@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.8 1995/10/05 21:06:56 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.9 1995/10/05 22:24:24 jfontain Exp $}
 
 source pielabel.tcl
 
@@ -6,15 +6,39 @@ proc pieBoxLabeller::pieBoxLabeller {id canvas args} {
     eval pieLabeller::pieLabeller $id $canvas $args
 }
 
-proc pieBoxLabeller::~pieBoxLabeller {id} {}
+proc pieBoxLabeller::~pieBoxLabeller {id} {
+    global pieBoxLabeller
+
+    foreach label $pieBoxLabeller($id,labelIds) {
+        delete canvasLabel $label
+    }
+}
+
+proc pieBoxLabeller::create {id sliceId args} {
+    global pieBoxLabeller pieLabeller
+
+    if {[lsearch -exact $args -font]<0} {
+        # eventually use main font if not overridden
+        catch {lappend args -font $pieLabeller($id,font)}
+    }
+    set labelId [eval new canvasLabel $pieLabeller($id,canvas) 0 0 $args]
+    # always append semi-column to label
+    canvasLabel::configure $labelId -text [canvasLabel::cget $labelId -text]:
+    $pieLabeller($id,canvas) addtag pieLabeller($id) withtag canvasLabel($labelId)
+    lappend pieBoxLabeller($id,labelIds) $labelId
+    # save related slice
+    set pieBoxLabeller($id,sliceId,$labelId) $sliceId
+    pieBoxLabeller::position $id $labelId
+    return $labelId
+}
 
 proc pieBoxLabeller::position {id labelId} {
-    global pieLabeller
+    global pieBoxLabeller pieLabeller
 
     set canvas $pieLabeller($id,canvas)
     set graphicsBox [$canvas bbox pieGraphics($pieLabeller($id,pieId))]
     set labelBox [$canvas bbox canvasLabel($labelId)]
-    set index [expr [llength $pieLabeller($id,labelIds)]-1]
+    set index [expr [llength $pieBoxLabeller($id,labelIds)]-1]
 
     # arrange labels in two columns
     set x [expr [lindex $graphicsBox 0]+(1.0+(2*($index%2)))*([lindex $graphicsBox 2]-[lindex $graphicsBox 0])/4]
@@ -24,3 +48,7 @@ proc pieBoxLabeller::position {id labelId} {
     $canvas move canvasLabel($labelId) $x $y
 }
 
+proc pieBoxLabeller::update {id labelId value} {
+    regsub {:.*$} [canvasLabel::cget $labelId -text] ": $value" text
+    canvasLabel::configure $labelId -text $text
+}
