@@ -1,4 +1,4 @@
-set rcsId {$Id: canlabel.tcl,v 1.9 1995/10/10 13:17:33 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.10 1995/10/12 21:08:30 jfontain Exp $}
 
 proc canvasLabel::canvasLabel {id canvas x y args} {
     global canvasLabel
@@ -42,6 +42,7 @@ proc canvasLabel::configure {id args} {
             }
             -borderwidth {
                 $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) -width $value
+                canvasLabel::update $id
             }
             -stipple {
                 $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) $option $value
@@ -123,8 +124,7 @@ proc canvasLabel::update {id} {
         set halfWidth [expr ($rectangleWidth+$canvasLabel($id,padding)+([lindex $textBox 2]-[lindex $textBox 0]))/2.0]
         set halfHeight [expr ($textHeight/2.0)+$border]
         $canvas coords $rectangle\
-            [expr $x-$halfWidth] [expr $y-$halfHeight]\
-            [expr $x-$halfWidth+$rectangleWidth] [expr $y+$halfHeight]
+            [expr $x-$halfWidth] [expr $y-$halfHeight] [expr $x-$halfWidth+$rectangleWidth] [expr $y+$halfHeight]
         $canvas coords $text [expr $x+(($rectangleWidth+$canvasLabel($id,padding))/2.0)] $y
     } else {
         set halfWidth [expr $border+$canvasLabel($id,padding)+(([lindex $textBox 2]-[lindex $textBox 0])/2.0)]
