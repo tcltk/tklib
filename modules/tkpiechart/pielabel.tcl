@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.5 1995/09/28 20:58:28 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.6 1995/10/01 16:45:12 jfontain Exp $}
 
 source canlabel.tcl
 
@@ -10,7 +10,7 @@ proc pieLabeller::pieLabeller {id pieId args} {
     array set option {-offset 5}
     array set option $args
 
-    set pieLabeller($id,offset) $option(-offset)
+    set pieLabeller($id,offset) [winfo fpixels $pie($pieId,canvas) $option(-offset)]
     catch {set pieLabeller($id,font) $option(-font)}
     set pieLabeller($id,pie) $pieId
 }
