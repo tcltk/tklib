@@ -5,7 +5,7 @@
 # Copyright (c) 2003 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.9 2004/07/27 06:20:43 afaupell Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.10 2004/07/28 03:32:19 afaupell Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -271,9 +271,8 @@ proc ::ico::EXEtoICO {exeFile icoFile} {
     set cnt  [SearchForIcos $file $fh]
 
     for {set i 0} {$i <= $cnt} {incr i} {
-	set idx $ICONS($file,$i)
 	set ico $ICONS($file,$i,data)
-	seek $fh $idx start
+	seek $fh $ICONS($file,$i) start
 	eval [list lappend dir] $ico
 	append data [read $fh [eval calcSize $ico 40]]
     }
@@ -453,7 +452,7 @@ proc ::ico::getIconAsColorList {w h bpp palette xor and} {
 	    incr x
 	}
     } elseif {$bpp == 32} {
-	foreach {b g r a} [split $xor {}] a [split $and {}] {
+	foreach {b g r n} [split $xor {}] a [split $and {}] {
 	    if {$x == $w} { set x 0; incr y -1 }
 	    if {$a == 0} {
 		lset colors $y $x [formatColor $r $g $b]
@@ -565,10 +564,10 @@ proc ::ico::getColorListFromImage {img} {
 # and the color list transformed to point to palette entries instead of color names
 # the palette entry itself is stored as 32bpp in "G B R padding" order
 proc ::ico::getPaletteFromColors {colors} {
-    set palette {}
-    array set tpal {}
+    set palette "\x00\x00\x00\x00"
+    array set tpal {{0 0 0} 0}
     set new {}
-    set i 0
+    set i 1
     foreach line $colors {
 	set tline {}
 	foreach x $line {
@@ -804,7 +803,7 @@ proc ::ico::writeIconICO {file index w h bpp palette xor and} {
 	    incr cur
 	}
 	# insert new icon dir entry
-	bputs $fh ccccss $w $h $colors 0 1 $bpp
+	bputs $fh ccccss $w $h $colors 0 0 $bpp
 	bputs $fh ii [expr {$size + 40}] [expr {[string length $olddata] + [tell $fh] + 8}]
 	# put all the icon data back
 	puts -nonewline $fh $olddata
@@ -834,7 +833,7 @@ proc ::ico::writeIconICO {file index w h bpp palette xor and} {
 	set olddata [read $fh]
 	# overwrite icon dir entry
 	seek $fh [expr {($index * 16) + 6}] start
-	bputs $fh ccccssi $w $h $colors 0 1 $bpp [expr {$size + 40}]
+	bputs $fh ccccssi $w $h $colors 0 0 $bpp [expr {$size + 40}]
 	# insert new icon and saved data
 	seek $fh $offset start
 	bputs $fh iiissiiiiii 40 $w [expr {$h * 2}] 1 $bpp 0 $size 0 0 0 0
