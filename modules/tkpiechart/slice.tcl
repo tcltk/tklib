@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.11 1995/09/22 21:16:11 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.12 1995/09/24 15:53:28 jfontain Exp $}
 
 source $env(AGVHOME)/tools/utility.tk
 
@@ -43,28 +43,20 @@ proc slice::slice {id canvas radiusX radiusY startRadian extentRadian {height 0}
     if {$height>0} {
         # 3D
         set slice($id,startBottomArcFill)\
-            [$canvas create arc\
-                -$radiusX -$radiusY $radiusX $radiusY -style chord -extent 0 -fill $bottomColor -outline $bottomColor\
-            ]
+            [$canvas create arc 0 0 0 0 -style chord -extent 0 -fill $bottomColor -outline $bottomColor]
         $canvas addtag slice($id) withtag $slice($id,startBottomArcFill)
         set slice($id,startPolygon) [$canvas create polygon 0 0 0 0 0 0 -fill $bottomColor]
         $canvas addtag slice($id) withtag $slice($id,startPolygon)
-        set slice($id,startBottomArc) [$canvas create arc -$radiusX -$radiusY $radiusX $radiusY -style arc -extent 0 -fill black]
+        set slice($id,startBottomArc) [$canvas create arc 0 0 0 0 -style arc -extent 0 -fill black]
         $canvas addtag slice($id) withtag $slice($id,startBottomArc)
-        $canvas move $slice($id,startBottomArcFill) 0 $height
-        $canvas move $slice($id,startBottomArc) 0 $height
 
         set slice($id,endBottomArcFill)\
-            [$canvas create arc\
-                -$radiusX -$radiusY $radiusX $radiusY -style chord -extent 0 -fill $bottomColor -outline $bottomColor\
-            ]
+            [$canvas create arc 0 0 0 0 -style chord -extent 0 -fill $bottomColor -outline $bottomColor]
         $canvas addtag slice($id) withtag $slice($id,endBottomArcFill)
         set slice($id,endPolygon) [$canvas create polygon 0 0 0 0 0 0 -fill $bottomColor]
         $canvas addtag slice($id) withtag $slice($id,endPolygon)
-        set slice($id,endBottomArc) [$canvas create arc -$radiusX -$radiusY $radiusX $radiusY -style arc -extent 0 -fill black]
+        set slice($id,endBottomArc) [$canvas create arc 0 0 0 0 -style arc -extent 0 -fill black]
         $canvas addtag slice($id) withtag $slice($id,endBottomArc)
-        $canvas move $slice($id,endBottomArcFill) 0 $height
-        $canvas move $slice($id,endBottomArc) 0 $height
 
         $canvas addtag slice($id) withtag [set slice($id,startLeftLine) [$canvas create line 0 0 0 0]]
         $canvas addtag slice($id) withtag [set slice($id,startRightLine) [$canvas create line 0 0 0 0]]
@@ -87,18 +79,28 @@ proc slice::~slice {id} {
 proc slice::update {id radian extentRadian} {
     global slice PI twoPI
 
+    set canvas $slice($id,canvas)
+
+    # first store slice position in case it was moved as a whole
+    set coordinates [$canvas coords $slice($id,topArc)]
+
+    $canvas coords $slice($id,topArc) -$slice($id,radiusX) -$slice($id,radiusY) $slice($id,radiusX) $slice($id,radiusY)
+
     set slice($id,start) [set startRadian [moduloPI $radian]]
     set startDegrees [expr $startRadian*180/$PI]
     # normalize extent by choosing a value slightly less than 2 PI for too large values, for slice size cannot be 2 PI
     set extentRadian [maximum 0 [minimum [expr $twoPI-0.0001] $extentRadian]]
     set slice($id,extent) $extentRadian
     set extentDegrees [expr $extentRadian*180/$PI]
-    $slice($id,canvas) itemconfigure $slice($id,topArc) -start $startDegrees -extent $extentDegrees
+    $canvas itemconfigure $slice($id,topArc) -start $startDegrees -extent $extentDegrees
 
     if {$slice($id,height)>0} {
         # if 3D
         slice::updateBottom $id
     }
+
+    # now position slice at the correct coordinates
+    $canvas move slice($id) [expr [lindex $coordinates 0]+$slice($id,radiusX)] [expr [lindex $coordinates 1]+$slice($id,radiusY)]
 }
 
 proc slice::updateBottom {id} {
@@ -114,11 +116,19 @@ proc slice::updateBottom {id} {
 
     # first make all bottom parts invisible
     $canvas itemconfigure $slice($id,startBottomArcFill) -extent 0
+    $canvas coords $slice($id,startBottomArcFill) -$radiusX -$radiusY $radiusX $radiusY
+    $canvas move $slice($id,startBottomArcFill) 0 $height
     $canvas itemconfigure $slice($id,startBottomArc) -extent 0
+    $canvas coords $slice($id,startBottomArc) -$radiusX -$radiusY $radiusX $radiusY
+    $canvas move $slice($id,startBottomArc) 0 $height
     $canvas coords $slice($id,startLeftLine) 0 0 0 0
     $canvas coords $slice($id,startRightLine) 0 0 0 0
     $canvas itemconfigure $slice($id,endBottomArcFill) -extent 0
+    $canvas coords $slice($id,endBottomArcFill) -$radiusX -$radiusY $radiusX $radiusY
+    $canvas move $slice($id,endBottomArcFill) 0 $height
     $canvas itemconfigure $slice($id,endBottomArc) -extent 0
+    $canvas coords $slice($id,endBottomArc) -$radiusX -$radiusY $radiusX $radiusY
+    $canvas move $slice($id,endBottomArc) 0 $height
     $canvas coords $slice($id,endLeftLine) 0 0 0 0
     $canvas coords $slice($id,endRightLine) 0 0 0 0
     $canvas coords $slice($id,startPolygon) 0 0 0 0 0 0 0 0
