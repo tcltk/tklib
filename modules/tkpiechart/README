@@ -1,9 +1,9 @@
-Some people have asked for a Tcl/Tk pie utility: so here is my little
-implementation with Tcl, not as an extension.
+Tkpiechart is a Tcl only library which allows the creation of pies
+with labels in Tcl canvases.
 
-This is version 5.3. It was tested with Tcl8.0/Tk8.0, Tcl8.1/Tk8.1 and
-the netscape plug-in 2.0, on both Linux and Windows platforms (it
-should work on all Tcl/Tk supported platforms).
+This is version 5.4. It was tested with Tcl8.0/Tk8.0 and the netscape
+plug-in 2.0, on both Linux and Windows platforms (it should work on
+all Tcl/Tk supported platforms).
 
 It is object oriented using the stooop (Simple Tcl Only Object
 Oriented Programming) extension (version 3.7 or above, tcl file
@@ -24,4 +24,4 @@ email the modified code so I can include it in the next release. The
 same goes for improvements.
 
 Jean-Luc Fontaine
-(http://www.multimania.com/jfontain/, mailto:jfontain@multimania.com)
+(http://jfontain.free.fr/, mailto:jfontain@free.fr)
