@@ -1,11 +1,12 @@
 # copyright (C) 1997-98 Jean-Luc Fontaine (mailto:jfontain@free.fr)
 # this program is free software: please read the COPYRIGHT file enclosed in this package or use the Help Copyright menu
 
-set rcsId {$Id: objselec.tcl,v 1.8 1999/10/02 20:53:05 jfontain Exp $}
+set rcsId {$Id: objselec.tcl,v 1.9 2002/05/19 10:32:12 jfontain Exp $}
 
 # implements selection on a list of object identifiers (sortable list of integer), for a listbox implementation, for example
 
-class objectSelector {
+
+::stooop::class objectSelector {
 
     proc objectSelector {this args} selector {$args} {}
 

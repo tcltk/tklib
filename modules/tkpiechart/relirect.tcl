@@ -1,7 +1,7 @@
-set rcsId {$Id: relirect.tcl,v 1.2 2001/02/11 22:06:40 jfontain Exp $}
+set rcsId {$Id: relirect.tcl,v 1.3 2002/05/19 10:32:12 jfontain Exp $}
 
 
-class canvasReliefRectangle {
+::stooop::class canvasReliefRectangle {
 
     proc canvasReliefRectangle {this canvas args} switched {$args} {
         set ($this,topLeft) [$canvas create line 0 0 0 0 0 0 -tags canvasReliefRectangle($this)]
