@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.32 1998/03/28 08:59:39 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.33 1998/03/28 20:34:38 jfontain Exp $}
 
 class pieBoxLabeler {
 
@@ -10,7 +10,8 @@ class pieBoxLabeler {
         catch {::delete $pieBoxLabeler::($this,array)}                                        ;# array may not have been created yet
     }
 
-    proc options {this} {
+    proc options {this} {                                      ;# font and justify options are used when creating a new canvas label
+        # justify option is used for both the labels array and the labels
         return [list\
             [list -font $pieLabeler::(default,font) $pieLabeler::(default,font)]\
             [list -justify left left]\
@@ -27,17 +28,18 @@ class pieBoxLabeler {
         "
     }
 
-    proc create {this slice args} {
+    proc create {this slice args} {                                    ;# variable arguments are for the created canvas label object
         if {![info exists pieBoxLabeler::($this,array)]} {                                                  ;# create a labels array
             set box [$pieLabeler::($this,canvas) bbox pie($pieLabeler::($this,pie))]                     ;# position array below pie
             set pieBoxLabeler::($this,array) [new canvasLabelsArray\
                 $pieLabeler::($this,canvas) [lindex $box 0] [expr {[lindex $box 3]+$switched::($this,-offset)}]\
-                [expr {[lindex $box 2]-[lindex $box 0]}]\
-                -justify $switched::($this,-justify) -xoffset $switched::($this,-xoffset) -font $switched::($this,-font)\
+                [expr {[lindex $box 2]-[lindex $box 0]}] -xoffset $switched::($this,-xoffset)\
             ]
         }
-        # this label font may be overriden in arguments
-        set label [eval canvasLabelsArray::create $pieBoxLabeler::($this,array) $args]
+        set label [eval new canvasLabel $pieLabeler::($this,canvas) 0 0\
+            $args [list -justify $switched::($this,-justify) -font $switched::($this,-font)]\
+        ]
+        canvasLabelsArray::manage $pieBoxLabeler::($this,array) $label
         # refresh our tags
         $pieLabeler::($this,canvas) addtag pieLabeler($this) withtag canvasLabelsArray($pieBoxLabeler::($this,array))
         switched::configure $label -text [switched::cget $label -text]:                        ;# always append semi-column to label

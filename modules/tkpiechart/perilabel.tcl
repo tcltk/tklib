@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.33 1998/03/28 08:59:39 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.34 1998/03/28 20:35:52 jfontain Exp $}
 
 class piePeripheralLabeler {
 
@@ -11,7 +11,8 @@ class piePeripheralLabeler {
         $pieLabeler::($this,canvas) delete pieLabeler($this)                                               ;# delete remaining items
     }
 
-    proc options {this} {
+    proc options {this} {                        ;# bullet width, font and justify options are used when creating a new canvas label
+        # justify option is used for both the labels array and the labels
         return [list\
             [list -bulletwidth 20 20]\
             [list -font $pieLabeler::(default,font) $pieLabeler::(default,font)]\
@@ -30,27 +31,29 @@ class piePeripheralLabeler {
         "
     }
 
-    proc create {this slice args} {
+    proc create {this slice args} {                                    ;# variable arguments are for the created canvas label object
         set canvas $pieLabeler::($this,canvas)
 
-        set text [$canvas create text 0 0 -tags pieLabeler($this)]                                             ;# create value label
-        catch {$canvas itemconfigure $text -font $switched::($this,-smallfont)}                         ;# eventually use small font
+        set text [$canvas create text 0 0 -font $switched::($this,-smallfont) -tags pieLabeler($this)]         ;# create value label
         set box [$canvas bbox $text]
         set smallTextHeight [expr {[lindex $box 3]-[lindex $box 1]}]
 
         if {![info exists piePeripheralLabeler::($this,array)]} {                                     ;# create a split labels array
-            set options "-style split -justify $switched::($this,-justify) -xoffset $switched::($this,-xoffset)"
-            catch {lappend options -bulletwidth $switched::($this,-bulletwidth)}
-            catch {lappend options -font $switched::($this,-font)}                                    ;# eventually use labeler font
             set box [$canvas bbox pie($pieLabeler::($this,pie))]                                         ;# position array below pie
             set piePeripheralLabeler::($this,array) [eval new canvasLabelsArray\
                 $canvas [lindex $box 0] [expr {[lindex $box 3]+(2*$switched::($this,-offset))+$smallTextHeight}]\
-                [expr {[lindex $box 2]-[lindex $box 0]}] $options\
+                [expr {[lindex $box 2]-[lindex $box 0]}] -justify $switched::($this,-justify) -xoffset $switched::($this,-xoffset)\
             ]
         }
 
-        # this label font may be overriden in arguments
-        set label [eval canvasLabelsArray::create $piePeripheralLabeler::($this,array) $args]
+        set label [eval new canvasLabel $pieLabeler::($this,canvas) 0 0 $args\
+            [list\
+                -style split -justify $switched::($this,-justify) -bulletwidth $switched::($this,-bulletwidth)\
+                -font $switched::($this,-font)\
+            ]\
+        ]
+        canvasLabelsArray::manage $piePeripheralLabeler::($this,array) $label
+
         $canvas addtag pieLabeler($this) withtag canvasLabelsArray($piePeripheralLabeler::($this,array))         ;# refresh our tags
 
         set piePeripheralLabeler::($this,textItem,$label) $text                         ;# value text item is the only one to update
