@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.36 1998/03/28 08:59:39 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.37 1998/03/28 20:42:15 jfontain Exp $}
 
 class pieLabeler {
 
@@ -14,7 +14,7 @@ class pieLabeler {
         set pieLabeler::($this,pie) $pie
     }
 
-    virtual proc create {this slice args}                                                               ;# must return a canvasLabel
+    virtual proc new {this slice args}                                                                  ;# must return a canvasLabel
 
     virtual proc delete {this label}
 

@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.33 1998/03/28 20:34:38 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.34 1998/03/28 20:42:15 jfontain Exp $}
 
 class pieBoxLabeler {
 
@@ -28,15 +28,15 @@ class pieBoxLabeler {
         "
     }
 
-    proc create {this slice args} {                                    ;# variable arguments are for the created canvas label object
+    proc new {this slice args} {                                       ;# variable arguments are for the created canvas label object
         if {![info exists pieBoxLabeler::($this,array)]} {                                                  ;# create a labels array
             set box [$pieLabeler::($this,canvas) bbox pie($pieLabeler::($this,pie))]                     ;# position array below pie
-            set pieBoxLabeler::($this,array) [new canvasLabelsArray\
+            set pieBoxLabeler::($this,array) [::new canvasLabelsArray\
                 $pieLabeler::($this,canvas) [lindex $box 0] [expr {[lindex $box 3]+$switched::($this,-offset)}]\
                 [expr {[lindex $box 2]-[lindex $box 0]}] -xoffset $switched::($this,-xoffset)\
             ]
         }
-        set label [eval new canvasLabel $pieLabeler::($this,canvas) 0 0\
+        set label [eval ::new canvasLabel $pieLabeler::($this,canvas) 0 0\
             $args [list -justify $switched::($this,-justify) -font $switched::($this,-font)]\
         ]
         canvasLabelsArray::manage $pieBoxLabeler::($this,array) $label

@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.34 1998/03/28 20:35:52 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.35 1998/03/28 20:42:15 jfontain Exp $}
 
 class piePeripheralLabeler {
 
@@ -31,7 +31,7 @@ class piePeripheralLabeler {
         "
     }
 
-    proc create {this slice args} {                                    ;# variable arguments are for the created canvas label object
+    proc new {this slice args} {                                       ;# variable arguments are for the created canvas label object
         set canvas $pieLabeler::($this,canvas)
 
         set text [$canvas create text 0 0 -font $switched::($this,-smallfont) -tags pieLabeler($this)]         ;# create value label
@@ -40,13 +40,13 @@ class piePeripheralLabeler {
 
         if {![info exists piePeripheralLabeler::($this,array)]} {                                     ;# create a split labels array
             set box [$canvas bbox pie($pieLabeler::($this,pie))]                                         ;# position array below pie
-            set piePeripheralLabeler::($this,array) [eval new canvasLabelsArray\
+            set piePeripheralLabeler::($this,array) [eval ::new canvasLabelsArray\
                 $canvas [lindex $box 0] [expr {[lindex $box 3]+(2*$switched::($this,-offset))+$smallTextHeight}]\
                 [expr {[lindex $box 2]-[lindex $box 0]}] -justify $switched::($this,-justify) -xoffset $switched::($this,-xoffset)\
             ]
         }
 
-        set label [eval new canvasLabel $pieLabeler::($this,canvas) 0 0 $args\
+        set label [eval ::new canvasLabel $pieLabeler::($this,canvas) 0 0 $args\
             [list\
                 -style split -justify $switched::($this,-justify) -bulletwidth $switched::($this,-bulletwidth)\
                 -font $switched::($this,-font)\
