@@ -1,4 +1,4 @@
-RCS: @(#) $Id: README,v 1.1.1.1 2001/11/07 20:51:21 hobbs Exp $
+RCS: @(#) $Id: README,v 1.2 2001/11/08 19:14:22 hobbs Exp $
 
 Welcome to the tklib, the Tk Standard Library.  This package is
 intended to be a collection of Tcl packages that provide utility
@@ -25,19 +25,20 @@ will be added to tklib:
 
 * the module must be a proper Tcl package
 * the module must use a namespace for its commands and variables
-* the name of the package must be the same as the name of the
-  namespace
+* the name of the package must be the same as the name of the namespace
 * the module must reside in a subdirectory of the modules directory in
   the source heirarchy, and that subdirectory must have the same name
-  as the package and namespace
+  as the package and namespace.  A module may opt to have multiple
+  similar packages (ie: clock), in which case the module name must not
+  match the packages therein.
 * the module must be released under the BSD License, the terms of
   which can be found in the toplevel tklib source directory in the file
   license.terms
 * the module should have both documentation (in XML, man, or HTML
   form) and a test suite (in the form of a group of *.test files in
-  the module directory).
-* the module must have either documentation or a test suite.  It can
-  not have neither.
+  the module directory).  It is very hard for users to make use of
+  modules when neither are present.  Even a stub doc that states the
+  available commands is useful.
 * the module should adhere to Tcl coding standards
 
 When adding a module to tklib, be sure to add it to the Makefile.in
