@@ -17,6 +17,19 @@ proc _tcl {module libdir} {
     return
 }
 
+proc _ctxt {module libdir} {
+    global distribution
+    xcopy \
+	    [file join $distribution modules $module] \
+	    [file join $libdir $module] \
+	    0 ctext.tcl
+    xcopy \
+	    [file join $distribution modules $module] \
+	    [file join $libdir $module] \
+	    0 pkgIndex.tcl
+    return
+}
+
 proc _doc {module libdir} {
     global distribution
 
