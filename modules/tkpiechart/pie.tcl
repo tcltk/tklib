@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.70 1998/05/03 18:39:41 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.71 1998/05/30 22:35:05 jfontain Exp $}
 
 package provide tkpiechart 5.0
 
@@ -217,6 +217,21 @@ proc pie::setLabelsState {this labels selected} {
     foreach label $labels {
         pieLabeler::selectState $labeler $label $selected
     }
+}
+
+proc pie::currentSlice {this} {                           ;# return current slice (slice or its label under the mouse cursor) if any
+    set tags [$pie::($this,canvas) gettags current]
+    if {[scan $tags slice(%u) slice]>0} {
+        return $slice                                                                                         ;# found current slice
+    }
+    if {[scan $tags canvasLabel(%u) label]>0} {
+        foreach slice $pie::($this,slices) {
+            if {$pie::($this,sliceLabel,$slice)==$label} {
+                return $slice                                                                  ;# slice is current through its label
+            }
+        }
+    }
+    return 0                                                                                                     ;# no current slice
 }
 
 class pie {                                                                                     ;# define various utility procedures
