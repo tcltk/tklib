@@ -1,4 +1,4 @@
-set rcsId {$Id: labarray.tcl,v 1.5 1995/10/31 00:17:45 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.6 1995/11/04 17:47:18 jfontain Exp $}
 
 source canlabel.tcl
 
@@ -8,12 +8,11 @@ proc canvasLabelsArray::canvasLabelsArray {this canvas x y width args} {
     # use a dimensionless line as an origin marker
     set canvasLabelsArray($this,origin) [$canvas create line $x $y $x $y -fill {} -tags canvasLabelsArray($this)]
 
-    # set options default then parse switched options
-    array set option {-justify left -style box}
-    array set option $args
-    catch {set canvasLabelsArray($this,font) $option(-font)}
-    set canvasLabelsArray($this,justify) $option(-justify)
-    set canvasLabelsArray($this,style) $option(-style)
+    # set options default
+    array set options {-justify left -style box -bulletwidth 20}
+    # override with user options
+    array set options $args
+    set canvasLabelsArray($this,options) [array get options]
 }
 
 proc canvasLabelsArray::~canvasLabelsArray {this} {
@@ -25,22 +24,18 @@ proc canvasLabelsArray::~canvasLabelsArray {this} {
 }
 
 proc canvasLabelsArray::create {this args} {
-    if {[lsearch -exact $args -font]<0} {
-        # eventually use array main font
-        catch {lappend args -font $canvasLabelsArray($this,font)}
-    }
-    if {[lsearch -exact $args -style]<0} {
-        # use array main style if not overridden
-        lappend args -style $canvasLabelsArray($this,style)
-    }
-    set labelId [eval new canvasLabel $canvasLabelsArray($this,canvas) 0 0 $args]
+    array set options $canvasLabelsArray($this,options)
+    # override with user options
+    array set options $args
+
+    set labelId [eval new canvasLabel $canvasLabelsArray($this,canvas) 0 0 [array get options]]
     $canvasLabelsArray($this,canvas) addtag canvasLabelsArray($this) withtag canvasLabel($labelId)
     lappend canvasLabelsArray($this,labelIds) $labelId
-    canvasLabelsArray::position $this $labelId
+    canvasLabelsArray::position $this $labelId $options(-justify)
     return $labelId
 }
 
-proc canvasLabelsArray::position {this labelId} {
+proc canvasLabelsArray::position {this labelId justification} {
     set canvas $canvasLabelsArray($this,canvas)
 
     set coordinates [$canvas coords $canvasLabelsArray($this,origin)]
@@ -53,7 +48,7 @@ proc canvasLabelsArray::position {this labelId} {
     set index [expr [llength $canvasLabelsArray($this,labelIds)]-1]
 
     # arrange labels in two columns
-    switch $canvasLabelsArray($this,justify) {
+    switch $justification {
         left {
             set x [expr $x+(($index%2)*($canvasLabelsArray($this,width)/2.0))]
             set anchor nw
