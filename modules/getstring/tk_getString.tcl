@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: tk_getString.tcl,v 1.4 2005/03/31 03:15:48 andreas_kupries Exp $
+# RCS: @(#) $Id: tk_getString.tcl,v 1.5 2005/04/01 03:41:55 afaupell Exp $
 
 package require Tk
 package provide tk_getString 0.1
@@ -25,28 +25,14 @@ if {[tk windowingsystem] == "win32"} {
 }
 option add *TkSDialog*Entry.width 20 widgetDefault
 
-proc ::getstring::getStringEnable {w} {
-    if {![winfo exists $w.entry]} {return}
-    if {[$w.entry get] != ""} {
-        $w.ok configure -state normal
-    } else {
-        $w.ok configure -state disabled
+proc ::getstring::tk_getString {w var text args} {
+    array set options {
+        -allowempty 0
+        -entryoptions {}
+        -title "Enter Information"
     }
-}
-
-proc ::getstring::tk_getString {w var title text args} {
-    set allowempty 0
-    set entryoptions {}
-    if {([llength $args] % 2) > 0} {error "all options require a single argument"}
-    foreach {opt arg} $args {
-        if {$opt == "-allowempty" && [string is boolean -strict $arg] && $arg} {
-            set allowempty 1
-        } elseif {[string match -inv* $opt] || [string match -valid* $opt]} {
-            lappend entryoptions $opt $arg
-        } else {
-            error "unknown option $opt"
-        }
-    }
+    parseOpts options {{-allowempty boolean} {-entryoptions {}} {-geometry {}} \
+                       {-title {}} $args
 
     variable ::getstring::result
     upvar $var result
@@ -83,15 +69,18 @@ proc ::getstring::tk_getString {w var title text args} {
     wm withdraw $w
     update idletasks
     focus -force $w.entry
-    if {[winfo parent $w] == "."} {
+    if {[info exists options(-geometry)]} {
+        wm geometry $w $options(-geometry)
+    } elseif {[winfo parent $w] == "."} {
         set x [expr {[winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 - [winfo vrootx $w]}]
         set y [expr {[winfo screenheight $w]/2 - [winfo reqheight $w]/2 - [winfo vrooty $w]}]
+        wm geom $w +$x+$y
     } else {
         set t [winfo toplevel [winfo parent $w]]
         set x [expr {[winfo width $t]/2 - [winfo reqwidth $w]/2 - [winfo vrootx $w]}]
         set y [expr {[winfo height $t]/2 - [winfo reqheight $w]/2 - [winfo vrooty $w]}]
+        wm geom $w +$x+$y
     }
-    wm geom $w +$x+$y
     wm deiconify $w
     grab $w
 
@@ -104,4 +93,32 @@ proc ::getstring::tk_getString {w var title text args} {
     if {$grab != ""} {grab $grab}
     update idletasks
     return $::getstring::result
+}
+
+proc ::getstring::parseOpts {var opts input} {
+    upvar $var output
+    for {set i 0} {$i < [llength $input]} {incr i} {
+        for {set a 0} {$a < [llength $opts]} {incr a} {
+           if {[lindex $opts $a 0] == [lindex $input $i]} { break }
+        }
+        if {$a == [llength $opts]} { error "unknown option [lindex $input $i]" }
+        set opt [lindex $opts $a]
+        if {[llength $opt] > 1} {
+            foreach {opt type} $opt {break}
+            if {[incr i] >= [llength $input]} { error "$opt requires an argument" }
+            if {$type != "" && ![string is $type -strict [lindex $input $i]]} { error "$opt requires argument of type $type" }
+            set output($opt) [lindex $input $i]
+        } else {
+            set output($opt) {}
+        }
+    }
+}
+
+proc ::getstring::getStringEnable {w} {
+    if {![winfo exists $w.entry]} {return}
+    if {[$w.entry get] != ""} {
+        $w.ok configure -state normal
+    } else {
+        $w.ok configure -state disabled
+    }
 }
