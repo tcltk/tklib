@@ -1,11 +1,11 @@
-set rcsId {$Id: canlabel.tcl,v 1.20 1998/03/28 08:38:12 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.21 1998/05/03 10:52:49 jfontain Exp $}
 
 class canvasLabel {
 
     proc canvasLabel {this canvas x y args} switched {$args} {
         set canvasLabel::($this,canvas) $canvas
-        # use a dimensionless line as an origin marker
-        set canvasLabel::($this,origin) [$canvas create line $x $y $x $y -fill {} -tags canvasLabel($this)]
+        # use an empty image as an origin marker with only 2 coordinates
+        set canvasLabel::($this,origin) [$canvas create image $x $y -tags canvasLabel($this)]
         set canvasLabel::($this,rectangle) [$canvas create rectangle 0 0 0 0 -tags canvasLabel($this)]
         set canvasLabel::($this,text) [$canvas create text 0 0 -tags canvasLabel($this)]
 
@@ -28,6 +28,7 @@ class canvasLabel {
             [list -foreground black black]\
             [list -justify left left]\
             [list -padding 2 2]\
+            [list -scale {1 1} {1 1}]\
             [list -stipple {} {}]\
             [list -style box box]\
             [list -text {} {}]\
@@ -47,6 +48,9 @@ class canvasLabel {
     }
     proc set-foreground {this value} {
         $canvasLabel::($this,canvas) itemconfigure $canvasLabel::($this,text) -fill $value
+    }
+    proc set-scale {this value} {                                   ;# value is a list of ratios of the horizontal and vertical axis
+        update $this                                                           ;# refresh display which takes new scale into account
     }
     proc set-stipple {this value} {
         $canvasLabel::($this,canvas) itemconfigure $canvasLabel::($this,rectangle) -stipple $value
@@ -72,9 +76,7 @@ class canvasLabel {
         set rectangle $canvasLabel::($this,rectangle)
         set text $canvasLabel::($this,text)
 
-        set coordinates [$canvas coords $canvasLabel::($this,origin)]
-        set x [lindex $coordinates 0]
-        set y [lindex $coordinates 1]
+        foreach {x y} [$canvas coords $canvasLabel::($this,origin)] {}
 
         set border [$canvas itemcget $rectangle -width]
         set textBox [$canvas bbox $text]
@@ -101,6 +103,7 @@ class canvasLabel {
         set yDelta [expr {([string match n* $anchor]-[string match s* $anchor])*$halfHeight}]
         $canvas move $rectangle $xDelta $yDelta
         $canvas move $text $xDelta $yDelta
+        eval $canvas scale canvasLabel($this) $x $y $switched::($this,-scale)                                 ;# finally apply scale
     }
 
 }
