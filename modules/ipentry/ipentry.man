@@ -26,7 +26,7 @@ Each widget created with the command above supports the following methods:
 
 [call [arg pathName] [method complete]]
 
-Returns a boolean value. True indicaties that the entry contains a
+Returns a boolean value. True indicates that the entry contains a
 complete IP address, meaning all 4 fields have a value.
 
 [call [arg pathName] [method get]]
@@ -68,16 +68,21 @@ options section.
 Specifies one of three states for the entry: [const normal],
 [const disabled], or [const readonly].
 
-[tkoption_def -font               font Font]
-[tkoption_def -bd                 borderWidth BorderWidth]
-[tkoption_def -fg                 foreground Foreground]
-[tkoption_def -bg                 background Background]
-[tkoption_def -relief             relief Relief]
-[tkoption_def -selectbackground   selectBackground Background]
-[tkoption_def -selectforeground   selectForeground Foreground]
-[tkoption_def -selectborderwidth  selectBorderWidth BorderWidth]
-[tkoption_def -disabledbackground disabledBackground DisabledBackground]
-[tkoption_def -insertbackground   insertBackground Background]
+[tkoption_def -font                font Font]
+[tkoption_def -bd                  borderWidth BorderWidth]
+[tkoption_def -fg                  foreground Foreground]
+[tkoption_def -bg                  background Background]
+[tkoption_def -relief              relief Relief]
+[tkoption_def -highlightthickness  highlightThickness HighlightThickness]
+[tkoption_def -highlightcolor      highlightColor HighlightColor]
+[tkoption_def -highlightbackground highlightBackground HighlightBackground]
+[tkoption_def -selectbackground    selectBackground Background]
+[tkoption_def -selectforeground    selectForeground Foreground]
+[tkoption_def -selectborderwidth   selectBorderWidth BorderWidth]
+[tkoption_def -disabledbackground  disabledBackground DisabledBackground]
+[tkoption_def -disabledforeground  disabledForeground DisabledForeground]
+[tkoption_def -readonlybackground  readonlyBackground ReadonlyBackground]
+[tkoption_def -insertbackground    insertBackground Background]
 
 Standard widget options. See [cmd options] for a description of their
 meanings and values.

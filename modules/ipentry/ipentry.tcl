@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: ipentry.tcl,v 1.2 2003/07/23 19:13:47 afaupell Exp $
+# RCS: @(#) $Id: ipentry.tcl,v 1.3 2003/08/02 21:01:39 afaupell Exp $
 
 package provide ipentry 0.1
 
@@ -239,8 +239,11 @@ proc ::ipentry::configure {w args} {
                 _foreach $w [list configure $cmd [lindex $args 1]]
                 set args [lrange $args 2 end]
             }
-            -bd     -
-            -relief {
+            -bd                  -
+            -relief              -
+            -highlightcolor      -
+            -highlightbackground -
+            -highlightthickness  {
                 _$w configure $cmd [lindex $args 1]
                 set args [lrange $args 2 end]
             }
