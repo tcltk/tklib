@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.85 1999/03/27 21:41:51 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.85.1.1 2000/03/05 20:48:16 jfontain Exp $}
 
 package provide tkpiechart 5.3
 
@@ -200,6 +200,10 @@ proc pie::sizeSlice {this slice unitShare {valueToDisplay {}}} {
     foreach slice [lrange $pie::($this,slices) [incr index] end] {
         slice::rotate $slice $value
     }
+}
+
+proc pie::labelSlice {this slice text} {
+    pieLabeler::label $pie::($this,labeler) $pie::($this,sliceLabel,$slice) $text
 }
 
 proc pie::selectedSlices {this} {                                                      ;# return a list of currently selected slices
