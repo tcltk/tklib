@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.21 1995/09/26 17:06:55 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.22 1995/09/26 19:15:51 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -93,7 +93,7 @@ proc pie::sizeSlice {id sliceId perCent} {
     slice::update $sliceId [expr $slice($sliceId,start)-$growth] $newExtent
     # finally move the following slices
     set radian [expr -1*$growth]
-    while {[set sliceId [lindex $pie($id,slices) [incr index]]]>=0} {
+    foreach sliceId [lrange $pie($id,slices) [incr index] end] {
         slice::rotate $sliceId $radian
     }
 }
