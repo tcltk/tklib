@@ -1,31 +1,31 @@
-set rcsId {$Id: canlabel.tcl,v 1.10 1995/10/12 21:08:30 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.11 1995/10/14 17:13:32 jfontain Exp $}
 
-proc canvasLabel::canvasLabel {id canvas x y args} {
+proc canvasLabel::canvasLabel {this canvas x y args} {
     global canvasLabel
 
-    set canvasLabel($id,canvas) $canvas
+    set canvasLabel($this,canvas) $canvas
     # use a dimensionless line as an origin marker
-    set canvasLabel($id,origin) [$canvas create line $x $y $x $y -fill {} -tags canvasLabel($id)]
-    set canvasLabel($id,rectangle) [$canvas create rectangle 0 0 0 0 -tags canvasLabel($id)]
-    set canvasLabel($id,text) [$canvas create text 0 0 -tags canvasLabel($id)]
+    set canvasLabel($this,origin) [$canvas create line $x $y $x $y -fill {} -tags canvasLabel($this)]
+    set canvasLabel($this,rectangle) [$canvas create rectangle 0 0 0 0 -tags canvasLabel($this)]
+    set canvasLabel($this,text) [$canvas create text 0 0 -tags canvasLabel($this)]
     # set anchor default
-    set canvasLabel($id,anchor) center
+    set canvasLabel($this,anchor) center
     # style can be box or split
-    set canvasLabel($id,style) box
-    set canvasLabel($id,padding) 2
+    set canvasLabel($this,style) box
+    set canvasLabel($this,padding) 2
 
-    eval canvasLabel::configure $id $args
+    eval canvasLabel::configure $this $args
     # initialize rectangle
-    canvasLabel::update $id
+    canvasLabel::update $this
 }
 
-proc canvasLabel::~canvasLabel {id} {
+proc canvasLabel::~canvasLabel {this} {
     global canvasLabel
 
-    $canvasLabel($id,canvas) delete canvasLabel($id)
+    $canvasLabel($this,canvas) delete canvasLabel($this)
 }
 
-proc canvasLabel::configure {id args} {
+proc canvasLabel::configure {this args} {
     # emulate label widget behavior
     global canvasLabel
 
@@ -35,82 +35,82 @@ proc canvasLabel::configure {id args} {
         set value [lindex $args [incr index]]
         switch -- $option {
             -background {
-                $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) -fill $value
+                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,rectangle) -fill $value
             }
             -foreground {
-                $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,text) -fill $value
+                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,text) -fill $value
             }
             -borderwidth {
-                $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) -width $value
-                canvasLabel::update $id
+                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,rectangle) -width $value
+                canvasLabel::update $this
             }
             -stipple {
-                $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) $option $value
+                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,rectangle) $option $value
             }
             -anchor {
-                set canvasLabel($id,anchor) $value
-                canvasLabel::update $id
+                set canvasLabel($this,anchor) $value
+                canvasLabel::update $this
             }
             -font -
             -justify -
             -text -
             -width {
-                $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,text) $option $value
-                canvasLabel::update $id
+                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,text) $option $value
+                canvasLabel::update $this
             }
             -bordercolor {
-                $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) -outline $value
+                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,rectangle) -outline $value
             }
             -style {
-                set canvasLabel($id,style) $value
-                canvasLabel::update $id
+                set canvasLabel($this,style) $value
+                canvasLabel::update $this
             }
         }
     }
 }
 
-proc canvasLabel::cget {id option} {
+proc canvasLabel::cget {this option} {
     global canvasLabel
 
     switch -- $option {
         -background {
-            return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,rectangle) -fill]
+            return [$canvasLabel($this,canvas) itemcget $canvasLabel($this,rectangle) -fill]
         }
         -foreground {
-            return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,text) -fill]
+            return [$canvasLabel($this,canvas) itemcget $canvasLabel($this,text) -fill]
         }
         -borderwidth {
-            return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,rectangle) -width]
+            return [$canvasLabel($this,canvas) itemcget $canvasLabel($this,rectangle) -width]
         }
         -stipple {
-            return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,rectangle) $option]
+            return [$canvasLabel($this,canvas) itemcget $canvasLabel($this,rectangle) $option]
         }
         -anchor {
-            return $canvasLabel($id,anchor)
+            return $canvasLabel($this,anchor)
         }
         -font -
         -justify -
         -text -
         -width {
-            return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,text) $option]
+            return [$canvasLabel($this,canvas) itemcget $canvasLabel($this,text) $option]
         }
         -bordercolor {
-            return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,rectangle) -outline]
+            return [$canvasLabel($this,canvas) itemcget $canvasLabel($this,rectangle) -outline]
         }
         -style {
-            return canvasLabel($id,style) $value
+            return canvasLabel($this,style) $value
         }
     }
 }
 
-proc canvasLabel::update {id} {
+proc canvasLabel::update {this} {
     global canvasLabel
 
-    set canvas $canvasLabel($id,canvas)
-    set rectangle $canvasLabel($id,rectangle)
-    set text $canvasLabel($id,text)
+    set canvas $canvasLabel($this,canvas)
+    set rectangle $canvasLabel($this,rectangle)
+    set text $canvasLabel($this,text)
 
-    set coordinates [$canvas coords $canvasLabel($id,origin)]
+    set coordinates [$canvas coords $canvasLabel($this,origin)]
     set x [lindex $coordinates 0]
     set y [lindex $coordinates 1]
 
@@ -118,22 +118,22 @@ proc canvasLabel::update {id} {
     set textBox [$canvas bbox $text]
 
     # position rectangle and text as if anchor was center (the default)
-    if {[string compare $canvasLabel($id,style) split]==0} {
+    if {[string compare $canvasLabel($this,style) split]==0} {
         set textHeight [expr [lindex $textBox 3]-[lindex $textBox 1]]
         set rectangleWidth [expr 2.0*($textHeight+$border)]
-        set halfWidth [expr ($rectangleWidth+$canvasLabel($id,padding)+([lindex $textBox 2]-[lindex $textBox 0]))/2.0]
+        set halfWidth [expr ($rectangleWidth+$canvasLabel($this,padding)+([lindex $textBox 2]-[lindex $textBox 0]))/2.0]
         set halfHeight [expr ($textHeight/2.0)+$border]
         $canvas coords $rectangle\
             [expr $x-$halfWidth] [expr $y-$halfHeight] [expr $x-$halfWidth+$rectangleWidth] [expr $y+$halfHeight]
-        $canvas coords $text [expr $x+(($rectangleWidth+$canvasLabel($id,padding))/2.0)] $y
+        $canvas coords $text [expr $x+(($rectangleWidth+$canvasLabel($this,padding))/2.0)] $y
     } else {
-        set halfWidth [expr $border+$canvasLabel($id,padding)+(([lindex $textBox 2]-[lindex $textBox 0])/2.0)]
-        set halfHeight [expr $border+$canvasLabel($id,padding)+(([lindex $textBox 3]-[lindex $textBox 1])/2.0)]
+        set halfWidth [expr $border+$canvasLabel($this,padding)+(([lindex $textBox 2]-[lindex $textBox 0])/2.0)]
+        set halfHeight [expr $border+$canvasLabel($this,padding)+(([lindex $textBox 3]-[lindex $textBox 1])/2.0)]
         $canvas coords $rectangle [expr $x-$halfWidth] [expr $y-$halfHeight] [expr $x+$halfWidth] [expr $y+$halfHeight]
         $canvas coords $text $x $y
     }
     # now move rectangle and text according to anchor
-    set anchor $canvasLabel($id,anchor)
+    set anchor $canvasLabel($this,anchor)
     set xDelta [expr ([string match *w $anchor]-[string match *e $anchor])*$halfWidth]
     set yDelta [expr ([string match n* $anchor]-[string match s* $anchor])*$halfHeight]
     $canvas move $rectangle $xDelta $yDelta

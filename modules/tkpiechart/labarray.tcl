@@ -1,78 +1,78 @@
-set rcsId {$Id: labarray.tcl,v 1.2 1995/10/10 19:49:22 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.3 1995/10/14 17:13:32 jfontain Exp $}
 
 source canlabel.tcl
 
-proc canvasLabelsArray::canvasLabelsArray {id canvas x y width args} {
+proc canvasLabelsArray::canvasLabelsArray {this canvas x y width args} {
     global canvasLabelsArray
 
-    set canvasLabelsArray($id,canvas) $canvas
-    set canvasLabelsArray($id,width) [winfo fpixels $canvas $width]
+    set canvasLabelsArray($this,canvas) $canvas
+    set canvasLabelsArray($this,width) [winfo fpixels $canvas $width]
     # use a dimensionless line as an origin marker
-    set canvasLabelsArray($id,origin) [$canvas create line $x $y $x $y -fill {} -tags canvasLabelsArray($id)]
+    set canvasLabelsArray($this,origin) [$canvas create line $x $y $x $y -fill {} -tags canvasLabelsArray($this)]
 
     # set options default then parse switched options
     array set option {-justify left -style box}
     array set option $args
-    catch {set canvasLabelsArray($id,font) $option(-font)}
-    set canvasLabelsArray($id,justify) $option(-justify)
-    set canvasLabelsArray($id,style) $option(-style)
+    catch {set canvasLabelsArray($this,font) $option(-font)}
+    set canvasLabelsArray($this,justify) $option(-justify)
+    set canvasLabelsArray($this,style) $option(-style)
 }
 
-proc canvasLabelsArray::~canvasLabelsArray {id} {
+proc canvasLabelsArray::~canvasLabelsArray {this} {
     global canvasLabelsArray
 
-    foreach label $canvasLabelsArray($id,labelIds) {
+    foreach label $canvasLabelsArray($this,labelIds) {
         delete canvasLabel $label
     }
     # delete remaining items
-    $canvasLabelsArray($id,canvas) delete canvasLabelsArray($id)
+    $canvasLabelsArray($this,canvas) delete canvasLabelsArray($this)
 }
 
-proc canvasLabelsArray::create {id args} {
+proc canvasLabelsArray::create {this args} {
     global canvasLabelsArray
 
     if {[lsearch -exact $args -font]<0} {
         # eventually use array main font
-        catch {lappend args -font $canvasLabelsArray($id,font)}
+        catch {lappend args -font $canvasLabelsArray($this,font)}
     }
     if {[lsearch -exact $args -style]<0} {
         # use array main style if not overridden
-        lappend args -style $canvasLabelsArray($id,style)
+        lappend args -style $canvasLabelsArray($this,style)
     }
-    set labelId [eval new canvasLabel $canvasLabelsArray($id,canvas) 0 0 $args]
-    $canvasLabelsArray($id,canvas) addtag canvasLabelsArray($id) withtag canvasLabel($labelId)
-    lappend canvasLabelsArray($id,labelIds) $labelId
-    canvasLabelsArray::position $id $labelId
+    set labelId [eval new canvasLabel $canvasLabelsArray($this,canvas) 0 0 $args]
+    $canvasLabelsArray($this,canvas) addtag canvasLabelsArray($this) withtag canvasLabel($labelId)
+    lappend canvasLabelsArray($this,labelIds) $labelId
+    canvasLabelsArray::position $this $labelId
     return $labelId
 }
 
-proc canvasLabelsArray::position {id labelId} {
+proc canvasLabelsArray::position {this labelId} {
     global canvasLabelsArray
 
-    set canvas $canvasLabelsArray($id,canvas)
+    set canvas $canvasLabelsArray($this,canvas)
 
-    set coordinates [$canvas coords $canvasLabelsArray($id,origin)]
+    set coordinates [$canvas coords $canvasLabelsArray($this,origin)]
     set x [lindex $coordinates 0]
     set y [lindex $coordinates 1]
 
     set coordinates [$canvas bbox canvasLabel($labelId)]
     set labelHeight [expr [lindex $coordinates 3]-[lindex $coordinates 1]]
 
-    set index [expr [llength $canvasLabelsArray($id,labelIds)]-1]
+    set index [expr [llength $canvasLabelsArray($this,labelIds)]-1]
 
     # arrange labels in two columns
-    switch $canvasLabelsArray($id,justify) {
+    switch $canvasLabelsArray($this,justify) {
         left {
-            set x [expr $x+(($index%2)*($canvasLabelsArray($id,width)/2.0))]
+            set x [expr $x+(($index%2)*($canvasLabelsArray($this,width)/2.0))]
             set anchor nw
         }
         right {
-            set x [expr $x+((($index%2)+1)*($canvasLabelsArray($id,width)/2.0))]
+            set x [expr $x+((($index%2)+1)*($canvasLabelsArray($this,width)/2.0))]
             set anchor ne
         }
         default {
             # should be center
-            set x [expr $x+((1.0+(2*($index%2)))*$canvasLabelsArray($id,width)/4)]
+            set x [expr $x+((1.0+(2*($index%2)))*$canvasLabelsArray($this,width)/4)]
             set anchor n
         }
     }

@@ -1,98 +1,98 @@
-set rcsId {$Id: pie.tcl,v 1.37 1995/10/07 20:39:33 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.38 1995/10/14 17:13:32 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
 
-proc pie::pie {id canvas x y width height args} {
-    # note: all pie elements are tagged with pie($id)
+proc pie::pie {this canvas x y width height args} {
+    # note: all pie elements are tagged with pie($this)
     global pie
 
     # set options default then parse switched options
     array set option {-thickness 0 -background {} -colors {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}}
     array set option $args
 
-    set pie($id,canvas) $canvas
+    set pie($this,canvas) $canvas
 
     if {[info exists option(-labeller)]} {
-        set pie($id,labellerId) $option(-labeller)
+        set pie($this,labellerId) $option(-labeller)
     } else {
         # use default labeller
-        set pie($id,labellerId) [new pieBoxLabeller $canvas]
+        set pie($this,labellerId) [new pieBoxLabeller $canvas]
     }
-    $canvas addtag pie($id) withtag pieLabeller($pie($id,labellerId))
+    $canvas addtag pie($this) withtag pieLabeller($pie($this,labellerId))
     # bind labeller with pie
-    pieLabeller::bind $pie($id,labellerId) $id
+    pieLabeller::bind $pie($this,labellerId) $this
 
-    set pie($id,radiusX) [expr [winfo fpixels $canvas $width]/2.0]
-    set pie($id,radiusY) [expr [winfo fpixels $canvas $height]/2.0]
-    set pie($id,thickness) [winfo fpixels $canvas $option(-thickness)]
+    set pie($this,radiusX) [expr [winfo fpixels $canvas $width]/2.0]
+    set pie($this,radiusY) [expr [winfo fpixels $canvas $height]/2.0]
+    set pie($this,thickness) [winfo fpixels $canvas $option(-thickness)]
 
     if {[string length $option(-background)]>0} {
         set bottomColor [tkDarken $option(-background) 60]
     } else {
         set bottomColor {}
     }
-    set pie($id,backgroundSliceId) [new slice\
-        $canvas [winfo fpixels $canvas $x] [winfo fpixels $canvas $y] $pie($id,radiusX) $pie($id,radiusY) 90 360\
-        -height $pie($id,thickness) -topcolor $option(-background) -bottomcolor $bottomColor\
+    set pie($this,backgroundSliceId) [new slice\
+        $canvas [winfo fpixels $canvas $x] [winfo fpixels $canvas $y] $pie($this,radiusX) $pie($this,radiusY) 90 360\
+        -height $pie($this,thickness) -topcolor $option(-background) -bottomcolor $bottomColor\
     ]
-    $canvas addtag pie($id) withtag slice($pie($id,backgroundSliceId))
-    $canvas addtag pieGraphics($id) withtag slice($pie($id,backgroundSliceId))
-    set pie($id,sliceIds) {}
-    set pie($id,colors) $option(-colors)
+    $canvas addtag pie($this) withtag slice($pie($this,backgroundSliceId))
+    $canvas addtag pieGraphics($this) withtag slice($pie($this,backgroundSliceId))
+    set pie($this,sliceIds) {}
+    set pie($this,colors) $option(-colors)
 }
 
-proc pie::~pie {id} {
+proc pie::~pie {this} {
     global pie
 
-    delete pieLabeller $pie($id,labellerId)
-    foreach sliceId $pie($id,sliceIds) {
+    delete pieLabeller $pie($this,labellerId)
+    foreach sliceId $pie($this,sliceIds) {
         delete slice $sliceId
     }
-    delete slice $pie($id,backgroundSliceId)
+    delete slice $pie($this,backgroundSliceId)
 }
 
-proc pie::newSlice {id {text {}}} {
+proc pie::newSlice {this {text {}}} {
     global pie slice
 
     # calculate start radian for new slice (slices grow clockwise from 12 o'clock)
     set start 90
-    foreach sliceId $pie($id,sliceIds) {
+    foreach sliceId $pie($this,sliceIds) {
         set start [expr $start-$slice($sliceId,extent)]
     }
     # get a new color
-    set color [lindex $pie($id,colors) [expr [llength $pie($id,sliceIds)]%[llength $pie($id,colors)]]]
-    set numberOfSlices [llength $pie($id,sliceIds)]
+    set color [lindex $pie($this,colors) [expr [llength $pie($this,sliceIds)]%[llength $pie($this,colors)]]]
+    set numberOfSlices [llength $pie($this,sliceIds)]
 
     # make sure slice is positioned correctly in case pie was moved
-    set coordinates [$pie($id,canvas) coords slice($pie($id,backgroundSliceId))]
+    set coordinates [$pie($this,canvas) coords slice($pie($this,backgroundSliceId))]
 
     # darken slice top color by 40% to obtain bottom color, as it is done for Tk buttons shadow, for example
     set sliceId [new slice\
-        $pie($id,canvas) [lindex $coordinates 0] [lindex $coordinates 1] $pie($id,radiusX) $pie($id,radiusY) $start 0\
-        -height $pie($id,thickness) -topcolor $color -bottomcolor [tkDarken $color 60]\
+        $pie($this,canvas) [lindex $coordinates 0] [lindex $coordinates 1] $pie($this,radiusX) $pie($this,radiusY) $start 0\
+        -height $pie($this,thickness) -topcolor $color -bottomcolor [tkDarken $color 60]\
     ]
-    $pie($id,canvas) addtag pie($id) withtag slice($sliceId)
-    $pie($id,canvas) addtag pieGraphics($id) withtag slice($sliceId)
-    lappend pie($id,sliceIds) $sliceId
+    $pie($this,canvas) addtag pie($this) withtag slice($sliceId)
+    $pie($this,canvas) addtag pieGraphics($this) withtag slice($sliceId)
+    lappend pie($this,sliceIds) $sliceId
 
     if {[string length $text]==0} {
         # generate label text if not provided
-        set text "slice [expr [llength $pie($id,sliceIds)]+1]"
+        set text "slice [expr [llength $pie($this,sliceIds)]+1]"
     }
-    set pie($id,sliceLabel,$sliceId) [pieLabeller::create $pie($id,labellerId) $sliceId -text $text -background $color]
+    set pie($this,sliceLabel,$sliceId) [pieLabeller::create $pie($this,labellerId) $sliceId -text $text -background $color]
     # update tags which canvas does not automatically do
-    $pie($id,canvas) addtag pie($id) withtag pieLabeller($pie($id,labellerId))
+    $pie($this,canvas) addtag pie($this) withtag pieLabeller($pie($this,labellerId))
 
     return $sliceId
 }
 
-proc pie::sizeSlice {id sliceId unitShare {valueToDisplay {}}} {
+proc pie::sizeSlice {this sliceId unitShare {valueToDisplay {}}} {
     # share of whole pie between 0 and 1
     global pie slice
 
-    if {[set index [lsearch $pie($id,sliceIds) $sliceId]]<0} {
-        error "could not find slice $sliceId in pie $id slices"
+    if {[set index [lsearch $pie($this,sliceIds) $sliceId]]<0} {
+        error "could not find slice $sliceId in pie $this slices"
     }
     # cannot display slices that occupy more than whole pie and less than zero
     set newExtent [expr [maximum [minimum $unitShare 1] 0]*360]
@@ -102,15 +102,15 @@ proc pie::sizeSlice {id sliceId unitShare {valueToDisplay {}}} {
 
     # update label after slice for it may need slice latest configuration
     if {[string length $valueToDisplay]>0} {
-        pieLabeller::update $pie($id,labellerId) $pie($id,sliceLabel,$sliceId) $valueToDisplay
+        pieLabeller::update $pie($this,labellerId) $pie($this,sliceLabel,$sliceId) $valueToDisplay
     } else {
-        pieLabeller::update $pie($id,labellerId) $pie($id,sliceLabel,$sliceId) $unitShare
+        pieLabeller::update $pie($this,labellerId) $pie($this,sliceLabel,$sliceId) $unitShare
     }
 
     # finally move the following slices
     set value [expr -1*$growth]
-    foreach sliceId [lrange $pie($id,sliceIds) [incr index] end] {
+    foreach sliceId [lrange $pie($this,sliceIds) [incr index] end] {
         slice::rotate $sliceId $value
-        pieLabeller::rotate $pie($id,labellerId) $pie($id,sliceLabel,$sliceId)
+        pieLabeller::rotate $pie($this,labellerId) $pie($this,sliceLabel,$sliceId)
     }
 }
