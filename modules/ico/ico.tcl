@@ -192,8 +192,8 @@ proc ::ico::writeIcon {file index bpp data args} {
 
 proc ::ico::CopyICO {f1 i1 f2 i2} {
     set s [lindex [getIcons $f1] $i1]
-    writeIcon $f2 [lindex $s 2] [translateColors [getIconColors $f1 $i1]] \
-	-type ICO -index $i2
+    writeIcon $f2 $i2 [lindex $s 2] [translateColors [getIconColors $f1 $i1]] \
+	-type ICO
 }
 
 proc ::ico::formatColor {r g b} {
