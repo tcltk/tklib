@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.64 1998/04/20 20:17:25 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.65 1998/04/24 21:10:35 jfontain Exp $}
 
 package provide tkpiechart 4.2
 
@@ -115,16 +115,16 @@ proc pie::newSlice {this {text {}}} {
 
     if {$switched::($this,-selectable)} {                                             ;# toggle select state at every button release
         if {![info exists pie::($this,selector)]} {                                                  ;# create selector if necessary
-            set pie::($this,selector) [new objectSelection -selectcommand "pie::setLabelsState $this"]
+            set pie::($this,selector) [new objectSelector -selectcommand "pie::setLabelsState $this"]
         }
         set selector $pie::($this,selector)
-        objectSelection::add $selector $label
-        $canvas bind canvasLabel($label) <ButtonRelease-1> "objectSelection::select $selector $label"
-        $canvas bind slice($slice) <ButtonRelease-1> "objectSelection::select $selector $label"
-        $canvas bind canvasLabel($label) <Control-ButtonRelease-1> "objectSelection::toggle $selector $label"
-        $canvas bind slice($slice) <Control-ButtonRelease-1> "objectSelection::toggle $selector $label"
-        $canvas bind canvasLabel($label) <Shift-ButtonRelease-1> "objectSelection::extend $selector $label"
-        $canvas bind slice($slice) <Shift-ButtonRelease-1> "objectSelection::extend $selector $label"
+        selector::add $selector $label
+        $canvas bind canvasLabel($label) <ButtonRelease-1> "selector::select $selector $label"
+        $canvas bind slice($slice) <ButtonRelease-1> "selector::select $selector $label"
+        $canvas bind canvasLabel($label) <Control-ButtonRelease-1> "selector::toggle $selector $label"
+        $canvas bind slice($slice) <Control-ButtonRelease-1> "selector::toggle $selector $label"
+        $canvas bind canvasLabel($label) <Shift-ButtonRelease-1> "selector::extend $selector $label"
+        $canvas bind slice($slice) <Shift-ButtonRelease-1> "selector::extend $selector $label"
     }
 
     return $slice
@@ -144,7 +144,7 @@ proc pie::deleteSlice {this slice} {
     # finally delete label last so that other labels may eventually be repositionned according to remaining slices placement
     pieLabeler::delete $pie::($this,labeler) $pie::($this,sliceLabel,$slice)
     if {$switched::($this,-selectable)} {
-        objectSelection::remove $pie::($this,selector) $pie::($this,sliceLabel,$slice)
+        selector::remove $pie::($this,selector) $pie::($this,sliceLabel,$slice)
     }
     unset pie::($this,sliceLabel,$slice)
 }
