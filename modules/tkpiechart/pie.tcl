@@ -1,9 +1,7 @@
-set rcsId {$Id: pie.tcl,v 1.50 1997/06/05 20:25:51 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.51 1997/10/26 09:51:23 jfontain Exp $}
 
 package provide tkpiechart 3.0
 
-# in the plugin version 2.0 and above, tkDarken is not autoloaded, so source corresponding source file
-if {[catch {info body tkDarken}]} {source [file join $tk_library palette.tcl]}
 
 class pie {}
 
