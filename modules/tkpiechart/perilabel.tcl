@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.37 1998/05/03 15:04:06 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.38 1998/05/03 18:07:28 jfontain Exp $}
 
 class piePeripheralLabeler {
 
@@ -82,7 +82,7 @@ class piePeripheralLabeler {
     proc position {this text slice} {              ;# place the value text item next to the outter border of the corresponding slice
         variable PI
 
-        slice::data $slice data
+        slice::data $slice data                                                    ;# retrieve current slice position and dimensions
         # calculate text closest point coordinates in normal coordinates system (y increasing in north direction)
         ::set midAngle [expr {$data(start)+($data(extent)/2.0)}]
         ::set radians [expr {$midAngle*$PI/180}]
