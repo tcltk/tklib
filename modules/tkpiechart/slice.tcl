@@ -1,4 +1,4 @@
-# $Id: slice.tcl,v 1.8 1995/06/21 09:46:34 jfontain Exp $
+set rcsId {$Id: slice.tcl,v 1.9 1995/06/30 14:02:13 jfontain Exp $}
 
 source $env(AGVHOME)/tools/utility.tk
 

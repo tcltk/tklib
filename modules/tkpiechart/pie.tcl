@@ -1,4 +1,4 @@
-# $Id: pie.tcl,v 1.10 1995/06/25 18:10:26 jfontain Exp $
+set rcsId {$Id: pie.tcl,v 1.11 1995/06/30 14:02:13 jfontain Exp $}
 
 source $env(AGVHOME)/tools/slice.tcl
 
