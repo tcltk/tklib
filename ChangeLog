@@ -1,3 +1,8 @@
+2005-04-01  Andreas Kupries <andreask@activestate.com>
+
+	* installed_modules.tcl: Added new module 'swap_list' to the list
+	  of installed modules.
+
 2005-03-31  Andreas Kupries <andreask@activestate.com>
 
 	* installed_modules.tcl: Added 'get'string' and 'history' to the
