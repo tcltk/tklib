@@ -1,4 +1,4 @@
-set rcsId {$Id: canlabel.tcl,v 1.7 1995/10/01 12:58:34 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.8 1995/10/09 18:37:24 jfontain Exp $}
 
 proc canvasLabel::canvasLabel {id canvas x y args} {
     global canvasLabel
@@ -10,6 +10,10 @@ proc canvasLabel::canvasLabel {id canvas x y args} {
     set canvasLabel($id,text) [$canvas create text 0 0 -tags canvasLabel($id)]
     # set anchor default
     set canvasLabel($id,anchor) center
+    # style can be box or split
+    set canvasLabel($id,style) box
+    set canvasLabel($id,padding) 2
+
     eval canvasLabel::configure $id $args
     # initialize rectangle
     canvasLabel::update $id
@@ -56,6 +60,10 @@ proc canvasLabel::configure {id args} {
             -bordercolor {
                 $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) -outline $value
             }
+            -style {
+                set canvasLabel($id,style) $value
+                canvasLabel::update $id
+            }
         }
     }
 }
@@ -88,13 +96,15 @@ proc canvasLabel::cget {id option} {
         -bordercolor {
             return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,rectangle) -outline]
         }
+        -style {
+            return canvasLabel($id,style) $value
+        }
     }
 }
 
 proc canvasLabel::update {id} {
     global canvasLabel
 
-    set padding 2
     set canvas $canvasLabel($id,canvas)
     set rectangle $canvasLabel($id,rectangle)
     set text $canvasLabel($id,text)
@@ -104,22 +114,28 @@ proc canvasLabel::update {id} {
     set y [lindex $coordinates 1]
 
     set border [$canvas itemcget $rectangle -width]
-    set halfBorder [expr $border/2.0]
-    set box [$canvas bbox $text]
+    set textBox [$canvas bbox $text]
 
-    set halfWidth [expr ([lindex $box 2]-[lindex $box 0])/2.0]
-    set halfHeight [expr ([lindex $box 3]-[lindex $box 1])/2.0]
-
-    # first position rectangle and text as if anchor was center (the default)
-    $canvas coords $rectangle\
-        [expr $x-$halfWidth-$padding-$halfBorder] [expr $y-$halfHeight-$padding-$halfBorder]\
-        [expr $x+$halfWidth+$padding+$halfBorder] [expr $y+$halfHeight+$padding+$halfBorder]
-    $canvas coords $text $x $y
-
+    # position rectangle and text as if anchor was center (the default)
+    if {[string compare $canvasLabel($id,style) split]==0} {
+        set textHeight [expr [lindex $textBox 3]-[lindex $textBox 1]]
+        set rectangleWidth [expr 2.0*($textHeight+$border)]
+        set halfWidth [expr ($rectangleWidth+$canvasLabel($id,padding)+([lindex $textBox 2]-[lindex $textBox 0]))/2.0]
+        set halfHeight [expr ($textHeight/2.0)+$border]
+        $canvas coords $rectangle\
+            [expr $x-$halfWidth] [expr $y-$halfHeight]\
+            [expr $x-$halfWidth+$rectangleWidth] [expr $y+$halfHeight]
+        $canvas coords $text [expr $x+(($rectangleWidth+$canvasLabel($id,padding))/2.0)] $y
+    } else {
+        set halfWidth [expr $border+$canvasLabel($id,padding)+(([lindex $textBox 2]-[lindex $textBox 0])/2.0)]
+        set halfHeight [expr $border+$canvasLabel($id,padding)+(([lindex $textBox 3]-[lindex $textBox 1])/2.0)]
+        $canvas coords $rectangle [expr $x-$halfWidth] [expr $y-$halfHeight] [expr $x+$halfWidth] [expr $y+$halfHeight]
+        $canvas coords $text $x $y
+    }
     # now move rectangle and text according to anchor
     set anchor $canvasLabel($id,anchor)
-    set xDelta [expr ([string match *w $anchor]-[string match *e $anchor])*($border+$padding+$halfWidth)]
-    set yDelta [expr ([string match n* $anchor]-[string match s* $anchor])*($border+$padding+$halfHeight)]
+    set xDelta [expr ([string match *w $anchor]-[string match *e $anchor])*$halfWidth]
+    set yDelta [expr ([string match n* $anchor]-[string match s* $anchor])*$halfHeight]
     $canvas move $rectangle $xDelta $yDelta
     $canvas move $text $xDelta $yDelta
 }
