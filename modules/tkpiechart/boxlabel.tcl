@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.17 1995/10/27 20:25:14 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.18 1995/10/31 00:17:45 jfontain Exp $}
 
 source pielabel.tcl
 source labarray.tcl
@@ -12,7 +12,7 @@ proc pieBoxLabeller::pieBoxLabeller {this canvas args} pieLabeller {$canvas $arg
 
 proc pieBoxLabeller::~pieBoxLabeller {this} {
     # array may not have been created yet
-    catch {delete canvasLabelsArray $pieBoxLabeller($this,array)}
+    catch {delete $pieBoxLabeller($this,array)}
 }
 
 proc pieBoxLabeller::create {this sliceId args} {

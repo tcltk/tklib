@@ -1,4 +1,4 @@
-set rcsId {$Id: labarray.tcl,v 1.4 1995/10/21 20:27:40 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.5 1995/10/31 00:17:45 jfontain Exp $}
 
 source canlabel.tcl
 
@@ -18,7 +18,7 @@ proc canvasLabelsArray::canvasLabelsArray {this canvas x y width args} {
 
 proc canvasLabelsArray::~canvasLabelsArray {this} {
     foreach label $canvasLabelsArray($this,labelIds) {
-        delete canvasLabel $label
+        delete $label
     }
     # delete remaining items
     $canvasLabelsArray($this,canvas) delete canvasLabelsArray($this)
