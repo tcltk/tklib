@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.22 1995/09/26 19:15:51 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.23 1995/09/28 18:46:38 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -73,7 +73,7 @@ proc pie::newSlice {id {text {}}} {
         # generate label text if not provided
         set text "slice [expr [llength $pie($id,slices)]+1]"
     }
-    pieLabeller::create $pie($id,labeller) $text
+    pieLabeller::create $pie($id,labeller) -text $text -background $color
 
     return $sliceId
 }
