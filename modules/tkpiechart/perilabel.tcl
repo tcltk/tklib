@@ -1,6 +1,8 @@
-set rcsId {$Id: perilabel.tcl,v 1.35 1998/03/28 20:42:15 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.36 1998/04/09 21:55:19 jfontain Exp $}
 
 class piePeripheralLabeler {
+
+    variable PI 3.14159265358979323846
 
     proc piePeripheralLabeler {this canvas args} pieLabeler {$canvas $args} switched {$args} {
         switched::complete $this
@@ -81,7 +83,7 @@ class piePeripheralLabeler {
     }
 
     proc position {this text slice} {              ;# place the value text item next to the outter border of the corresponding slice
-        global PI
+        variable PI
 
         slice::data $slice data
         # calculate text closest point coordinates in normal coordinates system (y increasing in north direction)
