@@ -1,0 +1,72 @@
+[comment {-*- tcl -*- doctools manpage}]
+[manpage_begin ipentry n 0.1]
+[moddesc   {An IP address entry widget}]
+[titledesc {An IP address entry widget}]
+[require Tcl 8.4]
+[require ipentry [opt 0.1]]
+[description]
+
+This package provides a widget for the entering of a IP address.
+It guarantees a valid address at all times.
+
+[para]
+
+[list_begin definitions]
+
+[call [cmd ::ipentry::ipentry] [arg pathName] [opt [arg options]]]
+
+widget commands
+
+complete
+
+Returns a boolean value indicating if the contents of the entry is a complete IP address,
+meaning all 4 fields have a value.
+
+get
+
+Returns the contents of the entry as a list consisting of 4 elements.
+
+
+insert
+
+Takes a list of 4 elements and inserts one into each quad of the entry, in order.
+All values in the list must be integers. Values outside the range 0 to 255
+are modified to be inside the range.
+
+configure
+
+Modifies the configuration of the widget. For options and their meaning
+see the widget options section.
+
+cget
+
+Returns information about the current configuration of the widget. For
+options and their meaning see the widget options section.
+
+widget options
+
+-state
+
+Specifies one of three states for the entry:
+normal, disabled, or readonly.
+
+standard options
+-font
+-bd
+-fg
+-bg
+-relief
+-selectbackground
+-selectforeground
+-selectborderwidth
+-disabledbackground
+-disabledforeground
+-insertbackground
+
+
+
+
+
+[list_end]
+
+[manpage_end]
