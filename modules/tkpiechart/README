@@ -1,7 +1,8 @@
 Some people have asked for a Tcl/Tk pie utility: so here is my little
 implementation with Tcl, not as an extension.
 
-It was tested with both Tcl7.4/Tk4.0, and Tcl7.5/Tk4.1.
+It was tested with both Tcl7.4/Tk4.0 and Tcl7.5/Tk4.1 (yes, it even
+works on Windows! I have not tried the Mac yet).
 
 It is object oriented in a way, using pure Tcl code (read the OOTCL file for
 more details). Also look at the oop manual page.
