@@ -1,26 +1,24 @@
-set rcsId {$Id: pielabel.tcl,v 1.26 1998/03/14 09:48:05 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.27 1998/03/15 20:03:57 jfontain Exp $}
 
-class pieLabeller {}
+class pieLabeller {
 
-proc pieLabeller::pieLabeller {this canvas args} {
-    array set option {-offset 5 -xoffset 0}                                                                   ;# set options default
-    array set option $args                                                                             ;# override with user options
+    set pieLabeller::(defaultFont) {Helvetica 12}
 
-    set pieLabeller::($this,offset) [winfo fpixels $canvas $option(-offset)]                             ;# convert offsets to pixel
-    set pieLabeller::($this,xOffset) [winfo fpixels $canvas $option(-xoffset)]
-    catch {set pieLabeller::($this,font) $option(-font)}
-    set pieLabeller::($this,canvas) $canvas
+    proc pieLabeller {this canvas args} {
+        set pieLabeller::($this,canvas) $canvas
+    }
+
+    proc ~pieLabeller {this} {}
+
+    proc bind {this pie} {
+        set pieLabeller::($this,pie) $pie
+    }
+
+    # as this function is generic, it accepts only a few options, such as: -text, -background
+    virtual proc create {this sliceId args}
+
+    virtual proc update {this label value}
+
+    virtual proc rotate {this label}
+
 }
-
-proc pieLabeller::~pieLabeller {this} {}
-
-proc pieLabeller::bind {this pieId} {
-    set pieLabeller::($this,pieId) $pieId
-}
-
-# as this function is generic, it accepts only a few options, such as: -text, -background
-virtual proc pieLabeller::create {this sliceId args}
-
-virtual proc pieLabeller::update {this label value}
-
-virtual proc pieLabeller::rotate {this label}
