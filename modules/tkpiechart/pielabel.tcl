@@ -1,6 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.15 1995/10/07 20:42:26 jfontain Exp $}
-
-source canlabel.tcl
+set rcsId {$Id: pielabel.tcl,v 1.16 1995/10/10 21:08:42 jfontain Exp $}
 
 proc pieLabeller::pieLabeller {id canvas args} {
     allowVirtualProceduresIn pieLabeller
