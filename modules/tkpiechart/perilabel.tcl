@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.12 1995/10/11 20:48:46 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.13 1995/10/11 21:00:16 jfontain Exp $}
 
 source pielabel.tcl
 source labarray.tcl
@@ -92,10 +92,11 @@ proc piePeripheralLabeller::rotate {id valueId} {
     slice::data $sliceId data
 
     # calculate text closest point coordinates in normal coordinates system (y increasing in north direction)
-    set radians [expr $data(midAngle)*$PI/180]
+    set midAngle [expr $data(start)+($data(extent)/2.0)]
+    set radians [expr $midAngle*$PI/180]
     set x [expr ($data(xRadius)+$pieLabeller($id,offset))*cos($radians)]
     set y [expr ($data(yRadius)+$pieLabeller($id,offset))*sin($radians)]
-    set angle [expr round($data(midAngle))%360]
+    set angle [expr round($midAngle)%360]
     if {$angle>180} {
         # account for pie thickness
         set y [expr $y-$data(height)]
