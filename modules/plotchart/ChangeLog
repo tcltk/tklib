@@ -1,3 +1,8 @@
+2005-03-04  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+
+        * Added the contour plotting routines by Mark Stucky
+          (Documentation for 3D contour plot still missing)
+
 2004-09-29  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
         * Fixed bug 1035281 - wrong scaling for -1.7 -- 26.8
