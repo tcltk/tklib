@@ -1,4 +1,4 @@
-set rcsId {$Id: selector.tcl,v 1.4 1999/08/16 20:59:03 jfontain Exp $}
+set rcsId {$Id: selector.tcl,v 1.4.1.1 2000/07/30 19:47:35 jfontain Exp $}
 
 # implements generic selection on a list of unique identifiers
 
@@ -100,8 +100,8 @@ class selector {
             if {[::set ${this}selected($index)]} {
                 lappend deselect $index
                 ::set ${this}selected($index) 0
-                if {$index==$selector::($this,lastSelected)} {
-                    ::unset selector::($this,lastSelected)                                               ;# nothing is left selected
+                if {[info exists selector::($this,lastSelected)]&&($index==$selector::($this,lastSelected))} {
+                    ::unset selector::($this,lastSelected)                     ;# too complicated to find out what was selected last
                 }
             } else {
                 lappend select $index
