@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.34 1998/03/28 20:42:15 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.35 1998/05/03 10:51:12 jfontain Exp $}
 
 class pieBoxLabeler {
 
@@ -30,20 +30,17 @@ class pieBoxLabeler {
 
     proc new {this slice args} {                                       ;# variable arguments are for the created canvas label object
         if {![info exists pieBoxLabeler::($this,array)]} {                                                  ;# create a labels array
-            set box [$pieLabeler::($this,canvas) bbox pie($pieLabeler::($this,pie))]                     ;# position array below pie
-            set pieBoxLabeler::($this,array) [::new canvasLabelsArray\
-                $pieLabeler::($this,canvas) [lindex $box 0] [expr {[lindex $box 3]+$switched::($this,-offset)}]\
-                [expr {[lindex $box 2]-[lindex $box 0]}] -xoffset $switched::($this,-xoffset)\
-            ]
+            ::set pieBoxLabeler::($this,array) [::new canvasLabelsArray $pieLabeler::($this,canvas) 0 0]
+            update $this                                                                                 ;# position array below pie
         }
-        set label [eval ::new canvasLabel $pieLabeler::($this,canvas) 0 0\
+        ::set label [eval ::new canvasLabel $pieLabeler::($this,canvas) 0 0\
             $args [list -justify $switched::($this,-justify) -font $switched::($this,-font)]\
         ]
         canvasLabelsArray::manage $pieBoxLabeler::($this,array) $label
         # refresh our tags
         $pieLabeler::($this,canvas) addtag pieLabeler($this) withtag canvasLabelsArray($pieBoxLabeler::($this,array))
         switched::configure $label -text [switched::cget $label -text]:                        ;# always append semi-column to label
-        set pieBoxLabeler::($this,selected,$label) 0
+        ::set pieBoxLabeler::($this,selected,$label) 0
         return $label
     }
 
@@ -52,7 +49,7 @@ class pieBoxLabeler {
         unset pieBoxLabeler::($this,selected,$label)
     }
 
-    proc update {this label value} {
+    proc set {this label value} {
         regsub {:.*$} [switched::cget $label -text] ": $value" text
         switched::configure $label -text $text
     }
@@ -66,7 +63,15 @@ class pieBoxLabeler {
         } else {
             switched::configure $label -borderwidth 1
         }
-        set pieBoxLabeler::($this,selected,$label) $selected
+        ::set pieBoxLabeler::($this,selected,$label) $selected
+    }
+
+    proc update {this} {
+        ::set box [$pieLabeler::($this,canvas) bbox pieGraphics($pieLabeler::($this,pie))]
+        # first reposition labels array below pie graphics
+        $pieLabeler::($this,canvas) coords canvasLabelsArray($pieBoxLabeler::($this,array))\
+            [lindex $box 0] [expr {[lindex $box 3]+$switched::($this,-offset)}]
+        switched::configure $pieBoxLabeler::($this,array) -width [expr {[lindex $box 2]-[lindex $box 0]}]      ;# then fit pie width
     }
 
 }
