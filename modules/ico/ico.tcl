@@ -109,7 +109,7 @@ proc ::ico::getIconColors {file index args} {
     return [eval [list getColors] [extractIcon$type [file normalize $file] $index]]
 }
 
-# getIconColors --
+# getIconImage --
 #
 # Get icon @ index in file as tk image
 #
@@ -189,6 +189,23 @@ proc ::ico::writeIcon {file index bpp data args} {
 ## Some may be appropriate for exposing later, but would need docs
 ## and make sure they "fit" in the API.
 ##
+
+# getIconImageFromData --
+#
+# Get icon @ index in data as tk image
+#
+# ARGS:
+#	data	data to extra icon info from.  Must be in ICO format.
+#	index	Index of icon to use.  The ordering is the
+#		same as returned by getIcons.  (0-based)
+#
+# RETURNS:
+#	Tk image based on the specified icon
+#
+proc ::ico::getIconImageFromData {data index} {
+    set colors [eval [linsert [extractIconICOData $data $index] 0 getColors]]
+    return [createImage $colors]
+}
 
 proc ::ico::CopyICO {f1 i1 f2 i2} {
     set s [lindex [getIcons $f1] $i1]
@@ -448,17 +465,16 @@ proc ::ico::getPaletteFromColors {colors} {
 }
 
 proc ::ico::readDIB {fh w h bpp} {
+    set palette [list]
     if {$bpp == 1 || $bpp == 4 || $bpp == 8} {
 	set colors [read $fh [expr {1 << ($bpp + 2)}]]
+	foreach {b g r x} [split $colors {}] {
+	    lappend palette [formatColor $r $g $b]
+	}
     } elseif {$bpp == 16 || $bpp == 24 || $bpp == 32} {
-	set colors {}
+	# do nothing
     } else {
 	return -code error "unsupported color depth: $bpp"
-    }
-
-    set palette [list]
-    foreach {b g r x} [split $colors {}] {
-	lappend palette [formatColor $r $g $b]
     }
 
     set xor  [read $fh [expr {int(($w * $h) * ($bpp / 8.0))}]]
@@ -468,6 +484,41 @@ proc ::ico::readDIB {fh w h bpp} {
     set row [expr {($w + abs($w - 32)) / 8}]
     set len [expr {$row * $h}]
     for {set i 0} {$i < $len} {incr i $row} {
+	binary scan [string range $and1 $i [expr {$i + $row}]] B$w tmp
+	append and $tmp
+    }
+
+    return [list $palette $xor $and]
+}
+
+proc ::ico::readDIBData {data cnt w h bpp} {
+    set palette [list]
+    if {$bpp == 1 || $bpp == 4 || $bpp == 8} {
+	# Could do: [binary scan $data @${cnt}c$len colors]
+	# and iter over colors, but this is more consistent with $fh version
+	set len    [expr {1 << ($bpp + 2)}]
+	set colors [string range $data $cnt [expr {$cnt + $len - 1}]]
+	foreach {b g r x} [split $colors {}] {
+	    lappend palette [formatColor $r $g $b]
+	}
+	incr cnt $len
+    } elseif {$bpp == 16 || $bpp == 24 || $bpp == 32} {
+	# do nothing
+    } else {
+	return -code error "unsupported color depth: $bpp"
+    }
+
+    # Use -1 to account for string range inclusiveness
+    set end  [expr {$cnt + int(($w * $h) * ($bpp / 8.0)) - 1}]
+    set xor  [string range $data $cnt $end]
+    set and1 [string range $data [expr {$end + 1}] \
+		  [expr {$end + ((($w * $h) + ($h * ($w % 32))) / 8) - 1}]]
+
+    set and {}
+    set row [expr {($w + abs($w - 32)) / 8}]
+    set len [expr {$row * $h}]
+    for {set i 0} {$i < $len} {incr i $row} {
+	# Has to be decoded by row, in order
 	binary scan [string range $and1 $i [expr {$i + $row}]] B$w tmp
 	append and $tmp
     }
@@ -505,6 +556,33 @@ proc ::ico::IconInfoICO {file} {
     return $r
 }
 
+proc ::ico::IconInfoICOData {data} {
+    if {[binary scan $data sss h1 h2 num] != 3 || $h1 != 0 || $h2 != 1} {
+	return -code error "not icon data"
+    }
+    set r {}
+    set cnt 6
+    for {set i 0} {$i < $num} {incr i} {
+	if {[binary scan $data @${cnt}ccc w h bpp] != 3} {
+	    return -code error "error decoding icon data"
+	}
+	incr cnt 3
+	set info [list $w $h]
+	if {$bpp == 0} {
+	    set off [expr {$cnt + 9}]
+	    binary scan $data @${off}i off
+	    incr off 14
+	    binary scan $data @${off}s bpp
+	    lappend info $bpp
+	} else {
+	    lappend info [expr {int(sqrt($bpp))}]
+	}
+	lappend r $info
+	incr cnt 13
+    }
+    return $r
+}
+
 proc ::ico::extractIconICO {file index} {
     set fh [open $file r]
     fconfigure $fh -translation binary
@@ -513,8 +591,9 @@ proc ::ico::extractIconICO {file index} {
     if {"[getword $fh] [getword $fh]" != "0 1"} {
 	return -code error "not an icon file"
     }
-    if {$index < 0 || $index >= [getword $fh]} {
-	return -code error "index out of range"
+    set num [getword $fh]
+    if {$index < 0 || $index >= $num} {
+	return -code error "index out of range: must be between 0 and $num"
     }
 
     seek $fh [expr {(16 * $index) + 12}] current
@@ -528,6 +607,28 @@ proc ::ico::extractIconICO {file index} {
     set pxa [readDIB $fh $w $h $bpp]
 
     close $fh
+    return [concat [list $w $h $bpp] $pxa]
+}
+
+proc ::ico::extractIconICOData {data index} {
+    if {[binary scan $data sss h1 h2 num] != 3 || $h1 != 0 || $h2 != 1} {
+	return -code error "not icon data"
+    }
+    if {$index < 0 || $index >= $num} {
+	return -code error "index out of range: must be between 0 and $num"
+    }
+    # Move to ico location
+    set cnt [expr {6 + (16 * $index) + 12}]
+    binary scan $data @${cnt}i loc
+    # Read info from location
+    binary scan $data @${loc}iiiss s w h p bpp
+    set h [expr {$h / 2}]
+    # Move over location info + magic offset to start of DIB
+    set cnt [expr {$loc + 16 + 24}]
+
+    # readDIB returns: {palette xor and}
+    set pxa [readDIBData $data $cnt $w $h $bpp]
+
     return [concat [list $w $h $bpp] $pxa]
 }
 
