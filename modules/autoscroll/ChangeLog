@@ -1,3 +1,8 @@
+2005-04-01 Aaron Faupell <afaupell@users.sourceforge.net>
+
+	* autoscroll.tcl: updated to not fail if autoscroll called twice
+	on a the same scrollbar
+
 2005-03-24 Aaron Faupell <afaupell@users.sourceforge.net>
 
 	* bumped version number for new wrap commands
