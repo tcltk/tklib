@@ -148,19 +148,20 @@ icons in [arg file] with information about them.
 
 Icons may not be added or removed from file types other than ICO. Icons in these files
 may only be replaced with icons of the same dimensions and color depth.
-[nl]
+[para]
 
 Icons of 8bpp or lower must include black in the pallete, this means if your icon does
 not have black in it, you will need to leave a color free so that it may be included by
 writeIcon.
-[nl]
+[para]
 
 There is currently no way to read alpha channel information from 32bpp icons.
-[nl]
+[para]
 
 Tk images do not have an alpha channel so the only way to write a true 32bpp icon is from
 a color list. writing a 32bpp icon from a Tkimage is identical to writing a 24bpp icon.
 
+[para]
 [example {
     button .explore -image [::ico::getIcon explorer.exe 0 -name explore]
     set i [lsearch [::ico::getIconList tclkit.exe] {32 32 8}]]
