@@ -1,12 +1,11 @@
-set rcsId {$Id: labarray.tcl,v 1.16 1998/03/28 20:37:16 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.17 1998/05/03 10:53:38 jfontain Exp $}
 
 class canvasLabelsArray {
 
-    proc canvasLabelsArray {this canvas x y width args} switched {$args} {
+    proc canvasLabelsArray {this canvas x y args} switched {$args} {
         set canvasLabelsArray::($this,canvas) $canvas
-        set canvasLabelsArray::($this,width) [winfo fpixels $canvas $width]
-        # use a dimensionless line as an origin marker
-        set canvasLabelsArray::($this,origin) [$canvas create line $x $y $x $y -fill {} -tags canvasLabelsArray($this)]
+        # use an empty image as an origin marker with only 2 coordinates
+        set canvasLabelsArray::($this,origin) [$canvas create image $x $y -tags canvasLabelsArray($this)]
         set canvasLabelsArray::($this,labels) {}
         switched::complete $this
     }
@@ -17,9 +16,11 @@ class canvasLabelsArray {
     }
 
     proc options {this} {
+        # force width initialization for internals initialization
         return [list\
             [list -justify left left]\
             [list -xoffset 0 0]\
+            [list -width 100]\
         ]
     }
 
@@ -29,6 +30,19 @@ class canvasLabelsArray {
                 error {option $option cannot be set dynamically}
             }
         "
+    }
+
+    proc set-width {this value} {
+        set canvasLabelsArray::($this,width) [winfo fpixels $canvasLabelsArray::($this,canvas) $value]
+        update $this
+    }
+
+    proc update {this} {
+        set index 0
+        foreach label $canvasLabelsArray::($this,labels) {
+            position $this $label $index
+            incr index
+        }
     }
 
     proc manage {this label} {                                                                              ;# must be a canvasLabel
@@ -54,10 +68,8 @@ class canvasLabelsArray {
     proc position {this label index} {
         set canvas $canvasLabelsArray::($this,canvas)
 
-        set coordinates [$canvas coords $canvasLabelsArray::($this,origin)]
-        # offset horizontally, left column gets negative offset
-        set x [expr {[lindex $coordinates 0]+(($index%2?1:-1)*$switched::($this,-xoffset))}]
-        set y [lindex $coordinates 1]
+        foreach {x y} [$canvas coords $canvasLabelsArray::($this,origin)] {}
+        set x [expr {$x+(($index%2?1:-1)*$switched::($this,-xoffset))}]     ;# offset horizontally, left column gets negative offset
         set coordinates [$canvas bbox canvasLabel($label)]
         set y [expr {$y+(($index/2)*([lindex $coordinates 3]-[lindex $coordinates 1]))}]           ;# take label height into account
 
