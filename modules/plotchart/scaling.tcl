@@ -64,11 +64,12 @@ proc ::Plotchart::determineScale { xmin xmax } {
 
    set nicemin [expr {$step*$factor*int($xmin/$factor/$step)}]
    set nicemax [expr {$step*$factor*int($xmax/$factor/$step)}]
+
    if { [tlt $nicemax $xmax] } {
-      set nicemax [expr {$nicemax+$step}]
+      set nicemax [expr {$nicemax+$step*$factor}]
    }
    if { [tgt $nicemin $xmin] } {
-      set nicemin [expr {$nicemin-$step}]
+      set nicemin [expr {$nicemin-$step*$factor}]
    }
 
    return [list $nicemin $nicemax [expr {$step*$factor}]]

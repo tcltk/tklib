@@ -147,6 +147,10 @@ test Plotchart-2.10 {Nice scale 7} -match numbers -body {
     ::Plotchart::determineScale 10001 10015
 } -result {10000 10015 5}
 
+test Plotchart-2.11 {Nice scale 8} -match numbers -body {
+    ::Plotchart::determineScale -1.7 26.8   
+} -result {-10.0 30.0 10.0}
+
 
 
 
