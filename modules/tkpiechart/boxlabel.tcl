@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.9 1995/10/05 22:24:24 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.10 1995/10/06 10:54:41 jfontain Exp $}
 
 source pielabel.tcl
 
@@ -17,17 +17,13 @@ proc pieBoxLabeller::~pieBoxLabeller {id} {
 proc pieBoxLabeller::create {id sliceId args} {
     global pieBoxLabeller pieLabeller
 
-    if {[lsearch -exact $args -font]<0} {
-        # eventually use main font if not overridden
-        catch {lappend args -font $pieLabeller($id,font)}
-    }
+    # eventually use labeller font
+    catch {lappend args -font $pieLabeller($id,font)}
     set labelId [eval new canvasLabel $pieLabeller($id,canvas) 0 0 $args]
     # always append semi-column to label
     canvasLabel::configure $labelId -text [canvasLabel::cget $labelId -text]:
     $pieLabeller($id,canvas) addtag pieLabeller($id) withtag canvasLabel($labelId)
     lappend pieBoxLabeller($id,labelIds) $labelId
-    # save related slice
-    set pieBoxLabeller($id,sliceId,$labelId) $sliceId
     pieBoxLabeller::position $id $labelId
     return $labelId
 }
