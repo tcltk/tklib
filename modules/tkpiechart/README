@@ -1,11 +1,12 @@
 Some people have asked for a Tcl/Tk pie utility: so here is my little
 implementation with Tcl, not as an extension.
 
-It was tested with both Tcl7.4/Tk4.0 and Tcl7.5/Tk4.1 (yes, it even
-works on Windows! I have not tried the Mac yet).
+This is version 2.1. It was tested with both Tcl7.4/Tk4.0 and
+Tcl7.5/Tk4.1 (yes, it even works on Windows! I have not tried the Mac
+yet).
 
 It is object oriented using the stooop (Simple Tcl Only Object
-Oriented Programming) extension (version 2.2.1).
+Oriented Programming) extension (version 2.2.1, see STOOOP readme).
 
 Run the demo script to see what it looks like, read the pie man page
 to understand how to use it.
