@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.33 1998/03/27 22:11:32 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.34 1998/03/27 22:16:12 jfontain Exp $}
 
 class pieLabeller {
 
@@ -19,10 +19,6 @@ class pieLabeller {
     virtual proc delete {this label}
 
     virtual proc update {this label value}
-
-    proc bind {this label sequence command} {                                                              ;# label is a canvasLabel
-        $pieLabeller::($this,canvas) bind canvasLabel($label) $sequence $command
-    }
 
     virtual proc selectState {this label {state {}}}
 
