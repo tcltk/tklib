@@ -1,4 +1,4 @@
-set rcsId {$Id: labarray.tcl,v 1.13 1998/03/22 14:34:10 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.14 1998/03/27 21:14:19 jfontain Exp $}
 
 class canvasLabelsArray {}
 
@@ -73,4 +73,8 @@ proc canvasLabelsArray::position {this label index justification} {
     switched::configure $label -anchor $anchor
     set coordinates [$canvas coords canvasLabel($label)]                               ;# do an absolute positioning using label tag
     $canvas move canvasLabel($label) [expr {$x-[lindex $coordinates 0]}] [expr {$y-[lindex $coordinates 1]}]
+}
+
+proc canvasLabelsArray::labels {this} {
+    return $canvasLabelsArray::($this,labels)
 }
