@@ -1,7 +1,4 @@
-# copyright (C) 1997-98 Jean-Luc Fontaine (mailto:jfontain@mygale.org)
-# this program is free software: please refer to the BSD type license enclosed in this package
-
-set rcsId {$Id: selector.tcl,v 1.1 1998/04/24 10:46:30 jfontain Exp $}
+set rcsId {$Id: selector.tcl,v 1.2 1998/05/24 19:18:21 jfontain Exp $}
 
 # implements generic selection on a list of unique identifiers
 
