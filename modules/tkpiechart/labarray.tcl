@@ -1,4 +1,4 @@
-set rcsId {$Id: labarray.tcl,v 1.17 1998/05/03 10:53:38 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.18 1998/05/03 15:00:55 jfontain Exp $}
 
 class canvasLabelsArray {
 
@@ -88,8 +88,8 @@ class canvasLabelsArray {
             }
         }
         switched::configure $label -anchor $anchor
-        set coordinates [$canvas coords canvasLabel($label)]                           ;# do an absolute positioning using label tag
-        $canvas move canvasLabel($label) [expr {$x-[lindex $coordinates 0]}] [expr {$y-[lindex $coordinates 1]}]
+        foreach {xDelta yDelta} [$canvas coords canvasLabel($label)] {}                ;# do an absolute positioning using label tag
+        $canvas move canvasLabel($label) [expr {$x-$xDelta}] [expr {$y-$yDelta}]
     }
 
     proc labels {this} {
