@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.76 1998/06/07 10:18:54 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.77 1998/06/07 16:57:58 jfontain Exp $}
 
 package provide tkpiechart 5.1
 
@@ -242,15 +242,15 @@ proc pie::update {this} {                         ;# place and scale slices alon
     foreach {xSlices ySlices} [$canvas coords pieSlices($this)] {}                  ;# move slices in order to leave room for labels
     $canvas move pieSlices($this) [expr {$x+$room(left)-$xSlices}] [expr {$y+$room(top)-$ySlices}]
     set scale [list\
-        [expr {($switched::($this,-width)-$room(left)-$room(right))/$pie::($this,initialWidth)}]\
-        [expr {($switched::($this,-height)-$room(top)-$room(bottom))/($pie::($this,initialHeight)+$pie::($this,thickness))}]\
+        [expr {($pie::($this,width)-$room(left)-$room(right))/$pie::($this,initialWidth)}]\
+        [expr {($pie::($this,height)-$room(top)-$room(bottom))/($pie::($this,initialHeight)+$pie::($this,thickness))}]\
     ]
     switched::configure $pie::($this,backgroundSlice) -scale $scale                             ;# update scale of background slice,
     foreach slice $pie::($this,slices) {
         switched::configure $slice -scale $scale                                                                 ;# and other slices
     }
     # finally update labels now that pie graphics are in position
-    pieLabeler::update $pie::($this,labeler) $x $y [expr {$x+$switched::($this,-width)}] [expr {$y+$switched::($this,-height)}]
+    pieLabeler::update $pie::($this,labeler) $x $y [expr {$x+$pie::($this,width)}] [expr {$y+$pie::($this,height)}]
 }
 
 class pie {                                                                                     ;# define various utility procedures
