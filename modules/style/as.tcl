@@ -238,7 +238,21 @@ proc style::as::CtrlMouseWheel {W X Y D {what local}} {
 ##
 proc style::as::init_misc {args} {
     variable prio
+    variable highlightbg
+    variable highlightfg
+    variable bg
+    variable fg
     option add *ScrolledWindow.ipad		0 $prio
+
+    # Various other common widgets from popular widget sets
+    foreach class {HList Tree Tree.c TixHList TixTree} {
+	option add *$class.borderWidth		1 $prio
+	option add *$class.background		$bg $prio
+	option add *$class.foreground		$fg $prio
+	option add *$class.selectBorderWidth	0 $prio
+	option add *$class.selectForeground	$highlightfg $prio
+	option add *$class.selectBackground	$highlightbg $prio
+    }
 }
 
 ## Listbox
@@ -267,6 +281,7 @@ proc style::as::init_button {args} {
 	option add *Button.padX			1 $prio
 	option add *Button.padY			2 $prio
     }
+    option add *Button.highlightThickness	1 $prio
 }
 
 ## Entry

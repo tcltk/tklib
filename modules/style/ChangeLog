@@ -1,3 +1,7 @@
+2004-08-18  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* as.tcl (style::as::init_misc): add Tree and some Tix widget defs
+
 2004-08-17  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* as.tcl:       Change style::use to call style::${style}::init
