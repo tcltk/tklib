@@ -1,7 +1,7 @@
 Some people have asked for a Tcl/Tk pie utility: so here is my little
 implementation with Tcl, not as an extension.
 
-This is version 4.2. It was tested with Tcl8.0/Tk8.0, Tcl8.1/Tk8.1 and
+This is version 4.3. It was tested with Tcl8.0/Tk8.0, Tcl8.1/Tk8.1 and
 the netscape plug-in 2.0, on both Linux and Windows platforms (it
 should work on all Tcl/Tk supported platforms).
 
