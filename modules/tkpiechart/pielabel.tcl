@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.32 1998/03/26 20:18:52 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.33 1998/03/27 22:11:32 jfontain Exp $}
 
 class pieLabeller {
 
@@ -14,7 +14,6 @@ class pieLabeller {
         set pieLabeller::($this,pie) $pie
     }
 
-    # as this function is generic, it accepts only a few options, such as: -text, -background
     virtual proc create {this slice args}                                                               ;# must return a canvasLabel
 
     virtual proc delete {this label}
@@ -26,4 +25,5 @@ class pieLabeller {
     }
 
     virtual proc selectState {this label {state {}}}
+
 }
