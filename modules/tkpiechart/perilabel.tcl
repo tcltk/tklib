@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.39 1998/05/03 18:15:53 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.40 1998/06/04 21:59:01 jfontain Exp $}
 
 class piePeripheralLabeler {
 
@@ -14,18 +14,18 @@ class piePeripheralLabeler {
     }
 
     proc options {this} {                        ;# bullet width, font and justify options are used when creating a new canvas label
-        # justify option is used for both the labels array and the labels
+        # justify option is used for both the labels array and the labels. force small font option for font metrics calculations
         return [list\
             [list -bulletwidth 20 20]\
             [list -font $pieLabeler::(default,font) $pieLabeler::(default,font)]\
             [list -justify left left]\
             [list -offset 5 5]\
-            [list -smallfont {Helvetica -10} {Helvetica -10}]\
+            [list -smallfont {Helvetica -10}]\
             [list -xoffset 0 0]\
         ]
     }
 
-    foreach option {-bulletwidth -font -justify -offset -smallfont -xoffset} {                         ;# no dynamic options allowed
+    foreach option {-bulletwidth -font -justify -offset -xoffset} {                                    ;# no dynamic options allowed
         proc set$option {this value} "
             if {\$switched::(\$this,complete)} {
                 error {option $option cannot be set dynamically}
@@ -33,13 +33,17 @@ class piePeripheralLabeler {
         "
     }
 
+    proc set-smallfont {this value} {
+        if {$switched::($this,complete)} {
+            error {option -smallfont cannot be set dynamically}
+        }
+        ::set piePeripheralLabeler::($this,smallFontWidth) [font measure $value 0]
+        ::set piePeripheralLabeler::($this,smallFontHeight) [font metrics $value -ascent]
+    }
+
     proc new {this slice args} {                                       ;# variable arguments are for the created canvas label object
         ::set canvas $pieLabeler::($this,canvas)
-
         ::set text [$canvas create text 0 0 -font $switched::($this,-smallfont) -tags pieLabeler($this)]       ;# create value label
-        ::set box [$canvas bbox $text]
-        ::set smallTextHeight [expr {[lindex $box 3]-[lindex $box 1]}]
-
         if {![info exists piePeripheralLabeler::($this,array)]} {                                     ;# create a split labels array
             ::set piePeripheralLabeler::($this,array)\
                 [::new canvasLabelsArray $canvas 0 0 -justify $switched::($this,-justify) -xoffset $switched::($this,-xoffset)]
@@ -52,13 +56,10 @@ class piePeripheralLabeler {
             ]\
         ]
         canvasLabelsArray::manage $piePeripheralLabeler::($this,array) $label
-
         $canvas addtag pieLabeler($this) withtag canvasLabelsArray($piePeripheralLabeler::($this,array))         ;# refresh our tags
-
         ::set piePeripheralLabeler::($this,textItem,$label) $text                       ;# value text item is the only one to update
         ::set piePeripheralLabeler::($this,slice,$label) $slice
         ::set piePeripheralLabeler::($this,selected,$label) 0
-
         return $label
     }
 
@@ -126,15 +127,28 @@ class piePeripheralLabeler {
     proc update {this} {
         ::set canvas $pieLabeler::($this,canvas)
         ::set box [$canvas bbox pieGraphics($pieLabeler::($this,pie))]
-::set smallTextHeight 10 ;########### calculate in set-smallfont{} #################
         ::set array $piePeripheralLabeler::($this,array)                         ;# first reposition labels array below pie graphics
         foreach {x y} [$canvas coords canvasLabelsArray($array)] {}
         $canvas move canvasLabelsArray($array) [expr {[lindex $box 0]-$x}]\
-            [expr {[lindex $box 3]+(2*$switched::($this,-offset))+$smallTextHeight-$y}]
-        switched::configure $array -width [expr {[lindex $box 2]-[lindex $box 0]}]                             ;# then fit pie width
+            [expr {[lindex $box 3]+$switched::($this,-offset)+$piePeripheralLabeler::($this,smallFontHeight)-$y}]
+        switched::configure $array -width [switched::cget $pieLabeler::($this,pie) -width]                     ;# then fit pie width
         foreach label [canvasLabelsArray::labels $array] {                                   ;# finally reposition peripheral labels
             position $this $piePeripheralLabeler::($this,textItem,$label) $piePeripheralLabeler::($this,slice,$label)
         }
+    }
+
+    proc horizontalRoom {this} {
+        # use 3 characters as a maximum numerical string length
+        return [expr {2*((3*$piePeripheralLabeler::($this,smallFontWidth))+$switched::($this,-offset))}]
+    }
+
+    proc verticalRoom {this} {
+        if {[catch {::set piePeripheralLabeler::($this,array)} array]} {
+            return 0
+        }
+        ::set box [$pieLabeler::($this,canvas) bbox canvasLabelsArray($array)]
+        return\
+            [expr {[lindex $box 3]-[lindex $box 1]+(2*($switched::($this,-offset)+$piePeripheralLabeler::($this,smallFontHeight)))}]
     }
 
 }
