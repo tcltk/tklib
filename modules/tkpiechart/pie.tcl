@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.80 1998/06/09 21:20:45 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.81 1998/11/14 20:32:02 jfontain Exp $}
 
 package provide tkpiechart 5.2
 
@@ -17,10 +17,14 @@ proc pie::pie {this canvas x y args} switched {$args} {                         
 }
 
 proc pie::~pie {this} {
-    catch {$pie::($this,canvas) delete $pie::($this,title)}                                                   ;# title may not exist
+    if {[info exists pie::($this,title)]} {                                                                   ;# title may not exist
+        $pie::($this,canvas) delete $pie::($this,title)
+    }
     delete $pie::($this,labeler)
     eval delete $pie::($this,slices) $pie::($this,backgroundSlice)
-    catch {delete $pie::($this,selector)}
+    if {[info exists pie::($this,selector)]} {                                                             ;# selector may not exist
+        delete $pie::($this,selector)
+    }
     $pie::($this,canvas) delete $pie::($this,origin)
 }
 
