@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.41 1995/11/04 11:48:01 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.42 1996/02/20 12:10:39 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -7,7 +7,10 @@ proc pie::pie {this canvas x y width height args} {
     # note: all pie elements are tagged with pie($this)
 
     # set options default then parse switched options
-    array set option {-thickness 0 -background {} -colors {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}}
+    array set option {\
+        -thickness 0 -background {} -title {} -titlefont {} -titleoffset 2\
+        -colors {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}\
+    }
     array set option $args
 
     set pie($this,canvas) $canvas
@@ -39,6 +42,8 @@ proc pie::pie {this canvas x y width height args} {
     $canvas addtag pieGraphics($this) withtag slice($pie($this,backgroundSliceId))
     set pie($this,sliceIds) {}
     set pie($this,colors) $option(-colors)
+
+    pie::createTitle $this $option(-title) $option(-titlefont) $option(-titleoffset)
 }
 
 proc pie::~pie {this} {
@@ -110,4 +115,23 @@ proc pie::sizeSlice {this sliceId unitShare {valueToDisplay {}}} {
         slice::rotate $sliceId $value
         pieLabeller::rotate $pie($this,labellerId) $pie($this,sliceLabel,$sliceId)
     }
+}
+
+proc pie::createTitle {this string font offset} {
+    if {[string length $string]==0} {
+        return
+    }
+    set canvas $pie($this,canvas)
+    # place text on top of pie
+    set box [$canvas bbox pie($this)]
+    set item [\
+        $canvas create text\
+            [expr ([lindex $box 2]-[lindex $box 0])/2] [expr [lindex $box 1]-$offset] -anchor s -tags pie($this) -text $string\
+    ]
+    if {[string length $font]>0} {
+        $canvas itemconfigure $item -font $font
+    }
+    # move whole pie down to account for text height
+    set box [$canvas bbox $item]
+    $canvas move pie($this) 0 [expr [lindex $box 3]-[lindex $box 1]+$offset]
 }
