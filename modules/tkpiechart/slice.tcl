@@ -1,6 +1,42 @@
-set rcsId {$Id: slice.tcl,v 1.29 1998/03/14 09:48:05 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.30 1998/03/21 10:20:23 jfontain Exp $}
 
-proc normalizedAngle {value} {                                        ;# normalize value between -180 and 180 degrees (not included)
+
+class slice {}
+
+proc slice::slice {this canvas x y radiusX radiusY start extent args} switched {$args} {         ;# all dimensions must be in pixels
+    # note: all slice elements are tagged with slice($this)
+
+    set slice::($this,canvas) $canvas
+    set slice::($this,start) 0
+    set slice::($this,radiusX) $radiusX
+    set slice::($this,radiusY) $radiusY
+
+    switched::complete $this
+    complete $this $x $y                                            ;# wait till all options have been set for initial configuration
+    update $this $start $extent
+}
+
+proc slice::~slice {this} {
+    $slice::($this,canvas) delete slice($this)
+}
+
+proc slice::options {this} {
+    return [list\
+        [list -bottomcolor {} {}]\
+        [list -height 0 0]\
+        [list -topcolor {} {}]\
+    ]
+}
+
+foreach option {-bottomcolor -height -topcolor} {                                        ;# no dynamic options allowed: see complete
+    proc slice::set$option {this value} "
+        if {\$switched::(\$this,complete)} {
+            error {option $option cannot be set dynamically}
+        }
+    "
+}
+
+proc slice::normalizedAngle {value} {                                 ;# normalize value between -180 and 180 degrees (not included)
     while {$value>=180} {
         set value [expr {$value-360}]
     }
@@ -10,34 +46,26 @@ proc normalizedAngle {value} {                                        ;# normali
     return $value
 }
 
-class slice {}
-
-proc slice::slice {this canvas x y radiusX radiusY start extent args} {                          ;# all dimensions must be in pixels
-    # note: all slice elements are tagged with slice($this)
-
-    array set option {-height 0 -topcolor {} -bottomcolor {}}                     ;# set options default then parse switched options
-    array set option $args
-
-    set slice::($this,canvas) $canvas
-    set slice::($this,start) 0
-    set slice::($this,radiusX) $radiusX
-    set slice::($this,radiusY) $radiusY
-    set slice::($this,height) $option(-height)                                                   ;# extent member is set in update{}
+proc slice::complete {this x y} {
+    set canvas $slice::($this,canvas)
+    set radiusX $slice::($this,radiusX)
+    set radiusY $slice::($this,radiusY)
+    set bottomColor $switched::($this,-bottomcolor)
 
     # use a dimensionless line as an origin marker
     set slice::($this,origin) [$canvas create line -$radiusX -$radiusY -$radiusX -$radiusY -fill {} -tags slice($this)]
 
-    if {$option(-height)>0} {                                                                                                  ;# 3D
+    if {$switched::($this,-height)>0} {                                                                                        ;# 3D
         set slice::($this,startBottomArcFill) [$canvas create arc\
-            0 0 0 0 -style chord -extent 0 -fill $option(-bottomcolor) -outline $option(-bottomcolor) -tags slice($this)\
+            0 0 0 0 -style chord -extent 0 -fill $bottomColor -outline $bottomColor -tags slice($this)\
         ]
-        set slice::($this,startPolygon) [$canvas create polygon 0 0 0 0 0 0 -fill $option(-bottomcolor) -tags slice($this)]
+        set slice::($this,startPolygon) [$canvas create polygon 0 0 0 0 0 0 -fill $bottomColor -tags slice($this)]
         set slice::($this,startBottomArc) [$canvas create arc 0 0 0 0 -style arc -extent 0 -fill black -tags slice($this)]
 
         set slice::($this,endBottomArcFill) [$canvas create arc\
-            0 0 0 0 -style chord -extent 0 -fill $option(-bottomcolor) -outline $option(-bottomcolor) -tags slice($this)\
+            0 0 0 0 -style chord -extent 0 -fill $bottomColor -outline $bottomColor -tags slice($this)\
         ]
-        set slice::($this,endPolygon) [$canvas create polygon 0 0 0 0 0 0 -fill $option(-bottomcolor) -tags slice($this)]
+        set slice::($this,endPolygon) [$canvas create polygon 0 0 0 0 0 0 -fill $bottomColor -tags slice($this)]
         set slice::($this,endBottomArc) [$canvas create arc 0 0 0 0 -style arc -extent 0 -fill black -tags slice($this)]
 
         set slice::($this,startLeftLine) [$canvas create line 0 0 0 0 -tags slice($this)]
@@ -46,17 +74,12 @@ proc slice::slice {this canvas x y radiusX radiusY start extent args} {         
         set slice::($this,endRightLine) [$canvas create line 0 0 0 0 -tags slice($this)]
     }
 
-    set slice::($this,topArc)\
-        [$canvas create arc -$radiusX -$radiusY $radiusX $radiusY -extent $extent -fill $option(-topcolor) -tags slice($this)]
+    set slice::($this,topArc) [$canvas create arc\
+        -$radiusX -$radiusY $radiusX $radiusY -fill $switched::($this,-topcolor) -tags slice($this)\
+    ]
 
     # move slice so upper-left corner is at requested coordinates
     $canvas move slice($this) [expr {$x+$radiusX}] [expr {$y+$radiusY}]
-
-    slice::update $this $start $extent
-}
-
-proc slice::~slice {this} {
-    $slice::($this,canvas) delete slice($this)
 }
 
 proc slice::update {this start extent} {
@@ -77,8 +100,8 @@ proc slice::update {this start extent} {
     $canvas itemconfigure $slice::($this,topArc)\
         -start [set slice::($this,start) [normalizedAngle $start]] -extent [set slice::($this,extent) $extent]
 
-    if {$slice::($this,height)>0} {                                                                                            ;# 3D
-        slice::updateBottom $this
+    if {$switched::($this,-height)>0} {                                                                                        ;# 3D
+        updateBottom $this
     }
 
     # now position slice at the correct coordinates
@@ -94,7 +117,7 @@ proc slice::updateBottom {this} {
     set canvas $slice::($this,canvas)
     set radiusX $slice::($this,radiusX)
     set radiusY $slice::($this,radiusY)
-    set height $slice::($this,height)
+    set height $switched::($this,-height)
 
     $canvas itemconfigure $slice::($this,startBottomArcFill) -extent 0                      ;# first make all bottom parts invisible
     $canvas coords $slice::($this,startBottomArcFill) -$radiusX -$radiusY $radiusX $radiusY
@@ -178,17 +201,17 @@ proc slice::updateBottom {this} {
 }
 
 proc slice::position {this start} {
-    slice::update $this $start $slice::($this,extent)
+    update $this $start $slice::($this,extent)
 }
 
 proc slice::rotate {this angle} {
     if {$angle!=0} {
-        slice::update $this [expr {$slice::($this,start)+$angle}] $slice::($this,extent)
+        update $this [expr {$slice::($this,start)+$angle}] $slice::($this,extent)
     }
 }
 
 proc slice::size {this extent} {
-    slice::update $this $slice::($this,start) $extent
+    update $this $slice::($this,start) $extent
 }
 
 proc slice::data {this arrayName} {
@@ -201,5 +224,5 @@ proc slice::data {this arrayName} {
     set coordinates [$slice::($this,canvas) coords $slice::($this,origin)]
     set data(xCenter) [expr {[lindex $coordinates 0]+$data(xRadius)}]
     set data(yCenter) [expr {[lindex $coordinates 1]+$data(yRadius)}]
-    set data(height) $slice::($this,height)
+    set data(height) $switched::($this,-height)
 }
