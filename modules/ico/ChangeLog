@@ -1,3 +1,9 @@
+2004-07-26  Aaron Faupell <afaupell@users.sourceforge.net>
+
+	* ico.tcl: renamed some of the private API to be more descriptive.
+	bugfix in writeIcon and translateColors and CopyIcon. simplified
+	writeIconEXE.
+
 2004-07-26  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* ico.man: Reworked the documentation a bit (fixed bugs, reordered
