@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.42 1998/06/07 13:47:02 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.43 1998/06/07 14:19:02 jfontain Exp $}
 
 class piePeripheralLabeler {
 
@@ -7,6 +7,9 @@ class piePeripheralLabeler {
     proc piePeripheralLabeler {this canvas args} pieLabeler {$canvas $args} switched {$args} {
         switched::complete $this
         ::set piePeripheralLabeler::($this,array) [::new canvasLabelsArray $canvas -justify $switched::($this,-justify)]
+        ::set piePeripheralLabeler::($this,valueWidth)\
+            [font measure $switched::($this,-smallfont) $switched::($this,-widervaluetext)]
+        ::set piePeripheralLabeler::($this,valueHeight) [font metrics $switched::($this,-smallfont) -ascent]
     }
 
     proc ~piePeripheralLabeler {this} {
@@ -22,10 +25,11 @@ class piePeripheralLabeler {
             [list -justify left left]\
             [list -offset 5 5]\
             [list -smallfont {Helvetica -10}]\
+            [list -widervaluetext 0.00 0.00]\
         ]
     }
 
-    foreach option {-bulletwidth -font -justify -offset} {                                             ;# no dynamic options allowed
+    foreach option {-bulletwidth -font -justify -offset -smallfont -widervaluetext} {                  ;# no dynamic options allowed
         proc set$option {this value} "
             if {\$switched::(\$this,complete)} {
                 error {option $option cannot be set dynamically}
@@ -37,8 +41,6 @@ class piePeripheralLabeler {
         if {$switched::($this,complete)} {
             error {option -smallfont cannot be set dynamically}
         }
-        ::set piePeripheralLabeler::($this,smallFontWidth) [font measure $value 0]
-        ::set piePeripheralLabeler::($this,smallFontHeight) [font metrics $value -ascent]
     }
 
     proc new {this slice args} {                                       ;# variable arguments are for the created canvas label object
@@ -133,10 +135,9 @@ class piePeripheralLabeler {
     proc room {this arrayName} {
         upvar $arrayName data
 
-        # use 4 characters (0.00) as a maximum numerical string length
-        ::set data(left) [expr {(4*$piePeripheralLabeler::($this,smallFontWidth))+$switched::($this,-offset)}]
+        ::set data(left) [expr {$piePeripheralLabeler::($this,valueWidth)+$switched::($this,-offset)}]
         ::set data(right) $data(left)
-        ::set data(top) [expr {$switched::($this,-offset)+$piePeripheralLabeler::($this,smallFontHeight)}]
+        ::set data(top) [expr {$switched::($this,-offset)+$piePeripheralLabeler::($this,valueHeight)}]
         ::set box [$pieLabeler::($this,canvas) bbox canvasLabelsArray($piePeripheralLabeler::($this,array))]
         if {[llength $box]==0} {                                                                                    ;# no labels yet
             ::set data(bottom) $data(top)
