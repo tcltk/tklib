@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.45 1998/06/09 21:17:52 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.46 1998/11/14 20:27:30 jfontain Exp $}
 
 class piePeripheralLabeler {
 
@@ -13,8 +13,8 @@ class piePeripheralLabeler {
     }
 
     proc ~piePeripheralLabeler {this} {
-        catch {delete $piePeripheralLabeler::($this,array)}                                   ;# array may not have been created yet
-        $pieLabeler::($this,canvas) delete pieLabeler($this)                                               ;# delete remaining items
+        ::delete $piePeripheralLabeler::($this,array)
+        $pieLabeler::($this,canvas) delete pieLabeler($this)          ;# delete remaining items (should be in pieLabeler destructor)
     }
 
     proc options {this} {                        ;# bullet width, font and justify options are used when creating a new canvas label

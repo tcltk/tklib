@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.39 1998/06/07 10:20:43 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.40 1998/11/14 20:31:41 jfontain Exp $}
 
 class pieBoxLabeler {
 
@@ -8,7 +8,7 @@ class pieBoxLabeler {
     }
 
     proc ~pieBoxLabeler {this} {
-        catch {::delete $pieBoxLabeler::($this,array)}                                        ;# array may not have been created yet
+        ::delete $pieBoxLabeler::($this,array)
     }
 
     proc options {this} {                                      ;# font and justify options are used when creating a new canvas label
