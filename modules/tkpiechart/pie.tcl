@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.31 1995/10/03 09:02:07 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.32 1995/10/04 09:59:50 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -83,17 +83,20 @@ proc pie::newSlice {id {text {}}} {
     return $sliceId
 }
 
-proc pie::sizeSlice {id sliceId perCent} {
-    # in per cent of whole pie
+proc pie::sizeSlice {id sliceId unitShare {valueToDisplay {}}} {
+    # share of whole pie between 0 and 1
     global pie slice
 
     if {[set index [lsearch $pie($id,slices) $sliceId]]<0} {
         error "could not find slice $sliceId in pie $id slices"
     }
-    pieLabeller::setValue $pie($id,labeller) $pie($id,sliceLabel,$sliceId) $perCent
-    # cannot display slices that occupy more than 100%
-    set perCent [minimum $perCent 100]
-    set newExtent [expr $perCent*3.6]
+    if {[string length $valueToDisplay]>0} {
+        pieLabeller::setValue $pie($id,labeller) $pie($id,sliceLabel,$sliceId) $valueToDisplay
+    } else {
+        pieLabeller::setValue $pie($id,labeller) $pie($id,sliceLabel,$sliceId) $unitShare
+    }
+    # cannot display slices that occupy more than whole pie and less than zero
+    set newExtent [expr [maximum [minimum $unitShare 1] 0]*360]
     set growth [expr $newExtent-$slice($sliceId,extent)]
     # grow clockwise
     slice::update $sliceId [expr $slice($sliceId,start)-$growth] $newExtent
