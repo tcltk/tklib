@@ -1,3 +1,4 @@
+# RCS: @(#) $Id: README,v 1.2 2005/04/06 11:55:12 georgeps Exp $
 
 	o Author
 
@@ -144,9 +145,11 @@
 	I have personally tested it with Tcl/Tk 8.4.4 in NetBSD.
 	It should work with all Tcl platforms.
 
-	Please send comments and bugs to GeorgePS@XMission.com
+	Please send comments and bugs to the tklib project at
+	tcllib.sf.net
 
 	o Thanks
 
 	Kevin Kenny, Neil Madden, Jeffrey Hobbs, Richard Suchenwirth, 
-	Johan Bengtsson, Mac Cody, Günther, and Andreas Sievers.
+	Johan Bengtsson, Mac Cody, Günther, Andreas Sievers, and 
+	Michael Schlenker
