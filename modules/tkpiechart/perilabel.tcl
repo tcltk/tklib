@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.11 1995/10/10 19:50:38 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.12 1995/10/11 20:48:46 jfontain Exp $}
 
 source pielabel.tcl
 source labarray.tcl
@@ -48,7 +48,7 @@ proc piePeripheralLabeller::create {id sliceId args} {
         # position array below pie
         set box [$canvas bbox pie($pieLabeller($id,pieId))]
         set piePeripheralLabeller($id,array) [eval new canvasLabelsArray\
-            $canvas [lindex $box 0] [expr [lindex $box 3]+$pieLabeller($id,offset)+$smallTextHeight]\
+            $canvas [lindex $box 0] [expr [lindex $box 3]+(2*$pieLabeller($id,offset))+$smallTextHeight]\
             [expr [lindex $box 2]-[lindex $box 0]] $options\
         ]
     }
