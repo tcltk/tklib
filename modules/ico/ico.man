@@ -171,7 +171,6 @@ a color list. writing a 32bpp icon from a Tkimage is identical to writing a 24bp
     set colorlist [::ico::getIcon tclkit.exe $i -format colors -type EXE]
 }]
 
-
 [keywords entry icon ico exe dll]
 [manpage_end]
 
