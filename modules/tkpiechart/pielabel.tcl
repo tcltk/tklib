@@ -1,8 +1,9 @@
-set rcsId {$Id: pielabel.tcl,v 1.21 1995/10/31 00:18:07 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.22 1995/11/04 17:44:33 jfontain Exp $}
 
 proc pieLabeller::pieLabeller {this canvas args} {
-    # set options default then parse switched options
+    # set options default
     array set option {-offset 5}
+    # override with user options
     array set option $args
 
     # convert offset to pixel
