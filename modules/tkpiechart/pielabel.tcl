@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.39 1998/06/02 22:42:04 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.40 1998/06/07 10:07:30 jfontain Exp $}
 
 class pieLabeler {
 
@@ -10,10 +10,6 @@ class pieLabeler {
 
     proc ~pieLabeler {this} {}
 
-    proc link {this pie} {
-        ::set pieLabeler::($this,pie) $pie
-    }
-
     virtual proc new {this slice args}                                                                  ;# must return a canvasLabel
 
     virtual proc delete {this label}
@@ -22,10 +18,9 @@ class pieLabeler {
 
     virtual proc selectState {this label {state {}}}
 
-    virtual proc update {this} {}
+    # must be invoked only by pie, which knows when it is necessary to update (new or deleted label)
+    virtual proc update {this left top right bottom}
 
-    virtual proc horizontalRoom {this}
-
-    virtual proc verticalRoom {this}
+    virtual proc room {this arrayName}
 
 }
