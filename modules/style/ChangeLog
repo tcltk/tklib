@@ -1,3 +1,7 @@
+2004-03-18  David N. Welton  <davidw@dedasys.com>
+
+	* pkgIndex.tcl: Added package index.
+
 2004-03-17  David N. Welton  <davidw@dedasys.com>
 
 	* style.tcl: Created style package.
