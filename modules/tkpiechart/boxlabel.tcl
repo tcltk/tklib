@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.6 1995/10/05 20:41:03 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.7 1995/10/05 20:58:13 jfontain Exp $}
 
 source pielabel.tcl
 
@@ -15,7 +15,7 @@ proc pieBoxLabeller::position {id labelId} {
     set canvas $pie($pieId,canvas)
     set graphicsBox [$canvas bbox pieGraphics($pieId)]
     set labelBox [$canvas bbox canvasLabel($labelId)]
-    set index [expr [llength $pieLabeller($id,labels)]-1]
+    set index [expr [llength $pieLabeller($id,labelIds)]-1]
 
     # arrange labels in two columns
     set x [expr [lindex $graphicsBox 0]+(1.0+(2*($index%2)))*([lindex $graphicsBox 2]-[lindex $graphicsBox 0])/4]
