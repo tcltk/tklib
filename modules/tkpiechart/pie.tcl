@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.23 1995/09/28 18:46:38 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.24 1995/09/28 20:35:14 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -73,7 +73,7 @@ proc pie::newSlice {id {text {}}} {
         # generate label text if not provided
         set text "slice [expr [llength $pie($id,slices)]+1]"
     }
-    pieLabeller::create $pie($id,labeller) -text $text -background $color
+    set pie($id,sliceLabel,$sliceId) [pieLabeller::create $pie($id,labeller) -text $text -background $color]
 
     return $sliceId
 }
@@ -85,6 +85,7 @@ proc pie::sizeSlice {id sliceId perCent} {
     if {[set index [lsearch $pie($id,slices) $sliceId]]<0} {
         error "could not find slice $sliceId in pie $id slices"
     }
+    pieLabeller::setValue $pie($id,labeller) $pie($id,sliceLabel,$sliceId) $perCent
     # cannot display slices that occupy more than 100%
     set perCent [minimum $perCent 100]
     set newExtent [expr $perCent*$twoPI/100]
