@@ -1,11 +1,11 @@
-set rcsId {$Id: pie.tcl,v 1.30 1995/10/01 22:09:30 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.31 1995/10/03 09:02:07 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
 
 proc pie::pie {id canvas x y width height args} {
     # note: all pie elements are tagged with pie($id)
-    global pie PI
+    global pie
 
     # set options default then parse switched options
     array set option {-thickness 0 -background {} -colors {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}}
