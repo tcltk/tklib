@@ -7,24 +7,24 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: ipentry.tcl,v 1.1 2003/07/23 18:17:49 afaupell Exp $
+# RCS: @(#) $Id: ipentry.tcl,v 1.2 2003/07/23 19:13:47 afaupell Exp $
 
 package provide ipentry 0.1
 
 namespace eval ::ipentry {
     namespace export ipentry
     foreach x [bind Entry] {
-        bind IPEntry $x [bind Entry $x]
+        bind IPEntrybindtag $x [bind Entry $x]
     }
-    bind IPEntry <KeyPress>         {::ipentry::keypress %W %K}
-    bind IPEntry <BackSpace>        {::ipentry::backspace %W}
-    bind IPEntry <period>           {::ipentry::dot %W}
-    bind IPEntry <Key-Right>        {::ipentry::arrow %W %K}
-    bind IPEntry <Key-Left>         {::ipentry::arrow %W %K}
-    bind IPEntry <FocusIn>          {::ipentry::FocusIn %W}
-    bind IPEntry <FocusOut>         {::ipentry::FocusOut %W}
-    bind IPEntry <<Paste>>          {::ipentry::Paste %W CLIPBOARD}
-    bind IPEntry <<PasteSelection>> {::ipentry::Paste %W PRIMARY}
+    bind IPEntrybindtag <KeyPress>         {::ipentry::keypress %W %K}
+    bind IPEntrybindtag <BackSpace>        {::ipentry::backspace %W}
+    bind IPEntrybindtag <period>           {::ipentry::dot %W}
+    bind IPEntrybindtag <Key-Right>        {::ipentry::arrow %W %K}
+    bind IPEntrybindtag <Key-Left>         {::ipentry::arrow %W %K}
+    bind IPEntrybindtag <FocusIn>          {::ipentry::FocusIn %W}
+    bind IPEntrybindtag <FocusOut>         {::ipentry::FocusOut %W}
+    bind IPEntrybindtag <<Paste>>          {::ipentry::Paste %W CLIPBOARD}
+    bind IPEntrybindtag <<PasteSelection>> {::ipentry::Paste %W PRIMARY}
 }
 
 proc ::ipentry::ipentry {w args} {
@@ -35,12 +35,14 @@ proc ::ipentry::ipentry {w args} {
                           -cursor [$w.$x cget -cursor] -bg [$w.$x cget -background] \
                           -disabledforeground [$w.$x cget -disabledforeground]
         pack $w.$x $w.$y -side left
+        bindtags $w.$x [list $w.$x IPEntrybindtag . all]
         bind $w.$y <Button-1> {::ipentry::dotclick %W %x}
     }
     destroy $w.d4
     rename ::$w ::ipentry::_$w
     interp alias {} ::$w {} ::ipentry::widgetCommand $w
     bind $w <Destroy> [list rename ::$w {}]
+    bind $w <FocusIn> [list focus $w.0]
     if {[llength $args] > 0} {
         eval [list $w configure] $args
     }
@@ -282,6 +284,14 @@ proc ::ipentry::widgetCommand {w cmd args} {
                 $w.$x delete 0 end
                 $w.$x insert 0 $n
             }
+        }
+        icursor {
+            if {![string match $w.* [focus]]} {return}
+            set i [lindex $args 0]
+            if {![string is integer -strict $i]} {error "argument must be an integer"}
+            set s [expr {$i / 4}]
+            focus $w.$s
+            $w.$s icursor [expr {$i % 4}]
         }
         complete {
             foreach x {0 1 2 3} {
