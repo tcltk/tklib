@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.24 1995/09/28 20:35:14 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.25 1995/09/28 21:17:10 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -38,7 +38,7 @@ proc pie::pie {id canvas x y width height args} {
 proc pie::~pie {id} {
     global pie
 
-    delete pieBoxLabeller $pie($id,labeller)
+    delete pieLabeller $pie($id,labeller)
     foreach sliceId $pie($id,slices) {
         delete slice $sliceId
     }
