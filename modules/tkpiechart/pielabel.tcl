@@ -1,8 +1,8 @@
-set rcsId {$Id: pielabel.tcl,v 1.27 1998/03/15 20:03:57 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.28 1998/03/21 10:20:02 jfontain Exp $}
 
 class pieLabeller {
 
-    set pieLabeller::(defaultFont) {Helvetica 12}
+    set pieLabeller::(default,font) {Helvetica 12}
 
     proc pieLabeller {this canvas args} {
         set pieLabeller::($this,canvas) $canvas

@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.25 1998/03/15 20:03:38 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.26 1998/03/21 10:19:18 jfontain Exp $}
 
 class piePeripheralLabeller {
 
@@ -14,7 +14,7 @@ class piePeripheralLabeller {
     proc options {this} {
         return [list\
             [list -bulletwidth 20 20]\
-            [list -font $pieLabeller::(defaultFont) $pieLabeller::(defaultFont)]\
+            [list -font $pieLabeller::(default,font) $pieLabeller::(default,font)]\
             [list -justify left left]\
             [list -offset 5 5]\
             [list -smallfont {Helvetica 10} {Helvetica 10}]\
