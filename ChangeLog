@@ -1,3 +1,8 @@
+2004-06-29  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* install_action.tcl:    Added ctext and style to list of
+	* installed_modules.tcl: installed modules.
+
 2004-05-18  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* New module 'tkpiechart'. This has been donated by Jean-Luc
