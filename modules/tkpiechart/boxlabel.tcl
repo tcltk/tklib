@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.26 1998/03/21 21:22:29 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.27 1998/03/22 14:36:39 jfontain Exp $}
 
 class pieBoxLabeller {
 
@@ -7,7 +7,7 @@ class pieBoxLabeller {
     }
 
     proc ~pieBoxLabeller {this} {
-        catch {delete $pieBoxLabeller::($this,array)}                                         ;# array may not have been created yet
+        catch {::delete $pieBoxLabeller::($this,array)}                                       ;# array may not have been created yet
     }
 
     proc options {this} {
@@ -45,13 +45,12 @@ class pieBoxLabeller {
     }
 
     proc delete {this label} {
+        canvasLabelsArray::delete $pieBoxLabeller::($this,array) $label
     }
 
     proc update {this label value} {
         regsub {:.*$} [switched::cget $label -text] ": $value" text
         switched::configure $label -text $text
     }
-
-    proc rotate {this label} {}                                                          ;# we are not concerned with slice rotation
 
 }
