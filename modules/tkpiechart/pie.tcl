@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.71 1998/05/30 22:35:05 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.72 1998/06/02 09:29:18 jfontain Exp $}
 
 package provide tkpiechart 5.0
 
@@ -91,7 +91,7 @@ proc pie::complete {this} {
         set bottomColor [tkDarken $switched::($this,-background) 60]
     }
     set slice [new slice\
-        $canvas $pie::($this,x) $pie::($this,y) $pie::($this,radiusX) $pie::($this,radiusY) 90 360\
+        $canvas $pie::($this,x) $pie::($this,y) $pie::($this,radiusX) $pie::($this,radiusY) -startandextent {90 360}\
         -height $pie::($this,thickness) -topcolor $switched::($this,-background) -bottomcolor $bottomColor\
     ]
     $canvas addtag pie($this) withtag slice($slice)
@@ -114,7 +114,7 @@ proc pie::newSlice {this {text {}}} {
 
     # darken slice top color by 40% to obtain bottom color, as it is done for Tk buttons shadow, for example
     set slice [new slice\
-        $canvas $x $y $pie::($this,radiusX) $pie::($this,radiusY) $start 0 -scale $switched::($this,-scale)\
+        $canvas $x $y $pie::($this,radiusX) $pie::($this,radiusY) -startandextent "$start 0" -scale $switched::($this,-scale)\
         -height $pie::($this,thickness) -topcolor $color -bottomcolor [tkDarken $color 60]\
     ]
     $canvas addtag pie($this) withtag slice($slice)
@@ -173,7 +173,7 @@ proc pie::sizeSlice {this slice unitShare {valueToDisplay {}}} {
     # cannot display slices that occupy more than whole pie and less than zero
     set newExtent [expr {[maximum [minimum $unitShare 1] 0]*360}]
     set growth [expr {$newExtent-$slice::($slice,extent)}]
-    slice::update $slice [expr {$slice::($slice,start)-$growth}] $newExtent                                        ;# grow clockwise
+    switched::configure $slice -startandextent "[expr {$slice::($slice,start)-$growth}] $newExtent"                ;# grow clockwise
 
     if {[string length $valueToDisplay]>0} {                  ;# update label after slice for it may need slice latest configuration
         pieLabeler::set $pie::($this,labeler) $pie::($this,sliceLabel,$slice) $valueToDisplay
