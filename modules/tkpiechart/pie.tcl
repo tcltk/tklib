@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.20 1995/09/26 10:51:02 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.21 1995/09/26 17:06:55 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -12,6 +12,7 @@ proc pie::pie {id canvas x y width height args} {
         -thickness 0 -topcolor {} -bottomcolor {}\
         -slicecolors {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}\
     }
+    # other options: -labelsoffset, -font
     array set option $args
 
     set pie($id,radiusX) [expr [winfo fpixels $canvas $width]/2.0]
@@ -27,11 +28,11 @@ proc pie::pie {id canvas x y width height args} {
     $canvas addtag pieGraphics($id) withtag slice($pie($id,backgroundSlice))
     set pie($id,slices) {}
     set pie($id,colors) $option(-slicecolors)
-    if {[info exists option(-font)]} {
-        set pie($id,labeller) [new pieBoxLabeller $id -font $option(-font)]
-    } else {
-        set pie($id,labeller) [new pieBoxLabeller $id]
-    }
+
+    set options {}
+    catch {lappend options -font $option(-font)}
+    catch {lappend options -offset $option(-labelsoffset)}
+    set pie($id,labeller) [eval new pieBoxLabeller $id $options]
 }
 
 proc pie::~pie {id} {
