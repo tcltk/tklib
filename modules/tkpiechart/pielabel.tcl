@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.11 1995/10/05 20:58:13 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.12 1995/10/05 21:09:58 jfontain Exp $}
 
 source canlabel.tcl
 
@@ -12,6 +12,7 @@ proc pieLabeller::pieLabeller {id canvas args} {
     # convert offset to pixel
     set pieLabeller($id,offset) [winfo fpixels $canvas $option(-offset)]
     catch {set pieLabeller($id,font) $option(-font)}
+    set pieLabeller($id,canvas) $canvas
 }
 
 proc pieLabeller::~pieLabeller {id} {
@@ -29,17 +30,16 @@ proc pieLabeller::bind {id pieId} {
 }
 
 proc pieLabeller::create {id sliceId args} {
-    global pie pieLabeller
+    global pieLabeller
 
-    set canvas $pie($pieLabeller($id,pieId),canvas)
     if {[lsearch -exact $args -font]<0} {
         # eventually use main font if not overridden
         catch {lappend args -font $pieLabeller($id,font)}
     }
-    set labelId [eval new canvasLabel $canvas 0 0 $args]
+    set labelId [eval new canvasLabel $pieLabeller($id,canvas) 0 0 $args]
     # always append semi-column to label
     canvasLabel::configure $labelId -text [canvasLabel::cget $labelId -text]:
-    $canvas addtag pieLabeller($id) withtag canvasLabel($labelId)
+    $pieLabeller($id,canvas) addtag pieLabeller($id) withtag canvasLabel($labelId)
     lappend pieLabeller($id,labelIds) $labelId
     # save related slice
     set pieLabeller($id,sliceId,$labelId) $sliceId
