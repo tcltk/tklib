@@ -1,3 +1,8 @@
+2005-02-02  David N. Welton  <davidw@dedasys.com>
+
+	* lobster.tcl (style::lobster::init): Use nicer fonts for the
+	popup dialogs.
+
 2004-09-09  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* as.tcl: use system colors on Windows for highlightbg,
