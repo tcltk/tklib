@@ -5,7 +5,7 @@
 # Copyright (c) 2003 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.10 2004/07/28 03:32:19 afaupell Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.11 2004/08/17 17:36:41 afaupell Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -21,9 +21,6 @@ package require Tcl 8.4
 
 # Instantiate vars we need for this package
 namespace eval ::ico {
-    # don't look farther than this for icos past beginning or last ico found
-    variable maxIcoSearch 32768; #16384 ; #32768
-
     # stores cached indices of icons found
     variable  ICONS
     array set ICONS {}
@@ -267,12 +264,16 @@ proc ::ico::EXEtoICO {exeFile icoFile} {
     variable ICONS
 
     set file [file normalize $exeFile]
-    set fh   [checkEXE $file]
-    set cnt  [SearchForIcos $file $fh]
+    set cnt  [SearchForIcos $file]
+    set dir  {}
+    set data {}
+    
+    set fh [open $file]
+    fconfigure $fh -eofchar {} -encoding binary -translation lf
 
     for {set i 0} {$i <= $cnt} {incr i} {
+        seek $fh $ICONS($file,$i) start
 	set ico $ICONS($file,$i,data)
-	seek $fh $ICONS($file,$i) start
 	eval [list lappend dir] $ico
 	append data [read $fh [eval calcSize $ico 40]]
     }
@@ -280,7 +281,7 @@ proc ::ico::EXEtoICO {exeFile icoFile} {
 
     # write them out to a file
     set ifh [open $icoFile w+]
-    fconfigure $ifh -translation binary
+    fconfigure $ifh -eofchar {} -encoding binary -translation lf
 
     bputs $ifh sss 0 1 [expr {$cnt + 1}]
     set offset [expr {6 + (($cnt + 1) * 16)}]
@@ -295,7 +296,7 @@ proc ::ico::EXEtoICO {exeFile icoFile} {
     puts -nonewline $ifh $data
     foreach {offset size} $fix {
 	seek $ifh [expr {$offset + 20}] start
-	bputs $ifh i $s
+	bputs $ifh i $size
     }
     close $ifh
 }
@@ -352,6 +353,16 @@ proc ::ico::getdword {fh} {
 proc ::ico::getword {fh} {
     binary scan [read $fh 2] s* tmp
     return $tmp
+}
+
+proc ::ico::getulong {fh} {
+    binary scan [read $fh 4] i tmp
+    return [format %u $tmp]
+}
+
+proc ::ico::getushort {fh} {
+    binary scan [read $fh 2] s tmp
+    return [expr {$tmp & 0x0000FFFF}]
 }
 
 # binary puts
@@ -537,7 +548,7 @@ proc ::ico::getXORFromColors {bpp colors} {
     return $xor
 }
 
-# translates a Tk image into a list of colors in the #hex format
+# translates a Tk image into a list of colors in the {r g b} format
 # one element per pixel and {} designating transparent
 # used by writeIcon when writing from a Tk image
 proc ::ico::getColorListFromImage {img} {
@@ -664,7 +675,7 @@ proc ::ico::readDIBFromData {data loc} {
 
 proc ::ico::getIconListICO {file} {
     set fh [open $file r]
-    fconfigure $fh -translation binary
+    fconfigure $fh -eofchar {} -encoding binary -translation lf
 
     # both words must be read to keep in sync with later reads
     if {"[getword $fh] [getword $fh]" ne "0 1"} {
@@ -723,7 +734,7 @@ proc ::ico::getIconListICODATA {data} {
 #	{width height depth palette xor_mask and_mask}
 proc ::ico::getRawIconDataICO {file index} {
     set fh [open $file r]
-    fconfigure $fh -translation binary
+    fconfigure $fh -eofchar {} -encoding binary -translation lf
 
     # both words must be read to keep in sync with later reads
     if {"[getword $fh] [getword $fh]" ne "0 1"} {
@@ -764,12 +775,12 @@ proc ::ico::getRawIconDataICODATA {data index} {
 proc ::ico::writeIconICO {file index w h bpp palette xor and} {
     if {![file exists $file]} {
 	set fh [open $file w+]
-	fconfigure $fh -translation binary
+	fconfigure $fh -eofchar {} -encoding binary -translation lf
 	bputs $fh sss 0 1 0
 	seek $fh 0 start
     } else {
 	set fh [open $file r+]
-	fconfigure $fh -translation binary
+	fconfigure $fh -eofchar {} -encoding binary -translation lf
     }
     if {[file size $file] > 4 && "[getword $fh] [getword $fh]" ne "0 1"} {
 	close $fh
@@ -845,35 +856,6 @@ proc ::ico::writeIconICO {file index w h bpp palette xor and} {
     close $fh
 }
 
-# checks if file is a windows executable and returns an open file handle at the start of the data segment
-proc ::ico::checkEXE {exe {mode r}} {
-    set fh [open $exe $mode]
-    fconfigure $fh -translation binary
-
-    # verify PE header
-    if {[read $fh 2] ne "MZ"} {
-	close $fh
-	return -code error "not a DOS executable"
-    }
-    seek $fh 60 start
-    seek $fh [getword $fh] start
-    set sig [read $fh 4]
-    if {$sig eq "PE\000\000"} {
-	# move past header data
-	seek $fh 24 current
-	seek $fh [getdword $fh] start
-    } elseif {[string match "NE*" $sig]} {
-	seek $fh 34 current
-	seek $fh [getdword $fh] start
-    } else {
-	close $fh
-	return -code error "executable header not found"
-    }
-
-    # return file handle
-    return $fh
-}
-
 # calculate byte size of an icon.
 # often passed $w twice because $h is double $w in the binary data
 proc ::ico::calcSize {w h bpp {offset 0}} {
@@ -883,79 +865,137 @@ proc ::ico::calcSize {w h bpp {offset 0}} {
     return $s
 }
 
-# find all the icons in an executable and cache their size and offsets
-proc ::ico::SearchForIcos {file fh {index -1}} {
+proc ::ico::SearchForIcos {file {index -1}} {
     variable ICONS	  ; # stores icos offsets by index, and [list w h bpp]
-    variable maxIcoSearch ; # don't look farther than this for icos
-    set readsize 512	  ; # chunked read size
 
     if {[info exists ICONS($file,$index)]} {
 	return $ICONS($file,$index)
     }
-
-    set last   0 ; # tell point of last ico found
-    set idx   -1 ; # index of icos found
-    set pos    0
-    set offset [tell $fh]
-    set data   [read $fh $readsize]
-    set lastoffset $offset
-
-    while {1} {
-	if {$pos > ($readsize - 20)} {
-	    if {[eof $fh] || ($last && ([tell $fh]-$last) >= $maxIcoSearch)} {
-		# set the -1 index to indicate we've read the whole file
-		set ICONS($file,-1) $idx
-		break
-	    }
-
-	    seek $fh [expr {$pos - $readsize}] current
-	    set offset [tell $fh]
-
-	    if {$offset <= $lastoffset} {
-		# We made no progress (anymore). This means that we
-		# have reached the end of the file and processed a
-		# short block of 16 byte. And that we are now trying
-		# to read and process the same block again. Squashing
-		# the infinite loop just starting up right now.
-
-		set ICONS($file,-1) $idx
-		break
-	    }
-	    set lastoffset $offset
-
-	    set pos 0
-	    set data [read $fh $readsize]
-	}
-
-	binary scan [string range $data $pos [expr {$pos + 20}]] \
-	    iiissi s w h p bpp comp
-	if {$s == 40 && $p == 1 && $comp == 0 && $w == ($h / 2)} {
-	    set ICONS($file,[incr idx]) [expr {$offset + $pos}]
-	    set ICONS($file,$idx,data)	[list $w $w $bpp]
-	    # stop if we found requested index
-	    if {$index >= 0 && $idx == $index} { break }
-	    incr pos [calcSize $w $w $bpp 40]
-	    set last [expr {$offset + $pos}]
-	} else {
-	    incr pos 4
-	}
+    set fh [open $file]
+    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    if {[read $fh 2] ne "MZ"} {
+	close $fh
+	return -code error "unknown file format"
     }
-    return $idx
+    seek $fh 60 start
+    seek $fh [getword $fh] start
+    set sig [read $fh 4]
+    seek $fh -4 current
+    if {$sig eq "PE\000\000"} {
+        return [SearchForIcosPE $fh $file $index]
+    } elseif {[string match NE* $sig]} {
+        return [SearchForIcosNE $fh $file $index]
+    } else {
+        return -code error "unknown file format"
+    }
+}
+
+# parse the resource table of 16 bit windows files for icons
+proc ::ico::SearchForIcosNE {fh file index} {
+    variable ICONS ; # stores icos offsets by index, and [list w h bpp]
+    set idx   -1   ; # index of icos found
+
+    seek $fh 36 current
+    seek $fh [expr {[getword $fh] - 38}] current
+    
+    set base [tell $fh]
+    set shift [expr {int(pow(2, [getushort $fh]))}]
+    while {[set type [expr {[getushort $fh] & 0x7fff}]] != 0} {
+        set num [getushort $fh]
+        if {$type != 3} {
+            seek $fh [expr {($num * 12) + 4}] current
+            continue
+        }
+        seek $fh 4 current
+        for {set i 0} {$i < $num} {incr i} {
+            incr idx
+            set ICONS($file,$idx) [expr {[getushort $fh] * $shift}]
+            seek $fh 10 current
+            set cur [tell $fh]
+            
+            seek $fh $ICONS($file,$idx) start
+            binary scan [read $fh 16] x4iix2s w h bpp
+            set ICONS($file,$idx,data) [list $w [expr {$h / 2}] $bpp]
+            
+            seek $fh $cur start
+        }
+        close $fh
+        return $idx
+    }
+    close $fh
+    return -1
+}
+
+# parse the resource tree of 32 bit windows files for icons
+proc ::ico::SearchForIcosPE {fh file index} {
+    variable ICONS ; # stores icos offsets by index, and [list w h bpp]
+    set idx -1     ; # index of icos found
+
+    # find the .rsrc section by reading the coff header
+    binary scan [read $fh 24] x6sx12s sections headersize
+    seek $fh $headersize current
+    for {set i 0} {$i < $sections} {incr i} {
+        binary scan [read $fh 40] a8x4ix4i type baserva base
+        if {[string match .rsrc* $type]} {break}
+    }
+    # no resource section found = no icons
+    if {![string match .rsrc* $type]} {
+        close $fh
+        return -1
+    }
+    seek $fh $base start
+
+    seek $fh 12 current
+    set entries [expr {[getushort $fh] + [getushort $fh]}]
+    for {set i 0} {$i < $entries} {incr i} {
+        set name [getulong $fh]
+        set offset [expr {[getulong $fh] & 0x7fffffff}]
+        if {$name != 3} {continue}
+        seek $fh [expr {$base + $offset + 12}] start
+
+        set entries2 [expr {[getushort $fh] + [getushort $fh]}]
+        for {set i2 0} {$i2 < $entries2} {incr i2} {
+            seek $fh 4 current
+            set offset [expr {[getulong $fh] & 0x7fffffff}]
+            set cur2 [tell $fh]
+            seek $fh [expr {$offset + $base + 12}] start
+
+            set entries3 [expr {[getushort $fh] + [getushort $fh]}]
+            for {set i3 0} {$i3 < $entries3} {incr i3} {
+                seek $fh 4 current
+                set offset [expr {[getulong $fh] & 0x7fffffff}]
+                set cur3 [tell $fh]
+                seek $fh [expr {$offset + $base}] start
+
+                set rva [getulong $fh]
+                incr idx
+                set ICONS($file,$idx) [expr {$rva - $baserva + $base}]
+                seek $fh $ICONS($file,$idx) start
+                binary scan [read $fh 16] x4iix2s w h bpp
+                set ICONS($file,$idx,data) [list $w [expr {$h / 2}] $bpp]
+            
+                seek $fh $cur3 start
+            }
+            seek $fh $cur2 start
+        }
+        close $fh
+        return $idx
+    }
+    close $fh
+    return -1
 }
 
 proc ::ico::getIconListEXE {file} {
     variable ICONS
 
     set file [file normalize $file]
-    set fh   [checkEXE $file]
-    set cnt  [SearchForIcos $file $fh]
+    set cnt  [SearchForIcos $file]
 
     set icons [list]
     for {set i 0} {$i <= $cnt} {incr i} {
 	lappend icons $ICONS($file,$i,data)
     }
 
-    close $fh
     return $icons
 }
 
@@ -965,11 +1005,12 @@ proc ::ico::getRawIconDataEXE {file index} {
     variable ICONS
 
     set file [file normalize $file]
-    set fh   [checkEXE $file]
-    set cnt  [SearchForIcos $file $fh $index]
+    set cnt  [SearchForIcos $file $index]
 
     if {$cnt < $index} { return -code error "index out of range" }
 
+    set fh [open $file]
+    fconfigure $fh -eofchar {} -encoding binary -translation lf
     seek $fh $ICONS($file,$index) start
 
     # readDIB returns: {w h bpp palette xor and}
@@ -982,22 +1023,20 @@ proc ::ico::writeIconEXE {file index w h bpp palette xor and} {
     variable ICONS
 
     set file [file normalize $file]
-    set fh   [checkEXE $file r+]
     set cnt  [SearchForIcos $file $fh $index]
 
     if {$index eq "end"} {set index $cnt}
     if {$cnt < $index} { return -code error "index out of range" }
 
     if {[list $w $h $bpp] != $ICONS($file,$index,data)} {
-	close $fh
 	return -code error "icon format differs from original"
     }
-
+    
+    set fh [open $file r+]
+    fconfigure $fh -eofchar {} -encoding binary -translation lf
     seek $fh [expr {$ICONS($file,$index) + 40}] start
 
-    puts -nonewline $fh $palette
-    puts -nonewline $fh $xor
-    puts -nonewline $fh $and
+    puts -nonewline $fh $palette$xor$and
     close $fh
 }
 
@@ -1028,7 +1067,7 @@ proc ::ico::Show {file args} {
         set type [fileext $file]
     }
 
-    set file [file normalize $file]
+    set file  [file normalize $file]
     set icos  [getIconList $file -type $type]
     set wname [string map {. _ : _} $file]
 
