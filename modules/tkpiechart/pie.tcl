@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.53 1998/03/15 13:38:41 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.54 1998/03/22 14:38:40 jfontain Exp $}
 
 package provide tkpiechart 4.0
 
@@ -80,6 +80,8 @@ proc pie::complete {this} {
 }
 
 proc pie::newSlice {this {text {}}} {
+    set canvas $pie::($this,canvas)
+
     set start 90                                     ;# calculate start radian for new slice (slices grow clockwise from 12 o'clock)
     foreach slice $pie::($this,slices) {
         set start [expr {$start-$slice::($slice,extent)}]
@@ -88,15 +90,15 @@ proc pie::newSlice {this {text {}}} {
     set color [lindex $switched::($this,-colors) [expr {[llength $pie::($this,slices)]%[llength $switched::($this,-colors)]}]]
 
     # make sure slice is positioned correctly in case pie was moved
-    set coordinates [$pie::($this,canvas) coords slice($pie::($this,backgroundSlice))]
+    set coordinates [$canvas coords slice($pie::($this,backgroundSlice))]
 
     # darken slice top color by 40% to obtain bottom color, as it is done for Tk buttons shadow, for example
     set slice [new slice\
-        $pie::($this,canvas) [lindex $coordinates 0] [lindex $coordinates 1] $pie::($this,radiusX) $pie::($this,radiusY) $start 0\
+        $canvas [lindex $coordinates 0] [lindex $coordinates 1] $pie::($this,radiusX) $pie::($this,radiusY) $start 0\
         -height $pie::($this,thickness) -topcolor $color -bottomcolor [tkDarken $color 60]\
     ]
-    $pie::($this,canvas) addtag pie($this) withtag slice($slice)
-    $pie::($this,canvas) addtag pieGraphics($this) withtag slice($slice)
+    $canvas addtag pie($this) withtag slice($slice)
+    $canvas addtag pieGraphics($this) withtag slice($slice)
     lappend pie::($this,slices) $slice
 
     if {[string length $text]==0} {                                                           ;# generate label text if not provided
@@ -104,14 +106,32 @@ proc pie::newSlice {this {text {}}} {
     }
     set pie::($this,sliceLabel,$slice) [pieLabeller::create $pie::($this,labeller) $slice -text $text -background $color]
     # update tags which canvas does not automatically do
-    $pie::($this,canvas) addtag pie($this) withtag pieLabeller($pie::($this,labeller))
+    $canvas addtag pie($this) withtag pieLabeller($pie::($this,labeller))
 
     return $slice
 }
 
+proc pie::deleteSlice {this slice} {
+    set index [lsearch -exact $pie::($this,slices) $slice]
+    if {$index<0} {
+        error "invalid slice $slice for pie $this"
+    }
+    set pie::($this,slices) [lreplace $pie::($this,slices) $index $index]
+    set extent $slice::($slice,extent)
+    delete $slice
+
+    pieLabeller::delete $pie::($this,labeller) $pie::($this,sliceLabel,$slice)
+    unset pie::($this,sliceLabel,$slice)
+
+    foreach slice [lrange $pie::($this,slices) $index end] {                         ;# rotate the following slices counterclockwise
+        slice::rotate $slice $extent
+    }
+}
+
 proc pie::sizeSlice {this slice unitShare {valueToDisplay {}}} {
-    if {[set index [lsearch $pie::($this,slices) $slice]]<0} {
-        error "could not find slice $slice in pie $this slices"
+    set index [lsearch -exact $pie::($this,slices) $slice]
+    if {$index<0} {
+        error "invalid slice $slice for pie $this"
     }
     # cannot display slices that occupy more than whole pie and less than zero
     set newExtent [expr {[maximum [minimum $unitShare 1] 0]*360}]
@@ -127,7 +147,6 @@ proc pie::sizeSlice {this slice unitShare {valueToDisplay {}}} {
     set value [expr {-1*$growth}]                                                               ;# finally move the following slices
     foreach slice [lrange $pie::($this,slices) [incr index] end] {
         slice::rotate $slice $value
-        pieLabeller::rotate $pie::($this,labeller) $pie::($this,sliceLabel,$slice)
     }
 }
 
