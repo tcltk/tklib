@@ -1,17 +1,17 @@
-set rcsId {$Id: slice.tcl,v 1.38 1998/06/02 21:20:11 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.39 1998/06/07 10:19:25 jfontain Exp $}
 
 
 class slice {
     variable PI 3.14159265358979323846
 }
 
-proc slice::slice {this canvas x y xRadius yRadius args} switched {$args} {                      ;# all dimensions must be in pixels
+proc slice::slice {this canvas xRadius yRadius args} switched {$args} {                          ;# all dimensions must be in pixels
     # note: all slice elements are tagged with slice($this)
     set slice::($this,canvas) $canvas
     set slice::($this,xRadius) $xRadius
     set slice::($this,yRadius) $yRadius
     switched::complete $this
-    complete $this $x $y                                            ;# wait till all options have been set for initial configuration
+    complete $this                                                  ;# wait till all options have been set for initial configuration
     update $this
 }
 
@@ -74,7 +74,7 @@ proc slice::normalizedAngle {value} {                                 ;# normali
     return $value
 }
 
-proc slice::complete {this x y} {
+proc slice::complete {this} {
     set canvas $slice::($this,canvas)
     set xRadius $slice::($this,xRadius)
     set yRadius $slice::($this,yRadius)
@@ -102,8 +102,7 @@ proc slice::complete {this x y} {
     set slice::($this,topArc) [$canvas create arc\
         -$xRadius -$yRadius $xRadius $yRadius -fill $switched::($this,-topcolor) -tags slice($this)\
     ]
-    # move slice so upper-left corner is at requested coordinates
-    $canvas move slice($this) [expr {$x+$xRadius}] [expr {$y+$yRadius}]
+    $canvas move slice($this) $xRadius $yRadius                       ;# move slice so upper-left corner is at requested coordinates
 }
 
 proc slice::update {this} {
