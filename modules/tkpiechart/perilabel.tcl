@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.28 1998/03/26 20:20:06 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.29 1998/03/26 20:33:33 jfontain Exp $}
 
 class piePeripheralLabeller {
 
@@ -55,7 +55,7 @@ class piePeripheralLabeller {
 
         set piePeripheralLabeller::($this,textItem,$label) $text                        ;# value text item is the only one to update
         set piePeripheralLabeller::($this,slice,$label) $slice
-
+        set piePeripheralLabeller::($this,selected,$label) 0
         return $label
     }
 
@@ -99,6 +99,18 @@ class piePeripheralLabeller {
 
     proc delete {this label} {
         canvasLabelsArray::delete $piePeripheralLabeller::($this,array) $label
+    }
+
+    proc selectState {this label {selected {}}} {
+        if {[string length $selected]==0} {                                                   ;# return current state if no argument
+            return $piePeripheralLabeller::($this,selected,$label)
+        }
+        if {$selected} {
+            switched::configure $label -borderwidth 2
+        } else {
+            switched::configure $label -borderwidth 1
+        }
+        set piePeripheralLabeller::($this,selected,$label) $selected
     }
 
 }
