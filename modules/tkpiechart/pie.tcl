@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.19 1995/09/26 10:18:56 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.20 1995/09/26 10:51:02 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -7,31 +7,31 @@ proc pie::pie {id canvas x y width height args} {
     # note: all pie elements are tagged with pie($id)
     global pie PI
 
-    # parse switched options
+    # set options default then parse switched options
+    array set option {\
+        -thickness 0 -topcolor {} -bottomcolor {}\
+        -slicecolors {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}\
+    }
     array set option $args
-    set thickness 0
-    catch {set thickness $option(-thickness)}
-    set topColor {}
-    catch {set topColor $option(-topcolor)}
-    set bottomColor {}
-    catch {set bottomColor $option(-bottomcolor)}
-    set sliceColors {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}
-    catch {set sliceColors $option(-slicecolors)}
 
     set pie($id,radiusX) [expr [winfo fpixels $canvas $width]/2.0]
     set pie($id,radiusY) [expr [winfo fpixels $canvas $height]/2.0]
-    set pie($id,thickness) [winfo fpixels $canvas $thickness]
+    set pie($id,thickness) [winfo fpixels $canvas $option(-thickness)]
 
     set pie($id,canvas) $canvas
     set pie($id,backgroundSlice) [new slice\
         $canvas $x $y $pie($id,radiusX) $pie($id,radiusY) [expr $PI/2] 7\
-        -height $pie($id,thickness) -topcolor $topColor -bottomcolor $bottomColor\
+        -height $pie($id,thickness) -topcolor $option(-topcolor) -bottomcolor $option(-bottomcolor)\
     ]
     $canvas addtag pie($id) withtag slice($pie($id,backgroundSlice))
     $canvas addtag pieGraphics($id) withtag slice($pie($id,backgroundSlice))
     set pie($id,slices) {}
-    set pie($id,colors) $sliceColors
-    set pie($id,labeller) [new pieBoxLabeller $id]
+    set pie($id,colors) $option(-slicecolors)
+    if {[info exists option(-font)]} {
+        set pie($id,labeller) [new pieBoxLabeller $id -font $option(-font)]
+    } else {
+        set pie($id,labeller) [new pieBoxLabeller $id]
+    }
 }
 
 proc pie::~pie {id} {
