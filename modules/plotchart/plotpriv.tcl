@@ -122,6 +122,41 @@ proc ::Plotchart::SetColours { w args } {
    set scaling($w,colours) $args
 }
 
+# CycleColours --
+#    create cycling colours for those plots that treat them as a global resource
+# Arguments:
+#    colours     List of colours to be used. An empty list will activate to default colours
+#    nr_data     Number of data records
+# Result:
+#    List of 'nr_data' colours to be used
+#
+proc ::Plotchart::CycleColours { colours nr_data } {
+   if {![llength ${colours}]} {
+       # force to most usable default colour list 
+       set colours {green blue red cyan yellow magenta}
+   }
+   
+   if {[llength ${colours}] < ${nr_data}} {
+	# cycle through colours
+	set init_colours ${colours}
+        set colours {}
+        set pos 0
+        for {set nr 0} {${nr} < ${nr_data}} {incr nr} {
+            lappend colours [lindex ${init_colours} ${pos}]
+            incr pos
+            if {[llength ${init_colours}] <= ${pos}} {
+                set pos 0
+            }
+	}
+        if {[string equal [lindex ${colours} 0] [lindex ${colours} end]]} {
+            # keep first and last colour different from selected colours
+	    #    this will /sometimes fail in cases with only one/two colours in list
+	    set colours [lreplace ${colours} end end [lindex ${colours} 1]]
+        }
+   }
+   return ${colours}
+}
+
 # DataConfig --
 #    Configure the data series
 # Arguments:
@@ -440,49 +475,70 @@ proc ::Plotchart::DrawPie { w data } {
    set pxmax $scaling($w,pxmax)
    set pymax $scaling($w,pymax)
 
-   #
-   # Determine the scale for the values
-   # (so we can draw the correct angles)
-   #
-   set sum 0.0
-   foreach {label value} $data {
-      set sum [expr {$sum + $value}]
-   }
-   set factor [expr {360.0/$sum}]
+   set colours $scaling(${w},colours)
 
-   #
-   # Draw the line piece
-   #
-   set angle_bgn 0.0
-   set angle_ext 0.0
-   set sum       0.0
+   if {[llength ${data}] == 2} {
+       # use canvas create oval as arc does not fill with colour for a full circle 
+       set colour [lindex ${colours} 0]
+       ${w} create oval ${pxmin} ${pymin} ${pxmax} ${pymax} -fill ${colour}
+       # text looks nicer at 45 degree
+       set rad [expr {45.0 * 3.1415926 / 180.0}]
+       set xtext [expr {(${pxmin}+${pxmax}+cos(${rad})*(${pxmax}-${pxmin}+20))/2}]
+       set ytext [expr {(${pymin}+${pymax}-sin(${rad})*(${pymax}-${pymin}+20))/2}]
+       foreach {label value} ${data} {
+           break
+       }
+       ${w} create text ${xtext} ${ytext} -text ${label} -anchor w
+       set scaling($w,angles) {0 360}
+   } else { 
+       #
+       # Determine the scale for the values
+       # (so we can draw the correct angles)
+       #
+   
+       set sum 0.0
+       foreach {label value} $data {
+          set sum [expr {$sum + $value}]
+       }
+       set factor [expr {360.0/$sum}]
 
-   set colours $scaling($w,colours)
+       #
+       # Draw the line piece
+       #
+       set angle_bgn 0.0
+       set angle_ext 0.0
+       set sum       0.0
+       
+       set idx 0
+       
+       unset -nocomplain scaling(${w},angles)
+       set colours [CycleColours ${colours} [expr {[llength ${data}] / 2}]]
+       
+       foreach {label value} $data {
+          set colour [lindex $colours $idx]
+          incr idx
 
-   set idx 0
-   foreach {label value} $data {
-      set colour [lindex $colours $idx]
-      incr idx
+          set angle_bgn [expr {$sum   * $factor}]
+          set angle_ext [expr {$value * $factor}]
+          lappend scaling(${w},angles) [expr {int(${angle_bgn})}]
 
-      set angle_bgn [expr {$sum   * $factor}]
-      set angle_ext [expr {$value * $factor}]
+          $w create arc  $pxmin $pymin $pxmax $pymax \
+                         -start $angle_bgn -extent $angle_ext \
+                         -fill $colour -style pieslice
 
-      $w create arc  $pxmin $pymin $pxmax $pymax \
-                     -start $angle_bgn -extent $angle_ext \
-                     -fill $colour -style pieslice
+          set rad   [expr {($angle_bgn+0.5*$angle_ext)*3.1415926/180.0}]
+          set xtext [expr {($pxmin+$pxmax+cos($rad)*($pxmax-$pxmin+20))/2}]
+          set ytext [expr {($pymin+$pymax-sin($rad)*($pymax-$pymin+20))/2}]
+          if { $xtext > ($pxmin+$pymax)/2 } {
+             set dir w
+          } else {
+             set dir e
+          }
 
-      set rad   [expr {($angle_bgn+0.5*$angle_ext)*3.1415926/180.0}]
-      set xtext [expr {($pxmin+$pxmax+cos($rad)*($pxmax-$pxmin+20))/2}]
-      set ytext [expr {($pymin+$pymax-sin($rad)*($pymax-$pymin+20))/2}]
-      if { $xtext > ($pxmin+$pymax)/2 } {
-         set dir w
-      } else {
-         set dir e
-      }
+          $w create text $xtext $ytext -text $label -anchor $dir
 
-      $w create text $xtext $ytext -text $label -anchor $dir
-
-      set sum [expr {$sum + $value}]
+          set sum [expr {$sum + $value}]
+       }
    }
 }
 
@@ -526,10 +582,26 @@ proc ::Plotchart::DrawVertBarData { w series ydata {colour black}} {
    # Draw the bars
    #
    set x $scaling($w,xbase)
+   
+   #
+   # set the colours
+   #
+   if {[llength ${colour}]} {
+       set colours ${colour}
+   } elseif {[info exists scaling(${w},colours)]} {
+       set colours $scaling(${w},colours)
+   } else {
+       set colours {}
+   }
+   set colours [CycleColours ${colours} [llength ${ydata}]]
 
    set newbase {}
 
+   set idx 0
    foreach yvalue $ydata ybase $scaling($w,ybase) {
+      set colour [lindex ${colours} ${idx}]
+      incr idx
+	  
       set xnext [expr {$x+$scaling($w,barwidth)}]
       set y     [expr {$yvalue+$ybase}]
       foreach {px1 py1} [coordsToPixel $w $x     $ybase] {break}
@@ -574,9 +646,25 @@ proc ::Plotchart::DrawHorizBarData { w series xdata {colour black}} {
    #
    set y $scaling($w,ybase)
 
+   #
+   # set the colours
+   #
+   if {[llength ${colour}]} {
+       set colours ${colour}
+   } elseif {[info exists scaling(${w},colours)]} {
+       set colours $scaling(${w},colours)
+   } else {
+       set colours {}
+   }
+   set colours [CycleColours ${colours} [llength ${xdata}]]
+
    set newbase {}
 
+   set idx 0
    foreach xvalue $xdata xbase $scaling($w,xbase) {
+      set colour [lindex ${colours} ${idx}]
+      incr idx
+      
       set ynext [expr {$y+$scaling($w,barwidth)}]
       set x     [expr {$xvalue+$xbase}]
       foreach {px1 py1} [coordsToPixel $w $xbase $y    ] {break}

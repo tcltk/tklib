@@ -1,3 +1,9 @@
+2004-08-19  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+
+	* Added modifications by Stefan Finzel.
+	* One public procedure added: pixelToIndex (by Stefan Finzel)
+	* Added export of several described (public) procedures that were missing
+
 2004-04-15  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* New module 'plotchart', by Arjen Markus.

@@ -16,6 +16,9 @@ namespace eval ::Plotchart {
 
    namespace export worldCoordinates viewPort coordsToPixel \
                     polarCoordinates setZoomPan \
+                    world3DCoordinates coordsToPixel \
+                    coords3DToPixel polarToPixel \
+                    pixelToCoords pixelToIndex determineScale \
                     createXYPlot createPolarPlot createPiechart \
                     createBarchart createHorizontalBarchart \
                     createTimechart createStripchart \
@@ -345,6 +348,37 @@ proc ::Plotchart::pixelToCoords { w xpix ypix } {
    set xcrd [expr {$scaling($w,xmin)+($xpix-$scaling($w,pxmin))/$scaling($w,xfactor)}]
    set ycrd [expr {$scaling($w,ymax)-($ypix-$scaling($w,pymin))/$scaling($w,yfactor)}]
    return [list $xcrd $ycrd]
+}
+
+# pixelToIndex --
+#    Convert pixel coordinates to elements list index
+# Arguments:
+#    w           Name of the canvas
+#    xpix        X-coordinate (pixel)
+#    ypix        Y-coordinate (pixel)
+# Result:
+#    Elements list index
+#
+proc ::Plotchart::pixelToIndex { w xpix ypix } {
+   variable scaling
+   variable torad
+
+   set idx -1
+   set radius [expr {($scaling(${w},pxmax) - $scaling(${w},pxmin)) / 2}]
+   set xrel [expr {${xpix} - $scaling(${w},pxmin) - ${radius}}]
+   set yrel [expr {-${ypix} + $scaling(${w},pymin) + ${radius}}]
+   if {[expr {pow(${radius},2) < (pow(${xrel},2) + pow(${yrel},2))}]} {
+       # do nothing out of pie chart
+   } elseif {[info exists scaling(${w},angles)]} {
+       set xy_angle [expr {(360 + round(atan2(${yrel},${xrel})/${torad})) % 360}]
+       foreach angle $scaling(${w},angles) {
+	   if {${xy_angle} <= ${angle}} {
+	       break
+	   }
+	   incr idx
+       }
+   }
+   return ${idx}
 }
 
 # polarToPixel --
