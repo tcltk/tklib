@@ -1,4 +1,4 @@
-# $Id: pie.tcl,v 1.2 1994/07/26 16:16:21 jfontain Exp $
+# $Id: pie.tcl,v 1.3 1994/07/27 15:04:13 jfontain Exp $
 
 source ../tools/slice.tcl
 
@@ -23,7 +23,9 @@ set pie(darks,orange) "#BF7F00"
 set pie(colors) "cyan green red yellow blue orange gray magenta white"
 set pie(separatorHeight) 5
 
-proc pie::pie {id parentWidget radiusX radiusY {height 0} {topColor ""} {bottomColor ""} {highlight 1}} {
+proc pie::pie {id parentWidget radiusX radiusY {height 0} {topColor ""} {bottomColor ""} {highlight auto}} {
+    # slice / label highlighting can be automatic when slices of identical colors exist (auto), or on or off (boolean) no matter
+    # the number of slices
     global pie PI
 
     set pie($id,frame) [frame [objectWidgetName pie $id $parentWidget] -bd 0]
@@ -37,7 +39,12 @@ proc pie::pie {id parentWidget radiusX radiusY {height 0} {topColor ""} {bottomC
     set pie($id,radiusX) $radiusX
     set pie($id,radiusY) $radiusY
     set pie($id,height) $height
-    set pie($id,highlight) [boolean $highlight]
+    if {[set pie($id,automaticHighlight) [expr ("[string tolower $highlight]"=="auto")]]} {
+        # no need to highlight first slices
+        set pie($id,highlight) 0
+    } else {
+        set pie($id,highlight) [boolean $highlight]
+    }
     set pie($id,backgroundSlice)\
         [new slice $pie($id,canvas) $radiusX $radiusY $radiusX $radiusY [expr $PI/2] 7 $height $topColor $bottomColor]
     set pie($id,slices) ""
@@ -77,6 +84,8 @@ proc pie::newSlice {id {text ""}} {
         $pie($id,canvas) $pie($id,radiusX) $pie($id,radiusY) $pie($id,radiusX) $pie($id,radiusY) $startRadian 0\
         $pie($id,height) $pie(lights,$color) $pie(darks,$color)\
     ]
+    set pie($id,$sliceId,rowFrame) $rowFrame
+
     global normalFont boldFont
     set pie($id,$sliceId,label) [\
         label [objectWidgetName text $sliceId $rowFrame]\
@@ -85,14 +94,27 @@ proc pie::newSlice {id {text ""}} {
     pack $pie($id,$sliceId,label) -side left
     pack [frame [objectWidgetName spacer $sliceId $rowFrame]] -side left -fill both -expand 1
 
-    if {$pie($id,highlight)} {
-        slice::setupHighlighting $sliceId\
-            "$rowFrame configure -background black" "$rowFrame configure -background [llast [$rowFrame configure -background]]"
-    }
     set pie($id,$sliceId,valueLabel) [label [objectWidgetName value $sliceId $rowFrame] -text 0 -font $boldFont -bd 1]
     pack $pie($id,$sliceId,valueLabel) -side right
-
     lappend pie($id,slices) $sliceId
+
+    if {$pie($id,highlight)} {
+        # highlight by changing row frame background color, unhighlight by reversing to original background
+        slice::setupHighlighting $sliceId "$rowFrame configure -background black"\
+            "$rowFrame configure -background [llast [$rowFrame configure -background]]"
+    } else {
+        if {$pie($id,automaticHighlight)&&([llength $pie($id,slices)]>[llength $pie(colors)])} {
+            # if automatic highlight and number of colors exhausted, highlight from now on
+            set pie($id,highlight) 1
+            # setup highlighting on current slices
+            foreach currentId $pie($id,slices) {
+                set rowFrame $pie($id,$currentId,rowFrame)
+                slice::setupHighlighting $currentId "$rowFrame configure -background black"\
+                     "$rowFrame configure -background [llast [$rowFrame configure -background]]"
+            }
+        }
+    }
+
     return $sliceId
 }
 
