@@ -5,7 +5,7 @@
 # Copyright (c) 2003 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.8 2004/07/27 00:21:25 hobbs Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.9 2004/07/27 06:20:43 afaupell Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -105,7 +105,7 @@ proc ::ico::getIcon {file index args} {
     if {$type ne "ICODATA"} {
 	set file [file normalize $file]
     }
-    set colors [eval [linsert [getRawIconData$type $file $index] 0 getColors]]
+    set colors [eval [linsert [getRawIconData$type $file $index] 0 getIconAsColorList]]
     if {$format eq "image"} {
         return [createImage $colors $name]
     }
@@ -140,8 +140,8 @@ proc ::ico::writeIcon {file index bpp data args} {
 	return -code error "unsupported file format $type"
     }
     if {[llength $data] == 1} {
-        set data [getColorsFromImage $data]
-    } elseif {[string match "#*" [lindex $data 0 0]]} {
+        set data [getColorListFromImage $data]
+    } elseif {[lsearch -glob [join $data] #*] > -1} {
         set data [translateColors $data]
     }
     if {$bpp != 1 && $bpp != 4 && $bpp != 8 && $bpp != 24 && $bpp != 32} {
@@ -199,7 +199,8 @@ proc ::ico::copyIcon {f1 i1 f2 i2 args} {
     if {![llength [info commands getRawIconData$fromtype]]} {
 	return -code error "unsupported file format $fromtype"
     }
-    eval [list writeIcon$totype $f2 $i2] [getRawIconData$fromtype $f1 $i1]
+    set src [getRawIconData$fromtype $f1 $i1]
+    writeIcon $f2 $i2 [lindex $src 2] [eval getIconAsColorList $src] -type $totype
 }
 
 #
@@ -217,7 +218,7 @@ proc ::ico::copyIcon {f1 i1 f2 i2 args} {
 proc ::ico::transparentColor {img color} {
     package require Tk
     if {[string match "#*" $color]} {
-	set color [scan $x "#%2x%2x%2x"]
+	set color [scan $color "#%2x%2x%2x"]
     }
     set w [image width $img]
     set h [image height $img]
@@ -388,7 +389,7 @@ proc ::ico::createImage {colors {name {}}} {
 
 # return a list of colors in the #hex format from raw icon data
 # returned by readDIB
-proc ::ico::getColors {w h bpp palette xor and} {
+proc ::ico::getIconAsColorList {w h bpp palette xor and} {
     # Create initial empty color array that we'll set indices in
     set colors {}
     set row    {}
@@ -540,7 +541,7 @@ proc ::ico::getXORFromColors {bpp colors} {
 # translates a Tk image into a list of colors in the #hex format
 # one element per pixel and {} designating transparent
 # used by writeIcon when writing from a Tk image
-proc ::ico::getColorsFromImage {img} {
+proc ::ico::getColorListFromImage {img} {
     package require Tk
     set w [image width $img]
     set h [image height $img]
@@ -940,7 +941,6 @@ proc ::ico::SearchForIcos {file fh {index -1}} {
 	    incr pos 4
 	}
     }
-
     return $idx
 }
 
@@ -979,7 +979,7 @@ proc ::ico::getRawIconDataEXE {file index} {
     return $dib
 }
 
-proc ::ico::writeIconEXE {file index w0 h0 bpp0 palette xor and} {
+proc ::ico::writeIconEXE {file index w h bpp palette xor and} {
     variable ICONS
 
     set file [file normalize $file]
@@ -989,16 +989,13 @@ proc ::ico::writeIconEXE {file index w0 h0 bpp0 palette xor and} {
     if {$index eq "end"} {set index $cnt}
     if {$cnt < $index} { return -code error "index out of range" }
 
-    set idx $ICONS($file,$index)
-    set ico $ICONS($file,$index,data)
-    foreach {w h bpp} $ico { break }
-
-    seek $fh [expr {$idx + 40}] start
-
-    if {$w0 != $w || $h0 != $h || $bpp0 != $bpp} {
+    if {[list $w $h $bpp] != $ICONS($file,$index,data)} {
 	close $fh
 	return -code error "icon format differs from original"
     }
+
+    seek $fh [expr {$ICONS($file,$index) + 40}] start
+
     puts -nonewline $fh $palette
     puts -nonewline $fh $xor
     puts -nonewline $fh $and
