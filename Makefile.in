@@ -9,7 +9,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: Makefile.in,v 1.2 2002/02/26 08:04:26 keithv Exp $
+# RCS: @(#) $Id: Makefile.in,v 1.3 2002/09/25 23:06:15 hobbs Exp $
 
 # ModuleName: specify short description of module here
 #MODULENAME=moduleDirName
@@ -36,15 +36,15 @@ INSTALL_ROOT	=
 
 srcdir		= @srcdir@
 top_srcdir	= @top_srcdir@
-prefix		= $(INSTALL_ROOT)@prefix@
-exec_prefix	= $(INSTALL_ROOT)@exec_prefix@
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
 
 libdir		= @libdir@
 mandir		= @mandir@
 
 DESTDIR		=
 
-pkglibdir	= $(prefix)/lib/@PACKAGE@@VERSION@
+pkglibdir	= $(libdir)/@PACKAGE@@VERSION@
 
 top_builddir	= .
 
@@ -110,18 +110,18 @@ install-binaries:
 #========================================================================
 
 install-libraries: libraries
-	$(mkinstalldirs) $(pkglibdir)
-	@echo "Installing modules in $(pkglibdir)"
+	$(mkinstalldirs) $(DESTDIR)$(pkglibdir)
+	@echo "Installing modules in $(DESTDIR)$(pkglibdir)"
 	@for i in $(MODULES) ; do \
 	    if test -d $(srcdir)/modules/$$i; then  \
-		echo "Installing $$i in $(pkglibdir)/$$i" ; \
-		$(mkinstalldirs) $(pkglibdir)/$$i ; \
+		echo "Installing $$i in $(DESTDIR)$(pkglibdir)/$$i" ; \
+		$(mkinstalldirs) $(DESTDIR)$(pkglibdir)/$$i ; \
 		for j in $(srcdir)/modules/$$i/*.tcl ; do \
-		    $(INSTALL_DATA) $$j $(pkglibdir)/$$i ; \
+		    $(INSTALL_DATA) $$j $(DESTDIR)$(pkglibdir)/$$i ; \
 		done; \
 	    fi; \
 	done;
-	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/mkIndex.tcl` `$(CYGPATH) $(pkglibdir)` tklib $(VERSION) $(MODULES)
+	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/mkIndex.tcl` `$(CYGPATH) $(DESTDIR)$(pkglibdir)` tklib $(VERSION) $(MODULES)
 
 # AK: Mar 26, 2001: Added 'smtp' explicitly to the list of modules (is part of 'mime').
 
@@ -131,15 +131,15 @@ install-libraries: libraries
 #========================================================================
 
 install-doc: doc
-	$(mkinstalldirs) $(mandir)/mann
+	$(mkinstalldirs) $(DESTDIR)$(mandir)/mann
 	-for j in $(MODULES) ; do \
 	    echo "Installing documentation for $$j" ; \
 	    for i in $(srcdir)/modules/$$j/*.n ; do \
-	        $(INSTALL_DATA) $$i $(mandir)/mann ; \
+	        $(INSTALL_DATA) $$i $(DESTDIR)$(mandir)/mann ; \
 	    done; \
 	done
-	-chmod 444 $(mandir)/mann/*
-	$(INSTALL_DATA) $(srcdir)/man.macros $(mandir)
+	-chmod 444 $(DESTDIR)$(mandir)/mann/*
+	$(INSTALL_DATA) $(srcdir)/man.macros $(DESTDIR)$(mandir)
 
 test:
 	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/all.tcl` -modules "$(MODULES)"
