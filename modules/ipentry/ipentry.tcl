@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: ipentry.tcl,v 1.5 2005/03/05 02:06:22 andreas_kupries Exp $
+# RCS: @(#) $Id: ipentry.tcl,v 1.6 2005/03/16 05:59:20 afaupell Exp $
 
 package provide ipentry 0.1
 
@@ -25,6 +25,7 @@ namespace eval ::ipentry {
     bind IPEntrybindtag <FocusOut>         {::ipentry::FocusOut %W}
     bind IPEntrybindtag <<Paste>>          {::ipentry::Paste %W CLIPBOARD}
     bind IPEntrybindtag <<PasteSelection>> {::ipentry::Paste %W PRIMARY}
+    bind IPEntrybindtag <Key-Tab>          {::ipentry::tab %W; break}
 }
 
 proc ::ipentry::ipentry {w args} {
@@ -42,7 +43,7 @@ proc ::ipentry::ipentry {w args} {
     rename ::$w ::ipentry::_$w
     interp alias {} ::$w {} ::ipentry::widgetCommand $w
     bind $w <Destroy> [list rename ::$w {}]
-    bind $w <FocusIn> [list focus $w.0]
+    #bind $w <FocusIn> [list focus $w.0]
     if {[llength $args] > 0} {
         eval [list $w configure] $args
     }
@@ -60,6 +61,10 @@ proc ::ipentry::keypress {w key} {
     $w insert insert $key
 }
 
+proc ::ipentry::tab {w} {
+    tk::TabToWindow [tk_focusNext [winfo parent $w].3]
+}
+
 proc ::ipentry::backspace {w} {
     if {[$w selection present]} {
         $w delete sel.first sel.last
@@ -74,7 +79,7 @@ proc ::ipentry::backspace {w} {
 
 proc ::ipentry::dot {w} {
     if {[string length [$w get]] > 0} {
-        skip $w next
+        skip $w next 1
     }
 }
 
@@ -154,25 +159,27 @@ proc ::ipentry::validate {w key} {
             $w selection range 0 end
             return 0
         } elseif {$i == 2} {
-            skip $w next
+            skip $w next 1
         }
         return 1
     }
     if {[string length $s] >= 3 && ![$w selection present]} {
-        if {$i == 3} { skip $w next }
+        if {$i == 3} { skip $w next 1 }
         return 0
     }
     return 1
 }
 
-proc ::ipentry::skip {w dir} {
+proc ::ipentry::skip {w dir {sel 0}} {
     set n [string index $w end]
     if {$dir == "next"} {
         if { $n >= 3 } { return }
         set next [string trimright $w "0123"][expr {$n + 1}]
         focus $next
-        $next icursor 0
-        $next selection range 0 end
+        if {$sel} {
+            $next icursor 0
+            $next selection range 0 end
+        }
     } else {
         if { $n <= 0 } { return }
         set prev [string trimright $w "0123"][expr {$n - 1}]

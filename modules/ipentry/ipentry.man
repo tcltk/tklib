@@ -42,8 +42,8 @@ are modified to be within the range.
 [call [arg pathName] [method icursor] [arg index]]
 
 Sets the position of the widgets insertion cursor. Only integer values between
-0 and 15 are valid. Because of the way the widget works, setting the icursor
-will only have an effect if the widget already has the input focus.
+0 and 15 are valid. Setting the icursor will only have an effect if the widget
+already has the input focus.
 
 [call [arg pathName] [method configure] [arg option] [arg value]...]
 
