@@ -1,33 +1,37 @@
-set rcsId {$Id: pielabel.tcl,v 1.2 1995/09/26 17:07:35 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.3 1995/09/28 18:47:50 jfontain Exp $}
+
+source canlabel.tcl
 
 proc pieLabeller::pieLabeller {id pieId args} {
     global pie
     allowVirtualProceduresIn pieLabeller
 
     # set options default then parse switched options
-    array set option {-font -adobe-helvetica-medium-r-*-120-* -offset 5}
+    array set option {-offset 5}
     array set option $args
 
-    set pieLabeller($id,font) $option(-font)
     set pieLabeller($id,offset) $option(-offset)
-
-    set canvas $pie($pieId,canvas)
-    set temporary [$canvas create text 0 0 -font $pieLabeller($id,font)]
-    set box [$canvas bbox $temporary]
-    $canvas delete $temporary
-    set pieLabeller($id,fontHeight) [expr [lindex $box 3]-[lindex $box 1]]
     set pieLabeller($id,pie) $pieId
 }
 
 proc pieLabeller::~pieLabeller {id} {
     virtualCallFrom pieLabeller
 
-    global pie
-    $pie($pieLabeller($id,pie),canvas) delete pieLabeller($id)
+    foreach label $pieLabeller($id,labels) {
+        delete canvasLabel $label
+    }
 }
 
-proc pieLabeller::create {id text} {
+proc pieLabeller::create {id args} {
     global pie pieLabeller
 
-    $pie($pieLabeller($id,pie),canvas) addtag pieLabeller($id) withtag [virtualCallFrom pieLabeller]
+    set canvas $pie($pieLabeller($id,pie),canvas)
+    set label [eval new canvasLabel $canvas 0 0 $args]
+    $canvas addtag pieLabeller($id) withtag canvasLabel($label)
+    lappend pieLabeller($id,labels) $label
+    pieLabeller::position $id $label
+}
+
+proc pieLabeller::position {id label} {
+    virtualCallFrom pieLabeller
 }
