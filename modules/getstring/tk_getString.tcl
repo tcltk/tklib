@@ -7,17 +7,17 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: tk_getString.tcl,v 1.2 2005/03/18 03:15:56 andreas_kupries Exp $
+# RCS: @(#) $Id: tk_getString.tcl,v 1.3 2005/03/22 09:19:05 afaupell Exp $
 
 package require Tk
 package provide tk_getString 0.1
 
-namespace eval ::dialogs {
+namespace eval ::getstring {
     namespace export tk_getString
 }
 
 if {[tk windowingsystem] == "win32"} {
-    option add *TkSDialog*Button.width -10 widgetDefault
+    option add *TkSDialog*Button.width -8 widgetDefault
     option add *TkSDialog*Button.padX 1m widgetDefault
 } else {
     option add *TkSDialog.borderWidth 1 widgetDefault
@@ -25,7 +25,7 @@ if {[tk windowingsystem] == "win32"} {
 }
 option add *TkSDialog*Entry.width 20 widgetDefault
 
-proc ::dialogs::getStringEnable {w} {
+proc ::getstring::getStringEnable {w} {
     if {![winfo exists $w.entry]} {return}
     if {[$w.entry get] != ""} {
         $w.ok configure -state normal
@@ -34,18 +34,21 @@ proc ::dialogs::getStringEnable {w} {
     }
 }
 
-proc ::dialogs::tk_getString {w var title text args} {
+proc ::getstring::tk_getString {w var title text args} {
     set allowempty 0
     set entryoptions {}
+    if {([llength $args] % 2) > 0} {error "all options require a single argument"}
     foreach {opt arg} $args {
         if {$opt == "-allowempty" && [string is boolean -strict $arg] && $arg} {
             set allowempty 1
         } elseif {[string match -inv* $opt] || [string match -valid* $opt]} {
             lappend entryoptions $opt $arg
+        } else {
+            error "unknown option $opt"
         }
     }
 
-    variable ::tk::Priv
+    variable ::getstring::result
     upvar $var result
     catch {destroy $w}
     set focus [focus]
@@ -54,31 +57,32 @@ proc ::dialogs::tk_getString {w var title text args} {
     toplevel $w -relief raised -class TkSDialog
     wm title $w $title
     wm iconname $w $title
-    wm protocol $w WM_DELETE_WINDOW {set ::tk::Priv(button) 0}
+    wm protocol $w WM_DELETE_WINDOW {set ::getstring::result 0}
     wm transient $w [winfo toplevel [winfo parent $w]]
+    wm resizable $w 1 0
 
     eval [list entry $w.entry] $entryoptions
-    button $w.ok -text OK -default active -command {set ::tk::Priv(button) 1}
-    button $w.cancel -text Cancel -command {set ::tk::Priv(button) 0}
+    button $w.ok -text OK -default active -command {set ::getstring::result 1}
+    button $w.cancel -text Cancel -command {set ::getstring::result 0}
     label $w.label -text $text
 
-    grid $w.label -columnspan 2 -sticky ew -padx 3 -pady 3
-    grid $w.entry -columnspan 2 -sticky ew -padx 3 -pady 3
-    grid $w.ok $w.cancel -padx 3 -pady 3
+    grid $w.label -columnspan 2 -sticky ew -padx 5 -pady 3
+    grid $w.entry -columnspan 2 -sticky ew -padx 5 -pady 3
+    grid $w.ok $w.cancel -padx 4 -pady 7
     grid rowconfigure $w 2 -weight 1
     grid columnconfigure $w {0 1} -uniform 1 -weight 1
 
     bind $w <Return> [list $w.ok invoke]
     bind $w <Escape> [list $w.cancel invoke]
-    bind $w <Destroy> {set ::tk::Priv(button) 0}
+    bind $w <Destroy> {set ::getstring::result 0}
     if {!$allowempty} {
-        bind $w.entry <KeyPress> [list after idle [list ::dialogs::getStringEnable $w]]
+        bind $w.entry <KeyPress> [list after idle [list ::getstring::getStringEnable $w]]
         $w.ok configure -state disabled 
     }
 
     wm withdraw $w
     update idletasks
-    focus $w.entry
+    focus -force $w.entry
     if {[winfo parent $w] == "."} {
         set x [expr {[winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 - [winfo vrootx $w]}]
         set y [expr {[winfo screenheight $w]/2 - [winfo reqheight $w]/2 - [winfo vrooty $w]}]
@@ -91,7 +95,7 @@ proc ::dialogs::tk_getString {w var title text args} {
     wm deiconify $w
     grab $w
 
-    tkwait variable ::tk::Priv(button)
+    tkwait variable ::getstring::result
     set result [$w.entry get]
     bind $w <Destroy> {}
     grab release $w
@@ -99,5 +103,5 @@ proc ::dialogs::tk_getString {w var title text args} {
     focus -force $focus
     if {$grab != ""} {grab $grab}
     update idletasks
-    return $::tk::Priv(button)
+    return $::getstring::result
 }
