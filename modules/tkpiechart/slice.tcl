@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.34 1998/05/03 15:53:03 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.35 1998/05/03 18:08:55 jfontain Exp $}
 
 
 class slice {
@@ -219,17 +219,18 @@ proc slice::size {this extent} {
     update $this $slice::($this,start) $extent
 }
 
-proc slice::data {this arrayName} {
+proc slice::data {this arrayName} {                                               ;# return actual sizes and positions after scaling
     upvar $arrayName data
 
     set data(start) $slice::($this,start)
     set data(extent) $slice::($this,extent)
-    set data(xRadius) $slice::($this,radiusX)
-    set data(yRadius) $slice::($this,radiusY)
-    set coordinates [$slice::($this,canvas) coords $slice::($this,origin)]
-    set data(xCenter) [expr {[lindex $coordinates 0]+$data(xRadius)}]
-    set data(yCenter) [expr {[lindex $coordinates 1]+$data(yRadius)}]
-    set data(height) $switched::($this,-height)
+    foreach {x y} $switched::($this,-scale) {}
+    set data(xRadius) [expr {$x*$slice::($this,radiusX)}]
+    set data(yRadius) [expr {$y*$slice::($this,radiusY)}]
+    set data(height) [expr {$y*$switched::($this,-height)}]
+    foreach {x y} [$slice::($this,canvas) coords $slice::($this,origin)] {}
+    set data(xCenter) [expr {$x+$data(xRadius)}]
+    set data(yCenter) [expr {$y+$data(yRadius)}]
 }
 
 class slice {                                                                                   ;# define various utility procedures
