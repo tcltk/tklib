@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.73 1998/06/02 09:35:21 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.74 1998/06/02 22:38:27 jfontain Exp $}
 
 package provide tkpiechart 5.0
 
@@ -6,20 +6,12 @@ class pie {
     set pie::(colors) {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}
 }
 
-proc pie::pie {this canvas x y width height args} switched {$args} {            ;# note: all pie elements are tagged with pie($this)
-    set pie::($this,canvas) $canvas
-
+proc pie::pie {this canvas x y args} switched {$args} {                         ;# note: all pie elements are tagged with pie($this)
     set pie::($this,x) [winfo fpixels $canvas $x]
     set pie::($this,y) [winfo fpixels $canvas $y]
-    set pie::($this,xRadius) [expr {[winfo fpixels $canvas $width]/2.0}]
-    set pie::($this,yRadius) [expr {[winfo fpixels $canvas $height]/2.0}]
-
+    set pie::($this,canvas) $canvas
     set pie::($this,colorIndex) 0
     set pie::($this,slices) {}
-
-    set pie::($this,xScale) 1
-    set pie::($this,yScale) 1
-
     switched::complete $this
     complete $this                                                  ;# wait till all options have been set for initial configuration
 }
@@ -32,17 +24,18 @@ proc pie::~pie {this} {
 }
 
 proc pie::options {this} {
-    # force thickness option so that corresponding pie member is properly initialized
+    # force height, thickness and width options so that corresponding members are properly initialized
     return [list\
         [list -background {} {}]\
         [list -colors $pie::(colors) $pie::(colors)]\
+        [list -height 200]\
         [list -labeler 0 0]\
         [list -selectable 0 0]\
         [list -thickness 0]\
         [list -title {} {}]\
         [list -titlefont {} {}]\
         [list -titleoffset 2 2]\
-        [list -scale {1 1} {1 1}]\
+        [list -width 200]\
     ]
 }
 
@@ -55,18 +48,6 @@ foreach option {-background -colors -labeler -selectable -title -titlefont -titl
     "
 }
 
-proc pie::set-scale {this value} {
-    foreach {xScale yScale} $value {}
-    if {($xScale==$pie::($this,xScale))&&($yScale==$pie::($this,yScale))} return                                        ;# no change
-    switched::configure $pie::($this,backgroundSlice) -scale $value                             ;# update scale of background slice,
-    foreach slice $pie::($this,slices) {
-        switched::configure $slice -scale $value                                                                 ;# and other slices
-    }
-    pieLabeler::update $pie::($this,labeler)                          ;# finally update labels now that pie graphics are in position
-    set pie::($this,xScale) $xScale
-    set pie::($this,yScale) $yScale
-}
-
 proc pie::set-thickness {this value} {
     if {$switched::($this,complete)} {
         error {option -thickness cannot be set dynamically}
@@ -74,7 +55,25 @@ proc pie::set-thickness {this value} {
     set pie::($this,thickness) [winfo fpixels $pie::($this,canvas) $value]                                      ;# convert to pixels
 }
 
-proc pie::complete {this} {
+proc pie::set-height {this value} {
+    set pie::($this,height) [winfo fpixels $pie::($this,canvas) $value]                                         ;# convert to pixels
+    if {$switched::($this,complete)} {
+        update $this
+    } else {
+        set pie::($this,initialHeight) $pie::($this,height)           ;# keep track of initial value for latter scaling calculations
+    }
+}
+
+proc pie::set-width {this value} {
+    set pie::($this,width) [winfo fpixels $pie::($this,canvas) $value]                                          ;# convert to pixels
+    if {$switched::($this,complete)} {
+        update $this
+    } else {
+        set pie::($this,initialWidth) $pie::($this,width)             ;# keep track of initial value for latter scaling calculations
+    }
+}
+
+proc pie::complete {this} {                                                                              ;# no user slices exist yet
     set canvas $pie::($this,canvas)
 
     if {$switched::($this,-labeler)==0} {
@@ -91,8 +90,8 @@ proc pie::complete {this} {
         set bottomColor [tkDarken $switched::($this,-background) 60]
     }
     set slice [new slice\
-        $canvas $pie::($this,x) $pie::($this,y) $pie::($this,xRadius) $pie::($this,yRadius) -startandextent {90 360}\
-        -height $pie::($this,thickness) -topcolor $switched::($this,-background) -bottomcolor $bottomColor\
+        $canvas $pie::($this,x) $pie::($this,y) [expr {$pie::($this,initialWidth)/2}] [expr {$pie::($this,initialHeight)/2}]\
+        -startandextent {90 360} -height $pie::($this,thickness) -topcolor $switched::($this,-background) -bottomcolor $bottomColor\
     ]
     $canvas addtag pie($this) withtag slice($slice)
     $canvas addtag pieGraphics($this) withtag slice($slice)
@@ -114,7 +113,7 @@ proc pie::newSlice {this {text {}}} {
 
     # darken slice top color by 40% to obtain bottom color, as it is done for Tk buttons shadow, for example
     set slice [new slice\
-        $canvas $x $y $pie::($this,xRadius) $pie::($this,yRadius) -startandextent "$start 0" -scale $switched::($this,-scale)\
+        $canvas $x $y [expr {$pie::($this,initialWidth)/2}] [expr {$pie::($this,initialHeight)/2}] -startandextent "$start 0"\
         -height $pie::($this,thickness) -topcolor $color -bottomcolor [tkDarken $color 60]\
     ]
     $canvas addtag pie($this) withtag slice($slice)
@@ -128,6 +127,8 @@ proc pie::newSlice {this {text {}}} {
     set label [pieLabeler::new $labeler $slice -text $text -background $color]
     set pie::($this,sliceLabel,$slice) $label
     $canvas addtag pie($this) withtag pieLabeler($labeler)                     ;# update tags which canvas does not automatically do
+
+    update $this                                                                      ;# update sizes to take new label into account
 
     if {$switched::($this,-selectable)} {                                             ;# toggle select state at every button release
         if {![info exists pie::($this,selector)]} {                                                  ;# create selector if necessary
@@ -232,6 +233,22 @@ proc pie::currentSlice {this} {                           ;# return current slic
         }
     }
     return 0                                                                                                     ;# no current slice
+}
+
+proc pie::update {this} {
+    # rescale slices while taking labels room into account
+    set scale [list\
+        [expr {($switched::($this,-width)-[pieLabeler::horizontalRoom $pie::($this,labeler)])/$pie::($this,initialWidth)}]\
+        [expr {\
+            ($switched::($this,-height)-[pieLabeler::verticalRoom $pie::($this,labeler)])/\
+            ($pie::($this,initialHeight)+$pie::($this,thickness))\
+        }]\
+    ]
+    switched::configure $pie::($this,backgroundSlice) -scale $scale                             ;# update scale of background slice,
+    foreach slice $pie::($this,slices) {
+        switched::configure $slice -scale $scale                                                                 ;# and other slices
+    }
+    pieLabeler::update $pie::($this,labeler)                          ;# finally update labels now that pie graphics are in position
 }
 
 class pie {                                                                                     ;# define various utility procedures
