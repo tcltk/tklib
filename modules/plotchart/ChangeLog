@@ -1,3 +1,8 @@
+2005-03-11  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+
+        * Solved problem with plotcontour.test (works correctly
+          from sak.tcl now - still requires formalisation)
+
 2005-03-04  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
         * Added the contour plotting routines by Mark Stucky
