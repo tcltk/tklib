@@ -1,4 +1,4 @@
-set rcsId {$Id: canlabel.tcl,v 1.22 1998/06/07 10:08:13 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.23 1999/03/24 21:59:42 jfontain Exp $}
 
 class canvasLabel {
 
@@ -6,9 +6,9 @@ class canvasLabel {
         set canvasLabel::($this,canvas) $canvas
         # use an empty image as an origin marker with only 2 coordinates
         set canvasLabel::($this,origin) [$canvas create image 0 0 -tags canvasLabel($this)]
+        set canvasLabel::($this,selectRectangle) [$canvas create rectangle 0 0 0 0 -tags canvasLabel($this)]
         set canvasLabel::($this,rectangle) [$canvas create rectangle 0 0 0 0 -tags canvasLabel($this)]
         set canvasLabel::($this,text) [$canvas create text 0 0 -tags canvasLabel($this)]
-
         switched::complete $this
     }
 
@@ -29,6 +29,8 @@ class canvasLabel {
             [list -justify left left]\
             [list -padding 2 2]\
             [list -scale {1 1} {1 1}]\
+            [list -select 0 0]\
+            [list -selectcolor white white]\
             [list -stipple {} {}]\
             [list -style box box]\
             [list -text {} {}]\
@@ -61,7 +63,7 @@ class canvasLabel {
         }
         update $this
     }
-    foreach option {-anchor -bulletwidth -padding} {
+    foreach option {-anchor -bulletwidth -padding -select -selectcolor} {
         proc set$option {this value} {update $this}
     }
     foreach option {-font -justify -text -width} {
@@ -74,6 +76,7 @@ class canvasLabel {
     proc update {this} {
         set canvas $canvasLabel::($this,canvas)
         set rectangle $canvasLabel::($this,rectangle)
+        set selectRectangle $canvasLabel::($this,selectRectangle)
         set text $canvasLabel::($this,text)
 
         foreach {x y} [$canvas coords $canvasLabel::($this,origin)] {}
@@ -88,13 +91,22 @@ class canvasLabel {
             set rectangleWidth [winfo fpixels $canvas $switched::($this,-bulletwidth)]
             set halfWidth [expr {($rectangleWidth+$padding+([lindex $textBox 2]-[lindex $textBox 0]))/2.0}]
             set halfHeight [expr {($textHeight/2.0)+$border}]
+            $canvas coords $selectRectangle\
+                [expr {$x-$halfWidth}] [expr {$y-$halfHeight}] [expr {$x+$halfWidth}] [expr {$y+$halfHeight}]
             $canvas coords $rectangle\
                 [expr {$x-$halfWidth}] [expr {$y-$halfHeight}] [expr {$x-$halfWidth+$rectangleWidth}] [expr {$y+$halfHeight}]
             $canvas coords $text [expr {$x+(($rectangleWidth+$padding)/2.0)}] $y
+            if {$switched::($this,-select)} {
+                $canvas itemconfigure $selectRectangle\
+                    -fill $switched::($this,-selectcolor) -outline $switched::($this,-selectcolor)
+            } else {
+                $canvas itemconfigure $selectRectangle -fill {} -outline {}
+            }
         } else {                                                                                                        ;# box style
             set width [expr {$switched::($this,-width)==0?[lindex $textBox 2]-[lindex $textBox 0]:$switched::($this,-width)}]
             set halfWidth [expr {$border+$padding+($width/2.0)}]
             set halfHeight [expr {$border+$padding+(([lindex $textBox 3]-[lindex $textBox 1])/2.0)}]
+            $canvas itemconfigure $selectRectangle -fill {} -outline {}
             $canvas coords $rectangle [expr {$x-$halfWidth}] [expr {$y-$halfHeight}] [expr {$x+$halfWidth}] [expr {$y+$halfHeight}]
             $canvas coords $text $x $y
         }
@@ -102,6 +114,7 @@ class canvasLabel {
         set xDelta [expr {([string match *w $anchor]-[string match *e $anchor])*$halfWidth}]
         set yDelta [expr {([string match n* $anchor]-[string match s* $anchor])*$halfHeight}]
         $canvas move $rectangle $xDelta $yDelta
+        $canvas move $selectRectangle $xDelta $yDelta
         $canvas move $text $xDelta $yDelta
         eval $canvas scale canvasLabel($this) $x $y $switched::($this,-scale)                                 ;# finally apply scale
     }
