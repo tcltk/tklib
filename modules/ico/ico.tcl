@@ -5,7 +5,7 @@
 # Copyright (c) 2003 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.12 2004/08/18 19:23:40 afaupell Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.13 2004/08/21 00:15:14 afaupell Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -610,6 +610,15 @@ proc ::ico::getPaletteFromColors {colors} {
     return [list $i $palette $new]
 }
 
+# calculate byte size of an icon.
+# often passed $w twice because $h is double $w in the binary data
+proc ::ico::calcSize {w h bpp {offset 0}} {
+    set s [expr {int(($w*$h) * ($bpp/8.0)) \
+		     + ((($w*$h) + ($h*($w%32)))/8) + $offset}]
+    if {$bpp <= 8} { set s [expr {$s + (1 << ($bpp + 2))}] }
+    return $s
+}
+
 # read a Device Independent Bitmap from the current offset, return:
 #	{width height depth palette XOR_mask AND_mask}
 proc ::ico::readDIB {fh} {
@@ -752,6 +761,20 @@ proc ::ico::getIconListBMP {file} {
     return [list $w $h $bpp]
 }
 
+proc ::ico::getIconListEXE {file} {
+    variable ICONS
+
+    set file [file normalize $file]
+    set cnt  [SearchForIcos $file]
+
+    set icons [list]
+    for {set i 0} {$i <= $cnt} {incr i} {
+	lappend icons $ICONS($file,$i,data)
+    }
+
+    return $icons
+}
+
 # returns an icon in the form:
 #	{width height depth palette xor_mask and_mask}
 proc ::ico::getRawIconDataICO {file index} {
@@ -791,6 +814,55 @@ proc ::ico::getRawIconDataICODATA {data index} {
     # readDIB returns: {w h bpp palette xor and}
     set dib [readDIBFromData $data $loc]
 
+    return $dib
+}
+
+# returns an icon in the form:
+#	{width height depth palette xor_mask and_mask}
+proc ::ico::getRawIconDataBMP {file {index 0}} {
+    if {$index != 0} {return -code error "index out of range"}
+    set fh [open $file]
+    if {[read $fh 2] != "BM"} { close $fh; return -code error "not a BMP file" }
+    seek $fh 14 start
+    binary scan [read $fh 16] x4iix2s w h bpp
+    seek $fh 24 current
+
+    set palette [list]
+    if {$bpp == 1 || $bpp == 4 || $bpp == 8} {
+	set colors [read $fh [expr {1 << ($bpp + 2)}]]
+	foreach {b g r x} [split $colors {}] {
+	    lappend palette [formatColor $r $g $b]
+	}
+    } elseif {$bpp == 16 || $bpp == 24 || $bpp == 32} {
+	# do nothing here
+    } else {
+	return -code error "unsupported color depth: $bpp"
+    }
+
+    set xor  [read $fh [expr {int(($w * $h) * ($bpp / 8.0))}]]
+    set and [string repeat 0 [expr {$w * $h}]]
+    close $fh
+
+    return [list $w $h $bpp $palette $xor $and]
+}
+
+# returns an icon in the form:
+#	{width height depth palette xor_mask and_mask}
+proc ::ico::getRawIconDataEXE {file index} {
+    variable ICONS
+
+    set file [file normalize $file]
+    set cnt  [SearchForIcos $file $index]
+
+    if {$cnt < $index} { return -code error "index out of range" }
+
+    set fh [open $file]
+    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    seek $fh $ICONS($file,$index) start
+
+    # readDIB returns: {w h bpp palette xor and}
+    set dib [readDIB $fh]
+    close $fh
     return $dib
 }
 
@@ -878,41 +950,49 @@ proc ::ico::writeIconICO {file index w h bpp palette xor and} {
     close $fh
 }
 
-# returns an icon in the form:
-#	{width height depth palette xor_mask and_mask}
-proc ::ico::getRawIconDataBMP {file {index {}}} {
-    set fh [open $file]
-    if {[read $fh 2] != "BM"} { close $fh; return -code error "not a BMP file" }
-    seek $fh 14 start
-    binary scan [read $fh 16] x4iix2s w h bpp
-    seek $fh 24 current
-
-    set palette [list]
-    if {$bpp == 1 || $bpp == 4 || $bpp == 8} {
-	set colors [read $fh [expr {1 << ($bpp + 2)}]]
-	foreach {b g r x} [split $colors {}] {
-	    lappend palette [formatColor $r $g $b]
-	}
-    } elseif {$bpp == 16 || $bpp == 24 || $bpp == 32} {
-	# do nothing here
-    } else {
-	return -code error "unsupported color depth: $bpp"
-    }
-
-    set xor  [read $fh [expr {int(($w * $h) * ($bpp / 8.0))}]]
-    set and [string repeat 0 [expr {$w * $h}]]
-    close $fh
-
-    return [list $w $h $bpp $palette $xor $and]
+proc ::ico::writeIconICODATA {file index w h bpp palette xor and} {
+    if {$index != 0} {return -code error "index out of range"}
+    upvar 2 [file tail $file] data
+    set data [binary format sss 0 1 1]
+    set colors 0
+    if {$bpp <= 8} {set colors [expr {1 << $bpp}]}
+    set size [expr {[string length $palette] + [string length $xor] + [string length $and]}]
+    append data [binary format ccccssii $w $h $colors 0 0 $bpp [expr {$size + 40}] 22]
+    append data [binary format iiissiiiiii 40 $w [expr {$h * 2}] 1 $bpp 0 $size 0 0 0 0]
+    append data $palette $xor $and
 }
 
-# calculate byte size of an icon.
-# often passed $w twice because $h is double $w in the binary data
-proc ::ico::calcSize {w h bpp {offset 0}} {
-    set s [expr {int(($w*$h) * ($bpp/8.0)) \
-		     + ((($w*$h) + ($h*($w%32)))/8) + $offset}]
-    if {$bpp <= 8} { set s [expr {$s + (1 << ($bpp + 2))}] }
-    return $s
+proc ::ico::writeIconBMP {file index w h bpp palette xor and} {
+    if {$index != 0} {return -code error "index out of range"}
+    set fh [open $file w+]
+    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set size [expr {[string length $palette] + [string length $xor]}]
+    # bitmap header: magic, file size, reserved, reserved, offset of bitmap data
+    bputs $fh a2issi BM [expr {14 + 40 + $size}] 0 0 54
+    bputs $fh iiissiiiiii 40 $w $h 1 $bpp 0 $size 0 0 0 0
+    puts -nonewline $fh $palette$xor
+    close $fh
+}
+
+proc ::ico::writeIconEXE {file index w h bpp palette xor and} {
+    variable ICONS
+
+    set file [file normalize $file]
+    set cnt  [SearchForIcos $file $fh $index]
+
+    if {$index eq "end"} {set index $cnt}
+    if {$cnt < $index} { return -code error "index out of range" }
+
+    if {[list $w $h $bpp] != $ICONS($file,$index,data)} {
+	return -code error "icon format differs from original"
+    }
+    
+    set fh [open $file r+]
+    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    seek $fh [expr {$ICONS($file,$index) + 40}] start
+
+    puts -nonewline $fh $palette$xor$and
+    close $fh
 }
 
 proc ::ico::SearchForIcos {file {index -1}} {
@@ -1033,61 +1113,6 @@ proc ::ico::SearchForIcosPE {fh file index} {
     }
     close $fh
     return -1
-}
-
-proc ::ico::getIconListEXE {file} {
-    variable ICONS
-
-    set file [file normalize $file]
-    set cnt  [SearchForIcos $file]
-
-    set icons [list]
-    for {set i 0} {$i <= $cnt} {incr i} {
-	lappend icons $ICONS($file,$i,data)
-    }
-
-    return $icons
-}
-
-# returns an icon in the form:
-#	{width height depth palette xor_mask and_mask}
-proc ::ico::getRawIconDataEXE {file index} {
-    variable ICONS
-
-    set file [file normalize $file]
-    set cnt  [SearchForIcos $file $index]
-
-    if {$cnt < $index} { return -code error "index out of range" }
-
-    set fh [open $file]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
-    seek $fh $ICONS($file,$index) start
-
-    # readDIB returns: {w h bpp palette xor and}
-    set dib [readDIB $fh]
-    close $fh
-    return $dib
-}
-
-proc ::ico::writeIconEXE {file index w h bpp palette xor and} {
-    variable ICONS
-
-    set file [file normalize $file]
-    set cnt  [SearchForIcos $file $fh $index]
-
-    if {$index eq "end"} {set index $cnt}
-    if {$cnt < $index} { return -code error "index out of range" }
-
-    if {[list $w $h $bpp] != $ICONS($file,$index,data)} {
-	return -code error "icon format differs from original"
-    }
-    
-    set fh [open $file r+]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
-    seek $fh [expr {$ICONS($file,$index) + 40}] start
-
-    puts -nonewline $fh $palette$xor$and
-    close $fh
 }
 
 interp alias {} ::ico::getIconListDLL    {} ::ico::getIconListEXE
