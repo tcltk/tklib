@@ -5,6 +5,7 @@
 # Copyright (c) 2003 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
+# RCS: @(#) $Id: ico.tcl,v 1.8 2004/07/27 00:21:25 hobbs Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
