@@ -1,4 +1,4 @@
-# $Id: pie.tcl,v 1.6 1995/01/27 15:54:42 jfontain Exp $
+# $Id: pie.tcl,v 1.7 1995/01/27 16:02:37 jfontain Exp $
 
 source ../tools/slice.tcl
 
@@ -144,4 +144,13 @@ proc pie::sizeSlice {id sliceId perCent} {
     while {[set sliceId [lindex $pie($id,slices) [incr index]]]>=0} {
         slice::rotate $sliceId $radian
     }
+}
+
+proc showWholeCanvas {canvas} {
+    set extent [$canvas bbox all]
+    set left [expr [lindex $extent 0]-1]
+    set top [expr [lindex $extent 1]-1]
+    set right [expr [lindex $extent 2]+1]
+    set bottom [expr [lindex $extent 3]+1]
+    $canvas configure -scrollregion [list $left $top $right $bottom] -width [expr $right-$left] -height [expr $bottom-$top]
 }
