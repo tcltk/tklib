@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.9 1995/06/30 14:02:13 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.10 1995/09/19 20:49:48 jfontain Exp $}
 
 source $env(AGVHOME)/tools/utility.tk
 
@@ -25,8 +25,6 @@ proc moduloPI {value} {
     set value [moduloTwoPI $value]
     return [expr $value>=$PI?$value-$twoPI:$value]
 }
-
-set slice(highlightLineWidth) 2
 
 proc slice::slice {id canvas radiusX radiusY startRadian extentRadian {height 0} {topColor ""} {bottomColor ""}} {
     global slice PI twoPI
@@ -212,34 +210,4 @@ proc slice::size {id extentRadian} {
     global slice
 
     slice::update $id $slice($id,start) $extentRadian
-}
-
-proc slice::setupHighlighting {id enterCommand leaveCommand} {
-    global slice
-
-    set canvas $slice($id,canvas)
-
-    # first tag all item susceptible to see pointer movement
-    set sensitiveTag sensitive${id}
-    $canvas addtag $sensitiveTag withtag $slice($id,topArc)
-
-    # then tag all item susceptible to be highlighted
-    set highlightTag highlight${id}
-    $canvas addtag $highlightTag withtag $slice($id,topArc)
-
-    if {$slice($id,height)>0} {
-        # if 3D
-        $canvas addtag $sensitiveTag withtag $slice($id,startBottomArcFill)
-        $canvas addtag $sensitiveTag withtag $slice($id,startPolygon)
-        $canvas addtag $sensitiveTag withtag $slice($id,endBottomArcFill)
-        $canvas addtag $sensitiveTag withtag $slice($id,endPolygon)
-        $canvas addtag $highlightTag withtag $slice($id,startBottomArc)
-        $canvas addtag $highlightTag withtag $slice($id,endBottomArc)
-        $canvas addtag $highlightTag withtag $slice($id,startLeftLine)
-        $canvas addtag $highlightTag withtag $slice($id,startRightLine)
-        $canvas addtag $highlightTag withtag $slice($id,endLeftLine)
-        $canvas addtag $highlightTag withtag $slice($id,endRightLine)
-    }
-    $canvas bind $sensitiveTag <Enter> "$canvas itemconfigure $highlightTag -width $slice(highlightLineWidth); $enterCommand"
-    $canvas bind $sensitiveTag <Leave> "$canvas itemconfigure $highlightTag -width 1; $leaveCommand"
 }
