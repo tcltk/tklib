@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.8 1995/10/04 23:01:58 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.9 1995/10/05 20:23:07 jfontain Exp $}
 
 source canlabel.tcl
 
@@ -28,7 +28,7 @@ proc pieLabeller::bind {id pieId} {
     set pieLabeller($id,pie) $pieId
 }
 
-proc pieLabeller::create {id args} {
+proc pieLabeller::create {id sliceId args} {
     global pie pieLabeller
 
     set canvas $pie($pieLabeller($id,pie),canvas)
@@ -41,11 +41,13 @@ proc pieLabeller::create {id args} {
     canvasLabel::configure $label -text [canvasLabel::cget $label -text]:
     $canvas addtag pieLabeller($id) withtag canvasLabel($label)
     lappend pieLabeller($id,labels) $label
+    # save related slice
+    set pieLabeller($id,sliceId,$label) $sliceId
     pieLabeller::position $id $label
     return $label
 }
 
-proc pieLabeller::position {id label} {
+proc pieLabeller::position {id labelId} {
     virtualCallFrom pieLabeller
 }
 
