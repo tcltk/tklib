@@ -1,3 +1,12 @@
+
+3.1.5 - Mon Mar 21 11:23:09 GMT 2005
+
+	ctext_tcl.tcl was contributed to ctext by
+	Uwe Koloska.  It provides easy syntax 
+	highlighting for Tcl scripts.  He has apparently
+	added ctext to Nagelfar.   
+	http://spjuth.pointclark.net/Nagelfar.html
+
 3.1.4 - Thu Aug 12 03:10:06 UTC 2004
 
 	ctext.tcl was changed to fix a bug that
