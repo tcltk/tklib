@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.59 1998/03/28 08:59:39 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.60 1998/03/28 20:42:39 jfontain Exp $}
 
 package provide tkpiechart 4.0
 
@@ -108,7 +108,7 @@ proc pie::newSlice {this {text {}}} {
         set text "slice [llength $pie::($this,slices)]"
     }
     set labeler $pie::($this,labeler)
-    set label [pieLabeler::create $labeler $slice -text $text -background $color]
+    set label [pieLabeler::new $labeler $slice -text $text -background $color]
     set pie::($this,sliceLabel,$slice) $label
     # update tags which canvas does not automatically do
     $canvas addtag pie($this) withtag pieLabeler($labeler)
