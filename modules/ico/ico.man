@@ -3,7 +3,7 @@
 [moddesc   {}]
 [titledesc {}]
 [require Tcl 8.4]
-[require ico [ico 0.2]]
+[require ico [opt 0.2]]
 [description]
 
 This package provides functions for reading and writing Windows icons
@@ -26,12 +26,20 @@ from ICO ICL EXE and DLL files.
 [opt_def -type value]
 [list_end opt]
 
+Returns a list of icons found in [arg file] where each element has the format {width height depth}
+
 [call [cmd ::ico::getIcon] [arg file] [arg index] [opt "[arg option] [arg value]..."]]
 [list_begin opt]
 [opt_def -type value]
 [opt_def -format value]
 [opt_def -name value]
 [list_end opt]
+
+Extracts the icon at [arg index] from [arg file]. The default [opt -format] is [const image] which will return
+the name of a Tk image containing the icon. Optionally [arg -name] may be used to specify the name of the Tk
+image that is created. If [opt -format] is [const colors] then a list of color names in the #RRGGBB format is
+returned. Each list element is a horizontal row. Each horizontal row contains a list of colors for all the pixels
+in that row from left to right.
 
 
 [call [cmd ::ico::writeIcon] [arg file] [arg index] [arg depth] [arg data] [opt "[arg option] [arg value]..."]]
@@ -46,6 +54,18 @@ from ICO ICL EXE and DLL files.
 [opt_def -type value]
 [list_end opt]
 
+[arg index] is the 0 based index of the icon to write. When writing to an EXE, DLL, or ICL you may only overwrite
+existing icons with an icon of the same dimensions and color depth. When writing to an ICO, [arg index] may be one
+greater than the last icon which will append a new icon to the file. When wrting to an ICO, [arg index] will accept
+[const end] which will cause the new icon to be appended to the file. When writing the other types [const end] will
+refer to the last existing icon.
+
+[arg data] is either a list of colors in the format returned by [cmd getIcon -format colors] or the name of a Tk
+image.
+
+[arg depth] must be one of 1, 4, 8, 24 or 32. If [arg data] has more colors than the color depth allows an error
+will be generated.
+
 
 [call [cmd ::ico::copyIcon] [arg file] [arg index] [arg file2] [arg index2] [opt "[arg option] [arg value]..."]]
 [list_begin opt]
@@ -53,19 +73,21 @@ from ICO ICL EXE and DLL files.
 [opt_def -totype value]
 [list_end opt]
 
+Copies the icon at [arg index] in [arg file] to [arg index2] in [arg file2].
+
 
 [call [cmd ::ico::EXEtoICO] [arg file] [arg file2]
 [list_begin opt]
 [opt_def -type value]
 [list_end opt]
 
+Extracts all icons from the executable [arg file] to the ICO file [arg file2]
+
 
 [call [cmd ::ico::clearCache] [opt file]
 
 
-
 [call [cmd ::ico::transparentColor] [arg image] [arg color]
-
 
 
 [call [cmd ::ico::Show] [arg file] [opt "[arg option] [arg value]..."]]
@@ -73,6 +95,8 @@ from ICO ICL EXE and DLL files.
 [opt_def -type value]
 [opt_def -parent value]
 [list_end opt]
+
+Application level command which displays a window showing all the icons in [arg file] with information about them
 
 
 [list_end]
