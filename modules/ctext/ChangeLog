@@ -1,3 +1,19 @@
+3.1.4 - Thu Aug 12 03:10:06 UTC 2004
+
+	ctext.tcl was changed to fix a bug that
+	occured when the geometry management of the
+	ctext widget was such that it wouldn't enlarge
+	when [$inst configure -linemap 1] was invoked.
+
+	This was fixed using grid and a -minsize.  The
+	previous manager was pack.  Grid behaves in an
+	appropriate manner for this situation with the
+	proper weights and -minsize.
+
+	Thanks to Arjen Markus for testing and bringing
+	this up.
+
+
 3.1.3 - Thu Jan 22 14:51:08 GMT 2004
 
 	I changed the bindtags so that binding to
