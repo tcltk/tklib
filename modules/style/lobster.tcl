@@ -3,7 +3,7 @@
 # The code formerly known as "gtklook" on the Tcl'ers
 # wiki.  Most of this code was originally written by Jeremy Collins.
 
-# $Id: lobster.tcl,v 1.5 2005/02/02 15:25:46 davidw Exp $
+# $Id: lobster.tcl,v 1.6 2005/02/02 17:04:12 davidw Exp $
 
 namespace eval style::lobster {
     # This may need to be adjusted for some window managers that are
@@ -28,7 +28,7 @@ proc style::lobster::init {args} {
 	set size   -12
 	set family Helvetica
 	font create LobsterFont -size $size -family $family
-	font create LobsterFont -size $size -family $family -weight bold
+	font create LobsterBold -size $size -family $family -weight bold
 
 	option add *borderWidth			1 $prio
 	option add *activeBorderWidth		1 $prio
