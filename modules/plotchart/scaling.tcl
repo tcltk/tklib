@@ -4,6 +4,23 @@
 
 namespace eval ::Plotchart {
    namespace export determineScale
+
+   #
+   # Try and load the math::fuzzy package for better
+   # comparisons
+   #
+   if { [catch {
+            package require math::fuzzy
+            namespace import ::math::fuzzy::tlt
+            namespace import ::math::fuzzy::tgt
+         }] } {
+      proc tlt {a b} {
+         expr {$a < $b }
+      }
+      proc tgt {a b} {
+         expr {$a > $b }
+      }
+   }
 }
 
 # determineScale --
@@ -47,10 +64,10 @@ proc ::Plotchart::determineScale { xmin xmax } {
 
    set nicemin [expr {$step*$factor*int($xmin/$factor/$step)}]
    set nicemax [expr {$step*$factor*int($xmax/$factor/$step)}]
-   if { $nicemax < $xmax } {
+   if { [tlt $nicemax $xmax] } {
       set nicemax [expr {$nicemax+$step}]
    }
-   if { $nicemin > $xmin } {
+   if { [tgt $nicemin $xmin] } {
       set nicemin [expr {$nicemin-$step}]
    }
 
