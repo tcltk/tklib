@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.7 1995/10/04 22:22:12 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.8 1995/10/04 23:01:58 jfontain Exp $}
 
 source canlabel.tcl
 
@@ -49,7 +49,7 @@ proc pieLabeller::position {id label} {
     virtualCallFrom pieLabeller
 }
 
-proc pieLabeller::setValue {id label value} {
+proc pieLabeller::update {id label value} {
     regsub {:.*$} [canvasLabel::cget $label -text] ": $value" text
     canvasLabel::configure $label -text $text
 }
