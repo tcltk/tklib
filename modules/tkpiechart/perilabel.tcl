@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.9 1995/10/08 19:34:00 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.10 1995/10/08 20:15:11 jfontain Exp $}
 
 source pielabel.tcl
 
@@ -77,6 +77,19 @@ proc piePeripheralLabeller::create {id sliceId args} {
     return $valueId
 }
 
+proc piePeripheralLabeller::anglePosition {degrees} {
+    # quadrant specific index with added value for exact quarters
+    return [expr (2*($degrees/90))+(($degrees%90)!=0)]
+}
+
+# build angle position / value label anchor mapping array
+set index 0
+foreach anchor {w sw s se e ne n nw} {
+    set piePeripheralLabeller(anchor,[piePeripheralLabeller::anglePosition [expr $index*45]]) $anchor
+    incr index
+}
+unset index anchor
+
 proc piePeripheralLabeller::update {id valueId value} {
     global pieLabeller
 
@@ -107,23 +120,6 @@ proc piePeripheralLabeller::rotate {id valueId} {
     $pieLabeller($id,canvas) move $valueId\
         [expr $data(xCenter)+$x-[lindex $coordinates 0]] [expr $data(yCenter)-$y-[lindex $coordinates 1]]
 
-    # finally determine which point of the text is closest to pie graphics
-    if {$angle<=0} {
-        set anchor w
-    } elseif {$angle<90} {
-        set anchor sw
-    } elseif {$angle==90} {
-        set anchor s
-    } elseif {$angle<180} {
-        set anchor se
-    } elseif {$angle==180} {
-        set anchor e
-    } elseif {$angle<270} {
-        set anchor ne
-    } elseif {$angle==270} {
-        set anchor n
-    } else {
-        set anchor nw
-    }
-    $canvas itemconfigure $valueId -anchor $anchor
+    # finally set anchor according to which point of the text is closest to pie graphics
+    $canvas itemconfigure $valueId -anchor $piePeripheralLabeller(anchor,[piePeripheralLabeller::anglePosition $angle])
 }
