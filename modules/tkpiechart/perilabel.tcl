@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.29 1998/03/26 20:33:33 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.30 1998/03/26 20:36:52 jfontain Exp $}
 
 class piePeripheralLabeller {
 
@@ -98,6 +98,7 @@ class piePeripheralLabeller {
     }
 
     proc delete {this label} {
+        $pieLabeller::($this,canvas) delete $piePeripheralLabeller::($this,textItem,$label)
         canvasLabelsArray::delete $piePeripheralLabeller::($this,array) $label
     }
 
