@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.32 1998/04/09 21:56:03 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.33 1998/05/02 23:41:58 jfontain Exp $}
 
 
 class slice {
@@ -7,12 +7,10 @@ class slice {
 
 proc slice::slice {this canvas x y radiusX radiusY start extent args} switched {$args} {         ;# all dimensions must be in pixels
     # note: all slice elements are tagged with slice($this)
-
     set slice::($this,canvas) $canvas
     set slice::($this,start) 0
     set slice::($this,radiusX) $radiusX
     set slice::($this,radiusY) $radiusY
-
     switched::complete $this
     complete $this $x $y                                            ;# wait till all options have been set for initial configuration
     update $this $start $extent
@@ -30,6 +28,7 @@ proc slice::options {this} {
         [list -bottomcolor {} {}]\
         [list -deletecommand {} {}]\
         [list -height 0 0]\
+        [list -scale {1 1} {1 1}]\
         [list -topcolor {} {}]\
     ]
 }
@@ -43,6 +42,10 @@ foreach option {-bottomcolor -height -topcolor} {                               
 }
 
 proc slice::set-deletecommand {this value} {}                                                    ;# data is stored at switched level
+
+proc slice::set-scale {this value} {                                ;# value is a list of ratios of the horizontal and vertical axis
+    update $this $slice::($this,start) $slice::($this,extent)                  ;# refresh display which takes new scale into account
+}
 
 proc slice::normalizedAngle {value} {                                 ;# normalize value between -180 and 180 degrees (not included)
     while {$value>=180} {
@@ -59,10 +62,8 @@ proc slice::complete {this x y} {
     set radiusX $slice::($this,radiusX)
     set radiusY $slice::($this,radiusY)
     set bottomColor $switched::($this,-bottomcolor)
-
-    # use a dimensionless line as an origin marker
-    set slice::($this,origin) [$canvas create line -$radiusX -$radiusY -$radiusX -$radiusY -fill {} -tags slice($this)]
-
+    # use an empty image as an origin marker with only 2 coordinates
+    set slice::($this,origin) [$canvas create image -$radiusX -$radiusY -tags slice($this)]
     if {$switched::($this,-height)>0} {                                                                                        ;# 3D
         set slice::($this,startBottomArcFill) [$canvas create arc\
             0 0 0 0 -style chord -extent 0 -fill $bottomColor -outline $bottomColor -tags slice($this)\
@@ -81,39 +82,33 @@ proc slice::complete {this x y} {
         set slice::($this,endLeftLine) [$canvas create line 0 0 0 0 -tags slice($this)]
         set slice::($this,endRightLine) [$canvas create line 0 0 0 0 -tags slice($this)]
     }
-
     set slice::($this,topArc) [$canvas create arc\
         -$radiusX -$radiusY $radiusX $radiusY -fill $switched::($this,-topcolor) -tags slice($this)\
     ]
-
     # move slice so upper-left corner is at requested coordinates
     $canvas move slice($this) [expr {$x+$radiusX}] [expr {$y+$radiusY}]
 }
 
 proc slice::update {this start extent} {
     set canvas $slice::($this,canvas)
-
-    set coordinates [$canvas coords slice($this)]                      ;# first store slice position in case it was moved as a whole
-
+    set coordinates [$canvas coords $slice::($this,origin)]            ;# first store slice position in case it was moved as a whole
     set radiusX $slice::($this,radiusX)
     set radiusY $slice::($this,radiusY)
-    $canvas coords $slice::($this,origin) -$radiusX -$radiusY $radiusX $radiusY
+    $canvas coords $slice::($this,origin) -$radiusX -$radiusY
     $canvas coords $slice::($this,topArc) -$radiusX -$radiusY $radiusX $radiusY
-
     # normalize extent by choosing a value slightly less than 360 degrees for too large values, for slice size cannot be 360
     set extent [maximum 0 $extent]
-    if {$extent>=360} {
-        set extent 359.9999999999999
+    if {$extent>=360} {                            ;# get as close as possible to 360, which would not work as it is equivalent to 0
+        set extent [expr {360-pow(10,-$::tcl_precision+3)}]
     }
     $canvas itemconfigure $slice::($this,topArc)\
         -start [set slice::($this,start) [normalizedAngle $start]] -extent [set slice::($this,extent) $extent]
-
     if {$switched::($this,-height)>0} {                                                                                        ;# 3D
         updateBottom $this
     }
-
     # now position slice at the correct coordinates
     $canvas move slice($this) [expr {[lindex $coordinates 0]+$radiusX}] [expr {[lindex $coordinates 1]+$radiusY}]
+    eval $canvas scale slice($this) $coordinates $switched::($this,-scale)                                    ;# finally apply scale
 }
 
 proc slice::updateBottom {this} {
