@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.33 1995/10/04 22:29:00 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.34 1995/10/04 23:02:22 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -95,9 +95,9 @@ proc pie::sizeSlice {id sliceId unitShare {valueToDisplay {}}} {
         error "could not find slice $sliceId in pie $id slices"
     }
     if {[string length $valueToDisplay]>0} {
-        pieLabeller::setValue $pie($id,labeller) $pie($id,sliceLabel,$sliceId) $valueToDisplay
+        pieLabeller::update $pie($id,labeller) $pie($id,sliceLabel,$sliceId) $valueToDisplay
     } else {
-        pieLabeller::setValue $pie($id,labeller) $pie($id,sliceLabel,$sliceId) $unitShare
+        pieLabeller::update $pie($id,labeller) $pie($id,sliceLabel,$sliceId) $unitShare
     }
     # cannot display slices that occupy more than whole pie and less than zero
     set newExtent [expr [maximum [minimum $unitShare 1] 0]*360]
