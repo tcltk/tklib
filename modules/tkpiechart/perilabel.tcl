@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.36 1998/04/09 21:55:19 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.37 1998/05/03 15:04:06 jfontain Exp $}
 
 class piePeripheralLabeler {
 
@@ -34,21 +34,18 @@ class piePeripheralLabeler {
     }
 
     proc new {this slice args} {                                       ;# variable arguments are for the created canvas label object
-        set canvas $pieLabeler::($this,canvas)
+        ::set canvas $pieLabeler::($this,canvas)
 
-        set text [$canvas create text 0 0 -font $switched::($this,-smallfont) -tags pieLabeler($this)]         ;# create value label
-        set box [$canvas bbox $text]
-        set smallTextHeight [expr {[lindex $box 3]-[lindex $box 1]}]
+        ::set text [$canvas create text 0 0 -font $switched::($this,-smallfont) -tags pieLabeler($this)]       ;# create value label
+        ::set box [$canvas bbox $text]
+        ::set smallTextHeight [expr {[lindex $box 3]-[lindex $box 1]}]
 
         if {![info exists piePeripheralLabeler::($this,array)]} {                                     ;# create a split labels array
-            set box [$canvas bbox pie($pieLabeler::($this,pie))]                                         ;# position array below pie
-            set piePeripheralLabeler::($this,array) [eval ::new canvasLabelsArray\
-                $canvas [lindex $box 0] [expr {[lindex $box 3]+(2*$switched::($this,-offset))+$smallTextHeight}]\
-                [expr {[lindex $box 2]-[lindex $box 0]}] -justify $switched::($this,-justify) -xoffset $switched::($this,-xoffset)\
-            ]
+            ::set piePeripheralLabeler::($this,array)\
+                [::new canvasLabelsArray $canvas 0 0 -justify $switched::($this,-justify) -xoffset $switched::($this,-xoffset)]
+            update $this                                                                                 ;# position array below pie
         }
-
-        set label [eval ::new canvasLabel $pieLabeler::($this,canvas) 0 0 $args\
+        ::set label [eval ::new canvasLabel $pieLabeler::($this,canvas) 0 0 $args\
             [list\
                 -style split -justify $switched::($this,-justify) -bulletwidth $switched::($this,-bulletwidth)\
                 -font $switched::($this,-font)\
@@ -58,9 +55,9 @@ class piePeripheralLabeler {
 
         $canvas addtag pieLabeler($this) withtag canvasLabelsArray($piePeripheralLabeler::($this,array))         ;# refresh our tags
 
-        set piePeripheralLabeler::($this,textItem,$label) $text                         ;# value text item is the only one to update
-        set piePeripheralLabeler::($this,slice,$label) $slice
-        set piePeripheralLabeler::($this,selected,$label) 0
+        ::set piePeripheralLabeler::($this,textItem,$label) $text                       ;# value text item is the only one to update
+        ::set piePeripheralLabeler::($this,slice,$label) $slice
+        ::set piePeripheralLabeler::($this,selected,$label) 0
 
         return $label
     }
@@ -69,15 +66,15 @@ class piePeripheralLabeler {
         return [expr {(2*($degrees/90))+(($degrees%90)!=0)}]          ;# quadrant specific index with added value for exact quarters
     }
 
-    set index 0                                                           ;# build angle position / value label anchor mapping array
+    ::set index 0                                                         ;# build angle position / value label anchor mapping array
     foreach anchor {w sw s se e ne n nw} {
-        set piePeripheralLabeler::(anchor,[anglePosition [expr {$index*45}]]) $anchor
+        ::set piePeripheralLabeler::(anchor,[anglePosition [expr {$index*45}]]) $anchor
         incr index
     }
     unset index anchor
 
-    proc update {this label value} {
-        set text $piePeripheralLabeler::($this,textItem,$label)
+    proc set {this label value} {
+        ::set text $piePeripheralLabeler::($this,textItem,$label)
         position $this $text $piePeripheralLabeler::($this,slice,$label)
         $pieLabeler::($this,canvas) itemconfigure $text -text $value
     }
@@ -87,17 +84,17 @@ class piePeripheralLabeler {
 
         slice::data $slice data
         # calculate text closest point coordinates in normal coordinates system (y increasing in north direction)
-        set midAngle [expr {$data(start)+($data(extent)/2.0)}]
-        set radians [expr {$midAngle*$PI/180}]
-        set x [expr {($data(xRadius)+$switched::($this,-offset))*cos($radians)}]
-        set y [expr {($data(yRadius)+$switched::($this,-offset))*sin($radians)}]
-        set angle [expr {round($midAngle)%360}]
+        ::set midAngle [expr {$data(start)+($data(extent)/2.0)}]
+        ::set radians [expr {$midAngle*$PI/180}]
+        ::set x [expr {($data(xRadius)+$switched::($this,-offset))*cos($radians)}]
+        ::set y [expr {($data(yRadius)+$switched::($this,-offset))*sin($radians)}]
+        ::set angle [expr {round($midAngle)%360}]
         if {$angle>180} {
-            set y [expr {$y-$data(height)}]                                                             ;# account for pie thickness
+            ::set y [expr {$y-$data(height)}]                                                           ;# account for pie thickness
         }
 
-        set canvas $pieLabeler::($this,canvas)
-        set coordinates [$canvas coords $text]                   ;# now transform coordinates according to canvas coordinates system
+        ::set canvas $pieLabeler::($this,canvas)
+        ::set coordinates [$canvas coords $text]                 ;# now transform coordinates according to canvas coordinates system
         $canvas move $text [expr {$data(xCenter)+$x-[lindex $coordinates 0]}] [expr {$data(yCenter)-$y-[lindex $coordinates 1]}]
         # finally set anchor according to which point of the text is closest to pie graphics
         $canvas itemconfigure $text -anchor $piePeripheralLabeler::(anchor,[anglePosition $angle])
@@ -123,7 +120,18 @@ class piePeripheralLabeler {
         } else {
             switched::configure $label -borderwidth 1
         }
-        set piePeripheralLabeler::($this,selected,$label) $selected
+        ::set piePeripheralLabeler::($this,selected,$label) $selected
+    }
+
+    proc update {this} {
+        ::set canvas $pieLabeler::($this,canvas)
+        ::set box [$canvas bbox pieGraphics($pieLabeler::($this,pie))]
+::set smallTextHeight 10 ;########### calculate in set-smallfont{} #################
+        ::set array $piePeripheralLabeler::($this,array)                         ;# first reposition labels array below pie graphics
+        foreach {x y} [$canvas coords canvasLabelsArray($array)] {}
+        $canvas move canvasLabelsArray($array) [expr {[lindex $box 0]-$x}]\
+            [expr {[lindex $box 3]+(2*$switched::($this,-offset))+$smallTextHeight-$y}]
+        switched::configure $array -width [expr {[lindex $box 2]-[lindex $box 0]}]                             ;# then fit pie width
     }
 
 }
