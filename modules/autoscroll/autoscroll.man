@@ -1,9 +1,9 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin autoscroll n 1.0]
+[manpage_begin autoscroll n 1.1]
 [moddesc   {Automatic mapping of scrollbars}]
 [titledesc {Provides for a scrollbar to automatically mapped and unmapped as needed}]
 [require Tcl]
-[require autoscroll [opt 1.0]]
+[require autoscroll [opt 1.1]]
 [description]
 
 This package allows scrollbars to be mapped and
