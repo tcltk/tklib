@@ -1,4 +1,4 @@
-set rcsId {$Id: selector.tcl,v 1.3 1999/01/31 18:47:07 jfontain Exp $}
+set rcsId {$Id: selector.tcl,v 1.4 1999/08/16 20:59:03 jfontain Exp $}
 
 # implements generic selection on a list of unique identifiers
 
@@ -126,8 +126,8 @@ class selector {
         variable ${this}selected
 
         ::set list {}
-        foreach index [array names ${this}selected] {
-            if {[::set ${this}selected($index)]} {
+        foreach {index value} [array get ${this}selected] {
+            if {$value} {
                 lappend list $index
             }
         }
