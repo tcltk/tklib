@@ -38,6 +38,11 @@ puts "Plotchart [package present Plotchart]"
 
 # -------------------------------------------------------------------------
 
+#
+# Note:
+# The tests are formulated such that the resulting numbers
+# are exact. There is no need for a tolerance in the comparison
+#
 proc matchNumbers {expected actual} {
     set match 1
     foreach a $actual e $expected {
@@ -114,14 +119,6 @@ test Plotchart-2.3 {Pixel to world coordinates - ordering} -match numbers -body 
     ::Plotchart::pixelToCoords    "window"  110  120
 } -result {100 0}
 
-
-puts [::Plotchart::determineScale -0.2 0.9]
-puts [::Plotchart::determineScale -0.25 0.85]
-puts [::Plotchart::determineScale -0.25 0.7999]
-puts [::Plotchart::determineScale 10001 10010]
-puts [::Plotchart::determineScale 10001 10015]
-
-
 test Plotchart-2.4 {Nice scale 1} -match numbers -body {
     ::Plotchart::determineScale 0.1 1.0
 } -result {0.0 1.0 0.2}
@@ -136,15 +133,15 @@ test Plotchart-2.6 {Nice scale 3} -match numbers -body {
 
 test Plotchart-2.7 {Nice scale 4} -match numbers -body {
     ::Plotchart::determineScale -0.25 0.85
-} -result {-0.2 1.0 0.2}
+} -result {-0.4 1.0 0.2}
 
 test Plotchart-2.8 {Nice scale 5} -match numbers -body {
     ::Plotchart::determineScale -0.25 0.7999
-} -result {-0.2 0.8 0.2}
+} -result {-0.4 0.8 0.2}
 
 test Plotchart-2.9 {Nice scale 6} -match numbers -body {
     ::Plotchart::determineScale 10001 10010
-} -result {10001 10010 2}
+} -result {10000 10010 2}
 
 test Plotchart-2.10 {Nice scale 7} -match numbers -body {
     ::Plotchart::determineScale 10001 10015

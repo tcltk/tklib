@@ -50,6 +50,9 @@ proc ::Plotchart::determineScale { xmin xmax } {
    if { $nicemax < $xmax } {
       set nicemax [expr {$nicemax+$step}]
    }
+   if { $nicemin > $xmin } {
+      set nicemin [expr {$nicemin-$step}]
+   }
 
    return [list $nicemin $nicemax [expr {$step*$factor}]]
 }
