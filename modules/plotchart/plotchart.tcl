@@ -31,6 +31,10 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,xtext)          DrawXtext
    set methodProc(xyplot,ytext)          DrawYtext
    set methodProc(xyplot,plot)           DrawData
+   set methodProc(xyplot,grid)           DrawGrid
+   set methodProc(xyplot,contourlines)   DrawIsolines
+   set methodProc(xyplot,contourfill)    DrawShades
+   set methodProc(xyplot,contourbox)     DrawBox
    set methodProc(xyplot,saveplot)       SavePlot
    set methodProc(xyplot,dataconfig)     DataConfig
    set methodProc(xyplot,xconfig)        XConfig
@@ -86,6 +90,7 @@ namespace eval ::Plotchart {
    set methodProc(3dplot,xconfig)        XConfig
    set methodProc(3dplot,yconfig)        YConfig
    set methodProc(3dplot,zconfig)        ZConfig
+   set methodProc(3dplot,plotfuncont)    Draw3DFunctionContour
 
    #
    # Auxiliary parameters
@@ -113,6 +118,7 @@ namespace eval ::Plotchart {
                            -ticklines  {0 1}
                            -scale      {...}
                           }
+   variable contour_options
 }
 
 # setZoomPan --
@@ -776,7 +782,8 @@ source [file join [file dirname [info script]] "plotpriv.tcl"]
 source [file join [file dirname [info script]] "plotaxis.tcl"]
 source [file join [file dirname [info script]] "plot3d.tcl"]
 source [file join [file dirname [info script]] "scaling.tcl"]
+source [file join [file dirname [info script]] "plotcontour.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 0.9
+package provide Plotchart 1.0
