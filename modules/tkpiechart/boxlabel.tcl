@@ -1,9 +1,9 @@
-set rcsId {$Id: boxlabel.tcl,v 1.3 1995/09/28 18:49:22 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.4 1995/10/04 22:23:42 jfontain Exp $}
 
 source pielabel.tcl
 
-proc pieBoxLabeller::pieBoxLabeller {id pieId args} {
-    eval pieLabeller::pieLabeller $id $pieId $args
+proc pieBoxLabeller::pieBoxLabeller {id canvas args} {
+    eval pieLabeller::pieLabeller $id $canvas $args
 }
 
 proc pieBoxLabeller::~pieBoxLabeller {id} {}
