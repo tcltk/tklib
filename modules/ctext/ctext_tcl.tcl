@@ -1,4 +1,4 @@
-# RCS: @(#) $Id: ctext_tcl.tcl,v 1.1 2005/03/21 18:36:18 georgeps Exp $ 
+# RCS: @(#) $Id: ctext_tcl.tcl,v 1.2 2005/03/31 03:15:48 andreas_kupries Exp $ 
 
 package provide ctext_tcl 0.8
 
