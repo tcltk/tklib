@@ -1,6 +1,6 @@
 # By George Peter Staplin
 # See also the README for a list of contributors
-# RCS: @(#) $Id: ctext.tcl,v 1.2 2004/08/12 09:14:44 georgeps Exp $
+# RCS: @(#) $Id: ctext.tcl,v 1.3 2004/08/18 03:45:18 andreas_kupries Exp $
 
 package require Tk
 package provide ctext 3.1
