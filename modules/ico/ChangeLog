@@ -1,3 +1,9 @@
+2004-08-18  Aaron Faupell <afaupell@users.sourceforge.net>
+
+        * ico.tcl: added support for reading from BMP files
+        Modified transparentColor to work on pixel list also.
+        * ico.man: updated with the new functionality
+
 2004-08-18  Andreas Kupries  <andreask@activestate.com>
 
 	* ico.man: Fixed problems with formatting of ico manpage.

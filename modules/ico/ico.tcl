@@ -5,7 +5,7 @@
 # Copyright (c) 2003 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.11 2004/08/17 17:36:41 afaupell Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.12 2004/08/18 19:23:40 afaupell Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -203,27 +203,40 @@ proc ::ico::copyIcon {f1 i1 f2 i2 args} {
 #
 # transparentColor --
 #
-# Turns on transparency for all pixels in the Tk image that match the color
+# Turns on transparency for all pixels in the image that match the color
 #
 # ARGS:
-#	img	        Name of the Tk image to modify
+#	img	        Name of the Tk image to modify, or an image in color list format
 #	color	        Color in #hex format which will be made transparent
 #
 # RETURNS:
-#	nothing
+#	the data or image after modification
 #
 proc ::ico::transparentColor {img color} {
-    package require Tk
-    if {[string match "#*" $color]} {
-	set color [scan $color "#%2x%2x%2x"]
+    if {[llength $img] == 1} {
+        package require Tk
+        if {[string match "#*" $color]} {
+            set color [scan $color "#%2x%2x%2x"]
+        }
+        set w [image width $img]
+        set h [image height $img]
+        for {set y 0} {$y < $h} {incr y} {
+            for {set x 0} {$x < $w} {incr x} {
+                if {[$img get $x $y] eq $color} {$img transparency set $x $y 1}
+            }
+        }
+    } else {
+        set y 0
+        foreach row $img {
+            set x 0
+            foreach px $row {
+                if {$px == $color} {lset img $y $x {}}
+                incr x
+            }
+            incr y
+        }
     }
-    set w [image width $img]
-    set h [image height $img]
-    for {set y 0} {$y < $h} {incr y} {
-	for {set x 0} {$x < $w} {incr x} {
-	    if {[$img get $x $y] eq $color} {$img transparency set $x $y 1}
-	}
-    }
+    return $img
 }
 
 #
@@ -730,6 +743,15 @@ proc ::ico::getIconListICODATA {data} {
     return $r
 }
 
+proc ::ico::getIconListBMP {file} {
+    set fh [open $file]
+    if {[read $fh 2] != "BM"} { close $fh; return -code error "not a BMP file" }
+    seek $fh 14 start
+    binary scan [read $fh 16] x4iix2s w h bpp
+    close $fh
+    return [list $w $h $bpp]
+}
+
 # returns an icon in the form:
 #	{width height depth palette xor_mask and_mask}
 proc ::ico::getRawIconDataICO {file index} {
@@ -854,6 +876,34 @@ proc ::ico::writeIconICO {file index w h bpp palette xor and} {
 	puts -nonewline $fh $olddata
     }
     close $fh
+}
+
+# returns an icon in the form:
+#	{width height depth palette xor_mask and_mask}
+proc ::ico::getRawIconDataBMP {file {index {}}} {
+    set fh [open $file]
+    if {[read $fh 2] != "BM"} { close $fh; return -code error "not a BMP file" }
+    seek $fh 14 start
+    binary scan [read $fh 16] x4iix2s w h bpp
+    seek $fh 24 current
+
+    set palette [list]
+    if {$bpp == 1 || $bpp == 4 || $bpp == 8} {
+	set colors [read $fh [expr {1 << ($bpp + 2)}]]
+	foreach {b g r x} [split $colors {}] {
+	    lappend palette [formatColor $r $g $b]
+	}
+    } elseif {$bpp == 16 || $bpp == 24 || $bpp == 32} {
+	# do nothing here
+    } else {
+	return -code error "unsupported color depth: $bpp"
+    }
+
+    set xor  [read $fh [expr {int(($w * $h) * ($bpp / 8.0))}]]
+    set and [string repeat 0 [expr {$w * $h}]]
+    close $fh
+
+    return [list $w $h $bpp $palette $xor $and]
 }
 
 # calculate byte size of an icon.
