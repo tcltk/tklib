@@ -42,6 +42,26 @@ to be mapped and unmapped as needed.
 
 Returns the named scrollbar to its original static state.
 
+[call [cmd ::autoscroll::wrap]]
+
+Arranges for all scrollbars created after this command is run
+to be automatically mapped and unmapped as needed.
+
+[call [cmd ::autoscroll::unwrap]]
+
+Turns off the automatic autoscrolling of all new scrollbars.
+Does not effect existing scrollbars
+
 [list_end]
+
+[example {
+text .t -yscrollcommand ".scrolly set"
+scrollbar .scrolly -orient v -command ".t yview"
+pack .scrolly -side right -fill y
+pack .t -side left -fill both -expand 1
+::autoscroll::autoscroll .scrolly
+}]
+
+
 [keywords scroll scrollbar]
 [manpage_end]
