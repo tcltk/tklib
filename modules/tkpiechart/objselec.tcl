@@ -1,7 +1,7 @@
 # copyright (C) 1997-98 Jean-Luc Fontaine (mailto:jfontain@free.fr)
 # this program is free software: please read the COPYRIGHT file enclosed in this package or use the Help Copyright menu
 
-# $Id: objselec.tcl,v 1.10 2002/05/30 17:11:45 jfontain Exp $
+# $Id: objselec.tcl,v 1.11 2004/04/13 14:18:56 jfontain Exp $
 
 # implements selection on a list of object identifiers (sortable list of integer), for a listbox implementation, for example
 
@@ -20,7 +20,7 @@
             set last [lsearch -exact $list $selector::($this,lastSelected)]
             set index [lsearch -exact $list $id]
             selector::clear $this
-            if {$index>$last} {
+            if {$index > $last} {
                 selector::set $this [lrange $list $last $index] 1
             } else {
                 selector::set $this [lrange $list $index $last] 1
