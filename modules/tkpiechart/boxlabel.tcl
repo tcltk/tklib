@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.41 1999/03/27 21:41:06 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.41.1.1 2000/03/05 20:55:56 jfontain Exp $}
 
 class pieBoxLabeler {
 
@@ -47,8 +47,19 @@ class pieBoxLabeler {
     }
 
     proc set {this label value} {
-        regsub {:.*$} [switched::cget $label -text] ": $value" text
+        regsub {:[^:]*$} [switched::cget $label -text] ": $value" text                  ;# update string part after last semi-column
         switched::configure $label -text $text
+    }
+
+    proc label {this label args} {
+        ::set text [switched::cget $label -text]
+        if {[llength $args]==0} {
+            regexp {^(.*):} $text dummy text
+            return $text
+        } else {
+            regsub {^.*:} $text [lindex $args 0]: text                                 ;# update string part before last semi-column
+            switched::configure $label -text $text
+        }
     }
 
     proc selectState {this label {selected {}}} {
