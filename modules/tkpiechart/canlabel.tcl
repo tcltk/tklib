@@ -1,4 +1,4 @@
-set rcsId {$Id: canlabel.tcl,v 1.1 1995/09/28 15:53:54 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.2 1995/09/28 16:05:07 jfontain Exp $}
 
 proc canvasLabel::canvasLabel {id canvas x y args} {
     global canvasLabel
@@ -23,49 +23,70 @@ proc canvasLabel::configure {id args} {
     # emulate label widget behavior
     global canvasLabel
 
-    set canvas $canvasLabel($id,canvas)
-    set rectangle $canvasLabel($id,rectangle)
-    set text $canvasLabel($id,text)
-
     set number [llength $args]
     for {set index 0} {$index<$number} {incr index} {
-        set switch [lindex $args $index]
-        set option [lindex $args [incr index]]
-        switch -- $switch {
+        set option [lindex $args $index]
+        set value [lindex $args [incr index]]
+        switch -- $option {
             -background {
-                $canvas itemconfigure $rectangle -fill $option
+                $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) -fill $value
             }
             -foreground {
-                $canvas itemconfigure $text -fill $option
+                $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,text) -fill $value
             }
             -borderwidth {
-                $canvas itemconfigure $rectangle -width $option
+                $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) -width $value
             }
             -bitmap {
-                $canvas itemconfigure $rectangle -stipple $option
+                $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) -stipple $value
             }
             -anchor {
-                set canvasLabel($id,anchor) $option
+                set canvasLabel($id,anchor) $value
                 canvasLabel::sizeRectangle $id
             }
             -font -
             -justify -
             -text -
             -width {
-                $canvas itemconfigure $text $switch $option
+                $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,text) $option $value
                 canvasLabel::sizeRectangle $id
             }
             -bordercolor {
-                $canvas itemconfigure $rectangle -outline $option
+                $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) -outline $value
             }
         }
     }
 }
 
-proc canvasLabel::cget {id} {
+proc canvasLabel::cget {id option} {
     global canvasLabel
 
-    return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,text) -text]
+    switch -- $option {
+        -background {
+            return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,rectangle) -fill]
+        }
+        -foreground {
+            return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,text) -fill]
+        }
+        -borderwidth {
+            return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,rectangle) -width]
+        }
+        -bitmap {
+            return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,rectangle) -stipple]
+        }
+        -anchor {
+            return $canvasLabel($id,anchor)
+        }
+        -font -
+        -justify -
+        -text -
+        -width {
+            return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,text) $option]
+        }
+        -bordercolor {
+            return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,rectangle) -outline]
+        }
+    }
 }
 
 proc canvasLabel::sizeRectangle {id} {
