@@ -1,8 +1,14 @@
+2005-03-31  Andreas Kupries <andreask@activestate.com>
+
+	* installed_modules.tcl: Added 'get'string' and 'history' to the
+	  list of installed modules. These are new modules added a few
+	  days ago, by Aaron Faupell.
+
 2004-07-22  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* installed_modules.tcl: added ico to list of installed modules.
 	* modules/ico/*: new 'ico' module for extracting icos from exe/ico
-	files - works x-platform.
+	  files - works x-platform.
 
 2004-06-29  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
