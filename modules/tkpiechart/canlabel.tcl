@@ -1,4 +1,4 @@
-set rcsId {$Id: canlabel.tcl,v 1.3 1995/09/28 17:26:27 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.4 1995/09/28 21:16:30 jfontain Exp $}
 
 proc canvasLabel::canvasLabel {id canvas x y args} {
     global canvasLabel
@@ -16,7 +16,7 @@ proc canvasLabel::canvasLabel {id canvas x y args} {
 proc canvasLabel::~canvasLabel {id} {
     global canvasLabel
 
-    canvasLabel($id,canvas) delete canvasLabel($id)
+    $canvasLabel($id,canvas) delete canvasLabel($id)
 }
 
 proc canvasLabel::configure {id args} {
