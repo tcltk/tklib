@@ -4,8 +4,8 @@ implementation with Tcl, not as an extension.
 It was tested with both Tcl7.4/Tk4.0 and Tcl7.5/Tk4.1 (yes, it even
 works on Windows! I have not tried the Mac yet).
 
-It is object oriented in a way, using pure Tcl code (read the OOTCL
-file for more details). Also look at the oop manual page.
+It is object oriented using the stooop (Simple Tcl Only Object
+Oriented Programming) extension (version 2.2.1).
 
 Run the demo script to see what it looks like, read the pie man page
 to understand how to use it.
@@ -22,4 +22,4 @@ Note: there is a piecrunch.tcl file that is a stripped version of all
 the Tcl files needed for using pies: just source it (thanks to Laurent
 Demailly for his tcl_cruncher utility).
 
-Jean-Luc Fontaine (jfontain@pluton.experdata.fr)
+Jean-Luc Fontaine (mailto:jfontain@pluton.experdata.fr)
