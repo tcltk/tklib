@@ -7,7 +7,7 @@
 [description]
 
 This package provides functions for reading and writing Windows icons
-from ICO, ICL, EXE, and DLL files.
+from ICO, EXE, DLL, ICL, and BMP files.
 
 
 [section API]
@@ -121,7 +121,10 @@ cache for the specific [opt file] or all files.
 
 [call [cmd ::ico::transparentColor] [arg image] [arg color]]
 
-Sets every pixel matching [arg color] in Tk image [arg image] to transparent.
+If [arg image] is a single word it is assumed to be the name of a Tk image.
+All pixels matching [arg color] in the [arg image] will be set transparent.
+Alternatively, [arg image] may be a color list in which case a modified list
+is returned.
 
 
 [call [cmd ::ico::Show] [arg file] [opt "[arg option] [arg value]..."]]
