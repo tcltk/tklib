@@ -1,0 +1,43 @@
+[comment {-*- tcl -*- doctools manpage}]
+[manpage_begin tooltip n 1.1]
+[moddesc   {}]
+[titledesc {}]
+[require Tcl 8.4]
+[require tooltip [opt 1.1]]
+[description]
+
+This package provides tooltips, a small text message that is
+displayed when the mouse hovers over a widget.
+
+[para]
+
+[list_begin definitions]
+
+[call [cmd ::tooltip::tooltip] [arg command] [opt options]]
+commands:
+[call clear [opt pattern]]
+[call delay [opt millisecs]
+[call disable]
+[call enable]
+
+[call [cmd ::tooltip::tooltip] [arg pathName] [opt options] [opt message]
+This command arranges for widget [pathName] to display a tooltip with
+message [opt message]
+[list_begin opt]
+[opt_def -index]
+[opt_def -item]
+[list_end]
+
+[list_end]
+
+[section EXAMPLE]
+
+[example {
+package require tooltip
+pack [label .l -text "label"]
+tooltip::tooltip .l "This is a label widget"
+}]
+
+
+[keywords tooltip hover balloon help]
+[manpage_end]
