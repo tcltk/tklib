@@ -1,17 +1,17 @@
-set rcsId {$Id: pie.tcl,v 1.74 1998/06/02 22:38:27 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.75 1998/06/07 10:09:21 jfontain Exp $}
 
-package provide tkpiechart 5.0
+package provide tkpiechart 5.1
 
 class pie {
     set pie::(colors) {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}
 }
 
 proc pie::pie {this canvas x y args} switched {$args} {                         ;# note: all pie elements are tagged with pie($this)
-    set pie::($this,x) [winfo fpixels $canvas $x]
-    set pie::($this,y) [winfo fpixels $canvas $y]
     set pie::($this,canvas) $canvas
     set pie::($this,colorIndex) 0
     set pie::($this,slices) {}
+    # use an empty image as an origin marker with only 2 coordinates
+    set pie::($this,origin) [$canvas create image $x $y -tags pie($this)]
     switched::complete $this
     complete $this                                                  ;# wait till all options have been set for initial configuration
 }
@@ -21,6 +21,7 @@ proc pie::~pie {this} {
     delete $pie::($this,labeler)
     eval delete $pie::($this,slices) $pie::($this,backgroundSlice)
     catch {delete $pie::($this,selector)}
+    $pie::($this,canvas) delete $pie::($this,origin)
 }
 
 proc pie::options {this} {
@@ -55,7 +56,7 @@ proc pie::set-thickness {this value} {
     set pie::($this,thickness) [winfo fpixels $pie::($this,canvas) $value]                                      ;# convert to pixels
 }
 
-proc pie::set-height {this value} {
+proc pie::set-height {this value} {                                                ;# height is slices height not counting thickness
     set pie::($this,height) [winfo fpixels $pie::($this,canvas) $value]                                         ;# convert to pixels
     if {$switched::($this,complete)} {
         update $this
@@ -82,7 +83,6 @@ proc pie::complete {this} {                                                     
         set pie::($this,labeler) $switched::($this,-labeler)                                             ;# use user defined labeler
     }
     $canvas addtag pie($this) withtag pieLabeler($pie::($this,labeler))
-    pieLabeler::link $pie::($this,labeler) $this                                                            ;# link labeler with pie
 
     if {[string length $switched::($this,-background)]==0} {
         set bottomColor {}
@@ -90,12 +90,13 @@ proc pie::complete {this} {                                                     
         set bottomColor [tkDarken $switched::($this,-background) 60]
     }
     set slice [new slice\
-        $canvas $pie::($this,x) $pie::($this,y) [expr {$pie::($this,initialWidth)/2}] [expr {$pie::($this,initialHeight)/2}]\
+        $canvas [expr {$pie::($this,initialWidth)/2}] [expr {$pie::($this,initialHeight)/2}]\
         -startandextent {90 360} -height $pie::($this,thickness) -topcolor $switched::($this,-background) -bottomcolor $bottomColor\
     ]
     $canvas addtag pie($this) withtag slice($slice)
-    $canvas addtag pieGraphics($this) withtag slice($slice)
+    $canvas addtag pieSlices($this) withtag slice($slice)
     set pie::($this,backgroundSlice) $slice
+    update $this
 }
 
 proc pie::newSlice {this {text {}}} {
@@ -108,16 +109,14 @@ proc pie::newSlice {this {text {}}} {
     set color [lindex $switched::($this,-colors) $pie::($this,colorIndex)]                                        ;# get a new color
     set pie::($this,colorIndex) [expr {($pie::($this,colorIndex)+1)%[llength $switched::($this,-colors)]}]  ;# circle through colors
 
-    # make sure slice is positioned correctly in case pie was moved
-    foreach {x y} [$canvas coords slice($pie::($this,backgroundSlice))] {}
-
     # darken slice top color by 40% to obtain bottom color, as it is done for Tk buttons shadow, for example
     set slice [new slice\
-        $canvas $x $y [expr {$pie::($this,initialWidth)/2}] [expr {$pie::($this,initialHeight)/2}] -startandextent "$start 0"\
+        $canvas [expr {$pie::($this,initialWidth)/2}] [expr {$pie::($this,initialHeight)/2}] -startandextent "$start 0"\
         -height $pie::($this,thickness) -topcolor $color -bottomcolor [tkDarken $color 60]\
     ]
+    eval $canvas move slice($slice) [$canvas coords pieSlices($this)]  ;# place slice at other slices position in case pie was moved
     $canvas addtag pie($this) withtag slice($slice)
-    $canvas addtag pieGraphics($this) withtag slice($slice)
+    $canvas addtag pieSlices($this) withtag slice($slice)
     lappend pie::($this,slices) $slice
 
     if {[string length $text]==0} {                                                           ;# generate label text if not provided
@@ -128,7 +127,7 @@ proc pie::newSlice {this {text {}}} {
     set pie::($this,sliceLabel,$slice) $label
     $canvas addtag pie($this) withtag pieLabeler($labeler)                     ;# update tags which canvas does not automatically do
 
-    update $this                                                                      ;# update sizes to take new label into account
+    update $this
 
     if {$switched::($this,-selectable)} {                                             ;# toggle select state at every button release
         if {![info exists pie::($this,selector)]} {                                                  ;# create selector if necessary
@@ -164,6 +163,7 @@ proc pie::deleteSlice {this slice} {
         selector::remove $pie::($this,selector) $pie::($this,sliceLabel,$slice)
     }
     unset pie::($this,sliceLabel,$slice)
+    update $this
 }
 
 proc pie::sizeSlice {this slice unitShare {valueToDisplay {}}} {
@@ -235,20 +235,27 @@ proc pie::currentSlice {this} {                           ;# return current slic
     return 0                                                                                                     ;# no current slice
 }
 
-proc pie::update {this} {
-    # rescale slices while taking labels room into account
+proc pie::update {this} {                         ;# place and scale slices along and with labels array in its current configuration
+    set canvas $pie::($this,canvas)
+    pieLabeler::room $pie::($this,labeler) room                                                     ;# take labels room into account
+    foreach {x y} [$canvas coords $pie::($this,origin)] {}                                       ;# retrieve current pie coordinates
+    set x [expr {$x+$room(left)}]                                                                    ;# calculate slices coordinates
+    set y [expr {$y+$room(top)}]
+    foreach {xSlices ySlices} [$canvas coords pieSlices($this)] {}                  ;# move slices in order to leave room for labels
+    $canvas move pieSlices($this) [expr {$x-$xSlices}] [expr {$y-$ySlices}]
+    set slicesWidth [expr {$switched::($this,-width)-$room(left)-$room(right)}]
+    set slicesHeight [expr {$switched::($this,-height)-$room(top)-$room(bottom)}]
     set scale [list\
-        [expr {($switched::($this,-width)-[pieLabeler::horizontalRoom $pie::($this,labeler)])/$pie::($this,initialWidth)}]\
-        [expr {\
-            ($switched::($this,-height)-[pieLabeler::verticalRoom $pie::($this,labeler)])/\
-            ($pie::($this,initialHeight)+$pie::($this,thickness))\
-        }]\
+        [expr {$slicesWidth/$pie::($this,initialWidth)}]\
+        [expr {$slicesHeight/($pie::($this,initialHeight)+$pie::($this,thickness))}]\
     ]
     switched::configure $pie::($this,backgroundSlice) -scale $scale                             ;# update scale of background slice,
     foreach slice $pie::($this,slices) {
         switched::configure $slice -scale $scale                                                                 ;# and other slices
     }
-    pieLabeler::update $pie::($this,labeler)                          ;# finally update labels now that pie graphics are in position
+    # finally update labels now that pie graphics are in position
+foreach {x y} [$canvas coords $pie::($this,origin)] {}
+    pieLabeler::update $pie::($this,labeler) $x $y [expr {$x+$switched::($this,-width)}] [expr {$y+$switched::($this,-height)}]
 }
 
 class pie {                                                                                     ;# define various utility procedures
