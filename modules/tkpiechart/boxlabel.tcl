@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.25 1998/03/21 10:16:11 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.26 1998/03/21 21:22:29 jfontain Exp $}
 
 class pieBoxLabeller {
 
@@ -29,12 +29,11 @@ class pieBoxLabeller {
 
     proc create {this slice args} {
         if {![info exists pieBoxLabeller::($this,array)]} {                                                 ;# create a labels array
-            set options "-justify $switched::($this,-justify) -xoffset $switched::($this,-xoffset)"
-            catch {lappend options -font $switched::($this,-font)}                                   ;# eventually use labeller font
             set box [$pieLabeller::($this,canvas) bbox pie($pieLabeller::($this,pie))]                   ;# position array below pie
-            set pieBoxLabeller::($this,array) [eval new canvasLabelsArray\
+            set pieBoxLabeller::($this,array) [new canvasLabelsArray\
                 $pieLabeller::($this,canvas) [lindex $box 0] [expr {[lindex $box 3]+$switched::($this,-offset)}]\
-                [expr {[lindex $box 2]-[lindex $box 0]}] $options\
+                [expr {[lindex $box 2]-[lindex $box 0]}]\
+                -justify $switched::($this,-justify) -xoffset $switched::($this,-xoffset) -font $switched::($this,-font)\
             ]
         }
         # this label font may be overriden in arguments
@@ -43,6 +42,9 @@ class pieBoxLabeller {
         $pieLabeller::($this,canvas) addtag pieLabeller($this) withtag canvasLabelsArray($pieBoxLabeller::($this,array))
         switched::configure $label -text [switched::cget $label -text]:                        ;# always append semi-column to label
         return $label
+    }
+
+    proc delete {this label} {
     }
 
     proc update {this label value} {
