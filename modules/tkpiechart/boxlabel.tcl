@@ -1,38 +1,55 @@
-set rcsId {$Id: boxlabel.tcl,v 1.23 1998/03/14 09:48:05 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.24 1998/03/15 20:03:38 jfontain Exp $}
 
-class pieBoxLabeller {}
+class pieBoxLabeller {
 
-proc pieBoxLabeller::pieBoxLabeller {this canvas args} pieLabeller {$canvas $args} {
-    array set option {-justify left}                                              ;# set options default then parse switched options
-    array set option $args
-    set pieBoxLabeller::($this,justify) $option(-justify)
-}
+    proc pieBoxLabeller {this canvas args} pieLabeller {$canvas $args} switched {$args} {
+        switched::complete $this
+    }
 
-proc pieBoxLabeller::~pieBoxLabeller {this} {
-    catch {delete $pieBoxLabeller::($this,array)}                                             ;# array may not have been created yet
-}
+    proc ~pieBoxLabeller {this} {
+        catch {delete $pieBoxLabeller::($this,array)}                                         ;# array may not have been created yet
+    }
 
-proc pieBoxLabeller::create {this sliceId args} {
-    if {![info exists pieBoxLabeller::($this,array)]} {                                                     ;# create a labels array
-        set options "-justify $pieBoxLabeller::($this,justify) -xoffset $pieLabeller::($this,xOffset)"
-        catch {lappend options -font $pieLabeller::($this,font)}                                     ;# eventually use labeller font
-        set box [$pieLabeller::($this,canvas) bbox pie($pieLabeller::($this,pieId))]                     ;# position array below pie
-        set pieBoxLabeller::($this,array) [eval new canvasLabelsArray\
-            $pieLabeller::($this,canvas) [lindex $box 0] [expr {[lindex $box 3]+$pieLabeller::($this,offset)}]\
-            [expr {[lindex $box 2]-[lindex $box 0]}] $options\
+    proc options {this} {
+        return [list\
+            [list -font $pieLabeller::(defaultFont) $pieLabeller::(defaultFont)]\
+            [list -justify left left]\
+            [list -offset 5 5]\
+            [list -xoffset 0 0]\
         ]
     }
-    # this label font may be overriden in arguments
-    set labelId [eval canvasLabelsArray::create $pieBoxLabeller::($this,array) $args]
-    # refresh our tags
-    $pieLabeller::($this,canvas) addtag pieLabeller($this) withtag canvasLabelsArray($pieBoxLabeller::($this,array))
-    canvasLabel::configure $labelId -text [canvasLabel::cget $labelId -text]:                  ;# always append semi-column to label
-    return $labelId
-}
 
-proc pieBoxLabeller::update {this labelId value} {
-    regsub {:.*$} [canvasLabel::cget $labelId -text] ": $value" text
-    canvasLabel::configure $labelId -text $text
-}
+    foreach option {-font -justify -offset -xoffset} {                                                 ;# no dynamic options allowed
+        proc set$option {this value} "
+            if {\$switched::(\$this,complete)} {
+                error {option $option cannot be set dynamically}
+            }
+        "
+    }
 
-proc pieBoxLabeller::rotate {this labelId} {}                                            ;# we are not concerned with slice rotation
+    proc create {this slice args} {
+        if {![info exists pieBoxLabeller::($this,array)]} {                                                 ;# create a labels array
+            set options "-justify $switched::($this,-justify) -xoffset $switched::($this,-xoffset)"
+            catch {lappend options -font $switched::($this,-font)}                                   ;# eventually use labeller font
+            set box [$pieLabeller::($this,canvas) bbox pie($pieLabeller::($this,pie))]                   ;# position array below pie
+            set pieBoxLabeller::($this,array) [eval new canvasLabelsArray\
+                $pieLabeller::($this,canvas) [lindex $box 0] [expr {[lindex $box 3]+$switched::($this,-offset)}]\
+                [expr {[lindex $box 2]-[lindex $box 0]}] $options\
+            ]
+        }
+        # this label font may be overriden in arguments
+        set label [eval canvasLabelsArray::create $pieBoxLabeller::($this,array) $args]
+        # refresh our tags
+        $pieLabeller::($this,canvas) addtag pieLabeller($this) withtag canvasLabelsArray($pieBoxLabeller::($this,array))
+        canvasLabel::configure $label -text [canvasLabel::cget $label -text]:                  ;# always append semi-column to label
+        return $label
+    }
+
+    proc update {this label value} {
+        regsub {:.*$} [canvasLabel::cget $label -text] ": $value" text
+        canvasLabel::configure $label -text $text
+    }
+
+    proc rotate {this label} {}                                                          ;# we are not concerned with slice rotation
+
+}
