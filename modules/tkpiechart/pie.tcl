@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.15 1995/09/22 21:15:28 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.16 1995/09/24 15:57:58 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -16,6 +16,10 @@ proc pie::pie {id canvas width height {thickness 0} {topColor {}} {bottomColor {
         [new slice $canvas $pie($id,radiusX) $pie($id,radiusY) [expr $PI/2] 7 $pie($id,thickness) $topColor $bottomColor]
     $canvas addtag pie($id) withtag slice($pie($id,backgroundSlice))
     set pie($id,slices) {}
+
+    set coordinates [$canvas coords slice($pie($id,backgroundSlice))]
+    set pie($id,xOrigin) [lindex $coordinates 0]
+    set pie($id,yOrigin) [lindex $coordinates 1]
 
     if {[llength $sliceColors]==0} {
         set pie($id,colors) {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}
@@ -57,6 +61,12 @@ proc pie::newSlice {id {text {}}} {
     ]
     $pie($id,canvas) addtag pie($id) withtag slice($sliceId)
     lappend pie($id,slices) $sliceId
+
+    # make sure slice is positioned correctly in case pie was moved
+    set coordinates [$pie($id,canvas) coords slice($pie($id,backgroundSlice))]
+    $pie($id,canvas) move slice($sliceId)\
+        [expr [lindex $coordinates 0]-$pie($id,xOrigin)] [expr [lindex $coordinates 1]-$pie($id,yOrigin)]
+
     return $sliceId
 }
 
