@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.30 1998/03/21 10:20:23 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.31 1998/03/25 20:45:16 jfontain Exp $}
 
 
 class slice {}
@@ -17,12 +17,16 @@ proc slice::slice {this canvas x y radiusX radiusY start extent args} switched {
 }
 
 proc slice::~slice {this} {
+    if {[string length $switched::($this,-deletecommand)]>0} {                              ;# always invoke command at global level
+        uplevel $switched::($this,-deletecommand)
+    }
     $slice::($this,canvas) delete slice($this)
 }
 
 proc slice::options {this} {
     return [list\
         [list -bottomcolor {} {}]\
+        [list -deletecommand {} {}]\
         [list -height 0 0]\
         [list -topcolor {} {}]\
     ]
@@ -35,6 +39,8 @@ foreach option {-bottomcolor -height -topcolor} {                               
         }
     "
 }
+
+proc slice::set-deletecommand {this value} {}                                                    ;# data is stored at switched level
 
 proc slice::normalizedAngle {value} {                                 ;# normalize value between -180 and 180 degrees (not included)
     while {$value>=180} {
