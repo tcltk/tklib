@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.46 1998/11/14 20:27:30 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.47 1999/03/24 21:57:40 jfontain Exp $}
 
 class piePeripheralLabeler {
 
@@ -113,11 +113,7 @@ class piePeripheralLabeler {
         if {[string length $selected]==0} {                                                   ;# return current state if no argument
             return $piePeripheralLabeler::($this,selected,$label)
         }
-        if {$selected} {
-            switched::configure $label -borderwidth 2
-        } else {
-            switched::configure $label -borderwidth 1
-        }
+        switched::configure $label -select $selected
         ::set piePeripheralLabeler::($this,selected,$label) $selected
     }
 
