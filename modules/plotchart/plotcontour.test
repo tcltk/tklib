@@ -1,7 +1,9 @@
 # Informal test for plotcontour
 #
-source plotchart.tcl
+source [file join [file dirname [info script]] plotchart.tcl]
+package require Plotchart
 
+test "Plotcontours-1.0" "Informal test for plotcontour" {
 ########################################################################
 
 proc cowboyhat {x y} {
@@ -108,6 +110,7 @@ $chart contourfill $x $y $f $contours
 $chart grid $x $y
 
 set t [toplevel .contourlines]
+lappend windows $t
 wm title $t "Contour Demo : contourlines (default colormap)"
 set c [canvas $t.c  -background white \
           -width 500 -height 500]
@@ -119,6 +122,7 @@ $chart1 contourlines $x $y $f $contours
 
 
 set t [toplevel .hot]
+lappend windows $t
 wm title $t "Contour Demo : contourlines (hot colormap)"
 set c [canvas $t.c  -background white \
           -width 500 -height 500]
@@ -131,6 +135,7 @@ $chart2 grid $x $y
 
 
 set t [toplevel .gray]
+lappend windows $t
 wm title $t "Contour Demo : gray contourfill , jet contourlines"
 set c [canvas $t.c  -background white \
           -width 500 -height 500]
@@ -146,6 +151,7 @@ $chart3 grid $x $y
 
 
 set t [toplevel .cool]
+lappend windows $t
 wm title $t "Contour Demo : contourlines (cool colormap)"
 set c [canvas $t.c  -background white \
           -width 500 -height 500]
@@ -159,6 +165,7 @@ $chart4 grid $x $y
 
 
 set t [toplevel .defcont]
+lappend windows $t
 wm title $t "Contour Demo : default contours (jet colormap)"
 set c [canvas $t.c  -background white \
           -width 500 -height 500]
@@ -172,6 +179,7 @@ $chart5 grid $x $y
 
 
 set t [toplevel .3dcontour]
+lappend windows $t
 wm title $t "Contour Demo : contours on a 3DPlot"
 set c [canvas $t.c  -background white \
           -width 500 -height 500]
@@ -198,4 +206,17 @@ set chart6 [::Plotchart::create3DPlot $c $xlimits $ylimits $zlimits]
 $chart6 title "3D Plot"
 $chart6 plotfuncont cowboyhat $contours
 
+after 10000 {
+   foreach t $windows {
+      destroy $t
+   }
+   set vv 1
+}
+vwait vv
+set v 1
+} 1
+
+
+# -------------------------------------------------------------------------
+::tcltest::cleanupTests
 
