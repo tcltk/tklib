@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.40 1998/11/14 20:31:41 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.41 1999/03/27 21:41:06 jfontain Exp $}
 
 class pieBoxLabeler {
 
@@ -55,11 +55,7 @@ class pieBoxLabeler {
         if {[string length $selected]==0} {                                                   ;# return current state if no argument
             return $pieBoxLabeler::($this,selected,$label)
         }
-        if {$selected} {
-            switched::configure $label -borderwidth 2
-        } else {
-            switched::configure $label -borderwidth 1
-        }
+        switched::configure $label -select $selected
         ::set pieBoxLabeler::($this,selected,$label) $selected
     }
 
