@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.13 1995/10/11 21:00:16 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.14 1995/10/12 22:53:17 jfontain Exp $}
 
 source pielabel.tcl
 source labarray.tcl
@@ -20,7 +20,7 @@ proc piePeripheralLabeller::piePeripheralLabeller {id canvas args} {
 }
 
 proc piePeripheralLabeller::~piePeripheralLabeller {id} {
-    global pieLabeller
+    global piePeripheralLabeller pieLabeller
 
     # array may not have been created yet
     catch {delete canvasLabelsArray $piePeripheralLabeller($id,array)}
