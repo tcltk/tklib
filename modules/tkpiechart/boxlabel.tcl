@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.28 1998/03/22 19:00:34 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.29 1998/03/26 20:19:30 jfontain Exp $}
 
 class pieBoxLabeller {
 
@@ -52,10 +52,6 @@ class pieBoxLabeller {
     proc update {this label value} {
         regsub {:.*$} [switched::cget $label -text] ": $value" text
         switched::configure $label -text $text
-    }
-
-    proc bind {this label sequence command} {                                                              ;# label is a canvasLabel
-        $pieLabeller::($this,canvas) bind canvasLabel($label) $sequence $command
     }
 
     proc selectState {this label {selected {}}} {
