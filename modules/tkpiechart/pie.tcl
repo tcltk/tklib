@@ -1,4 +1,4 @@
-# $Id: pie.tcl,v 1.4 1994/09/01 15:54:03 jfontain Exp $
+# $Id: pie.tcl,v 1.5 1994/11/02 14:17:48 jfontain Exp $
 
 source ../tools/slice.tcl
 
@@ -23,22 +23,23 @@ set pie(darks,orange) "#BF7F00"
 set pie(colors) "cyan green red yellow blue orange gray magenta white"
 set pie(separatorHeight) 5
 
-proc pie::pie {id parentWidget radiusX radiusY {height 0} {topColor ""} {bottomColor ""} {highlight auto}} {
+proc pie::pie {id parentWidget width height {thickness 0} {topColor ""} {bottomColor ""} {highlight auto}} {
     # slice / label highlighting can be automatic when slices of identical colors exist (auto), or on or off (boolean) no matter
     # the number of slices
     global pie PI
 
+    set pie($id,radiusX) [set radiusX [expr [winfo fpixels $parentWidget $width]/2.0]]
+    set pie($id,radiusY) [set radiusY [expr [winfo fpixels $parentWidget $height]/2.0]]
+    set pie($id,thickness) [set thickness [winfo fpixels $parentWidget $thickness]]
+
     set pie($id,frame) [frame [objectWidgetName pie $id $parentWidget] -bd 0]
-    set pie($id,canvas) [canvas $pie($id,frame).canvas -width [expr (2*$radiusX)+1] -height [expr (2*$radiusY)+$height+1]]
+    set pie($id,canvas) [canvas $pie($id,frame).canvas -width [expr (2*$radiusX)+1] -height [expr (2*$radiusY)+$thickness+1]]
     pack $pie($id,canvas)
     pack [frame $pie($id,frame).separator -height $pie(separatorHeight)]
     # arrange slice labels in rows of 2 entries
     pack [frame $pie($id,frame).entriesFrame] -fill x
     pack [frame $pie($id,frame).entriesFrame.leftFrame] -side left -fill both -expand 1
     pack [frame $pie($id,frame).entriesFrame.rightFrame] -side right -fill both -expand 1
-    set pie($id,radiusX) $radiusX
-    set pie($id,radiusY) $radiusY
-    set pie($id,height) $height
     if {[set pie($id,automaticHighlight) [expr ("[string tolower $highlight]"=="auto")]]} {
         # no need to highlight first slices
         set pie($id,highlight) 0
@@ -46,7 +47,7 @@ proc pie::pie {id parentWidget radiusX radiusY {height 0} {topColor ""} {bottomC
         set pie($id,highlight) [boolean $highlight]
     }
     set pie($id,backgroundSlice)\
-        [new slice $pie($id,canvas) $radiusX $radiusY $radiusX $radiusY [expr $PI/2] 7 $height $topColor $bottomColor]
+        [new slice $pie($id,canvas) $radiusX $radiusY $radiusX $radiusY [expr $PI/2] 7 $thickness $topColor $bottomColor]
     set pie($id,slices) ""
 }
 
@@ -69,12 +70,12 @@ proc pie::newSlice {id {text ""}} {
     }
     # get a new color
     set color [lindex $pie(colors) [expr [llength $pie($id,slices)]%[llength $pie(colors)]]]
+    set numberOfSlices [llength $pie($id,slices)]
     if {$text==""} {
         # generate label text if not provided
-        set text "slice [llength $pie($id,slices)]"
+        set text "slice [expr $numberOfSlices+1]"
     }
     # arrange slice labels in rows of 2 entries
-    set numberOfSlices [llength $pie($id,slices)]
     # put even numbered entries of the left side, odd ones on the right side, in order to fill entries row by row
     set side [expr ($numberOfSlices%2)==0?"left":"right"]
     set rowFrame [frame [objectWidgetName row [expr $numberOfSlices/2] $pie($id,frame).entriesFrame.${side}Frame] -bd 2]
@@ -82,7 +83,7 @@ proc pie::newSlice {id {text ""}} {
 
     set sliceId [new slice\
         $pie($id,canvas) $pie($id,radiusX) $pie($id,radiusY) $pie($id,radiusX) $pie($id,radiusY) $startRadian 0\
-        $pie($id,height) $pie(lights,$color) $pie(darks,$color)\
+        $pie($id,thickness) $pie(lights,$color) $pie(darks,$color)\
     ]
     set pie($id,$sliceId,rowFrame) $rowFrame
 
@@ -126,5 +127,7 @@ proc pie::sizeSlice {id sliceId perCent} {
         error "could not find slice $sliceId in pie $id slices"
     }
     $pie($id,$sliceId,valueLabel) configure -text $perCent
+    # cannot display slices that occupy more than 100%
+    set perCent [minimum $perCent 100]
     global slice twoPI
     set newExtent [expr $perCent*$twoPI/100]
