@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.24 1995/10/14 17:13:32 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.25 1995/10/21 20:27:40 jfontain Exp $}
 
 source util.tcl
 
@@ -16,7 +16,6 @@ proc normalizedAngle {value} {
 proc slice::slice {this canvas x y radiusX radiusY start extent args} {
     # all dimensions must be in pixels
     # note: all slice elements are tagged with slice($this)
-    global slice
 
     # set options default then parse switched options
     array set option {-height 0 -topcolor {} -bottomcolor {}}
@@ -62,14 +61,10 @@ proc slice::slice {this canvas x y radiusX radiusY start extent args} {
 }
 
 proc slice::~slice {this} {
-    global slice
-
     $slice($this,canvas) delete slice($this)
 }
 
 proc slice::update {this start extent} {
-    global slice
-
     set canvas $slice($this,canvas)
 
     # first store slice position in case it was moved as a whole
@@ -98,7 +93,7 @@ proc slice::update {this start extent} {
 }
 
 proc slice::updateBottom {this} {
-    global slice PI
+    global PI
 
     set start $slice($this,start)
     set extent $slice($this,extent)
@@ -201,27 +196,20 @@ proc slice::updateBottom {this} {
 }
 
 proc slice::position {this start} {
-    global slice
-
     slice::update $this $start $slice($this,extent)
 }
 
 proc slice::rotate {this angle} {
-    global slice
-
     if {$angle!=0} {
         slice::update $this [expr $slice($this,start)+$angle] $slice($this,extent)
     }
 }
 
 proc slice::size {this extent} {
-    global slice
-
     slice::update $this $slice($this,start) $extent
 }
 
 proc slice::data {this arrayName} {
-    global slice
     upvar $arrayName data
 
     set data(start) $slice($this,start)

@@ -1,11 +1,10 @@
-set rcsId {$Id: pie.tcl,v 1.38 1995/10/14 17:13:32 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.39 1995/10/21 20:27:40 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
 
 proc pie::pie {this canvas x y width height args} {
     # note: all pie elements are tagged with pie($this)
-    global pie
 
     # set options default then parse switched options
     array set option {-thickness 0 -background {} -colors {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}}
@@ -43,8 +42,6 @@ proc pie::pie {this canvas x y width height args} {
 }
 
 proc pie::~pie {this} {
-    global pie
-
     delete pieLabeller $pie($this,labellerId)
     foreach sliceId $pie($this,sliceIds) {
         delete slice $sliceId
@@ -53,7 +50,7 @@ proc pie::~pie {this} {
 }
 
 proc pie::newSlice {this {text {}}} {
-    global pie slice
+    global slice
 
     # calculate start radian for new slice (slices grow clockwise from 12 o'clock)
     set start 90
@@ -89,7 +86,7 @@ proc pie::newSlice {this {text {}}} {
 
 proc pie::sizeSlice {this sliceId unitShare {valueToDisplay {}}} {
     # share of whole pie between 0 and 1
-    global pie slice
+    global slice
 
     if {[set index [lsearch $pie($this,sliceIds) $sliceId]]<0} {
         error "could not find slice $sliceId in pie $this slices"

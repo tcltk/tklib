@@ -1,10 +1,8 @@
-set rcsId {$Id: labarray.tcl,v 1.3 1995/10/14 17:13:32 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.4 1995/10/21 20:27:40 jfontain Exp $}
 
 source canlabel.tcl
 
 proc canvasLabelsArray::canvasLabelsArray {this canvas x y width args} {
-    global canvasLabelsArray
-
     set canvasLabelsArray($this,canvas) $canvas
     set canvasLabelsArray($this,width) [winfo fpixels $canvas $width]
     # use a dimensionless line as an origin marker
@@ -19,8 +17,6 @@ proc canvasLabelsArray::canvasLabelsArray {this canvas x y width args} {
 }
 
 proc canvasLabelsArray::~canvasLabelsArray {this} {
-    global canvasLabelsArray
-
     foreach label $canvasLabelsArray($this,labelIds) {
         delete canvasLabel $label
     }
@@ -29,8 +25,6 @@ proc canvasLabelsArray::~canvasLabelsArray {this} {
 }
 
 proc canvasLabelsArray::create {this args} {
-    global canvasLabelsArray
-
     if {[lsearch -exact $args -font]<0} {
         # eventually use array main font
         catch {lappend args -font $canvasLabelsArray($this,font)}
@@ -47,8 +41,6 @@ proc canvasLabelsArray::create {this args} {
 }
 
 proc canvasLabelsArray::position {this labelId} {
-    global canvasLabelsArray
-
     set canvas $canvasLabelsArray($this,canvas)
 
     set coordinates [$canvas coords $canvasLabelsArray($this,origin)]

@@ -1,8 +1,6 @@
-set rcsId {$Id: canlabel.tcl,v 1.11 1995/10/14 17:13:32 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.12 1995/10/21 20:27:40 jfontain Exp $}
 
 proc canvasLabel::canvasLabel {this canvas x y args} {
-    global canvasLabel
-
     set canvasLabel($this,canvas) $canvas
     # use a dimensionless line as an origin marker
     set canvasLabel($this,origin) [$canvas create line $x $y $x $y -fill {} -tags canvasLabel($this)]
@@ -20,14 +18,11 @@ proc canvasLabel::canvasLabel {this canvas x y args} {
 }
 
 proc canvasLabel::~canvasLabel {this} {
-    global canvasLabel
-
     $canvasLabel($this,canvas) delete canvasLabel($this)
 }
 
 proc canvasLabel::configure {this args} {
     # emulate label widget behavior
-    global canvasLabel
 
     set number [llength $args]
     for {set index 0} {$index<$number} {incr index} {
@@ -70,8 +65,6 @@ proc canvasLabel::configure {this args} {
 }
 
 proc canvasLabel::cget {this option} {
-    global canvasLabel
-
     switch -- $option {
         -background {
             return [$canvasLabel($this,canvas) itemcget $canvasLabel($this,rectangle) -fill]
@@ -104,8 +97,6 @@ proc canvasLabel::cget {this option} {
 }
 
 proc canvasLabel::update {this} {
-    global canvasLabel
-
     set canvas $canvasLabel($this,canvas)
     set rectangle $canvasLabel($this,rectangle)
     set text $canvasLabel($this,text)
