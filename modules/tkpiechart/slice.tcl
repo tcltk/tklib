@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.13 1995/09/24 17:45:37 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.14 1995/09/25 11:11:58 jfontain Exp $}
 
 source $env(AGVHOME)/tools/utility.tk
 
@@ -26,7 +26,7 @@ proc moduloPI {value} {
     return [expr $value>=$PI?$value-$twoPI:$value]
 }
 
-proc slice::slice {id canvas radiusX radiusY startRadian extentRadian {height 0} {topColor ""} {bottomColor ""}} {
+proc slice::slice {id canvas x y radiusX radiusY startRadian extentRadian {height 0} {topColor ""} {bottomColor ""}} {
     # note: all slice elements are tagged with slice($id)
     global slice PI twoPI
 
@@ -41,7 +41,8 @@ proc slice::slice {id canvas radiusX radiusY startRadian extentRadian {height 0}
     set slice($id,height) $height
 
     # use a dimensionless line as an origin marker
-    $canvas addtag slice($id) withtag [$canvas create line -$radiusX -$radiusY -$radiusX -$radiusY -fill {}]
+    set slice($id,origin) [$canvas create line -$radiusX -$radiusY -$radiusX -$radiusY -fill {}]
+    $canvas addtag slice($id) withtag $slice($id,origin)
 
     if {$height>0} {
         # 3D
@@ -70,6 +71,9 @@ proc slice::slice {id canvas radiusX radiusY startRadian extentRadian {height 0}
     set slice($id,topArc) [$canvas create arc -$radiusX -$radiusY $radiusX $radiusY -extent $extentDegrees -fill $topColor]
     $canvas addtag slice($id) withtag $slice($id,topArc)
 
+    # move slice so upper-left corner is at requested coordinates
+    $canvas move slice($id) [expr $x+$radiusX] [expr $y+$radiusY]
+
     slice::update $id [moduloPI $startRadian] $extentRadian
 }
 
@@ -85,9 +89,12 @@ proc slice::update {id radian extentRadian} {
     set canvas $slice($id,canvas)
 
     # first store slice position in case it was moved as a whole
-    set coordinates [$canvas coords $slice($id,topArc)]
+    set coordinates [$canvas coords slice($id)]
 
-    $canvas coords $slice($id,topArc) -$slice($id,radiusX) -$slice($id,radiusY) $slice($id,radiusX) $slice($id,radiusY)
+    set radiusX $slice($id,radiusX)
+    set radiusY $slice($id,radiusY)
+    $canvas coords $slice($id,origin) -$radiusX -$radiusY $radiusX $radiusY
+    $canvas coords $slice($id,topArc) -$radiusX -$radiusY $radiusX $radiusY
 
     set slice($id,start) [set startRadian [moduloPI $radian]]
     set startDegrees [expr $startRadian*180/$PI]
@@ -103,7 +110,7 @@ proc slice::update {id radian extentRadian} {
     }
 
     # now position slice at the correct coordinates
-    $canvas move slice($id) [expr [lindex $coordinates 0]+$slice($id,radiusX)] [expr [lindex $coordinates 1]+$slice($id,radiusY)]
+    $canvas move slice($id) [expr [lindex $coordinates 0]+$radiusX] [expr [lindex $coordinates 1]+$radiusY]
 }
 
 proc slice::updateBottom {id} {
