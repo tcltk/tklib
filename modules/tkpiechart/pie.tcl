@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.32 1995/10/04 09:59:50 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.33 1995/10/04 22:29:00 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -9,14 +9,24 @@ proc pie::pie {id canvas x y width height args} {
 
     # set options default then parse switched options
     array set option {-thickness 0 -background {} -colors {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}}
-    # other options: -labelsoffset, -font
     array set option $args
+
+    set pie($id,canvas) $canvas
+
+    if {[info exists option(-labeller)]} {
+        set pie($id,labeller) $option(-labeller)
+    } else {
+        # use default labeller
+        set pie($id,labeller) [new pieBoxLabeller $canvas]
+    }
+    $canvas addtag pie($id) withtag pieLabeller($pie($id,labeller))
+    # bind labeller with pie
+    pieLabeller::bind $pie($id,labeller) $id
 
     set pie($id,radiusX) [expr [winfo fpixels $canvas $width]/2.0]
     set pie($id,radiusY) [expr [winfo fpixels $canvas $height]/2.0]
     set pie($id,thickness) [winfo fpixels $canvas $option(-thickness)]
 
-    set pie($id,canvas) $canvas
     if {[string length $option(-background)]>0} {
         set bottomColor [tkDarken $option(-background) 60]
     } else {
@@ -30,12 +40,6 @@ proc pie::pie {id canvas x y width height args} {
     $canvas addtag pieGraphics($id) withtag slice($pie($id,backgroundSlice))
     set pie($id,slices) {}
     set pie($id,colors) $option(-colors)
-
-    set options {}
-    catch {lappend options -font $option(-font)}
-    catch {lappend options -offset $option(-labelsoffset)}
-    set pie($id,labeller) [eval new pieBoxLabeller $id $options]
-    $canvas addtag pie($id) withtag pieLabeller($pie($id,labeller))
 }
 
 proc pie::~pie {id} {
