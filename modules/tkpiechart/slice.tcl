@@ -1,10 +1,6 @@
-# $Id: slice.tcl,v 1.1 1994/07/25 09:59:46 jfontain Exp $
+# $Id: slice.tcl,v 1.2 1994/07/25 10:04:22 jfontain Exp $
 
 source ../tools/utility.tcl
-
-set PI 3.14159265358979323846
-set twoPI 6.2831853071795864769
-set halfPI 1.57079632679489661923
 
 proc moduloTwoPI {value} {
     # normalize value between 0 and 2*PI (not included)
