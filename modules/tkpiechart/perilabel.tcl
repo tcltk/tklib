@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.47 1999/03/24 21:57:40 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.47.1.1 2000/03/05 21:04:00 jfontain Exp $}
 
 class piePeripheralLabeler {
 
@@ -75,6 +75,14 @@ class piePeripheralLabeler {
         ::set text $piePeripheralLabeler::($this,textItem,$label)
         position $this $text $piePeripheralLabeler::($this,slice,$label)
         $pieLabeler::($this,canvas) itemconfigure $text -text $value
+    }
+
+    proc label {this label args} {
+        if {[llength $args]==0} {
+            return [switched::cget $label -text]
+        } else {
+            switched::configure $label -text [lindex $args 0]
+        }
     }
 
     proc position {this text slice} {              ;# place the value text item next to the outter border of the corresponding slice
