@@ -1,10 +1,11 @@
-# copyright (C) 1997-98 Jean-Luc Fontaine (mailto:jfontain@free.fr)
-# this program is free software: please read the COPYRIGHT file enclosed in this package or use the Help Copyright menu
+# copyright (C) 1997-2004 Jean-Luc Fontaine (mailto:jfontain@free.fr)
+# this program is free software: please read the COPYRIGHT file enclosed in this
+# package or use the Help Copyright menu
 
-# $Id: objselec.tcl,v 1.11 2004/04/13 14:18:56 jfontain Exp $
+# $Id: objselec.tcl,v 1.12 2004/04/28 21:14:19 jfontain Exp $
 
-# implements selection on a list of object identifiers (sortable list of integer), for a listbox implementation, for example
-
+# implements selection on a list of object identifiers (sortable list of
+# integers), for a listbox implementation, for example
 
 ::stooop::class objectSelector {
 
