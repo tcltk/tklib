@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.78 1998/06/09 20:27:54 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.79 1998/06/09 21:10:33 jfontain Exp $}
 
 package provide tkpiechart 5.1
 
@@ -25,7 +25,7 @@ proc pie::~pie {this} {
 }
 
 proc pie::options {this} {
-    # force height, thickness and width options so that corresponding members are properly initialized
+    # force height, thickness title font and width options so that corresponding members are properly initialized
     return [list\
         [list -background {} {}]\
         [list -colors $pie::(colors) $pie::(colors)]\
@@ -34,7 +34,7 @@ proc pie::options {this} {
         [list -selectable 0 0]\
         [list -thickness 0]\
         [list -title {} {}]\
-        [list -titlefont {} {}]\
+        [list -titlefont {Helvetica -12 bold} {Helvetica -12 bold}]\
         [list -titleoffset 2 2]\
         [list -width 200]\
     ]
@@ -96,6 +96,16 @@ proc pie::complete {this} {                                                     
     $canvas addtag pie($this) withtag slice($slice)
     $canvas addtag pieSlices($this) withtag slice($slice)
     set pie::($this,backgroundSlice) $slice
+    if {[string length $switched::($this,-title)]==0} {
+        set pie::($this,titleRoom) 0
+    } else {
+        set pie::($this,title) [$canvas create text 0 0\
+            -anchor n -text $switched::($this,-title) -font $switched::($this,-titlefont) -tags pie($this)\
+        ]
+        set pie::($this,titleRoom) [expr {\
+            [font metrics $switched::($this,-titlefont) -ascent]+[winfo fpixels $canvas $switched::($this,-titleoffset)]\
+        }]
+    }
     update $this
 }
 
@@ -188,21 +198,6 @@ proc pie::sizeSlice {this slice unitShare {valueToDisplay {}}} {
     }
 }
 
-proc pie::createTitle {this string font offset} {
-    if {[string length $string]==0} {
-        return
-    }
-    set canvas $pie::($this,canvas)                                                                      ;# place text on top of pie
-    set box [$canvas bbox pie($this)]
-    set pie::($this,title) [\
-        $canvas create text [expr {[lindex $box 0]+([lindex $box 2]-[lindex $box 0])/2}] [expr {[lindex $box 1]-$offset}]\
-            -anchor s -tags pie($this) -text $string\
-    ]
-    if {[string length $font]>0} {
-        $canvas itemconfigure $pie::($this,title) -font $font
-    }
-}
-
 proc pie::selectedSlices {this} {                                                      ;# return a list of currently selected slices
     set list {}
     foreach slice $pie::($this,slices) {
@@ -240,14 +235,20 @@ proc pie::update {this} {                         ;# place and scale slices alon
     pieLabeler::room $pie::($this,labeler) room                                                     ;# take labels room into account
     foreach {x y} [$canvas coords $pie::($this,origin)] {}                                       ;# retrieve current pie coordinates
     foreach {xSlices ySlices} [$canvas coords pieSlices($this)] {}                  ;# move slices in order to leave room for labels
-    $canvas move pieSlices($this) [expr {$x+$room(left)-$xSlices}] [expr {$y+$room(top)-$ySlices}]
+    $canvas move pieSlices($this) [expr {$x+$room(left)-$xSlices}] [expr {$y+$room(top)+$pie::($this,titleRoom)-$ySlices}]
     set scale [list\
         [expr {($pie::($this,width)-$room(left)-$room(right))/$pie::($this,initialWidth)}]\
-        [expr {($pie::($this,height)-$room(top)-$room(bottom))/($pie::($this,initialHeight)+$pie::($this,thickness))}]\
+        [expr {\
+            ($pie::($this,height)-$room(top)-$room(bottom)-$pie::($this,titleRoom))/\
+            ($pie::($this,initialHeight)+$pie::($this,thickness))\
+        }]\
     ]
     switched::configure $pie::($this,backgroundSlice) -scale $scale                             ;# update scale of background slice,
     foreach slice $pie::($this,slices) {
         switched::configure $slice -scale $scale                                                                 ;# and other slices
+    }
+    if {$pie::($this,titleRoom)>0} {                                                                                 ;# title exists
+        $canvas coords $pie::($this,title) [expr {$x+($pie::($this,width)/2)}] $y               ;# place text above pie and centered
     }
     # finally update labels now that pie graphics are in position
     pieLabeler::update $pie::($this,labeler) $x $y [expr {$x+$pie::($this,width)}] [expr {$y+$pie::($this,height)}]
