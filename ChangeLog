@@ -1,3 +1,7 @@
+2003-07-21 Aaron Faupell <afaupell@users.sourceforge.net>
+
+	* imported ipentry into tklib
+
 2002-09-25  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* Makefile.in: better DESTDIR/libdir support (steffen)
