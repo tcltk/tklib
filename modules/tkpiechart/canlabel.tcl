@@ -1,4 +1,4 @@
-set rcsId {$Id: canlabel.tcl,v 1.23 1999/03/24 21:59:42 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.24 1999/03/27 21:33:59 jfontain Exp $}
 
 class canvasLabel {
 
@@ -45,6 +45,7 @@ class canvasLabel {
         $canvasLabel::($this,canvas) itemconfigure $canvasLabel::($this,rectangle) -outline $value
     }
     proc set-borderwidth {this value} {
+        $canvasLabel::($this,canvas) itemconfigure $canvasLabel::($this,selectRectangle) -width $value
         $canvasLabel::($this,canvas) itemconfigure $canvasLabel::($this,rectangle) -width $value
         update $this
     }
@@ -87,15 +88,14 @@ class canvasLabel {
 
         # position rectangle and text as if anchor was center (the default)
         if {[string compare $switched::($this,-style) split]==0} {                                                    ;# split style
-            set textHeight [expr {[lindex $textBox 3]-[lindex $textBox 1]}]
             set rectangleWidth [winfo fpixels $canvas $switched::($this,-bulletwidth)]
-            set halfWidth [expr {($rectangleWidth+$padding+([lindex $textBox 2]-[lindex $textBox 0]))/2.0}]
-            set halfHeight [expr {($textHeight/2.0)+$border}]
+            set halfWidth [expr {($rectangleWidth+$border+$padding+([lindex $textBox 2]-[lindex $textBox 0]))/2.0}]
+            set halfHeight [expr {(([lindex $textBox 3]-[lindex $textBox 1])/2.0)+$border}]
             $canvas coords $selectRectangle\
                 [expr {$x-$halfWidth}] [expr {$y-$halfHeight}] [expr {$x+$halfWidth}] [expr {$y+$halfHeight}]
             $canvas coords $rectangle\
                 [expr {$x-$halfWidth}] [expr {$y-$halfHeight}] [expr {$x-$halfWidth+$rectangleWidth}] [expr {$y+$halfHeight}]
-            $canvas coords $text [expr {$x+(($rectangleWidth+$padding)/2.0)}] $y
+            $canvas coords $text [expr {$x+(($rectangleWidth+$border+$padding)/2.0)}] $y
             if {$switched::($this,-select)} {
                 $canvas itemconfigure $selectRectangle\
                     -fill $switched::($this,-selectcolor) -outline $switched::($this,-selectcolor)
