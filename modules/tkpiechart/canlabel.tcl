@@ -1,4 +1,4 @@
-set rcsId {$Id: canlabel.tcl,v 1.6 1995/10/01 12:52:43 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.7 1995/10/01 12:58:34 jfontain Exp $}
 
 proc canvasLabel::canvasLabel {id canvas x y args} {
     global canvasLabel
@@ -12,7 +12,7 @@ proc canvasLabel::canvasLabel {id canvas x y args} {
     set canvasLabel($id,anchor) center
     eval canvasLabel::configure $id $args
     # initialize rectangle
-    canvasLabel::sizeRectangle $id
+    canvasLabel::update $id
 }
 
 proc canvasLabel::~canvasLabel {id} {
@@ -44,14 +44,14 @@ proc canvasLabel::configure {id args} {
             }
             -anchor {
                 set canvasLabel($id,anchor) $value
-                canvasLabel::sizeRectangle $id
+                canvasLabel::update $id
             }
             -font -
             -justify -
             -text -
             -width {
                 $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,text) $option $value
-                canvasLabel::sizeRectangle $id
+                canvasLabel::update $id
             }
             -bordercolor {
                 $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) -outline $value
@@ -91,7 +91,7 @@ proc canvasLabel::cget {id option} {
     }
 }
 
-proc canvasLabel::sizeRectangle {id} {
+proc canvasLabel::update {id} {
     global canvasLabel
 
     set padding 2
