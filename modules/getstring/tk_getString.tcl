@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: tk_getString.tcl,v 1.6 2005/04/02 07:01:23 andreas_kupries Exp $
+# RCS: @(#) $Id: tk_getString.tcl,v 1.7 2005/04/06 03:39:34 afaupell Exp $
 
 package require Tk
 package provide tk_getString 0.1
@@ -32,7 +32,7 @@ proc ::getstring::tk_getString {w var text args} {
         -title "Enter Information"
     }
     parseOpts options {{-allowempty boolean} {-entryoptions {}} {-geometry {}} \
-                       {-title {}} $args
+                       {-title {}}} $args
 
     variable ::getstring::result
     upvar $var result
