@@ -217,7 +217,7 @@ bars, and the way the series will be drawn.
 
 If the keyword [const stacked] was specified the series will be drawn
 stacked on top of each other. Otherwise each series that is drawn will
-be drawn shifted.
+be drawn shifted to the right.
 
 [list_begin arg]
 [arg_def widget w in]
@@ -249,7 +249,7 @@ bars, and the way the series will be drawn.
 
 If the keyword [const stacked] was specified the series will be drawn
 stacked from left to right. Otherwise each series that is drawn will
-be drawn shifted.
+be drawn shifted upward.
 
 [list_begin arg]
 [arg_def widget w in]
@@ -282,11 +282,11 @@ and the vertical spacing is determined by the number of items to plot.
 Name of the [emph existing] canvas widget to hold the plot.
 
 [arg_def string time_begin in]
-The start time given in a form that is recognised by the [cmd clock]
+The start time given in a form that is recognised by the [cmd "clock scan"]
 command (e.g. "1 january 2004").
 
 [arg_def string time_end in]
-The end time given in a form that is recognised by the [cmd clock]
+The end time given in a form that is recognised by the [cmd "clock scan"]
 command (e.g. "1 january 2004").
 
 [arg_def int noitems in]
@@ -323,7 +323,7 @@ The text of the title to be drawn.
 
 [call [cmd \$anyplot] saveplot [arg filename]]
 
-Draws the plot into a file, uing PostScript.
+Draws the plot into a file, using PostScript.
 
 [list_begin arg]
 [arg_def string filename in]
@@ -495,8 +495,8 @@ columns. Example:
 [nl]
 [example {
     set data {
-	{1.0 2.0 3.0}
-	{4.0 5.0 6.0}
+    {1.0 2.0 3.0}
+    {4.0 5.0 6.0}
     }
 }]
 
@@ -923,7 +923,8 @@ runs from 0 to 360 degrees and the radius starts at 0. Hence you only
 need to give the maximum radius.
 
 [emph Note:] If the viewport is not square, this procedure will not
-adjust the extremes, so that would result in an elliptical plot.
+adjust the extremes, so that would result in an elliptical plot. The
+creation routine for a polar plot always determines a square viewport.
 
 [list_begin arg]
 [arg_def widget w in]
@@ -943,7 +944,8 @@ the world coordinates and viewport are set appropriately. Converts
 polar coordinates to pixel coordinates.
 
 [emph Note:] To be useful it should be accompanied by a matching
-[cmd ::Plotchart::worldCoordinates] procedure.
+[cmd ::Plotchart::worldCoordinates] procedure. This is automatically
+taken care of in the creation routine for polar plots.
 
 [list_begin arg]
 [arg_def widget w in]
@@ -995,6 +997,60 @@ Rough minimum value for the scaling
 Rough maximum value for the scaling.
 
 [list_end]
+[list_end]
+
+
+[section {OTHER OUTPUT FORMATS}]
+
+Besides output to the canvas on screen, the module is capable, via
+[cmd {canvas postscript}], of producing PostScript files. One may wonder
+whether it is possible to extend this set of output formats and the
+answer is "yes". This section tries to sum up the aspects of using this
+module for another sort of output.
+[para]
+One way you can create output files in a different format, is by
+examining the contents of the canvas after everything has been drawn and
+render that contents in the right form. This is probably the easiest
+way, as it involves nothing more than the re-creation of all the
+elements in the plot that are already there.
+[para]
+The drawback of that method is that you need to have a display, which is
+not always the case if you run a CGI server or something like that.
+[para]
+An alternative is to emulate the canvas command. For this to work, you
+need to know which canvas subcommands are used and what for. Obviously,
+the [emph create] subcommand is used to create the lines, texts and
+other items. But also the [emph raise] and [emph lower] subcommands are
+used, because with these the module can influence the drawing order -
+important to simulate a clipping rectangle around the axes. (The routine
+DrawMask is responsible for this - if the output format supports proper
+clipping areas, then a redefinition of this routine might just solve
+this).
+[para]
+Furthermore, the module uses the [emph cget] subcommand to find out the
+sizes of the canvas. A more mundane aspect of this is that the module
+currently assumes that the text is 14 pixels high and that 80 pixels in
+width suffice for the axis' labels. No "hook" is provided to customise
+this.
+[para]
+In summary:
+[list_begin bullet]
+[bullet]
+Emulate the [emph create] subcommand to create all the items in the
+correct format
+
+[bullet]
+Emulate the [emph cget] subcommand for the options -width and -height to
+allow the correct calculation of the rectangle's position and size
+
+[bullet]
+Solve the problem of [emph raising] and [emph lowering] the items so
+that they are properly clipped, for instance by redefining the
+routine DrawMask.
+
+[bullet]
+Take care of the currently fixed text size properties
+
 [list_end]
 
 
