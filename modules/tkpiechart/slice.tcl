@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.20 1995/10/03 09:23:21 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.21 1995/10/07 20:43:31 jfontain Exp $}
 
 source util.tcl
 
@@ -218,4 +218,16 @@ proc slice::size {id extent} {
     global slice
 
     slice::update $id $slice($id,start) $extent
+}
+
+proc slice::data {id arrayName} {
+    global slice
+    upvar $arrayName data
+
+    set data(midAngle) [expr $slice($id,start)+($slice($id,extent)/2.0)]
+    set data(xRadius) $slice($id,radiusX)
+    set data(yRadius) $slice($id,radiusY)
+    set coordinates [$slice($id,canvas) coords $slice($id,origin)]
+    set data(xCenter) [expr [lindex $coordinates 0]+$data(xRadius)]
+    set data(yCenter) [expr [lindex $coordinates 1]+$data(yRadius)]
 }
