@@ -151,8 +151,8 @@ proc style::as::init_fonts {args} {
 	    "aqua" - "macintosh" {
 		set size	11
 		set family	"Lucida Grande"
-		set size	11
-		set family	Courier
+		set fsize	11
+		set ffamily	Courier
 	    }
 	}
 	font create ASfont      -size $size -family $family
