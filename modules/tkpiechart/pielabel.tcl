@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.3 1995/09/28 18:47:50 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.4 1995/09/28 20:36:09 jfontain Exp $}
 
 source canlabel.tcl
 
@@ -27,11 +27,20 @@ proc pieLabeller::create {id args} {
 
     set canvas $pie($pieLabeller($id,pie),canvas)
     set label [eval new canvasLabel $canvas 0 0 $args]
+    # always append semi-column to label
+    canvasLabel::configure $label -text [canvasLabel::cget $label -text]:
     $canvas addtag pieLabeller($id) withtag canvasLabel($label)
     lappend pieLabeller($id,labels) $label
     pieLabeller::position $id $label
+    return $label
 }
 
 proc pieLabeller::position {id label} {
     virtualCallFrom pieLabeller
 }
+
+proc pieLabeller::setValue {id label value} {
+    regsub {:.*$} [canvasLabel::cget $label -text] ": $value" text
+    canvasLabel::configure $label -text $text
+}
+
