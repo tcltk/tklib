@@ -1,4 +1,4 @@
-set rcsId {$Id: canlabel.tcl,v 1.4 1995/09/28 21:16:30 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.5 1995/09/30 12:16:29 jfontain Exp $}
 
 proc canvasLabel::canvasLabel {id canvas x y args} {
     global canvasLabel
@@ -37,8 +37,8 @@ proc canvasLabel::configure {id args} {
             -borderwidth {
                 $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) -width $value
             }
-            -bitmap {
-                $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) -stipple $value
+            -stipple {
+                $canvasLabel($id,canvas) itemconfigure $canvasLabel($id,rectangle) $option $value
             }
             -anchor {
                 set canvasLabel($id,anchor) $value
@@ -71,8 +71,8 @@ proc canvasLabel::cget {id option} {
         -borderwidth {
             return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,rectangle) -width]
         }
-        -bitmap {
-            return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,rectangle) -stipple]
+        -stipple {
+            return [$canvasLabel($id,canvas) itemcget $canvasLabel($id,rectangle) $option]
         }
         -anchor {
             return $canvasLabel($id,anchor)
