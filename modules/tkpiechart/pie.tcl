@@ -1,6 +1,6 @@
-set rcsId {$Id: pie.tcl,v 1.69 1998/05/03 15:51:02 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.70 1998/05/03 18:39:41 jfontain Exp $}
 
-package provide tkpiechart 4.3
+package provide tkpiechart 5.0
 
 class pie {
     set pie::(colors) {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}
