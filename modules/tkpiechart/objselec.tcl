@@ -1,7 +1,9 @@
 # copyright (C) 1997-98 Jean-Luc Fontaine (mailto:jfontain@mygale.org)
 # this program is free software: please refer to the BSD type license enclosed in this package
 
-set rcsId {$Id: objselec.tcl,v 1.1 1998/04/20 12:49:31 jfontain Exp $}
+set rcsId {$Id: objselec.tcl,v 1.2 1998/04/20 13:37:29 jfontain Exp $}
+
+# implements selection on a list of object identifiers (sortable list of integer), for a listbox implementation, for example
 
 class objectSelection {
 
