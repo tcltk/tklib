@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.44 1996/02/20 12:34:20 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.45 1996/09/17 13:25:41 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -125,8 +125,8 @@ proc pie::createTitle {this string font offset} {
     # place text on top of pie
     set box [$canvas bbox pie($this)]
     set item [\
-        $canvas create text\
-            [expr ([lindex $box 2]-[lindex $box 0])/2] [expr [lindex $box 1]-$offset] -anchor s -tags pie($this) -text $string\
+        $canvas create text [expr [lindex $box 0]+([lindex $box 2]-[lindex $box 0])/2] [expr [lindex $box 1]-$offset]\
+            -anchor s -tags pie($this) -text $string\
     ]
     if {[string length $font]>0} {
         $canvas itemconfigure $item -font $font
