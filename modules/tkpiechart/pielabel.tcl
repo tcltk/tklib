@@ -1,18 +1,17 @@
-set rcsId {$Id: pielabel.tcl,v 1.6 1995/10/01 16:45:12 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.7 1995/10/04 22:22:12 jfontain Exp $}
 
 source canlabel.tcl
 
-proc pieLabeller::pieLabeller {id pieId args} {
-    global pie
+proc pieLabeller::pieLabeller {id canvas args} {
     allowVirtualProceduresIn pieLabeller
 
     # set options default then parse switched options
     array set option {-offset 5}
     array set option $args
 
-    set pieLabeller($id,offset) [winfo fpixels $pie($pieId,canvas) $option(-offset)]
+    # convert offset to pixel
+    set pieLabeller($id,offset) [winfo fpixels $canvas $option(-offset)]
     catch {set pieLabeller($id,font) $option(-font)}
-    set pieLabeller($id,pie) $pieId
 }
 
 proc pieLabeller::~pieLabeller {id} {
@@ -21,6 +20,12 @@ proc pieLabeller::~pieLabeller {id} {
     foreach label $pieLabeller($id,labels) {
         delete canvasLabel $label
     }
+}
+
+proc pieLabeller::bind {id pieId} {
+    global pieLabeller
+
+    set pieLabeller($id,pie) $pieId
 }
 
 proc pieLabeller::create {id args} {
