@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.24 1998/03/15 20:03:38 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.25 1998/03/21 10:16:11 jfontain Exp $}
 
 class pieBoxLabeller {
 
@@ -12,7 +12,7 @@ class pieBoxLabeller {
 
     proc options {this} {
         return [list\
-            [list -font $pieLabeller::(defaultFont) $pieLabeller::(defaultFont)]\
+            [list -font $pieLabeller::(default,font) $pieLabeller::(default,font)]\
             [list -justify left left]\
             [list -offset 5 5]\
             [list -xoffset 0 0]\
@@ -41,13 +41,13 @@ class pieBoxLabeller {
         set label [eval canvasLabelsArray::create $pieBoxLabeller::($this,array) $args]
         # refresh our tags
         $pieLabeller::($this,canvas) addtag pieLabeller($this) withtag canvasLabelsArray($pieBoxLabeller::($this,array))
-        canvasLabel::configure $label -text [canvasLabel::cget $label -text]:                  ;# always append semi-column to label
+        switched::configure $label -text [switched::cget $label -text]:                        ;# always append semi-column to label
         return $label
     }
 
     proc update {this label value} {
-        regsub {:.*$} [canvasLabel::cget $label -text] ": $value" text
-        canvasLabel::configure $label -text $text
+        regsub {:.*$} [switched::cget $label -text] ": $value" text
+        switched::configure $label -text $text
     }
 
     proc rotate {this label} {}                                                          ;# we are not concerned with slice rotation
