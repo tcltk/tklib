@@ -1,5 +1,10 @@
 2004-08-20  Aaron Faupell <afaupell@users.sourceforge.net>
 
+	* ico.tcl bugfix in writeIconEXE, called SearchForIcos
+	with wrong args
+
+2004-08-20  Aaron Faupell <afaupell@users.sourceforge.net>
+
 	* ico.tcl: added writing of BMP and ICODATA types.
 
 2004-08-18  Aaron Faupell <afaupell@users.sourceforge.net>

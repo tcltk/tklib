@@ -5,7 +5,7 @@
 # Copyright (c) 2003 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.13 2004/08/21 00:15:14 afaupell Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.14 2004/09/27 20:48:04 afaupell Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -978,7 +978,7 @@ proc ::ico::writeIconEXE {file index w h bpp palette xor and} {
     variable ICONS
 
     set file [file normalize $file]
-    set cnt  [SearchForIcos $file $fh $index]
+    set cnt  [SearchForIcos $file $index]
 
     if {$index eq "end"} {set index $cnt}
     if {$cnt < $index} { return -code error "index out of range" }
