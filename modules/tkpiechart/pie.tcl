@@ -1,29 +1,10 @@
-# $Id: pie.tcl,v 1.9 1995/06/02 10:25:07 jfontain Exp $
+# $Id: pie.tcl,v 1.10 1995/06/25 18:10:26 jfontain Exp $
 
 source $env(AGVHOME)/tools/slice.tcl
 
-set pie(lights,red) "#FF7F7F"
-set pie(lights,green) "#7FFF7F"
-set pie(lights,blue) "#7F7FFF"
-set pie(lights,cyan) "#7FFFFF"
-set pie(lights,magenta) "#FF7FFF"
-set pie(lights,yellow) "#FFFF7F"
-set pie(lights,white) "#FFFFFF"
-set pie(lights,gray) "#BFBFBF"
-set pie(lights,orange) "#FFBF00"
-set pie(darks,red) "#BF0000"
-set pie(darks,green) "#00BF00"
-set pie(darks,blue) "#0000BF"
-set pie(darks,cyan) "#00BFBF"
-set pie(darks,magenta) "#BF00BF"
-set pie(darks,yellow) "#BFBF00"
-set pie(darks,white) "#BFBFBF"
-set pie(darks,gray) "#7F7F7F"
-set pie(darks,orange) "#BF7F00"
-set pie(colors) "cyan green red yellow blue orange gray magenta white"
 set pie(separatorHeight) 5
 
-proc pie::pie {id parentWidget width height {thickness 0} {topColor ""} {bottomColor ""} {highlight auto}} {
+proc pie::pie {id parentWidget width height {thickness 0} {topColor ""} {bottomColor ""} {highlight auto} {sliceColors ""}} {
     # slice / label highlighting can be automatic when slices of identical colors exist (auto), or on or off (boolean) no matter
     # the number of slices
     global pie PI
@@ -53,6 +34,12 @@ proc pie::pie {id parentWidget width height {thickness 0} {topColor ""} {bottomC
     set pie($id,backgroundSlice) [new slice $canvas $radiusX $radiusY [expr $PI/2] 7 $thickness $topColor $bottomColor]
     set pie($id,slices) ""
 
+    if {[llength $sliceColors]==0} {
+        set pie($id,colors) {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}
+    } else {
+        set pie($id,colors) $sliceColors
+    }
+
     showWholeCanvas $canvas
 }
 
@@ -74,7 +61,7 @@ proc pie::newSlice {id {text ""}} {
         set startRadian [expr $startRadian-$slice($sliceId,extent)]
     }
     # get a new color
-    set color [lindex $pie(colors) [expr [llength $pie($id,slices)]%[llength $pie(colors)]]]
+    set color [lindex $pie($id,colors) [expr [llength $pie($id,slices)]%[llength $pie($id,colors)]]]
     set numberOfSlices [llength $pie($id,slices)]
     if {$text==""} {
         # generate label text if not provided
@@ -86,16 +73,16 @@ proc pie::newSlice {id {text ""}} {
     set rowFrame [frame [objectWidgetName row [expr $numberOfSlices/2] $pie($id,frame).entriesFrame.${side}Frame] -bd 2]
     pack $rowFrame -fill x -padx 15
 
+    # darken slice top color by 40% to obtain bottom color, as it is done for Tk buttons shadow, for example
     set sliceId [new slice\
-        $pie($id,canvas) $pie($id,radiusX) $pie($id,radiusY) $startRadian 0 $pie($id,thickness)\
-        $pie(lights,$color) $pie(darks,$color)\
+        $pie($id,canvas) $pie($id,radiusX) $pie($id,radiusY) $startRadian 0 $pie($id,thickness) $color [tkDarken $color 60]\
     ]
     set pie($id,$sliceId,rowFrame) $rowFrame
 
     global normalFont boldFont
     set pie($id,$sliceId,label) [\
         label [objectWidgetName text $sliceId $rowFrame]\
-            -background $pie(lights,$color) -foreground black -relief raised -text $text -font $normalFont -bd 1 -padx 2\
+            -background $color -foreground black -relief raised -text $text -font $normalFont -bd 1 -padx 2\
     ]
     pack $pie($id,$sliceId,label) -side left
     pack [frame [objectWidgetName spacer $sliceId $rowFrame]] -side left -fill both -expand 1
@@ -109,7 +96,7 @@ proc pie::newSlice {id {text ""}} {
         slice::setupHighlighting $sliceId "$rowFrame configure -background black"\
             "$rowFrame configure -background [$rowFrame cget -background]"
     } else {
-        if {$pie($id,automaticHighlight)&&([llength $pie($id,slices)]>[llength $pie(colors)])} {
+        if {$pie($id,automaticHighlight)&&([llength $pie($id,slices)]>[llength $pie($id,colors)])} {
             # if automatic highlight and number of colors exhausted, highlight from now on
             set pie($id,highlight) 1
             # setup highlighting on current slices
@@ -148,9 +135,6 @@ proc pie::sizeSlice {id sliceId perCent} {
 
 proc showWholeCanvas {canvas} {
     set extent [$canvas bbox all]
-    set left [expr [lindex $extent 0]-1]
-    set top [expr [lindex $extent 1]-1]
-    set right [expr [lindex $extent 2]+1]
-    set bottom [expr [lindex $extent 3]+1]
-    $canvas configure -scrollregion [list $left $top $right $bottom] -width [expr $right-$left] -height [expr $bottom-$top]
+    $canvas configure -scrollregion $extent\
+        -width [expr [lindex $extent 2]-[lindex $extent 0]] -height [expr [lindex $extent 3]-[lindex $extent 1]]
 }
