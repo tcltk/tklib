@@ -1,9 +1,9 @@
-set rcsId {$Id: pie.tcl,v 1.17 1995/09/24 17:46:04 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.18 1995/09/25 11:10:52 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
 
-proc pie::pie {id canvas width height {thickness 0} {topColor {}} {bottomColor {}} {sliceColors {}}} {
+proc pie::pie {id canvas x y width height {thickness 0} {topColor {}} {bottomColor {}} {sliceColors {}}} {
     # note: all pie elements are tagged with pie($id)
     global pie PI
 
@@ -13,7 +13,7 @@ proc pie::pie {id canvas width height {thickness 0} {topColor {}} {bottomColor {
 
     set pie($id,canvas) $canvas
     set pie($id,backgroundSlice)\
-        [new slice $canvas $pie($id,radiusX) $pie($id,radiusY) [expr $PI/2] 7 $pie($id,thickness) $topColor $bottomColor]
+        [new slice $canvas $x $y $pie($id,radiusX) $pie($id,radiusY) [expr $PI/2] 7 $pie($id,thickness) $topColor $bottomColor]
     $canvas addtag pie($id) withtag slice($pie($id,backgroundSlice))
     set pie($id,slices) {}
 
@@ -27,9 +27,6 @@ proc pie::pie {id canvas width height {thickness 0} {topColor {}} {bottomColor {
         set pie($id,colors) $sliceColors
     }
     set pie($id,labeller) [new pieBoxLabeller $id]
-
-    # move pie so upper-left corner is at origin
-    $canvas move pie($id) $pie($id,radiusX) $pie($id,radiusY)
 }
 
 proc pie::~pie {id} {
@@ -58,17 +55,17 @@ proc pie::newSlice {id {text {}}} {
     # get a new color
     set color [lindex $pie($id,colors) [expr [llength $pie($id,slices)]%[llength $pie($id,colors)]]]
     set numberOfSlices [llength $pie($id,slices)]
-    # darken slice top color by 40% to obtain bottom color, as it is done for Tk buttons shadow, for example
-    set sliceId [new slice\
-        $pie($id,canvas) $pie($id,radiusX) $pie($id,radiusY) $startRadian 0 $pie($id,thickness) $color [tkDarken $color 60]\
-    ]
-    $pie($id,canvas) addtag pie($id) withtag slice($sliceId)
-    lappend pie($id,slices) $sliceId
 
     # make sure slice is positioned correctly in case pie was moved
     set coordinates [$pie($id,canvas) coords slice($pie($id,backgroundSlice))]
-    $pie($id,canvas) move slice($sliceId)\
-        [expr [lindex $coordinates 0]-$pie($id,xOrigin)] [expr [lindex $coordinates 1]-$pie($id,yOrigin)]
+
+    # darken slice top color by 40% to obtain bottom color, as it is done for Tk buttons shadow, for example
+    set sliceId [new slice\
+        $pie($id,canvas) [lindex $coordinates 0] [lindex $coordinates 1] $pie($id,radiusX) $pie($id,radiusY)\
+        $startRadian 0 $pie($id,thickness) $color [tkDarken $color 60]\
+    ]
+    $pie($id,canvas) addtag pie($id) withtag slice($sliceId)
+    lappend pie($id,slices) $sliceId
 
     return $sliceId
 }
