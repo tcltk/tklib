@@ -1,11 +1,11 @@
-set rcsId {$Id: canlabel.tcl,v 1.8 1995/10/09 18:37:24 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.9 1995/10/10 13:17:33 jfontain Exp $}
 
 proc canvasLabel::canvasLabel {id canvas x y args} {
     global canvasLabel
 
     set canvasLabel($id,canvas) $canvas
     # use a dimensionless line as an origin marker
-    set canvasLabel($id,origin) [$canvas create line $x $y  $x $y -fill {} -tags canvasLabel($id)]
+    set canvasLabel($id,origin) [$canvas create line $x $y $x $y -fill {} -tags canvasLabel($id)]
     set canvasLabel($id,rectangle) [$canvas create rectangle 0 0 0 0 -tags canvasLabel($id)]
     set canvasLabel($id,text) [$canvas create text 0 0 -tags canvasLabel($id)]
     # set anchor default
