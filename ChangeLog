@@ -1,3 +1,15 @@
+2003-11-28  Andreas Kupries  <andreask@activestate.com>
+
+	* Reworked the entire build system to use the same framework as
+	  tcllib does. IOW tklib now uses a swiss army knife tool
+	  (sak.tcl, with all attendant files), and configure/Makefile are
+	  based on that. Generation of distributions, and installer now
+	  also work in the same way as for tcllib.
+
+	* Replaced existing nroff documentation with doctools manpages,
+	  and wrote doctools manpages for the modules which had none. All
+	  (four) modules now have documentation.
+
 2003-07-21 Aaron Faupell <afaupell@users.sourceforge.net>
 
 	* imported ipentry into tklib

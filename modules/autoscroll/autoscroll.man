@@ -12,7 +12,7 @@ content of the scrollbars scrolled widget. The
 scrollbar must be managed by either pack or grid,
 other geometry managers are not supported.
 
-[nl]
+[para]
 
 When managed by pack, any geometry changes made in the
 scrollbars parent between the time a scrollbar is
@@ -22,7 +22,7 @@ scrollbar is unmapped. When managed by grid, if anything
 becomes gridded in the same row and column the scrollbar
 occupied it will be replaced by the scrollbar when remapped.
 
-[nl]
+[para]
 
 This package may be used on any scrollbar-like widget
 as long as it supports the [const set] subcommand in the same
