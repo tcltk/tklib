@@ -1,3 +1,7 @@
+2002-09-25  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* Makefile.in: better DESTDIR/libdir support (steffen)
+
 2001-11-07  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* created tklib in CVS
