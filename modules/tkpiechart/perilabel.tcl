@@ -1,11 +1,17 @@
-set rcsId {$Id: perilabel.tcl,v 1.8 1995/10/08 18:17:39 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.9 1995/10/08 19:34:00 jfontain Exp $}
 
 source pielabel.tcl
 
 proc piePeripheralLabeller::piePeripheralLabeller {id canvas args} {
-    global piePeripheralLabeller
+    global piePeripheralLabeller pieLabeller
 
     eval pieLabeller::pieLabeller $id $canvas $args
+
+    # eventually use labeller font as small font
+    catch {set piePeripheralLabeller($id,smallFont) $pieLabeller($id,font)}
+    # unless specified as option
+    array set option $args
+    catch {set piePeripheralLabeller($id,smallFont) $option(-smallfont)}
     set piePeripheralLabeller($id,number) 0
 }
 
@@ -42,8 +48,15 @@ proc piePeripheralLabeller::create {id sliceId args} {
     set x [expr [lindex $box 0]+(($piePeripheralLabeller($id,number)%2)*([lindex $box 2]-[lindex $box 0])/2.0)]
     set y [expr [lindex $box 3]+$pieLabeller($id,offset)+(($piePeripheralLabeller($id,number)/2)*($textHeight+$yPadding))]
 
+    # create value label
+    $canvas addtag pieLabeller($id) withtag [set valueId [$canvas create text 0 0]]
+    # eventually use small font
+    catch {$canvas itemconfigure $valueId -font $piePeripheralLabeller($id,smallFont)}
+    set box [$canvas bbox $valueId]
+    set smallTextHeight [expr [lindex $box 3]-[lindex $box 1]]
+
     # take into account value labels around pie graphics
-    set y [expr $y+$pieLabeller($id,offset)+$textHeight]
+    set y [expr $y+$pieLabeller($id,offset)+$smallTextHeight]
 
     # filter rectangle options
     if {[set index [lsearch -exact $args -background]]>=0} {
@@ -56,13 +69,6 @@ proc piePeripheralLabeller::create {id sliceId args} {
     ]
     # place text next to colored rectangle
     $canvas move $textId [expr $x+(2*$textHeight)] [expr $y+($textHeight/2.0)]
-
-    # create value label
-    $canvas addtag pieLabeller($id) withtag [set valueId [$canvas create text 0 0]]
-    # eventually use labeller font
-    if {[info exists pieLabeller($id,font)]} {
-        $canvas itemconfigure $valueId -font $pieLabeller($id,font)
-    }
 
     # value label is the only one to update
     set piePeripheralLabeller($id,sliceId,$valueId) $sliceId
