@@ -1,3 +1,7 @@
+2004-09-06  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* as.tcl (style::as::init_fonts): create ASfontFixedBold
+
 2004-08-18  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* as.tcl (style::as::init_misc): add Tree and some Tix widget defs
