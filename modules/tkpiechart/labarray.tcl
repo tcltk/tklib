@@ -1,4 +1,4 @@
-set rcsId {$Id: labarray.tcl,v 1.12 1998/03/21 10:18:18 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.13 1998/03/22 14:34:10 jfontain Exp $}
 
 class canvasLabelsArray {}
 
@@ -13,12 +13,11 @@ proc canvasLabelsArray::canvasLabelsArray {this canvas x y width args} {
     set canvasLabelsArray::($this,xOffset) [winfo fpixels $canvas $options(-xoffset)]                     ;# convert offset to pixel
     unset options(-xoffset)                                                                      ;# remove invalid option for labels
     set canvasLabelsArray::($this,labelOptions) [array get options]
+    set canvasLabelsArray::($this,labels) {}
 }
 
 proc canvasLabelsArray::~canvasLabelsArray {this} {
-    foreach label $canvasLabelsArray::($this,labels) {
-        delete $label
-    }
+    eval ::delete $canvasLabelsArray::($this,labels)
     $canvasLabelsArray::($this,canvas) delete canvasLabelsArray($this)                                     ;# delete remaining items
 }
 
@@ -28,23 +27,34 @@ proc canvasLabelsArray::create {this args} {
 
     set label [eval new canvasLabel $canvasLabelsArray::($this,canvas) 0 0 [array get options]]
     $canvasLabelsArray::($this,canvas) addtag canvasLabelsArray($this) withtag canvasLabel($label)
+    set index [llength $canvasLabelsArray::($this,labels)]
     lappend canvasLabelsArray::($this,labels) $label
-    canvasLabelsArray::position $this $label $options(-justify)
+    position $this $label $index $options(-justify)
     return $label
 }
 
-proc canvasLabelsArray::position {this label justification} {
-    set canvas $canvasLabelsArray::($this,canvas)
+proc canvasLabelsArray::delete {this label} {
+    set index [lsearch -exact $canvasLabelsArray::($this,labels) $label]
+    if {$index<0} {
+        error "invalid label $label for canvas labels array $this"
+    }
+    set canvasLabelsArray::($this,labels) [lreplace $canvasLabelsArray::($this,labels) $index $index]
+    ::delete $label
+    foreach label [lrange $canvasLabelsArray::($this,labels) $index end] {
+        position $this $label $index [switched::cget $label -justify]
+        incr index
+    }
+}
 
-    set index [expr {[llength $canvasLabelsArray::($this,labels)]-1}]
+proc canvasLabelsArray::position {this label index justification} {
+    set canvas $canvasLabelsArray::($this,canvas)
 
     set coordinates [$canvas coords $canvasLabelsArray::($this,origin)]
     # offset horizontally, left column gets negative offset
     set x [expr {[lindex $coordinates 0]+(($index%2?1:-1)*$canvasLabelsArray::($this,xOffset))}]
     set y [lindex $coordinates 1]
-
     set coordinates [$canvas bbox canvasLabel($label)]
-    set labelHeight [expr {[lindex $coordinates 3]-[lindex $coordinates 1]}]
+    set y [expr {$y+(($index/2)*([lindex $coordinates 3]-[lindex $coordinates 1]))}]               ;# take label height into account
 
     switch $justification {                                                                         ;# arrange labels in two columns
         left {
@@ -61,5 +71,6 @@ proc canvasLabelsArray::position {this label justification} {
         }
     }
     switched::configure $label -anchor $anchor
-    $canvas move canvasLabel($label) $x [expr {$y+(($index/2)*$labelHeight)}]
+    set coordinates [$canvas coords canvasLabel($label)]                               ;# do an absolute positioning using label tag
+    $canvas move canvasLabel($label) [expr {$x-[lindex $coordinates 0]}] [expr {$y-[lindex $coordinates 1]}]
 }
