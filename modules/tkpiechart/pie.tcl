@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.56 1998/03/27 21:52:52 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.57 1998/03/27 22:05:13 jfontain Exp $}
 
 package provide tkpiechart 4.0
 
@@ -14,6 +14,7 @@ proc pie::pie {this canvas x y width height args} switched {$args} {            
     set pie::($this,radiusX) [expr {[winfo fpixels $canvas $width]/2.0}]
     set pie::($this,radiusY) [expr {[winfo fpixels $canvas $height]/2.0}]
 
+    set pie::($this,colorIndex) 0
     set pie::($this,slices) {}
 
     switched::complete $this
@@ -88,8 +89,8 @@ proc pie::newSlice {this {text {}}} {
     foreach slice $pie::($this,slices) {
         set start [expr {$start-$slice::($slice,extent)}]
     }
-    # get a new color
-    set color [lindex $switched::($this,-colors) [expr {[llength $pie::($this,slices)]%[llength $switched::($this,-colors)]}]]
+    set color [lindex $switched::($this,-colors) $pie::($this,colorIndex)]                                        ;# get a new color
+    set pie::($this,colorIndex) [expr {($pie::($this,colorIndex)+1)%[llength $switched::($this,-colors)]}]  ;# circle through colors
 
     # make sure slice is positioned correctly in case pie was moved
     set coordinates [$canvas coords slice($pie::($this,backgroundSlice))]
