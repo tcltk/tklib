@@ -1,4 +1,4 @@
-# ipentry.tcl --
+# autoscroll.tcl --
 #
 #       Package to create scroll bars that automatically appear when
 #       a window is too small to display its content.
@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: autoscroll.tcl,v 1.1 2003/07/28 05:00:27 afaupell Exp $
+# RCS: @(#) $Id: autoscroll.tcl,v 1.2 2005/03/25 04:07:59 afaupell Exp $
 
 package provide autoscroll 1.0
 
@@ -181,4 +181,56 @@ proc ::autoscroll::destroyed { w } {
 
 proc ::autoscroll::map { w } {
     wm geometry [winfo toplevel $w] [wm geometry [winfo toplevel $w]]
+}
+
+ #----------------------------------------------------------------------
+ #
+ # ::autoscroll::wrap --
+ #
+ #       Arrange for all new scrollbars to be automatically autoscrolled
+ #
+ # Parameters:
+ #       None.
+ #
+ # Results:
+ #       None.
+ #
+ # Side effects:
+ #       ::scrollbar is overloaded to automatically autoscroll any new
+ #          scrollbars.
+ #
+ #----------------------------------------------------------------------
+
+proc ::autoscroll::wrap {} {
+    if {[info commands ::autoscroll::_scrollbar] != ""} {return}
+    rename ::scrollbar ::autoscroll::_scrollbar
+    proc ::scrollbar {w args} {
+        eval ::autoscroll::_scrollbar [list $w] $args
+        ::autoscroll::autoscroll $w
+        return $w
+    }
+}
+
+ #----------------------------------------------------------------------
+ #
+ # ::autoscroll::unwrap --
+ #
+ #       Turns off automatic autoscrolling of new scrollbars. Does not
+ #         effect existing scrollbars.
+ #
+ # Parameters:
+ #       None.
+ #
+ # Results:
+ #       None.
+ #
+ # Side effects:
+ #       ::scrollbar is returned to its original state
+ #
+ #----------------------------------------------------------------------
+
+proc ::autoscroll::unwrap {} {
+    if {[info commands ::autoscroll::_scrollbar] == ""} {return}
+    rename ::scrollbar {}
+    rename ::autoscroll::_scrollbar ::scrollbar
 }

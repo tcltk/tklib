@@ -1,3 +1,8 @@
+2005-03-24 Aaron Faupell <afaupell@users.sourceforge.net>
+
+	* autoscroll.tcl: added commands wrap and unwrap
+	* autoscroll.man: added docs for wrap and unwrap, and an example
+
 2003-07-27 Aaron Faupell <afaupell@users.sourceforge.net>
 
 	initial import
