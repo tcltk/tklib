@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.60 1998/03/28 20:42:39 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.61 1998/04/09 21:56:38 jfontain Exp $}
 
 package provide tkpiechart 4.0
 
@@ -183,4 +183,9 @@ proc pie::selectedSlices {this} {                                               
         }
     }
     return $list
+}
+
+class pie {                                                                                     ;# define various utility procedures
+    proc maximum {a b} {return [expr {$a>$b?$a:$b}]}
+    proc minimum {a b} {return [expr {$a<$b?$a:$b}]}
 }
