@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.55 1998/03/22 19:02:05 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.56 1998/03/27 21:52:52 jfontain Exp $}
 
 package provide tkpiechart 4.0
 
@@ -129,13 +129,12 @@ proc pie::deleteSlice {this slice} {
     set pie::($this,slices) [lreplace $pie::($this,slices) $index $index]
     set extent $slice::($slice,extent)
     delete $slice
-
+    foreach following [lrange $pie::($this,slices) $index end] {                     ;# rotate the following slices counterclockwise
+        slice::rotate $following $extent
+    }
+    # finally delete label last so that other labels may eventually be repositionned according to remaining slices placement
     pieLabeller::delete $pie::($this,labeller) $pie::($this,sliceLabel,$slice)
     unset pie::($this,sliceLabel,$slice)
-
-    foreach slice [lrange $pie::($this,slices) $index end] {                         ;# rotate the following slices counterclockwise
-        slice::rotate $slice $extent
-    }
 }
 
 proc pie::sizeSlice {this slice unitShare {valueToDisplay {}}} {
