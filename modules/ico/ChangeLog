@@ -1,3 +1,8 @@
+2004-07-26  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* ico.man: Reworked the documentation a bit (fixed bugs, reordered
+	  stuff a bit).
+
 2004-07-26  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* pkgIndex.tcl, ico.man, ico.tcl: add -type ICODATA as a way pass
