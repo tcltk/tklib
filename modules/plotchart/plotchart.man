@@ -976,6 +976,23 @@ X-pixel to be mapped.
 Y-pixel to be mapped.
 
 [list_end]
+
+[call [cmd ::Plotchart::pixelToIndex] [arg w] [arg x] [arg y]]
+
+Return the index of the pie segment containing the pixel coordinates
+(x,y)
+
+[list_begin arg]
+[arg_def widget w in]
+Name of the window (canvas widget) in question, holding a piechart.
+
+[arg_def float x in]
+X-pixel to be mapped.
+
+[arg_def float y in]
+Y-pixel to be mapped.
+
+[list_end]
 [list_end]
 [para]
 
