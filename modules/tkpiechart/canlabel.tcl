@@ -1,4 +1,4 @@
-set rcsId {$Id: canlabel.tcl,v 1.12 1995/10/21 20:27:40 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.13 1995/11/03 23:32:03 jfontain Exp $}
 
 proc canvasLabel::canvasLabel {this canvas x y args} {
     set canvasLabel($this,canvas) $canvas
@@ -6,15 +6,12 @@ proc canvasLabel::canvasLabel {this canvas x y args} {
     set canvasLabel($this,origin) [$canvas create line $x $y $x $y -fill {} -tags canvasLabel($this)]
     set canvasLabel($this,rectangle) [$canvas create rectangle 0 0 0 0 -tags canvasLabel($this)]
     set canvasLabel($this,text) [$canvas create text 0 0 -tags canvasLabel($this)]
-    # set anchor default
-    set canvasLabel($this,anchor) center
-    # style can be box or split
-    set canvasLabel($this,style) box
-    set canvasLabel($this,padding) 2
 
-    eval canvasLabel::configure $this $args
-    # initialize rectangle
-    canvasLabel::update $this
+    # anchor defaults to center, style can be box by default or split
+    array set options {-anchor center -style box -padding 2}
+    # override with user options
+    array set options $args
+    eval canvasLabel::configure $this [array get options]
 }
 
 proc canvasLabel::~canvasLabel {this} {
@@ -24,43 +21,49 @@ proc canvasLabel::~canvasLabel {this} {
 proc canvasLabel::configure {this args} {
     # emulate label widget behavior
 
-    set number [llength $args]
-    for {set index 0} {$index<$number} {incr index} {
-        set option [lindex $args $index]
-        set value [lindex $args [incr index]]
+    set update 0
+    array set value $args
+    foreach option [array names value] {
         switch -- $option {
             -background {
-                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,rectangle) -fill $value
+                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,rectangle) -fill $value($option)
             }
             -foreground {
-                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,text) -fill $value
+                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,text) -fill $value($option)
             }
             -borderwidth {
-                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,rectangle) -width $value
-                canvasLabel::update $this
+                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,rectangle) -width $value($option)
+                set update 1
             }
             -stipple {
-                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,rectangle) $option $value
+                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,rectangle) $option $value($option)
             }
             -anchor {
-                set canvasLabel($this,anchor) $value
-                canvasLabel::update $this
+                set canvasLabel($this,anchor) $value($option)
+                set update 1
             }
             -font -
             -justify -
             -text -
             -width {
-                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,text) $option $value
-                canvasLabel::update $this
+                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,text) $option $value($option)
+                set update 1
             }
             -bordercolor {
-                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,rectangle) -outline $value
+                $canvasLabel($this,canvas) itemconfigure $canvasLabel($this,rectangle) -outline $value($option)
             }
             -style {
-                set canvasLabel($this,style) $value
-                canvasLabel::update $this
+                set canvasLabel($this,style) $value($option)
+                set update 1
+            }
+            -padding {
+                set canvasLabel($this,padding) $value($option)
+                set update 1
             }
         }
+    }
+    if {$update} {
+        canvasLabel::update $this
     }
 }
 
@@ -91,7 +94,7 @@ proc canvasLabel::cget {this option} {
             return [$canvasLabel($this,canvas) itemcget $canvasLabel($this,rectangle) -outline]
         }
         -style {
-            return canvasLabel($this,style) $value
+            return $canvasLabel($this,style)
         }
     }
 }
@@ -100,6 +103,9 @@ proc canvasLabel::update {this} {
     set canvas $canvasLabel($this,canvas)
     set rectangle $canvasLabel($this,rectangle)
     set text $canvasLabel($this,text)
+
+    # covert padding to pixels
+    set canvasLabel($this,padding) [winfo fpixels $canvas $canvasLabel($this,padding)]
 
     set coordinates [$canvas coords $canvasLabel($this,origin)]
     set x [lindex $coordinates 0]
