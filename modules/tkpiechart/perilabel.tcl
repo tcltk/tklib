@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.27 1998/03/21 10:23:17 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.28 1998/03/26 20:20:06 jfontain Exp $}
 
 class piePeripheralLabeller {
 
@@ -33,9 +33,9 @@ class piePeripheralLabeller {
     proc create {this slice args} {
         set canvas $pieLabeller::($this,canvas)
 
-        set item [$canvas create text 0 0 -tags pieLabeller($this)]                                            ;# create value label
-        catch {$canvas itemconfigure $item -font $switched::($this,-smallfont)}                         ;# eventually use small font
-        set box [$canvas bbox $item]
+        set text [$canvas create text 0 0 -tags pieLabeller($this)]                                            ;# create value label
+        catch {$canvas itemconfigure $text -font $switched::($this,-smallfont)}                         ;# eventually use small font
+        set box [$canvas bbox $text]
         set smallTextHeight [expr {[lindex $box 3]-[lindex $box 1]}]
 
         if {![info exists piePeripheralLabeller::($this,array)]} {                                    ;# create a split labels array
@@ -50,11 +50,13 @@ class piePeripheralLabeller {
         }
 
         # this label font may be overriden in arguments
-        eval canvasLabelsArray::create $piePeripheralLabeller::($this,array) $args
+        set label [eval canvasLabelsArray::create $piePeripheralLabeller::($this,array) $args]
         $canvas addtag pieLabeller($this) withtag canvasLabelsArray($piePeripheralLabeller::($this,array))       ;# refresh our tags
 
-        set piePeripheralLabeller::($this,slice,$item) $slice                               ;# value label is the only one to update
-        return $item
+        set piePeripheralLabeller::($this,textItem,$label) $text                        ;# value text item is the only one to update
+        set piePeripheralLabeller::($this,slice,$label) $slice
+
+        return $label
     }
 
     proc anglePosition {degrees} {
@@ -68,19 +70,16 @@ class piePeripheralLabeller {
     }
     unset index anchor
 
-    proc update {this item value} {
-        rotate $this $item
-        $pieLabeller::($this,canvas) itemconfigure $item -text $value
+    proc update {this label value} {
+        set text $piePeripheralLabeller::($this,textItem,$label)
+        rotate $this $text $piePeripheralLabeller::($this,slice,$label)
+        $pieLabeller::($this,canvas) itemconfigure $text -text $value
     }
 
-    proc rotate {this item} {
+    proc rotate {this text slice} {
         global PI
 
-        set canvas $pieLabeller::($this,canvas)
-        set slice $piePeripheralLabeller::($this,slice,$item)
-
         slice::data $slice data
-
         # calculate text closest point coordinates in normal coordinates system (y increasing in north direction)
         set midAngle [expr {$data(start)+($data(extent)/2.0)}]
         set radians [expr {$midAngle*$PI/180}]
@@ -91,13 +90,15 @@ class piePeripheralLabeller {
             set y [expr {$y-$data(height)}]                                                             ;# account for pie thickness
         }
 
-        # now transform coordinates according to canvas coordinates system
-        set coordinates [$pieLabeller::($this,canvas) coords $item]
-        $pieLabeller::($this,canvas) move $item\
-            [expr {$data(xCenter)+$x-[lindex $coordinates 0]}] [expr {$data(yCenter)-$y-[lindex $coordinates 1]}]
-
+        set canvas $pieLabeller::($this,canvas)
+        set coordinates [$canvas coords $text]                   ;# now transform coordinates according to canvas coordinates system
+        $canvas move $text [expr {$data(xCenter)+$x-[lindex $coordinates 0]}] [expr {$data(yCenter)-$y-[lindex $coordinates 1]}]
         # finally set anchor according to which point of the text is closest to pie graphics
-        $canvas itemconfigure $item -anchor $piePeripheralLabeller::(anchor,[anglePosition $angle])
+        $canvas itemconfigure $text -anchor $piePeripheralLabeller::(anchor,[anglePosition $angle])
+    }
+
+    proc delete {this label} {
+        canvasLabelsArray::delete $piePeripheralLabeller::($this,array) $label
     }
 
 }
