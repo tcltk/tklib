@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.19 1995/10/01 22:07:57 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.20 1995/10/03 09:23:21 jfontain Exp $}
 
 source util.tcl
 
@@ -27,6 +27,7 @@ proc slice::slice {id canvas x y radiusX radiusY start extent args} {
     set slice($id,radiusX) $radiusX
     set slice($id,radiusY) $radiusY
     set slice($id,height) $option(-height)
+    # extent member is set in update{}
 
     # use a dimensionless line as an origin marker
     set slice($id,origin) [$canvas create line -$radiusX -$radiusY -$radiusX -$radiusY -fill {} -tags slice($id)]
@@ -79,14 +80,13 @@ proc slice::update {id start extent} {
     $canvas coords $slice($id,origin) -$radiusX -$radiusY $radiusX $radiusY
     $canvas coords $slice($id,topArc) -$radiusX -$radiusY $radiusX $radiusY
 
-    set slice($id,start) [set start [normalizedAngle $start]]
     # normalize extent by choosing a value slightly less than 360 degrees for too large values, for slice size cannot be 360
     set extent [maximum 0 $extent]
     if {$extent>=360} {
         set extent 359.9999999999999
     }
-    set slice($id,extent) $extent
-    $canvas itemconfigure $slice($id,topArc) -start $start -extent $extent
+    $canvas itemconfigure $slice($id,topArc)\
+        -start [set slice($id,start) [normalizedAngle $start]] -extent [set slice($id,extent) $extent]
 
     if {$slice($id,height)>0} {
         # if 3D
@@ -98,7 +98,7 @@ proc slice::update {id start extent} {
 }
 
 proc slice::updateBottom {id} {
-    global slice
+    global slice PI
 
     set start $slice($id,start)
     set extent $slice($id,extent)
@@ -128,12 +128,11 @@ proc slice::updateBottom {id} {
     $canvas coords $slice($id,startPolygon) 0 0 0 0 0 0 0 0
     $canvas coords $slice($id,endPolygon) 0 0 0 0 0 0 0 0
 
-    set coefficient [expr 3.14159265358979323846/180]
-    set startX [expr $radiusX*cos($start*$coefficient)]
-    set startY [expr -$radiusY*sin($start*$coefficient)]
+    set startX [expr $radiusX*cos($start*$PI/180)]
+    set startY [expr -$radiusY*sin($start*$PI/180)]
     set end [normalizedAngle [expr $start+$extent]]
-    set endX [expr $radiusX*cos($end*$coefficient)]
-    set endY [expr -$radiusY*sin($end*$coefficient)]
+    set endX [expr $radiusX*cos($end*$PI/180)]
+    set endY [expr -$radiusY*sin($end*$PI/180)]
 
     set startBottom [expr $startY+$height]
     set endBottom [expr $endY+$height]
@@ -207,11 +206,11 @@ proc slice::position {id start} {
     slice::update $id $start $slice($id,extent)
 }
 
-proc slice::rotate {id value} {
+proc slice::rotate {id angle} {
     global slice
 
-    if {$value!=0} {
-        slice::update $id [expr $slice($id,start)+$value] $slice($id,extent)
+    if {$angle!=0} {
+        slice::update $id [expr $slice($id,start)+$angle] $slice($id,extent)
     }
 }
 
