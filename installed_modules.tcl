@@ -26,6 +26,7 @@ foreach {m pkg doc exa} {
     ipentry     _tcl  _man  _null
     plotchart   _tcl  _man _exa
     style       _tcl  _man  _null
+    swaplist    _tcl  _man  _null
     tkpiechart  _tcl  _man  _null
 } {
     lappend modules $m
