@@ -17,5 +17,8 @@ If you find a bug in the Tcl code and correct it yourself, please email the
 modified code so I can include it in the next release. The same goes for
 improvements.
 
+Note: there is a piecrunch.tcl file that is a stripped version of all the
+Tcl files needed for using pies: just source it (thanks to Laurent
+Demailly for his tcl_cruncher utility).
 
 Jean-Luc Fontaine (jfontain@pluton.experdata.fr)
