@@ -1,7 +1,9 @@
-set rcsId {$Id: slice.tcl,v 1.31 1998/03/25 20:45:16 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.32 1998/04/09 21:56:03 jfontain Exp $}
 
 
-class slice {}
+class slice {
+    variable PI 3.14159265358979323846
+}
 
 proc slice::slice {this canvas x y radiusX radiusY start extent args} switched {$args} {         ;# all dimensions must be in pixels
     # note: all slice elements are tagged with slice($this)
@@ -115,7 +117,7 @@ proc slice::update {this start extent} {
 }
 
 proc slice::updateBottom {this} {
-    global PI
+    variable PI
 
     set start $slice::($this,start)
     set extent $slice::($this,extent)
@@ -231,4 +233,8 @@ proc slice::data {this arrayName} {
     set data(xCenter) [expr {[lindex $coordinates 0]+$data(xRadius)}]
     set data(yCenter) [expr {[lindex $coordinates 1]+$data(yRadius)}]
     set data(height) $switched::($this,-height)
+}
+
+class slice {                                                                                   ;# define various utility procedures
+    proc maximum {a b} {return [expr {$a>$b?$a:$b}]}
 }
