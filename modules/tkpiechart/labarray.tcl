@@ -1,11 +1,11 @@
-set rcsId {$Id: labarray.tcl,v 1.18 1998/05/03 15:00:55 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.19 1998/06/07 10:08:51 jfontain Exp $}
 
 class canvasLabelsArray {
 
-    proc canvasLabelsArray {this canvas x y args} switched {$args} {
+    proc canvasLabelsArray {this canvas args} switched {$args} {
         set canvasLabelsArray::($this,canvas) $canvas
         # use an empty image as an origin marker with only 2 coordinates
-        set canvasLabelsArray::($this,origin) [$canvas create image $x $y -tags canvasLabelsArray($this)]
+        set canvasLabelsArray::($this,origin) [$canvas create image 0 0 -tags canvasLabelsArray($this)]
         set canvasLabelsArray::($this,labels) {}
         switched::complete $this
     }
@@ -94,6 +94,15 @@ class canvasLabelsArray {
 
     proc labels {this} {
         return $canvasLabelsArray::($this,labels)
+    }
+
+    proc height {this} {
+        set number [llength $canvasLabelsArray::($this,labels)]
+        if {$number==0} {
+            return 0
+        }
+        set coordinates [$canvasLabelsArray::($this,canvas) bbox canvasLabel([lindex $canvasLabelsArray::($this,labels) 0])]
+        return [expr {(($number+1)/2)*([lindex $coordinates 3]-[lindex $coordinates 1])}]
     }
 
 }
