@@ -43,6 +43,9 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
       }
       $w create text $xcrd $ycrd -text $ylabel -tag yaxis -anchor e
       set y [expr {$y+$ydelt}]
+      if { abs($y) < 0.5*$ydelt } {
+         set y 0.0
+      }
    }
 }
 
@@ -84,6 +87,9 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt } {
       }
       $w create text $xcrd $ycrd -text $xlabel -tag xaxis -anchor n
       set x [expr {$x+$xdelt}]
+      if { abs($x) < 0.5*$xdelt } {
+         set x 0.0
+      }
    }
 
    set scaling($w,xdelt) $xdelt
