@@ -20,7 +20,7 @@ Returns a list of icons found in [arg file] where each element has the
 format {width height depth}. Recognizes the following [arg option]s.
 
 [list_begin opt]
-[opt_def -type value]
+[opt_def -type fileFormat]
 [list_end]
 [nl]
 
@@ -40,7 +40,7 @@ in that row from left to right.
 Recognizes the following [arg option]s.
 
 [list_begin opt]
-[opt_def -type value]
+[opt_def -type fileFormat]
 [opt_def -format value]
 [opt_def -name value]
 [list_end]
@@ -69,7 +69,7 @@ existing icon.
 
 [arg_def integer depth in]
 
-This argument must have a value of 1, 4, 8, 24 or 32. If [arg data]
+This argument must have a value of [const 1], [const 4], [const 8], [const 24], or [const 32]. If [arg data]
 has more colors than the color depth allows an error will be
 generated.
 
@@ -86,7 +86,7 @@ This argument is either a list of colors in the format returned by
 Recognizes the following [arg option]s.
 
 [list_begin opt]
-[opt_def -type value]
+[opt_def -type fileFormat]
 [list_end]
 [nl]
 
@@ -96,8 +96,8 @@ Recognizes the following [arg option]s.
 Copies the icon at [arg index] in [arg file] to [arg index2] in [arg file2].
 
 [list_begin opt]
-[opt_def -fromtype value]
-[opt_def -totype value]
+[opt_def -fromtype fileFormat]
+[opt_def -totype fileFormat]
 [list_end]
 [nl]
 
@@ -107,7 +107,7 @@ Copies the icon at [arg index] in [arg file] to [arg index2] in [arg file2].
 Extracts all icons from the executable [arg file] to the ICO file [arg file2]
 
 [list_begin opt]
-[opt_def -type value]
+[opt_def -type fileFormat]
 [list_end]
 [nl]
 
@@ -130,8 +130,8 @@ Application level command which displays a window showing all the
 icons in [arg file] with information about them.
 
 [list_begin opt]
-[opt_def -type value]
-[opt_def -parent value]
+[opt_def -type fileFormat]
+[opt_def -parent pathName]
 [list_end]
 [list_end]
 
@@ -143,6 +143,24 @@ icons in [arg file] with information about them.
     set i [lsearch [::ico::getIconList tclkit.exe] {32 32 8}]]
     set colorlist [::ico::getIcon tclkit.exe $i -format colors -type EXE]
 }]
+
+[section LIMITATIONS]
+
+Icons may not be added or removed from file types other than ICO. Icons in these files
+may only be replaced with icons of the same dimensions and color depth.
+[nl]
+
+Icons of 8bpp or lower must include black in the pallete, this means if your icon does
+not have black in it, you will need to leave a color free so that it may be included by
+writeIcon.
+[nl]
+
+There is currently no way to read alpha channel information from 32bpp icons.
+[nl]
+
+Tk images do not have an alpha channel so the only way to write a true 32bpp icon is from
+a color list. writing a 32bpp icon from a Tkimage is identical to writing a 24bpp icon.
+
 
 
 [keywords entry icon ico exe dll]

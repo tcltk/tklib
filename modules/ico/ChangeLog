@@ -1,3 +1,10 @@
+2004-08-17  Aaron Faupell <afaupell@users.sourceforge.net>
+
+	* ico.tcl: CheckEXE removed and replaced by new SearchForIcos which
+	calls SearchForIcosNE or SearchForIcosPE which atually parse the
+	window resource tables resulting in a nice speed improvement
+	over the old linear search. Also corrected all usage of fconfigure.
+
 2004-07-27  Aaron Faupell <afaupell@users.sourceforge.net>
 
 	* ico.tcl: undocumented windows feature: if the first palette entry
