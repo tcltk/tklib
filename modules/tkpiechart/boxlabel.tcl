@@ -1,13 +1,9 @@
-set rcsId {$Id: boxlabel.tcl,v 1.15 1995/10/14 17:13:32 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.16 1995/10/21 20:26:19 jfontain Exp $}
 
 source pielabel.tcl
 source labarray.tcl
 
-proc pieBoxLabeller::pieBoxLabeller {this canvas args} {
-    global pieBoxLabeller
-
-    eval pieLabeller::pieLabeller $this $canvas $args
-
+proc pieBoxLabeller::pieBoxLabeller {this canvas args} pieLabeller {$canvas $args} {
     # set options default then parse switched options
     array set option {-justify left}
     array set option $args
@@ -15,15 +11,11 @@ proc pieBoxLabeller::pieBoxLabeller {this canvas args} {
 }
 
 proc pieBoxLabeller::~pieBoxLabeller {this} {
-    global pieBoxLabeller
-
     # array may not have been created yet
     catch {delete canvasLabelsArray $pieBoxLabeller($this,array)}
 }
 
 proc pieBoxLabeller::create {this sliceId args} {
-    global pieBoxLabeller pieLabeller
-
     if {![info exists pieBoxLabeller($this,array)]} {
         # create a labels array
         set options "-justify $pieBoxLabeller($this,justify)"

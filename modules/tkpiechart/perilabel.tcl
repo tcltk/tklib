@@ -1,13 +1,9 @@
-set rcsId {$Id: perilabel.tcl,v 1.15 1995/10/14 17:13:32 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.16 1995/10/21 20:26:19 jfontain Exp $}
 
 source pielabel.tcl
 source labarray.tcl
 
-proc piePeripheralLabeller::piePeripheralLabeller {this canvas args} {
-    global piePeripheralLabeller pieLabeller
-
-    eval pieLabeller::pieLabeller $this $canvas $args
-
+proc piePeripheralLabeller::piePeripheralLabeller {this canvas args} pieLabeller {$canvas $args} {
     # eventually use labeller font as small font
     catch {set piePeripheralLabeller($this,smallFont) $pieLabeller($this,font)}
 
@@ -20,8 +16,6 @@ proc piePeripheralLabeller::piePeripheralLabeller {this canvas args} {
 }
 
 proc piePeripheralLabeller::~piePeripheralLabeller {this} {
-    global piePeripheralLabeller pieLabeller
-
     # array may not have been created yet
     catch {delete canvasLabelsArray $piePeripheralLabeller($this,array)}
     # delete remaining items
@@ -29,8 +23,6 @@ proc piePeripheralLabeller::~piePeripheralLabeller {this} {
 }
 
 proc piePeripheralLabeller::create {this sliceId args} {
-    global piePeripheralLabeller pieLabeller
-
     set canvas $pieLabeller($this,canvas)
 
     # create value label
@@ -77,14 +69,12 @@ foreach anchor {w sw s se e ne n nw} {
 unset index anchor
 
 proc piePeripheralLabeller::update {this valueId value} {
-    global pieLabeller
-
     piePeripheralLabeller::rotate $this $valueId
     $pieLabeller($this,canvas) itemconfigure $valueId -text $value
 }
 
 proc piePeripheralLabeller::rotate {this valueId} {
-    global piePeripheralLabeller pieLabeller PI
+    global PI
 
     set canvas $pieLabeller($this,canvas)
     set sliceId $piePeripheralLabeller($this,sliceId,$valueId)
