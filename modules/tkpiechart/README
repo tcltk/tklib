@@ -1,24 +1,21 @@
 Some people have asked for a Tcl/Tk pie utility: so here is my little
 implementation with Tcl, not as an extension.
 
+It should work with Tcl7.4/Tk4.0 and above.
+
 It is object oriented in a way, using pure Tcl code (read the OOTCL file for
-more details).
+more details). Also look at the oop manual page.
 
 Run the demo.tcl script to see what it looks like, read the pie man page to
-understand how to use.
+understand how to use it.
 
-Whether you like it (or hate it), please let me know. You may use it freely but
-obviously I am not responsible for misuse or incorrect behaviour... (add your
-favorite lawyer mumbo-jumbo here).
-
-More seriously, I would like to hear about bugs and improvements you would like
-to see. I will correct the bugs quickly, especially if you send me a test
-script.
+Whether you like it (or hate it), please let me know.
+I would like to hear about bugs and improvements you would like to see.
+I will correct the bugs quickly, especially if you send me a test script.
 
 If you find a bug in the Tcl code and correct it yourself, please email the
 modified code so I can include it in the next release. The same goes for
 improvements.
 
 
-
-Jean-Luc Fontaine (jfontain@experdata.fr)
+Jean-Luc Fontaine (jfontain@pluton.experdata.fr)
