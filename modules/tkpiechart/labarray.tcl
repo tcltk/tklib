@@ -1,4 +1,4 @@
-set rcsId {$Id: labarray.tcl,v 1.15 1998/03/28 20:36:12 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.16 1998/03/28 20:37:16 jfontain Exp $}
 
 class canvasLabelsArray {
 
@@ -7,12 +7,6 @@ class canvasLabelsArray {
         set canvasLabelsArray::($this,width) [winfo fpixels $canvas $width]
         # use a dimensionless line as an origin marker
         set canvasLabelsArray::($this,origin) [$canvas create line $x $y $x $y -fill {} -tags canvasLabelsArray($this)]
-
-#       array set options {-justify left -style box -bulletwidth 20 -xoffset 0}                               ;# set options default
-#       array set options $args                                                                        ;# override with user options
-#       set canvasLabelsArray::($this,xOffset) [winfo fpixels $canvas $options(-xoffset)]                 ;# convert offset to pixel
-#       unset options(-xoffset)                                                                  ;# remove invalid option for labels
-#       set canvasLabelsArray::($this,labelOptions) [array get options]
         set canvasLabelsArray::($this,labels) {}
         switched::complete $this
     }
