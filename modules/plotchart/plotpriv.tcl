@@ -511,7 +511,7 @@ proc ::Plotchart::DrawPie { w data } {
        
        set idx 0
        
-       unset -nocomplain scaling(${w},angles)
+       array unset scaling ${w},angles
        set colours [CycleColours ${colours} [expr {[llength ${data}] / 2}]]
        
        foreach {label value} $data {
