@@ -1,4 +1,4 @@
-set rcsId {$Id: labarray.tcl,v 1.20 1998/06/07 13:47:02 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.20.1.1 2000/04/06 19:26:04 jfontain Exp $}
 
 class canvasLabelsArray {
 
@@ -64,25 +64,23 @@ class canvasLabelsArray {
 
     proc position {this label index} {
         set canvas $canvasLabelsArray::($this,canvas)
-
         foreach {x y} [$canvas coords $canvasLabelsArray::($this,origin)] {}
-        set coordinates [$canvas bbox canvasLabel($label)]
-        set y [expr {$y+(($index/2)*([lindex $coordinates 3]-[lindex $coordinates 1]))}]           ;# take label height into account
-
+        set column [expr {$index%2}]
         switch $switched::($this,-justify) {                                                        ;# arrange labels in two columns
             left {
-                set x [expr {$x+(($index%2)*($canvasLabelsArray::($this,width)/2.0))}]
+                set x [expr {$x+($column*($canvasLabelsArray::($this,width)/2.0))}]
                 set anchor nw
             }
             right {
-                set x [expr {$x+((($index%2)+1)*($canvasLabelsArray::($this,width)/2.0))}]
+                set x [expr {$x+(($column+1)*($canvasLabelsArray::($this,width)/2.0))}]
                 set anchor ne
             }
             default {                                                                                            ;# should be center
-                set x [expr {$x+((1.0+(2*($index%2)))*$canvasLabelsArray::($this,width)/4)}]
+                set x [expr {$x+((1.0+(2*$column))*$canvasLabelsArray::($this,width)/4)}]
                 set anchor n
             }
         }
+        set y [expr {$y+[columnHeight $this $column [expr {$index/2}]]}]
         switched::configure $label -anchor $anchor
         foreach {xDelta yDelta} [$canvas coords canvasLabel($label)] {}                ;# do an absolute positioning using label tag
         $canvas move canvasLabel($label) [expr {$x-$xDelta}] [expr {$y-$yDelta}]
@@ -92,13 +90,21 @@ class canvasLabelsArray {
         return $canvasLabelsArray::($this,labels)
     }
 
-    proc height {this} {
-        set number [llength $canvasLabelsArray::($this,labels)]
-        if {$number==0} {
-            return 0
+    proc columnHeight {this column {rows 2147483647}} {                                              ;# column must be either 0 or 1
+        set canvas $canvasLabelsArray::($this,canvas)
+        set length [llength $canvasLabelsArray::($this,labels)]
+        set height 0
+        for {set index $column; set row 0} {($index<$length)&&($row<$rows)} {incr index 2; incr row} {
+            set coordinates [$canvas bbox canvasLabel([lindex $canvasLabelsArray($this,labels) $index])]
+            incr height [expr {[lindex $coordinates 3]-[lindex $coordinates 1]}]
         }
-        set coordinates [$canvasLabelsArray::($this,canvas) bbox canvasLabel([lindex $canvasLabelsArray::($this,labels) 0])]
-        return [expr {(($number+1)/2)*([lindex $coordinates 3]-[lindex $coordinates 1])}]
+        return $height
     }
+
+    proc height {this} {
+        return [maximum [columnHeight $this 0] [columnHeight $this 1]]
+    }
+
+    proc maximum {a b} {return [expr {$a>$b?$a:$b}]}
 
 }
