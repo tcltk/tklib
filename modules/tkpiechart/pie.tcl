@@ -1,4 +1,4 @@
-# $Id: pie.tcl,v 1.5 1994/11/02 14:17:48 jfontain Exp $
+# $Id: pie.tcl,v 1.6 1995/01/27 15:54:42 jfontain Exp $
 
 source ../tools/slice.tcl
 
@@ -33,22 +33,27 @@ proc pie::pie {id parentWidget width height {thickness 0} {topColor ""} {bottomC
     set pie($id,thickness) [set thickness [winfo fpixels $parentWidget $thickness]]
 
     set pie($id,frame) [frame [objectWidgetName pie $id $parentWidget] -bd 0]
-    set pie($id,canvas) [canvas $pie($id,frame).canvas -width [expr (2*$radiusX)+1] -height [expr (2*$radiusY)+$thickness+1]]
-    pack $pie($id,canvas)
+
+    set canvas [canvas $pie($id,frame).canvas]
+    set pie($id,canvas) $canvas
+    pack $canvas
+
     pack [frame $pie($id,frame).separator -height $pie(separatorHeight)]
     # arrange slice labels in rows of 2 entries
     pack [frame $pie($id,frame).entriesFrame] -fill x
     pack [frame $pie($id,frame).entriesFrame.leftFrame] -side left -fill both -expand 1
     pack [frame $pie($id,frame).entriesFrame.rightFrame] -side right -fill both -expand 1
-    if {[set pie($id,automaticHighlight) [expr ("[string tolower $highlight]"=="auto")]]} {
+    set pie($id,automaticHighlight) [expr [string compare [string tolower $highlight] auto]==0]
+    if {$pie($id,automaticHighlight)} {
         # no need to highlight first slices
         set pie($id,highlight) 0
     } else {
         set pie($id,highlight) [boolean $highlight]
     }
-    set pie($id,backgroundSlice)\
-        [new slice $pie($id,canvas) $radiusX $radiusY $radiusX $radiusY [expr $PI/2] 7 $thickness $topColor $bottomColor]
+    set pie($id,backgroundSlice) [new slice $canvas $radiusX $radiusY [expr $PI/2] 7 $thickness $topColor $bottomColor]
     set pie($id,slices) ""
+
+    showWholeCanvas $canvas
 }
 
 proc pie::~pie {id} {
@@ -82,8 +87,8 @@ proc pie::newSlice {id {text ""}} {
     pack $rowFrame -fill x -padx 15
 
     set sliceId [new slice\
-        $pie($id,canvas) $pie($id,radiusX) $pie($id,radiusY) $pie($id,radiusX) $pie($id,radiusY) $startRadian 0\
-        $pie($id,thickness) $pie(lights,$color) $pie(darks,$color)\
+        $pie($id,canvas) $pie($id,radiusX) $pie($id,radiusY) $startRadian 0 $pie($id,thickness)\
+        $pie(lights,$color) $pie(darks,$color)\
     ]
     set pie($id,$sliceId,rowFrame) $rowFrame
 
@@ -102,7 +107,7 @@ proc pie::newSlice {id {text ""}} {
     if {$pie($id,highlight)} {
         # highlight by changing row frame background color, unhighlight by reversing to original background
         slice::setupHighlighting $sliceId "$rowFrame configure -background black"\
-            "$rowFrame configure -background [llast [$rowFrame configure -background]]"
+            "$rowFrame configure -background [$rowFrame cget -background]"
     } else {
         if {$pie($id,automaticHighlight)&&([llength $pie($id,slices)]>[llength $pie(colors)])} {
             # if automatic highlight and number of colors exhausted, highlight from now on
@@ -111,7 +116,7 @@ proc pie::newSlice {id {text ""}} {
             foreach currentId $pie($id,slices) {
                 set rowFrame $pie($id,$currentId,rowFrame)
                 slice::setupHighlighting $currentId "$rowFrame configure -background black"\
-                     "$rowFrame configure -background [llast [$rowFrame configure -background]]"
+                     "$rowFrame configure -background [$rowFrame cget -background]"
             }
         }
     }
@@ -131,3 +136,12 @@ proc pie::sizeSlice {id sliceId perCent} {
     set perCent [minimum $perCent 100]
     global slice twoPI
     set newExtent [expr $perCent*$twoPI/100]
+    set growth [expr $newExtent-$slice($sliceId,extent)]
+    # grow clockwise
+    slice::update $sliceId [expr $slice($sliceId,start)-$growth] $newExtent
+    # finally move the following slices
+    set radian [expr -1*$growth]
+    while {[set sliceId [lindex $pie($id,slices) [incr index]]]>=0} {
+        slice::rotate $sliceId $radian
+    }
+}
