@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.33 1998/05/02 23:41:58 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.34 1998/05/03 15:53:03 jfontain Exp $}
 
 
 class slice {
@@ -44,7 +44,9 @@ foreach option {-bottomcolor -height -topcolor} {                               
 proc slice::set-deletecommand {this value} {}                                                    ;# data is stored at switched level
 
 proc slice::set-scale {this value} {                                ;# value is a list of ratios of the horizontal and vertical axis
-    update $this $slice::($this,start) $slice::($this,extent)                  ;# refresh display which takes new scale into account
+    if {$switched::($this,complete)} {                                                                        ;# if completely built
+        update $this $slice::($this,start) $slice::($this,extent)              ;# refresh display which takes new scale into account
+    }
 }
 
 proc slice::normalizedAngle {value} {                                 ;# normalize value between -180 and 180 degrees (not included)
