@@ -1,6 +1,6 @@
-# $Id: slice.tcl,v 1.7 1995/06/02 10:25:07 jfontain Exp $
+# $Id: slice.tcl,v 1.8 1995/06/21 09:46:34 jfontain Exp $
 
-source $env(AGVHOME)/tools/utility.tcl
+source $env(AGVHOME)/tools/utility.tk
 
 proc moduloTwoPI {value} {
     # normalize value between 0 and 2*PI (not included)
