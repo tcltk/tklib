@@ -1,4 +1,4 @@
-set rcsId {$Id: labarray.tcl,v 1.6 1995/11/04 17:47:18 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.7 1996/09/17 13:25:07 jfontain Exp $}
 
 source canlabel.tcl
 
@@ -9,10 +9,14 @@ proc canvasLabelsArray::canvasLabelsArray {this canvas x y width args} {
     set canvasLabelsArray($this,origin) [$canvas create line $x $y $x $y -fill {} -tags canvasLabelsArray($this)]
 
     # set options default
-    array set options {-justify left -style box -bulletwidth 20}
+    array set options {-justify left -style box -bulletwidth 20 -xoffset 0}
     # override with user options
     array set options $args
-    set canvasLabelsArray($this,options) [array get options]
+    # convert offset to pixel
+    set canvasLabelsArray($this,xOffset) [winfo fpixels $canvas $options(-xoffset)]
+    # remove invalid option for labels
+    unset options(-xoffset)
+    set canvasLabelsArray($this,labelOptions) [array get options]
 }
 
 proc canvasLabelsArray::~canvasLabelsArray {this} {
@@ -24,7 +28,7 @@ proc canvasLabelsArray::~canvasLabelsArray {this} {
 }
 
 proc canvasLabelsArray::create {this args} {
-    array set options $canvasLabelsArray($this,options)
+    array set options $canvasLabelsArray($this,labelOptions)
     # override with user options
     array set options $args
 
@@ -38,14 +42,15 @@ proc canvasLabelsArray::create {this args} {
 proc canvasLabelsArray::position {this labelId justification} {
     set canvas $canvasLabelsArray($this,canvas)
 
+    set index [expr [llength $canvasLabelsArray($this,labelIds)]-1]
+
     set coordinates [$canvas coords $canvasLabelsArray($this,origin)]
-    set x [lindex $coordinates 0]
+    # offset horizontally, left column gets negative offset
+    set x [expr [lindex $coordinates 0]+(($index%2?1:-1)*$canvasLabelsArray($this,xOffset))]
     set y [lindex $coordinates 1]
 
     set coordinates [$canvas bbox canvasLabel($labelId)]
     set labelHeight [expr [lindex $coordinates 3]-[lindex $coordinates 1]]
-
-    set index [expr [llength $canvasLabelsArray($this,labelIds)]-1]
 
     # arrange labels in two columns
     switch $justification {
