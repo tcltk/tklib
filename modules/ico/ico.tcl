@@ -168,7 +168,7 @@ proc ::ico::writeIcon {file index bpp data args} {
 # Copies an icon directly from one file to another
 #
 # ARGS:
-#	file	        File to extra icon info from.
+#	file	        File to extract icon info from.
 #	index	        Index of icon in the file to use.  The ordering is the
 #		        same as returned by getIconList.  (0-based)
 #	?-fromtype?	Type of source file.  If not specified, it is derived from
@@ -182,11 +182,16 @@ proc ::ico::writeIcon {file index bpp data args} {
 #	nothing
 #
 proc ::ico::copyIcon {f1 i1 f2 i2 args} {
-    set totype {}
-    set fromtype {}
     parseOpts {fromtype totype} $args
-    set s [lindex [getIconList $f1 -type $fromtype] $i1]
-    writeIcon $f2 $i2 [lindex $s 2] [translateColors [getIcon $f1 $i1 -format colors]] -type $totype
+    if {![info exists fromtype]} {
+        # $type wasn't specified - get it from the extension
+        set fromtype [string trimleft [string toupper [file extension $f1]] .]
+    }
+    if {![info exists totype]} {
+        # $type wasn't specified - get it from the extension
+        set totype [string trimleft [string toupper [file extension $f2]] .]
+    }
+    writeIcon $f2 $i2 [lindex [getIconList $f1 -type $fromtype] $i1 2] [getIcon $f1 $i1 -format colors] -type $totype
 }
 
 #
@@ -305,7 +310,7 @@ proc ::ico::parseOpts {acc opts} {
     }
 }
 
-# formats a single color from the decimal list format to the #hex format
+# formats a single color from a binary decimal list format to the #hex format
 proc ::ico::formatColor {r g b} {
     format "#%02X%02X%02X" [scan $r %c] [scan $g %c] [scan $b %c]
 }
@@ -893,10 +898,10 @@ proc ::ico::writeIconEXE {file index w0 h0 bpp0 palette xor and} {
 
 interp alias {} ::ico::getIconListDLL    {} ::ico::getIconListEXE
 interp alias {} ::ico::getRawIconDataDLL {} ::ico::getRawIconDataEXE
-interp alias {} ::ico::writeIconDLL   {} ::ico::writeIconEXE
+interp alias {} ::ico::writeIconDLL      {} ::ico::writeIconEXE
 interp alias {} ::ico::getIconListICL    {} ::ico::getIconListEXE
 interp alias {} ::ico::getRawIconDataICL {} ::ico::getRawIconDataEXE
-interp alias {} ::ico::writeIconICL   {} ::ico::writeIconEXE
+interp alias {} ::ico::writeIconICL      {} ::ico::writeIconEXE
 
 proc ::ico::showaux {files} {
     if {[llength $files]} {
