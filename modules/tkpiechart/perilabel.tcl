@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.40 1998/06/04 21:59:01 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.41 1998/06/07 10:22:41 jfontain Exp $}
 
 class piePeripheralLabeler {
 
@@ -6,6 +6,8 @@ class piePeripheralLabeler {
 
     proc piePeripheralLabeler {this canvas args} pieLabeler {$canvas $args} switched {$args} {
         switched::complete $this
+        ::set piePeripheralLabeler::($this,array)\
+            [::new canvasLabelsArray $canvas -justify $switched::($this,-justify) -xoffset $switched::($this,-xoffset)]
     }
 
     proc ~piePeripheralLabeler {this} {
@@ -44,12 +46,7 @@ class piePeripheralLabeler {
     proc new {this slice args} {                                       ;# variable arguments are for the created canvas label object
         ::set canvas $pieLabeler::($this,canvas)
         ::set text [$canvas create text 0 0 -font $switched::($this,-smallfont) -tags pieLabeler($this)]       ;# create value label
-        if {![info exists piePeripheralLabeler::($this,array)]} {                                     ;# create a split labels array
-            ::set piePeripheralLabeler::($this,array)\
-                [::new canvasLabelsArray $canvas 0 0 -justify $switched::($this,-justify) -xoffset $switched::($this,-xoffset)]
-            update $this                                                                                 ;# position array below pie
-        }
-        ::set label [eval ::new canvasLabel $pieLabeler::($this,canvas) 0 0 $args\
+        ::set label [eval ::new canvasLabel $pieLabeler::($this,canvas) $args\
             [list\
                 -style split -justify $switched::($this,-justify) -bulletwidth $switched::($this,-bulletwidth)\
                 -font $switched::($this,-font)\
@@ -124,31 +121,30 @@ class piePeripheralLabeler {
         ::set piePeripheralLabeler::($this,selected,$label) $selected
     }
 
-    proc update {this} {
+    proc update {this left top right bottom} {                                   ;# whole pie coordinates, includings labeler labels
         ::set canvas $pieLabeler::($this,canvas)
-        ::set box [$canvas bbox pieGraphics($pieLabeler::($this,pie))]
         ::set array $piePeripheralLabeler::($this,array)                         ;# first reposition labels array below pie graphics
         foreach {x y} [$canvas coords canvasLabelsArray($array)] {}
-        $canvas move canvasLabelsArray($array) [expr {[lindex $box 0]-$x}]\
-            [expr {[lindex $box 3]+$switched::($this,-offset)+$piePeripheralLabeler::($this,smallFontHeight)-$y}]
-        switched::configure $array -width [switched::cget $pieLabeler::($this,pie) -width]                     ;# then fit pie width
+        $canvas move canvasLabelsArray($array) [expr {$left-$x}] [expr {$bottom-[canvasLabelsArray::height $array]-$y}]
+        switched::configure $array -width [expr {$right-$left}]                                                ;# then fit pie width
         foreach label [canvasLabelsArray::labels $array] {                                   ;# finally reposition peripheral labels
             position $this $piePeripheralLabeler::($this,textItem,$label) $piePeripheralLabeler::($this,slice,$label)
         }
     }
 
-    proc horizontalRoom {this} {
-        # use 3 characters as a maximum numerical string length
-        return [expr {2*((3*$piePeripheralLabeler::($this,smallFontWidth))+$switched::($this,-offset))}]
-    }
+    proc room {this arrayName} {
+        upvar $arrayName data
 
-    proc verticalRoom {this} {
-        if {[catch {::set piePeripheralLabeler::($this,array)} array]} {
-            return 0
+        # use 4 characters (0.00) as a maximum numerical string length
+        ::set data(left) [expr {(4*$piePeripheralLabeler::($this,smallFontWidth))+$switched::($this,-offset)}]
+        ::set data(right) $data(left)
+        ::set data(top) [expr {$switched::($this,-offset)+$piePeripheralLabeler::($this,smallFontHeight)}]
+        ::set box [$pieLabeler::($this,canvas) bbox canvasLabelsArray($piePeripheralLabeler::($this,array))]
+        if {[llength $box]==0} {                                                                                    ;# no labels yet
+            ::set data(bottom) $data(top)
+        } else {                                                                        ;# room taken by all labels including offset
+            ::set data(bottom) [expr {$data(top)+[lindex $box 3]-[lindex $box 1]}]
         }
-        ::set box [$pieLabeler::($this,canvas) bbox canvasLabelsArray($array)]
-        return\
-            [expr {[lindex $box 3]-[lindex $box 1]+(2*($switched::($this,-offset)+$piePeripheralLabeler::($this,smallFontHeight)))}]
     }
 
 }

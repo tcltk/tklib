@@ -1,8 +1,9 @@
-set rcsId {$Id: boxlabel.tcl,v 1.38 1998/06/04 21:58:18 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.39 1998/06/07 10:20:43 jfontain Exp $}
 
 class pieBoxLabeler {
 
     proc pieBoxLabeler {this canvas args} pieLabeler {$canvas $args} switched {$args} {
+        ::set pieBoxLabeler::($this,array) [::new canvasLabelsArray $canvas]
         switched::complete $this
     }
 
@@ -29,11 +30,7 @@ class pieBoxLabeler {
     }
 
     proc new {this slice args} {                                       ;# variable arguments are for the created canvas label object
-        if {![info exists pieBoxLabeler::($this,array)]} {                                                  ;# create a labels array
-            ::set pieBoxLabeler::($this,array) [::new canvasLabelsArray $pieLabeler::($this,canvas) 0 0]
-            update $this                                                                                 ;# position array below pie
-        }
-        ::set label [eval ::new canvasLabel $pieLabeler::($this,canvas) 0 0\
+        ::set label [eval ::new canvasLabel $pieLabeler::($this,canvas)\
             $args [list -justify $switched::($this,-justify) -font $switched::($this,-font)]\
         ]
         canvasLabelsArray::manage $pieBoxLabeler::($this,array) $label
@@ -66,25 +63,25 @@ class pieBoxLabeler {
         ::set pieBoxLabeler::($this,selected,$label) $selected
     }
 
-    proc update {this} {
+    proc update {this left top right bottom} {                                   ;# whole pie coordinates, includings labeler labels
         ::set canvas $pieLabeler::($this,canvas)
-        ::set box [$canvas bbox pieGraphics($pieLabeler::($this,pie))]
         ::set array $pieBoxLabeler::($this,array)                                ;# first reposition labels array below pie graphics
         foreach {x y} [$canvas coords canvasLabelsArray($array)] {}
-        $canvas move canvasLabelsArray($array) [expr {[lindex $box 0]-$x}] [expr {[lindex $box 3]+$switched::($this,-offset)-$y}]
-        switched::configure $array -width [switched::cget $pieLabeler::($this,pie) -width]                     ;# then fit pie width
+        $canvas move canvasLabelsArray($array) [expr {$left-$x}] [expr {$bottom-[canvasLabelsArray::height $array]-$y}]
+        switched::configure $array -width [expr {$right-$left}]                                                ;# then fit pie width
     }
 
-    proc horizontalRoom {this} {
-        return 0                                                                                      ;# no room taken around slices
-    }
+    proc room {this arrayName} {
+        upvar $arrayName data
 
-    proc verticalRoom {this} {                                                   ;# return room taken by all labels including offset
-        if {[catch {::set pieBoxLabeler::($this,array)} array]} {
-            return 0
+        ::set data(left) 0                                                                            ;# no room taken around slices
+        ::set data(right) 0
+        ::set data(top) 0
+        ::set box [$pieLabeler::($this,canvas) bbox canvasLabelsArray($pieBoxLabeler::($this,array))]
+        if {[llength $box]==0} {                                                                                    ;# no labels yet
+            ::set data(bottom) 0
+        } else {                                                                        ;# room taken by all labels including offset
+            ::set data(bottom) [expr {[lindex $box 3]-[lindex $box 1]+$switched::($this,-offset)}]
         }
-        ::set box [$pieLabeler::($this,canvas) bbox canvasLabelsArray($array)]
-        return [expr {[lindex $box 3]-[lindex $box 1]+$switched::($this,-offset)}]
     }
-
 }
