@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.21 1995/10/07 20:43:31 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.22 1995/10/08 18:17:09 jfontain Exp $}
 
 source util.tcl
 
@@ -230,4 +230,5 @@ proc slice::data {id arrayName} {
     set coordinates [$slice($id,canvas) coords $slice($id,origin)]
     set data(xCenter) [expr [lindex $coordinates 0]+$data(xRadius)]
     set data(yCenter) [expr [lindex $coordinates 1]+$data(yRadius)]
+    set data(height) $slice($id,height)
 }
