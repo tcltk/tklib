@@ -1,8 +1,10 @@
 # style.tcl -- Styles for Tk.
 
-# $Id: style.tcl,v 1.1 2004/03/17 21:27:47 davidw Exp $
+# $Id: style.tcl,v 1.2 2004/03/18 08:56:47 davidw Exp $
 
 # Copyright 2004 David N. Welton <davidw@dedasys.com>
+
+package provide style 0.1
 
 namespace eval style {
     # Available styles
