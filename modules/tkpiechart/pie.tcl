@@ -1,7 +1,10 @@
-set rcsId {$Id: pie.tcl,v 1.47 1996/12/22 12:42:04 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.48 1996/12/23 19:04:42 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
+
+# in the plugin version 2.0 and above, tkDarken is not autoloaded, so source corresponding source file
+if {[catch {info body tkDarken}]} {source [file join $tk_library palette.tcl]}
 
 proc pie::pie {this canvas x y width height args} {
     # note: all pie elements are tagged with pie($this)
