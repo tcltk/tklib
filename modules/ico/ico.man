@@ -11,16 +11,68 @@ from ICO ICL EXE and DLL files.
 
 [para]
 
+[para]
+[example {
+    button .explore -image [::ico::getIcon explorer.exe 0 -name explore]
+    set i [lsearch [::ico::getIconList tclkit.exe] {32 32 8}]]
+    set colorlist [::ico::getIcon tclkit.exe $i -format colors -type EXE]
+}]
+[para]
+
 [list_begin definitions]
 
 [call [cmd ::ico::getIconList] [arg file] [opt "[arg option] [arg value]..."]]
+[list_begin opt]
+[opt_def -type value]
+[list_end opt]
+
 [call [cmd ::ico::getIcon] [arg file] [arg index] [opt "[arg option] [arg value]..."]]
+[list_begin opt]
+[opt_def -type value]
+[opt_def -format value]
+[opt_def -name value]
+[list_end opt]
+
+
 [call [cmd ::ico::writeIcon] [arg file] [arg index] [arg depth] [arg data] [opt "[arg option] [arg value]..."]]
+[list_begin arg]
+[arg_def fileName file]
+[arg_def integer index]
+[arg_def integer depth]
+[arg_def options args]
+[list_end arg]
+
+[list_begin opt]
+[opt_def -type value]
+[list_end opt]
+
+
 [call [cmd ::ico::copyIcon] [arg file] [arg index] [arg file2] [arg index2] [opt "[arg option] [arg value]..."]]
+[list_begin opt]
+[opt_def -fromtype value]
+[opt_def -totype value]
+[list_end opt]
+
+
 [call [cmd ::ico::EXEtoICO] [arg file] [arg file2]
+[list_begin opt]
+[opt_def -type value]
+[list_end opt]
+
+
 [call [cmd ::ico::clearCache] [opt file]
+
+
+
 [call [cmd ::ico::transparentColor] [arg image] [arg color]
+
+
+
 [call [cmd ::ico::Show] [arg file] [opt "[arg option] [arg value]..."]]
+[list_begin opt]
+[opt_def -type value]
+[opt_def -parent value]
+[list_end opt]
 
 
 [list_end]
