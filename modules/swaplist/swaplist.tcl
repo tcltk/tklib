@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: swaplist.tcl,v 1.1 2005/04/01 03:52:41 afaupell Exp $
+# RCS: @(#) $Id: swaplist.tcl,v 1.2 2005/04/01 04:44:34 afaupell Exp $
 
 package provide swaplist 0.1
 
@@ -381,16 +381,3 @@ proc ::swaplist::SetButtonState {w} {
     }
 }
 
-
-console show
-puts [swaplist::swaplist .config var "name_f name_l phone_h phone_w pager phone_c email_h email_w fax_h fax_w street_h street_w city_h city_w state_h state_w zip_h zip_w notes" "5"]
-puts $var
-puts [swaplist::swaplist .config var "1 2 3 4 5 6 7 8 9" "1 3 5" -reorder 1 -ubuttontext "/\\" -dbuttontext "\\/" -reorder 0]
-puts $var
-
-toplevel .t
-namespace eval ::test {set blah {1 2 3}}
-pack [swaplist::swaplist .t.f ::test::blah {a b c} {a} -embed] -expand 1 -fill both 
-puts $var
-puts $::test::blah
-#exit
