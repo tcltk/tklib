@@ -1,17 +1,19 @@
-set rcsId {$Id: selector.tcl,v 1.2 1998/05/24 19:18:21 jfontain Exp $}
+set rcsId {$Id: selector.tcl,v 1.3 1999/01/31 18:47:07 jfontain Exp $}
 
 # implements generic selection on a list of unique identifiers
 
 class selector {
 
     proc selector {this args} switched {$args} {
+        ::set selector::($this,order) 0
         switched::complete $this
     }
 
     proc ~selector {this} {
         variable ${this}selected
+        variable ${this}order
 
-        catch {::unset ${this}selected}
+        catch {::unset ${this}selected ${this}order}
     }
 
     proc options {this} {
@@ -24,6 +26,7 @@ class selector {
 
     proc set {this indices selected} {
         variable ${this}selected
+        variable ${this}order
 
         ::set select {}
         ::set deselect {}
@@ -36,6 +39,8 @@ class selector {
                 lappend deselect $index
                 ::set ${this}selected($index) 0
             }
+            ::set ${this}order($index) $selector::($this,order)                                        ;# keep track of action order
+            incr selector::($this,order)
         }
         update $this $select $deselect
     }
@@ -52,10 +57,17 @@ class selector {
 
     proc unset {this indices} {
         variable ${this}selected
+        variable ${this}order
 
         foreach index $indices {
-            ::unset ${this}selected($index)
+            ::unset ${this}selected($index) ${this}order($index)
         }
+    }
+
+    proc ordered {this index1 index2} {                                    ;# used for sorting with lsort command according to order
+        variable ${this}order
+
+        return [expr {[::set ${this}order($index1)]-[::set ${this}order($index2)]}]
     }
 
     ### public procedures follow:
@@ -80,6 +92,7 @@ class selector {
 
     proc toggle {this indices} {
         variable ${this}selected
+        variable ${this}order
 
         ::set select {}
         ::set deselect {}
@@ -87,11 +100,16 @@ class selector {
             if {[::set ${this}selected($index)]} {
                 lappend deselect $index
                 ::set ${this}selected($index) 0
+                if {$index==$selector::($this,lastSelected)} {
+                    ::unset selector::($this,lastSelected)                                               ;# nothing is left selected
+                }
             } else {
                 lappend select $index
                 ::set ${this}selected($index) 1
                 ::set selector::($this,lastSelected) $index                      ;# keep track of last selected object for extension
             }
+            ::set ${this}order($index) $selector::($this,order)                                        ;# keep track of action order
+            incr selector::($this,order)
         }
         update $this $select $deselect
     }
@@ -113,12 +131,13 @@ class selector {
                 lappend list $index
             }
         }
-        return $list
+        return [lsort -command "ordered $this" $list]                                                                     ;# ordered
     }
 
     virtual proc list {this} {                      ;# derived class may want to do some additional processing, such as sorting, ...
         variable ${this}selected
 
-        return [array names ${this}selected]
+        return [lsort -command "ordered $this" [array names ${this}selected]]                                             ;# ordered
     }
+
 }
