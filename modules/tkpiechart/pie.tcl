@@ -1,4 +1,4 @@
-# $Id: pie.tcl,v 1.1 1994/07/25 09:59:46 jfontain Exp $
+# $Id: pie.tcl,v 1.2 1994/07/26 16:16:21 jfontain Exp $
 
 source ../tools/slice.tcl
 
@@ -23,7 +23,7 @@ set pie(darks,orange) "#BF7F00"
 set pie(colors) "cyan green red yellow blue orange gray magenta white"
 set pie(separatorHeight) 5
 
-proc pie::pie {id parentWidget radiusX radiusY {height 0} {topColor ""} {bottomColor ""}} {
+proc pie::pie {id parentWidget radiusX radiusY {height 0} {topColor ""} {bottomColor ""} {highlight 1}} {
     global pie PI
 
     set pie($id,frame) [frame [objectWidgetName pie $id $parentWidget] -bd 0]
@@ -37,6 +37,7 @@ proc pie::pie {id parentWidget radiusX radiusY {height 0} {topColor ""} {bottomC
     set pie($id,radiusX) $radiusX
     set pie($id,radiusY) $radiusY
     set pie($id,height) $height
+    set pie($id,highlight) [boolean $highlight]
     set pie($id,backgroundSlice)\
         [new slice $pie($id,canvas) $radiusX $radiusY $radiusX $radiusY [expr $PI/2] 7 $height $topColor $bottomColor]
     set pie($id,slices) ""
@@ -69,7 +70,7 @@ proc pie::newSlice {id {text ""}} {
     set numberOfSlices [llength $pie($id,slices)]
     # put even numbered entries of the left side, odd ones on the right side, in order to fill entries row by row
     set side [expr ($numberOfSlices%2)==0?"left":"right"]
-    set rowFrame [frame [objectWidgetName row [expr $numberOfSlices/2] $pie($id,frame).entriesFrame.${side}Frame]]
+    set rowFrame [frame [objectWidgetName row [expr $numberOfSlices/2] $pie($id,frame).entriesFrame.${side}Frame] -bd 2]
     pack $rowFrame -fill x -padx 15
 
     set sliceId [new slice\
@@ -79,10 +80,17 @@ proc pie::newSlice {id {text ""}} {
     global normalFont boldFont
     set pie($id,$sliceId,label) [\
         label [objectWidgetName text $sliceId $rowFrame]\
-            -background $pie(lights,$color) -relief raised -bd 1 -text $text -font $normalFont -padx 2\
+            -background $pie(lights,$color) -relief raised -text $text -font $normalFont -bd 1 -padx 2\
     ]
     pack $pie($id,$sliceId,label) -side left
-    pack [set pie($id,$sliceId,valueLabel) [label [objectWidgetName value $sliceId $rowFrame] -text 0 -font $boldFont]] -side right
+    pack [frame [objectWidgetName spacer $sliceId $rowFrame]] -side left -fill both -expand 1
+
+    if {$pie($id,highlight)} {
+        slice::setupHighlighting $sliceId\
+            "$rowFrame configure -background black" "$rowFrame configure -background [llast [$rowFrame configure -background]]"
+    }
+    set pie($id,$sliceId,valueLabel) [label [objectWidgetName value $sliceId $rowFrame] -text 0 -font $boldFont -bd 1]
+    pack $pie($id,$sliceId,valueLabel) -side right
 
     lappend pie($id,slices) $sliceId
     return $sliceId
