@@ -1,6 +1,6 @@
-set rcsId {$Id: slice.tcl,v 1.16 1995/09/26 11:14:10 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.17 1995/09/26 17:21:19 jfontain Exp $}
 
-source $env(AGVHOME)/tools/utility.tk
+source util.tcl
 
 proc moduloTwoPI {value} {
     # normalize value between 0 and 2*PI (not included)
