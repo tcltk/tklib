@@ -1,11 +1,9 @@
-set rcsId {$Id: pielabel.tcl,v 1.19 1995/10/21 20:29:18 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.20 1995/10/22 18:47:15 jfontain Exp $}
 
-proc pieLabeller::pieLabeller {this canvas options} {
-    ### should be able to use args instead of options here: fix stooop ###
-
+proc pieLabeller::pieLabeller {this canvas args} {
     # set options default then parse switched options
     array set option {-offset 5}
-    array set option $options
+    array set option $args
 
     # convert offset to pixel
     set pieLabeller($this,offset) [winfo fpixels $canvas $option(-offset)]
