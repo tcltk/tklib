@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.36 1995/10/05 20:29:12 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.37 1995/10/07 20:39:33 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -94,19 +94,23 @@ proc pie::sizeSlice {id sliceId unitShare {valueToDisplay {}}} {
     if {[set index [lsearch $pie($id,sliceIds) $sliceId]]<0} {
         error "could not find slice $sliceId in pie $id slices"
     }
-    if {[string length $valueToDisplay]>0} {
-        pieLabeller::update $pie($id,labellerId) $pie($id,sliceLabel,$sliceId) $valueToDisplay
-    } else {
-        pieLabeller::update $pie($id,labellerId) $pie($id,sliceLabel,$sliceId) $unitShare
-    }
     # cannot display slices that occupy more than whole pie and less than zero
     set newExtent [expr [maximum [minimum $unitShare 1] 0]*360]
     set growth [expr $newExtent-$slice($sliceId,extent)]
     # grow clockwise
     slice::update $sliceId [expr $slice($sliceId,start)-$growth] $newExtent
+
+    # update label after slice for it may need slice latest configuration
+    if {[string length $valueToDisplay]>0} {
+        pieLabeller::update $pie($id,labellerId) $pie($id,sliceLabel,$sliceId) $valueToDisplay
+    } else {
+        pieLabeller::update $pie($id,labellerId) $pie($id,sliceLabel,$sliceId) $unitShare
+    }
+
     # finally move the following slices
     set value [expr -1*$growth]
     foreach sliceId [lrange $pie($id,sliceIds) [incr index] end] {
         slice::rotate $sliceId $value
+        pieLabeller::rotate $pie($id,labellerId) $pie($id,sliceLabel,$sliceId)
     }
 }
