@@ -1,6 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.22 1997/06/05 20:25:51 jfontain Exp $}
-
-package provide tkpiechart 3.0
+set rcsId {$Id: boxlabel.tcl,v 1.23 1998/03/14 09:48:05 jfontain Exp $}
 
 class pieBoxLabeller {}
 

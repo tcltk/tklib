@@ -1,6 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.28 1997/06/05 20:25:51 jfontain Exp $}
-
-package provide tkpiechart 3.0
+set rcsId {$Id: slice.tcl,v 1.29 1998/03/14 09:48:05 jfontain Exp $}
 
 proc normalizedAngle {value} {                                        ;# normalize value between -180 and 180 degrees (not included)
     while {$value>=180} {
