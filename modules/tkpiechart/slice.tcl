@@ -1,19 +1,18 @@
-set rcsId {$Id: slice.tcl,v 1.35 1998/05/03 18:08:55 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.36 1998/06/02 09:21:19 jfontain Exp $}
 
 
 class slice {
     variable PI 3.14159265358979323846
 }
 
-proc slice::slice {this canvas x y radiusX radiusY start extent args} switched {$args} {         ;# all dimensions must be in pixels
+proc slice::slice {this canvas x y radiusX radiusY args} switched {$args} {                      ;# all dimensions must be in pixels
     # note: all slice elements are tagged with slice($this)
     set slice::($this,canvas) $canvas
-    set slice::($this,start) 0
     set slice::($this,radiusX) $radiusX
     set slice::($this,radiusY) $radiusY
     switched::complete $this
     complete $this $x $y                                            ;# wait till all options have been set for initial configuration
-    update $this $start $extent
+    update $this
 }
 
 proc slice::~slice {this} {
@@ -29,6 +28,7 @@ proc slice::options {this} {
         [list -deletecommand {} {}]\
         [list -height 0 0]\
         [list -scale {1 1} {1 1}]\
+        [list -startandextent {0 0} {0 0}]\
         [list -topcolor {} {}]\
     ]
 }
@@ -43,9 +43,24 @@ foreach option {-bottomcolor -height -topcolor} {                               
 
 proc slice::set-deletecommand {this value} {}                                                    ;# data is stored at switched level
 
-proc slice::set-scale {this value} {                                ;# value is a list of ratios of the horizontal and vertical axis
-    if {$switched::($this,complete)} {                                                                        ;# if completely built
-        update $this $slice::($this,start) $slice::($this,extent)              ;# refresh display which takes new scale into account
+proc slice::set-scale {this value} {
+    if {$switched::($this,complete)} {
+        update $this                                                                       ;# requires initialization to be complete
+    }
+}
+
+proc slice::set-startandextent {this value} {
+    foreach {start extent} $value {}
+    set slice::($this,start) [normalizedAngle $start]
+    if {$extent<0} {
+        set slice::($this,extent) 0                                                              ;# a negative extent is meaningless
+    } elseif {$extent>=360} {                      ;# get as close as possible to 360, which would not work as it is equivalent to 0
+        set slice::($this,extent) [expr {360-pow(10,-$::tcl_precision+3)}]
+    } else {
+        set slice::($this,extent) $extent
+    }
+    if {$switched::($this,complete)} {
+        update $this                                                                       ;# requires initialization to be complete
     }
 }
 
@@ -91,20 +106,14 @@ proc slice::complete {this x y} {
     $canvas move slice($this) [expr {$x+$radiusX}] [expr {$y+$radiusY}]
 }
 
-proc slice::update {this start extent} {
+proc slice::update {this} {
     set canvas $slice::($this,canvas)
     set coordinates [$canvas coords $slice::($this,origin)]            ;# first store slice position in case it was moved as a whole
     set radiusX $slice::($this,radiusX)
     set radiusY $slice::($this,radiusY)
     $canvas coords $slice::($this,origin) -$radiusX -$radiusY
     $canvas coords $slice::($this,topArc) -$radiusX -$radiusY $radiusX $radiusY
-    # normalize extent by choosing a value slightly less than 360 degrees for too large values, for slice size cannot be 360
-    set extent [maximum 0 $extent]
-    if {$extent>=360} {                            ;# get as close as possible to 360, which would not work as it is equivalent to 0
-        set extent [expr {360-pow(10,-$::tcl_precision+3)}]
-    }
-    $canvas itemconfigure $slice::($this,topArc)\
-        -start [set slice::($this,start) [normalizedAngle $start]] -extent [set slice::($this,extent) $extent]
+    $canvas itemconfigure $slice::($this,topArc) -start $slice::($this,start) -extent $slice::($this,extent)
     if {$switched::($this,-height)>0} {                                                                                        ;# 3D
         updateBottom $this
     }
@@ -205,18 +214,10 @@ proc slice::updateBottom {this} {
     }
 }
 
-proc slice::position {this start} {
-    update $this $start $slice::($this,extent)
-}
-
 proc slice::rotate {this angle} {
-    if {$angle!=0} {
-        update $this [expr {$slice::($this,start)+$angle}] $slice::($this,extent)
-    }
-}
-
-proc slice::size {this extent} {
-    update $this $slice::($this,start) $extent
+    if {$angle==0} return
+    set slice::($this,start) [normalizedAngle [expr {$slice::($this,start)+$angle}]]
+    update $this
 }
 
 proc slice::data {this arrayName} {                                               ;# return actual sizes and positions after scaling
