@@ -1,4 +1,4 @@
-set rcsId {$Id: labarray.tcl,v 1.20.1.1 2000/04/06 19:26:04 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.20.1.2 2000/04/06 19:34:36 jfontain Exp $}
 
 class canvasLabelsArray {
 
@@ -95,7 +95,7 @@ class canvasLabelsArray {
         set length [llength $canvasLabelsArray::($this,labels)]
         set height 0
         for {set index $column; set row 0} {($index<$length)&&($row<$rows)} {incr index 2; incr row} {
-            set coordinates [$canvas bbox canvasLabel([lindex $canvasLabelsArray($this,labels) $index])]
+            set coordinates [$canvas bbox canvasLabel([lindex $canvasLabelsArray::($this,labels) $index])]
             incr height [expr {[lindex $coordinates 3]-[lindex $coordinates 1]}]
         }
         return $height
