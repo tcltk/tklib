@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.29 1998/03/26 20:19:30 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.30 1998/03/26 20:33:09 jfontain Exp $}
 
 class pieBoxLabeller {
 
@@ -41,7 +41,7 @@ class pieBoxLabeller {
         # refresh our tags
         $pieLabeller::($this,canvas) addtag pieLabeller($this) withtag canvasLabelsArray($pieBoxLabeller::($this,array))
         switched::configure $label -text [switched::cget $label -text]:                        ;# always append semi-column to label
-        set pieLabeller::($this,selected,$label) 0
+        set pieBoxLabeller::($this,selected,$label) 0
         return $label
     }
 
@@ -56,14 +56,14 @@ class pieBoxLabeller {
 
     proc selectState {this label {selected {}}} {
         if {[string length $selected]==0} {                                                   ;# return current state if no argument
-            return $pieLabeller::($this,selected,$label)
+            return $pieBoxLabeller::($this,selected,$label)
         }
         if {$selected} {
             switched::configure $label -borderwidth 2
         } else {
             switched::configure $label -borderwidth 1
         }
-        set pieLabeller::($this,selected,$label) $selected
+        set pieBoxLabeller::($this,selected,$label) $selected
     }
 
 }
