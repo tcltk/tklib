@@ -1,6 +1,6 @@
-set rcsId {$Id: pie.tcl,v 1.85.1.2 2000/03/21 21:32:25 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.85.1.3 2000/04/06 19:29:27 jfontain Exp $}
 
-package provide tkpiechart 5.4
+package provide tkpiechart 5.4.1
 
 class pie {
     set pie::(colors) {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}
@@ -204,6 +204,7 @@ proc pie::sizeSlice {this slice unitShare {valueToDisplay {}}} {
 
 proc pie::labelSlice {this slice text} {
     pieLabeler::label $pie::($this,labeler) $pie::($this,sliceLabel,$slice) $text
+    update $this                                                                    ;# necessary if number of lines in label changes
 }
 
 proc pie::selectedSlices {this} {                                                      ;# return a list of currently selected slices
@@ -251,7 +252,7 @@ proc pie::update {this} {                         ;# place and scale slices alon
             ($pie::($this,initialHeight)+$pie::($this,thickness))\
         }]\
     ]
-    switched::configure $pie::($this,backgroundSlice) -scale $scale                             ;# update scale of background slice,
+    switched::configure $pie::($this,backgroundSlice) -scale $scale                              ;# update scale of background slice
     foreach slice $pie::($this,slices) {
         switched::configure $slice -scale $scale                                                                 ;# and other slices
     }
