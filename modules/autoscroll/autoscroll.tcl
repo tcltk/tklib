@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: autoscroll.tcl,v 1.4 2005/03/31 03:15:47 andreas_kupries Exp $
+# RCS: @(#) $Id: autoscroll.tcl,v 1.5 2005/04/01 21:37:44 afaupell Exp $
 
 package provide autoscroll 1.1
 
@@ -40,8 +40,9 @@ namespace eval ::autoscroll {
  #----------------------------------------------------------------------
 
 proc ::autoscroll::autoscroll { w } {
-    rename $w [namespace current]::renamed$w
-    interp alias {} ::$w {} [namespace current]::widgetCommand $w
+    if { [info commands ::autoscroll::renamed$w] != "" } { return $w }
+    rename $w ::autoscroll::renamed$w
+    interp alias {} ::$w {} ::autoscroll::widgetCommand $w
     bindtags $w [linsert [bindtags $w] 1 Autoscroll]
     eval [list ::$w set] [renamed$w get]
     return $w
