@@ -2,6 +2,8 @@
 # the next line restarts using the interpreter \
 exec wish "$0" "$@"
 
+# copyright (C) 1995-2004 Jean-Luc Fontaine (mailto:jfontain@free.fr)
+
 
 package require stooop 4.1
 namespace import stooop::*

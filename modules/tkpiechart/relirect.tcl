@@ -1,4 +1,4 @@
-# $Id: relirect.tcl,v 1.5 2004/04/28 21:14:19 jfontain Exp $
+# copyright (C) 1995-2004 Jean-Luc Fontaine (mailto:jfontain@free.fr)
 
 
 ::stooop::class canvasReliefRectangle {
