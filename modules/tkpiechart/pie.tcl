@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.57 1998/03/27 22:05:13 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.58 1998/03/27 22:16:30 jfontain Exp $}
 
 package provide tkpiechart 4.0
 
@@ -113,10 +113,10 @@ proc pie::newSlice {this {text {}}} {
     # update tags which canvas does not automatically do
     $canvas addtag pie($this) withtag pieLabeller($labeller)
 
-    if {$switched::($this,-selectable)} {
-        # toggle select state at every button release
-        pieLabeller::bind $labeller $label <ButtonRelease-1>\
+    if {$switched::($this,-selectable)} {                                             ;# toggle select state at every button release
+        $canvas bind canvasLabel($label) <ButtonRelease-1>\
             "pieLabeller::selectState $labeller $label \[expr {!\[pieLabeller::selectState $labeller $label\]}\]"
+        $canvas bind slice($slice) <ButtonRelease-1> [$canvas bind canvasLabel($label) <ButtonRelease-1>]
     }
 
     return $slice
