@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.19 1995/11/04 17:45:51 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.20 1996/09/17 13:20:33 jfontain Exp $}
 
 source pielabel.tcl
 source labarray.tcl
@@ -35,7 +35,7 @@ proc piePeripheralLabeller::create {this sliceId args} {
 
     if {![info exists piePeripheralLabeller($this,array)]} {
         # create a split labels array
-        set options "-style split -justify $piePeripheralLabeller($this,justify)"
+        set options "-style split -justify $piePeripheralLabeller($this,justify) -xoffset $pieLabeller($this,xOffset)"
         catch {lappend options -bulletwidth $piePeripheralLabeller($this,bulletWidth)}
         # eventually use labeller font
         catch {lappend options -font $pieLabeller($this,font)}
