@@ -1,4 +1,4 @@
-set rcsId {$Id: canlabel.tcl,v 1.19 1998/03/21 10:15:36 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.20 1998/03/28 08:38:12 jfontain Exp $}
 
 class canvasLabel {
 
@@ -24,7 +24,7 @@ class canvasLabel {
             [list -bordercolor black black]\
             [list -borderwidth 1 1]\
             [list -bulletwidth 20 20]\
-            [list -font {Helvetica 12}]\
+            [list -font {Helvetica -12}]\
             [list -foreground black black]\
             [list -justify left left]\
             [list -padding 2 2]\
