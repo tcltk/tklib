@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.67 1998/05/03 10:54:32 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.68 1998/05/03 14:59:50 jfontain Exp $}
 
 package provide tkpiechart 4.3
 
@@ -60,10 +60,9 @@ proc pie::set-scale {this value} {
     if {($xScale==$pie::($this,xScale))&&($yScale==$pie::($this,yScale))} return                                        ;# no change
     switched::configure $pie::($this,backgroundSlice) -scale $value                             ;# update scale of background slice,
     foreach slice $pie::($this,slices) {
-        switched::configure $slice -scale $value                                                                       ;# slices and
-        switched::configure $pie::($this,sliceLabel,$slice) -scale $value                                            ;# their labels
+        switched::configure $slice -scale $value                                                                 ;# and other slices
     }
-    pieLabeler::update $pie::($this,labeler)
+    pieLabeler::update $pie::($this,labeler)                          ;# finally update labels now that pie graphics are in position
     set pie::($this,xScale) $xScale
     set pie::($this,yScale) $yScale
 }
