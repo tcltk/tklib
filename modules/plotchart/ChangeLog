@@ -1,3 +1,10 @@
+2004-09-29  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+
+        * Fixed bug 1035281 - wrong scaling for -1.7 -- 26.8
+          (new test case)
+        * Fixed dependency on -nocomplain flag for unset (plotpriv.tcl)
+          Plotchart should work with Tcl 8.3 now
+
 2004-08-19  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
 	* Added modifications by Stefan Finzel.
