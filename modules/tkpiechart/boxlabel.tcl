@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.30 1998/03/26 20:33:09 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.31 1998/03/27 21:15:13 jfontain Exp $}
 
 class pieBoxLabeller {
 
@@ -47,6 +47,7 @@ class pieBoxLabeller {
 
     proc delete {this label} {
         canvasLabelsArray::delete $pieBoxLabeller::($this,array) $label
+        unset pieBoxLabeller::($this,selected,$label)
     }
 
     proc update {this label value} {
