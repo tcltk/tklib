@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.38 1998/05/03 10:50:27 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.39 1998/06/02 22:42:04 jfontain Exp $}
 
 class pieLabeler {
 
@@ -23,5 +23,9 @@ class pieLabeler {
     virtual proc selectState {this label {state {}}}
 
     virtual proc update {this} {}
+
+    virtual proc horizontalRoom {this}
+
+    virtual proc verticalRoom {this}
 
 }
