@@ -37,6 +37,7 @@ namespace eval style::as {
 }; # end of namespace style::as
 
 proc style::as::init {args} {
+    package require Tk
     variable prio
 
     if {[llength $args]} {
@@ -433,7 +434,5 @@ proc style::as::reset_mousewheel {args} {
 	}
     }
 }
-
-style::as::init
 
 package provide style::as $style::as::version
