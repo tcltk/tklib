@@ -1,0 +1,32 @@
+[comment {-*- tcl -*- doctools manpage}]
+[manpage_begin ico n 0.2]
+[moddesc   {}]
+[titledesc {}]
+[require Tcl 8.4]
+[require ico [ico 0.2]]
+[description]
+
+This package provides functions for reading and writing Windows icons
+from ICO ICL EXE and DLL files.
+
+[para]
+
+[list_begin definitions]
+
+[call [cmd ::ico::getIconList] [arg file] [opt "[arg option] [arg value]..."]]
+[call [cmd ::ico::getIcon] [arg file] [arg index] [opt "[arg option] [arg value]..."]]
+[call [cmd ::ico::writeIcon] [arg file] [arg index] [arg depth] [arg data] [opt "[arg option] [arg value]..."]]
+[call [cmd ::ico::copyIcon] [arg file] [arg index] [arg file2] [arg index2] [opt "[arg option] [arg value]..."]]
+[call [cmd ::ico::EXEtoICO] [arg file] [arg file2]
+[call [cmd ::ico::clearCache] [opt file]
+[call [cmd ::ico::transparentColor] [arg image] [arg color]
+[call [cmd ::ico::Show] [arg file] [opt "[arg option] [arg value]..."]]
+
+
+[list_end]
+
+
+
+[keywords entry {icon ico exe dll}]
+[manpage_end]
+
