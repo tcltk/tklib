@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.9 1995/10/05 20:23:07 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.10 1995/10/05 20:41:03 jfontain Exp $}
 
 source canlabel.tcl
 
@@ -25,13 +25,13 @@ proc pieLabeller::~pieLabeller {id} {
 proc pieLabeller::bind {id pieId} {
     global pieLabeller
 
-    set pieLabeller($id,pie) $pieId
+    set pieLabeller($id,pieId) $pieId
 }
 
 proc pieLabeller::create {id sliceId args} {
     global pie pieLabeller
 
-    set canvas $pie($pieLabeller($id,pie),canvas)
+    set canvas $pie($pieLabeller($id,pieId),canvas)
     if {[lsearch -exact $args -font]<0} {
         # eventually use main font if not overridden
         catch {lappend args -font $pieLabeller($id,font)}

@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.5 1995/10/05 20:24:11 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.6 1995/10/05 20:41:03 jfontain Exp $}
 
 source pielabel.tcl
 
@@ -11,7 +11,7 @@ proc pieBoxLabeller::~pieBoxLabeller {id} {}
 proc pieBoxLabeller::position {id labelId} {
     global pie pieLabeller
 
-    set pieId $pieLabeller($id,pie)
+    set pieId $pieLabeller($id,pieId)
     set canvas $pie($pieId,canvas)
     set graphicsBox [$canvas bbox pieGraphics($pieId)]
     set labelBox [$canvas bbox canvasLabel($labelId)]
