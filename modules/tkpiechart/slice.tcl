@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.15 1995/09/26 10:19:50 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.16 1995/09/26 11:14:10 jfontain Exp $}
 
 source $env(AGVHOME)/tools/utility.tk
 
@@ -30,14 +30,9 @@ proc slice::slice {id canvas x y radiusX radiusY startRadian extentRadian args} 
     # note: all slice elements are tagged with slice($id)
     global slice PI twoPI
 
-    # parse switched options
+    # set options default then parse switched options
+    array set option {-height 0 -topcolor {} -bottomcolor {}}
     array set option $args
-    set height 0
-    catch {set height $option(-height)}
-    set topColor {}
-    catch {set topColor $option(-topcolor)}
-    set bottomColor {}
-    catch {set bottomColor $option(-bottomcolor)}
 
     set slice($id,canvas) $canvas
     set slice($id,start) 0
@@ -47,26 +42,26 @@ proc slice::slice {id canvas x y radiusX radiusY startRadian extentRadian args} 
     set extentRadian [maximum 0 [minimum [expr $twoPI-0.0001] $extentRadian]]
     set slice($id,extent) $extentRadian
     set extentDegrees [expr $extentRadian*180/$PI]
-    set slice($id,height) $height
+    set slice($id,height) $option(-height)
 
     # use a dimensionless line as an origin marker
     set slice($id,origin) [$canvas create line -$radiusX -$radiusY -$radiusX -$radiusY -fill {}]
     $canvas addtag slice($id) withtag $slice($id,origin)
 
-    if {$height>0} {
+    if {$option(-height)>0} {
         # 3D
         set slice($id,startBottomArcFill)\
-            [$canvas create arc 0 0 0 0 -style chord -extent 0 -fill $bottomColor -outline $bottomColor]
+            [$canvas create arc 0 0 0 0 -style chord -extent 0 -fill $option(-bottomcolor) -outline $option(-bottomcolor)]
         $canvas addtag slice($id) withtag $slice($id,startBottomArcFill)
-        set slice($id,startPolygon) [$canvas create polygon 0 0 0 0 0 0 -fill $bottomColor]
+        set slice($id,startPolygon) [$canvas create polygon 0 0 0 0 0 0 -fill $option(-bottomcolor)]
         $canvas addtag slice($id) withtag $slice($id,startPolygon)
         set slice($id,startBottomArc) [$canvas create arc 0 0 0 0 -style arc -extent 0 -fill black]
         $canvas addtag slice($id) withtag $slice($id,startBottomArc)
 
         set slice($id,endBottomArcFill)\
-            [$canvas create arc 0 0 0 0 -style chord -extent 0 -fill $bottomColor -outline $bottomColor]
+            [$canvas create arc 0 0 0 0 -style chord -extent 0 -fill $option(-bottomcolor) -outline $option(-bottomcolor)]
         $canvas addtag slice($id) withtag $slice($id,endBottomArcFill)
-        set slice($id,endPolygon) [$canvas create polygon 0 0 0 0 0 0 -fill $bottomColor]
+        set slice($id,endPolygon) [$canvas create polygon 0 0 0 0 0 0 -fill $option(-bottomcolor)]
         $canvas addtag slice($id) withtag $slice($id,endPolygon)
         set slice($id,endBottomArc) [$canvas create arc 0 0 0 0 -style arc -extent 0 -fill black]
         $canvas addtag slice($id) withtag $slice($id,endBottomArc)
@@ -77,7 +72,7 @@ proc slice::slice {id canvas x y radiusX radiusY startRadian extentRadian args} 
         $canvas addtag slice($id) withtag [set slice($id,endRightLine) [$canvas create line 0 0 0 0]]
     }
 
-    set slice($id,topArc) [$canvas create arc -$radiusX -$radiusY $radiusX $radiusY -extent $extentDegrees -fill $topColor]
+    set slice($id,topArc) [$canvas create arc -$radiusX -$radiusY $radiusX $radiusY -extent $extentDegrees -fill $option(-topcolor)]
     $canvas addtag slice($id) withtag $slice($id,topArc)
 
     # move slice so upper-left corner is at requested coordinates
