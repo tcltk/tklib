@@ -1,5 +1,5 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin ipentry n 0.1]
+[manpage_begin history n 0.1]
 [moddesc   {Provides a history for Entry widgets}]
 [titledesc {Provides a history for Entry widgets}]
 [require Tcl 8.4]
