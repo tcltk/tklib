@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.40 1995/10/31 00:17:45 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.41 1995/11/04 11:48:01 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -75,7 +75,7 @@ proc pie::newSlice {this {text {}}} {
 
     if {[string length $text]==0} {
         # generate label text if not provided
-        set text "slice [expr [llength $pie($this,sliceIds)]+1]"
+        set text "slice [llength $pie($this,sliceIds)]"
     }
     set pie($this,sliceLabel,$sliceId) [pieLabeller::create $pie($this,labellerId) $sliceId -text $text -background $color]
     # update tags which canvas does not automatically do
