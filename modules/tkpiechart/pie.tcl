@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.46 1996/09/17 15:11:32 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.47 1996/12/22 12:42:04 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -25,8 +25,8 @@ proc pie::pie {this canvas x y width height args} {
     # bind labeller with pie
     pieLabeller::bind $pie($this,labellerId) $this
 
-    set pie($this,radiusX) [expr [winfo fpixels $canvas $width]/2.0]
-    set pie($this,radiusY) [expr [winfo fpixels $canvas $height]/2.0]
+    set pie($this,radiusX) [expr {[winfo fpixels $canvas $width]/2.0}]
+    set pie($this,radiusY) [expr {[winfo fpixels $canvas $height]/2.0}]
     set pie($this,thickness) [winfo fpixels $canvas $option(-thickness)]
 
     if {[string length $option(-background)]>0} {
@@ -61,10 +61,10 @@ proc pie::newSlice {this {text {}}} {
     # calculate start radian for new slice (slices grow clockwise from 12 o'clock)
     set start 90
     foreach sliceId $pie($this,sliceIds) {
-        set start [expr $start-$slice($sliceId,extent)]
+        set start [expr {$start-$slice($sliceId,extent)}]
     }
     # get a new color
-    set color [lindex $pie($this,colors) [expr [llength $pie($this,sliceIds)]%[llength $pie($this,colors)]]]
+    set color [lindex $pie($this,colors) [expr {[llength $pie($this,sliceIds)]%[llength $pie($this,colors)]}]]
     set numberOfSlices [llength $pie($this,sliceIds)]
 
     # make sure slice is positioned correctly in case pie was moved
@@ -98,10 +98,10 @@ proc pie::sizeSlice {this sliceId unitShare {valueToDisplay {}}} {
         error "could not find slice $sliceId in pie $this slices"
     }
     # cannot display slices that occupy more than whole pie and less than zero
-    set newExtent [expr [maximum [minimum $unitShare 1] 0]*360]
-    set growth [expr $newExtent-$slice($sliceId,extent)]
+    set newExtent [expr {[maximum [minimum $unitShare 1] 0]*360}]
+    set growth [expr {$newExtent-$slice($sliceId,extent)}]
     # grow clockwise
-    slice::update $sliceId [expr $slice($sliceId,start)-$growth] $newExtent
+    slice::update $sliceId [expr {$slice($sliceId,start)-$growth}] $newExtent
 
     # update label after slice for it may need slice latest configuration
     if {[string length $valueToDisplay]>0} {
@@ -111,7 +111,7 @@ proc pie::sizeSlice {this sliceId unitShare {valueToDisplay {}}} {
     }
 
     # finally move the following slices
-    set value [expr -1*$growth]
+    set value [expr {-1*$growth}]
     foreach sliceId [lrange $pie($this,sliceIds) [incr index] end] {
         slice::rotate $sliceId $value
         pieLabeller::rotate $pie($this,labellerId) $pie($this,sliceLabel,$sliceId)
@@ -126,7 +126,7 @@ proc pie::createTitle {this string font offset} {
     # place text on top of pie
     set box [$canvas bbox pie($this)]
     set pie($this,title) [\
-        $canvas create text [expr [lindex $box 0]+([lindex $box 2]-[lindex $box 0])/2] [expr [lindex $box 1]-$offset]\
+        $canvas create text [expr {[lindex $box 0]+([lindex $box 2]-[lindex $box 0])/2}] [expr {[lindex $box 1]-$offset}]\
             -anchor s -tags pie($this) -text $string\
     ]
     if {[string length $font]>0} {

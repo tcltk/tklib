@@ -1,14 +1,14 @@
-set rcsId {$Id: slice.tcl,v 1.25 1995/10/21 20:27:40 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.26 1996/12/22 12:42:04 jfontain Exp $}
 
 source util.tcl
 
 proc normalizedAngle {value} {
     # normalize value between -180 and 180 degrees (not included)
     while {$value>=180} {
-        set value [expr $value-360]
+        set value [expr {$value-360}]
     }
     while {$value<-180} {
-        set value [expr $value+360]
+        set value [expr {$value+360}]
     }
     return $value
 }
@@ -55,7 +55,7 @@ proc slice::slice {this canvas x y radiusX radiusY start extent args} {
         [$canvas create arc -$radiusX -$radiusY $radiusX $radiusY -extent $extent -fill $option(-topcolor) -tags slice($this)]
 
     # move slice so upper-left corner is at requested coordinates
-    $canvas move slice($this) [expr $x+$radiusX] [expr $y+$radiusY]
+    $canvas move slice($this) [expr {$x+$radiusX}] [expr {$y+$radiusY}]
 
     slice::update $this $start $extent
 }
@@ -89,7 +89,7 @@ proc slice::update {this start extent} {
     }
 
     # now position slice at the correct coordinates
-    $canvas move slice($this) [expr [lindex $coordinates 0]+$radiusX] [expr [lindex $coordinates 1]+$radiusY]
+    $canvas move slice($this) [expr {[lindex $coordinates 0]+$radiusX}] [expr {[lindex $coordinates 1]+$radiusY}]
 }
 
 proc slice::updateBottom {this} {
@@ -123,14 +123,14 @@ proc slice::updateBottom {this} {
     $canvas coords $slice($this,startPolygon) 0 0 0 0 0 0 0 0
     $canvas coords $slice($this,endPolygon) 0 0 0 0 0 0 0 0
 
-    set startX [expr $radiusX*cos($start*$PI/180)]
-    set startY [expr -$radiusY*sin($start*$PI/180)]
-    set end [normalizedAngle [expr $start+$extent]]
-    set endX [expr $radiusX*cos($end*$PI/180)]
-    set endY [expr -$radiusY*sin($end*$PI/180)]
+    set startX [expr {$radiusX*cos($start*$PI/180)}]
+    set startY [expr {-$radiusY*sin($start*$PI/180)}]
+    set end [normalizedAngle [expr {$start+$extent}]]
+    set endX [expr {$radiusX*cos($end*$PI/180)}]
+    set endY [expr {-$radiusY*sin($end*$PI/180)}]
 
-    set startBottom [expr $startY+$height]
-    set endBottom [expr $endY+$height]
+    set startBottom [expr {$startY+$height}]
+    set endBottom [expr {$endY+$height}]
 
     if {(($start>=0)&&($end>=0))||(($start<0)&&($end<0))} {
         # start and end angles are on the same side of the 0 abscissa
@@ -156,7 +156,7 @@ proc slice::updateBottom {this} {
                 $canvas coords $slice($this,startLeftLine) $startX $startY $startX $startBottom
                 $canvas coords $slice($this,startRightLine) $radiusX 0 $radiusX $height
 
-                set bottomArcExtent [expr $end+180]
+                set bottomArcExtent [expr {$end+180}]
                 $canvas itemconfigure $slice($this,endBottomArcFill) -start -180 -extent $bottomArcExtent
                 $canvas itemconfigure $slice($this,endBottomArc) -start -180 -extent $bottomArcExtent
                 $canvas coords $slice($this,endPolygon) -$radiusX 0 $endX $endY $endX $endBottom -$radiusX $height
@@ -184,7 +184,7 @@ proc slice::updateBottom {this} {
             $canvas coords $slice($this,startRightLine) $radiusX 0 $radiusX $height
         } else {
             # slice end is facing viewer
-            set bottomArcExtent [expr $end+180]
+            set bottomArcExtent [expr {$end+180}]
             $canvas itemconfigure $slice($this,endBottomArcFill) -start -180 -extent $bottomArcExtent
             $canvas itemconfigure $slice($this,endBottomArc) -start -180 -extent $bottomArcExtent
             # only one polygon is needed
@@ -201,7 +201,7 @@ proc slice::position {this start} {
 
 proc slice::rotate {this angle} {
     if {$angle!=0} {
-        slice::update $this [expr $slice($this,start)+$angle] $slice($this,extent)
+        slice::update $this [expr {$slice($this,start)+$angle}] $slice($this,extent)
     }
 }
 
@@ -217,7 +217,7 @@ proc slice::data {this arrayName} {
     set data(xRadius) $slice($this,radiusX)
     set data(yRadius) $slice($this,radiusY)
     set coordinates [$slice($this,canvas) coords $slice($this,origin)]
-    set data(xCenter) [expr [lindex $coordinates 0]+$data(xRadius)]
-    set data(yCenter) [expr [lindex $coordinates 1]+$data(yRadius)]
+    set data(xCenter) [expr {[lindex $coordinates 0]+$data(xRadius)}]
+    set data(yCenter) [expr {[lindex $coordinates 1]+$data(yRadius)}]
     set data(height) $slice($this,height)
 }

@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.20 1996/09/17 13:20:33 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.21 1996/12/22 12:42:04 jfontain Exp $}
 
 source pielabel.tcl
 source labarray.tcl
@@ -31,7 +31,7 @@ proc piePeripheralLabeller::create {this sliceId args} {
     # eventually use small font
     catch {$canvas itemconfigure $valueId -font $piePeripheralLabeller($this,smallFont)}
     set box [$canvas bbox $valueId]
-    set smallTextHeight [expr [lindex $box 3]-[lindex $box 1]]
+    set smallTextHeight [expr {[lindex $box 3]-[lindex $box 1]}]
 
     if {![info exists piePeripheralLabeller($this,array)]} {
         # create a split labels array
@@ -42,8 +42,8 @@ proc piePeripheralLabeller::create {this sliceId args} {
         # position array below pie
         set box [$canvas bbox pie($pieLabeller($this,pieId))]
         set piePeripheralLabeller($this,array) [eval new canvasLabelsArray\
-            $canvas [lindex $box 0] [expr [lindex $box 3]+(2*$pieLabeller($this,offset))+$smallTextHeight]\
-            [expr [lindex $box 2]-[lindex $box 0]] $options\
+            $canvas [lindex $box 0] [expr {[lindex $box 3]+(2*$pieLabeller($this,offset))+$smallTextHeight}]\
+            [expr {[lindex $box 2]-[lindex $box 0]}] $options\
         ]
     }
 
@@ -59,13 +59,13 @@ proc piePeripheralLabeller::create {this sliceId args} {
 
 proc piePeripheralLabeller::anglePosition {degrees} {
     # quadrant specific index with added value for exact quarters
-    return [expr (2*($degrees/90))+(($degrees%90)!=0)]
+    return [expr {(2*($degrees/90))+(($degrees%90)!=0)}]
 }
 
 # build angle position / value label anchor mapping array
 set index 0
 foreach anchor {w sw s se e ne n nw} {
-    set piePeripheralLabeller(anchor,[piePeripheralLabeller::anglePosition [expr $index*45]]) $anchor
+    set piePeripheralLabeller(anchor,[piePeripheralLabeller::anglePosition [expr {$index*45}]]) $anchor
     incr index
 }
 unset index anchor
@@ -84,20 +84,20 @@ proc piePeripheralLabeller::rotate {this valueId} {
     slice::data $sliceId data
 
     # calculate text closest point coordinates in normal coordinates system (y increasing in north direction)
-    set midAngle [expr $data(start)+($data(extent)/2.0)]
-    set radians [expr $midAngle*$PI/180]
-    set x [expr ($data(xRadius)+$pieLabeller($this,offset))*cos($radians)]
-    set y [expr ($data(yRadius)+$pieLabeller($this,offset))*sin($radians)]
-    set angle [expr round($midAngle)%360]
+    set midAngle [expr {$data(start)+($data(extent)/2.0)}]
+    set radians [expr {$midAngle*$PI/180}]
+    set x [expr {($data(xRadius)+$pieLabeller($this,offset))*cos($radians)}]
+    set y [expr {($data(yRadius)+$pieLabeller($this,offset))*sin($radians)}]
+    set angle [expr {round($midAngle)%360}]
     if {$angle>180} {
         # account for pie thickness
-        set y [expr $y-$data(height)]
+        set y [expr {$y-$data(height)}]
     }
 
     # now transform coordinates according to canvas coordinates system
     set coordinates [$pieLabeller($this,canvas) coords $valueId]
     $pieLabeller($this,canvas) move $valueId\
-        [expr $data(xCenter)+$x-[lindex $coordinates 0]] [expr $data(yCenter)-$y-[lindex $coordinates 1]]
+        [expr {$data(xCenter)+$x-[lindex $coordinates 0]}] [expr {$data(yCenter)-$y-[lindex $coordinates 1]}]
 
     # finally set anchor according to which point of the text is closest to pie graphics
     $canvas itemconfigure $valueId -anchor $piePeripheralLabeller(anchor,[piePeripheralLabeller::anglePosition $angle])

@@ -1,4 +1,4 @@
-set rcsId {$Id: labarray.tcl,v 1.7 1996/09/17 13:25:07 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.8 1996/12/22 12:42:04 jfontain Exp $}
 
 source canlabel.tcl
 
@@ -42,32 +42,32 @@ proc canvasLabelsArray::create {this args} {
 proc canvasLabelsArray::position {this labelId justification} {
     set canvas $canvasLabelsArray($this,canvas)
 
-    set index [expr [llength $canvasLabelsArray($this,labelIds)]-1]
+    set index [expr {[llength $canvasLabelsArray($this,labelIds)]-1}]
 
     set coordinates [$canvas coords $canvasLabelsArray($this,origin)]
     # offset horizontally, left column gets negative offset
-    set x [expr [lindex $coordinates 0]+(($index%2?1:-1)*$canvasLabelsArray($this,xOffset))]
+    set x [expr {[lindex $coordinates 0]+(($index%2?1:-1)*$canvasLabelsArray($this,xOffset))}]
     set y [lindex $coordinates 1]
 
     set coordinates [$canvas bbox canvasLabel($labelId)]
-    set labelHeight [expr [lindex $coordinates 3]-[lindex $coordinates 1]]
+    set labelHeight [expr {[lindex $coordinates 3]-[lindex $coordinates 1]}]
 
     # arrange labels in two columns
     switch $justification {
         left {
-            set x [expr $x+(($index%2)*($canvasLabelsArray($this,width)/2.0))]
+            set x [expr {$x+(($index%2)*($canvasLabelsArray($this,width)/2.0))}]
             set anchor nw
         }
         right {
-            set x [expr $x+((($index%2)+1)*($canvasLabelsArray($this,width)/2.0))]
+            set x [expr {$x+((($index%2)+1)*($canvasLabelsArray($this,width)/2.0))}]
             set anchor ne
         }
         default {
             # should be center
-            set x [expr $x+((1.0+(2*($index%2)))*$canvasLabelsArray($this,width)/4)]
+            set x [expr {$x+((1.0+(2*($index%2)))*$canvasLabelsArray($this,width)/4)}]
             set anchor n
         }
     }
     canvasLabel::configure $labelId -anchor $anchor
-    $canvas move canvasLabel($labelId) $x [expr $y+(($index/2)*$labelHeight)]
+    $canvas move canvasLabel($labelId) $x [expr {$y+(($index/2)*$labelHeight)}]
 }
