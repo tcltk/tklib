@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.54 1998/03/22 14:38:40 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.55 1998/03/22 19:02:05 jfontain Exp $}
 
 package provide tkpiechart 4.0
 
@@ -32,6 +32,7 @@ proc pie::options {this} {
         [list -background {} {}]\
         [list -colors $pie::(colors) $pie::(colors)]\
         [list -labeller 0 0]\
+        [list -selectable 0 0]\
         [list -thickness 0]\
         [list -title {} {}]\
         [list -titlefont {} {}]\
@@ -39,7 +40,8 @@ proc pie::options {this} {
     ]
 }
 
-foreach option {-background -colors -labeller -title -titlefont -titleoffset} {          ;# no dynamic options allowed: see complete
+# no dynamic options allowed: see complete
+foreach option {-background -colors -labeller -selectable -title -titlefont -titleoffset} {
     proc pie::set$option {this value} "
         if {\$switched::(\$this,complete)} {
             error {option $option cannot be set dynamically}
@@ -63,7 +65,7 @@ proc pie::complete {this} {
         set pie::($this,labeller) $switched::($this,-labeller)                                           ;# use user defined labeler
     }
     $canvas addtag pie($this) withtag pieLabeller($pie::($this,labeller))
-    pieLabeller::bind $pie::($this,labeller) $this                                                         ;# bind labeller with pie
+    pieLabeller::link $pie::($this,labeller) $this                                                         ;# link labeller with pie
 
     if {[string length $switched::($this,-background)]==0} {
         set bottomColor {}
@@ -104,9 +106,17 @@ proc pie::newSlice {this {text {}}} {
     if {[string length $text]==0} {                                                           ;# generate label text if not provided
         set text "slice [llength $pie::($this,slices)]"
     }
-    set pie::($this,sliceLabel,$slice) [pieLabeller::create $pie::($this,labeller) $slice -text $text -background $color]
+    set labeller $pie::($this,labeller)
+    set label [pieLabeller::create $labeller $slice -text $text -background $color]
+    set pie::($this,sliceLabel,$slice) $label
     # update tags which canvas does not automatically do
-    $canvas addtag pie($this) withtag pieLabeller($pie::($this,labeller))
+    $canvas addtag pie($this) withtag pieLabeller($labeller)
+
+    if {$switched::($this,-selectable)} {
+        # toggle select state at every button release
+        pieLabeller::bind $labeller $label <ButtonRelease-1>\
+            "pieLabeller::selectState $labeller $label \[expr {!\[pieLabeller::selectState $labeller $label\]}\]"
+    }
 
     return $slice
 }
@@ -163,4 +173,14 @@ proc pie::createTitle {this string font offset} {
     if {[string length $font]>0} {
         $canvas itemconfigure $pie::($this,title) -font $font
     }
+}
+
+proc pie::selectedSlices {this} {                                                      ;# return a list of currently selected slices
+    set list {}
+    foreach slice $pie::($this,slices) {
+        if {[pieLabeller::selectState $pie::($this,labeller) $pie::($this,sliceLabel,$slice)]} {
+            lappend list $slice
+        }
+    }
+    return $list
 }
