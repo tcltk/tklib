@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.20 1995/10/22 18:47:15 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.21 1995/10/31 00:18:07 jfontain Exp $}
 
 proc pieLabeller::pieLabeller {this canvas args} {
     # set options default then parse switched options
@@ -11,7 +11,7 @@ proc pieLabeller::pieLabeller {this canvas args} {
     set pieLabeller($this,canvas) $canvas
 }
 
-virtual proc pieLabeller::~pieLabeller {this}
+proc pieLabeller::~pieLabeller {this} {}
 
 proc pieLabeller::bind {this pieId} {
     set pieLabeller($this,pieId) $pieId
