@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.13 1995/10/05 22:22:51 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.14 1995/10/06 10:50:35 jfontain Exp $}
 
 source canlabel.tcl
 
@@ -26,6 +26,7 @@ proc pieLabeller::bind {id pieId} {
 }
 
 proc pieLabeller::create {id sliceId args} {
+    # as this function is generic, it accepts only a few options, such as: -text, -background
     return [virtualCallFrom pieLabeller]
 }
 
