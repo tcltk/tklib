@@ -1,4 +1,4 @@
-# $Id: slice.tcl,v 1.3 1994/07/26 16:14:53 jfontain Exp $
+# $Id: slice.tcl,v 1.4 1994/11/02 14:28:49 jfontain Exp $
 
 source ../tools/utility.tcl
 
@@ -114,6 +114,7 @@ proc slice::updateBottom {id} {
     set startDegrees [expr [set startRadian $slice($id,start)]*180/$PI]
     set extentDegrees [expr [set extentRadian $slice($id,extent)]*180/$PI]
 
+    set canvas $slice($id,canvas)
     set radiusX $slice($id,radiusX)
     set radiusY $slice($id,radiusY)
     set centerX $slice($id,centerX)
@@ -121,16 +122,16 @@ proc slice::updateBottom {id} {
     set height $slice($id,height)
 
     # first make all bottom parts invisible
-    $slice($id,canvas) itemconfigure $slice($id,startBottomArcFill) -extent 0
-    $slice($id,canvas) itemconfigure $slice($id,startBottomArc) -extent 0
-    $slice($id,canvas) coords $slice($id,startLeftLine) 0 0 0 0
-    $slice($id,canvas) coords $slice($id,startRightLine) 0 0 0 0
-    $slice($id,canvas) itemconfigure $slice($id,endBottomArcFill) -extent 0
-    $slice($id,canvas) itemconfigure $slice($id,endBottomArc) -extent 0
-    $slice($id,canvas) coords $slice($id,endLeftLine) 0 0 0 0
-    $slice($id,canvas) coords $slice($id,endRightLine) 0 0 0 0
-    $slice($id,canvas) coords $slice($id,startPolygon) 0 0 0 0 0 0 0 0
-    $slice($id,canvas) coords $slice($id,endPolygon) 0 0 0 0 0 0 0 0
+    $canvas itemconfigure $slice($id,startBottomArcFill) -extent 0
+    $canvas itemconfigure $slice($id,startBottomArc) -extent 0
+    $canvas coords $slice($id,startLeftLine) 0 0 0 0
+    $canvas coords $slice($id,startRightLine) 0 0 0 0
+    $canvas itemconfigure $slice($id,endBottomArcFill) -extent 0
+    $canvas itemconfigure $slice($id,endBottomArc) -extent 0
+    $canvas coords $slice($id,endLeftLine) 0 0 0 0
+    $canvas coords $slice($id,endRightLine) 0 0 0 0
+    $canvas coords $slice($id,startPolygon) 0 0 0 0 0 0 0 0
+    $canvas coords $slice($id,endPolygon) 0 0 0 0 0 0 0 0
 
     set startX [expr $centerX+($radiusX*cos($startRadian))]
     set startY [expr $centerY-($radiusY*sin($startRadian))]
@@ -151,60 +152,59 @@ proc slice::updateBottom {id} {
             # slice size is less than half pie
             if {$startRadian<0} {
                 # slice is facing viewer, so bottom is visible
-                $slice($id,canvas) itemconfigure $slice($id,startBottomArcFill) -start $startDegrees -extent $extentDegrees
-                $slice($id,canvas) itemconfigure $slice($id,startBottomArc) -start $startDegrees -extent $extentDegrees
+                $canvas itemconfigure $slice($id,startBottomArcFill) -start $startDegrees -extent $extentDegrees
+                $canvas itemconfigure $slice($id,startBottomArc) -start $startDegrees -extent $extentDegrees
                 # only one polygon is needed
-                $slice($id,canvas) coords $slice($id,startPolygon) $startX $startY $endX $endY $endX $endBottom $startX $startBottom
-                $slice($id,canvas) coords $slice($id,startLeftLine) $startX $startY $startX $startBottom
-                $slice($id,canvas) coords $slice($id,startRightLine) $endX $endY $endX $endBottom
+                $canvas coords $slice($id,startPolygon) $startX $startY $endX $endY $endX $endBottom $startX $startBottom
+                $canvas coords $slice($id,startLeftLine) $startX $startY $startX $startBottom
+                $canvas coords $slice($id,startRightLine) $endX $endY $endX $endBottom
             }
             # else only top is visible
         } else {
             # slice size is more than half pie
             if {$startRadian<0} {
                 # slice opening is facing viewer, so bottom is in 2 parts
-                $slice($id,canvas) itemconfigure $slice($id,startBottomArcFill) -start 0 -extent $startDegrees
-                $slice($id,canvas) itemconfigure $slice($id,startBottomArc) -start 0 -extent $startDegrees
-                $slice($id,canvas) coords $slice($id,startPolygon)\
-                    $startX $startY $right $centerY $right $bottom $startX $startBottom
-                $slice($id,canvas) coords $slice($id,startLeftLine) $startX $startY $startX $startBottom
-                $slice($id,canvas) coords $slice($id,startRightLine) $right $centerY $right $bottom
+                $canvas itemconfigure $slice($id,startBottomArcFill) -start 0 -extent $startDegrees
+                $canvas itemconfigure $slice($id,startBottomArc) -start 0 -extent $startDegrees
+                $canvas coords $slice($id,startPolygon) $startX $startY $right $centerY $right $bottom $startX $startBottom
+                $canvas coords $slice($id,startLeftLine) $startX $startY $startX $startBottom
+                $canvas coords $slice($id,startRightLine) $right $centerY $right $bottom
 
                 set bottomArcExtent [expr ($endRadian+$PI)*180/$PI]
-                $slice($id,canvas) itemconfigure $slice($id,endBottomArcFill) -start -180 -extent $bottomArcExtent
-                $slice($id,canvas) itemconfigure $slice($id,endBottomArc) -start -180 -extent $bottomArcExtent
-                $slice($id,canvas) coords $slice($id,endPolygon) $left $centerY $endX $endY $endX $endBottom $left $bottom
-                $slice($id,canvas) coords $slice($id,endLeftLine) $left $centerY $left $bottom
-                $slice($id,canvas) coords $slice($id,endRightLine) $endX $endY $endX $endBottom
+                $canvas itemconfigure $slice($id,endBottomArcFill) -start -180 -extent $bottomArcExtent
+                $canvas itemconfigure $slice($id,endBottomArc) -start -180 -extent $bottomArcExtent
+                $canvas coords $slice($id,endPolygon) $left $centerY $endX $endY $endX $endBottom $left $bottom
+                $canvas coords $slice($id,endLeftLine) $left $centerY $left $bottom
+                $canvas coords $slice($id,endRightLine) $endX $endY $endX $endBottom
             } else {
                 # slice back is facing viewer, so bottom occupies half the pie
-                $slice($id,canvas) itemconfigure $slice($id,startBottomArcFill) -start 0 -extent -180
-                $slice($id,canvas) itemconfigure $slice($id,startBottomArc) -start 0 -extent -180
+                $canvas itemconfigure $slice($id,startBottomArcFill) -start 0 -extent -180
+                $canvas itemconfigure $slice($id,startBottomArc) -start 0 -extent -180
                 # only one polygon is needed
-                $slice($id,canvas) coords $slice($id,startPolygon) $left $centerY $right $centerY $right $bottom $left $bottom
-                $slice($id,canvas) coords $slice($id,startLeftLine) $left $centerY $left $bottom
-                $slice($id,canvas) coords $slice($id,startRightLine) $right $centerY $right $bottom
+                $canvas coords $slice($id,startPolygon) $left $centerY $right $centerY $right $bottom $left $bottom
+                $canvas coords $slice($id,startLeftLine) $left $centerY $left $bottom
+                $canvas coords $slice($id,startRightLine) $right $centerY $right $bottom
             }
         }
     } else {
         # start and end angles are on opposite sides of the 0 abscissa
         if {$startRadian<0} {
             # slice start is facing viewer
-            $slice($id,canvas) itemconfigure $slice($id,startBottomArcFill) -start 0 -extent $startDegrees
-            $slice($id,canvas) itemconfigure $slice($id,startBottomArc) -start 0 -extent $startDegrees
+            $canvas itemconfigure $slice($id,startBottomArcFill) -start 0 -extent $startDegrees
+            $canvas itemconfigure $slice($id,startBottomArc) -start 0 -extent $startDegrees
             # only one polygon is needed
-            $slice($id,canvas) coords $slice($id,startPolygon) $startX $startY $right $centerY $right $bottom $startX $startBottom
-            $slice($id,canvas) coords $slice($id,startLeftLine) $startX $startY $startX $startBottom
-            $slice($id,canvas) coords $slice($id,startRightLine) $right $centerY $right $bottom
+            $canvas coords $slice($id,startPolygon) $startX $startY $right $centerY $right $bottom $startX $startBottom
+            $canvas coords $slice($id,startLeftLine) $startX $startY $startX $startBottom
+            $canvas coords $slice($id,startRightLine) $right $centerY $right $bottom
         } else {
             # slice end is facing viewer
             set bottomArcExtent [expr ($endRadian+$PI)*180/$PI]
-            $slice($id,canvas) itemconfigure $slice($id,endBottomArcFill) -start -180 -extent $bottomArcExtent
-            $slice($id,canvas) itemconfigure $slice($id,endBottomArc) -start -180 -extent $bottomArcExtent
+            $canvas itemconfigure $slice($id,endBottomArcFill) -start -180 -extent $bottomArcExtent
+            $canvas itemconfigure $slice($id,endBottomArc) -start -180 -extent $bottomArcExtent
             # only one polygon is needed
-            $slice($id,canvas) coords $slice($id,endPolygon) $left $centerY $endX $endY $endX $endBottom $left $bottom
-            $slice($id,canvas) coords $slice($id,startLeftLine) $left $centerY $left $bottom
-            $slice($id,canvas) coords $slice($id,startRightLine) $endX $endY $endX $endBottom
+            $canvas coords $slice($id,endPolygon) $left $centerY $endX $endY $endX $endBottom $left $bottom
+            $canvas coords $slice($id,startLeftLine) $left $centerY $left $bottom
+            $canvas coords $slice($id,startRightLine) $endX $endY $endX $endBottom
         }
     }
 }
@@ -258,4 +258,3 @@ proc slice::setupHighlighting {id enterCommand leaveCommand} {
     $canvas bind $sensitiveTag <Enter> "$canvas itemconfigure $highlightTag -width $slice(highlightLineWidth); $enterCommand"
     $canvas bind $sensitiveTag <Leave> "$canvas itemconfigure $highlightTag -width 1; $leaveCommand"
 }
-                                                                                                                          
