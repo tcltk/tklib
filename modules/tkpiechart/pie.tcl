@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.45 1996/09/17 13:25:41 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.46 1996/09/17 15:11:32 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -47,6 +47,7 @@ proc pie::pie {this canvas x y width height args} {
 }
 
 proc pie::~pie {this} {
+    $pie($this,canvas) delete $pie($this,title)
     delete $pie($this,labellerId)
     foreach sliceId $pie($this,sliceIds) {
         delete $sliceId
@@ -124,11 +125,11 @@ proc pie::createTitle {this string font offset} {
     set canvas $pie($this,canvas)
     # place text on top of pie
     set box [$canvas bbox pie($this)]
-    set item [\
+    set pie($this,title) [\
         $canvas create text [expr [lindex $box 0]+([lindex $box 2]-[lindex $box 0])/2] [expr [lindex $box 1]-$offset]\
             -anchor s -tags pie($this) -text $string\
     ]
     if {[string length $font]>0} {
-        $canvas itemconfigure $item -font $font
+        $canvas itemconfigure $pie($this,title) -font $font
     }
 }
