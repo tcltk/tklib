@@ -1,7 +1,7 @@
-set rcsId {$Id: pielabel.tcl,v 1.16 1995/10/10 21:08:42 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.17 1995/10/14 11:24:01 jfontain Exp $}
 
-proc pieLabeller::pieLabeller {id canvas args} {
-    allowVirtualProceduresIn pieLabeller
+virtual proc pieLabeller::pieLabeller {id canvas args} {
+    global pieLabeller
 
     # set options default then parse switched options
     array set option {-offset 5}
@@ -13,9 +13,7 @@ proc pieLabeller::pieLabeller {id canvas args} {
     set pieLabeller($id,canvas) $canvas
 }
 
-proc pieLabeller::~pieLabeller {id} {
-    virtualCallFrom pieLabeller
-}
+virtual proc pieLabeller::~pieLabeller {id}
 
 proc pieLabeller::bind {id pieId} {
     global pieLabeller
@@ -23,16 +21,9 @@ proc pieLabeller::bind {id pieId} {
     set pieLabeller($id,pieId) $pieId
 }
 
-proc pieLabeller::create {id sliceId args} {
-    # as this function is generic, it accepts only a few options, such as: -text, -background
-    return [virtualCallFrom pieLabeller]
-}
+# as this function is generic, it accepts only a few options, such as: -text, -background
+virtual proc pieLabeller::create {id sliceId args}
 
-proc pieLabeller::update {id label value} {
-    virtualCallFrom pieLabeller
-}
+virtual proc pieLabeller::update {id label value}
 
-proc pieLabeller::rotate {id label} {
-    virtualCallFrom pieLabeller
-}
-
+virtual proc pieLabeller::rotate {id label}
