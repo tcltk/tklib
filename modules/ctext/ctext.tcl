@@ -1,6 +1,6 @@
 # By George Peter Staplin
 # See also the README for a list of contributors
-# RCS: @(#) $Id: ctext.tcl,v 1.1.1.1 2004/01/23 00:32:16 georgeps Exp $
+# RCS: @(#) $Id: ctext.tcl,v 1.2 2004/08/12 09:14:44 georgeps Exp $
 
 package require Tk
 package provide ctext 3.1
@@ -57,26 +57,30 @@ proc ctext {win args} {
 	
 	#Now remove flags that will confuse text and those that need modification:
 	foreach arg $ar(ctextFlags) {
-		set loc [lsearch $args $arg]
-		if {$loc >= 0} {
+		if {[set loc [lsearch $args $arg]] >= 0} {
 			set args [lreplace $args $loc [expr {$loc + 1}]]
 		}
 	}
 	
 	text $win.l -font $ar(-font) -width 1 -height 1 \
-		-relief $ar(-relief) -fg $ar(-linemapfg) -bg $ar(-linemapbg) -takefocus 0
+		-relief $ar(-relief) -fg $ar(-linemapfg) \
+		-bg $ar(-linemapbg) -takefocus 0
 
 	set topWin [winfo toplevel $win]
 	bindtags $win.l [list $win.l $topWin all]
 
 	if {$ar(-linemap) == 1} {
-		pack $win.l -side left -fill y
+		grid $win.l -sticky ns -row 0 -column 0
 	}
 	
 	set args [concat $args [list -yscrollcommand [list ctext::event:yscroll $win $ar(-yscrollcommand)]]]
 
 	#escape $win, because it could have a space
-	pack [eval text \$win.t $args -font \$ar(-font)] -side right -fill both -expand 1
+	eval text \$win.t -font \$ar(-font) $args
+	
+	grid $win.t -row 0 -column 1 -sticky news
+	grid rowconfigure $win 0 -weight 100
+	grid columnconfigure $win 1 -weight 100
 
 	bind $win.t <Configure> [list ctext::linemapUpdate $win]
 	bind $win.l <ButtonPress-1> [list ctext::linemapToggleMark $win %y]
@@ -128,13 +132,16 @@ proc ctext::buildArgParseTable win {
 	}
 
 	lappend argTable {1 true yes} -linemap {
-		pack $self.l -side left -fill y
+		grid $self.l -sticky ns -row 0 -column 0
+		grid columnconfigure $self 0 \
+			-minsize [winfo reqwidth $self.l]
 		set configAr(-linemap) 1
 		break
 	}
 
 	lappend argTable {0 false no} -linemap {
-		pack forget $self.l
+		grid forget $self.l
+		grid columnconfigure $self 0 -minsize 0
 		set configAr(-linemap) 0
 		break
 	}
@@ -721,12 +728,7 @@ proc ctext::deleteHighlightClass {win classToDelete} {
 proc ctext::getHighlightClasses win {
 	ctext::getAr $win classes classesAr
 
-	set res [list]
-
-	foreach {class info} [array get classesAr] {
-		lappend res $class
-	}
-	return $res
+	array names classesAr
 }
 
 proc ctext::findNextChar {win index char} {
