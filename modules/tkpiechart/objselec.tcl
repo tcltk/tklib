@@ -1,7 +1,7 @@
 # copyright (C) 1997-98 Jean-Luc Fontaine (mailto:jfontain@mygale.org)
 # this program is free software: please refer to the BSD type license enclosed in this package
 
-set rcsId {$Id: objselec.tcl,v 1.2 1998/04/20 13:37:29 jfontain Exp $}
+set rcsId {$Id: objselec.tcl,v 1.3 1998/04/20 14:51:14 jfontain Exp $}
 
 # implements selection on a list of object identifiers (sortable list of integer), for a listbox implementation, for example
 
@@ -126,9 +126,9 @@ class objectSelection {
     proc selected {this} {
         variable ${this}selected
 
-        set list {}
+        ::set list {}
         foreach id [array names ${this}selected] {
-            if {[set ${this}selected($id)]} {
+            if {[::set ${this}selected($id)]} {
                 lappend list $id
             }
         }
