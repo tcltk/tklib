@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.43 1996/02/20 12:21:14 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.44 1996/02/20 12:34:20 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -43,7 +43,7 @@ proc pie::pie {this canvas x y width height args} {
     set pie($this,sliceIds) {}
     set pie($this,colors) $option(-colors)
 
-    pie::createTitle $this $option(-title) $option(-titlefont) $option(-titleoffset)
+    pie::createTitle $this $option(-title) $option(-titlefont) [winfo fpixels $canvas $option(-titleoffset)]
 }
 
 proc pie::~pie {this} {
