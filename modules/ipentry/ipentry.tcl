@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: ipentry.tcl,v 1.6 2005/03/16 05:59:20 afaupell Exp $
+# RCS: @(#) $Id: ipentry.tcl,v 1.7 2005/03/18 03:15:57 andreas_kupries Exp $
 
 package provide ipentry 0.1
 
