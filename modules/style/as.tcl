@@ -117,6 +117,7 @@ namespace eval style::as {
 	option add *Scrollbar.highlightThickness	0 widgetDefault
 
 	## PanedWindow
+
 	##
 	option add *Panedwindow.borderWidth		0 widgetDefault
 	option add *Panedwindow.sashwidth		3 widgetDefault

@@ -3,7 +3,7 @@
 # The code formerly known as "gtklook" on the Tcl'ers
 # wiki.  Most of this code was originally written by Jeremy Collins.
 
-# $Id: lobster.tcl,v 1.2 2004/03/18 08:56:47 davidw Exp $
+# $Id: lobster.tcl,v 1.3 2004/03/25 16:22:08 davidw Exp $
 
 package provide style::lobster 0.1
 
@@ -49,10 +49,16 @@ namespace eval styles::lobster {
 	option add *Menubutton.highlightThickness 0 widgetDefault
 	option add *Menubutton.borderWidth 0 widgetDefault
 
-	option add *Labelframe.borderWidth 2
-	option add *Frame.borderWidth 2
+	option add *Labelframe.borderWidth 2 widgetDefault
+	option add *Frame.borderWidth 2 widgetDefault
+	option add *Labelframe.padY 8 widgetDefault
+	option add *Labelframe.padX 12 widgetDefault
 
 	option add *highlightThickness 0 widgetDefault
-	option add *troughColor #bdb6ad widgetDefault
+	option add *troughColor #c3c3c3 widgetDefault
+
+	option add *Scrollbar.width		12 widgetDefault
+	option add *Scrollbar.borderWidth		1 widgetDefault
+	option add *Scrollbar.highlightThickness	0 widgetDefault
     }
 }
