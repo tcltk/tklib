@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.12 1995/09/24 15:53:28 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.13 1995/09/24 17:45:37 jfontain Exp $}
 
 source $env(AGVHOME)/tools/utility.tk
 
@@ -39,6 +39,9 @@ proc slice::slice {id canvas radiusX radiusY startRadian extentRadian {height 0}
     set slice($id,extent) $extentRadian
     set extentDegrees [expr $extentRadian*180/$PI]
     set slice($id,height) $height
+
+    # use a dimensionless line as an origin marker
+    $canvas addtag slice($id) withtag [$canvas create line -$radiusX -$radiusY -$radiusX -$radiusY -fill {}]
 
     if {$height>0} {
         # 3D
