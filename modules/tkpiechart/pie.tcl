@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.28 1995/10/01 16:32:15 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.29 1995/10/01 16:40:43 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -33,7 +33,7 @@ proc pie::pie {id canvas x y width height args} {
 
     set options {}
     catch {lappend options -font $option(-font)}
-    catch {lappend options -offset [winfo fpixels $canvas $option(-labelsoffset)]}
+    catch {lappend options -offset $option(-labelsoffset)}
     set pie($id,labeller) [eval new pieBoxLabeller $id $options]
     $canvas addtag pie($id) withtag pieLabeller($pie($id,labeller))
 }
