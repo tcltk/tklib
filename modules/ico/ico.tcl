@@ -61,21 +61,17 @@ proc ::ico::getIconList {file args} {
     parseOpts type $args
     if {![info exists type]} {
         # $type wasn't specified - get it from the extension
-        set type [string trimleft [string toupper [file extension $file]] .]
+        set type [fileext $file]
     }
-    if {[info commands getIconList$type] == ""} {
+    if {![llength [info commands getIconList$type]]} {
 	return -code error "unsupported file format $type"
-    }
-    if {![info exists type]} {
-	# $type wasn't specified - get it from the extension
-	set type [string trimleft [string toupper [file extension $file]] .]
     }
     getIconList$type [file normalize $file]
 }
 
 # getIcon --
 #
-# Get pixel data of icon @ index in file
+# Get pixel data or image of icon @ index in file
 #
 # ARGS:
 #	file		File to extra icon info from.
@@ -85,9 +81,10 @@ proc ::ico::getIconList {file args} {
 #			the file extension.  Currently recognized types are
 #			EXE, DLL, ICO and ICL
 #	?-format?	Output format. Must be one of "image" or "colors"
-#			image will return the name of a Tk image. colors will return a
-#			a list of pixel values
-#	?-name?		If output is image, use this as the name of Tk image created
+#			'image' will return the name of a Tk image.
+#			'colors' will return a list of pixel values
+#	?-name?		If output is image, use this as the name of Tk image
+#			created
 #
 # RETURNS:
 #	pixel data as a list that could be passed to 'image create'
@@ -98,13 +95,17 @@ proc ::ico::getIcon {file index args} {
     parseOpts {type format name} $args
     if {![info exists type]} {
         # $type wasn't specified - get it from the extension
-        set type [string trimleft [string toupper [file extension $file]] .]
+        set type [fileext $file]
     }
-    if {[info commands getRawIconData$type] == ""} {
+    if {![llength [info commands getRawIconData$type]]} {
         return -code error "unsupported file format $type"
     }
-    set colors [eval [list getColors] [getRawIconData$type [file normalize $file] $index]]
-    if {$format == "image"} {
+    # ICODATA is a pure data type - not a real file
+    if {$type ne "ICODATA"} {
+	set file [file normalize $file]
+    }
+    set colors [eval [linsert [getRawIconData$type $file $index] 0 getColors]]
+    if {$format eq "image"} {
         return [createImage $colors $name]
     }
     return $colors
@@ -132,9 +133,9 @@ proc ::ico::writeIcon {file index bpp data args} {
     parseOpts type $args
     if {![info exists type]} {
         # $type wasn't specified - get it from the extension
-        set type [string trimleft [string toupper [file extension $file]] .]
+        set type [fileext $file]
     }
-    if {[info commands writeIcon$type] == ""} {
+    if {![llength [info commands writeIcon$type]]} {
 	return -code error "unsupported file format $type"
     }
     if {[llength $data] == 1} {
@@ -185,19 +186,19 @@ proc ::ico::copyIcon {f1 i1 f2 i2 args} {
     parseOpts {fromtype totype} $args
     if {![info exists fromtype]} {
         # $type wasn't specified - get it from the extension
-        set fromtype [string trimleft [string toupper [file extension $f1]] .]
+        set fromtype [fileext $f1]
     }
     if {![info exists totype]} {
         # $type wasn't specified - get it from the extension
-        set totype [string trimleft [string toupper [file extension $f2]] .]
+        set totype [fileext $f2]
     }
-    if {[info commands writeIcon$totype] == ""} {
+    if {![llength [info commands writeIcon$totype]]} {
 	return -code error "unsupported file format $totype"
     }
-    if {[info commands getRawIconData$fromtype] == ""} {
+    if {![llength [info commands getRawIconData$fromtype]]} {
 	return -code error "unsupported file format $fromtype"
     }
-    eval [list writeIcon$totype $f2 $i2]] [getRawIconData$fromtype $f1 $i1]
+    eval [list writeIcon$totype $f2 $i2] [getRawIconData$fromtype $f1 $i1]
 }
 
 #
@@ -213,6 +214,7 @@ proc ::ico::copyIcon {f1 i1 f2 i2 args} {
 #	nothing
 #
 proc ::ico::transparentColor {img color} {
+    package require Tk
     if {[string match "#*" $color]} {
 	set color [scan $x "#%2x%2x%2x"]
     }
@@ -303,6 +305,11 @@ proc ::ico::EXEtoICO {exeFile icoFile} {
 ## and make sure they "fit" in the API.
 ##
 
+# gets the file extension as we use it internally (upper case, no '.')
+proc ::ico::fileext {file} {
+    return [string trimleft [string toupper [file extension $file]] .]
+}
+
 # helper proc to parse optional arguments to some of the public procs
 proc ::ico::parseOpts {acc opts} {
     foreach {key val} $opts {
@@ -310,7 +317,7 @@ proc ::ico::parseOpts {acc opts} {
 	if {[lsearch -exact $acc $key] >= 0} {
 	    upvar $key $key
 	    set $key $val
-	} elseif {$key != ""} {
+	} elseif {$key ne ""} {
 	    return -code error "unknown option \"$key\": must be one of $acc"
 	}
     }
@@ -328,7 +335,7 @@ proc ::ico::translateColors {colors} {
     foreach line $colors {
 	set tline {}
 	foreach x $line {
-	    if {$x == ""} {lappend tline {}; continue}
+	    if {$x eq ""} {lappend tline {}; continue}
 	    lappend tline [scan $x "#%2x%2x%2x"]
 	}
 	set new [linsert $new 0 $tline]
@@ -353,9 +360,14 @@ proc ::ico::bputs {fh format args} {
 
 # creates a Tk image from a list of colors in the #hex format
 proc ::ico::createImage {colors {name {}}} {
+    package require Tk
     set h [llength $colors]
     set w [llength [lindex $colors 0]]
-    set img [eval image create photo $name -width $w -height $h]
+    if {$name ne ""} {
+	set img [image create photo $name -width $w -height $h]
+    } else {
+	set img [image create photo -width $w -height $h]
+    }
     if {0} {
 	# if image supported "" colors as transparent pixels,
 	# we could use this much faster op
@@ -373,7 +385,8 @@ proc ::ico::createImage {colors {name {}}} {
     return $img
 }
 
-# return a list of colors in the #hex format from raw icon data returned by readDIB
+# return a list of colors in the #hex format from raw icon data
+# returned by readDIB
 proc ::ico::getColors {w h bpp palette xor and} {
     # Create initial empty color array that we'll set indices in
     set colors {}
@@ -455,7 +468,7 @@ proc ::ico::getAndMaskFromColors {colors} {
     set and {}
     foreach line $colors {
 	set l {}
-	foreach x $line {append l [expr {$x == ""}]}
+	foreach x $line {append l [expr {$x eq ""}]}
 	append l [string repeat 0 [expr {[string length $l] % 32}]]
 	foreach {a b c d e f g h} [split $l {}] {
 	    append and [binary format B8 $a$b$c$d$e$f$g$h]
@@ -527,6 +540,7 @@ proc ::ico::getXORFromColors {bpp colors} {
 # one element per pixel and {} designating transparent
 # used by writeIcon when writing from a Tk image
 proc ::ico::getColorsFromImage {img} {
+    package require Tk
     set w [image width $img]
     set h [image height $img]
     set r {}
@@ -556,7 +570,7 @@ proc ::ico::getPaletteFromColors {colors} {
     foreach line $colors {
 	set tline {}
 	foreach x $line {
-	    if {$x == ""} {lappend tline {}; continue}
+	    if {$x eq ""} {lappend tline {}; continue}
 	    if {![info exists tpal($x)]} {
 		foreach {a b c n} $x {
 		    append palette [binary format cccc $c $b $a 0]
@@ -571,24 +585,23 @@ proc ::ico::getPaletteFromColors {colors} {
     return [list $i $palette $new]
 }
 
-# read a Device Independent Bitmap from the current offset and return the
-# width, height, depth, palette, XOR mask, and AND mask
+# read a Device Independent Bitmap from the current offset, return:
+#	{width height depth palette XOR_mask AND_mask}
 proc ::ico::readDIB {fh} {
     binary scan [read $fh 16] x4iix2s w h bpp
     set h [expr {$h / 2}]
     seek $fh 24 current
 
+    set palette [list]
     if {$bpp == 1 || $bpp == 4 || $bpp == 8} {
 	set colors [read $fh [expr {1 << ($bpp + 2)}]]
+	foreach {b g r x} [split $colors {}] {
+	    lappend palette [formatColor $r $g $b]
+	}
     } elseif {$bpp == 16 || $bpp == 24 || $bpp == 32} {
-	set colors {}
+	# do nothing here
     } else {
 	return -code error "unsupported color depth: $bpp"
-    }
-
-    set palette [list]
-    foreach {b g r x} [split $colors {}] {
-	lappend palette [formatColor $r $g $b]
     }
 
     set xor  [read $fh [expr {int(($w * $h) * ($bpp / 8.0))}]]
@@ -605,12 +618,55 @@ proc ::ico::readDIB {fh} {
     return [list $w $h $bpp $palette $xor $and]
 }
 
+# read a Device Independent Bitmap from raw data, return:
+#	{width height depth palette XOR_mask AND_mask}
+proc ::ico::readDIBFromData {data loc} {
+    # Read info from location
+    binary scan $data @${loc}x4iix2s w h bpp
+    set h [expr {$h / 2}]
+    # Move over w/h/bpp info + magic offset to start of DIB
+    set cnt [expr {$loc + 16 + 24}]
+
+    set palette [list]
+    if {$bpp == 1 || $bpp == 4 || $bpp == 8} {
+	# Could do: [binary scan $data @${cnt}c$len colors]
+	# and iter over colors, but this is more consistent with $fh version
+	set len    [expr {1 << ($bpp + 2)}]
+	set colors [string range $data $cnt [expr {$cnt + $len - 1}]]
+	foreach {b g r x} [split $colors {}] {
+	    lappend palette [formatColor $r $g $b]
+	}
+	incr cnt $len
+    } elseif {$bpp == 16 || $bpp == 24 || $bpp == 32} {
+	# do nothing here
+    } else {
+	return -code error "unsupported color depth: $bpp"
+    }
+
+    # Use -1 to account for string range inclusiveness
+    set end  [expr {$cnt + int(($w * $h) * ($bpp / 8.0)) - 1}]
+    set xor  [string range $data $cnt $end]
+    set and1 [string range $data [expr {$end + 1}] \
+		  [expr {$end + ((($w * $h) + ($h * ($w % 32))) / 8) - 1}]]
+
+    set and {}
+    set row [expr {($w + abs($w - 32)) / 8}]
+    set len [expr {$row * $h}]
+    for {set i 0} {$i < $len} {incr i $row} {
+	# Has to be decoded by row, in order
+	binary scan [string range $and1 $i [expr {$i + $row}]] B$w tmp
+	append and $tmp
+    }
+
+    return [list $w $h $bpp $palette $xor $and]
+}
+
 proc ::ico::getIconListICO {file} {
     set fh [open $file r]
     fconfigure $fh -translation binary
 
     # both words must be read to keep in sync with later reads
-    if {"[getword $fh] [getword $fh]" != "0 1"} {
+    if {"[getword $fh] [getword $fh]" ne "0 1"} {
 	return -code error "not an icon file"
     }
     set num [getword $fh]
@@ -635,13 +691,41 @@ proc ::ico::getIconListICO {file} {
     return $r
 }
 
-# returns an icon in the format of width, height, depth, palette, xor mask, and mask
+proc ::ico::getIconListICODATA {data} {
+    if {[binary scan $data sss h1 h2 num] != 3 || $h1 != 0 || $h2 != 1} {
+	return -code error "not icon data"
+    }
+    set r {}
+    set cnt 6
+    for {set i 0} {$i < $num} {incr i} {
+	if {[binary scan $data @${cnt}ccc w h bpp] != 3} {
+	    return -code error "error decoding icon data"
+	}
+	incr cnt 3
+	set info [list $w $h]
+	if {$bpp == 0} {
+	    set off [expr {$cnt + 9}]
+	    binary scan $data @${off}i off
+	    incr off 14
+	    binary scan $data @${off}s bpp
+	    lappend info $bpp
+	} else {
+	    lappend info [expr {int(sqrt($bpp))}]
+	}
+	lappend r $info
+	incr cnt 13
+    }
+    return $r
+}
+
+# returns an icon in the form:
+#	{width height depth palette xor_mask and_mask}
 proc ::ico::getRawIconDataICO {file index} {
     set fh [open $file r]
     fconfigure $fh -translation binary
 
     # both words must be read to keep in sync with later reads
-    if {"[getword $fh] [getword $fh]" != "0 1"} {
+    if {"[getword $fh] [getword $fh]" ne "0 1"} {
         close $fh
 	return -code error "not an icon file"
     }
@@ -659,6 +743,23 @@ proc ::ico::getRawIconDataICO {file index} {
     return $dib
 }
 
+proc ::ico::getRawIconDataICODATA {data index} {
+    if {[binary scan $data sss h1 h2 num] != 3 || $h1 != 0 || $h2 != 1} {
+	return -code error "not icon data"
+    }
+    if {$index < 0 || $index >= $num} {
+	return -code error "index out of range: must be between 0 and $num"
+    }
+    # Move to ico location
+    set cnt [expr {6 + (16 * $index) + 12}]
+    binary scan $data @${cnt}i loc
+
+    # readDIB returns: {w h bpp palette xor and}
+    set dib [readDIBFromData $data $loc]
+
+    return $dib
+}
+
 proc ::ico::writeIconICO {file index w h bpp palette xor and} {
     if {![file exists $file]} {
 	set fh [open $file w+]
@@ -669,12 +770,12 @@ proc ::ico::writeIconICO {file index w h bpp palette xor and} {
 	set fh [open $file r+]
 	fconfigure $fh -translation binary
     }
-    if {[file size $file] > 4 && "[getword $fh] [getword $fh]" != "0 1"} {
+    if {[file size $file] > 4 && "[getword $fh] [getword $fh]" ne "0 1"} {
 	close $fh
 	return -code error "not an icon file"
     }
     set num [getword $fh]
-    if {$index == "end"} { set index $num }
+    if {$index eq "end"} { set index $num }
     if {$index < 0 || $index > $num} {
 	close $fh
 	return -code error "index out of range"
@@ -749,7 +850,7 @@ proc ::ico::checkEXE {exe {mode r}} {
     fconfigure $fh -translation binary
 
     # verify PE header
-    if {[read $fh 2] != "MZ"} {
+    if {[read $fh 2] ne "MZ"} {
 	close $fh
 	return -code error "not a DOS executable"
     }
@@ -858,7 +959,8 @@ proc ::ico::getIconListEXE {file} {
     return $icons
 }
 
-# returns an icon in the format of width, height, depth, palette, xor mask, and mask
+# returns an icon in the form:
+#	{width height depth palette xor_mask and_mask}
 proc ::ico::getRawIconDataEXE {file index} {
     variable ICONS
 
@@ -883,7 +985,7 @@ proc ::ico::writeIconEXE {file index w0 h0 bpp0 palette xor and} {
     set fh   [checkEXE $file r+]
     set cnt  [SearchForIcos $file $fh $index]
 
-    if {$index == "end"} {set index $cnt}
+    if {$index eq "end"} {set index $cnt}
     if {$cnt < $index} { return -code error "index out of range" }
 
     set idx $ICONS($file,$index)
@@ -926,7 +1028,7 @@ proc ::ico::Show {file args} {
     parseOpts {type parent} $args
     if {![info exists type]} {
         # $type wasn't specified - get it from the extension
-        set type [string trimleft [string toupper [file extension $file]] .]
+        set type [fileext $file]
     }
 
     set file [file normalize $file]
@@ -978,4 +1080,4 @@ proc ::ico::Show {file args} {
     grid columnconfigure $parent 0 -weight 1
 }
 
-package provide ico 0.2
+package provide ico 0.3
