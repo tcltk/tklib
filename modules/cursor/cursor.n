@@ -1,0 +1,53 @@
+'\" -*- nroff -*-
+'\" 
+'\" Copyright (c) 2001 by Jeffrey Hobbs <jeff@hobbs.org>
+'\" 
+'\" RCS: @(#) $Id: cursor.n,v 1.1 2001/11/08 19:10:47 hobbs Exp $
+'\" 
+.so man.macros
+.TH cursor n 0.1 Cursor "Tk cursor routines"
+.BS
+'\" Note:  do not modify the .SH NAME line immediately below!
+.SH "NAME"
+::cursor \- Procedures to handle CURSOR data
+.SH "SYNOPSIS"
+\fBpackage require Tk\fR
+.sp
+\fBpackage require cursor ?0.1?\fR
+.sp
+\fB::cursor::propagate\fR \fIwidget cursor\fR
+.sp
+\fB::cursor::restore\fR \fIwidget\fR ?\fIcursor\fR?
+.sp
+\fB::cursor::display\fR ?\fIparent\fR?
+.sp
+.BE
+
+.SH "DESCRIPTION"
+.PP
+The \fB::cursor\fR package provides commands to handle Tk cursors.
+
+.SH "COMMANDS"
+.PP
+The following commands are available:
+.TP
+\fB::cursor::propagate\fR \fIwidget cursor\fR
+Sets the cursor for the specified \fIwidget\fR and all its descendants
+to \fIcursor\fR.
+.TP
+\fB::cursor::restore\fR \fIwidget\fR ?\fIcursor\fR?
+Restore the original or previously set cursor for the specified
+\fIwidget\fR and all its descendants.  If \fIcursor\fR is specified,
+that will be used if on any widget that did not have a preset cursor
+(set by a previous call to \fB::cursor::propagate\fR).
+.TP
+\fB::cursor::display\fR ?\fIparent\fR?
+Pops up a dialog with a listbox containing all the cursor names.
+Selecting a cursor name will display it in that dialog.  This is
+simply for viewing any available cursors on the platform.
+
+.SH "SEE ALSO"
+cursors(n), options(n), Tk_GetCursor(3)
+
+.SH "KEYWORDS"
+cursor
