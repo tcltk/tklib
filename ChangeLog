@@ -1,3 +1,9 @@
+2004-07-22  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* installed_modules.tcl: added ico to list of installed modules.
+	* modules/ico/*: new 'ico' module for extracting icos from exe/ico
+	files - works x-platform.
+
 2004-06-29  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* install_action.tcl:    Added ctext and style to list of

@@ -1,0 +1,7 @@
+2004-07-22  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* ico.tcl: added to tklib as v0.2.
+	Primary usage is like so:
+		set file bin/wish.exe
+		set icos [::ico::getIcons $file]
+		set img  [::ico::getIconImage $file -index 1]
