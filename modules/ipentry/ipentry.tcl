@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: ipentry.tcl,v 1.3 2003/08/02 21:01:39 afaupell Exp $
+# RCS: @(#) $Id: ipentry.tcl,v 1.4 2005/01/10 06:19:18 mgbacke Exp $
 
 package provide ipentry 0.1
 
@@ -46,6 +46,7 @@ proc ::ipentry::ipentry {w args} {
     if {[llength $args] > 0} {
         eval [list $w configure] $args
     }
+    return $w
 }
 
 proc ::ipentry::keypress {w key} {
