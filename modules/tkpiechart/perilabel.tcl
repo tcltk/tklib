@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.38 1998/05/03 18:07:28 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.39 1998/05/03 18:15:53 jfontain Exp $}
 
 class piePeripheralLabeler {
 
@@ -132,6 +132,9 @@ class piePeripheralLabeler {
         $canvas move canvasLabelsArray($array) [expr {[lindex $box 0]-$x}]\
             [expr {[lindex $box 3]+(2*$switched::($this,-offset))+$smallTextHeight-$y}]
         switched::configure $array -width [expr {[lindex $box 2]-[lindex $box 0]}]                             ;# then fit pie width
+        foreach label [canvasLabelsArray::labels $array] {                                   ;# finally reposition peripheral labels
+            position $this $piePeripheralLabeler::($this,textItem,$label) $piePeripheralLabeler::($this,slice,$label)
+        }
     }
 
 }
