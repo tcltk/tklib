@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.77 1998/06/07 16:57:58 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.78 1998/06/09 20:27:54 jfontain Exp $}
 
 package provide tkpiechart 5.1
 
@@ -56,17 +56,17 @@ proc pie::set-thickness {this value} {
     set pie::($this,thickness) [winfo fpixels $pie::($this,canvas) $value]                                      ;# convert to pixels
 }
 
+# size is first converted to pixels, then 1 pixel is subtracted since slice size is half the pie size and pie center takes 1 pixel
 proc pie::set-height {this value} {                                                ;# height is slices height not counting thickness
-    set pie::($this,height) [winfo fpixels $pie::($this,canvas) $value]                                         ;# convert to pixels
+    set pie::($this,height) [expr {[winfo fpixels $pie::($this,canvas) $value]-1}]
     if {$switched::($this,complete)} {
         update $this
     } else {
         set pie::($this,initialHeight) $pie::($this,height)           ;# keep track of initial value for latter scaling calculations
     }
 }
-
 proc pie::set-width {this value} {
-    set pie::($this,width) [winfo fpixels $pie::($this,canvas) $value]                                          ;# convert to pixels
+    set pie::($this,width) [expr {[winfo fpixels $pie::($this,canvas) $value]-1}]
     if {$switched::($this,complete)} {
         update $this
     } else {
