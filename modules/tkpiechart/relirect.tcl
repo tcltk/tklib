@@ -1,4 +1,4 @@
-set rcsId {$Id: relirect.tcl,v 1.3 2002/05/19 10:32:12 jfontain Exp $}
+# $Id: relirect.tcl,v 1.4 2002/05/30 17:11:45 jfontain Exp $
 
 
 ::stooop::class canvasReliefRectangle {
