@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.3 1995/10/05 20:24:11 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.4 1995/10/05 22:23:45 jfontain Exp $}
 
 source pielabel.tcl
 
@@ -8,4 +8,6 @@ proc piePeripheralLabeller::piePeripheralLabeller {id canvas args} {
 
 proc piePeripheralLabeller::~piePeripheralLabeller {id} {}
 
-proc piePeripheralLabeller::position {id labelId} {}
+proc piePeripheralLabeller::create {id sliceId args} {}
+
+proc piePeripheralLabeller::update {id labelId value} {}
