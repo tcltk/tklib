@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.5 1995/10/06 15:51:25 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.6 1995/10/06 15:58:17 jfontain Exp $}
 
 source pielabel.tcl
 
@@ -57,9 +57,16 @@ proc piePeripheralLabeller::create {id sliceId args} {
     # place text next to colored rectangle
     $canvas move $textId [expr $x+(2*$textHeight)] [expr $y+($textHeight/2.0)]
 
+    # create value label
+    $canvas addtag pieLabeller($id) withtag [set valueId [$canvas create text 0 0]]
+    # eventually use labeller font
+    if {[info exists pieLabeller($id,font)]} {
+        $canvas itemconfigure -font $pieLabeller($id,font)
+    }
+
     incr piePeripheralLabeller($id,number)
-    # slice identifier is only what we will need to place value
-    return $sliceId
+    # value label is the only one to update
+    return $valueId
 }
 
 proc piePeripheralLabeller::update {id sliceId value} {}
