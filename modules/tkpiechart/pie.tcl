@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.29 1995/10/01 16:40:43 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.30 1995/10/01 22:09:30 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -23,7 +23,7 @@ proc pie::pie {id canvas x y width height args} {
         set bottomColor {}
     }
     set pie($id,backgroundSlice) [new slice\
-        $canvas [winfo fpixels $canvas $x] [winfo fpixels $canvas $y] $pie($id,radiusX) $pie($id,radiusY) [expr $PI/2] 7\
+        $canvas [winfo fpixels $canvas $x] [winfo fpixels $canvas $y] $pie($id,radiusX) $pie($id,radiusY) 90 360\
         -height $pie($id,thickness) -topcolor $option(-background) -bottomcolor $bottomColor\
     ]
     $canvas addtag pie($id) withtag slice($pie($id,backgroundSlice))
@@ -49,12 +49,12 @@ proc pie::~pie {id} {
 }
 
 proc pie::newSlice {id {text {}}} {
-    global pie slice halfPI
+    global pie slice
 
     # calculate start radian for new slice (slices grow clockwise from 12 o'clock)
-    set startRadian $halfPI
+    set start 90
     foreach sliceId $pie($id,slices) {
-        set startRadian [expr $startRadian-$slice($sliceId,extent)]
+        set start [expr $start-$slice($sliceId,extent)]
     }
     # get a new color
     set color [lindex $pie($id,colors) [expr [llength $pie($id,slices)]%[llength $pie($id,colors)]]]
@@ -65,7 +65,7 @@ proc pie::newSlice {id {text {}}} {
 
     # darken slice top color by 40% to obtain bottom color, as it is done for Tk buttons shadow, for example
     set sliceId [new slice\
-        $pie($id,canvas) [lindex $coordinates 0] [lindex $coordinates 1] $pie($id,radiusX) $pie($id,radiusY) $startRadian 0\
+        $pie($id,canvas) [lindex $coordinates 0] [lindex $coordinates 1] $pie($id,radiusX) $pie($id,radiusY) $start 0\
         -height $pie($id,thickness) -topcolor $color -bottomcolor [tkDarken $color 60]\
     ]
     $pie($id,canvas) addtag pie($id) withtag slice($sliceId)
@@ -85,7 +85,7 @@ proc pie::newSlice {id {text {}}} {
 
 proc pie::sizeSlice {id sliceId perCent} {
     # in per cent of whole pie
-    global pie slice twoPI
+    global pie slice
 
     if {[set index [lsearch $pie($id,slices) $sliceId]]<0} {
         error "could not find slice $sliceId in pie $id slices"
@@ -93,13 +93,13 @@ proc pie::sizeSlice {id sliceId perCent} {
     pieLabeller::setValue $pie($id,labeller) $pie($id,sliceLabel,$sliceId) $perCent
     # cannot display slices that occupy more than 100%
     set perCent [minimum $perCent 100]
-    set newExtent [expr $perCent*$twoPI/100]
+    set newExtent [expr $perCent*3.6]
     set growth [expr $newExtent-$slice($sliceId,extent)]
     # grow clockwise
     slice::update $sliceId [expr $slice($sliceId,start)-$growth] $newExtent
     # finally move the following slices
-    set radian [expr -1*$growth]
+    set value [expr -1*$growth]
     foreach sliceId [lrange $pie($id,slices) [incr index] end] {
-        slice::rotate $sliceId $radian
+        slice::rotate $sliceId $value
     }
 }

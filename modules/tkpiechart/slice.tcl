@@ -1,34 +1,22 @@
-set rcsId {$Id: slice.tcl,v 1.18 1995/09/27 10:13:51 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.19 1995/10/01 22:07:57 jfontain Exp $}
 
 source util.tcl
 
-proc moduloTwoPI {value} {
-    # normalize value between 0 and 2*PI (not included)
-    global twoPI
-
-    if {$value>=0} {
-        while {$value>=$twoPI} {
-            set value [expr $value-$twoPI]
-        }
-    } else {
-        while {$value<0} {
-            set value [expr $value+$twoPI]
-        }
+proc normalizedAngle {value} {
+    # normalize value between -180 and 180 degrees (not included)
+    while {$value>=180} {
+        set value [expr $value-360]
+    }
+    while {$value<-180} {
+        set value [expr $value+360]
     }
     return $value
 }
 
-proc moduloPI {value} {
-    # normalize value between -PI and PI (not included)
-    global PI twoPI
-
-    set value [moduloTwoPI $value]
-    return [expr $value>=$PI?$value-$twoPI:$value]
-}
-
-proc slice::slice {id canvas x y radiusX radiusY startRadian extentRadian args} {
+proc slice::slice {id canvas x y radiusX radiusY start extent args} {
+    # all dimensions must be in pixels
     # note: all slice elements are tagged with slice($id)
-    global slice PI twoPI
+    global slice
 
     # set options default then parse switched options
     array set option {-height 0 -topcolor {} -bottomcolor {}}
@@ -38,10 +26,6 @@ proc slice::slice {id canvas x y radiusX radiusY startRadian extentRadian args} 
     set slice($id,start) 0
     set slice($id,radiusX) $radiusX
     set slice($id,radiusY) $radiusY
-    # normalize extent by choosing a value slightly less than 2 PI for too large values, for slice size cannot be 2 PI
-    set extentRadian [maximum 0 [minimum [expr $twoPI-0.0001] $extentRadian]]
-    set slice($id,extent) $extentRadian
-    set extentDegrees [expr $extentRadian*180/$PI]
     set slice($id,height) $option(-height)
 
     # use a dimensionless line as an origin marker
@@ -68,12 +52,12 @@ proc slice::slice {id canvas x y radiusX radiusY startRadian extentRadian args} 
     }
 
     set slice($id,topArc)\
-        [$canvas create arc -$radiusX -$radiusY $radiusX $radiusY -extent $extentDegrees -fill $option(-topcolor) -tags slice($id)]
+        [$canvas create arc -$radiusX -$radiusY $radiusX $radiusY -extent $extent -fill $option(-topcolor) -tags slice($id)]
 
     # move slice so upper-left corner is at requested coordinates
     $canvas move slice($id) [expr $x+$radiusX] [expr $y+$radiusY]
 
-    slice::update $id [moduloPI $startRadian] $extentRadian
+    slice::update $id $start $extent
 }
 
 proc slice::~slice {id} {
@@ -82,8 +66,8 @@ proc slice::~slice {id} {
     $slice($id,canvas) delete slice($id)
 }
 
-proc slice::update {id radian extentRadian} {
-    global slice PI twoPI
+proc slice::update {id start extent} {
+    global slice
 
     set canvas $slice($id,canvas)
 
@@ -95,13 +79,14 @@ proc slice::update {id radian extentRadian} {
     $canvas coords $slice($id,origin) -$radiusX -$radiusY $radiusX $radiusY
     $canvas coords $slice($id,topArc) -$radiusX -$radiusY $radiusX $radiusY
 
-    set slice($id,start) [set startRadian [moduloPI $radian]]
-    set startDegrees [expr $startRadian*180/$PI]
-    # normalize extent by choosing a value slightly less than 2 PI for too large values, for slice size cannot be 2 PI
-    set extentRadian [maximum 0 [minimum [expr $twoPI-0.0001] $extentRadian]]
-    set slice($id,extent) $extentRadian
-    set extentDegrees [expr $extentRadian*180/$PI]
-    $canvas itemconfigure $slice($id,topArc) -start $startDegrees -extent $extentDegrees
+    set slice($id,start) [set start [normalizedAngle $start]]
+    # normalize extent by choosing a value slightly less than 360 degrees for too large values, for slice size cannot be 360
+    set extent [maximum 0 $extent]
+    if {$extent>=360} {
+        set extent 359.9999999999999
+    }
+    set slice($id,extent) $extent
+    $canvas itemconfigure $slice($id,topArc) -start $start -extent $extent
 
     if {$slice($id,height)>0} {
         # if 3D
@@ -113,10 +98,10 @@ proc slice::update {id radian extentRadian} {
 }
 
 proc slice::updateBottom {id} {
-    global slice PI twoPI
+    global slice
 
-    set startDegrees [expr [set startRadian $slice($id,start)]*180/$PI]
-    set extentDegrees [expr [set extentRadian $slice($id,extent)]*180/$PI]
+    set start $slice($id,start)
+    set extent $slice($id,extent)
 
     set canvas $slice($id,canvas)
     set radiusX $slice($id,radiusX)
@@ -143,23 +128,24 @@ proc slice::updateBottom {id} {
     $canvas coords $slice($id,startPolygon) 0 0 0 0 0 0 0 0
     $canvas coords $slice($id,endPolygon) 0 0 0 0 0 0 0 0
 
-    set startX [expr $radiusX*cos($startRadian)]
-    set startY [expr -$radiusY*sin($startRadian)]
-    set endRadian [moduloPI [expr $startRadian+$extentRadian]]
-    set endX [expr $radiusX*cos($endRadian)]
-    set endY [expr -$radiusY*sin($endRadian)]
+    set coefficient [expr 3.14159265358979323846/180]
+    set startX [expr $radiusX*cos($start*$coefficient)]
+    set startY [expr -$radiusY*sin($start*$coefficient)]
+    set end [normalizedAngle [expr $start+$extent]]
+    set endX [expr $radiusX*cos($end*$coefficient)]
+    set endY [expr -$radiusY*sin($end*$coefficient)]
 
     set startBottom [expr $startY+$height]
     set endBottom [expr $endY+$height]
 
-    if {(($startRadian>=0)&&($endRadian>=0))||(($startRadian<0)&&($endRadian<0))} {
+    if {(($start>=0)&&($end>=0))||(($start<0)&&($end<0))} {
         # start and end angles are on the same side of the 0 abscissa
-        if {$extentRadian<=$PI} {
+        if {$extent<=180} {
             # slice size is less than half pie
-            if {$startRadian<0} {
+            if {$start<0} {
                 # slice is facing viewer, so bottom is visible
-                $canvas itemconfigure $slice($id,startBottomArcFill) -start $startDegrees -extent $extentDegrees
-                $canvas itemconfigure $slice($id,startBottomArc) -start $startDegrees -extent $extentDegrees
+                $canvas itemconfigure $slice($id,startBottomArcFill) -start $start -extent $extent
+                $canvas itemconfigure $slice($id,startBottomArc) -start $start -extent $extent
                 # only one polygon is needed
                 $canvas coords $slice($id,startPolygon) $startX $startY $endX $endY $endX $endBottom $startX $startBottom
                 $canvas coords $slice($id,startLeftLine) $startX $startY $startX $startBottom
@@ -168,15 +154,15 @@ proc slice::updateBottom {id} {
             # else only top is visible
         } else {
             # slice size is more than half pie
-            if {$startRadian<0} {
+            if {$start<0} {
                 # slice opening is facing viewer, so bottom is in 2 parts
-                $canvas itemconfigure $slice($id,startBottomArcFill) -start 0 -extent $startDegrees
-                $canvas itemconfigure $slice($id,startBottomArc) -start 0 -extent $startDegrees
+                $canvas itemconfigure $slice($id,startBottomArcFill) -start 0 -extent $start
+                $canvas itemconfigure $slice($id,startBottomArc) -start 0 -extent $start
                 $canvas coords $slice($id,startPolygon) $startX $startY $radiusX 0 $radiusX $height $startX $startBottom
                 $canvas coords $slice($id,startLeftLine) $startX $startY $startX $startBottom
                 $canvas coords $slice($id,startRightLine) $radiusX 0 $radiusX $height
 
-                set bottomArcExtent [expr ($endRadian+$PI)*180/$PI]
+                set bottomArcExtent [expr $end+180]
                 $canvas itemconfigure $slice($id,endBottomArcFill) -start -180 -extent $bottomArcExtent
                 $canvas itemconfigure $slice($id,endBottomArc) -start -180 -extent $bottomArcExtent
                 $canvas coords $slice($id,endPolygon) -$radiusX 0 $endX $endY $endX $endBottom -$radiusX $height
@@ -194,17 +180,17 @@ proc slice::updateBottom {id} {
         }
     } else {
         # start and end angles are on opposite sides of the 0 abscissa
-        if {$startRadian<0} {
+        if {$start<0} {
             # slice start is facing viewer
-            $canvas itemconfigure $slice($id,startBottomArcFill) -start 0 -extent $startDegrees
-            $canvas itemconfigure $slice($id,startBottomArc) -start 0 -extent $startDegrees
+            $canvas itemconfigure $slice($id,startBottomArcFill) -start 0 -extent $start
+            $canvas itemconfigure $slice($id,startBottomArc) -start 0 -extent $start
             # only one polygon is needed
             $canvas coords $slice($id,startPolygon) $startX $startY $radiusX 0 $radiusX $height $startX $startBottom
             $canvas coords $slice($id,startLeftLine) $startX $startY $startX $startBottom
             $canvas coords $slice($id,startRightLine) $radiusX 0 $radiusX $height
         } else {
             # slice end is facing viewer
-            set bottomArcExtent [expr ($endRadian+$PI)*180/$PI]
+            set bottomArcExtent [expr $end+180]
             $canvas itemconfigure $slice($id,endBottomArcFill) -start -180 -extent $bottomArcExtent
             $canvas itemconfigure $slice($id,endBottomArc) -start -180 -extent $bottomArcExtent
             # only one polygon is needed
@@ -215,22 +201,22 @@ proc slice::updateBottom {id} {
     }
 }
 
-proc slice::position {id radian} {
+proc slice::position {id start} {
     global slice
 
-    slice::update $id $radian $slice($id,extent)
+    slice::update $id $start $slice($id,extent)
 }
 
-proc slice::rotate {id radian} {
+proc slice::rotate {id value} {
     global slice
 
-    if {$radian!=0} {
-        slice::update $id [expr $slice($id,start)+$radian] $slice($id,extent)
+    if {$value!=0} {
+        slice::update $id [expr $slice($id,start)+$value] $slice($id,extent)
     }
 }
 
-proc slice::size {id extentRadian} {
+proc slice::size {id extent} {
     global slice
 
-    slice::update $id $slice($id,start) $extentRadian
+    slice::update $id $slice($id,start) $extent
 }
