@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: history.tcl,v 1.1 2005/03/25 02:59:52 afaupell Exp $
+# RCS: @(#) $Id: history.tcl,v 1.2 2005/03/31 03:15:48 andreas_kupries Exp $
 
 package provide history 0.1
 
