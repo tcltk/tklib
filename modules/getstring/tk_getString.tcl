@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: tk_getString.tcl,v 1.7 2005/04/06 03:39:34 afaupell Exp $
+# RCS: @(#) $Id: tk_getString.tcl,v 1.8 2005/04/06 06:37:15 afaupell Exp $
 
 package require Tk
 package provide tk_getString 0.1
@@ -41,8 +41,8 @@ proc ::getstring::tk_getString {w var text args} {
     set grab [grab current .]
 
     toplevel $w -relief raised -class TkSDialog
-    wm title $w $title
-    wm iconname $w $title
+    wm title $w $options(-title)
+    wm iconname $w $options(-title)
     wm protocol $w WM_DELETE_WINDOW {set ::getstring::result 0}
     wm transient $w [winfo toplevel [winfo parent $w]]
     wm resizable $w 1 0
