@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.30 1998/03/26 20:36:52 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.31 1998/03/27 21:16:34 jfontain Exp $}
 
 class piePeripheralLabeller {
 
@@ -56,6 +56,7 @@ class piePeripheralLabeller {
         set piePeripheralLabeller::($this,textItem,$label) $text                        ;# value text item is the only one to update
         set piePeripheralLabeller::($this,slice,$label) $slice
         set piePeripheralLabeller::($this,selected,$label) 0
+
         return $label
     }
 
@@ -72,11 +73,11 @@ class piePeripheralLabeller {
 
     proc update {this label value} {
         set text $piePeripheralLabeller::($this,textItem,$label)
-        rotate $this $text $piePeripheralLabeller::($this,slice,$label)
+        position $this $text $piePeripheralLabeller::($this,slice,$label)
         $pieLabeller::($this,canvas) itemconfigure $text -text $value
     }
 
-    proc rotate {this text slice} {
+    proc position {this text slice} {              ;# place the value text item next to the outter border of the corresponding slice
         global PI
 
         slice::data $slice data
@@ -98,8 +99,14 @@ class piePeripheralLabeller {
     }
 
     proc delete {this label} {
-        $pieLabeller::($this,canvas) delete $piePeripheralLabeller::($this,textItem,$label)
         canvasLabelsArray::delete $piePeripheralLabeller::($this,array) $label
+        $pieLabeller::($this,canvas) delete $piePeripheralLabeller::($this,textItem,$label)
+        unset piePeripheralLabeller::($this,textItem,$label) piePeripheralLabeller::($this,slice,$label)\
+            piePeripheralLabeller::($this,selected,$label)
+        # finally reposition the remaining value text items next to their slices
+        foreach label [canvasLabelsArray::labels $piePeripheralLabeller::($this,array)] {
+            position $this $piePeripheralLabeller::($this,textItem,$label) $piePeripheralLabeller::($this,slice,$label)
+        }
     }
 
     proc selectState {this label {selected {}}} {
