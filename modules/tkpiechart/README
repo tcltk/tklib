@@ -1,11 +1,11 @@
 Some people have asked for a Tcl/Tk pie utility: so here is my little
 implementation with Tcl, not as an extension.
 
-This is version 2.3. It was tested with Tcl7.5/Tk4.1, Tcl7.6/Tk4.2,
-Tcl8.0/Tk8.0 and the netscape plug-in.
+This is version 3.0.1. It was tested with Tcl8.0/Tk8.0 and the
+netscape plug-in 2.0b3 or above.
 
 It is object oriented using the stooop (Simple Tcl Only Object
-Oriented Programming) extension (version 2.6 or above, tcl file
+Oriented Programming) extension (version 3.0 or above, tcl file
 included).
 
 If you have netscape with the Tcl plug-in installed, just Open File...
@@ -22,4 +22,4 @@ If you find a bug in the Tcl code and correct it yourself, please
 email the modified code so I can include it in the next release. The
 same goes for improvements.
 
-Jean-Luc Fontaine (mailto:jfontain@apogee-com.fr)
+Jean-Luc Fontaine (mailto:jfontain@mygale.org)
