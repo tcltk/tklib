@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.10 1995/09/19 20:49:48 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.11 1995/09/22 21:16:11 jfontain Exp $}
 
 source $env(AGVHOME)/tools/utility.tk
 
@@ -27,6 +27,7 @@ proc moduloPI {value} {
 }
 
 proc slice::slice {id canvas radiusX radiusY startRadian extentRadian {height 0} {topColor ""} {bottomColor ""}} {
+    # note: all slice elements are tagged with slice($id)
     global slice PI twoPI
 
     set slice($id,canvas) $canvas
@@ -45,8 +46,11 @@ proc slice::slice {id canvas radiusX radiusY startRadian extentRadian {height 0}
             [$canvas create arc\
                 -$radiusX -$radiusY $radiusX $radiusY -style chord -extent 0 -fill $bottomColor -outline $bottomColor\
             ]
+        $canvas addtag slice($id) withtag $slice($id,startBottomArcFill)
         set slice($id,startPolygon) [$canvas create polygon 0 0 0 0 0 0 -fill $bottomColor]
+        $canvas addtag slice($id) withtag $slice($id,startPolygon)
         set slice($id,startBottomArc) [$canvas create arc -$radiusX -$radiusY $radiusX $radiusY -style arc -extent 0 -fill black]
+        $canvas addtag slice($id) withtag $slice($id,startBottomArc)
         $canvas move $slice($id,startBottomArcFill) 0 $height
         $canvas move $slice($id,startBottomArc) 0 $height
 
@@ -54,30 +58,30 @@ proc slice::slice {id canvas radiusX radiusY startRadian extentRadian {height 0}
             [$canvas create arc\
                 -$radiusX -$radiusY $radiusX $radiusY -style chord -extent 0 -fill $bottomColor -outline $bottomColor\
             ]
+        $canvas addtag slice($id) withtag $slice($id,endBottomArcFill)
         set slice($id,endPolygon) [$canvas create polygon 0 0 0 0 0 0 -fill $bottomColor]
+        $canvas addtag slice($id) withtag $slice($id,endPolygon)
         set slice($id,endBottomArc) [$canvas create arc -$radiusX -$radiusY $radiusX $radiusY -style arc -extent 0 -fill black]
+        $canvas addtag slice($id) withtag $slice($id,endBottomArc)
         $canvas move $slice($id,endBottomArcFill) 0 $height
         $canvas move $slice($id,endBottomArc) 0 $height
 
-        set slice($id,startLeftLine) [$canvas create line 0 0 0 0]
-        set slice($id,startRightLine) [$canvas create line 0 0 0 0]
-        set slice($id,endLeftLine) [$canvas create line 0 0 0 0]
-        set slice($id,endRightLine) [$canvas create line 0 0 0 0]
+        $canvas addtag slice($id) withtag [set slice($id,startLeftLine) [$canvas create line 0 0 0 0]]
+        $canvas addtag slice($id) withtag [set slice($id,startRightLine) [$canvas create line 0 0 0 0]]
+        $canvas addtag slice($id) withtag [set slice($id,endLeftLine) [$canvas create line 0 0 0 0]]
+        $canvas addtag slice($id) withtag [set slice($id,endRightLine) [$canvas create line 0 0 0 0]]
     }
 
     set slice($id,topArc) [$canvas create arc -$radiusX -$radiusY $radiusX $radiusY -extent $extentDegrees -fill $topColor]
+    $canvas addtag slice($id) withtag $slice($id,topArc)
+
     slice::update $id [moduloPI $startRadian] $extentRadian
 }
 
 proc slice::~slice {id} {
     global slice
 
-    $slice($id,canvas) delete $slice($id,topArc)
-    if {$slice($id,height)>0} {
-        $slice($id,canvas) delete $slice($id,startBottomArcFill) $slice($id,startBottomArc) $slice($id,startLeftLine)\
-            $slice($id,startRightLine) $slice($id,endBottomArcFill) $slice($id,endBottomArc) $slice($id,startPolygon)\
-            $slice($id,endLeftLine) $slice($id,endRightLine) $slice($id,endPolygon)
-    }
+    $slice($id,canvas) delete slice($id)
 }
 
 proc slice::update {id radian extentRadian} {
