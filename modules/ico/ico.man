@@ -86,9 +86,13 @@ Extracts all icons from the executable [arg file] to the ICO file [arg file2]
 
 [call [cmd ::ico::clearCache] [opt file]
 
+The [cmd getIconList] command caches icon offsets inside EXE, DLL, and ICL files in order to speed up extraction.
+This command clears that cache for the specific [opt file] or all files.
+
 
 [call [cmd ::ico::transparentColor] [arg image] [arg color]
 
+Sets every pixel matching [arg color] in Tk image [arg image] to transparent.
 
 [call [cmd ::ico::Show] [arg file] [opt "[arg option] [arg value]..."]]
 [list_begin opt]
