@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.26 1998/03/21 10:19:18 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.27 1998/03/21 10:23:17 jfontain Exp $}
 
 class piePeripheralLabeller {
 
@@ -50,7 +50,7 @@ class piePeripheralLabeller {
         }
 
         # this label font may be overriden in arguments
-        set labelId [eval canvasLabelsArray::create $piePeripheralLabeller::($this,array) $args]
+        eval canvasLabelsArray::create $piePeripheralLabeller::($this,array) $args
         $canvas addtag pieLabeller($this) withtag canvasLabelsArray($piePeripheralLabeller::($this,array))       ;# refresh our tags
 
         set piePeripheralLabeller::($this,slice,$item) $slice                               ;# value label is the only one to update
