@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.16 1995/10/21 20:26:19 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.17 1995/10/27 20:25:14 jfontain Exp $}
 
 source pielabel.tcl
 source labarray.tcl
@@ -20,7 +20,7 @@ proc pieBoxLabeller::create {this sliceId args} {
         # create a labels array
         set options "-justify $pieBoxLabeller($this,justify)"
         # eventually use labeller font
-        catch {lappend options -font $pieLabeller($this,font}
+        catch {lappend options -font $pieLabeller($this,font)}
         # position array below pie
         set box [$pieLabeller($this,canvas) bbox pie($pieLabeller($this,pieId))]
         set pieBoxLabeller($this,array) [eval new canvasLabelsArray\
