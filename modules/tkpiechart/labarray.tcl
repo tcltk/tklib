@@ -1,4 +1,4 @@
-set rcsId {$Id: labarray.tcl,v 1.1 1995/10/10 13:16:23 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.2 1995/10/10 19:49:22 jfontain Exp $}
 
 source canlabel.tcl
 
@@ -11,10 +11,11 @@ proc canvasLabelsArray::canvasLabelsArray {id canvas x y width args} {
     set canvasLabelsArray($id,origin) [$canvas create line $x $y $x $y -fill {} -tags canvasLabelsArray($id)]
 
     # set options default then parse switched options
-    array set option {-justify left}
+    array set option {-justify left -style box}
     array set option $args
     catch {set canvasLabelsArray($id,font) $option(-font)}
     set canvasLabelsArray($id,justify) $option(-justify)
+    set canvasLabelsArray($id,style) $option(-style)
 }
 
 proc canvasLabelsArray::~canvasLabelsArray {id} {
@@ -23,6 +24,7 @@ proc canvasLabelsArray::~canvasLabelsArray {id} {
     foreach label $canvasLabelsArray($id,labelIds) {
         delete canvasLabel $label
     }
+    # delete remaining items
     $canvasLabelsArray($id,canvas) delete canvasLabelsArray($id)
 }
 
@@ -30,8 +32,12 @@ proc canvasLabelsArray::create {id args} {
     global canvasLabelsArray
 
     if {[lsearch -exact $args -font]<0} {
-        # eventually use array font
+        # eventually use array main font
         catch {lappend args -font $canvasLabelsArray($id,font)}
+    }
+    if {[lsearch -exact $args -style]<0} {
+        # use array main style if not overridden
+        lappend args -style $canvasLabelsArray($id,style)
     }
     set labelId [eval new canvasLabel $canvasLabelsArray($id,canvas) 0 0 $args]
     $canvasLabelsArray($id,canvas) addtag canvasLabelsArray($id) withtag canvasLabel($labelId)
