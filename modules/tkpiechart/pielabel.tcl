@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.14 1995/10/06 10:50:35 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.15 1995/10/07 20:42:26 jfontain Exp $}
 
 source canlabel.tcl
 
@@ -31,6 +31,10 @@ proc pieLabeller::create {id sliceId args} {
 }
 
 proc pieLabeller::update {id label value} {
+    virtualCallFrom pieLabeller
+}
+
+proc pieLabeller::rotate {id label} {
     virtualCallFrom pieLabeller
 }
 

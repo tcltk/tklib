@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.10 1995/10/06 10:54:41 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.11 1995/10/07 20:42:26 jfontain Exp $}
 
 source pielabel.tcl
 
@@ -48,3 +48,5 @@ proc pieBoxLabeller::update {id labelId value} {
     regsub {:.*$} [canvasLabel::cget $labelId -text] ": $value" text
     canvasLabel::configure $labelId -text $text
 }
+
+proc pieBoxLabeller::rotate {id labelId} {}
