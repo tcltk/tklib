@@ -69,9 +69,9 @@ existing icon.
 
 [arg_def integer depth in]
 
-This argument must have a value of [const 1], [const 4], [const 8], [const 24], or [const 32]. If [arg data]
-has more colors than the color depth allows an error will be
-generated.
+This argument must have a value of [const 1], [const 4], [const 8],
+[const 24], or [const 32]. If [arg data] has more colors than the
+color depth allows an error will be generated.
 
 
 [arg_def options data in]
@@ -104,7 +104,7 @@ Copies the icon at [arg index] in [arg file] to [arg index2] in [arg file2].
 
 [call [cmd ::ico::EXEtoICO] [arg file] [arg file2]]
 
-Extracts all icons from the executable [arg file] to the ICO file [arg file2]
+Extracts all icons from the executable [arg file] to the ICO file [arg file2].
 
 [list_begin opt]
 [opt_def -type fileFormat]
@@ -161,6 +161,11 @@ There is currently no way to read alpha channel information from 32bpp icons.
 Tk images do not have an alpha channel so the only way to write a true 32bpp icon is from
 a color list. writing a 32bpp icon from a Tkimage is identical to writing a 24bpp icon.
 
+[example {
+    button .explore -image [::ico::getIcon explorer.exe 0 -name explore]
+    set i [lsearch [::ico::getIconList tclkit.exe] {32 32 8}]]
+    set colorlist [::ico::getIcon tclkit.exe $i -format colors -type EXE]
+}]
 
 
 [keywords entry icon ico exe dll]
