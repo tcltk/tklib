@@ -1,4 +1,4 @@
-set rcsId {$Id: pielabel.tcl,v 1.12 1995/10/05 21:09:58 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.13 1995/10/05 22:22:51 jfontain Exp $}
 
 source canlabel.tcl
 
@@ -17,10 +17,6 @@ proc pieLabeller::pieLabeller {id canvas args} {
 
 proc pieLabeller::~pieLabeller {id} {
     virtualCallFrom pieLabeller
-
-    foreach label $pieLabeller($id,labelIds) {
-        delete canvasLabel $label
-    }
 }
 
 proc pieLabeller::bind {id pieId} {
@@ -30,29 +26,10 @@ proc pieLabeller::bind {id pieId} {
 }
 
 proc pieLabeller::create {id sliceId args} {
-    global pieLabeller
-
-    if {[lsearch -exact $args -font]<0} {
-        # eventually use main font if not overridden
-        catch {lappend args -font $pieLabeller($id,font)}
-    }
-    set labelId [eval new canvasLabel $pieLabeller($id,canvas) 0 0 $args]
-    # always append semi-column to label
-    canvasLabel::configure $labelId -text [canvasLabel::cget $labelId -text]:
-    $pieLabeller($id,canvas) addtag pieLabeller($id) withtag canvasLabel($labelId)
-    lappend pieLabeller($id,labelIds) $labelId
-    # save related slice
-    set pieLabeller($id,sliceId,$labelId) $sliceId
-    pieLabeller::position $id $labelId
-    return $labelId
-}
-
-proc pieLabeller::position {id labelId} {
-    virtualCallFrom pieLabeller
+    return [virtualCallFrom pieLabeller]
 }
 
 proc pieLabeller::update {id label value} {
-    regsub {:.*$} [canvasLabel::cget $label -text] ": $value" text
-    canvasLabel::configure $label -text $text
+    virtualCallFrom pieLabeller
 }
 
