@@ -1,11 +1,11 @@
-set rcsId {$Id: canlabel.tcl,v 1.21 1998/05/03 10:52:49 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.22 1998/06/07 10:08:13 jfontain Exp $}
 
 class canvasLabel {
 
-    proc canvasLabel {this canvas x y args} switched {$args} {
+    proc canvasLabel {this canvas args} switched {$args} {
         set canvasLabel::($this,canvas) $canvas
         # use an empty image as an origin marker with only 2 coordinates
-        set canvasLabel::($this,origin) [$canvas create image $x $y -tags canvasLabel($this)]
+        set canvasLabel::($this,origin) [$canvas create image 0 0 -tags canvasLabel($this)]
         set canvasLabel::($this,rectangle) [$canvas create rectangle 0 0 0 0 -tags canvasLabel($this)]
         set canvasLabel::($this,text) [$canvas create text 0 0 -tags canvasLabel($this)]
 
