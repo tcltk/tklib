@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.41 1998/06/07 10:22:41 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.42 1998/06/07 13:47:02 jfontain Exp $}
 
 class piePeripheralLabeler {
 
@@ -6,8 +6,7 @@ class piePeripheralLabeler {
 
     proc piePeripheralLabeler {this canvas args} pieLabeler {$canvas $args} switched {$args} {
         switched::complete $this
-        ::set piePeripheralLabeler::($this,array)\
-            [::new canvasLabelsArray $canvas -justify $switched::($this,-justify) -xoffset $switched::($this,-xoffset)]
+        ::set piePeripheralLabeler::($this,array) [::new canvasLabelsArray $canvas -justify $switched::($this,-justify)]
     }
 
     proc ~piePeripheralLabeler {this} {
@@ -23,11 +22,10 @@ class piePeripheralLabeler {
             [list -justify left left]\
             [list -offset 5 5]\
             [list -smallfont {Helvetica -10}]\
-            [list -xoffset 0 0]\
         ]
     }
 
-    foreach option {-bulletwidth -font -justify -offset -xoffset} {                                    ;# no dynamic options allowed
+    foreach option {-bulletwidth -font -justify -offset} {                                             ;# no dynamic options allowed
         proc set$option {this value} "
             if {\$switched::(\$this,complete)} {
                 error {option $option cannot be set dynamically}

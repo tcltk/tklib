@@ -1,4 +1,4 @@
-set rcsId {$Id: labarray.tcl,v 1.19 1998/06/07 10:08:51 jfontain Exp $}
+set rcsId {$Id: labarray.tcl,v 1.20 1998/06/07 13:47:02 jfontain Exp $}
 
 class canvasLabelsArray {
 
@@ -19,17 +19,14 @@ class canvasLabelsArray {
         # force width initialization for internals initialization
         return [list\
             [list -justify left left]\
-            [list -xoffset 0 0]\
             [list -width 100]\
         ]
     }
 
-    foreach option {-justify -xoffset} {
-        proc set$option {this value} "
-            if {\$switched::(\$this,complete)} {
-                error {option $option cannot be set dynamically}
-            }
-        "
+    proc set-justify {this value} {
+        if {$switched::($this,complete)} {
+            error {option -justify cannot be set dynamically}
+        }
     }
 
     proc set-width {this value} {
@@ -69,7 +66,6 @@ class canvasLabelsArray {
         set canvas $canvasLabelsArray::($this,canvas)
 
         foreach {x y} [$canvas coords $canvasLabelsArray::($this,origin)] {}
-        set x [expr {$x+(($index%2?1:-1)*$switched::($this,-xoffset))}]     ;# offset horizontally, left column gets negative offset
         set coordinates [$canvas bbox canvasLabel($label)]
         set y [expr {$y+(($index/2)*([lindex $coordinates 3]-[lindex $coordinates 1]))}]           ;# take label height into account
 
