@@ -4,22 +4,22 @@ implementation with Tcl, not as an extension.
 It was tested with both Tcl7.4/Tk4.0 and Tcl7.5/Tk4.1 (yes, it even
 works on Windows! I have not tried the Mac yet).
 
-It is object oriented in a way, using pure Tcl code (read the OOTCL file for
-more details). Also look at the oop manual page.
+It is object oriented in a way, using pure Tcl code (read the OOTCL
+file for more details). Also look at the oop manual page.
 
-Run the demo.tcl script to see what it looks like, read the pie man page to
-understand how to use it.
+Run the demo script to see what it looks like, read the pie man page
+to understand how to use it.
 
-Whether you like it (or hate it), please let me know.
-I would like to hear about bugs and improvements you would like to see.
-I will correct the bugs quickly, especially if you send me a test script.
+Whether you like it (or hate it), please let me know. I would like to
+hear about bugs and improvements you would like to see. I will correct
+the bugs quickly, especially if you send me a test script.
 
-If you find a bug in the Tcl code and correct it yourself, please email the
-modified code so I can include it in the next release. The same goes for
-improvements.
+If you find a bug in the Tcl code and correct it yourself, please
+email the modified code so I can include it in the next release. The
+same goes for improvements.
 
-Note: there is a piecrunch.tcl file that is a stripped version of all the
-Tcl files needed for using pies: just source it (thanks to Laurent
+Note: there is a piecrunch.tcl file that is a stripped version of all
+the Tcl files needed for using pies: just source it (thanks to Laurent
 Demailly for his tcl_cruncher utility).
 
 Jean-Luc Fontaine (jfontain@pluton.experdata.fr)
