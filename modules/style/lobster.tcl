@@ -3,62 +3,80 @@
 # The code formerly known as "gtklook" on the Tcl'ers
 # wiki.  Most of this code was originally written by Jeremy Collins.
 
-# $Id: lobster.tcl,v 1.3 2004/03/25 16:22:08 davidw Exp $
+# $Id: lobster.tcl,v 1.4 2004/08/17 19:09:23 hobbs Exp $
 
-package provide style::lobster 0.1
+namespace eval style::lobster {
+    # This may need to be adjusted for some window managers that are
+    # more aggressive with their own Xdefaults (like KDE and CDE)
+    variable prio "widgetDefault"
+}
 
-namespace eval styles::lobster {
-    if { [tk windowingsystem] == "x11" } {
-	set size	-12
-	set family	Helvetica
-	font create LobsterFont      -size $size -family $family
+proc style::lobster::init {args} {
+    package require Tk
+    variable prio
 
-	option add *borderWidth 1 widgetDefault
-	option add *activeBorderWidth 1 widgetDefault
-	option add *selectBorderWidth 1 widgetDefault
-	option add *font LobsterFont widgetDefault
+    if {[llength $args]} {
+	set arg [lindex $args 0]
+	set len [string length $arg]
+	if {$len > 2 && [string equal -len $len $arg "-priority"]} {
+	    set prio [lindex $args 1]
+	    set args [lrange $args 2 end]
+	}
+    }
 
-	option add *padX 2 widgetDefault
-	option add *padY 4 widgetDefault
+    if {[string equal [tk windowingsystem] "x11"]} {
+	set size   -12
+	set family Helvetica
+	font create LobsterFont -size $size -family $family
 
-	option add *Listbox.background white widgetDefault
-	option add *Listbox.selectBorderWidth 0 widgetDefault
-	option add *Listbox.selectForeground white widgetDefault
-	option add *Listbox.selectBackground #4a6984 widgetDefault
+	option add *borderWidth			1 $prio
+	option add *activeBorderWidth		1 $prio
+	option add *selectBorderWidth		1 $prio
+	option add *font			LobsterFont $prio
 
-	option add *Entry.background white widgetDefault
-	option add *Entry.foreground black widgetDefault
-	option add *Entry.selectBorderWidth 0 widgetDefault
-	option add *Entry.selectForeground white widgetDefault
-	option add *Entry.selectBackground #4a6984 widgetDefault
+	option add *padX			2 $prio
+	option add *padY			4 $prio
 
-	option add *Text.background white widgetDefault
-	option add *Text.selectBorderWidth 0 widgetDefault
-	option add *Text.selectForeground white widgetDefault
-	option add *Text.selectBackground #4a6984 widgetDefault
+	option add *Listbox.background		white $prio
+	option add *Listbox.selectBorderWidth	0 $prio
+	option add *Listbox.selectForeground	white $prio
+	option add *Listbox.selectBackground	#4a6984 $prio
 
-	option add *Menu.activeBackground #4a6984 widgetDefault
-	option add *Menu.activeForeground white widgetDefault
-	option add *Menu.activeBorderWidth 0 widgetDefault
-	option add *Menu.highlightThickness 0 widgetDefault
-	option add *Menu.borderWidth 2 widgetDefault
+	option add *Entry.background		white $prio
+	option add *Entry.foreground		black $prio
+	option add *Entry.selectBorderWidth	0 $prio
+	option add *Entry.selectForeground	white $prio
+	option add *Entry.selectBackground	#4a6984 $prio
 
-	option add *Menubutton.activeBackground #4a6984 widgetDefault
-	option add *Menubutton.activeForeground white widgetDefault
-	option add *Menubutton.activeBorderWidth 0 widgetDefault
-	option add *Menubutton.highlightThickness 0 widgetDefault
-	option add *Menubutton.borderWidth 0 widgetDefault
+	option add *Text.background		white $prio
+	option add *Text.selectBorderWidth	0 $prio
+	option add *Text.selectForeground	white $prio
+	option add *Text.selectBackground	#4a6984 $prio
 
-	option add *Labelframe.borderWidth 2 widgetDefault
-	option add *Frame.borderWidth 2 widgetDefault
-	option add *Labelframe.padY 8 widgetDefault
-	option add *Labelframe.padX 12 widgetDefault
+	option add *Menu.activeBackground	#4a6984 $prio
+	option add *Menu.activeForeground	white $prio
+	option add *Menu.activeBorderWidth	0 $prio
+	option add *Menu.highlightThickness	0 $prio
+	option add *Menu.borderWidth		2 $prio
 
-	option add *highlightThickness 0 widgetDefault
-	option add *troughColor #c3c3c3 widgetDefault
+	option add *Menubutton.activeBackground	#4a6984 $prio
+	option add *Menubutton.activeForeground	white $prio
+	option add *Menubutton.activeBorderWidth 0 $prio
+	option add *Menubutton.highlightThickness 0 $prio
+	option add *Menubutton.borderWidth	0 $prio
 
-	option add *Scrollbar.width		12 widgetDefault
-	option add *Scrollbar.borderWidth		1 widgetDefault
-	option add *Scrollbar.highlightThickness	0 widgetDefault
+	option add *Labelframe.borderWidth	2 $prio
+	option add *Frame.borderWidth		2 $prio
+	option add *Labelframe.padY		8 $prio
+	option add *Labelframe.padX		12 $prio
+
+	option add *highlightThickness		0 $prio
+	option add *troughColor			#c3c3c3 $prio
+
+	option add *Scrollbar.width		12 $prio
+	option add *Scrollbar.borderWidth	1 $prio
+	option add *Scrollbar.highlightThickness 0 $prio
     }
 }
+
+package provide style::lobster 0.2
