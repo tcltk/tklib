@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.58 1998/03/27 22:16:30 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.59 1998/03/28 08:59:39 jfontain Exp $}
 
 package provide tkpiechart 4.0
 
@@ -23,7 +23,7 @@ proc pie::pie {this canvas x y width height args} switched {$args} {            
 
 proc pie::~pie {this} {
     catch {$pie::($this,canvas) delete $pie::($this,title)}                                                   ;# title may not exist
-    delete $pie::($this,labeller)
+    delete $pie::($this,labeler)
     eval delete $pie::($this,slices) $pie::($this,backgroundSlice)
 }
 
@@ -32,7 +32,7 @@ proc pie::options {this} {
     return [list\
         [list -background {} {}]\
         [list -colors $pie::(colors) $pie::(colors)]\
-        [list -labeller 0 0]\
+        [list -labeler 0 0]\
         [list -selectable 0 0]\
         [list -thickness 0]\
         [list -title {} {}]\
@@ -42,7 +42,7 @@ proc pie::options {this} {
 }
 
 # no dynamic options allowed: see complete
-foreach option {-background -colors -labeller -selectable -title -titlefont -titleoffset} {
+foreach option {-background -colors -labeler -selectable -title -titlefont -titleoffset} {
     proc pie::set$option {this value} "
         if {\$switched::(\$this,complete)} {
             error {option $option cannot be set dynamically}
@@ -60,13 +60,13 @@ proc pie::set-thickness {this value} {
 proc pie::complete {this} {
     set canvas $pie::($this,canvas)
 
-    if {$switched::($this,-labeller)==0} {
-        set pie::($this,labeller) [new pieBoxLabeller $canvas]                           ;# use default labeler if user defined none
+    if {$switched::($this,-labeler)==0} {
+        set pie::($this,labeler) [new pieBoxLabeler $canvas]                             ;# use default labeler if user defined none
     } else {
-        set pie::($this,labeller) $switched::($this,-labeller)                                           ;# use user defined labeler
+        set pie::($this,labeler) $switched::($this,-labeler)                                             ;# use user defined labeler
     }
-    $canvas addtag pie($this) withtag pieLabeller($pie::($this,labeller))
-    pieLabeller::link $pie::($this,labeller) $this                                                         ;# link labeller with pie
+    $canvas addtag pie($this) withtag pieLabeler($pie::($this,labeler))
+    pieLabeler::link $pie::($this,labeler) $this                                                            ;# link labeler with pie
 
     if {[string length $switched::($this,-background)]==0} {
         set bottomColor {}
@@ -107,15 +107,15 @@ proc pie::newSlice {this {text {}}} {
     if {[string length $text]==0} {                                                           ;# generate label text if not provided
         set text "slice [llength $pie::($this,slices)]"
     }
-    set labeller $pie::($this,labeller)
-    set label [pieLabeller::create $labeller $slice -text $text -background $color]
+    set labeler $pie::($this,labeler)
+    set label [pieLabeler::create $labeler $slice -text $text -background $color]
     set pie::($this,sliceLabel,$slice) $label
     # update tags which canvas does not automatically do
-    $canvas addtag pie($this) withtag pieLabeller($labeller)
+    $canvas addtag pie($this) withtag pieLabeler($labeler)
 
     if {$switched::($this,-selectable)} {                                             ;# toggle select state at every button release
         $canvas bind canvasLabel($label) <ButtonRelease-1>\
-            "pieLabeller::selectState $labeller $label \[expr {!\[pieLabeller::selectState $labeller $label\]}\]"
+            "pieLabeler::selectState $labeler $label \[expr {!\[pieLabeler::selectState $labeler $label\]}\]"
         $canvas bind slice($slice) <ButtonRelease-1> [$canvas bind canvasLabel($label) <ButtonRelease-1>]
     }
 
@@ -134,7 +134,7 @@ proc pie::deleteSlice {this slice} {
         slice::rotate $following $extent
     }
     # finally delete label last so that other labels may eventually be repositionned according to remaining slices placement
-    pieLabeller::delete $pie::($this,labeller) $pie::($this,sliceLabel,$slice)
+    pieLabeler::delete $pie::($this,labeler) $pie::($this,sliceLabel,$slice)
     unset pie::($this,sliceLabel,$slice)
 }
 
@@ -149,9 +149,9 @@ proc pie::sizeSlice {this slice unitShare {valueToDisplay {}}} {
     slice::update $slice [expr {$slice::($slice,start)-$growth}] $newExtent                                        ;# grow clockwise
 
     if {[string length $valueToDisplay]>0} {                  ;# update label after slice for it may need slice latest configuration
-        pieLabeller::update $pie::($this,labeller) $pie::($this,sliceLabel,$slice) $valueToDisplay
+        pieLabeler::update $pie::($this,labeler) $pie::($this,sliceLabel,$slice) $valueToDisplay
     } else {
-        pieLabeller::update $pie::($this,labeller) $pie::($this,sliceLabel,$slice) $unitShare
+        pieLabeler::update $pie::($this,labeler) $pie::($this,sliceLabel,$slice) $unitShare
     }
 
     set value [expr {-1*$growth}]                                                               ;# finally move the following slices
@@ -178,7 +178,7 @@ proc pie::createTitle {this string font offset} {
 proc pie::selectedSlices {this} {                                                      ;# return a list of currently selected slices
     set list {}
     foreach slice $pie::($this,slices) {
-        if {[pieLabeller::selectState $pie::($this,labeller) $pie::($this,sliceLabel,$slice)]} {
+        if {[pieLabeler::selectState $pie::($this,labeler) $pie::($this,sliceLabel,$slice)]} {
             lappend list $slice
         }
     }

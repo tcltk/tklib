@@ -1,18 +1,18 @@
-set rcsId {$Id: boxlabel.tcl,v 1.31 1998/03/27 21:15:13 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.32 1998/03/28 08:59:39 jfontain Exp $}
 
-class pieBoxLabeller {
+class pieBoxLabeler {
 
-    proc pieBoxLabeller {this canvas args} pieLabeller {$canvas $args} switched {$args} {
+    proc pieBoxLabeler {this canvas args} pieLabeler {$canvas $args} switched {$args} {
         switched::complete $this
     }
 
-    proc ~pieBoxLabeller {this} {
-        catch {::delete $pieBoxLabeller::($this,array)}                                       ;# array may not have been created yet
+    proc ~pieBoxLabeler {this} {
+        catch {::delete $pieBoxLabeler::($this,array)}                                        ;# array may not have been created yet
     }
 
     proc options {this} {
         return [list\
-            [list -font $pieLabeller::(default,font) $pieLabeller::(default,font)]\
+            [list -font $pieLabeler::(default,font) $pieLabeler::(default,font)]\
             [list -justify left left]\
             [list -offset 5 5]\
             [list -xoffset 0 0]\
@@ -28,26 +28,26 @@ class pieBoxLabeller {
     }
 
     proc create {this slice args} {
-        if {![info exists pieBoxLabeller::($this,array)]} {                                                 ;# create a labels array
-            set box [$pieLabeller::($this,canvas) bbox pie($pieLabeller::($this,pie))]                   ;# position array below pie
-            set pieBoxLabeller::($this,array) [new canvasLabelsArray\
-                $pieLabeller::($this,canvas) [lindex $box 0] [expr {[lindex $box 3]+$switched::($this,-offset)}]\
+        if {![info exists pieBoxLabeler::($this,array)]} {                                                  ;# create a labels array
+            set box [$pieLabeler::($this,canvas) bbox pie($pieLabeler::($this,pie))]                     ;# position array below pie
+            set pieBoxLabeler::($this,array) [new canvasLabelsArray\
+                $pieLabeler::($this,canvas) [lindex $box 0] [expr {[lindex $box 3]+$switched::($this,-offset)}]\
                 [expr {[lindex $box 2]-[lindex $box 0]}]\
                 -justify $switched::($this,-justify) -xoffset $switched::($this,-xoffset) -font $switched::($this,-font)\
             ]
         }
         # this label font may be overriden in arguments
-        set label [eval canvasLabelsArray::create $pieBoxLabeller::($this,array) $args]
+        set label [eval canvasLabelsArray::create $pieBoxLabeler::($this,array) $args]
         # refresh our tags
-        $pieLabeller::($this,canvas) addtag pieLabeller($this) withtag canvasLabelsArray($pieBoxLabeller::($this,array))
+        $pieLabeler::($this,canvas) addtag pieLabeler($this) withtag canvasLabelsArray($pieBoxLabeler::($this,array))
         switched::configure $label -text [switched::cget $label -text]:                        ;# always append semi-column to label
-        set pieBoxLabeller::($this,selected,$label) 0
+        set pieBoxLabeler::($this,selected,$label) 0
         return $label
     }
 
     proc delete {this label} {
-        canvasLabelsArray::delete $pieBoxLabeller::($this,array) $label
-        unset pieBoxLabeller::($this,selected,$label)
+        canvasLabelsArray::delete $pieBoxLabeler::($this,array) $label
+        unset pieBoxLabeler::($this,selected,$label)
     }
 
     proc update {this label value} {
@@ -57,14 +57,14 @@ class pieBoxLabeller {
 
     proc selectState {this label {selected {}}} {
         if {[string length $selected]==0} {                                                   ;# return current state if no argument
-            return $pieBoxLabeller::($this,selected,$label)
+            return $pieBoxLabeler::($this,selected,$label)
         }
         if {$selected} {
             switched::configure $label -borderwidth 2
         } else {
             switched::configure $label -borderwidth 1
         }
-        set pieBoxLabeller::($this,selected,$label) $selected
+        set pieBoxLabeler::($this,selected,$label) $selected
     }
 
 }

@@ -1,17 +1,17 @@
-set rcsId {$Id: pielabel.tcl,v 1.35 1998/03/28 08:38:12 jfontain Exp $}
+set rcsId {$Id: pielabel.tcl,v 1.36 1998/03/28 08:59:39 jfontain Exp $}
 
-class pieLabeller {
+class pieLabeler {
 
-    set pieLabeller::(default,font) {Helvetica -12}
+    set pieLabeler::(default,font) {Helvetica -12}
 
-    proc pieLabeller {this canvas args} {
-        set pieLabeller::($this,canvas) $canvas
+    proc pieLabeler {this canvas args} {
+        set pieLabeler::($this,canvas) $canvas
     }
 
-    proc ~pieLabeller {this} {}
+    proc ~pieLabeler {this} {}
 
     proc link {this pie} {
-        set pieLabeller::($this,pie) $pie
+        set pieLabeler::($this,pie) $pie
     }
 
     virtual proc create {this slice args}                                                               ;# must return a canvasLabel
