@@ -18,6 +18,14 @@ namespace eval style::as {
     variable highlightfg "white"   ; # SystemHighlightText
     variable bg          "white"   ; # SystemWindow
     variable fg          "black"   ; # SystemWindowText
+    if {[string equal $::tcl_platform(platform) "windows"]} {
+	# Use the system colors on Windows, as they can adapt
+	# to the user's personal color scheme
+	set highlightbg "SystemHighlight"
+	set highlightfg "SystemHighlightText"
+	set bg          "SystemWindow"
+	set fg          "SystemWindowText"
+    }
 
     # This may need to be adjusted for some window managers that are
     # more aggressive with their own Xdefaults (like KDE and CDE)
