@@ -1,4 +1,4 @@
-set rcsId {$Id: canlabel.tcl,v 1.5 1995/09/30 12:16:29 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.6 1995/10/01 12:52:43 jfontain Exp $}
 
 proc canvasLabel::canvasLabel {id canvas x y args} {
     global canvasLabel
@@ -8,8 +8,10 @@ proc canvasLabel::canvasLabel {id canvas x y args} {
     set canvasLabel($id,origin) [$canvas create line $x $y  $x $y -fill {} -tags canvasLabel($id)]
     set canvasLabel($id,rectangle) [$canvas create rectangle 0 0 0 0 -tags canvasLabel($id)]
     set canvasLabel($id,text) [$canvas create text 0 0 -tags canvasLabel($id)]
+    # set anchor default
     set canvasLabel($id,anchor) center
     eval canvasLabel::configure $id $args
+    # initialize rectangle
     canvasLabel::sizeRectangle $id
 }
 
@@ -115,40 +117,9 @@ proc canvasLabel::sizeRectangle {id} {
     $canvas coords $text $x $y
 
     # now move rectangle and text according to anchor
-    set halfWidth [expr $border+$padding+$halfWidth]
-    set halfHeight [expr $border+$padding+$halfHeight]
-    switch $canvasLabel($id,anchor) {
-        nw {
-            $canvas move $rectangle $halfWidth $halfHeight
-            $canvas move $text $halfWidth $halfHeight
-        }
-        n {
-            $canvas move $rectangle 0 $halfHeight
-            $canvas move $text 0 $halfHeight
-        }
-        ne {
-            $canvas move $rectangle -$halfWidth $halfHeight
-            $canvas move $text -$halfWidth $halfHeight
-        }
-        e {
-            $canvas move $rectangle -$halfWidth 0
-            $canvas move $text -$halfWidth 0
-        }
-        se {
-            $canvas move $rectangle -$halfWidth -$halfHeight
-            $canvas move $text -$halfWidth -$halfHeight
-        }
-        s {
-            $canvas move $rectangle 0 -$halfHeight
-            $canvas move $text 0 -$halfHeight
-        }
-        sw {
-            $canvas move $rectangle $halfWidth -$halfHeight
-            $canvas move $text $halfWidth -$halfHeight
-        }
-        w {
-            $canvas move $rectangle $halfWidth 0
-            $canvas move $text $halfWidth 0
-        }
-    }
+    set anchor $canvasLabel($id,anchor)
+    set xDelta [expr ([string match *w $anchor]-[string match *e $anchor])*($border+$padding+$halfWidth)]
+    set yDelta [expr ([string match n* $anchor]-[string match s* $anchor])*($border+$padding+$halfHeight)]
+    $canvas move $rectangle $xDelta $yDelta
+    $canvas move $text $xDelta $yDelta
 }
