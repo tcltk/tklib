@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.66 1998/04/25 10:08:46 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.67 1998/05/03 10:54:32 jfontain Exp $}
 
 package provide tkpiechart 4.3
 
@@ -16,6 +16,9 @@ proc pie::pie {this canvas x y width height args} switched {$args} {            
 
     set pie::($this,colorIndex) 0
     set pie::($this,slices) {}
+
+    set pie::($this,xScale) 1
+    set pie::($this,yScale) 1
 
     switched::complete $this
     complete $this                                                  ;# wait till all options have been set for initial configuration
@@ -39,6 +42,7 @@ proc pie::options {this} {
         [list -title {} {}]\
         [list -titlefont {} {}]\
         [list -titleoffset 2 2]\
+        [list -scale {1 1} {1 1}]\
     ]
 }
 
@@ -49,6 +53,19 @@ foreach option {-background -colors -labeler -selectable -title -titlefont -titl
             error {option $option cannot be set dynamically}
         }
     "
+}
+
+proc pie::set-scale {this value} {
+    foreach {xScale yScale} $value {}
+    if {($xScale==$pie::($this,xScale))&&($yScale==$pie::($this,yScale))} return                                        ;# no change
+    switched::configure $pie::($this,backgroundSlice) -scale $value                             ;# update scale of background slice,
+    foreach slice $pie::($this,slices) {
+        switched::configure $slice -scale $value                                                                       ;# slices and
+        switched::configure $pie::($this,sliceLabel,$slice) -scale $value                                            ;# their labels
+    }
+    pieLabeler::update $pie::($this,labeler)
+    set pie::($this,xScale) $xScale
+    set pie::($this,yScale) $yScale
 }
 
 proc pie::set-thickness {this value} {
@@ -94,11 +111,11 @@ proc pie::newSlice {this {text {}}} {
     set pie::($this,colorIndex) [expr {($pie::($this,colorIndex)+1)%[llength $switched::($this,-colors)]}]  ;# circle through colors
 
     # make sure slice is positioned correctly in case pie was moved
-    set coordinates [$canvas coords slice($pie::($this,backgroundSlice))]
+    foreach {x y} [$canvas coords slice($pie::($this,backgroundSlice))] {}
 
     # darken slice top color by 40% to obtain bottom color, as it is done for Tk buttons shadow, for example
     set slice [new slice\
-        $canvas [lindex $coordinates 0] [lindex $coordinates 1] $pie::($this,radiusX) $pie::($this,radiusY) $start 0\
+        $canvas $x $y $pie::($this,radiusX) $pie::($this,radiusY) $start 0\
         -height $pie::($this,thickness) -topcolor $color -bottomcolor [tkDarken $color 60]\
     ]
     $canvas addtag pie($this) withtag slice($slice)
@@ -160,9 +177,9 @@ proc pie::sizeSlice {this slice unitShare {valueToDisplay {}}} {
     slice::update $slice [expr {$slice::($slice,start)-$growth}] $newExtent                                        ;# grow clockwise
 
     if {[string length $valueToDisplay]>0} {                  ;# update label after slice for it may need slice latest configuration
-        pieLabeler::update $pie::($this,labeler) $pie::($this,sliceLabel,$slice) $valueToDisplay
+        pieLabeler::set $pie::($this,labeler) $pie::($this,sliceLabel,$slice) $valueToDisplay
     } else {
-        pieLabeler::update $pie::($this,labeler) $pie::($this,sliceLabel,$slice) $unitShare
+        pieLabeler::set $pie::($this,labeler) $pie::($this,sliceLabel,$slice) $unitShare
     }
 
     set value [expr {-1*$growth}]                                                               ;# finally move the following slices
