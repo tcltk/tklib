@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.42 1996/02/20 12:10:39 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.43 1996/02/20 12:21:14 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -131,7 +131,4 @@ proc pie::createTitle {this string font offset} {
     if {[string length $font]>0} {
         $canvas itemconfigure $item -font $font
     }
-    # move whole pie down to account for text height
-    set box [$canvas bbox $item]
-    $canvas move pie($this) 0 [expr [lindex $box 3]-[lindex $box 1]+$offset]
 }
