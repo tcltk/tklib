@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.16 1995/09/24 15:57:58 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.17 1995/09/24 17:46:04 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
@@ -27,6 +27,9 @@ proc pie::pie {id canvas width height {thickness 0} {topColor {}} {bottomColor {
         set pie($id,colors) $sliceColors
     }
     set pie($id,labeller) [new pieBoxLabeller $id]
+
+    # move pie so upper-left corner is at origin
+    $canvas move pie($id) $pie($id,radiusX) $pie($id,radiusY)
 }
 
 proc pie::~pie {id} {
