@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.14 1995/09/25 11:11:58 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.15 1995/09/26 10:19:50 jfontain Exp $}
 
 source $env(AGVHOME)/tools/utility.tk
 
@@ -26,9 +26,18 @@ proc moduloPI {value} {
     return [expr $value>=$PI?$value-$twoPI:$value]
 }
 
-proc slice::slice {id canvas x y radiusX radiusY startRadian extentRadian {height 0} {topColor ""} {bottomColor ""}} {
+proc slice::slice {id canvas x y radiusX radiusY startRadian extentRadian args} {
     # note: all slice elements are tagged with slice($id)
     global slice PI twoPI
+
+    # parse switched options
+    array set option $args
+    set height 0
+    catch {set height $option(-height)}
+    set topColor {}
+    catch {set topColor $option(-topcolor)}
+    set bottomColor {}
+    catch {set bottomColor $option(-bottomcolor)}
 
     set slice($id,canvas) $canvas
     set slice($id,start) 0
