@@ -1,4 +1,4 @@
-# $Id: pie.tcl,v 1.3 1994/07/27 15:04:13 jfontain Exp $
+# $Id: pie.tcl,v 1.4 1994/09/01 15:54:03 jfontain Exp $
 
 source ../tools/slice.tcl
 
@@ -89,7 +89,7 @@ proc pie::newSlice {id {text ""}} {
     global normalFont boldFont
     set pie($id,$sliceId,label) [\
         label [objectWidgetName text $sliceId $rowFrame]\
-            -background $pie(lights,$color) -relief raised -text $text -font $normalFont -bd 1 -padx 2\
+            -background $pie(lights,$color) -foreground black -relief raised -text $text -font $normalFont -bd 1 -padx 2\
     ]
     pack $pie($id,$sliceId,label) -side left
     pack [frame [objectWidgetName spacer $sliceId $rowFrame]] -side left -fill both -expand 1
