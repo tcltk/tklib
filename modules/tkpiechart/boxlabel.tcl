@@ -1,7 +1,6 @@
-set rcsId {$Id: boxlabel.tcl,v 1.20 1996/12/22 12:42:04 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.21 1996/12/29 13:05:48 jfontain Exp $}
 
-source pielabel.tcl
-source labarray.tcl
+package provide tkpiechart 2.3
 
 proc pieBoxLabeller::pieBoxLabeller {this canvas args} pieLabeller {$canvas $args} {
     # set options default then parse switched options

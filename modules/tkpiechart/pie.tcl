@@ -1,7 +1,6 @@
-set rcsId {$Id: pie.tcl,v 1.48 1996/12/23 19:04:42 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.49 1996/12/29 13:05:48 jfontain Exp $}
 
-source slice.tcl
-source boxlabel.tcl
+package provide tkpiechart 2.3
 
 # in the plugin version 2.0 and above, tkDarken is not autoloaded, so source corresponding source file
 if {[catch {info body tkDarken}]} {source [file join $tk_library palette.tcl]}

@@ -1,7 +1,6 @@
-set rcsId {$Id: perilabel.tcl,v 1.21 1996/12/22 12:42:04 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.22 1996/12/29 13:05:48 jfontain Exp $}
 
-source pielabel.tcl
-source labarray.tcl
+package provide tkpiechart 2.3
 
 proc piePeripheralLabeller::piePeripheralLabeller {this canvas args} pieLabeller {$canvas $args} {
     # eventually use labeller font as small font

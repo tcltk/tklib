@@ -1,4 +1,6 @@
-set rcsId {$Id: canlabel.tcl,v 1.15 1996/12/22 12:42:04 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.16 1996/12/29 13:05:48 jfontain Exp $}
+
+package provide tkpiechart 2.3
 
 proc canvasLabel::canvasLabel {this canvas x y args} {
     set canvasLabel($this,canvas) $canvas
