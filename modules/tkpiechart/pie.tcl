@@ -1,6 +1,6 @@
-# $Id: pie.tcl,v 1.8 1995/06/02 10:14:50 jfontain Exp $
+# $Id: pie.tcl,v 1.9 1995/06/02 10:25:07 jfontain Exp $
 
-source $env(AGVHOME)/slice.tcl
+source $env(AGVHOME)/tools/slice.tcl
 
 set pie(lights,red) "#FF7F7F"
 set pie(lights,green) "#7FFF7F"
