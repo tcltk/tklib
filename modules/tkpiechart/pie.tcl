@@ -1,6 +1,7 @@
-set rcsId {$Id: pie.tcl,v 1.13 1995/09/22 20:09:58 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.14 1995/09/22 20:18:16 jfontain Exp $}
 
 source slice.tcl
+source boxlabel.tcl
 
 proc pie::pie {id canvas width height {thickness 0} {topColor {}} {bottomColor {}} {sliceColors {}}} {
     global pie PI
@@ -19,11 +20,13 @@ proc pie::pie {id canvas width height {thickness 0} {topColor {}} {bottomColor {
     } else {
         set pie($id,colors) $sliceColors
     }
+    set pie($id,labeller) [new pieBoxLabeller $id]
 }
 
 proc pie::~pie {id} {
     global pie
 
+    delete pieBoxLabeller $pie($id,labeller)
     foreach sliceId $pie($id,slices) {
         delete slice $sliceId
     }
@@ -32,6 +35,11 @@ proc pie::~pie {id} {
 
 proc pie::newSlice {id {text {}}} {
     global pie slice halfPI
+
+    if {[string length $text]==0} {
+        # generate label text if not provided
+        set text "slice [expr [llength $pie($id,slices)]+1]"
+    }
 
     # calculate start radian for new slice (slices grow clockwise from 12 o'clock)
     set startRadian $halfPI
@@ -67,10 +75,4 @@ proc pie::sizeSlice {id sliceId perCent} {
     while {[set sliceId [lindex $pie($id,slices) [incr index]]]>=0} {
         slice::rotate $sliceId $radian
     }
-}
-
-proc showWholeCanvas {canvas} {
-    set extent [$canvas bbox all]
-    $canvas configure -scrollregion $extent\
-        -width [expr [lindex $extent 2]-[lindex $extent 0]] -height [expr [lindex $extent 3]-[lindex $extent 1]]
 }
