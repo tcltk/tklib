@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.51 1997/10/26 09:51:23 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.52 1998/02/22 20:13:45 jfontain Exp $}
 
 package provide tkpiechart 3.0
 
@@ -44,7 +44,7 @@ proc pie::pie {this canvas x y width height args} {                             
 }
 
 proc pie::~pie {this} {
-    $pie::($this,canvas) delete $pie::($this,title)
+    catch {$pie::($this,canvas) delete $pie::($this,title)}                                                   ;# title may not exist
     delete $pie::($this,labellerId)
     foreach sliceId $pie::($this,sliceIds) {
         delete $sliceId
