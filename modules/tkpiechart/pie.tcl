@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.75 1998/06/07 10:09:21 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.76 1998/06/07 10:18:54 jfontain Exp $}
 
 package provide tkpiechart 5.1
 
@@ -239,22 +239,17 @@ proc pie::update {this} {                         ;# place and scale slices alon
     set canvas $pie::($this,canvas)
     pieLabeler::room $pie::($this,labeler) room                                                     ;# take labels room into account
     foreach {x y} [$canvas coords $pie::($this,origin)] {}                                       ;# retrieve current pie coordinates
-    set x [expr {$x+$room(left)}]                                                                    ;# calculate slices coordinates
-    set y [expr {$y+$room(top)}]
     foreach {xSlices ySlices} [$canvas coords pieSlices($this)] {}                  ;# move slices in order to leave room for labels
-    $canvas move pieSlices($this) [expr {$x-$xSlices}] [expr {$y-$ySlices}]
-    set slicesWidth [expr {$switched::($this,-width)-$room(left)-$room(right)}]
-    set slicesHeight [expr {$switched::($this,-height)-$room(top)-$room(bottom)}]
+    $canvas move pieSlices($this) [expr {$x+$room(left)-$xSlices}] [expr {$y+$room(top)-$ySlices}]
     set scale [list\
-        [expr {$slicesWidth/$pie::($this,initialWidth)}]\
-        [expr {$slicesHeight/($pie::($this,initialHeight)+$pie::($this,thickness))}]\
+        [expr {($switched::($this,-width)-$room(left)-$room(right))/$pie::($this,initialWidth)}]\
+        [expr {($switched::($this,-height)-$room(top)-$room(bottom))/($pie::($this,initialHeight)+$pie::($this,thickness))}]\
     ]
     switched::configure $pie::($this,backgroundSlice) -scale $scale                             ;# update scale of background slice,
     foreach slice $pie::($this,slices) {
         switched::configure $slice -scale $scale                                                                 ;# and other slices
     }
     # finally update labels now that pie graphics are in position
-foreach {x y} [$canvas coords $pie::($this,origin)] {}
     pieLabeler::update $pie::($this,labeler) $x $y [expr {$x+$switched::($this,-width)}] [expr {$y+$switched::($this,-height)}]
 }
 
