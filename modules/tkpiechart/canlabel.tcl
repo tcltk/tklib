@@ -1,4 +1,4 @@
-set rcsId {$Id: canlabel.tcl,v 1.2 1995/09/28 16:05:07 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.3 1995/09/28 17:26:27 jfontain Exp $}
 
 proc canvasLabel::canvasLabel {id canvas x y args} {
     global canvasLabel
@@ -99,7 +99,7 @@ proc canvasLabel::sizeRectangle {id} {
 
     set coordinates [$canvas coords $canvasLabel($id,origin)]
     set x [lindex $coordinates 0]
-    set y [lindex $coordinates 0]
+    set y [lindex $coordinates 1]
 
     set border [$canvas itemcget $rectangle -width]
     set halfBorder [expr $border/2.0]
