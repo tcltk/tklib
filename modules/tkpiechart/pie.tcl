@@ -1,4 +1,4 @@
-set rcsId {$Id: pie.tcl,v 1.68 1998/05/03 14:59:50 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.69 1998/05/03 15:51:02 jfontain Exp $}
 
 package provide tkpiechart 4.3
 
@@ -114,7 +114,7 @@ proc pie::newSlice {this {text {}}} {
 
     # darken slice top color by 40% to obtain bottom color, as it is done for Tk buttons shadow, for example
     set slice [new slice\
-        $canvas $x $y $pie::($this,radiusX) $pie::($this,radiusY) $start 0\
+        $canvas $x $y $pie::($this,radiusX) $pie::($this,radiusY) $start 0 -scale $switched::($this,-scale)\
         -height $pie::($this,thickness) -topcolor $color -bottomcolor [tkDarken $color 60]\
     ]
     $canvas addtag pie($this) withtag slice($slice)
