@@ -1,4 +1,4 @@
-set rcsId {$Id: slice.tcl,v 1.37 1998/06/02 09:33:29 jfontain Exp $}
+set rcsId {$Id: slice.tcl,v 1.38 1998/06/02 21:20:11 jfontain Exp $}
 
 
 class slice {
@@ -232,8 +232,4 @@ proc slice::data {this arrayName} {                                             
     foreach {x y} [$slice::($this,canvas) coords $slice::($this,origin)] {}
     set data(xCenter) [expr {$x+$data(xRadius)}]
     set data(yCenter) [expr {$y+$data(yRadius)}]
-}
-
-class slice {                                                                                   ;# define various utility procedures
-    proc maximum {a b} {return [expr {$a>$b?$a:$b}]}
 }
