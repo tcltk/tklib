@@ -1,3 +1,8 @@
+2004-09-09  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* as.tcl: use system colors on Windows for highlightbg,
+	highlightfg, bg and fg defaults
+
 2004-09-06  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* as.tcl (style::as::init_fonts): create ASfontFixedBold
