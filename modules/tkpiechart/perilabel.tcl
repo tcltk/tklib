@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.44 1998/06/07 16:46:56 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.45 1998/06/09 21:17:52 jfontain Exp $}
 
 class piePeripheralLabeler {
 
@@ -18,13 +18,13 @@ class piePeripheralLabeler {
     }
 
     proc options {this} {                        ;# bullet width, font and justify options are used when creating a new canvas label
-        # justify option is used for both the labels array and the labels. force small font option for font metrics calculations
+        # justify option is used for both the labels array and the labels
         return [list\
             [list -bulletwidth 20 20]\
             [list -font $pieLabeler::(default,font) $pieLabeler::(default,font)]\
             [list -justify left left]\
             [list -offset 5 5]\
-            [list -smallfont {Helvetica -10}]\
+            [list -smallfont {Helvetica -10} {Helvetica -10}]\
             [list -widestvaluetext 0.00 0.00]\
         ]
     }
