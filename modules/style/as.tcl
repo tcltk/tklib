@@ -150,12 +150,15 @@ proc style::as::init_fonts {args} {
 	font create ASfont      -size $size -family $family
 	font create ASfontBold  -size $size -family $family -weight bold
 	font create ASfontFixed -size $fsize -family $ffamily
+	font create ASfontFixedBold -size $fsize -family $ffamily -weight bold
 	for {set i -2} {$i <= 4} {incr i} {
 	    set isize  [expr {$size + ($i * (($size > 0) ? 1 : -1))}]
 	    set ifsize [expr {$fsize + ($i * (($fsize > 0) ? 1 : -1))}]
 	    font create ASfont$i      -size $isize -family $family
 	    font create ASfontBold$i  -size $isize -family $family -weight bold
 	    font create ASfontFixed$i -size $ifsize -family $ffamily
+	    font create ASfontFixedBold$i \
+		-size $fsize -family $ffamily -weight bold
 	}
     }
 
