@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.18 1995/10/31 00:17:45 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.19 1995/11/04 17:45:51 jfontain Exp $}
 
 source pielabel.tcl
 source labarray.tcl
@@ -12,6 +12,7 @@ proc piePeripheralLabeller::piePeripheralLabeller {this canvas args} pieLabeller
     array set option $args
     # small font can be overidden as an option
     catch {set piePeripheralLabeller($this,smallFont) $option(-smallfont)}
+    catch {set piePeripheralLabeller($this,bulletWidth) $option(-bulletwidth)}
     set piePeripheralLabeller($this,justify) $option(-justify)
 }
 
@@ -35,6 +36,7 @@ proc piePeripheralLabeller::create {this sliceId args} {
     if {![info exists piePeripheralLabeller($this,array)]} {
         # create a split labels array
         set options "-style split -justify $piePeripheralLabeller($this,justify)"
+        catch {lappend options -bulletwidth $piePeripheralLabeller($this,bulletWidth)}
         # eventually use labeller font
         catch {lappend options -font $pieLabeller($this,font)}
         # position array below pie

@@ -1,4 +1,4 @@
-set rcsId {$Id: canlabel.tcl,v 1.13 1995/11/03 23:32:03 jfontain Exp $}
+set rcsId {$Id: canlabel.tcl,v 1.14 1995/11/04 17:45:12 jfontain Exp $}
 
 proc canvasLabel::canvasLabel {this canvas x y args} {
     set canvasLabel($this,canvas) $canvas
@@ -8,7 +8,7 @@ proc canvasLabel::canvasLabel {this canvas x y args} {
     set canvasLabel($this,text) [$canvas create text 0 0 -tags canvasLabel($this)]
 
     # anchor defaults to center, style can be box by default or split
-    array set options {-anchor center -style box -padding 2}
+    array set options {-anchor center -style box -padding 2 -bulletwidth 20}
     # override with user options
     array set options $args
     eval canvasLabel::configure $this [array get options]
@@ -57,7 +57,12 @@ proc canvasLabel::configure {this args} {
                 set update 1
             }
             -padding {
-                set canvasLabel($this,padding) $value($option)
+                # convert to pixels
+                set canvasLabel($this,padding) [winfo fpixels $canvasLabel($this,canvas) $value($option)]
+                set update 1
+            }
+            -bulletwidth {
+                set canvasLabel($this,bulletWidth) [winfo fpixels $canvasLabel($this,canvas) $value($option)]
                 set update 1
             }
         }
@@ -96,6 +101,12 @@ proc canvasLabel::cget {this option} {
         -style {
             return $canvasLabel($this,style)
         }
+        -padding {
+            return $canvasLabel($this,padding)
+        }
+        -bulletwidth {
+            return $canvasLabel($this,bulletWidth)
+        }
     }
 }
 
@@ -103,9 +114,6 @@ proc canvasLabel::update {this} {
     set canvas $canvasLabel($this,canvas)
     set rectangle $canvasLabel($this,rectangle)
     set text $canvasLabel($this,text)
-
-    # covert padding to pixels
-    set canvasLabel($this,padding) [winfo fpixels $canvas $canvasLabel($this,padding)]
 
     set coordinates [$canvas coords $canvasLabel($this,origin)]
     set x [lindex $coordinates 0]
@@ -117,7 +125,7 @@ proc canvasLabel::update {this} {
     # position rectangle and text as if anchor was center (the default)
     if {[string compare $canvasLabel($this,style) split]==0} {
         set textHeight [expr [lindex $textBox 3]-[lindex $textBox 1]]
-        set rectangleWidth [expr 2.0*($textHeight+$border)]
+        set rectangleWidth $canvasLabel($this,bulletWidth)
         set halfWidth [expr ($rectangleWidth+$canvasLabel($this,padding)+([lindex $textBox 2]-[lindex $textBox 0]))/2.0]
         set halfHeight [expr ($textHeight/2.0)+$border]
         $canvas coords $rectangle\
