@@ -1928,13 +1928,13 @@ AC_DEFUN(SC_MAKE_LIB, [
     case "`uname -s`" in
 	*win32* | *WIN32* | *CYGWIN_NT* |*CYGWIN_98*|*CYGWIN_95*)
 	    if test "${CC-cc}" = "cl"; then
-		MAKE_STATIC_LIB="\${STLIB_LD} -out:\[$]@ \$(\[$]@_OBJECTS) "
-		MAKE_SHARED_LIB="\${SHLIB_LD} \${SHLIB_LDFLAGS} \${SHLIB_LD_LIBS} \$(LDFLAGS) -out:\[$]@ \$(\[$]@_OBJECTS) "
+		MAKE_STATIC_LIB="\${STLIB_LD} -out:\[$]@ \$(${PACKAGE}_LIB_OBJECTS) "
+		MAKE_SHARED_LIB="\${SHLIB_LD} \${SHLIB_LDFLAGS} \${SHLIB_LD_LIBS} \$(LDFLAGS) -out:\[$]@ \$(${PACKAGE}_LIB_OBJECTS) "
 	    fi
 	    ;;
 	*)
-	    MAKE_STATIC_LIB="\${STLIB_LD} \[$]@ \$(\[$]@_OBJECTS)"
-	    MAKE_SHARED_LIB="\${SHLIB_LD} -o \[$]@ \$(\[$]@_OBJECTS) \${SHLIB_LDFLAGS} \${SHLIB_LD_LIBS}"
+	    MAKE_STATIC_LIB="\${STLIB_LD} \[$]@ \$(${PACKAGE}_LIB_OBJECTS)"
+	    MAKE_SHARED_LIB="\${SHLIB_LD} -o \[$]@ \$(${PACKAGE}_LIB_OBJECTS) \${SHLIB_LDFLAGS} \${SHLIB_LD_LIBS}"
 	    ;;
     esac
 

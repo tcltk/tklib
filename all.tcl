@@ -1,24 +1,25 @@
 # all.tcl --
 #
 # This file contains a top-level script to run all of the Tcl
-# tests.  Execute it by invoking "source all.test" when running tcltest
-# in this directory.
+# tests.  Execute it by invoking "tclsh all.test" in this directory.
+#
+# To test a subset of the modules, invoke it by 'tclsh all.test -modules "<module list>"'
 #
 # Copyright (c) 1998-2000 by Ajuba Solutions.
 # All rights reserved.
 # 
-# RCS: @(#) $Id: all.tcl,v 1.1.1.1 2001/11/07 20:51:21 hobbs Exp $
+# RCS: @(#) $Id: all.tcl,v 1.2 2003/11/28 22:42:03 andreas_kupries Exp $
 
 set old_auto_path $auto_path
 
 if {[lsearch [namespace children] ::tcltest] == -1} {
     namespace eval ::tcltest {}
-    proc ::tcltest::processCmdLineArgsFlagsHook {} {
+    proc ::tcltest::processCmdLineArgsAddFlagsHook {} {
 	return [list -modules]
     }
     proc ::tcltest::processCmdLineArgsHook {argv} {
 	array set foo $argv
-	set ::modules $foo(-modules)
+	catch {set ::modules $foo(-modules)}
     }
     proc ::tcltest::cleanupTestsHook {{c {}}} {
 	if { [string equal $c ""] } {
@@ -41,7 +42,7 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
 		set res ""
 	    }
 	    set res
-	}]
+	}] ; # {}
 	if { ![string equal $f ""] } {
 	    lappend ::tcltest::failFiles $f
 	}
@@ -74,11 +75,19 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
 }
 
 set ::tcltest::testSingleFile false
-set ::tcltest::testsDirectory [file dir [info script]]
+set ::tcltest::testsDirectory [file dirname [info script]]
 set root $::tcltest::testsDirectory
 
 # We need to ensure that the testsDirectory is absolute
-::tcltest::normalizePath ::tcltest::testsDirectory
+if {[catch {::tcltest::normalizePath ::tcltest::testsDirectory}]} {
+    # The version of tcltest we have here does not support
+    # 'normalizePath', so we have to do this on our own.
+
+    set oldpwd [pwd]
+    catch {cd $::tcltest::testsDirectory}
+    set ::tcltest::testsDirectory [pwd]
+    cd $oldpwd
+}
 
 puts stdout "tcllib tests"
 puts stdout "Tests running in working dir:  $::tcltest::testsDirectory"
@@ -104,6 +113,18 @@ set auto_path $old_auto_path
 set auto_path [linsert $auto_path 0 [file join $root modules]]
 set old_apath $auto_path
 
+##
+## Take default action if the modules are not specified
+##
+
+if {![info exists modules]} then {
+    foreach module [glob [file join $root modules]/*/*.test] {
+	set tmp([lindex [file split $module] end-1]) 1
+    }
+    set modules [array names tmp]
+    unset tmp
+}
+
 foreach module $modules {
     set ::tcltest::testsDirectory [file join $root modules $module]
 
@@ -121,13 +142,46 @@ foreach module $modules {
     interp alias $c pSet {} set
     # import the auto_path from the parent interp, so "package require" works
     $c eval {
+	set ::argv0 [pSet ::argv0]
 	set ::tcllibModule [pSet module]
 	set auto_path [pSet auto_path]
+
+	# The next command allows the execution of 'tk' constrained
+	# tests, if Tk is present (for example when this code is run
+	# run by 'wish').
+	catch {package require Tk}
+
 	package require tcltest
 	namespace import ::tcltest::*
 	set ::tcltest::testSingleFile false
 	set ::tcltest::testsDirectory [pSet ::tcltest::testsDirectory]
 	#set ::tcltest::verbose ps
+
+	# Add a function to construct a proper error message for
+	# 'wrong#args' situations. The format of the messages changed
+	# for 8.4
+
+	proc ::tcltest::getErrorMessage {functionName argList missingIndex} {
+	    # if oldstyle errors:
+	    if { [info tclversion] < 8.4 } {
+		set msg "no value given for parameter "
+		append msg "\"[lindex $argList $missingIndex]\" to "
+		append msg "\"$functionName\""
+	    } else {
+		set msg "wrong # args: should be \"$functionName $argList\""
+	    }
+	    return $msg
+	}
+
+	proc ::tcltest::tooManyMessage {functionName argList} {
+	    # if oldstyle errors:
+	    if { [info tclversion] < 8.4 } {
+		set msg "called \"$functionName\" with too many arguments"
+	    } else {
+		set msg "wrong # args: should be \"$functionName $argList\""
+	    }
+	    return $msg
+	}
     }
     interp alias $c ::tcltest::cleanupTestsHook {} \
 	    ::tcltest::cleanupTestsHook $c
@@ -137,7 +191,7 @@ foreach module $modules {
 	puts stdout [string map [list "$root/" ""] $file]
 	$c eval {
 	    if {[catch {source [pSet file]} msg]} {
-		puts stdout $msg
+		puts stdout $errorInfo
 	    }
 	}
     }
@@ -148,5 +202,5 @@ foreach module $modules {
 # cleanup
 puts stdout "\nTests ended at [eval $timeCmd]"
 ::tcltest::cleanupTests 1
+# FRINK: nocheck
 return
-
