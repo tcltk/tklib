@@ -6,31 +6,39 @@
 [require tk_getString [opt 0.1]]
 [description]
 
-This package provides a dialog which consists of an Entry, OK, and Cancel buttons.
+This package provides a dialog which consists of an Entry, OK, and
+Cancel buttons.
 
 [para]
 
 [list_begin definitions]
 
-[call [cmd ::dialogs::tk_getString] [arg pathName] [arg variable] [arg title] [arg text] [opt options]]
+[call [cmd ::getstring::tk_getString] [arg pathName] [arg variable] [arg text]\
+[opt options]]
 
-Creates a dialog which prompts the user with [arg text] to input a text string. The contents of
-the entry is put in the [arg variable] upon closure of the dialog. The command returns a boolean
-indicating if the user pressed OK or not. The dialog is centered in its parent toplevel unless
-its parent is . in which case the dialog is centered in the screen. The currently recognized
-options are -allowempty, -validate, -invalidcmd, and -validatecmd. -allowempty takes a boolean
-argument indicating if the dialog should accept an empty entry. The validation options simply
-pass their arguments through to the entry widget.
+Creates a dialog which prompts the user with [arg text] to input a text string.
+The contents of the entry are put in the [arg variable] upon closure of the
+dialog. The command returns a boolean indicating if the user pressed OK or
+not. If -geometry is not specified, the dialog is centered in its parent
+toplevel unless its parent is . in which case the dialog is centered in the
+screen. 
+
+Options:
+-title
+-allowempty a boolean argument indicating if the dialog should accept an empty entry
+-entryoptions simply passes its arguments through to the entry widget. This is valuble for performing extra validation
+using the Entry widget validation hooks.
+-geometry specifies the geometry of the window
 
 [list_end]
 
 [section EXAMPLE]
 
 [example {
-package require tk_getString
-namespace import tk_getString::*
+package require getstring
+namespace import getstring::*
 
-if {[tk_getString .gs text "String Dialog" "Feed me a string please:"]} {
+if {[tk_getString .gs text "Feed me a string please:"]} {
     puts "user entered: $text"
 }
 
