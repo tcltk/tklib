@@ -1,4 +1,4 @@
-set rcsId {$Id: boxlabel.tcl,v 1.35 1998/05/03 10:51:12 jfontain Exp $}
+set rcsId {$Id: boxlabel.tcl,v 1.36 1998/05/03 15:01:20 jfontain Exp $}
 
 class pieBoxLabeler {
 
@@ -67,11 +67,12 @@ class pieBoxLabeler {
     }
 
     proc update {this} {
-        ::set box [$pieLabeler::($this,canvas) bbox pieGraphics($pieLabeler::($this,pie))]
-        # first reposition labels array below pie graphics
-        $pieLabeler::($this,canvas) coords canvasLabelsArray($pieBoxLabeler::($this,array))\
-            [lindex $box 0] [expr {[lindex $box 3]+$switched::($this,-offset)}]
-        switched::configure $pieBoxLabeler::($this,array) -width [expr {[lindex $box 2]-[lindex $box 0]}]      ;# then fit pie width
+        ::set canvas $pieLabeler::($this,canvas)
+        ::set box [$canvas bbox pieGraphics($pieLabeler::($this,pie))]
+        ::set array $pieBoxLabeler::($this,array)                                ;# first reposition labels array below pie graphics
+        foreach {x y} [$canvas coords canvasLabelsArray($array)] {}
+        $canvas move canvasLabelsArray($array) [expr {[lindex $box 0]-$x}] [expr {[lindex $box 3]+$switched::($this,-offset)-$y}]
+        switched::configure $array -width [expr {[lindex $box 2]-[lindex $box 0]}]                             ;# then fit pie width
     }
 
 }
