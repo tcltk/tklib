@@ -1,8 +1,8 @@
-set rcsId {$Id: pie.tcl,v 1.12 1995/09/19 20:50:06 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.13 1995/09/22 20:09:58 jfontain Exp $}
 
-source $env(AGVHOME)/tools/slice.tcl
+source slice.tcl
 
-proc pie::pie {id canvas width height {thickness 0} {topColor ""} {bottomColor ""} {sliceColors ""}} {
+proc pie::pie {id canvas width height {thickness 0} {topColor {}} {bottomColor {}} {sliceColors {}}} {
     global pie PI
 
     set pie($id,radiusX) [expr [winfo fpixels $canvas $width]/2.0]
@@ -12,7 +12,7 @@ proc pie::pie {id canvas width height {thickness 0} {topColor ""} {bottomColor "
     set pie($id,canvas) $canvas
     set pie($id,backgroundSlice)\
         [new slice $canvas $pie($id,radiusX) $pie($id,radiusY) [expr $PI/2] 7 $pie($id,thickness) $topColor $bottomColor]
-    set pie($id,slices) ""
+    set pie($id,slices) {}
 
     if {[llength $sliceColors]==0} {
         set pie($id,colors) {#7FFFFF #7FFF7F #FF7F7F #FFFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF}
@@ -30,7 +30,7 @@ proc pie::~pie {id} {
     delete slice $pie($id,backgroundSlice)
 }
 
-proc pie::newSlice {id {text ""}} {
+proc pie::newSlice {id {text {}}} {
     global pie slice halfPI
 
     # calculate start radian for new slice (slices grow clockwise from 12 o'clock)
