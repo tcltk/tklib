@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tooltip.tcl,v 1.1 2005/04/02 06:18:57 afaupell Exp $
+# RCS: @(#) $Id: tooltip.tcl,v 1.2 2005/04/02 07:01:24 andreas_kupries Exp $
 #
 # Initiated: 28 October 1996
 

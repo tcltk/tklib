@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: autoscroll.tcl,v 1.5 2005/04/01 21:37:44 afaupell Exp $
+# RCS: @(#) $Id: autoscroll.tcl,v 1.6 2005/04/02 07:01:23 andreas_kupries Exp $
 
 package provide autoscroll 1.1
 
