@@ -1,9 +1,10 @@
-set rcsId {$Id: pie.tcl,v 1.14 1995/09/22 20:18:16 jfontain Exp $}
+set rcsId {$Id: pie.tcl,v 1.15 1995/09/22 21:15:28 jfontain Exp $}
 
 source slice.tcl
 source boxlabel.tcl
 
 proc pie::pie {id canvas width height {thickness 0} {topColor {}} {bottomColor {}} {sliceColors {}}} {
+    # note: all pie elements are tagged with pie($id)
     global pie PI
 
     set pie($id,radiusX) [expr [winfo fpixels $canvas $width]/2.0]
@@ -13,6 +14,7 @@ proc pie::pie {id canvas width height {thickness 0} {topColor {}} {bottomColor {
     set pie($id,canvas) $canvas
     set pie($id,backgroundSlice)\
         [new slice $canvas $pie($id,radiusX) $pie($id,radiusY) [expr $PI/2] 7 $pie($id,thickness) $topColor $bottomColor]
+    $canvas addtag pie($id) withtag slice($pie($id,backgroundSlice))
     set pie($id,slices) {}
 
     if {[llength $sliceColors]==0} {
@@ -53,6 +55,7 @@ proc pie::newSlice {id {text {}}} {
     set sliceId [new slice\
         $pie($id,canvas) $pie($id,radiusX) $pie($id,radiusY) $startRadian 0 $pie($id,thickness) $color [tkDarken $color 60]\
     ]
+    $pie($id,canvas) addtag pie($id) withtag slice($sliceId)
     lappend pie($id,slices) $sliceId
     return $sliceId
 }
