@@ -1,3 +1,12 @@
+2004-08-17  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* as.tcl:       Change style::use to call style::${style}::init
+	* style.tcl:    procedure, so a simple package require doesn't
+	* lobster.tcl:  actually do anything.  Add init to lobster and
+	* pkgIndex.tcl: correct namespace usage.  Move lobster and style
+	to v0.2.  style::use now takes args to pass to init, eg:
+	style::use as -priority 80
+
 2004-06-29  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* pkgIndex.tcl: style::as is version 1.2
