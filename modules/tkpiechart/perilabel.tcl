@@ -1,4 +1,4 @@
-set rcsId {$Id: perilabel.tcl,v 1.6 1995/10/06 15:58:17 jfontain Exp $}
+set rcsId {$Id: perilabel.tcl,v 1.7 1995/10/07 20:44:41 jfontain Exp $}
 
 source pielabel.tcl
 
@@ -61,12 +61,36 @@ proc piePeripheralLabeller::create {id sliceId args} {
     $canvas addtag pieLabeller($id) withtag [set valueId [$canvas create text 0 0]]
     # eventually use labeller font
     if {[info exists pieLabeller($id,font)]} {
-        $canvas itemconfigure -font $pieLabeller($id,font)
+        $canvas itemconfigure $valueId -font $pieLabeller($id,font)
     }
 
-    incr piePeripheralLabeller($id,number)
     # value label is the only one to update
+    set piePeripheralLabeller($id,sliceId,$valueId) $sliceId
+
+    incr piePeripheralLabeller($id,number)
     return $valueId
 }
 
-proc piePeripheralLabeller::update {id sliceId value} {}
+proc piePeripheralLabeller::update {id valueId value} {
+    global pieLabeller
+
+    piePeripheralLabeller::rotate $id $valueId
+    $pieLabeller($id,canvas) itemconfigure $valueId -text $value
+}
+
+proc piePeripheralLabeller::rotate {id valueId} {
+    global piePeripheralLabeller pieLabeller PI
+
+    set canvas $pieLabeller($id,canvas)
+    set sliceId $piePeripheralLabeller($id,sliceId,$valueId)
+
+    slice::data $sliceId data
+
+    set radians [expr $data(midAngle)*$PI/180]
+    set x [expr ($data(xRadius)+$pieLabeller($id,offset))*cos($radians)]
+    set y [expr ($data(yRadius)+$pieLabeller($id,offset))*sin($radians)]
+
+    set coordinates [$pieLabeller($id,canvas) coords $valueId]
+    $pieLabeller($id,canvas) move $valueId\
+        [expr $data(xCenter)+$x-[lindex $coordinates 0]] [expr $data(yCenter)-$y-[lindex $coordinates 1]]
+}
