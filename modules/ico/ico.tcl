@@ -191,7 +191,13 @@ proc ::ico::copyIcon {f1 i1 f2 i2 args} {
         # $type wasn't specified - get it from the extension
         set totype [string trimleft [string toupper [file extension $f2]] .]
     }
-    writeIcon $f2 $i2 [lindex [getIconList $f1 -type $fromtype] $i1 2] [getIcon $f1 $i1 -format colors] -type $totype
+    if {[info commands writeIcon$totype] == ""} {
+	return -code error "unsupported file format $totype"
+    }
+    if {[info commands getRawIconData$fromtype] == ""} {
+	return -code error "unsupported file format $fromtype"
+    }
+    eval [list writeIcon$totype $f2 $i2]] [getRawIconData$fromtype $f1 $i1]
 }
 
 #
