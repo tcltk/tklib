@@ -8,7 +8,7 @@
 # Copyright (c) 1998-2000 by Ajuba Solutions.
 # All rights reserved.
 # 
-# RCS: @(#) $Id: all.tcl,v 1.2 2003/11/28 22:42:03 andreas_kupries Exp $
+# RCS: @(#) $Id: all.tcl,v 1.3 2004/04/16 05:21:55 andreas_kupries Exp $
 
 set old_auto_path $auto_path
 
@@ -181,6 +181,30 @@ foreach module $modules {
 		set msg "wrong # args: should be \"$functionName $argList\""
 	    }
 	    return $msg
+	}
+
+	# This constraint restricts certain tests to run on tcl 8.3+, and tcl8.4+
+	if {[package vsatisfies [package provide tcltest] 2.0]} {
+	    # tcltest2.0+ has an API to specify a test constraint
+	    ::tcltest::testConstraint tcl8.3only \
+		    [expr {![package vsatisfies [package provide Tcl] 8.4]}]
+	    ::tcltest::testConstraint tcl8.3plus \
+		    [expr {[package vsatisfies [package provide Tcl] 8.3]}]
+	    ::tcltest::testConstraint tcl8.4plus \
+		    [expr {[package vsatisfies [package provide Tcl] 8.4]}]
+
+	    ::tcltest::testConstraint tk \
+		    [expr {![catch {package present Tk}]}]
+	} else {
+	    # In tcltest1.0, a global variable needs to be set directly.
+	    set ::tcltest::testConstraints(tcl8.3only) \
+		    [expr {![package vsatisfies [package provide Tcl] 8.4]}]
+	    set ::tcltest::testConstraints(tcl8.3plus) \
+		    [expr {[package vsatisfies [package provide Tcl] 8.3]}]
+	    set ::tcltest::testConstraints(tcl8.4plus) \
+		    [expr {[package vsatisfies [package provide Tcl] 8.4]}]
+	    set ::tcltest::testConstraints(tk) \
+		    [expr {![catch {package present Tk}]}]
 	}
     }
     interp alias $c ::tcltest::cleanupTestsHook {} \

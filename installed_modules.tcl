@@ -20,6 +20,7 @@ foreach {m pkg doc exa} {
     cursor      _tcl  _man  _null
     datefield   _tcl  _man  _null
     ipentry     _tcl  _man  _null
+    plotchart   _tcl  _man _exa
 } {
     lappend modules $m
     set guide($m,pkg) $pkg
