@@ -1,3 +1,7 @@
+2005-04-07  Andreas Kupries <andreask@activestate.com>
+
+	* ctext.man: Fixed formatting bugs in ctext.man
+
 3.1.6 - Wed Apr  6 04:41:13 GMT 2005
 
 	ctext.man was kindly contributed by
