@@ -1,4 +1,4 @@
-# RCS: @(#) $Id: BUGS,v 1.2 2005/04/06 12:04:22 georgeps Exp $
+# RCS: @(#) $Id: BUGS,v 1.3 2005/04/07 02:33:30 andreas_kupries Exp $
 
 The linemap and text widget can get into a voodoo dance of geometry-management madness.  This can occur with lines that wrap and cause the linemap to be able to continue a line.  When the wrap occurs the linemap changes, because the width of the linemap is altered, so the text and linemap do idle size changes until the user goes up or down to avoid the problem. 
 
