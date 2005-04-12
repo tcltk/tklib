@@ -3,7 +3,7 @@
 [moddesc   {A dialog which prompts for a string input}]
 [titledesc {A string dialog}]
 [require Tcl 8.4]
-[require tk_getString [opt 0.1]]
+[require getstring [opt 0.1]]
 [description]
 
 This package provides a dialog which consists of an Entry, OK, and
