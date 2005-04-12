@@ -7,10 +7,10 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: tk_getString.tcl,v 1.9 2005/04/07 02:33:30 andreas_kupries Exp $
+# RCS: @(#) $Id: tk_getString.tcl,v 1.10 2005/04/12 08:10:51 afaupell Exp $
 
 package require Tk
-package provide tk_getString 0.1
+package provide getstring 0.1
 
 namespace eval ::getstring {
     namespace export tk_getString
@@ -47,7 +47,7 @@ proc ::getstring::tk_getString {w var text args} {
     wm transient $w [winfo toplevel [winfo parent $w]]
     wm resizable $w 1 0
 
-    eval [list entry $w.entry] $entryoptions
+    eval [list entry $w.entry] $options(-entryoptions)
     button $w.ok -text OK -default active -command {set ::getstring::result 1}
     button $w.cancel -text Cancel -command {set ::getstring::result 0}
     label $w.label -text $text
@@ -61,7 +61,7 @@ proc ::getstring::tk_getString {w var text args} {
     bind $w <Return> [list $w.ok invoke]
     bind $w <Escape> [list $w.cancel invoke]
     bind $w <Destroy> {set ::getstring::result 0}
-    if {!$allowempty} {
+    if {!$options(-allowempty)} {
         bind $w.entry <KeyPress> [list after idle [list ::getstring::getStringEnable $w]]
         $w.ok configure -state disabled 
     }
@@ -115,7 +115,7 @@ proc ::getstring::parseOpts {var opts input} {
 }
 
 proc ::getstring::getStringEnable {w} {
-    if {![winfo exists $w.entry]} {return}
+    if {![winfo exists $w.entry]} { return }
     if {[$w.entry get] != ""} {
         $w.ok configure -state normal
     } else {
