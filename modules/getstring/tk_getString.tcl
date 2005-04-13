@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: tk_getString.tcl,v 1.10 2005/04/12 08:10:51 afaupell Exp $
+# RCS: @(#) $Id: tk_getString.tcl,v 1.11 2005/04/13 01:29:22 andreas_kupries Exp $
 
 package require Tk
 package provide getstring 0.1
