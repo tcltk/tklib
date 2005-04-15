@@ -22,7 +22,8 @@ namespace eval ::Plotchart {
                     createXYPlot createPolarPlot createPiechart \
                     createBarchart createHorizontalBarchart \
                     createTimechart createStripchart \
-                    createIsometricPlot create3DPlot
+                    createIsometricPlot create3DPlot \
+                    colorMap
 
    #
    # Array linking procedures with methods
