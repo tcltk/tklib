@@ -102,7 +102,7 @@ pack   $c  -fill both -side top
 
 set chart [::Plotchart::createXYPlot $c $xlimits $ylimits]
 
-::Plotchart::Colormap jet
+::Plotchart::colorMap jet
 
 #$chart contourlines $x $y $f $contours
 $chart contourfill $x $y $f $contours
@@ -129,7 +129,7 @@ set c [canvas $t.c  -background white \
 pack   $c  -fill both -side top
 
 set chart2 [::Plotchart::createXYPlot $c $xlimits $ylimits]
-::Plotchart::Colormap hot
+::Plotchart::colorMap hot
 $chart2 contourfill $x $y $f $contours
 $chart2 grid $x $y
 
@@ -142,10 +142,10 @@ set c [canvas $t.c  -background white \
 pack   $c  -fill both -side top
 
 set chart3 [::Plotchart::createXYPlot $c $xlimits $ylimits]
-::Plotchart::Colormap gray
+::Plotchart::colorMap gray
 $chart3 contourfill $x $y $f $contours
 
-::Plotchart::Colormap jet
+::Plotchart::colorMap jet
 $chart3 contourlines $x $y $f $contours
 $chart3 grid $x $y
 
@@ -158,7 +158,7 @@ set c [canvas $t.c  -background white \
 pack   $c  -fill both -side top
 
 set chart4 [::Plotchart::createXYPlot $c $xlimits $ylimits]
-::Plotchart::Colormap cool
+::Plotchart::colorMap cool
 $chart4 contourfill $x $y $f $contours
 $chart4 grid $x $y
 
@@ -172,7 +172,7 @@ set c [canvas $t.c  -background white \
 pack   $c  -fill both -side top
 
 set chart5 [::Plotchart::createXYPlot $c $xlimits $ylimits]
-::Plotchart::Colormap jet
+::Plotchart::colorMap jet
 $chart5 contourfill $x $y $f
 $chart5 grid $x $y
 
@@ -202,7 +202,7 @@ for {set cnt 1} {$cnt < $nc} {incr cnt} {
 }
 
 set chart6 [::Plotchart::create3DPlot $c $xlimits $ylimits $zlimits]
-::Plotchart::Colormap jet
+::Plotchart::colorMap jet
 $chart6 title "3D Plot"
 $chart6 plotfuncont cowboyhat $contours
 

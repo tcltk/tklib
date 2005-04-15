@@ -1,3 +1,10 @@
+2005-04-15  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+
+        * Updated the documentation, changed name (colourmap
+          has become colorMap).
+        * Mark Stucky provided the latest updates of the
+          main procedures
+
 2005-03-11  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
         * Solved problem with plotcontour.test (works correctly

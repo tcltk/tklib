@@ -283,9 +283,9 @@ proc ::Plotchart::Draw3DFunctionContour { w function {cont {}} } {
     set ymax    $scaling($w,ymax)
     set dx      [expr {($xmax-$xmin)/double($nxcells)}]
     set dy      [expr {($ymax-$ymin)/double($nycells)}]
-    
+
     foreach {fill border} $scaling($w,colours) {break}
-    
+
     #
     # Draw the quadrangles making up the plot in the right order:
     # first y from minimum to maximum
@@ -297,7 +297,7 @@ proc ::Plotchart::Draw3DFunctionContour { w function {cont {}} } {
         for { set i $nxcells } { $i > 0 } { incr i -1 } {
             set x2 [expr {$xmin + $dx*$i}]
             set x1 [expr {$x2   - $dx}]
-            
+
             set z11 [$function $x1 $y1]
             set z12 [$function $x1 $y2]
             set z21 [$function $x2 $y1]
@@ -353,9 +353,9 @@ proc ::Plotchart::DrawContour {canv x y f cont} {
     set fmax  [lindex $cont end 0]
     set ncont [llength $cont]
 
-    # Now that we know how many entries (ncont), create 
+    # Now that we know how many entries (ncont), create
     # the colormap colors
-    # 
+    #
     # I moved this into MakeContourClasses...
     #    ::Plotchart::setColormapColors  $ncont
 
@@ -525,7 +525,7 @@ proc ::Plotchart::Tri_contour { canv x1 y1 f1 x2 y2 f2 x3 y3 f3 cont {doTrans 1}
 
         # Describe class here...
 
-        # ( - - - )   : Case A, 
+        # ( - - - )   : Case A,
         # ( - - = )   : Case B, color a point, do nothing
         # ( - - + )   : Case C, contour between {23}-{31}
         # ( - = - )   : Case D, color a point, do nothing
@@ -539,26 +539,26 @@ proc ::Plotchart::Tri_contour { canv x1 y1 f1 x2 y2 f2 x3 y3 f3 cont {doTrans 1}
         # ( = - + )   : Case L, contour between 1-{23}
         # ( = = - )   : Case M, contour line between 1-2
         # ( = = = )   : Case N, fill full triangle, return
-        # ( = = + )   : Case M, 
-        # ( = + - )   : Case L, 
-        # ( = + = )   : Case K, 
-        # ( = + + )   : Case J, 
-        # ( + - - )   : Case I, 
-        # ( + - = )   : Case H, 
-        # ( + - + )   : Case G, 
-        # ( + = - )   : Case F, 
-        # ( + = = )   : Case E, 
-        # ( + = + )   : Case D, 
-        # ( + + - )   : Case C, 
-        # ( + + = )   : Case B, 
-        # ( + + + )   : Case A, 
+        # ( = = + )   : Case M,
+        # ( = + - )   : Case L,
+        # ( = + = )   : Case K,
+        # ( = + + )   : Case J,
+        # ( + - - )   : Case I,
+        # ( + - = )   : Case H,
+        # ( + - + )   : Case G,
+        # ( + = - )   : Case F,
+        # ( + = = )   : Case E,
+        # ( + = + )   : Case D,
+        # ( + + - )   : Case C,
+        # ( + + = )   : Case B,
+        # ( + + + )   : Case A,
 
 
         switch -- $class {
 
             ############### Case A ###############
 
-            "---" { 
+            "---" {
 #debug#                puts "class A = $class , $ic , $ff"
                 if {$contour_options(filled_contour)} {
                     set pxylist [list $x1 $y1 $x2 $y2 $x3 $y3]
@@ -567,7 +567,7 @@ proc ::Plotchart::Tri_contour { canv x1 y1 f1 x2 y2 f2 x3 y3 f3 cont {doTrans 1}
                 return
             }
 
-            "+++" { 
+            "+++" {
 #debug#                puts "class A = $class , $ic , $ff"
                 if {$contour_options(filled_contour)} {
                     if {$ic == $imax} {
@@ -581,7 +581,7 @@ proc ::Plotchart::Tri_contour { canv x1 y1 f1 x2 y2 f2 x3 y3 f3 cont {doTrans 1}
 
             ############### Case N ###############
 
-            "===" { 
+            "===" {
 #debug#                puts "class N = $class , $ic , $ff"
                 if {$contour_options(filled_contour)} {
                     set pxylist [list $x1 $y1 $x2 $y2 $x3 $y3]
@@ -714,7 +714,7 @@ proc ::Plotchart::Tri_contour { canv x1 y1 f1 x2 y2 f2 x3 y3 f3 cont {doTrans 1}
                         return
                     }
                     C_line $canv $xylist [lindex $colorMap $ic] $doTrans
-                    
+
                 } else {
                     C_line $canv $xylist [lindex $colorMap $ic] $doTrans
                 }
@@ -1332,9 +1332,9 @@ proc ::Plotchart::MakeContourClasses {values classes} {
             lappend classes [list $x]
         }
 
-        # Now that we know how many entries (ncont), create 
+        # Now that we know how many entries (ncont), create
         # the colormap colors
-        # 
+        #
         ::Plotchart::setColormapColors  [expr [llength $classes] + 1]
 
     } elseif { [llength [lindex $classes 0]] == 1 } {
@@ -1371,7 +1371,7 @@ proc ::Plotchart::MakeContourClasses {values classes} {
 #     Auxiliary function: Based on the current colormap type
 #     create a colormap with requested number of entries
 # Arguments:
-#     ncont       Number of colors in the colormap 
+#     ncont       Number of colors in the colormap
 # Result:
 #     List of colours
 #
@@ -1500,10 +1500,10 @@ proc ::Plotchart::setColormapColors  {ncont} {
     }
 }
 
-# setColormapColors --
+# colorMap --
 #     Define the current colormap type
 # Arguments:
-#     cmap        Type of colormap 
+#     cmap        Type of colormap
 # Result:
 #     Updated the internal variable "colorMapType"
 # Note:
@@ -1512,7 +1512,7 @@ proc ::Plotchart::setColormapColors  {ncont} {
 #     rather than a string, then it is assumes that (s)he
 #     passed in a list of colors.
 #
-proc ::Plotchart::Colormap {cmap} {
+proc ::Plotchart::colorMap {cmap} {
     variable colorMapType
     variable colorMap
 

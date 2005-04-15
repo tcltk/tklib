@@ -464,17 +464,27 @@ method is identical to the "contourlines" method).
 Draw the cells as filled quadrangles. The colour is determined from
 the average of the values on all four corners.
 
-[call [cmd \$xyplot] colourmap [arg colours]]
+[call [cmd \$xyplot] colorMap [arg colours]]
 
 Set the colours to be used with the contour methods. The argument is
-either a predefined colourmap (rainbow, white-blue, white-red,
-white-black, green-red, blue-red) or a list of colours. When selecting
-the colours for actually drawing the contours, the given colours will be
-interpolated (based on the HLS scheme).
+either a predefined colourmap (grey/gray, jet, hot or cool)
+or a list of colours. When selecting the colours for actually drawing the
+contours, the given colours will be interpolated (based on the HLS scheme).
 
 [list_begin arg]
 [arg_def list colours in]
-List of colour names or colour values
+List of colour names or colour values or one of the predefined maps:
+[list_begin bullet]
+[bullet]
+grey or gray: gray colours from dark to light
+[bullet]
+jet: rainbow colours
+[bullet]
+hot: colours from yellow via red to darkred
+[bullet]
+hot: colours from cyan via blue to magenta
+[list_end]
+
 [list_end]
 
 [list_end]
