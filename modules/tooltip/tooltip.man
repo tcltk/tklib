@@ -16,12 +16,12 @@ displayed when the mouse hovers over a widget.
 [call [cmd ::tooltip::tooltip] [arg command] [opt options]]
 commands:
 [call clear [opt pattern]]
-[call delay [opt millisecs]
+[call delay [opt millisecs]]
 [call disable]
 [call enable]
 
-[call [cmd ::tooltip::tooltip] [arg pathName] [opt options] [opt message]
-This command arranges for widget [pathName] to display a tooltip with
+[call [cmd ::tooltip::tooltip] [arg pathName] [opt options] [opt message]]
+This command arranges for widget [arg pathName] to display a tooltip with
 message [opt message]
 [list_begin opt]
 [opt_def -index]
