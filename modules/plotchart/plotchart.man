@@ -482,7 +482,7 @@ jet: rainbow colours
 [bullet]
 hot: colours from yellow via red to darkred
 [bullet]
-hot: colours from cyan via blue to magenta
+cool: colours from cyan via blue to magenta
 [list_end]
 
 [list_end]
@@ -526,6 +526,27 @@ The resolution is determined by the set grid sizes (see the method
 Name of the procedure that calculates the z-value for the given x and
 y coordinates. The procedure has to accept two float arguments (x is
 first argument, y is second) and return a floating-point value.
+
+[list_end]
+[nl]
+
+[call [cmd \$plot3d] plotfuncont [arg function] [arg contours]]
+
+Plot a function defined over two variables [var x] and [var y] using
+the contour levels in [var contours] to colour the surface.
+
+The resolution is determined by the set grid sizes (see the method
+[method gridsize] for more information).
+
+[list_begin arg]
+[arg_def string function in]
+Name of the procedure that calculates the z-value for the given x and
+y coordinates. The procedure has to accept two float arguments (x is
+first argument, y is second) and return a floating-point value.
+
+[arg_def list contours in]
+List of values in ascending order that represent the contour levels
+(the boundaries between the colours in the contour map).
 
 [list_end]
 [nl]
