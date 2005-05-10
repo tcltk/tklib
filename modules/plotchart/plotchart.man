@@ -487,6 +487,20 @@ cool: colours from cyan via blue to magenta
 
 [list_end]
 
+[call [cmd \$xyplot] grid [arg xcrd] [arg ycrd]
+
+Draw the grid cells as lines connecting the (valid) grid points.
+
+[list_begin arg]
+[arg_def list xcrd in]
+List of lists, each value is an x-coordinate for a grid cell corner
+
+[arg_def list ycrd in]
+List of lists, each value is an y-coordinate for a grid cell corner
+
+[list_end]
+
+
 [list_end]
 [para]
 
