@@ -1,6 +1,10 @@
+2005-05-10  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* plotchart.man: Fixed trivial syntax error in update.
+
 2005-05-10  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
-        * Added documentation of plotfuncont method
+        * plotchart.man: Added documentation of plotfuncont method.
         * Corrected description for "cool" colour map
 
 2005-04-15  Arjen Markus  <arjenmarkus@users.sourceforge.net>
