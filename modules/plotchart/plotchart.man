@@ -487,7 +487,7 @@ cool: colours from cyan via blue to magenta
 
 [list_end]
 
-[call [cmd \$xyplot] grid [arg xcrd] [arg ycrd]
+[call [cmd \$xyplot] grid [arg xcrd] [arg ycrd]]
 
 Draw the grid cells as lines connecting the (valid) grid points.
 
