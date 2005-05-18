@@ -3,7 +3,9 @@
 # The code formerly known as "gtklook" on the Tcl'ers
 # wiki.  Most of this code was originally written by Jeremy Collins.
 
-# $Id: lobster.tcl,v 1.6 2005/02/02 17:04:12 davidw Exp $
+# $Id: lobster.tcl,v 1.7 2005/05/18 16:19:53 andreas_kupries Exp $
+
+package require Tk
 
 namespace eval style::lobster {
     # This may need to be adjusted for some window managers that are

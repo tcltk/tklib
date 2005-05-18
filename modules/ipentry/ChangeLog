@@ -1,3 +1,7 @@
+2005-05-18  Andreas Kupries <andreask@activestate.com>
+
+	* ipentry.tcl: Added missing 'require Tk'.
+
 2005-01-09  Marty Backe <marty@lucidway.org>
 
         * ipentry.tcl: Bug fix - widget creation was not returning the

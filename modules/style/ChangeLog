@@ -1,3 +1,8 @@
+2005-05-18  Andreas Kupries <andreask@activestate.com>
+
+	* as.tcl:
+	* lobster.tcl: Added missing 'require Tk'.
+
 2005-03-08  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* as.tcl (style::as::init_fonts): corrected fsize, ffamily
