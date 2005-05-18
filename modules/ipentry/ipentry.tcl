@@ -7,8 +7,9 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: ipentry.tcl,v 1.7 2005/03/18 03:15:57 andreas_kupries Exp $
+# RCS: @(#) $Id: ipentry.tcl,v 1.8 2005/05/18 16:19:53 andreas_kupries Exp $
 
+package require Tk
 package provide ipentry 0.1
 
 namespace eval ::ipentry {

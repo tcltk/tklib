@@ -12,6 +12,8 @@
 #	ie: enable control-mousewheel local|global
 #
 
+package require Tk
+
 namespace eval style::as {
     variable version 1.2
     variable highlightbg "#316AC5" ; # SystemHighlight

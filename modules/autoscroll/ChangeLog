@@ -1,3 +1,7 @@
+2005-05-18  Andreas Kupries <andreask@activestate.com>
+
+	* autoscroll.tcl: Added missing 'require Tk'.
+
 2005-04-01 Aaron Faupell <afaupell@users.sourceforge.net>
 
 	* autoscroll.tcl: updated to not fail if autoscroll called twice
