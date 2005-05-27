@@ -1,3 +1,8 @@
+2005-05-27  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* ico.tcl (::ico::Show): handle >48px icons by resizing the frame.
+	Currently >48px icons are not decoded properly by ico though.
+
 2004-08-20  Aaron Faupell <afaupell@users.sourceforge.net>
 
 	* ico.tcl bugfix in writeIconEXE, called SearchForIcos
