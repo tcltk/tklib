@@ -5,7 +5,7 @@
 # Copyright (c) 2003 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.14 2004/09/27 20:48:04 afaupell Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.15 2005/05/27 19:50:21 hobbs Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -1042,11 +1042,11 @@ proc ::ico::SearchForIcosNE {fh file index} {
             set ICONS($file,$idx) [expr {[getushort $fh] * $shift}]
             seek $fh 10 current
             set cur [tell $fh]
-            
+
             seek $fh $ICONS($file,$idx) start
             binary scan [read $fh 16] x4iix2s w h bpp
             set ICONS($file,$idx,data) [list $w [expr {$h / 2}] $bpp]
-            
+
             seek $fh $cur start
         }
         close $fh
@@ -1103,7 +1103,7 @@ proc ::ico::SearchForIcosPE {fh file index} {
                 seek $fh $ICONS($file,$idx) start
                 binary scan [read $fh 16] x4iix2s w h bpp
                 set ICONS($file,$idx,data) [list $w [expr {$h / 2}] $bpp]
-            
+
                 seek $fh $cur3 start
             }
             seek $fh $cur2 start
@@ -1167,7 +1167,10 @@ proc ::ico::Show {file args} {
 	labelframe $lf -text "[llength $icos] Icons in '$file'"
 	grid $lf -sticky news
 	set sw [ScrolledWindow $lf.sw$wname]
-	set sf [ScrollableFrame $lf.sf$wname -constrainedheight 1 -height 70]
+	set height 48
+	set fh [expr {[font metrics [$lf cget -font] -linespace] + 4}]
+	set sf [ScrollableFrame $lf.sf$wname -constrainedheight 1 \
+		    -height [expr {$height + $fh}]]
 	$sw setwidget $sf
 	set sf [$sf getframe]
 	pack $sw -fill both -expand 1
@@ -1182,6 +1185,10 @@ proc ::ico::Show {file args} {
 		set txt [eval {format "$x: %sx%s %sbpp"} [lindex $icos $x]]
 		set lbl [label $sf.lbl$wname-$x -anchor w -text $txt \
 			     -compound top -image $img]
+		if {[image height $img] > $height} {
+		    set height [image height $img]
+		    $lf.sf$wname configure -height [expr {$height + $fh}]
+		}
 		grid $lbl -sticky s -row 0 -column [incr col]
 	    }
 	    update idletasks
