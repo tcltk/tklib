@@ -1,3 +1,7 @@
+2005-05-28  Aaron Faupell <afaupell@users.sourceforge.net>
+
+	* ico.tcl fixed padding algorithm to handle icons >48px
+
 2005-05-27  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* ico.tcl (::ico::Show): handle >48px icons by resizing the frame.
