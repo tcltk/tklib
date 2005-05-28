@@ -5,7 +5,7 @@
 # Copyright (c) 2003 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.15 2005/05/27 19:50:21 hobbs Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.16 2005/05/28 15:38:46 afaupell Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -21,6 +21,7 @@ package require Tcl 8.4
 
 # Instantiate vars we need for this package
 namespace eval ::ico {
+    namespace export getIconList getIcon writeIcon copyIcon transparentColor clearCache EXEtoICO
     # stores cached indices of icons found
     variable  ICONS
     array set ICONS {}
@@ -642,7 +643,7 @@ proc ::ico::readDIB {fh} {
     set and1 [read $fh [expr {(($w * $h) + ($h * ($w % 32))) / 8}]]
 
     set and {}
-    set row [expr {($w + abs($w - 32)) / 8}]
+    set row [expr {($w + ($w % 32)) / 8}]
     set len [expr {$row * $h}]
     for {set i 0} {$i < $len} {incr i $row} {
 	binary scan [string range $and1 $i [expr {$i + $row}]] B$w tmp
@@ -684,7 +685,7 @@ proc ::ico::readDIBFromData {data loc} {
 		  [expr {$end + ((($w * $h) + ($h * ($w % 32))) / 8) - 1}]]
 
     set and {}
-    set row [expr {($w + abs($w - 32)) / 8}]
+    set row [expr {($w + ($w % 32)) / 8}]
     set len [expr {$row * $h}]
     for {set i 0} {$i < $len} {incr i $row} {
 	# Has to be decoded by row, in order
