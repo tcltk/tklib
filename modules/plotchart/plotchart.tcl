@@ -5,11 +5,13 @@
 #    This source file contains the public functions.
 #    The others are contained in "plotpriv.tcl"
 #
+package require Tk
 
 # Plotchart --
 #    Namespace to hold the procedures and the private data
 #
 namespace eval ::Plotchart {
+   variable settings
    variable scaling
    variable methodProc
    variable data_series
@@ -23,7 +25,7 @@ namespace eval ::Plotchart {
                     createBarchart createHorizontalBarchart \
                     createTimechart createStripchart \
                     createIsometricPlot create3DPlot \
-                    colorMap
+                    createGanttChart colorMap
 
    #
    # Array linking procedures with methods
@@ -68,6 +70,15 @@ namespace eval ::Plotchart {
    set methodProc(timechart,milestone)   DrawTimeMilestone
    set methodProc(timechart,vertline)    DrawTimeVertLine
    set methodProc(timechart,saveplot)    SavePlot
+   set methodProc(ganttchart,title)      DrawTitle
+   set methodProc(ganttchart,period)     DrawGanttPeriod
+   set methodProc(ganttchart,milestone)  DrawGanttMilestone
+   set methodProc(ganttchart,vertline)   DrawGanttVertLine
+   set methodProc(ganttchart,saveplot)   SavePlot
+   set methodProc(ganttchart,color)      GanttColor
+   set methodProc(ganttchart,colour)     GanttColor
+   set methodProc(ganttchart,font)       GanttFont
+   set methodProc(ganttchart,connect)    DrawGanttConnect
    set methodProc(stripchart,title)      DrawTitle
    set methodProc(stripchart,xtext)      DrawXtext
    set methodProc(stripchart,ytext)      DrawYtext
@@ -379,10 +390,10 @@ proc ::Plotchart::pixelToIndex { w xpix ypix } {
    } elseif {[info exists scaling(${w},angles)]} {
        set xy_angle [expr {(360 + round(atan2(${yrel},${xrel})/${torad})) % 360}]
        foreach angle $scaling(${w},angles) {
-	   if {${xy_angle} <= ${angle}} {
-	       break
-	   }
-	   incr idx
+       if {${xy_angle} <= ${angle}} {
+           break
+       }
+       incr idx
        }
    }
    return ${idx}
@@ -738,6 +749,78 @@ proc ::Plotchart::createTimechart { w time_begin time_end noitems } {
    return $newchart
 }
 
+# createGanttchart --
+#    Create a command for drawing a Gantt (planning) chart
+# Arguments:
+#    w           Name of the canvas
+#    time_begin  Start time (in the form of a date/time)
+#    time_end    End time (in the form of a date/time)
+#    noitems     Number of items to be shown (determines spacing)
+# Result:
+#    Name of a new command
+# Note:
+#    The entire canvas will be dedicated to the Gantt chart.
+#    Most commands taken from time charts.
+#
+proc ::Plotchart::createGanttchart { w time_begin time_end noitems } {
+   variable data_series
+   variable scaling
+
+   foreach s [array names data_series "$w,*"] {
+      unset data_series($s)
+   }
+
+   set newchart "ganttchart_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler ganttchart $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w 3] {break}
+
+   set ymin  0.0
+   set ymax  $noitems
+
+   set xmin  [expr {1.0*[clock scan $time_begin]}]
+   set xmax  [expr {1.0*[clock scan $time_end]}]
+
+   viewPort         $w $pxmin $pymin $pxmax $pymax
+   worldCoordinates $w $xmin  $ymin  $xmax  $ymax
+
+   set scaling($w,current) $ymax
+   set scaling($w,dy)      -0.7
+
+   #
+   # Draw the backgrounds
+   #
+   set yend 0.0
+   for { set i 0 } { $i < $noitems } { incr i } {
+       set ybegin $yend
+       set yend   [expr {$ybegin+1.0}]
+       foreach {x1 y1} [coordsToPixel $w $xmin $ybegin] {break}
+       foreach {x2 y2} [coordsToPixel $w $xmax $yend  ] {break}
+
+       if { $i%2 == 0 } {
+           set tag odd
+       } else {
+           set tag even
+       }
+       $w create rectangle $x1 $y1 $x2 $y2 -fill white -tag $tag -outline white
+   }
+
+   #
+   # Default colours and fonts
+   #
+   GanttColor $w description black
+   GanttColor $w completed   lightblue
+   GanttColor $w left        white
+   GanttColor $w odd         white
+   GanttColor $w even        lightgrey
+   GanttColor $w summary     black
+   GanttFont  $w description "times 10"
+   GanttFont  $w summary     "times 10 bold"
+   GanttFont  $w scale       "times 7"
+
+   return $newchart
+}
+
 # create3DPlot --
 #    Create a simple 3D plot
 # Arguments:
@@ -784,6 +867,7 @@ source [file join [file dirname [info script]] "plotaxis.tcl"]
 source [file join [file dirname [info script]] "plot3d.tcl"]
 source [file join [file dirname [info script]] "scaling.tcl"]
 source [file join [file dirname [info script]] "plotcontour.tcl"]
+source [file join [file dirname [info script]] "plotgantt.tcl"]
 
 # Announce our presence
 #

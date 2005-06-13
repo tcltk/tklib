@@ -1,3 +1,9 @@
+2005-06-13 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+
+        * plotchart.tcl: Added new chart type, Gantt charts
+        * plotgantt.tcl: Procedures for Gantt charts (new file) 
+        * No documentation yet
+
 2005-05-10  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* plotchart.man: Fixed trivial syntax error in update.
