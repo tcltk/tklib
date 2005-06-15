@@ -3,6 +3,7 @@
         * plotgantt.tcl: Expanded Gantt charts with one more
           procedure - drawing "summary" items
         * Added documentation on Gantt charts
+        * Moved the example to the examples directory
 
 2005-06-13 Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
