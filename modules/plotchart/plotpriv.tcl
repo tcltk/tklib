@@ -31,11 +31,13 @@ proc ::Plotchart::SavePlot { w filename } {
 #    w           Name of the canvas
 #    notext      Number of lines of text to make room for at the top
 #                (default: 2.0)
+#    text_width  Number of characters to be displayed at most on left
+#                (default: 8)
 # Result:
 #    List of four values
 #
-proc ::Plotchart::MarginsRectangle { w {notext 2.0}} {
-   set pxmin 80
+proc ::Plotchart::MarginsRectangle { w {notext 2.0} {text_width 8}} {
+   set pxmin [expr {10*$text_width}]
    set pymin [expr {int(14*$notext)}]
    set pxmax [expr {[$w cget -width]  - 40}]
    set pymax [expr {[$w cget -height] - 30}]
@@ -132,10 +134,10 @@ proc ::Plotchart::SetColours { w args } {
 #
 proc ::Plotchart::CycleColours { colours nr_data } {
    if {![llength ${colours}]} {
-       # force to most usable default colour list 
+       # force to most usable default colour list
        set colours {green blue red cyan yellow magenta}
    }
-   
+
    if {[llength ${colours}] < ${nr_data}} {
 	# cycle through colours
 	set init_colours ${colours}
@@ -478,7 +480,7 @@ proc ::Plotchart::DrawPie { w data } {
    set colours $scaling(${w},colours)
 
    if {[llength ${data}] == 2} {
-       # use canvas create oval as arc does not fill with colour for a full circle 
+       # use canvas create oval as arc does not fill with colour for a full circle
        set colour [lindex ${colours} 0]
        ${w} create oval ${pxmin} ${pymin} ${pxmax} ${pymax} -fill ${colour}
        # text looks nicer at 45 degree
@@ -490,12 +492,12 @@ proc ::Plotchart::DrawPie { w data } {
        }
        ${w} create text ${xtext} ${ytext} -text ${label} -anchor w
        set scaling($w,angles) {0 360}
-   } else { 
+   } else {
        #
        # Determine the scale for the values
        # (so we can draw the correct angles)
        #
-   
+
        set sum 0.0
        foreach {label value} $data {
           set sum [expr {$sum + $value}]
@@ -508,12 +510,12 @@ proc ::Plotchart::DrawPie { w data } {
        set angle_bgn 0.0
        set angle_ext 0.0
        set sum       0.0
-       
+
        set idx 0
-       
+
        array unset scaling ${w},angles
        set colours [CycleColours ${colours} [expr {[llength ${data}] / 2}]]
-       
+
        foreach {label value} $data {
           set colour [lindex $colours $idx]
           incr idx
@@ -582,7 +584,7 @@ proc ::Plotchart::DrawVertBarData { w series ydata {colour black}} {
    # Draw the bars
    #
    set x $scaling($w,xbase)
-   
+
    #
    # set the colours
    #
@@ -601,7 +603,7 @@ proc ::Plotchart::DrawVertBarData { w series ydata {colour black}} {
    foreach yvalue $ydata ybase $scaling($w,ybase) {
       set colour [lindex ${colours} ${idx}]
       incr idx
-	  
+	
       set xnext [expr {$x+$scaling($w,barwidth)}]
       set y     [expr {$yvalue+$ybase}]
       foreach {px1 py1} [coordsToPixel $w $x     $ybase] {break}
@@ -664,7 +666,7 @@ proc ::Plotchart::DrawHorizBarData { w series xdata {colour black}} {
    foreach xvalue $xdata xbase $scaling($w,xbase) {
       set colour [lindex ${colours} ${idx}]
       incr idx
-      
+
       set ynext [expr {$y+$scaling($w,barwidth)}]
       set x     [expr {$xvalue+$xbase}]
       foreach {px1 py1} [coordsToPixel $w $xbase $y    ] {break}
