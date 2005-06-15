@@ -778,7 +778,7 @@ proc ::Plotchart::createGanttchart { w time_begin time_end noitems
    set newchart "ganttchart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler ganttchart $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w 3] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w 3 $text_width] {break}
 
    set ymin  0.0
    set ymax  $noitems
