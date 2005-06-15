@@ -72,6 +72,7 @@ namespace eval ::Plotchart {
    set methodProc(timechart,saveplot)    SavePlot
    set methodProc(ganttchart,title)      DrawTitle
    set methodProc(ganttchart,period)     DrawGanttPeriod
+   set methodProc(ganttchart,task)       DrawGanttPeriod
    set methodProc(ganttchart,milestone)  DrawGanttMilestone
    set methodProc(ganttchart,vertline)   DrawGanttVertLine
    set methodProc(ganttchart,saveplot)   SavePlot
@@ -79,6 +80,7 @@ namespace eval ::Plotchart {
    set methodProc(ganttchart,colour)     GanttColor
    set methodProc(ganttchart,font)       GanttFont
    set methodProc(ganttchart,connect)    DrawGanttConnect
+   set methodProc(ganttchart,summary)    DrawGanttSummary
    set methodProc(stripchart,title)      DrawTitle
    set methodProc(stripchart,xtext)      DrawXtext
    set methodProc(stripchart,ytext)      DrawYtext
@@ -756,13 +758,16 @@ proc ::Plotchart::createTimechart { w time_begin time_end noitems } {
 #    time_begin  Start time (in the form of a date/time)
 #    time_end    End time (in the form of a date/time)
 #    noitems     Number of items to be shown (determines spacing)
+#    text_width  Estimated maximum length of text (default: 20)
 # Result:
 #    Name of a new command
 # Note:
 #    The entire canvas will be dedicated to the Gantt chart.
 #    Most commands taken from time charts.
 #
-proc ::Plotchart::createGanttchart { w time_begin time_end noitems } {
+proc ::Plotchart::createGanttchart { w time_begin time_end noitems
+                                     {text_width 20} } {
+
    variable data_series
    variable scaling
 
@@ -788,7 +793,9 @@ proc ::Plotchart::createGanttchart { w time_begin time_end noitems } {
    set scaling($w,dy)      -0.7
 
    #
-   # Draw the backgrounds
+   # Draw the backgrounds (both in the text part and the
+   # graphical part; the text part has the "special" tag
+   # "Edit" to enable a GUI to change things)
    #
    set yend 0.0
    for { set i 0 } { $i < $noitems } { incr i } {
@@ -802,6 +809,7 @@ proc ::Plotchart::createGanttchart { w time_begin time_end noitems } {
        } else {
            set tag even
        }
+       $w create rectangle 0   $y1 $x1 $y2 -fill white -tag Edit -outline white
        $w create rectangle $x1 $y1 $x2 $y2 -fill white -tag $tag -outline white
    }
 
@@ -814,6 +822,7 @@ proc ::Plotchart::createGanttchart { w time_begin time_end noitems } {
    GanttColor $w odd         white
    GanttColor $w even        lightgrey
    GanttColor $w summary     black
+   GanttColor $w summarybar  black
    GanttFont  $w description "times 10"
    GanttFont  $w summary     "times 10 bold"
    GanttFont  $w scale       "times 7"
@@ -871,4 +880,4 @@ source [file join [file dirname [info script]] "plotgantt.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.0
+package provide Plotchart 1.1

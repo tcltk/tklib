@@ -1,3 +1,9 @@
+2005-06-14 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+
+        * plotgantt.tcl: Expanded Gantt charts with one more
+          procedure - drawing "summary" items
+        * Added documentation on Gantt charts
+
 2005-06-13 Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
         * plotchart.tcl: Added new chart type, Gantt charts

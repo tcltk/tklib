@@ -1,10 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 1.0]
+[manpage_begin Plotchart n 1.1]
 [copyright {2004 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.3]]
-[require Plotchart [opt 1.0]]
+[require Tk [opt 8.3]]
+[require Plotchart [opt 1.1]]
 
 [description]
 [para]
@@ -294,6 +295,39 @@ Expected/maximum number of items. This determines the vertical
 spacing.
 
 [list_end]
+
+
+[call [cmd ::Plotchart::createGanttchart] [arg w] [arg time_begin] [arg time_end] [arg noitems] [opt text_width ]]
+
+Create a new Gantt chart.
+
+The time axis (= x-axis) goes from [arg time_begin] to [arg time_end],
+and the vertical spacing is determined by the number of items to plot.
+Via the specific commands you can then add tasks and connections between
+the tasks.
+
+[list_begin arg]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the plot.
+
+[arg_def string time_begin in]
+The start time given in a form that is recognised by the [cmd "clock scan"]
+command (e.g. "1 january 2004").
+
+[arg_def string time_end in]
+The end time given in a form that is recognised by the [cmd "clock scan"]
+command (e.g. "1 january 2004").
+
+[arg_def int noitems in]
+Expected/maximum number of items. This determines the vertical
+spacing.
+
+[arg_def int text_width]
+Expected/maximum width of the descriptive text (roughly in characters,
+for the actual space reserved for the text, it is assumed that a
+character is about ten pixels wide). Defaults to 20.
+
+[list_end]
 [list_end]
 
 [section "PLOT METHODS"]
@@ -363,7 +397,7 @@ The text of the y-axis label to be drawn.
 
 Set one or more configuration parameters for the x-axis.
 
-The following options are known:
+The following options are supported:
 
 [list_begin opt]
 
@@ -789,6 +823,169 @@ date/time for instance).
 
 [arg_def string time in]
 Time at which the line must be positioned.
+
+[list_end]
+[list_end]
+[para]
+
+For [emph "Gantt charts"]:
+
+[list_begin definitions]
+[call [cmd \$ganttchart] task [arg text] [arg time_begin] [arg time_end] [arg completed]]
+
+Add a task with its period and level of completion to the chart. Returns
+a list of canvas items that can be used for further manipulations, like
+connecting two tasks.
+
+[list_begin arg]
+[arg_def string text in]
+The text describing the task.
+
+[arg_def string time_begin in]
+Start time of the task.
+
+[arg_def string time_end in]
+Stop time of the task.
+
+[arg_def float completed in]
+The percentage of the task that is completed.
+
+[list_end]
+[nl]
+
+
+[call [cmd \$ganttchart] milestone [arg text] [arg time] [arg colour]]
+
+Add a [term milestone] (represented as an point-down triangle) to the
+chart.
+
+[list_begin arg]
+[arg_def string text in]
+The text describing the milestone.
+
+[arg_def string time in]
+Time at which the milestone must be positioned.
+
+[arg_def color colour in]
+The colour of the triangle (defaults to black).
+
+[list_end]
+[nl]
+
+
+[call [cmd \$ganttchart] vertline [arg text] [arg time]]
+
+Add a vertical line (to indicate the start of the month for instance)
+to the chart.
+
+[list_begin arg]
+[arg_def string text in]
+The text appearing at the top (an abbreviation of the
+date/time for instance).
+
+[arg_def string time in]
+Time at which the line must be positioned.
+
+[list_end]
+[nl]
+
+
+[call [cmd \$ganttchart] connect [arg from] [arg to]]
+
+Add an arrow that connects the [emph from] task with the [emph to] task.
+
+[list_begin arg]
+[arg_def list from in]
+The list of items returned by the "task" command that represents the
+task from which the arrow starts.
+[arg_def string text in]
+The text summarising the tasks
+
+[arg_def list args in]
+One or more tasks (the lists returned by the "task" command). They are
+shifted down to make room for the summary.
+
+[arg_def list to in]
+The list of items returned by the "task" command that represents the
+task at which the arrow ends.
+
+[list_end]
+[nl]
+
+
+[call [cmd \$ganttchart] summary [arg text] [arg args]]
+
+Add a summary item that spans all the tasks listed. The graphical
+representation is a thick bar running from the leftmost task to the
+rightmost.
+[nl]
+Use this command before connecting the tasks, as the arrow would not be
+shifted down!
+
+[list_begin arg]
+[arg_def string text in]
+The text summarising the tasks
+
+[arg_def list args in]
+One or more tasks (the lists returned by the "task" command). They are
+shifted down to make room for the summary.
+
+[list_end]
+[nl]
+
+
+[call [cmd \$ganttchart] color [arg keyword] [arg newcolor]]
+
+Set the colour of a part of the Gantt chart. These colours hold for all
+items of that type.
+
+[list_begin arg]
+[arg_def string keyword in]
+The keyword indicates which part of the Gantt chart to change:
+[list_begin bullet]
+[bullet]
+description - the colour of the descriptive text
+[bullet]
+completed - the colour of the filled bar representing the completed part
+of a task
+[bullet]
+left - the colour for the part that is not yet completed
+[bullet]
+odd - the background colour for the odd entries
+[bullet]
+even - the background colour for the even entries
+[bullet]
+summary - the colour for the summary text
+[bullet]
+summarybar - the colour for the bar for a summary
+[list_end]
+
+[arg_def string newcolor in]
+The new colour for the chosen items.
+
+[list_end]
+[nl]
+
+
+[call [cmd \$ganttchart] font [arg keyword] [arg newfont]]
+
+Set the font of a part of the Gantt chart. These fonts hold for all
+items of that type.
+
+[list_begin arg]
+[arg_def string keyword in]
+The keyword indicates which part of the Gantt chart to change:
+[list_begin bullet]
+[bullet]
+description - the font used for descriptive text
+[bullet]
+summary - the font used for summaries
+[bullet]
+scale - the font used for the time scale
+[list_end]
+
+[arg_def string newfont in]
+The new font for the chosen items.
 
 [list_end]
 [list_end]
