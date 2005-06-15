@@ -169,42 +169,42 @@ proc ::Plotchart::DrawGanttVertLine { w text time {colour black}} {
 #    Triangle drawn in canvas
 #
 proc ::Plotchart::DrawGanttMilestone { w text time {colour black}} {
-   variable settings
-   variable data_series
-   variable scaling
+    variable settings
+    variable data_series
+    variable scaling
 
-   #
-   # Draw the text first
-   #
-   set ytext [expr {$scaling($w,current)+0.5*$scaling($w,dy)}]
-   foreach {x y} [coordsToPixel $w $scaling($w,xmin) $ytext] {break}
+    #
+    # Draw the text first
+    #
+    set ytext [expr {$scaling($w,current)-0.5}]
+    foreach {x y} [coordsToPixel $w $scaling($w,xmin) $ytext] {break}
 
-   set items {}
-   lappend items \
+    set items {}
+    lappend items \
        [$w create text 5 $y -text $text -anchor w -tag description \
              -font $settings($w,font,description)]
        # Colour text?
 
-   #
-   # Draw an upside-down triangle to indicate the time
-   #
-   set xcentre [clock scan $time]
-   set ytop    [expr {$scaling($w,current)-0.2}]
-   set ybott   [expr {$scaling($w,current)+$scaling($w,dy)}]
+    #
+    # Draw an upside-down triangle to indicate the time
+    #
+    set xcentre [clock scan $time]
+    set ytop    [expr {$scaling($w,current)-0.2}]
+    set ybott   [expr {$scaling($w,current)-0.8}]
 
-   foreach {x1 y1} [coordsToPixel $w $xcentre $ybott] {break}
-   foreach {x2 y2} [coordsToPixel $w $xcentre $ytop]  {break}
+    foreach {x1 y1} [coordsToPixel $w $xcentre $ybott] {break}
+    foreach {x2 y2} [coordsToPixel $w $xcentre $ytop]  {break}
 
-   set x2 [expr {$x1-0.4*($y1-$y2)}]
-   set x3 [expr {$x1+0.4*($y1-$y2)}]
-   set y3 $y2
+    set x2 [expr {$x1-0.4*($y1-$y2)}]
+    set x3 [expr {$x1+0.4*($y1-$y2)}]
+    set y3 $y2
 
-   lappend items \
-       [$w create polygon $x1 $y1 $x2 $y2 $x3 $y3 -fill $colour]
+    lappend items \
+        [$w create polygon $x1 $y1 $x2 $y2 $x3 $y3 -fill $colour]
 
-   set scaling($w,current) [expr {$scaling($w,current)-1.0}]
+    set scaling($w,current) [expr {$scaling($w,current)-1.0}]
 
-   return $items
+    return $items
 }
 
 # DrawGanttConnect --
@@ -246,18 +246,105 @@ proc ::Plotchart::DrawGanttConnect { w from to } {
     return [$w create line $coords -arrow last]
 }
 
+# DrawGanttSummary --
+#    Draw a summary entry
+# Arguments:
+#    w           Name of the canvas
+#    text        Text to describe the summary
+#    args        List of items belonging to the summary
+# Result:
+#    List of canvas items making up the summary
+# Side effects:
+#    Items are shifted down to make room for the summary
+#
+proc ::Plotchart::DrawGanttSummary { w text args } {
+    variable settings
+    variable data_series
+    variable scaling
+
+    #
+    # Determine the coordinates of the summary bar
+    #
+    set xmin {}
+    set xmax {}
+    set ymin {}
+    set ymax {}
+    foreach entry $args {
+        foreach {x1 y1}             [$w coords [lindex $entry 1]] {break}
+        foreach {dummy dummy x2 y2} [$w coords [lindex $entry 2]] {break}
+
+        if { $xmin == {} || $xmin > $x1 } { set xmin $x1 }
+        if { $xmax == {} || $xmax < $x2 } { set xmax $x2 }
+        if { $ymin == {} || $ymin > $y1 } {
+            set ymin  $y1
+            set yminb $y2
+        }
+    }
+
+    #
+    # Compute the vertical shift
+    #
+    set yfirst $scaling($w,ymin)
+    set ynext  [expr {$yfirst-1.0}]
+    foreach {x y1} [coordsToPixel $w $scaling($w,xmin) $yfirst] {break}
+    foreach {x y2} [coordsToPixel $w $scaling($w,xmin) $ynext ] {break}
+    set dy [expr {$y2-$y1}]
+
+    #
+    # Shift the items
+    #
+    foreach entry $args {
+        foreach item $entry {
+            $w move $item 0 $dy
+        }
+    }
+
+    #
+    # Draw the summary text first
+    #
+    set ytext [expr {($ymin+$yminb)/2.0}]
+    set ymin  [expr {$ymin+0.3*$dy}]
+
+    set items {}
+    lappend items \
+        [$w create text 5 $ytext -text $text -anchor w -tag summary \
+              -font $settings($w,font,summary)]
+        # Colour text?
+
+    #
+    # Draw the bar
+    #
+    set coords [list [expr {$xmin-5}] [expr {$ymin-5}]  \
+                     [expr {$xmax+5}] [expr {$ymin-5}]  \
+                     [expr {$xmax+5}] [expr {$ymin+5}]  \
+                     $xmax            [expr {$ymin+10}] \
+                     [expr {$xmax-5}] [expr {$ymin+5}]  \
+                     [expr {$xmin+5}] [expr {$ymin+5}]  \
+                     $xmin            [expr {$ymin+10}] \
+                     [expr {$xmin-5}] [expr {$ymin+5}]  ]
+
+    lappend items \
+        [$w create polygon $coords -tag summarybar \
+              -fill $settings($w,color,summarybar)]
+
+    set scaling($w,current) [expr {$scaling($w,current)-1.0}]
+
+    return $items
+}
+
 #
 # Example
 #
-canvas .c -width 400 -height 200 -bg white
+canvas .c -width 500 -height 200 -bg white
 pack   .c -fill both
 .c delete all
 
 set s [::Plotchart::createGanttchart .c "1 january 2004" \
         "31 december 2004" 4]
 
-set from [$s period "Spring" "1 march 2004" "1 june 2004" 30]
-set to   [$s period "Summer" "1 june 2004" "1 september 2004" 10]
+set from [$s task "Spring" "1 march 2004" "1 june 2004" 30]
+set to   [$s task "Summer" "1 june 2004" "1 september 2004" 10]
+$s summary "First half" $from $to
 $s connect $from $to
 $s vertline "1 jan" "1 january 2004"
 $s vertline "1 apr" "1 april 2004"
