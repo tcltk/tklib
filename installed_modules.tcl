@@ -28,6 +28,7 @@ foreach {m pkg doc exa} {
     style       _tcl  _man  _null
     swaplist    _tcl  _man  _null
     tkpiechart  _tcl  _man  _null
+    tooltip     _tcl  _man  _null
 } {
     lappend modules $m
     set guide($m,pkg) $pkg

@@ -1,3 +1,8 @@
+2005-07-27  Andreas Kupries <andreask@activestate.com>
+
+	* installed_modules.tcl: Added module 'tooltip' to the list of
+	  installed modules.
+
 2005-04-01  Andreas Kupries <andreask@activestate.com>
 
 	* installed_modules.tcl: Added new module 'swap_list' to the list
