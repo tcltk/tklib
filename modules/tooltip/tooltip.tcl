@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tooltip.tcl,v 1.2 2005/04/02 07:01:24 andreas_kupries Exp $
+# RCS: @(#) $Id: tooltip.tcl,v 1.3 2005/08/11 23:18:12 hobbs Exp $
 #
 # Initiated: 28 October 1996
 
@@ -259,9 +259,16 @@ proc ::tooltip::show {w msg {i {}}} {
     } elseif {($x+[winfo reqwidth $b])>[winfo screenwidth $w]} {
 	set x [expr {[winfo screenwidth $w]-[winfo reqwidth $b]}]
     }
+    if {[tk windowingsystem] eq "aqua"} {
+	set focus [focus]
+    }
     wm geometry $b +$x+$y
     wm deiconify $b
     raise $b
+    if {[tk windowingsystem] eq "aqua" && $focus ne ""} {
+	# Aqua's help window steals focus on display
+	after idle [list focus -force $w]
+    }
 }
 
 proc ::tooltip::menuMotion {w} {
