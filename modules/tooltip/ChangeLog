@@ -1,3 +1,7 @@
+2005-08-12  Andreas Kupries <andreask@activestate.com>
+
+	* tooltip.man: Added module/title descriptions to the manpage.
+
 2005-08-11  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* tooltip.tcl (::tooltip::show): prevent aqua help focus theft
