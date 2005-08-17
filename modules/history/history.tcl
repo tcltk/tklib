@@ -7,8 +7,9 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: history.tcl,v 1.2 2005/03/31 03:15:48 andreas_kupries Exp $
+# RCS: @(#) $Id: history.tcl,v 1.3 2005/08/17 22:49:57 andreas_kupries Exp $
 
+package require Tk
 package provide history 0.1
 
 namespace eval history {
