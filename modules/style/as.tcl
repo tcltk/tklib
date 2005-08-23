@@ -15,7 +15,7 @@
 package require Tk
 
 namespace eval style::as {
-    variable version 1.2
+    variable version 1.3
     variable highlightbg "#316AC5" ; # SystemHighlight
     variable highlightfg "white"   ; # SystemHighlightText
     variable bg          "white"   ; # SystemWindow
@@ -265,6 +265,9 @@ proc style::as::init_misc {args} {
 	option add *$class.selectBorderWidth	0 $prio
 	option add *$class.selectForeground	$highlightfg $prio
 	option add *$class.selectBackground	$highlightbg $prio
+    }
+    if {[tk windowingsystem] ne "x11"} {
+	option add *TreeCtrl.useTheme 1
     }
 }
 

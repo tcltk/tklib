@@ -8,6 +8,6 @@
 # script is sourced, the variable $dir must contain the
 # full path name of this file's directory.
 
-package ifneeded style 0.2 [list source [file join $dir style.tcl]]
-package ifneeded style::as 1.2 [list source [file join $dir as.tcl]]
+package ifneeded style 0.3 [list source [file join $dir style.tcl]]
+package ifneeded style::as 1.3 [list source [file join $dir as.tcl]]
 package ifneeded style::lobster 0.2 [list source [file join $dir lobster.tcl]]

@@ -1,3 +1,8 @@
+2005-08-23  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* as.tcl (style::as::init_misc): add "*TreeCtrl.useTheme 1",
+	bump package version up
+
 2005-05-18  Andreas Kupries <andreask@activestate.com>
 
 	* as.tcl:
