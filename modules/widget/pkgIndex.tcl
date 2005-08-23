@@ -17,3 +17,5 @@ package ifneeded widget::dialog 1.0 \
     [list source [file join $dir dialog.tcl]]
 package ifneeded widget::superframe 1.0 \
     [list source [file join $dir superframe.tcl]]
+package ifneeded widget::panelframe 1.0 \
+    [list source [file join $dir panelframe.tcl]]

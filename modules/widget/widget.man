@@ -31,7 +31,7 @@ options:
 [call [cmd widget::superframe] [arg pathname] [opt options]]
 options:
 
-[call [cmd widget::mainframe] [arg pathname] [opt options]]
+[call [cmd widget::panelframe] [arg pathname] [opt options]]
 options:
 
 [list_end]
