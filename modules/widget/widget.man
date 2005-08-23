@@ -20,7 +20,7 @@ commands:
 
 [section WIDGETS]
 
-[list_begin widgets]
+[list_begin definitions]
 
 [call [cmd widget::dialog] [arg pathname] [opt options]]
 options:
