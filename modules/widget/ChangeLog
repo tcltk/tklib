@@ -1,0 +1,9 @@
+2005-08-22  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* widget.tcl:   new megawidget package, based on snit (snidgets)
+	* widget.man:
+	* pkgIndex.tcl:
+	* dialog.tcl:     widget::dialog megawidget dialog
+	* superframe.tcl: widget::superframe enhanced frame types
+	* scrollw.tcl:    widget::scrolledwindow BWidget::ScrolledWindow port
+
