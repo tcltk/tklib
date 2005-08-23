@@ -12,7 +12,88 @@ package require snit
 
 #package provide Widget 3.0 ; # at end
 
-namespace eval ::widget {}
+namespace eval ::widget {
+    if 0 {
+	variable HaveMarlett \
+	    [expr {[lsearch -exact [font families] "Marlett"] != -1}]
+	snit::macro widget::HaveMarlett {} [list return $::widget::HaveMarlett]
+    }
+}
+
+
+# widget::propagate -- (snit macro)
+#
+#   Propagates an option to multiple components
+#
+# Arguments:
+#   option  option definition
+#   args
+# Results:
+#   Create method Propagate$option
+#
+snit::macro widget::propagate {option args} {
+    # propagate option $optDefn ?-default ...? to $components ?as $realopt?
+    set idx [lsearch -exact $args "to"]
+    set cmd [linsert [lrange $args 0 [expr {$idx - 1}]] 0 option $option]
+    foreach {components as what} [lrange $args [expr {$idx + 1}] end] {
+	break
+    }
+    # ensure we have just the option name
+    set option [lindex $option 0]
+    set realopt [expr {$what eq "" ? $option : $what}]
+    lappend cmd -configuremethod Propagate$option
+    eval $cmd
+
+    set body "\n"
+    foreach comp $components {
+        append body "\$[list $comp] configure [list $realopt] \$value\n"
+    }
+    append body "set [list options($option)] \$value\n"
+
+    method Propagate$option {option value} $body
+}
+
+if {0} {
+    # Currently not feasible due to snit's compiler-as-slave-interp
+    snit::macro widget::tkoption {option args} {
+	# XXX should support this
+	# tkoption {-opt opt Opt} ?-default ""? from /wclass/ ?as $wopt?
+    }
+
+    snit::macro widget::tkresource {wclass wopt} {
+	# XXX should support this
+	# tkresource $wclass $wopt
+	set w ".#widget#$wclass"
+	if {![winfo exists $w]} {
+	    set w [$wclass $w]
+	}
+	set value [$w cget $wopt]
+	after idle [list destroy $w]
+	return $value
+    }
+}
+
+# widget::tkresource --
+#
+#   Get the default option value from a widget class
+#
+# Arguments:
+#   wclass  widget class
+#   wopt    widget option
+# Results:
+#   Returns default value of $wclass $wopt value
+#
+proc widget::tkresource {wclass wopt} {
+    # XXX should support this
+    # tkresource $wclass $wopt
+    set w ".#widget#$wclass"
+    if {![winfo exists $w]} {
+	set w [$wclass $w]
+    }
+    set value [$w cget $wopt]
+    after idle [list destroy $w]
+    return $value
+}
 
 # ::widget::validate --
 #

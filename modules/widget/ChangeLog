@@ -1,5 +1,11 @@
 2005-08-22  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* widget.tcl: add widget::tkresource to get default class options.
+	add widget::propagate snit macro to do multi-component propagation.
+	* panelframe.tcl: widget::panelframe to create color-bordered
+	frames.  This could be part of superframe, but then superframe
+	would need extra widgets
+
 	* widget.tcl:   new megawidget package, based on snit (snidgets)
 	* widget.man:
 	* pkgIndex.tcl:
