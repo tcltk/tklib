@@ -13,7 +13,7 @@ This package provides megawidgets based on the snit oo system (snidgets).
 
 [list_begin definitions]
 
-[call [cmd widget::validate] [arg as] [arg value] [opt options]]
+[call [cmd widget::validate] [arg as] [opt options]]
 commands:
 
 [list_end]
@@ -39,7 +39,7 @@ options:
 [section EXAMPLE]
 
 [example {
-package require widget::all
+package require widget::superframe ; # or widget::all
 pack [widget::superframe .f -type separator -text "SuperFrame:"]
 }]
 
