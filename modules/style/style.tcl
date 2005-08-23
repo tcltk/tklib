@@ -1,11 +1,9 @@
 # style.tcl -- Styles for Tk.
 
-# $Id: style.tcl,v 1.3 2004/08/17 19:09:23 hobbs Exp $
+# $Id: style.tcl,v 1.4 2005/08/23 22:21:32 hobbs Exp $
 
 # Copyright 2004 David N. Welton <davidw@dedasys.com>
 # Copyright 2004 ActiveState Corporation
-
-package provide style 0.2
 
 namespace eval style {
     # Available styles
@@ -31,3 +29,5 @@ proc style::use {newstyle args} {
     package require style::${newstyle}
     eval [linsert $args 0 style::${newstyle}::init]
 }
+
+package provide style 0.3
