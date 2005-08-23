@@ -1,3 +1,9 @@
+2005-08-22  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* tklib_version.tcl: updated to 0.3
+	* installed_modules.tcl: Added module 'widget' to the list of
+	  installed modules.
+
 2005-07-27  Andreas Kupries <andreask@activestate.com>
 
 	* installed_modules.tcl: Added module 'tooltip' to the list of
