@@ -1,0 +1,418 @@
+# -*- tcl -*-
+#
+# dialog.tcl -
+#
+#	Generic dialog widget (themed)
+#
+
+# Creation and Options
+#  gdialog $path
+#    -command	-default {}
+#    -modal	-default none
+#    -padding	-default 0
+#    -parent	-default ""
+#    -place	-default center
+#    -separator	-default 1
+#    -synchronous -default 1
+#    -title	-default ""
+#    -transient -default 1
+#    -type	-default custom
+#
+# Methods
+#  $path add $what $name $args...
+#  $path getframe
+#  $path setwidget $widget
+#  $path display
+#  $path cancel
+#  $path withdraw
+#
+# Bindings
+#  Escape
+#  WM_DELETE_WINDOW
+#
+
+if 0 {
+    # Samples
+    package require widget::dialog
+    set dlg [widget::dialog .pkgerr -modal local -separator 1 \
+		 -place right -parent . -type okcancel \
+		 -title "Dialog Title"]
+    set frame [frame $dlg.f]
+    label $frame.lbl -text "Type Something In:"
+    entry $frame.ent
+    grid $frame.lbl $frame.ent -sticky ew
+    grid columnconfigure $frame 1 -weight 1
+    $dlg setwidget $frame
+    puts [$dlg display]
+}
+
+# ### ######### ###########################
+## Prerequisites
+
+#package require image   ; # bitmaps
+package require snit    ; # object system
+package require tile
+package require msgcat
+
+# ### ######### ###########################
+## Implementation
+
+snit::widget widget::dialog {
+    # ### ######### ###########################
+    hulltype toplevel
+
+    component frame
+    component separator
+    component buttonbox
+
+    delegate option -padding to frame;
+    delegate option * to hull
+    delegate method * to hull
+
+    option -command	-default {};
+    # {none local global}
+    option -modal	-default none -configuremethod C-modal;
+    #option -padding	-default 0 -configuremethod C-padding;
+    option -parent	-default "" -configuremethod C-parent;
+    # {none center left right above below}
+    option -place	-default center -configuremethod C-place;
+    option -separator	-default 1 -configuremethod C-separator;
+    option -synchronous -default 1;
+    option -title	-default "" -configuremethod C-title;
+    option -transient   -default 1 -configuremethod C-transient;
+    option -type	-default custom -configuremethod C-type;
+
+    # We may make this an easier customizable messagebox, but not yet
+    #option -anchor      c; # {n e w s c}
+    #option -text	"";
+    #option -bitmap	"";
+    #option -image	"";
+
+    # ### ######### ###########################
+    ## Public API. Construction
+
+    constructor {args} {
+	wm withdraw $win
+
+	install frame using ttk::frame $win._frame
+	install separator using ttk::separator $win._separator \
+	    -orient horizontal
+	if {[tk windowingsystem] eq "aqua"} {
+	    # left top right bottom - Aqua corner resize control padding
+	    set btnpad [list 0 6 14 4]
+	} else {
+	    # left top right bottom
+	    set btnpad [list 0 6 0 4]
+	}
+	install buttonbox using ttk::frame $win._buttonbox -padding $btnpad
+
+	grid $frame     -row 0 -column 0 -sticky news
+	grid $separator -row 1 -column 0 -sticky ew
+	# Should padding effect the buttonbox?
+	grid $buttonbox -row 2 -column 0 -sticky ew
+
+	grid columnconfigure $win 0 -weight 1
+	grid rowconfigure    $win 0 -weight 1
+	grid columnconfigure $frame 0 -weight 1
+	grid rowconfigure    $frame 0 -weight 1
+
+	# Default to invoking no/cancel/withdraw
+	wm protocol $win WM_DELETE_WINDOW [mymethod close cancel]
+	bind $win <Key-Escape> [mymethod close cancel]
+	# Ensure grab release on unmap?
+	#bind $win <Unmap> [grab release $win]
+
+	$self configurelist $args
+    }
+
+    # ### ######### ###########################
+    ## Public API. Extend container by application specific content.
+
+    # getframe and setwidget are somewhat mutually exlusive.
+    # Use one or the other.
+    method getframe {} {
+	return $frame
+    }
+
+    method setwidget {w} {
+	if {[winfo exists $setwidget]} {
+	    grid remove $setwidget
+	    set setwidget {}
+	}
+	if {[winfo exists $w]} {
+	    grid $w -in $frame -row 0 -column 0 -sticky news
+	    set setwidget $w
+	}
+    }
+
+    method add {what name args} {
+	if {$what eq "button"} {
+	    set w [eval [linsert $args 0 ttk::button $buttonbox._$name]]
+	} else {
+	    return -code error "unknown add type \"$what\", must be: button"
+	}
+	set col [lindex [grid size $buttonbox] 0]; # get last column
+	if {$col == 0} {
+	    # ensure weighted 0 column
+	    grid columnconfigure $buttonbox 0 -weight 1
+	    incr col
+	}
+	grid $w -row 0 -column $col -sticky ew -padx 4
+    }
+
+    method display {} {
+	lappend lastFocusGrab [focus]
+	set last [grab current $win]
+	lappend lastFocusGrab $last
+	if {[winfo exists $last]} {
+	    lappend lastFocusGrab [grab status $last]
+	}
+
+	$self PlaceWindow $win $options(-place) $options(-parent)
+	if {[tk windowingsystem] ne "aqua"} { tkwait visibility $win }
+	if {$options(-modal) ne "none"} {
+	    catch {grab -$option(-modal) $win}
+	}
+	if {$options(-type) ne "custom" && $options(-synchronous)} {
+	    vwait [myvar result]
+	    foreach {oldFocus oldGrab oldStatus} $lastFocusGrab { break }
+	    catch {focus $oldFocus}
+	    catch {grab release $oldGrab}
+	    wm withdraw $win
+	    return $result
+	}
+    }
+
+    method close {{reason {}}} {
+	set code 0
+	if {$options(-command) ne ""} {
+	    set cmd $options(-command)
+	    lappend cmd $win $reason
+	    set code [catch {uplevel \#0 $cmd} result]
+	} else {
+	    # set result to trigger any possible vwait
+	    set result $reason
+	}
+	if {$code == 3} {
+	    # 'break' return code - don't withdraw
+	    return $result
+	} else {
+	    # Withdraw on anything but 'break' return code
+	    foreach {oldFocus oldGrab oldStatus} $lastFocusGrab { break }
+	    catch {focus $oldFocus}
+	    catch {grab release $oldGrab}
+	    wm withdraw $win
+	}
+	return -code $code $result
+    }
+
+    method withdraw {} {
+	set result "withdraw"
+	foreach {oldFocus oldGrab oldStatus} $lastFocusGrab { break }
+	catch {focus $oldFocus}
+	catch {grab release $oldGrab}
+	wm withdraw $win
+	return $result
+    }
+
+    # ### ######### ###########################
+    ## Internal. State variable for close-button (X)
+
+    variable lastFocusGrab {};
+    variable isPlaced 0;
+    variable result {};
+    variable setwidget {};
+
+    # ### ######### ###########################
+    ## Internal. Handle changes to the options.
+
+    method C-title {option value} {
+	wm title $win $value
+	wm iconname $win $value
+        set options($option) $value
+    }
+    method C-modal {option value} {
+	set values [list none local global]
+	if {[lsearch -exact $values $value] == -1} {
+	    return -code error "unknown $option option \"$value\":\
+		must be one of [join $values {, }]"
+	}
+        set options($option) $value
+    }
+    method C-separator {option value} {
+	if {$value} {
+	    grid $separator
+	} else {
+	    grid remove $separator
+	}
+        set options($option) $value
+    }
+    method C-parent {option value} {
+	if {$options(-transient)} {
+	    if {[winfo exists $value]} {
+		wm transient $win [winfo toplevel $value]
+		wm group $win [winfo toplevel $value]
+	    } else {
+		wm transient $win ""
+		wm group $win ""
+	    }
+	}
+        set options($option) $value
+    }
+    method C-transient {option value} {
+	if {$value} {
+	    if {[winfo exists $options(-parent)]} {
+		wm transient $win [winfo toplevel $options(-parent)]
+		wm group $win [winfo toplevel $options(-parent)]
+	    } else {
+		wm transient $win ""
+		wm group $win ""
+	    }
+	}
+        set options($option) $value
+    }
+    method C-place {option value} {
+	set values [list none center left right over above below pointer]
+	if {[lsearch -exact $values $value] == -1} {
+	    return -code error "unknown $option option \"$value\":\
+		must be one of [join $values {, }]"
+	}
+	set isPlaced 0
+        set options($option) $value
+    }
+    method C-type {option value} {
+	set types [list ok okcancel okcancelapply custom]
+	# ok
+	# okcancel
+	# okcancelapply
+	# custom
+	# msgcat
+
+	if {$options(-type) eq $value} { return }
+	if {[lsearch -exact $types $value] == -1} {
+	    return -code error "invalid type \"$value\", must be one of:\
+		[join $types {, }]"
+	}
+	if {$options(-type) ne "custom"} {
+	    # Just trash whatever we had
+	    eval [list destroy] [winfo children $buttonbox]
+	}
+
+	set ok     [msgcat::mc "OK"]
+	set cancel [msgcat::mc "Cancel"]
+	set apply  [msgcat::mc "Apply"]
+	set okBtn  [ttk::button $buttonbox.ok -text $ok -default active \
+			-command [mymethod close ok]]
+	set canBtn [ttk::button $buttonbox.cancel -text $cancel \
+			-command [mymethod close cancel]]
+	set appBtn [ttk::button $buttonbox.apply -text $apply \
+			-command [mymethod close apply]]
+
+	# [OK] [Cancel] [Apply]
+	grid x $okBtn $canBtn $appBtn -padx 4
+	grid columnconfigure $buttonbox 0 -weight 1
+	#bind $win <Return> [list $okBtn invoke]
+	#bind $win <Escape> [list $canBtn invoke]
+	if {$value eq "ok"} {
+	    grid remove $canBtn $appBtn
+	} elseif {$value eq "okcancel"} {
+	    grid remove $appBtn
+	}
+        set options($option) $value
+    }
+
+    # ### ######### ###########################
+    ## Internal.
+
+    method PlaceWindow {w place anchor} {
+	# Variation of tk::PlaceWindow
+	if {$isPlaced || $place eq "none"} {
+	    # For most options, we place once and then just deiconify
+	    wm deiconify $w
+	    return
+	}
+	set isPlaced 1
+	if {$place eq "pointer"} {
+	    # pointer placement occurs each time, centered
+	    set anchor center
+	    set isPlaced 0
+	} elseif {![winfo exists $anchor]} {
+	    set anchor [winfo toplevel [winfo parent $w]]
+	    if {![winfo ismapped $anchor]} {
+		set place center
+	    }
+	}
+	wm withdraw $w
+	update idletasks
+	set checkBounds 1
+	if {$place eq "center"} {
+	    set x [expr {([winfo screenwidth $w]-[winfo reqwidth $w])/2}]
+	    set y [expr {([winfo screenheight $w]-[winfo reqheight $w])/2}]
+	    set checkBounds 0
+	} elseif {$place eq "pointer"} {
+	    ## place at POINTER (centered)
+	    if {$anchor eq "center"} {
+		set x [expr {[winfo pointerx $w]-[winfo reqwidth $w]/2}]
+		set y [expr {[winfo pointery $w]-[winfo reqheight $w]/2}]
+	    } else {
+		set x [winfo pointerx $w]
+		set y [winfo pointery $w]
+	    }
+	} elseif {$place eq "over"} {
+	    ## center about WIDGET $anchor
+	    set x [expr {[winfo rootx $anchor] + \
+			     ([winfo width $anchor]-[winfo reqwidth $w])/2}]
+	    set y [expr {[winfo rooty $anchor] + \
+			     ([winfo height $anchor]-[winfo reqheight $w])/2}]
+	} elseif {$place eq "above"} {
+	    ## above (north of) WIDGET $anchor, centered
+	    set x [expr {[winfo rootx $anchor] + \
+			     ([winfo width $anchor]-[winfo reqwidth $w])/2}]
+	    set y [expr {[winfo rooty $anchor] - [winfo reqheight $w]}]
+	} elseif {$place eq "below"} {
+	    ## below WIDGET $anchor, centered
+	    set x [expr {[winfo rootx $anchor] + \
+			     ([winfo width $anchor]-[winfo reqwidth $w])/2}]
+	    set y [expr {[winfo rooty $anchor] + [winfo height $anchor]}]
+	} elseif {$place eq "left"} {
+	    ## left of WIDGET $anchor, top-aligned
+	    set x [expr {[winfo rootx $anchor] - [winfo reqwidth $w]}]
+	    set y [winfo rooty $anchor]
+	} elseif {$place eq "right"} {
+	    ## right of WIDGET $anchor, top-aligned
+	    set x [expr {[winfo rootx $anchor] + [winfo width $anchor]}]
+	    set y [winfo rooty $anchor]
+	} else {
+	    return -code error "unknown place type \"$place\""
+	}
+	if {[tk windowingsystem] eq "win32"} {
+	    # win32 multiple desktops may produce negative geometry - avoid.
+	    set checkBounds -1
+	}
+	if {$checkBounds} {
+	    if {$x < 0 && $checkBounds > 0} {
+		set x 0
+	    } elseif {$x > ([winfo screenwidth $w]-[winfo reqwidth $w])} {
+		set x [expr {[winfo screenwidth $w]-[winfo reqwidth $w]}]
+	    }
+	    if {$y < 0 && $checkBounds > 0} {
+		set y 0
+	    } elseif {$y > ([winfo screenheight $w]-[winfo reqheight $w])} {
+		set y [expr {[winfo screenheight $w]-[winfo reqheight $w]}]
+	    }
+	    if {[tk windowingsystem] eq "aqua"} {
+		# Avoid the native menu bar which sits on top of everything.
+		if {$y < 20} { set y 20 }
+	    }
+	}
+	wm geometry $w +$x+$y
+	wm deiconify $w
+    }
+
+    # ### ######### ###########################
+}
+
+# ### ######### ###########################
+## Ready for use
+
+package provide widget::dialog 1.0
