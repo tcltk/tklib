@@ -97,6 +97,7 @@ proc get_input {f} {return [read [set if [open $f r]]][close $if]}
 proc write_out {f text} {
     global config
     if {$config(dry)} {log "Generate $f" ; return}
+    catch {file delete -force $f}
     puts -nonewline [set of [open $f w]] $text
     close $of
 }
