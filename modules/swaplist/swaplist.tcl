@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: swaplist.tcl,v 1.4 2005/08/17 22:50:17 andreas_kupries Exp $
+# RCS: @(#) $Id: swaplist.tcl,v 1.5 2005/08/25 03:36:58 andreas_kupries Exp $
 
 package require Tk
 package provide swaplist 0.1
