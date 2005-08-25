@@ -19,9 +19,9 @@
 #    -type	-default custom
 #
 # Methods
-#  $path add $what $name $args...
-#  $path getframe
-#  $path setwidget $widget
+#  $path add $what $args... => $id
+#  $path getframe           => $frame
+#  $path setwidget $widget  => ""
 #  $path display
 #  $path cancel
 #  $path withdraw
@@ -145,11 +145,15 @@ snit::widget widget::dialog {
 	}
     }
 
-    method add {what name args} {
+    variable uid 0
+    method add {what args} {
 	if {$what eq "button"} {
-	    set w [eval [linsert $args 0 ttk::button $buttonbox._$name]]
+	    set w [eval [linsert $args 0 ttk::button $buttonbox._b[incr uid]]]
+	} elseif {[winfo exists $what]} {
+	    set w $what
 	} else {
-	    return -code error "unknown add type \"$what\", must be: button"
+	    return -code error "unknown add type \"$what\", must be:\
+		button or a pathname"
 	}
 	set col [lindex [grid size $buttonbox] 0]; # get last column
 	if {$col == 0} {
@@ -158,6 +162,7 @@ snit::widget widget::dialog {
 	    incr col
 	}
 	grid $w -row 0 -column $col -sticky ew -padx 4
+	return $w
     }
 
     method display {} {
@@ -415,4 +420,4 @@ snit::widget widget::dialog {
 # ### ######### ###########################
 ## Ready for use
 
-package provide widget::dialog 1.0
+package provide widget::dialog 1.1
