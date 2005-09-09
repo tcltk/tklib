@@ -17,6 +17,7 @@
 #    -title	-default ""
 #    -transient -default 1
 #    -type	-default custom
+#    -timeout	-default 0 ; # only active with -synchronous
 #
 # Methods
 #  $path add $what $args... => $id
@@ -79,8 +80,9 @@ snit::widget widget::dialog {
     option -separator	-default 1 -configuremethod C-separator;
     option -synchronous -default 1;
     option -title	-default "" -configuremethod C-title;
-    option -transient   -default 1 -configuremethod C-transient;
+    option -transient	-default 1 -configuremethod C-transient;
     option -type	-default custom -configuremethod C-type;
+    option -timeout	-default 0;
 
     # We may make this an easier customizable messagebox, but not yet
     #option -anchor      c; # {n e w s c}
@@ -179,7 +181,13 @@ snit::widget widget::dialog {
 	    catch {grab -$option(-modal) $win}
 	}
 	if {$options(-type) ne "custom" && $options(-synchronous)} {
+	    if {$options(-timeout) > 0} {
+		# set var after specified timeout
+		set timeout_id [after $options(-timeout) \
+				    [list set [myvar result] timeout]]
+	    }
 	    vwait [myvar result]
+	    catch {after cancel $timeout_id}
 	    foreach {oldFocus oldGrab oldStatus} $lastFocusGrab { break }
 	    catch {focus $oldFocus}
 	    catch {grab release $oldGrab}
