@@ -1,5 +1,7 @@
 2005-09-08  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* dialog.tcl: add -timeout ms option to dialog
+
 	* scrollw.tcl: use ttk::scrollbar on x11
 
 2005-08-25  Jeff Hobbs  <jeffh@ActiveState.com>
