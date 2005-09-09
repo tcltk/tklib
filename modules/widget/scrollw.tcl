@@ -16,6 +16,9 @@ if 0 {
 
 ###
 
+if {[tk windowingsystem] eq "x11"} {
+    package require tile
+}
 package require widget
 
 snit::widget widget::scrolledwindow {
@@ -46,10 +49,17 @@ snit::widget widget::scrolledwindow {
     variable pending {}    ; # pending after id for scrollbar mgmt
 
     constructor args {
-	install hscroll using scrollbar $win.hscroll -orient horizontal \
-	    -highlightthickness 0 -takefocus 0
-	install vscroll using scrollbar $win.vscroll -orient vertical \
-	    -highlightthickness 0 -takefocus 0
+	if {[tk windowingsystem] eq "x11"} {
+	    install hscroll using ttk::scrollbar $win.hscroll \
+		-orient horizontal -takefocus 0
+	    install vscroll using ttk::scrollbar $win.vscroll \
+		-orient vertical -takefocus 0
+	} else {
+	    install hscroll using scrollbar $win.hscroll \
+		-orient horizontal -highlightthickness 0 -takefocus 0
+	    install vscroll using scrollbar $win.vscroll \
+		-orient vertical -highlightthickness 0 -takefocus 0
+	}
 
 	bind $win <Configure> [mymethod _realize $win]
 
