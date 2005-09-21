@@ -25,13 +25,16 @@ commands:
 [call [cmd widget::dialog] [arg pathname] [opt options]]
 options:
 
-[call [cmd widget::toolbar] [arg pathname] [opt options]]
+[call [cmd widget::panelframe] [arg pathname] [opt options]]
+options:
+
+[call [cmd widget::ruler] [arg pathname] [opt options]]
+options:
+
+[call [cmd widget::screenruler] [arg pathname] [opt options]]
 options:
 
 [call [cmd widget::superframe] [arg pathname] [opt options]]
-options:
-
-[call [cmd widget::panelframe] [arg pathname] [opt options]]
 options:
 
 [list_end]
