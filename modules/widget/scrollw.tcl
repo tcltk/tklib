@@ -5,6 +5,24 @@
 #	Scrolled widget
 #
 
+# Creation and Options - widget::scrolledwindow $path ...
+#  -scrollbar -default "both" ; vertical horizontal none
+#  -auto      -default "both" ; vertical horizontal none
+#  -sides     -default "se"   ;
+#  -size      -default 0      ; scrollbar -width (not recommended to change)
+#  -ipad      -default {0 0}  ; represents internal {x y} padding between
+#			      ; scrollbar and given widget
+#  All other options to frame
+#
+# Methods
+#  $path getframe           => $frame
+#  $path setwidget $widget  => $widget
+#  All other methods to frame
+#
+# Bindings
+#  NONE
+#
+
 if 0 {
     # Samples
     package require widget::scrolledwindow
@@ -38,7 +56,7 @@ snit::widget widget::scrolledwindow {
     option -sides     -default "se" \
 	-configuremethod C-scrollbar -validatemethod isa
     option -size      -default 0 -configuremethod C-size -validatemethod isa
-    option -padding   -default 1 -configuremethod C-padding -validatemethod isa
+    option -ipad      -default 0 -configuremethod C-ipad -validatemethod isa
 
     typevariable scrollopts {none horizontal vertical both}
     variable hlock 0       ; # locks to prevent redisplay loop
@@ -86,8 +104,8 @@ snit::widget widget::scrolledwindow {
 	    -size {
 		return [uplevel 1 [list $cmd integer {0 30} $option $value]]
 	    }
-	    -padding {
-		return [uplevel 1 [list $cmd listofint 4 $option $value]]
+	    -ipad {
+		return [uplevel 1 [list $cmd listofint 2 $option $value]]
 	    }
 	}
     }
@@ -110,18 +128,27 @@ snit::widget widget::scrolledwindow {
 		-xscrollcommand [mymethod _set_hscroll] \
 		-yscrollcommand [mymethod _set_vscroll]
 	}
+	return $widget
     }
 
     method C-size {option value} {
+	set options($option) $value
 	$vscroll configure -width $value
 	$hscroll configure -width $value
-	set options($option) $value
     }
 
     method C-scrollbar {option value} {
+	set options($option) $value
 	after cancel $pending
 	set pending [after idle [mymethod _setdata]]
+    }
+
+    method C-ipad {option value} {
 	set options($option) $value
+	# double value to ensure a single int value covers pad x and y
+	foreach {padx pady} [concat $value $value] { break }
+	grid configure $vscroll -padx [list $padx 0]
+	grid configure $hscroll -pady [list $pady 0]
     }
 
     method _set_hscroll {vmin vmax} {
