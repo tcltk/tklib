@@ -16,7 +16,8 @@
 #    -showvalues	-default 1
 #    -outline		-default 1
 #    -grid		-default 0
-#    -measure		-default pixels ; # not yet implemented
+#    -measure		-default pixels ; {pixels points inches mm cm}
+#    -zoom		-default 1
 #    all other options inherited from canvas
 #
 # Methods
@@ -31,6 +32,8 @@
 #    -alpha	-default 0.8
 #    -title	-default ""
 #    -topmost	-default 0
+#    -reflect	-default 0 ; reflect desktop screen
+#    -zoom	-default 1
 #
 # Methods
 #  $path display
@@ -64,7 +67,8 @@ snit::widgetadaptor widget::ruler {
     option -showvalues	-default 1 -configuremethod C-redraw;
     option -outline	-default 1 -configuremethod C-redraw;
     option -grid	-default 0 -configuremethod C-redraw;
-    option -measure	-default pixels; # -configuremethod C-measure;
+    option -measure	-default pixels -configuremethod C-measure;
+    option -zoom	-default 1 -configuremethod C-zoom;
 
     variable shade -array {small gray medium gray large gray}
 
@@ -88,15 +92,24 @@ snit::widgetadaptor widget::ruler {
 	$self redraw
    }
 
+    destructor {
+	catch {after cancel $redrawID}
+    }
+
     ########################################
     ## public methods
 
     ########################################
     ## configure methods
 
-    variable redrawID {}
     variable width    0
     variable height   0
+    variable measure  -array {
+	what ""
+	valid {pixels points inches mm cm}
+	cm c mm m inches i points p pixels ""
+    }
+    variable redrawID {}
 
     method C-interval {option value} {
 	if {[llength $value] != 2
@@ -106,8 +119,7 @@ snit::widgetadaptor widget::ruler {
 		must be a pair of doubles"
 	}
         set options($option) $value
-	after cancel $redrawID
-	set redrawID [after idle [mymethod redraw]]
+	$self redraw
     }
 
     method C-list {option value} {
@@ -120,11 +132,37 @@ snit::widgetadaptor widget::ruler {
 	}
     }
     method C-redraw {option value} {
-        set options($option) $value
-	if {$option eq "-foreground"} { $self _reshade }
-	after cancel $redrawID
-	set redrawID [after idle [mymethod redraw]]
+	if {$value ne $options($option)} {
+	    set options($option) $value
+	    if {$option eq "-foreground"} { $self _reshade }
+	    $self redraw
+	}
     }
+
+    method C-measure {option value} {
+	if {[set idx [lsearch -glob $measure(valid) $value*]] == -1} {
+	    return -code error "invalid $option value \"$value\":\
+		must be one of [join $measure(valid) {, }]"
+	}
+	set value [lindex $measure(valid) $idx]
+	set measure(what) $measure($value)
+	set options($option) $value
+	$self redraw
+    }
+
+    method C-zoom {option value} {
+	if {$value ne $options($option)} {
+	    if {![string is integer -strict $value] || $value < 1} {
+		return -code error "invalid $option value \"$value\":\
+		must be a valid integer >= 1"
+	    }
+	    set options($option) $value
+	    $self redraw
+	}
+    }
+
+    ########################################
+    ## private methods
 
     method _reshade {} {
 	set bg [$hull cget -bg]
@@ -134,101 +172,119 @@ snit::widgetadaptor widget::ruler {
 	set shade(large)  [$self shade $bg $fg 0.8]
     }
 
-    ########################################
-    ## private methods
-
-    method redraw_x {} {
- 	foreach {sms meds lgs} $options(-sizes) { break }
-	foreach {smi medi lgi} $options(-interval) { break }
- 	for {set x 0} {$x < $width} {set x [expr {$x + $smi}]} {
-	    if {fmod($x, $lgi) == 0.0} {
-		# draw large tick
-		set h $lgs
-		set tags [list tick large]
-		if {$x && $options(-showvalues) && $height > $lgs} {
-		    $hull create text [expr {$x+1}] $h \
-			-text [format %g $x] -anchor nw -tags value
-		}
-		set fill $shade(large)
-	    } elseif {fmod($x, $medi) == 0.0} {
-		set h $meds
-		set tags [list tick medium]
-		set fill $shade(medium)
-	    } else {
-		set h $sms
-		set tags [list tick small]
-		set fill $shade(small)
-	    }
-	    if {$options(-grid)} {
-		$hull create line $x 0 $x $height -width 1 -tags $tags \
-		    -fill $fill
-	    } else {
-		$hull create line $x 0 $x $h -width 1 -tags $tags \
-		    -fill $options(-foreground)
-		$hull create line $x $height $x [expr {$height - $h}] \
-		    -width 1 -tags $tags -fill $options(-foreground)
-	    }
-	}
-    }
-
-    method redraw_y {} {
- 	foreach {sms meds lgs} $options(-sizes) { break }
-	foreach {smi medi lgi} $options(-interval) { break }
- 	for {set y 0} {$y < $height} {set y [expr {$y + $smi}]} {
-	    if {fmod($y, $lgi) == 0.0} {
-		# draw large tick
-		set w $lgs
-		set tags [list tick large]
-		if {$y && $options(-showvalues) && $width > $lgs} {
-		    $hull create text $w [expr {$y+1}] \
-			-text [format %g $y] -anchor nw -tags value
-		}
-		set fill $shade(large)
-	    } elseif {fmod($y, $medi) == 0.0} {
-		set w $meds
-		set tags [list tick medium]
-		set fill $shade(medium)
-	    } else {
-		set w $sms
-		set tags [list tick small]
-		set fill $shade(small)
-	    }
-	    if {$options(-grid)} {
-		$hull create line 0 $y $width $y -width 1 -tags $tags \
-		    -fill $fill
-	    } else {
-		$hull create line 0 $y $w $y -width 1 -tags $tags \
-		    -fill $options(-foreground)
-		$hull create line $width $y [expr {$width - $w}] $y \
-		    -width 1 -tags $tags -fill $options(-foreground)
-	    }
-	}
-    }
-
     method redraw {} {
-	$hull delete all
+	after cancel $redrawID
+	set redrawID [after idle [mymethod _redraw]]
+    }
+
+    method _redraw {} {
+	$hull delete ruler
 	set width  [winfo width $win]
 	set height [winfo height $win]
-	$self redraw_x
-	$self redraw_y
+	$self _redraw_x
+	$self _redraw_y
 	if {$options(-outline) || $options(-grid)} {
 	    $hull create rect 0 0 [expr {$width-1}] [expr {$height-1}] \
-		-width 1 -outline $options(-foreground) -tags outline
+		-width 1 -outline $options(-foreground) \
+		-tags [list ruler outline]
 	}
 	if {$options(-showvalues) && $height > 20} {
+	    if {$measure(what) ne ""} {
+		set m   [winfo fpixels $win 1$measure(what)]
+		set txt "[format %.2f [expr {$width / $m}]] x\
+			[format %.2f [expr {$height / $m}]] $options(-measure)"
+	    } else {
+		set txt "$width x $height"
+	    }
+	    if {$options(-zoom) > 1} {
+		append txt " (x$options(-zoom))"
+	    }
 	    $hull create text 15 [expr {$height/2.}] \
-		-text "${width}x$height pixels" \
-		-anchor w -tags [list value label] \
+		-text $txt \
+		-anchor w -tags [list ruler value label] \
 		-fill $options(-foreground)
 	}
 	$hull raise large
 	$hull raise value
     }
 
+    method _redraw_x {} {
+ 	foreach {sms meds lgs} $options(-sizes) { break }
+	foreach {smi medi lgi} $options(-interval) { break }
+ 	for {set x 0} {$x < $width} {set x [expr {$x + $smi}]} {
+	    set dx [winfo fpixels $win \
+			[expr {$x * $options(-zoom)}]$measure(what)]
+	    if {fmod($x, $lgi) == 0.0} {
+		# draw large tick
+		set h $lgs
+		set tags [list ruler tick large]
+		if {$x && $options(-showvalues) && $height > $lgs} {
+		    $hull create text [expr {$dx+1}] $h -anchor nw \
+			-text [format %g $x]$measure(what) \
+			-tags [list ruler value]
+		}
+		set fill $shade(large)
+	    } elseif {fmod($x, $medi) == 0.0} {
+		set h $meds
+		set tags [list ruler tick medium]
+		set fill $shade(medium)
+	    } else {
+		set h $sms
+		set tags [list ruler tick small]
+		set fill $shade(small)
+	    }
+	    if {$options(-grid)} {
+		$hull create line $dx 0 $dx $height -width 1 -tags $tags \
+		    -fill $fill
+	    } else {
+		$hull create line $dx 0 $dx $h -width 1 -tags $tags \
+		    -fill $options(-foreground)
+		$hull create line $dx $height $dx [expr {$height - $h}] \
+		    -width 1 -tags $tags -fill $options(-foreground)
+	    }
+	}
+    }
+
+    method _redraw_y {} {
+ 	foreach {sms meds lgs} $options(-sizes) { break }
+	foreach {smi medi lgi} $options(-interval) { break }
+ 	for {set y 0} {$y < $height} {set y [expr {$y + $smi}]} {
+	    set dy [winfo fpixels $win \
+			[expr {$y * $options(-zoom)}]$measure(what)]
+	    if {fmod($y, $lgi) == 0.0} {
+		# draw large tick
+		set w $lgs
+		set tags [list ruler tick large]
+		if {$y && $options(-showvalues) && $width > $lgs} {
+		    $hull create text $w [expr {$dy+1}] -anchor nw \
+			-text [format %g $y]$measure(what) \
+			-tags [list ruler value]
+		}
+		set fill $shade(large)
+	    } elseif {fmod($y, $medi) == 0.0} {
+		set w $meds
+		set tags [list ruler tick medium]
+		set fill $shade(medium)
+	    } else {
+		set w $sms
+		set tags [list ruler tick small]
+		set fill $shade(small)
+	    }
+	    if {$options(-grid)} {
+		$hull create line 0 $dy $width $dy -width 1 -tags $tags \
+		    -fill $fill
+	    } else {
+		$hull create line 0 $dy $w $dy -width 1 -tags $tags \
+		    -fill $options(-foreground)
+		$hull create line $width $dy [expr {$width - $w}] $dy \
+		    -width 1 -tags $tags -fill $options(-foreground)
+	    }
+	}
+    }
+
     method _resize {w X Y} {
 	if {$w ne $win} { return }
-	after cancel $redrawID
-	set redrawID [after idle [mymethod redraw]]
+	$self redraw
     }
 
     method _adjustinterval {dir} {
@@ -241,8 +297,7 @@ snit::widgetadaptor widget::ruler {
 	    }
 	}
 	set options(-interval) $newint
-	after cancel $redrawID
-	set redrawID [after idle [mymethod redraw]]
+	$self redraw
     }
 
     method shade {orig dest frac} {
@@ -271,10 +326,15 @@ snit::widget widget::screenruler {
     option -alpha	-default 0.8 -configuremethod C-alpha;
     option -title	-default "" -configuremethod C-title;
     option -topmost	-default 0 -configuremethod C-topmost;
+    option -reflect	-default 0 -configuremethod C-reflect;
+    # override ruler zoom for reflection control as well
+    option -zoom	-default 1 -configuremethod C-zoom;
 
     variable alpha 0.8 ; # internal opacity value
     variable curinterval 5;
+    variable curmeasure "";
     variable grid 0;
+    variable reflect -array {ok 0 image "" id ""}
 
     constructor {args} {
 	wm withdraw $win
@@ -285,8 +345,10 @@ snit::widget widget::screenruler {
 	    -relief flat -bd 0 -background white -highlightthickness 0
 	install menu using menu $win.menu -tearoff 0
 
-	# avoid 1.0 because we want to maintain
-	if {$alpha >= 1.0} { set alpha 0.999 }
+	# avoid 1.0 because we want to maintain layered class
+	if {$::tcl_platform(platform) eq "windows" && $alpha >= 1.0} {
+	    set alpha 0.999
+	}
 	catch {wm attributes $win -alpha $alpha}
 	catch {wm attributes $win -topmost $options(-topmost)}
 
@@ -294,12 +356,32 @@ snit::widget widget::screenruler {
 	grid columnconfigure $win 0 -weight 1
 	grid rowconfigure    $win 0 -weight 1
 
+	set reflect(ok) [expr {![catch {package require treectrl}]
+			       && [llength [info commands loupe]]}]
+	if {$reflect(ok)} {
+	    set reflect(do) 0
+	    set reflect(x) -1
+	    set reflect(y) -1
+	    set reflect(w) [winfo width $win]
+	    set reflect(h) [winfo height $win]
+	    set reflect(image) [image create photo [myvar reflect] \
+				    -width  $reflect(w) -height $reflect(h)]
+	    $ruler create image 0 0 -anchor nw -image $reflect(image)
+	}
+
+	# Don't use options(-reflect) because it isn't 0/1
+	$menu add checkbutton -label "Reflect Desktop" \
+	    -variable [myvar reflect(do)] \
+	    -command "[list $win configure -reflect] \$[myvar reflect(do)]"
 	$menu add checkbutton -label "Show Grid" \
 	    -variable [myvar grid] \
 	    -command "[list $ruler configure -grid] \$[myvar grid]"
-	$menu add checkbutton -label "Keep on Top" \
-	    -variable [myvar options(-topmost)] \
-	    -command "[list $win configure -topmost] \$[myvar options(-topmost)]"
+	if {[tk windowingsystem] ne "x11"} {
+	    $menu add checkbutton -label "Keep on Top" \
+		-variable [myvar options(-topmost)] \
+		-command "[list $win configure -topmost] \$[myvar options(-topmost)]"
+	}
+	$menu add command -label "Place at ..." -command [mymethod _placedlg]
 	set m [menu $menu.interval -tearoff 0]
 	$menu add cascade -label "Interval" -menu $m
 	foreach interval {
@@ -308,6 +390,20 @@ snit::widget widget::screenruler {
 	    $m add radiobutton -label [lindex $interval 0] \
 		-variable [myvar curinterval] -value [lindex $interval 0] \
 		-command [list $ruler configure -interval $interval]
+	}
+	set m [menu $menu.zoom -tearoff 0]
+	$menu add cascade -label "Zoom" -menu $m
+	foreach zoom {1 2 3 4 5 8 10} {
+	    $m add radiobutton -label $zoom \
+		-variable [myvar options(-zoom)] -value $zoom \
+		-command "[list $win configure -zoom] \$[myvar options(-zoom)]"
+	}
+	set m [menu $menu.measure -tearoff 0]
+	$menu add cascade -label "Measurement" -menu $m
+	foreach val {pixels points inches mm cm} {
+	    $m add radiobutton -label $val \
+		-variable [myvar curmeasure] -value $val \
+		-command [list $ruler configure -measure $val]
 	}
 	set m [menu $menu.opacity -tearoff 0]
 	$menu add cascade -label "Opacity" -menu $m
@@ -325,15 +421,25 @@ snit::widget widget::screenruler {
 	} else {
 	    bind $win <ButtonPress-3>         [list tk_popup $menu %X %Y]
 	}
-	#bind $win <Configure>     [mymethod _resize %W %X %Y]
 	bind $win <ButtonPress-1> [mymethod _dragstart %W %X %Y]
 	bind $win <B1-Motion>     [mymethod _drag %W %X %Y]
 	bind $win <Motion>        [mymethod _edgecheck %W %x %y]
 
+	#$hull configure -menu $menu
+
 	$self configurelist $args
 
 	set grid [$ruler cget -grid]
+	set curinterval [lindex [$ruler cget -interval] 0]
+	set curmeasure  [$ruler cget -measure]
    }
+
+    destructor {
+	catch {
+	    after cancel $reflect(id)
+	    image delete $reflect(image)
+	}
+    }
 
     ########################################
     ## public methods
@@ -359,8 +465,10 @@ snit::widget widget::screenruler {
 	}
         set options($option) $value
 	set alpha $value
-	# avoid 1.0 because we want to maintain
-	if {$alpha >= 1.0} { set alpha 0.999 }
+	# avoid 1.0 because we want to maintain layered class
+	if {$::tcl_platform(platform) eq "windows" && $alpha >= 1.0} {
+	    set alpha 0.999
+	}
 	catch {wm attributes $win -alpha $alpha}
     }
     method C-title {option value} {
@@ -373,13 +481,58 @@ snit::widget widget::screenruler {
 	catch {wm attributes $win -topmost $value}
     }
 
+    method C-reflect {option value} {
+	if {($value > 0) && !$reflect(ok)} {
+	    return -code error "no reflection possible"
+	}
+	if {$value > 0} {
+	    if {$value < 50} {
+		set value 50
+	    }
+	    set reflect(id) [after idle [mymethod _reflect]]
+	} else {
+	    after cancel $reflect(id)
+	    catch {$reflect(image) blank}
+	}
+        set options($option) $value
+    }
+
+    method C-zoom {option value} {
+	if {![string is integer -strict $value] || $value < 1} {
+	    return -code error "invalid $option value \"$value\":\
+		must be a valid integer >= 1"
+	}
+	$ruler configure -zoom $value
+	set options($option) $value
+    }
+
     ########################################
     ## private methods
 
-    method _resize {w X Y} {
-	if {$w ne $ruler} { return }
-	after cancel $redrawID
-	set redrawID [after idle [mymethod redraw]]
+    method _placedlg {} {
+	package require widget::dialog
+	#widget::dialog
+    }
+
+    method _reflect {} {
+	if {!$reflect(ok)} { return }
+	set w [winfo width $win]
+	set h [winfo height $win]
+	set x [expr {[winfo pointerx .] - ($w / 2)}]
+	set y [expr {[winfo pointery .] - ($h / 2)}]
+	if {($reflect(w) != $w) || ($reflect(h) != $h)} {
+	    $reflect(image) configure -width $w -height $h
+	    set reflect(w) $w
+	    set reflect(h) $h
+	}
+	if {($reflect(x) != $x) || ($reflect(y) != $y)} {
+	    loupe $reflect(image) $x $y $w $h $options(-zoom)
+	    set reflect(x) $x
+	    set reflect(y) $y
+	}
+	if {$options(-reflect)} {
+	    set reflect(id) [after $options(-reflect) [mymethod _reflect]]
+	}
     }
 
     variable edge -array {
