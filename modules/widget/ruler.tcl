@@ -369,12 +369,12 @@ snit::widget widget::screenruler {
 	    set reflect(image) [image create photo [myvar reflect] \
 				    -width  $reflect(w) -height $reflect(h)]
 	    $ruler create image 0 0 -anchor nw -image $reflect(image)
-	}
 
-	# Don't use options(-reflect) because it isn't 0/1
-	$menu add checkbutton -label "Reflect Desktop" \
-	    -variable [myvar reflect(do)] \
-	    -command "[list $win configure -reflect] \$[myvar reflect(do)]"
+	    # Don't use options(-reflect) because it isn't 0/1
+	    $menu add checkbutton -label "Reflect Desktop" \
+		-variable [myvar reflect(do)] \
+		-command "[list $win configure -reflect] \$[myvar reflect(do)]"
+	}
 	$menu add checkbutton -label "Show Grid" \
 	    -variable [myvar grid] \
 	    -command "[list $ruler configure -grid] \$[myvar grid]"
