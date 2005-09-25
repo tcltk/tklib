@@ -5,8 +5,7 @@
 #	Generic dialog widget (themed)
 #
 
-# Creation and Options
-#  gdialog $path
+# Creation and Options - widget::dialog $path ...
 #    -command	-default {}
 #    -modal	-default none
 #    -padding	-default 0
