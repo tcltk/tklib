@@ -1,3 +1,16 @@
+2005-09-25  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* ruler.tcl: add -zoom option, add proper destructors, make
+	-measure work, add -reflect option to screenruler.
+
+	* dialog.tcl: add docs
+	* scrollw.tcl: change non-working -padding to working -ipad
+
+2005-09-21  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* widget.man, pkgIndex.tcl, ruler.tcl: add widget::ruler widget
+	and widget::screenruler dialog
+
 2005-09-12  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* scrollw.tcl: move tk call after 'package require widget'
