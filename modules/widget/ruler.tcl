@@ -329,12 +329,14 @@ snit::widget widget::screenruler {
     option -reflect	-default 0 -configuremethod C-reflect;
     # override ruler zoom for reflection control as well
     option -zoom	-default 1 -configuremethod C-zoom;
+    option -showgeometry	-default 0 -configuremethod C-showgeometry;
 
     variable alpha 0.8 ; # internal opacity value
     variable curinterval 5;
     variable curmeasure "";
     variable grid 0;
     variable reflect -array {ok 0 image "" id ""}
+    variable curdim -array {x 0 y 0 w 0 h 0}
 
     constructor {args} {
 	wm withdraw $win
@@ -376,12 +378,14 @@ snit::widget widget::screenruler {
 	$menu add checkbutton -label "Show Grid" \
 	    -variable [myvar grid] \
 	    -command "[list $ruler configure -grid] \$[myvar grid]"
+	$menu add checkbutton -label "Show Geometry" \
+	    -variable [myvar options(-showgeometry)] \
+	    -command "[list $win configure -showgeometry] \$[myvar options(-showgeometry)]"
 	if {[tk windowingsystem] ne "x11"} {
 	    $menu add checkbutton -label "Keep on Top" \
 		-variable [myvar options(-topmost)] \
 		-command "[list $win configure -topmost] \$[myvar options(-topmost)]"
 	}
-	$menu add command -label "Place at ..." -command [mymethod _placedlg]
 	set m [menu $menu.interval -tearoff 0]
 	$menu add cascade -label "Interval" -menu $m
 	foreach interval {
@@ -421,6 +425,7 @@ snit::widget widget::screenruler {
 	} else {
 	    bind $win <ButtonPress-3>         [list tk_popup $menu %X %Y]
 	}
+	bind $win <Configure>     [mymethod _resize %W %x %y %w %h]
 	bind $win <ButtonPress-1> [mymethod _dragstart %W %X %Y]
 	bind $win <B1-Motion>     [mymethod _drag %W %X %Y]
 	bind $win <Motion>        [mymethod _edgecheck %W %x %y]
@@ -506,12 +511,40 @@ snit::widget widget::screenruler {
 	set options($option) $value
     }
 
+    method C-showgeometry {option value} {
+	if {![string is boolean -strict $value]} {
+	    return -code error "invalid $option value \"$value\":\
+		must be a valid boolean"
+	}
+	set options($option) $value
+	$ruler delete geoinfo
+	if {$value} {
+	    set opts [list -bd 1 -highlightthickness 1 -width 4]
+	    set x 20
+	    set y 20
+	    foreach d {x y w h} {
+		set w [eval [list entry $win._$d -textvar [myvar curdim($d)]] \
+			   $opts]
+		$ruler create window $x $y -window $w -tags geoinfo
+		bind $w <Return> [mymethod _placecmd]
+		incr x [winfo reqwidth $w]
+	    }
+	}
+    }
+
     ########################################
     ## private methods
 
-    method _placedlg {} {
-	package require widget::dialog
-	#widget::dialog
+    method _placecmd {} {
+	wm geometry $win $curdim(w)x$curdim(h)+$curdim(x)+$curdim(y)
+    }
+
+    method _resize {W x y w h} {
+	if {$W ne $win} { return }
+	set curdim(x) $x
+	set curdim(y) $y
+	set curdim(w) $w
+	set curdim(h) $h
     }
 
     method _reflect {} {

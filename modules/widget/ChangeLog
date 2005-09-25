@@ -2,6 +2,7 @@
 
 	* ruler.tcl: add -zoom option, add proper destructors, make
 	-measure work, add -reflect option to screenruler.
+	Add -showgeometry to control geometry strictly.
 
 	* dialog.tcl: add docs
 	* scrollw.tcl: change non-working -padding to working -ipad
