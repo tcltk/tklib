@@ -184,8 +184,13 @@ snit::widgetadaptor widget::ruler {
 	$self _redraw_x
 	$self _redraw_y
 	if {$options(-outline) || $options(-grid)} {
-	    $hull create rect 0 0 [expr {$width-1}] [expr {$height-1}] \
-		-width 1 -outline $options(-foreground) \
+	    if {[tk windowingsystem] eq "aqua"} {
+		# Aqua has an odd off-by-one drawing
+		set coords [list 0 0 $width $height]
+	    } else {
+		set coords [list 0 0 [expr {$width-1}] [expr {$height-1}]]
+	    }
+	    $hull create rect $coords -width 1 -outline $options(-foreground) \
 		-tags [list ruler outline]
 	}
 	if {$options(-showvalues) && $height > 20} {
@@ -551,8 +556,8 @@ snit::widget widget::screenruler {
 	if {!$reflect(ok)} { return }
 	set w [winfo width $win]
 	set h [winfo height $win]
-	set x [expr {[winfo pointerx .] - ($w / 2)}]
-	set y [expr {[winfo pointery .] - ($h / 2)}]
+	set x [winfo pointerx $win]
+	set y [winfo pointery $win]
 	if {($reflect(w) != $w) || ($reflect(h) != $h)} {
 	    $reflect(image) configure -width $w -height $h
 	    set reflect(w) $w
@@ -634,7 +639,7 @@ snit::widget widget::screenruler {
 ## Ready for use
 
 package provide widget::ruler 1.0
-package provide widget::screenruler 1.0
+package provide widget::screenruler 1.1
 
 if {[info exist ::argv0] && $::argv0 eq [info script]} {
     # We are the main script being run - show ourselves
