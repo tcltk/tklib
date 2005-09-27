@@ -496,8 +496,8 @@ snit::widget widget::screenruler {
 	    return -code error "no reflection possible"
 	}
 	if {$value > 0} {
-	    if {$value < 30} {
-		set value 30
+	    if {$value < 50} {
+		set value 50
 	    }
 	    set reflect(id) [after idle [mymethod _reflect]]
 	} else {
