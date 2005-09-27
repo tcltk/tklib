@@ -1,3 +1,9 @@
+2005-09-26  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* pkgIndex.tcl: bumped widget::screenruler to 1.1
+	* ruler.tcl: fix off-by-one drawing in ruler and let the loupe
+	auto-center around the pointer for us.
+
 2005-09-25  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* ruler.tcl: add -zoom option, add proper destructors, make
