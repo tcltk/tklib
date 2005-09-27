@@ -9,7 +9,6 @@ package ifneeded widget::all 1.0 {
     package require widget::superframe
     package require widget::panelframe
     package require widget::ruler ; # includes screenruler
-    package require widget::toolbar
     package provide widget::all 1.0
 }
 
@@ -31,6 +30,3 @@ package ifneeded widget::screenruler 1.1 \
     [list source [file join $dir ruler.tcl]]
 package ifneeded widget::ruler 1.0 \
     [list source [file join $dir ruler.tcl]]
-
-package ifneeded widget::toolbar 1.0 \
-    [list source [file join $dir toolbar.tcl]]
