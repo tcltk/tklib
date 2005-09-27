@@ -496,8 +496,8 @@ snit::widget widget::screenruler {
 	    return -code error "no reflection possible"
 	}
 	if {$value > 0} {
-	    if {$value < 50} {
-		set value 50
+	    if {$value < 30} {
+		set value 30
 	    }
 	    set reflect(id) [after idle [mymethod _reflect]]
 	} else {
@@ -528,6 +528,7 @@ snit::widget widget::screenruler {
 	    set x 20
 	    set y 20
 	    foreach d {x y w h} {
+		destroy $win._$d
 		set w [eval [list entry $win._$d -textvar [myvar curdim($d)]] \
 			   $opts]
 		$ruler create window $x $y -window $w -tags geoinfo
