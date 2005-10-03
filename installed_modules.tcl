@@ -27,6 +27,7 @@ foreach {m pkg doc exa} {
     plotchart   _tcl  _man _exa
     style       _tcl  _man  _null
     swaplist    _tcl  _man  _null
+    tablelist    _tab  _null  _exa
     tkpiechart  _tcl  _man  _null
     tooltip     _tcl  _man  _null
     widget      _tcl  _man  _null

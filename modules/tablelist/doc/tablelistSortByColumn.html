@@ -1,0 +1,75 @@
+<html>
+<head>
+  <title>The tablelist::sortByColumn Command</title>
+
+  <meta name="Author"   content="Csaba Nemethi">
+  <meta name="Keywords" content="tablelist, sort, column, widget">
+</head>
+
+<body bgcolor=#ffffff>
+<div align=center>
+  <h1>The <code><b><font size=6>tablelist::sortByColumn</font></b></code>
+      Command</h1>
+
+  <h3>by</h3>
+
+  <h2>Csaba Nemethi</h2>
+
+  <address>
+    <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
+  </address>
+</div>
+
+
+<p><hr>
+
+
+<dl>
+  <dt><b>NAME</b>
+    <dd><code>tablelist::sortByColumn</code> - Sort the items of a tablelist
+	widget based on one of its columns
+
+  <p>
+  <dt><b>SYNOPSIS</b>
+    <dd>
+<pre>
+<b>tablelist::sortByColumn</b> <i>pathName</i> <i>columnIndex</i>
+</pre>
+
+  <p>
+  <dt><b>DESCRIPTION</b>
+    <dd>This command sorts the items of the <a href=
+	"tablelistWidget.html">tablelist</a> widget
+	<code><i>pathName</i></code> based on the elements of the column
+	specified by <code><i>columnIndex</i></code>.&nbsp; This is done by
+	invoking the <code><b><a href=
+	"tablelistWidget.html#sortbycolumn">sortbycolumn</a></b></code>
+	subcommand of the Tcl command associated with the given tablelist
+	widget.&nbsp; If the items were last sorted in increasing order, based
+	on the same column given by <code><i>columnIndex</i></code>, and no
+	subsequent invocation of the <code><b><a href=
+	"tablelistWidget.html#resetsortinfo">resetsortinfo</a></b></code>
+	subcommand was made, then the last argument passed to
+	<code><b>sortbycolumn</b></code> will be
+	<code><b>-decreasing</b></code>, otherwise
+	<code><b>-increasing</b></code>.&nbsp; After sorting the items, the
+	virtual event <code><b>&lt;&lt;TablelistColumnSorted&gt;&gt;</b></code>
+	is generated.&nbsp; The command returns the corresponding sorting
+	order, as <code><b>decreasing</b></code> or
+	<code><b>increasing</b></code>.
+
+	<p><code><b>tablelist::sortByColumn</b></code> is usually specified as
+	the value of the <code><b><a href=
+	"tablelistWidget.html#labelcommand">-labelcommand</a></b></code>
+	configuration option for a tablelist widget.
+
+  <p>
+  <dt><b>KEYWORDS</b>
+    <dd>tablelist, sort, column, widget
+</dl>
+
+<div align=center>
+  <p><a href="index.html">Start page</a>
+</div>
+</body>
+</html>
