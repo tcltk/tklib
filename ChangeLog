@@ -1,3 +1,9 @@
+2005-10-03  Andreas Kupries <andreask@activestate.com>
+
+	* install_action.tcl (_tab): New command for tablelist installation.
+	* installed_modules.tcl: New module: tablelist. Originator/Author:
+	  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 2005-08-24  Andreas Kupries <andreask@activestate.com>
 
 	* installer.tcl (write_out): Cross-ported the fix for [Tcllib SF
