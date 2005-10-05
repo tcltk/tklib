@@ -1,0 +1,14 @@
+2005-10-05  Andreas Kupries <andreask@activestate.com>
+
+	* doc/tablelist.html: Applied changes made by Csaba reflecting the
+	* README.txt:         fact that tablelist is now in tklib, and
+	  that the demos are in a different location.
+
+	* ../../examples/tablelist/: Applied changes made by Csaba
+	  reflecting the changed location of the demos in the scripts
+	  themselves.
+
+2005-10-03  Andreas Kupries <andreask@activestate.com>
+
+	* Added tablelist to tklib, moved demos to canonical location for
+	  examples of tklib modules.
