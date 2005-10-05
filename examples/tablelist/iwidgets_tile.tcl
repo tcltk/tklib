@@ -17,7 +17,7 @@ wm title . "Serial Line Configuration"
 #
 # Add some entries to the Tk option database
 #
-set dir [file join $tablelist::library demos]
+set dir [file dirname [info script]]
 source [file join $dir option_tile.tcl]
 option add *Tablelist*Checkbutton.background		white
 option add *Tablelist*Checkbutton.activeBackground	white
