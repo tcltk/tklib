@@ -86,6 +86,11 @@ information, except for the additional carriage return character
 preceding the linefeed at the end of each line in the text files for
 Windows.
 
+Tablelist is also hosted on SourceForge, as part of tklib, which in
+turn is contained in the tcllib project, having the address
+
+    http://sourceforge.net/projects/tcllib
+
 How to install it?
 ------------------
 

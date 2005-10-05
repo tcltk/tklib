@@ -8,7 +8,7 @@
 package require Tablelist_tile
 
 namespace eval demo {
-    variable dir [file join $tablelist::library demos]
+    variable dir [file dirname [info script]]
 
     #
     # Create two images, needed in the procedure putChildren

@@ -150,6 +150,13 @@ distribution file is <code>tablelist4.2.tar.gz</code> for UNIX and
 information, except for the additional carriage return character preceding the
 linefeed at the end of each line in the text files for Windows.
 
+<p>Tablelist is also hosted on SourceForge, as part of tklib, which in turn is
+contained in the tcllib project, having the address
+
+<blockquote><address>
+  <a href="http://sourceforge.net/projects/tcllib">http://sourceforge.net/projects/tcllib</a>
+</address></blockquote>
+
 
 <h3><a name="ov_install"></a>How to install it?</h3>
 
@@ -200,6 +207,12 @@ all invocations of&nbsp; <code>info exists</code>&nbsp; for array elements with
 a call to the helper procedure <code>arrElemExists</code>.&nbsp; The patched
 files work with all Tcl/Tk releases starting with 8.0, but the original ones
 have a much better performance.
+
+<p>Being part of tklib, Tablelist is also included in the ActiveState and
+TclTkAquaBI binary distributions.&nbsp; Notice that in these distributions the
+Tablelist <code>demos</code> directory is replaced with some other
+location.&nbsp; Please take this into account when reading the <a href=
+"#examples">examples</a> below.
 
 
 <h3><a name="ov_use"></a>How to use it?</h3>
@@ -390,7 +403,9 @@ using the <code>source</code> command as follows:
 
   <li>If <code>wish</code> was started in some other directory then you can use
       the <code>tablelist::library</code> variable to find the location of the
-      file:
+      file.&nbsp; For example, assuming that your Tablelist installation has
+      the directory structure described in the <a href="#ov_install">How to
+      install it?</a> section, the required commands are:
 
 <blockquote><pre>
 <p>package require Tablelist
@@ -813,7 +828,7 @@ details).&nbsp; To go one level up, click on the <code>Parent</code> button.
 package require Tablelist
 
 namespace eval demo {
-    variable dir [file join $tablelist::library demos]
+    variable dir [file dirname [info script]]
 
     #
     # Create two images, needed in the procedure putChildren
@@ -1307,7 +1322,7 @@ wm title . "Serial Line Configuration"
 #
 # Add some entries to the Tk option database
 #
-set dir [file join $tablelist::library demos]
+set dir [file dirname [info script]]
 source [file join $dir option.tcl]
 option add *Tablelist*Checkbutton.background		white
 option add *Tablelist*Checkbutton.activeBackground	white
@@ -1590,7 +1605,7 @@ wm title . "Tk Library Scripts"
 #
 # Add some entries to the Tk option database
 #
-set dir [file join $tablelist::library demos]
+set dir [file dirname [info script]]
 source [file join $dir option.tcl]
 
 #
