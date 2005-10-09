@@ -16,6 +16,11 @@ What is new in Tablelist 4.2?
    (thanks to Mats Bengtsson, Schelte Bron, and Mark Garvey for their
    bug reports).
 
+5. The demo scripts now work independently of their location (this
+   small improvement reflects the fact that Tablelist is now included
+   in tklib, where the examples are in a location different from
+   "$tablelist::library/demos").
+
 What was new in Tablelist 4.1?
 ------------------------------
 
