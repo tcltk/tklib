@@ -35,6 +35,13 @@ set uncheckedImg [image create photo -file [file join $dir unchecked.gif]]
 set f [ttk::frame .f -padding -2]
 
 #
+# Work around the improper appearance of the tile scrollbars in the aqua theme
+#
+if {$tile::currentTheme eq "aqua"} {
+    interp alias {} ttk::scrollbar {} ::scrollbar
+}
+
+#
 # Create a tablelist widget with editable columns (except the first one)
 #
 set tbl $f.tbl
