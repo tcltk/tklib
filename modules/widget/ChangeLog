@@ -1,3 +1,9 @@
+2005-10-12  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* pkgIndex.tcl: Bumped widget::dialog to v1.2.
+	* dialog.tcl: allow -type custom dialogs to be synchronous, add an
+	example showing user how to use it properly.
+
 2005-09-26  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* pkgIndex.tcl: bumped widget::screenruler to 1.1
