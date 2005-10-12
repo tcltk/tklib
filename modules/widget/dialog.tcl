@@ -6,7 +6,7 @@
 #
 
 # Creation and Options - widget::dialog $path ...
-#    -command	-default {}
+#    -command	-default {} ; # gets appended: $win $reason
 #    -modal	-default none
 #    -padding	-default 0
 #    -parent	-default ""
@@ -15,7 +15,7 @@
 #    -synchronous -default 1
 #    -title	-default ""
 #    -transient -default 1
-#    -type	-default custom
+#    -type	-default custom ; # {ok okcancel okcancelapply custom}
 #    -timeout	-default 0 ; # only active with -synchronous
 #
 # Methods
@@ -27,8 +27,8 @@
 #  $path withdraw
 #
 # Bindings
-#  Escape
-#  WM_DELETE_WINDOW
+#  Escape            => invokes [$dlg close cancel]
+#  WM_DELETE_WINDOW  => invokes [$dlg close cancel]
 #
 
 if 0 {
@@ -43,6 +43,21 @@ if 0 {
     grid $frame.lbl $frame.ent -sticky ew
     grid columnconfigure $frame 1 -weight 1
     $dlg setwidget $frame
+    puts [$dlg display]
+    destroy $dlg
+
+    # Using -synchronous with a -type custom dialog requires that the
+    # custom buttons call [$dlg close $reason] to trigger the close
+    set dlg [widget::dialog .pkgerr -title "Yes/No Dialog" -separator 1 \
+		 -parent . -type custom]
+    set frame [frame $dlg.f]
+    label $frame.lbl -text "Type Something In:"
+    entry $frame.ent
+    grid $frame.lbl $frame.ent -sticky ew
+    grid columnconfigure $frame 1 -weight 1
+    $dlg setwidget $frame
+    $dlg add button -text "Yes" -command [list $dlg close yes]
+    $dlg add button -text "No" -command [list $dlg close no]
     puts [$dlg display]
 }
 
@@ -179,7 +194,10 @@ snit::widget widget::dialog {
 	if {$options(-modal) ne "none"} {
 	    catch {grab -$option(-modal) $win}
 	}
-	if {$options(-type) ne "custom" && $options(-synchronous)} {
+	# In order to allow !custom synchronous, we need to allow
+	# custom dialogs to set [myvar result].  They do that through
+	# [$dlg close $reason]
+	if {$options(-synchronous)} {
 	    if {$options(-timeout) > 0} {
 		# set var after specified timeout
 		set timeout_id [after $options(-timeout) \
@@ -427,4 +445,4 @@ snit::widget widget::dialog {
 # ### ######### ###########################
 ## Ready for use
 
-package provide widget::dialog 1.1
+package provide widget::dialog 1.2
