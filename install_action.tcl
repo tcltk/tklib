@@ -21,6 +21,7 @@ proc _tab {module libdir} {
     global distribution
 
     _tcl $module $libdir
+
     xcopy \
 	    [file join $distribution modules $module images] \
 	    [file join $libdir $module images] \
@@ -30,6 +31,11 @@ proc _tab {module libdir} {
 	    [file join $distribution modules $module scripts] \
 	    [file join $libdir $module scripts] \
 	    0 *.tcl
+
+    xcopyfile \
+	[file join $distribution modules $module scripts tclIndex] \
+	[file join $libdir $module scripts]
+
     return
 }
 

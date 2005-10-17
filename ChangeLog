@@ -1,3 +1,8 @@
+2005-10-17  Andreas Kupries <andreask@activestate.com>
+
+	* install_action.tcl (_tab): Bugfix. Have to install the file
+	  'tclIndex' as well to make the package fully-functional.
+
 2005-10-03  Andreas Kupries <andreask@activestate.com>
 
 	* install_action.tcl (_tab): New command for tablelist installation.
