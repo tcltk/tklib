@@ -415,13 +415,13 @@ proc tablelist::doConfig {win opt val} {
 		    set w $data(body)
 		    switch $val {
 			frame {
-			    $w tag configure active -relief solid -underline 0
+			    $w tag configure active -relief solid -underline ""
 			}
 			none {
-			    $w tag configure active -relief flat -underline 0
+			    $w tag configure active -relief "" -underline ""
 			}
 			underline {
-			    $w tag configure active -relief flat -underline 1
+			    $w tag configure active -relief "" -underline 1
 			}
 		    }
 		    set data($opt) $val
@@ -721,15 +721,12 @@ proc tablelist::doConfig {win opt val} {
 		    switch $val {
 			disabled {
 			    $w tag add disabled 1.0 end
-			    $w tag configure active -borderwidth 0
-			    $w tag configure select -borderwidth 0
+			    $w tag configure select -relief flat
 			    set data(isDisabled) 1
 			}
 			normal {
 			    $w tag remove disabled 1.0 end
-			    $w tag configure active -borderwidth 1
-			    $w tag configure select -borderwidth \
-				   $data(-selectborderwidth)
+			    $w tag configure select -relief raised
 			    set data(isDisabled) 0
 			}
 		    }

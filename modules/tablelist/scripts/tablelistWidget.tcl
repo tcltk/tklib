@@ -610,10 +610,10 @@ proc tablelist::tablelist args {
     # only becomes visible when the window gets the input focus.
     # DO NOT CHANGE the order of creation of these tags!
     #
-    $w tag configure stripe -background "" -foreground ""
+    $w tag configure stripe -background "" -foreground ""    ;# will be changed
     $w tag configure select -relief raised
-    $w tag configure active -borderwidth 1 -underline 1
-    $w tag configure disabled -underline 0
+    $w tag configure active -borderwidth 1
+    $w tag configure disabled -foreground ""		     ;# will be changed
     variable elide
     if {$::tk_version >= 8.3} {
 	$w tag configure elidedCol -elide 1
