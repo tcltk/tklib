@@ -1091,6 +1091,12 @@ proc tablelist::xpnativeTheme {} {
 	    set activeBg	#fefefe
 	    set pressedBg	#ececf3
 	}
+
+	default {
+	    set labelBg		SystemButtonFace
+	    set activeBg	SystemButtonFace
+	    set pressedBg	SystemButtonFace
+	}
     }
 
     variable themeDefaults
