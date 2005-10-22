@@ -14,8 +14,5 @@ package provide tablelist_tile $tablelist::version
 set tablelist::usingTile 1
 trace variable tablelist::usingTile wu "tablelist::restoreUsingTile 1"
 
-#
-# The following statements might no longer be needed for tile versions > 0.6:
-#
 interp alias {} tk::frame {} ::frame
 interp alias {} tk::label {} ::label
