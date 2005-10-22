@@ -112,16 +112,6 @@ pack $btn -side bottom -pady 10
 pack $tbl -side top -expand yes -fill both
 pack $f -expand yes -fill both
 
-if {$tile::currentTheme ne "aqua"} {
-    #
-    # Improve the appearance of the combobox
-    #
-    # CAUTION:  The command below might break the combobox when using
-    #		tile versions > 0.6.  In that case, please remove it.
-    #
-    namespace import -force ttk::scrollbar
-}
-
 #------------------------------------------------------------------------------
 # editStartCmd
 #
