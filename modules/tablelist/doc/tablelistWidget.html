@@ -1425,7 +1425,7 @@
 	  <p>Specifies a boolean value that determines whether the <code><b><a
 	  href="#sortbycolumn">sortbycolumn</a></b></code> subcommand of the
 	  Tcl command associated with the widget should place an arrow
-	  indicating the sorting order into the header label of the column
+	  indicating the sort order into the header label of the column
 	  specified by its first argument.&nbsp; The default value is
 	  <code>1</code>.
 	</blockquote>
@@ -1563,10 +1563,9 @@
 	  "#labeldisabledforeground">-labeldisabledforeground</a></b></code>,
 	  and <code><b><a href=
 	  "#arrowdisabledcolor">-arrowdisabledcolor</a></b></code> color,
-	  respectively, the location of the active item or element and the
-	  selection cannot be modified and are not shown (although the
-	  corresponding information is retained), the header labels are
-	  completely insensitive, and no interactive cell editing can be
+	  respectively, the selection cannot be modified and is not shown
+	  (although the selection information is retained), the header labels
+	  are completely insensitive, and no interactive cell editing can be
 	  performed.
 	</blockquote>
 
@@ -2141,7 +2140,7 @@
 	  <dd>Specifies whether the <code><b><a href=
 	      "#sortbycolumn">sortbycolumn</a></b></code> command with the
 	      given column index as first argument should place an arrow
-	      indicating the sorting order into the column's label.&nbsp; The
+	      indicating the sort order into the column's label.&nbsp; The
 	      default value is <code>1</code>.&nbsp; This option is only
 	      relevant if the value of the <code><b><a href=
 	      "#showarrow">-showarrow</a></b></code> widget configuration
@@ -3798,9 +3797,9 @@
 	      that of the <code><b><a href=
 	      "#col_showarrow">-showarrow</a></b></code> option for the
 	      specified column are true then an up- or down-arrow indicating
-	      the sorting order will be placed into the column's label.&nbsp;
-	      The shape of the arrow depends on the command's optional argument
-	      and on the value of the <code><b><a href=
+	      the sort order will be placed into the column's label.&nbsp; The
+	      shape of the arrow depends on the command's optional argument and
+	      on the value of the <code><b><a href=
 	      "#incrarrowtype">-incrarrowtype</a></b></code> configuration
 	      option.&nbsp; If the label's contents are right-aligned then the
 	      arrow will be displayed on the left side of the label, otherwise
@@ -3815,17 +3814,17 @@
 	      "#sortbycolumn">sortbycolumn</a></b></code> command, or
 	      <code>-1</code> if they were last sorted with the <code><b><a
 	      href="#sort">sort</a></b></code> command or haven't been sorted
-	      at all, or the sorting information was reset by invoking
+	      at all, or the sort information was reset by invoking
 	      <code><b><a href="#resetsortinfo">resetsortinfo</a></b></code>.
 
 	<p><a name="sortorder"></a>
 	<dt><code><i>pathName</i> <b>sortorder</b></code>
-	  <dd>Returns the sorting order (as <code><b>increasing</b></code> or
+	  <dd>Returns the sort order (as <code><b>increasing</b></code> or
 	      <code><b>decreasing</b></code>) from the last invocation of the
 	      <code><b><a href="#sort">sort</a></b></code> or <code><b><a
 	      href="#sortbycolumn">sortbycolumn</a></b></code> command, or an
 	      empty string if the items haven't been sorted at all, or the
-	      sorting information was reset by invoking <code><b><a href=
+	      sort information was reset by invoking <code><b><a href=
 	      "#resetsortinfo">resetsortinfo</a></b></code>.
 
 	<p><a name="togglevisibility"></a>
