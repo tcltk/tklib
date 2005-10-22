@@ -5,9 +5,9 @@ What is new in Tablelist 4.2?
    both sides of the right edge (thanks to Bryan Oakley for suggesting
    this improvement).
 
-2. Made sure the header labels have the right appearance in the "aqua"
-   theme when using tile version 0.6.4 or later (thanks to Bryan Oakley
-   for his bug report).
+2. Made sure that the header labels have the right appearance in the
+   "aqua" theme when using tile version 0.6.4 or later (thanks to Bryan
+   Oakley for his bug report).
 
 3. Several further improvements related to Mac OS X Aqua, in both the
    implementation and the demo scripts.
@@ -16,10 +16,20 @@ What is new in Tablelist 4.2?
    (thanks to Mats Bengtsson, Schelte Bron, and Mark Garvey for their
    bug reports).
 
-5. The demo scripts now work independently of their location (this
+5. Fixed a bug related to the "xpnative" theme, introduced in the
+   previous release (thanks to Mark Garvey, Jeff Godfrey, and Uwe
+   Koloska for their bug reports).
+
+6. The demo scripts now work independently of their location (this
    small improvement reflects the fact that Tablelist is now included
    in tklib, where the examples are in a location different from
    "$tablelist::library/demos").
+
+7. Adapted two tile-based demo scripts to the recently released tile
+   version 0.7.
+
+8. Several further improvements in the code and documentation (thanks
+   to Patrick Fradin for his valuable contribution).
 
 What was new in Tablelist 4.1?
 ------------------------------
