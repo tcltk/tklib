@@ -218,7 +218,7 @@ proc demo::formatBoolean val {
 #
 # Sorts the contents of the tablelist widget tbl by its col'th column and makes
 # sure the items will be updated 500 ms later (because one of the items might
-# refer to the canvas containing the arrow that displays the sorting order).
+# refer to the canvas containing the arrow that displays the sort order).
 #------------------------------------------------------------------------------
 proc demo::labelCmd {tbl col} {
     tablelist::sortByColumn $tbl $col
