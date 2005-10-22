@@ -1,8 +1,45 @@
 #==============================================================================
 # Contains private utility procedures for tablelist widgets.
 #
+# Structure of the module:
+#   - Namespace initialization
+#   - Private utility procedures
+#
 # Copyright (c) 2000-2005  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
+
+#
+# Namespace initialization
+# ========================
+#
+
+namespace eval tablelist {
+    #
+    # Alignment to anchor mapping
+    #
+    variable anchors
+    array set anchors {
+	left	w
+	right	e
+	center	center
+    }
+
+    #
+    # <incrArrowType, sortOrder> to direction mapping
+    #
+    variable directions
+    array set directions {
+	up,increasing	Up
+	up,decreasing	Down
+	down,increasing	Down
+	down,decreasing	Up
+    }
+}
+
+#
+# Private utility procedures
+# ==========================
+#
 
 #------------------------------------------------------------------------------
 # tablelist::rowIndex
@@ -1388,6 +1425,7 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 # children.
 #------------------------------------------------------------------------------
 proc tablelist::adjustLabel {win col pixels alignment} {
+    variable anchors
     variable usingTile
     upvar ::tablelist::ns${win}::data data
 
@@ -1395,11 +1433,7 @@ proc tablelist::adjustLabel {win col pixels alignment} {
     # Apply some configuration options to the label and its children (if any)
     #
     set w $data(hdrTxtFrLbl)$col
-    switch $alignment {
-	left	{ set anchor w }
-	right	{ set anchor e }
-	center	{ set anchor center }
-    }
+    set anchor $anchors($alignment)
     if {$usingTile && [string compare $tile::currentTheme "xpnative"] == 0} {
 	set padX $data(charWidth)
     } else {
@@ -2915,26 +2949,12 @@ proc tablelist::getShadows {w color darkColorName lightColorName} {
 # tablelist widget win.
 #------------------------------------------------------------------------------
 proc tablelist::raiseArrow win {
+    variable directions
     upvar ::tablelist::ns${win}::data data
 
     set w $data(hdrTxtFrCanv)
     set state $data(-state)
-
-    switch $data(-incrarrowtype) {
-	up {
-	    switch $data(sortOrder) {
-		increasing { set direction Up }
-		decreasing { set direction Down }
-	    }
-	}
-
-	down {
-	    switch $data(sortOrder) {
-		increasing { set direction Down }
-		decreasing { set direction Up }
-	    }
-	}
-    }
+    set direction $directions($data(-incrarrowtype),$data(sortOrder))
 
     $w raise ${state}Triangle$direction
     $w raise ${state}DarkLine$direction

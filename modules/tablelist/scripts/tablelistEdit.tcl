@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of interactive cell editing in tablelist widgets.
 #
-# Stucture of the module:
+# Structure of the module:
 #   - Namespace initialization
 #   - Public procedures related to interactive cell editing
 #   - Private procedures implementing the interactive cell editing
