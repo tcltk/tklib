@@ -1,5 +1,11 @@
 2005-10-24  Andreas Kupries <andreask@activestate.com>
 
+	* sak.tcl: Added methods for release engineering: rstatus,
+	  release, desc, desc/2, better tap generation.
+	* PACKAGES: New file, empty, will be filled when the release is
+	  committed.
+	* README-0.4.txt: New file, summary changes for 0.4 release.
+
 	* sak.tcl (ipackages): Strip code opening with brace after version
 	  number as well when extracting version numbers from package
 	  indices.
