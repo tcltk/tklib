@@ -1,3 +1,15 @@
+2005-10-24  Andreas Kupries <andreask@activestate.com>
+
+	* pkgIndex.tcl: Reorganized things a bit. Procedures to remove
+	  quoting issues and make code more readable. Unrolled the loops
+	  to make code accessible to extraction of name/version
+	  information by sak tool.
+
+2005-10-2x Csaba Nemethi
+
+	* Unknown changes -- This entry is a placeholder
+	  Please, always update the ChangeLog before a commit !!
+
 2005-10-05  Andreas Kupries <andreask@activestate.com>
 
 	* doc/tablelist.html: Applied changes made by Csaba reflecting the
