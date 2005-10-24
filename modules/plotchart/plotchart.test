@@ -10,6 +10,12 @@
 # - checks for setZoomPan (changes of coordinates)
 #
 
+if {![package vsatisfies [package provide Tcl] 8.3]} {
+    puts "    Aborting tests for plotchart."
+    puts "    Requiring Tcl 8.3, have [package present Tcl]"
+    return
+}
+
 # -------------------------------------------------------------------------
 #
 # Note:

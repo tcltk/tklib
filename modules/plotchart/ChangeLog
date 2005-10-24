@@ -1,3 +1,11 @@
+2005-10-24  Andreas Kupries <andreask@activestate.com>
+
+	* plotchart.test: Added check for Tcl 8.3, minimum version of Tcl
+	  required by the charts.
+
+	* pkgIndex.tcl: Sync'd the package version with implementation and
+	  documentation.
+
 2005-06-14 Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
         * plotgantt.tcl: Expanded Gantt charts with one more

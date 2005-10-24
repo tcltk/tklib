@@ -5,6 +5,7 @@
 #    This source file contains the public functions.
 #    The others are contained in "plotpriv.tcl"
 #
+package require Tcl 8.3
 package require Tk
 
 # Plotchart --
