@@ -972,7 +972,7 @@ proc tablelist::createTileEntry {w args} {
     switch $tile::currentTheme {
 	aqua     { set padding {0 0 0 -1} }
 	tileqt   { set padding {3 2} }
-	xpnative { set padding 2 }
+	xpnative { set padding [expr {$::tablelist::xpStyle ? 2 : 1}] }
 	default  { set padding 1 }
     }
     style default Edit$win.TEntry -highlightthickness 0 -padding $padding

@@ -1029,9 +1029,9 @@ proc tablelist::tileqtTheme {} {
 proc tablelist::winnativeTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-background		white \
+	-background		SystemWindow \
 	-foreground		SystemWindowText \
-	-disabledforeground	SystemGrayText \
+	-disabledforeground	SystemDisabledText \
 	-selectbackground	SystemHighlight \
 	-selectforeground	SystemHighlightText \
 	-selectborderwidth	0 \
@@ -1040,7 +1040,7 @@ proc tablelist::winnativeTheme {} {
 	-labeldisabledBg	SystemButtonFace \
 	-labelactiveBg		SystemButtonFace \
 	-labelpressedBg		SystemButtonFace \
-	-labelforeground	SystemWindowText \
+	-labelforeground	SystemButtonText \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		0 \
@@ -1079,31 +1079,47 @@ proc tablelist::winxpblueTheme {} {
 # tablelist::xpnativeTheme
 #------------------------------------------------------------------------------
 proc tablelist::xpnativeTheme {} {
+    variable xpStyle
     switch [winfo rgb . SystemButtonFace] {
 	"60652 59881 55512" {
+	    set xpStyle		1
 	    set labelBg		#ebeadb
 	    set activeBg	#faf8f3
 	    set pressedBg	#dedfd8
+	    set labelBd		1
+	    set labelPadY	4
+	    set arrowColor	#aca899
+	    set arrowStyle	flat9x5
 	}
 
 	"57568 57311 58339" {
+	    set xpStyle		1
 	    set labelBg		#f9fafd
 	    set activeBg	#fefefe
 	    set pressedBg	#ececf3
+	    set labelBd		1
+	    set labelPadY	4
+	    set arrowColor	#aca899
+	    set arrowStyle	flat9x5
 	}
 
 	default {
+	    set xpStyle		0
 	    set labelBg		SystemButtonFace
 	    set activeBg	SystemButtonFace
 	    set pressedBg	SystemButtonFace
+	    set labelBd		2
+	    set labelPadY	0
+	    set arrowColor	SystemButtonShadow
+	    set arrowStyle	flat7x4
 	}
     }
 
     variable themeDefaults
     array set themeDefaults [list \
-	-background		white \
+	-background		SystemWindow \
 	-foreground		SystemWindowText \
-	-disabledforeground	SystemGrayText \
+	-disabledforeground	SystemDisabledText \
 	-selectbackground	SystemHighlight \
 	-selectforeground	SystemHighlightText \
 	-selectborderwidth	0 \
@@ -1112,11 +1128,11 @@ proc tablelist::xpnativeTheme {} {
 	-labeldisabledBg	$labelBg \
 	-labelactiveBg		$activeBg \
 	-labelpressedBg		$pressedBg \
-	-labelforeground	SystemWindowText \
+	-labelforeground	SystemButtonText \
 	-labelfont		TkDefaultFont \
-	-labelborderwidth	1 \
-	-labelpady		4 \
-	-arrowcolor		#aca899 \
-	-arrowstyle		flat9x5 \
+	-labelborderwidth	$labelBd \
+	-labelpady		$labelPadY \
+	-arrowcolor		$arrowColor \
+	-arrowstyle		$arrowStyle \
     ]
 }

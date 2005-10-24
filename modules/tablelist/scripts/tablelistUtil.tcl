@@ -1119,7 +1119,8 @@ proc tablelist::createSeps win {
     variable usingTile
     upvar ::tablelist::ns${win}::data data
 
-    if {$usingTile && [string compare $tile::currentTheme "xpnative"] == 0} {
+    if {$usingTile && [string compare $tile::currentTheme "xpnative"] == 0 &&
+	$::tablelist::xpStyle} {
 	set x 0
     } else {
 	set x 1
@@ -1218,7 +1219,8 @@ proc tablelist::adjustSeps win {
 	}
     } else {
 	if {$usingTile &&
-	    [string compare $tile::currentTheme "xpnative"] == 0} {
+	    [string compare $tile::currentTheme "xpnative"] == 0 &&
+	    $::tablelist::xpStyle} {
 	    set x 0
 	} else {
 	    set x 1
@@ -1434,7 +1436,8 @@ proc tablelist::adjustLabel {win col pixels alignment} {
     #
     set w $data(hdrTxtFrLbl)$col
     set anchor $anchors($alignment)
-    if {$usingTile && [string compare $tile::currentTheme "xpnative"] == 0} {
+    if {$usingTile && [string compare $tile::currentTheme "xpnative"] == 0 &&
+	$::tablelist::xpStyle} {
 	set padX $data(charWidth)
     } else {
 	set borderWidth [winfo pixels $w [$w cget -borderwidth]]
