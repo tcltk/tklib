@@ -1,3 +1,11 @@
+2005-10-24  Andreas Kupries <andreask@activestate.com>
+
+	* sak.tcl (ipackages): Strip code opening with brace after version
+	  number as well when extracting version numbers from package
+	  indices.
+
+	* tklib_version.tcl: Bumped to 0.4.
+
 2005-10-17  Andreas Kupries <andreask@activestate.com>
 
 	* install_action.tcl (_tab): Bugfix. Have to install the file
