@@ -96,6 +96,7 @@ proc ipackages {args} {
 	    if {![regexp {ifneeded} $line]} {continue}
 	    regsub {^.*ifneeded } $line {} line
 	    regsub {([0-9]) \[.*$}  $line {\1} line
+	    regsub {([0-9]) \{.*$}  $line {\1} line
 
 	    foreach {n v} $line break
 	    set p($n) $v
@@ -454,7 +455,7 @@ proc gd-gen-tap {} {
 proc gd-gen-rpmspec {} {
     global tklib_version tklib_name distribution
 
-    set header [string map [list @@@@ $tklib_version @__@ $tklib_name] {# $Id: sak.tcl,v 1.1 2003/11/28 22:42:03 andreas_kupries Exp $
+    set header [string map [list @@@@ $tklib_version @__@ $tklib_name] {# $Id: sak.tcl,v 1.2 2005/10/24 22:06:27 andreas_kupries Exp $
 
 %define version @@@@
 %define directory /usr
