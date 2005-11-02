@@ -130,9 +130,17 @@ proc ipackages {args} {
     return [array get p]
 }
 
+# Result: dict (package name --> list of package versions).
 
 proc ppackages {args} {
     # Determine provided packages (provide, *.tcl - pkgIndex.tcl)
+    # We cache results for a bit of speed, some stuff uses this
+    # multiple times for the same arguments.
+
+    global ppcache
+    if {[info exists ppcache($args)]} {
+	return $ppcache($args)
+    }
 
     global    p pf currentfile
     array set p {}
@@ -143,39 +151,153 @@ proc ppackages {args} {
 	set files [modtclfiles $args]
     }
 
+    getpackage fileutil
+    set capout [fileutil::tempfile] ; set capcout [open $capout w]
+    set caperr [fileutil::tempfile] ; set capcerr [open $caperr w]
+
     foreach f $files {
 	# We ignore package indices and all files not in a module.
 
 	if {[string equal pkgIndex.tcl [file tail $f]]} {continue}
 	if {![regexp modules $f]}                       {continue}
 
-	set fh [open $f r]
+	# We use two methods to extract the version information from a
+	# module and its packages. First we do a static scan for
+	# appropriate statements. If that did not work out we try to
+	# execute the script in a modified interpreter which lets us
+	# pick up dynamically generated version data (like stored in
+	# variables). If the second method fails as well we give up.
 
-	# Source the code into a sub-interpreter. The sub interpreter
-	# overloads 'package provide' so that the information about
-	# new packages goes directly to us. We also make sure that the
-	# sub interpreter doesn't kill us, and will not get stuck
-	# early by trying to load other files, or when creating
-	# procedures in namespaces which do not exist due to us
-	# disabling most of the package management.
+	# Method I. Static scan.
+
+	# We do heuristic scanning of the code to locate suitable
+	# package provide statements.
+
+	set fh [open $f r]
 
 	set currentfile [eval file join [lrange [file split $f] end-1 end]]
 
-	set ip [interp create]
-	interp alias $ip package {} xPackage
-	interp alias $ip source  {} xNULL
-	interp alias $ip unknown {} xNULL
-	interp alias $ip proc    {} xNULL
-	interp alias $ip exit    {} xNULL
-	if {[catch {$ip eval [read $fh]} msg]} {
-	    #puts "ERROR in $currentfile:\n$msg\n"
+	set ok -1
+	foreach line [split [read $fh] \n] {
+	    regsub "\#.*$" $line {} line
+	    if {![regexp {provide} $line]} {continue}
+	    if {![regexp {package} $line]} {continue}
+
+	    set xline $line
+	    regsub {^.*provide } $line {} line
+	    regsub {\].*$}       $line {\1} line
+
+	    sakdebug {puts stderr __$f\ _________$line}
+
+	    foreach {n v} $line break
+
+	    # HACK ...
+	    # Module 'page', package 'page::gen::peg::cpkg'.
+	    # Has a provide statement inside a template codeblock.
+	    # Name is placeholder @@. Ignore this specific name.
+	    # Better would be to use general static Tcl parsing
+	    # to find that the string is a variable value.
+
+	    if {[string equal $n @@]} continue
+
+	    if {[regexp {^[0-9]+(\.[0-9]+)*$} $v]} {
+		lappend p($n) $v
+		set p($n) [lsort -uniq -dict $p($n)]
+		set pf($n,$v) $currentfile
+		set ok 1
+
+		# We continue the scan. The file may provide several
+		# versions of the same package, or multiple packages.
+		continue
+	    }
+
+	    # 'package provide foo' are tests. Ignore.
+	    if {$v == ""} continue
+
+	    # We do not set the state to bad if we found ok provide
+	    # statements before, only if nothing was found before.
+	    if {$ok < 0} {
+		set ok 0
+
+		# No good version found on the current line. We scan
+		# further through the file and hope for more luck.
+
+		sakdebug {puts stderr @_$f\ _________$xline\t<$n>\t($v)}
+	    }
 	}
 	close $fh
-	interp delete $ip
+
+	# Method II. Restricted Execution.
+	# We now try to run the code through a safe interpreter
+	# and hope for better luck regarding package information.
+
+	if {$ok == -1} {sakdebug {puts stderr $f\ IGNORE}}
+	if {$ok == 0} {
+	    sakdebug {puts -nonewline stderr $f\ EVAL}
+
+	    # Source the code into a sub-interpreter. The sub
+	    # interpreter overloads 'package provide' so that the
+	    # information about new packages goes directly to us. We
+	    # also make sure that the sub interpreter doesn't kill us,
+	    # and will not get stuck early by trying to load other
+	    # files, or when creating procedures in namespaces which
+	    # do not exist due to us disabling most of the package
+	    # management.
+
+	    set fh [open $f r]
+
+	    set ip [interp create]
+
+	    # Kill control structures. Namespace is required, but we
+	    # skip everything related to loading of packages,
+	    # i.e. 'command import'.
+
+	    $ip eval {
+		rename ::if        ::_if_
+		rename ::namespace ::_namespace_
+
+		proc ::if {args} {}
+		proc ::namespace {cmd args} {
+		    #puts stderr "_nscmd_ $cmd"
+		    ::_if_ {[string equal $cmd import]} return
+		    #puts stderr "_nsdo_ $cmd $args"
+		    return [uplevel 1 [linsert $args 0 ::_namespace_ $cmd]]
+		}
+	    }
+
+	    # Kill more package stuff, and ensure that unknown
+	    # commands are neither loaded nor abort execution. We also
+	    # stop anything trying to kill the application at large.
+
+	    interp alias $ip package {} xPackage
+	    interp alias $ip source  {} xNULL
+	    interp alias $ip unknown {} xNULL
+	    interp alias $ip proc    {} xNULL
+	    interp alias $ip exit    {} xNULL
+
+	    # From here on no redefinitions anymore, proc == xNULL !!
+
+	    $ip eval {close stdout} ; interp share {} $capcout $ip
+	    $ip eval {close stderr} ; interp share {} $capcerr $ip
+
+	    if {[catch {$ip eval [read $fh]} msg]} {
+		sakdebug {puts stderr "ERROR in $currentfile:\n$::errorInfo\n"}
+	    }
+
+	    sakdebug {puts stderr ""}
+
+	    close $fh
+	    interp delete $ip
+	}
     }
+
+    close $capcout ; file delete $capout
+    close $capcerr ; file delete $caperr
 
     set   pp [array get p]
     unset p
+
+    set ppcache($args) $pp
     return $pp 
 }
 
@@ -492,6 +614,7 @@ proc gd-gen-tap {} {
 	    # A single package in the module. And only one version of
 	    # it as well. Otherwise we are in the multi-pkg branch.
 
+	    foreach {p vlist} {{} {}} break
 	    foreach {p vlist} [ppackages $m] break
 	    set desc ""
 	    catch {set desc [string trim [lindex $pd($p) 1]]}
@@ -551,7 +674,7 @@ proc getpdesc  {} {
 proc gd-gen-rpmspec {} {
     global tklib_version tklib_name distribution
 
-    set header [string map [list @@@@ $tklib_version @__@ $tklib_name] {# $Id: sak.tcl,v 1.3 2005/10/24 23:15:17 andreas_kupries Exp $
+    set header [string map [list @@@@ $tklib_version @__@ $tklib_name] {# $Id: sak.tcl,v 1.4 2005/11/02 19:31:11 andreas_kupries Exp $
 
 %define version @@@@
 %define directory /usr

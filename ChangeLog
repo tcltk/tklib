@@ -1,3 +1,8 @@
+2005-11-02  Andreas Kupries <andreask@activestate.com>
+
+	* sak.tcl (ppackages): Copied the impl. we have in Tcllib over for
+	  better detection. Does not help table list however.
+
 2005-10-24  Andreas Kupries <andreask@activestate.com>
 
 	* sak.tcl: Added methods for release engineering: rstatus,

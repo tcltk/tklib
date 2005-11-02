@@ -7,8 +7,8 @@
 package require Tcl 8
 package require Tk  8
 
-package provide Tablelist $tablelist::version
-package provide tablelist $tablelist::version
+package provide Tablelist 4.2
+package provide tablelist 4.2
 
 set tablelist::usingTile 0
 trace variable tablelist::usingTile wu "tablelist::restoreUsingTile 0"
