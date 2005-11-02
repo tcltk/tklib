@@ -1,3 +1,10 @@
+2005-11-02  Andreas Kupries <andreask@activestate.com>
+
+	* Hack: Replaced access to $tableist::version with hardwired
+	  version numbers until I figure out how to make this properly
+	  accessible to sak.tcl's code scanner. Needed to have tablelist
+	  in the generated .tap file.
+
 2005-10-24  Andreas Kupries <andreask@activestate.com>
 
 	* pkgIndex.tcl: Reorganized things a bit. Procedures to remove
@@ -5,7 +12,7 @@
 	  to make code accessible to extraction of name/version
 	  information by sak tool.
 
-2005-10-2x Csaba Nemethi
+2005-10-23 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Unknown changes -- This entry is a placeholder
 	  Please, always update the ChangeLog before a commit !!
