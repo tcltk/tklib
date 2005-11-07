@@ -1,3 +1,9 @@
+2005-11-02  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	*
+	* Released and tagged Tklib 0.4 ========================
+	* 
+
 2005-08-23  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* as.tcl (style::as::init_misc): add "*TreeCtrl.useTheme 1",
