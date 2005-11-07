@@ -1,6 +1,8 @@
-2005-11-04 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+2005-11-02  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
-        * Changed file permissions: no execute anymore
+	*
+	* Released and tagged Tklib 0.4 ========================
+	* 
 
 2005-10-24  Andreas Kupries <andreask@activestate.com>
 
