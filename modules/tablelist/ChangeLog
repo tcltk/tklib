@@ -1,3 +1,9 @@
+2005-11-10  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	*
+	* Released and tagged Tklib 0.4.1 ========================
+	* 
+
 2005-11-10  Andreas Kupries <andreask@activestate.com>
 
 	* pkgIndex.tcl (::tablelist::Load): Fixed bugs in my hack of
