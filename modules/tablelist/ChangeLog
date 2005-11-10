@@ -1,3 +1,10 @@
+2005-11-10  Andreas Kupries <andreask@activestate.com>
+
+	* pkgIndex.tcl (::tablelist::Load): Fixed bugs in my hack of
+	  pkgIndex.tcl, reported by Csaba. The loaded code is scope
+	  sensitive, pcausing the move into the proc to estblish the
+	  commands in the wrong namespace. Applied fix by Csaba.
+
 2005-11-02  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*

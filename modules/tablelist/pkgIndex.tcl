@@ -9,28 +9,30 @@ namespace eval ::tablelist {}
 proc ::tablelist::Load {dir} {
     if {[string compare $::tcl_platform(platform) "macintosh"] == 0} {
 	#
-	# We need to do this here instead of in tablelist.tcl, because of
-	# a bug in [info script] in some Tcl releases for the Macintosh.
+	# We need to do this here instead of in tablelistPublic.tcl,
+	# because of a bug in [info script] in some Tcl releases for
+	# the Macintosh.
 	#
-	set ::tablelist::library $dir
+	variable library $dir
     }
 
-    source [file join $dir tablelistPublic.tcl]
-    source [file join $dir tablelist.tcl]
+    uplevel #0 [list source [file join $dir tablelistPublic.tcl]]
+    uplevel #0 [list source [file join $dir tablelist.tcl]]
     rename ::tablelist::Load {}
 }
 
 proc ::tablelist::LoadTile {dir} {
     if {[string compare $::tcl_platform(platform) "macintosh"] == 0} {
 	#
-	# We need to do this here instead of in tablelist.tcl, because of
-	# a bug in [info script] in some Tcl releases for the Macintosh.
+	# We need to do this here instead of in tablelistPublic.tcl,
+	# because of a bug in [info script] in some Tcl releases for
+	# the Macintosh.
 	#
-	set ::tablelist::library $dir
+	variable library $dir
     }
 
-    source [file join $dir tablelistPublic.tcl]
-    source [file join $dir tablelist_tile.tcl]
+    uplevel #0 [list source [file join $dir tablelistPublic.tcl]]
+    uplevel #0 [list source [file join $dir tablelist_tile.tcl]]
     rename ::tablelist::LoadTile {}
 }
 
