@@ -452,12 +452,14 @@ proc tablelist::doConfig {win opt val} {
 			[mwutil::fullOpt "arrow style" $val $arrowStyles]
 		    regexp {^(flat|sunken)([0-9]+)x([0-9]+)$} $data($opt) \
 			   dummy relief width height
+		    set data(arrowWidth) $width
 		    set w $data(hdrTxtFrCanv)
 		    createArrows $w $width $height $relief
 		    fillArrows $w normal   $data(-arrowcolor)
 		    fillArrows $w disabled $data(-arrowdisabledcolor)
 		    if {$data(arrowCol) >= 0} {
 			raiseArrow $win
+			adjustColumns $win l$data(arrowCol) 1
 		    }
 		}
 		-columns {
@@ -1718,7 +1720,7 @@ proc tablelist::doRowConfig {row win opt val} {
 
 	    set dispItem [strToDispStr $item]
 	    set colWidthsChanged 0
-	    set colList {}
+	    set colIdxList {}
 	    set line [expr {$row + 1}]
 	    set textIdx1 $line.1
 	    set col 0
@@ -1799,7 +1801,7 @@ proc tablelist::doRowConfig {row win opt val} {
 				  $newElemWidth < $oldElemWidth &&
 				  [incr data($col-widestCount) -1] == 0} {
 			    set colWidthsChanged 1
-			    lappend colList $col
+			    lappend colIdxList $col
 			}
 		    }
 		}
@@ -1812,7 +1814,7 @@ proc tablelist::doRowConfig {row win opt val} {
 	    # Adjust the columns if necessary
 	    #
 	    if {$colWidthsChanged} {
-		adjustColumns $win $colList 1
+		adjustColumns $win $colIdxList 1
 	    }
 
 	    adjustSepsWhenIdle $win
@@ -1908,7 +1910,7 @@ proc tablelist::doRowConfig {row win opt val} {
 	    }
 
 	    set colWidthsChanged 0
-	    set colList {}
+	    set colIdxList {}
 	    set oldItem [lindex $data(itemList) $row]
 	    set key [lindex $oldItem end]
 	    set newItem [adjustItem $val $data(colCount)]
@@ -1995,7 +1997,7 @@ proc tablelist::doRowConfig {row win opt val} {
 				  $newElemWidth < $oldElemWidth &&
 				  [incr data($col-widestCount) -1] == 0} {
 			    set colWidthsChanged 1
-			    lappend colList $col
+			    lappend colIdxList $col
 			}
 		    }
 		}
@@ -2024,7 +2026,7 @@ proc tablelist::doRowConfig {row win opt val} {
 	    # Adjust the columns if necessary
 	    #
 	    if {$colWidthsChanged} {
-		adjustColumns $win $colList 1
+		adjustColumns $win $colIdxList 1
 	    }
 	}
     }
@@ -2309,7 +2311,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 		}
 		set aux $w.l$key,$col
 		set existsAux [winfo exists $aux]
-		if {$existsAux && [string compare $val $data($name)] == 0} {
+		if {$existsAux && [info exists data($name)] &&
+		    [string compare $val $data($name)] == 0} {
 		    set keepAux 1
 		} else {
 		    set keepAux 0
@@ -2609,7 +2612,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 		}
 		set aux $w.f$key,$col
 		set existsAux [winfo exists $aux]
-		if {$existsAux && [string compare $val $data($name)] == 0} {
+		if {$existsAux && [info exists data($name)] &&
+		    [string compare $val $data($name)] == 0} {
 		    set keepAux 1
 		} else {
 		    set keepAux 0
