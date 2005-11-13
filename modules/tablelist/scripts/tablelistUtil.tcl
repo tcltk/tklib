@@ -1004,7 +1004,10 @@ proc tablelist::setupColumns {win columns createLabels} {
     # Build the list data(colList), and create the labels if requested
     #
     set widgetFont $data(-font)
+    set oldColCount $data(colCount)
     set data(colList) {}
+    set data(colCount) 0
+    set data(lastCol) -1
     set col 0
     foreach {width title alignment} $data(-columns) {
 	#
@@ -1021,6 +1024,8 @@ proc tablelist::setupColumns {win columns createLabels} {
 	    set pixels 0
 	}
 	lappend data(colList) $pixels $alignment
+	incr data(colCount)
+	set data(lastCol) $col
 
 	if {$createLabels} {
 	    set data($col-elided) 0
@@ -1087,13 +1092,6 @@ proc tablelist::setupColumns {win columns createLabels} {
 
 	incr col
     }
-
-    #
-    # Save the number of columns in data(colCount)
-    #
-    set oldColCount $data(colCount)
-    set data(colCount) $col
-    set data(lastCol) [expr {$col - 1}]
 
     #
     # Clean up the data associated with the deleted columns
