@@ -1,35 +1,43 @@
 What is new in Tablelist 4.2?
 -----------------------------
 
-1. The resize area of the header labels now consists of a few pixels on
-   both sides of the right edge (thanks to Bryan Oakley for suggesting
-   this improvement).
+1.  The resize area of the header labels now consists of a few pixels
+    on both sides of the right edge (thanks to Bryan Oakley for
+    suggesting this improvement).
 
-2. Made sure that the header labels have the right appearance in the
-   "aqua" theme when using tile version 0.6.4 or later (thanks to Bryan
-   Oakley for his bug report).
+2.  Made sure that the header labels have the right appearance in the
+    "aqua" theme when using tile version 0.6.4 or later (thanks to
+    Bryan Oakley for his bug report).
 
-3. Several further improvements related to Mac OS X Aqua, in both the
-   implementation and the demo scripts.
+3.  Several further improvements related to Mac OS X Aqua (for example,
+    support for the "Command" key during keyboard navigation between
+    the editable cells).
 
-4. Fixed a very long-standing bug in the "containing" subcommand
-   (thanks to Mats Bengtsson, Schelte Bron, and Mark Garvey for their
-   bug reports).
+4.  Fixed a very long-standing bug in the "containing" subcommand
+    (thanks to Mats Bengtsson, Schelte Bron, and Mark Garvey for their
+    bug reports).
 
-5. Fixed a bug related to the "xpnative" theme, introduced in the
-   previous release (thanks to Mark Garvey, Jeff Godfrey, and Uwe
-   Koloska for their bug reports).
+5.  Fixed a bug related to the "xpnative" theme, introduced in the
+    previous release (thanks to Mark Garvey, Jeff Godfrey, and Uwe
+    Koloska for their bug reports).
 
-6. The demo scripts now work independently of their location (this
-   small improvement reflects the fact that Tablelist is now included
-   in tklib, where the examples are in a location different from
-   "$tablelist::library/demos").
+6.  Fixed another very long-standing bug, related to insertion and
+    deletion of columns having images in their labels (thanks to
+    Sebastien Barre for his bug report).
 
-7. Adapted two tile-based demo scripts to the recently released tile
-   version 0.7.
+7.  Fixed an old bug related to embedding images or windows into hidden
+    cells (again, thanks to Sebastien Barre for reporting this bug).
 
-8. Several further improvements in the code and documentation (thanks
-   to Patrick Fradin for his valuable contribution).
+8.  The demo scripts now work independently of their location (this
+    small improvement reflects the fact that Tablelist is now included
+    in tklib, where the examples are in a location different from
+    "$tablelist::library/demos").
+
+9.  Adapted two tile-based demo scripts to the recently released tile
+    version 0.7.
+
+10. Several further improvements in the code and documentation (thanks
+    to Patrick Fradin for his valuable contribution).
 
 What was new in Tablelist 4.1?
 ------------------------------
