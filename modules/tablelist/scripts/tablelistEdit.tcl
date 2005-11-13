@@ -53,7 +53,7 @@ namespace eval tablelist {
 	bind TablelistEdit <Tab>          { tablelist::goToNextPrevCell %W  1 }
 	bind TablelistEdit <Shift-Tab>    { tablelist::goToNextPrevCell %W -1 }
 	bind TablelistEdit <<PrevWindow>> { tablelist::goToNextPrevCell %W -1 }
-	foreach modifier {Alt Meta} {
+	foreach modifier {Alt Command Meta} {
 	    bind TablelistEdit <$modifier-Left> {
 		tablelist::goLeftRight %W -1
 	    }
