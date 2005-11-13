@@ -1,3 +1,22 @@
+2005-11-13  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistEdit.tcl: Added support for the Command key
+	  during keyboard navigation between the editable cells on the
+	  Macintosh.
+
+	* scripts/tablelistUtil.tcl: Fixed a bug related to embedding
+	  images or windows into hidden cells, reported by Sebastien
+	  Barre.
+
+	* scripts/tablelistConfig.tcl: Fixed a bug related to insertion
+	  and deletion of columns having images in their labels,
+	  reported by Sebastien Barre.
+
+	* doc/tablelistWidget.html: Added the description of the
+	  support for the Command key on the Macintosh.
+
+	* CHANGES.txt: Added the descriptions of the above changes.
+
 2005-11-10  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
