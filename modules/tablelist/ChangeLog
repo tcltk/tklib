@@ -1,3 +1,15 @@
+2005-11-19  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.2.1.
+	* COPYRIGHT.txt:
+
+	* scripts/tablelistWidget.tcl: Improved the handling of the
+	* scripts/tablelistConfig.tcl: -activestyle option.
+
+	* scripts/tablelistUtil.tcl: Made sure that the sort arrow is
+	  unmanaged if its column becomes elided through horizontal
+	  scrolling.
+
 2005-11-13  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistEdit.tcl: Added support for the Command key
