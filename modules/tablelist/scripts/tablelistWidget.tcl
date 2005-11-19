@@ -383,7 +383,7 @@ namespace eval tablelist {
     bind TablelistLabel <B1-Motion>	{ tablelist::labelB1Motion %W %X %x %y }
     bind TablelistLabel <B1-Enter>	{ tablelist::labelB1Enter  %W }
     bind TablelistLabel <B1-Leave>	{ tablelist::labelB1Leave  %W %x %y }
-    bind TablelistLabel <ButtonRelease-1> { tablelist::labelB1Up   %W %X}
+    bind TablelistLabel <ButtonRelease-1> { tablelist::labelB1Up   %W %X }
     bind TablelistLabel <<Button3>>	  { tablelist::labelB3Down %W }
     bind TablelistLabel <<ShiftButton3>>  { tablelist::labelShiftB3Down %W }
 
@@ -612,7 +612,7 @@ proc tablelist::tablelist args {
     #
     $w tag configure stripe -background "" -foreground ""    ;# will be changed
     $w tag configure select -relief raised
-    $w tag configure active -borderwidth 1
+    $w tag configure active -borderwidth ""		     ;# will be changed
     $w tag configure disabled -foreground ""		     ;# will be changed
     variable elide
     if {$::tk_version >= 8.3} {
@@ -1220,8 +1220,10 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	    place forget $data(hdrTxtFrCanv)
 	    set oldArrowCol $data(arrowCol)
 	    set data(arrowCol) -1
-	    synchronize $win
-	    adjustColumns $win l$oldArrowCol 1
+	    if {$oldArrowCol >= 0} {
+		synchronize $win
+		adjustColumns $win l$oldArrowCol 1
+	    }
 	    return ""
 	}
 
@@ -2862,11 +2864,11 @@ proc tablelist::insertcolumnsSubCmd {win colIdx argList} {
 	[eval [list linsert $data(-columns) [expr {3*$colIdx}]] $argList] 1
     makeColFontAndTagLists $win
     set limit [expr {$colIdx + $count}]
-    set cols {}
+    set colIdxList {}
     for {set col $colIdx} {$col < $limit} {incr col} {
-	lappend cols $col
+	lappend colIdxList $col
     }
-    adjustColumns $win $cols 1
+    adjustColumns $win $colIdxList 1
 
     #
     # Reconfigure the relevant column labels
