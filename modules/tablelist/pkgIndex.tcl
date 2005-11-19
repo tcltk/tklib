@@ -9,9 +9,8 @@ namespace eval ::tablelist {}
 proc ::tablelist::Load {dir} {
     if {[string compare $::tcl_platform(platform) "macintosh"] == 0} {
 	#
-	# We need to do this here instead of in tablelistPublic.tcl,
-	# because of a bug in [info script] in some Tcl releases for
-	# the Macintosh.
+	# We need to do this here instead of in tablelistPublic.tcl, because
+	# of a bug in [info script] in some Tcl releases for the Macintosh.
 	#
 	variable library $dir
     }
@@ -24,9 +23,8 @@ proc ::tablelist::Load {dir} {
 proc ::tablelist::LoadTile {dir} {
     if {[string compare $::tcl_platform(platform) "macintosh"] == 0} {
 	#
-	# We need to do this here instead of in tablelistPublic.tcl,
-	# because of a bug in [info script] in some Tcl releases for
-	# the Macintosh.
+	# We need to do this here instead of in tablelistPublic.tcl, because
+	# of a bug in [info script] in some Tcl releases for the Macintosh.
 	#
 	variable library $dir
     }
@@ -36,7 +34,7 @@ proc ::tablelist::LoadTile {dir} {
     rename ::tablelist::LoadTile {}
 }
 
-package ifneeded Tablelist      4.2 [list ::tablelist::Load     $dir]
-package ifneeded tablelist      4.2 [list ::tablelist::Load     $dir]
-package ifneeded Tablelist_tile 4.2 [list ::tablelist::LoadTile $dir]
-package ifneeded tablelist_tile 4.2 [list ::tablelist::LoadTile $dir]
+package ifneeded Tablelist      4.2.1 [list ::tablelist::Load     $dir]
+package ifneeded tablelist      4.2.1 [list ::tablelist::Load     $dir]
+package ifneeded Tablelist_tile 4.2.1 [list ::tablelist::LoadTile $dir]
+package ifneeded tablelist_tile 4.2.1 [list ::tablelist::LoadTile $dir]
