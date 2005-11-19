@@ -1330,19 +1330,23 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 	}
 
 	if {$col == $data(arrowCol)} {
-	    #
-	    # Place the canvas to the left side of the label if the
-	    # latter is right-justified and to its right side otherwise
-	    #
 	    set canvas $data(hdrTxtFrCanv)
-	    if {[string compare $labelAlignment "right"] == 0} {
-		place $canvas -in $w -anchor w -bordermode outside \
-			      -relx 0.0 -x $data(charWidth) -rely 0.499 -y -1
+	    if {$data($col-elided)} {
+		place forget $canvas
 	    } else {
-		place $canvas -in $w -anchor e -bordermode outside \
-			      -relx 1.0 -x -$data(charWidth) -rely 0.499 -y -1
+		#
+		# Place the canvas to the left side of the label if the
+		# latter is right-justified and to its right side otherwise
+		#
+		if {[string compare $labelAlignment "right"] == 0} {
+		    place $canvas -in $w -anchor w -bordermode outside \
+			  -relx 0.0 -x $data(charWidth) -rely 0.499 -y -1
+		} else {
+		    place $canvas -in $w -anchor e -bordermode outside \
+			  -relx 1.0 -x -$data(charWidth) -rely 0.499 -y -1
+		}
+		raise $canvas
 	    }
-	    raise $canvas
 	}
 
 	#
