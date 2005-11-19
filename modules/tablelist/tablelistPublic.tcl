@@ -8,7 +8,7 @@ namespace eval tablelist {
     #
     # Public variables:
     #
-    variable version	4.2
+    variable version	4.2.1
     if {[string compare $::tcl_platform(platform) "macintosh"] != 0} {
 	#
 	# On the Macintosh, the tablelist::library variable is
