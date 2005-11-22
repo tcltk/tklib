@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tooltip.tcl,v 1.4 2005/08/25 03:36:58 andreas_kupries Exp $
+# RCS: @(#) $Id: tooltip.tcl,v 1.5 2005/11/22 00:55:07 hobbs Exp $
 #
 # Initiated: 28 October 1996
 
@@ -267,7 +267,7 @@ proc ::tooltip::show {w msg {i {}}} {
     raise $b
     if {[tk windowingsystem] eq "aqua" && $focus ne ""} {
 	# Aqua's help window steals focus on display
-	after idle [list focus -force $w]
+	after idle [list focus -force $focus]
     }
 }
 
