@@ -1,3 +1,9 @@
+2005-11-27  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistEdit.tcl: Fixed a bug related to the use of
+	  a tile entry within a non-tile-based tablelist widget on
+	  Windows XP, reported by Schelte Bron.
+
 2005-11-19  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 4.2.1.
