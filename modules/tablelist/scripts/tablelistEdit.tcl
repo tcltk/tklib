@@ -970,10 +970,25 @@ proc tablelist::createTileEntry {w args} {
     #
     set win [tablelist::getTablelistPath $w]
     switch $tile::currentTheme {
-	aqua     { set padding {0 0 0 -1} }
-	tileqt   { set padding {3 2} }
-	xpnative { set padding [expr {$::tablelist::xpStyle ? 2 : 1}] }
-	default  { set padding 1 }
+	aqua {
+	    set padding {0 0 0 -1}
+	}
+
+	tileqt {
+	    set padding {3 2}
+	}
+
+	xpnative {
+	    switch [winfo rgb . SystemButtonFace] {
+		"60652 59881 55512" -
+		"57568 57311 58339"	{ set padding 2 }
+		default			{ set padding 1 }
+	    }
+	}
+
+	default {
+	    set padding 1
+	}
     }
     style default Edit$win.TEntry -highlightthickness 0 -padding $padding
 
