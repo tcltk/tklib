@@ -415,15 +415,15 @@ proc tablelist::doConfig {win opt val} {
 		    set w $data(body)
 		    switch $val {
 			frame {
-			    $w tag configure active 
+			    $w tag configure active \
 				   -borderwidth 1 -relief solid -underline ""
 			}
 			none {
-			    $w tag configure active 
+			    $w tag configure active \
 				   -borderwidth "" -relief "" -underline ""
 			}
 			underline {
-			    $w tag configure active 
+			    $w tag configure active \
 				   -borderwidth "" -relief "" -underline 1
 			}
 		    }
