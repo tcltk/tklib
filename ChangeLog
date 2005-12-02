@@ -1,3 +1,8 @@
+2005-12-02  Andreas Kupries <andreask@activestate.com>
+
+	* sak.tcl (validate_versions_cmp): Fixed typo causing the use of a
+	wrong variable [SF Tcllib Bug 1371186]. Thanks to Wart.
+
 2005-11-10  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*

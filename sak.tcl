@@ -674,7 +674,7 @@ proc getpdesc  {} {
 proc gd-gen-rpmspec {} {
     global tklib_version tklib_name distribution
 
-    set header [string map [list @@@@ $tklib_version @__@ $tklib_name] {# $Id: sak.tcl,v 1.4 2005/11/02 19:31:11 andreas_kupries Exp $
+    set header [string map [list @@@@ $tklib_version @__@ $tklib_name] {# $Id: sak.tcl,v 1.5 2005/12/02 20:56:18 andreas_kupries Exp $
 
 %define version @@@@
 %define directory /usr
@@ -884,7 +884,7 @@ proc validate_versions_cmp {ipvar ppvar} {
     }
     foreach p [lsort [array names pp]] {
 	if {![info exists ip($p)]} {
-	    puts "  Provided, not indexed:          [format "%-*s | %s" $maxl $p $::pf($p)]"
+	    puts "  Provided, not indexed:          [format "%-*s | %s" $maxl $p $pp($p)]"
 	}
     }
     foreach p [lsort [array names ip]] {
