@@ -1,3 +1,8 @@
+2006-01-10  Andreas Kupries <andreask@activestate.com>
+
+	* demo.tcl: Removed from the module, moved into directory
+	  "examples/tkpiechart".
+
 2005-11-10  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
