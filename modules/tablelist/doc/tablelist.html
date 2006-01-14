@@ -2,9 +2,9 @@
 <head>
   <title>Tablelist Programmer's Guide</title>
 
-  <meta name="Author"   content="Csaba Nemethi">
-  <meta name="Keywords" content="tablelist, multi-column, listbox, widget,
-   tile">
+  <meta name="Author" content="Csaba Nemethi">
+  <meta name="Keywords" content=
+  "tablelist, multi-column, listbox, widget, tile">
 
   <style type="text/css">
     <!--
@@ -13,429 +13,477 @@
   </style>
 </head>
 
-<body bgcolor=#ffffff>
-<div align=center>
-  <h1>Tablelist Programmer's Guide</h1>
+<body bgcolor="#FFFFFF">
+  <div align="center">
+    <h1>Tablelist Programmer's Guide</h1>
 
-  <h3>by</h3>
+    <h3>by</h3>
 
-  <h2>Csaba Nemethi</h2>
+    <h2>Csaba Nemethi</h2>
 
-  <address>
-    <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
-  </address>
-</div>
+    <address>
+      <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
+    </address>
+  </div>
 
+  <hr>
 
-<p><hr>
+  <h2><a name="contents"></a>Contents</h2>
 
+  <h4><a href="#overview">Overview</a></h4>
 
-<a name="contents"></a><h2>Contents</h2>
+  <ul>
+    <li><a href="#ov_what">What is Tablelist?</a></li>
 
+    <li><a href="#ov_get">How to get it?</a></li>
 
-<h4><a href="#overview">Overview</a></h4>
+    <li><a href="#ov_install">How to install it?</a></li>
 
-<ul>
-  <li><a href="#ov_what">What is Tablelist?</a>
-  <li><a href="#ov_get">How to get it?</a>
-  <li><a href="#ov_install">How to install it?</a>
-  <li><a href="#ov_use">How to use it?</a>
-  <li><a href="#ov_tile">More on Tablelist_tile</a>
-</ul>
+    <li><a href="#ov_use">How to use it?</a></li>
 
-<h4><a href="#examples">Examples</a></h4>
+    <li><a href="#ov_tile">More on Tablelist_tile</a></li>
+  </ul>
 
-<ul>
-  <li><a href="#ex_config">A tablelist widget for displaying and editing
-      configuration options</a>
-  <li><a href="#ex_browse">A simple widget browser based on a tablelist</a>
-  <li><a href="#ex_styles">Improving the look &amp; feel of a tablelist
-      widget</a>
-  <li><a href="#ex_editing">Advanced interactive tablelist cell editing</a>
-  <li><a href="#ex_windows">A tablelist widget containing embedded windows</a>
-  <li><a href="#ex_tile">Tile-based demo scripts</a>
-</ul>
+  <h4><a href="#examples">Examples</a></h4>
 
-<div align=center>
-  <p><a href="index.html">Start page</a>
-</div>
+  <ul>
+    <li><a href="#ex_config">A tablelist widget for displaying and editing
+    configuration options</a></li>
 
+    <li><a href="#ex_browse">A simple widget browser based on a
+    tablelist</a></li>
 
-<p><hr>
+    <li><a href="#ex_styles">Improving the look &amp; feel of a tablelist
+    widget</a></li>
 
+    <li><a href="#ex_editing">Advanced interactive tablelist cell
+    editing</a></li>
 
-<h2><a name="overview"></a>Overview</h2>
+    <li><a href="#ex_windows">A tablelist widget containing embedded
+    windows</a></li>
 
+    <li><a href="#ex_tile">Tile-based demo scripts</a></li>
+  </ul>
 
-<h3><a name="ov_what"></a>What is Tablelist?</h3>
+  <div align="center">
+    <p><a href="index.html">Start page</a></p>
+  </div>
 
-<p>Tablelist is a library package for Tcl/Tk version 8.0 or higher, written in
-pure Tcl/Tk code.&nbsp; It contains:
+  <hr>
 
-<ul>
-  <li>the implementation of the <a href="tablelistWidget.html"><b>tablelist</b>
-      mega-widget</a>, including a general utility module for mega-widgets;
-  <li>a demo script containing a useful procedure that displays the
-      configuration options of an arbitrary widget in a tablelist and enables
-      you to edit their values interactively;
-  <li>a second demo script, implementing a simple widget browser based on a
-      tablelist;
-  <li>a third demo script, showing several ways to improve the appearance of a
-      tablelist widget;
-  <li>four further demo scripts, illustrating the interactive cell editing
-      with the aid of various widgets from the Tk core and from the packages
-      tile, BWidget, Iwidgets, combobox (by Bryan Oakley), and Mentry;
-  <li>one further demo script, with a tablelist widget containing embedded
-      windows;
-  <li>tile-based counterparts of the above-mentioned demo scripts;
-  <li>this tutorial;
-  <li>reference pages in HTML format.
-</ul>
+  <h2><a name="overview"></a>Overview</h2>
 
-<p>A tablelist widget is a multi-column listbox.&nbsp; The width of each column
-can be dynamic (i.e., just large enough to hold all its elements, including the
-header) or static (specified in characters or pixels).&nbsp; The columns are,
-per default, resizable.&nbsp; The alignment of each column can be specified as
-<code>left</code>, <code>right</code>, or <code>center</code>.
+  <h3><a name="ov_what"></a>What is Tablelist?</h3>
 
-<p>The columns, rows, and cells can be configured individually.&nbsp; Several
-of the global and column-specific options refer to the headers, implemented as
-label widgets.&nbsp; For instance, the <code>-labelcommand</code> option
-specifies a Tcl command to be invoked when mouse button 1 is released over a
-label.&nbsp; The most common value of this option is <code><a href=
-"tablelistSortByColumn.html">tablelist::sortByColumn</a></code>, which sorts
-the items based on the respective column.
+  <p>Tablelist is a library package for Tcl/Tk version 8.0 or higher, written
+  in pure Tcl/Tk code.&nbsp; It contains:</p>
 
-<p>Interactive editing of the elements of a tablelist widget can be enabled for
-individual cells and for entire columns.&nbsp; A great variety of widgets from
-the Tk core and from the packages tile, BWidget, Iwidgets, combobox, and Mentry
-is supported for being used as embedded edit window.&nbsp; In addition, a rich
-set of keyboard bindings is provided for a comfortable navigation between the
-editable cells.
+  <ul>
+    <li>the implementation of the <a href=
+    "tablelistWidget.html"><b>tablelist</b> mega-widget</a>, including a
+    general utility module for mega-widgets;</li>
 
-<p>The Tcl command corresponding to a tablelist widget is very similar to the
-one associated with a normal listbox.&nbsp; There are column-, row-, and
-cell-specific counterparts of the <code>configure</code> and <code>cget</code>
-subcommands (<code>columnconfigure</code>, <code>rowconfigure</code>,
-<code>cellconfigure</code>, ...).&nbsp; They can be used, among others, to
-insert images into the cells and the header labels, or to insert embedded
-windows into the cells.&nbsp; The <code>index</code>, <code>nearest</code>, and
-<code>see</code> command options refer to the rows, but similar subcommands are
-provided for the columns and cells (<code>columnindex</code>,
-<code>cellindex</code>, ...).&nbsp; The items can be sorted with the
-<code>sort</code> and <code>sortbycolumn</code> command options.
+    <li>a demo script containing a useful procedure that displays the
+    configuration options of an arbitrary widget in a tablelist and enables you
+    to edit their values interactively;</li>
 
-<p>The bindings defined for the body of a tablelist widget make it behave just
-like a normal listbox.&nbsp; This includes the support for the virtual event
-<code>&lt;&lt;ListboxSelect&gt;&gt;</code> (which is equivalent to
-<code>&lt;&lt;TablelistSelect&gt;&gt;</code>).&nbsp; In addition, version 2.3
-or higher of the widget callback package Wcb (written in pure Tcl/Tk code as
-well) can be used to define callbacks for the <code>activate</code>,&nbsp;
-<code>selection set</code>,&nbsp; and&nbsp; <code>selection clear</code>&nbsp;
-commands, and Wcb version 3.0 or higher also supports callbacks for the
-<code>activatecell</code>,&nbsp; <code>cellselection set</code>,&nbsp;
-and&nbsp; <code>cellselection clear</code>&nbsp; commands.&nbsp; The download
-location of Wcb is
+    <li>a second demo script, implementing a simple widget browser based on a
+    tablelist;</li>
 
-<blockquote><address>
-  <a href="http://www.nemethi.de">http://www.nemethi.de</a>
-</address></blockquote>
+    <li>a third demo script, showing several ways to improve the appearance of
+    a tablelist widget;</li>
 
+    <li>four further demo scripts, illustrating the interactive cell editing
+    with the aid of various widgets from the Tk core and from the packages
+    tile, BWidget, Iwidgets, combobox (by Bryan Oakley), and Mentry;</li>
 
-<h3><a name="ov_get"></a>How to get it?</h3>
+    <li>one further demo script, with a tablelist widget containing embedded
+    windows;</li>
 
-<p>Tablelist is available for free download from the same URL as Wcb.&nbsp; The
-distribution file is <code>tablelist4.2.tar.gz</code> for UNIX and
-<code>tablelist4_2.zip</code> for Windows.&nbsp; These files contain the same
-information, except for the additional carriage return character preceding the
-linefeed at the end of each line in the text files for Windows.
+    <li>tile-based counterparts of the above-mentioned demo scripts;</li>
 
-<p>Tablelist is also hosted on SourceForge, as part of tklib, which in turn is
-contained in the tcllib project, having the address
+    <li>this tutorial;</li>
 
-<blockquote><address>
-  <a href="http://sourceforge.net/projects/tcllib">http://sourceforge.net/projects/tcllib</a>
-</address></blockquote>
+    <li>reference pages in HTML format.</li>
+  </ul>
 
+  <p>A tablelist widget is a multi-column listbox.&nbsp; The width of each
+  column can be dynamic (i.e., just large enough to hold all its elements,
+  including the header) or static (specified in characters or pixels).&nbsp;
+  The columns are, per default, resizable.&nbsp; The alignment of each column
+  can be specified as <code>left</code>, <code>right</code>, or
+  <code>center</code>.</p>
 
-<h3><a name="ov_install"></a>How to install it?</h3>
+  <p>The columns, rows, and cells can be configured individually.&nbsp; Several
+  of the global and column-specific options refer to the headers, implemented
+  as label widgets.&nbsp; For instance, the <code>-labelcommand</code> option
+  specifies a Tcl command to be invoked when mouse button 1 is released over a
+  label.&nbsp; The most common value of this option is <code><a href=
+  "tablelistColSort.html">tablelist::sortByColumn</a></code>, which sorts the
+  items based on the respective column.</p>
 
-<p>Install the package as a subdirectory of one of the directories given by the
-<code>auto_path</code> variable.&nbsp; For example, you can install it as a
-directory at the same level as the Tcl and Tk script libraries.&nbsp; The
-locations of these library directories are given by the
-<code>tcl_library</code> and <code>tk_library</code> variables, respectively.
+  <p>Interactive editing of the elements of a tablelist widget can be enabled
+  for individual cells and for entire columns.&nbsp; A great variety of widgets
+  from the Tk core and from the packages tile, BWidget, Iwidgets, combobox, and
+  Mentry is supported for being used as embedded edit window.&nbsp; In
+  addition, a rich set of keyboard bindings is provided for a comfortable
+  navigation between the editable cells.</p>
 
-<p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
-directory and unpack the distribution file <code>tablelist4.2.tar.gz</code>:
+  <p>The Tcl command corresponding to a tablelist widget is very similar to the
+  one associated with a normal listbox.&nbsp; There are column-, row-, and
+  cell-specific counterparts of the <code>configure</code> and
+  <code>cget</code> subcommands (<code>columnconfigure</code>,
+  <code>rowconfigure</code>, <code>cellconfigure</code>, ...).&nbsp; They can
+  be used, among others, to insert images into the cells and the header labels,
+  or to insert embedded windows into the cells.&nbsp; The <code>index</code>,
+  <code>nearest</code>, and <code>see</code> command options refer to the rows,
+  but similar subcommands are provided for the columns and cells
+  (<code>columnindex</code>, <code>cellindex</code>, ...).&nbsp; The items can
+  be sorted with the <code>sort</code> and <code>sortbycolumn</code> command
+  options.</p>
 
-<blockquote><pre>
-gunzip -c tablelist4.2.tar.gz | tar -xf -
-</pre></blockquote>
+  <p>The bindings defined for the body of a tablelist widget make it behave
+  just like a normal listbox.&nbsp; This includes the support for the virtual
+  event <code>&lt;&lt;ListboxSelect&gt;&gt;</code> (which is equivalent to
+  <code>&lt;&lt;TablelistSelect&gt;&gt;</code>).&nbsp; In addition, version 2.3
+  or higher of the widget callback package Wcb (written in pure Tcl/Tk code as
+  well) can be used to define callbacks for the <code>activate</code>,&nbsp;
+  <code>selection set</code>,&nbsp; and&nbsp; <code>selection
+  clear</code>&nbsp; commands, and Wcb version 3.0 or higher also supports
+  callbacks for the <code>activatecell</code>,&nbsp; <code>cellselection
+  set</code>,&nbsp; and&nbsp; <code>cellselection clear</code>&nbsp;
+  commands.&nbsp; The download location of Wcb is</p>
 
-<p>This command will create a directory named <code>tablelist4.2</code>, with
-the subdirectories <code>demos</code>, <code>doc</code>, <code>images</code>,
-and <code>scripts</code>.
+  <blockquote>
+    <address>
+      <a href="http://www.nemethi.de">http://www.nemethi.de</a>
+    </address>
+  </blockquote>
 
-<p><i>On Windows</i>, use WinZip or some other program capable of unpacking the
-distribution file <code>tablelist4_2.zip</code> into the directory
-<code>tablelist4.2</code>, with the subdirectories <code>demos</code>,
-<code>doc</code>, <code>images</code>, and <code>scripts</code>.
+  <h3><a name="ov_get"></a>How to get it?</h3>
 
-<p>Note that the file <code>tablelistEdit.tcl</code> in the
-<code>scripts</code> directory is only needed for applications making use of
-interactive cell editing.&nbsp; Similarly, the file
-<code>tablelistMove.tcl</code> in the same directory is only required for
-scripts invoking the <code>move</code> or <code>movecolumn</code>
-command.&nbsp; Finally, the file <code>tablelistThemes.tcl</code> is only
-needed for applications using the package Tablelist_tile (see next section).
+  <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
+  The distribution file is <code>tablelist4.3.tar.gz</code> for UNIX and
+  <code>tablelist4_3.zip</code> for Windows.&nbsp; These files contain the same
+  information, except for the additional carriage return character preceding
+  the linefeed at the end of each line in the text files for Windows.</p>
 
-<p>Next, you should check the exact version number of your Tcl/Tk distribution,
-given by the <code>tcl_patchLevel</code> and <code>tk_patchLevel</code>
-variables.&nbsp; If you are using Tcl/Tk version 8.2.X, 8.3.0 - 8.3.2, or
-8.4a1, then you should upgrade your Tcl/Tk distribution to a higher
-release.&nbsp; This is because a bug in these Tcl versions (fixed in Tcl 8.3.3
-and 8.4a2) causes excessive memory use when calling&nbsp; <code>info
-exists</code>&nbsp; on non-existent array elements, and Tablelist makes a lot
-of invocations of this command.
+  <p>Tablelist is also hosted on SourceForge, as part of tklib, which in turn
+  is contained in the tcllib project, having the address</p>
 
-<p>If for some reason you cannot upgrade your Tcl/Tk version, then you should
-execute the Tcl script <code>repair.tcl</code> in the directory
-<code>scripts</code>.&nbsp; This script makes backup copies of several files
-contained in this directory, and then creates new versions of them by replacing
-all invocations of&nbsp; <code>info exists</code>&nbsp; for array elements with
-a call to the helper procedure <code>arrElemExists</code>.&nbsp; The patched
-files work with all Tcl/Tk releases starting with 8.0, but the original ones
-have a much better performance.
+  <blockquote>
+    <address>
+      <a href=
+      "http://sourceforge.net/projects/tcllib">http://sourceforge.net/projects/tcllib</a>
+    </address>
+  </blockquote>
 
-<p>Being part of tklib, Tablelist is also included in the ActiveTcl and
-TclTkAquaBI binary distributions.&nbsp; Notice that in these distributions the
-Tablelist <code>demos</code> directory is replaced with some other
-location.&nbsp; Please take this into account when reading the <a href=
-"#examples">examples</a> below.
+  <h3><a name="ov_install"></a>How to install it?</h3>
 
+  <p>Install the package as a subdirectory of one of the directories given by
+  the <code>auto_path</code> variable.&nbsp; For example, you can install it as
+  a directory at the same level as the Tcl and Tk script libraries.&nbsp; The
+  locations of these library directories are given by the
+  <code>tcl_library</code> and <code>tk_library</code> variables,
+  respectively.</p>
 
-<h3><a name="ov_use"></a>How to use it?</h3>
+  <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
+  directory and unpack the distribution file
+  <code>tablelist4.3.tar.gz</code>:</p>
 
-<p>The Tablelist distribution provides two packages, called <b>Tablelist</b>
-and <b>Tablelist_tile</b>.&nbsp; The main difference between the two is that
-Tablelist_tile enables the tile-based, theme-specific appearance of tablelist
-widgets; this package requires Tcl/Tk 8.4 or higher and tile 0.6 or
-higher.&nbsp; It is not possible to use both packages in one and the same
-application, because both are implemented in the same <code>tablelist</code>
-namespace and provide identical commands.
+  <blockquote>
+    <pre>
+gunzip -c tablelist4.3.tar.gz | tar -xf -
+</pre>
+  </blockquote>
 
-<p>To be able to access the commands and variables defined in the package
-Tablelist, your scripts must contain one of the lines
+  <p>This command will create a directory named <code>tablelist4.3</code>, with
+  the subdirectories <code>demos</code>, <code>doc</code>, and
+  <code>scripts</code>.</p>
 
-<blockquote><pre>
+  <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
+  the distribution file <code>tablelist4_3.zip</code> into the directory
+  <code>tablelist4.3</code>, with the subdirectories <code>demos</code>,
+  <code>doc</code>, and <code>scripts</code>.</p>
+
+  <p>Note that the file <code>tablelistEdit.tcl</code> in the
+  <code>scripts</code> directory is only needed for applications making use of
+  interactive cell editing.&nbsp; Similarly, the file
+  <code>tablelistMove.tcl</code> in the same directory is only required for
+  scripts invoking the <code>move</code> or <code>movecolumn</code>
+  command.&nbsp; Finally, the file <code>tablelistThemes.tcl</code> is only
+  needed for applications using the package Tablelist_tile (see next
+  section).</p>
+
+  <p>Next, you should check the exact version number of your Tcl/Tk
+  distribution, given by the <code>tcl_patchLevel</code> and
+  <code>tk_patchLevel</code> variables.&nbsp; If you are using Tcl/Tk version
+  8.2.X, 8.3.0 - 8.3.2, or 8.4a1, then you should upgrade your Tcl/Tk
+  distribution to a higher release.&nbsp; This is because a bug in these Tcl
+  versions (fixed in Tcl 8.3.3 and 8.4a2) causes excessive memory use when
+  calling&nbsp; <code>info exists</code>&nbsp; on non-existent array elements,
+  and Tablelist makes a lot of invocations of this command.</p>
+
+  <p>If for some reason you cannot upgrade your Tcl/Tk version, then you should
+  execute the Tcl script <code>repair.tcl</code> in the directory
+  <code>scripts</code>.&nbsp; This script makes backup copies of several files
+  contained in this directory, and then creates new versions of them by
+  replacing all invocations of&nbsp; <code>info exists</code>&nbsp; for array
+  elements with a call to the helper procedure
+  <code>arrElemExists</code>.&nbsp; The patched files work with all Tcl/Tk
+  releases starting with 8.0, but the original ones have a much better
+  performance.</p>
+
+  <p>Being part of tklib, Tablelist is also included in the ActiveTcl and
+  TclTkAquaBI binary distributions.&nbsp; Notice that in these distributions
+  the Tablelist <code>demos</code> directory is replaced with some other
+  location.&nbsp; Please take this into account when reading the <a href=
+  "#examples">examples</a> below.</p>
+
+  <h3><a name="ov_use"></a>How to use it?</h3>
+
+  <p>The Tablelist distribution provides two packages, called <b>Tablelist</b>
+  and <b>Tablelist_tile</b>.&nbsp; The main difference between the two is that
+  Tablelist_tile enables the tile-based, theme-specific appearance of tablelist
+  widgets; this package requires Tcl/Tk 8.4 or higher and tile 0.6 or
+  higher.&nbsp; It is not possible to use both packages in one and the same
+  application, because both are implemented in the same <code>tablelist</code>
+  namespace and provide identical commands.</p>
+
+  <p>To be able to access the commands and variables defined in the package
+  Tablelist, your scripts must contain one of the lines</p>
+
+  <blockquote>
+    <pre>
 package require Tablelist
 package require tablelist
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>You can use either one of the two statements above because the file
-<code>tablelist.tcl</code> contains both lines
+  <p>You can use either one of the two statements above because the file
+  <code>tablelist.tcl</code> contains both lines</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 package provide Tablelist ...
 package provide tablelist ...
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>Likewise, to be able to access the commands and variables defined in the
-package Tablelist_tile, your scripts must contain one of the lines
+  <p>Likewise, to be able to access the commands and variables defined in the
+  package Tablelist_tile, your scripts must contain one of the lines</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 package require Tablelist_tile
 package require tablelist_tile
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>Again, you can use either one of the two statements above because the file
-<code>tablelist_tile.tcl</code> contains both lines
+  <p>Again, you can use either one of the two statements above because the file
+  <code>tablelist_tile.tcl</code> contains both lines</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 package provide Tablelist_tile ...
 package provide tablelist_tile ...
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>You are free to remove one of the above lines from
-<code>tablelist.tcl</code> and <code>tablelist_tile.tcl</code>, respectively,
-if you want to prevent the corresponding packages from making themselves known
-under two different names each.&nbsp; Of course, by doing so you restrict the
-argument of&nbsp; <code>package require</code>&nbsp; to a single name per
-package.&nbsp; Notice that the <a href="#examples">examples</a> below use the
-statement&nbsp; <code>package require Tablelist</code>, and their tile-based
-counterparts invoke the command&nbsp; <code>package require
-Tablelist_tile</code>.
+  <p>You are free to remove one of the above lines from
+  <code>tablelist.tcl</code> and <code>tablelist_tile.tcl</code>, respectively,
+  if you want to prevent the corresponding packages from making themselves
+  known under two different names each.&nbsp; Of course, by doing so you
+  restrict the argument of&nbsp; <code>package require</code>&nbsp; to a single
+  name per package.&nbsp; Notice that the <a href="#examples">examples</a>
+  below use the statement&nbsp; <code>package require Tablelist</code>, and
+  their tile-based counterparts invoke the command&nbsp; <code>package require
+  Tablelist_tile</code>.</p>
 
-<p>Since the packages Tablelist and Tablelist_tile are implemented in the
-namespace <code>tablelist</code>, you must either invoke the
+  <p>Since the packages Tablelist and Tablelist_tile are implemented in the
+  namespace <code>tablelist</code>, you must either invoke the</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>command to import the <i>procedures</i> you need, or use qualified names
-like <code>tablelist::tablelist</code>.&nbsp; In the examples below we have
-chosen the latter approach.
+  <p>command to import the <i>procedures</i> you need, or use qualified names
+  like <code>tablelist::tablelist</code>.&nbsp; In the examples below we have
+  chosen the latter approach.</p>
 
-<p>To access Tablelist <i>variables</i>, you <i>must</i> use qualified
-names.&nbsp; There are only three Tablelist variables that are designed to be
-accessed outside the namespace <code>tablelist</code>:
+  <p>To access Tablelist <i>variables</i>, you <i>must</i> use qualified
+  names.&nbsp; There are only three Tablelist variables that are designed to be
+  accessed outside the namespace <code>tablelist</code>:</p>
 
-<ul>
-  <li>The variable <code>tablelist::version</code> holds the current version
-      number of the Tablelist and Tablelist_tile packages.
-  <li>The variable <code>tablelist::library</code> holds the location of the
-      Tablelist installation directory.
-  <li>The read-only variable <code>tablelist::usingTile</code> has the value
-      <code>0</code> in the package Tablelist and the value <code>1</code> in
-      Tablelist_tile.
-</ul>
+  <ul>
+    <li>The variable <code>tablelist::version</code> holds the current version
+    number of the Tablelist and Tablelist_tile packages.</li>
 
+    <li>The variable <code>tablelist::library</code> holds the location of the
+    Tablelist installation directory.</li>
 
-<h3><a name="ov_tile"></a>More on Tablelist_tile</h3>
+    <li>The read-only variable <code>tablelist::usingTile</code> has the value
+    <code>0</code> in the package Tablelist and the value <code>1</code> in
+    Tablelist_tile.</li>
+  </ul>
 
-<p>A tablelist widget consists of a body (containing the items) and a header
-(displaying the column titles).&nbsp; Both components are contained in a
-hull, implemented as a frame.&nbsp; The header has a rather complex structure,
-consisting mainly of frame and label widgets.&nbsp; While in the Tablelist
-package all of these components are Tk widgets, the Tablelist_tile package uses
-both Tk and tile frame and label widgets.&nbsp; Due to several
-incompatibilities between Tk and tile, it is currently not possible to replace
-all Tk widgets making up a tablelist with their tile counterparts.
+  <h3><a name="ov_tile"></a>More on Tablelist_tile</h3>
 
-<p>From the above it follows that <b>the package Tablelist_tile will only work
-as expected if the Tk <code>frame</code> and <code>label</code> commands
-haven't been overridden by using&nbsp; <code>namespace import -force
-ttk::*</code>&nbsp; at global scope</b>.&nbsp; While earlier tile releases
-suggested using this command at global scope for the really adventurous, in
-newer tile versions this is considered a Really Bad Idea, causing many things
-to break.&nbsp; Instead, <b>you should explicitly invoke
-<code>ttk::frame</code>, <code>ttk::label</code>, etc. whenever you want to use
-a tile widget</b>.
+  <p>A tablelist widget consists of a body (containing the items) and a header
+  (displaying the column titles).&nbsp; Both components are contained in a
+  hull, implemented as a frame.&nbsp; The header has a rather complex
+  structure, consisting mainly of frame and label widgets.&nbsp; While in the
+  Tablelist package all of these components are Tk widgets, the Tablelist_tile
+  package uses both Tk and tile frame and label widgets.&nbsp; Due to several
+  incompatibilities between Tk and tile, it is currently not possible to
+  replace all Tk widgets making up a tablelist with their tile
+  counterparts.</p>
 
-<p><b>Overriding some other Tk widgets at global scope may be equally dangerous
-when using various widgets from the Tk core and from the packages BWidget,
-Iwidgets, combobox (by Bryan Oakley), and Mentry for interactive cell
-editing</b>, because these packages expect Tk widgets, which may not always be
-replaced by their tile counterparts.
+  <p>From the above it follows that <b>the package Tablelist_tile will only
+  work as expected if the Tk <code>frame</code> and <code>label</code> commands
+  haven't been overridden by using&nbsp; <code>namespace import -force
+  ttk::*</code>&nbsp; at global scope</b>.&nbsp; While earlier tile releases
+  suggested using this command at global scope for the really adventurous, in
+  newer tile versions this is considered a Really Bad Idea, causing many things
+  to break.&nbsp; Instead, <b>you should explicitly invoke
+  <code>ttk::frame</code>, <code>ttk::label</code>, etc. whenever you want to
+  use a tile widget</b>.</p>
 
-<p>Another restriction to be taken into account (as of tile version 0.6) is due
-to the fact that the&nbsp; <code>style theme use</code>&nbsp; command can only
-be used to set the current theme, but not to retrieve it.&nbsp; For this
-reason, the package Tablelist_tile makes use of the variable
-<code>tile::currentTheme</code>, which is set by the
-<code>tile::setTheme</code> procedure.&nbsp; From this it follows that <b>the
-tile-based tablelist widgets will only have the expected appearance if the
-platform-specific default theme is either left unchanged or replaced with
-another theme by invoking the procedure <code>tile::setTheme</code></b>.
+  <p><b>Overriding some other Tk widgets at global scope may be equally
+  dangerous when using various widgets from the Tk core and from the packages
+  BWidget, Iwidgets, combobox (by Bryan Oakley), and Mentry for interactive
+  cell editing</b>, because these packages expect Tk widgets, which may not
+  always be replaced by their tile counterparts.</p>
 
-<p>After these cautions concerning the use of tile, the rest of this section
-describes the differences between the packages Tablelist and Tablelist_tile.
+  <p>Another restriction to be taken into account (as of tile version 0.7) is
+  due to the fact that the&nbsp; <code>style theme use</code>&nbsp; command can
+  only be used to set the current theme, but not to retrieve it.&nbsp; For this
+  reason, the package Tablelist_tile makes use of the variable
+  <code>tile::currentTheme</code>, which is set by the
+  <code>tile::setTheme</code> procedure.&nbsp; From this it follows that <b>the
+  tile-based tablelist widgets will only have the expected appearance if the
+  platform-specific default theme is either left unchanged or replaced with
+  another theme by invoking the procedure <code>tile::setTheme</code></b>.</p>
 
-<p>The Tablelist_tile package checks whether the required Tcl, Tk, and tile
-versions are present, by executing the commands
+  <p>After these cautions concerning the use of tile, the rest of this section
+  describes the differences between the packages Tablelist and
+  Tablelist_tile.</p>
 
-<blockquote><pre>
+  <p>The Tablelist_tile package checks whether the required Tcl, Tk, and tile
+  versions are present, by executing the commands</p>
+
+  <blockquote>
+    <pre>
 package require Tcl  8.4
 package require Tk   8.4
 package require tile 0.6
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>Apart from this and the <code>_tile</code> suffix in the&nbsp; <code>package
-require</code>&nbsp; command, the only difference (from the programmer's point
-of view) between the packages Tablelist and Tablelist_tile is related to the
-supported configuration options:&nbsp; The <code>-highlightbackground</code>,
-<code>-highlightcolor</code>, <code>-highlightthickness</code>,
-<code>-labelactivebackground</code>, <code>-labelactiveforeground</code>,
-<code>-labeldisabledforeground</code>, and <code>-labelheight</code> options
-(the latter at both widget and column levels), present in the Tablelist
-package, are not supported by Tablelist_tile.&nbsp; The first three are
-standard Tk widget options, which are not available for tile widgets.&nbsp;
-The others stand for the <code>-activebackground</code>,
-<code>-activeforeground</code>, <code>-disabledforeground</code> and
-<code>-height</code> options of the column labels, and these configuration
-options are not supported for tile label widgets.
+  <p>Apart from this and the <code>_tile</code> suffix in the&nbsp;
+  <code>package require</code>&nbsp; command, the only difference (from the
+  programmer's point of view) between the packages Tablelist and Tablelist_tile
+  is related to the supported configuration options:&nbsp; The
+  <code>-highlightbackground</code>, <code>-highlightcolor</code>,
+  <code>-highlightthickness</code>, <code>-labelactivebackground</code>,
+  <code>-labelactiveforeground</code>, <code>-labeldisabledforeground</code>,
+  and <code>-labelheight</code> options (the latter at both widget and column
+  levels), present in the Tablelist package, are not supported by
+  Tablelist_tile.&nbsp; The first three are standard Tk widget options, which
+  are not available for tile widgets.&nbsp; The others stand for the
+  <code>-activebackground</code>, <code>-activeforeground</code>,
+  <code>-disabledforeground</code> and <code>-height</code> options of the
+  column labels, and these configuration options are not supported for tile
+  label widgets.</p>
 
-<p>Notice that the <code>-labelbackground</code> tablelist option, which stands
-for the <code>-background</code> option of the header labels (at both widget
-and column levels) doesn't work as expected if the current theme is
-<code>aqua</code> or <code>tileqt</code>, because these themes silently ignore
-any attempt to change the background color of a tile label.
+  <p>Notice that the <code>-labelbackground</code> tablelist option, which
+  stands for the <code>-background</code> option of the header labels (at both
+  widget and column levels) doesn't work as expected if the current theme is
+  <code>aqua</code>, <code>tileqt</code>, or <code>xpnative</code>, because
+  these themes silently ignore any attempt to change the background color of a
+  tile label.</p>
 
-<p>Finally, take into account that in some themes, setting the
-<code>-labelborderwidth</code> option (at widget or column level) to a value
-other than the default might be ignored by tile and thus could cause alignment
-problems.&nbsp; This is because the border of tile widgets is drawn with
-theme-specific methods, which will not always produce the results known from Tk
-widgets.
+  <p>Finally, take into account that in some themes, setting the
+  <code>-labelborderwidth</code> option (at widget or column level) to a value
+  other than the default might be ignored by tile and thus could cause
+  alignment problems.&nbsp; This is because the border of tile widgets is drawn
+  with theme-specific methods, which will not always produce the results known
+  from Tk widgets.</p>
 
-<div align=center>
-  <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="index.html">Start page</a>
-</div>
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
 
+  <hr>
 
-<p><hr>
+  <h2><a name="examples"></a>Examples</h2>
 
+  <h3><a name="ex_config"></a>A tablelist widget for displaying and editing
+  configuration options</h3>
 
-<h2><a name="examples"></a>Examples</h2>
+  <p>The file <code>config.tcl</code> in the <code>demos</code> directory
+  contains a procedure <code>demo::displayConfig</code> that displays the
+  configuration options of an arbitrary widget in a tablelist contained in a
+  newly created top-level widget and allows you to edit these options.&nbsp;
+  This procedure can prove to be quite useful during interactive GUI
+  development.&nbsp; To test it, start <code>wish</code> and evaluate the file
+  by using the <code>source</code> command as follows:</p>
 
+  <ul>
+    <li>If <code>wish</code> was started in the <code>demos</code> directory
+    then it is sufficient to enter
 
-<h3><a name="ex_config"></a>A tablelist widget for displaying and editing
-    configuration options</h3>
+      <blockquote>
+	<pre>
+source config.tcl
+</pre>
+      </blockquote>
+    </li>
 
-<p>The file <code>config.tcl</code> in the <code>demos</code> directory
-contains a procedure <code>demo::displayConfig</code> that displays the
-configuration options of an arbitrary widget in a tablelist contained in a
-newly created top-level widget and allows you to edit these options.&nbsp; This
-procedure can prove to be quite useful during interactive GUI
-development.&nbsp; To test it, start <code>wish</code> and evaluate the file by
-using the <code>source</code> command as follows:
+    <li>If <code>wish</code> was started in some other directory then you can
+    use the <code>tablelist::library</code> variable to find the location of
+    the file.&nbsp; For example, assuming that your Tablelist installation has
+    the directory structure described in the <a href="#ov_install">How to
+    install it?</a> section, the required commands are:
 
-<ul>
-  <li>If <code>wish</code> was started in the <code>demos</code> directory then
-      it is sufficient to enter
-
-<blockquote><pre>
-<p>source config.tcl
-</pre></blockquote>
-
-  <li>If <code>wish</code> was started in some other directory then you can use
-      the <code>tablelist::library</code> variable to find the location of the
-      file.&nbsp; For example, assuming that your Tablelist installation has
-      the directory structure described in the <a href="#ov_install">How to
-      install it?</a> section, the required commands are:
-
-<blockquote><pre>
-<p>package require Tablelist
+      <blockquote>
+	<pre>
+package require Tablelist
 source [file join $tablelist::library demos config.tcl]
-</pre></blockquote>
+</pre>
+      </blockquote>
+    </li>
+  </ul>
 
-</ul>
+  <p>In both cases, the script will print the following message to
+  <code>stdout</code>:</p>
 
-<p>In both cases, the script will print the following message to
-<code>stdout</code>:
-
-<blockquote><pre>
+  <blockquote>
+    <pre>
 To display the configuration options of an arbitrary widget, enter
 
-        demo::displayConfig &lt;widgetName&gt;
-</pre></blockquote>
+	demo::displayConfig &lt;widgetName&gt;
+</pre>
+  </blockquote>
 
-<p><img src="config.png" alt="Configuration Options - Please load this image!"
-    width=735 height=378>
+  <p><img src="config.png" alt=
+  "Configuration Options - Please load this image!" width="735" height=
+  "378"></p>
 
-<p>It is assumed that the Tcl command associated with the widget specified by
-<code>&lt;widgetName&gt;</code> has a <code>configure</code> subcommand which,
-when invoked without any argument, returns a list describing all of the
-available configuration options for the widget, in the common format known from
-the standard Tk widgets.&nbsp; The <code>demo::displayConfig</code> procedure
-inserts the items of this list into a scrolled tablelist with 5 dynamic-width
-columns and interactive sort capability, and returns the name of the newly
-created tablelist widget:
+  <p>It is assumed that the Tcl command associated with the widget specified by
+  <code>&lt;widgetName&gt;</code> has a <code>configure</code> subcommand
+  which, when invoked without any argument, returns a list describing all of
+  the available configuration options for the widget, in the common format
+  known from the standard Tk widgets.&nbsp; The
+  <code>demo::displayConfig</code> procedure inserts the items of this list
+  into a scrolled tablelist with 5 dynamic-width columns and interactive sort
+  capability, and returns the name of the newly created tablelist widget:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 package require Tablelist
 
 namespace eval demo {
@@ -447,10 +495,10 @@ namespace eval demo {
     # Name		Class
     # -----------------------------
     # tf		Frame
-    #   tbl		  Tabellist
-    #   vsb, hsb	  Scrollbar
+    #	tbl		  Tabellist
+    #	vsb, hsb	  Scrollbar
     # bf		Frame
-    #   b1, b2, b3	  Button
+    #	b1, b2, b3	  Button
     #
     variable winSys
     if {[catch {tk windowingsystem} winSys] != 0} {
@@ -537,9 +585,9 @@ proc demo::displayConfig w {
     set b1 $bf.b1
     set b2 $bf.b2
     set b3 $bf.b3
-    button $b1 -text "Refresh"     -command [list demo::putConfig $w $tbl]
+    button $b1 -text "Refresh"	   -command [list demo::putConfig $w $tbl]
     button $b2 -text "Sort as set" -command [list $tbl sort]
-    button $b3 -text "Close"       -command [list destroy $top]
+    button $b3 -text "Close"	   -command [list destroy $top]
 
     #
     # Manage the widgets
@@ -552,79 +600,83 @@ proc demo::displayConfig w {
     putConfig $w $tbl
     return $tbl
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>The procedure invokes the <code><a href=
-"tablelistWidget.html">tablelist::tablelist</a></code> command to create a
-tablelist widget.&nbsp; The value of the <code><a href=
-"tablelistWidget.html#columns">-columns</a></code> option passed to this
-command specifies the widths, titles, and alignments of the 5 columns.&nbsp;
-The width of each column is given as <code>0</code>, specifying that the
-column's width is to be made just large enough to hold all the elements in the
-column, including its title, which is the string following the width.&nbsp; We
-have omitted the alignment specifications (which can optionally follow the
-titles), because the columns shall all be left-justified.
+  <p>The procedure invokes the <code><a href=
+  "tablelistWidget.html">tablelist::tablelist</a></code> command to create a
+  tablelist widget.&nbsp; The value of the <code><a href=
+  "tablelistWidget.html#columns">-columns</a></code> option passed to this
+  command specifies the widths, titles, and alignments of the 5 columns.&nbsp;
+  The width of each column is given as <code>0</code>, specifying that the
+  column's width is to be made just large enough to hold all the elements in
+  the column, including its title, which is the string following the
+  width.&nbsp; We have omitted the alignment specifications (which can
+  optionally follow the titles), because the columns shall all be
+  left-justified.</p>
 
-<p>The command <code><a href=
-"tablelistSortByColumn.html">tablelist::sortByColumn</a></code>, specified as
-the value of the <code><a href=
-"tablelistWidget.html#labelcommand">-labelcommand</a></code> option, will be
-invoked whenever mouse button 1 is released over one of the labels.&nbsp; This
-command sorts the items based on the column corresponding to that label, in the
-right order, by invoking the <code><a href=
-"tablelistWidget.html#sortbycolumn">sortbycolumn</a></code> subcommand of the
-Tcl command associated with the tablelist widget.
+  <p>The command <code><a href=
+  "tablelistColSort.html">tablelist::sortByColumn</a></code>, specified as the
+  value of the <code><a href=
+  "tablelistWidget.html#labelcommand">-labelcommand</a></code> option, will be
+  invoked whenever mouse button 1 is released over one of the labels.&nbsp;
+  This command sorts the items based on the column corresponding to that label,
+  in the right order, by invoking the <code><a href=
+  "tablelistWidget.html#sortbycolumn">sortbycolumn</a></code> subcommand of the
+  Tcl command associated with the tablelist widget.</p>
 
-<p>As seen from the creation of the button displaying the text&nbsp;
-<code>"Sort as set"</code>,&nbsp; the items will also be sorted by
-invoking the <code><a href="tablelistWidget.html#sort">sort</a></code>
-subcommand.&nbsp; This makes it necessary to specify a command to be used for
-the comparison of the items, as the value of the <code><a href=
-"tablelistWidget.html#sortcommand">-sortcommand</a></code> option.&nbsp; In our
-example this is the <code>demo::compareAsSet</code> procedure shown below.
+  <p>As seen from the creation of the button displaying the text&nbsp;
+  <code>"Sort as set"</code>,&nbsp; the items will also be sorted by invoking
+  the <code><a href="tablelistWidget.html#sort">sort</a></code>
+  subcommand.&nbsp; This makes it necessary to specify a command to be used for
+  the comparison of the items, as the value of the <code><a href=
+  "tablelistWidget.html#sortcommand">-sortcommand</a></code> option.&nbsp; In
+  our example this is the <code>demo::compareAsSet</code> procedure shown
+  below.</p>
 
-<p>The <code><a href=
-"tablelistWidget.html#editendcommand">-editendcommand</a></code> option
-specifies the command to be invoked automatically whenever the interactive
-editing of a cell's contents is finished and the final contents of the
-temporary embedded entry widget used for the editing are different from its
-original one.&nbsp; Per default, the elements of a tablelist widget can only be
-edited programmatically, but we enable the interactive editing for the cells of
-the last column with the aid of the <code><a href=
-"tablelistWidget.html#col_editable">-editable</a></code> column configuration
-option.
+  <p>The <code><a href=
+  "tablelistWidget.html#editendcommand">-editendcommand</a></code> option
+  specifies the command to be invoked automatically whenever the interactive
+  editing of a cell's contents is finished and the final contents of the
+  temporary embedded entry widget used for the editing are different from its
+  original one.&nbsp; Per default, the elements of a tablelist widget can only
+  be edited programmatically, but we enable the interactive editing for the
+  cells of the last column with the aid of the <code><a href=
+  "tablelistWidget.html#col_editable">-editable</a></code> column configuration
+  option.</p>
 
-<p>By specifying the value <code>all</code> for the <code><a href=
-"tablelistWidget.html#stretch">-stretch</a></code> configuration option we make
-sure that all of the columns will be stretched to eliminate the blank space
-that might appear at the right of the table.
+  <p>By specifying the value <code>all</code> for the <code><a href=
+  "tablelistWidget.html#stretch">-stretch</a></code> configuration option we
+  make sure that all of the columns will be stretched to eliminate the blank
+  space that might appear at the right of the table.</p>
 
-<p>For the last two columns of the tablelist we use the <code><a href=
-"tablelistWidget.html#col_maxwidth">-maxwidth</a></code> column configuration
-option, to make sure that the dynamic widths of these columns won't exceed 30
-characters.
+  <p>For the last two columns of the tablelist we use the <code><a href=
+  "tablelistWidget.html#col_maxwidth">-maxwidth</a></code> column configuration
+  option, to make sure that the dynamic widths of these columns won't exceed 30
+  characters.</p>
 
-<p>Besides the options given on the command line, our tablelist widget will
-automatically inherit the ones contained in the Tk option database entries
-specified in the namespace initialization preceding the
-<code>demo::displayConfig</code> procedure.&nbsp; The database name
-<code>activeStyle</code> corresponds to the <code><a href=
-"tablelistWidget.html#activestyle">-activestyle</a></code> configuration
-option; its value <code>frame</code> makes the active item appear surrounded
-with a thin frame.&nbsp; The database name <code>stripeBackground</code>
-corresponds to the <code><a href=
-"tablelistWidget.html#stripebackground">-stripebackground</a></code>
-configuration option.&nbsp; According to this entry, every other row of the
-tablelist widget will be displayed in the background color
-<code>#e0e8f0</code>, which improves the readability of the items and gives the
-widget a nice appearance.
+  <p>Besides the options given on the command line, our tablelist widget will
+  automatically inherit the ones contained in the Tk option database entries
+  specified in the namespace initialization preceding the
+  <code>demo::displayConfig</code> procedure.&nbsp; The database name
+  <code>activeStyle</code> corresponds to the <code><a href=
+  "tablelistWidget.html#activestyle">-activestyle</a></code> configuration
+  option; its value <code>frame</code> makes the active item appear surrounded
+  with a thin frame.&nbsp; The database name <code>stripeBackground</code>
+  corresponds to the <code><a href=
+  "tablelistWidget.html#stripebackground">-stripebackground</a></code>
+  configuration option.&nbsp; According to this entry, every other row of the
+  tablelist widget will be displayed in the background color
+  <code>#e0e8f0</code>, which improves the readability of the items and gives
+  the widget a nice appearance.</p>
 
-<p>We populate the tablelist by invoking the <code>demo::putConfig</code>
-procedure discussed below.&nbsp; The same script is associated with the
-<code>Refresh</code> button, as the value of its <code>-command</code>
-configuration option.&nbsp; This procedure is implemented as follows:
+  <p>We populate the tablelist by invoking the <code>demo::putConfig</code>
+  procedure discussed below.&nbsp; The same script is associated with the
+  <code>Refresh</code> button, as the value of its <code>-command</code>
+  configuration option.&nbsp; This procedure is implemented as follows:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 #------------------------------------------------------------------------------
 # demo::putConfig
 #
@@ -672,36 +724,39 @@ proc demo::putConfig {w tbl} {
     $tbl activate 0
     $tbl attrib widget $w
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>After deleting the current items of the tablelist widget <code>tbl</code>,
-the procedure inserts the items of the list returned by the
-<code>configure</code> subcommand of the Tcl command associated with the widget
-<code>w</code>.&nbsp; For each option that is merely an abbreviated form of
-some other one, we use the <code><a href=
-"tablelistWidget.html#rowconfigure">rowconfigure</a></code> tablelist
-subcommand to change the normal and selection foreground colors of the item
-just appended, and we disable the interactive editing in the last inserted cell
-by using the <code><a href=
-"tablelistWidget.html#cell_editable">-editable</a></code> cell configuration
-option.&nbsp; The <code><a href=
-"tablelistWidget.html#cellconfigure">cellconfigure</a></code> tablelist
-operation is also invoked for each real option whose current value is different
-from the default one, to change the values of the <code>-foreground</code> and
-<code>-selectforeground</code> options of the cells no. 0 and 4, containing the
-command-line name of the option and its current value.
+  <p>After deleting the current items of the tablelist widget <code>tbl</code>,
+  the procedure inserts the items of the list returned by the
+  <code>configure</code> subcommand of the Tcl command associated with the
+  widget <code>w</code>.&nbsp; For each option that is merely an abbreviated
+  form of some other one, we use the <code><a href=
+  "tablelistWidget.html#rowconfigure">rowconfigure</a></code> tablelist
+  subcommand to change the normal and selection foreground colors of the item
+  just appended, and we disable the interactive editing in the last inserted
+  cell by using the <code><a href=
+  "tablelistWidget.html#cell_editable">-editable</a></code> cell configuration
+  option.&nbsp; The <code><a href=
+  "tablelistWidget.html#cellconfigure">cellconfigure</a></code> tablelist
+  operation is also invoked for each real option whose current value is
+  different from the default one, to change the values of the
+  <code>-foreground</code> and <code>-selectforeground</code> options of the
+  cells no. 0 and 4, containing the command-line name of the option and its
+  current value.</p>
 
-<p>Each tablelist widget may have any number of private <b>attributes</b>,
-which can be set and retrieved with the aid of the <code><a href=
-"tablelistWidget.html#attrib">attrib</a></code> subcommand of the Tcl command
-corresponding to the widget.&nbsp; The <code>demo::putConfig</code> procedure
-sets the <code>widget</code> attribute to the name of the widget whose options
-are displayed in the tablelist.
+  <p>Each tablelist widget may have any number of private <b>attributes</b>,
+  which can be set and retrieved with the aid of the <code><a href=
+  "tablelistWidget.html#attrib">attrib</a></code> subcommand of the Tcl command
+  corresponding to the widget.&nbsp; The <code>demo::putConfig</code> procedure
+  sets the <code>widget</code> attribute to the name of the widget whose
+  options are displayed in the tablelist.</p>
 
-<p>The implementation of the comparison command
-<code>demo::compareAsSet</code> mentioned above is quite simple:
+  <p>The implementation of the comparison command
+  <code>demo::compareAsSet</code> mentioned above is quite simple:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 #------------------------------------------------------------------------------
 # demo::compareAsSet
 #
@@ -725,12 +780,15 @@ proc demo::compareAsSet {item1 item2} {
 	}
     }
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>Finally, here is the implementation of the <code>demo::applyValue</code>
-procedure, specified as the value of the <code>-editendcommand</code> option:
+  <p>Finally, here is the implementation of the <code>demo::applyValue</code>
+  procedure, specified as the value of the <code>-editendcommand</code>
+  option:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 #------------------------------------------------------------------------------
 # demo::applyValue
 #
@@ -774,57 +832,62 @@ proc demo::applyValue {tbl row col text} {
 
     return $text
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>The procedure retrieves the name of the widget whose options are displayed
-in the tablelist, as the value of its <code>widget</code> attribute, and
-invokes the <code><a href="tablelistWidget.html#cellcget">cellcget</a></code>
-tablelist subcommand to get the name of the option specified in the first cell
-of the row whose last element was just edited.&nbsp; Next, it tries to apply
-the new value of the option to the widget, and invokes the <code><a href=
-"tablelistWidget.html#rejectinput">rejectinput</a></code> subcommand if the
-attempt fails.&nbsp; Otherwise it replaces the new option value with its
-canonical form and updates the normal and selection foreground colors of the
-cells no. 0 and 4.&nbsp; The canonical form of the option value is given by the
-<code>cget</code> subcommand of the Tcl command associated with that
-widget.&nbsp; For example, a boolean value will always be replaced with
-<code>1</code> or <code>0</code>, even if the entry contains the string
-<code>yes</code> or <code>no</code>.&nbsp; The procedure returns this canonical
-option value, thus making sure that the latter will become the new contents of
-the cell that was just edited.
+  <p>The procedure retrieves the name of the widget whose options are displayed
+  in the tablelist, as the value of its <code>widget</code> attribute, and
+  invokes the <code><a href="tablelistWidget.html#cellcget">cellcget</a></code>
+  tablelist subcommand to get the name of the option specified in the first
+  cell of the row whose last element was just edited.&nbsp; Next, it tries to
+  apply the new value of the option to the widget, and invokes the
+  <code><a href="tablelistWidget.html#rejectinput">rejectinput</a></code>
+  subcommand if the attempt fails.&nbsp; Otherwise it replaces the new option
+  value with its canonical form and updates the normal and selection foreground
+  colors of the cells no. 0 and 4.&nbsp; The canonical form of the option value
+  is given by the <code>cget</code> subcommand of the Tcl command associated
+  with that widget.&nbsp; For example, a boolean value will always be replaced
+  with <code>1</code> or <code>0</code>, even if the entry contains the string
+  <code>yes</code> or <code>no</code>.&nbsp; The procedure returns this
+  canonical option value, thus making sure that the latter will become the new
+  contents of the cell that was just edited.</p>
 
+  <h3><a name="ex_browse"></a>A simple widget browser based on a tablelist</h3>
 
-<h3><a name="ex_browse"></a>A simple widget browser based on a tablelist</h3>
+  <p>The file <code>browse.tcl</code> in the <code>demos</code> directory
+  contains a procedure <code>demo::displayChildren</code> that displays
+  information about the children of an arbitrary widget in a tablelist
+  contained in a newly created top-level widget.&nbsp; To test it, start
+  <code>wish</code> and evaluate the file by using the <code>source</code>
+  command, in a similar way as in the case of the <a href="#ex_config">previous
+  example</a>.</p>
 
-<p>The file <code>browse.tcl</code> in the <code>demos</code> directory
-contains a procedure <code>demo::displayChildren</code> that displays
-information about the children of an arbitrary widget in a tablelist contained
-in a newly created top-level widget.&nbsp; To test it, start <code>wish</code>
-and evaluate the file by using the <code>source</code> command, in a similar
-way as in the case of the <a href="#ex_config">previous example</a>.
+  <p>The script will print the following message to <code>stdout</code>:</p>
 
-<p>The script will print the following message to <code>stdout</code>:
-
-<blockquote><pre>
+  <blockquote>
+    <pre>
 To display information about the children of an arbitrary widget, enter
 
-        demo::displayChildren &lt;widgetName&gt;
-</pre></blockquote>
+	demo::displayChildren &lt;widgetName&gt;
+</pre>
+  </blockquote>
 
-<p><img src="browse.png" alt="Children - Please load this image!"
-    width=554 height=272>
+  <p><img src="browse.png" alt="Children - Please load this image!" width="554"
+  height="272"></p>
 
-<p>The <code>demo::displayChildren</code> command inserts some data of the
-children of the widget specified by <code>&lt;widgetName&gt;</code> into a
-vertically scrolled tablelist with 9 dynamic-width columns and interactive sort
-capability, and returns the name of the newly created tablelist widget.&nbsp;
-By double-clicking on an item or invoking the first entry of a pop-up menu
-within the body of the tablelist, you can display the data of the children of
-the widget corresponding to the selected item, and with the second menu entry
-you can display its configuration options (see the previous example for
-details).&nbsp; To go one level up, click on the <code>Parent</code> button.
+  <p>The <code>demo::displayChildren</code> command inserts some data of the
+  children of the widget specified by <code>&lt;widgetName&gt;</code> into a
+  vertically scrolled tablelist with 9 dynamic-width columns and interactive
+  sort capability, and returns the name of the newly created tablelist
+  widget.&nbsp; By double-clicking on an item or invoking the first entry of a
+  pop-up menu within the body of the tablelist, you can display the data of the
+  children of the widget corresponding to the selected item, and with the
+  second menu entry you can display its configuration options (see the previous
+  example for details).&nbsp; To go one level up, click on the
+  <code>Parent</code> button.</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 package require Tablelist
 
 namespace eval demo {
@@ -874,7 +937,7 @@ proc demo::displayChildren w {
     set tbl $tf.tbl
     set vsb $tf.vsb
     tablelist::tablelist $tbl \
-	-columns {0 "Path Name"	left
+	-columns {0 "Path Name" left
 		  0 "Class"	left
 		  0 "X"		right
 		  0 "Y"		right
@@ -943,76 +1006,80 @@ proc demo::displayChildren w {
     putChildren $w $tbl
     return $tbl
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>The procedure invokes the <code><a href=
-"tablelistWidget.html">tablelist::tablelist</a></code> command to create a
-tablelist widget.&nbsp; The value of the <code><a href=
-"tablelistWidget.html#columns">-columns</a></code> option passed to this
-command specifies the widths, titles, and alignments of the 9 columns.&nbsp;
-The width of each column is given as <code>0</code>, specifying that the
-column's width is to be made just large enough to hold all the elements in the
-column, including its title, which is the string following the width.&nbsp;
-Each of the titles is followed by an alignment, which indicates how to justify
-both the elements and the title of the respective column.
+  <p>The procedure invokes the <code><a href=
+  "tablelistWidget.html">tablelist::tablelist</a></code> command to create a
+  tablelist widget.&nbsp; The value of the <code><a href=
+  "tablelistWidget.html#columns">-columns</a></code> option passed to this
+  command specifies the widths, titles, and alignments of the 9 columns.&nbsp;
+  The width of each column is given as <code>0</code>, specifying that the
+  column's width is to be made just large enough to hold all the elements in
+  the column, including its title, which is the string following the
+  width.&nbsp; Each of the titles is followed by an alignment, which indicates
+  how to justify both the elements and the title of the respective column.</p>
 
-<p>The command <code>demo::labelCmd</code>, specified as the value of the
-<code><a href="tablelistWidget.html#labelcommand">-labelcommand</a></code>
-option, will be invoked whenever mouse button 1 is released over one of the
-labels.&nbsp; We will discuss this procedure a little later.
+  <p>The command <code>demo::labelCmd</code>, specified as the value of the
+  <code><a href="tablelistWidget.html#labelcommand">-labelcommand</a></code>
+  option, will be invoked whenever mouse button 1 is released over one of the
+  labels.&nbsp; We will discuss this procedure a little later.</p>
 
-<p>We specify the value <code>0</code> for the widget's <code><a href=
-"tablelistWidget.html#width">-width</a></code> option, meaning that the
-tablelist's width shall be made just large enough to hold all its columns.
+  <p>We specify the value <code>0</code> for the widget's <code><a href=
+  "tablelistWidget.html#width">-width</a></code> option, meaning that the
+  tablelist's width shall be made just large enough to hold all its
+  columns.</p>
 
-<p>After creating the tablelist widget, we make sure that the elements of its
-columns 2, 3, 4, and 5 (displaying the x and y coordinates as well as the
-widths and heights of the children) will be compared as integers when sorting
-the items based on one of these columns.&nbsp; We do this with the aid of the
-<code><a href="tablelistWidget.html#columnconfigure">columnconfigure</a></code>
-tablelist operation.
+  <p>After creating the tablelist widget, we make sure that the elements of its
+  columns 2, 3, 4, and 5 (displaying the x and y coordinates as well as the
+  widths and heights of the children) will be compared as integers when sorting
+  the items based on one of these columns.&nbsp; We do this with the aid of the
+  <code><a href=
+  "tablelistWidget.html#columnconfigure">columnconfigure</a></code> tablelist
+  operation.</p>
 
-<p>The same <code>columnconfigure</code> subcommand enables us to specify that,
-when displaying the elements of columns 6 and 7 (having the titles
-<code>"Mapped"</code> and <code>"Viewable"</code>, respectively), the boolean
-values <code>1</code> and <code>0</code> will be replaced with the strings
-<code>"yes"</code> and <code>"no"</code>, returned by the
-<code>demo::formatBoolean</code> command shown below.
+  <p>The same <code>columnconfigure</code> subcommand enables us to specify
+  that, when displaying the elements of columns 6 and 7 (having the titles
+  <code>"Mapped"</code> and <code>"Viewable"</code>, respectively), the boolean
+  values <code>1</code> and <code>0</code> will be replaced with the strings
+  <code>"yes"</code> and <code>"no"</code>, returned by the
+  <code>demo::formatBoolean</code> command shown below.</p>
 
-<p>After creating the vertical scrollbar, we iterate over the elements of the
-list containing the path names of all header labels of the tablelist widget,
-returned by the <code><a href="tablelistWidget.html#labels">labels</a></code>
-subcommand of the Tcl command corresponding to the widget.&nbsp; For each
-element of the list, we bind the procedure
-<code>demo::updateItemsDelayed</code> to the <code>&lt;Configure&gt;</code>
-event.&nbsp; In this way we make sure the procedure will be invoked whenever
-the header label indicated by that list element changes size.
+  <p>After creating the vertical scrollbar, we iterate over the elements of the
+  list containing the path names of all header labels of the tablelist widget,
+  returned by the <code><a href="tablelistWidget.html#labels">labels</a></code>
+  subcommand of the Tcl command corresponding to the widget.&nbsp; For each
+  element of the list, we bind the procedure
+  <code>demo::updateItemsDelayed</code> to the <code>&lt;Configure&gt;</code>
+  event.&nbsp; In this way we make sure the procedure will be invoked whenever
+  the header label indicated by that list element changes size.</p>
 
-<p>The four invocations of the <code>bind</code> command following the
-creation of the pop-up menu make use of a binding tag whose name depends on the
-path name of the tablelist widget and is returned by the <code><a href=
-"tablelistWidget.html#bodytag">bodytag</a></code> subcommand of the Tcl command
-associated with the tablelist widget.&nbsp; The advantage of using this tag
-instead of the path name of the tablelist's body is that this binding tag is
-associated not only with the body but also with the separator frames and with
-the labels displaying embedded images.&nbsp; This is important in our example
-because we want to make sure the <code>&lt;&lt;Button3&gt;&gt;</code> and
-<code>&lt;Double-1&gt;</code> events will be handled in the same way within a
-label containing an embedded image as in the rest of the tablelist's
-body.&nbsp; Both the <code><a href=
-"tablelistWidget.html#button3">&lt;&lt;Button3&gt;&gt;</a></code> virtual event
-(used in the first three <code>bind</code> commands) and the <code><a href=
-"tablelistWidget.html#body_bindings">TablelistBody</a></code> binding tag (used
-in the first binding script) are created by the Tablelist package.&nbsp; The
-first three <code>bind</code> commands make sure that a
-<code>&lt;&lt;Button3&gt;&gt;</code> virtual event will select and activate the
-nearest item and will post a pop-up menu with two command entries that refer to
-the widget described by that item.
+  <p>The four invocations of the <code>bind</code> command following the
+  creation of the pop-up menu make use of a binding tag whose name depends on
+  the path name of the tablelist widget and is returned by the <code><a href=
+  "tablelistWidget.html#bodytag">bodytag</a></code> subcommand of the Tcl
+  command associated with the tablelist widget.&nbsp; The advantage of using
+  this tag instead of the path name of the tablelist's body is that this
+  binding tag is associated not only with the body but also with the separator
+  frames and with the labels displaying embedded images.&nbsp; This is
+  important in our example because we want to make sure the
+  <code>&lt;&lt;Button3&gt;&gt;</code> and <code>&lt;Double-1&gt;</code> events
+  will be handled in the same way within a label containing an embedded image
+  as in the rest of the tablelist's body.&nbsp; Both the <code><a href=
+  "tablelistWidget.html#button3">&lt;&lt;Button3&gt;&gt;</a></code> virtual
+  event (used in the first three <code>bind</code> commands) and the
+  <code><a href="tablelistWidget.html#body_bindings">TablelistBody</a></code>
+  binding tag (used in the first binding script) are created by the Tablelist
+  package.&nbsp; The first three <code>bind</code> commands make sure that a
+  <code>&lt;&lt;Button3&gt;&gt;</code> virtual event will select and activate
+  the nearest item and will post a pop-up menu with two command entries that
+  refer to the widget described by that item.</p>
 
-<p>We populate the tablelist by invoking the <code>demo::putChildren</code>
-procedure, implemented as follows:
+  <p>We populate the tablelist by invoking the <code>demo::putChildren</code>
+  procedure, implemented as follows:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 #------------------------------------------------------------------------------
 # demo::putChildren
 #
@@ -1071,26 +1138,28 @@ proc demo::putChildren {w tbl} {
 	$b2 configure -state normal -command [list demo::putChildren $p $tbl]
     }
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>After resetting the sorting information by invoking the <code><a href=
-"tablelistWidget.html#resetsortinfo">resetsortinfo</a></code> subcommand and
-deleting the current items of the tablelist widget <code>tbl</code>, the
-procedure iterates over the children of the specified widget and inserts the
-items built from some data retrieved by using the <code>winfo</code>
-command.&nbsp; For each child, it invokes the <code><a href=
-"tablelistWidget.html#cellconfigure">cellconfigure</a></code> tablelist
-operation to set the value of the <code>-image</code> option of the first cell,
-containing the path name of the child.&nbsp; In this way, the procedure inserts
-the image <code>$leafImg</code> or <code>$compImg</code> into the first cell,
-depending upon whether the child in question is a leaf or a composite
-widget.&nbsp; Remember that both images were created outside this procedure,
-within the initialization of the <code>demo</code> namespace.
+  <p>After resetting the sorting information by invoking the <code><a href=
+  "tablelistWidget.html#resetsortinfo">resetsortinfo</a></code> subcommand and
+  deleting the current items of the tablelist widget <code>tbl</code>, the
+  procedure iterates over the children of the specified widget and inserts the
+  items built from some data retrieved by using the <code>winfo</code>
+  command.&nbsp; For each child, it invokes the <code><a href=
+  "tablelistWidget.html#cellconfigure">cellconfigure</a></code> tablelist
+  operation to set the value of the <code>-image</code> option of the first
+  cell, containing the path name of the child.&nbsp; In this way, the procedure
+  inserts the image <code>$leafImg</code> or <code>$compImg</code> into the
+  first cell, depending upon whether the child in question is a leaf or a
+  composite widget.&nbsp; Remember that both images were created outside this
+  procedure, within the initialization of the <code>demo</code> namespace.</p>
 
-<p>The <code>demo::formatBoolean</code> and <code>demo::labelCmd</code>
-procedures mentioned above are trivial:
+  <p>The <code>demo::formatBoolean</code> and <code>demo::labelCmd</code>
+  procedures mentioned above are trivial:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 #------------------------------------------------------------------------------
 # demo::formatBoolean
 #
@@ -1105,26 +1174,27 @@ proc demo::formatBoolean val {
 #
 # Sorts the contents of the tablelist widget tbl by its col'th column and makes
 # sure the items will be updated 500 ms later (because one of the items might
-# refer to the canvas containing the arrow that displays the sorting order).
+# refer to a canvas containing the arrow that displays the sorting order).
 #------------------------------------------------------------------------------
 proc demo::labelCmd {tbl col} {
     tablelist::sortByColumn $tbl $col
     updateItemsDelayed $tbl
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>The command <code><a href=
-"tablelistSortByColumn.html">tablelist::sortByColumn</a></code> sorts the items
-of the tablelist widget by the specified column in the right order, by invoking
-the <code><a href=
-"tablelistWidget.html#sortbycolumn">sortbycolumn</a></code> subcommand of the
-Tcl command associated with the tablelist widget.
+  <p>The command <code><a href=
+  "tablelistColSort.html">tablelist::sortByColumn</a></code> sorts the items of
+  the tablelist widget by the specified column in the right order, by invoking
+  the <code><a href="tablelistWidget.html#sortbycolumn">sortbycolumn</a></code>
+  subcommand of the Tcl command associated with the tablelist widget.</p>
 
-<p>The implementation of the <code>demo::updateItemsDelayed</code> command,
-invoked in this procedure and already encountered in the
-<code>demo::displayChildren</code> procedure above, is quite simple:
+  <p>The implementation of the <code>demo::updateItemsDelayed</code> command,
+  invoked in this procedure and already encountered in the
+  <code>demo::displayChildren</code> procedure above, is quite simple:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 #------------------------------------------------------------------------------
 # demo::updateItemsDelayed
 #
@@ -1167,32 +1237,48 @@ proc demo::updateItems tbl {
 		     [winfo viewable $c] [winfo manager $c]
 	$tbl rowconfigure $row -text $item
     }
+
+    #
+    # Repeat the last sort operation
+    #
+    if {[set sortCol [$tbl sortcolumn]] &gt;= 0} {
+	$tbl sortbycolumn $sortCol -[$tbl sortorder]
+    }
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>As already mentioned in the previous example, each tablelist widget may have
-any number of private attributes, which can be set and retrieved with the aid
-of the <code><a href="tablelistWidget.html#attrib">attrib</a></code> subcommand
-of the Tcl command corresponding to the widget.&nbsp; The <code>afterId</code>
-attribute is set by the <code>demo::updateItemsDelayed</code> procedure when
-sheduling the <code>demo::updateItems</code> command for execution 500 ms
-later, but only if its value is an empty string.&nbsp; For this reason, the
-<code>demo::updateItems</code> procedure resets this attribute.&nbsp; It also
-makes use of the <code><a href=
-"tablelistWidget.html#cellcget">cellcget</a></code> tablelist subcommand to get
-the path names contained in the first cell of each row, and updates the data
-of the children with the aid of the <code><a href=
-"tablelistWidget.html#rowconfigure">rowconfigure</a></code> subcommand.
+  <p>As already mentioned in the previous example, each tablelist widget may
+  have any number of private attributes, which can be set and retrieved with
+  the aid of the <code><a href="tablelistWidget.html#attrib">attrib</a></code>
+  subcommand of the Tcl command corresponding to the widget.&nbsp; The
+  <code>afterId</code> attribute is set by the
+  <code>demo::updateItemsDelayed</code> procedure when sheduling the
+  <code>demo::updateItems</code> command for execution 500 ms later, but only
+  if its value is an empty string.&nbsp; For this reason, the
+  <code>demo::updateItems</code> procedure resets this attribute.&nbsp; It also
+  makes use of the <code><a href=
+  "tablelistWidget.html#cellcget">cellcget</a></code> tablelist subcommand to
+  get the path names contained in the first cell of each row, and updates the
+  data of the children with the aid of the <code><a href=
+  "tablelistWidget.html#rowconfigure">rowconfigure</a></code> subcommand.&nbsp;
+  After updating the items, the procedure repeats the last sorting based on the
+  column whose index is retrieved by invoking the <code><a href=
+  "tablelistWidget.html#sortcolumn">sortcolumn</a></code> subcommand, in the
+  order returned by <code><a href=
+  "tablelistWidget.html#sortorder">sortorder</a></code>.</p>
 
-<p>The remaining three procedures are also straight-forward.&nbsp; For example,
-the <code>demo::putChildrenOfSelWidget</code> command shown below makes use of
-the <code><a href="tablelistWidget.html#curselection">curselection</a></code>
-subcommand to get the index of the selected row.&nbsp; More precisely,
-<code>curselection</code> returns a list, but in our case this list will have
-exactly one element, hence it can be used directly as the first component of a
-cell index.
+  <p>The remaining three procedures are also straight-forward.&nbsp; For
+  example, the <code>demo::putChildrenOfSelWidget</code> command shown below
+  makes use of the <code><a href=
+  "tablelistWidget.html#curselection">curselection</a></code> subcommand to get
+  the index of the selected row.&nbsp; More precisely,
+  <code>curselection</code> returns a list, but in our case this list will have
+  exactly one element, hence it can be used directly as the first component of
+  a cell index.</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 #------------------------------------------------------------------------------
 # demo::putChildrenOfSelWidget
 #
@@ -1214,23 +1300,24 @@ proc demo::putChildrenOfSelWidget tbl {
 	putChildren $w $tbl
     }
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
+  <h3><a name="ex_styles"></a>Improving the look &amp; feel of a tablelist
+  widget</h3>
 
-<h3><a name="ex_styles"></a>Improving the look &amp; feel of a tablelist
-    widget</h3>
+  <p>The script <code>styles.tcl</code> in the <code>demos</code> directory
+  demonstrates some ways of making tablelist widgets smarter and improving the
+  readability of their items.&nbsp; It creates 8 tablelist widgets, shown in
+  the following figure:</p>
 
-<p>The script <code>styles.tcl</code> in the <code>demos</code> directory
-demonstrates some ways of making tablelist widgets smarter and improving the
-readability of their items.&nbsp; It creates 8 tablelist widgets, shown in the
-following figure:
+  <p><img src="styles.png" alt="Styles - Please load this image!" width="610"
+  height="492"></p>
 
-<p><img src="styles.png" alt="Styles - Please load this image!"
-    width=610 height=492>
+  <p>Here is the relevant code segment:</p>
 
-<p>Here is the relevant code segment:
-
-<blockquote><pre>
+  <blockquote>
+    <pre>
 #
 # Create, configure, and populate 8 tablelist widgets
 #
@@ -1238,7 +1325,7 @@ frame .f
 for {set n 0} { $n &lt; 8} {incr n} {
     set tbl .f.tbl$n
     tablelist::tablelist $tbl \
-    	-columns {0 "Label 0"  0 "Label 1"  0 "Label 2"  0 "Label 3"} \
+	-columns {0 "Label 0"  0 "Label 1"  0 "Label 2"  0 "Label 3"} \
 	-background gray98 -height 4 -width 40 -stretch all
 
     switch $n {
@@ -1281,38 +1368,40 @@ for {set n 0} { $n &lt; 8} {incr n} {
 	     [list "Cell $row,0" "Cell $row,1" "Cell $row,2" "Cell $row,3"]
     }
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>The only configuration option used here but not encountered in the first two
-examples is <code><a href=
-"tablelistWidget.html#showseparators">-showseparators</a></code>.&nbsp; The
-visual effect it produces looks nice both by itself and combined with
-horizontal or vertical stripes, created by using the <code><a href=
-"tablelistWidget.html#stripebackground">-stripebackground</a></code> option
-and the <code><a href=
-"tablelistWidget.html#columnconfigure">columnconfigure</a></code> subcommand,
-respectively.
+  <p>The only configuration option used here but not encountered in the first
+  two examples is <code><a href=
+  "tablelistWidget.html#showseparators">-showseparators</a></code>.&nbsp; The
+  visual effect it produces looks nice both by itself and combined with
+  horizontal or vertical stripes, created by using the <code><a href=
+  "tablelistWidget.html#stripebackground">-stripebackground</a></code> option
+  and the <code><a href=
+  "tablelistWidget.html#columnconfigure">columnconfigure</a></code> subcommand,
+  respectively.</p>
 
+  <h3><a name="ex_editing"></a>Advanced interactive tablelist cell editing</h3>
 
-<h3><a name="ex_editing"></a>Advanced interactive tablelist cell editing</h3>
+  <p>The scripts <code>tileWidgets.tcl</code>, <code>bwidget.tcl</code>,
+  <code>iwidgets.tcl</code>, and <code>miscWidgets.tcl</code> in the
+  <code>demos</code> directory create a tablelist widget displaying some
+  parameters of 16 serial lines, and demonstrate how to use various widgets
+  from the Tk core and from the packages tile, BWidget, Iwidgets, combobox (by
+  Bryan Oakley), and Mentry for interactive cell editing.&nbsp; The following
+  figure shows the tablelist widget, together with a BWidget ComboBox used to
+  edit the contents of one of its cells:</p>
 
-<p>The scripts <code>tileWidgets.tcl</code>, <code>bwidget.tcl</code>,
-<code>iwidgets.tcl</code>, and <code>miscWidgets.tcl</code> in the
-<code>demos</code> directory create a tablelist widget displaying some
-parameters of 16 serial lines, and demonstrate how to use various widgets from
-the Tk core and from the packages tile, BWidget, Iwidgets, combobox (by Bryan
-Oakley), and Mentry for interactive cell editing.&nbsp; The following figure
-shows the tablelist widget, together with a BWidget ComboBox used to edit the
-contents of one of its cells:
+  <p><img src="bwidget.png" alt=
+  "Serial Line Configuration - Please load this image!" width="696" height=
+  "374"></p>
 
-<p><img src="bwidget.png" alt=
-    "Serial Line Configuration - Please load this image!" width=696 height=374>
+  <p>Here is the relevant code segment from the script <code>bwidget.tcl</code>
+  (the scripts <code>tileWidgets.tcl</code>, <code>iwidgets.tcl</code>, and
+  <code>miscWidgets.tcl</code> are similar):</p>
 
-<p>Here is the relevant code segment from the script <code>bwidget.tcl</code>
-(the scripts <code>tileWidgets.tcl</code>, <code>iwidgets.tcl</code>, and
-<code>miscWidgets.tcl</code> are similar):
-
-<blockquote><pre>
+  <blockquote>
+    <pre>
 package require Tk 8.3				;# because of entry validation
 package require Tablelist
 package require BWidget
@@ -1338,7 +1427,7 @@ tablelist::addBWidgetComboBox
 #
 # Create two images, to be displayed in tablelist cells with boolean values
 #
-set checkedImg   [image create photo -file [file join $dir checked.gif]]
+set checkedImg	 [image create photo -file [file join $dir checked.gif]]
 set uncheckedImg [image create photo -file [file join $dir unchecked.gif]]
 
 #
@@ -1374,7 +1463,7 @@ $tbl columnconfigure 8 -name actDate   -editable yes -editwindow Entry \
 $tbl columnconfigure 9 -name actTime   -editable yes -editwindow Entry \
     -formatcommand formatTime -sortmode integer
 
-proc emptyStr   val { return "" }
+proc emptyStr	val { return "" }
 proc formatDate val { return [clock format $val -format "%Y-%m-%d"] }
 proc formatTime val { return [clock format $val -format "%H:%M:%S"] }
 
@@ -1400,48 +1489,53 @@ set btn [button .btn -text "Close" -command exit]
 #
 pack $btn -side bottom -pady 10
 pack $tbl -side top -expand yes -fill both
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>We invoke the <code><a href=
-"tablelistBWidget.html#Entry">tablelist::addBWidgetEntry</a></code>, <code><a
-href="tablelistBWidget.html#SpinBox">tablelist::addBWidgetSpinBox</a></code>,
-and <code><a href=
-"tablelistBWidget.html#ComboBox">tablelist::addBWidgetComboBox</a></code>
-commands to register the Entry, SpinBox, and ComboBox widgets from the BWidget
-package for interactive cell editing.&nbsp; These commands return the values
-<code>"Entry"</code>, <code>"SpinBox"</code>, and <code>"ComboBox"</code>,
-respectively, which we then use in the <code><a href=
-"tablelistWidget.html#col_editwindow">-editwindow</a></code> column
-configuration option to set the edit window for the columns no. 2, ...,
-9.&nbsp; In column no. 1 we use the Tk core checkbutton widget, which is
-automatically registered for interactive cell editing.
+  <p>We invoke the <code><a href=
+  "tablelistBWidget.html#Entry">tablelist::addBWidgetEntry</a></code>,
+  <code><a href=
+  "tablelistBWidget.html#SpinBox">tablelist::addBWidgetSpinBox</a></code>, and
+  <code><a href=
+  "tablelistBWidget.html#ComboBox">tablelist::addBWidgetComboBox</a></code>
+  commands to register the Entry, SpinBox, and ComboBox widgets from the
+  BWidget package for interactive cell editing.&nbsp; These commands return the
+  values <code>"Entry"</code>, <code>"SpinBox"</code>, and
+  <code>"ComboBox"</code>, respectively, which we then use in the
+  <code><a href="tablelistWidget.html#col_editwindow">-editwindow</a></code>
+  column configuration option to set the edit window for the columns no. 2,
+  ..., 9.&nbsp; In column no. 1 we use the Tk core checkbutton widget, which is
+  automatically registered for interactive cell editing.</p>
 
-<p>Notice the use of the <code><a href=
-"tablelistWidget.html#col_name">-name</a></code> column configuration option,
-which allows us to access the columns by their names instead of by numerical
-column indices.&nbsp; This is important, because the file
-<code>option.tcl</code>, which is <code>source</code>d into the main script,
-contains the line
+  <p>Notice the use of the <code><a href=
+  "tablelistWidget.html#col_name">-name</a></code> column configuration option,
+  which allows us to access the columns by their names instead of by numerical
+  column indices.&nbsp; This is important, because the file
+  <code>option.tcl</code>, which is <code>source</code>d into the main script,
+  contains the line</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 option add *Tablelist.movableColumns	yes
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>The <code>editStartCmd</code> and <code>editEndCmd</code> procedures shown
-below use the <code><a href=
-"tablelistWidget.html#columncget">columncget</a></code> subcommand to retrieve
-the name of the column from the numerical column index.
+  <p>The <code>editStartCmd</code> and <code>editEndCmd</code> procedures shown
+  below use the <code><a href=
+  "tablelistWidget.html#columncget">columncget</a></code> subcommand to
+  retrieve the name of the column from the numerical column index.</p>
 
-<p>The <code>editStartCmd</code> procedure, specified as the value of the
-<code><a href=
-"tablelistWidget.html#editstartcommand">-editstartcommand</a></code>
-configuration option, needs the path name of the edit window, in order to be
-able to configure the widget in various ways.&nbsp; This is a common situation,
-and Tablelist provides the <code><a href=
-"tablelistWidget.html#editwinpath">editwinpath</a></code> subcommand for this
-purpose:
+  <p>The <code>editStartCmd</code> procedure, specified as the value of the
+  <code><a href=
+  "tablelistWidget.html#editstartcommand">-editstartcommand</a></code>
+  configuration option, needs the path name of the edit window, in order to be
+  able to configure the widget in various ways.&nbsp; This is a common
+  situation, and Tablelist provides the <code><a href=
+  "tablelistWidget.html#editwinpath">editwinpath</a></code> subcommand for this
+  purpose:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 #------------------------------------------------------------------------------
 # editStartCmd
 #
@@ -1490,17 +1584,20 @@ proc editStartCmd {tbl row col text} {
 
     return $text
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>The <code>editEndCmd</code> procedure, specified as the value of the
-<code><a href=
-"tablelistWidget.html#editendcommand">-editendcommand</a></code> configuration
-option, is responsible for a final validation of the edit window's text.&nbsp;
-Another purpose of this command is to convert the text contained in the edit
-window to the cell's new <i>internal</i> contents, which is necessary because
-the internal value of the activation date and time is a clock value in seconds:
+  <p>The <code>editEndCmd</code> procedure, specified as the value of the
+  <code><a href=
+  "tablelistWidget.html#editendcommand">-editendcommand</a></code>
+  configuration option, is responsible for a final validation of the edit
+  window's text.&nbsp; Another purpose of this command is to convert the text
+  contained in the edit window to the cell's new <i>internal</i> contents,
+  which is necessary because the internal value of the activation date and time
+  is a clock value in seconds:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 #------------------------------------------------------------------------------
 # editEndCmd
 #
@@ -1564,40 +1661,44 @@ proc editEndCmd {tbl row col text} {
 
     return $text
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>As already mentioned above, the scripts <code>tileWidgets.tcl</code>,
-<code>iwidgets.tcl</code>, and <code>miscWidgets.tcl</code> are similar to
-<code>bwidget.tcl</code>.&nbsp; The first one makes use of the tile entry,
-combobox, and checkbutton widgets, together with the Tk core spinbox.&nbsp; The
-second one uses (besides the Tk core checkbutton) the entryfield, spinint,
-combobox, dateentry, and timeentry widgets from the Iwidgets package and the
-validation facilities specific to that library.&nbsp; The third script makes
-use of the entry, spinbox, and checkbutton widgets from the Tk core, Bryan
-Oakley's combobox, and of the mentry widgets of type <code>"Date"</code> and
-<code>"Time"</code>, and it performs the entry validation with the aid of the
-Wcb package (which is required anyway for the Mentry library).
+  <p>As already mentioned above, the scripts <code>tileWidgets.tcl</code>,
+  <code>iwidgets.tcl</code>, and <code>miscWidgets.tcl</code> are similar to
+  <code>bwidget.tcl</code>.&nbsp; The first one makes use of the tile entry,
+  combobox, and checkbutton widgets, together with the Tk core spinbox.&nbsp;
+  The second one uses (besides the Tk core checkbutton) the entryfield,
+  spinint, combobox, dateentry, and timeentry widgets from the Iwidgets package
+  and the validation facilities specific to that library.&nbsp; The third
+  script makes use of the entry, spinbox, and checkbutton widgets from the Tk
+  core, Bryan Oakley's combobox, and of the mentry widgets of type
+  <code>"Date"</code> and <code>"Time"</code>, and it performs the entry
+  validation with the aid of the Wcb package (which is required anyway for the
+  Mentry library).</p>
 
+  <h3><a name="ex_windows"></a>A tablelist widget containing embedded
+  windows</h3>
 
-<h3><a name="ex_windows"></a>A tablelist widget containing embedded windows</h3>
+  <p>The script <code>embeddedWindows.tcl</code> in the <code>demos</code>
+  directory creates a tablelist widget whose items correspond to the Tk library
+  scripts.&nbsp; The size of each file (in bytes) is not only displayed as a
+  number, but is also illustrated with the aid of a frame with red background,
+  created as a child of an embedded frame with ivory background.&nbsp; The
+  files can be viewed by clicking on the corresponding embedded button
+  widgets.</p>
 
-<p>The script <code>embeddedWindows.tcl</code> in the <code>demos</code>
-directory creates a tablelist widget whose items correspond to the Tk library
-scripts.&nbsp; The size of each file (in bytes) is not only displayed as a
-number, but is also illustrated with the aid of a frame with red background,
-created as a child of an embedded frame with ivory background.&nbsp; The files
-can be viewed by clicking on the corresponding embedded button widgets.
+  <p>The following screenshot shows the tablelist widget with the mouse cursor
+  over the first header label, causing this label to appear in
+  <code>active</code> state:</p>
 
-<p>The following screenshot shows the tablelist widget with the mouse cursor
-over the first header label, causing this label to appear in
-<code>active</code> state:
+  <p><img src="embeddedWindows.png" alt=
+  "Embedded Windows - Please load this image!" width="414" height="287"></p>
 
-<p><img src="embeddedWindows.png" alt=
-    "Embedded Windows - Please load this image!" width=414 height=272>
+  <p>First, we create and populate the tablelist widget:</p>
 
-<p>First, we create and populate the tablelist widget:
-
-<blockquote><pre>
+  <blockquote>
+    <pre>
 package require Tablelist
 
 wm title . "Tk Library Scripts"
@@ -1623,8 +1724,8 @@ tablelist::tablelist $tbl \
     -columns {0 "File Name" left
 	      0 "Bar Chart" center
 	      0 "File Size" right
-	      0 "View"      center
-	      0 "Seen"      center} \
+	      0 "View"	    center
+	      0 "Seen"	    center} \
     -font "Helvetica -13" -setgrid no -yscrollcommand [list $vsb set] -width 0
 $tbl columnconfigure 0 -name fileName
 $tbl columnconfigure 1 -formatcommand emptyStr -sortmode integer
@@ -1647,22 +1748,24 @@ foreach fileName [lsort [glob *.tcl]] {
 	set maxFileSize $fileSize
     }
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>We insert the size of each file not only into the column with the
-title&nbsp; <code>"File Size"</code>&nbsp;, but also into the column&nbsp;
-<code>"Bar Chart"</code>.&nbsp; Since we configured
-this column with&nbsp; <code>-formatcommand emptyStr</code>,&nbsp; the text
-will remain hidden in it.&nbsp; It will, however, be needed when sorting the
-items by that column.
+  <p>We insert the size of each file not only into the column with the
+  title&nbsp; <code>"File Size"</code>&nbsp;, but also into the column&nbsp;
+  <code>"Bar Chart"</code>.&nbsp; Since we configured this column with&nbsp;
+  <code>-formatcommand emptyStr</code>,&nbsp; the text will remain hidden in
+  it.&nbsp; It will, however, be needed when sorting the items by that
+  column.</p>
 
-<p>To be able to create the embedded windows, we have first to implement the
-creation scripts for them, as specified in the description of the <code><a href
-="tablelistWidget.html#cell_window">-window</a></code> cell configuration
-option.&nbsp; Here is the script that creates a frame to be embedded into the
-column displaying the bar chart:
+  <p>To be able to create the embedded windows, we have first to implement the
+  creation scripts for them, as specified in the description of the
+  <code><a href="tablelistWidget.html#cell_window">-window</a></code> cell
+  configuration option.&nbsp; Here is the script that creates a frame to be
+  embedded into the column displaying the bar chart:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 #------------------------------------------------------------------------------
 # createFrame
 #
@@ -1689,20 +1792,22 @@ proc createFrame {tbl row col w} {
     bindtags $w.f [lreplace [bindtags $w] 1 1 TablelistBody]
     place $w.f -relheight 1.0
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>Since the frame will be embedded into the tablelist's body, we want to have
-the same handling of the mouse events in the frame and in its child frame as in
-the rest of the tablelist's body.&nbsp; To this end we replace the binding tag
-<code>Frame</code> (which has no own bindings anyway) with <code><a href=
-"tablelistWidget.html#body_bindings">TablelistBody</a></code>, thus making sure
-that the default binding scripts associated with that tag will be valid for the
-parent frame and its child, too.
+  <p>Since the frame will be embedded into the tablelist's body, we want to
+  have the same handling of the mouse events in the frame and in its child
+  frame as in the rest of the tablelist's body.&nbsp; To this end we replace
+  the binding tag <code>Frame</code> (which has no own bindings anyway) with
+  <code><a href="tablelistWidget.html#body_bindings">TablelistBody</a></code>,
+  thus making sure that the default binding scripts associated with that tag
+  will be valid for the parent frame and its child, too.</p>
 
-<p>The creation script for the buttons used for viewing the Tk library files is
-quite simple:
+  <p>The creation script for the buttons used for viewing the Tk library files
+  is quite simple:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 #------------------------------------------------------------------------------
 # createButton
 #
@@ -1740,23 +1845,25 @@ proc viewFile {tbl key} {
     $tbl rowconfigure k$key -font "Helvetica -13 bold"
     $tbl cellconfigure k$key,seen -text yes
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>Each file will be displayed in a text widget contained in a top-level whose
-name is <code>.top$key</code>, where <code>$key</code> is obtained with the aid
-of the <code><a href="tablelistWidget.html#getkeys">getkeys</a></code>
-subcommand.&nbsp; By using the key instead of the row number, we will have a
-unique name for the top-level, even if the order of the items changes due to
-interactive sorting by a column.&nbsp; (Remember that the embedded windows will
-be destroyed and automatically recreated when sorting the items or moving the
-columns.)
+  <p>Each file will be displayed in a text widget contained in a top-level
+  whose name is <code>.top$key</code>, where <code>$key</code> is obtained with
+  the aid of the <code><a href=
+  "tablelistWidget.html#getkeys">getkeys</a></code> subcommand.&nbsp; By using
+  the key instead of the row number, we will have a unique name for the
+  top-level, even if the order of the items changes due to interactive sorting
+  by a column.&nbsp; (Remember that the embedded windows will be destroyed and
+  automatically recreated when sorting the items or moving the columns.)</p>
 
-<p>Having implemented the creation scripts for the frames and buttons, we can
-now use the <code><a href=
-"tablelistWidget.html#cellconfigure">cellconfigure</a></code> subcommand to
-effectively create these widgets as embedded windows:
+  <p>Having implemented the creation scripts for the frames and buttons, we can
+  now use the <code><a href=
+  "tablelistWidget.html#cellconfigure">cellconfigure</a></code> subcommand to
+  effectively create these widgets as embedded windows:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 #
 # Create embedded windows in the columns no. 1 and 3
 #
@@ -1765,140 +1872,147 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
     $tbl cellconfigure $row,1 -window createFrame
     $tbl cellconfigure $row,3 -window createButton
 }
-</pre></blockquote>
+</pre>
+  </blockquote>
 
+  <h3><a name="ex_tile"></a>Tile-based demo scripts</h3>
 
-<h3><a name="ex_tile"></a>Tile-based demo scripts</h3>
+  <p>The Tablelist distribution contains also tile-based counterparts of the
+  demo scripts discussed above.&nbsp; As described in the <a href=
+  "#ov_tile">More on Tablelist_tile</a> section of this tutorial, it is quite
+  easy to port an application using the Tablelist package to one based on
+  Tablelist_tile.&nbsp; For example, let's see how to transform the demo script
+  <code>bwidget.tcl</code> into a tile-based one, called
+  <code>bwidget_tile.tcl</code>:</p>
 
-<p>The Tablelist distribution contains also tile-based counterparts of the demo
-scripts discussed above.&nbsp; As described in the <a href="#ov_tile">More on
-Tablelist_tile</a> section of this tutorial, it is quite easy to port an
-application using the Tablelist package to one based on Tablelist_tile.&nbsp;
-For example, let's see how to transform the demo script
-<code>bwidget.tcl</code> into a tile-based one, called
-<code>bwidget_tile.tcl</code>:
+  <p>First, we replace the starting lines</p>
 
-<p>First, we replace the starting lines
-
-<blockquote><pre>
+  <blockquote>
+    <pre>
 package require Tk 8.3				;# because of entry validation
 package require Tablelist
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>with
+  <p>with</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 package require Tablelist_tile
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>and the command
+  <p>and the command</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 source [file join $dir option.tcl]
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>with
+  <p>with</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 source [file join $dir option_tile.tcl]
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>where <code>option_tile.tcl</code> is nearly identical to
-<code>option.tcl</code>:&nbsp; It contains the same option database settings,
-and additionally the&nbsp; <code>tile::setTheme alt</code>&nbsp; command for
-the windowing system <code>x11</code>.
+  <p>where <code>option_tile.tcl</code> is nearly identical to
+  <code>option.tcl</code>:&nbsp; It contains the same option database settings,
+  and additionally the&nbsp; <code>tile::setTheme alt</code>&nbsp; command for
+  the windowing system <code>x11</code>.</p>
 
-<p>To make sure that the overall appearance of the GUI will conform to the
-currently used theme, we create a theme-specific container for our widgets:
+  <p>To make sure that the overall appearance of the GUI will conform to the
+  currently used theme, we create a theme-specific container for our
+  widgets:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 #
 # Improve the window's appearance by using a tile frame as a
 # container for the other widgets; set -padding -2 to work
 # around a tile bug in the themes winnative and xpnative
 #
 set f [ttk::frame .f -padding -2]
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>This implies that we have to replace the statement
+  <p>This implies that we have to replace the statement</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 set tbl .tbl
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>defining the path name of our tablelist widget with
+  <p>defining the path name of our tablelist widget with</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 set tbl $f.tbl
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>Similarly, instead of a Tk button created by the command
+  <p>Similarly, instead of a Tk button created by the command</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 set btn [button .btn -text "Close" -command exit]
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>we use a tile button that is a child of the above tile frame:
+  <p>we use a tile button that is a child of the above tile frame:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 set btn [ttk::button $f.btn -text "Close" -command exit]
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>We manage this frame in the usual manner:
+  <p>We manage this frame in the usual manner:</p>
 
-<blockquote><pre>
+  <blockquote>
+    <pre>
 pack $f -expand yes -fill both
-</pre></blockquote>
+</pre>
+  </blockquote>
 
-<p>Finally, we add the following lines (recall the cautions from the <a href=
-"#ov_tile">More on Tablelist_tile</a> section):
+  <p>That's all!&nbsp; The resulting window has a nice theme-specific
+  appearance.&nbsp; In an X11 environment its height is less than that of its
+  non-tile-based counterpart, because the default value of the
+  <code>-selectborderwidth</code> option for the <code>alt</code> theme is
+  <code>0</code>, while the same option's value in the non-tile-based version
+  defaults to <code>1</code>.&nbsp; Notice that we could have used the
+  <code><b><a href="tablelistWidget.html#spacing">-spacing</a></b></code>
+  option to provide additional space above and below the rows, which would have
+  increased the widget's height.</p>
 
-<blockquote><pre>
-if {$tile::currentTheme ne "aqua"} {
-    #   
-    # Improve the appearance of the ComboBox
-    #
-    # CAUTION:  The command below might break the ComboBox when using
-    #           tile versions &gt; 0.6.  In that case, please remove it.
-    #
-    namespace import -force ttk::scrollbar 
-}
-</pre></blockquote>
+  <p><img src="bwidget_tile.png" alt=
+  "Serial Line Configuration - Please load this image!" width="694" height=
+  "337"></p>
 
-<p>That's all!&nbsp; The resulting window has a nice theme-specific
-appearance.&nbsp; In an X11 environment its height is less than that of its
-non-tile-based counterpart, because the default value of the
-<code>-selectborderwidth</code> option for the <code>alt</code> theme is
-<code>0</code>, while the same option's value in the non-tile-based version
-defaults to <code>1</code>.&nbsp; Notice that we could have used the
-<code><b><a href="tablelistWidget.html#spacing">-spacing</a></b></code> option
-to provide additional space above and below the rows, which would have
-increased the widget's height.
+  <p>The demo script <code>tileWidgets.tcl</code> uses not only the
+  Tablelist_tile package for creating a tablelist widget with a modern
+  theme-specific look &amp; feel, but also the tile entry, combobox, and
+  checkbutton widgets for interactive cell editing:</p>
 
-<p><img src="bwidget_tile.png" alt=
-    "Serial Line Configuration - Please load this image!" width=694 height=337>
+  <p><img src="tileWidgets.png" alt=
+  "Serial Line Configuration - Please load this image!" width="694" height=
+  "337"></p>
 
-<p>The window created by the demo script <code>tileWidgets.tcl</code> looks
-even nicer, because this script uses not only the Tablelist_tile package for
-creating a tablelist widget with a modern theme-specific look &amp; feel, but
-also the tile entry, combobox, and checkbutton widgets for interactive cell
-editing:
+  <p>The tile-based version of the demo script <code>embeddedWindows.tcl</code>
+  contains a bit more changes, but most of them are not
+  Tablelist-specific.&nbsp; Please take a look at the file
+  <code>embeddedWindows_tile.tcl</code> in the <code>demos</code> directory for
+  the details.&nbsp; Here is a screenshot of the resulting window:</p>
 
-<p><img src="tileWidgets.png" alt=
-    "Serial Line Configuration - Please load this image!" width=694 height=369>
+  <p><img src="embeddedWindows_tile.png" alt=
+  "Embedded Windows - Please load this image!" width="406" height="265"></p>
 
-<p>The tile-based version of the demo script <code>embeddedWindows.tcl</code>
-contains a bit more changes, but most of them are not Tablelist-specific.&nbsp;
-Please take a look at the file <code>embeddedWindows_tile.tcl</code> in the
-<code>demos</code> directory for the details.&nbsp; Here is a screenshot of the
-resulting window:
-
-<p><img src="embeddedWindows_tile.png" alt=
-    "Embedded Windows - Please load this image!" width=406 height=247>
-
-<div align=center>
-  <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="index.html">Start page</a>
-</div>
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
 </body>
 </html>
