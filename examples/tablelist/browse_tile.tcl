@@ -2,7 +2,7 @@
 # Demonstrates how to implement a tablelist widget for displaying information
 # about the children of an arbitrary widget.
 #
-# Copyright (c) 2000-2005  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tablelist_tile
@@ -225,7 +225,7 @@ proc demo::formatBoolean val {
 #
 # Sorts the contents of the tablelist widget tbl by its col'th column and makes
 # sure the items will be updated 500 ms later (because one of the items might
-# refer to the canvas containing the arrow that displays the sort order).
+# refer to a canvas containing the arrow that displays the sort order).
 #------------------------------------------------------------------------------
 proc demo::labelCmd {tbl col} {
     tablelist::sortByColumn $tbl $col
@@ -273,6 +273,13 @@ proc demo::updateItems tbl {
 		     [winfo width $c] [winfo height $c] [winfo ismapped $c] \
 		     [winfo viewable $c] [winfo manager $c]
 	$tbl rowconfigure $row -text $item
+    }
+
+    #
+    # Repeat the last sort operation
+    #
+    if {[set sortCol [$tbl sortcolumn]] >= 0} {
+	$tbl sortbycolumn $sortCol -[$tbl sortorder]
     }
 }
 

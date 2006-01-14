@@ -5,7 +5,7 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
 #
-# Copyright (c) 2004-2005  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tablelist_tile
@@ -38,7 +38,12 @@ if {$tile::currentTheme eq "aqua"} {
     #         Button.padding  (two of its options are -padding and -shiftrelief)
     #             Button.label
     #
-    style default Embedded.TButton -focusthickness 0 -padding 0 -shiftrelief 0
+    if {[string compare $tile::version 0.7] < 0} {
+	interp alias {} styleConfig {} style default
+    } else {
+	interp alias {} styleConfig {} style configure
+    }
+    styleConfig Embedded.TButton -focusthickness 0 -padding 0 -shiftrelief 0
 }
 
 #
