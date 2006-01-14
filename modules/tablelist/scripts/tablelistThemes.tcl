@@ -2,7 +2,7 @@
 # Contains procedures that populate the array themeDefaults with theme-specific
 # values of some tablelist configuration options.
 #
-# Copyright (c) 2005  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -23,6 +23,9 @@ proc tablelist::altTheme {} {
 	-labelactiveBg		#ececec \
 	-labelpressedBg		#ececec \
 	-labelforeground	black \
+	-labeldisabledFg	#a3a3a3 \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
@@ -49,6 +52,9 @@ proc tablelist::aquaTheme {} {
 	-labelactiveBg		#f4f4f4 \
 	-labelpressedBg		#e4e4e4 \
 	-labelforeground	black \
+	-labeldisabledFg	#a3a3a3 \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
 	-labelfont		TkHeadingFont \
 	-labelborderwidth	1 \
 	-labelpady		1 \
@@ -75,6 +81,9 @@ proc tablelist::AquativoTheme {} {
 	-labelactiveBg		#fafafa \
 	-labelpressedBg		#fafafa \
 	-labelforeground	black \
+	-labeldisabledFg	black \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
@@ -101,6 +110,9 @@ proc tablelist::blueTheme {} {
 	-labelactiveBg		#6699cc \
 	-labelpressedBg		#6699cc \
 	-labelforeground	black \
+	-labeldisabledFg	#666666 \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
@@ -127,6 +139,9 @@ proc tablelist::clamTheme {} {
 	-labelactiveBg		#eeebe7 \
 	-labelpressedBg		#eeebe7 \
 	-labelforeground	black \
+	-labeldisabledFg	#999999 \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
@@ -153,6 +168,9 @@ proc tablelist::classicTheme {} {
 	-labelactiveBg		#ececec \
 	-labelpressedBg		#ececec \
 	-labelforeground	black \
+	-labeldisabledFg	#a3a3a3 \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
 	-labelfont		TkClassicDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
@@ -179,6 +197,9 @@ proc tablelist::defaultTheme {} {
 	-labelactiveBg		#ececec \
 	-labelpressedBg		#ececec \
 	-labelforeground	black \
+	-labeldisabledFg	#a3a3a3 \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	1 \
 	-labelpady		1 \
@@ -205,6 +226,9 @@ proc tablelist::keramikTheme {} {
 	-labelactiveBg		#cccccc \
 	-labelpressedBg		#cccccc \
 	-labelforeground	black \
+	-labeldisabledFg	#aaaaaa \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
@@ -231,6 +255,9 @@ proc tablelist::krocTheme {} {
 	-labelactiveBg		#694418 \
 	-labelpressedBg		#694418 \
 	-labelforeground	black \
+	-labeldisabledFg	#b2b2b2 \
+	-labelactiveFg		#ffe7cb \
+	-labelpressedFg		#ffe7cb \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
@@ -257,6 +284,9 @@ proc tablelist::plastikTheme {} {
 	-labelactiveBg		#cccccc \
 	-labelpressedBg		#cccccc \
 	-labelforeground	black \
+	-labeldisabledFg	#aaaaaa \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
@@ -283,6 +313,9 @@ proc tablelist::srivTheme {} {
 	-labelactiveBg		#a0a0a0 \
 	-labelpressedBg		#a0a0a0 \
 	-labelforeground	black \
+	-labeldisabledFg	#666666 \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
@@ -309,6 +342,9 @@ proc tablelist::srivlgTheme {} {
 	-labelactiveBg		#6699cc \
 	-labelpressedBg		#6699cc \
 	-labelforeground	black \
+	-labeldisabledFg	#666666 \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
@@ -335,6 +371,9 @@ proc tablelist::stepTheme {} {
 	-labelactiveBg		#aeb2c3 \
 	-labelpressedBg		#aeb2c3 \
 	-labelforeground	black \
+	-labeldisabledFg	#808080 \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
@@ -993,13 +1032,13 @@ proc tablelist::tileqtTheme {} {
 	"keramik" -
 	"thinkeramik"	{ set arrowColor $labelFg;  set arrowStyle flat8x5 }
 
-	default		{ set arrowColor "";	set arrowStyle sunken12x11 }
+	default		{ set arrowColor "";	    set arrowStyle sunken12x11 }
     }
 
     #
-    # The values corresponding to the keys -disabledforeground
-    # and -labeldisabledBg below are not yet correct,
-    # due to the current development state of tile-qt:
+    # The values corresponding to the keys -disabledforeground,
+    # -labeldisabledBg, and -labeldisabledFg below are not yet
+    # correct, due to the current development state of tile-qt:
     #
     variable themeDefaults
     array set themeDefaults [list \
@@ -1015,6 +1054,9 @@ proc tablelist::tileqtTheme {} {
 	-labelactiveBg		$labelBg \
 	-labelpressedBg		$pressedBg \
 	-labelforeground	$labelFg \
+	-labeldisabledFg	$labelFg \
+	-labelactiveFg		$labelFg \
+	-labelpressedFg		$labelFg \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	4 \
 	-labelpady		0 \
@@ -1041,6 +1083,9 @@ proc tablelist::winnativeTheme {} {
 	-labelactiveBg		SystemButtonFace \
 	-labelpressedBg		SystemButtonFace \
 	-labelforeground	SystemButtonText \
+	-labeldisabledFg	SystemDisabledText \
+	-labelactiveFg		SystemButtonText \
+	-labelpressedFg		SystemButtonText \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		0 \
@@ -1067,6 +1112,9 @@ proc tablelist::winxpblueTheme {} {
 	-labelactiveBg		#c1d2ee \
 	-labelpressedBg		#bab5ab \
 	-labelforeground	black \
+	-labeldisabledFg	#565248 \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
@@ -1086,10 +1134,14 @@ proc tablelist::xpnativeTheme {} {
 	    set labelBg		#ebeadb
 	    set activeBg	#faf8f3
 	    set pressedBg	#dedfd8
-	    set labelBd		1
+	    set labelBd		4
 	    set labelPadY	4
 	    set arrowColor	#aca899
 	    set arrowStyle	flat9x5
+
+	    if {[string compare $tile::version 0.7] < 0} {
+		set labelBd 0
+	    }
 	}
 
 	"57568 57311 58339" {
@@ -1097,10 +1149,14 @@ proc tablelist::xpnativeTheme {} {
 	    set labelBg		#f9fafd
 	    set activeBg	#fefefe
 	    set pressedBg	#ececf3
-	    set labelBd		1
+	    set labelBd		4
 	    set labelPadY	4
 	    set arrowColor	#aca899
 	    set arrowStyle	flat9x5
+
+	    if {[string compare $tile::version 0.7] < 0} {
+		set labelBd 0
+	    }
 	}
 
 	default {
@@ -1129,6 +1185,9 @@ proc tablelist::xpnativeTheme {} {
 	-labelactiveBg		$activeBg \
 	-labelpressedBg		$pressedBg \
 	-labelforeground	SystemButtonText \
+	-labeldisabledFg	SystemDisabledText \
+	-labelactiveFg		SystemButtonText \
+	-labelpressedFg		SystemButtonText \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	$labelBd \
 	-labelpady		$labelPadY \
