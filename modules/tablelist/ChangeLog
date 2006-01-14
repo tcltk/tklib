@@ -1,3 +1,32 @@
+2006-01-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl: Bumped the version number to 4.3.
+	* *.txt:
+
+	* CHANGES.txt: Listed the new features in version 4.3.
+
+	* scripts/*.tcl: Added support for multi-line cells and multi-column
+	  sorting; new configuration option -setfocus; numerous improvements,
+	  minor bug fixes, and support for several recent changes in tile.
+
+	* scripts/tablelistBitmaps.tcl: New script file, replacing the
+	  contents of the images directory.
+
+	* images/: Replaced the contents of this directory with the new file
+	  scripts/tablelistBitmaps.tcl.
+
+	* doc/*.html: Added the descriptions of the new features in version
+	  4.3, and cleaned up the files with HTML Tidy.
+
+	* doc/tablelistSortByColumn.html: Renamed tablelistSortByColumn.html
+	* doc/tablelistColSort.html:      to tablelistColSort.html, because
+	  this file now contains the description of the new addToSortColumns
+	  subcommand, too.
+
+	* doc/*.png: Updated a few screenshots.
+
+	* ../../examples/tablelist/*.tcl: Minor updates and improvements.
+
 2005-12-01  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistConfig.tcl: Corrected some typos.
