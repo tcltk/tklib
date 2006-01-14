@@ -1,7 +1,7 @@
 #==============================================================================
 # Tablelist and Tablelist_tile package index file.
 #
-# Copyright (c) 2000-2005  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval ::tablelist {}
@@ -34,7 +34,7 @@ proc ::tablelist::LoadTile {dir} {
     rename ::tablelist::LoadTile {}
 }
 
-package ifneeded Tablelist      4.2.1 [list ::tablelist::Load     $dir]
-package ifneeded tablelist      4.2.1 [list ::tablelist::Load     $dir]
-package ifneeded Tablelist_tile 4.2.1 [list ::tablelist::LoadTile $dir]
-package ifneeded tablelist_tile 4.2.1 [list ::tablelist::LoadTile $dir]
+package ifneeded Tablelist      4.3 [list ::tablelist::Load     $dir]
+package ifneeded tablelist      4.3 [list ::tablelist::Load     $dir]
+package ifneeded Tablelist_tile 4.3 [list ::tablelist::LoadTile $dir]
+package ifneeded tablelist_tile 4.3 [list ::tablelist::LoadTile $dir]
