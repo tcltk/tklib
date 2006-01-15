@@ -1,3 +1,9 @@
+2006-01-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/tileWidgets.png: Screenshot updated, to reflect the fact that
+	  tile bug #1399182 (related to the combobox appearance) has been
+	  fixed.
+
 2006-01-14  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl: Bumped the version number to 4.3.
