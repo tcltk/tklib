@@ -1,3 +1,9 @@
+2006-01-16  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* install_action.tcl: Removed the invocation of xcopy for the
+	  images directory from the _tab proc, because the contents of that
+	  Tablelist directory has been replaced with a new script file.
+
 2005-12-02  Andreas Kupries <andreask@activestate.com>
 
 	* sak.tcl (validate_versions_cmp): Fixed typo causing the use of a
