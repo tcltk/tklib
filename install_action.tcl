@@ -23,11 +23,6 @@ proc _tab {module libdir} {
     _tcl $module $libdir
 
     xcopy \
-	    [file join $distribution modules $module images] \
-	    [file join $libdir $module images] \
-	    0 *
-
-    xcopy \
 	    [file join $distribution modules $module scripts] \
 	    [file join $libdir $module scripts] \
 	    0 *.tcl
