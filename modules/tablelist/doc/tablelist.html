@@ -119,8 +119,8 @@
   as label widgets.&nbsp; For instance, the <code>-labelcommand</code> option
   specifies a Tcl command to be invoked when mouse button 1 is released over a
   label.&nbsp; The most common value of this option is <code><a href=
-  "tablelistColSort.html">tablelist::sortByColumn</a></code>, which sorts the
-  items based on the respective column.</p>
+  "tablelistColSort.html#sortByColumn">tablelist::sortByColumn</a></code>,
+  which sorts the items based on the respective column.</p>
 
   <p>Interactive editing of the elements of a tablelist widget can be enabled
   for individual cells and for entire columns.&nbsp; A great variety of widgets
@@ -616,8 +616,8 @@ proc demo::displayConfig w {
   left-justified.</p>
 
   <p>The command <code><a href=
-  "tablelistColSort.html">tablelist::sortByColumn</a></code>, specified as the
-  value of the <code><a href=
+  "tablelistColSort.html#sortByColumn">tablelist::sortByColumn</a></code>,
+  specified as the value of the <code><a href=
   "tablelistWidget.html#labelcommand">-labelcommand</a></code> option, will be
   invoked whenever mouse button 1 is released over one of the labels.&nbsp;
   This command sorts the items based on the column corresponding to that label,
@@ -1184,10 +1184,11 @@ proc demo::labelCmd {tbl col} {
   </blockquote>
 
   <p>The command <code><a href=
-  "tablelistColSort.html">tablelist::sortByColumn</a></code> sorts the items of
-  the tablelist widget by the specified column in the right order, by invoking
-  the <code><a href="tablelistWidget.html#sortbycolumn">sortbycolumn</a></code>
-  subcommand of the Tcl command associated with the tablelist widget.</p>
+  "tablelistColSort.html#sortByColumn">tablelist::sortByColumn</a></code> sorts
+  the items of the tablelist widget by the specified column in the right order,
+  by invoking the <code><a href=
+  "tablelistWidget.html#sortbycolumn">sortbycolumn</a></code> subcommand of the
+  Tcl command associated with the tablelist widget.</p>
 
   <p>The implementation of the <code>demo::updateItemsDelayed</code> command,
   invoked in this procedure and already encountered in the
@@ -1524,6 +1525,24 @@ option add *Tablelist.movableColumns	yes
   below use the <code><a href=
   "tablelistWidget.html#columncget">columncget</a></code> subcommand to
   retrieve the name of the column from the numerical column index.</p>
+
+  <p>By the way, two further option database settings contained in the file
+  <code>option.tcl</code> are:</p>
+
+  <blockquote>
+    <pre>
+option add *Tablelist.labelCommand	tablelist::sortByColumn
+option add *Tablelist.labelCommand2	tablelist::addToSortColumns
+</pre>
+  </blockquote>
+
+  <p>The <code><a href=
+  "tablelistColSort.html#sortByColumn">tablelist::sortByColumn</a></code> and
+  <code><a href=
+  "tablelistColSort.html#addToSortColumns">tablelist::addToSortColumns</a></code>
+  commands specified in these settings enable the user to sort the items by one
+  or more columns, with the aid of the left mouse button and of the
+  <code>Shift</code> key.</p>
 
   <p>The <code>editStartCmd</code> procedure, specified as the value of the
   <code><a href=
