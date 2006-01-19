@@ -88,8 +88,8 @@
     <i>color</i></code></dd>
 
     <dd><code><b><a href="#columns">-columns</a></b> {<i>width</i> <i>title</i>
-    ?<b>left</b>|<b>right</b>|<b>center</b>? ?<i>width</i> <i>title</i>
-    ?<b>left</b>|<b>right</b>|<b>center</b>? ...?}</code></dd>
+    ?<b>left</b>|<b>right</b>|<b>center</b>? <i>width</i> <i>title</i>
+    ?<b>left</b>|<b>right</b>|<b>center</b>? ...}</code></dd>
 
     <dd><code><b><a href="#editendcommand">-editendcommand</a></b>
     <i>command</i></code></dd>
@@ -573,8 +573,8 @@
     <dd><code><i>pathName</i> <b><a href=
     "#insertcolumnlist">insertcolumnlist</a></b> <i>columnIndex</i>
     {<i>width</i> <i>title</i> ?<b>left</b>|<b>right</b>|<b>center</b>?
-    ?<i>width</i> <i>title</i> ?<b>left</b>|<b>right</b>|<b>center</b>?
-    ...?}</code></dd>
+    <i>width</i> <i>title</i> ?<b>left</b>|<b>right</b>|<b>center</b>?
+    ...}</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#insertcolumns">insertcolumns</a></b>
     <i>columnIndex</i> ?<i>width</i> <i>title</i>
@@ -711,7 +711,7 @@
 	<i>fraction</i></code></dd>
 
 	<dd><code><i>pathName</i> <b>xview</b> <b>scroll</b> <i>number</i>
-	<i>what</i></code></dd>
+	<b>units</b>|<b>pages</b></code></dd>
       </dl>
     </dd>
 
@@ -728,7 +728,7 @@
 	<i>fraction</i></code></dd>
 
 	<dd><code><i>pathName</i> <b>yview</b> <b>scroll</b> <i>number</i>
-	<i>what</i></code></dd>
+	<b>units</b>|<b>pages</b></code></dd>
       </dl>
     </dd>
 
