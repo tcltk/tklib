@@ -34,3 +34,4 @@ option add *Tablelist.stripeBackground	#e0e8f0
 option add *Tablelist.setGrid		yes
 option add *Tablelist.movableColumns	yes
 option add *Tablelist.labelCommand	tablelist::sortByColumn
+option add *Tablelist.labelCommand2	tablelist::addToSortColumns
