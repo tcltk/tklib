@@ -42,7 +42,7 @@ What is new in Tablelist 4.3?
 
 8. Cleaned up the documentation, to make sure that the HTML files
    generated for the ActiveTcl distribution with the tool HTML Tidy
-   will be be syntactically identical to the original ones.
+   will be syntactically identical to the original ones.
 
 What was new in Tablelist 4.2?
 ------------------------------
