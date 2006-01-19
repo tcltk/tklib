@@ -791,7 +791,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	    if {$argCount < 3 || $argCount > 4} {
 		mwutil::wrongNumArgs "$win $cmd option\
 				      firstCellIndex lastCellIndex" \
-				     "$win $cmd cellIndexList"
+				     "$win $cmd option cellIndexList"
 	    }
 
 	    synchronize $win
@@ -1321,7 +1321,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	selection {
 	    if {$argCount < 3 || $argCount > 4} {
 		mwutil::wrongNumArgs "$win $cmd option firstIndex lastIndex" \
-				     "$win $cmd indexList"
+				     "$win $cmd option indexList"
 	    }
 
 	    synchronize $win
