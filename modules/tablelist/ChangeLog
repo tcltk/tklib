@@ -1,3 +1,14 @@
+2006-01-19  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                 Corrected a few typos.
+	* scripts/tablelistWidget.tcl:
+
+	* doc/tablelist.html:       Minor improvements.
+	* doc/tablelistWidget.html:
+
+	* ../../examples/tablelist/option.tcl:      Added the labelCommand2
+	* ../../examples/tablelist/option_tile.tcl: option.
+
 2006-01-15  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/tileWidgets.png: Screenshot updated, to reflect the fact that
