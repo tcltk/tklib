@@ -1,3 +1,7 @@
+2006-01-23  Andreas Kupries <andreask@activestate.com>
+
+	* pkgIndex.tcl: Replaced lazy with immediate loading.
+
 2006-01-10  Andreas Kupries <andreask@activestate.com>
 
 	* demo.tcl: Removed from the module, moved into directory
