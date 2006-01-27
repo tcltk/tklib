@@ -2,7 +2,10 @@
 # this program is free software: please read the COPYRIGHT file enclosed in this
 # package or use the Help Copyright menu
 
-# $Id: objselec.tcl,v 1.12 2004/04/28 21:14:19 jfontain Exp $
+package require Tk 8.3
+package require stooop
+
+# $Id: objselec.tcl,v 1.13 2006/01/27 19:05:52 andreas_kupries Exp $
 
 # implements selection on a list of object identifiers (sortable list of
 # integers), for a listbox implementation, for example
