@@ -1,5 +1,8 @@
 # copyright (C) 1995-2004 Jean-Luc Fontaine (mailto:jfontain@free.fr)
 
+package require Tk 8.3
+package require stooop
+
 
 ::stooop::class canvasReliefRectangle {
 
