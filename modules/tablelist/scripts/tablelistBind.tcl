@@ -149,7 +149,7 @@ proc tablelist::cleanup win {
     # If there is a list variable associated with the
     # widget then remove the trace set on this variable
     #
-    if {$data(hasListVar)} {
+    if {$data(hasListVar) && [info exists $data(-listvariable)]} {
 	upvar #0 $data(-listvariable) var
 	trace vdelete var wu $data(listVarTraceCmd)
     }
