@@ -1,3 +1,8 @@
+2006-02-09  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tabelistMove.tcl: Corrected a typo in the implementation
+	  of the move subcommand (fixes a bug reported by Jérome Siot).
+
 2006-ß2-05  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl: Improved cleanup proc to handle the case
