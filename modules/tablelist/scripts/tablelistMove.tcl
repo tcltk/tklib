@@ -155,7 +155,7 @@ proc tablelist::moveSubCmd {win source target} {
 	if {$auxType == 0} {
 	    if {$multiline} {
 		$w insert $targetLine.end "\t\t" $tagNames
-		$w window create $targetLine.end-1c -pady 1 -window $msgScript
+		$w window create $targetLine.end-1c -pady 1 -create $msgScript
 	    } else {
 		$w insert $targetLine.end "\t$text\t" $tagNames
 	    }
