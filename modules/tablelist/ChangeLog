@@ -1,3 +1,12 @@
+2006-02-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.3.1.
+	* COPYRIGHT.txt:
+
+	* scripts/tablelistBind.tcl:   Improved the handling of the virtual
+	  scripts/tablelistConfig.tcl: event <<ThemeChanged>> (fixes a bug
+	  scripts/tablelistWidget.tcl: reported by Wolfgang Großer).
+
 2006-02-09  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tabelistMove.tcl: Corrected a typo in the implementation
