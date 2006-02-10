@@ -87,37 +87,45 @@ proc tablelist::removeActiveTag win {
 # theme-specific default values of some tablelist configuration options.
 #------------------------------------------------------------------------------
 proc tablelist::updateConfigSpecs win {
-    variable currentTheme
-    if {[string compare $tile::currentTheme $currentTheme] == 0} {
+    upvar ::tablelist::ns${win}::data data
+
+    if {[string compare $tile::currentTheme $data(currentTheme)] == 0} {
 	return ""
     }
 
-    variable configSpecs
     variable themeDefaults
-    upvar ::tablelist::ns${win}::data data
+    variable configSpecs
 
-    set optList {-background -foreground -disabledforeground
+    #
+    # Populate the array tmp with values corresponding to the old theme
+    # and the array themeDefaults with values corresponding to the new one
+    #
+    array set tmp $data(themeDefaults)	;# populates the array tmp
+    set tmp(-arrowdisabledcolor) $tmp(-arrowcolor)
+    ${tile::currentTheme}Theme		;# populates the array themeDefaults
+    set themeDefaults(-arrowdisabledcolor) $themeDefaults(-arrowcolor)
+
+    #
+    # Update the default values in the array configSpecs and
+    # set those configuration options whose values equal the old
+    # theme-specific defaults to the new theme-specific ones
+    #
+    foreach opt {-background -foreground -disabledforeground
 		 -selectbackground -selectforeground -selectborderwidth -font
 		 -labelbackground -labelforeground -labelfont
 		 -labelborderwidth -labelpady
-		 -arrowcolor -arrowdisabledcolor -arrowstyle}
-    foreach opt $optList {
-	set tmp($opt) [string compare $data($opt) $themeDefaults($opt)]
-    }
-
-    set currentTheme $tile::currentTheme
-    ${currentTheme}Theme		;# populates the array themeDefaults
-    set themeDefaults(-arrowdisabledcolor) $themeDefaults(-arrowcolor)
-    foreach opt $optList {
+		 -arrowcolor -arrowdisabledcolor -arrowstyle} {
 	lset configSpecs($opt) 3 $themeDefaults($opt)
-	if {$tmp($opt) == 0} {
+	if {[string compare $data($opt) $tmp($opt)] == 0} {
 	    doConfig $win $opt $themeDefaults($opt)
 	}
     }
-
     foreach opt {-background -foreground} {
 	doConfig $win $opt $data($opt)	;# sets the bg color of the separators
     }
+
+    set data(currentTheme) $tile::currentTheme
+    set data(themeDefaults) [array get themeDefaults]
 }
 
 #------------------------------------------------------------------------------
