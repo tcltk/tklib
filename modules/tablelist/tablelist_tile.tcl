@@ -8,8 +8,8 @@ package require Tcl  8.4
 package require Tk   8.4
 package require tile 0.6
 
-package provide Tablelist_tile 4.3
-package provide tablelist_tile 4.3
+package provide Tablelist_tile 4.3.1
+package provide tablelist_tile 4.3.1
 
 set tablelist::usingTile 1
 trace variable tablelist::usingTile wu "tablelist::restoreUsingTile 1"
