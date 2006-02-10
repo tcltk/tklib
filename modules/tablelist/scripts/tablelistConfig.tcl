@@ -52,9 +52,8 @@ proc tablelist::extendConfigSpecs {} {
 	# Append theme-specific values to some elements of the array configSpecs
 	#
 	ttk::label $helpLabel
-	variable currentTheme $tile::currentTheme
 	variable themeDefaults
-	${currentTheme}Theme		;# pupulates the array themeDefaults
+	${tile::currentTheme}Theme	;# pupulates the array themeDefaults
 	set themeDefaults(-arrowdisabledcolor) $themeDefaults(-arrowcolor)
 	foreach opt {-labelbackground -labelforeground -labelfont
 		     -labelborderwidth -labelpady

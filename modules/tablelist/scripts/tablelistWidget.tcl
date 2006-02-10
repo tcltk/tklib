@@ -512,6 +512,11 @@ proc tablelist::tablelist args {
     foreach opt $configOpts {
 	set data($opt) [lindex $configSpecs($opt) 3]
     }
+    if {$usingTile} {
+	set data(currentTheme) $tile::currentTheme
+	variable themeDefaults
+	set data(themeDefaults) [array get themeDefaults]
+    }
     set data(-titlecolumns)	0		;# for Tk versions < 8.3
     set data(colFontList)	[list $data(-font)]
     set data(listVarTraceCmd)	[list tablelist::listVarTrace $win]
