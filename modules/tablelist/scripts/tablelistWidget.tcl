@@ -176,15 +176,16 @@ namespace eval tablelist {
     #
     # Extend some elements of the array colConfigSpecs
     #
-    lappend colConfigSpecs(-align)	- left
-    lappend colConfigSpecs(-editable)	- 0
-    lappend colConfigSpecs(-editwindow)	- entry
-    lappend colConfigSpecs(-hide)	- 0
-    lappend colConfigSpecs(-maxwidth)	- 0
-    lappend colConfigSpecs(-resizable)	- 1
-    lappend colConfigSpecs(-showarrow)	- 1
-    lappend colConfigSpecs(-sortmode)	- ascii
-    lappend colConfigSpecs(-width)	- 0
+    lappend colConfigSpecs(-align)		- left
+    lappend colConfigSpecs(-editable)		- 0
+    lappend colConfigSpecs(-editwindow)		- entry
+    lappend colConfigSpecs(-hide)		- 0
+    lappend colConfigSpecs(-maxwidth)		- 0
+    lappend colConfigSpecs(-resizable)		- 1
+    lappend colConfigSpecs(-showarrow)		- 1
+    lappend colConfigSpecs(-sortmode)		- ascii
+    lappend colConfigSpecs(-stretchable)	- 0
+    lappend colConfigSpecs(-width)		- 0
 
     if {$usingTile} {
 	unset colConfigSpecs(-labelheight)
@@ -2234,8 +2235,8 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	incr data(anchorRow) -$count
 	if {$data(anchorRow) < $first} {
 	    set data(anchorRow) $first
-	    if {$data(anchorRow) > $data(lastCol) && $data(lastCol) >= 0} {
-		set data(anchorRow) $data(lastCol)
+	    if {$data(anchorRow) > $data(lastRow) && $data(lastRow) >= 0} {
+		set data(anchorRow) $data(lastRow)
 	    }
 	}
     }
