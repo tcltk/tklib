@@ -1,3 +1,8 @@
+2006-03-31  Andreas Kupries <andreask@activestate.com>
+
+	* tipstack.tcl (::tipstack::clearsub): Superfluous argument to
+	  call of 'clear' removed.
+
 2005-11-21  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* tooltip.tcl (::tooltip::show): focus back to previous item, not

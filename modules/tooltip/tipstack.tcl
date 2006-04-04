@@ -10,7 +10,7 @@
 # See the file "license.terms" for information on usage and
 # redistribution of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: tipstack.tcl,v 1.2 2005/04/02 07:01:24 andreas_kupries Exp $
+# RCS: @(#) $Id: tipstack.tcl,v 1.3 2006/04/04 23:56:36 andreas_kupries Exp $
 #
 
 # ### ######### ###########################
@@ -145,7 +145,7 @@ proc ::tipstack::clearsub {base} {
 
     foreach k [array names db ${base}*] {
 	# Danger. Will fail if 'base' matches a menu reference.
-	clear $k $text
+	clear $k
     }
     return
 }
