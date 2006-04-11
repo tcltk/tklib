@@ -1,3 +1,7 @@
+2006-04-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl: Minor improvement in labelB1Up proc.
+
 2006-02-22  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistWidget.tcl: Minor corrections.
