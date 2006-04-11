@@ -2041,7 +2041,7 @@ proc tablelist::labelB1Up {w X} {
 	    }
 	} elseif {$data(-movablecolumns)} {
 	    $data(hdrTxtFrCanv)$col configure -cursor $data(-cursor)
-	    if {$data(targetCol) != -1 &&
+	    if {[info exists data(targetCol)] && $data(targetCol) != -1 &&
 		$data(targetCol) != $col && $data(targetCol) != $col + 1} {
 		movecolumnSubCmd $win $col $data(targetCol)
 		event generate $win <<TablelistColumnMoved>>
