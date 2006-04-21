@@ -1,3 +1,9 @@
+2006-04-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistSort.tcl: update idletasks no longer invoked during
+	* scripts/tablelistUtil.tcl: redisplay (fixes a bug reported by Dave
+	  Leslie).
+
 2006-04-11  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl: Minor improvement in labelB1Up proc.
@@ -12,8 +18,8 @@
 	* COPYRIGHT.txt:
 
 	* scripts/tablelistBind.tcl:   Improved the handling of the virtual
-	  scripts/tablelistConfig.tcl: event <<ThemeChanged>> (fixes a bug
-	  scripts/tablelistWidget.tcl: reported by Wolfgang Großer).
+	* scripts/tablelistConfig.tcl: event <<ThemeChanged>> (fixes a bug
+	* scripts/tablelistWidget.tcl: reported by Wolfgang Großer).
 
 2006-02-09  Csaba Nemethi <csaba.nemethi@t-online.de>
 
