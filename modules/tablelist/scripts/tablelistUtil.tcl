@@ -2233,9 +2233,6 @@ proc tablelist::stretchColumns {win colOfFixedDelta} {
     # Adjust the columns
     #
     adjustColumns $win {} 0
-    if {[winfo viewable $win]} {
-	update idletasks
-    }
 }
 
 #------------------------------------------------------------------------------
@@ -2597,17 +2594,10 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
     set snipStr $data(-snipstring)
     set isSimple [expr {$data(tagRefCount) == 0 && $data(imgCount) == 0 &&
 			$data(winCount) == 0 && !$data(hasColTags)}]
-    set isViewable [winfo viewable $win]
     set newItemList {}
     set row 0
     set line 1
     foreach item $data(itemList) {
-	if {$isViewable &&
-	    $row == [rowIndex $win @0,[winfo height $win] 0] + 1} {
-	    updateColors $win
-	    update idletasks
-	}
-
 	#
 	# Empty the line, clip the elements if necessary,
 	# and insert them with the corresponding tags
@@ -2881,13 +2871,8 @@ proc tablelist::redisplayCol {win col first last} {
     }
     set alignment [lindex $data(colList) [expr {2*$col + 1}]]
 
-    set isViewable [winfo viewable $win]
     for {set row $first; set line [expr {$first + 1}]} {$row <= $last} \
 	{incr row; incr line} {
-	if {$isViewable &&
-	    $row == [rowIndex $win @0,[winfo height $win] 0] + 1} {
-	    update idletasks
-	}
 	if {$row == $data(editRow) && $col == $data(editCol)} {
 	    continue
 	}

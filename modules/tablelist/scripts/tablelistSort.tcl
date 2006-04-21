@@ -286,17 +286,10 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
     set snipStr $data(-snipstring)
     set isSimple [expr {$data(tagRefCount) == 0 && $data(imgCount) == 0 &&
 			$data(winCount) == 0 && !$data(hasColTags)}]
-    set isViewable [winfo viewable $win]
     set hasFmtCmds [expr {[lsearch -exact $data(fmtCmdFlagList) 1] >= 0}]
     set row 0
     set line 1
     foreach item $data(itemList) {
-	if {$isViewable &&
-	    $row == [rowIndex $win @0,[winfo height $win] 0] + 1} {
-	    updateColors $win
-	    update idletasks
-	}
-
 	if {$hasFmtCmds} {
 	    set formattedItem {}
 	    set col 0
