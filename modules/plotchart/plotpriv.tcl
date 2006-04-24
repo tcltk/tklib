@@ -319,6 +319,14 @@ proc ::Plotchart::DrawData { w series xcrd ycrd } {
    variable scaling
 
    #
+   # Check for missing values
+   #
+   if { $xcrd == "" || $ycrd == "" } {
+       unset data_series($w,$series,x)
+       return
+   }
+
+   #
    # Draw the line piece
    #
    set colour "black"
@@ -372,6 +380,14 @@ proc ::Plotchart::DrawData { w series xcrd ycrd } {
 proc ::Plotchart::DrawStripData { w series xcrd ycrd } {
    variable data_series
    variable scaling
+
+   #
+   # Check for missing values
+   #
+   if { $xcrd == "" || $ycrd == "" } {
+       unset data_series($w,$series,x)
+       return
+   }
 
    if { $xcrd > $scaling($w,xmax) } {
       set xdelt $scaling($w,xdelt)
@@ -520,6 +536,10 @@ proc ::Plotchart::DrawPie { w data } {
           set colour [lindex $colours $idx]
           incr idx
 
+          if { $value == "" } {
+              break
+          }
+
           set angle_bgn [expr {$sum   * $factor}]
           set angle_ext [expr {$value * $factor}]
           lappend scaling(${w},angles) [expr {int(${angle_bgn})}]
@@ -603,7 +623,11 @@ proc ::Plotchart::DrawVertBarData { w series ydata {colour black}} {
    foreach yvalue $ydata ybase $scaling($w,ybase) {
       set colour [lindex ${colours} ${idx}]
       incr idx
-	
+
+      if { $yvalue == "" } {
+          set yvalue 0.0
+      }
+
       set xnext [expr {$x+$scaling($w,barwidth)}]
       set y     [expr {$yvalue+$ybase}]
       foreach {px1 py1} [coordsToPixel $w $x     $ybase] {break}
@@ -666,6 +690,10 @@ proc ::Plotchart::DrawHorizBarData { w series xdata {colour black}} {
    foreach xvalue $xdata xbase $scaling($w,xbase) {
       set colour [lindex ${colours} ${idx}]
       incr idx
+
+      if { $xvalue == "" } {
+          set xvalue 0.0
+      }
 
       set ynext [expr {$y+$scaling($w,barwidth)}]
       set x     [expr {$xvalue+$xbase}]
