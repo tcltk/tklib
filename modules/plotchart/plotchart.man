@@ -1317,6 +1317,39 @@ Rough maximum value for the scaling.
 [list_end]
 
 
+[section {MISSING VALUES}]
+Often data that need to be plotted contain gaps - in a series of
+measurement data, they can occur because the equipment failed, a sample
+was not collected correctly or for many other reasons. The
+[emph Plotchart] handles these gaps by assuming that one or both
+coordinates of such data points are an empty string:
+
+[example {
+    #
+    # Create the plot with its x- and y-axes
+    #
+    set s [::Plotchart::createXYPlot .c {0.0 100.0 10.0} {0.0 100.0 20.0}]
+
+    foreach {x y} {0.0 32.0 10.0 {} 25.0 60.0 78.0 11.0 } {
+        $s plot series1 $x $y
+    }
+}]
+
+The effect varies according to the type of plot:
+
+[list_begin bullet]
+[bullet]
+For xy-plots, radial plots and strip charts the missing data point
+causes a gap in the line through the points.
+[bullet]
+For barchats, missing values are treated as if a value of zero was
+given.
+[bullet]
+For time charts and Gantt charts missing values cause errors - there is
+no use for them there.
+[list_end]
+
+
 [section {OTHER OUTPUT FORMATS}]
 
 Besides output to the canvas on screen, the module is capable, via
