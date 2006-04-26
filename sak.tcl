@@ -509,6 +509,15 @@ proc gd-assemble {} {
     return
 }
 
+proc normalize-version {v} {
+    # Strip everything after the first non-version character, and any
+    # trailing dots left behind by that, to avoid the insertion of bad
+    # version numbers into the generated .tap file.
+
+    regsub {[^0-9.].*$} $v {} v
+    return [string trimright $v .]
+}
+
 proc gd-gen-tap {} {
     getpackage textutil
     getpackage fileutil
@@ -542,7 +551,7 @@ proc gd-gen-tap {} {
     lappend lines {# ###############}
     lappend lines {# Complete bundle}
     lappend lines {}
-    lappend lines [list Package [list $package_name $package_version]]
+    lappend lines [list Package [list $package_name [normalize-version $package_version]]]
     lappend lines "Base     @TAP_DIR@"
     lappend lines "Platform *"
     lappend lines "Desc     \{$pname: Bundle of all packages\}"
@@ -604,7 +613,7 @@ proc gd-gen-tap {} {
 
 		foreach v $vlist {
 		    lappend lines {}
-		    lappend lines [list Package [list $p $v]]
+		    lappend lines [list Package [list $p [normalize-version $v]]]
 		    lappend lines "See   [list __$m]"
 		    lappend lines "Platform *"
 		    lappend lines "Desc     \{$desc\}"
@@ -624,7 +633,7 @@ proc gd-gen-tap {} {
 
 	    lappend lines "# -------+"
 	    lappend lines {}
-	    lappend lines [list Package [list $p $v]]
+	    lappend lines [list Package [list $p [normalize-version $v]]]
 	    lappend lines "Platform *"
 	    lappend lines "Desc     \{$desc\}"
 	    lappend lines "Base     @TAP_DIR@/$m"
@@ -674,7 +683,7 @@ proc getpdesc  {} {
 proc gd-gen-rpmspec {} {
     global tklib_version tklib_name distribution
 
-    set header [string map [list @@@@ $tklib_version @__@ $tklib_name] {# $Id: sak.tcl,v 1.5 2005/12/02 20:56:18 andreas_kupries Exp $
+    set header [string map [list @@@@ $tklib_version @__@ $tklib_name] {# $Id: sak.tcl,v 1.6 2006/04/26 16:29:58 andreas_kupries Exp $
 
 %define version @@@@
 %define directory /usr
