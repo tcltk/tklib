@@ -1,3 +1,26 @@
+2006-05-30  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl: Bumped the version number to 4.4.
+	* *.txt:
+
+	* scripts/*.tcl: Added support for hidden rows; new command
+	  tablelist::setThemeDefaults; lots of optimizations, code
+	  improvements, minor bug fixes, and support for recent changes in
+	  TileQt.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/*.html: Added the descriptions of the new features in version
+	  4.4.
+
+	* doc/tablelistThemeDefs.html: New reference page, describing the
+	  command tablelist::setThemeDefaults.
+
+	* doc/*.png: Updated a few screenshots.
+
+	* ../../examples/tablelist/*.tcl: Added the use of the -spacing option
+	  and of the tablelist::setThemeDefaults command.
+
 2006-04-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistSort.tcl: update idletasks no longer invoked during
