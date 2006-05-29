@@ -65,7 +65,10 @@ tablelist::tablelist $tbl \
 	      0 "File Size" right
 	      0 "View"      center
 	      0 "Seen"      center} \
-    -font "Helvetica -13" -setgrid no -yscrollcommand [list $vsb set] -width 0
+    -font "Helvetica -12" -setgrid no -yscrollcommand [list $vsb set] -width 0
+if {[$tbl cget -selectborderwidth] == 0} {
+    $tbl configure -spacing 1
+}
 $tbl columnconfigure 0 -name fileName
 $tbl columnconfigure 1 -formatcommand emptyStr -sortmode integer
 $tbl columnconfigure 2 -name fileSize -sortmode integer
@@ -182,7 +185,7 @@ proc viewFile {tbl key} {
     #
     # Mark the file as seen
     #
-    $tbl rowconfigure k$key -font "Helvetica -13 bold"
+    $tbl rowconfigure k$key -font "Helvetica -12 bold"
     $tbl cellconfigure k$key,seen -text yes
 }
 

@@ -46,6 +46,7 @@ namespace eval demo {
     option add *DemoTop.tf.tbl.background		gray98
     option add *DemoTop.tf.tbl.stripeBackground		#e0e8f0
     option add *DemoTop.tf.tbl*Entry.background		white
+    option add *DemoTop.tf.tbl.setFocus			yes
     option add *DemoTop.tf.tbl.setGrid			yes
     option add *DemoTop.bf.Button.width			10
 }
@@ -93,6 +94,9 @@ proc demo::displayConfig w {
 	-labelcommand tablelist::sortByColumn -sortcommand demo::compareAsSet \
 	-editendcommand demo::applyValue -height 15 -width 100 -stretch all \
 	-xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set]
+    if {[$tbl cget -selectborderwidth] == 0} {
+	$tbl configure -spacing 1
+    }
     $tbl columnconfigure 3 -maxwidth 30
     $tbl columnconfigure 4 -maxwidth 30 -editable yes
     scrollbar $vsb -orient vertical   -command [list $tbl yview]
