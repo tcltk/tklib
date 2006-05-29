@@ -31,6 +31,7 @@ switch $winSys {
 option add *Tablelist.activeStyle	frame
 option add *Tablelist.background	gray98
 option add *Tablelist.stripeBackground	#e0e8f0
+option add *Tablelist.setFocus		yes
 option add *Tablelist.setGrid		yes
 option add *Tablelist.movableColumns	yes
 option add *Tablelist.labelCommand	tablelist::sortByColumn
