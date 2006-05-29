@@ -64,6 +64,9 @@ proc demo::displayChildren w {
 		  0 "Viewable"	center
 		  0 "Manager"	left} \
 	-labelcommand demo::labelCmd -yscrollcommand [list $vsb set] -width 0
+    if {[$tbl cget -selectborderwidth] == 0} {
+	$tbl configure -spacing 1
+    }
     foreach col {2 3 4 5} {
 	$tbl columnconfigure $col -sortmode integer
     }

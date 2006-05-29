@@ -17,11 +17,13 @@ wm title . "Tablelist Styles"
 # "aqua") and add some entries to the Tk option database
 #
 if {[tk windowingsystem] eq "x11"} {
-    option add *Font			"Helvetica -12"
-    option add *selectBackground	#447bcd
-    option add *selectForeground	white
-
     tile::setTheme alt
+}
+tablelist::setThemeDefaults
+if {$tile::currentTheme ne "aqua"} {
+    option add *selectBackground  $tablelist::themeDefaults(-selectbackground)
+    option add *selectForeground  $tablelist::themeDefaults(-selectforeground)
+    option add *selectBorderWidth $tablelist::themeDefaults(-selectborderwidth)
 }
 
 #
@@ -40,6 +42,9 @@ for {set n 0} { $n < 8} {incr n} {
     tablelist::tablelist $tbl \
     	-columns {0 "Label 0"  0 "Label 1"  0 "Label 2"  0 "Label 3"} \
 	-background gray98 -height 4 -width 40 -stretch all
+    if {[$tbl cget -selectborderwidth] == 0} {
+	$tbl configure -spacing 1
+    }
 
     switch $n {
 	1 {

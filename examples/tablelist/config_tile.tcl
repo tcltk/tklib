@@ -22,11 +22,17 @@ namespace eval demo {
     #   b1, b2, b3	  TButton
     #
     if {[tk windowingsystem] eq "x11"} {
-	option add *DemoTop*Font			"Helvetica -12"
-	option add *DemoTop*selectBackground		#447bcd
-	option add *DemoTop*selectForeground		white
-
 	tile::setTheme alt
+	option add *DemoTop*Font			"Helvetica -12"
+    }
+    tablelist::setThemeDefaults
+    if {$tile::currentTheme ne "aqua"} {
+	option add *DemoTop*selectBackground \
+		   $tablelist::themeDefaults(-selectbackground)
+	option add *DemoTop*selectForeground \
+		   $tablelist::themeDefaults(-selectforeground)
+	option add *DemoTop*selectBorderWidth \
+		   $tablelist::themeDefaults(-selectborderwidth)
     }
     option add *DemoTop.tf.borderWidth			2
     option add *DemoTop.tf.relief			sunken
@@ -35,6 +41,7 @@ namespace eval demo {
     option add *DemoTop.tf.tbl.stripeBackground		#e0e8f0
     option add *DemoTop.tf.tbl*Entry.background		white
     option add *DemoTop.tf.tbl.borderWidth		0
+    option add *DemoTop.tf.tbl.setFocus			yes
     option add *DemoTop.tf.tbl.setGrid			yes
     option add *DemoTop.bf.TButton.width		10
 }
@@ -89,6 +96,9 @@ proc demo::displayConfig w {
 	-labelcommand tablelist::sortByColumn -sortcommand demo::compareAsSet \
 	-editendcommand demo::applyValue -height 15 -width 100 -stretch all \
 	-xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set]
+    if {[$tbl cget -selectborderwidth] == 0} {
+	$tbl configure -spacing 1
+    }
     $tbl columnconfigure 3 -maxwidth 30
     $tbl columnconfigure 4 -maxwidth 30 -editable yes
     ttk::scrollbar $vsb -orient vertical   -command [list $tbl yview]

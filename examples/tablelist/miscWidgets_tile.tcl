@@ -68,6 +68,9 @@ tablelist::tablelist $tbl \
 	      0 "Activation Time" center} \
     -editstartcommand editStartCmd -editendcommand editEndCmd \
     -height 0 -width 0
+if {[$tbl cget -selectborderwidth] == 0} {
+    $tbl configure -spacing 1
+}
 $tbl columnconfigure 0 -sortmode integer
 $tbl columnconfigure 1 -name available -editable yes -editwindow checkbutton \
     -formatcommand emptyStr
