@@ -34,7 +34,7 @@ proc ::tablelist::LoadTile {dir} {
     rename ::tablelist::LoadTile {}
 }
 
-package ifneeded Tablelist      4.3.1 [list ::tablelist::Load     $dir]
-package ifneeded tablelist      4.3.1 [list ::tablelist::Load     $dir]
-package ifneeded Tablelist_tile 4.3.1 [list ::tablelist::LoadTile $dir]
-package ifneeded tablelist_tile 4.3.1 [list ::tablelist::LoadTile $dir]
+package ifneeded Tablelist      4.4 [list ::tablelist::Load     $dir]
+package ifneeded tablelist      4.4 [list ::tablelist::Load     $dir]
+package ifneeded Tablelist_tile 4.4 [list ::tablelist::LoadTile $dir]
+package ifneeded tablelist_tile 4.4 [list ::tablelist::LoadTile $dir]

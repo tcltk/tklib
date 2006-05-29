@@ -8,7 +8,7 @@ namespace eval tablelist {
     #
     # Public variables:
     #
-    variable version	4.3.1
+    variable version	4.4
     if {[string compare $::tcl_platform(platform) "macintosh"] != 0} {
 	#
 	# On the Macintosh, the tablelist::library variable is
@@ -48,6 +48,11 @@ namespace eval tablelist {
     namespace export	addOakleyCombobox
     namespace export	addDateMentry addTimeMentry addFixedPointMentry \
     			addIPAddrMentry
+
+    #
+    # Sets some configuration options to theme-specific default values:
+    #
+    namespace export	setThemeDefaults
 }
 
 lappend auto_path [file join $tablelist::library scripts]
