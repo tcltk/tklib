@@ -82,7 +82,7 @@
     <i>color</i></code></dd>
 
     <dd><code><b><a href="#arrowstyle">-arrowstyle</a></b>
-    <b>flat7x4</b>|<b>flat7x7</b>|<b>flat8x5</b>|<b>flat9x5</b>|<b>sunken8x7</b>|<b>sunken10x9</b>|<b>sunken12x11</b></code></dd>
+    <b>flat7x4</b>|<b>flat7x5</b>|<b>flat7x7</b>|<b>flat8x5</b>|<b>flat9x5</b>|<b>sunken8x7</b>|<b>sunken10x9</b>|<b>sunken12x11</b></code></dd>
 
     <dd><code><b><a href="#arrowdisabledcolor">-arrowdisabledcolor</a></b>
     <i>color</i></code></dd>
@@ -339,6 +339,8 @@
     <dd><code><b><a href="#row_foreground">-foreground</a></b>
     <i>color</i></code>&nbsp; or&nbsp; <code><b>-fg</b>
     <i>color</i></code></dd>
+
+    <dd><code><b><a href="#row_hide">-hide</a></b> <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#row_name">-name</a></b> <i>name</i></code></dd>
 
@@ -688,6 +690,21 @@
     "#sortorderlist">sortorderlist</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
+    "#togglecolumnhide">togglecolumnhide</a></b> <i>firstColumn</i>
+    <i>lastColumn</i></code><br></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#togglecolumnhide">togglecolumnhide</a></b>
+    <i>columnIndexList</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#togglerowhide">togglerowhide</a></b> <i>first</i>
+    <i>last</i></code><br></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#togglerowhide">togglerowhide</a></b> <i>indexList</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
     "#togglevisibility">togglevisibility</a></b> <i>firstColumn</i>
     <i>lastColumn</i></code><br></dd>
 
@@ -722,7 +739,7 @@
       <dl>
 	<dd><code><i>pathName</i> <b>yview</b></code></dd>
 
-	<dd><code><i>pathName</i> <b>yview</b> <i>index</i></code></dd>
+	<dd><code><i>pathName</i> <b>yview</b> <i>units</i></code></dd>
 
 	<dd><code><i>pathName</i> <b>yview</b> <b>moveto</b>
 	<i>fraction</i></code></dd>
@@ -809,7 +826,7 @@
     valid for the body component of the tablelist widget.&nbsp; As discussed in
     the next section, the colors and font used when drawing the header labels
     can be different from those specified for the body.&nbsp; When using the
-    package Tablelist_tile, these optioens have theme-specific default
+    package Tablelist_tile, these options have theme-specific default
     values.</dd>
 
     <dt><br>
@@ -930,9 +947,9 @@
 	relevant if the value of the <code><b><a href=
 	"#showarrow">-showarrow</a></b></code> option is true.&nbsp; The
 	currently supported values are <code><b>flat7x4</b></code>,
-	<code><b>flat7x7</b></code>, <code><b>flat8x5</b></code>,
-	<code><b>flat9x5</b></code>, <code><b>sunken8x7</b></code>,
-	<code><b>sunken10x9</b></code>, and
+	<code><b>flat7x5</b></code>, <code><b>flat7x7</b></code>,
+	<code><b>flat8x5</b></code>, <code><b>flat9x5</b></code>,
+	<code><b>sunken8x7</b></code>, <code><b>sunken10x9</b></code>, and
 	<code><b>sunken12x11</b></code>.&nbsp; The default value depends on the
 	windowing system in the Tablelist package and on the current theme in
 	Tablelist_tile; see the description of the <code><b><a href=
@@ -2168,18 +2185,26 @@
       <blockquote>
 	<p>Specifies the background color to use when displaying the items
 	belonging to a stripe.&nbsp; Each stripe is composed of the same number
-	<code>stripeHeight</code> of consecutive items, according to the value
-	of the <code><b><a href="#stripeheight">-stripeheight</a></b></code>
-	configuration option.&nbsp; The first <code>stripeHeight</code> items
-	are "normal" ones; they are followed by a stripe composed of the next
-	<code>stripeHeight</code> items, which in turn is followed by the same
-	number of "normal" items, and so on.&nbsp; The default value is an
-	empty string, indicating that the stripes will inherit the background
-	color specified by the <code><b><a href=
+	<code>stripeHeight</code> of consecutive non-hidden items, according to
+	the value of the <code><b><a href=
+	"#stripeheight">-stripeheight</a></b></code> configuration
+	option.&nbsp; The first <code>stripeHeight</code> non-hidden items are
+	"normal" ones; they are followed by a stripe composed of the next
+	<code>stripeHeight</code> non-hidden items, which in turn is followed
+	by the same number of "normal" non-hidden items, and so on.&nbsp; In
+	the Tablelist package and in most themes supported by Tablelist_tile,
+	the default value is an empty string, indicating that the stripes will
+	inherit the background color specified by the <code><b><a href=
 	"#body_options">-background</a></b></code> configuration option.&nbsp;
-	The <code><b>-stripebackground</b></code> option has a higher priority
-	than the <code><b>-background</b></code> column configuration option,
-	but a lower priority than the <code><b>-background</b></code> option
+	When using Tablelist_tile with the <code><b>tileqt</b></code> theme
+	then the default value is given by the global KDE option
+	<code><b>alternateBackground</b></code>, which in turn depends on the
+	current color scheme.&nbsp; In this case it is recommended to either
+	keep that default value retrieved from KDE, or to use an explicitly
+	specified empty string if no stripes are to be displayed.&nbsp; The
+	<code><b>-stripebackground</b></code> option has a higher priority than
+	the <code><b>-background</b></code> column configuration option, but a
+	lower priority than the <code><b>-background</b></code> option
 	specified at row or cell level.</p>
       </blockquote>
     </dd>
@@ -2207,14 +2232,15 @@
       <blockquote>
 	<p>Specifies the foreground color to use when displaying the items
 	belonging to a stripe.&nbsp; Each stripe is composed of the same number
-	<code>stripeHeight</code> of consecutive items, according to the value
-	of the <code><b><a href="#stripeheight">-stripeheight</a></b></code>
-	configuration option.&nbsp; The first <code>stripeHeight</code> items
+	<code>stripeHeight</code> of consecutive non-hidden items, according to
+	the value of the <code><b><a href=
+	"#stripeheight">-stripeheight</a></b></code> configuration
+	option.&nbsp; The first <code>stripeHeight</code> non-hidden items
 	are "normal" ones; they are followed by a stripe composed of the next
-	<code>stripeHeight</code> items, which in turn is followed by the same
-	number of "normal" items, and so on.&nbsp; The default value is an
-	empty string, indicating that the stripes will inherit the foreground
-	color specified by the <code><b><a href=
+	<code>stripeHeight</code> non-hidden items, which in turn is followed
+	by the same number of "normal" non-hidden items, and so on.&nbsp; The
+	default value is an empty string, indicating that the stripes will
+	inherit the foreground color specified by the <code><b><a href=
 	"#body_options">-foreground</a></b></code> configuration option.&nbsp;
 	The <code><b>-stripeforeground</b></code> option has a higher priority
 	than the <code><b>-foreground</b></code> column configuration option,
@@ -2921,7 +2947,25 @@ proc formatDate clockVal {
 	contents of the row.</dd>
 
 	<dt><br>
-	<a name="row_name"></a><code><b>-name</b> <i>name</i></code></dt>
+	<a name="row_hide"></a><code><b>-hide</b> <i>boolean</i></code></dt>
+
+	<dd>
+	  Specifies whether to hide the row when displaying the widget or
+	  exporting its selection.&nbsp; The default value is
+	  <code>0</code>.&nbsp; For technical reasons (the use of the
+	  <code><b>-elide</b></code> option for a text widget tag), this option
+	  is not supported for Tk versions earlier than 8.3.
+
+	  <p><b>CAUTION:</b>&nbsp; Tk versions 8.3 - 8.4.12 had a bug that
+	  caused a segmentation fault if the whole content of a text widget was
+	  elided.&nbsp; This bug was also present in Tk 8.5.a1 - 8.5.a3.&nbsp;
+	  When using one of these earlier Tk versions, this bug will produce a
+	  crash if all the rows of a tablelist widget are hidden.&nbsp; It is
+	  your responsibility to avoid such situations when using a Tk version
+	  having this bug!</p>
+	</dd>
+
+	<dt><a name="row_name"></a><code><b>-name</b> <i>name</i></code></dt>
 
 	<dd>Specifies a name associated with the row.&nbsp; While the numerical
 	index of a row might change by inserting, deleting, or moving rows, or
@@ -3558,13 +3602,13 @@ proc formatDate clockVal {
 	<code><i>index</i></code> if the tablelist's <code><b><a href=
 	"#state">state</a></b></code> is not
 	<code><b>disabled</b></code>.&nbsp; If <code><i>index</i></code> is
-	outside the range of items in the tablelist then the closest item is
-	activated.&nbsp; The active item is drawn as specified by the
-	<code><b><a href="#activestyle">-activestyle</a></b></code>
-	configuration option when the widget has the input focus and the
-	selection type is <code><b>row</b></code>.&nbsp; Its index may be
-	retrieved with the index <code><b>active</b></code>.&nbsp; Returns an
-	empty string.</dd>
+	outside the range of items in the tablelist or it refers to a hidden
+	item then the closest non-hidden item is activated.&nbsp; The active
+	item is drawn as specified by the <code><b><a href=
+	"#activestyle">-activestyle</a></b></code> configuration option when
+	the widget has the input focus and the selection type is
+	<code><b>row</b></code>.&nbsp; Its index may be retrieved with the
+	index <code><b>active</b></code>.&nbsp; Returns an empty string.</dd>
 
 	<dt><br>
 	<a name="activatecell"></a><code><i>pathName</i> <b>activatecell</b>
@@ -3749,14 +3793,14 @@ proc formatDate clockVal {
 	    <code><i>pathName</i> <b>cellselection</b> <b>set</b>
 	    <i>cellIndexList</i></code></dt>
 
-	    <dd>Selects all of the selectable elements in the range between
-	    <code><i>firstCell</i></code> and <code><i>lastCell</i></code>,
-	    inclusive, or corresponding to the indices specified by the list
-	    <code><i>cellIndexList</i></code>, without affecting the selection
-	    state of any other elements.&nbsp; An element is viewed as
-	    selectable if and only if the value of the <code><b><a href=
-	    "#selectable">-selectable</a></b></code> option of the row
-	    containing it is true.</dd>
+	    <dd>Selects all of the selectable non-hidden elements in the range
+	    between <code><i>firstCell</i></code> and
+	    <code><i>lastCell</i></code>, inclusive, or corresponding to the
+	    indices specified by the list <code><i>cellIndexList</i></code>,
+	    without affecting the selection state of any other elements.&nbsp;
+	    An element is viewed as selectable if and only if the value of the
+	    <code><b><a href="#selectable">-selectable</a></b></code> option of
+	    the row containing it is true.</dd>
 	  </dl>
 	</dd>
 
@@ -3929,10 +3973,10 @@ proc formatDate clockVal {
 
 	<dd>Starts the interactive editing of the cell's contents if the
 	tablelist's <code><b><a href="#state">state</a></b></code> is not
-	<code><b>disabled</b></code>, the cell's column is not hidden, and the
-	cell is editable.&nbsp; Returns an empty string.&nbsp; See the <a href=
-	"#cell_editing">INTERACTIVE CELL EDITING</a> section for details on
-	editablity and on the editing process.</dd>
+	<code><b>disabled</b></code>, the cell's row and column are not hidden,
+	and the cell is editable.&nbsp; Returns an empty string.&nbsp; See the
+	<a href="#cell_editing">INTERACTIVE CELL EDITING</a> section for
+	details on editablity and on the editing process.</dd>
 
 	<dt><br>
 	<a name="editwinpath"></a><code><i>pathName</i>
@@ -4225,7 +4269,7 @@ upvar #0 [.tbl itemlistvar] itemList
 	  additional element, holding the item's key.</p>
 
 	  <p>The <code><b>itemlistvar</b></code> command provides an efficient
-	  way of accessing this internal list, instead of retrieving the items
+	  way for accessing this internal list, instead of retrieving the items
 	  with the <code><b><a href="#get">get</a></b></code> subcommand or
 	  using the <code><b><a href=
 	  "#listvariable">-listvariable</a></b></code> option (these methods
@@ -4277,7 +4321,7 @@ upvar #0 [.tbl itemlistvar] itemList
 	<i>y</i></code></dt>
 
 	<dd>Given a y-coordinate within the tablelist window, this command
-	returns the index of the tablelist item nearest to that
+	returns the index of the non-hidden tablelist item nearest to that
 	y-coordinate.&nbsp; The coordinate <code><i>y</i></code> is expected to
 	be relative to the tablelist window itself (not its body
 	component).</dd>
@@ -4468,11 +4512,11 @@ upvar #0 [.tbl itemlistvar] itemList
 
 	    <dd>Sets the selection anchor to the item given by
 	    <code><i>index</i></code>.&nbsp; If <code><i>index</i></code>
-	    refers to a nonexistent item then the closest item is used.&nbsp;
-	    The selection anchor is the end of the selection that is fixed
-	    while dragging out a selection with the mouse if the selection type
-	    is <code><b>row</b></code>.&nbsp; The index
-	    <code><b>anchor</b></code> may be used to refer to the anchor
+	    refers to a nonexistent  or hidden item, then the closest
+	    non-hidden item is used.&nbsp; The selection anchor is the end of
+	    the selection that is fixed while dragging out a selection with the
+	    mouse if the selection type is <code><b>row</b></code>.&nbsp; The
+	    index <code><b>anchor</b></code> may be used to refer to the anchor
 	    item.</dd>
 
 	    <dt><br>
@@ -4484,10 +4528,10 @@ upvar #0 [.tbl itemlistvar] itemList
 	    <dd>If any of the items between <code><i>first</i></code> and
 	    <code><i>last</i></code> (inclusive) or corresponding to the
 	    indices specified by the list <code><i>indexList</i></code> contain
-	    at least one non-hidden selected cell, they are deselected.&nbsp;
-	    The selection state is not changed for items outside the range
-	    given in the first form of the command or different from those
-	    specified by the index list given in its second form.</dd>
+	    at least one selected cell, they are deselected.&nbsp; The
+	    selection state is not changed for items outside the range given in
+	    the first form of the command or different from those specified by
+	    the index list given in its second form.</dd>
 
 	    <dt><br>
 	    <code><i>pathName</i> <b>selection</b> <b>includes</b>
@@ -4630,7 +4674,7 @@ upvar #0 [.tbl itemlistvar] itemList
 	option.&nbsp; If the label's text is right-aligned then the arrow will
 	be displayed on the left side of the label, otherwise on its right
 	side.&nbsp; If the <code><i>columnIndexList</i></code> argument
-	specifies more than one columns then the first 9 sort ranks
+	specifies more than one column then the first 9 sort ranks
 	(<code>1</code> for the first element of
 	<code><i>columnIndexList</i></code>, <code>2</code> for the second one,
 	and so on) will also be displayed to the right of the arrows.&nbsp;
@@ -4694,9 +4738,9 @@ upvar #0 [.tbl itemlistvar] itemList
 	"#resetsortinfo">resetsortinfo</a></b></code>.</dd>
 
 	<dt><br>
-	<a name="togglevisibility"></a><code><i>pathName</i>
-	<b>togglevisibility</b> <i>firstColumn</i> <i>lastColumn</i></code><br>
-	<code><i>pathName</i> <b>togglevisibility</b>
+	<a name="togglecolumnhide"></a><code><i>pathName</i>
+	<b>togglecolumnhide</b> <i>firstColumn</i> <i>lastColumn</i></code><br>
+	<code><i>pathName</i> <b>togglecolumnhide</b>
 	<i>columnIndexList</i></code></dt>
 
 	<dd>Toggles the value of the <code><b><a href=
@@ -4712,6 +4756,43 @@ upvar #0 [.tbl itemlistvar] itemList
 	"#columnconfigure">columnconfigure</a></b></code> for each of the
 	specified columns is that it causes only one redisplay of the widget's
 	contents, thus being significantly faster.</dd>
+
+	<dt><br>
+	<a name="togglerowhide"></a><code><i>pathName</i>
+	<b>togglerowhide</b> <i>first</i> <i>last</i></code><br>
+	<code><i>pathName</i> <b>togglerowhide</b> <i>indexList</i></code></dt>
+
+	<dd>
+	  Toggles the value of the <code><b><a href=
+	  "#row_hide">-hide</a></b></code> option for one or more rows of the
+	  tablelist.&nbsp; In the first form of the command,
+	  <code><i>first</i></code> and <code><i>last</i></code> are indices
+	  specifying the first and last rows in the range whose visibility is
+	  to be toggled.&nbsp; The command's second form accepts a list
+	  <code><i>indexList</i></code> of indices specifying the rows whose
+	  visibility is to be toggled.&nbsp; Returns an empty string.&nbsp;
+	  Just like the <code><b>-hide</b></code> row configuration option,
+	  this subcommand is not supported for Tk versions earlier than
+	  8.3.
+
+	  <p><b>CAUTION:</b>&nbsp; Tk versions 8.3 - 8.4.12 had a bug that
+	  caused a segmentation fault if the whole content of a text widget was
+	  elided.&nbsp; This bug was also present in Tk 8.5.a1 - 8.5.a3.&nbsp;
+	  When using one of these earlier Tk versions, this bug will produce a
+	  crash if all the rows of a tablelist widget are hidden.&nbsp; It is
+	  your responsibility to avoid such situations when using a Tk version
+	  having this bug!</p>
+	</dd>
+
+	<dt><a name="togglevisibility"></a><code><i>pathName</i>
+	<b>togglevisibility</b> <i>firstColumn</i> <i>lastColumn</i></code><br>
+	<code><i>pathName</i> <b>togglevisibility</b>
+	<i>columnIndexList</i></code></dt>
+
+	<dd>This subcommand has been renamed to <code><b><a href=
+	"#togglecolumnhide">togglecolumnhide</a></b></code>.&nbsp; The old name
+	is still supported, but is now deprecated and will be eliminated in the
+	next Tablelist release.</dd>
 
 	<dt><br>
 	<a name="windowpath"></a><code><i>pathName</i> <b>windowpath</b>
@@ -4782,9 +4863,9 @@ upvar #0 [.tbl itemlistvar] itemList
 	    <code><b>units</b></code> or <code><b>pages</b></code> or an
 	    abbreviation of one of these.&nbsp; If <code><i>what</i></code> is
 	    <code><b>units</b></code>, the view adjusts left or right by
-	    <code><i>number</i></code> columns or character units (the width of
-	    the <code><b>0</b></code> character) on the display, depending on
-	    the value of the <code><b><a href=
+	    <code><i>number</i></code> non-hidden columns or character units
+	    (the width of the <code><b>0</b></code> character) on the display,
+	    depending on the value of the <code><b><a href=
 	    "#titlecolumns">-titlecolumns</a></b></code> option; if
 	    <code><i>what</i></code> is <code><b>pages</b></code> then the view
 	    adjusts by <code><i>number</i></code> screenfuls.&nbsp; If
@@ -4809,31 +4890,33 @@ upvar #0 [.tbl itemlistvar] itemList
 
 	    <dd>Returns a list containing two elements, both of which are real
 	    fractions between <code>0</code> and <code>1</code>.&nbsp; The
-	    first element gives the position of the tablelist item at the top
-	    of the window, relative to the tablelist as a whole
+	    first element gives the position of the non-hidden tablelist item
+	    at the top of the window, relative to the tablelist as a whole
 	    (<code>0.5</code> means it is halfway through the tablelist, for
 	    example).&nbsp; The second element gives the position of the
-	    tablelist item just after the last one in the window, relative to
-	    the tablelist as a whole.&nbsp; These are the same values passed to
-	    scrollbars via the <code><b>-yscrollcommand</b></code> option.</dd>
+	    non-hidden tablelist item just after the last one in the window,
+	    relative to the tablelist as a whole.&nbsp; These are the same
+	    values passed to scrollbars via the
+	    <code><b>-yscrollcommand</b></code> option.</dd>
 
 	    <dt><br>
-	    <code><i>pathName</i> <b>yview</b> <i>index</i></code></dt>
+	    <code><i>pathName</i> <b>yview</b> <i>units</i></code></dt>
 
-	    <dd>Adjusts the view in the window so that the item given by
-	    <code><i>index</i></code> is displayed at the top of the
-	    window.</dd>
+	    <dd>Adjusts the view in the window so that the item whose offset
+	    equals <code><i>units</i></code> non-hidden rows is displayed at
+	    the top of the window.</dd>
 
 	    <dt><br>
 	    <code><i>pathName</i> <b>yview</b> <b>moveto</b>
 	    <i>fraction</i></code></dt>
 
-	    <dd>Adjusts the view in the window so that the item given by
-	    <code><i>fraction</i></code> appears at the top of the
+	    <dd>Adjusts the view in the window so that the non-hidden item
+	    given by <code><i>fraction</i></code> appears at the top of the
 	    window.&nbsp; <code><i>fraction</i></code> is a fraction between
 	    <code>0</code> and <code>1</code>; <code>0</code> indicates the
-	    first item in the tablelist, <code>0.33</code> indicates the item
-	    one-third the way through the tablelist, and so on.</dd>
+	    first non-hidden item in the tablelist, <code>0.33</code> indicates
+	    the non-hidden item one-third the way through the tablelist, and so
+	    on.</dd>
 
 	    <dt><br>
 	    <code><i>pathName</i> <b>yview</b> <b>scroll</b> <i>number</i>
@@ -4846,7 +4929,7 @@ upvar #0 [.tbl itemlistvar] itemList
 	    or <code><b>pages</b></code> or an abbreviation of one of
 	    these.&nbsp; If <code><i>what</i></code> is
 	    <code><b>units</b></code>, the view adjusts up or down by
-	    <code><i>number</i></code> lines; if it is
+	    <code><i>number</i></code> non-hidden rows; if it is
 	    <code><b>pages</b></code> then the view adjusts by
 	    <code><i>number</i></code> screenfuls.&nbsp; If
 	    <code><i>number</i></code> is negative then earlier items become

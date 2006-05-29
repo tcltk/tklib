@@ -139,8 +139,8 @@
   <code>nearest</code>, and <code>see</code> command options refer to the rows,
   but similar subcommands are provided for the columns and cells
   (<code>columnindex</code>, <code>cellindex</code>, ...).&nbsp; The items can
-  be sorted with the <code>sort</code> and <code>sortbycolumn</code> command
-  options.</p>
+  be sorted with the <code>sort</code>, <code>sortbycolumn</code>, and
+  <code>sortbycolumnlist</code> command options.</p>
 
   <p>The bindings defined for the body of a tablelist widget make it behave
   just like a normal listbox.&nbsp; This includes the support for the virtual
@@ -163,8 +163,8 @@
   <h3><a name="ov_get"></a>How to get it?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist4.3.tar.gz</code> for UNIX and
-  <code>tablelist4_3.zip</code> for Windows.&nbsp; These files contain the same
+  The distribution file is <code>tablelist4.4.tar.gz</code> for UNIX and
+  <code>tablelist4_4.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -189,21 +189,21 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist4.3.tar.gz</code>:</p>
+  <code>tablelist4.4.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist4.3.tar.gz | tar -xf -
+gunzip -c tablelist4.4.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>tablelist4.3</code>, with
+  <p>This command will create a directory named <code>tablelist4.4</code>, with
   the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist4_3.zip</code> into the directory
-  <code>tablelist4.3</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist4_4.zip</code> into the directory
+  <code>tablelist4.4</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Note that the file <code>tablelistEdit.tcl</code> in the
@@ -314,8 +314,9 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   chosen the latter approach.</p>
 
   <p>To access Tablelist <i>variables</i>, you <i>must</i> use qualified
-  names.&nbsp; There are only three Tablelist variables that are designed to be
-  accessed outside the namespace <code>tablelist</code>:</p>
+  names.&nbsp; There are only three Tablelist variables (and one more when
+  using Tablelist_tile) that are designed to be accessed outside the namespace
+  <code>tablelist</code>:</p>
 
   <ul>
     <li>The variable <code>tablelist::version</code> holds the current version
@@ -327,6 +328,10 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     <li>The read-only variable <code>tablelist::usingTile</code> has the value
     <code>0</code> in the package Tablelist and the value <code>1</code> in
     Tablelist_tile.</li>
+
+    <li>In Tablelist_tile the array <code>tablelist::themeDefaults</code> holds
+    the theme-specific default values of a series of Tablelist configuration
+    options.</li>
   </ul>
 
   <h3><a name="ov_tile"></a>More on Tablelist_tile</h3>
@@ -394,7 +399,7 @@ package require tile 0.6
   Tablelist_tile.&nbsp; The first three are standard Tk widget options, which
   are not available for tile widgets.&nbsp; The others stand for the
   <code>-activebackground</code>, <code>-activeforeground</code>,
-  <code>-disabledforeground</code> and <code>-height</code> options of the
+  <code>-disabledforeground</code>, and <code>-height</code> options of the
   column labels, and these configuration options are not supported for tile
   label widgets.</p>
 
@@ -405,12 +410,17 @@ package require tile 0.6
   these themes silently ignore any attempt to change the background color of a
   tile label.</p>
 
-  <p>Finally, take into account that in some themes, setting the
+  <p>Also, take into account that in some themes, setting the
   <code>-labelborderwidth</code> option (at widget or column level) to a value
   other than the default might be ignored by tile and thus could cause
   alignment problems.&nbsp; This is because the border of tile widgets is drawn
   with theme-specific methods, which will not always produce the results known
   from Tk widgets.</p>
+
+  <p>Finally, notice that, when using the <code>tileqt</code> theme, the
+  version number of the <code>tile::theme::tileqt</code> package must be 0.3 or
+  higher, and <code>tileqt</code> itself won't work with tile versions earlier
+  than 0.7.</p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
@@ -525,6 +535,7 @@ namespace eval demo {
     option add *DemoTop.tf.tbl.background		gray98
     option add *DemoTop.tf.tbl.stripeBackground		#e0e8f0
     option add *DemoTop.tf.tbl*Entry.background		white
+    option add *DemoTop.tf.tbl.setFocus			yes
     option add *DemoTop.tf.tbl.setGrid			yes
     option add *DemoTop.bf.Button.width			10
 }
@@ -572,6 +583,9 @@ proc demo::displayConfig w {
 	-labelcommand tablelist::sortByColumn -sortcommand demo::compareAsSet \
 	-editendcommand demo::applyValue -height 15 -width 100 -stretch all \
 	-xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set]
+    if {[$tbl cget -selectborderwidth] == 0} {
+	$tbl configure -spacing 1
+    }
     $tbl columnconfigure 3 -maxwidth 30
     $tbl columnconfigure 4 -maxwidth 30 -editable yes
     scrollbar $vsb -orient vertical   -command [list $tbl yview]
@@ -650,10 +664,16 @@ proc demo::displayConfig w {
   make sure that all of the columns will be stretched to eliminate the blank
   space that might appear at the right of the table.</p>
 
+  <p>If the default value of the <code>-selectborderwidth</code> option is
+  <code>0</code> (this is the case on the Windows and Macintosh platforms) then
+  we use the <code><b><a href=
+  "tablelistWidget.html#spacing">-spacing</a></b></code> option to provide some
+  additional space above and below the rows.</p>
+
   <p>For the last two columns of the tablelist we use the <code><a href=
   "tablelistWidget.html#col_maxwidth">-maxwidth</a></code> column configuration
   option, to make sure that the dynamic widths of these columns won't exceed 30
-  characters.</p>
+  average-width characters.</p>
 
   <p>Besides the options given on the command line, our tablelist widget will
   automatically inherit the ones contained in the Tk option database entries
@@ -668,7 +688,11 @@ proc demo::displayConfig w {
   configuration option.&nbsp; According to this entry, every other row of the
   tablelist widget will be displayed in the background color
   <code>#e0e8f0</code>, which improves the readability of the items and gives
-  the widget a nice appearance.</p>
+  the widget a nice appearance.&nbsp; Finally, the database name
+  <code>setFocus</code> corresponds to the <code><a href=
+  "tablelistWidget.html#setfocus">-setfocus</a></code> configuration option;
+  we set it to <code>yes</code> to make sure that the tablelist's body will
+  receive the focus when clicked with the left mouse button.</p>
 
   <p>We populate the tablelist by invoking the <code>demo::putConfig</code>
   procedure discussed below.&nbsp; The same script is associated with the
@@ -872,7 +896,7 @@ To display information about the children of an arbitrary widget, enter
 </pre>
   </blockquote>
 
-  <p><img src="browse.png" alt="Children - Please load this image!" width="554"
+  <p><img src="browse.png" alt="Children - Please load this image!" width="558"
   height="272"></p>
 
   <p>The <code>demo::displayChildren</code> command inserts some data of the
@@ -947,6 +971,9 @@ proc demo::displayChildren w {
 		  0 "Viewable"	center
 		  0 "Manager"	left} \
 	-labelcommand demo::labelCmd -yscrollcommand [list $vsb set] -width 0
+    if {[$tbl cget -selectborderwidth] == 0} {
+	$tbl configure -spacing 1
+    }
     foreach col {2 3 4 5} {
 	$tbl columnconfigure $col -sortmode integer
     }
@@ -1328,6 +1355,9 @@ for {set n 0} { $n &lt; 8} {incr n} {
     tablelist::tablelist $tbl \
 	-columns {0 "Label 0"  0 "Label 1"  0 "Label 2"  0 "Label 3"} \
 	-background gray98 -height 4 -width 40 -stretch all
+    if {[$tbl cget -selectborderwidth] == 0} {
+	$tbl configure -spacing 1
+    }
 
     switch $n {
 	1 {
@@ -1448,6 +1478,9 @@ tablelist::tablelist $tbl \
 	      0 "Activation Time" center} \
     -editstartcommand editStartCmd -editendcommand editEndCmd \
     -height 0 -width 0
+if {[$tbl cget -selectborderwidth] == 0} {
+    $tbl configure -spacing 1
+}
 $tbl columnconfigure 0 -sortmode integer
 $tbl columnconfigure 1 -name available -editable yes -editwindow checkbutton \
     -formatcommand emptyStr
@@ -1745,7 +1778,10 @@ tablelist::tablelist $tbl \
 	      0 "File Size" right
 	      0 "View"	    center
 	      0 "Seen"	    center} \
-    -font "Helvetica -13" -setgrid no -yscrollcommand [list $vsb set] -width 0
+    -font "Helvetica -12" -setgrid no -yscrollcommand [list $vsb set] -width 0
+if {[$tbl cget -selectborderwidth] == 0} {
+    $tbl configure -spacing 1
+}
 $tbl columnconfigure 0 -name fileName
 $tbl columnconfigure 1 -formatcommand emptyStr -sortmode integer
 $tbl columnconfigure 2 -name fileSize -sortmode integer
@@ -1861,7 +1897,7 @@ proc viewFile {tbl key} {
     #
     # Mark the file as seen
     #
-    $tbl rowconfigure k$key -font "Helvetica -13 bold"
+    $tbl rowconfigure k$key -font "Helvetica -12 bold"
     $tbl cellconfigure k$key,seen -text yes
 }
 </pre>
@@ -1938,11 +1974,30 @@ source [file join $dir option_tile.tcl]
   </blockquote>
 
   <p>where <code>option_tile.tcl</code> is nearly identical to
-  <code>option.tcl</code>:&nbsp; It contains the same option database settings,
-  and additionally the&nbsp; <code>tile::setTheme alt</code>&nbsp; command for
-  the windowing system <code>x11</code>.</p>
+  <code>option.tcl</code>.&nbsp; Its tile-specific part sets the theme to
+  <code>alt</code> for the windowing system <code>x11</code> and uses the
+  values written by the command <code><a href=
+  "tablelistThemeDefs.html">tablelist::setThemeDefaults</a></code> into the
+  array <code>tablelist::themeDefaults</code>, to make sure that the selection
+  will have the same theme-specific look in all the widgets created by the
+  application:</p>
 
-  <p>To make sure that the overall appearance of the GUI will conform to the
+  <blockquote>
+    <pre>
+if {[tk windowingsystem] eq "x11"} {
+    tile::setTheme alt
+    option add *Font			"Helvetica -12"
+}
+tablelist::setThemeDefaults
+if {$tile::currentTheme ne "aqua"} {
+    option add *selectBackground  $tablelist::themeDefaults(-selectbackground)
+    option add *selectForeground  $tablelist::themeDefaults(-selectforeground)
+    option add *selectBorderWidth $tablelist::themeDefaults(-selectborderwidth)
+}
+</pre>
+  </blockquote>
+
+  <p>To ensure that the overall appearance of the GUI will conform to the
   currently used theme, we create a theme-specific container for our
   widgets:</p>
 
@@ -1998,18 +2053,18 @@ pack $f -expand yes -fill both
   </blockquote>
 
   <p>That's all!&nbsp; The resulting window has a nice theme-specific
-  appearance.&nbsp; In an X11 environment its height is less than that of its
-  non-tile-based counterpart, because the default value of the
-  <code>-selectborderwidth</code> option for the <code>alt</code> theme is
-  <code>0</code>, while the same option's value in the non-tile-based version
-  defaults to <code>1</code>.&nbsp; Notice that we could have used the
-  <code><b><a href="tablelistWidget.html#spacing">-spacing</a></b></code>
-  option to provide additional space above and below the rows, which would have
-  increased the widget's height.</p>
+  appearance:</p>
 
   <p><img src="bwidget_tile.png" alt=
   "Serial Line Configuration - Please load this image!" width="694" height=
-  "337"></p>
+  "369"></p>
+
+  <p>Notice that the default value of the <code>-selectborderwidth</code>
+  option for the <code>alt</code> theme is <code>0</code>, but the
+  <code><b><a href="tablelistWidget.html#spacing">-spacing</a></b></code>
+  option provides additional space above and below the rows, making sure that
+  the widget's body will have the same height as in the non-tile-based
+  version.</p>
 
   <p>The demo script <code>tileWidgets.tcl</code> uses not only the
   Tablelist_tile package for creating a tablelist widget with a modern
@@ -2018,7 +2073,7 @@ pack $f -expand yes -fill both
 
   <p><img src="tileWidgets.png" alt=
   "Serial Line Configuration - Please load this image!" width="694" height=
-  "337"></p>
+  "369"></p>
 
   <p>The tile-based version of the demo script <code>embeddedWindows.tcl</code>
   contains a bit more changes, but most of them are not
@@ -2027,7 +2082,7 @@ pack $f -expand yes -fill both
   the details.&nbsp; Here is a screenshot of the resulting window:</p>
 
   <p><img src="embeddedWindows_tile.png" alt=
-  "Embedded Windows - Please load this image!" width="406" height="265"></p>
+  "Embedded Windows - Please load this image!" width="406" height="281"></p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
