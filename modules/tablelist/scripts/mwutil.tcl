@@ -11,8 +11,6 @@
 package require Tcl 8
 package require Tk  8
 
-namespace eval tablelist {
-
 #
 # Namespace initialization
 # ========================
@@ -29,8 +27,8 @@ namespace eval mwutil {
     # Public procedures:
     #
     namespace export	wrongNumArgs getAncestorByClass convEventFields \
-			defineKeyNav processTraversal configure \
-			fullConfigOpt fullOpt enumOpts configSubCmd \
+			defineKeyNav processTraversal configureWidget \
+			fullConfigOpt fullOpt enumOpts configureSubCmd \
 			attribSubCmd getScrollInfo
 }
 
@@ -130,14 +128,14 @@ proc mwutil::processTraversal {w class event} {
 }
 
 #------------------------------------------------------------------------------
-# mwutil::configure
+# mwutil::configureWidget
 #
 # Configures the widget win by processing the command-line arguments specified
 # in optValPairs and, if the value of initialize is true, also those database
 # options that don't match any command-line arguments.
 #------------------------------------------------------------------------------
-proc mwutil::configure {win configSpecsName configCmd cgetCmd \
-			optValPairs initialize} {
+proc mwutil::configureWidget {win configSpecsName configCmd cgetCmd \
+			      optValPairs initialize} {
     upvar $configSpecsName configSpecs
 
     #
@@ -328,11 +326,11 @@ proc mwutil::enumOpts optList {
 }
 
 #------------------------------------------------------------------------------
-# mwutil::configSubCmd
+# mwutil::configureSubCmd
 #
 # This procedure is invoked to process configuration subcommands.
 #------------------------------------------------------------------------------
-proc mwutil::configSubCmd {win configSpecsName configCmd cgetCmd argList} {
+proc mwutil::configureSubCmd {win configSpecsName configCmd cgetCmd argList} {
     upvar $configSpecsName configSpecs
 
     switch [llength $argList] {
@@ -376,7 +374,8 @@ proc mwutil::configSubCmd {win configSpecsName configCmd cgetCmd argList} {
 	    #
 	    # Set the specified configuration options to the given values
 	    #
-	    return [configure $win configSpecs $configCmd $cgetCmd $argList 0]
+	    return [configureWidget $win configSpecs $configCmd $cgetCmd \
+		    $argList 0]
 	}
     }
 }
@@ -463,6 +462,4 @@ proc mwutil::getScrollInfo argList {
     } else {
 	return -code error "unknown option \"$opt\": must be moveto or scroll"
     }
-}
-
 }
