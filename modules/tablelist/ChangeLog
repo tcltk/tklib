@@ -1,3 +1,13 @@
+2006-06-03  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/mwutil.tcl:          Renamed two mwutil commands, in order
+	* scripts/tablelistWidget.tcl: to avoid conflicts when using the
+	* scripts/tclIndex:            Mentry package.
+
+	* doc/tablelist.html:                       Updated a few option
+	* doc/tablelistThemeDefs.html:	            database settings.
+	* ../../examples/tablelist/option_tile.tcl:
+
 2006-05-30  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl: Bumped the version number to 4.4.
