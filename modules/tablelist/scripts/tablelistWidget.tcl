@@ -664,8 +664,8 @@ proc tablelist::tablelist args {
     # arguments and to the available database options
     #
     if {[catch {
-	mwutil::configure $win configSpecs tablelist::doConfig \
-			  tablelist::doCget [lrange $args 1 end] 1
+	mwutil::configureWidget $win configSpecs tablelist::doConfig \
+				tablelist::doCget [lrange $args 1 end] 1
     } result] != 0} {
 	destroy $win
 	return -code error $result
@@ -803,7 +803,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	    scan [cellIndex $win [lindex $argList 1] 1] "%d,%d" row col
 	    variable cellConfigSpecs
 	    set argList [lrange $argList 2 end]
-	    return [mwutil::configSubCmd $win cellConfigSpecs \
+	    return [mwutil::configureSubCmd $win cellConfigSpecs \
 		    "tablelist::doCellConfig $row $col" \
 		    "tablelist::doCellCget $row $col" $argList]
 	}
@@ -891,7 +891,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	    set col [colIndex $win [lindex $argList 1] 1]
 	    variable colConfigSpecs
 	    set argList [lrange $argList 2 end]
-	    return [mwutil::configSubCmd $win colConfigSpecs \
+	    return [mwutil::configureSubCmd $win colConfigSpecs \
 		    "tablelist::doColConfig $col" \
 		    "tablelist::doColCget $col" $argList]
 	}
@@ -915,8 +915,9 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 
 	configure {
 	    variable configSpecs
-	    return [mwutil::configSubCmd $win configSpecs tablelist::doConfig \
-		    tablelist::doCget [lrange $argList 1 end]]
+	    return [mwutil::configureSubCmd $win configSpecs \
+		    tablelist::doConfig tablelist::doCget \
+		    [lrange $argList 1 end]]
 	}
 
 	containing {
@@ -1299,7 +1300,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 
 	    variable rowConfigSpecs
 	    set argList [lrange $argList 2 end]
-	    return [mwutil::configSubCmd $win rowConfigSpecs \
+	    return [mwutil::configureSubCmd $win rowConfigSpecs \
 		    "tablelist::doRowConfig $row" \
 		    "tablelist::doRowCget $row" $argList]
 	}
