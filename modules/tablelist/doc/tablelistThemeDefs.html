@@ -78,7 +78,7 @@
       be invoked in Tcl scripts, still before creating tile-based tablelist
       widgets.&nbsp; By calling it explicitly and using the values written by
       it into the array <code><b>tablelist::themeDefaults</b></code>, you can
-      make sure that classical Tk widgets, e.g., text, will have a
+      make sure that classical Tk widgets, e.g., listbox and text, will have a
       theme-specific appearance, just like the tile widgets.&nbsp; For example,
       you can add some common configuration options to the option database as
       follows:</p>
@@ -86,21 +86,18 @@
       <blockquote>
 	<pre>
 tablelist::setThemeDefaults
-if {$tile::currentTheme ne "aqua"} {
+if {$tile::currentTheme eq "aqua"} {
+    option add *Listbox.selectBackground \
+	       $tablelist::themeDefaults(-selectbackground)
+    option add *Listbox.selectForeground \
+	       $tablelist::themeDefaults(-selectforeground)
+} else {
     option add *selectBackground  $tablelist::themeDefaults(-selectbackground)
     option add *selectForeground  $tablelist::themeDefaults(-selectforeground)
-    option add *selectBorderWidth $tablelist::themeDefaults(-selectborderwidth)
-    option add *Text.background   $tablelist::themeDefaults(-background)
-    option add *Text.foreground   $tablelist::themeDefaults(-foreground)
 }
+option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)
 </pre>
       </blockquote>
-
-      <p>In the example above we excluded the <code><b>aqua</b></code> theme,
-      because in this theme the default values of the
-      <code><b>-selectbackground</b></code> and
-      <code><b>-selectforeground</b></code> options for tablelist widgets are
-      different from those for Tk core widgets.</p>
     </dd>
 
     <dt><b>KEYWORDS</b></dt>
