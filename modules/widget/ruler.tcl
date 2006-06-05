@@ -495,13 +495,13 @@ snit::widget widget::screenruler {
 	if {($value > 0) && !$reflect(ok)} {
 	    return -code error "no reflection possible"
 	}
+	after cancel $reflect(id)
 	if {$value > 0} {
 	    if {$value < 50} {
 		set value 50
 	    }
 	    set reflect(id) [after idle [mymethod _reflect]]
 	} else {
-	    after cancel $reflect(id)
 	    catch {$reflect(image) blank}
 	}
         set options($option) $value
