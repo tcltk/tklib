@@ -61,6 +61,9 @@ series.
 Polar plots, where the coordinates are polar instead of cartesian.
 
 [bullet]
+Histograms, for plotting statistical information.
+
+[bullet]
 
 Isometric plots, where the scale of the coordinates in the two
 directions is always the same, i.e. a circle in world coordinates
@@ -169,6 +172,24 @@ A 2-element list containing minimum, and maximum for the y-axis, in this order.
 Either the stepsize used by both axes or the keyword [const noaxes] to
 signal the plot that it should use the full area of the widget, to not
 draw any of the axes.
+
+[list_end]
+[nl]
+
+
+[call [cmd ::Plotchart::createHistogram] [arg w] [arg xaxis] [arg yaxis]]
+
+Create a new histogram.
+
+[list_begin arg]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the plot.
+
+[arg_def list xaxis in]
+A 3-element list containing minimum, maximum and stepsize for the x-axis, in this order.
+
+[arg_def list yaxis in]
+A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order.
 
 [list_end]
 [nl]
@@ -435,7 +456,7 @@ and only the option [option -format] has any effect.
 
 [para]
 
-For [emph {xy plots}] and [emph stripcharts]:
+For [emph {xy plots}], [emph stripcharts] and [emph histograms]:
 
 [list_begin definitions]
 [call [cmd \$xyplot] plot [arg series] [arg xcrd] [arg ycrd]]
@@ -456,6 +477,14 @@ Y-coordinate of the new point.
 [list_end]
 [para]
 
+[emph "Note on histograms:"]
+[para]
+For histograms the x-coordinate that is given is interpreted to be
+the x-coordinate of the [emph right] side of the bar. The first
+bar starts at the y-axis on the left. To completely fill the range
+of the x-axis, you should draw a bar at the maximum x-coordinate.
+
+[para]
 For [emph {xy plots}]:
 
 [list_begin definitions]

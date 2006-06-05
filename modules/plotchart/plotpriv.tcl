@@ -718,6 +718,55 @@ proc ::Plotchart::DrawHorizBarData { w series xdata {colour black}} {
    set scaling($w,ybase) [expr {$scaling($w,ybase)+$scaling($w,yshift)}]
 }
 
+# DrawHistogramData --
+#    Draw the vertical bars for a histogram
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    xcrd        X coordinate (for the righthand side of the bar)
+#    ycrd        Y coordinate
+# Result:
+#    None
+# Side effects:
+#    Data bars drawn in canvas
+#
+proc ::Plotchart::DrawHistogramData { w series xcrd ycrd } {
+   variable data_series
+   variable scaling
+
+   #
+   # Check for missing values (only y-value can be missing!)
+   #
+   if { $ycrd == "" } {
+       set data_series($w,$series,x) $xcrd
+       return
+   }
+
+   #
+   # Draw the bar
+   #
+   set colour "black"
+   if { [info exists data_series($w,$series,-colour)] } {
+      set colour $data_series($w,$series,-colour)
+   }
+
+   foreach {pxcrd pycrd} [coordsToPixel $w $xcrd $ycrd] {break}
+
+   if { [info exists data_series($w,$series,x)] } {
+      set xold $data_series($w,$series,x)
+   } else {
+      set xold $scaling($w,xmin)
+   }
+   set yold $scaling($w,ymin)
+   foreach {pxold pyold} [coordsToPixel $w $xold $yold] {break}
+
+   $w create rectangle $pxold $pyold $pxcrd $pycrd \
+                         -fill $colour -outline $colour -tag data
+   $w lower data
+
+   set data_series($w,$series,x) $xcrd
+}
+
 # DrawTimePeriod --
 #    Draw a period
 # Arguments:
