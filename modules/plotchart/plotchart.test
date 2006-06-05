@@ -154,7 +154,7 @@ test Plotchart-2.10 {Nice scale 7} -match numbers -body {
 } -result {10000 10015 5}
 
 test Plotchart-2.11 {Nice scale 8} -match numbers -body {
-    ::Plotchart::determineScale -1.7 26.8   
+    ::Plotchart::determineScale -1.7 26.8
 } -result {-10.0 30.0 10.0}
 
 
@@ -409,6 +409,38 @@ test Plotchart-3.10 {Isometric plot} -constraints tk -body {
     set result 1
 } -result 1
 
+test Plotchart-3.11 {Histogram} -constraints tk -body {
+    canvas .c -width 300 -height 200 -bg white
+    pack   .c -fill both
+    .c delete all
+
+    set s [::Plotchart::createHistogram .c {0.0 100.0 10.0} {0.0 100.0 20.0}]
+
+    $s dataconfig series1 -colour green
+
+    set xd    5.0
+    set yd   20.0
+    set xold  0.0
+    set yold 50.0
+
+    for { set i 0 } { $i < 20 } { incr i } {
+	set xnew [expr {$xold+$xd}]
+	set ynew [expr {$yold+(rand()-0.5)*$yd}]
+	$s plot series1 $xnew $ynew
+	set xold $xnew
+	set yold $ynew
+    }
+
+    $s title "Aha!"
+
+    after 1000 {set waited 1}
+    vwait waited
+    set waited 0
+
+    set res [checkCanvasItems .c {data xaxis yaxis}]
+    destroy .c
+    set res
+} -result 1 ;# {}
 
 # -------------------------------------------------------------------------
 ::tcltest::cleanupTests

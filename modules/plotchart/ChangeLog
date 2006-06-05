@@ -1,3 +1,10 @@
+2006-06-05 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+
+        * plotchart.tcl: Added a histogram procedure
+        * plotpriv.tcl: Added a procedure to draw histogram data
+        * plotchart.test: Added a test for histogram data
+        * plotchart.man: Description for histograms
+
 2006-04-24 Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
         * plotpriv.tcl: Added support for missing values
