@@ -1,3 +1,10 @@
+2006-06-05  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* ruler.tcl: make sure reflect(id) gets cancelled
+
+	* scrollw.tcl: added ttk scrolledwindow variant
+	* pkgIndex.tcl: added widget::tscrolledwindow
+
 2005-11-10  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*

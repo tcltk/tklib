@@ -16,6 +16,8 @@ package ifneeded widget 3.0 [list source [file join $dir widget.tcl]]
 
 package ifneeded widget::scrolledwindow 1.0 \
     [list source [file join $dir scrollw.tcl]]
+package ifneeded widget::tscrolledwindow 1.0 \
+    [list source [file join $dir scrollw.tcl]]
 
 package ifneeded widget::dialog 1.2 \
     [list source [file join $dir dialog.tcl]]
