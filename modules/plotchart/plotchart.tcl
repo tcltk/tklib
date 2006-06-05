@@ -26,7 +26,7 @@ namespace eval ::Plotchart {
                     createBarchart createHorizontalBarchart \
                     createTimechart createStripchart \
                     createIsometricPlot create3DPlot \
-                    createGanttChart colorMap
+                    createGanttChart createHistogram colorMap
 
    #
    # Array linking procedures with methods
@@ -50,6 +50,14 @@ namespace eval ::Plotchart {
    set methodProc(polarplot,plot)        DrawPolarData
    set methodProc(polarplot,saveplot)    SavePlot
    set methodProc(polarplot,dataconfig)  DataConfig
+   set methodProc(histogram,title)       DrawTitle
+   set methodProc(histogram,xtext)       DrawXtext
+   set methodProc(histogram,ytext)       DrawYtext
+   set methodProc(histogram,plot)        DrawHistogramData
+   set methodProc(histogram,saveplot)    SavePlot
+   set methodProc(histogram,dataconfig)  DataConfig
+   set methodProc(histogram,xconfig)     XConfig
+   set methodProc(histogram,yconfig)     YConfig
    set methodProc(horizbars,title)       DrawTitle
    set methodProc(horizbars,xtext)       DrawXtext
    set methodProc(horizbars,ytext)       DrawYtext
@@ -540,6 +548,55 @@ proc ::Plotchart::createIsometricPlot { w xscale yscale stepsize } {
       DrawXaxis        $w $xmin  $xmax  $xdelt
       DrawMask         $w
    }
+
+   return $newchart
+}
+
+# createHistogram --
+#    Create a command for drawing a histogram
+# Arguments:
+#    w           Name of the canvas
+#    xscale      Minimum, maximum and step for x-axis (initial)
+#    yscale      Minimum, maximum and step for y-axis
+# Result:
+#    Name of a new command
+# Note:
+#    The entire canvas will be dedicated to the histogram.
+#    The plot will be drawn with axes
+#    This is almost the same code as for an XY plot
+#
+proc ::Plotchart::createHistogram { w xscale yscale } {
+   variable data_series
+
+   foreach s [array names data_series "$w,*"] {
+      unset data_series($s)
+   }
+
+   set newchart "histogram_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler histogram $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+
+   foreach {xmin xmax xdelt} $xscale {break}
+   foreach {ymin ymax ydelt} $yscale {break}
+
+   if { $xdelt == 0.0 || $ydelt == 0.0 } {
+      return -code error "Step size can not be zero"
+   }
+
+   if { ($xmax-$xmin)*$xdelt < 0.0 } {
+      set xdelt [expr {-$xdelt}]
+   }
+   if { ($ymax-$ymin)*$ydelt < 0.0 } {
+      set ydelt [expr {-$ydelt}]
+   }
+
+   viewPort         $w $pxmin $pymin $pxmax $pymax
+   worldCoordinates $w $xmin  $ymin  $xmax  $ymax
+
+   DrawYaxis        $w $ymin  $ymax  $ydelt
+   DrawXaxis        $w $xmin  $xmax  $xdelt
+   DrawMask         $w
 
    return $newchart
 }
