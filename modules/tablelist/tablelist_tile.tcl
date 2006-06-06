@@ -16,3 +16,5 @@ trace variable tablelist::usingTile wu "tablelist::restoreUsingTile 1"
 
 interp alias {} tk::frame {} ::frame
 interp alias {} tk::label {} ::label
+
+source [file join [::tablelist::DIR] tablelistPublic.tcl]
