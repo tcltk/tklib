@@ -434,3 +434,4 @@ snit::widget widget::tscrolledwindow {
 }
 
 package provide widget::scrolledwindow 1.0
+package provide widget::tscrolledwindow 1.0
