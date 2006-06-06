@@ -1,3 +1,4 @@
+# @mdgen OWNER: scripts/tclIndex
 #==============================================================================
 # Main Tablelist and Tablelist_tile package module.
 #
@@ -8,15 +9,9 @@ namespace eval tablelist {
     #
     # Public variables:
     #
+
     variable version	4.4
-    if {[string compare $::tcl_platform(platform) "macintosh"] != 0} {
-	#
-	# On the Macintosh, the tablelist::library variable is
-	# set in the file pkgIndex.tcl, because of a bug in
-	# [info script] in some Tcl releases for that platform.
-	#
-	variable library	[file dirname [info script]]
-    }
+    variable library   [::tablelist::DIR]
     variable usingTile		;# set in tablelist.tcl or tablelist_tile.tcl
 
     #
