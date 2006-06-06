@@ -1,3 +1,7 @@
+2006-06-06  Andreas Kupries <andreask@activestate.com>
+
+	* scrollw.tcl: Added provide statement for 'tscrolledwindow'.
+
 2006-06-05  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* ruler.tcl: make sure reflect(id) gets cancelled
