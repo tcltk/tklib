@@ -1,3 +1,20 @@
+2006-06-08  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* tablelist.tcl:       A bit more shuffling of code, reducing
+	* tablelist_tile.tcl:  the variant setup even further. Now only
+	* tablelistPublic.tcl: the usingTile flag is set within them.
+
+	* pkgIndex.tcl:        Modified the package index to be simpler
+	* tablelist.tcl:       and express the relationships clearly.
+	* tablelist_tile.tcl:  Tablelist(_tile) are now aliases of
+	* tablelistPublic.tcl: tablelist(_tile). The common code now
+	  has its own package name, tablelist::common, is the only one
+	  which has to handle [info script] and $dir, and is not 'source'd
+	  anymore, but loaded via 'package require'. The code for [info
+	  script] is much simpler and moved into the 'ifneeded' script,
+	  avoiding the pollution of the namespaces just by reading the
+	  package index, as it happened before.
+
 2006-06-03  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/mwutil.tcl:          Renamed two mwutil commands, in order
