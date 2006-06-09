@@ -7,14 +7,9 @@
 package require Tcl  8.4
 package require Tk   8.4
 package require tile 0.6
+package require tablelist::common
 
 package provide Tablelist_tile 4.4
 package provide tablelist_tile 4.4
 
-set tablelist::usingTile 1
-trace variable tablelist::usingTile wu "tablelist::restoreUsingTile 1"
-
-interp alias {} tk::frame {} ::frame
-interp alias {} tk::label {} ::label
-
-source [file join [::tablelist::DIR] tablelistPublic.tcl]
+::tablelist::useTile 1
