@@ -5,14 +5,24 @@
 # Copyright (c) 2000-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-namespace eval tablelist {
+package provide tablelist::common 4.4
+
+namespace eval ::tablelist {
     #
     # Public variables:
     #
 
     variable version	4.4
-    variable library   [::tablelist::DIR]
-    variable usingTile		;# set in tablelist.tcl or tablelist_tile.tcl
+    variable library	[::tablelist::DIR]
+    variable usingTile	; # set in tablelist.tcl or tablelist_tile.tcl
+
+    proc useTile {bool} {
+	variable usingTile $bool
+	trace variable ::tablelist::usingTile wu \
+		[list ::tablelist::restoreUsingTile $bool]
+	rename ::tablelist::useTile {}
+	return
+    }
 
     #
     # Creates a new tablelist widget:
@@ -50,4 +60,11 @@ namespace eval tablelist {
     namespace export	setThemeDefaults
 }
 
-lappend auto_path [file join $tablelist::library scripts]
+# Everything else needed is lazily loaded on demand, via the
+# dispatcher set up in the subdirectory "scripts", see the file
+# "tclIndex".
+
+lappend auto_path [file join $::tablelist::library scripts]
+
+interp alias {} tk::frame {} ::frame
+interp alias {} tk::label {} ::label
