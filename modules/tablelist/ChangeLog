@@ -1,3 +1,30 @@
+2006-06-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.4.1.
+	* COPYRIGHT.txt:
+
+	* tablelistPublic.tcl:         Moved the tablelist::restoreUsingTile
+	* scripts/tablelistWidget.tcl: procedure from tablelistWidget.tcl to
+	  tablelistPublic.tcl.
+
+	* scripts/tablelistBind.tcl:   Corrected two typos reported by 
+	* scripts/tablelistThemes.tcl: Patrick Fradin.
+
+	* scripts/tablelistBind.tcl: Moved the tablelist::parseLabelPath
+	* scripts/tablelistUtil.tcl: procedure from tablelistBind.tcl to
+	  tablelistUtil.tcl and improved it to work around a binding-related
+	  problem reported by Patrick Fradin.  In addition, replaced two regexp
+	  occurrences in tablelistUtil.tcl with invocations of parseLabelPath.
+
+	* scripts/tablelistConfig.tcl: Changed the windowing system- and
+	* scripts/tablelistBind.tcl:   theme-specific default value of the
+	* doc/tablelistWidget.html:    -arrowdisabledcolor option.
+
+	* scripts/tablelistEdit.tcl: Modified the padding for tile entries in
+	  the tileqt theme.
+
+	* scripts/tclIndex: Newly generated.
+
 2006-06-08  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* tablelist.tcl:       A bit more shuffling of code, reducing
