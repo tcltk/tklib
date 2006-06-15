@@ -998,7 +998,7 @@ proc tablelist::tileqtTheme {} {
 		"baghira"	{ set labelBg #f6f6f5;  set pressedBg #f0f0f0 }
 		"highcolor"	{ set labelBg #eeeeee;  set pressedBg #f0f0ef }
 		"keramik"	{ set labelBg #f4f4f4;  set pressedBg #dfdfde }
-		"phase"		{ set labelBg #Re7e7df  set pressedBg #bfbfb8 }
+		"phase"		{ set labelBg #e7e7df;  set pressedBg #bfbfb8 }
 		"plastik"	{ set labelBg #ededeb;  set pressedBg #cbcbc9 }
 		"qtcurve"	{ set labelBg #e3e3db;  set pressedBg #c4c4b6 }
 		"thinkeramik"	{ set labelBg #e6e6e1;  set pressedBg #cfcfc9 }
