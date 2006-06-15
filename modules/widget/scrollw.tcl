@@ -94,9 +94,12 @@ snit::widget widget::scrolledwindow {
 		-orient vertical -takefocus 0
 	} else {
 	    install hscroll using scrollbar $win.hscroll \
-		-orient horizontal -highlightthickness 0 -takefocus 0
+		-orient horizontal -takefocus 0
 	    install vscroll using scrollbar $win.vscroll \
-		-orient vertical -highlightthickness 0 -takefocus 0
+		-orient vertical -takefocus 0
+	    # in case the scrollbar has been overridden ...
+	    catch {$hscroll configure -highlightthickness 0}
+	    catch {$vscroll configure -highlightthickness 0}
 	}
 
 	bind $win <Configure> [mymethod _realize $win]
@@ -247,7 +250,7 @@ snit::widget widget::scrolledwindow {
 }
 
 snit::widget widget::tscrolledwindow {
-    hulltype ttk::frame ; # not themed to allow relief
+    hulltype ttk::frame
 
     component hscroll
     component vscroll
@@ -281,9 +284,12 @@ snit::widget widget::tscrolledwindow {
 		-orient vertical -takefocus 0
 	} else {
 	    install hscroll using scrollbar $win.hscroll \
-		-orient horizontal -highlightthickness 0 -takefocus 0
+		-orient horizontal -takefocus 0
 	    install vscroll using scrollbar $win.vscroll \
-		-orient vertical -highlightthickness 0 -takefocus 0
+		-orient vertical -takefocus 0
+	    # in case the scrollbar has been overridden ...
+	    catch {$hscroll configure -highlightthickness 0}
+	    catch {$vscroll configure -highlightthickness 0}
 	}
 
 	bind $win <Configure> [mymethod _realize $win]
