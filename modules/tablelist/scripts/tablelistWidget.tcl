@@ -3893,30 +3893,6 @@ proc tablelist::yviewSubCmd {win argList} {
 #
 
 #------------------------------------------------------------------------------
-# tablelist::restoreUsingTile
-#
-# This procedure is executed whenever the variable tablelist::usingTile is
-# written or unset.  It restores the variable to its original value, given by
-# the first argument.
-#------------------------------------------------------------------------------
-proc tablelist::restoreUsingTile {origVal varName index op} {
-    variable usingTile
-
-    set usingTile $origVal
-    switch $op {
-	w {
-	    return -code error "it is not allowed to use both Tablelist and\
-				Tablelist_tile in the same application"
-	}
-
-	u {
-	    trace variable usingTile wu \
-		  [list tablelist::restoreUsingTile $origVal]
-	}
-    }
-}
-
-#------------------------------------------------------------------------------
 # tablelist::fetchSelection
 #
 # This procedure is invoked when the PRIMARY selection is owned by the
