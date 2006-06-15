@@ -3241,6 +3241,24 @@ proc tablelist::getSublabels w {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::parseLabelPath
+#
+# Extracts the path name of the tablelist widget as well as the column number
+# from the path name w of a header label.
+#------------------------------------------------------------------------------
+proc tablelist::parseLabelPath {w winName colName} {
+    upvar $winName win $colName col
+
+    #
+    # For some mysterious reason, the first regexp below sometimes returns 0.
+    #
+    if {![regexp {^(.+)\.hdr\.t\.f\.l([0-9]+)$} $w dummy win col]} {
+	regexp {^(.+)\.hdr\.t\.f$} $w dummy win
+	set col 0
+    }
+}
+
+#------------------------------------------------------------------------------
 # tablelist::configLabel
 #
 # This procedure configures the label widget w according to the options and
@@ -3272,7 +3290,7 @@ proc tablelist::configLabel {w args} {
 		    }
 		}
 
-		regexp {^(.+)\.hdr\.t\.f\.l([0-9]+)$} $w dummy win col
+		parseLabelPath $w win col
 		upvar ::tablelist::ns${win}::data data
 		if {[lsearch -exact $data(arrowColList) $col] >= 0} {
 		    configCanvas $win $col
@@ -3337,7 +3355,7 @@ proc tablelist::configLabel {w args} {
 			$l configure -background $bg
 		    }
 
-		    regexp {^(.+)\.hdr\.t\.f\.l([0-9]+)$} $w dummy win col
+		    parseLabelPath $w win col
 		    upvar ::tablelist::ns${win}::data data
 		    if {[lsearch -exact $data(arrowColList) $col] >= 0} {
 			configCanvas $win $col
