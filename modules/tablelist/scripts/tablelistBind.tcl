@@ -104,7 +104,11 @@ proc tablelist::updateConfigSpecs win {
     array set tmp $data(themeDefaults)	;# populates the array tmp
     set tmp(-arrowdisabledcolor) $tmp(-arrowcolor)
     setThemeDefaults			;# populates the array themeDefaults
-    set themeDefaults(-arrowdisabledcolor) $themeDefaults(-arrowcolor)
+    if {[string compare $themeDefaults(-arrowcolor) ""] == 0} {
+	set themeDefaults(-arrowdisabledcolor) ""
+    } else {
+	set themeDefaults(-arrowdisabledcolor) $themeDefaults(-labeldisabledFg)
+    }
 
     #
     # Update the default values in the array configSpecs and
@@ -1853,7 +1857,7 @@ proc tablelist::labelB1Motion {w X x y} {
 	    set data(afterId) ""
 	}
 	set data(X) $X
-	if ($scroll) {
+	if {$scroll} {
 	    horizAutoScan $win
 	}
 
@@ -2174,18 +2178,6 @@ proc tablelist::escape {win col} {
 	}
 	set data(labelClicked) 0
     }
-}
-
-#------------------------------------------------------------------------------
-# tablelist::parseLabelPath
-#
-# Extracts the path name of the tablelist widget as well as the column number
-# from the path name w of a header label.
-#------------------------------------------------------------------------------
-proc tablelist::parseLabelPath {w winName colName} {
-    upvar $winName win $colName col
-
-    regexp {^(.+)\.hdr\.t\.f\.l([0-9]+)$} $w dummy win col
 }
 
 #------------------------------------------------------------------------------
