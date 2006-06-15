@@ -88,7 +88,12 @@ proc tablelist::extendConfigSpecs {} {
 	ttk::label $helpLabel
 	variable themeDefaults
 	setThemeDefaults		;# pupulates the array themeDefaults
-	set themeDefaults(-arrowdisabledcolor) $themeDefaults(-arrowcolor)
+	if {[string compare $themeDefaults(-arrowcolor) ""] == 0} {
+	    set themeDefaults(-arrowdisabledcolor) ""
+	} else {
+	    set themeDefaults(-arrowdisabledcolor) \
+		$themeDefaults(-labeldisabledFg)
+	}
 	foreach opt {-labelbackground -labelforeground -labelfont
 		     -labelborderwidth -labelpady
 		     -arrowcolor -arrowdisabledcolor -arrowstyle} {
@@ -212,24 +217,28 @@ proc tablelist::extendConfigSpecs {} {
 	#
 	switch $winSys {
 	    x11 {
-		lappend configSpecs(-arrowcolor)	{}
-		lappend configSpecs(-arrowstyle)	sunken10x9
+		lappend configSpecs(-arrowcolor)	      {}
+		lappend configSpecs(-arrowdisabledcolor)      {}
+		lappend configSpecs(-arrowstyle)	      sunken10x9
 	    }
 
 	    win32 {
 		if {$::tcl_platform(osVersion) < 5.1} {
-		    lappend configSpecs(-arrowcolor)	{}
-		    lappend configSpecs(-arrowstyle)	sunken8x7
+		    lappend configSpecs(-arrowcolor)	      {}
+		    lappend configSpecs(-arrowdisabledcolor)  {}
+		    lappend configSpecs(-arrowstyle)	      sunken8x7
 		} else {
-		    lappend configSpecs(-arrowcolor)	#aca899
-		    lappend configSpecs(-arrowstyle)	flat9x5
+		    lappend configSpecs(-arrowcolor)	      #aca899
+		    lappend configSpecs(-arrowdisabledcolor)  SystemDisabledText
+		    lappend configSpecs(-arrowstyle)	      flat9x5
 		}
 	    }
 
 	    classic -
 	    aqua {
-		lappend configSpecs(-arrowcolor)	#777777
-		lappend configSpecs(-arrowstyle)	flat7x7
+		lappend configSpecs(-arrowcolor)	      #777777
+		lappend configSpecs(-arrowdisabledcolor)      #a3a3a3
+		lappend configSpecs(-arrowstyle)	      flat7x7
 	    }
 	}
 	lappend configSpecs(-arrowdisabledcolor) \
