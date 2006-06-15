@@ -1044,7 +1044,7 @@ proc tablelist::createTileEntry {w args} {
 	}
 
 	tileqt {
-	    set padding {3 2}
+	    set padding 3
 	}
 
 	xpnative {
