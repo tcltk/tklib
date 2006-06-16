@@ -3248,14 +3248,7 @@ proc tablelist::getSublabels w {
 #------------------------------------------------------------------------------
 proc tablelist::parseLabelPath {w winName colName} {
     upvar $winName win $colName col
-
-    #
-    # For some mysterious reason, the first regexp below sometimes returns 0.
-    #
-    if {![regexp {^(.+)\.hdr\.t\.f\.l([0-9]+)$} $w dummy win col]} {
-	regexp {^(.+)\.hdr\.t\.f$} $w dummy win
-	set col 0
-    }
+    return [regexp {^(.+)\.hdr\.t\.f\.l([0-9]+)$} $w dummy win col]
 }
 
 #------------------------------------------------------------------------------
