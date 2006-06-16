@@ -1664,7 +1664,10 @@ proc tablelist::defineTablelistArrow {} {
 # on its right border or not.
 #------------------------------------------------------------------------------
 proc tablelist::labelEnter {w x} {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
 
     configLabel $w -cursor $data(-cursor)
@@ -1678,8 +1681,7 @@ proc tablelist::labelEnter {w x} {
     } elseif {$x < 5} {
 	set X [expr {[winfo rootx $w] - 3}]
 	set contW [winfo containing -displayof $w $X [winfo rooty $w]]
-	parseLabelPath $contW dummy col2
-	set inResizeArea [info exists col2]
+	set inResizeArea [parseLabelPath $contW dummy col2]
     } else {
 	set inResizeArea 0
     }
@@ -1699,7 +1701,10 @@ proc tablelist::labelEnter {w x} {
 # a tablelist widget.  It deactivates the label.
 #------------------------------------------------------------------------------
 proc tablelist::labelLeave {w X x y} {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
 
     if {$data(isDisabled)} {
@@ -1730,7 +1735,10 @@ proc tablelist::labelLeave {w X x y} {
 # label's relief so it can be restored later, and changes the relief to sunken.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Down {w x shiftPressed} {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
 
     if {$data(isDisabled) ||
@@ -1748,8 +1756,7 @@ proc tablelist::labelB1Down {w x shiftPressed} {
     } elseif {$x < 5} {
 	set X [expr {[winfo rootx $w] - 3}]
 	set contW [winfo containing -displayof $w $X [winfo rooty $w]]
-	parseLabelPath $contW dummy col2
-	set inResizeArea [info exists col2]
+	set inResizeArea [parseLabelPath $contW dummy col2]
     } else {
 	set inResizeArea 0
     }
@@ -1815,7 +1822,10 @@ proc tablelist::labelB1Down {w x shiftPressed} {
 # visualized if the columns are movable.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Motion {w X x y} {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
 
     if {!$data(labelClicked)} {
@@ -1888,8 +1898,7 @@ proc tablelist::labelB1Motion {w X x y} {
 		# Get the target column index
 		#
 		set contW [winfo containing -displayof $w $X [winfo rooty $w]]
-		parseLabelPath $contW dummy targetCol
-		if {[info exists targetCol]} {
+		if {[parseLabelPath $contW dummy targetCol]} {
 		    set master $contW
 		    if {$X < [winfo rootx $contW] + [winfo width $contW]/2} {
 			set relx 0.0
@@ -1961,7 +1970,10 @@ proc tablelist::labelB1Motion {w X x y} {
 # accordingly.  Otherwise it changes the label's relief to sunken.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Enter w {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
 
     if {!$data(labelClicked)} {
@@ -1990,7 +2002,10 @@ proc tablelist::labelB1Enter w {
 # if the columns are movable, then it changes the mouse cursor, too.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Leave {w x y} {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
 
     if {!$data(labelClicked) ||
@@ -2026,7 +2041,10 @@ proc tablelist::labelB1Leave {w x y} {
 # if the columns are movable.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Up {w X} {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
 
     if {!$data(labelClicked)} {
@@ -2126,7 +2144,10 @@ proc tablelist::labelB1Up {w X} {
 # to hold all the elements (including the label).
 #------------------------------------------------------------------------------
 proc tablelist::labelB3Down {w shiftPressed} {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
 
     if {!$data(isDisabled) &&

@@ -1,3 +1,8 @@
+2006-06-16  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl: Further improvements related to the
+	* scripts/tablelistUtil.tcl: tablelist::parseLabelPath procedure.
+
 2006-06-15  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 4.4.1.
