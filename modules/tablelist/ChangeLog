@@ -1,3 +1,12 @@
+2006-06-17  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistThemes.tcl: Improvements related to the
+	* scripts/tablelistConfig.tcl: setThemeDefaults subcommand.
+	* scripts/tablelistBind.tcl:
+
+	* doc/tablelist.html:          Minor improvements.
+	* doc/tablelistThemeDefs.html:
+
 2006-06-16  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl: Further improvements related to the
