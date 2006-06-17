@@ -88,12 +88,6 @@ proc tablelist::extendConfigSpecs {} {
 	ttk::label $helpLabel
 	variable themeDefaults
 	setThemeDefaults		;# pupulates the array themeDefaults
-	if {[string compare $themeDefaults(-arrowcolor) ""] == 0} {
-	    set themeDefaults(-arrowdisabledcolor) ""
-	} else {
-	    set themeDefaults(-arrowdisabledcolor) \
-		$themeDefaults(-labeldisabledFg)
-	}
 	foreach opt {-labelbackground -labelforeground -labelfont
 		     -labelborderwidth -labelpady
 		     -arrowcolor -arrowdisabledcolor -arrowstyle} {
