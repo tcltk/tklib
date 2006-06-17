@@ -15,6 +15,13 @@ proc tablelist::setThemeDefaults {} {
     if {[catch {${tile::currentTheme}Theme}] != 0} {
 	return -code error "theme \"$tile::currentTheme\" not supported"
     }
+
+    variable themeDefaults
+    if {[string compare $themeDefaults(-arrowcolor) ""] == 0} {
+	set themeDefaults(-arrowdisabledcolor) ""
+    } else {
+	set themeDefaults(-arrowdisabledcolor) $themeDefaults(-labeldisabledFg)
+    }
 }
 
 #------------------------------------------------------------------------------

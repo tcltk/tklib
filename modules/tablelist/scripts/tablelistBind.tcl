@@ -102,13 +102,7 @@ proc tablelist::updateConfigSpecs win {
     # and the array themeDefaults with values corresponding to the new one
     #
     array set tmp $data(themeDefaults)	;# populates the array tmp
-    set tmp(-arrowdisabledcolor) $tmp(-arrowcolor)
     setThemeDefaults			;# populates the array themeDefaults
-    if {[string compare $themeDefaults(-arrowcolor) ""] == 0} {
-	set themeDefaults(-arrowdisabledcolor) ""
-    } else {
-	set themeDefaults(-arrowdisabledcolor) $themeDefaults(-labeldisabledFg)
-    }
 
     #
     # Update the default values in the array configSpecs and
