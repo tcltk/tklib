@@ -45,11 +45,10 @@ set checkedImg   [image create photo -file [file join $dir checked.gif]]
 set uncheckedImg [image create photo -file [file join $dir unchecked.gif]]
 
 #
-# Improve the window's appearance by using a tile frame as a
-# container for the other widgets; set -padding -2 to work
-# around a tile bug in the themes winnative and xpnative
+# Improve the window's appearance by using a tile
+# frame as a container for the other widgets
 #
-set f [ttk::frame .f -padding -2]
+set f [ttk::frame .f]
 
 #
 # Create a tablelist widget with editable columns (except the first one)
