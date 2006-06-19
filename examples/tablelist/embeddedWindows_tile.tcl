@@ -47,11 +47,10 @@ if {$tile::currentTheme eq "aqua"} {
 }
 
 #
-# Improve the window's appearance by using a tile frame as a
-# container for the other widgets; set -padding -2 to work
-# around a tile bug in the themes winnative and xpnative
+# Improve the window's appearance by using a tile
+# frame as a container for the other widgets
 #
-set f [ttk::frame .f -padding -2]
+set f [ttk::frame .f]
 
 #
 # Create a vertically scrolled tablelist widget with 5
@@ -148,11 +147,10 @@ proc viewFile {tbl key} {
     wm title $top "File \"$fileName\""
 
     #
-    # Improve the window's appearance by using a tile frame as a
-    # container for the other widgets; set -padding -2 to work
-    # around a tile bug in the themes winnative and xpnative
+    # Improve the window's appearance by using a tile
+    # frame as a container for the other widgets
     #
-    set f [ttk::frame $top.f -padding -2]
+    set f [ttk::frame $top.f]
 
     #
     # Create a vertically scrolled text widget as a child of the toplevel

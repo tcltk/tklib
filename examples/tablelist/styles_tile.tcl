@@ -27,16 +27,15 @@ if {$tile::currentTheme ne "aqua"} {
 }
 
 #
-# Improve the window's appearance by using a tile frame as a
-# container for the other widgets; set -padding -2 to work
-# around a tile bug in the themes winnative and xpnative
+# Improve the window's appearance by using a tile
+# frame as a container for the other widgets
 #
-set f [ttk::frame .f -padding -2]
+set f [ttk::frame .f]
 
 #
 # Create, configure, and populate 8 tablelist widgets
 #
-ttk::frame $f.f -padding -2
+ttk::frame $f.f
 for {set n 0} { $n < 8} {incr n} {
     set tbl $f.f.tbl$n
     tablelist::tablelist $tbl \
