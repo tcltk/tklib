@@ -1,3 +1,12 @@
+2006-06-19  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistWidget.tcl: Fixed a bug in tablelist::deleteCols,
+	  reported by Kai Morich.
+
+	* ../../examples/tablelist/*tile*.tcl: Removed the "-padding -2" option
+	* doc/tablelist.html:                  for the ttk::frame base widget,
+	  because it is no longer needed in newer tile versions.
+
 2006-06-17  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistThemes.tcl: Improvements related to the
