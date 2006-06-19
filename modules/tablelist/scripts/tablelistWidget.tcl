@@ -2349,11 +2349,11 @@ proc tablelist::deleteCols {win first last selCellsName} {
     # Delete the data corresponding to the given range
     #
     for {set col $first} {$col <= $last} {incr col} {
-	deleteColData $win $col
-	set selCells [deleteColFromCellList $selCells $col]
 	if {$data($col-hide)} {
 	    incr data(hiddenColCount) -1
 	}
+	deleteColData $win $col
+	set selCells [deleteColFromCellList $selCells $col]
     }
 
     #
