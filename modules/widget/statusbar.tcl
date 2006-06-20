@@ -6,9 +6,9 @@
 
 # Creation and Options - widget::scrolledwindow $path ...
 #
-#  -showseparator -default 1 ; show horizontal separator on top of statusbar
-#  -showresize    -default 1 ; show resize control on bottom right
-#  -showresizesep -default 1 ; show separator for resize control
+#  -separator -default 1 ; show horizontal separator on top of statusbar
+#  -resize    -default 1 ; show resize control on bottom right
+#  -resizeseparator -default 1 ; show separator for resize control
 #  ## Padding can be a list of {padx pady}
 #  -ipad -default 1 ; provides padding around each status bar item
 #  -pad  -default 0 ; provides general padding around the status bar
@@ -41,7 +41,7 @@ if {0} {
     pack [text .t -width 0 -height 0] -fill both -expand 1
 
     set sbar .s
-    StatusBar $sbar
+    widget::statusbar $sbar
     pack $sbar -side bottom -fill x
     set f [$sbar getframe]
 
@@ -100,23 +100,25 @@ snit::widget widget::statusbar {
     delegate method * to hull
     #delegate option -padding to frame
 
-    option -showseparator -default 1 \
-	-configuremethod C-showseparator -validatemethod isa
-    option -showresize -default 1 \
-	-configuremethod C-showresize -validatemethod isa
-    option -showresizesep -default 1 \
-	-configuremethod C-showresize -validatemethod isa
+    option -separator -default 1 \
+	-configuremethod C-separator -validatemethod isa
+    option -resize -default 1 \
+	-configuremethod C-resize -validatemethod isa
+    option -resizeseparator -default 1 \
+	-configuremethod C-resize -validatemethod isa
     # -pad provides general padding around the status bar
     # -ipad provides padding around each status bar item
     # Padding can be a list of {padx pady}
     option -ipad -default 1 -configuremethod C-ipad -validatemethod isa
-    option -pad  -default 0 -configuremethod C-ipad -validatemethod isa
+    option -pad  -default 0 -configuremethod C-pad -validatemethod isa
 
     variable ITEMS {}
     variable resize -array {}
 
     constructor args {
-	install frame using ttk::frame $win.frame -height 18
+	$hull configure -height 18
+
+	install frame using ttk::frame $win.frame
 
 	if {$::tcl_platform(platform) eq "windows"} {
 	    set cursor size_nw_se
@@ -157,21 +159,12 @@ snit::widget widget::statusbar {
 	grid columnconfigure $win 0 -weight 1
 
 	$self configurelist $args
-	return
-	if {!$options(-showseparator)} {
-	    grid remove $fsep
-	}
-	if {!$options(-showresize)} {
-	    grid remove $sep $resize
-	} elseif {!$options(-showresizesep)} {
-	    grid remove $sep
-	}
     }
 
     method isa {option value} {
 	set cmd widget::isa
 	switch -exact -- $option {
-	    -showseparator - -showresize - -showresizesep {
+	    -separator - -resize - -resizeseparator {
 		return [uplevel 1 [list $cmd boolean $option $value]]
 	    }
 	    -ipad - -pad {
@@ -196,7 +189,7 @@ snit::widget widget::statusbar {
 	$frame configure -padding [list $padx $pady]
     }
 
-    method C-showseparator {option value} {
+    method C-separator {option value} {
 	set options($option) $value
 	if {$value} {
 	    grid $separator
@@ -205,10 +198,10 @@ snit::widget widget::statusbar {
 	}
     }
 
-    method C-showresize {option value} {
+    method C-resize {option value} {
 	set options($option) $value
-	if {$options(-showresize)} {
-	    if {$options(-showresizesep)} {
+	if {$options(-resize)} {
+	    if {$options(-resizeseparator)} {
 		grid $sepresize
 	    }
 	    grid $resizer
@@ -223,7 +216,7 @@ snit::widget widget::statusbar {
     method add {w args} {
 	array set opts [list \
 			    -weight    0 \
-			    -separator 1 \
+			    -separator 0 \
 			    -sticky    news \
 			    -pad       $options(-ipad) \
 			   ]
@@ -257,9 +250,6 @@ snit::widget widget::statusbar {
 	return $w
     }
 
-    # ------------------------------------------------------------------------
-    #  Command StatusBar::delete
-    # ------------------------------------------------------------------------
     method remove {args} {
 	set destroy [string equal [lindex $args 0] "-destroy"]
 	if {$destroy} {
