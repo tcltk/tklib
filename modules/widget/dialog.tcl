@@ -89,7 +89,7 @@ snit::widget widget::dialog {
     option -modal	-default none -configuremethod C-modal;
     #option -padding	-default 0 -configuremethod C-padding;
     option -parent	-default "" -configuremethod C-parent;
-    # {none center left right above below}
+    # {none center left right above below over}
     option -place	-default center -configuremethod C-place;
     option -separator	-default 1 -configuremethod C-separator;
     option -synchronous -default 1;
