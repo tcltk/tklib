@@ -1,3 +1,11 @@
+2006-06-19  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* statusbar.tcl: add widget::statusbar, equivalent to BWidget
+	* pkgIndex.tcl:  StatusBar widget.
+
+	* scrollw.tcl: remove widget::tscrolledwindow, make
+	widget::scrolledwindow use a ttk::frame, bump to 1.1.
+
 2006-06-15  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* scrollw.tcl: support scrollbar actually being a ttk::scrollbar.

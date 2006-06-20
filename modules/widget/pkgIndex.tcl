@@ -14,9 +14,7 @@ package ifneeded widget::all 1.0 {
 
 package ifneeded widget 3.0 [list source [file join $dir widget.tcl]]
 
-package ifneeded widget::scrolledwindow 1.0 \
-    [list source [file join $dir scrollw.tcl]]
-package ifneeded widget::tscrolledwindow 1.0 \
+package ifneeded widget::scrolledwindow 1.1 \
     [list source [file join $dir scrollw.tcl]]
 
 package ifneeded widget::dialog 1.2 \
@@ -27,6 +25,9 @@ package ifneeded widget::superframe 1.0 \
 
 package ifneeded widget::panelframe 1.0 \
     [list source [file join $dir panelframe.tcl]]
+
+package ifneeded widget::statusbar 1.0 \
+    [list source [file join $dir statusbar.tcl]]
 
 package ifneeded widget::screenruler 1.1 \
     [list source [file join $dir ruler.tcl]]
