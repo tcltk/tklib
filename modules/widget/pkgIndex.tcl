@@ -29,6 +29,9 @@ package ifneeded widget::panelframe 1.0 \
 package ifneeded widget::statusbar 1.0 \
     [list source [file join $dir statusbar.tcl]]
 
+package ifneeded widget::toolbar 1.0 \
+    [list source [file join $dir toolbar.tcl]]
+
 package ifneeded widget::screenruler 1.1 \
     [list source [file join $dir ruler.tcl]]
 package ifneeded widget::ruler 1.0 \

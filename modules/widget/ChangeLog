@@ -1,3 +1,11 @@
+2006-06-20  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* pkgIndex.tcl:
+	* toolbar.tcl: add widget::toolbar that eases toolbar handling
+
+	* statusbar.tcl: s/-show/-/ in option names.  Make -separator
+	default to 0 for add items.
+
 2006-06-19  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* statusbar.tcl: add widget::statusbar, equivalent to BWidget
