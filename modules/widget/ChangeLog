@@ -1,5 +1,8 @@
 2006-06-20  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* mentry.tcl:   prototype menuentry widget (entry with associated
+	* pkgIndex.tcl: menu under an icon).
+
 	* pkgIndex.tcl:
 	* toolbar.tcl: add widget::toolbar that eases toolbar handling
 
