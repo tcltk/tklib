@@ -36,3 +36,6 @@ package ifneeded widget::screenruler 1.1 \
     [list source [file join $dir ruler.tcl]]
 package ifneeded widget::ruler 1.0 \
     [list source [file join $dir ruler.tcl]]
+
+package ifneeded widget::menuentry 1.0 \
+    [list source [file join $dir mentry.tcl]]
