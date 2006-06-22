@@ -1,3 +1,14 @@
+2006-06-22  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* statusbar.tcl (C-ipad): allow 4-int -(i)pad, make default -ipad 2.
+	Ensure minimum separator spacing and adjust item padding for sep.
+
+	* toolbar.tcl (C-ipad): allow 4-int -(i)pad, make default -ipad 2.
+	Ensure minimum separator spacing and adjust item padding for sep.
+	Correct adding of typed items.
+
+	* widget.tcl (::widget::isa): correct listofint range handling
+
 2006-06-21  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* mentry.tcl: new image with drop-arrow and improved padding
