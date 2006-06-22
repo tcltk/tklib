@@ -1,5 +1,7 @@
 2006-06-22  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* mentry.tcl: use Ctrl-space for popdown key (was Key-Space).
+
 	* statusbar.tcl (C-ipad): allow 4-int -(i)pad, make default -ipad 2.
 	Ensure minimum separator spacing and adjust item padding for sep.
 
