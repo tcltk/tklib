@@ -109,7 +109,7 @@ snit::widget widget::statusbar {
     # -pad provides general padding around the status bar
     # -ipad provides padding around each status bar item
     # Padding can be a list of {padx pady}
-    option -ipad -default 1 -configuremethod C-ipad -validatemethod isa
+    option -ipad -default 2 -configuremethod C-ipad -validatemethod isa
     option -pad  -default 0 -configuremethod C-pad -validatemethod isa
 
     variable ITEMS {}
@@ -168,25 +168,28 @@ snit::widget widget::statusbar {
 		return [uplevel 1 [list $cmd boolean $option $value]]
 	    }
 	    -ipad - -pad {
-		return [uplevel 1 [list $cmd listofint 2 $option $value]]
+		return [uplevel 1 [list $cmd listofint 4 $option $value]]
 	    }
 	}
     }
 
     method C-ipad {option value} {
 	set options($option) $value
-	# double value to ensure a single int value covers pad x and y
-	foreach {padx pady} [concat $value $value] { break }
+	# returns pad values - each will be a list of 2 ints
+	foreach {px py} [$self _padval $value] { break }
 	foreach w [grid slaves $frame] {
-	    grid configure $w -padx $padx -pady $pady
+	    if {[string match _sep* $w]} {
+		grid configure $w -padx $px -pady 0
+	    } else {
+		grid configure $w -padx $px -pady $py
+	    }
 	}
     }
 
     method C-pad {option value} {
 	set options($option) $value
-	# double value to ensure a single int value covers pad x and y
-	foreach {padx pady} [concat $value $value] { break }
-	$frame configure -padding [list $padx $pady]
+	# we can pass this directly to the frame
+	$frame configure -padding $value
     }
 
     method C-separator {option value} {
@@ -229,22 +232,29 @@ snit::widget widget::statusbar {
 		return -code error $msg
 	    }
 	}
-	foreach {ipadx ipady} [$self _padval $opts(-pad)] { break }
+	$self isa -pad $opts(-pad)
+	# returns pad values - each will be a list of 2 ints
+	foreach {px py} [$self _padval $opts(-pad)] { break }
 
+	# get cols,rows extent
 	foreach {cols rows} [grid size $frame] break
 	# Add separator if requested, and we aren't the first element
 	if {$opts(-separator) && $cols != 0} {
-	    set sep [ttk::separator $frame.sep[winfo name $w] -orient vertical]
+	    set sep [ttk::separator $frame._sep[winfo name $w] \
+			 -orient vertical]
 	    # only append name, to distinguish us from them
 	    lappend ITEMS [winfo name $sep]
-	    grid $sep -in $frame -row 0 -column $cols \
-		-sticky ns -padx $ipadx -pady $ipady
+	    # No pady for separators, and adjust padx for separator space
+	    set sx $px
+	    if {[lindex $sx 0] < 2} { lset sx 0 2 }
+	    lset px 1 0
+	    grid $sep -row 0 -column $cols -sticky ns -padx $sx -pady 0
 	    incr cols
 	}
 
 	lappend ITEMS $w
 	grid $w -in $frame -row 0 -column $cols -sticky $opts(-sticky) \
-	    -padx $ipadx -pady $ipady
+	    -padx $px -pady $py
 	grid columnconfigure $frame $cols -weight $opts(-weight)
 
 	return $w
@@ -293,16 +303,20 @@ snit::widget widget::statusbar {
 	return $ITEMS
     }
 
-    method _padval {padval} {
-	set len [llength $padval]
-	foreach {a b} $padval { break }
-	if {$len == 0 || $len > 2} {
-	    return -code error \
-		"invalid pad value \"$padval\", must be 1 or 2 pixel values"
+    method _padval {val} {
+	set len [llength $val]
+	if {$len == 0} {
+	    return [list 0 0 0 0]
 	} elseif {$len == 1} {
-	    return [list $a $a]
+	    return [list [list $val $val] [list $val $val]]
 	} elseif {$len == 2} {
-	    return $padval
+	    set x [lindex $val 0] ; set y [lindex $val 1]
+	    return [list [list $x $x] [list $y $y]]
+	} elseif {$len == 3} {
+	    return [list [list [lindex $val 0] [lindex $val 2]] \
+			[list [lindex $val 1] [lindex $val 1]]]
+	} else {
+	    return $val
 	}
     }
 
