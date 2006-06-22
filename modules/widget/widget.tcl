@@ -131,7 +131,7 @@ proc ::widget::isa {as args} {
 	if {$range eq ""} { set range [expr {1<<16}] }
 	set i 0
 	foreach val $value {
-	    if {![string is integer -strict $value] || ([incr i] > $range)} {
+	    if {![string is integer -strict $val] || ([incr i] > $range)} {
 		return -code error "$option requires an list of integers"
 	    }
 	}
