@@ -161,7 +161,7 @@ namespace eval ttk {
     bind TMenuEntry <Enter>	{ %W state active }
     bind TMenuEntry <Leave>	{ %W state !active }
     bind TMenuEntry <<Invoke>> 	{ ttk::menuentry::Popdown %W %x %y }
-    bind TMenuEntry <Key-space>	{ ttk::menuentry::Popdown %W 10 10 }
+    bind TMenuEntry <Control-space> { ttk::menuentry::Popdown %W 10 10 }
 
     if {[tk windowingsystem] eq "x11"} {
 	bind TMenuEntry <ButtonPress-1>   { ttk::menuentry::Pulldown %W %x %y }
