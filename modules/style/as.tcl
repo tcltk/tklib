@@ -417,7 +417,7 @@ proc style::as::MouseWheel {wFired X Y D {shifted 0}} {
     if {![winfo exists $w]} { catch {set w [focus]} }
     if {[winfo exists $w]} {
 	set cmd [expr {$shifted ? "xview" : "yview"}]
-	if {[tk windowingsystem] eq "aqua"} {
+	if {[tk windowingsystem] ne "aqua"} {
 	    # scrollbars have different call conventions
 	    if {[string match "*Scrollbar" [winfo class $w]]} {
 		catch {tk::ScrollByUnits $w \
