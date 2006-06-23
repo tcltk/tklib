@@ -39,6 +39,7 @@ namespace eval style::as {
     if {![info exists mw(binding)]} {
 	# do this only once, in case of re-source-ing
 	set mw(binding) [bind Text <MouseWheel>]
+	set mw(s-binding) [bind Text <Shift-MouseWheel>]
 	if {[tk windowingsystem] eq "x11"} {
 	    set mw(binding4) [bind Text <4>]
 	    set mw(binding5) [bind Text <5>]
@@ -407,7 +408,7 @@ proc style::as::init_panedwindow {args} {
 
 ## MouseWheel
 ##
-proc style::as::MouseWheel {wFired X Y D} {
+proc style::as::MouseWheel {wFired X Y D {shifted 0}} {
     # do not double-fire in case the class already has a binding
     if {[bind [winfo class $wFired] <MouseWheel>] ne ""} { return }
     # obtain the window the mouse is over
@@ -415,13 +416,25 @@ proc style::as::MouseWheel {wFired X Y D} {
     # if we are outside the app, try and scroll the focus widget
     if {![winfo exists $w]} { catch {set w [focus]} }
     if {[winfo exists $w]} {
-	# scrollbars have different call conventions
-	if {[winfo class $w] eq "Scrollbar"} {
-	    catch {tk::ScrollByUnits $w \
-		       [string index [$w cget -orient] 0] \
-		       [expr {-($D/30)}]}
+	set cmd [expr {$shifted ? "xview" : "yview"}]
+	if {[tk windowingsystem] eq "aqua"} {
+	    # scrollbars have different call conventions
+	    if {[string match "*Scrollbar" [winfo class $w]]} {
+		catch {tk::ScrollByUnits $w \
+			   [string index [$w cget -orient] 0] \
+			   [expr {-($D/30)}]}
+	    } else {
+		catch {$w $cmd scroll [expr {- ($D / 120) * 4}] units}
+	    }
 	} else {
-	    catch {$w yview scroll [expr {- ($D / 120) * 4}] units}
+	    # scrollbars have different call conventions
+	    if {[string match "*Scrollbar" [winfo class $w]]} {
+		catch {tk::ScrollByUnits $w \
+			   [string index [$w cget -orient] 0] \
+			   [expr {-($D)}]}
+	    } else {
+		catch {$w $cmd scroll [expr {- ($D)}] units}
+	    }
 	}
     }
 }
@@ -430,9 +443,11 @@ proc style::as::init_mousewheel {args} {
 
     # Create a catch-all MouseWheel proc & binding and
     # alter default bindings to allow toplevel binding to control all
-    bind all <MouseWheel> [list ::style::as::MouseWheel %W %X %Y %D]
+    bind all <MouseWheel> [list ::style::as::MouseWheel %W %X %Y %D 0]
+    bind all <Shift-MouseWheel> [list ::style::as::MouseWheel %W %X %Y %D 1]
     foreach class $mw(classes) {
 	bind $class <MouseWheel> {}
+	bind $class <Shift-MouseWheel> {}
     }
     #if {[bind [winfo toplevel %W] <MouseWheel>] ne ""} { continue }
     #%W yview scroll [expr {- (%D / 120) * 4}] units
@@ -453,8 +468,10 @@ proc style::as::reset_mousewheel {args} {
     variable mw
 
     bind all <MouseWheel> {}
+    bind all <Shift-MouseWheel> {}
     foreach class $mw(classes) {
 	bind $class <MouseWheel> $mw(binding)
+	bind $class <Shift-MouseWheel> $mw(s-binding)
     }
     if {[tk windowingsystem] eq "x11"} {
 	bind all <4> {}
