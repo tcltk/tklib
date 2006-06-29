@@ -1,3 +1,13 @@
+2006-06-29  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* mentry.tcl: update the icon with a better drop arrow
+	(::widget::createMenuEntryLayout): simplify theme settings
+
+	* statusbar.tcl (add): remove neighboring separator when removing
+	the first item.
+
+	* dialog.tcl (PlaceWindow): add a raise after deiconify.
+
 2006-06-22  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* mentry.tcl: use Ctrl-space for popdown key (was Key-Space).

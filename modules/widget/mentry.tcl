@@ -39,32 +39,28 @@ package require tile
 namespace eval ::widget {
     # PNG version has partial alpha transparency for better look
     variable menuentry_pngdata {
-	iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAABGdBTUEAAYag
-	MeiWXwAAAxFJREFUGJVlkH9o1HUYx1+f785rroliUpsFi4KQojAtRjOv3PxF
-	E5dy9GPdjin5j/2xipixSiGj2F9BMTYp/KPYzfC2m3BsDDSWNE9j3aVlbZSa
-	X8WbHc21731///j0z91Y64E37z+e53m/n+cNwPkvX05x7thLqZyqtZAd2FcA
-	IKdqBwDIJtoLOVXrzKnaQco1NjYmh9+MtP2Z+VySTcTqs4n9/kI3p2p7c6r2
-	1pmPm98HUIAsMOe5wXsAocJU5pqqqjRt3c4nmWt/iGwiVi8D2aJE+rJADTBS
-	TLVPbO4YrAVQpFx2Ton0XQfWAh7QqP89v6XsKQDOfvpi3tHtHtf2klUrV1x+
-	6PkdyvToCFs/OCUUgIuhpienVjUfHZlbZzz3zlBF5tjxuO/b9Mc3rBEA2YF4
-	Sojwbt+2Zx3d2NVwcPDCgkXuxL48DZ81AtuBq8VU2zOu5Z1qPJS+AKD4ltUD
-	tAAhoK56z9ffgkiXFRTX9pKACViAC9wjfbl6YUD6JIA8YJcwYWvmZHkg5Bh2
-	r3Wi9V1Xt1sDN4jWNTx9Y13zCyTvGPdF+zK3xejoqF5ZWVlVLBaZnJz8qXHl
-	9PpHtu1EPf8dV76/dDcA3d3dZmdnp1GW7Y9tlCdfr7+1kGR2oO2AEKEPZeDn
-	A9cb8j0/KQMJUkYlyl58al3HPhzpGP6CJSV+TMRTSOqUzT2twBZgFeADQYn/
-	Aibmk7Ehz/WvNx1K71ksEFJEaLdj6I+FoQlYXoqrvOwD1cAmR7NbK5bfdXnp
-	BYpj2bOB60eBK6W87UVwSnzDc/yoo1uz/xfQjF1+IN6YH4xFgDTwG3AHmAOm
-	gdPF4f2n71//6NFw0V4z3PHsq//JAGB8fFw6joNt21iWhWmaGIaBrs3LJ4yz
-	4sHIJlbc+wBCUfjn5u9c/OZM4Af22leO/3BbASgUCrUzMzO6ruuEw2FM00RV
-	VfPmrfzD246kxaWT6fgvqSFmr07hOZKax2uVimXi1/74hmqx+Jyurq4a0zR/
-	tixrY29vr7r034H2p1YXLe/tqrD46LWvchbAv3ejiD1SNMCQAAAAAElFTkSu
-	QmCC
+	iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAs6
+	AAALOgFkf1cNAAACkklEQVR4nHWSXUhTYRjHdxnRVQTeCElXp7vS6BCZFGlO
+	nc2vbdrccrbhR9IKI7KOXzQniikzUvyIlNoHrZgXmYrbas6cg3keKFKoqHiC
+	VowgeC6C4PB24RmlRy/+Nw/v7/c+/5dXxRhTMcZUoqeWF73mgOi1pMBnlURP
+	vZSYNqVWJw2BlZFKPn1uezZhr8kGPktS9JjFxPQFIf7AwK1O6LnVcZ0QGzeI
+	sVFDcslVZttRIHpqefBZkmuPjU5AOgxIVYBkB6QWQCoFpENRV5kz6qpMhvs0
+	ik1Uax5zYM1tFgGJA6QmQGoDpBuAdB2QrgGSEZCyIoNaMdSnCeywQV0qMVUj
+	AFIFIN2U4VYZbgGkZkDKDzlLhHBfaUohAG+9FJ80cIB0+b9b0xWaAKkBkIyL
+	3Wou3K+VlBXcFik2puPkg3ZAuiLLGuWZFZAM8x0FXMipUQriD42p2GiVAEhq
+	GWyWYRsgXQKkOkDKm7tdIMx3FiorrIzpAysjOhGQsgBJL4NWQLLIsBaQMhe6
+	i36/aDsbVwiiw+X88n1dMjKkdQLSQUA6A0gGQNIBUi4gZUaHdX/e+O0s3Hqa
+	zdhzaxQf6dXAedvSUFky3F8qBh1FwkLnOW6uvYCbu5UvRAYqpPXnbexrYox9
+	Wr7Lgne07GnjiYwtAsaYKthTzAd7igNBpyYVcmqkoKNEmuso/LXYrWEfXvay
+	7+8esR8bbvZ+sYv5rackX/3xjC2C3TJzNc8UGaxmn18PseTbKfYldo/FJyys
+	V8199FzM2bu5hkrFtud/ybPmk6ago5xtzLaz9dlOFnXpmb+B/+k2Z+/79xi7
+	wOk8sfEmd20OW+hSM7+V/+Y2Zx9QVNgNTsdbd2z/RPURh9t8dE969hckF6c1
+	n3C8ywAAAABJRU5ErkJggg==
     }
     variable menuentry_gifdata {
-	R0lGODlhEAAQAPcAAAQEBGRsaW5saW51dHh1dHh+foF+fotGLIuIiJWRkpWb
-	nJ5ZLJ6bnJ6kpqhZN6hiN6hiQahsN6iuprJsN7JsQbJ1QbKusbK3sbt+S7uI
-	S7uIVbu3u7vBu8WIVcWRS8WRVcWbVcWbX8+kVc+kX8+udM/d7ti3ftjBiOLB
-	iOLBkuLKkuLKnOLUpgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+	R0lGODlhEAAQAPcAAAQEBIREJJpaL6RaL6RkL6RkOq9kOq9vOrpvRLp6RLqE
+	T7qPT8SPT8SaT8SaWsSaZM+kWs+kZM+vb8/k79qvetq6etq6hNrEj+TPmuTP
+	pOTapPr6+gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 	AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 	AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 	AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -78,10 +74,11 @@ namespace eval ::widget {
 	AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 	AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 	AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-	AAAAAAAAAAAAAAAAAP///yH5BAEAAP8ALAAAAAAQABAAQAiEAP8JHEGQIAiB
-	CAWC+JAwIYYKCUc0bJih4YYNHDZcYGDg34cUK1SEODBQYkMPDCNOTFjxZEuB
-	HUysQIFhIoIEBBo6wPAgokmFBxsSXPnPw8t/P1ceDUFUYM2EHzxM/EACYsKM
-	FyQ0UIAAwwkWLExASNiggQUFBRBqMGHiQ8+EA1YuQBgQADs=
+	AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+	AAAAAAAAAAAAAAAAAP///yH5BAEAAP8ALAAAAAAQABAAQAh4AP8JhBChIAQH
+	AhMKdIBQYcIECRRGcOhQAcWLDi5kuPAggMAIECgyYOBw4kWBFh0yWKCQAQUM
+	F1ImBECT4oAEBiSGTMiQIoSdImX+M3mSJc+TAiMqdEDSoQMJCC4qmKoggQIL
+	GjRYyCmQpleFCipUcMC160kBCQMCADs=
     }
 }
 
@@ -99,23 +96,26 @@ proc ::widget::createMenuEntryLayout {} {
     }
     # Create -padding for space on left and right of icon
     set pad [expr {[image width $img] + 4}]
-    foreach theme [style theme names] {
-	# Do this per-theme so that we adapt to theme changes
-	style theme settings $theme {
-	    style layout MenuEntry {
-		Entry.field -children {
-		    MenuEntry.icon -side left
-		    Entry.padding -children {
-			Entry.textarea
-		    }
+    style theme settings "default" {
+	style layout MenuEntry {
+	    Entry.field -children {
+		MenuEntry.icon -side left
+		Entry.padding -children {
+		    Entry.textarea
 		}
 	    }
-	    # center icon in padded cell
-	    style element create MenuEntry.icon image $img -sticky "" \
-		-padding [list $pad 0 0 0]
-
-	    # Could have disabled, pressed, ... state images
-	    #style map MenuEntry -image [list disabled $img]
+	}
+	# center icon in padded cell
+	style element create MenuEntry.icon image $img -sticky "" \
+	    -padding [list $pad 0 0 0]
+    }
+    if 0 {
+	# Some mappings would be required per-theme to adapt to theme changes
+	foreach theme [style theme names] {
+	    style theme settings $theme {
+		# Could have disabled, pressed, ... state images
+		#style map MenuEntry -image [list disabled $img]
+	    }
 	}
     }
 }
@@ -208,7 +208,7 @@ proc ttk::menuentry::PostPosition {mb menu} {
 	below { if {$y <= $sh} { incr y  $bh } { incr y -$mh } }
 	left  { if {$x >= $mw} { incr x -$mw } { incr x  $bw } }
 	right { if {$x <= $sw} { incr x  $bw } { incr x -$mw } }
-	flush { 
+	flush {
 	    # post menu atop menuentry.
 	    # If there's a menu entry whose label matches the
 	    # menuentry -text, assume this is an optionmenu
