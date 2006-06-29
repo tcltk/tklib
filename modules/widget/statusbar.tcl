@@ -112,7 +112,7 @@ snit::widget widget::statusbar {
     option -ipad -default 2 -configuremethod C-ipad -validatemethod isa
     option -pad  -default 0 -configuremethod C-pad -validatemethod isa
 
-    variable ITEMS {}
+    variable ITEMS -array {}
     variable resize -array {}
 
     constructor args {
@@ -236,14 +236,18 @@ snit::widget widget::statusbar {
 	# returns pad values - each will be a list of 2 ints
 	foreach {px py} [$self _padval $opts(-pad)] { break }
 
+	# Add defined item and append to ordered list
+	set ITEMS($w) {}
+	lappend ITEMS() $w
+
 	# get cols,rows extent
 	foreach {cols rows} [grid size $frame] break
 	# Add separator if requested, and we aren't the first element
 	if {$opts(-separator) && $cols != 0} {
 	    set sep [ttk::separator $frame._sep[winfo name $w] \
 			 -orient vertical]
-	    # only append name, to distinguish us from them
-	    lappend ITEMS [winfo name $sep]
+	    # Make the separator entry known
+	    set ITEMS($w) $sep
 	    # No pady for separators, and adjust padx for separator space
 	    set sx $px
 	    if {[lindex $sx 0] < 2} { lset sx 0 2 }
@@ -252,7 +256,6 @@ snit::widget widget::statusbar {
 	    incr cols
 	}
 
-	lappend ITEMS $w
 	grid $w -in $frame -row 0 -column $cols -sticky $opts(-sticky) \
 	    -padx $px -pady $py
 	grid columnconfigure $frame $cols -weight $opts(-weight)
@@ -266,21 +269,19 @@ snit::widget widget::statusbar {
 	    set args [lrange $args 1 end]
 	}
 	foreach w $args {
-	    set idx [lsearch -exact $ITEMS $w]
-	    if {$idx == -1 || ![winfo exists $w]} {
-		# ignore unknown or non-widget items (like our separators)
+	    if {$w eq ""} { continue }
+	    if {![info exists ITEMS($w)] || ![winfo exists $w]} {
+		# destroy any possible left-over separator
+		catch {destroy $ITEMS($w)}
+		# and make sure the item name is removed
+		catch {unset ITEMS($w)}
+		# otherwise ignore unknown or non-widget items
 		continue
 	    }
 	    # separator is always previous item
-	    set sidx [expr {$idx - 1}]
-	    set sep  [lindex $ITEMS $sidx]
-	    if {[string match .* $sep]} {
-		# not one of our separators
-		incr sidx
-	    } else {
-		# destroy separator too
-		set sep $frame.$sep
-		grid forget $sep
+	    set sep $ITEMS($w)
+	    if {[winfo exists $sep]} {
+		# destroy separator on remove or destroy
 		destroy $sep
 	    }
 	    if {$destroy} {
@@ -288,7 +289,16 @@ snit::widget widget::statusbar {
 	    } else {
 		grid forget $w
 	    }
-	    set ITEMS [lreplace $ITEMS $sidx $idx]
+	    unset ITEMS($w)
+	    set idx [lsearch -exact $ITEMS() $w]
+	    set ITEMS() [lreplace $ITEMS() $idx $idx]
+	    if {$idx == 0 && [llength $ITEMS()]} {
+		# separator of next item is no longer necessary, if it exists
+		set w [lindex $ITEMS() 0]
+		set sep $ITEMS($w)
+		set ITEMS($w) {}
+		destroy $sep
+	    }
 	}
     }
 
@@ -297,10 +307,11 @@ snit::widget widget::statusbar {
     }
 
     method items {{ptn *}} {
+	# return from ordered list
 	if {$ptn ne "*"} {
-	    return [lsearch -all -inline $ITEMS $ptn]
+	    return [lsearch -all -inline $ITEMS() $ptn]
 	}
-	return $ITEMS
+	return $ITEMS()
     }
 
     method _padval {val} {
