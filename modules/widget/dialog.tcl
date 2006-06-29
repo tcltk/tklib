@@ -437,6 +437,7 @@ snit::widget widget::dialog {
 	}
 	wm geometry $w +$x+$y
 	wm deiconify $w
+	raise $w
     }
 
     # ### ######### ###########################
