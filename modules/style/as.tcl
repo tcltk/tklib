@@ -361,8 +361,7 @@ proc style::as::init_menu {args} {
 	variable highlightfg
 	option add *Menu.activeBackground	$highlightbg $prio
 	option add *Menu.activeForeground	$highlightfg $prio
-	option add *Menu.activeBorderWidth	0 $prio
-	option add *Menu.highlightThickness	0 $prio
+	option add *Menu.activeBorderWidth	1 $prio
 	option add *Menu.borderWidth		1 $prio
     }
 }
@@ -375,11 +374,11 @@ proc style::as::init_menubutton {args} {
     variable highlightfg
     option add *Menubutton.activeBackground	$highlightbg $prio
     option add *Menubutton.activeForeground	$highlightfg $prio
-    option add *Menubutton.activeBorderWidth	0 $prio
+    option add *Menubutton.activeBorderWidth	1 $prio
+    option add *Menubutton.borderWidth		1 $prio
     option add *Menubutton.highlightThickness	0 $prio
-    option add *Menubutton.borderWidth		0 $prio
     option add *Menubutton*padX			4 $prio
-    option add *Menubutton*padY			2 $prio
+    option add *Menubutton*padY			3 $prio
 }
 
 ## Scrollbar
