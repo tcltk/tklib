@@ -1,3 +1,8 @@
+2006-07-05  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* dialog.tcl (setwidget): configure frame resizability only if we
+	setwidget into it.  It confuses use with getframe.
+
 2006-06-29  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* mentry.tcl: update the icon with a better drop arrow
