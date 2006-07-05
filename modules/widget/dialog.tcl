@@ -129,8 +129,6 @@ snit::widget widget::dialog {
 
 	grid columnconfigure $win 0 -weight 1
 	grid rowconfigure    $win 0 -weight 1
-	grid columnconfigure $frame 0 -weight 1
-	grid rowconfigure    $frame 0 -weight 1
 
 	# Default to invoking no/cancel/withdraw
 	wm protocol $win WM_DELETE_WINDOW [mymethod close cancel]
@@ -157,6 +155,8 @@ snit::widget widget::dialog {
 	}
 	if {[winfo exists $w]} {
 	    grid $w -in $frame -row 0 -column 0 -sticky news
+	    grid columnconfigure $frame 0 -weight 1
+	    grid rowconfigure    $frame 0 -weight 1
 	    set setwidget $w
 	}
     }
