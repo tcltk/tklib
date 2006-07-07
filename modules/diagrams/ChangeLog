@@ -1,0 +1,8 @@
+2006-07-07 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+
+        * initial checkin of the Diagrams package
+        * fixed several outstanding bugs
+        * started with documentation
+
+	* New module 'diagrams', by Arjen Markus.
+
