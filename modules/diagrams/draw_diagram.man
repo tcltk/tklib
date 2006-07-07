@@ -1,0 +1,200 @@
+[manpage_begin Diagrams n 0.1]
+[moddesc {Tk Diagrams}]
+[titledesc {User documentation of the Diagrams package}]
+[require Tcl 8.4]
+[require Tk 8.4]
+[require Diagrams 0.1]
+[description]
+[para]
+The [package Diagrams] package is meant to help drawing diagrams, like
+flowcharts. The philosophy is that you should be concentrating on the
+contents of the diagram, rather than the exact positioning and sizing
+of all items within it. The Diagrams package uses a few simple rules
+to layout the items:
+
+[list_begin bullet]
+[bullet]
+Each item (or object) in the diagram has a number of "anchors" - places
+where arrows and lines can be connected to.
+
+[bullet]
+You can draw an arrow or a line from an object in a preset direction
+
+[bullet]
+Sizing and positioning should be done as automatic as possible: this is
+achieved for instance by drawing boxes and circles with text, rather
+than first drawing a rectangle and then drawing the text inside it or
+vice versa.
+
+[list_end]
+
+The commands within this package can be split up in several
+categories. Each category is described in a separate section.
+
+[section "GENERAL COMMANDS FOR POSITIONING AND SETUP"]
+
+[list_begin definitions]
+
+[call [cmd ::Diagrams::drawin] [arg canvas]]
+Set the canvas widget in which to draw
+[list_begin arg]
+[arg_def widget canvas] Widget to draw in
+[list_end]
+[nl]
+
+[call [cmd ::Diagrams::saveps] [arg filename]]
+Save the drawing in a PostScript file
+[list_begin arg]
+[arg_def filename string] Name of the file to save the drawing in
+[list_end]
+[nl]
+
+[call [cmd ::Diagrams::direction] [arg newdir]]
+Set the direction for moving the current position.
+The direction is one of:
+north  northeast  east southeast  south
+southwest west northwest
+N      NE         E    SE         S     SW        W    NW
+up     up-right   left down-right down  down-left left up-left
+centre center     C
+[list_begin arg]
+[arg_def newdir string] New direction
+[list_end]
+[nl]
+
+[call [cmd ::Diagrams::currentpos] [arg pos]]
+Set the current position explicitly (argument must be
+a position "object")
+[list_begin arg]
+[arg_def pos list] New position (retrieve via [emph getpos] for instance)
+[list_end]
+[nl]
+
+[call [cmd ::Diagrams::getpos] [arg anchor] [arg obj]]
+Get the position of a particular "anchor" point of an object
+anchor should be one of the direction strings
+[list_begin arg]
+[arg_def anchor string] Name of the anchor (one of the directions - see
+the [emph direction] command
+[arg_def obj list] The object in question
+[list_end]
+[nl]
+
+[call [cmd ::Diagrams::position] [arg xcoord] [arg ycoord]]
+Create a position "object"
+[list_begin arg]
+[arg_def xcoord float] X-coordinate of the position
+[arg_def ycoord float] Y-coordinate of the position
+[list_end]
+
+[list_end]
+
+[section "DRAWING OBJECTS"]
+
+[list_begin definitions]
+[call [cmd ::Diagrams::box] [arg text] [arg width] [arg height]]
+    Draw a box from the current position
+    (width and height are both optional; if not given, the text
+    determines the width and height)
+
+[call [cmd ::Diagrams::plaintext] [arg text] [arg width] [arg height]]
+    Draw plain text from the current position
+    (width and height are both optional; if not given, the text
+    determines the width and height)
+
+[call [cmd ::Diagrams::circle] [arg text] [arg radius]]
+    Draw a circle from the current position
+    (the radius is optional)
+
+[call [cmd ::Diagrams::slanted] [arg text] [arg width] [arg height] [arg angle]]
+    Draw a slanted box from the current position
+    (width, height and angle are optional)
+
+[call [cmd ::Diagrams::diamond] [arg text] [arg width] [arg height]]
+    Draw a diamond-shaped box from the current position
+    (width and height are both optional; if not given, the text
+    determines the width and height)
+
+[call [cmd ::Diagrams::drum] [arg text] [arg width] [arg height]]
+    (width and height are both optional; if not given, the text
+    determines the width and height)
+
+[call [cmd ::Diagrams::arrow] [arg text] [arg length]]
+    Draw an arrow from the current position to the next.
+    The text is drawn next to the arrow, the length (in pixels) is
+    optional. If not given the gap parameters are used.
+
+[call [cmd ::Diagrams::line] [arg args]]
+    Draw a line specified via positions or via line segments
+    The arguments are either position or length-angle pairs
+[list_end]
+
+[section "Attributes"]
+
+(Note: attributes are persistent)
+
+[list_begin definitions]
+[call [cmd ::Diagrams::attach] [arg anchor]]
+    Set the anchor point for attaching arrows to
+
+[call [cmd ::Diagrams::color] [arg name]]
+    Set the color for the outline of a box etc.
+
+[call [cmd ::Diagrams::fillcolor] [arg name]]
+    Set the color to fill the objects
+
+[call [cmd ::Diagrams::textcolor] [arg name]]
+    Set the color to draw the text in
+
+[call [cmd ::Diagrams::usegap] [arg use]]
+    Turn the gap on (1) or off (0). Note: usually a small gap is used
+    when positioning objects.
+
+[call [cmd ::Diagrams::xgap] [arg value]]
+    Size of the gap in horizontal direction (in pixels)
+
+[call [cmd ::Diagrams::ygap] [arg value]]
+    Size of the gap in vertical direction (in pixels)
+
+[call [cmd ::Diagrams::textfont] [arg name]]
+    Set the name of the font to use
+
+[call [cmd ::Diagrams::linewidth] [arg pixels]]
+    Set the width of the lines (in line objects and arrows)
+
+[call [cmd ::Diagrams::linestyle] [arg style]]
+    Set the style of the lines and arrows
+[list_end]
+
+[section "Commands for implementing new objects"]
+
+Note: it is best to study how for instance box objects are implemented
+first.
+
+[list_begin definitions]
+[call [cmd ::Diagrams::pushstate]]
+    Save the current global settings
+    Used when defining an object that is composed of other objects
+
+[call [cmd ::Diagrams::popstate]]
+    Restore the previously saved global settings
+
+[call [cmd ::Diagrams::computepos]]
+    Compute the current position
+
+[call [cmd ::Diagrams::boxcoords] [arg x1] [arg y1] [arg x2] [arg y2]]
+    Compute the anchor coordinates for a box-like object
+    (this is merely a convenience routine. In general, you will
+    have to compute the list of coordinates yourself - see
+    for instance the diamond object)
+
+[call [cmd ::Diagrams::moveobject] [arg obj]]
+    Move the object to the right position and return the new
+    information
+
+[list_end]
+
+
+[keywords diagrams drawing]
+
+[manpage_end]
