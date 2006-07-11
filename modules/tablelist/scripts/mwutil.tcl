@@ -20,7 +20,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.1
+    variable version	2.2
     variable library	[file dirname [info script]]
 
     #
@@ -157,7 +157,7 @@ proc mwutil::configureWidget {win configSpecsName configCmd cgetCmd \
 	}
 	set opt $result
 	lappend cmdLineOpts $opt
-	lappend savedVals [eval $cgetCmd $win $opt]
+	lappend savedVals [eval $cgetCmd [list $win $opt]]
 	if {[catch {eval $configCmd [list $win $opt $val]} result] != 0} {
 	    set failed 1
 	    break
@@ -352,7 +352,7 @@ proc mwutil::configureSubCmd {win configSpecsName configCmd cgetCmd argList} {
 		    set dbClass [lindex $configSpecs($opt) 1]
 		    set default [lindex $configSpecs($opt) 3]
 		    lappend result [list $opt $dbName $dbClass $default \
-				    [eval $cgetCmd $win $opt]]
+				    [eval $cgetCmd [list $win $opt]]]
 		}
 	    }
 	    return $result
@@ -367,7 +367,7 @@ proc mwutil::configureSubCmd {win configSpecsName configCmd cgetCmd argList} {
 	    set dbClass [lindex $configSpecs($opt) 1]
 	    set default [lindex $configSpecs($opt) 3]
 	    return [list $opt $dbName $dbClass $default \
-		    [eval $cgetCmd $win $opt]]
+		    [eval $cgetCmd [list $win $opt]]]
 	}
 
 	default {
