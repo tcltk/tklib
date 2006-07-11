@@ -704,14 +704,6 @@
     <dd><code><i>pathName</i> <b><a href=
     "#togglerowhide">togglerowhide</a></b> <i>indexList</i></code></dd>
 
-    <dd><code><i>pathName</i> <b><a href=
-    "#togglevisibility">togglevisibility</a></b> <i>firstColumn</i>
-    <i>lastColumn</i></code><br></dd>
-
-    <dd><code><i>pathName</i> <b><a href=
-    "#togglevisibility">togglevisibility</a></b>
-    <i>columnIndexList</i></code></dd>
-
     <dd><code><i>pathName</i> <b><a href="#windowpath">windowpath</a></b>
     <i>cellIndex</i></code></dd>
 
@@ -1049,6 +1041,12 @@
 
 	<p>The default value of this option is an empty list, specifying that
 	initially the widget has no columns.</p>
+
+	<p><b>REMARK:</b>&nbsp; Whenever possible, you should specify the value
+	zero for the column widths, i.e., use <b>dynamic-width</b>
+	columns.&nbsp; Besides being more user-friendly, dynamic-width columns
+	have the main advantage that they increase the performance of the item
+	insertion and sorting quite significantly.</p>
       </blockquote>
     </dd>
 
@@ -2448,12 +2446,12 @@
     cell editing uses a temporary embedded entry widget, thus making sure that
     all the validation facilities available for entry widgets can be used
     during the editing process.&nbsp; A great variety of widgets from the
-    packages BWidget, Iwidgets, combobox (by Bryan Oakley), and Mentry, as well
-    as Tk core text, spinbox and checkbutton widgets along with tile entry,
-    combobox, and checkbutton widgets are also supported as temporary embedded
-    widgets used for cell editing.&nbsp; In addition, a rich set of keyboard
-    bindings is provided for a comfortable navigation between the editable
-    cells.</dd>
+    packages BWidget, Iwidgets, combobox (by Bryan Oakley), and Mentry (or
+    Mentry_tile), as well as Tk core text, spinbox and checkbutton widgets
+    along with tile entry, combobox, and checkbutton widgets are also supported
+    as temporary embedded widgets used for cell editing.&nbsp; In addition, a
+    rich set of keyboard bindings is provided for a comfortable navigation
+    between the editable cells.</dd>
 
     <dd><br>
     When first created, a new tablelist widget has no items.&nbsp; Items may be
@@ -2565,10 +2563,10 @@
 	"tablelistBWidget.html">BWidget</a>, <a href=
 	"tablelistIwidgets.html">Iwidgets</a>, <a href=
 	"tablelistCombobox.html">combobox</a> (by Bryan Oakley), and <a href=
-	"tablelistMentry.html">Mentry</a>.&nbsp; For example, you can use&nbsp;
-	<code><b>-editwindow ComboBox</b></code>&nbsp; <i>after</i> registering
-	the ComboBox widget for interactive cell editing with the aid of the
-	<code><b><a href=
+	"tablelistMentry.html">Mentry (or Mentry_tile)</a>.&nbsp; For example,
+	you can use&nbsp; <code><b>-editwindow ComboBox</b></code>&nbsp;
+	<i>after</i> registering the ComboBox widget for interactive cell
+	editing with the aid of the <code><b><a href=
 	"tablelistBWidget.html#ComboBox">tablelist::addBWidgetComboBox</a></b></code>
 	command.&nbsp; Similarly, you can use&nbsp; <code><b>-editwindow
 	combobox</b></code>&nbsp; <i>after</i> registering Bryan Oakley's
@@ -3221,8 +3219,8 @@ proc formatDate clockVal {
     "tablelistBWidget.html">BWidget</a>, <a href=
     "tablelistIwidgets.html">Iwidgets</a>, <a href=
     "tablelistCombobox.html">combobox</a> (by Bryan Oakley), and <a href=
-    "tablelistMentry.html">Mentry</a>.&nbsp; Before specifying a widget from
-    one of these library packages as the value of the
+    "tablelistMentry.html">Mentry (or Mentry_tile)</a>.&nbsp; Before specifying
+    a widget from one of these library packages as the value of the
     <code><b>-editwindow</b></code> column or cell configuration option, you
     must register it for interactive cell editing by invoking the corresponding
     <code><b>tablelist::add*</b></code> command.&nbsp; The Tk core entry, text,
@@ -4787,16 +4785,6 @@ upvar #0 [.tbl itemlistvar] itemList
 	  your responsibility to avoid such situations when using a Tk version
 	  having this bug!</p>
 	</dd>
-
-	<dt><a name="togglevisibility"></a><code><i>pathName</i>
-	<b>togglevisibility</b> <i>firstColumn</i> <i>lastColumn</i></code><br>
-	<code><i>pathName</i> <b>togglevisibility</b>
-	<i>columnIndexList</i></code></dt>
-
-	<dd>This subcommand has been renamed to <code><b><a href=
-	"#togglecolumnhide">togglecolumnhide</a></b></code>.&nbsp; The old name
-	is still supported, but is now deprecated and will be eliminated in the
-	next Tablelist release.</dd>
 
 	<dt><br>
 	<a name="windowpath"></a><code><i>pathName</i> <b>windowpath</b>
