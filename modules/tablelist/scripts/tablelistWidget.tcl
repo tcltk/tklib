@@ -285,7 +285,7 @@ namespace eval tablelist {
 	resetsortinfo rowcget rowconfigure scan see seecell seecolumn \
 	selection separatorpath separators size sort sortbycolumn \
 	sortbycolumnlist sortcolumn sortcolumnlist sortorder sortorderlist \
-	togglecolumnhide togglevisibility togglerowhide windowpath xview yview]
+	togglecolumnhide togglerowhide windowpath xview yview]
     if {!$canElide} {
 	set idx [lsearch -exact $cmdOpts togglerowhide]
 	set cmdOpts [lreplace $cmdOpts $idx $idx]
@@ -359,27 +359,19 @@ namespace eval tablelist {
 	    }
 	}
     }
-    bind Tablelist <FocusOut> {
-	tablelist::removeActiveTag %W
-    }
-    bind Tablelist <<ThemeChanged>> {
-	if {$tablelist::usingTile} {
-	    tablelist::updateConfigSpecs %W
+    bind Tablelist <FocusOut>		{ tablelist::removeActiveTag %W }
+    bind Tablelist <<TablelistSelect>>	{ event generate %W <<ListboxSelect>> }
+    bind Tablelist <Destroy>		{ tablelist::cleanup %W }
+    if {$usingTile} {
+	bind Tablelist <<ThemeChanged>>	{
+	    after idle [list tablelist::updateConfigSpecs %W]
 	}
-    }
-    bind Tablelist <<TablelistSelect>> {
-	event generate %W <<ListboxSelect>>
-    }
-    bind Tablelist <Destroy> {
-	tablelist::cleanup %W
     }
 
     #
     # Define some TablelistWindow class bindings
     #
-    bind TablelistWindow <Destroy> {
-	tablelist::cleanupWindow %W
-    }
+    bind TablelistWindow <Destroy>	{ tablelist::cleanupWindow %W }
 
     #
     # Define the binding tags TablelistKeyNav and TablelistBody
@@ -540,9 +532,16 @@ proc tablelist::tablelist args {
 	set data($opt) [lindex $configSpecs($opt) 3]
     }
     if {$usingTile} {
-	set data(currentTheme) $tile::currentTheme
 	variable themeDefaults
+	set data(currentTheme) $tile::currentTheme
 	set data(themeDefaults) [array get themeDefaults]
+	if {[string compare $tile::currentTheme "tileqt"] == 0} {
+	    set data(widgetStyle) [tile::theme::tileqt::currentThemeName]
+	    set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
+	} else {
+	    set data(widgetStyle) ""
+	    set data(colorScheme) ""
+	}
     }
     set data(-titlecolumns)	0		;# for Tk versions < 8.3
     set data(colFontList)	[list $data(-font)]
@@ -973,8 +972,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 
 	deletecolumns -
 	getcolumns -
-	togglecolumnhide -
-	togglevisibility {
+	togglecolumnhide {
 	    if {$argCount < 2 || $argCount > 3} {
 		mwutil::wrongNumArgs \
 			"$win $cmd firstColumnIndex lastColumnIndex" \
@@ -982,9 +980,6 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	    }
 
 	    synchronize $win
-	    if {[string compare $cmd "togglevisibility"] == 0} {
-		set cmd togglecolumnhide
-	    }
 	    set first [lindex $argList 1]
 	    if {$argCount == 3} {
 		set last [lindex $argList 2]
@@ -3149,7 +3144,7 @@ proc tablelist::seeSubCmd {win index} {
 #------------------------------------------------------------------------------
 proc tablelist::seecellSubCmd {win row col} {
     #
-    # This may be an "after idle" callback; check whether the window exists
+    # This might be an "after idle" callback; check whether the window exists
     #
     if {![winfo exists $win]} {
 	return ""
