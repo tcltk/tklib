@@ -57,6 +57,11 @@
     </address>
   </blockquote>
 
+  <p>Starting with version 3.0, the Mentry distribution provides not only the
+  package Mentry, but also its tile-based equivalent Mentry_tile, which enables
+  the theme-specific appearance of mentry widgets; this package requires Tcl/Tk
+  8.4 or higher and tile 0.6 or higher.</p>
+
   <p>Tablelist supports interactive cell editing with the aid of the mentry
   widgets of type <code>"Date"</code>, <code>"Time"</code>,
   <code>"FixedPoint"</code>, and <code>"IPAddr"</code>.&nbsp; The steps needed
@@ -108,15 +113,16 @@
     <dt><b>DESCRIPTION</b></dt>
 
     <dd>This command registers the widget created by the
-    <code><b>mentry::dateMentry</b></code> command from the Mentry package for
-    interactive cell editing in tablelist widgets.&nbsp; The
-    <code><i>format</i></code> and <code><i>separator</i></code> arguments have
-    the same meanings as in the <code><b>mentry::dateMentry</b></code>
-    command.&nbsp; If the <code><b>-gmt</b></code> argument is present then
-    both the internal clock value and its external date representation in the
-    mentry widget will be viewed as Greenwich Mean Time, otherwise as local
-    time.&nbsp; The second optional argument specifies the name to be used for
-    the mentry widget as the value of the <code><b><a href=
+    <code><b>mentry::dateMentry</b></code> command from the Mentry (or
+    Mentry_tile) package for interactive cell editing in tablelist
+    widgets.&nbsp; The <code><i>format</i></code> and
+    <code><i>separator</i></code> arguments have the same meanings as in the
+    <code><b>mentry::dateMentry</b></code> command.&nbsp; If the
+    <code><b>-gmt</b></code> argument is present then both the internal clock
+    value and its external date representation in the mentry widget will be
+    viewed as Greenwich Mean Time, otherwise as local time.&nbsp; The second
+    optional argument specifies the name to be used for the mentry widget as
+    the value of the <code><b><a href=
     "tablelistWidget.html#col_editwindow">-editwindow</a></b></code> column or
     cell configuration option.&nbsp; It may be any string that is different
     from <code><b>entry</b></code>, <code><b>text</b></code>,
@@ -182,15 +188,16 @@
     <dt><b>DESCRIPTION</b></dt>
 
     <dd>This command registers the widget created by the
-    <code><b>mentry::timeMentry</b></code> command from the Mentry package for
-    interactive cell editing in tablelist widgets.&nbsp; The
-    <code><i>format</i></code> and <code><i>separator</i></code> arguments have
-    the same meanings as in the <code><b>mentry::timeMentry</b></code>
-    command.&nbsp; If the <code><b>-gmt</b></code> argument is present then
-    both the internal clock value and its external time representation in the
-    mentry widget will be viewed as Greenwich Mean Time, otherwise as local
-    time.&nbsp; The second optional argument specifies the name to be used for
-    the mentry widget as the value of the <code><b><a href=
+    <code><b>mentry::timeMentry</b></code> command from the Mentry (or
+    Mentry_tile) package for interactive cell editing in tablelist
+    widgets.&nbsp; The <code><i>format</i></code> and
+    <code><i>separator</i></code> arguments have the same meanings as in the
+    <code><b>mentry::timeMentry</b></code> command.&nbsp; If the
+    <code><b>-gmt</b></code> argument is present then both the internal clock
+    value and its external time representation in the mentry widget will be
+    viewed as Greenwich Mean Time, otherwise as local time.&nbsp; The second
+    optional argument specifies the name to be used for the mentry widget as
+    the value of the <code><b><a href=
     "tablelistWidget.html#col_editwindow">-editwindow</a></b></code> column or
     cell configuration option.&nbsp; It may be any string that is different
     from <code><b>entry</b></code>, <code><b>text</b></code>,
@@ -255,10 +262,10 @@
     <dt><b>DESCRIPTION</b></dt>
 
     <dd>This command registers the widget created by the
-    <code><b>mentry::fixedPointMentry</b></code> command from the Mentry
-    package for interactive cell editing in tablelist widgets.&nbsp; The
-    <code><i>count1</i></code>, <code><i>count2</i></code>, and
-    <code><i>-comma</i></code> arguments have the same meanings as in the
+    <code><b>mentry::fixedPointMentry</b></code> command from the Mentry (or
+    Mentry_tile) package for interactive cell editing in tablelist
+    widgets.&nbsp; The <code><i>count1</i></code>, <code><i>count2</i></code>,
+    and <code><i>-comma</i></code> arguments have the same meanings as in the
     <code><b>mentry::fixedPointMentry</b></code> command.&nbsp; The second
     optional argument specifies the name to be used for the mentry widget as
     the value of the <code><b><a href=
@@ -327,10 +334,10 @@
     <dt><b>DESCRIPTION</b></dt>
 
     <dd>This command registers the widget created by the
-    <code><b>tablelist::addIPAddrMentry</b></code> command from the Mentry
-    package for interactive cell editing in tablelist widgets.&nbsp; The
-    optional argument specifies the name to be used for the mentry widget as
-    the value of the <code><b><a href=
+    <code><b>tablelist::addIPAddrMentry</b></code> command from the Mentry (or
+    Mentry_tile) package for interactive cell editing in tablelist
+    widgets.&nbsp; The optional argument specifies the name to be used for the
+    mentry widget as the value of the <code><b><a href=
     "tablelistWidget.html#col_editwindow">-editwindow</a></b></code> column or
     cell configuration option.&nbsp; It may be any string that is different
     from <code><b>entry</b></code>, <code><b>text</b></code>,
