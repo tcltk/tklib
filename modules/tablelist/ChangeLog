@@ -1,3 +1,25 @@
+2006-07-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl: Fixed a bug reported by Kurt Kurczyk;
+	  improved the handling of the <<ThemeChanged>> virtual event.
+
+	* scripts/tablelistConfig.tcl: Improved the handling of the
+	* scripts/tablelistWidget.tcl: <<ThemeChanged>> virtual event.
+
+	* scripts/tablelistEdit.tcl: Support for tile-based multi-entry
+	  widgets used as edit windows; required tile version 0.6 or higher.
+
+	* scripts/tablelistUtil.tcl: Bug-fix in tablelist::adjustColumns.
+
+	* scripts/mwutil.tcl: Improved a few invocations of eval.
+
+	* doc/tablelist.html:       Updated to reflect the support for the
+	* doc/tablelistMentry.html: Mentry_tile package.
+	* doc/tablelistWidget.html:
+
+	* doc/tablelistTile.html: Updated to reflect the change that the tile
+	  version must be 0.6 or higher.
+
 2006-06-19  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistWidget.tcl: Fixed a bug in tablelist::deleteCols,
