@@ -81,53 +81,6 @@ proc tablelist::removeActiveTag win {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::updateConfigSpecs
-#
-# This procedure handles the virtual event <<ThemeChanged>> by updating the
-# theme-specific default values of some tablelist configuration options.
-#------------------------------------------------------------------------------
-proc tablelist::updateConfigSpecs win {
-    upvar ::tablelist::ns${win}::data data
-
-    if {[string compare $tile::currentTheme $data(currentTheme)] == 0 &&
-	[string compare $tile::currentTheme "tileqt"] != 0} {
-	return ""
-    }
-
-    variable themeDefaults
-    variable configSpecs
-
-    #
-    # Populate the array tmp with values corresponding to the old theme
-    # and the array themeDefaults with values corresponding to the new one
-    #
-    array set tmp $data(themeDefaults)	;# populates the array tmp
-    setThemeDefaults			;# populates the array themeDefaults
-
-    #
-    # Update the default values in the array configSpecs and
-    # set those configuration options whose values equal the old
-    # theme-specific defaults to the new theme-specific ones
-    #
-    foreach opt {-background -foreground -disabledforeground -stripebackground
-		 -selectbackground -selectforeground -selectborderwidth -font
-		 -labelbackground -labelforeground -labelfont
-		 -labelborderwidth -labelpady
-		 -arrowcolor -arrowdisabledcolor -arrowstyle} {
-	lset configSpecs($opt) 3 $themeDefaults($opt)
-	if {[string compare $data($opt) $tmp($opt)] == 0} {
-	    doConfig $win $opt $themeDefaults($opt)
-	}
-    }
-    foreach opt {-background -foreground} {
-	doConfig $win $opt $data($opt)	;# sets the bg color of the separators
-    }
-
-    set data(currentTheme) $tile::currentTheme
-    set data(themeDefaults) [array get themeDefaults]
-}
-
-#------------------------------------------------------------------------------
 # tablelist::cleanup
 #
 # This procedure is invoked when the tablelist widget win is destroyed.  It
@@ -163,6 +116,85 @@ proc tablelist::cleanup win {
 
     namespace delete ::tablelist::ns$win
     catch {rename ::$win ""}
+}
+
+#------------------------------------------------------------------------------
+# tablelist::updateConfigSpecs
+#
+# This procedure handles the virtual event <<ThemeChanged>> by updating the
+# theme-specific default values of some tablelist configuration options.
+#------------------------------------------------------------------------------
+proc tablelist::updateConfigSpecs win {
+    #
+    # This might be an "after idle" callback; check whether the window exists
+    #
+    if {![winfo exists $win]} {
+	return ""
+    }
+
+    upvar ::tablelist::ns${win}::data data
+
+    if {[string compare $tile::currentTheme $data(currentTheme)] == 0} {
+	if {[string compare $tile::currentTheme "tileqt"] == 0} {
+	    set widgetStyle [tile::theme::tileqt::currentThemeName]
+	    set colorScheme [getKdeConfigVal "KDE" "colorScheme"]
+	    if {[string compare $widgetStyle $data(widgetStyle)] == 0 &&
+		[string compare $colorScheme $data(colorScheme)] == 0} {
+		return ""
+	    }
+	} else {
+	    return ""
+	}
+    }
+
+    variable themeDefaults
+    variable configSpecs
+
+    #
+    # Populate the array tmp with values corresponding to the old theme
+    # and the array themeDefaults with values corresponding to the new one
+    #
+    array set tmp $data(themeDefaults)
+    setThemeDefaults
+
+    #
+    # Update the default values in the array configSpecs and
+    # set those configuration options whose values equal the old
+    # theme-specific defaults to the new theme-specific ones
+    #
+    foreach opt {-background -foreground -disabledforeground -stripebackground
+		 -selectbackground -selectforeground -selectborderwidth -font
+		 -labelbackground -labelforeground -labelfont
+		 -labelborderwidth -labelpady
+		 -arrowcolor -arrowdisabledcolor -arrowstyle} {
+	lset configSpecs($opt) 3 $themeDefaults($opt)
+	if {[string compare $data($opt) $tmp($opt)] == 0} {
+	    doConfig $win $opt $themeDefaults($opt)
+	}
+    }
+    foreach opt {-background -foreground} {
+	doConfig $win $opt $data($opt)	;# sets the bg color of the separators
+    }
+
+    #
+    # Destroy and recreate the edit window if present
+    #
+    if {[set editCol $data(editCol)] >= 0} {
+	set editRow $data(editRow)
+	saveEditData $win
+	destroy $data(bodyFr)
+	editcellSubCmd $win $editRow $editCol 1
+    }
+
+    set data(currentTheme) $tile::currentTheme
+    set data(themeDefaults) [array get themeDefaults]
+    if {[string compare $tile::currentTheme "tileqt"] == 0} {
+	set data(widgetStyle) [tile::theme::tileqt::currentThemeName]
+	set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
+    } else {
+	set data(widgetStyle) ""
+	set data(colorScheme) ""
+    }
 }
 
 #
@@ -207,6 +239,7 @@ proc tablelist::defineTablelistBody {} {
 	prevCol		""
 	selection	{}
 	clicked		0
+	clickTime	0
     }
 
     bind TablelistBody <Button-1> {
