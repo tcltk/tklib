@@ -85,7 +85,7 @@ proc tablelist::extendConfigSpecs {} {
 	#
 	# Append theme-specific values to some elements of the array configSpecs
 	#
-	ttk::label $helpLabel
+	ttk::label $helpLabel -takefocus 0
 	variable themeDefaults
 	setThemeDefaults		;# pupulates the array themeDefaults
 	foreach opt {-labelbackground -labelforeground -labelfont
@@ -102,34 +102,38 @@ proc tablelist::extendConfigSpecs {} {
 	#
 	# Define the header label layout
 	#
-	if {[string compare $tile::currentTheme "aqua"] == 0} {
-	    if {[string compare $tile::patchlevel "0.6.4"] < 0} {
-		style layout TablelistHeader.TLabel {
-		    Treeheading.cell -children {
-			Label.padding -children {
-			    Label.label -side top
-			    Separator.hseparator -side bottom
-			}
-		    }
-		}
-	    } else {
-		style layout TablelistHeader.TLabel {
-		    Treeheading.cell -children {
-			Label.padding -children {
-			    Label.label -side top
-			}
-		    }
-		}
-	    }
-	    style map TablelistHeader.TLabel -foreground [list \
-		{disabled background} #a3a3a3 disabled #a3a3a3 background black]
-	} else {
+	style theme settings "default" {
 	    style layout TablelistHeader.TLabel {
 		Treeheading.border -children {
 		    Label.padding -children {
 			Label.label
 		    }
 		}
+	    }
+	}
+	if {[string compare [package provide tile::theme::aqua] ""] != 0} {
+	    style theme settings "aqua" {
+		if {[string compare $tile::patchlevel "0.6.4"] < 0} {
+		    style layout TablelistHeader.TLabel {
+			Treeheading.cell -children {
+			    Label.padding -children {
+				Label.label -side top
+				Separator.hseparator -side bottom
+			    }
+			}
+		    }
+		} else {
+		    style layout TablelistHeader.TLabel {
+			Treeheading.cell -children {
+			    Label.padding -children {
+				Label.label -side top
+			    }
+			}
+		    }
+		}
+		style map TablelistHeader.TLabel -foreground [list \
+		    {disabled background} #a3a3a3 disabled #a3a3a3 \
+		    background black]
 	    }
 	}
 
@@ -151,7 +155,7 @@ proc tablelist::extendConfigSpecs {} {
 	# of an invisible label widget to the values of the
 	# corresponding -label* elements of the array configSpecs
 	#
-	tk::label $helpLabel
+	tk::label $helpLabel -takefocus 0
 	foreach optTail {font height} {
 	    set configSet [$helpLabel configure -$optTail]
 	    lappend configSpecs(-label$optTail) [lindex $configSet 3]
