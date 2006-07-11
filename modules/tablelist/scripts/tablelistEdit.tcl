@@ -1011,10 +1011,7 @@ proc tablelist::createCheckbutton {w args} {
 
     foreach {opt val} $args {
 	switch -- $opt {
-	    -borderwidth -
-	    -font -
-	    -relief {}
-
+	    -font  {}
 	    -state { $w configure $opt $val }
 	}
     }
@@ -1030,7 +1027,7 @@ proc tablelist::createCheckbutton {w args} {
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileEntry {w args} {
-    package require tile 0.5
+    package require tile 0.6
 
     #
     # The style of the tile entry widget should have -borderwidth
@@ -1059,19 +1056,13 @@ proc tablelist::createTileEntry {w args} {
 	    set padding 1
 	}
     }
-    styleConfig Edit$win.TEntry -highlightthickness 0 -padding $padding
+    styleConfig Tablelist.TEntry -borderwidth 2 -highlightthickness 0 \
+				 -padding $padding
 
-    ttk::entry $w -style Edit$win.TEntry
+    ttk::entry $w -style Tablelist.TEntry
 
     foreach {opt val} $args {
-	switch -- $opt {
-	    -borderwidth { styleConfig Edit$win.TEntry $opt $val }
-
-	    -font -
-	    -state { $w configure $opt $val }
-
-	    -relief {}
-	}
+	$w configure $opt $val
     }
 }
 
@@ -1082,26 +1073,19 @@ proc tablelist::createTileEntry {w args} {
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileCombobox {w args} {
-    package require tile 0.5
+    package require tile 0.6
 
     set win [getTablelistPath $w]
     if {[string compare $tile::currentTheme "aqua"] == 0} {
-	styleConfig Edit$win.TCombobox -padding {0 0 0 -1}
+	styleConfig Tablelist.TCombobox -borderwidth 2 -padding {0 0 0 -1}
     } else {
-	styleConfig Edit$win.TCombobox -padding 1
+	styleConfig Tablelist.TCombobox -borderwidth 2 -padding 1
     }
 
-    ttk::combobox $w -style Edit$win.TCombobox
+    ttk::combobox $w -style Tablelist.TCombobox
 
     foreach {opt val} $args {
-	switch -- $opt {
-	    -borderwidth { styleConfig Edit$win.TCombobox $opt $val }
-
-	    -font -
-	    -state { $w configure $opt $val }
-
-	    -relief {}
-	}
+	$w configure $opt $val
     }
 }
 
@@ -1112,29 +1096,26 @@ proc tablelist::createTileCombobox {w args} {
 # cell editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileCheckbutton {w args} {
-    package require tile 0.5
+    package require tile 0.6
 
     #
     # Define the checkbutton layout; use catch to suppress
     # the error message in case the layout already exists
     #
-    set win [getTablelistPath $w]
     if {[string compare $tile::currentTheme "aqua"] == 0} {
-	catch { style layout Edit$win.TCheckbutton { Checkbutton.button } }
+	catch { style layout Tablelist.TCheckbutton { Checkbutton.button } }
     } else {
-	catch { style layout Edit$win.TCheckbutton { Checkbutton.indicator } }
-	styleConfig Edit$win.TCheckbutton -indicatormargin 0
+	catch { style layout Tablelist.TCheckbutton { Checkbutton.indicator } }
+	styleConfig Tablelist.TCheckbutton -indicatormargin 0
     }
 
-    ttk::checkbutton $w -style Edit$win.TCheckbutton \
+    set win [getTablelistPath $w]
+    ttk::checkbutton $w -style Tablelist.TCheckbutton \
 			-variable ::tablelist::ns${win}::data(editText)
 
     foreach {opt val} $args {
 	switch -- $opt {
-	    -borderwidth -
-	    -font -
-	    -relief {}
-
+	    -font  {}
 	    -state { $w configure $opt $val }
 	}
     }
@@ -1292,12 +1273,14 @@ proc tablelist::editcellSubCmd {win row col restore {cmd ""} {charPos -1}} {
     set item [lindex $data(itemList) $row]
     set key [lindex $item end]
     append creationCmd { $editWin($name-fontOpt) [getCellFont $win $key $col]} \
-	   { -borderwidth 2 -relief ridge -state normal}
+		       { -state normal}
     set w $data(bodyFrEd)
     if {[catch {eval $creationCmd} result] != 0} {
 	destroy $f
 	return -code error $result
     }
+    catch {$w configure -borderwidth 2}
+    catch {$w configure -relief ridge}
     catch {$w configure -highlightthickness 0}
     set class [winfo class $w]
     set isText [expr {[string compare $class "Text"] == 0}]
@@ -1678,6 +1661,11 @@ proc tablelist::setMentryCursor {w number} {
 		set entry $c
 		incr entryIdx
 	    }
+	    Frame {
+		set str [$c.e get]
+		set entry $c.e
+		incr entryIdx
+	    }
 	    Label { set str [$c cget -text] }
 	}
 	set len [string length $str]
@@ -1698,7 +1686,8 @@ proc tablelist::setMentryCursor {w number} {
     # preceding the found one and set the insertion cursor to its end
     #
     switch $class {
-	Entry { set relIdx $number }
+	Entry -
+	Frame { set relIdx $number }
 	Label { set relIdx end }
     }
     if {[string compare [$entry cget -state] "normal"] == 0} {
@@ -1771,10 +1760,6 @@ proc tablelist::setEditWinFont win {
     switch [winfo class $data(bodyFrEd)] {
 	Checkbutton -
 	TCheckbutton { return "" }
-
-	TEntry { styleConfig Edit$win.TEntry -font $cellFont }
-
-	TCombobox { styleConfig Edit$win.TCombobox -font $cellFont }
 
 	default {
 	    variable editWin
