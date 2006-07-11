@@ -8,7 +8,7 @@
 
   <style type="text/css">
     <!--
-      pre {color: #006400}
+      pre {color: #004800}
     -->
   </style>
 </head>
@@ -125,9 +125,9 @@
   <p>Interactive editing of the elements of a tablelist widget can be enabled
   for individual cells and for entire columns.&nbsp; A great variety of widgets
   from the Tk core and from the packages tile, BWidget, Iwidgets, combobox, and
-  Mentry is supported for being used as embedded edit window.&nbsp; In
-  addition, a rich set of keyboard bindings is provided for a comfortable
-  navigation between the editable cells.</p>
+  Mentry (or Mentry_tile) is supported for being used as embedded edit
+  window.&nbsp; In addition, a rich set of keyboard bindings is provided for a
+  comfortable navigation between the editable cells.</p>
 
   <p>The Tcl command corresponding to a tablelist widget is very similar to the
   one associated with a normal listbox.&nbsp; There are column-, row-, and
@@ -408,7 +408,7 @@ package require tile 0.6
   widget and column levels) doesn't work as expected if the current theme is
   <code>aqua</code>, <code>tileqt</code>, or <code>xpnative</code>, because
   these themes silently ignore any attempt to change the background color of a
-  tile label.</p>
+  tile header label.</p>
 
   <p>Also, take into account that in some themes, setting the
   <code>-labelborderwidth</code> option (at widget or column level) to a value
@@ -1419,9 +1419,9 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <code>demos</code> directory create a tablelist widget displaying some
   parameters of 16 serial lines, and demonstrate how to use various widgets
   from the Tk core and from the packages tile, BWidget, Iwidgets, combobox (by
-  Bryan Oakley), and Mentry for interactive cell editing.&nbsp; The following
-  figure shows the tablelist widget, together with a BWidget ComboBox used to
-  edit the contents of one of its cells:</p>
+  Bryan Oakley), and Mentry (or Mentry_tile) for interactive cell
+  editing.&nbsp; The following figure shows the tablelist widget, together with
+  a BWidget ComboBox used to edit the contents of one of its cells:</p>
 
   <p><img src="bwidget.png" alt=
   "Serial Line Configuration - Please load this image!" width="696" height=
