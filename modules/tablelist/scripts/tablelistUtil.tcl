@@ -295,23 +295,20 @@ proc tablelist::findTabs {win line firstCol lastCol idx1Name idx2Name} {
     set w $data(body)
     set endIdx $line.end
 
-    set idx1 $line.0
+    set idx $line.1
     for {set col 0} {$col < $firstCol} {incr col} {
 	if {!$data($col-hide) || $canElide} {
-	    set idx1 [$w search $elide "\t" $idx1+1c $endIdx]+1c
+	    set idx [$w search $elide "\t" $idx $endIdx]+2c
 	}
     }
-    set idx1 [$w index $idx1]
+    set idx1 [$w index $idx-1c]
 
-    set idx2 $idx1
     for {} {$col < $lastCol} {incr col} {
 	if {!$data($col-hide) || $canElide} {
-	    set idx2 [$w search $elide "\t" $idx2+1c $endIdx]+1c
+	    set idx [$w search $elide "\t" $idx $endIdx]+2c
 	}
     }
-    set idx2 [$w search $elide "\t" $idx2+1c $endIdx]
-
-    return ""
+    set idx2 [$w search $elide "\t" $idx $endIdx]
 }
 
 #------------------------------------------------------------------------------
@@ -1685,12 +1682,10 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 	    }
 
 	    set pixels $data($col-reqPixels)
-	    if {$data($col-maxPixels) > 0} {
-		if {$pixels > $data($col-maxPixels)} {
-		    set pixels $data($col-maxPixels)
-		    incr pixels $data($col-delta)
-		    adjustLabel $win $col $pixels $labelAlignment
-		}
+	    if {$data($col-maxPixels) > 0 && $pixels > $data($col-maxPixels)} {
+		set pixels $data($col-maxPixels)
+		incr pixels $data($col-delta)
+		adjustLabel $win $col $pixels $labelAlignment
 	    } else {
 		incr pixels $data($col-delta)
 	    }
@@ -3302,8 +3297,8 @@ proc tablelist::configLabel {w args} {
 	    -background -
 	    -foreground -
 	    -font {
-		if {[string compare [winfo class $w] "TLabel"] == 0 &&
-		    [string compare $val ""] == 0} {
+		if {[string compare $val ""] == 0 &&
+		    [string compare [winfo class $w] "TLabel"] == 0} {
 		    variable themeDefaults
 		    set val $themeDefaults(-label[string range $opt 1 end])
 		}
