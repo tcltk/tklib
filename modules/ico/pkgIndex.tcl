@@ -3,6 +3,6 @@
 # Copyright (c) 2003 ActiveState Corporation.
 # All rights reserved.
 #
-# RCS: @(#) $Id: pkgIndex.tcl,v 1.2 2004/07/27 00:19:44 hobbs Exp $
+# RCS: @(#) $Id: pkgIndex.tcl,v 1.3 2006/07/12 03:52:47 afaupell Exp $
 
-package ifneeded ico 0.3 [list source [file join $dir ico.tcl]]
+package ifneeded ico 1.0 [list source [file join $dir ico.tcl]]
