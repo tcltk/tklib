@@ -1,9 +1,9 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin ico n 0.3]
+[manpage_begin ico n 1.0]
 [moddesc   {Windows ICO handling}]
 [titledesc {Reading and writing windows icons}]
 [require Tcl 8.4]
-[require ico [opt 0.3]]
+[require ico [opt 1.0]]
 [description]
 
 This package provides functions for reading and writing Windows icons
@@ -14,10 +14,10 @@ from ICO, EXE, DLL, ICL, and BMP files.
 
 [list_begin definitions]
 
-[call [cmd ::ico::getIconList] [arg file] [opt "[arg option] [arg value]..."]]
+[call [cmd ::ico::icons] [arg file] [opt "[arg option] [arg value]..."]]
 
-Returns a list of icons found in [arg file] where each element has the
-format {width height depth}. Recognizes the following [arg option]s.
+Returns a list of icons found in [arg file] where each element is the
+name or numeric ID. Recognizes the following [arg option]s.
 
 [list_begin opt]
 [opt_def -type fileFormat]
@@ -25,12 +25,27 @@ format {width height depth}. Recognizes the following [arg option]s.
 [nl]
 
 
+[call [cmd ::ico::iconMembers] [arg file] [arg index] [opt "[arg option] [arg value]..."]]
+
+Returns a list of images that make up the icon at [arg index]. Each element is itself a
+sublist in the format {name width height bpp}. Recognizes the following [arg option]s.
+
+[list_begin opt]
+[opt_def -type fileFormat]
+[list_end]
+[nl]
+
 [call [cmd ::ico::getIcon] [arg file] [arg index] [opt "[arg option] [arg value]..."]]
 
 Extracts the icon at [arg index] from [arg file].
 
 The default [option -format] is [const image] which will return the
-name of a Tk image containing the icon. Optionally [option -name] may
+name of a Tk image containing the icon. The resolution and color depth
+are selected with the [opt -res], [opt -bpp], and [opt -exact] options.
+
+If -exact is specified and there is no exact match, an error is thrown.
+
+Optionally [option -image] may
 be used to specify the name of the Tk image that is created. If
 [option -format] is [const colors] then a list of color names in the
 #RRGGBB format is returned. Each list element is a horizontal
@@ -42,10 +57,35 @@ Recognizes the following [arg option]s.
 [list_begin opt]
 [opt_def -type fileFormat]
 [opt_def -format value]
-[opt_def -name value]
+[opt_def -image value]
+[opt_def -res value]
+[opt_def -bpp value]
+[opt_def -exact value]
 [list_end]
 [nl]
 
+[call [cmd ::ico::getIconByName] [arg file] [arg name] [opt "[arg option] [arg value]..."]]
+
+[list_begin opt]
+[opt_def -type fileFormat]
+[opt_def -format value]
+[opt_def -image value]
+[opt_def -res value]
+[opt_def -bpp value]
+[opt_def -exact value]
+[list_end]
+[nl]
+
+[call [cmd ::ico::getFileIcon] [arg file] [opt "[arg option] [arg value]..."]]
+
+[list_begin opt]
+[opt_def -format value]
+[opt_def -image value]
+[opt_def -res value]
+[opt_def -bpp value]
+[opt_def -exact value]
+[list_end]
+[nl]
 
 [call [cmd ::ico::writeIcon] [arg file] [arg index] [arg depth] [arg data] [opt "[arg option] [arg value]..."]]
 
@@ -102,9 +142,9 @@ Copies the icon at [arg index] in [arg file] to [arg index2] in [arg file2].
 [nl]
 
 
-[call [cmd ::ico::EXEtoICO] [arg file] [arg file2]]
+[call [cmd ::ico::EXEtoICO] [arg file] [opt dir]]
 
-Extracts all icons from the executable [arg file] to the ICO file [arg file2].
+Extracts all icons from the executable [arg file] to ICO files placed in [arg dir].
 
 [list_begin opt]
 [opt_def -type fileFormat]

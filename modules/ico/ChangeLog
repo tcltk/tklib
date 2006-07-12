@@ -1,3 +1,8 @@
+2006-07-11  Aaron Faupell <afaupell@users.sourceforge.net>
+
+	* ico.tcl: many changes to add support for icon groups
+	* ico.man: many changes to reflect new commands and usage
+
 2005-11-10  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
