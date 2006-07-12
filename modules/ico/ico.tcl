@@ -5,7 +5,7 @@
 # Copyright (c) 2003-2006 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.17 2006/07/12 03:52:47 afaupell Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.18 2006/07/12 19:58:39 afaupell Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -222,7 +222,7 @@ proc ::ico::getIconByName {file name args} {
 proc ::ico::getFileIcon {file args} {
     set ext [file extension $file]
     if {[catch {registry get HKEY_CLASSES_ROOT\\.$ext ""} doctype] || \
-        [catch {registry get HKEY_CLASSES_ROOT\\$doctype\\DefaultIcon ""} icon] {
+        [catch {registry get HKEY_CLASSES_ROOT\\$doctype\\DefaultIcon ""} icon]} {
         set icon "%SystemRoot%\\System32\\shell32.dll,0"
     }
     set index [lindex [split $icon ,] 1]
