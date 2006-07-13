@@ -186,6 +186,22 @@ proc tablelist::updateConfigSpecs win {
 	editcellSubCmd $win $editRow $editCol 1
     }
 
+    #
+    # Destroy and recreate the embedded windows
+    #
+    if {$data(winCount) != 0} {
+	for {set row 0} {$row < $data(itemCount)} {incr row} {
+	    for {set col 0} {$col < $data(colCount)} {incr col} {
+		set key [lindex [lindex $data(itemList) $row] end]
+		if {[info exists data($key-$col-window)]} {
+		    set val $data($key-$col-window)
+		    doCellConfig $row $col $win -window ""
+		    doCellConfig $row $col $win -window $val
+		}
+	    }
+	}
+    }
+
     set data(currentTheme) $tile::currentTheme
     set data(themeDefaults) [array get themeDefaults]
     if {[string compare $tile::currentTheme "tileqt"] == 0} {
