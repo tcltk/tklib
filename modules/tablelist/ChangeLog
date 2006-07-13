@@ -1,3 +1,8 @@
+2006-07-13  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl: Further improvements in the handling of
+	  the <<ThemeChanged>> virtual event.
+
 2006-07-11  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl: Fixed a bug reported by Kurt Kurczyk;
