@@ -1,9 +1,9 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin ipentry n 0.1]
+[manpage_begin ipentry n 0.2]
 [moddesc   {An IP address entry widget}]
 [titledesc {An IP address entry widget}]
 [require Tcl 8.4]
-[require ipentry [opt 0.1]]
+[require ipentry [opt 0.2]]
 [description]
 
 This package provides a widget for the entering of a IP address.  It
@@ -62,6 +62,10 @@ options section.
 [section {Widget options}]
 
 [list_begin tkoption]
+
+[tkoption_def -textvariable textvariable Variable]
+
+The name of a variable which holds the value of the IP address.  The value must be a string of the form NNN.NNN.NNN.NNN or it will be modified to represent a valid IP address.
 
 [tkoption_def -state state State]
 

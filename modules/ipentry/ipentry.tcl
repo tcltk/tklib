@@ -7,10 +7,10 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: ipentry.tcl,v 1.9 2005/06/01 02:37:51 andreas_kupries Exp $
+# RCS: @(#) $Id: ipentry.tcl,v 1.10 2006/07/15 02:22:53 afaupell Exp $
 
 package require Tk
-package provide ipentry 0.1
+package provide ipentry 0.2
 
 namespace eval ::ipentry {
     namespace export ipentry
@@ -43,7 +43,8 @@ proc ::ipentry::ipentry {w args} {
     destroy $w.d4
     rename ::$w ::ipentry::_$w
     interp alias {} ::$w {} ::ipentry::widgetCommand $w
-    bind $w <Destroy> [list rename ::$w {}]
+    namespace eval _tvns$w {variable textvarname}
+    bind $w <Destroy> [list ::ipentry::destroyWidget $w]
     #bind $w <FocusIn> [list focus $w.0]
     if {[llength $args] > 0} {
         eval [list $w configure] $args
@@ -196,10 +197,19 @@ proc ::ipentry::_foreach {w cmd} {
 }
 
 proc ::ipentry::cget {w cmd} {
-    switch -exact -- [lindex $args 0] {
+    switch -exact -- $cmd {
         -bd     -
         -relief {
-            return [::ipentry::_$w cget [lindex $args 0]]
+            return [::ipentry::_$w cget $cmd]
+        }
+        -textvariable {
+            namespace eval _tvns$w {
+                if { [info exists textvarname] } {
+                    return $textvarname
+                } else {
+                    return {}
+                }
+            }
         }
         default {
             return [$w.0 cget $cmd]
@@ -265,11 +275,89 @@ proc ::ipentry::configure {w args} {
                 foreach x {0 1 2 3} { $w.$x configure $cmd [lindex $args 1] }
                 set args [lrange $args 2 end]
             }
+            -textvariable {
+                namespace eval _tvns$w {
+                    if { [info exists textvarname] } {
+                        set _w [join [lrange [split [namespace current] .] 1 end] .]
+                        trace remove variable $textvarname \
+                            [list array read write unset] \
+                            [list ::ipentry::traceVar .$_w]
+                    }
+                }
+                set _tvns[set w]::textvarname [lindex $args 1]
+                upvar #0 [lindex $args 1] var
+                if { [info exists var] && [isValid $var] } {
+                    $w insert [split $var .]
+                } else {
+                    set var {}
+                }
+                trace add variable var [list array read write unset] \
+                    [list ::ipentry::traceVar $w]
+                set args [lrange $args 2 end]
+            }
             default {
                 error "unknown option \"[lindex $args 0]\""
             }
         }
     }
+}
+
+proc ::ipentry::destroyWidget {w} {
+    upvar #0 [$w cget -textvariable] var
+    trace remove variable var [list array read write unset] \
+        [list ::ipentry::traceVar $w]
+    namespace forget _tvns$w
+    rename $w {}
+}
+
+proc ::ipentry::traceVar {w varname key op} {
+    upvar #0 $varname var
+
+    if { $op == "write" } {
+        if { $key != "" } {
+            $w insert [split $var($key) .]
+        } else {
+            $w insert [split $var .]
+        }
+    }
+
+    if { $op == "unset" } {
+        if { $key != "" } {
+            trace add variable var($key) [list array read write unset] \
+                [list ::ipentry::traceVar $w]
+        } else {
+            trace add variable var [list array read write unset] \
+                [list ::ipentry::traceVar $w]
+        }
+    }
+
+    set val [join [$w get] .]
+    if { ![isValid $val] } {
+        set val {}
+    }
+    if { $key != "" } {
+        set var($key) $val
+    } else {
+        set var $val
+    }
+
+}
+
+proc ::ipentry::isValid {val} {
+    set lval [split [join $val] {. }]
+    set valid 1
+    if { [llength $lval] != 4 } {
+        set valid 0
+    } else {
+        foreach n $lval {
+            if { $n == "" || ![string is integer -strict $n]
+              || $n > 255 || $n < 0 } {
+                set valid 0
+                break
+            }
+        }
+    }
+    return $valid
 }
 
 proc ::ipentry::widgetCommand {w cmd args} {
@@ -290,7 +378,7 @@ proc ::ipentry::widgetCommand {w cmd args} {
                         error "cannot insert non-numeric arguments"
                     }
                     if {$n > 255} { set n 255 }
-                    if {$n < 0}   { set n 0 }
+                    if {$n <= 0}  { set n 0 }
                     if {$x == 0 && $n < 1} { set n 1 }
                 }
                 $w.$x delete 0 end
