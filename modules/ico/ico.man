@@ -9,6 +9,12 @@
 This package provides functions for reading and writing Windows icons
 from ICO, EXE, DLL, ICL, and BMP files.
 
+As used in this module an icon is a visual representation of an object.
+An icon consists of one or more images usually with varying resolution
+and color depth. Each icon and image has a resource identifier which
+may be a text string or a positive integer value. Most commands use this
+identifier to specify which icon or image to operate on.
+
 
 [section API]
 
@@ -17,7 +23,7 @@ from ICO, EXE, DLL, ICL, and BMP files.
 [call [cmd ::ico::icons] [arg file] [opt "[arg option] [arg value]..."]]
 
 Returns a list of icons found in [arg file] where each element is the
-name or numeric ID. Recognizes the following [arg option]s.
+name or numeric ID. Recognizes the following options:
 
 [list_begin opt]
 [opt_def -type fileFormat]
@@ -25,19 +31,19 @@ name or numeric ID. Recognizes the following [arg option]s.
 [nl]
 
 
-[call [cmd ::ico::iconMembers] [arg file] [arg index] [opt "[arg option] [arg value]..."]]
+[call [cmd ::ico::iconMembers] [arg file] [arg name] [opt "[arg option] [arg value]..."]]
 
-Returns a list of images that make up the icon at [arg index]. Each element is itself a
-sublist in the format {name width height bpp}. Recognizes the following [arg option]s.
+Returns a list of images that make up the icon with ID [arg name]. Each element is itself a
+sublist in the format {name width height bpp}. Recognizes the following options:
 
 [list_begin opt]
 [opt_def -type fileFormat]
 [list_end]
 [nl]
 
-[call [cmd ::ico::getIcon] [arg file] [arg index] [opt "[arg option] [arg value]..."]]
+[call [cmd ::ico::getIcon] [arg file] [arg name] [opt "[arg option] [arg value]..."]]
 
-Extracts the icon at [arg index] from [arg file].
+Extracts the icon with ID [arg name] from [arg file].
 
 The default [option -format] is [const image] which will return the
 name of a Tk image containing the icon. The resolution and color depth
@@ -45,12 +51,13 @@ are selected with the [opt -res], [opt -bpp], and [opt -exact] options.
 
 If -exact is specified and there is no exact match, an error is thrown.
 
-Optionally [option -image] may
-be used to specify the name of the Tk image that is created. If
-[option -format] is [const colors] then a list of color names in the
-#RRGGBB format is returned. Each list element is a horizontal
-row. Each horizontal row contains a list of colors for all the pixels
-in that row from left to right.
+Optionally [option -image] may be used to specify the name of the Tk
+image that is created. If [option -format] is [const colors] then a
+list of color names in the #RRGGBB format is returned. Each list element
+is a horizontal row. Each horizontal row contains a list of colors for
+all the pixels in that row from left to right. If [option -format] is
+[const name] then the resource name of the image chosen is returned.
+This is useful for calling writeIcon or getIconByName.
 
 Recognizes the following [arg option]s.
 
@@ -66,18 +73,21 @@ Recognizes the following [arg option]s.
 
 [call [cmd ::ico::getIconByName] [arg file] [arg name] [opt "[arg option] [arg value]..."]]
 
+Extracts the image with ID [arg name] from [arg file]. If there is no matching resource ID
+in [file] an error is thrown. Recognizes the following options:
+
 [list_begin opt]
 [opt_def -type fileFormat]
 [opt_def -format value]
-[opt_def -image value]
-[opt_def -res value]
-[opt_def -bpp value]
-[opt_def -exact value]
 [list_end]
 [nl]
 
 [call [cmd ::ico::getFileIcon] [arg file] [opt "[arg option] [arg value]..."]]
 
+This command is only functional when running under Windows. It reads the Windows
+registry to determine the display icon for [arg file] as it would appear in Explorer
+or similar. This command takes the same arguments and usage as [cmd getIcon]:
+
 [list_begin opt]
 [opt_def -format value]
 [opt_def -image value]
@@ -87,24 +97,20 @@ Recognizes the following [arg option]s.
 [list_end]
 [nl]
 
-[call [cmd ::ico::writeIcon] [arg file] [arg index] [arg depth] [arg data] [opt "[arg option] [arg value]..."]]
+[call [cmd ::ico::writeIcon] [arg file] [arg name] [arg depth] [arg data] [opt "[arg option] [arg value]..."]]
 
-[list_begin arg]
-[arg_def fileName file in]
-[arg_def integer index in]
-
-This is the 0-based index of the icon to write. When writing to an
-EXE, DLL, or ICL file you may only overwrite existing icons with an
-icon of the same dimensions and color depth.
-
-When writing to an ICO, [arg index] may be one greater than the last
-icon. This will append a new icon to the file.
-
-When writing to an ICO, [arg index] will accept [const end]. This will
-also cause the new icon to be appended to the file.
-
-When writing the other types [const end] will refer to the last
-existing icon.
+Writes an image to [arg file]. [arg name] is the resource identifier of the
+image in [arg file] to write.
+When writing to an EXE, DLL, or ICL file you may only overwrite existing icons with an
+icon of the same dimensions and color depth. No icons may be added to these file types.
+[nl]
+When writing to BMP the name is ignored as this type can contain only one image. This means
+if the file already existed it is completely overwritten.
+[nl]
+When writing to an ICO or ICODATA file if the name
+specified does not exist then an image is appended and will be named the next in sequence
+(the specified name is ignored). Images in ICO and ICODATA files may be overwritten with differing
+dimensions or color depths.
 
 
 [arg_def integer depth in]
@@ -154,8 +160,8 @@ Extracts all icons from the executable [arg file] to ICO files placed in [arg di
 
 [call [cmd ::ico::clearCache] [opt file]]
 
-The [cmd ::ico::getIconList] command caches icon offsets inside EXE, DLL, and
-ICL files in order to speed up extraction.  This command clears that
+The [cmd ::ico::getIconList] command caches icon offsets inside EXE, DLL, ICL,
+and ICO files in order to speed up extraction.  This command clears that
 cache for the specific [opt file] or all files.
 
 
@@ -170,7 +176,7 @@ is returned.
 [call [cmd ::ico::Show] [arg file] [opt "[arg option] [arg value]..."]]
 
 Application level command which displays a window showing all the
-icons in [arg file] with information about them.
+icons in [arg file] and their name.
 
 [list_begin opt]
 [opt_def -type fileFormat]

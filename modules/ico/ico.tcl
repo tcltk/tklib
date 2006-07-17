@@ -5,7 +5,7 @@
 # Copyright (c) 2003-2006 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.18 2006/07/12 19:58:39 afaupell Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.19 2006/07/17 07:16:33 afaupell Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -74,7 +74,7 @@ proc ::ico::icons {file args} {
 #
 # ARGS:
 #	file		File containing icon
-#       index           0-based index of icon in the file.
+#       name		Name of the icon in the file
 #	?-type?		Type of file.  If not specified, it is derived from
 #			the file extension.  Currently recognized types are
 #			EXE, DLL, ICO, ICL, BMP, and ICODATA
@@ -82,7 +82,7 @@ proc ::ico::icons {file args} {
 # RETURNS:
 #	list of icons as tuples {name width height bpp}
 #
-proc ::ico::iconMembers {file index args} {
+proc ::ico::iconMembers {file name args} {
     parseOpts type $args
     if {![info exists type]} {
         # $type wasn't specified - get it from the extension
@@ -91,17 +91,17 @@ proc ::ico::iconMembers {file index args} {
     if {![llength [info commands getIconMembers$type]]} {
 	return -code error "unsupported file format $type"
     }
-    getIconMembers$type [file normalize $file] $index
+    getIconMembers$type [file normalize $file] $name
 }
 
 # getIcon --
 #
-# Get pixel data or image of icon @ index in file
+# Get pixel data or image of icon
 #
 # ARGS:
 #	file		File to extract icon info from.
-#	index		Index of icon in the file to use.  The ordering is the
-#			same as returned by getIconList.  (0-based)
+#	name		Name of image in the file to use.  The name is the first element
+#			in the sublists returned by iconMembers.
 #	?-res?		Set the preferred resolution.
 #	?-bpp?		Set the preferred color depth in bits per pixel.
 #	?-exact?	Accept only exact matches for res and bpp. Returns
@@ -119,7 +119,7 @@ proc ::ico::iconMembers {file index args} {
 #	pixel data as a list that could be passed to 'image create'
 #	or the name of a Tk image
 #
-proc ::ico::getIcon {file index args} {
+proc ::ico::getIcon {file name args} {
     set image {}
     set format image
     set exact 0
@@ -137,13 +137,13 @@ proc ::ico::getIcon {file index args} {
 	set file [file normalize $file]
     }
 
-    set mem [getIconMembers$type $file $index]
+    set mem [getIconMembers$type $file $name]
 
     if {![info exists res]} {
-        set name [lindex $mem 0 0]
+        set icon [lindex $mem 0 0]
     } elseif {$exact} {
-        set name [lsearch -inline -glob $mem "* $res $bpp"]
-        if {$name == ""} { return -code error "No matching icon" }
+        set icon [lsearch -inline -glob $mem "* $res $bpp"]
+        if {$icon == ""} { return -code error "No matching icon" }
     } else {
         set mem [lsort -integer -index 1 $mem]
         set match ""
@@ -157,11 +157,14 @@ proc ::ico::getIcon {file index args} {
         }
         set match [lsort -integer -decreasing -index 3 $match]
         foreach x $match {
-            if {[lindex $x 3] == $bpp} { set name [lindex $x 0]; break }
+            if {[lindex $x 3] == $bpp} { set icon [lindex $x 0]; break }
         }
-        if {![info exists name]} { set name [lindex $match end 0]}
+        if {![info exists icon]} { set icon [lindex $match end 0]}
     }
-    set colors [eval [linsert [getRawIconData$type $file $name] 0 getIconAsColorList]]
+    if {$format eq "name"} {
+        return $icon
+    }
+    set colors [eval [linsert [getRawIconData$type $file $icon] 0 getIconAsColorList]]
     if {$format eq "image"} {
         return [createImage $colors $image]
     }
@@ -175,7 +178,8 @@ proc ::ico::getIcon {file index args} {
 #
 # ARGS:
 #	file		File to extract icon info from.
-#	name		Name of icon in the file to use.
+#	name		Name of image in the file to use.  The name is the first element
+#			in the sublists returned by iconMembers.
 #	?-type?		Type of file.  If not specified, it is derived from
 #			the file extension.  Currently recognized types are
 #			EXE, DLL, ICO, ICL, BMP, and ICODATA
@@ -239,17 +243,17 @@ proc ::ico::getFileIcon {file args} {
         }
         set index 0
     }
-    return [eval [list getIcon $file $index] $args]
+    return [eval [list getIcon $file [lindex [icons $file] $index] $args]
 }
 
 # writeIcon --
 #
-# Overwrite write icon @ index in file of specific type with depth/pixel data
+# Overwrite write image in file with depth/pixel data
 #
 # ARGS:
 #	file	File to extract icon info from.
-#	index	Index of icon in the file to use.  The ordering is the
-#		same as returned by getIconList.  (0-based)
+#	name	Name of image in the file to use.  The name is the first element
+#		in the sublists returned by iconMembers.
 #	bpp	bit depth of icon we are writing
 #	data	Either pixel color data (as returned by getIcon -format color)
 #		or the name of a Tk image.
@@ -260,7 +264,7 @@ proc ::ico::getFileIcon {file args} {
 # RETURNS:
 #	nothing
 #
-proc ::ico::writeIcon {file index bpp data args} {
+proc ::ico::writeIcon {file name bpp data args} {
     parseOpts type $args
     if {![info exists type]} {
         # $type wasn't specified - get it from the extension
@@ -290,7 +294,7 @@ proc ::ico::writeIcon {file index bpp data args} {
     set and [getAndMaskFromColors $data]
     set xor [getXORFromColors $bpp $data]
     # writeIcon$type file index w h bpp palette xor and
-    writeIcon$type [file normalize $file] $index \
+    writeIcon$type [file normalize $file] $name \
 	[llength [lindex $data 0]] [llength $data] $bpp $palette $xor $and
 }
 
@@ -300,28 +304,31 @@ proc ::ico::writeIcon {file index bpp data args} {
 # Copies an icon directly from one file to another
 #
 # ARGS:
-#	file	        File to extract icon info from.
-#	index	        Index of icon in the file to use.  The ordering is the
-#		        same as returned by getIconList.  (0-based)
+#	file1	        File to extract icon info from.
+#	name1		Name of image in the file to use.  The name is the first element
+#			in the sublists returned by iconMembers.
+#	file2	        File to write icon to.
+#	name2		Name of image in the file to use.  The name is the first element
+#			in the sublists returned by iconMembers.
 #	?-fromtype?	Type of source file.  If not specified, it is derived from
 #		        the file extension.  Currently recognized types are
-#		        EXE, DLL, ICO and ICL
+#		        EXE, DLL, ICO, ICL, BMP, and ICODATA
 #	?-totype?	Type of destination file.  If not specified, it is derived from
 #		        the file extension.  Currently recognized types are
-#		        EXE, DLL, ICO and ICL
+#		        EXE, DLL, ICO, ICL, BMP, and ICODATA
 #
 # RETURNS:
 #	nothing
 #
-proc ::ico::copyIcon {f1 i1 f2 i2 args} {
+proc ::ico::copyIcon {file1 name1 file2 name2 args} {
     parseOpts {fromtype totype} $args
     if {![info exists fromtype]} {
         # $type wasn't specified - get it from the extension
-        set fromtype [fileext $f1]
+        set fromtype [fileext $file1]
     }
     if {![info exists totype]} {
         # $type wasn't specified - get it from the extension
-        set totype [fileext $f2]
+        set totype [fileext $file2]
     }
     if {![llength [info commands writeIcon$totype]]} {
 	return -code error "unsupported file format $totype"
@@ -329,8 +336,8 @@ proc ::ico::copyIcon {f1 i1 f2 i2 args} {
     if {![llength [info commands getRawIconData$fromtype]]} {
 	return -code error "unsupported file format $fromtype"
     }
-    set src [getRawIconData$fromtype $f1 $i1]
-    writeIcon $f2 $i2 [lindex $src 2] [eval getIconAsColorList $src] -type $totype
+    set src [getRawIconData$fromtype $file1 $name1]
+    writeIcon $file2 $name2 [lindex $src 2] [eval getIconAsColorList $src] -type $totype
 }
 
 #
@@ -868,16 +875,16 @@ proc ::ico::getIconListEXE {file} {
     }
 }
 
-# returns a list of images that make up the icon at index
+# returns a list of images that make up the named icon
 # as tuples {name width height bpp}. Called by [iconMembers]
-proc ::ico::getIconMembersICO {file index} {
+proc ::ico::getIconMembersICO {file name} {
     variable RES
 
-    if {$index != "0"} { return -code error "index out of range" }
+    if {$name ne "0"} { return -code error "no icon \"$name\"" }
     set file [file normalize $file]
-    if {[info exists RES($file,group,$index,members)]} {
+    if {[info exists RES($file,group,$name,members)]} {
         set ret ""
-        foreach x $RES($file,group,$index,members) {
+        foreach x $RES($file,group,$name,members) {
             lappend ret [linsert $RES($file,icon,$x,data) 0 $x]
         }
         return $ret
@@ -888,6 +895,7 @@ proc ::ico::getIconMembersICO {file index} {
 
     # both words must be read to keep in sync with later reads
     if {"[getword $fh] [getword $fh]" ne "0 1"} {
+        close $fh
 	return -code error "not an icon file"
     }
     
@@ -915,7 +923,7 @@ proc ::ico::getIconMembersICO {file index} {
     return $ret
 }
 
-# returns a list of images that make up the icon at index
+# returns a list of images that make up the named icon
 # as tuples {name width height bpp}. Called by [iconMembers]
 proc ::ico::getIconMembersICODATA {data} {
     if {[binary scan $data sss h1 h2 num] != 3 || $h1 != 0 || $h2 != 1} {
@@ -944,25 +952,25 @@ proc ::ico::getIconMembersICODATA {data} {
     return $r
 }
 
-# returns a list of images that make up the icon at index
+# returns a list of images that make up the named icon
 # as tuples {name width height bpp}. Called by [iconMembers]
-proc ::ico::getIconMembersBMP {file {index 0}} {
+proc ::ico::getIconMembersBMP {file {name 0}} {
+    if {$name ne "0"} { return -code error "no icon \"$name\"" }
     set fh [open $file]
     if {[read $fh 2] != "BM"} { close $fh; return -code error "not a BMP file" }
-    if {$index != "0"} { return -code error "index out of range" }
     seek $fh 14 start
     binary scan [read $fh 16] x4iix2s w h bpp
     close $fh
     return [list 1 $w $h $bpp]
 }
 
-# returns a list of images that make up the icon at index
+# returns a list of images that make up the named icon
 # as tuples {name width height bpp}. Called by [iconMembers]
-proc ::ico::getIconMembersEXE {file index} {
+proc ::ico::getIconMembersEXE {file name} {
     variable RES
     set file [file normalize $file]
     FindResources $file
-    if {[set name [lindex $RES($file,group,names) $index]] == ""} { return -code error "index out of range" }
+    if {![info exists RES($file,group,$name,members)]} { return -code error "no icon \"$name\"" }
     set ret ""
     foreach x $RES($file,group,$name,members) {
         lappend ret [linsert $RES($file,icon,$x,data) 0 $x]
@@ -986,9 +994,7 @@ proc ::ico::getRawIconDataICO {file name} {
         close $fh
         return -code error "not an icon file"
     }
-    if {$name < 0 || $name >= [getword $fh]} {
-        return -code error "No icon $name"
-    }
+    if {![info exists RES($file,group,$name,members)]} { return -code error "no icon \"$name\"" }
 
     seek $fh [expr {(16 * $name) + 12}] current
     seek $fh [getdword $fh] start
@@ -1006,7 +1012,7 @@ proc ::ico::getRawIconDataICODATA {data name} {
     if {[binary scan $data sss h1 h2 num] != 3 || $h1 != 0 || $h2 != 1} {
 	return -code error "not icon data"
     }
-    if {$name < 0 || $name >= $num} {
+    if {![string is -strict integer] || $name < 0 || $name >= $num} {
 	return -code error "No icon $name"
     }
     # Move to ico location
@@ -1022,7 +1028,7 @@ proc ::ico::getRawIconDataICODATA {data name} {
 # returns an icon in the form:
 #	{width height depth palette xor_mask and_mask}
 proc ::ico::getRawIconDataBMP {file {name 0}} {
-    if {$name != 0} {return -code error "No icon $name"}
+    if {$name ne "0"} {return -code error "No icon \"$name\""}
     set fh [open $file]
     if {[read $fh 2] != "BM"} { close $fh; return -code error "not a BMP file" }
     seek $fh 14 start
@@ -1056,7 +1062,7 @@ proc ::ico::getRawIconDataEXE {file name} {
     set file [file normalize $file]
     FindResources $file
 
-    if {![info exists RES($file,icon,$name,offset)]} { error "No icon $name" }
+    if {![info exists RES($file,icon,$name,offset)]} { error "No icon \"$name\"" }
     set fh [open $file]
     fconfigure $fh -eofchar {} -encoding binary -translation lf
     seek $fh $RES($file,icon,$name,offset) start
@@ -1067,7 +1073,7 @@ proc ::ico::getRawIconDataEXE {file name} {
     return $dib
 }
 
-proc ::ico::writeIconICO {file index w h bpp palette xor and} {
+proc ::ico::writeIconICO {file name w h bpp palette xor and} {
     if {![file exists $file]} {
 	set fh [open $file w+]
 	fconfigure $fh -eofchar {} -encoding binary -translation lf
@@ -1077,22 +1083,17 @@ proc ::ico::writeIconICO {file index w h bpp palette xor and} {
 	set fh [open $file r+]
 	fconfigure $fh -eofchar {} -encoding binary -translation lf
     }
-    if {[file size $file] > 4 && "[getword $fh] [getword $fh]" ne "0 1"} {
+    if {"[getword $fh] [getword $fh]" ne "0 1"} {
 	close $fh
 	return -code error "not an icon file"
     }
     set num [getword $fh]
-    if {$index eq "end"} { set index $num }
-    if {$index < 0 || $index > $num} {
-	close $fh
-	return -code error "index out of range"
-    }
     set colors 0
     if {$bpp <= 8} {set colors [expr {1 << $bpp}]}
     set size [expr {[string length $palette] + [string length $xor] + [string length $and]}]
 
     # if we are adding a new icon at the end
-    if {$index == $num} {
+    if {![string is -strict integer $name] || $name >= $num || $name < 0} {
         # increment the icon count
 	seek $fh -2 current
 	bputs $fh s [expr {$num + 1}]
@@ -1121,12 +1122,12 @@ proc ::ico::writeIconICO {file index w h bpp palette xor and} {
     } else {
         # we are overwriting an icon - not necesarily the same size
         # get existing icon offset and length
-	seek $fh [expr {($index * 16) + 8}] current
+	seek $fh [expr {($name * 16) + 8}] current
 	set len [getdword $fh]
 	set offset [getdword $fh]
 	# adjust offset in existing icon dir entries higher than our new icon to account
 	# for new icon length
-	set cur [expr {$index + 1}]
+	set cur [expr {$name + 1}]
 	while {$cur < $num} {
 	    seek $fh [expr {($cur * 16) + 18}] start
 	    set toff [getdword $fh]
@@ -1138,7 +1139,7 @@ proc ::ico::writeIconICO {file index w h bpp palette xor and} {
 	seek $fh [expr {$offset + $len}] start
 	set olddata [read $fh]
 	# overwrite icon dir entry
-	seek $fh [expr {($index * 16) + 6}] start
+	seek $fh [expr {($name * 16) + 6}] start
 	bputs $fh ccccssi $w $h $colors 0 0 $bpp [expr {$size + 40}]
 	# insert new icon and saved data
 	seek $fh $offset start
@@ -1151,9 +1152,12 @@ proc ::ico::writeIconICO {file index w h bpp palette xor and} {
     close $fh
 }
 
-proc ::ico::writeIconICODATA {file index w h bpp palette xor and} {
-    if {$index != 0} {return -code error "index out of range"}
+proc ::ico::writeIconICODATA {file name w h bpp palette xor and} {
     upvar 2 [file tail $file] data
+    if {[binary scan $data sss h1 h2 num] != 3 || $h1 != 0 || $h2 != 1} {
+	return -code error "not icon data"
+    }
+    
     set data [binary format sss 0 1 1]
     set colors 0
     if {$bpp <= 8} {set colors [expr {1 << $bpp}]}
@@ -1163,8 +1167,7 @@ proc ::ico::writeIconICODATA {file index w h bpp palette xor and} {
     append data $palette $xor $and
 }
 
-proc ::ico::writeIconBMP {file index w h bpp palette xor and} {
-    if {$index != 0} {return -code error "index out of range"}
+proc ::ico::writeIconBMP {file name w h bpp palette xor and} {
     set fh [open $file w+]
     fconfigure $fh -eofchar {} -encoding binary -translation lf
     set size [expr {[string length $palette] + [string length $xor]}]
@@ -1175,21 +1178,22 @@ proc ::ico::writeIconBMP {file index w h bpp palette xor and} {
     close $fh
 }
 
-proc ::ico::writeIconEXE {file index w h bpp palette xor and} {
+proc ::ico::writeIconEXE {file name w h bpp palette xor and} {
     variable RES
 
     set file [file normalize $file]
-    set members [getIconMembersEXE $file $index]
+    set members [getIconMembersEXE $file $name]
 
-    set icon [lsearch -glob $members "* $w $h $bpp"]
-    if {$icon < 0} {
+    if {![info exists RES($file,icon,$name,data)] {
+        return -code error "no icon \"$name\""
+    }
+    if {![string match "* $w $h $bpp" $RES($file,icon,$name,data)]} {
 	return -code error "icon format differs from original"
     }
-    set icon [lindex $icon 0]
     
     set fh [open $file r+]
     fconfigure $fh -eofchar {} -encoding binary -translation lf
-    seek $fh [expr {$RES($file,icon,$icon,offset) + 40}] start
+    seek $fh [expr {$RES($file,icon,$name,offset) + 40}] start
 
     puts -nonewline $fh $palette$xor$and
     close $fh
@@ -1197,7 +1201,7 @@ proc ::ico::writeIconEXE {file index w h bpp palette xor and} {
 
 proc ::ico::FindResources {file} {
     variable RES
-    
+
     if {[info exists RES($file,group,names)]} {
         return [llength $RES($file,group,names)]
     }
@@ -1215,14 +1219,14 @@ proc ::ico::FindResources {file} {
     if {$sig eq "PE\000\000"} {
         return [FindResourcesPE $fh $file]
     } elseif {[string match NE* $sig]} {
-        return [SearchForIcosNE $fh $file]
+        return [FindResourcesNE $fh $file]
     } else {
         return -code error "unknown file format"
     }
 }
 
 # parse the resource table of 16 bit windows files for icons
-proc ::ico::SearchForIcosNE {fh file} {
+proc ::ico::FindResourcesNE {fh file} {
     variable RES
 
     seek $fh 36 current
@@ -1441,7 +1445,7 @@ proc ::ico::Show {file args} {
 	set col 0
 	for {set x 0} {$x < [llength $icos]} {incr x} {
 	    # catch in case theres any icons with unsupported color
-	    if {[catch {getIcon $file $x -type $type -res 32} img]} {
+	    if {[catch {getIcon $file [lindex $icos $x] -type $type -res 24} img]} {
 		set txt "ERROR: $img"
 		set lbl [label $sf.lbl$wname-$x -anchor w -text $txt]
 		grid $lbl -sticky s -row 0 -column [incr col]
