@@ -5,7 +5,7 @@
 # Copyright (c) 2003-2006 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.19 2006/07/17 07:16:33 afaupell Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.20 2006/07/18 15:46:19 afaupell Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -898,7 +898,7 @@ proc ::ico::getIconMembersICO {file name} {
         close $fh
 	return -code error "not an icon file"
     }
-    
+
     set ret ""
     set num [getword $fh]
     for {set i 0} {$i < $num} {incr i} {
@@ -915,7 +915,7 @@ proc ::ico::getIconMembersICO {file name} {
 	} else {
 	    lappend info [expr {int(sqrt($bpp))}]
 	}
-	lappend ret [linsert $info 0 $x]
+	lappend ret [linsert $info 0 $i]
 	set RES($file,icon,$i,data) $info
 	seek $fh 13 current
     }
@@ -981,11 +981,6 @@ proc ::ico::getIconMembersEXE {file name} {
 # returns an icon in the form:
 #       {width height depth palette xor_mask and_mask}
 proc ::ico::getRawIconDataICO {file name} {
-    variable RES
-    if {![llength [array names RES $file,group,*]]} {
-        getIconMembersICO $file
-    }
-    
     set fh [open $file r]
     fconfigure $fh -eofchar {} -encoding binary -translation lf
 
@@ -994,7 +989,8 @@ proc ::ico::getRawIconDataICO {file name} {
         close $fh
         return -code error "not an icon file"
     }
-    if {![info exists RES($file,group,$name,members)]} { return -code error "no icon \"$name\"" }
+    set num [getword $fh]
+    if {![string is integer -strict $name] || $name < 0 || $name >= $num} { return -code error "no icon \"$name\"" }
 
     seek $fh [expr {(16 * $name) + 12}] current
     seek $fh [getdword $fh] start
@@ -1012,7 +1008,7 @@ proc ::ico::getRawIconDataICODATA {data name} {
     if {[binary scan $data sss h1 h2 num] != 3 || $h1 != 0 || $h2 != 1} {
 	return -code error "not icon data"
     }
-    if {![string is -strict integer] || $name < 0 || $name >= $num} {
+    if {![string is integer -strict $name] || $name < 0 || $name >= $num} {
 	return -code error "No icon $name"
     }
     # Move to ico location
@@ -1093,7 +1089,7 @@ proc ::ico::writeIconICO {file name w h bpp palette xor and} {
     set size [expr {[string length $palette] + [string length $xor] + [string length $and]}]
 
     # if we are adding a new icon at the end
-    if {![string is -strict integer $name] || $name >= $num || $name < 0} {
+    if {![string is integer -strict $name] || $name >= $num || $name < 0} {
         # increment the icon count
 	seek $fh -2 current
 	bputs $fh s [expr {$num + 1}]
@@ -1153,18 +1149,42 @@ proc ::ico::writeIconICO {file name w h bpp palette xor and} {
 }
 
 proc ::ico::writeIconICODATA {file name w h bpp palette xor and} {
-    upvar 2 [file tail $file] data
-    if {[binary scan $data sss h1 h2 num] != 3 || $h1 != 0 || $h2 != 1} {
-	return -code error "not icon data"
+    upvar 2 [file tail $file] input
+    if {![info exists input] || ([binary scan $input sss h1 h2 num] != 3 || $h1 != 0 || $h2 != 1)} {
+	set num 0
     }
-    
-    set data [binary format sss 0 1 1]
-    set colors 0
-    if {$bpp <= 8} {set colors [expr {1 << $bpp}]}
+
     set size [expr {[string length $palette] + [string length $xor] + [string length $and]}]
-    append data [binary format ccccssii $w $h $colors 0 0 $bpp [expr {$size + 40}] 22]
-    append data [binary format iiissiiiiii 40 $w [expr {$h * 2}] 1 $bpp 0 $size 0 0 0 0]
-    append data $palette $xor $and
+    set newicon [binary format iiissiiiiii 40 $w [expr {$h * 2}] 1 $bpp 0 $size 0 0 0 0]$palette$xor$and
+
+    set readpos [expr {6 + (16 * $num)}]
+    set data {}
+    for {set i 0} {$i < $num} {incr i} {
+        binary scan $input @{$readpos}ix16i a b
+        lappend data [string range $data $readpos [expr {$readpos + $a + $b}]]
+        incr readpos [expr {$readpos + $a + $b}]
+    }
+
+    if {![string is integer -strict $name] || $name < 0 || $name >= $num} {
+        set name [llength $data]
+        lappend data $newicon
+    } else {
+        set data [lreplace $data $name $name $newicon]
+    }
+    set num [llength $data]
+
+    set new [binary format sss 0 1 $num]
+    set offset [expr {6 + (16 * $num)}]
+    foreach x $data {
+        binary scan $x x4iix2s w h bpp
+        set len [string length $x]
+        append new [binary format ccccssii $w $h [expr {$bpp <= 8 ? 1 << $bpp : 0}] 0 0 $bpp $len $offset]
+        incr offset $len
+    }
+    set input $new
+    append input [join $data {}]
+
+    return $name
 }
 
 proc ::ico::writeIconBMP {file name w h bpp palette xor and} {
@@ -1184,7 +1204,7 @@ proc ::ico::writeIconEXE {file name w h bpp palette xor and} {
     set file [file normalize $file]
     set members [getIconMembersEXE $file $name]
 
-    if {![info exists RES($file,icon,$name,data)] {
+    if {![info exists RES($file,icon,$name,data)]} {
         return -code error "no icon \"$name\""
     }
     if {![string match "* $w $h $bpp" $RES($file,icon,$name,data)]} {
