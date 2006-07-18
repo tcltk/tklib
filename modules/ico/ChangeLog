@@ -1,3 +1,7 @@
+2006-07-18  Andreas Kupries  <andreask@gactivestate.com>
+
+	* ico.man: Fixed syntax problems in the manpage.
+
 2006-07-11  Aaron Faupell <afaupell@users.sourceforge.net>
 
 	* ico.tcl: many changes to add support for icon groups
