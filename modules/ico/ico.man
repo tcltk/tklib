@@ -112,6 +112,8 @@ specified does not exist then an image is appended and will be named the next in
 (the specified name is ignored). Images in ICO and ICODATA files may be overwritten with differing
 dimensions or color depths.
 
+Note that you will get strange results when displaying icons if you fail to change every image
+which makes up a given icon.
 
 [arg_def integer depth in]
 
@@ -150,7 +152,7 @@ Copies the icon at [arg index] in [arg file] to [arg index2] in [arg file2].
 
 [call [cmd ::ico::EXEtoICO] [arg file] [opt dir]]
 
-Extracts all icons from the executable [arg file] to ICO files placed in [arg dir].
+Extracts all icons from the executable [arg file] to ICO files placed in [arg dir]. [opt dir] defaults to the directory [arg file] is located in. Icon files will be named in the form [arg file]-ID.ico where ID is the icon resource identifier.
 
 [list_begin opt]
 [opt_def -type fileFormat]
