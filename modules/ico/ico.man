@@ -74,7 +74,7 @@ Recognizes the following [arg option]s.
 [call [cmd ::ico::getIconByName] [arg file] [arg name] [opt "[arg option] [arg value]..."]]
 
 Extracts the image with ID [arg name] from [arg file]. If there is no matching resource ID
-in [file] an error is thrown. Recognizes the following options:
+in [arg file] an error is thrown. Recognizes the following options:
 
 [list_begin opt]
 [opt_def -type fileFormat]
@@ -115,6 +115,7 @@ dimensions or color depths.
 Note that you will get strange results when displaying icons if you fail to change every image
 which makes up a given icon.
 
+[list_begin arg]
 [arg_def integer depth in]
 
 This argument must have a value of [const 1], [const 4], [const 8],
