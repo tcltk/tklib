@@ -5,7 +5,7 @@
 # Copyright (c) 2003-2006 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.20 2006/07/18 15:46:19 afaupell Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.21 2006/07/19 04:01:53 afaupell Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -157,7 +157,7 @@ proc ::ico::getIcon {file name args} {
         }
         set match [lsort -integer -decreasing -index 3 $match]
         foreach x $match {
-            if {[lindex $x 3] == $bpp} { set icon [lindex $x 0]; break }
+            if {[lindex $x 3] <= $bpp} { set icon [lindex $x 0]; break }
         }
         if {![info exists icon]} { set icon [lindex $match end 0]}
     }
@@ -786,7 +786,7 @@ proc ::ico::readDIB {fh} {
     set and1 [read $fh [expr {(($w * $h) + ($h * ($w % 32))) / 8}]]
 
     set and {}
-    set row [expr {($w + ($w % 32)) / 8}]
+    set row [expr {($w + abs(32 - $w)) / 8}]
     set len [expr {$row * $h}]
     for {set i 0} {$i < $len} {incr i $row} {
 	binary scan [string range $and1 $i [expr {$i + $row}]] B$w tmp
@@ -1073,79 +1073,49 @@ proc ::ico::writeIconICO {file name w h bpp palette xor and} {
     if {![file exists $file]} {
 	set fh [open $file w+]
 	fconfigure $fh -eofchar {} -encoding binary -translation lf
-	bputs $fh sss 0 1 0
-	seek $fh 0 start
+	set num 0
     } else {
 	set fh [open $file r+]
 	fconfigure $fh -eofchar {} -encoding binary -translation lf
+	if {"[getword $fh] [getword $fh]" ne "0 1"} {
+	    close $fh
+	    return -code error "not an icon file"
+	}
+	set num [getword $fh]
+	seek $fh [expr {6 + (16 * $num)}] start
     }
-    if {"[getword $fh] [getword $fh]" ne "0 1"} {
-	close $fh
-	return -code error "not an icon file"
-    }
-    set num [getword $fh]
-    set colors 0
-    if {$bpp <= 8} {set colors [expr {1 << $bpp}]}
-    set size [expr {[string length $palette] + [string length $xor] + [string length $and]}]
 
-    # if we are adding a new icon at the end
-    if {![string is integer -strict $name] || $name >= $num || $name < 0} {
-        # increment the icon count
-	seek $fh -2 current
-	bputs $fh s [expr {$num + 1}]
-	# save all the data past the icon dir entries
-	seek $fh [expr {$num * 16}] current
-	set olddata [read $fh]
-	# increment all the offsets in the existing dir entries by 16 to account for our new entry
-	set cur 0
-	while {$cur < $num} {
-	    seek $fh [expr {($cur * 16) + 18}] start
-	    set toff [getdword $fh]
-	    seek $fh -4 current
-	    bputs $fh i [expr {$toff + 16}]
-	    incr cur
-	}
-	# insert new icon dir entry
-	bputs $fh ccccss $w $h $colors 0 0 $bpp
-	bputs $fh ii [expr {$size + 40}] [expr {[string length $olddata] + [tell $fh] + 8}]
-	# put all the icon data back
-	puts -nonewline $fh $olddata
-	# put our new icon at the end
-	bputs $fh iiissiiiiii 40 $w [expr {$h * 2}] 1 $bpp 0 $size 0 0 0 0
-	puts -nonewline $fh $palette
-	puts -nonewline $fh $xor
-	puts -nonewline $fh $and
-    } else {
-        # we are overwriting an icon - not necesarily the same size
-        # get existing icon offset and length
-	seek $fh [expr {($name * 16) + 8}] current
-	set len [getdword $fh]
-	set offset [getdword $fh]
-	# adjust offset in existing icon dir entries higher than our new icon to account
-	# for new icon length
-	set cur [expr {$name + 1}]
-	while {$cur < $num} {
-	    seek $fh [expr {($cur * 16) + 18}] start
-	    set toff [getdword $fh]
-	    seek $fh -4 current
-	    bputs $fh i [expr {$toff + (($size + 40) - $len)}]
-	    incr cur
-	}
-	# save all data after new icon
-	seek $fh [expr {$offset + $len}] start
-	set olddata [read $fh]
-	# overwrite icon dir entry
-	seek $fh [expr {($name * 16) + 6}] start
-	bputs $fh ccccssi $w $h $colors 0 0 $bpp [expr {$size + 40}]
-	# insert new icon and saved data
-	seek $fh $offset start
-	bputs $fh iiissiiiiii 40 $w [expr {$h * 2}] 1 $bpp 0 $size 0 0 0 0
-	puts -nonewline $fh $palette
-	puts -nonewline $fh $xor
-	puts -nonewline $fh $and
-	puts -nonewline $fh $olddata
+    set size [expr {[string length $palette] + [string length $xor] + [string length $and]}]
+    set newicon [binary format iiissiiiiii 40 $w [expr {$h * 2}] 1 $bpp 0 $size 0 0 0 0]$palette$xor$and
+
+    set data {}
+    for {set i 0} {$i < $num} {incr i} {
+        binary scan [read $fh 24] ix16i a b
+        seek $fh -24 current
+        lappend data [read $fh [expr {$a + $b}]]
     }
+
+    if {![string is integer -strict $name] || $name < 0 || $name >= $num} {
+        set name [llength $data]
+        lappend data $newicon
+    } else {
+        set data [lreplace $data $name $name $newicon]
+    }
+    set num [llength $data]
+
+    seek $fh 0 start
+    bputs $fh sss 0 1 $num
+    set offset [expr {6 + (16 * $num)}]
+    foreach x $data {
+        binary scan $x x4iix2s w h bpp
+        set len [string length $x]
+        bputs $fh ccccssii $w $h [expr {$bpp <= 8 ? 1 << $bpp : 0}] 0 0 $bpp $len $offset
+        incr offset $len
+    }
+    puts -nonewline $fh [join $data {}]
     close $fh
+
+    return $name
 }
 
 proc ::ico::writeIconICODATA {file name w h bpp palette xor and} {
@@ -1409,81 +1379,5 @@ interp alias {} ::ico::getIconListICL    {} ::ico::getIconListEXE
 interp alias {} ::ico::getIconMembersICL {} ::ico::getIconMembersEXE
 interp alias {} ::ico::getRawIconDataICL {} ::ico::getRawIconDataEXE
 interp alias {} ::ico::writeIconICL      {} ::ico::writeIconEXE
-
-proc ::ico::showaux {files} {
-    if {[llength $files]} {
-	set file [lindex $files 0]
-	Show $f
-	update
-	after 50 [list ::ico::showaux [lrange $files 1 end]]
-    }
-}
-
-# Application level command: Find icons in a file and show them.
-proc ::ico::Show {file args} {
-    package require BWidget
-    
-    set parent .
-    parseOpts {type parent} $args
-    if {![info exists type]} {
-        # $type wasn't specified - get it from the extension
-        set type [fileext $file]
-    }
-
-    set file  [file normalize $file]
-    set icos  [icons $file -type $type]
-    set wname [string map {. _ : _} $file]
-
-    if {$parent eq "."} { set w ""} else { set w $parent }
-
-    set mf $w.mainsw
-    if {![winfo exists $mf]} {
-	set sw [ScrolledWindow $mf]
-	set sf [ScrollableFrame $mf.sf -constrainedwidth 1]
-	$sw setwidget $sf
-	pack $sw -fill both -expand 1
-	grid columnconfigure [$mf.sf getframe] 0 -weight 1
-    }
-    set mf [$mf.sf getframe]
-
-    set lf $mf.f$wname
-    if {[winfo exists $lf]} { destroy $lf }
-    if {![llength $icos]} {
-	label $lf -text "No icons in '$file'" -anchor w
-	grid $lf -sticky ew
-    } else {
-	labelframe $lf -text "[llength $icos] Icons in '$file'"
-	grid $lf -sticky news
-	set sw [ScrolledWindow $lf.sw$wname]
-	set height 48
-	set fh [expr {[font metrics [$lf cget -font] -linespace] + 4}]
-	set sf [ScrollableFrame $lf.sf$wname -constrainedheight 1 \
-		    -height [expr {$height + $fh}]]
-	$sw setwidget $sf
-	set sf [$sf getframe]
-	pack $sw -fill both -expand 1
-	set col 0
-	for {set x 0} {$x < [llength $icos]} {incr x} {
-	    # catch in case theres any icons with unsupported color
-	    if {[catch {getIcon $file [lindex $icos $x] -type $type -res 24} img]} {
-		set txt "ERROR: $img"
-		set lbl [label $sf.lbl$wname-$x -anchor w -text $txt]
-		grid $lbl -sticky s -row 0 -column [incr col]
-	    } else {
-		set txt [lindex $icos $x]
-		set lbl [label $sf.lbl$wname-$x -anchor w -text $txt \
-			     -compound top -image $img]
-		if {[image height $img] > $height} {
-		    set height [image height $img]
-		    $lf.sf$wname configure -height [expr {$height + $fh}]
-		}
-		grid $lbl -sticky s -row 0 -column [incr col]
-	    }
-	    update idletasks
-	}
-    }
-    grid rowconfigure $parent 0 -weight 1
-    grid columnconfigure $parent 0 -weight 1
-}
 
 package provide ico 1.0
