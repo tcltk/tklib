@@ -609,34 +609,57 @@ proc tablelist::strRange {win str font pixels alignment} {
 	return $str
     }
 
-    set halfLen [expr {[string length $str] / 2}]
-    if {$halfLen == 0} {
-	return ""
-    }
-
+    set s $str
     if {[string compare $alignment "right"] == 0} {
-	set rightStr [string range $str $halfLen end]
-	set width [font measure $font -displayof $win $rightStr]
-	if {$width == $pixels} {
-	    return $rightStr
-	} elseif {$width > $pixels} {
-	    return [strRange $win $rightStr $font $pixels $alignment]
-	} else {
-	    set str [string range $str 0 [expr {$halfLen - 1}]]
-	    return [strRange $win $str $font \
-		    [expr {$pixels - $width}] $alignment]$rightStr
+	set idx [string length $s]
+	while 1 {
+	    set len [string length $s]
+	    set halfLen [expr {$len / 2}]
+	    if {$halfLen == 0} {
+		return [string range $str $idx end]
+	    }
+
+	    set rightStr [string range $s $halfLen end]
+	    set width [font measure $font -displayof $win $rightStr]
+	    if {$width == $pixels} {
+		incr idx [expr {$halfLen - $len}]
+		return [string range $str $idx end]
+	    } elseif {$width > $pixels} {
+		set s $rightStr
+	    } else {
+		incr idx [expr {$halfLen - $len}]
+		incr pixels -$width
+		set s [string range $s 0 [expr {$halfLen - 1}]]
+		if {[font measure $font -displayof $win $s] <= $pixels} {
+		    incr idx [expr {$halfLen - $len}]
+		    return [string range $str $idx end]
+		}
+	    }
 	}
     } else {
-	set leftStr [string range $str 0 [expr {$halfLen - 1}]]
-	set width [font measure $font -displayof $win $leftStr]
-	if {$width == $pixels} {
-	    return $leftStr
-	} elseif {$width > $pixels} {
-	    return [strRange $win $leftStr $font $pixels $alignment]
-	} else {
-	    set str [string range $str $halfLen end]
-	    return $leftStr[strRange $win $str $font \
-			    [expr {$pixels - $width}] $alignment]
+	set idx -1
+	while 1 {
+	    set halfLen [expr {[string length $s] / 2}]
+	    if {$halfLen == 0} {
+		return [string range $str 0 $idx]
+	    }
+
+	    set leftStr [string range $s 0 [expr {$halfLen - 1}]]
+	    set width [font measure $font -displayof $win $leftStr]
+	    if {$width == $pixels} {
+		incr idx $halfLen
+		return [string range $str 0 $idx]
+	    } elseif {$width > $pixels} {
+		set s $leftStr
+	    } else {
+		incr idx $halfLen
+		incr pixels -$width
+		set s [string range $s $halfLen end]
+		if {[font measure $font -displayof $win $s] <= $pixels} {
+		    incr idx $halfLen
+		    return [string range $str 0 $idx]
+		}
+	    }
 	}
     }
 }
@@ -1639,8 +1662,8 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 	[expr {[string compare $whichWidths "allLabels"] == 0}]
 
     #
-    # Configure the labels, place them in the header frame, and compute
-    # the positions of the tab stops to be set in the body text widget
+    # Configure the labels and compute the positions of
+    # the tab stops to be set in the body text widget
     #
     set data(hdrPixels) 0
     set tabs {}
@@ -1691,44 +1714,6 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 	    }
 	}
 
-	if {$col == $data(editCol) &&
-	    ![string match "*Checkbutton" [winfo class $data(bodyFrEd)]]} {
-	    adjustEditWindow $win $pixels
-	}
-
-	set canvas $data(hdrTxtFrCanv)$col
-	if {[lsearch -exact $data(arrowColList) $col] >= 0 &&
-	    !$data($col-elide) && !$data($col-hide)} {
-	    #
-	    # Place the canvas to the left side of the label if the
-	    # latter is right-justified and to its right side otherwise
-	    #
-	    if {[string compare $labelAlignment "right"] == 0} {
-		place $canvas -in $w -anchor w -bordermode outside \
-			      -relx 0.0 -x $data(charWidth) -rely 0.499 -y -1
-	    } else {
-		place $canvas -in $w -anchor e -bordermode outside \
-			      -relx 1.0 -x -$data(charWidth) -rely 0.499 -y -1
-	    }
-	    raise $canvas
-	} else {
-	    place forget $canvas
-	}
-
-	#
-	# Place the label in the header frame
-	#
-	if {$data($col-elide) || $data($col-hide)} {
-	    foreach l [getSublabels $w] {
-		place forget $l
-	    }
-	    place $w -x [expr {$x - 1}] -relheight 1.0 -width 1
-	    lower $w
-	} else {
-	    set labelPixels [expr {$pixels + 2*$data(charWidth)}]
-	    place $w -x $x -relheight 1.0 -width $labelPixels
-	}
-
 	#
 	# Append a tab stop and the alignment to the tabs list
 	#
@@ -1754,8 +1739,6 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 
 	incr col
     }
-    place $data(hdrLbl) -x $x
-    set data(hdrPixels) $x
 
     #
     # Apply the value of tabs to the body text widget
@@ -1763,19 +1746,15 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
     $data(body) configure -tabs $tabs
 
     #
-    # Adjust the width and height of the frames data(hdrTxtFr) and data(hdr)
+    # Place the labels in the header frame
+    # and adjust the latter's width and height
     #
-    $data(hdrTxtFr) configure -width $data(hdrPixels)
-    if {$data(-width) <= 0} {
-	if {$stretchCols} {
-	    $data(hdr) configure -width $data(hdrPixels)
-	    $data(lb) configure -width \
-		      [expr {$data(hdrPixels) / $data(charWidth)}]
-	}
+    set resizingCol [info exists data(colBeingResized)]
+    if {$resizingCol} {
+	placeLabels $win
     } else {
-	$data(hdr) configure -width 0
+	placeLabelsWhenIdle $win
     }
-    adjustHeaderHeight $win
 
     #
     # Stretch the stretchable columns if requested, and update
@@ -1784,8 +1763,8 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
     if {$stretchCols} {
 	stretchColumnsWhenIdle $win
     }
-    if {![info exists data(x)]} {	;# no resize operation in progress
-	updateScrlColOffset $win
+    if {!$resizingCol} {
+	updateScrlColOffsetWhenIdle $win
     }
     updateHScrlbarWhenIdle $win
 }
@@ -1831,7 +1810,6 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 	set canvasWidth $data(arrowWidth)
 	if {[llength $data(arrowColList)] > 1} {
 	    incr canvasWidth 6
-	    variable library
 	    $canvas itemconfigure sortRank \
 		    -image sortRank$data($col-sortRank)$win
 	}
@@ -2098,6 +2076,126 @@ proc tablelist::computeLabelWidth {win col} {
     } else {
 	set data($col-reqPixels) $netLabelWidth
     }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::placeLabelsWhenIdle
+#
+# Arranges for the labels of the tablelist widget win to be placed in the
+# header frame at idle time.
+#------------------------------------------------------------------------------
+proc tablelist::placeLabelsWhenIdle win {
+    upvar ::tablelist::ns${win}::data data
+
+    if {[info exists data(placeId)]} {
+	return ""
+    }
+
+    set data(placeId) [after idle [list tablelist::placeLabels $win]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::placeLabels
+#
+# Places the labels of the tablelist widget win in the header frame and adjusts
+# the latter's width and height.
+#------------------------------------------------------------------------------
+proc tablelist::placeLabels win {
+    variable canElide
+    upvar ::tablelist::ns${win}::data data
+
+    if {[info exists data(placeId)]} {
+	after cancel $data(placeId)
+	unset data(placeId)
+    }
+
+    #
+    # Place the labels in the header frame
+    #
+    set col 0
+    set x 0
+    foreach {pixels alignment} $data(colList) {
+	set w $data(hdrTxtFrLbl)$col
+	if {$data($col-hide) && !$canElide} {
+	    place forget $w
+	    incr col
+	    continue
+	}
+
+	if {$pixels == 0} {			;# convention: dynamic width
+	    set pixels $data($col-reqPixels)
+	    if {$data($col-maxPixels) > 0} {
+		if {$pixels > $data($col-maxPixels)} {
+		    set pixels $data($col-maxPixels)
+		}
+	    }
+	}
+	incr pixels $data($col-delta)
+
+	if {[info exists data($col-labelalign)]} {
+	    set labelAlignment $data($col-labelalign)
+	} else {
+	    set labelAlignment $alignment
+	}
+
+	if {$col == $data(editCol) &&
+	    ![string match "*Checkbutton" [winfo class $data(bodyFrEd)]]} {
+	    adjustEditWindow $win $pixels
+	}
+
+	set canvas $data(hdrTxtFrCanv)$col
+	if {[lsearch -exact $data(arrowColList) $col] >= 0 &&
+	    !$data($col-elide) && !$data($col-hide)} {
+	    #
+	    # Place the canvas to the left side of the label if the
+	    # latter is right-justified and to its right side otherwise
+	    #
+	    if {[string compare $labelAlignment "right"] == 0} {
+		place $canvas -in $w -anchor w -bordermode outside \
+			      -relx 0.0 -x $data(charWidth) -rely 0.499 -y -1
+	    } else {
+		place $canvas -in $w -anchor e -bordermode outside \
+			      -relx 1.0 -x -$data(charWidth) -rely 0.499 -y -1
+	    }
+	    raise $canvas
+	} else {
+	    place forget $canvas
+	}
+
+	#
+	# Place the label
+	#
+	if {$data($col-elide) || $data($col-hide)} {
+	    foreach l [getSublabels $w] {
+		place forget $l
+	    }
+	    place $w -x [expr {$x - 1}] -relheight 1.0 -width 1
+	    lower $w
+	} else {
+	    set labelPixels [expr {$pixels + 2*$data(charWidth)}]
+	    place $w -x $x -relheight 1.0 -width $labelPixels
+	    incr x [expr {2*$data(charWidth) + $pixels}]
+	}
+
+	incr col
+    }
+    place $data(hdrLbl) -x $x
+
+    #
+    # Adjust the width and height of the frames data(hdrTxtFr) and data(hdr)
+    #
+    set data(hdrPixels) $x
+    $data(hdrTxtFr) configure -width $data(hdrPixels)
+    if {$data(-width) <= 0} {
+	if {$stretchCols} {
+	    $data(hdr) configure -width $data(hdrPixels)
+	    $data(lb) configure -width \
+		      [expr {$data(hdrPixels) / $data(charWidth)}]
+	}
+    } else {
+	$data(hdr) configure -width 0
+    }
+    adjustHeaderHeight $win
 }
 
 #------------------------------------------------------------------------------
@@ -3371,7 +3469,9 @@ proc tablelist::configLabel {w args} {
 	    }
 
 	    default {
-		$w configure $opt $val
+		if {[string compare $val [$w cget $opt]] != 0} {
+		    $w configure $opt $val
+		}
 	    }
 	}
     }
@@ -3383,8 +3483,6 @@ proc tablelist::configLabel {w args} {
 # Creates two arrows in the canvas w.
 #------------------------------------------------------------------------------
 proc tablelist::createArrows {w width height relief} {
-    variable library
-
     if {$height < 6} {
 	set wHeight 6
 	set y 1
