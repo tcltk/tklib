@@ -90,13 +90,13 @@ proc tablelist::cleanup win {
     upvar ::tablelist::ns${win}::data data
 
     #
-    # Cancel the execution of all delayed adjustSeps, makeStripes,
-    # stretchColumns, updateColors, updateScrlColOffset,
+    # Cancel the execution of all delayed placeLabels, adjustSeps,
+    # makeStripes, stretchColumns, updateColors, updateScrlColOffset,
     # updateHScrlbar, updateVScrlbar, adjustElidedText, synchronize,
     # horizAutoScan, doCellConfig, redisplay, and redisplayCol commands
     #
-    foreach id {sepsId stripesId stretchId colorId offsetId hScrlbarId \
-		vScrlbarId elidedId syncId afterId reconfigId} {
+    foreach id {placeId sepsId stripesId stretchId colorId offsetId \
+		hScrlbarId vScrlbarId elidedId syncId afterId reconfigId} {
 	if {[info exists data($id)]} {
 	    after cancel $data($id)
 	}
@@ -248,14 +248,15 @@ proc tablelist::cleanupWindow aux {
 proc tablelist::defineTablelistBody {} {
     variable priv
     array set priv {
-	x		""
-	y		""
-	afterId		""
-	prevRow		""
-	prevCol		""
-	selection	{}
-	clicked		0
-	clickTime	0
+	x			""
+	y			""
+	afterId			""
+	prevRow			""
+	prevCol			""
+	selection		{}
+	clicked			0
+	clickTime		0
+	clickedInEditWin	0
     }
 
     bind TablelistBody <Button-1> {
@@ -312,6 +313,7 @@ proc tablelist::defineTablelistBody {} {
 
 	set tablelist::priv(x) ""
 	set tablelist::priv(y) ""
+	set tablelist::priv(clicked) 0
 	after cancel $tablelist::priv(afterId)
 	set tablelist::priv(afterId) ""
 	set tablelist::priv(releasedInEditWin) 0
@@ -324,7 +326,6 @@ proc tablelist::defineTablelistBody {} {
 		[$tablelist::W nearest       $tablelist::y] \
 		[$tablelist::W nearestcolumn $tablelist::x]
 	}
-	set tablelist::priv(clicked) 0
 	tablelist::condEvalInvokeCmd $tablelist::W
     }
     bind TablelistBody <Shift-Button-1> {
@@ -818,14 +819,11 @@ proc tablelist::condShowTarget {win y} {
 #------------------------------------------------------------------------------
 proc tablelist::moveOrActivate {win row col} {
     #
-    # Return if <ButtonRelease-1> was not preceded by a <Button-1> event (e.g.,
-    # the tile combobox generates a <ButtonRelease-1> event when popping down
-    # its associated listbox) or both <Button-1> and <ButtonRelease-1> occurred
-    # in the temporary embedded widget used for interactive cell editing
+    # Return if both <Button-1> and <ButtonRelease-1> occurred in the
+    # temporary embedded widget used for interactive cell editing
     #
     variable priv
-    if {!$priv(clicked) ||
-	($priv(clickedInEditWin) && $priv(releasedInEditWin))} {
+    if {$priv(clickedInEditWin) && $priv(releasedInEditWin)} {
 	return ""
     }
 
@@ -883,14 +881,11 @@ proc tablelist::condEvalInvokeCmd win {
     }
 
     #
-    # Set data(invoked) to 1 BEFORE evaluating the invoke command, because
-    # the latter might generate a <ButtonRelease-1> event (e.g., the
-    # tile combobox behaves this way), thus resulting in an endless
-    # loop of recursive invocations of the script bound to that event
+    # Evaluate the edit window's invoke command
     #
     update 
-    set data(invoked) 1
     eval [strMap {"%W" "$data(bodyFrEd)"} $editWin($name-invokeCmd)]
+    set data(invoked) 1
 }
 
 #------------------------------------------------------------------------------
