@@ -1,3 +1,13 @@
+2006-07-28  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl: Fixed a bug reported by Mark Garvey.
+	* scripts/tablelistEdit.tcl:
+
+	* scripts/tablelistUtil.tcl: Performance tuning in the procedures
+	  tablelist::adjustColumns and tablelist::strRange.
+
+	* scripts/tclIndex: Newly generated.
+
 2006-07-13  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl: Further improvements in the handling of
