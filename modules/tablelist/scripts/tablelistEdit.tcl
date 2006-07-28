@@ -48,25 +48,26 @@ namespace eval tablelist {
 	    focus %W
 	}
 	bind TablelistEdit <ButtonRelease-1> {
-	    foreach {tablelist::W tablelist::x tablelist::y} \
-		[tablelist::convEventFields %W %x %y] {}
+	    if {%t != 0} {			;# i.e., no generated event
+		foreach {tablelist::W tablelist::x tablelist::y} \
+		    [tablelist::convEventFields %W %x %y] {}
 
-	    set tablelist::priv(x) ""
-	    set tablelist::priv(y) ""
-	    after cancel $tablelist::priv(afterId)
-	    set tablelist::priv(afterId) ""
-	    set tablelist::priv(releasedInEditWin) 1
-	    if {$tablelist::priv(clicked) &&
-		%t - $tablelist::priv(clickTime) < 300} {
-		tablelist::moveOrActivate $tablelist::W \
-		    $tablelist::priv(row) $tablelist::priv(col)
-	    } else {
-		tablelist::moveOrActivate $tablelist::W \
-		    [$tablelist::W nearest       $tablelist::y] \
-		    [$tablelist::W nearestcolumn $tablelist::x]
+		set tablelist::priv(x) ""
+		set tablelist::priv(y) ""
+		set tablelist::priv(clicked) 0
+		after cancel $tablelist::priv(afterId)
+		set tablelist::priv(afterId) ""
+		set tablelist::priv(releasedInEditWin) 1
+		if {%t - $tablelist::priv(clickTime) < 300} {
+		    tablelist::moveOrActivate $tablelist::W \
+			$tablelist::priv(row) $tablelist::priv(col)
+		} else {
+		    tablelist::moveOrActivate $tablelist::W \
+			[$tablelist::W nearest       $tablelist::y] \
+			[$tablelist::W nearestcolumn $tablelist::x]
+		}
+		tablelist::condEvalInvokeCmd $tablelist::W
 	    }
-	    set tablelist::priv(clicked) 0
-	    tablelist::condEvalInvokeCmd $tablelist::W
 	}
 	bind TablelistEdit <Control-i>    { tablelist::insertChar %W "\t" }
 	bind TablelistEdit <Control-j>    { tablelist::insertChar %W "\n" }
