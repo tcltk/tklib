@@ -1757,6 +1757,21 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
     }
 
     #
+    # Adjust the width of the frames data(hdrTxtFr) and data(hdr)
+    #
+    set data(hdrPixels) $x
+    $data(hdrTxtFr) configure -width $data(hdrPixels)
+    if {$data(-width) <= 0} {
+	if {$stretchCols} {
+	    $data(hdr) configure -width $data(hdrPixels)
+	    $data(lb) configure -width \
+		      [expr {$data(hdrPixels) / $data(charWidth)}]
+	}
+    } else {
+	$data(hdr) configure -width 0
+    }
+
+    #
     # Stretch the stretchable columns if requested, and update
     # the scrolled column offset and the horizontal scrollbar
     #
@@ -2182,19 +2197,8 @@ proc tablelist::placeLabels win {
     place $data(hdrLbl) -x $x
 
     #
-    # Adjust the width and height of the frames data(hdrTxtFr) and data(hdr)
+    # Adjust the height of the frames data(hdrTxtFr) and data(hdr)
     #
-    set data(hdrPixels) $x
-    $data(hdrTxtFr) configure -width $data(hdrPixels)
-    if {$data(-width) <= 0} {
-	if {$stretchCols} {
-	    $data(hdr) configure -width $data(hdrPixels)
-	    $data(lb) configure -width \
-		      [expr {$data(hdrPixels) / $data(charWidth)}]
-	}
-    } else {
-	$data(hdr) configure -width 0
-    }
     adjustHeaderHeight $win
 }
 
