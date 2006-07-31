@@ -1,3 +1,7 @@
+2006-07-31  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: Correction in tablelist::adjustColumns.
+
 2006-07-28  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl: Fixed a bug reported by Mark Garvey.
