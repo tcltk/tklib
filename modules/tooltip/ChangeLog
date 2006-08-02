@@ -1,3 +1,9 @@
+2006-08-02  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* tooltip.tcl (::tooltip::show): better handle boundary case
+	considering Tk's odd multi-monitor screen dimension handling.
+	AS bug 48498.
+
 2006-03-31  Andreas Kupries <andreask@activestate.com>
 
 	* tipstack.tcl (::tipstack::clearsub): Superfluous argument to
