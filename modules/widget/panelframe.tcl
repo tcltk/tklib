@@ -184,7 +184,7 @@ snit::widget widget::panelframe {
 		return -code error $msg
 	    }
 	}
-	foreach {ipadx ipady} [_padval $opts(-pad)] { break }
+	foreach {ipadx ipady} [$self _padval $opts(-pad)] { break }
 
 	lappend items $w
 	pack $w -in $tframe -padx $ipadx -pady $ipady -side $opts(-side) \
