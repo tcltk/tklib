@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tooltip.tcl,v 1.5 2005/11/22 00:55:07 hobbs Exp $
+# RCS: @(#) $Id: tooltip.tcl,v 1.6 2006/08/02 18:59:51 hobbs Exp $
 #
 # Initiated: 28 October 1996
 
@@ -131,6 +131,7 @@ proc ::tooltip::tooltip {w args} {
 		} else {
 		    wm overrideredirect $b 1
 		}
+		catch {wm attributes $b -topmost 1}
 		wm positionfrom $b program
 		wm withdraw $b
 		label $b.label -highlightthickness 0 -relief solid -bd 1 \
@@ -228,36 +229,41 @@ proc ::tooltip::show {w msg {i {}}} {
     set b $G(TOPLEVEL)
     $b.label configure -text $msg
     update idletasks
+    set screenw [winfo screenwidth $w]
+    set screenh [winfo screenheight $w]
+    set reqw [winfo reqwidth $b]
+    set reqh [winfo reqheight $b]
+    # When adjusting for being on the screen boundary, check that we are
+    # near the "edge" already, as Tk handles multiple monitors oddly
     if {$i eq "cursor"} {
 	set y [expr {[winfo pointery $w]+20}]
-	if {($y+[winfo reqheight $b])>[winfo screenheight $w]} {
-	    set y [expr {[winfo pointery $w]-[winfo reqheight $b]-5}]
+	if {($y < $screenh) && ($y+$reqh) > $screenh} {
+	    set y [expr {[winfo pointery $w]-$reqh-5}]
 	}
     } elseif {$i ne ""} {
 	set y [expr {[winfo rooty $w]+[winfo vrooty $w]+[$w yposition $i]+25}]
-	if {($y+[winfo reqheight $b])>[winfo screenheight $w]} {
+	if {($y < $screenh) && ($y+$reqh) > $screenh} {
 	    # show above if we would be offscreen
-	    set y [expr {[winfo rooty $w]+[$w yposition $i]-\
-			     [winfo reqheight $b]-5}]
+	    set y [expr {[winfo rooty $w]+[$w yposition $i]-$reqh-5}]
 	}
     } else {
 	set y [expr {[winfo rooty $w]+[winfo vrooty $w]+[winfo height $w]+5}]
-	if {($y+[winfo reqheight $b])>[winfo screenheight $w]} {
+	if {($y < $screenh) && ($y+$reqh) > $screenh} {
 	    # show above if we would be offscreen
-	    set y [expr {[winfo rooty $w]-[winfo reqheight $b]-5}]
+	    set y [expr {[winfo rooty $w]-$reqh-5}]
 	}
     }
     if {$i eq "cursor"} {
 	set x [winfo pointerx $w]
     } else {
-	set x [expr {[winfo rootx $w]+[winfo vrootx $w]+\
-			 ([winfo width $w]-[winfo reqwidth $b])/2}]
+	set x [expr {[winfo rootx $w]+[winfo vrootx $w]+
+		     ([winfo width $w]-$reqw)/2}]
     }
     # only readjust when we would appear right on the screen edge
-    if {$x<0 && ($x+[winfo reqwidth $b])>0} {
+    if {$x<0 && ($x+$reqw)>0} {
 	set x 0
-    } elseif {($x+[winfo reqwidth $b])>[winfo screenwidth $w]} {
-	set x [expr {[winfo screenwidth $w]-[winfo reqwidth $b]}]
+    } elseif {($x < $screenw) && ($x+$reqw) > $screenw} {
+	set x [expr {$screenw-$reqw}]
     }
     if {[tk windowingsystem] eq "aqua"} {
 	set focus [focus]
