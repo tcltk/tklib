@@ -3065,6 +3065,8 @@ proc tablelist::scanSubCmd {win opt x y} {
 	if {[string compare $opt "dragto"] == 0} {
 	    updateColorsWhenIdle $win
 	    adjustSepsWhenIdle $win
+	    adjustElidedText $win
+	    updateVScrlbarWhenIdle $win
 	}
     } elseif {[string compare $opt "mark"] == 0} {
 	$w scan mark 0 $y
@@ -3101,6 +3103,7 @@ proc tablelist::scanSubCmd {win opt x y} {
 	updateColorsWhenIdle $win
 	adjustSepsWhenIdle $win
 	adjustElidedText $win
+	updateVScrlbarWhenIdle $win
     }
 
     return ""

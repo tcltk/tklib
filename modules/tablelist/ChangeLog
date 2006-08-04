@@ -1,3 +1,7 @@
+2006-08-04  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistWidget.tcl: Improvements in tablelist::scanSubCmd.
+
 2006-07-31  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistUtil.tcl: Correction in tablelist::adjustColumns.
