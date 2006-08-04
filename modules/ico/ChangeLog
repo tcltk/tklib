@@ -1,3 +1,8 @@
+2006-08-04  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* ico0.tcl: added back ico 0.3 for compatibility
+	* pkgIndex.tcl: note both 0.3 and 1.0 exist
+
 2006-07-18  Andreas Kupries  <andreask@gactivestate.com>
 
 	* ico.man: Fixed syntax problems in the manpage.
@@ -6,7 +11,8 @@
 
 	* ico.tcl: many changes to add support for icon groups
 	* ico.man: many changes to reflect new commands and usage
-
+	**** update to v1.0 POTENTIAL INCOMPATIBILITY ****
+	
 2005-11-10  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
@@ -39,9 +45,9 @@
 
 2004-08-18  Aaron Faupell <afaupell@users.sourceforge.net>
 
-        * ico.tcl: added support for reading from BMP files
-        Modified transparentColor to work on pixel list also.
-        * ico.man: updated with the new functionality
+	* ico.tcl: added support for reading from BMP files
+	Modified transparentColor to work on pixel list also.
+	* ico.man: updated with the new functionality
 
 2004-08-18  Andreas Kupries  <andreask@activestate.com>
 
