@@ -418,24 +418,21 @@ proc style::as::MouseWheel {wFired X Y D {shifted 0}} {
     # if we are outside the app, try and scroll the focus widget
     if {![winfo exists $w]} { catch {set w [focus]} }
     if {[winfo exists $w]} {
-	set cmd [expr {$shifted ? "xview" : "yview"}]
+	# aqua and x11/win32 have different delta handling
 	if {[tk windowingsystem] ne "aqua"} {
-	    # scrollbars have different call conventions
-	    if {[string match "*Scrollbar" [winfo class $w]]} {
-		catch {tk::ScrollByUnits $w \
-			   [string index [$w cget -orient] 0] \
-			   [expr {-($D/30)}]}
-	    } else {
-		catch {$w $cmd scroll [expr {- ($D / 120) * 4}] units}
-	    }
+	    set delta [expr {- ($D / 30)}]
 	} else {
-	    # scrollbars have different call conventions
-	    if {[string match "*Scrollbar" [winfo class $w]]} {
-		catch {tk::ScrollByUnits $w \
-			   [string index [$w cget -orient] 0] \
-			   [expr {-($D)}]}
-	    } else {
-		catch {$w $cmd scroll [expr {- ($D)}] units}
+	    set delta [expr {- ($D)}]
+	}
+	# scrollbars have different call conventions
+	if {[string match "*Scrollbar" [winfo class $w]]} {
+	    catch {tk::ScrollByUnits $w \
+		       [string index [$w cget -orient] 0] $delta}
+	} else {
+	    set cmd [list $w [expr {$shifted ? "xview" : "yview"}] \
+			 scroll $delta units]
+	    while {[catch $cmd] && [winfo toplevel $w] ne $w} {
+		set w [winfo parent $w]
 	    }
 	}
     }
