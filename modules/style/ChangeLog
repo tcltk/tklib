@@ -2,6 +2,9 @@
 
 	* as.tcl (style::as::CtrlMouseWheel): account for negative (pixel)
 	font sizes in control-mousewheel bindings.
+	(style::as::MouseWheel): walk the widget path up to find the
+	proper widget to scroll, i.e. for proper scrolling of canvas
+	or text with embedded widgets.
 
 2006-07-03  Jeff Hobbs  <jeffh@ActiveState.com>
 
