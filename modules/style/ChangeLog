@@ -1,3 +1,8 @@
+2006-08-10  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* as.tcl (style::as::CtrlMouseWheel): account for negative (pixel)
+	font sizes in control-mousewheel bindings.
+
 2006-07-03  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* as.tcl (style::as::init_menu*): adjust menu style defaults to

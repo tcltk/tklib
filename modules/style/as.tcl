@@ -223,12 +223,14 @@ proc style::as::CtrlMouseWheel {W X Y D {what local}} {
 	} else {
 	    # readjust all the font sizes based on the current one
 	    set size [font configure ASfont -size]
-	    incr size [expr {($D > 0) ? 1 : -1}]
+	    # handle negative font sizes (by pixel instead of point)
+	    set neg [expr {($size < 0) ? -1 : 1}]
+	    incr size [expr {$neg * (($D > 0) ? 1 : -1)}]
 	    # but we do have limits on how small/large things can get
-	    if {$size < 6 || $size > 18} { return }
+	    if {abs($size) < 6 || abs($size) > 18} { return }
 	    font configure ASfont      -size $size
 	    font configure ASfontBold  -size $size
-	    font configure ASfontFixed -size [expr {$size+1}]
+	    font configure ASfontFixed -size [expr {$size+(1*$neg)}]
 	    # force reconfigure of this widget with the same font in
 	    # case it doesn't have a WorldChanged function
 	    catch {$w configure -font $font}
@@ -237,11 +239,12 @@ proc style::as::CtrlMouseWheel {W X Y D {what local}} {
 		# switching between global/local ctrl-mswhl modes
 		for {set i -2} {$i <= 4} {incr i} {
 		    font configure ASfont$i      \
-			-size [expr {$size+$i}] -family $family
+			-size [expr {$size+($i*$neg)}] -family $family
 		    font configure ASfontBold$i  \
-			-size [expr {$size+$i}] -family $family -weight bold
+			-size [expr {$size+($i*$neg)}] -family $family \
+			-weight bold
 		    font configure ASfontFixed$i \
-			-size [expr {$size+1+$i}] -family Courier
+			-size [expr {$size+((1+$i)*$neg)}] -family Courier
 		}
 	    }
 	}
