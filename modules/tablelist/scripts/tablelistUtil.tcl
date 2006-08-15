@@ -600,111 +600,87 @@ proc tablelist::charsToPixels {win font charCount} {
 #------------------------------------------------------------------------------
 # tablelist::strRange
 #
-# Returns the largest initial (for alignment = left or center) or final (for
+# Gets the largest initial (for alignment = left or center) or final (for
 # alignment = right) range of characters from str whose width, when displayed
-# in the given font, is no greater than pixels.
+# in the given font, is no greater than pixels decremented by the width of
+# snipStr.  Returns a string obtained from this substring by appending (for
+# alignment = left or center) or prepending (for alignment = right) (part of)
+# snipStr to it.
 #------------------------------------------------------------------------------
-proc tablelist::strRange {win str font pixels alignment} {
-    if {[font measure $font -displayof $win $str] <= $pixels} {
+proc tablelist::strRange {win str font pixels alignment snipStr} {
+    set width [font measure $font -displayof $win $str]
+    if {$width <= $pixels} {
 	return $str
     }
 
-    set s $str
-    if {[string compare $alignment "right"] == 0} {
-	set idx [string length $s]
-	while 1 {
-	    set len [string length $s]
-	    set halfLen [expr {$len / 2}]
-	    if {$halfLen == 0} {
-		return [string range $str $idx end]
-	    }
-
-	    set rightStr [string range $s $halfLen end]
-	    set width [font measure $font -displayof $win $rightStr]
-	    if {$width == $pixels} {
-		incr idx [expr {$halfLen - $len}]
-		return [string range $str $idx end]
-	    } elseif {$width > $pixels} {
-		set s $rightStr
-	    } else {
-		incr idx [expr {$halfLen - $len}]
-		incr pixels -$width
-		set s [string range $s 0 [expr {$halfLen - 1}]]
-		if {[font measure $font -displayof $win $s] <= $pixels} {
-		    incr idx [expr {$halfLen - $len}]
-		    return [string range $str $idx end]
-		}
-	    }
-	}
+    set snipWidth [font measure $font -displayof $win $snipStr]
+    if {$pixels <= $snipWidth} {
+	set str $snipStr
+	set snipStr ""
     } else {
-	set idx -1
-	while 1 {
-	    set halfLen [expr {[string length $s] / 2}]
-	    if {$halfLen == 0} {
-		return [string range $str 0 $idx]
-	    }
-
-	    set leftStr [string range $s 0 [expr {$halfLen - 1}]]
-	    set width [font measure $font -displayof $win $leftStr]
-	    if {$width == $pixels} {
-		incr idx $halfLen
-		return [string range $str 0 $idx]
-	    } elseif {$width > $pixels} {
-		set s $leftStr
-	    } else {
-		incr idx $halfLen
-		incr pixels -$width
-		set s [string range $s $halfLen end]
-		if {[font measure $font -displayof $win $s] <= $pixels} {
-		    incr idx $halfLen
-		    return [string range $str 0 $idx]
-		}
-	    }
-	}
-    }
-}
-
-#------------------------------------------------------------------------------
-# tablelist::strRangeExt
-#
-# Invokes strRange with the given arguments and returns a string obtained by
-# appending (for alignment = left or center) or prepending (for alignment =
-# right) (part of) the snip string to (part of) its result.
-#------------------------------------------------------------------------------
-proc tablelist::strRangeExt {win str font pixels alignment snipStr} {
-    set subStr [strRange $win $str $font $pixels $alignment]
-    set len [string length $subStr]
-    if {$pixels < 0 || $len == [string length $str] ||
-	[string compare $snipStr ""] == 0} {
-	return $subStr
+	incr pixels -$snipWidth
     }
 
     if {[string compare $alignment "right"] == 0} {
-	set extSubStr $snipStr$subStr
-	while {[font measure $font -displayof $win $extSubStr] > $pixels} {
-	    if {$len > 0} {
-		set subStr [string range $subStr 1 end]
-		incr len -1
-		set extSubStr $snipStr$subStr
-	    } else {
-		set extSubStr [string range $extSubStr 1 end]
+	set idx [expr {[string length $str]*($width - $pixels)/$width}]
+	set subStr [string range $str $idx end]
+	set width [font measure $font -displayof $win $subStr]
+	if {$width < $pixels} {
+	    while 1 {
+		incr idx -1
+		set subStr [string range $str $idx end]
+		set width [font measure $font -displayof $win $subStr]
+		if {$width > $pixels} {
+		    incr idx
+		    set subStr [string range $str $idx end]
+		    return $snipStr$subStr
+		} elseif {$width == $pixels} {
+		    return $snipStr$subStr
+		}
+	    }
+	} elseif {$width == $pixels} {
+	    return $snipStr$subStr
+	} else {
+	    while 1 {
+		incr idx
+		set subStr [string range $str $idx end]
+		set width [font measure $font -displayof $win $subStr]
+		if {$width <= $pixels} {
+		    return $snipStr$subStr
+		}
 	    }
 	}
+
     } else {
-	set last [expr {$len - 1}]
-	set extSubStr $subStr$snipStr
-	while {[font measure $font -displayof $win $extSubStr] > $pixels} {
-	    if {$last >= 0} {
-		incr last -1
-		set subStr [string range $subStr 0 $last]
-		set extSubStr $subStr$snipStr
-	    } else {
-		set extSubStr [string range $extSubStr 1 end]
+	set idx [expr {[string length $str]*$pixels/$width - 1}]
+	set subStr [string range $str 0 $idx]
+	set width [font measure $font -displayof $win $subStr]
+	if {$width < $pixels} {
+	    while 1 {
+		incr idx
+		set subStr [string range $str 0 $idx]
+		set width [font measure $font -displayof $win $subStr]
+		if {$width > $pixels} {
+		    incr idx -1
+		    set subStr [string range $str 0 $idx]
+		    return $subStr$snipStr
+		} elseif {$width == $pixels} {
+		    return $subStr$snipStr
+		}
+	    }
+	} elseif {$width == $pixels} {
+	    return $subStr$snipStr
+	} else {
+	    while 1 {
+		incr idx -1
+		set subStr [string range $str 0 $idx]
+		set width [font measure $font -displayof $win $subStr]
+		if {$width <= $pixels} {
+		    return $subStr$snipStr
+		}
 	    }
 	}
     }
-
-    return $extSubStr
 }
 
 #------------------------------------------------------------------------------
@@ -783,13 +759,13 @@ proc tablelist::getListWidth {win list font} {
 # tablelist::joinList
 #
 # Returns the string formed by joining together with "\n" the strings obtained 
-# by applying strRangeExt to the elements of the given list, with the specified
+# by applying strRange to the elements of the given list, with the specified
 # specified arguments.
 #------------------------------------------------------------------------------
 proc tablelist::joinList {win list font pixels alignment snipStr} {
     set list2 {}
     foreach str $list {
-	lappend list2 [strRangeExt $win $str $font $pixels $alignment $snipStr]
+	lappend list2 [strRange $win $str $font $pixels $alignment $snipStr]
     }
 
     return [join $list2 "\n"]
@@ -871,7 +847,7 @@ proc tablelist::adjustElem {win textName auxWidthName font pixels alignment
 	    }
 	}
     } elseif {$auxWidth == 0} {			;# no image or window
-	set text [strRangeExt $win $text $font $pixels $alignment $snipStr]
+	set text [strRange $win $text $font $pixels $alignment $snipStr]
     } elseif {[string compare $text ""] == 0} {	;# aux. object w/o text
 	if {$auxWidth > $pixels} {
 	    set auxWidth $pixels
@@ -880,7 +856,7 @@ proc tablelist::adjustElem {win textName auxWidthName font pixels alignment
 	set gap [font measure $font -displayof $win " "]
 	if {$auxWidth + $gap <= $pixels} {
 	    incr pixels -[expr {$auxWidth + $gap}]
-	    set text [strRangeExt $win $text $font $pixels $alignment $snipStr]
+	    set text [strRange $win $text $font $pixels $alignment $snipStr]
 	    if {[string compare $alignment "right"] == 0} {
 		set text "$text "
 	    } else {
@@ -920,8 +896,7 @@ proc tablelist::adjustMlElem {win listName auxWidthName font pixels alignment
 	}
     } elseif {$auxWidth == 0} {			;# no image or window
 	foreach str $list {
-	    lappend list2 [strRangeExt $win $str $font \
-			   $pixels $alignment $snipStr]
+	    lappend list2 [strRange $win $str $font $pixels $alignment $snipStr]
 	}
 	set list $list2
     } elseif {![hasChars $list]} {		;# aux. object w/o text
@@ -933,8 +908,7 @@ proc tablelist::adjustMlElem {win listName auxWidthName font pixels alignment
 	if {$auxWidth + $gap <= $pixels} {
 	    incr pixels -[expr {$auxWidth + $gap}]
 	    foreach str $list {
-		set str [strRangeExt $win $str $font \
-			 $pixels $alignment $snipStr]
+		set str [strRange $win $str $font $pixels $alignment $snipStr]
 		if {[string compare $alignment "right"] == 0} {
 		    lappend list2 "$str "
 		} else {
@@ -1391,7 +1365,8 @@ proc tablelist::setupColumns {win columns createLabels} {
 	    foreach {name val} {delta 0  lastStaticWidth 0  maxPixels 0
 				sortOrder ""  sortRank 0  editable 0
 				editwindow entry  hide 0  maxwidth 0
-				resizable 1  showarrow 1  sortmode ascii} {
+				resizable 1  showarrow 1  showlinenumbers 0
+				sortmode ascii} {
 		if {![info exists data($col-$name)]} {
 		    set data($col-$name) $val
 		}
@@ -1890,7 +1865,7 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 	    } else {
 		set lines {}
 		foreach line [split $title "\n"] {
-		    set line [strRangeExt $win $line $labelFont \
+		    set line [strRange $win $line $labelFont \
 			      $lessPixels $alignment $data(-snipstring)]
 		    if {[string compare $alignment "right"] == 0} {
 			lappend lines $spaces$line
@@ -1922,7 +1897,7 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 		incr lessPixels -[expr {$imageWidth + $gap}]
 		set lines {}
 		foreach line [split $title "\n"] {
-		    set line [strRangeExt $win $line $labelFont \
+		    set line [strRange $win $line $labelFont \
 			      $lessPixels $alignment $data(-snipstring)]
 		    if {[string compare $alignment "right"] == 0} {
 			lappend lines "$spaces$line "
@@ -2928,7 +2903,7 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 			set text [joinList $win $list $widgetFont \
 				  $pixels $alignment $snipStr]
 		    } else {
-			set text [strRangeExt $win $text $widgetFont \
+			set text [strRange $win $text $widgetFont \
 				  $pixels $alignment $snipStr]
 		    }
 		}
@@ -3247,6 +3222,77 @@ proc tablelist::makeStripes win {
     }
 
     updateColors $win
+}
+
+#------------------------------------------------------------------------------
+# tablelist::showLineNumbersWhenIdle
+#
+# Arranges for the line numbers in the tablelist widget win to be redisplayed
+# at idle time.
+#------------------------------------------------------------------------------
+proc tablelist::showLineNumbersWhenIdle win {
+    upvar ::tablelist::ns${win}::data data
+
+    if {[info exists data(lineNumsId)]} {
+	return ""
+    }
+
+    set data(lineNumsId) [after idle [list tablelist::showLineNumbers $win]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::showLineNumbers
+#
+# Redisplays the line numbers (if any) in the tablelist widget win.
+#------------------------------------------------------------------------------
+proc tablelist::showLineNumbers win {
+    upvar ::tablelist::ns${win}::data data
+
+    if {[info exists data(lineNumsId)]} {
+	after cancel $data(lineNumsId)
+	unset data(lineNumsId)
+    }
+
+    #
+    # Update the item list
+    #
+    set colIdxList {}
+    for {set col 0} {$col < $data(colCount)} {incr col} {
+	if {!$data($col-showlinenumbers)} {
+	    continue
+	}
+
+	lappend colIdxList $col
+
+	set newItemList {}
+	set line 1
+	foreach item $data(itemList) {
+	    set item [lreplace $item $col $col $line]
+	    lappend newItemList $item
+	    set key [lindex $item end]
+	    if {![info exists data($key-hide)]} {
+		incr line
+	    }
+	}
+	set data(itemList) $newItemList
+
+	redisplayColWhenIdle $win $col
+    }
+
+    if {[llength $colIdxList] == 0} {
+	return ""
+    }
+
+    #
+    # Update the list variable if present
+    #
+    condUpdateListVar $win
+
+    #
+    # Adjust the columns
+    #
+    adjustColumns $win $colIdxList 1
+    return ""
 }
 
 #------------------------------------------------------------------------------
