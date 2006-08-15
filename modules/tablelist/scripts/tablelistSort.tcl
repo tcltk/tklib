@@ -28,11 +28,14 @@ proc tablelist::sortByColumn {win col} {
     if {$result < 0 || $result >= [::$win columncount]} {
 	return -code error "column index \"$col\" out of range"
     }
+    set col $result
+    if {[::$win columncget $col -showlinenumbers]} {
+	return ""
+    }
 
     #
     # Determine the sort order
     #
-    set col $result
     if {[set idx [lsearch -exact [::$win sortcolumnlist] $col]] >= 0 &&
 	[string compare [lindex [::$win sortorderlist] $idx] "increasing"]
 	== 0} {
@@ -75,11 +78,14 @@ proc tablelist::addToSortColumns {win col} {
     if {$result < 0 || $result >= [::$win columncount]} {
 	return -code error "column index \"$col\" out of range"
     }
+    set col $result
+    if {[::$win columncget $col -showlinenumbers]} {
+	return ""
+    }
 
     #
     # Update the lists of sort columns and orders
     #
-    set col $result
     set sortColList [::$win sortcolumnlist]
     set sortOrderList [::$win sortorderlist]
     if {[set idx [lsearch -exact $sortColList $col]] >= 0} {
@@ -153,10 +159,12 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
     #
     if {[llength $sortColList] == 1 && [lindex $sortColList 0] == -1} {
 	if {[string compare $data(-sortcommand) ""] == 0} {
-	    return -code error \
-		   "value of the -sortcommand option is empty"
+	    return -code error "value of the -sortcommand option is empty"
 	}
 
+	#
+	# Update the sort info
+	#
 	for {set col 0} {$col < $data(colCount)} {incr col} {
 	    set data($col-sortRank) 0
 	    set data($col-sortOrder) ""
@@ -166,67 +174,102 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
 	set order [lindex $sortOrderList 0]
 	set data(sortOrder) $order
 
+	#
+	# Sort the item list
+	#
 	set data(itemList) \
 	    [lsort -$order -command $data(-sortcommand) $data(itemList)]
     } else {					;# sorting by a column (list)
-	set sortColCount [llength $sortColList]
-	if {$sortColCount == 0} {
+	#
+	# Check the specified column indices
+	#
+	set sortColCount2 $sortColCount
+	foreach col $sortColList {
+	    if {$data($col-showlinenumbers)} {
+		incr sortColCount2 -1
+	    }
+	}
+	if {$sortColCount2 == 0} {
 	    return ""
 	}
 
+	#
+	# Update the sort info
+	#
 	for {set col 0} {$col < $data(colCount)} {incr col} {
 	    set data($col-sortRank) 0
 	    set data($col-sortOrder) ""
 	}
 	set rank 1
 	foreach col $sortColList order $sortOrderList {
+	    if {$data($col-showlinenumbers)} {
+		continue
+	    }
+
 	    set data($col-sortRank) $rank
 	    set data($col-sortOrder) $order
 	    incr rank
 	}
 	makeSortAndArrowColLists $win
 
+	#
+	# Sort the item list based on the specified columns
+	#
 	for {set idx [expr {$sortColCount - 1}]} {$idx >= 0} {incr idx -1} {
 	    set col [lindex $sortColList $idx]
+	    if {$data($col-showlinenumbers)} {
+		continue
+	    }
+
 	    set order $data($col-sortOrder)
 	    if {[string compare $data($col-sortmode) "command"] == 0} {
-		if {[info exists data($col-sortcommand)]} {
-		    set data(itemList) \
-			[lsort -$order -index $col \
-			 -command $data($col-sortcommand) $data(itemList)]
-		} else {
-		    return -code error \
-			   "value of the -sortcommand option for\
-			    column $col is missing or empty"
+		if {![info exists data($col-sortcommand)]} {
+		    return -code error "value of the -sortcommand option for\
+					column $col is missing or empty"
 		}
+
+		set data(itemList) [lsort -$order -index $col \
+		    -command $data($col-sortcommand) $data(itemList)]
 	    } else {
-		set data(itemList) \
-		    [lsort -$order -index $col \
-		     -$data($col-sortmode) $data(itemList)]
+		set data(itemList) [lsort -$order -index $col \
+		    -$data($col-sortmode) $data(itemList)]
 	    }
 	}
     }
 
     #
+    # Update the line numbers (if any)
+    #
+    for {set col 0} {$col < $data(colCount)} {incr col} {
+	if {!$data($col-showlinenumbers)} {
+	    continue
+	}
+
+	set newItemList {}
+	set line 1
+	foreach item $data(itemList) {
+	    set item [lreplace $item $col $col $line]
+	    lappend newItemList $item
+	    set key [lindex $item end]
+	    if {![info exists data($key-hide)]} {
+		incr line
+	    }
+	}
+	set data(itemList) $newItemList
+    }
+
+    #
     # Replace the contents of the list variable if present
     #
-    if {$data(hasListVar)} {
-	upvar #0 $data(-listvariable) var
-	trace vdelete var wu $data(listVarTraceCmd)
-	set var {}
-	foreach item $data(itemList) {
-	    lappend var [lrange $item 0 $data(lastCol)]
-	}
-	trace variable var wu $data(listVarTraceCmd)
-    }
+    condUpdateListVar $win
 
     #
     # Update anchorRow and activeRow
     #
     foreach type {anchor active} {
-	upvar 0 ${type}Key key
-	if {[string compare $key ""] != 0} {
-	    set data(${type}Row) [lsearch $data(itemList) "* $key"]
+	upvar 0 ${type}Key key2
+	if {[string compare $key2 ""] != 0} {
+	    set data(${type}Row) [lsearch $data(itemList) "* $key2"]
 	}
     }
 
@@ -330,7 +373,7 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
 			set text [joinList $win $list $widgetFont \
 				  $pixels $alignment $snipStr]
 		    } else {
-			set text [strRangeExt $win $text $widgetFont \
+			set text [strRange $win $text $widgetFont \
 				  $pixels $alignment $snipStr]
 		    }
 		}

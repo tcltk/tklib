@@ -1494,6 +1494,19 @@ proc tablelist::doColConfig {col win opt val} {
 	    adjustColumns $win l$col 1
 	}
 
+	-showlinenumbers {
+	    #
+	    # Save the boolean value specified by val in
+	    # data($col$opt), and make sure the line numbers
+	    # will be redisplayed at idle time if needed
+	    #
+	    set val [expr {$val ? 1 : 0}]
+	    if {!$data($col$opt) && $val} {
+		showLineNumbersWhenIdle $win
+	    }
+	    set data($col$opt) $val
+	}
+
 	-sortmode {
 	    #
 	    # Save the properly formatted value of val in data($col$opt)
@@ -1880,12 +1893,12 @@ proc tablelist::doRowConfig {row win opt val} {
 	    }
 
 	    #
-	    # Adjust the columns if necessary
+	    # Adjust the columns if necessary and schedule
+	    # some operations for execution at idle time
 	    #
 	    if {$colWidthsChanged} {
 		adjustColumns $win $colIdxList 1
 	    }
-
 	    updateColorsWhenIdle $win
 	    adjustSepsWhenIdle $win
 	    adjustElidedTextWhenIdle $win
@@ -1982,9 +1995,8 @@ proc tablelist::doRowConfig {row win opt val} {
 
 		#
 		# Invalidate the list of the row indices indicating the
-		# non-hidden rows, adjust the columns if necessary, adjust
-		# the separators and the elided text, redraw the stripes in
-		# the body text widget, and update the vertical scrollbar
+		# non-hidden rows, adjust the columns if necessary, and
+		# schedule some operations for execution at idle time
 		#
 		set data(nonHiddenRowList) {-1}
 		if {$colWidthsChanged} {
@@ -1994,6 +2006,7 @@ proc tablelist::doRowConfig {row win opt val} {
 		adjustElidedTextWhenIdle $win
 		makeStripesWhenIdle $win
 		updateVScrlbarWhenIdle $win
+		showLineNumbersWhenIdle $win
 	    }
 	}
 
@@ -2212,15 +2225,16 @@ proc tablelist::doRowConfig {row win opt val} {
 	    set data(itemList) [lreplace $data(itemList) $row $row $newItem]
 
 	    #
-	    # Adjust the columns if necessary
+	    # Adjust the columns if necessary and schedule
+	    # some operations for execution at idle time
 	    #
 	    if {$colWidthsChanged} {
 		adjustColumns $win $colIdxList 1
 	    }
-
 	    updateColorsWhenIdle $win
 	    adjustSepsWhenIdle $win
 	    adjustElidedTextWhenIdle $win
+	    showLineNumbersWhenIdle $win
 	}
     }
 }
