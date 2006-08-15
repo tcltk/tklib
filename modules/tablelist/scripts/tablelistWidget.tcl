@@ -165,6 +165,7 @@ namespace eval tablelist {
 	-selectbackground	{selectBackground	Foreground	}
 	-selectforeground	{selectForeground	Background	}
 	-showarrow		{showArrow		ShowArrow	}
+	-showlinenumbers	{showLineNumbers	ShowLineNumbers }
 	-sortcommand		{sortCommand		SortCommand	}
 	-sortmode		{sortMode		SortMode	}
 	-stretchable		{stretchable		Stretchable	}
@@ -183,6 +184,7 @@ namespace eval tablelist {
     lappend colConfigSpecs(-maxwidth)		- 0
     lappend colConfigSpecs(-resizable)		- 1
     lappend colConfigSpecs(-showarrow)		- 1
+    lappend colConfigSpecs(-showlinenumbers)	- 0
     lappend colConfigSpecs(-sortmode)		- ascii
     lappend colConfigSpecs(-stretchable)	- 0
     lappend colConfigSpecs(-width)		- 0
@@ -2228,9 +2230,8 @@ proc tablelist::deleteRows {win first last updateListVar} {
 
     #
     # Invalidate the list of the row indices indicating the
-    # non-hidden rows, adjust the columns if necessary, adjust
-    # the separators and the elided text, redraw the stripes in
-    # the body text widget, and update the vertical scrollbar
+    # non-hidden rows, adjust the columns if necessary, and
+    # schedule some operations for exection at idle time
     #
     set data(nonHiddenRowList) {-1}
     if {$colWidthsChanged} {
@@ -2240,6 +2241,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
     adjustElidedTextWhenIdle $win
     makeStripesWhenIdle $win
     updateVScrlbarWhenIdle $win
+    showLineNumbersWhenIdle $win
 
     #
     # Update the indices anchorRow and activeRow
@@ -2738,7 +2740,7 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 			set text [joinList $win $list $colFont \
 				  $pixels $alignment $snipStr]
 		    } else {
-			set text [strRangeExt $win $text $colFont \
+			set text [strRange $win $text $colFont \
 				  $pixels $alignment $snipStr]
 		    }
 		}
@@ -2808,7 +2810,7 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 			set text [joinList $win $list $widgetFont \
 				  $pixels $alignment $snipStr]
 		    } else {
-			set text [strRangeExt $win $text $widgetFont \
+			set text [strRange $win $text $widgetFont \
 				  $pixels $alignment $snipStr]
 		    }
 		}
@@ -2888,9 +2890,8 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 
     #
     # Invalidate the list of the row indices indicating the
-    # non-hidden rows, adjust the columns if necessary, adjust
-    # the separators and the elided text, redraw the stripes in
-    # the body text widget, and update the vertical scrollbar
+    # non-hidden rows, adjust the columns if necessary, and
+    # schedule some operations for execution at idle time
     #
     set data(nonHiddenRowList) {-1}
     if {$colWidthsChanged} {
@@ -2900,6 +2901,7 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
     adjustElidedTextWhenIdle $win
     makeStripesWhenIdle $win
     updateVScrlbarWhenIdle $win
+    showLineNumbersWhenIdle $win
 
     #
     # Update the indices anchorRow and activeRow
