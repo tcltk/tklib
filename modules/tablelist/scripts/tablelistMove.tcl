@@ -202,9 +202,10 @@ proc tablelist::moveSubCmd {win source target} {
     set data(nonHiddenRowList) {-1}
 
     #
-    # Restore the stripes in the body text widget
+    # Restore the stripes and redisplay the line numbers (if any)
     #
     makeStripesWhenIdle $win
+    showLineNumbersWhenIdle $win
 
     #
     # Select those source elements that were selected before

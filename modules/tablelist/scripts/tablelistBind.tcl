@@ -90,12 +90,12 @@ proc tablelist::cleanup win {
     upvar ::tablelist::ns${win}::data data
 
     #
-    # Cancel the execution of all delayed placeLabels, adjustSeps,
-    # makeStripes, stretchColumns, updateColors, updateScrlColOffset,
+    # Cancel the execution of all delayed placeLabels, adjustSeps, makeStripes,
+    # showLineNumbers, stretchColumns, updateColors, updateScrlColOffset,
     # updateHScrlbar, updateVScrlbar, adjustElidedText, synchronize,
     # horizAutoScan, doCellConfig, redisplay, and redisplayCol commands
     #
-    foreach id {placeId sepsId stripesId stretchId colorId offsetId \
+    foreach id {placeId sepsId stripesId lineNumsId stretchId colorId offsetId \
 		hScrlbarId vScrlbarId elidedId syncId afterId reconfigId} {
 	if {[info exists data($id)]} {
 	    after cancel $data($id)
@@ -1702,10 +1702,7 @@ proc tablelist::defineTablelistArrow {} {
 # on its right border or not.
 #------------------------------------------------------------------------------
 proc tablelist::labelEnter {w x} {
-    if {![parseLabelPath $w win col]} {
-	return ""
-    }
-
+    parseLabelPath $w win col
     upvar ::tablelist::ns${win}::data data
 
     configLabel $w -cursor $data(-cursor)
@@ -1739,10 +1736,7 @@ proc tablelist::labelEnter {w x} {
 # a tablelist widget.  It deactivates the label.
 #------------------------------------------------------------------------------
 proc tablelist::labelLeave {w X x y} {
-    if {![parseLabelPath $w win col]} {
-	return ""
-    }
-
+    parseLabelPath $w win col
     upvar ::tablelist::ns${win}::data data
 
     if {$data(isDisabled)} {
@@ -1773,10 +1767,7 @@ proc tablelist::labelLeave {w X x y} {
 # label's relief so it can be restored later, and changes the relief to sunken.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Down {w x shiftPressed} {
-    if {![parseLabelPath $w win col]} {
-	return ""
-    }
-
+    parseLabelPath $w win col
     upvar ::tablelist::ns${win}::data data
 
     if {$data(isDisabled) ||
@@ -1860,10 +1851,7 @@ proc tablelist::labelB1Down {w x shiftPressed} {
 # visualized if the columns are movable.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Motion {w X x y} {
-    if {![parseLabelPath $w win col]} {
-	return ""
-    }
-
+    parseLabelPath $w win col
     upvar ::tablelist::ns${win}::data data
 
     if {!$data(labelClicked)} {
@@ -2008,10 +1996,7 @@ proc tablelist::labelB1Motion {w X x y} {
 # accordingly.  Otherwise it changes the label's relief to sunken.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Enter w {
-    if {![parseLabelPath $w win col]} {
-	return ""
-    }
-
+    parseLabelPath $w win col
     upvar ::tablelist::ns${win}::data data
 
     if {!$data(labelClicked)} {
@@ -2040,10 +2025,7 @@ proc tablelist::labelB1Enter w {
 # if the columns are movable, then it changes the mouse cursor, too.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Leave {w x y} {
-    if {![parseLabelPath $w win col]} {
-	return ""
-    }
-
+    parseLabelPath $w win col
     upvar ::tablelist::ns${win}::data data
 
     if {!$data(labelClicked) ||
@@ -2079,10 +2061,7 @@ proc tablelist::labelB1Leave {w x y} {
 # if the columns are movable.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Up {w X} {
-    if {![parseLabelPath $w win col]} {
-	return ""
-    }
-
+    parseLabelPath $w win col
     upvar ::tablelist::ns${win}::data data
 
     if {!$data(labelClicked)} {
@@ -2182,10 +2161,7 @@ proc tablelist::labelB1Up {w X} {
 # to hold all the elements (including the label).
 #------------------------------------------------------------------------------
 proc tablelist::labelB3Down {w shiftPressed} {
-    if {![parseLabelPath $w win col]} {
-	return ""
-    }
-
+    parseLabelPath $w win col
     upvar ::tablelist::ns${win}::data data
 
     if {!$data(isDisabled) &&
