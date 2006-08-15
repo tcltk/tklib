@@ -312,6 +312,9 @@
     <dd><code><b><a href="#col_showarrow">-showarrow</a></b>
     <i>boolean</i></code></dd>
 
+    <dd><code><b><a href="#col_showlinenumbers">-showlinenumbers</a></b>
+    <i>boolean</i></code></dd>
+
     <dd><code><b><a href="#col_sortcommand">-sortcommand</a></b>
     <i>command</i></code></dd>
 
@@ -2782,7 +2785,44 @@ proc formatDate clockVal {
 	true.</dd>
 
 	<dt><br>
-	<a name="col_sortcommand"></a><code><b>-sortcommand</b>
+	<a name="col_showlinenumbers"></a><code><b>-showlinenumbers</b>
+	<i>boolean</i></code></dt>
+
+	<dd>
+	  Specifies whether the given column should display the line numbers
+	  (starting with 1 and ending with the number of the non-hidden
+	  rows).&nbsp; The default value is <code>0</code>.
+	  
+	  <p>The following details assume that the given column's
+	  <code><b>-showlinenumbers</b></code> option was set to true:&nbsp;
+	  Associating the line numbers with the non-hidden rows takes place
+	  automatically whenever items are inserted, deleted, updated, moved,
+	  or sorted.&nbsp; For increased efficiency, this is in most cases done
+	  at idle time.&nbsp; For example, if several items are inserted into
+	  or deleted from the tablelist widget, then the necessary renumbering
+	  of the non-hidden rows will be performed as an idle callback, the
+	  next time the event loop is entered and there are no events to
+	  process.&nbsp; The line numbers will override any previous contents
+	  of the column's cells.&nbsp; They are, per default, displayed without
+	  leading zeros, but this (and the display format in general) can be
+	  changed with the aid of the <code><b><a href=
+	  "#col_formatcommand">-formatcommand</a></b></code> column
+	  configuration option.</p>
+
+	  <p>The <code><b><a href="#sortbycolumn">sortbycolumn</a></b></code>
+	  and <code><b><a href=
+	  "#sortbycolumnlist">sortbycolumnlist</a></b></code> subcommands as
+	  well as the <code><b><a href=
+	  "tablelistColSort.html#sortByColumn">tablelist::sortByColumn</a></b></code>
+	  and <code><b><a href=
+	  "tablelistColSort.html#addToSortColumns">tablelist::addToSortColumns</a></b></code>
+	  commands check the column indices passed to them as arguments and
+	  don't perform any sorting by those columns that have been configured
+	  to display the line numbers (see the corresponding descriptions for
+	  details).
+	</dd>
+
+	<dt><a name="col_sortcommand"></a><code><b>-sortcommand</b>
 	<i>command</i></code></dt>
 
 	<dd>This option is only relevant if the value of the <code><b><a href=
@@ -4623,69 +4663,81 @@ upvar #0 [.tbl itemlistvar] itemList
 	<a name="sortbycolumn"></a><code><i>pathName</i> <b>sortbycolumn</b>
 	<i>columnIndex</i> ?<b>-increasing</b>|<b>-decreasing</b>?</code></dt>
 
-	<dd>Sorts the items based on the elements of the column given by
-	<code><i>columnIndex</i></code>, in increasing or decreasing order, as
-	specified by the optional argument.&nbsp; The default is
-	<code><b>-increasing</b></code>.&nbsp; The sorting process is
-	controlled by the values of the <code><b><a href=
-	"#col_sortmode">-sortmode</a></b></code> and <code><b><a href=
-	"#col_sortcommand">-sortcommand</a></b></code> options for the given
-	column.&nbsp; If both the value of the <code><b><a href=
-	"#showarrow">-showarrow</a></b></code> configuration option and that of
-	the <code><b><a href="#col_showarrow">-showarrow</a></b></code> option
-	for the specified column are true then an up- or down-arrow indicating
-	the sort order will be placed into the column's label.&nbsp; The shape
-	of the arrow depends on the command's optional argument and on the
-	value of the <code><b><a href=
-	"#incrarrowtype">-incrarrowtype</a></b></code> configuration
-	option.&nbsp; If the label's text is right-aligned then the arrow will
-	be displayed on the left side of the label, otherwise on its right
-	side.&nbsp; After sorting the items, the vertical view is adjusted in
-	the same way as in the case of the <code><b><a href=
-	"#sort">sort</a></b></code> subcommand.</dd>
+	<dd>
+	  Sorts the items based on the elements of the column given by
+	  <code><i>columnIndex</i></code>, in increasing or decreasing order,
+	  as specified by the optional argument.&nbsp; The default is
+	  <code><b>-increasing</b></code>.&nbsp; The sorting process is
+	  controlled by the values of the <code><b><a href=
+	  "#col_sortmode">-sortmode</a></b></code> and <code><b><a href=
+	  "#col_sortcommand">-sortcommand</a></b></code> options for the given
+	  column.&nbsp; If both the value of the <code><b><a href=
+	  "#showarrow">-showarrow</a></b></code> configuration option and that
+	  of the <code><b><a href="#col_showarrow">-showarrow</a></b></code>
+	  option for the specified column are true then an up- or down-arrow
+	  indicating the sort order will be placed into the column's
+	  label.&nbsp; The shape of the arrow depends on the command's optional
+	  argument and on the value of the <code><b><a href=
+	  "#incrarrowtype">-incrarrowtype</a></b></code> configuration
+	  option.&nbsp; If the label's text is right-aligned then the arrow
+	  will be displayed on the left side of the label, otherwise on its
+	  right side.&nbsp; After sorting the items, the vertical view is
+	  adjusted in the same way as in the case of the <code><b><a href=
+	  "#sort">sort</a></b></code> subcommand.
 
-	<dt><br>
-	<a name="sortbycolumnlist"></a><code><i>pathName</i>
+	  <p>The actions described above are only performed if the specified
+	  column's <code><b><a href=
+	  "#col_showlinenumbers">-showlinenumbers</a></b></code> option hasn't
+	  been set to true.</p>
+	</dd>
+
+	<dt><a name="sortbycolumnlist"></a><code><i>pathName</i>
 	<b>sortbycolumnlist</b> <i>columnIndexList</i>
 	?<i>sortOrderList</i>?</code></dt>
 
-	<dd>Sorts the items based on the elements of the columns given by the
-	<code><i>columnIndexList</i></code> argument, which must be a list of
-	distinct column indices.&nbsp; The items are first sorted based on the
-	column specified by the last element of
-	<code><i>columnIndexList</i></code>, then based on the one given by the
-	last but one element, and so on.&nbsp; The order of each sort operation
-	is taken from the optional argument <code><i>sortOrderList</i></code>,
-	whose elements must be (abbreviations of)
-	<code><b>increasing</b></code> or <code><b>decreasing</b></code>.&nbsp;
-	If this argument was not specified or contains less elements than
-	<code><i>columnIndexList</i></code> then the missing sort orders are
-	assumed to be <code><b>increasing</b></code>.&nbsp; Each sorting
-	process is controlled by the values of the <code><b><a href=
-	"#col_sortmode">-sortmode</a></b></code> and <code><b><a href=
-	"#col_sortcommand">-sortcommand</a></b></code> options for the
-	respective column.&nbsp; If the column's index was specified among the
-	first 9 elements of <code><i>columnIndexList</i></code> and both the
-	value of the <code><b><a href="#showarrow">-showarrow</a></b></code>
-	configuration option and that of the <code><b><a href=
-	"#col_showarrow">-showarrow</a></b></code> option for that column are
-	true then an up- or down-arrow indicating the sort order will be placed
-	into the column's label.&nbsp; The shape of the arrow depends on the
-	respective sort order and on the value of the <code><b><a href=
-	"#incrarrowtype">-incrarrowtype</a></b></code> configuration
-	option.&nbsp; If the label's text is right-aligned then the arrow will
-	be displayed on the left side of the label, otherwise on its right
-	side.&nbsp; If the <code><i>columnIndexList</i></code> argument
-	specifies more than one column then the first 9 sort ranks
-	(<code>1</code> for the first element of
-	<code><i>columnIndexList</i></code>, <code>2</code> for the second one,
-	and so on) will also be displayed to the right of the arrows.&nbsp;
-	After sorting the items, the vertical view is adjusted in the same way
-	as in the case of the <code><b><a href="#sort">sort</a></b></code>
-	subcommand.</dd>
+	<dd>
+	  Sorts the items based on the elements of the columns given by the
+	  <code><i>columnIndexList</i></code> argument, which must be a list of
+	  distinct column indices.&nbsp; Only those elements of this list are
+	  considered significant that identify columns whose <code><b><a
+	  href="#col_showlinenumbers">-showlinenumbers</a></b></code> option
+	  hasn't been set to true.
+	  
+	  <p>The items are first sorted based on the column specified by the
+	  last significant element of <code><i>columnIndexList</i></code>, then
+	  based on the one given by the last but one significant element, and
+	  so on.&nbsp; The order of each sort operation is taken from the
+	  optional argument <code><i>sortOrderList</i></code>, whose elements
+	  must be (abbreviations of) <code><b>increasing</b></code> or
+	  <code><b>decreasing</b></code>.&nbsp; If this argument was not
+	  specified or contains less elements than
+	  <code><i>columnIndexList</i></code> then the missing sort orders are
+	  assumed to be <code><b>increasing</b></code>.&nbsp; Each sorting
+	  process is controlled by the values of the <code><b><a href=
+	  "#col_sortmode">-sortmode</a></b></code> and <code><b><a href=
+	  "#col_sortcommand">-sortcommand</a></b></code> options for the
+	  respective column.&nbsp; If the column's index was specified among
+	  the first 9 significant elements of
+	  <code><i>columnIndexList</i></code> and both the value of the
+	  <code><b><a href="#showarrow">-showarrow</a></b></code> configuration
+	  option and that of the <code><b><a href=
+	  "#col_showarrow">-showarrow</a></b></code> option for that column are
+	  true then an up- or down-arrow indicating the sort order will be
+	  placed into the column's label.&nbsp; The shape of the arrow depends
+	  on the respective sort order and on the value of the <code><b><a
+	  href="#incrarrowtype">-incrarrowtype</a></b></code> configuration
+	  option.&nbsp; If the label's text is right-aligned then the arrow
+	  will be displayed on the left side of the label, otherwise on its
+	  right side.&nbsp; If more than one sort arrows are to be displayed
+	  then the first 9 sort ranks (<code>1</code> for the first significant
+	  element of <code><i>columnIndexList</i></code>, <code>2</code> for
+	  the second one, and so on) will also be shown to the right of the
+	  arrows.&nbsp; After sorting the items, the vertical view is adjusted
+	  in the same way as in the case of the <code><b><a href=
+	  "#sort">sort</a></b></code> subcommand.</p>
+	</dd>
 
-	<dt><br>
-	<a name="sortcolumn"></a><code><i>pathName</i>
+	<dt><a name="sortcolumn"></a><code><i>pathName</i>
 	<b>sortcolumn</b></code></dt>
 
 	<dd>Returns the numerical index of the column by which the items were
@@ -4786,8 +4838,7 @@ upvar #0 [.tbl itemlistvar] itemList
 	  having this bug!</p>
 	</dd>
 
-	<dt><br>
-	<a name="windowpath"></a><code><i>pathName</i> <b>windowpath</b>
+	<dt><a name="windowpath"></a><code><i>pathName</i> <b>windowpath</b>
 	<i>cellIndex</i></code></dt>
 
 	<dd>Returns the path name of the window contained in the cell given by
