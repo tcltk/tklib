@@ -1,3 +1,20 @@
+2006-08-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl:   Implemented the -showlinenumbers column
+	* scripts/tablelistConfig.tcl: configuration option.
+	* scripts/tablelistMove.tcl:
+	* scripts/tablelistSort.tcl:
+	* scripts/tablelistUtil.tcl:
+	* scripts/tablelistWidget.tcl:
+
+	* scripts/tablelistUtil.tcl: Eliminated the procedure
+	  tablelist::strRange; rewritten the procedure tablelist::strRangeExt.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/tablelistColSort.html: Updated to describe the -showlinenumbers
+	* doc/tablelistWidget.html:  column configuration option.
+
 2006-08-04  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistWidget.tcl: Improvements in tablelist::scanSubCmd.
