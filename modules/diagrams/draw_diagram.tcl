@@ -892,6 +892,8 @@ proc ::Diagrams::drum {text {width {}} {height {}} } {
     #
     set     items [lindex $textobj 1]
     lappend items \
+        [$state(canvas) create rectangle $xline1 $yline1 $xline2 $yline2 \
+             -fill $state(fillcolor) -outline {}] \
         [$state(canvas) create line $xline1 $yline1 $xline1 $yline2 \
              -fill $state(color)] \
         [$state(canvas) create line $xline2 $yline1 $xline2 $yline2 \
@@ -1032,6 +1034,53 @@ proc ::Diagrams::line {args} {
 
     set state(lastitem) $item
     set state(usegap)   1
+    return $item
+}
+
+# bracket --
+#    Draw three line segments in the form of a square bracket from
+#    one position to the next
+# Arguments:
+#    dir         Direction of the bracket (east, west, north or south)
+#    dist        Distance of the
+# Result:
+#    ID of the "bracket"
+# Side effect:
+#    Three line segments drawn
+#
+proc ::Diagrams::bracket {dir dist begin end} {
+    variable state
+
+    set coords [lrange $begin 1 2]
+    if { $dir == "west" } {
+       lappend coords [expr {[lindex $begin 1]-$dist}] [lindex $begin 2]
+       lappend coords [expr {[lindex $begin 1]-$dist}] [lindex $end 2]
+    }
+    if { $dir == "east" } {
+       lappend coords [expr {[lindex $begin 1]+$dist}] [lindex $begin 2]
+       lappend coords [expr {[lindex $begin 1]+$dist}] [lindex $end 2]
+    }
+    if { $dir == "south" } {
+       lappend coords [lindex $begin 1] [expr {[lindex $begin 2]+$dist}]
+       lappend coords [lindex $end 1]   [expr {[lindex $begin 2]+$dist}]
+    }
+    if { $dir == "north" } {
+       lappend coords [lindex $begin 1] [expr {[lindex $begin 2]-$dist}]
+       lappend coords [lindex $end 1]   [expr {[lindex $begin 2]-$dist}]
+    }
+    lappend coords [lindex $end 1] [lindex $end 2]
+
+    $state(canvas) create line $coords -arrow last
+
+    set item [list ARROW $item [join [lrange $coords 0 1] [lrange $coords end-1 end]]]
+
+    #
+    # Ignore the direction of motion - we need the end point
+    #
+    currentpos [position [lindex $coords end-1] [lindex $coords end]]
+
+    set state(lastitem) $item
+    set state(usegap)   0
     return $item
 }
 
