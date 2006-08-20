@@ -1,3 +1,8 @@
+2006-08-20  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: Improved the procedure
+	  tablelist::updateMlCell.
+
 2006-08-15  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl:   Implemented the -showlinenumbers column
@@ -7,8 +12,8 @@
 	* scripts/tablelistUtil.tcl:
 	* scripts/tablelistWidget.tcl:
 
-	* scripts/tablelistUtil.tcl: Eliminated the procedure
-	  tablelist::strRange; rewritten the procedure tablelist::strRangeExt.
+	* scripts/tablelistUtil.tcl: Rewritten the procedure
+	  tablelist::strRange; eliminated the procedure tablelist::strRangeExt.
 
 	* scripts/tclIndex: Newly generated.
 
