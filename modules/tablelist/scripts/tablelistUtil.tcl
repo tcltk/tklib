@@ -1060,6 +1060,8 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
 	$w delete $index1 $index2
 	$w insert $index1 $text
     } else {
+	$aux configure -width $auxWidth
+
 	#
 	# Check whether the label containing an image or the frame containing
 	# a window is mapped at the first or last position of the cell
@@ -1078,20 +1080,20 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
 
 	if {$auxFound} {
 	    #
-	    # Adjust the aux. window's width and contents
+	    # Insert the text
 	    #
-	    $aux configure -width $auxWidth
 	    if {[string compare $alignment "right"] == 0} {
 		if {$auxType == 2} {			;# window
 		    place $aux.w -relx 1.0 -anchor ne
 		}
-		$w insert $index1 $text
+		set index $index1
 	    } else {
 		if {$auxType == 2} {			;# window
 		    place $aux.w -relx 0.0 -anchor nw
 		}
-		$w insert $index1+1c $text
+		set index $index1+1c
 	    }
+	    $w insert $index $text
 	} else {
 	    #
 	    # Insert the text and the aux. window
@@ -1115,11 +1117,15 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 	if {[string compare $path ""] != 0 &&
 	    [string compare [winfo class $path] "Message"] == 0} {
 	    eval $msgScript
-	} else {
+	} elseif {[catch {
+	    $w window configure $index1 -pady 1 -create $msgScript
+	}] != 0} {
 	    $w delete $index1 $index2
 	    $w window create $index1 -pady 1 -create $msgScript
 	}
     } else {
+	$aux configure -width $auxWidth
+
 	#
 	# Check whether the label containing an image or the frame containing
 	# a window is mapped at the first or last position of the cell
@@ -1142,33 +1148,27 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 
 	if {$auxFound} {
 	    #
-	    # Adjust the aux. window's width and contents
+	    # Insert the message window
 	    #
-	    $aux configure -width $auxWidth
 	    if {[string compare $alignment "right"] == 0} {
 		if {$auxType == 2} {			;# window
 		    place $aux.w -relx 1.0 -anchor ne
 		}
-
-		set path [lindex [$w dump -window $index1] 1]
-		if {[string compare $path ""] != 0 &&
-		    [string compare [winfo class $path] "Message"] == 0} {
-		    $w window configure $index1 -window [eval $msgScript]
-		} else {
-		    $w window create $index1 -pady 1 -create $msgScript
-		}
+		set index $index1
 	    } else {
 		if {$auxType == 2} {			;# window
 		    place $aux.w -relx 0.0 -anchor nw
 		}
-
-		set path [lindex [$w dump -window $index1+1c] 1]
-		if {[string compare $path ""] != 0 &&
-		    [string compare [winfo class $path] "Message"] == 0} {
-		    $w window configure $index1+1c -window [eval $msgScript]
-		} else {
-		    $w window create $index1+1c -pady 1 -create $msgScript
-		}
+		set index $index1+1c
+	    }
+	    set path [lindex [$w dump -window $index] 1]
+	    if {[string compare $path ""] != 0 &&
+		[string compare [winfo class $path] "Message"] == 0} {
+		eval $msgScript
+	    } elseif {[catch {
+		$w window configure $index -pady 1 -create $msgScript
+	    }] != 0} {
+		$w window create $index -pady 1 -create $msgScript
 	    }
 	} else {
 	    #
