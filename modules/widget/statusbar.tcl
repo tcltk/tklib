@@ -61,28 +61,31 @@ if {0} {
 }
 
 namespace eval ::widget {
-    variable HaveMarlett \
-	[expr {[lsearch -exact [font families] "Marlett"] != -1}]
+    variable HaveSizegrip [llength [info commands ::ttk::sizegrip]]
+    if {!$HaveSizegrip} {
+	variable HaveMarlett \
+	    [expr {[lsearch -exact [font families] "Marlett"] != -1}]
 
-    # PNG version has partial alpha transparency for better look
-    variable resizer_pngdata {
-	iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAFM0aXcAAAABGdBTUEAAYagM
-	eiWXwAAAGJJREFUGJW9kVEOgCAMQzs8GEezN69fkKlbUAz2r3l5NGTA+pCU+Q
-	IA5sv39wGgZKClZGBhJMVTklRr3VNwMz04mVfQzQiEm79EkrYZycxIkq8kkv2
-	v6RFGku9TUrj8RGr9AGy6mhv2ymLwAAAAAElFTkSuQmCC
-    }
-    variable resizer_gifdata {
-	R0lGODlhDwAPAJEAANnZ2f///4CAgD8/PyH5BAEAAAAALAAAAAAPAA8AAAJEh
-	I+py+1IQvh4IZlG0Qg+QshkAokGQfAvZCBIhG8hA0Ea4UPIQJBG+BAyEKQhCH
-	bIQAgNEQCAIA0hAyE0AEIGgjSEDBQAOw==
-    }
-    if {[package provide img::png] != ""} {
-	set resizer_gifdata {}
-	image create photo ::widget::img_resizer \
-	    -format PNG -data $resizer_pngdata
-    } else {
-	image create photo ::widget::img_resizer \
-	    -format GIF -data $resizer_gifdata
+	# PNG version has partial alpha transparency for better look
+	variable resizer_pngdata {
+	    iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAFM0aXcAAAABGdBTUEAAYagM
+	    eiWXwAAAGJJREFUGJW9kVEOgCAMQzs8GEezN69fkKlbUAz2r3l5NGTA+pCU+Q
+	    IA5sv39wGgZKClZGBhJMVTklRr3VNwMz04mVfQzQiEm79EkrYZycxIkq8kkv2
+	    v6RFGku9TUrj8RGr9AGy6mhv2ymLwAAAAAElFTkSuQmCC
+	}
+	variable resizer_gifdata {
+	    R0lGODlhDwAPAJEAANnZ2f///4CAgD8/PyH5BAEAAAAALAAAAAAPAA8AAAJEh
+	    I+py+1IQvh4IZlG0Qg+QshkAokGQfAvZCBIhG8hA0Ea4UPIQJBG+BAyEKQhCH
+	    bIQAgNEQCAIA0hAyE0AEIGgjSEDBQAOw==
+	}
+	if {[package provide img::png] != ""} {
+	    set resizer_gifdata {}
+	    image create photo ::widget::img_resizer \
+		-format PNG -data $resizer_pngdata
+	} else {
+	    image create photo ::widget::img_resizer \
+		-format GIF -data $resizer_gifdata
+	}
     }
 }
 
@@ -120,34 +123,39 @@ snit::widget widget::statusbar {
 
 	install frame using ttk::frame $win.frame
 
-	if {$::tcl_platform(platform) eq "windows"} {
-	    set cursor size_nw_se
+	if {$::widget::HaveSizegrip} {
+	    # As of tile 0.7.7
+	    install resizer using ttk::sizegrip $win.resizer
 	} else {
-	    set cursor sizing; # bottom_right_corner ??
-	}
-	install resizer using ttk::label $win.resizer \
-	    -borderwidth 0 -relief flat \
-	    -anchor se -cursor $cursor -padding 0
-	if {$::widget::HaveMarlett} {
-	    $resizer configure -font "Marlett -16" -text \u006f
-	} else {
-	    $resizer configure -image ::widget::img_resizer
-	}
+	    if {$::tcl_platform(platform) eq "windows"} {
+		set cursor size_nw_se
+	    } else {
+		set cursor sizing; # bottom_right_corner ??
+	    }
+	    install resizer using ttk::label $win.resizer \
+		-borderwidth 0 -relief flat \
+		-anchor se -cursor $cursor -padding 0
+	    if {$::widget::HaveMarlett} {
+		$resizer configure -font "Marlett -16" -text \u006f
+	    } else {
+		$resizer configure -image ::widget::img_resizer
+	    }
 
-	bind $resizer <1>		[mymethod begin_resize %W %X %Y]
-	bind $resizer <B1-Motion>	[mymethod continue_resize %W %X %Y]
-	bind $resizer <ButtonRelease-1>	[mymethod end_resize %W %X %Y]
+	    bind $resizer <1>		[mymethod begin_resize %W %X %Y]
+	    bind $resizer <B1-Motion>	[mymethod continue_resize %W %X %Y]
+	    bind $resizer <ButtonRelease-1>	[mymethod end_resize %W %X %Y]
+
+	    if {$::widget::resizer_gifdata ne ""
+		&& [package provide img::png] ne ""} {
+		# Try to instantiate this as PNG after first source
+		set resizer_gifdata ""
+		::widget::img_resizer configure \
+		    -format PNG -data $::widget::pngdata
+	    }
+	}
 
 	install separator using ttk::separator $win.separator \
 	    -orient horizontal
-
-	if {$::widget::resizer_gifdata ne ""
-	    && [package provide img::png] ne ""} {
-	    # Try to instantiate this as PNG after first source
-	    set resizer_gifdata ""
-	    ::widget::img_resizer configure \
-		-format PNG -data $::widget::pngdata
-	}
 
 	install sepresize using ttk::separator $win.sepresize \
 	    -orient vertical
@@ -155,7 +163,7 @@ snit::widget widget::statusbar {
 	grid $separator -row 0 -column 0 -columnspan 3 -sticky ew
 	grid $frame     -row 1 -column 0 -sticky news
 	grid $sepresize -row 1 -column 1 -sticky ns;# -padx $ipadx -pady $ipady
-	grid $resizer   -row 1 -column 2 -sticky news
+	grid $resizer   -row 1 -column 2 -sticky se
 	grid columnconfigure $win 0 -weight 1
 
 	$self configurelist $args
@@ -331,8 +339,9 @@ snit::widget widget::statusbar {
 	}
     }
 
-    # The following proc handles the mouse click on the resize control. It
-    # stores the original size of the window and the initial coords of the
+    # The following proc handles the mouse click on the resize control if we
+    # aren't using the ttk::sizegrip.
+    # It stores the original size of the window and the initial coords of the
     # mouse relative to the root.
     method begin_resize {w rootx rooty} {
 	set t    [winfo toplevel $w]
@@ -372,4 +381,4 @@ snit::widget widget::statusbar {
     }
 }
 
-package provide widget::statusbar 1.0
+package provide widget::statusbar 1.1
