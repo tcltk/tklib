@@ -26,7 +26,7 @@ package ifneeded widget::superframe 1.0 \
 package ifneeded widget::panelframe 1.0 \
     [list source [file join $dir panelframe.tcl]]
 
-package ifneeded widget::statusbar 1.0 \
+package ifneeded widget::statusbar 1.1 \
     [list source [file join $dir statusbar.tcl]]
 
 package ifneeded widget::toolbar 1.0 \
