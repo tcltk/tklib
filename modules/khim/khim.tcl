@@ -17,7 +17,7 @@
 # Refer to the file "license.terms" for the terms and conditions of
 # use and redistribution of this file, and a DISCLAIMER OF ALL WARRANTEES.
 #
-# $Id: khim.tcl,v 1.1 2006/08/27 05:54:49 kennykb Exp $
+# $Id: khim.tcl,v 1.2 2006/08/27 20:07:42 kennykb Exp $
 # $Source: /home/rkeene/tmp/cvs2fossil/tcllib/tklib/modules/khim/khim.tcl,v $
 #
 #----------------------------------------------------------------------
@@ -879,9 +879,16 @@ proc khim::BadCompose {w c0 c1} {
 
 proc khim::Insert {w c} {
     $w insert insert $c
-    set c [$w index insert]
-    if {($c < [$w index @0]) || ($c > [$w index @[winfo width $w]])} {
-	$w xview $c
+    switch -exact [winfo class $w] {
+	entry {
+	    set c [$w index insert]
+	    if {($c < [$w index @0]) || ($c > [$w index @[winfo width $w]])} {
+		$w xview $c
+	    }
+	}
+	text {
+	    $w see insert
+	}
     }
 }
 
