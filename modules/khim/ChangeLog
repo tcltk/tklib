@@ -1,0 +1,6 @@
+2006-08-28   Kevin B. Kenny   <kennykb@acm.org>
+
+	* ChangeLog:     Initial import of the 'khim' (Kevin's Hacky
+	* en.msg:        Input Method) package, which provides key
+	* khim.tcl:      bindings for inputting international characters
+	* pkgIndex.tcl:  on a keyboard that does not support them.
