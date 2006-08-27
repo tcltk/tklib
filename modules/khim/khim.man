@@ -148,7 +148,7 @@ Window title for the dialog box that prompts for KHIM settings.
 [lst_item [const OK]]
 Label for the OK button on several dialogs.
 
-[lst_item [const {Select code page:}]
+[lst_item [const {Select code page:}]]
 Label for a spinbox that prompts the user for a Unicode code page number.
 
 [lst_item [const {SELECT COMPOSE KEY}]]
