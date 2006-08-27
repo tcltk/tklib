@@ -2,8 +2,10 @@
 
 	* PACKAGES:               Added KHIM (Kevin's Hacky Input Method)
 	* README-0.4.txt:         to the module list for installation and
-	* installed-modules.tcl:  documentation.
-	* configure: Regenerated
+	* installed_modules.tcl:  documentation.  Added rules to
+	* install_actions.tcl:    'install_actions' to install message
+	                          catalogs.
+	* configure:              Regenerated.
 	
 	
 2006-04-26  Andreas Kupries <andreask@activestate.com>
