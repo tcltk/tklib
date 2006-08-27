@@ -31,3 +31,7 @@
 2003-07-27 Aaron Faupell <afaupell@users.sourceforge.net>
 
 	initial import
+
+2000-09-18   Kevin Kenny   <kennykb@acm.org>
+
+	* autoscroll.tcl: Initial version posted to http://wiki.tcl.tk/950
