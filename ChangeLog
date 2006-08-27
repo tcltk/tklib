@@ -1,3 +1,11 @@
+2006-08-27  Kevin B. Kenny  <kennykb@acm.org>
+
+	* PACKAGES:               Added KHIM (Kevin's Hacky Input Method)
+	* README-0.4.txt:         to the module list for installation and
+	* installed-modules.tcl:  documentation.
+	* configure: Regenerated
+	
+	
 2006-04-26  Andreas Kupries <andreask@activestate.com>
 
 	* sak.tcl (gd-gen-tap): modified to strip non-version characters
