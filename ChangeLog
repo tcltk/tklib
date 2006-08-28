@@ -1,3 +1,10 @@
+2006-08-28  Andreas Kupries <andreask@activestate.com>
+
+	* PACKAGES:               Reverted changes to the files describing
+	* README-0.4.txt:         the last release. At least PACKAGES is
+	                          needed unchanged to enable the comparison
+	                          of the last release to the current state.
+
 2006-08-27  Kevin B. Kenny  <kennykb@acm.org>
 
 	* PACKAGES:               Added KHIM (Kevin's Hacky Input Method)
