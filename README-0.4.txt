@@ -11,7 +11,6 @@ getstring	getstring               0.1		A dialog which prompts for a string input
 history		history                 0.1		Provides a history for Entry widgets
 ico		ico                     0.3		Reading and writing windows icons
 ipentry		ipentry                 0.1		An IP address entry widget
-khim            khim                    1.0             Pure-Tcl code for inputting international characters
 plotchart	Plotchart               1.1		Simple plotting and charting package
 ------          -------                 -----------     -------------------------------
 style		style                   0.3		Theming via tk options.
