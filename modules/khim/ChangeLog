@@ -1,3 +1,8 @@
+2006-08-29  Andreas Kupries <andreask@activestate.com>
+
+	* khim.man: Put titledesc on a single line. sak's tap file
+	  generation bails out otherwise.
+
 2006-08-27   Kevin B. Kenny   <kennykb@acm.org>
 
 	* ChangeLog:     Initial import of the 'khim' (Kevin's Hacky
