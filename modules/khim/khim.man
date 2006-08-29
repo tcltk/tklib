@@ -1,8 +1,7 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin khim n 1.0]
 [moddesc   {Kevin's Hacky Input Method}]
-[titledesc {Provides key bindings for entering international
-characters on a keyboard that does not support them}]
+[titledesc {Provides key bindings for entering international characters on a keyboard that does not support them}]
 [require Tcl]
 [require khim [opt 1.0]]
 [description]
