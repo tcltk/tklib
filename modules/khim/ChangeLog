@@ -1,3 +1,10 @@
+2006-09-05  Kevin B. Kenny  <kennykb@acm.org>
+
+	* ROOT.msg: Added the missing root catalog, so that at least
+	English help text appears when KHIM is not localized.
+	* khim.tcl: Corrected a problem where the spinbox did not get
+	initialized correctly and so would not spin until the user typed in it.
+	
 2006-09-05  Torsten Berg  <berg@marilim.de>
 
 	* da.msg: Added message catalog for the Danish locale.

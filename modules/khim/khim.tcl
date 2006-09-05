@@ -17,7 +17,7 @@
 # Refer to the file "license.terms" for the terms and conditions of
 # use and redistribution of this file, and a DISCLAIMER OF ALL WARRANTEES.
 #
-# $Id: khim.tcl,v 1.3 2006/08/27 20:18:28 kennykb Exp $
+# $Id: khim.tcl,v 1.4 2006/09/05 16:23:51 kennykb Exp $
 # $Source: /home/rkeene/tmp/cvs2fossil/tcllib/tklib/modules/khim/khim.tcl,v $
 #
 #----------------------------------------------------------------------
@@ -1571,10 +1571,12 @@ proc khim::CMapInteractor {w} {
     grid $map.f.b3 -row 0 -column 3 -sticky ew -padx 5
     grid columnconfigure $map.f 2 -weight 1
     grid columnconfigure $map.f {0 1 3} -uniform A
+    grid columnconfigure $map 1 -weight 1
 
     bindtags $c [list $c khim::cmap Canvas [winfo toplevel $c] all]
     trace add variable ::khim::CMapInputCodePage($map) write \
 	[list khim::CMapUpdateSpinbox $map]
+    after idle [list khim::CMapUpdateSpinbox $map]
     trace add variable ::khim::CMapCodePage($map) write \
 	[list khim::CMapDrawCanvas $map]
     if { ![info exists CMapSelectedCharacter($map)] } {
