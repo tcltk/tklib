@@ -7,7 +7,7 @@
 # Refer to the file "license.terms" for the terms and conditions of
 # use and redistribution of this file, and a DISCLAIMER OF ALL WARRANTEES.
 #
-# $Id: ROOT.msg,v 1.1 2006/09/05 16:23:51 kennykb Exp $
+# $Id: ROOT.msg,v 1.2 2006/09/05 18:52:22 kennykb Exp $
 # $Source: /home/rkeene/tmp/cvs2fossil/tcllib/tklib/modules/khim/ROOT.msg,v $
 #
 #----------------------------------------------------------------------
@@ -15,6 +15,10 @@
 # Make sure that help text is available in the root locale.
 
 namespace eval ::khim {
+
+    # If you edit this file, also edit the corresponding text in en.msg,
+    # which is provided for 8.4 compatibility.
+
     ::msgcat::mcset {} HELPTEXT {
 
 	Kevin's Hacky Input Method (KHIM)
