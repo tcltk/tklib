@@ -8,7 +8,7 @@
 	Changed the character map to display incrementally at 1-second
 	intervals if it's taking too long to look up characters in the
 	font substitution (because of performance bugs in that logic on
-	Unix).
+	Unix).  Added support for the Tile entry widget.
 	
 2006-09-05  Torsten Berg  <berg@marilim.de>
 
