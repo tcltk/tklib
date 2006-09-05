@@ -7,31 +7,15 @@
 # Refer to the file "license.terms" for the terms and conditions of
 # use and redistribution of this file, and a DISCLAIMER OF ALL WARRANTEES.
 #
-# $Id: en.msg,v 1.1 2006/08/27 05:54:49 kennykb Exp $
+# $Id: en.msg,v 1.2 2006/09/05 18:52:22 kennykb Exp $
 # $Source: /home/rkeene/tmp/cvs2fossil/tcllib/tklib/modules/khim/en.msg,v $
 #
 #----------------------------------------------------------------------
 
 namespace eval ::khim {
 
-    ::msgcat::mcset en {Apply} {Apply}
-
-    ::msgcat::mcset en {Cancel} {Cancel}
-
-    ::msgcat::mcset en {Change} {Change}
-
-    ::msgcat::mcset en {Character} {Character}
-
-    ::msgcat::mcset en {Compose Key} {Compose Key}
-
-    ::msgcat::mcset en {Compose key:} {Compose key:}
-
-    ::msgcat::mcset en {Composed sequence must be two characters long} \
-	{Composed sequence must be two characters long}
-
-    ::msgcat::mcset en {Delete} {Delete}
-
-    ::msgcat::mcset en {Help...} {Help...}
+    # If you edit HELPTEXT or {SELECT COMPOSE KEY}, also edit the corresponding
+    # messages in ROOT.msg
 
     ::msgcat::mcset en HELPTEXT {
 
@@ -77,6 +61,32 @@ namespace eval ::khim {
 
     }
 
+    ::msgcat::mcset en {SELECT COMPOSE KEY} [string map [list \n\t \n] {
+	Please press the 
+	key that you want 
+	to use as the 
+	"Compose" key.
+    }]
+
+    ::msgcat::mcset en {Apply} {Apply}
+
+    ::msgcat::mcset en {Cancel} {Cancel}
+
+    ::msgcat::mcset en {Change} {Change}
+
+    ::msgcat::mcset en {Character} {Character}
+
+    ::msgcat::mcset en {Compose Key} {Compose Key}
+
+    ::msgcat::mcset en {Compose key:} {Compose key:}
+
+    ::msgcat::mcset en {Composed sequence must be two characters long} \
+	{Composed sequence must be two characters long}
+
+    ::msgcat::mcset en {Delete} {Delete}
+
+    ::msgcat::mcset en {Help...} {Help...}
+
     ::msgcat::mcset en {Input key sequence} {Input key sequence}
 
     ::msgcat::mcset en {Insert Character} {Insert Character}
@@ -90,13 +100,6 @@ namespace eval ::khim {
     ::msgcat::mcset en {OK} {OK}
 
     ::msgcat::mcset en {Select code page:} {Select code page:}
-
-    ::msgcat::mcset en {SELECT COMPOSE KEY} [string map [list \n\t \n] {
-	Please press the 
-	key that you want 
-	to use as the 
-	"Compose" key.
-    }]
 
     ::msgcat::mcset en {Unicode...} {Unicode...}
 

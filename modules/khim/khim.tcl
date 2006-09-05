@@ -17,7 +17,7 @@
 # Refer to the file "license.terms" for the terms and conditions of
 # use and redistribution of this file, and a DISCLAIMER OF ALL WARRANTEES.
 #
-# $Id: khim.tcl,v 1.4 2006/09/05 16:23:51 kennykb Exp $
+# $Id: khim.tcl,v 1.5 2006/09/05 18:52:22 kennykb Exp $
 # $Source: /home/rkeene/tmp/cvs2fossil/tcllib/tklib/modules/khim/khim.tcl,v $
 #
 #----------------------------------------------------------------------
@@ -28,6 +28,8 @@ package require msgcat 1.2
 package require autoscroll 1.0
 
 package provide khim 1.0
+
+namespace eval khim [list variable KHIMDir [file dirname [info script]]]
 
 namespace eval khim {
 
@@ -419,6 +421,8 @@ proc khim::FocusAndInsertSymbol {w} {
 
 proc khim::showHelp {w} {
 
+    variable KHIMDir
+
     # Create dialog to display help
 
     catch {destroy $w}
@@ -436,6 +440,18 @@ proc khim::showHelp {w} {
 
     text $w.t -width 60 -yscrollcommand [list $w.y set] -wrap word
     set text [string trim [mc HELPTEXT]]
+    if {$text eq "HELPTEXT"} {
+	# This must be a version of Tcl that doesn't support the root
+	# locale.  Do The Right Thing anyway
+	set locale [::msgcat::mclocale]
+	::msgcat::mclocale en
+	set text [string trim [mc HELPTEXT]]
+	if {$text eq "HELPTEXT"} {
+	    ::msgcat::mcload $KHIMDir
+	    set text [string trim [mc HELPTEXT]]
+	}
+	::msgcat::mclocale $locale
+    }
     regsub -all -line {^[ \t]+} $text {} text
     regsub -all -line {[ \t]+$} $text {} text
     regsub -all {\n\n} $text <p> text
@@ -490,6 +506,7 @@ proc khim::showHelp {w} {
 #----------------------------------------------------------------------
 
 proc khim::GetComposeKey {parent} {
+    variable KHIMDir
     variable inputComposeKey
     set w [winfo parent $parent].composeKey
     toplevel $w -class dialog
@@ -503,7 +520,20 @@ proc khim::GetComposeKey {parent} {
     wm transient $w $g
     catch {wm attributes $w -toolwindow 1}
     wm title $w [mc "Compose Key"]
-    grid [label $w.l -text [mc "SELECT COMPOSE KEY"]]
+    set text [mc "SELECT COMPOSE KEY"]
+    if {$text eq "SELECT COMPOSE KEY"} {
+	# This must be a version of Tcl that doesn't support the root
+	# locale.  Do The Right Thing anyway
+	set locale [::msgcat::mclocale]
+	::msgcat::mclocale en
+	set text [string trim [mc "SELECT COMPOSE KEY"]]
+	if {$text eq "SELECT COMPOSE KEY"} {
+	    ::msgcat::mcload $KHIMDir
+	    set text [string trim [mc "SELECT COMPOSE KEY"]]
+	}
+	::msgcat::mclocale $locale
+    }
+    grid [label $w.l -text $text]
     bind $w.l <Any-Key> [list set ::khim::inputComposeKey %K]
     bind $w.l <Map> [list focus %W]
     wm resizable $w 0 0
@@ -1078,6 +1108,13 @@ proc khim::CMapDrawCanvas {w args} {
     variable CMapBadCharFont
     variable CMapXL
     variable CMapYL
+    variable CMapSelectedCharacter
+    variable CMapAfter
+
+    if {[info exists CMapAfter($w)]} {
+	after cancel $CMapAfter($w)
+	unset CMapAfter($w)
+    }
 
     set c $w.c
 
@@ -1093,10 +1130,16 @@ proc khim::CMapDrawCanvas {w args} {
     # all at (0,0).  We'll be sliding them by rows and columns to make the
     # grid.
 
+    set rem [expr { $CMapSelectedCharacter($w) % 0x0100 }]
+    set srow [expr { $rem / 16 }]
+    set scol [expr { $rem % 16 }]
+    set tick [clock clicks -milliseconds]
+    set ok 1
     for { set row 0 } { $row < 16 } { incr row } {
 	for { set col 0 } { $col < 16 } { incr col } {
 	    set point [expr { 256 * $CMapCodePage($w) + 16 * $row + $col }]
-	    if { [ValidChar $point] } {
+	    if { ($ok || ($row == $srow && $col == $scol))
+		 && [ValidChar $point] } {
 		set t [format %c $point]
 		set f $CMapFont
 	    } else {
@@ -1107,6 +1150,11 @@ proc khim::CMapDrawCanvas {w args} {
 	    set tags [list row$row col$col]
 	    $c create text 0 0 -text $t -font $f \
 		-anchor center -justify center -tags $tags
+	    set tock [clock clicks -milliseconds]
+	    if {$ok && $tock-$tick > 500} {
+		set CMapAfter($w) [after 500 [list khim::CMapDrawCanvas $w]]
+		set ok 0
+	    }
 	}
     }
 
@@ -1727,7 +1775,7 @@ proc khim::CMapCancel {w} {
 #	Handles the <Destroy> notification in the KHIM character map
 #
 # Parameters:
-#	w - Path name of the character map dialog.
+#	c - Path name of the character map canvas
 #
 # Results:
 #	None.
@@ -1737,8 +1785,16 @@ proc khim::CMapCancel {w} {
 #
 #----------------------------------------------------------------------
 
-proc khim::CMapDestroy {w} {
+proc khim::CMapDestroy {c} {
     variable CMapFocus
+    variable CMapAfter
+    variable CMapXL
+    variable CMapYL
+    set w [winfo toplevel $c]
+    if {[info exists CMapAfter($w)]} {
+	after cancel $CMapAfter($w)
+	unset CMapAfter($w)
+    }
     catch {unset CMapFocus($w)}
     catch {unset CMapXL($w)}
     catch {unset CMapYL($w)}
@@ -1887,10 +1943,10 @@ if {[info exists ::argv0] && ![string compare $::argv0 [info script]]} {
     .e insert end {Type here}
     bindtags .e {.e KHIM Entry . all}
     grid [button .test -text "Test" -command "khim::getOptions .khim"] \
-	[button .load -text "Load config" -command "testLoadConfig"] \
-	[button .save -text "Save config" -command "testSaveConfig"] \
-	[button .help -text "Help" -command "khim::showHelp .help"] \
-	[button .quit -text "Quit" -command "exit"] \
+	[button .bload -text "Load config" -command "testLoadConfig"] \
+	[button .bsave -text "Save config" -command "testSaveConfig"] \
+	[button .bhelp -text "Help" -command "khim::showHelp .help"] \
+	[button .bquit -text "Quit" -command "exit"] \
 	-padx 5 -pady 5
     
     proc testLoadConfig {} {
