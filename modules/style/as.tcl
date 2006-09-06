@@ -418,6 +418,15 @@ proc style::as::MouseWheel {wFired X Y D {shifted 0}} {
     # if we are outside the app, try and scroll the focus widget
     if {![winfo exists $w]} { catch {set w [focus]} }
     if {[winfo exists $w]} {
+	if {[bind $w <MouseWheel>] ne ""} {
+	    # Awkward ... this widget has a MouseWheel binding, but to
+	    # trigger successfully in it, we must give it focus.
+	    catch {focus} old
+	    if {$w ne $old} { focus $w }
+	    event generate $w <MouseWheel> -rootx $X -rooty $Y -delta $D
+	    if {$w ne $old} { focus $old }
+	    return
+	}
 	# aqua and x11/win32 have different delta handling
 	if {[tk windowingsystem] ne "aqua"} {
 	    set delta [expr {- ($D / 30)}]
