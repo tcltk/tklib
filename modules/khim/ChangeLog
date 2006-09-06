@@ -1,3 +1,9 @@
+2006-09-06  Andreas Kupries  <andreask@activestate.com>
+
+	* de.msg: Added message catalog for the German locale.
+	Thanks go to Richard Suchenwirth-Bauersachs
+	<richard.suchenwirth-bauersachs@siemens.com> for proofreading.
+	
 2006-09-05  Kevin B. Kenny  <kennykb@acm.org>
 
 	* ROOT.msg: Added the missing root catalog, so that at least
