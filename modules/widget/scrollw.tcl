@@ -45,9 +45,7 @@ if 0 {
 ###
 
 package require widget
-if {[tk windowingsystem] eq "x11"} {
-    package require tile
-}
+package require tile
 
 snit::widget widget::scrolledwindow {
     hulltype ttk::frame
