@@ -1,6 +1,13 @@
+2006-09-07  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* toolbar.tcl: allow for '$tbar add separator'.
+	allow for %AUTO% as name in special-purpose add types.
+	ensure we only delete toolbar-created widgets on add error.
+	check for item existence in itemcget.
+
 2006-08-24  Jeff Hobbs  <jeffh@ActiveState.com>
 
-	* statusbar.tcl: use ttk::sizegrip is available.
+	* statusbar.tcl: use ttk::sizegrip if available.
 	* pkgIndex.tcl:  update statusbar to 1.1.
 
 2006-08-02  Jeff Hobbs  <jeffh@ActiveState.com>
