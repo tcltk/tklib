@@ -2,40 +2,26 @@
 
 if {![package vsatisfies [package provide Tcl] 8.4]} {return}
 
-package ifneeded widget::all 1.0 {
-    package require widget
-    package require widget::scrolledwindow
-    package require widget::dialog
-    package require widget::superframe
-    package require widget::panelframe
-    package require widget::ruler ; # includes screenruler
-    package provide widget::all 1.0
+namespace eval ::widget {}
+proc ::widget::pkgindex {dir} {
+    set allpkgs [list]
+    # Keep alphabetical for sanity
+    foreach {pkg ver file} {
+	widget			3.0	widget.tcl
+	widget::dialog		1.2	dialog.tcl
+	widget::menuentry	1.0	mentry.tcl
+	widget::panelframe	1.0	panelframe.tcl
+	widget::ruler		1.0	ruler.tcl
+	widget::screenruler	1.1	ruler.tcl
+	widget::scrolledwindow	1.1	scrollw.tcl
+	widget::statusbar	1.1	statusbar.tcl
+	widget::superframe	1.0	superframe.tcl
+	widget::toolbar		1.0	toolbar.tcl
+    } {
+	lappend allpkgs [list package require $pkg $ver]
+	package ifneeded $pkg $ver [list source [file join $dir $file]]
+    }
+    lappend allpkgs {package provide widget::all 1.1}
+    package ifneeded widget::all 1.1 [join $allpkgs \n]
 }
-
-package ifneeded widget 3.0 [list source [file join $dir widget.tcl]]
-
-package ifneeded widget::scrolledwindow 1.1 \
-    [list source [file join $dir scrollw.tcl]]
-
-package ifneeded widget::dialog 1.2 \
-    [list source [file join $dir dialog.tcl]]
-
-package ifneeded widget::superframe 1.0 \
-    [list source [file join $dir superframe.tcl]]
-
-package ifneeded widget::panelframe 1.0 \
-    [list source [file join $dir panelframe.tcl]]
-
-package ifneeded widget::statusbar 1.1 \
-    [list source [file join $dir statusbar.tcl]]
-
-package ifneeded widget::toolbar 1.0 \
-    [list source [file join $dir toolbar.tcl]]
-
-package ifneeded widget::screenruler 1.1 \
-    [list source [file join $dir ruler.tcl]]
-package ifneeded widget::ruler 1.0 \
-    [list source [file join $dir ruler.tcl]]
-
-package ifneeded widget::menuentry 1.0 \
-    [list source [file join $dir mentry.tcl]]
+::widget::pkgindex $dir
