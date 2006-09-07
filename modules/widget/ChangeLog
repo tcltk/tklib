@@ -1,5 +1,8 @@
 2006-09-07  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* widget.man: include all current widgets
+	* widget_toolbar.man: man page for widget::toolbar
+
 	* pkgIndex.tcl (::widget::pkgindex): made pkgindex to consolidate
 	commands for widget::all more easily
 
