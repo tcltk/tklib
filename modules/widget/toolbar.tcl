@@ -143,17 +143,28 @@ snit::widget widget::toolbar {
 	if {[winfo exists $what]} {
 	    set w $what
 	    set symbol $w
+	    set ours 0
 	} else {
 	    set w $frame._$what[incr uid]
 	    set symbol [lindex $args 0]
 	    set args [lrange $args 1 end]
+	    if {![llength $args] || $symbol eq "%AUTO%"}
+		# Autogenerate symbol name
+		set symbol _$what$uid
+	    }
+	    if {[info exists ITEMS($symbol)]} {
+		return -code error "toolbar item '$symbol' already exists"
+	    }
 	    if {$what eq "button"} {
 		set w [ttk::button $w -style Toolbutton -takefocus 0]
 	    } elseif {$what eq "checkbutton"} {
 		set w [ttk::checkbutton $w -style Toolbutton -takefocus 0]
+	    } elseif {$what eq "separator"} {
+		set w [ttk::separator $w -orient vertical]
 	    } else {
 		return -code error "unknown toolbar item type '$what'"
 	    }
+	    set ours 1
 	}
 	set opts(-weight)	0
 	set opts(-separator)	0
@@ -176,7 +187,8 @@ snit::widget widget::toolbar {
 	    }
 	}
 	if {[catch {eval [linsert $cmdargs 0 $w configure]} err]} {
-	    if {[info exists symbol]} { destroy $w }
+	    # we only want to destroy widgets we created
+	    if {$ours} { destroy $w }
 	    return -code error $err
 	}
 	set ITEMS($symbol) $w
@@ -249,6 +261,9 @@ snit::widget widget::toolbar {
     }
 
     method itemcget {symbol option} {
+	if {![info exists ITEMS($symbol)]} {
+	    return -code error "unknown toolbar item '$symbol'"
+	}
 	return [$ITEMS($symbol) cget $option]
     }
 
