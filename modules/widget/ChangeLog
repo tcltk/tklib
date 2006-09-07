@@ -1,3 +1,9 @@
+2006-09-07  Andreas Kupries  <andreask@activestate.com>
+
+	* pkgIndex.tcl (::tcl::pkgindex): Reworked the 'pkindex' command
+	  to make it more general, and more susceptible to programmatic
+	  analysis (meta data extraction).
+
 2006-09-07  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* widget.tcl (::widget::isa): correct error result for 'isa list'
