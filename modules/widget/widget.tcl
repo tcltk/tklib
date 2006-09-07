@@ -113,7 +113,7 @@ proc ::widget::isa {as args} {
     if {$as eq "list"} {
 	if {[lsearch -exact $range $value] == -1} {
 	    return -code error "invalid $option option \"$value\",\
-		must be one of [join $data {, }]"
+		must be one of [join $range {, }]"
 	}
     } elseif {$as eq "boolean" || $as eq "bool"} {
 	foreach {option value} $args { break }
