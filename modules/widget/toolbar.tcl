@@ -148,7 +148,7 @@ snit::widget widget::toolbar {
 	    set w $frame._$what[incr uid]
 	    set symbol [lindex $args 0]
 	    set args [lrange $args 1 end]
-	    if {![llength $args] || $symbol eq "%AUTO%"}
+	    if {![llength $args] || $symbol eq "%AUTO%"} {
 		# Autogenerate symbol name
 		set symbol _$what$uid
 	    }
@@ -161,12 +161,14 @@ snit::widget widget::toolbar {
 		set w [ttk::checkbutton $w -style Toolbutton -takefocus 0]
 	    } elseif {$what eq "separator"} {
 		set w [ttk::separator $w -orient vertical]
+	    } elseif {$what eq "space"} {
+		set w [ttk::frame $w]
 	    } else {
 		return -code error "unknown toolbar item type '$what'"
 	    }
 	    set ours 1
 	}
-	set opts(-weight)	0
+	set opts(-weight)	[string equal $what "space"]
 	set opts(-separator)	0
 	set opts(-sticky)	news
 	set opts(-pad)		$options(-ipad)
