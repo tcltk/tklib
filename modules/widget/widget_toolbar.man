@@ -20,7 +20,7 @@ It makes use of the Tile/Ttk themed widget set.
 [call getframe]
 [call add [opt item] [opt args]]
 [call delete item1 [opt item2] [opt ...]]
-[call itemcget symbol option
+[call itemcget symbol option]
 [call itemconfigure symbol [opt args]]
 [call items [opt pattern]]
 [call remove [opt -destroy] item1 [opt item2] [opt ...]]
