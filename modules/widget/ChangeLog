@@ -1,5 +1,7 @@
 2006-09-07  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* widget.tcl (::widget::isa): correct error result for 'isa list'
+
 	* widget.man: include all current widgets
 	* widget_toolbar.man: man page for widget::toolbar
 
