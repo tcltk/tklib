@@ -7,7 +7,7 @@
 # Refer to the file "license.terms" for the terms and conditions of
 # use and redistribution of this file, and a DISCLAIMER OF ALL WARRANTEES.
 #
-# $Id: de.msg,v 1.1 2006/09/06 17:43:12 kennykb Exp $
+# $Id: de.msg,v 1.2 2006/09/07 13:18:13 kennykb Exp $
 # $Source: /home/rkeene/tmp/cvs2fossil/tcllib/tklib/modules/khim/de.msg,v $
 #
 #----------------------------------------------------------------------
@@ -18,61 +18,61 @@ namespace eval ::khim {
 
 	Kevin's Hacky Input Method (KHIM)
 
-	KHIM ermoeglicht die Eingabe von internationalen Zeichen
+	KHIM ermöglicht die Eingabe von internationalen Zeichen
 	mittels einer Tastatur, welches diese nicht direkt
-	unterstuetzt. Es ist unabhaengig von allen Eingabemethoden,
-	welche vom Betriebssystem bereitgestellt werden (koennten),
-	und fuer den Fall gedacht, wenn der Anwender keine Kontrolle
-	ueber die Tastatur hat und dennoch Text in anderen Sprachen
-	eingeben muss.
+	unterstützt. Es ist unabhängig von allen Eingabemethoden,
+	welche vom Betriebssystem bereitgestellt werden (könnten),
+	und für den Fall gedacht, wenn der Anwender keine Kontrolle
+	über die Tastatur hat und dennoch Text in anderen Sprachen
+	eingeben muß.
 
 	Um KHIM zu benutzen, ist es notwendig, den KHIM Steuer-Dialog zu
-	oeffnen (dies ist abhaengig von der Anwendung) und dann KHIM
+	öffnen (dies ist abhängig von der Anwendung) und dann KHIM
 	durch 'ticken' der 'Benutze KHIM'-Checkbox zu aktivieren. Es
 	ist weiterhin notwendig, eine Taste als die Kombinier-Taste zu
-	waehlen. Die gewaehlte Taste sollte im Normalgebrauch selten
+	wählen. Die gewählte Taste sollte im Normalgebrauch selten
 	genutzt werden. Die Auswahl selbst besteht aus zwei Schritten.
-	Zuerst muss der Knopf "Kombinier-Taste:" gedrueckt werden,
-	dann die gewuenschte Taste.
+	Zuerst muß der Knopf "Kombinier-Taste:" gedrückt werden,
+	dann die gewünschte Taste.
 
 	Allgemein gesprochen, wenn die benutzte Tastatur eine Taste
 	"Compose" besitzt, dann sollte diese _nicht_ als die
-	Kombinier-Taste fuer KHIM gewaehlt werden. Dies stellt sicher,
+	Kombinier-Taste für KHIM gewählt werden. Dies stellt sicher,
 	das diese Taste weiterhin vom Betriebssystem genutzt werden
 	kann, um dessen eventuelle Eingabemethoden zu aktivieren.
 
-	Sobald KHIM aktiviert wurde, koennen in jedem Widget, welches
-	fuer die Benutzung von KHIM konfiguriert wurde, internationale
-	Zeichen eingegeben werden. Dies geschieht durch Druecken der
-	gewaehlten Kombinier-Taste, gefolgt von zwei weiteren Zeichen,
-	welche das gewuenschte Zeichen identifizieren. Der KHIM
+	Sobald KHIM aktiviert wurde, können in jedem Widget, welches
+	für die Benutzung von KHIM konfiguriert wurde, internationale
+	Zeichen eingegeben werden. Dies geschieht durch Drücken der
+	gewählten Kombinier-Taste, gefolgt von zwei weiteren Zeichen,
+	welche das gewünschte Zeichen identifizieren. Der KHIM
 	Steuer-Dialog stellt eine Liste der bekannten Zeichenfolgen
-	zur Verfuegung. Zusaetzlich ist es moeglich einen Dialog zu
-	oeffnen, welcher die Auswahl beliebiger Zeichen in einer Tabelle
-	erlaubt. Dies geschieht durch zweimaliges Druecken der
+	zur Verfügung. Zusätzlich ist es möglich einen Dialog zu
+	öffnen, welcher die Auswahl beliebiger Zeichen in einer Tabelle
+	erlaubt. Dies geschieht durch zweimaliges Drücken der
 	Kombinier-Taste. Navigation in der Tabelle geschieht mit der
-	Maus oder den Kursor-Tasten. Das einzufuegende Zeichen kann
-	mit Doppel-Klick gewaehlt werden, durch Druecken der
-	Leer-Taste, oder durch Druecken der Enter- (oder Return-)Taste.
+	Maus oder den Kursor-Tasten. Das einzufügende Zeichen kann
+	mit Doppel-Klick gewählt werden, durch Drücken der
+	Leer-Taste, oder durch Drücken der Enter- (oder Return-)Taste.
 
-	Es ist auch moeglich, die Liste der direkt anwaehlbaeren Zeichen
+	Es ist auch möglich, die Liste der direkt anwählbären Zeichen
 	zu erweitern. Dies geschieht im KHIM Steuer-Dialog durch Eingabe
-	der zwei Zeichen fuer den Kode im Eingabefeld
-	"Eingabezeichenfolge", des gewuenschten Zeichens im Feld
-	"Zeichen", gefolgt vom Druecken des Knopfes "Aendern".
+	der zwei Zeichen für den Kode im Eingabefeld
+	"Eingabezeichenfolge", des gewünschten Zeichens im Feld
+	"Zeichen", gefolgt vom Drücken des Knopfes "Ändern".
 
-	(Bezueglich der Herkunft des gewuenschten Zeichens: Es kann aus
+	(Bezüglich der Herkunft des gewünschten Zeichens: Es kann aus
 	einer anderen Anwendung kopiert werden, oder man benutze den Knopf
-	"Unicode..." (oder druecke die Kombinier-Taste zweimal), um es
-	aus der Tabelle aller Zeichen auszuwaehlen.)
+	"Unicode..." (oder drücke die Kombinier-Taste zweimal), um es
+	aus der Tabelle aller Zeichen auszuwählen.)
 
-	Eine Zeichenfolge wird geloescht durch Auswahl der Folge in
+	Eine Zeichenfolge wird gelöscht durch Auswahl der Folge in
 	der Liste aller Zeichenfolgen, gefolgt von der
-	Loesch/Entferne-Taste.
+	Lösch/Entferne-Taste.
     }
 
     ::msgcat::mcset de {SELECT COMPOSE KEY} [string map [list \n\t \n] {
-	Bitte druecken Sie
+	Bitte drücken Sie
 	die Taste, welche Sie
 	als Kombinier-Taste
 	verwenden wollen.
@@ -82,7 +82,7 @@ namespace eval ::khim {
 
     ::msgcat::mcset de {Cancel} {Abbrechen}
 
-    ::msgcat::mcset de {Change} {Aendern}
+    ::msgcat::mcset de {Change} {Ändern}
 
     ::msgcat::mcset de {Character} {Zeichen}
 
@@ -91,17 +91,17 @@ namespace eval ::khim {
     ::msgcat::mcset de {Compose key:} {Kombinier-Taste:}
 
     ::msgcat::mcset de {Composed sequence must be two characters long} \
-	{Die Eingabezeichenfolge muss aus zwei Zeichen bestehen}
+	{Die Eingabezeichenfolge muß aus zwei Zeichen bestehen}
 
-    ::msgcat::mcset de {Delete} {Loeschen}
+    ::msgcat::mcset de {Delete} {Löschen}
 
     ::msgcat::mcset de {Help...} {Hilfe...}
 
     ::msgcat::mcset de {Input key sequence} {Eingabezeichenfolge}
 
-    ::msgcat::mcset de {Insert Character} {Zeichen einfuegen}
+    ::msgcat::mcset de {Insert Character} {Zeichen einfügen}
 
-    ::msgcat::mcset de {Invalid sequence} {Ungueltige Zeichenfolge}
+    ::msgcat::mcset de {Invalid sequence} {Ungültige Zeichenfolge}
 
     ::msgcat::mcset de {Key sequences} {Zeichenfolgen}
 
@@ -109,7 +109,7 @@ namespace eval ::khim {
 
     ::msgcat::mcset de {OK} {OK}
 
-    ::msgcat::mcset de {Select code page:} {Waehle Code-Seite:}
+    ::msgcat::mcset de {Select code page:} {Wähle Code-Seite:}
 
     ::msgcat::mcset de {Unicode...} {Unicode...}
 
@@ -120,3 +120,4 @@ namespace eval ::khim {
 # Local Variables:
 # mode: tcl
 # End:
+

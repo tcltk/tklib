@@ -1,3 +1,7 @@
+2006-09-07  Kevin B. Kenny  <kennykb@acm.org>
+
+	* de.msg: UTF-8-ized the file.
+	
 2006-09-06  Andreas Kupries  <andreask@activestate.com>
 
 	* de.msg: Added message catalog for the German locale.
