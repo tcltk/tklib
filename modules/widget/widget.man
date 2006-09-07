@@ -8,6 +8,7 @@
 [description]
 
 This package provides megawidgets based on the snit oo system (snidgets).
+It makes use of the Tile/Ttk themed widget set.
 
 [para]
 
@@ -25,6 +26,9 @@ commands:
 [call [cmd widget::dialog] [arg pathname] [opt options]]
 options:
 
+[call [cmd widget::menuentry] [arg pathname] [opt options]]
+options:
+
 [call [cmd widget::panelframe] [arg pathname] [opt options]]
 options:
 
@@ -34,7 +38,16 @@ options:
 [call [cmd widget::screenruler] [arg pathname] [opt options]]
 options:
 
+[call [cmd widget::scrolledwindow] [arg pathname] [opt options]]
+options:
+
+[call [cmd widget::statusbar] [arg pathname] [opt options]]
+options:
+
 [call [cmd widget::superframe] [arg pathname] [opt options]]
+options:
+
+[call [cmd widget::toolbar] [arg pathname] [opt options]]
 options:
 
 [list_end]
