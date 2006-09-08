@@ -611,9 +611,9 @@ proc tablelist::tablelist args {
 	    -insertwidth 0 -padx 0 -pady 0 -state normal -takefocus 0 -wrap none
     bind $w <Configure> {
 	set tablelist::W [winfo parent %W]
+	tablelist::adjustElidedTextWhenIdle $tablelist::W
 	tablelist::updateColorsWhenIdle $tablelist::W
 	tablelist::adjustSepsWhenIdle $tablelist::W
-	tablelist::adjustElidedTextWhenIdle $tablelist::W
 	tablelist::updateVScrlbarWhenIdle $tablelist::W
     }
     pack $w -expand 1 -fill both
@@ -1322,7 +1322,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 
 	    synchronize $win
 	    scan [cellIndex $win [lindex $argList 1] 0] "%d,%d" row col
-	    if {[winfo ismapped $win]} {
+	    if {[winfo viewable $win]} {
 		return [seecellSubCmd $win $row $col]
 	    } else {
 		after idle [list tablelist::seecellSubCmd $win $row $col]
@@ -1337,7 +1337,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 
 	    synchronize $win
 	    set col [colIndex $win [lindex $argList 1] 0]
-	    if {[winfo ismapped $win]} {
+	    if {[winfo viewable $win]} {
 		return [seecellSubCmd $win [rowIndex $win @0,0 0] $col]
 	    } else {
 		after idle [list tablelist::seecellSubCmd \
@@ -1724,7 +1724,7 @@ proc tablelist::cellselectionSubCmd {win opt firstRow firstCol \
 		    $w tag remove select $textIdx1 $textIdx2
 		    foreach optTail {background foreground} {
 			set opt -select$optTail
-			foreach name  [list $col$opt $key$opt $key-$col$opt] \
+			foreach name  [list $col$opt $key$opt $key,$col$opt] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
 				set tag $level$opt-$data($name)
@@ -1732,7 +1732,7 @@ proc tablelist::cellselectionSubCmd {win opt firstRow firstCol \
 			    }
 			}
 			foreach name  [list $col-$optTail $key-$optTail \
-				       $key-$col-$optTail] \
+				       $key,$col-$optTail] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
 				set tag $level-$optTail-$data($name)
@@ -1844,7 +1844,7 @@ proc tablelist::cellselectionSubCmd {win opt firstRow firstCol \
 		    $w tag add select $textIdx1 $textIdx2
 		    foreach optTail {background foreground} {
 			set opt -select$optTail
-			foreach name  [list $col$opt $key$opt $key-$col$opt] \
+			foreach name  [list $col$opt $key$opt $key,$col$opt] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
 				set tag $level$opt-$data($name)
@@ -1852,7 +1852,7 @@ proc tablelist::cellselectionSubCmd {win opt firstRow firstCol \
 			    }
 			}
 			foreach name  [list $col-$optTail $key-$optTail \
-				       $key-$col-$optTail] \
+				       $key,$col-$optTail] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
 				set tag $level-$optTail-$data($name)
@@ -2161,44 +2161,47 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	if {$count != $data(itemCount)} {
 	    lappend data(freeKeyList) $key
 	}
-	if {[info exists data($key-name)]} {
-	    unset data($key-name)
-	}
-	array set itemData [array get data $key*-\[bfhse\]*]	;# for speed
 
-	foreach name [array names itemData $key-\[bfhs\]*] {
-	    unset data($name)
-	    if {[string match "$key-\[bf\]*" $name]} {
+	foreach opt {-background -foreground -font} {
+	    if {[info exists data($key$opt)]} {
+		unset data($key$opt)
 		incr data(tagRefCount) -1
 	    }
-	    if {[string compare $name "$key-hide"] == 0} {
-		incr data(hiddenRowCount) -1
+	}
+	if {[info exists data($key-hide)]} {
+	    unset data($key-hide)
+	    incr data(hiddenRowCount) -1
+	}
+	foreach opt {-name -selectable -selectbackground -selectforeground} {
+	    if {[info exists data($key$opt)]} {
+		unset data($key$opt)
 	    }
 	}
 
 	for {set col 0} {$col < $data(colCount)} {incr col} {
-	    foreach name [array names itemData $key-$col-\[bfse\]*] {
-		unset data($name)
-		if {[string match "$key-$col-\[bf\]*" $name]} {
+	    foreach opt {-background -foreground -font} {
+		if {[info exists data($key,$col$opt)]} {
+		    unset data($key,$col$opt)
 		    incr data(tagRefCount) -1
 		}
 	    }
-	    if {[info exists data($key-$col-image)]} {
-		unset data($key-$col-image)
+	    foreach opt {-editable -editwindow -selectbackground
+			 -selectforeground -windowdestroy} {
+		if {[info exists data($key,$col$opt)]} {
+		    unset data($key,$col$opt)
+		}
+	    }
+	    if {[info exists data($key,$col-image)]} {
+		unset data($key,$col-image)
 		incr data(imgCount) -1
 	    }
-	    if {[info exists data($key-$col-window)]} {
-		unset data($key-$col-window)
-		unset data($key-$col-reqWidth)
-		unset data($key-$col-reqHeight)
+	    if {[info exists data($key,$col-window)]} {
+		unset data($key,$col-window)
+		unset data($key,$col-reqWidth)
+		unset data($key,$col-reqHeight)
 		incr data(winCount) -1
 	    }
-	    if {[info exists data($key-$col-windowdestroy)]} {
-		unset data($key-$col-windowdestroy)
-	    }
 	}
-
-	unset itemData
     }
 
     #
@@ -2237,9 +2240,9 @@ proc tablelist::deleteRows {win first last updateListVar} {
     if {$colWidthsChanged} {
 	adjustColumns $win allCols 1
     }
-    adjustSepsWhenIdle $win
     adjustElidedTextWhenIdle $win
     makeStripesWhenIdle $win
+    adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
     showLineNumbersWhenIdle $win
 
@@ -2897,9 +2900,9 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
     if {$colWidthsChanged} {
 	adjustColumns $win {} 1
     }
-    adjustSepsWhenIdle $win
     adjustElidedTextWhenIdle $win
     makeStripesWhenIdle $win
+    adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
     showLineNumbersWhenIdle $win
 
@@ -3065,9 +3068,9 @@ proc tablelist::scanSubCmd {win opt x y} {
 	$data(hdrTxt) scan $opt $x 0
 
 	if {[string compare $opt "dragto"] == 0} {
+	    adjustElidedText $win
 	    updateColorsWhenIdle $win
 	    adjustSepsWhenIdle $win
-	    adjustElidedText $win
 	    updateVScrlbarWhenIdle $win
 	}
     } elseif {[string compare $opt "mark"] == 0} {
@@ -3102,9 +3105,9 @@ proc tablelist::scanSubCmd {win opt x y} {
 	# Change the scrolled column offset and adjust the elided text
 	#
 	changeScrlColOffset $win [scrlXOffsetToColOffset $win $scrlXOffset]
+	adjustElidedText $win
 	updateColorsWhenIdle $win
 	adjustSepsWhenIdle $win
-	adjustElidedText $win
 	updateVScrlbarWhenIdle $win
     }
 
@@ -3135,9 +3138,9 @@ proc tablelist::seeSubCmd {win index} {
     $data(body) see [expr {double($index + 1)}]
     $data(body) xview moveto [lindex [$data(hdrTxt) xview] 0]
 
+    adjustElidedText $win
     updateColorsWhenIdle $win
     adjustSepsWhenIdle $win
-    adjustElidedTextWhenIdle $win
     updateVScrlbarWhenIdle $win
     return ""
 }
@@ -3289,7 +3292,7 @@ proc tablelist::seecellSubCmd {win row col} {
 	    # one that is fully visible; restore the horizontal view
 	    #
 	    $b xview moveto [lindex [$h xview] 0]
-	    adjustElidedTextWhenIdle $win
+	    adjustElidedText $win
 	} elseif {$data($col-elide) ||
 		  [winfo width $data(hdrTxtFrLbl)$col] > $scrlWindowWidth} {
 	    #
@@ -3397,7 +3400,7 @@ proc tablelist::selectionSubCmd {win opt first last} {
 				  $textIdx1+1c "$selStart lineend"]+1c
 		    foreach optTail {background foreground} {
 			set opt -select$optTail
-			foreach name  [list $col$opt $key$opt $key-$col$opt] \
+			foreach name  [list $col$opt $key$opt $key,$col$opt] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
 				set tag $level$opt-$data($name)
@@ -3405,7 +3408,7 @@ proc tablelist::selectionSubCmd {win opt first last} {
 			    }
 			}
 			foreach name  [list $col-$optTail $key-$optTail \
-				       $key-$col-$optTail] \
+				       $key,$col-$optTail] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
 				set tag $level-$optTail-$data($name)
@@ -3487,7 +3490,7 @@ proc tablelist::selectionSubCmd {win opt first last} {
 		    $w tag add select $textIdx1 $textIdx2
 		    foreach optTail {background foreground} {
 			set opt -select$optTail
-			foreach name  [list $col$opt $key$opt $key-$col$opt] \
+			foreach name  [list $col$opt $key$opt $key,$col$opt] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
 				set tag $level$opt-$data($name)
@@ -3495,7 +3498,7 @@ proc tablelist::selectionSubCmd {win opt first last} {
 			    }
 			}
 			foreach name  [list $col-$optTail $key-$optTail \
-				       $key-$col-$optTail] \
+				       $key,$col-$optTail] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
 				set tag $level-$optTail-$data($name)
@@ -3822,9 +3825,9 @@ proc tablelist::yviewSubCmd {win argList} {
 	    #
 	    set units [format "%d" [lindex $argList 0]]
 	    $w yview [nonHiddenRowOffsetToRowIndex $win $units]
+	    adjustElidedText $win
 	    updateColorsWhenIdle $win
 	    adjustSepsWhenIdle $win
-	    adjustElidedText $win
 	    updateVScrlbarWhenIdle $win
 	    return ""
 	}
@@ -3868,9 +3871,9 @@ proc tablelist::yviewSubCmd {win argList} {
 		    }
 		}
 	    }
+	    adjustElidedText $win
 	    updateColorsWhenIdle $win
 	    adjustSepsWhenIdle $win
-	    adjustElidedText $win
 	    updateVScrlbarWhenIdle $win
 	    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
 		#
