@@ -34,6 +34,13 @@ namespace eval tablelist {
 	down,increasing	Dn
 	down,decreasing	Up
     }
+
+    variable auxWinClasses
+    array set auxWinClasses {
+	0	""
+	1	Label
+	2	Frame
+    }
 }
 
 #
@@ -367,15 +374,15 @@ proc tablelist::deleteColData {win col} {
     }
 
     #
-    # Remove the elements with names of the form k*-$col-*
+    # Remove the elements with names of the form k*,$col-*
     #
-    foreach name [array names data k*-$col-*] {
+    foreach name [array names data k*,$col-*] {
 	unset data($name)
-	if {[string match "k*-$col-\[bf\]*" $name]} {
+	if {[string match "k*,$col-\[bf\]*" $name]} {
 	    incr data(tagRefCount) -1
-	} elseif {[string match "k*-$col-image" $name]} {
+	} elseif {[string match "k*,$col-image" $name]} {
 	    incr data(imgCount) -1
-	} elseif {[string match "k*-$col-window" $name]} {
+	} elseif {[string match "k*,$col-window" $name]} {
 	    incr data(winCount) -1
 	}
     }
@@ -447,14 +454,14 @@ proc tablelist::moveColData {win oldArrName newArrName imgArrName
     }
 
     #
-    # Move the elements of oldArr with names of the form k*-$oldCol-*
-    # to those of newArr with names of the form k*-$newCol-*
+    # Move the elements of oldArr with names of the form k*,$oldCol-*
+    # to those of newArr with names of the form k*,$newCol-*
     #
-    foreach newName [array names newArr k*-$newCol-*] {
+    foreach newName [array names newArr k*,$newCol-*] {
 	unset newArr($newName)
     }
-    foreach oldName [array names oldArr k*-$oldCol-*] {
-	regsub -- "-$oldCol-" $oldName "-$newCol-" newName
+    foreach oldName [array names oldArr k*,$oldCol-*] {
+	regsub -- ",$oldCol-" $oldName ",$newCol-" newName
 	set newArr($newName) $oldArr($oldName)
 	unset oldArr($oldName)
     }
@@ -608,6 +615,10 @@ proc tablelist::charsToPixels {win font charCount} {
 # snipStr to it.
 #------------------------------------------------------------------------------
 proc tablelist::strRange {win str font pixels alignment snipStr} {
+    if {$pixels < 0} {
+	return ""
+    }
+
     set width [font measure $font -displayof $win $str]
     if {$width <= $pixels} {
 	return $str
@@ -801,6 +812,32 @@ proc tablelist::displayText {win key col text font alignment} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::displayImage
+#
+# Displays an image in a label widget to be embedded into the specified cell of
+# the tablelist widget win.
+#------------------------------------------------------------------------------
+proc tablelist::displayImage {win key col width} {
+    upvar ::tablelist::ns${win}::data data
+
+    set w $data(body).l$key,$col
+    if {![winfo exists $w]} {
+	#
+	# Create a label widget and replace the binding tag Label with
+	# $data(bodyTag) and TablelistBody in the list of its binding tags
+	#
+	tk::label $w -borderwidth 0 -height 0 -highlightthickness 0 \
+		     -padx 0 -pady 0 -relief flat -takefocus 0
+	bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) TablelistBody]
+    }
+
+    $w configure -image $data($key,$col-image) -width $width
+    updateColorsWhenIdle $win
+
+    return $w
+}
+
+#------------------------------------------------------------------------------
 # tablelist::getAuxData
 #
 # Gets the name, type, and width of the image or window associated with the
@@ -810,13 +847,13 @@ proc tablelist::getAuxData {win key col auxTypeName auxWidthName} {
     upvar ::tablelist::ns${win}::data data
     upvar $auxTypeName auxType $auxWidthName auxWidth
 
-    if {[info exists data($key-$col-window)]} {
+    if {[info exists data($key,$col-window)]} {
 	set aux $data(body).f$key,$col
-	set auxWidth $data($key-$col-reqWidth)
+	set auxWidth $data($key,$col-reqWidth)
 	set auxType 2
-    } elseif {[info exists data($key-$col-image)]} {
-	set aux $data(body).l$key,$col
-	set auxWidth [image width $data($key-$col-image)]
+    } elseif {[info exists data($key,$col-image)]} {
+	set aux [list ::tablelist::displayImage $win $key $col 0]
+	set auxWidth [image width $data($key,$col-image)]
 	set auxType 1
     } else {
 	set aux ""
@@ -956,43 +993,6 @@ proc tablelist::getCellTextWidth {win text auxWidth cellFont} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::createAuxObject
-#
-# Creates the specified auxiliary object (image or window) for insertion into
-# the given cell of the tablelist widget win.
-#------------------------------------------------------------------------------
-proc tablelist::createAuxObject {win key row col aux auxType auxWidth} {
-    if {[winfo exists $aux]} {
-	return ""
-    }
-
-    upvar ::tablelist::ns${win}::data data
-
-    if {$auxType == 1} {					;# image
-	#
-	# Create the label containing the cell's image and
-	# replace the binding tag Label with $data(bodyTag)
-	# and TablelistBody in the list of its binding tags
-	#
-	tk::label $aux -borderwidth 0 -height 0 -highlightthickness 0 \
-		       -image $data($key-$col-image) -padx 0 -pady 0 \
-		       -relief flat -takefocus 0 -width $auxWidth
-	bindtags $aux [lreplace [bindtags $aux] 1 1 \
-		       $data(bodyTag) TablelistBody]
-    } elseif {$auxType == 2} {					;# window
-	#
-	# Create the frame and evaluate the script
-	# that creates a child widget within the frame
-	#
-	tk::frame $aux -borderwidth 0 -class TablelistWindow -container 0 \
-		       -height $data($key-$col-reqHeight) \
-		       -highlightthickness 0 -relief flat \
-		       -takefocus 0 -width $auxWidth
-	uplevel #0 $data($key-$col-window) [list $win $row $col $aux.w]
-    }
-}
-
-#------------------------------------------------------------------------------
 # tablelist::insertElem
 #
 # Inserts the given text and auxiliary object (image or window) into the text
@@ -1005,17 +1005,21 @@ proc tablelist::insertElem {w index text aux auxType alignment} {
     if {$auxType == 0} {				;# no image or window
 	$w insert $index $text
     } elseif {[string compare $alignment "right"] == 0} {
-	if {$auxType == 2} {				;# window
+	if {$auxType == 1} {					;# image
+	    $w window create $index -pady 1 -create $aux
+	} else {						;# window
 	    place $aux.w -relx 1.0 -anchor ne
+	    $w window create $index -pady 1 -window $aux
 	}
-	$w window create $index -pady 1 -window $aux
 	$w insert $index $text
     } else {
-	if {$auxType == 2} {				;# window
-	    place $aux.w -relx 0.0 -anchor nw
-	}
 	$w insert $index $text
-	$w window create $index -pady 1 -window $aux
+	if {$auxType == 1} {					;# image
+	    $w window create $index -pady 1 -create $aux
+	} else {						;# window
+	    place $aux.w -relx 0.0 -anchor nw
+	    $w window create $index -pady 1 -window $aux
+	}
     }
 }
 
@@ -1033,17 +1037,21 @@ proc tablelist::insertMlElem {w index msgScript aux auxType alignment} {
     if {$auxType == 0} {				;# no image or window
 	$w window create $index -pady 1 -create $msgScript
     } elseif {[string compare $alignment "right"] == 0} {
-	if {$auxType == 2} {				;# window
+	if {$auxType == 1} {					;# image
+	    $w window create $index -pady 1 -create $aux
+	} else {						;# window
 	    place $aux.w -relx 1.0 -anchor ne
+	    $w window create $index -pady 1 -window $aux
 	}
-	$w window create $index -pady 1 -window $aux
 	$w window create $index -pady 1 -create $msgScript
     } else {
-	if {$auxType == 2} {				;# window
-	    place $aux.w -relx 0.0 -anchor nw
-	}
 	$w window create $index -pady 1 -create $msgScript
-	$w window create $index -pady 1 -window $aux
+	if {$auxType == 1} {					;# image
+	    $w window create $index -pady 1 -create $aux
+	} else {						;# window
+	    place $aux.w -relx 0.0 -anchor nw
+	    $w window create $index -pady 1 -window $aux
+	}
     }
 }
 
@@ -1060,22 +1068,36 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
 	$w delete $index1 $index2
 	$w insert $index1 $text
     } else {
-	$aux configure -width $auxWidth
-
 	#
 	# Check whether the label containing an image or the frame containing
 	# a window is mapped at the first or last position of the cell
 	#
-	if {[string compare [lindex [$w dump -window $index1] 1] $aux] == 0} {
-	    set auxFound 1
-	    $w delete $index1+1c $index2
-	} elseif {[string compare [lindex [$w dump -window $index2-1c] 1] $aux]
-		  == 0} {
-	    set auxFound 1
-	    $w delete $index1 $index2-1c
-	} else {
-	    set auxFound 0
-	    $w delete $index1 $index2
+	if {$auxType == 1} {					;# image
+	    if {[setImgLabelWidth $w $index1 $auxWidth]} {
+		set auxFound 1
+		$w delete $index1+1c $index2
+	    } elseif {[setImgLabelWidth $w $index2-1c $auxWidth]} {
+		set auxFound 1
+		$w delete $index1 $index2-1c
+	    } else {
+		set auxFound 0
+		$w delete $index1 $index2
+	    }
+	} else {						;# window
+	    $aux configure -width $auxWidth
+
+	    if {[string compare [lindex [$w dump -window $index1] 1] $aux]
+		== 0} {
+		set auxFound 1
+		$w delete $index1+1c $index2
+	    } elseif {[string compare [lindex [$w dump -window $index2-1c] 1]
+		       $aux] == 0} {
+		set auxFound 1
+		$w delete $index1 $index2-1c
+	    } else {
+		set auxFound 0
+		$w delete $index1 $index2
+	    }
 	}
 
 	if {$auxFound} {
@@ -1083,12 +1105,12 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
 	    # Insert the text
 	    #
 	    if {[string compare $alignment "right"] == 0} {
-		if {$auxType == 2} {			;# window
+		if {$auxType == 2} {				;# window
 		    place $aux.w -relx 1.0 -anchor ne
 		}
 		set index $index1
 	    } else {
-		if {$auxType == 2} {			;# window
+		if {$auxType == 2} {				;# window
 		    place $aux.w -relx 0.0 -anchor nw
 		}
 		set index $index1+1c
@@ -1098,6 +1120,11 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
 	    #
 	    # Insert the text and the aux. window
 	    #
+	    if {$auxType == 1} {				;# image
+		set aux [lreplace $aux end end $auxWidth]
+	    } else {						;# window
+		$aux configure -width $auxWidth
+	    }
 	    insertElem $w $index1 $text $aux $auxType $alignment
 	}
     }
@@ -1124,26 +1151,36 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 	    $w window create $index1 -pady 1 -create $msgScript
 	}
     } else {
-	$aux configure -width $auxWidth
-
 	#
 	# Check whether the label containing an image or the frame containing
 	# a window is mapped at the first or last position of the cell
 	#
-	if {[string compare [lindex [$w dump -window $index1] 1] $aux] == 0} {
-	    set auxFound 1
-	    if {[string compare $alignment "right"] == 0} {
+	if {$auxType == 1} {					;# image
+	    if {[setImgLabelWidth $w $index1 $auxWidth]} {
+		set auxFound 1
 		$w delete $index1+1c $index2
-	    }
-	} elseif {[string compare [lindex [$w dump -window $index2-1c] 1] $aux]
-		  == 0} {
-	    set auxFound 1
-	    if {[string compare $alignment "right"] != 0} {
+	    } elseif {[setImgLabelWidth $w $index2-1c $auxWidth]} {
+		set auxFound 1
 		$w delete $index1 $index2-1c
+	    } else {
+		set auxFound 0
+		$w delete $index1 $index2
 	    }
-	} else {
-	    set auxFound 0
-	    $w delete $index1 $index2
+	} else {						;# window
+	    $aux configure -width $auxWidth
+
+	    if {[string compare [lindex [$w dump -window $index1] 1] $aux]
+		== 0} {
+		set auxFound 1
+		$w delete $index1+1c $index2
+	    } elseif {[string compare [lindex [$w dump -window $index2-1c] 1]
+		       $aux] == 0} {
+		set auxFound 1
+		$w delete $index1 $index2-1c
+	    } else {
+		set auxFound 0
+		$w delete $index1 $index2
+	    }
 	}
 
 	if {$auxFound} {
@@ -1151,12 +1188,12 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 	    # Insert the message window
 	    #
 	    if {[string compare $alignment "right"] == 0} {
-		if {$auxType == 2} {			;# window
+		if {$auxType == 2} {				;# window
 		    place $aux.w -relx 1.0 -anchor ne
 		}
 		set index $index1
 	    } else {
-		if {$auxType == 2} {			;# window
+		if {$auxType == 2} {				;# window
 		    place $aux.w -relx 0.0 -anchor nw
 		}
 		set index $index1+1c
@@ -1174,7 +1211,112 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 	    #
 	    # Insert the message and aux. windows
 	    #
+	    if {$auxType == 1} {				;# image
+		set aux [lreplace $aux end end $auxWidth]
+	    } else {						;# window
+		$aux configure -width $auxWidth
+	    }
 	    insertMlElem $w $index1 $msgScript $aux $auxType $alignment
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::setImgLabelWidth
+#
+# Sets the width of the image label embedded into the text widget w at the
+# given index to the specified value.
+#------------------------------------------------------------------------------
+proc tablelist::setImgLabelWidth {w index width} {
+    set path [lindex [$w dump -window $index] 1]
+    if {[string compare $path ""] != 0 &&
+	[string compare [winfo class $path] "Label"] == 0} {
+	$path configure -width $width
+	return 1
+    } elseif {[catch {$w window cget $index -create} createScript] == 0 &&
+	      [string match "::tablelist::displayImage*" $createScript]} {
+	set createScript [lreplace $createScript end end $width]
+	$w window configure $index -pady 1 -create $createScript
+	return 1
+    } else {
+	return 0
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::appendComplexElem
+#
+# Adjusts the given text and the width of the auxiliary object (image or
+# window) corresponding to the specified cell of the tablelist widget win, and
+# inserts the text and the auxiliary object (if any) just before the newline
+# character at the end of the specified line of the tablelist's body.
+#------------------------------------------------------------------------------
+proc tablelist::appendComplexElem {win key row col text pixels alignment
+				   snipStr cellTags line} {
+    upvar ::tablelist::ns${win}::data data
+
+    #
+    # Adjust the cell text and the image or window width
+    #
+    if {[string match "*\n*" $text]} {
+	set multiline 1
+	set list [split $text "\n"]
+    } else {
+	set multiline 0
+    }
+    set aux [getAuxData $win $key $col auxType auxWidth]
+    set cellFont [getCellFont $win $key $col]
+    if {$pixels == 0} {		;# convention: dynamic width
+	if {$data($col-maxPixels) > 0} {
+	    if {$data($col-reqPixels) > $data($col-maxPixels)} {
+		set pixels $data($col-maxPixels)
+	    }
+	}
+    }
+    if {$pixels != 0} {
+	incr pixels $data($col-delta)
+    }
+    if {$multiline} {
+	adjustMlElem $win list auxWidth $cellFont $pixels $alignment $snipStr
+	set msgScript [list ::tablelist::displayText $win $key $col \
+		       [join $list "\n"] $cellFont $alignment]
+    } else {
+	adjustElem $win text auxWidth $cellFont $pixels $alignment $snipStr
+    }
+
+    #
+    # Insert the text and the auxiliary object (if any) just before the newline
+    #
+    set w $data(body)
+    if {$auxType == 0} {				;# no image or window
+	if {$multiline} {
+	    $w insert $line.end "\t\t" $cellTags
+	    $w window create $line.end-1c -pady 1 -create $msgScript
+	} else {
+	    $w insert $line.end "\t$text\t" $cellTags
+	}
+    } else {
+	$w insert $line.end "\t\t" $cellTags
+	if {$auxType == 1} {					;# image
+	    #
+	    # Update the creation script for the image label
+	    #
+	    set aux [lreplace $aux end end $auxWidth]
+	} else {						;# window
+	    #
+	    # Create a frame and evaluate the script that
+	    # creates a child window within the frame
+	    #
+	    tk::frame $aux -borderwidth 0 -class TablelistWindow -container 0 \
+			   -height $data($key,$col-reqHeight) \
+			   -highlightthickness 0 -relief flat -takefocus 0 \
+			   -width $auxWidth
+	    uplevel #0 $data($key,$col-window) [list $win $row $col $aux.w]
+	}
+	if {$multiline} {
+	    insertMlElem $w $line.end-1c $msgScript $aux $auxType $alignment
+	} else {
+	    insertElem $w $line.end-1c $text $aux $auxType $alignment
 	}
     }
 }
@@ -1689,6 +1831,44 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 	    }
 	}
 
+	if {$col == $data(editCol) &&
+	    ![string match "*Checkbutton" [winfo class $data(bodyFrEd)]]} {
+	    adjustEditWindow $win $pixels
+	}
+
+	set canvas $data(hdrTxtFrCanv)$col
+	if {[lsearch -exact $data(arrowColList) $col] >= 0 &&
+	    !$data($col-elide) && !$data($col-hide)} {
+	    #
+	    # Place the canvas to the left side of the label if the
+	    # latter is right-justified and to its right side otherwise
+	    #
+	    if {[string compare $labelAlignment "right"] == 0} {
+		place $canvas -in $w -anchor w -bordermode outside \
+			      -relx 0.0 -x $data(charWidth) -rely 0.499 -y -1
+	    } else {
+		place $canvas -in $w -anchor e -bordermode outside \
+			      -relx 1.0 -x -$data(charWidth) -rely 0.499 -y -1
+	    }
+	    raise $canvas
+	} else {
+	    place forget $canvas
+	}
+
+	#
+	# Place the label in the header frame
+	#
+	if {$data($col-elide) || $data($col-hide)} {
+	    foreach l [getSublabels $w] {
+		place forget $l
+	    }
+	    place $w -x [expr {$x - 1}] -relheight 1.0 -width 1
+	    lower $w
+	} else {
+	    set labelPixels [expr {$pixels + 2*$data(charWidth)}]
+	    place $w -x $x -relheight 1.0 -width $labelPixels
+	}
+
 	#
 	# Append a tab stop and the alignment to the tabs list
 	#
@@ -1714,6 +1894,7 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 
 	incr col
     }
+    place $data(hdrLbl) -x $x
 
     #
     # Apply the value of tabs to the body text widget
@@ -1721,18 +1902,7 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
     $data(body) configure -tabs $tabs
 
     #
-    # Place the labels in the header frame
-    # and adjust the latter's width and height
-    #
-    set resizingCol [info exists data(colBeingResized)]
-    if {$resizingCol} {
-	placeLabels $win
-    } else {
-	placeLabelsWhenIdle $win
-    }
-
-    #
-    # Adjust the width of the frames data(hdrTxtFr) and data(hdr)
+    # Adjust the width and height of the frames data(hdrTxtFr) and data(hdr)
     #
     set data(hdrPixels) $x
     $data(hdrTxtFr) configure -width $data(hdrPixels)
@@ -1745,6 +1915,7 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
     } else {
 	$data(hdr) configure -width 0
     }
+    adjustHeaderHeight $win
 
     #
     # Stretch the stretchable columns if requested, and update
@@ -1753,7 +1924,7 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
     if {$stretchCols} {
 	stretchColumnsWhenIdle $win
     }
-    if {!$resizingCol} {
+    if {![info exists data(colBeingResized)]} {
 	updateScrlColOffsetWhenIdle $win
     }
     updateHScrlbarWhenIdle $win
@@ -2069,115 +2240,6 @@ proc tablelist::computeLabelWidth {win col} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::placeLabelsWhenIdle
-#
-# Arranges for the labels of the tablelist widget win to be placed in the
-# header frame at idle time.
-#------------------------------------------------------------------------------
-proc tablelist::placeLabelsWhenIdle win {
-    upvar ::tablelist::ns${win}::data data
-
-    if {[info exists data(placeId)]} {
-	return ""
-    }
-
-    set data(placeId) [after idle [list tablelist::placeLabels $win]]
-}
-
-#------------------------------------------------------------------------------
-# tablelist::placeLabels
-#
-# Places the labels of the tablelist widget win in the header frame and adjusts
-# the latter's width and height.
-#------------------------------------------------------------------------------
-proc tablelist::placeLabels win {
-    variable canElide
-    upvar ::tablelist::ns${win}::data data
-
-    if {[info exists data(placeId)]} {
-	after cancel $data(placeId)
-	unset data(placeId)
-    }
-
-    #
-    # Place the labels in the header frame
-    #
-    set col 0
-    set x 0
-    foreach {pixels alignment} $data(colList) {
-	set w $data(hdrTxtFrLbl)$col
-	if {$data($col-hide) && !$canElide} {
-	    place forget $w
-	    incr col
-	    continue
-	}
-
-	if {$pixels == 0} {			;# convention: dynamic width
-	    set pixels $data($col-reqPixels)
-	    if {$data($col-maxPixels) > 0} {
-		if {$pixels > $data($col-maxPixels)} {
-		    set pixels $data($col-maxPixels)
-		}
-	    }
-	}
-	incr pixels $data($col-delta)
-
-	if {[info exists data($col-labelalign)]} {
-	    set labelAlignment $data($col-labelalign)
-	} else {
-	    set labelAlignment $alignment
-	}
-
-	if {$col == $data(editCol) &&
-	    ![string match "*Checkbutton" [winfo class $data(bodyFrEd)]]} {
-	    adjustEditWindow $win $pixels
-	}
-
-	set canvas $data(hdrTxtFrCanv)$col
-	if {[lsearch -exact $data(arrowColList) $col] >= 0 &&
-	    !$data($col-elide) && !$data($col-hide)} {
-	    #
-	    # Place the canvas to the left side of the label if the
-	    # latter is right-justified and to its right side otherwise
-	    #
-	    if {[string compare $labelAlignment "right"] == 0} {
-		place $canvas -in $w -anchor w -bordermode outside \
-			      -relx 0.0 -x $data(charWidth) -rely 0.499 -y -1
-	    } else {
-		place $canvas -in $w -anchor e -bordermode outside \
-			      -relx 1.0 -x -$data(charWidth) -rely 0.499 -y -1
-	    }
-	    raise $canvas
-	} else {
-	    place forget $canvas
-	}
-
-	#
-	# Place the label
-	#
-	if {$data($col-elide) || $data($col-hide)} {
-	    foreach l [getSublabels $w] {
-		place forget $l
-	    }
-	    place $w -x [expr {$x - 1}] -relheight 1.0 -width 1
-	    lower $w
-	} else {
-	    set labelPixels [expr {$pixels + 2*$data(charWidth)}]
-	    place $w -x $x -relheight 1.0 -width $labelPixels
-	    incr x [expr {2*$data(charWidth) + $pixels}]
-	}
-
-	incr col
-    }
-    place $data(hdrLbl) -x $x
-
-    #
-    # Adjust the height of the frames data(hdrTxtFr) and data(hdr)
-    #
-    adjustHeaderHeight $win
-}
-
-#------------------------------------------------------------------------------
 # tablelist::adjustHeaderHeight
 #
 # Sets the height of the header frame of the tablelist widget win to the max.
@@ -2432,8 +2494,8 @@ proc tablelist::updateColors win {
 	    set bg $data(-background)
 	    set fg $data(-disabledforeground)
 	} elseif {[lsearch -exact $tagNames select] < 0} {	;# not selected
-	    if {[info exists data($key-$col-background)]} {
-		set bg $data($key-$col-background)
+	    if {[info exists data($key,$col-background)]} {
+		set bg $data($key,$col-background)
 	    } elseif {[info exists data($key-background)]} {
 		set bg $data($key-background)
 	    } elseif {[lsearch -exact $tagNames stripe] < 0 ||
@@ -2447,8 +2509,8 @@ proc tablelist::updateColors win {
 		set bg $data(-stripebackground)
 	    }
 
-	    if {[info exists data($key-$col-foreground)]} {
-		set fg $data($key-$col-foreground)
+	    if {[info exists data($key,$col-foreground)]} {
+		set fg $data($key,$col-foreground)
 	    } elseif {[info exists data($key-foreground)]} {
 		set fg $data($key-foreground)
 	    } elseif {[lsearch -exact $tagNames stripe] < 0 ||
@@ -2462,8 +2524,8 @@ proc tablelist::updateColors win {
 		set fg $data(-stripeforeground)
 	    }
 	} else {						;# selected
-	    if {[info exists data($key-$col-selectbackground)]} {
-		set bg $data($key-$col-selectbackground)
+	    if {[info exists data($key,$col-selectbackground)]} {
+		set bg $data($key,$col-selectbackground)
 	    } elseif {[info exists data($key-selectbackground)]} {
 		set bg $data($key-selectbackground)
 	    } elseif {[info exists data($col-selectbackground)]} {
@@ -2472,8 +2534,8 @@ proc tablelist::updateColors win {
 		set bg $data(-selectbackground)
 	    }
 
-	    if {[info exists data($key-$col-selectforeground)]} {
-		set fg $data($key-$col-selectforeground)
+	    if {[info exists data($key,$col-selectforeground)]} {
+		set fg $data($key,$col-selectforeground)
 	    } elseif {[info exists data($key-selectforeground)]} {
 		set fg $data($key-selectforeground)
 	    } elseif {[info exists data($col-selectforeground)]} {
@@ -2843,10 +2905,9 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
     }
 
     set w $data(body)
-    set widgetFont $data(-font)
     set snipStr $data(-snipstring)
-    set isSimple [expr {$data(tagRefCount) == 0 && $data(imgCount) == 0 &&
-			$data(winCount) == 0 && !$data(hasColTags)}]
+    set tagRefCount $data(tagRefCount)
+    set isSimple [expr {$data(imgCount) == 0 && $data(winCount) == 0}]
     set newItemList {}
     set row 0
     set line 1
@@ -2861,9 +2922,11 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 	set newItem {}
 	set col 0
 	if {$isSimple} {
-	    set insertStr ""
+	    set insertArgs {}
 	    set multilineData {}
 	    foreach fmtCmdFlag $data(fmtCmdFlagList) \
+		    colFont $data(colFontList) \
+		    colTags $data(colTagsList) \
 		    {pixels alignment} $data(colList) {
 		if {$col < $keyIdx} {
 		    set text [lindex $item $col]
@@ -2877,12 +2940,27 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 		    continue
 		}
 
-		#
-		# Clip the element if necessary
-		#
 		if {$fmtCmdFlag} {
 		    set text [uplevel #0 $data($col-formatcommand) [list $text]]
 		}
+
+		#
+		# Build the list of tags to be applied to the cell
+		#
+		set cellFont $colFont
+		set cellTags $colTags
+		if {$tagRefCount != 0} {
+		    set cellFont [getCellFont $win $key $col]
+		    foreach opt {-background -foreground -font} {
+			if {[info exists data($key,$col$opt)]} {
+			    lappend cellTags cell$opt-$data($key,$col$opt)
+			}
+		    }
+		}
+
+		#
+		# Clip the element if necessary
+		#
 		set text [strToDispStr $text]
 		if {[string match "*\n*" $text]} {
 		    set multiline 1
@@ -2900,49 +2978,44 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 		if {$pixels != 0} {
 		    incr pixels $data($col-delta)
 		    if {$multiline} {
-			set text [joinList $win $list $widgetFont \
+			set text [joinList $win $list $cellFont \
 				  $pixels $alignment $snipStr]
 		    } else {
-			set text [strRange $win $text $widgetFont \
+			set text [strRange $win $text $cellFont \
 				  $pixels $alignment $snipStr]
 		    }
 		}
 
 		if {$multiline} {
-		    append insertStr "\t\t"
-		    lappend multilineData $col $text $alignment
+		    lappend insertArgs "\t\t" $cellTags
+		    lappend multilineData $col $text $cellFont $alignment
 		} else {
-		    append insertStr "\t$text\t"
+		    lappend insertArgs "\t$text\t" $cellTags
 		}
+
 		incr col
 	    }
 
 	    #
 	    # Insert the item into the body text widget
 	    #
-	    $w insert $line.0 $insertStr
+	    if {[llength $insertArgs] != 0} {
+		eval [list $w insert $line.0] $insertArgs
+	    }
 
 	    #
 	    # Embed the message widgets displaying multiline elements
 	    #
-	    foreach {col text alignment} $multilineData {
+	    foreach {col text font alignment} $multilineData {
 		findTabs $win $line $col $col tabIdx1 tabIdx2
 		set msgScript [list ::tablelist::displayText $win $key \
-			       $col $text $widgetFont $alignment]
+			       $col $text $font $alignment]
 		$w window create $tabIdx2 -pady 1 -create $msgScript
 	    }
 
 	} else {
-	    array set itemData [array get data $key*-\[bf\]*]	;# for speed
-
-	    set rowTags {}
-	    foreach name [array names itemData $key-\[bf\]*] {
-		set tail [lindex [split $name "-"] 1]
-		lappend rowTags row-$tail-$itemData($name)
-	    }
-
-	    foreach colTags $data(colTagsList) \
-		    fmtCmdFlag $data(fmtCmdFlagList) \
+	    foreach fmtCmdFlag $data(fmtCmdFlagList) \
+		    colTags $data(colTagsList) \
 		    {pixels alignment} $data(colList) {
 		if {$col < $keyIdx} {
 		    set text [lindex $item $col]
@@ -2956,73 +3029,39 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 		    continue
 		}
 
-		#
-		# Adjust the cell text and the image or window width
-		#
 		if {$fmtCmdFlag} {
 		    set text [uplevel #0 $data($col-formatcommand) [list $text]]
 		}
-		set text [strToDispStr $text]
-		if {[string match "*\n*" $text]} {
-		    set multiline 1
-		    set list [split $text "\n"]
-		} else {
-		    set multiline 0
-		}
-		set aux [getAuxData $win $key $col auxType auxWidth]
-		set cellFont [getCellFont $win $key $col]
-		if {$pixels == 0} {		;# convention: dynamic width
-		    if {$data($col-maxPixels) > 0} {
-			if {$data($col-reqPixels) > $data($col-maxPixels)} {
-			    set pixels $data($col-maxPixels)
+
+		#
+		# Build the list of tags to be applied to the cell
+		#
+		set cellTags $colTags
+		if {$tagRefCount != 0} {
+		    foreach opt {-background -foreground -font} {
+			if {[info exists data($key,$col$opt)]} {
+			    lappend cellTags cell$opt-$data($key,$col$opt)
 			}
 		    }
 		}
-		if {$pixels != 0} {
-		    incr pixels $data($col-delta)
-		}
-		if {$multiline} {
-		    adjustMlElem $win list auxWidth $cellFont \
-				 $pixels $alignment $snipStr
-		    set msgScript [list ::tablelist::displayText $win $key \
-				   $col [join $list "\n"] $cellFont $alignment]
-		} else {
-		    adjustElem $win text auxWidth $cellFont \
-			       $pixels $alignment $snipStr
-		}
 
 		#
-		# Insert the text and the auxiliary object
+		# Insert the text and the label or window
+		# (if any) into the body text widget
 		#
-		set cellTags {}
-		foreach name [array names itemData $key-$col-\[bf\]*] {
-		    set tail [lindex [split $name "-"] 2]
-		    lappend cellTags cell-$tail-$itemData($name)
-		}
-		set tagNames [concat $colTags $rowTags $cellTags]
-		if {$auxType == 0} {
-		    if {$multiline} {
-			$w insert $line.end "\t\t" $tagNames
-			$w window create $line.end-1c -pady 1 -create $msgScript
-		    } else {
-			$w insert $line.end "\t$text\t" $tagNames
-		    }
-		} else {
-		    $w insert $line.end "\t\t" $tagNames
-		    createAuxObject $win $key $row $col $aux $auxType $auxWidth
-		    if {$multiline} {
-			insertMlElem $w $line.end-1c $msgScript \
-				     $aux $auxType $alignment
-		    } else {
-			insertElem $w $line.end-1c $text \
-				   $aux $auxType $alignment
-		    }
-		}
+		appendComplexElem $win $key $row $col $text $pixels \
+				  $alignment $snipStr $cellTags $line
 
 		incr col
 	    }
+	}
 
-	    unset itemData
+	if {$tagRefCount != 0} {
+	    foreach opt {-background -foreground -font} {
+		if {[info exists data($key$opt)]} {
+		    $w tag add row$opt-$data($key$opt) $line.0 $line.end
+		}
+	    }
 	}
 
 	if {[info exists data($key-hide)]} {
@@ -3039,11 +3078,6 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
     set data(itemList) $newItemList
 
     #
-    # Restore the stripes in the body text widget
-    #
-    makeStripes $win
-
-    #
     # Select the cells that were selected before
     #
     foreach cellIdx $selCells {
@@ -3054,16 +3088,17 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
     }
 
     #
+    # Adjust the elided text and restore the stripes in the body text widget
+    #
+    adjustElidedText $win
+    makeStripes $win
+
+    #
     # Restore the edit window if it was present before
     #
     if {$editCol >= 0} {
 	editcellSubCmd $win $editRow $editCol 1
     }
-
-    #
-    # Adjust the elided text
-    #
-    adjustElidedTextWhenIdle $win
 }
 
 #------------------------------------------------------------------------------
