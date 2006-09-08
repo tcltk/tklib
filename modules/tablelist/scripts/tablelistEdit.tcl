@@ -219,6 +219,8 @@ namespace eval tablelist {
 	set name entry
 	array set ::tablelist::editWin [list \
 	    $name-creationCmd	"$name %W -width 0" \
+	    $name-putValueCmd	"%W delete 0 end; %W insert 0 %T" \
+	    $name-getValueCmd	"%W get" \
 	    $name-putTextCmd	"%W delete 0 end; %W insert 0 %T" \
 	    $name-getTextCmd	"%W get" \
 	    $name-putListCmd	"" \
@@ -229,6 +231,7 @@ namespace eval tablelist {
 	    $name-useFormat	1 \
 	    $name-useReqWidth	0 \
 	    $name-usePadX	0 \
+	    $name-isEntryLike	1 \
 	    $name-focusWin	%W \
 	    $name-reservedKeys	{Left Right} \
 	]
@@ -236,6 +239,8 @@ namespace eval tablelist {
 	set name text
 	array set ::tablelist::editWin [list \
 	    $name-creationCmd	"$name %W -padx 2 -pady 2 -wrap none" \
+	    $name-putValueCmd	"%W delete 1.0 end; %W insert 1.0 %T" \
+	    $name-getValueCmd	"%W get 1.0 end-1c" \
 	    $name-putTextCmd	"%W delete 1.0 end; %W insert 1.0 %T" \
 	    $name-getTextCmd	"%W get 1.0 end-1c" \
 	    $name-putListCmd	"" \
@@ -246,6 +251,7 @@ namespace eval tablelist {
 	    $name-useFormat	1 \
 	    $name-useReqWidth	0 \
 	    $name-usePadX	0 \
+	    $name-isEntryLike	1 \
 	    $name-focusWin	%W \
 	    $name-reservedKeys	{Left Right Up Down Prior Next
 				 Control-Home Control-End Meta-b Meta-f
@@ -255,16 +261,19 @@ namespace eval tablelist {
 	set name checkbutton
 	array set ::tablelist::editWin [list \
 	    $name-creationCmd	"createCheckbutton %W" \
+	    $name-putValueCmd	{set [%W cget -variable] %T} \
+	    $name-getValueCmd	{set [%W cget -variable]} \
 	    $name-putTextCmd	{set [%W cget -variable] %T} \
 	    $name-getTextCmd	{set [%W cget -variable]} \
 	    $name-putListCmd	"" \
 	    $name-getListCmd	"" \
 	    $name-selectCmd	"" \
 	    $name-invokeCmd	"%W invoke" \
-	    $name-fontOpt	-font \
+	    $name-fontOpt	"" \
 	    $name-useFormat	0 \
 	    $name-useReqWidth	1 \
 	    $name-usePadX	0 \
+	    $name-isEntryLike	0 \
 	    $name-focusWin	%W \
 	    $name-reservedKeys	{} \
 	]
@@ -276,6 +285,8 @@ namespace eval tablelist {
 	set name spinbox
 	array set ::tablelist::editWin [list \
 	    $name-creationCmd	"$name %W -width 0" \
+	    $name-putValueCmd	"%W delete 0 end; %W insert 0 %T" \
+	    $name-getValueCmd	"%W get" \
 	    $name-putTextCmd	"%W delete 0 end; %W insert 0 %T" \
 	    $name-getTextCmd	"%W get" \
 	    $name-putListCmd	"" \
@@ -286,6 +297,7 @@ namespace eval tablelist {
 	    $name-useFormat	1 \
 	    $name-useReqWidth	0 \
 	    $name-usePadX	1 \
+	    $name-isEntryLike	1 \
 	    $name-focusWin	%W \
 	    $name-reservedKeys	{Left Right Up Down} \
 	]
@@ -300,6 +312,8 @@ namespace eval tablelist {
 	set name ttk::entry
 	array set ::tablelist::editWin [list \
 	    $name-creationCmd	"createTileEntry %W" \
+	    $name-putValueCmd	"%W delete 0 end; %W insert 0 %T" \
+	    $name-getValueCmd	"%W get" \
 	    $name-putTextCmd	"%W delete 0 end; %W insert 0 %T" \
 	    $name-getTextCmd	"%W get" \
 	    $name-putListCmd	"" \
@@ -310,6 +324,7 @@ namespace eval tablelist {
 	    $name-useFormat	1 \
 	    $name-useReqWidth	0 \
 	    $name-usePadX	0 \
+	    $name-isEntryLike	1 \
 	    $name-focusWin	%W \
 	    $name-reservedKeys	{Left Right} \
 	]
@@ -317,6 +332,8 @@ namespace eval tablelist {
 	set name ttk::combobox
 	array set ::tablelist::editWin [list \
 	    $name-creationCmd	"createTileCombobox %W" \
+	    $name-putValueCmd	"%W set %T" \
+	    $name-getValueCmd	"%W get" \
 	    $name-putTextCmd	"%W set %T" \
 	    $name-getTextCmd	"%W get" \
 	    $name-putListCmd	"" \
@@ -327,6 +344,7 @@ namespace eval tablelist {
 	    $name-useFormat	1 \
 	    $name-useReqWidth	0 \
 	    $name-usePadX	1 \
+	    $name-isEntryLike	1 \
 	    $name-focusWin	%W \
 	    $name-reservedKeys	{Left Right Up Down} \
 	]
@@ -334,16 +352,19 @@ namespace eval tablelist {
 	set name ttk::checkbutton
 	array set ::tablelist::editWin [list \
 	    $name-creationCmd	"createTileCheckbutton %W" \
+	    $name-putValueCmd	{set [%W cget -variable] %T} \
+	    $name-getValueCmd	{set [%W cget -variable]} \
 	    $name-putTextCmd	{set [%W cget -variable] %T} \
 	    $name-getTextCmd	{set [%W cget -variable]} \
 	    $name-putListCmd	"" \
 	    $name-getListCmd	"" \
 	    $name-selectCmd	"" \
 	    $name-invokeCmd	{%W instate !pressed {%W invoke}} \
-	    $name-fontOpt	-font \
+	    $name-fontOpt	"" \
 	    $name-useFormat	0 \
 	    $name-useReqWidth	1 \
 	    $name-usePadX	0 \
+	    $name-isEntryLike	0 \
 	    $name-focusWin	%W \
 	    $name-reservedKeys	{} \
 	]
@@ -369,6 +390,8 @@ proc tablelist::addBWidgetEntry {{name Entry}} {
 
     array set ::tablelist::editWin [list \
 	$name-creationCmd	"Entry %W -width 0" \
+	$name-putValueCmd	"%W delete 0 end; %W insert 0 %T" \
+	$name-getValueCmd	"%W get" \
 	$name-putTextCmd	"%W delete 0 end; %W insert 0 %T" \
 	$name-getTextCmd	"%W get" \
 	$name-putListCmd	"" \
@@ -379,6 +402,7 @@ proc tablelist::addBWidgetEntry {{name Entry}} {
 	$name-useFormat		1 \
 	$name-useReqWidth	0 \
 	$name-usePadX		0 \
+	$name-isEntryLike	1 \
 	$name-focusWin		%W \
 	$name-reservedKeys	{Left Right} \
     ]
@@ -397,6 +421,8 @@ proc tablelist::addBWidgetSpinBox {{name SpinBox}} {
 
     array set ::tablelist::editWin [list \
 	$name-creationCmd	"SpinBox %W -editable 1 -width 0" \
+	$name-putValueCmd	"%W configure -text %T" \
+	$name-getValueCmd	"%W cget -text" \
 	$name-putTextCmd	"%W configure -text %T" \
 	$name-getTextCmd	"%W cget -text" \
 	$name-putListCmd	"" \
@@ -407,6 +433,7 @@ proc tablelist::addBWidgetSpinBox {{name SpinBox}} {
 	$name-useFormat		1 \
 	$name-useReqWidth	0 \
 	$name-usePadX		1 \
+	$name-isEntryLike	1 \
 	$name-focusWin		%W.e \
 	$name-reservedKeys	{Left Right Up Down Prior Next} \
     ]
@@ -425,6 +452,8 @@ proc tablelist::addBWidgetComboBox {{name ComboBox}} {
 
     array set ::tablelist::editWin [list \
 	$name-creationCmd	"ComboBox %W -editable 1 -width 0" \
+	$name-putValueCmd	"%W configure -text %T" \
+	$name-getValueCmd	"%W cget -text" \
 	$name-putTextCmd	"%W configure -text %T" \
 	$name-getTextCmd	"%W cget -text" \
 	$name-putListCmd	"" \
@@ -435,6 +464,7 @@ proc tablelist::addBWidgetComboBox {{name ComboBox}} {
 	$name-useFormat		1 \
 	$name-useReqWidth	0 \
 	$name-usePadX		1 \
+	$name-isEntryLike	1 \
 	$name-focusWin		%W.e \
 	$name-reservedKeys	{Left Right Up Down} \
     ]
@@ -453,6 +483,8 @@ proc tablelist::addIncrEntryfield {{name entryfield}} {
 
     array set ::tablelist::editWin [list \
 	$name-creationCmd	"iwidgets::entryfield %W -width 0" \
+	$name-putValueCmd	"%W clear; %W insert 0 %T" \
+	$name-getValueCmd	"%W get" \
 	$name-putTextCmd	"%W clear; %W insert 0 %T" \
 	$name-getTextCmd	"%W get" \
 	$name-putListCmd	"" \
@@ -463,6 +495,7 @@ proc tablelist::addIncrEntryfield {{name entryfield}} {
 	$name-useFormat		1 \
 	$name-useReqWidth	0 \
 	$name-usePadX		0 \
+	$name-isEntryLike	1 \
 	$name-focusWin		{[%W component entry]} \
 	$name-reservedKeys	{Left Right} \
     ]
@@ -521,6 +554,8 @@ proc tablelist::addIncrDateTimeWidget {widgetType args} {
 
     array set ::tablelist::editWin [list \
 	$name-creationCmd	"iwidgets::$widgetType %W" \
+	$name-putValueCmd	"%W show %T" \
+	$name-getValueCmd	"%W get" \
 	$name-putTextCmd	"%W show %T" \
 	$name-getTextCmd	"%W get" \
 	$name-putListCmd	"" \
@@ -531,10 +566,11 @@ proc tablelist::addIncrDateTimeWidget {widgetType args} {
 	$name-useReqWidth	1 \
 	$name-usePadX		[string match "*entry" $widgetType] \
 	$name-useFormat		1 \
+	$name-isEntryLike	1 \
 	$name-reservedKeys	{Left Right Up Down} \
     ]
     if {$useClicks} {
-	lappend ::tablelist::editWin($name-getTextCmd) -clicks
+	lappend ::tablelist::editWin($name-getValueCmd) -clicks
 	set ::tablelist::editWin($name-useFormat) 0
     }
     if {[string match "date*" $widgetType]} {
@@ -557,6 +593,8 @@ proc tablelist::addIncrSpinner {{name spinner}} {
 
     array set ::tablelist::editWin [list \
 	$name-creationCmd	"iwidgets::spinner %W -width 0" \
+	$name-putValueCmd	"%W clear; %W insert 0 %T" \
+	$name-getValueCmd	"%W get" \
 	$name-putTextCmd	"%W clear; %W insert 0 %T" \
 	$name-getTextCmd	"%W get" \
 	$name-putListCmd	"" \
@@ -567,6 +605,7 @@ proc tablelist::addIncrSpinner {{name spinner}} {
 	$name-useFormat		1 \
 	$name-useReqWidth	0 \
 	$name-usePadX		1 \
+	$name-isEntryLike	1 \
 	$name-focusWin		{[%W component entry]} \
 	$name-reservedKeys	{Left Right} \
     ]
@@ -585,6 +624,8 @@ proc tablelist::addIncrSpinint {{name spinint}} {
 
     array set ::tablelist::editWin [list \
 	$name-creationCmd	"iwidgets::spinint %W -width 0" \
+	$name-putValueCmd	"%W clear; %W insert 0 %T" \
+	$name-getValueCmd	"%W get" \
 	$name-putTextCmd	"%W clear; %W insert 0 %T" \
 	$name-getTextCmd	"%W get" \
 	$name-putListCmd	"" \
@@ -595,6 +636,7 @@ proc tablelist::addIncrSpinint {{name spinint}} {
 	$name-useFormat		1 \
 	$name-useReqWidth	0 \
 	$name-usePadX		1 \
+	$name-isEntryLike	1 \
 	$name-focusWin		{[%W component entry]} \
 	$name-reservedKeys	{Left Right} \
     ]
@@ -613,6 +655,8 @@ proc tablelist::addIncrCombobox {{name combobox}} {
 
     array set ::tablelist::editWin [list \
 	$name-creationCmd	"createIncrCombobox %W" \
+	$name-putValueCmd	"%W clear entry; %W insert entry 0 %T" \
+	$name-getValueCmd	"%W get" \
 	$name-putTextCmd	"%W clear entry; %W insert entry 0 %T" \
 	$name-getTextCmd	"%W get" \
 	$name-putListCmd	{eval [list %W insert list end] %L} \
@@ -623,6 +667,7 @@ proc tablelist::addIncrCombobox {{name combobox}} {
 	$name-useFormat		1 \
 	$name-useReqWidth	0 \
 	$name-usePadX		1 \
+	$name-isEntryLike	1 \
 	$name-focusWin		{[%W component entry]} \
 	$name-reservedKeys	{Left Right Up Down Control-p Control-n} \
     ]
@@ -640,6 +685,8 @@ proc tablelist::addOakleyCombobox {{name combobox}} {
 
     array set ::tablelist::editWin [list \
 	$name-creationCmd	"createOakleyCombobox %W" \
+	$name-putValueCmd	"%W delete 0 end; %W insert 0 %T" \
+	$name-getValueCmd	"%W get" \
 	$name-putTextCmd	"%W delete 0 end; %W insert 0 %T" \
 	$name-getTextCmd	"%W get" \
 	$name-putListCmd	{eval [list %W list insert end] %L} \
@@ -650,6 +697,7 @@ proc tablelist::addOakleyCombobox {{name combobox}} {
 	$name-useFormat		1 \
 	$name-useReqWidth	0 \
 	$name-usePadX		1 \
+	$name-isEntryLike	1 \
 	$name-focusWin		%W.entry \
 	$name-reservedKeys	{Left Right Up Down Prior Next} \
     ]
@@ -746,8 +794,10 @@ proc tablelist::addDateMentry {fmt sep args} {
 
     array set ::tablelist::editWin [list \
 	$name-creationCmd	[list mentry::dateMentry %W $fmt $sep] \
-	$name-putTextCmd	"mentry::putClockVal %T %W -gmt $useGMT" \
-	$name-getTextCmd	"mentry::getClockVal %W -gmt $useGMT" \
+	$name-putValueCmd	"mentry::putClockVal %T %W -gmt $useGMT" \
+	$name-getValueCmd	"mentry::getClockVal %W -gmt $useGMT" \
+	$name-putTextCmd	"" \
+	$name-getTextCmd	"%W getstring" \
 	$name-putListCmd	{eval [list %W put 0] %L} \
 	$name-getListCmd	"%W getlist" \
 	$name-selectCmd		"" \
@@ -756,6 +806,7 @@ proc tablelist::addDateMentry {fmt sep args} {
 	$name-useFormat		0 \
 	$name-useReqWidth	1 \
 	$name-usePadX		1 \
+	$name-isEntryLike	1 \
 	$name-focusWin		"" \
 	$name-reservedKeys	{Left Right Up Down Prior Next} \
     ]
@@ -819,8 +870,10 @@ proc tablelist::addTimeMentry {fmt sep args} {
 
     array set ::tablelist::editWin [list \
 	$name-creationCmd	[list mentry::timeMentry %W $fmt $sep] \
-	$name-putTextCmd	"mentry::putClockVal %T %W -gmt $useGMT" \
-	$name-getTextCmd	"mentry::getClockVal %W -gmt $useGMT" \
+	$name-putValueCmd	"mentry::putClockVal %T %W -gmt $useGMT" \
+	$name-getValueCmd	"mentry::getClockVal %W -gmt $useGMT" \
+	$name-putTextCmd	"" \
+	$name-getTextCmd	"%W getstring" \
 	$name-putListCmd	{eval [list %W put 0] %L} \
 	$name-getListCmd	"%W getlist" \
 	$name-selectCmd		"" \
@@ -829,6 +882,7 @@ proc tablelist::addTimeMentry {fmt sep args} {
 	$name-useFormat		0 \
 	$name-useReqWidth	1 \
 	$name-usePadX		1 \
+	$name-isEntryLike	1 \
 	$name-focusWin		"" \
 	$name-reservedKeys	{Left Right Up Down Prior Next} \
     ]
@@ -894,8 +948,10 @@ proc tablelist::addFixedPointMentry {cnt1 cnt2 args} {
 
     array set ::tablelist::editWin [list \
 	$name-creationCmd	[list mentry::fixedPointMentry %W $cnt1 $cnt2] \
-	$name-putTextCmd	"mentry::putReal %T %W" \
-	$name-getTextCmd	"mentry::getReal %W" \
+	$name-putValueCmd	"mentry::putReal %T %W" \
+	$name-getValueCmd	"mentry::getReal %W" \
+	$name-putTextCmd	"" \
+	$name-getTextCmd	"%W getstring" \
 	$name-putListCmd	{eval [list %W put 0] %L} \
 	$name-getListCmd	"%W getlist" \
 	$name-selectCmd		"" \
@@ -904,6 +960,7 @@ proc tablelist::addFixedPointMentry {cnt1 cnt2 args} {
 	$name-useFormat		0 \
 	$name-useReqWidth	1 \
 	$name-usePadX		1 \
+	$name-isEntryLike	1 \
 	$name-focusWin		"" \
 	$name-reservedKeys	{Left Right} \
     ]
@@ -925,8 +982,10 @@ proc tablelist::addIPAddrMentry {{name ipAddrMentry}} {
 
     array set ::tablelist::editWin [list \
 	$name-creationCmd	"mentry::ipAddrMentry %W" \
-	$name-putTextCmd	"mentry::putIPAddr %T %W" \
-	$name-getTextCmd	"mentry::getIPAddr %W" \
+	$name-putValueCmd	"mentry::putIPAddr %T %W" \
+	$name-getValueCmd	"mentry::getIPAddr %W" \
+	$name-putTextCmd	"" \
+	$name-getTextCmd	"%W getstring" \
 	$name-putListCmd	{eval [list %W put 0] %L} \
 	$name-getListCmd	"%W getlist" \
 	$name-selectCmd		"" \
@@ -935,6 +994,7 @@ proc tablelist::addIPAddrMentry {{name ipAddrMentry}} {
 	$name-useFormat		0 \
 	$name-useReqWidth	1 \
 	$name-usePadX		1 \
+	$name-isEntryLike	1 \
 	$name-focusWin		"" \
 	$name-reservedKeys	{Left Right Up Down Prior Next} \
     ]
@@ -1340,7 +1400,7 @@ proc tablelist::editcellSubCmd {win row col restore {cmd ""} {charPos -1}} {
 	    set text [uplevel #0 $data($col-formatcommand) [list $text]]
 	}
 	catch {
-	    eval [strMap {"%W" "$w"  "%T" "$text"} $editWin($name-putTextCmd)]
+	    eval [strMap {"%W" "$w"  "%T" "$text"} $editWin($name-putValueCmd)]
 	}
 	if {[string compare $data(-editstartcommand) ""] != 0} {
 	    set text [uplevel #0 $data(-editstartcommand) \
@@ -1350,16 +1410,18 @@ proc tablelist::editcellSubCmd {win row col restore {cmd ""} {charPos -1}} {
 	    }
 	    catch {
 		eval [strMap {"%W" "$w"  "%T" "$text"} \
-		      $editWin($name-putTextCmd)]
+		      $editWin($name-putValueCmd)]
 	    }
 	}
 
 	#
 	# Save the edit window's text
 	#
-	if {$isText} {
-	    set data(origEditText) [$w get 1.0 end-1c]
+	set data(origEditText) \
+	    [eval [strMap {"%W" "$w"} $editWin($name-getTextCmd)]]
+	set data(rejected) 0
 
+	if {$isText} {
 	    #
 	    # Adjust the edit window's height
 	    #
@@ -1369,14 +1431,7 @@ proc tablelist::editcellSubCmd {win row col restore {cmd ""} {charPos -1}} {
 		wcb::callback $w after insert tablelist::adjustTextHeight
 		wcb::callback $w after delete tablelist::adjustTextHeight
 	    }
-	} elseif {$isMentry} {
-	    set data(origEditText) [$w getstring]
-	} elseif {$isCheckbtn} {
-	    set data(origEditText) $text
-	} else {
-	    set data(origEditText) [$comp get]
 	}
-	set data(rejected) 0
 
 	if {[string compare $editWin($name-getListCmd) ""] != 0 &&
 	    [string compare $editWin($name-selectCmd) ""] != 0} {
@@ -1400,11 +1455,11 @@ proc tablelist::editcellSubCmd {win row col restore {cmd ""} {charPos -1}} {
 	# Set the focus and the insertion cursor
 	#
 	if {$charPos >= 0} {
-	    if {$isText || $isCheckbtn} {
+	    if {$isText || !$editWin($name-isEntryLike)} {
 		focus $w
 	    } else {
-		set hasAuxObject [expr {[info exists data($key-$col-image)] ||
-					[info exists data($key-$col-window)]}]
+		set hasAuxObject [expr {[info exists data($key,$col-image)] ||
+					[info exists data($key,$col-window)]}]
 		if {[string compare $alignment "right"] == 0} {
 		    scan $tabIdx2 "%d.%d" line tabCharIdx2
 		    if {$isMentry} {
@@ -1431,7 +1486,7 @@ proc tablelist::editcellSubCmd {win row col restore {cmd ""} {charPos -1}} {
 		}
 	    }
 	} else {
-	    if {$isText || $isMentry || $isCheckbtn} {
+	    if {$isText || $isMentry || !$editWin($name-isEntryLike)} {
 		focus $w
 	    } else {
 		focus $comp
@@ -1462,9 +1517,9 @@ proc tablelist::editcellSubCmd {win row col restore {cmd ""} {charPos -1}} {
 	update idletasks
     }
 
+    adjustElidedTextWhenIdle $win
     updateColorsWhenIdle $win
     adjustSepsWhenIdle $win
-    adjustElidedTextWhenIdle $win
     return ""
 }
 
@@ -1496,10 +1551,10 @@ proc tablelist::canceleditingSubCmd win {
 	destroy $data(bodyFr)
 	set item [lindex $data(itemList) $row]
 	set key [lindex $item end]
-	if {[info exists data($key-$col-window)]} {
-	    doCellConfig $row $col $win -window $data($key-$col-window)
-	} elseif {[info exists data($key-$col-image)]} {
-	    doCellConfig $row $col $win -image $data($key-$col-image)
+	if {[info exists data($key,$col-window)]} {
+	    doCellConfig $row $col $win -window $data($key,$col-window)
+	} elseif {[info exists data($key,$col-image)]} {
+	    doCellConfig $row $col $win -image $data($key,$col-image)
 	}
 	doCellConfig $row $col $win -text [lindex $item $col]
     }
@@ -1508,9 +1563,9 @@ proc tablelist::canceleditingSubCmd win {
     set data(canceled) 1
     event generate $win <<TablelistCellRestored>>
 
+    adjustElidedTextWhenIdle $win
     updateColorsWhenIdle $win
     adjustSepsWhenIdle $win
-    adjustElidedTextWhenIdle $win
     return ""
 }
 
@@ -1537,30 +1592,19 @@ proc tablelist::finisheditingSubCmd win {
     # specified by the -editendcommand option if needed
     #
     set w $data(bodyFrEd)
-    set class [winfo class $w]
-    set isText [expr {[string compare $class "Text"] == 0}]
-    set isMentry [expr {[string compare $class "Mentry"] == 0}]
-    set isCheckbtn [string match "*Checkbutton" $class]
-    if {$isText} {
-	set text [$w get 1.0 end-1c]
-    } elseif {$isMentry} {
-	set text [$w getstring]
-    } elseif {$isCheckbtn} {
-	set text $data(editText)
-    } else {
-	set text [$data(editFocus) get]
-    }
+    set name [getEditWindow $win $row $col]
+    set text [eval [strMap {"%W" "$w"} $editWin($name-getTextCmd)]]
     set item [lindex $data(itemList) $row]
     if {!$data(-forceeditendcommand) &&
 	[string compare $text $data(origEditText)] == 0} {
 	set text [lindex $item $col]
     } else {
-	set name [getEditWindow $win $row $col]
 	if {[catch {
-	    eval [strMap {"%W" "$w"} $editWin($name-getTextCmd)]
+	    eval [strMap {"%W" "$w"} $editWin($name-getValueCmd)]
 	} text] != 0} {
 	    set data(rejected) 1
-	} elseif {[string compare $data(-editendcommand) ""] != 0} {
+	}
+	if {[string compare $data(-editendcommand) ""] != 0} {
 	    set text \
 		[uplevel #0 $data(-editendcommand) [list $win $row $col $text]]
 	}
@@ -1573,7 +1617,7 @@ proc tablelist::finisheditingSubCmd win {
     if {$data(rejected)} {
 	if {[winfo exists $data(bodyFr)]} {
 	    seecellSubCmd $win $row $col
-	    if {!$isMentry} {
+	    if {[string compare [winfo class $w] "Mentry"] != 0} {
 		focus $data(editFocus)
 	    }
 	} else {
@@ -1586,10 +1630,10 @@ proc tablelist::finisheditingSubCmd win {
 	if {[winfo exists $data(bodyFr)]} {
 	    destroy $data(bodyFr)
 	    set key [lindex $item end]
-	    if {[info exists data($key-$col-window)]} {
-		doCellConfig $row $col $win -window $data($key-$col-window)
-	    } elseif {[info exists data($key-$col-image)]} {
-		doCellConfig $row $col $win -image $data($key-$col-image)
+	    if {[info exists data($key,$col-window)]} {
+		doCellConfig $row $col $win -window $data($key,$col-window)
+	    } elseif {[info exists data($key,$col-image)]} {
+		doCellConfig $row $col $win -image $data($key,$col-image)
 	    }
 	    doCellConfig $row $col $win -text $text
 	    set result 1
@@ -1601,9 +1645,9 @@ proc tablelist::finisheditingSubCmd win {
 	event generate $win <<TablelistCellUpdated>>
     }
 
+    adjustElidedTextWhenIdle $win
     updateColorsWhenIdle $win
     adjustSepsWhenIdle $win
-    adjustElidedTextWhenIdle $win
     return $result
 }
 
@@ -1753,21 +1797,17 @@ proc tablelist::adjustEditWindow {win pixels} {
 # that of the cell currently being edited.
 #------------------------------------------------------------------------------
 proc tablelist::setEditWinFont win {
+    variable editWin
     upvar ::tablelist::ns${win}::data data
+
+    set name [getEditWindow $win $data(editRow) $data(editCol)]
+    if {[string compare $editWin($name-fontOpt) ""] == 0} {
+	return ""
+    }
 
     set key [lindex [lindex $data(itemList) $data(editRow)] end] 
     set cellFont [getCellFont $win $key $data(editCol)]
-
-    switch [winfo class $data(bodyFrEd)] {
-	Checkbutton -
-	TCheckbutton { return "" }
-
-	default {
-	    variable editWin
-	    set name [getEditWindow $win $data(editRow) $data(editCol)]
-	    $data(bodyFrEd) configure $editWin($name-fontOpt) $cellFont
-	}
-    }
+    $data(bodyFrEd) configure $editWin($name-fontOpt) $cellFont
 
     $data(bodyFr) configure -height [winfo reqheight $data(bodyFrEd)]
 }
@@ -1786,17 +1826,12 @@ proc tablelist::saveEditData win {
     set class [winfo class $w]
     set isText [expr {[string compare $class "Text"] == 0}]
     set isMentry [expr {[string compare $class "Mentry"] == 0}]
-    set isCheckbtn [string match "*Checkbutton" $class]
 
     #
     # Miscellaneous data
     #
-    if {$isText} {
-	set data(editText) [$w get 1.0 end-1c]
-    } elseif {!$isMentry && !$isCheckbtn} {
-	set data(editText) [$entry get]
-    }
     set name [getEditWindow $win $data(editRow) $data(editCol)]
+    set data(editText) [eval [strMap {"%W" "$w"} $editWin($name-getTextCmd)]]
     if {[string compare $editWin($name-getListCmd) ""] != 0} {
 	set data(editList) \
 	    [eval [strMap {"%W" "$w"} $editWin($name-getListCmd)]]
@@ -1804,7 +1839,7 @@ proc tablelist::saveEditData win {
     if {$isText} {
 	set data(editPos) [$w index insert]
 	set data(textSelRanges) [$w tag ranges sel]
-    } elseif {!$isCheckbtn} {
+    } elseif {$editWin($name-isEntryLike)} {
 	set data(editPos) [$entry index insert]
 	if {[set data(entryHadSel) [$entry selection present]]} {
 	    set data(entrySelFrom) [$entry index sel.first]
@@ -1818,7 +1853,8 @@ proc tablelist::saveEditData win {
     # Configuration options and widget callbacks
     #
     saveEditConfigOpts $w
-    if {[info exists ::wcb::version] && !$isMentry && !$isCheckbtn} {
+    if {[info exists ::wcb::version] &&
+	$editWin($name-isEntryLike) && !$isMentry} {
 	foreach when {before after} {
 	    foreach opt {insert delete motion} {
 		set data(entryCb-$when-$opt) \
@@ -1869,20 +1905,16 @@ proc tablelist::restoreEditData win {
     set class [winfo class $w]
     set isText [expr {[string compare $class "Text"] == 0}]
     set isMentry [expr {[string compare $class "Mentry"] == 0}]
-    set isCheckbtn [string match "*Checkbutton" $class]
     set isIncrDateTimeWidget [regexp {^(Date.+|Time.+)$} $class]
 
     #
     # Miscellaneous data
     #
-    if {$isText} {
-	$w delete 1.0 end
-	$w insert 1.0 $data(editText)
-    } elseif {!$isMentry && !$isCheckbtn && !$isIncrDateTimeWidget} {
-	$entry delete 0 end
-	$entry insert 0 $data(editText)
-    }
     set name [getEditWindow $win $data(editRow) $data(editCol)]
+    if {[string compare $editWin($name-putTextCmd) ""] != 0} {
+	eval [strMap {"%W" "$w"  "%T" "$data(editText)"} \
+	      $editWin($name-putTextCmd)]
+    }
     if {[string compare $editWin($name-putListCmd) ""] != 0 &&
 	[string compare $data(editList) ""] != 0} {
 	eval [strMap {"%W" "$w"  "%L" "$data(editList)"} \
@@ -1897,7 +1929,7 @@ proc tablelist::restoreEditData win {
 	if {[llength $data(textSelRanges)] != 0} {
 	    eval [list $w tag add sel] $data(textSelRanges)
 	}
-    } elseif {!$isCheckbtn} {
+    } elseif {$editWin($name-isEntryLike)} {
 	$entry icursor $data(editPos)
 	if {$data(entryHadSel)} {
 	    $entry selection range $data(entrySelFrom) $data(entrySelTo)
@@ -1911,7 +1943,8 @@ proc tablelist::restoreEditData win {
     # Configuration options and widget callbacks
     #
     restoreEditConfigOpts $w
-    if {[info exists ::wcb::version] && !$isMentry && !$isCheckbtn} {
+    if {[info exists ::wcb::version] &&
+	$editWin($name-isEntryLike) && !$isMentry} {
 	foreach when {before after} {
 	    foreach opt {insert delete motion} {
 		eval [list ::wcb::callback $entry $when $opt] \
@@ -1928,8 +1961,8 @@ proc tablelist::restoreEditData win {
     # general we must restore the text BEFORE the configuration options.
     #
     if {$isIncrDateTimeWidget} {
-	$entry delete 0 end
-	$entry insert 0 $data(editText)
+	eval [strMap {"%W" "$w"  "%T" "$data(editText)"} \
+	      $editWin($name-putTextCmd)]
     }
 }
 

@@ -90,12 +90,12 @@ proc tablelist::cleanup win {
     upvar ::tablelist::ns${win}::data data
 
     #
-    # Cancel the execution of all delayed placeLabels, adjustSeps, makeStripes,
+    # Cancel the execution of all delayed adjustSeps, makeStripes,
     # showLineNumbers, stretchColumns, updateColors, updateScrlColOffset,
     # updateHScrlbar, updateVScrlbar, adjustElidedText, synchronize,
     # horizAutoScan, doCellConfig, redisplay, and redisplayCol commands
     #
-    foreach id {placeId sepsId stripesId lineNumsId stretchId colorId offsetId \
+    foreach id {sepsId stripesId lineNumsId stretchId colorId offsetId \
 		hScrlbarId vScrlbarId elidedId syncId afterId reconfigId} {
 	if {[info exists data($id)]} {
 	    after cancel $data($id)
@@ -193,8 +193,8 @@ proc tablelist::updateConfigSpecs win {
 	for {set row 0} {$row < $data(itemCount)} {incr row} {
 	    for {set col 0} {$col < $data(colCount)} {incr col} {
 		set key [lindex [lindex $data(itemList) $row] end]
-		if {[info exists data($key-$col-window)]} {
-		    set val $data($key-$col-window)
+		if {[info exists data($key,$col-window)]} {
+		    set val $data($key,$col-window)
 		    doCellConfig $row $col $win -window ""
 		    doCellConfig $row $col $win -window $val
 		}
@@ -229,9 +229,9 @@ proc tablelist::cleanupWindow aux {
     regexp {^(.+)\.body\.f(k[0-9]+),([0-9]+)$} $aux dummy win key col
     upvar ::tablelist::ns${win}::data data
 
-    if {[info exists data($key-$col-windowdestroy)]} {
+    if {[info exists data($key,$col-windowdestroy)]} {
 	set row [lsearch $data(itemList) "* $key"]
-	uplevel #0 $data($key-$col-windowdestroy) [list $win $row $col $aux.w]
+	uplevel #0 $data($key,$col-windowdestroy) [list $win $row $col $aux.w]
     }
 }
 
@@ -2076,6 +2076,8 @@ proc tablelist::labelB1Up {w X} {
 	redisplayColWhenIdle $win $col
 	if {$data(-width) <= 0} {
 	    $data(hdr) configure -width $data(hdrPixels)
+	    $data(lb) configure -width \
+		      [expr {$data(hdrPixels) / $data(charWidth)}]
 	} elseif {[info exists data(stretchableCols)] &&
 		  [lsearch -exact $data(stretchableCols) $col] >= 0} {
 	    set oldColWidth \
