@@ -8,7 +8,7 @@ package require Tcl 8
 package require Tk  8
 package require tablelist::common
 
-package provide Tablelist 4.4.1
-package provide tablelist 4.4.1
+package provide Tablelist 4.5
+package provide tablelist 4.5
 
 ::tablelist::useTile 0

@@ -5,13 +5,13 @@
 # Copyright (c) 2000-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package provide tablelist::common 4.4.1
+package provide tablelist::common 4.5
 
 namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	4.4.1
+    variable version	4.5
     variable library	[DIR]
 
     #
