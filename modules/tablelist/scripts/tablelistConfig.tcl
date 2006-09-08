@@ -1349,7 +1349,7 @@ proc tablelist::doColConfig {col win opt val} {
 				$l configure $opt2 $data($opt2)
 			    }
 			}
-			foreach opt2 {-background -font -foreground} {
+			foreach opt2 {-background -foreground -font} {
 			    $l configure $opt2 [$w cget $opt2]
 			}
 			foreach opt2 {-activebackground -activeforeground
@@ -1899,9 +1899,9 @@ proc tablelist::doRowConfig {row win opt val} {
 	    if {$colWidthsChanged} {
 		adjustColumns $win $colIdxList 1
 	    }
+	    adjustElidedTextWhenIdle $win
 	    updateColorsWhenIdle $win
 	    adjustSepsWhenIdle $win
-	    adjustElidedTextWhenIdle $win
 	}
 
 	-hide {
@@ -2002,9 +2002,9 @@ proc tablelist::doRowConfig {row win opt val} {
 		if {$colWidthsChanged} {
 		    adjustColumns $win $colIdxList 1
 		}
-		adjustSepsWhenIdle $win
 		adjustElidedTextWhenIdle $win
 		makeStripesWhenIdle $win
+		adjustSepsWhenIdle $win
 		updateVScrlbarWhenIdle $win
 		showLineNumbersWhenIdle $win
 	    }
@@ -2231,9 +2231,9 @@ proc tablelist::doRowConfig {row win opt val} {
 	    if {$colWidthsChanged} {
 		adjustColumns $win $colIdxList 1
 	    }
+	    adjustElidedTextWhenIdle $win
 	    updateColorsWhenIdle $win
 	    adjustSepsWhenIdle $win
-	    adjustElidedTextWhenIdle $win
 	    showLineNumbersWhenIdle $win
 	}
     }
@@ -2302,7 +2302,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	-background -
 	-foreground {
 	    set key [lindex [lindex $data(itemList) $row] end]
-	    set name $key-$col$opt
+	    set name $key,$col$opt
 
 	    if {[info exists data($name)] &&
 		(!$data($col-hide) || $canElide)} {
@@ -2353,10 +2353,10 @@ proc tablelist::doCellConfig {row col win opt val} {
 
 	-editable {
 	    #
-	    # Save the boolean value specified by val in data($key-$col$opt)
+	    # Save the boolean value specified by val in data($key,$col$opt)
 	    #
 	    set key [lindex [lindex $data(itemList) $row] end]
-	    set data($key-$col$opt) [expr {$val ? 1 : 0}]
+	    set data($key,$col$opt) [expr {$val ? 1 : 0}]
 	}
 
 	-editwindow {
@@ -2364,7 +2364,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    if {[info exists editWin($val-registered)] ||
 		[info exists editWin($val-creationCmd)]} {
 		set key [lindex [lindex $data(itemList) $row] end]
-		set data($key-$col$opt) $val
+		set data($key,$col$opt) $val
 	    } else {
 		return -code error "name \"$val\" is not registered\
 				    for interactive cell editing"
@@ -2377,7 +2377,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    set item [lindex $data(itemList) $row]
 	    set key [lindex $item end]
-	    set name $key-$col$opt
+	    set name $key,$col$opt
 	    set oldCellFont [getCellFont $win $key $col]
 
 	    if {[info exists data($name)] &&
@@ -2514,9 +2514,9 @@ proc tablelist::doCellConfig {row col win opt val} {
 		}
 	    }
 
+	    adjustElidedTextWhenIdle $win
 	    updateColorsWhenIdle $win
 	    adjustSepsWhenIdle $win
-	    adjustElidedTextWhenIdle $win
 	}
 
 	-image {
@@ -2529,7 +2529,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    set item [lindex $data(itemList) $row]
 	    set key [lindex $item end]
-	    set name $key-$col$opt
+	    set name $key,$col$opt
 	    getAuxData $win $key $col oldAuxWidth oldAuxType
 
 	    #
@@ -2554,17 +2554,6 @@ proc tablelist::doCellConfig {row col win opt val} {
 		    if {$existsAux} {
 			destroy $aux
 		    }
-
-		    #
-		    # Create the label containing the specified image and
-		    # replace the binding tag Label with $data(bodyTag)
-		    # and TablelistBody in the list of its binding tags
-		    #
-		    tk::label $aux -borderwidth 0 -height 0 \
-				   -highlightthickness 0 -image $val \
-				   -padx 0 -pady 0 -relief flat -takefocus 0
-		    bindtags $aux [lreplace [bindtags $aux] 1 1 \
-				   $data(bodyTag) TablelistBody]
 		}
 		set data($name) $val
 	    }
@@ -2627,7 +2616,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 				   $aux $auxType $auxWidth $alignment
 		    }
 		} else {
-		    $aux configure -width $auxWidth
+		    set aux [lreplace $aux end end $auxWidth]
 		    $w delete $tabIdx1+1c $tabIdx2
 		    if {$multiline} {
 			insertMlElem $w $tabIdx1+1c $msgScript \
@@ -2670,15 +2659,15 @@ proc tablelist::doCellConfig {row col win opt val} {
 		}
 	    }
 
+	    adjustElidedTextWhenIdle $win
 	    updateColorsWhenIdle $win
 	    adjustSepsWhenIdle $win
-	    adjustElidedTextWhenIdle $win
 	}
 
 	-selectbackground -
 	-selectforeground {
 	    set key [lindex [lindex $data(itemList) $row] end]
-	    set name $key-$col$opt
+	    set name $key,$col$opt
 
 	    if {[info exists data($name)] &&
 		(!$data($col-hide) || $canElide)} {
@@ -2844,9 +2833,9 @@ proc tablelist::doCellConfig {row col win opt val} {
 		}
 	    }
 
+	    adjustElidedTextWhenIdle $win
 	    updateColorsWhenIdle $win
 	    adjustSepsWhenIdle $win
-	    adjustElidedTextWhenIdle $win
 	}
 
 	-window {
@@ -2859,7 +2848,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    set item [lindex $data(itemList) $row]
 	    set key [lindex $item end]
-	    set name $key-$col$opt
+	    set name $key,$col$opt
 	    getAuxData $win $key $col oldAuxWidth oldAuxType
 
 	    #
@@ -2868,8 +2857,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    if {[string compare $val ""] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
-		    unset data($key-$col-reqWidth)
-		    unset data($key-$col-reqHeight)
+		    unset data($key,$col-reqWidth)
+		    unset data($key,$col-reqHeight)
 
 		    #
 		    # If the cell index is contained in the list
@@ -2907,16 +2896,16 @@ proc tablelist::doCellConfig {row col win opt val} {
 		    uplevel #0 $val [list $win $row $col $aux.w]
 		}
 		set data($name) $val
-		set data($key-$col-reqWidth) [winfo reqwidth $aux.w]
-		set data($key-$col-reqHeight) [winfo reqheight $aux.w]
-		$aux configure -height $data($key-$col-reqHeight)
+		set data($key,$col-reqWidth) [winfo reqwidth $aux.w]
+		set data($key,$col-reqHeight) [winfo reqheight $aux.w]
+		$aux configure -height $data($key,$col-reqHeight)
 
 		#
 		# Add the cell index to the list data(cellsToReconfig) if
 		# the window's requested width or height is not yet known
 		#
-		if {($data($key-$col-reqWidth) == 1 ||
-		     $data($key-$col-reqHeight) == 1) &&
+		if {($data($key,$col-reqWidth) == 1 ||
+		     $data($key,$col-reqHeight) == 1) &&
 		    [lsearch -exact $data(cellsToReconfig) $row,$col] < 0} {
 		    lappend data(cellsToReconfig) $row,$col
 		    if {![info exists data(reconfigId)]} {
@@ -3027,14 +3016,14 @@ proc tablelist::doCellConfig {row col win opt val} {
 		}
 	    }
 
+	    adjustElidedTextWhenIdle $win
 	    updateColorsWhenIdle $win
 	    adjustSepsWhenIdle $win
-	    adjustElidedTextWhenIdle $win
 	}
 
 	-windowdestroy {
 	    set key [lindex [lindex $data(itemList) $row] end]
-	    set name $key-$col$opt
+	    set name $key,$col$opt
 
 	    #
 	    # Delete data($name) or save the specified value in it
@@ -3077,8 +3066,8 @@ proc tablelist::doCellCget {row col win opt} {
 
 	default {
 	    set key [lindex [lindex $data(itemList) $row] end]
-	    if {[info exists data($key-$col$opt)]} {
-		return $data($key-$col$opt)
+	    if {[info exists data($key,$col$opt)]} {
+		return $data($key,$col$opt)
 	    } else {
 		return ""
 	    }
@@ -3160,8 +3149,8 @@ proc tablelist::makeListVar {win varName} {
 proc tablelist::getCellFont {win key col} {
     upvar ::tablelist::ns${win}::data data
 
-    if {[info exists data($key-$col-font)]} {
-	return $data($key-$col-font)
+    if {[info exists data($key,$col-font)]} {
+	return $data($key,$col-font)
     } elseif {[info exists data($key-font)]} {
 	return $data($key-font)
     } else {
@@ -3191,8 +3180,8 @@ proc tablelist::reconfigWindows win {
     foreach cellIdx $data(cellsToReconfig) {
 	foreach {row col} [split $cellIdx ","] {}
 	set key [lindex [lindex $data(itemList) $row] end]
-	if {[info exists data($key-$col-window)]} {
-	    doCellConfig $row $col $win -window $data($key-$col-window)
+	if {[info exists data($key,$col-window)]} {
+	    doCellConfig $row $col $win -window $data($key,$col-window)
 	}
     }
 
@@ -3209,8 +3198,8 @@ proc tablelist::isCellEditable {win row col} {
     upvar ::tablelist::ns${win}::data data
 
     set key [lindex [lindex $data(itemList) $row] end]
-    if {[info exists data($key-$col-editable)]} {
-	return $data($key-$col-editable)
+    if {[info exists data($key,$col-editable)]} {
+	return $data($key,$col-editable)
     } else {
 	return $data($col-editable)
     }
@@ -3226,8 +3215,8 @@ proc tablelist::getEditWindow {win row col} {
     upvar ::tablelist::ns${win}::data data
 
     set key [lindex [lindex $data(itemList) $row] end]
-    if {[info exists data($key-$col-editwindow)]} {
-	return $data($key-$col-editwindow)
+    if {[info exists data($key,$col-editwindow)]} {
+	return $data($key,$col-editwindow)
     } elseif {[info exists data($col-editwindow)]} {
 	return $data($col-editwindow)
     } else {
