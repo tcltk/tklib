@@ -49,9 +49,10 @@ respective column.
 Interactive editing of the elements of a tablelist widget can be
 enabled for individual cells and for entire columns.  A great variety
 of widgets from the Tk core and from the packages tile, BWidget,
-Iwidgets, combobox, and Mentry is supported for being used as embedded
-edit window.  In addition, a rich set of keyboard bindings is provided
-for a comfortable navigation between the editable cells.
+Iwidgets, combobox, and Mentry (or Mentry_tile) is supported for being
+used as embedded edit window.  In addition, a rich set of keyboard
+bindings is provided for a comfortable navigation between the editable
+cells.
 
 The Tcl command corresponding to a tablelist widget is very similar to
 the one associated with a normal listbox.  There are column-, row-, and
