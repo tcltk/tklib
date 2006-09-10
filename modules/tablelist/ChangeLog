@@ -1,5 +1,9 @@
 2006-09-08  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* scripts/tablelistEdit.tcl: Bug-fix in tablelist::editcellSubCmd.
+
+2006-09-08  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* *.tcl: Bumped the version number to 4.5.
 	* *.txt:
 
