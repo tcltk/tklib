@@ -1340,13 +1340,15 @@ proc tablelist::editcellSubCmd {win row col restore {cmd ""} {charPos -1}} {
 	destroy $f
 	return -code error $result
     }
-    catch {$w configure -borderwidth 2}
-    catch {$w configure -relief ridge}
-    catch {$w configure -highlightthickness 0}
     set class [winfo class $w]
+    set isCheckbtn [string match "*Checkbutton" $class]
     set isText [expr {[string compare $class "Text"] == 0}]
     set isMentry [expr {[string compare $class "Mentry"] == 0}]
-    set isCheckbtn [string match "*Checkbutton" $class]
+    catch {$w configure -relief ridge}
+    catch {$w configure -highlightthickness 0}
+    if {!$isCheckbtn} {
+	catch {$w configure -borderwidth 2}
+    }
     set alignment [lindex $data(colList) [expr {2*$col + 1}]]
     if {!$isText && !$isMentry} {
 	catch {$w configure -justify $alignment}
