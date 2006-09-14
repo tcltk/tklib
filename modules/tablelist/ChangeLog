@@ -1,3 +1,8 @@
+2006-09-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* README.txt:         Corrected the version number (it was still 4.4).
+	* doc/tablelist.html:
+
 2006-09-08  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistEdit.tcl: Bug-fix in tablelist::editcellSubCmd.
