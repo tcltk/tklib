@@ -192,7 +192,11 @@ snit::widget widget::dialog {
 	$self PlaceWindow $win $options(-place) $options(-parent)
 	if {[tk windowingsystem] ne "aqua"} { tkwait visibility $win }
 	if {$options(-modal) ne "none"} {
-	    catch {grab -$option(-modal) $win}
+	    if {$options(-modal) eq "global"} {
+		catch {grab -global $win}
+	    } else {
+		catch {grab $win}
+	    }
 	}
 	# In order to allow !custom synchronous, we need to allow
 	# custom dialogs to set [myvar result].  They do that through
