@@ -1,3 +1,7 @@
+2006-09-22  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* dialog.tcl (display): correct handling of -modal == local
+
 2006-09-07  Andreas Kupries  <andreask@activestate.com>
 
 	* widget_toolbar.man: Fixed missing closing bracket.
