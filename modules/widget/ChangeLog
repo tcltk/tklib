@@ -1,3 +1,8 @@
+2006-09-25  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* scrollw.tcl: consolidate scroll handling to one method.
+	Add extra check for loop condition (last min/max).
+
 2006-09-22  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* dialog.tcl (display): correct handling of -modal == local

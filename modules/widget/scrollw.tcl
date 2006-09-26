@@ -67,11 +67,13 @@ snit::widget widget::scrolledwindow {
     option -ipad      -default 0 -configuremethod C-ipad -validatemethod isa
 
     typevariable scrollopts {none horizontal vertical both}
-    variable hlock 0       ; # locks to prevent redisplay loop
-    variable vlock 0
     variable realized 0    ; # set when first Configure'd
-    variable hsb -array {packed 0 present 0 auto 0 cell 0}
-    variable vsb -array {packed 0 present 0 auto 0 cell 0}
+    variable hsb -array {
+	packed 0 present 0 auto 0 cell 0 lastmin -1 lastmax -1 lock 0
+    }
+    variable vsb -array {
+	packed 0 present 0 auto 0 cell 0 lastmin -1 lastmax -1 lock 0
+    }
     variable pending {}    ; # pending after id for scrollbar mgmt
 
     constructor args {
@@ -90,6 +92,8 @@ snit::widget widget::scrolledwindow {
 	    catch {$vscroll configure -highlightthickness 0}
 	}
 
+	set hsb(bar) $hscroll
+	set vsb(bar) $vscroll
 	bind $win <Configure> [mymethod _realize $win]
 
 	grid columnconfigure $win 1 -weight 1
@@ -136,8 +140,8 @@ snit::widget widget::scrolledwindow {
 	    $hscroll configure -command [list $widget xview]
 	    $vscroll configure -command [list $widget yview]
 	    $widget configure \
-		-xscrollcommand [mymethod _set_hscroll] \
-		-yscrollcommand [mymethod _set_vscroll]
+		-xscrollcommand [mymethod _set_scroll hsb] \
+		-yscrollcommand [mymethod _set_scroll vsb]
 	}
 	return $widget
     }
@@ -162,43 +166,30 @@ snit::widget widget::scrolledwindow {
 	grid configure $hscroll -pady [list $pady 0]
     }
 
-    method _set_hscroll {vmin vmax} {
-	if {$realized && $hsb(present)} {
-	    if {$hsb(auto)} {
-		if {$hsb(packed) && $vmin == 0 && $vmax == 1} {
-		    if {!$hlock} {
-			set hsb(packed) 0
-			grid remove $hscroll
+    method _set_scroll {varname vmin vmax} {
+	upvar 0 $varname sb
+	if {$realized && $sb(present)} {
+	    if {$sb(auto)} {
+		# One last check to avoid loops
+		if {$vmin == $sb(lastmin) && $vmax == $sb(lastmax)} {
+		    return
+		}
+		set sb(lastmin) $vmin
+		set sb(lastmax) $vmax
+		if {$sb(packed) && $vmin == 0 && $vmax == 1} {
+		    if {!$sb(lock)} {
+			set sb(packed) 0
+			grid remove $sb(bar)
 		    }
-		} elseif {!$hsb(packed) && ($vmin != 0 || $vmax != 1)} {
-		    set hsb(packed) 1
-		    grid $hscroll -column 1 -row $hsb(cell) -sticky ew
-		    set hlock 1
+		} elseif {!$sb(packed) && ($vmin != 0 || $vmax != 1)} {
+		    set sb(packed) 1
+		    grid $sb(bar) -column 1 -row $sb(cell) -sticky ew
+		    set sb(lock) 1
 		    update idletasks
-		    set hlock 0
+		    set sb(lock) 0
 		}
 	    }
-	    $hscroll set $vmin $vmax
-	}
-    }
-
-    method _set_vscroll {vmin vmax} {
-	if {$realized && $vsb(present)} {
-	    if {$vsb(auto)} {
-		if {$vsb(packed) && $vmin == 0 && $vmax == 1} {
-		    if {!$vlock} {
-			set vsb(packed) 0
-			grid remove $win.vscroll
-		    }
-		} elseif {!$vsb(packed) && ($vmin != 0 || $vmax != 1) } {
-		    set vsb(packed) 1
-		    grid $win.vscroll -column $vsb(cell) -row 1 -sticky ns
-		    set vlock 1
-		    update idletasks
-		    set vlock 0
-		}
-	    }
-	    $vscroll set $vmin $vmax
+	    $sb(bar) set $vmin $vmax
 	}
     }
 
