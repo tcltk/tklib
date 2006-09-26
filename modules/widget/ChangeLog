@@ -1,3 +1,7 @@
+2006-09-26  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* toolbar.tcl (add): separator item should have no pady by default
+
 2006-09-25  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* scrollw.tcl: consolidate scroll handling to one method.

@@ -172,6 +172,10 @@ snit::widget widget::toolbar {
 	set opts(-separator)	0
 	set opts(-sticky)	news
 	set opts(-pad)		$options(-ipad)
+	if {$what eq "separator"} {
+	    # separators shoudl not have pady by default
+	    lappend opts(-pad) 0
+	}
 	set cmdargs [list]
 	set len [llength $args]
 	for {set i 0} {$i < $len} {incr i} {
