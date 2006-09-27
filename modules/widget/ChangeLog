@@ -1,6 +1,7 @@
 2006-09-26  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* toolbar.tcl (add): separator item should have no pady by default
+	(add): add label and radiobutton item support
 
 2006-09-25  Jeff Hobbs  <jeffh@ActiveState.com>
 
