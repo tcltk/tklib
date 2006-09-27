@@ -155,10 +155,9 @@ snit::widget widget::toolbar {
 	    if {[info exists ITEMS($symbol)]} {
 		return -code error "toolbar item '$symbol' already exists"
 	    }
-	    if {$what eq "button"} {
-		set w [ttk::button $w -style Toolbutton -takefocus 0]
-	    } elseif {$what eq "checkbutton"} {
-		set w [ttk::checkbutton $w -style Toolbutton -takefocus 0]
+	    if {$what eq "label" || $what eq "button"
+		|| $what eq "checkbutton" || $what eq "radiobutton"} {
+		set w [ttk::$what $w -style Toolbutton -takefocus 0]
 	    } elseif {$what eq "separator"} {
 		set w [ttk::separator $w -orient vertical]
 	    } elseif {$what eq "space"} {
