@@ -1,3 +1,10 @@
+2006-09-28  Kevin B. Kenny  <kennykb@acm.org>
+	
+	* khim.tcl: Fixed a typo in the X11 mouse-wheel bindings.
+	Added a scrollregion to the canvas to prevent inadvertent
+	scrolling with the mouse wheel.  Extended the drawing timeout on
+	the character map.
+	
 2006-09-28  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* khim.tcl (khim::CMapWheel): handle Shift-MouseWheel variant, and

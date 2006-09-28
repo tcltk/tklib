@@ -17,7 +17,7 @@
 # Refer to the file "license.terms" for the terms and conditions of
 # use and redistribution of this file, and a DISCLAIMER OF ALL WARRANTEES.
 #
-# $Id: khim.tcl,v 1.7 2006/09/28 22:14:01 hobbs Exp $
+# $Id: khim.tcl,v 1.8 2006/09/28 23:17:24 kennykb Exp $
 # $Source: /home/rkeene/tmp/cvs2fossil/tcllib/tklib/modules/khim/khim.tcl,v $
 #
 #----------------------------------------------------------------------
@@ -1151,7 +1151,7 @@ proc khim::CMapDrawCanvas {w args} {
 	    $c create text 0 0 -text $t -font $f \
 		-anchor center -justify center -tags $tags
 	    set tock [clock clicks -milliseconds]
-	    if {$ok && $tock-$tick > 500} {
+	    if {$ok && $tock-$tick > 1500} {
 		set CMapAfter($w) [after 500 [list khim::CMapDrawCanvas $w]]
 		set ok 0
 	    }
@@ -1206,7 +1206,9 @@ proc khim::CMapDrawCanvas {w args} {
     foreach y $CMapYL($w) {
 	$c create line $xmin $y $xmax $y -width 0 -fill gray85
     }
-    $c configure -width [expr { $xmax + $pad }] -height [expr { $ymax + $pad }]
+    $c configure -width [expr { $xmax + $pad }] \
+	-height [expr { $ymax + $pad }] \
+	-scrollregion [list 0 0 [expr {$xmax + $pad}] [expr {$ymax + $pad}]]
 
     # Change the codepage in the spinbox
 
@@ -1826,10 +1828,10 @@ bind khim::cmap <Shift-MouseWheel> {khim::CMapWheel %W %D 1; break}
 bind khim::cmap <Tab> {tk::TabToWindow [tk_focusNext %W]; break}
 bind khim::cmap <<PrevWindow>> {tk::TabToWindow [tk_focusPrev %W]; break}
 if { [string equal "x11" [tk windowingsystem]] } {
-    bind khim::cmap <4> {khim::CMapMove %W 120 0; break}
-    bind khim::cmap <5> {khim::CMapMove %W -120 0; break}
-    bind khim::cmap <Shift-4> {khim::CMapMove %W 120 1; break}
-    bind khim::cmap <Shift-5> {khim::CMapMove %W -120 1; break}
+    bind khim::cmap <4> {khim::CMapWheel %W 120 0; break}
+    bind khim::cmap <5> {khim::CMapWheel %W -120 0; break}
+    bind khim::cmap <Shift-4> {khim::CMapWheel %W 120 1; break}
+    bind khim::cmap <Shift-5> {khim::CMapWheel %W -120 1; break}
 }
 bind khim::cmap <Destroy> {khim::CMapDestroy %W}
 
