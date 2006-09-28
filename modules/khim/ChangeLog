@@ -1,3 +1,10 @@
+2006-09-28  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* khim.tcl (khim::CMapWheel): handle Shift-MouseWheel variant, and
+	switch so that MouseWheel moves always by 1 up or down, and
+	Shifted variants move always 1 left or right.
+	Add break to prevent later mousewheel event triggers (eg, style::as)
+
 2006-09-07  Kevin B. Kenny  <kennykb@acm.org>
 
 	* de.msg: UTF-8-ized the file.
