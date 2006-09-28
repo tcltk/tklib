@@ -1,3 +1,8 @@
+2006-09-28  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* as.tcl (style::as::MouseWheel): handle Shift-MouseWheel
+	correctly as the possible incoming event
+
 2006-09-05  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* as.tcl (style::as::MouseWheel): allow for widgets with their own
