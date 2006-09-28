@@ -17,7 +17,7 @@
 # Refer to the file "license.terms" for the terms and conditions of
 # use and redistribution of this file, and a DISCLAIMER OF ALL WARRANTEES.
 #
-# $Id: khim.tcl,v 1.6 2006/09/05 20:19:05 kennykb Exp $
+# $Id: khim.tcl,v 1.7 2006/09/28 22:14:01 hobbs Exp $
 # $Source: /home/rkeene/tmp/cvs2fossil/tcllib/tklib/modules/khim/khim.tcl,v $
 #
 #----------------------------------------------------------------------
@@ -1528,19 +1528,14 @@ proc khim::CMapKey {c char} {
 #	
 #----------------------------------------------------------------------
 
-proc khim::CMapWheel { c delta } {
-    switch -exact [tk windowingsystem] {
-	aqua {
-	    set delta [expr {16 * $delta}]
-	}
-	default {
-	    set delta [expr {$delta / 15 * 2}]
-	    if {$delta == 0} {
-		set delta -1
-	    }
-	}
+proc khim::CMapWheel { c delta shifted } {
+    # the delta will vary for OS X and X11/Win32, but we only check
+    # + or - and move accordingly
+    if {$delta > 0} {
+	khim::CMapMove $c [expr {$shifted ? -1 : -16}]
+    } else {
+	khim::CMapMove $c [expr {$shifted ? 1 : 16}]
     }
-    khim::CMapMove $c [expr { $delta / 15 * 2 }]
     return
 }
 
@@ -1826,12 +1821,15 @@ bind khim::cmap <<Copy>> {khim::CMapCopy %W}
 bind khim::cmap <space> {khim::CMapOK %W}
 bind khim::cmap <Return> {khim::CMapOK %W}
 bind khim::cmap <Escape> {khim::CMapCancel %W}
-bind khim::cmap <MouseWheel> {khim::CMapWheel %W %D}
+bind khim::cmap <MouseWheel> {khim::CMapWheel %W %D 0; break}
+bind khim::cmap <Shift-MouseWheel> {khim::CMapWheel %W %D 1; break}
 bind khim::cmap <Tab> {tk::TabToWindow [tk_focusNext %W]; break}
 bind khim::cmap <<PrevWindow>> {tk::TabToWindow [tk_focusPrev %W]; break}
 if { [string equal "x11" [tk windowingsystem]] } {
-    bind khim::cmap <4> {khim::CMapMove %W -80}
-    bind khim::cmap <5> {khim::CMapMove %W 80}
+    bind khim::cmap <4> {khim::CMapMove %W 120 0; break}
+    bind khim::cmap <5> {khim::CMapMove %W -120 0; break}
+    bind khim::cmap <Shift-4> {khim::CMapMove %W 120 1; break}
+    bind khim::cmap <Shift-5> {khim::CMapMove %W -120 1; break}
 }
 bind khim::cmap <Destroy> {khim::CMapDestroy %W}
 
