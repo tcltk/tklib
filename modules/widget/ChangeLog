@@ -1,3 +1,8 @@
+2006-09-29  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* scrollw.tcl: fix error gridding scrollbar from 2006-09-25 change
+	to handle the variant options for vsb vs. hsb correctly.
+
 2006-09-26  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* toolbar.tcl (add): separator item should have no pady by default
