@@ -6,6 +6,8 @@
 #
 # Copyright (c) 2005 Jeffrey Hobbs.  All Rights Reserved.
 #
+# RCS: @(#) $Id: ruler.tcl,v 1.9 2006/09/29 16:25:07 hobbs Exp $
+#
 
 ###
 # Creation and Options - widget::ruler $path ...
