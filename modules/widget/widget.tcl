@@ -6,6 +6,8 @@
 #
 # Copyright (c) 2005 Jeffrey Hobbs
 #
+# RCS: @(#) $Id: widget.tcl,v 1.5 2006/09/29 16:25:07 hobbs Exp $
+#
 
 package require Tk 8.4
 package require snit

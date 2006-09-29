@@ -3,6 +3,9 @@
 # toolbar - /snit::widget
 #	Manage items in a toolbar.
 #
+# RCS: @(#) $Id: toolbar.tcl,v 1.7 2006/09/29 16:25:07 hobbs Exp $
+#
+
 #  ## Padding can be a list of {padx pady}
 #  -ipad -default 1 ; provides padding around each status bar item
 #  -pad  -default 0 ; provides general padding around the status bar

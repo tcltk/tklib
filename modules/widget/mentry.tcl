@@ -4,6 +4,8 @@
 #
 #	MenuEntry widget
 #
+# RCS: @(#) $Id: mentry.tcl,v 1.5 2006/09/29 16:25:07 hobbs Exp $
+#
 
 # Creation and Options - widget::menuentry $path ...
 #  -menu -default "" ; menu to associate with entry

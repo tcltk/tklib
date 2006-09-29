@@ -3,6 +3,8 @@
 #  statusbar.tcl -
 #	Create a status bar Tk widget
 #
+# RCS: @(#) $Id: statusbar.tcl,v 1.6 2006/09/29 16:25:07 hobbs Exp $
+#
 
 # Creation and Options - widget::scrolledwindow $path ...
 #
