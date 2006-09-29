@@ -4,6 +4,9 @@
 #
 #	Superframe widget - enhanced labelframe widget
 #
+# RCS: @(#) $Id: superframe.tcl,v 1.3 2006/09/29 16:25:07 hobbs Exp $
+#
+
 # Allows 3 styles of labelframes:
 #  border        standard labelframe
 #  whitespace    labelframe with inset contents, no border
