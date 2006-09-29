@@ -4,6 +4,8 @@
 #
 #	Scrolled widget
 #
+# RCS: @(#) $Id: scrollw.tcl,v 1.11 2006/09/29 16:23:25 hobbs Exp $
+#
 
 # Creation and Options - widget::scrolledwindow $path ...
 #  -scrollbar -default "both" ; vertical horizontal none
@@ -183,7 +185,11 @@ snit::widget widget::scrolledwindow {
 		    }
 		} elseif {!$sb(packed) && ($vmin != 0 || $vmax != 1)} {
 		    set sb(packed) 1
-		    grid $sb(bar) -column 1 -row $sb(cell) -sticky ew
+		    if {$varname eq "vsb"} {
+			grid $sb(bar) -column $sb(cell) -row 1 -sticky ns
+		    } else {
+			grid $sb(bar) -column 1 -row $sb(cell) -sticky ew
+		    }
 		    set sb(lock) 1
 		    update idletasks
 		    set sb(lock) 0
