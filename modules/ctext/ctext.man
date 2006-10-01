@@ -1,4 +1,4 @@
-[comment {# RCS: @(#) $Id: ctext.man,v 1.4 2005/04/08 04:30:16 andreas_kupries Exp $}]
+[comment {# RCS: @(#) $Id: ctext.man,v 1.5 2006/10/01 12:09:54 arjenmarkus Exp $}]
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin ctext n 3.1]
 [copyright {George Peter Staplin <GeorgePS@XMission.com>}]
@@ -31,10 +31,10 @@ Creates and configures a ctext widget.
 
 [section {HIGHLIGHTING}]
 
-Highlighting is controlled with text widget tags, that are called highlight classes. 
+Highlighting is controlled with text widget tags, that are called highlight classes.
 The [arg class] is a tag name and can be configured like any text widget tag.
 Four types of highlight classes are supported. All highlight classes are automatically used
-by the [method highlight] method of the widget. 
+by the [method highlight] method of the widget.
 
 [list_begin definitions]
 
@@ -90,7 +90,7 @@ The C comment highlighting is disabled by default.
 
 [call [cmd ::ctext::disableComments] [arg enable]]
 
-Disable C comment highlighting. 
+Disable C comment highlighting.
 
 [list_end]
 
@@ -134,6 +134,11 @@ Call [cmd tk_textPaste] for the ctext instance.
 
 Append the current selection to the clipboard.
 
+[call [arg pathName] [method configure] [arg option] [arg value] [opt ...]]
+
+Set the options for the ctext widget. Each option name must be followed
+the new value.
+
 [list_end]
 
 
@@ -143,49 +148,50 @@ Append the current selection to the clipboard.
 
 [tkoption_def -linemap "" ""]
 
-Creates a line number list on the left of the widget
+Creates (-linemap 1) or deletes (-linemap 0) a line number list on the
+left of the widget. The default is to have a linemap displayed.
 
 [tkoption_def -linemapfg "" ""]
 
 Changes the foreground of the linemap.
-The default is the same color as the main text 
+The default is the same color as the main text
 widget.
 
 [tkoption_def -linemapbg "" ""]
 
 Changes the background of the linemap.
-The default is the same color as the main text 
+The default is the same color as the main text
 widget.
 
 [tkoption_def -linemap_select_fg "" ""]
 
-Changes the selected 
+Changes the selected
 line foreground.  The default is black.
 
 [tkoption_def -linemap_select_bg "" ""]
 
-Changes the selected line 
+Changes the selected line
 background.  The default is yellow.
 	
 [tkoption_def -linemap_mark_command "" ""]
 
-Calls a procedure or command 
-with the [arg pathName] of the ctext window, the [arg type] which is 
-either [const marked] or [const unmarked], and finally the line 
-number selected.  
+Calls a procedure or command
+with the [arg pathName] of the ctext window, the [arg type] which is
+either [const marked] or [const unmarked], and finally the line
+number selected.
 
-The proc prototype is: 
+The proc prototype is:
 [example {
-proc linemark_cmd {win type line}.  
+proc linemark_cmd {win type line}.
 }]
 
-See also 
+See also
 ctext_test_interactive.tcl
 
 [tkoption_def -highlight "" ""]
 
 Takes a boolean value which defines
-whether or not to highlight text which is inserted 
+whether or not to highlight text which is inserted
 or deleted.  The default is 1.
 
 [tkoption_def -linemap_markable "" ""]
@@ -199,7 +205,7 @@ are markable with the mouse.  The default is 1.
 [section EXAMPLE]
 [example {
 	package require Tk
-	package require ctext 
+	package require ctext
 	
 	proc main {} {
 	pack [frame .f] -fill both -expand 1
@@ -208,24 +214,27 @@ are markable with the mouse.  The default is 1.
 	pack [ctext .f.t -bg black -fg white -insertbackground yellow \
 		-yscrollcommand {.f.s set}] -fill both -expand 1
 
-	ctext::addHighlightClass .f.t widgets purple [list ctext button label text frame toplevel \
-		scrollbar checkbutton canvas listbox menu menubar menubutton \
-		radiobutton scale entry message tk_chooseDir tk_getSaveFile \
-		tk_getOpenFile tk_chooseColor tk_optionMenu]
+	ctext::addHighlightClass .f.t widgets purple \
+		[list ctext button label text frame toplevel \
+			scrollbar checkbutton canvas listbox menu menubar menubutton \
+			radiobutton scale entry message tk_chooseDir tk_getSaveFile \
+			tk_getOpenFile tk_chooseColor tk_optionMenu]
 
-	ctext::addHighlightClass .f.t flags orange [list -text -command -yscrollcommand \
-		-xscrollcommand -background -foreground -fg -bg \
-		-highlightbackground -y -x -highlightcolor -relief -width \
-		-height -wrap -font -fill -side -outline -style -insertwidth \
-		-textvariable -activebackground -activeforeground -insertbackground \
-		-anchor -orient -troughcolor -nonewline -expand -type -message \
-		-title -offset -in -after -yscroll -xscroll -forward -regexp -count \
-		-exact -padx -ipadx -filetypes -all -from -to -label -value -variable \
-		-regexp -backwards -forwards -bd -pady -ipady -state -row -column \
-		-cursor -highlightcolors -linemap -menu -tearoff -displayof -cursor \
-		-underline -tags -tag]
+	ctext::addHighlightClass .f.t flags orange \
+		[list -text -command -yscrollcommand \
+			-xscrollcommand -background -foreground -fg -bg \
+			-highlightbackground -y -x -highlightcolor -relief -width \
+			-height -wrap -font -fill -side -outline -style -insertwidth \
+			-textvariable -activebackground -activeforeground -insertbackground \
+			-anchor -orient -troughcolor -nonewline -expand -type -message \
+			-title -offset -in -after -yscroll -xscroll -forward -regexp -count \
+			-exact -padx -ipadx -filetypes -all -from -to -label -value -variable \
+			-regexp -backwards -forwards -bd -pady -ipady -state -row -column \
+			-cursor -highlightcolors -linemap -menu -tearoff -displayof -cursor \
+			-underline -tags -tag]
 
-	ctext::addHighlightClass .f.t stackControl red {proc uplevel namespace while for foreach if else}
+	ctext::addHighlightClass .f.t stackControl red \
+		{proc uplevel namespace while for foreach if else}
 	ctext::addHighlightClassWithOnlyCharStart .f.t vars mediumspringgreen "\$"
 	ctext::addHighlightClass .f.t variable_funcs gold {set global variable unset}
 	ctext::addHighlightClassForSpecialChars .f.t brackets green {[]{}}
@@ -250,7 +259,7 @@ are markable with the mouse.  The default is 1.
 Further examples are in the source package for ctext.
 
 [section THANKS]
-Kevin Kenny, Neil Madden, Jeffrey Hobbs, Richard Suchenwirth, 
+Kevin Kenny, Neil Madden, Jeffrey Hobbs, Richard Suchenwirth,
 Johan Bengtsson, Mac Cody, Günther, Andreas Sievers, and Michael Schlenker.
 
 [see_also text re_syntax]
