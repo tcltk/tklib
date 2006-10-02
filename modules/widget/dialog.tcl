@@ -4,7 +4,7 @@
 #
 #	Generic dialog widget (themed)
 #
-# RCS: @(#) $Id: dialog.tcl,v 1.11 2006/09/29 16:25:07 hobbs Exp $
+# RCS: @(#) $Id: dialog.tcl,v 1.12 2006/10/02 05:55:24 hobbs Exp $
 #
 
 # Creation and Options - widget::dialog $path ...
@@ -136,7 +136,7 @@ snit::widget widget::dialog {
 	wm protocol $win WM_DELETE_WINDOW [mymethod close cancel]
 	bind $win <Key-Escape> [mymethod close cancel]
 	# Ensure grab release on unmap?
-	#bind $win <Unmap> [grab release $win]
+	#bind $win <Unmap> [list grab release $win]
 
 	$self configurelist $args
     }
@@ -211,10 +211,7 @@ snit::widget widget::dialog {
 	    }
 	    vwait [myvar result]
 	    catch {after cancel $timeout_id}
-	    foreach {oldFocus oldGrab oldStatus} $lastFocusGrab { break }
-	    catch {focus $oldFocus}
-	    catch {grab release $oldGrab}
-	    wm withdraw $win
+	    $self withdraw
 	    return $result
 	}
     }
@@ -234,10 +231,7 @@ snit::widget widget::dialog {
 	    return $result
 	} else {
 	    # Withdraw on anything but 'break' return code
-	    foreach {oldFocus oldGrab oldStatus} $lastFocusGrab { break }
-	    catch {focus $oldFocus}
-	    catch {grab release $oldGrab}
-	    wm withdraw $win
+	    $self withdraw
 	}
 	return -code $code $result
     }
@@ -245,9 +239,16 @@ snit::widget widget::dialog {
     method withdraw {} {
 	set result "withdraw"
 	foreach {oldFocus oldGrab oldStatus} $lastFocusGrab { break }
-	catch {focus $oldFocus}
-	catch {grab release $oldGrab}
+	catch {grab release $win}
 	wm withdraw $win
+	catch {focus $oldFocus}
+	if {[winfo exists $oldGrab]} {
+	    if {$oldStatus eq "global"} {
+		catch {grab -global $oldGrab}
+	    } elseif {$oldStatus eq "local"} {
+		catch {grab $oldGrab}
+	    }
+	}
 	return $result
     }
 
