@@ -4,7 +4,7 @@
 #
 #	Generic dialog widget (themed)
 #
-# RCS: @(#) $Id: dialog.tcl,v 1.12 2006/10/02 05:55:24 hobbs Exp $
+# RCS: @(#) $Id: dialog.tcl,v 1.13 2006/10/02 05:58:49 hobbs Exp $
 #
 
 # Creation and Options - widget::dialog $path ...
@@ -211,8 +211,7 @@ snit::widget widget::dialog {
 	    }
 	    vwait [myvar result]
 	    catch {after cancel $timeout_id}
-	    $self withdraw
-	    return $result
+	    return [$self withdraw $result]
 	}
     }
 
@@ -231,13 +230,13 @@ snit::widget widget::dialog {
 	    return $result
 	} else {
 	    # Withdraw on anything but 'break' return code
-	    $self withdraw
+	    $self withdraw $result
 	}
 	return -code $code $result
     }
 
-    method withdraw {} {
-	set result "withdraw"
+    method withdraw {{reason "withdraw"}} {
+	set result $reason
 	foreach {oldFocus oldGrab oldStatus} $lastFocusGrab { break }
 	catch {grab release $win}
 	wm withdraw $win
