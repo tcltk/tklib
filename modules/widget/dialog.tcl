@@ -4,7 +4,7 @@
 #
 #	Generic dialog widget (themed)
 #
-# RCS: @(#) $Id: dialog.tcl,v 1.13 2006/10/02 05:58:49 hobbs Exp $
+# RCS: @(#) $Id: dialog.tcl,v 1.14 2006/10/20 00:32:33 hobbs Exp $
 #
 
 # Creation and Options - widget::dialog $path ...
@@ -137,6 +137,11 @@ snit::widget widget::dialog {
 	bind $win <Key-Escape> [mymethod close cancel]
 	# Ensure grab release on unmap?
 	#bind $win <Unmap> [list grab release $win]
+
+	# Handle defaults
+	if {!$options(-separator)} {
+	    grid remove $separator
+	}
 
 	$self configurelist $args
     }
