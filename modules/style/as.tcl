@@ -423,10 +423,14 @@ proc style::as::MouseWheel {wFired X Y D {shifted 0}} {
 	if {[bind $w $evt] ne ""} {
 	    # Awkward ... this widget has a MouseWheel binding, but to
 	    # trigger successfully in it, we must give it focus.
-	    catch {focus} old
-	    if {$w ne $old} { focus $w }
-	    event generate $w $evt -rootx $X -rooty $Y -delta $D
-	    if {$w ne $old} { focus $old }
+	    # XXX For now, let's do nothing - maybe check containing != focus?
+	    # Users should restrict MouseWheel bindings to special cases only.
+	    if {0} {
+		catch {focus} old
+		if {$w ne $old} { focus $w }
+		event generate $w $evt -rootx $X -rooty $Y -delta $D
+		if {$w ne $old} { catch {focus $old} }
+	    }
 	    return
 	}
 	# aqua and x11/win32 have different delta handling
@@ -440,11 +444,11 @@ proc style::as::MouseWheel {wFired X Y D {shifted 0}} {
 	    catch {tk::ScrollByUnits $w \
 		       [string index [$w cget -orient] 0] $delta}
 	} else {
-	    set cmd [list $w [expr {$shifted ? "xview" : "yview"}] \
-			 scroll $delta units]
+	    set view [expr {$shifted ? "xview" : "yview"}]
 	    # Walking up to find the proper widget handles cases like
 	    # embedded widgets in a canvas
-	    while {[catch $cmd] && [winfo toplevel $w] ne $w} {
+	    while {[catch {$w $view scroll $delta units}]
+		   && [winfo toplevel $w] ne $w} {
 		set w [winfo parent $w]
 	    }
 	}
@@ -467,13 +471,16 @@ proc style::as::init_mousewheel {args} {
     if {[tk windowingsystem] eq "x11"} {
 	# Support for mousewheels on Linux/Unix commonly comes through
 	# mapping the wheel to the extended buttons.
-	bind all <4> [list ::style::as::MouseWheel %W %X %Y 120]
-	bind all <5> [list ::style::as::MouseWheel %W %X %Y -120]
+	bind all <Button-4> [list ::style::as::MouseWheel %W %X %Y 120]
+	bind all <Button-5> [list ::style::as::MouseWheel %W %X %Y -120]
 	foreach class $mw(classes) {
-	    bind $class <4> {}
-	    bind $class <5> {}
+	    bind $class <Button-4> {}
+	    bind $class <Button-5> {}
 	}
     }
+    # Disable this bwidget proc if it exists.  It creates bindings that
+    # are unnecessary and possibly dangerous in combination
+    catch { proc ::BWidget::bindMouseWheel args {} }
 }
 proc style::as::reset_mousewheel {args} {
     # Remove catch-all MouseWheel binding and restore default bindings
@@ -486,11 +493,11 @@ proc style::as::reset_mousewheel {args} {
 	bind $class <Shift-MouseWheel> $mw(s-binding)
     }
     if {[tk windowingsystem] eq "x11"} {
-	bind all <4> {}
-	bind all <5> {}
+	bind all <Button-4> {}
+	bind all <Button-5> {}
 	foreach class $mw(classes) {
-	    bind $class <4> $mw(binding4)
-	    bind $class <5> $mw(binding5)
+	    bind $class <Button-4> $mw(binding4)
+	    bind $class <Button-5> $mw(binding5)
 	}
     }
 }
