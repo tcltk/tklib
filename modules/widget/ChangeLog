@@ -1,3 +1,7 @@
+2006-10-19  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* dialog.tcl: handle -separator changed with option default
+
 2006-10-01  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* dialog.tcl (withdraw): fix grab handling to properly release
