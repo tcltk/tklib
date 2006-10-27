@@ -1,3 +1,8 @@
+2006-10-27  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* dialog.tcl (display): don't tkwait, as it will just hang for an
+	already displayed window (a Tk misfeature ... but oh well).
+
 2006-10-19  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* dialog.tcl: handle -separator changed with option default
