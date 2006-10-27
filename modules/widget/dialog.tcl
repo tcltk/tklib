@@ -4,7 +4,7 @@
 #
 #	Generic dialog widget (themed)
 #
-# RCS: @(#) $Id: dialog.tcl,v 1.14 2006/10/20 00:32:33 hobbs Exp $
+# RCS: @(#) $Id: dialog.tcl,v 1.15 2006/10/27 18:52:57 hobbs Exp $
 #
 
 # Creation and Options - widget::dialog $path ...
@@ -197,7 +197,6 @@ snit::widget widget::dialog {
 	}
 
 	$self PlaceWindow $win $options(-place) $options(-parent)
-	if {[tk windowingsystem] ne "aqua"} { tkwait visibility $win }
 	if {$options(-modal) ne "none"} {
 	    if {$options(-modal) eq "global"} {
 		catch {grab -global $win}
