@@ -1,3 +1,8 @@
+2006-11-02  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* dialog.tcl: add -focus option to set desired subwindow focus,
+	and make sure we don't restore focus/grab to a subwindow on withdraw
+
 2006-10-27  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* dialog.tcl (display): don't tkwait, as it will just hang for an
