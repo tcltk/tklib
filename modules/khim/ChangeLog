@@ -1,3 +1,7 @@
+2006-11-02  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* khim.tcl (khim::Insert): correct missing space
+
 2006-09-28  Kevin B. Kenny  <kennykb@acm.org>
 	
 	* khim.tcl: Fixed a typo in the X11 mouse-wheel bindings.
