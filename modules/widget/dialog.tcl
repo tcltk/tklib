@@ -4,11 +4,12 @@
 #
 #	Generic dialog widget (themed)
 #
-# RCS: @(#) $Id: dialog.tcl,v 1.15 2006/10/27 18:52:57 hobbs Exp $
+# RCS: @(#) $Id: dialog.tcl,v 1.16 2006/11/02 18:53:18 hobbs Exp $
 #
 
 # Creation and Options - widget::dialog $path ...
 #    -command	-default {} ; # gets appended: $win $reason
+#    -focus     -default {} ; # subwindow to set focus on display
 #    -modal	-default none
 #    -padding	-default 0
 #    -parent	-default ""
@@ -99,6 +100,7 @@ snit::widget widget::dialog {
     option -transient	-default 1 -configuremethod C-transient;
     option -type	-default custom -configuremethod C-type;
     option -timeout	-default 0;
+    option -focus	-default "";
 
     # We may make this an easier customizable messagebox, but not yet
     #option -anchor      c; # {n e w s c}
@@ -204,6 +206,9 @@ snit::widget widget::dialog {
 		catch {grab $win}
 	    }
 	}
+	if {[winfo exists $options(-focus)]} {
+	    catch { focus $options(-focus) }
+	}
 	# In order to allow !custom synchronous, we need to allow
 	# custom dialogs to set [myvar result].  They do that through
 	# [$dlg close $reason]
@@ -244,8 +249,11 @@ snit::widget widget::dialog {
 	foreach {oldFocus oldGrab oldStatus} $lastFocusGrab { break }
 	catch {grab release $win}
 	wm withdraw $win
-	catch {focus $oldFocus}
-	if {[winfo exists $oldGrab]} {
+	# Ensure last focus/grab wasn't a child of this window
+	if {[winfo exists $oldFocus] && ![string match $win* $oldFocus]} {
+	    catch {focus $oldFocus}
+	}
+	if {[winfo exists $oldGrab] && ![string match $win* $oldGrab]} {
 	    if {$oldStatus eq "global"} {
 		catch {grab -global $oldGrab}
 	    } elseif {$oldStatus eq "local"} {
