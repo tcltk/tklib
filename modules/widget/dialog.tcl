@@ -4,7 +4,7 @@
 #
 #	Generic dialog widget (themed)
 #
-# RCS: @(#) $Id: dialog.tcl,v 1.16 2006/11/02 18:53:18 hobbs Exp $
+# RCS: @(#) $Id: dialog.tcl,v 1.17 2006/11/04 01:15:56 hobbs Exp $
 #
 
 # Creation and Options - widget::dialog $path ...
@@ -191,7 +191,7 @@ snit::widget widget::dialog {
     }
 
     method display {} {
-	lappend lastFocusGrab [focus]
+	set lastFocusGrab [focus]
 	set last [grab current $win]
 	lappend lastFocusGrab $last
 	if {[winfo exists $last]} {
