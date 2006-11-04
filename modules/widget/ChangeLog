@@ -1,6 +1,7 @@
 2006-11-03  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* dialog.tcl (display): init lastFocusGrab properly
+	don't restore focus/grab if we weren't mapped
 
 2006-11-02  Jeff Hobbs  <jeffh@ActiveState.com>
 
