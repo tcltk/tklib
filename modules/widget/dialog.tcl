@@ -4,7 +4,7 @@
 #
 #	Generic dialog widget (themed)
 #
-# RCS: @(#) $Id: dialog.tcl,v 1.17 2006/11/04 01:15:56 hobbs Exp $
+# RCS: @(#) $Id: dialog.tcl,v 1.18 2006/11/04 01:21:19 hobbs Exp $
 #
 
 # Creation and Options - widget::dialog $path ...
@@ -246,9 +246,11 @@ snit::widget widget::dialog {
 
     method withdraw {{reason "withdraw"}} {
 	set result $reason
-	foreach {oldFocus oldGrab oldStatus} $lastFocusGrab { break }
 	catch {grab release $win}
+	# Let's avoid focus/grab restore if we don't think we were showing
+	if {![winfo ismapped $win]} { return $reason }
 	wm withdraw $win
+	foreach {oldFocus oldGrab oldStatus} $lastFocusGrab { break }
 	# Ensure last focus/grab wasn't a child of this window
 	if {[winfo exists $oldFocus] && ![string match $win* $oldFocus]} {
 	    catch {focus $oldFocus}
