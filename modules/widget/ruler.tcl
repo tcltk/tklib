@@ -6,7 +6,7 @@
 #
 # Copyright (c) 2005 Jeffrey Hobbs.  All Rights Reserved.
 #
-# RCS: @(#) $Id: ruler.tcl,v 1.9 2006/09/29 16:25:07 hobbs Exp $
+# RCS: @(#) $Id: ruler.tcl,v 1.10 2006/11/16 01:50:57 hobbs Exp $
 #
 
 ###
@@ -379,22 +379,30 @@ snit::widget widget::screenruler {
 
 	    # Don't use options(-reflect) because it isn't 0/1
 	    $menu add checkbutton -label "Reflect Desktop" \
+		-accelerator "r" -underline 0 \
 		-variable [myvar reflect(do)] \
 		-command "[list $win configure -reflect] \$[myvar reflect(do)]"
+	    bind $win <Key-r> [list $menu invoke "Reflect Desktop"]
 	}
 	$menu add checkbutton -label "Show Grid" \
+	    -accelerator "d" -underline 8 \
 	    -variable [myvar grid] \
 	    -command "[list $ruler configure -grid] \$[myvar grid]"
+	bind $win <Key-d> [list $menu invoke "Show Grid"]
 	$menu add checkbutton -label "Show Geometry" \
+	    -accelerator "g" -underline 5 \
 	    -variable [myvar options(-showgeometry)] \
 	    -command "[list $win configure -showgeometry] \$[myvar options(-showgeometry)]"
+	bind $win <Key-g> [list $menu invoke "Show Geometry"]
 	if {[tk windowingsystem] ne "x11"} {
 	    $menu add checkbutton -label "Keep on Top" \
+		-underline 8 -accelerator "t" \
 		-variable [myvar options(-topmost)] \
 		-command "[list $win configure -topmost] \$[myvar options(-topmost)]"
+	    bind $win <Key-t> [list $menu invoke "Keep on Top"]
 	}
 	set m [menu $menu.interval -tearoff 0]
-	$menu add cascade -label "Interval" -menu $m
+	$menu add cascade -label "Interval" -menu $m -underline 0
 	foreach interval {
 	    {2 10 50} {4 20 100} {5 25 100} {10 50 100}
 	} {
@@ -403,21 +411,26 @@ snit::widget widget::screenruler {
 		-command [list $ruler configure -interval $interval]
 	}
 	set m [menu $menu.zoom -tearoff 0]
-	$menu add cascade -label "Zoom" -menu $m
+	$menu add cascade -label "Zoom" -menu $m -underline 0
 	foreach zoom {1 2 3 4 5 8 10} {
-	    $m add radiobutton -label $zoom \
+	    set lbl [expr {$zoom * 10}]%
+	    $m add radiobutton -label $lbl \
+		-underline [expr {[string length $zoom]-1}] \
 		-variable [myvar options(-zoom)] -value $zoom \
 		-command "[list $win configure -zoom] \$[myvar options(-zoom)]"
+	    bind $win <Key-[string index $zoom end]> \
+		[list $m invoke [string map {% %%} $lbl]]
 	}
 	set m [menu $menu.measure -tearoff 0]
-	$menu add cascade -label "Measurement" -menu $m
-	foreach val {pixels points inches mm cm} {
+	$menu add cascade -label "Measurement" -menu $m -underline 0
+	foreach {val und} {pixels 0 points 1 inches 0 mm 0 cm 0} {
 	    $m add radiobutton -label $val \
+		-underline $und \
 		-variable [myvar curmeasure] -value $val \
 		-command [list $ruler configure -measure $val]
 	}
 	set m [menu $menu.opacity -tearoff 0]
-	$menu add cascade -label "Opacity" -menu $m
+	$menu add cascade -label "Opacity" -menu $m -underline 0
 	for {set i 10} {$i <= 100} {incr i 10} {
 	    set aval [expr {$i/100.}]
 	    $m add radiobutton -label "${i}%" \
@@ -444,7 +457,7 @@ snit::widget widget::screenruler {
 	set grid [$ruler cget -grid]
 	set curinterval [lindex [$ruler cget -interval] 0]
 	set curmeasure  [$ruler cget -measure]
-   }
+    }
 
     destructor {
 	catch {
@@ -604,6 +617,7 @@ snit::widget widget::screenruler {
 	set drag(w) [winfo width $win]
 	set drag(h) [winfo height $win]
 	$self _edgecheck $ruler $drag(X) $drag(Y)
+	focus $ruler
     }
     method _drag {w X Y} {
 	if {$edge(at) == 0} {
