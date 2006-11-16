@@ -1,3 +1,7 @@
+2006-11-15  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* ruler.tcl: add screenruler menu bindings and underlines
+
 2006-11-03  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* dialog.tcl (display): init lastFocusGrab properly
