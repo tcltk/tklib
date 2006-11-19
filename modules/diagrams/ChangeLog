@@ -1,3 +1,9 @@
+2006-11-19 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+
+        * added missing "package provide" statement
+        * corrected mistake in plaintext, for text with given width/height
+        * corrected handling of lines
+
 2006-07-07 Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
         * initial checkin of the Diagrams package
