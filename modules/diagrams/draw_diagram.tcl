@@ -3,13 +3,12 @@
 #
 # TODO:
 #    - Update the arrow and line drawing routines
-#    - Fix the problem with direction/arrow pairs
-#    - Implement the part for given width and height in the
-#      text drawing routine
 #    - Routines to:
 #      - Re-initialise a page
 #      - Collect the height and width of text (for objects that
 #        have several text strings possibly in different fonts)
+#    - Consolidate examples/tests in separate examples
+#
 #
 if { 0 } {
 '''Concise user documentation:'''
@@ -574,11 +573,16 @@ proc ::Diagrams::plaintext {text {width {}} {height {}}} {
                   -fill         $state(textcolor) \
                   -justify      $state(justify)]
 
+
     if { $width == "fitting" } {
         foreach {x1 y1 x2 y2} [$state(canvas) bbox $items] {break}
-
-        set width  [expr {$x2-$x1}]
-        set height [expr {$y2-$y1}]
+    } else {
+        set x1 [expr {-$width/2}]
+        set x2 [expr {$width/2}]
+        set y1 [expr {-$height/2}]
+        set y2 [expr {$height/2}]
+       # set width  [expr {$x2-$x1}]
+       # set height [expr {$y2-$y1}]
     }
 
     #
@@ -1011,7 +1015,7 @@ proc ::Diagrams::line {args} {
             set x      [expr {$x+$length*cos($torad*$angle)}]
             set y      [expr {$y-$length*sin($torad*$angle)}]
         } else {
-            foreach {dummy x y} [currentpos] {break}
+            foreach {dummy x y} [lindex $args $idx] {break}
         }
 
         lappend xycoords $x $y
@@ -1028,12 +1032,12 @@ proc ::Diagrams::line {args} {
                  -smooth  $state(spline) \
                  -fill  $state(colour)] ;# -dash?
 
-    set item [list LINE $x1 $y1 $x2 $y2]
+    set item [list LINE $item [list $x1 $y1 $x2 $y2]]
 
-    currentpos [getpos $state(dir) $item]
+    currentpos [getpos 1 $item] ;# Absolute index, rather than particular direction
 
     set state(lastitem) $item
-    set state(usegap)   1
+    set state(usegap)   0
     return $item
 }
 
@@ -1084,9 +1088,33 @@ proc ::Diagrams::bracket {dir dist begin end} {
     return $item
 }
 
+# Announce our presence
+#
+package provide Diagrams 0.1
+
 #
 # A small demonstration ...
 #
+if { 0 } {
+pack [canvas .c -width 500 -height 500 -bg white]
+
+namespace import ::Diagrams::*
+
+console show
+drawin .c
+
+textcolor green
+set C [circle "Hi there!" 20]
+arrow "XX" 40 none
+direction south
+arrow "YY" 40
+set B [box Aha]
+
+puts "Pos: [getpos S $C]"
+line [getpos S $B] 100 270
+line [getpos S $B] 100 0
+
+}
 if { 0 } {
 pack [canvas .c -width 500 -height 500 -bg white]
 
