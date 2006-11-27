@@ -4,7 +4,7 @@
 #
 #	Generic dialog widget (themed)
 #
-# RCS: @(#) $Id: dialog.tcl,v 1.18 2006/11/04 01:21:19 hobbs Exp $
+# RCS: @(#) $Id: dialog.tcl,v 1.19 2006/11/27 18:53:47 hobbs Exp $
 #
 
 # Creation and Options - widget::dialog $path ...
@@ -379,6 +379,7 @@ snit::widget widget::dialog {
 	if {$isPlaced || $place eq "none"} {
 	    # For most options, we place once and then just deiconify
 	    wm deiconify $w
+	    raise $w
 	    return
 	}
 	set isPlaced 1
