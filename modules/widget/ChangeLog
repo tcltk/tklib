@@ -1,3 +1,7 @@
+2006-11-27  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* dialog.tcl (PlaceWindow): always raise after deiconify
+
 2006-11-15  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* ruler.tcl: add screenruler menu bindings and underlines
