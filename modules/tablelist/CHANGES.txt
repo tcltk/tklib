@@ -1,5 +1,40 @@
-What is new in Tablelist 4.5?
+What is new in Tablelist 4.6?
 -----------------------------
+
+1. New "columnwidth" subcommand, with the options "-requested",
+   "-stretched", and "-total" (thanks to Matthew Callaghan, Richard
+   Finstad, Lieven Forrez, and Tom Roeder for their proposals).
+
+2. Support for the new virtual event <<TablelistColumnResized>>,
+   generated after resizing a column interactively (thanks to Kurt
+   Kurczyk for his proposal).
+
+3. Visual improvement:  Within an active row, the gap to the left or
+   right of an embedded image or window no longer appears underlined
+   (when the "-activestyle" option has its default value "underline").
+
+4. Embedded images and windows are no longer hidden during interactive
+   cell editing (the only exception is the editing with the aid of a Tk
+   or tile checkbutton widget).
+
+5. Significantly improved the redraw and stretching behavior when
+   resizing a column interactively.
+
+6. Adapted the implementation of vertical scrolling to the text widget
+   changes made in Tk 8.5 (thanks to Julian M Noble for his posting on
+   the Wiki related to this subject).
+
+7. Fixed a bug related to hidden rows, introduced in Tablelist version
+   4.3 (thanks to Matthew Callaghan for his bug report).
+
+8. Eliminated the possible endless loop caused by some option database
+   settings in the implementation of the "seecell" subcommand (thanks
+   to Erik Allaert and Mauro Comin for reporting this bug).
+
+9. Numerous further improvements and minor bug fixes.
+
+What was new in Tablelist 4.5?
+------------------------------
 
 1.  Static-width columns are now displayed much faster than in earlier
     Tablelist releases.
