@@ -1319,7 +1319,7 @@ proc tablelist::editcellSubCmd {win row col restore {cmd ""} {charPos -1}} {
     set frameHeight [expr {$netRowHeight + 6}]	;# + 6 because of -pady -3 below
     set f $data(bodyFr)
     tk::frame $f -borderwidth 0 -container 0 -height $frameHeight \
-		 -highlightthickness 0 -relief flat -takefocus 0
+		 -highlightthickness 0 -padx 0 -pady 0 -relief flat -takefocus 0
     bindtags $f [lreplace [bindtags $f] 1 1 TablelistEdit]
     bind $f <Destroy> {
 	array set tablelist::ns[winfo parent [winfo parent %W]]::data \
@@ -1363,8 +1363,24 @@ proc tablelist::editcellSubCmd {win row col restore {cmd ""} {charPos -1}} {
     set data(editRow) $row
     set data(editCol) $col
     findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
-    set editIdx [$b index $tabIdx1+1c]
-    $b delete $editIdx $tabIdx2
+    if {$isCheckbtn} {
+	set editIdx [$b index $tabIdx1+1c]
+	$b delete $editIdx $tabIdx2
+    } else {
+	getAuxData $win $data(editKey) $data(editCol) auxType auxWidth
+	if {$auxType == 0} {				;# no image or window
+	    set editIdx [$b index $tabIdx1+1c]
+	    $b delete $editIdx $tabIdx2
+	} elseif {[string compare $alignment "right"] == 0} {
+	    $b mark set editAuxMark $tabIdx2-1c
+	    set editIdx [$b index $tabIdx1+1c]
+	    $b delete $editIdx $tabIdx2-1c
+	} else {
+	    $b mark set editAuxMark $tabIdx1+1c
+	    set editIdx [$b index $tabIdx1+2c]
+	    $b delete $editIdx $tabIdx2
+	}
+    }
     $b window create $editIdx -padx -3 -pady -3 -window $f
     $b mark set editMark $editIdx
 
@@ -1460,8 +1476,9 @@ proc tablelist::editcellSubCmd {win row col restore {cmd ""} {charPos -1}} {
 	    if {$isText || !$editWin($name-isEntryLike)} {
 		focus $w
 	    } else {
-		set hasAuxObject [expr {[info exists data($key,$col-image)] ||
-					[info exists data($key,$col-window)]}]
+		set hasAuxObject [expr {
+		    [info exists data($key,$col-image)] ||
+		    [info exists data($key,$col-window)]}]
 		if {[string compare $alignment "right"] == 0} {
 		    scan $tabIdx2 "%d.%d" line tabCharIdx2
 		    if {$isMentry} {
@@ -1762,6 +1779,34 @@ proc tablelist::adjustEditWindow {win pixels} {
     variable editWin
     upvar ::tablelist::ns${win}::data data
 
+    #
+    # Adjust the width of the auxiliary object (if any)
+    #
+    set aux [getAuxData $win $data(editKey) $data(editCol) auxType auxWidth]
+    if {$auxType != 0} {				;# image or window
+	if {$auxWidth + 4 <= $pixels} {
+	    incr auxWidth 4
+	    incr pixels -$auxWidth
+	} elseif {$auxWidth <= $pixels} {
+	    set pixels 0
+	} else {
+	    set auxWidth $pixels
+	    set pixels 0
+	}
+
+	if {$auxType == 1} {					;# image
+	    setImgLabelWidth $data(body) editAuxMark $auxWidth
+	} else {						;# window
+	    if {[$aux cget -width] != $auxWidth} {
+		$aux configure -width $auxWidth
+	    }
+	}
+    }
+
+    #
+    # Compute an appropriate width and horizontal
+    # padding for the frame containing the edit window
+    #
     set name [getEditWindow $win $data(editRow) $data(editCol)]
     if {$editWin($name-useReqWidth) &&
 	[set reqWidth [winfo reqwidth $data(bodyFrEd)]] <=
