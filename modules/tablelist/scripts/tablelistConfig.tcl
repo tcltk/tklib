@@ -1149,6 +1149,12 @@ proc tablelist::doColConfig {col win opt val} {
 		} else {
 		    redisplay $win 0 $selCells
 		}
+		if {!$newVal &&
+		    [string compare $data(-selecttype) "row"] == 0} {
+		    foreach row [curselectionSubCmd $win] {
+			selectionSubCmd $win set $row $row
+		    }
+		}
 	    }
 	}
 
@@ -1691,9 +1697,8 @@ proc tablelist::doRowConfig {row win opt val} {
 		#
 		# Remove the tag row$opt-$data($name) from the given row
 		#
-		set tag row$opt-$data($name)
 		set line [expr {$row + 1}]
-		$w tag remove $tag $line.0 $line.end
+		$w tag remove row$opt-$data($name) $line.0 $line.end
 	    }
 
 	    if {[string compare $val ""] == 0} {
@@ -1753,9 +1758,8 @@ proc tablelist::doRowConfig {row win opt val} {
 		#
 		# Remove the tag row$opt-$data($name) from the given row
 		#
-		set tag row$opt-$data($name)
 		set line [expr {$row + 1}]
-		$w tag remove $tag $line.0 $line.end
+		$w tag remove row$opt-$data($name) $line.0 $line.end
 	    }
 
 	    if {[string compare $val ""] == 0} {
@@ -1811,14 +1815,14 @@ proc tablelist::doRowConfig {row win opt val} {
 		    set multiline 0
 		}
 		set aux [getAuxData $win $key $col auxType auxWidth]
+		set textSav $text
+		set auxWidthSav $auxWidth
 		set cellFont [getCellFont $win $key $col]
 		set workPixels $pixels
 		if {$pixels == 0} {		;# convention: dynamic width
 		    if {$data($col-maxPixels) > 0} {
 			if {$data($col-reqPixels) > $data($col-maxPixels)} {
 			    set workPixels $data($col-maxPixels)
-			    set textSav $text
-			    set auxWidthSav $auxWidth
 			}
 		    }
 		}
@@ -1858,13 +1862,10 @@ proc tablelist::doRowConfig {row win opt val} {
 		    #
 		    # Check whether the width of the current column has changed
 		    #
-		    if {$workPixels > 0} {
-			set text $textSav
-			set auxWidth $auxWidthSav
-		    }
-		    set textWidth \
-			[getCellTextWidth $win $text $auxWidth $cellFont]
-		    set newElemWidth [expr {$auxWidth + $textWidth}]
+		    set text $textSav
+		    set auxWidth $auxWidthSav
+		    set newElemWidth \
+			[getElemWidth $win $text $auxWidth $cellFont]
 		    if {$newElemWidth > $data($col-elemWidth)} {
 			set data($col-elemWidth) $newElemWidth
 			set data($col-widestCount) 1
@@ -1873,9 +1874,8 @@ proc tablelist::doRowConfig {row win opt val} {
 			    set colWidthsChanged 1
 			}
 		    } else {
-			set oldTextWidth [getCellTextWidth $win $text \
+			set oldElemWidth [getElemWidth $win $text \
 					  $auxWidth $oldCellFonts($col)]
-			set oldElemWidth [expr {$auxWidth + $oldTextWidth}]
 			if {$oldElemWidth < $data($col-elemWidth) &&
 			    $newElemWidth == $data($col-elemWidth)} {
 			    incr data($col-widestCount)
@@ -1968,9 +1968,7 @@ proc tablelist::doRowConfig {row win opt val} {
 
 		    getAuxData $win $key $col auxType auxWidth
 		    set cellFont [getCellFont $win $key $col]
-		    set textWidth \
-			[getCellTextWidth $win $text $auxWidth $cellFont]
-		    set elemWidth [expr {$auxWidth + $textWidth}]
+		    set elemWidth [getElemWidth $win $text $auxWidth $cellFont]
 		    if {$val} {				;# hiding the row
 			if {$elemWidth == $data($col-elemWidth) &&
 			    [incr data($col-widestCount) -1] == 0} {
@@ -2047,9 +2045,8 @@ proc tablelist::doRowConfig {row win opt val} {
 		#
 		# Remove the tag row$opt-$data($name) from the given row
 		#
-		set tag row$opt-$data($name)
 		set line [expr {$row + 1}]
-		$w tag remove $tag $line.0 $line.end
+		$w tag remove row$opt-$data($name) $line.0 $line.end
 	    }
 
 	    if {[string compare $val ""] == 0} {
@@ -2126,14 +2123,14 @@ proc tablelist::doRowConfig {row win opt val} {
 		    set multiline 0
 		}
 		set aux [getAuxData $win $key $col auxType auxWidth]
+		set textSav $text
+		set auxWidthSav $auxWidth
 		set cellFont [getCellFont $win $key $col]
 		set workPixels $pixels
 		if {$pixels == 0} {		;# convention: dynamic width
 		    if {$data($col-maxPixels) > 0} {
 			if {$data($col-reqPixels) > $data($col-maxPixels)} {
 			    set workPixels $data($col-maxPixels)
-			    set textSav $text
-			    set auxWidthSav $auxWidth
 			}
 		    }
 		}
@@ -2168,13 +2165,10 @@ proc tablelist::doRowConfig {row win opt val} {
 		    #
 		    # Check whether the width of the current column has changed
 		    #
-		    if {$workPixels > 0} {
-			set text $textSav
-			set auxWidth $auxWidthSav
-		    }
-		    set textWidth \
-			[getCellTextWidth $win $text $auxWidth $cellFont]
-		    set newElemWidth [expr {$auxWidth + $textWidth}]
+		    set text $textSav
+		    set auxWidth $auxWidthSav
+		    set newElemWidth \
+			[getElemWidth $win $text $auxWidth $cellFont]
 		    if {$newElemWidth > $data($col-elemWidth)} {
 			set data($col-elemWidth) $newElemWidth
 			set data($col-widestCount) 1
@@ -2189,9 +2183,8 @@ proc tablelist::doRowConfig {row win opt val} {
 					 [list $oldText]]
 			}
 			set oldText [strToDispStr $oldText]
-			set oldTextWidth \
-			    [getCellTextWidth $win $oldText $auxWidth $cellFont]
-			set oldElemWidth [expr {$auxWidth + $oldTextWidth}]
+			set oldElemWidth \
+			    [getElemWidth $win $oldText $auxWidth $cellFont]
 			if {$oldElemWidth < $data($col-elemWidth) &&
 			    $newElemWidth == $data($col-elemWidth)} {
 			    incr data($col-widestCount)
@@ -2309,9 +2302,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 		#
 		# Remove the tag cell$opt-$data($name) from the given cell
 		#
-		set tag cell$opt-$data($name)
 		findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
-		$w tag remove $tag $tabIdx1 $tabIdx2+1c
+		$w tag remove cell$opt-$data($name) $tabIdx1 $tabIdx2+1c
 	    }
 
 	    if {[string compare $val ""] == 0} {
@@ -2385,9 +2377,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 		#
 		# Remove the tag cell$opt-$data($name) from the given cell
 		#
-		set tag cell$opt-$data($name)
 		findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
-		$w tag remove $tag $tabIdx1 $tabIdx2+1c
+		$w tag remove cell$opt-$data($name) $tabIdx1 $tabIdx2+1c
 	    }
 
 	    if {[string compare $val ""] == 0} {
@@ -2435,6 +2426,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 		set multiline 0
 	    }
 	    set aux [getAuxData $win $key $col auxType auxWidth]
+	    set textSav $text
+	    set auxWidthSav $auxWidth
 	    set cellFont [getCellFont $win $key $col]
 	    set pixels [lindex $data(colList) [expr {2*$col}]]
 	    set workPixels $pixels
@@ -2442,8 +2435,6 @@ proc tablelist::doCellConfig {row col win opt val} {
 		if {$data($col-maxPixels) > 0} {
 		    if {$data($col-reqPixels) > $data($col-maxPixels)} {
 			set workPixels $data($col-maxPixels)
-			set textSav $text
-			set auxWidthSav $auxWidth
 		    }
 		}
 	    }
@@ -2486,12 +2477,9 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    # Adjust the columns if necessary
 	    #
 	    if {$pixels == 0} {			;# convention: dynamic width
-		if {$workPixels > 0} {
-		    set text $textSav
-		    set auxWidth $auxWidthSav
-		}
-		set textWidth [getCellTextWidth $win $text $auxWidth $cellFont]
-		set newElemWidth [expr {$auxWidth + $textWidth}]
+		set text $textSav
+		set auxWidth $auxWidthSav
+		set newElemWidth [getElemWidth $win $text $auxWidth $cellFont]
 		if {$newElemWidth > $data($col-elemWidth)} {
 		    set data($col-elemWidth) $newElemWidth
 		    set data($col-widestCount) 1
@@ -2500,9 +2488,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 			adjustColumns $win {} 1
 		    }
 		} else {
-		    set oldTextWidth \
-			[getCellTextWidth $win $text $auxWidth $oldCellFont]
-		    set oldElemWidth [expr {$auxWidth + $oldTextWidth}]
+		    set oldElemWidth \
+			[getElemWidth $win $text $auxWidth $oldCellFont]
 		    if {$oldElemWidth < $data($col-elemWidth) &&
 			$newElemWidth == $data($col-elemWidth)} {
 			incr data($col-widestCount)
@@ -2530,7 +2517,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    set item [lindex $data(itemList) $row]
 	    set key [lindex $item end]
 	    set name $key,$col$opt
-	    getAuxData $win $key $col oldAuxWidth oldAuxType
+	    getAuxData $win $key $col oldAuxType oldAuxWidth
 
 	    #
 	    # Delete data($name) or save the specified value in it
@@ -2544,15 +2531,15 @@ proc tablelist::doCellConfig {row col win opt val} {
 		if {![info exists data($name)]} {
 		    incr data(imgCount)
 		}
-		set aux $w.l$key,$col
-		set existsAux [winfo exists $aux]
-		if {$existsAux && [info exists data($name)] &&
+		set imgLabel $w.l$key,$col
+		set existsImgLabel [winfo exists $imgLabel]
+		if {$existsImgLabel && [info exists data($name)] &&
 		    [string compare $val $data($name)] == 0} {
 		    set keepAux 1
 		} else {
 		    set keepAux 0
-		    if {$existsAux} {
-			destroy $aux
+		    if {$existsImgLabel} {
+			destroy $imgLabel
 		    }
 		}
 		set data($name) $val
@@ -2574,6 +2561,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 		set multiline 0
 	    }
 	    set aux [getAuxData $win $key $col auxType auxWidth]
+	    set textSav $text
+	    set auxWidthSav $auxWidth
 	    set cellFont [getCellFont $win $key $col]
 	    set pixels [lindex $data(colList) [expr {2*$col}]]
 	    set workPixels $pixels
@@ -2581,8 +2570,6 @@ proc tablelist::doCellConfig {row col win opt val} {
 		if {$data($col-maxPixels) > 0} {
 		    if {$data($col-reqPixels) > $data($col-maxPixels)} {
 			set workPixels $data($col-maxPixels)
-			set textSav $text
-			set auxWidthSav $auxWidth
 		    }
 		}
 	    }
@@ -2631,12 +2618,9 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    # Adjust the columns if necessary
 	    #
 	    if {$pixels == 0} {			;# convention: dynamic width
-		if {$workPixels > 0} {
-		    set text $textSav
-		    set auxWidth $auxWidthSav
-		}
-		set textWidth [getCellTextWidth $win $text $auxWidth $cellFont]
-		set newElemWidth [expr {$auxWidth + $textWidth}]
+		set text $textSav
+		set auxWidth $auxWidthSav
+		set newElemWidth [getElemWidth $win $text $auxWidth $cellFont]
 		if {$newElemWidth > $data($col-elemWidth)} {
 		    set data($col-elemWidth) $newElemWidth
 		    set data($col-widestCount) 1
@@ -2645,9 +2629,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 			adjustColumns $win {} 1
 		    }
 		} else {
-		    set oldTextWidth \
-			[getCellTextWidth $win $oldText $oldAuxWidth $cellFont]
-		    set oldElemWidth [expr {$oldAuxWidth + $oldTextWidth}]
+		    set oldElemWidth \
+			[getElemWidth $win $oldText $oldAuxWidth $cellFont]
 		    if {$oldElemWidth < $data($col-elemWidth) &&
 			$newElemWidth == $data($col-elemWidth)} {
 			incr data($col-widestCount)
@@ -2674,9 +2657,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 		#
 		# Remove the tag cell$opt-$data($name) from the given cell
 		#
-		set tag cell$opt-$data($name)
 		findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
-		$w tag remove $tag $tabIdx1 $tabIdx2+1c
+		$w tag remove cell$opt-$data($name) $tabIdx1 $tabIdx2+1c
 	    }
 
 	    if {[string compare $val ""] == 0} {
@@ -2799,12 +2781,9 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    # Adjust the columns if necessary
 	    #
 	    if {$pixels == 0} {			;# convention: dynamic width
-		if {$workPixels > 0} {
-		    set text $textSav
-		    set auxWidth $auxWidthSav
-		}
-		set textWidth [getCellTextWidth $win $text $auxWidth $cellFont]
-		set newElemWidth [expr {$auxWidth + $textWidth}]
+		set text $textSav
+		set auxWidth $auxWidthSav
+		set newElemWidth [getElemWidth $win $text $auxWidth $cellFont]
 		if {$newElemWidth > $data($col-elemWidth)} {
 		    set data($col-elemWidth) $newElemWidth
 		    set data($col-widestCount) 1
@@ -2819,9 +2798,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 				     [list $oldText]]
 		    }
 		    set oldText [strToDispStr $oldText]
-		    set oldTextWidth \
-			[getCellTextWidth $win $oldText $auxWidth $cellFont]
-		    set oldElemWidth [expr {$auxWidth + $oldTextWidth}]
+		    set oldElemWidth \
+			[getElemWidth $win $oldText $auxWidth $cellFont]
 		    if {$oldElemWidth < $data($col-elemWidth) &&
 			$newElemWidth == $data($col-elemWidth)} {
 			incr data($col-widestCount)
@@ -2849,7 +2827,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    set item [lindex $data(itemList) $row]
 	    set key [lindex $item end]
 	    set name $key,$col$opt
-	    getAuxData $win $key $col oldAuxWidth oldAuxType
+	    getAuxData $win $key $col oldAuxType oldAuxWidth
 
 	    #
 	    # Delete data($name) or save the specified value in it
@@ -2892,7 +2870,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 		    #
 		    tk::frame $aux -borderwidth 0 -class TablelistWindow \
 				   -container 0 -highlightthickness 0 \
-				   -relief flat -takefocus 0
+				    -padx 0 -pady 0 -relief flat -takefocus 0
 		    uplevel #0 $val [list $win $row $col $aux.w]
 		}
 		set data($name) $val
@@ -2931,6 +2909,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 		set multiline 0
 	    }
 	    set aux [getAuxData $win $key $col auxType auxWidth]
+	    set textSav $text
+	    set auxWidthSav $auxWidth
 	    set cellFont [getCellFont $win $key $col]
 	    set pixels [lindex $data(colList) [expr {2*$col}]]
 	    set workPixels $pixels
@@ -2938,8 +2918,6 @@ proc tablelist::doCellConfig {row col win opt val} {
 		if {$data($col-maxPixels) > 0} {
 		    if {$data($col-reqPixels) > $data($col-maxPixels)} {
 			set workPixels $data($col-maxPixels)
-			set textSav $text
-			set auxWidthSav $auxWidth
 		    }
 		}
 	    }
@@ -2988,12 +2966,9 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    # Adjust the columns if necessary
 	    #
 	    if {$pixels == 0} {			;# convention: dynamic width
-		if {$workPixels > 0} {
-		    set text $textSav
-		    set auxWidth $auxWidthSav
-		}
-		set textWidth [getCellTextWidth $win $text $auxWidth $cellFont]
-		set newElemWidth [expr {$auxWidth + $textWidth}]
+		set text $textSav
+		set auxWidth $auxWidthSav
+		set newElemWidth [getElemWidth $win $text $auxWidth $cellFont]
 		if {$newElemWidth > $data($col-elemWidth)} {
 		    set data($col-elemWidth) $newElemWidth
 		    set data($col-widestCount) 1
@@ -3002,9 +2977,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 			adjustColumns $win {} 1
 		    }
 		} else {
-		    set oldTextWidth \
-			[getCellTextWidth $win $oldText $oldAuxWidth $cellFont]
-		    set oldElemWidth [expr {$oldAuxWidth + $oldTextWidth}]
+		    set oldElemWidth \
+			[getElemWidth $win $oldText $oldAuxWidth $cellFont]
 		    if {$oldElemWidth < $data($col-elemWidth) &&
 			$newElemWidth == $data($col-elemWidth)} {
 			incr data($col-widestCount)
