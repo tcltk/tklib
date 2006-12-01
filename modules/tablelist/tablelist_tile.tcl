@@ -9,7 +9,7 @@ package require Tk   8.4
 package require tile 0.6
 package require tablelist::common
 
-package provide Tablelist_tile 4.5
-package provide tablelist_tile 4.5
+package provide Tablelist_tile 4.6
+package provide tablelist_tile 4.6
 
 ::tablelist::useTile 1
