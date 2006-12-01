@@ -278,16 +278,16 @@ namespace eval tablelist {
     variable cmdOpts [list \
 	activate activatecell attrib bbox bodypath bodytag cancelediting \
 	cellcget cellconfigure cellindex cellselection cget columncget \
-	columnconfigure columncount columnindex configure containing \
-	containingcell containingcolumn curcellselection curselection delete \
-	deletecolumns editcell editwinpath entrypath fillcolumn finishediting \
-	get getcells getcolumns getkeys imagelabelpath index insert \
-	insertcolumnlist insertcolumns insertlist itemlistvar labelpath \
-	labels move movecolumn nearest nearestcell nearestcolumn rejectinput \
-	resetsortinfo rowcget rowconfigure scan see seecell seecolumn \
-	selection separatorpath separators size sort sortbycolumn \
-	sortbycolumnlist sortcolumn sortcolumnlist sortorder sortorderlist \
-	togglecolumnhide togglerowhide windowpath xview yview]
+	columnconfigure columncount columnindex columnwidth configure \
+	containing containingcell containingcolumn curcellselection \
+	curselection delete deletecolumns editcell editwinpath entrypath \
+	fillcolumn finishediting get getcells getcolumns getkeys \
+	imagelabelpath index insert insertcolumnlist insertcolumns insertlist \
+	itemlistvar labelpath labels move movecolumn nearest nearestcell \
+	nearestcolumn rejectinput resetsortinfo rowcget rowconfigure scan see \
+	seecell seecolumn selection separatorpath separators size sort \
+	sortbycolumn sortbycolumnlist sortcolumn sortcolumnlist sortorder \
+	sortorderlist togglecolumnhide togglerowhide windowpath xview yview]
     if {!$canElide} {
 	set idx [lsearch -exact $cmdOpts togglerowhide]
 	set cmdOpts [lreplace $cmdOpts $idx $idx]
@@ -301,6 +301,7 @@ namespace eval tablelist {
     variable arrowStyles	[list flat7x4 flat7x5 flat7x7 flat8x5 flat9x5 \
 				      sunken8x7 sunken10x9 sunken12x11]
     variable arrowTypes		[list up down]
+    variable colWidthOpts	[list -requested -stretched -total]
     variable states		[list disabled normal]
     variable selectTypes	[list row cell]
     variable sortModes		[list ascii command dictionary integer real]
@@ -572,7 +573,7 @@ proc tablelist::tablelist args {
     #
     set w $data(hdr)			;# header frame
     tk::frame $w -borderwidth 0 -container 0 -height 0 -highlightthickness 0 \
-		 -relief flat -takefocus 0 -width 0
+		 -padx 0 -pady 0 -relief flat -takefocus 0 -width 0
     bind $w <Configure> {
 	set tablelist::W [winfo parent %W]
 	tablelist::stretchColumnsWhenIdle $tablelist::W
@@ -586,8 +587,8 @@ proc tablelist::tablelist args {
     place $w -relheight 1.0 -relwidth 1.0
     bindtags $w [lreplace [bindtags $w] 1 1]
     tk::frame $data(hdrTxtFr) -borderwidth 0 -container 0 -height 0 \
-			      -highlightthickness 0 -relief flat \
-			      -takefocus 0 -width 0
+			      -highlightthickness 0 -padx 0 -pady 0 \
+			      -relief flat -takefocus 0 -width 0
     $w window create 1.0 -window $data(hdrTxtFr)
     set w $data(hdrLbl)			;# filler label within the header frame
     if {$usingTile} {
@@ -746,7 +747,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	    }
 
 	    synchronize $win
-	    scan [cellIndex $win [lindex $argList 1] 0] "%d,%d" row col
+	    foreach {row col} [cellIndex $win [lindex $argList 1] 0] {}
 	    return [activatecellSubCmd $win $row $col]
 	}
 
@@ -788,7 +789,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	    }
 
 	    synchronize $win
-	    scan [cellIndex $win [lindex $argList 1] 1] "%d,%d" row col
+	    foreach {row col} [cellIndex $win [lindex $argList 1] 1] {}
 	    variable cellConfigSpecs
 	    set opt [mwutil::fullConfigOpt [lindex $argList 2] cellConfigSpecs]
 	    return [doCellCget $row $col $win $opt]
@@ -801,7 +802,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	    }
 
 	    synchronize $win
-	    scan [cellIndex $win [lindex $argList 1] 1] "%d,%d" row col
+	    foreach {row col} [cellIndex $win [lindex $argList 1] 1] {}
 	    variable cellConfigSpecs
 	    set argList [lrange $argList 2 end]
 	    return [mwutil::configureSubCmd $win cellConfigSpecs \
@@ -815,7 +816,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	    }
 
 	    synchronize $win
-	    return [cellIndex $win [lindex $argList 1] 0]
+	    return [join [cellIndex $win [lindex $argList 1] 0] ","]
 	}
 
 	cellselection {
@@ -835,21 +836,22 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 		    if {$argCount != 3} {
 			mwutil::wrongNumArgs "$win cellselection $opt cellIndex"
 		    }
-		    scan [cellIndex $win $first 0] "%d,%d" row col
+		    foreach {row col} [cellIndex $win $first 0] {}
 		    return [cellselectionSubCmd $win $opt $row $col $row $col]
 		}
 		clear -
 		set {
 		    if {$argCount == 3} {
 			foreach elem $first {
-			    scan [cellIndex $win $elem 0] "%d,%d" row col
+			    foreach {row col} [cellIndex $win $elem 0] {}
 			    cellselectionSubCmd $win $opt $row $col $row $col
 			}
 			return ""
 		    } else {
-			scan [cellIndex $win $first 0] "%d,%d" firstRow firstCol
-			scan [cellIndex $win [lindex $argList 3] 0] "%d,%d" \
-			     lastRow lastCol
+			foreach {firstRow firstCol} \
+				[cellIndex $win $first 0] {}
+			foreach {lastRow lastCol} \
+				[cellIndex $win [lindex $argList 3] 0] {}
 			return [cellselectionSubCmd $win $opt \
 				$firstRow $firstCol $lastRow $lastCol]
 		    }
@@ -912,6 +914,24 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 
 	    synchronize $win
 	    return [colIndex $win [lindex $argList 1] 0]
+	}
+
+	columnwidth {
+	    if {$argCount < 2 || $argCount > 3} {
+		mwutil::wrongNumArgs "$win $cmd columnIndex\
+				      ?-requested|-stretched|-total?"
+	    }
+
+	    synchronize $win
+	    set col [colIndex $win [lindex $argList 1] 1]
+	    if {$argCount == 2} {
+		set opt -requested
+	    } else {
+		variable colWidthOpts
+		set opt [mwutil::fullOpt "option" \
+			 [lindex $argList 2] $colWidthOpts]
+	    }
+	    return [columnwidthSubCmd $win $col $opt]
 	}
 
 	configure {
@@ -998,7 +1018,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	    }
 
 	    synchronize $win
-	    scan [cellIndex $win [lindex $argList 1] 1] "%d,%d" row col
+	    foreach {row col} [cellIndex $win [lindex $argList 1] 1] {}
 	    return [editcellSubCmd $win $row $col 0]
 	}
 
@@ -1065,7 +1085,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	    }
 
 	    synchronize $win
-	    scan [cellIndex $win [lindex $argList 1] 1] "%d,%d" row col
+	    foreach {row col} [cellIndex $win [lindex $argList 1] 1] {}
 	    set key [lindex [lindex $data(itemList) $row] end]
 	    set w $data(body).l$key,$col
 	    if {[winfo exists $w]} {
@@ -1214,7 +1234,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	    set x [format "%d" [lindex $argList 1]]
 	    set y [format "%d" [lindex $argList 2]]
 	    synchronize $win
-	    return [cellIndex $win @$x,$y 0]
+	    return [join [cellIndex $win @$x,$y 0] ","]
 	}
 
 	nearestcolumn {
@@ -1321,7 +1341,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	    }
 
 	    synchronize $win
-	    scan [cellIndex $win [lindex $argList 1] 0] "%d,%d" row col
+	    foreach {row col} [cellIndex $win [lindex $argList 1] 0] {}
 	    if {[winfo viewable $win]} {
 		return [seecellSubCmd $win $row $col]
 	    } else {
@@ -1537,7 +1557,7 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 	    }
 
 	    synchronize $win
-	    scan [cellIndex $win [lindex $argList 1] 1] "%d,%d" row col
+	    foreach {row col} [cellIndex $win [lindex $argList 1] 1] {}
 	    set key [lindex [lindex $data(itemList) $row] end]
 	    set w $data(body).f$key,$col.w
 	    if {[winfo exists $w]} {
@@ -1727,16 +1747,16 @@ proc tablelist::cellselectionSubCmd {win opt firstRow firstCol \
 			foreach name  [list $col$opt $key$opt $key,$col$opt] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
-				set tag $level$opt-$data($name)
-				$w tag remove $tag $textIdx1 $textIdx2
+				$w tag remove $level$opt-$data($name) \
+				       $textIdx1 $textIdx2
 			    }
 			}
 			foreach name  [list $col-$optTail $key-$optTail \
 				       $key,$col-$optTail] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
-				set tag $level-$optTail-$data($name)
-				$w tag add $tag $textIdx1 $textIdx2
+				$w tag add $level-$optTail-$data($name) \
+				       $textIdx1 $textIdx2
 			    }
 			}
 		    }
@@ -1847,8 +1867,8 @@ proc tablelist::cellselectionSubCmd {win opt firstRow firstCol \
 			foreach name  [list $col$opt $key$opt $key,$col$opt] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
-				set tag $level$opt-$data($name)
-				$w tag add $tag $textIdx1 $textIdx2
+				$w tag add $level$opt-$data($name) \
+				       $textIdx1 $textIdx2
 			    }
 			}
 			foreach name  [list $col-$optTail $key-$optTail \
@@ -1856,7 +1876,8 @@ proc tablelist::cellselectionSubCmd {win opt firstRow firstCol \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
 				set tag $level-$optTail-$data($name)
-				$w tag remove $tag $textIdx1 $textIdx2
+				$w tag remove $level-$optTail-$data($name) \
+				       $textIdx1 $textIdx2
 			    }
 			}
 		    }
@@ -1878,6 +1899,33 @@ proc tablelist::cellselectionSubCmd {win opt firstRow firstCol \
 
 	    updateColorsWhenIdle $win
 	    return ""
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::columnwidthSubCmd
+#
+# This procedure is invoked to process the tablelist columnwidth subcommand.
+#------------------------------------------------------------------------------
+proc tablelist::columnwidthSubCmd {win col opt} {
+    upvar ::tablelist::ns${win}::data data
+
+    set pixels [lindex $data(colList) [expr {2*$col}]]
+    if {$pixels == 0} {				;# convention: dynamic width
+	set pixels $data($col-reqPixels)
+	if {$data($col-maxPixels) > 0} {
+	    if {$pixels > $data($col-maxPixels)} {
+		set pixels $data($col-maxPixels)
+	    }
+	}
+    }
+
+    switch -- $opt {
+	-requested { return $pixels }
+	-stretched { return [expr {$pixels + $data($col-delta)}] }
+	-total {
+	    return [expr {$pixels + $data($col-delta) + 2*$data(charWidth)}]
 	}
     }
 }
@@ -2130,8 +2178,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 
 		getAuxData $win $key $col auxType auxWidth
 		set cellFont [getCellFont $win $key $col]
-		set textWidth [getCellTextWidth $win $text $auxWidth $cellFont]
-		set elemWidth [expr {$auxWidth + $textWidth}]
+		set elemWidth [getElemWidth $win $text $auxWidth $cellFont]
 		if {$elemWidth == $data($col-elemWidth) &&
 		    [incr data($col-widestCount) -1] == 0} {
 		    set colWidthsChanged 1
@@ -2517,7 +2564,7 @@ proc tablelist::getcellsSubCmd {win first last argCount} {
     set result {}
     if {$argCount == 1} {
 	foreach elem $first {
-	    scan [cellIndex $win $elem 1] "%d,%d" row col
+	    foreach {row col} [cellIndex $win $elem 1] {}
 	    lappend result [lindex [lindex $data(itemList) $row] $col]
 	}
 
@@ -2527,8 +2574,8 @@ proc tablelist::getcellsSubCmd {win first last argCount} {
 	    return $result
 	}
     } else {
-	scan [cellIndex $win $first 1] "%d,%d" firstRow firstCol
-	scan [cellIndex $win $last 1] "%d,%d" lastRow lastCol
+	foreach {firstRow firstCol} [cellIndex $win $first 1] {}
+	foreach {lastRow lastCol} [cellIndex $win $last 1] {}
 
 	foreach item [lrange $data(itemList) $firstRow $lastRow] {
 	    foreach elem [lrange $item $firstCol $lastCol] {
@@ -2661,6 +2708,7 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
     set widgetFont $data(-font)
     set snipStr $data(-snipstring)
     set savedCount $data(itemCount)
+    set appending [expr {$index >= $savedCount}]
     set colWidthsChanged 0
     set row $index
     set line [expr {$index + 1}]
@@ -2689,6 +2737,9 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 	set multilineData {}
 	if {$data(itemCount) != 0} {
 	     $w insert $line.0 "\n"
+	}
+	if {$data(hiddenRowCount) != 0} {
+	    $w tag remove hiddenRow $line.0
 	}
 
 	set col 0
@@ -2849,7 +2900,7 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 	if {$updateListVar} {
 	    upvar #0 $data(-listvariable) var
 	    trace vdelete var wu $data(listVarTraceCmd)
-	    if {$row == $data(itemCount)} {
+	    if {$appending} {
 		lappend var $item    		;# this works much faster
 	    } else {
 		set var [linsert $var $row $item]
@@ -2861,7 +2912,7 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 	# Insert the item into the internal list
 	#
 	lappend item $key
-	if {$row == $data(itemCount)} {
+	if {$appending} {
 	    lappend data(itemList) $item	;# this works much faster
 	} else {
 	    set data(itemList) [linsert $data(itemList) $row $item]
@@ -3403,16 +3454,16 @@ proc tablelist::selectionSubCmd {win opt first last} {
 			foreach name  [list $col$opt $key$opt $key,$col$opt] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
-				set tag $level$opt-$data($name)
-				$w tag remove $tag $textIdx1 $textIdx2
+				$w tag remove $level$opt-$data($name) \
+				       $textIdx1 $textIdx2
 			    }
 			}
 			foreach name  [list $col-$optTail $key-$optTail \
 				       $key,$col-$optTail] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
-				set tag $level-$optTail-$data($name)
-				$w tag add $tag $textIdx1 $textIdx2
+				$w tag add $level-$optTail-$data($name) \
+				       $textIdx1 $textIdx2
 			    }
 			}
 		    }
@@ -3493,16 +3544,16 @@ proc tablelist::selectionSubCmd {win opt first last} {
 			foreach name  [list $col$opt $key$opt $key,$col$opt] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
-				set tag $level$opt-$data($name)
-				$w tag add $tag $textIdx1 $textIdx2
+				$w tag add $level$opt-$data($name) \
+				       $textIdx1 $textIdx2
 			    }
 			}
 			foreach name  [list $col-$optTail $key-$optTail \
 				       $key,$col-$optTail] \
 				level [list col row cell] {
 			    if {[info exists data($name)]} {
-				set tag $level-$optTail-$data($name)
-				$w tag remove $tag $textIdx1 $textIdx2
+				$w tag remove $level-$optTail-$data($name) \
+				       $textIdx1 $textIdx2
 			    }
 			}
 		    }
@@ -3597,6 +3648,11 @@ proc tablelist::togglecolumnhideSubCmd {win first last argCount} {
 	adjustElidedTextWhenIdle $win
     } else {
 	redisplay $win 0 $selCells
+    }
+    if {[string compare $data(-selecttype) "row"] == 0} {
+	foreach row [curselectionSubCmd $win] {
+	    selectionSubCmd $win set $row $row
+	}
     }
     return ""
 }
@@ -3805,8 +3861,12 @@ proc tablelist::yviewSubCmd {win argList} {
 	    set topRow [expr {int($topTextIdx) - 1}]
 	    set btmRow [expr {int($btmTextIdx) - 1}]
 	    foreach {x y width height baselinePos} [$w dlineinfo $btmTextIdx] {}
+	    if {$y < 0} {				 ;# top row incomplete
+		incr topRow
+	    }
+	    foreach {x y width height baselinePos} [$w dlineinfo $btmTextIdx] {}
 	    set y2 [expr {$y + $height}]
-	    if {[$w index @0,$y] == [$w index @0,$y2]} {;# row not fully visible
+	    if {[$w index @0,$y] == [$w index @0,$y2]} { ;# btm row incomplete
 		incr btmRow -1
 	    }
 	    set upperNonHiddenCount \
