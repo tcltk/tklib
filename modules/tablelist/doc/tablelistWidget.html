@@ -497,6 +497,10 @@
     <dd><code><i>pathName</i> <b><a href="#columnindex">columnindex</a></b>
     <i>columnIndex</i></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#columnwidth">columnwidth</a></b>
+    <i>columnIndex</i>
+    ?<b>-requested</b>|<b>-stretched</b>|<b>-total</b>?</code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#configure">configure</a></b>
     ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i> ...?</code></dd>
 
@@ -3907,6 +3911,34 @@ proc formatDate clockVal {
 	<code><i>columnIndex</i></code>.</dd>
 
 	<dt><br>
+	<a name="columnwidth"></a><code><i>pathName</i> <b>columnwidth</b>
+	<i>columnIndex</i>
+	?<b>-requested</b>|<b>-stretched</b>|<b>-total</b>?</code></dt>
+
+	<dd>Returns the current width in pixels of the column specified by
+	<code><i>columnIndex</i></code>.&nbsp; If the optional argument is
+	<code><b>-requested</b></code> (which is the default) then the return
+	value is the number of pixels corresponding to the column width
+	specified by the <code><b><a href="#columns">-columns</a></b></code>
+	widget or <code><b><a href="#col_width">-width</a></b></code> column
+	configuration option (possibly overridden by interactive column
+	resizing); if the column width was specified as <code>0</code> (and was
+	not changed by interactive column resizing) then the return value is
+	the actual number of pixels corresponding to the widest non-hidden
+	element of the column, including its header.&nbsp; With the
+	<code><b>-stretched</b></code> option, the command returns the column
+	width obtained by increasing the value described above by the number of
+	additional pixels that might have been added to the requested column
+	width by a stretch operation (see the <code><b><a href=
+	"#stretch">-stretch</a></b></code> widget and <code><b><a href=
+	"#col_stretchable">-stretchable</a></b></code> column configuration
+	options).&nbsp; Finally, if the optional argument is
+	<code><b>-total</b></code> then the return value is the stretched
+	column width increased by the number of pixels corresponding to the
+	left and right margins within the column; this value equals the width
+	of the header label if the tablelist widget is mapped.</dd>
+
+	<dt><br>
 	<a name="configure"></a><code><i>pathName</i> <b>configure</b>
 	?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i>
 	...?</code></dt>
@@ -5179,7 +5211,10 @@ bind [.tbl bodytag] &lt;Button-1&gt; {
 	when mouse button 1 is released, and can be canceled by pressing the
 	<code>Escape</code> key.&nbsp; In both cases, the mouse cursor is reset
 	to its original value, specified by the <code><b>-cursor</b></code>
-	configuration option.<br>
+	configuration option.&nbsp; When the column resize operation is
+	finished, the virtual event
+	<code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code><br> is
+	generated.<br>
 	&nbsp;</li>
 
 	<li>If mouse button 1 is pressed over a header label but outside the
