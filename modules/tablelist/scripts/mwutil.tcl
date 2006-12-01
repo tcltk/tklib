@@ -20,16 +20,48 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.2
+    variable version	2.3
     variable library	[file dirname [info script]]
 
     #
     # Public procedures:
     #
     namespace export	wrongNumArgs getAncestorByClass convEventFields \
-			defineKeyNav processTraversal configureWidget \
-			fullConfigOpt fullOpt enumOpts configureSubCmd \
-			attribSubCmd getScrollInfo
+			defineKeyNav processTraversal focusNext focusPrev \
+			configureWidget fullConfigOpt fullOpt enumOpts \
+			configureSubCmd attribSubCmd getScrollInfo
+
+    #
+    # Make modified versions of the procedures tk_focusNext and
+    # tk_focusPrev, to be invoked in the processTraversal command
+    #
+    proc makeFocusProcs {} {
+	#
+	# Enforce the evaluation of the Tk library file "focus.tcl"
+	#
+	tk_focusNext .
+
+	#
+	# Build the procedures focusNext and focusPrev
+	#
+	foreach direction {Next Prev} {
+	    set procBody [info body tk_focus$direction]
+	    regsub -all {winfo children} $procBody {getChildren $class} procBody
+	    proc focus$direction {w class} $procBody
+	}
+    }
+    makeFocusProcs 
+
+    #
+    # Invoked in the procedures focusNext and focusPrev defined above:
+    #
+    proc getChildren {class w} {
+	if {[string compare [winfo class $w] $class] == 0} {
+	    return {}
+	} else {
+	    return [winfo children $w]
+	}
+    }
 }
 
 #
@@ -114,9 +146,9 @@ proc mwutil::processTraversal {w class event} {
     set win [getAncestorByClass $w $class]
 
     if {[string compare $event "<Tab>"] == 0} {
-	set target [tk_focusNext $win]
+	set target [focusNext $win $class]
     } else {
-	set target [tk_focusPrev $win]
+	set target [focusPrev $win $class]
     }
 
     if {[string compare $target $win] != 0} {
@@ -236,26 +268,20 @@ proc mwutil::fullConfigOpt {opt configSpecsName} {
 	}
     }
 
-    switch $count {
-	0 {
-	    ### return -code error "unknown option \"$opt\""
-	    return -code error \
-		   "bad option \"$opt\": must be [enumOpts $optList]"
+    if {$count == 1} {
+	if {[llength $configSpecs($option)] == 1} {
+	    return $configSpecs($option)
+	} else {
+	    return $option
 	}
-
-	1 {
-	    if {[llength $configSpecs($option)] == 1} {
-		return $configSpecs($option)
-	    } else {
-		return $option
-	    }
-	}
-
-	default {
-	    ### return -code error "unknown option \"$opt\""
-	    return -code error \
-		   "ambiguous option \"$opt\": must be [enumOpts $optList]"
-	}
+    } elseif {$count == 0} {
+	### return -code error "unknown option \"$opt\""
+	return -code error \
+	       "bad option \"$opt\": must be [enumOpts $optList]"
+    } else {
+	### return -code error "unknown option \"$opt\""
+	return -code error \
+	       "ambiguous option \"$opt\": must be [enumOpts $optList]"
     }
 }
 
@@ -281,20 +307,14 @@ proc mwutil::fullOpt {kind opt optList} {
 	}
     }
 
-    switch $count {
-	0 {
-	    return -code error \
-		   "bad $kind \"$opt\": must be [enumOpts $optList]"
-	}
-
-	1 {
-	    return $option
-	}
-
-	default {
-	    return -code error \
-		   "ambiguous $kind \"$opt\": must be [enumOpts $optList]"
-	}
+    if {$count == 1} {
+	return $option
+    } elseif {$count == 0} {
+	return -code error \
+	       "bad $kind \"$opt\": must be [enumOpts $optList]"
+    } else {
+	return -code error \
+	       "ambiguous $kind \"$opt\": must be [enumOpts $optList]"
     }
 }
 
@@ -333,50 +353,44 @@ proc mwutil::enumOpts optList {
 proc mwutil::configureSubCmd {win configSpecsName configCmd cgetCmd argList} {
     upvar $configSpecsName configSpecs
 
-    switch [llength $argList] {
-	0 {
-	    #
-	    # Return a list describing all available configuration options
-	    #
-	    foreach opt [lsort [array names configSpecs]] {
-		if {[llength $configSpecs($opt)] == 1} {
-		    set alias $configSpecs($opt)
-		    if {$::tk_version < 8.1} {
-			set dbName [lindex $configSpecs($alias) 0]
-			lappend result [list $opt $dbName]
-		    } else {
-			lappend result [list $opt $alias]
-		    }
+    set argCount [llength $argList]
+    if {$argCount > 1} {
+	#
+	# Set the specified configuration options to the given values
+	#
+	return [configureWidget $win configSpecs $configCmd $cgetCmd $argList 0]
+    } elseif {$argCount == 1} {
+	#
+	# Return the description of the specified configuration option
+	#
+	set opt [fullConfigOpt [lindex $argList 0] configSpecs]
+	set dbName [lindex $configSpecs($opt) 0]
+	set dbClass [lindex $configSpecs($opt) 1]
+	set default [lindex $configSpecs($opt) 3]
+	return [list $opt $dbName $dbClass $default \
+		[eval $cgetCmd [list $win $opt]]]
+    } else {
+	#
+	# Return a list describing all available configuration options
+	#
+	foreach opt [lsort [array names configSpecs]] {
+	    if {[llength $configSpecs($opt)] == 1} {
+		set alias $configSpecs($opt)
+		if {$::tk_version < 8.1} {
+		    set dbName [lindex $configSpecs($alias) 0]
+		    lappend result [list $opt $dbName]
 		} else {
-		    set dbName [lindex $configSpecs($opt) 0]
-		    set dbClass [lindex $configSpecs($opt) 1]
-		    set default [lindex $configSpecs($opt) 3]
-		    lappend result [list $opt $dbName $dbClass $default \
-				    [eval $cgetCmd [list $win $opt]]]
+		    lappend result [list $opt $alias]
 		}
+	    } else {
+		set dbName [lindex $configSpecs($opt) 0]
+		set dbClass [lindex $configSpecs($opt) 1]
+		set default [lindex $configSpecs($opt) 3]
+		lappend result [list $opt $dbName $dbClass $default \
+				[eval $cgetCmd [list $win $opt]]]
 	    }
-	    return $result
 	}
-
-	1 {
-	    #
-	    # Return the description of the specified configuration option
-	    #
-	    set opt [fullConfigOpt [lindex $argList 0] configSpecs]
-	    set dbName [lindex $configSpecs($opt) 0]
-	    set dbClass [lindex $configSpecs($opt) 1]
-	    set default [lindex $configSpecs($opt) 3]
-	    return [list $opt $dbName $dbClass $default \
-		    [eval $cgetCmd [list $win $opt]]]
-	}
-
-	default {
-	    #
-	    # Set the specified configuration options to the given values
-	    #
-	    return [configureWidget $win configSpecs $configCmd $cgetCmd \
-		    $argList 0]
-	}
+	return $result
     }
 }
 
@@ -390,40 +404,34 @@ proc mwutil::attribSubCmd {win argList} {
     upvar ::${classNs}::ns${win}::attribVals attribVals
 
     set argCount [llength $argList]
-    switch $argCount {
-	0 {
-	    #
-	    # Return the current list of attribute names and values
-	    #
-	    set result {}
-	    foreach attr [lsort [array names attribVals]] {
-		lappend result [list $attr $attribVals($attr)]
-	    }
-	    return $result
+    if {$argCount > 1} {
+	#
+	# Set the specified attributes to the given values
+	#
+	if {$argCount % 2 != 0} {
+	    return -code error "value for \"[lindex $argList end]\" missing"
 	}
-
-	1 {
-	    #
-	    # Return the value of the specified attribute
-	    #
-	    set attr [lindex $argList 0]
-	    if {[info exists attribVals($attr)]} {
-		return $attribVals($attr)
-	    } else {
-		return ""
-	    }
-	}
-
-	default {
-	    #
-	    # Set the specified attributes to the given values
-	    #
-	    if {$argCount % 2 != 0} {
-		return -code error "value for \"[lindex $argList end]\" missing"
-	    }
-	    array set attribVals $argList
+	array set attribVals $argList
+	return ""
+    } elseif {$argCount == 1} {
+	#
+	# Return the value of the specified attribute
+	#
+	set attr [lindex $argList 0]
+	if {[info exists attribVals($attr)]} {
+	    return $attribVals($attr)
+	} else {
 	    return ""
 	}
+    } else {
+	#
+	# Return the current list of attribute names and values
+	#
+	set result {}
+	foreach attr [lsort [array names attribVals]] {
+	    lappend result [list $attr $attribVals($attr)]
+	}
+	return $result
     }
 }
 
