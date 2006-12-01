@@ -1792,6 +1792,8 @@ proc tablelist::labelB1Down {w x shiftPressed} {
 
     if {$inResizeArea && $data(-resizablecolumns) && $data($col2-resizable)} {
 	set data(colBeingResized) $col2
+	set data(topRow) [rowIndex $win @0,0 0]
+	set data(btmRow) [rowIndex $win @0,[expr {[winfo height $win] - 1}] 0]
 
 	set w $data(hdrTxtFrLbl)$col2
 	set labelWidth [winfo width $w]
@@ -1869,8 +1871,7 @@ proc tablelist::labelB1Motion {w X x y} {
 	    set data($col-lastStaticWidth) $width
 	    set data($col-delta) 0
 	    adjustColumns $win {} 0
-	    redisplayCol $win $col [rowIndex $win @0,0 0] \
-			 [rowIndex $win @0,[expr {[winfo height $win] - 1}] 0]
+	    redisplayCol $win $col $data(topRow) $data(btmRow)
 	}
     } else {
 	#
@@ -2073,7 +2074,6 @@ proc tablelist::labelB1Up {w X} {
 	focus $data(focus)
 	bind [winfo toplevel $win] <Escape> $data(topEscBinding)
 	set col $data(colBeingResized)
-	redisplayColWhenIdle $win $col
 	if {$data(-width) <= 0} {
 	    $data(hdr) configure -width $data(hdrPixels)
 	    $data(lb) configure -width \
@@ -2083,15 +2083,15 @@ proc tablelist::labelB1Up {w X} {
 	    set oldColWidth \
 		[expr {$data(oldStretchedColWidth) - $data(oldColDelta)}]
 	    set stretchedColWidth \
-		[expr {[winfo width $w] - 2*$data(charWidth)}]
+		[expr {$data(oldStretchedColWidth) + $X - $data(X)}]
 	    if {$oldColWidth < $data(stretchablePixels) &&
 		$stretchedColWidth < $oldColWidth + $data(delta)} {
 		#
 		# Compute the new column width, using the following equations:
 		#
-		# $stretchedColWidth = $colWidth + $colDelta
-		# $colDelta =
-		#    ($data(delta) - $colWidth + $oldColWidth) * $colWidth /
+		# $colWidth = $stretchedColWidth - $colDelta
+		# $colDelta / $colWidth =
+		#    ($data(delta) - $colWidth + $oldColWidth) /
 		#    ($data(stretchablePixels) + $colWidth - $oldColWidth)
 		#
 		set colWidth [expr {
@@ -2111,9 +2111,11 @@ proc tablelist::labelB1Up {w X} {
 		set data($col-delta) [expr {$stretchedColWidth - $colWidth}]
 	    }
 	}
+	redisplayCol $win $col 0 end
 	stretchColumns $win $col
 	updateScrlColOffset $win
 	unset data(colBeingResized)
+	event generate $win <<TablelistColumnResized>>
     } else {
 	if {[info exists data(X)]} {
 	    unset data(X)
@@ -2199,8 +2201,7 @@ proc tablelist::escape {win col} {
 	setupColumns $win [lreplace $data(-columns) $idx $idx \
 				    $data(configColWidth)] 0
 	adjustColumns $win $col 1
-	redisplayCol $win $col [rowIndex $win @0,0 0] \
-		     [rowIndex $win @0,[expr {[winfo height $win] - 1}] 0]
+	redisplayCol $win $col $data(topRow) $data(btmRow)
 	unset data(colBeingResized)
     } elseif {!$data(inClickedLabel)} {
 	configLabel $w -cursor $data(-cursor)
