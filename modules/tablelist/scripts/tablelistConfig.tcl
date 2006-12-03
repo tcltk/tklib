@@ -2870,7 +2870,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 		    #
 		    tk::frame $aux -borderwidth 0 -class TablelistWindow \
 				   -container 0 -highlightthickness 0 \
-				    -padx 0 -pady 0 -relief flat -takefocus 0
+				    -relief flat -takefocus 0
+		    catch {$aux configure -padx 0 -pady 0}
 		    uplevel #0 $val [list $win $row $col $aux.w]
 		}
 		set data($name) $val

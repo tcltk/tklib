@@ -1319,7 +1319,8 @@ proc tablelist::editcellSubCmd {win row col restore {cmd ""} {charPos -1}} {
     set frameHeight [expr {$netRowHeight + 6}]	;# + 6 because of -pady -3 below
     set f $data(bodyFr)
     tk::frame $f -borderwidth 0 -container 0 -height $frameHeight \
-		 -highlightthickness 0 -padx 0 -pady 0 -relief flat -takefocus 0
+		 -highlightthickness 0 -relief flat -takefocus 0
+    catch {$f configure -padx 0 -pady 0}
     bindtags $f [lreplace [bindtags $f] 1 1 TablelistEdit]
     bind $f <Destroy> {
 	array set tablelist::ns[winfo parent [winfo parent %W]]::data \
