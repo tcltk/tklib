@@ -1,3 +1,10 @@
+2006-12-03  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistEdit.tcl:   Corrected the use of the -padx and -pady
+	* scripts/tablelistConfig.tcl: options for frame widgets (these options
+	* scripts/tablelistUtil.tcl:   were not available for frame widgets in
+	* scripts/tablelistWidget.tcl: Tk versions < 8.4).
+
 2006-12-01  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:              Bumped the version number to 4.6.
