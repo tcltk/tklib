@@ -573,7 +573,8 @@ proc tablelist::tablelist args {
     #
     set w $data(hdr)			;# header frame
     tk::frame $w -borderwidth 0 -container 0 -height 0 -highlightthickness 0 \
-		 -padx 0 -pady 0 -relief flat -takefocus 0 -width 0
+		 -relief flat -takefocus 0 -width 0
+    catch {$w configure -padx 0 -pady 0}
     bind $w <Configure> {
 	set tablelist::W [winfo parent %W]
 	tablelist::stretchColumnsWhenIdle $tablelist::W
@@ -587,8 +588,9 @@ proc tablelist::tablelist args {
     place $w -relheight 1.0 -relwidth 1.0
     bindtags $w [lreplace [bindtags $w] 1 1]
     tk::frame $data(hdrTxtFr) -borderwidth 0 -container 0 -height 0 \
-			      -highlightthickness 0 -padx 0 -pady 0 \
-			      -relief flat -takefocus 0 -width 0
+			      -highlightthickness 0 -relief flat \
+			      -takefocus 0 -width 0
+    catch {$data(hdrTxtFr) configure -padx 0 -pady 0}
     $w window create 1.0 -window $data(hdrTxtFr)
     set w $data(hdrLbl)			;# filler label within the header frame
     if {$usingTile} {

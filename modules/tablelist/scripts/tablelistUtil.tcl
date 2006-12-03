@@ -1335,8 +1335,9 @@ proc tablelist::appendComplexElem {win key row col text pixels alignment
 	    #
 	    tk::frame $aux -borderwidth 0 -class TablelistWindow -container 0 \
 			   -height $data($key,$col-reqHeight) \
-			   -highlightthickness 0 -padx 0 -pady 0 -relief flat \
+			   -highlightthickness 0 -relief flat \
 			   -takefocus 0 -width $auxWidth
+	    catch {$aux configure -padx 0 -pady 0}
 	    uplevel #0 $data($key,$col-window) [list $win $row $col $aux.w]
 	}
 	if {$multiline} {
