@@ -2085,6 +2085,7 @@ proc tablelist::labelB1Up {w X} {
 	    set stretchedColWidth \
 		[expr {$data(oldStretchedColWidth) + $X - $data(X)}]
 	    if {$oldColWidth < $data(stretchablePixels) &&
+		$stretchedColWidth >= $data(minColWidth) &&
 		$stretchedColWidth < $oldColWidth + $data(delta)} {
 		#
 		# Compute the new column width, using the following equations:
