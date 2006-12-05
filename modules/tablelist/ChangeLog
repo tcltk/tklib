@@ -1,3 +1,8 @@
+2006-12-05  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl: Small correction in the procedure
+	  tablelist::labelB1Up.
+
 2006-12-03  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistEdit.tcl:   Corrected the use of the -padx and -pady
