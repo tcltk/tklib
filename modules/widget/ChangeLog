@@ -1,3 +1,7 @@
+2006-12-05  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* dialog.tcl (PlaceWindow): handle unmapped anchor
+
 2006-11-27  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* dialog.tcl (PlaceWindow): always raise after deiconify
