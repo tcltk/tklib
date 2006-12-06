@@ -4,7 +4,7 @@
 #
 #	Generic dialog widget (themed)
 #
-# RCS: @(#) $Id: dialog.tcl,v 1.19 2006/11/27 18:53:47 hobbs Exp $
+# RCS: @(#) $Id: dialog.tcl,v 1.20 2006/12/06 01:20:07 hobbs Exp $
 #
 
 # Creation and Options - widget::dialog $path ...
@@ -409,6 +409,12 @@ snit::widget widget::dialog {
 		set x [winfo pointerx $w]
 		set y [winfo pointery $w]
 	    }
+	} elseif {![winfo ismapped $anchor]} {
+	    ## All the rest require the anchor to be mapped
+	    ## If the anchor isn't mapped, use center
+	    set x [expr {([winfo screenwidth $w]-[winfo reqwidth $w])/2}]
+	    set y [expr {([winfo screenheight $w]-[winfo reqheight $w])/2}]
+	    set checkBounds 0
 	} elseif {$place eq "over"} {
 	    ## center about WIDGET $anchor
 	    set x [expr {[winfo rootx $anchor] + \
