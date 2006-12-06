@@ -1,3 +1,9 @@
+2006-12-06:  Kevin Kenny  <kennykb@acm.org>
+
+	* cs.msg: Added message catalog for the Czech locale.
+	Many thanks to Michal Mestan <mestan@dix.cz> for the translation.
+	[Patch 1608793]
+	
 2006-11-02  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* khim.tcl (khim::Insert): correct missing space
