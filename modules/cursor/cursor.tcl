@@ -7,10 +7,10 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: cursor.tcl,v 1.1.1.1 2001/11/07 20:51:21 hobbs Exp $
+# RCS: @(#) $Id: cursor.tcl,v 1.2 2006/12/08 23:30:31 hobbs Exp $
 
 package require Tk 8.0
-package provide cursor 0.1
+package provide cursor 0.2
 
 namespace eval ::cursor {
     namespace export propagate restore display
@@ -58,11 +58,11 @@ namespace eval ::cursor {
 
 proc ::cursor::propagate {w cursor} {
     variable CURSOR
-    # Ignores {} cursors
-    if {[string compare {} [set CURSOR($w) [$w cget -cursor]]]} {
+    # Ignores {} cursors or widgets that don't have a -cursor option
+    if {![catch {set CURSOR($w) [$w cget -cursor]}] && $CURSOR($w) != ""} {
 	$w config -cursor $cursor
     } else {
-	unset CURSOR($w)
+	catch {unset CURSOR($w)}
     }
     foreach child [winfo children $w] { propagate $child $cursor }
 }
@@ -83,7 +83,8 @@ proc ::cursor::restore {w {cursor {}}} {
     if {[info exists CURSOR($w)]} {
 	$w config -cursor $CURSOR($w)
     } else {
-	$w config -cursor $cursor
+	# Not all widgets have -cursor
+	catch {$w config -cursor $cursor}
     }
     foreach child [winfo children $w] { restore $child $cursor }
 }
