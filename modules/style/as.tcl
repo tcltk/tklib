@@ -15,7 +15,7 @@
 package require Tk
 
 namespace eval style::as {
-    variable version 1.3
+    variable version 1.4
     variable highlightbg "#316AC5" ; # SystemHighlight
     variable highlightfg "white"   ; # SystemHighlightText
     variable bg          "white"   ; # SystemWindow
@@ -44,6 +44,11 @@ namespace eval style::as {
 	    set mw(binding4) [bind Text <4>]
 	    set mw(binding5) [bind Text <5>]
 	}
+    }
+    if {[tk windowingsystem] eq "aqua"} {
+	set mw(ctrl) "Command"
+    } else {
+	set mw(ctrl) "Control"
     }
 }; # end of namespace style::as
 
@@ -94,15 +99,16 @@ proc style::as::reset {args} {
     }
 }
 proc style::as::enable {what args} {
+    variable mw
     switch -exact $what {
 	mousewheel { init_mousewheel }
 	control-mousewheel {
 	    set type [lindex $args 0]; # should be local or global
 	    bind all <Control-MouseWheel> \
 		[list ::style::as::CtrlMouseWheel %W %X %Y %D $type]
-	    bind all <Control-plus> \
+	    bind all <$mw(ctrl)-plus> \
 		[list ::style::as::CtrlMouseWheel %W %X %Y 120 $type]
-	    bind all <Control-minus> \
+	    bind all <$mw(ctrl)-minus> \
 		[list ::style::as::CtrlMouseWheel %W %X %Y -120 $type]
 	    if {[tk windowingsystem] eq "x11"} {
 		bind all <Control-ButtonPress-4> \
@@ -117,12 +123,13 @@ proc style::as::enable {what args} {
     }
 }
 proc style::as::disable {what args} {
+    variable mw
     switch -exact $what {
 	mousewheel { reset_mousewheel }
 	control-mousewheel {
 	    bind all <Control-MouseWheel> {}
-	    bind all <Control-plus> {}
-	    bind all <Control-minus> {}
+	    bind all <$mw(ctrl)-plus> {}
+	    bind all <$mw(ctrl)-minus> {}
 	    if {[tk windowingsystem] eq "x11"} {
 		bind all <Control-ButtonPress-4> {}
 		bind all <Control-ButtonPress-5> {}
