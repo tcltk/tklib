@@ -1,3 +1,7 @@
+2006-12-12  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* ico.tcl (::ico::getFileIcon): fixed missing close ]
+
 2006-08-04  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* ico0.tcl: added back ico 0.3 for compatibility
