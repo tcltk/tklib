@@ -5,7 +5,7 @@
 # Copyright (c) 2003-2006 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.22 2006/07/19 09:19:32 afaupell Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.23 2006/12/13 00:14:20 hobbs Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -243,7 +243,7 @@ proc ::ico::getFileIcon {file args} {
         }
         set index 0
     }
-    return [eval [list getIcon $file [lindex [icons $file] $index] $args]
+    return [eval [list getIcon $file [lindex [icons $file] $index] $args]]
 }
 
 # writeIcon --
