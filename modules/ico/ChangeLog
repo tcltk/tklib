@@ -1,3 +1,7 @@
+2006-12-14  Aaron Faupell <afaupell@users.sourceforge.net>
+
+	* ico.tcl: fixed problem in EXEtoICO and incremented version to 1.0.1
+
 2006-12-12  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* ico.tcl (::ico::getFileIcon): fixed missing close ]
