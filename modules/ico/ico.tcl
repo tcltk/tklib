@@ -5,7 +5,7 @@
 # Copyright (c) 2003-2006 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.23 2006/12/13 00:14:20 hobbs Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.24 2006/12/14 18:02:34 afaupell Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -439,15 +439,13 @@ proc ::ico::EXEtoICO {exeFile {icoDir {}}} {
         set ifh [open [file join $icoDir [file tail $exeFile]-$group.ico] w+]
         fconfigure $ifh -eofchar {} -encoding binary -translation lf
 
-        bputs $ifh sss 0 1 [expr {$cnt + 1}]
-        set offset [expr {6 + (($cnt + 1) * 16)}]
+        bputs $ifh sss 0 1 [llength $RES($file,group,$group,members)]
+        set offset [expr {6 + ([llength $RES($file,group,$group,members)] * 16)}]
         foreach {w h bpp} $dir {
-            set colors 0
-            if {$bpp <= 8} {set colors [expr {1 << $bpp}]}
-            set s [calcSize $w $h $bpp 40]
-            lappend fix $offset $s
-            bputs $ifh ccccssii $w $h $colors 0 1 $bpp $s $offset
-            set offset [expr {$offset + $s}]
+            set len [calcSize $w $h $bpp 40]
+            lappend fix $offset $len
+            bputs $ifh ccccssii $w $h [expr {$bpp <= 8 ? 1 << $bpp : 0}] 0 1 $bpp $len $offset
+            set offset [expr {$offset + $len}]
         }
         puts -nonewline $ifh $data
         foreach {offset size} $fix {
@@ -458,6 +456,8 @@ proc ::ico::EXEtoICO {exeFile {icoDir {}}} {
     }
     close $fh
 }
+
+
 
 ##
 ## Internal helper commands.
@@ -1380,4 +1380,4 @@ interp alias {} ::ico::getIconMembersICL {} ::ico::getIconMembersEXE
 interp alias {} ::ico::getRawIconDataICL {} ::ico::getRawIconDataEXE
 interp alias {} ::ico::writeIconICL      {} ::ico::writeIconEXE
 
-package provide ico 1.0
+package provide ico 1.0.1
