@@ -5,17 +5,12 @@
 # Copyright (c) 2003-2006 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.24 2006/12/14 18:02:34 afaupell Exp $
-
-# JH: speed has been considered in these routines, although they
-# may not be fully optimized.  Running EXEtoICO on explorer.exe,
-# which has nearly 100 icons, takes .2 secs on a P4/2.4ghz machine.
-#
+# RCS: @(#) $Id: ico.tcl,v 1.25 2006/12/14 18:42:19 afaupell Exp $
 
 # Sample usage:
 #	set file bin/wish.exe
-#	set icos [::ico::getIconList $file]
-#	set img  [::ico::getIcon $file 1 -format image]
+#	set icos [::ico::icons $file]
+#	set img  [::ico::getIcon $file [lindex $icos 1] -format image -res 32]
 
 package require Tcl 8.4
 
@@ -219,7 +214,7 @@ proc ::ico::getIconByName {file name args} {
 # Get the registered icon for the file under Windows
 #
 # ARGS:
-#	file	File to extract icon info from.
+#	file	File to get icon for.
 #	
 #	optional arguments and return values are the same as getIcon
 #
