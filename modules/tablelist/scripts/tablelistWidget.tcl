@@ -466,9 +466,10 @@ proc tablelist::tablelist args {
     if {[catch {
 	if {$usingTile} {
 	    ttk::frame $win -style Frame$win.TFrame -class Tablelist \
-			    -height 0 -width 0
+			    -height 0 -width 0 -padding 0
 	} else {
 	    tk::frame $win -class Tablelist -container 0 -height 0 -width 0
+	    catch {$win configure -padx 0 -pady 0}
 	}
     } result] != 0} {
 	return -code error $result
@@ -614,6 +615,7 @@ proc tablelist::tablelist args {
 	    -insertwidth 0 -padx 0 -pady 0 -state normal -takefocus 0 -wrap none
     bind $w <Configure> {
 	set tablelist::W [winfo parent %W]
+	tablelist::makeColFontAndTagLists $tablelist::W
 	tablelist::adjustElidedTextWhenIdle $tablelist::W
 	tablelist::updateColorsWhenIdle $tablelist::W
 	tablelist::adjustSepsWhenIdle $tablelist::W
@@ -3643,6 +3645,7 @@ proc tablelist::togglecolumnhideSubCmd {win first last argCount} {
     #
     # Adjust the columns and redisplay the items
     #
+    makeColFontAndTagLists $win
     adjustColumns $win $colIdxList 1
     adjustColIndex $win data(anchorCol) 1
     adjustColIndex $win data(activeCol) 1

@@ -1143,6 +1143,7 @@ proc tablelist::doColConfig {col win opt val} {
 		} else {
 		    incr data(hiddenColCount) -1
 		}
+		makeColFontAndTagLists $win
 		adjustColumns $win $col 1
 		if {$canElide} {
 		    adjustElidedTextWhenIdle $win
