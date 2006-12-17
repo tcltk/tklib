@@ -1,3 +1,10 @@
+2006-12-17  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+    	* scripts/tablelistConfig.tcl: Eliminated some annoying visual effects
+	* scripts/tablelistUtil.tcl:   caused by hidden columns when displaying
+	* scripts/tablelistWidget.tcl: the items of an already visible
+	* CHANGES.txt:                 tablelist widget (reported by Rolf Ade).
+
 2006-12-05  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl: Small correction in the procedure
