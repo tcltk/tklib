@@ -1355,12 +1355,14 @@ proc tablelist::appendComplexElem {win key row col text pixels alignment
 # of the column tag names for the tablelist widget win.
 #------------------------------------------------------------------------------
 proc tablelist::makeColFontAndTagLists win {
+    variable canElide
     upvar ::tablelist::ns${win}::data data
 
     set widgetFont $data(-font)
     set data(colFontList) {}
     set data(colTagsList) {}
     set data(hasColTags) 0
+    set viewable [winfo viewable $win]
 
     for {set col 0} {$col < $data(colCount)} {incr col} {
 	set tagNames {}
@@ -1378,6 +1380,11 @@ proc tablelist::makeColFontAndTagLists win {
 		lappend tagNames col$opt-$data($col$opt)
 		set data(hasColTags) 1
 	    }
+	}
+
+	if {$viewable && $data($col-hide) && $canElide} {
+	    lappend tagNames hiddenCol
+	    set data(hasColTags) 1
 	}
 
 	lappend data(colTagsList) $tagNames
