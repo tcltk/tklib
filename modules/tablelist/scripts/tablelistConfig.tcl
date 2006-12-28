@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -83,6 +83,30 @@ proc tablelist::extendConfigSpecs {} {
 	}
 
 	#
+	# Some tile backward compatibility issues
+	#
+	if {[string compare [info commands "::ttk::style"] ""] != 0} {
+	    interp alias {} ::tablelist::styleConfig {} ::ttk::style configure
+	    namespace import ::ttk::style
+
+	    interp alias {} ::tablelist::tileqt_currentThemeName \
+			 {} ::ttk::theme::tileqt::currentThemeName
+	    interp alias {} ::tablelist::tileqt_currentThemeColour \
+			 {} ::ttk::theme::tileqt::currentThemeColour
+	} else {
+	    if {[string compare $tile::version "0.7"] >= 0} {
+		interp alias {} ::tablelist::styleConfig {} style configure
+	    } else {
+		interp alias {} ::tablelist::styleConfig {} style default
+	    }
+
+	    interp alias {} ::tablelist::tileqt_currentThemeName \
+			 {} ::tile::theme::tileqt::currentThemeName
+	    interp alias {} ::tablelist::tileqt_currentThemeColour \
+			 {} ::tile::theme::tileqt::currentThemeColour
+	}
+
+	#
 	# Append theme-specific values to some elements of the array configSpecs
 	#
 	ttk::label $helpLabel -takefocus 0
@@ -104,6 +128,7 @@ proc tablelist::extendConfigSpecs {} {
 	#
 	style theme settings "default" {
 	    style layout TablelistHeader.TLabel {
+		Treeheading.cell
 		Treeheading.border -children {
 		    Label.padding -children {
 			Label.label
@@ -111,23 +136,23 @@ proc tablelist::extendConfigSpecs {} {
 		}
 	    }
 	}
-	if {[string compare [package provide tile::theme::aqua] ""] != 0} {
+	if {[string compare [package provide ttk::theme::aqua] ""] != 0 ||
+	    [string compare [package provide tile::theme::aqua] ""] != 0} {
 	    style theme settings "aqua" {
-		if {[string compare $tile::patchlevel "0.6.4"] < 0} {
+		if {[info exists tile::patchlevel] &&
+		    [string compare $tile::patchlevel "0.6.4"] < 0} {
 		    style layout TablelistHeader.TLabel {
-			Treeheading.cell -children {
-			    Label.padding -children {
-				Label.label -side top
-				Separator.hseparator -side bottom
-			    }
+			Treeheading.cell
+			Label.padding -children {
+			    Label.label -side top
+			    Separator.hseparator -side bottom
 			}
 		    }
 		} else {
 		    style layout TablelistHeader.TLabel {
-			Treeheading.cell -children {
-			    Label.padding -children {
-				Label.label -side top
-			    }
+			Treeheading.cell
+			Label.padding -children {
+			    Label.label -side top
 			}
 		    }
 		}
@@ -135,15 +160,6 @@ proc tablelist::extendConfigSpecs {} {
 		    {disabled background} #a3a3a3 disabled #a3a3a3 \
 		    background black]
 	    }
-	}
-
-	#
-	# Another tile backward compatibility issue
-	#
-	if {[string compare $tile::version 0.7] < 0} {
-	    interp alias {} ::tablelist::styleConfig {} style default
-	} else {
-	    interp alias {} ::tablelist::styleConfig {} style configure
 	}
     } else {
 	if {$::tk_version < 8.3} {

@@ -1,7 +1,7 @@
 #==============================================================================
 # Tablelist and Tablelist_tile package index file.
 #
-# Copyright (c) 2000-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #

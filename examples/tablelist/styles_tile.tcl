@@ -5,7 +5,7 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 # Demonstrates some ways of improving the look & feel of a tablelist widget.
 #
-# Copyright (c) 2002-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2002-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tablelist_tile
@@ -17,10 +17,10 @@ wm title . "Tablelist Styles"
 # "aqua") and add some entries to the Tk option database
 #
 if {[tk windowingsystem] eq "x11"} {
-    tile::setTheme alt
+    tablelist::setTheme alt
 }
 tablelist::setThemeDefaults
-if {$tile::currentTheme ne "aqua"} {
+if {[tablelist::getCurrentTheme] ne "aqua"} {
     option add *selectBackground  $tablelist::themeDefaults(-selectbackground)
     option add *selectForeground  $tablelist::themeDefaults(-selectforeground)
     option add *selectBorderWidth $tablelist::themeDefaults(-selectborderwidth)

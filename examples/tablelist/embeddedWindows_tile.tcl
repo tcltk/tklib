@@ -5,7 +5,7 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
 #
-# Copyright (c) 2004-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tablelist_tile
@@ -23,7 +23,7 @@ source [file join $dir option_tile.tcl]
 #
 set openImg [image create photo -file [file join $dir open.gif]]
 
-if {$tile::currentTheme eq "aqua"} {
+if {[tablelist::getCurrentTheme] eq "aqua"} {
     #
     # Work around the improper appearance of the tile scrollbars
     #
@@ -38,10 +38,12 @@ if {$tile::currentTheme eq "aqua"} {
     #         Button.padding  (two of its options are -padding and -shiftrelief)
     #             Button.label
     #
-    if {[string compare $tile::version 0.7] < 0} {
-	interp alias {} styleConfig {} style default
-    } else {
+    if {[info commands "::ttk::style"] ne ""} {
+	interp alias {} styleConfig {} ttk::style configure
+    } elseif {[string compare $tile::version "0.7"] >= 0} {
 	interp alias {} styleConfig {} style configure
+    } else {
+	interp alias {} styleConfig {} style default
     }
     styleConfig Embedded.TButton -focusthickness 0 -padding 0 -shiftrelief 0
 }
@@ -79,7 +81,11 @@ proc emptyStr val { return "" }
 #
 # Populate the tablelist widget
 #
-cd $tile::library
+if {[info exists ttk::library]} {
+    cd $ttk::library
+} else {
+    cd $tile::library
+}
 set maxFileSize 0
 foreach fileName [lsort [glob *.tcl]] {
     set fileSize [file size $fileName]
@@ -159,6 +165,7 @@ proc viewFile {tbl key} {
     set vsb $f.vsb
     text $txt -background white -font "Courier -12" -highlightthickness 0 \
 	      -setgrid yes -yscrollcommand [list $vsb set]
+    catch {$txt configure -tabstyle wordprocessor}		;# for Tk 8.5
     ttk::scrollbar $vsb -orient vertical -command [list $txt yview]
 
     #

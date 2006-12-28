@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1088,7 +1088,9 @@ proc tablelist::createCheckbutton {w args} {
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileEntry {w args} {
-    package require tile 0.6
+    if {$::tk_version < 8.5 || [regexp {^8\.5a.$} $::tk_patchLevel]} {
+	package require tile 0.6
+    }
 
     #
     # The style of the tile entry widget should have -borderwidth
@@ -1096,7 +1098,7 @@ proc tablelist::createTileEntry {w args} {
     # -borderwidth 2 setting, set the padding to another value.
     #
     set win [getTablelistPath $w]
-    switch $tile::currentTheme {
+    switch [getCurrentTheme] {
 	aqua {
 	    set padding {0 0 0 -1}
 	}
@@ -1134,10 +1136,12 @@ proc tablelist::createTileEntry {w args} {
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileCombobox {w args} {
-    package require tile 0.6
+    if {$::tk_version < 8.5 || [regexp {^8\.5a.$} $::tk_patchLevel]} {
+	package require tile 0.6
+    }
 
     set win [getTablelistPath $w]
-    if {[string compare $tile::currentTheme "aqua"] == 0} {
+    if {[string compare [getCurrentTheme] "aqua"] == 0} {
 	styleConfig Tablelist.TCombobox -borderwidth 2 -padding {0 0 0 -1}
     } else {
 	styleConfig Tablelist.TCombobox -borderwidth 2 -padding 1
@@ -1157,13 +1161,16 @@ proc tablelist::createTileCombobox {w args} {
 # cell editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileCheckbutton {w args} {
-    package require tile 0.6
+    if {$::tk_version < 8.5 || [regexp {^8\.5a.$} $::tk_patchLevel]} {
+	package require tile 0.6
+    }
 
     #
     # Define the checkbutton layout; use catch to suppress
     # the error message in case the layout already exists
     #
-    if {[string compare $tile::currentTheme "aqua"] == 0} {
+    set currentTheme [getCurrentTheme]
+    if {[string compare $currentTheme "aqua"] == 0} {
 	catch { style layout Tablelist.TCheckbutton { Checkbutton.button } }
     } else {
 	catch { style layout Tablelist.TCheckbutton { Checkbutton.indicator } }
@@ -1185,7 +1192,7 @@ proc tablelist::createTileCheckbutton {w args} {
     # Adjust the dimensions of the tile checkbutton's parent
     # and manage the checkbutton, depending on the current theme
     #
-    switch $tile::currentTheme {
+    switch $currentTheme {
 	aqua {
 	    [winfo parent $w] configure -width 16 -height 17
 	    place $w -x -3 -y -2
@@ -1215,7 +1222,7 @@ proc tablelist::createTileCheckbutton {w args} {
 	}
 
 	tileqt {
-	    switch -- [string tolower [tile::theme::tileqt::currentThemeName]] {
+	    switch -- [string tolower [tileqt_currentThemeName]] {
 		acqua {
 		    [winfo parent $w] configure -width 17 -height 18
 		    place $w -x -1 -y -2
@@ -1328,7 +1335,9 @@ proc tablelist::editcellSubCmd {win row col restore {cmd ""} {charPos -1}} {
 	if {[catch {tk::CancelRepeat}] != 0} {
 	    tkCancelRepeat 
 	}
-	catch {tile::CancelRepeat}
+	if {[catch {ttk::CancelRepeat}] != 0} {
+	    catch {tile::CancelRepeat}
+	}
     }
     set name [getEditWindow $win $row $col]
     set creationCmd [strMap {"%W" "$w"} $editWin($name-creationCmd)]
@@ -1571,10 +1580,11 @@ proc tablelist::canceleditingSubCmd win {
 	destroy $data(bodyFr)
 	set item [lindex $data(itemList) $row]
 	set key [lindex $item end]
-	if {[info exists data($key,$col-window)]} {
-	    doCellConfig $row $col $win -window $data($key,$col-window)
-	} elseif {[info exists data($key,$col-image)]} {
-	    doCellConfig $row $col $win -image $data($key,$col-image)
+	foreach opt {-window -image} {
+	    if {[info exists data($key,$col$opt)]} {
+		doCellConfig $row $col $win $opt $data($key,$col$opt)
+		break
+	    }
 	}
 	doCellConfig $row $col $win -text [lindex $item $col]
     }
@@ -1650,10 +1660,11 @@ proc tablelist::finisheditingSubCmd win {
 	if {[winfo exists $data(bodyFr)]} {
 	    destroy $data(bodyFr)
 	    set key [lindex $item end]
-	    if {[info exists data($key,$col-window)]} {
-		doCellConfig $row $col $win -window $data($key,$col-window)
-	    } elseif {[info exists data($key,$col-image)]} {
-		doCellConfig $row $col $win -image $data($key,$col-image)
+	    foreach opt {-window -image} {
+		if {[info exists data($key,$col$opt)]} {
+		    doCellConfig $row $col $win $opt $data($key,$col$opt)
+		    break
+		}
 	    }
 	    doCellConfig $row $col $win -text $text
 	    set result 1
@@ -1821,7 +1832,7 @@ proc tablelist::adjustEditWindow {win pixels} {
 	    switch -- $name {
 		text { set amount 4 }
 		ttk::entry {
-		    if {[string compare $tile::currentTheme "aqua"] == 0} {
+		    if {[string compare [getCurrentTheme] "aqua"] == 0} {
 			set amount 5
 		    } else {
 			set amount 3
@@ -2062,8 +2073,12 @@ proc tablelist::insertChar {w str} {
 	return -code break ""
     } elseif {[regexp {^(T?Entry|TCombobox|Spinbox)$} $class]} {
 	if {[string match "T*" $class]} {
-	    tile::entry::Insert $w $str
-	} elseif {[string compare [info procs "::tkEntryInsert"] ""] == 0} {
+	    if {[string compare [info procs "::ttk::entry::Insert"] ""] != 0} {
+		ttk::entry::Insert $w $str
+	    } else {
+		tile::entry::Insert $w $str
+	    }
+	} elseif {[string compare [info procs "::tk::EntryInsert"] ""] != 0} {
 	    tk::EntryInsert $w $str
 	} else {
 	    tkEntryInsert $w $str

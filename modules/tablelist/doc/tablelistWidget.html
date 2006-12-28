@@ -1633,6 +1633,49 @@
 	cause an error.&nbsp; Attempts to unset a variable in use as a
 	<code><b>-listvariable</b></code> will fail but will not generate an
 	error.</p>
+
+	<p><b>REMARK:</b>&nbsp; For increased efficiency, updating the widget
+	to reflect a changed value of the variable specified with this option
+	is, whenever possible, done at idle time (i.e., when there are no
+	events to process).&nbsp; On the other hand, most tablelist subcommands
+	make it necessary to perform an <i>immediate</i> update of the widget's
+	internal list according to the value of this variable, before executing
+	the subcommand in question.&nbsp; Doing this repeatedly can become
+	quite inefficient.&nbsp; To avoid performance problems, you should
+	always try to separate the operations that build up the value of the
+	variable specified by this option from other commands.&nbsp; For
+	example, instead of</p>
+
+	<blockquote>
+	  <pre>
+tablelist::tablelist .tbl ... -listvariable var
+set var {}
+for {set row 0} {$row < 1000} {incr row} {
+    lappend var ...
+    .tbl cellconfigure $row,3 -image ...
+}
+</pre>
+	</blockquote>
+
+	<p>you should write</p>
+
+	<blockquote>
+	  <pre>
+tablelist::tablelist .tbl ... -listvariable var
+set var {}
+for {set row 0} {$row < 1000} {incr row} {
+    lappend var ...
+}
+for {set row 0} {$row < 1000} {incr row} {
+    .tbl cellconfigure $row,3 -image ...
+}
+</pre>
+	</blockquote>
+
+	<p>The first method above is quite inefficient, because it requires
+	1000 updates of the widget's internal list.&nbsp; The second method
+	performs incomparably faster, because it needs only one synchronization
+	(at the beginning of the second loop).</p>
       </blockquote>
     </dd>
 
@@ -2580,7 +2623,9 @@
 	combobox widget for interactive cell editing by invoking the
 	<code><b><a href=
 	"tablelistCombobox.html#combobox">tablelist::addOakleyCombobox</a></b></code>
-	command.</dd>
+	command.&nbsp; The value of this option can be overridden for
+	individual cells by using the cell configuration option with the same
+	name.</dd>
 
 	<dt><br>
 	<a name="col_font"></a><code><b>-font</b> <i>font</i></code></dt>
@@ -3141,14 +3186,15 @@ proc formatDate clockVal {
 	  this option will be ignored.
 
 	  <p>To display an image in a cell, Tablelist makes use of an embedded
-	  label widget.&nbsp; This requires more memory than inserting the
-	  image directly into the tablelist's body, but has the main advantage
-	  of making it possible to adjust the width of the label containing the
-	  widget to fit into its column.&nbsp; This has the visual effect of
-	  cutting off part of the image from its right side.&nbsp; To make sure
-	  that images with transparent background will be displayed correctly,
-	  the background color of the label widgets containing the embedded
-	  images is automatically updated whenever necessary.</p>
+	  label widget (which is created on demand).&nbsp; This requires more
+	  memory than inserting the image directly into the tablelist's body,
+	  but has the main advantage of making it possible to adjust the width
+	  of the label containing the widget to fit into its column.&nbsp; This
+	  has the visual effect of cutting off part of the image from its right
+	  side.&nbsp; To make sure that images with transparent background will
+	  be displayed correctly, the background color of the label widgets
+	  containing the embedded images is automatically updated whenever
+	  necessary.</p>
 	</dd>
 
 	<dt><a name="cell_selectbackground"></a><code><b>-selectbackground</b>
@@ -3714,13 +3760,15 @@ proc formatDate clockVal {
 
 	<dd>Returns the name of a binding tag whose name depends on the path
 	name of the tablelist widget and which is associated with the
-	tablelist's body, the separators, and the labels used for displaying
-	embedded images.&nbsp; This binding tag is designed to be used when
+	tablelist's body, the separators, as well as the message and label
+	widgets used for displaying multi-line elements and images,
+	respectively.&nbsp; This binding tag is designed to be used when
 	defining individual binding scripts for tablelist widgets.&nbsp; The
 	main advantage of using this tag instead of the path name of the
 	tablelist's body is that it enables you to write event handling scripts
 	that are valid not only for the tablelist's body but also for the
-	separators and embedded images.&nbsp; This binding tag precedes the tag
+	separators, multi-line cells, and embedded images.&nbsp; This binding
+	tag precedes the tag
 	<code><b><a href="#body_bindings">TablelistBody</a></b></code> in the
 	list of binding tags of the tablelist descendants mentioned above.</dd>
 
@@ -4236,7 +4284,8 @@ proc formatDate clockVal {
 	characters are displayed as <code>\t</code> (i.e., a backslash followed
 	by a <code>t</code>) but are inserted unchanged into the internal
 	list.&nbsp; Newline characters will force line breaks, i.e., will give
-	rise to multi-line elements.&nbsp; The return value is an empty
+	rise to multi-line elements (which are displayed in embedded message
+	widgets, created on demand).&nbsp; The return value is an empty
 	string.</dd>
 
 	<dt><br>
@@ -4308,8 +4357,10 @@ eval [list $<i>pathName</i> insertcolumns $<i>columnIndex</i>] $<i>columnList</i
 	  Tabulator characters are displayed as <code>\t</code> (i.e., a
 	  backslash followed by a <code>t</code>) but are inserted unchanged
 	  into the internal list.&nbsp; Newline characters will force line
-	  breaks, i.e., will give rise to multi-line elements.&nbsp; The return
-	  value is an empty string.&nbsp; This command has the same effect as
+	  breaks, i.e., will give rise to multi-line elements (which are
+	  displayed in embedded message widgets, created on demand).&nbsp; The
+	  return value is an empty string.&nbsp; This command has the same
+	  effect as
 
 	  <blockquote>
 	    <pre>
@@ -5063,9 +5114,11 @@ set tablelist::W [tablelist::getTablelistPath %W]
       <p>The binding tag <code><b>TablelistBody</b></code> replaces the class
       name (<code><b>Frame</b></code> or <code><b>TSeparator</b></code>) of the
       separator widgets, too.&nbsp; It also replaces the binding tag
-      <code><b>Label</b></code> of the label widgets used to display embedded
-      images.&nbsp; This makes sure that the default handling of the mouse
-      events on the column separators and embedded images is the same as in the
+      <code><b>Message</b></code> of the message widgets used to display
+      multi-line elements, as well as the binding tag <code><b>Label</b></code>
+      of the label widgets used to display embedded images.&nbsp; This makes
+      sure that the default handling of the mouse events on the column
+      separators, multi-line cells, and embedded images is the same as in the
       rest of the tablelist's body.</p>
 
       <p>When defining individual bindings for tablelist widgets, the same
@@ -5087,8 +5140,8 @@ bind [.tbl bodytag] &lt;Button-1&gt; {
       <p>By associating the script with the binding tag returned by the
       <code><b><a href="#bodytag">bodytag</a></b></code> subcommand instead of
       just with the path name of the tablelist's body we make sure to have the
-      same event handling for the separators and embedded images as for the
-      rest of the tablelist's body.</p>
+      same event handling for the separators, multi-line cells, and embedded
+      images as for the rest of the tablelist's body.</p>
 
       <p>The bindings associated with the binding tag
       <code><b>TablelistBody</b></code>, created automatically by the
