@@ -5,7 +5,7 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
 #
-# Copyright (c) 2004-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tablelist
@@ -124,6 +124,7 @@ proc viewFile {tbl key} {
     set vsb $top.vsb
     text $txt -background white -font "Courier -12" -setgrid yes \
 	      -yscrollcommand [list $vsb set]
+    catch {$txt configure -tabstyle wordprocessor}		;# for Tk 8.5
     scrollbar $vsb -orient vertical -command [list $txt yview]
 
     #

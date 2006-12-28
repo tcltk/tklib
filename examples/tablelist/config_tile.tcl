@@ -2,7 +2,7 @@
 # Demonstrates how to implement a tablelist widget for displaying and editing
 # the configuration options of an arbitrary widget.
 #
-# Copyright (c) 2000-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tablelist_tile
@@ -22,11 +22,12 @@ namespace eval demo {
     #   b1, b2, b3	  TButton
     #
     if {[tk windowingsystem] eq "x11"} {
-	tile::setTheme alt
+	tablelist::setTheme alt
 	option add *DemoTop*Font			"Helvetica -12"
     }
     tablelist::setThemeDefaults
-    if {$tile::currentTheme ne "aqua"} {
+    variable currentTheme [tablelist::getCurrentTheme]
+    if {$currentTheme ne "aqua"} {
 	option add *DemoTop*selectBackground \
 		   $tablelist::themeDefaults(-selectbackground)
 	option add *DemoTop*selectForeground \
@@ -49,7 +50,7 @@ namespace eval demo {
 #
 # Work around the improper appearance of the tile scrollbars in the aqua theme
 #
-if {$tile::currentTheme eq "aqua"} {
+if {$demo::currentTheme eq "aqua"} {
     interp alias {} ttk::scrollbar {} ::scrollbar
 }
 

@@ -3,11 +3,11 @@
 #
 # Structure of the module:
 #   - Namespace initialization
-#   - Public procedure
+#   - Public procedure creating a new tablelist widget
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -438,8 +438,8 @@ namespace eval tablelist {
 }
 
 #
-# Public procedure
-# ================
+# Public procedure creating a new tablelist widget
+# ================================================
 #
 
 #------------------------------------------------------------------------------
@@ -537,10 +537,10 @@ proc tablelist::tablelist args {
     }
     if {$usingTile} {
 	variable themeDefaults
-	set data(currentTheme) $tile::currentTheme
+	set data(currentTheme) [getCurrentTheme]
 	set data(themeDefaults) [array get themeDefaults]
-	if {[string compare $tile::currentTheme "tileqt"] == 0} {
-	    set data(widgetStyle) [tile::theme::tileqt::currentThemeName]
+	if {[string compare $data(currentTheme) "tileqt"] == 0} {
+	    set data(widgetStyle) [tileqt_currentThemeName]
 	    set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
 	} else {
 	    set data(widgetStyle) ""

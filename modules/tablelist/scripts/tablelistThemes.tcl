@@ -2,8 +2,32 @@
 # Contains procedures that populate the array themeDefaults with theme-specific
 # default values of some tablelist configuration options.
 #
-# Copyright (c) 2005-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Structure of the module:
+#   - Public procedures related to tile themes
+#   - Private procedures related to tile themes
+#   - Private procedures performing RGB <-> HSV conversions
+#   - Private procedures related to global KDE configuration options
+#
+# Copyright (c) 2005-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
+
+#
+# Public procedures related to tile themes
+# ========================================
+#
+
+#------------------------------------------------------------------------------
+# tablelist::getCurrentTheme
+#
+# Returns the current tile theme.
+#------------------------------------------------------------------------------
+proc tablelist::getCurrentTheme {} {
+    if {[info exists ttk::currentTheme]} {
+	return $ttk::currentTheme
+    } else {
+	return $tile::currentTheme
+    }
+}
 
 #------------------------------------------------------------------------------
 # tablelist::setThemeDefaults
@@ -12,8 +36,9 @@
 # tablelist configuration options.
 #------------------------------------------------------------------------------
 proc tablelist::setThemeDefaults {} {
-    if {[catch {${tile::currentTheme}Theme}] != 0} {
-	return -code error "theme \"$tile::currentTheme\" not supported"
+    set currentTheme [getCurrentTheme]
+    if {[catch {${currentTheme}Theme}] != 0} {
+	return -code error "theme \"$currentTheme\" not supported"
     }
 
     variable themeDefaults
@@ -23,6 +48,11 @@ proc tablelist::setThemeDefaults {} {
 	set themeDefaults(-arrowdisabledcolor) $themeDefaults(-labeldisabledFg)
     }
 }
+
+#
+# Private procedures related to tile themes
+# =========================================
+#
 
 #------------------------------------------------------------------------------
 # tablelist::altTheme
@@ -219,7 +249,7 @@ proc tablelist::classicTheme {} {
 	-selectbackground	#c3c3c3 \
 	-selectforeground	#000000 \
 	-selectborderwidth	1 \
-	-font			TkClassicDefaultFont \
+	-font			TkTextFont \
         -labelbackground	#d9d9d9 \
 	-labeldisabledBg	#d9d9d9 \
 	-labelactiveBg		#ececec \
@@ -228,12 +258,18 @@ proc tablelist::classicTheme {} {
 	-labeldisabledFg	#a3a3a3 \
 	-labelactiveFg		black \
 	-labelpressedFg		black \
-	-labelfont		TkClassicDefaultFont \
+	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
 	-arrowcolor		"" \
 	-arrowstyle		sunken10x9 \
     ]
+
+    if {[info exists tile::version] &&
+	[string compare $tile::version 0.8] < 0} {
+	set themeDefaults(-font)	TkClassicDefaultFont
+	set themeDefaults(-labelfont)	TkClassicDefaultFont
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -476,19 +512,18 @@ proc tablelist::stepTheme {} {
 #   High Contrast White Text      Plastik
 #------------------------------------------------------------------------------
 proc tablelist::tileqtTheme {} {
-    set bg         [tile::theme::tileqt::currentThemeColour -background]
-    set fg         [tile::theme::tileqt::currentThemeColour -foreground]
-    set tableBg    [tile::theme::tileqt::currentThemeColour -base]
-    set tableFg    [tile::theme::tileqt::currentThemeColour -text]
-    set tableDisFg [tile::theme::tileqt::currentThemeColour -disabled -text]
-    set selectBg   [tile::theme::tileqt::currentThemeColour -highlight]
-    set selectFg   [tile::theme::tileqt::currentThemeColour -highlightedText]
-    set labelBg    [tile::theme::tileqt::currentThemeColour -button]
-    set labelFg    [tile::theme::tileqt::currentThemeColour -buttonText]
-    set labelDisFg [tile::theme::tileqt::currentThemeColour -disabled \
-		    -buttonText]
-    set style      [string tolower [tile::theme::tileqt::currentThemeName]]
-    set pressedBg  $labelBg
+    set bg		[tileqt_currentThemeColour -background]
+    set fg		[tileqt_currentThemeColour -foreground]
+    set tableBg		[tileqt_currentThemeColour -base]
+    set tableFg		[tileqt_currentThemeColour -text]
+    set tableDisFg	[tileqt_currentThemeColour -disabled -text]
+    set selectBg	[tileqt_currentThemeColour -highlight]
+    set selectFg	[tileqt_currentThemeColour -highlightedText]
+    set labelBg		[tileqt_currentThemeColour -button]
+    set labelFg		[tileqt_currentThemeColour -buttonText]
+    set labelDisFg	[tileqt_currentThemeColour -disabled -buttonText]
+    set style		[string tolower [tileqt_currentThemeName]]
+    set pressedBg	$labelBg
 
     #
     # For most Qt styles the label colors depend on the color scheme:
@@ -1208,7 +1243,8 @@ proc tablelist::xpnativeTheme {} {
 	    set arrowColor	#aca899
 	    set arrowStyle	flat9x5
 
-	    if {[string compare $tile::version 0.7] < 0} {
+	    if {[info exists tile::version] &&
+		[string compare $tile::version 0.7] < 0} {
 		set labelBd 0
 	    }
 	}
@@ -1223,7 +1259,8 @@ proc tablelist::xpnativeTheme {} {
 	    set arrowColor	#aca899
 	    set arrowStyle	flat9x5
 
-	    if {[string compare $tile::version 0.7] < 0} {
+	    if {[info exists tile::version] &&
+		[string compare $tile::version 0.7] < 0} {
 		set labelBd 0
 	    }
 	}
@@ -1265,6 +1302,11 @@ proc tablelist::xpnativeTheme {} {
 	-arrowstyle		$arrowStyle \
     ]
 }
+
+#
+# Private procedures performing RGB <-> HSV conversions
+# =====================================================
+#
 
 #------------------------------------------------------------------------------
 # tablelist::rgb2hsv
@@ -1349,6 +1391,11 @@ proc tablelist::hsv2rgb {h s v} {
 	5 { return [list $v  $p1 $p2] }
     }
 }
+
+#
+# Private procedures related to global KDE configuration options
+# ==============================================================
+#
 
 #------------------------------------------------------------------------------
 # tablelist::getKdeConfigVal

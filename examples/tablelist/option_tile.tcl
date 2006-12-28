@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains some Tk option database settings.
 #
-# Copyright (c) 2004-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -9,11 +9,11 @@
 # "aqua") and add some entries to the Tk option database
 #
 if {[tk windowingsystem] eq "x11"} {
-    tile::setTheme alt
+    tablelist::setTheme alt
     option add *Font			"Helvetica -12"
 }
 tablelist::setThemeDefaults
-if {$tile::currentTheme eq "aqua"} {
+if {[tablelist::getCurrentTheme] eq "aqua"} {
     option add *Listbox.selectBackground \
 	       $tablelist::themeDefaults(-selectbackground)
     option add *Listbox.selectForeground \

@@ -45,7 +45,8 @@
   <h2><a name="overview"></a>Overview</h2>
 
   <p>The tile theme engine is a compiled library extension for Tcl/Tk version
-  8.4 or higher.&nbsp; Its download location is</p>
+  8.4 or higher.&nbsp; Beginning with Tk 8.5b1, tile is integrated into the Tk
+  core.&nbsp; For earlier Tk versions it can be downloaded from the address</p>
 
   <blockquote>
     <address>
@@ -78,12 +79,17 @@
   <p>One known limitation of the currently available tile versions is that
   the&nbsp; <code><b>style theme use</b></code>&nbsp; command can only be used
   to set the current theme, but not to retrieve it.&nbsp; For this reason,
-  Tablelist makes use of the variable <code><b>tile::currentTheme</b></code>,
-  which is set by the <code><b>tile::setTheme</b></code> procedure.&nbsp; From
+  Tablelist makes use of the variable <code><b>ttk::currentTheme</b></code> or
+  <code><b>tile::currentTheme</b></code> (depending on the tile version), which
+  is set by the <code><b>ttk::setTheme</b></code> or
+  <code><b>tile::setTheme</b></code> procedure.&nbsp; From
   this it follows that the tile widgets used for interactive cell editing will
   only be managed as expected if the platform-specific default theme is either
   left unchanged or replaced with another theme by invoking the procedure
-  <code><b>tile::setTheme</b></code>.</p>
+  <code><b>ttk::currentTheme</b></code> or <code><b>tile::setTheme</b></code>,
+  depending on the current tile version.&nbsp; (See also the <code><b><a href=
+  "tablelistThemes.html#setTheme">tablelist::setTheme</a></b></code>
+  command.)</p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=

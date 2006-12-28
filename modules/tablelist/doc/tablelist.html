@@ -362,15 +362,19 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   cell editing</b>, because these packages expect Tk widgets, which may not
   always be replaced by their tile counterparts.</p>
 
-  <p>Another restriction to be taken into account (as of tile version 0.7) is
-  due to the fact that the&nbsp; <code>style theme use</code>&nbsp; command can
-  only be used to set the current theme, but not to retrieve it.&nbsp; For this
-  reason, the package Tablelist_tile makes use of the variable
-  <code>tile::currentTheme</code>, which is set by the
-  <code>tile::setTheme</code> procedure.&nbsp; From this it follows that <b>the
-  tile-based tablelist widgets will only have the expected appearance if the
-  platform-specific default theme is either left unchanged or replaced with
-  another theme by invoking the procedure <code>tile::setTheme</code></b>.</p>
+  <p>Another restriction to be taken into account (as of tile version 0.8) is
+  due to the fact that the&nbsp; <code>(ttk::)style theme use</code>&nbsp;
+  command can only be used to set the current theme, but not to retrieve
+  it.&nbsp; For this reason, the package Tablelist_tile makes use of the
+  variable <code>ttk::currentTheme</code> or <code>tile::currentTheme</code>
+  (depending on the tile version), which is set by the
+  <code>ttk::setTheme</code> or <code>tile::setTheme</code> procedure.&nbsp;
+  From this it follows that <b>the tile-based tablelist widgets will only have
+  the expected appearance if the platform-specific default theme is either left
+  unchanged or replaced with another theme by invoking the procedure
+  <code>ttk::setTheme</code> or <code>tile::setTheme</code>, depending on the
+  current tile version</b>.&nbsp; (See also the <code><a href=
+  "tablelistThemes.html#setTheme">tablelist::setTheme</a></code> command.)</p>
 
   <p>After these cautions concerning the use of tile, the rest of this section
   describes the differences between the packages Tablelist and
@@ -381,11 +385,17 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
 
   <blockquote>
     <pre>
-package require Tcl  8.4
-package require Tk   8.4
-package require tile 0.6
+package require Tcl 8.4
+package require Tk  8.4
+if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
+    package require tile 0.6
+}
 </pre>
   </blockquote>
+
+  <p>The last command above takes into account that, beginning with Tk 8.5b1,
+  tile is integrated into the Tk core and therefore it should only be loaded
+  explicitly when using an earlier Tk version.</p>
 
   <p>Apart from this and the <code>_tile</code> suffix in the&nbsp;
   <code>package require</code>&nbsp; command, the only difference (from the
@@ -418,7 +428,7 @@ package require tile 0.6
   from Tk widgets.</p>
 
   <p>Finally, notice that, when using the <code>tileqt</code> theme, the
-  version number of the <code>tile::theme::tileqt</code> package must be 0.3 or
+  version number of the <code>tile::theme::tileqt</code> package must be 0.4 or
   higher, and <code>tileqt</code> itself won't work with tile versions earlier
   than 0.7.</p>
 
@@ -1716,7 +1726,7 @@ proc editEndCmd {tbl row col text} {
 </pre>
   </blockquote>
 
-  <p>As already mentioned above, the scripts <code>tileWidgets.tcl</code>,
+  <p>As mentioned above, the scripts <code>tileWidgets.tcl</code>,
   <code>iwidgets.tcl</code>, and <code>miscWidgets.tcl</code> are similar to
   <code>bwidget.tcl</code>.&nbsp; The first one makes use of the tile entry,
   combobox, and checkbutton widgets, together with the Tk core spinbox.&nbsp;
@@ -1975,21 +1985,22 @@ source [file join $dir option_tile.tcl]
 
   <p>where <code>option_tile.tcl</code> is nearly identical to
   <code>option.tcl</code>.&nbsp; Its tile-specific part sets the theme to
-  <code>alt</code> for the windowing system <code>x11</code> and uses the
-  values written by the command <code><a href=
-  "tablelistThemeDefs.html">tablelist::setThemeDefaults</a></code> into the
-  array <code>tablelist::themeDefaults</code>, to make sure that the selection
-  will have the same theme-specific look in all the widgets created by the
-  application:</p>
+  <code>alt</code> for the windowing system <code>x11</code> by invoking the
+  <code><a href="tablelistThemes.html#setTheme">tablelist::setTheme</a></code>
+  command, and uses the values written by the command <code><a href=
+  "tablelistThemes.html#setThemeDefaults">tablelist::setThemeDefaults</a></code>
+  into the array <code>tablelist::themeDefaults</code>, to make sure that the
+  selection will have the same theme-specific look in all the widgets created
+  by the application:</p>
 
   <blockquote>
     <pre>
 if {[tk windowingsystem] eq "x11"} {
-    tile::setTheme alt
+    tablelist::setTheme alt
     option add *Font			"Helvetica -12"
 }
 tablelist::setThemeDefaults
-if {$tile::currentTheme eq "aqua"} {
+if {[tablelist::getCurrentTheme] eq "aqua"} {
     option add *Listbox.selectBackground \
 	       $tablelist::themeDefaults(-selectbackground)
     option add *Listbox.selectForeground \
