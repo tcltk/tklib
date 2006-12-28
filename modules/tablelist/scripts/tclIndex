@@ -147,6 +147,7 @@ set auto_index(::tablelist::movecolumnSubCmd) [list source [file join $dir table
 set auto_index(::tablelist::sortByColumn) [list source [file join $dir tablelistSort.tcl]]
 set auto_index(::tablelist::addToSortColumns) [list source [file join $dir tablelistSort.tcl]]
 set auto_index(::tablelist::sortSubCmd) [list source [file join $dir tablelistSort.tcl]]
+set auto_index(::tablelist::getCurrentTheme) [list source [file join $dir tablelistThemes.tcl]]
 set auto_index(::tablelist::setThemeDefaults) [list source [file join $dir tablelistThemes.tcl]]
 set auto_index(::tablelist::altTheme) [list source [file join $dir tablelistThemes.tcl]]
 set auto_index(::tablelist::aquaTheme) [list source [file join $dir tablelistThemes.tcl]]
