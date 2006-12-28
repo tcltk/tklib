@@ -1,3 +1,19 @@
+2006-12-28  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                          Support for tile 0.8 and Tk 8.5b1
+	* *.txt:                          (where tile is integrated in the
+	* scripts/*.tcl:                  core); updated the Copyright lines.
+	* doc/index.html:
+	* doc/tablelist.html:
+	* doc/tablelistThemes.html:
+	* doc/tablelistTile.html:
+	* doc/tablelistWidget.html:
+	* ../../examples/tablelist/*.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/tablelistThemeDefs.html: Renamed to tablelistThemes.html.
+
 2006-12-17  Csaba Nemethi <csaba.nemethi@t-online.de>
 
     	* scripts/tablelistConfig.tcl: Eliminated some annoying visual effects
