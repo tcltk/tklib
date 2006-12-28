@@ -2,7 +2,7 @@
 # Demonstrates how to implement a tablelist widget for displaying information
 # about the children of an arbitrary widget.
 #
-# Copyright (c) 2000-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tablelist_tile
@@ -24,7 +24,7 @@ source [file join $demo::dir config_tile.tcl]
 #
 # Work around the improper appearance of the tile scrollbars in the aqua theme
 #
-if {$tile::currentTheme eq "aqua"} {
+if {[tablelist::getCurrentTheme] eq "aqua"} {
     interp alias {} ttk::scrollbar {} ::scrollbar
 }
 

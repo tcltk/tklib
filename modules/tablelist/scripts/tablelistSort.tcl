@@ -3,8 +3,17 @@
 # tablelist::addToSortColumns commands, as well as of the tablelist sort,
 # sortbycolumn, and sortbycolumnlist subcommands.
 #
-# Copyright (c) 2000-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Structure of the module:
+#   - Public procedures related to sorting
+#   - Private procedures implementing the sorting
+#
+# Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
+
+#
+# Public procedures related to sorting
+# ====================================
+#
 
 #------------------------------------------------------------------------------
 # tablelist::sortByColumn
@@ -113,6 +122,11 @@ proc tablelist::addToSortColumns {win col} {
 	return -code error $result
     }
 }
+
+#
+# Private procedures implementing the sorting
+# ===========================================
+#
 
 #------------------------------------------------------------------------------
 # tablelist::sortSubCmd

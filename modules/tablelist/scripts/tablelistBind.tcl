@@ -8,7 +8,7 @@
 #   - Binding tag TablelistBody
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -134,9 +134,10 @@ proc tablelist::updateConfigSpecs win {
 
     upvar ::tablelist::ns${win}::data data
 
-    if {[string compare $tile::currentTheme $data(currentTheme)] == 0} {
-	if {[string compare $tile::currentTheme "tileqt"] == 0} {
-	    set widgetStyle [tile::theme::tileqt::currentThemeName]
+    set currentTheme [getCurrentTheme]
+    if {[string compare $currentTheme $data(currentTheme)] == 0} {
+	if {[string compare $currentTheme "tileqt"] == 0} {
+	    set widgetStyle [tileqt_currentThemeName]
 	    set colorScheme [getKdeConfigVal "KDE" "colorScheme"]
 	    if {[string compare $widgetStyle $data(widgetStyle)] == 0 &&
 		[string compare $colorScheme $data(colorScheme)] == 0} {
@@ -202,10 +203,10 @@ proc tablelist::updateConfigSpecs win {
 	}
     }
 
-    set data(currentTheme) $tile::currentTheme
+    set data(currentTheme) $currentTheme
     set data(themeDefaults) [array get themeDefaults]
-    if {[string compare $tile::currentTheme "tileqt"] == 0} {
-	set data(widgetStyle) [tile::theme::tileqt::currentThemeName]
+    if {[string compare $currentTheme "tileqt"] == 0} {
+	set data(widgetStyle) [tileqt_currentThemeName]
 	set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
     } else {
 	set data(widgetStyle) ""

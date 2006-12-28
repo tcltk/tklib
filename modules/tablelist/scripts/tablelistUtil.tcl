@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2006  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1654,11 +1654,12 @@ proc tablelist::createSeps win {
 
     set x 1
     if {$usingTile} {
-	if {[string compare $tile::currentTheme "xpnative"] == 0 &&
+	set currentTheme [getCurrentTheme]
+	if {[string compare $currentTheme "xpnative"] == 0 &&
 	    $::tablelist::xpStyle} {
 	    set x 0
-	} elseif {[string compare $tile::currentTheme "tileqt"] == 0 &&
-		  [string compare [string tolower $tile::theme::tileqt::theme] \
+	} elseif {[string compare $currentTheme "tileqt"] == 0 &&
+		  [string compare [string tolower [tileqt_currentThemeName]] \
 		   "qtcurve"] == 0} {
 	    set x 2
 	}
@@ -1757,7 +1758,7 @@ proc tablelist::adjustSeps win {
 	}
     } else {
 	if {$usingTile &&
-	    [string compare $tile::currentTheme "xpnative"] == 0 &&
+	    [string compare [getCurrentTheme] "xpnative"] == 0 &&
 	    $::tablelist::xpStyle} {
 	    set x 0
 	} else {
