@@ -1,5 +1,10 @@
 2007-01-01  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* tablelist_tile.tcl:          Moved some alias definitions to
+	* scripts/tablelistConfig.tcl: tablelist_tile.tcl.
+
+2007-01-01  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* CHANGES.txt:        Minor improvements.
 	* scripts/repair.tcl:
 	* doc/tablelist.html:

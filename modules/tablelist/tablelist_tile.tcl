@@ -17,17 +17,24 @@ package provide tablelist_tile 4.6
 ::tablelist::useTile 1
 
 #
-# Define the aliases ::tablelist::getThemes and ::tablelist::setTheme
+# Define some aliases
 #
-if {[info commands ::ttk::themes] ne ""} {
+if {[info commands ::ttk::style] ne ""} {
     interp alias {} ::tablelist::getThemes {} ::ttk::themes
+    interp alias {} ::tablelist::setTheme  {} ::ttk::setTheme
+
+    interp alias {} ::tablelist::tileqt_currentThemeName \
+		 {} ::ttk::theme::tileqt::currentThemeName
+    interp alias {} ::tablelist::tileqt_currentThemeColour \
+		 {} ::ttk::theme::tileqt::currentThemeColour
 } else {
     interp alias {} ::tablelist::getThemes {} ::tile::availableThemes
-}
-if {[info commands "::ttk::setTheme"] ne ""} {
-    interp alias {} ::tablelist::setTheme {} ::ttk::setTheme
-} else {
-    interp alias {} ::tablelist::setTheme {} ::tile::setTheme
+    interp alias {} ::tablelist::setTheme  {} ::tile::setTheme
+
+    interp alias {} ::tablelist::tileqt_currentThemeName \
+		 {} ::tile::theme::tileqt::currentThemeName
+    interp alias {} ::tablelist::tileqt_currentThemeColour \
+		 {} ::tile::theme::tileqt::currentThemeColour
 }
 
 namespace eval ::tablelist {
