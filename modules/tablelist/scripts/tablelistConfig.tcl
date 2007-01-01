@@ -88,22 +88,10 @@ proc tablelist::extendConfigSpecs {} {
 	if {[string compare [info commands "::ttk::style"] ""] != 0} {
 	    interp alias {} ::tablelist::styleConfig {} ::ttk::style configure
 	    namespace import ::ttk::style
-
-	    interp alias {} ::tablelist::tileqt_currentThemeName \
-			 {} ::ttk::theme::tileqt::currentThemeName
-	    interp alias {} ::tablelist::tileqt_currentThemeColour \
-			 {} ::ttk::theme::tileqt::currentThemeColour
+	} elseif {[string compare $tile::version "0.7"] >= 0} {
+	    interp alias {} ::tablelist::styleConfig {} style configure
 	} else {
-	    if {[string compare $tile::version "0.7"] >= 0} {
-		interp alias {} ::tablelist::styleConfig {} style configure
-	    } else {
-		interp alias {} ::tablelist::styleConfig {} style default
-	    }
-
-	    interp alias {} ::tablelist::tileqt_currentThemeName \
-			 {} ::tile::theme::tileqt::currentThemeName
-	    interp alias {} ::tablelist::tileqt_currentThemeColour \
-			 {} ::tile::theme::tileqt::currentThemeColour
+	    interp alias {} ::tablelist::styleConfig {} style default
 	}
 
 	#
