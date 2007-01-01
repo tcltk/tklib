@@ -1,8 +1,8 @@
 What is new in Tablelist 4.6?
 -----------------------------
 
-1.  Support for tile 0.8 and Tk 8.5b1 (where tile is integrated in the
-    core).  For example, the new commands "tablelist::setTheme",
+1.  Support for tile 0.8 and Tk 8.5a6/8.5b1 (where tile is integrated
+    in the core).  For example, the new commands "tablelist::setTheme",
     "tablelist::getCurrentTheme", and "tablelist::getThemes" enable you
     to set and get the current theme and to query the available ones,
     without having to worry about the tile version being used.

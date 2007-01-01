@@ -67,7 +67,7 @@ foreach file {tablelistBind.tcl tablelistConfig.tcl tablelistEdit.tcl
     set fi [open $file.BAK r]
     set fo [open $file     w]
 
-    for {set n 1} {[gets $fi line] >= 0} {incr n} {
+    while {[gets $fi line] >= 0} {
 	regsub -all {\[info exists ([^\(]+)\(([^\]]+)\)\]} $line \
 		    {[arrElemExists \1 \2]} line
 	puts $fo $line
