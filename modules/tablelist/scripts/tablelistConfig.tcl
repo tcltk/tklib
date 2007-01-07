@@ -1012,6 +1012,17 @@ proc tablelist::doColConfig {col win opt val} {
 	    makeColFontAndTagLists $win
 	}
 
+	-changesnipside {
+	    #
+	    # Save the boolean value specified by val in data($col$opt) and
+	    # make sure the given column will be redisplayed at idle time
+	    #
+	    set data($col$opt) [expr {$val ? 1 : 0}]
+	    if {[lindex $data(-columns) [expr {3*$col}]] != 0} {
+		redisplayColWhenIdle $win $col
+	    }
+	}
+
 	-editable -
 	-resizable {
 	    #
@@ -1688,6 +1699,7 @@ proc tablelist::doColCget {col win opt} {
 proc tablelist::doRowConfig {row win opt val} {
     variable canElide
     variable elide
+    variable snipSides
     upvar ::tablelist::ns${win}::data data
 
     set w $data(body)
@@ -1834,14 +1846,15 @@ proc tablelist::doRowConfig {row win opt val} {
 		if {$workPixels != 0} {
 		    incr workPixels $data($col-delta)
 		}
+		set snipSide $snipSides($alignment,$data($col-changesnipside))
 		if {$multiline} {
 		    adjustMlElem $win list auxWidth $cellFont $workPixels \
-				 $alignment $data(-snipstring)
+				 $snipSide $data(-snipstring)
 		    set msgScript [list ::tablelist::displayText $win $key \
 				   $col [join $list "\n"] $cellFont $alignment]
 		} else {
 		    adjustElem $win text auxWidth $cellFont $workPixels \
-			       $alignment $data(-snipstring)
+			       $snipSide $data(-snipstring)
 		}
 
 		if {$row == $data(editRow) && $col == $data(editCol)} {
@@ -2142,14 +2155,15 @@ proc tablelist::doRowConfig {row win opt val} {
 		if {$workPixels != 0} {
 		    incr workPixels $data($col-delta)
 		}
+		set snipSide $snipSides($alignment,$data($col-changesnipside))
 		if {$multiline} {
 		    adjustMlElem $win list auxWidth $cellFont $workPixels \
-				 $alignment $data(-snipstring)
+				 $snipSide $data(-snipstring)
 		    set msgScript [list ::tablelist::displayText $win $key \
 				   $col [join $list "\n"] $cellFont $alignment]
 		} else {
 		    adjustElem $win text auxWidth $cellFont $workPixels \
-			       $alignment $data(-snipstring)
+			       $snipSide $data(-snipstring)
 		}
 
 		if {$row != $data(editRow) || $col != $data(editCol)} {
@@ -2292,6 +2306,7 @@ proc tablelist::doRowCget {row win opt} {
 #------------------------------------------------------------------------------
 proc tablelist::doCellConfig {row col win opt val} {
     variable canElide
+    variable snipSides
     upvar ::tablelist::ns${win}::data data
 
     set w $data(body)
@@ -2447,14 +2462,15 @@ proc tablelist::doCellConfig {row col win opt val} {
 		incr workPixels $data($col-delta)
 	    }
 	    set alignment [lindex $data(colList) [expr {2*$col + 1}]]
+	    set snipSide $snipSides($alignment,$data($col-changesnipside))
 	    if {$multiline} {
 		adjustMlElem $win list auxWidth $cellFont $workPixels \
-			     $alignment $data(-snipstring)
+			     $snipSide $data(-snipstring)
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col [join $list "\n"] $cellFont $alignment]
 	    } else {
 		adjustElem $win text auxWidth $cellFont $workPixels \
-			   $alignment $data(-snipstring)
+			   $snipSide $data(-snipstring)
 	    }
 
 	    if {!$data($col-hide)} {
@@ -2582,14 +2598,15 @@ proc tablelist::doCellConfig {row col win opt val} {
 		incr workPixels $data($col-delta)
 	    }
 	    set alignment [lindex $data(colList) [expr {2*$col + 1}]]
+	    set snipSide $snipSides($alignment,$data($col-changesnipside))
 	    if {$multiline} {
 		adjustMlElem $win list auxWidth $cellFont $workPixels \
-			     $alignment $data(-snipstring)
+			     $snipSide $data(-snipstring)
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col [join $list "\n"] $cellFont $alignment]
 	    } else {
 		adjustElem $win text auxWidth $cellFont $workPixels \
-			   $alignment $data(-snipstring)
+			   $snipSide $data(-snipstring)
 	    }
 
 	    if {(!$data($col-hide) || $canElide) &&
@@ -2740,14 +2757,15 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    set aux [getAuxData $win $key $col auxType auxWidth]
 	    set auxWidthSav $auxWidth
 	    set cellFont [getCellFont $win $key $col]
+	    set snipSide $snipSides($alignment,$data($col-changesnipside))
 	    if {$multiline} {
 		adjustMlElem $win list auxWidth $cellFont $workPixels \
-			     $alignment $data(-snipstring)
+			     $snipSide $data(-snipstring)
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col [join $list "\n"] $cellFont $alignment]
 	    } else {
 		adjustElem $win text auxWidth $cellFont $workPixels \
-			   $alignment $data(-snipstring)
+			   $snipSide $data(-snipstring)
 	    }
 
 	    if {(!$data($col-hide) || $canElide) &&
@@ -2931,14 +2949,15 @@ proc tablelist::doCellConfig {row col win opt val} {
 		incr workPixels $data($col-delta)
 	    }
 	    set alignment [lindex $data(colList) [expr {2*$col + 1}]]
+	    set snipSide $snipSides($alignment,$data($col-changesnipside))
 	    if {$multiline} {
 		adjustMlElem $win list auxWidth $cellFont $workPixels \
-			     $alignment $data(-snipstring)
+			     $snipSide $data(-snipstring)
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col [join $list "\n"] $cellFont $alignment]
 	    } else {
 		adjustElem $win text auxWidth $cellFont $workPixels \
-			   $alignment $data(-snipstring)
+			   $snipSide $data(-snipstring)
 	    }
 
 	    if {(!$data($col-hide) || $canElide) &&

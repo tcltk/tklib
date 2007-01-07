@@ -1,3 +1,12 @@
+2007-01-07  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                 Implemented the -changesnipside column
+	* scripts/tablelistConfig.tcl: configuration option.
+	* scripts/tablelistSort.tcl:
+	* scripts/tablelistUtil.tcl:
+	* scripts/tablelistWidget.tcl:
+	* doc/tablelistWidget.html:
+
 2007-01-01  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* tablelist_tile.tcl:          Moved some alias definitions to
