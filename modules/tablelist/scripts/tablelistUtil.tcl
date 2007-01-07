@@ -15,13 +15,26 @@
 
 namespace eval tablelist {
     #
-    # Alignment -> anchor mapping
+    # alignment -> anchor mapping
     #
     variable anchors
     array set anchors {
 	left	w
 	right	e
 	center	center
+    }
+
+    #
+    # <alignment, changeSnipSide> -> snipSide mapping
+    #
+    variable snipSides
+    array set snipSides {
+	left,0		r
+	left,1		l
+	right,0		l
+	right,0		r
+	center,0	r
+	center,0	l
     }
 
     #
@@ -33,13 +46,6 @@ namespace eval tablelist {
 	up,decreasing	Dn
 	down,increasing	Dn
 	down,decreasing	Up
-    }
-
-    variable auxWinClasses
-    array set auxWinClasses {
-	0	""
-	1	Label
-	2	Frame
     }
 }
 
@@ -597,14 +603,13 @@ proc tablelist::charsToPixels {win font charCount} {
 #------------------------------------------------------------------------------
 # tablelist::strRange
 #
-# Gets the largest initial (for alignment = left or center) or final (for
-# alignment = right) range of characters from str whose width, when displayed
-# in the given font, is no greater than pixels decremented by the width of
-# snipStr.  Returns a string obtained from this substring by appending (for
-# alignment = left or center) or prepending (for alignment = right) (part of)
-# snipStr to it.
+# Gets the largest initial (for snipSide = r) or final (for snipSide = l) range
+# of characters from str whose width, when displayed in the given font, is no
+# greater than pixels decremented by the width of snipStr.  Returns a string
+# obtained from this substring by appending (for snipSide = r) or prepending
+# (for snipSide = l) (part of) snipStr to it.
 #------------------------------------------------------------------------------
-proc tablelist::strRange {win str font pixels alignment snipStr} {
+proc tablelist::strRange {win str font pixels snipSide snipStr} {
     if {$pixels < 0} {
 	return ""
     }
@@ -622,37 +627,7 @@ proc tablelist::strRange {win str font pixels alignment snipStr} {
 	incr pixels -$snipWidth
     }
 
-    if {[string compare $alignment "right"] == 0} {
-	set idx [expr {[string length $str]*($width - $pixels)/$width}]
-	set subStr [string range $str $idx end]
-	set width [font measure $font -displayof $win $subStr]
-	if {$width < $pixels} {
-	    while 1 {
-		incr idx -1
-		set subStr [string range $str $idx end]
-		set width [font measure $font -displayof $win $subStr]
-		if {$width > $pixels} {
-		    incr idx
-		    set subStr [string range $str $idx end]
-		    return $snipStr$subStr
-		} elseif {$width == $pixels} {
-		    return $snipStr$subStr
-		}
-	    }
-	} elseif {$width == $pixels} {
-	    return $snipStr$subStr
-	} else {
-	    while 1 {
-		incr idx
-		set subStr [string range $str $idx end]
-		set width [font measure $font -displayof $win $subStr]
-		if {$width <= $pixels} {
-		    return $snipStr$subStr
-		}
-	    }
-	}
-
-    } else {
+    if {[string compare $snipSide "r"] == 0} {
 	set idx [expr {[string length $str]*$pixels/$width - 1}]
 	set subStr [string range $str 0 $idx]
 	set width [font measure $font -displayof $win $subStr]
@@ -678,6 +653,36 @@ proc tablelist::strRange {win str font pixels alignment snipStr} {
 		set width [font measure $font -displayof $win $subStr]
 		if {$width <= $pixels} {
 		    return $subStr$snipStr
+		}
+	    }
+	}
+
+    } else {
+	set idx [expr {[string length $str]*($width - $pixels)/$width}]
+	set subStr [string range $str $idx end]
+	set width [font measure $font -displayof $win $subStr]
+	if {$width < $pixels} {
+	    while 1 {
+		incr idx -1
+		set subStr [string range $str $idx end]
+		set width [font measure $font -displayof $win $subStr]
+		if {$width > $pixels} {
+		    incr idx
+		    set subStr [string range $str $idx end]
+		    return $snipStr$subStr
+		} elseif {$width == $pixels} {
+		    return $snipStr$subStr
+		}
+	    }
+	} elseif {$width == $pixels} {
+	    return $snipStr$subStr
+	} else {
+	    while 1 {
+		incr idx
+		set subStr [string range $str $idx end]
+		set width [font measure $font -displayof $win $subStr]
+		if {$width <= $pixels} {
+		    return $snipStr$subStr
 		}
 	    }
 	}
@@ -763,10 +768,10 @@ proc tablelist::getListWidth {win list font} {
 # by applying strRange to the elements of the given list, with the specified
 # arguments.
 #------------------------------------------------------------------------------
-proc tablelist::joinList {win list font pixels alignment snipStr} {
+proc tablelist::joinList {win list font pixels snipSide snipStr} {
     set list2 {}
     foreach str $list {
-	lappend list2 [strRange $win $str $font $pixels $alignment $snipStr]
+	lappend list2 [strRange $win $str $font $pixels $snipSide $snipStr]
     }
 
     return [join $list2 "\n"]
@@ -855,8 +860,8 @@ proc tablelist::getAuxData {win key col auxTypeName auxWidthName} {
 # specified by $auxWidthName for insertion into a cell of the tablelist widget
 # win.
 #------------------------------------------------------------------------------
-proc tablelist::adjustElem {win textName auxWidthName font pixels alignment
-			    snipStr} {
+proc tablelist::adjustElem {win textName auxWidthName font pixels
+			    snipSide snipStr} {
     upvar $textName text $auxWidthName auxWidth
 
     if {$pixels == 0} {				;# convention: dynamic width
@@ -864,7 +869,7 @@ proc tablelist::adjustElem {win textName auxWidthName font pixels alignment
 	    incr auxWidth 4
 	}
     } elseif {$auxWidth == 0} {			;# no image or window
-	set text [strRange $win $text $font $pixels $alignment $snipStr]
+	set text [strRange $win $text $font $pixels $snipSide $snipStr]
     } elseif {[string compare $text ""] == 0} {	;# aux. object w/o text
 	if {$auxWidth > $pixels} {
 	    set auxWidth $pixels
@@ -873,7 +878,7 @@ proc tablelist::adjustElem {win textName auxWidthName font pixels alignment
 	if {$auxWidth + 4 <= $pixels} {
 	    incr auxWidth 4
 	    incr pixels -$auxWidth
-	    set text [strRange $win $text $font $pixels $alignment $snipStr]
+	    set text [strRange $win $text $font $pixels $snipSide $snipStr]
 	} elseif {$auxWidth <= $pixels} {
 	    set text ""				;# can't display the text
 	} else {
@@ -890,8 +895,8 @@ proc tablelist::adjustElem {win textName auxWidthName font pixels alignment
 # specified by $auxWidthName for insertion into a multiline cell of the
 # tablelist widget win.
 #------------------------------------------------------------------------------
-proc tablelist::adjustMlElem {win listName auxWidthName font pixels alignment
-			      snipStr} {
+proc tablelist::adjustMlElem {win listName auxWidthName font pixels
+			      snipSide snipStr} {
     upvar $listName list $auxWidthName auxWidth
 
     set list2 {}
@@ -901,7 +906,7 @@ proc tablelist::adjustMlElem {win listName auxWidthName font pixels alignment
 	}
     } elseif {$auxWidth == 0} {			;# no image or window
 	foreach str $list {
-	    lappend list2 [strRange $win $str $font $pixels $alignment $snipStr]
+	    lappend list2 [strRange $win $str $font $pixels $snipSide $snipStr]
 	}
 	set list $list2
     } elseif {![hasChars $list]} {		;# aux. object w/o text
@@ -914,7 +919,7 @@ proc tablelist::adjustMlElem {win listName auxWidthName font pixels alignment
 	    incr pixels -$auxWidth
 	    foreach str $list {
 		lappend list2 \
-			[strRange $win $str $font $pixels $alignment $snipStr]
+			[strRange $win $str $font $pixels $snipSide $snipStr]
 	    }
 	    set list $list2
 	} elseif {$auxWidth <= $pixels} {
@@ -1279,6 +1284,7 @@ proc tablelist::setImgLabelAnchor {w index anchor} {
 #------------------------------------------------------------------------------
 proc tablelist::appendComplexElem {win key row col text pixels alignment
 				   snipStr cellTags line} {
+    variable snipSides
     upvar ::tablelist::ns${win}::data data
 
     #
@@ -1302,12 +1308,13 @@ proc tablelist::appendComplexElem {win key row col text pixels alignment
     if {$pixels != 0} {
 	incr pixels $data($col-delta)
     }
+    set snipSide $snipSides($alignment,$data($col-changesnipside))
     if {$multiline} {
-	adjustMlElem $win list auxWidth $cellFont $pixels $alignment $snipStr
+	adjustMlElem $win list auxWidth $cellFont $pixels $snipSide $snipStr
 	set msgScript [list ::tablelist::displayText $win $key $col \
 		       [join $list "\n"] $cellFont $alignment]
     } else {
-	adjustElem $win text auxWidth $cellFont $pixels $alignment $snipStr
+	adjustElem $win text auxWidth $cellFont $pixels $snipSide $snipStr
     }
 
     #
@@ -1539,10 +1546,10 @@ proc tablelist::setupColumns {win columns createLabels} {
 	if {$createLabels} {
 	    set data($col-elide) 0
 	    foreach {name val} {delta 0  lastStaticWidth 0  maxPixels 0
-				sortOrder ""  sortRank 0  editable 0
-				editwindow entry  hide 0  maxwidth 0
-				resizable 1  showarrow 1  showlinenumbers 0
-				sortmode ascii} {
+				sortOrder ""  sortRank 0  changesnipside 0
+				editable 0  editwindow entry  hide 0
+				maxwidth 0  resizable 1  showarrow 1
+				showlinenumbers 0  sortmode ascii} {
 		if {![info exists data($col-$name)]} {
 		    set data($col-$name) $val
 		}
@@ -2065,6 +2072,8 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 	# Clip each line of title according to pixels and alignment
 	#
 	set lessPixels [expr {$pixels - $spacePixels}]
+	variable snipSides
+	set snipSide $snipSides($alignment,0)
 	if {$imageWidth == 0} {				;# no image
 	    if {[string compare $title ""] == 0} {
 		set text $spaces
@@ -2072,7 +2081,7 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 		set lines {}
 		foreach line [split $title "\n"] {
 		    set line [strRange $win $line $labelFont \
-			      $lessPixels $alignment $data(-snipstring)]
+			      $lessPixels $snipSide $data(-snipstring)]
 		    if {[string compare $alignment "right"] == 0} {
 			lappend lines $spaces$line
 		    } else {
@@ -2104,7 +2113,7 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 		set lines {}
 		foreach line [split $title "\n"] {
 		    set line [strRange $win $line $labelFont \
-			      $lessPixels $alignment $data(-snipstring)]
+			      $lessPixels $snipSide $data(-snipstring)]
 		    if {[string compare $alignment "right"] == 0} {
 			lappend lines "$spaces$line "
 		    } else {
@@ -2958,6 +2967,7 @@ proc tablelist::redisplayWhenIdle win {
 #------------------------------------------------------------------------------
 proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
     variable canElide
+    variable snipSides
     upvar ::tablelist::ns${win}::data data
 
     if {[info exists data(redispId)]} {
@@ -3053,12 +3063,14 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 		}
 		if {$pixels != 0} {
 		    incr pixels $data($col-delta)
+		    set snipSide \
+			$snipSides($alignment,$data($col-changesnipside))
 		    if {$multiline} {
 			set text [joinList $win $list $cellFont \
-				  $pixels $alignment $snipStr]
+				  $pixels $snipSide $snipStr]
 		    } else {
 			set text [strRange $win $text $cellFont \
-				  $pixels $alignment $snipStr]
+				  $pixels $snipSide $snipStr]
 		    }
 		}
 
@@ -3202,6 +3214,7 @@ proc tablelist::redisplayColWhenIdle {win col} {
 # the range specified by first and last.
 #------------------------------------------------------------------------------
 proc tablelist::redisplayCol {win col first last} {
+    variable snipSides
     upvar ::tablelist::ns${win}::data data
 
     if {$first == 0 && [string first $last "end"] == 0 &&
@@ -3233,6 +3246,7 @@ proc tablelist::redisplayCol {win col first last} {
 	incr pixels $data($col-delta)
     }
     set alignment [lindex $data(colList) [expr {2*$col + 1}]]
+    set snipSide $snipSides($alignment,$data($col-changesnipside))
 
     for {set row $first; set line [expr {$first + 1}]} {$row <= $last} \
 	{set row $line; incr line} {
@@ -3260,11 +3274,11 @@ proc tablelist::redisplayCol {win col first last} {
 	set cellFont [getCellFont $win $key $col]
 	if {$multiline} {
 	    adjustMlElem $win list auxWidth $cellFont \
-			 $pixels $alignment $snipStr
+			 $pixels $snipSide $snipStr
 	    set msgScript [list ::tablelist::displayText $win $key \
 			   $col [join $list "\n"] $cellFont $alignment]
 	} else {
-	    adjustElem $win text auxWidth $cellFont $pixels $alignment $snipStr
+	    adjustElem $win text auxWidth $cellFont $pixels $snipSide $snipStr
 	}
 
 	#

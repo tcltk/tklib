@@ -242,6 +242,9 @@
     <i>color</i></code>&nbsp; or&nbsp; <code><b>-bg</b>
     <i>color</i></code></dd>
 
+    <dd><code><b><a href="#col_changesnipside">-changesnipside</a></b>
+    <i>boolean</i></code></dd>
+
     <dd><code><b><a href="#col_editable">-editable</a></b>
     <i>boolean</i></code></dd>
 
@@ -2586,6 +2589,18 @@ for {set row 0} {$row < 1000} {incr row} {
 
 	<dd>Specifies the normal background color to use when displaying the
 	contents of the column.</dd>
+
+	<dt><br>
+	<a name="col_changesnipside"></a><code><b>-changesnipside</b>
+	<i>boolean</i></code></dt>
+
+	<dd>Specifies whether to override the alignment-specific default
+	position of the <a href="#snipstring">snip indicator</a> when
+	displaying the elements of the column (excluding its title).&nbsp; The
+	default value is <code>0</code>, meaning that the snip string will be
+	appended to the elements if the column's alignment is
+	<code><b>left</b></code> or <code><b>center</b></code> and prepended to
+	them in case the alignment is <code><b>right</b></code>.</dd>
 
 	<dt><br>
 	<a name="col_editable"></a><code><b>-editable</b>
