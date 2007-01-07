@@ -136,6 +136,7 @@ proc tablelist::addToSortColumns {win col} {
 #------------------------------------------------------------------------------
 proc tablelist::sortSubCmd {win sortColList sortOrderList} {
     variable canElide
+    variable snipSides
     upvar ::tablelist::ns${win}::data data
 
     #
@@ -398,12 +399,14 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
 		}
 		if {$pixels != 0} {
 		    incr pixels $data($col-delta)
+		    set snipSide \
+			$snipSides($alignment,$data($col-changesnipside))
 		    if {$multiline} {
 			set text [joinList $win $list $cellFont \
-				  $pixels $alignment $snipStr]
+				  $pixels $snipSide $snipStr]
 		    } else {
 			set text [strRange $win $text $cellFont \
-				  $pixels $alignment $snipStr]
+				  $pixels $snipSide $snipStr]
 		    }
 		}
 

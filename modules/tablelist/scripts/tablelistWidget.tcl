@@ -138,6 +138,7 @@ namespace eval tablelist {
 	-align			{align			Align		}
 	-background		{background		Background	}
 	-bg			-background
+	-changesnipside		{changeSnipSide		ChangeSnipSide	}
 	-editable		{editable		Editable	}
 	-editwindow		{editWindow		EditWindow	}
 	-font			{font			Font		}
@@ -2689,6 +2690,7 @@ proc tablelist::getkeysSubCmd {win first last argCount} {
 # subcommands.
 #------------------------------------------------------------------------------
 proc tablelist::insertSubCmd {win index argList updateListVar} {
+    variable snipSides
     upvar ::tablelist::ns${win}::data data
 
     if {$data(isDisabled)} {
@@ -2794,12 +2796,14 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 		}
 		if {$pixels != 0} {
 		    incr pixels $data($col-delta)
+		    set snipSide \
+			$snipSides($alignment,$data($col-changesnipside))
 		    if {$multiline} {
 			set text [joinList $win $list $colFont \
-				  $pixels $alignment $snipStr]
+				  $pixels $snipSide $snipStr]
 		    } else {
 			set text [strRange $win $text $colFont \
-				  $pixels $alignment $snipStr]
+				  $pixels $snipSide $snipStr]
 		    }
 		}
 
@@ -2864,12 +2868,14 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 		}
 		if {$pixels != 0} {
 		    incr pixels $data($col-delta)
+		    set snipSide \
+			$snipSides($alignment,$data($col-changesnipside))
 		    if {$multiline} {
 			set text [joinList $win $list $widgetFont \
-				  $pixels $alignment $snipStr]
+				  $pixels $snipSide $snipStr]
 		    } else {
 			set text [strRange $win $text $widgetFont \
-				  $pixels $alignment $snipStr]
+				  $pixels $snipSide $snipStr]
 		    }
 		}
 
