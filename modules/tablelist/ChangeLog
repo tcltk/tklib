@@ -1,3 +1,9 @@
+2007-01-12  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: New procedure tablelist::getSepX.
+
+	* scripts/tclIndex: Newly generated.
+
 2007-01-07  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:                 Implemented the -changesnipside column
