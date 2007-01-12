@@ -211,6 +211,7 @@ set auto_index(::tablelist::setupColumns) [list source [file join $dir tablelist
 set auto_index(::tablelist::createSeps) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::adjustSepsWhenIdle) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::adjustSeps) [list source [file join $dir tablelistUtil.tcl]]
+set auto_index(::tablelist::getSepX) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::adjustColumns) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::adjustLabel) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::computeColWidth) [list source [file join $dir tablelistUtil.tcl]]
