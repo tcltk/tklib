@@ -1589,7 +1589,7 @@ proc tablelist::setupColumns {win columns createLabels} {
 	    catch {configLabel $w -state $data(-state)}
 
 	    #
-	    # Replace the binding tag Label with TablelistLabel
+	    # Replace the binding tag (T)Label with TablelistLabel
 	    # in the list of binding tags of the label
 	    #
 	    bindtags $w [lreplace [bindtags $w] 1 1 TablelistLabel]
@@ -1659,19 +1659,7 @@ proc tablelist::createSeps win {
     variable usingTile
     upvar ::tablelist::ns${win}::data data
 
-    set x 1
-    if {$usingTile} {
-	set currentTheme [getCurrentTheme]
-	if {[string compare $currentTheme "xpnative"] == 0 &&
-	    $::tablelist::xpStyle} {
-	    set x 0
-	} elseif {[string compare $currentTheme "tileqt"] == 0 &&
-		  [string compare [string tolower [tileqt_currentThemeName]] \
-		   "qtcurve"] == 0} {
-	    set x 2
-	}
-    }
-
+    set sepX [getSepX]
     for {set col 0} {$col < $data(colCount)} {incr col} {
 	#
 	# Create the col'th separator frame and attach it
@@ -1689,11 +1677,11 @@ proc tablelist::createSeps win {
 			 -takefocus 0 -width 2
 	}
 	place $w -in $data(hdrTxtFrLbl)$col -anchor ne -bordermode outside \
-		 -relx 1.0 -x $x
+		 -relx 1.0 -x $sepX
 
 	#
-	# Replace the binding tag Frame with $data(bodyTag) and
-	# TablelistBody in the list of binding tags of the frame
+	# Replace the binding tag TSeparator or Frame with $data(bodyTag)
+	# and TablelistBody in the list of binding tags of the frame
 	#
 	bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) TablelistBody]
     }
@@ -1764,16 +1752,9 @@ proc tablelist::adjustSeps win {
 	    place forget $w
 	}
     } else {
-	if {$usingTile &&
-	    [string compare [getCurrentTheme] "xpnative"] == 0 &&
-	    $::tablelist::xpStyle} {
-	    set x 0
-	} else {
-	    set x 1
-	}
 	place $w -in $data(hdrTxtFrLbl)$col -anchor ne -bordermode outside \
 		 -height [expr {$sepHeight + [winfo height $data(hdr)] - 1}] \
-		 -relx 1.0 -x $x -y 1
+		 -relx 1.0 -x [getSepX] -y 1
 	raise $w
     }
 
@@ -1800,6 +1781,31 @@ proc tablelist::adjustSeps win {
 	    }
 	}
     }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::getSepX
+#
+# Returns the value of the -x option to be used when placing a separator
+# relative to the corresponding header label, with -anchor ne.
+#------------------------------------------------------------------------------
+proc tablelist::getSepX {} {
+    variable usingTile
+
+    set x 1
+    if {$usingTile} {
+	set currentTheme [getCurrentTheme]
+	variable xpStyle
+	if {[string compare $currentTheme "xpnative"] == 0 && $xpStyle} {
+	    set x 0
+	} elseif {[string compare $currentTheme "tileqt"] == 0 &&
+		  [string compare [string tolower [tileqt_currentThemeName]] \
+		   "qtcurve"] == 0} {
+	    set x 2
+	}
+    }
+
+    return $x
 }
 
 #------------------------------------------------------------------------------
