@@ -1,5 +1,5 @@
-source draw_diagram.tcl
-
+package require Tk
+package require Diagrams
 namespace import ::Diagrams::*
 
 pack [canvas .c -width 200 -height 120 -bg white]
