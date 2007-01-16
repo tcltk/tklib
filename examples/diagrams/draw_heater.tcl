@@ -1,5 +1,5 @@
-source draw_diagram.tcl
-
+package require Tk
+package require Diagrams
 namespace import ::Diagrams::*
 
 proc ::Diagrams::bracket {dir dist begin end} {
