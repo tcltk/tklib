@@ -1134,7 +1134,7 @@ proc ::Diagrams::bracket {dir dist begin end} {
 
 # Announce our presence
 #
-package provide Diagrams 0.1
+package provide Diagrams 0.2
 
 #
 # A small demonstration ...
