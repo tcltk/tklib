@@ -1,9 +1,9 @@
-[manpage_begin Diagrams n 0.1]
+[manpage_begin Diagrams n 0.2]
 [moddesc {Tk Diagrams}]
 [titledesc {User documentation of the Diagrams package}]
 [require Tcl 8.4]
 [require Tk 8.4]
-[require Diagrams 0.1]
+[require Diagrams 0.2]
 [description]
 [para]
 The [package Diagrams] package is meant to help drawing diagrams, like
@@ -243,14 +243,18 @@ Set the name of the font to use
 [nl]
 
 [call [cmd ::Diagrams::linewidth] [arg pixels]]
-Set the width of the lines (in line objects and arrows)
+Set the width of the lines (in line objects and arrows and the outline
+of boxes and other objects)
 [list_begin arg]
 [arg_def integer pixels] Number of pixels the lines are wide
 [list_end]
 [nl]
 
 [call [cmd ::Diagrams::linestyle] [arg style]]
-Set the style of the lines and arrows
+Set the style of the lines and arrows and of the outline of boxes and
+other objects. The predefined line styles are: solid, dot, dash,
+dash-dot, dash-dot-dot (these are the distinguishable line styles on
+Windows). You can also use the style patterns from the canvas directly.
 [list_begin arg]
 [arg_def string style] Name of a valid line style
 [list_end]

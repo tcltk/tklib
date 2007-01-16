@@ -115,6 +115,9 @@ linewidth $pixels
 linestyle $style
     Set the style of the lines and arrows
 
+spline $yesno
+    Draw curved lines and arrows or not
+
 
 '''Commands for implmenting new objects:'''
 
@@ -164,7 +167,7 @@ namespace eval ::Diagrams {
     namespace export currentpos getpos direction \
                      arrow box circle diamond drum line slanted \
                      pushstate popstate \
-                     drawin saveps line position plaintext
+                     drawin saveps line position plaintext linestyle
 
     array set state {
         attach         "northwest"
@@ -193,6 +196,8 @@ namespace eval ::Diagrams {
         color          "black"
         fillcolor      {}
         textcolor      "black"
+        linewidth      1
+        linestyle      {}
     }
 
     # Name of direction, xdir, ydir, default attachment, anchor for text near arrow
@@ -222,7 +227,7 @@ namespace eval ::Diagrams {
 #    Current or new value, depending on whether a new value was given
 #
 foreach p {attach color fillcolor textcolor usegap xgap ygap textfont
-           linewidth linestyle} {
+           linewidth spline} {
     eval [string map [list PP $p] \
         {proc ::Diagrams::PP {args} {
              variable state
@@ -233,6 +238,28 @@ foreach p {attach color fillcolor textcolor usegap xgap ygap textfont
          }
          namespace eval ::Diagrams {namespace export PP}
         }]
+}
+
+# linestyle --
+#    Set the line style for all objects
+# Arguments:
+#    style     New style
+# Result:
+#    None
+#
+proc ::Diagrams::linestyle {style} {
+    variable state
+
+    switch -- $style {
+        "solid"        { set pattern "" }
+        "dot"          { set pattern . }
+        "dash"         { set pattern - }
+        "dash-dot"     { set pattern -. }
+        "dash-dot-dot" { set pattern -.. }
+        default        { set pattern $style }
+    }
+
+    set state(linestyle) $pattern
 }
 
 # drawin --
@@ -534,7 +561,9 @@ proc ::Diagrams::box {text {width {}} {height {}}} {
     set     items [lindex $textobj 1]
     lappend items [$state(canvas) create rectangle $x1 $y1 $x2 $y2 \
                        -fill    $state(fillcolor) \
-                       -outline $state(color)]
+                       -outline $state(color)     \
+                       -width   $state(linewidth) \
+                       -dash    $state(linestyle) ]
     $state(canvas) raise [lindex $items 0]
 
     #
@@ -639,7 +668,9 @@ proc ::Diagrams::circle {text {radius {}} } {
     set     items [lindex $textobj 1]
     lappend items [$state(canvas) create oval $x1 $y1 $x2 $y2 \
                        -fill    $state(fillcolor) \
-                       -outline $state(color)]
+                       -outline $state(color)     \
+                       -width   $state(linewidth) \
+                       -dash    $state(linestyle) ]
     $state(canvas) raise [lindex $items 0]
 
     #
@@ -742,7 +773,9 @@ proc ::Diagrams::slanted {text {width {}} {height {}} {angle 70} } {
     lappend items [$state(canvas) create polygon  \
                        $xnw $ynw $xne $yne $xse $yse $xsw $ysw $xnw $ynw \
                        -fill    $state(fillcolor) \
-                       -outline $state(color)]
+                       -outline $state(color)     \
+                       -width   $state(linewidth) \
+                       -dash    $state(linestyle) ]
     $state(canvas) raise [lindex $items 0]
 
     #
@@ -823,7 +856,9 @@ proc ::Diagrams::diamond {text {width {}} {height {}} } {
     lappend items [$state(canvas) create polygon \
                        $xn $yn $xe $ye $xs $ys $xw $yw \
                        -fill    $state(fillcolor) \
-                       -outline $state(color)]
+                       -outline $state(color)     \
+                       -width   $state(linewidth) \
+                       -dash    $state(linestyle) ]
     $state(canvas) raise [lindex $items 0]
 
     #
@@ -903,13 +938,16 @@ proc ::Diagrams::drum {text {width {}} {height {}} } {
         [$state(canvas) create line $xline2 $yline1 $xline2 $yline2 \
              -fill $state(color)] \
         [$state(canvas) create oval $xtop1  $ytop1  $xtop2  $ytop2 \
-             -fill $state(fillcolor) -outline $state(color)] \
+             -fill  $state(fillcolor) -outline $state(color) \
+             -width $state(linewidth) -dash    $state(linestyle) ] \
         [$state(canvas) create arc  $xbot1  $ybot1  $xbot2  $ybot2 \
              -fill $state(fillcolor) -outline {} \
-            -start 179 -extent 182 -style chord] \
+             -dash    $state(linestyle) \
+             -start 179 -extent 182 -style chord] \
         [$state(canvas) create arc  $xbot1  $ybot1  $xbot2  $ybot2 \
-             -fill $state(fillcolor) \
-            -start 179 -extent 182 -style arc]
+             -fill  $state(fillcolor) -outline $state(color) \
+             -width $state(linewidth) -dash    $state(linestyle) \
+             -start 179 -extent 182 -style arc]
     $state(canvas) raise [lindex $items 0]
 
     #
@@ -950,9 +988,11 @@ proc ::Diagrams::arrow { {text {}} {length {}} {heads last}} {
     set y2      [expr {$state(ycurr)+$dyarrow}]
 
     set item [$state(canvas) create line $x1 $y1 $x2 $y2 \
-                 -fill    $state(colour) \
-                 -smooth  $state(spline) \
-                 -arrow   $heads]
+                 -fill    $state(colour)    \
+                 -smooth  $state(spline)    \
+                 -arrow   $heads            \
+                 -width   $state(linewidth) \
+                 -dash    $state(linestyle) ]
 
     set xt [expr {($x1+$x2)/2}]
     set yt [expr {($y1+$y2)/2}]
@@ -1029,8 +1069,10 @@ proc ::Diagrams::line {args} {
     }
 
     set item [$state(canvas) create line $xycoords \
-                 -smooth  $state(spline) \
-                 -fill  $state(colour)] ;# -dash?
+                 -smooth  $state(spline)    \
+                 -fill    $state(colour)    \
+                 -width   $state(linewidth) \
+                 -dash    $state(linestyle) ]
 
     set item [list LINE $item [list $x1 $y1 $x2 $y2]]
 
@@ -1074,7 +1116,9 @@ proc ::Diagrams::bracket {dir dist begin end} {
     }
     lappend coords [lindex $end 1] [lindex $end 2]
 
-    $state(canvas) create line $coords -arrow last
+    $state(canvas) create line $coords -arrow last \
+                       -width   $state(linewidth) \
+                       -dash    $state(linestyle) ]
 
     set item [list ARROW $item [join [lrange $coords 0 1] [lrange $coords end-1 end]]]
 
@@ -1102,6 +1146,7 @@ namespace import ::Diagrams::*
 
 console show
 drawin .c
+linestyle dot
 
 textcolor green
 set C [circle "Hi there!" 20]
@@ -1122,6 +1167,8 @@ namespace import ::Diagrams::*
 
 console show
 drawin .c
+#linestyle dot
+#linewidth 3
 
 textcolor green
 box "There is\nstill a lot to\ndo!"
