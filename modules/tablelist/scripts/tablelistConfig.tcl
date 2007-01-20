@@ -83,18 +83,6 @@ proc tablelist::extendConfigSpecs {} {
 	}
 
 	#
-	# Some tile backward compatibility issues
-	#
-	if {[string compare [info commands "::ttk::style"] ""] != 0} {
-	    interp alias {} ::tablelist::styleConfig {} ::ttk::style configure
-	    namespace import ::ttk::style
-	} elseif {[string compare $tile::version "0.7"] >= 0} {
-	    interp alias {} ::tablelist::styleConfig {} style configure
-	} else {
-	    interp alias {} ::tablelist::styleConfig {} style default
-	}
-
-	#
 	# Append theme-specific values to some elements of the array configSpecs
 	#
 	ttk::label $helpLabel -takefocus 0
