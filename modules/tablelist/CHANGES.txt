@@ -1,15 +1,16 @@
 What is new in Tablelist 4.6?
 -----------------------------
 
-1.  Support for tile 0.8 and Tk 8.5a6/8.5b1 (where tile is integrated
-    in the core).  For example, the new commands "tablelist::setTheme",
+1.  Tablelist_tile now supports tile 0.8 and Tk 8.5a6/8.5b1 (where tile
+    is integrated in the core).  The new commands "tablelist::setTheme",
     "tablelist::getCurrentTheme", and "tablelist::getThemes" enable you
     to set and get the current theme and to query the available ones,
-    without having to worry about the tile version being used.
+    without having to worry about the incompatibilities between the
+    various tile versions.
 
 2.  New column configuration option "-changesnipside", which allows you
-    to override the alignment-specific default position of the snip
-    indicator (thanks to Georgios Petasis for his proposal).
+    to override the alignment-specific default snip side (thanks to
+    Georgios Petasis for his proposal).
 
 3.  New "columnwidth" subcommand, with the options "-requested",
     "-stretched", and "-total" (thanks to Matthew Callaghan, Richard
