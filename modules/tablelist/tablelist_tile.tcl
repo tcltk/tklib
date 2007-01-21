@@ -30,11 +30,11 @@ if {[info commands ::ttk::style] ne ""} {
     interp alias {} ::tablelist::tileqt_currentThemeColour \
 		 {} ::ttk::theme::tileqt::currentThemeColour
 } else {
-    interp alias {} ::tablelist::style		 {} style
-    if {[string compare $tile::version "0.7"] >= 0} {
-	interp alias {} ::tablelist::styleConfig {} style configure
+    interp alias {} ::tablelist::style		 {} ::style
+    if {[string compare $::tile::version "0.7"] >= 0} {
+	interp alias {} ::tablelist::styleConfig {} ::style configure
     } else {
-	interp alias {} ::tablelist::styleConfig {} style default
+	interp alias {} ::tablelist::styleConfig {} ::style default
     }
     interp alias {} ::tablelist::getThemes	 {} ::tile::availableThemes
     interp alias {} ::tablelist::setTheme	 {} ::tile::setTheme
