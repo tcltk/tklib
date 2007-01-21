@@ -4,7 +4,7 @@
 #
 #	Scrolled widget
 #
-# RCS: @(#) $Id: scrollw.tcl,v 1.11 2006/09/29 16:23:25 hobbs Exp $
+# RCS: @(#) $Id: scrollw.tcl,v 1.12 2007/01/21 20:51:03 hobbs Exp $
 #
 
 # Creation and Options - widget::scrolledwindow $path ...
@@ -172,12 +172,14 @@ snit::widget widget::scrolledwindow {
 	upvar 0 $varname sb
 	if {$realized && $sb(present)} {
 	    if {$sb(auto)} {
-		# One last check to avoid loops
-		if {$vmin == $sb(lastmin) && $vmax == $sb(lastmax)} {
-		    return
+		if {!$sb(lock)} {
+		    # One last check to avoid loops when not locked
+		    if {$vmin == $sb(lastmin) && $vmax == $sb(lastmax)} {
+			return
+		    }
+		    set sb(lastmin) $vmin
+		    set sb(lastmax) $vmax
 		}
-		set sb(lastmin) $vmin
-		set sb(lastmax) $vmax
 		if {$sb(packed) && $vmin == 0 && $vmax == 1} {
 		    if {!$sb(lock)} {
 			set sb(packed) 0
@@ -190,10 +192,10 @@ snit::widget widget::scrolledwindow {
 		    } else {
 			grid $sb(bar) -column 1 -row $sb(cell) -sticky ew
 		    }
-		    set sb(lock) 1
-		    update idletasks
-		    set sb(lock) 0
 		}
+		set sb(lock) 1
+		update idletasks
+		set sb(lock) 0
 	    }
 	    $sb(bar) set $vmin $vmax
 	}

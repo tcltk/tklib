@@ -1,3 +1,8 @@
+2007-01-21  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* scrollw.tcl (_set_scroll): move loop lock detection to include
+	removal of scrollbar
+
 2006-12-05  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* dialog.tcl (PlaceWindow): handle unmapped anchor
