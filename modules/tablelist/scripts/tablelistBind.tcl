@@ -484,7 +484,7 @@ proc tablelist::defineTablelistBody {} {
 # tablelist::condEditContainingCell
 #
 # This procedure is invoked when mouse button 1 is pressed in the body of a
-# tablelist widget win or in one of its separator frames.  If the mouse click
+# tablelist widget win or in one of its separators.  If the mouse click
 # occurred inside an editable cell and the latter is not already being edited,
 # then the procedure starts the interactive editing in that cell.  Otherwise it
 # finishes a possibly active cell editing.
@@ -522,7 +522,7 @@ proc tablelist::condEditContainingCell {win x y} {
 # tablelist::condBeginMove
 #
 # This procedure is typically invoked on button-1 presses in the body of a
-# tablelist widget or in one of its separator frames.  It begins the process of
+# tablelist widget or in one of its separators.  It begins the process of
 # moving the nearest row if the rows are movable and the selection mode is not
 # browse or extended.
 #------------------------------------------------------------------------------
@@ -548,7 +548,7 @@ proc tablelist::condBeginMove {win row} {
 # tablelist::beginSelect
 #
 # This procedure is typically invoked on button-1 presses in the body of a
-# tablelist widget or in one of its separator frames.  It begins the process of
+# tablelist widget or in one of its separators.  It begins the process of
 # making a selection in the widget.  Its exact behavior depends on the
 # selection mode currently in effect for the widget.
 #------------------------------------------------------------------------------
@@ -708,9 +708,8 @@ proc tablelist::minScrollableX win {
 # tablelist::motion
 #
 # This procedure is called to process mouse motion events in the body of a
-# tablelist widget or in one of its separator frames. while button 1 is down.
-# It may move or extend the selection, depending on the widget's selection
-# mode.
+# tablelist widget or in one of its separators. while button 1 is down.  It may
+# move or extend the selection, depending on the widget's selection mode.
 #------------------------------------------------------------------------------
 proc tablelist::motion {win row col} {
     upvar ::tablelist::ns${win}::data data
@@ -773,8 +772,8 @@ proc tablelist::motion {win row col} {
 # tablelist::condShowTarget
 #
 # This procedure is called to process mouse motion events in the body of a
-# tablelist widget or in one of its separator frames. while button 1 is down.
-# It visualizes the would-be target position of the clicked row if a move
+# tablelist widget or in one of its separators. while button 1 is down.  It
+# visualizes the would-be target position of the clicked row if a move
 # operation is in progress.
 #------------------------------------------------------------------------------
 proc tablelist::condShowTarget {win y} {
@@ -813,7 +812,7 @@ proc tablelist::condShowTarget {win y} {
 # tablelist::moveOrActivate
 #
 # This procedure is invoked whenever mouse button 1 is released in the body of
-# a tablelist widget or in one of its separator frames.  It either moves the
+# a tablelist widget or in one of its separators.  It either moves the
 # previously clicked row before or after the one containing the mouse cursor,
 # or activates the given nearest item or element (depending on the widget's
 # selection type).
@@ -854,7 +853,7 @@ proc tablelist::moveOrActivate {win row col} {
 # tablelist::condEvalInvokeCmd
 #
 # This procedure is invoked when mouse button 1 is released in the body of a
-# tablelist widget win or in one of its separator frames.  If interactive cell
+# tablelist widget win or in one of its separators.  If interactive cell
 # editing is in progress in a column whose associated edit window has an invoke
 # command that hasn't yet been called in the current edit session, then the
 # procedure evaluates that command.
@@ -913,8 +912,8 @@ proc tablelist::cancelMove win {
 # tablelist::beginExtend
 #
 # This procedure is typically invoked on shift-button-1 presses in the body of
-# a tablelist widget or in one of its separator frames.  It begins the process
-# of extending a selection in the widget.  Its exact behavior depends on the
+# a tablelist widget or in one of its separators.  It begins the process of
+# extending a selection in the widget.  Its exact behavior depends on the
 # selection mode currently in effect for the widget.
 #------------------------------------------------------------------------------
 proc tablelist::beginExtend {win row col} {
@@ -933,9 +932,9 @@ proc tablelist::beginExtend {win row col} {
 # tablelist::beginToggle
 #
 # This procedure is typically invoked on control-button-1 presses in the body
-# of a tablelist widget or in one of its separator frames.  It begins the
-# process of toggling a selection in the widget.  Its exact behavior depends on
-# the selection mode currently in effect for the widget.
+# of a tablelist widget or in one of its separators.  It begins the process of
+# toggling a selection in the widget.  Its exact behavior depends on the
+# selection mode currently in effect for the widget.
 #------------------------------------------------------------------------------
 proc tablelist::beginToggle {win row col} {
     upvar ::tablelist::ns${win}::data data

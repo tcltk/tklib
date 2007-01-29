@@ -1653,7 +1653,7 @@ proc tablelist::setupColumns {win columns createLabels} {
 #------------------------------------------------------------------------------
 # tablelist::createSeps
 #
-# Creates and manages the separator frames in the tablelist widget win.
+# Creates and manages the separators in the tablelist widget win.
 #------------------------------------------------------------------------------
 proc tablelist::createSeps win {
     variable usingTile
@@ -1662,8 +1662,8 @@ proc tablelist::createSeps win {
     set sepX [getSepX]
     for {set col 0} {$col < $data(colCount)} {incr col} {
 	#
-	# Create the col'th separator frame and attach it
-	# to the right edge of the col'th header label
+	# Create the col'th separator and attach it to
+	# the right edge of the col'th header label
 	#
 	set w $data(sep)$col
 	if {$usingTile} {
@@ -1681,7 +1681,7 @@ proc tablelist::createSeps win {
 
 	#
 	# Replace the binding tag TSeparator or Frame with $data(bodyTag)
-	# and TablelistBody in the list of binding tags of the frame
+	# and TablelistBody in the list of binding tags of the separator
 	#
 	bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) TablelistBody]
     }
@@ -1692,7 +1692,7 @@ proc tablelist::createSeps win {
 #------------------------------------------------------------------------------
 # tablelist::adjustSepsWhenIdle
 #
-# Arranges for the height and vertical position of each separator frame in the
+# Arranges for the height and vertical position of each separator in the
 # tablelist widget win to be adjusted at idle time.
 #------------------------------------------------------------------------------
 proc tablelist::adjustSepsWhenIdle win {
@@ -1708,8 +1708,8 @@ proc tablelist::adjustSepsWhenIdle win {
 #------------------------------------------------------------------------------
 # tablelist::adjustSeps
 #
-# Adjusts the height and vertical position of each separator frame in the
-# tablelist widget win.
+# Adjusts the height and vertical position of each separator in the tablelist
+# widget win.
 #------------------------------------------------------------------------------
 proc tablelist::adjustSeps win {
     variable usingTile
@@ -1721,7 +1721,7 @@ proc tablelist::adjustSeps win {
     }
 
     #
-    # Get the height to be applied to the separator frames
+    # Get the height to be applied to the separators
     #
     set w $data(body)
     set textIdx [$w index @0,[expr {[winfo height $w] - 1}]]
@@ -1734,8 +1734,8 @@ proc tablelist::adjustSeps win {
     }
 
     #
-    # Set the height of the main separator frame (if any) and attach
-    # the latter to the right edge of the last non-hidden title column
+    # Set the height of the main separator (if any) and attach the
+    # latter to the right edge of the last non-hidden title column
     #
     set startCol [expr {$data(-titlecolumns) - 1}]
     if {$startCol > $data(lastCol)} {
@@ -1759,7 +1759,7 @@ proc tablelist::adjustSeps win {
     }
 
     #
-    # Set the height and vertical position of each separator frame
+    # Set the height and vertical position of each separator
     #
     if {!$usingTile && $data(-showlabels)} {
 	incr sepHeight
