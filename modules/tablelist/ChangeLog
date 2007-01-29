@@ -1,3 +1,9 @@
+2007-01-29  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl:   Minor improvements.
+	* scripts/tablelistConfig.tcl:
+	* scripts/tablelistUtil.tcl:
+
 2007-01-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* tablelist.tcl:      Minor improvements.

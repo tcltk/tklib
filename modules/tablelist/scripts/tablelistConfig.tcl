@@ -832,8 +832,8 @@ proc tablelist::doConfig {win opt val} {
 		-titlecolumns {
 		    #
 		    # Update the value of the -xscrollcommand option, save
-		    # the properly formatted value of val in data($opt), and
-		    # create or destroy the main separator frame if needed
+		    # the properly formatted value of val in data($opt),
+		    # and create or destroy the main separator if needed
 		    #
 		    set oldVal $data($opt)
 		    set val [format "%d" $val]	;# integer check with error msg
