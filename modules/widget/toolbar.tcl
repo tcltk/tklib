@@ -3,7 +3,7 @@
 # toolbar - /snit::widget
 #	Manage items in a toolbar.
 #
-# RCS: @(#) $Id: toolbar.tcl,v 1.7 2006/09/29 16:25:07 hobbs Exp $
+# RCS: @(#) $Id: toolbar.tcl,v 1.8 2007/01/30 21:43:32 andreas_kupries Exp $
 #
 
 #  ## Padding can be a list of {padx pady}
@@ -275,9 +275,16 @@ snit::widget widget::toolbar {
 	return [$ITEMS($symbol) cget $option]
     }
 
+    method itemidentify {symbol} {
+	if {![info exists ITEMS($symbol)]} {
+	    return -code error "unknown toolbar item '$symbol'"
+	}
+	return $ITEMS($symbol)
+    }
+
     method items {{ptn *}} {
 	if {$ptn ne "*"} {
-	    return [lsearch -all -inline [array names ITEMS] $ptn]
+	    return [array names ITEMS $ptn]
 	}
 	return [array names ITEMS]
     }
