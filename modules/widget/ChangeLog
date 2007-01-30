@@ -1,3 +1,9 @@
+2007-01-30  Andreas Kupries  <andreask@activestate.com>
+
+	* toolbar.tcl (itemidentify): New method, converting symbolic
+	  button names to their actual widget path.	
+	* toolbar.tcl (items): Simplified the code.
+
 2007-01-21  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* scrollw.tcl (_set_scroll): move loop lock detection to include
