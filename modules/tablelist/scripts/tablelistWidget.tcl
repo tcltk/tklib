@@ -802,8 +802,8 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 
 	cellconfigure {
 	    if {$argCount < 2} {
-		mwutil::wrongNumArgs "$win $cmd cellIndex ?option? ?value?\
-				      ?option value ...?"
+		mwutil::wrongNumArgs "$win $cmd cellIndex ?option? ?value\
+				      option value ...?"
 	    }
 
 	    synchronize $win
@@ -891,8 +891,8 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 
 	columnconfigure {
 	    if {$argCount < 2} {
-		mwutil::wrongNumArgs "$win $cmd columnIndex ?option? ?value?\
-				      ?option value ...?"
+		mwutil::wrongNumArgs "$win $cmd columnIndex ?option? ?value\
+				      option value ...?"
 	    }
 
 	    synchronize $win
@@ -1306,8 +1306,8 @@ proc tablelist::tablelistWidgetCmd {win argList} {
 
 	rowconfigure {
 	    if {$argCount < 2} {
-		mwutil::wrongNumArgs "$win $cmd index ?option? ?value?\
-				      ?option value ...?"
+		mwutil::wrongNumArgs "$win $cmd index ?option? ?value\
+				      option value ...?"
 	    }
 
 	    #
