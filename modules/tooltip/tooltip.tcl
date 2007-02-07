@@ -7,13 +7,13 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tooltip.tcl,v 1.6 2006/08/02 18:59:51 hobbs Exp $
+# RCS: @(#) $Id: tooltip.tcl,v 1.7 2007/02/07 16:31:08 patthoyts Exp $
 #
 # Initiated: 28 October 1996
 
 
 package require Tk 8.4
-package provide tooltip 1.1
+package provide tooltip 1.2
 
 
 #------------------------------------------------------------------------
@@ -168,6 +168,15 @@ proc ::tooltip::register {w args} {
 		}
 		set args [lreplace $args 0 1]
 	    }
+            -tag {
+                set tag [lindex $args 1]
+                set r [catch {lsearch -exact [$w tag names] $tag} ndx]
+                if {$r || $ndx == -1} {
+                    return -code error "widget \"$w\" is not a text widget or\
+                        \"$tag\" is not a text tag"
+                }
+                set args [lreplace $args 0 1]
+            }
 	    default	{
 		return -code error "unknown option \"$key\":\
 			should be -index or -item"
@@ -176,8 +185,8 @@ proc ::tooltip::register {w args} {
 	set key [lindex $args 0]
     }
     if {[llength $args] != 1} {
-	return -code error "wrong \# args: should be \"tooltip widget\
-		?-index index? ?-item item? message\""
+	return -code error "wrong # args: should be \"tooltip widget\
+		?-index index? ?-item item? ?-tag tag? message\""
     }
     if {$key eq ""} {
 	clear $w
@@ -187,13 +196,15 @@ proc ::tooltip::register {w args} {
 	}
 	if {[info exists index]} {
 	    set tooltip($w,$index) $key
-	    #bindtags $w [linsert [bindtags $w] end "TooltipMenu"]
 	    return $w,$index
 	} elseif {[info exists item]} {
 	    set tooltip($w,$item) $key
-	    #bindtags $w [linsert [bindtags $w] end "TooltipCanvas"]
 	    enableCanvas $w $item
 	    return $w,$item
+        } elseif {[info exists tag]} {
+            set tooltip($w,t_$tag) $key
+            enableTag $w $tag
+            return $w,$tag
 	} else {
 	    set tooltip($w) $key
 	    bindtags $w [linsert [bindtags $w] end "Tooltip"]
@@ -220,7 +231,11 @@ proc ::tooltip::clear {{pattern .*}} {
 proc ::tooltip::show {w msg {i {}}} {
     # Use string match to allow that the help will be shown when
     # the pointer is in any child of the desired widget
-    if {![winfo exists $w] || ![string match $w* [eval [list winfo containing] [winfo pointerxy $w]]]} {
+    set we [winfo exists $w]
+    set wc [string match $w* [eval [list winfo containing] \
+                                  [winfo pointerxy $w]]]
+    set wm [string equal [winfo class $w] "Menu"]
+    if {!$we || (!$wm && !$wc)} {
 	return
     }
 
@@ -283,7 +298,10 @@ proc ::tooltip::menuMotion {w} {
     if {$G(enabled)} {
 	variable tooltip
 
+        # Menu events come from a funny path, map to the real path.
+        set m [string map {"#" "."} [winfo name $w]]
 	set cur [$w index active]
+
 	# The next two lines (all uses of LAST) are necessary until the
 	# <<MenuSelect>> event is properly coded for Unix/(Windows)?
 	if {$cur == $G(LAST)} return
@@ -291,11 +309,11 @@ proc ::tooltip::menuMotion {w} {
 	# a little inlining - this is :hide
 	after cancel $G(AFTERID)
 	catch {wm withdraw $G(TOPLEVEL)}
-	if {[info exists tooltip($w,$cur)] || \
+	if {[info exists tooltip($m,$cur)] || \
 		(![catch {$w entrycget $cur -label} cur] && \
-		[info exists tooltip($w,$cur)])} {
+		[info exists tooltip($m,$cur)])} {
 	    set G(AFTERID) [after $G(DELAY) \
-		    [namespace code [list show $w $tooltip($w,$cur) $cur]]]
+		    [namespace code [list show $w $tooltip($m,$cur) cursor]]]
 	}
     }
 }
@@ -333,9 +351,25 @@ proc ::tooltip::itemTip {w args} {
 }
 
 proc ::tooltip::enableCanvas {w args} {
-    $w bind all <Enter> [namespace code [list itemTip $w]]
-    $w bind all <Leave>		[namespace code hide]
-    $w bind all <Any-KeyPress>	[namespace code hide]
-    $w bind all <Any-Button>	[namespace code hide]
+    $w bind all <Enter> +[namespace code [list itemTip $w]]
+    $w bind all <Leave>	+[namespace code hide]
+    $w bind all <Any-KeyPress> +[namespace code hide]
+    $w bind all <Any-Button> +[namespace code hide]
 }
 
+proc ::tooltip::tagTip {w tag} {
+    variable tooltip
+    variable G
+    set G(LAST) -1
+    if {$G(enabled) && [info exists tooltip($w,t_$tag)]} {
+        set G(AFTERID) [after $G(DELAY) \
+            [namespace code [list show $w $tooltip($w,t_$tag) cursor]]]
+    }
+}
+
+proc ::tooltip::enableTag {w tag} {
+    $w tag bind $tag <Enter> +[namespace code [list tagTip $w $tag]]
+    $w tag bind $tag <Leave> +[namespace code hide]
+    $w tag bind $tag <Any-KeyPress> +[namespace code hide]
+    $w tag bind $tag <Any-Button> +[namespace code hide]
+}

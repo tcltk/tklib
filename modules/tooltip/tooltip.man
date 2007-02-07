@@ -1,13 +1,14 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin tooltip n 1.1]
+[manpage_begin tooltip n 1.2]
 [moddesc   {Tooltip management}]
 [titledesc {Tooltip management}]
 [require Tcl 8.4]
-[require tooltip [opt 1.1]]
+[require tooltip [opt 1.2]]
 [description]
 
-This package provides tooltips, a small text message that is
-displayed when the mouse hovers over a widget.
+This package provides tooltips, a small text message that is displayed
+when the mouse hovers over a widget, menu item, canvas item or text
+widget tag.
 
 [para]
 
@@ -20,12 +21,32 @@ commands:
 [call disable]
 [call enable]
 
-[call [cmd ::tooltip::tooltip] [arg pathName] [opt options] [opt message]]
+[call [cmd ::tooltip::tooltip] \
+      [arg pathName] [opt options] [opt message]]
+
 This command arranges for widget [arg pathName] to display a tooltip with
 message [opt message]
+
 [list_begin opt]
-[opt_def -index]
-[opt_def -item]
+
+[opt_def -index [arg index]]
+
+This option is used to set a tooltip on a menu item. The index may be
+either the entry index or the entry label. The widget must be a menu
+widget but the entries do not have to exists when the tooltip is set.
+
+[opt_def -item [arg name]]
+
+This option is used to set a tooltip for a canvas widget item. The
+item must already be present in the canvas widget and the widget must
+be a canvas widget or an error is raised.
+
+[opt_def -tag [arg name]]
+
+The [opt -tag] option can be used to set a tooltip for a text widget
+tag. The tag should already be present when this command is called or
+an error will be returned. The widget must also be a text widget.
+
 [list_end]
 
 [list_end]
@@ -33,11 +54,28 @@ message [opt message]
 [section EXAMPLE]
 
 [example {
+# Demonstrate widget tooltip
 package require tooltip
 pack [label .l -text "label"]
 tooltip::tooltip .l "This is a label widget"
 }]
 
+[example {
+# Demonstrate canvas item tooltip
+package require tooltip
+pack [canvas .c]
+set item [.c create rectangle 10 10 80 80]
+tooltip::tooltip .c -item $item "Canvas item tooltip"
+}]
+
+[example {
+# Demonstrate text tag tooltip
+package require tooltip
+pack [text .txt]
+.txt tag configure TIP-1 -underline 1
+tooltip::tooltip .txt -tag TIP-1 "tooltip one text"
+.txt insert end "An example of a " {} "tooltip" TIP-1 " tag.\n" {}
+}]
 
 [keywords tooltip hover balloon help]
 [manpage_end]
