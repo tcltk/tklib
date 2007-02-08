@@ -1,3 +1,18 @@
+2007-02-09 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+
+        * plotchart.tcl: Added commands for background colour,
+                         ticklines
+        * plotaxis.tcl: Support for ticklines
+        * plotpriv.tcl: Support for background
+        * plotchart.test: Added commands to test ticklines and
+                          background for several plot types
+        * plotchart.man: Description of the new commands
+
+        * Still to do:
+          - draw a legend
+          - draw integer numbers, if the axis numbers _are_ integer
+          - add a facility for displaying balloon text
+
 2006-06-05 Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
         * plotchart.tcl: Added a histogram procedure
