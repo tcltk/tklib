@@ -447,6 +447,51 @@ maximum and stepsize for the axis, in this order.
 Set one or more configuration parameters for the y-axis. This method
 accepts the same options and values as the method [method xconfig].
 
+
+[call [cmd \$anyplot] background [arg part] [arg colour]
+
+Set the background of a part of the plot
+
+[list_begin arg]
+
+[arg_def string part]
+Which part of the plot: "axes" for the axes area and "plot" for the
+inner part. The interpretation depends on the type of plot.
+
+[arg_def string colour]
+Colour for that part
+
+[list_end]
+[nl]
+
+
+[call [cmd \$anyplot] xticklines [arg colour]
+
+Draw vertical ticklines at each tick location
+
+[list_begin arg]
+
+[arg_def string colour]
+Colour of the lines. Specifying an empty colour ("") removes them again.
+Defaults to "black"
+
+[list_end]
+[nl]
+
+
+[call [cmd \$anyplot] yticklines [arg colour]
+
+Draw horizontal ticklines at each tick location
+
+[list_begin arg]
+
+[arg_def string colour]
+Colour of the lines. Specifying an empty colour ("") removes them again
+Defaults to "black"
+
+[list_end]
+[nl]
+
 [list_end]
 [para]
 

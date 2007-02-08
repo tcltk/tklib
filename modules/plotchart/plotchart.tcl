@@ -43,6 +43,9 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,dataconfig)     DataConfig
    set methodProc(xyplot,xconfig)        XConfig
    set methodProc(xyplot,yconfig)        YConfig
+   set methodProc(xyplot,xticklines)     DrawXTicklines
+   set methodProc(xyplot,yticklines)     DrawYTicklines
+   set methodProc(xyplot,background)     BackgroundColour
    set methodProc(piechart,title)        DrawTitle
    set methodProc(piechart,plot)         DrawPie
    set methodProc(piechart,saveplot)     SavePlot
@@ -50,6 +53,7 @@ namespace eval ::Plotchart {
    set methodProc(polarplot,plot)        DrawPolarData
    set methodProc(polarplot,saveplot)    SavePlot
    set methodProc(polarplot,dataconfig)  DataConfig
+   set methodProc(polarplot,background)  BackgroundColour
    set methodProc(histogram,title)       DrawTitle
    set methodProc(histogram,xtext)       DrawXtext
    set methodProc(histogram,ytext)       DrawYtext
@@ -58,10 +62,14 @@ namespace eval ::Plotchart {
    set methodProc(histogram,dataconfig)  DataConfig
    set methodProc(histogram,xconfig)     XConfig
    set methodProc(histogram,yconfig)     YConfig
+   set methodProc(histogram,yticklines)  DrawYTicklines
+   set methodProc(histogram,background)  BackgroundColour
    set methodProc(horizbars,title)       DrawTitle
    set methodProc(horizbars,xtext)       DrawXtext
    set methodProc(horizbars,ytext)       DrawYtext
    set methodProc(horizbars,plot)        DrawHorizBarData
+   set methodProc(horizbars,xticklines)  DrawXTicklines
+   set methodProc(horizbars,background)  BackgroundColour
    set methodProc(horizbars,saveplot)    SavePlot
    set methodProc(horizbars,colours)     SetColours
    set methodProc(horizbars,colors)      SetColours
@@ -70,6 +78,8 @@ namespace eval ::Plotchart {
    set methodProc(vertbars,xtext)        DrawXtext
    set methodProc(vertbars,ytext)        DrawYtext
    set methodProc(vertbars,plot)         DrawVertBarData
+   set methodProc(vertbars,background)   BackgroundColour
+   set methodProc(vertbars,yticklines)   DrawYTicklines
    set methodProc(vertbars,saveplot)     SavePlot
    set methodProc(vertbars,colours)      SetColours
    set methodProc(vertbars,colors)       SetColours
@@ -79,6 +89,7 @@ namespace eval ::Plotchart {
    set methodProc(timechart,milestone)   DrawTimeMilestone
    set methodProc(timechart,vertline)    DrawTimeVertLine
    set methodProc(timechart,saveplot)    SavePlot
+   set methodProc(timechart,background)  BackgroundColour
    set methodProc(ganttchart,title)      DrawTitle
    set methodProc(ganttchart,period)     DrawGanttPeriod
    set methodProc(ganttchart,task)       DrawGanttPeriod
@@ -90,6 +101,7 @@ namespace eval ::Plotchart {
    set methodProc(ganttchart,font)       GanttFont
    set methodProc(ganttchart,connect)    DrawGanttConnect
    set methodProc(ganttchart,summary)    DrawGanttSummary
+   set methodProc(ganttchart,background) BackgroundColour
    set methodProc(stripchart,title)      DrawTitle
    set methodProc(stripchart,xtext)      DrawXtext
    set methodProc(stripchart,ytext)      DrawYtext
@@ -98,11 +110,14 @@ namespace eval ::Plotchart {
    set methodProc(stripchart,dataconfig) DataConfig
    set methodProc(stripchart,xconfig)    XConfig
    set methodProc(stripchart,yconfig)    YConfig
+   set methodProc(stripchart,yticklines) DrawYTicklines
+   set methodProc(stripchart,background) BackgroundColour
    set methodProc(isometric,title)       DrawTitle
    set methodProc(isometric,xtext)       DrawXtext
    set methodProc(isometric,ytext)       DrawYtext
    set methodProc(isometric,plot)        DrawIsometricData
    set methodProc(isometric,saveplot)    SavePlot
+   set methodProc(isometric,background)  BackgroundColour
    set methodProc(3dplot,title)          DrawTitle
    set methodProc(3dplot,plotfunc)       Draw3DFunction
    set methodProc(3dplot,plotdata)       Draw3DData
@@ -114,6 +129,7 @@ namespace eval ::Plotchart {
    set methodProc(3dplot,yconfig)        YConfig
    set methodProc(3dplot,zconfig)        ZConfig
    set methodProc(3dplot,plotfuncont)    Draw3DFunctionContour
+   set methodProc(3dplot,background)     BackgroundColour
 
    #
    # Auxiliary parameters

@@ -19,34 +19,40 @@
 #    Axis drawn in canvas
 #
 proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
-   variable scaling
+    variable scaling
 
-   set scaling($w,ydelt) $ydelt
+    set scaling($w,ydelt) $ydelt
 
-   $w delete yaxis
+    $w delete yaxis
 
-   $w create line $scaling($w,pxmin) $scaling($w,pymin) \
-                  $scaling($w,pxmin) $scaling($w,pymax) \
-                  -fill black -tag yaxis
+    $w create line $scaling($w,pxmin) $scaling($w,pymin) \
+                   $scaling($w,pxmin) $scaling($w,pymax) \
+                   -fill black -tag yaxis
 
-   set format ""
-   if { [info exists scaling($w,-format,y)] } {
-      set format $scaling($w,-format,y)
-   }
+    set format ""
+    if { [info exists scaling($w,-format,y)] } {
+        set format $scaling($w,-format,y)
+    }
 
-   set y $ymin
-   while { $y < $ymax+0.5*$ydelt } {
-      foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $y] {break}
-      set ylabel $y
-      if { $format != "" } {
-         set ylabel [format $format $y]
-      }
-      $w create text $xcrd $ycrd -text $ylabel -tag yaxis -anchor e
-      set y [expr {$y+$ydelt}]
-      if { abs($y) < 0.5*$ydelt } {
-         set y 0.0
-      }
-   }
+    set y $ymin
+    set scaling($w,yaxis) {}
+
+    while { $y < $ymax+0.5*$ydelt } {
+
+        foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $y] {break}
+
+        lappend scaling($w,yaxis) $ycrd
+
+        set ylabel $y
+        if { $format != "" } {
+            set ylabel [format $format $y]
+        }
+        $w create text $xcrd $ycrd -text $ylabel -tag yaxis -anchor e
+        set y [expr {$y+$ydelt}]
+        if { abs($y) < 0.5*$ydelt } {
+            set y 0.0
+        }
+    }
 }
 
 # DrawXaxis --
@@ -62,37 +68,42 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
 #    Axis drawn in canvas
 #
 proc ::Plotchart::DrawXaxis { w xmin xmax xdelt } {
-   variable scaling
+    variable scaling
 
-   set scaling($w,xdelt) $xdelt
+    set scaling($w,xdelt) $xdelt
 
-   $w delete xaxis
+    $w delete xaxis
 
-   $w create line $scaling($w,pxmin) $scaling($w,pymax) \
-                  $scaling($w,pxmax) $scaling($w,pymax) \
-                  -fill black -tag xaxis
+    $w create line $scaling($w,pxmin) $scaling($w,pymax) \
+                   $scaling($w,pxmax) $scaling($w,pymax) \
+                   -fill black -tag xaxis
 
-   set format ""
-   if { [info exists scaling($w,-format,x)] } {
-      set format $scaling($w,-format,x)
-   }
+    set format ""
+    if { [info exists scaling($w,-format,x)] } {
+        set format $scaling($w,-format,x)
+    }
 
-   set x $xmin
-   while { $x < $xmax+0.5*$xdelt } {
-      foreach {xcrd ycrd} [coordsToPixel $w $x $scaling($w,ymin)] {break}
+    set x $xmin
+    set scaling($w,xaxis) {}
 
-      set xlabel $x
-      if { $format != "" } {
-         set xlabel [format $format $x]
-      }
-      $w create text $xcrd $ycrd -text $xlabel -tag xaxis -anchor n
-      set x [expr {$x+$xdelt}]
-      if { abs($x) < 0.5*$xdelt } {
-         set x 0.0
-      }
-   }
+    while { $x < $xmax+0.5*$xdelt } {
 
-   set scaling($w,xdelt) $xdelt
+        foreach {xcrd ycrd} [coordsToPixel $w $x $scaling($w,ymin)] {break}
+
+        lappend scaling($w,xaxis) $xcrd
+
+        set xlabel $x
+        if { $format != "" } {
+            set xlabel [format $format $x]
+        }
+        $w create text $xcrd $ycrd -text $xlabel -tag xaxis -anchor n
+        set x [expr {$x+$xdelt}]
+        if { abs($x) < 0.5*$xdelt } {
+            set x 0.0
+        }
+    }
+
+    set scaling($w,xdelt) $xdelt
 }
 
 # DrawXtext --
@@ -106,12 +117,12 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt } {
 #    Text drawn in canvas
 #
 proc ::Plotchart::DrawXtext { w text } {
-   variable scaling
+    variable scaling
 
-   set xt [expr {($scaling($w,pxmin)+$scaling($w,pxmax))/2}]
-   set yt [expr {$scaling($w,pymax)+12}]
+    set xt [expr {($scaling($w,pxmin)+$scaling($w,pxmax))/2}]
+    set yt [expr {$scaling($w,pymax)+12}]
 
-   $w create text $xt $yt -text $text -fill black -anchor n
+    $w create text $xt $yt -text $text -fill black -anchor n
 }
 
 # DrawYtext --
@@ -125,12 +136,12 @@ proc ::Plotchart::DrawXtext { w text } {
 #    Text drawn in canvas
 #
 proc ::Plotchart::DrawYtext { w text } {
-   variable scaling
+    variable scaling
 
-   set xt $scaling($w,pxmin)
-   set yt [expr {$scaling($w,pymin)-8}]
+    set xt $scaling($w,pxmin)
+    set yt [expr {$scaling($w,pymin)-8}]
 
-   $w create text $xt $yt -text $text -fill black -anchor se
+    $w create text $xt $yt -text $text -fill black -anchor se
 }
 
 # DrawPolarAxes --
@@ -146,44 +157,44 @@ proc ::Plotchart::DrawYtext { w text } {
 #
 proc ::Plotchart::DrawPolarAxes { w rad_max rad_step } {
 
-   #
-   # Draw the spikes
-   #
-   set angle 0.0
+    #
+    # Draw the spikes
+    #
+    set angle 0.0
 
-   foreach {xcentre ycentre} [polarToPixel $w 0.0 0.0] {break}
+    foreach {xcentre ycentre} [polarToPixel $w 0.0 0.0] {break}
 
-   while { $angle < 360.0 } {
-      foreach {xcrd ycrd} [polarToPixel $w $rad_max $angle] {break}
-      foreach {xtxt ytxt} [polarToPixel $w [expr {1.05*$rad_max}] $angle] {break}
-      $w create line $xcentre $ycentre $xcrd $ycrd
-      if { $xcrd > $xcentre } {
-         set dir w
-      } else {
-         set dir e
-      }
-      $w create text $xtxt $ytxt -text $angle -anchor $dir
+    while { $angle < 360.0 } {
+        foreach {xcrd ycrd} [polarToPixel $w $rad_max $angle] {break}
+        foreach {xtxt ytxt} [polarToPixel $w [expr {1.05*$rad_max}] $angle] {break}
+        $w create line $xcentre $ycentre $xcrd $ycrd
+        if { $xcrd > $xcentre } {
+            set dir w
+        } else {
+            set dir e
+        }
+        $w create text $xtxt $ytxt -text $angle -anchor $dir
 
-      set angle [expr {$angle+30}]
-   }
+        set angle [expr {$angle+30}]
+    }
 
-   #
-   # Draw the concentric circles
-   #
-   set rad $rad_step
+    #
+    # Draw the concentric circles
+    #
+    set rad $rad_step
 
-   while { $rad < $rad_max+0.5*$rad_step } {
-      foreach {xright ytxt}    [polarToPixel $w $rad    0.0] {break}
-      foreach {xleft  ycrd}    [polarToPixel $w $rad  180.0] {break}
-      foreach {xcrd   ytop}    [polarToPixel $w $rad   90.0] {break}
-      foreach {xcrd   ybottom} [polarToPixel $w $rad  270.0] {break}
+    while { $rad < $rad_max+0.5*$rad_step } {
+        foreach {xright ytxt}    [polarToPixel $w $rad    0.0] {break}
+        foreach {xleft  ycrd}    [polarToPixel $w $rad  180.0] {break}
+        foreach {xcrd   ytop}    [polarToPixel $w $rad   90.0] {break}
+        foreach {xcrd   ybottom} [polarToPixel $w $rad  270.0] {break}
 
-      $w create oval $xleft $ytop $xright $ybottom
+        $w create oval $xleft $ytop $xright $ybottom
 
-      $w create text $xright [expr {$ytxt+3}] -text $rad -anchor n
+        $w create text $xright [expr {$ytxt+3}] -text $rad -anchor n
 
-      set rad [expr {$rad+$rad_step}]
-   }
+        set rad [expr {$rad+$rad_step}]
+    }
 }
 
 # DrawXlabels --
@@ -198,36 +209,36 @@ proc ::Plotchart::DrawPolarAxes { w rad_max rad_step } {
 #    Axis drawn in canvas
 #
 proc ::Plotchart::DrawXlabels { w xlabels noseries } {
-   variable scaling
+    variable scaling
 
-   $w delete xaxis
+    $w delete xaxis
 
-   $w create line $scaling($w,pxmin) $scaling($w,pymax) \
-                  $scaling($w,pxmax) $scaling($w,pymax) \
-                  -fill black -tag xaxis
+    $w create line $scaling($w,pxmin) $scaling($w,pymax) \
+                   $scaling($w,pxmax) $scaling($w,pymax) \
+                   -fill black -tag xaxis
 
-   set x 0.5
-   set scaling($w,ybase) {}
-   foreach label $xlabels {
-      foreach {xcrd ycrd} [coordsToPixel $w $x $scaling($w,ymin)] {break}
-      $w create text $xcrd $ycrd -text $label -tag xaxis -anchor n
-      set x [expr {$x+1.0}]
+    set x 0.5
+    set scaling($w,ybase) {}
+    foreach label $xlabels {
+        foreach {xcrd ycrd} [coordsToPixel $w $x $scaling($w,ymin)] {break}
+        $w create text $xcrd $ycrd -text $label -tag xaxis -anchor n
+        set x [expr {$x+1.0}]
 
-      lappend scaling($w,ybase) 0.0
-   }
+        lappend scaling($w,ybase) 0.0
+    }
 
-   set scaling($w,xbase) 0.0
+    set scaling($w,xbase) 0.0
 
-   if { $noseries != "stacked" } {
-      set scaling($w,stacked)  0
-      set scaling($w,xshift)   [expr {1.0/$noseries}]
-      set scaling($w,barwidth) [expr {1.0/$noseries}]
-   } else {
-      set scaling($w,stacked)  1
-      set scaling($w,xshift)   0.0
-      set scaling($w,barwidth) 0.8
-      set scaling($w,xbase)    0.1
-   }
+    if { $noseries != "stacked" } {
+        set scaling($w,stacked)  0
+        set scaling($w,xshift)   [expr {1.0/$noseries}]
+        set scaling($w,barwidth) [expr {1.0/$noseries}]
+    } else {
+        set scaling($w,stacked)  1
+        set scaling($w,xshift)   0.0
+        set scaling($w,barwidth) 0.8
+        set scaling($w,xbase)    0.1
+    }
 }
 
 # DrawYlabels --
@@ -242,36 +253,36 @@ proc ::Plotchart::DrawXlabels { w xlabels noseries } {
 #    Axis drawn in canvas
 #
 proc ::Plotchart::DrawYlabels { w ylabels noseries } {
-   variable scaling
+    variable scaling
 
-   $w delete yaxis
+    $w delete yaxis
 
-   $w create line $scaling($w,pxmin) $scaling($w,pymin) \
-                  $scaling($w,pxmin) $scaling($w,pymax) \
-                  -fill black -tag yaxis
+    $w create line $scaling($w,pxmin) $scaling($w,pymin) \
+                   $scaling($w,pxmin) $scaling($w,pymax) \
+                   -fill black -tag yaxis
 
-   set y 0.5
-   set scaling($w,xbase) {}
-   foreach label $ylabels {
-      foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $y] {break}
-      $w create text $xcrd $ycrd -text $label -tag yaxis -anchor e
-      set y [expr {$y+1.0}]
+    set y 0.5
+    set scaling($w,xbase) {}
+    foreach label $ylabels {
+        foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $y] {break}
+        $w create text $xcrd $ycrd -text $label -tag yaxis -anchor e
+        set y [expr {$y+1.0}]
 
-      lappend scaling($w,xbase) 0.0
-   }
+        lappend scaling($w,xbase) 0.0
+    }
 
-   set scaling($w,ybase) 0.0
+    set scaling($w,ybase) 0.0
 
-   if { $noseries != "stacked" } {
-      set scaling($w,stacked)  0
-      set scaling($w,yshift)   [expr {1.0/$noseries}]
-      set scaling($w,barwidth) [expr {1.0/$noseries}]
-   } else {
-      set scaling($w,stacked)  1
-      set scaling($w,yshift)   0.0
-      set scaling($w,barwidth) 0.8
-      set scaling($w,ybase)    0.1
-   }
+    if { $noseries != "stacked" } {
+        set scaling($w,stacked)  0
+        set scaling($w,yshift)   [expr {1.0/$noseries}]
+        set scaling($w,barwidth) [expr {1.0/$noseries}]
+    } else {
+        set scaling($w,stacked)  1
+        set scaling($w,yshift)   0.0
+        set scaling($w,barwidth) 0.8
+        set scaling($w,ybase)    0.1
+    }
 }
 
 # XConfig --
@@ -283,7 +294,7 @@ proc ::Plotchart::DrawYlabels { w ylabels noseries } {
 #    None
 #
 proc ::Plotchart::XConfig { w args } {
-   AxisConfig xyplot $w x DrawXaxis $args
+    AxisConfig xyplot $w x DrawXaxis $args
 }
 
 # YConfig --
@@ -295,7 +306,7 @@ proc ::Plotchart::XConfig { w args } {
 #    None
 #
 proc ::Plotchart::YConfig { w args } {
-   AxisConfig xyplot $w y DrawYaxis $args
+    AxisConfig xyplot $w y DrawYaxis $args
 }
 
 # AxisConfig --
@@ -310,43 +321,102 @@ proc ::Plotchart::YConfig { w args } {
 #    None
 #
 proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
-   variable scaling
-   variable axis_options
-   variable axis_option_clear
-   variable axis_option_values
+    variable scaling
+    variable axis_options
+    variable axis_option_clear
+    variable axis_option_values
 
-   set clear_data 0
+    set clear_data 0
 
-   foreach {option value} $option_values {
-      set idx [lsearch $axis_options $option]
-      if { $idx < 0 } {
-         return -code error "Unknown or invalid option: $option (value: $value)"
-      } else {
-         set clear   [lindex  $axis_option_clear  $idx]
-         set values  [lindex  $axis_option_values [incr idx]]
-         if { $values != "..." } {
-            if { [lsearch $values $value] < 0 } {
-               return -code error "Unknown or invalid value: $value for option $option - $values"
+    foreach {option value} $option_values {
+        set idx [lsearch $axis_options $option]
+        if { $idx < 0 } {
+            return -code error "Unknown or invalid option: $option (value: $value)"
+        } else {
+            set clear   [lindex  $axis_option_clear  $idx]
+            set values  [lindex  $axis_option_values [incr idx]]
+            if { $values != "..." } {
+                if { [lsearch $values $value] < 0 } {
+                    return -code error "Unknown or invalid value: $value for option $option - $values"
+                }
             }
-         }
-         set scaling($w,$option,$orient) $value
-         if { $clear } {
-            set clear_data 1
-         }
-      }
-   }
+            set scaling($w,$option,$orient) $value
+            if { $clear } {
+                set clear_data 1
+            }
+        }
+    }
 
-   if { $clear_data }  {
-      $w delete data
-   }
+    if { $clear_data }  {
+        $w delete data
+    }
 
-   if { $orient == "x" } {
-      $drawmethod $w $scaling($w,xmin) $scaling($w,xmax) $scaling($w,xdelt)
-   }
-   if { $orient == "y" } {
-      $drawmethod $w $scaling($w,ymin) $scaling($w,ymax) $scaling($w,ydelt)
-   }
-   if { $orient == "z" } {
-      $drawmethod $w $scaling($w,zmin) $scaling($w,zmax) $scaling($w,zdelt)
-   }
+    if { $orient == "x" } {
+        $drawmethod $w $scaling($w,xmin) $scaling($w,xmax) $scaling($w,xdelt)
+    }
+    if { $orient == "y" } {
+        $drawmethod $w $scaling($w,ymin) $scaling($w,ymax) $scaling($w,ydelt)
+    }
+    if { $orient == "z" } {
+        $drawmethod $w $scaling($w,zmin) $scaling($w,zmax) $scaling($w,zdelt)
+    }
+}
+
+# DrawXTicklines --
+#    Draw the ticklines for the x-axis
+# Arguments:
+#    w           Name of the canvas
+#    colour      Colour of the ticklines
+# Result:
+#    None
+#
+proc ::Plotchart::DrawXTicklines { w {colour black} } {
+    DrawTicklines $w x $colour
+}
+
+# DrawYTicklines --
+#    Draw the ticklines for the y-axis
+# Arguments:
+#    w           Name of the canvas
+#    colour      Colour of the ticklines
+# Result:
+#    None
+#
+proc ::Plotchart::DrawYTicklines { w {colour black} } {
+    DrawTicklines $w y $colour
+}
+
+# DrawTicklines --
+#    Draw the ticklines
+# Arguments:
+#    w           Name of the canvas
+#    axis        Which axis (x or y)
+#    colour      Colour of the ticklines
+# Result:
+#    None
+#
+proc ::Plotchart::DrawTicklines { w axis {colour black} } {
+    variable scaling
+
+    if { $axis == "x" } {
+        if { $colour != {} } {
+            foreach x $scaling($w,xaxis) {
+                $w create line $x $scaling($w,pymin) \
+                               $x $scaling($w,pymax) \
+                               -fill $colour -tag xtickline
+            }
+        } else {
+            $w delete xtickline
+        }
+    } else {
+        if { $colour != {} } {
+            foreach y $scaling($w,yaxis) {
+                $w create line $scaling($w,pxmin) $y \
+                               $scaling($w,pxmax) $y \
+                               -fill $colour -tag ytickline
+            }
+        } else {
+            $w delete ytickline
+        }
+    }
 }

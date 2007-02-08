@@ -184,6 +184,9 @@ test Plotchart-3.1 {XY-plot} -constraints tk -body {
 
     $s title "Aha!"
 
+    $s xticklines green
+    $s yticklines red
+
     after 1000 {set waited 1}
     vwait waited
     set waited 0
@@ -365,6 +368,7 @@ test Plotchart-3.9 {Stripchart} -constraints tk -body {
     after 100 [list gendata $s 0.0 15.0 50.0 30.0]
 
     $s title "Aha!"
+    $s background plot grey
 
     after 4000 {set waited 1}
     vwait waited
@@ -432,6 +436,7 @@ test Plotchart-3.11 {Histogram} -constraints tk -body {
     }
 
     $s title "Aha!"
+    $s background axes grey
 
     after 1000 {set waited 1}
     vwait waited
