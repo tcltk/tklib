@@ -999,3 +999,25 @@ proc ::Plotchart::DrawIsometricData { w type args } {
    }
 
 }
+
+# BackgroundColour --
+#    Set the background colour
+# Arguments:
+#    w           Name of the canvas
+#    part        Which part: axes or plot
+#    colour      Colour to use
+# Result:
+#    None
+# Side effect:
+#    Colour of the relevant part is changed
+#
+proc ::Plotchart::BackgroundColour { w part colour } {
+    if { $part == "axes" } {
+        $w configure -highlightthickness 0
+        $w itemconfigure mask -fill $colour -outline $colour
+    }
+    if { $part == "plot" } {
+        $w configure -highlightthickness 0
+        $w configure -background $colour
+    }
+}
