@@ -448,7 +448,7 @@ Set one or more configuration parameters for the y-axis. This method
 accepts the same options and values as the method [method xconfig].
 
 
-[call [cmd \$anyplot] background [arg part] [arg colour]
+[call [cmd \$anyplot] background [arg part] [arg colour]]
 
 Set the background of a part of the plot
 
@@ -465,7 +465,7 @@ Colour for that part
 [nl]
 
 
-[call [cmd \$anyplot] xticklines [arg colour]
+[call [cmd \$anyplot] xticklines [arg colour]]
 
 Draw vertical ticklines at each tick location
 
@@ -479,7 +479,7 @@ Defaults to "black"
 [nl]
 
 
-[call [cmd \$anyplot] yticklines [arg colour]
+[call [cmd \$anyplot] yticklines [arg colour]]
 
 Draw horizontal ticklines at each tick location
 

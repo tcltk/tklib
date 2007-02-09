@@ -10,6 +10,14 @@
           - draw integer numbers, if the axis numbers _are_ integer
           - add a facility for displaying balloon text
 
+2007-02-09  Andreas Kupries  <andreask@activestate.com>
+
+	* plotchart.man: Fixed syntax errors introduced by last checkin,
+	  consistently missing closing brackets. It is strongly
+	  recommended to run a command like './sak.tcl nroff plotchart'
+	  from the tklib toplevel directory before doc changes checking
+	  in.
+
 2007-02-08 Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
         * plotchart.tcl: Added commands for background colour,
