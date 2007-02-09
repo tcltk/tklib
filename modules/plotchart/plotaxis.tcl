@@ -2,8 +2,8 @@
 #    Facilities to draw simple plots in a dedicated canvas
 #
 # Note:
-#    This source file contains the functions for drawing the axes.
-#    It is the companion of "plotchart.tcl"
+#    This source file contains the functions for drawing the axes
+#    and the legend. It is the companion of "plotchart.tcl"
 #
 
 # DrawYaxis --
@@ -419,4 +419,152 @@ proc ::Plotchart::DrawTicklines { w axis {colour black} } {
             $w delete ytickline
         }
     }
+}
+
+# DefaultLegend --
+#    Set all legend options to default
+# Arguments:
+#    w              Name of the canvas
+# Result:
+#    None
+#
+proc ::Plotchart::DefaultLegend { w } {
+    variable legend
+
+    set legend($w,background) "white"
+    set legend($w,border)     "black"
+    set legend($w,canvas)     $w
+    set legend($w,position)   "top-right"
+    set legend($w,series)     ""
+    set legend($w,text)       ""
+}
+
+# LegendConfigure --
+#    Configure the legend
+# Arguments:
+#    w              Name of the canvas
+#    args           Key-value pairs
+# Result:
+#    None
+#
+proc ::Plotchart::LegendConfigure { w args } {
+    variable legend
+
+    foreach {option value} $args {
+        switch -- $option {
+            "-background" {
+                 set legend($w,background) $value
+            }
+            "-border" {
+                 set legend($w,border) $value
+            }
+            "-canvas" {
+                 set legend($w,canvas) $value
+            }
+            "-position" {
+                 if { [lsearch {top-left top-right bottom-left bottom-right} $value] >= 0 } {
+                     set legend($w,position) $value
+                 } else {
+                     return -code error "Unknown or invalid position: $value"
+                 }
+            }
+            default {
+                return -code error "Unknown or invalid option: $option (value: $value)"
+            }
+        }
+    }
+}
+
+# DrawLegend --
+#    Draw or extend the legend
+# Arguments:
+#    w              Name of the canvas
+#    series         For which series?
+#    text           Text to be shown
+# Result:
+#    None
+#
+proc ::Plotchart::DrawLegend { w series text } {
+    variable legend
+    variable scaling
+    variable data_series
+
+
+    lappend legend($w,series) $series
+    lappend legend($w,text)   $text
+    set legendw               $legend($w,canvas)
+
+    $legendw delete legend
+    $legendw delete legendbg
+
+    set y 0
+    foreach series $legend($w,series) text $legend($w,text) {
+
+        set colour "black"
+        if { [info exists data_series($w,$series,-colour)] } {
+            set colour $data_series($w,$series,-colour)]
+        }
+        set type "line"
+        if { [info exists data_series($w,$series,-type)] } {
+            set type $data_series($w,$series,-type)]
+        }
+
+        # TODO: line or rectangle!
+
+        $legendw create line 0 $y 15 $y -fill $colour -tag legend
+
+        if { $type == "symbol" || $type == "both" } {
+            set symbol "dot"
+            if { [info exists data_series($w,$series,-symbol)] } {
+                set symbol $data_series($w,$series,-symbol)
+            }
+            DrawSymbolPixel $legendw $series 7 $y $symbol $colour $tag
+        }
+
+        $legendw create text 25 $y -text $text -anchor w -tag legend
+
+        incr y 10   ;# TODO: size of font!
+    }
+
+    #
+    # Now the frame and the background
+    #
+    foreach {xl yt xr yb} [$w bbox legend] {break}
+
+    set xl [expr {$xl-2}]
+    set xr [expr {$xr+2}]
+    set yt [expr {$yt-2}]
+    set yb [expr {$yb+2}]
+
+    $legendw create rectangle $xl $yt $xr $yb -fill $legend($w,background) \
+        -outline $legend($w,border) -tag legendbg
+
+    $legendw raise legend
+
+    if { $w == $legendw } {
+        switch -- $legend($w,position) {
+            "top-left" {
+                 set dx [expr { 10+$scaling($w,pxmin)-$xl}]
+                 set dy [expr { 10+$scaling($w,pymin)-$yt}]
+            }
+            "top-right" {
+                 set dx [expr {-10+$scaling($w,pxmax)-$xr}]
+                 set dy [expr { 10+$scaling($w,pymin)-$yt}]
+            }
+            "bottom-left" {
+                 set dx [expr { 10+$scaling($w,pxmin)-$xl}]
+                 set dy [expr {-10+$scaling($w,pymax)-$yb}]
+            }
+            "bottom-right" {
+                 set dx [expr {-10+$scaling($w,pxmax)-$xr}]
+                 set dy [expr {-10+$scaling($w,pymax)-$yb}]
+            }
+        }
+    } else {
+        set dx 10
+        set dy 10
+    }
+
+    $legendw move legend   $dx $dy
+    $legendw move legendbg $dx $dy
 }

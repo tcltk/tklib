@@ -187,6 +187,11 @@ test Plotchart-3.1 {XY-plot} -constraints tk -body {
     $s xticklines green
     $s yticklines red
 
+    $s legendconfig -position "top-left"
+    $s legendconfig -background grey
+    $s legend series1 "Series 1"
+    $s legend series2 "Series 2"
+
     after 1000 {set waited 1}
     vwait waited
     set waited 0

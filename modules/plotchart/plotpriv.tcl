@@ -356,7 +356,7 @@ proc ::Plotchart::DrawData { w series xcrd ycrd } {
       if { [info exists data_series($w,$series,-symbol)] } {
          set symbol $data_series($w,$series,-symbol)
       }
-      DrawSymbolPixel $w $series $pxcrd $pycrd $symbol $colour
+      DrawSymbolPixel $w $series $pxcrd $pycrd $symbol $colour "data"
    }
 
    $w lower data
@@ -422,12 +422,13 @@ proc ::Plotchart::DrawStripData { w series xcrd ycrd } {
 #    pycrd       Next y (pixel) coordinate
 #    symbol      What symbol to draw
 #    colour      What colour to use
+#    tag         What tag to use
 # Result:
 #    None
 # Side effects:
 #    New symbol drawn in canvas
 #
-proc ::Plotchart::DrawSymbolPixel { w series pxcrd pycrd symbol colour } {
+proc ::Plotchart::DrawSymbolPixel { w series pxcrd pycrd symbol colour tag } {
    variable data_series
    variable scaling
 
@@ -440,36 +441,36 @@ proc ::Plotchart::DrawSymbolPixel { w series pxcrd pycrd symbol colour } {
    "plus"     { $w create line $pxmin $pycrd $pxmax $pycrd \
                                $pxcrd $pycrd $pxcrd $pymin \
                                $pxcrd $pymax \
-                               -fill $colour -tag data \
+                               -fill $colour -tag $tag \
                                -capstyle projecting
               }
    "cross"    { $w create line $pxmin $pymin $pxmax $pymax \
                                $pxcrd $pycrd $pxmax $pymin \
                                $pxmin $pymax \
-                               -fill $colour -tag data \
+                               -fill $colour -tag $tag \
                                -capstyle projecting
               }
    "circle"   { $w create oval $pxmin $pymin $pxmax $pymax \
-                               -outline $colour -tag data
+                               -outline $colour -tag $tag
               }
    "dot"      { $w create oval $pxmin $pymin $pxmax $pymax \
-                               -outline $colour -fill $colour -tag data
+                               -outline $colour -fill $colour -tag $tag
               }
    "up"       { $w create polygon $pxmin $pymax $pxmax $pymax \
                                $pxcrd $pymin \
-                               -outline $colour -fill {} -tag data
+                               -outline $colour -fill {} -tag $tag
               }
    "upfilled" { $w create polygon $pxmin $pymax $pxmax $pymax \
                               $pxcrd $pymin \
-                              -outline $colour -fill $colour -tag data
+                              -outline $colour -fill $colour -tag $tag
               }
    "down"     { $w create polygon $pxmin $pymin $pxmax $pymin \
                               $pxcrd $pymax \
-                              -outline $colour -fill {} -tag data
+                              -outline $colour -fill {} -tag $tag
               }
    "downfilled" { $w create polygon $pxmin $pymin $pxmax $pymin \
                               $pxcrd $pymax \
-                              -outline $colour -fill $colour -tag data
+                              -outline $colour -fill $colour -tag $tag
               }
    }
 }
