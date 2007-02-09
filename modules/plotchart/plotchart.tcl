@@ -13,6 +13,7 @@ package require Tk
 #
 namespace eval ::Plotchart {
    variable settings
+   variable legend
    variable scaling
    variable methodProc
    variable data_series
@@ -46,6 +47,8 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,xticklines)     DrawXTicklines
    set methodProc(xyplot,yticklines)     DrawYTicklines
    set methodProc(xyplot,background)     BackgroundColour
+   set methodProc(xyplot,legendconfig)   LegendConfigure
+   set methodProc(xyplot,legend)         DrawLegend
    set methodProc(piechart,title)        DrawTitle
    set methodProc(piechart,plot)         DrawPie
    set methodProc(piechart,saveplot)     SavePlot
@@ -54,6 +57,8 @@ namespace eval ::Plotchart {
    set methodProc(polarplot,saveplot)    SavePlot
    set methodProc(polarplot,dataconfig)  DataConfig
    set methodProc(polarplot,background)  BackgroundColour
+   set methodProc(polarplot,legendconfig) LegendConfigure
+   set methodProc(polarplot,legend)      DrawLegend
    set methodProc(histogram,title)       DrawTitle
    set methodProc(histogram,xtext)       DrawXtext
    set methodProc(histogram,ytext)       DrawYtext
@@ -64,6 +69,8 @@ namespace eval ::Plotchart {
    set methodProc(histogram,yconfig)     YConfig
    set methodProc(histogram,yticklines)  DrawYTicklines
    set methodProc(histogram,background)  BackgroundColour
+   set methodProc(histogram,legendconfig) LegendConfigure
+   set methodProc(histogram,legend)      DrawLegend
    set methodProc(horizbars,title)       DrawTitle
    set methodProc(horizbars,xtext)       DrawXtext
    set methodProc(horizbars,ytext)       DrawYtext
@@ -74,6 +81,8 @@ namespace eval ::Plotchart {
    set methodProc(horizbars,colours)     SetColours
    set methodProc(horizbars,colors)      SetColours
    set methodProc(horizbars,xconfig)     XConfig
+   set methodProc(horizbars,legendconfig) LegendConfigure
+   set methodProc(horizbars,legend)      DrawLegend
    set methodProc(vertbars,title)        DrawTitle
    set methodProc(vertbars,xtext)        DrawXtext
    set methodProc(vertbars,ytext)        DrawYtext
@@ -84,6 +93,8 @@ namespace eval ::Plotchart {
    set methodProc(vertbars,colours)      SetColours
    set methodProc(vertbars,colors)       SetColours
    set methodProc(vertbars,yconfig)      YConfig
+   set methodProc(vertbars,legendconfig) LegendConfigure
+   set methodProc(vertbars,legend)       DrawLegend
    set methodProc(timechart,title)       DrawTitle
    set methodProc(timechart,period)      DrawTimePeriod
    set methodProc(timechart,milestone)   DrawTimeMilestone
@@ -112,6 +123,8 @@ namespace eval ::Plotchart {
    set methodProc(stripchart,yconfig)    YConfig
    set methodProc(stripchart,yticklines) DrawYTicklines
    set methodProc(stripchart,background) BackgroundColour
+   set methodProc(stripchart,legendconfig) LegendConfigure
+   set methodProc(stripchart,legend)     DrawLegend
    set methodProc(isometric,title)       DrawTitle
    set methodProc(isometric,xtext)       DrawXtext
    set methodProc(isometric,ytext)       DrawYtext
@@ -488,6 +501,7 @@ proc ::Plotchart::createXYPlot { w xscale yscale } {
    DrawYaxis        $w $ymin  $ymax  $ydelt
    DrawXaxis        $w $xmin  $xmax  $xdelt
    DrawMask         $w
+   DefaultLegend    $w
 
    return $newchart
 }
@@ -564,6 +578,7 @@ proc ::Plotchart::createIsometricPlot { w xscale yscale stepsize } {
       DrawXaxis        $w $xmin  $xmax  $xdelt
       DrawMask         $w
    }
+   DefaultLegend $w
 
    return $newchart
 }
@@ -613,6 +628,7 @@ proc ::Plotchart::createHistogram { w xscale yscale } {
    DrawYaxis        $w $ymin  $ymax  $ydelt
    DrawXaxis        $w $xmin  $xmax  $xdelt
    DrawMask         $w
+   DefaultLegend    $w
 
    return $newchart
 }
@@ -642,6 +658,7 @@ proc ::Plotchart::createPiechart { w } {
    $w create oval $pxmin $pymin $pxmax $pymax
 
    SetColours $w blue lightblue green yellow orange red magenta brown
+   DefaultLegend $w
 
    return $newchart
 }
@@ -683,6 +700,7 @@ proc ::Plotchart::createPolarplot { w radius_data } {
    viewPort         $w $pxmin     $pymin     $pxmax   $pymax
    polarCoordinates $w $rad_max
    DrawPolarAxes    $w $rad_max   $rad_step
+   DefaultLegend    $w
 
    return $newchart
 }
@@ -730,6 +748,7 @@ proc ::Plotchart::createBarchart { w xlabels yscale noseries } {
    DrawYaxis        $w $ymin  $ymax  $ydelt
    DrawXlabels      $w $xlabels $noseries
    DrawMask         $w
+   DefaultLegend    $w
 
    SetColours $w blue lightblue green yellow orange red magenta brown
 
@@ -779,6 +798,7 @@ proc ::Plotchart::createHorizontalBarchart { w xscale ylabels noseries } {
    DrawXaxis        $w $xmin  $xmax  $xdelt
    DrawYlabels      $w $ylabels $noseries
    DrawMask         $w
+   DefaultLegend    $w
 
    SetColours $w blue lightblue green yellow orange red magenta brown
 
@@ -937,6 +957,7 @@ proc ::Plotchart::create3DPlot { w xscale yscale zscale } {
 
    Draw3DAxes         $w $xmin  $ymin  $zmin  $xmax  $ymax $zmax \
                          $xstep $ystep $zstep
+   DefaultLegend      $w
 
    SetColours $w grey black
 

@@ -1,4 +1,16 @@
 2007-02-09 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.tcl: Added commands for drawing and configuring
+                         the legend
+        * plotaxis.tcl: Actual procedures for legend
+        * plotpriv.tcl: Small change in procedure to plot symbols
+        * plotchart.test: Added commands to test legend
+
+        * Still to do:
+          - document the legend commands
+          - draw integer numbers, if the axis numbers _are_ integer
+          - add a facility for displaying balloon text
+
+2007-02-08 Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
         * plotchart.tcl: Added commands for background colour,
                          ticklines
@@ -7,11 +19,6 @@
         * plotchart.test: Added commands to test ticklines and
                           background for several plot types
         * plotchart.man: Description of the new commands
-
-        * Still to do:
-          - draw a legend
-          - draw integer numbers, if the axis numbers _are_ integer
-          - add a facility for displaying balloon text
 
 2006-06-05 Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
