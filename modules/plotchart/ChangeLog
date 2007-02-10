@@ -1,3 +1,12 @@
+2007-02-10 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.man: Description of legend commands
+        * plotchart.tcl: Raised version to 1.2
+        * pkgIndext.tcl: Raised version to 1.2
+
+        * Still to do:
+          - draw integer numbers, if the axis numbers _are_ integer
+          - add a facility for displaying balloon text
+
 2007-02-09 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.tcl: Added commands for drawing and configuring
                          the legend

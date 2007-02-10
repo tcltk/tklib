@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 1.1]
+[manpage_begin Plotchart n 1.2]
 [copyright {2004 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.3]]
 [require Tk [opt 8.3]]
-[require Plotchart [opt 1.1]]
+[require Plotchart [opt 1.2]]
 
 [description]
 [para]
@@ -488,6 +488,51 @@ Draw horizontal ticklines at each tick location
 [arg_def string colour]
 Colour of the lines. Specifying an empty colour ("") removes them again
 Defaults to "black"
+
+[list_end]
+[nl]
+
+
+[call [cmd \$anyplot] legendconfig [option -option] [arg value] ...]
+
+Set one or more options for the legend. The legend is drawn as a
+rectangle with text and graphics inside.
+
+[list_begin opt]
+
+[opt_def background colour]
+Set the colour of the background (the default colour is white).
+Set to the empty string for a transparant legend.
+
+[opt_def border colour]
+Set the colour of the border (the default colour is white). Set to the
+empty string if you do not want a border.
+
+[opt_def canvas c]
+Draw the legend in a different canvas widget. This gives you the freedom
+to position the legend outside the actual plot.
+
+[opt_def position corner]
+Set the position of the legend. May be one of: top-left, top-right,
+bottom-left or bottom-right. (Default value is top-right.)
+
+[list_end]
+[nl]
+
+
+[call [cmd \$anyplot] legend [arg series] [arg text]]
+
+Add an entry to the legend. The series determines which graphical
+symbol is to be used. (As a side effect the legend is actually drawn.)
+
+[list_begin arg]
+
+[arg_def string series]
+Name of the data series. This determines the colour of the line and the
+symbol (if any) that will be drawn.
+
+[arg_def string text]
+Text to be drawn next to the line/symbol.
 
 [list_end]
 [nl]
