@@ -975,4 +975,4 @@ source [file join [file dirname [info script]] "plotgantt.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.1
+package provide Plotchart 1.2
