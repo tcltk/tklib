@@ -5,7 +5,7 @@
 # Copyright (c) 2003-2006 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.25 2006/12/14 18:42:19 afaupell Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.26 2007/02/23 22:59:59 hobbs Exp $
 
 # Sample usage:
 #	set file bin/wish.exe
@@ -220,7 +220,7 @@ proc ::ico::getIconByName {file name args} {
 #
 proc ::ico::getFileIcon {file args} {
     set ext [file extension $file]
-    if {[catch {registry get HKEY_CLASSES_ROOT\\.$ext ""} doctype] || \
+    if {[catch {registry get HKEY_CLASSES_ROOT\\$ext ""} doctype] || \
         [catch {registry get HKEY_CLASSES_ROOT\\$doctype\\DefaultIcon ""} icon]} {
         set icon "%SystemRoot%\\System32\\shell32.dll,0"
     }
@@ -229,7 +229,7 @@ proc ::ico::getFileIcon {file args} {
     if {$index == ""} { set index 0 }
     set icon [string trim $icon "@'\" "]
     while {[regexp -nocase {%([a-z]+)%} $icon -> var]} {
-        set icon [string map "%$var% $::env($var)" $icon]
+        set icon [string map [list %$var% $::env($var)] $icon]
     }
     set icon [string map [list %1 $file] $icon]
     if {$index < 0} {
@@ -238,7 +238,7 @@ proc ::ico::getFileIcon {file args} {
         }
         set index 0
     }
-    return [eval [list getIcon $file [lindex [icons $file] $index] $args]]
+    return [eval [list getIcon $icon [lindex [icons $icon] $index]] $args]
 }
 
 # writeIcon --
@@ -1375,4 +1375,4 @@ interp alias {} ::ico::getIconMembersICL {} ::ico::getIconMembersEXE
 interp alias {} ::ico::getRawIconDataICL {} ::ico::getRawIconDataEXE
 interp alias {} ::ico::writeIconICL      {} ::ico::writeIconEXE
 
-package provide ico 1.0.1
+package provide ico 1.0.2
