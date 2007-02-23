@@ -5,7 +5,7 @@
 # Copyright (c) 2003 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico0.tcl,v 1.1 2006/08/04 16:37:13 hobbs Exp $
+# RCS: @(#) $Id: ico0.tcl,v 1.2 2007/02/23 23:28:33 hobbs Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -643,7 +643,7 @@ proc ::ico::readDIB {fh} {
     set and1 [read $fh [expr {(($w * $h) + ($h * ($w % 32))) / 8}]]
 
     set and {}
-    set row [expr {($w + ($w % 32)) / 8}]
+    set row [expr {((($w - 1) / 32) * 32 + 32) / 8}]
     set len [expr {$row * $h}]
     for {set i 0} {$i < $len} {incr i $row} {
 	binary scan [string range $and1 $i [expr {$i + $row}]] B$w tmp
@@ -685,7 +685,7 @@ proc ::ico::readDIBFromData {data loc} {
 		  [expr {$end + ((($w * $h) + ($h * ($w % 32))) / 8) - 1}]]
 
     set and {}
-    set row [expr {($w + ($w % 32)) / 8}]
+    set row [expr {((($w - 1) / 32) * 32 + 32) / 8}]
     set len [expr {$row * $h}]
     for {set i 0} {$i < $len} {incr i $row} {
 	# Has to be decoded by row, in order
@@ -1199,4 +1199,4 @@ proc ::ico::Show {file args} {
     grid columnconfigure $parent 0 -weight 1
 }
 
-package provide ico 0.3
+package provide ico 0.3.1
