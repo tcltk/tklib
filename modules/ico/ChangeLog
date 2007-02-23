@@ -1,5 +1,8 @@
 2007-02-23  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* ico0.tcl (::ico::readDIBFromData): correct row calc for edge
+	case.  Bump version to 0.3.1
+
 	* ico.tcl (::ico::getFileIcon): fixed for better overall support.
 	[Bug 1660234] (Griffiths).
 	Bumped version to 1.0.2
