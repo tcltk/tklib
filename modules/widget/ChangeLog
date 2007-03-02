@@ -1,3 +1,8 @@
+2007-03-01  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* dialog.tcl (C-transient, C-parent): ensure we unset parent
+	transient and group when not both are set.
+
 2007-01-30  Andreas Kupries  <andreask@activestate.com>
 
 	* toolbar.tcl (itemidentify): New method, converting symbolic

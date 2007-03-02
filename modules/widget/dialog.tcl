@@ -4,7 +4,7 @@
 #
 #	Generic dialog widget (themed)
 #
-# RCS: @(#) $Id: dialog.tcl,v 1.20 2006/12/06 01:20:07 hobbs Exp $
+# RCS: @(#) $Id: dialog.tcl,v 1.21 2007/03/02 00:38:03 hobbs Exp $
 #
 
 # Creation and Options - widget::dialog $path ...
@@ -298,26 +298,22 @@ snit::widget widget::dialog {
         set options($option) $value
     }
     method C-parent {option value} {
-	if {$options(-transient)} {
-	    if {[winfo exists $value]} {
-		wm transient $win [winfo toplevel $value]
-		wm group $win [winfo toplevel $value]
-	    } else {
-		wm transient $win ""
-		wm group $win ""
-	    }
+	if {$options(-transient) && [winfo exists $value]} {
+	    wm transient $win [winfo toplevel $value]
+	    wm group $win [winfo toplevel $value]
+	} else {
+	    wm transient $win ""
+	    wm group $win ""
 	}
         set options($option) $value
     }
     method C-transient {option value} {
-	if {$value} {
-	    if {[winfo exists $options(-parent)]} {
-		wm transient $win [winfo toplevel $options(-parent)]
-		wm group $win [winfo toplevel $options(-parent)]
-	    } else {
-		wm transient $win ""
-		wm group $win ""
-	    }
+	if {$value && [winfo exists $options(-parent)]} {
+	    wm transient $win [winfo toplevel $options(-parent)]
+	    wm group $win [winfo toplevel $options(-parent)]
+	} else {
+	    wm transient $win ""
+	    wm group $win ""
 	}
         set options($option) $value
     }
