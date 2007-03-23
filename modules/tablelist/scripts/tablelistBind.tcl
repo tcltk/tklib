@@ -58,7 +58,7 @@ proc tablelist::addActiveTag win {
     if {[string compare $data(-selecttype) "row"] == 0} {
 	$data(body) tag add active $line.0 $line.end
     } elseif {$data(itemCount) > 0 && $data(colCount) > 0 &&
-	      !$data($col-hide)} {
+	      $line > 0 && !$data($col-hide)} {
 	findTabs $win $line $col $col tabIdx1 tabIdx2
 	$data(body) tag add active $tabIdx1 $tabIdx2+1c
     }
@@ -2071,7 +2071,9 @@ proc tablelist::labelB1Up {w X} {
 
     if {[info exists data(colBeingResized)]} {	;# resize operation in progress
 	configLabel $w -cursor $data(-cursor)
-	focus $data(focus)
+	if {[winfo exists $data(focus)]} {
+	    focus $data(focus)
+	}
 	bind [winfo toplevel $win] <Escape> $data(topEscBinding)
 	set col $data(colBeingResized)
 	if {$data(-width) <= 0} {
@@ -2124,7 +2126,9 @@ proc tablelist::labelB1Up {w X} {
 	    set data(afterId) ""
 	}
     	if {$data(-movablecolumns)} {
-	    focus $data(focus)
+	    if {[winfo exists $data(focus)]} {
+		focus $data(focus)
+	    }
 	    bind [winfo toplevel $win] <Escape> $data(topEscBinding)
 	    place forget $data(colGap)
 	}
@@ -2194,7 +2198,9 @@ proc tablelist::escape {win col} {
     if {[info exists data(colBeingResized)]} {	;# resize operation in progress
 	configLabel $w -cursor $data(-cursor)
 	update idletasks
-	focus $data(focus)
+	if {[winfo exists $data(focus)]} {
+	    focus $data(focus)
+	}
 	bind [winfo toplevel $win] <Escape> $data(topEscBinding)
 	set data(labelClicked) 0
 	set col $data(colBeingResized)
@@ -2207,7 +2213,9 @@ proc tablelist::escape {win col} {
     } elseif {!$data(inClickedLabel)} {
 	configLabel $w -cursor $data(-cursor)
 	$data(hdrTxtFrCanv)$col configure -cursor $data(-cursor)
-	focus $data(focus)
+	if {[winfo exists $data(focus)]} {
+	    focus $data(focus)
+	}
 	bind [winfo toplevel $win] <Escape> $data(topEscBinding)
 	place forget $data(colGap)
 	if {[info exists data(X)]} {
