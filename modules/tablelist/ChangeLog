@@ -1,3 +1,19 @@
+2007-03-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.6.1.
+	* COPYRIGHT.txt:
+
+	* scripts/tablelistBind.tcl: Improved the focus handling when resizing
+	  a column interactively (bug reported by Jorge Enderr).
+
+	* scripts/tablelistUtil.tcl: Fixed a bug reported by Harold Campbell,
+	  related to hidden rows when having -selecttype cell; fixed a bug in
+	  the cellconfigure subcommand, reported by Roy Terry.
+
+	* scripts/tablelistWidget.tcl: Corrected a typo in the adaptation of
+	  vertical scrolling to the text widget changes made in Tk 8.5 (bug
+	  reported by Julian M Noble).
+
 2007-02-01  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/tablelistTile.html: Minor improvement.
