@@ -3871,7 +3871,7 @@ proc tablelist::yviewSubCmd {win argList} {
 	    set btmTextIdx [$w index @0,$btmY]
 	    set topRow [expr {int($topTextIdx) - 1}]
 	    set btmRow [expr {int($btmTextIdx) - 1}]
-	    foreach {x y width height baselinePos} [$w dlineinfo $btmTextIdx] {}
+	    foreach {x y width height baselinePos} [$w dlineinfo $topTextIdx] {}
 	    if {$y < 0} {				 ;# top row incomplete
 		incr topRow
 	    }
