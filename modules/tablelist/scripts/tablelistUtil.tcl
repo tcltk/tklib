@@ -218,32 +218,41 @@ proc tablelist::cellIndex {win idx checkRange} {
 # Sets the row index specified by $rowName to the index of the nearest
 # (non-hidden) row.
 #------------------------------------------------------------------------------
-proc tablelist::adjustRowIndex {win rowName {forceVisible 0}} {
-    upvar ::tablelist::ns${win}::data data
-    upvar $rowName row
+proc tablelist::adjustRowIndex {win rowName {forceNonHidden 0}} {
+    upvar ::tablelist::ns${win}::data data $rowName row
 
-    if {$row > $data(lastRow)} {
-	set row $data(lastRow)
+    #
+    # Don't operate on row directly, because $rowName might
+    # be data(activeRow), in which case any temporary changes
+    # made on row would trigger the activeTrace procedure
+    #
+    set _row $row
+    if {$_row > $data(lastRow)} {
+	set _row $data(lastRow)
     }
-    if {$row < 0} {
-	set row 0
+    if {$_row < 0} {
+	set _row 0
     }
 
-    if {$forceVisible} {
-	set origRow $row
-	for {} {$row < $data(itemCount)} {incr row} {
-	    set key [lindex [lindex $data(itemList) $row] end]
+    if {$forceNonHidden} {
+	set _rowSav $_row
+	for {} {$_row < $data(itemCount)} {incr _row} {
+	    set key [lindex [lindex $data(itemList) $_row] end]
 	    if {![info exists data($key-hide)]} {
+		set row $_row
 		return ""
 	    }
 	}
-	for {set row [expr {$origRow - 1}]} {$row >= 0} {incr row -1} {
-	    set key [lindex [lindex $data(itemList) $row] end]
+	for {set _row [expr {$_rowSav - 1}]} {$_row >= 0} {incr _row -1} {
+	    set key [lindex [lindex $data(itemList) $_row] end]
 	    if {![info exists data($key-hide)]} {
+		set row $_row
 		return ""
 	    }
 	}
 	set row 0
+    } else {
+	set row $_row
     }
 }
 
@@ -253,30 +262,39 @@ proc tablelist::adjustRowIndex {win rowName {forceVisible 0}} {
 # Sets the column index specified by $colName to the index of the nearest
 # (non-hidden) column.
 #------------------------------------------------------------------------------
-proc tablelist::adjustColIndex {win colName {forceVisible 0}} {
-    upvar ::tablelist::ns${win}::data data
-    upvar $colName col
+proc tablelist::adjustColIndex {win colName {forceNonHidden 0}} {
+    upvar ::tablelist::ns${win}::data data $colName col
 
-    if {$col > $data(lastCol)} {
-	set col $data(lastCol)
+    #
+    # Don't operate on col directly, because $colName might
+    # be data(activeCol), in which case any temporary changes
+    # made on col would trigger the activeTrace procedure
+    #
+    set _col $col
+    if {$_col > $data(lastCol)} {
+	set _col $data(lastCol)
     }
-    if {$col < 0} {
-	set col 0
+    if {$_col < 0} {
+	set _col 0
     }
 
-    if {$forceVisible} {
-	set origCol $col
-	for {} {$col < $data(colCount)} {incr col} {
-	    if {!$data($col-hide)} {
+    if {$forceNonHidden} {
+	set _colSav $_col
+	for {} {$_col < $data(colCount)} {incr _col} {
+	    if {!$data($_col-hide)} {
+		set col $_col
 		return ""
 	    }
 	}
-	for {set col [expr {$origCol - 1}]} {$col >= 0} {incr col -1} {
-	    if {!$data($col-hide)} {
+	for {set _col [expr {$_colSav - 1}]} {$_col >= 0} {incr _col -1} {
+	    if {!$data($_col-hide)} {
+		set col $_col
 		return ""
 	    }
 	}
-	set col 0
+	set _col 0
+    } else {
+	set col $_col
     }
 }
 
@@ -1120,6 +1138,7 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
 proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 			      alignment} {
     if {$auxType == 0} {				;# no image or window
+	set areEqual [$w compare $index1 == $index2]
 	$w delete $index1+1c $index2
 	if {[catch {$w window cget $index1 -create} script] == 0 &&
 	    [string match "::tablelist::displayText*" $script]} {
@@ -1131,7 +1150,9 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 		eval $msgScript
 	    }
 	} else {
-	    $w delete $index1
+	    if {!$areEqual} {
+		$w delete $index1
+	    }
 	    $w window create $index1 -pady 1 -create $msgScript
 	}
     } else {
