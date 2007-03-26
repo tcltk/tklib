@@ -32,9 +32,9 @@ namespace eval tablelist {
 	left,0		r
 	left,1		l
 	right,0		l
-	right,0		r
+	right,1		r
 	center,0	r
-	center,0	l
+	center,1	l
     }
 
     #
