@@ -1,3 +1,8 @@
+2007-03-26  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: Fixed a bug reported by Kai Morich,
+	  related to the -snipside option.
+
 2007-03-23  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 4.6.1.
