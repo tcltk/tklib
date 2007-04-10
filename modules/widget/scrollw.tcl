@@ -4,7 +4,7 @@
 #
 #	Scrolled widget
 #
-# RCS: @(#) $Id: scrollw.tcl,v 1.12 2007/01/21 20:51:03 hobbs Exp $
+# RCS: @(#) $Id: scrollw.tcl,v 1.13 2007/04/10 18:15:28 hobbs Exp $
 #
 
 # Creation and Options - widget::scrolledwindow $path ...
@@ -103,6 +103,10 @@ snit::widget widget::scrolledwindow {
 
 	set pending [after idle [mymethod _setdata]]
 	$self configurelist $args
+    }
+
+    destructor {
+	after cancel $pending
     }
 
     # Do we need this ??
