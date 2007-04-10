@@ -6,7 +6,7 @@
 #
 # Copyright (c) 2005 Jeffrey Hobbs.  All Rights Reserved.
 #
-# RCS: @(#) $Id: ruler.tcl,v 1.10 2006/11/16 01:50:57 hobbs Exp $
+# RCS: @(#) $Id: ruler.tcl,v 1.11 2007/04/10 18:15:58 hobbs Exp $
 #
 
 ###
@@ -92,7 +92,7 @@ snit::widgetadaptor widget::ruler {
 	$self configurelist $args
 
 	$self redraw
-   }
+    }
 
     destructor {
 	catch {after cancel $redrawID}
