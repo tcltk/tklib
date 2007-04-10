@@ -4,7 +4,7 @@
 #
 #	MenuEntry widget
 #
-# RCS: @(#) $Id: mentry.tcl,v 1.5 2006/09/29 16:25:07 hobbs Exp $
+# RCS: @(#) $Id: mentry.tcl,v 1.6 2007/04/10 18:15:40 hobbs Exp $
 #
 
 # Creation and Options - widget::menuentry $path ...
@@ -96,27 +96,31 @@ proc ::widget::createMenuEntryLayout {} {
     } else {
 	image create photo $img -format GIF -data $menuentry_gifdata
     }
-    # Create -padding for space on left and right of icon
-    set pad [expr {[image width $img] + 4}]
-    style theme settings "default" {
-	style layout MenuEntry {
-	    Entry.field -children {
-		MenuEntry.icon -side left
-		Entry.padding -children {
-		    Entry.textarea
+    namespace eval ::ttk [list set img $img] ; # namespace resolved
+    namespace eval ::ttk {
+	# Create -padding for space on left and right of icon
+	set pad [expr {[image width $img] + 4}]
+	style theme settings "default" {
+	    style layout MenuEntry {
+		Entry.field -children {
+		    MenuEntry.icon -side left
+		    Entry.padding -children {
+			Entry.textarea
+		    }
 		}
 	    }
+	    # center icon in padded cell
+	    style element create MenuEntry.icon image $img \
+		-sticky "" -padding [list $pad 0 0 0]
 	}
-	# center icon in padded cell
-	style element create MenuEntry.icon image $img -sticky "" \
-	    -padding [list $pad 0 0 0]
-    }
-    if 0 {
-	# Some mappings would be required per-theme to adapt to theme changes
-	foreach theme [style theme names] {
-	    style theme settings $theme {
-		# Could have disabled, pressed, ... state images
-		#style map MenuEntry -image [list disabled $img]
+	if 0 {
+	    # Some mappings would be required per-theme to adapt to theme
+	    # changes
+	    foreach theme [style theme names] {
+		style theme settings $theme {
+		    # Could have disabled, pressed, ... state images
+		    #style map MenuEntry -image [list disabled $img]
+		}
 	    }
 	}
     }
