@@ -27,7 +27,8 @@ namespace eval ::Plotchart {
                     createBarchart createHorizontalBarchart \
                     createTimechart createStripchart \
                     createIsometricPlot create3DPlot \
-                    createGanttChart createHistogram colorMap
+                    createGanttChart createHistogram colorMap \
+                    create3DBars
 
    #
    # Array linking procedures with methods
@@ -49,9 +50,12 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,background)     BackgroundColour
    set methodProc(xyplot,legendconfig)   LegendConfigure
    set methodProc(xyplot,legend)         DrawLegend
+   set methodProc(xyplot,balloon)        DrawBalloon
+   set methodProc(xyplot,balloonconfig)  ConfigBalloon
    set methodProc(piechart,title)        DrawTitle
    set methodProc(piechart,plot)         DrawPie
    set methodProc(piechart,saveplot)     SavePlot
+   set methodProc(piechart,balloon)      DrawBalloon
    set methodProc(polarplot,title)       DrawTitle
    set methodProc(polarplot,plot)        DrawPolarData
    set methodProc(polarplot,saveplot)    SavePlot
@@ -59,6 +63,8 @@ namespace eval ::Plotchart {
    set methodProc(polarplot,background)  BackgroundColour
    set methodProc(polarplot,legendconfig) LegendConfigure
    set methodProc(polarplot,legend)      DrawLegend
+   set methodProc(polarplot,balloon)     DrawBalloon
+   set methodProc(polarplot,balloonconfig) ConfigBalloon
    set methodProc(histogram,title)       DrawTitle
    set methodProc(histogram,xtext)       DrawXtext
    set methodProc(histogram,ytext)       DrawYtext
@@ -71,6 +77,8 @@ namespace eval ::Plotchart {
    set methodProc(histogram,background)  BackgroundColour
    set methodProc(histogram,legendconfig) LegendConfigure
    set methodProc(histogram,legend)      DrawLegend
+   set methodProc(histogram,balloon)     DrawBalloon
+   set methodProc(histogram,balloonconfig) ConfigBalloon
    set methodProc(horizbars,title)       DrawTitle
    set methodProc(horizbars,xtext)       DrawXtext
    set methodProc(horizbars,ytext)       DrawYtext
@@ -83,6 +91,8 @@ namespace eval ::Plotchart {
    set methodProc(horizbars,xconfig)     XConfig
    set methodProc(horizbars,legendconfig) LegendConfigure
    set methodProc(horizbars,legend)      DrawLegend
+   set methodProc(horizbars,balloon)     DrawBalloon
+   set methodProc(horizbars,balloonconfig) ConfigBalloon
    set methodProc(vertbars,title)        DrawTitle
    set methodProc(vertbars,xtext)        DrawXtext
    set methodProc(vertbars,ytext)        DrawYtext
@@ -95,12 +105,16 @@ namespace eval ::Plotchart {
    set methodProc(vertbars,yconfig)      YConfig
    set methodProc(vertbars,legendconfig) LegendConfigure
    set methodProc(vertbars,legend)       DrawLegend
+   set methodProc(vertbars,balloon)      DrawBalloon
+   set methodProc(vertbars,balloonconfig) ConfigBalloon
    set methodProc(timechart,title)       DrawTitle
    set methodProc(timechart,period)      DrawTimePeriod
    set methodProc(timechart,milestone)   DrawTimeMilestone
    set methodProc(timechart,vertline)    DrawTimeVertLine
    set methodProc(timechart,saveplot)    SavePlot
    set methodProc(timechart,background)  BackgroundColour
+   set methodProc(timechart,balloon)     DrawBalloon
+   set methodProc(timechart,balloonconfig) ConfigBalloon
    set methodProc(ganttchart,title)      DrawTitle
    set methodProc(ganttchart,period)     DrawGanttPeriod
    set methodProc(ganttchart,task)       DrawGanttPeriod
@@ -113,6 +127,8 @@ namespace eval ::Plotchart {
    set methodProc(ganttchart,connect)    DrawGanttConnect
    set methodProc(ganttchart,summary)    DrawGanttSummary
    set methodProc(ganttchart,background) BackgroundColour
+   set methodProc(ganttchart,balloon)     DrawBalloon
+   set methodProc(ganttchart,balloonconfig) ConfigBalloon
    set methodProc(stripchart,title)      DrawTitle
    set methodProc(stripchart,xtext)      DrawXtext
    set methodProc(stripchart,ytext)      DrawYtext
@@ -125,12 +141,16 @@ namespace eval ::Plotchart {
    set methodProc(stripchart,background) BackgroundColour
    set methodProc(stripchart,legendconfig) LegendConfigure
    set methodProc(stripchart,legend)     DrawLegend
+   set methodProc(stripchart,balloon)    DrawBalloon
+   set methodProc(stripchart,balloonconfig) ConfigBalloon
    set methodProc(isometric,title)       DrawTitle
    set methodProc(isometric,xtext)       DrawXtext
    set methodProc(isometric,ytext)       DrawYtext
    set methodProc(isometric,plot)        DrawIsometricData
    set methodProc(isometric,saveplot)    SavePlot
    set methodProc(isometric,background)  BackgroundColour
+   set methodProc(isometric,balloon)     DrawBalloon
+   set methodProc(isometric,balloonconfig) ConfigBalloon
    set methodProc(3dplot,title)          DrawTitle
    set methodProc(3dplot,plotfunc)       Draw3DFunction
    set methodProc(3dplot,plotdata)       Draw3DData
@@ -143,6 +163,13 @@ namespace eval ::Plotchart {
    set methodProc(3dplot,zconfig)        ZConfig
    set methodProc(3dplot,plotfuncont)    Draw3DFunctionContour
    set methodProc(3dplot,background)     BackgroundColour
+   set methodProc(3dbars,title)          DrawTitle
+   set methodProc(3dbars,plot)           Draw3DBar
+   set methodProc(3dbars,yconfig)        YConfig
+   set methodProc(3dbars,saveplot)       SavePlot
+   set methodProc(3dbars,config)         Config3DBars
+   set methodProc(3dbars,balloon)        DrawBalloon
+   set methodProc(3dbars,balloonconfig)  ConfigBalloon
 
    #
    # Auxiliary parameters
@@ -502,6 +529,7 @@ proc ::Plotchart::createXYPlot { w xscale yscale } {
    DrawXaxis        $w $xmin  $xmax  $xdelt
    DrawMask         $w
    DefaultLegend    $w
+   DefaultBalloon   $w
 
    return $newchart
 }
@@ -578,7 +606,8 @@ proc ::Plotchart::createIsometricPlot { w xscale yscale stepsize } {
       DrawXaxis        $w $xmin  $xmax  $xdelt
       DrawMask         $w
    }
-   DefaultLegend $w
+   DefaultLegend  $w
+   DefaultBalloon $w
 
    return $newchart
 }
@@ -629,6 +658,7 @@ proc ::Plotchart::createHistogram { w xscale yscale } {
    DrawXaxis        $w $xmin  $xmax  $xdelt
    DrawMask         $w
    DefaultLegend    $w
+   DefaultBalloon   $w
 
    return $newchart
 }
@@ -658,7 +688,8 @@ proc ::Plotchart::createPiechart { w } {
    $w create oval $pxmin $pymin $pxmax $pymax
 
    SetColours $w blue lightblue green yellow orange red magenta brown
-   DefaultLegend $w
+   DefaultLegend  $w
+   DefaultBalloon $w
 
    return $newchart
 }
@@ -701,6 +732,7 @@ proc ::Plotchart::createPolarplot { w radius_data } {
    polarCoordinates $w $rad_max
    DrawPolarAxes    $w $rad_max   $rad_step
    DefaultLegend    $w
+   DefaultBalloon   $w
 
    return $newchart
 }
@@ -749,6 +781,7 @@ proc ::Plotchart::createBarchart { w xlabels yscale noseries } {
    DrawXlabels      $w $xlabels $noseries
    DrawMask         $w
    DefaultLegend    $w
+   DefaultBalloon   $w
 
    SetColours $w blue lightblue green yellow orange red magenta brown
 
@@ -799,6 +832,7 @@ proc ::Plotchart::createHorizontalBarchart { w xscale ylabels noseries } {
    DrawYlabels      $w $ylabels $noseries
    DrawMask         $w
    DefaultLegend    $w
+   DefaultBalloon   $w
 
    SetColours $w blue lightblue green yellow orange red magenta brown
 
@@ -920,6 +954,7 @@ proc ::Plotchart::createGanttchart { w time_begin time_end noitems
    GanttFont  $w description "times 10"
    GanttFont  $w summary     "times 10 bold"
    GanttFont  $w scale       "times 7"
+   DefaultBalloon $w
 
    return $newchart
 }
@@ -958,8 +993,57 @@ proc ::Plotchart::create3DPlot { w xscale yscale zscale } {
    Draw3DAxes         $w $xmin  $ymin  $zmin  $xmax  $ymax $zmax \
                          $xstep $ystep $zstep
    DefaultLegend      $w
+   DefaultBalloon     $w
 
    SetColours $w grey black
+
+   return $newchart
+}
+
+# create3DBarchart --
+#    Create a command for drawing a barchart with vertical 3D bars
+# Arguments:
+#    w           Name of the canvas
+#    yscale      Minimum, maximum and step for y-axis
+#    nobars      Number of bars to be drawn
+# Result:
+#    Name of a new command
+# Note:
+#    The entire canvas will be dedicated to the barchart.
+#
+proc ::Plotchart::create3DBarchart { w yscale nobars } {
+   variable data_series
+
+   foreach s [array names data_series "$w,*"] {
+      unset data_series($s)
+   }
+
+   set newchart "3dbarchart_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler 3dbars $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w 4] {break}
+
+   set xmin  0.0
+   set xmax  [expr {$nobars + 0.1}]
+
+   foreach {ymin ymax ydelt} $yscale {break}
+
+   if { $ydelt == 0.0 } {
+      return -code error "Step size can not be zero"
+   }
+
+   if { ($ymax-$ymin)*$ydelt < 0.0 } {
+      set ydelt [expr {-$ydelt}]
+   }
+
+   viewPort         $w $pxmin $pymin $pxmax $pymax
+   worldCoordinates $w $xmin  $ymin  $xmax  $ymax
+
+   DrawYaxis        $w $ymin  $ymax  $ydelt
+  #DrawMask         $w -- none!
+   Draw3DBarchart   $w $yscale $nobars
+   DefaultLegend    $w
+   DefaultBalloon   $w
 
    return $newchart
 }
@@ -972,7 +1056,9 @@ source [file join [file dirname [info script]] "plot3d.tcl"]
 source [file join [file dirname [info script]] "scaling.tcl"]
 source [file join [file dirname [info script]] "plotcontour.tcl"]
 source [file join [file dirname [info script]] "plotgantt.tcl"]
+source [file join [file dirname [info script]] "plotbusiness.tcl"]
+source [file join [file dirname [info script]] "plotannot.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.2
+package provide Plotchart 1.3
