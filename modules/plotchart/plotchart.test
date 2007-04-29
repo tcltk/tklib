@@ -503,11 +503,12 @@ test Plotchart-5.1 {Gantt chart} -constraints tk -body {
     set s [::Plotchart::createGanttchart .c "1 january 2004" \
 	    "31 december 2004" 4]
 
-    $s task "Spring" "1 march 2004" "1 june 2004" 30
-    $s task "Summer" "1 june 2004" "1 september 2004" 0
-#
-#   The summary does not work yet!
-#    $s summary "Half year" "Spring" "Summer"
+    #
+    # Two tasks, add a summary for them
+    #
+    set begin [$s task "Spring" "1 march 2004" "1 june 2004" 30]
+    set end   [$s task "Summer" "1 june 2004" "1 september 2004" 0]
+    $s summary "Half year" $begin $end
 
     $s milestone "Holiday" "21 july 2004" blue
     $s vertline "1 apr" "1 april 2004"
