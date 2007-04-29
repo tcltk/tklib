@@ -1,3 +1,14 @@
+2007-04-29 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.tcl: Added balloon text
+        * plotchart.man: Description of balloon text
+        * plotchart.test: Test for balloon text and Gantt chart
+        * plotannot.tcl: File with procedures for annotations
+
+2007-04-17 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.tcl: Added 3D barchart
+        * plotchart.man: Description of 3D barchart
+        * plotbusiness.tcl: File with procedures for business-type charts
+
 2007-02-10 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.man: Description of legend commands
         * plotchart.tcl: Raised version to 1.2

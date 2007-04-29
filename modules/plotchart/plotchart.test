@@ -452,5 +452,105 @@ test Plotchart-3.11 {Histogram} -constraints tk -body {
     set res
 } -result 1 ;# {}
 
+test Plotchart-4.1 {XY-plot - balloon} -constraints tk -body {
+    canvas .c -width 300 -height 200 -bg white
+    pack   .c -fill both
+    .c delete all
+
+    set s [::Plotchart::createXYPlot .c {0.0 100.0 10.0} {0.0 100.0 20.0}]
+
+    set xd    5.0
+    set yd   20.0
+    set xold  0.0
+    set yold 50.0
+
+    for { set i 0 } { $i < 20 } { incr i } {
+	set xnew [expr {$xold+$xd}]
+	set ynew [expr {$yold+(rand()-0.5)*$yd}]
+	set ynew2 [expr {$yold+(rand()-0.5)*2.0*$yd}]
+	$s plot series1 $xnew $ynew
+	$s plot series2 $xnew $ynew2
+	set xold $xnew
+	set yold $ynew
+    }
+
+    $s title "Aha!"
+
+    $s xticklines green
+    $s yticklines red
+
+    $s balloonconfig -background green
+    $s balloon 50 50 "Here it is!"  south-east
+
+    $s balloonconfig -background red -font "Times 14"
+    $s balloonconfig -margin 10
+    $s balloon 50 100 "No, here!"  north-east
+
+    after 1000 {set waited 1}
+    vwait waited
+    set waited 0
+
+    set res [checkCanvasItems .c {data xaxis yaxis}]
+    destroy .c
+    set res
+} -result 1 ;# {}
+
+test Plotchart-5.1 {Gantt chart} -constraints tk -body {
+    canvas .c -width 600 -height 200 -bg white
+    pack   .c -fill both
+    .c delete all
+
+    set s [::Plotchart::createGanttchart .c "1 january 2004" \
+	    "31 december 2004" 4]
+
+    $s task "Spring" "1 march 2004" "1 june 2004" 30
+    $s task "Summer" "1 june 2004" "1 september 2004" 0
+#
+#   The summary does not work yet!
+#    $s summary "Half year" "Spring" "Summer"
+
+    $s milestone "Holiday" "21 july 2004" blue
+    $s vertline "1 apr" "1 april 2004"
+    $s vertline "1 jul" "1 july 2004"
+    $s vertline "1 oct" "1 october 2004"
+    $s title "Seasons (northern hemisphere)"
+
+    after 1000 {set waited 1}
+    vwait waited
+    set waited 0
+
+    #set res [checkCanvasItems .c {data xaxis yaxis}]
+    destroy .c
+    set res
+} -result 1 ;# {}
+
+test Plotchart-6.1 {3D Bars} -constraints tk -body {
+    canvas .c -width 600 -height 200 -bg white
+    pack   .c -fill both
+    .c delete all
+
+    set s [::Plotchart::create3DBarchart .c {-200.0 900.0 100.0} 7]
+
+    foreach {bar value} {red 765 green 234 blue 345 yellow 321
+                         magenta 567 cyan -123 white 400} {
+
+        $s plot $bar $value $bar
+    }
+
+    $s title "3D Bars"
+
+    $s balloon 1.2 100 "Arrow pointing\nat second bar" south-east
+
+    after 1000 {set waited 1}
+    vwait waited
+    set waited 0
+
+    #set res [checkCanvasItems .c {data xaxis yaxis}]
+    destroy .c
+    set res
+} -result 1 ;# {}
+
+
+
 # -------------------------------------------------------------------------
 ::tcltest::cleanupTests
