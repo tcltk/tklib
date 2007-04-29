@@ -21,4 +21,11 @@ source plotchart.tcl
 	set yold $ynew
     }
 
+    $s balloonconfig -background green -rimwidth 3 -arrowsize 10 -font "Times 14"
+    $s balloon 50 50 "Here it is!"  south-east
+
+    $s balloonconfig -background red
+    $s balloonconfig -margin 10
+    $s balloon 50 100 "No, here!"  north-east
+
     $s title "Aha!"

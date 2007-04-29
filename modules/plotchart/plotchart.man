@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 1.2]
-[copyright {2004 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
+[manpage_begin Plotchart n 1.3]
+[copyright {2007 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.3]]
 [require Tk [opt 8.3]]
-[require Plotchart [opt 1.2]]
+[require Plotchart [opt 1.3]]
 
 [description]
 [para]
@@ -292,6 +292,28 @@ integer number greater than zero (if [const stacked] is not used).
 [nl]
 
 
+[call [cmd ::Plotchart::create3DBarchart] [arg w] [arg yaxis] [arg nobars]]
+
+Create a new barchart with 3D vertical bars. The horizontal axis will
+display the labels per bar. The number of bars given by [arg nobars]
+determines the position and the width of the bars. The colours can be
+varied per bar. (This type of chart was inspired by the Wiki page on 3D
+bars by Richard Suchenwirth.)
+
+[list_begin arg]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the plot.
+
+[arg_def list yaxis in]
+A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order.
+
+[arg_def int nobars in]
+The number of bars that will be plotted.
+
+[list_end]
+[nl]
+
+
 [call [cmd ::Plotchart::createTimechart] [arg w] [arg time_begin] [arg time_end] [arg noitems]]
 
 Create a new timechart.
@@ -536,6 +558,69 @@ Text to be drawn next to the line/symbol.
 
 [list_end]
 [nl]
+
+
+[call [cmd \$anyplot] balloon [arg x] [arg y] [arg text] [arg dir]]
+
+Add balloon text to the plot (except for 3D plots). The arrow will point
+to the given x- and y-coordinates. For xy-graphs and such, the
+coordinates are directly related to the axes; for vertical barcharts the
+x-coordinate is measured as the number of bars minus 1 and similar for
+horizontal barcharts.
+
+[list_begin arg]
+
+[arg_def float x]
+X-coordinate of the point that the arrow of the balloon will point to.
+
+[arg_def float y]
+Y-coordinate of the point that the arrow of the balloon will point to.
+
+[arg_def string text]
+Text to be drawn in the balloon.
+
+[arg_def string dir]
+Direction of the arrow, one of: north, north-east, east, south-east,
+south, south-west, west or north-west.
+
+[list_end]
+[nl]
+
+
+[call [cmd \$anyplot] balloonconfig [arg args]]
+
+Configure the balloon text for the plot. The new settings will be used
+for the next balloon text.
+
+[list_begin opt]
+
+[opt_def font fontname]
+Font to be used for the text
+
+[opt_def justify left|center|right]
+Way to justify multiline text
+
+[opt_def textcolour colour]
+Colour for the text (synonym: textcolor)
+
+[opt_def background colour]
+Background colour for the balloon
+
+[opt_def outline colour]
+Colour of the outline of the balloon
+
+[opt_def margin value]
+Margin around the text (in pixels)
+
+[opt_def rimwidth value]
+Width of the outline of the balloon (in pixels)
+
+[opt_def arrowsize value]
+Length factor for the arrow (in pixels)
+
+[list_end]
+[nl]
+
 
 [list_end]
 [para]
@@ -791,7 +876,7 @@ Name of the data series whose configuration we are changing.
 [list_end]
 [nl]
 
-The following option are known:
+The following options are allowed:
 
 [list_begin opt]
 [opt_def colour c]
@@ -884,6 +969,58 @@ A list of values, one for each y-axis label.
 The colour of the bars.
 
 [list_end]
+[list_end]
+[para]
+
+For [emph {3D barcharts}]:
+
+[list_begin definitions]
+[call [cmd \$barchart] plot [arg label] [arg yvalue] [arg colour]]
+
+Add the next bar to the barchart.
+
+[list_begin arg]
+[arg_def string label in]
+The label to be shown below the column.
+
+[arg_def float yvalue in]
+The value that determines the height of the column
+
+[arg_def color colour in]
+The colour of the column.
+
+[list_end]
+
+[call [cmd \$barchart] config [option -option] [arg value] ...]
+
+Set one or more configuration parameters. The following options are
+supported:
+
+[list_begin opt]
+
+[opt_def usebackground boolean]
+Whether to draw walls to the left and to the back of the columns or not
+
+[opt_def useticklines boolean]
+Whether to draw ticklines on the walls or not
+
+[opt_def showvalues boolean]
+Whether to show the values or not
+
+[opt_def labelfont newfont]
+Name of the font to use for labels
+
+[opt_def labelcolour colour]
+Colour for the labels
+
+[opt_def valuefont newfont]
+Name of the font to use for the values
+
+[opt_def valuecolour colour]
+Colour for the values
+
+[list_end]
+
 [list_end]
 [para]
 
