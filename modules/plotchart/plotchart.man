@@ -228,6 +228,25 @@ Name of the [emph existing] canvas widget to hold the plot.
 [nl]
 
 
+[call [cmd ::Plotchart::createRadialchart] [arg w] [arg names] [arg scale]]
+
+Create a new radial chart (the data are drawn as a line connecting the
+spokes of the diagram).
+
+[list_begin arg]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the plot.
+
+[arg_def list names in]
+Names for the spokes.
+
+[arg_def float scale in]
+Scale value to determine the position of the data along the spokes.
+
+[list_end]
+[nl]
+
+
 [call [cmd ::Plotchart::createBarchart] [arg w] [arg xlabels] [arg yaxis] [arg noseries]]
 
 Create a new barchart with vertical bars. The horizontal axis will
@@ -912,6 +931,41 @@ Fill a piechart.
 [arg_def list data in]
 A list of pairs (labels and values). The values determine the relative
 size of the circle segments. The labels are drawn beside the circle.
+
+[list_end]
+
+[call [cmd \$pie] colours [arg colour1] [arg colour2] ...]
+
+Set the colours to be used.
+
+[list_begin arg]
+[arg_def color colour1 in]
+The first colour.
+
+[arg_def color colour2 in]
+The second colour, and so on.
+
+[list_end]
+[list_end]
+[para]
+
+For [emph "radial charts"]:
+
+[list_begin definitions]
+[call [cmd \$radial] plot [arg data] [arg colour] [arg thickness]]
+
+Draw a new line in the radial chart
+
+[list_begin arg]
+[arg_def list data in]
+A list of data (one for each spoke). The values determine the distance
+from the centre of the line connecting the spokes.
+
+[arg_def color colour in]
+The colour for the line.
+
+[arg_def int thickness in]
+An optional argument for the thickness of the line.
 
 [list_end]
 
