@@ -1051,9 +1051,9 @@ proc ::Plotchart::DrawRadialSpokes { w names } {
 
    foreach name $names {
        set xtext  [expr {$xcentr+cos($angle)*($pxmax-$pxmin+20)/2}]
-       set ytext  [expr {$ycentr+sin($angle)*($pymax-$pymin+20)/2}]
+       set ytext  [expr {$ycentr-sin($angle)*($pymax-$pymin+20)/2}]
        set xspoke [expr {$xcentr+cos($angle)*($pxmax-$pxmin)/2}]
-       set yspoke [expr {$ycentr+sin($angle)*($pymax-$pymin)/2}]
+       set yspoke [expr {$ycentr-sin($angle)*($pymax-$pymin)/2}]
 
        if { cos($angle) >= 0.0 } {
            set anchor w
@@ -1088,8 +1088,13 @@ proc ::Plotchart::DrawRadialSpokes { w names } {
 #    New line drawn
 #
 proc ::Plotchart::DrawRadial { w values colour {thickness 1} } {
+   variable data_series
    variable settings
    variable scaling
+
+   if { [llength $values] != $settings($w,number) } {
+       return -code error "Incorrect number of data given - should be $settings($w,number)"
+   }
 
    set pxmin $scaling($w,pxmin)
    set pymin $scaling($w,pymin)
@@ -1103,14 +1108,42 @@ proc ::Plotchart::DrawRadial { w values colour {thickness 1} } {
 
    set coords {}
 
-   foreach value $values {
+   if { ! [info exists data_series($w,base)] } {
+       set data_series($w,base) {}
+       foreach value $values {
+           lappend data_series($w,base) 0.0
+       }
+   }
+
+   set newbase {}
+   foreach value $values base $data_series($w,base) {
+       if { $settings($w,style) != "lines" } {
+           set value [expr {$value+$base}]
+       }
        set factor [expr {$value/$settings($w,scale)}]
        set xspoke [expr {$xcentr+$factor*cos($angle)*($pxmax-$pxmin)/2}]
-       set yspoke [expr {$ycentr+$factor*sin($angle)*($pymax-$pymin)/2}]
+       set yspoke [expr {$ycentr-$factor*sin($angle)*($pymax-$pymin)/2}]
+
+       if { abs($xspoke-$xcentr) < 2 } {
+           set xspoke $xcentr
+       }
+       if { abs($yspoke-$ycentr) < 2 } {
+           set yspoke $ycentr
+       }
 
        lappend coords $xspoke $yspoke
+       lappend newbase $value
        set angle [expr {$angle+$dangle}]
    }
 
-   $w create polygon $coords -outline $colour -width $thickness -fill {}
+   set data_series($w,base) $newbase
+
+   if { $settings($w,style) == "filled" } {
+       set fillcolour $colour
+   } else {
+       set fillcolour ""
+   }
+
+   set id [$w create polygon $coords -outline $colour -width $thickness -fill $fillcolour]
+   $w lower $id
 }

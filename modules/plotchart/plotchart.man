@@ -228,7 +228,7 @@ Name of the [emph existing] canvas widget to hold the plot.
 [nl]
 
 
-[call [cmd ::Plotchart::createRadialchart] [arg w] [arg names] [arg scale]]
+[call [cmd ::Plotchart::createRadialchart] [arg w] [arg names] [arg scale] [arg style]]
 
 Create a new radial chart (the data are drawn as a line connecting the
 spokes of the diagram).
@@ -242,6 +242,19 @@ Names for the spokes.
 
 [arg_def float scale in]
 Scale value to determine the position of the data along the spokes.
+
+[arg_def float style in]
+Style of the chart (optional). One of:
+[list_begin bullet]
+[bullet]
+[emph lines] - the default: draw the data as independent polylines.
+[bullet]
+[emph cumulative] - draw the data as polylines where the data are
+accumulated.
+[bullet]
+[emph filled] - draw the data as filled polygons where the data are
+accumulated
+[list_end]
 
 [list_end]
 [nl]
