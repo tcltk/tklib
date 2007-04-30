@@ -1060,6 +1060,14 @@ proc ::Plotchart::DrawRadialSpokes { w names } {
        } else {
            set anchor e
        }
+
+       if { abs($xspoke-$xcentr) < 2 } {
+           set xspoke $xcentr
+       }
+       if { abs($yspoke-$ycentr) < 2 } {
+           set yspoke $ycentr
+       }
+
        $w create text $xtext $ytext -text $name -anchor $anchor
        $w create line $xcentr $ycentr $xspoke $yspoke -fill black
 
