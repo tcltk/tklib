@@ -1058,13 +1058,19 @@ proc ::Plotchart::create3DBarchart { w yscale nobars } {
 #    w           Name of the canvas
 #    names       Names of the spokes
 #    scale       Scale factor for the data
+#    style       (Optional) style of the chart (lines, cumulative or filled)
 # Result:
 #    Name of a new command
 # Note:
 #    The entire canvas will be dedicated to the radial chart.
 #
-proc ::Plotchart::createRadialchart { w names scale } {
+proc ::Plotchart::createRadialchart { w names scale {style lines} } {
    variable settings
+   variable data_series
+
+   foreach s [array names data_series "$w,*"] {
+      unset data_series($s)
+   }
 
    set newchart "radialchart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler radialchart $w
@@ -1074,7 +1080,9 @@ proc ::Plotchart::createRadialchart { w names scale } {
    viewPort $w $pxmin $pymin $pxmax $pymax
    $w create oval $pxmin $pymin $pxmax $pymax
 
-   set settings($w,scale) [expr {double($scale)}]
+   set settings($w,scale)  [expr {double($scale)}]
+   set settings($w,style)  $style
+   set settings($w,number) [llength $names]
 
    DrawRadialSpokes $w $names
    DefaultLegend  $w

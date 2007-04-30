@@ -573,5 +573,49 @@ test Plotchart-7.1 {Radial chart} -constraints tk -body {
     set res
 } -result 1 ;# {}
 
+
+test Plotchart-7.2 {Filled radial chart} -constraints tk -body {
+    canvas .c -width 600 -height 400 -bg white
+    pack   .c -fill both
+    .c delete all
+
+    set s [::Plotchart::createRadialchart .c {A B LongerName C} 10 filled]
+
+    $s plot {1 2 3 4} green 2
+    $s plot {4 5 0 1} red   3
+
+    $s title "Sample of a filled radial chart"
+
+    after 1000 {set waited 1}
+    vwait waited
+    set waited 0
+
+    #set res [checkCanvasItems .c {data xaxis yaxis}]
+    destroy .c
+    set res
+} -result 1 ;# {}
+
+
+test Plotchart-7.3 {Filled radial chart} -constraints tk -body {
+    canvas .c -width 600 -height 400 -bg white
+    pack   .c -fill both
+    .c delete all
+
+    set s [::Plotchart::createRadialchart .c {A B LongerName C} 10 cumulative]
+
+    $s plot {1 2 3 4} green 2
+    $s plot {4 5 0 1} red   3
+
+    $s title "Sample of a cumulative radial chart"
+
+    after 1000 {set waited 1}
+    vwait waited
+    set waited 0
+
+    #set res [checkCanvasItems .c {data xaxis yaxis}]
+    destroy .c
+    set res
+} -result 1 ;# {}
+
 # -------------------------------------------------------------------------
 ::tcltest::cleanupTests
