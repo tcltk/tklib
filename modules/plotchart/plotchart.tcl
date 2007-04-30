@@ -28,7 +28,7 @@ namespace eval ::Plotchart {
                     createTimechart createStripchart \
                     createIsometricPlot create3DPlot \
                     createGanttChart createHistogram colorMap \
-                    create3DBars
+                    create3DBars createRadialchart
 
    #
    # Array linking procedures with methods
@@ -170,6 +170,10 @@ namespace eval ::Plotchart {
    set methodProc(3dbars,config)         Config3DBars
    set methodProc(3dbars,balloon)        DrawBalloon
    set methodProc(3dbars,balloonconfig)  ConfigBalloon
+   set methodProc(radialchart,title)     DrawTitle
+   set methodProc(radialchart,plot)      DrawRadial
+   set methodProc(radialchart,saveplot)  SavePlot
+   set methodProc(radialchart,balloon)   DrawBalloon
 
    #
    # Auxiliary parameters
@@ -1044,6 +1048,37 @@ proc ::Plotchart::create3DBarchart { w yscale nobars } {
    Draw3DBarchart   $w $yscale $nobars
    DefaultLegend    $w
    DefaultBalloon   $w
+
+   return $newchart
+}
+
+# createRadialchart --
+#    Create a command for drawing a radial chart
+# Arguments:
+#    w           Name of the canvas
+#    names       Names of the spokes
+#    scale       Scale factor for the data
+# Result:
+#    Name of a new command
+# Note:
+#    The entire canvas will be dedicated to the radial chart.
+#
+proc ::Plotchart::createRadialchart { w names scale } {
+   variable settings
+
+   set newchart "radialchart_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler radialchart $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsCircle $w] {break}
+
+   viewPort $w $pxmin $pymin $pxmax $pymax
+   $w create oval $pxmin $pymin $pxmax $pymax
+
+   set settings($w,scale) [expr {double($scale)}]
+
+   DrawRadialSpokes $w $names
+   DefaultLegend  $w
+   DefaultBalloon $w
 
    return $newchart
 }
