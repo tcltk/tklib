@@ -1,3 +1,9 @@
+2007-04-30 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.tcl: Added radial chart
+        * plotpriv.tcl:  Added routines for radial chart
+        * plotchart.man: Description of radial chart
+        * plotchart.test: Test for such charts
+
 2007-04-29 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.tcl: Added balloon text
         * plotchart.man: Description of balloon text

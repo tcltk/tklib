@@ -1022,3 +1022,87 @@ proc ::Plotchart::BackgroundColour { w part colour } {
         $w configure -background $colour
     }
 }
+
+# DrawRadialSpokes --
+#    Draw the spokes of the radial chart
+# Arguments:
+#    w           Name of the canvas
+#    names       Names of the spokes
+# Result:
+#    None
+# Side effects:
+#    Radial chart filled in
+#
+proc ::Plotchart::DrawRadialSpokes { w names } {
+   variable settings
+   variable scaling
+
+   set pxmin $scaling($w,pxmin)
+   set pymin $scaling($w,pymin)
+   set pxmax $scaling($w,pxmax)
+   set pymax $scaling($w,pymax)
+
+   $w create oval $pxmin $pymin $pxmax $pymax -outline black
+
+   set dangle [expr {2.0 * 3.1415926 / [llength $names]}]
+   set angle  0.0
+   set xcentr [expr {($pxmin+$pxmax)/2.0}]
+   set ycentr [expr {($pymin+$pymax)/2.0}]
+
+   foreach name $names {
+       set xtext  [expr {$xcentr+cos($angle)*($pxmax-$pxmin+20)/2}]
+       set ytext  [expr {$ycentr+sin($angle)*($pymax-$pymin+20)/2}]
+       set xspoke [expr {$xcentr+cos($angle)*($pxmax-$pxmin)/2}]
+       set yspoke [expr {$ycentr+sin($angle)*($pymax-$pymin)/2}]
+
+       if { cos($angle) >= 0.0 } {
+           set anchor w
+       } else {
+           set anchor e
+       }
+       $w create text $xtext $ytext -text $name -anchor $anchor
+       $w create line $xcentr $ycentr $xspoke $yspoke -fill black
+
+       set angle [expr {$angle+$dangle}]
+   }
+}
+
+# DrawRadial --
+#    Draw the data for the radial chart
+# Arguments:
+#    w           Name of the canvas
+#    values      Values for each spoke
+#    colour      Colour of the line
+#    thickness   Thickness of the line (optional)
+# Result:
+#    None
+# Side effects:
+#    New line drawn
+#
+proc ::Plotchart::DrawRadial { w values colour {thickness 1} } {
+   variable settings
+   variable scaling
+
+   set pxmin $scaling($w,pxmin)
+   set pymin $scaling($w,pymin)
+   set pxmax $scaling($w,pxmax)
+   set pymax $scaling($w,pymax)
+
+   set dangle [expr {2.0 * 3.1415926 / [llength $values]}]
+   set angle  0.0
+   set xcentr [expr {($pxmin+$pxmax)/2.0}]
+   set ycentr [expr {($pymin+$pymax)/2.0}]
+
+   set coords {}
+
+   foreach value $values {
+       set factor [expr {$value/$settings($w,scale)}]
+       set xspoke [expr {$xcentr+$factor*cos($angle)*($pxmax-$pxmin)/2}]
+       set yspoke [expr {$ycentr+$factor*sin($angle)*($pymax-$pymin)/2}]
+
+       lappend coords $xspoke $yspoke
+       set angle [expr {$angle+$dangle}]
+   }
+
+   $w create polygon $coords -outline $colour -width $thickness -fill {}
+}

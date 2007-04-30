@@ -24,7 +24,6 @@ proc ::Plotchart::Config3DBar { w args } {
         set option [string range $option 1 end]
         set settings($w,$option) $value
 
-        puts "Option: $option -- $value"
         switch -- $option {
             "usebackground" {
                 if { $value } {
@@ -67,8 +66,6 @@ proc ::Plotchart::Config3DBar { w args } {
             }
         }
     }
-
-    parray settings
 }
 
 # Draw3DBarchart --
