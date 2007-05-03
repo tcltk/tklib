@@ -34,7 +34,7 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
         set format $scaling($w,-format,y)
     }
 
-    set y $ymin
+    set y [expr {$ymin+0.0}]  ;# Make sure we have the number in the right format
     set scaling($w,yaxis) {}
 
     while { $y < $ymax+0.5*$ydelt } {
@@ -83,7 +83,7 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt } {
         set format $scaling($w,-format,x)
     }
 
-    set x $xmin
+    set x [expr {$xmin+0.0}]  ;# Make sure we have the number in the right format
     set scaling($w,xaxis) {}
 
     while { $x < $xmax+0.5*$xdelt } {

@@ -11,18 +11,38 @@
 # Arguments:
 #    w           Name of the canvas
 #    filename    Name of the file to write
+#    args        Optional format (-format name)
 # Result:
 #    None
 # Side effect:
 #    A (new) PostScript file
 #
-proc ::Plotchart::SavePlot { w filename } {
-   #
-   # Wait for the canvas to become visible - just in case.
-   # Then write the file
-   #
-   update idletasks
-   $w postscript -file $filename
+proc ::Plotchart::SavePlot { w filename args } {
+
+   if { [llength $args] == 0 } {
+       #
+       # Wait for the canvas to become visible - just in case.
+       # Then write the file
+       #
+       update idletasks
+       $w postscript -file $filename
+   } else {
+       puts ">>$args"
+       if { [llength $args] == 2 && [lindex $args 0] == "-format" } {
+           package require Img
+           set format [lindex $args 1]
+           raise [winfo toplevel $w]
+           puts "Raised";update idletasks
+          # tkwait visibility [winfo toplevel $w]
+           after 2000 {set ::Plotchart::waited 0}
+           vwait ::Plotchart::waited
+           puts "Visible";update idletasks
+           set img [image create photo -data $w -format window]
+           $img write $filename -format $format
+       } else {
+           return -code error "Unknown option: $args - must be: -format img-format"
+       }
+   }
 }
 
 # MarginsRectangle --
