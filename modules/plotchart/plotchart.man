@@ -430,13 +430,29 @@ The text of the title to be drawn.
 [nl]
 
 
-[call [cmd \$anyplot] saveplot [arg filename]]
+[call [cmd \$anyplot] saveplot [arg filename] [arg args]]
 
 Draws the plot into a file, using PostScript.
 
 [list_begin arg]
 [arg_def string filename in]
 Contain the path name of the file to write the plot to.
+
+[arg_def list args in]
+Optionally you can specify the option -format "some picture format" to
+store the plot in a different file than a PostScript file. This,
+however, relies on the Img package to do the actual job.
+[nl]
+[emph Note:]
+Because the window holding the plot must be fully visible before Img can
+successfully grab it, it is raised first.
+On some systems, for instance Linux with KDE, raising
+a window is not done automatically, but instead you need to click on the
+window in the task bar. Similar things happen on Windows XP.
+[nl]
+There seems to be something wrong under some circumstances, so instead
+of waiting for the visibility of the window, the procedure simply waits
+two seconds. It is not ideal, but it seems to work better.
 
 [list_end]
 [nl]
