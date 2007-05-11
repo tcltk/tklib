@@ -1,6 +1,6 @@
 # By George Peter Staplin
 # See also the README for a list of contributors
-# RCS: @(#) $Id: ctext.tcl,v 1.4 2006/09/06 01:40:04 hobbs Exp $
+# RCS: @(#) $Id: ctext.tcl,v 1.5 2007/05/11 22:23:01 hobbs Exp $
 
 package require Tk
 package provide ctext 3.1
@@ -969,7 +969,6 @@ proc ctext::linemapUpdate {win args} {
 		if {$idx != $lastLine} {
 			set line [lindex [split $idx .] 0]
 			set lastLine $idx
-			$win.l config -width [string length $line]
 			lappend lineList $line
 		}
 		incr pixel $incrBy
@@ -991,6 +990,8 @@ proc ctext::linemapUpdate {win args} {
 		}
 		set lastLine $line
 	}
+	set endrow [lindex [split [$win._t index end-1c] .] 0]
+	$win.l configure -width [expr {int(ceil(log10($endrow)))}]
 }
 
 proc ctext::modified {win value} {
