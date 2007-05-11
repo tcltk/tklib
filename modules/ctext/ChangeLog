@@ -1,3 +1,8 @@
+2007-05-11  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* ctext.tcl (ctext::linemapUpdate): make the ctext linemap not
+	resize - it maintains the widest size necessary
+
 2006-10-01  Arjen Markus <arjenmarkus@users.sourceforge.net>
 	ctext.man updated - -linemap clarified, example reformatted (smaller
 	width, for better display and printing), added configure subcommand
