@@ -1,6 +1,6 @@
 # By George Peter Staplin
 # See also the README for a list of contributors
-# RCS: @(#) $Id: ctext.tcl,v 1.5 2007/05/11 22:23:01 hobbs Exp $
+# RCS: @(#) $Id: ctext.tcl,v 1.6 2007/05/11 22:54:09 hobbs Exp $
 
 package require Tk
 package provide ctext 3.1
@@ -991,7 +991,7 @@ proc ctext::linemapUpdate {win args} {
 		set lastLine $line
 	}
 	set endrow [lindex [split [$win._t index end-1c] .] 0]
-	$win.l configure -width [expr {int(ceil(log10($endrow)))}]
+	$win.l configure -width [string length $endrow]
 }
 
 proc ctext::modified {win value} {
