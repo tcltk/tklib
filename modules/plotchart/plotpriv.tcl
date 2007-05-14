@@ -27,16 +27,18 @@ proc ::Plotchart::SavePlot { w filename args } {
        update idletasks
        $w postscript -file $filename
    } else {
-       puts ">>$args"
        if { [llength $args] == 2 && [lindex $args 0] == "-format" } {
            package require Img
            set format [lindex $args 1]
+
+           #
+           # This is a kludge:
+           # Somehow tkwait does not always work (on Windows XP, that is)
+           #
            raise [winfo toplevel $w]
-           puts "Raised";update idletasks
           # tkwait visibility [winfo toplevel $w]
            after 2000 {set ::Plotchart::waited 0}
            vwait ::Plotchart::waited
-           puts "Visible";update idletasks
            set img [image create photo -data $w -format window]
            $img write $filename -format $format
        } else {
@@ -431,6 +433,63 @@ proc ::Plotchart::DrawStripData { w series xcrd ycrd } {
    }
 
    DrawData $w $series $xcrd $ycrd
+}
+
+# DrawInterval --
+#    Draw the data as an error interval in an XY-plot
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    xcrd        X coordinate
+#    ymin        Minimum y coordinate
+#    ymax        Maximum y coordinate
+#    ycentr      Central y coordinate (optional)
+# Result:
+#    None
+# Side effects:
+#    New interval drawn in canvas
+#
+proc ::Plotchart::DrawInterval { w series xcrd ymin ymax {ycentr {}} } {
+   variable data_series
+   variable scaling
+
+   #
+   # Check for missing values
+   #
+   if { $xcrd == "" || $ymin == "" || $ymax == "" } {
+       return
+   }
+
+   #
+   # Draw the line piece
+   #
+   set colour "black"
+   if { [info exists data_series($w,$series,-colour)] } {
+      set colour $data_series($w,$series,-colour)
+   }
+
+   foreach {pxcrd pymin} [coordsToPixel $w $xcrd $ymin] {break}
+   foreach {pxcrd pymax} [coordsToPixel $w $xcrd $ymax] {break}
+   if { $ycentr != "" } {
+       foreach {pxcrd pycentr} [coordsToPixel $w $xcrd $ycentr] {break}
+   }
+
+   $w create line $pxcrd $pymin $pxcrd $pymax \
+                        -fill $colour -tag data
+   $w create line [expr {$pxcrd-3}] $pymin [expr {$pxcrd+3}] $pymin \
+                        -fill $colour -tag data
+   $w create line [expr {$pxcrd-3}] $pymax [expr {$pxcrd+3}] $pymax \
+                        -fill $colour -tag data
+
+   if { $ycentr != "" } {
+      set symbol "dot"
+      if { [info exists data_series($w,$series,-symbol)] } {
+         set symbol $data_series($w,$series,-symbol)
+      }
+      DrawSymbolPixel $w $series $pxcrd $pycentr $symbol $colour "data"
+   }
+
+   $w lower data
 }
 
 # DrawSymbolPixel --
@@ -1166,4 +1225,81 @@ proc ::Plotchart::DrawRadial { w values colour {thickness 1} } {
 
    set id [$w create polygon $coords -outline $colour -width $thickness -fill $fillcolour]
    $w lower $id
+}
+
+# DrawTrendLine --
+#    Draw a trend line based on the given data in an XY-plot
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    xcrd        Next x coordinate
+#    ycrd        Next y coordinate
+# Result:
+#    None
+# Side effects:
+#    New/updated trend line drawn in canvas
+#
+proc ::Plotchart::DrawTrendLine { w series xcrd ycrd } {
+    variable data_series
+    variable scaling
+
+    #
+    # Check for missing values
+    #
+    if { $xcrd == "" || $ycrd == "" } {
+        return
+    }
+
+    #
+    # Compute the coefficients of the line
+    #
+    if { [info exists data_series($w,$series,xsum)] } {
+        set nsum  [expr {$data_series($w,$series,nsum)  + 1.0}]
+        set xsum  [expr {$data_series($w,$series,xsum)  + $xcrd}]
+        set x2sum [expr {$data_series($w,$series,x2sum) + $xcrd*$xcrd}]
+        set ysum  [expr {$data_series($w,$series,ysum)  + $ycrd}]
+        set xysum [expr {$data_series($w,$series,xysum) + $ycrd*$xcrd}]
+    } else {
+        set nsum  [expr {1.0}]
+        set xsum  [expr {$xcrd}]
+        set x2sum [expr {$xcrd*$xcrd}]
+        set ysum  [expr {$ycrd}]
+        set xysum [expr {$ycrd*$xcrd}]
+    }
+
+    if { $nsum*$x2sum != $xsum*$xsum } {
+        set a [expr {($nsum*$xysum-$xsum*$ysum)/($nsum*$x2sum - $xsum*$xsum)}]
+    } else {
+        set a 0.0
+    }
+    set b [expr {($ysum-$a*$xsum)/$nsum}]
+
+    set xmin $scaling($w,xmin)
+    set xmax $scaling($w,xmax)
+
+    foreach {pxmin pymin} [coordsToPixel $w $xmin [expr {$a*$xmin+$b}]] {break}
+    foreach {pxmax pymax} [coordsToPixel $w $xmax [expr {$a*$xmax+$b}]] {break}
+
+    #
+    # Draw the actual line
+    #
+    set colour "black"
+    if { [info exists data_series($w,$series,-colour)] } {
+        set colour $data_series($w,$series,-colour)
+    }
+
+    if { [info exists data_series($w,$series,trend)] } {
+        $w coords $data_series($w,$series,trend) $pxmin $pymin $pxmax $pymax
+    } else {
+        set data_series($w,$series,trend) \
+            [$w create line $pxmin $pymin $pxmax $pymax -fill $colour -tag data]
+    }
+
+    $w lower data
+
+    set data_series($w,$series,nsum)  $nsum
+    set data_series($w,$series,xsum)  $xsum
+    set data_series($w,$series,x2sum) $x2sum
+    set data_series($w,$series,ysum)  $ysum
+    set data_series($w,$series,xysum) $xysum
 }

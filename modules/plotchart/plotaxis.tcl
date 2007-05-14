@@ -568,3 +568,56 @@ proc ::Plotchart::DrawLegend { w series text } {
     $legendw move legend   $dx $dy
     $legendw move legendbg $dx $dy
 }
+
+# DrawTimeaxis --
+#    Draw the date/time-axis
+# Arguments:
+#    w           Name of the canvas
+#    tmin        Minimum date/time
+#    tmax        Maximum date/time
+#    tstep       Step size in days
+# Result:
+#    None
+# Side effects:
+#    Axis drawn in canvas
+#
+proc ::Plotchart::DrawTimeaxis { w tmin tmax tdelt } {
+    variable scaling
+
+    set scaling($w,tdelt) $tdelt
+
+    $w delete taxis
+
+    $w create line $scaling($w,pxmin) $scaling($w,pymax) \
+                   $scaling($w,pxmax) $scaling($w,pymax) \
+                   -fill black -tag taxis
+
+    set format ""
+    if { [info exists scaling($w,-format,x)] } {
+        set format $scaling($w,-format,x)
+    }
+
+    set ttmin  [clock scan $tmin]
+    set ttmax  [clock scan $tmax]
+    set t      [expr {int($ttmin)}]
+    set ttdelt [expr {$tdelt*86400.0}]
+
+    set scaling($w,taxis) {}
+
+    while { $t < $ttmax+0.5*$ttdelt } {
+
+        foreach {xcrd ycrd} [coordsToPixel $w $t $scaling($w,ymin)] {break}
+
+        lappend scaling($w,taxis) $xcrd
+
+        if { $format != "" } {
+            set tlabel [clock format $t -format $format]
+        } else {
+            set tlabel [clock format $t -format "%Y-%m-%d"]
+        }
+        $w create text $xcrd $ycrd -text $tlabel -tag taxis -anchor n
+        set t [expr {int($t+$ttdelt)}]
+    }
+
+    set scaling($w,tdelt) $tdelt
+}
