@@ -711,6 +711,45 @@ of the x-axis, you should draw a bar at the maximum x-coordinate.
 For [emph {xy plots}]:
 
 [list_begin definitions]
+[call [cmd \$xyplot] trend [arg series] [arg xcrd] [arg ycrd]]
+
+Draw or update a trend line using the data given sofar.
+
+[list_begin arg]
+[arg_def string series in]
+Name of the data series the trend line belongs to.
+
+[arg_def float xcrd in]
+X-coordinate of the new data point
+
+[arg_def float ycrd in]
+Y-coordinate of the new data point
+[list_end]
+
+[call [cmd \$xyplot] interval [arg series] [arg xcrd] [arg ymin] [arg ymax] [opt ycentr]]
+
+Add a vertical error interval to the plot. The interval is drawn from
+ymin to ymax. If the ycentr argument is given, a symbol is drawn at that
+position.
+
+[list_begin arg]
+[arg_def string series in]
+Name of the data series the interval belongs to.
+
+[arg_def float xcrd in]
+X-coordinate of the interval
+
+[arg_def float ymin in]
+Minimum y-coordinate of the interval.
+
+[arg_def float ymax in]
+Maximum y-coordinate of the interval.
+
+[arg_def float ycentr in]
+Y-coordinate to draw the symbol at (optional)
+
+[list_end]
+
 [call [cmd \$xyplot] contourlines [arg xcrd] [arg ycrd] [arg values] [opt classes]]
 
 Draw contour lines for the values given on the grid. The grid is defined

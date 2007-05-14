@@ -17,7 +17,8 @@ package require Plotchart
 canvas .c  -background white -width 400 -height 200
 canvas .c2 -background white -width 400 -height 200
 canvas .c3 -background white -width 400 -height 200
-pack   .c .c2 .c3 -fill both -side top
+canvas .c4 -background white -width 400 -height 200
+pack   .c .c2 .c3 .c4 -fill both -side top
 
 toplevel .h
 canvas .h.c  -background white -width 400 -height 200
@@ -38,6 +39,8 @@ set xold  0.0
 set yold 50.0
 
 $s dataconfig series1 -colour "red"
+$s dataconfig series2 -colour "blue"
+$s dataconfig series3 -colour "magenta"
 
 for { set i 0 } { $i < 20 } { incr i } {
    set xnew [expr {$xold+$xd}]
@@ -45,9 +48,13 @@ for { set i 0 } { $i < 20 } { incr i } {
    set ynew2 [expr {$yold+(rand()-0.5)*2.0*$yd}]
    $s plot series1 $xnew $ynew
    $s plot series2 $xnew $ynew2
+   $s trend series3 $xnew $ynew2
    set xold $xnew
    set yold $ynew
 }
+
+$s interval series2 50.0 40.0 60.0 52.0
+$s interval series2 60.0 40.0 60.0
 
 $s xtext "X-coordinate"
 $s ytext "Y-data"
@@ -140,3 +147,33 @@ set s [::Plotchart::create3DPlot .h3.c2 {0 10 3} {-10 10 10} {0 10 2.5}]
 $s title "3D Plot - data "
 $s colour "green" "black"
 $s plotdata { {1.0 2.0 1.0 0.0} {1.1 3.0 1.1 -0.5} {3.0 1.0 4.0 5.0} }
+
+
+set s [::Plotchart::createTXPlot .c4 {2006-01-01 2007-01-01 120} {0.0 100.0 20.0}]
+
+if { 0 } {
+set xd    5.0
+set yd   20.0
+set xold  0.0
+set yold 50.0
+
+$s dataconfig series1 -colour "red"
+$s dataconfig series2 -colour "blue"
+
+for { set i 0 } { $i < 20 } { incr i } {
+   set xnew [expr {$xold+$xd}]
+   set ynew [expr {$yold+(rand()-0.5)*$yd}]
+   set ynew2 [expr {$yold+(rand()-0.5)*2.0*$yd}]
+   $s plot series1 $xnew $ynew
+   $s plot series2 $xnew $ynew2
+   set xold $xnew
+   set yold $ynew
+}
+
+$s interval series2 50.0 40.0 60.0 52.0
+$s interval series2 60.0 40.0 60.0
+
+$s xtext "X-coordinate"
+$s ytext "Y-data"
+$s title "Aha!"
+}

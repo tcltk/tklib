@@ -75,6 +75,54 @@ proc ::Plotchart::determineScale { xmin xmax } {
    return [list $nicemin $nicemax [expr {$step*$factor}]]
 }
 
+# determineTimeScale --
+#    Determine nice date/time values for an axis from the given extremes
+#
+# Arguments:
+#    tmin      Minimum date/time
+#    tmax      Maximum date/time
+# Result:
+#    A list of three values, a nice minimum and maximum
+#    and stepsize
+# Note:
+#    tmin is assumed to be smaller or equal tmax
+#
+proc ::Plotchart::determineTimeScale { tmin tmax } {
+    set ttmin [clock scan $tmin]
+    set ttmax [clock scan $tmax]
+
+    set dt [expr {abs($ttmax-$ttmin)}]
+
+    if { $dt == 0.0 } {
+        set dt 86400.0
+        set ttmin [expr {$ttmin-$dt}]
+        set ttmax [expr {$ttmin+$dt}]
+    }
+
+    foreach {limit step} {2.0 0.5 5.0 1.0 10.0 2.0 50.0 7.0 300.0 30.0 1.0e10 365.0} {
+        if { $dt/86400.0 < $limit } {
+            break
+        }
+    }
+
+    set nicemin [expr {$step*floor($ttmin/$step)}]
+    set nicemax [expr {$step*floor($ttmax/$step)}]
+
+    if { $nicemax < $ttmax } {
+        set nicemax [expr {$nicemax+$step}]
+    }
+    if { $nicemin > $ttmin } {
+        set nicemin [expr {$nicemin-$step}]
+    }
+
+    set nicemin [expr {int($nicemin)}]
+    set nicemax [expr {int($nicemax)}]
+
+    return [list [clock format $nicemin -format "%Y-%m-%d %H:%M:%S"] \
+                 [clock format $nicemax -format "%Y-%m-%d %H:%M:%S"] \
+                 $step]
+}
+
 if 0 {
     #
     # Some simple test cases
@@ -87,4 +135,8 @@ if 0 {
     puts [determineScale -0.25 0.7999]
     puts [determineScale 10001 10010]
     puts [determineScale 10001 10015]
+}
+if 1 {
+    puts [::Plotchart::determineTimeScale "2007-01-15" "2007-01-16"]
+    puts [::Plotchart::determineTimeScale "2007-03-15" "2007-06-16"]
 }
