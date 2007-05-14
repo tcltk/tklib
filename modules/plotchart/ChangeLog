@@ -1,3 +1,8 @@
+2007-05-14 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.tcl: Added an interval and a trend method for XY plots
+        * plotpriv.tcl: Implementation of the interval and trend methods
+        * plotdemo1.tcl: Examples of these methods
+
 2007-05-03 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotpriv.tcl: Expanded the saveplot method (other file formats
                         than PostScript via Img)

@@ -28,7 +28,8 @@ namespace eval ::Plotchart {
                     createTimechart createStripchart \
                     createIsometricPlot create3DPlot \
                     createGanttChart createHistogram colorMap \
-                    create3DBars createRadialchart
+                    create3DBars createRadialchart \
+                    createTXPlot
 
    #
    # Array linking procedures with methods
@@ -37,6 +38,8 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,xtext)          DrawXtext
    set methodProc(xyplot,ytext)          DrawYtext
    set methodProc(xyplot,plot)           DrawData
+   set methodProc(xyplot,interval)       DrawInterval
+   set methodProc(xyplot,trend)          DrawTrendLine
    set methodProc(xyplot,grid)           DrawGrid
    set methodProc(xyplot,contourlines)   DrawIsolines
    set methodProc(xyplot,contourfill)    DrawShades
@@ -174,6 +177,22 @@ namespace eval ::Plotchart {
    set methodProc(radialchart,plot)      DrawRadial
    set methodProc(radialchart,saveplot)  SavePlot
    set methodProc(radialchart,balloon)   DrawBalloon
+   set methodProc(txplot,title)          DrawTitle
+   set methodProc(txplot,xtext)          DrawXtext
+   set methodProc(txplot,ytext)          DrawYtext
+   set methodProc(txplot,plot)           DrawTimeData
+   set methodProc(txplot,interval)       DrawInterval
+   set methodProc(txplot,saveplot)       SavePlot
+   set methodProc(txplot,dataconfig)     DataConfig
+   set methodProc(txplot,xconfig)        XConfig
+   set methodProc(txplot,yconfig)        YConfig
+   set methodProc(txplot,xticklines)     DrawXTicklines
+   set methodProc(txplot,yticklines)     DrawYTicklines
+   set methodProc(txplot,background)     BackgroundColour
+   set methodProc(txplot,legendconfig)   LegendConfigure
+   set methodProc(txplot,legend)         DrawLegend
+   set methodProc(txplot,balloon)        DrawBalloon
+   set methodProc(txplot,balloonconfig)  ConfigBalloon
 
    #
    # Auxiliary parameters
@@ -1087,6 +1106,62 @@ proc ::Plotchart::createRadialchart { w names scale {style lines} } {
    DrawRadialSpokes $w $names
    DefaultLegend  $w
    DefaultBalloon $w
+
+   return $newchart
+}
+
+# createTXPlot --
+#    Create a command for drawing a TX plot (x versus date/time)
+# Arguments:
+#    w           Name of the canvas
+#    tscale      Minimum, maximum and step for date/time-axis (initial)
+#                (values must be valid dates and the step is in days)
+#    yscale      Minimum, maximum and step for vertical axis
+# Result:
+#    Name of a new command
+# Note:
+#    The entire canvas will be dedicated to the TX plot.
+#    The plot will be drawn with axes
+#
+proc ::Plotchart::createTXPlot { w tscale xscale } {
+   variable data_series
+
+   foreach s [array names data_series "$w,*"] {
+      unset data_series($s)
+   }
+
+   set newchart "txplot_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler txplot $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+
+   foreach {tmin tmax tdelt} $tscale {break}
+
+   set xmin  [clock scan $tmin]
+   set xmax  [clock scan $tmax]
+   set xdelt [expr {86400*$tdelt}]
+
+   foreach {ymin ymax ydelt} $xscale {break}
+
+   if { $xdelt == 0.0 || $ydelt == 0.0 } {
+      return -code error "Step size can not be zero"
+   }
+
+   if { ($xmax-$xmin)*$xdelt < 0.0 } {
+      set xdelt [expr {-$xdelt}]
+   }
+   if { ($ymax-$ymin)*$ydelt < 0.0 } {
+      set ydelt [expr {-$ydelt}]
+   }
+
+   viewPort         $w $pxmin $pymin $pxmax $pymax
+   worldCoordinates $w $xmin  $ymin  $xmax  $ymax
+
+   DrawYaxis        $w $ymin  $ymax  $ydelt
+   DrawTimeaxis     $w $tmin  $tmax  $tdelt
+   DrawMask         $w
+   DefaultLegend    $w
+   DefaultBalloon   $w
 
    return $newchart
 }
