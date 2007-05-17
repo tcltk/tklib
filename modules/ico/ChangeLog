@@ -1,3 +1,9 @@
+2007-5-17  Aaron Faupell <afaupell@users.sourceforge.net>
+
+	* ico.tcl: fixed problem with reading BMPs and updated
+	getFileIcon to search for additional icons (read CLSID)
+	* ico.man: updated example and added verbage to getFileIcon
+
 2007-02-23  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* ico0.tcl (::ico::readDIBFromData): correct row calc for edge
