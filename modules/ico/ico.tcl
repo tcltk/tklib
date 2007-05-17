@@ -2,10 +2,10 @@
 #
 # Win32 ico manipulation code
 #
-# Copyright (c) 2003-2006 Aaron Faupell
+# Copyright (c) 2003-2007 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.26 2007/02/23 22:59:59 hobbs Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.27 2007/05/17 15:57:12 afaupell Exp $
 
 # Sample usage:
 #	set file bin/wish.exe
@@ -219,10 +219,21 @@ proc ::ico::getIconByName {file name args} {
 #	optional arguments and return values are the same as getIcon
 #
 proc ::ico::getFileIcon {file args} {
-    set ext [file extension $file]
-    if {[catch {registry get HKEY_CLASSES_ROOT\\$ext ""} doctype] || \
-        [catch {registry get HKEY_CLASSES_ROOT\\$doctype\\DefaultIcon ""} icon]} {
-        set icon "%SystemRoot%\\System32\\shell32.dll,0"
+    set icon "%SystemRoot%\\System32\\shell32.dll,0"
+    if {[file isdirectory $file] || $file == "Folder"} {
+        if {![catch {registry get HKEY_CLASSES_ROOT\\Folder\\DefaultIcon ""} reg]} {
+            set icon $reg
+        }
+    } else {
+        set ext [file extension $file]
+        if {![catch {registry get HKEY_CLASSES_ROOT\\$ext ""} doctype]} {
+            if {![catch {registry get HKEY_CLASSES_ROOT\\$doctype\\CLSID ""} clsid] && \
+                ![catch {registry get HKEY_CLASSES_ROOT\\CLSID\\$clsid\\DefaultIcon ""} reg]} {
+                set icon $reg
+            } elseif {![catch {registry get HKEY_CLASSES_ROOT\\$doctype\\DefaultIcon ""} reg]} {
+                set icon $reg
+            }
+        }
     }
     set index [lindex [split $icon ,] 1]
     set icon [lindex [split $icon ,] 0]
@@ -233,7 +244,7 @@ proc ::ico::getFileIcon {file args} {
     }
     set icon [string map [list %1 $file] $icon]
     if {$index < 0} {
-        if {![catch {eval [list getIconByName $file [string trimleft $index -]] $args} output]} {
+        if {![catch {eval [list getIcon $icon [string trimleft $index -]] $args} output]} {
             return $output
         }
         set index 0
@@ -1018,8 +1029,8 @@ proc ::ico::getRawIconDataICODATA {data name} {
 
 # returns an icon in the form:
 #	{width height depth palette xor_mask and_mask}
-proc ::ico::getRawIconDataBMP {file {name 0}} {
-    if {$name ne "0"} {return -code error "No icon \"$name\""}
+proc ::ico::getRawIconDataBMP {file {name 1}} {
+    if {$name ne "1"} {return -code error "No icon \"$name\""}
     set fh [open $file]
     if {[read $fh 2] != "BM"} { close $fh; return -code error "not a BMP file" }
     seek $fh 14 start
