@@ -73,7 +73,9 @@ Recognizes the following [arg option]s.
 
 [call [cmd ::ico::getIconByName] [arg file] [arg name] [opt "[arg option] [arg value]..."]]
 
-Extracts the image with ID [arg name] from [arg file]. If there is no matching resource ID
+Extracts the image with ID [arg name] from [arg file]. This name should be the name of a
+specific image as returned by [cmd ::ico::getIconMembers], not an icon name returned from
+[cmd ::ico::icons]. If there is no matching resource ID
 in [arg file] an error is thrown. Recognizes the following options:
 
 [list_begin opt]
@@ -86,7 +88,10 @@ in [arg file] an error is thrown. Recognizes the following options:
 
 This command is only functional when running under Windows. It reads the Windows
 registry to determine the display icon for [arg file] as it would appear in Explorer
-or similar. This command takes the same arguments and usage as [cmd getIcon]:
+or similar. [arg file] does not need to exist and may also be specified as a file
+extension with a leading dot. If [arg file] is a directory or you specify the
+special name [const Folder] then the icon representing a folder is returned. This
+command takes the same arguments and usage as [cmd getIcon]:
 
 [list_begin opt]
 [opt_def -format value]
@@ -191,9 +196,10 @@ icons in [arg file] and their name.
 [section EXAMPLE]
 
 [example {
-    button .explore -image [::ico::getIcon explorer.exe 0 -name explore]
-    set i [lsearch [::ico::getIconList tclkit.exe] {32 32 8}]]
-    set colorlist [::ico::getIcon tclkit.exe $i -format colors -type EXE]
+    button .explore -image [::ico::getIcon explorer.exe 0 -name explore -res 16 -bpp 8]
+
+    set i [lsearch -inline [::ico::getIconMembers tclkit.exe 0] {* 32 32 8}]
+    set colorlist [::ico::getIconByName tclkit.exe [lindex $i 0] -format colors]
 }]
 
 [section LIMITATIONS]
