@@ -1,9 +1,10 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin tooltip n 1.2]
+[manpage_begin tooltip n 1.3]
 [moddesc   {Tooltip management}]
 [titledesc {Tooltip management}]
 [require Tcl 8.4]
-[require tooltip [opt 1.2]]
+[require msgcat 1.3]
+[require tooltip [opt 1.3]]
 [description]
 
 This package provides tooltips, a small text message that is displayed
@@ -25,7 +26,8 @@ commands:
       [arg pathName] [opt options] [opt message]]
 
 This command arranges for widget [arg pathName] to display a tooltip with
-message [opt message]
+message [opt message].  The tooltip uses a late-binding msgcat call on the
+passed in message to allow for on-the-fly language changes in an application.
 
 [list_begin opt]
 
