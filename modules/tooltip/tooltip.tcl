@@ -2,19 +2,19 @@
 #
 #       Balloon help
 #
-# Copyright (c) 1996-2003 Jeffrey Hobbs
+# Copyright (c) 1996-2007 Jeffrey Hobbs
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tooltip.tcl,v 1.7 2007/02/07 16:31:08 patthoyts Exp $
+# RCS: @(#) $Id: tooltip.tcl,v 1.8 2007/05/18 19:28:21 hobbs Exp $
 #
 # Initiated: 28 October 1996
 
 
 package require Tk 8.4
-package provide tooltip 1.2
-
+package provide tooltip 1.3
+package require msgcat
 
 #------------------------------------------------------------------------
 # PROCEDURE
@@ -242,7 +242,9 @@ proc ::tooltip::show {w msg {i {}}} {
     variable G
 
     set b $G(TOPLEVEL)
-    $b.label configure -text $msg
+    # Use late-binding msgcat (lazy translation) to support programs
+    # that allow on-the-fly l10n changes
+    $b.label configure -text [::msgcat::mc $msg]
     update idletasks
     set screenw [winfo screenwidth $w]
     set screenh [winfo screenheight $w]
