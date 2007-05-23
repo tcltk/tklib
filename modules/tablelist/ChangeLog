@@ -1,3 +1,7 @@
+2007-05-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistEdit.tcl: Corrections related to Tk 8.5a6.
+
 2007-03-26  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistUtil.tcl: Fixed a bug reported by Kai Morich,
