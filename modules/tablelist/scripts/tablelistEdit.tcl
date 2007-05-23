@@ -1088,7 +1088,7 @@ proc tablelist::createCheckbutton {w args} {
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileEntry {w args} {
-    if {$::tk_version < 8.5 || [regexp {^8\.5a.$} $::tk_patchLevel]} {
+    if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.6
     }
 
@@ -1136,7 +1136,7 @@ proc tablelist::createTileEntry {w args} {
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileCombobox {w args} {
-    if {$::tk_version < 8.5 || [regexp {^8\.5a.$} $::tk_patchLevel]} {
+    if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.6
     }
 
@@ -1161,7 +1161,7 @@ proc tablelist::createTileCombobox {w args} {
 # cell editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileCheckbutton {w args} {
-    if {$::tk_version < 8.5 || [regexp {^8\.5a.$} $::tk_patchLevel]} {
+    if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.6
     }
 
