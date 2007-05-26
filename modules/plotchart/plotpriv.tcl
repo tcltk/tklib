@@ -474,11 +474,14 @@ proc ::Plotchart::DrawInterval { w series xcrd ymin ymax {ycentr {}} } {
        foreach {pxcrd pycentr} [coordsToPixel $w $xcrd $ycentr] {break}
    }
 
+   #
+   # Draw the I-shape (note the asymmetry!)
+   #
    $w create line $pxcrd $pymin $pxcrd $pymax \
                         -fill $colour -tag data
-   $w create line [expr {$pxcrd-3}] $pymin [expr {$pxcrd+3}] $pymin \
+   $w create line [expr {$pxcrd-3}] $pymin [expr {$pxcrd+4}] $pymin \
                         -fill $colour -tag data
-   $w create line [expr {$pxcrd-3}] $pymax [expr {$pxcrd+3}] $pymax \
+   $w create line [expr {$pxcrd-3}] $pymax [expr {$pxcrd+4}] $pymax \
                         -fill $colour -tag data
 
    if { $ycentr != "" } {

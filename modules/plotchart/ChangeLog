@@ -1,3 +1,9 @@
+2007-05-26 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.tcl: Support for right-hand axis
+        * plotaxis.tcl: Support for right-hand axis, tickmarks
+        * plot3d.tcl: Draw tickmarks at 3D axes
+        * scaling.tcl: Suppress testing output (time axis)
+
 2007-05-14 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.tcl: Added an interval and a trend method for XY plots
         * plotpriv.tcl: Implementation of the interval and trend methods
