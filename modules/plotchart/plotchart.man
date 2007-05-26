@@ -403,6 +403,25 @@ for the actual space reserved for the text, it is assumed that a
 character is about ten pixels wide). Defaults to 20.
 
 [list_end]
+
+[call [cmd ::Plotchart::createRightAxis] [arg w] [arg yaxis]]
+
+Create a plot command that will use a right axis instead of the left
+axis. The widget (w) must already contain an ordinary plot, as the
+horizontal axis and other properties are reused. To plot data using the
+right axis, use this new command, to plot data using the [emph left]
+axis, use the original plot command.
+
+[list_begin arg]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the plot.
+
+[arg_def list yaxis in]
+A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order.
+
+[list_end]
+[nl]
+
 [list_end]
 
 [section "PLOT METHODS"]

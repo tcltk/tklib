@@ -40,6 +40,8 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
     while { $y < $ymax+0.5*$ydelt } {
 
         foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $y] {break}
+        set xcrd2 [expr {$xcrd-3}]
+        set xcrd3 [expr {$xcrd-5}]
 
         lappend scaling($w,yaxis) $ycrd
 
@@ -47,7 +49,60 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
         if { $format != "" } {
             set ylabel [format $format $y]
         }
-        $w create text $xcrd $ycrd -text $ylabel -tag yaxis -anchor e
+        $w create line $xcrd2 $ycrd $xcrd $ycrd -tag yaxis
+        $w create text $xcrd3 $ycrd -text $ylabel -tag yaxis -anchor e
+        set y [expr {$y+$ydelt}]
+        if { abs($y) < 0.5*$ydelt } {
+            set y 0.0
+        }
+    }
+}
+
+# DrawRightaxis --
+#    Draw the y-axis on the right-hand side
+# Arguments:
+#    w           Name of the canvas
+#    ymin        Minimum y coordinate
+#    ymax        Maximum y coordinate
+#    ystep       Step size
+# Result:
+#    None
+# Side effects:
+#    Axis drawn in canvas
+#
+proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
+    variable scaling
+
+    set scaling($w,ydelt) $ydelt
+
+    $w delete raxis
+
+    $w create line $scaling($w,pxmax) $scaling($w,pymin) \
+                   $scaling($w,pxmax) $scaling($w,pymax) \
+                   -fill black -tag raxis
+
+    set format ""
+    if { [info exists scaling($w,-format,y)] } {
+        set format $scaling($w,-format,y)
+    }
+
+    set y [expr {$ymin+0.0}]  ;# Make sure we have the number in the right format
+    set scaling($w,yaxis) {}
+
+    while { $y < $ymax+0.5*$ydelt } {
+
+        foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmax) $y] {break}
+        set xcrd2 [expr {$xcrd+3}]
+        set xcrd3 [expr {$xcrd+5}]
+
+        lappend scaling($w,yaxis) $ycrd
+
+        set ylabel $y
+        if { $format != "" } {
+            set ylabel [format $format $y]
+        }
+        $w create line $xcrd2 $ycrd $xcrd $ycrd -tag raxis
+        $w create text $xcrd3 $ycrd -text $ylabel -tag raxis -anchor w
         set y [expr {$y+$ydelt}]
         if { abs($y) < 0.5*$ydelt } {
             set y 0.0
@@ -89,6 +144,8 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt } {
     while { $x < $xmax+0.5*$xdelt } {
 
         foreach {xcrd ycrd} [coordsToPixel $w $x $scaling($w,ymin)] {break}
+        set ycrd2 [expr {$ycrd+3}]
+        set ycrd3 [expr {$ycrd+5}]
 
         lappend scaling($w,xaxis) $xcrd
 
@@ -96,7 +153,9 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt } {
         if { $format != "" } {
             set xlabel [format $format $x]
         }
-        $w create text $xcrd $ycrd -text $xlabel -tag xaxis -anchor n
+
+        $w create line $xcrd $ycrd2 $xcrd $ycrd -tag xaxis
+        $w create text $xcrd $ycrd3 -text $xlabel -tag xaxis -anchor n
         set x [expr {$x+$xdelt}]
         if { abs($x) < 0.5*$xdelt } {
             set x 0.0
@@ -120,7 +179,7 @@ proc ::Plotchart::DrawXtext { w text } {
     variable scaling
 
     set xt [expr {($scaling($w,pxmin)+$scaling($w,pxmax))/2}]
-    set yt [expr {$scaling($w,pymax)+12}]
+    set yt [expr {$scaling($w,pymax)+18}]
 
     $w create text $xt $yt -text $text -fill black -anchor n
 }
@@ -138,7 +197,11 @@ proc ::Plotchart::DrawXtext { w text } {
 proc ::Plotchart::DrawYtext { w text } {
     variable scaling
 
-    set xt $scaling($w,pxmin)
+    if { [string match "r*" $w] == 0 } {
+        set xt $scaling($w,pxmin)
+    } else {
+        set xt $scaling($w,pxmax)
+    }
     set yt [expr {$scaling($w,pymin)-8}]
 
     $w create text $xt $yt -text $text -fill black -anchor se
@@ -607,6 +670,8 @@ proc ::Plotchart::DrawTimeaxis { w tmin tmax tdelt } {
     while { $t < $ttmax+0.5*$ttdelt } {
 
         foreach {xcrd ycrd} [coordsToPixel $w $t $scaling($w,ymin)] {break}
+        set ycrd2 [expr {$ycrd+3}]
+        set ycrd3 [expr {$ycrd+5}]
 
         lappend scaling($w,taxis) $xcrd
 
@@ -615,7 +680,8 @@ proc ::Plotchart::DrawTimeaxis { w tmin tmax tdelt } {
         } else {
             set tlabel [clock format $t -format "%Y-%m-%d"]
         }
-        $w create text $xcrd $ycrd -text $tlabel -tag taxis -anchor n
+        $w create line $xcrd $ycrd2 $xcrd $ycrd -tag taxis
+        $w create text $xcrd $ycrd3 -text $tlabel -tag taxis -anchor n
         set t [expr {int($t+$ttdelt)}]
     }
 

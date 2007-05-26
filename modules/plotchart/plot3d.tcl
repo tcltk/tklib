@@ -21,6 +21,10 @@
 #    zstep       Step size
 # Result:
 #    None
+# Note:
+#    To keep the axes in positive orientation, the x-axis appears
+#    on the right-hand side and the y-axis appears in front.
+#    This may not be the most "intuitive" presentation though.
 # Side effects:
 #    Axes drawn in canvas
 #
@@ -67,27 +71,39 @@ proc ::Plotchart::Draw3DAxes { w xmin  ymin  zmin
    set z $zmin
    while { $z < $zmax+0.5*$zstep } {
       foreach {xcrd ycrd} [coords3DToPixel $w $xmin $ymin $z] {break}
-      $w create text $xcrd $ycrd -text $z -tag axis3d -anchor e
+      set xcrd2 [expr {$xcrd-3}]
+      set xcrd3 [expr {$xcrd-5}]
+
+      $w create line $xcrd2 $ycrd $xcrd $ycrd -tag axis3d
+      $w create text $xcrd3 $ycrd -text $z -tag axis3d -anchor e
       set z [expr {$z+$zstep}]
    }
 
    #
-   # Numbers to the x-axis
+   # Numbers to the x-axis (shown on the right!)
    #
    set x $xmin
    while { $x < $xmax+0.5*$xstep } {
       foreach {xcrd ycrd} [coords3DToPixel $w $x $ymax $zmin] {break}
-      $w create text $xcrd $ycrd -text $x -tag axis3d -anchor nw
+      set xcrd2 [expr {$xcrd+4}]
+      set xcrd3 [expr {$xcrd+6}]
+
+      $w create line $xcrd2 $ycrd $xcrd $ycrd -tag axis3d
+      $w create text $xcrd3 $ycrd -text $x -tag axis3d -anchor w
       set x [expr {$x+$xstep}]
    }
 
    #
-   # Numbers to the y-axis
+   # Numbers to the y-axis (shown in front!)
    #
    set y $ymin
    while { $y < $ymax+0.5*$ystep } {
       foreach {xcrd ycrd} [coords3DToPixel $w $xmin $y $zmin] {break}
-      $w create text $xcrd $ycrd -text $y -tag axis3d -anchor n
+      set ycrd2 [expr {$ycrd+3}]
+      set ycrd3 [expr {$ycrd+5}]
+
+      $w create line $xcrd $ycrd2 $xcrd $ycrd -tag axis3d
+      $w create text $xcrd $ycrd3 -text $y -tag axis3d -anchor n
       set y [expr {$y+$ystep}]
    }
 
