@@ -136,7 +136,7 @@ if 0 {
     puts [determineScale 10001 10010]
     puts [determineScale 10001 10015]
 }
-if 1 {
+if 0 {
     puts [::Plotchart::determineTimeScale "2007-01-15" "2007-01-16"]
     puts [::Plotchart::determineTimeScale "2007-03-15" "2007-06-16"]
 }
