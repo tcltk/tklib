@@ -40,6 +40,8 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,plot)           DrawData
    set methodProc(xyplot,interval)       DrawInterval
    set methodProc(xyplot,trend)          DrawTrendLine
+   set methodProc(xyplot,vector)         DrawVector
+   set methodProc(xyplot,vectorconfig)   VectorConfigure
    set methodProc(xyplot,grid)           DrawGrid
    set methodProc(xyplot,contourlines)   DrawIsolines
    set methodProc(xyplot,contourfill)    DrawShades

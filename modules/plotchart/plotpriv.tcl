@@ -1306,3 +1306,137 @@ proc ::Plotchart::DrawTrendLine { w series xcrd ycrd } {
     set data_series($w,$series,ysum)  $ysum
     set data_series($w,$series,xysum) $xysum
 }
+
+# VectorConfigure --
+#    Set configuration options for vectors
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series (identifier for vectors)
+#    args        Pairs of configuration options:
+#                -scale|-colour|-centred|-type {cartesian|polar|nautical}
+# Result:
+#    None
+# Side effects:
+#    Configuration options are stored
+#
+proc ::Plotchart::VectorConfigure { w series args } {
+    variable data_series
+    variable scaling
+
+    foreach {option value} $args {
+        switch -- $option {
+            "-scale" {
+                if { $value > 0.0 } {
+                    set scaling($w,$series,vectorscale) $value
+                } else {
+                    return -code error "Scale factor must be positive"
+                }
+            }
+            "-colour" - "-color" {
+                set data_series($w,$series,vectorcolour) $value
+            }
+            "-centered" - "-centred" {
+                set data_series($w,$series,vectorcentred) $value
+            }
+            "-type" {
+                if { [lsearch {cartesian polar nautical} $value] >= 0 } {
+                    set data_series($w,$series,vectortype) $value
+                } else {
+                    return -code error "Unknown vector components option: $value"
+                }
+            }
+            default {
+                return -code error "Unknown vector option: $option ($value)"
+            }
+        }
+    }
+}
+
+# DrawVector --
+#    Draw a vector at the given coordinates with the given components
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series (identifier for the vectors)
+#    xcrd        X coordinate of start or centre
+#    ycrd        Y coordinate of start or centre
+#    ucmp        X component or length
+#    vcmp        Y component or angle
+# Result:
+#    None
+# Side effects:
+#    New/updated trend line drawn in canvas
+#
+proc ::Plotchart::DrawVector { w series xcrd ycrd ucmp vcmp } {
+    variable data_series
+    variable scaling
+
+    #
+    # Check for missing values
+    #
+    if { $xcrd == "" || $ycrd == "" } {
+        return
+    }
+    #
+    # Check for missing values
+    #
+    if { $ucmp == "" || $vcmp == "" } {
+        return
+    }
+
+    #
+    # Get the options
+    #
+    set scalef  1.0
+    set colour  black
+    set centred 0
+    set type    cartesian
+    if { [info exists scaling($w,$series,vectorscale)] } {
+        set scalef $scaling($w,$series,vectorscale)
+    }
+    if { [info exists data_series($w,$series,vectorcolour)] } {
+        set colour $data_series($w,$series,vectorcolour)
+    }
+    if { [info exists data_series($w,$series,vectorcentred)] } {
+        set centred $data_series($w,$series,vectorcentred)
+    }
+    if { [info exists data_series($w,$series,vectortype)] } {
+        set type $data_series($w,$series,vectortype)
+    }
+
+    #
+    # Compute the coordinates of beginning and end of the arrow
+    #
+    switch -- $type {
+        "polar" {
+            set x1 [expr {$ucmp * cos( 3.1415926 * $vcmp / 180.0 ) }]
+            set y1 [expr {$ucmp * sin( 3.1415926 * $vcmp / 180.0 ) }]
+            set ucmp $x1
+            set vcmp $y1
+        }
+        "nautical" {
+            set x1 [expr {$ucmp * sin( 3.1415926 * $vcmp / 180.0 ) }]
+            set y1 [expr {$ucmp * cos( 3.1415926 * $vcmp / 180.0 ) }]
+            set ucmp $x1
+            set vcmp $y1
+        }
+    }
+
+    set u1 [expr {$scalef * $ucmp}]
+    set v1 [expr {$scalef * $vcmp}]
+
+    foreach {x1 y1} [coordsToPixel $w $xcrd $ycrd] {break}
+
+    if { $centred } {
+        set x1 [expr {$x1 - 0.5 * $u1}]
+        set y1 [expr {$y1 - 0.5 * $v1}]
+    }
+
+    set x2 [expr {$x1 + $u1}]
+    set y2 [expr {$y1 + $v1}]
+
+    #
+    # Draw the arrow
+    #
+    $w create line $x1 $y1 $x2 $y2 -fill $colour -tag data -arrow last
+    $w lower data
+}
