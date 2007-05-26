@@ -769,6 +769,63 @@ Y-coordinate to draw the symbol at (optional)
 
 [list_end]
 
+
+[call [cmd \$xyplot] vector [arg series] [arg xcrd] [arg ycrd] [arg ucmp] [arg vcmp]]
+
+Draw a vector in the plot. The vector can be given as either cartesian
+coordinates or as length/angle, where the angle is in degrees and is
+interpreted according to the mathematical convention or the nautical.
+(See the vectorconfig subcommand)
+
+[list_begin arg]
+[arg_def string series in]
+Name of the series the vector belongs to. Determines the appearance and
+interpretation.
+
+[arg_def float xcrd in]
+X-coordinate of the point where the arrow appears
+
+[arg_def float ycrd in]
+Y-coordinate of the point where the arrow appears
+
+[arg_def float ucmp in]
+X-component or the length of the vector
+
+[arg_def float ycentr in]
+Y-component or the angle of the vector
+
+[list_end]
+
+
+[call [cmd \$xyplot] vectorconfig [arg series] [option -option] [arg value] ...]]
+
+Set the vector drawing options for a particular series
+
+[list_begin arg]
+[arg_def string series in]
+Name of the series the vector belongs to.
+[list_end]
+
+The options can be one of the following:
+[list_begin opt]
+[opt_def colour]
+The colour of the arrow (default: black; synonym: color)
+[opt_def scale value]
+The scale factor used to convert the length of the
+arrow into a number of pixels (default: 1.0)
+[opt_def centred onoff]
+Logical value indicating that the xy-coordinates
+are to be used as the start of the arrow or as the centre (default: 0;
+synonym: centered)
+[opt_def type keyword]
+Interpretation of the vector components. Can be "cartesian"
+(default), in which case the x- and y-components are expected, "polar"
+(the angle 0 coincides with the positive x-axis, 90 coincides with the
+positive y-axis) or "nautical" (0 is "north" and 90 is "east").
+[list_end]
+[nl]
+
+
 [call [cmd \$xyplot] contourlines [arg xcrd] [arg ycrd] [arg values] [opt classes]]
 
 Draw contour lines for the values given on the grid. The grid is defined

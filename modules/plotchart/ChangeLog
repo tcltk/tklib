@@ -1,5 +1,7 @@
 2007-05-26 Arjen Markus  <arjenmarkus@users.sourceforge.net>
-        * plotchart.tcl: Support for right-hand axis
+        * plotchart.man: Documentation of right-hand axis, vectors
+        * plotchart.tcl: Support for right-hand axis, vectors
+        * plotpriv.tcl: Support for drawing vectors
         * plotaxis.tcl: Support for right-hand axis, tickmarks
         * plot3d.tcl: Draw tickmarks at 3D axes
         * scaling.tcl: Suppress testing output (time axis)
