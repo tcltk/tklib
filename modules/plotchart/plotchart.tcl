@@ -29,7 +29,7 @@ namespace eval ::Plotchart {
                     createIsometricPlot create3DPlot \
                     createGanttChart createHistogram colorMap \
                     create3DBars createRadialchart \
-                    createTXPlot
+                    createTXPlot createRightAxis
 
    #
    # Array linking procedures with methods
@@ -1116,7 +1116,7 @@ proc ::Plotchart::createRadialchart { w names scale {style lines} } {
 #    w           Name of the canvas
 #    tscale      Minimum, maximum and step for date/time-axis (initial)
 #                (values must be valid dates and the step is in days)
-#    yscale      Minimum, maximum and step for vertical axis
+#    xscale      Minimum, maximum and step for vertical axis
 # Result:
 #    Name of a new command
 # Note:
@@ -1162,6 +1162,66 @@ proc ::Plotchart::createTXPlot { w tscale xscale } {
    DrawMask         $w
    DefaultLegend    $w
    DefaultBalloon   $w
+
+   return $newchart
+}
+
+# createRightAxis --
+#    Create a command for drawing a plot with a right axis
+# Arguments:
+#    w           Name of the canvas
+#    yscale      Minimum, maximum and step for vertical axis
+# Result:
+#    Name of a new command
+# Note:
+#    This command requires that another plot command has been
+#    created prior to this one. Some of the properties from that
+#    command serve for this one too.
+#
+proc ::Plotchart::createRightAxis { w yscale } {
+   variable data_series
+   variable scaling
+
+   set newchart "right_$w"
+
+   #
+   # Check if there is an appropriate plot already defined - there
+   # should be only one!
+   #
+   if { [llength [info command "*_$w" ]] == 0 } {
+       return -code error "There should be a plot with a left axis already defined"
+   }
+   if { [llength [info command "*_$w" ]] != 1 } {
+       return -code error "There should be only one plot command for this widget ($w)"
+   }
+
+   set type [lindex [interp alias {} [info command "*_$w"]] 1]
+
+   interp alias {} $newchart {} ::Plotchart::PlotHandler $type r$w
+   interp alias {} r$w       {} $w
+
+   set xmin $scaling($w,xmin)
+   set xmax $scaling($w,xmax)
+
+   set pxmin $scaling($w,pxmin)
+   set pxmax $scaling($w,pxmax)
+   set pymin $scaling($w,pymin)
+   set pymax $scaling($w,pymax)
+
+   foreach {ymin ymax ydelt} $yscale {break}
+
+   if { $ydelt == 0.0 } {
+      return -code error "Step size can not be zero"
+   }
+
+   if { ($ymax-$ymin)*$ydelt < 0.0 } {
+      set ydelt [expr {-$ydelt}]
+   }
+
+   viewPort         r$w $pxmin $pymin $pxmax $pymax
+   worldCoordinates r$w $xmin  $ymin  $xmax  $ymax
+
+   DrawRightaxis    r$w $ymin  $ymax  $ydelt
 
    return $newchart
 }
