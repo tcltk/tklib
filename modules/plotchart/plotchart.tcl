@@ -38,6 +38,8 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,xtext)          DrawXtext
    set methodProc(xyplot,ytext)          DrawYtext
    set methodProc(xyplot,plot)           DrawData
+   set methodProc(xyplot,dot)            DrawDot
+   set methodProc(xyplot,dotconfig)      DotConfigure
    set methodProc(xyplot,interval)       DrawInterval
    set methodProc(xyplot,trend)          DrawTrendLine
    set methodProc(xyplot,vector)         DrawVector
