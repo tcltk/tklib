@@ -1428,11 +1428,11 @@ proc ::Plotchart::DrawVector { w series xcrd ycrd ucmp vcmp } {
 
     if { $centred } {
         set x1 [expr {$x1 - 0.5 * $u1}]
-        set y1 [expr {$y1 - 0.5 * $v1}]
+        set y1 [expr {$y1 + 0.5 * $v1}]
     }
 
     set x2 [expr {$x1 + $u1}]
-    set y2 [expr {$y1 + $v1}]
+    set y2 [expr {$y1 - $v1}]
 
     #
     # Draw the arrow
@@ -1542,10 +1542,6 @@ proc ::Plotchart::DrawDot { w series xcrd ycrd value } {
     }
     if { [info exists data_series($w,$series,dotscalebyvalue)] } {
         set usevalue $data_series($w,$series,dotscalebyvalue)
-    }
-
-    if { $classes == {} } {
-        set usevalue 1
     }
 
     #
