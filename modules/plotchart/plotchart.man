@@ -826,6 +826,71 @@ positive y-axis) or "nautical" (0 is "north" and 90 is "east").
 [nl]
 
 
+[call [cmd \$xyplot] dot [arg series] [arg xcrd] [arg ycrd] [arg value]]
+
+Draw a dot in the plot. The size and colour is determined by the value
+and by the options set for the series it belongs to.
+(See the dotconfig subcommand)
+
+[list_begin arg]
+[arg_def string series in]
+Name of the series the dot belongs to. Determines size and colour
+
+[arg_def float xcrd in]
+X-coordinate of the point where the arrow appears
+
+[arg_def float ycrd in]
+Y-coordinate of the point where the arrow appears
+
+[arg_def float value in]
+Value determining size and colour
+
+[list_end]
+
+
+[call [cmd \$xyplot] dotconfig [arg series] [option -option] [arg value] ...]]
+
+Set the dot drawing options for a particular series
+
+[list_begin arg]
+[arg_def string series in]
+Name of the series the dot belongs to.
+[list_end]
+
+The options can be one of the following:
+[list_begin opt]
+[opt_def colour]
+The colour of the dot if no scaling is used or the value exceeds the
+last limit of the classes.
+[opt_def scale value]
+The scale factor used to convert the value into the radius of the dot
+in pixels (default: 1.0)
+[opt_def radius value]
+The default radius of the dots, used if there is no scaling by value
+(in pixels; default: 3)
+[opt_def scalebyvalue onoff]
+Determines whether the dots all have the same size or a size depending
+on the given value (default: on).
+[opt_def outline onoff]
+Draw a black circle around the dot or not (default: on)
+[opt_def classes list]
+Set the limits and the corresponding colours. For instance:
+[example {
+    $xyplot series1 -classes {0 blue 1 green} -colour red
+}]
+will cause a blue dot to be drawn for values smaller than 0, a green dot
+for values larger/equal 0 but lower than 1 and a red dot for values
+larger/equal 1.
+[nl]
+If there is no list of classes for the particular series, the dots are
+scaled by the value.
+[nl]
+You can combine the colouring by value and the scaling by value by
+setting a list of classes and setting the [emph scalebyvalue] option on.
+[list_end]
+[nl]
+
+
 [call [cmd \$xyplot] contourlines [arg xcrd] [arg ycrd] [arg values] [opt classes]]
 
 Draw contour lines for the values given on the grid. The grid is defined
