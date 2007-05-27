@@ -1364,7 +1364,7 @@ proc ::Plotchart::VectorConfigure { w series args } {
 # Result:
 #    None
 # Side effects:
-#    New/updated trend line drawn in canvas
+#    New arrow drawn in canvas
 #
 proc ::Plotchart::DrawVector { w series xcrd ycrd ucmp vcmp } {
     variable data_series
@@ -1438,5 +1438,141 @@ proc ::Plotchart::DrawVector { w series xcrd ycrd ucmp vcmp } {
     # Draw the arrow
     #
     $w create line $x1 $y1 $x2 $y2 -fill $colour -tag data -arrow last
+    $w lower data
+}
+
+# DotConfigure --
+#    Set configuration options for dots
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series (identifier for dots)
+#    args        Pairs of configuration options:
+#                -radius|-colour|-classes {value colour ...}|-outline|-scalebyvalue|
+#                -scale
+# Result:
+#    None
+# Side effects:
+#    Configuration options are stored
+#
+proc ::Plotchart::DotConfigure { w series args } {
+    variable data_series
+    variable scaling
+
+    foreach {option value} $args {
+        switch -- $option {
+            "-scale" {
+                if { $value > 0.0 } {
+                    set scaling($w,$series,dotscale) $value
+                } else {
+                    return -code error "Scale factor must be positive"
+                }
+            }
+            "-colour" - "-color" {
+                set data_series($w,$series,dotcolour) $value
+            }
+            "-radius" {
+                set data_series($w,$series,dotradius) $value
+            }
+            "-scalebyvalue" {
+                set data_series($w,$series,dotscalebyvalue) $value
+            }
+            "-outline" {
+                set data_series($w,$series,dotoutline) $value
+            }
+            "-classes" {
+                set data_series($w,$series,dotclasses) $value
+            }
+            default {
+                return -code error "Unknown dot option: $option ($value)"
+            }
+        }
+    }
+}
+
+# DrawDot --
+#    Draw a dot at the given coordinates, size and colour based on the given value
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series (identifier for the vectors)
+#    xcrd        X coordinate of start or centre
+#    ycrd        Y coordinate of start or centre
+#    value       Value to be used
+# Result:
+#    None
+# Side effects:
+#    New oval drawn in canvas
+#
+proc ::Plotchart::DrawDot { w series xcrd ycrd value } {
+    variable data_series
+    variable scaling
+
+    #
+    # Check for missing values
+    #
+    if { $xcrd == "" || $ycrd == "" || $value == "" } {
+        return
+    }
+
+    #
+    # Get the options
+    #
+    set scalef   1.0
+    set colour   black
+    set usevalue 1
+    set outline  black
+    set radius   3
+    set classes  {}
+    if { [info exists scaling($w,$series,dotscale)] } {
+        set scalef $scaling($w,$series,dotscale)
+    }
+    if { [info exists data_series($w,$series,dotcolour)] } {
+        set colour $data_series($w,$series,dotcolour)
+    }
+    if { [info exists data_series($w,$series,dotoutline)] } {
+        set outline {}
+        if { $data_series($w,$series,dotoutline) } {
+            set outline black
+        }
+    }
+    if { [info exists data_series($w,$series,dotradius)] } {
+        set radius $data_series($w,$series,dotradius)
+    }
+    if { [info exists data_series($w,$series,dotclasses)] } {
+        set classes $data_series($w,$series,dotclasses)
+    }
+    if { [info exists data_series($w,$series,dotscalebyvalue)] } {
+        set usevalue $data_series($w,$series,dotscalebyvalue)
+    }
+
+    if { $classes == {} } {
+        set usevalue 1
+    }
+
+    #
+    # Compute the radius and the colour
+    #
+    if { $usevalue } {
+        set radius [expr {$scalef * $value}]
+    }
+    if { $classes != {} } {
+        foreach {limit col} $classes {
+            if { $value < $limit } {
+                set colour $col
+                break
+            }
+        }
+    }
+
+    foreach {x y} [coordsToPixel $w $xcrd $ycrd] {break}
+
+    set x1 [expr {$x - $radius}]
+    set y1 [expr {$y - $radius}]
+    set x2 [expr {$x + $radius}]
+    set y2 [expr {$y + $radius}]
+
+    #
+    # Draw the oval
+    #
+    $w create oval $x1 $y1 $x2 $y2 -fill $colour -tag data -outline $outline
     $w lower data
 }
