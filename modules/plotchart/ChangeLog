@@ -1,7 +1,8 @@
 2007-05-27 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.man: Documentation of dot subcommand
         * plotchart.tcl: Support for drawing dots
-        * plotpriv.tcl: Support for drawing dots
+        * plotpriv.tcl: Support for drawing dots, corrected mistakes in vector drawing
+        * plotdemos6.tcl: Demonstration of dots and vectors
 
 2007-05-26 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.man: Documentation of right-hand axis, vectors
