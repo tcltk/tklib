@@ -1,3 +1,9 @@
+2007-05-28 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.man: Documentation of rchart subcommand
+        * plotchart.tcl: Support for drawing an R-chart
+        * plotpriv.tcl: Support for drawing an R-chart
+        * plotdemos6.tcl: Demonstration of R-chart
+
 2007-05-27 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.man: Documentation of dot subcommand
         * plotchart.tcl: Support for drawing dots
