@@ -112,3 +112,37 @@ for {set y 45.25} {$y < 55.0} {set y [expr {$y+0.5}]} {
         $s vector series1 $x $y $length $angle
     }
 }
+
+#
+# Simple demonstration of an R-chart
+#
+toplevel .rchart
+canvas .rchart.c -background white -width 400 -height 200
+pack   .rchart.c -fill both -side top
+
+set s [::Plotchart::createXYPlot .rchart.c {0.0 100.0 10.0} {0.0 50.0 10.0}]
+
+$s title "R-chart (arbitrary data)"
+
+$s dataconfig series1 -colour "green"
+
+for {set x 1.0} {$x < 50.0} {set x [expr {$x+3.0}]} {
+    set y [expr {20.0 + 3.0*rand()}]
+    $s rchart series1 $x $y
+}
+
+#
+# Now some data outside the expected range
+#
+
+$s rchart series1 50.0 41.0
+$s rchart series1 52.0 42.0
+$s rchart series1 54.0 39.0
+
+#
+# And continue with the well-behaved series
+#
+for {set x 57.0} {$x < 100.0} {set x [expr {$x+3.0}]} {
+    set y [expr {20.0 + 3.0*rand()}]
+    $s rchart series1 $x $y
+}
