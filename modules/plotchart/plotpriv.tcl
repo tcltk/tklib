@@ -1572,3 +1572,123 @@ proc ::Plotchart::DrawDot { w series xcrd ycrd value } {
     $w create oval $x1 $y1 $x2 $y2 -fill $colour -tag data -outline $outline
     $w lower data
 }
+
+# DrawRchart --
+#    Draw data together with two horizontal lines representing the
+#    expected range
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    xcrd        X coordinate of the data point
+#    ycrd        Y coordinate of the data point
+# Result:
+#    None
+# Side effects:
+#    New data point drawn, lines updated
+#
+proc ::Plotchart::DrawRchart { w series xcrd ycrd } {
+    variable data_series
+    variable scaling
+
+    #
+    # Check for missing values
+    #
+    if { $xcrd == "" || $ycrd == "" } {
+        return
+    }
+
+    #
+    # In any case, draw the data point
+    #
+    DrawData $w $series $xcrd $ycrd
+
+    #
+    # Compute the expected range
+    #
+    if { ! [info exists data_series($w,$series,rchart)] } {
+        set data_series($w,$series,rchart) $ycrd
+    } else {
+        lappend data_series($w,$series,rchart) $ycrd
+
+        if { [llength $data_series($w,$series,rchart)] < 2 } {
+            return
+        }
+
+        set filtered $data_series($w,$series,rchart)
+        set outside  1
+        while { $outside } {
+            set data     $filtered
+            foreach {ymin ymax} [RchartValues $data] {break}
+            set filtered {}
+            set outside  0
+            foreach y $data {
+                if { $y < $ymin || $y > $ymax } {
+                    set outside 1
+                } else {
+                    lappend filtered $y
+                }
+            }
+        }
+
+        #
+        # Draw the limit lines
+        #
+        if { [info exists data_series($w,$series,rchartlimits)] } {
+            eval $w delete $data_series($w,$series,rchartlimits)
+        }
+
+        set colour "black"
+        if { [info exists data_series($w,$series,-colour)] } {
+            set colour $data_series($w,$series,-colour)
+        }
+
+        set xmin $scaling($w,xmin)
+        set xmax $scaling($w,xmax)
+
+        foreach {pxmin pymin} [coordsToPixel $w $xmin $ymin] {break}
+        foreach {pxmax pymax} [coordsToPixel $w $xmax $ymax] {break}
+
+
+        set data_series($w,$series,rchartlimits) [list \
+            [$w create line $pxmin $pymin $pxmax $pymin -fill $colour -tag data] \
+            [$w create line $pxmin $pymax $pxmax $pymax -fill $colour -tag data]]
+    }
+}
+
+# RchartValues --
+#    Compute the expected range for a series of data
+# Arguments:
+#    data        Data to be examined
+# Result:
+#    Expected minimum and maximum
+#
+proc ::Plotchart::RchartValues { data } {
+    set sum   0.0
+    set sum2  0.0
+    set ndata [llength $data]
+
+    if { $ndata <= 1 } {
+        return [list $data $data]
+    }
+
+    foreach v $data {
+        set sum   [expr {$sum  + $v}]
+        set sum2  [expr {$sum2 + $v*$v}]
+    }
+
+    if { $ndata < 2 } {
+       return [list $v $v]
+    }
+
+    set variance [expr {($sum2 - $sum*$sum/double($ndata))/($ndata-1.0)}]
+    if { $variance < 0.0 } {
+        set variance 0.0
+    }
+
+    set vmean [expr {$sum/$ndata}]
+    set stdev [expr {sqrt($variance)}]
+    set vmin  [expr {$vmean - 3.0 * $stdev}]
+    set vmax  [expr {$vmean + 3.0 * $stdev}]
+
+    return [list $vmin $vmax]
+}
