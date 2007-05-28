@@ -745,6 +745,23 @@ X-coordinate of the new data point
 Y-coordinate of the new data point
 [list_end]
 
+[call [cmd \$xyplot] rchart [arg series] [arg xcrd] [arg ycrd]]
+
+Draw data in the same way as the plot method, but with two lines added
+that indicate the expected range (+/- 3*standard deviation) of the data.
+
+[list_begin arg]
+[arg_def string series in]
+Name of the data series the data point belongs to.
+
+[arg_def float xcrd in]
+X-coordinate of the new data point
+
+[arg_def float ycrd in]
+Y-coordinate of the new data point
+[list_end]
+
+
 [call [cmd \$xyplot] interval [arg series] [arg xcrd] [arg ymin] [arg ymax] [opt ycentr]]
 
 Add a vertical error interval to the plot. The interval is drawn from
