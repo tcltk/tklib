@@ -20,10 +20,28 @@ namespace eval ::Plotchart {
     set BalloonDir(south)      {5  1  0  0  3 -1  0}
     set BalloonDir(south-west) {6  1  0 -2  2  0 -1}
     set BalloonDir(west)       {7  0  1 -3  0  0 -1}
+
+    set TextDir(centre)     c
+    set TextDir(center)     c
+    set TextDir(c)          c
+    set TextDir(north-west) nw
+    set TextDir(nw)         nw
+    set TextDir(north)      n
+    set TextDir(n)          n
+    set TextDir(north-east) ew
+    set TextDir(ne)         ew
+    set TextDir(east)       e
+    set TextDir(e)          e
+    set TextDir(south-west) nw
+    set TextDir(sw)         sw
+    set TextDir(south)      s
+    set TextDir(s)          s
+    set TextDir(south-east) ew
+    set TextDir(east)       e
 }
 
 # DefaultBalloon --
-#    Set the default properties of balloon text
+#    Set the default properties of balloon text and other types of annotation
 # Arguments:
 #    w           Name of the canvas
 # Result:
@@ -43,6 +61,11 @@ proc ::Plotchart::DefaultBalloon { w } {
                             outline    black
                             rimwidth   1} {
         set settings($w,balloon$option) $value
+    }
+    foreach {option value} {font       fixed
+                            colour     black
+                            justify    left} {
+        set settings($w,text$option) $value
     }
 }
 
@@ -165,4 +188,174 @@ proc ::Plotchart::DrawBalloon { w x y text dir } {
     $w move $poly  $dx $dy
     $w raise BalloonFrame
     $w raise BalloonText
+}
+
+# DrawPlainText --
+#    Plot plain text in a chart
+# Arguments:
+#    w           Name of the canvas
+#    x           X-coordinate of the point the arrow points to
+#    y           Y-coordinate of the point the arrow points to
+#    text        Text to be drawn
+#    anchor      Anchor position (north, north-east, ..., defaults to centre)
+# Result:
+#    None
+# Side effects:
+#    Text drawn in the chart
+#
+proc ::Plotchart::DrawPlainText { w x y text {anchor centre} } {
+    variable settings
+    variable TextDir
+
+    foreach {xtext ytext} [coordsToPixel $w $x $y] {break}
+
+    if { [info exists TextDir($anchor)] } {
+        set anchor $TextDir($anchor)
+    } else {
+        set anchor c
+    }
+
+    $w create text $xtext $ytext -text $text -tag PlainText \
+         -font $settings($w,textfont) -fill $settings($w,textcolour) \
+         -justify $settings($w,textjustify) -anchor $anchor
+
+    $w raise PlainText
+}
+
+# BrightenColour --
+#    Compute a brighter colour
+# Arguments:
+#    color       Original colour
+#    factor      Factor by which to brighten the colour
+# Result:
+#    New colour
+# Note:
+#    Adapted from R. Suchenwirths Wiki page on 3D bars
+#
+proc ::Plotchart::BrightenColour {color factor} {
+   foreach i {r g b} n [winfo rgb . $color] d [winfo rgb . white] {
+       set $i [expr {int(255.*($n+($d-$n)*$factor)/$d)}]
+   }
+   format #%02x%02x%02x $r $g $b
+}
+
+# DrawGradientBackground --
+#    Add a gradient background to the plot
+# Arguments:
+#    w           Name of the canvas
+#    colour      Main colour
+#    dir         Direction of the gradient (left-right, top-down,
+#                bottom-up, right-left)
+# Result:
+#    None
+# Side effects:
+#    Gradient background drawn in the chart
+#
+proc ::Plotchart::DrawGradientBackground { w colour dir } {
+    variable scaling
+
+    set pxmin $scaling($w,pxmin)
+    set pxmax $scaling($w,pxmax)
+    set pymin $scaling($w,pymin)
+    set pymax $scaling($w,pymax)
+
+    switch -- $dir {
+        "left-right" {
+            set dir   h
+            set first 0.0
+            set last  1.0
+            set fac   [expr {($pxmax-$pxmin)/50.0}]
+        }
+        "right-left" {
+            set dir   h
+            set first 1.0
+            set last  0.0
+            set fac   [expr {($pxmax-$pxmin)/50.0}]
+        }
+        "top-down" {
+            set dir   v
+            set first 0.0
+            set last  1.0
+            set fac   [expr {($pymin-$pymax)/50.0}]
+        }
+        "bottom-up" {
+            set dir   v
+            set first 1.0
+            set last  0.0
+            set fac   [expr {($pymin-$pymax)/50.0}]
+        }
+        default {
+            set dir   v
+            set first 0.0
+            set last  1.0
+            set fac   [expr {($pymin-$pymax)/50.0}]
+        }
+    }
+
+    if { $dir == "h" } {
+        set x2 $pxmin
+        set y1 $pymin
+        set y2 $pymax
+    } else {
+        set y2 $pymax
+        set x1 $pxmin
+        set x2 $pxmax
+    }
+
+    set n 50
+    for { set i 0 } { $i < $n } { incr i } {
+        set factor [expr {($first*$i+$last*($n-$i-1))/double($n)}]
+        set gcolour [BrightenColour $colour $factor]
+
+        if { $dir == "h" } {
+            set x1     $x2
+            set x2     [expr {$pxmin+($i+1)*$fac}]
+            if { $i == $n-1 } {
+                set x2 $pxmax
+            }
+        } else {
+            set y1     $y2
+            set y2     [expr {$pymax+($i+1)*$fac}]
+            if { $i == $n-1 } {
+                set y2 $pymin
+            }
+        }
+
+        $w create rectangle $x1 $y1 $x2 $y2 -fill $gcolour -outline $gcolour -tag {data background}
+    }
+
+    $w lower data
+    $w lower background
+}
+
+# DrawImageBackground --
+#    Add an image (tilde) to the background to the plot
+# Arguments:
+#    w           Name of the canvas
+#    colour      Main colour
+#    image       Name of the image
+# Result:
+#    None
+# Side effects:
+#    Image appears in the plot area, tiled if needed
+#
+proc ::Plotchart::DrawImageBackground { w image } {
+    variable scaling
+
+    set pxmin $scaling($w,pxmin)
+    set pxmax $scaling($w,pxmax)
+    set pymin $scaling($w,pymin)
+    set pymax $scaling($w,pymax)
+
+    set iwidth  [image width $image]
+    set iheight [image height $image]
+
+    for { set y $pymax } { $y > $pymin } { set y [expr {$y-$iheight}] } {
+        for { set x $pxmin } { $x < $pxmax } { incr x $iwidth } {
+            $w create image $x $y -image $image -anchor sw -tags {data background}
+        }
+    }
+
+    $w lower data
+    $w lower background
 }

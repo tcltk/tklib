@@ -60,10 +60,13 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,legend)         DrawLegend
    set methodProc(xyplot,balloon)        DrawBalloon
    set methodProc(xyplot,balloonconfig)  ConfigBalloon
+   set methodProc(xyplot,plaintext)      DrawPlainText
    set methodProc(piechart,title)        DrawTitle
    set methodProc(piechart,plot)         DrawPie
    set methodProc(piechart,saveplot)     SavePlot
    set methodProc(piechart,balloon)      DrawBalloon
+   set methodProc(piechart,balloonconfig) ConfigBalloon
+   set methodProc(piechart,plaintext)    DrawPlainText
    set methodProc(polarplot,title)       DrawTitle
    set methodProc(polarplot,plot)        DrawPolarData
    set methodProc(polarplot,saveplot)    SavePlot
@@ -73,6 +76,7 @@ namespace eval ::Plotchart {
    set methodProc(polarplot,legend)      DrawLegend
    set methodProc(polarplot,balloon)     DrawBalloon
    set methodProc(polarplot,balloonconfig) ConfigBalloon
+   set methodProc(polarplot,plaintext)   DrawPlainText
    set methodProc(histogram,title)       DrawTitle
    set methodProc(histogram,xtext)       DrawXtext
    set methodProc(histogram,ytext)       DrawYtext
@@ -87,6 +91,7 @@ namespace eval ::Plotchart {
    set methodProc(histogram,legend)      DrawLegend
    set methodProc(histogram,balloon)     DrawBalloon
    set methodProc(histogram,balloonconfig) ConfigBalloon
+   set methodProc(histogram,plaintext)   DrawPlainText
    set methodProc(horizbars,title)       DrawTitle
    set methodProc(horizbars,xtext)       DrawXtext
    set methodProc(horizbars,ytext)       DrawYtext
@@ -101,6 +106,7 @@ namespace eval ::Plotchart {
    set methodProc(horizbars,legend)      DrawLegend
    set methodProc(horizbars,balloon)     DrawBalloon
    set methodProc(horizbars,balloonconfig) ConfigBalloon
+   set methodProc(horizbars,plaintext)   DrawPlainText
    set methodProc(vertbars,title)        DrawTitle
    set methodProc(vertbars,xtext)        DrawXtext
    set methodProc(vertbars,ytext)        DrawYtext
@@ -115,6 +121,7 @@ namespace eval ::Plotchart {
    set methodProc(vertbars,legend)       DrawLegend
    set methodProc(vertbars,balloon)      DrawBalloon
    set methodProc(vertbars,balloonconfig) ConfigBalloon
+   set methodProc(vertbars,plaintext)    DrawPlainText
    set methodProc(timechart,title)       DrawTitle
    set methodProc(timechart,period)      DrawTimePeriod
    set methodProc(timechart,milestone)   DrawTimeMilestone
@@ -123,6 +130,7 @@ namespace eval ::Plotchart {
    set methodProc(timechart,background)  BackgroundColour
    set methodProc(timechart,balloon)     DrawBalloon
    set methodProc(timechart,balloonconfig) ConfigBalloon
+   set methodProc(timechart,plaintext)   DrawPlainText
    set methodProc(ganttchart,title)      DrawTitle
    set methodProc(ganttchart,period)     DrawGanttPeriod
    set methodProc(ganttchart,task)       DrawGanttPeriod
@@ -137,6 +145,7 @@ namespace eval ::Plotchart {
    set methodProc(ganttchart,background) BackgroundColour
    set methodProc(ganttchart,balloon)     DrawBalloon
    set methodProc(ganttchart,balloonconfig) ConfigBalloon
+   set methodProc(ganttchart,plaintext)  DrawPlainText
    set methodProc(stripchart,title)      DrawTitle
    set methodProc(stripchart,xtext)      DrawXtext
    set methodProc(stripchart,ytext)      DrawYtext
@@ -151,6 +160,7 @@ namespace eval ::Plotchart {
    set methodProc(stripchart,legend)     DrawLegend
    set methodProc(stripchart,balloon)    DrawBalloon
    set methodProc(stripchart,balloonconfig) ConfigBalloon
+   set methodProc(stripchart,plaintext)  DrawPlainText
    set methodProc(isometric,title)       DrawTitle
    set methodProc(isometric,xtext)       DrawXtext
    set methodProc(isometric,ytext)       DrawYtext
@@ -159,6 +169,7 @@ namespace eval ::Plotchart {
    set methodProc(isometric,background)  BackgroundColour
    set methodProc(isometric,balloon)     DrawBalloon
    set methodProc(isometric,balloonconfig) ConfigBalloon
+   set methodProc(isometric,plaintext)   DrawPlainText
    set methodProc(3dplot,title)          DrawTitle
    set methodProc(3dplot,plotfunc)       Draw3DFunction
    set methodProc(3dplot,plotdata)       Draw3DData
@@ -178,10 +189,12 @@ namespace eval ::Plotchart {
    set methodProc(3dbars,config)         Config3DBars
    set methodProc(3dbars,balloon)        DrawBalloon
    set methodProc(3dbars,balloonconfig)  ConfigBalloon
+   set methodProc(3dbars,plaintext)      DrawPlainText
    set methodProc(radialchart,title)     DrawTitle
    set methodProc(radialchart,plot)      DrawRadial
    set methodProc(radialchart,saveplot)  SavePlot
    set methodProc(radialchart,balloon)   DrawBalloon
+   set methodProc(radialchart,plaintext) DrawPlainText
    set methodProc(txplot,title)          DrawTitle
    set methodProc(txplot,xtext)          DrawXtext
    set methodProc(txplot,ytext)          DrawYtext
@@ -198,6 +211,7 @@ namespace eval ::Plotchart {
    set methodProc(txplot,legend)         DrawLegend
    set methodProc(txplot,balloon)        DrawBalloon
    set methodProc(txplot,balloonconfig)  ConfigBalloon
+   set methodProc(txplot,plaintext)      DrawPlainText
 
    #
    # Auxiliary parameters
@@ -208,11 +222,13 @@ namespace eval ::Plotchart {
    variable options
    variable option_keys
    variable option_values
-   set options       {-colour -color  -symbol -type}
-   set option_keys   {-colour -colour -symbol -type}
+   set options       {-colour -color  -symbol -type -filled -fillcolour}
+   set option_keys   {-colour -colour -symbol -type -filled -fillcolour}
    set option_values {-colour {...}
                       -symbol {plus cross circle up down dot upfilled downfilled}
                       -type {line symbol both}
+                      -filled {no up down}
+                      -fillcolour {...}
                      }
 
    variable axis_options
