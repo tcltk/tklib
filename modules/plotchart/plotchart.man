@@ -346,6 +346,36 @@ The number of bars that will be plotted.
 [nl]
 
 
+[call [cmd ::Plotchart::create3DRibbonChart] [arg w] [arg names] [arg yaxis] [arg zaxis]]
+
+Create a new "ribbon chart". This is a chart where the data series are
+represented as ribbons in a three-dimensional axis system. Along the
+x-axis (which is "into" the screen) the names are plotted, each
+representing a single series. The first plot command draws the furthest
+series, the second draws the series in front of that and so on.
+
+[list_begin arg]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the plot.
+
+[arg_def widget w in]
+Names of the series, plotted as labels along the x-axis
+
+[arg_def list yaxis in]
+A 3-element list containing minimum, maximum and stepsize for the y-axis
+(drawn horizontally!), in this order.
+
+[arg_def list zaxis in]
+A 3-element list containing minimum, maximum and stepsize for the z-axis
+(drawn vertically), in this order.
+
+[arg_def int nobars in]
+The number of bars that will be plotted.
+
+[list_end]
+[nl]
+
+
 [call [cmd ::Plotchart::createTimechart] [arg w] [arg time_begin] [arg time_end] [arg noitems]]
 
 Create a new timechart.
@@ -1326,6 +1356,37 @@ Colour for the values
 
 [list_end]
 [para]
+
+For [emph {3D ribbon charts}]:
+
+[list_begin definitions]
+[call [cmd \$ribbon] line [arg xypairs] [arg colour]]
+
+Plot the given xy-pairs as a ribbon in the chart
+
+[list_begin arg]
+[arg_def list xypairs in]
+The pairs of x/y values to be drawn (the series is drawn as a whole)
+
+[arg_def color colour in]
+The colour of the ribbon.
+
+[list_end]
+
+[call [cmd \$ribbon] area [arg xypairs] [arg colour]]
+
+Plot the given xy-pairs as a ribbon with a filled area in front. The
+effect is that of a box with the data as its upper surface.
+
+[list_begin arg]
+[arg_def list xypairs in]
+The pairs of x/y values to be drawn (the series is drawn as a whole)
+
+[arg_def color colour in]
+The colour of the ribbon/area.
+
+[list_end]
+[list_end]
 
 For [emph timecharts]:
 

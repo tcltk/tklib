@@ -19,6 +19,7 @@
 #    zmin        Minimum z coordinate
 #    zmax        Maximum z coordinate
 #    zstep       Step size
+#    names       List of labels for the x-axis (optional)
 # Result:
 #    None
 # Note:
@@ -30,7 +31,8 @@
 #
 proc ::Plotchart::Draw3DAxes { w xmin  ymin  zmin
                                  xmax  ymax  zmax
-                                 xstep ystep zstep } {
+                                 xstep ystep zstep
+                                 {names {}}        } {
    variable scaling
 
    $w delete axis3d
@@ -80,17 +82,28 @@ proc ::Plotchart::Draw3DAxes { w xmin  ymin  zmin
    }
 
    #
-   # Numbers to the x-axis (shown on the right!)
+   # Numbers or labels to the x-axis (shown on the right!)
    #
-   set x $xmin
-   while { $x < $xmax+0.5*$xstep } {
-      foreach {xcrd ycrd} [coords3DToPixel $w $x $ymax $zmin] {break}
-      set xcrd2 [expr {$xcrd+4}]
-      set xcrd3 [expr {$xcrd+6}]
+   if { $names eq "" } {
+       set x $xmin
+       while { $x < $xmax+0.5*$xstep } {
+           foreach {xcrd ycrd} [coords3DToPixel $w $x $ymax $zmin] {break}
+           set xcrd2 [expr {$xcrd+4}]
+           set xcrd3 [expr {$xcrd+6}]
 
-      $w create line $xcrd2 $ycrd $xcrd $ycrd -tag axis3d
-      $w create text $xcrd3 $ycrd -text $x -tag axis3d -anchor w
-      set x [expr {$x+$xstep}]
+           $w create line $xcrd2 $ycrd $xcrd $ycrd -tag axis3d
+           $w create text $xcrd3 $ycrd -text $x -tag axis3d -anchor w
+           set x [expr {$x+$xstep}]
+       }
+   } else {
+       set x [expr {$xmin+0.5*$xstep}]
+       foreach label $names {
+           foreach {xcrd ycrd} [coords3DToPixel $w $x $ymax $zmin] {break}
+           set xcrd2 [expr {$xcrd+6}]
+
+           $w create text $xcrd2 $ycrd -text $label -tag axis3d -anchor w
+           set x [expr {$x+$xstep}]
+       }
    }
 
    #

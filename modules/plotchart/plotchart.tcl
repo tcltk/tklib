@@ -29,7 +29,8 @@ namespace eval ::Plotchart {
                     createIsometricPlot create3DPlot \
                     createGanttChart createHistogram colorMap \
                     create3DBars createRadialchart \
-                    createTXPlot createRightAxis
+                    createTXPlot createRightAxis \
+                    create3DRibbonChart
 
    #
    # Array linking procedures with methods
@@ -212,6 +213,11 @@ namespace eval ::Plotchart {
    set methodProc(txplot,balloon)        DrawBalloon
    set methodProc(txplot,balloonconfig)  ConfigBalloon
    set methodProc(txplot,plaintext)      DrawPlainText
+   set methodProc(3dribbon,title)        DrawTitle
+   set methodProc(3dribbon,saveplot)     SavePlot
+   set methodProc(3dribbon,line)         Draw3DLine
+   set methodProc(3dribbon,area)         Draw3DArea
+   set methodProc(3dribbon,background)   BackgroundColour
 
    #
    # Auxiliary parameters
@@ -1243,6 +1249,52 @@ proc ::Plotchart::createRightAxis { w yscale } {
    worldCoordinates r$w $xmin  $ymin  $xmax  $ymax
 
    DrawRightaxis    r$w $ymin  $ymax  $ydelt
+
+   return $newchart
+}
+
+# create3DRibbonChart --
+#    Create a chart that can display 3D lines and areas
+# Arguments:
+#    w           Name of the canvas
+#    names       Labels along the x-axis
+#    yscale      Minimum, maximum and step for y-axis
+#    zscale      Minimum, maximum and step for z-axis
+# Result:
+#    Name of a new command
+# Note:
+#    The entire canvas will be dedicated to the 3D chart
+#
+proc ::Plotchart::create3DRibbonChart { w names yscale zscale } {
+   variable data_series
+
+   foreach s [array names data_series "$w,*"] {
+      unset data_series($s)
+   }
+
+   set newchart "3dribbon_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler 3dribbon $w
+
+   foreach {pxmin pymin pxmax pymax} [Margins3DPlot $w] {break}
+
+   foreach {xmin xmax xstep} {0.0 1.0 0.0} {break}
+   foreach {ymin ymax ystep} $yscale {break}
+   foreach {zmin zmax zstep} $zscale {break}
+
+   set xstep [expr {1.0/[llength $names]}]
+   set data_series($w,xbase)  [expr {1.0-0.15*$xstep}]
+   set data_series($w,xstep)  $xstep
+   set data_series($w,xwidth) [expr {0.7*$xstep}]
+
+   viewPort           $w $pxmin $pymin $pxmax $pymax
+   world3DCoordinates $w $xmin  $ymin  $zmin  $xmax  $ymax $zmax
+
+   Draw3DAxes         $w $xmin  $ymin  $zmin  $xmax  $ymax $zmax \
+                         $xstep $ystep $zstep $names
+   DefaultLegend      $w
+   DefaultBalloon     $w
+
+   SetColours $w grey black
 
    return $newchart
 }
