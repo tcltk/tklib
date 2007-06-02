@@ -245,3 +245,121 @@ proc ::Plotchart::DimColour {color factor} {
    format #%02x%02x%02x $r $g $b
 }
 
+# Draw3DLine --
+#    Plot a ribbon of z-data as a function of y
+# Arguments:
+#    w           Name of the canvas
+#    data        List of coordinate pairs y, z
+#    colour      Colour to use
+# Result:
+#    None
+# Side effect:
+#    The plot of the data
+#
+proc ::Plotchart::Draw3DLine { w data colour } {
+    variable data_series
+    variable scaling
+
+    set bright $colour
+    set dim    [DimColour $colour 0.6]
+
+    #
+    # Draw the ribbon as a series of quadrangles
+    #
+    set xe $data_series($w,xbase)
+    set xb [expr {$xe-$data_series($w,xwidth)}]
+
+    set data_series($w,xbase) [expr {$xe-$data_series($w,xstep)}]
+
+    foreach {yb zb} [lrange $data 0 end-2] {ye ze} [lrange $data 2 end] {
+
+        foreach {px11 py11} [coords3DToPixel $w $xb $yb $zb] {break}
+        foreach {px12 py12} [coords3DToPixel $w $xe $yb $zb] {break}
+        foreach {px21 py21} [coords3DToPixel $w $xb $ye $ze] {break}
+        foreach {px22 py22} [coords3DToPixel $w $xe $ye $ze] {break}
+
+        #
+        # Use the angle of the line to determine if the top or the
+        # bottom side is visible
+        #
+        if { $px21 == $px11 ||
+             ($py21-$py11)/($px21-$px11) < ($py12-$py11)/($px12-$px11) } {
+            set colour $dim
+        } else {
+            set colour $bright
+        }
+
+        $w create polygon $px11 $py11 $px21 $py21 $px22 $py22 \
+                          $px12 $py12 $px11 $py11 \
+                          -fill $colour -outline black
+    }
+}
+
+# Draw3DArea --
+#    Plot a ribbon of z-data as a function of y with a "facade"
+# Arguments:
+#    w           Name of the canvas
+#    data        List of coordinate pairs y, z
+#    colour      Colour to use
+# Result:
+#    None
+# Side effect:
+#    The plot of the data
+#
+proc ::Plotchart::Draw3DArea { w data colour } {
+    variable data_series
+    variable scaling
+
+    set bright $colour
+    set dimmer [DimColour $colour 0.8]
+    set dim    [DimColour $colour 0.6]
+
+    #
+    # Draw the ribbon as a series of quadrangles
+    #
+    set xe $data_series($w,xbase)
+    set xb [expr {$xe-$data_series($w,xwidth)}]
+
+    set data_series($w,xbase) [expr {$xe-$data_series($w,xstep)}]
+
+    set facade {}
+
+    foreach {yb zb} [lrange $data 0 end-2] {ye ze} [lrange $data 2 end] {
+
+        foreach {px11 py11} [coords3DToPixel $w $xb $yb $zb] {break}
+        foreach {px12 py12} [coords3DToPixel $w $xe $yb $zb] {break}
+        foreach {px21 py21} [coords3DToPixel $w $xb $ye $ze] {break}
+        foreach {px22 py22} [coords3DToPixel $w $xe $ye $ze] {break}
+
+        $w create polygon $px11 $py11 $px21 $py21 $px22 $py22 \
+                          $px12 $py12 $px11 $py11 \
+                          -fill $dimmer -outline black
+
+        lappend facade $px11 $py11
+    }
+
+    #
+    # Add the last point
+    #
+    lappend facade $px21 $py21
+
+    #
+    # Add the polygon at the right
+    #
+    set zmin $scaling($w,zmin)
+    foreach {px2z py2z} [coords3DToPixel $w $xe $ye $zmin] {break}
+    foreach {px1z py1z} [coords3DToPixel $w $xb $ye $zmin] {break}
+
+    $w create polygon $px21 $py21 $px22 $py22 \
+                      $px2z $py2z $px1z $py1z \
+                      -fill $dim -outline black
+
+    foreach {pxb pyb} [coords3DToPixel $w $xb $ye $zmin] {break}
+
+    set yb [lindex $data 0]
+    foreach {pxe pye} [coords3DToPixel $w $xb $yb $zmin] {break}
+
+    lappend facade $px21 $py21 $pxb $pyb $pxe $pye
+
+    $w create polygon $facade -fill $colour -outline black
+}
