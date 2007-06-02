@@ -537,7 +537,7 @@ Set one or more configuration parameters for the y-axis. This method
 accepts the same options and values as the method [method xconfig].
 
 
-[call [cmd \$anyplot] background [arg part] [arg colour]]
+[call [cmd \$anyplot] background [arg part] [arg colour_or_image] [arg dir]]
 
 Set the background of a part of the plot
 
@@ -545,10 +545,24 @@ Set the background of a part of the plot
 
 [arg_def string part]
 Which part of the plot: "axes" for the axes area and "plot" for the
-inner part. The interpretation depends on the type of plot.
+inner part. The interpretation depends on the type of plot. Two further
+possibilities are:
+[list_begin bullet]
+[bullet]
+[emph image], in which case a predefined image is loaded
+into the background of the plot.
+[bullet]
+[emph gradient], in which case the background is coloured in different
+shades of the given colour. The "dir" argument specifies the direction
+in which the colour gets whiter.
+[list_end]
 
-[arg_def string colour]
-Colour for that part
+[arg_def string colour_or_image]
+Colour for that part or the name of the image if "part" is "image"
+
+[arg_def string dir]
+The direction of the gradient. One of: top-down, bottom-up, left-right
+or right-left.
 
 [list_end]
 [nl]
@@ -1141,6 +1155,15 @@ the drawing mode [const line] was chosen. This can be one of
 pointing up), [const down] (triangle pointing down), [const dot]
 (filled circle), [const upfilled] or [const downfilled] (filled
 triangles).
+
+[opt_def filled enum]
+
+Whether to fill the area above or below the data line or not. Can be one
+of: [const no], [const up] or [const down] ([sectref "SPECIAL EFFECTS"])
+
+[opt_def fillcolour colour]
+
+Colour to use when filling the area associated with the data line.
 
 [list_end]
 [list_end]
@@ -1940,15 +1963,43 @@ Take care of the currently fixed text size properties
 [list_end]
 
 
+[section {SPECIAL EFFECTS}]
+
+As an example of some special effects you can achieve, here is the
+code for a plot where the area below the data line varies in colour:
+
+[example {
+canvas .c  -background white -width 400 -height 200
+pack .c -fill both
+
+set s [::Plotchart::createXYPlot .c {0.0 100.0 10.0} {0.0 100.0 20.0}]
+
+$s background gradient green top-down
+
+$s dataconfig series1 -filled up -fillcolour white
+
+$s plot series1  0.0 20.0
+$s plot series1 10.0 20.0
+$s plot series1 30.0 50.0
+$s plot series1 35.0 45.0
+$s plot series1 45.0 25.0
+$s plot series1 75.0 55.0
+$s plot series1 100.0 55.0
+
+$s plaintext 30.0 60.0 "Peak" south
+}]
+
+The trick is to fill the background with a colour that changes from
+green at the top to white at the bottom. Then the area above the data
+line is filled with a white polygon. Thus the green shading varies with
+the height of the line.
+
 [section {ROOM FOR IMPROVEMENT}]
 
 In this version there are a lot of things that still need to
 be implemented:
 
 [list_begin bullet]
-[bullet]
-General options like legends and text to the axes.
-
 [bullet]
 More robust handling of incorrect calls (right now the procedures may
 fail when called incorrectly):

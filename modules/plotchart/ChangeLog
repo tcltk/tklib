@@ -1,3 +1,9 @@
+2007-06-02 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.man: Documentation of background options
+        * plotpriv.tcl: Support for extra background options and filling data series
+        * plotannot.tcl: Image and gradient background options
+        * plotdemos2.tcl: Demonstration of background options
+
 2007-05-28 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.man: Documentation of rchart subcommand
         * plotchart.tcl: Support for drawing an R-chart

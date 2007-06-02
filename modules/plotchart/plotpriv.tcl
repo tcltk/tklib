@@ -289,7 +289,7 @@ proc ::Plotchart::PlotHandler { type w command args } {
 proc ::Plotchart::DrawMask { w } {
    variable scaling
 
-   set width  [$w cget -width]
+   set width  [expr {[$w cget -width]  + 1}]
    set height [expr {[$w cget -height] + 1}]
    set colour [$w cget -background]
    set pxmin  $scaling($w,pxmin)
@@ -360,17 +360,36 @@ proc ::Plotchart::DrawData { w series xcrd ycrd } {
    if { [info exists data_series($w,$series,-type)] } {
       set type $data_series($w,$series,-type)
    }
+   set filled "no"
+   if { [info exists data_series($w,$series,-filled)] } {
+      set filled $data_series($w,$series,-filled)
+   }
+   set fillcolour white
+   if { [info exists data_series($w,$series,-fillcolour)] } {
+      set fillcolour $data_series($w,$series,-fillcolour)
+   }
 
    foreach {pxcrd pycrd} [coordsToPixel $w $xcrd $ycrd] {break}
 
    if { [info exists data_series($w,$series,x)] } {
-      set xold $data_series($w,$series,x)
-      set yold $data_series($w,$series,y)
-      foreach {pxold pyold} [coordsToPixel $w $xold $yold] {break}
-      if { $type == "line" || $type == "both" } {
-         $w create line $pxold $pyold $pxcrd $pycrd \
-                        -fill $colour -tag data
-      }
+       set xold $data_series($w,$series,x)
+       set yold $data_series($w,$series,y)
+       foreach {pxold pyold} [coordsToPixel $w $xold $yold] {break}
+
+       if { $filled ne "no" } {
+           if { $filled eq "down" } {
+               set pym $scaling($w,pymax)
+           } else {
+               set pym $scaling($w,pymin)
+           }
+           $w create polygon $pxold $pym $pxold $pyold $pxcrd $pycrd $pxcrd $pym \
+               -fill $fillcolour -outline {} -tag data
+       }
+
+       if { $type == "line" || $type == "both" } {
+          $w create line $pxold $pyold $pxcrd $pycrd \
+                         -fill $colour -tag data
+       }
    }
 
    if { $type == "symbol" || $type == "both" } {
@@ -1084,17 +1103,19 @@ proc ::Plotchart::DrawIsometricData { w type args } {
 }
 
 # BackgroundColour --
-#    Set the background colour
+#    Set the background colour or other aspects of the background
 # Arguments:
 #    w           Name of the canvas
 #    part        Which part: axes or plot
-#    colour      Colour to use
+#    colour      Colour to use (or if part is "image", name of the image)
+#    dir         Direction of increasing whiteness (optional, for "gradient"
+#
 # Result:
 #    None
 # Side effect:
 #    Colour of the relevant part is changed
 #
-proc ::Plotchart::BackgroundColour { w part colour } {
+proc ::Plotchart::BackgroundColour { w part colour {dir {}} } {
     if { $part == "axes" } {
         $w configure -highlightthickness 0
         $w itemconfigure mask -fill $colour -outline $colour
@@ -1102,6 +1123,12 @@ proc ::Plotchart::BackgroundColour { w part colour } {
     if { $part == "plot" } {
         $w configure -highlightthickness 0
         $w configure -background $colour
+    }
+    if { $part == "gradient" } {
+        DrawGradientBackground $w $colour $dir
+    }
+    if { $part == "image" } {
+        DrawImageBackground $w $colour
     }
 }
 
@@ -1226,7 +1253,7 @@ proc ::Plotchart::DrawRadial { w values colour {thickness 1} } {
        set fillcolour ""
    }
 
-   set id [$w create polygon $coords -outline $colour -width $thickness -fill $fillcolour]
+   set id [$w create polygon $coords -outline $colour -width $thickness -fill $fillcolour -tags data]
    $w lower $id
 }
 
