@@ -7,7 +7,7 @@
 # Refer to the file "license.terms" for the terms and conditions of
 # use and redistribution of this file, and a DISCLAIMER OF ALL WARRANTEES.
 #
-# $Id: en.msg,v 1.2 2006/09/05 18:52:22 kennykb Exp $
+# $Id: en.msg,v 1.3 2007/06/08 19:24:31 kennykb Exp $
 # $Source: /home/rkeene/tmp/cvs2fossil/tcllib/tklib/modules/khim/en.msg,v $
 #
 #----------------------------------------------------------------------
@@ -84,6 +84,8 @@ namespace eval ::khim {
 	{Composed sequence must be two characters long}
 
     ::msgcat::mcset en {Delete} {Delete}
+
+    ::msgcat::mcset en {KHIM Help} {KHIM Help}
 
     ::msgcat::mcset en {Help...} {Help...}
 
