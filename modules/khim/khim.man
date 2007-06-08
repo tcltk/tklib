@@ -144,6 +144,9 @@ sequences that are currently bound.
 [lst_item [const {{KHIM Controls}}]]
 Window title for the dialog box that prompts for KHIM settings.
 
+[lst_item [const {{KHIM Help}}]]
+Window title for the window that display help text for KHIM.
+
 [lst_item [const OK]]
 Label for the OK button on several dialogs.
 
