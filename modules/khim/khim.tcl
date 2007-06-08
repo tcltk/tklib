@@ -17,7 +17,7 @@
 # Refer to the file "license.terms" for the terms and conditions of
 # use and redistribution of this file, and a DISCLAIMER OF ALL WARRANTEES.
 #
-# $Id: khim.tcl,v 1.9 2006/11/02 19:19:47 hobbs Exp $
+# $Id: khim.tcl,v 1.10 2007/06/08 19:24:31 kennykb Exp $
 # $Source: /home/rkeene/tmp/cvs2fossil/tcllib/tklib/modules/khim/khim.tcl,v $
 #
 #----------------------------------------------------------------------
@@ -27,7 +27,7 @@ package require Tk 8.4
 package require msgcat 1.2
 package require autoscroll 1.0
 
-package provide khim 1.0
+package provide khim 1.0.1
 
 namespace eval khim [list variable KHIMDir [file dirname [info script]]]
 
@@ -434,6 +434,7 @@ proc khim::showHelp {w} {
 	set g $p
     }
     wm transient $w $g
+    wm title $w [mc {KHIM Help}]
     catch {wm attributes $w -toolwindow 1}
 
     # Create and manage GUI components
@@ -1041,6 +1042,7 @@ proc khim::ReplaceU {string} {
 proc khim::CMapUpdateSpinbox {w args} {
     variable CMapInputCodePage
     variable CMapCodePage
+    variable CMapSavedColors
 
     set spin $w.spin
 
@@ -1049,14 +1051,22 @@ proc khim::CMapUpdateSpinbox {w args} {
     if { ![string is integer -strict $CMapInputCodePage($w)]
 	 || $CMapInputCodePage($w) < 0
 	 || $CMapInputCodePage($w) >= 0x100 } {
-	$spin configure -background \#ff6666
+	if {![info exists CMapSavedColors($w)]} {
+	    set CMapSavedColors($w) \
+		[list [$spin cget -background] [$spin cget -foreground]]
+	}
+	$spin configure -background \#ff6666 -foreground \#000000
     } else {
 
 	# Valid code page - generate the values list. Make sure that
 	# the current value is in the list, even if it's formatted
 	# eccentrically (e.g., 0x000012).
 
-	$spin configure -background white
+	if {[info exists CMapSavedColors($w)]} {
+	    foreach {bg fg} $CMapSavedColors($w) break
+	    $spin configure -background $bg -foreground $fg
+	    unset CMapSavedColors($w)
+	}
 	if { [string match *0x* $CMapInputCodePage($w)] } {
 	    set format 0x%02X
 	} else {
@@ -1110,6 +1120,8 @@ proc khim::CMapDrawCanvas {w args} {
     variable CMapYL
     variable CMapSelectedCharacter
     variable CMapAfter
+    variable CMapBackground
+    variable CMapForeground
 
     if {[info exists CMapAfter($w)]} {
 	after cancel $CMapAfter($w)
@@ -1147,8 +1159,8 @@ proc khim::CMapDrawCanvas {w args} {
 			   [expr { $point / 0x100 }] [expr { $point % 0x100 }]]
 		set f $CMapBadCharFont
 	    }
-	    set tags [list row$row col$col]
-	    $c create text 0 0 -text $t -font $f \
+	    set tags [list text row$row col$col]
+	    $c create text 0 0 -text $t -font $f -fill $CMapForeground($w)\
 		-anchor center -justify center -tags $tags
 	    set tock [clock clicks -milliseconds]
 	    if {$ok && $tock-$tick > 1500} {
@@ -1200,11 +1212,21 @@ proc khim::CMapDrawCanvas {w args} {
     # Now that the characters on the grid are properly positioned, draw
     # the separator lines and configure the canvas size
 
+    # We interpolate between foreground and background to draw the lines,
+    # so that they appear "finer" visually than a 0-pixel line
+    
+    set linecolor \#
+    foreach \
+	c1 [winfo rgb $c $CMapForeground($w)] \
+	c2 [winfo rgb $c $CMapBackground($w)] {
+	    set c3 [expr {(3 * $c2 + $c1) / 4}]
+	    append linecolor [format %04x $c3]
+	}
     foreach x $CMapXL($w) {
-	$c create line $x $ymin $x $ymax -width 0 -fill gray85
+	$c create line $x $ymin $x $ymax -width 0 -fill $linecolor
     }
     foreach y $CMapYL($w) {
-	$c create line $xmin $y $xmax $y -width 0 -fill gray85
+	$c create line $xmin $y $xmax $y -width 0 -fill $linecolor
     }
     $c configure -width [expr { $xmax + $pad }] \
 	-height [expr { $ymax + $pad }] \
@@ -1285,6 +1307,10 @@ proc khim::ShowSelectedCell {w} {
     variable CMapSelectedCharacter
     variable CMapXL
     variable CMapYL
+    variable CMapBackground
+    variable CMapForeground
+    variable CMapSelectBackground
+    variable CMapSelectForeground
     if { $CMapSelectedCharacter($w) < $CMapCodePage($w) * 0x0100
 	 || $CMapSelectedCharacter($w) >= ($CMapCodePage($w) + 1) * 0x100 } {
 	set CMapSelectedCharacter($w) \
@@ -1295,15 +1321,22 @@ proc khim::ShowSelectedCell {w} {
     set rem [expr { $CMapSelectedCharacter($w) % 0x0100 }]
     set row [expr { $rem / 16 }]
     set col [expr { $rem % 16 }]
+
+    $c itemconfigure text -fill $CMapForeground($w)
+    $c itemconfigure text&&row$row&&col$col -fill $CMapSelectForeground($w)
+
     set xmin [lindex $CMapXL($w) $col]
     incr col
     set xmax [lindex $CMapXL($w) $col]
+
     set ymin [lindex $CMapYL($w) $row]
     incr row
     set ymax [lindex $CMapYL($w) $row]
     catch { $c delete selectrect }
     $c create rectangle $xmin $ymin $xmax $ymax \
-	-width 2 -fill {} -outline blue -tags selectrect
+	-width 2 -fill $CMapSelectBackground($w) \
+	-outline $CMapSelectForeground($w) -tags selectrect
+    $c lower selectrect text
     return
 }
 
@@ -1585,11 +1618,19 @@ proc khim::CMapInteractor {w} {
     variable CMapInputCodePage
     variable CMapCodePage
     variable CMapFocus
+    variable CMapBackground
+    variable CMapForeground
+    variable CMapSelectBackground
+    variable CMapSelectForeground
     set t [winfo toplevel $w]
     if { $t eq "." } {
 	set t {}
     }
     set map $t.khimcmap
+    if {[winfo exists $map]} {
+	wm deiconify $map
+	return
+    }
     toplevel $map
     wm withdraw $map
     wm title $map [mc {Insert Character}]
@@ -1603,8 +1644,20 @@ proc khim::CMapInteractor {w} {
     grid [spinbox $map.spin -textvariable khim::CMapInputCodePage($map) \
 	      -width 4] \
 	-row 0 -column 1 -sticky w
+
+    # Get canvas background from the background that a text widget would
+    # have had.
+    text $map.text
+    set CMapBackground($map) [$map.text cget -background]
+    set CMapForeground($map) [$map.text cget -foreground]
+    set CMapSelectBackground($map) [$map.text cget -selectbackground]
+    set CMapSelectForeground($map) [$map.text cget -selectforeground]
+    destroy $map.text
+
+    # Create the dialog
     set c $map.c
-    grid [canvas $c -width 400 -height 400 -bg white -takefocus 1] \
+    grid [canvas $c -width 400 -height 400 \
+	      -bg $CMapBackground($map) -takefocus 1] \
 	-columnspan 2 -padx 3 -pady 3
     grid [frame $map.f] -row 2 -column 0 -columnspan 2 -sticky ew -pady 3
     button $map.f.b1 -text [mc OK] -command [list khim::CMapOK $map]
@@ -1628,11 +1681,15 @@ proc khim::CMapInteractor {w} {
 	set CMapSelectedCharacter($map) 0x0000
     }
     set CMapFocus($map) $w
+
+    # Draw the character map in the canvas
     CMapDrawCanvas $map
 
     wm deiconify $map
     bind $map <Map> [list grab $map]
     bind $map.c <Map> [list focus %W]
+
+    # eeew, tkwait... make this interaction modal
     tkwait window $map
     catch {
 	destroy $map
@@ -1787,6 +1844,11 @@ proc khim::CMapDestroy {c} {
     variable CMapAfter
     variable CMapXL
     variable CMapYL
+    variable CMapSavedColors
+    variable CMapForeground
+    variable CMapBackground
+    variable CMapSelectForeground
+    variable CMapSelectBackground
     set w [winfo toplevel $c]
     if {[info exists CMapAfter($w)]} {
 	after cancel $CMapAfter($w)
@@ -1795,6 +1857,11 @@ proc khim::CMapDestroy {c} {
     catch {unset CMapFocus($w)}
     catch {unset CMapXL($w)}
     catch {unset CMapYL($w)}
+    catch {unset CMapSavedColors($w)}
+    catch {unset CMapForeground($w)}
+    catch {unset CMapSelectForeground($w)}
+    catch {unset CMapBackground($w)}
+    catch {unset CMapSelectBackground($w)}
     return
 }
     
