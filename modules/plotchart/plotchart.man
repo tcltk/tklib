@@ -273,6 +273,13 @@ If the keyword [const stacked] was specified the series will be drawn
 stacked on top of each other. Otherwise each series that is drawn will
 be drawn shifted to the right.
 
+[nl]
+
+The number of series determines the width of the bars, so that there is
+space of that number of bars. If you use a floating-point number, like
+2.2, instead of an integer, like 2, a small gap between the sets of bars
+will be drawn - the width depends on the fractional part.
+
 [list_begin arg]
 [arg_def widget w in]
 Name of the [emph existing] canvas widget to hold the plot.

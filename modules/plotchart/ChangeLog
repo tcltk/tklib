@@ -1,8 +1,16 @@
+2007-06-12 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.man: Documented a tip by Bernhard Wallner (number of
+                         series can be floating-point)
+        * plotaxis.tcl: Corrected a few typos in drawing the legend
+        * plotdemos1.tcl: Apply Bernhard's tip to see the effect
+
 2007-06-02 Arjen Markus  <arjenmarkus@users.sourceforge.net>
-        * plotchart.man: Documentation of background options
+        * plotchart.man: Documentation of background options, 3D ribbon charts
+        * plotchart.tcl: 3D ribbon plot added
         * plotpriv.tcl: Support for extra background options and filling data series
-        * plotannot.tcl: Image and gradient background options
+        * plotannot.tcl: Image and gradient background options, 3D ribbon charts
         * plotdemos2.tcl: Demonstration of background options
+        * plotbus.test: Demonstration of 3D ribbon charts
 
 2007-05-28 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.man: Documentation of rchart subcommand
