@@ -565,11 +565,11 @@ proc ::Plotchart::DrawLegend { w series text } {
 
         set colour "black"
         if { [info exists data_series($w,$series,-colour)] } {
-            set colour $data_series($w,$series,-colour)]
+            set colour $data_series($w,$series,-colour)
         }
         set type "line"
         if { [info exists data_series($w,$series,-type)] } {
-            set type $data_series($w,$series,-type)]
+            set type $data_series($w,$series,-type)
         }
 
         # TODO: line or rectangle!
@@ -581,7 +581,7 @@ proc ::Plotchart::DrawLegend { w series text } {
             if { [info exists data_series($w,$series,-symbol)] } {
                 set symbol $data_series($w,$series,-symbol)
             }
-            DrawSymbolPixel $legendw $series 7 $y $symbol $colour $tag
+            DrawSymbolPixel $legendw $series 7 $y $symbol $colour legend
         }
 
         $legendw create text 25 $y -text $text -anchor w -tag legend
