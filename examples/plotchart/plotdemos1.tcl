@@ -96,7 +96,7 @@ for { set angle 0 } { $angle < 360.0 } { set angle [expr {$angle+10.0}] } {
 $s title "Cardioid"
 
 
-set s [::Plotchart::createBarchart .h.c {A B C D E} {0.0 10.0 2.0} 2]
+set s [::Plotchart::createBarchart .h.c {A B C D E} {0.0 10.0 2.0} 2.5]
 
 $s plot series1 {1.0 4.0 6.0 1.0 7.0} red
 $s plot series2 {0.0 3.0 7.0 9.3 2.0} green
