@@ -1,3 +1,11 @@
+2007-06-16 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.man: Documented the createTXPlot method (for time-x plots)
+        * plotpriv.tcl: Added the DrawTimeData method and proper support for legends
+                        in barcharts
+        * plotaxis.tcl: Added drawing rectangles in legends
+        * plotdemos1.tcl: Extended the barchart with a legend and added
+                          data to the TX-plot
+
 2007-06-12 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.man: Documented a tip by Bernhard Wallner (number of
                          series can be floating-point)
