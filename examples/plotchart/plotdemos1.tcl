@@ -98,6 +98,9 @@ $s title "Cardioid"
 
 set s [::Plotchart::createBarchart .h.c {A B C D E} {0.0 10.0 2.0} 2.5]
 
+$s legend series1 "Series 1"
+$s legend series2 "Series 2"
+
 $s plot series1 {1.0 4.0 6.0 1.0 7.0} red
 $s plot series2 {0.0 3.0 7.0 9.3 2.0} green
 $s title "Arbitrary data"
@@ -161,29 +164,23 @@ $s plotdata { {1.0 2.0 1.0 0.0} {1.1 3.0 1.1 -0.5} {3.0 1.0 4.0 5.0} }
 
 set s [::Plotchart::createTXPlot .c4 {2006-01-01 2007-01-01 120} {0.0 100.0 20.0}]
 
-if { 0 } {
-set xd    5.0
-set yd   20.0
-set xold  0.0
-set yold 50.0
-
 $s dataconfig series1 -colour "red"
 $s dataconfig series2 -colour "blue"
 
-for { set i 0 } { $i < 20 } { incr i } {
-   set xnew [expr {$xold+$xd}]
-   set ynew [expr {$yold+(rand()-0.5)*$yd}]
-   set ynew2 [expr {$yold+(rand()-0.5)*2.0*$yd}]
-   $s plot series1 $xnew $ynew
-   $s plot series2 $xnew $ynew2
-   set xold $xnew
-   set yold $ynew
-}
+$s xtext "Time"
+$s ytext "Data"
 
-$s interval series2 50.0 40.0 60.0 52.0
-$s interval series2 60.0 40.0 60.0
+$s plot series1 2006-02-01 10.0
+$s plot series1 2006-02-11 50.0
+$s plot series1 2006-03-01 50.0
+$s plot series1 2006-07-01 40.0
+$s plot series1 2006-08-21 20.0
+$s plot series1 2006-08-22  1.0
+$s plot series1 2006-12-11 78.0
 
-$s xtext "X-coordinate"
-$s ytext "Y-data"
-$s title "Aha!"
-}
+$s plot series2 2006-03-01 110.0
+$s plot series2 2006-04-11  50.0
+$s plot series2 2006-07-28  20.0
+$s plot series2 2006-10-21  99.0
+$s plot series2 2006-11-22   1.0
+$s plot series2 2006-12-31  78.0
