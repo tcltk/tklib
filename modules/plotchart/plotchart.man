@@ -136,6 +136,27 @@ A 3-element list containing minimum, maximum and stepsize for the y-axis, in thi
 [nl]
 
 
+[call [cmd ::Plotchart::createTXPlot] [arg w] [arg timeaxis] [arg xaxis]]
+
+Create a new time-x-plot. The horizontal axis represents the date/time
+of the data and the vertical axis the values themselves.
+
+[list_begin arg]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the plot.
+
+[arg_def list timeaxis in]
+A 3-element list containing the minimum and maximum date/time to be
+shown and the stepsize ([emph in days]) for the time-axis, in this order.
+
+[arg_def list xaxis in]
+A 3-element list containing minimum, maximum and stepsize for the
+vertical axis, in this order.
+
+[list_end]
+[nl]
+
+
 [call [cmd ::Plotchart::createPolarPlot] [arg w] [arg radius_data]]
 
 Create a new polar plot.
@@ -516,8 +537,8 @@ two seconds. It is not ideal, but it seems to work better.
 
 [call [cmd \$anyplot] xtext [arg text]]
 
-Specify the title of the x-axis, for those plots that have a straight
-x-axis.
+Specify the title of the (horizontal) x-axis, for those plots that have
+a straight x-axis.
 
 [list_begin arg]
 [arg_def string text in]
@@ -529,8 +550,8 @@ The text of the x-axis label to be drawn.
 
 [call [cmd \$anyplot] ytext [arg text]]
 
-Specify the title of the y-axis, for those plots that have a straight
-y-axis.
+Specify the title of the (horizontal) y-axis, for those plots that have
+a straight y-axis.
 
 [list_begin arg]
 [arg_def string text in]
@@ -749,7 +770,8 @@ and only the option [option -format] has any effect.
 
 [para]
 
-For [emph {xy plots}], [emph stripcharts] and [emph histograms]:
+For [emph {xy plots}], [emph stripcharts], [emph histograms] and
+[emph time-x-plots]:
 
 [list_begin definitions]
 [call [cmd \$xyplot] plot [arg series] [arg xcrd] [arg ycrd]]
@@ -761,7 +783,8 @@ Add a data point to the plot.
 Name of the data series the new point belongs to.
 
 [arg_def float xcrd in]
-X-coordinate of the new point.
+X-coordinate of the new point. (For time-x plots this must be valid
+date/time that can be read with the [emph "clock scan"] command).
 
 [arg_def float ycrd in]
 Y-coordinate of the new point.

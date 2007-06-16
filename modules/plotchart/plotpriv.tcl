@@ -576,6 +576,22 @@ proc ::Plotchart::DrawSymbolPixel { w series pxcrd pycrd symbol colour tag } {
    }
 }
 
+# DrawTimeData --
+#    Draw the data in an TX-plot
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    time        Next date/time value
+#    xcrd        Next x coordinate (vertical axis)
+# Result:
+#    None
+# Side effects:
+#    New data drawn in canvas
+#
+proc ::Plotchart::DrawTimeData { w series time xcrd } {
+    DrawData $w $series [clock scan $time] $xcrd
+}
+
 # DrawPie --
 #    Draw the pie
 # Arguments:
@@ -701,6 +717,7 @@ proc ::Plotchart::DrawPolarData { w series rad phi } {
 proc ::Plotchart::DrawVertBarData { w series ydata {colour black}} {
    variable data_series
    variable scaling
+   variable legend
 
    #
    # Draw the bars
@@ -718,6 +735,17 @@ proc ::Plotchart::DrawVertBarData { w series ydata {colour black}} {
        set colours {}
    }
    set colours [CycleColours ${colours} [llength ${ydata}]]
+
+   #
+   # Legend information
+   #
+   set legendcol [lindex $colours 0]
+   set data_series($w,$series,-colour) $legendcol
+   set data_series($w,$series,-type)   rectangle
+   if { [info exists legend($w,canvas)] } {
+       set legendw $legend($w,canvas)
+       $legendw itemconfigure $series -fill $legendcol
+   }
 
    set newbase {}
 
@@ -785,6 +813,16 @@ proc ::Plotchart::DrawHorizBarData { w series xdata {colour black}} {
        set colours {}
    }
    set colours [CycleColours ${colours} [llength ${xdata}]]
+
+   #
+   # Legend information
+   #
+   set legendcol [lindex $colours 0]
+   set data_series($w,$series,-colour) $legendcol
+   if { [info exists legend($w,canvas)] } {
+       set legendw $legend($w,canvas)
+       $legendw itemconfigure $series -fill $legendcol
+   }
 
    set newbase {}
 
