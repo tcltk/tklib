@@ -571,17 +571,25 @@ proc ::Plotchart::DrawLegend { w series text } {
         if { [info exists data_series($w,$series,-type)] } {
             set type $data_series($w,$series,-type)
         }
+        if { [info exists data_series($w,legendtype)] } {
+            set type $data_series($w,legendtype)
+        }
 
         # TODO: line or rectangle!
 
-        $legendw create line 0 $y 15 $y -fill $colour -tag legend
+        if { $type != "rectangle" } {
+            $legendw create line 0 $y 15 $y -fill $colour -tag legend
 
-        if { $type == "symbol" || $type == "both" } {
-            set symbol "dot"
-            if { [info exists data_series($w,$series,-symbol)] } {
-                set symbol $data_series($w,$series,-symbol)
+            if { $type == "symbol" || $type == "both" } {
+                set symbol "dot"
+                if { [info exists data_series($w,$series,-symbol)] } {
+                    set symbol $data_series($w,$series,-symbol)
+                }
+                DrawSymbolPixel $legendw $series 7 $y $symbol $colour legend
             }
-            DrawSymbolPixel $legendw $series 7 $y $symbol $colour legend
+        } else {
+            $legendw create rectangle 0 [expr {$y-3}] 15 [expr {$y+3}] \
+                -fill $colour -tag [list legend $series]
         }
 
         $legendw create text 25 $y -text $text -anchor w -tag legend

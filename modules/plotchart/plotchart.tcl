@@ -831,6 +831,7 @@ proc ::Plotchart::createBarchart { w xlabels yscale noseries } {
    DrawXlabels      $w $xlabels $noseries
    DrawMask         $w
    DefaultLegend    $w
+   set data_series($w,legendtype) "rectangle"
    DefaultBalloon   $w
 
    SetColours $w blue lightblue green yellow orange red magenta brown
@@ -882,6 +883,7 @@ proc ::Plotchart::createHorizontalBarchart { w xscale ylabels noseries } {
    DrawYlabels      $w $ylabels $noseries
    DrawMask         $w
    DefaultLegend    $w
+   set data_series($w,legendtype) "rectangle"
    DefaultBalloon   $w
 
    SetColours $w blue lightblue green yellow orange red magenta brown
