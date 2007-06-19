@@ -1,3 +1,6 @@
+2007-06-19 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.man: Corrected syntax error
+
 2007-06-16 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.man: Documented the createTXPlot method (for time-x plots)
         * plotpriv.tcl: Added the DrawTimeData method and proper support for legends
