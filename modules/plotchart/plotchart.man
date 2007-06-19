@@ -147,7 +147,7 @@ Name of the [emph existing] canvas widget to hold the plot.
 
 [arg_def list timeaxis in]
 A 3-element list containing the minimum and maximum date/time to be
-shown and the stepsize ([emph in days]) for the time-axis, in this order.
+shown and the stepsize ([emph "in days"]) for the time-axis, in this order.
 
 [arg_def list xaxis in]
 A 3-element list containing minimum, maximum and stepsize for the
