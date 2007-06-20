@@ -21,7 +21,7 @@ if {![package vsatisfies [package provide Tcl] 8.4]} {return}
     widget::panelframe		1.0	panelframe.tcl
     widget::ruler		1.0	ruler.tcl
     widget::screenruler		1.1	ruler.tcl
-    widget::scrolledwindow	1.1	scrollw.tcl
+    widget::scrolledwindow	1.2	scrollw.tcl
     widget::statusbar		1.1	statusbar.tcl
     widget::superframe		1.0	superframe.tcl
     widget::toolbar		1.1	toolbar.tcl
