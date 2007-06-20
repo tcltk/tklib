@@ -1,5 +1,8 @@
 2007-06-20  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* stext.tcl (new): example adaptation of scrolledwindow to create
+	a scrolledtext widget.
+
 	* ruler.tcl: update to 1.1
 	Correct zoom menu to show proper label.
 	update option handling with latest snit features.
