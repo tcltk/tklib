@@ -4,7 +4,7 @@
 #
 #	Scrolled widget
 #
-# RCS: @(#) $Id: scrollw.tcl,v 1.13 2007/04/10 18:15:28 hobbs Exp $
+# RCS: @(#) $Id: scrollw.tcl,v 1.14 2007/06/20 23:42:41 hobbs Exp $
 #
 
 # Creation and Options - widget::scrolledwindow $path ...
@@ -59,27 +59,33 @@ snit::widget widget::scrolledwindow {
     delegate method * to hull
     #delegate option -size to {hscroll vscroll} as -width
 
-    option -scrollbar -default "both" \
-	-configuremethod C-scrollbar -validatemethod isa
-    option -auto      -default "both" \
-	-configuremethod C-scrollbar -validatemethod isa
-    option -sides     -default "se" \
-	-configuremethod C-scrollbar -validatemethod isa
-    option -size      -default 0 -configuremethod C-size -validatemethod isa
-    option -ipad      -default 0 -configuremethod C-ipad -validatemethod isa
+    option -scrollbar -default "both" -configuremethod C-scrollbar \
+	-type [list snit::enum -values [list none horizontal vertical both]]
+    option -auto      -default "both" -configuremethod C-scrollbar \
+	-type [list snit::enum -values [list none horizontal vertical both]]
+    option -sides     -default "se" -configuremethod C-scrollbar \
+	-type [list snit::enum -values [list ne en nw wn se es sw ws]]
+    option -size      -default 0 -configuremethod C-size \
+	-type [list  snit::integer -min 0 -max 30]
+    option -ipad      -default 0 -configuremethod C-ipad \
+	-type [list snit::listtype -type {snit::integer} -minlen 1 -maxlen 2]
 
     typevariable scrollopts {none horizontal vertical both}
+
     variable realized 0    ; # set when first Configure'd
     variable hsb -array {
-	packed 0 present 0 auto 0 cell 0 lastmin -1 lastmax -1 lock 0
+	packed 0 present 0 auto 0 row 2 col 1 lastmin -1 lastmax -1 lock 0
+	sticky "ew" padx 0 pady 0
     }
     variable vsb -array {
-	packed 0 present 0 auto 0 cell 0 lastmin -1 lastmax -1 lock 0
+	packed 0 present 0 auto 0 row 1 col 2 lastmin -1 lastmax -1 lock 0
+	sticky "ns" padx 0 pady 0
     }
     variable pending {}    ; # pending after id for scrollbar mgmt
 
     constructor args {
-	if {[tk windowingsystem] eq "x11"} {
+	if {[tk windowingsystem] ne "aqua"} {
+	    # ttk scrollbars on aqua are a bit wonky still
 	    install hscroll using ttk::scrollbar $win.hscroll \
 		-orient horizontal -takefocus 0
 	    install vscroll using ttk::scrollbar $win.vscroll \
@@ -107,47 +113,42 @@ snit::widget widget::scrolledwindow {
 
     destructor {
 	after cancel $pending
+	set pending {}
     }
 
     # Do we need this ??
     method getframe {} { return $win }
-
-    method isa {option value} {
-	set cmd widget::isa
-	switch -exact -- $option {
-	    -scrollbar -
-	    -auto {
-		return [uplevel 1 [list $cmd list $scrollopts $option $value]]
-	    }
-	    -sides {
-		return [uplevel 1 [list $cmd list {ne en nw wn se es sw ws} $option $value]]
-	    }
-	    -size {
-		return [uplevel 1 [list $cmd integer {0 30} $option $value]]
-	    }
-	    -ipad {
-		return [uplevel 1 [list $cmd listofint 2 $option $value]]
-	    }
-	}
-    }
 
     variable setwidget {}
     method setwidget {widget} {
 	if {$setwidget eq $widget} { return }
 	if {[winfo exists $setwidget]} {
 	    grid remove $setwidget
-	    $setwidget configure -xscrollcommand "" -yscrollcommand ""
+	    # in case we only scroll in one direction
+	    catch {$setwidget configure -xscrollcommand ""}
+	    catch {$setwidget configure -yscrollcommand ""}
+	    $hscroll configure -command {}
+	    $vscroll configure -command {}
 	    set setwidget {}
+	}
+	if {$pending ne {}} {
+	    # ensure we have called most recent _setdata
+	    after cancel $pending
+	    $self _setdata
 	}
 	if {[winfo exists $widget]} {
 	    set setwidget $widget
 	    grid $widget -in $win -row 1 -column 1 -sticky news
 
-	    $hscroll configure -command [list $widget xview]
-	    $vscroll configure -command [list $widget yview]
-	    $widget configure \
-		-xscrollcommand [mymethod _set_scroll hsb] \
-		-yscrollcommand [mymethod _set_scroll vsb]
+	    # in case we only scroll in one direction
+	    if {$hsb(present)} {
+		$widget configure -xscrollcommand [mymethod _set_scroll hsb]
+		$hscroll configure -command [list $widget xview]
+	    }
+	    if {$vsb(present)} {
+		$widget configure -yscrollcommand [mymethod _set_scroll vsb]
+		$vscroll configure -command [list $widget yview]
+	    }
 	}
 	return $widget
     }
@@ -168,67 +169,82 @@ snit::widget widget::scrolledwindow {
 	set options($option) $value
 	# double value to ensure a single int value covers pad x and y
 	foreach {padx pady} [concat $value $value] { break }
-	grid configure $vscroll -padx [list $padx 0]
-	grid configure $hscroll -pady [list $pady 0]
+	set vsb(padx) [list $padx 0] ; set vsb(pady) 0
+	set hsb(padx) 0              ; set vsb(pady) [list $pady 0]
+	if {$vsb(present) && $vsb(packed)} {
+	    grid configure $vsb(bar) -padx $vsb(padx) -pady $vsb(pady)
+	}
+	if {$hsb(present) && $hsb(packed)} {
+	    grid configure $hsb(bar) -padx $hsb(padx) -pady $hsb(pady)
+	}
     }
 
     method _set_scroll {varname vmin vmax} {
+	if {!$realized} { return }
+	# This is only called if the scrollbar is attached properly
 	upvar 0 $varname sb
-	if {$realized && $sb(present)} {
-	    if {$sb(auto)} {
-		if {!$sb(lock)} {
-		    # One last check to avoid loops when not locked
-		    if {$vmin == $sb(lastmin) && $vmax == $sb(lastmax)} {
-			return
-		    }
-		    set sb(lastmin) $vmin
-		    set sb(lastmax) $vmax
+	if {$sb(auto)} {
+	    if {!$sb(lock)} {
+		# One last check to avoid loops when not locked
+		if {$vmin == $sb(lastmin) && $vmax == $sb(lastmax)} {
+		    return
 		}
-		if {$sb(packed) && $vmin == 0 && $vmax == 1} {
-		    if {!$sb(lock)} {
-			set sb(packed) 0
-			grid remove $sb(bar)
-		    }
-		} elseif {!$sb(packed) && ($vmin != 0 || $vmax != 1)} {
-		    set sb(packed) 1
-		    if {$varname eq "vsb"} {
-			grid $sb(bar) -column $sb(cell) -row 1 -sticky ns
-		    } else {
-			grid $sb(bar) -column 1 -row $sb(cell) -sticky ew
-		    }
-		}
-		set sb(lock) 1
-		update idletasks
-		set sb(lock) 0
+		set sb(lastmin) $vmin
+		set sb(lastmax) $vmax
 	    }
-	    $sb(bar) set $vmin $vmax
+	    if {$sb(packed) && $vmin == 0 && $vmax == 1} {
+		if {!$sb(lock)} {
+		    set sb(packed) 0
+		    grid remove $sb(bar)
+		}
+	    } elseif {!$sb(packed) && ($vmin != 0 || $vmax != 1)} {
+		set sb(packed) 1
+		grid $sb(bar) -column $sb(col) -row $sb(row) \
+		    -sticky $sb(sticky) -padx $sb(padx) -pady $sb(pady)
+	    }
+	    set sb(lock) 1
+	    update idletasks
+	    set sb(lock) 0
 	}
+	$sb(bar) set $vmin $vmax
     }
 
     method _setdata {} {
-	set sb    [lsearch -exact $scrollopts $options(-scrollbar)]
+	set pending {}
+	set bar   [lsearch -exact $scrollopts $options(-scrollbar)]
 	set auto  [lsearch -exact $scrollopts $options(-auto)]
 
-	set hsb(present) [expr {($sb & 1) != 0}]
-	set hsb(auto)	 [expr {($auto & 1) != 0}]
-	set hsb(cell)	 [expr {[string match *n* $options(-sides)] ? 0 : 2}]
+	set hsb(present) [expr {$bar & 1}]  ; # idx 1 or 3
+	set hsb(auto)    [expr {$auto & 1}] ; # idx 1 or 3
+	set hsb(row)     [expr {[string match *n* $options(-sides)] ? 0 : 2}]
+	set hsb(col)     1
+	set hsb(sticky)  "ew"
 
-	set vsb(present) [expr {($sb & 2) != 0}]
-	set vsb(auto)	 [expr {($auto & 2) != 0}]
-	set vsb(cell)    [expr {[string match *w* $options(-sides)] ? 0 : 2}]
+	set vsb(present) [expr {$bar & 2}]  ; # idx 2
+	set vsb(auto)    [expr {$auto & 2}] ; # idx 2
+	set vsb(row)     1
+	set vsb(col)     [expr {[string match *w* $options(-sides)] ? 0 : 2}]
+	set vsb(sticky)	 "ns"
 
-	foreach {vmin vmax} [$hscroll get] { break }
-	set hsb(packed) [expr {$hsb(present) &&
-			       (!$hsb(auto) || ($vmin != 0 || $vmax != 1))}]
-	foreach {vmin vmax} [$vscroll get] { break }
-	set vsb(packed) [expr {$vsb(present) &&
-			       (!$vsb(auto) || ($vmin != 0 || $vmax != 1))}]
-
-	if {$hsb(packed)} {
-	    grid $hscroll -column 1 -row $hsb(cell) -sticky ew
+	if {$setwidget eq ""} {
+	    grid remove $hsb(bar)
+	    grid remove $vsb(bar)
+	    set hsb(packed) 0
+	    set vsb(packed) 0
+	    return
 	}
-	if {$vsb(packed)} {
-	    grid $vscroll -column $vsb(cell) -row 1 -sticky ns
+
+	foreach varname {hsb vsb} {
+	    upvar 0 $varname sb
+	    foreach {vmin vmax} [$sb(bar) get] { break }
+	    set sb(packed) [expr {$sb(present) &&
+				   (!$sb(auto) || ($vmin != 0 || $vmax != 1))}]
+	    if {$sb(packed)} {
+		grid $sb(bar) -column $sb(col) -row $sb(row) \
+		    -sticky $sb(sticky) -padx $sb(padx) -pady $sb(pady)
+	    } else {
+		grid remove $sb(bar)
+	    }
 	}
     }
 
@@ -240,4 +256,4 @@ snit::widget widget::scrolledwindow {
     }
 }
 
-package provide widget::scrolledwindow 1.1
+package provide widget::scrolledwindow 1.2
