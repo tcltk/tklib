@@ -6,7 +6,7 @@
 #
 # Copyright (c) 2005 Jeffrey Hobbs.  All Rights Reserved.
 #
-# RCS: @(#) $Id: ruler.tcl,v 1.11 2007/04/10 18:15:58 hobbs Exp $
+# RCS: @(#) $Id: ruler.tcl,v 1.12 2007/06/20 23:49:49 hobbs Exp $
 #
 
 ###
@@ -60,17 +60,22 @@ snit::widgetadaptor widget::ruler {
     delegate option * to hull
     delegate method * to hull
 
-    option -foreground	-default black -configuremethod C-redraw;
-    option -font	-default {Helvetica 14};
-    option -interval	-default [list 5 25 100] -validatemethod C-list \
-	-configuremethod C-redraw;
-    option -sizes	-default [list 4 8 12] -validatemethod C-list \
-	-configuremethod C-redraw;
-    option -showvalues	-default 1 -configuremethod C-redraw;
-    option -outline	-default 1 -configuremethod C-redraw;
-    option -grid	-default 0 -configuremethod C-redraw;
-    option -measure	-default pixels -configuremethod C-measure;
-    option -zoom	-default 1 -configuremethod C-zoom;
+    option -foreground	-default black -configuremethod C-redraw
+    option -font	-default {Helvetica 14}
+    option -interval	-default [list 5 25 100] -configuremethod C-redraw \
+	-type [list snit::listtype -type {snit::double} -minlen 3 -maxlen 3]
+    option -sizes	-default [list 4 8 12] -configuremethod C-redraw \
+	-type [list snit::listtype -type {snit::double} -minlen 3 -maxlen 3]
+    option -showvalues	-default 1 -configuremethod C-redraw \
+	-type [list snit::boolean]
+    option -outline	-default 1 -configuremethod C-redraw \
+	-type [list snit::boolean]
+    option -grid	-default 0 -configuremethod C-redraw \
+	-type [list snit::boolean]
+    option -measure	-default pixels -configuremethod C-measure \
+	-type [list snit::enum -values [list pixels points inches mm cm]]
+    option -zoom	-default 1 -configuremethod C-redraw \
+	-type [list snit::integer -min 1]
 
     variable shade -array {small gray medium gray large gray}
 
@@ -113,26 +118,6 @@ snit::widgetadaptor widget::ruler {
     }
     variable redrawID {}
 
-    method C-interval {option value} {
-	if {[llength $value] != 2
-	    || ![string is double -strict [lindex $value 0]]
-	    || ![string is double -strict [lindex $value 1]]} {
-	    return -code error "invalid $option value \"$value\":\
-		must be a pair of doubles"
-	}
-        set options($option) $value
-	$self redraw
-    }
-
-    method C-list {option value} {
-	if {[llength $value] != 3
-	    || ![string is double -strict [lindex $value 0]]
-	    || ![string is double -strict [lindex $value 1]]
-	    || ![string is double -strict [lindex $value 2]]} {
-	    return -code error "invalid $option value \"$value\":\
-		must be a list of 3 doubles"
-	}
-    }
     method C-redraw {option value} {
 	if {$value ne $options($option)} {
 	    set options($option) $value
@@ -150,17 +135,6 @@ snit::widgetadaptor widget::ruler {
 	set measure(what) $measure($value)
 	set options($option) $value
 	$self redraw
-    }
-
-    method C-zoom {option value} {
-	if {$value ne $options($option)} {
-	    if {![string is integer -strict $value] || $value < 1} {
-		return -code error "invalid $option value \"$value\":\
-		must be a valid integer >= 1"
-	    }
-	    set options($option) $value
-	    $self redraw
-	}
     }
 
     ########################################
@@ -413,9 +387,9 @@ snit::widget widget::screenruler {
 	set m [menu $menu.zoom -tearoff 0]
 	$menu add cascade -label "Zoom" -menu $m -underline 0
 	foreach zoom {1 2 3 4 5 8 10} {
-	    set lbl [expr {$zoom * 10}]%
+	    set lbl ${zoom}x
 	    $m add radiobutton -label $lbl \
-		-underline [expr {[string length $zoom]-1}] \
+		-underline 0 \
 		-variable [myvar options(-zoom)] -value $zoom \
 		-command "[list $win configure -zoom] \$[myvar options(-zoom)]"
 	    bind $win <Key-[string index $zoom end]> \
@@ -655,7 +629,7 @@ snit::widget widget::screenruler {
 ########################################
 ## Ready for use
 
-package provide widget::ruler 1.0
+package provide widget::ruler 1.1
 package provide widget::screenruler 1.1
 
 if {[info exist ::argv0] && $::argv0 eq [info script]} {

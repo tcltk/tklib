@@ -1,5 +1,9 @@
 2007-06-20  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* ruler.tcl: update to 1.1
+	Correct zoom menu to show proper label.
+	update option handling with latest snit features.
+
 	* scrollw.tcl: update to 1.2
 	update option handling with latest snit features.
 	Use ttk::scrollbar on Windows (just not on Aqua).
