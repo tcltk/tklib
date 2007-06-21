@@ -1,7 +1,15 @@
 2007-06-20  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* statusbar.tcl: update to 1.2, actual API changes (matched closer
+	to toolbar), but they were not documented previously.  The core
+	API remains and should be compatible with most standard use cases.
+	Remove fallback sizegrip image usage, requires ttk::sizegrip now.
+	update option handling with latest snit features.
+
 	* toolbar.tcl (add): update to 1.2
 	update option handling with latest snit features.
+	Pass -pad to frame.
+	Rename 'itemidentify' to 'itemid'.
 
 	* stext.tcl (new): example adaptation of scrolledwindow to create
 	a scrolledtext widget.
