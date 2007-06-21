@@ -25,6 +25,7 @@ foreach {m pkg doc exa} {
     ico         _tcl  _man  _null
     ipentry     _tcl  _man  _null
     khim        _tclm _man  _null
+    ntext       _tcl  _man _exa
     plotchart   _tcl  _man _exa
     style       _tcl  _man  _null
     swaplist    _tcl  _man  _null
