@@ -1,5 +1,8 @@
 2007-06-20  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* toolbar.tcl (add): update to 1.2
+	update option handling with latest snit features.
+
 	* stext.tcl (new): example adaptation of scrolledwindow to create
 	a scrolledtext widget.
 
