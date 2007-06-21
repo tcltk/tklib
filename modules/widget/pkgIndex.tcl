@@ -23,7 +23,7 @@ if {![package vsatisfies [package provide Tcl] 8.4]} {return}
     widget::screenruler		1.1	ruler.tcl
     widget::scrolledtext	1.0	stext.tcl
     widget::scrolledwindow	1.2	scrollw.tcl
-    widget::statusbar		1.1	statusbar.tcl
+    widget::statusbar		1.2	statusbar.tcl
     widget::superframe		1.0	superframe.tcl
     widget::toolbar		1.2	toolbar.tcl
 }
