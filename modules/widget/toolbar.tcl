@@ -3,7 +3,7 @@
 # toolbar - /snit::widget
 #	Manage items in a toolbar.
 #
-# RCS: @(#) $Id: toolbar.tcl,v 1.10 2007/06/21 00:08:09 hobbs Exp $
+# RCS: @(#) $Id: toolbar.tcl,v 1.11 2007/06/21 01:59:28 hobbs Exp $
 #
 
 #  ## Padding can be a list of {padx pady}
@@ -59,8 +59,7 @@ snit::widget widget::toolbar {
     # Padding can be a list of {padx pady}
     option -ipad -default 2 -configuremethod C-ipad \
 	-type [list snit::listtype -type {snit::integer} -minlen 1 -maxlen 4]
-    option -pad  -default 0 -configuremethod C-pad \
-	-type [list snit::listtype -type {snit::integer} -minlen 1 -maxlen 4]
+    delegate option -pad to frame as -padding
 
     variable ITEMS -array {}
     variable uid 0
@@ -92,12 +91,6 @@ snit::widget widget::toolbar {
 		grid configure $w -padx $px -pady $py
 	    }
 	}
-    }
-
-    method C-pad {option value} {
-	set options($option) $value
-	# we can pass this directly to the frame
-	$frame configure -padding $value
     }
 
     method C-separator {option value} {
@@ -217,19 +210,20 @@ snit::widget widget::toolbar {
 	    set args [lrange $args 1 end]
 	}
 	foreach sym $args {
+	    # Should we ignore unknown (possibly already removed) items?
+	    #if {![info exists ITEMS($sym)]} { continue }
 	    set w $ITEMS($sym)
-	    # separator is always previous item
+	    # separator name is based off item name
 	    set sep $frame._sep[winfo name $w]
-	    if {[winfo exists $sep]} {
-		# destroy separator for remove or destroy case
-		destroy $sep
-	    }
+	    # destroy separator for remove or destroy case
+	    destroy $sep
 	    if {$destroy} {
 		destroy $w
 	    } else {
 		grid forget $w
 	    }
 	    unset ITEMS($sym)
+	    # XXX separator of next item is no longer necessary, if it exists
 	}
     }
 
@@ -238,20 +232,19 @@ snit::widget widget::toolbar {
     }
 
     method itemconfigure {symbol args} {
-	if {$symbol eq "all"} {
-	    # configure all, return # that failed the configure (0 == OK)
-	    set code 0
-	    foreach sym [array names ITEMS -glob $symbol] {
-		incr code [catch { eval [linsert $args 0 \
-					     $ITEMS($sym) configure] }]
-	    }
-	    return $code
-	} elseif {[info exists ITEMS($symbol)]} {
+	if {[info exists ITEMS($symbol)]} {
 	    # configure exact item
 	    return [eval [linsert $args 0 $ITEMS($symbol) configure]]
-	} else {
-	    return -code error "unknown toolbar item '$symbol'"
 	}
+	# configure based on $symbol as a glob pattern
+	set res {}
+	foreach sym [array names ITEMS -glob $symbol] {
+	    lappend res \
+		[catch { eval [linsert $args 0 $ITEMS($sym) configure] } msg] \
+		$msg
+	}
+	# return something when we can figure out what is good to return
+	#return $res
     }
 
     method itemcget {symbol option} {
@@ -261,7 +254,7 @@ snit::widget widget::toolbar {
 	return [$ITEMS($symbol) cget $option]
     }
 
-    method itemidentify {symbol} {
+    method itemid {symbol} {
 	if {![info exists ITEMS($symbol)]} {
 	    return -code error "unknown toolbar item '$symbol'"
 	}
