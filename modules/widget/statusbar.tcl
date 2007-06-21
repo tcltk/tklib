@@ -3,7 +3,7 @@
 #  statusbar.tcl -
 #	Create a status bar Tk widget
 #
-# RCS: @(#) $Id: statusbar.tcl,v 1.6 2006/09/29 16:25:07 hobbs Exp $
+# RCS: @(#) $Id: statusbar.tcl,v 1.7 2007/06/21 01:59:40 hobbs Exp $
 #
 
 # Creation and Options - widget::scrolledwindow $path ...
@@ -62,35 +62,6 @@ if {0} {
     }
 }
 
-namespace eval ::widget {
-    variable HaveSizegrip [llength [info commands ::ttk::sizegrip]]
-    if {!$HaveSizegrip} {
-	variable HaveMarlett \
-	    [expr {[lsearch -exact [font families] "Marlett"] != -1}]
-
-	# PNG version has partial alpha transparency for better look
-	variable resizer_pngdata {
-	    iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAFM0aXcAAAABGdBTUEAAYagM
-	    eiWXwAAAGJJREFUGJW9kVEOgCAMQzs8GEezN69fkKlbUAz2r3l5NGTA+pCU+Q
-	    IA5sv39wGgZKClZGBhJMVTklRr3VNwMz04mVfQzQiEm79EkrYZycxIkq8kkv2
-	    v6RFGku9TUrj8RGr9AGy6mhv2ymLwAAAAAElFTkSuQmCC
-	}
-	variable resizer_gifdata {
-	    R0lGODlhDwAPAJEAANnZ2f///4CAgD8/PyH5BAEAAAAALAAAAAAPAA8AAAJEh
-	    I+py+1IQvh4IZlG0Qg+QshkAokGQfAvZCBIhG8hA0Ea4UPIQJBG+BAyEKQhCH
-	    bIQAgNEQCAIA0hAyE0AEIGgjSEDBQAOw==
-	}
-	if {[package provide img::png] != ""} {
-	    set resizer_gifdata {}
-	    image create photo ::widget::img_resizer \
-		-format PNG -data $resizer_pngdata
-	} else {
-	    image create photo ::widget::img_resizer \
-		-format GIF -data $resizer_gifdata
-	}
-    }
-}
-
 snit::widget widget::statusbar {
     hulltype ttk::frame
 
@@ -103,58 +74,29 @@ snit::widget widget::statusbar {
     # should be left flat for proper look
     delegate option * to hull
     delegate method * to hull
-    #delegate option -padding to frame
 
-    option -separator -default 1 \
-	-configuremethod C-separator -validatemethod isa
-    option -resize -default 1 \
-	-configuremethod C-resize -validatemethod isa
-    option -resizeseparator -default 1 \
-	-configuremethod C-resize -validatemethod isa
+    option -separator       -default 1 -configuremethod C-separator \
+	-type [list snit::boolean]
+    option -resize          -default 1 -configuremethod C-resize \
+	-type [list snit::boolean]
+    option -resizeseparator -default 1 -configuremethod C-resize \
+	-type [list snit::boolean]
     # -pad provides general padding around the status bar
     # -ipad provides padding around each status bar item
     # Padding can be a list of {padx pady}
-    option -ipad -default 2 -configuremethod C-ipad -validatemethod isa
-    option -pad  -default 0 -configuremethod C-pad -validatemethod isa
+    option -ipad -default 2 -configuremethod C-ipad \
+	-type [list snit::listtype -type {snit::integer} -minlen 1 -maxlen 4]
+    delegate option -pad to frame as -padding
 
     variable ITEMS -array {}
-    variable resize -array {}
+    variable uid 0
 
     constructor args {
 	$hull configure -height 18
 
 	install frame using ttk::frame $win.frame
 
-	if {$::widget::HaveSizegrip} {
-	    # As of tile 0.7.7
-	    install resizer using ttk::sizegrip $win.resizer
-	} else {
-	    if {$::tcl_platform(platform) eq "windows"} {
-		set cursor size_nw_se
-	    } else {
-		set cursor sizing; # bottom_right_corner ??
-	    }
-	    install resizer using ttk::label $win.resizer \
-		-borderwidth 0 -relief flat \
-		-anchor se -cursor $cursor -padding 0
-	    if {$::widget::HaveMarlett} {
-		$resizer configure -font "Marlett -16" -text \u006f
-	    } else {
-		$resizer configure -image ::widget::img_resizer
-	    }
-
-	    bind $resizer <1>		[mymethod begin_resize %W %X %Y]
-	    bind $resizer <B1-Motion>	[mymethod continue_resize %W %X %Y]
-	    bind $resizer <ButtonRelease-1>	[mymethod end_resize %W %X %Y]
-
-	    if {$::widget::resizer_gifdata ne ""
-		&& [package provide img::png] ne ""} {
-		# Try to instantiate this as PNG after first source
-		set resizer_gifdata ""
-		::widget::img_resizer configure \
-		    -format PNG -data $::widget::pngdata
-	    }
-	}
+	install resizer using ttk::sizegrip $win.resizer
 
 	install separator using ttk::separator $win.separator \
 	    -orient horizontal
@@ -171,18 +113,6 @@ snit::widget widget::statusbar {
 	$self configurelist $args
     }
 
-    method isa {option value} {
-	set cmd widget::isa
-	switch -exact -- $option {
-	    -separator - -resize - -resizeseparator {
-		return [uplevel 1 [list $cmd boolean $option $value]]
-	    }
-	    -ipad - -pad {
-		return [uplevel 1 [list $cmd listofint 4 $option $value]]
-	    }
-	}
-    }
-
     method C-ipad {option value} {
 	set options($option) $value
 	# returns pad values - each will be a list of 2 ints
@@ -194,12 +124,6 @@ snit::widget widget::statusbar {
 		grid configure $w -padx $px -pady $py
 	    }
 	}
-    }
-
-    method C-pad {option value} {
-	set options($option) $value
-	# we can pass this directly to the frame
-	$frame configure -padding $value
     }
 
     method C-separator {option value} {
@@ -224,31 +148,69 @@ snit::widget widget::statusbar {
     }
 
     # Use this or 'add' - but not both
-    method getframe {} { return $win.frame }
+    method getframe {} { return $frame }
 
-    method add {w args} {
-	array set opts [list \
-			    -weight    0 \
-			    -separator 0 \
-			    -sticky    news \
-			    -pad       $options(-ipad) \
-			   ]
-	foreach {key val} $args {
+    method add {what args} {
+	if {[winfo exists $what]} {
+	    set w $what
+	    set symbol $w
+	    set ours 0
+	} else {
+	    set w $frame._$what[incr uid]
+	    set symbol [lindex $args 0]
+	    set args [lrange $args 1 end]
+	    if {![llength $args] || $symbol eq "%AUTO%"} {
+		# Autogenerate symbol name
+		set symbol _$what$uid
+	    }
+	    if {[info exists ITEMS($symbol)]} {
+		return -code error "item '$symbol' already exists"
+	    }
+	    if {$what eq "label" || $what eq "button"
+		|| $what eq "checkbutton" || $what eq "radiobutton"} {
+		set w [ttk::$what $w -style Toolbutton -takefocus 0]
+	    } elseif {$what eq "separator"} {
+		set w [ttk::separator $w -orient vertical]
+	    } elseif {$what eq "space"} {
+		set w [ttk::frame $w]
+	    } else {
+		return -code error "unknown item type '$what'"
+	    }
+	    set ours 1
+	}
+	set opts(-weight)	[string equal $what "space"]
+	set opts(-separator)	0
+	set opts(-sticky)	news
+	set opts(-pad)		$options(-ipad)
+	if {$what eq "separator"} {
+	    # separators should not have pady by default
+	    lappend opts(-pad) 0
+	}
+	set cmdargs [list]
+	set len [llength $args]
+	for {set i 0} {$i < $len} {incr i} {
+	    set key [lindex $args $i]
+	    set val [lindex $args [incr i]]
+	    if {$key eq "--"} {
+		eval [list lappend cmdargs] [lrange $args $i end]
+		break
+	    }
 	    if {[info exists opts($key)]} {
 		set opts($key) $val
 	    } else {
-		set msg "unknown option \"$key\", must be one of: "
-		append msg [join [lsort [array names opts]] {, }]
-		return -code error $msg
+		# no error - pass to command
+		lappend cmdargs $key $val
 	    }
 	}
-	$self isa -pad $opts(-pad)
+	if {[catch {eval [linsert $cmdargs 0 $w configure]} err]} {
+	    # we only want to destroy widgets we created
+	    if {$ours} { destroy $w }
+	    return -code error $err
+	}
+	set ITEMS($symbol) $w
+	widget::isa listofint 4 -pad $opts(-pad)
 	# returns pad values - each will be a list of 2 ints
 	foreach {px py} [$self _padval $opts(-pad)] { break }
-
-	# Add defined item and append to ordered list
-	set ITEMS($w) {}
-	lappend ITEMS() $w
 
 	# get cols,rows extent
 	foreach {cols rows} [grid size $frame] break
@@ -256,8 +218,6 @@ snit::widget widget::statusbar {
 	if {$opts(-separator) && $cols != 0} {
 	    set sep [ttk::separator $frame._sep[winfo name $w] \
 			 -orient vertical]
-	    # Make the separator entry known
-	    set ITEMS($w) $sep
 	    # No pady for separators, and adjust padx for separator space
 	    set sx $px
 	    if {[lindex $sx 0] < 2} { lset sx 0 2 }
@@ -270,7 +230,7 @@ snit::widget widget::statusbar {
 	    -padx $px -pady $py
 	grid columnconfigure $frame $cols -weight $opts(-weight)
 
-	return $w
+	return $symbol
     }
 
     method remove {args} {
@@ -278,37 +238,20 @@ snit::widget widget::statusbar {
 	if {$destroy} {
 	    set args [lrange $args 1 end]
 	}
-	foreach w $args {
-	    if {$w eq ""} { continue }
-	    if {![info exists ITEMS($w)] || ![winfo exists $w]} {
-		# destroy any possible left-over separator
-		catch {destroy $ITEMS($w)}
-		# and make sure the item name is removed
-		catch {unset ITEMS($w)}
-		# otherwise ignore unknown or non-widget items
-		continue
-	    }
-	    # separator is always previous item
-	    set sep $ITEMS($w)
-	    if {[winfo exists $sep]} {
-		# destroy separator on remove or destroy
-		destroy $sep
-	    }
+	foreach sym $args {
+	    # Should we ignore unknown (possibly already removed) items?
+	    #if {![info exists ITEMS($sym)]} { continue }
+	    set w $ITEMS($sym)
+	    # separator name is based off item name
+	    set sep $frame._sep[winfo name $w]
+	    # destroy separator for remove or destroy case
+	    destroy $sep
 	    if {$destroy} {
 		destroy $w
 	    } else {
 		grid forget $w
 	    }
-	    unset ITEMS($w)
-	    set idx [lsearch -exact $ITEMS() $w]
-	    set ITEMS() [lreplace $ITEMS() $idx $idx]
-	    if {$idx == 0 && [llength $ITEMS()]} {
-		# separator of next item is no longer necessary, if it exists
-		set w [lindex $ITEMS() 0]
-		set sep $ITEMS($w)
-		set ITEMS($w) {}
-		destroy $sep
-	    }
+	    unset ITEMS($sym)
 	}
     }
 
@@ -319,9 +262,9 @@ snit::widget widget::statusbar {
     method items {{ptn *}} {
 	# return from ordered list
 	if {$ptn ne "*"} {
-	    return [lsearch -all -inline $ITEMS() $ptn]
+	    return [array names ITEMS $ptn]
 	}
-	return $ITEMS()
+	return [array names ITEMS]
     }
 
     method _padval {val} {
@@ -340,47 +283,6 @@ snit::widget widget::statusbar {
 	    return $val
 	}
     }
-
-    # The following proc handles the mouse click on the resize control if we
-    # aren't using the ttk::sizegrip.
-    # It stores the original size of the window and the initial coords of the
-    # mouse relative to the root.
-    method begin_resize {w rootx rooty} {
-	set t    [winfo toplevel $w]
-	set relx [expr {$rootx - [winfo rootx $t]}]
-	set rely [expr {$rooty - [winfo rooty $t]}]
-	set resize($w,x) $relx
-	set resize($w,y) $rely
-	set resize($w,w) [winfo width $t]
-	set resize($w,h) [winfo height $t]
-	set resize($w,winc) 1
-	set resize($w,hinc) 1
-	set resize($w,grid) [wm grid $t]
-    }
-
-    # The following proc handles mouse motion on the resize control by asking
-    # the wm to adjust the size of the window.
-    method continue_resize {w rootx rooty} {
-	if {[llength $resize($w,grid)]} {
-	    # at this time, we don't know how to handle gridded resizing
-	    return
-	}
-	set t      [winfo toplevel $w]
-	set relx   [expr {$rootx - [winfo rootx $t]}]
-	set rely   [expr {$rooty - [winfo rooty $t]}]
-	set width  [expr {$relx - $resize($w,x) + $resize($w,w)}]
-	set height [expr {$rely - $resize($w,y) + $resize($w,h)}]
-	if {$width  < 0} { set width 0 }
-	if {$height < 0} { set height 0 }
-	wm geometry $t ${width}x${height}
-    }
-
-    # The following proc cleans up when the user releases the mouse button.
-    method end_resize {w rootx rooty} {
-	#continue_resize $w $rootx $rooty
-	#wm grid $t $resize($w,grid)
-	array unset resize $w,*
-    }
 }
 
-package provide widget::statusbar 1.1
+package provide widget::statusbar 1.2
