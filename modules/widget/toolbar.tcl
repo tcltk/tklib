@@ -3,7 +3,7 @@
 # toolbar - /snit::widget
 #	Manage items in a toolbar.
 #
-# RCS: @(#) $Id: toolbar.tcl,v 1.9 2007/01/30 21:45:13 andreas_kupries Exp $
+# RCS: @(#) $Id: toolbar.tcl,v 1.10 2007/06/21 00:08:09 hobbs Exp $
 #
 
 #  ## Padding can be a list of {padx pady}
@@ -51,18 +51,19 @@ snit::widget widget::toolbar {
     delegate option * to hull
     delegate method * to hull
 
-    option -wrap -default 0 -validatemethod isa
-    option -separator -default {} \
-	-configuremethod C-separator -validatemethod isa
+    option -wrap -default 0 -type [list snit::boolean]
+    option -separator -default {} -configuremethod C-separator \
+	-type [list snit::enum -values [list top left bottom right {}]]
     # -pad provides general padding around the status bar
     # -ipad provides padding around each status bar item
     # Padding can be a list of {padx pady}
-    option -ipad -default 2 -configuremethod C-ipad -validatemethod isa
-    option -pad  -default 0 -configuremethod C-pad -validatemethod isa
+    option -ipad -default 2 -configuremethod C-ipad \
+	-type [list snit::listtype -type {snit::integer} -minlen 1 -maxlen 4]
+    option -pad  -default 0 -configuremethod C-pad \
+	-type [list snit::listtype -type {snit::integer} -minlen 1 -maxlen 4]
 
     variable ITEMS -array {}
     variable uid 0
-    typevariable septypes {top left bottom right {}}
 
     constructor {args} {
 	$hull configure -height 18
@@ -78,21 +79,6 @@ snit::widget widget::toolbar {
 	#bind $win <Configure> [mymethod resize [list $win] %w]
 
 	$self configurelist $args
-    }
-
-    method isa {option value} {
-	set cmd widget::isa
-	switch -exact -- $option {
-	    -separator {
-		return [uplevel 1 [list $cmd list $septypes $option $value]]
-	    }
-	    -wrap {
-		return [uplevel 1 [list $cmd boolean $option $value]]
-	    }
-	    -ipad - -pad {
-		return [uplevel 1 [list $cmd listofint 4 $option $value]]
-	    }
-	}
     }
 
     method C-ipad {option value} {
@@ -140,7 +126,7 @@ snit::widget widget::toolbar {
     }
 
     # Use this or 'add' - but not both
-    method getframe {} { return $win.frame }
+    method getframe {} { return $frame }
 
     method add {what args} {
 	if {[winfo exists $what]} {
@@ -156,7 +142,7 @@ snit::widget widget::toolbar {
 		set symbol _$what$uid
 	    }
 	    if {[info exists ITEMS($symbol)]} {
-		return -code error "toolbar item '$symbol' already exists"
+		return -code error "item '$symbol' already exists"
 	    }
 	    if {$what eq "label" || $what eq "button"
 		|| $what eq "checkbutton" || $what eq "radiobutton"} {
@@ -166,7 +152,7 @@ snit::widget widget::toolbar {
 	    } elseif {$what eq "space"} {
 		set w [ttk::frame $w]
 	    } else {
-		return -code error "unknown toolbar item type '$what'"
+		return -code error "unknown item type '$what'"
 	    }
 	    set ours 1
 	}
@@ -175,7 +161,7 @@ snit::widget widget::toolbar {
 	set opts(-sticky)	news
 	set opts(-pad)		$options(-ipad)
 	if {$what eq "separator"} {
-	    # separators shoudl not have pady by default
+	    # separators should not have pady by default
 	    lappend opts(-pad) 0
 	}
 	set cmdargs [list]
@@ -200,7 +186,7 @@ snit::widget widget::toolbar {
 	    return -code error $err
 	}
 	set ITEMS($symbol) $w
-	$self isa -pad $opts(-pad)
+	widget::isa listofint 4 -pad $opts(-pad)
 	# returns pad values - each will be a list of 2 ints
 	foreach {px py} [$self _padval $opts(-pad)] { break }
 
@@ -315,4 +301,4 @@ snit::widget widget::toolbar {
 
 }
 
-package provide widget::toolbar 1.1
+package provide widget::toolbar 1.2
