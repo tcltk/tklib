@@ -14,7 +14,7 @@ if {![llength [info commands ::tcl::pkgindex]]} {
     }
 }
 if {![package vsatisfies [package provide Tcl] 8.4]} {return}
-::tcl::pkgindex $dir widget::all 1.1 {
+::tcl::pkgindex $dir widget::all 1.2 {
     widget			3.0	widget.tcl
     widget::dialog		1.2	dialog.tcl
     widget::menuentry		1.0	mentry.tcl
