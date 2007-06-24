@@ -1,5 +1,56 @@
-What is new in Tablelist 4.6?
+What is new in Tablelist 4.7?
 -----------------------------
+
+1.  Significant performance improvements related to the "insert",
+    "rowconfigure", "sort", "sortbycolumn", and "sortbycolumnlist"
+    subcommands (thanks to Harold Campbell for his valuable
+    contribution to speeding up the item insertion).  The extent of the
+    speed-up depends on the configuration options present at column,
+    row, and cell levels.
+    
+2.  Support for cell- and column label-specific balloon help, with the
+    aid of the new configuration options "-tooltipaddcommand" and
+    "-tooltipdelcommand".
+
+3.  New subcommands "iselemsnipped" and "istitlesnipped", which make it
+    very easy to display the full cell texts and column titles as
+    tooltips for cells and header labels with snipped contents.
+
+4.  New subcommands "configcolumnlist", "configcolumns",
+    "configrowlist", "configrows", "configcelllist", and "configcells",
+    which allow you to configure several columns/rows/cells with a
+    single command invocation (thanks to Harold Campbell, Jeff Godfrey,
+    and Paul Obermeier for their proposals).
+
+5.  Worked around some performance problems regarding the "switch"
+    command in Tcl 8.5a6/8.5b1 and ActiveTcl 8.4.14.
+
+6.  Made sure that ActiveState's "style::as" package won't break the
+    mousewheel bindings (thanks to Michael Schlenker for drawing my
+    attention to this problem).
+
+7.  Improved the focus handling when resizing a column interactively
+    (thanks to Jorge Enderr for his bug report).
+
+8.  Corrected a typo in the adaptation of vertical scrolling to the
+    text widget changes made in Tk 8.5 (thanks to Julian M Noble for
+    his posting on the Wiki related to this subject).
+
+9.  Fixed a bug related to hidden rows when having "-selecttype cell",
+    introduced in Tablelist version 4.3 (thanks to Harold Campbell for
+    his bug report and discussions on this subject).
+
+10. Fixed a bug in the "cellconfigure" subcommand, introduced in the
+    previous Tablelist release (thanks to Roy Terry for reporting this
+    problem on the Wiki).
+
+11. Fixed a bug in the "-changesnipside" option (thanks to Kai Morich
+    for his bug report).
+
+12. Numerous further improvements in the code and documentation.
+
+What was new in Tablelist 4.6?
+------------------------------
 
 1.  Tablelist_tile now supports tile 0.8 and Tk 8.5a6/8.5b1 (where tile
     is integrated in the core).  The new commands "tablelist::setTheme",
