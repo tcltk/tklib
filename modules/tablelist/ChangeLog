@@ -1,3 +1,30 @@
+2007-06-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.7.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Listed the new features in version 4.7.
+
+	* scripts/tablelistBind.tcl:   Lots of performance improvements; new
+	* scripts/tablelistConfig.tcl: configuration options -tooltipaddcommand
+	* scripts/tablelistEdit.tcl:   and -tooltipdelcommand; new subcommands
+	* scripts/tablelistMove.tcl:   iselemsnipped, istitlesnipped,
+	* scripts/tablelistSort.tcl:   configcolumnlist, configcolumns,
+	* scripts/tablelistUtil.tcl:   configrowlist, configrows,
+	* scripts/tablelistWidget.tcl: configcelllist, and configcells; worked
+	  around some performance problems regarding the switch command in Tcl
+	  8.5a6/8.5b1 and ActiveTcl 8.4.14; made sure that the style::as
+	  package won't break the mousewheel bindings.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/tablelist.html:         Updates and improvements.
+	* doc/tablelistIwidgets.html:
+	* doc/tablelistThemes.html:
+	* doc/tablelistTile.html:
+	* doc/tablelistWidget.html:
+
 2007-05-23  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistEdit.tcl: Corrections related to Tk 8.5a6.
