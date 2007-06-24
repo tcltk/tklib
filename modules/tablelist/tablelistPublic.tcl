@@ -1,4 +1,3 @@
-# @mdgen OWNER: scripts/tclIndex
 #==============================================================================
 # Main Tablelist and Tablelist_tile package module.
 #
@@ -9,7 +8,7 @@ namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	4.6.1
+    variable version	4.7
     variable library	[DIR]
 
     #
