@@ -100,6 +100,8 @@ namespace eval tablelist {
 	-takefocus		 {takeFocus		  TakeFocus	      f}
 	-targetcolor		 {targetColor		  TargetColor	      w}
 	-titlecolumns		 {titleColumns	  	  TitleColumns	      w}
+	-tooltipaddcommand	 {tooltipAddCommand	  TooltipAddCommand   w}
+	-tooltipdelcommand	 {tooltipDelCommand	  TooltipDelCommand   w}
 	-width			 {width			  Width		      w}
 	-xscrollcommand		 {xScrollCommand	  ScrollCommand	      w}
 	-yscrollcommand		 {yScrollCommand	  ScrollCommand	      w}
@@ -280,15 +282,17 @@ namespace eval tablelist {
 	activate activatecell attrib bbox bodypath bodytag cancelediting \
 	cellcget cellconfigure cellindex cellselection cget columncget \
 	columnconfigure columncount columnindex columnwidth configure \
-	containing containingcell containingcolumn curcellselection \
-	curselection delete deletecolumns editcell editwinpath entrypath \
-	fillcolumn finishediting get getcells getcolumns getkeys \
-	imagelabelpath index insert insertcolumnlist insertcolumns insertlist \
-	itemlistvar labelpath labels move movecolumn nearest nearestcell \
-	nearestcolumn rejectinput resetsortinfo rowcget rowconfigure scan see \
-	seecell seecolumn selection separatorpath separators size sort \
-	sortbycolumn sortbycolumnlist sortcolumn sortcolumnlist sortorder \
-	sortorderlist togglecolumnhide togglerowhide windowpath xview yview]
+	configcelllist configcells configcolumnlist configcolumns \
+	configrowlist configrows containing containingcell containingcolumn \
+	curcellselection curselection delete deletecolumns editcell \
+	editwinpath entrypath fillcolumn finishediting get getcells \
+	getcolumns getkeys imagelabelpath index insert insertcolumnlist \
+	insertcolumns insertlist iselemsnipped istitlesnipped itemlistvar \
+	labelpath labels move movecolumn nearest nearestcell nearestcolumn \
+	rejectinput resetsortinfo rowcget rowconfigure scan see seecell \
+	seecolumn selection separatorpath separators size sort sortbycolumn \
+	sortbycolumnlist sortcolumn sortcolumnlist sortorder sortorderlist \
+	togglecolumnhide togglerowhide windowpath xview yview]
     if {!$canElide} {
 	set idx [lsearch -exact $cmdOpts togglerowhide]
 	set cmdOpts [lreplace $cmdOpts $idx $idx]
@@ -397,8 +401,8 @@ namespace eval tablelist {
     #
     # Define some mouse bindings for the binding tag TablelistLabel
     #
-    bind TablelistLabel <Enter>		{ tablelist::labelEnter    %W %x }
-    bind TablelistLabel <Motion>	{ tablelist::labelEnter    %W %x }
+    bind TablelistLabel <Enter>		{ tablelist::labelEnter    %W %X %Y %x }
+    bind TablelistLabel <Motion>	{ tablelist::labelEnter    %W %X %Y %x }
     bind TablelistLabel <Leave>		{ tablelist::labelLeave    %W %X %x %y }
     bind TablelistLabel <Button-1>	{ tablelist::labelB1Down   %W %x 0 }
     bind TablelistLabel <Shift-Button-1>  { tablelist::labelB1Down %W %x 1 }
@@ -503,18 +507,22 @@ proc tablelist::tablelist args {
 	    colList		 {}
 	    colCount		 0
 	    lastCol		-1
-	    tagRefCount		 0
+	    rowTagRefCount	 0
+	    cellTagRefCount	 0
 	    imgCount		 0
 	    winCount		 0
-	    afterId		 {}
+	    afterId		 ""
 	    labelClicked	 0
 	    arrowColList	 {}
 	    sortColList		 {}
-	    sortOrder		 {}
+	    sortOrder		 ""
 	    editRow		-1
 	    editCol		-1
+	    prevCell		 ""
+	    prevCol		-1
 	    forceAdjust		 0
 	    fmtCmdFlagList	 {}
+	    hasFmtCmds		 0
 	    scrlColOffset	 0
 	    cellsToReconfig	 {}
 	    hiddenRowCount	 0
@@ -720,877 +728,34 @@ proc tablelist::tablelist args {
 #------------------------------------------------------------------------------
 # tablelist::tablelistWidgetCmd
 #
-# This procedure is invoked to process the Tcl command corresponding to a
-# tablelist widget.
+# Processes the Tcl command corresponding to a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::tablelistWidgetCmd {win argList} {
-    variable cmdOpts
-    upvar ::tablelist::ns${win}::data data
-
-    set argCount [llength $argList]
-    if {$argCount == 0} {
+    if {[llength $argList] == 0} {
 	mwutil::wrongNumArgs "$win option ?arg arg ...?"
     }
 
+    variable cmdOpts
     set cmd [mwutil::fullOpt "option" [lindex $argList 0] $cmdOpts]
-    switch $cmd {
-	activate -
-	bbox -
-	see {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd index"
-	    }
-
-	    synchronize $win
-	    set index [rowIndex $win [lindex $argList 1] 0]
-	    return [${cmd}SubCmd $win $index]
-	}
-
-	activatecell {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd cellIndex"
-	    }
-
-	    synchronize $win
-	    foreach {row col} [cellIndex $win [lindex $argList 1] 0] {}
-	    return [activatecellSubCmd $win $row $col]
-	}
-
-	attrib {
-	    return [mwutil::attribSubCmd $win [lrange $argList 1 end]]
-	}
-
-	bodypath {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    return $data(body)
-	}
-
-	bodytag {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    return $data(bodyTag)
-	}
-
-	cancelediting -
-	curcellselection -
-	curselection -
-	finishediting {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    synchronize $win
-	    return [${cmd}SubCmd $win]
-	}
-
-	cellcget {
-	    if {$argCount != 3} {
-		mwutil::wrongNumArgs "$win $cmd cellIndex option"
-	    }
-
-	    synchronize $win
-	    foreach {row col} [cellIndex $win [lindex $argList 1] 1] {}
-	    variable cellConfigSpecs
-	    set opt [mwutil::fullConfigOpt [lindex $argList 2] cellConfigSpecs]
-	    return [doCellCget $row $col $win $opt]
-	}
-
-	cellconfigure {
-	    if {$argCount < 2} {
-		mwutil::wrongNumArgs "$win $cmd cellIndex ?option? ?value\
-				      option value ...?"
-	    }
-
-	    synchronize $win
-	    foreach {row col} [cellIndex $win [lindex $argList 1] 1] {}
-	    variable cellConfigSpecs
-	    set argList [lrange $argList 2 end]
-	    return [mwutil::configureSubCmd $win cellConfigSpecs \
-		    "tablelist::doCellConfig $row $col" \
-		    "tablelist::doCellCget $row $col" $argList]
-	}
-
-	cellindex {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd cellIndex"
-	    }
-
-	    synchronize $win
-	    return [join [cellIndex $win [lindex $argList 1] 0] ","]
-	}
-
-	cellselection {
-	    if {$argCount < 3 || $argCount > 4} {
-		mwutil::wrongNumArgs \
-			"$win $cmd option firstCellIndex lastCellIndex" \
-			"$win $cmd option cellIndexList"
-	    }
-
-	    synchronize $win
-	    variable selCmdOpts
-	    set opt [mwutil::fullOpt "option" [lindex $argList 1] $selCmdOpts]
-	    set first [lindex $argList 2]
-	    switch $opt {
-		anchor -
-		includes {
-		    if {$argCount != 3} {
-			mwutil::wrongNumArgs "$win cellselection $opt cellIndex"
-		    }
-		    foreach {row col} [cellIndex $win $first 0] {}
-		    return [cellselectionSubCmd $win $opt $row $col $row $col]
-		}
-		clear -
-		set {
-		    if {$argCount == 3} {
-			foreach elem $first {
-			    foreach {row col} [cellIndex $win $elem 0] {}
-			    cellselectionSubCmd $win $opt $row $col $row $col
-			}
-			return ""
-		    } else {
-			foreach {firstRow firstCol} \
-				[cellIndex $win $first 0] {}
-			foreach {lastRow lastCol} \
-				[cellIndex $win [lindex $argList 3] 0] {}
-			return [cellselectionSubCmd $win $opt \
-				$firstRow $firstCol $lastRow $lastCol]
-		    }
-		}
-	    }
-	}
-
-	cget {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd option"
-	    }
-
-	    #
-	    # Return the value of the specified configuration option
-	    #
-	    variable configSpecs
-	    set opt [mwutil::fullConfigOpt [lindex $argList 1] configSpecs]
-	    return $data($opt)
-	}
-
-	columncget {
-	    if {$argCount != 3} {
-		mwutil::wrongNumArgs "$win $cmd columnIndex option"
-	    }
-
-	    synchronize $win
-	    set col [colIndex $win [lindex $argList 1] 1]
-	    variable colConfigSpecs
-	    set opt [mwutil::fullConfigOpt [lindex $argList 2] colConfigSpecs]
-	    return [doColCget $col $win $opt]
-	}
-
-	columnconfigure {
-	    if {$argCount < 2} {
-		mwutil::wrongNumArgs "$win $cmd columnIndex ?option? ?value\
-				      option value ...?"
-	    }
-
-	    synchronize $win
-	    set col [colIndex $win [lindex $argList 1] 1]
-	    variable colConfigSpecs
-	    set argList [lrange $argList 2 end]
-	    return [mwutil::configureSubCmd $win colConfigSpecs \
-		    "tablelist::doColConfig $col" \
-		    "tablelist::doColCget $col" $argList]
-	}
-
-	columncount {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    return $data(colCount)
-	}
-
-	columnindex {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd columnIndex"
-	    }
-
-	    synchronize $win
-	    return [colIndex $win [lindex $argList 1] 0]
-	}
-
-	columnwidth {
-	    if {$argCount < 2 || $argCount > 3} {
-		mwutil::wrongNumArgs "$win $cmd columnIndex\
-				      ?-requested|-stretched|-total?"
-	    }
-
-	    synchronize $win
-	    set col [colIndex $win [lindex $argList 1] 1]
-	    if {$argCount == 2} {
-		set opt -requested
-	    } else {
-		variable colWidthOpts
-		set opt [mwutil::fullOpt "option" \
-			 [lindex $argList 2] $colWidthOpts]
-	    }
-	    return [columnwidthSubCmd $win $col $opt]
-	}
-
-	configure {
-	    variable configSpecs
-	    return [mwutil::configureSubCmd $win configSpecs \
-		    tablelist::doConfig tablelist::doCget \
-		    [lrange $argList 1 end]]
-	}
-
-	containing {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd y"
-	    }
-
-	    set y [format "%d" [lindex $argList 1]]
-	    synchronize $win
-	    return [containingSubCmd $win $y]
-	}
-
-	containingcell {
-	    if {$argCount != 3} {
-		mwutil::wrongNumArgs "$win $cmd x y"
-	    }
-
-	    set x [format "%d" [lindex $argList 1]]
-	    set y [format "%d" [lindex $argList 2]]
-	    synchronize $win
-	    return [containingSubCmd $win $y],[containingcolumnSubCmd $win $x]
-	}
-
-	containingcolumn {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd x"
-	    }
-
-	    set x [format "%d" [lindex $argList 1]]
-	    synchronize $win
-	    return [containingcolumnSubCmd $win $x]
-	}
-
-	delete -
-	get -
-	getkeys -
-	togglerowhide {
-	    if {$argCount < 2 || $argCount > 3} {
-		mwutil::wrongNumArgs "$win $cmd firstIndex lastIndex" \
-				     "$win $cmd indexList"
-	    }
-
-	    synchronize $win
-	    set first [lindex $argList 1]
-	    if {$argCount == 3} {
-		set last [lindex $argList 2]
-	    } else {
-		set last $first
-	    }
-	    incr argCount -1
-	    return [${cmd}SubCmd $win $first $last $argCount]
-	}
-
-	deletecolumns -
-	getcolumns -
-	togglecolumnhide {
-	    if {$argCount < 2 || $argCount > 3} {
-		mwutil::wrongNumArgs \
-			"$win $cmd firstColumnIndex lastColumnIndex" \
-			"$win $cmd columnIndexList"
-	    }
-
-	    synchronize $win
-	    set first [lindex $argList 1]
-	    if {$argCount == 3} {
-		set last [lindex $argList 2]
-	    } else {
-		set last $first
-	    }
-	    incr argCount -1
-	    return [${cmd}SubCmd $win $first $last $argCount]
-	}
-
-	editcell {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd cellIndex"
-	    }
-
-	    synchronize $win
-	    foreach {row col} [cellIndex $win [lindex $argList 1] 1] {}
-	    return [editcellSubCmd $win $row $col 0]
-	}
-
-	editwinpath {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    if {[winfo exists $data(bodyFrEd)]} {
-		return $data(bodyFrEd)
-	    } else {
-		return ""
-	    }
-	}
-
-	entrypath {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    if {[winfo exists $data(bodyFrEd)]} {
-		set class [winfo class $data(bodyFrEd)]
-		if {[regexp {^(Mentry|T?Checkbutton)$} $class]} {
-		    return ""
-		} else {
-		    return $data(editFocus)
-		}
-	    } else {
-		return ""
-	    }
-	}
-
-	fillcolumn {
-	    if {$argCount != 3} {
-		mwutil::wrongNumArgs "$win $cmd columnIndex text"
-	    }
-
-	    synchronize $win
-	    set col [colIndex $win [lindex $argList 1] 1]
-	    return [fillcolumnSubCmd $win $col [lindex $argList 2]]
-	}
-
-	getcells {
-	    if {$argCount < 2 || $argCount > 3} {
-		mwutil::wrongNumArgs \
-			"$win $cmd firstCellIndex lastCellIndex" \
-			"$win $cmd cellIndexList"
-	    }
-
-	    synchronize $win
-	    set first [lindex $argList 1]
-	    if {$argCount == 3} {
-		set last [lindex $argList 2]
-	    } else {
-		set last $first
-	    }
-	    incr argCount -1
-	    return [${cmd}SubCmd $win $first $last $argCount]
-	}
-
-	imagelabelpath {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd cellIndex"
-	    }
-
-	    synchronize $win
-	    foreach {row col} [cellIndex $win [lindex $argList 1] 1] {}
-	    set key [lindex [lindex $data(itemList) $row] end]
-	    set w $data(body).l$key,$col
-	    if {[winfo exists $w]} {
-		return $w
-	    } else {
-		return ""
-	    }
-	}
-
-	index {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd index"
-	    }
-
-	    synchronize $win
-	    return [rowIndex $win [lindex $argList 1] 1]
-	}
-
-	insert {
-	    if {$argCount < 2} {
-		mwutil::wrongNumArgs "$win $cmd index ?item item ...?"
-	    }
-
-	    synchronize $win
-	    set index [rowIndex $win [lindex $argList 1] 1]
-	    return [insertSubCmd $win $index [lrange $argList 2 end] \
-		    $data(hasListVar)]
-	}
-
-	insertcolumnlist {
-	    if {$argCount != 3} {
-		mwutil::wrongNumArgs "$win $cmd columnIndex columnList"
-	    }
-
-	    synchronize $win
-	    set arg1 [lindex $argList 1]
-	    if {[string first $arg1 "end"] == 0 || $arg1 == $data(colCount)} {
-		set col $data(colCount)
-	    } else {
-		set col [colIndex $win $arg1 1]
-	    }
-	    return [insertcolumnsSubCmd $win $col [lindex $argList 2]]
-	}
-
-	insertcolumns {
-	    if {$argCount < 2} {
-		mwutil::wrongNumArgs "$win $cmd columnIndex\
-			?width title ?alignment? width title ?alignment? ...?"
-	    }
-
-	    synchronize $win
-	    set arg1 [lindex $argList 1]
-	    if {[string first $arg1 "end"] == 0 || $arg1 == $data(colCount)} {
-		set col $data(colCount)
-	    } else {
-		set col [colIndex $win $arg1 1]
-	    }
-	    return [insertcolumnsSubCmd $win $col [lrange $argList 2 end]]
-	}
-
-	insertlist {
-	    if {$argCount != 3} {
-		mwutil::wrongNumArgs "$win $cmd index list"
-	    }
-
-	    synchronize $win
-	    set index [rowIndex $win [lindex $argList 1] 1]
-	    return [insertSubCmd $win $index [lindex $argList 2] \
-		    $data(hasListVar)]
-	}
-
-	itemlistvar {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    return ::tablelist::ns${win}::data(itemList)
-	}
-
-	labelpath {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd columnIndex"
-	    }
-
-	    synchronize $win
-	    set col [colIndex $win [lindex $argList 1] 1]
-	    return $data(hdrTxtFrLbl)$col
-	}
-
-	labels {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    set labelList {}
-	    for {set col 0} {$col < $data(colCount)} {incr col} {
-		lappend labelList $data(hdrTxtFrLbl)$col
-	    }
-	    return $labelList
-	}
-
-	move {
-	    if {$argCount != 3} {
-		mwutil::wrongNumArgs "$win $cmd sourceIndex targetIndex"
-	    }
-
-	    synchronize $win
-	    set source [rowIndex $win [lindex $argList 1] 0]
-	    set target [rowIndex $win [lindex $argList 2] 1]
-	    return [moveSubCmd $win $source $target]
-	}
-
-	movecolumn {
-	    if {$argCount != 3} {
-		mwutil::wrongNumArgs "$win $cmd sourceColumnIndex\
-				      targetColumnIndex"
-	    }
-
-	    synchronize $win
-	    set arg1 [lindex $argList 1]
-	    set source [colIndex $win $arg1 1]
-	    set arg2 [lindex $argList 2]
-	    if {[string first $arg2 "end"] == 0 || $arg2 == $data(colCount)} {
-		set target $data(colCount)
-	    } else {
-		set target [colIndex $win $arg2 1]
-	    }
-	    return [movecolumnSubCmd $win $source $target]
-	}
-
-	nearest {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd y"
-	    }
-
-	    set y [format "%d" [lindex $argList 1]]
-	    synchronize $win
-	    return [rowIndex $win @0,$y 0]
-	}
-
-	nearestcell {
-	    if {$argCount != 3} {
-		mwutil::wrongNumArgs "$win $cmd x y"
-	    }
-
-	    set x [format "%d" [lindex $argList 1]]
-	    set y [format "%d" [lindex $argList 2]]
-	    synchronize $win
-	    return [join [cellIndex $win @$x,$y 0] ","]
-	}
-
-	nearestcolumn {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd x"
-	    }
-
-	    set x [format "%d" [lindex $argList 1]]
-	    synchronize $win
-	    return [colIndex $win @$x,0 0]
-	}
-
-	rejectinput {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    set data(rejected) 1
-	}
-
-	resetsortinfo {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    foreach col $data(sortColList) {
-		set data($col-sortRank) 0
-		set data($col-sortOrder) ""
-	    }
-	    set whichWidths {}
-	    foreach col $data(arrowColList) {
-		lappend whichWidths l$col
-	    }
-	    set data(sortColList) {}
-	    set data(arrowColList) {}
-	    set data(sortOrder) {}
-
-	    if {[llength $whichWidths] > 0} {
-		synchronize $win
-		adjustColumns $win $whichWidths 1
-	    }
-	    return ""
-	}
-
-	rowcget {
-	    if {$argCount != 3} {
-		mwutil::wrongNumArgs "$win $cmd index option"
-	    }
-
-	    #
-	    # Check the row index
-	    #
-	    synchronize $win
-	    set rowArg [lindex $argList 1]
-	    set row [rowIndex $win $rowArg 0]
-	    if {$row < 0 || $row > $data(lastRow)} {
-		return -code error "row index \"$rowArg\" out of range"
-	    }
-
-	    variable rowConfigSpecs
-	    set opt [mwutil::fullConfigOpt [lindex $argList 2] rowConfigSpecs]
-	    return [doRowCget $row $win $opt]
-	}
-
-	rowconfigure {
-	    if {$argCount < 2} {
-		mwutil::wrongNumArgs "$win $cmd index ?option? ?value\
-				      option value ...?"
-	    }
-
-	    #
-	    # Check the row index
-	    #
-	    synchronize $win
-	    set rowArg [lindex $argList 1]
-	    set row [rowIndex $win $rowArg 0]
-	    if {$row < 0 || $row > $data(lastRow)} {
-		return -code error "row index \"$rowArg\" out of range"
-	    }
-
-	    variable rowConfigSpecs
-	    set argList [lrange $argList 2 end]
-	    return [mwutil::configureSubCmd $win rowConfigSpecs \
-		    "tablelist::doRowConfig $row" \
-		    "tablelist::doRowCget $row" $argList]
-	}
-
-	scan {
-	    if {$argCount != 4} {
-		mwutil::wrongNumArgs "$win $cmd mark|dragto x y"
-	    }
-
-	    set x [format "%d" [lindex $argList 2]]
-	    set y [format "%d" [lindex $argList 3]]
-	    variable scanCmdOpts
-	    set opt [mwutil::fullOpt "option" [lindex $argList 1] $scanCmdOpts]
-	    synchronize $win
-	    return [scanSubCmd $win $opt $x $y]
-	}
-
-	seecell {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd cellIndex"
-	    }
-
-	    synchronize $win
-	    foreach {row col} [cellIndex $win [lindex $argList 1] 0] {}
-	    if {[winfo viewable $win]} {
-		return [seecellSubCmd $win $row $col]
-	    } else {
-		after idle [list tablelist::seecellSubCmd $win $row $col]
-		return ""
-	    }
-	}
-
-	seecolumn {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd columnIndex"
-	    }
-
-	    synchronize $win
-	    set col [colIndex $win [lindex $argList 1] 0]
-	    if {[winfo viewable $win]} {
-		return [seecellSubCmd $win [rowIndex $win @0,0 0] $col]
-	    } else {
-		after idle [list tablelist::seecellSubCmd \
-			    $win [rowIndex $win @0,0 0] $col]
-		return ""
-	    }
-	}
-
-	selection {
-	    if {$argCount < 3 || $argCount > 4} {
-		mwutil::wrongNumArgs "$win $cmd option firstIndex lastIndex" \
-				     "$win $cmd option indexList"
-	    }
-
-	    synchronize $win
-	    variable selCmdOpts
-	    set opt [mwutil::fullOpt "option" [lindex $argList 1] $selCmdOpts]
-	    set first [lindex $argList 2]
-	    switch $opt {
-		anchor -
-		includes {
-		    if {$argCount != 3} {
-			mwutil::wrongNumArgs "$win selection $opt index"
-		    }
-		    set index [rowIndex $win $first 0]
-		    return [selectionSubCmd $win $opt $index $index]
-		}
-		clear -
-		set {
-		    if {$argCount == 3} {
-			foreach elem $first {
-			    set index [rowIndex $win $elem 0]
-			    selectionSubCmd $win $opt $index $index
-			}
-			return ""
-		    } else {
-			set first [rowIndex $win $first 0]
-			set last [rowIndex $win [lindex $argList 3] 0]
-			return [selectionSubCmd $win $opt $first $last]
-		    }
-		}
-	    }
-	}
-
-	separatorpath {
-	    if {$argCount < 1 || $argCount > 2} {
-		mwutil::wrongNumArgs "$win $cmd ?columnIndex?"
-	    }
-
-	    if {$argCount == 1} {
-		if {[winfo exists $data(sep)]} {
-		    return $data(sep)
-		} else {
-		    return ""
-		}
-	    } else {
-		synchronize $win
-		set col [colIndex $win [lindex $argList 1] 1]
-		if {$data(-showseparators)} {
-		    return $data(sep)$col
-		} else {
-		    return ""
-		}
-	    }
-	}
-
-	separators {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    set sepList {}
-	    foreach w [winfo children $win] {
-		if {[regexp {^sep([0-9]+)?$} [winfo name $w]]} {
-		    lappend sepList $w
-		}
-	    }
-	    return [lsort -dictionary $sepList]
-	}
-
-	size {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    synchronize $win
-	    return $data(itemCount)
-	}
-
-	sort {
-	    if {$argCount < 1 || $argCount > 2} {
-		mwutil::wrongNumArgs "$win $cmd  ?-increasing|-decreasing?"
-	    }
-
-	    if {$argCount == 1} {
-		set order -increasing
-	    } else {
-		variable _sortOrders
-		set order [mwutil::fullOpt "option" \
-			   [lindex $argList 2] $_sortOrders]
-	    }
-	    synchronize $win
-	    return [sortSubCmd $win -1 [string range $order 1 end]]
-	}
-
-	sortbycolumn {
-	    if {$argCount < 2 || $argCount > 3} {
-		mwutil::wrongNumArgs "$win $cmd columnIndex\
-				      ?-increasing|-decreasing?"
-	    }
-
-	    synchronize $win
-	    set col [colIndex $win [lindex $argList 1] 1]
-	    if {$argCount == 2} {
-		set order -increasing
-	    } else {
-		variable _sortOrders
-		set order [mwutil::fullOpt "option" \
-			   [lindex $argList 2] $_sortOrders]
-	    }
-	    return [sortSubCmd $win $col [string range $order 1 end]]
-	}
-
-	sortbycolumnlist {
-	    if {$argCount < 2 || $argCount > 3} {
-		mwutil::wrongNumArgs "$win $cmd columnIndexList ?sortOrderList?"
-	    }
-
-	    synchronize $win
-	    set sortColList {}
-	    foreach elem [lindex $argList 1] {
-		set col [colIndex $win $elem 1]
-		if {[lsearch -exact $sortColList $col] >= 0} {
-		    return -code error "duplicate column index \"$elem\""
-		}
-		lappend sortColList $col
-	    }
-	    set sortOrderList {}
-	    if {$argCount == 3} {
-		variable sortOrders
-		foreach elem [lindex $argList 2] {
-		    lappend sortOrderList \
-			    [mwutil::fullOpt "option" $elem $sortOrders]
-		}
-	    }
-	    return [sortSubCmd $win $sortColList $sortOrderList]
-	}
-
-	sortcolumn {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    if {[llength $data(sortColList)] == 0} {
-		return -1
-	    } else {
-		return [lindex $data(sortColList) 0]
-	    }
-	}
-
-	sortcolumnlist {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    return $data(sortColList)
-	}
-
-	sortorder {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    if {[llength $data(sortColList)] == 0} {
-		return $data(sortOrder)
-	    } else {
-		set col [lindex $data(sortColList) 0]
-		return $data($col-sortOrder)
-	    }
-	}
-
-	sortorderlist {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    set sortOrderList {}
-	    foreach col $data(sortColList) {
-		lappend sortOrderList $data($col-sortOrder)
-	    }
-	    return $sortOrderList
-	}
-
-	windowpath {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd cellIndex"
-	    }
-
-	    synchronize $win
-	    foreach {row col} [cellIndex $win [lindex $argList 1] 1] {}
-	    set key [lindex [lindex $data(itemList) $row] end]
-	    set w $data(body).f$key,$col.w
-	    if {[winfo exists $w]} {
-		return $w
-	    } else {
-		return ""
-	    }
-	}
-
-	xview -
-	yview {
-	    synchronize $win
-	    return [${cmd}SubCmd $win [lrange $argList 1 end]]
-	}
-    }
+    return [${cmd}SubCmd $win [lrange $argList 1 end]]
 }
 
 #------------------------------------------------------------------------------
 # tablelist::activateSubCmd
-#
-# This procedure is invoked to process the tablelist activate subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::activateSubCmd {win index} {
-    upvar ::tablelist::ns${win}::data data
+proc tablelist::activateSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win activate index"
+    }
 
+    upvar ::tablelist::ns${win}::data data
     if {$data(isDisabled)} {
 	return ""
     }
+
+    synchronize $win
+    displayItems $win
+    set index [rowIndex $win [lindex $argList 0] 0]
 
     #
     # Adjust the index to fit within the existing non-hidden items
@@ -1603,15 +768,20 @@ proc tablelist::activateSubCmd {win index} {
 
 #------------------------------------------------------------------------------
 # tablelist::activatecellSubCmd
-#
-# This procedure is invoked to process the tablelist activatecell subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::activatecellSubCmd {win row col} {
-    upvar ::tablelist::ns${win}::data data
+proc tablelist::activatecellSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win activatecell cellIndex"
+    }
 
+    upvar ::tablelist::ns${win}::data data
     if {$data(isDisabled)} {
 	return ""
     }
+
+    synchronize $win
+    displayItems $win
+    foreach {row col} [cellIndex $win [lindex $argList 0] 0] {}
 
     #
     # Adjust the row and column indices to fit
@@ -1626,13 +796,25 @@ proc tablelist::activatecellSubCmd {win row col} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::bboxSubCmd
-#
-# This procedure is invoked to process the tablelist bbox subcommand.
+# tablelist::attribSubCmd
 #------------------------------------------------------------------------------
-proc tablelist::bboxSubCmd {win index} {
-    upvar ::tablelist::ns${win}::data data
+proc tablelist::attribSubCmd {win argList} {
+    return [mwutil::attribSubCmd $win $argList]
+}
 
+#------------------------------------------------------------------------------
+# tablelist::bboxSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::bboxSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win bbox index"
+    }
+
+    synchronize $win
+    displayItems $win
+    set index [rowIndex $win [lindex $argList 0] 0]
+
+    upvar ::tablelist::ns${win}::data data
     set w $data(body)
     set dlineinfo [$w dlineinfo [expr {double($index + 1)}]]
     if {$data(itemCount) == 0 || [string compare $dlineinfo ""] == 0} {
@@ -1649,14 +831,1948 @@ proc tablelist::bboxSubCmd {win index} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::cellselectionSubCmd
-#
-# This procedure is invoked to process the tablelist cellselection subcommand.
+# tablelist::bodypathSubCmd
 #------------------------------------------------------------------------------
-proc tablelist::cellselectionSubCmd {win opt firstRow firstCol \
-				     lastRow lastCol} {
+proc tablelist::bodypathSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win bodypath"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    return $data(body)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::bodytagSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::bodytagSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win bodytag"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    return $data(bodyTag)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::canceleditingSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::canceleditingSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win cancelediting"
+    }
+
+    synchronize $win
+    displayItems $win
+    return [doCancelEditing $win]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::cellcgetSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::cellcgetSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win cellcget cellIndex option"
+    }
+
+    synchronize $win
+    foreach {row col} [cellIndex $win [lindex $argList 0] 1] {}
+    variable cellConfigSpecs
+    set opt [mwutil::fullConfigOpt [lindex $argList 1] cellConfigSpecs]
+    return [doCellCget $row $col $win $opt]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::cellconfigureSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::cellconfigureSubCmd {win argList} {
+    if {[llength $argList] < 1} {
+	mwutil::wrongNumArgs "$win cellconfigure cellIndex ?option? ?value\
+			      option value ...?"
+    }
+
+    synchronize $win
+    displayItems $win
+    variable cellConfigSpecs
+    foreach {row col} [cellIndex $win [lindex $argList 0] 1] {}
+    return [mwutil::configureSubCmd $win cellConfigSpecs \
+	    "tablelist::doCellConfig $row $col" \
+	    "tablelist::doCellCget $row $col" [lrange $argList 1 end]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::cellindexSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::cellindexSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win cellindex cellIndex"
+    }
+
+    synchronize $win
+    return [join [cellIndex $win [lindex $argList 0] 0] ","]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::cellselectionSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::cellselectionSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 2 || $argCount > 3} {
+	mwutil::wrongNumArgs \
+		"$win cellselection option firstCellIndex lastCellIndex" \
+		"$win cellselection option cellIndexList"
+    }
+
+    synchronize $win
+    displayItems $win
+    variable selCmdOpts
+    set opt [mwutil::fullOpt "option" [lindex $argList 0] $selCmdOpts]
+    set first [lindex $argList 1]
+
+    switch $opt {
+	anchor -
+	includes {
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win cellselection $opt cellIndex"
+	    }
+	    foreach {row col} [cellIndex $win $first 0] {}
+	    return [cellSelection $win $opt $row $col $row $col]
+	}
+
+	clear -
+	set {
+	    if {$argCount == 2} {
+		foreach elem $first {
+		    foreach {row col} [cellIndex $win $elem 0] {}
+		    cellSelection $win $opt $row $col $row $col
+		}
+		return ""
+	    } else {
+		foreach {firstRow firstCol} [cellIndex $win $first 0] {}
+		foreach {lastRow lastCol} \
+			[cellIndex $win [lindex $argList 2] 0] {}
+		return [cellSelection $win $opt \
+			$firstRow $firstCol $lastRow $lastCol]
+	    }
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::cgetSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::cgetSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win cget option"
+    }
+
+    #
+    # Return the value of the specified configuration option
+    #
+    variable configSpecs
+    set opt [mwutil::fullConfigOpt [lindex $argList 0] configSpecs]
+    upvar ::tablelist::ns${win}::data data
+    return $data($opt)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::columncgetSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::columncgetSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win columncget columnIndex option"
+    }
+
+    synchronize $win
+    set col [colIndex $win [lindex $argList 0] 1]
+    variable colConfigSpecs
+    set opt [mwutil::fullConfigOpt [lindex $argList 1] colConfigSpecs]
+    return [doColCget $col $win $opt]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::columnconfigureSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::columnconfigureSubCmd {win argList} {
+    if {[llength $argList] < 1} {
+	mwutil::wrongNumArgs "$win columnconfigure columnIndex ?option? ?value\
+			      option value ...?"
+    }
+
+    synchronize $win
+    displayItems $win
+    variable colConfigSpecs
+    set col [colIndex $win [lindex $argList 0] 1]
+    return [mwutil::configureSubCmd $win colConfigSpecs \
+	    "tablelist::doColConfig $col" "tablelist::doColCget $col" \
+	    [lrange $argList 1 end]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::columncountSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::columncountSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win columncount"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    return $data(colCount)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::columnindexSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::columnindexSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win columnindex columnIndex"
+    }
+
+    return [colIndex $win [lindex $argList 0] 0]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::columnwidthSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::columnwidthSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs "$win columnwidth columnIndex\
+			      ?-requested|-stretched|-total?"
+    }
+
+    synchronize $win
+    displayItems $win
+    set col [colIndex $win [lindex $argList 0] 1]
+    if {$argCount == 1} {
+	set opt -requested
+    } else {
+	variable colWidthOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 1] $colWidthOpts]
+    }
+    return [colWidth $win $col $opt]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::configureSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::configureSubCmd {win argList} {
+    synchronize $win
+    displayItems $win
+    variable configSpecs
+    return [mwutil::configureSubCmd $win configSpecs tablelist::doConfig \
+	    tablelist::doCget $argList]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::configcelllistSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::configcelllistSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win configcelllist cellConfigSpecList"
+    }
+
+    return [configcellsSubCmd $win [lindex $argList 0]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::configcellsSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::configcellsSubCmd {win argList} {
+    synchronize $win
+    displayItems $win
+    variable cellConfigSpecs
+
+    set argCount [llength $argList]
+    foreach {cell opt val} $argList {
+	if {$argCount == 1} {
+	    return -code error "option and value for \"$cell\" missing"
+	} elseif {$argCount == 2} {
+	    return -code error "value for \"$opt\" missing"
+	}
+	foreach {row col} [cellIndex $win $cell 1] {}
+	mwutil::configureWidget $win cellConfigSpecs \
+		"tablelist::doCellConfig $row $col" \
+		"tablelist::doCellCget $row $col" [list $opt $val] 0
+	incr argCount -3
+    }
+
+    return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::configcolumnlistSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::configcolumnlistSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win configcolumnlist columnConfigSpecList"
+    }
+
+    return [configcolumnsSubCmd $win [lindex $argList 0]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::configcolumnsSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::configcolumnsSubCmd {win argList} {
+    synchronize $win
+    displayItems $win
+    variable colConfigSpecs
+
+    set argCount [llength $argList]
+    foreach {col opt val} $argList {
+	if {$argCount == 1} {
+	    return -code error "option and value for \"$col\" missing"
+	} elseif {$argCount == 2} {
+	    return -code error "value for \"$opt\" missing"
+	}
+	set col [colIndex $win $col 1]
+	mwutil::configureWidget $win colConfigSpecs \
+		"tablelist::doColConfig $col" "tablelist::doColCget $col" \
+		[list $opt $val] 0
+	incr argCount -3
+    }
+
+    return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::configrowlistSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::configrowlistSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win configrowlist rowConfigSpecList"
+    }
+
+    return [configrowsSubCmd $win [lindex $argList 0]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::configrowsSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::configrowsSubCmd {win argList} {
+    synchronize $win
+    displayItems $win
+    variable rowConfigSpecs
     upvar ::tablelist::ns${win}::data data
 
+    set argCount [llength $argList]
+    foreach {rowSpec opt val} $argList {
+	if {$argCount == 1} {
+	    return -code error "option and value for \"$rowSpec\" missing"
+	} elseif {$argCount == 2} {
+	    return -code error "value for \"$opt\" missing"
+	}
+	set row [rowIndex $win $rowSpec 0]
+	if {$row < 0 || $row > $data(lastRow)} {
+	    return -code error "row index \"$rowSpec\" out of range"
+	}
+	mwutil::configureWidget $win rowConfigSpecs \
+		"tablelist::doRowConfig $row" "tablelist::doRowCget $row" \
+		[list $opt $val] 0
+	incr argCount -3
+    }
+
+    return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::containingSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::containingSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win containing y"
+    }
+
+    set y [format "%d" [lindex $argList 0]]
+    synchronize $win
+    displayItems $win
+    return [containingRow $win $y]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::containingcellSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::containingcellSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win containingcell x y"
+    }
+
+    set x [format "%d" [lindex $argList 0]]
+    set y [format "%d" [lindex $argList 1]]
+    synchronize $win
+    displayItems $win
+    return [containingRow $win $y],[containingCol $win $x]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::containingcolumnSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::containingcolumnSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win containingcolumn x"
+    }
+
+    set x [format "%d" [lindex $argList 0]]
+    synchronize $win
+    displayItems $win
+    return [containingCol $win $x]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::curcellselectionSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::curcellselectionSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win curcellselection"
+    }
+
+    synchronize $win
+    displayItems $win
+    return [curCellSelection $win]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::curselectionSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::curselectionSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win curselection"
+    }
+
+    synchronize $win
+    displayItems $win
+    return [curSelection $win]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::deleteSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::deleteSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs "$win delete firstIndex lastIndex" \
+			     "$win delete indexList"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    if {$data(isDisabled)} {
+	return ""
+    }
+
+    synchronize $win
+    displayItems $win
+    set first [lindex $argList 0]
+
+    if {$argCount == 1} {
+	if {[llength $first] == 1} {			;# just to save time
+	    set index [rowIndex $win [lindex $first 0] 0]
+	    return [deleteRows $win $index $index $data(hasListVar)]
+	} elseif {$data(itemCount) == 0} {		;# no items present
+	    return ""
+	} else {					;# a bit more work
+	    #
+	    # Sort the numerical equivalents of the
+	    # specified indices in decreasing order
+	    #
+	    set indexList {}
+	    foreach elem $first {
+		set index [rowIndex $win $elem 0]
+		if {$index < 0} {
+		    set index 0
+		} elseif {$index > $data(lastRow)} {
+		    set index $data(lastRow)
+		}
+		lappend indexList $index
+	    }
+	    set indexList [lsort -integer -decreasing $indexList]
+
+	    #
+	    # Traverse the sorted index list and ignore any duplicates
+	    #
+	    set prevIndex -1
+	    foreach index $indexList {
+		if {$index != $prevIndex} {
+		    deleteRows $win $index $index $data(hasListVar)
+		    set prevIndex $index
+		}
+	    }
+	    return ""
+	}
+    } else {
+	set first [rowIndex $win $first 0]
+	set last [rowIndex $win [lindex $argList 1] 0]
+	return [deleteRows $win $first $last $data(hasListVar)]
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::deletecolumnsSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::deletecolumnsSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs \
+		"$win deletecolumns firstColumnIndex lastColumnIndex" \
+		"$win deletecolumns columnIndexList"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    if {$data(isDisabled)} {
+	return ""
+    }
+
+    synchronize $win
+    displayItems $win
+    set first [lindex $argList 0]
+
+    if {$argCount == 1} {
+	if {[llength $first] == 1} {			;# just to save time
+	    set col [colIndex $win [lindex $first 0] 1]
+	    set selCells [curCellSelection $win]
+	    deleteCols $win $col $col selCells
+	    redisplay $win 0 $selCells
+	} elseif {$data(colCount) == 0} {		;# no columns present
+	    return ""
+	} else {					;# a bit more work
+	    #
+	    # Sort the numerical equivalents of the
+	    # specified column indices in decreasing order
+	    #
+	    set colList {}
+	    foreach elem $first {
+		lappend colList [colIndex $win $elem 1]
+	    }
+	    set colList [lsort -integer -decreasing $colList]
+
+	    #
+	    # Traverse the sorted column index list and ignore any duplicates
+	    #
+	    set selCells [curCellSelection $win]
+	    set deleted 0
+	    set prevCol -1
+	    foreach col $colList {
+		if {$col != $prevCol} {
+		    deleteCols $win $col $col selCells
+		    set deleted 1
+		    set prevCol $col
+		}
+	    }
+	    if {$deleted} {
+		redisplay $win 0 $selCells
+	    }
+	}
+    } else {
+	set first [colIndex $win $first 1]
+	set last [colIndex $win [lindex $argList 1] 1]
+	if {$first <= $last} {
+	    set selCells [curCellSelection $win]
+	    deleteCols $win $first $last selCells
+	    redisplay $win 0 $selCells
+	}
+    }
+
+    return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::editcellSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::editcellSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win editcell cellIndex"
+    }
+
+    synchronize $win
+    displayItems $win
+    foreach {row col} [cellIndex $win [lindex $argList 0] 1] {}
+    return [doEditCell $win $row $col 0]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::editwinpathSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::editwinpathSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win editwinpath"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    if {[winfo exists $data(bodyFrEd)]} {
+	return $data(bodyFrEd)
+    } else {
+	return ""
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::entrypathSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::entrypathSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win entrypath"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    if {[winfo exists $data(bodyFrEd)]} {
+	set class [winfo class $data(bodyFrEd)]
+	if {[regexp {^(Mentry|T?Checkbutton)$} $class]} {
+	    return ""
+	} else {
+	    return $data(editFocus)
+	}
+    } else {
+	return ""
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::fillcolumnSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::fillcolumnSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win fillcolumn columnIndex text"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    if {$data(isDisabled)} {
+	return ""
+    }
+
+    synchronize $win
+    displayItems $win
+    set colIdx [colIndex $win [lindex $argList 0] 1]
+    set text [lindex $argList 1]
+
+    #
+    # Update the item list
+    #
+    set newItemList {}
+    foreach item $data(itemList) {
+	set item [lreplace $item $colIdx $colIdx $text]
+	lappend newItemList $item
+    }
+    set data(itemList) $newItemList
+
+    #
+    # Update the list variable if present
+    #
+    condUpdateListVar $win
+
+    #
+    # Adjust the columns and make sure the specified
+    # column will be redisplayed at idle time
+    #
+    adjustColumns $win $colIdx 1
+    redisplayColWhenIdle $win $colIdx
+    return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::finisheditingSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::finisheditingSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win finishediting"
+    }
+
+    synchronize $win
+    displayItems $win
+    return [doFinishEditing $win]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::getSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::getSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs "$win get firstIndex lastIndex" \
+			     "$win get indexList"
+    }
+
+    synchronize $win
+    set first [lindex $argList 0]
+
+    #
+    # Get the specified items from the internal list
+    #
+    upvar ::tablelist::ns${win}::data data
+    set result {}
+    if {$argCount == 1} {
+	foreach elem $first {
+	    set index [rowIndex $win $elem 0]
+	    if {$index >= 0 && $index < $data(itemCount)} {
+		set item [lindex $data(itemList) $index]
+		lappend result [lrange $item 0 $data(lastCol)]
+	    }
+	}
+
+	if {[llength $first] == 1} {
+	    return [lindex $result 0]
+	} else {
+	    return $result
+	}
+    } else {
+	set first [rowIndex $win $first 0]
+	set last [rowIndex $win [lindex $argList 1] 0]
+
+	#
+	# Adjust the range to fit within the existing items
+	#
+	if {$first > $data(lastRow)} {
+	    return {}
+	}
+	if {$first < 0} {
+	    set first 0
+	}
+	if {$last > $data(lastRow)} {
+	    set last $data(lastRow)
+	}
+
+	foreach item [lrange $data(itemList) $first $last] {
+	    lappend result [lrange $item 0 $data(lastCol)]
+	}
+	return $result
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::getcellsSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::getcellsSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs \
+		"$win getcells firstCellIndex lastCellIndex" \
+		"$win getcells cellIndexList"
+    }
+
+    synchronize $win
+    set first [lindex $argList 0]
+
+    #
+    # Get the specified elements from the internal list
+    #
+    upvar ::tablelist::ns${win}::data data
+    set result {}
+    if {$argCount == 1} {
+	foreach elem $first {
+	    foreach {row col} [cellIndex $win $elem 1] {}
+	    lappend result [lindex [lindex $data(itemList) $row] $col]
+	}
+
+	if {[llength $first] == 1} {
+	    return [lindex $result 0]
+	} else {
+	    return $result
+	}
+    } else {
+	foreach {firstRow firstCol} [cellIndex $win $first 1] {}
+	foreach {lastRow lastCol} [cellIndex $win [lindex $argList 1] 1] {}
+
+	foreach item [lrange $data(itemList) $firstRow $lastRow] {
+	    foreach elem [lrange $item $firstCol $lastCol] {
+		lappend result $elem
+	    }
+	}
+	return $result
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::getcolumnsSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::getcolumnsSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs \
+		"$win getcolumns firstColumnIndex lastColumnIndex" \
+		"$win getcolumns columnIndexList"
+    }
+
+    synchronize $win
+    set first [lindex $argList 0]
+
+    #
+    # Get the specified columns from the internal list
+    #
+    upvar ::tablelist::ns${win}::data data
+    set result {}
+    if {$argCount == 1} {
+	foreach elem $first {
+	    set col [colIndex $win $elem 1]
+	    set colResult {}
+	    foreach item $data(itemList) {
+		lappend colResult [lindex $item $col]
+	    }
+	    lappend result $colResult
+	}
+
+	if {[llength $first] == 1} {
+	    return [lindex $result 0]
+	} else {
+	    return $result
+	}
+    } else {
+	set first [colIndex $win $first 1]
+	set last [colIndex $win [lindex $argList 1] 1]
+
+	for {set col $first} {$col <= $last} {incr col} {
+	    set colResult {}
+	    foreach item $data(itemList) {
+		lappend colResult [lindex $item $col]
+	    }
+	    lappend result $colResult
+	}
+	return $result
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::getkeysSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::getkeysSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs "$win getkeys firstIndex lastIndex" \
+			     "$win getkeys indexList"
+    }
+
+    synchronize $win
+    set first [lindex $argList 0]
+
+    #
+    # Get the specified keys from the internal list
+    #
+    upvar ::tablelist::ns${win}::data data
+    set result {}
+    if {$argCount == 1} {
+	foreach elem $first {
+	    set index [rowIndex $win $elem 0]
+	    if {$index >= 0 && $index < $data(itemCount)} {
+		set item [lindex $data(itemList) $index]
+		lappend result [string range [lindex $item end] 1 end]
+	    }
+	}
+
+	if {[llength $first] == 1} {
+	    return [lindex $result 0]
+	} else {
+	    return $result
+	}
+    } else {
+	set first [rowIndex $win $first 0]
+	set last [rowIndex $win [lindex $argList 1] 0]
+
+	#
+	# Adjust the range to fit within the existing items
+	#
+	if {$first > $data(lastRow)} {
+	    return {}
+	}
+	if {$first < 0} {
+	    set first 0
+	}
+	if {$last > $data(lastRow)} {
+	    set last $data(lastRow)
+	}
+
+	foreach item [lrange $data(itemList) $first $last] {
+	    lappend result [string range [lindex $item end] 1 end]
+	}
+	return $result
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::imagelabelpathSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::imagelabelpathSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win imagelabelpath cellIndex"
+    }
+
+    synchronize $win
+    foreach {row col} [cellIndex $win [lindex $argList 0] 1] {}
+    upvar ::tablelist::ns${win}::data data
+    set key [lindex [lindex $data(itemList) $row] end]
+    set w $data(body).l$key,$col
+    if {[winfo exists $w]} {
+	return $w
+    } else {
+	return ""
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::indexSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::indexSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win index index"
+    }
+
+    synchronize $win
+    return [rowIndex $win [lindex $argList 0] 1]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::insertSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::insertSubCmd {win argList} {
+    if {[llength $argList] < 1} {
+	mwutil::wrongNumArgs "$win insert index ?item item ...?"
+    }
+
+    synchronize $win
+    set index [rowIndex $win [lindex $argList 0] 1]
+    upvar ::tablelist::ns${win}::data data
+    return [insertRows $win $index [lrange $argList 1 end] $data(hasListVar)]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::insertcolumnlistSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::insertcolumnlistSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win insertcolumnlist columnIndex columnList"
+    }
+
+    synchronize $win
+    displayItems $win
+    set arg0 [lindex $argList 0]
+    upvar ::tablelist::ns${win}::data data
+    if {[string first $arg0 "end"] == 0 || $arg0 == $data(colCount)} {
+	set col $data(colCount)
+    } else {
+	set col [colIndex $win $arg0 1]
+    }
+    return [insertCols $win $col [lindex $argList 1]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::insertcolumnsSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::insertcolumnsSubCmd {win argList} {
+    if {[llength $argList] < 1} {
+	mwutil::wrongNumArgs "$win insertcolumns columnIndex\
+		?width title ?alignment? width title ?alignment? ...?"
+    }
+
+    synchronize $win
+    displayItems $win
+    set arg0 [lindex $argList 0]
+    upvar ::tablelist::ns${win}::data data
+    if {[string first $arg0 "end"] == 0 || $arg0 == $data(colCount)} {
+	set col $data(colCount)
+    } else {
+	set col [colIndex $win $arg0 1]
+    }
+    return [insertCols $win $col [lrange $argList 1 end]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::insertlistSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::insertlistSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win insertlist index list"
+    }
+
+    synchronize $win
+    set index [rowIndex $win [lindex $argList 0] 1]
+    upvar ::tablelist::ns${win}::data data
+    return [insertRows $win $index [lindex $argList 1] $data(hasListVar)]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::iselemsnippedSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::iselemsnippedSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win iselemsnipped cellIndex fullTextName"
+    }
+
+    synchronize $win
+    displayItems $win
+    foreach {row col} [cellIndex $win [lindex $argList 0] 1] {}
+    set fullTextName [lindex $argList 1]
+    upvar 3 $fullTextName fullText
+
+    upvar ::tablelist::ns${win}::data data
+    set item [lindex $data(itemList) $row]
+    set fullText [lindex $item $col]
+    if {[lindex $data(fmtCmdFlagList) $col]} {
+	set fullText [uplevel #0 $data($col-formatcommand) [list $fullText]]
+    }
+    set fullText [strToDispStr $fullText]
+
+    set pixels [lindex $data(colList) [expr {2*$col}]]
+    if {$pixels == 0} {				;# convention: dynamic width
+	if {$data($col-maxPixels) > 0 &&
+	    $data($col-reqPixels) > $data($col-maxPixels)} {
+	    set pixels $data($col-maxPixels)
+	}
+    }
+    if {$pixels == 0} {
+	return 0
+    }
+
+    set text $fullText
+    set key [lindex $item end]
+    getAuxData $win $key $col auxType auxWidth
+    set cellFont [getCellFont $win $key $col]
+    incr pixels $data($col-delta)
+
+    if {[string match "*\n*" $text]} {
+	set list [split $text "\n"]
+	adjustMlElem $win list auxWidth $cellFont $pixels "r" ""
+	set text [join $list "\n"]
+    } else {
+	adjustElem $win text auxWidth $cellFont $pixels "r" ""
+    }
+    return [expr {[string compare $text $fullText] != 0}]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::istitlesnippedSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::istitlesnippedSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win istitlesnipped columnIndex fullTextName"
+    }
+
+    set col [colIndex $win [lindex $argList 0] 1]
+    set fullTextName [lindex $argList 1]
+    upvar 3 $fullTextName fullText
+
+    upvar ::tablelist::ns${win}::data data
+    set fullText [lindex $data(-columns) [expr {3*$col + 1}]]
+    return $data($col-isSnipped)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::itemlistvarSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::itemlistvarSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win itemlistvar"
+    }
+
+    return ::tablelist::ns${win}::data(itemList)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::labelpathSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::labelpathSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win labelpath columnIndex"
+    }
+
+    set col [colIndex $win [lindex $argList 0] 1]
+    upvar ::tablelist::ns${win}::data data
+    return $data(hdrTxtFrLbl)$col
+}
+
+#------------------------------------------------------------------------------
+# tablelist::labelsSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::labelsSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win labels"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    set labelList {}
+    for {set col 0} {$col < $data(colCount)} {incr col} {
+	lappend labelList $data(hdrTxtFrLbl)$col
+    }
+    return $labelList
+}
+
+#------------------------------------------------------------------------------
+# tablelist::moveSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::moveSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win move sourceIndex targetIndex"
+    }
+
+    synchronize $win
+    displayItems $win
+    set source [rowIndex $win [lindex $argList 0] 0]
+    set target [rowIndex $win [lindex $argList 1] 1]
+    return [moveRow $win $source $target]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::movecolumnSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::movecolumnSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win movecolumn sourceColumnIndex\
+			      targetColumnIndex"
+    }
+
+    synchronize $win
+    displayItems $win
+    set arg0 [lindex $argList 0]
+    set source [colIndex $win $arg0 1]
+    set arg1 [lindex $argList 1]
+    upvar ::tablelist::ns${win}::data data
+    if {[string first $arg1 "end"] == 0 || $arg1 == $data(colCount)} {
+	set target $data(colCount)
+    } else {
+	set target [colIndex $win $arg1 1]
+    }
+    return [moveCol $win $source $target]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::nearestSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::nearestSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win nearest y"
+    }
+
+    set y [format "%d" [lindex $argList 0]]
+    synchronize $win
+    displayItems $win
+    return [rowIndex $win @0,$y 0]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::nearestcellSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::nearestcellSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win nearestcell x y"
+    }
+
+    set x [format "%d" [lindex $argList 0]]
+    set y [format "%d" [lindex $argList 1]]
+    synchronize $win
+    displayItems $win
+    return [join [cellIndex $win @$x,$y 0] ","]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::nearestcolumnSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::nearestcolumnSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win nearestcolumn x"
+    }
+
+    set x [format "%d" [lindex $argList 0]]
+    synchronize $win
+    displayItems $win
+    return [colIndex $win @$x,0 0]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::rejectinputSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::rejectinputSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win rejectinput"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    set data(rejected) 1
+}
+
+#------------------------------------------------------------------------------
+# tablelist::resetsortinfoSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::resetsortinfoSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win resetsortinfo"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+
+    foreach col $data(sortColList) {
+	set data($col-sortRank) 0
+	set data($col-sortOrder) ""
+    }
+
+    set whichWidths {}
+    foreach col $data(arrowColList) {
+	lappend whichWidths l$col
+    }
+
+    set data(sortColList) {}
+    set data(arrowColList) {}
+    set data(sortOrder) {}
+
+    if {[llength $whichWidths] > 0} {
+	synchronize $win
+	displayItems $win
+	adjustColumns $win $whichWidths 1
+    }
+    return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::rowcgetSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::rowcgetSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win rowcget index option"
+    }
+
+    synchronize $win
+    set rowArg [lindex $argList 0]
+    set row [rowIndex $win $rowArg 0]
+    upvar ::tablelist::ns${win}::data data
+    if {$row < 0 || $row > $data(lastRow)} {
+	return -code error "row index \"$rowArg\" out of range"
+    }
+    variable rowConfigSpecs
+    set opt [mwutil::fullConfigOpt [lindex $argList 1] rowConfigSpecs]
+    return [doRowCget $row $win $opt]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::rowconfigureSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::rowconfigureSubCmd {win argList} {
+    if {[llength $argList] < 1} {
+	mwutil::wrongNumArgs "$win rowconfigure index ?option? ?value\
+			      option value ...?"
+    }
+
+    synchronize $win
+    displayItems $win
+    variable rowConfigSpecs
+    set rowSpec [lindex $argList 0]
+    set row [rowIndex $win $rowSpec 0]
+    upvar ::tablelist::ns${win}::data data
+    if {$row < 0 || $row > $data(lastRow)} {
+	return -code error "row index \"$rowSpec\" out of range"
+    }
+    return [mwutil::configureSubCmd $win rowConfigSpecs \
+	    "tablelist::doRowConfig $row" "tablelist::doRowCget $row" \
+	    [lrange $argList 1 end]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::scanSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::scanSubCmd {win argList} {
+    if {[llength $argList] != 3} {
+	mwutil::wrongNumArgs "$win scan mark|dragto x y"
+    }
+
+    set x [format "%d" [lindex $argList 1]]
+    set y [format "%d" [lindex $argList 2]]
+    variable scanCmdOpts
+    set opt [mwutil::fullOpt "option" [lindex $argList 0] $scanCmdOpts]
+    synchronize $win
+    displayItems $win
+    return [doScan $win $opt $x $y]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::seeSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::seeSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win see index"
+    }
+
+    synchronize $win
+    displayItems $win
+    set index [rowIndex $win [lindex $argList 0] 0]
+    return [seeRow $win $index]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::seecellSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::seecellSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win seecell cellIndex"
+    }
+
+    synchronize $win
+    displayItems $win
+    foreach {row col} [cellIndex $win [lindex $argList 0] 0] {}
+    if {[winfo viewable $win]} {
+	return [seeCell $win $row $col]
+    } else {
+	after idle [list tablelist::seeCell $win $row $col]
+	return ""
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::seecolumnSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::seecolumnSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win seecolumn columnIndex"
+    }
+
+    synchronize $win
+    displayItems $win
+    set col [colIndex $win [lindex $argList 0] 0]
+    if {[winfo viewable $win]} {
+	return [seeCell $win [rowIndex $win @0,0 0] $col]
+    } else {
+	after idle [list tablelist::seeCell $win [rowIndex $win @0,0 0] $col]
+	return ""
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::selectionSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::selectionSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 2 || $argCount > 3} {
+	mwutil::wrongNumArgs "$win selection option firstIndex lastIndex" \
+			     "$win selection option indexList"
+    }
+
+    synchronize $win
+    displayItems $win
+    variable selCmdOpts
+    set opt [mwutil::fullOpt "option" [lindex $argList 0] $selCmdOpts]
+    set first [lindex $argList 1]
+
+    switch $opt {
+	anchor -
+	includes {
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win selection $opt index"
+	    }
+	    set index [rowIndex $win $first 0]
+	    return [rowSelection $win $opt $index $index]
+	}
+
+	clear -
+	set {
+	    if {$argCount == 2} {
+		foreach elem $first {
+		    set index [rowIndex $win $elem 0]
+		    rowSelection $win $opt $index $index
+		}
+		return ""
+	    } else {
+		set first [rowIndex $win $first 0]
+		set last [rowIndex $win [lindex $argList 2] 0]
+		return [rowSelection $win $opt $first $last]
+	    }
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::separatorpathSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::separatorpathSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount > 1} {
+	mwutil::wrongNumArgs "$win separatorpath ?columnIndex?"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    if {$argCount == 0} {
+	if {[winfo exists $data(sep)]} {
+	    return $data(sep)
+	} else {
+	    return ""
+	}
+    } else {
+	set col [colIndex $win [lindex $argList 0] 1]
+	if {$data(-showseparators)} {
+	    return $data(sep)$col
+	} else {
+	    return ""
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::separatorsSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::separatorsSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win separators"
+    }
+
+    set sepList {}
+    foreach w [winfo children $win] {
+	if {[regexp {^sep([0-9]+)?$} [winfo name $w]]} {
+	    lappend sepList $w
+	}
+    }
+    return [lsort -dictionary $sepList]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::sizeSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::sizeSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win size"
+    }
+
+    synchronize $win
+    upvar ::tablelist::ns${win}::data data
+    return $data(itemCount)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::sortSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::sortSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount > 1} {
+	mwutil::wrongNumArgs "$win sort ?-increasing|-decreasing?"
+    }
+
+    if {$argCount == 0} {
+	set order -increasing
+    } else {
+	variable _sortOrders
+	set order [mwutil::fullOpt "option" [lindex $argList 0] $_sortOrders]
+    }
+    synchronize $win
+    displayItems $win
+    return [sortItems $win -1 [string range $order 1 end]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::sortbycolumnSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::sortbycolumnSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs "$win sortbycolumn columnIndex\
+			      ?-increasing|-decreasing?"
+    }
+
+    synchronize $win
+    displayItems $win
+    set col [colIndex $win [lindex $argList 0] 1]
+    if {$argCount == 1} {
+	set order -increasing
+    } else {
+	variable _sortOrders
+	set order [mwutil::fullOpt "option" [lindex $argList 1] $_sortOrders]
+    }
+    return [sortItems $win $col [string range $order 1 end]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::sortbycolumnlistSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::sortbycolumnlistSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs "$win sortbycolumnlist columnIndexList\
+	                      ?sortOrderList?"
+    }
+
+    synchronize $win
+    displayItems $win
+    set sortColList {}
+    foreach elem [lindex $argList 0] {
+	set col [colIndex $win $elem 1]
+	if {[lsearch -exact $sortColList $col] >= 0} {
+	    return -code error "duplicate column index \"$elem\""
+	}
+	lappend sortColList $col
+    }
+    set sortOrderList {}
+    if {$argCount == 2} {
+	variable sortOrders
+	foreach elem [lindex $argList 1] {
+	    lappend sortOrderList [mwutil::fullOpt "option" $elem $sortOrders]
+	}
+    }
+    return [sortItems $win $sortColList $sortOrderList]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::sortcolumnSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::sortcolumnSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win sortcolumn"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    if {[llength $data(sortColList)] == 0} {
+	return -1
+    } else {
+	return [lindex $data(sortColList) 0]
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::sortcolumnlistSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::sortcolumnlistSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win sortcolumnlist"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    return $data(sortColList)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::sortorderSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::sortorderSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win sortorder"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    if {[llength $data(sortColList)] == 0} {
+	return $data(sortOrder)
+    } else {
+	set col [lindex $data(sortColList) 0]
+	return $data($col-sortOrder)
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::sortorderlistSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::sortorderlistSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win sortorderlist"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    set sortOrderList {}
+    foreach col $data(sortColList) {
+	lappend sortOrderList $data($col-sortOrder)
+    }
+    return $sortOrderList
+}
+
+#------------------------------------------------------------------------------
+# tablelist::togglecolumnhideSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::togglecolumnhideSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs \
+		"$win togglecolumnhide firstColumnIndex lastColumnIndex" \
+		"$win togglecolumnhide columnIndexList"
+    }
+
+    synchronize $win
+    displayItems $win
+    set first [lindex $argList 0]
+
+    #
+    # Toggle the value of the -hide option of the specified columns
+    #
+    variable canElide
+    if {!$canElide} {
+	set selCells [curCellSelection $win]
+    }
+    upvar ::tablelist::ns${win}::data data
+    set colIdxList {}
+    if {$argCount == 1} {
+	foreach elem $first {
+	    set col [colIndex $win $elem 1]
+	    if {$canElide && !$data($col-hide)} {
+		cellSelection $win clear 0 $col $data(lastRow) $col
+	    }
+	    set data($col-hide) [expr {!$data($col-hide)}]
+	    if {$data($col-hide)} {
+		incr data(hiddenColCount)
+		if {$col == $data(editCol)} {
+		    doCancelEditing $win
+		}
+	    } else {
+		incr data(hiddenColCount) -1
+	    }
+	    lappend colIdxList $col
+	}
+    } else {
+	set first [colIndex $win $first 1]
+	set last [colIndex $win [lindex $argList 1] 1]
+
+	for {set col $first} {$col <= $last} {incr col} {
+	    if {$canElide && !$data($col-hide)} {
+		cellSelection $win clear 0 $col $data(lastRow) $col
+	    }
+	    set data($col-hide) [expr {!$data($col-hide)}]
+	    if {$data($col-hide)} {
+		incr data(hiddenColCount)
+		if {$col == $data(editCol)} {
+		    doCancelEditing $win
+		}
+	    } else {
+		incr data(hiddenColCount) -1
+	    }
+	    lappend colIdxList $col
+	}
+    }
+
+    if {[llength $colIdxList] == 0} {
+	return ""
+    }
+
+    #
+    # Adjust the columns and redisplay the items
+    #
+    makeColFontAndTagLists $win
+    adjustColumns $win $colIdxList 1
+    adjustColIndex $win data(anchorCol) 1
+    adjustColIndex $win data(activeCol) 1
+    if {$canElide} {
+	adjustElidedTextWhenIdle $win
+    } else {
+	redisplay $win 0 $selCells
+    }
+    if {[string compare $data(-selecttype) "row"] == 0} {
+	foreach row [curSelection $win] {
+	    rowSelection $win set $row $row
+	}
+    }
+    return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::togglerowhideSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::togglerowhideSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs "$win togglerowhide firstIndex lastIndex" \
+			     "$win togglerowhide indexList"
+    }
+
+    synchronize $win
+    displayItems $win
+    set first [lindex $argList 0]
+
+    #
+    # Toggle the value of the -hide option of the specified rows
+    #
+    upvar ::tablelist::ns${win}::data data
+    if {$argCount == 1} {
+	foreach elem $first {
+	    set row [rowIndex $win $elem 0]
+	    if {$row < 0 || $row > $data(lastRow)} {
+		return -code error "row index \"$elem\" out of range"
+	    }
+
+	    doRowConfig $row $win -hide [expr {![doRowCget $row $win -hide]}]
+	}
+    } else {
+	set firstRow [rowIndex $win $first 0]
+	if {$firstRow < 0 || $firstRow > $data(lastRow)} {
+	    return -code error "row index \"$first\" out of range"
+	}
+
+	set lastRow [rowIndex $win [lindex $argList 1] 0]
+	if {$lastRow < 0 || $lastRow > $data(lastRow)} {
+	    return -code error "row index \"$last\" out of range"
+	}
+
+	for {set row $firstRow} {$row <= $lastRow} {incr row} {
+	    doRowConfig $row $win -hide [expr {![doRowCget $row $win -hide]}]
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::windowpathSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::windowpathSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win windowpath cellIndex"
+    }
+
+    synchronize $win
+    foreach {row col} [cellIndex $win [lindex $argList 0] 1] {}
+    upvar ::tablelist::ns${win}::data data
+    set key [lindex [lindex $data(itemList) $row] end]
+    set w $data(body).f$key,$col.w
+    if {[winfo exists $w]} {
+	return $w
+    } else {
+	return ""
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::xviewSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::xviewSubCmd {win argList} {
+    synchronize $win
+    displayItems $win
+    upvar ::tablelist::ns${win}::data data
+
+    switch [llength $argList] {
+	0 {
+	    #
+	    # Command: $win xview
+	    #
+	    if {$data(-titlecolumns) == 0} {
+		return [$data(hdrTxt) xview]
+	    } else {
+		set scrlWindowWidth [getScrlWindowWidth $win]
+		if {$scrlWindowWidth <= 0} {
+		    return [list 0 0]
+		}
+
+		set scrlContentWidth [getScrlContentWidth $win 0 $data(lastCol)]
+		if {$scrlContentWidth == 0} {
+		    return [list 0 1]
+		}
+
+		set scrlXOffset \
+		    [scrlColOffsetToXOffset $win $data(scrlColOffset)]
+		set fraction1 [expr {$scrlXOffset/double($scrlContentWidth)}]
+		set fraction2 [expr {($scrlXOffset + $scrlWindowWidth)/
+				     double($scrlContentWidth)}]
+		if {$fraction2 > 1.0} {
+		    set fraction2 1.0
+		}
+		return [list [format "%g" $fraction1] [format "%g" $fraction2]]
+	    }
+	}
+
+	1 {
+	    #
+	    # Command: $win xview <units>
+	    #
+	    set units [format "%d" [lindex $argList 0]]
+	    if {$data(-titlecolumns) == 0} {
+		foreach w [list $data(hdrTxt) $data(body)] {
+		    $w xview moveto 0
+		    $w xview scroll $units units
+		}
+	    } else {
+		changeScrlColOffset $win $units
+		updateColorsWhenIdle $win
+	    }
+	    return ""
+	}
+
+	default {
+	    #
+	    # Command: $win xview moveto <fraction>
+	    #	       $win xview scroll <number> units|pages
+	    #
+	    set argList [mwutil::getScrollInfo $argList]
+	    if {$data(-titlecolumns) == 0} {
+		foreach w [list $data(hdrTxt) $data(body)] {
+		    eval [list $w xview] $argList
+		}
+	    } else {
+		if {[string compare [lindex $argList 0] "moveto"] == 0} {
+		    #
+		    # Compute the new scrolled column offset
+		    #
+		    set fraction [lindex $argList 1]
+		    set scrlContentWidth \
+			[getScrlContentWidth $win 0 $data(lastCol)]
+		    set pixels [expr {int($fraction*$scrlContentWidth + 0.5)}]
+		    set scrlColOffset [scrlXOffsetToColOffset $win $pixels]
+
+		    #
+		    # Increase the new scrolled column offset if necessary
+		    #
+		    if {$pixels + [getScrlWindowWidth $win] >=
+			$scrlContentWidth} {
+			incr scrlColOffset
+		    }
+
+		    changeScrlColOffset $win $scrlColOffset
+		} else {
+		    set number [lindex $argList 1]
+		    if {[string compare [lindex $argList 2] "units"] == 0} {
+			changeScrlColOffset $win \
+			    [expr {$data(scrlColOffset) + $number}]
+		    } else {
+			#
+			# Compute the new scrolled column offset
+			#
+			set scrlXOffset \
+			    [scrlColOffsetToXOffset $win $data(scrlColOffset)]
+			set scrlWindowWidth [getScrlWindowWidth $win]
+			set deltaPixels [expr {$number*$scrlWindowWidth}]
+			set pixels [expr {$scrlXOffset + $deltaPixels}]
+			set scrlColOffset [scrlXOffsetToColOffset $win $pixels]
+
+			#
+			# Adjust the new scrolled column offset if necessary
+			#
+			if {$number < 0 &&
+			    [getScrlContentWidth $win $scrlColOffset \
+			     $data(lastCol)] -
+			    [getScrlContentWidth $win $data(scrlColOffset) \
+			     $data(lastCol)] > -$deltaPixels} {
+			    incr scrlColOffset
+			}
+			if {$scrlColOffset == $data(scrlColOffset)} {
+			    if {$number < 0} {
+				incr scrlColOffset -1
+			    } elseif {$number > 0} {
+				incr scrlColOffset
+			    }
+			}
+
+			changeScrlColOffset $win $scrlColOffset
+		    }
+		}
+		updateColorsWhenIdle $win
+	    }
+	    variable winSys
+	    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
+		#
+		# Work around some Tk bugs on Mac OS X Aqua
+		#
+		if {[winfo exists $data(bodyFr)]} {
+		    lower $data(bodyFr)
+		    raise $data(bodyFr)
+		}
+		update 
+	    }
+	    return ""
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::yviewSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::yviewSubCmd {win argList} {
+    synchronize $win
+    displayItems $win
+    upvar ::tablelist::ns${win}::data data
+    set w $data(body)
+
+    switch [llength $argList] {
+	0 {
+	    #
+	    # Command: $win yview
+	    #
+	    set totalNonHiddenCount \
+		[expr {$data(itemCount) - $data(hiddenRowCount)}]
+	    if {$totalNonHiddenCount == 0} {
+		return [list 0 1]
+	    }
+	    set btmY [expr {[winfo height $w] - 1}]
+	    set topTextIdx [$w index @0,0]
+	    set btmTextIdx [$w index @0,$btmY]
+	    set topRow [expr {int($topTextIdx) - 1}]
+	    set btmRow [expr {int($btmTextIdx) - 1}]
+	    foreach {x y width height baselinePos} [$w dlineinfo $topTextIdx] {}
+	    if {$y < 0} {				 ;# top row incomplete
+		incr topRow
+	    }
+	    foreach {x y width height baselinePos} [$w dlineinfo $btmTextIdx] {}
+	    set y2 [expr {$y + $height}]
+	    if {[$w index @0,$y] == [$w index @0,$y2]} { ;# btm row incomplete
+		incr btmRow -1
+	    }
+	    set upperNonHiddenCount \
+		[getNonHiddenRowCount $win 0 [expr {$topRow - 1}]]
+	    set winNonHiddenCount [getNonHiddenRowCount $win $topRow $btmRow]
+	    set fraction1 [expr {$upperNonHiddenCount/
+				 double($totalNonHiddenCount)}]
+	    set fraction2 [expr {($upperNonHiddenCount + $winNonHiddenCount)/
+				 double($totalNonHiddenCount)}]
+	    return [list [format "%g" $fraction1] [format "%g" $fraction2]]
+	}
+
+	1 {
+	    #
+	    # Command: $win yview <units>
+	    #
+	    set units [format "%d" [lindex $argList 0]]
+	    $w yview [nonHiddenRowOffsetToRowIndex $win $units]
+	    adjustElidedText $win
+	    updateColorsWhenIdle $win
+	    adjustSepsWhenIdle $win
+	    updateVScrlbarWhenIdle $win
+	    return ""
+	}
+
+	default {
+	    #
+	    # Command: $win yview moveto <fraction>
+	    #	       $win yview scroll <number> units|pages
+	    #
+	    set argList [mwutil::getScrollInfo $argList]
+	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
+		set fraction [lindex $argList 1]
+		set totalNonHiddenCount \
+		    [expr {$data(itemCount) - $data(hiddenRowCount)}]
+		set offset [expr {int($fraction*$totalNonHiddenCount + 0.5)}]
+		$w yview [nonHiddenRowOffsetToRowIndex $win $offset]
+	    } else {
+		set number [lindex $argList 1]
+		if {[string compare [lindex $argList 2] "units"] == 0} {
+		    set topRow [expr {int([$w index @0,0]) - 1}]
+		    set upperNonHiddenCount \
+			[getNonHiddenRowCount $win 0 [expr {$topRow - 1}]]
+		    set offset [expr {$upperNonHiddenCount + $number}]
+		    $w yview [nonHiddenRowOffsetToRowIndex $win $offset]
+		} else {
+		    set absNumber [expr {abs($number)}]
+		    set btmY [expr {[winfo height $w] - 1}]
+		    for {set n 0} {$n < $absNumber} {incr n} {
+			set topRow [expr {int([$w index @0,0]) - 1}]
+			set btmRow [expr {int([$w index @0,$btmY]) - 1}]
+			set upperNonHiddenCount \
+			    [getNonHiddenRowCount $win 0 [expr {$topRow - 1}]]
+			set winNonHiddenCount \
+			    [getNonHiddenRowCount $win $topRow $btmRow]
+			set delta [expr {$winNonHiddenCount - 2}]
+			if {$number < 0} {
+			    set delta [expr {(-1)*$delta}]
+			}
+			set offset [expr {$upperNonHiddenCount + $delta}]
+			$w yview [nonHiddenRowOffsetToRowIndex $win $offset]
+		    }
+		}
+	    }
+	    adjustElidedText $win
+	    updateColorsWhenIdle $win
+	    adjustSepsWhenIdle $win
+	    updateVScrlbarWhenIdle $win
+	    variable winSys
+	    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
+		#
+		# Work around some Tk bugs on Mac OS X Aqua
+		#
+		if {[winfo exists $data(bodyFr)]} {
+		    lower $data(bodyFr)
+		    raise $data(bodyFr)
+		}
+		update 
+	    }
+	    return ""
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::cellSelection
+#
+# Processes the tablelist cellselection subcommand.
+#------------------------------------------------------------------------------
+proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
+    upvar ::tablelist::ns${win}::data data
     if {$data(isDisabled) && [string compare $opt "includes"] != 0} {
 	return ""
     }
@@ -1909,13 +3025,12 @@ proc tablelist::cellselectionSubCmd {win opt firstRow firstCol \
 }
 
 #------------------------------------------------------------------------------
-# tablelist::columnwidthSubCmd
+# tablelist::colWidth
 #
-# This procedure is invoked to process the tablelist columnwidth subcommand.
+# Processes the tablelist columnwidth subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::columnwidthSubCmd {win col opt} {
+proc tablelist::colWidth {win col opt} {
     upvar ::tablelist::ns${win}::data data
-
     set pixels [lindex $data(colList) [expr {2*$col}]]
     if {$pixels == 0} {				;# convention: dynamic width
 	set pixels $data($col-reqPixels)
@@ -1936,21 +3051,23 @@ proc tablelist::columnwidthSubCmd {win col opt} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::containingSubCmd
+# tablelist::containingRow
 #
-# This procedure is invoked to process the tablelist containing subcommand.
+# Processes the tablelist containing subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::containingSubCmd {win y} {
+proc tablelist::containingRow {win y} {
     upvar ::tablelist::ns${win}::data data
-
     if {$data(itemCount) == 0} {
 	return -1
     }
 
     set row [rowIndex $win @0,$y 0]
-
     set w $data(body)
     incr y -[winfo y $w]
+    if {$y < 0} {
+	return -1
+    }
+
     set dlineinfo [$w dlineinfo [expr {double($row + 1)}]]
     if {$y < [lindex $dlineinfo 1] + [lindex $dlineinfo 3]} {
 	return $row
@@ -1960,13 +3077,15 @@ proc tablelist::containingSubCmd {win y} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::containingcolumnSubCmd
+# tablelist::containingCol
 #
-# This procedure is invoked to process the tablelist containingcolumn
-# subcommand.
+# Processes the tablelist containingcolumn subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::containingcolumnSubCmd {win x} {
+proc tablelist::containingCol {win x} {
     upvar ::tablelist::ns${win}::data data
+    if {$x < [winfo x $data(body)]} {
+	return -1
+    }
 
     set col [colIndex $win @$x,0 0]
     if {$col < 0} {
@@ -1982,12 +3101,11 @@ proc tablelist::containingcolumnSubCmd {win x} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::curcellselectionSubCmd
+# tablelist::curCellSelection
 #
-# This procedure is invoked to process the tablelist curcellselection
-# subcommand.
+# Processes the tablelist curcellselection subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::curcellselectionSubCmd {win {getKeys 0}} {
+proc tablelist::curCellSelection {win {getKeys 0}} {
     variable canElide
     variable elide
     upvar ::tablelist::ns${win}::data data
@@ -2048,17 +3166,16 @@ proc tablelist::curcellselectionSubCmd {win {getKeys 0}} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::curselectionSubCmd
+# tablelist::curSelection
 #
-# This procedure is invoked to process the tablelist curselection subcommand.
+# Processes the tablelist curselection subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::curselectionSubCmd win {
-    upvar ::tablelist::ns${win}::data data
-
+proc tablelist::curSelection win {
     #
     # Find the (partly) selected lines of the body text widget
     #
     set result {}
+    upvar ::tablelist::ns${win}::data data
     set w $data(body)
     set selRange [$w tag nextrange select 1.0]
     while {[llength $selRange] != 0} {
@@ -2071,73 +3188,18 @@ proc tablelist::curselectionSubCmd win {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::deleteSubCmd
-#
-# This procedure is invoked to process the tablelist delete subcommand.
-#------------------------------------------------------------------------------
-proc tablelist::deleteSubCmd {win first last argCount} {
-    upvar ::tablelist::ns${win}::data data
-
-    if {$data(isDisabled)} {
-	return ""
-    }
-
-    if {$argCount == 1} {
-	if {[llength $first] == 1} {			;# just to save time
-	    set index [rowIndex $win [lindex $first 0] 0]
-	    return [deleteRows $win $index $index $data(hasListVar)]
-	} elseif {$data(itemCount) == 0} {		;# no items present
-	    return ""
-	} else {					;# a bit more work
-	    #
-	    # Sort the numerical equivalents of the
-	    # specified indices in decreasing order
-	    #
-	    set indexList {}
-	    foreach elem $first {
-		set index [rowIndex $win $elem 0]
-		if {$index < 0} {
-		    set index 0
-		} elseif {$index > $data(lastRow)} {
-		    set index $data(lastRow)
-		}
-		lappend indexList $index
-	    }
-	    set indexList [lsort -integer -decreasing $indexList]
-
-	    #
-	    # Traverse the sorted index list and ignore any duplicates
-	    #
-	    set prevIndex -1
-	    foreach index $indexList {
-		if {$index != $prevIndex} {
-		    deleteRows $win $index $index $data(hasListVar)
-		    set prevIndex $index
-		}
-	    }
-	    return ""
-	}
-    } else {
-	set first [rowIndex $win $first 0]
-	set last [rowIndex $win $last 0]
-	return [deleteRows $win $first $last $data(hasListVar)]
-    }
-}
-
-#------------------------------------------------------------------------------
 # tablelist::deleteRows
 #
-# Deletes a given range of rows of a tablelist widget.
+# Processes the tablelist delete subcommand.
 #------------------------------------------------------------------------------
 proc tablelist::deleteRows {win first last updateListVar} {
-    upvar ::tablelist::ns${win}::data data
-
     #
     # Adjust the range to fit within the existing items
     #
     if {$first < 0} {
 	set first 0
     }
+    upvar ::tablelist::ns${win}::data data
     if {$last > $data(lastRow)} {
 	set last $data(lastRow)
     }
@@ -2160,21 +3222,18 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	variable canElide
 	set colWidthsChanged 0
 	set snipStr $data(-snipstring)
-	set hasFmtCmds [expr {[lsearch -exact $data(fmtCmdFlagList) 1] >= 0}]
 	foreach item $itemListRange {
 	    #
 	    # Format the item
 	    #
-	    if {$hasFmtCmds} {
-		set formattedItem \
-		    [formatItem $win [lrange $item 0 $data(lastCol)]]
-	    } else {
-		set formattedItem [lrange $item 0 $data(lastCol)]
+	    set key [lindex $item end]
+	    set dispItem [lrange $item 0 $data(lastCol)]
+	    if {$data(hasFmtCmds)} {
+		set dispItem [formatItem $win $dispItem]
 	    }
 
-	    set key [lindex $item end]
 	    set col 0
-	    foreach text [strToDispStr $formattedItem] \
+	    foreach text [strToDispStr $dispItem] \
 		    {pixels alignment} $data(colList) {
 		if {($data($col-hide) && !$canElide) || $pixels != 0} {
 		    incr col
@@ -2217,7 +3276,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	foreach opt {-background -foreground -font} {
 	    if {[info exists data($key$opt)]} {
 		unset data($key$opt)
-		incr data(tagRefCount) -1
+		incr data(rowTagRefCount) -1
 	    }
 	}
 	if {[info exists data($key-hide)]} {
@@ -2234,7 +3293,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	    foreach opt {-background -foreground -font} {
 		if {[info exists data($key,$col$opt)]} {
 		    unset data($key,$col$opt)
-		    incr data(tagRefCount) -1
+		    incr data(cellTagRefCount) -1
 		}
 	    }
 	    foreach opt {-editable -editwindow -selectbackground
@@ -2274,31 +3333,6 @@ proc tablelist::deleteRows {win first last updateListVar} {
     }
 
     #
-    # Adjust the heights of the body text widget
-    # and of the listbox child, if necessary
-    #
-    if {$data(-height) <= 0} {
-	set nonHiddenRowCount [expr {$data(itemCount) - $data(hiddenRowCount)}]
-	$w configure -height $nonHiddenRowCount
-	$data(lb) configure -height $nonHiddenRowCount
-    }
-
-    #
-    # Invalidate the list of the row indices indicating the
-    # non-hidden rows, adjust the columns if necessary, and
-    # schedule some operations for exection at idle time
-    #
-    set data(nonHiddenRowList) {-1}
-    if {$colWidthsChanged} {
-	adjustColumns $win allCols 1
-    }
-    adjustElidedTextWhenIdle $win
-    makeStripesWhenIdle $win
-    adjustSepsWhenIdle $win
-    updateVScrlbarWhenIdle $win
-    showLineNumbersWhenIdle $win
-
-    #
     # Update the indices anchorRow and activeRow
     #
     if {$first <= $data(anchorRow)} {
@@ -2323,67 +3357,30 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	set data(editRow) [lsearch $data(itemList) "* $data(editKey)"]
     }
 
-    return ""
-}
-
-#------------------------------------------------------------------------------
-# tablelist::deletecolumnsSubCmd
-#
-# This procedure is invoked to process the tablelist deletecolumns subcommand.
-#------------------------------------------------------------------------------
-proc tablelist::deletecolumnsSubCmd {win first last argCount} {
-    upvar ::tablelist::ns${win}::data data
-
-    if {$data(isDisabled)} {
-	return ""
+    #
+    # Adjust the heights of the body text widget
+    # and of the listbox child, if necessary
+    #
+    if {$data(-height) <= 0} {
+	set nonHiddenRowCount [expr {$data(itemCount) - $data(hiddenRowCount)}]
+	$w configure -height $nonHiddenRowCount
+	$data(lb) configure -height $nonHiddenRowCount
     }
 
-    if {$argCount == 1} {
-	if {[llength $first] == 1} {			;# just to save time
-	    set col [colIndex $win [lindex $first 0] 1]
-	    set selCells [curcellselectionSubCmd $win]
-	    deleteCols $win $col $col selCells
-	    redisplay $win 0 $selCells
-	} elseif {$data(colCount) == 0} {		;# no columns present
-	    return ""
-	} else {					;# a bit more work
-	    #
-	    # Sort the numerical equivalents of the
-	    # specified column indices in decreasing order
-	    #
-	    set colList {}
-	    foreach elem $first {
-		lappend colList [colIndex $win $elem 1]
-	    }
-	    set colList [lsort -integer -decreasing $colList]
-
-	    #
-	    # Traverse the sorted column index
-	    # list and ignore any duplicates
-	    #
-	    set selCells [curcellselectionSubCmd $win]
-	    set deleted 0
-	    set prevCol -1
-	    foreach col $colList {
-		if {$col != $prevCol} {
-		    deleteCols $win $col $col selCells
-		    set deleted 1
-		    set prevCol $col
-		}
-	    }
-	    if {$deleted} {
-		redisplay $win 0 $selCells
-	    }
-	}
-    } else {
-	set first [colIndex $win $first 1]
-	set last [colIndex $win $last 1]
-	if {$first <= $last} {
-	    set selCells [curcellselectionSubCmd $win]
-	    deleteCols $win $first $last selCells
-	    redisplay $win 0 $selCells
-	}
+    #
+    # Invalidate the list of the row indices indicating the
+    # non-hidden rows, adjust the columns if necessary, and
+    # schedule some operations for execution at idle time
+    #
+    set data(nonHiddenRowList) {-1}
+    if {$colWidthsChanged} {
+	adjustColumns $win allCols 1
     }
+    adjustElidedTextWhenIdle $win
+    makeStripesWhenIdle $win
+    adjustSepsWhenIdle $win
+    updateVScrlbarWhenIdle $win
+    showLineNumbersWhenIdle $win
 
     return ""
 }
@@ -2391,11 +3388,10 @@ proc tablelist::deletecolumnsSubCmd {win first last argCount} {
 #------------------------------------------------------------------------------
 # tablelist::deleteCols
 #
-# Deletes a given range of columns of a tablelist widget.
+# Processes the tablelist deletecolumns subcommand.
 #------------------------------------------------------------------------------
 proc tablelist::deleteCols {win first last selCellsName} {
-    upvar ::tablelist::ns${win}::data data
-    upvar $selCellsName selCells
+    upvar ::tablelist::ns${win}::data data $selCellsName selCells
 
     #
     # Delete the data corresponding to the given range
@@ -2414,7 +3410,7 @@ proc tablelist::deleteCols {win first last selCellsName} {
     #
     for {set oldCol [expr {$last + 1}]; set newCol $first} \
 	{$oldCol < $data(colCount)} {incr oldCol; incr newCol} {
-	moveColData $win data data imgs $oldCol $newCol
+	moveColData data data imgs $oldCol $newCol
 	set selCells [replaceColInCellList $selCells $oldCol $newCol]
     }
 
@@ -2470,235 +3466,14 @@ proc tablelist::deleteCols {win first last selCellsName} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::fillcolumnSubCmd
+# tablelist::insertRows
 #
-# This procedure is invoked to process the tablelist fillcolumn subcommand.
+# Processes the tablelist insert and insertlist subcommands.
 #------------------------------------------------------------------------------
-proc tablelist::fillcolumnSubCmd {win colIdx text} {
-    upvar ::tablelist::ns${win}::data data
-
-    if {$data(isDisabled)} {
-	return ""
-    }
-
-    #
-    # Update the item list
-    #
-    set newItemList {}
-    foreach item $data(itemList) {
-	set item [lreplace $item $colIdx $colIdx $text]
-	lappend newItemList $item
-    }
-    set data(itemList) $newItemList
-
-    #
-    # Update the list variable if present
-    #
-    condUpdateListVar $win
-
-    #
-    # Adjust the columns and make sure the specified
-    # column will be redisplayed at idle time
-    #
-    adjustColumns $win $colIdx 1
-    redisplayColWhenIdle $win $colIdx
-    return ""
-}
-
-#------------------------------------------------------------------------------
-# tablelist::getSubCmd
-#
-# This procedure is invoked to process the tablelist get subcommand.
-#------------------------------------------------------------------------------
-proc tablelist::getSubCmd {win first last argCount} {
-    upvar ::tablelist::ns${win}::data data
-
-    #
-    # Get the specified items from the internal list
-    #
-    set result {}
-    if {$argCount == 1} {
-	foreach elem $first {
-	    set index [rowIndex $win $elem 0]
-	    if {$index >= 0 && $index < $data(itemCount)} {
-		set item [lindex $data(itemList) $index]
-		lappend result [lrange $item 0 $data(lastCol)]
-	    }
-	}
-
-	if {[llength $first] == 1} {
-	    return [lindex $result 0]
-	} else {
-	    return $result
-	}
-    } else {
-	set first [rowIndex $win $first 0]
-	set last [rowIndex $win $last 0]
-
-	#
-	# Adjust the range to fit within the existing items
-	#
-	if {$first > $data(lastRow)} {
-	    return {}
-	}
-	if {$first < 0} {
-	    set first 0
-	}
-	if {$last > $data(lastRow)} {
-	    set last $data(lastRow)
-	}
-
-	foreach item [lrange $data(itemList) $first $last] {
-	    lappend result [lrange $item 0 $data(lastCol)]
-	}
-	return $result
-    }
-}
-
-#------------------------------------------------------------------------------
-# tablelist::getcellsSubCmd
-#
-# This procedure is invoked to process the tablelist getcells subcommand.
-#------------------------------------------------------------------------------
-proc tablelist::getcellsSubCmd {win first last argCount} {
-    upvar ::tablelist::ns${win}::data data
-
-    #
-    # Get the specified elements from the internal list
-    #
-    set result {}
-    if {$argCount == 1} {
-	foreach elem $first {
-	    foreach {row col} [cellIndex $win $elem 1] {}
-	    lappend result [lindex [lindex $data(itemList) $row] $col]
-	}
-
-	if {[llength $first] == 1} {
-	    return [lindex $result 0]
-	} else {
-	    return $result
-	}
-    } else {
-	foreach {firstRow firstCol} [cellIndex $win $first 1] {}
-	foreach {lastRow lastCol} [cellIndex $win $last 1] {}
-
-	foreach item [lrange $data(itemList) $firstRow $lastRow] {
-	    foreach elem [lrange $item $firstCol $lastCol] {
-		lappend result $elem
-	    }
-	}
-	return $result
-    }
-}
-
-#------------------------------------------------------------------------------
-# tablelist::getcolumnsSubCmd
-#
-# This procedure is invoked to process the tablelist getcolumns subcommand.
-#------------------------------------------------------------------------------
-proc tablelist::getcolumnsSubCmd {win first last argCount} {
-    upvar ::tablelist::ns${win}::data data
-
-    #
-    # Get the specified columns from the internal list
-    #
-    set result {}
-    if {$argCount == 1} {
-	foreach elem $first {
-	    set col [colIndex $win $elem 1]
-	    set colResult {}
-	    foreach item $data(itemList) {
-		lappend colResult [lindex $item $col]
-	    }
-	    lappend result $colResult
-	}
-
-	if {[llength $first] == 1} {
-	    return [lindex $result 0]
-	} else {
-	    return $result
-	}
-    } else {
-	set first [colIndex $win $first 1]
-	set last [colIndex $win $last 1]
-
-	for {set col $first} {$col <= $last} {incr col} {
-	    set colResult {}
-	    foreach item $data(itemList) {
-		lappend colResult [lindex $item $col]
-	    }
-	    lappend result $colResult
-	}
-	return $result
-    }
-}
-
-#------------------------------------------------------------------------------
-# tablelist::getkeysSubCmd
-#
-# This procedure is invoked to process the tablelist getkeys subcommand.
-#------------------------------------------------------------------------------
-proc tablelist::getkeysSubCmd {win first last argCount} {
-    upvar ::tablelist::ns${win}::data data
-
-    #
-    # Get the specified keys from the internal list
-    #
-    set result {}
-    if {$argCount == 1} {
-	foreach elem $first {
-	    set index [rowIndex $win $elem 0]
-	    if {$index >= 0 && $index < $data(itemCount)} {
-		set item [lindex $data(itemList) $index]
-		lappend result [string range [lindex $item end] 1 end]
-	    }
-	}
-
-	if {[llength $first] == 1} {
-	    return [lindex $result 0]
-	} else {
-	    return $result
-	}
-    } else {
-	set first [rowIndex $win $first 0]
-	set last [rowIndex $win $last 0]
-
-	#
-	# Adjust the range to fit within the existing items
-	#
-	if {$first > $data(lastRow)} {
-	    return {}
-	}
-	if {$first < 0} {
-	    set first 0
-	}
-	if {$last > $data(lastRow)} {
-	    set last $data(lastRow)
-	}
-
-	foreach item [lrange $data(itemList) $first $last] {
-	    lappend result [string range [lindex $item end] 1 end]
-	}
-	return $result
-    }
-}
-
-#------------------------------------------------------------------------------
-# tablelist::insertSubCmd
-#
-# This procedure is invoked to process the tablelist insert and insertlist
-# subcommands.
-#------------------------------------------------------------------------------
-proc tablelist::insertSubCmd {win index argList updateListVar} {
-    variable snipSides
-    upvar ::tablelist::ns${win}::data data
-
-    if {$data(isDisabled)} {
-	return ""
-    }
-
+proc tablelist::insertRows {win index argList updateListVar} {
     set argCount [llength $argList]
-    if {$argCount == 0} {
+    upvar ::tablelist::ns${win}::data data
+    if {$argCount == 0 || $data(isDisabled)} {
 	return ""
     }
 
@@ -2707,28 +3482,15 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
     }
 
     #
-    # Insert the items into the body text widget and into the internal list
+    # Insert the items into the internal list
     #
-    variable canElide
-    set w $data(body)
-    set widgetFont $data(-font)
-    set snipStr $data(-snipstring)
-    set savedCount $data(itemCount)
-    set appending [expr {$index >= $savedCount}]
-    set colWidthsChanged 0
+    set appending [expr {$index >= $data(itemCount)}]
     set row $index
-    set line [expr {$index + 1}]
-    set hasFmtCmds [expr {[lsearch -exact $data(fmtCmdFlagList) 1] >= 0}]
     foreach item $argList {
 	#
-	# Adjust and format the item
+	# Adjust the item
 	#
 	set item [adjustItem $item $data(colCount)]
-	if {$hasFmtCmds} {
-	    set formattedItem [formatItem $win $item]
-	} else {
-	    set formattedItem $item
-	}
 
 	#
 	# Get a free key for the new item
@@ -2740,18 +3502,129 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 	    set data(freeKeyList) [lrange $data(freeKeyList) 1 end]
 	}
 
-	set multilineData {}
-	if {$data(itemCount) != 0} {
-	     $w insert $line.0 "\n"
+	#
+	# Insert the item into the list variable if needed
+	#
+	if {$updateListVar} {
+	    upvar #0 $data(-listvariable) var
+	    trace vdelete var wu $data(listVarTraceCmd)
+	    if {$appending} {
+		lappend var $item    		;# this works much faster
+	    } else {
+		set var [linsert $var $row $item]
+	    }
+	    trace variable var wu $data(listVarTraceCmd)
+	}
+
+	#
+	# Insert the item into the internal list
+	#
+	lappend item $key
+	if {$appending} {
+	    lappend data(itemList) $item	;# this works much faster
+	} else {
+	    set data(itemList) [linsert $data(itemList) $row $item]
+	}
+
+	lappend data(rowsToDisplay) $row
+
+	incr row
+    }
+    incr data(itemCount) $argCount
+    set data(lastRow) [expr {$data(itemCount) - 1}]
+
+    #
+    # Update the indices anchorRow and activeRow
+    #
+    if {$index <= $data(anchorRow)} {
+	incr data(anchorRow) $argCount
+	adjustRowIndex $win data(anchorRow) 1
+    }
+    if {$index <= $data(activeRow)} {
+	incr data(activeRow) $argCount
+	adjustRowIndex $win data(activeRow) 1
+    }
+
+    #
+    # Update data(editRow) if the edit window is present
+    #
+    if {$data(editRow) >= 0} {
+	set data(editRow) [lsearch $data(itemList) "* $data(editKey)"]
+    }
+
+    if {![info exists data(dispId)]} {
+	#
+	# Arrange for the inserted items to be displayed at idle time
+	#
+	set data(dispId) [after idle [list tablelist::displayItems $win]]
+    }
+
+    return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::displayItems
+#
+# This procedure is invoked either as an idle callback after inserting some
+# items into the internal list of the tablelist widget win, or directly, upon
+# execution of some widget commands.  It displays the inserted items.
+#------------------------------------------------------------------------------
+proc tablelist::displayItems win {
+    #
+    # Nothing to do if there are no items to display
+    #
+    upvar ::tablelist::ns${win}::data data
+    if {![info exists data(dispId)]} {
+	return ""
+    }
+
+    #
+    # Here we are in the case that the procedure was scheduled for
+    # execution at idle time.  However, it might have been invoked
+    # directly, before the idle time occured; in this case we should
+    # cancel the execution of the previously scheduled idle callback.
+    #
+    after cancel $data(dispId)	;# no harm if data(dispId) is no longer valid
+    unset data(dispId)
+
+    #
+    # Insert the items into the body text widget and into the internal list
+    #
+    variable canElide
+    variable snipSides
+    set w $data(body)
+    set widgetFont $data(-font)
+    set snipStr $data(-snipstring)
+    set padY [expr {[$w cget -spacing1] == 0}]
+    set wasEmpty [expr {[llength $data(rowsToDisplay)] == $data(itemCount)}]
+    set isEmpty $wasEmpty
+    set colWidthsChanged 0
+    foreach row $data(rowsToDisplay) {
+	set line [expr {$row + 1}]
+	set item [lindex $data(itemList) $row]
+	set key [lindex $item end]
+
+	#
+	# Format the item
+	#
+	set dispItem [lrange $item 0 $data(lastCol)]
+	if {$data(hasFmtCmds)} {
+	    set dispItem [formatItem $win $dispItem]
+	}
+
+	if {$isEmpty} {
+	    set isEmpty 0
+	} else {
+	    $w insert $line.0 "\n"
 	}
 	if {$data(hiddenRowCount) != 0} {
 	    $w tag remove hiddenRow $line.0
 	}
-
+	set multilineData {}
 	set col 0
 	if {$data(hasColTags)} {
 	    set insertArgs {}
-	    foreach text [strToDispStr $formattedItem] \
+	    foreach text [strToDispStr $dispItem] \
 		    colFont $data(colFontList) \
 		    colTags $data(colTagsList) \
 		    {pixels alignment} $data(colList) {
@@ -2763,14 +3636,10 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 		#
 		# Update the column width or clip the element if necessary
 		#
-		if {[string match "*\n*" $text]} {
-		    set multiline 1
-		    set list [split $text "\n"]
-		} else {
-		    set multiline 0
-		}
+		set multiline [string match "*\n*" $text]
 		if {$pixels == 0} {		;# convention: dynamic width
 		    if {$multiline} {
+			set list [split $text "\n"]
 			set textWidth [getListWidth $win $list $colFont]
 		    } else {
 			set textWidth \
@@ -2788,9 +3657,7 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 			set data($col-widestCount) 1
 			if {$textWidth > $data($col-reqPixels)} {
 			    set data($col-reqPixels) $textWidth
-			    if {$pixels == 0} {
-				set colWidthsChanged 1
-			    }
+			    set colWidthsChanged 1
 			}
 		    }
 		}
@@ -2825,7 +3692,7 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 
 	} else {
 	    set insertStr ""
-	    foreach text [strToDispStr $formattedItem] \
+	    foreach text [strToDispStr $dispItem] \
 		    {pixels alignment} $data(colList) {
 		if {$data($col-hide) && !$canElide} {
 		    incr col
@@ -2835,14 +3702,10 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 		#
 		# Update the column width or clip the element if necessary
 		#
-		if {[string match "*\n*" $text]} {
-		    set multiline 1
-		    set list [split $text "\n"]
-		} else {
-		    set multiline 0
-		}
+		set multiline [string match "*\n*" $text]
 		if {$pixels == 0} {		;# convention: dynamic width
 		    if {$multiline} {
+			set list [split $text "\n"]
 			set textWidth [getListWidth $win $list $widgetFont]
 		    } else {
 			set textWidth \
@@ -2860,9 +3723,7 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 			set data($col-widestCount) 1
 			if {$textWidth > $data($col-reqPixels)} {
 			    set data($col-reqPixels) $textWidth
-			    if {$pixels == 0} {
-				set colWidthsChanged 1
-			    }
+			    set colWidthsChanged 1
 			}
 		    }
 		}
@@ -2901,38 +3762,10 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 	    findTabs $win $line $col $col tabIdx1 tabIdx2
 	    set msgScript [list ::tablelist::displayText $win \
 			   $key $col $text $font $alignment]
-	    $w window create $tabIdx2 -pady 1 -create $msgScript
+	    $w window create $tabIdx2 -pady $padY -create $msgScript
 	}
-
-	#
-	# Insert the item into the list variable if needed
-	#
-	if {$updateListVar} {
-	    upvar #0 $data(-listvariable) var
-	    trace vdelete var wu $data(listVarTraceCmd)
-	    if {$appending} {
-		lappend var $item    		;# this works much faster
-	    } else {
-		set var [linsert $var $row $item]
-	    }
-	    trace variable var wu $data(listVarTraceCmd)
-	}
-
-	#
-	# Insert the item into the internal list
-	#
-	lappend item $key
-	if {$appending} {
-	    lappend data(itemList) $item	;# this works much faster
-	} else {
-	    set data(itemList) [linsert $data(itemList) $row $item]
-	}
-
-	set row $line
-	incr line
-	incr data(itemCount)
     }
-    set data(lastRow) [expr {$data(itemCount) - 1}]
+    unset data(rowsToDisplay)
 
     #
     # Adjust the heights of the body text widget
@@ -2942,14 +3775,6 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
 	set nonHiddenRowCount [expr {$data(itemCount) - $data(hiddenRowCount)}]
 	$w configure -height $nonHiddenRowCount
 	$data(lb) configure -height $nonHiddenRowCount
-    }
-
-    #
-    # Adjust the horizontal view in the body text 
-    # widget if the tablelist was previously empty
-    #
-    if {$savedCount == 0} {
-	$w xview moveto [lindex [$data(hdrTxt) xview] 0]
     }
 
     #
@@ -2967,50 +3792,27 @@ proc tablelist::insertSubCmd {win index argList updateListVar} {
     updateVScrlbarWhenIdle $win
     showLineNumbersWhenIdle $win
 
-    #
-    # Update the indices anchorRow and activeRow
-    #
-    if {$index <= $data(anchorRow)} {
-	incr data(anchorRow) $argCount
-	adjustRowIndex $win data(anchorRow) 1
+    if {$wasEmpty} {
+	$w xview moveto [lindex [$data(hdrTxt) xview] 0]
     }
-    if {$index <= $data(activeRow)} {
-	incr data(activeRow) $argCount
-	adjustRowIndex $win data(activeRow) 1
-    }
-
-    #
-    # Update data(editRow) if the edit window is present
-    #
-    if {$data(editRow) >= 0} {
-	set data(editRow) [lsearch $data(itemList) "* $data(editKey)"]
-    }
-
-    return ""
 }
 
 #------------------------------------------------------------------------------
-# tablelist::insertcolumnsSubCmd
+# tablelist::insertCols
 #
-# This procedure is invoked to process the tablelist insertcolumns and
-# insertcolumnlist subcommands.
+# Processes the tablelist insertcolumns and insertcolumnlist subcommands.
 #------------------------------------------------------------------------------
-proc tablelist::insertcolumnsSubCmd {win colIdx argList} {
-    variable alignments
-    upvar ::tablelist::ns${win}::data data
-
-    if {$data(isDisabled)} {
-	return ""
-    }
-
+proc tablelist::insertCols {win colIdx argList} {
     set argCount [llength $argList]
-    if {$argCount == 0} {
+    upvar ::tablelist::ns${win}::data data
+    if {$argCount == 0 || $data(isDisabled)} {
 	return ""
     }
 
     #
     # Check the syntax of argList and get the number of columns to be inserted
     #
+    variable alignments
     set count 0
     for {set n 0} {$n < $argCount} {incr n} {
 	#
@@ -3045,10 +3847,10 @@ proc tablelist::insertcolumnsSubCmd {win colIdx argList} {
     # Shift the elements of data corresponding to the column
     # indices >= colIdx to the right by count positions
     #
-    set selCells [curcellselectionSubCmd $win]
+    set selCells [curCellSelection $win]
     for {set oldCol $data(lastCol); set newCol [expr {$oldCol + $count}]} \
 	{$oldCol >= $colIdx} {incr oldCol -1; incr newCol -1} {
-	moveColData $win data data imgs $oldCol $newCol
+	moveColData data data imgs $oldCol $newCol
 	set selCells [replaceColInCellList $selCells $oldCol $newCol]
     }
 
@@ -3113,13 +3915,12 @@ proc tablelist::insertcolumnsSubCmd {win colIdx argList} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::scanSubCmd
+# tablelist::doScan
 #
-# This procedure is invoked to process the tablelist scan subcommand.
+# Processes the tablelist scan subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::scanSubCmd {win opt x y} {
+proc tablelist::doScan {win opt x y} {
     upvar ::tablelist::ns${win}::data data
-
     set w $data(body)
     incr x -[winfo x $w]
     incr y -[winfo y $w]
@@ -3176,17 +3977,16 @@ proc tablelist::scanSubCmd {win opt x y} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::seeSubCmd
+# tablelist::seeRow
 #
-# This procedure is invoked to process the tablelist see subcommand.
+# Processes the tablelist see subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::seeSubCmd {win index} {
-    upvar ::tablelist::ns${win}::data data
-
+proc tablelist::seeRow {win index} {
     #
     # Adjust the index to fit within the existing items
     #
     adjustRowIndex $win index
+    upvar ::tablelist::ns${win}::data data
     set key [lindex [lindex $data(itemList) $index] end]
     if {$data(itemCount) == 0 || [info exists data($key-hide)]} {
 	return ""
@@ -3207,11 +4007,11 @@ proc tablelist::seeSubCmd {win index} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::seecellSubCmd
+# tablelist::seeCell
 #
-# This procedure is invoked to process the tablelist seecell subcommand.
+# Processes the tablelist seecell subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::seecellSubCmd {win row col} {
+proc tablelist::seeCell {win row col} {
     #
     # This might be an "after idle" callback; check whether the window exists
     #
@@ -3397,13 +4197,12 @@ proc tablelist::seecellSubCmd {win row col} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::selectionSubCmd
+# tablelist::rowSelection
 #
-# This procedure is invoked to process the tablelist selection subcommand.
+# Processes the tablelist selection subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::selectionSubCmd {win opt first last} {
+proc tablelist::rowSelection {win opt first last} {
     upvar ::tablelist::ns${win}::data data
-
     if {$data(isDisabled) && [string compare $opt "includes"] != 0} {
 	return ""
     }
@@ -3589,378 +4388,6 @@ proc tablelist::selectionSubCmd {win opt first last} {
     }
 }
 
-#------------------------------------------------------------------------------
-# tablelist::togglecolumnhideSubCmd
-#
-# This procedure is invoked to process the tablelist togglecolumnhide
-# subcommand.
-#------------------------------------------------------------------------------
-proc tablelist::togglecolumnhideSubCmd {win first last argCount} {
-    variable canElide
-    upvar ::tablelist::ns${win}::data data
-
-    #
-    # Toggle the value of the -hide option of the specified columns
-    #
-    if {!$canElide} {
-	set selCells [curcellselectionSubCmd $win]
-    }
-    set colIdxList {}
-    if {$argCount == 1} {
-	foreach elem $first {
-	    set col [colIndex $win $elem 1]
-	    if {$canElide && !$data($col-hide)} {
-		cellselectionSubCmd $win clear 0 $col $data(lastRow) $col
-	    }
-	    set data($col-hide) [expr {!$data($col-hide)}]
-	    if {$data($col-hide)} {
-		incr data(hiddenColCount)
-		if {$col == $data(editCol)} {
-		    canceleditingSubCmd $win
-		}
-	    } else {
-		incr data(hiddenColCount) -1
-	    }
-	    lappend colIdxList $col
-	}
-    } else {
-	set first [colIndex $win $first 1]
-	set last [colIndex $win $last 1]
-
-	for {set col $first} {$col <= $last} {incr col} {
-	    if {$canElide && !$data($col-hide)} {
-		cellselectionSubCmd $win clear 0 $col $data(lastRow) $col
-	    }
-	    set data($col-hide) [expr {!$data($col-hide)}]
-	    if {$data($col-hide)} {
-		incr data(hiddenColCount)
-		if {$col == $data(editCol)} {
-		    canceleditingSubCmd $win
-		}
-	    } else {
-		incr data(hiddenColCount) -1
-	    }
-	    lappend colIdxList $col
-	}
-    }
-
-    if {[llength $colIdxList] == 0} {
-	return ""
-    }
-
-    #
-    # Adjust the columns and redisplay the items
-    #
-    makeColFontAndTagLists $win
-    adjustColumns $win $colIdxList 1
-    adjustColIndex $win data(anchorCol) 1
-    adjustColIndex $win data(activeCol) 1
-    if {$canElide} {
-	adjustElidedTextWhenIdle $win
-    } else {
-	redisplay $win 0 $selCells
-    }
-    if {[string compare $data(-selecttype) "row"] == 0} {
-	foreach row [curselectionSubCmd $win] {
-	    selectionSubCmd $win set $row $row
-	}
-    }
-    return ""
-}
-
-#------------------------------------------------------------------------------
-# tablelist::togglerowhideSubCmd
-#
-# This procedure is invoked to process the tablelist togglerowhide subcommand.
-#------------------------------------------------------------------------------
-proc tablelist::togglerowhideSubCmd {win first last argCount} {
-    upvar ::tablelist::ns${win}::data data
-
-    #
-    # Toggle the value of the -hide option of the specified rows
-    #
-    if {$argCount == 1} {
-	foreach elem $first {
-	    set row [rowIndex $win $elem 0]
-	    if {$row < 0 || $row > $data(lastRow)} {
-		return -code error "row index \"$elem\" out of range"
-	    }
-
-	    doRowConfig $row $win -hide [expr {![doRowCget $row $win -hide]}]
-	}
-    } else {
-	set firstRow [rowIndex $win $first 0]
-	if {$firstRow < 0 || $firstRow > $data(lastRow)} {
-	    return -code error "row index \"$first\" out of range"
-	}
-
-	set lastRow [rowIndex $win $last 0]
-	if {$lastRow < 0 || $lastRow > $data(lastRow)} {
-	    return -code error "row index \"$last\" out of range"
-	}
-
-	for {set row $firstRow} {$row <= $lastRow} {incr row} {
-	    doRowConfig $row $win -hide [expr {![doRowCget $row $win -hide]}]
-	}
-    }
-}
-
-#------------------------------------------------------------------------------
-# tablelist::xviewSubCmd
-#
-# This procedure is invoked to process the tablelist xview subcommand.
-#------------------------------------------------------------------------------
-proc tablelist::xviewSubCmd {win argList} {
-    variable winSys
-    upvar ::tablelist::ns${win}::data data
-
-    switch [llength $argList] {
-	0 {
-	    #
-	    # Command: $win xview
-	    #
-	    if {$data(-titlecolumns) == 0} {
-		return [$data(hdrTxt) xview]
-	    } else {
-		set scrlWindowWidth [getScrlWindowWidth $win]
-		if {$scrlWindowWidth <= 0} {
-		    return [list 0 0]
-		}
-
-		set scrlContentWidth [getScrlContentWidth $win 0 $data(lastCol)]
-		if {$scrlContentWidth == 0} {
-		    return [list 0 1]
-		}
-
-		set scrlXOffset \
-		    [scrlColOffsetToXOffset $win $data(scrlColOffset)]
-		set fraction1 [expr {$scrlXOffset/double($scrlContentWidth)}]
-		set fraction2 [expr {($scrlXOffset + $scrlWindowWidth)/
-				     double($scrlContentWidth)}]
-		if {$fraction2 > 1.0} {
-		    set fraction2 1.0
-		}
-		return [list [format "%g" $fraction1] [format "%g" $fraction2]]
-	    }
-	}
-
-	1 {
-	    #
-	    # Command: $win xview <units>
-	    #
-	    set units [format "%d" [lindex $argList 0]]
-	    if {$data(-titlecolumns) == 0} {
-		foreach w [list $data(hdrTxt) $data(body)] {
-		    $w xview moveto 0
-		    $w xview scroll $units units
-		}
-	    } else {
-		changeScrlColOffset $win $units
-		updateColorsWhenIdle $win
-	    }
-	    return ""
-	}
-
-	default {
-	    #
-	    # Command: $win xview moveto <fraction>
-	    #	       $win xview scroll <number> units|pages
-	    #
-	    set argList [mwutil::getScrollInfo $argList]
-	    if {$data(-titlecolumns) == 0} {
-		foreach w [list $data(hdrTxt) $data(body)] {
-		    eval [list $w xview] $argList
-		}
-	    } else {
-		if {[string compare [lindex $argList 0] "moveto"] == 0} {
-		    #
-		    # Compute the new scrolled column offset
-		    #
-		    set fraction [lindex $argList 1]
-		    set scrlContentWidth \
-			[getScrlContentWidth $win 0 $data(lastCol)]
-		    set pixels [expr {int($fraction*$scrlContentWidth + 0.5)}]
-		    set scrlColOffset [scrlXOffsetToColOffset $win $pixels]
-
-		    #
-		    # Increase the new scrolled column offset if necessary
-		    #
-		    if {$pixels + [getScrlWindowWidth $win] >=
-			$scrlContentWidth} {
-			incr scrlColOffset
-		    }
-
-		    changeScrlColOffset $win $scrlColOffset
-		} else {
-		    set number [lindex $argList 1]
-		    if {[string compare [lindex $argList 2] "units"] == 0} {
-			changeScrlColOffset $win \
-			    [expr {$data(scrlColOffset) + $number}]
-		    } else {
-			#
-			# Compute the new scrolled column offset
-			#
-			set scrlXOffset \
-			    [scrlColOffsetToXOffset $win $data(scrlColOffset)]
-			set scrlWindowWidth [getScrlWindowWidth $win]
-			set deltaPixels [expr {$number*$scrlWindowWidth}]
-			set pixels [expr {$scrlXOffset + $deltaPixels}]
-			set scrlColOffset [scrlXOffsetToColOffset $win $pixels]
-
-			#
-			# Adjust the new scrolled column offset if necessary
-			#
-			if {$number < 0 &&
-			    [getScrlContentWidth $win $scrlColOffset \
-			     $data(lastCol)] -
-			    [getScrlContentWidth $win $data(scrlColOffset) \
-			     $data(lastCol)] > -$deltaPixels} {
-			    incr scrlColOffset
-			}
-			if {$scrlColOffset == $data(scrlColOffset)} {
-			    if {$number < 0} {
-				incr scrlColOffset -1
-			    } elseif {$number > 0} {
-				incr scrlColOffset
-			    }
-			}
-
-			changeScrlColOffset $win $scrlColOffset
-		    }
-		}
-		updateColorsWhenIdle $win
-	    }
-	    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
-		#
-		# Work around some Tk bugs on Mac OS X Aqua
-		#
-		if {[winfo exists $data(bodyFr)]} {
-		    lower $data(bodyFr)
-		    raise $data(bodyFr)
-		}
-		update 
-	    }
-	    return ""
-	}
-    }
-}
-
-#------------------------------------------------------------------------------
-# tablelist::yviewSubCmd
-#
-# This procedure is invoked to process the tablelist yview subcommand.
-#------------------------------------------------------------------------------
-proc tablelist::yviewSubCmd {win argList} {
-    variable winSys
-    upvar ::tablelist::ns${win}::data data
-
-    set w $data(body)
-    set argCount [llength $argList]
-    switch $argCount {
-	0 {
-	    #
-	    # Command: $win yview
-	    #
-	    set totalNonHiddenCount \
-		[expr {$data(itemCount) - $data(hiddenRowCount)}]
-	    if {$totalNonHiddenCount == 0} {
-		return [list 0 1]
-	    }
-	    set btmY [expr {[winfo height $w] - 1}]
-	    set topTextIdx [$w index @0,0]
-	    set btmTextIdx [$w index @0,$btmY]
-	    set topRow [expr {int($topTextIdx) - 1}]
-	    set btmRow [expr {int($btmTextIdx) - 1}]
-	    foreach {x y width height baselinePos} [$w dlineinfo $topTextIdx] {}
-	    if {$y < 0} {				 ;# top row incomplete
-		incr topRow
-	    }
-	    foreach {x y width height baselinePos} [$w dlineinfo $btmTextIdx] {}
-	    set y2 [expr {$y + $height}]
-	    if {[$w index @0,$y] == [$w index @0,$y2]} { ;# btm row incomplete
-		incr btmRow -1
-	    }
-	    set upperNonHiddenCount \
-		[getNonHiddenRowCount $win 0 [expr {$topRow - 1}]]
-	    set winNonHiddenCount [getNonHiddenRowCount $win $topRow $btmRow]
-	    set fraction1 [expr {$upperNonHiddenCount/
-				 double($totalNonHiddenCount)}]
-	    set fraction2 [expr {($upperNonHiddenCount + $winNonHiddenCount)/
-				 double($totalNonHiddenCount)}]
-	    return [list [format "%g" $fraction1] [format "%g" $fraction2]]
-	}
-
-	1 {
-	    #
-	    # Command: $win yview <units>
-	    #
-	    set units [format "%d" [lindex $argList 0]]
-	    $w yview [nonHiddenRowOffsetToRowIndex $win $units]
-	    adjustElidedText $win
-	    updateColorsWhenIdle $win
-	    adjustSepsWhenIdle $win
-	    updateVScrlbarWhenIdle $win
-	    return ""
-	}
-
-	default {
-	    #
-	    # Command: $win yview moveto <fraction>
-	    #	       $win yview scroll <number> units|pages
-	    #
-	    set argList [mwutil::getScrollInfo $argList]
-	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
-		set fraction [lindex $argList 1]
-		set totalNonHiddenCount \
-		    [expr {$data(itemCount) - $data(hiddenRowCount)}]
-		set offset [expr {int($fraction*$totalNonHiddenCount + 0.5)}]
-		$w yview [nonHiddenRowOffsetToRowIndex $win $offset]
-	    } else {
-		set number [lindex $argList 1]
-		if {[string compare [lindex $argList 2] "units"] == 0} {
-		    set topRow [expr {int([$w index @0,0]) - 1}]
-		    set upperNonHiddenCount \
-			[getNonHiddenRowCount $win 0 [expr {$topRow - 1}]]
-		    set offset [expr {$upperNonHiddenCount + $number}]
-		    $w yview [nonHiddenRowOffsetToRowIndex $win $offset]
-		} else {
-		    set absNumber [expr {abs($number)}]
-		    set btmY [expr {[winfo height $w] - 1}]
-		    for {set n 0} {$n < $absNumber} {incr n} {
-			set topRow [expr {int([$w index @0,0]) - 1}]
-			set btmRow [expr {int([$w index @0,$btmY]) - 1}]
-			set upperNonHiddenCount \
-			    [getNonHiddenRowCount $win 0 [expr {$topRow - 1}]]
-			set winNonHiddenCount \
-			    [getNonHiddenRowCount $win $topRow $btmRow]
-			set delta [expr {$winNonHiddenCount - 2}]
-			if {$number < 0} {
-			    set delta [expr {(-1)*$delta}]
-			}
-			set offset [expr {$upperNonHiddenCount + $delta}]
-			$w yview [nonHiddenRowOffsetToRowIndex $win $offset]
-		    }
-		}
-	    }
-	    adjustElidedText $win
-	    updateColorsWhenIdle $win
-	    adjustSepsWhenIdle $win
-	    updateVScrlbarWhenIdle $win
-	    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
-		#
-		# Work around some Tk bugs on Mac OS X Aqua
-		#
-		if {[winfo exists $data(bodyFr)]} {
-		    lower $data(bodyFr)
-		    raise $data(bodyFr)
-		}
-		update 
-	    }
-	    return ""
-	}
-    }
-}
-
 #
 # Private callback procedures
 # ===========================
@@ -3978,14 +4405,13 @@ proc tablelist::yviewSubCmd {win argList} {
 #------------------------------------------------------------------------------
 proc tablelist::fetchSelection {win offset maxChars} {
     upvar ::tablelist::ns${win}::data data
-
     if {!$data(-exportselection)} {
 	return ""
     }
 
     set selection ""
     set prevRow -1
-    foreach cellIdx [curcellselectionSubCmd $win] {
+    foreach cellIdx [curCellSelection $win] {
 	scan $cellIdx "%d,%d" row col
 	if {$row != $prevRow} {
 	    if {$prevRow != -1} {
@@ -3998,7 +4424,7 @@ proc tablelist::fetchSelection {win offset maxChars} {
 	}
 
 	set text [lindex $item $col]
-	if {[info exists data($col-formatcommand)]} {
+	if {[lindex $data(fmtCmdFlagList) $col]} {
 	    set text [uplevel #0 $data($col-formatcommand) [list $text]]
 	}
 
@@ -4018,13 +4444,12 @@ proc tablelist::fetchSelection {win offset maxChars} {
 #
 # This procedure is invoked when the tablelist widget win loses ownership of
 # the PRIMARY selection.  It deselects all items of the widget with the aid of
-# the selectionSubCmd procedure if the selection is exported.
+# the rowSelection procedure if the selection is exported.
 #------------------------------------------------------------------------------
 proc tablelist::lostSelection win {
     upvar ::tablelist::ns${win}::data data
-
     if {$data(-exportselection)} {
-	selectionSubCmd $win clear 0 $data(lastRow)
+	rowSelection $win clear 0 $data(lastRow)
 	event generate $win <<TablelistSelectionLost>>
     }
 }
@@ -4039,7 +4464,6 @@ proc tablelist::lostSelection win {
 #------------------------------------------------------------------------------
 proc tablelist::activeTrace {win varName index op} {
     upvar ::tablelist::ns${win}::data data
-
     set w $data(body)
     if {$data(ownsFocus)} {
 	$w tag remove active 1.0 end
@@ -4049,7 +4473,7 @@ proc tablelist::activeTrace {win varName index op} {
 	if {[string compare $data(-selecttype) "row"] == 0} {
 	    $w tag add active $line.0 $line.end
 	} elseif {$data(itemCount) > 0 && $data(colCount) > 0 &&
-		  !$data($col-hide)} {
+		  $line > 0 && !$data($col-hide)} {
 	    findTabs $win $line $data(activeCol) $data(activeCol) \
 		     tabIdx1 tabIdx2
 	    $w tag add active $tabIdx1 $tabIdx2+1c
@@ -4067,7 +4491,6 @@ proc tablelist::activeTrace {win varName index op} {
 #------------------------------------------------------------------------------
 proc tablelist::listVarTrace {win varName index op} {
     upvar ::tablelist::ns${win}::data data
-
     switch $op {
 	w {
 	    if {![info exists data(syncId)]} {
