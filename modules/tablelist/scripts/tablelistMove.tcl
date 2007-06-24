@@ -5,15 +5,12 @@
 #==============================================================================
 
 #------------------------------------------------------------------------------
-# tablelist::moveSubCmd
+# tablelist::moveRow
 #
-# This procedure is invoked to process the tablelist move subcommand.
+# Processes the tablelist move subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::moveSubCmd {win source target} {
-    variable canElide
-    variable elide
+proc tablelist::moveRow {win source target} {
     upvar ::tablelist::ns${win}::data data
-
     if {$data(isDisabled) || $data(itemCount) == 0} {
 	return ""
     }
@@ -55,6 +52,8 @@ proc tablelist::moveSubCmd {win source target} {
     set selectedCols {}
     set line [expr {$source + 1}]
     set textIdx [expr {double($line)}]
+    variable canElide
+    variable elide
     for {set col 0} {$col < $data(colCount)} {incr col} {
 	if {$data($col-hide) && !$canElide} {
 	    continue
@@ -78,15 +77,13 @@ proc tablelist::moveSubCmd {win source target} {
     $w insert $targetLine.0 "\n"
     set snipStr $data(-snipstring)
     set sourceItem [lindex $data(itemList) $source]
-    if {[lsearch -exact $data(fmtCmdFlagList) 1] >= 0} {
-	set formattedItem \
-	    [formatItem $win [lrange $sourceItem 0 $data(lastCol)]]
-    } else {
-	set formattedItem [lrange $sourceItem 0 $data(lastCol)]
+    set dispItem [lrange $sourceItem 0 $data(lastCol)]
+    if {$data(hasFmtCmds)} {
+	set dispItem [formatItem $win $dispItem]
     }
     set key [lindex $sourceItem end]
     set col 0
-    foreach text [strToDispStr $formattedItem] \
+    foreach text [strToDispStr $dispItem] \
 	    colTags $data(colTagsList) \
 	    {pixels alignment} $data(colList) {
 	if {$data($col-hide) && !$canElide} {
@@ -97,6 +94,7 @@ proc tablelist::moveSubCmd {win source target} {
 	#
 	# Build the list of tags to be applied to the cell
 	#
+	set cellFont [getCellFont $win $key $col]
 	set cellTags $colTags
 	foreach opt {-background -foreground -font} {
 	    if {[info exists data($key,$col$opt)]} {
@@ -109,7 +107,7 @@ proc tablelist::moveSubCmd {win source target} {
 	# (if any) to the target line of body text widget
 	#
 	appendComplexElem $win $key $source $col $text $pixels \
-			  $alignment $snipStr $cellTags $targetLine
+			  $alignment $snipStr $cellFont $cellTags $targetLine
 
 	incr col
     }
@@ -164,7 +162,7 @@ proc tablelist::moveSubCmd {win source target} {
     # Select those source elements that were selected before
     #
     foreach col $selectedCols {
-	cellselectionSubCmd $win set $target1 $col $target1 $col
+	cellSelection $win set $target1 $col $target1 $col
     }
 
     #
@@ -180,7 +178,7 @@ proc tablelist::moveSubCmd {win source target} {
     #
     if {$editCol >= 0} {
 	if {$editRow == $source} {
-	    editcellSubCmd $win $target1 $editCol 1
+	    doEditCell $win $target1 $editCol 1
 	} else {
 	    set data(editRow) [lsearch $data(itemList) "* $editKey"]
 	}
@@ -190,13 +188,12 @@ proc tablelist::moveSubCmd {win source target} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::movecolumnSubCmd
+# tablelist::moveCol
 #
-# This procedure is invoked to process the tablelist movecolumn subcommand.
+# Processes the tablelist movecolumn subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::movecolumnSubCmd {win source target} {
+proc tablelist::moveCol {win source target} {
     upvar ::tablelist::ns${win}::data data
-
     if {$data(isDisabled)} {
 	return ""
     }
@@ -234,7 +231,7 @@ proc tablelist::movecolumnSubCmd {win source target} {
     foreach specialCol {activeCol anchorCol editCol} {
 	set tmp($specialCol) $data($specialCol)
     }
-    set selCells [curcellselectionSubCmd $win]
+    set selCells [curCellSelection $win]
     set tmpRows [extractColFromCellList $selCells $source]
 
     #
@@ -281,7 +278,7 @@ proc tablelist::movecolumnSubCmd {win source target} {
     # elements corresponding to the columns with the same indices in newCols
     #
     foreach oldCol $oldCols newCol $newCols {
-	moveColData $win data data imgs $oldCol $newCol
+	moveColData data data imgs $oldCol $newCol
 	set selCells [replaceColInCellList $selCells $oldCol $newCol]
     }
 
@@ -289,7 +286,7 @@ proc tablelist::movecolumnSubCmd {win source target} {
     # Move the elements of data corresponding to
     # source to the elements corresponding to target1
     #
-    moveColData $win tmp data imgs $source $target1
+    moveColData tmp data imgs $source $target1
     set selCells [deleteColFromCellList $selCells $target1]
     foreach row $tmpRows {
 	lappend selCells $row,$target1
