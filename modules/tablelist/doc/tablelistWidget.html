@@ -224,6 +224,12 @@
     <dd><code><b><a href="#titlecolumns">-titlecolumns</a></b>
     <i>number</i></code></dd>
 
+    <dd><code><b><a href="#tooltipaddcommand">-tooltipaddcommand</a></b>
+    <i>command</i></code></dd>
+
+    <dd><code><b><a href="#tooltipdelcommand">-tooltipdelcommand</a></b>
+    <i>command</i></code></dd>
+
     <dd><code><b><a href="#width">-width</a></b> <i>characters</i></code></dd>
 
     <dt><br>
@@ -507,6 +513,31 @@
     <dd><code><i>pathName</i> <b><a href="#configure">configure</a></b>
     ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i> ...?</code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#configcelllist">configcelllist</a></b> {<i>cellIndex</i> <i>option</i>
+    <i>value</i> <i>cellIndex</i> <i>option</i> <i>value</i> ...}</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#configcells">configcells</a></b> ?<i>cellIndex</i> <i>option</i>
+    <i>value</i> <i>cellIndex</i> <i>option</i> <i>value</i> ...?</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#configcolumnlist">configcolumnlist</a></b> {<i>columnIndex</i>
+    <i>option</i> <i>value</i> <i>columnIndex</i> <i>option</i> <i>value</i>
+    ...}</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#configcolumns">configcolumns</a></b> ?<i>columnIndex</i> <i>option</i>
+    <i>value</i> <i>columnIndex</i> <i>option</i> <i>value</i> ...?</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#configrowlist">configrowlist</a></b> {<i>index</i> <i>option</i>
+    <i>value</i> <i>index</i> <i>option</i> <i>value</i> ...}</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#configrows">configrows</a></b>
+    ?<i>index</i> <i>option</i> <i>value</i> <i>index</i> <i>option</i>
+    <i>value</i> ...?</code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#containing">containing</a></b>
     <i>y</i></code></dd>
 
@@ -595,6 +626,13 @@
 
     <dd><code><i>pathName</i> <b><a href="#insertlist">insertlist</a></b>
     <i>index</i> <i>itemList</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#iselemsnipped">iselemsnipped</a></b>
+    <i>cellIndex</i> <i>fullTextName</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#istitlesnipped">istitlesnipped</a></b> <i>columnIndex</i>
+    <i>fullTextName</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#itemlistvar">itemlistvar</a></b></code></dd>
@@ -707,12 +745,11 @@
     "#togglecolumnhide">togglecolumnhide</a></b>
     <i>columnIndexList</i></code></dd>
 
-    <dd><code><i>pathName</i> <b><a href=
-    "#togglerowhide">togglerowhide</a></b> <i>first</i>
-    <i>last</i></code><br></dd>
+    <dd><code><i>pathName</i> <b><a href="#togglerowhide">togglerowhide</a></b>
+    <i>first</i> <i>last</i></code><br></dd>
 
-    <dd><code><i>pathName</i> <b><a href=
-    "#togglerowhide">togglerowhide</a></b> <i>indexList</i></code></dd>
+    <dd><code><i>pathName</i> <b><a href="#togglerowhide">togglerowhide</a></b>
+    <i>indexList</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#windowpath">windowpath</a></b>
     <i>cellIndex</i></code></dd>
@@ -1653,7 +1690,7 @@
 	  <pre>
 tablelist::tablelist .tbl ... -listvariable var
 set var {}
-for {set row 0} {$row < 1000} {incr row} {
+for {set row 0} {$row &lt; 1000} {incr row} {
     lappend var ...
     .tbl cellconfigure $row,3 -image ...
 }
@@ -1666,10 +1703,10 @@ for {set row 0} {$row < 1000} {incr row} {
 	  <pre>
 tablelist::tablelist .tbl ... -listvariable var
 set var {}
-for {set row 0} {$row < 1000} {incr row} {
+for {set row 0} {$row &lt; 1000} {incr row} {
     lappend var ...
 }
-for {set row 0} {$row < 1000} {incr row} {
+for {set row 0} {$row &lt; 1000} {incr row} {
     .tbl cellconfigure $row,3 -image ...
 }
 </pre>
@@ -2290,8 +2327,8 @@ for {set row 0} {$row < 1000} {incr row} {
 	<code>stripeHeight</code> of consecutive non-hidden items, according to
 	the value of the <code><b><a href=
 	"#stripeheight">-stripeheight</a></b></code> configuration
-	option.&nbsp; The first <code>stripeHeight</code> non-hidden items
-	are "normal" ones; they are followed by a stripe composed of the next
+	option.&nbsp; The first <code>stripeHeight</code> non-hidden items are
+	"normal" ones; they are followed by a stripe composed of the next
 	<code>stripeHeight</code> non-hidden items, which in turn is followed
 	by the same number of "normal" non-hidden items, and so on.&nbsp; The
 	default value is an empty string, indicating that the stripes will
@@ -2436,6 +2473,129 @@ for {set row 0} {$row < 1000} {incr row} {
     </dd>
 
     <dd>
+      <a name="tooltipaddcommand"></a>
+      <table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+	  <td>Command-Line Name:&nbsp;</td>
+	  <td><code><b>-tooltipaddcommand</b></code></td>
+	</tr>
+
+	<tr>
+	  <td>Database Name:</td>
+	  <td><code><b>&nbsp;tooltipAddCommand</b></code></td>
+	</tr>
+
+	<tr>
+	  <td>Database Class:</td>
+	  <td><code><b>&nbsp;TooltipAddCommand</b></code></td>
+	</tr>
+      </table>
+
+      <blockquote>
+	<p>Specifies a Tcl command to be used for displaying cell- and column
+	label-specific balloon help.&nbsp; When the mouse pointer enters a
+	cell, the command is automatically concatenated with the name of the
+	tablelist widget and the cell's row and column indices, and the
+	resulting script is evaluated in the global scope.&nbsp; Similarly,
+	when the mouse pointer enters a header label, the command is
+	automatically concatenated with the name of the tablelist widget, the
+	number <code>-1</code>, and the column index of the respective label,
+	and the resulting script is evaluated in the global scope.&nbsp; In
+	both cases, the action described above is only triggered if both the
+	value of this option and that of <code><b><a href=
+	"#tooltipdelcommand">-tooltipdelcommand</a></b></code> are nonempty
+	strings.</p>
+
+	<p>For example, consider the procedure <code>tooltipAddCmd</code> shown
+	below, which makes use of the <code>DynamicHelp::add</code> command
+	from the BWidget package to display the full cell and label texts as
+	tooltips for the cells and header labels with snipped contents.</p>
+
+	<blockquote>
+	  <pre>
+proc tooltipAddCmd {tbl row col} {
+    if {($row &gt;= 0 &amp;&amp; [$tbl iselemsnipped $row,$col fullText]) ||
+	($row &lt;  0 &amp;&amp; [$tbl istitlesnipped $col fullText])} {
+	DynamicHelp::add $tbl -text $fullText
+    }
+}
+</pre>
+	</blockquote>
+
+	<p>A tablelist widget can use this procedure by specifying</p>
+
+	<blockquote>
+	  <pre>
+-tooltipaddcommand tooltipAddCmd -tooltipdelcommand DynamicHelp::delete
+</pre>
+	</blockquote>
+
+	<p>If you prefer to use the <code>tooltip::tooltip</code> command from
+	the tooltip package contained in tklib then the procedure becomes</p>
+
+	<blockquote>
+	  <pre>
+proc tooltipAddCmd {tbl row col} {
+    if {($row &gt;= 0 &amp;&amp; [$tbl iselemsnipped $row,$col fullText]) ||
+	($row &lt;  0 &amp;&amp; [$tbl istitlesnipped $col fullText])} {
+	tooltip::tooltip $tbl $fullText
+    }
+}
+</pre>
+	</blockquote>
+
+	<p>and can be used by specifying</p>
+
+	<blockquote>
+	  <pre>
+-tooltipaddcommand tooltipAddCmd -tooltipdelcommand "tooltip::tooltip clear"
+</pre>
+	</blockquote>
+
+	<p>Both versions above make use of the <code><b><a href=
+	"#iselemsnipped">iselemsnipped</a></b></code> and <code><b><a href=
+	"#istitlesnipped">istitlesnipped</a></b></code> subcommands, to make
+	sure that the full cell and label texts will only be displayed for
+	those cells and header labels whose contents are snipped.</p>
+      </blockquote>
+    </dd>
+
+    <dd>
+      <a name="tooltipdelcommand"></a>
+      <table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+	  <td>Command-Line Name:&nbsp;</td>
+	  <td><code><b>-tooltipdelcommand</b></code></td>
+	</tr>
+
+	<tr>
+	  <td>Database Name:</td>
+	  <td><code><b>&nbsp;tooltipDelCommand</b></code></td>
+	</tr>
+
+	<tr>
+	  <td>Database Class:</td>
+	  <td><code><b>&nbsp;TooltipDelCommand</b></code></td>
+	</tr>
+      </table>
+
+      <blockquote>
+	<p>Specifies a Tcl command to be used for removing the cell- or column
+	label-specific balloon help.&nbsp; When the mouse pointer leaves a cell
+	or a header label, the command specified by this option is
+	automatically concatenated with the name of the tablelist widget and
+	the resulting script is evaluated in the global scope.&nbsp; This
+	action is only triggered if both the value of this option and that of
+	<code><b><a href="#tooltipaddcommand">-tooltipaddcommand</a></b></code>
+	are nonempty strings.&nbsp; Common values for this option are
+	<code>"DynamicHelp::delete"</code> (which requires the BWidget package)
+	and&nbsp; <code>"tooltip::tooltip clear"</code>&nbsp; (which requires
+	the tooltip package contained in tklib).&nbsp; Their usage is shown in
+	the examples above.</p>
+      </blockquote>
+    </dd>
+
+    <dd>
       <a name="width"></a>
       <table border="0" cellpadding="0" cellspacing="0">
 	<tr>
@@ -2562,8 +2722,10 @@ for {set row 0} {$row < 1000} {incr row} {
     <dt><a name="col_options"></a><b>COLUMN CONFIGURATION OPTIONS</b></dt>
 
     <dd>The following options are currently supported by the <code><b><a href=
-    "#columncget">columncget</a></b></code> and <code><b><a href=
-    "#columnconfigure">columnconfigure</a></b></code> commands:</dd>
+    "#columncget">columncget</a></b></code>, <code><b><a href=
+    "#columnconfigure">columnconfigure</a></b></code>, <code><b><a href=
+    "#configcolumnlist">configcolumnlist</a></b></code>, and <code><b><a href=
+    "#configcolumns">configcolumns</a></b></code> commands:</dd>
 
     <dd>
       <dl>
@@ -2688,6 +2850,7 @@ proc formatDate clockVal {
 	  "#getcolumns">getcolumns</a></b></code>, <code><b><a href=
 	  "#getcells">getcells</a></b></code>, <code><b><a href=
 	  "#rowcget">rowcget</a></b></code>, <code><b><a href=
+	  "#columncget">columncget</a></b></code>, <code><b><a href=
 	  "#cellcget">cellcget</a></b></code>, <code><b><a href=
 	  "#sort">sort</a></b></code>, <code><b><a href=
 	  "#sortbycolumn">sortbycolumn</a></b></code>, and <code><b><a href=
@@ -2735,6 +2898,7 @@ proc formatDate clockVal {
 	<code><b>-labelborderwidth</b> <i>screenDistance</i></code> or
 	<code><b>-labelbd</b> <i>screenDistance</i></code><br>
 	<code><b>-labelcommand</b> <i>command</i></code><br>
+	<code><b>-labelcommand2</b> <i>command</i></code><br>
 	<code><b>-labelfont</b> <i>fontName</i></code><br>
 	<code><b>-labelforeground</b> <i>color</i></code> or
 	<code><b>-labelfg</b> <i>color</i></code><br>
@@ -2856,7 +3020,7 @@ proc formatDate clockVal {
 	  Specifies whether the given column should display the line numbers
 	  (starting with 1 and ending with the number of the non-hidden
 	  rows).&nbsp; The default value is <code>0</code>.
-	  
+
 	  <p>The following details assume that the given column's
 	  <code><b>-showlinenumbers</b></code> option was set to true:&nbsp;
 	  Associating the line numbers with the non-hidden rows takes place
@@ -2883,7 +3047,7 @@ proc formatDate clockVal {
 	  commands check the column indices passed to them as arguments and
 	  don't perform any sorting by those columns that have been configured
 	  to display the line numbers (see the corresponding descriptions for
-	  details).
+	  details).</p>
 	</dd>
 
 	<dt><a name="col_sortcommand"></a><code><b>-sortcommand</b>
@@ -3027,8 +3191,10 @@ proc formatDate clockVal {
     <a name="row_options"></a><b>ROW CONFIGURATION OPTIONS</b></dt>
 
     <dd>The following options are currently supported by the <code><b><a href=
-    "#rowcget">rowcget</a></b></code> and <code><b><a href=
-    "#rowconfigure">rowconfigure</a></b></code> commands:</dd>
+    "#rowcget">rowcget</a></b></code>, <code><b><a href=
+    "#rowconfigure">rowconfigure</a></b></code>, <code><b><a href=
+    "#configrowlist">configrowlist</a></b></code>, and <code><b><a href=
+    "#configrows">configrows</a></b></code> commands:</dd>
 
     <dd>
       <dl>
@@ -3137,8 +3303,10 @@ proc formatDate clockVal {
     <a name="cell_options"></a><b>CELL CONFIGURATION OPTIONS</b></dt>
 
     <dd>The following options are currently supported by the <code><b><a href=
-    "#cellcget">cellcget</a></b></code> and <code><b><a href=
-    "#cellconfigure">cellconfigure</a></b></code> commands:</dd>
+    "#cellcget">cellcget</a></b></code>, <code><b><a href=
+    "#cellconfigure">cellconfigure</a></b></code>, <code><b><a href=
+    "#configcelllist">configcelllist</a></b></code>, and <code><b><a href=
+    "#configcells">configcells</a></b></code> commands:</dd>
 
     <dd>
       <dl>
@@ -3392,11 +3560,12 @@ proc formatDate clockVal {
     normally with <code>Return</code> or <code>KP_Enter</code> (together with
     <code>Control</code> for a text widget).&nbsp; The bindings for the keys
     used for normal termination of the editing just invoke the
-    <code><b><a href="#finishediting">finishediting</a></b></code>
-    subcommand.&nbsp; Normal termination is also triggered by clicking with the
-    left mouse button anywhere in the tablelist's body, outside the cell just
-    being edited, or moving into another editable cell by using keyboard
-    navigation.</dd>
+    <code><b><a href="#finishediting">finishediting</a></b></code> subcommand;
+    the latter can also be called explicitly to terminate the editing
+    programmatically.&nbsp; Normal termination is also triggered by clicking
+    with the left mouse button anywhere in the tablelist's body, outside the
+    cell just being edited, or moving into another editable cell by using
+    keyboard navigation.</dd>
 
     <dd><br>
     When normal termination of the editing process occurs, the Tcl command
@@ -3783,9 +3952,9 @@ proc formatDate clockVal {
 	tablelist's body is that it enables you to write event handling scripts
 	that are valid not only for the tablelist's body but also for the
 	separators, multi-line cells, and embedded images.&nbsp; This binding
-	tag precedes the tag
-	<code><b><a href="#body_bindings">TablelistBody</a></b></code> in the
-	list of binding tags of the tablelist descendants mentioned above.</dd>
+	tag precedes the tag <code><b><a href=
+	"#body_bindings">TablelistBody</a></b></code> in the list of binding
+	tags of the tablelist descendants mentioned above.</dd>
 
 	<dt><br>
 	<a name="cancelediting"></a><code><i>pathName</i>
@@ -4023,6 +4192,137 @@ proc formatDate clockVal {
 	accepted by the <code><b>tablelist::tablelist</b></code> command.</dd>
 
 	<dt><br>
+	<a name="configcelllist"></a><code><i>pathName</i>
+	<b>configcelllist</b> <i>cellConfigSpecList</i></code></dt>
+
+	<dd>
+	  For each cell index, option, and value specified by the list
+	  <code><i>cellConfigSpecList</i></code>, the command modifies the
+	  given option of the given cell to have the given value.&nbsp; The
+	  argument <code><i>cellConfigSpecList</i></code> must be a list of the
+	  form
+
+	  <blockquote>
+	    <pre>
+<i>cellIndex</i> <i>option</i> <i>value</i> <i>cellIndex</i> <i>option</i> <i>value</i> ...
+</pre>
+	  </blockquote>
+
+	  <p>where each <code><i>option</i></code> may have any of the values
+	  described in the <a href="#cell_options">CELL CONFIGURATION
+	  OPTIONS</a> section.&nbsp; The return value is an empty string.</p>
+
+	  <p>This command has the same effect as</p>
+
+	  <blockquote>
+	    <pre>
+eval [list $<i>pathName</i> <a href=
+"#configcells">configcells</a>] $<i>cellConfigSpecList</i>
+</pre>
+	  </blockquote>
+
+	  <p>but it is more efficient and easier to use.</p>
+	</dd>
+
+	<dt><a name="configcells"></a><code><i>pathName</i> <b>configcells</b>
+	?<i>cellIndex</i> <i>option</i> <i>value</i> <i>cellIndex</i>
+	<i>option</i> <i>value</i> ...?</code></dt>
+
+	<dd>For each <code><i>cellIndex</i></code>, <code><i>option</i></code>,
+	and <code><i>value</i></code>, the command modifies the given option of
+	the given cell to have the given value.&nbsp; Each
+	<code><i>option</i></code> may have any of the values described in the
+	<a href="#cell_options">CELL CONFIGURATION OPTIONS</a> section.&nbsp;
+	The return value is an empty string.</dd>
+
+	<dt><br>
+	<a name="configcolumnlist"></a><code><i>pathName</i>
+	<b>configcolumnlist</b> <i>columnConfigSpecList</i></code></dt>
+
+	<dd>
+	  For each column index, option, and value specified by the list
+	  <code><i>columnConfigSpecList</i></code>, the command modifies the
+	  given option of the given column to have the given value.&nbsp; The
+	  argument <code><i>columnConfigSpecList</i></code> must be a list of
+	  the form
+
+	  <blockquote>
+	    <pre>
+<i>columnIndex</i> <i>option</i> <i>value</i> <i>columnIndex</i> <i>option</i> <i>value</i> ...
+</pre>
+	  </blockquote>
+
+	  <p>where each <code><i>option</i></code> may have any of the values
+	  described in the <a href="#col_options">COLUMN CONFIGURATION
+	  OPTIONS</a> section.&nbsp; The return value is an empty string.</p>
+
+	  <p>This command has the same effect as</p>
+
+	  <blockquote>
+	    <pre>
+eval [list $<i>pathName</i> <a href=
+"#configcolumns">configcolumns</a>] $<i>columnConfigSpecList</i>
+</pre>
+	  </blockquote>
+
+	  <p>but it is more efficient and easier to use.</p>
+	</dd>
+
+	<dt><a name="configcolumns"></a><code><i>pathName</i>
+	<b>configcolumns</b> ?<i>columnIndex</i> <i>option</i> <i>value</i>
+	<i>columnIndex</i> <i>option</i> <i>value</i> ...?</code></dt>
+
+	<dd>For each <code><i>columnIndex</i></code>,
+	<code><i>option</i></code>, and <code><i>value</i></code>, the command
+	modifies the given option of the given column to have the given
+	value.&nbsp; Each <code><i>option</i></code> may have any of the values
+	described in the <a href="#col_options">COLUMN CONFIGURATION
+	OPTIONS</a> section.&nbsp; The return value is an empty string.</dd>
+
+	<dt><br>
+	<a name="configrowlist"></a><code><i>pathName</i> <b>configrowlist</b>
+	<i>rowConfigSpecList</i></code></dt>
+
+	<dd>
+	  For each row index, option, and value specified by the list
+	  <code><i>rowConfigSpecList</i></code>, the command modifies the given
+	  option of the given row to have the given value.&nbsp; The argument
+	  <code><i>rowConfigSpecList</i></code> must be a list of the form
+
+	  <blockquote>
+	    <pre>
+<i>index</i> <i>option</i> <i>value</i> <i>index</i> <i>option</i> <i>value</i> ...
+</pre>
+	  </blockquote>
+
+	  <p>where each <code><i>option</i></code> may have any of the values
+	  described in the <a href="#row_options">ROW CONFIGURATION OPTIONS</a>
+	  section.&nbsp; The return value is an empty string.</p>
+
+	  <p>This command has the same effect as</p>
+
+	  <blockquote>
+	    <pre>
+eval [list $<i>pathName</i> <a href=
+"#configrows">configrows</a>] $<i>rowConfigSpecList</i>
+</pre>
+	  </blockquote>
+
+	  <p>but it is more efficient and easier to use.</p>
+	</dd>
+
+	<dt><a name="configrows"></a><code><i>pathName</i> <b>configrows</b>
+	?<i>index</i> <i>option</i> <i>value</i> <i>index</i> <i>option</i>
+	<i>value</i> ...?</code></dt>
+
+	<dd>For each <code><i>index</i></code>, <code><i>option</i></code>, and
+	<code><i>value</i></code>, the command modifies the given option of the
+	given row to have the given value.&nbsp; Each
+	<code><i>option</i></code> may have any of the values described in the
+	<a href="#row_options">ROW CONFIGURATION OPTIONS</a> section.&nbsp; The
+	return value is an empty string.</dd>
+
+	<dt><br>
 	<a name="containing"></a><code><i>pathName</i> <b>containing</b>
 	<i>y</i></code></dt>
 
@@ -4186,12 +4486,21 @@ proc formatDate clockVal {
 	  cell was being edited when the command was invoked then the same
 	  value <code>1</code> is returned but no virtual event is generated.
 
-	  <p>This subcommand is called implicitly by pressing
+	  <p>This subcommand is called <i>implicitly</i> by pressing
 	  <code>Return</code> or <code>KP_Enter</code> (together with
 	  <code>Control</code> if the edit window is a text widget) when
 	  editing a cell, or by clicking with the left mouse button anywhere in
 	  the tablelist's body, outside the cell just being edited, or moving
 	  into another editable cell by using keyboard navigation.</p>
+
+	  <p>There are also situations where an <i>explicit</i> invocation of
+	  this subcommand is needed, in order to make sure that the cell just
+	  being edited gets updated with the text entered by the user.&nbsp;
+	  For example, if a tablelist widget is part of a dialog used for
+	  editing some data, then the binding script associated with the button
+	  designed to accept the data should call this subcommand, because
+	  otherwise, if the button is pressed during interactive cell editing
+	  then the text entered into the edit window will get lost.</p>
 	</dd>
 
 	<dt><a name="get"></a><code><i>pathName</i> <b>get</b> <i>first</i>
@@ -4245,8 +4554,8 @@ proc formatDate clockVal {
 	of the tablelist elements contained in that column.</dd>
 
 	<dt><br>
-	<a name="getkeys"></a><code><i>pathName</i> <b>getkeys</b>
-	<i>first</i> <i>last</i></code><br>
+	<a name="getkeys"></a><code><i>pathName</i> <b>getkeys</b> <i>first</i>
+	<i>last</i></code><br>
 	<code><i>pathName</i> <b>getkeys</b> <i>indexList</i></code></dt>
 
 	<dd>The first form of the command returns a list whose elements are all
@@ -4326,11 +4635,14 @@ proc formatDate clockVal {
 	  values is to use the <code><b><a href=
 	  "#fillcolumn">fillcolumn</a></b></code> subcommand or the
 	  <code><b><a href="#col_text">-text</a></b></code> column
-	  configuration option.&nbsp; This command has the same effect as
+	  configuration option.
+
+	  <p>This command has the same effect as</p>
 
 	  <blockquote>
 	    <pre>
-eval [list $<i>pathName</i> insertcolumns $<i>columnIndex</i>] $<i>columnList</i>
+eval [list $<i>pathName</i> <a href=
+"#insertcolumns">insertcolumns</a> $<i>columnIndex</i>] $<i>columnList</i>
 </pre>
 	  </blockquote>
 
@@ -4374,19 +4686,51 @@ eval [list $<i>pathName</i> insertcolumns $<i>columnIndex</i>] $<i>columnList</i
 	  into the internal list.&nbsp; Newline characters will force line
 	  breaks, i.e., will give rise to multi-line elements (which are
 	  displayed in embedded message widgets, created on demand).&nbsp; The
-	  return value is an empty string.&nbsp; This command has the same
-	  effect as
+	  return value is an empty string.
+
+	  <p>This command has the same effect as</p>
 
 	  <blockquote>
 	    <pre>
-eval [list $<i>pathName</i> insert $<i>index</i>] $<i>itemList</i>
+eval [list $<i>pathName</i> <a href=
+"#insert">insert</a> $<i>index</i>] $<i>itemList</i>
 </pre>
 	  </blockquote>
 
 	  <p>but it is more efficient and easier to use.</p>
 	</dd>
 
-	<dt><a name="itemlistvar"></a><code><i>pathName</i>
+	<dt><a name="iselemsnipped"></a><code><i>pathName</i>
+	<b>iselemsnipped</b> <i>cellIndex</i> <i>fullTextName</i></code></dt>
+
+	<dd>Returns the value <code>1</code> if the text displayed in the cell
+	specified by <code><i>cellIndex</i></code> is snipped and
+	<code>0</code> otherwise.&nbsp; In both cases, the full (unsnipped)
+	cell text is stored in the variable having the name given by
+	<code><i>fullTextName</i></code>; this full text can be the cell's
+	contents or the string obtained from the latter by using the
+	<code><b><a href="#col_formatcommand">-formatcommand</a></b></code>
+	option of the cell's column.&nbsp; The most common invocation of this
+	command occurs within the procedure specified as the value of the
+	<code><b><a href="#tooltipaddcommand">-tooltipaddcommand</a></b></code>
+	configuration option.</dd>
+
+	<dt><br>
+	<a name="istitlesnipped"></a><code><i>pathName</i>
+	<b>istitlesnipped</b> <i>columnIndex</i>
+	<i>fullTextName</i></code></dt>
+
+	<dd>Returns the value <code>1</code> if the text displayed in the
+	header label specified by <code><i>columnIndex</i></code> is snipped
+	and <code>0</code> otherwise.&nbsp; In both cases, the full (unsnipped)
+	label text is stored in the variable having the name given by
+	<code><i>fullTextName</i></code>.&nbsp; The most common invocation of
+	this command occurs within the procedure specified as the value of the
+	<code><b><a href="#tooltipaddcommand">-tooltipaddcommand</a></b></code>
+	configuration option.</dd>
+
+	<dt><br>
+	<a name="itemlistvar"></a><code><i>pathName</i>
 	<b>itemlistvar</b></code></dt>
 
 	<dd>
@@ -4522,8 +4866,8 @@ upvar #0 [.tbl itemlistvar] itemList
 	value is an empty string.</dd>
 
 	<dt><br>
-	<a name="rowcget"></a><code><i>pathName</i> <b>rowcget</b>
-	<i>index</i> <i>option</i></code></dt>
+	<a name="rowcget"></a><code><i>pathName</i> <b>rowcget</b> <i>index</i>
+	<i>option</i></code></dt>
 
 	<dd>Returns the current value of the row configuration option given by
 	<code><i>option</i></code> for the row specified by
@@ -4641,7 +4985,7 @@ upvar #0 [.tbl itemlistvar] itemList
 	<i>option</i> <i>args</i></code></dt>
 
 	<dd>This command is used to adjust the selection within a tablelist
-	widget.&nbsp; It has several forms, depending
+	widget.&nbsp; It has several forms, depending on
 	<code><i>option</i></code>:</dd>
 
 	<dd>
@@ -4652,9 +4996,9 @@ upvar #0 [.tbl itemlistvar] itemList
 
 	    <dd>Sets the selection anchor to the item given by
 	    <code><i>index</i></code>.&nbsp; If <code><i>index</i></code>
-	    refers to a nonexistent  or hidden item, then the closest
-	    non-hidden item is used.&nbsp; The selection anchor is the end of
-	    the selection that is fixed while dragging out a selection with the
+	    refers to a nonexistent or hidden item, then the closest non-hidden
+	    item is used.&nbsp; The selection anchor is the end of the
+	    selection that is fixed while dragging out a selection with the
 	    mouse if the selection type is <code><b>row</b></code>.&nbsp; The
 	    index <code><b>anchor</b></code> may be used to refer to the anchor
 	    item.</dd>
@@ -4690,8 +5034,8 @@ upvar #0 [.tbl itemlistvar] itemList
 	    <dd>Selects all of the selectable items in the range between
 	    <code><i>first</i></code> and <code><i>last</i></code>, inclusive,
 	    or corresponding to the indices specified by the list
-	    <code><i>indexList</i></code>, without affecting the selection state
-	    of any other items.</dd>
+	    <code><i>indexList</i></code>, without affecting the selection
+	    state of any other items.</dd>
 	  </dl>
 	</dd>
 
@@ -4797,10 +5141,10 @@ upvar #0 [.tbl itemlistvar] itemList
 	  Sorts the items based on the elements of the columns given by the
 	  <code><i>columnIndexList</i></code> argument, which must be a list of
 	  distinct column indices.&nbsp; Only those elements of this list are
-	  considered significant that identify columns whose <code><b><a
-	  href="#col_showlinenumbers">-showlinenumbers</a></b></code> option
-	  hasn't been set to true.
-	  
+	  considered significant that identify columns whose <code><b><a href=
+	  "#col_showlinenumbers">-showlinenumbers</a></b></code> option hasn't
+	  been set to true.
+
 	  <p>The items are first sorted based on the column specified by the
 	  last significant element of <code><i>columnIndexList</i></code>, then
 	  based on the one given by the last but one significant element, and
@@ -4822,17 +5166,17 @@ upvar #0 [.tbl itemlistvar] itemList
 	  "#col_showarrow">-showarrow</a></b></code> option for that column are
 	  true then an up- or down-arrow indicating the sort order will be
 	  placed into the column's label.&nbsp; The shape of the arrow depends
-	  on the respective sort order and on the value of the <code><b><a
-	  href="#incrarrowtype">-incrarrowtype</a></b></code> configuration
-	  option.&nbsp; If the label's text is right-aligned then the arrow
-	  will be displayed on the left side of the label, otherwise on its
-	  right side.&nbsp; If more than one sort arrows are to be displayed
-	  then the first 9 sort ranks (<code>1</code> for the first significant
-	  element of <code><i>columnIndexList</i></code>, <code>2</code> for
-	  the second one, and so on) will also be shown to the right of the
-	  arrows.&nbsp; After sorting the items, the vertical view is adjusted
-	  in the same way as in the case of the <code><b><a href=
-	  "#sort">sort</a></b></code> subcommand.</p>
+	  on the respective sort order and on the value of the
+	  <code><b><a href="#incrarrowtype">-incrarrowtype</a></b></code>
+	  configuration option.&nbsp; If the label's text is right-aligned then
+	  the arrow will be displayed on the left side of the label, otherwise
+	  on its right side.&nbsp; If more than one sort arrows are to be
+	  displayed then the first 9 sort ranks (<code>1</code> for the first
+	  significant element of <code><i>columnIndexList</i></code>,
+	  <code>2</code> for the second one, and so on) will also be shown to
+	  the right of the arrows.&nbsp; After sorting the items, the vertical
+	  view is adjusted in the same way as in the case of the
+	  <code><b><a href="#sort">sort</a></b></code> subcommand.</p>
 	</dd>
 
 	<dt><a name="sortcolumn"></a><code><i>pathName</i>
@@ -4910,8 +5254,8 @@ upvar #0 [.tbl itemlistvar] itemList
 	contents, thus being significantly faster.</dd>
 
 	<dt><br>
-	<a name="togglerowhide"></a><code><i>pathName</i>
-	<b>togglerowhide</b> <i>first</i> <i>last</i></code><br>
+	<a name="togglerowhide"></a><code><i>pathName</i> <b>togglerowhide</b>
+	<i>first</i> <i>last</i></code><br>
 	<code><i>pathName</i> <b>togglerowhide</b> <i>indexList</i></code></dt>
 
 	<dd>
@@ -4924,8 +5268,7 @@ upvar #0 [.tbl itemlistvar] itemList
 	  <code><i>indexList</i></code> of indices specifying the rows whose
 	  visibility is to be toggled.&nbsp; Returns an empty string.&nbsp;
 	  Just like the <code><b>-hide</b></code> row configuration option,
-	  this subcommand is not supported for Tk versions earlier than
-	  8.3.
+	  this subcommand is not supported for Tk versions earlier than 8.3.
 
 	  <p><b>CAUTION:</b>&nbsp; Tk versions 8.3 - 8.4.12 had a bug that
 	  caused a segmentation fault if the whole content of a text widget was
@@ -5281,7 +5624,7 @@ bind [.tbl bodytag] &lt;Button-1&gt; {
 	to its original value, specified by the <code><b>-cursor</b></code>
 	configuration option.&nbsp; When the column resize operation is
 	finished, the virtual event
-	<code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code><br> is
+	<code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code> is
 	generated.<br>
 	&nbsp;</li>
 
@@ -5315,7 +5658,11 @@ bind [.tbl bodytag] &lt;Button-1&gt; {
 	<code><b><a href="#columnconfigure">columnconfigure</a></b></code>
 	option of the Tcl command associated with the tablelist widget, then
 	that column-specific command will be used instead of the global
-	one.<br>
+	one.&nbsp; If mouse button 1 was pressed together with the
+	<code>Shift</code> key then the widget- or column-specific command
+	mentioned above will be replaced with the one specified by the
+	<code><b><a href="#labelcommand2">-labelcommand2</a></b></code> option
+	at widget or column level.<br>
 	&nbsp;</li>
 
 	<li><a name="button3"></a>The Tablelist package defines the virtual
@@ -5331,8 +5678,10 @@ bind [.tbl bodytag] &lt;Button-1&gt; {
 	set to zero, i.e., it is made just large enough to hold all the
 	elements in the column, including the header (but no larger than the
 	maximum width indicated by the <code><b><a href=
-	"#col_maxwidth">-maxwidth</a></b></code> column configuration
-	option).<br>
+	"#col_maxwidth">-maxwidth</a></b></code> column configuration option),
+	and the virtual event
+	<code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code> is
+	generated.<br>
 	&nbsp;</li>
 
 	<li>The Tablelist package defines the virtual event
@@ -5345,7 +5694,9 @@ bind [.tbl bodytag] &lt;Button-1&gt; {
 	option and that of the <code><b><a href=
 	"#col_resizable">-resizable</a></b></code> option for the column
 	corresponding to that label are true, then the width of that column is
-	set to its last static width (if any).</li>
+	set to its last static width (if any) and the virtual event
+	<code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code> is
+	generated.</li>
       </ol>
 
       <p>If the tablelist's <code><b><a href="#state">state</a></b></code> is
