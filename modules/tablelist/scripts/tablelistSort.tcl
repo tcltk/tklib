@@ -5,7 +5,7 @@
 #
 # Structure of the module:
 #   - Public procedures related to sorting
-#   - Private procedures implementing the sorting
+#   - Private procedure implementing the sorting
 #
 # Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
@@ -124,17 +124,16 @@ proc tablelist::addToSortColumns {win col} {
 }
 
 #
-# Private procedures implementing the sorting
-# ===========================================
+# Private procedure implementing the sorting
+# ==========================================
 #
 
 #------------------------------------------------------------------------------
-# tablelist::sortSubCmd
+# tablelist::sortItems
 #
-# This procedure is invoked to process the tablelist sort, sortbycolumn, and
-# sortbycolumnlist subcommands.
+# Processes the tablelist sort, sortbycolumn, and sortbycolumnlist subcommands.
 #------------------------------------------------------------------------------
-proc tablelist::sortSubCmd {win sortColList sortOrderList} {
+proc tablelist::sortItems {win sortColList sortOrderList} {
     variable canElide
     variable snipSides
     upvar ::tablelist::ns${win}::data data
@@ -159,7 +158,7 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
     foreach type {anchor active} {
 	set ${type}Key [lindex [lindex $data(itemList) $data(${type}Row)] end]
     }
-    set selCells [curcellselectionSubCmd $win 1]
+    set selCells [curCellSelection $win 1]
 
     #
     # Save some data of the edit window if present
@@ -337,16 +336,16 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
 	$w delete $line.0 $line.end
     }
     set snipStr $data(-snipstring)
-    set tagRefCount $data(tagRefCount)
+    set rowTagRefCount $data(rowTagRefCount)
+    set cellTagRefCount $data(cellTagRefCount)
     set isSimple [expr {$data(imgCount) == 0 && $data(winCount) == 0}]
-    set hasFmtCmds [expr {[lsearch -exact $data(fmtCmdFlagList) 1] >= 0}]
+    set padY [expr {[$w cget -spacing1] == 0}]
     set row 0
     set line 1
     foreach item $data(itemList) {
-	if {$hasFmtCmds} {
-	    set formattedItem [formatItem $win [lrange $item 0 $data(lastCol)]]
-	} else {
-	    set formattedItem [lrange $item 0 $data(lastCol)]
+	set dispItem [lrange $item 0 $data(lastCol)]
+	if {$data(hasFmtCmds)} {
+	    set dispItem [formatItem $win $dispItem]
 	}
 
 	#
@@ -354,11 +353,16 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
 	# insert them with the corresponding tags
 	#
 	set key [lindex $item end]
+	if {$rowTagRefCount == 0} {
+	    set hasRowFont 0
+	} else {
+	    set hasRowFont [info exists data($key-font)]
+	}
 	set col 0
 	if {$isSimple} {
 	    set insertArgs {}
 	    set multilineData {}
-	    foreach text [strToDispStr $formattedItem] \
+	    foreach text [strToDispStr $dispItem] \
 		    colFont $data(colFontList) \
 		    colTags $data(colTagsList) \
 		    {pixels alignment} $data(colList) {
@@ -370,11 +374,18 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
 		#
 		# Build the list of tags to be applied to the cell
 		#
-		set cellFont $colFont
+		if {$hasRowFont} {
+		    set cellFont $data($key-font)
+		} else {
+		    set cellFont $colFont
+		}
 		set cellTags $colTags
-		if {$tagRefCount != 0} {
-		    set cellFont [getCellFont $win $key $col]
-		    foreach opt {-background -foreground -font} {
+		if {$cellTagRefCount != 0} {
+		    if {[info exists data($key,$col-font)]} {
+			set cellFont $data($key,$col-font)
+			lappend cellTags cell-font-$data($key,$col-font)
+		    }
+		    foreach opt {-background -foreground} {
 			if {[info exists data($key,$col$opt)]} {
 			    lappend cellTags cell$opt-$data($key,$col$opt)
 			}
@@ -384,12 +395,7 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
 		#
 		# Clip the element if necessary
 		#
-		if {[string match "*\n*" $text]} {
-		    set multiline 1
-		    set list [split $text "\n"]
-		} else {
-		    set multiline 0
-		}
+		set multiline [string match "*\n*" $text]
 		if {$pixels == 0} {		;# convention: dynamic width
 		    if {$data($col-maxPixels) > 0} {
 			if {$data($col-reqPixels) > $data($col-maxPixels)} {
@@ -402,6 +408,7 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
 		    set snipSide \
 			$snipSides($alignment,$data($col-changesnipside))
 		    if {$multiline} {
+			set list [split $text "\n"]
 			set text [joinList $win $list $cellFont \
 				  $pixels $snipSide $snipStr]
 		    } else {
@@ -434,11 +441,12 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
 		findTabs $win $line $col $col tabIdx1 tabIdx2
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col $text $font $alignment]
-		$w window create $tabIdx2 -pady 1 -create $msgScript
+		$w window create $tabIdx2 -pady $padY -create $msgScript
 	    }
 
 	} else {
-	    foreach text [strToDispStr $formattedItem] \
+	    foreach text [strToDispStr $dispItem] \
+		    colFont $data(colFontList) \
 		    colTags $data(colTagsList) \
 		    {pixels alignment} $data(colList) {
 		if {$data($col-hide) && !$canElide} {
@@ -449,9 +457,18 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
 		#
 		# Build the list of tags to be applied to the cell
 		#
+		if {$hasRowFont} {
+		    set cellFont $data($key-font)
+		} else {
+		    set cellFont $colFont
+		}
 		set cellTags $colTags
-		if {$tagRefCount != 0} {
-		    foreach opt {-background -foreground -font} {
+		if {$cellTagRefCount != 0} {
+		    if {[info exists data($key,$col-font)]} {
+			set cellFont $data($key,$col-font)
+			lappend cellTags cell-font-$data($key,$col-font)
+		    }
+		    foreach opt {-background -foreground} {
 			if {[info exists data($key,$col$opt)]} {
 			    lappend cellTags cell$opt-$data($key,$col$opt)
 			}
@@ -463,13 +480,13 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
 		# (if any) into the body text widget
 		#
 		appendComplexElem $win $key $row $col $text $pixels \
-				  $alignment $snipStr $cellTags $line
+				  $alignment $snipStr $cellFont $cellTags $line
 
 		incr col
 	    }
 	}
 
-	if {$tagRefCount != 0} {
+	if {$rowTagRefCount != 0} {
 	    foreach opt {-background -foreground -font} {
 		if {[info exists data($key$opt)]} {
 		    $w tag add row$opt-$data($key$opt) $line.0 $line.end
@@ -495,7 +512,7 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
     #
     foreach {key col} $selCells {
 	set row [lsearch $data(itemList) "* $key"]
-	cellselectionSubCmd $win set $row $col $row $col
+	cellSelection $win set $row $col $row $col
     }
 
     #
@@ -511,13 +528,13 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
     #
     if {$editCol >= 0} {
 	set editRow [lsearch $data(itemList) "* $editKey"]
-	seeSubCmd $win $editRow
+	seeRow $win $editRow
     } else {
-	set selRows [curselectionSubCmd $win]
+	set selRows [curSelection $win]
 	if {[llength $selRows] == 1} {
-	    seeSubCmd $win $selRows
+	    seeRow $win $selRows
 	} elseif {[string compare [focus -lastfor $w] $w] == 0} {
-	    seeSubCmd $win $data(activeRow)
+	    seeRow $win $data(activeRow)
 	}
     }
 
@@ -531,7 +548,7 @@ proc tablelist::sortSubCmd {win sortColList sortOrderList} {
     # Restore the edit window if it was present before
     #
     if {$editCol >= 0} {
-	editcellSubCmd $win $editRow $editCol 1
+	doEditCell $win $editRow $editCol 1
     }
 
     #
