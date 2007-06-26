@@ -1,3 +1,7 @@
+2007-06-25  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* examples/ntext/*.tcl (new): examples for ntext module
+
 2007-06-21  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* installed_modules.tcl: added ntext module
