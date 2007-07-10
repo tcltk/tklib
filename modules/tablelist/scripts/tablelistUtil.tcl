@@ -2792,6 +2792,10 @@ proc tablelist::adjustElidedText win {
 	unset data(elidedId)
     }
 
+    if {[info exists data(dispId)]} {
+	return ""
+    }
+
     #
     # Remove the "hiddenCol" tag
     #
@@ -3356,6 +3360,10 @@ proc tablelist::makeStripes win {
     if {[info exists data(stripesId)]} {
 	after cancel $data(stripesId)
 	unset data(stripesId)
+    }
+
+    if {[info exists data(dispId)]} {
+	return ""
     }
 
     set w $data(body)

@@ -357,7 +357,9 @@ namespace eval tablelist {
     #
     bind Tablelist <KeyPress> continue
     bind Tablelist <FocusIn> {
-	tablelist::addActiveTag %W
+	if {![info exists tablelist::ns%W::data(dispId)]} {
+	    tablelist::addActiveTag %W
+	}
 
 	if {[string compare [focus -lastfor %W] %W] == 0} {
 	    if {[winfo exists [%W editwinpath]]} {
@@ -3477,14 +3479,20 @@ proc tablelist::insertRows {win index argList updateListVar} {
 	return ""
     }
 
+    if {$index < $data(itemCount)} {
+	displayItems $win
+    }
+
     if {$index < 0} {
 	set index 0
+    } elseif {$index > $data(itemCount)} {
+	set index $data(itemCount)
     }
 
     #
     # Insert the items into the internal list
     #
-    set appending [expr {$index >= $data(itemCount)}]
+    set appending [expr {$index == $data(itemCount)}]
     set row $index
     foreach item $argList {
 	#
@@ -3666,6 +3674,7 @@ proc tablelist::displayItems win {
 		    set snipSide \
 			$snipSides($alignment,$data($col-changesnipside))
 		    if {$multiline} {
+			set list [split $text "\n"]
 			set text [joinList $win $list $colFont \
 				  $pixels $snipSide $snipStr]
 		    } else {
@@ -3732,6 +3741,7 @@ proc tablelist::displayItems win {
 		    set snipSide \
 			$snipSides($alignment,$data($col-changesnipside))
 		    if {$multiline} {
+			set list [split $text "\n"]
 			set text [joinList $win $list $widgetFont \
 				  $pixels $snipSide $snipStr]
 		    } else {
@@ -3792,6 +3802,7 @@ proc tablelist::displayItems win {
     updateVScrlbarWhenIdle $win
     showLineNumbersWhenIdle $win
 
+    activeTrace $win data activeRow w
     if {$wasEmpty} {
 	$w xview moveto [lindex [$data(hdrTxt) xview] 0]
     }
@@ -4465,7 +4476,7 @@ proc tablelist::lostSelection win {
 proc tablelist::activeTrace {win varName index op} {
     upvar ::tablelist::ns${win}::data data
     set w $data(body)
-    if {$data(ownsFocus)} {
+    if {$data(ownsFocus) && ![info exists data(dispId)]} {
 	$w tag remove active 1.0 end
 
 	set line [expr {$data(activeRow) + 1}]
