@@ -1,3 +1,16 @@
+2007-07-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:             Bumped the version number to 4.8.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* doc/tablelist.html:
+
+	* CHANGES.txt: Added the reason for releasing a new version.
+
+	* scripts/tablelistUtil.tcl:   Fixed a few bugs related to the
+	* scripts/tablelistWidget.tcl: optimized item insertion, reported by
+	  Harold Campbell and Roger Niva.
+
 2007-06-24  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/config.png: Updated screenshot.
