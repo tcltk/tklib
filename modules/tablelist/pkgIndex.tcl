@@ -7,22 +7,22 @@
 #
 # Regular packages:
 #
-package ifneeded tablelist         4.7 \
+package ifneeded tablelist         4.8 \
 	[list source [file join $dir tablelist.tcl]]
-package ifneeded tablelist_tile    4.7 \
+package ifneeded tablelist_tile    4.8 \
 	[list source [file join $dir tablelist_tile.tcl]]
 
 #
 # Aliases:
 #
-package ifneeded Tablelist         4.7 \
-	[list package require -exact tablelist	    4.7]
-package ifneeded Tablelist_tile    4.7 \
-	[list package require -exact tablelist_tile 4.7]
+package ifneeded Tablelist         4.8 \
+	[list package require -exact tablelist	    4.8]
+package ifneeded Tablelist_tile    4.8 \
+	[list package require -exact tablelist_tile 4.8]
 
 #
 # Code common to all packages:
 #
-package ifneeded tablelist::common 4.7 \
+package ifneeded tablelist::common 4.8 \
         "namespace eval ::tablelist { proc DIR {} {return [list $dir]} } ;\
 	 source [list [file join $dir tablelistPublic.tcl]]"
