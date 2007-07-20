@@ -3,7 +3,8 @@ What is new in Tablelist 4.8?
 
 This release fixes a few nasty bugs related to the optimized item
 insertion, introduced in the previous Tablelist version (thanks to
-Harold Campbell and Roger Niva for their bug reports).
+Harold Campbell, Roger Niva, and Jörg Klingseisen for their bug
+reports).
 
 What was new in Tablelist 4.7?
 ------------------------------
