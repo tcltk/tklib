@@ -1,6 +1,10 @@
+2007-07-20  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt: Updated.
+
 2007-07-10  Csaba Nemethi <csaba.nemethi@t-online.de>
 
-	* *.tcl:             Bumped the version number to 4.8.
+	* *.tcl:              Bumped the version number to 4.8.
 	* COPYRIGHT.txt:
 	* README.txt:
 	* doc/tablelist.html:
