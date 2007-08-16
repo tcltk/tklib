@@ -74,7 +74,7 @@ Recognizes the following [arg option]s.
 [call [cmd ::ico::getIconByName] [arg file] [arg name] [opt "[arg option] [arg value]..."]]
 
 Extracts the image with ID [arg name] from [arg file]. This name should be the name of a
-specific image as returned by [cmd ::ico::getIconMembers], not an icon name returned from
+specific image as returned by [cmd ::ico::iconMembers], not an icon name returned from
 [cmd ::ico::icons]. If there is no matching resource ID
 in [arg file] an error is thrown. Recognizes the following options:
 
@@ -198,7 +198,7 @@ icons in [arg file] and their name.
 [example {
     button .explore -image [::ico::getIcon explorer.exe 0 -name explore -res 16 -bpp 8]
 
-    set i [lsearch -inline [::ico::getIconMembers tclkit.exe 0] {* 32 32 8}]
+    set i [lsearch -inline [::ico::iconMembers tclkit.exe 0] {* 32 32 8}]
     set colorlist [::ico::getIconByName tclkit.exe [lindex $i 0] -format colors]
 }]
 
@@ -218,13 +218,6 @@ There is currently no way to read alpha channel information from 32bpp icons.
 
 Tk images do not have an alpha channel so the only way to write a true 32bpp icon is from
 a color list. writing a 32bpp icon from a Tkimage is identical to writing a 24bpp icon.
-
-[para]
-[example {
-    button .explore -image [::ico::getIcon explorer.exe 0 -name explore]
-    set i [lsearch [::ico::getIconList tclkit.exe] {32 32 8}]]
-    set colorlist [::ico::getIcon tclkit.exe $i -format colors -type EXE]
-}]
 
 [keywords entry icon ico exe dll]
 [manpage_end]
