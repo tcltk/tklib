@@ -48,7 +48,7 @@ listvariable for the right side listbox. This flag will also cause the -title an
 [opt_def -rbuttontext] sets the text on the "move right" button. defaults to ">>"
 [opt_def -ubuttontext] sets the text on the "move up" button. defaults to "Move Up"
 [opt_def -dbuttontext] sets the text on the "move down" button. defaults to "Move Down"
-[opt_def -geometry] sets the geometry of the dialog window. screen. 
+[opt_def -geometry] sets the geometry of the dialog window.
 
 [list_end]
 
