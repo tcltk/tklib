@@ -3541,6 +3541,13 @@ proc tablelist::insertRows {win index argList updateListVar} {
     incr data(itemCount) $argCount
     set data(lastRow) [expr {$data(itemCount) - 1}]
 
+    if {![info exists data(dispId)]} {
+	#
+	# Arrange for the inserted items to be displayed at idle time
+	#
+	set data(dispId) [after idle [list tablelist::displayItems $win]]
+    }
+
     #
     # Update the indices anchorRow and activeRow
     #
@@ -3558,13 +3565,6 @@ proc tablelist::insertRows {win index argList updateListVar} {
     #
     if {$data(editRow) >= 0} {
 	set data(editRow) [lsearch $data(itemList) "* $data(editKey)"]
-    }
-
-    if {![info exists data(dispId)]} {
-	#
-	# Arrange for the inserted items to be displayed at idle time
-	#
-	set data(dispId) [after idle [list tablelist::displayItems $win]]
     }
 
     return ""
