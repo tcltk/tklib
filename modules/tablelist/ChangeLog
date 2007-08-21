@@ -1,3 +1,12 @@
+2007-08-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistConfig.tcl: Eliminated the potential invocation of
+	* scripts/tablelistUtil.tcl:   the unknown command from within a catch
+	  statement.
+
+	* scripts/tablelistWidget.tcl: Fixed a bug related to the optimized
+	  item insertion.
+
 2007-07-20  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Updated.
