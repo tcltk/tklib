@@ -468,7 +468,7 @@ proc tablelist::doConfig {win opt val} {
 			([string compare $opt "-arrowdisabledcolor"] == 0 &&
 			 $data(isDisabled))} {
 			foreach w [info commands $data(hdrTxtFrCanv)*] {
-			    fillArrows $w $val
+			    fillArrows $w $val $data(-arrowstyle)
 			}
 		    }
 		}
@@ -486,9 +486,9 @@ proc tablelist::doConfig {win opt val} {
 		    foreach w [info commands $data(hdrTxtFrCanv)*] {
 			createArrows $w $width $height $relief
 			if {$data(isDisabled)} {
-			    fillArrows $w $data(-arrowdisabledcolor)
+			    fillArrows $w $data(-arrowdisabledcolor) $data($opt)
 			} else {
-			    fillArrows $w $data(-arrowcolor)
+			    fillArrows $w $data(-arrowcolor) $data($opt)
 			}
 		    }
 		    if {[llength $data(arrowColList)] > 0} {
