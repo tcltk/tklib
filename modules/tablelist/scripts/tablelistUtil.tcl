@@ -3776,9 +3776,9 @@ proc tablelist::configCanvas {win col} {
     sortRank$data($col-sortRank)$win configure -foreground $labelFg
 
     if {$data(isDisabled)} {
-	fillArrows $w $data(-arrowdisabledcolor)
+	fillArrows $w $data(-arrowdisabledcolor) $data(-arrowstyle)
     } else {
-	fillArrows $w $data(-arrowcolor)
+	fillArrows $w $data(-arrowcolor) $data(-arrowstyle)
     }
 }
 
@@ -3787,9 +3787,9 @@ proc tablelist::configCanvas {win col} {
 #
 # Fills the two arrows contained in the canvas w with the given color, or with
 # the background color of the canvas if color is an empty string.  Also fills
-# the arrow's borders with the corresponding 3-D shadow colors.
+# the arrow's borders (if any) with the corresponding 3-D shadow colors.
 #------------------------------------------------------------------------------
-proc tablelist::fillArrows {w color} {
+proc tablelist::fillArrows {w color arrowStyle} {
     set bgColor [$w cget -background]
     if {[string compare $color ""] == 0} {
 	set color $bgColor
@@ -3799,7 +3799,7 @@ proc tablelist::fillArrows {w color} {
 
     foreach dir {Up Dn} {
 	triangle$dir$w configure -foreground $color -background $bgColor
-	catch {
+	if {[string match "sunken*" $arrowStyle]} {
 	    darkLine$dir$w  configure -foreground $darkColor
 	    lightLine$dir$w configure -foreground $lightColor
 	}
