@@ -61,8 +61,10 @@ proc ::Plotchart::SavePlot { w filename args } {
 proc ::Plotchart::MarginsRectangle { w {notext 2.0} {text_width 8}} {
    set pxmin [expr {10*$text_width}]
    set pymin [expr {int(14*$notext)}]
-   set pxmax [expr {[$w cget -width]  - 40}]
-   set pymax [expr {[$w cget -height] - 30}]
+   set pxmax [expr {[winfo width $w]  - 40}]
+   set pymax [expr {[winfo height $w] - 30}]
+   #set pxmax [expr {[$w cget -width]  - 40}]
+   #set pymax [expr {[$w cget -height] - 30}]
 
    return [list $pxmin $pymin $pxmax $pymax]
 }
@@ -77,8 +79,10 @@ proc ::Plotchart::MarginsRectangle { w {notext 2.0} {text_width 8}} {
 proc ::Plotchart::MarginsCircle { w } {
    set pxmin 80
    set pymin 30
-   set pxmax [expr {[$w cget -width]  - 80}]
-   set pymax [expr {[$w cget -height] - 30}]
+   set pxmax [expr {[winfo width $w]  - 80}]
+   set pymax [expr {[winfo height $w] - 30}]
+   #set pxmax [expr {[$w cget -width]  - 80}]
+   #set pymax [expr {[$w cget -height] - 30}]
 
    set dx [expr {$pxmax-$pxmin+1}]
    set dy [expr {$pymax-$pymin+1}]
@@ -121,11 +125,14 @@ proc ::Plotchart::Margins3DPlot { w } {
       set scaling($w,zfract) $zfract
    }
 
-   set yzwidth  [expr {(-120+[$w cget -width])/(1.0+$yfract)}]
-   set yzheight [expr {(-60+[$w cget -height])/(1.0+$zfract)}]
+   set yzwidth  [expr {(-120+[winfo width $w])/(1.0+$yfract)}]
+   set yzheight [expr {(-60+[winfo height $w])/(1.0+$zfract)}]
+   #set yzwidth  [expr {(-120+[$w cget -width])/(1.0+$yfract)}]
+   #set yzheight [expr {(-60+[$w cget -height])/(1.0+$zfract)}]
 
    set pxmin    [expr {60+$yfract*$yzwidth}]
-   set pxmax    [expr {[$w cget -width] - 60}]
+   set pxmax    [expr {[winfo width $w] - 60}]
+   #set pxmax    [expr {[$w cget -width] - 60}]
    set pymin    30
    set pymax    [expr {30+$yzheight}]
 
@@ -289,8 +296,10 @@ proc ::Plotchart::PlotHandler { type w command args } {
 proc ::Plotchart::DrawMask { w } {
    variable scaling
 
-   set width  [expr {[$w cget -width]  + 1}]
-   set height [expr {[$w cget -height] + 1}]
+   set width  [expr {[winfo width $w]  + 1}]
+   set height [expr {[winfo height $w] + 1}]
+   #set width  [expr {[$w cget -width]  + 1}]
+   #set height [expr {[$w cget -height] + 1}]
    set colour [$w cget -background]
    set pxmin  $scaling($w,pxmin)
    set pxmax  $scaling($w,pxmax)
@@ -317,7 +326,8 @@ proc ::Plotchart::DrawMask { w } {
 proc ::Plotchart::DrawTitle { w title } {
    variable scaling
 
-   set width  [$w cget -width]
+   set width  [winfo width $w]
+   #set width  [$w cget -width]
    set pymin  $scaling($w,pymin)
 
    $w create text [expr {$width/2}] 3 -text $title \
