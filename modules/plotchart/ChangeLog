@@ -1,3 +1,8 @@
+2007-09-07 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.man: Added description of how to handle resizing
+        * plotchart.tcl: Changed from [$w cget -width] to [winfo width $w]
+        * plotpriv.tcl: Ditto
+
 2007-06-19 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.man: Corrected syntax error
 

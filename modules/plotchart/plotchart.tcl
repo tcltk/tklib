@@ -637,8 +637,10 @@ proc ::Plotchart::createIsometricPlot { w xscale yscale stepsize } {
    } else {
       set pxmin 0
       set pymin 0
-      set pxmax [$w cget -width]
-      set pymax [$w cget -height]
+      #set pxmax [$w cget -width]
+      #set pymax [$w cget -height]
+      set pxmax [winfo width $w]
+      set pymax [winfo height $w]
    }
 
    foreach {xmin xmax} $xscale {break}
@@ -1314,4 +1316,4 @@ source [file join [file dirname [info script]] "plotannot.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.3
+package provide Plotchart 1.3.1
