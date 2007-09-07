@@ -259,4 +259,42 @@ proc ::Plotchart::Draw3DData { w data } {
    }
 }
 
+# Draw3DLineFrom3Dcoordinates --
+#    Plot a line in the three-dimensional axis system
+# Arguments:
+#    w           Name of the canvas
+#    data        List of xyz-coordinates
+#    colour      The colour to use
+# Result:
+#    None
+# Side effect:
+#    The projected line
+#
+proc ::Plotchart::Draw3DLineFrom3Dcoordinates { w data colour } {
+   variable scaling
+
+   set xmin    $scaling($w,xmin)
+   set xmax    $scaling($w,xmax)
+   set xprev   {}
+
+   set coords  {}
+   set colours {}
+   foreach {x y z} $data {
+       foreach {px py} [coords3DToPixel $w $x $y $z] {break}
+
+       lappend coords $px $py
+
+       if { $xprev == {} } {
+           set xprev $x
+       }
+       set factor [expr {0.5*(2.0*$xmax-$xprev-$x)/($xmax-$xmin)}]
+
+       lappend colours [GreyColour $colour $factor]
+       set xprev $x
+   }
+
+   foreach {xb yb} [lrange $coords 0 end-2] {xe ye} [lrange $coords 2 end] c [lrange $colours 0 end-1] {
+       $w create line $xb $yb $xe $ye -fill $c
+   }
+}
 

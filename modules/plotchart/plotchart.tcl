@@ -174,6 +174,7 @@ namespace eval ::Plotchart {
    set methodProc(3dplot,title)          DrawTitle
    set methodProc(3dplot,plotfunc)       Draw3DFunction
    set methodProc(3dplot,plotdata)       Draw3DData
+   set methodProc(3dplot,plotline)       Draw3DLineFrom3Dcoordinates
    set methodProc(3dplot,gridsize)       GridSize3D
    set methodProc(3dplot,saveplot)       SavePlot
    set methodProc(3dplot,colour)         SetColours
@@ -639,8 +640,8 @@ proc ::Plotchart::createIsometricPlot { w xscale yscale stepsize } {
       set pymin 0
       #set pxmax [$w cget -width]
       #set pymax [$w cget -height]
-      set pxmax [winfo width $w]
-      set pymax [winfo height $w]
+      set pxmax [WidthCanvas $w]
+      set pymax [HeightCanvas $w]
    }
 
    foreach {xmin xmax} $xscale {break}
