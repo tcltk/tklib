@@ -245,6 +245,23 @@ proc ::Plotchart::DimColour {color factor} {
    format #%02x%02x%02x $r $g $b
 }
 
+# GreyColour --
+#    Compute a greyer colour
+# Arguments:
+#    color       Original colour
+#    factor      Factor by which to mix in grey
+# Result:
+#    New colour
+# Note:
+#    Shamelessly adapted from R. Suchenwirths Wiki page on 3D bars
+#
+proc ::Plotchart::GreyColour {color factor} {
+   foreach i {r g b} n [winfo rgb . $color] d [winfo rgb . white] e [winfo rgb . lightgrey] {
+       set $i [expr int(255.*($n*$factor+$e*(1.0-$factor))/$d)]
+   }
+   format #%02x%02x%02x $r $g $b
+}
+
 # Draw3DLine --
 #    Plot a ribbon of z-data as a function of y
 # Arguments:
