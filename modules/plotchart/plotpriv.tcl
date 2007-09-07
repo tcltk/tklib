@@ -6,6 +6,38 @@
 #    It is the companion of "plotchart.tcl"
 #
 
+# WidthCanvas --
+#    Return the width of the canvas
+# Arguments:
+#    w           Name of the canvas
+# Result:
+#    Width in pixels
+#
+proc ::Plotchart::WidthCanvas {w} {
+    set width [winfo width $w]
+
+    if { $width < 10 } {
+        set width [$w cget -width]
+    }
+    return $width
+}
+
+# HeightCanvas --
+#    Return the height of the canvas
+# Arguments:
+#    w           Name of the canvas
+# Result:
+#    Height in pixels
+#
+proc ::Plotchart::HeightCanvas {w} {
+    set height [winfo height $w]
+
+    if { $height < 10 } {
+        set height [$w cget -height]
+    }
+    return $height
+}
+
 # SavePlot --
 #    Save the plot/chart to a PostScript file (using default options)
 # Arguments:
@@ -61,8 +93,8 @@ proc ::Plotchart::SavePlot { w filename args } {
 proc ::Plotchart::MarginsRectangle { w {notext 2.0} {text_width 8}} {
    set pxmin [expr {10*$text_width}]
    set pymin [expr {int(14*$notext)}]
-   set pxmax [expr {[winfo width $w]  - 40}]
-   set pymax [expr {[winfo height $w] - 30}]
+   set pxmax [expr {[WidthCanvas $w]  - 40}]
+   set pymax [expr {[HeightCanvas $w] - 30}]
    #set pxmax [expr {[$w cget -width]  - 40}]
    #set pymax [expr {[$w cget -height] - 30}]
 
@@ -79,8 +111,8 @@ proc ::Plotchart::MarginsRectangle { w {notext 2.0} {text_width 8}} {
 proc ::Plotchart::MarginsCircle { w } {
    set pxmin 80
    set pymin 30
-   set pxmax [expr {[winfo width $w]  - 80}]
-   set pymax [expr {[winfo height $w] - 30}]
+   set pxmax [expr {[WidthCanvas $w]  - 80}]
+   set pymax [expr {[HeightCanvas $w] - 30}]
    #set pxmax [expr {[$w cget -width]  - 80}]
    #set pymax [expr {[$w cget -height] - 30}]
 
@@ -125,13 +157,13 @@ proc ::Plotchart::Margins3DPlot { w } {
       set scaling($w,zfract) $zfract
    }
 
-   set yzwidth  [expr {(-120+[winfo width $w])/(1.0+$yfract)}]
-   set yzheight [expr {(-60+[winfo height $w])/(1.0+$zfract)}]
+   set yzwidth  [expr {(-120+[WidthCanvas $w])/(1.0+$yfract)}]
+   set yzheight [expr {(-60+[HeightCanvas $w])/(1.0+$zfract)}]
    #set yzwidth  [expr {(-120+[$w cget -width])/(1.0+$yfract)}]
    #set yzheight [expr {(-60+[$w cget -height])/(1.0+$zfract)}]
 
    set pxmin    [expr {60+$yfract*$yzwidth}]
-   set pxmax    [expr {[winfo width $w] - 60}]
+   set pxmax    [expr {[WidthCanvas $w] - 60}]
    #set pxmax    [expr {[$w cget -width] - 60}]
    set pymin    30
    set pymax    [expr {30+$yzheight}]
@@ -296,8 +328,8 @@ proc ::Plotchart::PlotHandler { type w command args } {
 proc ::Plotchart::DrawMask { w } {
    variable scaling
 
-   set width  [expr {[winfo width $w]  + 1}]
-   set height [expr {[winfo height $w] + 1}]
+   set width  [expr {[WidthCanvas $w]  + 1}]
+   set height [expr {[HeightCanvas $w] + 1}]
    #set width  [expr {[$w cget -width]  + 1}]
    #set height [expr {[$w cget -height] + 1}]
    set colour [$w cget -background]
@@ -326,7 +358,7 @@ proc ::Plotchart::DrawMask { w } {
 proc ::Plotchart::DrawTitle { w title } {
    variable scaling
 
-   set width  [winfo width $w]
+   set width  [WidthCanvas $w]
    #set width  [$w cget -width]
    set pymin  $scaling($w,pymin)
 
