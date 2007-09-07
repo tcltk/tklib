@@ -2107,6 +2107,62 @@ throw an error.
 [list_end]
 
 
+[section RESIZING]
+
+[package Plotchart] has not been designed to create plots and charts
+that keep track of the data that are put in. This means that if an
+application needs to allow the user to resize the window holding the
+plot or chart, it must take care to redraw the complete plot.
+
+[para]
+The code below is a simple example of how to do that:
+
+[example {
+package require Plotchart
+
+grid [canvas .c -background white] -sticky news
+grid columnconfigure . 0 -weight 1
+grid rowconfigure . 0 -weight 1
+
+bind .c <Configure> {doResize}
+
+proc doPlot {} {
+    #
+    # Clean up the contents (see also the note below!)
+    #
+    .c delete all
+
+    #
+    # (Re)draw the bar chart
+    #
+    set p [::Plotchart::createBarchart .c {x y z} {0 100 10} 3]
+    $p plot R {10 30 40} red
+    $p plot G {30 40 60} green
+}
+
+proc doResize {} {
+    global redo
+
+    #
+    # To avoid redrawing the plot many times during resizing,
+    # cancel the callback, until the last one is left.
+    #
+    if { [info exists redo] } {
+        after cancel $redo
+    }
+
+    set redo [after 50 doPlot]
+}}]
+
+
+[emph "Please note:"]
+The code above will work fine for barcharts and many other types of
+plots, but as [package Plotchart] keeps some private information for
+xy plots, more is needed in these cases. This actually requires a
+command "destroyPlot" to take care of such details. A next version
+of [package Plotchart] will have that.
+
+
 [section {TODO - SOME PRIVATE NOTES}]
 
 I have the following wishlist:
