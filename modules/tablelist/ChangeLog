@@ -1,3 +1,15 @@
+2007-09-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistConfig.tcl: Changes related to the new formatinfo
+	* scripts/tablelistEdit.tcl:   subcommand.
+	* scripts/tablelistMove.tcl:
+	* scripts/tablelistSort.tcl:
+	* scripts/tablelistUtil.tcl:
+	* scripts/tablelistWidget.tcl:
+	* doc/tablelistWidget.html:
+
+	* scripts/tclIndex: Newly generated.
+
 2007-08-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistConfig.tcl: Eliminated the potential invocation of
