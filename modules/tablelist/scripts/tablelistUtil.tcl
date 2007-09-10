@@ -612,6 +612,7 @@ proc tablelist::charsToPixels {win font charCount} {
     for {set n 0} {$n < $charCount} {incr n} {
 	append str 0
     }
+
     return [font measure $font -displayof $win $str]
 }
 
@@ -723,16 +724,29 @@ proc tablelist::adjustItem {item expLen} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::formatElem
+#
+# Returns the string obtained by formatting the last argument.
+#------------------------------------------------------------------------------
+proc tablelist::formatElem {win key row col text} {
+    upvar ::tablelist::ns${win}::data data
+    array set data [list fmtKey $key fmtRow $row fmtCol $col]
+
+    return [uplevel #0 $data($col-formatcommand) [list $text]]
+}
+
+#------------------------------------------------------------------------------
 # tablelist::formatItem
 #
-# Returns the list obtained by formatting the elements of the item argument.
+# Returns the list obtained by formatting the elements of the last argument.
 #------------------------------------------------------------------------------
-proc tablelist::formatItem {win item} {
+proc tablelist::formatItem {win key row item} {
     upvar ::tablelist::ns${win}::data data
     set formattedItem {}
     set col 0
     foreach text $item fmtCmdFlag $data(fmtCmdFlagList) {
 	if {$fmtCmdFlag} {
+	    array set data [list fmtKey $key fmtRow $row fmtCol $col]
 	    set text [uplevel #0 $data($col-formatcommand) [list $text]]
 	}
 	lappend formattedItem $text
@@ -2255,7 +2269,10 @@ proc tablelist::computeColWidth {win col} {
     #
     # Column elements
     #
+    set row -1
     foreach item $data(itemList) {
+	incr row
+
 	if {$col >= [llength $item] - 1} {
 	    continue
 	}
@@ -2267,7 +2284,7 @@ proc tablelist::computeColWidth {win col} {
 
 	set text [lindex $item $col]
 	if {$fmtCmdFlag} {
-	    set text [uplevel #0 $data($col-formatcommand) [list $text]]
+	    set text [formatElem $win $key $row $col $text]
 	}
 	set text [strToDispStr $text]
 	getAuxData $win $key $col auxType auxWidth
@@ -3052,7 +3069,7 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 		}
 
 		if {$fmtCmdFlag} {
-		    set text [uplevel #0 $data($col-formatcommand) [list $text]]
+		    set text [formatElem $win $key $row $col $text]
 		}
 		set text [strToDispStr $text]
 
@@ -3147,7 +3164,7 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 		}
 
 		if {$fmtCmdFlag} {
-		    set text [uplevel #0 $data($col-formatcommand) [list $text]]
+		    set text [formatElem $win $key $row $col $text]
 		}
 		set text [strToDispStr $text]
 
@@ -3296,13 +3313,13 @@ proc tablelist::redisplayCol {win col first last} {
 	# Adjust the cell text and the image or window width
 	#
 	set item [lindex $data(itemList) $row]
+	set key [lindex $item end]
 	set text [lindex $item $col]
 	if {$fmtCmdFlag} {
-	    set text [uplevel #0 $data($col-formatcommand) [list $text]]
+	    set text [formatElem $win $key $row $col $text]
 	}
 	set text [strToDispStr $text]
 	set multiline [string match "*\n*" $text]
-	set key [lindex $item end]
 	set aux [getAuxData $win $key $col auxType auxWidth]
 	if {[info exists data($key,$col-font)]} {
 	    set cellFont $data($key,$col-font)
