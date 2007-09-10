@@ -77,11 +77,11 @@ proc tablelist::moveRow {win source target} {
     $w insert $targetLine.0 "\n"
     set snipStr $data(-snipstring)
     set sourceItem [lindex $data(itemList) $source]
+    set key [lindex $sourceItem end]
     set dispItem [lrange $sourceItem 0 $data(lastCol)]
     if {$data(hasFmtCmds)} {
-	set dispItem [formatItem $win $dispItem]
+	set dispItem [formatItem $win $key $source $dispItem]
     }
-    set key [lindex $sourceItem end]
     set col 0
     foreach text [strToDispStr $dispItem] \
 	    colTags $data(colTagsList) \

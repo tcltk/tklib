@@ -580,6 +580,9 @@
     <dd><code><i>pathName</i> <b><a href=
     "#finishediting">finishediting</a></b></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#formatinfo">formatinfo</a></b></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#get">get</a></b> <i>first</i>
     <i>last</i></code><br></dd>
 
@@ -2771,7 +2774,8 @@ proc tooltipAddCmd {tbl row col} {
 	<dd>Specifies whether the elements of the column can be edited
 	interactively.&nbsp; The default value is <code>0</code>.&nbsp; The
 	value of this option can be overridden for individual cells by using
-	the cell configuration option with the same name.</dd>
+	the <a href="#cell_editable">cell configuration option</a> with the
+	same name.</dd>
 
 	<dt><br>
 	<a name="col_editwindow"></a><code><b>-editwindow</b>
@@ -2801,8 +2805,8 @@ proc tooltipAddCmd {tbl row col} {
 	<code><b><a href=
 	"tablelistCombobox.html#combobox">tablelist::addOakleyCombobox</a></b></code>
 	command.&nbsp; The value of this option can be overridden for
-	individual cells by using the cell configuration option with the same
-	name.</dd>
+	individual cells by using the <a href="#cell_editwindow">cell
+	configuration option</a> with the same name.</dd>
 
 	<dt><br>
 	<a name="col_font"></a><code><b>-font</b> <i>font</i></code></dt>
@@ -2822,7 +2826,7 @@ proc tooltipAddCmd {tbl row col} {
 	<i>command</i></code></dt>
 
 	<dd>
-	  Specifies the Tcl command to be invoked when displaying the contents
+	  Specifies a Tcl command to be invoked when displaying the contents
 	  of a cell within this column or adding them to the selection when the
 	  latter is being exported.&nbsp; If <code><i>command</i></code> is a
 	  nonempty string, then it is automatically concatenated with the
@@ -2868,6 +2872,12 @@ proc formatDate clockVal {
 	  editing).&nbsp; In such cases, a procedure returning an empty string
 	  can be used as the option's value, thus making sure that the textual
 	  information contained in that column remains hidden.</p>
+
+	  <p>In the more sophisticated case that the result of the formatting
+	  should also depend on the cell's row, you will have to invoke the
+	  <code><b><a href="#formatinfo">formatinfo</a></b></code> subcommand,
+	  which provides the necessary information about the cell whose content
+	  is being formatted.</p>
 	</dd>
 
 	<dt><a name="col_hide"></a><code><b>-hide</b>
@@ -3323,8 +3333,8 @@ proc formatDate clockVal {
 
 	<dd>Specifies whether the contents of the cell can be edited
 	interactively.&nbsp; The default value is <code>0</code>.&nbsp; This
-	option overrides the one with the same name for the column containing
-	the given cell.</dd>
+	option overrides <a href="#col_editable">the one with the same name</a>
+	for the column containing the given cell.</dd>
 
 	<dt><br>
 	<a name="cell_editwindow"></a><code><b>-editwindow</b>
@@ -3332,10 +3342,10 @@ proc formatDate clockVal {
 
 	<dd>Specifies the type of the temporary embedded widget to be used for
 	interactive editing of the cell's contents.&nbsp; The default value is
-	<code><b>entry</b></code>.&nbsp; This option overrides the one with the
-	same name for the column containing the given cell, and may have the
-	same values as its <a href="#col_editwindow">column-related
-	counterpart</a>.</dd>
+	<code><b>entry</b></code>.&nbsp; This option overrides <a href=
+	"#col_editwindow">the one with the same name</a> for the column
+	containing the given cell, and may have the same values as its
+	column-related counterpart.</dd>
 
 	<dt><br>
 	<a name="cell_font"></a><code><b>-font</b> <i>font</i></code></dt>
@@ -4501,6 +4511,44 @@ eval [list $<i>pathName</i> <a href=
 	  designed to accept the data should call this subcommand, because
 	  otherwise, if the button is pressed during interactive cell editing
 	  then the text entered into the edit window will get lost.</p>
+	</dd>
+
+	<dt><a name="formatinfo"></a><code><i>pathName</i>
+	<b>formatinfo</b></code></dt>
+
+	<dd>
+	  This command is designed to be invoked from within a Tcl command
+	  specified as the value of the <code><b><a href=
+	  "#col_formatcommand">-formatcommand</a></b></code> column
+	  configuration option.&nbsp; It returns a three-element list
+	  containing information about the tablelist cell whose content is
+	  being formatted with the aid of that command.&nbsp; The first element
+	  of the list is the full key (of the form
+	  <code><b>k</b><i>number</i></code>) associated with the item
+	  containing the tablelist element that is being formatted.&nbsp; The
+	  second and third elements of the list are the cell's row and column
+	  indices.
+
+	  <p>This subcommand is needed in cases where the result of the
+	  formatting should depend on the cell's row.&nbsp; To be able to use
+	  it, specify the value of the <code><b>-formatcommand</b></code>
+	  column configuration option as&nbsp; <code>[<b>list</b>
+	  <i>formatCommand</i> <i>pathName</i>]</code>,&nbsp like in the
+	  following example:</p>
+
+	  <blockquote>
+	    <pre>
+.tbl columnconfigure 1 -formatcommand [list formatValue .tbl]
+
+proc formatValue {tbl val} {
+    # Get information about the cell whose content is being formatted
+    foreach {key row col} [$tbl formatinfo] {}
+
+    # Return a string depending on $val and $row (or $key)
+    . . .
+}
+</pre>
+	  </blockquote>
 	</dd>
 
 	<dt><a name="get"></a><code><i>pathName</i> <b>get</b> <i>first</i>

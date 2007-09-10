@@ -1369,11 +1369,9 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     #
     # Replace the cell contents between the two tabs with the above frame
     #
-    set b $data(body)
-    set data(editKey) $key
-    set data(editRow) $row
-    set data(editCol) $col
+    array set data [list editKey $key editRow $row editCol $col]
     findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
+    set b $data(body)
     if {$isCheckbtn} {
 	set editIdx [$b index $tabIdx1+1c]
 	$b delete $editIdx $tabIdx2
@@ -1425,7 +1423,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	set data(invoked) 0
 	set text [lindex $item $col]
 	if {$editWin($name-useFormat) && [lindex $data(fmtCmdFlagList) $col]} {
-	    set text [uplevel #0 $data($col-formatcommand) [list $text]]
+	    set text [formatElem $win $key $row $col $text]
 	}
 	catch {
 	    eval [strMap {"%W" "$w"  "%T" "$text"} $editWin($name-putValueCmd)]
@@ -1933,7 +1931,7 @@ proc tablelist::saveEditConfigOpts w {
 	    set current [lindex $configSet 4]
 	    if {[string compare $default $current] != 0} {
 		set opt [lindex $configSet 0]
-		set data($tail$opt) [lindex $configSet 4]
+		set data($tail$opt) $current
 	    }
 	}
     }
@@ -2132,8 +2130,7 @@ proc tablelist::goToNextPrevCell {w amount args} {
 	set col $data(editCol)
 	set cmd condChangeSelection
     } else {
-	set row [lindex $args 0]
-	set col [lindex $args 1]
+	foreach {row col} $args {}
 	set cmd changeSelection
     }
 

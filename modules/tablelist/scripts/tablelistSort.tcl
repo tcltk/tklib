@@ -343,16 +343,16 @@ proc tablelist::sortItems {win sortColList sortOrderList} {
     set row 0
     set line 1
     foreach item $data(itemList) {
+	set key [lindex $item end]
 	set dispItem [lrange $item 0 $data(lastCol)]
 	if {$data(hasFmtCmds)} {
-	    set dispItem [formatItem $win $dispItem]
+	    set dispItem [formatItem $win $key $row $dispItem]
 	}
 
 	#
 	# Clip the elements if necessary and
 	# insert them with the corresponding tags
 	#
-	set key [lindex $item end]
 	if {$rowTagRefCount == 0} {
 	    set hasRowFont 0
 	} else {
