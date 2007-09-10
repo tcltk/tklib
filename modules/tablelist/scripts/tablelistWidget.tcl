@@ -285,14 +285,15 @@ namespace eval tablelist {
 	configcelllist configcells configcolumnlist configcolumns \
 	configrowlist configrows containing containingcell containingcolumn \
 	curcellselection curselection delete deletecolumns editcell \
-	editwinpath entrypath fillcolumn finishediting get getcells \
-	getcolumns getkeys imagelabelpath index insert insertcolumnlist \
-	insertcolumns insertlist iselemsnipped istitlesnipped itemlistvar \
-	labelpath labels move movecolumn nearest nearestcell nearestcolumn \
-	rejectinput resetsortinfo rowcget rowconfigure scan see seecell \
-	seecolumn selection separatorpath separators size sort sortbycolumn \
-	sortbycolumnlist sortcolumn sortcolumnlist sortorder sortorderlist \
-	togglecolumnhide togglerowhide windowpath xview yview]
+	editwinpath entrypath fillcolumn finishediting formatinfo get \
+	getcells getcolumns getkeys imagelabelpath index insert \
+	insertcolumnlist insertcolumns insertlist iselemsnipped \
+	istitlesnipped itemlistvar labelpath labels move movecolumn nearest \
+	nearestcell nearestcolumn rejectinput resetsortinfo rowcget \
+	rowconfigure scan see seecell seecolumn selection separatorpath \
+	separators size sort sortbycolumn sortbycolumnlist sortcolumn \
+	sortcolumnlist sortorder sortorderlist togglecolumnhide togglerowhide \
+	windowpath xview yview]
     if {!$canElide} {
 	set idx [lsearch -exact $cmdOpts togglerowhide]
 	set cmdOpts [lreplace $cmdOpts $idx $idx]
@@ -343,7 +344,7 @@ namespace eval tablelist {
 	proc strMap {charMap str} {
 	    foreach {key val} $charMap {
 		#
-		# We will only need this for noncritical key values
+		# We will only need this for noncritical key and str values
 		#
 		regsub -all $key $str $val str
 	    }
@@ -520,6 +521,9 @@ proc tablelist::tablelist args {
 	    sortOrder		 ""
 	    editRow		-1
 	    editCol		-1
+	    fmtKey		 ""
+	    fmtRow		-1
+	    fmtCol		-1
 	    prevCell		 ""
 	    prevCol		-1
 	    forceAdjust		 0
@@ -1484,6 +1488,18 @@ proc tablelist::finisheditingSubCmd {win argList} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::formatinfoSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::formatinfoSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win formatinfo"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    return [list $data(fmtKey) $data(fmtRow) $data(fmtCol)]
+}
+
+#------------------------------------------------------------------------------
 # tablelist::getSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::getSubCmd {win argList} {
@@ -1804,9 +1820,10 @@ proc tablelist::iselemsnippedSubCmd {win argList} {
 
     upvar ::tablelist::ns${win}::data data
     set item [lindex $data(itemList) $row]
+    set key [lindex $item end]
     set fullText [lindex $item $col]
     if {[lindex $data(fmtCmdFlagList) $col]} {
-	set fullText [uplevel #0 $data($col-formatcommand) [list $fullText]]
+	set fullText [formatElem $win $key $row $col $fullText]
     }
     set fullText [strToDispStr $fullText]
 
@@ -1822,7 +1839,6 @@ proc tablelist::iselemsnippedSubCmd {win argList} {
     }
 
     set text $fullText
-    set key [lindex $item end]
     getAuxData $win $key $col auxType auxWidth
     set cellFont [getCellFont $win $key $col]
     incr pixels $data($col-delta)
@@ -3119,8 +3135,7 @@ proc tablelist::curCellSelection {win {getKeys 0}} {
     set w $data(body)
     set selRange [$w tag nextrange select 1.0]
     while {[llength $selRange] != 0} {
-	set selStart [lindex $selRange 0]
-	set selEnd [lindex $selRange 1]
+	foreach {selStart selEnd} $selRange {}
 	set line [expr {int($selStart)}]
 	set row [expr {$line - 1}]
 
@@ -3224,6 +3239,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	variable canElide
 	set colWidthsChanged 0
 	set snipStr $data(-snipstring)
+	set row 0
 	foreach item $itemListRange {
 	    #
 	    # Format the item
@@ -3231,7 +3247,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	    set key [lindex $item end]
 	    set dispItem [lrange $item 0 $data(lastCol)]
 	    if {$data(hasFmtCmds)} {
-		set dispItem [formatItem $win $dispItem]
+		set dispItem [formatItem $win $key $row $dispItem]
 	    }
 
 	    set col 0
@@ -3257,6 +3273,8 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	    if {$colWidthsChanged} {
 		break
 	    }
+
+	    incr row
 	}
     }
 
@@ -3617,7 +3635,7 @@ proc tablelist::displayItems win {
 	#
 	set dispItem [lrange $item 0 $data(lastCol)]
 	if {$data(hasFmtCmds)} {
-	    set dispItem [formatItem $win $dispItem]
+	    set dispItem [formatItem $win $key $row $dispItem]
 	}
 
 	if {$isEmpty} {
@@ -4434,9 +4452,10 @@ proc tablelist::fetchSelection {win offset maxChars} {
 	    set isFirstCol 1
 	}
 
+	set key [lindex $item end]
 	set text [lindex $item $col]
 	if {[lindex $data(fmtCmdFlagList) $col]} {
-	    set text [uplevel #0 $data($col-formatcommand) [list $text]]
+	    set text [formatElem $win $key $row $col $text]
 	}
 
 	if {!$isFirstCol} {

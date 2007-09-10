@@ -1807,7 +1807,7 @@ proc tablelist::doRowConfig {row win opt val} {
 
 	    set displayedItem [lrange $item 0 $data(lastCol)]
 	    if {$data(hasFmtCmds)} {
-		set displayedItem [formatItem $win $displayedItem]
+		set displayedItem [formatItem $win $key $row $displayedItem]
 	    }
 	    set colWidthsChanged 0
 	    set colIdxList {}
@@ -1967,7 +1967,7 @@ proc tablelist::doRowConfig {row win opt val} {
 		set colIdxList {}
 		set displayedItem [lrange $item 0 $data(lastCol)]
 		if {$data(hasFmtCmds)} {
-		    set displayedItem [formatItem $win $displayedItem]
+		    set displayedItem [formatItem $win $key $row $displayedItem]
 		}
 		set col 0
 		foreach text [strToDispStr $displayedItem] \
@@ -2076,8 +2076,7 @@ proc tablelist::doRowConfig {row win opt val} {
 		set line [expr {$row + 1}]
 		set selRange [$w tag nextrange select $line.0 $line.end]
 		while {[llength $selRange] != 0} {
-		    set selStart [lindex $selRange 0]
-		    set selEnd [lindex $selRange 1]
+		    foreach {selStart selEnd} $selRange {}
 		    $w tag add $tag $selStart $selEnd
 		    set selRange [$w tag nextrange select $selEnd $line.end]
 		}
@@ -2104,7 +2103,7 @@ proc tablelist::doRowConfig {row win opt val} {
 	    set key [lindex $oldItem end]
 	    set newItem [adjustItem $val $data(colCount)]
 	    if {$data(hasFmtCmds)} {
-		set displayedItem [formatItem $win $newItem]
+		set displayedItem [formatItem $win $key $row $newItem]
 	    } else {
 		set displayedItem $newItem
 	    }
@@ -2181,8 +2180,8 @@ proc tablelist::doRowConfig {row win opt val} {
 		    } else {
 			set oldText [lindex $oldItem $col]
 			if {[lindex $data(fmtCmdFlagList) $col]} {
-			    set oldText [uplevel #0 $data($col-formatcommand) \
-					 [list $oldText]]
+			    set oldText \
+				[formatElem $win $key $row $col $oldText]
 			}
 			set oldText [strToDispStr $oldText]
 			set oldElemWidth \
@@ -2419,7 +2418,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    set text [lindex $item $col]
 	    if {[lindex $data(fmtCmdFlagList) $col]} {
-		set text [uplevel #0 $data($col-formatcommand) [list $text]]
+		set text [formatElem $win $key $row $col $text]
 	    }
 	    set text [strToDispStr $text]
 	    set multiline [string match "*\n*" $text]
@@ -2550,7 +2549,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    set text [lindex $item $col]
 	    if {[lindex $data(fmtCmdFlagList) $col]} {
-		set text [uplevel #0 $data($col-formatcommand) [list $text]]
+		set text [formatElem $win $key $row $col $text]
 	    }
 	    set text [strToDispStr $text]
 	    set oldText $text
@@ -2714,16 +2713,16 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    # Adjust the cell text and the image or window width
 	    #
+	    set oldItem [lindex $data(itemList) $row]
+	    set key [lindex $oldItem end]
 	    set text $val
 	    set fmtCmdFlag [lindex $data(fmtCmdFlagList) $col]
 	    if {$fmtCmdFlag} {
-		set text [uplevel #0 $data($col-formatcommand) [list $text]]
+		set text [formatElem $win $key $row $col $text]
 	    }
 	    set text [strToDispStr $text]
 	    set textSav $text
 	    set multiline [string match "*\n*" $text]
-	    set oldItem [lindex $data(itemList) $row]
-	    set key [lindex $oldItem end]
 	    set aux [getAuxData $win $key $col auxType auxWidth]
 	    set auxWidthSav $auxWidth
 	    set cellFont [getCellFont $win $key $col]
@@ -2788,8 +2787,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 		} else {
 		    set oldText [lindex $oldItem $col]
 		    if {$fmtCmdFlag} {
-			set oldText [uplevel #0 $data($col-formatcommand) \
-				     [list $oldText]]
+			set oldText [formatElem $win $key $row $col $oldText]
 		    }
 		    set oldText [strToDispStr $oldText]
 		    set oldElemWidth \
@@ -2893,7 +2891,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    set text [lindex $item $col]
 	    if {[lindex $data(fmtCmdFlagList) $col]} {
-		set text [uplevel #0 $data($col-formatcommand) [list $text]]
+		set text [formatElem $win $key $row $col $text]
 	    }
 	    set text [strToDispStr $text]
 	    set oldText $text
