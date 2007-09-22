@@ -3,6 +3,7 @@
 	* tooltip.tcl (::tooltip::show): Left align the tooltip text
 	* pkgIndex.tcl:                  (reported by Peter Caffin)
 	* tooltip.man:                   Bumped to 1.4
+	Generally improved the manual to fix bug #1800296.
 
 2007-05-18  Jeff Hobbs  <jeffh@ActiveState.com>
 

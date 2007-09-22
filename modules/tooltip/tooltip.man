@@ -1,33 +1,63 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin tooltip n 1.4]
+[copyright {1996-2007, Jeffrey Hobbs}]
 [moddesc   {Tooltip management}]
 [titledesc {Tooltip management}]
 [require Tcl 8.4]
 [require msgcat 1.3]
 [require tooltip [opt 1.4]]
 [description]
+[para]
 
-This package provides tooltips, a small text message that is displayed
+This package provides tooltips, small text messages that can be displayed
 when the mouse hovers over a widget, menu item, canvas item or text
 widget tag.
 
-[para]
+[section {COMMANDS}]
 
 [list_begin definitions]
 
-[call [cmd ::tooltip::tooltip] [arg command] [opt options]]
-commands:
-[call clear [opt pattern]]
-[call delay [opt millisecs]]
-[call disable]
-[call enable]
+[call [cmd ::tooltip::tooltip] [arg command] [opt [arg options]]]
+
+Manage the tooltip package using the following subcommands.
+
+[list_begin options]
+
+[opt_def clear [arg index]]
+
+Prevents the specified widgets from showing tooltips. [arg pattern] 
+is a glob pattern and defaults to matching all widgets.
+
+[opt_def delay [opt [arg millisecs]]]
+
+Query or set the hover delay. This is the interval that the pointer must remain
+over the widget before the tooltip is displayed. The delay is specified in 
+milliseconds and must be greater than 50ms.
+With no argument the current delay is returned.
+
+[opt_def disable]
+[opt_def off]
+
+Disable all tooltips
+
+[opt_def enable]
+[opt_def on]
+
+Enables tooltips for defined widgets.
+
+[list_end]
+
+[nl]
 
 [call [cmd ::tooltip::tooltip] \
-      [arg pathName] [opt options] [opt message]]
+     [arg pathName] [opt [arg "option arg"]] [arg message]]
 
 This command arranges for widget [arg pathName] to display a tooltip with
-message [opt message].  The tooltip uses a late-binding msgcat call on the
+message [arg message].  The tooltip uses a late-binding msgcat call on the
 passed in message to allow for on-the-fly language changes in an application.
+If the widget specified is a menu, canvas or text widget then additional options
+are used to tie the tooltip to specific menu entries, canvas items or text
+tags.
 
 [list_begin options]
 
@@ -45,7 +75,7 @@ be a canvas widget or an error is raised.
 
 [opt_def -tag [arg name]]
 
-The [opt -tag] option can be used to set a tooltip for a text widget
+The [option -tag] option can be used to set a tooltip for a text widget
 tag. The tag should already be present when this command is called or
 an error will be returned. The widget must also be a text widget.
 
@@ -60,6 +90,15 @@ an error will be returned. The widget must also be a text widget.
 package require tooltip
 pack [label .l -text "label"]
 tooltip::tooltip .l "This is a label widget"
+}]
+
+[example {
+# Demonstrate menu tooltip
+package require tooltip
+. configure -menu [menu .menu]
+.menu add cascade -label Test -menu [menu .menu.test -tearoff 0]
+.menu.test add command -label Tooltip
+tooltip::tooltip .menu.test -index 0 "This is a menu tooltip"
 }]
 
 [example {
