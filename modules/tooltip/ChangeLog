@@ -1,3 +1,9 @@
+2007-09-22  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* tooltip.tcl (::tooltip::show): Left align the tooltip text
+	* pkgIndex.tcl:                  (reported by Peter Caffin)
+	* tooltip.man:                   Bumped to 1.4
+
 2007-05-18  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* tooltip.man, pkgIndex.tcl: bumped version to 1.3

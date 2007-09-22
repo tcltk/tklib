@@ -7,13 +7,13 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tooltip.tcl,v 1.8 2007/05/18 19:28:21 hobbs Exp $
+# RCS: @(#) $Id: tooltip.tcl,v 1.9 2007/09/22 13:55:41 patthoyts Exp $
 #
 # Initiated: 28 October 1996
 
 
 package require Tk 8.4
-package provide tooltip 1.3
+package provide tooltip 1.4
 package require msgcat
 
 #------------------------------------------------------------------------
@@ -244,7 +244,7 @@ proc ::tooltip::show {w msg {i {}}} {
     set b $G(TOPLEVEL)
     # Use late-binding msgcat (lazy translation) to support programs
     # that allow on-the-fly l10n changes
-    $b.label configure -text [::msgcat::mc $msg]
+    $b.label configure -text [::msgcat::mc $msg] -justify left
     update idletasks
     set screenw [winfo screenwidth $w]
     set screenh [winfo screenheight $w]
