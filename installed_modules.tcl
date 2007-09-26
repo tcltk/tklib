@@ -20,6 +20,7 @@ foreach {m pkg doc exa} {
     ctext       _ctxt _man  _null
     cursor      _tcl  _man  _null
     datefield   _tcl  _man  _null
+    diagrams    _tcl  _man  _null
     getstring   _tcl  _man  _null
     history     _tcl  _man  _null
     ico         _tcl  _man  _null

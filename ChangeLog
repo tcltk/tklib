@@ -1,3 +1,8 @@
+2007-09-26  Andreas Kupries  <andreask@activestate.com>
+
+	* installed_modules.tcl: Added 'diagrams' to the list of installed
+	  modules.
+
 2007-06-25  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* examples/ntext/*.tcl (new): examples for ntext module
