@@ -24,13 +24,24 @@
 #############################################################################
 
 package require Tk 8.0
-package provide datefield 0.1
+package provide datefield 0.2
 
 namespace eval ::datefield {
     namespace export datefield
 
+    # Have the widget use tile/ttk should it be available.
+
+    variable entry entry
+    if {![catch {
+	package require tile
+    }]} {
+	set entry ttk::entry
+    }
+
     proc datefield {w args} {
-	eval entry $w -width 10 -justify center $args
+	variable entry
+
+	eval $entry $w -width 10 -justify center $args
 	$w insert end [clock format [clock seconds] -format "%m/%d/%Y"]
 	$w icursor 0
 
