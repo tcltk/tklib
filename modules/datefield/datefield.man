@@ -1,10 +1,10 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin datefield n 0.1]
+[manpage_begin datefield n 0.2]
 [copyright {Keith Vetter <keith@ebook.gemstar.com>}]
 [moddesc {Tk datefield widget}]
 [titledesc {Tk datefield widget}]
 [require Tk]
-[require datefield [opt 0.1]]
+[require datefield [opt 0.2]]
 [description]
 
 The [package datefield] package provides the datefield widget which
