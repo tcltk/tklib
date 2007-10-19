@@ -11,7 +11,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: chatwidget.tcl,v 1.1 2007/10/19 11:41:39 patthoyts Exp $
+# RCS: @(#) $Id: chatwidget.tcl,v 1.2 2007/10/19 22:39:09 patthoyts Exp $
 
 package require Tk 8.5
 
@@ -25,6 +25,10 @@ namespace eval chatwidget {
             ChatwidgetFrame.padding -sticky news
         }
     }
+    if {[lsearch -exact [font names] ChatwidgetFont] == -1} {
+        eval [list font create ChatwidgetFont] [font configure TkTextFont]
+        eval [list font create ChatwidgetBoldFont] [font configure ChatwidgetFont] -weight bold
+    }
 }
 
 proc chatwidget::chatwidget {w args} {
@@ -35,6 +39,7 @@ proc chatwidget::chatwidget {w args} {
 }
 
 proc chatwidget::WidgetProc {self cmd args} {
+    upvar #0 [namespace current]::$self state
     switch -- $cmd {
         hook {
             if {[llength $args] < 2} {
@@ -58,9 +63,31 @@ proc chatwidget::WidgetProc {self cmd args} {
         entry {
             return [uplevel 1 [list [namespace origin Entry] $self] $args]
         }
-        default { return [uplevel 1 [list $self.text $cmd] $args] }
+        peer {
+            return [uplevel 1 [list [namespace origin Peer] $self] $args]
+        }
+        chat - 
+        default {
+            return [uplevel 1 [list [namespace origin Chat] $self] $args]
+        }
     }
     return
+}
+
+proc chatwidget::Chat {self args} {
+    upvar #0 [namespace current]::$self state
+    if {[llength $args] == 0} {
+        return $state(chat_widget)
+    }
+    return [uplevel 1 [list $state(chat_widget)] $args]
+}
+
+proc chatwidget::Peer {self args} {
+    upvar #0 [namespace current]::$self state
+    if {[llength $args] == 0} {
+        return $state(chat_peer_widget)
+    }
+    return [uplevel 1 [list $state(chat_peer_widget)] $args]
 }
 
 proc chatwidget::Topic {self cmd args} {
@@ -77,30 +104,35 @@ proc chatwidget::Topic {self cmd args} {
 }
 
 proc chatwidget::Names {self args} {
+    upvar #0 [namespace current]::$self state
+    set frame [winfo parent $state(names_widget)]
+    set pane [winfo parent $frame]
     if {[llength $args] == 0} {
-        return $self.names
+        return $state(names_widget)
     }
     if {[llength $args] == 1 && [lindex $args 0] eq "hide"} {
-        return [$self.inner forget $self.namesf]
+        return [$pane forget $frame]
     }
     if {[llength $args] == 1 && [lindex $args 0] eq "show"} {
-        return [$self.inner add $self.namesf]
+        return [$pane add $frame]
     }
-    return [uplevel 1 [list $self.names] $args] 
+    return [uplevel 1 [list $state(names_widget)] $args] 
 }
 
 proc chatwidget::Entry {self args} {
+    upvar #0 [namespace current]::$self state
     if {[llength $args] == 0} {
-        return $self.entry
+        return $state(entry_widget)
     }
     if {[llength $args] == 1 && [lindex $args 0] eq "text"} {
-        return [$self.entry get 1.0 end-1c]
+        return [$state(entry_widget) get 1.0 end-1c]
     }
-    return [uplevel 1 [list $self.entry] $args]
+    return [uplevel 1 [list $state(entry_widget)] $args]
 }
 
 proc chatwidget::Message {self text args} {
     upvar #0 [namespace current]::$self state
+    set chat $state(chat_widget)
 
     set mark end
     set type normal
@@ -130,22 +162,22 @@ proc chatwidget::Message {self text args} {
 
     if {$type ne "system"} { lappend tags NICK-$nick }
     lappend tags TYPE-$type
-    $self.text configure -state normal
+    $chat configure -state normal
     set ts [clock format $time -format "\[%H:%M\]\t"]
-    $self.text insert $mark $ts [concat BOOKMARK STAMP $tags]
+    $chat insert $mark $ts [concat BOOKMARK STAMP $tags]
     if {$type eq "action"} {
-        $self.text insert $mark "   * $nick " [concat BOOKMARK NICK $tags]
+        $chat insert $mark "   * $nick " [concat BOOKMARK NICK $tags]
         lappend tags ACTION
     } elseif {$type eq "system"} {
     } else {
-        $self.text insert $mark "$nick\t" [concat BOOKMARK NICK $tags]
+        $chat insert $mark "$nick\t" [concat BOOKMARK NICK $tags]
     }
     if {$type ne "system"} { lappend tags MSG NICK-$nick }
-    $self.text insert $mark $text $tags
-    $self.text insert $mark "\n" $tags
-    $self.text configure -state disabled
+    $chat insert $mark $text $tags
+    $chat insert $mark "\n" $tags
+    $chat configure -state disabled
     if {$state(autoscroll)} {
-        $self.text see end
+        $chat see end
     }
     return
 }
@@ -202,16 +234,27 @@ proc chatwidget::Name {self cmd args} {
 
 proc chatwidget::UpdateNames {self} {
     upvar #0 [namespace current]::$self state
-    
-    foreach tagname [lsearch -all -inline [$self.names tag names] NICK-*] {
-        $self.names tag delete $tagname
+    if {[info exists state(updatenames)]} {
+        after cancel $state(updatenames)
     }
-    foreach tagname [lsearch -all -inline [$self.names tag names] GROUP-*] {
-        $self.names tag delete $tagname
+    set state(updatenames) [after idle [list [namespace origin UpdateNamesExec] $self]]
+}
+
+proc chatwidget::UpdateNamesExec {self} {
+    upvar #0 [namespace current]::$self state
+    unset state(updatenames)
+    set names $state(names_widget)
+    set chat  $state(chat_widget)
+    
+    foreach tagname [lsearch -all -inline [$names tag names] NICK-*] {
+        $names tag delete $tagname
+    }
+    foreach tagname [lsearch -all -inline [$names tag names] GROUP-*] {
+        $names tag delete $tagname
     }
 
-    $self.names configure -state normal
-    $self.names delete 1.0 end
+    $names configure -state normal
+    $names delete 1.0 end
     array set groups {}
     foreach item $state(names) {
         set group {}
@@ -221,25 +264,27 @@ proc chatwidget::UpdateNames {self} {
         lappend groups($group) [lindex $item 0]
     }
 
-    foreach group [array names groups] {
+    foreach group [lsort [array names groups]] {
         Hook $self run names_group $group
-        $self.names insert end "$group\n" [list SUBTITLE GROUP-$group]
+        $names insert end "$group\n" [list SUBTITLE GROUP-$group]
         foreach nick [lsort -dictionary $groups($group)] {
-            $self.names tag configure NICK-$nick
+            $names tag configure NICK-$nick
             unset -nocomplain opts ; array set opts {}
             if {[set ndx [lsearch -exact -index 0 $state(names) $nick]] != -1} {
                 array set opts [lrange [lindex $state(names) $ndx] 1 end]
                 if {[info exists opts(-color)]} {
-                    $self.names tag configure NICK-$nick -foreground $opts(-color)
-                    $self.text tag configure NICK-$nick -foreground $opts(-color)
+                    $names tag configure NICK-$nick -foreground $opts(-color)
+                    $chat  tag configure NICK-$nick -foreground $opts(-color)
                 }
-                eval [linsert [lindex $state(names) $ndx] 0 Hook $self run names_nick]
+                eval [linsert [lindex $state(names) $ndx] 0 \
+                          Hook $self run names_nick]
             }
-            $self.names insert end $nick\n [list NICK NICK-$nick GROUP-$group]
+            $names insert end $nick\n [list NICK NICK-$nick GROUP-$group]
         }
     }
+    $names insert end "[llength $state(names)] nicks\n" [list SUBTITLE]
 
-    $self.names configure -state disabled
+    $names configure -state disabled
 }
 
 proc chatwidget::Pop {varname {nth 0}} {
@@ -319,78 +364,80 @@ proc chatwidget::Create {self} {
     set state(autoscroll) 1
     set state(names) {}
 
-    if {[lsearch -exact [font names] ChatwidgetFont] == -1} {
-        eval [list font create ChatwidgetFont] [font configure TkTextFont]
-        eval [list font create ChatwidgetBoldFont] [font configure ChatwidgetFont] -weight bold
-    }
-
-    set f [ttk::frame $self]
-    set outer [ttk::panedwindow $f.outer -orient vertical]
-    set inner [ttk::panedwindow $f.inner -orient horizontal]
+    set self [ttk::frame $self -class Chatwidget]
+    set outer [ttk::panedwindow $self.outer -orient vertical]
+    set inner [ttk::panedwindow $outer.inner -orient horizontal]
 
     # Create a topic/subject header
-    ttk::frame $f.topic
-    ttk::label $f.topic.label -anchor w -text Topic
-    #ttk::label $f.topic.text -anchor w -relief solid -textvariable [set State](topic)
-    ttk::entry $f.topic.text -state disabled -textvariable [set State](topic)
-    grid $f.topic.label $f.topic.text -sticky new -pady {2 0} -padx 1
-    Grid $f.topic 0 1
+    set topic [ttk::frame $self.topic]
+    ttk::label $topic.label -anchor w -text Topic
+    ttk::entry $topic.text -state disabled -textvariable [set State](topic)
+    grid $topic.label $topic.text -sticky new -pady {2 0} -padx 1
+    Grid $topic 0 1
 
     # Create the usernames scrolled text
-    ttk::frame $f.namesf -style ChatwidgetFrame
-    text $f.names -borderwidth 0 -relief flat -font ChatwidgetFont \
-        -yscrollcommand [list [namespace origin AutoScrollSet] $self $f.namesvs $f.namesf 0]
-    ttk::scrollbar $f.namesvs -command [list $f.names yview]
-    $f.names configure -width 10 -height 10 -state disabled
-    bindtags $f.names [linsert [bindtags $f.names] 1 ChatwidgetNames]
-    grid $f.names $f.namesvs -in $f.namesf -sticky news -padx 1 -pady 1
-    Grid $f.namesf 0 0
+    set names [ttk::frame $inner.names -style ChatwidgetFrame]
+    text $names.text -borderwidth 0 -relief flat -font ChatwidgetFont
+    ttk::scrollbar $names.vs -command [list $names.text yview]
+    $names.text configure -width 10 -height 10 -state disabled \
+        -yscrollcommand [list [namespace origin scroll_set] $names.vs $inner 0]
+    bindtags $names.text [linsert [bindtags $names.text] 1 ChatwidgetNames]
+    grid $names.text $names.vs -sticky news -padx 1 -pady 1
+    Grid $names 0 0
+    set state(names_widget) $names.text
 
     # Create the chat display
-    ttk::frame $f.textf -style ChatwidgetFrame
-    set peers [ttk::panedwindow $f.peers -orient vertical]
-    ttk::frame $f.textfupper
-    ttk::frame $f.textflower
-    text $f.text -borderwidth 0 -relief flat -state disabled -font ChatwidgetFont \
-        -yscrollcommand [list [namespace origin AutoScrollSet] $self $f.textvs $f.textflower 1]
-    ttk::scrollbar $f.textvs -command [list $f.text yview]
-    grid $f.text $f.textvs -in $f.textflower -sticky news
-    Grid $f.textflower 0 0
-    $f.text peer create $f.textpeer -borderwidth 0 -relief flat -state disabled -font ChatwidgetFont\
-        -yscrollcommand [list [namespace origin AutoScrollSet] $self $f.textpvs $f.textfupper 0]
-    ttk::scrollbar $f.textpvs -command [list $f.textpeer yview]
-    $f.text configure -height 5
-    grid $f.textpeer $f.textpvs -in $f.textfupper -sticky news
-    Grid $f.textfupper 0 0
-    $peers add $f.textfupper
-    $peers add $f.textflower -weight 1
-    grid $peers -in $f.textf -sticky news -padx 1 -pady 1
-    Grid $f.textf 0 0
-    bindtags $f.text [linsert [bindtags $f.text] 1 ChatwidgetText]
+    set chatf [ttk::frame $inner.chat -style ChatwidgetFrame]
+    set peers [ttk::panedwindow $chatf.peers -orient vertical]
+    set upper [ttk::frame $peers.upper]
+    set lower [ttk::frame $peers.lower]
+
+    set chat [text $lower.text -borderwidth 0 -relief flat -wrap word \
+                  -state disabled -font ChatwidgetFont]
+    set chatvs [ttk::scrollbar $lower.vs -command [list $chat yview]]
+    $chat configure -height 10 -state disabled \
+        -yscrollcommand [list [namespace origin scroll_set] $chatvs $peers 1]
+    grid $chat $chatvs -sticky news
+    Grid $lower 0 0
+    set peer [$chat peer create $upper.text -borderwidth 0 -relief flat \
+                  -wrap word -state disabled -font ChatwidgetFont]
+    set peervs [ttk::scrollbar $upper.vs -command [list $peer yview]]
+    $peer configure -height 0 \
+        -yscrollcommand [list [namespace origin scroll_set] $peervs $peers 0]
+    grid $peer $peervs -sticky news
+    Grid $upper 0 0
+    $peers add $upper
+    $peers add $lower -weight 1
+    grid $peers -sticky news -padx 1 -pady 1
+    Grid $chatf 0 0
+    bindtags $chat [linsert [bindtags $chat] 1 ChatwidgetText]
+    set state(chat_widget) $chat
+    set state(chat_peer_widget) $peer
     
     # Create the entry widget
-    ttk::frame $f.entryf -style ChatwidgetFrame
-    text $f.entry -borderwidth 0 -relief flat -font ChatwidgetFont \
-        -yscrollcommand [list [namespace origin AutoScrollSet] $self $f.entryvs $f.entryf 0]
-    ttk::scrollbar $f.entryvs -command [list $f.entry yview]
-    $f.entry configure -height 1
-    bindtags $f.entry [linsert [bindtags $f.entry] 1 ChatwidgetEntry]
-    grid $f.entry $f.entryvs -in $f.entryf -sticky news -padx 1 -pady 1
-    Grid $f.entryf 0 0
+    set entry [ttk::frame $outer.entry -style ChatwidgetFrame]
+    text $entry.text -borderwidth 0 -relief flat -font ChatwidgetFont
+    ttk::scrollbar $entry.vs -command [list $entry.text yview]
+    $entry.text configure -height 1 \
+        -yscrollcommand [list [namespace origin scroll_set] $entry.vs $outer 0]
+    bindtags $entry.text [linsert [bindtags $entry.text] 1 ChatwidgetEntry]
+    grid $entry.text $entry.vs -sticky news -padx 1 -pady 1
+    Grid $entry 0 0
+    set state(entry_widget) $entry.text
 
-    bind ChatwidgetEntry <Return> "[namespace origin Post] \[winfo parent %W\]"
-    bind ChatwidgetEntry <KP_Enter> "[namespace origin Post] \[winfo parent %W\]"
+    bind ChatwidgetEntry <Return> "[namespace origin Post] \[[namespace origin Self] %W\]"
+    bind ChatwidgetEntry <KP_Enter> "[namespace origin Post] \[[namespace origin Self] %W\]"
     bind ChatwidgetEntry <Shift-Return> "#"
     bind ChatwidgetEntry <Control-Return> "#"
-    bind ChatwidgetEntry <Key-Up>   "[namespace origin History] \[winfo parent %W\] prev"
-    bind ChatwidgetEntry <Key-Down> "[namespace origin History] \[winfo parent %W\] next"
-    bind ChatwidgetEntry <Key-Tab> "[namespace origin Nickcomplete] \[winfo parent %W\]"
-    bind ChatwidgetEntry <Key-Prior> "\[winfo parent %W\] yview scroll -1 pages"
-    bind ChatwidgetEntry <Key-Next> "\[winfo parent %W\] yview scroll 1 pages"
+    bind ChatwidgetEntry <Key-Up>   "[namespace origin History] \[[namespace origin Self] %W\] prev"
+    bind ChatwidgetEntry <Key-Down> "[namespace origin History] \[[namespace origin Self] %W\] next"
+    bind ChatwidgetEntry <Key-Tab> "[namespace origin Nickcomplete] \[[namespace origin Self] %W\]"
+    bind ChatwidgetEntry <Key-Prior> "\[[namespace origin Self] %W\] yview scroll -1 pages"
+    bind ChatwidgetEntry <Key-Next> "\[[namespace origin Self] %W\] yview scroll 1 pages"
     bind $self <Destroy> "+unset -nocomplain [namespace current]::%W"
-    bind $peers <Map> [list [namespace origin PaneMap] %W 0]
-    bind $inner <Map> [list [namespace origin PaneMap] %W -90]
-    bind $outer <Map> [list [namespace origin PaneMap] %W -28]
+    bind $peer       <Map> [list [namespace origin PaneMap] %W $peers 0]
+    bind $names.text <Map> [list [namespace origin PaneMap] %W $inner -90]
+    bind $entry.text <Map> [list [namespace origin PaneMap] %W $outer -28]
 
     bind ChatwidgetText <<ThemeChanged>> {
         ttk::style layout ChatwidgetFrame {
@@ -400,25 +447,40 @@ proc chatwidget::Create {self} {
         }
     }
 
-    $f.names tag configure SUBTITLE -background grey80 -font ChatwidgetBoldFont
+    $names.text tag configure SUBTITLE \
+        -background grey80 -font ChatwidgetBoldFont
 
-    $inner add $f.textf -weight 1
-    $inner add $f.namesf
+    $inner add $chatf -weight 1
+    $inner add $names
     $outer add $inner -weight 1
-    $outer add $f.entryf
+    $outer add $entry
     
     grid $outer -row 1 -column 0 -sticky news -padx 1 -pady 1
-    grid columnconfigure $f 0 -weight 1
-    grid rowconfigure $f 1 -weight 1
+    Grid $self 1 0
     return $self
 }
 
+proc chatwidget::Self {widget} {
+    set class [winfo class [set w $widget]]
+    while {[winfo exists $w] && [winfo class $w] ne "Chatwidget"} {
+        set w [winfo parent $w]
+    }
+    if {![winfo exists $w]} {
+        return -code error "invalid window $widget" 
+    }
+    return $w
+}
+
 # Set initial position of sash
-proc chatwidget::PaneMap {pane offset} {
+proc chatwidget::PaneMap {w pane offset} {
     bind $pane <Map> {}
     if {[llength [$pane panes]] > 1} {
         if {$offset < 0} {
-            if {[$pane cget -orient] eq "horizontal"} {set axis width} else {set axis height}
+            if {[$pane cget -orient] eq "horizontal"} {
+                set axis width
+            } else {
+                set axis height
+            }
             after idle [list $pane sashpos 0 [expr {[winfo $axis $pane] + $offset}]]
         } else {
             after idle [list $pane sashpos 0 $offset]
@@ -429,15 +491,23 @@ proc chatwidget::PaneMap {pane offset} {
 # Handle auto-scroll smarts. This will cause the scrollbar to be removed if
 # not required and to disable autoscroll for the text widget if we are not
 # tracking the bottom line.
-proc chatwidget::AutoScrollSet {self scrollbar frame set f1 f2} {
-    upvar #0 [namespace current]::$self state
+proc chatwidget::scroll_set {scrollbar pw set f1 f2} {
     $scrollbar set $f1 $f2
     if {($f1 == 0) && ($f2 == 1)} {
 	grid remove $scrollbar
     } else {
-        grid $scrollbar -in $frame
+        if {[winfo manager $scrollbar] eq {}} {}
+            if {[llength [$pw panes]] > 1} {
+                set pos [$pw sashpos 0]
+                grid $scrollbar
+                after idle [list $pw sashpos 0 $pos]
+            } else {
+                grid $scrollbar
+            }
+        
     }
     if {$set} {
+        upvar #0 [namespace current]::[Self $scrollbar] state
         set state(autoscroll) [expr {(1.0 - $f2) < 1.0e-6 }]
     }
 }
