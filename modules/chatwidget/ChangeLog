@@ -1,5 +1,11 @@
 2007-10-19  Pat Thoyts  <patthoyts@users.sourceforge.net>
 
+	* chatwidget.tcl: Reorganized the widget tree to fix some problems
+	                  when adding scrollbars to the panes. Added
+	                  accessors for all the components.
+
+2007-10-19  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
 	* chatwidget.tcl: Initial checkin of a composite widget for use
 	* chatwidget.man: in chat applications (eg: jabber or irc)
 	* pkgIndex.tcl: 
