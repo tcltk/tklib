@@ -1,0 +1,7 @@
+2007-10-19  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* chatwidget.tcl: Initial checkin of a composite widget for use
+	* chatwidget.man: in chat applications (eg: jabber or irc)
+	* pkgIndex.tcl: 
+
+
