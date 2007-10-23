@@ -55,7 +55,7 @@ Set the topic text to [arg topic].
 Control the names and tags associated with names. 
 [list_begin commands]
 [cmd_def "list [opt [arg -full]]"]
-Returns a list of all the user names from the names view. If [opt
+Returns a list of all the user names from the names view. If [opt \
 -full] is given then the list returned is a list of lists where each
 sublist is made up of the nick followed by any options that have been
 set on this nick entry. This may be used to examine any application
