@@ -11,7 +11,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: chatwidget.tcl,v 1.2 2007/10/19 22:39:09 patthoyts Exp $
+# RCS: @(#) $Id: chatwidget.tcl,v 1.3 2007/10/24 10:32:19 patthoyts Exp $
 
 package require Tk 8.5
 
@@ -27,7 +27,10 @@ namespace eval chatwidget {
     }
     if {[lsearch -exact [font names] ChatwidgetFont] == -1} {
         eval [list font create ChatwidgetFont] [font configure TkTextFont]
-        eval [list font create ChatwidgetBoldFont] [font configure ChatwidgetFont] -weight bold
+        eval [list font create ChatwidgetBoldFont] \
+            [font configure ChatwidgetFont] -weight bold
+        eval [list font create ChatwidgetItalicFont] \
+            [font configure ChatwidgetFont] -slant italic
     }
 }
 
@@ -432,8 +435,8 @@ proc chatwidget::Create {self} {
     bind ChatwidgetEntry <Key-Up>   "[namespace origin History] \[[namespace origin Self] %W\] prev"
     bind ChatwidgetEntry <Key-Down> "[namespace origin History] \[[namespace origin Self] %W\] next"
     bind ChatwidgetEntry <Key-Tab> "[namespace origin Nickcomplete] \[[namespace origin Self] %W\]"
-    bind ChatwidgetEntry <Key-Prior> "\[[namespace origin Self] %W\] yview scroll -1 pages"
-    bind ChatwidgetEntry <Key-Next> "\[[namespace origin Self] %W\] yview scroll 1 pages"
+    bind ChatwidgetEntry <Key-Prior> "\[[namespace origin Self] %W\] chat yview scroll -1 pages"
+    bind ChatwidgetEntry <Key-Next> "\[[namespace origin Self] %W\] chat yview scroll 1 pages"
     bind $self <Destroy> "+unset -nocomplain [namespace current]::%W"
     bind $peer       <Map> [list [namespace origin PaneMap] %W $peers 0]
     bind $names.text <Map> [list [namespace origin PaneMap] %W $inner -90]
@@ -449,6 +452,8 @@ proc chatwidget::Create {self} {
 
     $names.text tag configure SUBTITLE \
         -background grey80 -font ChatwidgetBoldFont
+    $chat tag configure NICK        -font ChatwidgetBoldFont
+    $chat tag configure TYPE-system -font ChatwidgetItalicFont
 
     $inner add $chatf -weight 1
     $inner add $names
