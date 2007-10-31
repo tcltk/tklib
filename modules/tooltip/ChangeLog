@@ -1,3 +1,8 @@
+2007-10-31  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* tooltip.tcl: added fading (default on for Win32/Aqua) of tooltip
+	* tooltip.man: instead of just withdraw. [Bug 1641071]
+
 2007-09-22  Pat Thoyts  <patthoyts@users.sourceforge.net>
 
 	* tooltip.tcl (::tooltip::show): Left align the tooltip text
