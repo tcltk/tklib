@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tooltip.tcl,v 1.10 2007/10/31 18:48:12 hobbs Exp $
+# RCS: @(#) $Id: tooltip.tcl,v 1.11 2007/10/31 23:04:32 hobbs Exp $
 #
 # Initiated: 28 October 1996
 
@@ -228,6 +228,8 @@ proc ::tooltip::register {w args} {
 
 proc ::tooltip::clear {{pattern .*}} {
     variable tooltip
+    # cache the current widget at pointer
+    set ptrw [winfo containing [winfo pointerx .] [winfo pointery .]]
     foreach w [array names tooltip $pattern] {
 	unset tooltip($w)
 	if {[winfo exists $w]} {
@@ -237,6 +239,9 @@ proc ::tooltip::clear {{pattern .*}} {
 	    }
 	    ## We don't remove TooltipMenu because there
 	    ## might be other indices that use it
+
+	    # Withdraw the tooltip if we clear the current contained item
+	    if {$ptrw eq $w} { hide }
 	}
     }
 }
