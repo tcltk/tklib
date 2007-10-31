@@ -35,6 +35,11 @@ over the widget before the tooltip is displayed. The delay is specified in
 milliseconds and must be greater than 50ms.
 With no argument the current delay is returned.
 
+[opt_def fade [opt [arg boolean]]]
+
+Enable or disable fading of the tooltip.  The is enabled by default on Win32
+and Aqua.  The tooltip will fade away on Leave events instead disappearing.
+
 [opt_def disable]
 [opt_def off]
 
