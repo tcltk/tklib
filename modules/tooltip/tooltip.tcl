@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tooltip.tcl,v 1.9 2007/09/22 13:55:41 patthoyts Exp $
+# RCS: @(#) $Id: tooltip.tcl,v 1.10 2007/10/31 18:48:12 hobbs Exp $
 #
 # Initiated: 28 October 1996
 
@@ -67,12 +67,17 @@ namespace eval ::tooltip {
 
     array set G {
 	enabled		1
+	fade		1
+	FADESTEP	0.2
+	FADEID		{}
 	DELAY		500
 	AFTERID		{}
 	LAST		-1
 	TOPLEVEL	.__tooltip__
     }
-
+    if {[tk windowingsystem] eq "x11"} {
+	set G(fade) 0 ; # don't fade by default on X11
+    }
     # The extra ::hide call in <Enter> is necessary to catch moving to
     # child widgets where the <Leave> event won't be generated
     bind Tooltip <Enter> [namespace code {
@@ -87,7 +92,7 @@ namespace eval ::tooltip {
     }]
 
     bind Menu <<MenuSelect>>	[namespace code { menuMotion %W }]
-    bind Tooltip <Leave>	[namespace code hide]
+    bind Tooltip <Leave>	[namespace code [list hide 1]] ; # fade ok
     bind Tooltip <Any-KeyPress>	[namespace code hide]
     bind Tooltip <Any-Button>	[namespace code hide]
 }
@@ -111,6 +116,12 @@ proc ::tooltip::tooltip {w args} {
 		return $G(DELAY)
 	    }
 	}
+	fade	{
+	    if {[llength $args]} {
+		set G(fade) [string is true -strict [lindex $args 0]]
+	    }
+	    return $G(fade)
+	}
 	off - disable	{
 	    set G(enabled) 0
 	    hide
@@ -132,6 +143,8 @@ proc ::tooltip::tooltip {w args} {
 		    wm overrideredirect $b 1
 		}
 		catch {wm attributes $b -topmost 1}
+		# avoid the blink issue with 1 to <1 alpha on Windows
+		catch {wm attributes $b -alpha 0.99}
 		wm positionfrom $b program
 		wm withdraw $b
 		label $b.label -highlightthickness 0 -relief solid -bd 1 \
@@ -241,6 +254,7 @@ proc ::tooltip::show {w msg {i {}}} {
 
     variable G
 
+    after cancel $G(FADEID)
     set b $G(TOPLEVEL)
     # Use late-binding msgcat (lazy translation) to support programs
     # that allow on-the-fly l10n changes
@@ -285,6 +299,8 @@ proc ::tooltip::show {w msg {i {}}} {
     if {[tk windowingsystem] eq "aqua"} {
 	set focus [focus]
     }
+    # avoid the blink issue with 1 to <1 alpha on Windows, watch half-fading
+    catch {wm attributes $b -alpha 0.99}
     wm geometry $b +$x+$y
     wm deiconify $b
     raise $b
@@ -320,11 +336,27 @@ proc ::tooltip::menuMotion {w} {
     }
 }
 
-proc ::tooltip::hide {args} {
+proc ::tooltip::hide {{fadeOk 0}} {
     variable G
 
     after cancel $G(AFTERID)
-    catch {wm withdraw $G(TOPLEVEL)}
+    after cancel $G(FADEID)
+    if {$fadeOk && $G(fade)} {
+	fade $G(TOPLEVEL) $G(FADESTEP)
+    } else {
+	catch {wm withdraw $G(TOPLEVEL)}
+    }
+}
+
+proc ::tooltip::fade {w step} {
+    if {[catch {wm attributes $w -alpha} alpha] || $alpha <= 0.0} {
+        catch { wm withdraw $w }
+        catch { wm attributes $w -alpha 0.99 }
+    } else {
+	variable G
+        wm attributes $w -alpha [expr {$alpha-$step}]
+        set G(FADEID) [after 50 [namespace code [list fade $w $step]]]
+    }
 }
 
 proc ::tooltip::wname {{w {}}} {
@@ -354,7 +386,7 @@ proc ::tooltip::itemTip {w args} {
 
 proc ::tooltip::enableCanvas {w args} {
     $w bind all <Enter> +[namespace code [list itemTip $w]]
-    $w bind all <Leave>	+[namespace code hide]
+    $w bind all <Leave>	+[namespace code [list hide 1]] ; # fade ok
     $w bind all <Any-KeyPress> +[namespace code hide]
     $w bind all <Any-Button> +[namespace code hide]
 }
@@ -371,7 +403,7 @@ proc ::tooltip::tagTip {w tag} {
 
 proc ::tooltip::enableTag {w tag} {
     $w tag bind $tag <Enter> +[namespace code [list tagTip $w $tag]]
-    $w tag bind $tag <Leave> +[namespace code hide]
+    $w tag bind $tag <Leave> +[namespace code [list hide 1]] ; # fade ok
     $w tag bind $tag <Any-KeyPress> +[namespace code hide]
     $w tag bind $tag <Any-Button> +[namespace code hide]
 }
