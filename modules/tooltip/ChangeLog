@@ -1,5 +1,8 @@
 2007-10-31  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* tooltip.tcl (::tooltip::clear): Withdraw the tooltip if we clear
+	the current contained item. [Bug 1547729]
+
 	* tooltip.tcl: added fading (default on for Win32/Aqua) of tooltip
 	* tooltip.man: instead of just withdraw. [Bug 1641071]
 
