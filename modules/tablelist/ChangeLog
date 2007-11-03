@@ -1,3 +1,11 @@
+2007-11-03  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.8.1.
+	* COPYRIGHT.txt:
+
+	* scripts/tablelistUtil.tcl: Improved the appearance of the header
+	  labels for the aqua theme.
+
 2007-09-10  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistConfig.tcl: Changes related to the new formatinfo
