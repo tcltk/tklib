@@ -1822,7 +1822,8 @@ proc tablelist::getSepX {} {
     if {$usingTile} {
 	set currentTheme [getCurrentTheme]
 	variable xpStyle
-	if {[string compare $currentTheme "xpnative"] == 0 && $xpStyle} {
+	if {[string compare $currentTheme "aqua"] == 0 ||
+	    [string compare $currentTheme "xpnative"] == 0 && $xpStyle} {
 	    set x 0
 	} elseif {[string compare $currentTheme "tileqt"] == 0 &&
 		  [string compare [string tolower [tileqt_currentThemeName]] \
@@ -1848,6 +1849,10 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
     set compAllColWidths [expr {[string compare $whichWidths "allCols"] == 0}]
     set compAllLabelWidths \
 	[expr {[string compare $whichWidths "allLabels"] == 0}]
+
+    variable usingTile
+    set usingAquaTheme \
+	[expr {$usingTile && [string compare [getCurrentTheme] "aqua"] == 0}]
 
     #
     # Configure the labels and compute the positions of
@@ -1939,6 +1944,9 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 	    lower $w
 	} else {
 	    set labelPixels [expr {$pixels + 2*$data(charWidth)}]
+	    if {$usingAquaTheme && $col < $data(lastCol)} {
+		incr labelPixels
+	    }
 	    place $w -x $x -relheight 1.0 -width $labelPixels
 	}
 
@@ -1967,7 +1975,11 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 
 	incr col
     }
-    place $data(hdrLbl) -x $x
+    if {$usingAquaTheme} {
+	place $data(hdrLbl) -x [expr {$x - 1}]
+    } else {
+	place $data(hdrLbl) -x $x
+    }
 
     #
     # Apply the value of tabs to the body text widget
