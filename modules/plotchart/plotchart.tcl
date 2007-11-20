@@ -30,195 +30,216 @@ namespace eval ::Plotchart {
                     createGanttChart createHistogram colorMap \
                     create3DBars createRadialchart \
                     createTXPlot createRightAxis \
-                    create3DRibbonChart
+                    create3DRibbonChart \
+                    createXLogYPlot \
 
    #
    # Array linking procedures with methods
    #
-   set methodProc(xyplot,title)          DrawTitle
-   set methodProc(xyplot,xtext)          DrawXtext
-   set methodProc(xyplot,ytext)          DrawYtext
-   set methodProc(xyplot,plot)           DrawData
-   set methodProc(xyplot,dot)            DrawDot
-   set methodProc(xyplot,dotconfig)      DotConfigure
-   set methodProc(xyplot,interval)       DrawInterval
-   set methodProc(xyplot,trend)          DrawTrendLine
-   set methodProc(xyplot,vector)         DrawVector
-   set methodProc(xyplot,vectorconfig)   VectorConfigure
-   set methodProc(xyplot,rchart)         DrawRchart
-   set methodProc(xyplot,grid)           DrawGrid
-   set methodProc(xyplot,contourlines)   DrawIsolines
-   set methodProc(xyplot,contourfill)    DrawShades
-   set methodProc(xyplot,contourbox)     DrawBox
-   set methodProc(xyplot,saveplot)       SavePlot
-   set methodProc(xyplot,dataconfig)     DataConfig
-   set methodProc(xyplot,xconfig)        XConfig
-   set methodProc(xyplot,yconfig)        YConfig
-   set methodProc(xyplot,xticklines)     DrawXTicklines
-   set methodProc(xyplot,yticklines)     DrawYTicklines
-   set methodProc(xyplot,background)     BackgroundColour
-   set methodProc(xyplot,legendconfig)   LegendConfigure
-   set methodProc(xyplot,legend)         DrawLegend
-   set methodProc(xyplot,balloon)        DrawBalloon
-   set methodProc(xyplot,balloonconfig)  ConfigBalloon
-   set methodProc(xyplot,plaintext)      DrawPlainText
-   set methodProc(piechart,title)        DrawTitle
-   set methodProc(piechart,plot)         DrawPie
-   set methodProc(piechart,saveplot)     SavePlot
-   set methodProc(piechart,balloon)      DrawBalloon
-   set methodProc(piechart,balloonconfig) ConfigBalloon
-   set methodProc(piechart,plaintext)    DrawPlainText
-   set methodProc(polarplot,title)       DrawTitle
-   set methodProc(polarplot,plot)        DrawPolarData
-   set methodProc(polarplot,saveplot)    SavePlot
-   set methodProc(polarplot,dataconfig)  DataConfig
-   set methodProc(polarplot,background)  BackgroundColour
-   set methodProc(polarplot,legendconfig) LegendConfigure
-   set methodProc(polarplot,legend)      DrawLegend
-   set methodProc(polarplot,balloon)     DrawBalloon
-   set methodProc(polarplot,balloonconfig) ConfigBalloon
-   set methodProc(polarplot,plaintext)   DrawPlainText
-   set methodProc(histogram,title)       DrawTitle
-   set methodProc(histogram,xtext)       DrawXtext
-   set methodProc(histogram,ytext)       DrawYtext
-   set methodProc(histogram,plot)        DrawHistogramData
-   set methodProc(histogram,saveplot)    SavePlot
-   set methodProc(histogram,dataconfig)  DataConfig
-   set methodProc(histogram,xconfig)     XConfig
-   set methodProc(histogram,yconfig)     YConfig
-   set methodProc(histogram,yticklines)  DrawYTicklines
-   set methodProc(histogram,background)  BackgroundColour
-   set methodProc(histogram,legendconfig) LegendConfigure
-   set methodProc(histogram,legend)      DrawLegend
-   set methodProc(histogram,balloon)     DrawBalloon
-   set methodProc(histogram,balloonconfig) ConfigBalloon
-   set methodProc(histogram,plaintext)   DrawPlainText
-   set methodProc(horizbars,title)       DrawTitle
-   set methodProc(horizbars,xtext)       DrawXtext
-   set methodProc(horizbars,ytext)       DrawYtext
-   set methodProc(horizbars,plot)        DrawHorizBarData
-   set methodProc(horizbars,xticklines)  DrawXTicklines
-   set methodProc(horizbars,background)  BackgroundColour
-   set methodProc(horizbars,saveplot)    SavePlot
-   set methodProc(horizbars,colours)     SetColours
-   set methodProc(horizbars,colors)      SetColours
-   set methodProc(horizbars,xconfig)     XConfig
-   set methodProc(horizbars,legendconfig) LegendConfigure
-   set methodProc(horizbars,legend)      DrawLegend
-   set methodProc(horizbars,balloon)     DrawBalloon
-   set methodProc(horizbars,balloonconfig) ConfigBalloon
-   set methodProc(horizbars,plaintext)   DrawPlainText
-   set methodProc(vertbars,title)        DrawTitle
-   set methodProc(vertbars,xtext)        DrawXtext
-   set methodProc(vertbars,ytext)        DrawYtext
-   set methodProc(vertbars,plot)         DrawVertBarData
-   set methodProc(vertbars,background)   BackgroundColour
-   set methodProc(vertbars,yticklines)   DrawYTicklines
-   set methodProc(vertbars,saveplot)     SavePlot
-   set methodProc(vertbars,colours)      SetColours
-   set methodProc(vertbars,colors)       SetColours
-   set methodProc(vertbars,yconfig)      YConfig
-   set methodProc(vertbars,legendconfig) LegendConfigure
-   set methodProc(vertbars,legend)       DrawLegend
-   set methodProc(vertbars,balloon)      DrawBalloon
-   set methodProc(vertbars,balloonconfig) ConfigBalloon
-   set methodProc(vertbars,plaintext)    DrawPlainText
-   set methodProc(timechart,title)       DrawTitle
-   set methodProc(timechart,period)      DrawTimePeriod
-   set methodProc(timechart,milestone)   DrawTimeMilestone
-   set methodProc(timechart,vertline)    DrawTimeVertLine
-   set methodProc(timechart,saveplot)    SavePlot
-   set methodProc(timechart,background)  BackgroundColour
-   set methodProc(timechart,balloon)     DrawBalloon
-   set methodProc(timechart,balloonconfig) ConfigBalloon
-   set methodProc(timechart,plaintext)   DrawPlainText
-   set methodProc(ganttchart,title)      DrawTitle
-   set methodProc(ganttchart,period)     DrawGanttPeriod
-   set methodProc(ganttchart,task)       DrawGanttPeriod
-   set methodProc(ganttchart,milestone)  DrawGanttMilestone
-   set methodProc(ganttchart,vertline)   DrawGanttVertLine
-   set methodProc(ganttchart,saveplot)   SavePlot
-   set methodProc(ganttchart,color)      GanttColor
-   set methodProc(ganttchart,colour)     GanttColor
-   set methodProc(ganttchart,font)       GanttFont
-   set methodProc(ganttchart,connect)    DrawGanttConnect
-   set methodProc(ganttchart,summary)    DrawGanttSummary
-   set methodProc(ganttchart,background) BackgroundColour
-   set methodProc(ganttchart,balloon)     DrawBalloon
+   set methodProc(xyplot,title)             DrawTitle
+   set methodProc(xyplot,xtext)             DrawXtext
+   set methodProc(xyplot,ytext)             DrawYtext
+   set methodProc(xyplot,plot)              DrawData
+   set methodProc(xyplot,dot)               DrawDot
+   set methodProc(xyplot,dotconfig)         DotConfigure
+   set methodProc(xyplot,interval)          DrawInterval
+   set methodProc(xyplot,trend)             DrawTrendLine
+   set methodProc(xyplot,vector)            DrawVector
+   set methodProc(xyplot,vectorconfig)      VectorConfigure
+   set methodProc(xyplot,rchart)            DrawRchart
+   set methodProc(xyplot,grid)              DrawGrid
+   set methodProc(xyplot,contourlines)      DrawIsolines
+   set methodProc(xyplot,contourfill)       DrawShades
+   set methodProc(xyplot,contourbox)        DrawBox
+   set methodProc(xyplot,saveplot)          SavePlot
+   set methodProc(xyplot,dataconfig)        DataConfig
+   set methodProc(xyplot,xconfig)           XConfig
+   set methodProc(xyplot,yconfig)           YConfig
+   set methodProc(xyplot,xticklines)        DrawXTicklines
+   set methodProc(xyplot,yticklines)        DrawYTicklines
+   set methodProc(xyplot,background)        BackgroundColour
+   set methodProc(xyplot,legendconfig)      LegendConfigure
+   set methodProc(xyplot,legend)            DrawLegend
+   set methodProc(xyplot,balloon)           DrawBalloon
+   set methodProc(xyplot,balloonconfig)     ConfigBalloon
+   set methodProc(xyplot,plaintext)         DrawPlainText
+   set methodProc(xlogyplot,title)          DrawTitle
+   set methodProc(xlogyplot,xtext)          DrawXtext
+   set methodProc(xlogyplot,ytext)          DrawYtext
+   set methodProc(xlogyplot,plot)           DrawLogData
+   set methodProc(xlogyplot,dot)            DrawLogDot
+   set methodProc(xlogyplot,dotconfig)      DotConfigure
+   set methodProc(xlogyplot,interval)       DrawLogInterval
+   set methodProc(xlogyplot,trend)          DrawLogTrendLine
+   set methodProc(xlogyplot,saveplot)       SavePlot
+   set methodProc(xlogyplot,dataconfig)     DataConfig
+   set methodProc(xlogyplot,xconfig)        XConfig
+   set methodProc(xlogyplot,yconfig)        YConfig
+   set methodProc(xlogyplot,xticklines)     DrawXTicklines
+   set methodProc(xlogyplot,yticklines)     DrawYTicklines
+   set methodProc(xlogyplot,background)     BackgroundColour
+   set methodProc(xlogyplot,legendconfig)   LegendConfigure
+   set methodProc(xlogyplot,legend)         DrawLegend
+   set methodProc(xlogyplot,balloon)        DrawBalloon
+   set methodProc(xlogyplot,balloonconfig)  ConfigBalloon
+   set methodProc(xlogyplot,plaintext)      DrawPlainText
+   set methodProc(piechart,title)           DrawTitle
+   set methodProc(piechart,plot)            DrawPie
+   set methodProc(piechart,saveplot)        SavePlot
+   set methodProc(piechart,balloon)         DrawBalloon
+   set methodProc(piechart,balloonconfig)   ConfigBalloon
+   set methodProc(piechart,plaintext)       DrawPlainText
+   set methodProc(polarplot,title)          DrawTitle
+   set methodProc(polarplot,plot)           DrawPolarData
+   set methodProc(polarplot,saveplot)       SavePlot
+   set methodProc(polarplot,dataconfig)     DataConfig
+   set methodProc(polarplot,background)     BackgroundColour
+   set methodProc(polarplot,legendconfig)   LegendConfigure
+   set methodProc(polarplot,legend)         DrawLegend
+   set methodProc(polarplot,balloon)        DrawBalloon
+   set methodProc(polarplot,balloonconfig)  ConfigBalloon
+   set methodProc(polarplot,plaintext)      DrawPlainText
+   set methodProc(histogram,title)          DrawTitle
+   set methodProc(histogram,xtext)          DrawXtext
+   set methodProc(histogram,ytext)          DrawYtext
+   set methodProc(histogram,plot)           DrawHistogramData
+   set methodProc(histogram,saveplot)       SavePlot
+   set methodProc(histogram,dataconfig)     DataConfig
+   set methodProc(histogram,xconfig)        XConfig
+   set methodProc(histogram,yconfig)        YConfig
+   set methodProc(histogram,yticklines)     DrawYTicklines
+   set methodProc(histogram,background)     BackgroundColour
+   set methodProc(histogram,legendconfig)   LegendConfigure
+   set methodProc(histogram,legend)         DrawLegend
+   set methodProc(histogram,balloon)        DrawBalloon
+   set methodProc(histogram,balloonconfig)  ConfigBalloon
+   set methodProc(histogram,plaintext)      DrawPlainText
+   set methodProc(horizbars,title)          DrawTitle
+   set methodProc(horizbars,xtext)          DrawXtext
+   set methodProc(horizbars,ytext)          DrawYtext
+   set methodProc(horizbars,plot)           DrawHorizBarData
+   set methodProc(horizbars,xticklines)     DrawXTicklines
+   set methodProc(horizbars,background)     BackgroundColour
+   set methodProc(horizbars,saveplot)       SavePlot
+   set methodProc(horizbars,colours)        SetColours
+   set methodProc(horizbars,colors)         SetColours
+   set methodProc(horizbars,xconfig)        XConfig
+   set methodProc(horizbars,legendconfig)   LegendConfigure
+   set methodProc(horizbars,legend)         DrawLegend
+   set methodProc(horizbars,balloon)        DrawBalloon
+   set methodProc(horizbars,balloonconfig)  ConfigBalloon
+   set methodProc(horizbars,plaintext)      DrawPlainText
+   set methodProc(vertbars,title)           DrawTitle
+   set methodProc(vertbars,xtext)           DrawXtext
+   set methodProc(vertbars,ytext)           DrawYtext
+   set methodProc(vertbars,plot)            DrawVertBarData
+   set methodProc(vertbars,background)      BackgroundColour
+   set methodProc(vertbars,yticklines)      DrawYTicklines
+   set methodProc(vertbars,saveplot)        SavePlot
+   set methodProc(vertbars,colours)         SetColours
+   set methodProc(vertbars,colors)          SetColours
+   set methodProc(vertbars,yconfig)         YConfig
+   set methodProc(vertbars,legendconfig)    LegendConfigure
+   set methodProc(vertbars,legend)          DrawLegend
+   set methodProc(vertbars,balloon)         DrawBalloon
+   set methodProc(vertbars,balloonconfig)   ConfigBalloon
+   set methodProc(vertbars,plaintext)       DrawPlainText
+   set methodProc(timechart,title)          DrawTitle
+   set methodProc(timechart,period)         DrawTimePeriod
+   set methodProc(timechart,milestone)      DrawTimeMilestone
+   set methodProc(timechart,vertline)       DrawTimeVertLine
+   set methodProc(timechart,saveplot)       SavePlot
+   set methodProc(timechart,background)     BackgroundColour
+   set methodProc(timechart,balloon)        DrawBalloon
+   set methodProc(timechart,balloonconfig)  ConfigBalloon
+   set methodProc(timechart,plaintext)      DrawPlainText
+   set methodProc(ganttchart,title)         DrawTitle
+   set methodProc(ganttchart,period)        DrawGanttPeriod
+   set methodProc(ganttchart,task)          DrawGanttPeriod
+   set methodProc(ganttchart,milestone)     DrawGanttMilestone
+   set methodProc(ganttchart,vertline)      DrawGanttVertLine
+   set methodProc(ganttchart,saveplot)      SavePlot
+   set methodProc(ganttchart,color)         GanttColor
+   set methodProc(ganttchart,colour)        GanttColor
+   set methodProc(ganttchart,font)          GanttFont
+   set methodProc(ganttchart,connect)       DrawGanttConnect
+   set methodProc(ganttchart,summary)       DrawGanttSummary
+   set methodProc(ganttchart,background)    BackgroundColour
+   set methodProc(ganttchart,balloon)       DrawBalloon
    set methodProc(ganttchart,balloonconfig) ConfigBalloon
-   set methodProc(ganttchart,plaintext)  DrawPlainText
-   set methodProc(stripchart,title)      DrawTitle
-   set methodProc(stripchart,xtext)      DrawXtext
-   set methodProc(stripchart,ytext)      DrawYtext
-   set methodProc(stripchart,plot)       DrawStripData
-   set methodProc(stripchart,saveplot)   SavePlot
-   set methodProc(stripchart,dataconfig) DataConfig
-   set methodProc(stripchart,xconfig)    XConfig
-   set methodProc(stripchart,yconfig)    YConfig
-   set methodProc(stripchart,yticklines) DrawYTicklines
-   set methodProc(stripchart,background) BackgroundColour
-   set methodProc(stripchart,legendconfig) LegendConfigure
-   set methodProc(stripchart,legend)     DrawLegend
-   set methodProc(stripchart,balloon)    DrawBalloon
+   set methodProc(ganttchart,plaintext)     DrawPlainText
+   set methodProc(stripchart,title)         DrawTitle
+   set methodProc(stripchart,xtext)         DrawXtext
+   set methodProc(stripchart,ytext)         DrawYtext
+   set methodProc(stripchart,plot)          DrawStripData
+   set methodProc(stripchart,saveplot)      SavePlot
+   set methodProc(stripchart,dataconfig)    DataConfig
+   set methodProc(stripchart,xconfig)       XConfig
+   set methodProc(stripchart,yconfig)       YConfig
+   set methodProc(stripchart,yticklines)    DrawYTicklines
+   set methodProc(stripchart,background)    BackgroundColour
+   set methodProc(stripchart,legendconfig)  LegendConfigure
+   set methodProc(stripchart,legend)        DrawLegend
+   set methodProc(stripchart,balloon)       DrawBalloon
    set methodProc(stripchart,balloonconfig) ConfigBalloon
-   set methodProc(stripchart,plaintext)  DrawPlainText
-   set methodProc(isometric,title)       DrawTitle
-   set methodProc(isometric,xtext)       DrawXtext
-   set methodProc(isometric,ytext)       DrawYtext
-   set methodProc(isometric,plot)        DrawIsometricData
-   set methodProc(isometric,saveplot)    SavePlot
-   set methodProc(isometric,background)  BackgroundColour
-   set methodProc(isometric,balloon)     DrawBalloon
-   set methodProc(isometric,balloonconfig) ConfigBalloon
-   set methodProc(isometric,plaintext)   DrawPlainText
-   set methodProc(3dplot,title)          DrawTitle
-   set methodProc(3dplot,plotfunc)       Draw3DFunction
-   set methodProc(3dplot,plotdata)       Draw3DData
-   set methodProc(3dplot,plotline)       Draw3DLineFrom3Dcoordinates
-   set methodProc(3dplot,gridsize)       GridSize3D
-   set methodProc(3dplot,saveplot)       SavePlot
-   set methodProc(3dplot,colour)         SetColours
-   set methodProc(3dplot,color)          SetColours
-   set methodProc(3dplot,xconfig)        XConfig
-   set methodProc(3dplot,yconfig)        YConfig
-   set methodProc(3dplot,zconfig)        ZConfig
-   set methodProc(3dplot,plotfuncont)    Draw3DFunctionContour
-   set methodProc(3dplot,background)     BackgroundColour
-   set methodProc(3dbars,title)          DrawTitle
-   set methodProc(3dbars,plot)           Draw3DBar
-   set methodProc(3dbars,yconfig)        YConfig
-   set methodProc(3dbars,saveplot)       SavePlot
-   set methodProc(3dbars,config)         Config3DBars
-   set methodProc(3dbars,balloon)        DrawBalloon
-   set methodProc(3dbars,balloonconfig)  ConfigBalloon
-   set methodProc(3dbars,plaintext)      DrawPlainText
-   set methodProc(radialchart,title)     DrawTitle
-   set methodProc(radialchart,plot)      DrawRadial
-   set methodProc(radialchart,saveplot)  SavePlot
-   set methodProc(radialchart,balloon)   DrawBalloon
-   set methodProc(radialchart,plaintext) DrawPlainText
-   set methodProc(txplot,title)          DrawTitle
-   set methodProc(txplot,xtext)          DrawXtext
-   set methodProc(txplot,ytext)          DrawYtext
-   set methodProc(txplot,plot)           DrawTimeData
-   set methodProc(txplot,interval)       DrawInterval
-   set methodProc(txplot,saveplot)       SavePlot
-   set methodProc(txplot,dataconfig)     DataConfig
-   set methodProc(txplot,xconfig)        XConfig
-   set methodProc(txplot,yconfig)        YConfig
-   set methodProc(txplot,xticklines)     DrawXTicklines
-   set methodProc(txplot,yticklines)     DrawYTicklines
-   set methodProc(txplot,background)     BackgroundColour
-   set methodProc(txplot,legendconfig)   LegendConfigure
-   set methodProc(txplot,legend)         DrawLegend
-   set methodProc(txplot,balloon)        DrawBalloon
-   set methodProc(txplot,balloonconfig)  ConfigBalloon
-   set methodProc(txplot,plaintext)      DrawPlainText
-   set methodProc(3dribbon,title)        DrawTitle
-   set methodProc(3dribbon,saveplot)     SavePlot
-   set methodProc(3dribbon,line)         Draw3DLine
-   set methodProc(3dribbon,area)         Draw3DArea
-   set methodProc(3dribbon,background)   BackgroundColour
+   set methodProc(stripchart,plaintext)     DrawPlainText
+   set methodProc(isometric,title)          DrawTitle
+   set methodProc(isometric,xtext)          DrawXtext
+   set methodProc(isometric,ytext)          DrawYtext
+   set methodProc(isometric,plot)           DrawIsometricData
+   set methodProc(isometric,saveplot)       SavePlot
+   set methodProc(isometric,background)     BackgroundColour
+   set methodProc(isometric,balloon)        DrawBalloon
+   set methodProc(isometric,balloonconfig)  ConfigBalloon
+   set methodProc(isometric,plaintext)      DrawPlainText
+   set methodProc(3dplot,title)             DrawTitle
+   set methodProc(3dplot,plotfunc)          Draw3DFunction
+   set methodProc(3dplot,plotdata)          Draw3DData
+   set methodProc(3dplot,plotline)          Draw3DLineFrom3Dcoordinates
+   set methodProc(3dplot,gridsize)          GridSize3D
+   set methodProc(3dplot,saveplot)          SavePlot
+   set methodProc(3dplot,colour)            SetColours
+   set methodProc(3dplot,color)             SetColours
+   set methodProc(3dplot,xconfig)           XConfig
+   set methodProc(3dplot,yconfig)           YConfig
+   set methodProc(3dplot,zconfig)           ZConfig
+   set methodProc(3dplot,plotfuncont)       Draw3DFunctionContour
+   set methodProc(3dplot,background)        BackgroundColour
+   set methodProc(3dbars,title)             DrawTitle
+   set methodProc(3dbars,plot)              Draw3DBar
+   set methodProc(3dbars,yconfig)           YConfig
+   set methodProc(3dbars,saveplot)          SavePlot
+   set methodProc(3dbars,config)            Config3DBars
+   set methodProc(3dbars,balloon)           DrawBalloon
+   set methodProc(3dbars,balloonconfig)     ConfigBalloon
+   set methodProc(3dbars,plaintext)         DrawPlainText
+   set methodProc(radialchart,title)        DrawTitle
+   set methodProc(radialchart,plot)         DrawRadial
+   set methodProc(radialchart,saveplot)     SavePlot
+   set methodProc(radialchart,balloon)      DrawBalloon
+   set methodProc(radialchart,plaintext)    DrawPlainText
+   set methodProc(txplot,title)             DrawTitle
+   set methodProc(txplot,xtext)             DrawXtext
+   set methodProc(txplot,ytext)             DrawYtext
+   set methodProc(txplot,plot)              DrawTimeData
+   set methodProc(txplot,interval)          DrawInterval
+   set methodProc(txplot,saveplot)          SavePlot
+   set methodProc(txplot,dataconfig)        DataConfig
+   set methodProc(txplot,xconfig)           XConfig
+   set methodProc(txplot,yconfig)           YConfig
+   set methodProc(txplot,xticklines)        DrawXTicklines
+   set methodProc(txplot,yticklines)        DrawYTicklines
+   set methodProc(txplot,background)        BackgroundColour
+   set methodProc(txplot,legendconfig)      LegendConfigure
+   set methodProc(txplot,legend)            DrawLegend
+   set methodProc(txplot,balloon)           DrawBalloon
+   set methodProc(txplot,balloonconfig)     ConfigBalloon
+   set methodProc(txplot,plaintext)         DrawPlainText
+   set methodProc(3dribbon,title)           DrawTitle
+   set methodProc(3dribbon,saveplot)        SavePlot
+   set methodProc(3dribbon,line)            Draw3DLine
+   set methodProc(3dribbon,area)            Draw3DArea
+   set methodProc(3dribbon,background)      BackgroundColour
 
    #
    # Auxiliary parameters
@@ -661,6 +682,57 @@ proc ::Plotchart::createIsometricPlot { w xscale yscale stepsize } {
    }
    DefaultLegend  $w
    DefaultBalloon $w
+
+   return $newchart
+}
+
+# createXLogYPlot --
+#    Create a command for drawing an XY plot (with a vertical logarithmic axis)
+# Arguments:
+#    w           Name of the canvas
+#    xscale      Minimum, maximum and step for x-axis (initial)
+#    yscale      Minimum, maximum and step for y-axis (step is ignored!)
+# Result:
+#    Name of a new command
+# Note:
+#    The entire canvas will be dedicated to the XY plot.
+#    The plot will be drawn with axes
+#
+proc ::Plotchart::createXLogYPlot { w xscale yscale } {
+   variable data_series
+
+   foreach s [array names data_series "$w,*"] {
+      unset data_series($s)
+   }
+
+   set newchart "xlogyplot_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler xlogyplot $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+
+   foreach {xmin xmax xdelt} $xscale {break}
+   foreach {ymin ymax ydelt} $yscale {break}
+
+   if { $xdelt == 0.0 || $ydelt == 0.0 } {
+      return -code error "Step size can not be zero"
+   }
+
+   if { $ymin <= 0.0 || $ymax <= 0.0 } {
+      return -code error "Minimum and maximum for y-axis must be positive"
+   }
+
+   #
+   # TODO: reversed log plot
+   #
+
+   viewPort         $w $pxmin $pymin $pxmax $pymax
+   worldCoordinates $w $xmin  [expr {log10($ymin)}]  $xmax [expr {log10($ymax)}]
+
+   DrawLogYaxis     $w $ymin  $ymax  $ydelt
+   DrawXaxis        $w $xmin  $xmax  $xdelt
+   DrawMask         $w
+   DefaultLegend    $w
+   DefaultBalloon   $w
 
    return $newchart
 }
