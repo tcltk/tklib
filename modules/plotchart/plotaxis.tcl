@@ -110,6 +110,67 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
     }
 }
 
+# DrawLogYaxis --
+#    Draw the logarithmic y-axis
+# Arguments:
+#    w           Name of the canvas
+#    ymin        Minimum y coordinate
+#    ymax        Maximum y coordinate
+#    ystep       Step size
+# Result:
+#    None
+# Side effects:
+#    Axis drawn in canvas
+#
+proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
+    variable scaling
+
+    set scaling($w,ydelt) $ydelt
+
+    $w delete yaxis
+
+    $w create line $scaling($w,pxmin) $scaling($w,pymin) \
+                   $scaling($w,pxmin) $scaling($w,pymax) \
+                   -fill black -tag yaxis
+
+    set format ""
+    if { [info exists scaling($w,-format,y)] } {
+        set format $scaling($w,-format,y)
+    }
+
+    set scaling($w,yaxis) {}
+
+    set y       [expr {pow(10.0,ceil(log10($ymin)))}]
+    set ylogmax [expr {pow(10.0,floor(log10($ymax)))+0.1}]
+
+    while { $y < $ylogmax } {
+
+        #
+        # Labels and tickmarks
+        #
+        foreach factor {1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0} {
+            set yt [expr {$y*$factor}]
+            if { $yt > $ylogmax } break
+
+            foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) [expr {log10($yt)}]] {break}
+            set xcrd2 [expr {$xcrd-3}]
+            set xcrd3 [expr {$xcrd-5}]
+
+            lappend scaling($w,yaxis) $ycrd
+
+            set ylabel $y
+            if { $format != "" } {
+                set ylabel [format $format $y]
+            }
+            $w create line $xcrd2 $ycrd $xcrd $ycrd -tag yaxis
+            if { $factor == 1.0 } {
+                $w create text $xcrd3 $ycrd -text $ylabel -tag yaxis -anchor e
+            }
+        }
+        set y [expr {10.0*$y}]
+    }
+}
+
 # DrawXaxis --
 #    Draw the x-axis
 # Arguments:
