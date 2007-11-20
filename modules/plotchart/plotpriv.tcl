@@ -496,6 +496,23 @@ proc ::Plotchart::DrawStripData { w series xcrd ycrd } {
    DrawData $w $series $xcrd $ycrd
 }
 
+# DrawLogData --
+#    Draw the data in an X-logY-plot
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    xcrd        Next x coordinate
+#    ycrd        Next y coordinate
+# Result:
+#    None
+# Side effects:
+#    New data drawn in canvas
+#
+proc ::Plotchart::DrawLogData { w series xcrd ycrd } {
+
+    DrawData $w $series $xcrd [expr {log10($ycrd)}]
+}
+
 # DrawInterval --
 #    Draw the data as an error interval in an XY-plot
 # Arguments:
