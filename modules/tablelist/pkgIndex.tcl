@@ -9,7 +9,7 @@
 #
 package ifneeded tablelist         4.8.1 \
 	[list source [file join $dir tablelist.tcl]]
-package ifneeded tablelist_tile    4.8 \
+package ifneeded tablelist_tile    4.8.1 \
 	[list source [file join $dir tablelist_tile.tcl]]
 
 #
