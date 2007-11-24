@@ -63,6 +63,8 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,balloon)           DrawBalloon
    set methodProc(xyplot,balloonconfig)     ConfigBalloon
    set methodProc(xyplot,plaintext)         DrawPlainText
+   set methodProc(xyplot,bindvar)           BindVar
+   set methodProc(xyplot,bindcmd)           BindCmd
    set methodProc(xlogyplot,title)          DrawTitle
    set methodProc(xlogyplot,xtext)          DrawXtext
    set methodProc(xlogyplot,ytext)          DrawYtext
@@ -1386,7 +1388,8 @@ source [file join [file dirname [info script]] "plotcontour.tcl"]
 source [file join [file dirname [info script]] "plotgantt.tcl"]
 source [file join [file dirname [info script]] "plotbusiness.tcl"]
 source [file join [file dirname [info script]] "plotannot.tcl"]
+#source [file join [file dirname [info script]] "plotbind.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.3.1
+package provide Plotchart 1.4.0

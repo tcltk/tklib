@@ -34,26 +34,35 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
         set format $scaling($w,-format,y)
     }
 
-    set y [expr {$ymin+0.0}]  ;# Make sure we have the number in the right format
+    if { $ymax > $ymin } {
+        set y [expr {$ymin+0.0}]  ;# Make sure we have the number in the right format
+        set ym $ymax
+    } else {
+        set y [expr {$ymax+0.0}]
+        set ym $ymin
+    }
+    set yt [expr {$ymin+0.0}]
+
     set scaling($w,yaxis) {}
 
-    while { $y < $ymax+0.5*$ydelt } {
+    while { $y < $ym+0.5*abs($ydelt) } {
 
-        foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $y] {break}
+        foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $yt] {break}
         set xcrd2 [expr {$xcrd-3}]
         set xcrd3 [expr {$xcrd-5}]
 
         lappend scaling($w,yaxis) $ycrd
 
-        set ylabel $y
+        set ylabel $yt
         if { $format != "" } {
             set ylabel [format $format $y]
         }
         $w create line $xcrd2 $ycrd $xcrd $ycrd -tag yaxis
         $w create text $xcrd3 $ycrd -text $ylabel -tag yaxis -anchor e
-        set y [expr {$y+$ydelt}]
-        if { abs($y) < 0.5*$ydelt } {
-            set y 0.0
+        set y  [expr {$y+abs($ydelt)}]
+        set yt [expr {$yt+$ydelt}]
+        if { abs($yt) < 0.5*abs($ydelt) } {
+            set yt 0.0
         }
     }
 }
@@ -86,26 +95,35 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
         set format $scaling($w,-format,y)
     }
 
-    set y [expr {$ymin+0.0}]  ;# Make sure we have the number in the right format
+    if { $ymax > $ymin } {
+        set y [expr {$ymin+0.0}]  ;# Make sure we have the number in the right format
+        set ym $ymax
+    } else {
+        set y [expr {$ymax+0.0}]
+        set ym $ymin
+    }
+    set yt [expr {$ymin+0.0}]
+
     set scaling($w,yaxis) {}
 
-    while { $y < $ymax+0.5*$ydelt } {
+    while { $y < $ym+0.5*abs($ydelt) } {
 
-        foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmax) $y] {break}
+        foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmax) $yt] {break}
         set xcrd2 [expr {$xcrd+3}]
         set xcrd3 [expr {$xcrd+5}]
 
         lappend scaling($w,yaxis) $ycrd
 
-        set ylabel $y
+        set ylabel $yt
         if { $format != "" } {
-            set ylabel [format $format $y]
+            set ylabel [format $format $yt]
         }
         $w create line $xcrd2 $ycrd $xcrd $ycrd -tag raxis
         $w create text $xcrd3 $ycrd -text $ylabel -tag raxis -anchor w
-        set y [expr {$y+$ydelt}]
-        if { abs($y) < 0.5*$ydelt } {
-            set y 0.0
+        set y  [expr {$y+abs($ydelt)}]
+        set yt [expr {$y+$ydelt}]
+        if { abs($yt) < 0.5*abs($ydelt) } {
+            set yt 0.0
         }
     }
 }
@@ -140,8 +158,8 @@ proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
 
     set scaling($w,yaxis) {}
 
-    set y       [expr {pow(10.0,ceil(log10($ymin)))}]
-    set ylogmax [expr {pow(10.0,floor(log10($ymax)))+0.1}]
+    set y       [expr {pow(10.0,floor(log10($ymin)))}]
+    set ylogmax [expr {pow(10.0,ceil(log10($ymax)))+0.1}]
 
     while { $y < $ylogmax } {
 
@@ -150,7 +168,8 @@ proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
         #
         foreach factor {1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0} {
             set yt [expr {$y*$factor}]
-            if { $yt > $ylogmax } break
+            if { $yt < $ymin } continue
+            if { $yt > $ymax } break
 
             foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) [expr {log10($yt)}]] {break}
             set xcrd2 [expr {$xcrd-3}]
@@ -199,27 +218,39 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt } {
         set format $scaling($w,-format,x)
     }
 
-    set x [expr {$xmin+0.0}]  ;# Make sure we have the number in the right format
+    if { $xmax > $xmin } {
+        set x [expr {$xmin+0.0}]  ;# Make sure we have the number in the right format
+        set xm $xmax
+    } else {
+        set x [expr {$xmax+0.0}]
+        set xm $xmin
+    }
+    set xt [expr {$xmin+0.0}]
     set scaling($w,xaxis) {}
 
-    while { $x < $xmax+0.5*$xdelt } {
+    console show
+    puts "xmin,xmax,deltx: $xmin,$xmax,$xdelt"
 
-        foreach {xcrd ycrd} [coordsToPixel $w $x $scaling($w,ymin)] {break}
+    while { $x < $xm+0.5*abs($xdelt) } {
+
+        foreach {xcrd ycrd} [coordsToPixel $w $xt $scaling($w,ymin)] {break}
         set ycrd2 [expr {$ycrd+3}]
         set ycrd3 [expr {$ycrd+5}]
 
         lappend scaling($w,xaxis) $xcrd
 
-        set xlabel $x
+        set xlabel $xt
         if { $format != "" } {
-            set xlabel [format $format $x]
+            set xlabel [format $format $xt]
         }
+        puts "$xt -- $x"
 
         $w create line $xcrd $ycrd2 $xcrd $ycrd -tag xaxis
         $w create text $xcrd $ycrd3 -text $xlabel -tag xaxis -anchor n
-        set x [expr {$x+$xdelt}]
-        if { abs($x) < 0.5*$xdelt } {
-            set x 0.0
+        set x  [expr {$x+abs($xdelt)}]
+        set xt [expr {$xt+$xdelt}]
+        if { abs($x) < 0.5*abs($xdelt) } {
+            set xt 0.0
         }
     }
 
