@@ -3288,13 +3288,14 @@ proc tablelist::redisplayCol {win col first last} {
 	unset data($col-redispId)
     }
 
-    if {$data(itemCount) == 0 || $data($col-hide) || $first < 0} {
+    if {$data(itemCount) == 0 || $first < 0 || $data($col-hide)} {
 	return ""
     }
     if {[string first $last "end"] == 0} {
 	set last $data(lastRow)
     }
 
+    displayItems $win
     set fmtCmdFlag [lindex $data(fmtCmdFlagList) $col]
     set colFont [lindex $data(colFontList) $col]
     set snipStr $data(-snipstring)
@@ -3556,6 +3557,7 @@ proc tablelist::synchronize win {
     if {$itemsChanged} {
 	adjustColumns $win allCols 1
 	redisplayWhenIdle $win
+	showLineNumbersWhenIdle $win
     }
 }
 
