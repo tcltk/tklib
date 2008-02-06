@@ -7,10 +7,10 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: swaplist.tcl,v 1.5 2005/08/25 03:36:58 andreas_kupries Exp $
+# RCS: @(#) $Id: swaplist.tcl,v 1.6 2008/02/06 07:15:16 afaupell Exp $
 
 package require Tk
-package provide swaplist 0.1
+package provide swaplist 0.2
 
 namespace eval swaplist {
     namespace export swaplist
@@ -272,7 +272,9 @@ proc ::swaplist::ShiftRNoReorder {w olist} {
     if {[set cur [$from curselection]] == ""} { return }
     foreach x $cur {
         set name [$from get $x]
-        $to insert [FindPos $olist [$to get 0 end] $name] $name
+        set pos [FindPos $olist [$to get 0 end] $name]
+        $to insert $pos $name
+        lappend new $pos
     }
     foreach x [lreverse $cur] { $from delete $x }
     if {[$from index end] == 0} {
@@ -325,7 +327,7 @@ proc ::swaplist::ShiftUD {w dir} {
 proc ::swaplist::FindPos {olist curlist el} {
     set orig [lsearch $olist $el]
     set end [llength $curlist]
-    for {set i 0} {$i <= $end} {incr i} {
+    for {set i 0} {$i < $end} {incr i} {
         if {[lsearch $olist [lindex $curlist $i]] > $orig} { break }
     }
     return $i
