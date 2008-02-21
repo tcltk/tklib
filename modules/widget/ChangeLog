@@ -1,3 +1,9 @@
+2008-02-21  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* pkgIndex.tcl: bump widget::screenruler to 1.2
+	* ruler.tcl (C-showgeometry): prevent entry input from triggering
+	the toplevel bindings.
+
 2007-06-20  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* statusbar.tcl: update to 1.2, actual API changes (matched closer
