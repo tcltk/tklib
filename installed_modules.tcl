@@ -34,7 +34,7 @@ foreach {m pkg doc exa} {
     tablelist   _tab  _null _exa
     tkpiechart  _tcl  _man  _null
     tooltip     _tcl  _man  _null
-    widget      _tcl  _man  _null
+    widget      _tcl  _man  _exa
 } {
     lappend modules $m
     set guide($m,pkg) $pkg
