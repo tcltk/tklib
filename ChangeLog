@@ -1,3 +1,8 @@
+2008-02-21  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* installed_modules.tcl:
+	* examples/widget/screenruler.tcl: Added widget::screenruler example
+
 2007-10-19  Pat Thoyts  <patthoyts@users.sourceforge.net>
 
 	* modules/chatwidget:    Added a new widget: 'chatwidget'
