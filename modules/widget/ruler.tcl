@@ -6,7 +6,7 @@
 #
 # Copyright (c) 2005 Jeffrey Hobbs.  All Rights Reserved.
 #
-# RCS: @(#) $Id: ruler.tcl,v 1.12 2007/06/20 23:49:49 hobbs Exp $
+# RCS: @(#) $Id: ruler.tcl,v 1.13 2008/02/21 20:11:16 hobbs Exp $
 #
 
 ###
@@ -446,7 +446,7 @@ snit::widget widget::screenruler {
     method display {} {
 	wm deiconify $win
 	raise $win
-	focus $ruler
+	focus $win
     }
 
     method hide {} {
@@ -513,15 +513,17 @@ snit::widget widget::screenruler {
 	set options($option) $value
 	$ruler delete geoinfo
 	if {$value} {
-	    set opts [list -bd 1 -highlightthickness 1 -width 4]
+	    set opts [list -borderwidth 1 -highlightthickness 1 -width 4]
 	    set x 20
 	    set y 20
 	    foreach d {x y w h} {
-		destroy $win._$d
-		set w [eval [list entry $win._$d -textvar [myvar curdim($d)]] \
-			   $opts]
+		set w $win._$d
+		destroy $w
+		eval [linsert $opts 0 entry $w -textvar [myvar curdim($d)]]
 		$ruler create window $x $y -window $w -tags geoinfo
 		bind $w <Return> [mymethod _placecmd]
+		# Avoid toplevel bindings
+		bindtags $w [list $w Entry all]
 		incr x [winfo reqwidth $w]
 	    }
 	}
@@ -591,6 +593,7 @@ snit::widget widget::screenruler {
 	set drag(w) [winfo width $win]
 	set drag(h) [winfo height $win]
 	$self _edgecheck $ruler $drag(X) $drag(Y)
+	raise $win
 	focus $ruler
     }
     method _drag {w X Y} {
@@ -630,7 +633,7 @@ snit::widget widget::screenruler {
 ## Ready for use
 
 package provide widget::ruler 1.1
-package provide widget::screenruler 1.1
+package provide widget::screenruler 1.2
 
 if {[info exist ::argv0] && $::argv0 eq [info script]} {
     # We are the main script being run - show ourselves
