@@ -91,12 +91,17 @@ proc ::Plotchart::SavePlot { w filename args } {
 #    List of four values
 #
 proc ::Plotchart::MarginsRectangle { w {notext 2.0} {text_width 8}} {
+   variable config
    set pxmin [expr {10*$text_width}]
+   if { $pxmin < $config($w,margin,left) } {
+       set pxmin $config($w,margin,left)
+   }
    set pymin [expr {int(14*$notext)}]
-   set pxmax [expr {[WidthCanvas $w]  - 40}]
-   set pymax [expr {[HeightCanvas $w] - 30}]
-   #set pxmax [expr {[$w cget -width]  - 40}]
-   #set pymax [expr {[$w cget -height] - 30}]
+   if { $pymin < $config($w,margin,top) } {
+       set pymin $config($w,margin,top)
+   }
+   set pxmax [expr {[WidthCanvas $w]  - $config($w,margin,right)}]
+   set pymax [expr {[HeightCanvas $w] - $config($w,margin,bottom)}]
 
    return [list $pxmin $pymin $pxmax $pymax]
 }
@@ -327,12 +332,11 @@ proc ::Plotchart::PlotHandler { type w command args } {
 #
 proc ::Plotchart::DrawMask { w } {
    variable scaling
+   variable config
 
    set width  [expr {[WidthCanvas $w]  + 1}]
    set height [expr {[HeightCanvas $w] + 1}]
-   #set width  [expr {[$w cget -width]  + 1}]
-   #set height [expr {[$w cget -height] + 1}]
-   set colour [$w cget -background]
+   set colour $config($w,background,outercolor)
    set pxmin  $scaling($w,pxmin)
    set pxmax  $scaling($w,pxmax)
    set pymin  $scaling($w,pymin)
@@ -357,13 +361,15 @@ proc ::Plotchart::DrawMask { w } {
 #
 proc ::Plotchart::DrawTitle { w title } {
    variable scaling
+   variable config
 
    set width  [WidthCanvas $w]
    #set width  [$w cget -width]
    set pymin  $scaling($w,pymin)
 
    $w create text [expr {$width/2}] 3 -text $title \
-       -anchor n -tags title
+       -tags title -font $config($w,title,font) \
+       -fill $config($w,title,textcolor) -anchor $config($w,title,anchor)
 }
 
 # DrawData --
