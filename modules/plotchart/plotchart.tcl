@@ -32,6 +32,7 @@ namespace eval ::Plotchart {
                     createTXPlot createRightAxis \
                     create3DRibbonChart \
                     createXLogYPlot \
+                    plotconfig \
 
    #
    # Array linking procedures with methods
@@ -65,6 +66,7 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,plaintext)         DrawPlainText
    set methodProc(xyplot,bindvar)           BindVar
    set methodProc(xyplot,bindcmd)           BindCmd
+   set methodProc(xyplot,rescale)           RescalePlot
    set methodProc(xlogyplot,title)          DrawTitle
    set methodProc(xlogyplot,xtext)          DrawXtext
    set methodProc(xlogyplot,ytext)          DrawYtext
@@ -579,6 +581,7 @@ proc ::Plotchart::createXYPlot { w xscale yscale } {
 
    set newchart "xyplot_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler xyplot $w
+   CopyConfig xyplot $w
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
 
@@ -629,6 +632,7 @@ proc ::Plotchart::createStripchart { w xscale yscale } {
 
    set newchart "stripchart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler stripchart $w
+   CopyConfig stripchart $w
 
    return $newchart
 }
@@ -655,6 +659,7 @@ proc ::Plotchart::createIsometricPlot { w xscale yscale stepsize } {
 
    set newchart "isometric_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler isometric $w
+   CopyConfig isometric $w
 
    if { $stepsize != "noaxes" } {
       foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
@@ -709,6 +714,7 @@ proc ::Plotchart::createXLogYPlot { w xscale yscale } {
 
    set newchart "xlogyplot_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler xlogyplot $w
+   CopyConfig xlogyplot $w
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
 
@@ -761,6 +767,7 @@ proc ::Plotchart::createHistogram { w xscale yscale } {
 
    set newchart "histogram_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler histogram $w
+   CopyConfig histogram $w
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
 
@@ -808,6 +815,7 @@ proc ::Plotchart::createPiechart { w } {
 
    set newchart "piechart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler piechart $w
+   CopyConfig piechart $w
 
    foreach {pxmin pymin pxmax pymax} [MarginsCircle $w] {break}
 
@@ -842,6 +850,7 @@ proc ::Plotchart::createPolarplot { w radius_data } {
 
    set newchart "polarplot_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler polarplot $w
+   CopyConfig polarplot $w
 
    set rad_max   [lindex $radius_data 0]
    set rad_step  [lindex $radius_data 1]
@@ -885,6 +894,7 @@ proc ::Plotchart::createBarchart { w xlabels yscale noseries } {
 
    set newchart "barchart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler vertbars $w
+   CopyConfig vertbars $w
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
 
@@ -930,6 +940,7 @@ proc ::Plotchart::createBarchart { w xlabels yscale noseries } {
 #
 proc ::Plotchart::createHorizontalBarchart { w xscale ylabels noseries } {
    variable data_series
+   variable config
 
    foreach s [array names data_series "$w,*"] {
       unset data_series($s)
@@ -937,6 +948,17 @@ proc ::Plotchart::createHorizontalBarchart { w xscale ylabels noseries } {
 
    set newchart "hbarchart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler horizbars $w
+   CopyConfig horizbars $w
+
+   set font      $config($w,leftaxis,font)
+   set xspacemax 0
+   foreach ylabel $ylabels {
+       set xspace [font measure $font $ylabel]
+       if { $xspace > $xspacemax } {
+           set xspacemax $xspace
+       }
+   }
+   set config($w,margin,left) [expr {$xspacemax+5}] ;# Slightly more space required!
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
 
@@ -990,6 +1012,7 @@ proc ::Plotchart::createTimechart { w time_begin time_end noitems } {
 
    set newchart "timechart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler timechart $w
+   CopyConfig timechart $w
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w 3] {break}
 
@@ -1034,6 +1057,7 @@ proc ::Plotchart::createGanttchart { w time_begin time_end noitems
 
    set newchart "ganttchart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler ganttchart $w
+   CopyConfig ganttchart $w
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w 3 $text_width] {break}
 
@@ -1109,6 +1133,7 @@ proc ::Plotchart::create3DPlot { w xscale yscale zscale } {
 
    set newchart "3dplot_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler 3dplot $w
+   CopyConfig 3dplot $w
 
    foreach {pxmin pymin pxmax pymax} [Margins3DPlot $w] {break}
 
@@ -1149,6 +1174,7 @@ proc ::Plotchart::create3DBarchart { w yscale nobars } {
 
    set newchart "3dbarchart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler 3dbars $w
+   CopyConfig 3dbars $w
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w 4] {break}
 
@@ -1199,6 +1225,7 @@ proc ::Plotchart::createRadialchart { w names scale {style lines} } {
 
    set newchart "radialchart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler radialchart $w
+   CopyConfig radialchart $w
 
    foreach {pxmin pymin pxmax pymax} [MarginsCircle $w] {break}
 
@@ -1238,6 +1265,7 @@ proc ::Plotchart::createTXPlot { w tscale xscale } {
 
    set newchart "txplot_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler txplot $w
+   CopyConfig txplot $w
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
 
@@ -1305,6 +1333,7 @@ proc ::Plotchart::createRightAxis { w yscale } {
 
    interp alias {} $newchart {} ::Plotchart::PlotHandler $type r$w
    interp alias {} r$w       {} $w
+   CopyConfig $type r$w
 
    set xmin $scaling($w,xmin)
    set xmax $scaling($w,xmax)
@@ -1353,6 +1382,7 @@ proc ::Plotchart::create3DRibbonChart { w names yscale zscale } {
 
    set newchart "3dribbon_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler 3dribbon $w
+   CopyConfig 3dribbon $w
 
    foreach {pxmin pymin pxmax pymax} [Margins3DPlot $w] {break}
 
@@ -1388,8 +1418,9 @@ source [file join [file dirname [info script]] "plotcontour.tcl"]
 source [file join [file dirname [info script]] "plotgantt.tcl"]
 source [file join [file dirname [info script]] "plotbusiness.tcl"]
 source [file join [file dirname [info script]] "plotannot.tcl"]
+source [file join [file dirname [info script]] "plotconfig.tcl"]
 #source [file join [file dirname [info script]] "plotbind.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.4.0
+package provide Plotchart 1.5.0
