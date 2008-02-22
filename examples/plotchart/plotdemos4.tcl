@@ -2,10 +2,11 @@
 # -*- tcl -*- \
 exec tclsh "$0" ${1+"$@"}
 
-package require Tcl 8.3
+package require Tcl 8.4
 package require Tk
 
-package require Plotchart 1.3
+source ../../modules/plotchart/plotchart.tcl
+package require Plotchart 1.5
 
 #
 # Show a 3D bar chart
