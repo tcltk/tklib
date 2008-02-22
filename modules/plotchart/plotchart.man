@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 1.3]
+[manpage_begin Plotchart n 1.5]
 [copyright {2007 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
-[require Tcl [opt 8.3]]
-[require Tk [opt 8.3]]
-[require Plotchart [opt 1.4]]
+[require Tcl [opt 8.4]]
+[require Tk [opt 8.4]]
+[require Plotchart [opt 1.5]]
 
 [description]
 [para]
@@ -91,6 +91,10 @@ important moments in time are represented by triangles.
 3D plots (both for displaying surfaces and 3D bars)
 [list_end]
 
+With version 1.5 a new command has been introduced: plotconfig, which
+can be used to configure the plot options for particular types of plots
+and charts (cf. [sectref "CONFIGURATION OPTIONS"])
+
 [section "PLOT CREATION COMMANDS"]
 
 You create the plot or chart with one single command and then fill the
@@ -100,7 +104,7 @@ plot with data:
 
 [call [cmd ::Plotchart::createXYPlot] [arg w] [arg xaxis] [arg yaxis]]
 
-Create a new xy-plot.
+Create a new xy-plot (configuration type: xyplot).
 
 [list_begin arg]
 [arg_def widget w in]
@@ -122,7 +126,8 @@ use: maximum, minimum and a [emph negative] stepsize.
 
 [call [cmd ::Plotchart::createStripchart] [arg w] [arg xaxis] [arg yaxis]]
 
-Create a new strip chart. The only difference to a regular XY plot is
+Create a new strip chart (configuration type: stripchart). The
+only difference to a regular XY plot is
 that the x-axis will be automatically adjusted when the x-coordinate
 of a new point exceeds the maximum.
 
@@ -145,7 +150,7 @@ use: maximum, minimum and a [emph negative] stepsize.
 
 [call [cmd ::Plotchart::createTXPlot] [arg w] [arg timeaxis] [arg xaxis]]
 
-Create a new time-x-plot. The horizontal axis represents the date/time
+Create a new time-x-plot (configuration type: txplot). The horizontal axis represents the date/time
 of the data and the vertical axis the values themselves.
 
 [list_begin arg]
@@ -169,7 +174,7 @@ use: maximum, minimum and a [emph negative] stepsize.
 
 [call [cmd ::Plotchart::createXLogYPlot] [arg w] [arg xaxis] [arg yaxis]]
 
-Create a new xy-plot where the y-axis has a logarithmic scale.
+Create a new xy-plot where the y-axis has a logarithmic scale (configuration type: xlogyplot).
 [nl]
 The data should be given as for a linear scale, as the logarithmic transformation
 is taken of internally.
@@ -193,7 +198,7 @@ Note that an inverted logarithmic axis is [emph not] supported.
 
 [call [cmd ::Plotchart::createPolarPlot] [arg w] [arg radius_data]]
 
-Create a new polar plot.
+Create a new polar plot (configuration type: polarplot).
 
 [list_begin arg]
 [arg_def widget w in]
@@ -210,7 +215,7 @@ axis, in this order.
 [call [cmd ::Plotchart::createIsometricPlot] [arg w] [arg xaxis] [arg yaxis] [arg stepsize]]
 
 Create a new isometric plot, where the vertical and the horizontal
-coordinates are scaled so that a circle will truly appear as a circle.
+coordinates are scaled so that a circle will truly appear as a circle (configuration type: isometric).
 
 [list_begin arg]
 [arg_def widget w in]
@@ -234,7 +239,7 @@ draw any of the axes.
 
 [call [cmd ::Plotchart::createHistogram] [arg w] [arg xaxis] [arg yaxis]]
 
-Create a new histogram.
+Create a new histogram (configuration type: histogram).
 
 [list_begin arg]
 [arg_def widget w in]
@@ -273,7 +278,7 @@ A 3-element list containing minimum, maximum and stepsize for the z-axis, in thi
 
 [call [cmd ::Plotchart::createPiechart] [arg w]]
 
-Create a new piechart.
+Create a new piechart (configuration type: piechart).
 
 [list_begin arg]
 [arg_def widget w in]
@@ -286,7 +291,7 @@ Name of the [emph existing] canvas widget to hold the plot.
 [call [cmd ::Plotchart::createRadialchart] [arg w] [arg names] [arg scale] [arg style]]
 
 Create a new radial chart (the data are drawn as a line connecting the
-spokes of the diagram).
+spokes of the diagram) (configuration type: radialchart).
 
 [list_begin arg]
 [arg_def widget w in]
@@ -317,7 +322,7 @@ accumulated
 
 [call [cmd ::Plotchart::createBarchart] [arg w] [arg xlabels] [arg yaxis] [arg noseries]]
 
-Create a new barchart with vertical bars. The horizontal axis will
+Create a new barchart with vertical bars (configuration type: vertbars). The horizontal axis will
 display the labels contained in the argument [arg xlabels]. The number
 of series given by [arg noseries] determines both the width of the
 bars, and the way the series will be drawn.
@@ -356,7 +361,7 @@ integer number greater than zero (if [const stacked] is not used).
 
 [call [cmd ::Plotchart::createHorizontalBarchart] [arg w] [arg xlabels] [arg yaxis] [arg noseries]]
 
-Create a new barchart with horizontal bars. The vertical axis will
+Create a new barchart with horizontal bars (configuration type: horizbars). The vertical axis will
 display the labels contained in the argument [arg ylabels]. The number
 of series given by [arg noseries] determines both the width of the
 bars, and the way the series will be drawn.
@@ -388,7 +393,7 @@ integer number greater than zero (if [const stacked] is not used).
 
 [call [cmd ::Plotchart::create3DBarchart] [arg w] [arg yaxis] [arg nobars]]
 
-Create a new barchart with 3D vertical bars. The horizontal axis will
+Create a new barchart with 3D vertical bars (configuration type: 3dbars). The horizontal axis will
 display the labels per bar. The number of bars given by [arg nobars]
 determines the position and the width of the bars. The colours can be
 varied per bar. (This type of chart was inspired by the Wiki page on 3D
@@ -410,7 +415,8 @@ The number of bars that will be plotted.
 
 [call [cmd ::Plotchart::create3DRibbonChart] [arg w] [arg names] [arg yaxis] [arg zaxis]]
 
-Create a new "ribbon chart". This is a chart where the data series are
+Create a new "ribbon chart" (configuration type: 3dribbon). This is
+a chart where the data series are
 represented as ribbons in a three-dimensional axis system. Along the
 x-axis (which is "into" the screen) the names are plotted, each
 representing a single series. The first plot command draws the furthest
@@ -440,7 +446,7 @@ The number of bars that will be plotted.
 
 [call [cmd ::Plotchart::createTimechart] [arg w] [arg time_begin] [arg time_end] [arg noitems]]
 
-Create a new timechart.
+Create a new timechart (configuration type: timechart).
 
 The time axis (= x-axis) goes from [arg time_begin] to [arg time_end],
 and the vertical spacing is determined by the number of items to plot.
@@ -466,7 +472,7 @@ spacing.
 
 [call [cmd ::Plotchart::createGanttchart] [arg w] [arg time_begin] [arg time_end] [arg noitems] [opt text_width ]]
 
-Create a new Gantt chart.
+Create a new Gantt chart (configuration type: ganttchart).
 
 The time axis (= x-axis) goes from [arg time_begin] to [arg time_end],
 and the vertical spacing is determined by the number of items to plot.
@@ -499,7 +505,8 @@ character is about ten pixels wide). Defaults to 20.
 [call [cmd ::Plotchart::createRightAxis] [arg w] [arg yaxis]]
 
 Create a plot command that will use a right axis instead of the left
-axis. The widget (w) must already contain an ordinary plot, as the
+axis (configuration type: inherited from the existing plot). The widget
+(w) must already contain an ordinary plot, as the
 horizontal axis and other properties are reused. To plot data using the
 right axis, use this new command, to plot data using the [emph left]
 axis, use the original plot command.
@@ -1997,7 +2004,7 @@ Rough minimum value for the scaling
 [arg_def float xmax in]
 Rough maximum value for the scaling.
 
-[opt_def boolean inverted in]
+[arg_def boolean inverted in]
 Optional argument: if 1, then the returned list produces an
 inverted axis. Defaults to 0 (the axis will be from minimum to maximum)
 
@@ -2200,6 +2207,108 @@ xy plots, more is needed in these cases. This actually requires a
 command "destroyPlot" to take care of such details. A next version
 of [package Plotchart] will have that.
 
+
+[section "CONFIGURATION OPTIONS"]
+
+The command plotconfig can be used to set all manner of options. The
+syntax is:
+
+[list_begin definitions]
+
+[call [cmd ::Plotchart::plotconfig] [arg charttype] [arg component] [arg property] [arg value]]
+
+Set a new value for the property of a component in a particular chart or
+plot type or query its current value. Each argument is optional.
+
+[list_begin arg]
+[arg_def string charttype in]
+The type of chart or plot (see the configuration type that is mentioned
+for each create command). If not given or empty, a list of chart types
+is returned. If it is given, the properties for that particular type are
+used.
+
+[arg_def string component in]
+The component of the plot/chart: leftaxis, rightaxis, background, margin
+and so on. If not given or empty, a list of components is returned. If
+it is given, the properties for that particular component will be set
+for that particular type of chart.
+
+[arg_def string property in]
+The property of the component of the plot/chart: textcolor, thickness of
+the axis line, etc. If not given or empty, a list of properties is returned. If
+it is given, that particular property for that particular component
+will be set for that particular type of chart.
+
+[arg_def string value in]
+The new value for the property. If empty, the current value is returned.
+If the value is "default", the default value will be restored.
+[nl]
+Note, that in some cases an empty value is useful. Use "none" in this
+case - it can be useful for colours and for formats.
+
+[list_end]
+[list_end]
+
+Below is a more detailed list of the components and properties:
+
+[list_begin bullet]
+
+[bullet]
+Axes come in a wide variety:
+
+[list_begin bullet]
+[bullet]
+leftaxis, rightaxis, topaxis, bottomaxis for the plots with a
+rectangular shape.
+[bullet]
+xaxis, yaxis and zaxis are used for the 3D plots
+[bullet]
+axis, this represents the radial and tangential axes of a polar plot
+[list_end]
+
+All axes have the following properties:
+
+[list_begin bullet]
+
+[bullet]
+color - the colour of the line and the tickmarks
+[bullet]
+thickness - the width of the line of the axis itself, not the tickmarks
+[bullet]
+ticklength - the length of the tickmarks in pixels. A positive value is
+outward, a negative value is inward.
+[bullet]
+font - the font for the labels and the text at the axis
+[bullet]
+format - the format for rendering the (numerical) labels. For the time
+axis it is the format for a date and time.
+[bullet]
+textcolor - the colour for the labels and the text.
+
+[list_end]
+
+[bullet]
+The [emph margin] is important for the layout. Currently only the
+rectangular plots allow the margins to be set: left, right, top and bottom.
+The values are in pixels.
+
+[bullet]
+The [emph text] component is meant for any text appearing via the
+plaintext subcommand. The properties are: textcolor, font and anchor
+(positioning of the text relative to the given coordinates).
+
+[bullet]
+The [emph background] has two properties: outercolor, the colour outside
+of the actual plot, and innercolor, the colour inside the plot. (Note:
+only "outercolor" has now been implemented).
+
+[bullet]
+The [emph legend] has three properties: background, border and position.
+See the legend subcommand for the meaning.
+
+[list_end]
+
+See the examples in plotdemos7.tcl for it use.
 
 [section {TODO - SOME PRIVATE NOTES}]
 
