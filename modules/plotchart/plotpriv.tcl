@@ -774,12 +774,13 @@ proc ::Plotchart::DrawPolarData { w series rad phi } {
 #    series      Data series
 #    ydata       Series of y data
 #    colour      The colour to use (optional)
+#    dir         Direction if graded colours are used (see DrawGradientBackground)
 # Result:
 #    None
 # Side effects:
 #    Data bars drawn in canvas
 #
-proc ::Plotchart::DrawVertBarData { w series ydata {colour black}} {
+proc ::Plotchart::DrawVertBarData { w series ydata {colour black} {dir {}} } {
    variable data_series
    variable scaling
    variable legend
@@ -827,8 +828,13 @@ proc ::Plotchart::DrawVertBarData { w series ydata {colour black}} {
       set y     [expr {$yvalue+$ybase}]
       foreach {px1 py1} [coordsToPixel $w $x     $ybase] {break}
       foreach {px2 py2} [coordsToPixel $w $xnext $y    ] {break}
-      $w create rectangle $px1 $py1 $px2 $py2 \
-                     -fill $colour -tag data
+
+      if { $dir == {} } {
+          $w create rectangle $px1 $py1 $px2 $py2 \
+                         -fill $colour -tag data
+      } else {
+          DrawGradientBackground $w $colour $dir [list $px1 $py1 $px2 $py2]
+      }
       $w lower data
 
       set x [expr {$x+1.0}]
@@ -853,12 +859,13 @@ proc ::Plotchart::DrawVertBarData { w series ydata {colour black}} {
 #    series      Data series
 #    xdata       Series of x data
 #    colour      The colour to use (optional)
+#    dir         Direction if graded colours are used (see DrawGradientBackground)
 # Result:
 #    None
 # Side effects:
 #    Data bars drawn in canvas
 #
-proc ::Plotchart::DrawHorizBarData { w series xdata {colour black}} {
+proc ::Plotchart::DrawHorizBarData { w series xdata {colour black} {dir {}} } {
    variable data_series
    variable scaling
 
@@ -904,8 +911,14 @@ proc ::Plotchart::DrawHorizBarData { w series xdata {colour black}} {
       set x     [expr {$xvalue+$xbase}]
       foreach {px1 py1} [coordsToPixel $w $xbase $y    ] {break}
       foreach {px2 py2} [coordsToPixel $w $x     $ynext] {break}
-      $w create rectangle $px1 $py1 $px2 $py2 \
-                     -fill $colour -tag data
+
+      if { $dir == {} } {
+          $w create rectangle $px1 $py1 $px2 $py2 \
+                         -fill $colour -tag data
+      } else {
+          DrawGradientBackground $w $colour $dir [list $px1 $py1 $px2 $py2]
+      }
+
       $w lower data
 
       set y [expr {$y+1.0}]

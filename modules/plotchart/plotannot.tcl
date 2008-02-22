@@ -246,18 +246,28 @@ proc ::Plotchart::BrightenColour {color factor} {
 #    colour      Main colour
 #    dir         Direction of the gradient (left-right, top-down,
 #                bottom-up, right-left)
+#    rect        (Optional) coordinates of the rectangle to be filled
 # Result:
 #    None
 # Side effects:
 #    Gradient background drawn in the chart
 #
-proc ::Plotchart::DrawGradientBackground { w colour dir } {
+proc ::Plotchart::DrawGradientBackground { w colour dir {rect {}} } {
     variable scaling
 
     set pxmin $scaling($w,pxmin)
     set pxmax $scaling($w,pxmax)
     set pymin $scaling($w,pymin)
     set pymax $scaling($w,pymax)
+
+    if { $rect != {} } {
+        foreach {rxmin rymin rxmax rymax} $rect {break}
+    } else {
+        set rxmin $pxmin
+        set rxmax $pxmax
+        set rymin $pymin
+        set rymax $pymax
+    }
 
     switch -- $dir {
         "left-right" {
@@ -293,31 +303,36 @@ proc ::Plotchart::DrawGradientBackground { w colour dir } {
     }
 
     if { $dir == "h" } {
-        set x2 $pxmin
-        set y1 $pymin
-        set y2 $pymax
+        set x2 $rxmin
+        set y1 $rymin
+        set y2 $rymax
     } else {
-        set y2 $pymax
-        set x1 $pxmin
-        set x2 $pxmax
+        set y2 $rymax
+        set x1 $rxmin
+        set x2 $rxmax
     }
 
     set n 50
-    for { set i 0 } { $i < $n } { incr i } {
+    if { $dir == "h" } {
+        set nmax [expr {ceil($n*($rxmax-$rxmin)/double($pxmax-$pxmin))}]
+    } else {
+        set nmax [expr {ceil($n*($rymin-$rymax)/double($pymin-$pymax))}]
+    }
+    for { set i 0 } { $i < $nmax } { incr i } {
         set factor [expr {($first*$i+$last*($n-$i-1))/double($n)}]
         set gcolour [BrightenColour $colour $factor]
 
         if { $dir == "h" } {
             set x1     $x2
-            set x2     [expr {$pxmin+($i+1)*$fac}]
-            if { $i == $n-1 } {
-                set x2 $pxmax
+            set x2     [expr {$rxmin+($i+1)*$fac}]
+            if { $i == $nmax-1 } {
+                set x2 $rxmax
             }
         } else {
             set y1     $y2
-            set y2     [expr {$pymax+($i+1)*$fac}]
-            if { $i == $n-1 } {
-                set y2 $pymin
+            set y2     [expr {$rymax+($i+1)*$fac}]
+            if { $i == $nmax-1 } {
+                set y2 $rymin
             }
         }
 
