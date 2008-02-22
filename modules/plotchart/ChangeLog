@@ -1,3 +1,15 @@
+2008-02-22 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * pkgIndex.tcl: Increased version number to 1.5, require Tcl/Tk 8.4
+        * plotconfig.tcl: Added this file for configuring the plots
+        * plotchart.tcl: Support for configuration command, also incorporated patch by Michael Baudin
+        * plotaxis.tcl: Support for configuration command
+        * plotpriv.tcl: Support for configuration command
+        * scaling.tcl: Corrected optional argument to determineScale
+        * plotdemos7.tcl: Added examples of configuring the plots
+
+2008-01-25 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * pkgIndex.tcl: Corrected version number
+
 2007-09-07 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.man: Added description of how to handle resizing
         * plotchart.tcl: Changed from [$w cget -width] to [winfo width $w]

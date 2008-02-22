@@ -5,7 +5,7 @@
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.3]]
 [require Tk [opt 8.3]]
-[require Plotchart [opt 1.3]]
+[require Plotchart [opt 1.4]]
 
 [description]
 [para]
@@ -108,9 +108,13 @@ Name of the [emph existing] canvas widget to hold the plot.
 
 [arg_def list xaxis in]
 A 3-element list containing minimum, maximum and stepsize for the x-axis, in this order.
+For an inverted axis, where the maximum appears on the left-hand side,
+use: maximum, minimum and a [emph negative] stepsize.
 
 [arg_def list yaxis in]
 A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order.
+For an inverted axis, where the maximum appears at the bottom,
+use: maximum, minimum and a [emph negative] stepsize.
 
 [list_end]
 [nl]
@@ -128,9 +132,12 @@ Name of the [emph existing] canvas widget to hold the plot.
 
 [arg_def list xaxis in]
 A 3-element list containing minimum, maximum and stepsize for the x-axis, in this order.
+Note that an inverted x-axis is [emph not] supported for this type of plot.
 
 [arg_def list yaxis in]
 A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order.
+For an inverted axis, where the maximum appears at the bottom,
+use: maximum, minimum and a [emph negative] stepsize.
 
 [list_end]
 [nl]
@@ -148,10 +155,37 @@ Name of the [emph existing] canvas widget to hold the plot.
 [arg_def list timeaxis in]
 A 3-element list containing the minimum and maximum date/time to be
 shown and the stepsize ([emph "in days"]) for the time-axis, in this order.
+Note that an inverted time-axis is [emph not] supported.
 
 [arg_def list xaxis in]
 A 3-element list containing minimum, maximum and stepsize for the
 vertical axis, in this order.
+For an inverted axis, where the maximum appears at the bottom,
+use: maximum, minimum and a [emph negative] stepsize.
+
+[list_end]
+[nl]
+
+
+[call [cmd ::Plotchart::createXLogYPlot] [arg w] [arg xaxis] [arg yaxis]]
+
+Create a new xy-plot where the y-axis has a logarithmic scale.
+[nl]
+The data should be given as for a linear scale, as the logarithmic transformation
+is taken of internally.
+
+[list_begin arg]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the plot.
+
+[arg_def list xaxis in]
+A 3-element list containing minimum, maximum and stepsize for the x-axis, in this order.
+For an inverted axis, where the maximum appears on the left-hand side,
+use: maximum, minimum and a [emph negative] stepsize.
+
+[arg_def list yaxis in]
+A 2-element list containing minimum and maximum for the y-axis, in this order.
+Note that an inverted logarithmic axis is [emph not] supported.
 
 [list_end]
 [nl]
@@ -1950,7 +1984,7 @@ Furthermore there is a routine to determine "pretty" numbers for use
 with an axis:
 
 [list_begin definitions]
-[call [cmd ::Plotchart::determineScale] [arg xmin] [arg xmax]]
+[call [cmd ::Plotchart::determineScale] [arg xmin] [arg xmax] [arg inverted]]
 
 Determine "pretty" numbers from the given range and return a list
 containing the minimum, maximum and stepsize that can be used for a
@@ -1962,6 +1996,10 @@ Rough minimum value for the scaling
 
 [arg_def float xmax in]
 Rough maximum value for the scaling.
+
+[opt_def boolean inverted in]
+Optional argument: if 1, then the returned list produces an
+inverted axis. Defaults to 0 (the axis will be from minimum to maximum)
 
 [list_end]
 [list_end]
