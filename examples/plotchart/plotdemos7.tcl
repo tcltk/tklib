@@ -135,14 +135,14 @@ $s title "Stacked diagram"
 set s [::Plotchart::createHorizontalBarchart .v.c {0.0 10.0 2.0} \
          {Antarctica Eurasia "The Americas" "Australia and Oceania" Ocean} 2]
 
-$s plot series1 {1.0 4.0 6.0 1.0 7.0} red
-$s plot series2 {0.0 3.0 7.0 9.3 2.0} green
+$s plot series1 {1.0 4.0 6.0 1.0 7.0} red left-right
+$s plot series2 {0.0 3.0 7.0 9.3 2.0} green right-left
 $s title "Arbitrary data"
 
 
 set s [::Plotchart::createHorizontalBarchart .v.c2 {0.0 20.0 5.0} {A B C D E} stacked]
 
-$s plot series1 {1.0 4.0 6.0 1.0 7.0} red
+$s plot series1 {1.0 4.0 6.0 1.0 7.0} red left-right
 $s plot series2 {0.0 3.0 7.0 9.3 2.0} green
 $s title "Stacked diagram"
 
