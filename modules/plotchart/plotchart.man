@@ -2310,6 +2310,51 @@ See the legend subcommand for the meaning.
 
 See the examples in plotdemos7.tcl for it use.
 
+[section "ARRANGING MULTIPLE PLOTS IN A CANVAS"]
+
+The command [term plotpack] allows you to copy the contents of a plot
+into another canvas widget. This canvas widget does not act as a
+composite plot, but it can be saved as a PostScript file for instance:
+
+Note: the command simply takes a snapshot of the plots/charts as they
+are at that moment.
+
+[list_begin definitions]
+
+[call [cmd ::Plotchart::plotpack] [arg w] [arg dir] [arg args]]
+
+Copy the contents of the plots/charts into another widget, in a manner
+similar to the [term pack] geometry manager.
+
+[list_begin arg]
+[arg_def widget w in]
+The name of the canvas widget to copy the plots/charts into
+
+[arg_def string dir in]
+The direction of the arrangement - top, left, bottom or right
+
+[arg_def list args in]
+List of plots/charts to be copied.
+
+[list_end]
+[list_end]
+
+For example:
+[example {
+    set p1 [createXYPlot ...]
+    set p2 [createBarchart ...]
+
+    ... fill the plots ...
+
+    toplevel .t
+    pack [canvas .t.c2 -width ...]
+
+    #
+    # Copy the two plots above each other in the new canvas
+    #
+    plotpack .t.c2 top $p1 $p2
+}]
+
 [section {TODO - SOME PRIVATE NOTES}]
 
 I have the following wishlist:
