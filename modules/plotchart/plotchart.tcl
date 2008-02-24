@@ -5,7 +5,7 @@
 #    This source file contains the public functions.
 #    The others are contained in "plotpriv.tcl"
 #
-package require Tcl 8.3
+package require Tcl 8.4
 package require Tk
 
 # Plotchart --
@@ -32,7 +32,7 @@ namespace eval ::Plotchart {
                     createTXPlot createRightAxis \
                     create3DRibbonChart \
                     createXLogYPlot \
-                    plotconfig \
+                    plotconfig plotpack \
 
    #
    # Array linking procedures with methods
@@ -1419,8 +1419,9 @@ source [file join [file dirname [info script]] "plotgantt.tcl"]
 source [file join [file dirname [info script]] "plotbusiness.tcl"]
 source [file join [file dirname [info script]] "plotannot.tcl"]
 source [file join [file dirname [info script]] "plotconfig.tcl"]
+source [file join [file dirname [info script]] "plotpack.tcl"]
 #source [file join [file dirname [info script]] "plotbind.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.5.0
+package provide Plotchart 1.5.1
