@@ -2,9 +2,10 @@
 # -*- tcl -*- \
 exec tclsh "$0" ${1+"$@"}
 
-package require Tcl 8.3
+package require Tcl 8.4
 package require Tk
 
+source ../../modules/plotchart/plotchart.tcl
 package require Plotchart
 
 #
@@ -28,3 +29,15 @@ $s vertline "1 jul" "1 july 2004"
 $s vertline "1 oct" "1 october 2004"
 $s milestone "Longest day" "21 july 2004"
 $s title "Seasons (northern hemisphere)"
+
+#
+# Copy the thing:
+# Should result in this configuration:
+#  = =
+#  =
+toplevel .t
+canvas   .t.c -width 700 -height 500
+pack .t.c
+::Plotchart::plotpack .t.c top $s $s
+::Plotchart::plotpack .t.c left $s
+console show
