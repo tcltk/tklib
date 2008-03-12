@@ -1,3 +1,9 @@
+2008-03-12  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* ico.tcl (::ico::writeIconICODATA, ::ico::writeIconICO): correct the
+	* pkgIndex.tcl: icon table header height info (was doubling),
+	update version to 1.0.3.
+
 2007-5-17  Aaron Faupell <afaupell@users.sourceforge.net>
 
 	* ico.tcl: fixed problem with reading BMPs and updated

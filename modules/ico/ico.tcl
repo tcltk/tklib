@@ -5,7 +5,7 @@
 # Copyright (c) 2003-2007 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.27 2007/05/17 15:57:12 afaupell Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.28 2008/03/12 07:25:49 hobbs Exp $
 
 # Sample usage:
 #	set file bin/wish.exe
@@ -1115,7 +1115,8 @@ proc ::ico::writeIconICO {file name w h bpp palette xor and} {
     foreach x $data {
         binary scan $x x4iix2s w h bpp
         set len [string length $x]
-        bputs $fh ccccssii $w $h [expr {$bpp <= 8 ? 1 << $bpp : 0}] 0 0 $bpp $len $offset
+	# use original height in icon table header
+        bputs $fh ccccssii $w [expr {$h / 2}] [expr {$bpp <= 8 ? 1 << $bpp : 0}] 0 0 $bpp $len $offset
         incr offset $len
     }
     puts -nonewline $fh [join $data {}]
@@ -1154,7 +1155,8 @@ proc ::ico::writeIconICODATA {file name w h bpp palette xor and} {
     foreach x $data {
         binary scan $x x4iix2s w h bpp
         set len [string length $x]
-        append new [binary format ccccssii $w $h [expr {$bpp <= 8 ? 1 << $bpp : 0}] 0 0 $bpp $len $offset]
+	# use original height in icon table header
+        append new [binary format ccccssii $w [expr {$h / 2}] [expr {$bpp <= 8 ? 1 << $bpp : 0}] 0 0 $bpp $len $offset]
         incr offset $len
     }
     set input $new
@@ -1312,7 +1314,7 @@ proc ::ico::FindResourcesPE {fh file} {
         set offset [expr {[getulong $fh] & 0x7fffffff}]
         if {$type != 3 && $type != 14} {continue}
         set type [string map {3 icon 14 group} $type]
-        
+
         set cur [tell $fh]
         seek $fh [expr {$base + $offset + 12}] start
         set entries2 [expr {[getushort $fh] + [getushort $fh]}]
@@ -1320,7 +1322,7 @@ proc ::ico::FindResourcesPE {fh file} {
             set name [getPEResName $fh $base [getulong $fh]]
             lappend RES($file,$type,names) $name
             set offset [expr {[getulong $fh] & 0x7fffffff}]
-            
+
             set cur2 [tell $fh]
             seek $fh [expr {$offset + $base + 12}] start
             set entries3 [expr {[getushort $fh] + [getushort $fh]}]
@@ -1328,14 +1330,14 @@ proc ::ico::FindResourcesPE {fh file} {
                 seek $fh 4 current
                 set offset [expr {[getulong $fh] & 0x7fffffff}]
                 set cur3 [tell $fh]
-                
+
                 seek $fh [expr {$offset + $base}] start
                 set rva [getulong $fh]
                 set RES($file,$type,$name,offset) [expr {$rva - $baserva + $base}]
 
                 seek $fh $cur3 start
             }
-            
+
             seek $fh $cur2 start
         }
         seek $fh $cur start
@@ -1386,4 +1388,4 @@ interp alias {} ::ico::getIconMembersICL {} ::ico::getIconMembersEXE
 interp alias {} ::ico::getRawIconDataICL {} ::ico::getRawIconDataEXE
 interp alias {} ::ico::writeIconICL      {} ::ico::writeIconEXE
 
-package provide ico 1.0.2
+package provide ico 1.0.3
