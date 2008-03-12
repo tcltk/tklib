@@ -1,3 +1,9 @@
+2008-03-12  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* pkgIndex.tcl: bump to 1.4.1
+	* tooltip.tcl (::tooltip::show): check window exists before any
+	other ops. [Bug 1879622]
+
 2007-10-31  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* tooltip.tcl (::tooltip::clear): Withdraw the tooltip if we clear

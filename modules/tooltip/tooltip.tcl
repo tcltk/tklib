@@ -7,13 +7,13 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tooltip.tcl,v 1.11 2007/10/31 23:04:32 hobbs Exp $
+# RCS: @(#) $Id: tooltip.tcl,v 1.12 2008/03/12 20:41:05 hobbs Exp $
 #
 # Initiated: 28 October 1996
 
 
 package require Tk 8.4
-package provide tooltip 1.4
+package provide tooltip 1.4.1
 package require msgcat
 
 #------------------------------------------------------------------------
@@ -247,13 +247,13 @@ proc ::tooltip::clear {{pattern .*}} {
 }
 
 proc ::tooltip::show {w msg {i {}}} {
+    if {![winfo exists $w]} { return }
+
     # Use string match to allow that the help will be shown when
     # the pointer is in any child of the desired widget
-    set we [winfo exists $w]
-    set wc [string match $w* [eval [list winfo containing] \
-                                  [winfo pointerxy $w]]]
-    set wm [string equal [winfo class $w] "Menu"]
-    if {!$we || (!$wm && !$wc)} {
+    if {([winfo class $w] ne "Menu")
+	&& ![string match $w* [eval [list winfo containing] \
+				   [winfo pointerxy $w]]]} {
 	return
     }
 
