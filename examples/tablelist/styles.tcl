@@ -5,7 +5,7 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 # Demonstrates some ways of improving the look & feel of a tablelist widget.
 #
-# Copyright (c) 2002-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2002-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tablelist
@@ -25,8 +25,13 @@ if {[catch {tk windowingsystem} winSys] != 0} {
 }
 switch $winSys {
     x11 {
-	option add *Font		"Helvetica -12"
-	option add *selectBackground	#447bcd
+	#
+	# Create the font TkDefaultFont if not yet present
+	#
+	catch {font create TkDefaultFont -family Helvetica -size -12}
+
+	option add *Font		TkDefaultFont
+	option add *selectBackground	#678db2
 	option add *selectForeground	white
     }
     classic {
@@ -59,25 +64,25 @@ for {set n 0} { $n < 8} {incr n} {
 	}
 	4 {
 	    foreach col {1 3} {
-		$tbl columnconfigure $col -background linen
+		$tbl columnconfigure $col -background ivory
 	    }
 	}
 	5 {
 	    $tbl configure -showseparators yes
 	    foreach col {1 3} {
-		$tbl columnconfigure $col -background linen
+		$tbl columnconfigure $col -background ivory
 	    }
 	}
 	6 {
 	    $tbl configure -stripebackground #e0e8f0
 	    foreach col {1 3} {
-		$tbl columnconfigure $col -background linen
+		$tbl columnconfigure $col -background ivory
 	    }
 	}
 	7 {
 	    $tbl configure -stripebackground #e0e8f0 -showseparators yes
 	    foreach col {1 3} {
-		$tbl columnconfigure $col -background linen
+		$tbl columnconfigure $col -background ivory
 	    }
 	}
     }

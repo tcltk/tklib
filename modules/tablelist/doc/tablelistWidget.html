@@ -338,6 +338,7 @@
     <dd><code><b><a href="#col_title">-title</a></b> <i>title</i></code></dd>
 
     <dd><code><b><a href="#col_width">-width</a></b> <i>width</i></code></dd>
+    <dd><code><b><a href="#col_wrap">-wrap</a></b> <i>boolean</i></code></dd>
 
     <dt><br>
     <a href="#row_options">ROW CONFIGURATION OPTIONS</a></dt>
@@ -393,6 +394,9 @@
 
     <dd><code><b><a href="#cell_selectforeground">-selectforeground</a></b>
     <i>color</i></code></dd>
+
+    <dd><code><b><a href="#cell_stretchwindow">-stretchwindow</a></b>
+    <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#cell_text">-text</a></b> <i>text</i></code></dd>
 
@@ -510,9 +514,6 @@
     <i>columnIndex</i>
     ?<b>-requested</b>|<b>-stretched</b>|<b>-total</b>?</code></dd>
 
-    <dd><code><i>pathName</i> <b><a href="#configure">configure</a></b>
-    ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i> ...?</code></dd>
-
     <dd><code><i>pathName</i> <b><a href=
     "#configcelllist">configcelllist</a></b> {<i>cellIndex</i> <i>option</i>
     <i>value</i> <i>cellIndex</i> <i>option</i> <i>value</i> ...}</code></dd>
@@ -537,6 +538,9 @@
     <dd><code><i>pathName</i> <b><a href="#configrows">configrows</a></b>
     ?<i>index</i> <i>option</i> <i>value</i> <i>index</i> <i>option</i>
     <i>value</i> ...?</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#configure">configure</a></b>
+    ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i> ...?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#containing">containing</a></b>
     <i>y</i></code></dd>
@@ -900,18 +904,16 @@
 	configuration option) when the tablelist has the keyboard focus.&nbsp;
 	The allowed values are <code><b>frame</b></code>,
 	<code><b>none</b></code>, and <code><b>underline</b></code>.&nbsp; The
-	value <code><b>frame</b></code> makes the active item or element appear
-	surrounded with a thin frame, which looks nice when applied to the
-	active element, and also when displaying the active item if all of its
-	cells have the same background color.&nbsp; It looks less pretty when
-	applied to the active item if the background color of some of its cells
-	was changed by using the <code><b><a href=
+	default value <code><b>frame</b></code> shows a thin frame around the
+	active item or element, which in most cases looks nice.&nbsp; It looks
+	less pretty when applied to the active item if the background color of
+	some of its cells was changed by using the <code><b><a href=
 	"#columnconfigure">columnconfigure</a></b></code> or <code><b><a href=
-	"#cellconfigure">cellconfigure</a></b></code> widget command.&nbsp; The
-	value <code><b>none</b></code> specifies that no special indication of
-	the active item or element is to be performed.&nbsp; The default is
-	<code><b>underline</b></code>, which produces the same visual effect as
-	in the case of the Tk core listbox.</p>
+	"#cellconfigure">cellconfigure</a></b></code> widget command and no
+	column separators are shown.&nbsp; The value <code><b>none</b></code>
+	specifies that no special indication of the active item or element is
+	to be performed.&nbsp; The value <code><b>underline</b></code> produces
+	the same visual effect as in the case of the Tk core listbox.</p>
       </blockquote>
     </dd>
 
@@ -2000,8 +2002,9 @@ for {set row 0} {$row &lt; 1000} {incr row} {
 	separators and the embedded images (more precisely, any descendants of
 	the tablelist widget having the binding tag <code><b><a href=
 	"#body_bindings">TablelistBody</a></b></code>) should set the focus to
-	the body of the tablelist widget.&nbsp; The default value is
-	<code>0</code>.</p>
+	the body of the tablelist widget if the latter's <code><b><a href=
+	"#state">state</a></b></code> is <code><b>normal</b></code>.&nbsp; The
+	default value is <code>1</code>.</p>
       </blockquote>
     </dd>
 
@@ -2391,7 +2394,7 @@ for {set row 0} {$row &lt; 1000} {incr row} {
       <blockquote>
 	<p>This option determines whether the widget accepts the focus during
 	keyboard traversal.&nbsp; It is almost identical to the standard option
-	with the same name (see the <b>options</b> manual entry for
+	of the same name (see the <b>options</b> manual entry for
 	details).&nbsp; The only difference is that not the widget itself but
 	its body child (containing the items) will receive the focus during
 	keyboard traversal with the standard keys (<code>Tab</code> and
@@ -2774,8 +2777,8 @@ proc tooltipAddCmd {tbl row col} {
 	<dd>Specifies whether the elements of the column can be edited
 	interactively.&nbsp; The default value is <code>0</code>.&nbsp; The
 	value of this option can be overridden for individual cells by using
-	the <a href="#cell_editable">cell configuration option</a> with the
-	same name.</dd>
+	the <a href="#cell_editable">cell configuration option</a> of the same
+	name.</dd>
 
 	<dt><br>
 	<a name="col_editwindow"></a><code><b>-editwindow</b>
@@ -2806,7 +2809,7 @@ proc tooltipAddCmd {tbl row col} {
 	"tablelistCombobox.html#combobox">tablelist::addOakleyCombobox</a></b></code>
 	command.&nbsp; The value of this option can be overridden for
 	individual cells by using the <a href="#cell_editwindow">cell
-	configuration option</a> with the same name.</dd>
+	configuration option</a> of the same name.</dd>
 
 	<dt><br>
 	<a name="col_font"></a><code><b>-font</b> <i>font</i></code></dt>
@@ -2920,11 +2923,11 @@ proc formatDate clockVal {
 	string.&nbsp; These options are the column-specific equivalents of the
 	global ones having the same names, described in the <a href=
 	"#widget_options">WIDGET-SPECIFIC OPTIONS</a> section.&nbsp; They
-	override the options with the same names set at widget level if the
+	override the options of the same names set at widget level if the
 	specified value is not empty.&nbsp; If one of these options hasn't been
 	specified for the given column, or if its value is an empty string,
-	then that option will not be used at column level; the global option
-	with the same name will be used instead.&nbsp; The <code><b><a href=
+	then that option will not be used at column level; the global option of
+	the same name will be used instead.&nbsp; The <code><b><a href=
 	"#labelactivebackground">-labelactivebackground</a></b></code>,
 	<code><b><a href=
 	"#labelactiveforeground">-labelactiveforeground</a></b></code>, and
@@ -3187,13 +3190,30 @@ proc formatDate clockVal {
 	changes in either will automatically be reflected in the other.</dd>
 
 	<dt><br>
+	<a name="col_wrap"></a><code><b>-wrap</b> <i>boolean</i></code></dt>
+
+	<dd>Specifies whether to display those elements of the given column
+	that don't fit into their cells in word-wrapped multi-line rather than
+	snipped form.&nbsp; The default value is <code>0</code>.&nbsp; If the
+	specified column has static width and the value of this option is true
+	then elements of the column that are too long to be displayed in a
+	single line will be broken up into several lines.&nbsp; The same
+	applies to the individual lines of the multi-line elements (i.e.,
+	elements containing newline characters): they will also be wrapped if
+	necessary, thus giving rise to additional line breaks.&nbsp; In both
+	cases, the line breaks are chosen at word boundaries wherever possible,
+	and they are only used for the external representation of the strings
+	contained in the given column, without affecting the internal contents
+	of the cells.</dd>
+
+	<dt><br>
 	The <code><b>-background</b></code>, <code><b>-font</b></code>,
 	<code><b>-foreground</b></code>, <code><b>-selectbackground</b></code>,
 	and <code><b>-selectforeground</b></code> column configuration options
-	override the options with the same names set at widget level (but not
-	the ones set at cell or row level) if the specified value is not an
-	empty string.&nbsp; See the <a href="#colors_and_fonts">COLORS AND
-	FONTS</a> section for further details on these options.</dt>
+	override the options of the same names set at widget level (but not the
+	ones set at cell or row level) if the specified value is not an empty
+	string.&nbsp; See the <a href="#colors_and_fonts">COLORS AND FONTS</a>
+	section for further details on these options.</dt>
       </dl>
     </dd>
 
@@ -3302,7 +3322,7 @@ proc formatDate clockVal {
 	The <code><b>-background</b></code>, <code><b>-font</b></code>,
 	<code><b>-foreground</b></code>, <code><b>-selectbackground</b></code>,
 	and <code><b>-selectforeground</b></code> row configuration options
-	override the options with the same names set at column or widget level
+	override the options of the same names set at column or widget level
 	(but not the ones set at cell level) if the specified value is not an
 	empty string.&nbsp; See the <a href="#colors_and_fonts">COLORS AND
 	FONTS</a> section for further details on these options.</dt>
@@ -3333,7 +3353,7 @@ proc formatDate clockVal {
 
 	<dd>Specifies whether the contents of the cell can be edited
 	interactively.&nbsp; The default value is <code>0</code>.&nbsp; This
-	option overrides <a href="#col_editable">the one with the same name</a>
+	option overrides <a href="#col_editable">the one of the same name</a>
 	for the column containing the given cell.</dd>
 
 	<dt><br>
@@ -3343,7 +3363,7 @@ proc formatDate clockVal {
 	<dd>Specifies the type of the temporary embedded widget to be used for
 	interactive editing of the cell's contents.&nbsp; The default value is
 	<code><b>entry</b></code>.&nbsp; This option overrides <a href=
-	"#col_editwindow">the one with the same name</a> for the column
+	"#col_editwindow">the one of the same name</a> for the column
 	containing the given cell, and may have the same values as its
 	column-related counterpart.</dd>
 
@@ -3371,7 +3391,7 @@ proc formatDate clockVal {
 	  column containing the cell is right-aligned then the image will be
 	  displayed to the right of the cell's text, otherwise to its
 	  left.&nbsp; The text and the image are separated from each other by a
-	  space character.&nbsp; If for the same cell the <code><b><a href=
+	  gap of 4 pixels.&nbsp; If for the same cell the <code><b><a href=
 	  "#cell_window">-window</a></b></code> option was specified with a
 	  nonempty value then it overrides the <code><b>-image</b></code>
 	  option.&nbsp; If the tablelist's <code><b><a href=
@@ -3404,6 +3424,28 @@ proc formatDate clockVal {
 	of the cell while it is selected.</dd>
 
 	<dt><br>
+	<a name="cell_stretchwindow"></a><code><b>-stretchwindow</b>
+	<i>boolean</i></code></dt>
+
+	<dd>Specifies whether the width of the window embedded into the cell
+	shall be adapted dynamically to the width of the cell's column if the
+	latter is non-zero (i.e., static).&nbsp; The default value is
+	<code>0</code>.&nbsp; If the value of this option is true and the
+	column was specified with a non-zero width or was resized
+	interactively, then the width of the embedded window (if any)  will be
+	adjusted automatically so the window fills the whole horizontal space
+	belonging to that column (except the left and right margins).&nbsp;
+	Please note that in this case the cell's text will remain hidden.&nbsp;
+	On the other hand, if the column is of dynamic width then this option
+	will be ignored and both the cell's text and its embedded window (if
+	any) will be displayed as usual.&nbsp; The easiest way to avoid this
+	discrepancy is to set the cell's text to an empy string or make sure
+	that the column's elements are always displayed as empty strings, by
+	using the <code><b><a href=
+	"#col_formatcommand">-formatcommand</a></b></code> column configuration
+	option.</dd>
+
+	<dt><br>
 	<a name="cell_text"></a><code><b>-text</b> <i>text</i></code></dt>
 
 	<dd>Specifies the string to be displayed in the given cell, i.e.,
@@ -3426,7 +3468,7 @@ proc formatDate clockVal {
 	  containing the cell is right-aligned then the window will be
 	  displayed to the right of the cell's text, otherwise to its
 	  left.&nbsp; The text and the window are separated from each other by
-	  a space character.&nbsp; If this option was specified with a nonempty
+	  a gap of 4 pixels.&nbsp; If this option was specified with a nonempty
 	  value then it overrides the <code><b><a href=
 	  "#cell_image">-image</a></b></code> cell configuration option.&nbsp;
 	  If the tablelist's <code><b><a href="#state">state</a></b></code> is
@@ -3461,7 +3503,7 @@ proc formatDate clockVal {
 	The <code><b>-background</b></code>, <code><b>-font</b></code>,
 	<code><b>-foreground</b></code>, <code><b>-selectbackground</b></code>,
 	and <code><b>-selectforeground</b></code> cell configuration options
-	override the options with the same names set at row, column, or widget
+	override the options of the same names set at row, column, or widget
 	level if the specified value is not an empty string.&nbsp; See the
 	<a href="#colors_and_fonts">COLORS AND FONTS</a> section for further
 	details on these options.</dt>
@@ -4181,27 +4223,6 @@ proc formatDate clockVal {
 	of the header label if the tablelist widget is mapped.</dd>
 
 	<dt><br>
-	<a name="configure"></a><code><i>pathName</i> <b>configure</b>
-	?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i>
-	...?</code></dt>
-
-	<dd>Queries or modifies the configuration options of the widget.&nbsp;
-	If no <code><i>option</i></code> is specified, the command returns a
-	list describing all of the available options for
-	<code><i>pathName</i></code> (see <code><b>Tk_ConfigureInfo</b></code>
-	for information on the format of this list).&nbsp; If
-	<code><i>option</i></code> is specified with no
-	<code><i>value</i></code>, then the command returns a list describing
-	the one named option (this list will be identical to the corresponding
-	sublist of the value returned if no <code><i>option</i></code> is
-	specified).&nbsp; If one or more
-	<code><i>option</i></code>-<code><i>value</i></code> pairs are
-	specified, then the command modifies the given widget option(s) to have
-	the given value(s); in this case the return value is an empty
-	string.&nbsp; <code><i>option</i></code> may have any of the values
-	accepted by the <code><b>tablelist::tablelist</b></code> command.</dd>
-
-	<dt><br>
 	<a name="configcelllist"></a><code><i>pathName</i>
 	<b>configcelllist</b> <i>cellConfigSpecList</i></code></dt>
 
@@ -4331,6 +4352,27 @@ eval [list $<i>pathName</i> <a href=
 	<code><i>option</i></code> may have any of the values described in the
 	<a href="#row_options">ROW CONFIGURATION OPTIONS</a> section.&nbsp; The
 	return value is an empty string.</dd>
+
+	<dt><br>
+	<a name="configure"></a><code><i>pathName</i> <b>configure</b>
+	?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i>
+	...?</code></dt>
+
+	<dd>Queries or modifies the configuration options of the widget.&nbsp;
+	If no <code><i>option</i></code> is specified, the command returns a
+	list describing all of the available options for
+	<code><i>pathName</i></code> (see <code><b>Tk_ConfigureInfo</b></code>
+	for information on the format of this list).&nbsp; If
+	<code><i>option</i></code> is specified with no
+	<code><i>value</i></code>, then the command returns a list describing
+	the one named option (this list will be identical to the corresponding
+	sublist of the value returned if no <code><i>option</i></code> is
+	specified).&nbsp; If one or more
+	<code><i>option</i></code>-<code><i>value</i></code> pairs are
+	specified, then the command modifies the given widget option(s) to have
+	the given value(s); in this case the return value is an empty
+	string.&nbsp; <code><i>option</i></code> may have any of the values
+	accepted by the <code><b>tablelist::tablelist</b></code> command.</dd>
 
 	<dt><br>
 	<a name="containing"></a><code><i>pathName</i> <b>containing</b>

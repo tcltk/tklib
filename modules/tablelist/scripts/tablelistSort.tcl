@@ -7,7 +7,7 @@
 #   - Public procedures related to sorting
 #   - Private procedure implementing the sorting
 #
-# Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -405,10 +405,21 @@ proc tablelist::sortItems {win sortColList sortOrderList} {
 		}
 		if {$pixels != 0} {
 		    incr pixels $data($col-delta)
+
+		    if {$data($col-wrap) && !$multiline} {
+			if {[font measure $cellFont -displayof $win $text] >
+			    $pixels} {
+			    set multiline 1
+			}
+		    }
+
 		    set snipSide \
 			$snipSides($alignment,$data($col-changesnipside))
 		    if {$multiline} {
 			set list [split $text "\n"]
+			if {$data($col-wrap)} {
+			    set snipSide ""
+			}
 			set text [joinList $win $list $cellFont \
 				  $pixels $snipSide $snipStr]
 		    } else {
@@ -419,7 +430,7 @@ proc tablelist::sortItems {win sortColList sortOrderList} {
 
 		if {$multiline} {
 		    lappend insertArgs "\t\t" $cellTags
-		    lappend multilineData $col $text $colFont $alignment
+		    lappend multilineData $col $text $colFont $pixels $alignment
 		} else {
 		    lappend insertArgs "\t$text\t" $cellTags
 		}
@@ -437,10 +448,10 @@ proc tablelist::sortItems {win sortColList sortOrderList} {
 	    #
 	    # Embed the message widgets displaying multiline elements
 	    #
-	    foreach {col text font alignment} $multilineData {
+	    foreach {col text font pixels alignment} $multilineData {
 		findTabs $win $line $col $col tabIdx1 tabIdx2
 		set msgScript [list ::tablelist::displayText $win $key \
-			       $col $text $font $alignment]
+			       $col $text $font $pixels $alignment]
 		$w window create $tabIdx2 -pady $padY -create $msgScript
 	    }
 

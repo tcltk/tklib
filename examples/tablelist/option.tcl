@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains some Tk option database settings.
 #
-# Copyright (c) 2004-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -20,18 +20,21 @@ if {[catch {tk windowingsystem} winSys] != 0} {
 #
 switch $winSys {
     x11 {
-	option add *Font		"Helvetica -12"
-	option add *selectBackground	#447bcd
+	#
+	# Create the font TkDefaultFont if not yet present
+	#
+	catch {font create TkDefaultFont -family Helvetica -size -12}
+
+	option add *Font		TkDefaultFont
+	option add *selectBackground	#678db2
 	option add *selectForeground	white
     }
     classic {
 	option add *background		#dedede
     }
 }
-option add *Tablelist.activeStyle	frame
 option add *Tablelist.background	gray98
 option add *Tablelist.stripeBackground	#e0e8f0
-option add *Tablelist.setFocus		yes
 option add *Tablelist.setGrid		yes
 option add *Tablelist.movableColumns	yes
 option add *Tablelist.labelCommand	tablelist::sortByColumn
