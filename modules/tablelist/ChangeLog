@@ -1,3 +1,19 @@
+2008-04-12  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                          Bumped the version number to 4.9;
+	* *.txt:                          updated the Copyright lines; new
+	* scripts/*.tcl:                  -wrap column configuration option;
+	* doc/tablelist.html:             new -stretchwindow cell configuration
+	* doc/tablelistTile.html:         option; changed the default values of
+	* doc/tablelistWidget.html:       the -activestyle and -setfocus
+	* ../../examples/tablelist/*.tcl: configuration options; improved the
+	  cell editing with a combobox widget (proposed by Bryan Oakley);
+	  improved the setThemeDefaults command (contributed by Schelte Bron).
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/*.png: Updated the screenshots.
+
 2007-12-09  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistUtil.tcl: Fixed a bug related to the optimized item
