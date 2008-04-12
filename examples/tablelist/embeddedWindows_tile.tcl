@@ -5,7 +5,7 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
 #
-# Copyright (c) 2004-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tablelist_tile
@@ -17,6 +17,11 @@ wm title . "Tile Library Scripts"
 #
 set dir [file dirname [info script]]
 source [file join $dir option_tile.tcl]
+
+#
+# Create the font TkFixedFont if not yet present
+#
+catch {font create TkFixedFont -family Courier -size -12}
 
 #
 # Create an image to be displayed in buttons embedded in a tablelist widget
@@ -66,7 +71,7 @@ tablelist::tablelist $tbl \
 	      0 "File Size" right
 	      0 "View"      center
 	      0 "Seen"      center} \
-    -font "Helvetica -12" -setgrid no -yscrollcommand [list $vsb set] -width 0
+    -setgrid no -yscrollcommand [list $vsb set] -width 0
 if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
@@ -77,6 +82,8 @@ $tbl columnconfigure 4 -name seen
 ttk::scrollbar $vsb -orient vertical -command [list $tbl yview]
 
 proc emptyStr val { return "" }
+
+eval font create BoldFont [font actual [$tbl cget -font]] -weight bold
 
 #
 # Populate the tablelist widget
@@ -116,11 +123,14 @@ proc createFrame {tbl row col w} {
     # Create the child frame and replace the binding tag "Frame"
     # with "TablelistBody" in the list of its binding tags
     #
-    set fileSize [$tbl cellcget $row,fileSize -text]
-    set width [expr {$fileSize * 100 / $::maxFileSize}]
-    frame $w.f -width $width -background red -borderwidth 1 -relief raised
+    frame $w.f -height 12 -background red -borderwidth 1 -relief raised
     bindtags $w.f [lreplace [bindtags $w] 1 1 TablelistBody]
-    place $w.f -relheight 1.0
+
+    #
+    # Manage the child frame
+    #
+    set fileSize [$tbl cellcget $row,fileSize -text]
+    place $w.f -relwidth [expr {double($fileSize) / $::maxFileSize}]
 }
 
 #------------------------------------------------------------------------------
@@ -163,7 +173,7 @@ proc viewFile {tbl key} {
     #
     set txt $f.txt
     set vsb $f.vsb
-    text $txt -background white -font "Courier -12" -highlightthickness 0 \
+    text $txt -background white -font TkFixedFont -highlightthickness 0 \
 	      -setgrid yes -yscrollcommand [list $vsb set]
     catch {$txt configure -tabstyle wordprocessor}		;# for Tk 8.5
     ttk::scrollbar $vsb -orient vertical -command [list $txt yview]
@@ -190,7 +200,7 @@ proc viewFile {tbl key} {
     #
     # Mark the file as seen
     #
-    $tbl rowconfigure k$key -font "Helvetica -12 bold"
+    $tbl rowconfigure k$key -font BoldFont
     $tbl cellconfigure k$key,seen -text yes
 }
 
@@ -201,7 +211,7 @@ proc viewFile {tbl key} {
 #
 set rowCount [$tbl size]
 for {set row 0} {$row < $rowCount} {incr row} {
-    $tbl cellconfigure $row,1 -window createFrame
+    $tbl cellconfigure $row,1 -window createFrame -stretchwindow yes
     $tbl cellconfigure $row,3 -window createButton
 }
 

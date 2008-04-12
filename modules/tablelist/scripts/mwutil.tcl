@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Public utility procedures
 #
-# Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tcl 8
@@ -20,7 +20,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.3
+    variable version	2.4
     variable library	[file dirname [info script]]
 
     #
@@ -152,6 +152,11 @@ proc mwutil::processTraversal {w class event} {
     }
 
     if {[string compare $target $win] != 0} {
+	set focus [focus]
+	if {[string compare $focus ""] != 0} {
+	    event generate $focus <<TraverseOut>>
+	}
+
 	focus $target
 	event generate $target <<TraverseIn>>
     }

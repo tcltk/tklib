@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -18,7 +18,7 @@ proc tablelist::extendConfigSpecs {} {
     #
     # Extend some elements of the array configSpecs
     #
-    lappend configSpecs(-activestyle)		underline
+    lappend configSpecs(-activestyle)		frame
     lappend configSpecs(-columns)		{}
     lappend configSpecs(-editendcommand)	{}
     lappend configSpecs(-editstartcommand)	{}
@@ -36,7 +36,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-resizablecolumns)	1
     lappend configSpecs(-resizecursor)		sb_h_double_arrow
     lappend configSpecs(-selecttype)		row
-    lappend configSpecs(-setfocus)		0
+    lappend configSpecs(-setfocus)		1
     lappend configSpecs(-showarrow)		1
     lappend configSpecs(-showlabels)		1
     lappend configSpecs(-showseparators)	0
@@ -1005,7 +1005,8 @@ proc tablelist::doColConfig {col win opt val} {
 	    makeColFontAndTagLists $win
 	}
 
-	-changesnipside {
+	-changesnipside -
+	-wrap {
 	    #
 	    # Save the boolean value specified by val in data($col$opt) and
 	    # make sure the given column will be redisplayed at idle time
@@ -1825,12 +1826,12 @@ proc tablelist::doRowConfig {row win opt val} {
 		# Adjust the cell text and the image or window width
 		#
 		set multiline [string match "*\n*" $text]
-		set aux [getAuxData $win $key $col auxType auxWidth]
-		set textSav $text
-		set auxWidthSav $auxWidth
 		set cellFont [getCellFont $win $key $col]
 		set workPixels $pixels
 		if {$pixels == 0} {		;# convention: dynamic width
+		    set textSav $text
+		    getAuxData $win $key $col auxType auxWidthSav
+
 		    if {$data($col-maxPixels) > 0} {
 			if {$data($col-reqPixels) > $data($col-maxPixels)} {
 			    set workPixels $data($col-maxPixels)
@@ -1839,14 +1840,26 @@ proc tablelist::doRowConfig {row win opt val} {
 		}
 		if {$workPixels != 0} {
 		    incr workPixels $data($col-delta)
+
+		    if {$data($col-wrap) && !$multiline} {
+			if {[font measure $cellFont -displayof $win $text] >
+			    $workPixels} {
+			    set multiline 1
+			}
+		    }
 		}
+		set aux [getAuxData $win $key $col auxType auxWidth $workPixels]
 		set snipSide $snipSides($alignment,$data($col-changesnipside))
 		if {$multiline} {
 		    set list [split $text "\n"]
+		    if {$data($col-wrap)} {
+			set snipSide ""
+		    }
 		    adjustMlElem $win list auxWidth $cellFont $workPixels \
 				 $snipSide $data(-snipstring)
 		    set msgScript [list ::tablelist::displayText $win $key \
-				   $col [join $list "\n"] $cellFont $alignment]
+				   $col [join $list "\n"] $cellFont \
+				   $workPixels $alignment]
 		} else {
 		    adjustElem $win text auxWidth $cellFont $workPixels \
 			       $snipSide $data(-snipstring)
@@ -2121,12 +2134,12 @@ proc tablelist::doRowConfig {row win opt val} {
 		# Adjust the cell text and the image or window width
 		#
 		set multiline [string match "*\n*" $text]
-		set aux [getAuxData $win $key $col auxType auxWidth]
-		set textSav $text
-		set auxWidthSav $auxWidth
 		set cellFont [getCellFont $win $key $col]
 		set workPixels $pixels
 		if {$pixels == 0} {		;# convention: dynamic width
+		    set textSav $text
+		    getAuxData $win $key $col auxType auxWidthSav
+
 		    if {$data($col-maxPixels) > 0} {
 			if {$data($col-reqPixels) > $data($col-maxPixels)} {
 			    set workPixels $data($col-maxPixels)
@@ -2135,14 +2148,26 @@ proc tablelist::doRowConfig {row win opt val} {
 		}
 		if {$workPixels != 0} {
 		    incr workPixels $data($col-delta)
+
+		    if {$data($col-wrap) && !$multiline} {
+			if {[font measure $cellFont -displayof $win $text] >
+			    $workPixels} {
+			    set multiline 1
+			}
+		    }
 		}
+		set aux [getAuxData $win $key $col auxType auxWidth $workPixels]
 		set snipSide $snipSides($alignment,$data($col-changesnipside))
 		if {$multiline} {
 		    set list [split $text "\n"]
+		    if {$data($col-wrap)} {
+			set snipSide ""
+		    }
 		    adjustMlElem $win list auxWidth $cellFont $workPixels \
 				 $snipSide $data(-snipstring)
 		    set msgScript [list ::tablelist::displayText $win $key \
-				   $col [join $list "\n"] $cellFont $alignment]
+				   $col [join $list "\n"] $cellFont \
+				   $workPixels $alignment]
 		} else {
 		    adjustElem $win text auxWidth $cellFont $workPixels \
 			       $snipSide $data(-snipstring)
@@ -2422,13 +2447,13 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    }
 	    set text [strToDispStr $text]
 	    set multiline [string match "*\n*" $text]
-	    set aux [getAuxData $win $key $col auxType auxWidth]
-	    set textSav $text
-	    set auxWidthSav $auxWidth
 	    set cellFont [getCellFont $win $key $col]
 	    set pixels [lindex $data(colList) [expr {2*$col}]]
 	    set workPixels $pixels
 	    if {$pixels == 0} {			;# convention: dynamic width
+		set textSav $text
+		getAuxData $win $key $col auxType auxWidthSav
+
 		if {$data($col-maxPixels) > 0} {
 		    if {$data($col-reqPixels) > $data($col-maxPixels)} {
 			set workPixels $data($col-maxPixels)
@@ -2437,15 +2462,27 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    }
 	    if {$workPixels != 0} {
 		incr workPixels $data($col-delta)
+
+		if {$data($col-wrap) && !$multiline} {
+		    if {[font measure $cellFont -displayof $win $text] >
+			$workPixels} {
+			set multiline 1
+		    }
+		}
 	    }
+	    set aux [getAuxData $win $key $col auxType auxWidth $workPixels]
 	    set alignment [lindex $data(colList) [expr {2*$col + 1}]]
 	    set snipSide $snipSides($alignment,$data($col-changesnipside))
 	    if {$multiline} {
 		set list [split $text "\n"]
+		if {$data($col-wrap)} {
+		    set snipSide ""
+		}
 		adjustMlElem $win list auxWidth $cellFont $workPixels \
 			     $snipSide $data(-snipstring)
 		set msgScript [list ::tablelist::displayText $win $key \
-			       $col [join $list "\n"] $cellFont $alignment]
+			       $col [join $list "\n"] $cellFont \
+			       $workPixels $alignment]
 	    } else {
 		adjustElem $win text auxWidth $cellFont $workPixels \
 			   $snipSide $data(-snipstring)
@@ -2547,6 +2584,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    # Adjust the cell text and the image or window width
 	    #
+	    set pixels [lindex $data(colList) [expr {2*$col}]]
+	    set workPixels $pixels
 	    set text [lindex $item $col]
 	    if {[lindex $data(fmtCmdFlagList) $col]} {
 		set text [formatElem $win $key $row $col $text]
@@ -2554,13 +2593,11 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    set text [strToDispStr $text]
 	    set oldText $text
 	    set multiline [string match "*\n*" $text]
-	    set aux [getAuxData $win $key $col auxType auxWidth]
-	    set textSav $text
-	    set auxWidthSav $auxWidth
 	    set cellFont [getCellFont $win $key $col]
-	    set pixels [lindex $data(colList) [expr {2*$col}]]
-	    set workPixels $pixels
 	    if {$pixels == 0} {			;# convention: dynamic width
+		set textSav $text
+		getAuxData $win $key $col auxType auxWidthSav
+
 		if {$data($col-maxPixels) > 0} {
 		    if {$data($col-reqPixels) > $data($col-maxPixels)} {
 			set workPixels $data($col-maxPixels)
@@ -2569,15 +2606,27 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    }
 	    if {$workPixels != 0} {
 		incr workPixels $data($col-delta)
+
+		if {$data($col-wrap) && !$multiline} {
+		    if {[font measure $cellFont -displayof $win $text] >
+			$workPixels} {
+			set multiline 1
+		    }
+		}
 	    }
+	    set aux [getAuxData $win $key $col auxType auxWidth $workPixels]
 	    set alignment [lindex $data(colList) [expr {2*$col + 1}]]
 	    set snipSide $snipSides($alignment,$data($col-changesnipside))
 	    if {$multiline} {
 		set list [split $text "\n"]
+		if {$data($col-wrap)} {
+		    set snipSide ""
+		}
 		adjustMlElem $win list auxWidth $cellFont $workPixels \
 			     $snipSide $data(-snipstring)
 		set msgScript [list ::tablelist::displayText $win $key \
-			       $col [join $list "\n"] $cellFont $alignment]
+			       $col [join $list "\n"] $cellFont \
+			       $workPixels $alignment]
 	    } else {
 		adjustElem $win text auxWidth $cellFont $workPixels \
 			   $snipSide $data(-snipstring)
@@ -2691,6 +2740,86 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    }
 	}
 
+	-stretchwindow {
+	    #
+	    # Save the boolean value specified by val in data($key,$col$opt)
+	    #
+	    set item [lindex $data(itemList) $row]
+	    set key [lindex $item end]
+	    set name $key,$col$opt
+	    if {$val} {
+		set data($name) 1
+	    } elseif {[info exists data($name)]} {
+		unset data($name)
+	    }
+
+	    if {($data($col-hide) && !$canElide) ||
+		($row == $data(editRow) && $col == $data(editCol))} {
+		return ""
+	    }
+
+	    set pixels [lindex $data(colList) [expr {2*$col}]]
+	    set text [lindex $item $col]
+	    if {[lindex $data(fmtCmdFlagList) $col]} {
+		set text [formatElem $win $key $row $col $text]
+	    }
+	    set text [strToDispStr $text]
+	    set multiline [string match "*\n*" $text]
+	    set cellFont [getCellFont $win $key $col]
+	    if {$pixels == 0} {			;# convention: dynamic width
+		if {$data($col-maxPixels) > 0} {
+		    if {$data($col-reqPixels) > $data($col-maxPixels)} {
+			set pixels $data($col-maxPixels)
+		    }
+		}
+	    }
+	    if {$pixels != 0} {
+		incr pixels $data($col-delta)
+
+		if {$data($col-wrap) && !$multiline} {
+		    if {[font measure $cellFont -displayof $win $text] >
+			$pixels} {
+			set multiline 1
+		    }
+		}
+	    }
+	    set aux [getAuxData $win $key $col auxType auxWidth $pixels]
+	    if {$auxType < 2} {			;# no window
+		return ""
+	    }
+
+	    #
+	    # Adjust the cell text and the window width
+	    #
+	    set alignment [lindex $data(colList) [expr {2*$col + 1}]]
+	    set snipSide $snipSides($alignment,$data($col-changesnipside))
+	    if {$multiline} {
+		set list [split $text "\n"]
+		if {$data($col-wrap)} {
+		    set snipSide ""
+		}
+		adjustMlElem $win list auxWidth $cellFont $pixels \
+			     $snipSide $data(-snipstring)
+		set msgScript [list ::tablelist::displayText $win $key $col \
+			       [join $list "\n"] $cellFont $pixels $alignment]
+	    } else {
+		adjustElem $win text auxWidth $cellFont $pixels \
+			   $snipSide $data(-snipstring)
+	    }
+
+	    #
+	    # Update the text widget's contents between the two tabs
+	    #
+	    findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
+	    if {$multiline} {
+		updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript \
+			     $aux $auxType $auxWidth $alignment
+	    } else {
+		updateCell $w $tabIdx1+1c $tabIdx2 $text \
+			   $aux $auxType $auxWidth $alignment
+	    }
+	}
+
 	-text {
 	    if {$data(isDisabled)} {
 		return ""
@@ -2698,7 +2827,20 @@ proc tablelist::doCellConfig {row col win opt val} {
 
 	    set pixels [lindex $data(colList) [expr {2*$col}]]
 	    set workPixels $pixels
+	    set text $val
+	    set oldItem [lindex $data(itemList) $row]
+	    set key [lindex $oldItem end]
+	    set fmtCmdFlag [lindex $data(fmtCmdFlagList) $col]
+	    if {$fmtCmdFlag} {
+		set text [formatElem $win $key $row $col $text]
+	    }
+	    set text [strToDispStr $text]
+	    set textSav $text
+	    set multiline [string match "*\n*" $text]
+	    set cellFont [getCellFont $win $key $col]
 	    if {$pixels == 0} {			;# convention: dynamic width
+		getAuxData $win $key $col auxType auxWidthSav
+
 		if {$data($col-maxPixels) > 0} {
 		    if {$data($col-reqPixels) > $data($col-maxPixels)} {
 			set workPixels $data($col-maxPixels)
@@ -2707,32 +2849,31 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    }
 	    if {$workPixels != 0} {
 		incr workPixels $data($col-delta)
+
+		if {$data($col-wrap) && !$multiline} {
+		    if {[font measure $cellFont -displayof $win $text] >
+			$workPixels} {
+			set multiline 1
+		    }
+		}
 	    }
 	    set alignment [lindex $data(colList) [expr {2*$col + 1}]]
 
 	    #
 	    # Adjust the cell text and the image or window width
 	    #
-	    set oldItem [lindex $data(itemList) $row]
-	    set key [lindex $oldItem end]
-	    set text $val
-	    set fmtCmdFlag [lindex $data(fmtCmdFlagList) $col]
-	    if {$fmtCmdFlag} {
-		set text [formatElem $win $key $row $col $text]
-	    }
-	    set text [strToDispStr $text]
-	    set textSav $text
-	    set multiline [string match "*\n*" $text]
-	    set aux [getAuxData $win $key $col auxType auxWidth]
-	    set auxWidthSav $auxWidth
-	    set cellFont [getCellFont $win $key $col]
+	    set aux [getAuxData $win $key $col auxType auxWidth $workPixels]
 	    set snipSide $snipSides($alignment,$data($col-changesnipside))
 	    if {$multiline} {
 		set list [split $text "\n"]
+		if {$data($col-wrap)} {
+		    set snipSide ""
+		}
 		adjustMlElem $win list auxWidth $cellFont $workPixels \
 			     $snipSide $data(-snipstring)
 		set msgScript [list ::tablelist::displayText $win $key \
-			       $col [join $list "\n"] $cellFont $alignment]
+			       $col [join $list "\n"] $cellFont \
+			       $workPixels $alignment]
 	    } else {
 		adjustElem $win text auxWidth $cellFont $workPixels \
 			   $snipSide $data(-snipstring)
@@ -2864,6 +3005,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 				   -container 0 -highlightthickness 0 \
 				    -relief flat -takefocus 0
 		    catch {$aux configure -padx 0 -pady 0}
+		    bindtags $aux [lreplace [bindtags $aux] 1 1 \
+				   $data(bodyTag) TablelistBody]
 		    uplevel #0 $val [list $win $row $col $aux.w]
 		}
 		set data($name) $val
@@ -2889,6 +3032,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    # Adjust the cell text and the image or window width
 	    #
+	    set pixels [lindex $data(colList) [expr {2*$col}]]
+	    set workPixels $pixels
 	    set text [lindex $item $col]
 	    if {[lindex $data(fmtCmdFlagList) $col]} {
 		set text [formatElem $win $key $row $col $text]
@@ -2896,13 +3041,11 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    set text [strToDispStr $text]
 	    set oldText $text
 	    set multiline [string match "*\n*" $text]
-	    set aux [getAuxData $win $key $col auxType auxWidth]
-	    set textSav $text
-	    set auxWidthSav $auxWidth
 	    set cellFont [getCellFont $win $key $col]
-	    set pixels [lindex $data(colList) [expr {2*$col}]]
-	    set workPixels $pixels
 	    if {$pixels == 0} {			;# convention: dynamic width
+		set textSav $text
+		getAuxData $win $key $col auxType auxWidthSav
+
 		if {$data($col-maxPixels) > 0} {
 		    if {$data($col-reqPixels) > $data($col-maxPixels)} {
 			set workPixels $data($col-maxPixels)
@@ -2911,15 +3054,27 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    }
 	    if {$workPixels != 0} {
 		incr workPixels $data($col-delta)
+
+		if {$data($col-wrap) && !$multiline} {
+		    if {[font measure $cellFont -displayof $win $text] >
+			$workPixels} {
+			set multiline 1
+		    }
+		}
 	    }
+	    set aux [getAuxData $win $key $col auxType auxWidth $workPixels]
 	    set alignment [lindex $data(colList) [expr {2*$col + 1}]]
 	    set snipSide $snipSides($alignment,$data($col-changesnipside))
 	    if {$multiline} {
 		set list [split $text "\n"]
+		if {$data($col-wrap)} {
+		    set snipSide ""
+		}
 		adjustMlElem $win list auxWidth $cellFont $workPixels \
 			     $snipSide $data(-snipstring)
 		set msgScript [list ::tablelist::displayText $win $key \
-			       $col [join $list "\n"] $cellFont $alignment]
+			       $col [join $list "\n"] $cellFont \
+			       $workPixels $alignment]
 	    } else {
 		adjustElem $win text auxWidth $cellFont $workPixels \
 			   $snipSide $data(-snipstring)
@@ -2932,7 +3087,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 		# and insert the text and the auxiliary object
 		#
 		findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
-		if {$auxType != 2 || $keepAux} {
+		if {$auxType < 2 || $keepAux} {
 		    if {$multiline} {
 			updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript \
 				     $aux $auxType $auxWidth $alignment
@@ -3022,6 +3177,15 @@ proc tablelist::doCellCget {row col win opt} {
 
 	-editwindow {
 	    return [getEditWindow $win $row $col]
+	}
+
+	-stretchwindow {
+	    set key [lindex [lindex $data(itemList) $row] end]
+	    if {[info exists data($key,$col$opt)]} {
+		return $data($key,$col$opt)
+	    } else {
+		return 0
+	    }
 	}
 
 	-text {

@@ -3,7 +3,7 @@
 # specifies a canvas displaying a sort arrow, while the argument win stands for
 # a tablelist widget.
 #
-# Copyright (c) 2006-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2006-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------

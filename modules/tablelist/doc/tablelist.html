@@ -163,8 +163,8 @@
   <h3><a name="ov_get"></a>How to get it?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist4.8.tar.gz</code> for UNIX and
-  <code>tablelist4_8.zip</code> for Windows.&nbsp; These files contain the same
+  The distribution file is <code>tablelist4.9.tar.gz</code> for UNIX and
+  <code>tablelist4_9.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -189,21 +189,21 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist4.8.tar.gz</code>:</p>
+  <code>tablelist4.9.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist4.8.tar.gz | tar -xf -
+gunzip -c tablelist4.9.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>tablelist4.8</code>, with
+  <p>This command will create a directory named <code>tablelist4.9</code>, with
   the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist4_8.zip</code> into the directory
-  <code>tablelist4.8</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist4_9.zip</code> into the directory
+  <code>tablelist4.9</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Note that the file <code>tablelistEdit.tcl</code> in the
@@ -393,9 +393,9 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 </pre>
   </blockquote>
 
-  <p>The last command above reflects the fact that, beginning with Tk
-  8.5a6/8.5b1, tile is integrated into the Tk core and therefore it should only
-  be loaded explicitly when using an earlier Tk version.</p>
+  <p>The last command above reflects the fact that, beginning with Tk 8.5a6,
+  tile is integrated into the Tk core and therefore it should only be loaded
+  explicitly when using an earlier Tk version.</p>
 
   <p>Apart from this and the <code>_tile</code> suffix in the&nbsp;
   <code>package require</code>&nbsp; command, the only difference (from the
@@ -491,7 +491,7 @@ To display the configuration options of an arbitrary widget, enter
 
   <p><img src="config.png" alt=
   "Configuration Options - Please load this image!" width="735" height=
-  "378"></p>
+  "380"></p>
 
   <p>It is assumed that the Tcl command associated with the widget specified by
   <code>&lt;widgetName&gt;</code> has a <code>configure</code> subcommand
@@ -529,8 +529,13 @@ namespace eval demo {
 	}
     }
     if {[string compare $winSys "x11"] == 0} {
-	option add *DemoTop*Font			"Helvetica -12"
-	option add *DemoTop*selectBackground		#447bcd
+	#
+	# Create the font TkDefaultFont if not yet present
+	#
+	catch {font create TkDefaultFont -family Helvetica -size -12}
+
+	option add *DemoTop*Font			TkDefaultFont
+	option add *DemoTop*selectBackground		#678db2
 	option add *DemoTop*selectForeground		white
     } else {
 	option add *DemoTop.tf.borderWidth		2
@@ -541,11 +546,9 @@ namespace eval demo {
     if {[string compare $winSys "classic"] == 0} {
 	option add *DemoTop*background			#dedede
     }
-    option add *DemoTop.tf.tbl.activeStyle		frame
     option add *DemoTop.tf.tbl.background		gray98
     option add *DemoTop.tf.tbl.stripeBackground		#e0e8f0
     option add *DemoTop.tf.tbl*Entry.background		white
-    option add *DemoTop.tf.tbl.setFocus			yes
     option add *DemoTop.tf.tbl.setGrid			yes
     option add *DemoTop.bf.Button.width			10
 }
@@ -689,20 +692,12 @@ proc demo::displayConfig w {
   automatically inherit the ones contained in the Tk option database entries
   specified in the namespace initialization preceding the
   <code>demo::displayConfig</code> procedure.&nbsp; The database name
-  <code>activeStyle</code> corresponds to the <code><a href=
-  "tablelistWidget.html#activestyle">-activestyle</a></code> configuration
-  option; its value <code>frame</code> makes the active item appear surrounded
-  with a thin frame.&nbsp; The database name <code>stripeBackground</code>
-  corresponds to the <code><a href=
+  <code>stripeBackground</code> corresponds to the <code><a href=
   "tablelistWidget.html#stripebackground">-stripebackground</a></code>
   configuration option.&nbsp; According to this entry, every other row of the
   tablelist widget will be displayed in the background color
   <code>#e0e8f0</code>, which improves the readability of the items and gives
-  the widget a nice appearance.&nbsp; Finally, the database name
-  <code>setFocus</code> corresponds to the <code><a href=
-  "tablelistWidget.html#setfocus">-setfocus</a></code> configuration option; we
-  set it to <code>yes</code> to make sure that the tablelist's body will
-  receive the focus when clicked with the left mouse button.</p>
+  the widget a nice appearance.</p>
 
   <p>We populate the tablelist by invoking the <code>demo::putConfig</code>
   procedure discussed below.&nbsp; The same script is associated with the
@@ -906,8 +901,8 @@ To display information about the children of an arbitrary widget, enter
 </pre>
   </blockquote>
 
-  <p><img src="browse.png" alt="Children - Please load this image!" width="558"
-  height="272"></p>
+  <p><img src="browse.png" alt="Children - Please load this image!" width="554"
+  height="274"></p>
 
   <p>The <code>demo::displayChildren</code> command inserts some data of the
   children of the widget specified by <code>&lt;widgetName&gt;</code> into a
@@ -1350,7 +1345,7 @@ proc demo::putChildrenOfSelWidget tbl {
   the following figure:</p>
 
   <p><img src="styles.png" alt="Styles - Please load this image!" width="610"
-  height="492"></p>
+  height="494"></p>
 
   <p>Here is the relevant code segment:</p>
 
@@ -1435,7 +1430,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
 
   <p><img src="bwidget.png" alt=
   "Serial Line Configuration - Please load this image!" width="696" height=
-  "374"></p>
+  "376"></p>
 
   <p>Here is the relevant code segment from the script <code>bwidget.tcl</code>
   (the scripts <code>tileWidgets.tcl</code>, <code>iwidgets.tcl</code>, and
@@ -1755,7 +1750,7 @@ proc editEndCmd {tbl row col text} {
   <code>active</code> state:</p>
 
   <p><img src="embeddedWindows.png" alt=
-  "Embedded Windows - Please load this image!" width="414" height="287"></p>
+  "Embedded Windows - Please load this image!" width="414" height="272"></p>
 
   <p>First, we create and populate the tablelist widget:</p>
 
@@ -1770,6 +1765,11 @@ wm title . "Tk Library Scripts"
 #
 set dir [file dirname [info script]]
 source [file join $dir option.tcl]
+
+#
+# Create the font TkFixedFont if not yet present
+# 
+catch {font create TkFixedFont -family Courier -size -12}
 
 #
 # Create an image to be displayed in buttons embedded in a tablelist widget
@@ -1788,7 +1788,7 @@ tablelist::tablelist $tbl \
 	      0 "File Size" right
 	      0 "View"	    center
 	      0 "Seen"	    center} \
-    -font "Helvetica -12" -setgrid no -yscrollcommand [list $vsb set] -width 0
+    -setgrid no -yscrollcommand [list $vsb set] -width 0
 if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
@@ -1799,6 +1799,8 @@ $tbl columnconfigure 4 -name seen
 scrollbar $vsb -orient vertical -command [list $tbl yview]
 
 proc emptyStr val { return "" }
+
+eval font create BoldFont [font actual [$tbl cget -font]] -weight bold
 
 #
 # Populate the tablelist widget
@@ -1851,11 +1853,14 @@ proc createFrame {tbl row col w} {
     # Create the child frame and replace the binding tag "Frame"
     # with "TablelistBody" in the list of its binding tags
     #
-    set fileSize [$tbl cellcget $row,fileSize -text]
-    set width [expr {$fileSize * 100 / $::maxFileSize}]
-    frame $w.f -width $width -background red -borderwidth 1 -relief raised
+    frame $w.f -height 12 -background red -borderwidth 1 -relief raised
     bindtags $w.f [lreplace [bindtags $w] 1 1 TablelistBody]
-    place $w.f -relheight 1.0
+
+    #
+    # Manage the child frame
+    #
+    set fileSize [$tbl cellcget $row,fileSize -text]
+    place $w.f -relwidth [expr {double($fileSize) / $::maxFileSize}]
 }
 </pre>
   </blockquote>
@@ -1867,6 +1872,11 @@ proc createFrame {tbl row col w} {
   <code><a href="tablelistWidget.html#body_bindings">TablelistBody</a></code>,
   thus making sure that the default binding scripts associated with that tag
   will be valid for the parent frame and its child, too.</p>
+
+  <p>We <code>place</code> the red child frame within its parent using the
+  <code>-relwidth</code> option, to make sure that its width will remain
+  proportional to the size of the corresponding file when resizing the parent
+  frame (which will happen when resizing its column, as seen below).</p>
 
   <p>The creation script for the buttons used for viewing the Tk library files
   is quite simple:</p>
@@ -1902,12 +1912,29 @@ proc viewFile {tbl key} {
     set fileName [$tbl cellcget k$key,fileName -text]
     wm title $top "File \"$fileName\""
 
+    #
+    # Create a vertically scrolled text widget as a child of the toplevel
+    #
+    set txt $top.txt
+    set vsb $top.vsb
+    text $txt -background white -font TkFixedFont -setgrid yes \
+	      -yscrollcommand [list $vsb set]
+    catch {$txt configure -tabstyle wordprocessor}              ;# for Tk 8.5
+    scrollbar $vsb -orient vertical -command [list $txt yview]
+
+    #
+    # Insert the file's contents into the text widget
+    #
+    set chan [open $fileName]
+    $txt insert end [read $chan]
+    close $chan
+
     . . .
 
     #
     # Mark the file as seen
     #
-    $tbl rowconfigure k$key -font "Helvetica -12 bold"
+    $tbl rowconfigure k$key -font BoldFont
     $tbl cellconfigure k$key,seen -text yes
 }
 </pre>
@@ -1925,7 +1952,12 @@ proc viewFile {tbl key} {
   <p>Having implemented the creation scripts for the frames and buttons, we can
   now use the <code><a href=
   "tablelistWidget.html#cellconfigure">cellconfigure</a></code> subcommand to
-  effectively create these widgets as embedded windows:</p>
+  effectively create these widgets as embedded windows.&nbsp; Notice the
+  <code><a href=
+  "tablelistWidget.html#cell_stretchwindow">-stretchwindow</a></code>
+  option used for the embedded frames, to make sure that their width will be
+  adapted to that of the containing column when the latter is being resized
+  interactively.</p>
 
   <blockquote>
     <pre>
@@ -1934,7 +1966,7 @@ proc viewFile {tbl key} {
 #
 set rowCount [$tbl size]
 for {set row 0} {$row &lt; $rowCount} {incr row} {
-    $tbl cellconfigure $row,1 -window createFrame
+    $tbl cellconfigure $row,1 -window createFrame -stretchwindow yes
     $tbl cellconfigure $row,3 -window createButton
 }
 </pre>
@@ -1997,7 +2029,7 @@ source [file join $dir option_tile.tcl]
     <pre>
 if {[tk windowingsystem] eq "x11"} {
     tablelist::setTheme alt
-    option add *Font			"Helvetica -12"
+    option add *Font			TkDefaultFont
 }
 tablelist::setThemeDefaults
 if {[tablelist::getCurrentTheme] eq "aqua"} {
@@ -2097,7 +2129,7 @@ pack $f -expand yes -fill both
   the details.&nbsp; Here is a screenshot of the resulting window:</p>
 
   <p><img src="embeddedWindows_tile.png" alt=
-  "Embedded Windows - Please load this image!" width="406" height="281"></p>
+  "Embedded Windows - Please load this image!" width="406" height="265"></p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=

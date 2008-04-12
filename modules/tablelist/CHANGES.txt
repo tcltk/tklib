@@ -1,5 +1,55 @@
-What is new in Tablelist 4.8?
+What is new in Tablelist 4.9?
 -----------------------------
+
+1.  Added the "-wrap" column configuration option, which makes it
+    possible to display long texts in word-wrapped multi-line rather
+    than snipped form (thanks to Alexander Schöpe and Anant Adke for
+    their proposals).
+
+2.  Support for dynamic-with embedded windows, with the aid of the new
+    "-stretchwindow" cell configuration option (thanks to Kurt Kurczyk,
+    Bryan Oakley, and Rasmus Debitsch for their proposals). The demo
+    script "embeddedWindows.tcl" and its tile-based counterpart now make
+    use of this option.
+
+3.  New "formatinfo" subcommand, returning information about the cell
+    whose content is being formatted by a command specified as the value
+    of the "-formatcommand" column configuration option (thanks to Goran
+    Ivankovic and Sebastien Barre for their proposals).
+
+4.  Changed the default value of the "-activestyle" configuration option
+    from "underline" to "frame" and that of the "-setfocus" option from
+    0 to 1, making them conform to similar changes in Tk 8.5 related to
+    the listbox widget.
+
+5.  Improved the appearance of the header labels for the "aqua" theme
+    (thanks to Torsten Berg for discussing this topic on the Wiki).
+
+6.  Eliminated the potential invocation of the "unknown" command from
+    within the Tablelist code (thanks to Roger Niva for discussions on
+    this topic).
+
+7.  When starting the interactive cell editing with the aid of a
+    combobox widget, the list associated with the latter is only dropped
+    down if the combobox is read-only (thanks to Bryan Oakley for his
+    proposal).
+
+8.  The "setThemeDefaults" command no longer throws an error if the
+    current theme is not explicitly supported by Tablelist.  Instead, it
+    uses the options set by the current theme and falls back to the
+    "default" one for the rest (thanks to Schelte Bron for his valuable
+    contribution).
+
+9.  Fixed two bugs related to the optimized item insertion (thanks to
+    Harold Campbell and Bryan Oakley for their bug reports).
+
+10. Fixed a bug related to the "-showlinenumbers" column configuration
+    option (thanks to Martin Lemburg for his bug report).
+
+11. Several further improvements and minor bug fixes.
+
+What was new in Tablelist 4.8?
+------------------------------
 
 This release fixes a few nasty bugs related to the optimized item
 insertion, introduced in the previous Tablelist version (thanks to
@@ -15,7 +65,7 @@ What was new in Tablelist 4.7?
     contribution to speeding up the item insertion).  The extent of the
     speed-up depends on the configuration options present at column,
     row, and cell levels.
-    
+
 2.  Support for cell- and column label-specific balloon help, with the
     aid of the new configuration options "-tooltipaddcommand" and
     "-tooltipdelcommand".
