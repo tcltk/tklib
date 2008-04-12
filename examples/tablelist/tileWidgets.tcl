@@ -6,7 +6,7 @@ exec wish "$0" ${1+"$@"}
 # Demonstrates the interactive tablelist cell editing with the aid of some
 # widgets from the tile package and of the Tk core spinbox widget.
 #
-# Copyright (c) 2005-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tablelist_tile

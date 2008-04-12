@@ -8,7 +8,7 @@
 #   - Binding tag TablelistBody
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -278,7 +278,8 @@ proc tablelist::defineTablelistBody {} {
 	    set tablelist::priv(clicked) 1
 	    set tablelist::priv(clickTime) %t
 	    set tablelist::priv(clickedInEditWin) 0
-	    if {[$tablelist::W cget -setfocus]} {
+	    if {[$tablelist::W cget -setfocus] &&
+		[string compare [$tablelist::W cget -state] "normal"] == 0} {
 		focus [$tablelist::W bodypath]
 	    }
 	    tablelist::condEditContainingCell $tablelist::W \
@@ -473,12 +474,31 @@ proc tablelist::defineTablelistBody {} {
     if {[string compare $winSys "classic"] == 0 ||
 	[string compare $winSys "aqua"] == 0} {
 	bind TablelistBody <MouseWheel> {
-	    [tablelist::getTablelistPath %W] yview scroll [expr {-(%D)}] units
+	    [tablelist::getTablelistPath %W] yview scroll [expr {-%D}] units
+	    break
+	}
+	bind TablelistBody <Shift-MouseWheel> {
+	    [tablelist::getTablelistPath %W] xview scroll [expr {-%D}] units
+	    break
+	}
+	bind TablelistBody <Option-MouseWheel> {
+	    [tablelist::getTablelistPath %W] yview scroll \
+		[expr {-10 * %D}] units
+	    break
+	}
+	bind TablelistBody <Shift-Option-MouseWheel> {
+	    [tablelist::getTablelistPath %W] xview scroll \
+		[expr {-10 * %D}] units
 	    break
 	}
     } else {
 	bind TablelistBody <MouseWheel> {
 	    [tablelist::getTablelistPath %W] yview scroll \
+		[expr {-(%D / 120) * 4}] units
+	    break
+	}
+	bind TablelistBody <Shift-MouseWheel> {
+	    [tablelist::getTablelistPath %W] xview scroll \
 		[expr {-(%D / 120) * 4}] units
 	    break
 	}
@@ -494,6 +514,18 @@ proc tablelist::defineTablelistBody {} {
 	bind TablelistBody <Button-5> {
 	    if {!$tk_strictMotif} {
 		[tablelist::getTablelistPath %W] yview scroll 5 units
+		break
+	    }
+	}
+	bind TablelistBody <Shift-Button-4> {
+	    if {!$tk_strictMotif} {
+		[tablelist::getTablelistPath %W] xview scroll -5 units
+		break
+	    }
+	}
+	bind TablelistBody <Shift-Button-5> {
+	    if {!$tk_strictMotif} {
+		[tablelist::getTablelistPath %W] xview scroll 5 units
 		break
 	    }
 	}
@@ -951,10 +983,28 @@ proc tablelist::condEvalInvokeCmd win {
     }
 
     #
+    # Return if the edit window is an editable combobox widgets
+    #
+    set w $data(bodyFrEd)
+    switch [winfo class $w] {
+	TCombobox {
+	    if {[string compare [$w cget -state] "normal"] == 0} {
+		return ""
+	    }
+	}
+	ComboBox -
+	Combobox {
+	    if {[$w cget -editable]} {
+		return ""
+	    }
+	}
+    }
+
+    #
     # Evaluate the edit window's invoke command
     #
     update 
-    eval [strMap {"%W" "$data(bodyFrEd)"} $editWin($name-invokeCmd)]
+    eval [strMap {"%W" "$w"} $editWin($name-invokeCmd)]
     set data(invoked) 1
 }
 
@@ -1886,9 +1936,12 @@ proc tablelist::labelB1Down {w x shiftPressed} {
 		incr canvasWidth 6
 	    }
 	    set data(minColWidth) $canvasWidth
+	} elseif {$data($col2-wrap)} {
+	    set data(minColWidth) $data(charWidth)
 	} else {
-	    set data(minColWidth) 1
+	    set data(minColWidth) 0
 	}
+	incr data(minColWidth)
 
 	set data(focus) [focus -displayof $win]
 	set topWin [winfo toplevel $win]
@@ -1949,7 +2002,46 @@ proc tablelist::labelB1Motion {w X x y} {
 	    set data($col-lastStaticWidth) $width
 	    set data($col-delta) 0
 	    redisplayCol $win $col $data(topRow) $data(btmRow)
+
+	    #
+	    # Handle the case that the bottom row has become
+	    # greater (due to the redisplayCol invocation)
+	    #
+	    set b $data(body)
+	    set btmY [expr {[winfo height $b] - 1}]
+	    set btmTextIdx [$b index @0,$btmY]
+	    set btmRow [expr {int($btmTextIdx) - 1}]
+	    while {$btmRow > $data(btmRow)} {
+		$b tag add visibleLines [expr {double($data(btmRow) + 2)}] \
+					"$btmTextIdx lineend"
+		incr data(btmRow)
+		redisplayCol $win $col $data(btmRow) $btmRow
+		set data(btmRow) $btmRow
+
+		set btmTextIdx [$b index @0,$btmY]
+		set btmRow [expr {int($btmTextIdx) - 1}]
+	    }
+
+	    #
+	    # Handle the case that the top row has become
+	    # less (due to the redisplayCol invocation)
+	    #
+	    set topTextIdx [$b index @0,0]
+	    set topRow [expr {int($topTextIdx) - 1}]
+	    while {$topRow < $data(topRow)} {
+		$b tag add visibleLines "$topTextIdx linestart" \
+					"[expr {double($data(topRow))}] lineend"
+		incr data(topRow) -1
+		redisplayCol $win $col $topRow $data(topRow)
+		set data(topRow) $topRow
+
+		set topTextIdx [$b index @0,0]
+		set topRow [expr {int($topTextIdx) - 1}]
+	    }
+
 	    adjustColumns $win {} 0
+	    adjustElidedTextWhenIdle $win
+	    updateVScrlbarWhenIdle $win
 	}
     } else {
 	#
@@ -1983,8 +2075,8 @@ proc tablelist::labelB1Motion {w X x y} {
 	    # can also occur in a widget placed into the label
 	    #
 	    set data(inClickedLabel) 1
-	    $data(hdrTxtFrCanv)$col configure -cursor $data(-cursor)
 	    configLabel $w -cursor $data(-cursor)
+	    $data(hdrTxtFrCanv)$col configure -cursor $data(-cursor)
 	    if {$data(changeRelief)} {
 		configLabel $w -relief sunken -pressed 1
 	    }

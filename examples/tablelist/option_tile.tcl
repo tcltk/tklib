@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains some Tk option database settings.
 #
-# Copyright (c) 2004-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -10,7 +10,7 @@
 #
 if {[tk windowingsystem] eq "x11"} {
     tablelist::setTheme alt
-    option add *Font			"Helvetica -12"
+    option add *Font			TkDefaultFont
 }
 tablelist::setThemeDefaults
 if {[tablelist::getCurrentTheme] eq "aqua"} {
@@ -23,10 +23,8 @@ if {[tablelist::getCurrentTheme] eq "aqua"} {
     option add *selectForeground  $tablelist::themeDefaults(-selectforeground)
 }
 option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)
-option add *Tablelist.activeStyle	frame
 option add *Tablelist.background	gray98
 option add *Tablelist.stripeBackground	#e0e8f0
-option add *Tablelist.setFocus		yes
 option add *Tablelist.setGrid		yes
 option add *Tablelist.movableColumns	yes
 option add *Tablelist.labelCommand	tablelist::sortByColumn

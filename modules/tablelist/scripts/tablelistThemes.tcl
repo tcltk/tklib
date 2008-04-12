@@ -8,7 +8,7 @@
 #   - Private procedures performing RGB <-> HSV conversions
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2005-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -36,12 +36,16 @@ proc tablelist::getCurrentTheme {} {
 # tablelist configuration options.
 #------------------------------------------------------------------------------
 proc tablelist::setThemeDefaults {} {
-    set currentTheme [getCurrentTheme]
-    if {[catch {${currentTheme}Theme}] != 0} {
-	return -code error "theme \"$currentTheme\" not supported"
+    variable themeDefaults
+    if {[catch {[getCurrentTheme]Theme}] != 0} {
+	#
+	# Fall back to the "default" theme (which is the root of all
+	# themes) and then override the options set by the current one
+	#
+	defaultTheme 
+	array set themeDefaults [style configure .]
     }
 
-    variable themeDefaults
     if {[string compare $themeDefaults(-arrowcolor) ""] == 0} {
 	set themeDefaults(-arrowdisabledcolor) ""
     } else {
@@ -129,7 +133,7 @@ proc tablelist::aquaTheme {} {
 	-selectbackground	$selectBg \
 	-selectforeground	white \
 	-selectborderwidth	0 \
-	-font			TkTooltipFont \
+	-font			{"Lucida Grande" 12} \
         -labelbackground	#f4f4f4 \
 	-labeldisabledBg	#f4f4f4 \
 	-labelactiveBg		#f4f4f4 \
@@ -138,7 +142,7 @@ proc tablelist::aquaTheme {} {
 	-labeldisabledFg	#a3a3a3 \
 	-labelactiveFg		black \
 	-labelpressedFg		black \
-	-labelfont		TkHeadingFont \
+	-labelfont		{"Lucida Grande" 11} \
 	-labelborderwidth	1 \
 	-labelpady		1 \
 	-arrowcolor		#777777 \

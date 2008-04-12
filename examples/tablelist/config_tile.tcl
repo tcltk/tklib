@@ -2,7 +2,7 @@
 # Demonstrates how to implement a tablelist widget for displaying and editing
 # the configuration options of an arbitrary widget.
 #
-# Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tablelist_tile
@@ -23,7 +23,7 @@ namespace eval demo {
     #
     if {[tk windowingsystem] eq "x11"} {
 	tablelist::setTheme alt
-	option add *DemoTop*Font			"Helvetica -12"
+	option add *DemoTop*Font			TkDefaultFont
     }
     tablelist::setThemeDefaults
     variable currentTheme [tablelist::getCurrentTheme]
@@ -37,12 +37,10 @@ namespace eval demo {
     }
     option add *DemoTop.tf.borderWidth			2
     option add *DemoTop.tf.relief			sunken
-    option add *DemoTop.tf.tbl.activeStyle		frame
     option add *DemoTop.tf.tbl.background		gray98
     option add *DemoTop.tf.tbl.stripeBackground		#e0e8f0
     option add *DemoTop.tf.tbl*Entry.background		white
     option add *DemoTop.tf.tbl.borderWidth		0
-    option add *DemoTop.tf.tbl.setFocus			yes
     option add *DemoTop.tf.tbl.setGrid			yes
     option add *DemoTop.bf.TButton.width		10
 }

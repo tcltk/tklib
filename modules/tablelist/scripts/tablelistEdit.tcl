@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1802,7 +1802,7 @@ proc tablelist::adjustEditWindow {win pixels} {
 	if {$auxType == 1} {					;# image
 	    setImgLabelWidth $data(body) editAuxMark $auxWidth
 	} else {						;# window
-	    if {[$aux cget -width] != $auxWidth} {
+	    if {[winfo exists $aux] && [$aux cget -width] != $auxWidth} {
 		$aux configure -width $auxWidth
 	    }
 	}

@@ -2,7 +2,7 @@
 # Demonstrates how to implement a tablelist widget for displaying and editing
 # the configuration options of an arbitrary widget.
 #
-# Copyright (c) 2000-2007  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tablelist
@@ -30,8 +30,13 @@ namespace eval demo {
 	}
     }
     if {[string compare $winSys "x11"] == 0} {
-	option add *DemoTop*Font			"Helvetica -12"
-	option add *DemoTop*selectBackground		#447bcd
+	#
+	# Create the font TkDefaultFont if not yet present
+	#
+	catch {font create TkDefaultFont -family Helvetica -size -12}
+
+	option add *DemoTop*Font			TkDefaultFont
+	option add *DemoTop*selectBackground		#678db2
 	option add *DemoTop*selectForeground		white
     } else {
 	option add *DemoTop.tf.borderWidth		2
@@ -42,11 +47,9 @@ namespace eval demo {
     if {[string compare $winSys "classic"] == 0} {
 	option add *DemoTop*background			#dedede
     }
-    option add *DemoTop.tf.tbl.activeStyle		frame
     option add *DemoTop.tf.tbl.background		gray98
     option add *DemoTop.tf.tbl.stripeBackground		#e0e8f0
     option add *DemoTop.tf.tbl*Entry.background		white
-    option add *DemoTop.tf.tbl.setFocus			yes
     option add *DemoTop.tf.tbl.setGrid			yes
     option add *DemoTop.bf.Button.width			10
 }
