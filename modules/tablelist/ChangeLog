@@ -1,3 +1,10 @@
+2008-04-13  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/tablelist.html:        Expanded the tabs to spaces.
+	* doc/tablelistBinding.html:
+	* doc/tablelistThemes.html:
+	* doc/tablelistWidget.html:
+
 2008-04-12  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:                          Bumped the version number to 4.9;

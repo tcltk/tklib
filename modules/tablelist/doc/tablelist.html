@@ -457,7 +457,7 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     then it is sufficient to enter
 
       <blockquote>
-	<pre>
+        <pre>
 source config.tcl
 </pre>
       </blockquote>
@@ -470,7 +470,7 @@ source config.tcl
     install it?</a> section, the required commands are:
 
       <blockquote>
-	<pre>
+        <pre>
 package require Tablelist
 source [file join $tablelist::library demos config.tcl]
 </pre>
@@ -485,7 +485,7 @@ source [file join $tablelist::library demos config.tcl]
     <pre>
 To display the configuration options of an arbitrary widget, enter
 
-	demo::displayConfig &lt;widgetName&gt;
+        demo::displayConfig &lt;widgetName&gt;
 </pre>
   </blockquote>
 
@@ -512,45 +512,45 @@ namespace eval demo {
     # and add some entries to the Tk option database for the following
     # widget hierarchy within a top-level widget of the class DemoTop:
     #
-    # Name		Class
+    # Name              Class
     # -----------------------------
-    # tf		Frame
-    #	tbl		  Tabellist
-    #	vsb, hsb	  Scrollbar
-    # bf		Frame
-    #	b1, b2, b3	  Button
+    # tf                Frame
+    #   tbl               Tabellist
+    #   vsb, hsb          Scrollbar
+    # bf                Frame
+    #   b1, b2, b3        Button
     #
     variable winSys
     if {[catch {tk windowingsystem} winSys] != 0} {
-	switch $::tcl_platform(platform) {
-	    unix	{ set winSys x11 }
-	    windows	{ set winSys win32 }
-	    macintosh	{ set winSys classic }
-	}
+        switch $::tcl_platform(platform) {
+            unix        { set winSys x11 }
+            windows     { set winSys win32 }
+            macintosh   { set winSys classic }
+        }
     }
     if {[string compare $winSys "x11"] == 0} {
-	#
-	# Create the font TkDefaultFont if not yet present
-	#
-	catch {font create TkDefaultFont -family Helvetica -size -12}
+        #
+        # Create the font TkDefaultFont if not yet present
+        #
+        catch {font create TkDefaultFont -family Helvetica -size -12}
 
-	option add *DemoTop*Font			TkDefaultFont
-	option add *DemoTop*selectBackground		#678db2
-	option add *DemoTop*selectForeground		white
+        option add *DemoTop*Font                        TkDefaultFont
+        option add *DemoTop*selectBackground            #678db2
+        option add *DemoTop*selectForeground            white
     } else {
-	option add *DemoTop.tf.borderWidth		2
-	option add *DemoTop.tf.relief			sunken
-	option add *DemoTop.tf.tbl.borderWidth		0
-	option add *DemoTop.tf.tbl.highlightThickness	0
+        option add *DemoTop.tf.borderWidth              2
+        option add *DemoTop.tf.relief                   sunken
+        option add *DemoTop.tf.tbl.borderWidth          0
+        option add *DemoTop.tf.tbl.highlightThickness   0
     }
     if {[string compare $winSys "classic"] == 0} {
-	option add *DemoTop*background			#dedede
+        option add *DemoTop*background                  #dedede
     }
-    option add *DemoTop.tf.tbl.background		gray98
-    option add *DemoTop.tf.tbl.stripeBackground		#e0e8f0
-    option add *DemoTop.tf.tbl*Entry.background		white
-    option add *DemoTop.tf.tbl.setGrid			yes
-    option add *DemoTop.bf.Button.width			10
+    option add *DemoTop.tf.tbl.background               gray98
+    option add *DemoTop.tf.tbl.stripeBackground         #e0e8f0
+    option add *DemoTop.tf.tbl*Entry.background         white
+    option add *DemoTop.tf.tbl.setGrid                  yes
+    option add *DemoTop.bf.Button.width                 10
 }
 
 #------------------------------------------------------------------------------
@@ -562,10 +562,10 @@ namespace eval demo {
 #------------------------------------------------------------------------------
 proc demo::displayConfig w {
     if {![winfo exists $w]} {
-	bell
-	tk_messageBox -icon error -message "Bad window path name \"$w\"" \
-		      -type ok
-	return ""
+        bell
+        tk_messageBox -icon error -message "Bad window path name \"$w\"" \
+                      -type ok
+        return ""
     }
 
     #
@@ -573,7 +573,7 @@ proc demo::displayConfig w {
     #
     set top .configTop
     for {set n 2} {[winfo exists $top]} {incr n} {
-	set top .configTop$n
+        set top .configTop$n
     }
     toplevel $top -class DemoTop
     wm title $top "Configuration Options of the [winfo class $w] Widget \"$w\""
@@ -588,16 +588,16 @@ proc demo::displayConfig w {
     set vsb $tf.vsb
     set hsb $tf.hsb
     tablelist::tablelist $tbl \
-	-columns {0 "Command-Line Name"
-		  0 "Database/Alias Name"
-		  0 "Database Class"
-		  0 "Default Value"
-		  0 "Current Value"} \
-	-labelcommand tablelist::sortByColumn -sortcommand demo::compareAsSet \
-	-editendcommand demo::applyValue -height 15 -width 100 -stretch all \
-	-xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set]
+        -columns {0 "Command-Line Name"
+                  0 "Database/Alias Name"
+                  0 "Database Class"
+                  0 "Default Value"
+                  0 "Current Value"} \
+        -labelcommand tablelist::sortByColumn -sortcommand demo::compareAsSet \
+        -editendcommand demo::applyValue -height 15 -width 100 -stretch all \
+        -xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set]
     if {[$tbl cget -selectborderwidth] == 0} {
-	$tbl configure -spacing 1
+        $tbl configure -spacing 1
     }
     $tbl columnconfigure 3 -maxwidth 30
     $tbl columnconfigure 4 -maxwidth 30 -editable yes
@@ -612,9 +612,9 @@ proc demo::displayConfig w {
     set b1 $bf.b1
     set b2 $bf.b2
     set b3 $bf.b3
-    button $b1 -text "Refresh"	   -command [list demo::putConfig $w $tbl]
+    button $b1 -text "Refresh"     -command [list demo::putConfig $w $tbl]
     button $b2 -text "Sort as set" -command [list $tbl sort]
-    button $b3 -text "Close"	   -command [list destroy $top]
+    button $b3 -text "Close"       -command [list destroy $top]
 
     #
     # Manage the widgets
@@ -714,10 +714,10 @@ proc demo::displayConfig w {
 #------------------------------------------------------------------------------
 proc demo::putConfig {w tbl} {
     if {![winfo exists $w]} {
-	bell
-	tk_messageBox -icon error -message "Bad window path name \"$w\"" \
-		      -parent [winfo toplevel $tbl] -type ok
-	return ""
+        bell
+        tk_messageBox -icon error -message "Bad window path name \"$w\"" \
+                      -parent [winfo toplevel $tbl] -type ok
+        return ""
     }
 
     #
@@ -725,28 +725,28 @@ proc demo::putConfig {w tbl} {
     #
     $tbl delete 0 end
     foreach configSet [$w configure] {
-	#
-	# Insert the list configSet into the tablelist widget
-	#
-	$tbl insert end $configSet
+        #
+        # Insert the list configSet into the tablelist widget
+        #
+        $tbl insert end $configSet
 
-	if {[llength $configSet] == 2} {
-	    $tbl rowconfigure end -foreground gray50 -selectforeground gray75
-	    $tbl cellconfigure end -editable no
-	} else {
-	    #
-	    # Change the colors of the first and last cell of the row
-	    # if the current value is different from the default one
-	    #
-	    set default [lindex $configSet 3]
-	    set current [lindex $configSet 4]
-	    if {[string compare $default $current] != 0} {
-		foreach col {0 4} {
-		    $tbl cellconfigure end,$col \
-			 -foreground red -selectforeground yellow
-		}
-	    }
-	}
+        if {[llength $configSet] == 2} {
+            $tbl rowconfigure end -foreground gray50 -selectforeground gray75
+            $tbl cellconfigure end -editable no
+        } else {
+            #
+            # Change the colors of the first and last cell of the row
+            # if the current value is different from the default one
+            #
+            set default [lindex $configSet 3]
+            set current [lindex $configSet 4]
+            if {[string compare $default $current] != 0} {
+                foreach col {0 4} {
+                    $tbl cellconfigure end,$col \
+                         -foreground red -selectforeground yellow
+                }
+            }
+        }
     }
 
     $tbl sortbycolumn 0
@@ -797,16 +797,16 @@ proc demo::putConfig {w tbl} {
 #------------------------------------------------------------------------------
 proc demo::compareAsSet {item1 item2} {
     foreach {opt1 dbName1 dbClass1 default1 current1} $item1 \
-	    {opt2 dbName2 dbClass2 default2 current2} $item2 {
-	set changed1 [expr {[string compare $default1 $current1] != 0}]
-	set changed2 [expr {[string compare $default2 $current2] != 0}]
-	if {$changed1 == $changed2} {
-	    return [string compare $opt1 $opt2]
-	} elseif {$changed1} {
-	    return -1
-	} else {
-	    return 1
-	}
+            {opt2 dbName2 dbClass2 default2 current2} $item2 {
+        set changed1 [expr {[string compare $default1 $current1] != 0}]
+        set changed2 [expr {[string compare $default2 $current2] != 0}]
+        if {$changed1 == $changed2} {
+            return [string compare $opt1 $opt2]
+        } elseif {$changed1} {
+            return -1
+        } else {
+            return 1
+        }
     }
 }
 </pre>
@@ -834,11 +834,11 @@ proc demo::applyValue {tbl row col text} {
     set w [$tbl attrib widget]
     set opt [$tbl cellcget $row,0 -text]
     if {[catch {$w configure $opt $text} result] != 0} {
-	bell
-	tk_messageBox -parent [winfo toplevel $tbl] -title Error \
-		      -icon error -message $result -type ok
-	$tbl rejectinput
-	return ""
+        bell
+        tk_messageBox -parent [winfo toplevel $tbl] -title Error \
+                      -icon error -message $result -type ok
+        $tbl rejectinput
+        return ""
     }
 
     #
@@ -848,15 +848,15 @@ proc demo::applyValue {tbl row col text} {
     set text [$w cget $opt]
     set default [$tbl cellcget $row,3 -text]
     if {[string compare $default $text] == 0} {
-	foreach col {0 4} {
-	    $tbl cellconfigure $row,$col \
-		 -foreground "" -selectforeground ""
-	}
+        foreach col {0 4} {
+            $tbl cellconfigure $row,$col \
+                 -foreground "" -selectforeground ""
+        }
     } else {
-	foreach col {0 4} {
-	    $tbl cellconfigure $row,$col \
-		 -foreground red -selectforeground yellow
-	}
+        foreach col {0 4} {
+            $tbl cellconfigure $row,$col \
+                 -foreground red -selectforeground yellow
+        }
     }
 
     return $text
@@ -897,7 +897,7 @@ proc demo::applyValue {tbl row col text} {
     <pre>
 To display information about the children of an arbitrary widget, enter
 
-	demo::displayChildren &lt;widgetName&gt;
+        demo::displayChildren &lt;widgetName&gt;
 </pre>
   </blockquote>
 
@@ -926,9 +926,9 @@ namespace eval demo {
     # Create two images, needed in the procedure putChildren
     #
     variable leafImg [image create bitmap -file [file join $dir leaf.xbm] \
-		      -background coral -foreground gray50]
+                      -background coral -foreground gray50]
     variable compImg [image create bitmap -file [file join $dir comp.xbm] \
-		      -background yellow -foreground gray50]
+                      -background yellow -foreground gray50]
 }
 
 source [file join $demo::dir config.tcl]
@@ -942,10 +942,10 @@ source [file join $demo::dir config.tcl]
 #------------------------------------------------------------------------------
 proc demo::displayChildren w {
     if {![winfo exists $w]} {
-	bell
-	tk_messageBox -icon error -message "Bad window path name \"$w\"" \
-		      -type ok
-	return ""
+        bell
+        tk_messageBox -icon error -message "Bad window path name \"$w\"" \
+                      -type ok
+        return ""
     }
 
     #
@@ -953,7 +953,7 @@ proc demo::displayChildren w {
     #
     set top .browseTop
     for {set n 2} {[winfo exists $top]} {incr n} {
-	set top .browseTop$n
+        set top .browseTop$n
     }
     toplevel $top -class DemoTop
 
@@ -966,24 +966,24 @@ proc demo::displayChildren w {
     set tbl $tf.tbl
     set vsb $tf.vsb
     tablelist::tablelist $tbl \
-	-columns {0 "Path Name" left
-		  0 "Class"	left
-		  0 "X"		right
-		  0 "Y"		right
-		  0 "Width"	right
-		  0 "Height"	right
-		  0 "Mapped"	center
-		  0 "Viewable"	center
-		  0 "Manager"	left} \
-	-labelcommand demo::labelCmd -yscrollcommand [list $vsb set] -width 0
+        -columns {0 "Path Name" left
+                  0 "Class"     left
+                  0 "X"         right
+                  0 "Y"         right
+                  0 "Width"     right
+                  0 "Height"    right
+                  0 "Mapped"    center
+                  0 "Viewable"  center
+                  0 "Manager"   left} \
+        -labelcommand demo::labelCmd -yscrollcommand [list $vsb set] -width 0
     if {[$tbl cget -selectborderwidth] == 0} {
-	$tbl configure -spacing 1
+        $tbl configure -spacing 1
     }
     foreach col {2 3 4 5} {
-	$tbl columnconfigure $col -sortmode integer
+        $tbl columnconfigure $col -sortmode integer
     }
     foreach col {6 7} {
-	$tbl columnconfigure $col -formatcommand demo::formatBoolean
+        $tbl columnconfigure $col -formatcommand demo::formatBoolean
     }
     scrollbar $vsb -orient vertical -command [list $tbl yview]
 
@@ -995,7 +995,7 @@ proc demo::displayChildren w {
     # will be updated after any change in the sizes of the labels
     #
     foreach l [$tbl labels] {
-	bind $l &lt;Configure&gt; [list demo::updateItemsDelayed $tbl]
+        bind $l &lt;Configure&gt; [list demo::updateItemsDelayed $tbl]
     }
     bind $tbl &lt;Configure&gt; [list demo::updateItemsDelayed $tbl]
 
@@ -1006,9 +1006,9 @@ proc demo::displayChildren w {
     set menu $top.menu
     menu $menu -tearoff no
     $menu add command -label "Display children" \
-		      -command [list demo::putChildrenOfSelWidget $tbl]
+                      -command [list demo::putChildrenOfSelWidget $tbl]
     $menu add command -label "Display config" \
-		      -command [list demo::dispConfigOfSelWidget $tbl]
+                      -command [list demo::dispConfigOfSelWidget $tbl]
     set bodyTag [$tbl bodytag]
     bind $bodyTag &lt;&lt;Button3&gt;&gt;  [bind TablelistBody &lt;Button-1&gt;]
     bind $bodyTag &lt;&lt;Button3&gt;&gt; +[bind TablelistBody &lt;ButtonRelease-1&gt;]
@@ -1124,7 +1124,7 @@ proc demo::putChildren {w tbl} {
     # is also invoked by the "Refresh" and "Parent" buttons
     #
     if {![winfo exists $w]} {
-	. . .
+        . . .
     }
 
     set top [winfo toplevel $tbl]
@@ -1139,23 +1139,23 @@ proc demo::putChildren {w tbl} {
     $tbl resetsortinfo
     $tbl delete 0 end
     foreach c [winfo children $w] {
-	#
-	# Insert the data of the current child into the tablelist widget
-	#
-	set item {}
-	lappend item $c [winfo class $c] [winfo x $c] [winfo y $c] \
-		     [winfo width $c] [winfo height $c] [winfo ismapped $c] \
-		     [winfo viewable $c] [winfo manager $c]
-	$tbl insert end $item
+        #
+        # Insert the data of the current child into the tablelist widget
+        #
+        set item {}
+        lappend item $c [winfo class $c] [winfo x $c] [winfo y $c] \
+                     [winfo width $c] [winfo height $c] [winfo ismapped $c] \
+                     [winfo viewable $c] [winfo manager $c]
+        $tbl insert end $item
 
-	#
-	# Insert an image into the first cell of the row
-	#
-	if {[llength [winfo children $c]] == 0} {
-	    $tbl cellconfigure end,0 -image $leafImg
-	} else {
-	    $tbl cellconfigure end,0 -image $compImg
-	}
+        #
+        # Insert an image into the first cell of the row
+        #
+        if {[llength [winfo children $c]] == 0} {
+            $tbl cellconfigure end,0 -image $leafImg
+        } else {
+            $tbl cellconfigure end,0 -image $compImg
+        }
     }
 
     #
@@ -1165,9 +1165,9 @@ proc demo::putChildren {w tbl} {
     set b2 $top.bf.b2
     set p [winfo parent $w]
     if {[string compare $p ""] == 0} {
-	$b2 configure -state disabled
+        $b2 configure -state disabled
     } else {
-	$b2 configure -state normal -command [list demo::putChildren $p $tbl]
+        $b2 configure -state normal -command [list demo::putChildren $p $tbl]
     }
 }
 </pre>
@@ -1239,7 +1239,7 @@ proc demo::updateItemsDelayed tbl {
     # 500 ms later, but only if it is not yet pending
     #
     if {[string compare [$tbl attrib afterId] ""] == 0} {
-	$tbl attrib afterId [after 500 [list demo::updateItems $tbl]]
+        $tbl attrib afterId [after 500 [list demo::updateItems $tbl]]
     }
 }
 
@@ -1259,23 +1259,23 @@ proc demo::updateItems tbl {
     #
     set rowCount [$tbl size]
     for {set row 0} {$row &lt; $rowCount} {incr row} {
-	set c [$tbl cellcget $row,0 -text]
-	if {![winfo exists $c]} {
-	    continue
-	}
+        set c [$tbl cellcget $row,0 -text]
+        if {![winfo exists $c]} {
+            continue
+        }
 
-	set item {}
-	lappend item $c [winfo class $c] [winfo x $c] [winfo y $c] \
-		     [winfo width $c] [winfo height $c] [winfo ismapped $c] \
-		     [winfo viewable $c] [winfo manager $c]
-	$tbl rowconfigure $row -text $item
+        set item {}
+        lappend item $c [winfo class $c] [winfo x $c] [winfo y $c] \
+                     [winfo width $c] [winfo height $c] [winfo ismapped $c] \
+                     [winfo viewable $c] [winfo manager $c]
+        $tbl rowconfigure $row -text $item
     }
 
     #
     # Repeat the last sort operation
     #
     if {[set sortCol [$tbl sortcolumn]] &gt;= 0} {
-	$tbl sortbycolumn $sortCol -[$tbl sortorder]
+        $tbl sortbycolumn $sortCol -[$tbl sortorder]
     }
 }
 </pre>
@@ -1321,16 +1321,16 @@ proc demo::updateItems tbl {
 proc demo::putChildrenOfSelWidget tbl {
     set w [$tbl cellcget [$tbl curselection],0 -text]
     if {![winfo exists $w]} {
-	bell
-	tk_messageBox -icon error -message "Bad window path name \"$w\"" \
-		      -parent [winfo toplevel $tbl] -type ok
-	return ""
+        bell
+        tk_messageBox -icon error -message "Bad window path name \"$w\"" \
+                      -parent [winfo toplevel $tbl] -type ok
+        return ""
     }
 
     if {[llength [winfo children $w]] == 0} {
-	bell
+        bell
     } else {
-	putChildren $w $tbl
+        putChildren $w $tbl
     }
 }
 </pre>
@@ -1358,50 +1358,50 @@ frame .f
 for {set n 0} { $n &lt; 8} {incr n} {
     set tbl .f.tbl$n
     tablelist::tablelist $tbl \
-	-columns {0 "Label 0"  0 "Label 1"  0 "Label 2"  0 "Label 3"} \
-	-background gray98 -height 4 -width 40 -stretch all
+        -columns {0 "Label 0"  0 "Label 1"  0 "Label 2"  0 "Label 3"} \
+        -background gray98 -height 4 -width 40 -stretch all
     if {[$tbl cget -selectborderwidth] == 0} {
-	$tbl configure -spacing 1
+        $tbl configure -spacing 1
     }
 
     switch $n {
-	1 {
-	    $tbl configure -showseparators yes
-	}
-	2 {
-	    $tbl configure -stripebackground #e0e8f0
-	}
-	3 {
-	    $tbl configure -stripebackground #e0e8f0 -showseparators yes
-	}
-	4 {
-	    foreach col {1 3} {
-		$tbl columnconfigure $col -background linen
-	    }
-	}
-	5 {
-	    $tbl configure -showseparators yes
-	    foreach col {1 3} {
-		$tbl columnconfigure $col -background linen
-	    }
-	}
-	6 {
-	    $tbl configure -stripebackground #e0e8f0
-	    foreach col {1 3} {
-		$tbl columnconfigure $col -background linen
-	    }
-	}
-	7 {
-	    $tbl configure -stripebackground #e0e8f0 -showseparators yes
-	    foreach col {1 3} {
-		$tbl columnconfigure $col -background linen
-	    }
-	}
+        1 {
+            $tbl configure -showseparators yes
+        }
+        2 {
+            $tbl configure -stripebackground #e0e8f0
+        }
+        3 {
+            $tbl configure -stripebackground #e0e8f0 -showseparators yes
+        }
+        4 {
+            foreach col {1 3} {
+                $tbl columnconfigure $col -background linen
+            }
+        }
+        5 {
+            $tbl configure -showseparators yes
+            foreach col {1 3} {
+                $tbl columnconfigure $col -background linen
+            }
+        }
+        6 {
+            $tbl configure -stripebackground #e0e8f0
+            foreach col {1 3} {
+                $tbl columnconfigure $col -background linen
+            }
+        }
+        7 {
+            $tbl configure -stripebackground #e0e8f0 -showseparators yes
+            foreach col {1 3} {
+                $tbl columnconfigure $col -background linen
+            }
+        }
     }
 
     foreach row {0 1 2 3} {
-	$tbl insert end \
-	     [list "Cell $row,0" "Cell $row,1" "Cell $row,2" "Cell $row,3"]
+        $tbl insert end \
+             [list "Cell $row,0" "Cell $row,1" "Cell $row,2" "Cell $row,3"]
     }
 }
 </pre>
@@ -1438,7 +1438,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
 
   <blockquote>
     <pre>
-package require Tk 8.3				;# because of entry validation
+package require Tk 8.3                          ;# because of entry validation
 package require Tablelist
 package require BWidget
 
@@ -1449,9 +1449,9 @@ wm title . "Serial Line Configuration"
 #
 set dir [file dirname [info script]]
 source [file join $dir option.tcl]
-option add *Tablelist*Checkbutton.background		white
-option add *Tablelist*Checkbutton.activeBackground	white
-option add *Tablelist*Entry.background			white
+option add *Tablelist*Checkbutton.background            white
+option add *Tablelist*Checkbutton.activeBackground      white
+option add *Tablelist*Entry.background                  white
 
 #
 # Register some widgets from the BWidget package for interactive cell editing
@@ -1463,7 +1463,7 @@ tablelist::addBWidgetComboBox
 #
 # Create two images, to be displayed in tablelist cells with boolean values
 #
-set checkedImg	 [image create photo -file [file join $dir checked.gif]]
+set checkedImg   [image create photo -file [file join $dir checked.gif]]
 set uncheckedImg [image create photo -file [file join $dir unchecked.gif]]
 
 #
@@ -1471,16 +1471,16 @@ set uncheckedImg [image create photo -file [file join $dir unchecked.gif]]
 #
 set tbl .tbl
 tablelist::tablelist $tbl \
-    -columns {0 "No."		  right
-	      0 "Available"	  center
-	      0 "Name"		  left
-	      0 "Baud Rate"	  right
-	      0 "Data Bits"	  center
-	      0 "Parity"	  left
-	      0 "Stop Bits"	  center
-	      0 "Handshake"	  left
-	      0 "Activation Date" center
-	      0 "Activation Time" center} \
+    -columns {0 "No."             right
+              0 "Available"       center
+              0 "Name"            left
+              0 "Baud Rate"       right
+              0 "Data Bits"       center
+              0 "Parity"          left
+              0 "Stop Bits"       center
+              0 "Handshake"       left
+              0 "Activation Date" center
+              0 "Activation Time" center} \
     -editstartcommand editStartCmd -editendcommand editEndCmd \
     -height 0 -width 0
 if {[$tbl cget -selectborderwidth] == 0} {
@@ -1502,7 +1502,7 @@ $tbl columnconfigure 8 -name actDate   -editable yes -editwindow Entry \
 $tbl columnconfigure 9 -name actTime   -editable yes -editwindow Entry \
     -formatcommand formatTime -sortmode integer
 
-proc emptyStr	val { return "" }
+proc emptyStr   val { return "" }
 proc formatDate val { return [clock format $val -format "%Y-%m-%d"] }
 proc formatTime val { return [clock format $val -format "%H:%M:%S"] }
 
@@ -1555,7 +1555,7 @@ pack $tbl -side top -expand yes -fill both
 
   <blockquote>
     <pre>
-option add *Tablelist.movableColumns	yes
+option add *Tablelist.movableColumns    yes
 </pre>
   </blockquote>
 
@@ -1569,8 +1569,8 @@ option add *Tablelist.movableColumns	yes
 
   <blockquote>
     <pre>
-option add *Tablelist.labelCommand	tablelist::sortByColumn
-option add *Tablelist.labelCommand2	tablelist::addToSortColumns
+option add *Tablelist.labelCommand      tablelist::sortByColumn
+option add *Tablelist.labelCommand2     tablelist::addToSortColumns
 </pre>
   </blockquote>
 
@@ -1603,40 +1603,40 @@ proc editStartCmd {tbl row col text} {
     set w [$tbl editwinpath]
 
     switch [$tbl columncget $col -name] {
-	lineName {
-	    #
-	    # Set an upper limit of 20 for the number of characters
-	    #
-	    $w configure -invalidcommand bell -validate key \
-			 -validatecommand {expr {[string length %P] &lt;= 20}}
-	}
+        lineName {
+            #
+            # Set an upper limit of 20 for the number of characters
+            #
+            $w configure -invalidcommand bell -validate key \
+                         -validatecommand {expr {[string length %P] &lt;= 20}}
+        }
 
-	baudRate {
-	    #
-	    # Populate the ComboBox and allow no more
-	    # than 6 digits in its Entry component
-	    #
-	    $w configure -values {50 75 110 300 1200 2400 4800 9600 19200 38400
-				  57600 115200 230400 460800 921600}
-	    $w configure -invalidcommand bell -validate key -validatecommand \
-		{expr {[string length %P] &lt;= 6 &amp;&amp; [regexp {^[0-9]*$} %S]}}
-	}
+        baudRate {
+            #
+            # Populate the ComboBox and allow no more
+            # than 6 digits in its Entry component
+            #
+            $w configure -values {50 75 110 300 1200 2400 4800 9600 19200 38400
+                                  57600 115200 230400 460800 921600}
+            $w configure -invalidcommand bell -validate key -validatecommand \
+                {expr {[string length %P] &lt;= 6 &amp;&amp; [regexp {^[0-9]*$} %S]}}
+        }
 
-	dataBits {
-	    #
-	    # Configure the SpinBox
-	    #
-	    $w configure -range {5 8 1} -editable no
-	}
+        dataBits {
+            #
+            # Configure the SpinBox
+            #
+            $w configure -range {5 8 1} -editable no
+        }
 
-	parity {
-	    #
-	    # Populate the ComboBox and make it non-editable
-	    #
-	    $w configure -values {None Even Odd Mark Space} -editable no
-	}
+        parity {
+            #
+            # Populate the ComboBox and make it non-editable
+            #
+            $w configure -values {None Even Odd Mark Space} -editable no
+        }
 
-	. . .
+        . . .
     }
 
     return $text
@@ -1663,57 +1663,57 @@ proc editStartCmd {tbl row col text} {
 #------------------------------------------------------------------------------
 proc editEndCmd {tbl row col text} {
     switch [$tbl columncget $col -name] {
-	available {
-	    #
-	    # Update the image contained in the cell
-	    #
-	    set img [expr {$text ? $::checkedImg : $::uncheckedImg}]
-	    $tbl cellconfigure $row,$col -image $img
-	}
+        available {
+            #
+            # Update the image contained in the cell
+            #
+            set img [expr {$text ? $::checkedImg : $::uncheckedImg}]
+            $tbl cellconfigure $row,$col -image $img
+        }
 
-	baudRate {
-	    #
-	    # Check whether the baud rate is an integer in the range 50..921600
-	    #
-	    if {![regexp {^[0-9]+$} $text] || $text &lt; 50 || $text &gt; 921600} {
-		bell
-		tk_messageBox -title Error -icon error -type ok -message \
-		    "The baud rate must be an integer in the range 50..921600"
-		$tbl rejectinput
-	    }
-	}
+        baudRate {
+            #
+            # Check whether the baud rate is an integer in the range 50..921600
+            #
+            if {![regexp {^[0-9]+$} $text] || $text &lt; 50 || $text &gt; 921600} {
+                bell
+                tk_messageBox -title Error -icon error -type ok -message \
+                    "The baud rate must be an integer in the range 50..921600"
+                $tbl rejectinput
+            }
+        }
 
-	actDate {
-	    #
-	    # Get the activation date in seconds from the last argument 
-	    #
-	    if {[catch {clock scan $text} actDate] != 0} {
-		bell
-		tk_messageBox -title Error -icon error -type ok -message \
-		    "Invalid date"
-		$tbl rejectinput
-		return ""
-	    }
+        actDate {
+            #
+            # Get the activation date in seconds from the last argument 
+            #
+            if {[catch {clock scan $text} actDate] != 0} {
+                bell
+                tk_messageBox -title Error -icon error -type ok -message \
+                    "Invalid date"
+                $tbl rejectinput
+                return ""
+            }
 
-	    #
-	    # Check whether the activation clock value is later than the
-	    # current one; if this is the case then make sure the cells
-	    # "actDate" and "actTime" will have the same internal value
-	    #
-	    set actTime [$tbl cellcget $row,actTime -text]
-	    set actClock [clock scan [formatTime $actTime] -base $actDate]
-	    if {$actClock &lt;= [clock seconds]} {
-		bell
-		tk_messageBox -title Error -icon error -type ok -message \
-		    "The activation date &amp; time must be in the future"
-		$tbl rejectinput
-	    } else {
-		$tbl cellconfigure $row,actTime -text $actClock
-		return $actClock
-	    }
-	}
+            #
+            # Check whether the activation clock value is later than the
+            # current one; if this is the case then make sure the cells
+            # "actDate" and "actTime" will have the same internal value
+            #
+            set actTime [$tbl cellcget $row,actTime -text]
+            set actClock [clock scan [formatTime $actTime] -base $actDate]
+            if {$actClock &lt;= [clock seconds]} {
+                bell
+                tk_messageBox -title Error -icon error -type ok -message \
+                    "The activation date &amp; time must be in the future"
+                $tbl rejectinput
+            } else {
+                $tbl cellconfigure $row,actTime -text $actClock
+                return $actClock
+            }
+        }
 
-	. . .
+        . . .
     }
 
     return $text
@@ -1784,10 +1784,10 @@ set tbl .tbl
 set vsb .vsb
 tablelist::tablelist $tbl \
     -columns {0 "File Name" left
-	      0 "Bar Chart" center
-	      0 "File Size" right
-	      0 "View"	    center
-	      0 "Seen"	    center} \
+              0 "Bar Chart" center
+              0 "File Size" right
+              0 "View"      center
+              0 "Seen"      center} \
     -setgrid no -yscrollcommand [list $vsb set] -width 0
 if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
@@ -1812,7 +1812,7 @@ foreach fileName [lsort [glob *.tcl]] {
     $tbl insert end [list $fileName $fileSize $fileSize "" no]
 
     if {$fileSize &gt; $maxFileSize} {
-	set maxFileSize $fileSize
+        set maxFileSize $fileSize
     }
 }
 </pre>
@@ -1846,7 +1846,7 @@ proc createFrame {tbl row col w} {
     # with "TablelistBody" in the list of its binding tags
     #
     frame $w -width 102 -height 14 -background ivory -borderwidth 1 \
-	     -relief solid
+             -relief solid
     bindtags $w [lreplace [bindtags $w] 1 1 TablelistBody]
 
     #
@@ -1892,7 +1892,7 @@ proc createFrame {tbl row col w} {
 proc createButton {tbl row col w} {
     set key [$tbl getkeys $row]
     button $w -image $::openImg -highlightthickness 0 -takefocus 0 \
-	      -command [list viewFile $tbl $key]
+              -command [list viewFile $tbl $key]
 }
 
 #------------------------------------------------------------------------------
@@ -1904,8 +1904,8 @@ proc createButton {tbl row col w} {
 proc viewFile {tbl key} {
     set top .top$key
     if {[winfo exists $top]} {
-	raise $top
-	return ""
+        raise $top
+        return ""
     }
 
     toplevel $top
@@ -1918,7 +1918,7 @@ proc viewFile {tbl key} {
     set txt $top.txt
     set vsb $top.vsb
     text $txt -background white -font TkFixedFont -setgrid yes \
-	      -yscrollcommand [list $vsb set]
+              -yscrollcommand [list $vsb set]
     catch {$txt configure -tabstyle wordprocessor}              ;# for Tk 8.5
     scrollbar $vsb -orient vertical -command [list $txt yview]
 
@@ -1986,7 +1986,7 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
 
   <blockquote>
     <pre>
-package require Tk 8.3				;# because of entry validation
+package require Tk 8.3                          ;# because of entry validation
 package require Tablelist
 </pre>
   </blockquote>
@@ -2029,14 +2029,14 @@ source [file join $dir option_tile.tcl]
     <pre>
 if {[tk windowingsystem] eq "x11"} {
     tablelist::setTheme alt
-    option add *Font			TkDefaultFont
+    option add *Font                    TkDefaultFont
 }
 tablelist::setThemeDefaults
 if {[tablelist::getCurrentTheme] eq "aqua"} {
     option add *Listbox.selectBackground \
-	       $tablelist::themeDefaults(-selectbackground)
+               $tablelist::themeDefaults(-selectbackground)
     option add *Listbox.selectForeground \
-	       $tablelist::themeDefaults(-selectforeground)
+               $tablelist::themeDefaults(-selectforeground)
 } else {
     option add *selectBackground  $tablelist::themeDefaults(-selectbackground)
     option add *selectForeground  $tablelist::themeDefaults(-selectforeground)
