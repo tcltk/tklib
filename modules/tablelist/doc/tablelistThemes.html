@@ -252,13 +252,13 @@
       follows:</p>
 
       <blockquote>
-	<pre>
+        <pre>
 tablelist::setThemeDefaults
 if {$tile::currentTheme eq "aqua"} {
     option add *Listbox.selectBackground \
-	       $tablelist::themeDefaults(-selectbackground)
+               $tablelist::themeDefaults(-selectbackground)
     option add *Listbox.selectForeground \
-	       $tablelist::themeDefaults(-selectforeground)
+               $tablelist::themeDefaults(-selectforeground)
 } else {
     option add *selectBackground  $tablelist::themeDefaults(-selectbackground)
     option add *selectForeground  $tablelist::themeDefaults(-selectforeground)
