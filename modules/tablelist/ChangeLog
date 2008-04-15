@@ -1,3 +1,10 @@
+2008-04-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistConfig.tcl: Improvements related to multi-line
+	* scripts/tablelistUtil.tcl:   elements.
+
+	* scripts/tclIndex: Newly generated.
+
 2008-04-13  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/tablelist.html:        Expanded the tabs to spaces.
