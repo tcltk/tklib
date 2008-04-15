@@ -197,6 +197,7 @@ set auto_index(::tablelist::joinList) [list source [file join $dir tablelistUtil
 set auto_index(::tablelist::displayText) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::displayImage) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::getAuxData) [list source [file join $dir tablelistUtil.tcl]]
+set auto_index(::tablelist::getMaxTextWidth) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::adjustElem) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::adjustMlElem) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::getElemWidth) [list source [file join $dir tablelistUtil.tcl]]
