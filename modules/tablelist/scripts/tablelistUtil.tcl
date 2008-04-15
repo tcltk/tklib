@@ -895,6 +895,25 @@ proc tablelist::getAuxData {win key col auxTypeName auxWidthName {pixels 0}} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::getMaxTextWidth
+#
+# Returns the number of pixels available for displaying the text of a static-
+# width tablelist cell.
+#------------------------------------------------------------------------------
+proc tablelist::getMaxTextWidth {pixels auxWidth} {
+    if {$auxWidth == 0} {
+	return $pixels
+    } else {
+	set lessPixels [expr {$pixels - $auxWidth - 4}]
+	if {$lessPixels > 0} {
+	    return $lessPixels
+	} else {
+	    return 1
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
 # tablelist::adjustElem
 #
 # Prepares the text specified by $textName and the auxiliary object width
@@ -1379,16 +1398,19 @@ proc tablelist::appendComplexElem {win key row col text pixels alignment
 	    }
 	}
     }
+    set aux [getAuxData $win $key $col auxType auxWidth $pixels]
+    set maxTextWidth $pixels
     if {$pixels != 0} {
 	incr pixels $data($col-delta)
+	set maxTextWidth [getMaxTextWidth $pixels $auxWidth]
 
 	if {$data($col-wrap) && !$multiline} {
-	    if {[font measure $cellFont -displayof $win $text] > $pixels} {
+	    if {[font measure $cellFont -displayof $win $text] > \
+		$maxTextWidth} {
 		set multiline 1
 	    }
 	}
     }
-    set aux [getAuxData $win $key $col auxType auxWidth $pixels]
     variable snipSides
     set snipSide $snipSides($alignment,$data($col-changesnipside))
     if {$multiline} {
@@ -1398,7 +1420,7 @@ proc tablelist::appendComplexElem {win key row col text pixels alignment
 	}
 	adjustMlElem $win list auxWidth $cellFont $pixels $snipSide $snipStr
 	set msgScript [list ::tablelist::displayText $win $key $col \
-		       [join $list "\n"] $cellFont $pixels $alignment]
+		       [join $list "\n"] $cellFont $maxTextWidth $alignment]
     } else {
 	adjustElem $win text auxWidth $cellFont $pixels $snipSide $snipStr
     }
@@ -3400,6 +3422,7 @@ proc tablelist::redisplayCol {win col first last} {
 	set text [strToDispStr $text]
 	set multiline [string match "*\n*" $text]
 	set aux [getAuxData $win $key $col auxType auxWidth $pixels]
+	set maxTextWidth $pixels
 	if {[info exists data($key,$col-font)]} {
 	    set cellFont $data($key,$col-font)
 	} elseif {[info exists data($key-font)]} {
@@ -3407,9 +3430,14 @@ proc tablelist::redisplayCol {win col first last} {
 	} else {
 	    set cellFont $colFont
 	}
-	if {$pixels != 0 && $data($col-wrap) && !$multiline} {
-	    if {[font measure $cellFont -displayof $win $text] > $pixels} {
-		set multiline 1
+	if {$pixels != 0} {
+	    set maxTextWidth [getMaxTextWidth $pixels $auxWidth]
+
+	    if {$data($col-wrap) && !$multiline} {
+		if {[font measure $cellFont -displayof $win $text] >
+		    $maxTextWidth} {
+		    set multiline 1
+		}
 	    }
 	}
 	if {$multiline} {
@@ -3420,7 +3448,7 @@ proc tablelist::redisplayCol {win col first last} {
 	    adjustMlElem $win list auxWidth $cellFont \
 			 $pixels $snipSide $snipStr
 	    set msgScript [list ::tablelist::displayText $win $key $col \
-			   [join $list "\n"] $cellFont $pixels $alignment]
+			   [join $list "\n"] $cellFont $maxTextWidth $alignment]
 	} else {
 	    adjustElem $win text auxWidth $cellFont $pixels $snipSide $snipStr
 	}
