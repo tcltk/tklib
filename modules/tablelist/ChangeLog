@@ -1,5 +1,9 @@
 2008-04-15  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* CHANGES.txt: Corrected a small typo.
+
+2008-04-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* scripts/tablelistConfig.tcl: Improvements related to multi-line
 	* scripts/tablelistUtil.tcl:   elements.
 

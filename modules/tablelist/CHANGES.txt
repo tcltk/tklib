@@ -6,7 +6,7 @@ What is new in Tablelist 4.9?
     than snipped form (thanks to Alexander Schöpe and Anant Adke for
     their proposals).
 
-2.  Support for dynamic-with embedded windows, with the aid of the new
+2.  Support for dynamic-width embedded windows, with the aid of the new
     "-stretchwindow" cell configuration option (thanks to Kurt Kurczyk,
     Bryan Oakley, and Rasmus Debitsch for their proposals). The demo
     script "embeddedWindows.tcl" and its tile-based counterpart now make
