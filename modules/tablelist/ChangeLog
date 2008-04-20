@@ -1,5 +1,11 @@
 2008-04-15  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* doc/styles.png: Updated the screenshot.
+
+	* ../../examples/tablelist/styles_tile.tcl: Minor improvement.
+
+2008-04-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* CHANGES.txt: Corrected a small typo.
 
 2008-04-15  Csaba Nemethi <csaba.nemethi@t-online.de>
