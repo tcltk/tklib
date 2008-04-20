@@ -57,25 +57,25 @@ for {set n 0} { $n < 8} {incr n} {
 	}
 	4 {
 	    foreach col {1 3} {
-		$tbl columnconfigure $col -background linen
+		$tbl columnconfigure $col -background ivory
 	    }
 	}
 	5 {
 	    $tbl configure -showseparators yes
 	    foreach col {1 3} {
-		$tbl columnconfigure $col -background linen
+		$tbl columnconfigure $col -background ivory
 	    }
 	}
 	6 {
 	    $tbl configure -stripebackground #e0e8f0
 	    foreach col {1 3} {
-		$tbl columnconfigure $col -background linen
+		$tbl columnconfigure $col -background ivory
 	    }
 	}
 	7 {
 	    $tbl configure -stripebackground #e0e8f0 -showseparators yes
 	    foreach col {1 3} {
-		$tbl columnconfigure $col -background linen
+		$tbl columnconfigure $col -background ivory
 	    }
 	}
     }
