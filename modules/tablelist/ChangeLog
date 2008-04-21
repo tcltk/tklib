@@ -1,3 +1,8 @@
+2008-04-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:               Improved the tablelist widget's appearance
+	* scripts/tablelistUtil.tcl: when the header labels are not shown.
+
 2008-04-20  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/tablelist.html: Minor correction.
