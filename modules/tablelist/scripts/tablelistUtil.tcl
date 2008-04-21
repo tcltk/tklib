@@ -1861,6 +1861,9 @@ proc tablelist::adjustSeps win {
 	place $w -in $data(hdrTxtFrLbl)$col -anchor ne -bordermode outside \
 		 -height [expr {$sepHeight + [winfo height $data(hdr)] - 1}] \
 		 -relx 1.0 -x [getSepX] -y 1
+	if {!$data(-showlabels)} {
+	    place configure $w -y 2
+	}
 	raise $w
     }
 
@@ -1880,11 +1883,7 @@ proc tablelist::adjustSeps win {
 		    place configure $w -height $sepHeight -rely 1.0 -y -1
 		}
 	    } else {
-		if {$usingTile} {
-		    place configure $w -height $sepHeight -rely 0.0 -y 1
-		} else {
-		    place configure $w -height $sepHeight -rely 0.0 -y 0
-		}
+		place configure $w -height $sepHeight -rely 0.0 -y 2
 	    }
 	}
     }
@@ -2463,8 +2462,10 @@ proc tablelist::adjustHeaderHeight win {
     $data(hdrTxtFr) configure -height $maxLabelHeight
     if {$data(-showlabels)} {
 	$data(hdr) configure -height $maxLabelHeight
+	place configure $data(hdrTxt) -y 0
     } else {
 	$data(hdr) configure -height 1
+	place configure $data(hdrTxt) -y -1
     }
     updateColorsWhenIdle $win
     adjustSepsWhenIdle $win

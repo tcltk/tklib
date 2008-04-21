@@ -40,13 +40,16 @@ What is new in Tablelist 4.9?
     "default" one for the rest (thanks to Schelte Bron for his valuable
     contribution).
 
-9.  Fixed two bugs related to the optimized item insertion (thanks to
+9.  Improved the tablelist widget's appearance when the header labels
+    are not shown (thanks to Mark Garvey for his input).
+
+10. Fixed two bugs related to the optimized item insertion (thanks to
     Harold Campbell and Bryan Oakley for their bug reports).
 
-10. Fixed a bug related to the "-showlinenumbers" column configuration
+11. Fixed a bug related to the "-showlinenumbers" column configuration
     option (thanks to Martin Lemburg for his bug report).
 
-11. Several further improvements and minor bug fixes.
+12. Several further improvements and minor bug fixes.
 
 What was new in Tablelist 4.8?
 ------------------------------
