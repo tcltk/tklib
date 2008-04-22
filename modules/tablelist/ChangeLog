@@ -1,3 +1,8 @@
+2008-04-22  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: Small improvements related to the header
+	  labels and separators.
+
 2008-04-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:               Improved the tablelist widget's appearance
