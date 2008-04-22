@@ -1871,20 +1871,21 @@ proc tablelist::adjustSeps win {
     # Set the height and vertical position of each separator
     #
     variable usingTile
-    if {!$usingTile && $data(-showlabels)} {
-	incr sepHeight
+    if {$data(-showlabels)} {
+	set relY 1.0
+	if {$usingTile} {
+	    set y 0
+	} else {
+	    incr sepHeight
+	    set y -1
+	}
+    } else {
+	set relY 0.0
+	set y 2
     }
     foreach w [winfo children $win] {
 	if {[regexp {^sep[0-9]+$} [winfo name $w]]} {
-	    if {$data(-showlabels)} {
-		if {$usingTile} {
-		    place configure $w -height $sepHeight -rely 1.0 -y 0
-		} else {
-		    place configure $w -height $sepHeight -rely 1.0 -y -1
-		}
-	    } else {
-		place configure $w -height $sepHeight -rely 0.0 -y 2
-	    }
+	    place configure $w -height $sepHeight -rely $relY -y $y
 	}
     }
 }
@@ -2463,9 +2464,11 @@ proc tablelist::adjustHeaderHeight win {
     if {$data(-showlabels)} {
 	$data(hdr) configure -height $maxLabelHeight
 	place configure $data(hdrTxt) -y 0
+	place configure $data(hdrLbl) -y 0
     } else {
 	$data(hdr) configure -height 1
 	place configure $data(hdrTxt) -y -1
+	place configure $data(hdrLbl) -y -1
     }
     updateColorsWhenIdle $win
     adjustSepsWhenIdle $win
