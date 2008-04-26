@@ -698,17 +698,11 @@ proc tablelist::tablelist args {
     }
 
     #
-    # Move the original widget command into the current namespace
-    # and build a new widget procedure in the global one
+    # Move the original widget command into the current namespace and
+    # create an alias of the original name for a new widget procedure
     #
     rename ::$win $win
-    proc ::$win args [format {
-	if {[catch {tablelist::tablelistWidgetCmd %s $args} result] == 0} {
-	    return $result
-	} else {
-	    return -code error $result
-	}
-    } [list $win]]
+    interp alias {} ::$win {} tablelist::tablelistWidgetCmd $win
 
     #
     # Register a callback to be invoked whenever the PRIMARY
@@ -741,14 +735,14 @@ proc tablelist::tablelist args {
 #
 # Processes the Tcl command corresponding to a tablelist widget.
 #------------------------------------------------------------------------------
-proc tablelist::tablelistWidgetCmd {win argList} {
-    if {[llength $argList] == 0} {
+proc tablelist::tablelistWidgetCmd {win args} {
+    if {[llength $args] == 0} {
 	mwutil::wrongNumArgs "$win option ?arg arg ...?"
     }
 
     variable cmdOpts
-    set cmd [mwutil::fullOpt "option" [lindex $argList 0] $cmdOpts]
-    return [${cmd}SubCmd $win [lrange $argList 1 end]]
+    set cmd [mwutil::fullOpt "option" [lindex $args 0] $cmdOpts]
+    return [${cmd}SubCmd $win [lrange $args 1 end]]
 }
 
 #------------------------------------------------------------------------------

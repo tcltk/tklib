@@ -2040,7 +2040,7 @@ proc tablelist::labelB1Motion {w X x y} {
 	    }
 
 	    adjustColumns $win {} 0
-	    adjustElidedTextWhenIdle $win
+	    adjustElidedText $win
 	    updateVScrlbarWhenIdle $win
 	}
     } else {
