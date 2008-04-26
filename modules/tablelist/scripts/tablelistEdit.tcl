@@ -1451,11 +1451,20 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	    #
 	    # Adjust the edit window's height
 	    #
-	    scan [$w index end-1c] "%d" numLines
-	    $w configure -height $numLines
+	    if {$data($col-wrap) && $::tk_version >= 8.5} {
+		$w configure -wrap word
+		bind $w <Configure> {
+		    set numLines [%W count -displaylines 1.0 end]
+		    %W configure -height $numLines
+		    [winfo parent %W] configure -height [winfo reqheight %W]
+		}
+	    } else {
+		scan [$w index end-1c] "%d" numLines
+		$w configure -height $numLines
+	    }
 	    if {[info exists ::wcb::version]} {
-		wcb::callback $w after insert tablelist::adjustTextHeight
-		wcb::callback $w after delete tablelist::adjustTextHeight
+		wcb::cbappend $w after insert tablelist::adjustTextHeight
+		wcb::cbappend $w after delete tablelist::adjustTextHeight
 	    }
 	}
 
@@ -1698,7 +1707,17 @@ proc tablelist::clearTakefocusOpt w {
 # edit window to the number of lines currently contained in it.
 #------------------------------------------------------------------------------
 proc tablelist::adjustTextHeight {w args} {
-    scan [$w index end-1c] "%d" numLines
+    if {$::tk_version < 8.5} {
+	#
+	# We can only count the logical lines (irrespective of wrapping)
+	#
+	scan [$w index end-1c] "%d" numLines
+    } else {
+	#
+	# Count the display lines (taking into account the line wraps)
+	#
+	set numLines [$w count -displaylines 1.0 end]
+    }
     $w configure -height $numLines
 
     set path [wcb::pathname $w]
