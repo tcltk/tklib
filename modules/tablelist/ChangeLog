@@ -1,3 +1,11 @@
+2008-04-26  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistEdit.tcl: Added supprt for cell editing with a word-
+	* doc/tablelistTkCore.html   wrapped text widget when appropriate.
+
+	* scripts/tablelistBind.tcl:   Minor improvements.
+	* scripts/tablelistWidget.tcl:
+
 2008-04-22  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistUtil.tcl: Small improvements related to the header
