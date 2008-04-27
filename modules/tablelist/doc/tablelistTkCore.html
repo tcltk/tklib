@@ -114,12 +114,22 @@
     column was set to true and Tk version 8.5 or higher is being used, then the
     text widget's <code><b>-wrap</b></code> option will be set to
     <code><b>word</b></code> and its initial height will equal the number of
-    <i>display</i> lines (taking into account the line wraps) contained in it;
-    whenever the text widget's width changes (due to interactive column
-    resizing), its height will be automatically updated to equal the number of
+    <i>display</i> lines (taking into account the line wraps) contained in
+    it.&nbsp; You can use the script corresponding to the <code><b><a href=
+    "tablelistWidget.html#editstartcommand">-editstartcommand</a></b></code>
+    tablelist configuration option to override the initial settings according
+    to your needs.</d>
+
+    <dd><br>
+    If the text widget's <code><b>-wrap</b></code> option was set to
+    <code><b>word</b></code> or <code><b>char</b></code> (either by Tablelist
+    or from within the above-mentioned script) and Tk version 8.5 or higher is
+    being used, then, whenever its width changes (e.g., due to interactive
+    column resizing), its height will be set automatically to the number of
     display lines contained in it.&nbsp; (The number of display lines is
-    retrieved with the aid of the <code><b>count</b></code> text widget
-    subcommand, introduced in Tk version 8.5.)</dd>
+    retrieved with the aid of the&nbsp;
+    <code><b>count -displaylines</b></code>&nbsp; text widget subcommand,
+    introduced in Tk 8.5.)</dd>
     
     <dd><br>
     If the widget callback package Wcb was loaded into the interpreter
@@ -133,7 +143,9 @@
     the <code><b><a href=
     "tablelistWidget.html#editstartcommand">-editstartcommand</a></b></code>
     tablelist configuration option to define further callbacks for the text
-    widget or configure it according to your needs.</dd>
+    widget.&nbsp (The above-mentioned callback is created via
+    <code><b>wcb::cbappend</b></code>, <i>after</i> returning from that
+    script.)</dd>
 
     <dd><br>
     The <code>Tab</code> key is reserved for navigation between the editable
