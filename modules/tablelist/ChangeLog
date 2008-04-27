@@ -1,5 +1,10 @@
 2008-04-27  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* *.tcl:         Bumped the version number to 4.9.1.
+	* COPYRIGHT.txt:
+
+2008-04-27  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* CHANGES.txt:               Improved the support for cell editing with
 	* scripts/tablelistEdit.tcl: a word- or char-wrapped text widget.
 	* doc/tablelistTkCore.html:
