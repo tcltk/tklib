@@ -4,7 +4,9 @@ What is new in Tablelist 4.9?
 1.  Added the "-wrap" column configuration option, which makes it
     possible to display long texts in word-wrapped multi-line rather
     than snipped form (thanks to Alexander Schöpe and Anant Adke for
-    their proposals).
+    their proposals).  Also, added support for interactive cell editing
+    with a word- or char-wrapped text widget when using Tk 8.5 (thanks
+    to Juberi Rajib for discussions on this topic).
 
 2.  Support for dynamic-width embedded windows, with the aid of the new
     "-stretchwindow" cell configuration option (thanks to Kurt Kurczyk,
