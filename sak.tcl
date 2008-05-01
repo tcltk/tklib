@@ -564,15 +564,34 @@ proc gd-gen-tap {} {
     foreach m $modules {
 	# File set of module ...
 
+	puts "M $m"
+	catch { unset ps }
+	array set ps {}
+
 	lappend lines {}
 	lappend lines "# #########[::textutil::strRepeat {#} [string length $m]]" ; # {}
 	lappend lines "# Module \"$m\""
 	set n 0
 	foreach {p vlist} [ppackages $m] {
+	    puts "  | $p"
 	    foreach v $vlist {
 		lappend lines "# \[[format %1d [incr n]]\]    | \"$p\" ($v)"
 	    }
+	    set ps($p) .
 	}
+	if {$m == "tablelist"} {
+	    # Tablelist contains dynamics in the provide statements
+	    # the analysis in ppackages is unable to deal with,
+	    # causing it to locate only tablelist::common. We now fix
+	    # this here by adding the indexed package names as well
+	    # and assuming that they are provided.
+	    foreach {p vlist} [ipackages $m] {
+		if {[info exists ps($p)]} continue
+		puts "  / $p"
+		lappend lines "# \[[format %1d [incr n]]\]    | \"$p\" ($v)"
+	    }
+	}
+
 	if {$n > 1} {
 	    # Multiple packages (*). We create one hidden package to
 	    # contain all the files and then have all the true
@@ -581,10 +600,21 @@ proc gd-gen-tap {} {
 	    # (*) This can also be one package for which we have
 	    # several versions. Or a combination thereof.
 
+	    catch { unset ps }
+	    array set ps {}
 	    array set _ {}
 	    foreach {p vlist} [ppackages $m] {
 		catch {set _([lindex $pd($p) 0]) .}
+		set ps($p) .
 	    }
+	    if {$m == "tablelist"} {
+		# S.a. for explantions.
+		foreach {p vlist} [ipackages $m] {
+		    if {[info exists ps($p)]} continue
+		    catch {set _([lindex $pd($p) 0]) .}
+		}
+	    }
+
 	    set desc [string trim [join [array names _] ", "] " \n\t\r,"]
 	    if {$desc == ""} {set desc "$pname module"}
 	    unset _
@@ -601,8 +631,12 @@ proc gd-gen-tap {} {
 		lappend lines "Path     [fileutil::stripN $f $strip]"
 	    }
 
+	    catch { unset ps }
+	    array set ps {}
+
 	    # Packages in the module ...
 	    foreach {p vlist} [ppackages $m] {
+		set ps($p) .
 		# NO DANGER. As we are listing only the packages P for
 		# the module any other version of P in a different
 		# module is _not_ listed here.
@@ -617,6 +651,26 @@ proc gd-gen-tap {} {
 		    lappend lines "See   [list __$m]"
 		    lappend lines "Platform *"
 		    lappend lines "Desc     \{$desc\}"
+		}
+	    }
+
+	    if {$m == "tablelist"} {
+		# S.a. for explantions.
+		foreach {p vlist} [ipackages $m] {
+		    if {[info exists ps($p)]} continue
+
+		    # factor into procedure ...
+		    set desc ""
+		    catch {set desc [string trim [lindex $pd($p) 1]]}
+		    if {$desc == ""} {set desc "$pname package"}
+
+		    foreach v $vlist {
+			lappend lines {}
+			lappend lines [list Package [list $p [normalize-version $v]]]
+			lappend lines "See   [list __$m]"
+			lappend lines "Platform *"
+			lappend lines "Desc     \{$desc\}"
+		    }
 		}
 	    }
 	} else {
@@ -683,7 +737,7 @@ proc getpdesc  {} {
 proc gd-gen-rpmspec {} {
     global tklib_version tklib_name distribution
 
-    set header [string map [list @@@@ $tklib_version @__@ $tklib_name] {# $Id: sak.tcl,v 1.6 2006/04/26 16:29:58 andreas_kupries Exp $
+    set header [string map [list @@@@ $tklib_version @__@ $tklib_name] {# $Id: sak.tcl,v 1.7 2008/05/01 17:16:01 andreas_kupries Exp $
 
 %define version @@@@
 %define directory /usr

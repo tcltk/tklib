@@ -1,3 +1,8 @@
+2008-05-01  Andreas Kupries  <andreask@activestate.com>
+
+	* sak.tcl (gd-gen-tap): Added hacks to get proper tap definitions
+	  for Tablelist and its related packages.
+
 2008-02-21  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* installed_modules.tcl:
