@@ -1,3 +1,9 @@
+2008-05-16 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.tcl: Refined check in right axis, remove any leftover information
+                         (problem occurring with resizing - Francis Courtois)
+        * plotaxis.tcl: Corrected mistake with drawing right axis (Francis Courtois)
+        * plotaxis.tcl: Applied patch regarding ticklines with time axes (Nick Matthews)
+
 2008-02-24 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * pkgIndex.tcl: Increased version number to 1.5.1, require Tcl/Tk 8.4
         * plotchart.man: Added plotpack command
