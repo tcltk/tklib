@@ -1325,8 +1325,12 @@ proc ::Plotchart::createRightAxis { w yscale } {
    if { [llength [info command "*_$w" ]] == 0 } {
        return -code error "There should be a plot with a left axis already defined"
    }
-   if { [llength [info command "*_$w" ]] != 1 } {
+   if { [llength [info command "*_$w" ]] >= 2 && [llength [info command "right_$w"]] == 0 } {
        return -code error "There should be only one plot command for this widget ($w)"
+   }
+
+   foreach s [array names data_series "r$w,*"] {
+      unset data_series($s)
    }
 
    set type [lindex [interp alias {} [info command "*_$w"]] 1]
