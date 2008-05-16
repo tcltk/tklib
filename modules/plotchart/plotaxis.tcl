@@ -139,7 +139,7 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
         $w create text $xcrd3 $ycrd -text $ylabel -tag raxis -anchor w \
             -fill $textcolor -font $textfont
         set y  [expr {$y+abs($ydelt)}]
-        set yt [expr {$y+$ydelt}]
+        set yt [expr {$yt+$ydelt}]
         if { abs($yt) < 0.5*abs($ydelt) } {
             set yt 0.0
         }
@@ -557,16 +557,22 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
         if { $idx < 0 } {
             return -code error "Unknown or invalid option: $option (value: $value)"
         } else {
-            set clear   [lindex  $axis_option_clear  $idx]
-            set values  [lindex  $axis_option_values [incr idx]]
+            set clear_data [lindex  $axis_option_clear  $idx]
+            set values     [lindex  $axis_option_values [expr {2*$idx+1}]]
             if { $values != "..." } {
                 if { [lsearch $values $value] < 0 } {
                     return -code error "Unknown or invalid value: $value for option $option - $values"
                 }
             }
             set scaling($w,$option,$orient) $value
-            if { $clear } {
-                set clear_data 1
+            if { $option == "-scale" } {
+                set min  ${orient}min
+                set max  ${orient}max
+                set delt ${orient}delt
+                foreach [list $min $max $delt] $value {break}
+                set scaling($w,$min)  [set $min]
+                set scaling($w,$max)  [set $max]
+                set scaling($w,$delt) [set $delt]
             }
         }
     }
@@ -623,8 +629,16 @@ proc ::Plotchart::DrawTicklines { w axis {colour black} } {
     variable scaling
 
     if { $axis == "x" } {
+        #
+        # Cater for both regular x-axes and time-axes
+        #
+        if { [info exists scaling($w,xaxis)] } {
+            set botaxis xaxis
+        } else {
+            set botaxis taxis
+        }
         if { $colour != {} } {
-            foreach x $scaling($w,xaxis) {
+            foreach x $scaling($w,$botaxis) {
                 $w create line $x $scaling($w,pymin) \
                                $x $scaling($w,pymax) \
                                -fill $colour -tag xtickline
