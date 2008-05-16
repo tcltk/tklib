@@ -1,3 +1,9 @@
+2008-05-15   Kevin B. Kenny   <kennykb@acm.org>
+
+	* es.msg: Added Spanish message catalog.  Thanks to Emiliano
+	Gavilan (egavilan at eie.fceia.unr.edu.ar) for contributing
+	the transation.
+	
 2007-06-08   Kevin B. Kenny   <kennyb@acm.org>
 
 	* en.msg: Added l10n for the "KHIM Help" dialog title.
