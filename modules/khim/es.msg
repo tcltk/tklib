@@ -2,12 +2,13 @@
 #
 #	Spanish-language messages for KHIM
 #
-# Copyright (c) 2008 by Emiliano Gavilan.
+# Copyright (c) 2008 by Emiliano Gavilán.
+# Proofreading and corrections by Miguel Sofer.
 #
 # Refer to the file "license.terms" for the terms and conditions of
 # use and redistribution of this file, and a DISCLAIMER OF ALL WARRANTEES.
 #
-# $Id: es.msg,v 1.1 2008/05/16 00:56:52 kennykb Exp $
+# $Id: es.msg,v 1.2 2008/05/16 20:35:10 kennykb Exp $
 # $Source: /home/rkeene/tmp/cvs2fossil/tcllib/tklib/modules/khim/es.msg,v $
 #
 #----------------------------------------------------------------------
@@ -34,7 +35,7 @@ namespace eval ::khim {
 	tecla "Componer" presionando el botón con la leyenda "Tecla Componer:"
 	y luego la tecla que quiere asignar a esta función. Ésta tecla no
 	debe ser la tecla designada como la tecla de composición de su
-	teclado; dicha tecla seguirá invocando cualquier método	de entrada
+	teclado; dicha tecla seguirá invocando cualquier método de entrada
 	que su sistema operativo provea.
 
 	Una vez que KHIM esté habilitado, podrá ingresar caracteres
@@ -43,19 +44,19 @@ namespace eval ::khim {
 	secuencia de dos teclas. La lista en el control de KHIM
 	muestra todas las secuencias disponibles. Además, si presiona la
 	tecla "Componer" dos veces se mostrará un diálogo que le permitirá
-	ingresar cualquier caracter arbitrario desde un mapa de caracteres
+	ingresar cualquier carácter arbitrario desde un mapa de caracteres
 	Unicode. En dicho mapa se puede navegar utilizando bien el ratón
-	o las teclas de dirección, y se puede seleccionar el caracter
+	o las teclas de dirección, y se puede seleccionar el carácter
 	deseado bien con un doble click o presionando la barra espaciadora
 	o la tecla Return (Enter).
 
 	Para definir una nueva secuencia para utilizar con la tecla
 	"Componer", seleccione el control de KHIM, ingrese dos	teclas en
-	secuancia en la entrada "Secuencia de teclas", el caracter deseado
-	en la entrada "Caracter", y luego presione la tecla "Cambiar".
-	(Usted puede copiar y pegar dicho caracter desde otra aplicación,
+	secuencia en la entrada "Secuencia de teclas", el carácter deseado
+	en la entrada "Carácter", y luego presione la tecla "Cambiar".
+	(Usted puede copiar y pegar dicho carácter desde otra aplicación,
 	o presionar el botón "Unicode..." (o presione la tecla "Componer"
-	dos veces) para seleccionar el caracter desde el mapa de los
+	dos veces) para seleccionar el carácter desde el mapa de los
 	caracteres Unicode disponibles). Para borrar una secuencia,
 	selecciónela de la lista y presione "Borrar".
 
@@ -74,14 +75,14 @@ namespace eval ::khim {
 
     ::msgcat::mcset es {Change} {Cambiar}
 
-    ::msgcat::mcset es {Character} {Caracter}
+    ::msgcat::mcset es {Character} {Carácter}
 
     ::msgcat::mcset es {Compose Key} {Tecla Componer}
 
     ::msgcat::mcset es {Compose key:} {Tecla Componer:}
 
     ::msgcat::mcset es {Composed sequence must be two characters long} \
-	{La secuencia de composición debe tener dos caracteres}
+	{La secuencia de composición debe ser de dos teclas}
 
     ::msgcat::mcset es {Delete} {Borrar}
 
@@ -89,17 +90,17 @@ namespace eval ::khim {
 
     ::msgcat::mcset es {Help...} {Ayuda...}
 
-    ::msgcat::mcset es {Input key sequence} {Secuencia de teclas}
+    ::msgcat::mcset es {Input key sequence} {Secuencia de teclas de entrada}
 
-    ::msgcat::mcset es {Insert Character} {Insertar Caracter}
+    ::msgcat::mcset es {Insert Character} {Insertar carácter}
 
-    ::msgcat::mcset es {Invalid sequence} {Secuancia Inválida}
+    ::msgcat::mcset es {Invalid sequence} {Secuencia inválida}
 
-    ::msgcat::mcset es {Key sequences} {Secuencias}
+    ::msgcat::mcset es {Key sequences} {Secuencias de teclas}
 
     ::msgcat::mcset es {KHIM Controls} {Controles de KHIM}
 
-    ::msgcat::mcset es {OK} {OK}
+    ::msgcat::mcset es {OK} {Aceptar}
 
     ::msgcat::mcset es {Select code page:} {Seleccionar página de código:}
 
