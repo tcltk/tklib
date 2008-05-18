@@ -728,6 +728,9 @@ proc ::Plotchart::DrawLegend { w series text } {
     variable scaling
     variable data_series
 
+    if { [string match r* $w] } {
+        set w [string range $w 1 end]
+    }
 
     lappend legend($w,series) $series
     lappend legend($w,text)   $text

@@ -1325,8 +1325,14 @@ proc ::Plotchart::createRightAxis { w yscale } {
    if { [llength [info command "*_$w" ]] == 0 } {
        return -code error "There should be a plot with a left axis already defined"
    }
-   if { [llength [info command "*_$w" ]] >= 2 && [llength [info command "right_$w"]] == 0 } {
-       return -code error "There should be only one plot command for this widget ($w)"
+   if { [llength [info command "*_$w" ]] >= 2 } {
+       if { [llength [info command "right_$w"]] == 0 } {
+           return -code error "There should be only one plot command for this widget ($w)"
+       } else {
+           catch {
+               interp alias {} $newchart {}
+           }
+       }
    }
 
    foreach s [array names data_series "r$w,*"] {
@@ -1361,6 +1367,9 @@ proc ::Plotchart::createRightAxis { w yscale } {
    worldCoordinates r$w $xmin  $ymin  $xmax  $ymax
 
    DrawRightaxis    r$w $ymin  $ymax  $ydelt
+
+   #DefaultLegend    r$w
+   #DefaultBalloon   r$w
 
    return $newchart
 }
