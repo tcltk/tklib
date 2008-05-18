@@ -1,3 +1,7 @@
+2008-05-18 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.tcl: Remove interpreter alias for right axis in case of resizing)
+        * plotaxis.tcl: Draw entries for right axis in the legend for the left axis
+
 2008-05-16 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.tcl: Refined check in right axis, remove any leftover information
                          (problem occurring with resizing - Francis Courtois)
