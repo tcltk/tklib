@@ -8,15 +8,12 @@
 # Refer to the file "license.terms" for the terms and conditions of
 # use and redistribution of this file, and a DISCLAIMER OF ALL WARRANTEES.
 #
-# $Id: es.msg,v 1.2 2008/05/16 20:35:10 kennykb Exp $
+# $Id: es.msg,v 1.3 2008/05/30 02:00:19 kennykb Exp $
 # $Source: /home/rkeene/tmp/cvs2fossil/tcllib/tklib/modules/khim/es.msg,v $
 #
 #----------------------------------------------------------------------
 
 namespace eval ::khim {
-
-    # If you edit HELPTEXT or {SELECT COMPOSE KEY}, also edit the corresponding
-    # messages in ROOT.msg
 
     ::msgcat::mcset es HELPTEXT {
 
@@ -39,16 +36,16 @@ namespace eval ::khim {
 	que su sistema operativo provea.
 
 	Una vez que KHIM esté habilitado, podrá ingresar caracteres
-	internacionales en cualquier widget que este configurado para usar
-	KHIM presionando la tecla designada como Componer seguida de una
-	secuencia de dos teclas. La lista en el control de KHIM
-	muestra todas las secuencias disponibles. Además, si presiona la
-	tecla "Componer" dos veces se mostrará un diálogo que le permitirá
-	ingresar cualquier carácter arbitrario desde un mapa de caracteres
-	Unicode. En dicho mapa se puede navegar utilizando bien el ratón
-	o las teclas de dirección, y se puede seleccionar el carácter
-	deseado bien con un doble click o presionando la barra espaciadora
-	o la tecla Return (Enter).
+	internacionales en cualquier widget que este configurado para
+	usar KHIM presionando la tecla designada como Componer seguida
+	de una secuencia de dos teclas. La lista en el control de KHIM
+	muestra todas las secuencias disponibles. Además, si presiona
+	la tecla "Componer" dos veces, se mostrará un diálogo que le
+	permitirá ingresar cualquier carácter arbitrario desde un mapa
+	de caracteres Unicode. Dicho mapa puede navegarse utilizando
+	el ratón o las teclas de dirección, y se puede seleccionar el
+	carácter deseado con un doble click, la barra espaciadora o la
+	tecla Return (Enter).
 
 	Para definir una nueva secuencia para utilizar con la tecla
 	"Componer", seleccione el control de KHIM, ingrese dos	teclas en
