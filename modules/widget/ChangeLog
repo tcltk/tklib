@@ -1,3 +1,9 @@
+2008-06-17  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* pkgIndex.tcl: bump panelframe to 1.1.
+	* panelframe.tcl: handle the case of empty color names (occurs on
+	OS X) for use of fg/bg.
+
 2008-02-21  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* pkgIndex.tcl: bump widget::screenruler to 1.2
