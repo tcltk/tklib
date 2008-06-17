@@ -18,7 +18,7 @@ if {![package vsatisfies [package provide Tcl] 8.4]} {return}
     widget			3.0	widget.tcl
     widget::dialog		1.2	dialog.tcl
     widget::menuentry		1.0	mentry.tcl
-    widget::panelframe		1.0	panelframe.tcl
+    widget::panelframe		1.1	panelframe.tcl
     widget::ruler		1.1	ruler.tcl
     widget::screenruler		1.2	ruler.tcl
     widget::scrolledtext	1.0	stext.tcl

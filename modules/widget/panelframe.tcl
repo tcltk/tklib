@@ -10,7 +10,7 @@
 #
 # Copyright 2005 Jeffrey Hobbs
 #
-# RCS: @(#) $Id: panelframe.tcl,v 1.4 2006/09/29 16:25:07 hobbs Exp $
+# RCS: @(#) $Id: panelframe.tcl,v 1.5 2008/06/17 20:28:27 hobbs Exp $
 #
 
 if 0 {
@@ -31,10 +31,16 @@ package require widget
 #package require tile
 
 namespace eval widget {
-    snit::macro widget::entry-selectbackground {} \
-	[list return [widget::tkresource entry -selectbackground]]
-    snit::macro widget::entry-selectforeground {} \
-	[list return [widget::tkresource entry -selectforeground]]
+    variable entry_selbg
+    variable entry_selfg
+    if {![info exists entry_selbg]} {
+	set entry_selbg [widget::tkresource entry -selectbackground]
+	if {$entry_selbg eq ""} { set entry_selbg "black" }
+	set entry_selfg [widget::tkresource entry -selectforeground]
+	if {$entry_selfg eq ""} { set entry_selfg "black" }
+    }
+    snit::macro widget::entry-selectbackground {} [list return $entry_selbg]
+    snit::macro widget::entry-selectforeground {} [list return $entry_selfg]
 
     variable imgdata {
 	#define close_width 16
@@ -50,8 +56,7 @@ namespace eval widget {
 	    0x00, 0x00, 0x00, 0x00};
     }
     # We use the same -foreground as the default
-    image create bitmap ::widget::X -data $imgdata \
-	-foreground [widget::tkresource entry -selectforeground]
+    image create bitmap ::widget::X -data $imgdata -foreground $entry_selfg
 }
 
 snit::widget widget::panelframe {
@@ -237,4 +242,4 @@ snit::widget widget::panelframe {
     }
 }
 
-package provide widget::panelframe 1.0
+package provide widget::panelframe 1.1
