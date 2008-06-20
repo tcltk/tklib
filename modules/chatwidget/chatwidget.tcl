@@ -11,12 +11,12 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: chatwidget.tcl,v 1.3 2007/10/24 10:32:19 patthoyts Exp $
+# RCS: @(#) $Id: chatwidget.tcl,v 1.4 2008/06/20 22:53:54 patthoyts Exp $
 
 package require Tk 8.5
 
 namespace eval chatwidget {
-    variable version 1.0.0
+    variable version 1.1.0
 
     namespace export chatwidget
 
@@ -47,9 +47,18 @@ proc chatwidget::WidgetProc {self cmd args} {
         hook {
             if {[llength $args] < 2} {
                 return -code error "wrong \# args: should be\
-                    \"$self hook add|remove type script ?priority?\""
+                    \"\$widget hook add|remove|list hook_type ?script? ?priority?\""
             }
             return [uplevel 1 [list [namespace origin Hook] $self] $args]
+        }
+        cget {
+            return [uplevel 1 [list [namespace origin Cget] $self] $args]
+        }
+        configure {
+            return [uplevel 1 [list [namespace origin Configure] $self] $args]
+        }
+        insert {
+            return [uplevel 1 [list [namespace origin Insert] $self] $args]
         }
         message {
             return [uplevel 1 [list [namespace origin Message] $self] $args]
@@ -83,6 +92,44 @@ proc chatwidget::Chat {self args} {
         return $state(chat_widget)
     }
     return [uplevel 1 [list $state(chat_widget)] $args]
+}
+
+proc chatwidget::Cget {self args} {
+    upvar #0 [namespace current]::$self state
+    switch -exact -- [set what [lindex $args 0]] {
+        -chatstate { return $state(chatstate) }
+        -history { return $state(history) }
+        default {
+            return [uplevel 1 [list $state(chat_widget) cget] $args]
+        }
+    }
+}
+
+proc chatwidget::Configure {self args} {
+    upvar #0 [namespace current]::$self state
+    switch -exact -- [set option [lindex $args 0]] {
+        -chatstate {
+            if {[llength $args] > 1} { set state(chatstate) [Pop args 1] }
+            else { return $state(chatstate) }
+        }
+        -history {
+            if {[llength $args] > 1} { set state(history) [Pop args 1] }
+            else { return $state(history) }
+        }
+        -font {
+            if {[llength $args] > 1} {
+                set font [Pop args 1]
+                set family [font actual $font -family]
+                set size [font actual $font -size]
+                font configure ChatwidgetFont -family $family -size $size
+                font configure ChatwidgetBoldFont -family $family -size $size
+                font configure ChatwidgetItalicFont -family $family -size $size
+            } else { return [$state(chat_widget) cget -font] }
+        }
+        default {
+            return [uplevel 1 [list $state(chat_widget) configure] $args]
+        }
+    }
 }
 
 proc chatwidget::Peer {self args} {
@@ -148,7 +195,7 @@ proc chatwidget::Message {self text args} {
             -nick { set nick [Pop args 1] }
             -time { set time [Pop args 1] }
             -type { set type [Pop args 1] }
-            -mark { set type [Pop args 1] }
+            -mark { set mark [Pop args 1] }
             -tags { set tags [Pop args 1] }
             default {
                 return -code error "unknown option \"$option\""
@@ -176,13 +223,35 @@ proc chatwidget::Message {self text args} {
         $chat insert $mark "$nick\t" [concat BOOKMARK NICK $tags]
     }
     if {$type ne "system"} { lappend tags MSG NICK-$nick }
-    $chat insert $mark $text $tags
+    #$chat insert $mark $text $tags
+    Insert $self $mark $text $tags
     $chat insert $mark "\n" $tags
     $chat configure -state disabled
     if {$state(autoscroll)} {
-        $chat see end
+        $chat see $mark
     }
     return
+}
+
+proc chatwidget::Insert {self mark args} {
+    upvar #0 [namespace current]::$self state
+    if {![info exists state(urluid)]} {set state(urluid) 0}
+    set w $state(chat_widget)
+    set parts {}
+    foreach {s t} $args {
+        while {[regexp -indices {\m(https?://[^\s]+)} $s -> ndx]} {
+            foreach {fr bk} $ndx break
+            lappend parts [string range $s 0 [expr {$fr - 1}]] $t
+            lappend parts [string range $s $fr $bk] \
+                [linsert $t end URL URL-[incr state(urluid)]]
+            set s [string range $s [incr bk] end]
+        }
+        lappend parts $s $t
+    }
+    set ws [$w cget -state]
+    $w configure -state normal
+    eval [list $w insert $mark] $parts
+    $w configure -state $ws
 }
 
 # $w name add ericthered -group admin -color red
@@ -227,6 +296,25 @@ proc chatwidget::Name {self cmd args} {
                 set state(names) [lreplace $state(names) $ndx $ndx]
                 UpdateNames $self
             }
+        }
+        get {
+            if {[llength $args] < 1} {
+                return -code error "wrong # args:\
+                    should be \"get nick\" ?option?"
+            }
+            set result {}
+            set nick [lindex $args 0]
+            if {[set ndx [lsearch -exact -index 0 $state(names) $nick]] != -1} {
+                set result [lindex $state(names) $ndx]
+                if {[llength $args] > 1} {
+                    if {[set ndx [lsearch $result [lindex $args 1]]] != -1} {
+                        set result [lindex $result [incr ndx]]
+                    } else {
+                        set result {}
+                    }
+                }
+            }
+            return $result
         }
         default {
             return -code error "bad name option \"$cmd\":\
@@ -299,7 +387,7 @@ proc chatwidget::Pop {varname {nth 0}} {
 
 proc chatwidget::Hook {self do type args} {
     upvar #0 [namespace current]::$self state
-    set valid {message post names_group names_nick}
+    set valid {message post names_group names_nick chatstate url}
     if {[lsearch -exact $valid $type] == -1} {
         return -code error "unknown hook type \"$type\":\
                 must be one of [join $valid ,]"
@@ -366,8 +454,13 @@ proc chatwidget::Create {self} {
     set state(current) 0
     set state(autoscroll) 1
     set state(names) {}
+    set state(chatstatetimer) {}
+    set state(chatstate) active
 
-    set self [ttk::frame $self -class Chatwidget]
+    # NOTE: By using a non-ttk frame as the outermost part we are able
+    # to be [wm manage]d. The outermost frame should be invisible at all times.
+    set self [frame $self -class Chatwidget \
+                  -borderwidth 0 -highlightthickness 0 -relief flat]
     set outer [ttk::panedwindow $self.outer -orient vertical]
     set inner [ttk::panedwindow $outer.inner -orient horizontal]
 
@@ -437,6 +530,8 @@ proc chatwidget::Create {self} {
     bind ChatwidgetEntry <Key-Tab> "[namespace origin Nickcomplete] \[[namespace origin Self] %W\]"
     bind ChatwidgetEntry <Key-Prior> "\[[namespace origin Self] %W\] chat yview scroll -1 pages"
     bind ChatwidgetEntry <Key-Next> "\[[namespace origin Self] %W\] chat yview scroll 1 pages"
+    bind ChatwidgetEntry <Key> "+[namespace origin Chatstate] \[[namespace origin Self] %W\] composing"
+    bind ChatwidgetEntry <FocusIn> "+[namespace origin Chatstate] \[[namespace origin Self] %W\] active"
     bind $self <Destroy> "+unset -nocomplain [namespace current]::%W"
     bind $peer       <Map> [list [namespace origin PaneMap] %W $peers 0]
     bind $names.text <Map> [list [namespace origin PaneMap] %W $inner -90]
@@ -454,6 +549,7 @@ proc chatwidget::Create {self} {
         -background grey80 -font ChatwidgetBoldFont
     $chat tag configure NICK        -font ChatwidgetBoldFont
     $chat tag configure TYPE-system -font ChatwidgetItalicFont
+    $chat tag configure URL         -underline 1
 
     $inner add $chatf -weight 1
     $inner add $names
@@ -486,11 +582,24 @@ proc chatwidget::PaneMap {w pane offset} {
             } else {
                 set axis height
             }
-            after idle [list $pane sashpos 0 [expr {[winfo $axis $pane] + $offset}]]
+            #after idle [list $pane sashpos 0 [expr {[winfo $axis $pane] + $offset}]]
+            after idle [namespace code [list PaneMapImpl $pane $axis $offset]]
         } else {
-            after idle [list $pane sashpos 0 $offset]
+            #after idle [list $pane sashpos 0 $offset]
+            after idle [namespace code [list PaneMapImpl $pane {} $offset]]
         }
     }
+}
+
+proc chatwidget::PaneMapImpl {pane axis offset} {
+    if {$axis eq {}} {
+        set size 0
+    } else {
+        set size [winfo $axis $pane]
+    }
+    set sashpos [expr {$size + $offset}]
+    #puts stderr "PaneMapImpl $pane $axis $offset : size:$size sashpos:$sashpos"
+    after 0 [list $pane sashpos 0 $sashpos]
 }
 
 # Handle auto-scroll smarts. This will cause the scrollbar to be removed if
@@ -591,6 +700,37 @@ proc chatwidget::NickcompleteCleanup {self} {
     upvar #0 [namespace current]::$self state
     if {[info exists state(nickcompletion)]} {
         unset state(nickcompletion)
+    }
+}
+
+# Update the widget chatstate (one of active, composing, paused, inactive, gone)
+# These are from XEP-0085 but seem likey useful in many chat-type environments.
+# Note: this state is _per-widget_. This is not the same as [tk inactive]
+# active = got focus and recently active
+#   composing = typing
+#   paused = 5 secs non typing
+# inactive = no activity for 30 seconds
+# gone = no activity for 2 minutes or closed the window
+proc chatwidget::Chatstate {self what} {
+    upvar #0 [namespace current]::$self state
+    after cancel $state(chatstatetimer)
+    switch -exact -- $what {
+        composing - active {
+            set state(chatstatetimer) [after 5000 [namespace code [list Chatstate $self paused]]]
+        }
+        paused {
+            set state(chatstatetimer) [after 25000 [namespace code [list Chatstate $self inactive]]]
+        }
+        inactive {
+            set state(chatstatetimer) [after 120000 [namespace code [list Chatstate $self gone]]]
+        }
+        gone {}
+    }
+    set fire [expr {$state(chatstate) eq $what ? 0 : 1}]
+    set state(chatstate) $what
+    if {$fire} {
+        catch {Hook $self run chatstate $what}
+        event generate $self <<ChatwidgetChatstate>>
     }
 }
     

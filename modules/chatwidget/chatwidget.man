@@ -72,7 +72,7 @@ Add messages to the display. options are -nick, -time, -type, -mark
 
 [call [cmd \$widget] hook [arg command] [arg args]]
 
-Manage hooks. add (message, post names_group, names_nick), remove, run
+Manage hooks. add (message, post names_group, names_nick, chatstate), remove, run
 
 [call [cmd \$widget] names [arg args]]
 
@@ -85,6 +85,11 @@ display of this element in the widget.
 
 Passthrough to the entry text widget. See the [cmd text] widget manual
 for all available commands.
+
+[call [cmd \$widget] chat [arg args]]
+
+Passthrough to the chat text widget. See the [cmd text] widget manual for 
+all available commands.
 
 [list_end]
 
@@ -105,6 +110,11 @@ pack .chat -side top -fill both -expand 1
 .chat message "Hello, admin" -nick user
 }]
 
+[para]
+
+A more extensive example is available by examining the code for the picoirc
+program in the tclapps repository which ties the tcllib [package picoirc] package to this
+[package chatwidget] package to create a simple irc client.
 
 [see_also text(n)]
 [keywords widget {mega-widget} {composite widget} chat irc chatwidget]
