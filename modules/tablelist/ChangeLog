@@ -1,3 +1,22 @@
+2008-06-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.9.2.
+	* COPYRIGHT.txt:
+
+	* scripts/repair.tcl: Updated to work with current Tablelist versions.
+
+	* scripts/tablelistBind.tcl:   Setting up the default bindings at load
+	* scripts/tablelistConfig.tcl: time; re-established the support for
+	* scripts/tablelistEdit.tcl:   tile widgets as edit windows in non-
+	* scripts/tablelistThemes.tcl: tile-based tablelist widgets; adapted
+	* scripts/tablelistUtil.tcl:   the handling of the tile checkbutton as
+	* scripts/tablelistWidget.tcl: edit window in the xpnative theme to
+	* doc/tablelistThemes.html:    some changes made in tile 0.8; guarded
+	  against potential widget deletion from within user-defined binding
+	  scripts or update (idletasks).
+
+	* scripts/tclIndex: Newly generated.
+
 2008-04-27  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 4.9.1.
