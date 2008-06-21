@@ -235,18 +235,17 @@
       the column labels.)</p>
 
       <p>The <code><b>tablelist::setThemeDefaults</b></code> command is invoked
-      by Tablelist_tile automatically when the first tablelist widget is
-      createad or a <code><b>&lt;&lt;ThemeChanged&gt;&gt;</b></code> virtual
-      event is received by a tablelist widget.&nbsp; In the latter case, the
-      widget is reconfigured, using the new default values of those options
-      that were not set explicitly to values different from the corresponding
-      defaults.</p>
+      by Tablelist_tile automatically whenever a tablelist widget is createad
+      or the <code><b>&lt;&lt;ThemeChanged&gt;&gt;</b></code> virtual event is
+      received by a tablelist widget.&nbsp; In the latter case, the widget is
+      reconfigured, using the new default values of those options that were not
+      set explicitly to values different from the corresponding defaults.</p>
 
       <p>Besides being used by the Tablelist_tile code, this command can also
-      be invoked in Tcl scripts, still before creating tile-based tablelist
-      widgets.&nbsp; By calling it explicitly and using the values written by
-      it into the array <code><b>tablelist::themeDefaults</b></code>, you can
-      make sure that classical Tk widgets, e.g., listbox and text, will have a
+      be invoked in Tcl scripts, still before creating any tile-based tablelist
+      widget.&nbsp; By calling it explicitly and using the values written by it
+      into the array <code><b>tablelist::themeDefaults</b></code>, you can make
+      sure that classical Tk widgets, e.g., listbox and text, will have a
       theme-specific appearance, just like the tile widgets.&nbsp; For example,
       you can add some common configuration options to the option database as
       follows:</p>

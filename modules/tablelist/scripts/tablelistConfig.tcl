@@ -87,19 +87,9 @@ proc tablelist::extendConfigSpecs {} {
 	#
 	# Append theme-specific values to some elements of the array configSpecs
 	#
+	setThemeDefaults
+
 	ttk::label $helpLabel -takefocus 0
-	variable themeDefaults
-	setThemeDefaults		;# pupulates the array themeDefaults
-	foreach opt {-labelbackground -labelforeground -labelfont
-		     -labelborderwidth -labelpady
-		     -arrowcolor -arrowdisabledcolor -arrowstyle} {
-	    lappend configSpecs($opt) $themeDefaults($opt)
-	}
-	foreach opt {-background -foreground -disabledforeground
-		     -stripebackground -selectbackground -selectforeground
-		     -selectborderwidth -font} {
-	    lset configSpecs($opt) 3 $themeDefaults($opt)
-	}
 
 	#
 	# Define the header label layout
@@ -1027,8 +1017,7 @@ proc tablelist::doColConfig {col win opt val} {
 
 	-editwindow {
 	    variable editWin
-	    if {[info exists editWin($val-registered)] ||
-		[info exists editWin($val-creationCmd)]} {
+	    if {[info exists editWin($val-creationCmd)]} {
 		set data($col$opt) $val
 	    } else {
 		return -code error "name \"$val\" is not registered\
@@ -2384,8 +2373,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 
 	-editwindow {
 	    variable editWin
-	    if {[info exists editWin($val-registered)] ||
-		[info exists editWin($val-creationCmd)]} {
+	    if {[info exists editWin($val-creationCmd)]} {
 		set key [lindex [lindex $data(itemList) $row] end]
 		set data($key,$col$opt) $val
 	    } else {
@@ -3312,6 +3300,9 @@ proc tablelist::reconfigWindows win {
     # Force any geometry manager calculations to be completed first
     #
     update idletasks
+    if {![winfo exists $win]} {			;# because of update idletasks
+	return ""
+    }
 
     #
     # Reconfigure the cells specified in the list data(cellsToReconfig)

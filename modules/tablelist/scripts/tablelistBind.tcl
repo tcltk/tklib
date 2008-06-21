@@ -146,9 +146,6 @@ proc tablelist::updateConfigSpecs win {
 	}
     }
 
-    variable themeDefaults
-    variable configSpecs
-
     #
     # Populate the array tmp with values corresponding to the old theme
     # and the array themeDefaults with values corresponding to the new one
@@ -157,16 +154,14 @@ proc tablelist::updateConfigSpecs win {
     setThemeDefaults
 
     #
-    # Update the default values in the array configSpecs and
-    # set those configuration options whose values equal the old
+    # Set those configuration options whose values equal the old
     # theme-specific defaults to the new theme-specific ones
     #
+    variable themeDefaults
     foreach opt {-background -foreground -disabledforeground -stripebackground
 		 -selectbackground -selectforeground -selectborderwidth -font
-		 -labelbackground -labelforeground -labelfont
-		 -labelborderwidth -labelpady
-		 -arrowcolor -arrowdisabledcolor -arrowstyle} {
-	lset configSpecs($opt) 3 $themeDefaults($opt)
+		 -labelbackground -labelforeground -labelfont -labelborderwidth
+		 -labelpady -arrowcolor -arrowdisabledcolor -arrowstyle} {
 	if {[string compare $data($opt) $tmp($opt)] == 0} {
 	    doConfig $win $opt $themeDefaults($opt)
 	}
@@ -539,9 +534,11 @@ proc tablelist::defineTablelistBody {} {
 
 	if {[string compare $script ""] != 0} {
 	    bind TablelistBody $event [format {
-		foreach {tablelist::W tablelist::x tablelist::y} \
-		    [tablelist::convEventFields %%W %%x %%y] {}
-		%s
+		if {[winfo exists %%W]} {
+		    foreach {tablelist::W tablelist::x tablelist::y} \
+			[tablelist::convEventFields %%W %%x %%y] {}
+		    %s
+		}
 	    } $script]
 	}
     }
@@ -1004,6 +1001,9 @@ proc tablelist::condEvalInvokeCmd win {
     # Evaluate the edit window's invoke command
     #
     update 
+    if {![winfo exists $w]} {				;# because of update
+	return ""
+    }
     eval [strMap {"%W" "$w"} $editWin($name-invokeCmd)]
     set data(invoked) 1
 }
@@ -2366,6 +2366,9 @@ proc tablelist::escape {win col} {
     if {[info exists data(colBeingResized)]} {	;# resize operation in progress
 	configLabel $w -cursor $data(-cursor)
 	update idletasks
+	if {![winfo exists $win]} {		;# because of update idletasks
+	    return ""
+	}
 	if {[winfo exists $data(focus)]} {
 	    focus $data(focus)
 	}
