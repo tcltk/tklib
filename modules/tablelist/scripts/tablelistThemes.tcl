@@ -33,7 +33,7 @@ proc tablelist::getCurrentTheme {} {
 # tablelist::setThemeDefaults
 #
 # Populates the array themeDefaults with theme-specific default values of some
-# tablelist configuration options.
+# tablelist configuration options and updates the array configSpecs.
 #------------------------------------------------------------------------------
 proc tablelist::setThemeDefaults {} {
     variable themeDefaults
@@ -50,6 +50,18 @@ proc tablelist::setThemeDefaults {} {
 	set themeDefaults(-arrowdisabledcolor) ""
     } else {
 	set themeDefaults(-arrowdisabledcolor) $themeDefaults(-labeldisabledFg)
+    }
+
+    variable configSpecs
+    foreach opt {-background -foreground -disabledforeground -stripebackground
+		 -selectbackground -selectforeground -selectborderwidth -font
+		 -labelbackground -labelforeground -labelfont -labelborderwidth
+		 -labelpady -arrowcolor -arrowdisabledcolor -arrowstyle} {
+	if {[llength $configSpecs($opt)] < 4} {
+	    lappend configSpecs($opt) $themeDefaults($opt)
+	} else {
+	    lset configSpecs($opt) 3 $themeDefaults($opt)
+	}
     }
 }
 

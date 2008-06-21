@@ -91,8 +91,8 @@ proc tablelist::rowIndex {win idx endIsSize} {
 	for {set row 0} {$row < $data(itemCount)} {incr row} {
 	    set key [lindex [lindex $data(itemList) $row] end]
 	    set hasName [info exists data($key-name)]
-	    if {$hasName && [string compare $idx $data($key-name)] == 0 ||
-		!$hasName && [string compare $idx ""] == 0} {
+	    if {($hasName && [string compare $idx $data($key-name)] == 0) ||
+		(!$hasName && [string compare $idx ""] == 0)} {
 		return $row
 	    }
 	}
@@ -1902,8 +1902,8 @@ proc tablelist::getSepX {} {
     if {$usingTile} {
 	set currentTheme [getCurrentTheme]
 	variable xpStyle
-	if {[string compare $currentTheme "aqua"] == 0 ||
-	    [string compare $currentTheme "xpnative"] == 0 && $xpStyle} {
+	if {([string compare $currentTheme "aqua"] == 0) ||
+	    ([string compare $currentTheme "xpnative"] == 0 && $xpStyle)} {
 	    set x 0
 	} elseif {[string compare $currentTheme "tileqt"] == 0 &&
 		  [string compare [string tolower [tileqt_currentThemeName]] \
@@ -2843,6 +2843,9 @@ proc tablelist::updateVScrlbar win {
 
     if {[winfo viewable $win]} {
 	update idletasks
+	if {![winfo exists $win]} {		;# because of update idletasks
+	    return ""
+	}
     }
 
     if {$data(winCount) != 0 || $::tk_version > 8.4} {
