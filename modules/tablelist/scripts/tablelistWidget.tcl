@@ -3,6 +3,7 @@
 #
 # Structure of the module:
 #   - Namespace initialization
+#   - Private procedure creating the default bindings
 #   - Public procedure creating a new tablelist widget
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
@@ -16,6 +17,56 @@
 #
 
 namespace eval tablelist {
+    #
+    # Get the current windowing system ("x11", "win32", "classic", or "aqua")
+    #
+    variable winSys
+    if {[catch {tk windowingsystem} winSys] != 0} {
+	switch $::tcl_platform(platform) {
+	    unix	{ set winSys x11 }
+	    windows	{ set winSys win32 }
+	    macintosh	{ set winSys classic }
+	}
+    }
+
+    #
+    # Create aliases for a few tile commands if not yet present
+    #
+    proc createTileAliases {} {
+	if {[string compare [interp alias {} ::tablelist::style] ""] != 0} {
+	    return ""
+	}
+
+	if {[string compare [info commands ::ttk::style] ""] == 0} {
+	    interp alias {} ::tablelist::style      {} ::style
+	    if {[string compare $::tile::version "0.7"] >= 0} {
+		interp alias {} ::tablelist::styleConfig {} ::style configure
+	    } else {
+		interp alias {} ::tablelist::styleConfig {} ::style default
+	    }
+	    interp alias {} ::tablelist::getThemes  {} ::tile::availableThemes
+	    interp alias {} ::tablelist::setTheme   {} ::tile::setTheme
+
+	    interp alias {} ::tablelist::tileqt_currentThemeName \
+			 {} ::tile::theme::tileqt::currentThemeName
+	    interp alias {} ::tablelist::tileqt_currentThemeColour \
+			 {} ::tile::theme::tileqt::currentThemeColour
+	} else {
+	    interp alias {} ::tablelist::style	      {} ::ttk::style
+	    interp alias {} ::tablelist::styleConfig  {} ::ttk::style configure
+	    interp alias {} ::tablelist::getThemes    {} ::ttk::themes
+	    interp alias {} ::tablelist::setTheme     {} ::ttk::setTheme
+
+	    interp alias {} ::tablelist::tileqt_currentThemeName \
+			 {} ::ttk::theme::tileqt::currentThemeName
+	    interp alias {} ::tablelist::tileqt_currentThemeColour \
+			 {} ::ttk::theme::tileqt::currentThemeColour
+	}
+    }
+    if {$usingTile} {
+	createTileAliases 
+    }
+
     #
     # The array configSpecs is used to handle configuration options.  The
     # names of its elements are the configuration options for the Tablelist
@@ -105,18 +156,6 @@ namespace eval tablelist {
 	-width			 {width			  Width		      w}
 	-xscrollcommand		 {xScrollCommand	  ScrollCommand	      w}
 	-yscrollcommand		 {yScrollCommand	  ScrollCommand	      w}
-    }
-
-    #
-    # Get the current windowing system ("x11", "win32", "classic", or "aqua")
-    #
-    variable winSys
-    if {[catch {tk windowingsystem} winSys] != 0} {
-	switch $::tcl_platform(platform) {
-	    unix	{ set winSys x11 }
-	    windows	{ set winSys win32 }
-	    macintosh	{ set winSys classic }
-	}
     }
 
     #
@@ -357,7 +396,21 @@ namespace eval tablelist {
 	    return $str
 	}
     }
+}
 
+#
+# Private procedure creating the default bindings
+# ===============================================
+#
+
+#------------------------------------------------------------------------------
+# tablelist::createBindings
+#
+# Creates the default bindings for the binding tags Tablelist, TablelistWindow,
+# TablelistKeyNav, TablelistBody, TablelistLabel, TablelistSubLabel,
+# TablelistArrow, and TablelistEdit.
+#------------------------------------------------------------------------------
+proc tablelist::createBindings {} {
     #
     # Define some Tablelist class bindings
     #
@@ -378,6 +431,7 @@ namespace eval tablelist {
     bind Tablelist <FocusOut>		{ tablelist::removeActiveTag %W }
     bind Tablelist <<TablelistSelect>>	{ event generate %W <<ListboxSelect>> }
     bind Tablelist <Destroy>		{ tablelist::cleanup %W }
+    variable usingTile
     if {$usingTile} {
 	bind Tablelist <<ThemeChanged>>	{
 	    after idle [list tablelist::updateConfigSpecs %W]
@@ -400,6 +454,7 @@ namespace eval tablelist {
     #
     event add <<Button3>> <Button-3>
     event add <<ShiftButton3>> <Shift-Button-3>
+    variable winSys
     if {[string compare $winSys "classic"] == 0 ||
 	[string compare $winSys "aqua"] == 0} {
 	event add <<Button3>> <Control-Button-1>
@@ -428,26 +483,9 @@ namespace eval tablelist {
     defineTablelistArrow 
 
     #
-    # Pre-register some widgets for interactive cell editing
+    # Define the binding tag TablelistEdit if the file tablelistEdit.tcl exists
     #
-    variable editWin
-    array set editWin {
-	entry-registered			1
-	text-registered				1
-	checkbutton-registered			1
-    }
-    if {$::tk_version >= 8.4} {
-	array set editWin {
-	    spinbox-registered			1
-	}
-	if {[llength [package versions tile]] > 0} {
-	    array set editWin {
-		ttk::entry-registered		1
-		ttk::combobox-registered	1
-		ttk::checkbutton-registered	1
-	    }
-	}
-    }
+    catch {defineTablelistEdit}
 }
 
 #
@@ -556,6 +594,7 @@ proc tablelist::tablelist args {
 	set data($opt) [lindex $configSpecs($opt) 3]
     }
     if {$usingTile} {
+	setThemeDefaults
 	variable themeDefaults
 	set data(currentTheme) [getCurrentTheme]
 	set data(themeDefaults) [array get themeDefaults]
@@ -4101,6 +4140,9 @@ proc tablelist::seeCell {win row col} {
     # Force any geometry manager calculations to be completed first
     #
     update idletasks
+    if {![winfo exists $win]} {			;# because of update idletasks
+	return ""
+    }
 
     #
     # If the tablelist is empty then insert a temporary row
