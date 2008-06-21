@@ -44,10 +44,12 @@ set fi [open tablelistWidget.tcl.BAK r]
 set fo [open tablelistWidget.tcl     w]
 
 for {set n 1} {[gets $fi line] >= 0} {incr n} {
-    if {$n == 18} {
+    if {$n == 19} {
 	puts -nonewline $fo $line
 	puts $fo $procDef
     } else {
+	regsub -all {\[info exists (tablelist::[^\(]+)\(([^\]]+)\)\]} $line \
+		    {[tablelist::arrElemExists \1 \2]} line
 	regsub -all {\[info exists ([^\(]+)\(([^\]]+)\)\]} $line \
 		    {[arrElemExists \1 \2]} line
 	puts $fo $line
@@ -68,6 +70,8 @@ foreach file {tablelistBind.tcl tablelistConfig.tcl tablelistEdit.tcl
     set fo [open $file     w]
 
     while {[gets $fi line] >= 0} {
+	regsub -all {\[info exists (tablelist::[^\(]+)\(([^\]]+)\)\]} $line \
+		    {[tablelist::arrElemExists \1 \2]} line
 	regsub -all {\[info exists ([^\(]+)\(([^\]]+)\)\]} $line \
 		    {[arrElemExists \1 \2]} line
 	puts $fo $line
