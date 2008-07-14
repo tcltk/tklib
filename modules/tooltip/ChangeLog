@@ -1,3 +1,9 @@
+2008-07-14  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* tooltip.tcl (::tooltip::enableTag, ::tooltip::enableCanvas):
+	Protect bind enablers to only add themselves once.
+	bump to 1.4.2. [Bug 2015992]
+
 2008-03-12  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* pkgIndex.tcl: bump to 1.4.1

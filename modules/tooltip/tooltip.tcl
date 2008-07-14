@@ -7,13 +7,13 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tooltip.tcl,v 1.12 2008/03/12 20:41:05 hobbs Exp $
+# RCS: @(#) $Id: tooltip.tcl,v 1.13 2008/07/14 22:53:02 hobbs Exp $
 #
 # Initiated: 28 October 1996
 
 
 package require Tk 8.4
-package provide tooltip 1.4.1
+package provide tooltip 1.4.2
 package require msgcat
 
 #------------------------------------------------------------------------
@@ -390,6 +390,7 @@ proc ::tooltip::itemTip {w args} {
 }
 
 proc ::tooltip::enableCanvas {w args} {
+    if {[string match *itemTip* [$w bind all <Enter>]]} { return }
     $w bind all <Enter> +[namespace code [list itemTip $w]]
     $w bind all <Leave>	+[namespace code [list hide 1]] ; # fade ok
     $w bind all <Any-KeyPress> +[namespace code hide]
@@ -407,6 +408,7 @@ proc ::tooltip::tagTip {w tag} {
 }
 
 proc ::tooltip::enableTag {w tag} {
+    if {[string match *tagTip* [$w tag bind $tag]]} { return }
     $w tag bind $tag <Enter> +[namespace code [list tagTip $w $tag]]
     $w tag bind $tag <Leave> +[namespace code [list hide 1]] ; # fade ok
     $w tag bind $tag <Any-KeyPress> +[namespace code hide]
