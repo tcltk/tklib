@@ -1,3 +1,9 @@
+2008-08-01   Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: Made sure that the body text widget of a
+	  disabled tablelist remains covered by the "disabled" tag (fixes a
+	  bug reported by Rolf Ade).
+
 2008-06-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 4.9.2.

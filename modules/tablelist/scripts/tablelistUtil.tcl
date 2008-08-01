@@ -2646,6 +2646,10 @@ proc tablelist::updateColors win {
     }
 
     set w $data(body)
+    if {$data(isDisabled)} {
+	$w tag add disabled 1.0 end
+    }
+
     set topLeftIdx "[$w index @0,0] linestart"
     set btmRightIdx "[$w index @0,[expr {[winfo height $w] - 1}]] lineend"
     foreach {dummy path textIdx} [$w dump -window $topLeftIdx $btmRightIdx] {
