@@ -1,3 +1,9 @@
+2008-08-08  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* tooltip.tcl (::tooltip::tagTip): Cancel outstanding after events
+	on tags when setting a new one to avoid visual glitches when
+	moving the cursor across a set of tags (ie: tkchat userlist)
+
 2008-07-14  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* pkgIndex.tcl: bump to 1.4.2. [Bug 2015992]
