@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tooltip.tcl,v 1.13 2008/07/14 22:53:02 hobbs Exp $
+# RCS: @(#) $Id: tooltip.tcl,v 1.14 2008/08/08 22:50:13 patthoyts Exp $
 #
 # Initiated: 28 October 1996
 
@@ -402,6 +402,7 @@ proc ::tooltip::tagTip {w tag} {
     variable G
     set G(LAST) -1
     if {$G(enabled) && [info exists tooltip($w,t_$tag)]} {
+        if {[info exists G(AFTERID)]} { after cancel $G(AFTERID) }
         set G(AFTERID) [after $G(DELAY) \
             [namespace code [list show $w $tooltip($w,t_$tag) cursor]]]
     }
