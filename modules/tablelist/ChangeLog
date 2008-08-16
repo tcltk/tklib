@@ -1,3 +1,16 @@
+2008-08-16   Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/mwutil.tcl:          Added the subcommands hasattrib,
+	* scripts/tablelistEdit.tcl:   unsetattrib, columnattrib,
+	* scripts/tablelistMove.tcl:   hascolumnattrib, unsetcolumnattrib,
+	* scripts/tablelistUtil.tcl:   rowattrib, hasrowattrib, unsetrowattrib,
+	* scripts/tablelistWidget.tcl: cellattrib, hascellattrib,
+	* doc/tablelistWidget.html:    unsetcellattrib, and editwintag.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/tablelist.html: Minor improvement.
+
 2008-08-01   Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistUtil.tcl: Made sure that the body text widget of a
