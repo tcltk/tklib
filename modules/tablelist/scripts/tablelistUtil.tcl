@@ -382,7 +382,6 @@ proc tablelist::deleteColData {win col} {
     if {[info exists data($col-redispId)]} {
 	after cancel $data($col-redispId)
     }
-    set w $data(body)
     foreach name [array names data $col-*] {
 	unset data($name)
     }
@@ -416,6 +415,30 @@ proc tablelist::deleteColData {win col} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::deleteColAttribs
+#
+# Cleans up the attributes associated with the col'th column of the tablelist
+# widget win.
+#------------------------------------------------------------------------------
+proc tablelist::deleteColAttribs {win col} {
+    upvar ::tablelist::ns${win}::attribs attribs
+
+    #
+    # Remove the elements with names of the form $col-*
+    #
+    foreach name [array names attribs $col-*] {
+	unset attribs($name)
+    }
+
+    #
+    # Remove the elements with names of the form k*,$col-*
+    #
+    foreach name [array names attribs k*,$col-*] {
+	unset attribs($name)
+    }
+}
+
+#------------------------------------------------------------------------------
 # tablelist::moveColData
 #
 # Moves the elements of oldArrName corresponding to oldCol to those of
@@ -442,7 +465,6 @@ proc tablelist::moveColData {oldArrName newArrName imgArrName oldCol newCol} {
     # Move the elements of oldArr with names of the form $oldCol-*
     # to those of newArr with names of the form $newCol-*
     #
-    set w $newArr(body)
     foreach newName [array names newArr $newCol-*] {
 	unset newArr($newName)
     }
@@ -494,6 +516,42 @@ proc tablelist::moveColData {oldArrName newArrName imgArrName oldCol newCol} {
 	    }
 	}
 	set newArr(-stretch) $stretchableCols
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::moveColAttribs
+#
+# Moves the elements of oldArrName corresponding to oldCol to those of
+# newArrName corresponding to newCol.
+#------------------------------------------------------------------------------
+proc tablelist::moveColAttribs {oldArrName newArrName oldCol newCol} {
+    upvar $oldArrName oldArr $newArrName newArr
+
+    #
+    # Move the elements of oldArr with names of the form $oldCol-*
+    # to those of newArr with names of the form $newCol-*
+    #
+    foreach newName [array names newArr $newCol-*] {
+	unset newArr($newName)
+    }
+    foreach oldName [array names oldArr $oldCol-*] {
+	regsub "$oldCol-" $oldName "$newCol-" newName
+	set newArr($newName) $oldArr($oldName)
+	unset oldArr($oldName)
+    }
+
+    #
+    # Move the elements of oldArr with names of the form k*,$oldCol-*
+    # to those of newArr with names of the form k*,$newCol-*
+    #
+    foreach newName [array names newArr k*,$newCol-*] {
+	unset newArr($newName)
+    }
+    foreach oldName [array names oldArr k*,$oldCol-*] {
+	regsub -- ",$oldCol-" $oldName ",$newCol-" newName
+	set newArr($newName) $oldArr($oldName)
+	unset oldArr($oldName)
     }
 }
 
@@ -1746,10 +1804,11 @@ proc tablelist::setupColumns {win columns createLabels} {
     set data(hasFmtCmds) [expr {[lsearch -exact $data(fmtCmdFlagList) 1] >= 0}]
 
     #
-    # Clean up the data associated with the deleted columns
+    # Clean up the data and attributes associated with the deleted columns
     #
     for {set col $data(colCount)} {$col < $oldColCount} {incr col} {
 	deleteColData $win $col
+	deleteColAttribs $win $col
     }
 
     #

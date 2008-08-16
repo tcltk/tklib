@@ -459,6 +459,10 @@
     <dd><code><i>pathName</i> <b><a href=
     "#cancelediting">cancelediting</a></b></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#cellattrib">cellattrib</a></b>
+    <i>cellIndex</i> ?<i>name</i>? ?<i>value</i> <i>name</i> <i>value</i>
+    ...?</code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#cellcget">cellcget</a></b>
     <i>cellIndex</i> <i>option</i></code></dd>
 
@@ -497,6 +501,10 @@
     <dd><code><i>pathName</i> <b><a href="#cget">cget</a></b>
     <i>option</i></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#columnattrib">columnattrib</a></b>
+    <i>columnIndex</i> ?<i>name</i>? ?<i>value</i> <i>name</i> <i>value</i>
+    ...?</code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#columncget">columncget</a></b>
     <i>columnIndex</i> <i>option</i></code></dd>
 
@@ -518,22 +526,22 @@
     "#configcelllist">configcelllist</a></b> {<i>cellIndex</i> <i>option</i>
     <i>value</i> <i>cellIndex</i> <i>option</i> <i>value</i> ...}</code></dd>
 
-    <dd><code><i>pathName</i> <b><a href=
-    "#configcells">configcells</a></b> ?<i>cellIndex</i> <i>option</i>
-    <i>value</i> <i>cellIndex</i> <i>option</i> <i>value</i> ...?</code></dd>
+    <dd><code><i>pathName</i> <b><a href="#configcells">configcells</a></b>
+    ?<i>cellIndex</i> <i>option</i> <i>value</i> <i>cellIndex</i> <i>option</i>
+    <i>value</i> ...?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#configcolumnlist">configcolumnlist</a></b> {<i>columnIndex</i>
     <i>option</i> <i>value</i> <i>columnIndex</i> <i>option</i> <i>value</i>
     ...}</code></dd>
 
-    <dd><code><i>pathName</i> <b><a href=
-    "#configcolumns">configcolumns</a></b> ?<i>columnIndex</i> <i>option</i>
-    <i>value</i> <i>columnIndex</i> <i>option</i> <i>value</i> ...?</code></dd>
+    <dd><code><i>pathName</i> <b><a href="#configcolumns">configcolumns</a></b>
+    ?<i>columnIndex</i> <i>option</i> <i>value</i> <i>columnIndex</i>
+    <i>option</i> <i>value</i> ...?</code></dd>
 
-    <dd><code><i>pathName</i> <b><a href=
-    "#configrowlist">configrowlist</a></b> {<i>index</i> <i>option</i>
-    <i>value</i> <i>index</i> <i>option</i> <i>value</i> ...}</code></dd>
+    <dd><code><i>pathName</i> <b><a href="#configrowlist">configrowlist</a></b>
+    {<i>index</i> <i>option</i> <i>value</i> <i>index</i> <i>option</i>
+    <i>value</i> ...}</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#configrows">configrows</a></b>
     ?<i>index</i> <i>option</i> <i>value</i> <i>index</i> <i>option</i>
@@ -573,6 +581,9 @@
     <i>cellIndex</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
+    "#editwintag">editwintag</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
     "#editwinpath">editwinpath</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
@@ -610,6 +621,19 @@
 
     <dd><code><i>pathName</i> <b><a href="#getkeys">getkeys</a></b>
     <i>indexList</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#hasattrib">hasattrib</a></b>
+    <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#hascellattrib">hascellattrib</a></b>
+    <i>cellIndex</i> <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#hascolumnattrib">hascolumnattrib</a></b> <i>columnIndex</i>
+    <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#hasrowattrib">hasrowattrib</a></b>
+    <i>index</i> <i>name</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#imagelabelpath">imagelabelpath</a></b> <i>cellIndex</i></code></dd>
@@ -669,6 +693,10 @@
 
     <dd><code><i>pathName</i> <b><a href=
     "#resetsortinfo">resetsortinfo</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#rowattrib">rowattrib</a></b>
+    <i>index</i> ?<i>name</i>? ?<i>value</i> <i>name</i> <i>value</i>
+    ...?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#rowcget">rowcget</a></b>
     <i>index</i> <i>option</i></code></dd>
@@ -757,6 +785,21 @@
 
     <dd><code><i>pathName</i> <b><a href="#togglerowhide">togglerowhide</a></b>
     <i>indexList</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#unsetattrib">unsetattrib</a></b>
+    <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#unsetcellattrib">unsetcellattrib</a></b> <i>cellIndex</i>
+    <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#unsetcolumnattrib">unsetcolumnattrib</a></b> <i>columnIndex</i>
+    <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#unsetrowattrib">unsetrowattrib</a></b> <i>index</i>
+    <i>name</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#windowpath">windowpath</a></b>
     <i>cellIndex</i></code></dd>
@@ -1245,8 +1288,9 @@
       <blockquote>
         <p>Specifies the desired height for the window, in lines.&nbsp; If zero
         or less then the desired height for the window is made just large
-        enough to hold the header and all the items in the tablelist
-        widget.</p>
+        enough to hold the header and all the items in the tablelist widget,
+        provided that no column-, row-, or cell-specific fonts are used and no
+        embedded images or windows are displayed in the widget's cells.</p>
       </blockquote>
     </dd>
 
@@ -2213,7 +2257,8 @@ for {set row 0} {$row &lt; 1000} {incr row} {
         respectively, the selection cannot be modified and is not shown
         (although the selection information is retained), the header labels are
         completely insensitive, and no interactive cell editing can be
-        performed.</p>
+        performed.&nbsp; In addition, in disabled state any color options
+        specified at column, row, or cell level will be ignored.</p>
       </blockquote>
     </dd>
 
@@ -2698,9 +2743,9 @@ proc tooltipAddCmd {tbl row col} {
     scanning, as described below.</dd>
 
     <dd><br>
-    Each tablelist widget may have any number of <b>attributes</b>, which can
-    be used in commands that create or manipulate tablelist widgets for
-    particular purposes.</dd>
+    Each tablelist widget, as well as each tablelist column, row, and cell may
+    have any number of <b>attributes</b>, which can be used in commands that
+    create or manipulate tablelist widgets for particular purposes.</dd>
 
     <dt><br>
     <a name="colors_and_fonts"></a><b>COLORS AND FONTS</b></dt>
@@ -2829,8 +2874,8 @@ proc tooltipAddCmd {tbl row col} {
         <i>command</i></code></dt>
 
         <dd>
-          Specifies a Tcl command to be invoked when displaying the contents
-          of a cell within this column or adding them to the selection when the
+          Specifies a Tcl command to be invoked when displaying the contents of
+          a cell within this column or adding them to the selection when the
           latter is being exported.&nbsp; If <code><i>command</i></code> is a
           nonempty string, then it is automatically concatenated with the
           cell's text, the resulting script is evaluated in the global scope,
@@ -3432,7 +3477,7 @@ proc formatDate clockVal {
         latter is non-zero (i.e., static).&nbsp; The default value is
         <code>0</code>.&nbsp; If the value of this option is true and the
         column was specified with a non-zero width or was resized
-        interactively, then the width of the embedded window (if any)  will be
+        interactively, then the width of the embedded window (if any) will be
         adjusted automatically so the window fills the whole horizontal space
         belonging to that column (except the left and right margins).&nbsp;
         Please note that in this case the cell's text will remain hidden.&nbsp;
@@ -3964,7 +4009,8 @@ proc formatDate clockVal {
         pairs, each of which contains the name and the value of an attribute
         for <code><i>pathName</i></code>.&nbsp; If <code><i>name</i></code> is
         specified with no <code><i>value</i></code>, then the command returns
-        the value of the one named attribute.&nbsp; If one or more
+        the value of the one named attribute (or an empty string if no
+        corresponding value exists).&nbsp; If one or more
         <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
         then the command sets the given widget attribute(s) to the given
         value(s); in this case the return value is an empty string.&nbsp;
@@ -3998,15 +4044,14 @@ proc formatDate clockVal {
         name of the tablelist widget and which is associated with the
         tablelist's body, the separators, as well as the message and label
         widgets used for displaying multi-line elements and images,
-        respectively.&nbsp; This binding tag is designed to be used when
-        defining individual binding scripts for tablelist widgets.&nbsp; The
-        main advantage of using this tag instead of the path name of the
-        tablelist's body is that it enables you to write event handling scripts
-        that are valid not only for the tablelist's body but also for the
-        separators, multi-line cells, and embedded images.&nbsp; This binding
-        tag precedes the tag <code><b><a href=
+        respectively.&nbsp; This binding tag precedes the tag <code><b><a href=
         "#body_bindings">TablelistBody</a></b></code> in the list of binding
-        tags of the tablelist descendants mentioned above.</dd>
+        tags of the tablelist descendants mentioned above, and is designed to
+        be used when defining individual binding scripts for tablelist
+        widgets.&nbsp; The main advantage of using this tag instead of the path
+        name of the tablelist's body is that it enables you to write event
+        handling scripts that are valid not only for the tablelist's body but
+        also for the separators, multi-line cells, and embedded images.</dd>
 
         <dt><br>
         <a name="cancelediting"></a><code><i>pathName</i>
@@ -4028,6 +4073,24 @@ proc formatDate clockVal {
         <code><b>&lt;&lt;TablelistCellRestored&gt;&gt;</b></code>.&nbsp; If no
         cell was being edited when the command was invoked then an empty string
         is returned without generating a virtual event.</dd>
+
+        <dt><br>
+        <a name="cellattrib"></a><code><i>pathName</i> <b>cellattrib</b>
+        <i>cellIndex</i> ?<i>name</i>? ?<i>value</i> <i>name</i> <i>value</i>
+        ...?</code></dt>
+
+        <dd>Queries or modifies the attributes of the cell given by
+        <code><i>cellIndex</i></code>.&nbsp; If no <code><i>name</i></code> is
+        specified, the command returns a list of pairs, each of which contains
+        the name and the value of an attribute for the cell.&nbsp; If
+        <code><i>name</i></code> is specified with no
+        <code><i>value</i></code>, then the command returns the value of the
+        one named cell attribute (or an empty string if no corresponding value
+        exists).&nbsp; If one or more
+        <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
+        then the command sets the given cell attribute(s) to the given
+        value(s); in this case the return value is an empty string.&nbsp;
+        <code><i>name</i></code> may be an arbitrary string.</dd>
 
         <dt><br>
         <a name="cellcget"></a><code><i>pathName</i> <b>cellcget</b>
@@ -4148,6 +4211,24 @@ proc formatDate clockVal {
         <dd>Returns the current value of the configuration option given by
         <code><i>option</i></code>, which may have any of the values accepted
         by the <code><b>tablelist::tablelist</b></code> command.</dd>
+
+        <dt><br>
+        <a name="columnattrib"></a><code><i>pathName</i> <b>columnattrib</b>
+        <i>columnIndex</i> ?<i>name</i>? ?<i>value</i> <i>name</i> <i>value</i>
+        ...?</code></dt>
+
+        <dd>Queries or modifies the attributes of the column given by
+        <code><i>columnIndex</i></code>.&nbsp; If no <code><i>name</i></code>
+        is specified, the command returns a list of pairs, each of which
+        contains the name and the value of an attribute for the column.&nbsp;
+        If <code><i>name</i></code> is specified with no
+        <code><i>value</i></code>, then the command returns the value of the
+        one named column attribute (or an empty string if no corresponding
+        value exists).&nbsp; If one or more
+        <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
+        then the command sets the given column attribute(s) to the given
+        value(s); in this case the return value is an empty string.&nbsp;
+        <code><i>name</i></code> may be an arbitrary string.</dd>
 
         <dt><br>
         <a name="columncget"></a><code><i>pathName</i> <b>columncget</b>
@@ -4468,7 +4549,35 @@ eval [list $<i>pathName</i> <a href=
         details on editablity and on the editing process.</dd>
 
         <dt><br>
-        <a name="editwinpath"></a><code><i>pathName</i>
+        <a name="editwintag"></a><code><i>pathName</i>
+        <b>editwintag</b></code></dt>
+
+        <dd>
+          Returns the name of a binding tag whose name depends on the path name
+          of the tablelist widget and which is associated with some of the
+          components of the temporary embedded widget used for interactive cell
+          editing.&nbsp; These components depend on the edit window: the widget
+          itself in case of a Tk or tile checkbutton; the edit window's entry
+          children in case of a mentry widget; the only entry or entry-like
+          component of the edit window in all other cases (see also the
+          <code><b><a href="#entrypath">entrypath</a></b></code>
+          subcommand).&nbsp; This binding tag precedes the tag
+          <code><b><a href="#edit_bindings">TablelistEdit</a></b></code> in the
+          list of binding tags of the edit window components mentioned above,
+          and is designed to be used when defining individual binding scripts
+          for controlling the interactive cell editing.&nbsp; For example, the
+          following command will replace the standard behavior of the
+          <code>Return</code> key during cell editing in the tablelist widget
+          <code>.tbl</code> with that of the <code>Tab</code> key:
+
+          <blockquote>
+            <pre>
+bind [.tbl editwintag] &lt;Return&gt; "[bind TablelistEdit &lt;Tab&gt;]; break"
+</pre>
+          </blockquote>
+        </dd>
+
+        <dt><a name="editwinpath"></a><code><i>pathName</i>
         <b>editwinpath</b></code></dt>
 
         <dd>Returns the path name of the temporary embedded widget used for
@@ -4575,7 +4684,7 @@ eval [list $<i>pathName</i> <a href=
           formatting should depend on the cell's row.&nbsp; To be able to use
           it, specify the value of the <code><b>-formatcommand</b></code>
           column configuration option as&nbsp; <code>[<b>list</b>
-          <i>formatCommand</i> <i>pathName</i>]</code>,&nbsp like in the
+          <i>formatCommand</i> <i>pathName</i>]</code>,&nbsp; like in the
           following example:</p>
 
           <blockquote>
@@ -4663,6 +4772,37 @@ proc formatValue {tbl val} {
         deleted, thus acting as a key that uniquely identifies the item even if
         the latter's position (i.e., row index) changes.&nbsp; This command
         provides read-only access to these internal item IDs.</dd>
+
+        <dt><br>
+        <a name="hasattrib"></a><code><i>pathName</i> <b>hasattrib</b>
+        <i>name</i></code></dt>
+
+        <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
+        exists and <code>0</code> otherwise.</dd>
+
+        <dt><br>
+        <a name="hascellattrib"></a><code><i>pathName</i> <b>hascellattrib</b>
+        <i>cellIndex</i> <i>name</i></code></dt>
+
+        <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
+        for the cell given by <code><i>cellIndex</i></code> exists and
+        <code>0</code> otherwise.</dd>
+
+        <dt><br>
+        <a name="hascolumnattrib"></a><code><i>pathName</i>
+        <b>hascolumnattrib</b> <i>columnIndex</i> <i>name</i></code></dt>
+
+        <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
+        for the column given by <code><i>columnIndex</i></code> exists and
+        <code>0</code> otherwise.</dd>
+
+        <dt><br>
+        <a name="hasrowattrib"></a><code><i>pathName</i> <b>hasrowattrib</b>
+        <i>index</i> <i>name</i></code></dt>
+
+        <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
+        for the row given by <code><i>index</i></code> exists and
+        <code>0</code> otherwise.</dd>
 
         <dt><br>
         <a name="imagelabelpath"></a><code><i>pathName</i>
@@ -4954,6 +5094,23 @@ upvar #0 [.tbl itemlistvar] itemList
         <code><b><a href=
         "#sortbycolumnlist">sortbycolumnlist</a></b></code>.&nbsp; The return
         value is an empty string.</dd>
+
+        <dt><br>
+        <a name="rowattrib"></a><code><i>pathName</i> <b>rowattrib</b>
+        <i>index</i> ?<i>name</i>? ?<i>value</i> <i>name</i> <i>value</i>
+        ...?</code></dt>
+
+        <dd>Queries or modifies the attributes of the row given by
+        <code><i>index</i></code>.&nbsp; If no <code><i>name</i></code> is
+        specified, the command returns a list of pairs, each of which contains
+        the name and the value of an attribute for the row.&nbsp; If
+        <code><i>name</i></code> is specified with no
+        <code><i>value</i></code>, then the command returns the value of the
+        one named row attribute.&nbsp; If one or more
+        <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
+        then the command sets the given row attribute(s) to the given value(s);
+        in this case the return value is an empty string.&nbsp;
+        <code><i>name</i></code> may be an arbitrary string.</dd>
 
         <dt><br>
         <a name="rowcget"></a><code><i>pathName</i> <b>rowcget</b> <i>index</i>
@@ -5369,7 +5526,35 @@ upvar #0 [.tbl itemlistvar] itemList
           having this bug!</p>
         </dd>
 
-        <dt><a name="windowpath"></a><code><i>pathName</i> <b>windowpath</b>
+        <dt><a name="unsetattrib"></a><code><i>pathName</i> <b>unsetattrib</b>
+        <i>name</i></code></dt>
+
+        <dd>Unsets the attribute <code><i>name</i></code>.&nbsp; Returns an
+        empty string.</dd>
+
+        <dt><br>
+        <a name="unsetcellattrib"></a><code><i>pathName</i>
+        <b>unsetcellattrib</b> <i>cellIndex</i> <i>name</i></code></dt>
+
+        <dd>Unsets the attribute <code><i>name</i></code> for the cell given by
+        <code><i>cellIndex</i></code>.&nbsp; Returns an empty string.</dd>
+
+        <dt><br>
+        <a name="unsetcolumnattrib"></a><code><i>pathName</i>
+        <b>unsetcolumnattrib</b> <i>columnIndex</i> <i>name</i></code></dt>
+
+        <dd>Unsets the attribute <code><i>name</i></code> for the column given
+        by <code><i>columnIndex</i></code>.&nbsp; Returns an empty string.</dd>
+
+        <dt><br>
+        <a name="unsetrowattrib"></a><code><i>pathName</i>
+        <b>unsetrowattrib</b> <i>index</i> <i>name</i></code></dt>
+
+        <dd>Unsets the attribute <code><i>name</i></code> for the row given by
+        <code><i>index</i></code>.&nbsp; Returns an empty string.</dd>
+
+        <dt><br>
+        <a name="windowpath"></a><code><i>pathName</i> <b>windowpath</b>
         <i>cellIndex</i></code></dt>
 
         <dd>Returns the path name of the window contained in the cell given by
@@ -5805,14 +5990,22 @@ bind [.tbl bodytag] &lt;Button-1&gt; {
       navigation to move from one editable cell into another.&nbsp; If the
       selection type is <code><b>cell</b></code> and the location cursor is in
       an editable cell, then the interactive editing of the active element can
-      also be started by pressing <code>Return</code> or
-      <code>KP_Enter</code>.&nbsp; The affected components of the temporary
-      embedded widget depend on the edit window: the widget itself in case of a
-      Tk or tile checkbutton; the edit window's entry children in case of a
-      mentry widget; the only entry or entry-like component of the edit window
-      in all other cases (see also the <code><b><a href=
-      "#entrypath">entrypath</a></b></code> subcommand).<br>
-      &nbsp;
+      also be started by pressing <code>Return</code> or <code>KP_Enter</code>.
+
+      <p>The affected components of the temporary embedded widget depend on the
+      edit window: the widget itself in case of a Tk or tile checkbutton; the
+      edit window's entry children in case of a mentry widget; the only entry
+      or entry-like component of the edit window in all other cases (see also
+      the <code><b><a href="#entrypath">entrypath</a></b></code>
+      subcommand).&nbsp; The list of binding tags of these edit window
+      components contains two addditional tags, inserted just before their path
+      names: the binding tag whose name is returned by the <code><b><a href=
+      "#editwintag">editwintag</a></b></code> subcommand, followed by the tag
+      <code><b>TablelistEdit</b></code>.&nbsp; The bindings described below are
+      associated with the tag <code><b>TablelistEdit</b></code>, and can be
+      overridden for individual tablelist widgets by making use of the binding
+      tag given by the <code><b><a href="#editwintag">editwintag</a></b></code>
+      subcommand.</p>
 
       <ol>
         <li><code>Control-i</code> inserts a tabulator character into the edit

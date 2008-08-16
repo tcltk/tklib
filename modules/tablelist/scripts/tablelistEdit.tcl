@@ -1133,9 +1133,9 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     }
 
     #
-    # Create a frame to be embedded into the tablelist's body, together
-    # with a child of column-specific type; replace the binding tag
-    # Frame with TablelistEdit in the list of binding tags of the frame
+    # Create a frame to be embedded into the tablelist's body, together with
+    # a child of column-specific type; replace the binding tag Frame with
+    # $data(editwinTag) and TablelistEdit in the frame's list of binding tags
     #
     seeCell $win $row $col
     set netRowHeight [lindex [bboxSubCmd $win $row] 3]
@@ -1144,7 +1144,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     tk::frame $f -borderwidth 0 -container 0 -height $frameHeight \
 		 -highlightthickness 0 -relief flat -takefocus 0
     catch {$f configure -padx 0 -pady 0}
-    bindtags $f [lreplace [bindtags $f] 1 1 TablelistEdit]
+    bindtags $f [lreplace [bindtags $f] 1 1 $data(editwinTag) TablelistEdit]
     bind $f <Destroy> {
 	array set tablelist::ns[winfo parent [winfo parent %W]]::data \
 		  {editRow -1  editCol -1}
@@ -1213,8 +1213,9 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     $b mark set editMark $editIdx
 
     #
-    # Insert the binding tag TablelistEdit in the list of binding tags
-    # of some components of w, just before the respective path names
+    # Insert the binding tags $data(editwinTag) and TablelistEdit
+    # into the list of binding tags of some components
+    # of w, just before the respective path names
     #
     if {$isMentry} {
 	set compList [$w entries]
@@ -1226,7 +1227,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     foreach comp $compList {
 	set bindTags [bindtags $comp]
 	set idx [lsearch -exact $bindTags $comp]
-	bindtags $comp [linsert $bindTags $idx TablelistEdit]
+	bindtags $comp [linsert $bindTags $idx $data(editwinTag) TablelistEdit]
     }
 
     #
