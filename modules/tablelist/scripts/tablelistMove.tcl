@@ -193,7 +193,8 @@ proc tablelist::moveRow {win source target} {
 # Processes the tablelist movecolumn subcommand.
 #------------------------------------------------------------------------------
 proc tablelist::moveCol {win source target} {
-    upvar ::tablelist::ns${win}::data data
+    upvar ::tablelist::ns${win}::data data \
+	  ::tablelist::ns${win}::attribs attribs
     if {$data(isDisabled)} {
 	return ""
     }
@@ -224,13 +225,15 @@ proc tablelist::moveCol {win source target} {
     set data(-columns) [eval linsert {$data(-columns)} $target3 $sourceRange]
 
     #
-    # Save some elements of data corresponding to source
+    # Save some elements of data and attribs corresponding to source
     #
-    array set tmp [array get data $source-*]
-    array set tmp [array get data k*,$source-*]
+    array set tmpData [array get data $source-*]
+    array set tmpData [array get data k*,$source-*]
     foreach specialCol {activeCol anchorCol editCol} {
-	set tmp($specialCol) $data($specialCol)
+	set tmpData($specialCol) $data($specialCol)
     }
+    array set tmpAttribs [array get attribs $source-*]
+    array set tmpAttribs [array get attribs k*,$source-*]
     set selCells [curCellSelection $win]
     set tmpRows [extractColFromCellList $selCells $source]
 
@@ -274,19 +277,22 @@ proc tablelist::moveCol {win source target} {
     trace vdelete data(activeCol) w [list tablelist::activeTrace $win]
 
     #
-    # Move the elements of data corresponding to the columns in oldCols to the
-    # elements corresponding to the columns with the same indices in newCols
+    # Move the elements of data and attribs corresponding
+    # to the columns in oldCols to the elements corresponding
+    # to the columns with the same indices in newCols
     #
     foreach oldCol $oldCols newCol $newCols {
 	moveColData data data imgs $oldCol $newCol
+	moveColAttribs attribs attribs $oldCol $newCol
 	set selCells [replaceColInCellList $selCells $oldCol $newCol]
     }
 
     #
-    # Move the elements of data corresponding to
-    # source to the elements corresponding to target1
+    # Move the elements of data and attribs corresponding
+    # to source to the elements corresponding to target1
     #
-    moveColData tmp data imgs $source $target1
+    moveColData tmpData data imgs $source $target1
+    moveColAttribs tmpAttribs attribs $source $target1
     set selCells [deleteColFromCellList $selCells $target1]
     foreach row $tmpRows {
 	lappend selCells $row,$target1

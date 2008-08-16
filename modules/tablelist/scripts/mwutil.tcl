@@ -20,7 +20,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.4
+    variable version	2.5
     variable library	[file dirname [info script]]
 
     #
@@ -29,7 +29,8 @@ namespace eval mwutil {
     namespace export	wrongNumArgs getAncestorByClass convEventFields \
 			defineKeyNav processTraversal focusNext focusPrev \
 			configureWidget fullConfigOpt fullOpt enumOpts \
-			configureSubCmd attribSubCmd getScrollInfo
+			configureSubCmd attribSubCmd hasattribSubCmd \
+			unsetattribSubCmd getScrollInfo
 
     #
     # Make modified versions of the procedures tk_focusNext and
@@ -402,11 +403,11 @@ proc mwutil::configureSubCmd {win configSpecsName configCmd cgetCmd argList} {
 #------------------------------------------------------------------------------
 # mwutil::attribSubCmd
 #
-# This procedure is invoked to process the attrib subcommand.
+# This procedure is invoked to process *attrib subcommands.
 #------------------------------------------------------------------------------
-proc mwutil::attribSubCmd {win argList} {
+proc mwutil::attribSubCmd {win prefix argList} {
     set classNs [string tolower [winfo class $win]]
-    upvar ::${classNs}::ns${win}::attribVals attribVals
+    upvar ::${classNs}::ns${win}::attribs attribs
 
     set argCount [llength $argList]
     if {$argCount > 1} {
@@ -416,15 +417,18 @@ proc mwutil::attribSubCmd {win argList} {
 	if {$argCount % 2 != 0} {
 	    return -code error "value for \"[lindex $argList end]\" missing"
 	}
-	array set attribVals $argList
+	foreach {attr val} $argList {
+	    set attribs($prefix-$attr) $val
+	}
 	return ""
     } elseif {$argCount == 1} {
 	#
 	# Return the value of the specified attribute
 	#
 	set attr [lindex $argList 0]
-	if {[info exists attribVals($attr)]} {
-	    return $attribVals($attr)
+	set name $prefix-$attr
+	if {[info exists attribs($name)]} {
+	    return $attribs($name)
 	} else {
 	    return ""
 	}
@@ -432,12 +436,43 @@ proc mwutil::attribSubCmd {win argList} {
 	#
 	# Return the current list of attribute names and values
 	#
+	set len [string length "$prefix-"]
 	set result {}
-	foreach attr [lsort [array names attribVals]] {
-	    lappend result [list $attr $attribVals($attr)]
+	foreach name [lsort [array names attribs "$prefix-*"]] {
+	    set attr [string range $name $len end]
+	    lappend result [list $attr $attribs($name)]
 	}
 	return $result
     }
+}
+
+#------------------------------------------------------------------------------
+# mwutil::hasattribSubCmd
+#
+# This procedure is invoked to process has*attrib subcommands.
+#------------------------------------------------------------------------------
+proc mwutil::hasattribSubCmd {win prefix attr} {
+    set classNs [string tolower [winfo class $win]]
+    upvar ::${classNs}::ns${win}::attribs attribs
+
+    return [info exists attribs($prefix-$attr)]
+}
+
+#------------------------------------------------------------------------------
+# mwutil::unsetattribSubCmd
+#
+# This procedure is invoked to process unset*attrib subcommands.
+#------------------------------------------------------------------------------
+proc mwutil::unsetattribSubCmd {win prefix attr} {
+    set classNs [string tolower [winfo class $win]]
+    upvar ::${classNs}::ns${win}::attribs attribs
+
+    set name $prefix-$attr
+    if {[info exists attribs($name)]} {
+	unset attribs($name)
+    }
+
+    return ""
 }
 
 #------------------------------------------------------------------------------
