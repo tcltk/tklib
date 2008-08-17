@@ -1,3 +1,8 @@
+2008-08-17   Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl:   Improvements related to balloon help.
+	* scripts/tablelistWidget.tcl:
+
 2008-08-16   Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/mwutil.tcl:          Added the subcommands hasattrib,
