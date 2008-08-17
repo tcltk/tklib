@@ -574,6 +574,7 @@ proc tablelist::showOrHideTooltip {win x y X Y} {
     #
     event generate $win <Leave>
     catch {uplevel #0 $data(-tooltipdelcommand) [list $win]}
+    catch {uplevel #0 $data(-tooltipdelcommand) .*}
     set data(prevCell) $row,$col
     if {$row >= 0 && $col >= 0} {
 	set focus [focus -displayof $win]
@@ -1872,6 +1873,7 @@ proc tablelist::labelLeave {w X x y} {
 	#
 	event generate $win <Leave>
 	catch {uplevel #0 $data(-tooltipdelcommand) [list $win]}
+	catch {uplevel #0 $data(-tooltipdelcommand) .*}
 	set data(prevCol) -1
     }
 

@@ -1964,7 +1964,7 @@ proc tablelist::iselemsnippedSubCmd {win argList} {
     displayItems $win
     foreach {row col} [cellIndex $win [lindex $argList 0] 1] {}
     set fullTextName [lindex $argList 1]
-    upvar 3 $fullTextName fullText
+    upvar 2 $fullTextName fullText
 
     upvar ::tablelist::ns${win}::data data
     set item [lindex $data(itemList) $row]
@@ -2011,7 +2011,7 @@ proc tablelist::istitlesnippedSubCmd {win argList} {
 
     set col [colIndex $win [lindex $argList 0] 1]
     set fullTextName [lindex $argList 1]
-    upvar 3 $fullTextName fullText
+    upvar 2 $fullTextName fullText
 
     upvar ::tablelist::ns${win}::data data
     set fullText [lindex $data(-columns) [expr {3*$col + 1}]]
