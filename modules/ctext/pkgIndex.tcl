@@ -1,1 +1,1 @@
-package ifneeded ctext 3.1 [list source [file join $dir ctext.tcl]]
+package ifneeded ctext 3.2 [list source [file join $dir ctext.tcl]]
