@@ -1,3 +1,13 @@
+2008-08-19  George Peter Staplin  <georgeps@users.sourceforge.net>
+
+	ctext.tcl: I fixed bug 2059415 by saving the id from [after idle].
+	On widget destruction the ids are catch {after cancel}.
+
+	I also fixed an old bug that occured in the tests, with backspace,
+	and the previously highlighted text not being dehighlighted.
+
+	pkgIndex.tcl: I bumped the revision to 3.2
+
 2007-05-11  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* ctext.tcl (ctext::linemapUpdate): make the ctext linemap not
