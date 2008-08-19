@@ -1,9 +1,9 @@
 # By George Peter Staplin
 # See also the README for a list of contributors
-# RCS: @(#) $Id: ctext.tcl,v 1.6 2007/05/11 22:54:09 hobbs Exp $
+# RCS: @(#) $Id: ctext.tcl,v 1.7 2008/08/19 21:08:27 georgeps Exp $
 
 package require Tk
-package provide ctext 3.1
+package provide ctext 3.2
 
 namespace eval ctext {}
 
@@ -41,6 +41,9 @@ proc ctext {win args} {
 	set ar(-highlight) 1
 	set ar(win) $win
 	set ar(modified) 0
+	set ar(commentsAfterId) ""
+	set ar(highlightAfterId) ""
+	set ar(blinkAfterId) ""
 
 	set ar(ctextFlags) [list -yscrollcommand -linemap -linemapfg -linemapbg \
 -font -linemap_mark_command -highlight -linemap_markable -linemap_select_fg \
@@ -115,6 +118,13 @@ proc ctext::event:Destroy {win dWin} {
 	if {![string equal $win $dWin]} {
 		return
 	}
+
+	ctext::getAr $win config configAr
+
+	catch {after cancel $configAr(commentsAfterId)}
+	catch {after cancel $configAr(highlightAfterId)}
+	catch {after cancel $configAr(blinkAfterId)}
+
 	catch {rename $win {}}
 	interp alias {} $win.t {}
 	ctext::clearHighlightClasses $win
@@ -225,6 +235,22 @@ proc ctext::buildArgParseTable win {
 	set ar(argTable) $argTable
 }
 
+proc ctext::commentsAfterIdle {win} {
+	ctext::getAr $win config configAr
+
+	if {"" eq $configAr(commentsAfterId)} {
+		set configAr(commentsAfterId) [after idle [list ctext::comments $win [set afterTriggered 1]]]
+	}
+}
+
+proc ctext::highlightAfterIdle {win lineStart lineEnd} {
+	ctext::getAr $win config configAr
+
+	if {"" eq $configAr(highlightAfterId)} {
+		set configAr(highlightAfterId) [after idle [list ctext::highlight $win $lineStart $lineEnd [set afterTriggered 1]]]
+	}
+}
+
 proc ctext::instanceCmd {self cmd args} {
 	#slightly different than the RE used in ctext::comments
 	set commentRE {\"|\\|'|/|\*}
@@ -309,10 +335,10 @@ proc ctext::instanceCmd {self cmd args} {
 
 		delete {
 			#delete n.n ?n.n
-
-			#first deal with delete n.n
+		
 			set argsLength [llength $args]
 
+			#first deal with delete n.n
 			if {$argsLength == 1} {
 				set deletePos [lindex $args 0]
 				set prevChar [$self._t get $deletePos]
@@ -326,13 +352,17 @@ proc ctext::instanceCmd {self cmd args} {
 				set lineStart [$self._t index "$deletePos linestart"]
 				set lineEnd [$self._t index "$deletePos + 1 chars lineend"]
 
-				if {[string equal $prevChar "#"] || [string equal $char "#"]} {
-					set removeStart $lineStart
-					set removeEnd $lineEnd
-				} else {
-					set removeStart $prevSpace
-					set removeEnd $nextSpace
-				}
+				#This pattern was used in 3.1.  We may want to investigate using it again
+				#eventually to reduce flicker.  It caused a bug with some patterns.
+				#if {[string equal $prevChar "#"] || [string equal $char "#"]} {
+				#	set removeStart $lineStart
+				#	set removeEnd $lineEnd
+				#} else {
+				#	set removeStart $prevSpace
+				#	set removeEnd $nextSpace
+				#}
+				set removeStart $lineStart
+				set removeEnd $lineEnd
 
 				foreach tag [$self._t tag names] {
 					if {[string equal $tag "_cComment"] != 1} {
@@ -343,9 +373,10 @@ proc ctext::instanceCmd {self cmd args} {
 				set checkStr "$prevChar[set char]"
 
 				if {[regexp $commentRE $checkStr]} {
-					after idle [list ctext::comments $self]
+					ctext::commentsAfterIdle $self
 				}
-				ctext::highlight $self $lineStart $lineEnd
+
+				ctext::highlightAfterIdle $self $lineStart $lineEnd
 				ctext::linemapUpdate $self
 			} elseif {$argsLength == 2} {
 				#now deal with delete n.n ?n.n?
@@ -365,10 +396,10 @@ proc ctext::instanceCmd {self cmd args} {
 				}
 
 				if {[regexp $commentRE $data]} {
-					after idle [list ctext::comments $self]
+					ctext::commentsAfterIdle $self
 				}
 
-				ctext::highlight $self $lineStart $lineEnd
+				ctext::highlightAfterIdle $self $lineStart $lineEnd
 				if {[string first "\n" $data] >= 0} {
 					ctext::linemapUpdate $self
 				}
@@ -399,6 +430,7 @@ proc ctext::instanceCmd {self cmd args} {
 			if {[llength $args] < 2} {
 				return -code error "please use at least 2 arguments to $self insert"
 			}
+
 			set insertPos [lindex $args 0]
 			set prevChar [$self._t get "$insertPos - 1 chars"]
 			set nextChar [$self._t get $insertPos]
@@ -428,10 +460,11 @@ proc ctext::instanceCmd {self cmd args} {
 			append REData $data
 			append REData $nextChar
 			if {[regexp $commentRE $REData]} {
-				after idle [list ctext::comments $self]
+				ctext::commentsAfterIdle $self
 			}
 
-			after idle [list ctext::highlight $self $lineStart $lineEnd]
+			ctext::highlightAfterIdle $self $lineStart $lineEnd
+			
 			switch -- $data {
 				"\}" {
 					ctext::matchPair $self "\\\{" "\\\}" "\\"
@@ -482,19 +515,27 @@ proc ctext::instanceCmd {self cmd args} {
 	}
 }
 
-proc ctext::tag:blink {win count} {
+proc ctext::tag:blink {win count {afterTriggered 0}} {
 	if {$count & 1} {
 		$win tag configure __ctext_blink -foreground [$win cget -bg] -background [$win cget -fg]
 	} else {
 		$win tag configure __ctext_blink -foreground [$win cget -fg] -background [$win cget -bg]
 	}
 
+	ctext::getAr $win config configAr
+	if {$afterTriggered} {
+		set configAr(blinkAfterId) ""
+	}
+
 	if {$count == 4} {
 		$win tag delete __ctext_blink 1.0 end
 		return
 	}
+
 	incr count
-	after 50 [list ctext::tag:blink $win $count]
+	if {"" eq $configAr(blinkAfterId)} {
+		set configAr(blinkAfterId) [after 50 [list ctext::tag:blink $win $count [set afterTriggered 1]]]
+	}
 }
 
 proc ctext::matchPair {win str1 str2 escape} {
@@ -596,10 +637,15 @@ proc ctext::disableComments {win} {
 	catch {$win tag delete _cComment}
 }
 
-proc ctext::comments {win} {
+proc ctext::comments {win {afterTriggered 0}} {
 	if {[catch {$win tag cget _cComment -foreground}]} {
 		#C comments are disabled
 		return
+	}
+
+	if {$afterTriggered} {
+		ctext::getAr $win config configAr
+		set configAr(commentsAfterId) ""
 	}
 
 	set startIndex 1.0
@@ -817,8 +863,12 @@ proc ctext::update {} {
 
 }
 
-proc ctext::highlight {win start end} {
+proc ctext::highlight {win start end {afterTriggered 0}} {
 	ctext::getAr $win config configAr
+
+	if {$afterTriggered} {
+		set configAr(highlightAfterId) ""
+	}
 
 	if {!$configAr(-highlight)} {
 		return
