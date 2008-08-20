@@ -8,6 +8,8 @@
 
 	pkgIndex.tcl: I bumped the revision to 3.2
 
+	ctext.man: Updated to revision 3.2
+
 2007-05-11  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* ctext.tcl (ctext::linemapUpdate): make the ctext linemap not
