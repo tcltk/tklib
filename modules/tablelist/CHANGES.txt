@@ -1,5 +1,57 @@
-What is new in Tablelist 4.9?
------------------------------
+What is new in Tablelist 4.10?
+------------------------------
+
+1.  Support for individual binding scripts controlling the interactive
+    cell editing, with the aid of the new "editwintag" subcommand
+    (thanks to Óscar Fuentes for his valuable input).
+
+2.  Complemented the "attrib" subcommand with the new subcommands
+    "hasattrib" and "unsetattrib".
+
+3.  Support for column-, row-, and cell-specific attributes, with the
+    aid of the new subcommands "columnattrib", "hascolumnattrib",
+    "unsetcolumnattrib", "rowattrib", "hasrowattrib", "unsetrowattrib",
+    "cellattrib", "hascellattrib", and "unsetcellattrib".
+
+4.  Support for interactive cell editing with the aid of the new mentry
+    widget of type "DateTime", introduced in version 3.2 of the Mentry
+    package (thanks to Florian Murr for his proposal).
+
+5.  Made sure that the default bindings are set up immediately when
+    loading the package, prior to creating any tablelist widget (thanks
+    to Schelte Bron for his proposal and discussions on this topic).
+
+6.  Re-established the support for tile widgets as edit windows in non-
+    tile-based tablelist widgets (again, thanks to Schelte Bron for
+    reporting that this was broken in the last few Tablelist versions).
+
+7.  Adapted the handling of the tile checkbutton as edit window in the
+    "xpnative" theme to some changes made in tile 0.8 (thanks to Jeff
+    Godfrey for his bug report).
+
+8.  Guarded against potential widget deletion from within user-defined
+    binding scripts or "update (idletasks)" (thanks to Schelte Bron and
+    Jan Kandziora for their bug reports).
+
+9.  Updated the (very rarely needed) distribution file "repair.tcl" to
+    work with current Tablelist versions (thanks to Robert Stollf for
+    his bug report).
+
+10. Corrected the description of the "-height" option in the reference
+    manual (thanks to Glenn Herteg for his bug report concerning the
+    case "-height 0").
+
+11. Improved the color handling in the "disabled" state (thanks to Rolf
+    Ade for his bug report and discussions on this topic).
+
+12. Made the handling of elided text more robust (thanks to Jos Decoster
+    for his bug report and valuable contribution).
+
+13. Several further improvements and minor bug fixes (thanks to Albrecht
+    Mucha for his valuable input).
+
+What was new in Tablelist 4.9?
+------------------------------
 
 1.  Added the "-wrap" column configuration option, which makes it
     possible to display long texts in word-wrapped multi-line rather
