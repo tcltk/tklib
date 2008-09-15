@@ -322,6 +322,9 @@ proc tablelist::findTabs {win line firstCol lastCol idx1Name idx2Name} {
     for {set col 0} {$col < $firstCol} {incr col} {
 	if {!$data($col-hide) || $canElide} {
 	    set idx [$w search $elide "\t" $idx $endIdx]+2c
+	    if {[string compare $idx "+2c"] == 0} {
+		return 0
+	    }
 	}
     }
     set idx1 [$w index $idx-1c]
@@ -329,9 +332,17 @@ proc tablelist::findTabs {win line firstCol lastCol idx1Name idx2Name} {
     for {} {$col < $lastCol} {incr col} {
 	if {!$data($col-hide) || $canElide} {
 	    set idx [$w search $elide "\t" $idx $endIdx]+2c
+	    if {[string compare $idx "+2c"] == 0} {
+		return 0
+	    }
 	}
     }
     set idx2 [$w search $elide "\t" $idx $endIdx]
+    if {[string compare $idx2 ""] == 0} {
+	return 0
+    }
+
+    return 1
 }
 
 #------------------------------------------------------------------------------
@@ -1680,6 +1691,7 @@ proc tablelist::setupColumns {win columns createLabels} {
 	    }
 	}
 	set data(fmtCmdFlagList) {}
+	set data(hiddenColCount) 0
     }
 
     #
@@ -1722,6 +1734,7 @@ proc tablelist::setupColumns {win columns createLabels} {
 		}
 	    }
 	    lappend data(fmtCmdFlagList) [info exists data($col-formatcommand)]
+	    incr data(hiddenColCount) $data($col-hide)
 
 	    #
 	    # Create the label
@@ -3000,6 +3013,9 @@ proc tablelist::adjustElidedText win {
 		{incr col} {
 		set textIdx2 \
 		    [$w search -elide "\t" $textIdx1+1c $line.end]+1c
+		if {[string compare $textIdx2 "+1c"] == 0} {
+		    break
+		}
 		if {$data($col-hide)} {
 		    incr count
 		    $w tag add hiddenCol $textIdx1 $textIdx2
@@ -3028,6 +3044,9 @@ proc tablelist::adjustElidedText win {
 		    {incr col} {
 		    set textIdx2 \
 			[$w search -elide "\t" $textIdx1+1c $line.end]+1c
+		    if {[string compare $textIdx2 "+1c"] == 0} {
+			break
+		    }
 		    if {$data($col-hide)} {
 			incr count
 			$w tag add hiddenCol $textIdx1 $textIdx2
@@ -3094,8 +3113,9 @@ proc tablelist::adjustElidedText win {
 	    {$line <= $btmLine} {set row $line; incr line} {
 	    set key [lindex [lindex $data(itemList) $row] end]
 	    if {![info exists data($key-hide)]} {
-		findTabs $win $line $firstCol $lastCol tabIdx1 tabIdx2
-		$w tag add elidedCol $tabIdx1 $tabIdx2+1c
+		if {[findTabs $win $line $firstCol $lastCol tabIdx1 tabIdx2]} {
+		    $w tag add elidedCol $tabIdx1 $tabIdx2+1c
+		}
 	    }
 
 	    #
@@ -3110,8 +3130,10 @@ proc tablelist::adjustElidedText win {
 		{$line >= $topLine} {set line $row; incr row -1} {
 		set key [lindex [lindex $data(itemList) $row] end]
 		if {![info exists data($key-hide)]} {
-		    findTabs $win $line $firstCol $lastCol tabIdx1 tabIdx2
-		    $w tag add elidedCol $tabIdx1 $tabIdx2+1c
+		    if {[findTabs $win $line $firstCol $lastCol \
+			 tabIdx1 tabIdx2]} {
+			$w tag add elidedCol $tabIdx1 $tabIdx2+1c
+		    }
 		}
 
 		#
