@@ -113,6 +113,16 @@ proc tablelist::cleanup win {
 	trace vdelete var wu $data(listVarTraceCmd)
     }
 
+    #
+    # Destroy any existing bindings for data(bodyTag) and data(editwinTag)
+    #
+    foreach event [bind $data(bodyTag)] {
+	bind $data(bodyTag) $event ""
+    }
+    foreach event [bind $data(editwinTag)] {
+	bind $data(editwinTag) $event ""
+    }
+
     namespace delete ::tablelist::ns$win
     catch {rename ::$win ""}
 }
