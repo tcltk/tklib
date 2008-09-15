@@ -1,3 +1,20 @@
+2008-09-15   Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:              Bumped the version number to 4.10.
+	* *.txt:
+	* doc/tablelist.html:
+
+	* scripts/tablelistEdit.tcl: Added support for mentry widgets of type
+	* doc/tablelistMentry.html:  "DateTime" as edit windows.
+	* doc/tablelistWidget.html:
+
+	* scripts/tablelistBind.tcl: Minor improvements.
+
+	* scripts/tablelistUtil.tcl: Made the handling of elided text more
+	  robust (fixes a bug reported by Jos Decoster).
+
+	* scripts/tclIndex: Newly generated.
+
 2008-08-17   Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl:   Improvements related to balloon help.
