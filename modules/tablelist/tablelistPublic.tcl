@@ -8,7 +8,7 @@ namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	4.9.2
+    variable version	4.10
     variable library	[DIR]
 
     #
@@ -33,8 +33,8 @@ namespace eval ::tablelist {
     namespace export    addIncrEntryfield addIncrDateTimeWidget \
 			addIncrSpinner addIncrSpinint addIncrCombobox
     namespace export	addOakleyCombobox
-    namespace export	addDateMentry addTimeMentry addFixedPointMentry \
-    			addIPAddrMentry
+    namespace export	addDateMentry addTimeMentry addDateTimeMentry \
+			addFixedPointMentry addIPAddrMentry
 }
 
 package provide tablelist::common $::tablelist::version
