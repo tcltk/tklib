@@ -4009,8 +4009,11 @@ proc formatDate clockVal {
         pairs, each of which contains the name and the value of an attribute
         for <code><i>pathName</i></code>.&nbsp; If <code><i>name</i></code> is
         specified with no <code><i>value</i></code>, then the command returns
-        the value of the one named attribute (or an empty string if no
-        corresponding value exists).&nbsp; If one or more
+        the value of the one named attribute, or an empty string if no
+        corresponding value exists (you can use the <code><b><a href=
+        "#hasattrib">hasattrib</a></b></code> subcommand to distinguish this
+        case from the one that the value of an <i>existing</i> attribute is an
+        empty string).&nbsp; If one or more
         <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
         then the command sets the given widget attribute(s) to the given
         value(s); in this case the return value is an empty string.&nbsp;
@@ -4085,8 +4088,11 @@ proc formatDate clockVal {
         the name and the value of an attribute for the cell.&nbsp; If
         <code><i>name</i></code> is specified with no
         <code><i>value</i></code>, then the command returns the value of the
-        one named cell attribute (or an empty string if no corresponding value
-        exists).&nbsp; If one or more
+        one named cell attribute, or an empty string if no corresponding value
+        exists (you can use the <code><b><a href=
+        "#hascellattrib">hascellattrib</a></b></code> subcommand to distinguish
+        this case from the one that the value of an <i>existing</i> cell
+        attribute is an empty string).&nbsp; If one or more
         <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
         then the command sets the given cell attribute(s) to the given
         value(s); in this case the return value is an empty string.&nbsp;
@@ -4223,8 +4229,11 @@ proc formatDate clockVal {
         contains the name and the value of an attribute for the column.&nbsp;
         If <code><i>name</i></code> is specified with no
         <code><i>value</i></code>, then the command returns the value of the
-        one named column attribute (or an empty string if no corresponding
-        value exists).&nbsp; If one or more
+        one named column attribute, or an empty string if no corresponding
+        value exists (you can use the <code><b><a href=
+        "#hascolumnattrib">hascolumnattrib</a></b></code> subcommand to
+        distinguish this case from the one that the value of an <i>existing</i>
+        column attribute is an empty string).&nbsp; If one or more
         <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
         then the command sets the given column attribute(s) to the given
         value(s); in this case the return value is an empty string.&nbsp;
@@ -5106,7 +5115,11 @@ upvar #0 [.tbl itemlistvar] itemList
         the name and the value of an attribute for the row.&nbsp; If
         <code><i>name</i></code> is specified with no
         <code><i>value</i></code>, then the command returns the value of the
-        one named row attribute.&nbsp; If one or more
+        one named row attribute, or an empty string if no corresponding value
+        exists (you can use the <code><b><a href=
+        "#hasrowattrib">hasrowattrib</a></b></code> subcommand to distinguish
+        this case from the one that the value of an <i>existing</i> row
+        attribute is an empty string).&nbsp; If one or more
         <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
         then the command sets the given row attribute(s) to the given value(s);
         in this case the return value is an empty string.&nbsp;
@@ -6109,9 +6122,10 @@ bind [.tbl bodytag] &lt;Button-1&gt; {
         The key sequence <code>Meta-Prior</code>/<code>Meta-Next</code> has the
         same effect as <code>Alt-Prior</code>/<code>Alt-Next</code>.&nbsp; If
         the edit window is not a text widget, BWidget SpinBox, Oakley combobox,
-        or a mentry widget of type <code>"Date"</code>, <code>"Time"</code>, or
-        <code>"IPAddr"</code>, then <code>Prior</code>/<code>Next</code> has
-        the same effect as <code>Alt-Prior</code>/<code>Alt-Next</code>.<br>
+        or a mentry widget of type <code>"Date"</code>, <code>"Time"</code>,
+        <code>"DateTime"</code>, or <code>"IPAddr"</code>, then
+        <code>Prior</code>/<code>Next</code> has the same effect as
+        <code>Alt-Prior</code>/<code>Alt-Next</code>.<br>
         &nbsp;</li>
 
         <li>When editing a cell that is not the only editable cell of the

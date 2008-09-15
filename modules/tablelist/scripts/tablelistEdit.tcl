@@ -696,6 +696,100 @@ proc tablelist::addTimeMentry {fmt sep args} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::addDateTimeMentry
+#
+# Registers the widget created by the mentry::dateTimeMentry command from the
+# Mentry package, with a given format and given separators and with or without
+# the "-gmt 1" option for the mentry::putClockVal and mentry::getClockVal
+# commands, for interactive cell editing.
+#------------------------------------------------------------------------------
+proc tablelist::addDateTimeMentry {fmt dateSep timeSep args} {
+    #
+    # Parse the fmt argument
+    #
+    if {![regexp {^([dmyY])([dmyY])([dmyY])(H|I)(M)(S?)$} $fmt dummy \
+		 fields(0) fields(1) fields(2) fields(3) fields(4) fields(5)]} {
+	return -code error \
+	       "bad format \"$fmt\": must be a string of length 5 or 6,\
+	        with the first 3 characters consisting of the letters d, m,\
+		and y or Y, followed by H or I, then M, and optionally by S"
+    }
+
+    #
+    # Check whether all the three date components are represented in fmt
+    #
+    for {set n 0} {$n < 3} {incr n} {
+	set lfields($n) [string tolower $fields($n)]
+    }
+    if {[string compare $lfields(0) $lfields(1)] == 0 ||
+	[string compare $lfields(0) $lfields(2)] == 0 ||
+	[string compare $lfields(1) $lfields(2)] == 0} {
+	return -code error \
+	       "bad format \"$fmt\": must have unique components for the\
+		day, month, and year"
+    }
+
+    #
+    # Parse the remaining arguments (if any)
+    #
+    switch [llength $args] {
+	0 {
+	    set useGMT 0
+	    set name dateTimeMentry
+	}
+
+	1 {
+	    set arg [lindex $args 0]
+	    if {[string compare $arg "-gmt"] == 0} {
+		set useGMT 1
+		set name dateTimeMentry
+	    } else {
+		set useGMT 0
+		set name $arg
+	    }
+	}
+
+	2 {
+	    set arg0 [lindex $args 0]
+	    if {[string compare $arg0 "-gmt"] != 0} {
+		return -code error "bad option \"$arg0\": must be -gmt"
+	    }
+
+	    set useGMT 1
+	    set name [lindex $args 1]
+	}
+
+	default {
+	    mwutil::wrongNumArgs "addDateTimeMentry format dateSeparator\
+				  timeSeparator ?-gmt? ?name?"
+	}
+    }
+    checkEditWinName $name
+
+    array set ::tablelist::editWin [list \
+	$name-creationCmd	[list mentry::dateTimeMentry %W $fmt \
+				      $dateSep $timeSep] \
+	$name-putValueCmd	"mentry::putClockVal %T %W -gmt $useGMT" \
+	$name-getValueCmd	"mentry::getClockVal %W -gmt $useGMT" \
+	$name-putTextCmd	"" \
+	$name-getTextCmd	"%W getstring" \
+	$name-putListCmd	{eval [list %W put 0] %L} \
+	$name-getListCmd	"%W getlist" \
+	$name-selectCmd		"" \
+	$name-invokeCmd		"" \
+	$name-fontOpt		-font \
+	$name-useFormat		0 \
+	$name-useReqWidth	1 \
+	$name-usePadX		1 \
+	$name-isEntryLike	1 \
+	$name-focusWin		"" \
+	$name-reservedKeys	{Left Right Up Down Prior Next} \
+    ]
+
+    return $name
+}
+
+#------------------------------------------------------------------------------
 # tablelist::addFixedPointMentry
 #
 # Registers the widget created by the mentry::fixedPointMentry command from the
@@ -2063,16 +2157,23 @@ proc tablelist::defineTablelistEdit {} {
     #
     catch {
 	bind TablelistEdit <MouseWheel> {
-	    if {[string compare [winfo class %W] "TCombobox"] != 0 &&
+	    if {![tablelist::hasMouseWheelBindings %W] &&
 		![tablelist::isComboTopMapped %W]} {
 		tablelist::genMouseWheelEvent \
+		    [[tablelist::getTablelistPath %W] bodypath] %D
+	    }
+	}
+	bind TablelistEdit <Option-MouseWheel> {
+	    if {![tablelist::hasMouseWheelBindings %W] &&
+		![tablelist::isComboTopMapped %W]} {
+		tablelist::genOptionMouseWheelEvent \
 		    [[tablelist::getTablelistPath %W] bodypath] %D
 	    }
 	}
     }
     foreach detail {4 5} {
 	bind TablelistEdit <Button-$detail> [format {
-	    if {[string compare [winfo class %%W] "TCombobox"] != 0 &&
+	    if {![tablelist::hasMouseWheelBindings %%W] &&
 		![tablelist::isComboTopMapped %%W]} {
 		event generate \
 		    [[tablelist::getTablelistPath %%W] bodypath] <Button-%s>
@@ -2343,6 +2444,18 @@ proc tablelist::genMouseWheelEvent {w delta} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::genOptionMouseWheelEvent
+#
+# Generates an <Option-MouseWheel> event with the given delta on the widget w.
+#------------------------------------------------------------------------------
+proc tablelist::genOptionMouseWheelEvent {w delta} {
+    set focus [focus -displayof $w]
+    focus $w
+    event generate $w <Option-MouseWheel> -delta $delta
+    focus $focus
+}
+
+#------------------------------------------------------------------------------
 # tablelist::isKeyReserved
 #
 # Checks whether the given keysym is used in the standard binding scripts
@@ -2356,6 +2469,24 @@ proc tablelist::isKeyReserved {w keySym} {
     set name [getEditWindow $win $data(editRow) $data(editCol)]
     variable editWin
     return [expr {[lsearch -exact $editWin($name-reservedKeys) $keySym] >= 0}]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::hasMouseWheelBindings
+#
+# Checks whether the given widget, which is assumed to be the edit window or
+# one of its descendants, has mouse wheel bindings.
+#------------------------------------------------------------------------------
+proc tablelist::hasMouseWheelBindings w {
+    if {[string compare [winfo class $w] "TCombobox"] == 0} {
+	return 1
+    } else {
+	set bindTags [bindtags $w]
+	return [expr {([lsearch -exact $bindTags "MentryDateTime"] >= 0 ||
+		       [lsearch -exact $bindTags "MentryMeridian"] >= 0 ||
+		       [lsearch -exact $bindTags "MentryIPAddr"] >= 0) &&
+		      ($mentry::version >= 3.2)}]
+    }
 }
 
 #------------------------------------------------------------------------------
