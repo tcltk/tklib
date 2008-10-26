@@ -764,14 +764,14 @@ proc ::Plotchart::DrawLegend { w series text } {
                 if { [info exists data_series($w,$series,-symbol)] } {
                     set symbol $data_series($w,$series,-symbol)
                 }
-                DrawSymbolPixel $legendw $series 7 $y $symbol $colour legend
+                DrawSymbolPixel $legendw $series 7 $y $symbol $colour [list legend legend_$series]
             }
         } else {
             $legendw create rectangle 0 [expr {$y-3}] 15 [expr {$y+3}] \
-                -fill $colour -tag [list legend $series]
+                -fill $colour -tag [list legend legend_$series]
         }
 
-        $legendw create text 25 $y -text $text -anchor w -tag legend
+        $legendw create text 25 $y -text $text -anchor w -tag [list legend legend_$series]
 
         incr y 10   ;# TODO: size of font!
     }
@@ -779,7 +779,7 @@ proc ::Plotchart::DrawLegend { w series text } {
     #
     # Now the frame and the background
     #
-    foreach {xl yt xr yb} [$w bbox legend] {break}
+    foreach {xl yt xr yb} [$legendw bbox legend] {break}
 
     set xl [expr {$xl-2}]
     set xr [expr {$xr+2}]
