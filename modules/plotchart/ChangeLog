@@ -1,3 +1,6 @@
+2008-10-26 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotaxis.tcl: Correct small glitch in drawing the legend (reported by Simon Geard)
+
 2008-05-18 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.tcl: Remove interpreter alias for right axis in case of resizing)
         * plotaxis.tcl: Draw entries for right axis in the legend for the left axis
