@@ -20,6 +20,7 @@ foreach {m pkg doc exa} {
     chatwidget  _tcl  _man  _null
     ctext       _ctxt _man  _null
     cursor      _tcl  _man  _null
+    crosshair   _tcl  _man  _null
     datefield   _tcl  _man  _null
     diagrams    _tcl  _man  _null
     getstring   _tcl  _man  _null
