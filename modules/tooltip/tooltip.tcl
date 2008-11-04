@@ -7,13 +7,12 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tooltip.tcl,v 1.14 2008/08/08 22:50:13 patthoyts Exp $
+# RCS: @(#) $Id: tooltip.tcl,v 1.15 2008/11/04 16:51:18 patthoyts Exp $
 #
 # Initiated: 28 October 1996
 
 
 package require Tk 8.4
-package provide tooltip 1.4.2
 package require msgcat
 
 #------------------------------------------------------------------------
@@ -65,18 +64,20 @@ namespace eval ::tooltip {
     variable tooltip
     variable G
 
-    array set G {
-	enabled		1
-	fade		1
-	FADESTEP	0.2
-	FADEID		{}
-	DELAY		500
-	AFTERID		{}
-	LAST		-1
-	TOPLEVEL	.__tooltip__
-    }
-    if {[tk windowingsystem] eq "x11"} {
-	set G(fade) 0 ; # don't fade by default on X11
+    if {![info exists G]} {
+        array set G {
+            enabled     1
+            fade        1
+            FADESTEP    0.2
+            FADEID      {}
+            DELAY       500
+            AFTERID     {}
+            LAST        -1
+            TOPLEVEL    .__tooltip__
+        }
+        if {[tk windowingsystem] eq "x11"} {
+            set G(fade) 0 ; # don't fade by default on X11
+        }
     }
     # The extra ::hide call in <Enter> is necessary to catch moving to
     # child widgets where the <Leave> event won't be generated
@@ -170,15 +171,19 @@ proc ::tooltip::register {w args} {
 		set args [lreplace $args 0 1]
 	    }
 	    -item	{
-		set namedItem [lindex $args 1]
-		if {[catch {$w find withtag $namedItem} item]} {
-		    return -code error "widget \"$w\" is not a canvas, or item\
+                if {[winfo class $w] eq "Listbox"} {
+                    set item [lindex $args 1]
+                } else {
+                    set namedItem [lindex $args 1]
+                    if {[catch {$w find withtag $namedItem} item]} {
+                        return -code error "widget \"$w\" is not a canvas, or item\
 			    \"$namedItem\" does not exist in the canvas"
-		}
-		if {[llength $item] > 1} {
-		    return -code error "item \"$namedItem\" specifies more\
+                    }
+                    if {[llength $item] > 1} {
+                        return -code error "item \"$namedItem\" specifies more\
 			    than one item on the canvas"
-		}
+                    }
+                }
 		set args [lreplace $args 0 1]
 	    }
             -tag {
@@ -212,7 +217,11 @@ proc ::tooltip::register {w args} {
 	    return $w,$index
 	} elseif {[info exists item]} {
 	    set tooltip($w,$item) $key
-	    enableCanvas $w $item
+            if {[winfo class $w] eq "Listbox"} {
+                enableListbox $w $item
+            } else {
+                enableCanvas $w $item
+            }
 	    return $w,$item
         } elseif {[info exists tag]} {
             set tooltip($w,t_$tag) $key
@@ -377,6 +386,46 @@ proc ::tooltip::wname {{w {}}} {
     return $G(TOPLEVEL)
 }
 
+proc ::tooltip::listitemTip {w x y} {
+    variable tooltip
+    variable G
+
+    set G(LAST) -1
+    set item [$w index @$x,$y]
+    if {$G(enabled) && [info exists tooltip($w,$item)]} {
+	set G(AFTERID) [after $G(DELAY) \
+		[namespace code [list show $w $tooltip($w,$item) cursor]]]
+    }
+}
+
+# Handle the lack of <Enter>/<Leave> between listbox items using <Motion>
+proc ::tooltip::listitemMotion {w x y} {
+    variable tooltip
+    variable G
+    if {$G(enabled)} {
+        set item [$w index @$x,$y]
+        if {$item ne $G(LAST)} {
+            set G(LAST) $item
+            after cancel $G(AFTERID)
+            catch {wm withdraw $G(TOPLEVEL)}
+            if {[info exists tooltip($w,$item)]} {
+                set G(AFTERID) [after $G(DELAY) \
+                   [namespace code [list show $w $tooltip($w,$item) cursor]]]
+            }
+        }
+    }
+}
+
+# Initialize tooltip events for Listbox widgets
+proc ::tooltip::enableListbox {w args} {
+    if {[string match *listitemTip* [bind $w <Enter>]]} { return }
+    bind $w <Enter> +[namespace code [list listitemTip %W %x %y]]
+    bind $w <Motion> +[namespace code [list listitemMotion %W %x %y]]
+    bind $w <Leave> +[namespace code [list hide 1]] ; # fade ok
+    bind $w <Any-KeyPress> +[namespace code hide]
+    bind $w <Any-Button> +[namespace code hide]
+}
+    
 proc ::tooltip::itemTip {w args} {
     variable tooltip
     variable G
@@ -415,3 +464,5 @@ proc ::tooltip::enableTag {w tag} {
     $w tag bind $tag <Any-KeyPress> +[namespace code hide]
     $w tag bind $tag <Any-Button> +[namespace code hide]
 }
+
+package provide tooltip 1.4.3
