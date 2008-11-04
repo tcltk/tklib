@@ -10,8 +10,8 @@
 [para]
 
 This package provides tooltips, small text messages that can be displayed
-when the mouse hovers over a widget, menu item, canvas item or text
-widget tag.
+when the mouse hovers over a widget, menu item, canvas item, listbox item
+or text widget tag.
 
 [section {COMMANDS}]
 
@@ -74,9 +74,14 @@ widget but the entries do not have to exists when the tooltip is set.
 
 [opt_def -item [arg name]]
 
-This option is used to set a tooltip for a canvas widget item. The
-item must already be present in the canvas widget and the widget must
-be a canvas widget or an error is raised.
+This option is used to set a tooltip for a canvas widget item or a listbox
+item. For the canvas widget, the item must already be present in the canvas
+widget. For listbox widgets the item may be created later but the programmer
+is responsible for managing the link between the listbox item index and the
+corresponding tooltip. If the listbox items are re-ordered, the tooltips
+will need ammending.
+[nl]
+If the widget is not a canvas or listbox then an error is raised.
 
 [opt_def -tag [arg name]]
 
@@ -112,6 +117,14 @@ package require tooltip
 pack [canvas .c]
 set item [.c create rectangle 10 10 80 80]
 tooltip::tooltip .c -item $item "Canvas item tooltip"
+}]
+
+[example {
+# Demonstrate listbox item tooltip
+package require tooltip
+pack [listbox .lb]
+.lb insert 0 "item one"
+tooltip::tooltip .lb -item 0 "Listbox item tooltip"
 }]
 
 [example {
