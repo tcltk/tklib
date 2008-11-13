@@ -1,3 +1,9 @@
+2008-11-12  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* pkgIndex.tcl: add widget::dateentry 0.9
+	* dateentry.tcl: first pass at a dateentry dropbox, by Ruediger
+	Haertel with updates from JH.
+
 2008-06-17  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* pkgIndex.tcl: bump panelframe to 1.1.
