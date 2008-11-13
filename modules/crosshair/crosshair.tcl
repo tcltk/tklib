@@ -18,12 +18,14 @@
 package require Tcl 8.4
 package require Tk  8.4
 
+namespace eval ::crosshair {}
+
 # ### ### ### ######### ######### #########
 ## API 
 
 #----------------------------------------------------------------------
 #
-# crosshair::crosshair --
+# ::crosshair::crosshair --
 #
 #       Displays a pair of cross-hairs in a canvas widget.  The
 #       cross-hairs track the pointing device.
@@ -43,7 +45,7 @@ package require Tk  8.4
 #
 #----------------------------------------------------------------------
 
-proc crosshair::crosshair { w args } {
+proc ::crosshair::crosshair { w args } {
     variable config
     set opts(args) $args
     bindtags $w [linsert [bindtags $w] 1 Crosshair]
@@ -53,7 +55,7 @@ proc crosshair::crosshair { w args } {
 
 #----------------------------------------------------------------------
 #
-# crosshair::off -
+# ::crosshair::off -
 #
 #       Removes the crosshairs from a canvas widget
 #
@@ -69,7 +71,7 @@ proc crosshair::crosshair { w args } {
 #
 #----------------------------------------------------------------------
 
-proc crosshair::off { w } {
+proc ::crosshair::off { w } {
     variable config
     if { ![info exists config($w)] } return
     array set opts $config($w)
@@ -87,7 +89,7 @@ proc crosshair::off { w } {
 
 #----------------------------------------------------------------------
 #
-# crosshair::configure --
+# ::crosshair::configure --
 #
 #       Changes the appearance of crosshairs in the canvas widget.
 #
@@ -101,7 +103,7 @@ proc crosshair::off { w } {
 #
 #----------------------------------------------------------------------
 
-proc crosshair::configure { w args } {
+proc ::crosshair::configure { w args } {
     variable config
     if { ![info exists config($w)] } {
 	return -code error "no crosshairs in $w"
@@ -122,7 +124,7 @@ proc crosshair::configure { w args } {
 
 #----------------------------------------------------------------------
 #
-# crosshair::track --
+# ::crosshair::track --
 #
 #       (De)activates reporting of the cross-hair coordinates through
 #       a user-specified callback.
@@ -146,7 +148,7 @@ proc crosshair::configure { w args } {
 #
 #----------------------------------------------------------------------
 
-proc crosshair::track { which w args } {
+proc ::crosshair::track { which w args } {
     variable config
 
     if { ![info exists config($w)] } {
@@ -180,7 +182,7 @@ proc crosshair::track { which w args } {
 
 #----------------------------------------------------------------------
 #
-# crosshair::Hide --
+# ::crosshair::Hide --
 #
 #       Hides the crosshair temporarily
 #
@@ -198,7 +200,7 @@ proc crosshair::track { which w args } {
 #
 #----------------------------------------------------------------------
 
-proc crosshair::Hide { w } {
+proc ::crosshair::Hide { w } {
     variable config
     if { ![info exists config($w)] } return
     array set opts $config($w)
@@ -213,7 +215,7 @@ proc crosshair::Hide { w } {
 
 #----------------------------------------------------------------------
 #
-# crosshair::Unhide --
+# ::crosshair::Unhide --
 #
 #       Places a hidden crosshair back on display
 #
@@ -235,7 +237,7 @@ proc crosshair::Hide { w } {
 #
 #----------------------------------------------------------------------
 
-proc crosshair::Unhide { w x y } {
+proc ::crosshair::Unhide { w x y } {
     variable config
     if { ![info exists config($w)] } return
     array set opts $config($w)
@@ -251,7 +253,7 @@ proc crosshair::Unhide { w x y } {
 
 #----------------------------------------------------------------------
 #
-# crosshair::Move --
+# ::crosshair::Move --
 #
 #       Moves the crosshairs in a camvas
 #
@@ -273,7 +275,7 @@ proc crosshair::Unhide { w x y } {
 #
 #----------------------------------------------------------------------
 
-proc crosshair::Move { w x y } {
+proc ::crosshair::Move { w x y } {
     variable config
     array set opts $config($w)
     set opts(x) [$w canvasx $x]
@@ -298,7 +300,7 @@ proc crosshair::Move { w x y } {
 # ### ### ### ######### ######### #########
 ## State
 
-namespace eval crosshair {
+namespace eval ::crosshair {
     
     # Array holding information describing crosshairs in canvases
     
@@ -316,4 +318,4 @@ namespace eval crosshair {
 # ### ### ### ######### ######### #########
 ## Ready
 
-package provide crosshair 1.0
+package provide crosshair 1.0.1
