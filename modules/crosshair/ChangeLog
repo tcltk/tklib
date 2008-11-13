@@ -1,3 +1,10 @@
+2008-11-12  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* crosshair.tcl: Fixed missing namespace before first
+	* crosshair.man: procedure definition. My fault. Made
+	* pkgIndex.tcl: namespace use fully qualified. Bumped
+	  version to 1.0.1.
+
 2008-11-10  Andreas Kupries  <andreask@activestate.com>
 
 	* crosshair.man: Fixed doc bugs found by Larry Virden
