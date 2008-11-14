@@ -1,3 +1,10 @@
+2008-11-13  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* pkgIndex.tcl: widget::calendar 0.9 ; widget::dataentry 0.91
+	* calendar.tcl: new widget::calendar adapted from the dateentry
+	dropbox pieces.  Now can be used as a stand-alone widget.
+	* dateentry.tcl: update to use calendar widget in dropbox.
+
 2008-11-12  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* pkgIndex.tcl: add widget::dateentry 0.9
