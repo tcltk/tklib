@@ -1,5 +1,9 @@
 2008-11-23  Ruediger Haertel <r_haertel@gmx.de>
 
+	* widget_calendar.man: added documentation to widget::calendar
+
+2008-11-23  Ruediger Haertel <r_haertel@gmx.de>
+
 	* widget.man: added widget::calendar and widget::dateentry
 	to the overview of snidgets in this package
 
