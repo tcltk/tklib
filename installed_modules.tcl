@@ -17,6 +17,7 @@ set     modules [list]
 array set guide {}
 foreach {m pkg doc exa} {
     autoscroll  _tcl  _man  _null
+    canvas      _tcl  _man  _exa
     chatwidget  _tcl  _man  _null
     ctext       _ctxt _man  _null
     cursor      _tcl  _man  _null
