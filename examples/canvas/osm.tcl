@@ -264,3 +264,5 @@ proc VPTRACK {xl yt xr yb} {
 ## Basic interface.
 
 GUI
+# banff       lat = 51.1653,  lon = -115.5322
+# lost lagoon lat = 49.30198, lon = -123.13724
