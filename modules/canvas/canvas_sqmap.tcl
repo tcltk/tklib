@@ -398,7 +398,7 @@ snit::widgetadaptor canvas::sqmap {
 	    # so we are inlining only parts of SetPixelView.
 	    set mypixelview [PV]
 	    $self PixelViewExport
-	    puts \tforce-due-undefined-viewport
+	    #puts \tforce-due-undefined-viewport
 	    set forced 1
 	}
 
