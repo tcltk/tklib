@@ -22,6 +22,8 @@
 #    positioned to overlap. Regarding coordinates this can be seen
 #    as a skewed cartesian system, so only 2 coordinates required
 
+# -- Consider viewport stabilization for when the canvas is resized.
+
 # ### ### ### ######### ######### #########
 ## Requisites
 
@@ -157,6 +159,7 @@ snit::widgetadaptor canvas::sqmap {
     method flush {} {
 	$tilecache clear
 	set mypixelview {}
+	#puts REDRAW-RQ/flush
 	$redraw request
 	return
     }
@@ -228,6 +231,7 @@ snit::widgetadaptor canvas::sqmap {
 
     method Configure {} {
 	set mypixelview {} ; # Force full recalculation.
+	#puts REDRAW-RQ/configure
 	$redraw request
 	return
     }
@@ -260,6 +264,7 @@ snit::widgetadaptor canvas::sqmap {
 	set mypixelview [PV]
 	$self PixelViewExport
 	# Viewport changes imply redraws
+	#puts REDRAW-RQ/set-pixel-view
 	$redraw request
 	return
     }
@@ -314,11 +319,8 @@ snit::widgetadaptor canvas::sqmap {
 	$hull configure -scrollregion $myscrollregion
 
 	# Flush the cache to force a reload of the entire visible
-	# area.
+	# area now, and of the invisible part later when scrolling.
 	$tilecache clear
-
-	# Nearly last, redraw full
-	$self Redraw 1
 
 	# Now save and restore the view, keeping the center of the
 	# view as stable as possible across the transition. Note, the
@@ -356,10 +358,26 @@ snit::widgetadaptor canvas::sqmap {
 	    if {$nytfrac < 0} { set nytfrac 0 }
 
 	    # Adjust canvas view to keep the center as stable as
-	    # possible across the transition.
+	    # possible across the transition. Note that this goes
+	    # through our own xview/yview method, calls SetPixelView,
+	    # and through that requests a redraw. No need to have the
+	    # redraw done by this method.
+
+	    #puts MOVETO\t$nxlfrac,$nytfrac
 	    $self xview moveto $nxlfrac
 	    $self yview moveto $nytfrac
+
+	    # Note however that we still have to force the redraw to
+	    # be fully done.
+	    set mypixelview {}
+	} else {
+	    # Nearly last, redraw full. This happens only because no
+	    # view adjustments were done which would have forced it
+	    # (see above), so in this cause we have to do it
+	    # ourselves.
+	    $self Redraw 1
 	}
+	#puts reconfigure/done
 	return
     }
 
@@ -375,8 +393,12 @@ snit::widgetadaptor canvas::sqmap {
 	# This will tell us where to update and how, if any.
 
 	if {![llength $mypixelview]} {
-	    # Undefined viewport, generate baseline, and force redraw.
-	    $self SetPixelView
+	    # Undefined viewport, generate baseline, and force
+	    # redraw. Scheduling another redraw is however not needed,
+	    # so we are inlining only parts of SetPixelView.
+	    set mypixelview [PV]
+	    $self PixelViewExport
+	    puts \tforce-due-undefined-viewport
 	    set forced 1
 	}
 
@@ -392,7 +414,10 @@ snit::widgetadaptor canvas::sqmap {
 	if {!$forced} {
 	    # Viewport unchanged, nothing to do.
 	    if {($xl == $ll) && ($xr == $lr) &&
-		($yt == $lt) && ($yb == $lb)} return
+		($yt == $lt) && ($yb == $lb)} {
+		#puts \tunchanged,ignore
+		return
+	    }
 	}
 
 	set myfreeitems {}
@@ -451,7 +476,12 @@ snit::widgetadaptor canvas::sqmap {
 	}
 
 	# Delete all items which were not reused.
-	$self DropFreeItems
+
+	# No, no need. Canvas image items without an image configured
+	# for display are effectively invisible, regardless of
+	# location. Keep them around for late coming provider results.
+	#$self DropFreeItems
+	#puts redraw/done
 	return
     }
 
