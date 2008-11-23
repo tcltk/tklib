@@ -1,3 +1,13 @@
+2008-11-23  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* canvas_sqmap.tcl: Removed guards from tilecache invokations in
+	  the image methods. Could have prevented insertion of new image
+	  into the cache, keeping an old image and making cache
+	  inconsistent with the display. This needs cache::async 0.3 to
+	  prevent a blow-up in the recursive call to the cache due to
+	  recursive call and cleanup of notifications causding failure in
+	  the outer call later. This was fixed in v0.3 of the cache::async.
+
 2008-11-22  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* New module for extended canvas widgets.

@@ -28,7 +28,7 @@
 package require Tcl 8.4          ; # No {*}-expansion! :(
 package require snit             ; # 
 package require uevent::onidle   ; # Some defered actions.
-package require cache::async 0.2 ; # Internal tile cache.
+package require cache::async 0.3 ; # Internal tile cache.
 
 # ### ### ### ######### ######### #########
 ##
@@ -118,9 +118,7 @@ snit::widgetadaptor canvas::sqmap {
     ## widget.
 
     method {image set} {at image} {
-	if {![$tilecache exists $at]} {
-	    $tilecache set $at $image
-	}
+	$tilecache set $at $image
 
 	# Nothing more is required for an invisible cell.
 	if {![info exists myvisible($at)]} return
@@ -138,9 +136,7 @@ snit::widgetadaptor canvas::sqmap {
     }
 
     method {image unset} {at} {
-	if {![$tilecache exists $at]} {
-	    $tilecache unset $at
-	}
+	$tilecache unset $at
 
 	# Nothing more is required for an invisible cell.
 	if {![info exists myvisible($at)]} return
