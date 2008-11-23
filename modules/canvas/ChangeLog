@@ -1,0 +1,8 @@
+2008-11-22  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* New module for extended canvas widgets.
+
+	* canvas_sqmap.man: Extended canvas for map display, based on
+	* canvas_sqmap.tcl: square image tiles. Plus examples.
+	* pkgIndex.tcl:
+
