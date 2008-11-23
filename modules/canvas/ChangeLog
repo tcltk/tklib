@@ -1,5 +1,16 @@
 2008-11-23  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
+	* canvas_sqmap.tcl (Reconfigure): Streamline internal operations a
+	  bit ... I.e. no redraw before the viewport is stabilized, and
+	  done only if not already done through the viewport move. Further
+	  no irrelevant redraw request when forced through undefined
+	  pixelview. At last, do never drop free items. As we configure
+	  them to show no image even those not immediately reused are
+	  effectively invisible and stay around until needed. This reduces
+	  item destroy/create churn rate when we are forcing a full reload.
+
+2008-11-23  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
 	* canvas_sqmap.tcl: Removed guards from tilecache invokations in
 	  the image methods. Could have prevented insertion of new image
 	  into the cache, keeping an old image and making cache
