@@ -15,6 +15,28 @@ exec tclsh "$0" ${1+"$@"}
 ##    large very quickly (I have currently seen ranging in size from
 ##    4K (water) to 124K (dense urban area)).
 
+## Note: The editing of waypoints shows my inexperience with the
+##       canvas. Adding points is with <1>, bound to the canvas
+##       itself. Removing is with <3>, bound to the item
+##       itself. However, often it doesn't work, or rather, only if a
+##       add a new point X via <1> over the point of interest, and
+##       then remove both X and the point of interest by using <3>
+##       twice.
+##
+##	 Oh, and removal via <1> bound the item works not at all,
+##	 because this triggers the global binding as well, re-adding
+##	 the point immediately after its removal. Found no way of
+##	 blocking that.
+##
+## Note: Currently new point can be added only at the end of the
+##       trail. No insertion in the middle possible, although deletion
+##       in the middle works. No moving points, yet.
+##
+## Note: This demo is reaching a size there it should be shifted to
+##       tclapps for further development, and cleaned up, with many of
+##       the messes encapsulated into snit types or other niceties,
+##       separate packages, etc.
+
 # ### ### ### ######### ######### #########
 ## Use canvas package relative to example location.
 
@@ -54,6 +76,7 @@ source $selfdir/osm_zoom.tcl            ; # Simple zoom-control (button based)
 ##    them. Or, select a series of location, like following a road,
 ##    and compute the partial and total distances.
 
+## == DONE == (roughly)
 ## -- Mark, save, load series of points (gps tracks, own tracks).
 ##    Name point series. Name individual points (location marks).
 
@@ -65,6 +88,7 @@ package require widget::scrolledwindow
 package require canvas::sqmap
 package require crosshair
 package require img::png
+package require tooltip
 
 package require snit             ; # canvas::sqmap dependency
 package require uevent::onidle   ; # ditto
@@ -99,8 +123,8 @@ proc Goto {lat lon} {
     set ofx [expr {$fx - ($r - $l)/2.0/$scrollw}]
 
     # Show lat/lon, tile coord, pix coord, region fractionals
-    puts $lat\t$ty\t$y\t$fy\t$ofy
-    puts $lon\t$tx\t$x\t$fx\t$ofx
+    #puts $lat\t$ty\t$y\t$fy\t$ofy
+    #puts $lon\t$tx\t$x\t$fx\t$ofx
 
     .map xview moveto $ofx
     .map yview moveto $ofy
@@ -169,8 +193,9 @@ proc TS {level} {
 }
 
 proc Init {} {
-    global argv cachedir
+    global argv cachedir loaddir
     set cachedir ""
+    set loaddir [pwd]
 
     # Nothing to do if no cache is specified
     if {![llength $argv]} return
@@ -179,6 +204,7 @@ proc Init {} {
     if {[llength $argv] > 1} Usage
 
     set cachedir [lindex $argv 0]
+    set loaddir  $cachedir
     return
 }
 
@@ -206,17 +232,17 @@ proc Cache {__ at donecmd} {
 	($c < 0) ||
 	($c >= $tc)
     } {
-	puts "OUT OF BOUNDS ($at)"
+	#puts "OUT OF BOUNDS ($at)"
 	after 0 [linsert $donecmd end unset $at]
 	return
     }
 
     if {$cachedir ne ""} {
-	puts "\tCache? ($at) -: $cachedir"
+	#puts "\tCache? ($at) -: $cachedir"
 
 	set tilefile [file join $cachedir $zoom $c $r.png]
 	if {[file exists $tilefile]} {
-	    puts "\t\tYES, serve immediately"
+	    #puts "\t\tYES, serve immediately"
 	    set tile [image create photo -file $tilefile]
 	    after 0 [linsert $donecmd end set $at $tile]
 	    return
@@ -235,7 +261,7 @@ proc CacheExtend {z donecmd what at args} {
     # zoom level was changed by the user between start of the request
     # and return of the result form the server.
     global cachedir
-    puts "\tCacheExtend $z/ ($donecmd) $what ($at) $args"
+    #puts "\tCacheExtend $z/ ($donecmd) $what ($at) $args"
     if {$what eq "set"} {
 	# Enter the newly retrieved tile into the local cache
 	foreach {r c} $at break
@@ -250,9 +276,12 @@ proc CacheExtend {z donecmd what at args} {
     return
 }
 
+global zoom
+set    zoom -1
+
 proc ZOOM {w level} {
     global zoom tile tc tr scrollw scrollh
-    puts Z=$level
+    #puts Z=$level/$zoom
 
     set p [TS $level]
 
@@ -263,8 +292,8 @@ proc ZOOM {w level} {
     set scrollw  [expr {$tile * $tc}]
     set scrollh  [expr {$tile * $tr}]
 
-    puts r/$tr
-    puts c/$tc
+    #puts r/$tr
+    #puts c/$tc
 
     # Tell Cache/provider
     set zoom $level
@@ -274,29 +303,273 @@ proc ZOOM {w level} {
 	-grid-cell-width  $tile \
 	-grid-cell-height $tile \
 	-scrollregion [list 0 0 $scrollw $scrollh]
+
+    ShowPoints
     return
 }
 
 # ### ### ### ######### ######### #########
 
-set location {}
+proc SavePoints {} {
+    global loaddir
+
+    set chosen [tk_getSaveFile -defaultextension .gps \
+		    -filetypes {
+			{GPS {.gps}}
+			{ALL {*}}
+		    } \
+		    -initialdir $loaddir \
+		    -title   {Save waypoints} \
+		    -parent .map]
+
+    if {$chosen eq ""} return
+
+    global points
+    set lines {}
+    foreach p $points {
+	foreach {lat lon comment} $p break
+	lappend lines [list waypoint $lat $lon $comment]
+    }
+
+    fileutil::writeFile $chosen [join $lines \n]\n
+    return
+}
+
+proc LoadPoints {} {
+    global loaddir
+
+    set chosen [tk_getOpenFile -defaultextension .gps \
+		    -filetypes {
+			{GPS {.gps}}
+			{ALL {*}}
+		    } \
+		    -initialdir $loaddir \
+		    -title   {Load waypoints} \
+		    -parent .map]
+
+    if {$chosen eq ""} return
+    if {[catch {
+	set waypoints [fileutil::cat $chosen]
+    }]} {
+	return
+    }
+
+    set loaddir [file dirname $chosen]
+
+    ClearPoints
+    # Content is TRUSTED. In a proper app this has to be isolated from
+    # the main system through a safe interp.
+    eval $waypoints
+    ShowPoints
+    return
+}
+
+proc waypoint {lat lon comment} {
+    global  points
+    lappend points [list $lat $lon $comment]
+    return
+}
+
+proc ShowPoints {} {
+    global points
+
+    if {![llength $points]} return
+
+    set cmds {}
+    set cmd [list .map create line]
+
+    foreach point $points {
+	foreach {lat lon comment} $point break
+	lappend cmd  [lon2pix $lon] [lat2pix $lat]
+	lappend cmds [list POI $lat $lon $comment -fill salmon -tags Series]
+    }
+    lappend cmd -width 2 -tags Series -capstyle round ;#-smooth 1
+
+    if {[llength $points] > 1} {
+	set cmds [linsert $cmds 0 $cmd]
+    }
+
+    .map delete Series
+    #puts [join $cmds \n]
+    eval [join $cmds \n]
+    return
+}
+
+global pcounter
+set pcounter 0
+proc RememberPoint {x y} {
+    #puts REMEMBER///
+    global pcounter
+    incr   pcounter
+    set lat [pix2lat [.map canvasy $y]]
+    set lon [pix2lon [.map canvasx $x]]
+    set comment "$pcounter:<$lat,$lon>"
+    #puts $x/$y/$lat/$lon/$comment/$pcounter
+
+    global  points
+    lappend points [list $lat $lon $comment $pcounter]
+    ShowPoints
+
+    # This is handled weird. Placing the mouse on top of a point
+    # doesn't trigger, however when I create a new point <1> at the
+    # position, and then immediately after use <3> I can remove the
+    # new point, and the second click the point underneath triggers as
+    # well. Could this be a stacking issue?
+    .map bind T/$comment <3> "[list ForgetPoint $pcounter];break"
+
+    # Alternative: Bind <3> and the top level and use 'find
+    # overlapping'. In that case however either we, or the sqmap
+    # should filter out the background items.
+
+    return
+}
+
+proc ForgetPoint {pid} {
+
+    #    puts [.map find overlapping $x $y $x $y]
+    #return
+
+    #puts //FORGET//$pid
+
+    global points
+    set pos -1
+    foreach p $points {
+	incr pos
+	foreach {lat lon comment id} $p break
+	if {$id != $pid} continue
+	#puts \tFound/$pos
+	set points [lreplace $points $pos $pos]
+	if {![llength $points]} {
+	    ClearPoints
+	} else {
+	    ShowPoints
+	}
+	return
+    }
+    #puts Missed
+    return
+}
+
+proc POI {lat lon comment args} {
+    set x [lon2pix $lon]
+    set y [lat2pix $lat]
+    set x1 [expr { $x + 6 }]
+    set y1 [expr { $y + 6 }]
+    set x  [expr { $x - 6 }]
+    set y  [expr { $y - 6 }]
+
+    set id [eval [linsert $args 0 .map create oval $x $y $x1 $y1]]
+    if {$comment eq ""} return
+    tooltip::tooltip .map -item $id $comment
+    .map addtag T/$comment withtag $id 
+    return
+}
+
+proc ClearPoints {} {
+    global points
+    set points {}
+    .map delete Series
+    return
+}
+
+proc FindMarks {v} {
+    upvar 1 $v file
+    global cachedir loaddir selfdir
+    set base locationmarks.gps
+
+    foreach d [list $cachedir $loaddir [pwd] $selfdir] {
+	set lm [file join $d $base]
+	if {![file exists $lm]} continue
+	set file $lm
+	return 1
+    }
+    return 0
+}
+
+proc LoadMarks {} {
+    if {![FindMarks lm]} return
+
+    if {[catch {
+	set waypoints [fileutil::cat $lm]
+    }]} {
+	return
+    }
+
+    ClearMarks
+    # Content is TRUSTED. In a proper app this has to be isolated from
+    # the main system through a safe interp.
+    eval $waypoints
+    ShowMarks
+    return
+}
+
+proc ClearMarks {} {
+    global lmarks locations
+    set lmarks {}
+    set locations {}
+    return
+}
+
+proc poi {lat lon comment} {
+    global lmarks locations
+    lappend lmarks [list $lat $lon]
+    lappend locations $comment
+    return
+}
+
+proc ShowMarks {} {
+    # locations traced by .lm
+    return
+}
+
+proc GotoMark {} {
+    global lmarks
+    set sel [.lm curselection]
+    if {![llength $sel]} return
+    set sel [lindex $sel 0]
+    set sel [lindex $lmarks $sel]
+    foreach {lat lon} $sel break
+    Goto $lat $lon
+    return
+}
+
+# ### ### ### ######### ######### #########
+
+set location  {} ; # geo location of the mouse in the canvas
+set points    {} ; # way-points loaded list (list (lat lon comment))
+set locations {} ; # Location markers (locationmark.gps)
+set lmarks    {} ; #
 
 proc GUI {} {
+    global zoom
+    set    zoom -1
     # ---------------------------------------------------------
 
     widget::scrolledwindow .sw
-    canvas::sqmap          .map  -viewport-command VPTRACK
-    button                 .exit -command exit     -text Exit
-    button                 .ac   -command Aachen   -text {Show City of Aachen}
-    button                 .grid -command ShowGrid -text {Show Grid}
+    canvas::sqmap          .map  -viewport-command VPTRACK -closeenough 3
+    button                 .exit -command exit        -text Exit
+    #button                 .ac   -command Aachen     -text {Show City of Aachen}
+    button                 .goto  -command GotoMark   -text Goto
+    button                 .clr  -command ClearPoints -text {Clear Points}
+    button                 .ld   -command LoadPoints  -text {Load Points}
+    button                 .sv   -command SavePoints  -text {Save Points}
+    #button                 .grid -command ShowGrid    -text {Show Grid}
     entry                  .loc  -textvariable location \
-	-bd 2 -relief sunken -bg white -width 80
+	-bd 2 -relief sunken -bg white -width 60
     zoom .z -orient vertical -levels 19 -variable ::zoom -command ZOOM
     .sw setwidget .map
+
+    widget::scrolledwindow .sl
+    listbox .lm -listvariable ::locations -selectmode single
+    .sl setwidget .lm
 
     # Panning via mouse
     bind .map <ButtonPress-2> {%W scan mark   %x %y}
     bind .map <B2-Motion>     {%W scan dragto %x %y}
+
+    # Mark/unmark a point on the canvas
+    bind .map <1> {RememberPoint %x %y}
+    #bind .map <3> {ForgetPoint   %x %y}
 
     # Cross hairs ...
     .map configure -cursor tcross
@@ -313,12 +586,18 @@ proc GUI {} {
 	.map configure -grid-cell-command Cache
     }
 
-    grid .z    -row 1 -column 0 -sticky wen
-    grid .sw   -row 1 -column 1 -sticky swen -columnspan 4
-    grid .exit -row 0 -column 1 -sticky wen
-    grid .ac   -row 0 -column 2 -sticky wen
-    grid .grid -row 0 -column 3 -sticky wen
-    grid .loc  -row 0 -column 4 -sticky wen
+    grid .sl   -row 1 -column 0 -sticky swen -columnspan 2
+    grid .z    -row 1 -column 2 -sticky wen
+    grid .sw   -row 1 -column 3 -sticky swen -columnspan 5
+
+    #grid .ac   -row 0 -column 2 -sticky wen
+    grid .exit -row 0 -column 0 -sticky wen
+    grid .goto -row 0 -column 1 -sticky wen
+    grid .clr  -row 0 -column 3 -sticky wen
+    grid .ld   -row 0 -column 4 -sticky wen
+    grid .sv   -row 0 -column 5 -sticky wen
+    #grid .grid -row 0 -column 5 -sticky wen
+    grid .loc  -row 0 -column 6 -sticky wen
 
     grid rowconfigure . 0 -weight 0
     grid rowconfigure . 1 -weight 1
@@ -327,7 +606,7 @@ proc GUI {} {
     grid columnconfigure . 1 -weight 0
     grid columnconfigure . 2 -weight 0
     grid columnconfigure . 3 -weight 0
-    grid columnconfigure . 4 -weight 1
+    grid columnconfigure . 7 -weight 1
 
     ZOOM . 0
     return
@@ -391,6 +670,8 @@ proc VPTRACK {xl yt xr yb} {
 
 Init
 GUI
-# banff       lat = 51.1653,  lon = -115.5322
-# lost lagoon lat = 49.30198, lon = -123.13724
-after 1000 {ZOOM . 12 ; after 10 Aachen}
+LoadMarks
+after 1000 {
+    ZOOM . 12
+    after 10 Aachen
+}
