@@ -32,9 +32,9 @@ The result of the command is [arg pathName].
 [list_begin options]
 [opt_def -orient]
 
-The value for this option is either [const vertical], or [const
-horizontal], specifying the orientation of the major axis of the
-widget. The default is [const vertical].
+The value for this option is either [const vertical], or
+[const horizontal], specifying the orientation of the major axis of
+the widget. The default is [const vertical].
 
 [opt_def -levels]
 
