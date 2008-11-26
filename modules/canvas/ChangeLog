@@ -1,3 +1,8 @@
+2008-11-26  Andreas Kupries  <andreask@activestate.com>
+
+	* canvas_zoom.man: Fixed syntax error in manpage I forgot to
+	  validate.
+
 2008-11-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* ../../examples/canvas/osm_zoom.tcl: Removed zoom control and
