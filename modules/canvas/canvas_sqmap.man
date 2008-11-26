@@ -1,10 +1,10 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin canvas::sqmap n 0.1]
+[manpage_begin canvas::sqmap n 0.2]
 [moddesc   {Variations on a canvas}]
 [titledesc {Canvas with map background based on square tiles}]
 [require Tcl 8.4]
 [require Tk 8.4]
-[require canvas::sqmap [opt 0.1]]
+[require canvas::sqmap [opt 0.2]]
 [description]
 
 This package provides an extended canvas widget for the display of
@@ -19,9 +19,11 @@ where to get the images to show are all configurable.
 
 [call [cmd ::canvas::sqmap] [arg pathName] [opt options]]
 
-Creates the canvas [arg parthName] and configures it. The new widget
+Creates the canvas [arg pathName] and configures it. The new widget
 supports all of the options and methods of a regular canvas, plus the
 options and methods described below.
+
+[nl]
 
 The result of the command is [arg pathName].
 

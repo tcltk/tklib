@@ -328,10 +328,13 @@ snit::widgetadaptor canvas::sqmap {
 	# calculations in long form, i.e. all steps written out. Here
 	# the various expressions are inlined and simplified.
 
-	if {[llength $oldsr]} {
+	foreach { sxl  syt  sxr  syb} $oldsr break
+	if {[llength $oldsr] && (($sxr - $sxl) > 0) && (($syb - $syt) > 0)} {
 	    # Old and new scroll regions.
-	    foreach { sxl  syt  sxr  syb} $oldsr break
 	    foreach {nsxl nsyt nsxr nsyb} $myscrollregion break
+
+	    #puts OSR=($oldsr)
+	    #puts NSR=($myscrollregion)
 
 	    # Get current pixel view, and limit it to the old
 	    # scrollregion (as the canvas may show more than the
@@ -641,5 +644,5 @@ snit::widgetadaptor canvas::sqmap {
 # ### ### ### ######### ######### #########
 ## Ready
 
-package provide canvas::sqmap 0.1
+package provide canvas::sqmap 0.2
 return
