@@ -41,11 +41,14 @@ exec tclsh "$0" ${1+"$@"}
 ## Use canvas package relative to example location.
 
 set selfdir  [file dirname [file normalize [info script]]]
-set modules [file join [file dirname [file dirname $selfdir]] modules]
+set modules  [file join [file dirname [file dirname $selfdir]] modules]
+set lmodule  [file join [file dirname [file dirname [file dirname [file dirname $selfdir]]]] Tcllib Head modules]
 
+set dir $lmodule/map
+source $lmodule/map/pkgIndex.tcl
+unset dir
 source $modules/canvas/canvas_sqmap.tcl ; # The main map support
-source $selfdir/tiles_xy_store_http.tcl ; # Retrieving tiles from the web
-source $selfdir/osm_zoom.tcl            ; # Simple zoom-control (button based)
+source $modules/canvas/canvas_zoom.tcl  ; # Zoom control
 
 ## Ideas:
 ## == DONE ==
@@ -86,125 +89,59 @@ source $selfdir/osm_zoom.tcl            ; # Simple zoom-control (button based)
 package require Tk
 package require widget::scrolledwindow
 package require canvas::sqmap
+package require canvas::zoom
 package require crosshair
 package require img::png
 package require tooltip
+
+package require map::slippy             ; # Slippy utilities
+package require map::slippy::fetcher    ; # Slippy server access
+package require map::slippy::cache      ; # Local slippy tile cache
+#package require map::slippy::prefetcher ; # Agressive prefetch
 
 package require snit             ; # canvas::sqmap dependency
 package require uevent::onidle   ; # ditto
 package require cache::async 0.2 ; # ditto
 
 # ### ### ### ######### ######### #########
-## Pixels to geo coordinates, and back. Mercator projection.
-## See http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Pseudo-Code
 
-proc Goto {lat lon} {
-    global scrollw scrollh viewport tile
-    # pixels in the scrollregion, then fraction
-
-    set ty [lat2tile $lat]
-    set tx [lon2tile $lon]
-
-    set y [lat2pix $lat]
-    set x [lon2pix $lon]
-
-    set fy [expr {$y / $scrollh}]
-    set fx [expr {$x / $scrollw}]
-    # fraction of the scrollregion.
-
-    # Now we need an offset as well, so that the position we got is in
-    # the center, and not topleft. This offset is a half the size of
-    # the view port in both directions, as fraction of the entire
-    # region => We need viewport data out of the canvas. Which we have
-    # through TRACK.
-
-    foreach {l t r b} $viewport break
-    set ofy [expr {$fy - ($b - $t)/2.0/$scrollh}]
-    set ofx [expr {$fx - ($r - $l)/2.0/$scrollw}]
-
-    # Show lat/lon, tile coord, pix coord, region fractionals
-    #puts $lat\t$ty\t$y\t$fy\t$ofy
-    #puts $lon\t$tx\t$x\t$fx\t$ofx
-
-    .map xview moveto $ofx
-    .map yview moveto $ofy
-    return
-}
-
-set pi 3.1415926535
-
-proc lat2pix {lat} {
-    global tile
-    return [expr {$tile * [lat2tile $lat]}]
-}
-
-proc lon2pix {lon} {
-    global tile
-    return [expr {$tile * [lon2tile $lon]}]
-}
-
-proc lat2tile {lat} {
-    global pi tr ; # tr is 2^zoom = 2^12
-    # lat in degrees.
-    # 1/cos() == sec() in the referenced pseudo code.
-    set lat [deg2rad $lat]
-    return [expr { (1 - (log(tan($lat) + 1.0/cos($lat)) / $pi)) / 2 * $tr}]
-}
-
-proc lon2tile {lon} {
-    global tc ; # tc is 2^zoom = 2^12
-    return [expr {(($lon + 180.0) / 360.0) * $tc}]
-}
-
-proc pix2lat {y} {
-    global pi scrollh
-    return [rad2deg [expr {atan(sinh($pi * (1 - 2 * $y / $scrollh)))}]]
-}
-
-proc pix2lon {x} {
-    global scrollw
-    return [expr {$x / $scrollw * 360.0 - 180.0}]
-}
-
-proc deg2rad {d} {
-    global pi
-    return [expr {$d * $pi / 180.0}]
-}
-
-proc rad2deg {r} {
-    global pi
-    return [expr {$r * 180.0 / $pi}]
+proc Main {} {
+    InitModel
+    GUI
+    LoadMarks ; # Geo Bookmarks.
+    tkwait visibility .map
+    Aachen 12
 }
 
 # ### ### ### ######### ######### #########
 
-proc TS {level} {
-    global ts
-    if {![info exists ts($level)]} {
-	# Core tile provider, http to openstreetmap tile server.
-	# ---------------------------------------------------------
-	# OpenStreetMap. Mapnik rendered tiles.
+proc InitModel {} {
+    global argv cachedir loaddir provider zoom
 
-	set url  http://tile.openstreetmap.org
-	#set url  http://tah.openstreetmap.org/Tiles/tile
-	set ts($level) [tiles::xy::store::http TS/$level $level $url/$level]
-    }
-    return $ts($level)
-}
-
-proc Init {} {
-    global argv cachedir loaddir
+    set zoom     -1
     set cachedir ""
-    set loaddir [pwd]
+    set loaddir  [pwd]
 
-    # Nothing to do if no cache is specified
+    # OpenStreetMap. Mapnik rendered tiles.
+    # alternative  http://tah.openstreetmap.org/Tiles/tile
+
+    set provider [map::slippy::fetcher FETCH 19 http://tile.openstreetmap.org]
+
+    # Nothing to do if no cache is specified, and fail for wrong#args
+
     if {![llength $argv]} return
-
-    # Fail for wrong#args
     if {[llength $argv] > 1} Usage
+
+    # A cache is specified. Create the directory, if necessary, and
+    # initialize the necessary objects.
 
     set cachedir [lindex $argv 0]
     set loaddir  $cachedir
+    set provider [map::slippy::cache CACHE $cachedir FETCH]
+
+    # Pre-filling the cache based on map requests. Half-baked. Takes
+    # currently to much cycles from the main requests themselves.  set
+    #provider [map::slippy::prefetcher PREFE CACHE]
     return
 }
 
@@ -215,100 +152,189 @@ proc Usage {} {
 }
 
 # ### ### ### ######### ######### #########
-## Manage a filesystem cache of tiles.
 
-## AK FUTURE: Put this into a generalized snit::type, i.e. for all
-## types of keys, like with cache::async. Then we can simply chain
-## objects to set everything up.
+proc GUI {} {
+    global provider
+    # ---------------------------------------------------------
+    # The gui elements, plus connections.
 
-proc Cache {__ at donecmd} {
-    global zoom cachedir tc tr
+    widget::scrolledwindow .sw
+    widget::scrolledwindow .sl
 
-    foreach {r c} $at break
+    set th [$provider tileheight]
+    set tw [$provider tilewidth]
 
-    if {
-	($r < 0) ||
-	($r >= $tr) ||
-	($c < 0) ||
-	($c >= $tc)
-    } {
-	#puts "OUT OF BOUNDS ($at)"
-	after 0 [linsert $donecmd end unset $at]
-	return
-    }
+    canvas::sqmap          .map   -closeenough 3 \
+	-viewport-command VPTRACK -grid-cell-command GET \
+	-grid-cell-width $tw -grid-cell-height $th
+	
+    canvas::zoom           .z    -variable ::zoom -command ZOOM \
+	-orient vertical -levels [$provider levels]
 
-    if {$cachedir ne ""} {
-	#puts "\tCache? ($at) -: $cachedir"
+    entry                  .loc  -textvariable ::location \
+	-bd 2 -relief sunken -bg white -width 60
 
-	set tilefile [file join $cachedir $zoom $c $r.png]
-	if {[file exists $tilefile]} {
-	    #puts "\t\tYES, serve immediately"
-	    set tile [image create photo -file $tilefile]
-	    after 0 [linsert $donecmd end set $at $tile]
-	    return
-	}
-    }
+    listbox                .lm   -listvariable ::locations \
+	-selectmode single
 
-    # Not in the cache, or no cache. Invoke the original provider and
-    # route results back to us so that we can extend the cache.
+    button                 .exit -command exit        -text Exit
+    button                 .goto -command GotoMark    -text Goto
+    button                 .clr  -command ClearPoints -text {Clear Points}
+    button                 .ld   -command LoadPoints  -text {Load Points}
+    button                 .sv   -command SavePoints  -text {Save Points}
 
-    [TS $zoom] get $at [list CacheExtend $zoom $donecmd]
+    .sw setwidget .map
+    .sl setwidget .lm
+
+    # ---------------------------------------------------------
+    # layout of the elements
+
+    grid .sl   -row 1 -column 0 -sticky swen -columnspan 2
+    grid .z    -row 1 -column 2 -sticky wen
+    grid .sw   -row 1 -column 3 -sticky swen -columnspan 5
+
+    grid .exit -row 0 -column 0 -sticky wen
+    grid .goto -row 0 -column 1 -sticky wen
+    grid .clr  -row 0 -column 3 -sticky wen
+    grid .ld   -row 0 -column 4 -sticky wen
+    grid .sv   -row 0 -column 5 -sticky wen
+    grid .loc  -row 0 -column 6 -sticky wen
+
+    grid rowconfigure . 0 -weight 0
+    grid rowconfigure . 1 -weight 1
+
+    grid columnconfigure . 0 -weight 0
+    grid columnconfigure . 1 -weight 0
+    grid columnconfigure . 2 -weight 0
+    grid columnconfigure . 3 -weight 0
+    grid columnconfigure . 7 -weight 1
+
+    # ---------------------------------------------------------
+    # Behaviours
+
+    # Panning via mouse
+    bind .map <ButtonPress-2> {%W scan mark   %x %y}
+    bind .map <B2-Motion>     {%W scan dragto %x %y}
+
+    # Mark/unmark a point on the canvas
+    bind .map <1> {RememberPoint %x %y}
+
+    # Cross hairs ...
+    .map configure -cursor tcross
+    crosshair::crosshair .map -width 0 -fill \#999999 -dash {.}
+    crosshair::track on  .map TRACK
+
+    # ---------------------------------------------------------
     return
 }
 
-proc CacheExtend {z donecmd what at args} {
-    # note: z = zoom, at the time the request was made. In case the
-    # zoom level was changed by the user between start of the request
-    # and return of the result form the server.
-    global cachedir
-    #puts "\tCacheExtend $z/ ($donecmd) $what ($at) $args"
-    if {$what eq "set"} {
-	# Enter the newly retrieved tile into the local cache
-	foreach {r c} $at break
-	set tile     [lindex $args 0]
-	set tilefile [file join $cachedir $z $c $r.png]
-	file mkdir [file dirname $tilefile]
-	$tile write $tilefile -format png
+# ### ### ### ######### ######### #########
+
+set location  {} ; # geo location of the mouse in the canvas (crosshair)
+
+proc VPTRACK {xl yt xr yb} {
+    # args = viewport, pixels, see also canvas::sqmap, SetPixelView.
+    global viewport
+    set viewport [list $xl $yt $xr $yb]
+    #puts VP-TRACK($viewport)
+    return
+}
+
+proc TRACK {win x y args} {
+    # args = viewport, pixels, see also canvas::sqmap, SetPixelView.
+    global location zoom
+
+    # Convert pixels to geographic location.
+    set point [list $zoom $y $x]
+    foreach {_ lat lon} [map::slippy point 2geo $point] break
+
+    # Update entry field.
+    set location "$lat, $lon"
+    return
+}
+
+# ### ### ### ######### ######### #########
+# Basic callback structure, log for logging, facade to transform the
+# cache/tiles result into what xcanvas is expecting.
+
+proc GET {__ at donecmd} {
+    global provider zoom
+    set tile [linsert $at 0 $zoom]
+
+    if {![map::slippy tile valid $tile [$provider levels]]} {
+	GOT $donecmd unset $tile
+	return
     }
+
+    #puts "GET ($tile) ($donecmd)"
+    $provider get $tile [list GOT $donecmd]
+    return
+}
+
+proc GOT {donecmd what tile args} {
+    #puts "\tGOT $donecmd $what ($tile) $args"
+    set at [lrange $tile 1 end]
     if {[catch {
 	uplevel #0 [eval [linsert $args 0 linsert $donecmd end $what $at]]
     }]} { puts $::errorInfo }
     return
 }
 
-global zoom
-set    zoom -1
+# ### ### ### ######### ######### #########
 
 proc ZOOM {w level} {
-    global zoom tile tc tr scrollw scrollh
-    #puts Z=$level/$zoom
+    # The variable 'zoom' is already set to level, as the -variable of
+    # our zoom control .z
 
-    set p [TS $level]
+    #puts ".z = $level"
 
-    # Set up the data for map config and lat/lon conversion.
-    set tile     [$p tileheight] ; # assume quadratic cells.
-    set tc       [$p columns]
-    set tr       [$p rows]
-    set scrollw  [expr {$tile * $tc}]
-    set scrollh  [expr {$tile * $tr}]
+    set rlength [map::slippy length $level]
+    set region  [list 0 0 $rlength $rlength]
 
-    #puts r/$tr
-    #puts c/$tc
-
-    # Tell Cache/provider
-    set zoom $level
-
-    # Reload map tiles
-    .map configure \
-	-grid-cell-width  $tile \
-	-grid-cell-height $tile \
-	-scrollregion [list 0 0 $scrollw $scrollh]
+    .map configure -scrollregion $region
 
     ShowPoints
     return
 }
 
 # ### ### ### ######### ######### #########
+
+proc Goto {geo} {
+    global zoom
+
+    #puts Jump($geo)
+
+    # The geo location is converted to pixels, then to a fraction of
+    # the scrollregion. This is adjusted so that the fraction
+    # specifies the center of the viewed region, and not the upper
+    # left corner. for this translation we need the viewport data of
+    # VPTRACK.
+
+    foreach {z y x} [map::slippy geo 2point $geo] break
+    set zoom $z
+    after 200 [list Jigger $z $y $x]
+    #.map xview moveto $ofx
+    #.map yview moveto $ofy
+    return
+}
+
+proc Jigger {z y x} {
+    global viewport
+    set len [map::slippy length $z]
+    foreach {l t r b} $viewport break
+    set ofy [expr {($y - ($b - $t)/2.0)/$len}]
+    set ofx [expr {($x - ($r - $l)/2.0)/$len}]
+
+    .map xview moveto $ofx
+    .map yview moveto $ofy
+    return
+}
+
+# ### ### ### ######### ######### #########
+
+set points    {} ; # way-points loaded list (list (lat lon comment))
+set locations {} ; # Location markers (locationmark.gps)
+set lmarks    {} ; #
 
 proc SavePoints {} {
     global loaddir
@@ -371,7 +397,7 @@ proc waypoint {lat lon comment} {
 }
 
 proc ShowPoints {} {
-    global points
+    global points zoom
 
     if {![llength $points]} return
 
@@ -380,8 +406,9 @@ proc ShowPoints {} {
 
     foreach point $points {
 	foreach {lat lon comment} $point break
-	lappend cmd  [lon2pix $lon] [lat2pix $lat]
-	lappend cmds [list POI $lat $lon $comment -fill salmon -tags Series]
+	foreach {_ y x} [map::slippy geo 2point [list $zoom $lat $lon]] break
+	lappend cmd  $x $y
+	lappend cmds [list POI $y $x $lat $lon $comment -fill salmon -tags Series]
     }
     lappend cmd -width 2 -tags Series -capstyle round ;#-smooth 1
 
@@ -399,10 +426,12 @@ global pcounter
 set pcounter 0
 proc RememberPoint {x y} {
     #puts REMEMBER///
-    global pcounter
+    global pcounter zoom
     incr   pcounter
-    set lat [pix2lat [.map canvasy $y]]
-    set lon [pix2lon [.map canvasx $x]]
+
+    set point [list $zoom [.map canvasy $y] [.map canvasx $x]]
+    foreach {_ lat lon} [map::slippy point 2geo $point] break
+
     set comment "$pcounter:<$lat,$lon>"
     #puts $x/$y/$lat/$lon/$comment/$pcounter
 
@@ -450,9 +479,7 @@ proc ForgetPoint {pid} {
     return
 }
 
-proc POI {lat lon comment args} {
-    set x [lon2pix $lon]
-    set y [lat2pix $lat]
+proc POI {y x lat lon comment args} {
     set x1 [expr { $x + 6 }]
     set y1 [expr { $y + 6 }]
     set x  [expr { $x - 6 }]
@@ -523,94 +550,17 @@ proc ShowMarks {} {
 }
 
 proc GotoMark {} {
-    global lmarks
+    global lmarks zoom
     set sel [.lm curselection]
     if {![llength $sel]} return
     set sel [lindex $sel 0]
     set sel [lindex $lmarks $sel]
     foreach {lat lon} $sel break
-    Goto $lat $lon
+    Goto [list $zoom $lat $lon]
     return
 }
 
 # ### ### ### ######### ######### #########
-
-set location  {} ; # geo location of the mouse in the canvas
-set points    {} ; # way-points loaded list (list (lat lon comment))
-set locations {} ; # Location markers (locationmark.gps)
-set lmarks    {} ; #
-
-proc GUI {} {
-    global zoom
-    set    zoom -1
-    # ---------------------------------------------------------
-
-    widget::scrolledwindow .sw
-    canvas::sqmap          .map  -viewport-command VPTRACK -closeenough 3
-    button                 .exit -command exit        -text Exit
-    #button                 .ac   -command Aachen     -text {Show City of Aachen}
-    button                 .goto  -command GotoMark   -text Goto
-    button                 .clr  -command ClearPoints -text {Clear Points}
-    button                 .ld   -command LoadPoints  -text {Load Points}
-    button                 .sv   -command SavePoints  -text {Save Points}
-    #button                 .grid -command ShowGrid    -text {Show Grid}
-    entry                  .loc  -textvariable location \
-	-bd 2 -relief sunken -bg white -width 60
-    zoom .z -orient vertical -levels 19 -variable ::zoom -command ZOOM
-    .sw setwidget .map
-
-    widget::scrolledwindow .sl
-    listbox .lm -listvariable ::locations -selectmode single
-    .sl setwidget .lm
-
-    # Panning via mouse
-    bind .map <ButtonPress-2> {%W scan mark   %x %y}
-    bind .map <B2-Motion>     {%W scan dragto %x %y}
-
-    # Mark/unmark a point on the canvas
-    bind .map <1> {RememberPoint %x %y}
-    #bind .map <3> {ForgetPoint   %x %y}
-
-    # Cross hairs ...
-    .map configure -cursor tcross
-    crosshair::crosshair .map -width 0 -fill \#999999 -dash {.}
-    crosshair::track on  .map TRACK
-
-    if 1 {
-	# This routes the requests and results through GOT/GET logging
-	# commands.
-	.map configure -grid-cell-command GET
-    } else {
-	# This routes the requests directly to the grid provider, and
-	# results back.
-	.map configure -grid-cell-command Cache
-    }
-
-    grid .sl   -row 1 -column 0 -sticky swen -columnspan 2
-    grid .z    -row 1 -column 2 -sticky wen
-    grid .sw   -row 1 -column 3 -sticky swen -columnspan 5
-
-    #grid .ac   -row 0 -column 2 -sticky wen
-    grid .exit -row 0 -column 0 -sticky wen
-    grid .goto -row 0 -column 1 -sticky wen
-    grid .clr  -row 0 -column 3 -sticky wen
-    grid .ld   -row 0 -column 4 -sticky wen
-    grid .sv   -row 0 -column 5 -sticky wen
-    #grid .grid -row 0 -column 5 -sticky wen
-    grid .loc  -row 0 -column 6 -sticky wen
-
-    grid rowconfigure . 0 -weight 0
-    grid rowconfigure . 1 -weight 1
-
-    grid columnconfigure . 0 -weight 0
-    grid columnconfigure . 1 -weight 0
-    grid columnconfigure . 2 -weight 0
-    grid columnconfigure . 3 -weight 0
-    grid columnconfigure . 7 -weight 1
-
-    ZOOM . 0
-    return
-}
 
 proc ShowGrid {} {
     # Activating the grid leaks items = memory
@@ -619,59 +569,12 @@ proc ShowGrid {} {
     return
 }
 
-proc Aachen {} {
+proc Aachen {z} {
     # City of Aachen, NRW. Germany, Europe.
-    Goto 50.7764185111 6.086769104
+    Goto [list $z 50.7764185111 6.086769104]
     return
 }
 
 # ### ### ### ######### ######### #########
-# Basic callback structure, log for logging, facade to transform the
-# cache/tiles result into what xcanvas is expecting.
-
-proc GET {__ at donecmd} {
-    puts "GET ($at) ($donecmd)"
-    Cache get $at [list GOT $donecmd]
-    return
-}
-
-proc GOT {donecmd what at args} {
-    puts "\tGOT $donecmd $what ($at) $args"
-    if {[catch {
-	uplevel #0 [eval [linsert $args 0 linsert $donecmd end $what $at]]
-    }]} { puts $::errorInfo }
-    return
-}
-
 # ### ### ### ######### ######### #########
-
-proc TRACK {win x y args} {
-    # args = viewport, pixels, see also canvas::sqmap, SetPixelView.
-    global location
-
-    # Convert pixels to geographic location.
-    set lat [pix2lat $y]
-    set lon [pix2lon $x]
-
-    # Update entry field.
-    set location "$lat, $lon"
-    return
-}
-
-proc VPTRACK {xl yt xr yb} {
-    # args = viewport, pixels, see also canvas::sqmap, SetPixelView.
-    global viewport
-    set viewport [list $xl $yt $xr $yb]
-    return
-}
-
-# ### ### ### ######### ######### #########
-## Basic interface.
-
-Init
-GUI
-LoadMarks
-after 1000 {
-    ZOOM . 12
-    after 10 Aachen
-}
+Main

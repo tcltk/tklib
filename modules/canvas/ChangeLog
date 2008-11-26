@@ -1,3 +1,18 @@
+2008-11-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* ../../examples/canvas/osm_zoom.tcl: Removed zoom control and
+	* ../../examples/canvas/tiles_xy_store_http.tcl: tile fetching.
+	* ../../examples/canvas/osm.tcl: The former is now canvas::zoom,
+	  the latter has been replaced by the map::slippy::* packages in
+	  Tcllib. Updated the OSM example application to use these
+	  packages now. Reordered its innards a bit as well.
+
+	* canvas_zoom.tcl: Converted the zoom control in the canvas example
+	* canvas_zoom.man: into a regular widget, and fixed a problem with
+	* pkgIndex.tcl: viewport calculations (div-by-zero) in sqmap.
+	* canvas_sqmap.tcl: Bumped version the of sqmap to 0.2
+	* canvas_sqmap.man:
+
 2008-11-23  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* canvas_sqmap.tcl (Reconfigure): Streamline internal operations a
