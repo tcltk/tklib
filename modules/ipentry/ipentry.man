@@ -1,9 +1,10 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin ipentry n 0.2]
+[manpage_begin ipentry n 0.3]
 [moddesc   {An IP address entry widget}]
 [titledesc {An IP address entry widget}]
 [require Tcl 8.4]
-[require ipentry [opt 0.2]]
+[require Tk 8.4]
+[require ipentry [opt 0.3]]
 [description]
 
 This package provides a widget for the entering of a IP address.  It
@@ -15,7 +16,11 @@ guarantees a valid address at all times.
 
 [call [cmd ::ipentry::ipentry] [arg pathName] [opt "[arg option] [arg value]..."]]
 
-Creates a new ipentry widget and configures it with the given options and their values.
+Creates a new ipentry widget and configures it with the given options and
+their values. If themed Tk is available (Tk 8.5 or avove) then the widget
+will use the same appearance as a ttk::entry unless the [arg -themed] option
+is provided and set to false. This option can only be used during widget
+creation.
 
 [list_end]
 
