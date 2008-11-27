@@ -2,15 +2,16 @@
 #
 #       An entry widget for IP addresses.
 #
-# Copyright (c) 2003    Aaron Faupell <afaupell@users.sourceforge.net>
-#
+# Copyright (c) 2003-2008 Aaron Faupell <afaupell@users.sourceforge.net>
+# Copyright (c) 2008 Pat Thoyts <patthoyts@users.sourceforge.net>
+#  
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: ipentry.tcl,v 1.11 2008/11/27 02:32:13 afaupell Exp $
+# RCS: @(#) $Id: ipentry.tcl,v 1.12 2008/11/27 10:13:59 patthoyts Exp $
 
 package require Tk
-package provide ipentry 0.2
+package provide ipentry 0.3
 
 namespace eval ::ipentry {
     namespace export ipentry
@@ -29,6 +30,17 @@ namespace eval ::ipentry {
     bind IPEntrybindtag <<Paste>>          {::ipentry::Paste %W CLIPBOARD}
     bind IPEntrybindtag <<PasteSelection>> {::ipentry::Paste %W PRIMARY}
     bind IPEntrybindtag <Key-Tab>          {::ipentry::tab %W; break}
+
+    if {[package vsatisfies [package provide Tk] 8.5]} {
+        ttk::style layout IPEntryFrame {
+            Entry.field -sticky news -border 1 -children {
+                IPEntryFrame.padding -sticky news
+            }
+        }
+        bind [winfo class .] <<ThemeChanged>> \
+            [list +ttk::style layout IPEntryFrame \
+                 [ttk::style layout IPEntryFrame]]
+    }
 }
 
 # ipentry --
@@ -44,17 +56,27 @@ namespace eval ::ipentry {
 #       the widget path name
 #
 proc ::ipentry::ipentry {w args} {
-    frame $w -bd 2 -relief sunken -class IPEntry
+    set usettk [package vsatisfies [package provide Tk] 8.5]
+    foreach {name val} $args { if {$name eq "-themed"} {set usettk $val} }
+    if {$usettk} {
+        ttk::frame $w -style IPEntryFrame -class IPEntry
+    } else {
+        frame $w -borderwidth 2 -relief sunken -class IPEntry
+    }
     foreach x {0 1 2 3} y {d1 d2 d3 d4} {
         entry $w.$x -bd 0 -width 3 -highlightthickness 0 -justify center
         label $w.$y -bd 0 -font [$w.$x cget -font] -width 1 -text . -justify center \
-                          -cursor [$w.$x cget -cursor] -bg [$w.$x cget -background] \
-                          -disabledforeground [$w.$x cget -disabledforeground]
+            -cursor [$w.$x cget -cursor] -bg [$w.$x cget -background] \
+            -disabledforeground [$w.$x cget -disabledforeground]
         pack $w.$x $w.$y -side left
         bindtags $w.$x [list $w.$x IPEntrybindtag . all]
         bind $w.$y <Button-1> {::ipentry::dotclick %W %x}
     }
     destroy $w.d4
+    if {$usettk} {
+        pack configure $w.0 -padx {1 0} -pady 1
+        pack configure $w.3 -padx {0 1} -pady 1
+    }
     rename ::$w ::ipentry::_$w
     # redirect the widget name command to the widgetCommand dispatcher
     interp alias {} ::$w {} ::ipentry::widgetCommand $w
@@ -488,6 +510,10 @@ proc ::ipentry::configure {w args} {
                     [list ::ipentry::traceVar $w]
                 set args [lrange $args 2 end]
             }
+            -themed {
+                # ignored - only used in widget creation
+                set args [lrange $args 2 end]
+            }
             default {
                 error "unknown option \"[lindex $args 0]\""
             }
@@ -578,12 +604,17 @@ proc ::ipentry::isValid {val} {
         set valid 0
     } else {
         foreach n $lval {
-        if { $n == "" || ![string is integer -strict $n] || $n > 255 || $n < 0 } {
-            set valid 0
-            break
+            if { $n == ""
+                 || ![string is integer -strict $n]
+                 || $n > 255
+                 || $n < 0
+             } then {
+                set valid 0
+                break
+            }
         }
+        return $valid
     }
-    return $valid
 }
 
 # widgetCommand --
