@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: ipentry.tcl,v 1.12 2008/11/27 10:13:59 patthoyts Exp $
+# RCS: @(#) $Id: ipentry.tcl,v 1.13 2008/11/27 12:45:34 patthoyts Exp $
 
 package require Tk
 package provide ipentry 0.3
@@ -56,26 +56,34 @@ namespace eval ::ipentry {
 #       the widget path name
 #
 proc ::ipentry::ipentry {w args} {
-    set usettk [package vsatisfies [package provide Tk] 8.5]
-    foreach {name val} $args { if {$name eq "-themed"} {set usettk $val} }
-    if {$usettk} {
+    upvar #0 [namespace current]::widget_$w state
+    set state(themed) [package vsatisfies [package provide Tk] 8.5]
+    foreach {name val} $args {
+        if {$name eq "-themed"} {
+            set state(themed) $val
+        }
+    }
+    if {$state(themed)} {
         ttk::frame $w -style IPEntryFrame -class IPEntry
     } else {
         frame $w -borderwidth 2 -relief sunken -class IPEntry
     }
     foreach x {0 1 2 3} y {d1 d2 d3 d4} {
-        entry $w.$x -bd 0 -width 3 -highlightthickness 0 -justify center
-        label $w.$y -bd 0 -font [$w.$x cget -font] -width 1 -text . -justify center \
-            -cursor [$w.$x cget -cursor] -bg [$w.$x cget -background] \
+        entry $w.$x -borderwidth 0 -width 3 -highlightthickness 0 \
+            -justify center
+        label $w.$y -borderwidth 0 -font [$w.$x cget -font] -width 1 -text . \
+            -justify center -cursor [$w.$x cget -cursor] \
+            -background [$w.$x cget -background] \
             -disabledforeground [$w.$x cget -disabledforeground]
         pack $w.$x $w.$y -side left
         bindtags $w.$x [list $w.$x IPEntrybindtag . all]
         bind $w.$y <Button-1> {::ipentry::dotclick %W %x}
     }
     destroy $w.d4
-    if {$usettk} {
+    if {$state(themed)} {
         pack configure $w.0 -padx {1 0} -pady 1
-        pack configure $w.3 -padx {0 1} -pady 1
+        pack configure $w.3 -padx {0 1} -pady 1 -fill x -expand 1
+        $w.3 configure -justify left
     }
     rename ::$w ::ipentry::_$w
     # redirect the widget name command to the widgetCommand dispatcher
@@ -398,12 +406,15 @@ proc ::ipentry::_foreach {w cmd} {
 #       the value of the requested option
 #
 proc ::ipentry::cget {w cmd} {
+    upvar #0 [namespace current]::widget_$w state
     switch -exact -- $cmd {
         -bd -
         -borderwidth -
         -relief {
             # for bd and relief return the value from the container frame
-            return [::ipentry::_$w cget $cmd]
+            if {!$state(themed)} {
+                return [::ipentry::_$w cget $cmd]
+            }
         }
         -textvariable {
             namespace eval _tvns$w {
@@ -414,6 +425,7 @@ proc ::ipentry::cget {w cmd} {
                 }
             }
         }
+        -themed { return $state(themed) }
         default {
             # for all other commands return the value from the first entry
             return [$w.0 cget $cmd]
@@ -434,6 +446,7 @@ proc ::ipentry::cget {w cmd} {
 #       nothing
 #
 proc ::ipentry::configure {w args} {
+    upvar #0 [namespace current]::widget_$w Priv
     while {[set cmd [lindex $args 0]] != ""} {
         switch -exact -- $cmd {
             -state {
@@ -444,24 +457,40 @@ proc ::ipentry::configure {w args} {
                         set dbg [$w.0 cget -bg]
                     }
                     foreach x {d1 d2 d3} { $w.$x configure -bg $dbg }
-                    ::ipentry::_$w configure -bg $dbg
+                    if {$Priv(themed)} {
+                        ::ipentry::_$w state disabled
+                    } else {
+                        ::ipentry::_$w configure -background $dbg
+                    }
                 } elseif {$state == "normal"} {
                     _foreach $w [list configure -state normal]
                     foreach x {d1 d2 d3} { $w.$x configure -bg [$w.0 cget -bg] }
-                    ::ipentry::_$w configure -background [$w.0 cget -bg]
+                    if {$Priv(themed)} {
+                        ::ipentry::_$w state {!readonly !disabled}
+                    } else {
+                        ::ipentry::_$w configure -background [$w.0 cget -bg]
+                    }
                 } elseif {$state == "readonly"} {
                     foreach x {0 1 2 3} { $w.$x configure -state readonly }
                     if {[set robg [$w.0 cget -readonlybackground]] == ""} {
                         set robg [$w.0 cget -bg]
                     }
                     foreach x {d1 d2 d3} { $w.$x configure -bg $robg }
-                    ::ipentry::_$w configure -bg $robg
+                    if {$Priv(themed)} {
+                        ::ipentry::_$w state !readonly
+                    } else {
+                        ::ipentry::_$w configure -background $robg
+                    }
                 }
                 set args [lrange $args 2 end]
             }
-            -bg {
-                _foreach $w [list configure -bg [lindex $args 1]]
-                ::ipentry::_$w configure -bg [lindex $args 1]
+            -bg - -background {
+                set bg [lindex $args 1]
+                _foreach $w [list configure -background $bg]
+                foreach x {d1 d2 d3} { $w.$x configure -background $bg }
+                if {!$Priv(themed)} {
+                    ::ipentry::_$w configure -background $bg
+                }
                 set args [lrange $args 2 end]
             }
             -disabledforeground {
@@ -469,11 +498,11 @@ proc ::ipentry::configure {w args} {
                 set args [lrange $args 2 end]
             }
             -font -
-            -fg   {
+            -fg - -foreground  {
                 _foreach $w [list configure $cmd [lindex $args 1]]
                 set args [lrange $args 2 end]
             }
-            -bd                  -
+            -bd - -borderwidth   -
             -relief              -
             -highlightcolor      -
             -highlightbackground -
@@ -533,11 +562,13 @@ proc ::ipentry::configure {w args} {
 #       nothing
 #
 proc ::ipentry::destroyWidget {w} {
+    upvar #0 [namespace current]::widget_$w state
     upvar #0 [$w cget -textvariable] var
     trace remove variable var [list array read write unset] \
         [list ::ipentry::traceVar $w]
     namespace forget _tvns$w
     rename $w {}
+    unset state
 }
 
 # traceVar --
@@ -630,6 +661,7 @@ proc ::ipentry::isValid {val} {
 #       the results of the invoked subcommand
 #
 proc ::ipentry::widgetCommand {w cmd args} {
+    upvar #0 [namespace current]::widget_$w state
     switch -exact -- $cmd {
         get {
             # return the 4 entry values as a list
