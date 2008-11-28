@@ -1,3 +1,10 @@
+2008-11-27  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* crosshair.tcl: Split the two crosshair lines into four, one per
+	* crosshair.man: direction, and changed the locations so that the
+	* pkgIndex.tcl: canvas will not pick the crosshairs as the
+	'current' object under the cursor. Bumped version to 1.0.2
+
 2008-11-12  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* crosshair.tcl: Fixed missing namespace before first
