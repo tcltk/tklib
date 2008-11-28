@@ -17,7 +17,7 @@ guarantees a valid address at all times.
 [call [cmd ::ipentry::ipentry] [arg pathName] [opt "[arg option] [arg value]..."]]
 
 Creates a new ipentry widget and configures it with the given options and
-their values. If themed Tk is available (Tk 8.5 or avove) then the widget
+their values. If themed Tk is available (Tk 8.5 or above) then the widget
 will use the same appearance as a ttk::entry unless the [arg -themed] option
 is provided and set to false. This option can only be used during widget
 creation.

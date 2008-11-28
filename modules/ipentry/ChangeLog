@@ -1,3 +1,8 @@
+2008-11-28 Aaron Faupell <afaupell@users.sourceforge.net>
+
+	* ipentry.tcl fix textvariable. should work like a normal
+	  widget now
+
 2008-11-27  Pat Thoyts  <patthoyts@users.sourceforge.net>
 
 	* ipentry.tcl:  Use the ttk::entry border if ttk available

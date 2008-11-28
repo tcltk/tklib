@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: ipentry.tcl,v 1.13 2008/11/27 12:45:34 patthoyts Exp $
+# RCS: @(#) $Id: ipentry.tcl,v 1.14 2008/11/28 08:21:28 afaupell Exp $
 
 package require Tk
 package provide ipentry 0.3
@@ -32,15 +32,15 @@ namespace eval ::ipentry {
     bind IPEntrybindtag <Key-Tab>          {::ipentry::tab %W; break}
 
     if {[package vsatisfies [package provide Tk] 8.5]} {
-        ttk::style layout IPEntryFrame {
-            Entry.field -sticky news -border 1 -children {
-                IPEntryFrame.padding -sticky news
-            }
-        }
-        bind [winfo class .] <<ThemeChanged>> \
-            [list +ttk::style layout IPEntryFrame \
-                 [ttk::style layout IPEntryFrame]]
-    }
+         ttk::style layout IPEntryFrame {
+             Entry.field -sticky news -border 1 -children {
+                 IPEntryFrame.padding -sticky news
+             }
+         }
+         bind [winfo class .] <<ThemeChanged>> \
+             [list +ttk::style layout IPEntryFrame \
+                  [ttk::style layout IPEntryFrame]]
+     }
 }
 
 # ipentry --
@@ -66,7 +66,7 @@ proc ::ipentry::ipentry {w args} {
     if {$state(themed)} {
         ttk::frame $w -style IPEntryFrame -class IPEntry
     } else {
-        frame $w -borderwidth 2 -relief sunken -class IPEntry
+        frame $w -relief sunken -class IPEntry ;#-padx 5
     }
     foreach x {0 1 2 3} y {d1 d2 d3 d4} {
         entry $w.$x -borderwidth 0 -width 3 -highlightthickness 0 \
@@ -84,11 +84,13 @@ proc ::ipentry::ipentry {w args} {
         pack configure $w.0 -padx {1 0} -pady 1
         pack configure $w.3 -padx {0 1} -pady 1 -fill x -expand 1
         $w.3 configure -justify left
+    } else {
+        $w configure -borderwidth [lindex [$w.0 configure -bd] 3]
+            #-background [$w.0 cget -bg]
     }
     rename ::$w ::ipentry::_$w
     # redirect the widget name command to the widgetCommand dispatcher
     interp alias {} ::$w {} ::ipentry::widgetCommand $w
-    namespace eval _tvns$w {variable textvarname}
     bind $w <Destroy> [list ::ipentry::destroyWidget $w]
     #bind $w <FocusIn> [list focus $w.0]
     if {[llength $args] > 0} {
@@ -120,6 +122,7 @@ proc ::ipentry::keypress {w key} {
         }
     }
     $w insert insert $key
+    ::ipentry::updateTextvar $w
 }
 
 # tab --
@@ -156,11 +159,12 @@ proc ::ipentry::backspace {w} {
         $w delete sel.first sel.last
     } else {
         if {[$w index insert] == 0} {
-            skip $w prev
-        } else {
-            $w delete [expr {[$w index insert] - 1}]
+            set w [skip $w prev]
         }
+            $w delete [expr {[$w index insert] - 1}]
+        
     }
+    ::ipentry::updateTextvar $w
 }
 
 # dot --
@@ -179,6 +183,7 @@ proc ::ipentry::dot {w} {
     if {[string length [$w get]] > 0} {
         skip $w next 1
     }
+    ::ipentry::updateTextvar $w
 }
 
 # FocusIn --
@@ -206,7 +211,7 @@ proc ::ipentry::FocusIn {w} {
 #
 # called when the focus leaves any of the child widgets of an ipentry
 #
-# 
+# dont allow a 0 in the first quad
 #
 # ARGS:
 #       w       window argument (%W) from the event binding
@@ -219,6 +224,7 @@ proc ::ipentry::FocusOut {w} {
     if {[string match {*.0} $w] && $s != "" && $s < 1} {
         $w delete 0 end
         $w insert end 1
+        ::ipentry::updateTextvar $w
     }
 }
 
@@ -259,6 +265,7 @@ proc ::ipentry::Paste {w sel} {
             continue
         }
     }
+    ::ipentry::updateTextvar $w
 }
 
 # dotclick --
@@ -334,6 +341,7 @@ proc ::ipentry::validate {w key} {
             $w delete 0 end
             $w insert 0 255
             $w selection range 0 end
+            ::ipentry::updateTextvar $w
             return 0
         } elseif {$insert == 2} {
             skip $w next 1
@@ -357,23 +365,25 @@ proc ::ipentry::validate {w key} {
 #       sel     boolean indicating whether to select the digits in the next entry
 #
 # RETURNS:
-#       nothing
+#       the name of the widget with focus
 #
 proc ::ipentry::skip {w dir {sel 0}} {
     set n [string index $w end]
     if {$dir == "next"} {
-        if { $n >= 3 } { return }
+        if { $n >= 3 } { return $w }
         set next [string trimright $w "0123"][expr {$n + 1}]
         focus $next
         if {$sel} {
             $next icursor 0
             $next selection range 0 end
         }
+        return $next
     } else {
-        if { $n <= 0 } { return }
+        if { $n <= 0 } { return $w }
         set prev [string trimright $w "0123"][expr {$n - 1}]
         focus $prev
         $prev icursor end
+        return $prev
     }
 }
 
@@ -417,13 +427,10 @@ proc ::ipentry::cget {w cmd} {
             }
         }
         -textvariable {
-            namespace eval _tvns$w {
-                if { [info exists textvarname] } {
-                    return $textvarname
-                } else {
-                    return {}
-                }
+            if {[info exists ::ipentry::textvars($w)]} {
+                return $::ipentry::textvars($w)
             }
+            return {}
         }
         -themed { return $state(themed) }
         default {
@@ -431,7 +438,6 @@ proc ::ipentry::cget {w cmd} {
             return [$w.0 cget $cmd]
         }
     }
-    return
 }
 
 # configure --
@@ -454,7 +460,7 @@ proc ::ipentry::configure {w args} {
                 if {$state == "disabled"} {
                     _foreach $w [list configure -state disabled]
                     if {[set dbg [$w.0 cget -disabledbackground]] == ""} {
-                        set dbg [$w.0 cget -bg]
+                          set dbg [$w.0 cget -bg]
                     }
                     foreach x {d1 d2 d3} { $w.$x configure -bg $dbg }
                     if {$Priv(themed)} {
@@ -468,7 +474,7 @@ proc ::ipentry::configure {w args} {
                     if {$Priv(themed)} {
                         ::ipentry::_$w state {!readonly !disabled}
                     } else {
-                        ::ipentry::_$w configure -background [$w.0 cget -bg]
+                         ::ipentry::_$w configure -background [$w.0 cget -bg]
                     }
                 } elseif {$state == "readonly"} {
                     foreach x {0 1 2 3} { $w.$x configure -state readonly }
@@ -498,15 +504,15 @@ proc ::ipentry::configure {w args} {
                 set args [lrange $args 2 end]
             }
             -font -
-            -fg - -foreground  {
+            -fg - -foreground {
                 _foreach $w [list configure $cmd [lindex $args 1]]
                 set args [lrange $args 2 end]
             }
-            -bd - -borderwidth   -
-            -relief              -
-            -highlightcolor      -
+            -bd - -borderwidth -
+            -relief -
+            -highlightcolor -
             -highlightbackground -
-            -highlightthickness  {
+            -highlightthickness {
                 _$w configure $cmd [lindex $args 1]
                 set args [lrange $args 2 end]
             }
@@ -515,32 +521,26 @@ proc ::ipentry::configure {w args} {
             -selectforeground   -
             -selectbackground   -
             -selectborderwidth  -
-            -insertbackground   {
+            -insertbackground {
                 foreach x {0 1 2 3} { $w.$x configure $cmd [lindex $args 1] }
-                set args [lrange $args 2 end]
-            }
-            -textvariable {
-                namespace eval _tvns$w {
-                    if { [info exists textvarname] } {
-                        set _w [join [lrange [split [namespace current] .] 1 end] .]
-                        trace remove variable $textvarname \
-                            [list array read write unset] \
-                            [list ::ipentry::traceVar .$_w]
-                    }
-                }
-                set _tvns[set w]::textvarname [lindex $args 1]
-                upvar #0 [lindex $args 1] var
-                if { [info exists var] && [isValid $var] } {
-                    $w insert [split $var .]
-                } else {
-                    set var {}
-                }
-                trace add variable var [list array read write unset] \
-                    [list ::ipentry::traceVar $w]
                 set args [lrange $args 2 end]
             }
             -themed {
                 # ignored - only used in widget creation
+            }
+            -textvariable {
+                set name [lindex $args 1]
+                upvar #0 $name var
+                #if {![string match ::* $name]} { set name ::$name }
+                if {[info exists ::ipentry::textvars($w)]} {
+                    trace remove variable $::ipentry::textvars($w) \
+                        {write unset} [list ::ipentry::traceFired $w]
+                }
+                set ::ipentry::textvars($w) $name
+                if {![info exists var]} { set var "" }
+                ::ipentry::traceFired $w $name {} write
+                trace add variable var {write unset} \
+                    [list ::ipentry::traceFired $w]
                 set args [lrange $args 2 end]
             }
             default {
@@ -550,13 +550,12 @@ proc ::ipentry::configure {w args} {
     }
 }
 
-# configure --
+# destroyWidget --
 #
-# handle the widgetName configure subcommand
+# bound to the <Destroy> event
 #
 # ARGS:
 #       w       name of the ipentry widget 
-#       args    name/value pairs of configuration options
 #
 # RETURNS:
 #       nothing
@@ -571,9 +570,9 @@ proc ::ipentry::destroyWidget {w} {
     unset state
 }
 
-# traceVar --
+# traceFired --
 #
-# called by the variable trace for the ipentry textvariable
+# called by the variable trace on the ipentry textvariable
 #
 # ARGS:
 #       w       name of the ipentry widget 
@@ -584,67 +583,71 @@ proc ::ipentry::destroyWidget {w} {
 # RETURNS:
 #       nothing
 #
-proc ::ipentry::traceVar {w varname key op} {
-    upvar #0 $varname var
-
-    if { $op == "write" } {
-        if { $key != "" } {
-            $w insert [split $var($key) .]
-        } else {
-            $w insert [split $var .]
-        }
+proc ::ipentry::traceFired {w name key op} {
+    upvar #0 $name var
+    if {[info level] > 1} {
+        set caller [lindex [info level -1] 0]
+        if {$caller == "::ipentry::updateTextvar" || $caller == "::ipentry::traceFired"} { return }
     }
-
-    if { $op == "unset" } {
-        if { $key != "" } {
-            trace add variable var($key) [list array read write unset] \
-                [list ::ipentry::traceVar $w]
-        } else {
-            trace add variable var [list array read write unset] \
-                [list ::ipentry::traceVar $w]
-        }
-    }
-
-    set val [join [$w get] .]
-    if { ![isValid $val] } {
-        set val {}
-    }
-    if { $key != "" } {
-        set var($key) $val
-    } else {
+    if {$op == "write"} {
+        _insert $w [split $var .]
+        set val [string trim [join [$w get] .] .]
+        # allow a dot at the end, but only if we have less than 3 already
+        if {[string index $var end] == "." && [regexp -all {\.+} $var] <= 3} { append val . }
+        if {$val eq $var} return
+        after 0 [list set $name $val]
         set var $val
+    } elseif {$op == "unset"} {
+        ::ipentry::updateTextvar $w
+        trace add variable $::ipentry::textvars($w) {write unset} [list ipentry::traceFired $w]
     }
-
 }
 
-# isValid --
+# updateTextvar --
 #
-# determine if val is a valid ip address
-# used by the textvariable routines
+# called by all procs which change the value of the ipentry
+#
+# update the textvariable if it exists with the new value
 #
 # ARGS:
-#       val     value to test
+#       w       name of the ipentry widget 
 #
 # RETURNS:
-#       boolean indicating if val is a valid ip address
+#       nothing
 #
-proc ::ipentry::isValid {val} {
-    set lval [split [join $val] {. }]
-    set valid 1
-    if { [llength $lval] != 4 } {
-        set valid 0
-    } else {
-        foreach n $lval {
-            if { $n == ""
-                 || ![string is integer -strict $n]
-                 || $n > 255
-                 || $n < 0
-             } then {
-                set valid 0
-                break
+proc ::ipentry::updateTextvar {w} {
+    set p [winfo parent $w]
+    if {![info exists ::ipentry::textvars($p)]} { return }
+    set val [string trim [join [$p get] .] .]
+    global $::ipentry::textvars($p)
+    if {[set $::ipentry::textvars($p)] == $val} { return }
+    set $::ipentry::textvars($p) $val
+}
+
+# _insert --
+#
+# called by the variable trace on the ipentry textvariable and widget insert cmd
+#
+# ARGS:
+#       w       name of an ipentry widget 
+#       val     a list of 4 values to be inserted into the ipentry
+#
+# RETURNS:
+#       nothing
+#
+proc ::ipentry::_insert {w val} {
+    foreach x {0 1 2 3} {
+        set n [lindex $val $x]
+        if {$n != ""} {
+            if {![string is integer -strict $n]} {
+                error "cannot insert non-numeric arguments"
             }
+            if {$n > 255} { set n 255 }
+            if {$n <= 0}  { set n 0 }
+            #if {$x == 0 && $n < 1} { set n 1 }
         }
-        return $valid
+        $w.$x delete 0 end
+        $w.$x insert 0 $n
     }
 }
 
@@ -673,24 +676,13 @@ proc ::ipentry::widgetCommand {w cmd args} {
             return $r
         }
         insert {
-            foreach x {0 1 2 3} {
-                set n [lindex $args 0 $x]
-                if {$n != ""} {
-                    if {![string is integer -strict $n]} {
-                        error "cannot insert non-numeric arguments"
-                    }
-                    if {$n > 255} { set n 255 }
-                    if {$n <= 0}  { set n 0 }
-                    if {$x == 0 && $n < 1} { set n 1 }
-                }
-                $w.$x delete 0 end
-                $w.$x insert 0 $n
-            }
+            _insert $w [join $args]
+            ::ipentry::updateTextvar $w.3
         }
         icursor {
             if {![string match $w.* [focus]]} {return}
             set i [lindex $args 0]
-            if {![string is integer -strict $i]} {error "argument must be an integer"}
+            if {![string is integer -strict $i]} { error "argument must be an integer" }
             set s [expr {$i / 4}]
             focus $w.$s
             $w.$s icursor [expr {$i % 4}]
