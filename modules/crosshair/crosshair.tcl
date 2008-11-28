@@ -292,13 +292,14 @@ proc ::crosshair::Move { w x y } {
     set opts(y0) [$w canvasy 0]
     set opts(y1) [$w canvasy [winfo height $w]]
     if { [info exists opts(hhairl)] } {
-	# +/-2 is the minimal possible distance which still prevents
+	# +/-4 is the minimal possible distance which still prevents
 	# the canvas from choosing the crosshairs as 'current' object
 	# under the cursor.
-	$w coords $opts(hhairl) $opts(x0) $opts(y) [expr {$opts(x)-2}] $opts(y)
-	$w coords $opts(hhairr) [expr {$opts(x)+2}] $opts(y) $opts(x1) $opts(y)
-	$w coords $opts(vhairu) $opts(x) $opts(y0) $opts(x) [expr {$opts(y)-2}]
-	$w coords $opts(vhaird) $opts(x) [expr {$opts(y)+2}] $opts(x) $opts(y1)
+	set n 4
+	$w coords $opts(hhairl) $opts(x0) $opts(y) [expr {$opts(x)-$n}] $opts(y)
+	$w coords $opts(hhairr) [expr {$opts(x)+$n}] $opts(y) $opts(x1) $opts(y)
+	$w coords $opts(vhairu) $opts(x) $opts(y0) $opts(x) [expr {$opts(y)-$n}]
+	$w coords $opts(vhaird) $opts(x) [expr {$opts(y)+$n}] $opts(x) $opts(y1)
 	$w raise $opts(hhairl)
 	$w raise $opts(hhairr)
 	$w raise $opts(vhaird)
