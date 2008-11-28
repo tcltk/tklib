@@ -113,9 +113,11 @@ proc ::crosshair::configure { w args } {
 	array set flags $opts(args)
 	array set flags $args
 	set opts(args) [array get flags]
-	if { [info exists opts(hhair)] } {
-	    eval [list $w itemconfig $opts(hhair)] $args
-	    eval [list $w itemconfig $opts(vhair)] $args
+	if { [info exists opts(hhairl)] } {
+	    eval [list $w itemconfig $opts(hhairl)] $args
+	    eval [list $w itemconfig $opts(hhairr)] $args
+	    eval [list $w itemconfig $opts(vhaird)] $args
+	    eval [list $w itemconfig $opts(vhairu)] $args
 	}
 	set config($w) [array get opts]
     }
@@ -204,11 +206,15 @@ proc ::crosshair::Hide { w } {
     variable config
     if { ![info exists config($w)] } return
     array set opts $config($w)
-    if { ![info exists opts(hhair)] } return
-    $w delete $opts(hhair)
-    $w delete $opts(vhair)
-    unset opts(hhair)
-    unset opts(vhair)
+    if { ![info exists opts(hhairl)] } return
+    $w delete $opts(hhairl)
+    $w delete $opts(hhairr)
+    $w delete $opts(vhaird)
+    $w delete $opts(vhairu)
+    unset opts(hhairl)
+    unset opts(hhairr)
+    unset opts(vhairu)
+    unset opts(vhaird)
     set config($w) [array get opts]
     return
 }
@@ -241,10 +247,11 @@ proc ::crosshair::Unhide { w x y } {
     variable config
     if { ![info exists config($w)] } return
     array set opts $config($w)
-    if { ![info exists opts(hhair)] } {
-	set opts(hhair) [eval [list $w create line 0 0 0 0] $opts(args)]
-	set opts(vhair) [eval [list $w create line 0 0 0 0] $opts(args)]
-	
+    if { ![info exists opts(hhairl)] } {
+	set opts(hhairl) [eval [list $w create line 0 0 0 0] $opts(args)]
+	set opts(hhairr) [eval [list $w create line 0 0 0 0] $opts(args)]
+	set opts(vhaird) [eval [list $w create line 0 0 0 0] $opts(args)]
+	set opts(vhairu) [eval [list $w create line 0 0 0 0] $opts(args)]
     }
     set config($w) [array get opts]
     Move $w $x $y
@@ -284,11 +291,18 @@ proc ::crosshair::Move { w x y } {
     set opts(x1) [$w canvasx [winfo width $w]]
     set opts(y0) [$w canvasy 0]
     set opts(y1) [$w canvasy [winfo height $w]]
-    if { [info exists opts(hhair)] } {
-	$w coords $opts(hhair) $opts(x0) $opts(y) $opts(x1) $opts(y)
-	$w coords $opts(vhair) $opts(x) $opts(y0) $opts(x) $opts(y1)
-	$w raise $opts(hhair)
-	$w raise $opts(vhair)
+    if { [info exists opts(hhairl)] } {
+	# +/-2 is the minimal possible distance which still prevents
+	# the canvas from choosing the crosshairs as 'current' object
+	# under the cursor.
+	$w coords $opts(hhairl) $opts(x0) $opts(y) [expr {$opts(x)-2}] $opts(y)
+	$w coords $opts(hhairr) [expr {$opts(x)+2}] $opts(y) $opts(x1) $opts(y)
+	$w coords $opts(vhairu) $opts(x) $opts(y0) $opts(x) [expr {$opts(y)-2}]
+	$w coords $opts(vhaird) $opts(x) [expr {$opts(y)+2}] $opts(x) $opts(y1)
+	$w raise $opts(hhairl)
+	$w raise $opts(hhairr)
+	$w raise $opts(vhaird)
+	$w raise $opts(vhairu)
     }
     set config($w) [array get opts]
     if {[info exists opts(track)]} {
@@ -318,4 +332,4 @@ namespace eval ::crosshair {
 # ### ### ### ######### ######### #########
 ## Ready
 
-package provide crosshair 1.0.1
+package provide crosshair 1.0.2
