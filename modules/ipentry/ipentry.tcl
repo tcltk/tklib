@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: ipentry.tcl,v 1.14 2008/11/28 08:21:28 afaupell Exp $
+# RCS: @(#) $Id: ipentry.tcl,v 1.15 2008/11/29 05:25:45 afaupell Exp $
 
 package require Tk
 package provide ipentry 0.3
@@ -562,10 +562,11 @@ proc ::ipentry::configure {w args} {
 #
 proc ::ipentry::destroyWidget {w} {
     upvar #0 [namespace current]::widget_$w state
-    upvar #0 [$w cget -textvariable] var
-    trace remove variable var [list array read write unset] \
-        [list ::ipentry::traceVar $w]
-    namespace forget _tvns$w
+    if {[info exists ::ipentry::textvars($w)]} {
+        upvar #0 $::ipentry::textvars($w) var
+        trace remove variable var {write unset} \
+            [list ::ipentry::traceFired $w]
+    }
     rename $w {}
     unset state
 }
