@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: ipentry.tcl,v 1.16 2008/11/29 17:57:51 afaupell Exp $
+# RCS: @(#) $Id: ipentry.tcl,v 1.17 2008/11/29 19:05:15 afaupell Exp $
 
 package require Tk
 package provide ipentry 0.3
@@ -29,7 +29,6 @@ namespace eval ::ipentry {
     bind IPEntrybindtag <FocusOut>         {::ipentry::FocusOut %W}
     bind IPEntrybindtag <<Paste>>          {::ipentry::Paste %W CLIPBOARD}
     bind IPEntrybindtag <<PasteSelection>> {::ipentry::Paste %W PRIMARY}
-    bind IPEntrybindtag <Key-Tab>          {::ipentry::tab %W; break}
     
     # copy all the bindings from IPEntrybindtag
     foreach x [bind IPEntrybindtag] {
@@ -73,13 +72,13 @@ proc ::ipentry::ipentry {w args} {
         }
     }
     if {$state(themed)} {
-        ttk::frame $w -style IPEntryFrame -class IPEntry
+        ttk::frame $w -style IPEntryFrame -class IPEntry -takefocus 0
     } else {
-        frame $w -relief sunken -class IPEntry ;#-padx 5
+        frame $w -relief sunken -class IPEntry -takefocus 0;#-padx 5
     }
     foreach x {0 1 2 3} y {d1 d2 d3 d4} {
         entry $w.$x -borderwidth 0 -width 3 -highlightthickness 0 \
-            -justify center
+            -justify center -takefocus 0
         label $w.$y -borderwidth 0 -font [$w.$x cget -font] -width 1 -text . \
             -justify center -cursor [$w.$x cget -cursor] \
             -background [$w.$x cget -background] \
@@ -89,6 +88,7 @@ proc ::ipentry::ipentry {w args} {
         bind $w.$y <Button-1> {::ipentry::dotclick %W %x}
     }
     destroy $w.d4
+    $w.0 configure -takefocus 1
     if {$state(themed)} {
         pack configure $w.0 -padx {1 0} -pady 1
         pack configure $w.3 -padx {0 1} -pady 1 -fill x -expand 1
@@ -129,13 +129,13 @@ proc ::ipentry::ipentry6 {w args} {
         }
     }
     if {$state(themed)} {
-        ttk::frame $w -style IPEntryFrame -class IPEntry
+        ttk::frame $w -style IPEntryFrame -class IPEntry -takefocus 0
     } else {
-        frame $w -relief sunken -class IPEntry ;#-padx 5
+        frame $w -relief sunken -class IPEntry -takefocus 0;#-padx 5
     }
     foreach x {0 1 2 3 4 5 6 7} y {d1 d2 d3 d4 d5 d6 d7 d8} {
         entry $w.$x -borderwidth 0 -width 4 -highlightthickness 0 \
-            -justify center
+            -justify center -takefocus 0
         label $w.$y -borderwidth 0 -font [$w.$x cget -font] -width 1 -text : \
             -justify center -cursor [$w.$x cget -cursor] \
             -background [$w.$x cget -background] \
@@ -145,6 +145,7 @@ proc ::ipentry::ipentry6 {w args} {
         bind $w.$y <Button-1> {::ipentry::dotclick %W %x}
     }
     destroy $w.d8
+    $w.0 configure -takefocus 1
     if {$state(themed)} {
         pack configure $w.0 -padx {1 0} -pady 1
         pack configure $w.7 -padx {0 1} -pady 1 -fill x -expand 1
@@ -190,25 +191,6 @@ proc ::ipentry::keypress {w key {type {}}} {
     }
     $w insert insert $key
     ::ipentry::updateTextvar $w
-}
-
-# tab --
-#
-# called when the Tab key is pressed in an ipentry widget
-# used by both ipentry and ipentry6
-#
-# make the focus jump to the next widget instead of an ipentry sub-widget
-#
-# ARGS:
-#       w       window argument (%W) from the event binding
-#
-# RETURNS:
-#       nothing
-#
-proc ::ipentry::tab {w} {
-    # redirect to the standard tk handler but use the parent frame instead
-    # of the entry widget
-    tk::TabToWindow [tk_focusNext [lindex [winfo children [winfo parent $w]] end]]
 }
 
 # backspace --
@@ -773,8 +755,8 @@ proc ::ipentry::traceFired {w name key op} {
         after 0 [list set $name $val]
         set var $val
     } elseif {$op == "unset"} {
-        ::ipentry::updateTextvar $w
-        trace add variable $::ipentry::textvars($w) {write unset} [list ipentry::traceFired $w]
+        ::ipentry::updateTextvar $w.0
+        trace add variable var {write unset} [list ipentry::traceFired $w]
     }
 }
 
@@ -807,8 +789,8 @@ proc ::ipentry::traceFired6 {w name key op} {
         after 0 [list set $name $val]
         set var $val
     } elseif {$op == "unset"} {
-        ::ipentry::updateTextvar $w
-        trace add variable $::ipentry::textvars($w) {write unset} [list ipentry::traceFired6 $w]
+        ::ipentry::updateTextvar $w.0
+        trace add variable var {write unset} [list ipentry::traceFired6 $w]
     }
 }
 
@@ -830,9 +812,9 @@ proc ::ipentry::updateTextvar {w} {
     if {![info exists ::ipentry::textvars($p)]} { return }
     set c [$p.d1 cget -text]
     set val [string trim [join [$p get] $c] $c]
-    global $::ipentry::textvars($p)
-    if {[set $::ipentry::textvars($p)] == $val} { return }
-    set $::ipentry::textvars($p) $val
+    upvar #0 $::ipentry::textvars($p) var
+    if {[info exists var] && $var == $val} { return }
+    set var $val
 }
 
 # _insert --
