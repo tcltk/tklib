@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: ipentry.tcl,v 1.17 2008/11/29 19:05:15 afaupell Exp $
+# RCS: @(#) $Id: ipentry.tcl,v 1.18 2008/11/29 21:30:21 afaupell Exp $
 
 package require Tk
 package provide ipentry 0.3
@@ -74,7 +74,7 @@ proc ::ipentry::ipentry {w args} {
     if {$state(themed)} {
         ttk::frame $w -style IPEntryFrame -class IPEntry -takefocus 0
     } else {
-        frame $w -relief sunken -class IPEntry -takefocus 0;#-padx 5
+        frame $w -relief sunken -class IPEntry;#-padx 5
     }
     foreach x {0 1 2 3} y {d1 d2 d3 d4} {
         entry $w.$x -borderwidth 0 -width 3 -highlightthickness 0 \
@@ -101,7 +101,6 @@ proc ::ipentry::ipentry {w args} {
     # redirect the widget name command to the widgetCommand dispatcher
     interp alias {} ::$w {} ::ipentry::widgetCommand $w
     bind $w <Destroy> [list ::ipentry::destroyWidget $w]
-    #bind $w <FocusIn> [list focus $w.0]
     if {[llength $args] > 0} {
         eval [list $w configure] $args
     }
@@ -131,7 +130,7 @@ proc ::ipentry::ipentry6 {w args} {
     if {$state(themed)} {
         ttk::frame $w -style IPEntryFrame -class IPEntry -takefocus 0
     } else {
-        frame $w -relief sunken -class IPEntry -takefocus 0;#-padx 5
+        frame $w -relief sunken -class IPEntry;#-padx 5
     }
     foreach x {0 1 2 3 4 5 6 7} y {d1 d2 d3 d4 d5 d6 d7 d8} {
         entry $w.$x -borderwidth 0 -width 4 -highlightthickness 0 \
@@ -158,7 +157,6 @@ proc ::ipentry::ipentry6 {w args} {
     # redirect the widget name command to the widgetCommand dispatcher
     interp alias {} ::$w {} ::ipentry::widgetCommand6 $w
     bind $w <Destroy> [list ::ipentry::destroyWidget $w]
-    #bind $w <FocusIn> [list focus $w.0]
     if {[llength $args] > 0} {
         eval [list $w configure] $args
     }
@@ -584,6 +582,7 @@ proc ::ipentry::cget {w cmd} {
             return {}
         }
         -themed { return $state(themed) }
+        -takefocus { return 0 }
         default {
             # for all other commands return the value from the first entry
             return [$w.0 cget $cmd]
