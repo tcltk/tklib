@@ -1,6 +1,11 @@
+2008-11-29 Aaron Faupell <afaupell@users.sourceforge.net>
+
+	* ipentry.tcl: add ipentry6 widget for IPv6 addresses
+	* ipentry.man: document ipentry6
+
 2008-11-28 Aaron Faupell <afaupell@users.sourceforge.net>
 
-	* ipentry.tcl fix textvariable. should work like a normal
+	* ipentry.tcl: fix textvariable. should work like a normal
 	  widget now
 
 2008-11-27  Pat Thoyts  <patthoyts@users.sourceforge.net>
