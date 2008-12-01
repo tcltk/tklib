@@ -76,7 +76,7 @@ widget but the entries do not have to exists when the tooltip is set.
 
 This option is used to set a tooltip for canvas widget or listbox items.
 For the canvas widget, the item must already be present in the canvas
-widget and will be found with a [cmd "findtag withtag"] lookup.
+widget and will be found with a [cmd "find withtag"] lookup.
 For listbox widgets the item(s) may be created later but the programmer
 is responsible for managing the link between the listbox item index and the
 corresponding tooltip. If the listbox items are re-ordered, the tooltips
