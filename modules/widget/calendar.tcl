@@ -5,7 +5,7 @@
 #	Calendar widget drawn on a canvas.
 #	Adapted from Suchenwirth code on the wiki.
 #
-# RCS: @(#) $Id: calendar.tcl,v 1.1 2008/11/14 03:40:23 hobbs Exp $
+# RCS: @(#) $Id: calendar.tcl,v 1.2 2008/12/11 18:07:20 hobbs Exp $
 #
 
 # Creation and Options - widget::calendar $path ...
