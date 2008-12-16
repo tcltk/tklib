@@ -2329,12 +2329,6 @@ command "destroyPlot" to take care of such details. A next version
 of [package Plotchart] will have that.
 
 
-[section RESIZING]
-
-P.M.
-
-
-
 [section "CONFIGURATION OPTIONS"]
 
 The command plotconfig can be used to set all manner of options. The
