@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 1.5]
+[manpage_begin Plotchart n 1.6]
 [copyright {2007 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.4]]
 [require Tk [opt 8.4]]
-[require Plotchart [opt 1.5]]
+[require Plotchart [opt 1.6]]
 
 [description]
 [para]
@@ -359,7 +359,7 @@ integer number greater than zero (if [const stacked] is not used).
 [nl]
 
 
-[call [cmd ::Plotchart::createHorizontalBarchart] [arg w] [arg xlabels] [arg yaxis] [arg noseries]]
+[call [cmd ::Plotchart::createHorizontalBarchart] [arg w] [arg ylabels] [arg xaxis] [arg noseries]]
 
 Create a new barchart with horizontal bars (configuration type: horizbars). The vertical axis will
 display the labels contained in the argument [arg ylabels]. The number
@@ -380,7 +380,7 @@ Name of the [emph existing] canvas widget to hold the plot.
 List of labels for the y-axis. Its length also determines the number of
 bars that will be plotted per series.
 
-[arg_def list yaxis in]
+[arg_def list xaxis in]
 A 3-element list containing minimum, maximum and stepsize for the x-axis, in this order.
 
 [arg_def int|[const stacked] noseries in]
@@ -439,6 +439,28 @@ A 3-element list containing minimum, maximum and stepsize for the z-axis
 
 [arg_def int nobars in]
 The number of bars that will be plotted.
+
+[list_end]
+[nl]
+
+
+[call [cmd ::Plotchart::createBoxplot] [arg w] [arg xaxis] [arg ylabels]]
+
+Create a new boxplot with horizontal boxes (box-and-whiskers). The
+y-axis is drawn with labels. The boxes are drawn based on the raw data
+(see the plot subcommand for this type of plot).
+
+[list_begin arg]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the plot.
+
+[arg_def list xaxis in]
+A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order.
+
+[arg_def list ylabels in]
+List of labels for the y-axis. Its length also determines the number of
+boxes that can be plotted. The labels are also used in the plot
+subcommand.
 
 [list_end]
 [nl]
@@ -898,6 +920,36 @@ Maximum y-coordinate of the interval.
 
 [arg_def float ycentr in]
 Y-coordinate to draw the symbol at (optional)
+
+[list_end]
+
+
+[call [cmd \$xyplot] box-and-whiskers [arg series] [arg xcrd] [arg ycrd]]
+
+Draw a box and whiskers in the plot. If the argument [term xcrd] is a
+list of
+several values and the argument [term ycrd] is a single value, a
+horizontal
+box is drawn with the quartiles determined from the list of values
+contained in [term xcrd].
+[nl]
+If, instead, the argument [term ycrd] contains a list of several values
+and the argument [term xcrd] a single value, then a vertical box is
+drawn and the quartiles are determined from [term ycrd]. (There must be
+exactly one list of several values. Otherwise an error is reported.)
+[nl]
+The option -boxwidth (default: 10 pixels) determines the width (or
+height) of the box.
+
+[list_begin arg]
+[arg_def string series in]
+Name of the data series the box-and-whiskers belongs to.
+
+[arg_def float xcrd in]
+X-coordinate of the box or a list of values.
+
+[arg_def float ymin in]
+Y-coordinate of the box or a list of values.
 
 [list_end]
 
@@ -1459,6 +1511,26 @@ The colour of the ribbon/area.
 [list_end]
 [list_end]
 
+
+For [emph boxplots]:
+
+[list_begin definitions]
+[call [cmd \$boxplot] plot [arg label] [arg values]]
+
+Add a box-and-whisker to the plot.
+
+[list_begin arg]
+[arg_def string label in]
+The label along the y-axis to which the data belong
+
+[arg_def list values in]
+List of raw values, the extent of the box and the whiskers will be
+determined from this list.
+
+[list_end]
+[list_end]
+
+
 For [emph timecharts]:
 
 [list_begin definitions]
@@ -1516,6 +1588,31 @@ date/time for instance).
 Time at which the line must be positioned.
 
 [list_end]
+
+
+[call [cmd \$timechart] hscroll [arg scrollbar]]
+
+Connect a horizontal scrollbar to the chart. See also the section on
+scrolling.
+
+[list_begin arg]
+[arg_def widget scrollbar in]
+The horizontal scrollbar that is to be connected to the chart
+
+[list_end]
+
+
+[call [cmd \$timechart] vscroll [arg scrollbar]]
+
+Connect a vertical scrollbar to the chart. See also the section on
+scrolling.
+
+[list_begin arg]
+[arg_def widget scrollbar in]
+The vertical scrollbar that is to be connected to the chart
+
+[list_end]
+
 [list_end]
 [para]
 
@@ -1677,6 +1774,30 @@ scale - the font used for the time scale
 
 [arg_def string newfont in]
 The new font for the chosen items.
+
+[list_end]
+
+
+[call [cmd \$ganttchart] hscroll [arg scrollbar]]
+
+Connect a horizontal scrollbar to the chart. See also the section on
+scrolling.
+
+[list_begin arg]
+[arg_def widget scrollbar in]
+The horizontal scrollbar that is to be connected to the chart
+
+[list_end]
+
+
+[call [cmd \$ganttchart] vscroll [arg scrollbar]]
+
+Connect a vertical scrollbar to the chart. See also the section on
+scrolling.
+
+[list_begin arg]
+[arg_def widget scrollbar in]
+The vertical scrollbar that is to be connected to the chart
 
 [list_end]
 [list_end]
@@ -2208,6 +2329,12 @@ command "destroyPlot" to take care of such details. A next version
 of [package Plotchart] will have that.
 
 
+[section RESIZING]
+
+P.M.
+
+
+
 [section "CONFIGURATION OPTIONS"]
 
 The command plotconfig can be used to set all manner of options. The
@@ -2310,6 +2437,71 @@ See the legend subcommand for the meaning.
 
 See the examples in plotdemos7.tcl for it use.
 
+
+[section "SCROLLING FOR TIMECHARTS AND GANTT CHARTS"]
+
+For two types of plots automatic scrolling management has been
+implemented: timecharts and Gantt charts. The subcommands [term hscroll]
+and [term vscroll] associate (existing) scrollbars to the plot, in much
+the same way as for text and canvas widgets.
+
+[para]
+Once the association is made, the scrollbars are automatically
+updated if:
+[list_begin bullet]
+[bullet]
+You add an item with a period wider than the current one.
+[bullet]
+You add a vertical line for a time beyond the current bounds.
+[bullet]
+You add an extra item beyond the number that was used to create the
+chart.
+[list_end]
+
+For instance:
+
+[example {
+package require Plotchart
+
+canvas .c -width 400 -height 200
+scrollbar .y -orient vertical
+scrollbar .x -orient horizontal
+
+grid .c .y -sticky news
+grid .x    -sticky news
+
+source plotchart.tcl
+
+set s [::Plotchart::createTimechart .c "1 january 2004" \
+                                       "31 december 2004" 4]
+
+$s period "Spring" "1 march 2004" "1 june 2004" green
+$s period "Summer" "1 june 2004" "1 september 2004" yellow
+$s vertline "1 jan" "1 january 2004"
+$s vertline "1 apr" "1 april 2004"
+$s vertline "1 jul" "1 july 2004"
+$s vertline "1 oct" "1 october 2004"
+$s vertline "1 jan" "1 january 2005"
+$s vertline "1 apr" "1 april 2005"
+$s vertline "1 jul" "1 july 2005"
+$s milestone "Longest day" "21 july 2004"
+$s milestone "Longest day 2" "21 july 2004"
+$s milestone "Longest day 3" "21 july 2004"
+$s milestone "Longest day 4" "21 july 2004"
+$s milestone "Longest day 5" "21 july 2004"
+$s milestone "Longest day 6" "21 july 2004"
+$s title "Seasons (northern hemisphere)"
+
+$s vscroll .y
+$s hscroll .x
+}]
+
+The original extent of the chart is from 1 january 2004 to 31 december
+2004. But because of the addition of vertical lines in 2005 and
+more items than was specified at the creation of the chart, both the
+horizontal and the vertical scrollbar will be enabled.
+
+
 [section "ARRANGING MULTIPLE PLOTS IN A CANVAS"]
 
 The command [term plotpack] allows you to copy the contents of a plot
@@ -2355,6 +2547,11 @@ For example:
     plotpack .t.c2 top $p1 $p2
 }]
 
+[section {NOTES ON TAGS}]
+P.M.
+
+
+
 [section {TODO - SOME PRIVATE NOTES}]
 
 I have the following wishlist:
@@ -2364,10 +2561,18 @@ I have the following wishlist:
 Isometric plots - allow new items to be implemented easily.
 
 [bullet]
-Add support for histograms where the independent axis is numerical.
+A general 3D viewer - emphasis on geometry, not a ray-tracer.
 
 [bullet]
-A general 3D viewer - emphasis on geometry, not a ray-tracer.
+Several improvements for boxplots:
+[list_begin bullet]
+[bullet]
+Scaling of the special symbols (half the height of the box)
+[bullet]
+Height of the box scales with the logarithm of the number of points
+[bullet]
+Marker line to indicate a "current" value
+[list_end]
 
 [list_end]
 

@@ -1,3 +1,24 @@
+2008-12-16 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotdemo8.tcl: Additional demo script - boxplots
+
+2008-12-15 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * pkgIndex.tcl: Increased version number to 1.6.0
+        * plotgantt.tcl: Corrected a few tags and added reordering to
+                         get scrolling of Gantt charts
+        * plotchart.man: Added description of scrolling behaviour for
+                         timecharts and Gantt charts
+
+2008-12-09 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.man: Added boxplot to the types of plots and charts
+
+2008-12-06 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.man: Added method box-and-whiskers (suggested by Steve Blinkhorn),
+        * plotchart.tcl: Added method box-and-whiskers, option -boxwidth,
+                         scrolling of time charts and Gantt charts (Dave Hanks)
+        * plotpriv.tcl: Added method box-and-whiskers, scrolling of time charts
+        * plotaxis.tcl: Scrolling of time charts and Gantt charts
+        * plotgantt.tcl: Scrolling of Gantt charts
+
 2008-10-26 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotaxis.tcl: Correct small glitch in drawing the legend (reported by Simon Geard)
 

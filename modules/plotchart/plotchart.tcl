@@ -67,6 +67,7 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,bindvar)           BindVar
    set methodProc(xyplot,bindcmd)           BindCmd
    set methodProc(xyplot,rescale)           RescalePlot
+   set methodProc(xyplot,box-and-whiskers)  DrawBoxWhiskers
    set methodProc(xlogyplot,title)          DrawTitle
    set methodProc(xlogyplot,xtext)          DrawXtext
    set methodProc(xlogyplot,ytext)          DrawYtext
@@ -157,6 +158,8 @@ namespace eval ::Plotchart {
    set methodProc(timechart,balloon)        DrawBalloon
    set methodProc(timechart,balloonconfig)  ConfigBalloon
    set methodProc(timechart,plaintext)      DrawPlainText
+   set methodProc(timechart,hscroll)        ConnectHorizScrollbar
+   set methodProc(timechart,vscroll)        ConnectVertScrollbar
    set methodProc(ganttchart,title)         DrawTitle
    set methodProc(ganttchart,period)        DrawGanttPeriod
    set methodProc(ganttchart,task)          DrawGanttPeriod
@@ -172,6 +175,8 @@ namespace eval ::Plotchart {
    set methodProc(ganttchart,balloon)       DrawBalloon
    set methodProc(ganttchart,balloonconfig) ConfigBalloon
    set methodProc(ganttchart,plaintext)     DrawPlainText
+   set methodProc(ganttchart,hscroll)       ConnectHorizScrollbar
+   set methodProc(ganttchart,vscroll)       ConnectVertScrollbar
    set methodProc(stripchart,title)         DrawTitle
    set methodProc(stripchart,xtext)         DrawXtext
    set methodProc(stripchart,ytext)         DrawYtext
@@ -244,6 +249,22 @@ namespace eval ::Plotchart {
    set methodProc(3dribbon,line)            Draw3DLine
    set methodProc(3dribbon,area)            Draw3DArea
    set methodProc(3dribbon,background)      BackgroundColour
+   set methodProc(boxplot,title)            DrawTitle
+   set methodProc(boxplot,xtext)            DrawXtext
+   set methodProc(boxplot,ytext)            DrawYtext
+   set methodProc(boxplot,plot)             DrawBoxData
+   set methodProc(boxplot,saveplot)         SavePlot
+   set methodProc(boxplot,dataconfig)       DataConfig
+   set methodProc(boxplot,xconfig)          XConfig
+   set methodProc(boxplot,yconfig)          YConfig
+   set methodProc(boxplot,xticklines)       DrawXTicklines
+   set methodProc(boxplot,yticklines)       DrawYTicklines
+   set methodProc(boxplot,background)       BackgroundColour
+   set methodProc(boxplot,legendconfig)     LegendConfigure
+   set methodProc(boxplot,legend)           DrawLegend
+   set methodProc(boxplot,balloon)          DrawBalloon
+   set methodProc(boxplot,balloonconfig)    ConfigBalloon
+   set methodProc(boxplot,plaintext)        DrawPlainText
 
    #
    # Auxiliary parameters
@@ -254,13 +275,14 @@ namespace eval ::Plotchart {
    variable options
    variable option_keys
    variable option_values
-   set options       {-colour -color  -symbol -type -filled -fillcolour}
-   set option_keys   {-colour -colour -symbol -type -filled -fillcolour}
+   set options       {-colour -color  -symbol -type -filled -fillcolour -boxwidth}
+   set option_keys   {-colour -colour -symbol -type -filled -fillcolour -boxwidth}
    set option_values {-colour {...}
                       -symbol {plus cross circle up down dot upfilled downfilled}
                       -type {line symbol both}
                       -filled {no up down}
                       -fillcolour {...}
+                      -boxwidth   {...}
                      }
 
    variable axis_options
@@ -990,6 +1012,68 @@ proc ::Plotchart::createHorizontalBarchart { w xscale ylabels noseries } {
    return $newchart
 }
 
+# createBoxplot --
+#    Create a command for drawing a plot with box-and-whiskers
+# Arguments:
+#    w           Name of the canvas
+#    xscale      Minimum, maximum and step for x-axis
+#    ylabels     List of labels for y-axis
+# Result:
+#    Name of a new command
+# Note:
+#    The entire canvas will be dedicated to the boxplot.
+#
+proc ::Plotchart::createBoxplot { w xscale ylabels } {
+   variable data_series
+   variable config
+
+   foreach s [array names data_series "$w,*"] {
+      unset data_series($s)
+   }
+
+   set newchart "boxplot_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler boxplot $w
+   CopyConfig boxplot $w
+
+   set font      $config($w,leftaxis,font)
+   set xspacemax 0
+   foreach ylabel $ylabels {
+       set xspace [font measure $font $ylabel]
+       if { $xspace > $xspacemax } {
+           set xspacemax $xspace
+       }
+   }
+   set config($w,margin,left) [expr {$xspacemax+5}] ;# Slightly more space required!
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+
+   set ymin  0.0
+   set ymax  [expr {[llength $ylabels] + 0.1}]
+
+   foreach {xmin xmax xdelt} $xscale {break}
+
+   if { $xdelt == 0.0 } {
+      return -code error "Step size can not be zero"
+   }
+
+   if { ($xmax-$xmin)*$xdelt < 0.0 } {
+      set xdelt [expr {-$xdelt}]
+   }
+
+   viewPort         $w $pxmin $pymin $pxmax $pymax
+   worldCoordinates $w $xmin  $ymin  $xmax  $ymax
+
+   DrawXaxis        $w $xmin  $xmax  $xdelt
+   DrawYlabels      $w $ylabels 1
+   DrawMask         $w
+   DefaultLegend    $w
+   set data_series($w,legendtype) "rectangle"
+   DefaultBalloon   $w
+
+   set config($w,axisnames) $ylabels
+
+   return $newchart
+}
+
 # createTimechart --
 #    Create a command for drawing a simple timechart
 # Arguments:
@@ -1027,6 +1111,10 @@ proc ::Plotchart::createTimechart { w time_begin time_end noitems } {
 
    set scaling($w,current) $ymax
    set scaling($w,dy)      -0.7
+
+   DrawScrollMask $w
+   set scaling($w,curpos)  0
+   set scaling($w,curhpos) 0
 
    return $newchart
 }
@@ -1090,8 +1178,10 @@ proc ::Plotchart::createGanttchart { w time_begin time_end noitems
        } else {
            set tag even
        }
-       $w create rectangle 0   $y1 $x1 $y2 -fill white -tag Edit -outline white
-       $w create rectangle $x1 $y1 $x2 $y2 -fill white -tag $tag -outline white
+       $w create rectangle 0   $y1 $x1 $y2 -fill white \
+           -tag {Edit vertscroll lowest} -outline white
+       $w create rectangle $x1 $y1 $x2 $y2 -fill white \
+           -tag [list $tag vertscroll lowest] -outline white
    }
 
    #
@@ -1108,6 +1198,10 @@ proc ::Plotchart::createGanttchart { w time_begin time_end noitems
    GanttFont  $w summary     "times 10 bold"
    GanttFont  $w scale       "times 7"
    DefaultBalloon $w
+
+   DrawScrollMask $w
+   set scaling($w,curpos)  0
+   set scaling($w,curhpos) 0
 
    return $newchart
 }
@@ -1437,4 +1531,4 @@ source [file join [file dirname [info script]] "plotpack.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.5.1
+package provide Plotchart 1.6.0
