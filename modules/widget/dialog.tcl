@@ -4,7 +4,7 @@
 #
 #	Generic dialog widget (themed)
 #
-# RCS: @(#) $Id: dialog.tcl,v 1.21 2007/03/02 00:38:03 hobbs Exp $
+# RCS: @(#) $Id: dialog.tcl,v 1.22 2009/01/09 05:46:12 andreas_kupries Exp $
 #
 
 # Creation and Options - widget::dialog $path ...
@@ -469,4 +469,4 @@ snit::widget widget::dialog {
 # ### ######### ###########################
 ## Ready for use
 
-package provide widget::dialog 1.2
+package provide widget::dialog 1.3
