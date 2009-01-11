@@ -2920,13 +2920,13 @@ proc tablelist::yviewSubCmd {win argList} {
 	    set topRow [expr {int($topTextIdx) - 1}]
 	    set btmRow [expr {int($btmTextIdx) - 1}]
 	    foreach {x y width height baselinePos} [$w dlineinfo $topTextIdx] {}
-	    if {$y < 0} {				 ;# top row incomplete
-		incr topRow
+	    if {$y < 0} {
+		incr topRow	;# top row incomplete in vertical direction
 	    }
 	    foreach {x y width height baselinePos} [$w dlineinfo $btmTextIdx] {}
 	    set y2 [expr {$y + $height}]
-	    if {[$w index @0,$y] == [$w index @0,$y2]} { ;# btm row incomplete
-		incr btmRow -1
+	    if {[string compare [$w index @0,$y] [$w index @0,$y2]] == 0} {
+		incr btmRow -1	;# btm row incomplete in vertical direction
 	    }
 	    set upperNonHiddenCount \
 		[getNonHiddenRowCount $win 0 [expr {$topRow - 1}]]

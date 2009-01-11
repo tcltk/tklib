@@ -3006,7 +3006,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 				   -container 0 -highlightthickness 0 \
 				    -relief flat -takefocus 0
 		    catch {$aux configure -padx 0 -pady 0}
-		    bindtags $aux [lreplace [bindtags $aux] 1 1 \
+		    bindtags $aux [linsert [bindtags $aux] 1 \
 				   $data(bodyTag) TablelistBody]
 		    uplevel #0 $val [list $win $row $col $aux.w]
 		}
