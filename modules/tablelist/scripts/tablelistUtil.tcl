@@ -1523,7 +1523,7 @@ proc tablelist::appendComplexElem {win key row col text pixels alignment
 			   -highlightthickness 0 -relief flat \
 			   -takefocus 0 -width $auxWidth
 	    catch {$aux configure -padx 0 -pady 0}
-	    bindtags $aux [lreplace [bindtags $aux] 1 1 \
+	    bindtags $aux [linsert [bindtags $aux] 1 \
 			   $data(bodyTag) TablelistBody]
 	    uplevel #0 $data($key,$col-window) [list $win $row $col $aux.w]
 	}
