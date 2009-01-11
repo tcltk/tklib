@@ -1,3 +1,18 @@
+2009-01-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.10.1.
+	* COPYRIGHT.txt:
+
+	* scripts/tablelistConfig.tcl: Fixed a bug related to the
+	* scripts/tablelistUtil.tcl:   -windowdestroy cell configuration
+	  option.
+
+	* scripts/tablelistWidget.tcl: Fixed a nasty bug related to the yview
+	  subcommand.
+
+	* doc/tablelist.html:             Changed the recommended package name
+	  ../../examples/tablelist/*.tcl: from "Tablelist" to "tablelist".
+
 2008-09-15   Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:              Bumped the version number to 4.10.
