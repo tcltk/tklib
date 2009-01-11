@@ -7,12 +7,12 @@ exec wish "$0" ${1+"$@"}
 # Oakley's combobox, the mentry widgets of type "Date" and "Time", and of the
 # Tk core entry, spinbox, and checkbutton widgets.
 #
-# Copyright (c) 2004-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tablelist_tile
+package require tablelist_tile
 package require combobox
-package require Mentry
+package require mentry
 
 wm title . "Serial Line Configuration"
 
