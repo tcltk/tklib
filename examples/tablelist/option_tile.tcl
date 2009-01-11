@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains some Tk option database settings.
 #
-# Copyright (c) 2004-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -10,7 +10,7 @@
 #
 if {[tk windowingsystem] eq "x11"} {
     tablelist::setTheme alt
-    option add *Font			TkDefaultFont
+    option add *Font		  TkDefaultFont
 }
 tablelist::setThemeDefaults
 if {[tablelist::getCurrentTheme] eq "aqua"} {
