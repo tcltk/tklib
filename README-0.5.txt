@@ -44,7 +44,7 @@ ipentry		ipentry		0.1		0.3		EF, B
 plotchart	plotchart	1.1		1.6		EF, D, EX
 style		style::as	1.3		1.4		EF, B
 swaplist	swaplist	0.1		0.2		B, D
-tablelist	tablelist	4.2		4.10		D, EX, B, EF
+tablelist	tablelist	4.2		4.10.1		D, EX, B, EF
 ------          -------         -----------     -----------     ---------------
 tooltip		tooltip		1.1		1.4.4		B, D, EF
 		tipstack	1.0		1.0.1		B
