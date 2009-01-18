@@ -840,14 +840,14 @@ proc ::Plotchart::DrawBoxWhiskers { w series xcrd ycrd } {
         foreach value $data {
             if { $value < $outlower || $value > $outupper } {
                 foreach {px py} [coordsToPixel $w $value $ycrd] {break}
-                $w create text $px $py -text "*" \
+                $w create text $px $py -text "*" -anchor c \
                              -fill $colour -tag [list data data_$series]
                 continue
             }
             if { $value < $lower || $value > $upper } {
                 foreach {px py} [coordsToPixel $w $value $ycrd] {break}
-                $w create oval [expr {$px-3}] [expr {$py-3}] \
-                               [expr {$px+3}] [expr {$py+3}] \
+                $w create oval [expr {$px-2}] [expr {$py-2}] \
+                               [expr {$px+2}] [expr {$py+2}] \
                              -fill $colour -tag [list data data_$series]
                 continue
             }
@@ -1316,10 +1316,12 @@ proc ::Plotchart::DrawTimeVertLine { w text time {colour black}} {
    # Draw the text first
    #
    set xtime [clock scan $time]
-   set ytext [expr {$scaling($w,ymax)-0.5*$scaling($w,dy)}]
+   #set ytext [expr {$scaling($w,ymax)-0.5*$scaling($w,dy)}]
+   set ytext $scaling($w,ymax)
    foreach {x y} [coordsToPixel $w $xtime $ytext] {break}
+   set y [expr {$y-5}]
 
-   $w create text $x $y -text $text -anchor w -tags {horizscroll timeline}
+   $w create text $x $y -text $text -anchor sw -tags {horizscroll timeline}
 
    #
    # Draw the line

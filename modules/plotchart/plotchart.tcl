@@ -3,7 +3,8 @@
 #
 # Note:
 #    This source file contains the public functions.
-#    The others are contained in "plotpriv.tcl"
+#    The private functions are contained in the files "sourced"
+#    at the end.
 #
 package require Tcl 8.4
 package require Tk
@@ -1080,13 +1081,14 @@ proc ::Plotchart::createBoxplot { w xscale ylabels } {
 #    w           Name of the canvas
 #    time_begin  Start time (in the form of a date/time)
 #    time_end    End time (in the form of a date/time)
-#    noitems     Number of items to be shown (determines spacing)
+#    args        Number of items to be shown (determines spacing)
+#                or one or more options (-barheight pixels, -ylabelwidth pixels)
 # Result:
 #    Name of a new command
 # Note:
 #    The entire canvas will be dedicated to the timechart.
 #
-proc ::Plotchart::createTimechart { w time_begin time_end noitems } {
+proc ::Plotchart::createTimechart { w time_begin time_end args} {
    variable data_series
    variable scaling
 
@@ -1098,7 +1100,36 @@ proc ::Plotchart::createTimechart { w time_begin time_end noitems } {
    interp alias {} $newchart {} ::Plotchart::PlotHandler timechart $w
    CopyConfig timechart $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w 3] {break}
+   #
+   # Handle the arguments
+   #
+   set barheight    0
+   set noitems      [lindex $args 0]
+   set ylabelwidth  8
+
+   if { [string is integer -strict $noitems] } {
+       set args [lrange $args 1 end]
+   }
+   foreach {keyword value} $args {
+       switch -- $keyword {
+           "-barheight" {
+                set barheight $value
+           }
+           "-ylabelwidth" {
+                set ylabelwidth [expr {$value/10.0}] ;# Pixels to characters
+           }
+           default {
+                # Ignore
+           }
+       }
+   }
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w 3 $ylabelwidth] {break}
+
+   if { $barheight != 0 } {
+       set noitems [expr {($pxmax-$pxmin)/double($barheight)}]
+   }
+   set scaling($w,barheight) $barheight
 
    set ymin  0.0
    set ymax  $noitems
@@ -1125,16 +1156,16 @@ proc ::Plotchart::createTimechart { w time_begin time_end noitems } {
 #    w           Name of the canvas
 #    time_begin  Start time (in the form of a date/time)
 #    time_end    End time (in the form of a date/time)
-#    noitems     Number of items to be shown (determines spacing)
-#    text_width  Estimated maximum length of text (default: 20)
+#    args        (First integer) Number of items to be shown (determines spacing)
+#                (Second integer) Estimated maximum length of text (default: 20)
+#                Or keyword-value pairs
 # Result:
 #    Name of a new command
 # Note:
 #    The entire canvas will be dedicated to the Gantt chart.
 #    Most commands taken from time charts.
 #
-proc ::Plotchart::createGanttchart { w time_begin time_end noitems
-                                     {text_width 20} } {
+proc ::Plotchart::createGanttchart { w time_begin time_end args} {
 
    variable data_series
    variable scaling
@@ -1147,7 +1178,44 @@ proc ::Plotchart::createGanttchart { w time_begin time_end noitems
    interp alias {} $newchart {} ::Plotchart::PlotHandler ganttchart $w
    CopyConfig ganttchart $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w 3 $text_width] {break}
+   #
+   # Handle the arguments
+   #
+   set barheight    0
+   set noitems      [lindex $args 0]
+
+   if { [string is integer -strict $noitems] } {
+       set args        [lrange $args 1 end]
+       set ylabelwidth [lindex $args 0]
+       if { [string is integer -strict $ylabelwidth] } {
+           set args [lrange $args 1 end]
+       } else {
+           set ylabelwidth 20
+       }
+   } else {
+       set ylabelwidth 20
+   }
+
+   foreach {keyword value} $args {
+       switch -- $keyword {
+           "-barheight" {
+                set barheight $value
+           }
+           "-ylabelwidth" {
+                set ylabelwidth [expr {$value/10.0}] ;# Pixels to characters
+           }
+           default {
+                # Ignore
+           }
+       }
+   }
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w 3 $ylabelwidth] {break}
+
+   if { $barheight != 0 } {
+       set noitems [expr {($pxmax-$pxmin)/double($barheight)}]
+   }
+   set scaling($w,barheight) $barheight
 
    set ymin  0.0
    set ymax  $noitems
@@ -1531,4 +1599,4 @@ source [file join [file dirname [info script]] "plotpack.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.6.0
+package provide Plotchart 1.6.1
