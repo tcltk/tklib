@@ -466,7 +466,7 @@ subcommand.
 [nl]
 
 
-[call [cmd ::Plotchart::createTimechart] [arg w] [arg time_begin] [arg time_end] [arg noitems]]
+[call [cmd ::Plotchart::createTimechart] [arg w] [arg time_begin] [arg time_end] [arg args]]
 
 Create a new timechart (configuration type: timechart).
 
@@ -485,14 +485,24 @@ command (e.g. "1 january 2004").
 The end time given in a form that is recognised by the [cmd "clock scan"]
 command (e.g. "1 january 2004").
 
-[arg_def int noitems in]
-Expected/maximum number of items. This determines the vertical
-spacing.
+[arg_def arguments args in]
+The remaining arguments can be:
+[list_begin bullet]
+[bullet]
+The expected/maximum number of items. This determines the vertical
+spacing. (If given, it must be the first argument after "time_end"
+[bullet]
+The keyword -barheight and the number of pixels per bar. This is an
+alternative method to determine the vertical spacing.
+[bullet]
+The keyword -ylabelwidth and the number of pixels to reserve for the
+labels at the y-axis.
+[list_end]
 
 [list_end]
 
 
-[call [cmd ::Plotchart::createGanttchart] [arg w] [arg time_begin] [arg time_end] [arg noitems] [opt text_width ]]
+[call [cmd ::Plotchart::createGanttchart] [arg w] [arg time_begin] [arg time_end] [arg args]]
 
 Create a new Gantt chart (configuration type: ganttchart).
 
@@ -513,14 +523,24 @@ command (e.g. "1 january 2004").
 The end time given in a form that is recognised by the [cmd "clock scan"]
 command (e.g. "1 january 2004").
 
-[arg_def int noitems in]
-Expected/maximum number of items. This determines the vertical
-spacing.
-
-[arg_def int text_width]
-Expected/maximum width of the descriptive text (roughly in characters,
+[arg_def arguments args in]
+The remaining arguments can be:
+[list_begin bullet]
+[bullet]
+The expected/maximum number of items. This determines the vertical
+spacing. (If given this way, it must be the first argument after "time_end")
+[bullet]
+The expected/maximum width of the descriptive text (roughly in characters,
 for the actual space reserved for the text, it is assumed that a
-character is about ten pixels wide). Defaults to 20.
+character is about ten pixels wide). Defaults to 20. (If given this way,
+it must be the second argument after "time_end").
+[bullet]
+The keyword -barheight and the number of pixels per bar. This is an
+alternative method to determine the vertical spacing.
+[bullet]
+The keyword -ylabelwidth and the number of pixels to reserve for the
+labels at the y-axis.
+[list_end]
 
 [list_end]
 
@@ -2329,6 +2349,30 @@ command "destroyPlot" to take care of such details. A next version
 of [package Plotchart] will have that.
 
 
+[section "ZOOMING IN"]
+
+As the Plotchart package does not keep track of the data itself,
+rescaling an existing plot - for instance when zooming in - would have
+to be done by redefining the plot and redrawing the data. However, the
+canvas widget offers a way out by scaling and moving items, so that
+zooming in becomes a bit simpler.
+
+[para]
+Whether zooming is indeed useful, depends on the type of plot. Currently
+it is defined for XY-plots only. The method is called "rescale" and
+simply redraws the axes and scales and moves the data items so that they
+conform to the new axes. The drawback is that any symbols are scaled by
+the same amount. The rescale method works best for plots that only have
+lines, not symbols.
+
+[para]
+The method works very simply:
+
+[example {
+   $p rescale {newxmin newxmax newxstep} {newymin newymax newystep}
+}]
+
+
 [section "CONFIGURATION OPTIONS"]
 
 The command plotconfig can be used to set all manner of options. The
@@ -2561,11 +2605,11 @@ A general 3D viewer - emphasis on geometry, not a ray-tracer.
 Several improvements for boxplots:
 [list_begin bullet]
 [bullet]
-Scaling of the special symbols (half the height of the box)
-[bullet]
 Height of the box scales with the logarithm of the number of points
 [bullet]
 Marker line to indicate a "current" value
+[bullet]
+Box drawn from quantiles
 [list_end]
 
 [list_end]
