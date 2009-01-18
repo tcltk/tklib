@@ -1,3 +1,12 @@
+2008-01-18 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotchart.man: Document the rescale method and the new options to createTimeChart
+        * plotchart.tcl: Implemented new options for createTimeChart and
+                         createGanttChart
+        * plotpriv.tcl:  Correction in label to time line - different position
+                         Smaller filled circle and central position for
+                         asterisk in box plots
+        * pkgIndex.tcl:  Bumped version to 1.6.1
+
 2008-12-16 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotdemo8.tcl: Additional demo script - boxplots
 
