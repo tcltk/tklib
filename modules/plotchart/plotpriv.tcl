@@ -767,9 +767,6 @@ proc ::Plotchart::DrawBoxWhiskers { w series xcrd ycrd } {
     set quartile1 [DetermineMedian [lrange $data 0 $lowerhalf]]
     set quartile3 [DetermineMedian [lrange $data $upperhalf end]]
 
-    puts "Data: $data"
-    puts "Quartiles: $quartile1 $quartile2 $quartile3"
-
     set hspread   [expr {$quartile3-$quartile1}]
 
     set lower     [expr {$quartile1-1.5*$hspread}]
@@ -2236,10 +2233,8 @@ proc ::Plotchart::!VertScrollChart { w operation number {unit {}}} {
                 set dy     [expr {-$number*$height/$scaling($w,theight)}]
                 set newpos [expr {$scaling($w,curpos) + $number/$scaling($w,theight)}]
             } else {
-                puts "Current position: $scaling($w,curpos)"
                 set dy     [expr {-$number*$pixheight}]
                 set newpos [expr {$scaling($w,curpos) + $number*$scaling($w,ymax)/$scaling($w,theight)}]
-                puts "New position: $newpos"
             }
 
             if { $newpos < 0.0 } {
