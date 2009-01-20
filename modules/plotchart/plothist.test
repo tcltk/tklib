@@ -1,5 +1,14 @@
-source plotchart.tcl
+#! /bin/sh
+# -*- tcl -*- \
+exec tclsh "$0" ${1+"$@"}
 
+package require Tcl 8.4
+package require Tk
+package require Plotchart
+
+# plothist.test --
+#     Testing histograms
+#
     canvas .c -width 600 -height 400 -bg white
     pack   .c -fill both
     .c delete all

@@ -1,3 +1,8 @@
+2008-01-20 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotpriv.tcl:  Removed spurious puts statements
+        * plotdemos*.tcl: Removed source statement - patch 2521626 (Stuart Cassoff)
+        * plothist.test: Corrected histogram test (same patch)
+
 2008-01-18 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotchart.man: Document the rescale method and the new options to createTimeChart
         * plotchart.tcl: Implemented new options for createTimeChart and
