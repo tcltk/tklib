@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: ipentry.tcl,v 1.18 2008/11/29 21:30:21 afaupell Exp $
+# RCS: @(#) $Id: ipentry.tcl,v 1.19 2009/01/21 07:10:03 afaupell Exp $
 
 package require Tk
 package provide ipentry 0.3
@@ -39,16 +39,16 @@ namespace eval ::ipentry {
     bind IPEntrybindtag6 <colon>            {::ipentry::dot %W}
     bind IPEntrybindtag6 <period>           {}
 
-    if {[package vsatisfies [package provide Tk] 8.5]} {
-         ttk::style layout IPEntryFrame {
-             Entry.field -sticky news -border 1 -children {
-                 IPEntryFrame.padding -sticky news
-             }
-         }
-         bind [winfo class .] <<ThemeChanged>> \
-             [list +ttk::style layout IPEntryFrame \
-                  [ttk::style layout IPEntryFrame]]
-     }
+    #if {[package vsatisfies [package provide Tk] 8.5]} {
+    #     ttk::style layout IPEntryFrame {
+    #         Entry.field -sticky news -border 1 -children {
+    #             IPEntryFrame.padding -sticky news
+    #         }
+    #     }
+    #     bind [winfo class .] <<ThemeChanged>> \
+    #         [list +ttk::style layout IPEntryFrame \
+    #              [ttk::style layout IPEntryFrame]]
+    # }
 }
 
 # ipentry --
@@ -65,7 +65,8 @@ namespace eval ::ipentry {
 #
 proc ::ipentry::ipentry {w args} {
     upvar #0 [namespace current]::widget_$w state
-    set state(themed) [package vsatisfies [package provide Tk] 8.5]
+    #set state(themed) [package vsatisfies [package provide Tk] 8.5]
+    set state(themed) 0
     foreach {name val} $args {
         if {$name eq "-themed"} {
             set state(themed) $val
@@ -77,12 +78,16 @@ proc ::ipentry::ipentry {w args} {
         frame $w -relief sunken -class IPEntry;#-padx 5
     }
     foreach x {0 1 2 3} y {d1 d2 d3 d4} {
+        #if {$state(themed)} {
+        #    ttk::entry $w.$x -width 3 -justify center
+        #    ttk::label $w.$y -text .
+        #}
         entry $w.$x -borderwidth 0 -width 3 -highlightthickness 0 \
             -justify center -takefocus 0
         label $w.$y -borderwidth 0 -font [$w.$x cget -font] -width 1 -text . \
             -justify center -cursor [$w.$x cget -cursor] \
-            -background [$w.$x cget -background] \
-            -disabledforeground [$w.$x cget -disabledforeground]
+             -background [$w.$x cget -background] \
+             -disabledforeground [$w.$x cget -disabledforeground]
         pack $w.$x $w.$y -side left
         bindtags $w.$x [list $w.$x IPEntrybindtag . all]
         bind $w.$y <Button-1> {::ipentry::dotclick %W %x}
@@ -121,7 +126,8 @@ proc ::ipentry::ipentry {w args} {
 #
 proc ::ipentry::ipentry6 {w args} {
     upvar #0 [namespace current]::widget_$w state
-    set state(themed) [package vsatisfies [package provide Tk] 8.5]
+    #set state(themed) [package vsatisfies [package provide Tk] 8.5]
+    set state(themed) 0
     foreach {name val} $args {
         if {$name eq "-themed"} {
             set state(themed) $val
