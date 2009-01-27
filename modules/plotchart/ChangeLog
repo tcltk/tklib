@@ -1,3 +1,9 @@
+2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	*
+	* Released and tagged Tklib 0.5 ========================
+	* 
+
 2008-01-20 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotpriv.tcl:  Removed spurious puts statements
         * plotdemos*.tcl: Removed source statement - patch 2521626 (Stuart Cassoff)

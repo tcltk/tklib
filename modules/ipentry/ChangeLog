@@ -1,3 +1,9 @@
+2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	*
+	* Released and tagged Tklib 0.5 ========================
+	* 
+
 2008-11-29 Aaron Faupell <afaupell@users.sourceforge.net>
 	* ipentry.tcl: use -takefocus instead of tab bindings.
 	this works in reverse circulation too. also a fix when
