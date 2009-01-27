@@ -1,3 +1,9 @@
+2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	*
+	* Released and tagged Tklib 0.5 ========================
+	* 
+
 2006-11-19 Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
         * added missing "package provide" statement

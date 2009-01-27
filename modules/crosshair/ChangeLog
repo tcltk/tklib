@@ -1,3 +1,9 @@
+2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	*
+	* Released and tagged Tklib 0.5 ========================
+	* 
+
 2008-11-27  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* crosshair.tcl: Split the two crosshair lines into four, one per
