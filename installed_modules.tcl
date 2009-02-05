@@ -17,7 +17,7 @@ set     modules [list]
 array set guide {}
 foreach {m pkg doc exa} {
     autoscroll  _tcl  _man  _null
-    canvas      _tcl  _man  _exa
+    canvas      _tcl  _man  _null
     chatwidget  _tcl  _man  _null
     ctext       _ctxt _man  _null
     cursor      _tcl  _man  _null
@@ -34,7 +34,7 @@ foreach {m pkg doc exa} {
     style       _tcl  _man  _null
     swaplist    _tcl  _man  _null
     tablelist   _tab  _null _exa
-    tkpiechart  _tcl  _man  _null
+    tkpiechart  _tcl  _man  _exa
     tooltip     _tcl  _man  _null
     widget      _tcl  _man  _exa
 } {
