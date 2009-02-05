@@ -2073,7 +2073,8 @@ proc ::Plotchart::DrawRchart { w series xcrd ycrd } {
 
         set data_series($w,$series,rchartlimits) [list \
             [$w create line $pxmin $pymin $pxmax $pymin -fill $colour -tag [list data data_$series]] \
-            [$w create line $pxmin $pymax $pxmax $pymax -fill $colour -tag [list data data_$series]]]
+            [$w create line $pxmin $pymax $pxmax $pymax -fill $colour -tag [list data data_$series]] \
+        ]
     }
 }
 
