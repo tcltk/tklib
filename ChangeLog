@@ -1,3 +1,14 @@
+2009-02-05  Andreas Kupries  <andreask@activestate.com>
+
+	* examples/ntext/ntextExample.tcl: Modified examples to assume
+	* examples/tkpiechart/demo.tcl: that they are run by a tclsh
+	* installed_modules.tcl: found on the PATH, and that this shell
+	* modules/plotchart/plotpriv.tcl: has access to the packages of
+	  Tklib required by the example. The patches were provided by
+	  Stuart Cassoff <stwo@users.sourceforge.net> as part of his work
+	  on making a Tklib OpenBSD port. Added the examples for a number
+	  of modules to the installer. Patch by Stuart, see above.
+
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
