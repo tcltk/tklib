@@ -1,8 +1,11 @@
+2008-02-06 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+        * plotcontour.tcl:  Commented out one remaining debug puts statement
+
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
 	* Released and tagged Tklib 0.5 ========================
-	* 
+	*
 
 2008-01-20 Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotpriv.tcl:  Removed spurious puts statements
