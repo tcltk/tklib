@@ -1361,7 +1361,7 @@ proc ::Plotchart::MakeContourClasses {values classes} {
 #####
 #####    return $cont
 
-    puts "classes (cont) : $classes"
+#debug#    puts "classes (cont) : $classes"
 
     return $classes
 }
