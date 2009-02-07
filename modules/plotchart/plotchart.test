@@ -40,7 +40,7 @@ catch { console show }
 
 source [file join [file dirname [info script]] plotchart.tcl]
 
-puts "Plotchart [package present Plotchart]"
+#puts "Plotchart [package present Plotchart]"
 
 # -------------------------------------------------------------------------
 
