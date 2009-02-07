@@ -23,7 +23,7 @@ Creates the canvas [arg pathName] and configures it. The new widget
 supports all of the options and methods of a regular canvas, plus the
 options and methods described below.
 
-[nl]
+[para]
 
 The result of the command is [arg pathName].
 
@@ -50,7 +50,7 @@ the canvas needs the image for a specific cell of the background, with
 two additional arguments, the id of the cell, and a command prefix to
 invoke when the image is ready, or known to not exist.
 
-[nl]
+[para]
 
 The id of the cell is a 2-element list containing the row and column
 number of the cell, in this order. The result command prefix (named
@@ -88,7 +88,7 @@ Invoking this method places the [arg image] into the specified
 [arg cell] of the background. The cell is given as a 2-element list
 containing row and column number, in this order.
 
-[nl]
+[para]
 
 Note that an image is allowed to be associated with and displayed in
 multiple cells of the canvas.

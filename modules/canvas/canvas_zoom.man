@@ -20,7 +20,7 @@ Creates the zoom control widget [arg pathName] and configures it. The
 methods and options supported by the new widget are described in the
 following sections.
 
-[nl]
+[para]
 
 The result of the command is [arg pathName].
 
