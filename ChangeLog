@@ -1,3 +1,21 @@
+2009-02-06  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* installer.tcl: Updated to use the installer and sak of tcllib
+	* sak.tcl: head.
+
+	* PACKAGES: Moved to new directory support/releases/
+	* tklib_version.tcl: Ditto.
+	* README-0.4.txt: Moved to new directory support/releases/history/
+	* README-0.5.txt: Ditto.
+	* all.tcl: Moved to new directory support/devel
+	* install_action.tcl: Moved to new directory support/installation
+	* installed_modules.tcl: Ditto.
+	* main.tcl: Ditto.
+	* man.macros: Ditto.
+
+	* support/: New directory, mostly sak from Tcllib, and the renamed
+	  forms of the moved files, see above.
+
 2009-02-05  Andreas Kupries  <andreask@activestate.com>
 
 	* examples/ntext/ntextExample.tcl: Modified examples to assume
