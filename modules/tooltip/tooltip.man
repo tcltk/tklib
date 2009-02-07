@@ -52,7 +52,7 @@ Enables tooltips for defined widgets.
 
 [list_end]
 
-[nl]
+[para]
 
 [call [cmd ::tooltip::tooltip] \
      [arg pathName] [opt [arg "option arg"]] [arg message]]
@@ -81,7 +81,7 @@ For listbox widgets the item(s) may be created later but the programmer
 is responsible for managing the link between the listbox item index and the
 corresponding tooltip. If the listbox items are re-ordered, the tooltips
 will need amending.
-[nl]
+[para]
 If the widget is not a canvas or listbox then an error is raised.
 
 [opt_def -tag [arg name]]

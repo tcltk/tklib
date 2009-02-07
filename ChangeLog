@@ -1,5 +1,26 @@
 2009-02-06  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
+	* modules/swaplist/swaplist.man: General cleanup of all the documentation
+	* modules/ntext/ntextBindings.man: warnings reported for the packages.
+	* modules/ntext/ntext.man:
+	* modules/ntext/ntextIndent.man:
+	* modules/ntext/ntextWordBreak.man:
+	* modules/widget/widget_toolbar.man:
+	* modules/widget/widget_calendar.man:
+	* modules/ico/ico.man:
+	* modules/khim/khim.man:
+	* modules/tkpiechart/canvaslabel.man:
+	* modules/tkpiechart/pieperipherallabeler.man:
+	* modules/tkpiechart/pieboxlabeler.man:
+	* modules/tkpiechart/pie.man:
+	* modules/ipentry/ipentry.man:
+	* modules/plotchart/plotchart.man:
+	* modules/ctext/ctext.man:
+	* modules/diagrams/draw_diagram.man:
+	* modules/tooltip/tooltip.man:
+	* modules/canvas/canvas_sqmap.man:
+	* modules/canvas/canvas_zoom.man:
+
 	* installer.tcl: Updated to use the installer and sak of tcllib
 	* sak.tcl: head.
 
