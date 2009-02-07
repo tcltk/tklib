@@ -1,4 +1,14 @@
+2009-02-06  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* plothist.test: Moved to examples/plotchart, renamed to
+	  plothist.tcl. This is actually not a test suite in the standard
+	  form using tcltest, but an example application.
+
+	* plotcontour.test: Added boilerplate to make it more of a test
+	  suite, proper indentation.
+
 2008-02-06 Arjen Markus  <arjenmarkus@users.sourceforge.net>
+
         * plotcontour.tcl:  Commented out one remaining debug puts statement
 
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
