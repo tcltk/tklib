@@ -20,8 +20,8 @@ It makes use of the Tile/Ttk themed widget set.
 
 [section "WIDGET OPTIONS"]
 
-[nl]
-[list_begin opt]
+[para]
+[list_begin options]
 
 [opt_def -command]
 
@@ -49,7 +49,7 @@ Specify language of the calendar contents. The language is specified
 by abbreviations of the languge, for example: en - english, de -
 german ... 
 It defaults to en.
-[nl]
+[para]
 Supported languages: en, de, fr, it, es, pt, ru, sv, zh, fi
 
 [opt_def -shadecolor]
@@ -72,7 +72,8 @@ vice versa.
 
 [section "WIDGET COMMAND"]
 
-[arg pathname] [cmd get] [arg what] [nl]
+[arg pathname] [cmd get] [arg what]
+[para]
 
 Returns part of the selected date or 'all'. The argument [arg what] selects
 the part. Valid values for [arg what] are: day, month, year and all,
@@ -81,9 +82,9 @@ the part. Valid values for [arg what] are: day, month, year and all,
 [section EXAMPLE]
 
 [example {
-package require widget::calendar ; # or widget::all
-set t [widget::calendar .t]
-pack $t -fill x -expand 1
+    package require widget::calendar ; # or widget::all
+    set t [widget::calendar .t]
+    pack $t -fill x -expand 1
 }]
 
 [keywords megawidget snit widget]

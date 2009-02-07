@@ -75,7 +75,7 @@ options section.
 
 [section {Widget options}]
 
-[list_begin tkoption]
+[list_begin tkoptions]
 
 [tkoption_def -textvariable textvariable Variable]
 
