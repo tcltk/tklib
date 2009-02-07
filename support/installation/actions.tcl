@@ -27,6 +27,15 @@ proc _tclm {module libdir} {
     return
 }
 
+proc _tcr {module libdir} {
+    global distribution
+    xcopy \
+	    [file join $distribution modules $module] \
+	    [file join $libdir $module] \
+	    1 *.tcl
+    return
+}
+
 proc _tab {module libdir} {
     global distribution
 
@@ -44,6 +53,17 @@ proc _tab {module libdir} {
     return
 }
 
+proc _doc {module libdir} {
+    global distribution
+
+    _tcl $module $libdir
+    xcopy \
+	    [file join $distribution modules $module mpformats] \
+	    [file join $libdir $module mpformats] \
+	    1
+    return
+}
+
 proc _ctxt {module libdir} {
     global distribution
     xcopy \
@@ -57,13 +77,13 @@ proc _ctxt {module libdir} {
     return
 }
 
-proc _doc {module libdir} {
+proc _msg {module libdir} {
     global distribution
 
     _tcl $module $libdir
     xcopy \
-	    [file join $distribution modules $module mpformats] \
-	    [file join $libdir $module mpformats] \
+	    [file join $distribution modules $module msgs] \
+	    [file join $libdir $module msgs] \
 	    1
     return
 }
@@ -88,8 +108,47 @@ proc _tci {module libdir} {
     return
 }
 
+
+proc _manfile {f format ext docdir} {
+    global distribution argv argc argv0 config
+
+    set out [file join $docdir [file rootname [file tail $f]]].$ext
+
+    log "Generating $out"
+    if {$config(dry)} return
+
+    ::doctools::new dt -format $format -file $f
+
+    file mkdir [file dirname $out]
+
+    set data [dt format [get_input $f]]
+    switch -exact -- $format {
+	nroff {
+	    set data [string map \
+		    [list \
+		    {.so man.macros} \
+		    $config(man.macros)] \
+		    $data]
+	}
+	html {}
+    }
+    write_out $out $data
+
+    set warnings [dt warnings]
+    if {[llength $warnings] > 0} {
+	log [join $warnings \n]
+    }
+
+    dt destroy
+    return
+}
+
 proc _man {module format ext docdir} {
     global distribution argv argc argv0 config
+
+    # In Tklib we do not have access to a bundled doctools. We have to
+    # use whatever is installed. Best we can do is to use whatever is
+    # installed and pray that it supports everything needed.
 
     package require doctools
     ::doctools::new dt -format $format -module $module
