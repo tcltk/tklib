@@ -1,9 +1,9 @@
-[manpage_begin Diagrams n 0.2]
+[manpage_begin Diagrams n 0.3]
 [moddesc {Tk Diagrams}]
 [titledesc {User documentation of the Diagrams package}]
 [require Tcl 8.4]
 [require Tk 8.4]
-[require Diagrams 0.2]
+[require Diagrams 0.3]
 [description]
 [para]
 The [package Diagrams] package is meant to help drawing diagrams, like
@@ -177,6 +177,21 @@ The arguments are either position or length-angle pairs
 [arg_def list args] List of positions or of length-angle pairs
 [list_end]
 [para]
+
+[call [cmd ::Diagrams::bracket] [arg dir] [arg dist] [arg begin] [arg end]]
+Draw an arrow consisting of three lines from one item to another. The
+first argument gives the direction in which the arrow "bulges" away from
+the items, the second argument gives the distance over which it bulges.
+
+[list_begin arg]
+[arg_def string dir] Direction of "bulging" - one of north, south, east
+or west.
+[arg_def float dist] Length of the two end pieces of the arrow
+[arg_def list begin] Description of the item where the arrow begins as
+(returned by one of the item creation procedures, box, circle ...)
+[arg_def list end] Ditto for the item where the arrow points to
+[list_end]
+[nl]
 
 [list_end]
 
