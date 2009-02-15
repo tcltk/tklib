@@ -165,7 +165,7 @@ namespace eval ::Diagrams {
     variable torad [expr {3.1415926/180.0}]
 
     namespace export currentpos getpos direction \
-                     arrow box circle diamond drum line slanted \
+                     arrow box circle diamond drum line slanted bracket \
                      pushstate popstate \
                      drawin saveps line position plaintext linestyle
 
@@ -210,9 +210,17 @@ namespace eval ::Diagrams {
     set dirinfo(southeast)  {southeast   1  1 north nw}
     set dirinfo(northeast)  {northeast   1 -1 south sw}
     set dirinfo(down)       $dirinfo(south)
+    set dirinfo(down-left)  $dirinfo(southwest)
+    set dirinfo(down-right) $dirinfo(southeast)
     set dirinfo(up)         $dirinfo(north)
+    set dirinfo(up-left)    $dirinfo(northwest)
+    set dirinfo(up-right)   $dirinfo(northeast)
     set dirinfo(left)       $dirinfo(west)
     set dirinfo(right)      $dirinfo(east)
+    set dirinfo(W)          $dirinfo(west)
+    set dirinfo(E)          $dirinfo(east)
+    set dirinfo(N)          $dirinfo(north)
+    set dirinfo(S)          $dirinfo(south)
     set dirinfo(SE)         $dirinfo(southeast)
     set dirinfo(NE)         $dirinfo(northeast)
     set dirinfo(SW)         $dirinfo(southwest)
@@ -309,7 +317,7 @@ proc ::Diagrams::direction {newdir} {
     # TODO: problem with arrows/lines
     #
     if { $state(lastitem) != {} && [lindex $state(lastitem) 0] == "BOX" } {
-        currentpos [getpos $state(dir) $state(lastitem)]
+        currentpos [getpos $state(dir) $state(lastitem)] 1
     }
 }
 
@@ -384,12 +392,13 @@ proc ::Diagrams::popstate {} {
 #    Set the current position explicitly
 # Arguments:
 #    pos       Position "object" (optional)
+#    fromdir   (Used internally only) called from direction (or similar)
 # Result:
 #    Current position as an "object"
 # Side effect:
 #    Current position set
 #
-proc ::Diagrams::currentpos { {pos {}} } {
+proc ::Diagrams::currentpos { {pos {}} {fromdir 0} } {
     variable state
 
     if { [lindex $pos 0] == "POSITION" } {
@@ -397,6 +406,15 @@ proc ::Diagrams::currentpos { {pos {}} } {
         set state(yprev) $state(ycurr)
         set state(xcurr) [lindex $pos 1]
         set state(ycurr) [lindex $pos 2]
+    }
+
+    if { $fromdir == 0 } {
+
+        set coords [list]
+        foreach dir {N NW W SW S SE E NE C} {
+            lappend coords $state(xcurr) $state(ycurr)
+        }
+        set state(lastitem) [list BOX {} $coords]
     }
 
     return [list POSITION $state(xcurr) $state(ycurr)]
@@ -922,7 +940,7 @@ proc ::Diagrams::drum {text {width {}} {height {}} } {
     set ybot2   [expr {$yc+$height/2-$hellips/2}]
 
     set coords  [list $xc     $ytop2  $xline2 $yline1 $xline2 $yc     \
-                      $xline2 $yline2 $xc     $ybot2  $xline1 $yline2 \
+                      $xline2 $yline2 $xc     $ybot1  $xline1 $yline2 \
                       $xline1 $yc     $xline1 $yline2 $xc     $yc     ]
 
     #
@@ -1088,7 +1106,9 @@ proc ::Diagrams::line {args} {
 #    one position to the next
 # Arguments:
 #    dir         Direction of the bracket (east, west, north or south)
-#    dist        Distance of the
+#    dist        Distance of the excursion
+#    begin       Item to start the bracket from
+#    end         Item to point to
 # Result:
 #    ID of the "bracket"
 # Side effect:
@@ -1134,7 +1154,7 @@ proc ::Diagrams::bracket {dir dist begin end} {
 
 # Announce our presence
 #
-package provide Diagrams 0.2
+package provide Diagrams 0.3
 
 #
 # A small demonstration ...
@@ -1223,13 +1243,13 @@ proc ::Diagrams::segm {args} {
     foreach text $args {
         usegap 0
         if { [lindex [split $text] 0] != "BOX" } {
-            puts "text: $text"
+            #puts "text: $text"
             set text [plaintext $text]
         } else {
-            puts "original object: $text"
+            #puts "original object: $text"
             set text [moveobject $text]
         }
-        puts "object: $text"
+        #puts "object: $text"
         set items [concat $items [lindex $text 1]]
         direction east
     }
@@ -1241,7 +1261,7 @@ proc ::Diagrams::segm {args} {
                      $x1 $y2 $x1 $yc $x1 $y1 $xc $yc]
     set obj [list BOX $items $coords]
     usegap 0
-    puts "result: $obj"
+    #puts "result: $obj"
     currentpos $pos
     return $obj
 }
@@ -1273,7 +1293,7 @@ proc ::Diagrams::div {numerator denominator} {
     set item [$state(canvas) create line $x1 $y $x2 $y \
                  -fill    $state(colour)]
 
-    puts "line: $x1 $y $x2 $y"
+    #puts "line: $x1 $y $x2 $y"
 
     set items [concat [lindex $num 1] [lindex $den 1] $item]
 

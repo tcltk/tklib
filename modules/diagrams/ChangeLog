@@ -1,8 +1,16 @@
+2009-02-14  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+
+        * added missing directions in dirinfo array
+        * corrected anchor coordinate for drums
+        * solved a bug in the handling of the current position
+          (currentpos set last item)
+        * added documentation of "bracket" (and exporting the procedure)
+
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
 	* Released and tagged Tklib 0.5 ========================
-	* 
+	*
 
 2006-11-19 Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
