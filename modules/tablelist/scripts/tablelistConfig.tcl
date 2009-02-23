@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -19,6 +19,7 @@ proc tablelist::extendConfigSpecs {} {
     # Extend some elements of the array configSpecs
     #
     lappend configSpecs(-activestyle)		frame
+    lappend configSpecs(-columntitles)		{}
     lappend configSpecs(-columns)		{}
     lappend configSpecs(-editendcommand)	{}
     lappend configSpecs(-editstartcommand)	{}
@@ -503,6 +504,59 @@ proc tablelist::doConfig {win opt val} {
 		    makeColFontAndTagLists $win
 		    redisplay $win 0 $selCells
 		}
+		-columntitles {
+		    set titleCount [llength $val]
+		    set colCount $data(colCount)
+		    if {$titleCount <= $colCount} {
+			#
+			# Update the first titleCount column
+			# titles and adjust the columns
+			#
+			set whichWidths {}
+			for {set col 0} {$col < $titleCount} {incr col} {
+			    set idx [expr {3*$col + 1}]
+			    set data(-columns) [lreplace $data(-columns) \
+						$idx $idx [lindex $val $col]]
+			    lappend whichWidths l$col
+			}
+			adjustColumns $win $whichWidths 1
+		    } else {
+			#
+			# Update the titles of the current columns,
+			# extend the column list, and do nearly the
+			# same as in the case of the -columns option
+			#
+			set columns {}
+			set col 0
+			foreach {width title alignment} $data(-columns) {
+			    lappend columns $width [lindex $val $col] $alignment
+			    incr col
+			}
+			for {} {$col < $titleCount} {incr col} {
+			    lappend columns 0 [lindex $val $col] left
+			}
+			set selCells [curCellSelection $win]
+			setupColumns $win $columns 1
+			adjustColumns $win allCols 1
+			makeColFontAndTagLists $win
+			redisplay $win 0 $selCells
+
+			#
+			# If this option is being set at widget creation time
+			# then append "-columns" to the list of command line
+			# options processed by the caller proc, to make sure
+			# that the columns-related information produced by the
+			# setupColumns call above won't be overridden by the
+			# default -columns {} option that would otherwise
+			# be processed as a non-explicitly specified option
+			#
+			set callerProc [lindex [info level -1] 0]
+			if {[string compare $callerProc \
+			     "mwutil::configureWidget"] == 0} {
+			    uplevel 1 lappend cmdLineOpts "-columns"
+			}
+		    }
+		}
 		-disabledforeground {
 		    #
 		    # Configure the "disabled" tag in the body text widget and
@@ -911,7 +965,15 @@ proc tablelist::doConfig {win opt val} {
 #------------------------------------------------------------------------------
 proc tablelist::doCget {win opt} {
     upvar ::tablelist::ns${win}::data data
-    return $data($opt)
+    if {[string compare $opt "-columntitles"] == 0} {
+	set colTitles {}
+	foreach {width title alignment} $data(-columns) {
+	    lappend colTitles $title
+	}
+	return $colTitles
+    } else {
+	return $data($opt)
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -1156,6 +1218,7 @@ proc tablelist::doColConfig {col win opt val} {
 			rowSelection $win set $row $row
 		    }
 		}
+		event generate $win <<TablelistColHiddenStateChanged>>
 	    }
 	}
 
@@ -1937,7 +2000,11 @@ proc tablelist::doRowConfig {row win opt val} {
 		    $w tag add hiddenRow $line.0 $line.end+1c
 		    set viewChanged 1
 		    adjustRowIndex $win data(anchorRow) 1
-		    adjustRowIndex $win data(activeRow) 1
+
+		    set activeRow $data(activeRow)
+		    adjustRowIndex $win activeRow 1
+		    set data(activeRow) $activeRow
+
 		    if {$row == $data(editRow)} {
 			doCancelEditing $win
 		    }
@@ -2020,6 +2087,16 @@ proc tablelist::doRowConfig {row win opt val} {
 		adjustSepsWhenIdle $win
 		updateVScrlbarWhenIdle $win
 		showLineNumbersWhenIdle $win
+
+		#
+		# Generate a virtual event only if the caller proc is different
+		# from togglerowhideSubCmd, in order to make sure that only one
+		# event per togglerowhideSubCmd invocation will be generated
+		#
+		set callerProc [lindex [info level -1] 0]
+		if {[string compare $callerProc "togglerowhideSubCmd"] != 0} {
+		    event generate $win <<TablelistRowHiddenStateChanged>>
+		}
 	    }
 	}
 

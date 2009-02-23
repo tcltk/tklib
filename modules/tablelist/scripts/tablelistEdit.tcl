@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1305,6 +1305,10 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     }
     $b window create $editIdx -padx -3 -pady -3 -window $f
     $b mark set editMark $editIdx
+    update idletasks
+    if {![winfo exists $win]} {			;# because of update idletasks
+	return ""
+    }
 
     #
     # Insert the binding tags $data(editwinTag) and TablelistEdit

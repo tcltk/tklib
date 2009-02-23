@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -3332,10 +3332,11 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 	    # Embed the message widgets displaying multiline elements
 	    #
 	    foreach {col text font alignment} $multilineData {
-		findTabs $win $line $col $col tabIdx1 tabIdx2
-		set msgScript [list ::tablelist::displayText $win $key \
-			       $col $text $font $pixels $alignment]
-		$w window create $tabIdx2 -pady $padY -create $msgScript
+		if {[findTabs $win $line $col $col tabIdx1 tabIdx2]} {
+		    set msgScript [list ::tablelist::displayText $win $key \
+				   $col $text $font $pixels $alignment]
+		    $w window create $tabIdx2 -pady $padY -create $msgScript
+		}
 	    }
 
 	} else {
@@ -3548,13 +3549,14 @@ proc tablelist::redisplayCol {win col first last} {
 	#
 	# Update the text widget's contents between the two tabs
 	#
-	findTabs $win $line $col $col tabIdx1 tabIdx2
-	if {$multiline} {
-	    updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript \
-			 $aux $auxType $auxWidth $alignment
-	} else {
-	    updateCell $w $tabIdx1+1c $tabIdx2 $text \
-		       $aux $auxType $auxWidth $alignment
+	if {[findTabs $win $line $col $col tabIdx1 tabIdx2]} {
+	    if {$multiline} {
+		updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript \
+			     $aux $auxType $auxWidth $alignment
+	    } else {
+		updateCell $w $tabIdx1+1c $tabIdx2 $text \
+			   $aux $auxType $auxWidth $alignment
+	    }
 	}
     }
 }

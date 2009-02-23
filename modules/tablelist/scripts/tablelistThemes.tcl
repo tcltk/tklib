@@ -8,7 +8,7 @@
 #   - Private procedures performing RGB <-> HSV conversions
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2005-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1248,51 +1248,6 @@ proc tablelist::winxpblueTheme {} {
 #------------------------------------------------------------------------------
 proc tablelist::xpnativeTheme {} {
     variable xpStyle
-    switch [winfo rgb . SystemButtonFace] {
-	"60652 59881 55512" {
-	    set xpStyle		1
-	    set labelBg		#ebeadb
-	    set activeBg	#faf8f3
-	    set pressedBg	#dedfd8
-	    set labelBd		4
-	    set labelPadY	4
-	    set arrowColor	#aca899
-	    set arrowStyle	flat9x5
-
-	    if {[info exists tile::version] &&
-		[string compare $tile::version 0.7] < 0} {
-		set labelBd 0
-	    }
-	}
-
-	"57568 57311 58339" {
-	    set xpStyle		1
-	    set labelBg		#f9fafd
-	    set activeBg	#fefefe
-	    set pressedBg	#ececf3
-	    set labelBd		4
-	    set labelPadY	4
-	    set arrowColor	#aca899
-	    set arrowStyle	flat9x5
-
-	    if {[info exists tile::version] &&
-		[string compare $tile::version 0.7] < 0} {
-		set labelBd 0
-	    }
-	}
-
-	default {
-	    set xpStyle		0
-	    set labelBg		SystemButtonFace
-	    set activeBg	SystemButtonFace
-	    set pressedBg	SystemButtonFace
-	    set labelBd		2
-	    set labelPadY	0
-	    set arrowColor	SystemButtonShadow
-	    set arrowStyle	flat7x4
-	}
-    }
-
     variable themeDefaults
     array set themeDefaults [list \
 	-background		SystemWindow \
@@ -1303,15 +1258,91 @@ proc tablelist::xpnativeTheme {} {
 	-selectforeground	SystemHighlightText \
 	-selectborderwidth	0 \
 	-font			TkTextFont \
-        -labelbackground	$labelBg \
-	-labeldisabledBg	$labelBg \
-	-labelactiveBg		$activeBg \
-	-labelpressedBg		$pressedBg \
 	-labelforeground	SystemButtonText \
 	-labeldisabledFg	SystemDisabledText \
 	-labelactiveFg		SystemButtonText \
 	-labelpressedFg		SystemButtonText \
 	-labelfont		TkDefaultFont \
+    ]
+
+    if {$::tcl_platform(osVersion) < 6.0} {		;# Windows XP
+	switch [winfo rgb . SystemButtonFace] {
+	    "60652 59881 55512" {			;# XP style
+		set xpStyle	1
+		set labelBg	#ebeadb
+		set activeBg	#faf8f3
+		set pressedBg	#dedfd8
+		set labelBd	4
+		set labelPadY	4
+		set arrowColor	#aca899
+		set arrowStyle	flat9x5
+
+		if {[info exists tile::version] &&
+		    [string compare $tile::version 0.7] < 0} {
+		    set labelBd 0
+		}
+	    }
+
+	    "57568 57311 58339" {			;# XP style
+		set xpStyle	1
+		set labelBg	#f9fafd
+		set activeBg	#fefefe
+		set pressedBg	#ececf3
+		set labelBd	4
+		set labelPadY	4
+		set arrowColor	#aca899
+		set arrowStyle	flat9x5
+
+		if {[info exists tile::version] &&
+		    [string compare $tile::version 0.7] < 0} {
+		    set labelBd 0
+		}
+	    }
+
+	    default {					;# Classic style
+		set xpStyle	0
+		set labelBg	SystemButtonFace
+		set activeBg	SystemButtonFace
+		set pressedBg	SystemButtonFace
+		set labelBd	2
+		set labelPadY	0
+		set arrowColor	SystemButtonShadow
+		set arrowStyle	flat7x4
+	    }
+	}
+    } else {						;# Windows Vista
+	set xpStyle	0
+	set labelPadY	0
+
+	switch [winfo rgb . SystemButtonFace] {
+	    "61680 61680 61680" {			;# Vista style
+		set themeDefaults(-selectbackground)	#d8effb
+		set themeDefaults(-selectforeground)	SystemWindowText
+
+		set labelBg	#f8f9fa
+		set activeBg	#c3eeff
+		set pressedBg	#95d8f7
+		set labelBd	1
+		set arrowColor	#569bc0
+		set arrowStyle	flat7x4
+	    }
+
+	    default {					;# Classic style
+		set labelBg	SystemButtonFace
+		set activeBg	SystemButtonFace
+		set pressedBg	SystemButtonFace
+		set labelBd	2
+		set arrowColor	SystemButtonShadow
+		set arrowStyle	flat7x4
+	    }
+        }
+    }
+
+    array set themeDefaults [list \
+        -labelbackground	$labelBg \
+	-labeldisabledBg	$labelBg \
+	-labelactiveBg		$activeBg \
+	-labelpressedBg		$pressedBg \
 	-labelborderwidth	$labelBd \
 	-labelpady		$labelPadY \
 	-arrowcolor		$arrowColor \
