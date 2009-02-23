@@ -91,6 +91,9 @@
     ?<b>left</b>|<b>right</b>|<b>center</b>? <i>width</i> <i>title</i>
     ?<b>left</b>|<b>right</b>|<b>center</b>? ...}</code></dd>
 
+    <dd><code><b><a href="#columntitles">-columntitles</a></b> {<i>title</i>
+    <i>title</i> ...}</code></dd>
+
     <dd><code><b><a href="#editendcommand">-editendcommand</a></b>
     <i>command</i></code></dd>
 
@@ -996,8 +999,8 @@
         case the <code><b><a href="#arrowstyle">-arrowstyle</a></b></code>
         option has the default value <code><b>sunken10x9</b></code>).&nbsp; On
         the windowing system <code><b>win32</b></code>, the default arrow color
-        is <code>#aca899</code> for Windows XP and an empty string for older
-        Windows versions, paired with the default arrow style
+        is <code>#aca899</code> for Windows XP and Vista, and an empty string
+        for older Windows versions, paired with the default arrow style
         <code><b>flat9x5</b></code> and <code><b>sunken8x7</b></code>,
         respectively.&nbsp; Finally, for the windowing systems
         <code><b>classic</b></code> and <code><b>aqua</b></code> on the
@@ -1142,6 +1145,62 @@
         columns.&nbsp; Besides being more user-friendly, dynamic-width columns
         have the main advantage that they increase the performance of the item
         insertion and sorting quite significantly.</p>
+      </blockquote>
+    </dd>
+
+    <dd>
+      <a name="columntitles"></a>
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-columntitles</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;columnTitles</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;ColumnTitles</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>This option provides a simplified form of specifying dynamic-width,
+        left-aligned tablelist columns.&nbsp; Its value is viewed as a list of
+        column titles.&nbsp; The default is an empty list.</p>
+
+        <p>In the simplest case that no columns have been specified yet,
+        setting this option to the value given by the list</p>
+
+        <blockquote>
+          <pre>
+<i>title</i> <i>title</i> ...
+</pre>
+        </blockquote>
+        
+        <p>is equivalent to setting the <code><b><a href=
+        "#columns">-columns</a></b></code> option to the value given by the
+        list<p>
+
+        <blockquote>
+          <pre>
+0 <i>title</i> left 0 <i>title</i> left ...
+</pre>
+        </blockquote>
+
+        <p>If the columns have already been specified then this option updates
+        their titles (as many of them as possible) and, if the number of
+        elements of its value is greater than the number of columns then it
+        uses the remaining elements as titles of additional dynamic-width,
+        left-aligned columns.&nbsp; For example, if the widget has 3 columns
+        and the option's value is a list of length 5 then the option will
+        update the titles of the 3 columns and will append 2 new dynamic-width,
+        left-aligned columns having as titles the last 2 elements of the
+        list.&nbsp; If the widget has 3 columns and the option specifies just 2
+        texts then it will update the titles of the first 2 columns only.</p>
       </blockquote>
     </dd>
 
@@ -2577,7 +2636,7 @@ proc tooltipAddCmd {tbl row col} {
 
         <blockquote>
           <pre>
--tooltipaddcommand tooltipAddCmd -tooltipdelcommand DynamicHelp::delete
+... -tooltipaddcommand tooltipAddCmd -tooltipdelcommand DynamicHelp::delete
 </pre>
         </blockquote>
 
@@ -2599,11 +2658,24 @@ proc tooltipAddCmd {tbl row col} {
 
         <blockquote>
           <pre>
--tooltipaddcommand tooltipAddCmd -tooltipdelcommand "tooltip::tooltip clear"
+... -tooltipaddcommand tooltipAddCmd -tooltipdelcommand "tooltip::tooltip clear"
 </pre>
         </blockquote>
 
-        <p>Both versions above make use of the <code><b><a href=
+        <p>Please note that in the less common case that the name of your
+        tablelist widget contains spaces, the<code> tooltip::tooltip clear
+        </code>command won't work as expected.&nbsp; As a workaround you can
+        use the slightly modified approach shown below:</p>
+
+        <blockquote>
+          <pre>
+proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
+
+... -tooltipaddcommand tooltipAddCmd -tooltipdelcommand tooltipDelCmd
+</pre>
+        </blockquote>
+
+        <p>Both examples above make use of the <code><b><a href=
         "#iselemsnipped">iselemsnipped</a></b></code> and <code><b><a href=
         "#istitlesnipped">istitlesnipped</a></b></code> subcommands, to make
         sure that the full cell and label texts will only be displayed for
@@ -2933,7 +3005,9 @@ proc formatDate clockVal {
 
         <dd>Specifies whether to hide the column when displaying the widget or
         exporting its selection.&nbsp; The default value is
-        <code>0</code>.</dd>
+        <code>0</code>.&nbsp; After toggling the hidden state of a column, the
+        <code><b>&lt;&lt;TablelistColHiddenStateChanged&gt;&gt;</b></code>
+        virtual event is generated.</dd>
 
         <dt><br>
         <a name="col_labelalign"></a><code><b>-labelalign</b>
@@ -3299,9 +3373,11 @@ proc formatDate clockVal {
         <dd>
           Specifies whether to hide the row when displaying the widget or
           exporting its selection.&nbsp; The default value is
-          <code>0</code>.&nbsp; For technical reasons (the use of the
-          <code><b>-elide</b></code> option for a text widget tag), this option
-          is not supported for Tk versions earlier than 8.3.
+          <code>0</code>.&nbsp; After toggling the hidden state of a row, the
+          <code><b>&lt;&lt;TablelistRowHiddenStateChanged&gt;&gt;</b></code>
+          virtual event is generated.&nbsp; For technical reasons (the use of
+          the <code><b>-elide</b></code> option for a text widget tag), this
+          option is not supported for Tk versions earlier than 8.3.
 
           <p><b>CAUTION:</b>&nbsp; Tk versions 8.3 - 8.4.12 had a bug that
           caused a segmentation fault if the whole content of a text widget was
@@ -5501,14 +5577,16 @@ upvar #0 [.tbl itemlistvar] itemList
 
         <dd>Toggles the value of the <code><b><a href=
         "#col_hide">-hide</a></b></code> option for one or more columns of the
-        tablelist.&nbsp; In the first form of the command,
+        tablelist widget.&nbsp; In the first form of the command,
         <code><i>firstColumn</i></code> and <code><i>lastColumn</i></code> are
         indices specifying the first and last columns in the range whose
         visibility is to be toggled.&nbsp; The command's second form accepts a
         list <code><i>columnIndexList</i></code> of indices specifying the
         columns whose visibility is to be toggled.&nbsp; Returns an empty
-        string.&nbsp; The main advantage of using this command instead of
-        invoking <code><b><a href=
+        string.&nbsp; After toggling the hidden state of the specified columns,
+        the <code><b>&lt;&lt;TablelistColHiddenStateChanged&gt;&gt;</b></code>
+        virtual event is generated.&nbsp; The main advantage of using this
+        command instead of invoking <code><b><a href=
         "#columnconfigure">columnconfigure</a></b></code> for each of the
         specified columns is that it causes only one redisplay of the widget's
         contents, thus being significantly faster.</dd>
@@ -5521,14 +5599,17 @@ upvar #0 [.tbl itemlistvar] itemList
         <dd>
           Toggles the value of the <code><b><a href=
           "#row_hide">-hide</a></b></code> option for one or more rows of the
-          tablelist.&nbsp; In the first form of the command,
+          tablelist widget.&nbsp; In the first form of the command,
           <code><i>first</i></code> and <code><i>last</i></code> are indices
           specifying the first and last rows in the range whose visibility is
           to be toggled.&nbsp; The command's second form accepts a list
           <code><i>indexList</i></code> of indices specifying the rows whose
           visibility is to be toggled.&nbsp; Returns an empty string.&nbsp;
-          Just like the <code><b>-hide</b></code> row configuration option,
-          this subcommand is not supported for Tk versions earlier than 8.3.
+          After toggling the hidden state of the specified rows, the
+          <code><b>&lt;&lt;TablelistRowHiddenStateChanged&gt;&gt;</b></code>
+          virtual event is generated.&nbsp; Just like the
+          <code><b>-hide</b></code> row configuration option, this subcommand
+          is not supported for Tk versions earlier than 8.3.
 
           <p><b>CAUTION:</b>&nbsp; Tk versions 8.3 - 8.4.12 had a bug that
           caused a segmentation fault if the whole content of a text widget was
@@ -5969,7 +6050,8 @@ bind [.tbl bodytag] &lt;Button-1&gt; {
         "#col_maxwidth">-maxwidth</a></b></code> column configuration option),
         and the virtual event
         <code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code> is
-        generated.<br>
+        generated.&nbsp; The same action is triggered by double-clicking the
+        resize area of a header label.<br>
         &nbsp;</li>
 
         <li>The Tablelist package defines the virtual event
@@ -5984,7 +6066,9 @@ bind [.tbl bodytag] &lt;Button-1&gt; {
         corresponding to that label are true, then the width of that column is
         set to its last static width (if any) and the virtual event
         <code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code> is
-        generated.</li>
+        generated.&nbsp; The same action is triggered by double-clicking the
+        resize area of a header label with the <code>Shift</code> key held
+        down.</li>
       </ol>
 
       <p>If the tablelist's <code><b><a href="#state">state</a></b></code> is
