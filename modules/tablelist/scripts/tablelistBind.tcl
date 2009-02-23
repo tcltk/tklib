@@ -8,7 +8,7 @@
 #   - Binding tag TablelistBody
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -108,8 +108,8 @@ proc tablelist::cleanup win {
     # If there is a list variable associated with the
     # widget then remove the trace set on this variable
     #
-    if {$data(hasListVar) && [info exists $data(-listvariable)]} {
-	upvar #0 $data(-listvariable) var
+    upvar #0 $data(-listvariable) var
+    if {$data(hasListVar) && [info exists var]} {
 	trace vdelete var wu $data(listVarTraceCmd)
     }
 
@@ -584,7 +584,6 @@ proc tablelist::showOrHideTooltip {win x y X Y} {
     #
     event generate $win <Leave>
     catch {uplevel #0 $data(-tooltipdelcommand) [list $win]}
-    catch {uplevel #0 $data(-tooltipdelcommand) .*}
     set data(prevCell) $row,$col
     if {$row >= 0 && $col >= 0} {
 	set focus [focus -displayof $win]
@@ -991,7 +990,7 @@ proc tablelist::condEvalInvokeCmd win {
     }
 
     #
-    # Return if the edit window is an editable combobox widgets
+    # Return if the edit window is an editable combobox widget
     #
     set w $data(bodyFrEd)
     switch [winfo class $w] {
@@ -1836,18 +1835,8 @@ proc tablelist::labelEnter {w X Y x} {
 	return ""
     }
 
-    if {$x >= [winfo width $w] - 5} {
-	set inResizeArea 1
-	set col2 $col
-    } elseif {$x < 5} {
-	set X [expr {[winfo rootx $w] - 3}]
-	set contW [winfo containing -displayof $w $X [winfo rooty $w]]
-	set inResizeArea [parseLabelPath $contW dummy col2]
-    } else {
-	set inResizeArea 0
-    }
-
-    if {$inResizeArea && $data(-resizablecolumns) && $data($col2-resizable)} {
+    if {[inResizeArea $w $x col] &&
+	$data(-resizablecolumns) && $data($col-resizable)} {
 	configLabel $w -cursor $data(-resizecursor)
 	configLabel $w -active 0
     } else {
@@ -1883,7 +1872,6 @@ proc tablelist::labelLeave {w X x y} {
 	#
 	event generate $win <Leave>
 	catch {uplevel #0 $data(-tooltipdelcommand) [list $win]}
-	catch {uplevel #0 $data(-tooltipdelcommand) .*}
 	set data(prevCol) -1
     }
 
@@ -1915,19 +1903,9 @@ proc tablelist::labelB1Down {w x shiftPressed} {
     set data(X) [expr {[winfo rootx $w] + $x}]
     set data(shiftPressed) $shiftPressed
 
-    if {$x >= [winfo width $w] - 5} {
-	set inResizeArea 1
-	set col2 $col
-    } elseif {$x < 5} {
-	set X [expr {[winfo rootx $w] - 3}]
-	set contW [winfo containing -displayof $w $X [winfo rooty $w]]
-	set inResizeArea [parseLabelPath $contW dummy col2]
-    } else {
-	set inResizeArea 0
-    }
-
-    if {$inResizeArea && $data(-resizablecolumns) && $data($col2-resizable)} {
-	set data(colBeingResized) $col2
+    if {[inResizeArea $w $x col] &&
+	$data(-resizablecolumns) && $data($col-resizable)} {
+	set data(colBeingResized) $col
 
 	set w $data(body)
 	set topTextIdx [$w index @0,0]
@@ -1936,19 +1914,19 @@ proc tablelist::labelB1Down {w x shiftPressed} {
 	set data(topRow) [expr {int($topTextIdx) - 1}]
 	set data(btmRow) [expr {int($btmTextIdx) - 1}]
 
-	set w $data(hdrTxtFrLbl)$col2
+	set w $data(hdrTxtFrLbl)$col
 	set labelWidth [winfo width $w]
 	set data(oldStretchedColWidth) [expr {$labelWidth - 2*$data(charWidth)}]
-	set data(oldColDelta) $data($col2-delta)
-	set data(configColWidth) [lindex $data(-columns) [expr {3*$col2}]]
+	set data(oldColDelta) $data($col-delta)
+	set data(configColWidth) [lindex $data(-columns) [expr {3*$col}]]
 
-	if {[lsearch -exact $data(arrowColList) $col2] >= 0} {
+	if {[lsearch -exact $data(arrowColList) $col] >= 0} {
 	    set canvasWidth $data(arrowWidth)
 	    if {[llength $data(arrowColList)] > 1} {
 		incr canvasWidth 6
 	    }
 	    set data(minColWidth) $canvasWidth
-	} elseif {$data($col2-wrap)} {
+	} elseif {$data($col-wrap)} {
 	    set data(minColWidth) $data(charWidth)
 	} else {
 	    set data(minColWidth) 0
@@ -1960,7 +1938,7 @@ proc tablelist::labelB1Down {w x shiftPressed} {
 	focus $topWin
 	set data(topEscBinding) [bind $topWin <Escape>]
 	bind $topWin <Escape> \
-	     [list tablelist::escape [strMap {"%" "%%"} $win] $col2]
+	     [list tablelist::escape [strMap {"%" "%%"} $win] $col]
     } else {
 	set data(inClickedLabel) 1
 	set data(relief) [$w cget -relief]
@@ -2294,7 +2272,8 @@ proc tablelist::labelB1Up {w X} {
 	    }
 	}
 	unset data(colBeingResized)
-	$data(body) tag delete visibleLines 1.0 end
+	$data(body) tag remove visibleLines 1.0 end
+	$data(body) tag configure visibleLines -tabs {}
 	redisplayCol $win $col 0 end
 	adjustColumns $win {} 0
 	stretchColumns $win $col
@@ -2365,6 +2344,27 @@ proc tablelist::labelB3Down {w shiftPressed} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::labelDblB1
+#
+# This procedure is invoked when the header label w of a tablelist widget is
+# double-clicked.  If the pointer is on the right border of the label then the
+# procedure performs the same action as labelB3Down.
+#------------------------------------------------------------------------------
+proc tablelist::labelDblB1 {w x shiftPressed} {
+    parseLabelPath $w win col
+    upvar ::tablelist::ns${win}::data data
+    if {!$data(isDisabled) && [inResizeArea $w $x col] &&
+	$data(-resizablecolumns) && $data($col-resizable)} {
+	if {$shiftPressed} {
+	    doColConfig $col $win -width -$data($col-lastStaticWidth)
+	} else {
+	    doColConfig $col $win -width 0
+	}
+	event generate $win <<TablelistColumnResized>>
+    }
+}
+
+#------------------------------------------------------------------------------
 # tablelist::escape
 #
 # This procedure is invoked to process <Escape> events in the top-level window
@@ -2392,7 +2392,8 @@ proc tablelist::escape {win col} {
 				    $data(configColWidth)] 0
 	redisplayCol $win $col $data(topRow) $data(btmRow)
 	unset data(colBeingResized)
-	$data(body) tag delete visibleLines 1.0 end
+	$data(body) tag remove visibleLines 1.0 end
+	$data(body) tag configure visibleLines -tabs {}
 	adjustColumns $win {} 1
     } elseif {!$data(inClickedLabel)} {
 	configLabel $w -cursor $data(-cursor)
@@ -2454,4 +2455,27 @@ proc tablelist::horizAutoScan win {
     }
 
     set data(afterId) [after $ms [list tablelist::horizAutoScan $win]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::inResizeArea
+#
+# Checks whether the given x coordinate relative to the header label w of a
+# tablelist widget is in the resize area of that label or of the one to its
+# left.
+#------------------------------------------------------------------------------
+proc tablelist::inResizeArea {w x colName} {
+    upvar $colName col
+    parseLabelPath $w dummy _col
+
+    if {$x >= [winfo width $w] - 5} {
+	set col $_col
+	return 1
+    } elseif {$x < 5} {
+	set X [expr {[winfo rootx $w] - 3}]
+	set contW [winfo containing -displayof $w $X [winfo rooty $w]]
+	return [parseLabelPath $contW dummy col]
+    } else {
+	return 0
+    }
 }
