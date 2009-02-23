@@ -81,8 +81,8 @@ How to get it?
 --------------
 
 Tablelist is available for free download from the same URL as Wcb.  The
-distribution file is "tablelist4.10.tar.gz" for UNIX and
-"tablelist4_10.zip" for Windows.  These files contain the same
+distribution file is "tablelist4.11.tar.gz" for UNIX and
+"tablelist4_11.zip" for Windows.  These files contain the same
 information, except for the additional carriage return character
 preceding the linefeed at the end of each line in the text files for
 Windows.
@@ -102,16 +102,16 @@ locations of these library directories are given by the "tcl_library"
 and "tk_library" variables, respectively.
 
 To install Tablelist on UNIX, "cd" to the desired directory and unpack
-the distribution file "tablelist4.10.tar.gz":
+the distribution file "tablelist4.11.tar.gz":
 
-    gunzip -c tablelist4.10.tar.gz | tar -xf -
+    gunzip -c tablelist4.11.tar.gz | tar -xf -
 
-This command will create a directory named "tablelist4.10", with the
+This command will create a directory named "tablelist4.11", with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "tablelist4_10.zip" into the directory
-"tablelist4.10", with the subdirectories "demos", "doc", and "scripts".
+distribution file "tablelist4_11.zip" into the directory
+"tablelist4.11", with the subdirectories "demos", "doc", and "scripts".
 
 Note that the file "tablelistEdit.tcl" in the "scripts" directory is
 only needed for applications making use of interactive cell editing.
@@ -140,14 +140,14 @@ namespace and provide identical commands.
 To be able to use the commands and variables implemented in the package
 Tablelist, your scripts must contain one of the lines
 
-    package require Tablelist
     package require tablelist
+    package require Tablelist
 
 Likewise, to be able to use the commands and variables implemented in
 the package Tablelist_tile, your scripts must contain one of the lines
 
-    package require Tablelist_tile
     package require tablelist_tile
+    package require Tablelist_tile
 
 Since the packagse Tablelist and Tablelist_tile are implemented in the
 namespace "tablelist", you must either import the procedures you need,

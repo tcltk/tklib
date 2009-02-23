@@ -9,10 +9,10 @@ package require Tk  8.4
 if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     package require tile 0.6
 }
-package require -exact tablelist::common 4.10.1
+package require -exact tablelist::common 4.11
 
-package provide Tablelist_tile $::tablelist::version
 package provide tablelist_tile $::tablelist::version
+package provide Tablelist_tile $::tablelist::version
 
 ::tablelist::useTile 1
 ::tablelist::createBindings

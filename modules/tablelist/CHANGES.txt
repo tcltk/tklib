@@ -1,5 +1,47 @@
-What is new in Tablelist 4.10?
+What is new in Tablelist 4.11?
 ------------------------------
+
+1.  Added the "-columntitles" configuration option, which is mainly a
+    simplified form of the "-columns" option (thanks to Roy Terry for
+    his proposal).
+
+2.  Added the virtual events <<TablelistColHiddenStateChanged>> and
+    <<TablelistRowHiddenStateChanged>>, generated after toggling the
+    hidden state of a column or row, respectively (thanks to Jeff 
+    Godfrey for his proposal).
+
+3.  Besides with <Button-3>, the optimal column width can now be set
+    with <Double-Button-1> in the resize area of the column's header.
+    Similarly, the effect of <Shift-Button-3> can also be achieved with
+    <Shuft-Double-Button-1> in the column label's resize area.
+
+4.  Support for Windows Vista (thanks to Jeremy Cowgar for his input).
+
+5.  The recommended package name is now "tablelist" rather than
+    "Tablelist", for compatibility with the ActiveTcl distribution; the
+    demo scripts have been changed accordingly.
+
+6.  Made sure that the "-tooltipdelcommand" configuration option won't
+    affect other widgets (thanks to Jeff Godfrey for drawing my
+    attention to this issue).
+
+7.  Fixed a long-standing nasty bug related to the "yview" subcommand
+    (thanks to Nestor Patino for his bug report and very helpful example
+    script).
+
+8.  Fixed two bugs related to the "-listvariable" configuration option
+    (again, thanks to Nestor Patino for his valuable input).
+
+9.  Fixed a bug related to the item deletion when using Tcl/Tk 8.5
+    (thanks to Jos Decoster and Sven Wuytack for their valuable
+    contribution to finding and fixing this bug).
+
+10. Fixed a bug related to the "-windowdestroy" cell configuration
+    option, introduced in Tablelist 4.9 (thanks to Sebastien Barre for
+    his bug report).
+
+What was new in Tablelist 4.10?
+-------------------------------
 
 1.  Support for individual binding scripts controlling the interactive
     cell editing, with the aid of the new "editwintag" subcommand
