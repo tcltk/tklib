@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2008  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -90,6 +90,7 @@ namespace eval tablelist {
 	-borderwidth		 {borderWidth		  BorderWidth	      f}
 	-bd			 -borderwidth
 	-columns		 {columns		  Columns	      w}
+	-columntitles		 {columnTitles		  ColumnTitles	      w}
 	-cursor			 {cursor		  Cursor	      c}
 	-disabledforeground	 {disabledForeground	  DisabledForeground  w}
 	-editendcommand		 {editEndCommand	  EditEndCommand      w}
@@ -351,7 +352,7 @@ namespace eval tablelist {
     variable activeStyles	[list frame none underline]
     variable alignments		[list left right center]
     variable arrowStyles	[list flat7x4 flat7x5 flat7x7 flat8x5 flat9x5 \
-				      sunken8x7 sunken10x9 sunken12x11]
+				 sunken8x7 sunken10x9 sunken12x11]
     variable arrowTypes		[list up down]
     variable colWidthOpts	[list -requested -stretched -total]
     variable states		[list disabled normal]
@@ -466,10 +467,10 @@ proc tablelist::createBindings {} {
     #
     # Define some mouse bindings for the binding tag TablelistLabel
     #
-    bind TablelistLabel <Enter>		{ tablelist::labelEnter    %W %X %Y %x }
-    bind TablelistLabel <Motion>	{ tablelist::labelEnter    %W %X %Y %x }
-    bind TablelistLabel <Leave>		{ tablelist::labelLeave    %W %X %x %y }
-    bind TablelistLabel <Button-1>	{ tablelist::labelB1Down   %W %x 0 }
+    bind TablelistLabel <Enter>		  { tablelist::labelEnter  %W %X %Y %x }
+    bind TablelistLabel <Motion>	  { tablelist::labelEnter  %W %X %Y %x }
+    bind TablelistLabel <Leave>		  { tablelist::labelLeave  %W %X %x %y }
+    bind TablelistLabel <Button-1>	  { tablelist::labelB1Down %W %x 0 }
     bind TablelistLabel <Shift-Button-1>  { tablelist::labelB1Down %W %x 1 }
     bind TablelistLabel <B1-Motion>	{ tablelist::labelB1Motion %W %X %x %y }
     bind TablelistLabel <B1-Enter>	{ tablelist::labelB1Enter  %W }
@@ -477,6 +478,8 @@ proc tablelist::createBindings {} {
     bind TablelistLabel <ButtonRelease-1> { tablelist::labelB1Up   %W %X}
     bind TablelistLabel <<Button3>>	  { tablelist::labelB3Down %W 0 }
     bind TablelistLabel <<ShiftButton3>>  { tablelist::labelB3Down %W 1 }
+    bind TablelistLabel <Double-Button-1>	{ tablelist::labelDblB1 %W %x 0}
+    bind TablelistLabel <Shift-Double-Button-1> { tablelist::labelDblB1 %W %x 1}
 
     #
     # Define the binding tags TablelistSubLabel and TablelistArrow
@@ -1034,8 +1037,7 @@ proc tablelist::cgetSubCmd {win argList} {
     #
     variable configSpecs
     set opt [mwutil::fullConfigOpt [lindex $argList 0] configSpecs]
-    upvar ::tablelist::ns${win}::data data
-    return $data($opt)
+    return [doCget $win $opt]
 }
 
 #------------------------------------------------------------------------------
@@ -1047,7 +1049,6 @@ proc tablelist::columnattribSubCmd {win argList} {
 			      name value ...?"
     }
 
-    synchronize $win
     set col [colIndex $win [lindex $argList 0] 1]
     return [mwutil::attribSubCmd $win $col [lrange $argList 1 end]]
 }
@@ -1060,7 +1061,6 @@ proc tablelist::columncgetSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win columncget columnIndex option"
     }
 
-    synchronize $win
     set col [colIndex $win [lindex $argList 0] 1]
     variable colConfigSpecs
     set opt [mwutil::fullConfigOpt [lindex $argList 1] colConfigSpecs]
@@ -1253,8 +1253,6 @@ proc tablelist::configrowsSubCmd {win argList} {
 # tablelist::configureSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::configureSubCmd {win argList} {
-    synchronize $win
-    displayItems $win
     variable configSpecs
     return [mwutil::configureSubCmd $win configSpecs tablelist::doConfig \
 	    tablelist::doCget $argList]
@@ -1827,7 +1825,6 @@ proc tablelist::hascolumnattribSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win hascolumnattrib columnIndex name"
     }
 
-    synchronize $win
     set col [colIndex $win [lindex $argList 0] 1]
     return [mwutil::hasattribSubCmd $win $col [lindex $argList 1]]
 }
@@ -2134,8 +2131,6 @@ proc tablelist::nearestcolumnSubCmd {win argList} {
     }
 
     set x [format "%d" [lindex $argList 0]]
-    synchronize $win
-    displayItems $win
     return [colIndex $win @$x,0 0]
 }
 
@@ -2630,6 +2625,8 @@ proc tablelist::togglecolumnhideSubCmd {win argList} {
 	    rowSelection $win set $row $row
 	}
     }
+
+    event generate $win <<TablelistColHiddenStateChanged>>
     return ""
 }
 
@@ -2651,6 +2648,7 @@ proc tablelist::togglerowhideSubCmd {win argList} {
     # Toggle the value of the -hide option of the specified rows
     #
     upvar ::tablelist::ns${win}::data data
+    set count 0
     if {$argCount == 1} {
 	foreach elem $first {
 	    set row [rowIndex $win $elem 0]
@@ -2659,6 +2657,7 @@ proc tablelist::togglerowhideSubCmd {win argList} {
 	    }
 
 	    doRowConfig $row $win -hide [expr {![doRowCget $row $win -hide]}]
+	    incr count
 	}
     } else {
 	set firstRow [rowIndex $win $first 0]
@@ -2673,8 +2672,14 @@ proc tablelist::togglerowhideSubCmd {win argList} {
 
 	for {set row $firstRow} {$row <= $lastRow} {incr row} {
 	    doRowConfig $row $win -hide [expr {![doRowCget $row $win -hide]}]
+	    incr count
 	}
     }
+
+    if {$count != 0} {
+	event generate $win <<TablelistRowHiddenStateChanged>>
+    }
+    return ""
 }
 
 #------------------------------------------------------------------------------
@@ -2711,7 +2716,6 @@ proc tablelist::unsetcolumnattribSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win unsetcolumnattrib columnIndex name"
     }
 
-    synchronize $win
     set col [colIndex $win [lindex $argList 0] 1]
     return [mwutil::unsetattribSubCmd $win $col [lindex $argList 1]]
 }
@@ -2759,11 +2763,14 @@ proc tablelist::windowpathSubCmd {win argList} {
 # tablelist::xviewSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::xviewSubCmd {win argList} {
-    synchronize $win
-    displayItems $win
+    set argCount [llength $argList]
+    if {$argCount != 1 || [lindex $argList 0] != 0} {
+	synchronize $win
+	displayItems $win
+    }
     upvar ::tablelist::ns${win}::data data
 
-    switch [llength $argList] {
+    switch $argCount {
 	0 {
 	    #
 	    # Command: $win xview
@@ -2899,12 +2906,15 @@ proc tablelist::xviewSubCmd {win argList} {
 # tablelist::yviewSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::yviewSubCmd {win argList} {
-    synchronize $win
-    displayItems $win
+    set argCount [llength $argList]
+    if {$argCount != 1 || [lindex $argList 0] != 0} {
+	synchronize $win
+	displayItems $win
+    }
     upvar ::tablelist::ns${win}::data data
     set w $data(body)
 
-    switch [llength $argList] {
+    switch $argCount {
 	0 {
 	    #
 	    # Command: $win yview
@@ -3598,11 +3608,14 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	adjustRowIndex $win data(anchorRow) 1
     }
     if {$last < $data(activeRow)} {
-	incr data(activeRow) -$count
-	adjustRowIndex $win data(activeRow) 1
+	set activeRow $data(activeRow)
+	incr activeRow -$count
+	adjustRowIndex $win activeRow 1
+	set data(activeRow) $activeRow
     } elseif {$first <= $data(activeRow)} {
-	set data(activeRow) $first
-	adjustRowIndex $win data(activeRow) 1
+	set activeRow $first
+	adjustRowIndex $win activeRow 1
+	set data(activeRow) $activeRow
     }
 
     #
@@ -3812,8 +3825,10 @@ proc tablelist::insertRows {win index argList updateListVar} {
 	adjustRowIndex $win data(anchorRow) 1
     }
     if {$index <= $data(activeRow)} {
-	incr data(activeRow) $argCount
-	adjustRowIndex $win data(activeRow) 1
+	set activeRow $data(activeRow)
+	incr activeRow $argCount
+	adjustRowIndex $win activeRow 1
+	set data(activeRow) $activeRow
     }
 
     #
