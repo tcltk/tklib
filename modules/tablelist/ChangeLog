@@ -1,3 +1,22 @@
+2009-02-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:              Bumped the version number to 4.11.
+	* *.txt:
+	* doc/tablelist.html:
+
+	* scripts/*.tcl:            Added the -columntitles option; added two
+	  virtual events related to hidden columns and rows; extended the
+	  bindings; added support for Windows Vista; bug-fixes related to the
+	  -tooltipdelcommand and -listvariable options and to the item deletion
+	  when using Tcl/Tk 8.5.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/tablelistWidget.html: Updated to reflect the new features.
+
+	* ../../examples/tablelist/styles.tcl:      Using the new -columntitles
+	* ../../examples/tablelist/styles_tile.tcl: option.
+
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
@@ -17,7 +36,7 @@
 	  subcommand.
 
 	* doc/tablelist.html:             Changed the recommended package name
-	  ../../examples/tablelist/*.tcl: from "Tablelist" to "tablelist".
+	* ../../examples/tablelist/*.tcl: from "Tablelist" to "tablelist".
 
 2008-09-15   Nemethi <csaba.nemethi@t-online.de>
 
