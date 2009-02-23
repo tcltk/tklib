@@ -647,6 +647,23 @@ proc demo::displayConfig w {
   optionally follow the titles), because the columns shall all be
   left-justified.</p>
 
+  <p>Since all columns are of dynamic width and left-aligned, instead of
+  <code>-columns</code> we could have used the <code><a href=
+  "tablelistWidget.html#columntitles">-columntitles</a></code> option as
+  follows:</p>
+
+  <blockquote>
+    <pre>
+    tablelist::tablelist $tbl \
+        -columntitles {"Command-Line Name"
+                       "Database/Alias Name"
+                       "Database Class"
+                       "Default Value"
+                       "Current Value"} \
+        . . .
+</pre>
+  </blockquote>
+
   <p>The command <code><a href=
   "tablelistColSort.html#sortByColumn">tablelist::sortByColumn</a></code>,
   specified as the value of the <code><a href=
@@ -1363,7 +1380,7 @@ frame .f
 for {set n 0} { $n &lt; 8} {incr n} {
     set tbl .f.tbl$n
     tablelist::tablelist $tbl \
-        -columns {0 "Label 0"  0 "Label 1"  0 "Label 2"  0 "Label 3"} \
+        -columntitles {"Label 0" "Label 1" "Label 2" "Label 3"} \
         -background gray98 -height 4 -width 40 -stretch all
     if {[$tbl cget -selectborderwidth] == 0} {
         $tbl configure -spacing 1
