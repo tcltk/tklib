@@ -39,7 +39,7 @@ ttk::frame $f.f
 for {set n 0} { $n < 8} {incr n} {
     set tbl $f.f.tbl$n
     tablelist::tablelist $tbl \
-    	-columns {0 "Label 0"  0 "Label 1"  0 "Label 2"  0 "Label 3"} \
+	-columntitles {"Label 0" "Label 1" "Label 2" "Label 3"} \
 	-background gray98 -height 4 -width 40 -stretch all
     if {[$tbl cget -selectborderwidth] == 0} {
 	$tbl configure -spacing 1
