@@ -6,10 +6,10 @@
 
 package require Tcl 8
 package require Tk  8
-package require -exact tablelist::common 4.10.1
+package require -exact tablelist::common 4.11
 
-package provide Tablelist $::tablelist::version
 package provide tablelist $::tablelist::version
+package provide Tablelist $::tablelist::version
 
 ::tablelist::useTile 0
 ::tablelist::createBindings
