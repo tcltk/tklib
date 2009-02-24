@@ -149,7 +149,7 @@ the package Tablelist_tile, your scripts must contain one of the lines
     package require tablelist_tile
     package require Tablelist_tile
 
-Since the packagse Tablelist and Tablelist_tile are implemented in the
+Since the packages Tablelist and Tablelist_tile are implemented in the
 namespace "tablelist", you must either import the procedures you need,
 or use qualified names like "tablelist::tablelist".
 
