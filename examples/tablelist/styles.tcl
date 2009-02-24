@@ -8,7 +8,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2002-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist
+package require tablelist 4.11
 
 wm title . "Tablelist Styles"
 

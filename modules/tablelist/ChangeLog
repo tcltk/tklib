@@ -1,3 +1,9 @@
+2009-02-24  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* README.txt:                               Minor improvements.
+	* ../../examples/tablelist/styles.tcl:
+	* ../../examples/tablelist/styles_tile.tcl:
+
 2009-02-23  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:              Bumped the version number to 4.11.
