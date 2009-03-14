@@ -1906,6 +1906,7 @@ proc tablelist::labelB1Down {w x shiftPressed} {
     if {[inResizeArea $w $x col] &&
 	$data(-resizablecolumns) && $data($col-resizable)} {
 	set data(colBeingResized) $col
+	set data(colResized) 0
 
 	set w $data(body)
 	set topTextIdx [$w index @0,0]
@@ -1985,6 +1986,7 @@ proc tablelist::labelB1Motion {w X x y} {
 	set width [expr {$data(oldStretchedColWidth) + $X - $data(X)}]
 	if {$width >= $data(minColWidth)} {
 	    set col $data(colBeingResized)
+	    set data(colResized) 1
 	    set idx [expr {3*$col}]
 	    set data(-columns) [lreplace $data(-columns) $idx $idx -$width]
 	    set idx [expr {2*$col}]
@@ -2233,51 +2235,58 @@ proc tablelist::labelB1Up {w X} {
 	}
 	bind [winfo toplevel $win] <Escape> $data(topEscBinding)
 	set col $data(colBeingResized)
-	if {$data(-width) <= 0} {
-	    $data(hdr) configure -width $data(hdrPixels)
-	    $data(lb) configure -width \
-		      [expr {$data(hdrPixels) / $data(charWidth)}]
-	} elseif {[info exists data(stretchableCols)] &&
-		  [lsearch -exact $data(stretchableCols) $col] >= 0} {
-	    set oldColWidth \
-		[expr {$data(oldStretchedColWidth) - $data(oldColDelta)}]
-	    set stretchedColWidth \
-		[expr {$data(oldStretchedColWidth) + $X - $data(X)}]
-	    if {$oldColWidth < $data(stretchablePixels) &&
-		$stretchedColWidth >= $data(minColWidth) &&
-		$stretchedColWidth < $oldColWidth + $data(delta)} {
-		#
-		# Compute the new column width, using the following equations:
-		#
-		# $colWidth = $stretchedColWidth - $colDelta
-		# $colDelta / $colWidth =
-		#    ($data(delta) - $colWidth + $oldColWidth) /
-		#    ($data(stretchablePixels) + $colWidth - $oldColWidth)
-		#
-		set colWidth [expr {
-		    $stretchedColWidth *
-		    ($data(stretchablePixels) - $oldColWidth) /
-		    ($data(stretchablePixels) + $data(delta) -
-		     $stretchedColWidth)
-		}]
-		if {$colWidth < 1} {
-		    set colWidth 1
+	if {$data(colResized)} {
+	    if {$data(-width) <= 0} {
+		$data(hdr) configure -width $data(hdrPixels)
+		$data(lb) configure -width \
+			  [expr {$data(hdrPixels) / $data(charWidth)}]
+	    } elseif {[info exists data(stretchableCols)] &&
+		      [lsearch -exact $data(stretchableCols) $col] >= 0} {
+		set oldColWidth \
+		    [expr {$data(oldStretchedColWidth) - $data(oldColDelta)}]
+		set stretchedColWidth \
+		    [expr {$data(oldStretchedColWidth) + $X - $data(X)}]
+		if {$oldColWidth < $data(stretchablePixels) &&
+		    $stretchedColWidth >= $data(minColWidth) &&
+		    $stretchedColWidth < $oldColWidth + $data(delta)} {
+		    #
+		    # Compute the new column width,
+		    using the following equations:
+		    #
+		    # $colWidth = $stretchedColWidth - $colDelta
+		    # $colDelta / $colWidth =
+		    #    ($data(delta) - $colWidth + $oldColWidth) /
+		    #    ($data(stretchablePixels) + $colWidth - $oldColWidth)
+		    #
+		    set colWidth [expr {
+			$stretchedColWidth *
+			($data(stretchablePixels) - $oldColWidth) /
+			($data(stretchablePixels) + $data(delta) -
+			 $stretchedColWidth)
+		    }]
+		    if {$colWidth < 1} {
+			set colWidth 1
+		    }
+		    set idx [expr {3*$col}]
+		    set data(-columns) \
+			[lreplace $data(-columns) $idx $idx -$colWidth]
+		    set idx [expr {2*$col}]
+		    set data(colList) \
+			[lreplace $data(colList) $idx $idx $colWidth]
+		    set data($col-delta) [expr {$stretchedColWidth - $colWidth}]
 		}
-		set idx [expr {3*$col}]
-		set data(-columns) \
-		    [lreplace $data(-columns) $idx $idx -$colWidth]
-		set idx [expr {2*$col}]
-		set data(colList) [lreplace $data(colList) $idx $idx $colWidth]
-		set data($col-delta) [expr {$stretchedColWidth - $colWidth}]
 	    }
 	}
 	unset data(colBeingResized)
 	$data(body) tag remove visibleLines 1.0 end
 	$data(body) tag configure visibleLines -tabs {}
-	redisplayCol $win $col 0 end
-	adjustColumns $win {} 0
-	stretchColumns $win $col
-	event generate $win <<TablelistColumnResized>>
+
+	if {$data(colResized)} {
+	    redisplayCol $win $col 0 end
+	    adjustColumns $win {} 0
+	    stretchColumns $win $col
+	    event generate $win <<TablelistColumnResized>>
+	}
     } else {
 	if {[info exists data(X)]} {
 	    unset data(X)
