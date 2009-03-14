@@ -1,3 +1,14 @@
+2009-03-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.11.1.
+	* COPYRIGHT.txt:
+
+	* scripts/tablelistBind.tcl: Made sure that <Double-Button-1> works as
+	  expected for large lists, too.
+
+	* scripts/tablelistEdit.tcl: Eliminated a small regression introduced
+	  in tablelist 4.11.
+
 2009-02-24  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* README.txt:                               Minor improvements.
