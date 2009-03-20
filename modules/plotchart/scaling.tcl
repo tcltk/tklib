@@ -51,6 +51,17 @@ proc ::Plotchart::determineScale { xmin xmax {inverted 0} } {
    }
 
    #
+   # Very small ranges (relatively speaking) cause problems
+   # The range must be at least 1.0e-8
+   #
+   if { $dx < 0.5e-8*(abs($xmin)+abs($xmax)) } {
+       set xmean [expr {0.5*($xmin+$xmax)}]
+       set dx    [expr {1.0e-8*$xmean}]
+       set xmin  [expr {$xmean - 0.5*$dx}]
+       set xmax  [expr {$xmean + 0.5*$dx}]
+   }
+
+   #
    # Determine the factor of 10 so that dx falls within the range 1-10
    #
    set expon  [expr {int(log10($dx))}]
@@ -64,8 +75,16 @@ proc ::Plotchart::determineScale { xmin xmax {inverted 0} } {
       }
    }
 
-   set nicemin [expr {$step*$factor*int($xmin/$factor/$step)}]
-   set nicemax [expr {$step*$factor*int($xmax/$factor/$step)}]
+   set fmin    [expr {$xmin/$factor/$step}]
+   set fmax    [expr {$xmax/$factor/$step}]
+#  if { abs($fmin) > 1.0e10 } {
+#      set fmin [expr {$fmin > 0.0 ? 1.0e10 : -1.0e10}]
+#  }
+#  if { abs($fmax) > 1.0e10 } {
+#      set fmax [expr {$fmax > 0.0 ? 1.0e10 : -1.0e10}]
+#  }
+   set nicemin [expr {$step*$factor*wide($fmin)}]
+   set nicemax [expr {$step*$factor*wide($fmax)}]
 
    if { [tlt $nicemax $xmax] } {
       set nicemax [expr {$nicemax+$step*$factor}]

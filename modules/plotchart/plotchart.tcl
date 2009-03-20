@@ -589,13 +589,14 @@ proc ::Plotchart::polarToPixel { w rad phi } {
 #    w           Name of the canvas
 #    xscale      Minimum, maximum and step for x-axis (initial)
 #    yscale      Minimum, maximum and step for y-axis
+#    args        Options (currently: -xlabels list)
 # Result:
 #    Name of a new command
 # Note:
 #    The entire canvas will be dedicated to the XY plot.
 #    The plot will be drawn with axes
 #
-proc ::Plotchart::createXYPlot { w xscale yscale } {
+proc ::Plotchart::createXYPlot { w xscale yscale args} {
    variable data_series
 
    foreach s [array names data_series "$w,*"] {
@@ -615,7 +616,7 @@ proc ::Plotchart::createXYPlot { w xscale yscale } {
       return -code error "Step size can not be zero"
    }
 
-   if { ($xmax-$xmin)*$xdelt < 0.0 } {
+   if { $xdelt ne {} && ($xmax-$xmin)*$xdelt < 0.0 } {
       set xdelt [expr {-$xdelt}]
    }
    if { ($ymax-$ymin)*$ydelt < 0.0 } {
@@ -626,7 +627,20 @@ proc ::Plotchart::createXYPlot { w xscale yscale } {
    worldCoordinates $w $xmin  $ymin  $xmax  $ymax
 
    DrawYaxis        $w $ymin  $ymax  $ydelt
-   DrawXaxis        $w $xmin  $xmax  $xdelt
+   if { $xdelt eq {} } {
+       foreach {arg val} $args {
+           switch -exact -- $arg {
+               -xlabels {
+                   DrawXaxis $w $xmin  $xmax  $xdelt $arg $val
+               }
+               default {
+                   error "Argument $arg not recognized"
+               }
+           }
+       }
+   } else {
+       DrawXaxis   $w $xmin  $xmax  $xdelt
+   }
    DrawMask         $w
    DefaultLegend    $w
    DefaultBalloon   $w
@@ -1599,4 +1613,4 @@ source [file join [file dirname [info script]] "plotpack.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.6.1
+package provide Plotchart 1.6.2
