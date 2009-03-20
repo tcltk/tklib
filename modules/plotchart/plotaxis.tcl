@@ -225,16 +225,15 @@ proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
 #    xmin        Minimum x coordinate
 #    xmax        Maximum x coordinate
 #    xstep       Step size
+#    args        Options (currently: -xlabels list)
 # Result:
 #    None
 # Side effects:
 #    Axis drawn in canvas
 #
-proc ::Plotchart::DrawXaxis { w xmin xmax xdelt } {
+proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
     variable scaling
     variable config
-
-    set scaling($w,xdelt) $xdelt
 
     $w delete xaxis
 
@@ -264,7 +263,37 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt } {
     set xt [expr {$xmin+0.0}]
     set scaling($w,xaxis) {}
 
-    while { $x < $xm+0.5*abs($xdelt) } {
+    set xs {}
+    set xts {}
+
+    if { $xdelt eq {} } {
+        foreach {arg val} $args {
+            switch -exact -- $arg {
+                -xlabels {
+                    set xs $val
+                    foreach xval $val {
+                        lappend xts [expr {$xval+0.0}]
+                    }
+                    set scaling($w,xdelt) $xs
+                }
+                default {
+                    error "Argument $arg not recognized"
+                }
+            }
+        }
+    } else {
+        set scaling($w,xdelt) $xdelt
+        while { $x < $xm+0.5*abs($xdelt) } {
+            lappend xs $x
+            lappend xts $xt
+            set x  [expr {$x+abs($xdelt)}]
+            set xt [expr {$xt+$xdelt}]
+            if { abs($x) < 0.5*abs($xdelt) } {
+                set xt 0.0
+            }
+        }
+    }
+    foreach x $xs xt $xts {
 
         foreach {xcrd ycrd} [coordsToPixel $w $xt $scaling($w,ymin)] {break}
         set ycrd2 [expr {$ycrd+$ticklength}]
@@ -280,14 +309,7 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt } {
         $w create line $xcrd $ycrd2 $xcrd $ycrd -tag xaxis -fill $linecolor
         $w create text $xcrd $ycrd3 -text $xlabel -tag xaxis -anchor n \
             -fill $textcolor -font $textfont
-        set x  [expr {$x+abs($xdelt)}]
-        set xt [expr {$xt+$xdelt}]
-        if { abs($x) < 0.5*abs($xdelt) } {
-            set xt 0.0
-        }
     }
-
-    set scaling($w,xdelt) $xdelt
 }
 
 # DrawXtext --
@@ -582,7 +604,11 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
     }
 
     if { $orient == "x" } {
-        $drawmethod $w $scaling($w,xmin) $scaling($w,xmax) $scaling($w,xdelt)
+        if { [llength $scaling($w,xdelt)] == 1 } {
+            $drawmethod $w $scaling($w,xmin) $scaling($w,xmax) $scaling($w,xdelt)
+        } else {
+            $drawmethod $w $scaling($w,xmin) $scaling($w,xmax) {} -xlabels $scaling($w,xdelt)
+        }
     }
     if { $orient == "y" } {
         $drawmethod $w $scaling($w,ymin) $scaling($w,ymax) $scaling($w,ydelt)

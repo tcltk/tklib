@@ -1,3 +1,7 @@
+2008-03-20  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* scaling.tcl: Added special case: very small ranges now clipped to 1.0e-8 (bug #2691870)
+	* plotchart.test: Added test forvery small range, introduced tolerance in matching
+
 2009-02-06  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* plothist.test: Moved to examples/plotchart, renamed to
