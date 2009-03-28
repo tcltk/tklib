@@ -676,6 +676,9 @@
 
     <dd><code><i>pathName</i> <b><a href="#labels">labels</a></b></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#labeltag">labeltag</a></b></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#move">move</a></b> <i>source</i>
     <i>target</i></code></dd>
 
@@ -846,7 +849,8 @@
     BODY</a></dt>
 
     <dt><br>
-    <a href="#label_bindings">DEFAULT BINDINGS FOR THE HEADER LABELS</a></dt>
+    <a href="#label_bindings">DEFAULT AND INDIVIDUAL BINDINGS FOR THE HEADER
+    LABELS</a></dt>
 
     <dt><br>
     <a href="#edit_bindings">DEFAULT BINDINGS FOR INTERACTIVE CELL
@@ -1849,9 +1853,9 @@ for {set row 0} {$row &lt; 1000} {incr row} {
       <blockquote>
         <p>Specifies a boolean value that determines whether the columns can be
         moved interactively.&nbsp; See the <a href="#label_bindings">DEFAULT
-        BINDINGS FOR THE HEADER LABELS</a> section below for information on
-        moving a column interactively.&nbsp; The default value is
-        <code>0</code>.</p>
+        AND INDIVIDUAL BINDINGS FOR THE HEADER LABELS</a> section below for
+        information on moving a column interactively.&nbsp; The default value
+        is <code>0</code>.</p>
       </blockquote>
     </dd>
 
@@ -1957,8 +1961,8 @@ for {set row 0} {$row &lt; 1000} {incr row} {
         <p>Specifies a boolean value that determines whether the boundary of
         the title column area shall be protected from being crossed when moving
         a column interactively.&nbsp; See the <a href="#label_bindings">DEFAULT
-        BINDINGS FOR THE HEADER LABELS</a> section below for information on
-        moving a column interactively.&nbsp; The default value is
+        AND INDIVIDUAL BINDINGS FOR THE HEADER LABELS</a> section below for
+        information on moving a column interactively.&nbsp; The default value is
         <code>0</code>, specifying that non-title columns can be moved into the
         title column area and vice-versa.</p>
       </blockquote>
@@ -1986,8 +1990,8 @@ for {set row 0} {$row &lt; 1000} {incr row} {
       <blockquote>
         <p>Specifies a boolean value that determines whether the columns can be
         resized interactively.&nbsp; See the <a href="#label_bindings">DEFAULT
-        BINDINGS FOR THE HEADER LABELS</a> section below for information on
-        interactive column resizing.&nbsp; The default value is
+        AND INDIVIDUAL BINDINGS FOR THE HEADER LABELS</a> section below for
+        information on interactive column resizing.&nbsp; The default value is
         <code>1</code>.</p>
       </blockquote>
     </dd>
@@ -3108,8 +3112,8 @@ proc formatDate clockVal {
         <i>boolean</i></code></dt>
 
         <dd>Specifies whether the column can be resized interactively.&nbsp;
-        See the <a href="#label_bindings">DEFAULT BINDINGS FOR THE HEADER
-        LABELS</a> section for information on interactive column
+        See the <a href="#label_bindings">DEFAULT AND INDIVIDUAL BINDINGS FOR
+        THE HEADER LABELS</a> section for information on interactive column
         resizing.&nbsp; The default value is <code>1</code>.&nbsp; This option
         is only relevant if the value of the <code><b><a href=
         "#resizablecolumns">-resizablecolumns</a></b></code> widget
@@ -5092,6 +5096,22 @@ upvar #0 [.tbl itemlistvar] itemList
         the widget.</dd>
 
         <dt><br>
+        <a name="labeltag"></a><code><i>pathName</i>
+        <b>labeltag</b></code></dt>
+
+        <dd>Returns the name of a binding tag whose name depends on the path
+        name of the tablelist widget and which is associated with the header
+        labels as well as with the additional widgets placed by Tablelist into
+        the latters for displaying header images and sort arrows.&nbsp; This
+        binding tag is designed to be used when defining non-default binding
+        scripts for the header labels.&nbsp; From within such event handling
+        scripts you can retrieve the column number and the tablelist widget's
+        path name with the aid of the helper commands <code><b><a href=
+        "tablelistBinding.html#getTablelistColumn">tablelist::getTablelistColumn</a></b></code>
+        and <code><b><a href=
+        "tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a></b></code>.</dd>
+
+        <dt><br>
         <a name="move"></a><code><i>pathName</i> <b>move</b> <i>source</i>
         <i>target</i></code></dt>
 
@@ -5968,8 +5988,8 @@ bind [.tbl bodytag] &lt;Button-1&gt; {
       <code><b>&lt;&lt;TablelistRowMoved&gt;&gt;</b></code> is generated.</p>
     </dd>
 
-    <dt><a name="label_bindings"></a><b>DEFAULT BINDINGS FOR THE HEADER
-    LABELS</b></dt>
+    <dt><a name="label_bindings"></a><b>DEFAULT AND INDIVIDUAL BINDINGS FOR THE
+    HEADER LABELS</b></dt>
 
     <dd>
       The <code><b>tablelist::tablelist</b></code> command automatically
@@ -6074,6 +6094,27 @@ bind [.tbl bodytag] &lt;Button-1&gt; {
       <p>If the tablelist's <code><b><a href="#state">state</a></b></code> is
       <code><b>disabled</b></code> then none of the above actions occur: the
       labels are completely insensitive.</p>
+
+      <p>If you want to define non-default bindings for the header labels, it
+      is recommended to associate them with the binding tag whose name is
+      returned by the <code><b><a href="#labeltag">labeltag</a></b></code>
+      subcommand and make use of the helper commands <code><b><a href=
+      "tablelistBinding.html#getTablelistColumn">tablelist::getTablelistColumn</a></b></code>
+      and <code><b><a href=
+      "tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a></b></code>.&nbsp;
+      For example, to replace the default binding for
+      <code><b>&lt;Button-3&gt;</b></code> with a script that performs a
+      column-dependent action, you can proceed like in the code shown
+      below:</p>
+
+      <blockquote>
+        <pre>
+bind [.tbl labeltag] &lt;Button-3&gt; {
+    puts "right-clicked on header label no. [tablelist::getTablelistColumn %W]"
+    break
+}
+</pre>
+      </blockquote>
     </dd>
 
     <dt><a name="edit_bindings"></a><b>DEFAULT BINDINGS FOR INTERACTIVE CELL
