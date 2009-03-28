@@ -1428,12 +1428,12 @@ proc tablelist::doColConfig {col win opt val} {
 			}
 
 			#
-			# Replace the binding tag Label with
-			# $w and TablelistSubLabel in the
-			# list of binding tags of the label $l
+			# Replace the binding tag Label with $w,
+			# $data(labelTag), and TablelistSubLabel in
+			# the list of binding tags of the label $l
 			#
 			bindtags $l [lreplace [bindtags $l] 1 1 \
-				     $w TablelistSubLabel]
+				     $w $data(labelTag) TablelistSubLabel]
 		    }
 		}
 
