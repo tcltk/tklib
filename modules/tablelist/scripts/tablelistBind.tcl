@@ -17,6 +17,21 @@
 #
 
 #------------------------------------------------------------------------------
+# tablelist::getTablelistColumn
+#
+# Gets the column number from the path name w of a (sub)label or sort arrow of
+# a tablelist widget.
+#------------------------------------------------------------------------------
+proc tablelist::getTablelistColumn w {
+    if {[regexp {^(\..+)\.hdr\.t\.f\.l([0-9]+)(-[it]l)?$} $w dummy win col] ||
+	[regexp {^(\..+)\.hdr\.t\.f\.c([0-9]+)$} $w dummy win col]} {
+	return $col
+    } else {
+	return -1
+    }
+}
+
+#------------------------------------------------------------------------------
 # tablelist::getTablelistPath
 #
 # Gets the path name of the tablelist widget from the path name w of one of its
