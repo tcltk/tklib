@@ -334,13 +334,13 @@ namespace eval tablelist {
 	finishediting formatinfo get getcells getcolumns getkeys hasattrib \
 	hascellattrib hascolumnattrib hasrowattrib imagelabelpath index \
 	insert insertcolumnlist insertcolumns insertlist iselemsnipped \
-	istitlesnipped itemlistvar labelpath labels move movecolumn nearest \
-	nearestcell nearestcolumn rejectinput resetsortinfo rowattrib rowcget \
-	rowconfigure scan see seecell seecolumn selection separatorpath \
-	separators size sort sortbycolumn sortbycolumnlist sortcolumn \
-	sortcolumnlist sortorder sortorderlist togglecolumnhide togglerowhide \
-	unsetattrib unsetcellattrib unsetcolumnattrib unsetrowattrib \
-	windowpath xview yview]
+	istitlesnipped itemlistvar labelpath labels labeltag move movecolumn \
+	nearest nearestcell nearestcolumn rejectinput resetsortinfo rowattrib \
+	rowcget rowconfigure scan see seecell seecolumn selection \
+	separatorpath separators size sort sortbycolumn sortbycolumnlist \
+	sortcolumn sortcolumnlist sortorder sortorderlist togglecolumnhide \
+	togglerowhide unsetattrib unsetcellattrib unsetcolumnattrib \
+	unsetrowattrib windowpath xview yview]
     if {!$canElide} {
 	set idx [lsearch -exact $cmdOpts togglerowhide]
 	set cmdOpts [lreplace $cmdOpts $idx $idx]
@@ -615,6 +615,7 @@ proc tablelist::tablelist args {
     set data(colFontList)	[list $data(-font)]
     set data(listVarTraceCmd)	[list tablelist::listVarTrace $win]
     set data(bodyTag)		body$win
+    set data(labelTag)		label$win
     set data(editwinTag)	editwin$win
     set data(body)		$win.body
     set data(bodyFr)		$data(body).f
@@ -2053,6 +2054,18 @@ proc tablelist::labelsSubCmd {win argList} {
 	lappend labelList $data(hdrTxtFrLbl)$col
     }
     return $labelList
+}
+
+#------------------------------------------------------------------------------
+# tablelist::labeltagSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::labeltagSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win labeltag"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    return $data(labelTag)
 }
 
 #------------------------------------------------------------------------------

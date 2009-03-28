@@ -24,7 +24,7 @@ namespace eval ::tablelist {
     #
     # Helper procedures used in binding scripts:
     #
-    namespace export	getTablelistPath convEventFields
+    namespace export	convEventFields getTablelistPath getTablelistColumn
 
     #
     # Register various widgets for interactive cell editing:

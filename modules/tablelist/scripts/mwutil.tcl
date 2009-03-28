@@ -20,7 +20,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.5
+    variable version	2.6
     variable library	[file dirname [info script]]
 
     #
@@ -91,7 +91,7 @@ proc mwutil::wrongNumArgs args {
 # exist (but w itself needn't exist).
 #------------------------------------------------------------------------------
 proc mwutil::getAncestorByClass {w class} {
-    regexp {^(.+)\..+$} $w dummy win
+    regexp {^(\..+)\..+$} $w dummy win
     while {[string compare [winfo class $win] $class] != 0} {
 	set win [winfo parent $win]
     }

@@ -1769,10 +1769,11 @@ proc tablelist::setupColumns {win columns createLabels} {
 	    catch {configLabel $w -state $data(-state)}
 
 	    #
-	    # Replace the binding tag (T)Label with TablelistLabel
-	    # in the list of binding tags of the label
+	    # Replace the binding tag (T)Label with $data(labelTag) and
+	    # TablelistLabel in the list of binding tags of the label
 	    #
-	    bindtags $w [lreplace [bindtags $w] 1 1 TablelistLabel]
+	    bindtags $w [lreplace [bindtags $w] 1 1 \
+			 $data(labelTag) TablelistLabel]
 
 	    #
 	    # Create a canvas containing the sort arrows
@@ -1794,10 +1795,11 @@ proc tablelist::setupColumns {win columns createLabels} {
 	    }
 	    
 	    #
-	    # Replace the binding tag Canvas with TablelistArrow
-	    # in the list of binding tags of the canvas
+	    # Replace the binding tag Canvas with $data(labelTag) and
+	    # TablelistArrow in the list of binding tags of the canvas
 	    #
-	    bindtags $w [lreplace [bindtags $w] 1 1 TablelistArrow]
+	    bindtags $w [lreplace [bindtags $w] 1 1 \
+			 $data(labelTag) TablelistArrow]
 
 	    if {[info exists data($col-labelimage)]} {
 		doColConfig $col $win -labelimage $data($col-labelimage)
@@ -3782,7 +3784,7 @@ proc tablelist::getSublabels w {
 #------------------------------------------------------------------------------
 proc tablelist::parseLabelPath {w winName colName} {
     upvar $winName win $colName col
-    return [regexp {^(.+)\.hdr\.t\.f\.l([0-9]+)$} $w dummy win col]
+    return [regexp {^(\..+)\.hdr\.t\.f\.l([0-9]+)$} $w dummy win col]
 }
 
 #------------------------------------------------------------------------------
