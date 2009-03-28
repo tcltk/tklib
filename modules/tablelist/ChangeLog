@@ -9,7 +9,7 @@
 
 	* scripts/tclIndex: Newly generated.
 
-	* doc/tablelistBind.html:   Updated to reflect the new features.
+	* doc/tablelistBinding.html:   Updated to reflect the new features.
 	* doc/tablelistWidget.html:
 
 2009-03-14  Csaba Nemethi <csaba.nemethi@t-online.de>
