@@ -1,3 +1,17 @@
+2009-03-28  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* tablelistPublic.tcl:         Added the labeltag subcommand and the
+	* scripts/mwutil.tcl:          helper command
+	* scripts/tablelistBind.tcl    tablelist::getTablelistColumn.
+	* scripts/tablelistConfig.tcl:
+	* scripts/tablelistUtil.tcl:
+	* scripts/tablelistWidget.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/tablelistBind.html:   Updated to reflect the new features.
+	* doc/tablelistWidget.html:
+
 2009-03-14  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 4.11.1.
