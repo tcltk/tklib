@@ -1,3 +1,10 @@
+2009-04-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistEdit.tcl: Fixed a small bug related to interactive
+	  cell editing with the aid of a text widget.
+
+	* doc/tablelistWidget.html: Minor correction.
+
 2009-03-28  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* tablelistPublic.tcl:         Added the labeltag subcommand and the
