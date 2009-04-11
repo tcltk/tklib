@@ -1233,7 +1233,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     #
     seeCell $win $row $col
     set netRowHeight [lindex [bboxSubCmd $win $row] 3]
-    set frameHeight [expr {$netRowHeight + 6}]	;# + 6 because of -pady -3 below
+    set frameHeight [expr {$netRowHeight + 6}]	;# because of the -pady -3 below
     set f $data(bodyFr)
     tk::frame $f -borderwidth 0 -container 0 -height $frameHeight \
 		 -highlightthickness 0 -relief flat -takefocus 0
@@ -1425,14 +1425,15 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	}
     }
 
+    #
+    # Adjust the frame's height
+    #
     if {$isText} {
-	#
-	# Adjust the edit window's height
-	#
 	if {[string compare [$w cget -wrap] "none"] == 0 ||
 	    $::tk_version < 8.5} {
 	    scan [$w index end-1c] "%d" numLines
 	    $w configure -height $numLines
+	    $f configure -height [winfo reqheight $w]
 	} else {
 	    bind $w <Configure> {
 		%W configure -height [%W count -displaylines 1.0 end]
@@ -1443,17 +1444,18 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	    wcb::cbappend $w after insert tablelist::adjustTextHeight
 	    wcb::cbappend $w after delete tablelist::adjustTextHeight
 	}
+    } elseif {!$isCheckbtn} {
+	update idletasks
+	if {![winfo exists $win]} {		;# because of update idletasks
+	    return ""
+	}
+	$f configure -height [winfo reqheight $w]
     }
 
     #
-    # Adjust the frame's dimensions and paddings
+    # Adjust the frame's width and paddings
     #
-    update idletasks
-    if {![winfo exists $win]} {			;# because of update idletasks
-	return ""
-    }
     if {!$isCheckbtn} {
-	$f configure -height [winfo reqheight $w]
 	place $w -relwidth 1.0 -relheight 1.0
 	set pixels [lindex $data(colList) [expr {2*$col}]]
 	if {$pixels == 0} {			;# convention: dynamic width
