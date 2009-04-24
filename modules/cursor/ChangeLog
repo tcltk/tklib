@@ -1,3 +1,9 @@
+2009-04-24  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* cursor.tcl (::cursor::restore): allow for depthfirst restore to
+	better handle megawidgets. [Bug 2082457]
+	* pkgIndex.tcl: Bump version to 0.3.
+
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
