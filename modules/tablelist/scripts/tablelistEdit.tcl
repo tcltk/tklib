@@ -1468,10 +1468,6 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	}
 	incr pixels $data($col-delta)
 	adjustEditWindow $win $pixels
-	update idletasks
-	if {![winfo exists $win]} {		;# because of update idletasks
-	    return ""
-	}
     }
 
     adjustElidedTextWhenIdle $win
@@ -2008,6 +2004,15 @@ proc tablelist::defineTablelistEdit {} {
     # Define some bindings for the binding tag TablelistEdit
     #
     bind TablelistEdit <Button-1> {
+	#
+	# Very short left-clicks on the tablelist's body are sometimes
+	# unexpectedly propagated to the edit window just created - make
+	# sure they won't be handled by the latter's default bindings
+	#
+	if {%t - $tablelist::priv(releaseTime) < 100} {
+	    break
+	}
+
 	set tablelist::priv(clicked) 1
 	set tablelist::priv(clickedInEditWin) 1
 	focus %W
@@ -2022,6 +2027,7 @@ proc tablelist::defineTablelistEdit {} {
 	    set tablelist::priv(clicked) 0
 	    after cancel $tablelist::priv(afterId)
 	    set tablelist::priv(afterId) ""
+	    set tablelist::priv(releaseTime) %t
 	    set tablelist::priv(releasedInEditWin) 1
 	    if {%t - $tablelist::priv(clickTime) < 300} {
 		tablelist::moveOrActivate $tablelist::W \

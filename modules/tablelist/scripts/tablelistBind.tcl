@@ -274,6 +274,7 @@ proc tablelist::defineTablelistBody {} {
 	selection		{}
 	clicked			0
 	clickTime		0
+	releaseTime		0
 	clickedInEditWin	0
     }
 
@@ -317,6 +318,7 @@ proc tablelist::defineTablelistBody {} {
 	    %t - $tablelist::priv(clickTime) < 300} {
 	    continue
 	}
+
 	foreach {tablelist::W tablelist::x tablelist::y} \
 	    [tablelist::convEventFields %W %x %y] {}
 
@@ -344,6 +346,7 @@ proc tablelist::defineTablelistBody {} {
 	set tablelist::priv(clicked) 0
 	after cancel $tablelist::priv(afterId)
 	set tablelist::priv(afterId) ""
+	set tablelist::priv(releaseTime) %t
 	set tablelist::priv(releasedInEditWin) 0
 	if {$tablelist::priv(clicked) &&
 	    %t - $tablelist::priv(clickTime) < 300} {
@@ -1025,10 +1028,6 @@ proc tablelist::condEvalInvokeCmd win {
     #
     # Evaluate the edit window's invoke command
     #
-    update 
-    if {![winfo exists $w]} {				;# because of update
-	return ""
-    }
     eval [strMap {"%W" "$w"} $editWin($name-invokeCmd)]
     set data(invoked) 1
 }
