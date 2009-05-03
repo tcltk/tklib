@@ -1,3 +1,8 @@
+2009-05-03  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl: Improvements in the binding scripts
+	* scripts/tablelistEdit.tcl: related to interactive cell editing.
+
 2009-05-02  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 4.11.2.
