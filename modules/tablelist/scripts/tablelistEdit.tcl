@@ -2037,7 +2037,7 @@ proc tablelist::defineTablelistEdit {} {
 		    [$tablelist::W nearest       $tablelist::y] \
 		    [$tablelist::W nearestcolumn $tablelist::x]
 	    }
-	    tablelist::condEvalInvokeCmd $tablelist::W
+	    after 100 [list tablelist::condEvalInvokeCmd $tablelist::W]
 	}
     }
     bind TablelistEdit <Control-i>    { tablelist::insertChar %W "\t" }
