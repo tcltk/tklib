@@ -357,7 +357,7 @@ proc tablelist::defineTablelistBody {} {
 		[$tablelist::W nearest       $tablelist::y] \
 		[$tablelist::W nearestcolumn $tablelist::x]
 	}
-	tablelist::condEvalInvokeCmd $tablelist::W
+	after 100 [list tablelist::condEvalInvokeCmd $tablelist::W]
     }
     bind TablelistBody <Shift-Button-1> {
 	foreach {tablelist::W tablelist::x tablelist::y} \
@@ -1028,6 +1028,10 @@ proc tablelist::condEvalInvokeCmd win {
     #
     # Evaluate the edit window's invoke command
     #
+    update
+    if {![winfo exists $w]} {				;# because of update
+	return ""
+    }
     eval [strMap {"%W" "$w"} $editWin($name-invokeCmd)]
     set data(invoked) 1
 }
