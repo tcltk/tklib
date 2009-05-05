@@ -1468,6 +1468,10 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	}
 	incr pixels $data($col-delta)
 	adjustEditWindow $win $pixels
+	update idletasks
+	if {![winfo exists $win]} {		;# because of update idletasks
+	    return ""
+	}
     }
 
     adjustElidedTextWhenIdle $win
@@ -1596,6 +1600,7 @@ proc tablelist::doFinishEditing win {
 	focus $data(body)
 	event generate $win <<TablelistCellUpdated>>
     }
+    update idletasks
 
     adjustElidedTextWhenIdle $win
     updateColorsWhenIdle $win
