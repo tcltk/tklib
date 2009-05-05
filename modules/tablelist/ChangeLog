@@ -1,3 +1,7 @@
+2009-05-05  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistEdit.tcl: Small correction.
+
 2009-05-03  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl: Improvements in the binding scripts
