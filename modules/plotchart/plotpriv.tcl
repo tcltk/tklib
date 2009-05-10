@@ -92,16 +92,32 @@ proc ::Plotchart::SavePlot { w filename args } {
 #
 proc ::Plotchart::MarginsRectangle { w {notext 2.0} {text_width 8}} {
    variable config
-   set pxmin [expr {10*$text_width}]
+
+   set char_width  $config(font,char_width)
+   set char_height $config(font,char_height)
+   set config($w,font,char_width)  $char_width
+   set config($w,font,char_height) $char_height
+
+   foreach {char_width char_height} [FontMetrics $w] {break}
+   set margin_right [expr {$char_width * 4}]
+   if { $margin_right < $config($w,margin,right) } {
+      set margin_right $config($w,margin,right)
+   }
+   set margin_bottom [expr {$char_height * 2 + 2}]
+   if { $margin_bottom < $config($w,margin,bottom) } {
+      set margin_bottom $config($w,margin,bottom)
+   }
+
+   set pxmin [expr {$char_width*$text_width}]
    if { $pxmin < $config($w,margin,left) } {
        set pxmin $config($w,margin,left)
    }
-   set pymin [expr {int(14*$notext)}]
+   set pymin [expr {int($char_height*$notext)}]
    if { $pymin < $config($w,margin,top) } {
        set pymin $config($w,margin,top)
    }
-   set pxmax [expr {[WidthCanvas $w]  - $config($w,margin,right)}]
-   set pymax [expr {[HeightCanvas $w] - $config($w,margin,bottom)}]
+   set pxmax [expr {[WidthCanvas $w]  - $margin_right}]
+   set pymax [expr {[HeightCanvas $w] - $margin_bottom}]
 
    return [list $pxmin $pymin $pxmax $pymax]
 }

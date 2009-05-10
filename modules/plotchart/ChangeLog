@@ -1,4 +1,11 @@
-2008-03-20  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+2009-03-20  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotchart.tcl: Solved issue 2683544 (font size leading to clipped labels)
+	* plotpriv.tcl: Ditto
+	* plotaxis.tcl: Ditto
+	* plotconfig.tcl: Ditto
+	* pkgIndex.tcl: Bumped version number to 1.6.3
+
+2009-03-20  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* scaling.tcl: Added special case: very small ranges now clipped to 1.0e-8 (bug #2691870)
 	* plotchart.test: Added test forvery small range, introduced tolerance in matching
 
