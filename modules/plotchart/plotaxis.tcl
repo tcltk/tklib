@@ -330,7 +330,7 @@ proc ::Plotchart::DrawXtext { w text } {
     set textfont   $config($w,bottomaxis,font)
 
     set xt [expr {($scaling($w,pxmin)+$scaling($w,pxmax))/2}]
-    set yt [expr {$scaling($w,pymax)+18}]
+    set yt [expr {$scaling($w,pymax)+$config($w,font,char_height)+4}]
 
     $w create text $xt $yt -text $text -fill $textcolor -anchor n -font $textfont
 }
@@ -361,7 +361,7 @@ proc ::Plotchart::DrawYtext { w text } {
         set xt $scaling($w,pxmax)
         set anchor     sw
     }
-    set yt [expr {$scaling($w,pymin)-8}]
+    set yt [expr {$scaling($w,pymin)-$config($w,font,char_height)/2}]
 
     $w create text $xt $yt -text $text -fill $textcolor -anchor $anchor -font $textfont
 }
