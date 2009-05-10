@@ -5,6 +5,30 @@
 namespace eval ::Plotchart {
     variable config
 
+    # FontMetrics --
+    #     Determine the font metrics
+    #
+    # Arguments:
+    #     w         Canvas to be used
+    #
+    # Result:
+    #     List of character width and height
+    #
+    proc FontMetrics {w} {
+        set item        [$w create text 0 0 -text "M"]
+        set bbox        [$w bbox $item]
+        set char_width  [expr {[lindex $bbox 2] - [lindex $bbox 0]}]
+        set char_height [expr {[lindex $bbox 3] - [lindex $bbox 1]}]
+        if { $char_width  <  8 } { set char_width   8 }
+        if { $char_height < 14 } { set char_height 14 }
+        $w delete $item
+
+        return [list $char_width $char_height]
+    }
+
+    #
+    # Set default configuration options
+    #
     set config(charttypes) {xyplot xlogyplot piechart polarplot
                             histogram horizbars vertbars ganttchart
                             timechart stripchart isometric 3dplot 3dbars
@@ -45,7 +69,7 @@ namespace eval ::Plotchart {
 
     # TODO: default values
     canvas .invisibleCanvas
-    set invisibleLabel [.invisibleCanvas create text 0 0 -text ""]
+    set invisibleLabel [.invisibleCanvas create text 0 0 -text "M"]
 
     set _color      "black"
     set _font       [.invisibleCanvas itemcget $invisibleLabel -font]
@@ -54,10 +78,16 @@ namespace eval ::Plotchart {
     set _ticklength 3
     set _textcolor  "black"
     set _anchor     n
-    set _left       80
-    set _right      40
-    set _top        28
-    set _bottom     30
+
+    foreach {char_width char_height} [FontMetrics .invisibleCanvas] {break}
+
+    set config(font,char_width)  $char_width
+    set config(font,char_height) $char_height
+
+    set _left       [expr {$char_width  * 8}]
+    set _right      [expr {$char_width  * 4}]
+    set _top        [expr {$char_height * 2}]
+    set _bottom     [expr {$char_height * 2 + 2}]
     set _bgcolor    "white"
     set _outercolor "white"
     set _innercolor "white"  ;# Not implemented yet: "$w lower data" gets in the way

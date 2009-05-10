@@ -1491,6 +1491,7 @@ proc ::Plotchart::createTXPlot { w tscale xscale } {
 proc ::Plotchart::createRightAxis { w yscale } {
    variable data_series
    variable scaling
+   variable config
 
    set newchart "right_$w"
 
@@ -1520,6 +1521,9 @@ proc ::Plotchart::createRightAxis { w yscale } {
    interp alias {} $newchart {} ::Plotchart::PlotHandler $type r$w
    interp alias {} r$w       {} $w
    CopyConfig $type r$w
+
+   set config(r$w,font,char_width)  $config($w,font,char_width)
+   set config(r$w,font,char_height) $config($w,font,char_height)
 
    set xmin $scaling($w,xmin)
    set xmax $scaling($w,xmax)
