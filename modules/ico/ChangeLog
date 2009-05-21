@@ -1,3 +1,9 @@
+2009-05-21  Andreas Kupries  <andreask@activestate.com>
+
+	* ico.man: Fixed issues in getIcon and writeIcon (semantic mismatches).
+	* ico.tcl: With help by Aaron and Jeff to review and make the fixes simpler.
+	* pkgIndex.tcl: Plus additional checks on file existence. Bumped version to 1.0.4.
+
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*

@@ -5,7 +5,7 @@
 # Copyright (c) 2003-2007 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.28 2008/03/12 07:25:49 hobbs Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.29 2009/05/21 16:32:24 andreas_kupries Exp $
 
 # Sample usage:
 #	set file bin/wish.exe
@@ -53,6 +53,9 @@ namespace eval ::ico {
 #
 proc ::ico::icons {file args} {
     parseOpts type $args
+    if {![file exists $file]} {
+        return -code error "couldn't open \"$file\": no such file or directory"
+    } 
     if {![info exists type]} {
         # $type wasn't specified - get it from the extension
         set type [fileext $file]
@@ -79,6 +82,9 @@ proc ::ico::icons {file args} {
 #
 proc ::ico::iconMembers {file name args} {
     parseOpts type $args
+    if {![file exists $file]} {
+        return -code error "couldn't open \"$file\": no such file or directory"
+    } 
     if {![info exists type]} {
         # $type wasn't specified - get it from the extension
         set type [fileext $file]
@@ -120,6 +126,9 @@ proc ::ico::getIcon {file name args} {
     set exact 0
     set bpp 24
     parseOpts {type format image res bpp exact} $args
+    if {![file exists $file]} {
+        return -code error "couldn't open \"$file\": no such file or directory"
+    } 
     if {![info exists type]} {
         # $type wasn't specified - get it from the extension
         set type [fileext $file]
@@ -137,7 +146,7 @@ proc ::ico::getIcon {file name args} {
     if {![info exists res]} {
         set icon [lindex $mem 0 0]
     } elseif {$exact} {
-        set icon [lsearch -inline -glob $mem "* $res $bpp"]
+        set icon [lindex [lsearch -inline -glob $mem "* $res $bpp"] 0]
         if {$icon == ""} { return -code error "No matching icon" }
     } else {
         set mem [lsort -integer -index 1 $mem]
@@ -191,6 +200,9 @@ proc ::ico::getIconByName {file name args} {
     set format image
     set image {}
     parseOpts {type format image} $args
+    if {![file exists $file]} {
+        return -code error "couldn't open \"$file\": no such file or directory"
+    } 
     if {![info exists type]} {
         # $type wasn't specified - get it from the extension
         set type [fileext $file]
@@ -258,7 +270,7 @@ proc ::ico::getFileIcon {file args} {
 #
 # ARGS:
 #	file	File to extract icon info from.
-#	name	Name of image in the file to use.  The name is the first element
+#	name	Name of image in the file to use. The name is the first element
 #		in the sublists returned by iconMembers.
 #	bpp	bit depth of icon we are writing
 #	data	Either pixel color data (as returned by getIcon -format color)
@@ -272,6 +284,9 @@ proc ::ico::getFileIcon {file args} {
 #
 proc ::ico::writeIcon {file name bpp data args} {
     parseOpts type $args
+    if {![file exists $file]} {
+        return -code error "couldn't open \"$file\": no such file or directory"
+    } 
     if {![info exists type]} {
         # $type wasn't specified - get it from the extension
         set type [fileext $file]
@@ -328,6 +343,12 @@ proc ::ico::writeIcon {file name bpp data args} {
 #
 proc ::ico::copyIcon {file1 name1 file2 name2 args} {
     parseOpts {fromtype totype} $args
+    if {![file exists $file1]} {
+        return -code error "couldn't open \"$file1\": no such file or directory"
+    } 
+    if {![file exists $file2]} {
+        return -code error "couldn't open \"$file2\": no such file or directory"
+    } 
     if {![info exists fromtype]} {
         # $type wasn't specified - get it from the extension
         set fromtype [fileext $file1]
@@ -422,6 +443,10 @@ proc ::ico::clearCache {{file {}}} {
 #
 proc ::ico::EXEtoICO {exeFile {icoDir {}}} {
     variable RES
+
+    if {![file exists $exeFile]} {
+        return -code error "couldn't open \"$exeFile\": no such file or directory"
+    } 
 
     set file [file normalize $exeFile]
     FindResources $file
@@ -1180,12 +1205,12 @@ proc ::ico::writeIconEXE {file name w h bpp palette xor and} {
     variable RES
 
     set file [file normalize $file]
-    set members [getIconMembersEXE $file $name]
+    FindResources $file
 
     if {![info exists RES($file,icon,$name,data)]} {
-        return -code error "no icon \"$name\""
+	return -code error "no icon \"$name\""
     }
-    if {![string match "* $w $h $bpp" $RES($file,icon,$name,data)]} {
+    if {"$w $h $bpp" != $RES($file,icon,$name,data)} {
 	return -code error "icon format differs from original"
     }
     
@@ -1388,4 +1413,4 @@ interp alias {} ::ico::getIconMembersICL {} ::ico::getIconMembersEXE
 interp alias {} ::ico::getRawIconDataICL {} ::ico::getRawIconDataEXE
 interp alias {} ::ico::writeIconICL      {} ::ico::writeIconEXE
 
-package provide ico 1.0.3
+package provide ico 1.0.4
