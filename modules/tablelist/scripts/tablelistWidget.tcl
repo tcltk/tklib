@@ -1892,6 +1892,10 @@ proc tablelist::insertSubCmd {win argList} {
     synchronize $win
     set index [rowIndex $win [lindex $argList 0] 1]
     upvar ::tablelist::ns${win}::data data
+    if {$data(isDisabled)} {
+	return ""
+    }
+
     return [insertRows $win $index [lrange $argList 1 end] $data(hasListVar)]
 }
 
@@ -1907,6 +1911,10 @@ proc tablelist::insertcolumnlistSubCmd {win argList} {
     displayItems $win
     set arg0 [lindex $argList 0]
     upvar ::tablelist::ns${win}::data data
+    if {$data(isDisabled)} {
+	return ""
+    }
+
     if {[string first $arg0 "end"] == 0 || $arg0 == $data(colCount)} {
 	set col $data(colCount)
     } else {
@@ -1928,6 +1936,10 @@ proc tablelist::insertcolumnsSubCmd {win argList} {
     displayItems $win
     set arg0 [lindex $argList 0]
     upvar ::tablelist::ns${win}::data data
+    if {$data(isDisabled)} {
+	return ""
+    }
+
     if {[string first $arg0 "end"] == 0 || $arg0 == $data(colCount)} {
 	set col $data(colCount)
     } else {
@@ -1947,6 +1959,10 @@ proc tablelist::insertlistSubCmd {win argList} {
     synchronize $win
     set index [rowIndex $win [lindex $argList 0] 1]
     upvar ::tablelist::ns${win}::data data
+    if {$data(isDisabled)} {
+	return ""
+    }
+
     return [insertRows $win $index [lindex $argList 1] $data(hasListVar)]
 }
 
@@ -3756,11 +3772,11 @@ proc tablelist::deleteCols {win first last selCellsName} {
 #------------------------------------------------------------------------------
 proc tablelist::insertRows {win index argList updateListVar} {
     set argCount [llength $argList]
-    upvar ::tablelist::ns${win}::data data
-    if {$argCount == 0 || $data(isDisabled)} {
+    if {$argCount == 0} {
 	return ""
     }
 
+    upvar ::tablelist::ns${win}::data data
     if {$index < $data(itemCount)} {
 	displayItems $win
     }
@@ -4122,11 +4138,12 @@ proc tablelist::displayItems win {
 #------------------------------------------------------------------------------
 proc tablelist::insertCols {win colIdx argList} {
     set argCount [llength $argList]
-    upvar ::tablelist::ns${win}::data data \
-	  ::tablelist::ns${win}::attribs attribs
-    if {$argCount == 0 || $data(isDisabled)} {
+    if {$argCount == 0} {
 	return ""
     }
+
+    upvar ::tablelist::ns${win}::data data \
+	  ::tablelist::ns${win}::attribs attribs
 
     #
     # Check the syntax of argList and get the number of columns to be inserted
