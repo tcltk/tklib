@@ -1,3 +1,8 @@
+2009-05-29  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistWidget.tcl: Fixed a bug related to the -listvariable
+	  option in disabled state.
+
 2009-05-05  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistEdit.tcl: Small correction.
