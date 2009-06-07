@@ -1,6 +1,6 @@
 2009-06-07  Csaba Nemethi <csaba.nemethi@t-online.de>
 
-	* scripts/tablelistWidget.tcl: Corrected a typo.
+	* scripts/tablelistBind.tcl: Corrected a typo.
 
 2009-05-29  Csaba Nemethi <csaba.nemethi@t-online.de>
 
