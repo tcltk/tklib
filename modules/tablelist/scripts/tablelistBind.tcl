@@ -2269,7 +2269,7 @@ proc tablelist::labelB1Up {w X} {
 		    $stretchedColWidth < $oldColWidth + $data(delta)} {
 		    #
 		    # Compute the new column width,
-		    using the following equations:
+		    # using the following equations:
 		    #
 		    # $colWidth = $stretchedColWidth - $colDelta
 		    # $colDelta / $colWidth =
