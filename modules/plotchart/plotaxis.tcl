@@ -6,6 +6,34 @@
 #    and the legend. It is the companion of "plotchart.tcl"
 #
 
+# FormatNumber --
+#    Format a number (either as double or as integer)
+# Arguments:
+#    format      Format string
+#    number      Number to be formatted
+# Result:
+#    String containing the formatted number
+# Note:
+#    This procedure tries to format the string as a double first,
+#    but to allow formats like %x, it also tries it that way.
+#
+proc ::Plotchart::FormatNumber { format number } {
+
+    if { [catch {
+        puts 1
+        set string [format $format $number]
+    } msg1] } {
+        if { [catch {
+            puts 2-$msg1
+            set string [format $format [expr {int($number)}]]
+        } msg2] } {
+            puts 3-$msg2
+            set string [format $format $number] ;# To get the original message
+        }
+    }
+
+    return $string
+}
 # DrawYaxis --
 #    Draw the y-axis
 # Arguments:
@@ -63,7 +91,7 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
 
         set ylabel $yt
         if { $format != "" } {
-            set ylabel [format $format $y]
+            set ylabel [FormatNumber $format $y]
         }
         $w create line $xcrd2 $ycrd $xcrd $ycrd -tag yaxis -fill $linecolor
         $w create text $xcrd3 $ycrd -text $ylabel -tag yaxis -anchor e \
@@ -133,7 +161,7 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
 
         set ylabel $yt
         if { $format != "" } {
-            set ylabel [format $format $yt]
+            set ylabel [FormatNumber $format $yt]
         }
         $w create line $xcrd2 $ycrd $xcrd $ycrd -tag raxis -fill $linecolor
         $w create text $xcrd3 $ycrd -text $ylabel -tag raxis -anchor w \
@@ -206,7 +234,7 @@ proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
 
             set ylabel $y
             if { $format != "" } {
-                set ylabel [format $format $y]
+                set ylabel [FormatNumber $format $y]
             }
             $w create line $xcrd2 $ycrd $xcrd $ycrd -tag yaxis -fill $linecolor
             if { $factor == 1.0 } {
@@ -303,7 +331,7 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
 
         set xlabel $xt
         if { $format != "" } {
-            set xlabel [format $format $xt]
+            set xlabel [FormatNumber $format $xt]
         }
 
         $w create line $xcrd $ycrd2 $xcrd $ycrd -tag xaxis -fill $linecolor
