@@ -150,10 +150,14 @@ proc tablelist::aquaTheme {} {
 	-labeldisabledBg	#f4f4f4 \
 	-labelactiveBg		#f4f4f4 \
 	-labelpressedBg		#e4e4e4 \
+	-labelselectedBg	#86c4f2 \
+	-labelselectedpressedBg	#6fb7f0 \
 	-labelforeground	black \
 	-labeldisabledFg	#a3a3a3 \
 	-labelactiveFg		black \
 	-labelpressedFg		black \
+	-labelselectedFg	black \
+	-labelselectedpressedFg	black \
 	-labelfont		{"Lucida Grande" 11} \
 	-labelborderwidth	1 \
 	-labelpady		1 \

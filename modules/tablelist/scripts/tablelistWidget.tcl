@@ -436,6 +436,8 @@ proc tablelist::createBindings {} {
     bind Tablelist <Destroy>		{ tablelist::cleanup %W }
     variable usingTile
     if {$usingTile} {
+	bind Tablelist <Activate>	{ tablelist::updateCanvases %W }
+	bind Tablelist <Deactivate>	{ tablelist::updateCanvases %W }
 	bind Tablelist <<ThemeChanged>>	{
 	    after idle [list tablelist::updateConfigSpecs %W]
 	}
