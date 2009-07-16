@@ -143,6 +143,20 @@ proc tablelist::cleanup win {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::updateCanvases
+#
+# This procedure handles the events <Activate> and <Deactivate> by configuring
+# the canvases displaying sort arrows.
+#------------------------------------------------------------------------------
+proc tablelist::updateCanvases win {
+    upvar ::tablelist::ns${win}::data data
+    foreach col $data(arrowColList) {
+	configCanvas $win $col
+	raiseArrow $win $col
+    }
+}
+
+#------------------------------------------------------------------------------
 # tablelist::updateConfigSpecs
 #
 # This procedure handles the virtual event <<ThemeChanged>> by updating the
@@ -194,6 +208,7 @@ proc tablelist::updateConfigSpecs win {
     foreach opt {-background -foreground} {
 	doConfig $win $opt $data($opt)	;# sets the bg color of the separators
     }
+    updateCanvases $win
 
     #
     # Destroy and recreate the edit window if present

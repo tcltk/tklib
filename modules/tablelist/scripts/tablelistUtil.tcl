@@ -1615,6 +1615,23 @@ proc tablelist::makeSortAndArrowColLists win {
 	}
 	incr sortRank
     }
+
+    #
+    # Special handling for the "aqua" theme if Cocoa is being used:
+    # Deselect all header labels and select that of the main sort column
+    #
+    variable usingTile
+    if {$usingTile && [string compare [getCurrentTheme] "aqua"] == 0 &&
+	[lsearch -exact [winfo server .] "AppKit"] >= 0} {	;# using Cocoa
+	for {set col 0} {$col < $data(colCount)} {incr col} {
+	    configLabel $data(hdrTxtFrLbl)$col -selected 0
+	}
+
+	if {[llength $data(sortColList)] != 0} {
+	    set col [lindex $data(sortColList) 0]
+	    configLabel $data(hdrTxtFrLbl)$col -selected 1
+	}
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -1698,6 +1715,8 @@ proc tablelist::setupColumns {win columns createLabels} {
     # Build the list data(colList), and create
     # the labels and canvases if requested
     #
+    regexp {^(flat|sunken)([0-9]+)x([0-9]+)$} $data(-arrowstyle) \
+	   dummy arrowRelief arrowWidth arrowHeight
     set widgetFont $data(-font)
     set oldColCount $data(colCount)
     set data(colList) {}
@@ -1781,9 +1800,7 @@ proc tablelist::setupColumns {win columns createLabels} {
 	    set w $data(hdrTxtFrCanv)$col
 	    canvas $w -borderwidth 0 -highlightthickness 0 \
 		      -relief flat -takefocus 0
-	    regexp {^(flat|sunken)([0-9]+)x([0-9]+)$} $data(-arrowstyle) \
-		   dummy relief width height
-	    createArrows $w $width $height $relief
+	    createArrows $w $arrowWidth $arrowHeight $arrowRelief
 
 	    #
 	    # Apply to it the current configuration options
@@ -3798,16 +3815,18 @@ proc tablelist::configLabel {w args} {
 	switch -- $opt {
 	    -active {
 		if {[string compare [winfo class $w] "TLabel"] == 0} {
-		    set state [expr {$val ? "active" : "!active"}]
-		    $w state $state
-		    if {$val} {
-			variable themeDefaults
-			set bg $themeDefaults(-labelactiveBg)
-		    } else {
-			set bg [$w cget -background]
-		    }
-		    foreach l [getSublabels $w] {
-			$l configure -background $bg
+		    if {![$w instate selected]} {
+			set state [expr {$val ? "active" : "!active"}]
+			$w state $state
+			if {$val} {
+			    variable themeDefaults
+			    set bg $themeDefaults(-labelactiveBg)
+			} else {
+			    set bg [$w cget -background]
+			}
+			foreach l [getSublabels $w] {
+			    $l configure -background $bg
+			}
 		    }
 		} else {
 		    set state [expr {$val ? "active" : "normal"}]
@@ -3877,9 +3896,49 @@ proc tablelist::configLabel {w args} {
 		    $w state $state
 		    variable themeDefaults
 		    if {$val} {
-			set bg $themeDefaults(-labelpressedBg)
+			if {[$w instate selected]} {
+			    set bg $themeDefaults(-labelselectedpressedBg)
+			} else {
+			    set bg $themeDefaults(-labelpressedBg)
+			}
 		    } else {
-			set bg $themeDefaults(-labelactiveBg)
+			if {[$w instate selected]} {
+			    set bg $themeDefaults(-labelselectedBg)
+			} elseif {[$w instate active]} {
+			    set bg $themeDefaults(-labelactiveBg)
+			} else {
+			    set bg [$w cget -background]
+			}
+		    }
+		    foreach l [getSublabels $w] {
+			$l configure -background $bg
+		    }
+
+		    parseLabelPath $w win col
+		    upvar ::tablelist::ns${win}::data data
+		    if {[lsearch -exact $data(arrowColList) $col] >= 0} {
+			configCanvas $win $col
+		    }
+		}
+	    }
+
+	    -selected {
+		if {[string compare [winfo class $w] "TLabel"] == 0} {
+		    set state [expr {$val ? "selected" : "!selected"}]
+		    $w state $state
+		    variable themeDefaults
+		    if {$val} {
+			if {[$w instate pressed]} {
+			    set bg $themeDefaults(-labelselectedpressedBg)
+			} else {
+			    set bg $themeDefaults(-labelselectedBg)
+			}
+		    } else {
+			if {[$w instate pressed]} {
+			    set bg $themeDefaults(-labelpressedBg)
+			} else {
+			    set bg [$w cget -background]
+			}
 		    }
 		    foreach l [getSublabels $w] {
 			$l configure -background $bg
@@ -3980,10 +4039,19 @@ proc tablelist::configCanvas {win col} {
 
     if {[string compare [winfo class $w] "TLabel"] == 0} {
 	variable themeDefaults
-	foreach state {disabled active pressed} {
-	    $w instate $state {
-		set labelBg $themeDefaults(-label${state}Bg)
-		set labelFg $themeDefaults(-label${state}Fg)
+	if {[$w instate disabled]} {
+	    set labelBg $themeDefaults(-labeldisabledBg)
+	    set labelFg $themeDefaults(-labeldisabledFg)
+	} elseif {![$win instate background]} {
+	    foreach state {active pressed selected} {
+		$w instate $state {
+		    set labelBg $themeDefaults(-label${state}Bg)
+		    set labelFg $themeDefaults(-label${state}Fg)
+		}
+		if {[$w instate selected] && [$w instate pressed]} {
+		    set labelBg $themeDefaults(-labelselectedpressedBg)
+		    set labelFg $themeDefaults(-labelselectedpressedFg)
+		}
 	    }
 	}
     } else {
