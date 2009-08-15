@@ -1,3 +1,9 @@
+2009-08-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistWidget.tcl: Removed two update-invocations for Mac
+	  OS X Aqua that were present to work around a scrolling-related bug in
+	  old Mac-Tk versions but turned out to cause problems in newer ones.
+
 2009-07-16  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl:   Added support for the native "Aqua-blue"

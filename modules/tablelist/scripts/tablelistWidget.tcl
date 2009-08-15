@@ -2920,13 +2920,12 @@ proc tablelist::xviewSubCmd {win argList} {
 	    variable winSys
 	    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
 		#
-		# Work around some Tk bugs on Mac OS X Aqua
+		# Work around a Tk bug on Mac OS X Aqua
 		#
 		if {[winfo exists $data(bodyFr)]} {
 		    lower $data(bodyFr)
 		    raise $data(bodyFr)
 		}
-		update 
 	    }
 	    return ""
 	}
@@ -3038,13 +3037,12 @@ proc tablelist::yviewSubCmd {win argList} {
 	    variable winSys
 	    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
 		#
-		# Work around some Tk bugs on Mac OS X Aqua
+		# Work around a Tk bug on Mac OS X Aqua
 		#
 		if {[winfo exists $data(bodyFr)]} {
 		    lower $data(bodyFr)
 		    raise $data(bodyFr)
 		}
-		update 
 	    }
 	    return ""
 	}
