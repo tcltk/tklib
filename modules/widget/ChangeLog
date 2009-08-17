@@ -1,3 +1,9 @@
+2009-08-17  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* calendar.tcl: correct leading 0-month issues.
+	Make 8.4-friendly by not needing clock scan -format.
+	* pkgIndex.tcl: bump calendar to v0.91
+
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*

@@ -5,7 +5,7 @@
 #	Calendar widget drawn on a canvas.
 #	Adapted from Suchenwirth code on the wiki.
 #
-# RCS: @(#) $Id: calendar.tcl,v 1.3 2009/08/17 23:19:58 hobbs Exp $
+# RCS: @(#) $Id: calendar.tcl,v 1.4 2009/08/17 23:35:28 hobbs Exp $
 #
 
 # Creation and Options - widget::calendar $path ...
@@ -71,9 +71,7 @@ snit::widgetadaptor widget::calendar {
 	    -background white
 	bindtags $win [linsert [bindtags $win] 1 Calendar]
 
-	set now [clock scan today]
-	set x [clock format $now -format "%d/%m%/%Y"]
-	set now [clock scan "$x 00:00:00" -format "%d/%m%/%Y %H:%M:%S"]
+	set now [clock scan "today 00:00:00"]
 
 	foreach {data(day) data(month) data(year)} \
 	    [clock format $now -format "%e %m %Y"] { break }
@@ -105,7 +103,12 @@ snit::widgetadaptor widget::calendar {
 	if {$value ne "" && [info exists $value]} {
 	    set tmp [set $value]
 	    if {$tmp eq ""} { return }
-	    set date [clock scan $tmp -format $options(-dateformat)]
+	    if {$::tcl_version < 8.5} {
+		# Prior to 8.4, users must use [clock]-recognized dateformat
+		set date [clock scan $tmp]
+	    } else {
+		set date [clock scan $tmp -format $options(-dateformat)]
+	    }
 
 	    foreach {data(selday) data(selmonth) data(selyear)} \
 		[clock format $date -format "%e %m %Y"] { break }
