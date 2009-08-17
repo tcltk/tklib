@@ -5,7 +5,7 @@
 #	Calendar widget drawn on a canvas.
 #	Adapted from Suchenwirth code on the wiki.
 #
-# RCS: @(#) $Id: calendar.tcl,v 1.2 2008/12/11 18:07:20 hobbs Exp $
+# RCS: @(#) $Id: calendar.tcl,v 1.3 2009/08/17 23:19:58 hobbs Exp $
 #
 
 # Creation and Options - widget::calendar $path ...
@@ -76,7 +76,8 @@ snit::widgetadaptor widget::calendar {
 	set now [clock scan "$x 00:00:00" -format "%d/%m%/%Y %H:%M:%S"]
 
 	foreach {data(day) data(month) data(year)} \
-	    [clock format $now -format "%d %m %Y"] { break }
+	    [clock format $now -format "%e %m %Y"] { break }
+	scan $data(month) %d data(month) ; # avoid leading 0 issues
 
 	# Binding for the 'day' tagged items
 	$win bind day <1> [mymethod invoke]
@@ -107,7 +108,9 @@ snit::widgetadaptor widget::calendar {
 	    set date [clock scan $tmp -format $options(-dateformat)]
 
 	    foreach {data(selday) data(selmonth) data(selyear)} \
-		[clock format $date -format "%d %m %Y"] { break }
+		[clock format $date -format "%e %m %Y"] { break }
+	    scan $data(selmonth) %d data(selmonth) ; # avoid leading 0 issues
+
 	    $self refresh
 	}
     }
@@ -472,4 +475,4 @@ snit::widgetadaptor widget::calendar {
     }
 }
 
-package provide widget::calendar 0.9
+package provide widget::calendar 0.91
