@@ -9,7 +9,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2005-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile
+package require tablelist_tile 4.12
 
 wm title . "Serial Line Configuration"
 
@@ -67,7 +67,11 @@ $tbl columnconfigure 2 -name lineName  -editable yes -editwindow ttk::entry \
     -sortmode dictionary
 $tbl columnconfigure 3 -name baudRate  -editable yes -editwindow ttk::combobox \
     -sortmode integer
-$tbl columnconfigure 4 -name dataBits  -editable yes -editwindow spinbox
+if {[info commands ttk::spinbox] eq ""} {
+    $tbl columnconfigure 4 -name dataBits -editable yes -editwindow spinbox
+} else {
+    $tbl columnconfigure 4 -name dataBits -editable yes -editwindow ttk::spinbox
+}
 $tbl columnconfigure 5 -name parity    -editable yes -editwindow ttk::combobox
 $tbl columnconfigure 6 -name stopBits  -editable yes -editwindow ttk::combobox
 $tbl columnconfigure 7 -name handshake -editable yes -editwindow ttk::combobox

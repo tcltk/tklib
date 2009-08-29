@@ -5,7 +5,7 @@
 # Copyright (c) 2000-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile
+package require tablelist_tile 4.12
 
 namespace eval demo {
     #
@@ -22,7 +22,6 @@ namespace eval demo {
     #   b1, b2, b3	  TButton
     #
     if {[tk windowingsystem] eq "x11"} {
-	tablelist::setTheme alt
 	option add *DemoTop*Font			TkDefaultFont
     }
     tablelist::setThemeDefaults
@@ -35,7 +34,7 @@ namespace eval demo {
 	option add *DemoTop*selectBorderWidth \
 		   $tablelist::themeDefaults(-selectborderwidth)
     }
-    option add *DemoTop.tf.borderWidth			2
+    option add *DemoTop.tf.borderWidth			1
     option add *DemoTop.tf.relief			sunken
     option add *DemoTop.tf.tbl.background		gray98
     option add *DemoTop.tf.tbl.stripeBackground		#e0e8f0

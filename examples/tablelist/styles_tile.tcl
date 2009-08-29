@@ -8,7 +8,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2002-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 4.11
+package require tablelist_tile 4.12
 
 wm title . "Tablelist Styles"
 
@@ -16,9 +16,6 @@ wm title . "Tablelist Styles"
 # Get the current windowing system ("x11", "win32", or
 # "aqua") and add some entries to the Tk option database
 #
-if {[tk windowingsystem] eq "x11"} {
-    tablelist::setTheme alt
-}
 tablelist::setThemeDefaults
 if {[tablelist::getCurrentTheme] ne "aqua"} {
     option add *selectBackground  $tablelist::themeDefaults(-selectbackground)
