@@ -76,7 +76,7 @@
 
   <h3><a name="ov_what"></a>What is Tablelist?</h3>
 
-  <p>Tablelist is a library package for Tcl/Tk version 8.0 or higher, written
+  <p>Tablelist is a library package for Tcl/Tk versions 8.0 or higher, written
   in pure Tcl/Tk code.&nbsp; It contains:</p>
 
   <ul>
@@ -257,8 +257,8 @@ gunzip -c tablelist4.11.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-package require tablelist
-package require Tablelist
+package require tablelist ?<i>version</i>?
+package require Tablelist ?<i>version</i>?
 </pre>
   </blockquote>
 
@@ -277,8 +277,8 @@ package provide Tablelist ...
 
   <blockquote>
     <pre>
-package require tablelist_tile
-package require Tablelist_tile
+package require tablelist_tile ?<i>version</i>?
+package require Tablelist_tile ?<i>version</i>?
 </pre>
   </blockquote>
 
@@ -297,16 +297,22 @@ package provide Tablelist_tile ...
   if you want to prevent the corresponding packages from making themselves
   known under two different names each.&nbsp; Of course, by doing so you
   restrict the argument of&nbsp; <code>package require</code>&nbsp; to a single
-  name per package.&nbsp; Please note that <b>the ActiveTcl distribution</b>
-  uses a modified package mechanism, which <b>only exports the all-lowercase
-  names <code>tablelist</code> and <code>tablelist_tile</code></b>.&nbsp; For
-  this reason, the <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist</code>, and their tile-based
-  counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile</code>.</p>
+  name per package.&nbsp; Please note that <b>ActiveTcl versions 8.5 and
+  later use a modified package mechanism, which only exports the all-lowercase
+  names <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
+
+  <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
+  ActiveTcl 8.5 or above and the new Tablelist release 4.12, then it is highly
+  recommended to specify the version number <code>4.12</code> in the&nbsp;
+  <code>package require</code>&nbsp; command, because otherwise the interpreter
+  will load the old Tablelist version included in ActiveTcl as Tcl
+  Module.&nbsp; The <a href="#examples">examples</a> below use the
+  statement&nbsp; <code>package require tablelist 4.12</code>,&nbsp; and their
+  tile-based counterparts invoke the command&nbsp; <code>package require
+  tablelist_tile 4.12</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
-  namespace <code>tablelist</code>, you must either invoke the</p>
+  <code>tablelist</code> namespace, you must either invoke the</p>
 
   <blockquote>
     <pre>
@@ -476,7 +482,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist
+package require tablelist 4.12
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -495,8 +501,8 @@ To display the configuration options of an arbitrary widget, enter
   </blockquote>
 
   <p><img src="config.png" alt=
-  "Configuration Options - Please load this image!" width="735" height=
-  "380"></p>
+  "Configuration Options - Please load this image!" width="725" height=
+  "369"></p>
 
   <p>It is assumed that the Tcl command associated with the widget specified by
   <code>&lt;widgetName&gt;</code> has a <code>configure</code> subcommand
@@ -509,7 +515,7 @@ To display the configuration options of an arbitrary widget, enter
 
   <blockquote>
     <pre>
-package require tablelist
+package require tablelist 4.12
 
 namespace eval demo {
     #
@@ -543,7 +549,7 @@ namespace eval demo {
         option add *DemoTop*selectBackground            #678db2
         option add *DemoTop*selectForeground            white
     } else {
-        option add *DemoTop.tf.borderWidth              2
+        option add *DemoTop.tf.borderWidth              1
         option add *DemoTop.tf.relief                   sunken
         option add *DemoTop.tf.tbl.borderWidth          0
         option add *DemoTop.tf.tbl.highlightThickness   0
@@ -700,10 +706,10 @@ proc demo::displayConfig w {
   space that might appear at the right of the table.</p>
 
   <p>If the default value of the <code>-selectborderwidth</code> option is
-  <code>0</code> (this is the case on the Windows and Macintosh platforms) then
-  we use the <code><b><a href=
-  "tablelistWidget.html#spacing">-spacing</a></b></code> option to provide some
-  additional space above and below the rows.</p>
+  <code>0</code> (this is the case on the Windows and Macintosh platforms, and
+  also in an X11 envronment with Tk 8.5 or above) then we use the
+  <code><b><a href="tablelistWidget.html#spacing">-spacing</a></b></code>
+  option to provide some additional space above and below the rows.</p>
 
   <p>For the last two columns of the tablelist we use the <code><a href=
   "tablelistWidget.html#col_maxwidth">-maxwidth</a></code> column configuration
@@ -924,7 +930,7 @@ To display information about the children of an arbitrary widget, enter
   </blockquote>
 
   <p><img src="browse.png" alt="Children - Please load this image!" width="554"
-  height="274"></p>
+  height="271"></p>
 
   <p>The <code>demo::displayChildren</code> command inserts some data of the
   children of the widget specified by <code>&lt;widgetName&gt;</code> into a
@@ -939,7 +945,7 @@ To display information about the children of an arbitrary widget, enter
 
   <blockquote>
     <pre>
-package require tablelist
+package require tablelist 4.12
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1366,8 +1372,8 @@ proc demo::putChildrenOfSelWidget tbl {
   readability of their items.&nbsp; It creates 8 tablelist widgets, shown in
   the following figure:</p>
 
-  <p><img src="styles.png" alt="Styles - Please load this image!" width="610"
-  height="494"></p>
+  <p><img src="styles.png" alt="Styles - Please load this image!" width="606"
+  height="479"></p>
 
   <p>Here is the relevant code segment:</p>
 
@@ -1451,8 +1457,8 @@ for {set n 0} { $n &lt; 8} {incr n} {
   a BWidget ComboBox used to edit the contents of one of its cells:</p>
 
   <p><img src="bwidget.png" alt=
-  "Serial Line Configuration - Please load this image!" width="696" height=
-  "376"></p>
+  "Serial Line Configuration - Please load this image!" width="677" height=
+  "373"></p>
 
   <p>Here is the relevant code segment from the script <code>bwidget.tcl</code>
   (the scripts <code>tileWidgets.tcl</code>, <code>iwidgets.tcl</code>, and
@@ -1461,7 +1467,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.3                          ;# because of entry validation
-package require tablelist
+package require tablelist 4.12
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -1746,15 +1752,14 @@ proc editEndCmd {tbl row col text} {
   <p>As mentioned above, the scripts <code>tileWidgets.tcl</code>,
   <code>iwidgets.tcl</code>, and <code>miscWidgets.tcl</code> are similar to
   <code>bwidget.tcl</code>.&nbsp; The first one makes use of the tile entry,
-  combobox, and checkbutton widgets, together with the Tk core spinbox.&nbsp;
-  The second one uses (besides the Tk core checkbutton) the entryfield,
-  spinint, combobox, dateentry, and timeentry widgets from the Iwidgets package
-  and the validation facilities specific to that library.&nbsp; The third
-  script makes use of the entry, spinbox, and checkbutton widgets from the Tk
-  core, Bryan Oakley's combobox, and of the mentry widgets of type
-  <code>"Date"</code> and <code>"Time"</code>, and it performs the entry
-  validation with the aid of the Wcb package (which is required anyway for the
-  Mentry library).</p>
+  spinbox, combobox, and checkbutton widgets.&nbsp; The second one uses
+  (besides the Tk core checkbutton) the entryfield, spinint, combobox,
+  dateentry, and timeentry widgets from the Iwidgets package and the validation
+  facilities specific to that library.&nbsp; The third script makes use of the
+  entry, spinbox, and checkbutton widgets from the Tk core, Bryan Oakley's
+  combobox, and of the mentry widgets of type <code>"Date"</code> and
+  <code>"Time"</code>, and it performs the entry validation with the aid of the
+  Wcb package (which is required anyway for the Mentry library).</p>
 
   <h3><a name="ex_windows"></a>A tablelist widget containing embedded
   windows</h3>
@@ -1772,13 +1777,13 @@ proc editEndCmd {tbl row col text} {
   <code>active</code> state:</p>
 
   <p><img src="embeddedWindows.png" alt=
-  "Embedded Windows - Please load this image!" width="414" height="272"></p>
+  "Embedded Windows - Please load this image!" width="399" height="272"></p>
 
   <p>First, we create and populate the tablelist widget:</p>
 
   <blockquote>
     <pre>
-package require tablelist
+package require tablelist 4.12
 
 wm title . "Tk Library Scripts"
 
@@ -2010,7 +2015,7 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
   <blockquote>
     <pre>
 package require Tk 8.3                          ;# because of entry validation
-package require tablelist
+package require tablelist 4.12
 </pre>
   </blockquote>
 
@@ -2018,7 +2023,7 @@ package require tablelist
 
   <blockquote>
     <pre>
-package require tablelist<span>_tile</span>
+package require tablelist<span>_tile</span> 4.12
 </pre>
   </blockquote>
 
@@ -2096,21 +2101,12 @@ set btn [<span>ttk::</span>button <span>$f</span>.btn -text "Close" -command exi
   appearance:</p>
 
   <p><img src="bwidget_tile.png" alt=
-  "Serial Line Configuration - Please load this image!" width="694" height=
-  "369"></p>
-
-  <p>Notice that the default value of the <code>-selectborderwidth</code>
-  option for the <code>alt</code> theme is <code>0</code>, but the
-  <code><b><a href="tablelistWidget.html#spacing">-spacing</a></b></code>
-  option provides additional space above and below the rows, making sure that
-  the widget's body will have the same height as in the non-tile-based
-  version.</p>
+  "Serial Line Configuration - Please load this image!" width="675" height=
+  "368"></p>
 
   <p>The script <code>option_tile.tcl</code> is nearly identical to
-  <code>option.tcl</code>.&nbsp; Its tile-specific part sets the theme to
-  <code>alt</code> for the windowing system <code>x11</code> by invoking the
-  <code><a href="tablelistThemes.html#setTheme">tablelist::setTheme</a></code>
-  command, and uses the values written by the command <code><a href=
+  <code>option.tcl</code>.&nbsp; Its tile-specific part uses the values written
+  by the command <code><a href=
   "tablelistThemes.html#setThemeDefaults">tablelist::setThemeDefaults</a></code>
   into the array <code>tablelist::themeDefaults</code>, to make sure that the
   selection will have the same theme-specific look in all the widgets created
@@ -2119,7 +2115,6 @@ set btn [<span>ttk::</span>button <span>$f</span>.btn -text "Close" -command exi
   <blockquote>
     <pre>
 <span>if {[tk windowingsystem] eq "x11"} {
-    tablelist::setTheme alt
     option add *Font              TkDefaultFont
 }
 tablelist::setThemeDefaults
@@ -2138,12 +2133,12 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
 
   <p>The demo script <code>tileWidgets.tcl</code> uses not only the
   Tablelist_tile package for creating a tablelist widget with a modern
-  theme-specific look &amp; feel, but also the tile entry, combobox, and
-  checkbutton widgets for interactive cell editing:</p>
+  theme-specific look &amp; feel, but also the tile entry, spinbox, combobox,
+  and checkbutton widgets for interactive cell editing:</p>
 
   <p><img src="tileWidgets.png" alt=
-  "Serial Line Configuration - Please load this image!" width="694" height=
-  "369"></p>
+  "Serial Line Configuration - Please load this image!" width="675" height=
+  "368"></p>
 
   <p>The tile-based version of the demo script <code>embeddedWindows.tcl</code>
   contains a bit more changes, but most of them are not
@@ -2152,7 +2147,7 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
   the details.&nbsp; Here is a screenshot of the resulting window:</p>
 
   <p><img src="embeddedWindows_tile.png" alt=
-  "Embedded Windows - Please load this image!" width="406" height="265"></p>
+  "Embedded Windows - Please load this image!" width="397" height="266"></p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=

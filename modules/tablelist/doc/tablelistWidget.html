@@ -2911,7 +2911,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
         is the default), <code><b>text</b></code>, <code><b>spinbox</b></code>
         (the latter for Tk version 8.4 or higher),
         <code><b>checkbutton</b></code>, <code><b>ttk::entry</b></code>,
-        <code><b>ttk::combobox</b></code>, or
+        <code><b>ttk::spinbox</b></code>, <code><b>ttk::combobox</b></code>, or
         <code><b>ttk::checkbutton</b></code> (the latter three only in the
         presence of the tile widget engine), or the value returned by one of
         the registration commands for widgets from the packages <a href=
@@ -3664,8 +3664,8 @@ proc formatDate clockVal {
     <code><b>-editwindow</b></code> <a href="#col_editwindow">column</a> or
     <a href="#cell_editwindow">cell</a> configuration option to specify another
     widget instead of an entry, like a Tk core text, spinbox, or checkbutton
-    widget, or a tile entry, combobox, or checkbutton, or one of the 16
-    currently supported widgets from the packages <a href=
+    widget, or a tile entry, spinbox, combobox, or checkbutton, or one of the
+    16 currently supported widgets from the packages <a href=
     "tablelistBWidget.html">BWidget</a>, <a href=
     "tablelistIwidgets.html">Iwidgets</a>, <a href=
     "tablelistCombobox.html">combobox</a> (by Bryan Oakley), and <a href=
@@ -3674,8 +3674,9 @@ proc formatDate clockVal {
     <code><b>-editwindow</b></code> column or cell configuration option, you
     must register it for interactive cell editing by invoking the corresponding
     <code><b>tablelist::add*</b></code> command.&nbsp; The Tk core entry, text,
-    spinbox, and checkbutton widgets, as well as the tile entry, combobox, and
-    checkbutton widgets are automatically registered for cell editing.</dd>
+    spinbox, and checkbutton widgets, as well as the tile entry, spinbox,
+    combobox, and checkbutton widgets are automatically registered for cell
+    editing.</dd>
 
     <dd><br>
     In the simplest case, the text automatically inserted into the temporary
@@ -4689,8 +4690,8 @@ bind [.tbl editwintag] &lt;Return&gt; "[bind TablelistEdit &lt;Tab&gt;]; break"
         subcommand.&nbsp; If no cell is currently being edited or the editing
         is taking place with the aid of a Tk or tile checkbutton or mentry
         widget then the return value is an empty string; otherwise it is the
-        path name of a Tk or tile entry, Tk text or spinbox, or BWidget Entry
-        widget, which can be the edit window itself or one of its
+        path name of a Tk or tile entry, Tk text, Tk or tile spinbox, or
+	BWidget Entry widget, which can be the edit window itself or one of its
         descendants.&nbsp; This subcommand enables you to access the entry or
         entry-like component of the temporary embedded widget from within the
         commands specified by the <code><b><a href=
