@@ -5,7 +5,7 @@
 # Copyright (c) 2000-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist
+package require tablelist 4.12
 
 namespace eval demo {
     variable dir [file dirname [info script]]

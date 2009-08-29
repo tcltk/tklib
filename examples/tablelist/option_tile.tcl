@@ -9,7 +9,6 @@
 # "aqua") and add some entries to the Tk option database
 #
 if {[tk windowingsystem] eq "x11"} {
-    tablelist::setTheme alt
     option add *Font		  TkDefaultFont
 }
 tablelist::setThemeDefaults
