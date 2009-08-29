@@ -1,5 +1,50 @@
-What is new in Tablelist 4.11?
+What is new in Tablelist 4.12?
 ------------------------------
+
+1.  Added the "labeltag" subcommand and the helper command "tablelist::
+    getTablelistColumn", designed to be used in non-default binding
+    scripts for the header labels.
+
+2.  Support for interactive cell editing with the aid of the tile
+    spinbox widget.  The demo script "tileWidgets.tcl" now uses this
+    widget when available.
+
+3.  Improved the support for Windows Vista and added explicit support
+    for the "vista" theme.
+
+4.  Updated the support for the themes "plastik" and "keramik"; added
+    support for the "keramik_alt" theme.
+
+5.  Support for the native "Aqua-blue" background, set for the header
+    label of the sort column (thanks to Kewin Walzer for his proposal
+    and valuable contribution).  For technical reasons, this feature is
+    only supported for Mac-Tk versions using Cocoa.
+
+6.  Further improvements in the support for Mac OS X Aqua (thanks to
+    Daniel Steffen and Kewin Walzer for their valuable feedback).
+
+7.  Improvements in the binding scripts related to interactive cell
+    editing (thanks to Hadas Porat for discussions on this subject).
+
+8.  The binding for the <Double-Button-1> event in the resize area of a
+    column header now works as expected for large lists, too.
+
+9.  Eliminated a minor regression related to interactive cell editing,
+    introduced in the previous Tablelist version (thanks to Kai Morich
+    for his valuable input).
+
+10. Fixed a small bug related to interactive cell editing with the aid
+    of a text widget (thanks to Bryan Oakley for his bug report and
+    valuable suggestion).
+
+11. Fixed a long-standing bug related to the "-listvariable" option in
+    disabled state (thanks to Ralf Fassel for his bug report).
+
+12. Added a version-related hint to the "How to use it?" section of the
+    Tablelist Programmer's Guide.
+
+What was new in Tablelist 4.11?
+-------------------------------
 
 1.  Added the "-columntitles" configuration option, which is mainly a
     simplified form of the "-columns" option (thanks to Roy Terry for

@@ -8,7 +8,7 @@ namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	4.11.2
+    variable version	4.12
     variable library	[DIR]
 
     #
