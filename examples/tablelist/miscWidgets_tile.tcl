@@ -10,7 +10,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2004-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile
+package require tablelist_tile 4.12
 package require combobox
 package require mentry
 

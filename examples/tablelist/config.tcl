@@ -5,7 +5,7 @@
 # Copyright (c) 2000-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist
+package require tablelist 4.12
 
 namespace eval demo {
     #
@@ -39,7 +39,7 @@ namespace eval demo {
 	option add *DemoTop*selectBackground		#678db2
 	option add *DemoTop*selectForeground		white
     } else {
-	option add *DemoTop.tf.borderWidth		2
+	option add *DemoTop.tf.borderWidth		1
 	option add *DemoTop.tf.relief			sunken
 	option add *DemoTop.tf.tbl.borderWidth		0
 	option add *DemoTop.tf.tbl.highlightThickness	0

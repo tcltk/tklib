@@ -10,7 +10,7 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 
 package require Tk 8.3				;# because of entry validation
-package require tablelist
+package require tablelist 4.12
 package require BWidget
 
 wm title . "Serial Line Configuration"
