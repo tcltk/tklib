@@ -332,14 +332,44 @@ proc tablelist::keramikTheme {} {
 	-foreground		black \
 	-disabledforeground	#aaaaaa \
 	-stripebackground	"" \
-	-selectbackground	#000000 \
+	-selectbackground	#0a5f89 \
 	-selectforeground	#ffffff \
 	-selectborderwidth	0 \
 	-font			TkTextFont \
-        -labelbackground	#cccccc \
-	-labeldisabledBg	#cccccc \
-	-labelactiveBg		#cccccc \
-	-labelpressedBg		#cccccc \
+        -labelbackground	#e2e4e7 \
+	-labeldisabledBg	#e2e4e7 \
+	-labelactiveBg		#e2e4e7 \
+	-labelpressedBg		#c6c8cc \
+	-labelforeground	black \
+	-labeldisabledFg	#aaaaaa \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
+	-labelfont		TkDefaultFont \
+	-labelborderwidth	2 \
+	-labelpady		1 \
+	-arrowcolor		black \
+	-arrowstyle		flat8x5 \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::keramik_altTheme
+#------------------------------------------------------------------------------
+proc tablelist::keramik_altTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		white \
+	-foreground		black \
+	-disabledforeground	#aaaaaa \
+	-stripebackground	"" \
+	-selectbackground	#0a5f89 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-font			TkTextFont \
+        -labelbackground	#e2e4e7 \
+	-labeldisabledBg	#e2e4e7 \
+	-labelactiveBg		#e2e4e7 \
+	-labelpressedBg		#c6c8cc \
 	-labelforeground	black \
 	-labeldisabledFg	#aaaaaa \
 	-labelactiveFg		black \
@@ -396,10 +426,10 @@ proc tablelist::plastikTheme {} {
 	-selectforeground	#ffffff \
 	-selectborderwidth	0 \
 	-font			TkTextFont \
-        -labelbackground	#cccccc \
-	-labeldisabledBg	#cccccc \
-	-labelactiveBg		#cccccc \
-	-labelpressedBg		#cccccc \
+        -labelbackground	#dcdde3 \
+	-labeldisabledBg	#dcdde3 \
+	-labelactiveBg		#dcdde3 \
+	-labelpressedBg		#b9bcc0 \
 	-labelforeground	black \
 	-labeldisabledFg	#aaaaaa \
 	-labelactiveFg		black \
@@ -1188,6 +1218,64 @@ proc tablelist::tileqtTheme {} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::vistaTheme
+#------------------------------------------------------------------------------
+proc tablelist::vistaTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		SystemWindow \
+	-foreground		SystemWindowText \
+	-disabledforeground	SystemDisabledText \
+	-stripebackground	"" \
+	-selectbackground	SystemHighlight \
+	-selectforeground	SystemHighlightText \
+	-selectborderwidth	0 \
+	-font			TkTextFont \
+	-labelforeground	SystemButtonText \
+	-labeldisabledFg	SystemDisabledText \
+	-labelactiveFg		SystemButtonText \
+	-labelpressedFg		SystemButtonText \
+	-labelfont		TkDefaultFont \
+    ]
+
+    switch [winfo rgb . SystemButtonFace] {
+	"61680 61680 61680" {					;# Vista style
+	    set themeDefaults(-selectbackground) #d8effb
+	    set themeDefaults(-selectforeground) SystemWindowText
+
+	    set labelBg		#f8f9fa
+	    set activeBg	#c3eeff
+	    set pressedBg	#95d8f7
+	    set labelBd		4
+	    set labelPadY	4
+	    set arrowColor	#569bc0
+	    set arrowStyle	flat7x4
+	}
+
+	default {						;# Classic style
+	    set labelBg		SystemButtonFace
+	    set activeBg	SystemButtonFace
+	    set pressedBg	SystemButtonFace
+	    set labelBd		2
+	    set labelPadY	0
+	    set arrowColor	SystemButtonShadow
+	    set arrowStyle	flat7x4
+	}
+    }
+
+    array set themeDefaults [list \
+        -labelbackground	$labelBg \
+	-labeldisabledBg	$labelBg \
+	-labelactiveBg		$activeBg \
+	-labelpressedBg		$pressedBg \
+	-labelborderwidth	$labelBd \
+	-labelpady		$labelPadY \
+	-arrowcolor		$arrowColor \
+	-arrowstyle		$arrowStyle \
+    ]
+}
+
+#------------------------------------------------------------------------------
 # tablelist::winnativeTheme
 #------------------------------------------------------------------------------
 proc tablelist::winnativeTheme {} {
@@ -1269,77 +1357,63 @@ proc tablelist::xpnativeTheme {} {
 	-labelfont		TkDefaultFont \
     ]
 
-    if {$::tcl_platform(osVersion) < 6.0} {		;# Windows XP
-	switch [winfo rgb . SystemButtonFace] {
-	    "60652 59881 55512" {			;# XP style
-		set xpStyle	1
-		set labelBg	#ebeadb
-		set activeBg	#faf8f3
-		set pressedBg	#dedfd8
-		set labelBd	4
-		set labelPadY	4
-		set arrowColor	#aca899
-		set arrowStyle	flat9x5
+    switch [winfo rgb . SystemButtonFace] {
+	"60652 59881 55512" {					;# XP style
+	    set xpStyle		1
+	    set labelBg		#ebeadb
+	    set activeBg	#faf8f3
+	    set pressedBg	#dedfd8
+	    set labelBd		4
+	    set labelPadY	4
+	    set arrowColor	#aca899
+	    set arrowStyle	flat9x5
 
-		if {[info exists tile::version] &&
-		    [string compare $tile::version 0.7] < 0} {
-		    set labelBd 0
-		}
-	    }
-
-	    "57568 57311 58339" {			;# XP style
-		set xpStyle	1
-		set labelBg	#f9fafd
-		set activeBg	#fefefe
-		set pressedBg	#ececf3
-		set labelBd	4
-		set labelPadY	4
-		set arrowColor	#aca899
-		set arrowStyle	flat9x5
-
-		if {[info exists tile::version] &&
-		    [string compare $tile::version 0.7] < 0} {
-		    set labelBd 0
-		}
-	    }
-
-	    default {					;# Classic style
-		set xpStyle	0
-		set labelBg	SystemButtonFace
-		set activeBg	SystemButtonFace
-		set pressedBg	SystemButtonFace
-		set labelBd	2
-		set labelPadY	0
-		set arrowColor	SystemButtonShadow
-		set arrowStyle	flat7x4
+	    if {[info exists tile::version] &&
+		[string compare $tile::version 0.7] < 0} {
+		set labelBd 0
 	    }
 	}
-    } else {						;# Windows Vista
-	set xpStyle	0
-	set labelPadY	0
 
-	switch [winfo rgb . SystemButtonFace] {
-	    "61680 61680 61680" {			;# Vista style
-		set themeDefaults(-selectbackground)	#d8effb
-		set themeDefaults(-selectforeground)	SystemWindowText
+	"57568 57311 58339" {					;# XP style
+	    set xpStyle		1
+	    set labelBg		#f9fafd
+	    set activeBg	#fefefe
+	    set pressedBg	#ececf3
+	    set labelBd		4
+	    set labelPadY	4
+	    set arrowColor	#aca899
+	    set arrowStyle	flat9x5
 
-		set labelBg	#f8f9fa
-		set activeBg	#c3eeff
-		set pressedBg	#95d8f7
-		set labelBd	1
-		set arrowColor	#569bc0
-		set arrowStyle	flat7x4
+	    if {[info exists tile::version] &&
+		[string compare $tile::version 0.7] < 0} {
+		set labelBd 0
 	    }
+	}
 
-	    default {					;# Classic style
-		set labelBg	SystemButtonFace
-		set activeBg	SystemButtonFace
-		set pressedBg	SystemButtonFace
-		set labelBd	2
-		set arrowColor	SystemButtonShadow
-		set arrowStyle	flat7x4
-	    }
-        }
+	"61680 61680 61680" {					;# Vista style
+	    set themeDefaults(-selectbackground) #d8effb
+	    set themeDefaults(-selectforeground) SystemWindowText
+
+	    set xpStyle		0
+	    set labelBg		#f8f9fa
+	    set activeBg	#c3eeff
+	    set pressedBg	#95d8f7
+	    set labelBd		4
+	    set labelPadY	4
+	    set arrowColor	#569bc0
+	    set arrowStyle	flat7x4
+	}
+
+	default {						;# Classic style
+	    set xpStyle		0
+	    set labelBg		SystemButtonFace
+	    set activeBg	SystemButtonFace
+	    set pressedBg	SystemButtonFace
+	    set labelBd		2
+	    set labelPadY	0
+	    set arrowColor	SystemButtonShadow
+	    set arrowStyle	flat7x4
+	}
     }
 
     array set themeDefaults [list \

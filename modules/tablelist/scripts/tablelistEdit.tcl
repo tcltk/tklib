@@ -110,8 +110,8 @@ namespace eval tablelist {
     addTkCoreWidgets 
 
     #
-    # Register the tile widgets ttk::entry, ttk::combobox,
-    # and ttk::checkbutton for interactive cell editing
+    # Register the tile widgets ttk::entry, ttk::spinbox,
+    # ttk::combobox, and ttk::checkbutton for interactive cell editing
     #
     proc addTileWidgets {} {
 	set name ttk::entry
@@ -132,6 +132,26 @@ namespace eval tablelist {
 	    $name-isEntryLike	1 \
 	    $name-focusWin	%W \
 	    $name-reservedKeys	{Left Right} \
+	]
+
+	set name ttk::spinbox
+	array set ::tablelist::editWin [list \
+	    $name-creationCmd	"createTileSpinbox %W" \
+	    $name-putValueCmd	"%W delete 0 end; %W insert 0 %T" \
+	    $name-getValueCmd	"%W get" \
+	    $name-putTextCmd	"%W delete 0 end; %W insert 0 %T" \
+	    $name-getTextCmd	"%W get" \
+	    $name-putListCmd	"" \
+	    $name-getListCmd	"" \
+	    $name-selectCmd	"" \
+	    $name-invokeCmd	"" \
+	    $name-fontOpt	-font \
+	    $name-useFormat	1 \
+	    $name-useReqWidth	0 \
+	    $name-usePadX	1 \
+	    $name-isEntryLike	1 \
+	    $name-focusWin	%W \
+	    $name-reservedKeys	{Left Right Up Down} \
 	]
 
 	set name ttk::combobox
@@ -910,7 +930,7 @@ proc tablelist::addIPAddrMentry {{name ipAddrMentry}} {
 # tablelist::checkEditWinName
 #
 # Generates an error if the given edit window name is one of "entry", "text",
-# "spinbox", "checkbutton", "ttk::entry", "ttk::combobox", or
+# "spinbox", "checkbutton", "ttk::entry", "ttk::spinbox", "ttk::combobox", or
 # "ttk::checkbutton".
 #------------------------------------------------------------------------------
 proc tablelist::checkEditWinName name {
@@ -919,7 +939,7 @@ proc tablelist::checkEditWinName name {
 	       "edit window name \"$name\" is reserved for Tk $name widgets"
     }
 
-    if {[regexp {^ttk::(entry|combobox|checkbutton)$} $name dummy name]} {
+    if {[regexp {^ttk::(entry|spinbox|combobox|checkbutton)$} $name]} {
 	return -code error \
 	       "edit window name \"$name\" is reserved for tile $name widgets"
     }
@@ -1010,7 +1030,8 @@ proc tablelist::createTileEntry {w args} {
 	xpnative {
 	    switch [winfo rgb . SystemButtonFace] {
 		"60652 59881 55512" -
-		"57568 57311 58339"	{ set padding 2 }
+		"57568 57311 58339" -
+		"61680 61680 61680"	{ set padding 2 }
 		default			{ set padding 1 }
 	    }
 	}
@@ -1023,6 +1044,63 @@ proc tablelist::createTileEntry {w args} {
 				 -padding $padding
 
     ttk::entry $w -style Tablelist.TEntry
+
+    foreach {opt val} $args {
+	$w configure $opt $val
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::createTileSpinbox
+#
+# Creates a tile spinbox widget with the given path name for interactive cell
+# editing in a tablelist widget.
+#------------------------------------------------------------------------------
+proc tablelist::createTileSpinbox {w args} {
+    if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
+	package require tile 0.8.3
+    }
+    createTileAliases 
+
+    #
+    # The style of the tile entry widget should have -borderwidth
+    # 2 and -padding 1.  For those themes that don't honor the
+    # -borderwidth 2 setting, set the padding to another value.
+    #
+    set win [getTablelistPath $w]
+    switch [getCurrentTheme] {
+	aqua {
+	    set padding {0 0 0 -1}
+	}
+
+	tileqt {
+	    set padding 3
+	}
+
+	vista {
+	    switch [winfo rgb . SystemButtonFace] {
+		"61680 61680 61680"	{ set padding 0 }
+		default			{ set padding 1 }
+	    }
+	}
+
+	xpnative {
+	    switch [winfo rgb . SystemButtonFace] {
+		"60652 59881 55512" -
+		"57568 57311 58339" -
+		"61680 61680 61680"	{ set padding 2 }
+		default			{ set padding 1 }
+	    }
+	}
+
+	default {
+	    set padding 1
+	}
+    }
+    styleConfig Tablelist.TSpinbox -borderwidth 2 -highlightthickness 0 \
+				   -padding $padding
+
+    ttk::spinbox $w -style Tablelist.TSpinbox
 
     foreach {opt val} $args {
 	$w configure $opt $val
@@ -1106,15 +1184,22 @@ proc tablelist::createTileCheckbutton {w args} {
 	}
 
 	blue -
+	vista -
 	winxpblue {
 	    set height [winfo reqheight $w]
 	    [winfo parent $w] configure -width $height -height $height
 	    place $w -x 0
 	}
 
-	keramik {
+	keramik -
+	keramik_alt {
 	    [winfo parent $w] configure -width 16 -height 16
 	    place $w -x -1 -y -1
+	}
+
+	plastik {
+	    [winfo parent $w] configure -width 15 -height 15
+	    place $w -x -2 -y 1
 	}
 
 	sriv -
@@ -2210,7 +2295,7 @@ proc tablelist::insertChar {w str} {
 	    eval [strMap {"%W" "$w"} [bind Text <Control-i>]]
 	}
 	return -code break ""
-    } elseif {[regexp {^(T?Entry|TCombobox|Spinbox)$} $class]} {
+    } elseif {[regexp {^(T?Entry|TCombobox|T?Spinbox)$} $class]} {
 	if {[string match "T*" $class]} {
 	    if {[string compare [info procs "::ttk::entry::Insert"] ""] != 0} {
 		ttk::entry::Insert $w $str
