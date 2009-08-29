@@ -1,3 +1,27 @@
+2009-08-29  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl: Bumped the version number to 4.12.
+	* *.txt:
+
+	* scripts/tablelistEdit.tcl:   Added support for interactive cell
+	* scripts/tablelistThemes.tcl: editing with the aid of the ttk::spinbox
+	* scripts/tablelistUtil.tcl:   widget; added support for the themes
+	  "keramik_alt" and "vista"; improved the support for a few themes.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/tablelistBWidget.html:  Updated the documentation.
+	* doc/tablelistCombobox.html:
+	* doc/tablelist.html:
+	* doc/tablelistIwidgets.html:
+	* doc/tablelistMentry.html:
+	* doc/tablelistTile.html:
+	* doc/tablelistWidget.html:
+	* doc/*.png:
+
+	* ../../examples/tablelist/*.tcl: Appended the version number to
+	  "package require tablelist(_tile)".
+
 2009-08-15  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistWidget.tcl: Removed two update-invocations for Mac
