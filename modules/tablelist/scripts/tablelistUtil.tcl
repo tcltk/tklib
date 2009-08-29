@@ -2091,10 +2091,10 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 	    #
 	    if {[string compare $labelAlignment "right"] == 0} {
 		place $canvas -in $w -anchor w -bordermode outside \
-			      -relx 0.0 -x $data(charWidth) -rely 0.499 -y -1
+			      -relx 0.0 -x $data(charWidth) -rely 0.5 -y -1
 	    } else {
 		place $canvas -in $w -anchor e -bordermode outside \
-			      -relx 1.0 -x -$data(charWidth) -rely 0.499 -y -1
+			      -relx 1.0 -x -$data(charWidth) -rely 0.5 -y -1
 	    }
 	    raise $canvas
 	} else {
@@ -2381,7 +2381,7 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 	switch $alignment {
 	    left {
 		place $w-il -in $w -anchor w -bordermode outside \
-			    -relx 0.0 -x $margin -rely 0.499
+			    -relx 0.0 -x $margin -rely 0.5
 		if {[string compare $text ""] != 0} {
 		    if {$usingTile} {
 			set padding [$w cget -padding]
@@ -2390,14 +2390,14 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 		    } else {
 			set textX [expr {$margin + [winfo reqwidth $w-il]}]
 			place $w-tl -in $w -anchor w -bordermode outside \
-				    -relx 0.0 -x $textX -rely 0.499
+				    -relx 0.0 -x $textX -rely 0.5
 		    }
 		}
 	    }
 
 	    right {
 		place $w-il -in $w -anchor e -bordermode outside \
-			    -relx 1.0 -x -$margin -rely 0.499
+			    -relx 1.0 -x -$margin -rely 0.5
 		if {[string compare $text ""] != 0} {
 		    if {$usingTile} {
 			set padding [$w cget -padding]
@@ -2406,27 +2406,26 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 		    } else {
 			set textX [expr {-$margin - [winfo reqwidth $w-il]}]
 			place $w-tl -in $w -anchor e -bordermode outside \
-				    -relx 1.0 -x $textX -rely 0.499
+				    -relx 1.0 -x $textX -rely 0.5
 		    }
 		}
 	    }
 
 	    center {
 		if {[string compare $text ""] == 0} {
-		    place $w-il -in $w -anchor center -relx 0.5 -x 0 -rely 0.499
+		    place $w-il -in $w -anchor center -relx 0.5 -x 0 -rely 0.5
 		} else {
 		    set reqWidth [expr {[winfo reqwidth $w-il] +
 					[winfo reqwidth $w-tl]}]
 		    set iX [expr {-$reqWidth/2}]
-		    place $w-il -in $w -anchor w -relx 0.5 -x $iX -rely 0.499
+		    place $w-il -in $w -anchor w -relx 0.5 -x $iX -rely 0.5
 		    if {$usingTile} {
 			set padding [$w cget -padding]
 			lset padding 0 [expr {$padX + [winfo reqwidth $w-il]}]
 			$w configure -padding $padding -text $text
 		    } else {
 			set tX [expr {$reqWidth + $iX}]
-			place $w-tl -in $w -anchor e -relx 0.5 -x $tX \
-				    -rely 0.499
+			place $w-tl -in $w -anchor e -relx 0.5 -x $tX -rely 0.5
 		    }
 		}
 	    }
