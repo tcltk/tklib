@@ -1,3 +1,8 @@
+2009-08-30  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistEdit.tcl: Extended the list of supported Wcb
+	  options for text widgets used for interactive cell editing.
+
 2009-08-29  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl: Bumped the version number to 4.12.

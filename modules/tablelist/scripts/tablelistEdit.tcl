@@ -1932,8 +1932,15 @@ proc tablelist::saveEditData win {
     saveEditConfigOpts $w
     if {[info exists ::wcb::version] &&
 	$editWin($name-isEntryLike) && !$isMentry} {
+	set wcbOptList {insert delete motion}
+	if {$isText} {
+	    lappend wcbOptList selset selclear
+	    if {$::wcb::version >= 3.2} {
+		lappend wcbOptList replace
+	    }
+	}
 	foreach when {before after} {
-	    foreach opt {insert delete motion} {
+	    foreach opt $wcbOptList {
 		set data(entryCb-$when-$opt) \
 		    [::wcb::callback $entry $when $opt]
 	    }
@@ -2021,8 +2028,15 @@ proc tablelist::restoreEditData win {
     restoreEditConfigOpts $w
     if {[info exists ::wcb::version] &&
 	$editWin($name-isEntryLike) && !$isMentry} {
+	set wcbOptList {insert delete motion}
+	if {$isText} {
+	    lappend wcbOptList selset selclear
+	    if {$::wcb::version >= 3.2} {
+		lappend wcbOptList replace
+	    }
+	}
 	foreach when {before after} {
-	    foreach opt {insert delete motion} {
+	    foreach opt $wcbOptList {
 		eval [list ::wcb::callback $entry $when $opt] \
 		     $data(entryCb-$when-$opt)
 	    }
