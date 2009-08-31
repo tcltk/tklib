@@ -1617,4 +1617,4 @@ source [file join [file dirname [info script]] "plotpack.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.6.2
+package provide Plotchart 1.6.3
