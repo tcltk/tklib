@@ -34,7 +34,7 @@ namespace eval ::tablelist {
 			addIncrSpinner addIncrSpinint addIncrCombobox
     namespace export	addOakleyCombobox
     namespace export	addDateMentry addTimeMentry addDateTimeMentry \
-			addFixedPointMentry addIPAddrMentry
+			addFixedPointMentry addIPAddrMentry addIPv6AddrMentry
 }
 
 package provide tablelist::common $::tablelist::version

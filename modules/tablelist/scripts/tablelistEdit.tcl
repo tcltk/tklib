@@ -921,6 +921,37 @@ proc tablelist::addIPAddrMentry {{name ipAddrMentry}} {
     return $name
 }
 
+#------------------------------------------------------------------------------
+# tablelist::addIPv6AddrMentry
+#
+# Registers the widget created by the mentry::ipv6AddrMentry command from the
+# Mentry package for interactive cell editing.
+#------------------------------------------------------------------------------
+proc tablelist::addIPv6AddrMentry {{name ipv6AddrMentry}} {
+    checkEditWinName $name
+
+    array set ::tablelist::editWin [list \
+	$name-creationCmd	"mentry::ipv6AddrMentry %W" \
+	$name-putValueCmd	"mentry::putIPv6Addr %T %W" \
+	$name-getValueCmd	"mentry::getIPv6Addr %W" \
+	$name-putTextCmd	"" \
+	$name-getTextCmd	"%W getstring" \
+	$name-putListCmd	{eval [list %W put 0] %L} \
+	$name-getListCmd	"%W getlist" \
+	$name-selectCmd		"" \
+	$name-invokeCmd		"" \
+	$name-fontOpt		-font \
+	$name-useFormat		0 \
+	$name-useReqWidth	1 \
+	$name-usePadX		1 \
+	$name-isEntryLike	1 \
+	$name-focusWin		"" \
+	$name-reservedKeys	{Left Right Up Down Prior Next} \
+    ]
+
+    return $name
+}
+
 #
 # Private procedures implementing the interactive cell editing
 # ============================================================
