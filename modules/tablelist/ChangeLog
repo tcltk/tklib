@@ -1,3 +1,15 @@
+2009-09-08  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* tablelistPublic.tcl:       Added support for mentry widgets of type
+	* CHANGES.txt:               "IPv6Addr" as edit windows.
+	* scripts/tablelistEdit.tcl:
+	* doc/tablelistMentry.html:
+	* doc/tablelistWidget.html:
+
+	* scripts/tablelistBind.tcl: Minor correction.
+
+	* scripts/tclIndex: Newly generated.
+
 2009-08-30  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistEdit.tcl: Extended the list of supported Wcb
