@@ -358,7 +358,6 @@ proc tablelist::defineTablelistBody {} {
 
 	set tablelist::priv(x) ""
 	set tablelist::priv(y) ""
-	set tablelist::priv(clicked) 0
 	after cancel $tablelist::priv(afterId)
 	set tablelist::priv(afterId) ""
 	set tablelist::priv(releaseTime) %t
@@ -372,6 +371,7 @@ proc tablelist::defineTablelistBody {} {
 		[$tablelist::W nearest       $tablelist::y] \
 		[$tablelist::W nearestcolumn $tablelist::x]
 	}
+	set tablelist::priv(clicked) 0
 	after 100 [list tablelist::condEvalInvokeCmd $tablelist::W]
     }
     bind TablelistBody <Shift-Button-1> {
