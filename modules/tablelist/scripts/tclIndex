@@ -22,6 +22,7 @@ set auto_index(::tablelist::addTimeMentry) [list source [file join $dir tablelis
 set auto_index(::tablelist::addDateTimeMentry) [list source [file join $dir tablelistEdit.tcl]]
 set auto_index(::tablelist::addFixedPointMentry) [list source [file join $dir tablelistEdit.tcl]]
 set auto_index(::tablelist::addIPAddrMentry) [list source [file join $dir tablelistEdit.tcl]]
+set auto_index(::tablelist::addIPv6AddrMentry) [list source [file join $dir tablelistEdit.tcl]]
 set auto_index(::tablelist::checkEditWinName) [list source [file join $dir tablelistEdit.tcl]]
 set auto_index(::tablelist::createCheckbutton) [list source [file join $dir tablelistEdit.tcl]]
 set auto_index(::tablelist::createTileEntry) [list source [file join $dir tablelistEdit.tcl]]
