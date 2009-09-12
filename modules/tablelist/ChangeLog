@@ -1,3 +1,7 @@
+2009-09-12  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/tablelist.html: Corrected the version number.
+
 2009-09-08  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* tablelistPublic.tcl:       Added support for mentry widgets of type
