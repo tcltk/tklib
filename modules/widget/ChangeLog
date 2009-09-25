@@ -1,3 +1,9 @@
+2009-09-25  Ruediger Haertel <r_haertel@gmx.de>
+
+	* calendar.tcl: install/uninstall trace handler when
+	                -textvariable is set/unset
+	* pkgIndex.tcl: bump calendar to v0.92
+
 2009-08-17  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* calendar.tcl: correct leading 0-month issues.

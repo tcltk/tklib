@@ -5,7 +5,7 @@
 #	Calendar widget drawn on a canvas.
 #	Adapted from Suchenwirth code on the wiki.
 #
-# RCS: @(#) $Id: calendar.tcl,v 1.4 2009/08/17 23:35:28 hobbs Exp $
+# RCS: @(#) $Id: calendar.tcl,v 1.5 2009/09/25 19:11:06 haertel Exp $
 #
 
 # Creation and Options - widget::calendar $path ...
@@ -20,7 +20,9 @@
 #  All other options to canvas
 #
 # Methods
-#  $path get           => selected date
+#  $path get <part>   => selected date, part can be
+#                              day,month,year, all
+#                         default is all
 #  All other methods to canvas
 #
 # Bindings
@@ -42,21 +44,22 @@ snit::widgetadaptor widget::calendar {
     delegate option * to hull
     delegate method * to hull
 
-    option -firstday -default monday -configuremethod C-refresh \
-	-type [list snit::enum -values [list sunday monday]]
-    option -textvariable -default {} -configuremethod C-textvariable
+    option -firstday       -default monday        -configuremethod C-refresh \
+	                                          -type [list snit::enum -values [list sunday monday]]
+    option -textvariable   -default {}            -configuremethod C-textvariable
 
-    option -command -default {}
-    option -dateformat -default "%m/%d/%Y" -configuremethod C-refresh
-    option -font -default {Helvetica 9} -configuremethod C-font
-    option -highlightcolor -default "#FFCC00" -configuremethod C-refresh
-    option -shadecolor -default "#888888" -configuremethod C-refresh
+    option -command        -default {}
+    option -dateformat     -default "%m/%d/%Y"    -configuremethod C-refresh
+    option -font           -default {Helvetica 9} -configuremethod C-font
+    option -highlightcolor -default "#FFCC00"     -configuremethod C-refresh
+    option -shadecolor     -default "#888888"     -configuremethod C-refresh
 
-    option -language -default en
+    option -language       -default en
 
     # showpast not currently correct
-    option -showpast -default 1 -type {snit::boolean} \
-	-configuremethod C-refresh
+    option -showpast       -default 1             -configuremethod C-refresh \
+                                                  -type {snit::boolean} 
+	
 
     variable fullrefresh 1
     variable pending "" ; # pending after id for refresh
@@ -78,7 +81,22 @@ snit::widgetadaptor widget::calendar {
 	scan $data(month) %d data(month) ; # avoid leading 0 issues
 
 	# Binding for the 'day' tagged items
-	$win bind day <1> [mymethod invoke]
+	$win bind day <1>           [mymethod invoke]
+
+	if { 0 } {
+	# TODO key bindings
+	#
+	# left-/rightarrow            move by day
+	# Control-left-/rightarrow    move by month
+	# up-/downarrow               move by year
+	bind <leftarrow>            [mymethod invoke]
+	bind <Control-leftarrow>    [mymethod adjust -1 0]
+	bind <rightarrow>           [mymethod invoke]
+	bind <Control-rightarrow>   [mymethod adjust  1 0]
+
+	bind <uparrow>              [mymethod adjust  0  1]
+	bind <downarrow>            [mymethod adjust  0 -1]
+	}
 
 	$self configurelist $args
 
@@ -86,6 +104,12 @@ snit::widgetadaptor widget::calendar {
 	$self refresh
     }
 
+    #
+    # C-font --
+    #
+    #  Configure the font of the widget
+    #
+    ##
     method C-font {option value} {
 	set options($option) $value
 	$self reconfigure
@@ -93,31 +117,80 @@ snit::widgetadaptor widget::calendar {
 	$self refresh
     }
 
+    #
+    # C-refresh --
+    #
+    #  Place holder for all options that need a refresh after
+    #  takeing over the new option.
+    #
+    ##
     method C-refresh {option value} {
 	set options($option) $value
 	$self refresh
     }
 
+    #
+    # C-textvariable --
+    #
+    #  Configure the textvariable for the widget. Installs a
+    #  trace handler for the variable.
+    #  If an empty textvariable is given the trace handler is
+    #  uninstalled.
+    #
+    ##
     method C-textvariable {option value} {
+
 	set options($option) $value
-	if {$value ne "" && [info exists $value]} {
-	    set tmp [set $value]
-	    if {$tmp eq ""} { return }
-	    if {$::tcl_version < 8.5} {
-		# Prior to 8.4, users must use [clock]-recognized dateformat
-		set date [clock scan $tmp]
-	    } else {
-		set date [clock scan $tmp -format $options(-dateformat)]
+
+	if {$value ne "" } {
+	    trace add variable $value write [mymethod DoUpdate]
+	    if { [info exists $value] } {
+	        DoUpdate
 	    }
-
-	    foreach {data(selday) data(selmonth) data(selyear)} \
-		[clock format $date -format "%e %m %Y"] { break }
-	    scan $data(selmonth) %d data(selmonth) ; # avoid leading 0 issues
-
-	    $self refresh
+	} else {
+	    trace remove variable $options(-textvariable) write [mymethod DoUpdate]
 	}
     }
 
+    #
+    # DoUpdate --
+    #
+    #  Update the internal values of day, month and year when the
+    #  textvariable is written to (trace callback).
+    #
+    ##
+    method DoUpdate { args } {
+
+	set value $options(-textvariable)
+	set tmp [set $value]
+	if {$tmp eq ""} { return }
+	if {$::tcl_version < 8.5} {
+	    # Prior to 8.4, users must use [clock]-recognized dateformat
+	    set date [clock scan $tmp]
+	} else {
+	    set date [clock scan $tmp -format $options(-dateformat)]
+	}
+
+	foreach {data(day) data(month) data(year)} \
+	    [clock format $date -format "%e %m %Y"] { break }
+	scan $data(month) %d data(month) ; # avoid leading 0 issues
+
+	set data(selday)   $data(day)
+	set data(selmonth) $data(month)
+	set data(selyear)  $data(year)
+
+	$self refresh
+    }
+
+    #
+    # get --
+    #   Return parts of the selected date or the complete date.
+    #
+    # Arguments:
+    #   what  - Selects the part of the date or the complete date.
+    #            values <day,month,year, all>, default is all
+    #
+    ##
     method get {{what all}} {
 	switch -exact -- $what {
 	    "day"   { return $data(selday) }
@@ -174,13 +247,13 @@ snit::widgetadaptor widget::calendar {
 	$hull configure -width $w -height $h
     }
 
-    method refresh {} {
+    method refresh { } {
 	# Idle deferred refresh
 	after cancel $pending
-	set pending [after idle [mymethod Refresh]]
+	set pending [after idle [mymethod Refresh ]]
     }
 
-    method Refresh {} {
+    method Refresh { } {
 	# Set up coords based on font spacing
 	set x  [expr {$data(cellspace) / 2}]; set x0 $x
 	set dx $data(cellspace)
@@ -320,7 +393,7 @@ snit::widgetadaptor widget::calendar {
 	set data(selday) $data(day)
 	set data(selmonth) $data(month)
 	set data(selyear) $data(year)
-	set date [clock scan $data(month)/$data(day)/$data(year)]
+	set date    [clock scan   $data(month)/$data(day)/$data(year)]
 	set fmtdate [clock format $date -format $options(-dateformat)]
 
 	if {$options(-textvariable) ne {}} {
@@ -478,4 +551,4 @@ snit::widgetadaptor widget::calendar {
     }
 }
 
-package provide widget::calendar 0.91
+package provide widget::calendar 0.92
