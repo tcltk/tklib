@@ -1,5 +1,16 @@
 2009-09-25  Ruediger Haertel <r_haertel@gmx.de>
 
+	* calendar.tcl: uninstall trace handler with dtor
+	     . create key bindings to move within the calendar.
+	     . changing the language immediately refreshes the widget.
+	     . for english and german the string "Today is"
+	           is displayed, other languages don't have this.
+
+	* widget_calendar.tcl: added section with key bindings                 
+	* pkgIndex.tcl: bump calendar to v0.93
+
+2009-09-25  Ruediger Haertel <r_haertel@gmx.de>
+
 	* calendar.tcl: install/uninstall trace handler when
 	                -textvariable is set/unset
 	* pkgIndex.tcl: bump calendar to v0.92
