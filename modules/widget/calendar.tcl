@@ -5,9 +5,12 @@
 #	Calendar widget drawn on a canvas.
 #	Adapted from Suchenwirth code on the wiki.
 #
-# RCS: @(#) $Id: calendar.tcl,v 1.5 2009/09/25 19:11:06 haertel Exp $
+# Copyright (c) 2008 Rüdiger Härtel
+#
+# RCS: @(#) $Id: calendar.tcl,v 1.6 2009/09/26 12:39:01 haertel Exp $
 #
 
+#
 # Creation and Options - widget::calendar $path ...
 # -command        -default {}
 # -dateformat     -default "%m/%d/%Y"
@@ -16,6 +19,9 @@
 # -firstday       -default "monday"
 # -highlightcolor -default "#FFCC00"
 # -shadecolor     -default "#888888"
+# -language       -default en   Supported languages: de, en, es, fr, gr,
+#                                he, it, ja, sv, pt, zh, fi ,tr, nl, ru,
+#                                crk, crx-nak, crx-lhe
 #
 #  All other options to canvas
 #
@@ -53,10 +59,7 @@ snit::widgetadaptor widget::calendar {
     option -font           -default {Helvetica 9} -configuremethod C-font
     option -highlightcolor -default "#FFCC00"     -configuremethod C-refresh
     option -shadecolor     -default "#888888"     -configuremethod C-refresh
-
-    option -language       -default en
-
-    # showpast not currently correct
+    option -language       -default en            -configuremethod C-language
     option -showpast       -default 1             -configuremethod C-refresh \
                                                   -type {snit::boolean} 
 	
@@ -80,28 +83,36 @@ snit::widgetadaptor widget::calendar {
 	    [clock format $now -format "%e %m %Y"] { break }
 	scan $data(month) %d data(month) ; # avoid leading 0 issues
 
+	set data(selday)   $data(day)
+	set data(selmonth) $data(month)
+	set data(selyear)  $data(year)
+
 	# Binding for the 'day' tagged items
 	$win bind day <1>           [mymethod invoke]
 
-	if { 0 } {
-	# TODO key bindings
-	#
-	# left-/rightarrow            move by day
-	# Control-left-/rightarrow    move by month
-	# up-/downarrow               move by year
-	bind <leftarrow>            [mymethod invoke]
-	bind <Control-leftarrow>    [mymethod adjust -1 0]
-	bind <rightarrow>           [mymethod invoke]
-	bind <Control-rightarrow>   [mymethod adjust  1 0]
-
-	bind <uparrow>              [mymethod adjust  0  1]
-	bind <downarrow>            [mymethod adjust  0 -1]
-	}
+        # move days
+	bind $win <Left>            [mymethod adjust -1  0  0]
+	bind $win <Right>           [mymethod adjust  1  0  0]
+        # move weeks
+	bind $win <Up>              [mymethod adjust -7  0  0]
+	bind $win <Down>            [mymethod adjust  7  0  0]
+        # move months
+	bind $win <Control-Left>    [mymethod adjust  0 -1  0]
+	bind $win <Control-Right>   [mymethod adjust  0  1  0]
+        # move years
+	bind $win <Control-Up>      [mymethod adjust  0  0 -1]
+	bind $win <Control-Down>    [mymethod adjust  0  0  1]
 
 	$self configurelist $args
 
 	$self reconfigure
 	$self refresh
+    }
+
+    destructor {  
+	if { $options(-textvariable) ne "" } {
+	    trace remove variable $options(-textvariable) write [mymethod DoUpdate]
+	}
     }
 
     #
@@ -150,6 +161,29 @@ snit::widgetadaptor widget::calendar {
 	} else {
 	    trace remove variable $options(-textvariable) write [mymethod DoUpdate]
 	}
+    }
+
+    #
+    # C-language --
+    #
+    #  Configure the language of the calendar.
+    #
+    ##
+    method C-language {option value} {
+
+	set langs [list \
+		    de en es fr gr he it ja sv pt zh fi tr nl ru \
+		    crk  \
+		    crx-nak \
+		    crx-lhe \
+	]
+	if { $value ni $langs } {
+	    return -code error "Unsupported language. Choose one of: $langs"
+	}
+
+	set options($option) $value
+
+	$self refresh
     }
 
     #
@@ -210,21 +244,61 @@ snit::widgetadaptor widget::calendar {
 	}
     }
 
-    method adjust {dmonth dyear} {
+    #
+    # adjust --
+    #
+    #   Adjust internal values of the calendar and update the contents
+    #   of the widget. This function is invoked by pressing the arrows
+    #   in the widget and on key bindings.
+    #
+    # Arguments:
+    #   dday    - Difference in days
+    #   dmonth  - Difference in months
+    #   dyear   - Difference in years
+    #
+    ##
+    method adjust {dday dmonth dyear} {
 	incr data(year)  $dyear
 	incr data(month) $dmonth
 
-	if {$data(month) > 12} {
-	    set data(month) 1
+	if { ($data(day) + $dday) < 1}  {
+	    incr data(month) -1
+
+	    set maxday [$self numberofdays $data(month) $data(year)]
+	    set  data(day) [expr {($data(day) + $dday) % $maxday}]
+
+	} else {
+
+	    if { ($data(day) + $dday) > $maxday } {
+
+		set maxday [$self numberofdays $data(month) $data(year)]
+		incr data(month) 1
+		set  data(day)   [expr {($data(day) + $dday) % $maxday}]
+
+	    } else {
+		incr data(day) $dday
+	    }
+	}
+	    
+
+	if { $data(month) > 12} {
+	    set  data(month) 1
 	    incr data(year)
 	}
 
-	if {$data(month) < 1}  {
-	    set data(month) 12
-	    incr data(year) -1
+	if { $data(month) < 1}  {
+	    set  data(month) 12
+	    incr data(year)  -1
 	}
+
+
 	set maxday [$self numberofdays $data(month) $data(year)]
-	if {$maxday < $data(day)} {set data(day) $maxday}
+	if { $maxday < $data(day) } {
+	    set data(day) $maxday
+	}
+	set data(selday)   $data(day)
+	set data(selmonth) $data(month)
+	set data(selyear)  $data(year)
 
 	$self refresh
     }
@@ -272,12 +346,12 @@ snit::widgetadaptor widget::calendar {
 
 	    # Left and Right buttons
 	    set xs [expr {$data(cellspace) / 2}]
-	    $self cbutton [expr {$xs+2}] $pad -$xs [mymethod adjust 0 -1]; # <<
-	    $self cbutton [expr {$xs*2}] $pad [expr {-$xs/1.5}] [mymethod adjust -1 0]; # <
+	    $self cbutton [expr {$xs+2}] $pad -$xs              [mymethod adjust 0  0 -1]; # <<
+	    $self cbutton [expr {$xs*2}] $pad [expr {-$xs/1.5}] [mymethod adjust 0 -1  0]; # <
 	    set lxs [expr {$winw - $xs - 2}]
-	    $self cbutton $lxs $pad $xs [mymethod adjust 0 1]; # >>
+	    $self cbutton $lxs $pad $xs                         [mymethod adjust 0  0  1]; # >>
 	    incr lxs -$xs
-	    $self cbutton $lxs $pad [expr {$xs/1.5}] [mymethod adjust 1 0]; # >
+	    $self cbutton $lxs $pad [expr {$xs/1.5}]            [mymethod adjust 0  1  0]; # >
 
 	    # day (row) and weeknum (col) headers
 	    $hull create rect 0 [expr {$y - $pad}] $winw [expr {$y + $pad}] \
@@ -368,7 +442,7 @@ snit::widgetadaptor widget::calendar {
 
 	# Display Today line
 	set now [clock seconds]
-	set today "Today is [clock format $now -format $options(-dateformat)]"
+	set today "$LANGS(today,$options(-language)) [clock format $now -format $options(-dateformat)]"
 	$hull create text [expr {$winw/2}] [expr {$winh - $pad}] -text $today \
 	    -tag week -font $options(-font) -fill black
 
@@ -387,6 +461,11 @@ snit::widgetadaptor widget::calendar {
     }
 
     method invoke {} {
+
+        catch {focus -force $win} msg
+        if { $msg ne "" } {
+            puts $msg
+        }
 	set item [$hull find withtag current]
 	set data(day) [$hull itemcget $item -text]
 
@@ -444,67 +523,80 @@ snit::widgetadaptor widget::calendar {
 	    Paw\u0101cakinas\u012Bsip\u012Bsim
 	}
 	weekdays,crk {P\u01E3 N\u01E3s Nis N\u01E3 Niy Nik Ay}
+	today,crk {}
 
 	mn,crx-nak {
 	    . {Sacho Ooza'} {Chuzsul Ooza'} {Chuzcho Ooza'} {Shin Ooza'} {Dugoos Ooza'} {Dang Ooza'}\
 		{Talo Ooza'} {Gesul Ooza'} {Bit Ooza'} {Lhoh Ooza'} {Banghan Nuts'ukih} {Sacho Din'ai}
 	}
 	weekdays,crx-nak {Ji Jh WN WT WD Ts Sa}
+	today,crx-nak {}
 
 	mn,crx-lhe {
 	    . {'Elhdzichonun} {Yussulnun} {Datsannadulhnun} {Dulats'eknun} {Dugoosnun} {Daingnun}\
 		{Gesnun} {Nadlehcho} {Nadlehyaz} {Lhewhnandelnun} {Benats'ukuihnun} {'Elhdziyaznun}
 	}
 	weekdays,crx-lhe {Ji Jh WN WT WD Ts Sa}
+	today,crx-lhe {}
 
 	mn,de {
 	    . Januar Februar März April Mai Juni Juli August
 	    September Oktober November Dezember
 	}
 	weekdays,de {So Mo Di Mi Do Fr Sa}
+	today,de {Heute ist der}
 
 	mn,en {
 	    . January February March April May June July August
 	    September October November December
 	}
 	weekdays,en {Su Mo Tu We Th Fr Sa}
+	today,en {Today is}
 
 	mn,es {
 	    . Enero Febrero Marzo Abril Mayo Junio Julio Agosto
 	    Septiembre Octubre Noviembre Diciembre
 	}
 	weekdays,es {Do Lu Ma Mi Ju Vi Sa}
+	today,es {}
 
 	mn,fr {
 	    . Janvier Février Mars Avril Mai Juin Juillet Août
 	    Septembre Octobre Novembre Décembre
 	}
 	weekdays,fr {Di Lu Ma Me Je Ve Sa}
+	today,fr {}
 
 	mn,gr {
 	    . Îýý???Ïýý?Ïýý??Ïýý ???Ïýý?Ïýý?Ïýý??Ïýý Îýý?ÏýýÏýý??Ïýý ÎýýÏýýÏýý????Ïýý Îýý?Îýý?Ïýý Îýý?Ïýý???Ïýý Îýý?Ïýý???Ïýý ÎýýÏýý??ÏýýÏýýÏýý?Ïýý
 	    ??ÏýýÏýýÎýý??Ïýý??Ïýý Îýý?ÏýýÏýý??Ïýý??Ïýý Îýý?Îýý??Ïýý??Ïýý Îýý??Îýý??Ïýý??Ïýý
 	}
 	weekdays,gr {ÎýýÏýýÏýý Îýý?Ïýý TÏýý? ??Ïýý Î ?? Î ?Ïýý ???}
+	today,gr {}
 
 	mn,he {
 	    . ×ýý× ×ýý×ýý? ?×ýý?×ýý×ýý? ×ýý?? ×ýý??×ýý×ýý ×ýý×ýý×ýý ×ýý×ýý× ×ýý ×ýý×ýý×ýý×ýý ×ýý×ýý×ýý×ýý?×ýý ??×ýý×ýý×ýý? ×ýý×ýý?×ýý×ýý×ýý? × ×ýý×ýý×ýý×ýý? ×ýý?×ýý×ýý?
 	}
 	weekdays,he {?×ýý?×ýý×ýý ?× ×ýý ?×ýý×ýý?×ýý ?×ýý×ýý?×ýý ×ýý×ýý×ýý?×ýý ?×ýý?×ýý ?×ýý?}
+	today,he {}
+
 	mn,it {
 	    . Gennaio Febraio Marte Aprile Maggio Giugno Luglio Agosto
 	    Settembre Ottobre Novembre Dicembre
 	}
 	weekdays,it {Do Lu Ma Me Gi Ve Sa}
+	today,it {}
 
 	format,ja {%Y\u5e74 %m\u6708}
 	weekdays,ja {\u65e5 \u6708 \u706b \u6c34 \u6728 \u91d1 \u571f}
+	today,ja {}
 
 	mn,nl {
 	    . januari februari maart april mei juni juli augustus
 	    september oktober november december
 	}
 	weekdays,nl {Zo Ma Di Wo Do Vr Za}
+	today,nl {}
 
 	mn,ru {
 	    . \u042F\u043D\u0432\u0430\u0440\u044C
@@ -520,18 +612,21 @@ snit::widgetadaptor widget::calendar {
 	    \u432\u43e\u441 \u43f\u43e\u43d \u432\u442\u43e \u441\u440\u435
 	    \u447\u435\u442 \u43f\u44f\u442 \u441\u443\u431
 	}
+	today,ru {}
 
 	mn,sv {
 	    . januari februari mars april maj juni juli augusti
 	    september oktober november december
 	}
 	weekdays,sv {s\u00F6n m\u00E5n tis ons tor fre l\u00F6r}
+	today,sv {}
 
 	mn,pt {
 	    . Janeiro Fevereiro Mar\u00E7o Abril Maio Junho
 	    Julho Agosto Setembro Outubro Novembro Dezembro
 	}
 	weekdays,pt {Dom Seg Ter Qua Qui Sex Sab}
+	today,pt {}
 
 	format,zh {%Y\u5e74 %m\u6708}
 	mn,zh {
@@ -539,15 +634,20 @@ snit::widgetadaptor widget::calendar {
 	    \u516b \u4e5d \u5341 \u5341\u4e00 \u5341\u4e8c
 	}
 	weekdays,zh {\u65e5 \u4e00 \u4e8c \u4e09 \u56db \u4e94 \u516d}
+	today,zh {}
+
 	mn,fi {
 	    . Tammikuu Helmikuu Maaliskuu Huhtikuu Toukokuu Kesäkuu
 	    Heinäkuu Elokuu Syyskuu Lokakuu Marraskuu Joulukuu
 	}
 	weekdays,fi {Ma Ti Ke To Pe La Su}
+	today,fi {}
+
 	mn,tr {
 	    . ocak \u015fubat mart nisan may\u0131s haziran temmuz a\u011fustos eyl\u00FCl ekim kas\u0131m aral\u0131k
 	}
 	weekdays,tr {pa'tesi sa \u00e7a pe cu cu'tesi pa}
+	today,tr {}
     }
 }
 
