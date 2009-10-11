@@ -1,3 +1,11 @@
+2009-10-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.12.1.
+	* COPYRIGHT.txt:
+
+	* scripts/tablelistConfig.tcl: Fixed a bug related to the -labelfont
+	  option.
+
 2009-09-12  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/tablelist.html: Corrected the version number.
