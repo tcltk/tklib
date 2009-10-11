@@ -295,13 +295,11 @@ proc tablelist::doConfig {win opt val} {
 		}
 		-font {
 		    #
-		    # Apply the value to the header text widget and to
-		    # the listbox child, rebuild the lists of the column
-		    # fonts and tag names, configure the edit window if
-		    # present, set up and adjust the columns, and make
-		    # sure the items will be redisplayed at idle time
+		    # Apply the value to the listbox child, rebuild the lists
+		    # of the column fonts and tag names, configure the edit
+		    # window if present, set up and adjust the columns, and
+		    # make sure the items will be redisplayed at idle time
 		    #
-		    $data(hdrTxt) configure $opt $val
 		    $data(lb) configure $opt $val
 		    set data(charWidth) [font measure $val -displayof $win 0]
 		    makeColFontAndTagLists $win
@@ -392,9 +390,10 @@ proc tablelist::doConfig {win opt val} {
 		}
 		-labelfont {
 		    #
-		    # Adjust the columns (including
-		    # the height of the header frame)
+		    # Apply the value to $data(hdrTxt) and adjust the
+		    # columns (including the height of the header frame)
 		    #
+		    $data(hdrTxt) configure -$optTail $data($opt)
 		    adjustColumns $win allLabels 1
 		}
 		-labelheight -
