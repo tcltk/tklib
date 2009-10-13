@@ -1,3 +1,7 @@
+2009-10-12  Aaron Faupell <afaupell@users.sourceforge.net>
+
+	* ico.tcl fix error messages to be more clear and refactor fileext into gettype in the process
+
 2009-05-21  Andreas Kupries  <andreask@activestate.com>
 
 	* ico.man: Fixed issues in getIcon and writeIcon (semantic mismatches).
