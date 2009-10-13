@@ -5,7 +5,7 @@
 # Copyright (c) 2003-2007 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.29 2009/05/21 16:32:24 andreas_kupries Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.30 2009/10/13 06:42:02 afaupell Exp $
 
 # Sample usage:
 #	set file bin/wish.exe
@@ -55,11 +55,8 @@ proc ::ico::icons {file args} {
     parseOpts type $args
     if {![file exists $file]} {
         return -code error "couldn't open \"$file\": no such file or directory"
-    } 
-    if {![info exists type]} {
-        # $type wasn't specified - get it from the extension
-        set type [fileext $file]
     }
+    gettype type $file
     if {![llength [info commands getIconList$type]]} {
 	return -code error "unsupported file format $type"
     }
@@ -85,10 +82,7 @@ proc ::ico::iconMembers {file name args} {
     if {![file exists $file]} {
         return -code error "couldn't open \"$file\": no such file or directory"
     } 
-    if {![info exists type]} {
-        # $type wasn't specified - get it from the extension
-        set type [fileext $file]
-    }
+    gettype type $file
     if {![llength [info commands getIconMembers$type]]} {
 	return -code error "unsupported file format $type"
     }
@@ -128,11 +122,8 @@ proc ::ico::getIcon {file name args} {
     parseOpts {type format image res bpp exact} $args
     if {![file exists $file]} {
         return -code error "couldn't open \"$file\": no such file or directory"
-    } 
-    if {![info exists type]} {
-        # $type wasn't specified - get it from the extension
-        set type [fileext $file]
     }
+    gettype type $file
     if {![llength [info commands getRawIconData$type]]} {
         return -code error "unsupported file format $type"
     }
@@ -202,11 +193,8 @@ proc ::ico::getIconByName {file name args} {
     parseOpts {type format image} $args
     if {![file exists $file]} {
         return -code error "couldn't open \"$file\": no such file or directory"
-    } 
-    if {![info exists type]} {
-        # $type wasn't specified - get it from the extension
-        set type [fileext $file]
     }
+    gettype type $file
     if {![llength [info commands getRawIconData$type]]} {
         return -code error "unsupported file format $type"
     }
@@ -286,11 +274,8 @@ proc ::ico::writeIcon {file name bpp data args} {
     parseOpts type $args
     if {![file exists $file]} {
         return -code error "couldn't open \"$file\": no such file or directory"
-    } 
-    if {![info exists type]} {
-        # $type wasn't specified - get it from the extension
-        set type [fileext $file]
     }
+    gettype type $file
     if {![llength [info commands writeIcon$type]]} {
 	return -code error "unsupported file format $type"
     }
@@ -348,15 +333,9 @@ proc ::ico::copyIcon {file1 name1 file2 name2 args} {
     } 
     if {![file exists $file2]} {
         return -code error "couldn't open \"$file2\": no such file or directory"
-    } 
-    if {![info exists fromtype]} {
-        # $type wasn't specified - get it from the extension
-        set fromtype [fileext $file1]
     }
-    if {![info exists totype]} {
-        # $type wasn't specified - get it from the extension
-        set totype [fileext $file2]
-    }
+    gettype fromtype $file1
+    gettype totype $file2
     if {![llength [info commands writeIcon$totype]]} {
 	return -code error "unsupported file format $totype"
     }
@@ -497,8 +476,11 @@ proc ::ico::EXEtoICO {exeFile {icoDir {}}} {
 ##
 
 # gets the file extension as we use it internally (upper case, no '.')
-proc ::ico::fileext {file} {
-    return [string trimleft [string toupper [file extension $file]] .]
+proc ::ico::gettype {var file} {
+    upvar $var type
+    if {[info exists type]} { return }
+    set type [string trimleft [string toupper [file extension $file]] .]
+    if {$type == ""} { return -code error "could not determine file type from extension, use -$var option" }
 }
 
 # helper proc to parse optional arguments to some of the public procs
@@ -1233,7 +1215,7 @@ proc ::ico::FindResources {file} {
     fconfigure $fh -eofchar {} -encoding binary -translation lf
     if {[read $fh 2] ne "MZ"} {
 	close $fh
-	return -code error "unknown file format"
+	return -code error "file is not a valid executable"
     }
     seek $fh 60 start
     seek $fh [getword $fh] start
@@ -1244,7 +1226,7 @@ proc ::ico::FindResources {file} {
     } elseif {[string match NE* $sig]} {
         return [FindResourcesNE $fh $file]
     } else {
-        return -code error "unknown file format"
+        return -code error "file is not a valid executable"
     }
 }
 
