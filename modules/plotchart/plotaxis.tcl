@@ -992,3 +992,54 @@ proc ::Plotchart::RescalePlot { w xscale yscale } {
    DrawYaxis        $w $ymin  $ymax  $ydelt
    DrawXaxis        $w $xmin  $xmax  $xdelt
 }
+
+# DrawRoseAxes --
+#    Draw the axes to support a wind rose
+# Arguments:
+#    w           Name of the canvas
+#    rad_max     Maximum radius
+#    rad_step    Step in radius
+# Result:
+#    None
+# Side effects:
+#    Axes drawn in canvas
+#
+proc ::Plotchart::DrawRoseAxes { w rad_max rad_step } {
+
+    #
+    # Draw the spikes
+    #
+    set angle 0.0
+
+    foreach {xcentre ycentre} [polarToPixel $w 0.0 0.0] {break}
+
+    foreach {angle text dir} {
+         90  North s
+        180  West  e
+        270  South n
+          0  East  w } {
+        foreach {xcrd ycrd} [polarToPixel $w $rad_max $angle] {break}
+        foreach {xtxt ytxt} [polarToPixel $w [expr {1.05*$rad_max}] $angle] {break}
+        $w create line $xcentre $ycentre $xcrd $ycrd
+        $w create text $xtxt    $ytxt    -text $text -anchor $dir
+    }
+
+    #
+    # Draw the concentric circles
+    #
+    set rad $rad_step
+
+    while { $rad < $rad_max+0.5*$rad_step } {
+        foreach {xtxt   ytxt}    [polarToPixel $w $rad   45.0] {break}
+        foreach {xright ycrd}    [polarToPixel $w $rad    0.0] {break}
+        foreach {xleft  ycrd}    [polarToPixel $w $rad  180.0] {break}
+        foreach {xcrd   ytop}    [polarToPixel $w $rad   90.0] {break}
+        foreach {xcrd   ybottom} [polarToPixel $w $rad  270.0] {break}
+
+        $w create oval $xleft $ytop $xright $ybottom
+
+        $w create text $xtxt [expr {$ytxt+3}] -text $rad -anchor s
+
+        set rad [expr {$rad+$rad_step}]
+    }
+}
