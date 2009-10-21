@@ -2405,3 +2405,188 @@ proc ::Plotchart::HorizScrollChart { w operation number {unit {}}} {
 
     RescaleChart $w
 }
+
+# DrawWindRoseData --
+#    Draw the data for each sector
+# Arguments:
+#    w           Name of the canvas
+#    data        List of "sectors" data
+#    colour      Colour to use
+# Result:
+#    None
+# Side effects:
+#    Data added to the wind rose
+#
+proc ::Plotchart::DrawWindRoseData { w data colour } {
+
+    variable data_series
+
+    set start_angle  $data_series($w,start_angle)
+    set increment    $data_series($w,increment_angle)
+    set width_sector $data_series($w,d_angle)
+
+    set new_cumulative {}
+
+    foreach value $data cumulative_radius $data_series($w,cumulative_radius) {
+        set radius [expr {$value + $cumulative_radius}]
+
+        foreach {xright ytop}    [polarToPixel $w [expr {$radius*sqrt(2.0)}]  45.0] {break}
+        foreach {xleft  ybottom} [polarToPixel $w [expr {$radius*sqrt(2.0)}] 225.0] {break}
+
+        $w create arc $xleft $ytop $xright $ybottom -style pie -fill $colour \
+            -tag data_$data_series($w,count_data) -start $start_angle -extent $width_sector
+
+        lappend new_cumulative $radius
+
+        set start_angle [expr {$start_angle - $increment}]
+    }
+
+    $w lower data_$data_series($w,count_data)
+
+    set data_series($w,cumulative_radius) $new_cumulative
+    incr data_series($w,count_data)
+}
+
+# DrawYband --
+#    Draw a vertical grey band in a plot
+# Arguments:
+#    w           Name of the canvas
+#    xmin        Lower bound of the band
+#    xmax        Upper bound of the band
+# Result:
+#    None
+# Side effects:
+#    Horizontal band drawn in canvas
+#
+proc ::Plotchart::DrawYband { w xmin xmax } {
+    variable scaling
+
+
+    foreach {xp1 yp1} [coordsToPixel $w $xmin $scaling($w,ymin)] {break}
+    foreach {xp2 yp2} [coordsToPixel $w $xmax $scaling($w,ymax)] {break}
+
+    $w create rectangle $xp1 $yp1 $xp2 $yp2 -fill grey70 -outline grey70 -tag band
+
+    $w lower band ;# TODO: also in "plot" method
+}
+
+# DrawXband --
+#    Draw a horizontal grey band in a plot
+# Arguments:
+#    w           Name of the canvas
+#    ymin        Lower bound of the band
+#    ymax        Upper bound of the band
+# Result:
+#    None
+# Side effects:
+#    Horizontal band drawn in canvas
+#
+proc ::Plotchart::DrawXband { w ymin ymax } {
+    variable scaling
+
+
+    foreach {xp1 yp1} [coordsToPixel $w $scaling($w,xmin) $ymin] {break}
+    foreach {xp2 yp2} [coordsToPixel $w $scaling($w,xmax) $ymax] {break}
+
+    $w create rectangle $xp1 $yp1 $xp2 $yp2 -fill grey70 -outline grey70 -tag band
+
+    $w lower band ;# TODO: also in "plot" method
+}
+
+# DrawLabelDot --
+#    Draw a label and a symbol (dot) in a plot
+# Arguments:
+#    w           Name of the canvas
+#    x           X coordinate of the dot
+#    y           Y coordinate of the dot
+#    text        Text to be shown
+#    orient      (Optional) orientation of the text wrt the dot
+#                (w, e, n, s)
+#
+# Result:
+#    None
+# Side effects:
+#    Label and dot drawn in canvas
+# Note:
+#    The routine uses the data series name "labeldot" to derive
+#    the properties
+#
+proc ::Plotchart::DrawLabelDot { w x y text {orient w} } {
+    variable scaling
+
+    foreach {xp yp} [coordsToPixel $w $x $y] {break}
+
+    switch -- [string tolower $orient] {
+        "w" {
+            set xp [expr {$xp - 5}]
+            set anchor e
+        }
+        "e" {
+            set xp [expr {$xp + 10}]
+            set anchor w
+        }
+        "s" {
+            set yp [expr {$yp + 5}]
+            set anchor n
+        }
+        "n" {
+            set yp [expr {$yp - 5}]
+            set anchor s
+        }
+        default {
+            set xp [expr {$xp - 5}]
+            set anchor w
+        }
+    }
+
+    $w create text $xp $yp -text $text -fill grey -tag data -anchor $anchor
+    DrawData $w labeldot $x $y
+}
+
+# DrawLabelDotPolar --
+#    Draw a label and a symbol (dot) in a polar plot
+# Arguments:
+#    w           Name of the canvas
+#    rad         Radial coordinate of the dot
+#    angle       Tangential coordinate of the dot
+#    text        Text to be shown
+#    orient      (Optional) orientation of the text wrt the dot
+#                (w, e, n, s)
+#
+# Result:
+#    None
+# Side effects:
+#    Label and dot drawn in canvas
+# Note:
+#    The routine uses the data series name "labeldot" to derive
+#    the properties
+#
+proc ::Plotchart::DrawLabelDotPolar { w rad angle text {orient w} } {
+    variable torad
+
+    set xcrd [expr {$rad*cos($phi*$torad)}]
+    set ycrd [expr {$rad*sin($phi*$torad)}]
+
+    DrawLabelDot $w $xcrd $ycrd $text $orient
+}
+
+# DrawVtext --
+#    Draw vertical text to the y-axis
+# Arguments:
+#    w           Name of the canvas
+#    text        Text to be drawn
+# Result:
+#    None
+# Side effects:
+#    Text drawn in canvas
+# Note:
+#    This requires Tk 8.6 or later
+#
+proc ::Plotchart::DrawVtext { w text } {
+   variable scaling
+
+   set xt [expr {$scaling($w,pxmin) + 5}]
+   set yt [expr {($scaling($w,pymin) + $scaling($w,pymax)) / 2}]
+
+   $w create text $xt $yt -text $text -fill black -anchor n -angle 90
+}
