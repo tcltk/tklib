@@ -215,8 +215,8 @@ axis, in this order.
 [call [cmd ::Plotchart::createWindrose] [arg w] [arg radius_data] [arg sectors]]
 
 Create a new windrose diagram. The diagram will consist of concentric
-circles as defined by the [tt radius_data] argument and a number of
-sectors (given by the [tt sectors] argument). The sectors are drawn in
+circles as defined by the [term radius_data] argument and a number of
+sectors (given by the [term sectors] argument). The sectors are drawn in
 the "nautical" convention, that is: the first is located at the positive
 y-axis, the second is to the right and so on in a clockwise direction.
 
@@ -674,9 +674,7 @@ or later.
 Text to drawn to the y-axis
 
 [list_end]
-[nl]
 
-[list_end]
 [para]
 
 
@@ -1205,7 +1203,7 @@ List of lists, each value is an x-coordinate for a grid cell corner
 List of lists, each value is an y-coordinate for a grid cell corner
 
 [list_end]
-
+[para]
 
 [call [cmd \$xyplot] xband [arg ymin] [arg ymax]]
 Draw a light grey band in the plot, ranging over the full x-axis. This
@@ -1219,9 +1217,9 @@ Lower bound for the band
 Upper bound for the band
 
 [list_end]
-[nl]
+[para]
 
-[call [cmds \$xyplot] yband [arg xmin] [arg xmax]]
+[call [cmd \$xyplot] yband [arg xmin] [arg xmax]]
 Draw a light grey band in the plot, ranging over the full y-axis. This
 can be used to indicate a "typical" range for the data.
 
@@ -1243,7 +1241,7 @@ conspicuous.
 [nl]
 You can configure the appearance of the symbol by using the data series
 name "labeldot":
-[tt "$w dataconfig labeldot -colour red -type symbol -symbol dot"]
+[term "\$w dataconfig labeldot -colour red -type symbol -symbol dot"]
 
 [list_begin arguments]
 [arg_def float x in]
