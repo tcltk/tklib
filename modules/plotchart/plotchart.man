@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 1.6]
+[manpage_begin Plotchart n 1.7]
 [copyright {2007 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.4]]
 [require Tk [opt 8.4]]
-[require Plotchart [opt 1.6]]
+[require Plotchart [opt 1.7]]
 
 [description]
 [para]
@@ -207,6 +207,29 @@ Name of the [emph existing] canvas widget to hold the plot.
 [arg_def list radius_data in]
 A 2-element list containing maximum radius and stepsize for the radial
 axis, in this order.
+
+[list_end]
+[para]
+
+
+[call [cmd ::Plotchart::createWindrose] [arg w] [arg radius_data] [arg sectors]]
+
+Create a new windrose diagram. The diagram will consist of concentric
+circles as defined by the [tt radius_data] argument and a number of
+sectors (given by the [tt sectors] argument). The sectors are drawn in
+the "nautical" convention, that is: the first is located at the positive
+y-axis, the second is to the right and so on in a clockwise direction.
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the diagram
+
+[arg_def list radius_data in]
+A 2-element list, the first element is the maximum radius, the second is
+the step to be used for the circles.
+
+[arg_def int sectors]
+Number of sectors to use (defaults to 16).
 
 [list_end]
 [para]
@@ -639,6 +662,19 @@ a straight y-axis.
 [list_begin arguments]
 [arg_def string text in]
 The text of the y-axis label to be drawn.
+
+[list_end]
+
+[call [cmd \$anyplot] vtext [arg text]]
+Draw a [emph vertical] label to the y-axis. Note: this requires Tk 8.6
+or later.
+
+[list_begin arguments]
+[arg_def string text in]
+Text to drawn to the y-axis
+
+[list_end]
+[nl]
 
 [list_end]
 [para]
@@ -1171,13 +1207,89 @@ List of lists, each value is an y-coordinate for a grid cell corner
 [list_end]
 
 
+[call [cmd \$xyplot] xband [arg ymin] [arg ymax]]
+Draw a light grey band in the plot, ranging over the full x-axis. This
+can be used to indicate a "typical" range for the data.
+
+[list_begin arguments]
+[arg_def float ymin in]
+Lower bound for the band
+
+[arg_def float ymax in]
+Upper bound for the band
+
+[list_end]
+[nl]
+
+[call [cmds \$xyplot] yband [arg xmin] [arg xmax]]
+Draw a light grey band in the plot, ranging over the full y-axis. This
+can be used to indicate a "typical" range for the data.
+
+[list_begin arguments]
+[arg_def float xmin in]
+Lower bound for the band
+
+[arg_def float xmax in]
+Upper bound for the band
+
+[list_end]
+[nl]
+
+
+[call [cmd \$xyplot] labeldot [arg x] [arg y] [arg text] [arg orient]]
+Draw a label and a symbol in the plot. The label will appear near the
+symbol. The label will be drawn in grey, so as not to be too
+conspicuous.
+[nl]
+You can configure the appearance of the symbol by using the data series
+name "labeldot":
+[tt "$w dataconfig labeldot -colour red -type symbol -symbol dot"]
+
+[list_begin arguments]
+[arg_def float x in]
+X-coordinate of the symbol to be drawn
+
+[arg_def float y in]
+Y-coordinate of the symbol to be drawn
+
+[arg_def string text in]
+Text for the label
+
+[arg_def string orient in]
+Optional orientation (one of w, e, n, s) defining the position of the
+label with respect to the symbol. It defaults to w (so the label
+appears left of the symbol).
+
+[list_end]
+
 [list_end]
 [para]
+
 
 For [emph {polar plots}]:
 
 [list_begin definitions]
 [call [cmd \$polarplot] plot [arg series] [arg radius] [arg angle]]
+Add a data point to the polar plot.
+
+[list_begin arguments]
+[arg_def string series in]
+Name of the data series the new point belongs to.
+
+[arg_def float radius in]
+Radial coordinate of the new point.
+
+[arg_def float angle in]
+Angular coordinate of the new point (in degrees).
+
+[list_end]
+[list_end]
+[para]
+
+For [emph {wind rose diagrams}]:
+
+[list_begin definitions]
+[call [cmd \$windrose] plot [arg series] [arg radius] [arg angle]]
 
 Add a data point to the polar plot.
 

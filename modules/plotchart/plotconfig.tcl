@@ -32,7 +32,7 @@ namespace eval ::Plotchart {
     set config(charttypes) {xyplot xlogyplot piechart polarplot
                             histogram horizbars vertbars ganttchart
                             timechart stripchart isometric 3dplot 3dbars
-                            radialchart txplot 3dribbon boxplot}
+                            radialchart txplot 3dribbon boxplot windrose}
 
     set config(xyplot,components)      {title margin text legend leftaxis rightaxis bottomaxis background}
     set config(xlogyplot,components)   {title margin text legend leftaxis bottomaxis background}
@@ -51,6 +51,7 @@ namespace eval ::Plotchart {
     set config(txplot,components)      {title margin text legend leftaxis rightaxis bottomaxis background}
     set config(3dribbon,components)    {title margin text legend leftaxis bottomaxis background}
     set config(boxplot,components)     {title margin text legend leftaxis bottomaxis background}
+    set config(windrose,components)    {title margin text legend axis background}
 
     set config(axis,properties)        {color thickness font format ticklength textcolor}
     set config(leftaxis,properties)    $config(axis,properties)

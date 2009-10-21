@@ -1,3 +1,11 @@
+2009-10-18  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotchart.tcl: Added wind rose diagrams, added new methods
+	* plotpriv.tcl: Drawing methods for wind rose diagrams
+	* plotpriv.tcl: Drawing bands and label-dots
+	* plotaxis.tcl: Drawing axes for wind rose diagrams
+	* plotchart.man: Documentation of new diagram and new methods
+	* pkgIndex.tcl: Changed version to 1.7.0
+
 2009-08-31  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotchart.tcl: Corrected version number (1.6.3)
 

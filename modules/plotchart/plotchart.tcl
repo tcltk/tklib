@@ -32,7 +32,7 @@ namespace eval ::Plotchart {
                     create3DBars createRadialchart \
                     createTXPlot createRightAxis \
                     create3DRibbonChart \
-                    createXLogYPlot \
+                    createXLogYPlot createWindrose \
                     plotconfig plotpack \
 
    #
@@ -41,6 +41,7 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,title)             DrawTitle
    set methodProc(xyplot,xtext)             DrawXtext
    set methodProc(xyplot,ytext)             DrawYtext
+   set methodProc(xyplot,vtext)             DrawVtext
    set methodProc(xyplot,plot)              DrawData
    set methodProc(xyplot,dot)               DrawDot
    set methodProc(xyplot,dotconfig)         DotConfigure
@@ -69,9 +70,13 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,bindcmd)           BindCmd
    set methodProc(xyplot,rescale)           RescalePlot
    set methodProc(xyplot,box-and-whiskers)  DrawBoxWhiskers
+   set methodProc(xyplot,xband)             DrawXband
+   set methodProc(xyplot,yband)             DrawYband
+   set methodProc(xyplot,labeldot)          DrawLabelDot
    set methodProc(xlogyplot,title)          DrawTitle
    set methodProc(xlogyplot,xtext)          DrawXtext
    set methodProc(xlogyplot,ytext)          DrawYtext
+   set methodProc(xlogyplot,vtext)          DrawVtext
    set methodProc(xlogyplot,plot)           DrawLogData
    set methodProc(xlogyplot,dot)            DrawLogDot
    set methodProc(xlogyplot,dotconfig)      DotConfigure
@@ -105,9 +110,11 @@ namespace eval ::Plotchart {
    set methodProc(polarplot,balloon)        DrawBalloon
    set methodProc(polarplot,balloonconfig)  ConfigBalloon
    set methodProc(polarplot,plaintext)      DrawPlainText
+   set methodProc(polarplot,labeldot)       DrawLabelDotPolar
    set methodProc(histogram,title)          DrawTitle
    set methodProc(histogram,xtext)          DrawXtext
    set methodProc(histogram,ytext)          DrawYtext
+   set methodProc(histogram,vtext)          DrawVtext
    set methodProc(histogram,plot)           DrawHistogramData
    set methodProc(histogram,saveplot)       SavePlot
    set methodProc(histogram,dataconfig)     DataConfig
@@ -123,6 +130,7 @@ namespace eval ::Plotchart {
    set methodProc(horizbars,title)          DrawTitle
    set methodProc(horizbars,xtext)          DrawXtext
    set methodProc(horizbars,ytext)          DrawYtext
+   set methodProc(horizbars,vtext)          DrawVtext
    set methodProc(horizbars,plot)           DrawHorizBarData
    set methodProc(horizbars,xticklines)     DrawXTicklines
    set methodProc(horizbars,background)     BackgroundColour
@@ -138,6 +146,7 @@ namespace eval ::Plotchart {
    set methodProc(vertbars,title)           DrawTitle
    set methodProc(vertbars,xtext)           DrawXtext
    set methodProc(vertbars,ytext)           DrawYtext
+   set methodProc(vertbars,vtext)           DrawVtext
    set methodProc(vertbars,plot)            DrawVertBarData
    set methodProc(vertbars,background)      BackgroundColour
    set methodProc(vertbars,yticklines)      DrawYTicklines
@@ -181,6 +190,7 @@ namespace eval ::Plotchart {
    set methodProc(stripchart,title)         DrawTitle
    set methodProc(stripchart,xtext)         DrawXtext
    set methodProc(stripchart,ytext)         DrawYtext
+   set methodProc(stripchart,vtext)         DrawVtext
    set methodProc(stripchart,plot)          DrawStripData
    set methodProc(stripchart,saveplot)      SavePlot
    set methodProc(stripchart,dataconfig)    DataConfig
@@ -196,6 +206,7 @@ namespace eval ::Plotchart {
    set methodProc(isometric,title)          DrawTitle
    set methodProc(isometric,xtext)          DrawXtext
    set methodProc(isometric,ytext)          DrawYtext
+   set methodProc(isometric,vtext)          DrawVtext
    set methodProc(isometric,plot)           DrawIsometricData
    set methodProc(isometric,saveplot)       SavePlot
    set methodProc(isometric,background)     BackgroundColour
@@ -231,6 +242,7 @@ namespace eval ::Plotchart {
    set methodProc(txplot,title)             DrawTitle
    set methodProc(txplot,xtext)             DrawXtext
    set methodProc(txplot,ytext)             DrawYtext
+   set methodProc(txplot,vtext)             DrawVtext
    set methodProc(txplot,plot)              DrawTimeData
    set methodProc(txplot,interval)          DrawInterval
    set methodProc(txplot,saveplot)          SavePlot
@@ -253,6 +265,7 @@ namespace eval ::Plotchart {
    set methodProc(boxplot,title)            DrawTitle
    set methodProc(boxplot,xtext)            DrawXtext
    set methodProc(boxplot,ytext)            DrawYtext
+   set methodProc(boxplot,vtext)            DrawVtext
    set methodProc(boxplot,plot)             DrawBoxData
    set methodProc(boxplot,saveplot)         SavePlot
    set methodProc(boxplot,dataconfig)       DataConfig
@@ -266,6 +279,9 @@ namespace eval ::Plotchart {
    set methodProc(boxplot,balloon)          DrawBalloon
    set methodProc(boxplot,balloonconfig)    ConfigBalloon
    set methodProc(boxplot,plaintext)        DrawPlainText
+   set methodProc(windrose,plot)            DrawWindRoseData
+   set methodProc(windrose,saveplot)        SavePlot
+   set methodProc(windrose,title)           DrawTitle
 
    #
    # Auxiliary parameters
@@ -645,6 +661,8 @@ proc ::Plotchart::createXYPlot { w xscale yscale args} {
    DefaultLegend    $w
    DefaultBalloon   $w
 
+   $newchart dataconfig labeldot -colour red -type symbol -symbol dot
+
    return $newchart
 }
 
@@ -906,6 +924,8 @@ proc ::Plotchart::createPolarplot { w radius_data } {
    DrawPolarAxes    $w $rad_max   $rad_step
    DefaultLegend    $w
    DefaultBalloon   $w
+
+   $newchart dataconfig labeldot -colour red -type symbol -symbol dot
 
    return $newchart
 }
@@ -1601,6 +1621,62 @@ proc ::Plotchart::create3DRibbonChart { w names yscale zscale } {
    return $newchart
 }
 
+# createWindRose --
+#     Create a new command for plotting a windrose
+#
+# Arguments:
+#    w             Name of the canvas
+#    radius_data   Maximum radius and step
+#    sectors       Number of sectors (default: 16)
+# Result:
+#    Name of a new command
+# Note:
+#    The entire canvas will be dedicated to the windrose
+#    Possible additional arguments (optional): nautical/mathematical
+#    step in phi
+#
+proc ::Plotchart::createWindRose { w radius_data {sectors 16}} {
+    variable data_series
+
+    foreach s [array names data_series "$w,*"] {
+        unset data_series($s)
+    }
+
+    set newchart "windrose_$w"
+    interp alias {} $newchart {} ::Plotchart::PlotHandler windrose $w
+    CopyConfig windrose $w
+
+    set rad_max   [lindex $radius_data 0]
+    set rad_step  [lindex $radius_data 1]
+
+    if { $rad_step <= 0.0 } {
+        return -code error "Step size can not be zero or negative"
+    }
+    if { $rad_max <= 0.0 } {
+        return -code error "Maximum radius can not be zero or negative"
+    }
+
+    foreach {pxmin pymin pxmax pymax} [MarginsCircle $w] {break}
+
+    viewPort         $w $pxmin     $pymin     $pxmax   $pymax
+    polarCoordinates $w $rad_max
+    DrawRoseAxes     $w $rad_max   $rad_step
+
+
+    set data_series($w,radius) {}
+    for { set i 0 } { $i < $sectors } { incr i } {
+        lappend data_series($w,cumulative_radius) 0.0
+    }
+
+    set data_series($w,start_angle)     [expr {90.0 - 360.0/(4.0*$sectors)}]
+    set data_series($w,d_angle)         [expr {360.0/(2.0*$sectors)}]
+    set data_series($w,increment_angle) [expr {360.0/$sectors}]
+    set data_series($w,count_data)      0
+
+
+    return $newchart
+}
+
 # Load the private procedures
 #
 source [file join [file dirname [info script]] "plotpriv.tcl"]
@@ -1617,4 +1693,4 @@ source [file join [file dirname [info script]] "plotpack.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.6.3
+package provide Plotchart 1.7.0
