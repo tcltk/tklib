@@ -1,5 +1,12 @@
 2009-09-25  Ruediger Haertel <r_haertel@gmx.de>
 
+	* calendar.tcl: uninstall trace handler whenever a new
+	                  textvariable is assigned
+	     . remove bugfix in key bindings which resulted in an Tcl Error
+	* pkgIndex.tcl: really bump calendar to v0.93
+
+2009-09-25  Ruediger Haertel <r_haertel@gmx.de>
+
 	* calendar.tcl: uninstall trace handler with dtor
 	     . create key bindings to move within the calendar.
 	     . changing the language immediately refreshes the widget.

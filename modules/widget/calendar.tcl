@@ -7,7 +7,7 @@
 #
 # Copyright (c) 2008 Rüdiger Härtel
 #
-# RCS: @(#) $Id: calendar.tcl,v 1.6 2009/09/26 12:39:01 haertel Exp $
+# RCS: @(#) $Id: calendar.tcl,v 1.7 2009/10/22 18:54:43 haertel Exp $
 #
 
 #
@@ -51,7 +51,7 @@ snit::widgetadaptor widget::calendar {
     delegate method * to hull
 
     option -firstday       -default monday        -configuremethod C-refresh \
-	                                          -type [list snit::enum -values [list sunday monday]]
+					      -type [list snit::enum -values [list sunday monday]]
     option -textvariable   -default {}            -configuremethod C-textvariable
 
     option -command        -default {}
@@ -61,8 +61,8 @@ snit::widgetadaptor widget::calendar {
     option -shadecolor     -default "#888888"     -configuremethod C-refresh
     option -language       -default en            -configuremethod C-language
     option -showpast       -default 1             -configuremethod C-refresh \
-                                                  -type {snit::boolean} 
-	
+						  -type {snit::boolean} 
+
 
     variable fullrefresh 1
     variable pending "" ; # pending after id for refresh
@@ -90,16 +90,16 @@ snit::widgetadaptor widget::calendar {
 	# Binding for the 'day' tagged items
 	$win bind day <1>           [mymethod invoke]
 
-        # move days
+	    # move days
 	bind $win <Left>            [mymethod adjust -1  0  0]
 	bind $win <Right>           [mymethod adjust  1  0  0]
-        # move weeks
+	    # move weeks
 	bind $win <Up>              [mymethod adjust -7  0  0]
 	bind $win <Down>            [mymethod adjust  7  0  0]
-        # move months
+	    # move months
 	bind $win <Control-Left>    [mymethod adjust  0 -1  0]
 	bind $win <Control-Right>   [mymethod adjust  0  1  0]
-        # move years
+	    # move years
 	bind $win <Control-Up>      [mymethod adjust  0  0 -1]
 	bind $win <Control-Down>    [mymethod adjust  0  0  1]
 
@@ -154,12 +154,13 @@ snit::widgetadaptor widget::calendar {
 	set options($option) $value
 
 	if {$value ne "" } {
-	    trace add variable $value write [mymethod DoUpdate]
-	    if { [info exists $value] } {
-	        DoUpdate
-	    }
-	} else {
 	    trace remove variable $options(-textvariable) write [mymethod DoUpdate]
+
+	    set value [string map {: ""} $value]
+	    trace add variable ::$value write [mymethod DoUpdate]
+	    if { [info exists $value] } {
+		$self DoUpdate
+	    }
 	}
     }
 
@@ -261,6 +262,8 @@ snit::widgetadaptor widget::calendar {
 	incr data(year)  $dyear
 	incr data(month) $dmonth
 
+	set maxday [$self numberofdays $data(month) $data(year)]
+
 	if { ($data(day) + $dday) < 1}  {
 	    incr data(month) -1
 
@@ -271,7 +274,6 @@ snit::widgetadaptor widget::calendar {
 
 	    if { ($data(day) + $dday) > $maxday } {
 
-		set maxday [$self numberofdays $data(month) $data(year)]
 		incr data(month) 1
 		set  data(day)   [expr {($data(day) + $dday) % $maxday}]
 
@@ -448,11 +450,11 @@ snit::widgetadaptor widget::calendar {
 
 	# Make sure options-based items are set
 	$hull itemconfigure highlight \
-		    -fill $options(-highlightcolor) \
-		    -outline $options(-highlightcolor)
+	    -fill $options(-highlightcolor) \
+	    -outline $options(-highlightcolor)
 	$hull itemconfigure shadetext -fill $options(-shadecolor)
 	$hull itemconfigure shade -fill $options(-shadecolor) \
-		    -outline $options(-shadecolor)
+	    -outline $options(-shadecolor)
     }
 
     method getweek {day month year} {
@@ -462,10 +464,10 @@ snit::widgetadaptor widget::calendar {
 
     method invoke {} {
 
-        catch {focus -force $win} msg
-        if { $msg ne "" } {
-            puts $msg
-        }
+	catch {focus -force $win} msg
+	if { $msg ne "" } {
+	#    puts $msg
+	}
 	set item [$hull find withtag current]
 	set data(day) [$hull itemcget $item -text]
 
@@ -651,4 +653,4 @@ snit::widgetadaptor widget::calendar {
     }
 }
 
-package provide widget::calendar 0.92
+package provide widget::calendar 0.93
