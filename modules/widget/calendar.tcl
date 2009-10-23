@@ -7,7 +7,7 @@
 #
 # Copyright (c) 2008 Rüdiger Härtel
 #
-# RCS: @(#) $Id: calendar.tcl,v 1.7 2009/10/22 18:54:43 haertel Exp $
+# RCS: @(#) $Id: calendar.tcl,v 1.8 2009/10/23 18:33:15 haertel Exp $
 #
 
 #
@@ -151,12 +151,23 @@ snit::widgetadaptor widget::calendar {
     ##
     method C-textvariable {option value} {
 
+        if { [string match "::widget::dateentry::Snit*" $value] } {
+            return
+        }
+
+	if {![string match ::* $value]} {
+	    set value ::$value
+	}
 	set options($option) $value
 
 	if {$value ne "" } {
 	    trace remove variable $options(-textvariable) write [mymethod DoUpdate]
 
-	    set value [string map {: ""} $value]
+	    if { ![info exists $options($option)] } {
+	        set now [clock seconds]
+	        set $options($option) [clock format $now -format $options(-dateformat)]
+	    }
+
 	    trace add variable ::$value write [mymethod DoUpdate]
 	    if { [info exists $value] } {
 		$self DoUpdate
@@ -653,4 +664,4 @@ snit::widgetadaptor widget::calendar {
     }
 }
 
-package provide widget::calendar 0.93
+package provide widget::calendar 0.94
