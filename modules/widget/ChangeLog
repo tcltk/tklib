@@ -1,5 +1,11 @@
 2009-09-25  Ruediger Haertel <r_haertel@gmx.de>
 
+	* calendar.tcl: handle -textvariable option correctly also
+	                  for variables in namespaces
+	* pkgIndex.tcl: bump calendar to v0.94
+
+2009-09-25  Ruediger Haertel <r_haertel@gmx.de>
+
 	* calendar.tcl: uninstall trace handler whenever a new
 	                  textvariable is assigned
 	     . remove bugfix in key bindings which resulted in an Tcl Error
