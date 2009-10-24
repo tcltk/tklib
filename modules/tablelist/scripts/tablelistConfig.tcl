@@ -1065,6 +1065,7 @@ proc tablelist::doColConfig {col win opt val} {
 	    set data($col$opt) [expr {$val ? 1 : 0}]
 	    if {[lindex $data(-columns) [expr {3*$col}]] != 0} {
 		redisplayColWhenIdle $win $col
+		adjustElidedTextWhenIdle $win
 	    }
 	}
 
@@ -1142,7 +1143,6 @@ proc tablelist::doColConfig {col win opt val} {
 	    #
 	    adjustColumns $win $col 1
 	    redisplayColWhenIdle $win $col
-
 	    adjustElidedTextWhenIdle $win
 
 	    if {$col == $data(editCol)} {
@@ -1178,6 +1178,7 @@ proc tablelist::doColConfig {col win opt val} {
 	    #
 	    adjustColumns $win $col 1
 	    redisplayColWhenIdle $win $col
+	    adjustElidedTextWhenIdle $win
 	}
 
 	-hide {
@@ -1490,6 +1491,7 @@ proc tablelist::doColConfig {col win opt val} {
 	    set data($col-maxPixels) $pixels
 	    adjustColumns $win $col 1
 	    redisplayColWhenIdle $win $col
+	    adjustElidedTextWhenIdle $win
 	}
 
 	-selectbackground -
@@ -1661,6 +1663,7 @@ proc tablelist::doColConfig {col win opt val} {
 	    #
 	    adjustColumns $win $col 1
 	    redisplayColWhenIdle $win $col
+	    adjustElidedTextWhenIdle $win
 	}
 
 	-title {
@@ -1683,6 +1686,7 @@ proc tablelist::doColConfig {col win opt val} {
 		setupColumns $win [lreplace $data(-columns) $idx $idx $val] 0
 		redisplayColWhenIdle $win $col	;# here before adjustColumns!
 		adjustColumns $win $col 1
+		adjustElidedTextWhenIdle $win
 	    }
 	}
     }
