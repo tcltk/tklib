@@ -1,3 +1,8 @@
+2009-10-24  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistConfig.tcl: Minor improvements related to hidden
+	  columns.
+
 2009-10-11  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 4.12.1.
