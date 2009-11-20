@@ -29,13 +29,16 @@ namespace eval ::Plotchart {
     #
     # Set default configuration options
     #
-    set config(charttypes) {xyplot xlogyplot piechart polarplot
+    set config(charttypes) {xyplot xlogyplot logxyplot logxlogyplot
+                            piechart polarplot
                             histogram horizbars vertbars ganttchart
                             timechart stripchart isometric 3dplot 3dbars
                             radialchart txplot 3dribbon boxplot windrose}
 
     set config(xyplot,components)      {title margin text legend leftaxis rightaxis bottomaxis background}
     set config(xlogyplot,components)   {title margin text legend leftaxis bottomaxis background}
+    set config(logxyplot,components)   {title margin text legend leftaxis bottomaxis background}
+    set config(logxlogyplot,components) {title margin text legend leftaxis bottomaxis background}
     set config(piechart,components)    {title margin text legend labels background}
     set config(polarplot,components)   {title margin text legend axis background}
     set config(histogram,components)   {title margin text legend leftaxis rightaxis bottomaxis background}
