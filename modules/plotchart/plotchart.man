@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin Plotchart n 1.7]
-[copyright {2007 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
+[copyright {2009 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.4]]
@@ -195,6 +195,53 @@ Note that an inverted logarithmic axis is [emph not] supported.
 [list_end]
 [para]
 
+
+[call [cmd ::Plotchart::createLogXYPlot] [arg w] [arg xaxis] [arg yaxis]]
+
+Create a new xy-plot where the x-axis has a logarithmic scale (configuration type: logxyplot).
+[para]
+The data should be given as for a linear scale, as the logarithmic transformation
+is taken of internally.
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the plot.
+
+[arg_def list xaxis in]
+A 2-element list containing minimum and maximum for the x-axis, in this order.
+Note that an inverted logarithmic axis is [emph not] supported.
+
+[arg_def list yaxis in]
+A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order.
+For an inverted axis, where the maximum appears on the left-hand side,
+use: maximum, minimum and a [emph negative] stepsize.
+
+[list_end]
+[para]
+
+
+[call [cmd ::Plotchart::createLogXLogYPlot] [arg w] [arg xaxis] [arg yaxis]]
+
+Create a new xy-plot where both the x-axis and the y-axis have a logarithmic scale
+(configuration type: logxlogyplot).
+[para]
+The data should be given as for a linear scale, as the logarithmic transformation
+is taken of internally.
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the plot.
+
+[arg_def list xaxis in]
+A 2-element list containing minimum and maximum for the x-axis, in this order.
+Note that an inverted logarithmic axis is [emph not] supported.
+
+[arg_def list yaxis in]
+A 2-element list containing minimum and maximum for the y-axis, in this order.
+Note that an inverted logarithmic axis is [emph not] supported.
+
+[list_end]
+[para]
 
 [call [cmd ::Plotchart::createPolarPlot] [arg w] [arg radius_data]]
 
@@ -1287,20 +1334,16 @@ Angular coordinate of the new point (in degrees).
 For [emph {wind rose diagrams}]:
 
 [list_begin definitions]
-[call [cmd \$windrose] plot [arg series] [arg radius] [arg angle]]
-
-Add a data point to the polar plot.
+[call [cmd \$windrose] plot [arg data] [arg colour]]
+Draw the data contained in the [term data] argument. The data are added to
+the existing spokes towards the outer circle.
 
 [list_begin arguments]
-[arg_def string series in]
-Name of the data series the new point belongs to.
+[arg_def list data in]
+List of data (the length should correspond to the number of sectors)
 
-[arg_def float radius in]
-Radial coordinate of the new point.
-
-[arg_def float angle in]
-Angular coordinate of the new point (in degrees).
-
+[arg_def string colour]
+Colour in which the new segments will be drawn
 [list_end]
 [list_end]
 [para]

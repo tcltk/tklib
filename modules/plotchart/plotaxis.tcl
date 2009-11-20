@@ -81,7 +81,7 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
 
     set scaling($w,yaxis) {}
 
-    while { $y < $ym+0.5*abs($ydelt) } {
+    while { $y < $ym+0.0001*abs($ydelt) } {
 
         foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $yt] {break}
         set xcrd2 [expr {$xcrd-$ticklength}]
@@ -96,6 +96,7 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
         $w create line $xcrd2 $ycrd $xcrd $ycrd -tag yaxis -fill $linecolor
         $w create text $xcrd3 $ycrd -text $ylabel -tag yaxis -anchor e \
             -fill $textcolor -font $textfont
+
         set y  [expr {$y+abs($ydelt)}]
         set yt [expr {$yt+$ydelt}]
         if { abs($yt) < 0.5*abs($ydelt) } {
@@ -151,7 +152,7 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
 
     set scaling($w,yaxis) {}
 
-    while { $y < $ym+0.5*abs($ydelt) } {
+    while { $y < $ym+0.0001*abs($ydelt) } {
 
         foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmax) $yt] {break}
         set xcrd2 [expr {$xcrd+$ticklength}]
@@ -166,6 +167,7 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
         $w create line $xcrd2 $ycrd $xcrd $ycrd -tag raxis -fill $linecolor
         $w create text $xcrd3 $ycrd -text $ylabel -tag raxis -anchor w \
             -fill $textcolor -font $textfont
+
         set y  [expr {$y+abs($ydelt)}]
         set yt [expr {$yt+$ydelt}]
         if { abs($yt) < 0.5*abs($ydelt) } {
@@ -205,7 +207,6 @@ proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
                    $scaling($w,pxmin) $scaling($w,pymax) \
                    -fill $linecolor -tag yaxis -width $thickness
 
-    set format $config($w,bottomaxis,format)
     set format $config($w,leftaxis,format)
     if { [info exists scaling($w,-format,y)] } {
         set format $scaling($w,-format,y)
@@ -274,7 +275,7 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
 
     $w create line $scaling($w,pxmin) $scaling($w,pymax) \
                    $scaling($w,pxmax) $scaling($w,pymax) \
-                   -fill black -tag xaxis
+                   -fill $linecolor -tag xaxis
 
     set format $config($w,bottomaxis,format)
     if { [info exists scaling($w,-format,x)] } {
@@ -327,16 +328,89 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
         set ycrd2 [expr {$ycrd+$ticklength}]
         set ycrd3 [expr {$ycrd+$offtick}]
 
-        lappend scaling($w,xaxis) $xcrd
+        if { $xcrd >= $scaling($w,pxmin) && $xcrd <= $scaling($w,pxmax) } {
+            lappend scaling($w,xaxis) $xcrd
 
-        set xlabel $xt
-        if { $format != "" } {
-            set xlabel [FormatNumber $format $xt]
+            set xlabel $xt
+            if { $format != "" } {
+                set xlabel [FormatNumber $format $xt]
+            }
+
+            $w create line $xcrd $ycrd2 $xcrd $ycrd -tag xaxis -fill $linecolor
+            $w create text $xcrd $ycrd3 -text $xlabel -tag xaxis -anchor n \
+                 -fill $textcolor -font $textfont
         }
+    }
+}
 
-        $w create line $xcrd $ycrd2 $xcrd $ycrd -tag xaxis -fill $linecolor
-        $w create text $xcrd $ycrd3 -text $xlabel -tag xaxis -anchor n \
-            -fill $textcolor -font $textfont
+# DrawLogXaxis --
+#    Draw the logarithmic x-axis
+# Arguments:
+#    w           Name of the canvas
+#    xmin        Minimum x coordinate
+#    xmax        Maximum x coordinate
+#    xstep       Step size
+#    args        Options (currently: -xlabels list)
+# Result:
+#    None
+# Side effects:
+#    Axis drawn in canvas
+#
+proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
+    variable scaling
+    variable config
+
+    $w delete xaxis
+
+    set linecolor  $config($w,bottomaxis,color)
+    set textcolor  $config($w,bottomaxis,textcolor)
+    set textfont   $config($w,bottomaxis,font)
+    set thickness  $config($w,bottomaxis,thickness)
+    set ticklength $config($w,bottomaxis,ticklength)
+    set offtick    [expr {($ticklength > 0)? $ticklength+2 : 2}]
+
+    $w create line $scaling($w,pxmin) $scaling($w,pymax) \
+                   $scaling($w,pxmax) $scaling($w,pymax) \
+                   -fill $linecolor -tag xaxis
+
+    set format $config($w,bottomaxis,format)
+    if { [info exists scaling($w,-format,x)] } {
+        set format $scaling($w,-format,x)
+    }
+
+    set scaling($w,xaxis) {}
+
+    set x       [expr {pow(10.0,floor(log10($xmin)))}]
+    set xlogmax [expr {pow(10.0,ceil(log10($xmax)))+0.1}]
+
+    while { $x < $xlogmax } {
+        #
+        # Labels and tickmarks
+        #
+        foreach factor {1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0} {
+            set xt [expr {$x*$factor}]
+            if { $xt < $xmin } continue
+            if { $xt > $xmax } break
+
+            foreach {xcrd ycrd} [coordsToPixel $w [expr {log10($xt)}] $scaling($w,ymin)] {break}
+            set ycrd2 [expr {$ycrd+$ticklength}]
+            set ycrd3 [expr {$ycrd+$offtick}]
+
+            if {($xcrd >= $scaling($w,pxmin)) && ($xcrd <= $scaling($w,pxmax))} {
+                lappend scaling($w,xaxis) $xcrd
+
+                set xlabel $xt
+                if { $format != "" } {
+                    set xlabel [FormatNumber $format $xt]
+                }
+                $w create line $xcrd $ycrd2 $xcrd $ycrd -tag xaxis -fill $linecolor
+                if { $factor == 1.0 } {
+                    $w create text $xcrd $ycrd3 -text $xlabel -tag xaxis -anchor n \
+                        -fill $textcolor -font $textfont
+                }
+            }
+        }
+        set x [expr {10.0*$x}]
     }
 }
 

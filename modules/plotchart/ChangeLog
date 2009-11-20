@@ -1,3 +1,17 @@
+2009-11-20  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotchart.tcl: Added interactive commands bindplot and bindlast
+	* plotbind.tcl: Preliminary implementation of the bindplot and bindlast commands
+	* pkgIndex.tcl: Changed version to 1.8.0
+
+2009-11-17  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotchart.tcl: Added log X and log-log plots (patch by Paul Vogel)
+	* plotaxis.tcl: Added support for log X and log-log plots (patch by Paul Vogel)
+	                Corrected drawing of axis labels (patch by Paul Vogel)
+	* plotconfig.tcl: Support for log X and log-log plots (patch by Paul Vogel)
+	* plotpriv.tcl: Support for log X and log-log plots (patch by Paul Vogel)
+	* plotchart.man: Documentation of log-X and log-log plots
+	* pkgIndex.tcl: Changed version to 1.7.1
+
 2009-10-18  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotchart.tcl: Added wind rose diagrams, added new methods
 	* plotpriv.tcl: Drawing methods for wind rose diagrams

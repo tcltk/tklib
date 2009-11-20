@@ -32,8 +32,8 @@ namespace eval ::Plotchart {
                     create3DBars createRadialchart \
                     createTXPlot createRightAxis \
                     create3DRibbonChart \
-                    createXLogYPlot createWindrose \
-                    plotconfig plotpack \
+                    createXLogYPlot createLogXYPlot createLogXLogYPlot \
+                    createWindrose plotconfig plotpack
 
    #
    # Array linking procedures with methods
@@ -73,11 +73,14 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,xband)             DrawXband
    set methodProc(xyplot,yband)             DrawYband
    set methodProc(xyplot,labeldot)          DrawLabelDot
+   set methodProc(xyplot,bindplot)          BindPlot
+   set methodProc(xyplot,bindlast)          BindLast
+   set methodProc(xyplot,bindseries)        BindSeries
    set methodProc(xlogyplot,title)          DrawTitle
    set methodProc(xlogyplot,xtext)          DrawXtext
    set methodProc(xlogyplot,ytext)          DrawYtext
    set methodProc(xlogyplot,vtext)          DrawVtext
-   set methodProc(xlogyplot,plot)           DrawLogData
+   set methodProc(xlogyplot,plot)           DrawLogYData
    set methodProc(xlogyplot,dot)            DrawLogDot
    set methodProc(xlogyplot,dotconfig)      DotConfigure
    set methodProc(xlogyplot,interval)       DrawLogInterval
@@ -94,6 +97,48 @@ namespace eval ::Plotchart {
    set methodProc(xlogyplot,balloon)        DrawBalloon
    set methodProc(xlogyplot,balloonconfig)  ConfigBalloon
    set methodProc(xlogyplot,plaintext)      DrawPlainText
+   set methodProc(logxyplot,title)          DrawTitle
+   set methodProc(logxyplot,xtext)          DrawXtext
+   set methodProc(logxyplot,ytext)          DrawYtext
+   set methodProc(logxyplot,vtext)          DrawVtext
+   set methodProc(logxyplot,plot)           DrawLogXData
+   set methodProc(logxyplot,dot)            DrawLogDot
+   set methodProc(logxyplot,dotconfig)      DotConfigure
+   set methodProc(logxyplot,interval)       DrawLogInterval
+   set methodProc(logxyplot,trend)          DrawLogTrendLine
+   set methodProc(logxyplot,saveplot)       SavePlot
+   set methodProc(logxyplot,dataconfig)     DataConfig
+   set methodProc(logxyplot,xconfig)        XConfig
+   set methodProc(logxyplot,yconfig)        YConfig
+   set methodProc(logxyplot,xticklines)     DrawXTicklines
+   set methodProc(logxyplot,yticklines)     DrawYTicklines
+   set methodProc(logxyplot,background)     BackgroundColour
+   set methodProc(logxyplot,legendconfig)   LegendConfigure
+   set methodProc(logxyplot,legend)         DrawLegend
+   set methodProc(logxyplot,balloon)        DrawBalloon
+   set methodProc(logxyplot,balloonconfig)  ConfigBalloon
+   set methodProc(logxyplot,plaintext)      DrawPlainText
+   set methodProc(logxlogyplot,title)          DrawTitle
+   set methodProc(logxlogyplot,xtext)          DrawXtext
+   set methodProc(logxlogyplot,ytext)          DrawYtext
+   set methodProc(logxlogyplot,vtext)          DrawVtext
+   set methodProc(logxlogyplot,plot)           DrawLogXLogYData
+   set methodProc(logxlogyplot,dot)            DrawLogDot
+   set methodProc(logxlogyplot,dotconfig)      DotConfigure
+   set methodProc(logxlogyplot,interval)       DrawLogInterval
+   set methodProc(logxlogyplot,trend)          DrawLogTrendLine
+   set methodProc(logxlogyplot,saveplot)       SavePlot
+   set methodProc(logxlogyplot,dataconfig)     DataConfig
+   set methodProc(logxlogyplot,xconfig)        XConfig
+   set methodProc(logxlogyplot,yconfig)        YConfig
+   set methodProc(logxlogyplot,xticklines)     DrawXTicklines
+   set methodProc(logxlogyplot,yticklines)     DrawYTicklines
+   set methodProc(logxlogyplot,background)     BackgroundColour
+   set methodProc(logxlogyplot,legendconfig)   LegendConfigure
+   set methodProc(logxlogyplot,legend)         DrawLegend
+   set methodProc(logxlogyplot,balloon)        DrawBalloon
+   set methodProc(logxlogyplot,balloonconfig)  ConfigBalloon
+   set methodProc(logxlogyplot,plaintext)      DrawPlainText
    set methodProc(piechart,title)           DrawTitle
    set methodProc(piechart,plot)            DrawPie
    set methodProc(piechart,saveplot)        SavePlot
@@ -613,6 +658,7 @@ proc ::Plotchart::polarToPixel { w rad phi } {
 #    The plot will be drawn with axes
 #
 proc ::Plotchart::createXYPlot { w xscale yscale args} {
+   variable scaling
    variable data_series
 
    foreach s [array names data_series "$w,*"] {
@@ -622,6 +668,7 @@ proc ::Plotchart::createXYPlot { w xscale yscale args} {
    set newchart "xyplot_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler xyplot $w
    CopyConfig xyplot $w
+   set scaling($w,eventobj) ""
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
 
@@ -793,6 +840,108 @@ proc ::Plotchart::createXLogYPlot { w xscale yscale } {
 
    DrawLogYaxis     $w $ymin  $ymax  $ydelt
    DrawXaxis        $w $xmin  $xmax  $xdelt
+   DrawMask         $w
+   DefaultLegend    $w
+   DefaultBalloon   $w
+
+   return $newchart
+}
+
+# createLogXYPlot --
+#    Create a command for drawing an XY plot (with a horizontal logarithmic axis)
+# Arguments:
+#    w           Name of the canvas
+#    xscale      Minimum, maximum and step for x-axis (step is ignored!)
+#    yscale      Minimum, maximum and step for y-axis (initial)
+# Result:
+#    Name of a new command
+# Note:
+#    The entire canvas will be dedicated to the XY plot.
+#    The plot will be drawn with axes
+#
+proc ::Plotchart::createLogXYPlot { w xscale yscale } {
+   variable data_series
+
+   foreach s [array names data_series "$w,*"] {
+      unset data_series($s)
+   }
+
+   set newchart "logxyplot_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler logxyplot $w
+   CopyConfig logxyplot $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+
+   foreach {xmin xmax xdelt} $xscale {break}
+   foreach {ymin ymax ydelt} $yscale {break}
+
+   if { $xmin <= 0.0 || $xmax <= 0.0 } {
+      return -code error "Minimum and maximum for x-axis must be positive"
+   }
+
+   if { $ydelt == 0.0 } {
+      return -code error "Step size can not be zero"
+   }
+
+   #
+   # TODO: reversed log plot
+   #
+
+   viewPort         $w $pxmin $pymin $pxmax $pymax
+   worldCoordinates $w [expr {log10($xmin)}] $ymin [expr {log10($xmax)}] $ymax
+   DrawYaxis        $w $ymin  $ymax  $ydelt
+   DrawLogXaxis     $w $xmin  $xmax  $xdelt
+   DrawMask         $w
+   DefaultLegend    $w
+   DefaultBalloon   $w
+
+   return $newchart
+}
+
+# createLogXLogYPlot --
+#    Create a command for drawing an XY plot (with a both logarithmic axis)
+# Arguments:
+#    w           Name of the canvas
+#    xscale      Minimum, maximum and step for x-axis (step is ignored!)
+#    yscale      Minimum, maximum and step for y-axis (step is ignored!)
+# Result:
+#    Name of a new command
+# Note:
+#    The entire canvas will be dedicated to the XY plot.
+#    The plot will be drawn with axes
+#
+proc ::Plotchart::createLogXLogYPlot { w xscale yscale } {
+   variable data_series
+
+   foreach s [array names data_series "$w,*"] {
+      unset data_series($s)
+   }
+
+   set newchart "logxlogyplot_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler logxlogyplot $w
+   CopyConfig logxlogyplot $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+
+   foreach {xmin xmax xdelt} $xscale {break}
+   foreach {ymin ymax ydelt} $yscale {break}
+
+   if { $xmin <= 0.0 || $xmax <= 0.0 } {
+      return -code error "Minimum and maximum for x-axis must be positive"
+   }
+
+   if { $ymin <= 0.0 || $ymax <= 0.0 } {
+      return -code error "Minimum and maximum for y-axis must be positive"
+   }
+
+   #
+   # TODO: reversed log plot
+   #
+
+   viewPort         $w $pxmin $pymin $pxmax $pymax
+   worldCoordinates $w [expr {log10($xmin)}] [expr {log10($ymin)}] [expr {log10($xmax)}] [expr {log10($ymax)}]
+   DrawLogYaxis     $w $ymin  $ymax  $ydelt
+   DrawLogXaxis     $w $xmin  $xmax  $xdelt
    DrawMask         $w
    DefaultLegend    $w
    DefaultBalloon   $w
@@ -1689,8 +1838,8 @@ source [file join [file dirname [info script]] "plotbusiness.tcl"]
 source [file join [file dirname [info script]] "plotannot.tcl"]
 source [file join [file dirname [info script]] "plotconfig.tcl"]
 source [file join [file dirname [info script]] "plotpack.tcl"]
-#source [file join [file dirname [info script]] "plotbind.tcl"]
+source [file join [file dirname [info script]] "plotbind.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.7.0
+package provide Plotchart 1.8.0
