@@ -552,7 +552,7 @@ proc ::Plotchart::DrawStripData { w series xcrd ycrd } {
    DrawData $w $series $xcrd $ycrd
 }
 
-# DrawLogData --
+# DrawLogYData --
 #    Draw the data in an X-logY-plot
 # Arguments:
 #    w           Name of the canvas
@@ -564,9 +564,43 @@ proc ::Plotchart::DrawStripData { w series xcrd ycrd } {
 # Side effects:
 #    New data drawn in canvas
 #
-proc ::Plotchart::DrawLogData { w series xcrd ycrd } {
+proc ::Plotchart::DrawLogYData { w series xcrd ycrd } {
 
     DrawData $w $series $xcrd [expr {log10($ycrd)}]
+}
+
+# DrawLogXData --
+#    Draw the data in an logX-Y-plot
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    xcrd        Next x coordinate
+#    ycrd        Next y coordinate
+# Result:
+#    None
+# Side effects:
+#    New data drawn in canvas
+#
+proc ::Plotchart::DrawLogXData { w series xcrd ycrd } {
+
+    DrawData $w $series [expr {log10($xcrd)}] $ycrd 
+}
+
+# DrawLogXLogYData --
+#    Draw the data in an logX-logY-plot
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    xcrd        Next x coordinate
+#    ycrd        Next y coordinate
+# Result:
+#    None
+# Side effects:
+#    New data drawn in canvas
+#
+proc ::Plotchart::DrawLogXLogYData { w series xcrd ycrd } {
+
+    DrawData $w $series [expr {log10($xcrd)}] [expr {log10($ycrd)}]
 }
 
 # DrawInterval --
