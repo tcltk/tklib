@@ -1842,4 +1842,4 @@ source [file join [file dirname [info script]] "plotbind.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.8.0
+package provide Plotchart 1.8.1
