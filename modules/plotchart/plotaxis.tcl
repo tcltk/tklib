@@ -20,20 +20,18 @@
 proc ::Plotchart::FormatNumber { format number } {
 
     if { [catch {
-        puts 1
         set string [format $format $number]
     } msg1] } {
         if { [catch {
-            puts 2-$msg1
             set string [format $format [expr {int($number)}]]
         } msg2] } {
-            puts 3-$msg2
             set string [format $format $number] ;# To get the original message
         }
     }
 
     return $string
 }
+
 # DrawYaxis --
 #    Draw the y-axis
 # Arguments:

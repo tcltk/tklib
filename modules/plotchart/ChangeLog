@@ -1,3 +1,7 @@
+2009-11-24  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotaxis.tcl: Remove left-over debugging code in FormatNumber (reported by Dave Hanks)
+	* pkgIndex.tcl: Changed version to 1.8.1
+
 2009-11-20  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotchart.tcl: Added interactive commands bindplot and bindlast
 	* plotbind.tcl: Preliminary implementation of the bindplot and bindlast commands
