@@ -1,3 +1,8 @@
+2009-11-25  Andreas Kupries  <andreask@activestate.com>
+
+	* Makefile.in (test): [Bug 2903927]: Modified test target to
+	  behave like tcllib's test target.
+
 2009-02-06  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* modules/swaplist/swaplist.man: General cleanup of all the documentation
