@@ -583,7 +583,7 @@ proc ::Plotchart::DrawLogYData { w series xcrd ycrd } {
 #
 proc ::Plotchart::DrawLogXData { w series xcrd ycrd } {
 
-    DrawData $w $series [expr {log10($xcrd)}] $ycrd 
+    DrawData $w $series [expr {log10($xcrd)}] $ycrd
 }
 
 # DrawLogXLogYData --
@@ -1097,6 +1097,7 @@ proc ::Plotchart::DrawVertBarData { w series ydata {colour black} {dir {}} } {
    variable data_series
    variable scaling
    variable legend
+   variable settings
 
    #
    # Draw the bars
@@ -1148,6 +1149,21 @@ proc ::Plotchart::DrawVertBarData { w series ydata {colour black} {dir {}} } {
       } else {
           DrawGradientBackground $w $colour $dir [list $px1 $py1 $px2 $py2]
       }
+
+      if { $settings($w,showvalues) } {
+          set pxtext [expr {($px1+$px2)/2.0}]
+          set pytext [expr {$py2-5}]
+          set text   [format $settings($w,valueformat) $yvalue]
+          if { $settings($w,valuefont) == "" } {
+              $w create text $pxtext $pytext -text $text -anchor s \
+                         -fill $settings($w,valuecolour) -tag [list data data_$series]
+          } else {
+              $w create text $pxtext $pytext -text $text -anchor s \
+                         -fill $settings($w,valuecolour) -tag [list data data_$series] \
+                         -font $settings($w,valuefont)
+          }
+      }
+
       $w lower data
 
       set x [expr {$x+1.0}]
@@ -1181,6 +1197,7 @@ proc ::Plotchart::DrawVertBarData { w series ydata {colour black} {dir {}} } {
 proc ::Plotchart::DrawHorizBarData { w series xdata {colour black} {dir {}} } {
    variable data_series
    variable scaling
+   variable settings
 
    #
    # Draw the bars
@@ -1230,6 +1247,20 @@ proc ::Plotchart::DrawHorizBarData { w series xdata {colour black} {dir {}} } {
                          -fill $colour -tag data
       } else {
           DrawGradientBackground $w $colour $dir [list $px1 $py1 $px2 $py2]
+      }
+
+      if { $settings($w,showvalues) } {
+          set pytext [expr {($py1+$py2)/2.0}]
+          set pxtext [expr {$px2+5}]
+          set text   [format $settings($w,valueformat) $xvalue]
+          if { $settings($w,valuefont) == "" } {
+              $w create text $pxtext $pytext -text $text -anchor w \
+                         -fill $settings($w,valuecolour) -tag [list data data_$series]
+          } else {
+              $w create text $pxtext $pytext -text $text -anchor w \
+                         -fill $settings($w,valuecolour) -tag [list data data_$series] \
+                         -font $settings($w,valuefont)
+          }
       }
 
       $w lower data
@@ -2623,4 +2654,31 @@ proc ::Plotchart::DrawVtext { w text } {
    set yt [expr {($scaling($w,pymin) + $scaling($w,pymax)) / 2}]
 
    $w create text $xt $yt -text $text -fill black -anchor n -angle 90
+}
+
+# ConfigBar --
+#    Configuration options for vertical and horizontal barcharts
+# Arguments:
+#    w           Name of the canvas
+#    args        List of arguments
+# Result:
+#    None
+# Side effects:
+#    Items that are already visible will NOT be changed to the new look
+#
+proc ::Plotchart::ConfigBar { w args } {
+    variable settings
+
+    foreach {option value} $args {
+        set option [string range $option 1 end]
+        if { [lsearch {showvalues valuefont valuecolour valuecolor valueformat} \
+                $option] >= 0} {
+            if { $option == "valuecolor" } {
+                set option "valuecolour"
+            }
+            set settings($w,$option) $value
+        } else {
+            return -code error "Unknown barchart option: -$option"
+        }
+    }
 }

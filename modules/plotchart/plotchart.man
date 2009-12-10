@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 1.7]
+[manpage_begin Plotchart n 1.8]
 [copyright {2009 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.4]]
 [require Tk [opt 8.4]]
-[require Plotchart [opt 1.7]]
+[require Plotchart [opt 1.8]]
 
 [description]
 [para]
@@ -1179,11 +1179,16 @@ setting a list of classes and setting the [emph scalebyvalue] option on.
 [call [cmd \$xyplot] contourlines [arg xcrd] [arg ycrd] [arg values] [opt classes]]
 
 Draw contour lines for the values given on the grid. The grid is defined
-by the xcrd and ycrd arguments (they give the x- and y-coordinates of
-the grid cell corners). The values are given at these corners. The
-classes determine which contour lines are drawn. If a value on one of
+by the xcrd and ycrd arguments. The xcrd argument (resp. ycrd)
+is expected to be a matrix, implemented as a list of lists which gives the
+x-coordinates (resp. y-coordinates) of the grid cell corners.
+The function values are given at these corners.
+The number of rows in xvec (resp. yvec) is ny and each row contains nx values
+so that the total number of values in xvec (resp. yvec) is nx * ny.
+The classes determine which contour lines are drawn. If a value on one of
 the corners is missing, the contour lines in that cell will not be
 drawn.
+
 
 [list_begin arguments]
 [arg_def list xcrd in]
@@ -1201,9 +1206,44 @@ the class value and the colour to be used). If empty or missing, the
 classes are determined automatically.
 [para]
 [emph Note:] The class values must enclose the whole range of values.
+[emph Note:] The xcrd argument is generally made of nypoints identical rows, while
+each row of ycrd is made with one single value.
 [para]
 
 [list_end]
+
+[call [cmd \$xyplot] contourlinesfunctionvalues [arg xvec] [arg yvec] [arg valuesmat] [opt classes]]
+
+Draw contour lines for the values given on the grid. The grid is defined
+by the xvec and yvec arguments. Here, xvec (resp. yvec) is a list of x-coordinates
+(resp. y-coordinates). The number of values in xvec (resp. yvec) is the number of points in
+the x-coordinate (resp. y-coordinate).
+The function values are given at these corners. The
+classes determine which contour lines are drawn. If a value on one of
+the corners is missing, the contour lines in that cell will not be
+drawn.
+
+[list_begin arguments]
+[arg_def list xcrd in]
+List of x-coordinates in increasing order.
+
+[arg_def list ycrd in]
+List y-coordinates in increasing order.
+
+[arg_def list valuesmat in]
+List of lists, each value is the value at a grid cell corner.
+The total number of values is valuesmat is nx * ny.
+
+[arg_def list classes in]
+List of class values or a list of lists of two elements (each inner list
+the class value and the colour to be used). If empty or missing, the
+classes are determined automatically.
+[para]
+[emph Note:] The class values must enclose the whole range of values.
+[para]
+
+[list_end]
+
 
 [call [cmd \$xyplot] contourfill [arg xcrd] [arg ycrd] [arg values] [opt classes]]
 
@@ -1577,6 +1617,26 @@ A list of values, one for each x-axis label.
 The colour of the bars.
 
 [list_end]
+
+[call [cmd \$barchart] config [option -option] [arg value] ...]
+
+Set options for drawing the bars.
+
+[list_begin options]
+
+[opt_def showvalues boolean]
+Whether to show the values or not (above the bars)
+
+[opt_def valuefont newfont]
+Name of the font to use for the values
+
+[opt_def valuecolour colour]
+Colour for the values
+
+[opt_def valueformat format]
+Format string to use for formatting the values
+
+[list_end]
 [list_end]
 [para]
 
@@ -1596,6 +1656,26 @@ A list of values, one for each y-axis label.
 
 [arg_def color colour in]
 The colour of the bars.
+
+[list_end]
+
+[call [cmd \$barchart] config [option -option] [arg value] ...]
+
+Set options for drawing the bars.
+
+[list_begin options]
+
+[opt_def showvalues boolean]
+Whether to show the values or not (to the right of the bars)
+
+[opt_def valuefont newfont]
+Name of the font to use for the values
+
+[opt_def valuecolour colour]
+Colour for the values
+
+[opt_def valueformat format]
+Format string to use for formatting the values
 
 [list_end]
 [list_end]

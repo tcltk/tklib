@@ -34,6 +34,8 @@ source [file join [file dirname [info script]] plotchart.tcl]
 #puts "Plotchart [package present Plotchart]"
 
 
+#tcltest::configure -match Plotcontours-1.1
+
 tcltest::test Plotcontours-1.0 {Informal test for plotcontour} {
     ########################################################################
 
@@ -246,6 +248,50 @@ tcltest::test Plotcontours-1.0 {Informal test for plotcontour} {
     vwait vv
     set v 1
 } 1
+
+tcltest::test Plotcontours-1.1 {Test of rosenbrock contours with given function values} {
+  proc rosenbrock {x} {
+    set x1 [lindex $x 0]
+    set x2 [lindex $x 1]
+    set y [expr {100.0 * pow($x2 - $x1*$x1,2) + pow(1.0 - $x1,2)}]
+    return $y
+  }
+
+  set xvec {-2.0 -1.5 -1.0 -0.5 0.0 0.5 1.0 1.5 2.0}
+  set yvec {-1.0 -0.5 0.0 0.5 1.0 1.5 2.0}
+  
+  set fmat {}
+  foreach y $yvec {
+    set frow {}
+    foreach x $xvec {
+      lappend frow [rosenbrock [list $x $y]]
+    }
+    lappend fmat $frow
+  }
+  
+  set contours { \
+    0.0 5.0 10 20 30 40 \
+    50  100  200  500  1000  2000  3000   \
+    }
+  
+  set xlimits {-2.0 2.0 2.0}
+  set ylimits {-1.0 2.0 1.0}
+  wm title . "Rosenbrock contours"
+  ::Plotchart::colorMap jet
+  set c [canvas .c  -background white -width 200 -height 200]
+  pack   $c  -fill both -side top
+  set chart1 [::Plotchart::createXYPlot $c $xlimits $ylimits]
+  $chart1 contourlinesfunctionvalues $xvec $yvec $fmat $contours
+  $chart1 title "Rosenbrock"
+  after 1000 {
+    destroy $c
+    set vv 1
+  }
+  vwait vv
+
+  set res 1
+} 1
+
 
 
 # -------------------------------------------------------------------------

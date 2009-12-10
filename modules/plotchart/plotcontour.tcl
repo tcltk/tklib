@@ -1659,6 +1659,74 @@ proc ::Plotchart::Hsv2rgb {h s v} {
     }
     return [list $r $g $b]
 }
+# DrawIsolinesFunctionValues --
+#     Draw isolines in the given grid with given function values.
+# Arguments:
+#     canv : Canvas to draw in
+#     xvec : List of points in the x axis
+#     yvec : List of points in the y axis
+#     fmat : Matrix of function values at the points defined by x and y.
+#       The matrix is given as a list of rows, where each row
+#       stores the function values with a fixed y and a varying x.
+#     cont        List of contour classes (or empty to indicate
+#                 automatic scaling
+# Result:
+#     None
+# Side effect:
+#     Isolines drawn
+# Note:
+#     A cell is only drawn if there are four well-defined
+#     corners. If the x or y coordinate is missing or the value is
+#     missing, the cell is skipped.
+# Author : Michael Baudin
+#
+proc ::Plotchart::DrawIsolinesFunctionValues {canv xvec yvec fmat {cont {}}} {
+  variable scaling
+  set nx [llength $xvec]
+  set ny [llength $xvec]
+  if {$nx!=$ny} then {
+    error "The number of values in xvec (nx=$nx) is different from the number of values in yvec (ny=$ny)"
+  }
+  #
+  # Check the given values of xvec and yvec against the scaling of the plot,
+  # which was given at the creation of the plot.
+  #
+  set index 0
+  foreach xval $xvec {
+    if {$xval > $scaling($canv,xmax) || $xval < $scaling($canv,xmin)} then {
+      error "The given x value $xval at index $index of xvec is not in the x-axis range \[$scaling($canv,xmin),$scaling($canv,xmax)\]"
+    }
+    incr index
+  }
+  set index 0
+  foreach yval $yvec {
+    if {$yval > $scaling($canv,ymax) || $yval < $scaling($canv,ymin)} then {
+      error "The given y value $yval at index $index of yvec is not in the y-axis range \[$scaling($canv,ymin),$scaling($canv,ymax)\]"
+    }
+    incr index
+  }
+  #
+  # Form the xmat and ymat matrices based on the given x and y.
+  #
+  set xmat {}
+  for {set iy 0} {$iy < $ny} {incr iy} {
+    set xi {}
+    for {set ix 0} {$ix < $nx} {incr ix} {
+      lappend xi [lindex $xvec $ix]
+    }
+    lappend xmat $xi 
+  }
+  set ymat {}
+  for {set iy 0} {$iy < $ny} {incr iy} {
+    set yi {}
+    set yiy [lindex $yvec $iy]
+    for {set ix 0} {$ix < $nx} {incr ix} {
+      lappend yi $yiy
+    }
+    lappend ymat $yi 
+  }
+  DrawIsolines $canv $xmat $ymat $fmat $cont
+}
 
 #
 # Define default colour maps

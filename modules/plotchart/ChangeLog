@@ -1,3 +1,13 @@
+2009-12-10  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotchart.tcl: Added configuration method for barcharts
+	* plotchart.tcl: Added methods implemented by Michael Baudin for isolines
+	* plotchart.man: Documented this new configuration method and isoline methods
+	* plotpriv.tcl: Implementation of a number of configuration options for barcharts
+	* plotaxis.tcl: Solved bug 2906751 (formatting labels of right axis did not work)
+	* plotcontour.test: Added extra test by Michael Baudin for isoline plots
+	* rosenbrock.tcl: Demo by Michael Baudin of plotting isolines for the Rosenbrock function
+	* pkgIndex.tcl: Changed version to 1.8.2
+
 2009-11-24  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotaxis.tcl: Remove left-over debugging code in FormatNumber (reported by Dave Hanks)
 	* pkgIndex.tcl: Changed version to 1.8.1
