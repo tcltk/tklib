@@ -652,7 +652,11 @@ proc ::Plotchart::XConfig { w args } {
 #    None
 #
 proc ::Plotchart::YConfig { w args } {
-    AxisConfig xyplot $w y DrawYaxis $args
+    if { ! [string match "r*" $w] } {
+        AxisConfig xyplot $w y DrawYaxis $args
+    } else {
+        AxisConfig xyplot $w y DrawRightaxis $args
+    }
 }
 
 # AxisConfig --

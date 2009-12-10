@@ -1006,7 +1006,7 @@ proc ::Diagrams::arrow { {text {}} {length {}} {heads last}} {
     set y2      [expr {$state(ycurr)+$dyarrow}]
 
     set item [$state(canvas) create line $x1 $y1 $x2 $y2 \
-                 -fill    $state(colour)    \
+                 -fill    $state(color)    \
                  -smooth  $state(spline)    \
                  -arrow   $heads            \
                  -width   $state(linewidth) \
@@ -1088,7 +1088,7 @@ proc ::Diagrams::line {args} {
 
     set item [$state(canvas) create line $xycoords \
                  -smooth  $state(spline)    \
-                 -fill    $state(colour)    \
+                 -fill    $state(color)    \
                  -width   $state(linewidth) \
                  -dash    $state(linestyle) ]
 
@@ -1291,7 +1291,7 @@ proc ::Diagrams::div {numerator denominator} {
     set x2   [expr {[lindex $pos 1]+$twidth/2}]
     set y    [lindex $pos 2]
     set item [$state(canvas) create line $x1 $y $x2 $y \
-                 -fill    $state(colour)]
+                 -fill    $state(color)]
 
     #puts "line: $x1 $y $x2 $y"
 
