@@ -76,6 +76,8 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,bindplot)          BindPlot
    set methodProc(xyplot,bindlast)          BindLast
    set methodProc(xyplot,bindseries)        BindSeries
+   set methodProc(xyplot,contourlinesfunctionvalues)      DrawIsolinesFunctionValues
+   set methodProc(xyplot,contourlinesfunctionpoints)      DrawIsolinesFunctionPoints
    set methodProc(xlogyplot,title)          DrawTitle
    set methodProc(xlogyplot,xtext)          DrawXtext
    set methodProc(xlogyplot,ytext)          DrawYtext
@@ -183,6 +185,7 @@ namespace eval ::Plotchart {
    set methodProc(horizbars,colours)        SetColours
    set methodProc(horizbars,colors)         SetColours
    set methodProc(horizbars,xconfig)        XConfig
+   set methodProc(horizbars,config)         ConfigBar
    set methodProc(horizbars,legendconfig)   LegendConfigure
    set methodProc(horizbars,legend)         DrawLegend
    set methodProc(horizbars,balloon)        DrawBalloon
@@ -199,6 +202,7 @@ namespace eval ::Plotchart {
    set methodProc(vertbars,colours)         SetColours
    set methodProc(vertbars,colors)          SetColours
    set methodProc(vertbars,yconfig)         YConfig
+   set methodProc(vertbars,config)          ConfigBar
    set methodProc(vertbars,legendconfig)    LegendConfigure
    set methodProc(vertbars,legend)          DrawLegend
    set methodProc(vertbars,balloon)         DrawBalloon
@@ -275,7 +279,7 @@ namespace eval ::Plotchart {
    set methodProc(3dbars,plot)              Draw3DBar
    set methodProc(3dbars,yconfig)           YConfig
    set methodProc(3dbars,saveplot)          SavePlot
-   set methodProc(3dbars,config)            Config3DBars
+   set methodProc(3dbars,config)            Config3DBar
    set methodProc(3dbars,balloon)           DrawBalloon
    set methodProc(3dbars,balloonconfig)     ConfigBalloon
    set methodProc(3dbars,plaintext)         DrawPlainText
@@ -1093,6 +1097,7 @@ proc ::Plotchart::createPolarplot { w radius_data } {
 #
 proc ::Plotchart::createBarchart { w xlabels yscale noseries } {
    variable data_series
+   variable settings
 
    foreach s [array names data_series "$w,*"] {
       unset data_series($s)
@@ -1101,6 +1106,11 @@ proc ::Plotchart::createBarchart { w xlabels yscale noseries } {
    set newchart "barchart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler vertbars $w
    CopyConfig vertbars $w
+
+   set settings($w,showvalues)   0
+   set settings($w,valuefont)    ""
+   set settings($w,valuecolour)  black
+   set settings($w,valueformat)  %s
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
 
@@ -1147,6 +1157,7 @@ proc ::Plotchart::createBarchart { w xlabels yscale noseries } {
 proc ::Plotchart::createHorizontalBarchart { w xscale ylabels noseries } {
    variable data_series
    variable config
+   variable settings
 
    foreach s [array names data_series "$w,*"] {
       unset data_series($s)
@@ -1155,6 +1166,11 @@ proc ::Plotchart::createHorizontalBarchart { w xscale ylabels noseries } {
    set newchart "hbarchart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler horizbars $w
    CopyConfig horizbars $w
+
+   set settings($w,showvalues)   0
+   set settings($w,valuefont)    ""
+   set settings($w,valuecolour)  black
+   set settings($w,valueformat)  %s
 
    set font      $config($w,leftaxis,font)
    set xspacemax 0
@@ -1842,4 +1858,4 @@ source [file join [file dirname [info script]] "plotbind.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.8.1
+package provide Plotchart 1.8.2

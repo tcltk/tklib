@@ -61,11 +61,6 @@ proc ::Plotchart::BindLast {w series event cmd} {
 
     $w bind $object $event \
         [list ::Plotchart::BindCmd $x $y $w $cmd]
-
-
-
-    console show
-    puts "Bindings: $object -- [$w bind $object]"
 }
 
 # BindCmd --
