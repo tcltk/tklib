@@ -614,12 +614,10 @@ This implementation uses TclOO so it requires 8.6. The code has been
 tested on Windows (Vista), Linux, OSX (10.4) and Solaris however on OSX
 the Tk menu command doesn't behave like it does on the other platforms.
 I have observed the following issues on OSX (1) the -background 
-option doesn't work for the toplevel menubar items but does work for sub-items
- (2) the -underline option
-doesn't work but the {apple} key seems to have a predefined behavior
-that provides some short cuts to the commands (3) Tk key bindings don't work
-(4) the -accelerator options sort of
-works but the string is truncated.
+option doesn't work for the toplevel menubar items but does work for the cascade
+menus (2) the -underline option
+doesn't work (3) Tk key bindings work but the -accelerator strings aren't displayed
+for the toplevel menubar items and are truncated on the cascade menus.
 
 
 [see_also [uri http://www.tcl.tk/man/tcl8.6/TkCmd/menu.htm menu]]
