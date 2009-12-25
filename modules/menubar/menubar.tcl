@@ -9,7 +9,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: menubar.tcl,v 1.1 2009/12/18 01:44:55 tomk Exp $
+# RCS: @(#) $Id: menubar.tcl,v 1.2 2009/12/25 22:30:23 tomk Exp $
 
 package require Tk
 package require TclOO
@@ -354,7 +354,7 @@ oo::class create ::menubar {
 			set tag [string trimright ${tag} +]
 			my TagCheck ${tag}
 			${mtree} insert ${parent} ${index} ${tag}
-			set tagVal(${tag}) ${value}
+			set tagVal(${tag}%%) ${value}
 			dict set opts +sync yes
 			dict set opts +command {}
 			dict set opts +bind {}
