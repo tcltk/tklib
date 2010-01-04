@@ -13,7 +13,12 @@ package require TclOO
 lappend auto_path .
 
 package require menubar
+
+# uncomment the following line to enable the debugging menu
+package require menubar::debug
+
 package provide AppMain 0.5
+
 
 # --
 # 
@@ -51,13 +56,13 @@ namespace eval Main {
 			#   Label				 Type	Tag Name(s)	
 			#   ----------------- 	 ----	---------
 				"New Window"	 	 C 		new
-				--					 S 		s0
+				--					 S 							s0
 				"Show Macros Menu"	 C 		mshow
 				"Hide Macros Menu"   C 		mhide
 				"Toggle Paste State" C 		paste_state
-				--					 S 		s1
+				--					 S 							s1
 				Close                C      close
-				--					 S 		s2
+				--					 S 							s2
 				Exit			  	 C		exit
 			}
 			Edit M:items+ {
@@ -66,33 +71,40 @@ namespace eval Main {
 				"Cut"				C 		cut
 				"Copy"				C 		copy
 				"Paste"				C 		paste
-				--					S 		s3
-				"Options Sync" M:opts {
-					"CheckButtons" M:chx+ {
+				"Scope (buttons)"		S 							s3
+				"Global" M:opts+ {
+					"CheckButtons"	S							s4
 						Apple		X 		apple+
 						Bread		X 		bread
 						Coffee		X 		coffee
 						Donut		X 		donut+
-						Eggs		X 		eggs
-						}
-					"RadioButtons" M:btn+ {
+					"RadioButtons"	S							s5
 						"Red"		R 		color
 						"Green"		R 		color+
 						"Blue"		R 		color
 						"~!@#%^&*()_+{}: <>?`-=;',./" R color
-						}
 				}
-				"Options NoSync" M:opts2 {
-					"CheckButtons" M:chx2+ {
-						Obtuse  	X		obtuse
-						Acute		X		acute+
-						Right		X		right
-						}
-					"RadioButtons" M:btn2+ {
-						"Magenta"		R 	ryb+
-						"Yellow"		R 	ryb
-						"Cyan"			R 	ryb
-						}
+				"Local" M:opts2 {
+					"Default" M:local1+ {
+						"CheckButtons"	S						s6
+							Square  	X@		square
+							Triangle	X@		triangle+
+							rectangle	X@		rectangle
+						"RadioButtons"	S						s7
+							"Magenta"	R@ 		ryb+
+							"Yellow"	R@ 		ryb
+							"Cyan"		R@ 		ryb
+					}
+					"Notebook Tab" M:local2+ {
+						"CheckButtons"	S						s8
+							Right  		X=		right
+							Left		X=		left+
+							Top			X=		top
+						"RadioButtons"	S						s9
+							"North"		R= 		compass+
+							"South"		R= 		compass
+							"East"		R= 		compass
+					}
 				}
 			}
  			Macros M:macros+ {
@@ -109,36 +121,41 @@ namespace eval Main {
 				"Restore Macros" 	C		deserialize
 				--COMMANDGROUP--	G		macro
  			}
-			Help M:help {
+			Debug M:debug {
 			#   Label				Type	Tag Name(s)	
 			#   ----------------- 	----	---------
-				About			  	C 		about
-				--					S 		s4
-				Clear			  	C 		clear
-				"Load Debugging"	C		load_debug_code
 				"Test tag.cget"		C 		testcget
 				"Debug Tree"		C 		debug_tree
 				"Debug Nodes"		C 		debug_nodes
 				"Debug Installs"	C 		debug_installs
+				"Debug notebook"	C 		debug_notebook
 				"ptree"				C 		ptree
 				"pnodes"			C 		pnodes
 				"pkeys"				C 		pkeys
 			}
+			Help M:help {
+			#   Label				Type	Tag Name(s)	
+			#   ----------------- 	----	---------
+				About			  	C 		about
+				--					S						s10
+				Clear			  	C 		clear
+			}
 		}
-
+		
 		NewWindow
+
 	}
 	
 	proc NewWindow { args } {
 		variable mbar
 		variable wid
-		
+
+		# create pathname for new toplevel window
 		set w ".top${wid}"
 		incr wid
 		
 		Gui new ${wid} ${w} ${mbar}
 	}
-
 }
 
 # --
@@ -149,30 +166,44 @@ oo::class create Gui {
 	# Create a toplevel with a menu bar
 	constructor { wid w menubar } {
 		my variable mbar
-		my variable tout
 		my variable wtop
+		my variable nb
+		my variable tout
+		my variable tabvars
 		
-		set mbar ${menubar}
-
 		## 
-		## Install the menu bar definition in a toplevel
+		## Create toplevel window
 		##
-		
+
 		set wtop ${w}
+		toplevel ${wtop}
+		wm withdraw ${wtop}
 		
-		if { ${wtop} eq "." } {
-			set tout [text .t -width 25 -height 12]
-			error "warning: putting menubar in toplevel '.'"
-		} else {
-			toplevel ${wtop}
-			wm withdraw ${wtop}
-			set tout [text ${wtop}.t -width 25 -height 12]
-		}
-		pack ${tout} -expand 1 -fill both
+		##
+		## Define the GUI
+		##
+
+		# -- note
+		# This demo doesn't use the notebook frames.
+		# A real application would include gui elements in the
+		# notebook frames.
+
+		set nb [ttk::notebook ${wtop}.nb]
+		set tout [text ${wtop}.t -height 12]
+		grid ${nb} -sticky news
+		grid ${tout} -sticky news
+		grid rowconfigure ${wtop} 1 -weight 1
+		grid rowconfigure ${wtop} 2 -weight 0
+
+		# add binding for notebook tabs
+		bind ${nb} "<<NotebookTabChanged>>" [list [self object] nbTabSelect ${wtop}]
 
 		## 
 		## Install & Configure the menu bar
 		##
+		
+		set mbar ${menubar}
+		
 		${mbar} install ${wtop} {
 
 			# Create tags for this windows text widget. They will be 
@@ -198,103 +229,95 @@ oo::class create Gui {
 				bread	     	{my BoolToggle}
 				coffee	     	{my BoolToggle}
 				donut	     	{my BoolToggle}
-				eggs	     	{my BoolToggle}
-				obtuse	     	{my BoolToggle}
-				acute	     	{my BoolToggle}
-				right	     	{my BoolToggle}
+				square	     	{my BoolToggle}
+				triangle     	{my BoolToggle}
+				rectangle     	{my BoolToggle}
+				left     		{my NotebookBoolToggle}
+				right     		{my NotebookBoolToggle}
+				top    			{my NotebookBoolToggle}
 				# radio menu
 				color	     	{my RadioToggle}
 				ryb		     	{my RadioToggle}
+				compass	     	{my NotebookRadioToggle}
 				# Help menu
 				about			{my About}
 				clear			{my Clear}
-				load_debug_code	{my LoadDebugCode}
-				testcget		{my TestCget}
-				debug_tree		{my Debug tree}
-				debug_nodes		{my Debug nodes}
-				debug_installs	{my Debug installs}
-				ptree			{my print tree}
-				pnodes			{my print nodes}
-				pkeys			{my print keys}
 			} -state {
 				mhide	    	disabled
 				paste	    	disabled
-			} -sync {
-				obtuse			no
-				acute			no
-				right			no
-				ryb				no
 			} -bind {
 				exit		{1 Cntl+Q  Control-Key-q}
 				cut			{2 Cntl+X  Control-Key-x}
 				copy		{0 Cntl+C  Control-Key-c}
 				paste		{0 Cntl+V  Control-Key-v}
-
 				apple		{0 Cntl+A  Control-Key-a}
 				bread		{0 Cntl+B  Control-Key-b}
-
 				about		0
-				debug_tree	{0 {}	  Control-Key-d}
-				clear		{}
+				clear		{0 {}	  Control-Key-d}
 			} -background {
-				opts   tan
-				chx    tan
-				eggs   tan
 				exit red
-				testcget 		lightgreen
-				debug_tree 		pink
-				debug_nodes 	pink
-				debug_installs 	pink
-				ptree  			pink
-				pnodes  		pink
-				pkeys  			pink
 			} -foreground {
 				exit white
 			}
+
 
 			# change the namespace for commands associated the 
 			# 'macros' commands and 'macro' command group
 			${mbar} menu.namespace macros ::Macros
 			${mbar} menu.namespace macro  ::Macros
-
- 			# configure the macros menu
- 			${mbar} menu.configure -command {
- 				item_add		{NewItem}
- 				item_delete		{DeleteItem}
- 				mark_add		{Mark add}
- 				mark_up			{Mark up}
- 				mark_down		{Mark down}
- 				mark_del		{Mark delete}
- 				macro_entries	{Macros}
- 				serialize		{Serialize}
- 				deserialize		{Deserialize}
+			
+			# configure the macros menu
+			${mbar} menu.configure -command {
+				item_add		{NewItem}
+				item_delete		{DeleteItem}
+				mark_add		{Mark add}
+				mark_up			{Mark up}
+				mark_down		{Mark down}
+				mark_del		{Mark delete}
+				macro_entries	{Macros}
+				serialize		{Serialize}
+				deserialize		{Deserialize}
 			} -bind {
 				item_add	{0 Cntl+I  Control-Key-i}
 				mark_add	{0 Cntl+m  Control-Key-m}
 				mark_up		{0 Cntl+U  Control-Key-u}
 				mark_down	{0 Cntl+J  Control-Key-j}
 				mark_del	{0 Cntl+K  Control-Key-k}
- 			}
+			}
 			
 			# initally hide the macros menu
 			${mbar} menu.hide macros
+
+			# hide the debugging menu unless the package is loaded
+			if { [catch {package present menubar::debug}] } {
+				${mbar} menu.hide debug
+			} else {
+				${mbar} menu.configure -command {
+					testcget		{my TestCget}
+					debug_tree		{my Debug tree}
+					debug_nodes		{my Debug nodes}
+					debug_installs	{my Debug installs}
+					debug_notebook	{my Debug notebook}
+					ptree			{my print tree}
+					pnodes			{my print nodes}
+					pkeys			{my print keys}
+				}
+			}
 		}
 
-		##
-		## Your GUI code goes here
-		##		
-		
-		my pout "Demo started ..."
+		# After the menubar is installed we add 3 tabs
+		# to its widget scope.
+		my nbNewTab "One"
+		my nbNewTab "Two"
+		my nbNewTab "Three"
 
 		wm minsize ${wtop} 300 300
-		wm geometry ${wtop} +[expr ${wid}*20]+[expr ${wid}*20]
+		wm geometry ${wtop} 300x300+[expr ${wid}*20]+[expr ${wid}*20]
 		wm protocol ${wtop} WM_DELETE_WINDOW [list [self object] closeWindow ${wtop}]
-		wm title ${wtop} "Demo App"
+		wm title ${wtop} "Menubar Demo"
 		wm focusmodel ${wtop} active
 		wm deiconify ${wtop}
 
-		#my debug
-		
 		return
 	}
 	
@@ -303,6 +326,27 @@ oo::class create Gui {
 		my variable mbar
 		set tout [${mbar} tag.cget ${wtop} tout]
 		${tout} insert end "${txt}\n"
+	}
+	
+	method nbNewTab { text } {
+		my variable mbar
+		my variable wtop
+		my variable nb
+		set tabid [${nb} index end]
+		incr tabid
+		set tabwin ${wtop}.tab${tabid}
+		${nb} add [frame ${tabwin}] -text ${text}
+		${mbar} notebook.addTabStore ${tabwin}
+	}
+	
+	method nbTabSelect { wtop args } {
+		my variable mbar
+		my variable nb
+		my Clear
+		# restore tab values
+		set tabwin [${nb} select]
+		${mbar} notebook.restoreTabValues ${tabwin}
+		my pout "Tab Selected: ${tabwin}"
 	}
 
 	method mShow { args } {
@@ -323,9 +367,9 @@ oo::class create Gui {
 		}
 	}
 
-	method closeWindow { w } {
+	method closeWindow { wtop } {
 		my variable mbar
-		destroy ${w}
+		destroy ${wtop}
 		# check to see if we closed the last window
 		if { [winfo children .] eq ""  } {
 			my Exit
@@ -356,17 +400,7 @@ oo::class create Gui {
 		set tout [${mbar} tag.cget ${wtop} tout]
 		${tout} delete 0.0 end
 	}
-	method LoadDebugCode { args } {
-		my variable wtop
-		my variable mbar
-		${mbar} loadDebugMethod
-		${mbar} tag.configure ${wtop} debug_tree -background lightgreen
-		${mbar} tag.configure ${wtop} debug_nodes -background lightgreen
-		${mbar} tag.configure ${wtop} debug_installs -background lightgreen
-		${mbar} tag.configure ${wtop} ptree -background lightgreen
-		${mbar} tag.configure ${wtop} pnodes -background lightgreen
-		${mbar} tag.configure ${wtop} pkeys -background lightgreen
-	}
+	
 	method TestCget { args } {
 		my variable wtop
 		my variable mbar
@@ -395,15 +429,41 @@ oo::class create Gui {
 	}
 
 	method BoolToggle { args } {
+		my variable wtop
+		my variable mbar
+		my variable nb
 		my pout "BoolToggle: [join ${args} {, }]"
 	}
 
 	method RadioToggle { args } {
+		my variable wtop
+		my variable mbar
+		my variable nb
 		my pout "RadioToggle: [join ${args} {, }]"
 	}
 
+	method NotebookBoolToggle { args } {
+		my variable wtop
+		my variable mbar
+		my variable nb
+		my pout "NotebookBoolToggle: [join ${args} {, }]"
+		lassign ${args} wtop tag val
+		set tabwin [${nb} select]
+		${mbar} notebook.setTabValue ${tabwin} ${tag}
+	}
+
+	method NotebookRadioToggle { args } {
+		my variable wtop
+		my variable mbar
+		my variable nb
+		my pout "NotebookRadioToggle: [join ${args} {, }]"
+		lassign ${args} wtop tag val
+		set tabwin [${nb} select]
+		${mbar} notebook.setTabValue ${tabwin} ${tag}
+	}
+
 	method About { args } {
-		my pout "MenuBar Demo 1.0"
+		my pout "MenuBar Demo 0.5"
 	}
 
 	method print { args } {

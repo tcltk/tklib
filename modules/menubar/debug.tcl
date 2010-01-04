@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: debug.tcl,v 1.1 2009/12/17 23:30:04 tomk Exp $
+# RCS: @(#) $Id: debug.tcl,v 1.2 2010/01/04 23:33:39 tomk Exp $
 
 package require TclOO
 package require menubar
@@ -157,6 +157,7 @@ oo::define ::menubar::tree method pstream { stream } {
 oo::define ::menubar method debug { {type tree} } {
 	my variable mtree
 	my variable installs
+	my variable notebookVals
 	
 	set result ""
 	if { ${type} eq "tree" } {
@@ -178,6 +179,9 @@ oo::define ::menubar method debug { {type tree} } {
 	} elseif { ${type} eq "installs" } {
 		lappend result "##### installs #####"
 		lappend result [pdict ${installs}]
+	} elseif { ${type} eq "notebook" } {
+		lappend result "##### notebookVals #####"
+		lappend result [pdict ${notebookVals}]
 	}
 	return ${result}
 }
