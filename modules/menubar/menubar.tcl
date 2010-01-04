@@ -9,7 +9,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: menubar.tcl,v 1.2 2009/12/25 22:30:23 tomk Exp $
+# RCS: @(#) $Id: menubar.tcl,v 1.3 2010/01/04 23:33:39 tomk Exp $
 
 package require Tk
 package require TclOO
@@ -72,8 +72,19 @@ oo::class create ::menubar {
 		my variable wtop
 		my variable mtop
 		
-		# This array holds the current value for checkbutton and radiobutton items
-		my variable tagVal			
+		# The tagVal array holds the current value
+		# for all checkbutton and radiobutton items
+		my variable tagVal
+
+		# This dict holds the widget specific value store
+		my variable notebookVals
+
+		# create font used by labelseperator
+		menu .temp
+		set font_def [font actual [.temp cget -font]]
+		set font_def [dict replace ${font_def} -weight bold -slant italic]
+		font create sfont {*}${font_def}
+		destroy .temp
 
 		set next_id 0
 	
@@ -91,6 +102,7 @@ oo::class create ::menubar {
 		set installs [dict create]
 		set tearoffpathnames [dict create]
 		set first_install ""
+		set notebookVals [dict create]
 		return
 	}
 
@@ -295,8 +307,8 @@ oo::class create ::menubar {
 		my variable mtree
 		my variable tagVal
 		my variable next_id
-		switch -glob -- ${istype} {
-		"M*" {
+		switch -regexp -- ${istype} {
+		"M.*" {
 			# create a new sub-menu
 			set opts [dict create +type cascade]
 			set def ${more}
@@ -327,26 +339,27 @@ oo::class create ::menubar {
 			set opts [dict create +type separator]
 			my TagCheck ${tag}
 			${mtree} insert ${parent} ${index} ${tag}
+			dict set opts -label "${name}"
 			dict for {opt val} ${opts} {
 				${mtree} key.set ${tag} ${opt} ${val}
-			} 
-		}
+			}
+		} 
 		"C" {
 			# add a command
 			set tag ${more}
 			set opts [dict create +type command]
 			my TagCheck ${tag}
 			${mtree} insert ${parent} ${index} ${tag}
-			dict set opts +sync "no"
+			${mtree} key.set ${tag} +scope global
 			dict set opts +command {}
 			dict set opts +bind {}
 			dict set opts -label "${name}"
 			dict set opts -underline 0
 			dict for {opt val} ${opts} {
 				${mtree} key.set ${tag} ${opt} ${val}
-			} 
+			}
 		}
-		"X" {
+		{X[@=]?} {
 			# add a checkbutton
 			set tag ${more}
 			set opts [dict create +type checkbutton]
@@ -354,20 +367,35 @@ oo::class create ::menubar {
 			set tag [string trimright ${tag} +]
 			my TagCheck ${tag}
 			${mtree} insert ${parent} ${index} ${tag}
-			set tagVal(${tag}%%) ${value}
-			dict set opts +sync yes
+			${mtree} key.set ${tag} +initval ${value}
 			dict set opts +command {}
 			dict set opts +bind {}
+			# determine the scope of the button variable
+			if { [string index ${istype} end] eq "@" } {
+				# toplevel single-valued local
+				${mtree} key.set ${tag} +scope local
+				set tagVal(${tag}%%) ${value}
+				dict set opts +variable [self namespace]::tagVal(${tag}%%)
+			} elseif { [string index ${istype} end] eq "=" } {
+				# toplevel multi-valued local 
+				${mtree} key.set ${tag} +scope multival
+				set tagVal(${tag}%%) ${value}
+				dict set opts +variable [self namespace]::tagVal(${tag}%%)
+			} else {
+				# application global
+				${mtree} key.set ${tag} +scope global
+				set tagVal(${tag}) ${value}
+				dict set opts +variable [self namespace]::tagVal(${tag})
+			}
 			dict set opts -label "${name}"
 			dict set opts -underline 0
-			dict set opts +variable [self namespace]::tagVal(${tag}%%)
 			dict set opts -onvalue 1
 			dict set opts -offvalue 0
 			dict for {opt val} ${opts} {
 				${mtree} key.set ${tag} ${opt} ${val}
 			} 
 		}
-		"R" {
+		{R[@=]?} {
 			# add a radiobutton
 			set tag ${more}
 			set value  [expr {([string index ${tag} end] eq "+") ? 1 : 0}]
@@ -376,11 +404,26 @@ oo::class create ::menubar {
 			if { ${tag} ni [${mtree} nodes] } {
 				${mtree} insert ${parent} ${index} ${tag}
 				${mtree} key.set ${tag} +type radiogroup				
-				${mtree} key.set ${tag} +sync "yes"
 				${mtree} key.set ${tag} +command {}
 				${mtree} key.set ${tag} +value {}
 				${mtree} key.set ${tag} +initval {}
-				${mtree} key.set ${tag} +variable [self namespace]::tagVal(${tag}%%)
+				# determine the scope of the button variable
+				if { [string index ${istype} end] eq "@" } {
+					# toplevel single-valued local 
+					${mtree} key.set ${tag} +scope local
+					set tagVal(${tag}%%) ${value}
+					${mtree} key.set ${tag} +variable [self namespace]::tagVal(${tag}%%)
+				} elseif { [string index ${istype} end] eq "=" } {
+					# toplevel multi-valued local 
+					${mtree} key.set ${tag} +scope multival
+					set tagVal(${tag}%%) ${value}
+					${mtree} key.set ${tag} +variable [self namespace]::tagVal(${tag}%%)
+				} else {
+					# application global
+					${mtree} key.set ${tag} +scope global
+					set tagVal(${tag}) ${value}
+					${mtree} key.set ${tag} +variable [self namespace]::tagVal(${tag})
+				}
 			}
 			set opts [dict create +type radiobutton]
 			# tag name for radiobutton node
@@ -611,7 +654,7 @@ oo::class create ::menubar {
 		
 		if { [dict keys ${installs} ${wtop}] eq "" } {
 			# puts a Destroy binding on the new toplevel
-			bind ${wtop} <Destroy> [namespace code [list my WindowCleanup ${wtop}]]
+			bind ${wtop} <Destroy> [namespace code [list my WindowCleanup %W ${wtop}]]
 			# check to see if this is the first install
 			set first_install "no"
 			if { [llength [dict keys ${installs}]] == 0 } {
@@ -643,9 +686,10 @@ oo::class create ::menubar {
 	# WindowCleanup --
 	#
 	# 	Cleanup internal data structures associated with a toplevel window
-	#	when it is destroyed
+	#	when it is destroyed. Note that is will get called for each 
 	#
 	# Parameters:
+	#		w		- the window being destroyed
 	#		wtop	- pathname of toplevel window
 	#
 	# Results:
@@ -655,13 +699,15 @@ oo::class create ::menubar {
 	#		Data is removed from internal data structures
 	#
 	# ------------------------------------------------------------
-	method WindowCleanup { wtop } {
+	method WindowCleanup { w wtop } {
 		my variable mtree
 		my variable installs
 		my variable tearoffpathnames
-		if { ${wtop} in [dict keys ${installs}] } {
+		my variable notebookVals
+		if { ${w} eq ${wtop} && ${wtop} in [dict keys ${installs}] } {
 			dict unset installs ${wtop}
 			dict unset tearoffpathnames ${wtop}
+			set notebookVals [dict remove ${notebookVals} ${wtop}]
 			#puts "tearoffpathnames: ${tearoffpathnames}"
 		}
 		return
@@ -690,7 +736,9 @@ oo::class create ::menubar {
 		my variable mtree
 		my variable installs
 		my variable first_install
-		
+		my variable next_id
+		my variable notebookVals
+
 		set ns [dict get ${installs} ${wtop} menubar +callback_ns]
 
 		switch -glob -- [${mtree} key.get ${node} +type] {
@@ -721,8 +769,20 @@ oo::class create ::menubar {
 			my RenderTag ${wtop} ${node}
 		}
 		"separator" {
-			${parent_path} add separator
-			my RenderTag ${wtop} ${node}
+			set name [${mtree} key.get ${node} -label]
+			if { ${name} eq "--" } {
+				${parent_path} add separator
+			} else {
+				${parent_path} add command -label "-- ${name} --" \
+				-state active \
+				-command {} \
+				-foreground black \
+				-background lightgray \
+				-activebackground lightgray \
+				-activeforeground black \
+				-font sfont
+			}
+			#my RenderTag ${wtop} ${node}
 		}
 		"groupcommand" {
 			set name [${mtree} key.get ${node} -label]
@@ -737,10 +797,43 @@ oo::class create ::menubar {
 		"checkbutton" {
 			set name [${mtree} key.get ${node} -label]
 			${parent_path} add checkbutton -label ${name}
-			my RenderTag ${wtop} ${node}
+			# create the checkbutton variable
+			incr next_id
+			set varname [string map [list "%%" ${next_id}] [${mtree} key.get ${node} +variable]]
+			${parent_path} entryconfigure ${name} -variable ${varname}
+			set scope [${mtree} key.get ${node} +scope]
+			if { ${scope} eq "global" } {
+				if { ${first_install} eq "yes" } {
+					set ${varname} [${mtree} key.get ${node} +initval]
+				}
+			} elseif { ${scope} eq "local" } {
+					set ${varname} [${mtree} key.get ${node} +initval]
+			} elseif { ${scope} eq "multival" } {
+					set ${varname} [${mtree} key.get ${node} +initval]
+				dict set notebookVals ${wtop} +var ${node} ${varname}
+			}
+			dict set installs ${wtop} +btnvars ${node} ${varname}
+			# process the rest of the option settings
+			my RenderTag ${wtop} ${node} ${varname}
 		}
 		"radiogroup" {
 			dict set installs ${wtop} ${node} +pathname ${parent_path}
+			# create a variable for radiogroup
+			incr next_id
+			set varname [string map [list "%%" ${next_id}] [${mtree} key.get ${node} +variable]]
+			set scope [${mtree} key.get ${node} +scope]
+			if { ${scope} eq "global" } {
+				if { ${first_install} eq "yes" } {
+					set ${varname} [${mtree} key.get ${node} +initval]
+				}
+			} elseif { ${scope} eq "local" } {
+					set ${varname} [${mtree} key.get ${node} +initval]
+			} elseif { ${scope} eq "multival" } {
+					set ${varname} [${mtree} key.get ${node} +initval]
+				dict set notebookVals ${wtop} +var ${node} ${varname}
+			}
+			dict set installs ${wtop} +btnvars ${node} ${varname}
+			# process the rest of the option settings		
 			my InstallSubTree ${wtop} ${parent_path} ${node} 
 		}
 		"radiobutton" {
@@ -790,8 +883,18 @@ oo::class create ::menubar {
 		set wtop [join [lrange [split ${tearoff_pathname} "."] 0 1] "."]
 		my DeleteTearoff ${wtop} ${node}
 		dict set tearoffpathnames ${wtop} ${node} ${tearoff_pathname}
-		lassign [winfo pointerxy .] xx yy
+		switch -exact -- [tk windowingsystem] {
+		win32 {
+			wm attributes ${tearoff_pathname} -toolwindow 1
+		}
+		x11 {
+			set wtop [winfo parent [winfo toplevel ${tearoff_pathname}]]
+			wm transient ${tearoff_pathname}
+		}
+		osx {
+		}}
 		wm protocol ${tearoff_pathname} WM_DELETE_WINDOW [namespace code [list my DeleteTearoff ${wtop} ${node}]]
+		lassign [winfo pointerxy .] xx yy
 		regexp {([0-9]+)[Xx]([0-9]+)([+-][0-9]+)([+-][0-9]+)} [wm geometry ${tearoff_pathname}] - width height x y
 		wm geometry ${tearoff_pathname} +${xx}+${yy}
 		if { ${width} < 120 } { set width 120 }
@@ -945,11 +1048,6 @@ oo::class create ::menubar {
 					${mtree} key.set ${node} ${opt} ${value}
 				}
 			}
-			-sync {
-				if { ${first_install} eq "yes"  } {
-					${mtree} key.set ${node} +sync ${value}
-				}
-			}
 			-bind {
 				lassign ${value} uline accel sequence
 				if { ${uline} eq "" || [string is integer ${uline}] } {
@@ -971,6 +1069,28 @@ oo::class create ::menubar {
 			my RenderTag ${wtop} ${node}
 		}
 		return
+	}
+
+	# ------------------------------------------------------------
+	#
+	# getButtonVars --
+	#
+	#	Set any number of option/value pairs for one item in the mtree structure
+	#   then update the visible rendering of the item.
+	#
+	# Parameters:
+	#		wtop	- toplevel window containing the menubar item
+	#
+	# Results:
+	#       dict of tag name/button variables
+	#
+	# Side effects:
+	#		none
+	#
+	# ------------------------------------------------------------
+	method getButtonVars { wtop } {
+		my variable installs
+		return [dict get ${installs} ${wtop} +btnvars]
 	}
 
 	# ------------------------------------------------------------
@@ -1064,12 +1184,6 @@ oo::class create ::menubar {
 			} else {
 				${parent_path} entryconfigure ${name} -command [list [self object] commandCallback ${wtop} ${node}]
 			}
-			if { [${mtree} key.get ${node} +sync] eq "yes"  } {
-				${parent_path} entryconfigure ${name} -variable [${mtree} key.get ${node} +variable]
-			} else {
-				incr next_id
-				${parent_path} entryconfigure ${name} -variable [string map [list "%%" ${next_id}] [${mtree} key.get ${node} +variable]]
-			}
 			${parent_path} entryconfigure ${name} {*}[${mtree} key.getall ${node} -*]
 			set sequence [${mtree} key.get ${node} +bind]
 			if { ${sequence} eq "" } {
@@ -1079,16 +1193,9 @@ oo::class create ::menubar {
 			}
 		}
 		"radiogroup" {
-			if { [${mtree} key.get ${node} +sync] eq "yes"  } {
-				set var [${mtree} key.get ${node} +variable]
-				set ${var} [${mtree} key.get ${node} +initval]
-			} else {
-				incr next_id
-				set var [string map [list "%%" ${next_id}] [${mtree} key.get ${node} +variable]]
-				set ${var} [${mtree} key.get ${node} +initval]
-			}
+			set varname [dict get ${installs} ${wtop} +btnvars ${node}]
 			foreach child [${mtree} children ${node}] {
-				my RenderTag ${wtop} ${child} ${var}
+				my RenderTag ${wtop} ${child} ${varname}
 			}
 		}
 		"radiobutton" {
@@ -1193,7 +1300,6 @@ oo::class create ::menubar {
 				set cmd [${mtree} key.get ${parent_node} +command]
 				set cur_value [${mtree} key.get ${parent_node} +value]
 				set value [set [${parent_path} entrycget ${name} -variable]]
-				if { ${cur_value} eq ${value} } { return }
 				${mtree} key.set ${parent_node} +value ${value}
 				if { [string equal -length 2 "::" ${cmd}] } {
 					eval [list {*}${cmd} ${wtop} ${parent_node} ${value}]
@@ -1610,11 +1716,6 @@ oo::class create ::menubar {
 					${mtree} key.set ${name} ${opt} ${value}
 				}
 			}
-			-sync {
-				if { ${first_install} eq "yes"  } {
-					${mtree} key.set ${name} +sync ${value}
-				}
-			}
 			-bind {
 				lassign ${value} uline accel sequence
 				if { ${uline} eq "" || [string is integer ${uline}] } {
@@ -1714,5 +1815,107 @@ oo::class create ::menubar {
 		}
 		return 0
 	}
+
+	# ===== COMMANDS THAT SUPPORT NOTEBOOK TABS =========================
+	
+	# ------------------------------------------------------------
+	#
+	# notebook.addTabStore --
+	#
+	#	Add a new set of values to the notebookVals dict
+	#
+	# Parameters:
+	#		pathname - tab window pathname
+	#
+	# Results:
+	#       none
+	#
+	# Side effects:
+	#		A new tab is initialized in the notebookVals dict
+	#
+	# ------------------------------------------------------------
+	method notebook.addTabStore { pathname } {
+		my variable wtop
+		my variable notebookVals
+		dict for {tag var} [dict get ${notebookVals} ${wtop} +var] {
+			dict set notebookVals ${wtop} ${pathname} ${tag} [set ${var}]
+		}
+	}
+	
+	# ------------------------------------------------------------
+	#
+	# notebook.deleteTabStore --
+	#
+	#	Remove a set of values from the notebookVals dict
+	#
+	# Parameters:
+	#		pathname - window pathname
+	#
+	# Results:
+	#       none
+	#
+	# Side effects:
+	#		A tab is deleted from the notebookVals dict
+	#
+	# ------------------------------------------------------------
+	method notebook.deleteTabStore { pathname } {
+		my variable wtop
+		my variable notebookVals
+		set notebookVals [dict remove ${notebookVals} ${wtop} ${pathname}]
+	}
+	
+	# ------------------------------------------------------------
+	#
+	# notebook.setTabValue --
+	#
+	#	Set a value in the notebookVals dict
+	#
+	# Parameters:
+	#		pathname	- tab window pathname
+	#		tag			- menubar tag name
+	#
+	# Results:
+	#       none
+	#
+	# Side effects:
+	#		A value in the notebookVals dict is set
+	#		from a menu item variable.
+	#
+	# ------------------------------------------------------------
+	method notebook.setTabValue { pathname tag } {
+		set wtop [winfo toplevel ${pathname}]
+		my variable notebookVals
+		if { [dict exists ${notebookVals} ${wtop} ${pathname} ${tag}] } {
+			set val [set [dict get ${notebookVals} ${wtop} +var ${tag}]]
+			dict set notebookVals ${wtop} ${pathname} ${tag} ${val}
+		}
+	}
+	
+	# ------------------------------------------------------------
+	#
+	# notebook.restoreTabValues --
+	#
+	#	Restore the value for a notebook tab.
+	#
+	# Parameters:
+	#		pathname	- tab window pathname
+	#
+	# Results:
+	#       none
+	#
+	# Side effects:
+	#		Values in notebookVals associated with pathname are
+	#		assigned to menubar variables.
+	#
+	# ------------------------------------------------------------
+	method notebook.restoreTabValues { pathname } {
+		my variable notebookVals
+		set wtop [winfo toplevel ${pathname}]
+		dict for {tag var} [dict get ${notebookVals} ${wtop} +var] {
+			set val [dict get ${notebookVals} ${wtop} ${pathname} ${tag}]
+			set ${var} ${val}
+		}
+	}
+	
 }
 
