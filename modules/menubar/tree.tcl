@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tree.tcl,v 1.1 2009/12/18 01:45:54 tomk Exp $
+# RCS: @(#) $Id: tree.tcl,v 1.2 2010/01/04 23:33:39 tomk Exp $
 
 package require TclOO
 package require menubar::node
@@ -42,7 +42,7 @@ oo::class create ::menubar::tree {
     }
 
     destructor {
-        variable nodes
+        my variable nodes
         dict for {name node} ${nodes} {
             ${node} destroy
         }
