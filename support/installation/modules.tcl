@@ -44,6 +44,7 @@ Module history     _tcl  _man  _null
 Module ico         _tcl  _man  _null
 Module ipentry     _tcl  _man  _null
 Module khim        _tclm _man  _null
+Module menubar     _tcl  _man  _exa
 Module ntext       _tcl  _man  _exa
 Module plotchart   _tcl  _man  _exa
 Module style       _tcl  _man  _null
