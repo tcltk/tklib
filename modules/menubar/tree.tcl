@@ -1,4 +1,4 @@
-# Node.tcl --
+# tree.tcl --
 #
 #    Package that defines the menubar::Tree class. This class is a
 #    privite class used by the menubar class.
@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tree.tcl,v 1.2 2010/01/04 23:33:39 tomk Exp $
+# RCS: @(#) $Id: tree.tcl,v 1.3 2010/01/05 21:38:13 tomk Exp $
 
 package require TclOO
 package require menubar::node
