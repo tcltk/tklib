@@ -15,7 +15,7 @@ lappend auto_path .
 package require menubar
 
 # uncomment the following line to enable the debugging menu
-package require menubar::debug
+#package require menubar::debug
 
 package provide AppMain 0.5
 
