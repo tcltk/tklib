@@ -10,7 +10,7 @@ package require TclOO
 
 ## --
 ## Extend auto_path so package require will find the menubar package
-## in the tcllib directory hierarchy.
+## in the tklib directory hierarchy.
 set selfdir  [file dirname [file normalize [info script]]]
 set modules [file join [file dirname [file dirname $selfdir]] modules]
 lappend auto_path [file join ${modules} menubar]
