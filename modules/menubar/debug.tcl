@@ -1,4 +1,4 @@
-# Debug.tcl --
+# debug.tcl --
 #
 #    Package that add debugging procedures to the global namespace
 #    and to the menubar::Tree class.
@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: debug.tcl,v 1.2 2010/01/04 23:33:39 tomk Exp $
+# RCS: @(#) $Id: debug.tcl,v 1.3 2010/01/05 21:38:54 tomk Exp $
 
 package require TclOO
 package require menubar
