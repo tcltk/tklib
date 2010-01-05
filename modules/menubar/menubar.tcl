@@ -9,7 +9,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: menubar.tcl,v 1.3 2010/01/04 23:33:39 tomk Exp $
+# RCS: @(#) $Id: menubar.tcl,v 1.4 2010/01/05 21:34:04 tomk Exp $
 
 package require Tk
 package require TclOO
@@ -29,9 +29,9 @@ package provide menubar 0.5
 #   C - <command>
 #   X - <checkbutton>
 #   R - {radiogroup}
-#		 <radiobutton>
+#        <radiobutton>
 #   G - {commandgroup} <separator>
-#		 <command>
+#        <command>
 #
 # STRUCTURE: installs
 #
@@ -52,14 +52,14 @@ oo::class create ::menubar {
 	#
 	#    Create an instance of the menubar class.
 	#
-	# Parameters:
-	#       args - zero or more option/value pairs
+	# Arguments:
+	#    args - zero or more option/value pairs
 	#
 	# Results:
-	#       An instance of the menubar class is returned.
+	#    An instance of the menubar class is returned.
 	#
 	# Side effects:
-	#       none
+	#    none
 	#
 	# ------------------------------------------------------------
 	constructor { args } {
@@ -110,16 +110,16 @@ oo::class create ::menubar {
 	#
 	# loadDebugMethods --
 	#
-	#	Determine the pathname of the toplevel window for a widget.
+	#    Determine the pathname of the toplevel window for a widget.
 	#
-	# Parameters:
-	#		none
+	# Arguments:
+	#    none
 	#
 	# Results:
-	#       node
+	#    node
 	#
 	# Side effects:
-	#		Debug package is loaded
+	#    Debug package is loaded
 	#
 	# ------------------------------------------------------------
 	method loadDebugMethod { } {
@@ -130,17 +130,17 @@ oo::class create ::menubar {
 	#
 	# getTopLevel --
 	#
-	#	Determine the pathname of the toplevel window for a widget.
+	#    Determine the pathname of the toplevel window for a widget.
 	#
-	# Parameters:
-	#		w - window
+	# Arguments:
+	#        w - window
 	#
 	# Results:
 	#       Returns the path name of the top-of-hierarchy window 
-	#		containing window.
+	#        containing window.
 	#
 	# Side effects:
-	#		none
+	#        none
 	#
 	# ------------------------------------------------------------
 	method getTopLevel { w } {
@@ -152,17 +152,17 @@ oo::class create ::menubar {
 	#
 	# ScrubString --
 	#
-	# 	Convert users menubar description into a tcl list, also
-	# 	remove blank and comment lines from the description.
+	#    Convert users menubar description into a tcl list, also
+	#    remove blank and comment lines from the description.
 	#
-	# Parameters:
-	#		str - character string
+	# Arguments:
+	#    str - character string
 	#
 	# Results:
-	#       list
+	#    list
 	#
 	# Side effects:
-	#		none
+	#    none
 	#
 	# ------------------------------------------------------------
 	method ScrubString { str } {
@@ -178,16 +178,16 @@ oo::class create ::menubar {
 	#
 	# define --
 	#
-	# 	This is the user interface to the menubar description parser.
+	#    This is the user interface to the menubar description parser.
 	#
-	# Parameters:
-	#		definition - menubar description
+	# Arguments:
+	#    definition - menubar description
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		Entries are added to the mtree structure.
+	#    Entries are added to the mtree structure.
 	#
 	# ------------------------------------------------------------
 	method define { definition } {
@@ -202,18 +202,18 @@ oo::class create ::menubar {
 	#
 	# MenuAdd --
 	#
-	# 	Parse one menu description and add it to mtree.
-	# 	The new menu is a branch off the parent.
+	#    Parse one menu description and add it to mtree.
+	#    The new menu is a branch off the parent.
 	#
-	# Parameters:
-	#		parent	- parent tag name
-	#		desc	- menu description
+	# Arguments:
+	#    parent - parent tag name
+	#    desc   - menu description
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		Entries are added to the menu tree (mtree) structure.
+	#    Entries are added to the menu tree (mtree) structure.
 	#
 	# ------------------------------------------------------------
 	method MenuAdd { parent desc } {
@@ -234,18 +234,18 @@ oo::class create ::menubar {
 	#
 	# TagCheck --
 	#
-	#	Check the format of a tag string.
+	#    Check the format of a tag string.
 	#
-	# Parameters:
-	#		tag		- tag name to be checked
-	#		unique	- flag that indecates if the tag should be globally
-	#				  unique. Default is true.
+	# Arguments:
+	#    tag    - tag name to be checked
+	#    unique - flag that indecates if the tag should be globally
+	#             unique. Default is true.
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		error is thrown if tag check fails
+	#    error is thrown if tag check fails
 	#
 	# ------------------------------------------------------------
 	method TagCheck { tag {unique 1} } {
@@ -264,16 +264,16 @@ oo::class create ::menubar {
 	#
 	# CreateWidgetPath --
 	#
-	#	Construct a unique child pathname for a parent pathname.
+	#    Construct a unique child pathname for a parent pathname.
 	#
-	# Parameters:
-	#		pathname	- parent tag name
+	# Arguments:
+	#    pathname - parent tag name
 	#
 	# Results:
-	#       child widget pathname
+	#    child widget pathname
 	#
 	# Side effects:
-	#		none
+	#    none
 	#
 	# ------------------------------------------------------------
 	method CreateWidgetPath { pathname } {
@@ -286,21 +286,21 @@ oo::class create ::menubar {
 	#
 	# ParseItem --
 	#
-	#	Parse one line from the user's menubar description and add the
-	#	item to mtree.
+	#    Parse one line from the user's menubar description and add the
+	#    item to mtree.
 	#
-	# Parameters:
-	#		parent	- parent tag name
-	#		name	- tag name of new item
-	#		istype	- type identifier (oneof: M,S,C,X,R,G)
-	#		index	- position in parent's list
-	#		more	- rest of item definition; varies based on istype value
+	# Arguments:
+	#    parent - parent tag name
+	#    name   - tag name of new item
+	#    istype - type identifier (oneof: M,S,C,X,R,G)
+	#    index  - position in parent's list
+	#    more   - rest of item definition; varies based on istype value
 	#
 	# Results:
-	#       fully qualified tag name of new item
+	#    fully qualified tag name of new item
 	#
 	# Side effects:
-	#		an item is added to mtree
+	#    an item is added to mtree
 	#
 	# ------------------------------------------------------------
 	method ParseItem { parent name istype index more } {
@@ -459,18 +459,18 @@ oo::class create ::menubar {
 	#
 	# tag.add --
 	#
-	#	Add a user defined tag
+	#    Add a user defined tag
 	#
-	# Parameters:
-	#		tag		- tag name
-	#		value	- the tag's value
+	# Arguments:
+	#    tag   - tag name
+	#    value - the tag's value
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		a user defined tag/value pair is added to the installs
-	#		structure for the current toplevel window
+	#    a user defined tag/value pair is added to the installs
+	#    structure for the current toplevel window
 	#
 	# ------------------------------------------------------------
 	method tag.add { tag value } {
@@ -490,18 +490,18 @@ oo::class create ::menubar {
 	#
 	# tag.cget --
 	#
-	#	Return an option value given a window and tag
+	#    Return an option value given a window and tag
 	#
-	# Parameters:
-	#		wtop	- toplevel pathname
-	#		tag		- tag name
-	#		opt		- option name
+	# Arguments:
+	#    wtop - toplevel pathname
+	#    tag  - tag name
+	#    opt  - option name
 	#
 	# Results:
-	#       value of option
+	#    value of option
 	#
 	# Side effects:
-	#		none
+	#    none
 	#
 	# ------------------------------------------------------------
 	method tag.cget { wtop tag {opt ""} } {
@@ -577,19 +577,19 @@ oo::class create ::menubar {
 	#
 	# menu.namespace --
 	#
-	#	Set the namespace for a sub-tree of the menubar starting at
-	#	the entry with tag name.
+	#    Set the namespace for a sub-tree of the menubar starting at
+	#    the entry with tag name.
 	#
-	# Parameters:
-	#		tag		- tag name
-	#		ns		- new namespace
+	# Arguments:
+	#    tag - tag name
+	#    ns  - new namespace
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		mtree is modified or an error is thrown if the command is
-	#		used outside the context of the install method
+	#    mtree is modified or an error is thrown if the command is
+	#    used outside the context of the install method
 	#
 	# ------------------------------------------------------------
 	method menu.namespace { tag ns } {
@@ -615,20 +615,20 @@ oo::class create ::menubar {
 	#
 	# install --
 	#
-	# 	Install an initial Tk menu in a toplevel window and install the
-	#	rest of the menubar using the MenuInstall method. After the menubar
-	#	has been installed, configure option values for all the menubar entries.
+	#    Install an initial Tk menu in a toplevel window and install the
+	#    rest of the menubar using the MenuInstall method. After the menubar
+	#    has been installed, configure option values for all the menubar entries.
 	#
-	# Parameters:
-	#		win		- pathname of window where menubar will be installed
-	#		config	- user supplied code to configure the items on
-	#				  the installed menubar
+	# Arguments:
+	#    win    - pathname of window where menubar will be installed
+	#    config - user supplied code to configure the items on
+	#             the installed menubar
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		A menubar is installed and displayed.
+	#    A menubar is installed and displayed.
 	#
 	# ------------------------------------------------------------
 	method install { win config } {
@@ -685,18 +685,18 @@ oo::class create ::menubar {
 	#
 	# WindowCleanup --
 	#
-	# 	Cleanup internal data structures associated with a toplevel window
-	#	when it is destroyed. Note that is will get called for each 
+	#    Cleanup internal data structures associated with a toplevel window
+	#    when it is destroyed. Note that is will get called for each 
 	#
-	# Parameters:
-	#		w		- the window being destroyed
-	#		wtop	- pathname of toplevel window
+	# Arguments:
+	#    w    - the window being destroyed
+	#    wtop - pathname of toplevel window
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		Data is removed from internal data structures
+	#    Data is removed from internal data structures
 	#
 	# ------------------------------------------------------------
 	method WindowCleanup { w wtop } {
@@ -717,19 +717,19 @@ oo::class create ::menubar {
 	#
 	# MenuInstall --
 	#
-	#	Create Tk menu widget or menu widget entry from a definition found in
-	#	the mtree structure.
+	#    Create Tk menu widget or menu widget entry from a definition found in
+	#    the mtree structure.
 	#
-	# Parameters:
-	#		win			- pathname of window where tk menu will be added
-	#		parent_path	- pathname of parent menu 
-	#		node		- mtree node containing the item to be created
+	# Arguments:
+	#    win         - pathname of window where tk menu will be added
+	#    parent_path - pathname of parent menu 
+	#    node        - mtree node containing the item to be created
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		A Tk menu or menu entry is created.
+	#    A Tk menu or menu entry is created.
 	#
 	# ------------------------------------------------------------
 	method MenuInstall { wtop parent_path node } {
@@ -857,23 +857,23 @@ oo::class create ::menubar {
 	#
 	# AppendTearoffPathname --
 	#
-	# 	This proceedure is called after a tearoff menu has been created.
-	# 	Tearoff menus are toplevel windows but we need to keep track of
-	# 	the association between the toplevel window containing the menubar
-	# 	and the tearoff menu.
+	#    This proceedure is called after a tearoff menu has been created.
+	#    Tearoff menus are toplevel windows but we need to keep track of
+	#    the association between the toplevel window containing the menubar
+	#    and the tearoff menu.
 	#
-	# Parameters:
-	#		node				- mtree node containing the item to be created
-	#		trash				- not used
-	#		tearoff_pathname	- pathname of tearoff menu
+	# Arguments:
+	#    node             - mtree node containing the item to be created
+	#    trash            - not used
+	#    tearoff_pathname - pathname of tearoff menu
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		Information about the tearoff menu is saved. A WM_DELETE_WINDOW
-	#		protocol handler is added to the tearoff menu. The tearoff menu
-	#		geometry is ajusted and then resizing is turned off.
+	#    Information about the tearoff menu is saved. A WM_DELETE_WINDOW
+	#    protocol handler is added to the tearoff menu. The tearoff menu
+	#    geometry is ajusted and then resizing is turned off.
 	#
 	# ------------------------------------------------------------
 	method AppendTearoffPathname { node trash tearoff_pathname } {
@@ -908,18 +908,18 @@ oo::class create ::menubar {
 	#
 	# DeleteTearoff --
 	#
-	# 	This proceedure is called when a tearoff menu is destroyed.
+	#    This proceedure is called when a tearoff menu is destroyed.
 	#
-	# Parameters:
-	#		wtop	- toplevel window that created the tearoff menu
-	#		node	- mtree node that defines the menu
+	# Arguments:
+	#    wtop - toplevel window that created the tearoff menu
+	#    node - mtree node that defines the menu
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		The tornoff menu is destroyed and its pathname is removed from
-	#		the list of menus that have been tornoff.
+	#    The tornoff menu is destroyed and its pathname is removed from
+	#    the list of menus that have been tornoff.
 	#
 	# ------------------------------------------------------------
 	method DeleteTearoff { wtop node } {
@@ -936,19 +936,19 @@ oo::class create ::menubar {
 	#
 	# InstallSubTree --
 	#
-	#	Install all the child nodes for a given parent node.
+	#    Install all the child nodes for a given parent node.
 	#
-	# Parameters:
-	#		wtop		- toplevel window for install
-	#		parent_path	- pathname of parent node
-	#		parent_node	- mtree node name of parent
+	# Arguments:
+	#    wtop        - toplevel window for install
+	#    parent_path - pathname of parent node
+	#    parent_node - mtree node name of parent
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		The MenuInstall method is executed on all the child nodes
-	#		of parent_node.
+	#    The MenuInstall method is executed on all the child nodes
+	#    of parent_node.
 	#
 	# ------------------------------------------------------------
 	method InstallSubTree { wtop parent_path parent_node } {
@@ -963,21 +963,21 @@ oo::class create ::menubar {
 	#
 	# menu.configure --
 	#
-	#	Add any number of option/value pairs for multiple item in the mtree
-	#	stucture then update the visible rendering of the menubar.
+	#    Add any number of option/value pairs for multiple item in the mtree
+	#    stucture then update the visible rendering of the menubar.
 	#
-	# Parameters:
-	#		args - a list of option/body pairs. Option is any of the legal
-	#              option names for a menubar. The body part of the pair is
-	#              a line oriented text definition of tag/value pairs where
-	#			   the item associated with the tag will have the option set
-	#              to the specified value.
+	# Arguments:
+	#    args - a list of option/body pairs. Option is any of the legal
+	#           option names for a menubar. The body part of the pair is
+	#           a line oriented text definition of tag/value pairs where
+	#           the item associated with the tag will have the option set
+	#           to the specified value.
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		The option values for items in the menubar are modified.
+	#    The option values for items in the menubar are modified.
 	#
 	# ------------------------------------------------------------
 	method menu.configure { args } {
@@ -1000,19 +1000,19 @@ oo::class create ::menubar {
 	#
 	# tag.configure --
 	#
-	#	Set any number of option/value pairs for one item in the mtree structure
-	#   then update the visible rendering of the item.
+	#    Set any number of option/value pairs for one item in the mtree structure
+	#    then update the visible rendering of the item.
 	#
-	# Parameters:
-	#		wtop	- toplevel window containing the menubar item
-	#		node	- mtree node to be configured
-	#		args	- a list of option/value pairs
+	# Arguments:
+	#    wtop - toplevel window containing the menubar item
+	#    node - mtree node to be configured
+	#    args - a list of option/value pairs
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		The option values of a menubar item are modified.
+	#    The option values of a menubar item are modified.
 	#
 	# ------------------------------------------------------------
 	method tag.configure { wtop node args } {
@@ -1075,17 +1075,17 @@ oo::class create ::menubar {
 	#
 	# getButtonVars --
 	#
-	#	Set any number of option/value pairs for one item in the mtree structure
-	#   then update the visible rendering of the item.
+	#    Set any number of option/value pairs for one item in the mtree structure
+	#    then update the visible rendering of the item.
 	#
-	# Parameters:
-	#		wtop	- toplevel window containing the menubar item
+	# Arguments:
+	#    wtop - toplevel window containing the menubar item
 	#
 	# Results:
-	#       dict of tag name/button variables
+	#    dict of tag name/button variables
 	#
 	# Side effects:
-	#		none
+	#    none
 	#
 	# ------------------------------------------------------------
 	method getButtonVars { wtop } {
@@ -1097,16 +1097,16 @@ oo::class create ::menubar {
 	#
 	# IsHidden --
 	#
-	#	Determine if a node is visible.
+	#    Determine if a node is visible.
 	#
-	# Parameters:
-	#		node	- mtree node to be checked
+	# Arguments:
+	#    node - mtree node to be checked
 	#
 	# Results:
-	#       returns 1 if the node is hiden else 0
+	#    returns 1 if the node is hiden else 0
 	#
 	# Side effects:
-	#		none
+	#    none
 	#
 	# ------------------------------------------------------------
 	method IsHidden { node } {
@@ -1126,19 +1126,19 @@ oo::class create ::menubar {
 	#
 	# RenderTag --
 	#
-	#	Perform Tk configure commands on a menubar item using the option
-	#	settings found in the mtree structure.
+	#    Perform Tk configure commands on a menubar item using the option
+	#    settings found in the mtree structure.
 	#
-	# Parameters:
-	#		wtop	- toplevel window containing the menubar item
-	#		node	- mtree node for item
-	#		varname	- (optional) shared variable name for a radiobutton group
+	# Arguments:
+	#    wtop    - toplevel window containing the menubar item
+	#    node    - mtree node for item
+	#    varname - (optional) shared variable name for a radiobutton group
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		The visible rendering of a menubar is updated.
+	#    The visible rendering of a menubar is updated.
 	#
 	# ------------------------------------------------------------
 	method RenderTag { wtop node {varname {}} } {
@@ -1236,19 +1236,19 @@ oo::class create ::menubar {
 	#
 	# commandCallback --
 	#
-	#	Execute a command callback
+	#    Execute a command callback
 	#
-	# Parameters:
-	#		wtop	- toplevel window containing the menubar item
-	#                 that triggered the callback
-	#		node	- mtree node for item
+	# Arguments:
+	#    wtop - toplevel window containing the menubar item
+	#           that triggered the callback
+	#    node - mtree node for item
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		The callback code associated with node is executed in
-	#       the context of the wtop window.
+	#    The callback code associated with node is executed in
+	#    the context of the wtop window.
 	#
 	# ------------------------------------------------------------
 	method commandCallback { wtop node } {
@@ -1317,17 +1317,17 @@ oo::class create ::menubar {
 	#
 	# menu.show --
 	#
-	#	Render (i.e. show) a menubar item that is hidden.
+	#    Render (i.e. show) a menubar item that is hidden.
 	#
-	# Parameters:
-	#		node	- mtree node for item
+	# Arguments:
+	#    node - mtree node for item
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		The item is added to the menubar of all installed
-	#       toplevel windows.
+	#    The item is added to the menubar of all installed
+	#    toplevel windows.
 	#
 	# ------------------------------------------------------------
 	method menu.show { node } {
@@ -1356,17 +1356,17 @@ oo::class create ::menubar {
 	#
 	# menu.hide --
 	#
-	#	Hide a menubar item that is visible.
+	#    Hide a menubar item that is visible.
 	#
-	# Parameters:
-	#		node	- mtree node for item
+	# Arguments:
+	#    node - mtree node for item
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		The item is removed from the menubar of all installed
-	#       toplevel windows.
+	#    The item is removed from the menubar of all installed
+	#    toplevel windows.
 	#
 	# ------------------------------------------------------------
 	method menu.hide { node } {
@@ -1395,17 +1395,17 @@ oo::class create ::menubar {
 	#
 	# DeleteMenu --
 	#
-	#	Delete a Tk menu.
+	#    Delete a Tk menu.
 	#
-	# Parameters:
-	#		wtop	- toplevel window
-	#		node	- mtree node for item
+	# Arguments:
+	#    wtop - toplevel window
+	#    node - mtree node for item
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		The Tk menu defined by node is deleted from wtop.
+	#    The Tk menu defined by node is deleted from wtop.
 	#
 	# ------------------------------------------------------------
 	method DeleteMenu { wtop node } {
@@ -1439,21 +1439,21 @@ oo::class create ::menubar {
 	#
 	# group.add --
 	#
-	#	Add a command definition to a group and
-	#	append the command to the end of the group menu.
+	#    Add a command definition to a group and
+	#    append the command to the end of the group menu.
 	#
-	# Parameters:
-	#		parent	- parent node in mtree
-	#		args	- list of items that define the command
-	#				  (i.e. name cmd accel sequence state)
+	# Arguments:
+	#    parent - parent node in mtree
+	#    args   - list of items that define the command
+	#             (i.e. name cmd accel sequence state)
 	#
 	# Results:
-	#       Returns a 0 on success or 1 on failure.
+	#    Returns a 0 on success or 1 on failure.
 	#
 	# Side effects:
-	#		A command definition is added to the commandgroup and
-	#		the new command is displayed (i.e. rendered) on all
-	#		installed toplevel windows.
+	#    A command definition is added to the commandgroup and
+	#    the new command is displayed (i.e. rendered) on all
+	#    installed toplevel windows.
 	#
 	# ------------------------------------------------------------
 	method group.add { parent args } {
@@ -1517,17 +1517,17 @@ oo::class create ::menubar {
 	#
 	# group.entries --
 	#
-	#	Return a list of all entries in a group.
+	#    Return a list of all entries in a group.
 	#
-	# Parameters:
-	#		parent	- the mtree commandgroup node of interest
+	# Arguments:
+	#    parent - the mtree commandgroup node of interest
 	#
 	# Results:
-	#       Returns a list of mtree node names or 1 if parent isn't
-	#		a commandgroup node.
+	#    Returns a list of mtree node names or 1 if parent isn't
+	#    a commandgroup node.
 	#
 	# Side effects:
-	#		none
+	#    none
 	#
 	# ------------------------------------------------------------
 	method group.entries { parent } {
@@ -1546,17 +1546,17 @@ oo::class create ::menubar {
 	#
 	# group.delete --
 	#
-	#	Delete a command from a commandgroup.
+	#    Delete a command from a commandgroup.
 	#
-	# Parameters:
-	#		parent	- the mtree commandgroup node of interest
-	#		name	- name of item to be removed from the commandgroup
+	# Arguments:
+	#    parent - the mtree commandgroup node of interest
+	#    name   - name of item to be removed from the commandgroup
 	#
 	# Results:
-	#       Returns 0 on success or 1 on failure.
+	#    Returns 0 on success or 1 on failure.
 	#
 	# Side effects:
-	#		none
+	#    none
 	#
 	# ------------------------------------------------------------
 	method group.delete { parent name } {
@@ -1602,18 +1602,18 @@ oo::class create ::menubar {
 	#
 	# group.move --
 	#
-	#	Move a group command up/down one location within a group menu.
+	#    Move a group command up/down one location within a group menu.
 	#
-	# Parameters:
-	#		direction	- oneof: up, down
-	#		parent		- the mtree commandgroup node of interest
-	#		name		- name of item to be moved
+	# Arguments:
+	#    direction - oneof: up, down
+	#    parent    - the mtree commandgroup node of interest
+	#    name      - name of item to be moved
 	#
 	# Results:
-	#       Returns 0 on success or 1 on failure.
+	#    Returns 0 on success or 1 on failure.
 	#
 	# Side effects:
-	#		A menu items is move up or down on all installed menubar. 
+	#    A menu items is move up or down on all installed menubar. 
 	#
 	# ------------------------------------------------------------
 	method group.move { direction parent name } {
@@ -1673,19 +1673,19 @@ oo::class create ::menubar {
 	#
 	# group.configure --
 	#
-	#	Modify the configuration of a command in a commandgroup.
+	#    Modify the configuration of a command in a commandgroup.
 	#
-	# Parameters:
-	#		parent	- the mtree commandgroup node of interest
-	#		name	- name of item to be moved
-	#		args	- a list of option/value pairs used to configure
-	#				  the named commandgroup item.
+	# Arguments:
+	#    parent - the mtree commandgroup node of interest
+	#    name   - name of item to be moved
+	#    args   - a list of option/value pairs used to configure
+	#             the named commandgroup item.
 	#
 	# Results:
-	#       Returns 0 on success or 1 on failure.
+	#    Returns 0 on success or 1 on failure.
 	#
 	# Side effects:
-	#		A menu items is move up or down on all installed menubar. 
+	#    A menu items is move up or down on all installed menubar. 
 	#
 	# ------------------------------------------------------------
 	method group.configure { parent name args } {
@@ -1741,16 +1741,16 @@ oo::class create ::menubar {
 	#
 	# group.serialize --
 	#
-	#	Create a serialized representation of a commandgroup.
+	#    Create a serialized representation of a commandgroup.
 	#
-	# Parameters:
-	#		node	- node name of the commandgroup
+	# Arguments:
+	#    node - node name of the commandgroup
 	#
 	# Results:
-	#       Returns a string serialization or a 1 on failure.
+	#    Returns a string serialization or a 1 on failure.
 	#
 	# Side effects:
-	#		none 
+	#    none 
 	#
 	# ------------------------------------------------------------
 	method group.serialize { node } {
@@ -1768,19 +1768,19 @@ oo::class create ::menubar {
 	#
 	# group.deserialize --
 	#
-	#	Replace the items in a commandgroup from the definitions
-	#	found in a serialized stream
+	#    Replace the items in a commandgroup from the definitions
+	#    found in a serialized stream
 	#
-	# Parameters:
-	#		node	- node name of the commandgroup
-	#		stream	- a commandgroup serialization string
+	# Arguments:
+	#    node   - node name of the commandgroup
+	#    stream - a commandgroup serialization string
 	#
 	# Results:
-	#       Returns 0 on success or 1 on failure
+	#    Returns 0 on success or 1 on failure
 	#
 	# Side effects:
-	#		All the items in the commandgroup are deleted and replaced
-	#		with new items defined by the serialization string. 
+	#    All the items in the commandgroup are deleted and replaced
+	#    with new items defined by the serialization string. 
 	#
 	# ------------------------------------------------------------
 	method group.deserialize { node stream } {
@@ -1822,16 +1822,16 @@ oo::class create ::menubar {
 	#
 	# notebook.addTabStore --
 	#
-	#	Add a new set of values to the notebookVals dict
+	#    Add a new set of values to the notebookVals dict
 	#
-	# Parameters:
-	#		pathname - tab window pathname
+	# Arguments:
+	#    pathname - tab window pathname
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		A new tab is initialized in the notebookVals dict
+	#    A new tab is initialized in the notebookVals dict
 	#
 	# ------------------------------------------------------------
 	method notebook.addTabStore { pathname } {
@@ -1846,16 +1846,16 @@ oo::class create ::menubar {
 	#
 	# notebook.deleteTabStore --
 	#
-	#	Remove a set of values from the notebookVals dict
+	#    Remove a set of values from the notebookVals dict
 	#
-	# Parameters:
-	#		pathname - window pathname
+	# Arguments:
+	#    pathname - window pathname
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		A tab is deleted from the notebookVals dict
+	#    A tab is deleted from the notebookVals dict
 	#
 	# ------------------------------------------------------------
 	method notebook.deleteTabStore { pathname } {
@@ -1868,18 +1868,18 @@ oo::class create ::menubar {
 	#
 	# notebook.setTabValue --
 	#
-	#	Set a value in the notebookVals dict
+	#    Set a value in the notebookVals dict
 	#
-	# Parameters:
-	#		pathname	- tab window pathname
-	#		tag			- menubar tag name
+	# Arguments:
+	#    pathname - tab window pathname
+	#    tag      - menubar tag name
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		A value in the notebookVals dict is set
-	#		from a menu item variable.
+	#    A value in the notebookVals dict is set
+	#    from a menu item variable.
 	#
 	# ------------------------------------------------------------
 	method notebook.setTabValue { pathname tag } {
@@ -1895,17 +1895,17 @@ oo::class create ::menubar {
 	#
 	# notebook.restoreTabValues --
 	#
-	#	Restore the value for a notebook tab.
+	#    Restore the value for a notebook tab.
 	#
-	# Parameters:
-	#		pathname	- tab window pathname
+	# Arguments:
+	#    pathname - tab window pathname
 	#
 	# Results:
-	#       none
+	#    none
 	#
 	# Side effects:
-	#		Values in notebookVals associated with pathname are
-	#		assigned to menubar variables.
+	#    Values in notebookVals associated with pathname are
+	#    assigned to menubar variables.
 	#
 	# ------------------------------------------------------------
 	method notebook.restoreTabValues { pathname } {
