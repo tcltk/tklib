@@ -1,14 +1,14 @@
 # debug.tcl --
 #
-#    Package that add debugging procedures to the global namespace
-#    and to the menubar::Tree class.
+# Package that add debugging procedures to the global namespace
+# and to the menubar::Tree class.
 #
-# Copyright (c) 2009    Tom Krehbiel <tomk@users.sourceforge.net>
+# Copyright (c) 2009 Tom Krehbiel <tomk@users.sourceforge.net>
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: debug.tcl,v 1.3 2010/01/05 21:38:54 tomk Exp $
+# RCS: @(#) $Id: debug.tcl,v 1.4 2010/01/05 22:29:14 tomk Exp $
 
 package require TclOO
 package require menubar
@@ -23,12 +23,12 @@ package provide menubar::debug 0.5
 # Generic debugging method for TclOO object instance.
 #
 oo::define ::oo::object method debug {{pat *}} {
-    set res [list class [info object class [self]]]
-    foreach i [info object vars [self] $pat] {
-        my variable $i
-        lappend res $i [set $i]
-    }
-    set res
+	set res [list class [info object class [self]]]
+	foreach i [info object vars [self] $pat] {
+		my variable $i
+		lappend res $i [set $i]
+	}
+	set res
 }
 
 # -- pdict
@@ -57,31 +57,31 @@ oo::define ::oo::object method debug {{pat *}} {
 # c ->
 #   i -> 'm'
 #   j ->
-#     q -> 'w'
-#     e -> 'r'
+#      q -> 'w'
+#      e -> 'r'
 #   k -> 'o'
 #
 proc ::pdict { d {i 0} {p "  "} {s " -> "} } {
-    if { [catch {dict keys ${d}}] } {
-        error "error: pdict - argument is not a dict"
-    }
+	if { [catch {dict keys ${d}}] } {
+		error "error: pdict - argument is not a dict"
+	}
 	set result ""
-    set prefix [string repeat ${p} ${i}]
-    set max 0
-    foreach key [dict keys ${d}] {
-        if { [string length ${key}] > ${max} } {
-            set max [string length ${key}]
-        }
-    }
-    dict for {key val} ${d} {
-        append result "${prefix}[format "%-${max}s" ${key}]${s}"
-        if { [catch {dict keys ${val}}] } {
-            append result "'${val}'\n"
-        } else {
-            append result "\n"
-            append result "[pdict ${val} [expr ${i}+1] ${p} ${s}]\n"
-        }
-    }
+	set prefix [string repeat ${p} ${i}]
+	set max 0
+	foreach key [dict keys ${d}] {
+		if { [string length ${key}] > ${max} } {
+			set max [string length ${key}]
+		}
+	}
+	dict for {key val} ${d} {
+		append result "${prefix}[format "%-${max}s" ${key}]${s}"
+		if { [catch {dict keys ${val}}] } {
+			append result "'${val}'\n"
+		} else {
+			append result "\n"
+			append result "[pdict ${val} [expr ${i}+1] ${p} ${s}]\n"
+		}
+	}
 	return ${result}
 }
 
