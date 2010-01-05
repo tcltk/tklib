@@ -10,7 +10,7 @@ package require Tk
 
 package require TclOO
 
-lappend auto_path .
+lappend auto_path . ../
 
 package require menubar
 
