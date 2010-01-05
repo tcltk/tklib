@@ -1,5 +1,5 @@
 # ------------------------------------------------------------
-# Mon Jan  4 16:30:50 USMST 2010
+# Mon Jan  4 16:30:50 USMST 2010 (tomk)
 
 This checkin includes several major changes to the menubar class.
 
@@ -17,6 +17,6 @@ demo code.
 - The debug file was updated to include a dump of the notebookVals dict.
 
 # ------------------------------------------------------------
-# 12/17/2009
+# 12/17/2009 (tomk)
 
 Module created and initial version committed.
