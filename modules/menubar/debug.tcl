@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: debug.tcl,v 1.4 2010/01/05 22:29:14 tomk Exp $
+# RCS: @(#) $Id: debug.tcl,v 1.5 2010/01/06 20:55:54 tomk Exp $
 
 package require TclOO
 package require menubar
@@ -25,7 +25,7 @@ package provide menubar::debug 0.5
 oo::define ::oo::object method debug {{pat *}} {
 	set res [list class [info object class [self]]]
 	foreach i [info object vars [self] $pat] {
-		my variable $i
+		variable $i
 		lappend res $i [set $i]
 	}
 	set res
@@ -94,7 +94,7 @@ proc ::pdict { d {i 0} {p "  "} {s " -> "} } {
 # -- ptree
 # debugging utility
 oo::define ::menubar::tree method ptree { {name ""} } {
-	my variable root
+	variable root
 	if { ${name} eq "" } {
 		my DumpSubtree ${root}
 	} else {
@@ -108,7 +108,7 @@ oo::define ::menubar::tree method ptree { {name ""} } {
 # -- pnodes
 # debugging utility
 oo::define ::menubar::tree method pnodes { } {
-	my variable nodes
+	variable nodes
 	foreach name [lsort -dictionary [dict keys ${nodes}]] {
 		set node [dict get ${nodes} ${name}]
 		set pnode [${node} parent]
@@ -155,9 +155,9 @@ oo::define ::menubar::tree method pstream { stream } {
 #
 # ------------------------------------------------------------
 oo::define ::menubar method debug { {type tree} } {
-	my variable mtree
-	my variable installs
-	my variable notebookVals
+	variable mtree
+	variable installs
+	variable notebookVals
 	
 	set result ""
 	if { ${type} eq "tree" } {
@@ -186,7 +186,7 @@ oo::define ::menubar method debug { {type tree} } {
 	return ${result}
 }
 oo::define ::menubar method children { node {indent 1} } {
-	my variable mtree
+	variable mtree
 	set result ""
 	foreach _node [${mtree} children ${node}] {
 		lappend result [string repeat "  " ${indent}]${_node}
@@ -198,7 +198,7 @@ oo::define ::menubar method children { node {indent 1} } {
 	return ${result}
 }
 oo::define ::menubar method debug_node { node } {
-	my variable mtree
+	variable mtree
 	lappend result "==== node: ${node}"
 	foreach {attr val} [${mtree} key.getall ${node} +*] {
 		lappend result "  ${attr}: ${val}" 
@@ -210,7 +210,7 @@ oo::define ::menubar method debug_node { node } {
 }
 
 oo::define ::menubar method print { type } {
-	my variable mtree
+	variable mtree
 	switch -exact ${type} {
 	"tree" {
 		${mtree} ptree
