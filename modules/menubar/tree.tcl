@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tree.tcl,v 1.4 2010/01/05 22:29:14 tomk Exp $
+# RCS: @(#) $Id: tree.tcl,v 1.5 2010/01/06 20:55:54 tomk Exp $
 
 package require TclOO
 package require menubar::node
@@ -32,8 +32,8 @@ oo::class create ::menubar::tree {
    self export varname
 
 	constructor { } {
-		my variable root
-		my variable nodes
+		variable root
+		variable nodes
 
 		my eval upvar [[self class] varname nid] nid
 		set nid 0
@@ -42,7 +42,7 @@ oo::class create ::menubar::tree {
 	}
 
 	destructor {
-		my variable nodes
+		variable nodes
 		dict for {name node} ${nodes} {
 			${node} destroy
 		}
@@ -65,7 +65,7 @@ oo::class create ::menubar::tree {
 	# check args for a node that exists and return its name
 	# else return ""
 	method NotUsed { args } {
-		my variable nodes
+		variable nodes
 		foreach name ${args} {
 			if { [dict exists ${nodes} ${name}] } {
 				return ${name}
@@ -77,14 +77,14 @@ oo::class create ::menubar::tree {
 	# --
 	# return a node instance given a node name
 	method Name2Node { name } {
-		my variable nodes
+		variable nodes
 		return [dict get ${nodes} ${name}]
 	}
 
 	# --
 	# return a node name given a node instance
 	method Node2Name { node } {
-		my variable nodes
+		variable nodes
 		dict for {name node} [dict filter ${nodes} value ${node}] {
 			return ${name}
 		}
@@ -115,7 +115,7 @@ oo::class create ::menubar::tree {
 	# return the list of all nodes below parent node
 	# optionaly filter nodes useing procedure 'filter'
 	method GetSubtree { parent {filter ""} } {
-		my variable nodes
+		variable nodes
 		set pnode [my Name2Node ${parent}]
 		set children [my Nodes2NameList {*}[${pnode} children]]
 		set subtree ""
@@ -131,8 +131,8 @@ oo::class create ::menubar::tree {
 	# --
 	# completely delete one node
 	method DeleteNode { name } {
-		my variable root
-		my variable nodes
+		variable root
+		variable nodes
 		set node [my Name2Node ${name}]
 		# delete node from index
 		set nodes [dict remove ${nodes} ${name}]
@@ -174,8 +174,8 @@ oo::class create ::menubar::tree {
 	# 3) a recursive serialization of all children of the node
 	#
 	method SerializeNode { stream name {isroot 0}} {
-		my variable root
-		my variable nodes
+		variable root
+		variable nodes
 		# serialize the children
 		set children {}
 		foreach child [my children ${name}] {
@@ -220,7 +220,7 @@ oo::class create ::menubar::tree {
 	# attrs		- attribure dict for new node
 	# children	- recursive list of child node serializations
 	method DeserializeNode { pnode name attrs children } {
-		my variable nodes
+		variable nodes
 		# create the a node and set it's parent
 		set cnode [::menubar::node new ${pnode}]
 		# add the node to the index
@@ -261,7 +261,7 @@ oo::class create ::menubar::tree {
 	# --
 	#
 	method children { parent } {
-		my variable nodes
+		variable nodes
 		if { [my exists ${parent}] ne ""  } {
 			error "node (${parent}) - not found"
 		}
@@ -275,7 +275,7 @@ oo::class create ::menubar::tree {
 	# children into the parent. Ignore cut on
 	# the root node.
 	method cut { name {opt ""} } {
-		my variable nodes
+		variable nodes
 		if { ${name} eq [my rootname] } { return }
 		if { [my exists ${name}] ne ""  } {
 			error "node (${name}) - not found"
@@ -328,7 +328,7 @@ oo::class create ::menubar::tree {
 	# --
 	#
 	method descendants { parent {opt ""} {arg ""} } {
-		my variable nodes
+		variable nodes
 		if { [my exists ${parent}] ne ""  } {
 			error "node (${parent}) - not found"
 		}
@@ -346,8 +346,8 @@ oo::class create ::menubar::tree {
 	# node must be a leaf node unless the '-force' option is is
 	# used.
 	method deserialize { lname stream {opt ""} } {
-		my variable root
-		my variable nodes
+		variable root
+		variable nodes
 		if { [my exists ${lname}] ne "" } {
 			error "node (${lname}) - not found"
 		}
@@ -379,7 +379,7 @@ oo::class create ::menubar::tree {
 	# --
 	# return "" if all exist else return name that isn't found
 	method exists { args } {
-		my variable nodes
+		variable nodes
 		foreach name ${args} {
 			if { ![dict exists ${nodes} ${name}] } {
 				return ${name}
@@ -403,8 +403,8 @@ oo::class create ::menubar::tree {
 	# --
 	#
 	method insert { parent index args } {
-		my variable nid
-		my variable nodes
+		variable nid
+		variable nodes
 		if { [llength ${args}] == 0 } {
 			incr nid
 			set args "node${nid}"
@@ -656,14 +656,14 @@ oo::class create ::menubar::tree {
 	# --
 	#
 	method nodes { } {
-		my variable nodes
+		variable nodes
 		return [dict keys ${nodes}]
 	}
 
 	# --
 	#
 	method parent { child } {
-		my variable nodes
+		variable nodes
 		if { [my exists ${child}] ne ""  } {
 			error "node (${child}) - not found"
 		}
@@ -697,8 +697,8 @@ oo::class create ::menubar::tree {
 	# --
 	#
 	method rename { from to } {
-		my variable root
-		my variable nodes
+		variable root
+		variable nodes
 		if { ![dict exists ${nodes} ${from}] } {
 			error "node (${to}) - not found"
 		}
@@ -717,7 +717,7 @@ oo::class create ::menubar::tree {
 	# --
 	#
 	method rootname { } {
-		my variable root
+		variable root
 		return ${root}
 	}
 
@@ -730,8 +730,8 @@ oo::class create ::menubar::tree {
 	# recursivly serialize the children of the node.
 	#
 	method serialize { name } {
-		my variable root
-		my variable nodes
+		variable root
+		variable nodes
 		if { ${name} ne "root" && [my exists ${name}] ne ""  } {
 			error "node (${name}) - not found"
 		}
@@ -758,8 +758,8 @@ oo::class create ::menubar::tree {
 	# --
 	#
 	method splice { parent from {to ""} {child ""} } {
-		my variable nid
-		my variable nodes
+		variable nid
+		variable nodes
 		if { ${parent} eq "root" } {
 			set parent [my rootname]
 		} else {
@@ -846,7 +846,7 @@ oo::class create ::menubar::tree {
 	# --
 	#
 	method DfsPreOrderWalk { name cmdprefix } {
-		my variable nodes
+		variable nodes
 		if { [catch {${cmdprefix} [self object] ${name} "enter"} bool] || ${bool} != 0 } {
 			#puts "bool: $bool"
 			# shutdown the walk
@@ -869,8 +869,8 @@ oo::class create ::menubar::tree {
 	# --
 	#
 	method DfsPostOrderWalk { name cmdprefix } {
-		my variable nodes
-		my variable nodes
+		variable nodes
+		variable nodes
 		set node [my Name2Node ${name}]
 		for {set idx 0} { true } {incr idx} {
 			set children [my children ${name}]
@@ -893,7 +893,7 @@ oo::class create ::menubar::tree {
 	# --
 	#
 	method DfsBothOrderWalk { name cmdprefix } {
-		my variable nodes
+		variable nodes
 		if { [catch {${cmdprefix} [self object] ${name} "enter"} bool] || ${bool} != 0 } {
 			#puts "bool: $bool"
 			# shutdown the walk
@@ -921,7 +921,7 @@ oo::class create ::menubar::tree {
 	# --
 	#
 	method DfsInOrderWalk { name cmdprefix } {
-		my variable nodes
+		variable nodes
 		set node [my Name2Node ${name}]
 		for {set idx 0} { true } {incr idx} {
 			if { ${idx} == 1 } {

@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: node.tcl,v 1.3 2010/01/05 22:29:14 tomk Exp $
+# RCS: @(#) $Id: node.tcl,v 1.4 2010/01/06 20:55:54 tomk Exp $
 
 package require TclOO
 
@@ -29,9 +29,9 @@ oo::class create ::menubar::node {
 	# --
 	# create a named node
 	constructor { pnode } {
-		my variable parent
-		my variable children
-		my variable attrs
+		variable parent
+		variable children
+		variable attrs
 
 		set parent ${pnode}
 		set children {}
@@ -42,7 +42,7 @@ oo::class create ::menubar::node {
 	# If 'pnode' isn't blank, set the node's parent to its
 	# value; return the current parent.
 	method parent { {pnode ""} } {
-		my variable parent
+		variable parent
 		if { ${pnode} ne "" } {
 			set parent ${pnode}
 		}
@@ -55,7 +55,7 @@ oo::class create ::menubar::node {
 	# If the option '-force' is found then set the node's children even
 	# if 'clist' is blank.
 	method children { {clist ""} args } {
-		my variable children
+		variable children
 		if { [llength ${clist}] != 0 || "-force" in ${args} } {
 			set children ${clist}
 		}
@@ -66,7 +66,7 @@ oo::class create ::menubar::node {
 	# Insert a list of node instances ('args') into the
 	# child list at location 'index'.
 	method insert { index args } {
-		my variable children
+		variable children
 		set children [linsert ${children} ${index} {*}${args}]
 		return
 	}
@@ -75,7 +75,7 @@ oo::class create ::menubar::node {
 	# If 'kdict' isn't blank set the node attributes to its
 	# value; return the current value of attributes.
 	method attrs { {kdict ""} {force ""} } {
-		my variable attrs
+		variable attrs
 		if { ${kdict} ne "" || ${force} eq "-force" } {
 			set attrs ${kdict}
 		}
@@ -87,7 +87,7 @@ oo::class create ::menubar::node {
 	# globpat exists, only keys that match the glob pattern will be
 	# returned.
 	method attrs.filter { {globpat ""} } {
-		my variable attrs
+		variable attrs
 		if { ${globpat} eq "" } {
 			return ${attrs}
 		} else {
@@ -99,7 +99,7 @@ oo::class create ::menubar::node {
 	# Return the node's attribute keys as a list. If globpat exists,
 	# only return keys that match the glob pattern.
 	method attr.keys { {globpat ""} } {
-		my variable attrs
+		variable attrs
 		if { ${globpat} eq "" } {
 			return [dict keys ${attrs}]
 		} else {
@@ -111,7 +111,7 @@ oo::class create ::menubar::node {
 	# Set the value of the attribute 'key' to 'value'. If 'key
 	# doesn't exist add it to the node.
 	method attr.set { key value } {
-		my variable attrs
+		variable attrs
 		dict set attrs ${key} ${value}
 		return ${value}
 	}
@@ -119,7 +119,7 @@ oo::class create ::menubar::node {
 	# --
 	#
 	method attr.unset { key } {
-		my variable attrs
+		variable attrs
 		dict unset attrs ${key}
 		return
 	}
@@ -127,14 +127,14 @@ oo::class create ::menubar::node {
 	# --
 	# Return true of attribute 'key' exists for node else return false.
 	method attr.exists { key } {
-		my variable attrs
+		variable attrs
 		return [dict exist ${attrs} ${key}]
 	}
 
 	# --
 	# Return the value of the attribute 'key' for node.
 	method attr.get { key } {
-		my variable attrs
+		variable attrs
 		if { [dict exist ${attrs} ${key}] } {
 			return [dict get ${attrs} ${key}]
 		}
@@ -145,7 +145,7 @@ oo::class create ::menubar::node {
 	# Do a string append of 'value' to the value of attribute 'key' for
 	# node. Return the resulting string value.
 	method attr.append { key value } {
-		my variable attrs
+		variable attrs
 		dict append attrs ${key} ${value}
 		return
 	}
@@ -154,7 +154,7 @@ oo::class create ::menubar::node {
 	# Do a list append of 'value' to the value of attribute 'key' for
 	# node. Return the resulting list value.
 	method attr.lappend { key value } {
-		my variable attrs
+		variable attrs
 		dict lappend attrs ${key} ${value}
 		return
 	}

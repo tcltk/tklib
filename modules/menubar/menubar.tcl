@@ -9,7 +9,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: menubar.tcl,v 1.4 2010/01/05 21:34:04 tomk Exp $
+# RCS: @(#) $Id: menubar.tcl,v 1.5 2010/01/06 20:55:54 tomk Exp $
 
 package require Tk
 package require TclOO
@@ -63,21 +63,21 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	constructor { args } {
-		my variable mtree
-		my variable next_id
-		my variable installs
-		my variable tearoffpathnames
-		my variable first_install
+		variable mtree
+		variable next_id
+		variable installs
+		variable tearoffpathnames
+		variable first_install
 
-		my variable wtop
-		my variable mtop
+		variable wtop
+		variable mtop
 		
 		# The tagVal array holds the current value
 		# for all checkbutton and radiobutton items
-		my variable tagVal
+		variable tagVal
 
 		# This dict holds the widget specific value store
-		my variable notebookVals
+		variable notebookVals
 
 		# create font used by labelseperator
 		menu .temp
@@ -191,7 +191,7 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method define { definition } {
-		my variable mtree
+		variable mtree
 		if { [${mtree} key.get menubar +is_defined] == 1 } { return }
 		my MenuAdd menubar ${definition}
 		${mtree} key.set menubar +is_defined 1
@@ -217,7 +217,7 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method MenuAdd { parent desc } {
-		my variable mtree
+		variable mtree
 		if { ${parent} ni [${mtree} nodes] } {
 			error "error: MenuAdd - tag '${parent}' doesn't exist."
 		}
@@ -249,7 +249,7 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method TagCheck { tag {unique 1} } {
-		my variable mtree
+		variable mtree
 		set tags [${mtree} nodes]
 		if { ${unique} == 1 &&  ${tag} in ${tags} } {
 			error "bug: tag '${tag}' already used."
@@ -277,7 +277,7 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method CreateWidgetPath { pathname } {
-		my variable next_id
+		variable next_id
 		incr next_id
 		return [join [list ${pathname} "m${next_id}"] "."]
 	}
@@ -304,9 +304,9 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method ParseItem { parent name istype index more } {
-		my variable mtree
-		my variable tagVal
-		my variable next_id
+		variable mtree
+		variable tagVal
+		variable next_id
 		switch -regexp -- ${istype} {
 		"M.*" {
 			# create a new sub-menu
@@ -474,9 +474,9 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method tag.add { tag value } {
-		my variable wtop
-		my variable installs
-		my variable first_install
+		variable wtop
+		variable installs
+		variable first_install
 		# Only set during an install
 		if { ${first_install} ne ""  } {
 			dict set installs ${wtop} +tags ${tag} ${value}
@@ -505,8 +505,8 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method tag.cget { wtop tag {opt ""} } {
-		my variable mtree
-		my variable installs
+		variable mtree
+		variable installs
 
 		if { [dict size ${installs}] == 0 } {
 			error "error: tag.cget - '${mtree}' not installed."
@@ -593,10 +593,10 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method menu.namespace { tag ns } {
-		my variable mtree
-		my variable wtop
-		my variable installs
-		my variable first_install
+		variable mtree
+		variable wtop
+		variable installs
+		variable first_install
 		
 		# Only set during an install
 		if { ${first_install} ne ""  } {
@@ -632,12 +632,12 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method install { win config } {
-		my variable mtree
-		my variable wtop
-		my variable mtop
-		my variable installs
-		my variable first_install	;# oneof: "yes", "no" or ""
-		my variable ns
+		variable mtree
+		variable wtop
+		variable mtop
+		variable installs
+		variable first_install	;# oneof: "yes", "no" or ""
+		variable ns
 
 		if { [${mtree} key.get menubar +is_defined] != 1 } {
 			error "error: install - '${mtree}' not defined."
@@ -700,10 +700,10 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method WindowCleanup { w wtop } {
-		my variable mtree
-		my variable installs
-		my variable tearoffpathnames
-		my variable notebookVals
+		variable mtree
+		variable installs
+		variable tearoffpathnames
+		variable notebookVals
 		if { ${w} eq ${wtop} && ${wtop} in [dict keys ${installs}] } {
 			dict unset installs ${wtop}
 			dict unset tearoffpathnames ${wtop}
@@ -733,11 +733,11 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method MenuInstall { wtop parent_path node } {
-		my variable mtree
-		my variable installs
-		my variable first_install
-		my variable next_id
-		my variable notebookVals
+		variable mtree
+		variable installs
+		variable first_install
+		variable next_id
+		variable notebookVals
 
 		set ns [dict get ${installs} ${wtop} menubar +callback_ns]
 
@@ -877,8 +877,8 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method AppendTearoffPathname { node trash tearoff_pathname } {
-		my variable mtree
-		my variable tearoffpathnames
+		variable mtree
+		variable tearoffpathnames
 		# get the toplevel that contains the menubar
 		set wtop [join [lrange [split ${tearoff_pathname} "."] 0 1] "."]
 		my DeleteTearoff ${wtop} ${node}
@@ -923,8 +923,8 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method DeleteTearoff { wtop node } {
-		my variable mtree
-		my variable tearoffpathnames
+		variable mtree
+		variable tearoffpathnames
 		if { [dict exists ${tearoffpathnames} ${wtop} ${node}] } {
 			destroy  [dict get ${tearoffpathnames} ${wtop} ${node}]
 			dict unset tearoffpathnames ${wtop} ${node}
@@ -952,7 +952,7 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method InstallSubTree { wtop parent_path parent_node } {
-		my variable mtree
+		variable mtree
 		foreach node [${mtree} children ${parent_node}] {
 			my MenuInstall ${wtop} ${parent_path} ${node}
 		}
@@ -1016,9 +1016,9 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method tag.configure { wtop node args } {
-		my variable mtree
-		my variable installs
-		my variable first_install
+		variable mtree
+		variable installs
+		variable first_install
 
 		if { [dict size ${installs}] == 0 } {
 			error "error: tag.configure - '${mtree}' not installed."
@@ -1089,7 +1089,7 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method getButtonVars { wtop } {
-		my variable installs
+		variable installs
 		return [dict get ${installs} ${wtop} +btnvars]
 	}
 
@@ -1110,7 +1110,7 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method IsHidden { node } {
-		my variable mtree
+		variable mtree
 		if { [${mtree} key.exists ${node} +hide] && [${mtree} key.get ${node} +hide] == 1 } {
 			return 1
 		}
@@ -1142,9 +1142,9 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method RenderTag { wtop node {varname {}} } {
-		my variable mtree
-		my variable installs
-		my variable next_id
+		variable mtree
+		variable installs
+		variable next_id
 						
 		# don't configure hidden items
 		if { [my IsHidden ${node}] == 1 } {
@@ -1252,8 +1252,8 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method commandCallback { wtop node } {
-		my variable mtree
-		my variable installs
+		variable mtree
+		variable installs
 		
 		# set namespace for callbacks
 		set parent [${mtree} parent ${node}]
@@ -1331,9 +1331,9 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method menu.show { node } {
-		my variable mtree
-		my variable installs
-		my variable first_install
+		variable mtree
+		variable installs
+		variable first_install
 
 		if { ${node} ni [${mtree} nodes] } {
 			error "error: menu.show - tag '${node}' doesn't exist."
@@ -1370,9 +1370,9 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method menu.hide { node } {
-		my variable mtree
-		my variable installs
-		my variable first_install
+		variable mtree
+		variable installs
+		variable first_install
 
 		if { ${node} ni [${mtree} nodes] } {
 			error "error: menu.hide - tag '${node}' doesn't exist."
@@ -1409,8 +1409,8 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method DeleteMenu { wtop node } {
-		my variable mtree
-		my variable installs
+		variable mtree
+		variable installs
 		
 		set type [${mtree} key.get ${node} +type]
 		switch -exact -- ${type} {
@@ -1457,8 +1457,8 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method group.add { parent args } {
-		my variable mtree
-		my variable installs
+		variable mtree
+		variable installs
 		
 		if { [${mtree} key.get ${parent} +type] ne "commandgroup"  } {
 			#puts stderr "group.add: tag (${parent}) not a command group"
@@ -1531,8 +1531,8 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method group.entries { parent } {
-		my variable mtree
-		my variable installs
+		variable mtree
+		variable installs
 		
 		if { [${mtree} key.get ${parent} +type] ne "commandgroup"  } {
 			#puts stderr "group.add: tag (${parent}) not a command group"
@@ -1560,8 +1560,8 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method group.delete { parent name } {
-		my variable mtree
-		my variable installs
+		variable mtree
+		variable installs
 		
 		if { [${mtree} key.get ${parent} +type] ne "commandgroup"  } {
 			#puts stderr "group.add: tag (${parent}) not a command group"
@@ -1617,8 +1617,8 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method group.move { direction parent name } {
-		my variable mtree
-		my variable installs
+		variable mtree
+		variable installs
 		
 		if { [${mtree} key.get ${parent} +type] ne "commandgroup"  } {
 			#puts stderr "group.add: tag (${parent}) not a command group"
@@ -1689,9 +1689,9 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method group.configure { parent name args } {
-		my variable mtree
-		my variable first_install
-		my variable installs
+		variable mtree
+		variable first_install
+		variable installs
 		
 		if { [${mtree} key.get ${parent} +type] ne "commandgroup"  } {
 			#puts stderr "group.configure: tag (${parent}) not a command group"
@@ -1754,7 +1754,7 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method group.serialize { node } {
-		my variable mtree
+		variable mtree
 		
 		if { [${mtree} key.get ${node} +type] ne "commandgroup"  } {
 			#puts stderr "group.serialize: tag (${parent}) not a command group"
@@ -1784,8 +1784,8 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method group.deserialize { node stream } {
-		my variable mtree
-		my variable installs
+		variable mtree
+		variable installs
 		
 		if { [${mtree} key.get ${node} +type] ne "commandgroup"  } {
 			#puts stderr "group.serialize: tag (${parent}) not a command group"
@@ -1835,8 +1835,8 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method notebook.addTabStore { pathname } {
-		my variable wtop
-		my variable notebookVals
+		variable wtop
+		variable notebookVals
 		dict for {tag var} [dict get ${notebookVals} ${wtop} +var] {
 			dict set notebookVals ${wtop} ${pathname} ${tag} [set ${var}]
 		}
@@ -1859,8 +1859,8 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method notebook.deleteTabStore { pathname } {
-		my variable wtop
-		my variable notebookVals
+		variable wtop
+		variable notebookVals
 		set notebookVals [dict remove ${notebookVals} ${wtop} ${pathname}]
 	}
 	
@@ -1884,7 +1884,7 @@ oo::class create ::menubar {
 	# ------------------------------------------------------------
 	method notebook.setTabValue { pathname tag } {
 		set wtop [winfo toplevel ${pathname}]
-		my variable notebookVals
+		variable notebookVals
 		if { [dict exists ${notebookVals} ${wtop} ${pathname} ${tag}] } {
 			set val [set [dict get ${notebookVals} ${wtop} +var ${tag}]]
 			dict set notebookVals ${wtop} ${pathname} ${tag} ${val}
@@ -1909,7 +1909,7 @@ oo::class create ::menubar {
 	#
 	# ------------------------------------------------------------
 	method notebook.restoreTabValues { pathname } {
-		my variable notebookVals
+		variable notebookVals
 		set wtop [winfo toplevel ${pathname}]
 		dict for {tag var} [dict get ${notebookVals} ${wtop} +var] {
 			set val [dict get ${notebookVals} ${wtop} ${pathname} ${tag}]
