@@ -9,7 +9,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: menubar.tcl,v 1.5 2010/01/06 20:55:54 tomk Exp $
+# RCS: @(#) $Id: menubar.tcl,v 1.6 2010/01/09 20:41:29 tomk Exp $
 
 package require Tk
 package require TclOO
@@ -864,8 +864,8 @@ oo::class create ::menubar {
 	#
 	# Arguments:
 	#    node             - mtree node containing the item to be created
-	#    trash            - not used
-	#    tearoff_pathname - pathname of tearoff menu
+	#    from_pathname    - menubar path where tearoff occured
+	#    tearoff_pathname - pathname of torn off menu
 	#
 	# Results:
 	#    none
@@ -876,31 +876,30 @@ oo::class create ::menubar {
 	#    geometry is ajusted and then resizing is turned off.
 	#
 	# ------------------------------------------------------------
-	method AppendTearoffPathname { node trash tearoff_pathname } {
-		variable mtree
-		variable tearoffpathnames
+	method AppendTearoffPathname { node from_pathname tearoff_pathname } {
+		my variable mtree
+		my variable tearoffpathnames
 		# get the toplevel that contains the menubar
-		set wtop [join [lrange [split ${tearoff_pathname} "."] 0 1] "."]
-		my DeleteTearoff ${wtop} ${node}
-		dict set tearoffpathnames ${wtop} ${node} ${tearoff_pathname}
+		set tearoff_wtop [winfo toplevel ${tearoff_pathname}]
+		my DeleteTearoff ${from_pathname} ${node}
+		dict set tearoffpathnames ${from_pathname} ${node} ${tearoff_wtop}
 		switch -exact -- [tk windowingsystem] {
 		win32 {
 			wm attributes ${tearoff_pathname} -toolwindow 1
 		}
 		x11 {
-			set wtop [winfo parent [winfo toplevel ${tearoff_pathname}]]
 			wm transient ${tearoff_pathname}
 		}
 		osx {
 		}}
-		wm protocol ${tearoff_pathname} WM_DELETE_WINDOW [namespace code [list my DeleteTearoff ${wtop} ${node}]]
+		wm protocol ${tearoff_pathname} WM_DELETE_WINDOW [namespace code [list my DeleteTearoff ${from_pathname} ${node}]]
 		lassign [winfo pointerxy .] xx yy
-		regexp {([0-9]+)[Xx]([0-9]+)([+-][0-9]+)([+-][0-9]+)} [wm geometry ${tearoff_pathname}] - width height x y
-		wm geometry ${tearoff_pathname} +${xx}+${yy}
+		regexp {([0-9]+)[Xx]([0-9]+)([+-][0-9]+)([+-][0-9]+)} [wm geometry ${tearoff_wtop}] - width height x y
+		wm geometry ${tearoff_wtop} +${xx}+${yy}
 		if { ${width} < 120 } { set width 120 }
-		wm minsize ${tearoff_pathname} ${width} 40
+		wm minsize ${tearoff_wtop} ${width} 40
 		update
-		wm resizable ${tearoff_pathname} 0 0
+		wm resizable ${tearoff_wtop} 0 0
 		return
 	}
 
@@ -911,8 +910,8 @@ oo::class create ::menubar {
 	#    This proceedure is called when a tearoff menu is destroyed.
 	#
 	# Arguments:
-	#    wtop - toplevel window that created the tearoff menu
-	#    node - mtree node that defines the menu
+	#    from_path - menubar path where tearoff occured
+	#    node      - mtree node that defines the menu
 	#
 	# Results:
 	#    none
@@ -922,12 +921,12 @@ oo::class create ::menubar {
 	#    the list of menus that have been tornoff.
 	#
 	# ------------------------------------------------------------
-	method DeleteTearoff { wtop node } {
-		variable mtree
-		variable tearoffpathnames
-		if { [dict exists ${tearoffpathnames} ${wtop} ${node}] } {
-			destroy  [dict get ${tearoffpathnames} ${wtop} ${node}]
-			dict unset tearoffpathnames ${wtop} ${node}
+	method DeleteTearoff { from_path node } {
+		my variable mtree
+		my variable tearoffpathnames
+		if { [dict exists ${tearoffpathnames} ${from_path} ${node}] } {
+			destroy  [dict get ${tearoffpathnames} ${from_path} ${node}]
+			dict unset tearoffpathnames ${from_path} ${node}
 		}
 		return
 	}
