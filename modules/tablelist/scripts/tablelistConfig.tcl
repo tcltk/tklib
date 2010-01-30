@@ -1646,7 +1646,7 @@ proc tablelist::doColConfig {col win opt val} {
 	    #
 	    set newItemList {}
 	    set row 0
-	    foreach item $data(itemList) text [lrange $val 0 $data(itemCount)] {
+	    foreach item $data(itemList) text [lrange $val 0 $data(lastRow)] {
 		set item [lreplace $item $col $col $text]
 		lappend newItemList $item
 	    }
