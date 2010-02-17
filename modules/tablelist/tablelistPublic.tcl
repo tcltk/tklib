@@ -3,6 +3,7 @@
 #
 # Copyright (c) 2000-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
+# @mdgen OWNER: scripts/*
 
 namespace eval ::tablelist {
     #
