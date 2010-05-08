@@ -1,3 +1,60 @@
+2010-05-08  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl: Bumped the version number to 5.0.
+	* *.txt:
+
+	* scripts/*.tcl: Renamed tablelistBitmaps.tcl to tablelistImages.tcl;
+	  lots of new features (see CHANGES.txt: What is new in Tablelist 5.0?).
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/tablelist.html:       Updated to reflect the new features.
+	* doc/tablelistThemes.html:
+	* doc/tablelistWidget.html:
+
+	* doc/browse.png:               Updated the screenshots.
+	* doc/bwidget.png:
+	* doc/bwidget_tile.png:
+	* doc/config.png:
+	* doc/embeddedWindows.png:
+	* doc/embeddedWindows_tile.png:
+	* doc/styles.png:
+	* doc/tileWidgets.png:
+
+	* doc/aqua.png:         Added new screenshots.
+	* doc/baghira.png:
+	* doc/browseTree.png:
+	* doc/dirViewer.png:
+	* doc/gtk.png:
+	* doc/oxygen1.png:
+	* doc/oxygen2.png:
+	* doc/phase.png:
+	* doc/plastik.png:
+	* doc/plastique.png:
+	* doc/vistaAero.png:
+	* doc/vistaClassic.png:
+	* doc/win7Aero.png:
+	* doc/win7Classic.png:
+	* doc/winnative.png:
+	* doc/winxpBlue.png:
+	* doc/winxpOlive.png:
+	* doc/winxpSilver.png:
+
+	* ../../examples/tablelist/*.tcl: Updated the version number and
+	  copyright information.
+
+	* ../../examples/tablelist/browseTree.tcl:      Added new demo scripts.
+	* ../../examples/tablelist/browseTree_tile.tcl:
+	* ../../examples/tablelist/dirViewer.tcl:
+	* ../../examples/tablelist/dirViewer_tile.tcl:
+
+	* ../../examples/tablelist/comp.xbm: Updated the bitmaps.
+	* ../../examples/tablelist/leaf.xbm:
+
+	* ../../examples/tablelist/clsdFolder.gif: Added new images.
+	* ../../examples/tablelist/file.gif:
+	* ../../examples/tablelist/openFolder.gif:
+
 2010-01-30  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistConfig.tcl: Fixed a bug related to the -text column
