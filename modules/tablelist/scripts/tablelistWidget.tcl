@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -89,12 +89,15 @@ namespace eval tablelist {
 	-bg			 -background
 	-borderwidth		 {borderWidth		  BorderWidth	      f}
 	-bd			 -borderwidth
+	-collapsecommand	 {collapseCommand	  CollapseCommand     w}
 	-columns		 {columns		  Columns	      w}
 	-columntitles		 {columnTitles		  ColumnTitles	      w}
 	-cursor			 {cursor		  Cursor	      c}
 	-disabledforeground	 {disabledForeground	  DisabledForeground  w}
 	-editendcommand		 {editEndCommand	  EditEndCommand      w}
+	-editselectedonly	 {editSelectedOnly	  EditSelectedOnly    w}
 	-editstartcommand	 {editStartCommand	  EditStartCommand    w}
+	-expandcommand		 {expandCommand		  ExpandCommand       w}
 	-exportselection	 {exportSelection	  ExportSelection     w}
 	-font			 {font			  Font		      b}
 	-forceeditendcommand	 {forceEditEndCommand	  ForceEditEndCommand w}
@@ -154,6 +157,8 @@ namespace eval tablelist {
 	-titlecolumns		 {titleColumns	  	  TitleColumns	      w}
 	-tooltipaddcommand	 {tooltipAddCommand	  TooltipAddCommand   w}
 	-tooltipdelcommand	 {tooltipDelCommand	  TooltipDelCommand   w}
+	-treecolumn		 {treeColumn		  TreeColumn	      w}
+	-treestyle		 {treeStyle		  TreeStyle	      w}
 	-width			 {width			  Width		      w}
 	-xscrollcommand		 {xScrollCommand	  ScrollCommand	      w}
 	-yscrollcommand		 {yScrollCommand	  ScrollCommand	      w}
@@ -324,44 +329,71 @@ namespace eval tablelist {
     # Use a list to facilitate the handling of the command options 
     #
     variable cmdOpts [list \
-	activate activatecell attrib bbox bodypath bodytag cancelediting \
-	cellattrib cellcget cellconfigure cellindex cellselection cget \
-	columnattrib columncget columnconfigure columncount columnindex \
-	columnwidth config configcelllist configcells configcolumnlist \
-	configcolumns configrowlist configrows configure containing \
-	containingcell containingcolumn curcellselection curselection delete \
-	deletecolumns editcell editwintag editwinpath entrypath fillcolumn \
-	finishediting formatinfo get getcells getcolumns getkeys hasattrib \
-	hascellattrib hascolumnattrib hasrowattrib imagelabelpath index \
-	insert insertcolumnlist insertcolumns insertlist iselemsnipped \
-	istitlesnipped itemlistvar labelpath labels labeltag move movecolumn \
-	nearest nearestcell nearestcolumn rejectinput resetsortinfo rowattrib \
-	rowcget rowconfigure scan see seecell seecolumn selection \
-	separatorpath separators size sort sortbycolumn sortbycolumnlist \
-	sortcolumn sortcolumnlist sortorder sortorderlist togglecolumnhide \
-	togglerowhide unsetattrib unsetcellattrib unsetcolumnattrib \
+	activate activatecell applysorting attrib bbox bodypath bodytag \
+	cancelediting cellattrib cellcget cellconfigure cellindex \
+	cellselection cget childcount childindex childkeys collapse \
+	collapseall columnattrib columncget columnconfigure columncount \
+	columnindex columnwidth config configcelllist configcells \
+	configcolumnlist configcolumns configrowlist configrows configure \
+	containing containingcell containingcolumn curcellselection \
+	curselection depth delete deletecolumns descendantcount editcell \
+	editwintag editwinpath entrypath expand expandall expandedkeys \
+	fillcolumn finishediting formatinfo get getcells getcolumns \
+	getfullkeys getkeys hasattrib hascellattrib hascolumnattrib \
+	hasrowattrib imagelabelpath index insert insertchild insertchildlist \
+	insertchildren insertcolumnlist insertcolumns insertlist \
+	iselemsnipped istitlesnipped itemlistvar labelpath labels labeltag \
+	move movecolumn nearest nearestcell nearestcolumn noderow parentkey \
+	refreshsorting rejectinput resetsortinfo rowattrib rowcget \
+	rowconfigure scan see seecell seecolumn selection separatorpath \
+	separators size sort sortbycolumn sortbycolumnlist sortcolumn \
+	sortcolumnlist sortorder sortorderlist togglecolumnhide togglerowhide \
+	toplevelkey unsetattrib unsetcellattrib unsetcolumnattrib \
 	unsetrowattrib windowpath xview yview]
-    if {!$canElide} {
-	set idx [lsearch -exact $cmdOpts togglerowhide]
-	set cmdOpts [lreplace $cmdOpts $idx $idx]
+
+    proc restrictCmdOpts {} {
+	variable canElide
+	if {!$canElide} {
+	    variable cmdOpts
+	    foreach opt [list collapse collapseall expand expandall \
+			 insertchild insertchildlist insertchildren \
+			 togglerowhide] {
+		set idx [lsearch -exact $cmdOpts $opt]
+		set cmdOpts [lreplace $cmdOpts $idx $idx]
+	    }
+	}
     }
+    restrictCmdOpts 
 
     #
     # Use lists to facilitate the handling of miscellaneous options
     #
     variable activeStyles	[list frame none underline]
     variable alignments		[list left right center]
-    variable arrowStyles	[list flat7x4 flat7x5 flat7x7 flat8x5 flat9x5 \
-				 sunken8x7 sunken10x9 sunken12x11]
+    variable arrowStyles	[list flat6x4 flat7x4 flat7x5 flat7x7 \
+				      flat8x5 flat9x5 flat9x7 flat10x6 \
+				      sunken8x7 sunken10x9 sunken12x11]
     variable arrowTypes		[list up down]
+    variable expCollOpts	[list -fully -partly]
     variable colWidthOpts	[list -requested -stretched -total]
     variable states		[list disabled normal]
     variable selectTypes	[list row cell]
-    variable sortModes		[list ascii command dictionary integer real]
+    variable sortModes		[list ascii asciinocase command dictionary \
+				      integer real]
     variable sortOrders		[list increasing decreasing]
     variable _sortOrders	[list -increasing -decreasing]
     variable scanCmdOpts	[list mark dragto]
     variable selCmdOpts		[list anchor clear includes set]
+    variable treeStyles		[list aqua baghira gtk oxygen1 oxygen2 phase \
+				      plastik plastique vistaAero vistaClassic \
+				      win7Aero win7Classic winnative \
+				      winxpBlue winxpOlive winxpSilver]
+
+    #
+    # The array maxIndentDepths holds the current max.
+    # indentation depth for every tree style in use
+    #
+    variable maxIndentDepths
 
     #
     # Define the procedure strToDispStr, which returns the string
@@ -399,6 +431,11 @@ namespace eval tablelist {
 	    return $str
 	}
     }
+
+    interp alias {} ::tablelist::configSubCmd \
+		 {} ::tablelist::configureSubCmd
+    interp alias {} ::tablelist::insertchildSubCmd \
+		 {} ::tablelist::insertchildrenSubCmd
 }
 
 #
@@ -419,10 +456,7 @@ proc tablelist::createBindings {} {
     #
     bind Tablelist <KeyPress> continue
     bind Tablelist <FocusIn> {
-	if {![info exists tablelist::ns%W::data(dispId)]} {
-	    tablelist::addActiveTag %W
-	}
-
+	tablelist::addActiveTag %W
 	if {[string compare [focus -lastfor %W] %W] == 0} {
 	    if {[winfo exists [%W editwinpath]]} {
 		focus [set tablelist::ns%W::data(editFocus)]
@@ -542,7 +576,8 @@ proc tablelist::tablelist args {
 	#
 	variable data
 	array set data {
-	    arrowWidth		 9
+	    arrowWidth		 10
+	    arrowHeight		 9
 	    hasListVar		 0
 	    isDisabled		 0
 	    ownsFocus		 0
@@ -554,16 +589,20 @@ proc tablelist::tablelist args {
 	    anchorCol		 0
 	    seqNum		-1
 	    freeKeyList		 {}
+	    keyList		 {}
 	    itemList		 {}
 	    itemCount		 0
 	    lastRow		-1
 	    colList		 {}
 	    colCount		 0
 	    lastCol		-1
+	    treeCol		 0
+	    btmY		 0
 	    rowTagRefCount	 0
 	    cellTagRefCount	 0
 	    imgCount		 0
 	    winCount		 0
+	    indentCount		 0
 	    afterId		 ""
 	    labelClicked	 0
 	    arrowColList	 {}
@@ -584,6 +623,13 @@ proc tablelist::tablelist args {
 	    hiddenRowCount	 0
 	    nonHiddenRowList	 {-1}
 	    hiddenColCount	 0
+	    root-row		-1
+	    root-parent		 ""
+	    root-children	 {}
+	    keyToRowMapValid	 1
+	    searchStartIdx	 0
+	    keyBeingExpanded	 ""
+	    destroyIdList	 {}
 	}
 
 	#
@@ -614,6 +660,7 @@ proc tablelist::tablelist args {
 	}
     }
     set data(-titlecolumns)	0		;# for Tk versions < 8.3
+    set data(-treecolumn)	0		;# for Tk versions < 8.3
     set data(colFontList)	[list $data(-font)]
     set data(listVarTraceCmd)	[list tablelist::listVarTrace $win]
     set data(bodyTag)		body$win
@@ -683,11 +730,9 @@ proc tablelist::tablelist args {
 	    -insertwidth 0 -padx 0 -pady 0 -state normal -takefocus 0 -wrap none
     bind $w <Configure> {
 	set tablelist::W [winfo parent %W]
+	set tablelist::ns${tablelist::W}::data(btmY) [expr {%h - 1}]
 	tablelist::makeColFontAndTagLists $tablelist::W
-	tablelist::adjustElidedTextWhenIdle $tablelist::W
-	tablelist::updateColorsWhenIdle $tablelist::W
-	tablelist::adjustSepsWhenIdle $tablelist::W
-	tablelist::updateVScrlbarWhenIdle $tablelist::W
+	tablelist::updateViewWhenIdle $tablelist::W
     }
     pack $w -expand 1 -fill both
 
@@ -708,6 +753,7 @@ proc tablelist::tablelist args {
     $w tag configure select -relief raised
     $w tag configure active -borderwidth ""		     ;# will be changed
     $w tag configure disabled -foreground ""		     ;# will be changed
+    $w tag configure redraw -background black
     if {$canElide} {
 	$w tag configure hiddenRow -elide 1
 	$w tag configure hiddenCol -elide 1
@@ -849,6 +895,17 @@ proc tablelist::activatecellSubCmd {win argList} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::applysortingSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::applysortingSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win applysorting itemList"
+    }
+
+    return [sortList $win [lindex $argList 0]]
+}
+
+#------------------------------------------------------------------------------
 # tablelist::attribSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::attribSubCmd {win argList} {
@@ -932,7 +989,7 @@ proc tablelist::cellattribSubCmd {win argList} {
     synchronize $win
     foreach {row col} [cellIndex $win [lindex $argList 0] 1] {}
     upvar ::tablelist::ns${win}::data data
-    set key [lindex [lindex $data(itemList) $row] end]
+    set key [lindex $data(keyList) $row]
     return [mwutil::attribSubCmd $win $key,$col [lrange $argList 1 end]]
 }
 
@@ -1015,14 +1072,15 @@ proc tablelist::cellselectionSubCmd {win argList} {
 		    foreach {row col} [cellIndex $win $elem 0] {}
 		    cellSelection $win $opt $row $col $row $col
 		}
-		return ""
 	    } else {
 		foreach {firstRow firstCol} [cellIndex $win $first 0] {}
 		foreach {lastRow lastCol} \
 			[cellIndex $win [lindex $argList 2] 0] {}
-		return [cellSelection $win $opt \
-			$firstRow $firstCol $lastRow $lastCol]
+		cellSelection $win $opt $firstRow $firstCol $lastRow $lastCol
 	    }
+
+	    updateColors $win
+	    return ""
 	}
     }
 }
@@ -1041,6 +1099,260 @@ proc tablelist::cgetSubCmd {win argList} {
     variable configSpecs
     set opt [mwutil::fullConfigOpt [lindex $argList 0] configSpecs]
     return [doCget $win $opt]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::childcountSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::childcountSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win childcount nodeIndex"
+    }
+
+    synchronize $win
+    set key [nodeIndexToKey $win [lindex $argList 0]]
+    upvar ::tablelist::ns${win}::data data
+    return [llength $data($key-children)]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::childindexSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::childindexSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win childindex index"
+    }
+
+    synchronize $win
+    set row [rowIndex $win [lindex $argList 0] 0 1]
+    upvar ::tablelist::ns${win}::data data
+    set key [lindex $data(keyList) $row]
+    set parentKey $data($key-parent)
+    return [lsearch -exact $data($parentKey-children) $key]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::childkeysSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::childkeysSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win childkeys nodeIndex"
+    }
+
+    synchronize $win
+    set key [nodeIndexToKey $win [lindex $argList 0]]
+    upvar ::tablelist::ns${win}::data data
+    return $data($key-children)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::collapseSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::collapseSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs "$win collapse index ?-fully|-partly?"
+    }
+
+    synchronize $win
+    set index [rowIndex $win [lindex $argList 0] 0 1]
+
+    if {$argCount == 1} {
+	set fullCollapsion 1
+    } else {
+	variable expCollOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 1] $expCollOpts]
+	set fullCollapsion [expr {[string compare $opt "-fully"] == 0}]
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    set key [lindex $data(keyList) $index]
+    set col $data(treeCol)
+    if {![info exists data($key,$col-indent)]} {
+	return ""
+    }
+
+    if {[string compare $data(-collapsecommand) ""] != 0} {
+	uplevel #0 $data(-collapsecommand) [list $win $index]
+    }
+
+    #
+    # Set the indentation image to the collapsed one
+    #
+    set data($key,$col-indent) [strMap \
+	{"indented" "collapsed" "expanded" "collapsed"} $data($key,$col-indent)]
+    if {[winfo exists $data(body).ind_$key,$col]} {
+	$data(body).ind_$key,$col configure -image $data($key,$col-indent)
+    }
+
+    if {[llength $data($key-children)] == 0} {
+	return ""
+    }
+
+    #
+    # Hide the descendants of this item
+    #
+    set fromRow [expr {$index + 1}]
+    set toRow [nodeRow $win $key end 1]
+    for {set row $fromRow} {$row < $toRow} {incr row} {
+	doRowConfig $row $win -hide 1
+
+	if {$fullCollapsion} {
+	    set descKey [lindex $data(keyList) $row]
+	    if {[llength $data($descKey-children)] != 0} {
+		collapseSubCmd $win [list [keyToRow $win $descKey] -fully]
+	    }
+	}
+    }
+
+    set callerProc [lindex [info level -1] 0]
+    if {![string match "collapse*SubCmd" $callerProc]} {
+	#
+	# Destroy the label and messsage widgets
+	# embedded into the descendants just hidden
+	#
+	set widgets {}
+	set fromTextIdx [expr {double($fromRow + 1)}]
+	set toTextIdx [expr {double($toRow + 1)}]
+	foreach {dummy path textIdx} \
+		[$data(body) dump -window $fromTextIdx $toTextIdx] {
+	    if {[string compare $path ""] != 0} {
+		set class [winfo class $path]
+		if {[string compare $class "Label"] == 0 ||
+		    [string compare $class "Message"] == 0} {
+		    lappend widgets $path
+		}
+	    }
+	}
+	set destroyId [after 300 [list tablelist::destroyWidgets $win]]
+	lappend data(destroyIdList) $destroyId
+	set data(widgets-$destroyId) $widgets
+
+	adjustRowIndex $win data(anchorRow) 1
+
+	set activeRow $data(activeRow)
+	adjustRowIndex $win activeRow 1
+	set data(activeRow) $activeRow
+
+	makeStripes $win
+	showLineNumbersWhenIdle $win
+	updateViewWhenIdle $win
+
+	event generate $win <<TablelistRowHiddenStateChanged>>
+    }
+
+    return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::collapseallSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::collapseallSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount > 1} {
+	mwutil::wrongNumArgs "$win collapseall ?-fully|-partly?"
+    }
+
+    if {$argCount == 0} {
+	set fullCollapsion 1
+    } else {
+	variable expCollOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 0] $expCollOpts]
+	set fullCollapsion [expr {[string compare $opt "-fully"] == 0}]
+    }
+
+    synchronize $win
+
+    upvar ::tablelist::ns${win}::data data
+    set col $data(treeCol)
+
+    if {[winfo viewable $win]} {
+	purgeWidgets $win
+	update idletasks
+	if {![winfo exists $win]} {		;# because of update idletasks
+	    return ""
+	}
+    }
+
+    set childIdx 0
+    set childCount [llength $data(root-children)]
+    foreach key $data(root-children) {
+	if {![info exists data($key,$col-indent)]} {
+	    incr childIdx
+	    continue
+	}
+
+	if {[string compare $data(-collapsecommand) ""] != 0} {
+	    uplevel #0 $data(-collapsecommand) [list $win [keyToRow $win $key]]
+	}
+
+	#
+	# Change the indentation image from the expanded to the collapsed one
+	#
+	set data($key,$col-indent) \
+	    [strMap {"expanded" "collapsed"} $data($key,$col-indent)]
+	if {[winfo exists $data(body).ind_$key,$col]} {
+	    $data(body).ind_$key,$col configure -image $data($key,$col-indent)
+	}
+
+	#
+	# Hide the descendants of this item
+	#
+	incr childIdx
+	if {[llength $data($key-children)] != 0} {
+	    set fromRow [expr {[keyToRow $win $key] + 1}]
+	    if {$childIdx < $childCount} {
+		set nextChildKey [lindex $data(root-children) $childIdx]
+		set toRow [keyToRow $win $nextChildKey]
+	    } else {
+		set toRow $data(itemCount)
+	    }
+	    for {set row $fromRow} {$row < $toRow} {incr row} {
+		doRowConfig $row $win -hide 1
+
+		if {$fullCollapsion} {
+		    set descKey [lindex $data(keyList) $row]
+		    if {[llength $data($descKey-children)] != 0} {
+			collapseSubCmd $win \
+			    [list [keyToRow $win $descKey] -fully]
+		    }
+		}
+	    }
+
+	    #
+	    # Destroy the label and messsage widgets
+	    # embedded into the descendants just hidden
+	    #
+	    set widgets {}
+	    set fromTextIdx [expr {double($fromRow + 1)}]
+	    set toTextIdx [expr {double($toRow + 1)}]
+	    foreach {dummy path textIdx} \
+		    [$data(body) dump -window $fromTextIdx $toTextIdx] {
+		if {[string compare $path ""] != 0} {
+		    set class [winfo class $path]
+		    if {[string compare $class "Label"] == 0 ||
+			[string compare $class "Message"] == 0} {
+			lappend widgets $path
+		    }
+		}
+	    }
+	    set destroyId [after 300 [list tablelist::destroyWidgets $win]]
+	    lappend data(destroyIdList) $destroyId
+	    set data(widgets-$destroyId) $widgets
+	}
+    }
+
+    adjustRowIndex $win data(anchorRow) 1
+
+    set activeRow $data(activeRow)
+    adjustRowIndex $win activeRow 1
+    set data(activeRow) $activeRow
+
+    makeStripes $win
+    showLineNumbersWhenIdle $win
+    updateViewWhenIdle $win
+    event generate $win <<TablelistRowHiddenStateChanged>>
+    return ""
 }
 
 #------------------------------------------------------------------------------
@@ -1130,14 +1442,8 @@ proc tablelist::columnwidthSubCmd {win argList} {
 	variable colWidthOpts
 	set opt [mwutil::fullOpt "option" [lindex $argList 1] $colWidthOpts]
     }
-    return [colWidth $win $col $opt]
-}
 
-#------------------------------------------------------------------------------
-# tablelist::configSubCmd
-#------------------------------------------------------------------------------
-proc tablelist::configSubCmd {win argList} {
-    return [configureSubCmd $win $argList]
+    return [colWidth $win $col $opt]
 }
 
 #------------------------------------------------------------------------------
@@ -1230,7 +1536,6 @@ proc tablelist::configrowsSubCmd {win argList} {
     synchronize $win
     displayItems $win
     variable rowConfigSpecs
-    upvar ::tablelist::ns${win}::data data
 
     set argCount [llength $argList]
     foreach {rowSpec opt val} $argList {
@@ -1239,10 +1544,7 @@ proc tablelist::configrowsSubCmd {win argList} {
 	} elseif {$argCount == 2} {
 	    return -code error "value for \"$opt\" missing"
 	}
-	set row [rowIndex $win $rowSpec 0]
-	if {$row < 0 || $row > $data(lastRow)} {
-	    return -code error "row index \"$rowSpec\" out of range"
-	}
+	set row [rowIndex $win $rowSpec 0 1]
 	mwutil::configureWidget $win rowConfigSpecs \
 		"tablelist::doRowConfig $row" "tablelist::doRowCget $row" \
 		[list $opt $val] 0
@@ -1457,7 +1759,34 @@ proc tablelist::deletecolumnsSubCmd {win argList} {
 	}
     }
 
+    updateViewWhenIdle $win
     return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::depthSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::depthSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win depth nodeIndex"
+    }
+
+    synchronize $win
+    set key [nodeIndexToKey $win [lindex $argList 0]]
+    return [depth $win $key]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::descendantcountSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::descendantcountSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win descendantcount nodeIndex"
+    }
+
+    synchronize $win
+    set key [nodeIndexToKey $win [lindex $argList 0]]
+    return [descCount $win $key]
 }
 
 #------------------------------------------------------------------------------
@@ -1524,6 +1853,174 @@ proc tablelist::entrypathSubCmd {win argList} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::expandSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::expandSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs "$win expand index ?-fully|-partly?"
+    }
+
+    synchronize $win
+    displayItems $win
+    set index [rowIndex $win [lindex $argList 0] 0 1]
+
+    if {$argCount == 1} {
+	set fullExpansion 1
+    } else {
+	variable expCollOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 1] $expCollOpts]
+	set fullExpansion [expr {[string compare $opt "-fully"] == 0}]
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    set key [lindex $data(keyList) $index]
+    set col $data(treeCol)
+    if {![info exists data($key,$col-indent)] ||
+	[string match "*indented*" $data($key,$col-indent)]} {
+	return ""
+    }
+
+    if {[string compare $data(-expandcommand) ""] != 0} {
+	set data(keyBeingExpanded) $key
+	uplevel #0 $data(-expandcommand) [list $win $index]
+	set data(keyBeingExpanded) ""
+    }
+
+    #
+    # Set the indentation image to the indented or expanded one
+    #
+    set childCount [llength $data($key-children)]
+    set state [expr {($childCount == 0) ? "indented" : "expanded"}]
+    set data($key,$col-indent) [strMap \
+	[list "collapsed" $state "expanded" $state] $data($key,$col-indent)]
+    if {[string compare $state "indented"] == 0} {
+	set data($key,$col-indent) [strMap {"Act" ""} $data($key,$col-indent)]
+    }
+    if {[winfo exists $data(body).ind_$key,$col]} {
+	$data(body).ind_$key,$col configure -image $data($key,$col-indent)
+    }
+
+    #
+    # Unhide the children if appropriate and
+    # invoke this procedure recursively on them
+    #
+    set isHidden [expr {[info exists data($key-hide)]}]
+    foreach childKey $data($key-children) {
+	set childRow [keyToRow $win $childKey]
+	if {!$isHidden} {
+	    doRowConfig $childRow $win -hide 0
+	}
+	if {$fullExpansion} {
+	    expandSubCmd $win [list $childRow -fully]
+	} elseif {[string match "*expanded*" $data($childKey,$col-indent)]} {
+	    expandSubCmd $win [list $childRow -partly]
+	}
+    }
+
+    set callerProc [lindex [info level -1] 0]
+    if {![string match "expand*SubCmd" $callerProc]} {
+	makeStripes $win
+	showLineNumbersWhenIdle $win
+	updateViewWhenIdle $win
+	event generate $win <<TablelistRowHiddenStateChanged>>
+    }
+
+    return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::expandallSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::expandallSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount > 1} {
+	mwutil::wrongNumArgs "$win expandall ?-fully|-partly?"
+    }
+
+    if {$argCount == 0} {
+	set fullExpansion 1
+    } else {
+	variable expCollOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 0] $expCollOpts]
+	set fullExpansion [expr {[string compare $opt "-fully"] == 0}]
+    }
+
+    synchronize $win
+    displayItems $win
+
+    upvar ::tablelist::ns${win}::data data
+    set col $data(treeCol)
+
+    foreach key $data(root-children) {
+	if {![info exists data($key,$col-indent)] ||
+	    [string match "*indented*" $data($key,$col-indent)]} {
+	    continue
+	}
+
+	if {[string compare $data(-expandcommand) ""] != 0} {
+	    set data(keyBeingExpanded) $key
+	    uplevel #0 $data(-expandcommand) [list $win [keyToRow $win $key]]
+	    set data(keyBeingExpanded) ""
+	}
+
+	#
+	# Set the indentation image to the indented or expanded one
+	#
+	set childCount [llength $data($key-children)]
+	set state [expr {($childCount == 0) ? "indented" : "expanded"}]
+	set data($key,$col-indent) [strMap \
+	    [list "collapsed" $state "expanded" $state] $data($key,$col-indent)]
+	if {[string compare $state "indented"] == 0} {
+	    set data($key,$col-indent) [strMap \
+		{"Act" ""} $data($key,$col-indent)]
+	}
+	if {[winfo exists $data(body).ind_$key,$col]} {
+	    $data(body).ind_$key,$col configure -image $data($key,$col-indent)
+	}
+
+	#
+	# Unhide the children and invoke expandSubCmd on them
+	#
+	foreach childKey $data($key-children) {
+	    set childRow [keyToRow $win $childKey]
+	    doRowConfig $childRow $win -hide 0
+	    if {$fullExpansion} {
+		expandSubCmd $win [list $childRow -fully]
+	    } elseif {[string match "*expanded*" \
+		       $data($childKey,$col-indent)]} {
+		expandSubCmd $win [list $childRow -partly]
+	    }
+	}
+    }
+
+    makeStripes $win
+    showLineNumbersWhenIdle $win
+    updateViewWhenIdle $win
+    event generate $win <<TablelistRowHiddenStateChanged>>
+    return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::expandedkeysSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::expandedkeysSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win expandedkeys"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    set result {}
+    foreach name [array names data "*,$data(treeCol)-indent"] {
+	if {[string match "tablelist_*_expanded*Img*" $data($name)]} {
+	    set commaPos [string first "," $name]
+	    lappend result [string range $name 0 [expr {$commaPos - 1}]]
+	}
+    }
+    return $result
+}
+
+#------------------------------------------------------------------------------
 # tablelist::fillcolumnSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::fillcolumnSubCmd {win argList} {
@@ -1562,6 +2059,7 @@ proc tablelist::fillcolumnSubCmd {win argList} {
     #
     adjustColumns $win $colIdx 1
     redisplayColWhenIdle $win $colIdx
+    updateViewWhenIdle $win
     return ""
 }
 
@@ -1739,6 +2237,61 @@ proc tablelist::getcolumnsSubCmd {win argList} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::getfullkeysSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::getfullkeysSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs "$win getfullkeys firstIndex lastIndex" \
+			     "$win getfullkeys indexList"
+    }
+
+    synchronize $win
+    set first [lindex $argList 0]
+
+    #
+    # Get the specified keys from the internal list
+    #
+    upvar ::tablelist::ns${win}::data data
+    set result {}
+    if {$argCount == 1} {
+	foreach elem $first {
+	    set index [rowIndex $win $elem 0]
+	    if {$index >= 0 && $index < $data(itemCount)} {
+		lappend result [lindex $data(keyList) $index]
+	    }
+	}
+
+	if {[llength $first] == 1} {
+	    return [lindex $result 0]
+	} else {
+	    return $result
+	}
+    } else {
+	set first [rowIndex $win $first 0]
+	set last [rowIndex $win [lindex $argList 1] 0]
+
+	#
+	# Adjust the range to fit within the existing items
+	#
+	if {$first > $data(lastRow)} {
+	    return {}
+	}
+	if {$first < 0} {
+	    set first 0
+	}
+	if {$last > $data(lastRow)} {
+	    set last $data(lastRow)
+	}
+
+	foreach item [lrange $data(itemList) $first $last] {
+	    lappend result [lindex $item end]
+	}
+	return $result
+    }
+}
+
+#------------------------------------------------------------------------------
 # tablelist::getkeysSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::getkeysSubCmd {win argList} {
@@ -1816,7 +2369,7 @@ proc tablelist::hascellattribSubCmd {win argList} {
     synchronize $win
     foreach {row col} [cellIndex $win [lindex $argList 0] 1] {}
     upvar ::tablelist::ns${win}::data data
-    set key [lindex [lindex $data(itemList) $row] end]
+    set key [lindex $data(keyList) $row]
     return [mwutil::hasattribSubCmd $win $key,$col [lindex $argList 1]]
 }
 
@@ -1841,13 +2394,9 @@ proc tablelist::hasrowattribSubCmd {win argList} {
     }
 
     synchronize $win
-    set rowSpec [lindex $argList 0]
-    set row [rowIndex $win $rowSpec 0]
+    set row [rowIndex $win [lindex $argList 0] 0 1]
     upvar ::tablelist::ns${win}::data data
-    if {$row < 0 || $row > $data(lastRow)} {
-	return -code error "row index \"$rowSpec\" out of range"
-    }
-    set key [lindex [lindex $data(itemList) $row] end]
+    set key [lindex $data(keyList) $row]
     return [mwutil::hasattribSubCmd $win $key [lindex $argList 1]]
 }
 
@@ -1862,8 +2411,8 @@ proc tablelist::imagelabelpathSubCmd {win argList} {
     synchronize $win
     foreach {row col} [cellIndex $win [lindex $argList 0] 1] {}
     upvar ::tablelist::ns${win}::data data
-    set key [lindex [lindex $data(itemList) $row] end]
-    set w $data(body).l$key,$col
+    set key [lindex $data(keyList) $row]
+    set w $data(body).img_$key,$col
     if {[winfo exists $w]} {
 	return $w
     } else {
@@ -1891,14 +2440,104 @@ proc tablelist::insertSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win insert index ?item item ...?"
     }
 
-    synchronize $win
-    set index [rowIndex $win [lindex $argList 0] 1]
     upvar ::tablelist::ns${win}::data data
     if {$data(isDisabled)} {
 	return ""
     }
 
-    return [insertRows $win $index [lrange $argList 1 end] $data(hasListVar)]
+    synchronize $win
+    set index [rowIndex $win [lindex $argList 0] 1]
+    return [insertRows $win $index [lrange $argList 1 end] \
+	    $data(hasListVar) root $index]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::insertchildlistSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::insertchildlistSubCmd {win argList} {
+    if {[llength $argList] != 3} {
+	mwutil::wrongNumArgs "$win insertchildlist parentNodeIndex childIndex \
+			      itemList"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    if {$data(isDisabled)} {
+	return ""
+    }
+
+    synchronize $win
+    set parentKey [nodeIndexToKey $win [lindex $argList 0]]
+    set childIdx [lindex $argList 1]
+    set listIdx [nodeRow $win $parentKey $childIdx 1]
+    set itemList [lindex $argList 2]
+    set result [insertRows $win $listIdx $itemList $data(hasListVar) \
+		$parentKey $childIdx]
+
+    if {$data(colCount) == 0} {
+	return $result
+    }
+
+    displayItems $win
+    set treeCol $data(treeCol)
+    set treeStyle $data(-treestyle)
+
+    #
+    # Mark the parent item as expanded if it was just indented
+    #
+    set depth [depth $win $parentKey]
+    if {$depth != 0 &&
+	[string compare $data($parentKey,$treeCol-indent) \
+	 tablelist_${treeStyle}_indentedImg$depth] == 0} {
+	set data($parentKey,$treeCol-indent) \
+	    tablelist_${treeStyle}_expandedImg$depth
+	if {[winfo exists $data(body).ind_$parentKey,$treeCol]} {
+	    $data(body).ind_$parentKey,$treeCol configure -image \
+		$data($parentKey,$treeCol-indent)
+	}
+    }
+
+    #
+    # Hide the new items if the parent is collapsed or hidden
+    #
+    set itemCount [llength $itemList]
+    if {$depth != 0 &&
+	[string compare $parentKey $data(keyBeingExpanded)] != 0 &&
+	([string compare $data($parentKey,$treeCol-indent) \
+	  tablelist_${treeStyle}_collapsedImg$depth] == 0 || \
+	 [info exists data($parentKey-hide)])} {
+	for {set n 0; set row $listIdx} {$n < $itemCount} {incr n; incr row} {
+	    doRowConfig $row $win -hide 1
+	}
+    }
+
+    #
+    # Mark the new items as indented
+    #
+    incr depth
+    variable maxIndentDepths
+    if {$depth > $maxIndentDepths($treeStyle)} {
+	createTreeImgs $treeStyle $depth
+	set maxIndentDepths($treeStyle) $depth
+    }
+    for {set n 0; set row $listIdx} {$n < $itemCount} {incr n; incr row} {
+	doCellConfig $row $treeCol $win -indent \
+		     tablelist_${treeStyle}_indentedImg$depth
+    }
+
+    return $result
+}
+
+#------------------------------------------------------------------------------
+# tablelist::insertchildrenSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::insertchildrenSubCmd {win argList} {
+    if {[llength $argList] < 2} {
+	mwutil::wrongNumArgs "$win insertchildren parentNodeIndex childIndex\
+			      ?item item ...?"
+    }
+
+    return [insertchildlistSubCmd $win [list [lindex $argList 0] \
+	    [lindex $argList 1] [lrange $argList 2 end]]]
 }
 
 #------------------------------------------------------------------------------
@@ -1909,19 +2548,20 @@ proc tablelist::insertcolumnlistSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win insertcolumnlist columnIndex columnList"
     }
 
-    synchronize $win
-    displayItems $win
-    set arg0 [lindex $argList 0]
     upvar ::tablelist::ns${win}::data data
     if {$data(isDisabled)} {
 	return ""
     }
 
+    synchronize $win
+    displayItems $win
+    set arg0 [lindex $argList 0]
     if {[string first $arg0 "end"] == 0 || $arg0 == $data(colCount)} {
 	set col $data(colCount)
     } else {
 	set col [colIndex $win $arg0 1]
     }
+
     return [insertCols $win $col [lindex $argList 1]]
 }
 
@@ -1934,19 +2574,20 @@ proc tablelist::insertcolumnsSubCmd {win argList} {
 		?width title ?alignment? width title ?alignment? ...?"
     }
 
-    synchronize $win
-    displayItems $win
-    set arg0 [lindex $argList 0]
     upvar ::tablelist::ns${win}::data data
     if {$data(isDisabled)} {
 	return ""
     }
 
+    synchronize $win
+    displayItems $win
+    set arg0 [lindex $argList 0]
     if {[string first $arg0 "end"] == 0 || $arg0 == $data(colCount)} {
 	set col $data(colCount)
     } else {
 	set col [colIndex $win $arg0 1]
     }
+
     return [insertCols $win $col [lrange $argList 1 end]]
 }
 
@@ -1955,17 +2596,18 @@ proc tablelist::insertcolumnsSubCmd {win argList} {
 #------------------------------------------------------------------------------
 proc tablelist::insertlistSubCmd {win argList} {
     if {[llength $argList] != 2} {
-	mwutil::wrongNumArgs "$win insertlist index list"
+	mwutil::wrongNumArgs "$win insertlist index itemList"
     }
 
-    synchronize $win
-    set index [rowIndex $win [lindex $argList 0] 1]
     upvar ::tablelist::ns${win}::data data
     if {$data(isDisabled)} {
 	return ""
     }
 
-    return [insertRows $win $index [lindex $argList 1] $data(hasListVar)]
+    synchronize $win
+    set index [rowIndex $win [lindex $argList 0] 1]
+    return [insertRows $win $index [lrange $argList 1 end] \
+	    $data(hasListVar) root $index]
 }
 
 #------------------------------------------------------------------------------
@@ -2004,16 +2646,18 @@ proc tablelist::iselemsnippedSubCmd {win argList} {
 
     set text $fullText
     getAuxData $win $key $col auxType auxWidth $pixels
+    getIndentData $win $key $col indentWidth
     set cellFont [getCellFont $win $key $col]
     incr pixels $data($col-delta)
 
     if {[string match "*\n*" $text]} {
 	set list [split $text "\n"]
-	adjustMlElem $win list auxWidth $cellFont $pixels "r" ""
+	adjustMlElem $win list auxWidth indentWidth $cellFont $pixels "r" ""
 	set text [join $list "\n"]
     } else {
-	adjustElem $win text auxWidth $cellFont $pixels "r" ""
+	adjustElem $win text auxWidth indentWidth $cellFont $pixels "r" ""
     }
+
     return [expr {[string compare $text $fullText] != 0}]
 }
 
@@ -2071,6 +2715,7 @@ proc tablelist::labelsSubCmd {win argList} {
     for {set col 0} {$col < $data(colCount)} {incr col} {
 	lappend labelList $data(hdrTxtFrLbl)$col
     }
+
     return $labelList
 }
 
@@ -2121,6 +2766,7 @@ proc tablelist::movecolumnSubCmd {win argList} {
     } else {
 	set target [colIndex $win $arg1 1]
     }
+
     return [moveCol $win $source $target]
 }
 
@@ -2166,6 +2812,60 @@ proc tablelist::nearestcolumnSubCmd {win argList} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::noderowSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::noderowSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win noderow parentNodeIndex childIndex"
+    }
+
+    synchronize $win
+    set parentKey [nodeIndexToKey $win [lindex $argList 0]]
+    set childIdx [lindex $argList 1]
+    return [nodeRow $win $parentKey $childIdx 1]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::parentkeySubCmd
+#------------------------------------------------------------------------------
+proc tablelist::parentkeySubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win parentkey nodeIndex"
+    }
+
+    synchronize $win
+    set key [nodeIndexToKey $win [lindex $argList 0]]
+    upvar ::tablelist::ns${win}::data data
+    return $data($key-parent)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::refreshsortingSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::refreshsortingSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount > 1} {
+	mwutil::wrongNumArgs "$win refreshsorting ?parentNodeIndex?"
+    }
+
+    synchronize $win
+    displayItems $win
+    if {$argCount == 0} {
+	set parentKey root
+    } else {
+	set parentKey [nodeIndexToKey $win [lindex $argList 0]]
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    set sortOrderList {}
+    foreach col $data(sortColList) {
+	lappend sortOrderList $data($col-sortOrder)
+    }
+
+    return [sortItems $win $parentKey $data(sortColList) $sortOrderList]
+}
+
+#------------------------------------------------------------------------------
 # tablelist::rejectinputSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::rejectinputSubCmd {win argList} {
@@ -2175,6 +2875,7 @@ proc tablelist::rejectinputSubCmd {win argList} {
 
     upvar ::tablelist::ns${win}::data data
     set data(rejected) 1
+    return ""
 }
 
 #------------------------------------------------------------------------------
@@ -2206,6 +2907,7 @@ proc tablelist::resetsortinfoSubCmd {win argList} {
 	displayItems $win
 	adjustColumns $win $whichWidths 1
     }
+
     return ""
 }
 
@@ -2219,13 +2921,9 @@ proc tablelist::rowattribSubCmd {win argList} {
     }
 
     synchronize $win
-    set rowSpec [lindex $argList 0]
-    set row [rowIndex $win $rowSpec 0]
+    set row [rowIndex $win [lindex $argList 0] 0 1]
     upvar ::tablelist::ns${win}::data data
-    if {$row < 0 || $row > $data(lastRow)} {
-	return -code error "row index \"$rowSpec\" out of range"
-    }
-    set key [lindex [lindex $data(itemList) $row] end]
+    set key [lindex $data(keyList) $row]
     return [mwutil::attribSubCmd $win $key [lrange $argList 1 end]]
 }
 
@@ -2238,12 +2936,7 @@ proc tablelist::rowcgetSubCmd {win argList} {
     }
 
     synchronize $win
-    set rowArg [lindex $argList 0]
-    set row [rowIndex $win $rowArg 0]
-    upvar ::tablelist::ns${win}::data data
-    if {$row < 0 || $row > $data(lastRow)} {
-	return -code error "row index \"$rowArg\" out of range"
-    }
+    set row [rowIndex $win [lindex $argList 0] 0 1]
     variable rowConfigSpecs
     set opt [mwutil::fullConfigOpt [lindex $argList 1] rowConfigSpecs]
     return [doRowCget $row $win $opt]
@@ -2261,12 +2954,7 @@ proc tablelist::rowconfigureSubCmd {win argList} {
     synchronize $win
     displayItems $win
     variable rowConfigSpecs
-    set rowSpec [lindex $argList 0]
-    set row [rowIndex $win $rowSpec 0]
-    upvar ::tablelist::ns${win}::data data
-    if {$row < 0 || $row > $data(lastRow)} {
-	return -code error "row index \"$rowSpec\" out of range"
-    }
+    set row [rowIndex $win [lindex $argList 0] 0 1]
     return [mwutil::configureSubCmd $win rowConfigSpecs \
 	    "tablelist::doRowConfig $row" "tablelist::doRowCget $row" \
 	    [lrange $argList 1 end]]
@@ -2300,7 +2988,8 @@ proc tablelist::seeSubCmd {win argList} {
     synchronize $win
     displayItems $win
     set index [rowIndex $win [lindex $argList 0] 0]
-    return [seeRow $win $index]
+    seeRow $win $index
+    return ""
 }
 
 #------------------------------------------------------------------------------
@@ -2374,12 +3063,14 @@ proc tablelist::selectionSubCmd {win argList} {
 		    set index [rowIndex $win $elem 0]
 		    rowSelection $win $opt $index $index
 		}
-		return ""
 	    } else {
 		set first [rowIndex $win $first 0]
 		set last [rowIndex $win [lindex $argList 2] 0]
-		return [rowSelection $win $opt $first $last]
+		rowSelection $win $opt $first $last
 	    }
+
+	    updateColors $win
+	    return ""
 	}
     }
 }
@@ -2424,6 +3115,7 @@ proc tablelist::separatorsSubCmd {win argList} {
 	    lappend sepList $w
 	}
     }
+
     return [lsort -dictionary $sepList]
 }
 
@@ -2455,9 +3147,10 @@ proc tablelist::sortSubCmd {win argList} {
 	variable _sortOrders
 	set order [mwutil::fullOpt "option" [lindex $argList 0] $_sortOrders]
     }
+
     synchronize $win
     displayItems $win
-    return [sortItems $win -1 [string range $order 1 end]]
+    return [sortItems $win root -1 [string range $order 1 end]]
 }
 
 #------------------------------------------------------------------------------
@@ -2479,7 +3172,8 @@ proc tablelist::sortbycolumnSubCmd {win argList} {
 	variable _sortOrders
 	set order [mwutil::fullOpt "option" [lindex $argList 1] $_sortOrders]
     }
-    return [sortItems $win $col [string range $order 1 end]]
+
+    return [sortItems $win root $col [string range $order 1 end]]
 }
 
 #------------------------------------------------------------------------------
@@ -2502,6 +3196,7 @@ proc tablelist::sortbycolumnlistSubCmd {win argList} {
 	}
 	lappend sortColList $col
     }
+
     set sortOrderList {}
     if {$argCount == 2} {
 	variable sortOrders
@@ -2509,7 +3204,8 @@ proc tablelist::sortbycolumnlistSubCmd {win argList} {
 	    lappend sortOrderList [mwutil::fullOpt "option" $elem $sortOrders]
 	}
     }
-    return [sortItems $win $sortColList $sortOrderList]
+
+    return [sortItems $win root $sortColList $sortOrderList]
 }
 
 #------------------------------------------------------------------------------
@@ -2570,6 +3266,7 @@ proc tablelist::sortorderlistSubCmd {win argList} {
     foreach col $data(sortColList) {
 	lappend sortOrderList $data($col-sortOrder)
     }
+
     return $sortOrderList
 }
 
@@ -2646,9 +3343,7 @@ proc tablelist::togglecolumnhideSubCmd {win argList} {
     adjustColumns $win $colIdxList 1
     adjustColIndex $win data(anchorCol) 1
     adjustColIndex $win data(activeCol) 1
-    if {$canElide} {
-	adjustElidedTextWhenIdle $win
-    } else {
+    if {!$canElide} {
 	redisplay $win 0 $selCells
     }
     if {[string compare $data(-selecttype) "row"] == 0} {
@@ -2657,6 +3352,7 @@ proc tablelist::togglecolumnhideSubCmd {win argList} {
 	}
     }
 
+    updateViewWhenIdle $win
     event generate $win <<TablelistColHiddenStateChanged>>
     return ""
 }
@@ -2678,29 +3374,16 @@ proc tablelist::togglerowhideSubCmd {win argList} {
     #
     # Toggle the value of the -hide option of the specified rows
     #
-    upvar ::tablelist::ns${win}::data data
     set count 0
     if {$argCount == 1} {
 	foreach elem $first {
-	    set row [rowIndex $win $elem 0]
-	    if {$row < 0 || $row > $data(lastRow)} {
-		return -code error "row index \"$elem\" out of range"
-	    }
-
+	    set row [rowIndex $win $elem 0 1]
 	    doRowConfig $row $win -hide [expr {![doRowCget $row $win -hide]}]
 	    incr count
 	}
     } else {
-	set firstRow [rowIndex $win $first 0]
-	if {$firstRow < 0 || $firstRow > $data(lastRow)} {
-	    return -code error "row index \"$first\" out of range"
-	}
-
-	set lastRow [rowIndex $win [lindex $argList 1] 0]
-	if {$lastRow < 0 || $lastRow > $data(lastRow)} {
-	    return -code error "row index \"$last\" out of range"
-	}
-
+	set firstRow [rowIndex $win $first 0 1]
+	set lastRow [rowIndex $win [lindex $argList 1] 0 1]
 	for {set row $firstRow} {$row <= $lastRow} {incr row} {
 	    doRowConfig $row $win -hide [expr {![doRowCget $row $win -hide]}]
 	    incr count
@@ -2708,9 +3391,28 @@ proc tablelist::togglerowhideSubCmd {win argList} {
     }
 
     if {$count != 0} {
+	makeStripesWhenIdle $win
+	showLineNumbersWhenIdle $win
+	updateViewWhenIdle $win
 	event generate $win <<TablelistRowHiddenStateChanged>>
     }
+
     return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::toplevelkeySubCmd
+#------------------------------------------------------------------------------
+proc tablelist::toplevelkeySubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win toplevelkey index"
+    }
+
+    synchronize $win
+    set row [rowIndex $win [lindex $argList 0] 0 1]
+    upvar ::tablelist::ns${win}::data data
+    set key [lindex $data(keyList) $row]
+    return [topLevelKey $win $key]
 }
 
 #------------------------------------------------------------------------------
@@ -2735,7 +3437,7 @@ proc tablelist::unsetcellattribSubCmd {win argList} {
     synchronize $win
     foreach {row col} [cellIndex $win [lindex $argList 0] 1] {}
     upvar ::tablelist::ns${win}::data data
-    set key [lindex [lindex $data(itemList) $row] end]
+    set key [lindex $data(keyList) $row]
     return [mwutil::unsetattribSubCmd $win $key,$col [lindex $argList 1]]
 }
 
@@ -2760,13 +3462,9 @@ proc tablelist::unsetrowattribSubCmd {win argList} {
     }
 
     synchronize $win
-    set rowSpec [lindex $argList 0]
-    set row [rowIndex $win $rowSpec 0]
+    set row [rowIndex $win [lindex $argList 0] 0]
     upvar ::tablelist::ns${win}::data data
-    if {$row < 0 || $row > $data(lastRow)} {
-	return -code error "row index \"$rowSpec\" out of range"
-    }
-    set key [lindex [lindex $data(itemList) $row] end]
+    set key [lindex $data(keyList) $row]
     return [mwutil::unsetattribSubCmd $win $key [lindex $argList 1]]
 }
 
@@ -2781,8 +3479,8 @@ proc tablelist::windowpathSubCmd {win argList} {
     synchronize $win
     foreach {row col} [cellIndex $win [lindex $argList 0] 1] {}
     upvar ::tablelist::ns${win}::data data
-    set key [lindex [lindex $data(itemList) $row] end]
-    set w $data(body).f$key,$col.w
+    set key [lindex $data(keyList) $row]
+    set w $data(body).frm_$key,$col.w
     if {[winfo exists $w]} {
 	return $w
     } else {
@@ -2954,9 +3652,8 @@ proc tablelist::yviewSubCmd {win argList} {
 	    if {$totalNonHiddenCount == 0} {
 		return [list 0 1]
 	    }
-	    set btmY [expr {[winfo height $w] - 1}]
 	    set topTextIdx [$w index @0,0]
-	    set btmTextIdx [$w index @0,$btmY]
+	    set btmTextIdx [$w index @0,$data(btmY)]
 	    set topRow [expr {int($topTextIdx) - 1}]
 	    set btmRow [expr {int($btmTextIdx) - 1}]
 	    foreach {x y width height baselinePos} [$w dlineinfo $topTextIdx] {}
@@ -2983,9 +3680,10 @@ proc tablelist::yviewSubCmd {win argList} {
 	    # Command: $win yview <units>
 	    #
 	    set units [format "%d" [lindex $argList 0]]
-	    $w yview [nonHiddenRowOffsetToRowIndex $win $units]
+	    set row [nonHiddenRowOffsetToRowIndex $win $units]
+	    $w yview $row
 	    adjustElidedText $win
-	    updateColorsWhenIdle $win
+	    updateColors $win
 	    adjustSepsWhenIdle $win
 	    updateVScrlbarWhenIdle $win
 	    return ""
@@ -3002,7 +3700,8 @@ proc tablelist::yviewSubCmd {win argList} {
 		set totalNonHiddenCount \
 		    [expr {$data(itemCount) - $data(hiddenRowCount)}]
 		set offset [expr {int($fraction*$totalNonHiddenCount + 0.5)}]
-		$w yview [nonHiddenRowOffsetToRowIndex $win $offset]
+		set row [nonHiddenRowOffsetToRowIndex $win $offset]
+		$w yview $row
 	    } else {
 		set number [lindex $argList 1]
 		if {[string compare [lindex $argList 2] "units"] == 0} {
@@ -3010,13 +3709,13 @@ proc tablelist::yviewSubCmd {win argList} {
 		    set upperNonHiddenCount \
 			[getNonHiddenRowCount $win 0 [expr {$topRow - 1}]]
 		    set offset [expr {$upperNonHiddenCount + $number}]
-		    $w yview [nonHiddenRowOffsetToRowIndex $win $offset]
+		    set row [nonHiddenRowOffsetToRowIndex $win $offset]
+		    $w yview $row
 		} else {
 		    set absNumber [expr {abs($number)}]
-		    set btmY [expr {[winfo height $w] - 1}]
 		    for {set n 0} {$n < $absNumber} {incr n} {
 			set topRow [expr {int([$w index @0,0]) - 1}]
-			set btmRow [expr {int([$w index @0,$btmY]) - 1}]
+			set btmRow [expr {int([$w index @0,$data(btmY)]) - 1}]
 			set upperNonHiddenCount \
 			    [getNonHiddenRowCount $win 0 [expr {$topRow - 1}]]
 			set winNonHiddenCount \
@@ -3026,24 +3725,15 @@ proc tablelist::yviewSubCmd {win argList} {
 			    set delta [expr {(-1)*$delta}]
 			}
 			set offset [expr {$upperNonHiddenCount + $delta}]
-			$w yview [nonHiddenRowOffsetToRowIndex $win $offset]
+			set row [nonHiddenRowOffsetToRowIndex $win $offset]
+			$w yview $row
 		    }
 		}
 	    }
 	    adjustElidedText $win
-	    updateColorsWhenIdle $win
+	    updateColors $win
 	    adjustSepsWhenIdle $win
 	    updateVScrlbarWhenIdle $win
-	    variable winSys
-	    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
-		#
-		# Work around a Tk bug on Mac OS X Aqua
-		#
-		if {[winfo exists $data(bodyFr)]} {
-		    lower $data(bodyFr)
-		    raise $data(bodyFr)
-		}
-	    }
 	    return ""
 	}
     }
@@ -3129,7 +3819,7 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 		set selStart [lindex $selRange 0]
 		set line [expr {int($selStart)}]
 		set row [expr {$line - 1}]
-		set key [lindex [lindex $data(itemList) $row] end]
+		set key [lindex $data(keyList) $row]
 
 		#
 		# Deselect the relevant elements of the row and handle
@@ -3185,7 +3875,7 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 
 	    findTabs $win [expr {$firstRow + 1}] $firstCol $firstCol \
 		     tabIdx1 tabIdx2
-	    if {[lsearch -exact [$data(body) tag names $tabIdx1] select] < 0} {
+	    if {[lsearch -exact [$data(body) tag names $tabIdx2] select] < 0} {
 		return 0
 	    } else {
 		return 1
@@ -3240,7 +3930,7 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 		#
 		# Check whether the row is selectable and non-hidden
 		#
-		set key [lindex [lindex $data(itemList) $row] end]
+		set key [lindex $data(keyList) $row]
 		if {[info exists data($key-selectable)] ||
 		    [info exists data($key-hide)]} {
 		    continue
@@ -3352,7 +4042,8 @@ proc tablelist::containingRow {win y} {
     }
 
     set dlineinfo [$w dlineinfo [expr {double($row + 1)}]]
-    if {$y < [lindex $dlineinfo 1] + [lindex $dlineinfo 3]} {
+    if {[string compare $dlineinfo ""] != 0 &&
+	$y < [lindex $dlineinfo 1] + [lindex $dlineinfo 3]} {
 	return $row
     } else {
 	return -1
@@ -3410,7 +4101,10 @@ proc tablelist::curCellSelection {win {getKeys 0}} {
 	set textIdx $line.0
 	for {set col 0} {$col < $data(colCount)} {incr col} {
 	    if {!$data($col-hide) || $canElide} {
-		if {[$w compare $textIdx == $selStart]} {
+		if {[$w compare $selStart == $textIdx] ||
+		    [$w compare $selStart == $textIdx+1c] ||
+		    ([$w compare $selStart == $textIdx+2c] &&
+		     [string compare [$w get $textIdx+2c] "\t"] != 0)} {
 		    set firstCol $col
 		    break
 		} else {
@@ -3424,7 +4118,7 @@ proc tablelist::curCellSelection {win {getKeys 0}} {
 	# and ending just before the text position selEnd
 	#
 	if {$getKeys} {
-	    set key [lindex [lindex $data(itemList) $row] end]
+	    set key [lindex $data(keyList) $row]
 	}
 	set textIdx [$w search $elide "\t" $textIdx+1c $selEnd]+1c
 	for {set col $firstCol} {$col < $data(colCount)} {incr col} {
@@ -3444,6 +4138,7 @@ proc tablelist::curCellSelection {win {getKeys 0}} {
 
 	set selRange [$w tag nextrange select $selEnd]
     }
+
     return $result
 }
 
@@ -3466,6 +4161,7 @@ proc tablelist::curSelection win {
 
 	set selRange [$w tag nextrange select "$selStart lineend"]
     }
+
     return $result
 }
 
@@ -3486,17 +4182,23 @@ proc tablelist::deleteRows {win first last updateListVar} {
     if {$last > $data(lastRow)} {
 	set last $data(lastRow)
     }
-    set count [expr {$last - $first + 1}]
-    if {$count <= 0} {
+    if {$last < $first} {
 	return ""
     }
+
+    #
+    # Increase the last index if necessary, to make sure that all
+    # descendants of the corresponding item will get deleted, too
+    #
+    set lastKey [lindex $data(keyList) $last]
+    set last [expr {[nodeRow $win $lastKey end 1] - 1}]
+    set count [expr {$last - $first + 1}]
 
     #
     # Check whether the width of any dynamic-width
     # column might be affected by the deletion
     #
     set w $data(body)
-    set itemListRange [lrange $data(itemList) $first $last]
     if {$count == $data(itemCount)} {
 	set colWidthsChanged 1				;# just to save time
 	set data(seqNum) -1
@@ -3506,6 +4208,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	set colWidthsChanged 0
 	set snipStr $data(-snipstring)
 	set row 0
+	set itemListRange [lrange $data(itemList) $first $last]
 	foreach item $itemListRange {
 	    #
 	    # Format the item
@@ -3525,8 +4228,10 @@ proc tablelist::deleteRows {win first last updateListVar} {
 		}
 
 		getAuxData $win $key $col auxType auxWidth
+		getIndentData $win $key $col indentWidth
 		set cellFont [getCellFont $win $key $col]
-		set elemWidth [getElemWidth $win $text $auxWidth $cellFont]
+		set elemWidth \
+		    [getElemWidth $win $text $auxWidth $indentWidth $cellFont]
 		if {$elemWidth == $data($col-elemWidth) &&
 		    [incr data($col-widestCount) -1] == 0} {
 		    set colWidthsChanged 1
@@ -3544,16 +4249,28 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	}
     }
 
+    if {[winfo viewable $win] && $count == $data(itemCount)} {
+	$w tag remove select 1.0 end
+	updateColors $win
+	$w tag remove active 1.0 end
+	update idletasks
+	if {![winfo exists $win]} {		;# because of update idletasks
+	    return ""
+	}
+    }
+
     #
     # Delete the given items from the body text widget.  Interestingly,
     # for a large number of items it is much more efficient to delete
     # each line individually than to invoke a global delete command.
     #
-    set textIdx1 [expr {double($first + 1)}]
-    set textIdx2 [expr {double($first + 2)}]
-    foreach item $itemListRange {
+    set textIdx1 [expr {double($last + 1)}]
+    set textIdx2 [expr {double($last + 2)}]
+    for {set row $last; set line [expr {$last + 1}]} {$row >= $first} \
+	{set line $row; incr row -1} {
 	$w delete $textIdx1 $textIdx2
 
+	set item [lindex $data(itemList) $row]
 	set key [lindex $item end]
 	if {$count != $data(itemCount)} {
 	    lappend data(freeKeyList) $key
@@ -3573,6 +4290,36 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	    if {[info exists data($key$opt)]} {
 		unset data($key$opt)
 	    }
+	}
+
+	#
+	# Remove the key from the list of children of its parent
+	#
+	set parentKey $data($key-parent)
+	if {[info exists data($parentKey-children)]} {
+	    set childIdx [lsearch -exact $data($parentKey-children) $key]
+	    set data($parentKey-children) \
+		[lreplace $data($parentKey-children) $childIdx $childIdx]
+
+	    #
+	    # If the parent's list of children has become empty
+	    # then set its indentation image to the indented one
+	    #
+	    set col $data(treeCol)
+	    if {[llength $data($parentKey-children)] == 0 &&
+		[info exists data($parentKey,$col-indent)]} {
+		set data($parentKey,$col-indent) [strMap \
+		    {"collapsed" "indented" "expanded" "indented" "Act" ""} \
+		    $data($parentKey,$col-indent)]
+		if {[winfo exists $data(body).ind_$parentKey,$col]} {
+		    $data(body).ind_$parentKey,$col configure -image \
+			$data($parentKey,$col-indent)
+		}
+	    }
+	}
+
+	foreach prop {-row -parent -children} {
+	    unset data($key$prop)
 	}
 
 	foreach name [array names attribs $key-*] {
@@ -3602,17 +4349,25 @@ proc tablelist::deleteRows {win first last updateListVar} {
 		unset data($key,$col-reqHeight)
 		incr data(winCount) -1
 	    }
+	    if {[info exists data($key,$col-indent)]} {
+		unset data($key,$col-indent)
+		incr data(indentCount) -1
+	    }
 	}
 
 	foreach name [array names attribs $key,*-*] {
 	    unset attribs($name)
 	}
+
+	set textIdx2 $textIdx1
+	set textIdx1 [expr {double($row)}]
     }
 
     #
     # Delete the given items from the internal list
     #
     set data(itemList) [lreplace $data(itemList) $first $last]
+    set data(keyList) [lreplace $data(keyList) $first $last]
     incr data(itemCount) -$count
     incr data(lastRow) -$count
 
@@ -3624,6 +4379,14 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	trace vdelete var wu $data(listVarTraceCmd)
 	set var [lreplace $var $first $last]
 	trace variable var wu $data(listVarTraceCmd)
+    }
+
+    #
+    # Update the key -> row mapping at idle time if needed
+    #
+    if {$last != $data(lastRow)} {
+	set data(keyToRowMapValid) 0
+	updateKeyToRowMapWhenIdle $win
     }
 
     #
@@ -3651,7 +4414,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
     # Update data(editRow) if the edit window is present
     #
     if {$data(editRow) >= 0} {
-	set data(editRow) [lsearch $data(itemList) "* $data(editKey)"]
+	set data(editRow) [keyToRow $win $data(editKey)]
     }
 
     #
@@ -3665,7 +4428,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
     }
 
     #
-    # Invalidate the list of the row indices indicating the
+    # Invalidate the list of row indices indicating the
     # non-hidden rows, adjust the columns if necessary, and
     # schedule some operations for execution at idle time
     #
@@ -3673,11 +4436,9 @@ proc tablelist::deleteRows {win first last updateListVar} {
     if {$colWidthsChanged} {
 	adjustColumns $win allCols 1
     }
-    adjustElidedTextWhenIdle $win
     makeStripesWhenIdle $win
-    adjustSepsWhenIdle $win
-    updateVScrlbarWhenIdle $win
     showLineNumbersWhenIdle $win
+    updateViewWhenIdle $win
 
     return ""
 }
@@ -3737,6 +4498,7 @@ proc tablelist::deleteCols {win first last selCellsName} {
     makeColFontAndTagLists $win
     makeSortAndArrowColLists $win
     adjustColumns $win {} 1
+    updateViewWhenIdle $win
 
     #
     # Reconfigure the relevant column labels
@@ -3770,10 +4532,10 @@ proc tablelist::deleteCols {win first last selCellsName} {
 #
 # Processes the tablelist insert and insertlist subcommands.
 #------------------------------------------------------------------------------
-proc tablelist::insertRows {win index argList updateListVar} {
+proc tablelist::insertRows {win index argList updateListVar parentKey childIdx} {
     set argCount [llength $argList]
     if {$argCount == 0} {
-	return ""
+	return {}
     }
 
     upvar ::tablelist::ns${win}::data data
@@ -3787,16 +4549,39 @@ proc tablelist::insertRows {win index argList updateListVar} {
 	set index $data(itemCount)
     }
 
+    set childCount [llength $data($parentKey-children)]
+    if {$childIdx < 0} {
+	set childIdx 0
+    } elseif {$childIdx > $childCount} {
+	set childIdx $childCount
+    }
+
     #
     # Insert the items into the internal list
     #
-    set appending [expr {$index == $data(itemCount)}]
+    set result {}
+    set appendingItems [expr {$index == $data(itemCount)}]
+    set appendingChildren [expr {$childIdx == $childCount}]
     set row $index
     foreach item $argList {
 	#
 	# Adjust the item
 	#
 	set item [adjustItem $item $data(colCount)]
+
+	#
+	# Insert the item into the list variable if needed
+	#
+	if {$updateListVar} {
+	    upvar #0 $data(-listvariable) var
+	    trace vdelete var wu $data(listVarTraceCmd)
+	    if {$appendingItems} {
+		lappend var $item    		;# this works much faster
+	    } else {
+		set var [linsert $var $row $item]
+	    }
+	    trace variable var wu $data(listVarTraceCmd)
+	}
 
 	#
 	# Get a free key for the new item
@@ -3809,35 +4594,46 @@ proc tablelist::insertRows {win index argList updateListVar} {
 	}
 
 	#
-	# Insert the item into the list variable if needed
-	#
-	if {$updateListVar} {
-	    upvar #0 $data(-listvariable) var
-	    trace vdelete var wu $data(listVarTraceCmd)
-	    if {$appending} {
-		lappend var $item    		;# this works much faster
-	    } else {
-		set var [linsert $var $row $item]
-	    }
-	    trace variable var wu $data(listVarTraceCmd)
-	}
-
-	#
-	# Insert the item into the internal list
+	# Insert the extended item into the internal list
 	#
 	lappend item $key
-	if {$appending} {
+	if {$appendingItems} {
 	    lappend data(itemList) $item	;# this works much faster
+	    lappend data(keyList) $key		;# this works much faster
 	} else {
 	    set data(itemList) [linsert $data(itemList) $row $item]
+	    set data(keyList) [linsert $data(keyList) $row $key]
+	}
+
+	array set data \
+	      [list $key-row $row  $key-parent $parentKey  $key-children {}]
+
+	#
+	# Insert the key into the parent's list of children
+	#
+	if {$appendingChildren} {
+	    lappend data($parentKey-children) $key    ;# this works much faster
+	} else {
+	    set data($parentKey-children) \
+		[linsert $data($parentKey-children) $childIdx $key]
 	}
 
 	lappend data(rowsToDisplay) $row
+	lappend result $key
 
 	incr row
+	incr childIdx
     }
     incr data(itemCount) $argCount
     set data(lastRow) [expr {$data(itemCount) - 1}]
+
+    #
+    # Update the key -> row mapping at idle time if needed
+    #
+    if {!$appendingItems} {
+	set data(keyToRowMapValid) 0
+	updateKeyToRowMapWhenIdle $win
+    }
 
     if {![info exists data(dispId)]} {
 	#
@@ -3864,10 +4660,10 @@ proc tablelist::insertRows {win index argList updateListVar} {
     # Update data(editRow) if the edit window is present
     #
     if {$data(editRow) >= 0} {
-	set data(editRow) [lsearch $data(itemList) "* $data(editKey)"]
+	set data(editRow) [keyToRow $win $data(editKey)]
     }
 
-    return ""
+    return $result
 }
 
 #------------------------------------------------------------------------------
@@ -4111,7 +4907,7 @@ proc tablelist::displayItems win {
     }
 
     #
-    # Invalidate the list of the row indices indicating the
+    # Invalidate the list of row indices indicating the
     # non-hidden rows, adjust the columns if necessary, and
     # schedule some operations for execution at idle time
     #
@@ -4119,11 +4915,9 @@ proc tablelist::displayItems win {
     if {$colWidthsChanged} {
 	adjustColumns $win {} 1
     }
-    adjustElidedTextWhenIdle $win
     makeStripesWhenIdle $win
-    adjustSepsWhenIdle $win
-    updateVScrlbarWhenIdle $win
     showLineNumbersWhenIdle $win
+    updateViewWhenIdle $win
 
     activeTrace $win data activeRow w
     if {$wasEmpty} {
@@ -4225,16 +5019,16 @@ proc tablelist::insertCols {win colIdx argList} {
     adjustColumns $win $colIdxList 1
 
     #
+    # Redisplay the items
+    #
+    redisplay $win 0 $selCells
+
+    #
     # Reconfigure the relevant column labels
     #
     for {set col $limit} {$col < $data(colCount)} {incr col} {
 	reconfigColLabels $win imgs $col
     }
-
-    #
-    # Redisplay the items
-    #
-    redisplay $win 0 $selCells
 
     #
     # Update the indices anchorCol and activeCol
@@ -4248,6 +5042,7 @@ proc tablelist::insertCols {win colIdx argList} {
 	adjustColIndex $win data(activeCol) 1
     }
 
+    updateViewWhenIdle $win
     return ""
 }
 
@@ -4263,12 +5058,14 @@ proc tablelist::doScan {win opt x y} {
     incr y -[winfo y $w]
 
     if {$data(-titlecolumns) == 0} {
+	set textIdx [$data(body) index @0,$y]
+	set row [expr {int($textIdx) - 1}]
 	$w scan $opt $x $y
 	$data(hdrTxt) scan $opt $x 0
 
 	if {[string compare $opt "dragto"] == 0} {
 	    adjustElidedText $win
-	    updateColorsWhenIdle $win
+	    updateColors $win
 	    adjustSepsWhenIdle $win
 	    updateVScrlbarWhenIdle $win
 	}
@@ -4279,6 +5076,8 @@ proc tablelist::doScan {win opt x y} {
 	set data(scanMarkXOffset) \
 	    [scrlColOffsetToXOffset $win $data(scrlColOffset)]
     } else {
+	set textIdx [$data(body) index @0,$y]
+	set row [expr {int($textIdx) - 1}]
 	$w scan dragto 0 $y
 
 	#
@@ -4305,7 +5104,7 @@ proc tablelist::doScan {win opt x y} {
 	#
 	changeScrlColOffset $win [scrlXOffsetToColOffset $win $scrlXOffset]
 	adjustElidedText $win
-	updateColorsWhenIdle $win
+	updateColors $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
     }
@@ -4324,7 +5123,7 @@ proc tablelist::seeRow {win index} {
     #
     adjustRowIndex $win index
     upvar ::tablelist::ns${win}::data data
-    set key [lindex [lindex $data(itemList) $index] end]
+    set key [lindex $data(keyList) $index]
     if {$data(itemCount) == 0 || [info exists data($key-hide)]} {
 	return ""
     }
@@ -4336,10 +5135,7 @@ proc tablelist::seeRow {win index} {
     $data(body) see [expr {double($index + 1)}]
     $data(body) xview moveto [lindex [$data(hdrTxt) xview] 0]
 
-    adjustElidedText $win
-    updateColorsWhenIdle $win
-    adjustSepsWhenIdle $win
-    updateVScrlbarWhenIdle $win
+    updateViewWhenIdle $win
     return ""
 }
 
@@ -4365,7 +5161,7 @@ proc tablelist::seeCell {win row col} {
     #
     adjustRowIndex $win row
     adjustColIndex $win col
-    set key [lindex [lindex $data(itemList) $row] end]
+    set key [lindex $data(keyList) $row]
     if {[info exists data($key-hide)]} {
 	return ""
     }
@@ -4493,7 +5289,6 @@ proc tablelist::seeCell {win row col} {
 	    # one that is fully visible; restore the horizontal view
 	    #
 	    $b xview moveto [lindex [$h xview] 0]
-	    adjustElidedText $win
 	} elseif {$data($col-elide) ||
 		  [winfo width $data(hdrTxtFrLbl)$col] > $scrlWindowWidth} {
 	    #
@@ -4530,9 +5325,7 @@ proc tablelist::seeCell {win row col} {
 	$b delete 1.0 end
     }
 
-    updateColorsWhenIdle $win
-    adjustSepsWhenIdle $win
-    updateVScrlbarWhenIdle $win
+    updateViewWhenIdle $win
     return ""
 }
 
@@ -4589,7 +5382,7 @@ proc tablelist::rowSelection {win opt first last} {
 		# and column configuration options for each element of the row
 		#
 		set row [expr {int($selStart) - 1}]
-		set key [lindex [lindex $data(itemList) $row] end]
+		set key [lindex $data(keyList) $row]
 		set textIdx1 "$selStart linestart"
 		for {set col 0} {$col < $data(colCount)} {incr col} {
 		    if {$data($col-hide) && !$canElide} {
@@ -4663,7 +5456,7 @@ proc tablelist::rowSelection {win opt first last} {
 		#
 		# Check whether the row is selectable and non-hidden
 		#
-		set key [lindex [lindex $data(itemList) $row] end]
+		set key [lindex $data(keyList) $row]
 		if {[info exists data($key-selectable)] ||
 		    [info exists data($key-hide)]} {
 		    continue
@@ -4804,21 +5597,13 @@ proc tablelist::lostSelection win {
 # its body text child if the latter has the keyboard focus.
 #------------------------------------------------------------------------------
 proc tablelist::activeTrace {win varName index op} {
+    #
+    # Conditionally move the "active" tag to the line
+    # or cell that displays the active item or element
+    #
     upvar ::tablelist::ns${win}::data data
-    set w $data(body)
     if {$data(ownsFocus) && ![info exists data(dispId)]} {
-	$w tag remove active 1.0 end
-
-	set line [expr {$data(activeRow) + 1}]
-	set col $data(activeCol)
-	if {[string compare $data(-selecttype) "row"] == 0} {
-	    $w tag add active $line.0 $line.end
-	} elseif {$data(itemCount) > 0 && $data(colCount) > 0 &&
-		  $line > 0 && !$data($col-hide)} {
-	    findTabs $win $line $data(activeCol) $data(activeCol) \
-		     tabIdx1 tabIdx2
-	    $w tag add active $tabIdx1 $tabIdx2+1c
-	}
+	moveActiveTag $win
     }
 }
 

@@ -8,7 +8,7 @@
 #   - Private procedures performing RGB <-> HSV conversions
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2005-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -56,7 +56,8 @@ proc tablelist::setThemeDefaults {} {
     foreach opt {-background -foreground -disabledforeground -stripebackground
 		 -selectbackground -selectforeground -selectborderwidth -font
 		 -labelbackground -labelforeground -labelfont -labelborderwidth
-		 -labelpady -arrowcolor -arrowdisabledcolor -arrowstyle} {
+		 -labelpady -arrowcolor -arrowdisabledcolor -arrowstyle
+		 -treestyle} {
 	if {[llength $configSpecs($opt)] < 4} {
 	    lappend configSpecs($opt) $themeDefaults($opt)
 	} else {
@@ -97,6 +98,7 @@ proc tablelist::altTheme {} {
 	-labelpady		1 \
 	-arrowcolor		"" \
 	-arrowstyle		sunken10x9 \
+	-treestyle		winnative \
     ]
 }
 
@@ -163,6 +165,7 @@ proc tablelist::aquaTheme {} {
 	-labelpady		1 \
 	-arrowcolor		#777777 \
 	-arrowstyle		flat7x7 \
+	-treestyle		aqua \
     ]
 }
 
@@ -193,6 +196,7 @@ proc tablelist::AquativoTheme {} {
 	-labelpady		1 \
 	-arrowcolor		#777777 \
 	-arrowstyle		flat7x7 \
+	-treestyle		aqua \
     ]
 }
 
@@ -223,6 +227,7 @@ proc tablelist::blueTheme {} {
 	-labelpady		1 \
 	-arrowcolor		"" \
 	-arrowstyle		sunken10x9 \
+	-treestyle		gtk \
     ]
 }
 
@@ -253,6 +258,7 @@ proc tablelist::clamTheme {} {
 	-labelpady		1 \
 	-arrowcolor		"" \
 	-arrowstyle		sunken10x9 \
+	-treestyle		gtk \
     ]
 }
 
@@ -283,6 +289,7 @@ proc tablelist::classicTheme {} {
 	-labelpady		1 \
 	-arrowcolor		"" \
 	-arrowstyle		sunken10x9 \
+	-treestyle		gtk \
     ]
 
     if {[info exists tile::version] &&
@@ -319,6 +326,7 @@ proc tablelist::defaultTheme {} {
 	-labelpady		1 \
 	-arrowcolor		"" \
 	-arrowstyle		sunken10x9 \
+	-treestyle		gtk \
     ]
 }
 
@@ -349,6 +357,7 @@ proc tablelist::keramikTheme {} {
 	-labelpady		1 \
 	-arrowcolor		black \
 	-arrowstyle		flat8x5 \
+	-treestyle		winnative \
     ]
 }
 
@@ -379,6 +388,7 @@ proc tablelist::keramik_altTheme {} {
 	-labelpady		1 \
 	-arrowcolor		black \
 	-arrowstyle		flat8x5 \
+	-treestyle		winnative \
     ]
 }
 
@@ -409,6 +419,7 @@ proc tablelist::krocTheme {} {
 	-labelpady		1 \
 	-arrowcolor		"" \
 	-arrowstyle		sunken10x9 \
+	-treestyle		gtk \
     ]
 }
 
@@ -439,6 +450,7 @@ proc tablelist::plastikTheme {} {
 	-labelpady		1 \
 	-arrowcolor		black \
 	-arrowstyle		flat7x4 \
+	-treestyle		plastik \
     ]
 }
 
@@ -469,6 +481,7 @@ proc tablelist::srivTheme {} {
 	-labelpady		1 \
 	-arrowcolor		"" \
 	-arrowstyle		sunken10x9 \
+	-treestyle		gtk \
     ]
 }
 
@@ -499,6 +512,7 @@ proc tablelist::srivlgTheme {} {
 	-labelpady		1 \
 	-arrowcolor		"" \
 	-arrowstyle		sunken10x9 \
+	-treestyle		gtk \
     ]
 }
 
@@ -529,6 +543,7 @@ proc tablelist::stepTheme {} {
 	-labelpady		1 \
 	-arrowcolor		"" \
 	-arrowstyle		sunken10x9 \
+	-treestyle		gtk \
     ]
 }
 
@@ -1183,12 +1198,24 @@ proc tablelist::tileqtTheme {} {
 
 	"baghira"	{ set arrowColor $labelFg;  set arrowStyle flat7x7 }
 
+	"phase"		{ set arrowColor $labelFg;  set arrowStyle flat6x4 }
+
 	"qtcurve"	{ set arrowColor $labelFg;  set arrowStyle flat7x5 }
 
 	"keramik" -
 	"thinkeramik"	{ set arrowColor $labelFg;  set arrowStyle flat8x5 }
 
 	default		{ set arrowColor "";	    set arrowStyle sunken12x11 }
+    }
+
+    #
+    # The tree style depends on the current Qt style:
+    #
+    switch -- $style {
+	"baghira"	{ set treeStyle baghira }
+	"phase"		{ set treeStyle phase }
+	"plastik"	{ set treeStyle plastik }
+	default		{ set treeStyle winnative }
     }
 
     variable themeDefaults
@@ -1214,6 +1241,7 @@ proc tablelist::tileqtTheme {} {
 	-labelpady		0 \
 	-arrowcolor		$arrowColor \
 	-arrowstyle		$arrowStyle \
+	-treestyle		$treeStyle \
     ]
 }
 
@@ -1238,8 +1266,8 @@ proc tablelist::vistaTheme {} {
 	-labelfont		TkDefaultFont \
     ]
 
-    switch [winfo rgb . SystemButtonFace] {
-	"61680 61680 61680" {					;# Vista style
+    switch [winfo rgb . SystemHighlight] {
+	"13107 39321 65535" {					;# Aero
 	    set themeDefaults(-selectbackground) #d8effb
 	    set themeDefaults(-selectforeground) SystemWindowText
 
@@ -1250,9 +1278,15 @@ proc tablelist::vistaTheme {} {
 	    set labelPadY	4
 	    set arrowColor	#569bc0
 	    set arrowStyle	flat7x4
+
+	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
+		set treeStyle	vistaAero
+	    } else {						;# Win 7
+		set treeStyle	win7Aero
+	    }
 	}
 
-	default {						;# Classic style
+	default {						;# Win Classic
 	    set labelBg		SystemButtonFace
 	    set activeBg	SystemButtonFace
 	    set pressedBg	SystemButtonFace
@@ -1260,6 +1294,12 @@ proc tablelist::vistaTheme {} {
 	    set labelPadY	0
 	    set arrowColor	SystemButtonShadow
 	    set arrowStyle	flat7x4
+
+	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
+		set treeStyle	vistaClassic
+	    } else {						;# Win 7
+		set treeStyle	win7Classic
+	    }
 	}
     }
 
@@ -1272,6 +1312,7 @@ proc tablelist::vistaTheme {} {
 	-labelpady		$labelPadY \
 	-arrowcolor		$arrowColor \
 	-arrowstyle		$arrowStyle \
+	-treestyle		$treeStyle \
     ]
 }
 
@@ -1302,6 +1343,7 @@ proc tablelist::winnativeTheme {} {
 	-labelpady		0 \
 	-arrowcolor		"" \
 	-arrowstyle		sunken8x7 \
+	-treestyle		winnative \
     ]
 }
 
@@ -1332,6 +1374,7 @@ proc tablelist::winxpblueTheme {} {
 	-labelpady		1 \
 	-arrowcolor		#aca899 \
 	-arrowstyle		flat9x5 \
+	-treestyle		winxpBlue \
     ]
 }
 
@@ -1357,8 +1400,8 @@ proc tablelist::xpnativeTheme {} {
 	-labelfont		TkDefaultFont \
     ]
 
-    switch [winfo rgb . SystemButtonFace] {
-	"60652 59881 55512" {					;# XP style
+    switch [winfo rgb . SystemHighlight] {
+	"12593 27242 50629" {					;# Win XP Blue
 	    set xpStyle		1
 	    set labelBg		#ebeadb
 	    set activeBg	#faf8f3
@@ -1367,6 +1410,7 @@ proc tablelist::xpnativeTheme {} {
 	    set labelPadY	4
 	    set arrowColor	#aca899
 	    set arrowStyle	flat9x5
+	    set treeStyle	winxpBlue
 
 	    if {[info exists tile::version] &&
 		[string compare $tile::version 0.7] < 0} {
@@ -1374,7 +1418,24 @@ proc tablelist::xpnativeTheme {} {
 	    }
 	}
 
-	"57568 57311 58339" {					;# XP style
+	"37779 41120 28784" {					;# Win XP Olive
+	    set xpStyle		1
+	    set labelBg		#ebeadb
+	    set activeBg	#faf8f3
+	    set pressedBg	#dedfd8
+	    set labelBd		4
+	    set labelPadY	4
+	    set arrowColor	#aca899
+	    set arrowStyle	flat9x5
+	    set treeStyle	winxpOlive
+
+	    if {[info exists tile::version] &&
+		[string compare $tile::version 0.7] < 0} {
+		set labelBd 0
+	    }
+	}
+
+	"45746 46260 49087" {					;# Win XP Silver
 	    set xpStyle		1
 	    set labelBg		#f9fafd
 	    set activeBg	#fefefe
@@ -1383,6 +1444,7 @@ proc tablelist::xpnativeTheme {} {
 	    set labelPadY	4
 	    set arrowColor	#aca899
 	    set arrowStyle	flat9x5
+	    set treeStyle	winxpSilver
 
 	    if {[info exists tile::version] &&
 		[string compare $tile::version 0.7] < 0} {
@@ -1390,7 +1452,7 @@ proc tablelist::xpnativeTheme {} {
 	    }
 	}
 
-	"61680 61680 61680" {					;# Vista style
+	"13107 39321 65535" {					;# Aero
 	    set themeDefaults(-selectbackground) #d8effb
 	    set themeDefaults(-selectforeground) SystemWindowText
 
@@ -1402,9 +1464,15 @@ proc tablelist::xpnativeTheme {} {
 	    set labelPadY	4
 	    set arrowColor	#569bc0
 	    set arrowStyle	flat7x4
+
+	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
+		set treeStyle	vistaAero
+	    } else {						;# Win 7
+		set treeStyle	win7Aero
+	    }
 	}
 
-	default {						;# Classic style
+	default {						;# Win Classic
 	    set xpStyle		0
 	    set labelBg		SystemButtonFace
 	    set activeBg	SystemButtonFace
@@ -1413,6 +1481,12 @@ proc tablelist::xpnativeTheme {} {
 	    set labelPadY	0
 	    set arrowColor	SystemButtonShadow
 	    set arrowStyle	flat7x4
+
+	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
+		set treeStyle	vistaClassic
+	    } else {						;# Win 7
+		set treeStyle	win7Classic
+	    }
 	}
     }
 
@@ -1425,6 +1499,7 @@ proc tablelist::xpnativeTheme {} {
 	-labelpady		$labelPadY \
 	-arrowcolor		$arrowColor \
 	-arrowstyle		$arrowStyle \
+	-treestyle		$treeStyle \
     ]
 }
 
