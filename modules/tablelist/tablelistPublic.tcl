@@ -1,15 +1,14 @@
 #==============================================================================
 # Main Tablelist and Tablelist_tile package module.
 #
-# Copyright (c) 2000-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
-# @mdgen OWNER: scripts/*
 
 namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	4.12.1
+    variable version	5.0
     variable library	[DIR]
 
     #
