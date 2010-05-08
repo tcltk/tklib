@@ -1,11 +1,11 @@
 #==============================================================================
-# Demonstrates how to implement a tablelist widget for displaying and editing
-# the configuration options of an arbitrary widget.
+# Demonstrates how to use a tablelist widget for displaying and editing the
+# configuration options of an arbitrary widget.
 #
-# Copyright (c) 2000-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 4.12
+package require tablelist_tile 5.0
 
 namespace eval demo {
     #
@@ -61,8 +61,8 @@ if {$demo::currentTheme eq "aqua"} {
 proc demo::displayConfig w {
     if {![winfo exists $w]} {
 	bell
-	tk_messageBox -icon error -message "Bad window path name \"$w\"" \
-		      -type ok
+	tk_messageBox -title "Error" -icon error -message \
+	    "Bad window path name \"$w\""
 	return ""
     }
 
@@ -111,7 +111,7 @@ proc demo::displayConfig w {
     set b2 $bf.b2
     set b3 $bf.b3
     ttk::button $b1 -text "Refresh"     -command [list demo::putConfig $w $tbl]
-    ttk::button $b2 -text "Sort as set" -command [list $tbl sort]
+    ttk::button $b2 -text "Sort as Set" -command [list $tbl sort]
     ttk::button $b3 -text "Close"       -command [list destroy $top]
 
     #
@@ -142,8 +142,8 @@ proc demo::displayConfig w {
 proc demo::putConfig {w tbl} {
     if {![winfo exists $w]} {
 	bell
-	tk_messageBox -icon error -message "Bad window path name \"$w\"" \
-		      -parent [winfo toplevel $tbl] -type ok
+	tk_messageBox -title "Error" -icon error -message \
+	    "Bad window path name \"$w\"" -parent [winfo toplevel $tbl]
 	return ""
     }
 
@@ -222,8 +222,8 @@ proc demo::applyValue {tbl row col text} {
     set opt [$tbl cellcget $row,0 -text]
     if {[catch {$w configure $opt $text} result] != 0} {
 	bell
-	tk_messageBox -parent [winfo toplevel $tbl] -title Error \
-		      -icon error -message $result -type ok
+	tk_messageBox -title "Error" -icon error -message $result \
+	    -parent [winfo toplevel $tbl]
 	$tbl rejectinput
 	return ""
     }
@@ -256,7 +256,7 @@ if {$tcl_interactive} {
 	    widget, enter\n\n\tdemo::displayConfig <widgetName>\n"
 } else {
     wm withdraw .
-    tk_messageBox -icon warning -title $argv0 -type ok -message \
+    tk_messageBox -title $argv0 -icon warning -message \
 	"Please source this script into\nan interactive wish session"
     exit 1
 }
