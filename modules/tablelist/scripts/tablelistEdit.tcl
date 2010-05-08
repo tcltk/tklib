@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2009  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1059,10 +1059,11 @@ proc tablelist::createTileEntry {w args} {
 	}
 
 	xpnative {
-	    switch [winfo rgb . SystemButtonFace] {
-		"60652 59881 55512" -
-		"57568 57311 58339" -
-		"61680 61680 61680"	{ set padding 2 }
+	    switch [winfo rgb . SystemHighlight] {
+		"12593 27242 50629" -
+		"37779 41120 28784" -
+		"45746 46260 49087" -
+		"13107 39321 65535"	{ set padding 2 }
 		default			{ set padding 1 }
 	    }
 	}
@@ -1109,17 +1110,18 @@ proc tablelist::createTileSpinbox {w args} {
 	}
 
 	vista {
-	    switch [winfo rgb . SystemButtonFace] {
-		"61680 61680 61680"	{ set padding 0 }
+	    switch [winfo rgb . SystemHighlight] {
+		"13107 39321 65535"	{ set padding 0 }
 		default			{ set padding 1 }
 	    }
 	}
 
 	xpnative {
-	    switch [winfo rgb . SystemButtonFace] {
-		"60652 59881 55512" -
-		"57568 57311 58339" -
-		"61680 61680 61680"	{ set padding 2 }
+	    switch [winfo rgb . SystemHighlight] {
+		"12593 27242 50629" -
+		"37779 41120 28784" -
+		"45746 46260 49087" -
+		"13107 39321 65535"	{ set padding 2 }
 		default			{ set padding 1 }
 	    }
 	}
@@ -1338,6 +1340,13 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     if {$data(editRow) == $row && $data(editCol) == $col} {
 	return ""
     }
+    set item [lindex $data(itemList) $row]
+    set key [lindex $item end]
+    getIndentData $win $key $col indentWidth
+    set pixels [colWidth $win $col -stretched]
+    if {$indentWidth >= $pixels} {
+	return ""
+    }
     if {$data(editRow) >= 0 && ![doFinishEditing $win]} {
 	return ""
     }
@@ -1368,8 +1377,6 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     set name [getEditWindow $win $row $col]
     variable editWin
     set creationCmd [strMap {"%W" "$w"} $editWin($name-creationCmd)]
-    set item [lindex $data(itemList) $row]
-    set key [lindex $item end]
     append creationCmd { $editWin($name-fontOpt) [getCellFont $win $key $col]} \
 		       { -state normal}
     set w $data(bodyFrEd)
@@ -1401,21 +1408,28 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     array set data [list editKey $key editRow $row editCol $col]
     findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
     set b $data(body)
+    getIndentData $win $data(editKey) $data(editCol) indentWidth
+    if {$indentWidth == 0} {
+	set textIdx [$b index $tabIdx1+1c]
+    } else {
+	$b mark set editIndentMark [$b index $tabIdx1+1c]
+	set textIdx [$b index $tabIdx1+2c]
+    }
     if {$isCheckbtn} {
-	set editIdx [$b index $tabIdx1+1c]
+	set editIdx $textIdx
 	$b delete $editIdx $tabIdx2
     } else {
 	getAuxData $win $data(editKey) $data(editCol) auxType auxWidth
-	if {$auxType == 0} {				;# no image or window
-	    set editIdx [$b index $tabIdx1+1c]
+	if {$auxWidth == 0} {				;# no image or window
+	    set editIdx $textIdx
 	    $b delete $editIdx $tabIdx2
 	} elseif {[string compare $alignment "right"] == 0} {
 	    $b mark set editAuxMark $tabIdx2-1c
-	    set editIdx [$b index $tabIdx1+1c]
+	    set editIdx $textIdx
 	    $b delete $editIdx $tabIdx2-1c
 	} else {
-	    $b mark set editAuxMark $tabIdx1+1c
-	    set editIdx [$b index $tabIdx1+2c]
+	    $b mark set editAuxMark $textIdx
+	    set editIdx [$b index $textIdx+1c]
 	    $b delete $editIdx $tabIdx2
 	}
     }
@@ -1573,16 +1587,6 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     #
     if {!$isCheckbtn} {
 	place $w -relwidth 1.0 -relheight 1.0
-	set pixels [lindex $data(colList) [expr {2*$col}]]
-	if {$pixels == 0} {			;# convention: dynamic width
-	    set pixels $data($col-reqPixels)
-	    if {$data($col-maxPixels) > 0} {
-		if {$pixels > $data($col-maxPixels)} {
-		    set pixels $data($col-maxPixels)
-		}
-	    }
-	}
-	incr pixels $data($col-delta)
 	adjustEditWindow $win $pixels
 	update idletasks
 	if {![winfo exists $win]} {		;# because of update idletasks
@@ -1590,9 +1594,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	}
     }
 
-    adjustElidedTextWhenIdle $win
-    updateColorsWhenIdle $win
-    adjustSepsWhenIdle $win
+    updateViewWhenIdle $win
     return ""
 }
 
@@ -1636,9 +1638,7 @@ proc tablelist::doCancelEditing win {
     set data(canceled) 1
     event generate $win <<TablelistCellRestored>>
 
-    adjustElidedTextWhenIdle $win
-    updateColorsWhenIdle $win
-    adjustSepsWhenIdle $win
+    updateViewWhenIdle $win
     return ""
 }
 
@@ -1716,11 +1716,13 @@ proc tablelist::doFinishEditing win {
 	focus $data(body)
 	event generate $win <<TablelistCellUpdated>>
     }
-    update idletasks
 
-    adjustElidedTextWhenIdle $win
-    updateColorsWhenIdle $win
-    adjustSepsWhenIdle $win
+    update idletasks
+    if {![winfo exists $win]} {			;# because of update idletasks
+	return 0
+    }
+
+    updateViewWhenIdle $win
     return $result
 }
 
@@ -1844,18 +1846,31 @@ proc tablelist::adjustEditWindow {win pixels} {
     # Adjust the width of the auxiliary object (if any)
     #
     upvar ::tablelist::ns${win}::data data
+    set indent [getIndentData $win $data(editKey) $data(editCol) indentWidth]
     set aux [getAuxData $win $data(editKey) $data(editCol) auxType auxWidth]
-    if {$auxType != 0} {				;# image or window
-	if {$auxWidth + 4 <= $pixels} {
-	    incr auxWidth 4
-	    incr pixels -$auxWidth
-	} elseif {$auxWidth <= $pixels} {
-	    set pixels 0
-	} else {
-	    set auxWidth $pixels
-	    set pixels 0
+    if {$indentWidth >= $pixels} {
+	set indentWidth $pixels
+	set pixels 0
+	set auxWidth 0
+    } else {
+	incr pixels -$indentWidth
+	if {$auxWidth != 0} {				;# image or window
+	    if {$auxWidth + 5 <= $pixels} {
+		incr auxWidth 5
+		incr pixels -$auxWidth
+	    } elseif {$auxWidth <= $pixels} {
+		set pixels 0
+	    } else {
+		set auxWidth $pixels
+		set pixels 0
+	    }
 	}
+    }
 
+    if {$indentWidth != 0} {
+	insertOrUpdateIndent $data(body) editIndentMark $indent $indentWidth
+    }
+    if {$auxWidth != 0} {
 	if {$auxType == 1} {					;# image
 	    setImgLabelWidth $data(body) editAuxMark $auxWidth
 	} else {						;# window
@@ -1914,7 +1929,7 @@ proc tablelist::setEditWinFont win {
 	return ""
     }
 
-    set key [lindex [lindex $data(itemList) $data(editRow)] end] 
+    set key [lindex $data(keyList) $data(editRow)]
     set cellFont [getCellFont $win $key $data(editCol)]
     $data(bodyFrEd) configure $editWin($name-fontOpt) $cellFont
 
