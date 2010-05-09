@@ -1,3 +1,7 @@
+2010-05-09  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/tablelistWidget.html: Added two performance-related remarks.
+
 2010-05-08  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl: Bumped the version number to 5.0.

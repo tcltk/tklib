@@ -5856,6 +5856,11 @@ eval [list <i>pathName</i> <a href=
           <p>For technical reasons (the use of the <code><b>-elide</b></code>
           text widget tag option for collapsing a row), this subcommand is not
           supported for Tk versions earlier than 8.3.</p>
+
+          <p><b>REMARK:</b>&nbsp; You can achieve a quite significant speadup
+          by using this subcommand to insert a whole list of items rather than
+          using multiple invocations of <code><b><a href=
+          "#insertchildren">insertchildren</a></b></code>.</p>
         </dd>
 
         <dt><a name="insertchildren"></a><code><i>pathName</i>
@@ -5977,8 +5982,13 @@ eval [list <i>pathName</i> <a href=
 
           <p>but it is more efficient and easier to use.</p>
 
-          <p><b>REMARK:</b>&nbsp; This subcommand is not suitable for inserting
-          items into a tablelist designed for displaying a tree
+          <p><b>REMARK 1:</b>&nbsp; You can achieve a quite significant speadup
+          by using this subcommand to insert a whole list of items rather than
+          using multiple invocations of <code><b><a href=
+          "#insert">insert</a></b></code>.</p>
+
+          <p><b>REMARK 2:</b>&nbsp; This subcommand is not suitable for
+          inserting items into a tablelist designed for displaying a tree
           hierarchy.&nbsp; For such tablelist widgets use the <code><b><a href=
           "#insertchildlist">insertchildlist</a></b></code> or
           <code><b><a href="#insertchildren">insertchildren</a></b></code>
