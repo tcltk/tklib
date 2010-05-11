@@ -1,3 +1,6 @@
+2010-05-10  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotchart.man: Corrected documentation bug (2999846, thanks to Oliver Bienert)
+
 2009-12-10  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotchart.tcl: Added configuration method for barcharts
 	* plotchart.tcl: Added methods implemented by Michael Baudin for isolines
