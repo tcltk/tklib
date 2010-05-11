@@ -429,7 +429,7 @@ integer number greater than zero (if [const stacked] is not used).
 [para]
 
 
-[call [cmd ::Plotchart::createHorizontalBarchart] [arg w] [arg ylabels] [arg xaxis] [arg noseries]]
+[call [cmd ::Plotchart::createHorizontalBarchart] [arg w] [arg xaxis] [arg ylabel] [arg noseries]]
 
 Create a new barchart with horizontal bars (configuration type: horizbars). The vertical axis will
 display the labels contained in the argument [arg ylabels]. The number
@@ -446,12 +446,12 @@ be drawn shifted upward.
 [arg_def widget w in]
 Name of the [emph existing] canvas widget to hold the plot.
 
+[arg_def list xaxis in]
+A 3-element list containing minimum, maximum and stepsize for the x-axis, in this order.
+
 [arg_def list ylabels in]
 List of labels for the y-axis. Its length also determines the number of
 bars that will be plotted per series.
-
-[arg_def list xaxis in]
-A 3-element list containing minimum, maximum and stepsize for the x-axis, in this order.
 
 [arg_def int|[const stacked] noseries in]
 The number of data series that will be plotted. This has to be an
