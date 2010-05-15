@@ -1,3 +1,17 @@
+2010-05-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scrips/tablelistImages.tcl: Removed tree style "plastik";
+	* scrips/tablelistThemes.tcl: added tree style "klearlooks".
+	* scrips/tablelistWidget.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/tablelistWidget.html: Updated to reflect the changes.
+
+	* doc/plastik.png: Removed screenshot.
+
+	* doc/klearlooks.png: Added screenshot.
+
 2010-05-09  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/tablelistWidget.html: Added two performance-related remarks.
