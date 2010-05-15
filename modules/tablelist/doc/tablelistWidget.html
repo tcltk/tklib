@@ -247,7 +247,7 @@
     <i>columnIndex</i></code></dd>
 
     <dd><code><b><a href="#treestyle">-treestyle</a></b>
-    <b>aqua</b>|<b>baghira</b>|<b>gtk</b>|<b>oxygen1</b>|<b>oxygen2</b>|<b>phase</b>|<b>plastik</b>|<br>
+    <b>aqua</b>|<b>baghira</b>|<b>gtk</b>|<b>klearlooks</b>|<b>oxygen1</b>|<b>oxygen2</b>|<b>phase</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plastique</b>|<b>vistaAero</b>|<b>vistaClassic</b>|<b>win7Aero</b>|<b>win7Classic</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b></code></dd>
 
@@ -1144,10 +1144,10 @@
 
         <p>Notice that, while the up- and down-arrows of most of the styles
         listed above are drawn as triangles with flat or sunken relief, the
-        arrow styles <code><b>flat9x7</b></code> and
-        <code><b>flat10x6</b></code> give rise to arrows displayed as angles
-        similar to the <code><b>&gt;</b></code> and <code><b>&lt;</b></code>
-        characters rotated by 90&deg;.</p>
+        arrow styles <code><b>flat7x5</b></code>, <code><b>flat9x7</b></code>,
+        and <code><b>flat10x6</b></code> give rise to arrows displayed as
+        angles similar to the <code><b>&gt;</b></code> and
+        <code><b>&lt;</b></code> characters rotated by 90&deg;.</p>
       </blockquote>
     </dd>
 
@@ -3040,7 +3040,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
                   <td>Default for the Qt style <code><b>baghira</b></code>
-                  within the <code><b>tileqt</b></code> theme.</td>
+                  within the <code><b>tileqt</b></code> theme.&nbsp; Also used
+                  by some flavors of <code><b>qtcurve</b></code>.</td>
                 </tr>
               </table>
             </td>
@@ -3063,6 +3064,21 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
                   <code><b>default</b></code>, <code><b>kroc</b></code>,
                   <code><b>sriv</b></code>, <code><b>srivlg</b></code>, and
                   <code><b>step</b></code>.</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code><b>klearlooks</b></code></td>
+            <td><img src="klearlooks.png" width="117" height="51"></td>
+            <td>
+              Inspired by the KDE 4 style Klearlooks.<br>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                  <td>Tablelist_tile:&nbsp;</td>
+                  <td>Default for the Qt style <code><b>qtcurve</b></code>
+                  within the <code><b>tileqt</b></code> theme.</td>
                 </tr>
               </table>
             </td>
@@ -3095,24 +3111,9 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           </tr>
 
           <tr>
-            <td><code><b>plastik</b></code></td>
-            <td><img src="plastik.png" width="117" height="51"></td>
-            <td>
-              <table border="0" cellpadding="0" cellspacing="0">
-                <tr valign="top">
-                  <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the <code><b>plastik</b></code> theme and the
-                  Qt style <code><b>plastik</b></code> within the
-                  <code><b>tileqt</b></code> theme.</td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-
-          <tr>
             <td><code><b>plastique</b></code></td>
             <td><img src="plastique.png" width="117" height="51"></td>
-            <td>Inspired by the Qt style Plastique.</td>
+            <td>Inspired by the Qt and KDE 4 style Plastique.</td>
           </tr>
 
           <tr>
@@ -3208,9 +3209,9 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
                   <td>Tablelist_tile:&nbsp;</td>
                   <td>Default for the themes <code><b>alt</b></code>,
                   <code><b>keramik</b></code>, <code><b>keramik_alt</b></code>,
-                  <code><b>winnative</b></code>, and
-                  <code><b>xpnative</b></code> with the Windows Classic style,
-                  as well as for most Qt styles within the
+                  <code><b>plastik</b></code>, <code><b>winnative</b></code>,
+                  and <code><b>xpnative</b></code> with the Windows Classic
+                  style, as well as for most Qt styles within the
                   <code><b>tileqt</b></code> theme.</td>
                 </tr>
               </table>
