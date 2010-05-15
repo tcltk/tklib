@@ -450,7 +450,7 @@ proc tablelist::plastikTheme {} {
 	-labelpady		1 \
 	-arrowcolor		black \
 	-arrowstyle		flat7x4 \
-	-treestyle		plastik \
+	-treestyle		winnative \
     ]
 }
 
@@ -1214,7 +1214,7 @@ proc tablelist::tileqtTheme {} {
     switch -- $style {
 	"baghira"	{ set treeStyle baghira }
 	"phase"		{ set treeStyle phase }
-	"plastik"	{ set treeStyle plastik }
+	"qtcurve"	{ set treeStyle klearlooks }
 	default		{ set treeStyle winnative }
     }
 

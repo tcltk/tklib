@@ -368,26 +368,26 @@ namespace eval tablelist {
     #
     # Use lists to facilitate the handling of miscellaneous options
     #
-    variable activeStyles	[list frame none underline]
-    variable alignments		[list left right center]
-    variable arrowStyles	[list flat6x4 flat7x4 flat7x5 flat7x7 \
-				      flat8x5 flat9x5 flat9x7 flat10x6 \
-				      sunken8x7 sunken10x9 sunken12x11]
-    variable arrowTypes		[list up down]
-    variable expCollOpts	[list -fully -partly]
-    variable colWidthOpts	[list -requested -stretched -total]
-    variable states		[list disabled normal]
-    variable selectTypes	[list row cell]
-    variable sortModes		[list ascii asciinocase command dictionary \
-				      integer real]
-    variable sortOrders		[list increasing decreasing]
-    variable _sortOrders	[list -increasing -decreasing]
-    variable scanCmdOpts	[list mark dragto]
-    variable selCmdOpts		[list anchor clear includes set]
-    variable treeStyles		[list aqua baghira gtk oxygen1 oxygen2 phase \
-				      plastik plastique vistaAero vistaClassic \
-				      win7Aero win7Classic winnative \
-				      winxpBlue winxpOlive winxpSilver]
+    variable activeStyles  [list frame none underline]
+    variable alignments    [list left right center]
+    variable arrowStyles   [list flat6x4 flat7x4 flat7x5 flat7x7 \
+				 flat8x5 flat9x5 flat9x7 flat10x6 \
+				 sunken8x7 sunken10x9 sunken12x11]
+    variable arrowTypes    [list up down]
+    variable expCollOpts   [list -fully -partly]
+    variable colWidthOpts  [list -requested -stretched -total]
+    variable states	   [list disabled normal]
+    variable selectTypes   [list row cell]
+    variable sortModes     [list ascii asciinocase command dictionary \
+				 integer real]
+    variable sortOrders    [list increasing decreasing]
+    variable _sortOrders   [list -increasing -decreasing]
+    variable scanCmdOpts   [list mark dragto]
+    variable selCmdOpts    [list anchor clear includes set]
+    variable treeStyles    [list aqua baghira gtk klearlooks oxygen1 oxygen2 \
+				 phase plastique vistaAero vistaClassic \
+				 win7Aero win7Classic winnative \
+				 winxpBlue winxpOlive winxpSilver]
 
     #
     # The array maxIndentDepths holds the current max.
