@@ -1,8 +1,15 @@
+2010-05-22  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:              Slightly extended.
+	* doc/tablelistWidget.html:
+
+	* scripts/tablelistWidget.tcl: Fixed a bug in the insertlist subcommand.
+
 2010-05-15  Csaba Nemethi <csaba.nemethi@t-online.de>
 
-	* scrips/tablelistImages.tcl: Removed tree style "plastik";
-	* scrips/tablelistThemes.tcl: added tree style "klearlooks".
-	* scrips/tablelistWidget.tcl:
+	* scripts/tablelistImages.tcl: Removed tree style "plastik";
+	* scripts/tablelistThemes.tcl: added tree style "klearlooks".
+	* scripts/tablelistWidget.tcl:
 
 	* scripts/tclIndex: Newly generated.
 
