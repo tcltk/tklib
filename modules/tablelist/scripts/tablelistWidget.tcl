@@ -2606,7 +2606,7 @@ proc tablelist::insertlistSubCmd {win argList} {
 
     synchronize $win
     set index [rowIndex $win [lindex $argList 0] 1]
-    return [insertRows $win $index [lrange $argList 1 end] \
+    return [insertRows $win $index [lindex $argList 1] \
 	    $data(hasListVar) root $index]
 }
 
@@ -4532,7 +4532,8 @@ proc tablelist::deleteCols {win first last selCellsName} {
 #
 # Processes the tablelist insert and insertlist subcommands.
 #------------------------------------------------------------------------------
-proc tablelist::insertRows {win index argList updateListVar parentKey childIdx} {
+proc tablelist::insertRows {win index argList updateListVar parentKey \
+			    childIdx} {
     set argCount [llength $argList]
     if {$argCount == 0} {
 	return {}
