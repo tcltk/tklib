@@ -4,7 +4,8 @@ What is new in Tablelist 5.0?
 1.  A tablelist widget is now not only a multi-column listbox, but also
     a multi-column tree widget (thanks to Sebastien Barre, Tillmann
     Basien, Jos Decoster, Dr. Detlef Groth, Kai Morich, Georgios
-    Petasis, and Kevin Walzer for their proposals).  This is achieved
+    Petasis, and Kevin Walzer for their proposals, as well as to Paul
+    Obermeier for testing the preliminary version).  This is achieved
     with the aid of the new configuration options "-collapsecommand",
     "-expandcommand", "-treecolumn", and "-treestyle", along with the
     new subcommands "childcount", "childindex", "childkeys", "collapse",
@@ -31,7 +32,7 @@ What is new in Tablelist 5.0?
     "insertchildlist" now return the list of full keys corresponding to
     the items just inserted.
 
-8.  Fixed a long-sanding bug related to the "-labelfont" option (thanks
+8.  Fixed a long-standing bug related to the "-labelfont" option (thanks
     to Jacek Jendrysik for his bug report).
 
 9.  Fixed a bug related to the "-text" column configuration option
