@@ -1,3 +1,10 @@
+2010-05-26  Andreas Kupries  <andreask@activestate.com>
+
+	* canvas_snap.tcl: New package, taking snapshots of
+	* canvas_snap.man: Canvases (to Tk photo image).
+	* pkgIndex.tcl: Original author George Petasis, see
+	  http://wiki.tcl.tk/1404.
+
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
