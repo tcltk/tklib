@@ -1,3 +1,9 @@
+2010-05-28  Andreas Kupries  <andreask@activestate.com>
+
+	* canvas_snap.tcl: Fixed oops, missing setup of our
+	* canvas_snap.man: namespace. Version bumped to 1.0.1
+	* pkgIndex.tcl: Thanks to George Petasis for noticing.
+
 2010-05-26  Andreas Kupries  <andreask@activestate.com>
 
 	* canvas_snap.tcl: New package, taking snapshots of

@@ -12,10 +12,12 @@ package require Tcl 8.5
 package require Tk  8.5
 package require img::window
 
+namespace eval ::canvas {}
+
 # ### ### ### ######### ######### #########
 ## Implementation.
 
-proc canvas::snap {canvas} {
+proc ::canvas::snap {canvas} {
 
     # Ensure that the window is on top of everything else, so as not
     # to get white ranges in the image, due to overlapped portions of
@@ -105,5 +107,5 @@ proc canvas::snap {canvas} {
 # ### ### ### ######### ######### #########
 ## Ready
 
-package provide canvas::snap 1
+package provide canvas::snap 1.0.1
 return
