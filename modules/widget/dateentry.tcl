@@ -16,7 +16,7 @@
 #
 # See the example at the bottom.
 #
-# RCS: @(#) $Id: dateentry.tcl,v 1.3 2008/11/14 03:40:23 hobbs Exp $
+# RCS: @(#) $Id: dateentry.tcl,v 1.4 2010/06/01 18:06:52 hobbs Exp $
 #
 
 # Creation and Options - widget::dateentry $path ...
@@ -43,7 +43,6 @@
 
 package require widget
 package require widget::calendar
-if {![package vsatisfies [package provide Tk] 8.5]} { package require tile }
 
 namespace eval ::widget {
     # http://www.famfamfam.com/lab/icons/mini/
@@ -287,7 +286,7 @@ bind TDateEntry <Escape>        { %W unpost }
 bind TDateEntry <ButtonPress-1> { %W state pressed ; %W post }
 bind TDateEntry <ButtonRelease-1> { %W state !pressed }
 
-package provide widget::dateentry 0.91
+package provide widget::dateentry 0.92
 
 ##############
 # TEST CODE ##

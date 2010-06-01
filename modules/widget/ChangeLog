@@ -1,3 +1,14 @@
+2010-06-01  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* dateentry.tcl: v0.92
+	* dialog.tcl: v1.3.1
+	* mentry.tcl: v1.0.1
+	* statusbar.tcl: v1.2.1
+	* superframe.tcl: v1.0.1
+	* scrollw.tcl: v1.2.1
+	* toolbar.tcl: v1.2.1 rely on widget to provide tile
+	* widget.tcl: v3.1 conditionally require tile (8.4 only)
+
 2009-09-25  Ruediger Haertel <r_haertel@gmx.de>
 
 	* calendar.tcl: handle -textvariable option correctly also
@@ -19,7 +30,7 @@
 	     . for english and german the string "Today is"
 	           is displayed, other languages don't have this.
 
-	* widget_calendar.tcl: added section with key bindings                 
+	* widget_calendar.tcl: added section with key bindings
 	* pkgIndex.tcl: bump calendar to v0.93
 
 2009-09-25  Ruediger Haertel <r_haertel@gmx.de>
