@@ -1,3 +1,8 @@
+2010-06-02  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:               Fixed a bug related to embedded windows.
+	* scripts/tablelistUtil.tcl:
+
 2010-05-22  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:              Slightly extended.
