@@ -38,7 +38,10 @@ What is new in Tablelist 5.0?
 9.  Fixed a bug related to the "-text" column configuration option
     (thanks to Paul Obermeier for his bug report).
 
-10. Numerous further improvements in the code and documentation.
+10. Fixed a long-standing bug related to embedded windows in right-
+    aligned columns (thanks to Jerzy Witkowski for his bug report).
+
+11. Numerous further improvements in the code and documentation.
 
 What was new in Tablelist 4.12?
 -------------------------------
