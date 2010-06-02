@@ -1,3 +1,8 @@
+2010-06-02  Andreas Kupries  <andreask@activestate.com>
+
+	* pkgIndex.tcl: Meh, typo'd my update. screenruler is unchanged,
+	  scrolledwindow isn't. Fixed.
+
 2010-06-01  Andreas Kupries  <andreask@activestate.com>
 
 	* pkgIndex.tcl: Updated with the actual package versions.
