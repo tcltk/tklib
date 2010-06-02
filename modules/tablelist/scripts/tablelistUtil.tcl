@@ -1400,9 +1400,9 @@ proc tablelist::insertElem {w index text aux auxType alignment} {
 	    $w window create $index -padx 1 -pady $padY -create $aux
 	} else {						;# window
 	    if {$auxType == 2} {				;# static width
-		place $aux.w -anchor ne -relwidth ""
+		place $aux.w -anchor ne -relwidth "" -relx 1.0
 	    } else {						;# dynamic width
-		place $aux.w -anchor ne -relwidth 1.0
+		place $aux.w -anchor ne -relwidth 1.0 -relx 1.0
 	    }
 	    $w window create $index -padx 1 -pady $padY -window $aux
 	}
@@ -1415,9 +1415,9 @@ proc tablelist::insertElem {w index text aux auxType alignment} {
 	    $w window create $index -padx 1 -pady $padY -create $aux
 	} else {						;# window
 	    if {$auxType == 2} {				;# static width
-		place $aux.w -anchor nw -relwidth ""
+		place $aux.w -anchor nw -relwidth "" -relx 0.0
 	    } else {						;# dynamic width
-		place $aux.w -anchor nw -relwidth 1.0
+		place $aux.w -anchor nw -relwidth 1.0 -relx 0.0
 	    }
 	    $w window create $index -padx 1 -pady $padY -window $aux
 	}
@@ -1444,9 +1444,9 @@ proc tablelist::insertMlElem {w index msgScript aux auxType alignment} {
 	    $w window create $index -padx 1 -pady $padY -create $aux
 	} else {						;# window
 	    if {$auxType == 2} {				;# static width
-		place $aux.w -anchor ne -relwidth ""
+		place $aux.w -anchor ne -relwidth "" -relx 1.0
 	    } else {						;# dynamic width
-		place $aux.w -anchor ne -relwidth 1.0
+		place $aux.w -anchor ne -relwidth 1.0 -relx 1.0
 	    }
 	    $w window create $index -padx 1 -pady $padY -window $aux
 	}
@@ -1458,9 +1458,9 @@ proc tablelist::insertMlElem {w index msgScript aux auxType alignment} {
 	    $w window create $index -padx 1 -pady $padY -create $aux
 	} else {						;# window
 	    if {$auxType == 2} {				;# static width
-		place $aux.w -anchor nw -relwidth ""
+		place $aux.w -anchor nw -relwidth "" -relx 0.0
 	    } else {						;# dynamic width
-		place $aux.w -anchor nw -relwidth 1.0
+		place $aux.w -anchor nw -relwidth 1.0 -relx 0.0
 	    }
 	    $w window create $index -padx 1 -pady $padY -window $aux
 	}
@@ -1535,9 +1535,9 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
 		    setImgLabelAnchor $w $index1 e
 		} else {					;# window
 		    if {$auxType == 2} {			;# static width
-			place $aux.w -anchor ne -relwidth ""
+			place $aux.w -anchor ne -relwidth "" -relx 1.0
 		    } else {					;# dynamic width
-			place $aux.w -anchor ne -relwidth 1.0
+			place $aux.w -anchor ne -relwidth 1.0 -relx 1.0
 		    }
 		}
 		set index $index1
@@ -1546,9 +1546,9 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
 		    setImgLabelAnchor $w $index1 w
 		} else {					;# window
 		    if {$auxType == 2} {			;# static width
-			place $aux.w -anchor nw -relwidth ""
+			place $aux.w -anchor nw -relwidth "" -relx 0.0
 		    } else {					;# dynamic width
-			place $aux.w -anchor nw -relwidth 1.0
+			place $aux.w -anchor nw -relwidth 1.0 -relx 0.0
 		    }
 		}
 		set index $index1+1c
@@ -1663,9 +1663,9 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 		    setImgLabelAnchor $w index2Mark-1c e
 		} else {					;# window
 		    if {$auxType == 2} {			;# static width
-			place $aux.w -anchor ne -relwidth ""
+			place $aux.w -anchor ne -relwidth "" -relx 1.0
 		    } else {					;# dynamic width
-			place $aux.w -anchor ne -relwidth 1.0
+			place $aux.w -anchor ne -relwidth 1.0 -relx 1.0
 		    }
 		}
 		set index index2Mark-2c
@@ -1674,9 +1674,9 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 		    setImgLabelAnchor $w $index1 w
 		} else {					;# window
 		    if {$auxType == 2} {			;# static width
-			place $aux.w -anchor nw -relwidth ""
+			place $aux.w -anchor nw -relwidth "" -relx 0.0
 		    } else {					;# dynamic width
-			place $aux.w -anchor nw -relwidth 1.0
+			place $aux.w -anchor nw -relwidth 1.0 -relx 0.0
 		    }
 		}
 		set index $index1+1c
