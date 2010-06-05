@@ -1,3 +1,7 @@
+2010-06-05  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/tablelist.html:       Corrected a typo.
+
 2010-06-02  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:               Fixed a bug related to embedded windows.
