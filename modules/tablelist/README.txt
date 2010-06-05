@@ -117,7 +117,7 @@ This command will create a directory named "tablelist5.0", with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "tablelist5.0.zip" into the directory "tablelist5.0",
+distribution file "tablelist5_0.zip" into the directory "tablelist5.0",
 with the subdirectories "demos", "doc", and "scripts".
 
 Note that the file "tablelistEdit.tcl" in the "scripts" directory is
