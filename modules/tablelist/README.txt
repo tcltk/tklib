@@ -36,11 +36,11 @@ written in pure Tcl/Tk code.  It contains:
   - a tutorial in HTML format;
   - reference pages in HTML format.
 
-A tablelist widget is a multi-column listbox.  The width of each column
-can be dynamic (i.e., just large enough to hold all its elements,
-including the header) or static (specified in characters or pixels).
-The columns are, per default, resizable.  The alignment of each column
-can be specified as "left", "right", or "center".
+A tablelist is a multi-column listbox and tree widget.  The width of
+each column can be dynamic (i.e., just large enough to hold all its
+elements, including the header) or static (specified in characters or
+pixels).  The columns are, per default, resizable.  The alignment of
+each column can be specified as "left", "right", or "center".
 
 The columns, rows, and cells can be configured individually.  Several
 of the global and column-specific options refer to the headers,
