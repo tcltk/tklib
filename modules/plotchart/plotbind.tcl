@@ -101,9 +101,6 @@ proc ::Plotchart::BindCmd {xcoord ycoord w cmd} {
 proc ::Plotchart::PieExplodeSegment {w segment {button 0}} {
     variable scaling
 
-    console show
-    puts "Segment, button: $segment, $button"
-
     if { $button && $scaling($w,auto) == 0 } {
         return
     }
