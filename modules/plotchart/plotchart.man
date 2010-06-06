@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin Plotchart n 1.8.3]
-[copyright {2009 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
+[copyright {2010 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.4]]
@@ -762,7 +762,7 @@ Set one or more configuration parameters for the y-axis. This method
 accepts the same options and values as the method [method xconfig].
 
 
-[call [cmd \$anyplot] background [arg part] [arg colour_or_image] [arg dir]]
+[call [cmd \$anyplot] background [arg part] [arg colour_or_image] [arg dir] [opt brightness]]
 
 Set the background of a part of the plot
 
@@ -785,9 +785,12 @@ in which the colour gets whiter.
 [arg_def string colour_or_image]
 Colour for that part or the name of the image if "part" is "image"
 
-[arg_def string dir]
+[arg_def string dir in]
 The direction of the gradient. One of: top-down, bottom-up, left-right
 or right-left.
+
+[arg_def string brightness in]
+Indicates whether the colour should become brighter (bright) or darker (dark). Defaults to bright
 
 [list_end]
 [para]
@@ -1565,7 +1568,7 @@ The second colour, and so on.
 
 [list_end]
 
-[call [cmd \$pie] explode [arg segment]
+[call [cmd \$pie] explode [arg segment]]
 
 Explode a segment (that is: move one segment out of the circle). If the segment is
 indicated as "auto", then you can click on a segment. This will be exploded instead of
@@ -1618,7 +1621,7 @@ The second colour, and so on.
 For [emph {vertical barcharts}]:
 
 [list_begin definitions]
-[call [cmd \$barchart] plot [arg series] [arg ydata] [arg colour]]
+[call [cmd \$barchart] plot [arg series] [arg ydata] [arg colour] [opt dir] [opt brightness]]
 
 Add a data series to a barchart.
 
@@ -1631,6 +1634,15 @@ A list of values, one for each x-axis label.
 
 [arg_def color colour in]
 The colour of the bars.
+
+[arg_def string dir in]
+If given, "top-down" or "bottom-up", to indicate the direction in which the colour changes.
+(If not given, a uniform colour is used).
+
+[arg_def string brightness in]
+If given, "bright" or "dark" (defaulting to "bright"). The colour will change to respectively
+white or black, depending on the direction.
+
 
 [list_end]
 
@@ -1659,7 +1671,7 @@ Format string to use for formatting the values
 For [emph {horizontal barcharts}]:
 
 [list_begin definitions]
-[call [cmd \$barchart] plot [arg series] [arg xdata] [arg colour]]
+[call [cmd \$barchart] plot [arg series] [arg xdata] [arg colour] [opt dir] [opt brightness]]
 
 Add a data series to a barchart.
 
@@ -1672,6 +1684,14 @@ A list of values, one for each y-axis label.
 
 [arg_def color colour in]
 The colour of the bars.
+
+[arg_def string dir in]
+If given, "left-right" or "right-left", to indicate the direction in which the colour changes.
+(If not given, a uniform colour is used).
+
+[arg_def string brightness in]
+If given, "bright" or "dark" (defaulting to "bright"). The colour will change to respectively
+white or black, depending on the direction.
 
 [list_end]
 
@@ -2898,7 +2918,7 @@ For example:
 }]
 
 [section {INTERACTIVE USE}]
-[emph Plotchart} has several features for interactive use (cf. [sectref {NOTES ON TAGS}]):
+[emph Plotchart] has several features for interactive use (cf. [sectref {NOTES ON TAGS}]):
 
 [list_begin itemized]
 
@@ -2920,10 +2940,12 @@ If you require different forms of interaction, not covered by [emph Plotchart] i
 you can use the tags on the various canvas elements to define other bindings.
 
 [para]
-The [emph bindplot] and [emph bindlast] are defined as follows:
+The [emph bindplot] and [emph bindlast] are defined - currently for
+xy-plots with linear axes only - as follows:
+
 [list_begin definitions]
 
-[call [cmd \$anyplot bindplot [arg event] [arg command] [arg args]]
+[call [cmd \$anyplot] bindplot [arg event] [arg command] [arg args]]
 Register a command that will be run whenever the given event occurs in the plot.
 
 [list_begin arguments]
@@ -2941,7 +2963,7 @@ assuming the argument "command" is: {cmd A B C}
 
 [list_end]
 
-[call [cmd \$anyplot bindlast [arg series] [arg event] [arg command]]
+[call [cmd \$anyplot] bindlast [arg series] [arg event] [arg command]]
 Register a command that will be run when the event occurs within the neighbourhood of
 the last point added to the given series. (You can use directly after inserting
 a data point. All such commands will remain active).
@@ -3006,8 +3028,124 @@ foreach x {1 2 5 10 20 50 100 200 500 1000} {
 
 
 [section {NOTES ON TAGS}]
-P.M.
 
+The implementation of [emph Plotchart] relies heavily on the canvas's
+ability to identify graphical objects by tags and to change the drawing order of
+the objects. This section documents the tags that are used.
+
+[para]
+([emph Note:] the tags are not always used consistently - see the notes appearing with
+the various tags. This section describes the current state.)
+
+[para]
+[emph "General graphical objects:"]
+[list_begin itemized]
+[item]
+[emph mask] - Used to manipulate the opaque rectangles that ensure data outside
+the viewport are not shown.
+[item]
+[emph "topmask, horizmask, vertmask"] - specialised tags, used for scrollable plots.
+[item]
+[emph title] - Used for title strings.
+[item]
+[emph "BalloonText, BalloonFrame"] - Used to manipulate balloon text.
+[item]
+[emph PlainText] - Used to manipulate ordinary text without any decoration.
+[item]
+[emph background] - Tag used for gradient and image backgrounds (and for gradient-filled bars).
+[item]
+[emph "xaxis, yaxis"] - Tags used for all objects related to horizontal or vertical axes.
+(also: both for numerical axes and axes with labels as in barcharts).
+Note, however, that the [emph text] along the axes has no particular tag.
+[item]
+[emph raxis] - Tag used for all objects related to a [emph right] axis.
+[item]
+[emph taxis] - Tag used for all objects related to a [emph time] axis.
+[item]
+[emph axis3d] - Tag used for 3D axes
+[item]
+[emph "xtickline, ytickline"] - Tags used for ticklines.
+[item]
+[emph "legend, legengb, legendobj"] - Tags used for the legend. The latter is used to manipulate
+the legend as a whole.
+[item]
+[emph "legend_series"] - Tag used to control the appearance of the legend entry ("series" should
+be replaced by the series name).
+
+[list_end]
+
+[emph "XY-plots (all types of axes):"]
+[list_begin itemized]
+[item]
+[emph data] - The general tag to identify graphical objects associated with data.
+[item]
+[emph data_seriesname] - The tag specific to a data series ("seriesname" should be replaced).
+[item]
+[emph band] - The horizontal or vertical band drawn with the xband otr yband subcommands have this tag
+by the actual name).
+[list_end]
+Items such as labelled dots only have the "data" tag.
+
+[para]
+[emph "Piecharts:"]
+[list_begin itemized]
+[item]
+[emph segment_segmentnumber] - The tag identifying the segment, the string "segmentnumber" should
+be replaced by the actual number. This tag is used to explode the segments.
+[list_end]
+
+[emph "Barcharts:"]
+[para]
+Barcharts use the same tags as xy-plots (but for gradient-filled bars the data_seriesname is not used).
+
+[para]
+[emph "Histograms and isometric plots:"]
+[para]
+Currently the only tag used is "data".
+
+[para]
+[emph "Time-charts:"]
+[para]
+As these plots are scrollable, several tags are used specific to the scrolling:
+vertscroll, horizscroll, below, lowest, above, timeline, tline.
+Each item also has a tag of the form "item_number",
+where "number" is to be replaced by the actual sequence number of the item.
+
+[para]
+[emph "Gantt charts:"]
+[para]
+In addition to the tags described for the time-charts, the following tags are used:
+description, completed, summary and summarybar.
+
+[para]
+[emph "Radial charts and polar plots:"]
+[para]
+Currently the radial lines indicating the grid have no tags. The graphical objects associated with
+data only have the "data" tag.
+
+[para]
+[emph "Windroses:"]
+[para]
+Only the tag [emph data_number] is currently used ("number" should be replaced by the
+sequence number of the data, starting at 0.
+
+[para]
+[emph "Contour and isoline plots:"]
+[para]
+No tags are used.
+
+[para]
+[emph "3D plots:"]
+[para]
+No tags are used for the data objects, only for the axes.
+
+[para]
+[emph "Charts decorated with 3D effects:"]
+[para]
+The following tags are used to identify various types of graphical objects: platform, background, d, u,
+ticklines.
+[para]
+The text associated with the bars has no tags. The ribbon lines and areas have no tags either.
 
 
 [section {TODO - SOME PRIVATE NOTES}]
