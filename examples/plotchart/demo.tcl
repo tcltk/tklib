@@ -1,6 +1,7 @@
 #  demo.tcl --
 #      Demo program for Plotchart
 #
+source d:/tcl-programs/plotchart/cvs-dir/plotchart.tcl
 package require Plotchart
 
 proc demo {code} {
@@ -125,7 +126,7 @@ set s [::Plotchart::createHorizontalBarchart .cnv {0.0 10.0 2.0} \
          {Antarctica Eurasia "The Americas" "Australia and Oceania" Ocean} 2]
 
 $s plot series1 {1.0 4.0 6.0 1.0 7.0} red left-right
-$s plot series2 {0.0 3.0 7.0 9.3 2.0} green right-left
+$s plot series2 {0.0 3.0 7.0 9.3 2.0} green right-left dark
 $s title "Arbitrary data"
 }
 
