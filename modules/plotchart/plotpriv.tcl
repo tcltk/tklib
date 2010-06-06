@@ -1094,12 +1094,13 @@ proc ::Plotchart::DrawPolarData { w series rad phi } {
 #    ydata       Series of y data
 #    colour      The colour to use (optional)
 #    dir         Direction if graded colours are used (see DrawGradientBackground)
+#    brightness  Brighten (bright) or darken (dark) the colours
 # Result:
 #    None
 # Side effects:
 #    Data bars drawn in canvas
 #
-proc ::Plotchart::DrawVertBarData { w series ydata {colour black} {dir {}} } {
+proc ::Plotchart::DrawVertBarData { w series ydata {colour black} {dir {}} {brightness bright}} {
    variable data_series
    variable scaling
    variable legend
@@ -1153,7 +1154,12 @@ proc ::Plotchart::DrawVertBarData { w series ydata {colour black} {dir {}} } {
           $w create rectangle $px1 $py1 $px2 $py2 \
                          -fill $colour -tag [list data data_$series]
       } else {
-          DrawGradientBackground $w $colour $dir [list $px1 $py1 $px2 $py2]
+          if { $brightness == "dark" } {
+              set intensity black
+          } else {
+              set intensity white
+          }
+          DrawGradientBackground $w $colour $dir $intensity [list $px1 $py1 $px2 $py2]
       }
 
       if { $settings($w,showvalues) } {
@@ -1195,12 +1201,13 @@ proc ::Plotchart::DrawVertBarData { w series ydata {colour black} {dir {}} } {
 #    xdata       Series of x data
 #    colour      The colour to use (optional)
 #    dir         Direction if graded colours are used (see DrawGradientBackground)
+#    brightness  Brighten (bright) or darken (dark) the colours
 # Result:
 #    None
 # Side effects:
 #    Data bars drawn in canvas
 #
-proc ::Plotchart::DrawHorizBarData { w series xdata {colour black} {dir {}} } {
+proc ::Plotchart::DrawHorizBarData { w series xdata {colour black} {dir {}} {brightness bright}} {
    variable data_series
    variable scaling
    variable settings
@@ -1252,7 +1259,12 @@ proc ::Plotchart::DrawHorizBarData { w series xdata {colour black} {dir {}} } {
           $w create rectangle $px1 $py1 $px2 $py2 \
                          -fill $colour -tag data
       } else {
-          DrawGradientBackground $w $colour $dir [list $px1 $py1 $px2 $py2]
+          if { $brightness == "dark" } {
+              set intensity black
+          } else {
+              set intensity white
+          }
+          DrawGradientBackground $w $colour $dir $intensity [list $px1 $py1 $px2 $py2]
       }
 
       if { $settings($w,showvalues) } {
@@ -1591,13 +1603,14 @@ proc ::Plotchart::DrawIsometricData { w type args } {
 #    part        Which part: axes or plot
 #    colour      Colour to use (or if part is "image", name of the image)
 #    dir         Direction of increasing whiteness (optional, for "gradient"
+#    brightness  Brighten (bright) or darken (dark) the colours
 #
 # Result:
 #    None
 # Side effect:
 #    Colour of the relevant part is changed
 #
-proc ::Plotchart::BackgroundColour { w part colour {dir {}} } {
+proc ::Plotchart::BackgroundColour { w part colour {dir {}} {brighten bright}} {
     if { $part == "axes" } {
         $w configure -highlightthickness 0
         $w itemconfigure mask -fill $colour -outline $colour
@@ -1607,7 +1620,12 @@ proc ::Plotchart::BackgroundColour { w part colour {dir {}} } {
         $w configure -background $colour
     }
     if { $part == "gradient" } {
-        DrawGradientBackground $w $colour $dir
+          if { $brightness == "dark" } {
+              set intensity black
+          } else {
+              set intensity white
+          }
+        DrawGradientBackground $w $colour $dir $intensity
     }
     if { $part == "image" } {
         DrawImageBackground $w $colour

@@ -1,6 +1,7 @@
 2010-06-06  Arjen Markus  <arjenmarkus@users.sourceforge.net>
-	* demo.tcl: Added demo program showing  code and plot/chart
+	* demo.tcl: Added demo program showing code and plot/chart
 	* plotpriv.tcl: Moving DrawVtext to plotaxis.tcl (also checking Tk version)
+	* plotpriv.tcl: Adding option to use darkening gradients
 	* plotpriv.tcl: Enable "exploding" segments in a piechart
 	* plotbind.tcl: Provide a procedure to explode a segment in a piechart
 	* plotaxis.tcl: Adjusted formatting of axis labels - Tcl 8.5 uses a large precision,
@@ -11,9 +12,15 @@
 	* plotchart.tcl: Added this new scaling procedure to the exports
 	* plotchart.man: Describe the new scaling procedure
 	* plotchart.man: Describe the bindplot and bindlast subcommands
+	* plotchart.man: Describe the new option for darkening gradients
+	* plotchart.man: Describe the tags that are used (description of the current status)
 	* plotchart.test: Added tests for the new scaling procedure
 	* pkgIndex.tcl: Changed version Plotchart to 1.8.3 and xyplot to 1.0.1
 	* xyplot.tcl: Updates by Jos DeCoster (adjusted version to 1.0.1)
+	* plotannot.tcl: Support added for darkening gradients
+	* plotdemos13.tcl: Added to inspect the performance for large numbers of data points
+	* editgraph.tcl: Example for editing a data series
+
 
 2010-05-10  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotchart.man: Corrected documentation bug (2999846, thanks to Oliver Bienert)

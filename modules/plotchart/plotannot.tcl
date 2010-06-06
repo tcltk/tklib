@@ -226,15 +226,16 @@ proc ::Plotchart::DrawPlainText { w x y text {anchor centre} } {
 #    Compute a brighter colour
 # Arguments:
 #    color       Original colour
+#    intensity   Colour to interpolate with
 #    factor      Factor by which to brighten the colour
 # Result:
 #    New colour
 # Note:
 #    Adapted from R. Suchenwirths Wiki page on 3D bars
 #
-proc ::Plotchart::BrightenColour {color factor} {
-   foreach i {r g b} n [winfo rgb . $color] d [winfo rgb . white] {
-       set $i [expr {int(255.*($n+($d-$n)*$factor)/$d)}]
+proc ::Plotchart::BrightenColour {color intensity factor} {
+   foreach i {r g b} n [winfo rgb . $color] d [winfo rgb . $intensity] f [winfo rgb . white] {
+       set $i [expr {int(255.*($n+($d-$n)*$factor)/$f)}]
    }
    format #%02x%02x%02x $r $g $b
 }
@@ -246,13 +247,14 @@ proc ::Plotchart::BrightenColour {color factor} {
 #    colour      Main colour
 #    dir         Direction of the gradient (left-right, top-down,
 #                bottom-up, right-left)
+#    intensity   Brighten (white) or darken (black) the colours
 #    rect        (Optional) coordinates of the rectangle to be filled
 # Result:
 #    None
 # Side effects:
 #    Gradient background drawn in the chart
 #
-proc ::Plotchart::DrawGradientBackground { w colour dir {rect {}} } {
+proc ::Plotchart::DrawGradientBackground { w colour dir intensity {rect {}} } {
     variable scaling
 
     set pxmin $scaling($w,pxmin)
@@ -320,7 +322,7 @@ proc ::Plotchart::DrawGradientBackground { w colour dir {rect {}} } {
     }
     for { set i 0 } { $i < $nmax } { incr i } {
         set factor [expr {($first*$i+$last*($n-$i-1))/double($n)}]
-        set gcolour [BrightenColour $colour $factor]
+        set gcolour [BrightenColour $colour $intensity $factor]
 
         if { $dir == "h" } {
             set x1     $x2
