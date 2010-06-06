@@ -48,6 +48,10 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
     variable scaling
     variable config
 
+    # Tcl 8.5 treats numbers differently than Tcl 8.4 and previous
+    set old_precision   $::tcl_precision
+    set ::tcl_precision 12
+
     set scaling($w,ydelt) $ydelt
 
     $w delete yaxis
@@ -101,6 +105,8 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
             set yt 0.0
         }
     }
+
+    set ::tcl_precision $old_precision
 }
 
 # DrawRightaxis --
@@ -118,6 +124,10 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
 proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
     variable scaling
     variable config
+
+    # Tcl 8.5 treats numbers differently than Tcl 8.4 and previous
+    set old_precision   $::tcl_precision
+    set ::tcl_precision 12
 
     set scaling($w,ydelt) $ydelt
 
@@ -172,6 +182,8 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
             set yt 0.0
         }
     }
+
+    set ::tcl_precision $old_precision
 }
 
 # DrawLogYaxis --
@@ -189,6 +201,10 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
 proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
     variable scaling
     variable config
+
+    # Tcl 8.5 treats numbers differently than Tcl 8.4 and previous
+    set old_precision   $::tcl_precision
+    set ::tcl_precision 12
 
     set scaling($w,ydelt) $ydelt
 
@@ -243,6 +259,8 @@ proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
         }
         set y [expr {10.0*$y}]
     }
+
+    set ::tcl_precision $old_precision
 }
 
 # DrawXaxis --
@@ -261,6 +279,10 @@ proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
 proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
     variable scaling
     variable config
+
+    # Tcl 8.5 treats numbers differently than Tcl 8.4 and previous
+    set old_precision   $::tcl_precision
+    set ::tcl_precision 12
 
     $w delete xaxis
 
@@ -339,6 +361,8 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
                  -fill $textcolor -font $textfont
         }
     }
+
+    set ::tcl_precision $old_precision
 }
 
 # DrawLogXaxis --
@@ -357,6 +381,10 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
 proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
     variable scaling
     variable config
+
+    # Tcl 8.5 treats numbers differently than Tcl 8.4 and previous
+    set old_precision   $::tcl_precision
+    set ::tcl_precision 12
 
     $w delete xaxis
 
@@ -410,6 +438,8 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
         }
         set x [expr {10.0*$x}]
     }
+
+    set ::tcl_precision $old_precision
 }
 
 # DrawXtext --
@@ -464,6 +494,29 @@ proc ::Plotchart::DrawYtext { w text } {
     set yt [expr {$scaling($w,pymin)-$config($w,font,char_height)/2}]
 
     $w create text $xt $yt -text $text -fill $textcolor -anchor $anchor -font $textfont
+}
+
+# DrawVtext --
+#    Draw vertical text to the y-axis
+# Arguments:
+#    w           Name of the canvas
+#    text        Text to be drawn
+# Result:
+#    None
+# Side effects:
+#    Text drawn in canvas
+# Note:
+#    This requires Tk 8.6 or later
+#
+proc ::Plotchart::DrawVtext { w text } {
+    variable scaling
+
+    if { [package vsatisfies [package version Tk] 8.6] } {
+        set xt [expr {$scaling($w,pxmin) + 5}]
+        set yt [expr {($scaling($w,pymin) + $scaling($w,pymax)) / 2}]
+
+        $w create text $xt $yt -text $text -fill black -anchor n -angle 90
+    }
 }
 
 # DrawPolarAxes --
@@ -553,7 +606,7 @@ proc ::Plotchart::DrawXlabels { w xlabels noseries } {
                    $scaling($w,pxmax) $scaling($w,pymax) \
                    -fill $linecolor -width $thickness -tag xaxis
 
-    set x 0.5
+    set x [expr {int($noseries)/(2.0*$noseries)}]
     set scaling($w,ybase) {}
     foreach label $xlabels {
         foreach {xcrd ycrd} [coordsToPixel $w $x $scaling($w,ymin)] {break}
@@ -605,7 +658,7 @@ proc ::Plotchart::DrawYlabels { w ylabels noseries } {
                    $scaling($w,pxmin) $scaling($w,pymax) \
                    -fill $linecolor -width $thickness -tag yaxis
 
-    set y 0.5
+    set y [expr {int($noseries)/(2.0*$noseries)}]
     set scaling($w,xbase) {}
     foreach label $ylabels {
         foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $y] {break}
@@ -806,6 +859,11 @@ proc ::Plotchart::DefaultLegend { w } {
     set legend($w,position)   $config($w,legend,position)
     set legend($w,series)     ""
     set legend($w,text)       ""
+    set legend($w,move)       0
+
+    $w bind legendobj <ButtonPress-1>   [list ::Plotchart::LegendAnchor $w %x %y]
+    $w bind legendobj <Motion>          [list ::Plotchart::LegendMove   $w %x %y]
+    $w bind legendobj <ButtonRelease-1> [list ::Plotchart::LegendRelease $w]
 }
 
 # LegendConfigure --
@@ -887,21 +945,21 @@ proc ::Plotchart::DrawLegend { w series text } {
         # TODO: line or rectangle!
 
         if { $type != "rectangle" } {
-            $legendw create line 0 $y 15 $y -fill $colour -tag legend
+            $legendw create line 0 $y 15 $y -fill $colour -tag {legend legendobj}
 
             if { $type == "symbol" || $type == "both" } {
                 set symbol "dot"
                 if { [info exists data_series($w,$series,-symbol)] } {
                     set symbol $data_series($w,$series,-symbol)
                 }
-                DrawSymbolPixel $legendw $series 7 $y $symbol $colour [list legend legend_$series]
+                DrawSymbolPixel $legendw $series 7 $y $symbol $colour [list legend legendobj legend_$series]
             }
         } else {
             $legendw create rectangle 0 [expr {$y-3}] 15 [expr {$y+3}] \
-                -fill $colour -tag [list legend legend_$series]
+                -fill $colour -tag [list legend legendobj legend_$series]
         }
 
-        $legendw create text 25 $y -text $text -anchor w -tag [list legend legend_$series]
+        $legendw create text 25 $y -text $text -anchor w -tag [list legend legendobj legend_$series]
 
         incr y 10   ;# TODO: size of font!
     }
@@ -917,7 +975,7 @@ proc ::Plotchart::DrawLegend { w series text } {
     set yb [expr {$yb+2}]
 
     $legendw create rectangle $xl $yt $xr $yb -fill $legend($w,background) \
-        -outline $legend($w,border) -tag legendbg
+        -outline $legend($w,border) -tag {legendbg legendobj}
 
     $legendw raise legend
 
@@ -947,6 +1005,64 @@ proc ::Plotchart::DrawLegend { w series text } {
 
     $legendw move legend   $dx $dy
     $legendw move legendbg $dx $dy
+}
+
+# LegendAnchor --
+#    Record the coordinates of the button press -
+#    for moving the legend
+# Arguments:
+#    w           Name of the canvas
+#    x           X-coordinate
+#    y           Y-coordinate
+# Result:
+#    None
+# Side effects:
+#    X and Y stored
+#
+proc ::Plotchart::LegendAnchor { w x y } {
+    variable legend
+
+    set legend($w,move)    1
+    set legend($w,xbutton) $x
+    set legend($w,ybutton) $y
+}
+
+# LegendRelease --
+#    Release the legend - it no longer moves
+# Arguments:
+#    w           Name of the canvas
+# Result:
+#    None
+#
+proc ::Plotchart::LegendRelease { w } {
+    variable legend
+
+    set legend($w,move)    0
+}
+
+# LegendMove --
+#    Move the legend objects
+# Arguments:
+#    w           Name of the canvas
+#    x           X-coordinate
+#    y           Y-coordinate
+# Result:
+#    None
+# Side effects:
+#    Legend moved
+#
+proc ::Plotchart::LegendMove { w x y } {
+    variable legend
+
+    if { $legend($w,move) } {
+        set dx [expr {$x - $legend($w,xbutton)}]
+        set dy [expr {$y - $legend($w,ybutton)}]
+
+        $w move legendobj $dx $dy
+
+        set legend($w,xbutton) $x
+        set legend($w,ybutton) $y
+    }
 }
 
 # DrawTimeaxis --

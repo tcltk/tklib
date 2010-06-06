@@ -23,7 +23,8 @@ namespace eval ::Plotchart {
                     polarCoordinates setZoomPan \
                     world3DCoordinates coordsToPixel \
                     coords3DToPixel polarToPixel \
-                    pixelToCoords pixelToIndex determineScale \
+                    pixelToCoords pixelToIndex \
+                    determineScale determineScaleFromList \
                     createXYPlot createPolarPlot createPiechart \
                     createBarchart createHorizontalBarchart \
                     createTimechart createStripchart \
@@ -75,7 +76,6 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,labeldot)          DrawLabelDot
    set methodProc(xyplot,bindplot)          BindPlot
    set methodProc(xyplot,bindlast)          BindLast
-   set methodProc(xyplot,bindseries)        BindSeries
    set methodProc(xyplot,contourlinesfunctionvalues)      DrawIsolinesFunctionValues
    set methodProc(xyplot,contourlinesfunctionpoints)      DrawIsolinesFunctionPoints
    set methodProc(xlogyplot,title)          DrawTitle
@@ -146,6 +146,7 @@ namespace eval ::Plotchart {
    set methodProc(piechart,saveplot)        SavePlot
    set methodProc(piechart,balloon)         DrawBalloon
    set methodProc(piechart,balloonconfig)   ConfigBalloon
+   set methodProc(piechart,explode)         PieExplodeSegment
    set methodProc(piechart,plaintext)       DrawPlainText
    set methodProc(polarplot,title)          DrawTitle
    set methodProc(polarplot,plot)           DrawPolarData
@@ -1016,6 +1017,7 @@ proc ::Plotchart::createHistogram { w xscale yscale } {
 #
 proc ::Plotchart::createPiechart { w } {
    variable data_series
+   variable scaling
 
    foreach s [array names data_series "$w,*"] {
       unset data_series($s)
@@ -1028,11 +1030,14 @@ proc ::Plotchart::createPiechart { w } {
    foreach {pxmin pymin pxmax pymax} [MarginsCircle $w] {break}
 
    viewPort $w $pxmin $pymin $pxmax $pymax
-   $w create oval $pxmin $pymin $pxmax $pymax
+  #$w create oval $pxmin $pymin $pxmax $pymax
 
    SetColours $w blue lightblue green yellow orange red magenta brown
    DefaultLegend  $w
    DefaultBalloon $w
+
+   set scaling($w,auto)      0
+   set scaling($w,exploded) -1
 
    return $newchart
 }
@@ -1858,4 +1863,4 @@ source [file join [file dirname [info script]] "plotbind.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.8.2
+package provide Plotchart 1.8.3
