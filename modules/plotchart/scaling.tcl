@@ -23,6 +23,39 @@ namespace eval ::Plotchart {
    }
 }
 
+# determineScaleFromList --
+#    Determine nice values for an axis from a list of values
+#
+# Arguments:
+#    values    List of values
+#    inverted  Whether to return values for an inverted axis (1) or not (0)
+#              Defaults to 0.
+# Result:
+#    A list of three values, a nice minimum and maximum
+#    and stepsize
+# Note:
+#    Missing values (empty strings) are allowed in the list of values
+#
+proc ::Plotchart::determineScaleFromList { values {inverted 0} } {
+
+    set xmin {}
+    set xmax {}
+
+    foreach v $values {
+        if { $v == {} } {
+            continue
+        }
+        if { $xmin == {} || $xmin > $v } {
+            set xmin $v
+        }
+        if { $xmax == {} || $xmax < $v } {
+            set xmax $v
+        }
+    }
+
+    return [determineScale $xmin $xmax $inverted]
+}
+
 # determineScale --
 #    Determine nice values for an axis from the given extremes
 #

@@ -163,6 +163,14 @@ test Plotchart-2.12 {Nice scale 9} -match numbers -body {
     ::Plotchart::determineScale 0.99999999999999911  1.0000000000000007
 } -result {0.999999994 1.000000006 2e-009}
 
+test Plotchart-2.13 {Nice scale from list} -match numbers -body {
+    ::Plotchart::determineScaleFromList {-0.25 -0.1 0.6 0.6 0.85}
+} -result {-0.4 1.0 0.2}
+
+test Plotchart-2.14 {Nice scale from list with missing data} -match numbers -body {
+    ::Plotchart::determineScaleFromList {-0.25 -0.1 0.6 {} {} {} 0.6 0.85}
+} -result {-0.4 1.0 0.2}
+
 
 
 test Plotchart-3.1 {XY-plot} -constraints tk -body {

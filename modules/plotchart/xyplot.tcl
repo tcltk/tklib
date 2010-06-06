@@ -6,7 +6,7 @@ package require Tcl 8.5
 package require Tk 8.5
 package require Plotchart 1.5
 package require cmdline
-package provide xyplot 1.0.0
+package provide xyplot 1.0.1
 
 namespace eval xyplot {
     proc ::xyplot { path args } {
@@ -18,9 +18,11 @@ proc xyplot::create { path args } {
     variable data
 
     set options {
+	{xinteger.arg         0          "Integer X-axis"}
 	{xtext.arg            ""         "Set x-axis text"}
 	{xticks.arg           "10"       "Set number of x-axis ticks"}
 	{xformat.arg          ""         "Set x-scale format"}
+	{yinteger.arg         0          "Integer Y-axis"}
 	{ytext.arg            ""         "Set y-axis text"}
 	{yticks.arg           "10"       "Set number of y-axis ticks"}
 	{yformat.arg          ""         "Set y-scale format"}
@@ -30,25 +32,36 @@ proc xyplot::create { path args } {
 	{type.arg             "line"     "Set plot type (line/dot)"}
 	{width.arg            "600"      "Set plot width"}
 	{height.arg           "400"      "Set plot height"}
+	{ttk.arg              0          "Use TTK widgets"}
     }
     set usage "::xyplot <path> \[options\]"
     array set params [::cmdline::getoptions args $options $usage]
 
-    set data($path,title)   $params(title)
-    set data($path,xformat) $params(xformat)
-    set data($path,yformat) $params(yformat)
-    set data($path,xtext)   $params(xtext)
-    set data($path,ytext)   $params(ytext)
-    set data($path,xticks)  $params(xticks)
-    set data($path,yticks)  $params(yticks)
-    set data($path,cbg)     $params(canvasbackground)
-    set data($path,bg)      $params(background)
-    set data($path,type)    $params(type)
+    set data($path,title)    $params(title)
+    set data($path,xinteger) $params(xinteger)
+    set data($path,xformat)  $params(xformat)
+    set data($path,yformat)  $params(yformat)
+    set data($path,xtext)    $params(xtext)
+    set data($path,yinteger) $params(yinteger)
+    set data($path,ytext)    $params(ytext)
+    set data($path,xticks)   $params(xticks)
+    set data($path,yticks)   $params(yticks)
+    set data($path,cbg)      $params(canvasbackground)
+    set data($path,bg)       $params(background)
+    set data($path,type)     $params(type)
+    set data($path,ttk)      $params(ttk)
 
-    set f [frame $path]
-    set c [canvas $f.c -xscrollcommand [list xyplot::sbx_set $f] -yscrollcommand [list xyplot::sby_set $f]]
-    set sbx [scrollbar $f.sbx -orient horizontal -command [list xyplot::c_xview $f]]
-    set sby [scrollbar $f.sby -orient vertical   -command [list xyplot::c_yview $f]]
+    if {$data($path,ttk)} {
+	set f [ttk::frame $path]
+	set c [canvas $f.c -xscrollcommand [list xyplot::sbx_set $f] -yscrollcommand [list xyplot::sby_set $f]]
+	set sbx [ttk::scrollbar $f.sbx -orient horizontal -command [list xyplot::c_xview $f]]
+	set sby [ttk::scrollbar $f.sby -orient vertical   -command [list xyplot::c_yview $f]]
+    } else {
+	set f [frame $path]
+	set c [canvas $f.c -xscrollcommand [list xyplot::sbx_set $f] -yscrollcommand [list xyplot::sby_set $f]]
+	set sbx [scrollbar $f.sbx -orient horizontal -command [list xyplot::c_xview $f]]
+	set sby [scrollbar $f.sby -orient vertical   -command [list xyplot::c_yview $f]]
+    }
     grid $c $sby -sticky ewns
     grid $sbx -sticky ew
     grid columnconfigure $f 0 -weight 1
@@ -339,6 +352,31 @@ proc xyplot::zoom_end { path x y } {
 	set nSy $Sy
 	set nsy [expr {$Sy-$nh}]
     }
+
+    if {$data($path,xinteger)} {
+	set nsx [expr {int($nsx)}]
+	set nSx [expr {int($nSx)}]
+	if {[expr {$nSx-$nsx}] < $data($path,xticks)} {
+	    set nSx [expr {$nsx+$data($path,xticks)}]
+	}
+	if {[expr {($nSx-$nsx)%$data($path,xticks)}]} {
+	    set n [expr {round(($nSx-$nsx)/$data($path,xticks))}]
+	    set nSx [expr {$nsx+$data($path,xticks)*$n}]
+	}
+    }
+
+    if {$data($path,yinteger)} {
+	set nsy [expr {int($nsy)}]
+	set nSy [expr {int($nSy)}]
+	if {[expr {$nSy-$nsy}] < $data($path,yticks)} {
+	    set nSy [expr {$nsy+$data($path,yticks)}]
+	}
+	if {[expr {($nSy-$nsy)%$data($path,yticks)}]} {
+	    set n [expr {round(($nSy-$nsy)/$data($path,yticks))}]
+	    set nSy [expr {$nsy+$data($path,yticks)*$n}]
+	}
+    }
+
     lappend data($path,zoomstack) [list $nsx $nSx $nsy $nSy]
     rescale $path $mx $Mx $my $My $nsx $nSx $nsy $nSy
     return
@@ -408,7 +446,11 @@ proc xyplot::c_xview { path mode number {unit ""} } {
 	scroll {
 	    switch -exact -- $unit {
 		units {
-		    set pfactor 0.05
+		    if {$data($path,xticks)} {
+			set pfactor [expr {1.0/$data($path,xticks)}]
+		    } else {
+			set pfactor 0.05
+		    }
 		}
 		pages {
 		    set pfactor 1
@@ -450,7 +492,11 @@ proc xyplot::c_yview { path mode number {unit ""} } {
 	scroll {
 	    switch -exact -- $unit {
 		units {
-		    set pfactor 0.05
+		    if {$data($path,yticks)} {
+			set pfactor [expr {1.0/$data($path,yticks)}]
+		    } else {
+			set pfactor 0.05
+		    }
 		}
 		pages {
 		    set pfactor 1
@@ -512,7 +558,7 @@ for { set i 0 } { $i < 1024 } { incr i } {
     lappend xydata4 [expr {$i-1000}] [expr {$i * sin($i/4096.0*3.1415*2) * (sin($i/256.0*3.1415*2) + 0.25 * sin($i/256.0*3.1415*6) + 0.0625 * sin($i/256.0*3.1415*10) + 0.015625 * sin($i/256.0*3.1415*14))}]
 }
 
-set xyp [xyplot .xyp -xformat "%5.0f" -yformat "%5.0f" -title "XY plot testing" -background gray90]
+set xyp [xyplot .xyp -xformat "%5.2f" -yformat "%5.0f" -title "XY plot testing" -background gray90 -xinteger 1 -yinteger 1]
 pack $xyp -fill both -expand true
 
 set s1 [$xyp add_data sf1 $xydata1 -legend "Serie 1 data" -color red]

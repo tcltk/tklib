@@ -1023,9 +1023,11 @@ proc ::Plotchart::DrawPie { w data } {
        set angle_ext 0.0
        set sum       0.0
 
-       set idx 0
+       set idx     0
+       set segment 0
 
        array unset scaling ${w},angles
+       array unset scaling ${w},extent
        set colours [CycleColours ${colours} [expr {[llength ${data}] / 2}]]
 
        foreach {label value} $data {
@@ -1039,10 +1041,11 @@ proc ::Plotchart::DrawPie { w data } {
           set angle_bgn [expr {$sum   * $factor}]
           set angle_ext [expr {$value * $factor}]
           lappend scaling(${w},angles) [expr {int(${angle_bgn})}]
+          lappend scaling(${w},extent) [expr {int(${angle_ext})}]
 
           $w create arc  $pxmin $pymin $pxmax $pymax \
                          -start $angle_bgn -extent $angle_ext \
-                         -fill $colour -style pieslice
+                         -fill $colour -style pieslice -tag segment_$segment
 
           set rad   [expr {($angle_bgn+0.5*$angle_ext)*3.1415926/180.0}]
           set xtext [expr {($pxmin+$pxmax+cos($rad)*($pxmax-$pxmin+20))/2}]
@@ -1053,9 +1056,12 @@ proc ::Plotchart::DrawPie { w data } {
              set dir e
           }
 
-          $w create text $xtext $ytext -text $label -anchor $dir
+          $w create text $xtext $ytext -text $label -anchor $dir -tag segment_$segment
+
+          $w bind segment_$segment <ButtonPress-1> [list ::Plotchart::PieExplodeSegment $w $segment 1]
 
           set sum [expr {$sum + $value}]
+          incr segment
        }
    }
 }
@@ -2633,27 +2639,6 @@ proc ::Plotchart::DrawLabelDotPolar { w rad angle text {orient w} } {
     set ycrd [expr {$rad*sin($phi*$torad)}]
 
     DrawLabelDot $w $xcrd $ycrd $text $orient
-}
-
-# DrawVtext --
-#    Draw vertical text to the y-axis
-# Arguments:
-#    w           Name of the canvas
-#    text        Text to be drawn
-# Result:
-#    None
-# Side effects:
-#    Text drawn in canvas
-# Note:
-#    This requires Tk 8.6 or later
-#
-proc ::Plotchart::DrawVtext { w text } {
-   variable scaling
-
-   set xt [expr {$scaling($w,pxmin) + 5}]
-   set yt [expr {($scaling($w,pymin) + $scaling($w,pymax)) / 2}]
-
-   $w create text $xt $yt -text $text -fill black -anchor n -angle 90
 }
 
 # ConfigBar --
