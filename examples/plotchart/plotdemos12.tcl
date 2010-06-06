@@ -17,7 +17,7 @@ proc showCoords {xcoord ycoord} {
 #
 proc showAnnotation {xcoord ycoord plot w} {
 
-    $plot balloon $xcoord $ycoord "Data point: $xcoord, $ycoord" north
+    $plot balloon $xcoord $ycoord "Data point: [format "%.3f, %.3f" $xcoord $ycoord]" north
 
     after 2000 [list removeAnnotation $w]
 }

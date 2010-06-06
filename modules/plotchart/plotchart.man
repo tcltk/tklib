@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 1.8]
+[manpage_begin Plotchart n 1.8.3]
 [copyright {2009 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.4]]
 [require Tk [opt 8.4]]
-[require Plotchart [opt 1.8]]
+[require Plotchart [opt 1.8.3]]
 
 [description]
 [para]
@@ -94,6 +94,9 @@ important moments in time are represented by triangles.
 With version 1.5 a new command has been introduced: plotconfig, which
 can be used to configure the plot options for particular types of plots
 and charts (cf. [sectref "CONFIGURATION OPTIONS"])
+
+With version 1.8.3 several new features were introduced, which allow more interactivity
+(cf. [sectref "INTERACTIVE USE"])
 
 [section "PLOT CREATION COMMANDS"]
 
@@ -714,7 +717,7 @@ The text of the y-axis label to be drawn.
 
 [call [cmd \$anyplot] vtext [arg text]]
 Draw a [emph vertical] label to the y-axis. Note: this requires Tk 8.6
-or later.
+or later, for older versions it does nothing.
 
 [list_begin arguments]
 [arg_def string text in]
@@ -1561,6 +1564,19 @@ The first colour.
 The second colour, and so on.
 
 [list_end]
+
+[call [cmd \$pie] explode [arg segment]
+
+Explode a segment (that is: move one segment out of the circle). If the segment is
+indicated as "auto", then you can click on a segment. This will be exploded instead of
+any previously exploded segment.
+
+[list_begin arguments]
+[arg_def int segment]
+The segment to be exploded or "auto" if you want to do this interactively.
+
+[list_end]
+
 [list_end]
 [para]
 
@@ -2383,6 +2399,22 @@ Optional argument: if 1, then the returned list produces an
 inverted axis. Defaults to 0 (the axis will be from minimum to maximum)
 
 [list_end]
+
+[call [cmd ::Plotchart::determineScaleFromList] [arg values] [arg inverted]]
+
+Determine "pretty" numbers from the given list of values and return a list
+containing the minimum, maximum and stepsize that can be used for a
+(linear) axis.
+
+[list_begin arguments]
+[arg_def float values in]
+List of values that will be examined. May contain missing values (empty strings)
+
+[arg_def boolean inverted in]
+Optional argument: if 1, then the returned list produces an
+inverted axis. Defaults to 0 (the axis will be from minimum to maximum)
+
+[list_end]
 [list_end]
 
 
@@ -2864,6 +2896,114 @@ For example:
     #
     plotpack .t.c2 top $p1 $p2
 }]
+
+[section {INTERACTIVE USE}]
+[emph Plotchart} has several features for interactive use (cf. [sectref {NOTES ON TAGS}]):
+
+[list_begin itemized]
+
+[item]
+The legend can be moved around by pressing mouse button 1 in the legend's box and
+keeping it down.
+
+[item]
+You can use the [emph bindplot] and [emph bindlast] commands to
+define actions that are to be taken when the user clicks on an element of the plot or chart.
+(see below, see also the sample code in plotdemos12.tcl)
+
+[item]
+[emph Piecharts] can show an "exploded" segment that you can select with mouse button 1.
+
+[list_end]
+
+If you require different forms of interaction, not covered by [emph Plotchart] itself,
+you can use the tags on the various canvas elements to define other bindings.
+
+[para]
+The [emph bindplot] and [emph bindlast] are defined as follows:
+[list_begin definitions]
+
+[call [cmd \$anyplot bindplot [arg event] [arg command] [arg args]]
+Register a command that will be run whenever the given event occurs in the plot.
+
+[list_begin arguments]
+[arg_def string event]
+The event that you want to bind the command to
+
+[arg_def string command]
+Name of the command/procedure that you want to run. The following arguments
+are prefixed: the x- and y-coordinates of the point in the plot (the world coordinates!),
+so that the procedure has the signature:
+[example {
+    cmd $xworld $yworld $string1 $string2 $string3
+}]
+assuming the argument "command" is: {cmd A B C}
+
+[list_end]
+
+[call [cmd \$anyplot bindlast [arg series] [arg event] [arg command]]
+Register a command that will be run when the event occurs within the neighbourhood of
+the last point added to the given series. (You can use directly after inserting
+a data point. All such commands will remain active).
+
+[list_begin arguments]
+[arg_def string event]
+The event that you want to bind the command to
+
+[arg_def list command]
+Name of the command/procedure that you want to run. The following arguments
+are prefixed: the x- and y-coordinates of the point in the plot (the world coordinates!),
+so that the procedure has the signature:
+[example {
+    cmd $xworld $yworld $string1 $string2 $string3
+}]
+assuming the argument "command" is: {cmd A B C}
+
+[list_end]
+[list_end]
+
+Here is an example - show the values of the data points in an annotation
+(from the sample code in plotdemos12.tcl):
+[example {
+#
+# Procedure for showing an annotation
+#
+proc showAnnotation {xcoord ycoord plot w} {
+
+    $plot balloon $xcoord $ycoord "Data point: [format "%.3f, %.3f" $xcoord $ycoord]" north
+
+    after 2000 [list removeAnnotation $w]
+}
+
+#
+# Procedure for erase an annotation
+#
+proc removeAnnotation {w} {
+
+    # Use the tags to remove all annotations
+    $w delete BalloonText
+    $w delete BalloonFrame
+}
+
+#
+# Create a simple plot and a label
+#
+pack [canvas .c -bg white] [label .l -textvariable coords]
+
+set p [::Plotchart::createXYPlot .c {0 1000 200} {0 10 1}]
+
+$p dataconfig series1 -type both -symbol cross
+
+foreach x {1 2 5 10 20 50 100 200 500 1000} {
+    $p plot series1 $x [expr {log($x)}]
+
+    #
+    # Show the annotation for each data point
+    #
+    $p bindlast series1 <Enter> [list showAnnotation $p %W]
+}
+}]
+
 
 [section {NOTES ON TAGS}]
 P.M.

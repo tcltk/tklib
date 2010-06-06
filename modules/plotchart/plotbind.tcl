@@ -84,6 +84,63 @@ proc ::Plotchart::BindCmd {xcoord ycoord w cmd} {
 
 }
 
+# PieExplodeSegment --
+#     Move the indicated segment
+#
+# Arguments:
+#     w               Widget
+#     segment         Segment to move
+#     button          Whether it came from a button event or not
+#
+# Result:
+#     None
+#
+# Note:
+#     If the segment is "auto", then we accept button clicks
+#
+proc ::Plotchart::PieExplodeSegment {w segment {button 0}} {
+    variable scaling
+
+    console show
+    puts "Segment, button: $segment, $button"
+
+    if { $button && $scaling($w,auto) == 0 } {
+        return
+    }
+
+    if { $segment == "auto" } {
+        set scaling($w,auto) 1
+        return
+    } else {
+        if { $segment < 0 || $segment >= [llength $scaling($w,angles)] } {
+            return
+        }
+    }
+
+    if { $scaling($w,exploded) != -1 } {
+        $w move segment_$scaling($w,exploded) [expr {-$scaling($w,xexploded)}] [expr {-$scaling($w,yexploded)}]
+    }
+
+    if { $segment == $scaling($w,exploded) } {
+        set scaling($w,exploded) -1
+    } else {
+        set angle_bgn [lindex $scaling($w,angles) $segment]
+        set angle_ext [lindex $scaling($w,extent) $segment]
+
+        set angle     [expr {3.1415926*($angle_bgn+$angle_ext/2.0)/180.0}]
+        set dx        [expr { 15 * cos($angle)}]
+        set dy        [expr {-15 * sin($angle)}]
+
+        set scaling($w,exploded)  $segment
+        set scaling($w,xexploded) $dx
+        set scaling($w,yexploded) $dy
+        $w move segment_$segment $dx $dy
+    }
+}
+
+
+
+
 if {0} {
 
 -- this represents an old idea. Keeping it around for the moment --
