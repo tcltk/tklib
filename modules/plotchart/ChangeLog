@@ -1,3 +1,8 @@
+2010-06-08  Andreas Kupries  <andreask@activestate.com>
+
+	* pkgIndex.tcl: Added a guard command to xyplot, this package
+	  requires Tcl 8.5+.
+
 2010-06-06  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* demo.tcl: Added demo program showing code and plot/chart
 	* plotpriv.tcl: Moving DrawVtext to plotaxis.tcl (also checking Tk version)
