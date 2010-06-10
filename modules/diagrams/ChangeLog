@@ -1,3 +1,25 @@
+2010-06-09  Andreas Kupries  <andreask@activestate.com>
+
+	* ChangeLog: New files. Complete reworking of the diagram
+	* application.tcl: system, whole new code base. Note that
+	* attributes.tcl: this requires Tcl 8.5 or higher.
+	* basic.tcl: Version 1.
+	* core.tcl:
+	* diagram.man:
+	* diagram.tcl:
+	* direction.tcl:
+	* element.tcl:
+	* navigation.tcl:
+	* pkgIndex.tcl:
+	* point.tcl:
+	* include: Documentation text blocks.
+	* figures: Figures for the documentation, examples.
+	* ../../apps/dia:
+	* ../../apps/dia.man:
+
+	* draw_diagram.tcl: Removed.
+	* draw_diagram.man:
+
 2009-02-14  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 
         * added missing directions in dirinfo array
@@ -25,4 +47,3 @@
         * started with documentation
 
 	* New module 'diagrams', by Arjen Markus.
-
