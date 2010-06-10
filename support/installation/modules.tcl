@@ -54,5 +54,7 @@ Module tkpiechart  _tcl  _man  _exa
 Module tooltip     _tcl  _man  _null
 Module widget      _tcl  _man  _exa
 
+Application  dia
+
 # @@ Registration END
 # --------------------------------------------------------------
