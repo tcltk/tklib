@@ -1,7 +1,12 @@
-2010-06-08  Andreas Kupries  <andreask@activestate.com>
-
-	* pkgIndex.tcl: Added a guard command to xyplot, this package
-	  requires Tcl 8.5+.
+2010-06-21  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotchart.tcl: Added creation method for target diagrams, performance profiles and 3d ribbon plots
+	* plotdemos14.tcl: Added demonstration of so-called target diagram
+	* plotdemos15.tcl: Added demonstration of 3d ribbons (provided by Keith Vetter)
+	* plotdemos16.tcl: Added demonstration of performance profiles
+	* plotchart.man: Documentation added for target diagrams, performance profiles and 3d ribbon plots
+	* plotspecial.tcl: New file for methods that deal with specialised plots
+	* plot3d.tcl: Added ribbon plot method (by Keith Vetter)
+	* pkgIndex.tcl: Changed version Plotchart to 1.9.0
 
 2010-06-06  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* demo.tcl: Added demo program showing code and plot/chart

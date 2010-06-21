@@ -122,6 +122,55 @@ proc ::Plotchart::MarginsRectangle { w {notext 2.0} {text_width 8}} {
    return [list $pxmin $pymin $pxmax $pymax]
 }
 
+# MarginsSquare --
+#    Determine the margins for a square plot/chart
+# Arguments:
+#    w           Name of the canvas
+#    notext      Number of lines of text to make room for at the top
+#                (default: 2.0)
+#    text_width  Number of characters to be displayed at most on left
+#                (default: 8)
+# Result:
+#    List of four values
+#
+proc ::Plotchart::MarginsSquare { w {notext 2.0} {text_width 8}} {
+    variable config
+
+    set char_width  $config(font,char_width)
+    set char_height $config(font,char_height)
+    set config($w,font,char_width)  $char_width
+    set config($w,font,char_height) $char_height
+
+    foreach {char_width char_height} [FontMetrics $w] {break}
+    set margin_right [expr {$char_width * 4}]
+    if { $margin_right < $config($w,margin,right) } {
+        set margin_right $config($w,margin,right)
+    }
+    set margin_bottom [expr {$char_height * 2 + 2}]
+    if { $margin_bottom < $config($w,margin,bottom) } {
+        set margin_bottom $config($w,margin,bottom)
+    }
+
+    set pxmin [expr {$char_width*$text_width}]
+    if { $pxmin < $config($w,margin,left) } {
+        set pxmin $config($w,margin,left)
+    }
+    set pymin [expr {int($char_height*$notext)}]
+    if { $pymin < $config($w,margin,top) } {
+        set pymin $config($w,margin,top)
+    }
+    set pxmax [expr {[WidthCanvas $w]  - $margin_right}]
+    set pymax [expr {[HeightCanvas $w] - $margin_bottom}]
+
+    if { $pxmax-$pxmin > $pymax-$pymin } {
+        set pxmax [expr {$pxmin + ($pymax - $pymin)}]
+    } else {
+        set pymax [expr {$pymin + ($pxmax - $pxmin)}]
+    }
+
+    return [list $pxmin $pymin $pxmax $pymax]
+}
+
 # MarginsCircle --
 #    Determine the margins for a circular plot/chart
 # Arguments:

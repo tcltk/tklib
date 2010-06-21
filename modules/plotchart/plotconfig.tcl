@@ -33,7 +33,8 @@ namespace eval ::Plotchart {
                             piechart polarplot
                             histogram horizbars vertbars ganttchart
                             timechart stripchart isometric 3dplot 3dbars
-                            radialchart txplot 3dribbon boxplot windrose}
+                            radialchart txplot 3dribbon boxplot windrose
+                            targetdiagram performance}
 
     set config(xyplot,components)      {title margin text legend leftaxis rightaxis bottomaxis background}
     set config(xlogyplot,components)   {title margin text legend leftaxis bottomaxis background}
@@ -55,6 +56,8 @@ namespace eval ::Plotchart {
     set config(3dribbon,components)    {title margin text legend leftaxis bottomaxis background}
     set config(boxplot,components)     {title margin text legend leftaxis bottomaxis background}
     set config(windrose,components)    {title margin text legend axis background}
+    set config(targetdiagram,components) {title margin text legend leftaxis bottomaxis background limits}
+    set config(performance,components) {title margin text legend leftaxis bottomaxis background limits}
 
     set config(axis,properties)        {color thickness font format ticklength textcolor}
     set config(leftaxis,properties)    $config(axis,properties)
@@ -70,6 +73,7 @@ namespace eval ::Plotchart {
     set config(labels,properties)      {textcolor font}
     set config(background,properties)  {outercolor innercolor}
     set config(legend,properties)      {background border position}
+    set config(limits,properties)      {color}
 
     # TODO: default values
     canvas .invisibleCanvas
@@ -109,6 +113,11 @@ namespace eval ::Plotchart {
             }
         }
     }
+
+    #
+    # Specific defaults
+    #
+    set config(targetdiagram,limits,color) "gray"
 }
 
 # plotconfig --
