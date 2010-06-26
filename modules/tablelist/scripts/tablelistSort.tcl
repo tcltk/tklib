@@ -250,6 +250,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 		continue
 	    }
 
+	    set descItemList {}
 	    set order [lindex $sortOrderList $idx]
 	    if {[string compare $data($col-sortmode) "command"] == 0} {
 		if {![info exists data($col-sortcommand)]} {
@@ -265,7 +266,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 		    sortChildren $win $parentKey [list lsort -$order \
 			-index $col -command compareNoCase] descItemList
 		} else {
-		    sortChildren $win $parentKey [list lsort -$order \¸
+		    sortChildren $win $parentKey [list lsort -$order \
 			-index $col -ascii -nocase] descItemList
 		}
 	    } else {
