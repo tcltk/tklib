@@ -1,5 +1,27 @@
-What is new in Tablelist 5.0?
+What is new in Tablelist 5.1?
 -----------------------------
+
+This is a bugfix-only release.  The corrected files in the "scripts"
+directory are "tablelistBind.tcl", "tablelistSort.tcl",
+"tablelistUtil.tcl", and "tablelistWidget.tcl".
+
+1. Fixed a bug related to item deletion, introduced in the previous
+   Tablelist version (thanks to Aric Bills and Roger Niva for their bug
+   reports).
+
+2. Fixed a bug related to multi-column sorting, introduced in the
+   previous Tablelist version (thanks to Albrecht Mucha for his bug
+   report).
+
+3. Fixed a long-standing bug related to column deletion (thanks to
+   Liang Sian Yin for his bug report).
+
+4. Fixed a few further minor bugs and typos, introduced in the previous
+   Tablelist version (thanks to Patrick Fradin, Roger Niva, Harald
+   Oehlmann, and Peter Spjuth for their bug reports).
+
+What was new in Tablelist 5.0?
+------------------------------
 
 1.  A tablelist widget is now not only a multi-column listbox, but also
     a multi-column tree widget (thanks to Sebastien Barre, Tillmann
