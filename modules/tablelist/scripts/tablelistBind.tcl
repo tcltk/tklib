@@ -130,10 +130,14 @@ proc tablelist::cleanup win {
     }
 
     #
-    # Destroy any existing bindings for data(bodyTag) and data(editwinTag)
+    # Destroy any existing bindings for data(bodyTag),
+    # data(labelTag), and data(editwinTag)
     #
     foreach event [bind $data(bodyTag)] {
 	bind $data(bodyTag) $event ""
+    }
+    foreach event [bind $data(labelTag)] {
+	bind $data(labelTag) $event ""
     }
     foreach event [bind $data(editwinTag)] {
 	bind $data(editwinTag) $event ""
@@ -715,6 +719,7 @@ proc tablelist::updateExpCollCtrl {w x y} {
     variable priv
     set prevCellIdx $priv(prevActExpCollCtrlCell)
     if {[string compare $prevCellIdx ""] != 0 &&
+	[info exists data($prevCellIdx-indent)] &&
 	(!$inExpCollCtrl || [string compare $prevCellIdx $key,$col] != 0)} {
 	set data($prevCellIdx-indent) \
 	    [strMap {"Act" ""} $data($prevCellIdx-indent)]
@@ -1207,6 +1212,13 @@ proc tablelist::moveOrActivate {win row col} {
 # procedure evaluates that command.
 #------------------------------------------------------------------------------
 proc tablelist::condEvalInvokeCmd win {
+    #
+    # This is an "after 100" callback; check whether the window exists
+    #
+    if {![winfo exists $win]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
     if {$data(editCol) < 0} {
 	return ""
@@ -1378,7 +1390,7 @@ proc tablelist::plusMinus {win keysym} {
     if {[info exists data($key,$col-indent)]} {
 	set indentLabel $data(body).ind_$key,$col
 	set imgName [$indentLabel cget -image]
-	if {[regexp {^tablelist_(.+)_(collapsed|expanded)Img([0-9]+)$} \
+	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img([0-9]+)$} \
 		     $imgName dummy treeStyle state depth]} {
 	    if {[string compare $keysym "plus"] == 0 &&
 		[string compare $state "collapsed"] == 0} {
@@ -1514,7 +1526,7 @@ proc tablelist::leftRight {win amount} {
     if {[info exists data($key,$col-indent)]} {
 	set indentLabel $data(body).ind_$key,$col
 	set imgName [$indentLabel cget -image]
-	if {[regexp {^tablelist_(.+)_(collapsed|expanded)Img([0-9]+)$} \
+	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img([0-9]+)$} \
 		     $imgName dummy treeStyle state depth]} {
 	    if {$amount > 0 && [string compare $state "collapsed"] == 0} {
 		set op "expand"
