@@ -10,7 +10,7 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 
 package require Tk 8.3
-package require tablelist 5.0
+package require tablelist 5.1
 
 #
 # Add some entries to the Tk option database
