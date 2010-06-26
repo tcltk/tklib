@@ -8,7 +8,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2004-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.0
+package require tablelist 5.1
 
 wm title . "Tk Library Scripts"
 
