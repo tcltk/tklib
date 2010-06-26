@@ -3956,7 +3956,8 @@ proc tablelist::redisplayCol {win col first last} {
 	unset data($col-redispId)
     }
 
-    if {$data(itemCount) == 0 || $first < 0 || $data($col-hide)} {
+    if {$data(itemCount) == 0 || $first < 0 ||
+	$col > $data(lastCol) || $data($col-hide)} {
 	return ""
     }
     if {[string compare $last "end"] == 0} {

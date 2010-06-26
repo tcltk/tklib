@@ -1236,7 +1236,10 @@ proc tablelist::collapseSubCmd {win argList} {
 
 	makeStripes $win
 	showLineNumbersWhenIdle $win
-	updateViewWhenIdle $win
+	adjustElidedText $win
+	updateColorsWhenIdle $win
+	adjustSepsWhenIdle $win
+	updateVScrlbarWhenIdle $win
 
 	event generate $win <<TablelistRowHiddenStateChanged>>
     }
@@ -1350,7 +1353,10 @@ proc tablelist::collapseallSubCmd {win argList} {
 
     makeStripes $win
     showLineNumbersWhenIdle $win
-    updateViewWhenIdle $win
+    adjustElidedText $win
+    updateColorsWhenIdle $win
+    adjustSepsWhenIdle $win
+    updateVScrlbarWhenIdle $win
     event generate $win <<TablelistRowHiddenStateChanged>>
     return ""
 }
@@ -1922,7 +1928,10 @@ proc tablelist::expandSubCmd {win argList} {
     if {![string match "expand*SubCmd" $callerProc]} {
 	makeStripes $win
 	showLineNumbersWhenIdle $win
-	updateViewWhenIdle $win
+	adjustElidedText $win
+	updateColorsWhenIdle $win
+	adjustSepsWhenIdle $win
+	updateVScrlbarWhenIdle $win
 	event generate $win <<TablelistRowHiddenStateChanged>>
     }
 
@@ -1996,7 +2005,10 @@ proc tablelist::expandallSubCmd {win argList} {
 
     makeStripes $win
     showLineNumbersWhenIdle $win
-    updateViewWhenIdle $win
+    adjustElidedText $win
+    updateColorsWhenIdle $win
+    adjustSepsWhenIdle $win
+    updateVScrlbarWhenIdle $win
     event generate $win <<TablelistRowHiddenStateChanged>>
     return ""
 }
@@ -4369,7 +4381,6 @@ proc tablelist::deleteRows {win first last updateListVar} {
     set data(itemList) [lreplace $data(itemList) $first $last]
     set data(keyList) [lreplace $data(keyList) $first $last]
     incr data(itemCount) -$count
-    incr data(lastRow) -$count
 
     #
     # Delete the given items from the list variable if needed
@@ -4388,6 +4399,8 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	set data(keyToRowMapValid) 0
 	updateKeyToRowMapWhenIdle $win
     }
+
+    incr data(lastRow) -$count
 
     #
     # Update the indices anchorRow and activeRow
