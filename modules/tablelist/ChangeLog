@@ -1,3 +1,17 @@
+2010-06-26  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                          Bumped the version number to 5.1.
+	* *.txt:
+	* ../../examples/tablelist/*.tcl:
+
+	* scripts/tablelistBind.tcl:   Fixed a few bugs and typos.
+	* scripts/tablelistSort.tcl:
+	* scripts/tablelistUtil.tcl:
+	* scripts/tablelistWidget.tcl:
+
+	* doc/tablelist.html:       Updated the documentation.
+	* doc/tablelistWidget.html:
+
 2010-06-05  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* README.txt:         Small corrections.
