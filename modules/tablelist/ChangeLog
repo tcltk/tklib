@@ -1,3 +1,8 @@
+2010-07-03  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: Fixed a bug related to the -selecttype cell
+	  setting, (re)introduced in Tablelist version 5.0.
+
 2010-06-26  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:                          Bumped the version number to 5.1.

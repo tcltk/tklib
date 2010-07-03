@@ -3058,9 +3058,13 @@ proc tablelist::moveActiveTag win {
     upvar ::tablelist::ns${win}::data data
     set w $data(body)
     $w tag remove active 1.0 end
+
+    if {$data(itemCount) == 0 || $data(colCount) == 0} {
+	return ""
+    }
+
     set activeLine [expr {$data(activeRow) + 1}]
     set activeCol $data(activeCol)
-
     if {[string compare $data(-selecttype) "row"] == 0} {
 	$w tag add active $activeLine.0 $activeLine.end
 	updateColors $win $activeLine.0 $activeLine.end
