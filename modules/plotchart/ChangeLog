@@ -1,3 +1,6 @@
+2010-07-06  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotaxis.tcl: Fixing a bug wrt stacked histograms (reported by Torsten Berg)
+
 2010-06-21  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotchart.tcl: Added creation method for target diagrams, performance profiles and 3d ribbon plots
 	* plotdemos14.tcl: Added demonstration of so-called target diagram
