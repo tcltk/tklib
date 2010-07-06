@@ -1,0 +1,47 @@
+[comment {-*- tcl -*- doctools manpage}]
+[manpage_begin controlwidget n 0.2]
+[copyright {Ron Fox}]
+[copyright {Gerhard Reithofer}]
+[copyright {Arjen Markus}]
+[moddesc {Tk controlwidget widget}]
+[titledesc {Tk controlwidget widget}]
+[require Tk]
+[require Snit]
+[require controlwidget [opt 0.0]]
+[description]
+
+The [package controlwidget] package provides various Snit-based widgets
+for displaying and controlling numerical values.
+
+[para]
+
+Currently, it contains:
+
+[list_begin itemized]
+[item]
+A vertical meter widget
+
+[item]
+A slider widget (like those found on a synthesizer) for controlling a list of values
+
+[item]
+An graphical equalizer-like widget for displaying one or more numerical values at a time
+
+[item]
+A thermometer widget for displaying a single numerical value
+
+[item]
+A LED display for displaying on/off values
+
+[item]
+Rotating dials (both horizontal and vertical dials) for selecting values
+
+[list_end]
+
+
+[section COMMANDS]
+
+TO BE DONE
+
+[keywords numerical control widget]
+[manpage_end]
