@@ -606,7 +606,11 @@ proc ::Plotchart::DrawXlabels { w xlabels noseries } {
                    $scaling($w,pxmax) $scaling($w,pymax) \
                    -fill $linecolor -width $thickness -tag xaxis
 
-    set x [expr {int($noseries)/(2.0*$noseries)}]
+    if { $noseries != "stacked" } {
+        set x [expr {int($noseries)/(2.0*$noseries)}]
+    } else {
+        set x 0.5
+    }
     set scaling($w,ybase) {}
     foreach label $xlabels {
         foreach {xcrd ycrd} [coordsToPixel $w $x $scaling($w,ymin)] {break}
@@ -658,7 +662,11 @@ proc ::Plotchart::DrawYlabels { w ylabels noseries } {
                    $scaling($w,pxmin) $scaling($w,pymax) \
                    -fill $linecolor -width $thickness -tag yaxis
 
-    set y [expr {int($noseries)/(2.0*$noseries)}]
+    if { $noseries != "stacked" } {
+        set y [expr {int($noseries)/(2.0*$noseries)}]
+    } else {
+        set y 0.5
+    }
     set scaling($w,xbase) {}
     foreach label $ylabels {
         foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $y] {break}
