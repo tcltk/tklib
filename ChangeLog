@@ -1,3 +1,9 @@
+2010-07-07  Andreas Kupries  <andreask@activestate.com>
+
+	* README.developer: New files to help the referenced people with
+	* README.releasemgr: their work on Tklib. Copied from Tcllib, and
+	  modified to suit.
+
 2009-11-25  Andreas Kupries  <andreask@activestate.com>
 
 	* Makefile.in (test): [Bug 2903927]: Modified test target to
