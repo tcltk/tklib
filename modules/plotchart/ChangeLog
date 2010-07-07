@@ -1,5 +1,12 @@
 2010-07-06  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotaxis.tcl: Fixing a bug wrt stacked histograms (reported by Torsten Berg)
+	* plotaxis.tcl: Added support for minor tickmarks, ticklength, label offset
+	* plotconfig.tcl: Ditto
+	* plotaxis.tcl: Implemented solution for a bug in vtext method (supplied by Torsten Berg)
+	* plotaxis.tcl: Corrected positioning of vertical text (bug noted by Torsten Berg)
+	* plotchart.tcl: Added method for plotting functions (and several options)
+	* plotpriv.tcl: Added support for line width
+	* pkgIndex.tcl: Changed version Plotchart to 1.9.1
 
 2010-06-21  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotchart.tcl: Added creation method for target diagrams, performance profiles and 3d ribbon plots

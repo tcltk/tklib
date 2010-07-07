@@ -79,6 +79,7 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,bindlast)          BindLast
    set methodProc(xyplot,contourlinesfunctionvalues)      DrawIsolinesFunctionValues
    set methodProc(xyplot,contourlinesfunctionpoints)      DrawIsolinesFunctionPoints
+   set methodProc(xyplot,plotfunc)          DrawFunction
    set methodProc(xlogyplot,title)          DrawTitle
    set methodProc(xlogyplot,xtext)          DrawXtext
    set methodProc(xlogyplot,ytext)          DrawYtext
@@ -382,25 +383,30 @@ namespace eval ::Plotchart {
    variable options
    variable option_keys
    variable option_values
-   set options       {-colour -color  -symbol -type -filled -fillcolour -boxwidth}
-   set option_keys   {-colour -colour -symbol -type -filled -fillcolour -boxwidth}
+   set options       {-colour -color  -symbol -type -filled -fillcolour -boxwidth -width}
+   set option_keys   {-colour -colour -symbol -type -filled -fillcolour -boxwidth -width}
    set option_values {-colour {...}
                       -symbol {plus cross circle up down dot upfilled downfilled}
                       -type {line symbol both}
                       -filled {no up down}
                       -fillcolour {...}
                       -boxwidth   {...}
+                      -width      {...}
                      }
 
    variable axis_options
    variable axis_option_clear
    variable axis_option_values
-   set axis_options       {-format -ticklength -ticklines -scale}
-   set axis_option_clear  { 0       0           0          1    }
-   set axis_option_values {-format     {...}
-                           -ticklength {...}
-                           -ticklines  {0 1}
-                           -scale      {...}
+   set axis_options       {-format -ticklength -ticklines -scale -minorticks -labeloffset -axisoffset}
+   set axis_option_clear  { 0       0           0          1      0           0            0         }
+   set axis_option_config { 0       1           0          0      1           1            1         }
+   set axis_option_values {-format      {...}
+                           -ticklength  {...}
+                           -ticklines   {0 1}
+                           -scale       {...}
+                           -minorticks  {...}
+                           -labeloffset {...}
+                           -axisoffset  {...}
                           }
    variable contour_options
 }
@@ -447,7 +453,7 @@ proc ::Plotchart::viewPort { w pxmin pymin pxmax pymax } {
    variable scaling
 
    if { $pxmin >= $pxmax || $pymin >= $pymax } {
-      return -code error "Inconsistent bounds for viewport"
+      return -code error "Inconsistent bounds for viewport - increase canvas size or decrease margins"
    }
 
    set scaling($w,pxmin)    $pxmin
@@ -695,7 +701,7 @@ proc ::Plotchart::polarToPixel { w rad phi } {
 #    w           Name of the canvas
 #    xscale      Minimum, maximum and step for x-axis (initial)
 #    yscale      Minimum, maximum and step for y-axis
-#    args        Options (currently: -xlabels list)
+#    args        Options (currently: "-xlabels list" and "-ylabels list")
 # Result:
 #    Name of a new command
 # Note:
@@ -727,19 +733,21 @@ proc ::Plotchart::createXYPlot { w xscale yscale args} {
    if { $xdelt ne {} && ($xmax-$xmin)*$xdelt < 0.0 } {
       set xdelt [expr {-$xdelt}]
    }
-   if { ($ymax-$ymin)*$ydelt < 0.0 } {
+   if { $ydelt ne {} && ($ymax-$ymin)*$ydelt < 0.0 } {
       set ydelt [expr {-$ydelt}]
    }
 
    viewPort         $w $pxmin $pymin $pxmax $pymax
    worldCoordinates $w $xmin  $ymin  $xmax  $ymax
 
-   DrawYaxis        $w $ymin  $ymax  $ydelt
    if { $xdelt eq {} } {
        foreach {arg val} $args {
            switch -exact -- $arg {
                -xlabels {
                    DrawXaxis $w $xmin  $xmax  $xdelt $arg $val
+               }
+               -ylabels {
+                   # Ignore
                }
                default {
                    error "Argument $arg not recognized"
@@ -748,6 +756,23 @@ proc ::Plotchart::createXYPlot { w xscale yscale args} {
        }
    } else {
        DrawXaxis   $w $xmin  $xmax  $xdelt
+   }
+   if { $ydelt eq {} } {
+       foreach {arg val} $args {
+           switch -exact -- $arg {
+               -ylabels {
+                   DrawYaxis $w $ymin  $ymax  $ydelt $arg $val
+               }
+               -xlabels {
+                   # Ignore
+               }
+               default {
+                   error "Argument $arg not recognized"
+               }
+           }
+       }
+   } else {
+       DrawYaxis        $w $ymin  $ymax  $ydelt
    }
    DrawMask         $w
    DefaultLegend    $w
@@ -2057,4 +2082,4 @@ source [file join [file dirname [info script]] "plotspecial.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.9.0
+package provide Plotchart 1.9.1

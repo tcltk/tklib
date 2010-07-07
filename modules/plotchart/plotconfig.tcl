@@ -59,7 +59,7 @@ namespace eval ::Plotchart {
     set config(targetdiagram,components) {title margin text legend leftaxis bottomaxis background limits}
     set config(performance,components) {title margin text legend leftaxis bottomaxis background limits}
 
-    set config(axis,properties)        {color thickness font format ticklength textcolor}
+    set config(axis,properties)        {color thickness font format ticklength textcolor labeloffset minorticks}
     set config(leftaxis,properties)    $config(axis,properties)
     set config(rightaxis,properties)   $config(axis,properties)
     set config(topaxis,properties)     $config(axis,properties)
@@ -79,29 +79,31 @@ namespace eval ::Plotchart {
     canvas .invisibleCanvas
     set invisibleLabel [.invisibleCanvas create text 0 0 -text "M"]
 
-    set _color      "black"
-    set _font       [.invisibleCanvas itemcget $invisibleLabel -font]
-    set _thickness  1
-    set _format     ""
-    set _ticklength 3
-    set _textcolor  "black"
-    set _anchor     n
+    set _color       "black"
+    set _font        [.invisibleCanvas itemcget $invisibleLabel -font]
+    set _thickness   1
+    set _format      ""
+    set _ticklength  3
+    set _minorticks  0
+    set _textcolor   "black"
+    set _anchor      n
+    set _labeloffset 2
 
     foreach {char_width char_height} [FontMetrics .invisibleCanvas] {break}
 
     set config(font,char_width)  $char_width
     set config(font,char_height) $char_height
 
-    set _left       [expr {$char_width  * 8}]
-    set _right      [expr {$char_width  * 4}]
-    set _top        [expr {$char_height * 2}]
-    set _bottom     [expr {$char_height * 2 + 2}]
-    set _bgcolor    "white"
-    set _outercolor "white"
-    set _innercolor "white"  ;# Not implemented yet: "$w lower data" gets in the way
-    set _background "white"
-    set _border     "black"
-    set _position   "top-right"
+    set _left        [expr {$char_width  * 8}]
+    set _right       [expr {$char_width  * 4}]
+    set _top         [expr {$char_height * 2}]
+    set _bottom      [expr {$char_height * 2 + 2}]
+    set _bgcolor     "white"
+    set _outercolor  "white"
+    set _innercolor  "white"  ;# Not implemented yet: "$w lower data" gets in the way
+    set _background  "white"
+    set _border      "black"
+    set _position    "top-right"
 
     destroy .invisibleCanvas
 

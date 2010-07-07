@@ -39,29 +39,27 @@ proc ::Plotchart::FormatNumber { format number } {
 #    ymin        Minimum y coordinate
 #    ymax        Maximum y coordinate
 #    ystep       Step size
+#    args        Options (currently: -ylabels list)
 # Result:
 #    None
 # Side effects:
 #    Axis drawn in canvas
 #
-proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
+proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
     variable scaling
     variable config
-
-    # Tcl 8.5 treats numbers differently than Tcl 8.4 and previous
-    set old_precision   $::tcl_precision
-    set ::tcl_precision 12
 
     set scaling($w,ydelt) $ydelt
 
     $w delete yaxis
 
-    set linecolor  $config($w,leftaxis,color)
-    set textcolor  $config($w,leftaxis,textcolor)
-    set textfont   $config($w,leftaxis,font)
-    set ticklength $config($w,leftaxis,ticklength)
-    set thickness  $config($w,leftaxis,thickness)
-    set offtick    [expr {($ticklength > 0)? $ticklength+2 : 2}]
+    set linecolor    $config($w,leftaxis,color)
+    set textcolor    $config($w,leftaxis,textcolor)
+    set textfont     $config($w,leftaxis,font)
+    set ticklength   $config($w,leftaxis,ticklength)
+    set thickness    $config($w,leftaxis,thickness)
+    set labeloffset  $config($w,leftaxis,labeloffset)
+    set offtick      [expr {($ticklength > 0)? $ticklength+$labeloffset : $labeloffset}]
 
     $w create line $scaling($w,pxmin) $scaling($w,pymin) \
                    $scaling($w,pxmin) $scaling($w,pymax) \
@@ -83,30 +81,69 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt } {
 
     set scaling($w,yaxis) {}
 
-    while { $y < $ym+0.0001*abs($ydelt) } {
+    set ys {}
+    set yts {}
+
+    if { $ydelt eq {} } {
+        foreach {arg val} $args {
+            switch -exact -- $arg {
+                -ylabels {
+                    set ys $val
+                    foreach yval $val {
+                        lappend yts [expr {$yval+0.0}]
+                    }
+                    set scaling($w,ydelt) $ys
+                }
+                default {
+                    error "Argument $arg not recognized"
+                }
+            }
+        }
+    } else {
+        set scaling($w,ydelt) $ydelt
+        while { $y < $ym+0.0001*abs($ydelt) } {
+            lappend ys $y
+            lappend yts $yt
+            set y  [expr {$y+abs($ydelt)}]
+            set yt [expr {$yt+$ydelt}]
+            if { abs($y) < 0.5*abs($ydelt) } {
+                set yt 0.0
+            }
+        }
+        set dyminor [expr {$ydelt/($config($w,leftaxis,minorticks)+1.0)}]
+    }
+
+    foreach y $ys yt $yts {
 
         foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $yt] {break}
         set xcrd2 [expr {$xcrd-$ticklength}]
         set xcrd3 [expr {$xcrd-$offtick}]
 
-        lappend scaling($w,yaxis) $ycrd
+        if { $ycrd >= $scaling($w,pymin) && $ycrd <= $scaling($w,pymax) } {
+            lappend scaling($w,yaxis) $ycrd
 
-        set ylabel $yt
-        if { $format != "" } {
-            set ylabel [FormatNumber $format $y]
-        }
-        $w create line $xcrd2 $ycrd $xcrd $ycrd -tag yaxis -fill $linecolor
-        $w create text $xcrd3 $ycrd -text $ylabel -tag yaxis -anchor e \
-            -fill $textcolor -font $textfont
+            #
+            # Use the default format %.12g - this is equivalent to setting
+            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
+            #
+            set ylabel [format "%.12g" $yt]
+            if { $format != "" } {
+                set ylabel [FormatNumber $format $y]
+            }
+            $w create line $xcrd2 $ycrd $xcrd $ycrd -tag yaxis -fill $linecolor
+            $w create text $xcrd3 $ycrd -text $ylabel -tag yaxis -anchor e \
+                -fill $textcolor -font $textfont
 
-        set y  [expr {$y+abs($ydelt)}]
-        set yt [expr {$yt+$ydelt}]
-        if { abs($yt) < 0.5*abs($ydelt) } {
-            set yt 0.0
+            if { $ydelt != {} && $yt < $ym } {
+                for {set i 1} {$i <= $config($w,leftaxis,minorticks)} {incr i} {
+                    set xcrd4  [expr {$xcrd-$ticklength*0.6}]
+                    set yminor [expr {$yt  + $i * $dyminor}]
+                    foreach {xcrd ycrd4} [coordsToPixel $w $scaling($w,xmin) $yminor] {break}
+                    $w create line $xcrd4 $ycrd4 $xcrd $ycrd4 -tag yaxis -fill $linecolor
+                }
+            }
         }
     }
-
-    set ::tcl_precision $old_precision
 }
 
 # DrawRightaxis --
@@ -125,20 +162,17 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
     variable scaling
     variable config
 
-    # Tcl 8.5 treats numbers differently than Tcl 8.4 and previous
-    set old_precision   $::tcl_precision
-    set ::tcl_precision 12
-
     set scaling($w,ydelt) $ydelt
 
     $w delete raxis
 
-    set linecolor  $config($w,rightaxis,color)
-    set textcolor  $config($w,rightaxis,textcolor)
-    set textfont   $config($w,rightaxis,font)
-    set thickness  $config($w,rightaxis,thickness)
-    set ticklength $config($w,rightaxis,ticklength)
-    set offtick    [expr {($ticklength > 0)? $ticklength+2 : 2}]
+    set linecolor    $config($w,rightaxis,color)
+    set textcolor    $config($w,rightaxis,textcolor)
+    set textfont     $config($w,rightaxis,font)
+    set thickness    $config($w,rightaxis,thickness)
+    set ticklength   $config($w,rightaxis,ticklength)
+    set labeloffset  $config($w,leftaxis,labeloffset)
+    set offtick      [expr {($ticklength > 0)? $ticklength+$labeloffset : $labeloffset}]
 
     $w create line $scaling($w,pxmax) $scaling($w,pymin) \
                    $scaling($w,pxmax) $scaling($w,pymax) \
@@ -156,7 +190,8 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
         set y [expr {$ymax+0.0}]
         set ym $ymin
     }
-    set yt [expr {$ymin+0.0}]
+    set yt      [expr {$ymin+0.0}]
+    set dyminor [expr {$ydelt/($config($w,rightaxis,minorticks)+1.0)}]
 
     set scaling($w,yaxis) {}
 
@@ -168,7 +203,11 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
 
         lappend scaling($w,yaxis) $ycrd
 
-        set ylabel $yt
+        #
+        # Use the default format %.12g - this is equivalent to setting
+        # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
+        #
+        set ylabel [format "%.12g" $yt]
         if { $format != "" } {
             set ylabel [FormatNumber $format $yt]
         }
@@ -176,14 +215,21 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
         $w create text $xcrd3 $ycrd -text $ylabel -tag raxis -anchor w \
             -fill $textcolor -font $textfont
 
+        if { $ydelt != {} && $yt < $ym } {
+            for {set i 1} {$i <= $config($w,rightaxis,minorticks)} {incr i} {
+                set xcrd4  [expr {$xcrd-$ticklength*0.6}]
+                set yminor [expr {$yt  + $i * $dyminor}]
+                foreach {xcrd ycrd4} [coordsToPixel $w $scaling($w,xmin) $yminor] {break}
+                $w create line $xcrd4 $ycrd4 $xcrd $ycrd4 -tag yaxis -fill $linecolor
+            }
+        }
+
         set y  [expr {$y+abs($ydelt)}]
         set yt [expr {$yt+$ydelt}]
         if { abs($yt) < 0.5*abs($ydelt) } {
             set yt 0.0
         }
     }
-
-    set ::tcl_precision $old_precision
 }
 
 # DrawLogYaxis --
@@ -202,20 +248,17 @@ proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
     variable scaling
     variable config
 
-    # Tcl 8.5 treats numbers differently than Tcl 8.4 and previous
-    set old_precision   $::tcl_precision
-    set ::tcl_precision 12
-
     set scaling($w,ydelt) $ydelt
 
     $w delete yaxis
 
-    set linecolor  $config($w,leftaxis,color)
-    set textcolor  $config($w,leftaxis,textcolor)
-    set textfont   $config($w,leftaxis,font)
-    set thickness  $config($w,leftaxis,thickness)
-    set ticklength $config($w,leftaxis,ticklength)
-    set offtick    [expr {($ticklength > 0)? $ticklength+2 : 2}]
+    set linecolor    $config($w,leftaxis,color)
+    set textcolor    $config($w,leftaxis,textcolor)
+    set textfont     $config($w,leftaxis,font)
+    set thickness    $config($w,leftaxis,thickness)
+    set ticklength   $config($w,leftaxis,ticklength)
+    set labeloffset  $config($w,leftaxis,labeloffset)
+    set offtick      [expr {($ticklength > 0)? $ticklength+$labeloffset : $labeloffset}]
 
     $w create line $scaling($w,pxmin) $scaling($w,pymin) \
                    $scaling($w,pxmin) $scaling($w,pymax) \
@@ -247,7 +290,11 @@ proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
 
             lappend scaling($w,yaxis) $ycrd
 
-            set ylabel $y
+            #
+            # Use the default format %.12g - this is equivalent to setting
+            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
+            #
+            set ylabel [format "%.12g" $y]
             if { $format != "" } {
                 set ylabel [FormatNumber $format $y]
             }
@@ -259,8 +306,6 @@ proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
         }
         set y [expr {10.0*$y}]
     }
-
-    set ::tcl_precision $old_precision
 }
 
 # DrawXaxis --
@@ -280,18 +325,15 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
     variable scaling
     variable config
 
-    # Tcl 8.5 treats numbers differently than Tcl 8.4 and previous
-    set old_precision   $::tcl_precision
-    set ::tcl_precision 12
-
     $w delete xaxis
 
-    set linecolor  $config($w,bottomaxis,color)
-    set textcolor  $config($w,bottomaxis,textcolor)
-    set textfont   $config($w,bottomaxis,font)
-    set thickness  $config($w,bottomaxis,thickness)
-    set ticklength $config($w,bottomaxis,ticklength)
-    set offtick    [expr {($ticklength > 0)? $ticklength+2 : 2}]
+    set linecolor    $config($w,bottomaxis,color)
+    set textcolor    $config($w,bottomaxis,textcolor)
+    set textfont     $config($w,bottomaxis,font)
+    set thickness    $config($w,bottomaxis,thickness)
+    set ticklength   $config($w,bottomaxis,ticklength)
+    set labeloffset  $config($w,leftaxis,labeloffset)
+    set offtick      [expr {($ticklength > 0)? $ticklength+$labeloffset : $labeloffset}]
 
     $w create line $scaling($w,pxmin) $scaling($w,pymax) \
                    $scaling($w,pxmax) $scaling($w,pymax) \
@@ -316,6 +358,8 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
     set xts {}
 
     if { $xdelt eq {} } {
+        console show
+        puts "X: $args"
         foreach {arg val} $args {
             switch -exact -- $arg {
                 -xlabels {
@@ -341,6 +385,7 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
                 set xt 0.0
             }
         }
+        set dxminor [expr {$xdelt/($config($w,bottomaxis,minorticks)+1.0)}]
     }
     foreach x $xs xt $xts {
 
@@ -351,7 +396,11 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
         if { $xcrd >= $scaling($w,pxmin) && $xcrd <= $scaling($w,pxmax) } {
             lappend scaling($w,xaxis) $xcrd
 
-            set xlabel $xt
+            #
+            # Use the default format %.12g - this is equivalent to setting
+            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
+            #
+            set xlabel [format "%.12g" $xt]
             if { $format != "" } {
                 set xlabel [FormatNumber $format $xt]
             }
@@ -359,10 +408,17 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
             $w create line $xcrd $ycrd2 $xcrd $ycrd -tag xaxis -fill $linecolor
             $w create text $xcrd $ycrd3 -text $xlabel -tag xaxis -anchor n \
                  -fill $textcolor -font $textfont
+
+            if { $xdelt != {} && $xt < $xm } {
+                for {set i 1} {$i <= $config($w,bottomaxis,minorticks)} {incr i} {
+                    set ycrd4  [expr {$ycrd+$ticklength*0.6}]
+                    set xminor [expr {$xt  + $i * $dxminor}]
+                    foreach {xcrd4 ycrd} [coordsToPixel $w $xminor $scaling($w,ymin)] {break}
+                    $w create line $xcrd4 $ycrd4 $xcrd4 $ycrd -tag xaxis -fill $linecolor
+                }
+            }
         }
     }
-
-    set ::tcl_precision $old_precision
 }
 
 # DrawLogXaxis --
@@ -382,18 +438,15 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
     variable scaling
     variable config
 
-    # Tcl 8.5 treats numbers differently than Tcl 8.4 and previous
-    set old_precision   $::tcl_precision
-    set ::tcl_precision 12
-
     $w delete xaxis
 
-    set linecolor  $config($w,bottomaxis,color)
-    set textcolor  $config($w,bottomaxis,textcolor)
-    set textfont   $config($w,bottomaxis,font)
-    set thickness  $config($w,bottomaxis,thickness)
-    set ticklength $config($w,bottomaxis,ticklength)
-    set offtick    [expr {($ticklength > 0)? $ticklength+2 : 2}]
+    set linecolor    $config($w,bottomaxis,color)
+    set textcolor    $config($w,bottomaxis,textcolor)
+    set textfont     $config($w,bottomaxis,font)
+    set thickness    $config($w,bottomaxis,thickness)
+    set ticklength   $config($w,bottomaxis,ticklength)
+    set labeloffset  $config($w,leftaxis,labeloffset)
+    set offtick      [expr {($ticklength > 0)? $ticklength+$labeloffset : $labeloffset}]
 
     $w create line $scaling($w,pxmin) $scaling($w,pymax) \
                    $scaling($w,pxmax) $scaling($w,pymax) \
@@ -425,7 +478,11 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
             if {($xcrd >= $scaling($w,pxmin)) && ($xcrd <= $scaling($w,pxmax))} {
                 lappend scaling($w,xaxis) $xcrd
 
-                set xlabel $xt
+                #
+                # Use the default format %.12g - this is equivalent to setting
+                # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
+                #
+                set xlabel [format "%.12g" $xt]
                 if { $format != "" } {
                     set xlabel [FormatNumber $format $xt]
                 }
@@ -438,8 +495,6 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
         }
         set x [expr {10.0*$x}]
     }
-
-    set ::tcl_precision $old_precision
 }
 
 # DrawXtext --
@@ -511,8 +566,9 @@ proc ::Plotchart::DrawYtext { w text } {
 proc ::Plotchart::DrawVtext { w text } {
     variable scaling
 
-    if { [package vsatisfies [package version Tk] 8.6] } {
-        set xt [expr {$scaling($w,pxmin) + 5}]
+    if { [package vsatisfies [package present Tk] 8.6] } {
+        set bbox [$w bbox yaxis]
+        set xt [expr {[lindex $bbox 0] + 5}]
         set yt [expr {($scaling($w,pymin) + $scaling($w,pymax)) / 2}]
 
         $w create text $xt $yt -text $text -fill black -anchor n -angle 90
@@ -664,7 +720,7 @@ proc ::Plotchart::DrawYlabels { w ylabels noseries } {
 
     if { $noseries != "stacked" } {
         set y [expr {int($noseries)/(2.0*$noseries)}]
-    } else {
+    }  else {
         set y 0.5
     }
     set scaling($w,xbase) {}
@@ -731,11 +787,16 @@ proc ::Plotchart::YConfig { w args } {
 # Result:
 #    None
 #
+# Note:
+#    Merge the old configuration system with the new
+#
 proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
+    variable config
     variable scaling
     variable axis_options
     variable axis_option_clear
     variable axis_option_values
+    variable axis_option_config
 
     set clear_data 0
 
@@ -746,12 +807,23 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
         } else {
             set clear_data [lindex  $axis_option_clear  $idx]
             set values     [lindex  $axis_option_values [expr {2*$idx+1}]]
+            set isconfig   [lindex  $axis_option_config $idx]
             if { $values != "..." } {
                 if { [lsearch $values $value] < 0 } {
                     return -code error "Unknown or invalid value: $value for option $option - $values"
                 }
             }
-            set scaling($w,$option,$orient) $value
+            if { $isconfig } {
+                if { $orient == "x" } {
+                    set axis bottomaxis
+                }
+                if { $orient == "y" } {
+                    set axis leftaxis
+                }
+                set config($w,$axis,[string range $option 1 end]) $value
+            } else {
+                set scaling($w,$option,$orient) $value
+            }
             if { $option == "-scale" } {
                 set min  ${orient}min
                 set max  ${orient}max
@@ -776,7 +848,11 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
         }
     }
     if { $orient == "y" } {
-        $drawmethod $w $scaling($w,ymin) $scaling($w,ymax) $scaling($w,ydelt)
+        if { [llength $scaling($w,ydelt)] == 1 } {
+            $drawmethod $w $scaling($w,ymin) $scaling($w,ymax) $scaling($w,ydelt)
+        } else {
+            $drawmethod $w $scaling($w,ymin) $scaling($w,ymax) {} -ylabels $scaling($w,ydelt)
+        }
     }
     if { $orient == "z" } {
         $drawmethod $w $scaling($w,zmin) $scaling($w,zmax) $scaling($w,zdelt)
