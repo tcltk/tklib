@@ -9,12 +9,9 @@ exec tclsh "$0" ${1+"$@"}
 ##       jpeg and png images.
 
 # ### ### ### ######### ######### #########
-## Use canvas package relative to example location.
+## For data files found relative to the example's location.
 
-set selfdir  [file dirname [file normalize [info script]]]
-set modules [file join [file dirname [file dirname $selfdir]] modules]
-
-source $modules/canvas/canvas_sqmap.tcl
+set selfdir [file dirname [file normalize [info script]]]
 
 ## Ideas: It should be possible to get feedback on mouse clicks and
 ## use that to let the user swaps cells, until the shown image is

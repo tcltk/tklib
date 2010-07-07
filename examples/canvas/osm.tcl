@@ -38,17 +38,9 @@ exec tclsh "$0" ${1+"$@"}
 ##       separate packages, etc.
 
 # ### ### ### ######### ######### #########
-## Use canvas package relative to example location.
+## For data files found relative to the example's location.
 
 set selfdir  [file dirname [file normalize [info script]]]
-set modules  [file join [file dirname [file dirname $selfdir]] modules]
-set lmodule  [file join [file dirname [file dirname [file dirname [file dirname $selfdir]]]] Tcllib Head modules]
-
-set dir $lmodule/map
-source $lmodule/map/pkgIndex.tcl
-unset dir
-source $modules/canvas/canvas_sqmap.tcl ; # The main map support
-source $modules/canvas/canvas_zoom.tcl  ; # Zoom control
 
 ## Ideas:
 ## == DONE ==
@@ -58,7 +50,7 @@ source $modules/canvas/canvas_zoom.tcl  ; # Zoom control
 ##    from canvas items, to make the map look more like the web-based
 ##    map displays. For the latter we have to get viewport tracking
 ##    data out of the canvas::sqmap to move the item-group in sync
-##    with scrolling, so that they appaear to stay in place.
+##    with scrolling, so that they appear to stay in place.
 ##
 ## == DONE ==
 ## -- Add a filesystem based tile cache to speed up their loading. The
@@ -118,7 +110,7 @@ proc Main {} {
 proc InitModel {} {
     global argv cachedir loaddir provider zoom
 
-    set zoom     -1
+    set zoom     0
     set cachedir ""
     set loaddir  [pwd]
 

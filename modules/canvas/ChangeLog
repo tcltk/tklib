@@ -1,3 +1,11 @@
+2010-07-07  Andreas Kupries  <andreask@activestate.com>
+
+	* ../../examples/canvas/city.tcl: Dropped the code trying
+	* ../../examples/canvas/puzzle.tcl: to find and source
+	* ../../examples/canvas/osm.tcl: packages relative to the
+	  example's location. Assume that the packages are installed.
+	  Further fixed issue with initial zoom level in osm.tcl.
+
 2010-05-28  Andreas Kupries  <andreask@activestate.com>
 
 	* canvas_snap.tcl: Fixed oops, missing setup of our
