@@ -1,6 +1,13 @@
+2010-07-07  Andreas Kupries  <andreask@activestate.com>
+
+	* ico.tcl: [Bug 3007168]: Fixed padding used for 24x24 icons.
+	* ico.man: Further allowing writeIcon to create missing files.
+	* pkgIndex.tcl: Bumped version to 1.0.5.
+
 2009-10-12  Aaron Faupell <afaupell@users.sourceforge.net>
 
-	* ico.tcl fix error messages to be more clear and refactor fileext into gettype in the process
+	* ico.tcl fix error messages to be more clear and refactor fileext
+	  into gettype in the process.
 
 2009-05-21  Andreas Kupries  <andreask@activestate.com>
 
