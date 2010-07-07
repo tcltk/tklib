@@ -515,6 +515,10 @@ proc ::Plotchart::DrawData { w series xcrd ycrd } {
    if { [info exists data_series($w,$series,-fillcolour)] } {
       set fillcolour $data_series($w,$series,-fillcolour)
    }
+   set width 1
+   if { [info exists data_series($w,$series,-width)] } {
+      set width $data_series($w,$series,-width)
+   }
 
    foreach {pxcrd pycrd} [coordsToPixel $w $xcrd $ycrd] {break}
 
@@ -530,12 +534,12 @@ proc ::Plotchart::DrawData { w series xcrd ycrd } {
                set pym $scaling($w,pymin)
            }
            $w create polygon $pxold $pym $pxold $pyold $pxcrd $pycrd $pxcrd $pym \
-               -fill $fillcolour -outline {} -tag [list data data_$series]
+               -fill $fillcolour -outline {} -width $width -tag [list data data_$series]
        }
 
        if { $type == "line" || $type == "both" } {
           $w create line $pxold $pyold $pxcrd $pycrd \
-                         -fill $colour -tag [list data data_$series]
+                         -fill $colour -width $width -tag [list data data_$series]
        }
    }
 
@@ -2733,4 +2737,94 @@ proc ::Plotchart::ConfigBar { w args } {
             return -code error "Unknown barchart option: -$option"
         }
     }
+}
+
+# DrawFunction --
+#    Draw a function f(x) in an XY-plot
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series (for the colour)
+#    xargs       List of arguments to the (anonymous) function
+#    function    Function expression
+#    args        All parameters in the expression
+#                (and possibly the option -samples x)
+# Result:
+#    None
+# Side effects:
+#    New data drawn in canvas
+#
+# Note:
+#    This method requires Tcl 8.5
+#
+# TODO:
+#    Check for numerical problems!
+#
+proc ::Plotchart::DrawFunction { w series xargs function args } {
+   variable data_series
+   variable scaling
+
+   #
+   # Check the number of arguments
+   #
+   if { [llength $xargs]     != [llength $args] + 1 &&
+        [llength $xargs] + 2 != [llength $args] + 1 } {
+       return -code error "plotfunc: number of (extra) arguments does not match the list of variables"
+   }
+
+   #
+   # Determine the number of samples
+   #
+   set number 50
+   if { [llength $xargs] + 2 == [llength $args] + 1 } {
+       if { [lindex $args end-1] != "-samples" } {
+           return -code error "plotfunc: unknown option - [lindex $args end-1]"
+       }
+       if { ! [string is integer [lindex $args end]] } {
+           return -code error "plotfunc: number of samples must be an integer - is instead \"[lindex $args end]\""
+       }
+       set number [lindex $args end]
+       set args   [lrange $args 0 end-2]
+   }
+
+   #
+   # Get the caller's namespace
+   #
+   set namespace [uplevel 2 {namespace current}]
+
+   #
+   # The actual drawing
+   #
+   set colour black
+   if { [info exists data_series($w,$series,-colour)] } {
+      set colour $data_series($w,$series,-colour)
+   }
+
+   set xmin   $scaling($w,xmin)
+   set dx     [expr {($scaling($w,xmax) - $xmin) / ($number - 1.0)}]
+
+   set coords {}
+   set lambda [string map [list XARGS $xargs FUNCTION $function NS $namespace] {{XARGS} {expr {FUNCTION}} NS}]
+
+   for { set i 0 } { $i < $number } { incr i } {
+       set x [expr {$xmin + $dx*$i}]
+
+       if { [catch {
+           set y [apply $lambda $x {*}$args]
+
+           foreach {pxcrd pycrd} [coordsToPixel $w $x $y] {break}
+
+           lappend coords $pxcrd $pycrd
+       } msg] } {
+           if { [llength $coords] > 2 } {
+               $w create line $coords -fill $colour -smooth 1 -tag [list data data_$series]
+               set coords {}
+           }
+       }
+
+   }
+   if { [llength $coords] > 2 } {
+       $w create line $coords -fill $colour -smooth 1 -tag [list data data_$series]
+   }
+
+   $w lower data
 }
