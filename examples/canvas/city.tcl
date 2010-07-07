@@ -8,12 +8,10 @@ exec tclsh "$0" ${1+"$@"}
 ##           This part in citygrid.tcl
 
 # ### ### ### ######### ######### #########
-## Use canvas package relative to example location.
+## For data files found relative to the example's location.
 
 set selfdir  [file dirname [file normalize [info script]]]
-set modules [file join [file dirname [file dirname $selfdir]] modules]
 
-source $modules/canvas/canvas_sqmap.tcl
 source $selfdir/citygrid.tcl
 
 # ### ### ### ######### ######### #########
