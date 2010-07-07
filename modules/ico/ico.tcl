@@ -5,7 +5,7 @@
 # Copyright (c) 2003-2007 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico.tcl,v 1.30 2009/10/13 06:42:02 afaupell Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.31 2010/07/07 20:38:18 andreas_kupries Exp $
 
 # Sample usage:
 #	set file bin/wish.exe
@@ -272,9 +272,10 @@ proc ::ico::getFileIcon {file args} {
 #
 proc ::ico::writeIcon {file name bpp data args} {
     parseOpts type $args
-    if {![file exists $file]} {
-        return -code error "couldn't open \"$file\": no such file or directory"
-    }
+    # Bug 3007168 (code is able to create a file if none is present)
+    #if {![file exists $file]} {
+    #    return -code error "couldn't open \"$file\": no such file or directory"
+    #}
     gettype type $file
     if {![llength [info commands writeIcon$type]]} {
 	return -code error "unsupported file format $type"
@@ -651,7 +652,8 @@ proc ::ico::getAndMaskFromColors {colors} {
     foreach line $colors {
 	set l {}
 	foreach x $line {append l [expr {$x eq ""}]}
-	append l [string repeat 0 [expr {[string length $l] % 32}]]
+	set w [string length $l]
+	append l [string repeat 0 [expr {($w == 24) ? 8 : ($w % 32)}]]
 	foreach {a b c d e f g h} [split $l {}] {
 	    append and [binary format B8 $a$b$c$d$e$f$g$h]
 	}
@@ -770,8 +772,8 @@ proc ::ico::getPaletteFromColors {colors} {
 # calculate byte size of an icon.
 # often passed $w twice because $h is double $w in the binary data
 proc ::ico::calcSize {w h bpp {offset 0}} {
-    set s [expr {int(($w*$h) * ($bpp/8.0)) \
-		     + ((($w*$h) + ($h*($w%32)))/8) + $offset}]
+    set s [expr {int(($w*$h) * ($bpp/8.0)) +
+		 ((($w*$h) + ($h*(($w==24) ? 8 : ($w%32))))/8) + $offset}]
     if {$bpp <= 8} { set s [expr {$s + (1 << ($bpp + 2))}] }
     return $s
 }
@@ -796,7 +798,7 @@ proc ::ico::readDIB {fh} {
     }
 
     set xor  [read $fh [expr {int(($w * $h) * ($bpp / 8.0))}]]
-    set and1 [read $fh [expr {(($w * $h) + ($h * ($w % 32))) / 8}]]
+    set and1 [read $fh [expr {(($w * $h) + ($h * (($w == 24) ? 8 : ($w % 32)))) / 8}]]
 
     set and {}
     set row [expr {((($w - 1) / 32) * 32 + 32) / 8}]
@@ -838,7 +840,7 @@ proc ::ico::readDIBFromData {data loc} {
     set end  [expr {$cnt + int(($w * $h) * ($bpp / 8.0)) - 1}]
     set xor  [string range $data $cnt $end]
     set and1 [string range $data [expr {$end + 1}] \
-		  [expr {$end + ((($w * $h) + ($h * ($w % 32))) / 8) - 1}]]
+		  [expr {$end + ((($w * $h) + ($h * (($w == 24) ? 8 : ($w % 32)))) / 8) - 1}]]
 
     set and {}
     set row [expr {((($w - 1) / 32) * 32 + 32) / 8}]
@@ -1395,4 +1397,4 @@ interp alias {} ::ico::getIconMembersICL {} ::ico::getIconMembersEXE
 interp alias {} ::ico::getRawIconDataICL {} ::ico::getRawIconDataEXE
 interp alias {} ::ico::writeIconICL      {} ::ico::writeIconEXE
 
-package provide ico 1.0.4
+package provide ico 1.0.5
