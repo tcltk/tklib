@@ -1673,7 +1673,7 @@ proc ::Plotchart::BackgroundColour { w part colour {dir {}} {brighten bright}} {
         $w configure -background $colour
     }
     if { $part == "gradient" } {
-          if { $brightness == "dark" } {
+          if { $brighten == "dark" } {
               set intensity black
           } else {
               set intensity white

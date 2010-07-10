@@ -234,10 +234,12 @@ proc ::Plotchart::DrawPlainText { w x y text {anchor centre} } {
 #    Adapted from R. Suchenwirths Wiki page on 3D bars
 #
 proc ::Plotchart::BrightenColour {color intensity factor} {
-   foreach i {r g b} n [winfo rgb . $color] d [winfo rgb . $intensity] f [winfo rgb . white] {
-       set $i [expr {int(255.*($n+($d-$n)*$factor)/$f)}]
-   }
-   format #%02x%02x%02x $r $g $b
+    foreach i {r g b} n [winfo rgb . $color] d [winfo rgb . $intensity] f [winfo rgb . white] {
+	#checker exclude warnVarRef
+	set $i [expr {int(255.*($n+($d-$n)*$factor)/$f)}]
+    }
+    #checker exclude warnUndefinedVar
+    format #%02x%02x%02x $r $g $b
 }
 
 # DrawGradientBackground --
