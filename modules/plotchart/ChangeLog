@@ -1,3 +1,12 @@
+2010-07-09  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* plotannot.tcl: Made a number of fixes (mistyped variable names,
+	* plotaxis.tcl: unbraced expressions, ...) found by tclchecker.
+	* plotbusiness.tcl: Added a few checker pragmas for bogus warnings.
+	* plotcontour.tcl:
+	* plotpack.tcl:
+	* plotpriv.tcl:
+
 2010-07-06  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotaxis.tcl: Fixing a bug wrt stacked histograms (reported by Torsten Berg)
 	* plotaxis.tcl: Added support for minor tickmarks, ticklength, label offset
