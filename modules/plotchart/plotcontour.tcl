@@ -1335,7 +1335,7 @@ proc ::Plotchart::MakeContourClasses {values classes} {
         # Now that we know how many entries (ncont), create
         # the colormap colors
         #
-        ::Plotchart::setColormapColors  [expr [llength $classes] + 1]
+        ::Plotchart::setColormapColors  [expr {[llength $classes] + 1}]
 
     } elseif { [llength [lindex $classes 0]] == 1 } {
         #mbs#  Changed the above line from " == 2 " to " == 1 "
@@ -1383,7 +1383,7 @@ proc ::Plotchart::setColormapColors  {ncont} {
 
     # Note : The default colormap is "jet"
 
-    switch $colorMapType {
+    switch -- $colorMapType {
 
         custom {
             return
@@ -1516,7 +1516,7 @@ proc ::Plotchart::colorMap {cmap} {
     variable colorMapType
     variable colorMap
 
-    switch $cmap {
+    switch -- $cmap {
 
         "grey" -
         "gray" { set colorMapType $cmap }
@@ -1574,7 +1574,7 @@ proc ::Plotchart::colorMap {cmap} {
 #       Baker, Hearn, 1986, ISBN 0-13-165598-1, page 304.
 #
 proc ::Plotchart::Rgb2hsv {r g b} {
-    set h [set s [set v 0.0]]]
+    set h [set s [set v 0.0]]
     set sorted [lsort -real [list $r $g $b]]
     set v [expr {double([lindex $sorted end])}]
     set m [lindex $sorted 0]

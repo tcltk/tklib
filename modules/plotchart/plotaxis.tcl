@@ -829,8 +829,11 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
                 set max  ${orient}max
                 set delt ${orient}delt
                 foreach [list $min $max $delt] $value {break}
+		#checker exclude warnVarRef
                 set scaling($w,$min)  [set $min]
+		#checker exclude warnVarRef
                 set scaling($w,$max)  [set $max]
+		#checker exclude warnVarRef
                 set scaling($w,$delt) [set $delt]
             }
         }
