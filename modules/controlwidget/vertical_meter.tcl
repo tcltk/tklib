@@ -75,6 +75,9 @@ package require bindDown
 
 namespace eval controlwidget {
     namespace export meter
+    namespace export slider
+    namespace export equalizerBar
+    namespace export thermometer
 }
 
 # verticalAxis --

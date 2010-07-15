@@ -55,7 +55,9 @@
 
 package require Tk 8.5
 package require snit
+
 namespace eval controlwidget {
+    namespace export rdial
 }
 
 # rdial --
