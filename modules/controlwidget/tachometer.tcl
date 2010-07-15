@@ -3,9 +3,7 @@
 # Adapted by Arjen Markus (snitified), july 2010
 #
 # TODO:
-#     drawing of danger level (off centre)
-#     motion of the needle to the end of the scale
-#     motion through the start and end
+#     motion through the start and end - it can jump through the gap
 #     scaling (scale widget)
 #     deal with sizes of the widget (aspect ratio != 1)
 #
@@ -43,13 +41,14 @@
 # AND  THE  AUTHOR  AND  DISTRIBUTORS  HAVE  NO  OBLIGATION  TO  PROVIDE
 # MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
-# $Id: tachometer.tcl,v 1.1 2010/07/09 08:36:52 arjenmarkus Exp $
+# $Id: tachometer.tcl,v 1.2 2010/07/15 10:42:39 arjenmarkus Exp $
 #
 
 package require Tk  8.5
 package require snit
 
 namespace eval controlwidget {
+    namespace export tachometer
 }
 
 # tachometer --
@@ -70,6 +69,10 @@ snit::widget controlwidget::tachometer {
     option -min            -default 0.0
     option -max            -default 100.0
     option -dangerlevel    -default 90.0
+    option -dangercolor    -default red
+    option -dangerwidth    -default 3m
+    option -dialcolor      -default white
+    option -pincolor       -default red
     option -indexid        -default {}
 
     option -background         -default gray
@@ -96,12 +99,6 @@ snit::widget controlwidget::tachometer {
         grid $win.c -sticky news
 
         if {$options(-variable) ne ""} {
-            #if { [info exists ::$options(-variable)] } {
-            #    set options(-value) [set ::$options(-variable)]
-            #} else {
-            #    set ::options(-variable) [expr {$options(-value)*$options(-scale)}]
-            #}
-
             trace add variable ::$options(-variable) write [mymethod tracer $options(-variable)]
         }
 
@@ -118,7 +115,7 @@ snit::widget controlwidget::tachometer {
         set y1 [expr {$width/50.0*2.0}]
         set x2 [expr {$width/50.0*48.0}]
         set y2 [expr {$width/50.0*48.0}]
-        $win.c create oval $x1 $y1 $x2 $y2 -fill white -width 1 -outline lightgray
+        $win.c create oval $x1 $y1 $x2 $y2 -fill $options(-dialcolor) -width 1 -outline lightgray
         shadowcircle $win.c $x1 $y1 $x2 $y2 40 0.7m 135.0
 
         # pin
@@ -126,7 +123,7 @@ snit::widget controlwidget::tachometer {
         set y1 [expr {$width/50.0*23.0}]
         set x2 [expr {$width/50.0*27.0}]
         set y2 [expr {$width/50.0*27.0}]
-        $win.c create oval $x1 $y1 $x2 $y2 -width 1 -outline lightgray -fill red
+        $win.c create oval $x1 $y1 $x2 $y2 -width 1 -outline lightgray -fill $options(-pincolor)
         shadowcircle $win.c $x1 $y1 $x2 $y2 40 0.7m -45.0
 
         # danger marker
@@ -134,11 +131,19 @@ snit::widget controlwidget::tachometer {
 
             set deltadanger [expr {(360.0-40.0)*($options(-max)-$options(-dangerlevel))/(1.0*$options(-max)-$options(-min))}]
 
+            # Transform the thickness into a plain number (if given in mm for instance)
+            set id [$win.c create line 0 0 1 0]
+            $win.c move $id $options(-dangerwidth) 0
+            set coords    [$win.c coords $id]
+            set thickness [expr {[lindex $coords 0]/2.0}]
+            $win.c delete $id
+
+            # Create the arc for the danger level
             $win.c create arc \
-                [expr {$width/50.0*4.0}]  [expr {$width/50.0*4.0}] \
-                [expr {$width/50.0*44.5}] [expr {$width/50.0*44.5}] \
+                [expr {$width/50.0*4.0+$thickness}]  [expr {$width/50.0*4.0+$thickness}] \
+                [expr {$width/50.0*46.0-$thickness}] [expr {$width/50.0*46.0-$thickness}] \
                 -start -70 -extent $deltadanger -style arc \
-                -outline red -fill red -width 3m
+                -outline $options(-dangercolor) -fill $options(-dangercolor) -width $options(-dangerwidth)
         }
 
         # graduate line
@@ -272,41 +277,48 @@ snit::widget controlwidget::tachometer {
         set ys [expr {$half-0.2*$length*cos($angle)}]
 
         catch {$c delete $id}
-        set id [$c create line $xs $ys $xl $yl -fill red -width 0.6m]
+        set id [$c create line $xs $ys $xl $yl -fill $options(-pincolor) -width 0.6m]
         $c bind $id <ButtonPress> [list $self needlePress %W]
         set options(-indexid) $id
     }
 
     method needlePress {w} \
     {
-      set motion 1
+        set motion 1
     }
 
     method needleRelease {w} \
     {
-      set motion 0
+        set motion 0
     }
 
     method needleMotion {w x y} \
     {
-      if {! $motion} { return }
-      if {$y == $yc && $x == $xc} { return }
-      set angle [expr {180.0 + atan2($yc - $y,$xc - $x) / $pi}]
-      if {$angle >= 110.0} { set angle [expr {$angle - 110.0}] } \
-      else { set angle [expr {250.0 + $angle}] }
-      if {$angle >= 0.0 && $angle <= 320.0} \
-      { set ::$options(-variable) [expr {$options(-min) + ($options(-max)-$options(-min))*($angle-20.0) / 320.0}] }
+        if {! $motion} { return }
+        if {$y == $yc && $x == $xc} { return }
+
+        #
+        # Compute the angle with the positive y-axis - easier to examine!
+        #
+        set angle [expr {atan2($xc - $x,$yc - $y) / $pi}]
+        if { $angle >= 160.0 } {
+            set angle 160.0
+        }
+        if { $angle < -160.0 } {
+            set angle -160.0
+        }
+        set ::$options(-variable) [expr {$options(-min) + ($options(-max)-$options(-min))*(160.0-$angle) / 320.0}]
     }
 
     proc rivet { c xc yc } \
     {
-      set width 5
-      set bevel 0.5m
-      set angle -45.0
-      set ticks 7
-        shadowcircle $c \
-         [expr {$xc-$width}] [expr {$yc-$width}] [expr {$xc+$width}] [expr {$yc+$width}] \
-         $ticks $bevel $angle
+        set width 5
+        set bevel 0.5m
+        set angle -45.0
+        set ticks 7
+          shadowcircle $c \
+           [expr {$xc-$width}] [expr {$yc-$width}] [expr {$xc+$width}] [expr {$yc+$width}] \
+           $ticks $bevel $angle
     }
 
     proc shadowcircle { canvas x1 y1 x2 y2 ticks width orient } \
@@ -340,14 +352,16 @@ proc main { argc argv } \
     wm title . "A tachometer-like widget"
     wm geometry . +10+10
 
-    controlwidget::tachometer .t1 -variable ::value1 -labels { 0 10 20 30 40 50 60 70 80 90 100 }
+    controlwidget::tachometer .t1 -variable ::value1 -labels { 0 10 20 30 40 50 60 70 80 90 100 } \
+       -pincolor green -dialcolor lightpink
     scale .s1 -command "set ::value1" -variable ::value1
 
-#    controlwidget::tachometer .t2 -variable ::value2 -labels { 0 {} {} 5 {} {} 10 } -width 100m -height 100m \n
-#        -min 0 -max 10
-    controlwidget::tachometer .t2 -variable ::value2 -labels { 0 {} {} 5 {} {} 10 } \
-         ;#-min 0 -max 10
-    scale .s2 -command "set ::value2" -variable ::value2
+    #
+    # Note: the labels are not used in the scaling of the values
+    #
+    controlwidget::tachometer .t2 -variable ::value2 -labels { 0 {} {} 5 {} {} 10 } -width 100m -height 100m \
+        -min 0 -max 10 -dangerlevel 3
+    scale .s2 -command "set ::value2" -variable ::value2 -from 0 -to 10
 
     button .b -text Quit -command "set ::forever 1"
 
