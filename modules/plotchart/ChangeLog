@@ -1,3 +1,11 @@
+2010-07-15  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotchart.tcl: Fixed use of step sizes in createIsometricPlot (as found by Andreas)
+	* plotpriv.tcl: Import legend variable in drawing of horizontal bars
+	* plotpriv.tcl: Commented out some unfinished code in scrolling timecharts
+	* plotpriv.tcl: Fixed variable names in drawing label dots in polar plots
+	* plotpriv.tcl: Draw line with correct thickness in legend
+	* pkgIndex.tcl: Changed version to 1.9.2
+
 2010-07-09  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* plotannot.tcl: Made a number of fixes (mistyped variable names,

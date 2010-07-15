@@ -1263,6 +1263,7 @@ proc ::Plotchart::DrawVertBarData { w series ydata {colour black} {dir {}} {brig
 proc ::Plotchart::DrawHorizBarData { w series xdata {colour black} {dir {}} {brightness bright}} {
    variable data_series
    variable scaling
+   variable legend
    variable settings
 
    #
@@ -2396,15 +2397,16 @@ proc ::Plotchart::!VertScrollChart { w operation number {unit {}}} {
                 set newpos [expr {$scaling($w,curpos) + $number*$scaling($w,ymax)/$scaling($w,theight)}]
             }
 
-            if { $newpos < 0.0 } {
-                set newpos 0.0
-                set dy     [expr {$...}]
-            }
-
-            if { $newpos > 1.0 } {
-                set newpos 1.0
-                set dy     [expr {$...}]
-            }
+            # TODO: guard against scrolling too far
+            #if { $newpos < 0.0 } {
+            #    set newpos 0.0
+            #    set dy     [expr {$...}]
+            #}
+            #
+            #if { $newpos > 1.0 } {
+            #    set newpos 1.0
+            #    set dy     [expr {$...}]
+            #}
             set scaling($w,curpos) $newpos
         }
     }
@@ -2706,8 +2708,8 @@ proc ::Plotchart::DrawLabelDot { w x y text {orient w} } {
 proc ::Plotchart::DrawLabelDotPolar { w rad angle text {orient w} } {
     variable torad
 
-    set xcrd [expr {$rad*cos($phi*$torad)}]
-    set ycrd [expr {$rad*sin($phi*$torad)}]
+    set xcrd [expr {$rad*cos($angle*$torad)}]
+    set ycrd [expr {$rad*sin($angle*$torad)}]
 
     DrawLabelDot $w $xcrd $ycrd $text $orient
 }

@@ -844,8 +844,8 @@ proc ::Plotchart::createIsometricPlot { w xscale yscale stepsize } {
       set pymax [HeightCanvas $w]
    }
 
-   foreach {xmin xmax} $xscale {break}
-   foreach {ymin ymax} $yscale {break}
+   foreach {xmin xmax xdelt} $xscale {break}
+   foreach {ymin ymax ydelt} $yscale {break}
 
    if { $xmin == $xmax || $ymin == $ymax } {
       return -code error "Extremes for axes must be different"
@@ -855,8 +855,8 @@ proc ::Plotchart::createIsometricPlot { w xscale yscale stepsize } {
    ScaleIsometric   $w $xmin  $ymin  $xmax  $ymax
 
    if { $stepsize != "noaxes" } {
-      DrawYaxis        $w $ymin  $ymax  $ydelt
-      DrawXaxis        $w $xmin  $xmax  $xdelt
+      DrawYaxis        $w $ymin  $ymax  $stepsize
+      DrawXaxis        $w $xmin  $xmax  $stepsize
       DrawMask         $w
    }
    DefaultLegend  $w
@@ -2082,4 +2082,4 @@ source [file join [file dirname [info script]] "plotspecial.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.9.1
+package provide Plotchart 1.9.2
