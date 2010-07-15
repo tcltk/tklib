@@ -1028,11 +1028,15 @@ proc ::Plotchart::DrawLegend { w series text } {
         if { [info exists data_series($w,legendtype)] } {
             set type $data_series($w,legendtype)
         }
+        set width 1
+        if { [info exists data_series($w,$series,-width)] } {
+            set width $data_series($w,$series,-width)
+        }
 
         # TODO: line or rectangle!
 
         if { $type != "rectangle" } {
-            $legendw create line 0 $y 15 $y -fill $colour -tag {legend legendobj}
+            $legendw create line 0 $y 15 $y -fill $colour -tag {legend legendobj} -width $width
 
             if { $type == "symbol" || $type == "both" } {
                 set symbol "dot"
