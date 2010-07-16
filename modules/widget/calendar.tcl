@@ -7,7 +7,7 @@
 #
 # Copyright (c) 2008 Rüdiger Härtel
 #
-# RCS: @(#) $Id: calendar.tcl,v 1.8 2009/10/23 18:33:15 haertel Exp $
+# RCS: @(#) $Id: calendar.tcl,v 1.9 2010/07/16 00:19:57 hobbs Exp $
 #
 
 #
@@ -442,7 +442,7 @@ snit::widgetadaptor widget::calendar {
 	}
 	# Week of year (last day)
 	if {$x != $x0} {
-	    set week [$self getweek $d $data(month) $data(year)]
+	    set week [$self getweek $dmax $data(month) $data(year)]
 	    $hull create text [expr {$x0}] $y -text $week -tag week \
 		-font $options(-font) -fill white
 	    for {set d 1} {$x <= $xmax} {incr d} {
@@ -664,4 +664,4 @@ snit::widgetadaptor widget::calendar {
     }
 }
 
-package provide widget::calendar 0.94
+package provide widget::calendar 0.95

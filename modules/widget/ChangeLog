@@ -1,3 +1,9 @@
+2010-07-15  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* pkgIndex.tcl: bump calendar to 0.95
+	* calendar.tcl (Refresh): use correct last day, as 8.4 doesn't
+	handle going over on days in month for clock scan.
+
 2010-07-09  Andreas Kupries  <andreask@activestate.com>
 
 	* arrowb.tcl: Added arrowbutton widgets using Keith Vetter's
