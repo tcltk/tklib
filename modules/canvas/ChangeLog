@@ -1,3 +1,28 @@
+2010-07-16  Andreas Kupries  <andreask@activestate.com>
+
+	* ../../examples/canvas/osm.tcl: Another update of the app, Keith
+	  added:
+	  o computes distance between points: as you right click to
+	    to add points, it shows the distance from start to end
+	  o built in some initial locations (so not dependent on
+	    locations.gps)
+	  o hack to get the display shown nicely while initial maps
+	    are loading
+	  o double clicking a location automatically goes there
+	  o safer way to process *.gps files instead of just using 'eval'
+	  o shorten lat/lon to 6 decimal places
+
+	  And I added a binding (Button 3 double-click) to center the map
+	  at the mouse position. The zoom control has been 'place'd on the
+	  canvas. This works best for the new control, see below.
+
+	* canvas_zoom.tcl: Updated and modified by Keith. Only two buttons
+	* canvas_zoom.man: (+/-, as images) and a label in the
+	* pkgIndex.tcl: middle. Automatically uses tile/ttk widgets if
+	  they are present. Simplified internals by using an unmapped
+	  scale widget to handle all the variable tracing. Version bumped
+	  to 0.2.
+
 2010-07-07  Andreas Kupries  <andreask@activestate.com>
 
 	* ../../examples/canvas/city.tcl: Dropped the code trying
