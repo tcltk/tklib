@@ -1,0 +1,8 @@
+2010-07-16  Andreas Kupries  <andreask@activestate.com>
+
+	* controlwidget.man: Fixed the bad documentation syntax found by
+	  running "./sak.tcl doc validate modules/controlwidget" from the
+	  tklib toplevel directory.
+
+	* ChangeLog begun.
+
