@@ -1,6 +1,6 @@
 #!/bin/sh
 # -*- tcl -*- \
-exec tclsh "$0" ${1+"$@"}
+exec tclsh8.5 "$0" ${1+"$@"}
 # ### ### ### ######### ######### #########
 
 ## DEMO. Uses openstreetmap to show a tile-based world map.
@@ -23,10 +23,10 @@ exec tclsh "$0" ${1+"$@"}
 ##       then remove both X and the point of interest by using <3>
 ##       twice.
 ##
-##	 Oh, and removal via <1> bound the item works not at all,
-##	 because this triggers the global binding as well, re-adding
-##	 the point immediately after its removal. Found no way of
-##	 blocking that.
+##       Oh, and removal via <1> bound the item works not at all,
+##       because this triggers the global binding as well, re-adding
+##       the point immediately after its removal. Found no way of
+##       blocking that.
 ##
 ## Note: Currently new point can be added only at the end of the
 ##       trail. No insertion in the middle possible, although deletion
@@ -37,10 +37,6 @@ exec tclsh "$0" ${1+"$@"}
 ##       the messes encapsulated into snit types or other niceties,
 ##       separate packages, etc.
 
-# ### ### ### ######### ######### #########
-## For data files found relative to the example's location.
-
-set selfdir  [file dirname [file normalize [info script]]]
 
 ## Ideas:
 ## == DONE ==
@@ -67,6 +63,7 @@ set selfdir  [file dirname [file normalize [info script]]]
 ##    Hence this demo uses the freely available openstreetmap(.org)
 ##    data instead.
 ##
+## == DONE ==
 ## -- Select two locations, then compute the geo distance between
 ##    them. Or, select a series of location, like following a road,
 ##    and compute the partial and total distances.
@@ -78,6 +75,7 @@ set selfdir  [file dirname [file normalize [info script]]]
 # ### ### ### ######### ######### #########
 ## Other requirements for this example.
 
+package require Tcl 8.5
 package require Tk
 package require widget::scrolledwindow
 package require canvas::sqmap
@@ -95,14 +93,51 @@ package require snit             ; # canvas::sqmap dependency
 package require uevent::onidle   ; # ditto
 package require cache::async 0.2 ; # ditto
 
+set defaultLocations {
+}
+set cities {
+    "Aachen" {50.7764185111 6.086769104}
+    "Anchorage" {61.218333 -149.899167}
+    "Banff" {51.1653    -115.5322}
+    "Beijing" {39.913889 116.391667}
+    "Boston " {42.35 -71.066666}
+    "Buenos Aires" {-34.603333 -58.381667}
+    "Chicago" {41.8675 -87.6243}
+    "Denver" {39.75 -104.98}
+    "Honolulu" {21.31 -157.83}
+    "Johannesburg" {-26.204444 28.045556}
+    "London" {51.508056 -0.124722}
+    "Los Angeles" {34.054 -118.245}
+    "Mexico City" {19.433333 -99.133333}
+    "Moscow" {55.751667 37.617778}
+    "New York" {40.7563 -73.9865}
+    "Palo Alto" {37.429167 -122.138056}
+    "Paris" {48.856667 2.350833}
+    "San Francisco" {37.77 -122.43}
+    "Sydney" {-33.859972 151.211111}
+    "Tokyo" {35.700556 139.715}
+    "Vancouver (Lost Lagoon)" {49.30198   -123.13724}
+    "Washington DC" {38.9136 -77.0132}
+}
+
 # ### ### ### ######### ######### #########
 
 proc Main {} {
     InitModel
     GUI
-    LoadMarks ; # Geo Bookmarks.
-    tkwait visibility .map
-    Aachen 12
+    LoadInitialMarks
+
+    # Hack to get display to show nicely while the initial maps are
+    # loading
+    set gridInfo [grid info .sw]
+    grid forget .sw
+    update
+    grid .sw {*}$gridInfo
+
+    SetRegion $::zoom ; # Force initial region as the zoom control
+                        # will not call us initially, only on
+                        # future changes.
+    GetInitialMark
 }
 
 # ### ### ### ######### ######### #########
@@ -110,13 +145,14 @@ proc Main {} {
 proc InitModel {} {
     global argv cachedir loaddir provider zoom
 
-    set zoom     0
+    set zoom     12
     set cachedir ""
     set loaddir  [pwd]
 
     # OpenStreetMap. Mapnik rendered tiles.
     # alternative  http://tah.openstreetmap.org/Tiles/tile
 
+    if {"FETCH" in [info commands]} { rename FETCH {}} ;# KPV, allow re-loading
     set provider [map::slippy::fetcher FETCH 19 http://tile.openstreetmap.org]
 
     # Nothing to do if no cache is specified, and fail for wrong#args
@@ -157,17 +193,19 @@ proc GUI {} {
     set tw [$provider tilewidth]
 
     canvas::sqmap          .map   -closeenough 3 \
-	-viewport-command VPTRACK -grid-cell-command GET \
-	-grid-cell-width $tw -grid-cell-height $th
-	
-    canvas::zoom           .z    -variable ::zoom -command ZOOM \
-	-orient vertical -levels [$provider levels]
+        -viewport-command VPTRACK -grid-cell-command GET \
+        -grid-cell-width $tw -grid-cell-height $th -bg yellow
 
-    entry                  .loc  -textvariable ::location \
-	-bd 2 -relief sunken -bg white -width 60
+    canvas::zoom           .z    -variable ::zoom -command ZOOM \
+        -orient vertical -levels [$provider levels]
+
+    label                  .loc  -textvariable ::location \
+        -bd 2 -relief sunken -bg white -width 20 -anchor w
+    label                  .dist  -textvariable ::distance \
+        -bd 2 -relief sunken -bg white -width 20 -anchor w
 
     listbox                .lm   -listvariable ::locations \
-	-selectmode single
+        -selectmode single -exportselection 0
 
     button                 .exit -command exit        -text Exit
     button                 .goto -command GotoMark    -text Goto
@@ -182,8 +220,10 @@ proc GUI {} {
     # layout of the elements
 
     grid .sl   -row 1 -column 0 -sticky swen -columnspan 2
-    grid .z    -row 1 -column 2 -sticky wen
-    grid .sw   -row 1 -column 3 -sticky swen -columnspan 5
+    #grid .z    -row 1 -column 2 -sticky wen
+    grid .sw   -row 1 -column 3 -sticky swen -columnspan 6
+
+    place .z -in .map -x .2i -y .2i -anchor nw
 
     grid .exit -row 0 -column 0 -sticky wen
     grid .goto -row 0 -column 1 -sticky wen
@@ -191,6 +231,7 @@ proc GUI {} {
     grid .ld   -row 0 -column 4 -sticky wen
     grid .sv   -row 0 -column 5 -sticky wen
     grid .loc  -row 0 -column 6 -sticky wen
+    grid .dist -row 0 -column 7 -sticky wen
 
     grid rowconfigure . 0 -weight 0
     grid rowconfigure . 1 -weight 1
@@ -199,7 +240,7 @@ proc GUI {} {
     grid columnconfigure . 1 -weight 0
     grid columnconfigure . 2 -weight 0
     grid columnconfigure . 3 -weight 0
-    grid columnconfigure . 7 -weight 1
+    grid columnconfigure . 8 -weight 1
 
     # ---------------------------------------------------------
     # Behaviours
@@ -210,6 +251,12 @@ proc GUI {} {
 
     # Mark/unmark a point on the canvas
     bind .map <1> {RememberPoint %x %y}
+
+    # Double clicking location selects it
+    bind .lm <Double-Button-1> GotoMark
+
+    # Double-clicking right button centers map to mouse location.
+    bind .map <Double-Button-3> GotoMouse
 
     # Cross hairs ...
     .map configure -cursor tcross
@@ -222,7 +269,8 @@ proc GUI {} {
 
 # ### ### ### ######### ######### #########
 
-set location  {} ; # geo location of the mouse in the canvas (crosshair)
+set location  "location" ; # geo location of the mouse in the canvas (crosshair)
+set distance  "distance" ; # distance between marks
 
 proc VPTRACK {xl yt xr yb} {
     # args = viewport, pixels, see also canvas::sqmap, SetPixelView.
@@ -234,14 +282,14 @@ proc VPTRACK {xl yt xr yb} {
 
 proc TRACK {win x y args} {
     # args = viewport, pixels, see also canvas::sqmap, SetPixelView.
-    global location zoom
+    global location zoom clat clon
 
     # Convert pixels to geographic location.
     set point [list $zoom $y $x]
-    foreach {_ lat lon} [map::slippy point 2geo $point] break
+    foreach {_ clat clon} [map::slippy point 2geo $point] break
 
     # Update entry field.
-    set location "$lat, $lon"
+    set location [PrettyLatLon $clat $clon]
     return
 }
 
@@ -254,8 +302,8 @@ proc GET {__ at donecmd} {
     set tile [linsert $at 0 $zoom]
 
     if {![map::slippy tile valid $tile [$provider levels]]} {
-	GOT $donecmd unset $tile
-	return
+        GOT $donecmd unset $tile
+        return
     }
 
     #puts "GET ($tile) ($donecmd)"
@@ -267,7 +315,7 @@ proc GOT {donecmd what tile args} {
     #puts "\tGOT $donecmd $what ($tile) $args"
     set at [lrange $tile 1 end]
     if {[catch {
-	uplevel #0 [eval [linsert $args 0 linsert $donecmd end $what $at]]
+        uplevel #0 [eval [linsert $args 0 linsert $donecmd end $what $at]]
     }]} { puts $::errorInfo }
     return
 }
@@ -280,12 +328,16 @@ proc ZOOM {w level} {
 
     #puts ".z = $level"
 
+    SetRegion $level
+    ShowPoints
+    return
+}
+
+proc SetRegion {level} {
     set rlength [map::slippy length $level]
     set region  [list 0 0 $rlength $rlength]
 
     .map configure -scrollregion $region
-
-    ShowPoints
     return
 }
 
@@ -326,27 +378,27 @@ proc Jigger {z y x} {
 
 set points    {} ; # way-points loaded list (list (lat lon comment))
 set locations {} ; # Location markers (locationmark.gps)
-set lmarks    {} ; #
+set lmarks    {} ; # Coordinates for items in location
 
 proc SavePoints {} {
     global loaddir
 
     set chosen [tk_getSaveFile -defaultextension .gps \
-		    -filetypes {
-			{GPS {.gps}}
-			{ALL {*}}
-		    } \
-		    -initialdir $loaddir \
-		    -title   {Save waypoints} \
-		    -parent .map]
+                    -filetypes {
+                        {GPS {.gps}}
+                        {ALL {*}}
+                    } \
+                    -initialdir $loaddir \
+                    -title   {Save waypoints} \
+                    -parent .map]
 
     if {$chosen eq ""} return
 
     global points
     set lines {}
     foreach p $points {
-	foreach {lat lon comment} $p break
-	lappend lines [list waypoint $lat $lon $comment]
+        foreach {lat lon comment} $p break
+        lappend lines [list waypoint $lat $lon $comment]
     }
 
     fileutil::writeFile $chosen [join $lines \n]\n
@@ -357,19 +409,19 @@ proc LoadPoints {} {
     global loaddir
 
     set chosen [tk_getOpenFile -defaultextension .gps \
-		    -filetypes {
-			{GPS {.gps}}
-			{ALL {*}}
-		    } \
-		    -initialdir $loaddir \
-		    -title   {Load waypoints} \
-		    -parent .map]
+                    -filetypes {
+                        {GPS {.gps}}
+                        {ALL {*}}
+                    } \
+                    -initialdir $loaddir \
+                    -title   {Load waypoints} \
+                    -parent .map]
 
     if {$chosen eq ""} return
     if {[catch {
-	set waypoints [fileutil::cat $chosen]
+        set waypoints [fileutil::cat $chosen]
     }]} {
-	return
+        return
     }
 
     set loaddir [file dirname $chosen]
@@ -377,9 +429,33 @@ proc LoadPoints {} {
     ClearPoints
     # Content is TRUSTED. In a proper app this has to be isolated from
     # the main system through a safe interp.
-    eval $waypoints
+    #eval $waypoints
+    ProcessFile $waypoints
     ShowPoints
     return
+}
+##+##########################################################################
+#
+# Safer way of processing our GPS file data. Only two commands
+# allowed: "poi lat lon comment" and "waypoint lat lon comment"
+#
+proc ProcessFile {data} {
+    foreach line [split $data \n] {
+        set line [string trim $line]
+        if {$line eq "" || [string match "#*" $line]} continue
+
+        set n [catch {set len [llength $line]}]
+        if {$n || $len != 4} {
+            puts "bad line: '$line'"
+            continue
+        }
+        lassign $line cmd lat lon comment
+        if {$cmd ne "poi" && $cmd ne "waypoint"} {
+            puts "bad command: '$line'"
+            continue
+        }
+        $cmd $lat $lon $comment
+    }
 }
 
 proc waypoint {lat lon comment} {
@@ -389,29 +465,44 @@ proc waypoint {lat lon comment} {
 }
 
 proc ShowPoints {} {
-    global points zoom
+    global points zoom distance
 
     if {![llength $points]} return
 
     set cmds {}
     set cmd [list .map create line]
 
+    set lat0 {}
+    set lon0 {}
+    set dist 0
+
     foreach point $points {
-	foreach {lat lon comment} $point break
-	foreach {_ y x} [map::slippy geo 2point [list $zoom $lat $lon]] break
-	lappend cmd  $x $y
-	lappend cmds [list POI $y $x $lat $lon $comment -fill salmon -tags Series]
+        foreach {lat lon comment} $point break
+        foreach {_ y x} [map::slippy geo 2point [list $zoom $lat $lon]] break
+        lappend cmd  $x $y
+        lappend cmds [list POI $y $x $lat $lon $comment -fill salmon -tags Series]
+
+        if {$lat0 ne {}} {
+            set leg [GreatCircleDistance $lat0 $lon0 $lat $lon]
+            set dist [expr {$dist + $leg}]
+        }
+        set lat0 $lat
+        set lon0 $lon
     }
     lappend cmd -width 2 -tags Series -capstyle round ;#-smooth 1
 
     if {[llength $points] > 1} {
-	set cmds [linsert $cmds 0 $cmd]
+        set cmds [linsert $cmds 0 $cmd]
     }
 
     .map delete Series
     #puts [join $cmds \n]
     eval [join $cmds \n]
+    set distance [PrettyDistance $dist]
     return
+}
+proc PrettyLatLon {lat lon} {
+    return [format "%.6f %.6f" $lat $lon]
 }
 
 global pcounter
@@ -423,6 +514,7 @@ proc RememberPoint {x y} {
 
     set point [list $zoom [.map canvasy $y] [.map canvasx $x]]
     foreach {_ lat lon} [map::slippy point 2geo $point] break
+    lassign [PrettyLatLon $lat $lon] lat lon
 
     set comment "$pcounter:<$lat,$lon>"
     #puts $x/$y/$lat/$lon/$comment/$pcounter
@@ -455,22 +547,51 @@ proc ForgetPoint {pid} {
     global points
     set pos -1
     foreach p $points {
-	incr pos
-	foreach {lat lon comment id} $p break
-	if {$id != $pid} continue
-	#puts \tFound/$pos
-	set points [lreplace $points $pos $pos]
-	if {![llength $points]} {
-	    ClearPoints
-	} else {
-	    ShowPoints
-	}
-	return
+        incr pos
+        foreach {lat lon comment id} $p break
+        if {$id != $pid} continue
+        #puts \tFound/$pos
+        set points [lreplace $points $pos $pos]
+        if {![llength $points]} {
+            ClearPoints
+        } else {
+            ShowPoints
+        }
+        return
     }
     #puts Missed
     return
 }
+# See http://wiki.tcl.tk/8447
+proc GreatCircleDistance {lat1 lon1 lat2 lon2} {
+    set y1 $lat1
+    set x1 $lon1
+    set y2 $lat2
+    set x2 $lon2
 
+    set pi [expr {acos(-1)}]
+    set x1 [expr {$x1 *2*$pi/360.0}]            ;# Convert degrees to radians
+    set x2 [expr {$x2 *2*$pi/360.0}]
+    set y1 [expr {$y1 *2*$pi/360.0}]
+    set y2 [expr {$y2 *2*$pi/360.0}]
+    # calculate distance:
+    ##set d [expr {acos(sin($y1)*sin($y2)+cos($y1)*cos($y2)*cos($x1-$x2))}]
+    set d [expr {sin($y1)*sin($y2)+cos($y1)*cos($y2)*cos($x1-$x2)}]
+    if {abs($d) > 1.0} {                        ;# Rounding error
+        set d [expr {$d > 0 ? 1.0 : -1.0}]
+    }
+    set d [expr {acos($d)}]
+
+    set meters [expr {20001600/$pi*$d}]
+    return $meters
+}
+proc PrettyDistance {dist} {
+    if {$dist == 0} { return "distance" }
+    set meters [expr {round($dist)}]
+    if {$meters == 1} { return "1 meter"}
+    if {$meters < 1000} { return "$meters meters"}
+    return [format "%.1f km" [expr {$dist/1000.0}]]
+}
 proc POI {y x lat lon comment args} {
     set x1 [expr { $x + 6 }]
     set y1 [expr { $y + 6 }]
@@ -480,7 +601,7 @@ proc POI {y x lat lon comment args} {
     set id [eval [linsert $args 0 .map create oval $x $y $x1 $y1]]
     if {$comment eq ""} return
     tooltip::tooltip .map -item $id $comment
-    .map addtag T/$comment withtag $id 
+    .map addtag T/$comment withtag $id
     return
 }
 
@@ -488,38 +609,15 @@ proc ClearPoints {} {
     global points
     set points {}
     .map delete Series
+    set ::distance "distance"
     return
 }
 
-proc FindMarks {v} {
-    upvar 1 $v file
-    global cachedir loaddir selfdir
-    set base locationmarks.gps
-
-    foreach d [list $cachedir $loaddir [pwd] $selfdir] {
-	set lm [file join $d $base]
-	if {![file exists $lm]} continue
-	set file $lm
-	return 1
+proc LoadInitialMarks {} {
+    foreach {name latlon} $::cities {
+        lassign $latlon lat lon
+        poi $lat $lon $name
     }
-    return 0
-}
-
-proc LoadMarks {} {
-    if {![FindMarks lm]} return
-
-    if {[catch {
-	set waypoints [fileutil::cat $lm]
-    }]} {
-	return
-    }
-
-    ClearMarks
-    # Content is TRUSTED. In a proper app this has to be isolated from
-    # the main system through a safe interp.
-    eval $waypoints
-    ShowMarks
-    return
 }
 
 proc ClearMarks {} {
@@ -541,6 +639,12 @@ proc ShowMarks {} {
     return
 }
 
+proc GotoMouse {} {
+    global clat clon zoom
+    Goto [list $zoom $clat $clon]
+    return
+}
+
 proc GotoMark {} {
     global lmarks zoom
     set sel [.lm curselection]
@@ -551,7 +655,13 @@ proc GotoMark {} {
     Goto [list $zoom $lat $lon]
     return
 }
-
+proc GetInitialMark {} {
+    set n [expr {int(rand()*[llength $::locations])}]
+    .lm selection clear 0 end
+    .lm selection set $n
+    .lm selection anchor $n
+    GotoMark
+}
 # ### ### ### ######### ######### #########
 
 proc ShowGrid {} {
@@ -561,12 +671,7 @@ proc ShowGrid {} {
     return
 }
 
-proc Aachen {z} {
-    # City of Aachen, NRW. Germany, Europe.
-    Goto [list $z 50.7764185111 6.086769104]
-    return
-}
-
 # ### ### ### ######### ######### #########
 # ### ### ### ######### ######### #########
 Main
+

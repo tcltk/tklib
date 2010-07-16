@@ -1,10 +1,10 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin canvas::zoom n 0.1]
+[manpage_begin canvas::zoom n 0.2]
 [moddesc   {Variations on a canvas}]
 [titledesc {Zoom control for canvas::sqmap}]
 [require Tcl 8.4]
 [require Tk 8.4]
-[require canvas::zoom [opt 0.1]]
+[require canvas::zoom [opt 0.2]]
 [description]
 
 This package provides a widget to enable the user of a map display to

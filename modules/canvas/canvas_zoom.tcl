@@ -1,8 +1,8 @@
 ## -*- tcl -*-
 # ### ### ### ######### ######### #########
 
-## A discrete zoom-control widget based on buttons. The API is similar
-## to a scale.
+## A discrete zoom-control widget based on two buttons and label.
+## The API is similar to a scale.
 
 # ### ### ### ######### ######### #########
 ## Requisites
@@ -14,12 +14,14 @@ package require uevent::onidle ; # Some defered actions.
 # ### ### ### ######### ######### #########
 ##
 
-snit::widget canvas::zoom {
+snit::widget ::canvas::zoom {
     # ### ### ### ######### ######### #########
     ## API
 
-    option -orient   -default vertical -configuremethod O-orient -type {snit::enum -values {vertical horizontal}}
-    option -levels   -default 0        -configuremethod O-levels -type {snit::integer -min 0}
+    option -orient   -default vertical -configuremethod O-orient \
+	-type {snit::enum -values {vertical horizontal}}
+    option -levels   -default {0 10}   -configuremethod O-levels \
+	-type {snit::listtype -minlen 1 -maxlen 2 -type snit::integer}
     option -variable -default {}       -configuremethod O-variable
     option -command  -default {}       -configuremethod O-command
 
@@ -27,7 +29,13 @@ snit::widget canvas::zoom {
 	install reconfigure using uevent::onidle ${selfns}::reconfigure \
 	    [mymethod Reconfigure]
 
+        set options(-variable) [myvar myzoomlevel] ;# Default value
 	$self configurelist $args
+
+	# Force redraw if it could not be triggered by options.
+        if {![llength $args]} {
+            $reconfigure request
+        }
 	return
     }
 
@@ -36,7 +44,6 @@ snit::widget canvas::zoom {
     ## information, and then a redraw.
 
     method O-orient {o v} {
-	#puts $o=$v
 	if {$options($o) eq $v} return
 	set  options($o) $v
 	$reconfigure request
@@ -44,7 +51,11 @@ snit::widget canvas::zoom {
     }
 
     method O-levels {o v} {
-	#puts $o=$v
+	# When only a single value was specified, we use it as
+	# our maximum, and default the minimum to zero.
+        if {[llength $v] == 1} {
+            set v [linsert $v 0 0]
+        }
 	if {$options($o) == $v} return
 	set  options($o) $v
 	$reconfigure request
@@ -52,28 +63,20 @@ snit::widget canvas::zoom {
     }
 
     method O-variable {o v} {
-	if {$v eq $options(-variable)} return
-	if {$options(-variable) ne ""} {
-	    # Drop tracing of now disconnected variable.
-	    trace remove variable $options(-variable) write [mymethod ZoomChanged]
-	}
-	set options(-variable) $v
-	if {$options(-variable) ne ""} {
-	    # Start to trace the now connected variable. Also import
-	    # the zoomlevel external value.
-	    upvar #0 $options(-variable) zoomlevel
-	    set myzoomlevel $zoomlevel
-	    trace add variable $options(-variable) write [mymethod ZoomChanged]
-	}
-	$reconfigure request
+	# The handling of an attached variable is very simple, without
+	# any of the trace management one would expect to be
+	# here. That is because we are using an unmapped aka hidden
+	# scale widget to do this for us, at the C level.
+
+        if {$options($o) == $v} return
+        set options($o) $v
+        $reconfigure request
 	return
     }
 
     method O-command {o v} {
 	if {$v eq $options(-command)} return
 	set options(-command) $v
-	# Export current zoom level through the new callback.
-	$self Callback
 	return
     }
 
@@ -85,120 +88,92 @@ snit::widget canvas::zoom {
 
 	eval [linsert [winfo children $win] 0 destroy]
 
-	set side $ourside($options(-orient))
-	set max  $options(-levels)
+        set side $options(-orient)
+        set var  $options(-variable)
+        foreach {lo hi} $options(-levels) break
 
-	button $win.outz -text - -command [mymethod ZoomOut]
-	pack   $win.outz -side $side -expand 0 -fill both
+        set vwidth [expr {max([string length $lo], [string length $hi])}]
+        set pre    [expr {[info commands ::ttk::button] ne "" ? "::ttk" : "::tk"}]
 
-	set mynormalbg [$win.outz cget -bg]
+        ${pre}::frame  $win.z       -relief solid -borderwidth 1
+        ${pre}::button $win.z.plus  -image ::canvas::zoom::plus  -command [mymethod ZoomIn]
+        ${pre}::label  $win.z.val   -textvariable $var -justify c -anchor c -width $vwidth
+        ${pre}::button $win.z.minus -image ::canvas::zoom::minus -command [mymethod ZoomOut]
 
-	for {set level 0} {$level < $max} {incr level} {
-	    button $win.l$level -text $level -command [mymethod ZoomSet $level]
-	    pack   $win.l$level -side $side  -expand 0 -fill both
-	}
-
-	button $win.inz -text + -command [mymethod ZoomIn]
-	pack   $win.inz -side $side -expand 0 -fill both
-
-	# Validate the current zoom level, it may have become invalid
-	# due to a change to max allowed levels.
-
-	set z [Cap $myzoomlevel]
-	if {$z == $myzoomlevel} return
-	$self Update $z
+        # Use an unmapped scale to keep var between lo and hi and
+        # avoid doing our own trace management
+        scale $win.z.sc -from $lo -to $hi -variable $var
+        
+        pack $win.z -fill both -expand 1
+        if {$side eq "vertical"} {
+            pack $win.z.plus $win.z.val $win.z.minus -side top  -fill x
+        } else {
+            pack $win.z.plus $win.z.val $win.z.minus -side left -fill y
+        }
 	return
     }
 
     # ### ### ### ######### ######### #########
-    ## Handle option changes
-
-    # ### ### ### ######### ######### #########
-    ## Events from inside and outside which act on the zoomlevel.
-
-    method ZoomChanged {args} {
-	upvar #0 $options(-variable) zoomlevel
-	set z [Cap $zoomlevel]
-	if {$myzoomlevel == $z} return
-	$self Update $z
-	return
-    }
-
-    method ZoomSet {new} {
-	if {$new == $myzoomlevel} return
-	$self Update $new
-	return
-    }
+    ## Events which act on the zoomlevel.
 
     method ZoomIn {} {
-	if {$myzoomlevel >= ($options(-levels)-1)} return
-	set  new $myzoomlevel
-	incr new
-	$self Update $new
+        upvar #0 $options(-variable) zoomlevel
+        foreach {lo hi} $options(-levels) break
+        if {$zoomlevel >= $hi} return
+        incr zoomlevel
+        $self Callback
 	return
     }
 
     method ZoomOut {} {
-	if {$myzoomlevel <= 0} return
-	set  new $myzoomlevel
-	incr new -1
-	$self Update $new
-	return
-    }
-
-    proc Cap {n} {
-	upvar 1 options(-levels) max
-	if {$n < 0 } { return 0 }
-	if {$n >= $max } { return [expr {$max - 1}] }
-	return $n
-    }
-
-    # ### ### ### ######### ######### #########
-    ## Helper, update visible widget state for new level, and
-    ## propagate new level to the model as well, via either -variable
-    ## or -command.
-
-    method Update {newlevel} {
-	catch { $win.l$myzoomlevel configure -bg $mynormalbg }
-	set myzoomlevel $newlevel
-	catch { $win.l$myzoomlevel configure -bg steelblue }
-
-	if {$options(-variable) ne ""} {
-	    upvar #0 $options(-variable) zoomlevel
-	    set zoomlevel $myzoomlevel
-	}
-
-	$self Callback
+        upvar #0 $options(-variable) zoomlevel
+        foreach {lo hi} $options(-levels) break
+        if {$zoomlevel <= $lo} return
+        incr zoomlevel -1
+        $self Callback
 	return
     }
 
     method Callback {} {
 	if {![llength $options(-command)]} return
-	uplevel #0 [linsert $options(-command) end $win $myzoomlevel]
+
+        upvar   #0 $options(-variable) zoomlevel
+	uplevel #0 [linsert $options(-command) end $win $zoomlevel]
 	return
     }
 
     # ### ### ### ######### ######### #########
     ## State
 
-    variable mynormalbg {} ; # Color of non-highlighted button.
-    variable myzoomlevel 0 ; # Currently chosen zoom level.
-
-    # Map from the -orientation to the widget -side to use for
-    # pack'ing.
-
-    typevariable ourside -array {
-	vertical   bottom
-	horizontal right
-    }
+    variable myzoomlevel 0 ; # The variable to use if the user
+                             # did not supply one to -variable.
 
     # ### ### ### ######### ######### #########
 }
 
 # ### ### ### ######### ######### #########
+## Images for the buttons
+
+image create bitmap ::canvas::zoom::plus -data {
+    #define plus_width 8
+    #define plus_height 8
+    static char bullet_bits = {
+        0x18, 0x18, 0x18, 0xff, 0xff, 0x18, 0x18, 0x18
+    }
+}
+
+image create bitmap ::canvas::zoom::minus -data {
+    #define minus_width 8
+    #define minus_height 8
+    static char bullet_bits = {
+        0x00, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00
+    }
+}
+
+# ### ### ### ######### ######### #########
 ## Ready
 
-package provide canvas::zoom 0.1
+package provide canvas::zoom 0.2
 return
 
 # ### ### ### ######### ######### #########
