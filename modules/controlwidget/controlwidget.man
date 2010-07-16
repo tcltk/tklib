@@ -8,7 +8,7 @@
 [titledesc {Collection of widgets for displaying and controlling numerical values}]
 [require Tcl [opt 8.5]]
 [require Tk [opt 8.5]]
-[require snit [opt 2.0]
+[require snit [opt 2.0]]
 [require controlwidget [opt 0.1]]
 
 [description]
@@ -62,7 +62,7 @@ the widget displays (whether that is stored in a global variable or not).
 [para]
 They also have in common that their appearance and behaviour is determined by one or more options that
 you can set at creation time and often later on as well. The widgets are all based on the [emph snit]
-package, so that the methods [tt configure] and [tt cget] are available to set and get these options.
+package, so that the methods [method configure] and [method cget] are available to set and get these options.
 
 
 [section COMMANDS]
@@ -194,13 +194,13 @@ The foreground color of the widget (the marker lines)
 
 [list_end]
 
-
+[list_end]
 
 
 [section ACKNOWLEDGEMENTS]
 The code for most of these widgets first appeared on the Wiki. In many cases, Arjen Markus merely
 refactored the code a bit and "snitified" some of them. The original code was developed by the following people:
-[list itemized]
+[list_begin itemized]
 [item]
 Vertical meter, LED display, radio matrix: Ron Fox
 [item]
