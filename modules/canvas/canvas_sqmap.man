@@ -1,10 +1,10 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin canvas::sqmap n 0.2]
+[manpage_begin canvas::sqmap n 0.3]
 [moddesc   {Variations on a canvas}]
 [titledesc {Canvas with map background based on square tiles}]
 [require Tcl 8.4]
 [require Tk 8.4]
-[require canvas::sqmap [opt 0.2]]
+[require canvas::sqmap [opt 0.3]]
 [description]
 
 This package provides an extended canvas widget for the display of
@@ -45,7 +45,7 @@ height of the cells the background is made up of.
 
 [opt_def -grid-cell-command]
 
-The value for this option is a command prefix. It is nvoked whenever
+The value for this option is a command prefix. It is invoked whenever
 the canvas needs the image for a specific cell of the background, with
 two additional arguments, the id of the cell, and a command prefix to
 invoke when the image is ready, or known to not exist.
@@ -74,6 +74,18 @@ the canvas is changed, to allow users keep track of where in the
 scroll-region we are at all times. This can be used, for example, to
 drive derivate displays, or to keep items in view by moving them as
 the viewport moves.
+
+[opt_def -image-on-load]
+
+The value for this option is an image. If specified the image is shown
+in a cell while the actual image for that cell is getting loaded
+through the callback specified by the [option -grid-cell-command].
+
+[opt_def -image-on-unset]
+
+The value for this option is an image. If specified the image is shown
+in a cell for which the callback specified by the [option -grid-cell-command]
+reported that there is no actual image to be shown.
 
 [list_end]
 

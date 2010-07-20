@@ -92,6 +92,9 @@ snit::widgetadaptor canvas::sqmap {
 
     option -viewport-command -default {} -configuremethod O-vp-command
 
+    option -image-on-load  -default {}
+    option -image-on-unset -default {}
+
     constructor {args} {
 	installhull using canvas
 
@@ -138,6 +141,12 @@ snit::widgetadaptor canvas::sqmap {
     }
 
     method {image unset} {at} {
+	# Show an image signaling that 'this tile is not valid/found' ...
+	if {$options(-image-on-unset) ne {}} {
+	    $self image set $at $options(-image-on-unset)
+	    return
+	}
+
 	$tilecache unset $at
 
 	# Nothing more is required for an invisible cell.
@@ -470,7 +479,16 @@ snit::widgetadaptor canvas::sqmap {
 		if {[info exists myvisible($at)]} continue
 		#puts /make/$idx
 		set myvisible($at) "" ; # placeholder
-		$tilecache get $at [mymethod image]
+
+		# Show an image signaling that 'we are loading this tile' ...
+		if {$options(-image-on-load) ne {}} {
+		    set theitem [$self GetItem [GridToPixel $at]]
+		    set myvisible($at)  $theitem
+		    $hull itemconfigure $theitem \
+			-image $options(-image-on-load)
+		}
+
+		after 0 [list $tilecache get $at [mymethod image]]
 		# This cache access re-uses the items in myfreeitems
 		# as images already in the cache are delivered
 		# synchronously, going through 'image set' and
@@ -644,5 +662,5 @@ snit::widgetadaptor canvas::sqmap {
 # ### ### ### ######### ######### #########
 ## Ready
 
-package provide canvas::sqmap 0.2
+package provide canvas::sqmap 0.3
 return
