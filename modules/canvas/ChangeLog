@@ -1,3 +1,10 @@
+2010-07-19  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* canvas_sqmap.tcl: Extend the class with two option to specify
+	* canvas_sqmap.man: images to show while the image for a cell is
+	* pkgIndex.tcl: loaded, and in cells for which there is no
+	  image. Updated the documentation. Bumped the version to 0.3.
+
 2010-07-16  Andreas Kupries  <andreask@activestate.com>
 
 	* ../../examples/canvas/osm.tcl: Another update of the app, Keith
