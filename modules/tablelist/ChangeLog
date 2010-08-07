@@ -1,3 +1,7 @@
+2010-08-07  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl: Fixed a tooltip-related bug.
+
 2010-07-03  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistUtil.tcl: Fixed a bug related to the -selecttype cell

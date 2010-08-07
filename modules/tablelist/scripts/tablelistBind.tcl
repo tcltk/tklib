@@ -302,14 +302,14 @@ proc tablelist::defineTablelistBody {} {
     }
 
     foreach event {<Enter> <Motion> <Leave>} {
-	bind TablelistBody $event {
+	bind TablelistBody $event [format {
 	    foreach {tablelist::W tablelist::x tablelist::y} \
-		[tablelist::convEventFields %W %x %y] {}
+		[tablelist::convEventFields %%W %%x %%y] {}
 
 	    tablelist::showOrHideTooltip $tablelist::W \
-		$tablelist::x $tablelist::y %X %Y
-	    tablelist::updateExpCollCtrl %W %x %y
-	}
+		$tablelist::x $tablelist::y %%X %%Y %s
+	    tablelist::updateExpCollCtrl %%W %%x %%y
+	} $event]
     }
     bind TablelistBody <Button-1> {
 	if {[winfo exists %W]} {
@@ -628,7 +628,7 @@ proc tablelist::defineTablelistBody {} {
 # the pointer has crossed a cell boundary then the procedure removes the old
 # tooltip and displays the one corresponding to the new cell.
 #------------------------------------------------------------------------------
-proc tablelist::showOrHideTooltip {win x y X Y} {
+proc tablelist::showOrHideTooltip {win x y X Y event} {
     upvar ::tablelist::ns${win}::data data
     if {[string compare $data(-tooltipaddcommand) ""] == 0 ||
 	[string compare $data(-tooltipdelcommand) ""] == 0} {
@@ -638,8 +638,13 @@ proc tablelist::showOrHideTooltip {win x y X Y} {
     #
     # Get the containing cell from the coordinates relative to the parent
     #
-    set row [containingRow $win $y]
-    set col [containingCol $win $x]
+    if {[string compare $event "<Leave>"] == 0} {
+	set row -1
+	set col -1
+    } else {
+	set row [containingRow $win $y]
+	set col [containingCol $win $x]
+    }
     if {[string compare $row,$col $data(prevCell)] == 0} {
 	return ""
     }
@@ -2163,6 +2168,7 @@ proc tablelist::labelEnter {w X Y x} {
 	    [string compare [winfo toplevel $focus] \
 	     [winfo toplevel $win]] == 0} {
 	    uplevel #0 $data(-tooltipaddcommand) [list $win -1 $col]
+	    event generate $win <Leave>
 	    event generate $win <Enter> -rootx $X -rooty $Y
 	}
     }
