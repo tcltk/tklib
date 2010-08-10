@@ -128,10 +128,10 @@ snit::widget  ::controlwidget::radioMatrix {
 
     # Public methods:
 
-    method Get {} {
+    method get {} {
         return $radioVariable
     }
-    method Set value {
+    method set value {
 
         set radioVariable $value
 
