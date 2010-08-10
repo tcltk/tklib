@@ -343,7 +343,7 @@ snit::widget controlwidget::rdial {
 package provide rdial 0.3
 
 #-------- test & demo ... disable it for package autoloading -> {0}
-if {1} {
+if {0} {
     if {[info script] eq $argv0} {
         array set disp_value {rs -30.0 rh 120.0 rv 10.0}
         proc rndcol {} {
@@ -393,8 +393,6 @@ if {1} {
         after 3000 {
             set ::score 100.0
             .rh set 3
-            console show
-            puts "Widget values: [.rv get] -- [.rh get] -- [.rs get]"
         }
     }
 }

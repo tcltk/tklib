@@ -41,7 +41,7 @@
 # AND  THE  AUTHOR  AND  DISTRIBUTORS  HAVE  NO  OBLIGATION  TO  PROVIDE
 # MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
-# $Id: tachometer.tcl,v 1.2 2010/07/15 10:42:39 arjenmarkus Exp $
+# $Id: tachometer.tcl,v 1.3 2010/08/10 11:05:51 arjenmarkus Exp $
 #
 
 package require Tk  8.5
@@ -341,6 +341,7 @@ snit::widget controlwidget::tachometer {
     }
 }
 
+if {0} {
 # main --
 #     Demonstration of the tachometer object
 #
@@ -378,6 +379,7 @@ proc main { argc argv } \
 }
 
 main $argc $argv
+}
 
 ### end of file
 # Local Variables:

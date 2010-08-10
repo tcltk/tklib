@@ -62,11 +62,209 @@ the widget displays (whether that is stored in a global variable or not).
 [para]
 They also have in common that their appearance and behaviour is determined by one or more options that
 you can set at creation time and often later on as well. The widgets are all based on the [emph snit]
-package, so that the methods [method configure] and [method cget] are available to set and get these options.
+package, so that the methods [emph configure] and [emph cget] are available to set and get these options.
 
 
 [section COMMANDS]
-Currently the package contains these widgets:
+Currently the package contains these widgets of the [emph "vertical meter"] type:
+
+[list_begin definitions]
+
+[call [cmd ::controlwidget::meter] [arg w] [arg args]]
+Create a vertical meter consisting of an axis and a moveable arrow.
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the widget to be created.
+
+[arg_def arguments args in]
+List of key-value pairs, controlling the appearance and behaviour of the widget:
+[list_begin options]
+
+[opt_def variable name]
+Name of the variable to be associated with the meter
+
+[opt_def background color]
+Background color for the widget
+
+[opt_def height pixels]
+Height of the widget
+
+[opt_def width pixels]
+Width of the widget
+
+[opt_def arrowthickness pixels]
+Thickness of the displayed arrow in pixels
+
+[opt_def arrowcolor color]
+Color of the displayed arrow
+
+[opt_def readonly boolean]
+Whether the arrow can be moved interactively or not
+[list_end]
+
+[list_end]
+
+
+
+[call [cmd ::controlwidget::slider] [arg w] [arg args]]
+Create a widget containing one or more vertical sliders and an axis. You can shift the slider handles
+interactively via the mouse.
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the widget to be created.
+
+[arg_def arguments args in]
+List of key-value pairs, controlling the appearance and behaviour of the widget:
+[list_begin options]
+
+[opt_def variable name]
+Name of the (list) variable to be associated with the widget
+
+[opt_def number integer]
+Number of sliders in the widget
+
+[opt_def background color]
+Background color for the widget
+
+[opt_def height pixels]
+Height of the widget
+
+[opt_def width pixels]
+Width of the widget
+
+[opt_def sliderthickness pixels]
+Thickness of the slider handles
+
+[opt_def sliderwidth color]
+Width of the slider handles
+
+[opt_def troughwidth color]
+Width of the troughs holding the sliders
+[list_end]
+
+[list_end]
+
+
+
+[call [cmd ::controlwidget::equalizerBar] [arg w] [arg args]]
+Create a widget containing one or more vertical bars resembling those found on hifi graphical equalizers.
+Note that it is a read-only widget.
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the widget to be created.
+
+[arg_def arguments args in]
+List of key-value pairs, controlling the appearance and behaviour of the widget:
+[list_begin options]
+
+[opt_def variable name]
+Name of the (list) variable to be associated with the widget
+
+[opt_def number integer]
+Number of bars in the widget
+
+[opt_def background color]
+Background color for the widget
+
+[opt_def height pixels]
+Height of the widget
+
+[opt_def width pixels]
+Width of the widget
+
+[opt_def barwidth pixels]
+Width of the bars
+
+[opt_def segments integer]
+Number of segments the bars are divided in
+
+[opt_def safecolor color]
+Color for values lower than the warning level
+
+[opt_def warningcolor color]
+Color for values greater than the warning level
+
+[opt_def warninglevel double]
+Threshold value, determines at what level the color changes
+[list_end]
+
+[list_end]
+
+
+
+[call [cmd ::controlwidget::thermometer] [arg w] [arg args]]
+Create a thermometer widget (read-only)
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the widget to be created.
+
+[arg_def arguments args in]
+List of key-value pairs, controlling the appearance and behaviour of the widget:
+[list_begin options]
+
+[opt_def variable name]
+Name of the (list) variable to be associated with the widget
+
+[opt_def background color]
+Background color for the widget
+
+[opt_def height pixels]
+Height of the widget
+
+[opt_def width pixels]
+Width of the widget
+
+[opt_def linethickness pixels]
+Thickness of the line representing the "temperature"
+
+[opt_def linecolor color]
+Color of the line
+[list_end]
+
+[list_end]
+
+[list_end]
+
+
+
+These widgets all use a vertical axis and have the following options in common for configuring the
+axis:
+
+[list_begin options]
+
+[opt_def axisformat string]
+Format string for formatting the numbers along the axis
+
+[opt_def axisfont string]
+Name of the font to be used for the numbers
+
+[opt_def axiscolor color]
+Color of the axis (including the numbers)
+
+[opt_def from color]
+Lower value for the axis
+
+[opt_def to color]
+Upper value for the axis
+
+[opt_def majorticks integer]
+Number of major tickmarks to draw (each is labelled)
+
+[opt_def minorticks integer]
+Number of minor tickmarks to draw between two major tickmarks
+
+[opt_def log boolean]
+Use a logarithmic axis (true) or a linear axis (false)
+
+[list_end]
+
+
+
+The package contains the following widget based on angle displays:
 
 [list_begin definitions]
 
@@ -130,6 +328,7 @@ Color of the title below the dial
 Create a tachometer-like widget.
 
 [list_begin arguments]
+[arg_def widget w in]
 Name of the widget to be created.
 
 [arg_def arguments args in]
@@ -158,6 +357,7 @@ Create a rotating dial. You can drag the dial to change the value. With the shif
 depressed the value changes slowly, with the control button depressed it changes fast.
 
 [list_begin arguments]
+[arg_def widget w in]
 Name of the widget to be created.
 
 [arg_def arguments args in]
@@ -197,9 +397,129 @@ The foreground color of the widget (the marker lines)
 [list_end]
 
 
-[section ACKNOWLEDGEMENTS]
+
+All these widgets have the following methods:
+
+[list_begin definitions]
+
+[call [cmd \$widget] get]
+Return the current value or values shown in the widget
+
+[call [cmd \$widget] set [arg value]]
+Reset the value or values shown in the widget. If the widget is associated with
+a variable, that variable is set as well.
+
+[list_begin arguments]
+[arg_def value double/list]
+New value or values for the widget
+[list_end]
+
+[list_end]
+
+
+Two further widgets are available, meant to display logical values:
+
+[list_begin definitions]
+
+[call [cmd ::controlwidget::led] [arg w] [arg args]]
+Create a LED-like widget.
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the widget to be created.
+
+[arg_def arguments args in]
+List of key-value pairs, controlling the appearance and behaviour of the widget. In addition
+to the ones given for the voltmeter widget:
+[list_begin options]
+[opt_def variable name]
+Name of the variable to be associated with the LED
+[opt_def size pixels]
+Diameter of the LED widget
+[opt_def on color]
+Color to use for the "on" state
+[opt_def off color]
+Color to use for the "off" state
+[list_end]
+
+[list_end]
+
+[call [cmd ::controlwidget::radioMatrix] [arg w] [arg args]]
+Create a matrix of radio buttons that behaves as a single widget.
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the widget to be created.
+
+[arg_def arguments args in]
+List of key-value pairs, controlling the appearance and behaviour of the widget. In addition
+to the ones given for the voltmeter widget:
+[list_begin options]
+[opt_def variable name]
+Name of the variable to be associated with the matrix
+[opt_def orient string]
+The way the radio buttons are to be arranged (horizontal or vertical first)
+[opt_def rows integer]
+Number of rows in the matrix
+[opt_def columns integer]
+Number of columns in the matrix
+[opt_def command list]
+Command associated with the radio buttons. Invoked when the active radio button changes.
+[list_end]
+
+[list_end]
+
+[list_end]
+
+
+
+The LED widget has the following public methods:
+
+[list_begin definitions]
+
+[call [cmd \$led] on]
+Set the state to "on"
+
+[call [cmd \$led] off]
+Set the state to "off"
+
+[call [cmd \$led] setstate [arg state]]
+Set the state according to the value of "state"
+
+[list_begin arguments]
+[arg_def state boolean in]
+New state for the LED widget
+[list_end]
+
+[list_end]
+
+
+
+The radioMatrix widget has two public methods:
+
+[list_begin definitions]
+
+[call [cmd \$matrix] get]
+Return the index of the currently selected radio button
+
+[call [cmd \$matrix] set [arg index]]
+Select the radio button with index "index"
+
+[list_begin arguments]
+[arg_def index integer]
+Index of the radio button to be set
+[list_end]
+
+[list_end]
+
+
+
+
+
+[section ACKNOWLEDGMENTS]
 The code for most of these widgets first appeared on the Wiki. In many cases, Arjen Markus merely
 refactored the code a bit and "snitified" some of them. The original code was developed by the following people:
+
 [list_begin itemized]
 [item]
 Vertical meter, LED display, radio matrix: Ron Fox
