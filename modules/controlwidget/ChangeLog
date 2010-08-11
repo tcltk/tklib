@@ -1,3 +1,8 @@
+2010-08-11  Andreas Kupries  <andreask@activestate.com>
+
+ 	* controlwidget.man: Resolved merge conflict regarding markup of
+	  configure/cget in favor of 'method' over 'emph'.
+
 2010-08-10  Arjen Markus <arjenmarkus@users.sourceforge.net>
 
 	* controlwidget.man: Expanded the description of all widgets and

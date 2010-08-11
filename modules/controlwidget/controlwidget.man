@@ -62,7 +62,7 @@ the widget displays (whether that is stored in a global variable or not).
 [para]
 They also have in common that their appearance and behaviour is determined by one or more options that
 you can set at creation time and often later on as well. The widgets are all based on the [emph snit]
-package, so that the methods [emph configure] and [emph cget] are available to set and get these options.
+package, so that the methods [method configure] and [method cget] are available to set and get these options.
 
 
 [section COMMANDS]
