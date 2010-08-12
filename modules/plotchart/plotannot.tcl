@@ -24,6 +24,8 @@ namespace eval ::Plotchart {
     set TextDir(centre)     c
     set TextDir(center)     c
     set TextDir(c)          c
+    set TextDir(west)       w
+    set TextDir(w)          w
     set TextDir(north-west) nw
     set TextDir(nw)         nw
     set TextDir(north)      n
@@ -97,6 +99,38 @@ proc ::Plotchart::ConfigBalloon { w args } {
             }
             "textcolor" {
                 set settings($w,balloontextcolour) $value
+            }
+        }
+    }
+}
+
+# ConfigPlainText --
+#    Configure the properties of plain text
+# Arguments:
+#    w           Name of the canvas
+#    args        List of arguments
+# Result:
+#    None
+# Side effects:
+#    Stores the new settings for the next plain text
+#
+proc ::Plotchart::ConfigPlainText { w args } {
+    variable settings
+
+    foreach {option value} $args {
+        set option [string range $option 1 end]
+        switch -- $option {
+            "font" -
+            "textcolour" -
+            "justify" {
+                set settings($w,text$option) $value
+            }
+            "textcolor" {
+                set settings($w,textcolour) $value
+            }
+            "textfont" {
+                # Ugly hack!
+                set settings($w,$option) $value
             }
         }
     }
@@ -235,8 +269,8 @@ proc ::Plotchart::DrawPlainText { w x y text {anchor centre} } {
 #
 proc ::Plotchart::BrightenColour {color intensity factor} {
     foreach i {r g b} n [winfo rgb . $color] d [winfo rgb . $intensity] f [winfo rgb . white] {
-	#checker exclude warnVarRef
-	set $i [expr {int(255.*($n+($d-$n)*$factor)/$f)}]
+        #checker exclude warnVarRef
+        set $i [expr {int(255.*($n+($d-$n)*$factor)/$f)}]
     }
     #checker exclude warnUndefinedVar
     format #%02x%02x%02x $r $g $b

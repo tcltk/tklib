@@ -377,13 +377,17 @@ proc ::Plotchart::ScaleIsometric { w xmin ymin xmax ymax } {
 #    Whatever returned by the subcommand
 #
 proc ::Plotchart::PlotHandler { type w command args } {
-   variable methodProc
+    variable methodProc
 
-   if { [info exists methodProc($type,$command)] } {
-      eval $methodProc($type,$command) $w $args
-   } else {
-      return -code error "No such method - $command"
-   }
+    if { [info exists methodProc($type,$command)] } {
+        if { [llength $methodProc($type,$command)] == 1 } {
+            eval $methodProc($type,$command) $w $args
+        } else {
+            eval $methodProc($type,$command)_$w $w $args
+        }
+    } else {
+        return -code error "No such method - $command"
+    }
 }
 
 # DrawMask --

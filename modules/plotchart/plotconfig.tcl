@@ -206,3 +206,44 @@ proc ::Plotchart::CopyConfig {charttype chart} {
         set config($chprop) $value
     }
 }
+
+# plotmethod --
+#     Register a new plotting method
+#
+# Arguments:
+#     charttype         Type of plot or chart
+#     methodname        Name of the method
+#     plotproc          Plotting procedure that implements the method
+#
+# Result:
+#     None
+#
+# Side effects:
+#     Registers the plotting procedure under the method name,
+#     so that for that type of plot/chart you can now use:
+#
+#         $p methodname ...
+#
+#     and the plotting procedure is invoked.
+#
+#     The plotting procedure must have the following interface:
+#
+#         proc plotproc {plot widget ...} {...}
+#
+#     The first argument is the identification of the plot
+#     (the $p in the above example), the second is the name
+#     of the widget. This way you can use canvas subcommands
+#     via $widget and Plotchart's existing commands via $plot.
+#
+proc ::Plotchart::plotmethod {charttype methodname plotproc} {
+
+    variable methodProc
+
+    set fullname [uplevel 1 [list namespace which $plotproc]]
+
+    if { $fullname != "" } {
+        set methodProc($charttype,$methodname) [list $fullname $charttype]
+    } else {
+        return -code error "No such command or procedure: $plotproc"
+    }
+}
