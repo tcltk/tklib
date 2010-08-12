@@ -843,6 +843,24 @@ Defaults to "black"
 [para]
 
 
+[call [cmd \$anyplot] legend [arg series] [arg text]]
+
+Add an entry to the legend. The series determines which graphical
+symbol is to be used. (As a side effect the legend is actually drawn.)
+
+[list_begin arguments]
+
+[arg_def string series]
+Name of the data series. This determines the colour of the line and the
+symbol (if any) that will be drawn.
+
+[arg_def string text]
+Text to be drawn next to the line/symbol.
+
+[list_end]
+[para]
+
+
 [call [cmd \$anyplot] legendconfig [option -option] [arg value] ...]
 
 Set one or more options for the legend. The legend is drawn as a
@@ -865,24 +883,6 @@ to position the legend outside the actual plot.
 [opt_def position corner]
 Set the position of the legend. May be one of: top-left, top-right,
 bottom-left or bottom-right. (Default value is top-right.)
-
-[list_end]
-[para]
-
-
-[call [cmd \$anyplot] legend [arg series] [arg text]]
-
-Add an entry to the legend. The series determines which graphical
-symbol is to be used. (As a side effect the legend is actually drawn.)
-
-[list_begin arguments]
-
-[arg_def string series]
-Name of the data series. This determines the colour of the line and the
-symbol (if any) that will be drawn.
-
-[arg_def string text]
-Text to be drawn next to the line/symbol.
 
 [list_end]
 [para]
@@ -947,7 +947,52 @@ Width of the outline of the balloon (in pixels)
 Length factor for the arrow (in pixels)
 
 [list_end]
+
+
+[call [cmd \$anyplot] plaintext [arg x] [arg y] [arg text] [arg dir]]
+
+Add plain text to the plot (except for 3D plots). The text is positioned at
+the given x- and y-coordinates. For xy-graphs and such, the
+coordinates are directly related to the axes; for vertical barcharts the
+x-coordinate is measured as the number of bars minus 1 and similar for
+horizontal barcharts.
+
+[list_begin arguments]
+
+[arg_def float x]
+X-coordinate of the text position
+
+[arg_def float y]
+Y-coordinate of the text position
+
+[arg_def string text]
+Text to be drawn.
+
+[arg_def string dir]
+Anchor for the text, one of: north, north-east, east, south-east,
+south, south-west, west or north-west.
+
+[list_end]
 [para]
+
+
+[call [cmd \$anyplot] plaintextconfig [arg args]]
+
+Configure the plain text annotation for the plot. The new settings will be used
+for the next plain text.
+
+[list_begin options]
+
+[opt_def font fontname]
+Font to be used for the text
+
+[opt_def justify left|center|right]
+Way to justify multiline text
+
+[opt_def textcolour colour]
+Colour for the text (synonym: textcolor)
+
+[list_end]
 
 
 [list_end]
@@ -3026,6 +3071,53 @@ List of series names and data. All data must be given at once.
 [list_end]
 
 [list_end]
+
+The command [term plotmethod] can be used to add new methods for a particular
+plot or chart type. It is intended to help you develop specialised graphical displays.
+
+[list_begin definitions]
+
+[call [cmd ::Plotchart::plotmethod] [arg charttype] [arg methodname] [arg plotproc]]
+
+Adds a new method for the given plot or chart type. The method is implemented by the
+command or procedure given in the plotproc argument. The procedure will be called with
+two extra arguments, the name of the created plot and the canvas widget that contains
+(see the example below).
+
+[list_begin arguments]
+[arg_def string charttype in]
+The type of plot or chart that the new method should be added to.
+
+[arg_def string methodname in]
+Name of the method to be used.
+
+[arg_def string plotproc in]
+Name of the command or procedure that implements the method.
+
+[list_end]
+[list_end]
+[para]
+
+Here is a trivial example of how to use this:
+
+[example {
+#
+# The custom method "doodle" always adds the text "DOODLE"
+# to the plot
+#
+proc doodle {p w x y} {
+    $p plaintext $x $y "DOODLE"
+}
+::Plotchart::plotmethod xyplot doodle doodle
+
+#
+# Use it
+pack [canvas .c]
+
+set p [::Plotchart::createXYPlot .c {0 100 10} {0 20 5}]
+
+$p doodle 40 10
+}]
 
 
 [section "CONTROL DISPLAYS"]
