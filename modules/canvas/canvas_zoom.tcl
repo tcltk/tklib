@@ -8,6 +8,7 @@
 ## Requisites
 
 package require Tcl 8.4        ; # No {*}-expansion :(
+package require Tk
 package require snit           ; # 
 package require uevent::onidle ; # Some defered actions.
 
@@ -173,7 +174,7 @@ image create bitmap ::canvas::zoom::minus -data {
 # ### ### ### ######### ######### #########
 ## Ready
 
-package provide canvas::zoom 0.2
+package provide canvas::zoom 0.2.1
 return
 
 # ### ### ### ######### ######### #########
