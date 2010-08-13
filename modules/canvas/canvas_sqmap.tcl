@@ -28,6 +28,7 @@
 ## Requisites
 
 package require Tcl 8.4          ; # No {*}-expansion! :(
+package require Tk
 package require snit             ; # 
 package require uevent::onidle   ; # Some defered actions.
 package require cache::async 0.3 ; # Internal tile cache.
@@ -662,5 +663,5 @@ snit::widgetadaptor canvas::sqmap {
 # ### ### ### ######### ######### #########
 ## Ready
 
-package provide canvas::sqmap 0.3
+package provide canvas::sqmap 0.3.1
 return
