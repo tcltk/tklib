@@ -246,7 +246,7 @@ Note that an inverted logarithmic axis is [emph not] supported.
 [list_end]
 [para]
 
-[call [cmd ::Plotchart::createPolarPlot] [arg w] [arg radius_data]]
+[call [cmd ::Plotchart::createPolarplot] [arg w] [arg radius_data]]
 
 Create a new polar plot (configuration type: polarplot).
 
