@@ -25,7 +25,7 @@ namespace eval ::Plotchart {
                     coords3DToPixel polarToPixel \
                     pixelToCoords pixelToIndex \
                     determineScale determineScaleFromList \
-                    createXYPlot createPolarPlot createPiechart \
+                    createXYPlot createPolarplot createPiechart \
                     createBarchart createHorizontalBarchart \
                     createTimechart createStripchart \
                     createIsometricPlot create3DPlot \
