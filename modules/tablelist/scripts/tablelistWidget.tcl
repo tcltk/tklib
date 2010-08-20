@@ -4304,28 +4304,30 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	    }
 	}
 
-	#
-	# Remove the key from the list of children of its parent
-	#
-	set parentKey $data($key-parent)
-	if {[info exists data($parentKey-children)]} {
-	    set childIdx [lsearch -exact $data($parentKey-children) $key]
-	    set data($parentKey-children) \
-		[lreplace $data($parentKey-children) $childIdx $childIdx]
+	if {$count != $data(itemCount)} {
+	    #
+	    # Remove the key from the list of children of its parent
+	    #
+	    set parentKey $data($key-parent)
+	    if {[info exists data($parentKey-children)]} {
+		set childIdx [lsearch -exact $data($parentKey-children) $key]
+		set data($parentKey-children) \
+		    [lreplace $data($parentKey-children) $childIdx $childIdx]
 
-	    #
-	    # If the parent's list of children has become empty
-	    # then set its indentation image to the indented one
-	    #
-	    set col $data(treeCol)
-	    if {[llength $data($parentKey-children)] == 0 &&
-		[info exists data($parentKey,$col-indent)]} {
-		set data($parentKey,$col-indent) [strMap \
-		    {"collapsed" "indented" "expanded" "indented" "Act" ""} \
-		    $data($parentKey,$col-indent)]
-		if {[winfo exists $data(body).ind_$parentKey,$col]} {
-		    $data(body).ind_$parentKey,$col configure -image \
-			$data($parentKey,$col-indent)
+		#
+		# If the parent's list of children has become empty
+		# then set its indentation image to the indented one
+		#
+		set col $data(treeCol)
+		if {[llength $data($parentKey-children)] == 0 &&
+		    [info exists data($parentKey,$col-indent)]} {
+		    set data($parentKey,$col-indent) [strMap \
+			{"collapsed" "indented" "expanded" "indented"
+			 "Act" ""} $data($parentKey,$col-indent)]
+		    if {[winfo exists $data(body).ind_$parentKey,$col]} {
+			$data(body).ind_$parentKey,$col configure -image \
+			    $data($parentKey,$col-indent)
+		    }
 		}
 	    }
 	}
@@ -4373,6 +4375,10 @@ proc tablelist::deleteRows {win first last updateListVar} {
 
 	set textIdx2 $textIdx1
 	set textIdx1 [expr {double($row)}]
+    }
+
+    if {$count == $data(itemCount)} {
+	set data(root-children) {}
     }
 
     #

@@ -1,3 +1,8 @@
+2010-08-20  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistWidget.tcl: Made deleting the whole content of a
+	  tablelist widget significantly faster.
+
 2010-08-07  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl: Fixed a tooltip-related bug.
