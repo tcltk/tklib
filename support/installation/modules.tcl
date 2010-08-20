@@ -56,6 +56,7 @@ Module tooltip       _tcl  _man  _null
 Module widget        _tcl  _man  _exa
 
 Application  dia
+Application  bitmap-editor
 
 # @@ Registration END
 # --------------------------------------------------------------
