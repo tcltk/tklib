@@ -4,6 +4,20 @@
 
 package require Tcl 8.4
 
+# @@ Meta Begin
+# Application bitmap-editor 1.0
+# Meta platform     tcl
+# Meta summary      Bitmap Editor
+# Meta description  This application is an editor for bitmaps, read from and
+# Meta description  written to files in XBM format (X Bitmap).
+# Meta category     Editing bitmaps
+# Meta subject      bitmap xbm editor
+# Meta require      {Tcl 8.4}
+# Meta require      Tk
+# Meta author       Keith Vetter
+# Meta license      BSD
+# @@ Meta End
+
 ##+##########################################################################
 #
 # bitmap.tcl -- simple bitmap editor
@@ -12,15 +26,14 @@ package require Tcl 8.4
 # Revisions:
 # KPV Jan 15, 2003 - initial revision
 # KPV Mar 06, 2003 - added functions like shift, clear, invert and resize
-#
-##+##########################################################################
-#############################################################################
+# KPV Aug 20, 2010 - added mouse stroking, cursor, rename and undo
+
 
 # Syntax: bitmap-editor ?xbm-file?
 
 package require Tk
 
-# Data Structures :: 2 global arrays.
+# Data Structures :: 3 global arrays.
 #
 # S - Application state and configuration
 #
@@ -41,13 +54,19 @@ package require Tk
 # * xhot          - XBM Parse Result: column of the hot point
 # * yhot          - XBM Parse Result: row of the hot point
 
+# UNDO - Undo information
+#
+#  * last - last action done
+#  * all  - all previous actions
+
 set S(cell) 10
 set S(prog) "Bitmap Editor"
 set S(fname) ""
+set UNDO(last) {}
+set UNDO(all) {}
 
 # Table for conversion from hexadecimal nibbles to binary bit
-# strings. Used to convert BM(bits) to b,*,* keys. See ShowBits for
-# the user.
+# strings. Used to convert BM(bits) to b,*,* keys in ShowBits.
 array set bits {
     0 0000 1 1000 2 0100 3 1100 4 0010 5 1010 6 0110 7 1110
     8 0001 9 1001 a 0101 b 1101 c 0011 d 1011 e 0111 f 1111
@@ -76,6 +95,14 @@ proc DoDisplay {} {
     
     bind .c <2> [bind Text <2>]                 ;# Enable button 2 paning
     bind .c <B2-Motion> [bind Text <B2-Motion>]
+
+    bind .c <1> [list Click down 1 %x %y]
+    bind .c <B1-Motion> [list Click move 1 %x %y]
+    bind .c <ButtonRelease-1> [list Click up 1 %x %y]
+    bind .c <3> [list Click down 0 %x %y]
+    bind .c <B3-Motion> [list Click move 0 %x %y]
+    bind .c <ButtonRelease-3> [list Click up 0 %x %y]
+    bind all <Control-z> Undo
     
     frame .fctrl -bd 2 -relief ridge
     label .info -text "Left button to set    Right button to clear" -anchor c \
@@ -116,6 +143,7 @@ proc DoMenus {} {
     .m.image add command -label "Shift up"    -under 6 -command {BitFunc sup}
     .m.image add command -label "Shift down"  -under 6 -command {BitFunc sdown}
     .m.image add separator
+    .m.image add command -label "Undo"        -under 0 -command Undo
     .m.image add command -label "Resize"      -under 0 -command ResizeBMP
     
     .m.help add command -label About -under 0 -command About
@@ -182,7 +210,8 @@ proc ClearBMP {} {
     ::img::current config -data {}
     array unset BM
     foreach arr [array names BM] { set BM($arr) ""}
-    update
+    set UNDO(last) {}
+    set UNDO(all) {}
 }
 
 ##+##########################################################################
@@ -202,8 +231,6 @@ proc DrawGrid {} {
     for {set r 0} {$r < $BM(height)} {incr r} {
         for {set c 0} {$c < $BM(width)} {incr c} {
             .c create rect [CellXY $r $c] -tag [list grid c($r,$c)] -fill $bg
-            .c bind c($r,$c) <1> [list Click 1 cell $r $c]
-            .c bind c($r,$c) <3> [list Click 2 cell $r $c]
         }
     }
     .c config -scrollregion [.c bbox all]
@@ -214,16 +241,66 @@ proc DrawGrid {} {
 # Click -- handles left and right mouse click in a grid cell
 #
 
-proc Click {btn what row col} {
-    global BM
-    if {$btn == 1} {                            ;# Set the pixel
-        if {$BM(b,$row,$col)} return            ;# Already set
+proc Click {action onoff x y} {
+    global BM UNDO
+
+    if {$action eq "up"} {
+	.c config -cursor [lindex [.c config -cursor] 3]
+	return
+    }
+    if {$action eq "down"} {
+	.c config -cursor pencil
+        if {$UNDO(last) ne ""} {
+            lappend UNDO(all) $UNDO(last)
+        }
+        set UNDO(last) [list $onoff ":"]
+    }
+    foreach {row col} [XY2Cell [.c canvasx $x] [.c canvasy $y]] break
+    if {$row < 0 || $row >= $BM(height) || $col < 0 || $col >= $BM(width)} return
+    
+    if {$onoff == 1} {                           ;# Set the pixel
+        if {$BM(b,$row,$col)} return             ;# Already set
         set BM(b,$row,$col) 1
         ShowBitCell $row $col
-    } else {                                    ;# Clear the pixel
-        if {! $BM(b,$row,$col)} return          ;# Already cleare
+    } else {                                     ;# Clear the pixel
+        if {! $BM(b,$row,$col)} return           ;# Already cleared
         set BM(b,$row,$col) 0
         .c delete o($row,$col)
+    }
+    lappend UNDO(last) $row $col
+    set BM(raw) [UnparseBMP]
+    ::img::current config -data $BM(raw)
+}
+
+##+##########################################################################
+# 
+# Undo -- Implements undo
+# 
+
+proc Undo {} {
+    global UNDO BM
+
+    set what $UNDO(last)
+    set UNDO(last) ""
+    if {$what eq ""} {
+	set what [lindex $UNDO(all) end]
+	set UNDO(all) [lrange $UNDO(all) 0 end-1]
+    }
+    if {$what eq ""} return
+    set onoff [lindex $what 0]
+    set what [lrange $what 2 end]
+    set onoff [expr {! $onoff}]
+    
+    foreach {row col} $what {
+	if {$onoff == 1} {                           ;# Set the pixel
+	    if {$BM(b,$row,$col)} continue           ;# Already set
+	    set BM(b,$row,$col) 1
+	    ShowBitCell $row $col
+	} else {                                     ;# Clear the pixel
+	    if {! $BM(b,$row,$col)} continue         ;# Already cleared
+	    set BM(b,$row,$col) 0
+	    .c delete o($row,$col)
+	}
     }
     set BM(raw) [UnparseBMP]
     ::img::current config -data $BM(raw)
@@ -263,8 +340,6 @@ proc ShowBits {} {
 
 proc ShowBitCell {row col} {
     .c create oval [CellXY $row $col] -fill black -tag [list bit o($row,$col)]
-    .c bind o($row,$col) <1> [list Click 1 oval $row $col]
-    .c bind o($row,$col) <3> [list Click 2 oval $row $col]
 }
 
 ##+##########################################################################
@@ -281,6 +356,18 @@ proc CellXY {r c} {
     
     return [list $x1 $y1 $x2 $y2]
 }
+
+##+##########################################################################
+# 
+# XY2Cell -- returns cell based on canvas position
+# 
+
+proc XY2Cell {x y} {
+    set c [expr {(int($x) - 10) / $::S(cell)}]
+    set r [expr {(int($y) - 10) / $::S(cell)}]
+    return [list $r $c]
+}
+
 
 ##+##########################################################################
 #
@@ -448,7 +535,8 @@ proc ResizeBMP {} {
     set n [NewDlg 1]
     if {$n == {}} return
     
-    foreach {. nwidth nheight} $n break
+    foreach {nName nwidth nheight} $n break
+    if {$nName ne ""} { set ::BM(name) $nName }
     WidenBMP $nwidth
     HeightenBMP $nheight
     
@@ -509,16 +597,13 @@ proc NewDlg {{resize 0}} {
     wm geom .new "+[expr {[winfo x .] + 150}]+[expr {[winfo y .] + 100}]"
     
     set NEW(ok) 0
+    set NEW(name) $BM(name)
     set NEW(width) $BM(width)
     set NEW(height) $BM(height)
     
     frame .new.top -bd 2 -relief raised -padx 10 -pady 10
     grid columnconfigure .new.top 1 -weight 1
     set widgets {name width height}
-    if {$resize} {
-        set NEW(name) "xx"
-        set widgets {width height}
-    }
     foreach a $widgets {
         set a1 [string totitle $a]
         label .new.l$a -text "$a1:"
