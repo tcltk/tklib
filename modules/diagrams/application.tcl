@@ -72,9 +72,15 @@ namespace eval ::diagram::application {
     # The name of the format to convert the diagram documents
     # into. Used as extension for the generated files as well when
     # converting multiple files. Internally this is the name of the
-    # img::* package for the image format.
+    # canvas::* or img::* package for the image format. The two cases
+    # are distinguished by the value of the boolean flag "snap". True
+    # indicates a raster format via img::*, false a canvas::* dump
+    # package ... FUTURE :: Should have a 'canvas::write::*' or
+    # somesuch family of packages which hide this type of difference
+    # from us.
 
     variable  format ""
+    variable  snap   0
 
     # Name of the found processing mode. Derived during processing all
     # arguments on the command line. This value is used during the
@@ -115,7 +121,25 @@ proc ::diagram::application::ProcessCmdline {arguments} {
 
 proc ::diagram::application::ProcessShow {arguments} {
     if {[llength $arguments] < 1} Usage
-    variable input $arguments
+    variable input   {}
+    variable trusted 0
+
+    # Basic option processing and validation.
+    while {[llength $arguments]} {
+        set opt [lindex $arguments 0]
+        if {![string match "-*" $opt]} break
+
+        switch -exact -- $opt {
+            -t {
+                if {[llength $arguments] < 1} Usage
+                set arguments [lassign $arguments _opt_]
+                set trusted 1
+            }
+            default Usage
+        }
+    }
+
+    set input $arguments
     CheckInput
     return
 }
@@ -124,6 +148,7 @@ proc ::diagram::application::ProcessConvert {arguments} {
     variable output ""
     variable input  {}
     variable format ""
+    variable trusted 0
 
     if {[llength $arguments] < 4} Usage
 
@@ -137,6 +162,11 @@ proc ::diagram::application::ProcessConvert {arguments} {
 		if {[llength $arguments] < 2} Usage
 		set arguments [lassign $arguments _opt_ output]
 	    }
+            -t {
+                if {[llength $arguments] < 1} Usage
+                set arguments [lassign $arguments _opt_]
+                set trusted 1
+            }
 	    default Usage
 	}
     }
@@ -162,12 +192,18 @@ proc ::diagram::application::Usage {} {
 
 proc ::diagram::application::ValidateFormat {} {
     variable format
-    if {[catch {
+    variable snap
+    if {![catch {
 	package require canvas::snap
 	package require img::$format
-    } msg]} {
-	showerror "Unable to handle format \"$format\", because of: $msg"
-    }
+	set snap 1
+    } msgA]} return
+
+    if {![catch {
+	package require canvas::$format
+    } msgB]} return
+
+    showerror "Unable to handle format \"$format\", because of: $msgA and $msgB"
     return
 }
 
@@ -276,6 +312,7 @@ proc ::diagram::application::Run::convert {} {
 
 proc ::diagram::application::Run::Convert {dip src dst} {
     variable ::diagram::application::format
+    variable ::diagram::application::snap
 
     puts ${src}...
     set pic [fileutil::cat $src]
@@ -284,10 +321,13 @@ proc ::diagram::application::Run::Convert {dip src dst} {
 	$dip eval [list D draw $pic]
     } msg]} {
 	puts "FAIL $msg : $src"
-    } else {
+    } elseif {$snap} {
 	set DIA [canvas::snap .c]
 	$DIA write $dst -format $format
 	image delete $DIA
+    } else {
+	# Direct canvas dump ...
+	fileutil::writeFile $dst [canvas::$format .c]
     }
 
     # Wipe controller state, no information transfer between pictures.
@@ -396,11 +436,16 @@ proc ::diagram::application::Run::GetExtension {f} {
 }
 
 proc ::diagram::application::Run::MakeInterpreter {} {
-    puts {Creating trusted environment, please wait...}
+    variable ::diagram::application::trusted
     set sec [expr {[lindex [time {
-	set dip [::safe::interpCreate]
-        #set dip [interp create]
-        #$dip eval [list set auto_path $::auto_path]
+        if {$trusted} {
+            puts {Creating trusted environment, please wait...}
+            set dip [interp create]
+            $dip eval [list set auto_path $::auto_path]
+        } else {
+            puts {Creating safe environment, please wait...}
+	    set dip [::safe::interpCreate]
+        }
 	interp alias $dip .c {} .c ; # Import of canvas
 	interp alias $dip tk {} tk ; # enable tk scaling
 	$dip eval {package require diagram}
@@ -412,5 +457,5 @@ proc ::diagram::application::Run::MakeInterpreter {} {
 }
 
 # # ## ### ##### ######## ############# #####################
-package provide diagram::application 1
+package provide diagram::application 1.1
 return
