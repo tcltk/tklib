@@ -1,3 +1,9 @@
+2010-08-26  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* canvas_mvg.tcl: New package. Partial conversion of canvas
+	* canvas_mvg.man: contents to ImageMagick's MVG vector format.
+	* pkgIndex.tcl:
+
 2010-08-13  Andreas Kupries  <andreask@activestate.com>
 
 	* canvas_zoom.tcl: Added missing Tk requirement. Bumped version to
