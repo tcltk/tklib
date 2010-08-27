@@ -1,3 +1,10 @@
+2010-08-26  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* application.tcl: Extended with option '-t' when trusting the input,
+	* pkgIndex.tcl: using a simple slave interp, instead of a safe
+	  one. Further extended with a bility to load canvas::* packages
+	  as formatting backends. Bumped version to 1.1.
+
 2010-06-09  Andreas Kupries  <andreask@activestate.com>
 
 	* ChangeLog: New files. Complete reworking of the diagram
