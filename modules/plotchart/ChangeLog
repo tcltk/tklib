@@ -1,6 +1,10 @@
+2010-09-02  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotpriv.tcl: Fix bug in ScaleIsometric (division by integers; found by Torsten)
+
 2010-08-18  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotchart.tcl: Corrected export statement: createPolarplot
 	* plotchart.man: Corrected name of procedure: createPolarplot (found by Torsten Berg)
+
 2010-08-12  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotchart.tcl: Added plotmethod to export
 	* plotconfig.tcl: Implemented plotmethod for customised commands

@@ -345,8 +345,8 @@ proc ::Plotchart::ScaleIsometric { w xmin ymin xmax ymax } {
    set pxmax $scaling($w,pxmax)
    set pymax $scaling($w,pymax)
 
-   set dx [expr {($xmax-$xmin)/($pxmax-$pxmin)}]
-   set dy [expr {($ymax-$ymin)/($pymax-$pymin)}]
+   set dx [expr {double($xmax-$xmin)/($pxmax-$pxmin)}]
+   set dy [expr {double($ymax-$ymin)/($pymax-$pymin)}]
 
    #
    # Which coordinate is dominant?
