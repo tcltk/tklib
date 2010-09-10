@@ -1,3 +1,11 @@
+2010-09-10  Andreas Kupries  <andreask@activestate.com>
+
+	* controlwidget.tcl: Fixed the mess with controlwidget sourcing
+	* tachometer.tcl: files which were their own packages. Added
+	* voltmeter.tcl: package provide declarations to volt- and
+	* pkgIndex.tcl: tachometer widgets. Registered all the packages
+	  in the index.
+
 2010-08-11  Andreas Kupries  <andreask@activestate.com>
 
  	* controlwidget.man: Resolved merge conflict regarding markup of

@@ -8,4 +8,12 @@ if {![package vsatisfies [package provide Tcl] 8.5]} {
     # PRAGMA: returnok
     return
 }
+
 package ifneeded controlwidget 0.1 [list source [file join $dir controlwidget.tcl]]
+package ifneeded meter         1.0 [list source [file join $dir vertical_meter.tcl]]
+package ifneeded led           1.0 [list source [file join $dir led.tcl]]
+package ifneeded rdial         0.3 [list source [file join $dir rdial.tcl]]
+package ifneeded tachometer    0.1 [list source [file join $dir tachometer.tcl]]
+package ifneeded voltmeter     0.1 [list source [file join $dir voltmeter.tcl]]
+package ifneeded radioMatrix   1.0 [list source [file join $dir radioMatrix.tcl]]
+package ifneeded bindDown      1.0 [list source [file join $dir bindDown.tcl]]
