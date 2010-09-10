@@ -38,11 +38,12 @@
 # AND  THE  AUTHOR  AND  DISTRIBUTORS  HAVE  NO  OBLIGATION  TO  PROVIDE
 # MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
-# $Id: voltmeter.tcl,v 1.2 2010/08/10 11:05:51 arjenmarkus Exp $
+# $Id: voltmeter.tcl,v 1.3 2010/09/10 17:16:29 andreas_kupries Exp $
 #
 
 package require Tk   8.5
 package require snit
+package provide voltmeter 0.1
 
 namespace eval controlwidget {
     namespace export voltmeter
