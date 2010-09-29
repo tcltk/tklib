@@ -16,7 +16,7 @@
 #
 # See the example at the bottom.
 #
-# RCS: @(#) $Id: dateentry.tcl,v 1.4 2010/06/01 18:06:52 hobbs Exp $
+# RCS: @(#) $Id: dateentry.tcl,v 1.5 2010/09/29 06:43:44 hobbs Exp $
 #
 
 # Creation and Options - widget::dateentry $path ...
@@ -167,12 +167,12 @@ snit::widgetadaptor widget::dateentry {
 
 	if {[tk windowingsystem] ne "aqua"} {
 	    wm overrideredirect $dropbox 1
+	    wm transient $dropbox [winfo toplevel $win]
+	    wm group     $dropbox [winfo parent $win]
 	} else {
 	    tk::unsupported::MacWindowStyle style $dropbox \
 		help {noActivates hideOnSuspend}
 	}
-	wm transient $dropbox [winfo toplevel $win]
-	wm group     $dropbox [winfo parent $win]
 	wm resizable $dropbox 0 0
 
 	# Unpost on Escape or whenever user clicks outside the dropdown
@@ -182,6 +182,7 @@ snit::widgetadaptor widget::dateentry {
 		$win unpost
 	    }
 	}]
+	bindtags $dropbox [linsert [bindtags $dropbox] 1 TDateEntryPopdown]
 
 	set calendar $dropbox.calendar
 	widget::calendar $calendar -command [mymethod DateChosen] \
@@ -189,6 +190,7 @@ snit::widgetadaptor widget::dateentry {
 	    -dateformat $options(-dateformat) \
 	    -font $options(-font) \
 	    -borderwidth 1 -relief solid
+	bind $calendar <Map> [list focus -force $calendar]
 
 	pack $calendar -expand 1 -fill both
 
@@ -208,8 +210,6 @@ snit::widgetadaptor widget::dateentry {
 	if {[tk windowingsystem] ne "aqua"} {
 	    tkwait visibility $dropbox
 	}
-
-	ttk::globalGrab $dropbox
 	focus -force $calendar
 	return
 
@@ -219,8 +219,10 @@ snit::widgetadaptor widget::dateentry {
     }
 
     method unpost {args} {
-	ttk::releaseGrab $dropbox
-	wm withdraw $dropbox
+	if {[winfo exists $dropbox]} {
+	    wm withdraw $dropbox
+	    grab release $dropbox ; # just in case
+	}
     }
 
     method PostPosition {} {
@@ -286,23 +288,24 @@ bind TDateEntry <Escape>        { %W unpost }
 bind TDateEntry <ButtonPress-1> { %W state pressed ; %W post }
 bind TDateEntry <ButtonRelease-1> { %W state !pressed }
 
-package provide widget::dateentry 0.92
+# These are to get around issues on aqua (see ttk::combobox bindings)
+bind TDateEntryPopdown <Map> { ttk::globalGrab %W }
+bind TDateEntryPopdown <Unmap> { ttk::releaseGrab %W }
+
+package provide widget::dateentry 0.93
 
 ##############
 # TEST CODE ##
 ##############
 
 if { [info script] eq $argv0 } {
-
+    set auto_path [linsert $auto_path 0 [file dirname [info script]]]
+    package require widget::dateentry 0.93
+    destroy {*}[winfo children .]
     proc getDate { args } {
 	puts [info level 0]
 	puts "DATE $::DATE"
-
-	update
-    }
-
-    proc dateTrace { args } {
-	puts [info level 0]
+	update idle
     }
 
     # Samples
@@ -318,9 +321,6 @@ if { [info script] eq $argv0 } {
 		 -firstday sunday]
     grid [label .sl -text "Start:"] $start  -padx 4 -pady 4
     grid [label .el -text "End:"  ] $end    -padx 4 -pady 4
-
-    trace add variable ::DATE write dateTrace
-    set ::DATE 1
 
     puts [$end get]
 }
