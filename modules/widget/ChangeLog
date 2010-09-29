@@ -1,3 +1,11 @@
+2010-09-28  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* pkgIndex.tcl:  Bump dateentry to 0.93 
+	* dateentry.tcl: address aqua issues causing selection not to
+	work, following ttk::combobox.  Do grab/release on popdown
+	Map/Unmap and focus on calendar Map.  Set wm transient/group only
+	on non-aqua wms.
+
 2010-07-15  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* pkgIndex.tcl: bump calendar to 0.95
