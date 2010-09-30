@@ -7,7 +7,7 @@
 #
 # Copyright (c) 2008 Rüdiger Härtel
 #
-# RCS: @(#) $Id: calendar.tcl,v 1.9 2010/07/16 00:19:57 hobbs Exp $
+# RCS: @(#) $Id: calendar.tcl,v 1.10 2010/09/30 18:57:23 haertel Exp $
 #
 
 #
@@ -61,7 +61,7 @@ snit::widgetadaptor widget::calendar {
     option -shadecolor     -default "#888888"     -configuremethod C-refresh
     option -language       -default en            -configuremethod C-language
     option -showpast       -default 1             -configuremethod C-refresh \
-						  -type {snit::boolean} 
+						  -type {snit::boolean}
 
 
     variable fullrefresh 1
@@ -109,7 +109,7 @@ snit::widgetadaptor widget::calendar {
 	$self refresh
     }
 
-    destructor {  
+    destructor {
 	if { $options(-textvariable) ne "" } {
 	    trace remove variable $options(-textvariable) write [mymethod DoUpdate]
 	}
@@ -150,10 +150,6 @@ snit::widgetadaptor widget::calendar {
     #
     ##
     method C-textvariable {option value} {
-
-        if { [string match "::widget::dateentry::Snit*" $value] } {
-            return
-        }
 
 	if {![string match ::* $value]} {
 	    set value ::$value
@@ -292,7 +288,7 @@ snit::widgetadaptor widget::calendar {
 		incr data(day) $dday
 	    }
 	}
-	    
+
 
 	if { $data(month) > 12} {
 	    set  data(month) 1
@@ -664,4 +660,4 @@ snit::widgetadaptor widget::calendar {
     }
 }
 
-package provide widget::calendar 0.95
+package provide widget::calendar 0.96
