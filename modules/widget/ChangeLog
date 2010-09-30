@@ -1,6 +1,13 @@
+2010-09-30  Ruediger Haertel <r_haertel@gmx.de>
+
+	* calendar.tcl: allow a -textvariable also from the dateentry
+                         namespace. This was a misconception from their
+                         beginning.
+	* pkgIndex.tcl: bump calendar to v0.96
+
 2010-09-28  Jeff Hobbs  <jeffh@ActiveState.com>
 
-	* pkgIndex.tcl:  Bump dateentry to 0.93 
+	* pkgIndex.tcl:  Bump dateentry to 0.93
 	* dateentry.tcl: address aqua issues causing selection not to
 	work, following ttk::combobox.  Do grab/release on popdown
 	Map/Unmap and focus on calendar Map.  Set wm transient/group only
@@ -78,7 +85,7 @@
 
 	*
 	* Released and tagged Tklib 0.5 ========================
-	* 
+	*
 
 2008-11-23  Ruediger Haertel <r_haertel@gmx.de>
 
@@ -155,7 +162,7 @@
 2007-01-30  Andreas Kupries  <andreask@activestate.com>
 
 	* toolbar.tcl (itemidentify): New method, converting symbolic
-	  button names to their actual widget path.	
+	  button names to their actual widget path.
 	* toolbar.tcl (items): Simplified the code.
 
 2007-01-21  Jeff Hobbs  <jeffh@ActiveState.com>
@@ -240,7 +247,7 @@
 	ensure we only delete toolbar-created widgets on add error.
 	check for item existence in itemcget.
 	add '$tbar add space' for a spacer item.
-	
+
 2006-08-24  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* statusbar.tcl: use ttk::sizegrip if available.
@@ -320,13 +327,13 @@
 
 	*
 	* Released and tagged Tklib 0.4.1 ========================
-	* 
+	*
 
 2005-11-02  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
 	* Released and tagged Tklib 0.4 ========================
-	* 
+	*
 
 2005-10-12  Jeff Hobbs  <jeffh@ActiveState.com>
 
