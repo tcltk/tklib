@@ -341,14 +341,18 @@ proc ::diagram::application::Run::GUI::Show {} {
 
     set dip [::diagram::application::Run::MakeInterpreter]
 
+    ttk::notebook          .n
     button                 .e -text Exit -command ::exit
     widget::scrolledwindow .sl -borderwidth 1 -relief sunken
     widget::scrolledwindow .sc -borderwidth 1 -relief sunken
+    widget::scrolledwindow .st -borderwidth 1 -relief sunken
     listbox                .l -width 40 -selectmode single -listvariable ::diagram::application::input
     canvas                 .c -width 800 -height 600 -scrollregion {-4000 -4000 4000 4000}
+    text                   .t -font {Arial 20}
 
     .sl setwidget .l
     .sc setwidget .c
+    .st setwidget .t
 
     pack .e  -fill none -expand 0 -side bottom -anchor e
 
@@ -357,10 +361,12 @@ proc ::diagram::application::Run::GUI::Show {} {
     #.p paneconfigure .sl -width 100
 
     pack .sl -fill both -expand 1 -padx 4 -pady 4 -side left
-    pack .sc -fill both -expand 1 -padx 4 -pady 4 -side right
+    pack .n -fill both -expand 1 -padx 4 -pady 4 -side right
+
+    .n add .sc -state normal -sticky swen -text Diagram
+    .n add .st -state normal -sticky swen -text Code
 
     bind .l <<ListboxSelect>> [list ::diagram::application::Run::GUI::ShowPicture $dip]
-
 
     # Panning via mouse
     bind .c <ButtonPress-2> {%W scan mark   %x %y}
@@ -384,6 +390,9 @@ proc ::diagram::application::Run::GUI::ShowPicture {dip} {
     $dip eval {diagram D .c}
 
     set pic [fileutil::cat [.l get $selection]]
+
+    .t delete 0.1 end
+    .t insert 0.1 $pic
 
     after 0 [list $dip eval [list D draw $pic]]
     return
@@ -457,5 +466,5 @@ proc ::diagram::application::Run::MakeInterpreter {} {
 }
 
 # # ## ### ##### ######## ############# #####################
-package provide diagram::application 1.1
+package provide diagram::application 1.2
 return
