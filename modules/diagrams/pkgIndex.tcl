@@ -11,5 +11,5 @@ package ifneeded diagram::core        1 [list source [file join $dir core.tcl]]
 package ifneeded diagram::basic       1 [list source [file join $dir basic.tcl]]
 package ifneeded diagram              1 [list source [file join $dir diagram.tcl]]
 
-package ifneeded diagram::application 1.1 [list source [file join $dir application.tcl]]
+package ifneeded diagram::application 1.2 [list source [file join $dir application.tcl]]
 
