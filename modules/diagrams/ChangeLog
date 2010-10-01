@@ -1,3 +1,9 @@
+2010-09-30  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* application.tcl: Extended the GUI, use a notebook to allow
+	* pkgIndex.tcl: the display of both diagram and its code. Bumped
+	  version to 1.2.
+
 2010-08-26  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* application.tcl: Extended with option '-t' when trusting the input,
