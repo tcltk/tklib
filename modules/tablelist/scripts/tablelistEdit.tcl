@@ -1333,7 +1333,7 @@ proc tablelist::createOakleyCombobox {w args} {
 #------------------------------------------------------------------------------
 proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     upvar ::tablelist::ns${win}::data data
-    if {$data(isDisabled) || [doRowCget $row $win -hide] || $data($col-hide) ||
+    if {$data(isDisabled) || ![isRowViewable $win $row] || $data($col-hide) ||
 	![isCellEditable $win $row $col]} {
 	return ""
     }
@@ -2449,7 +2449,7 @@ proc tablelist::goToNextPrevCell {w amount args} {
 
 	if {$row == $oldRow && $col == $oldCol} {
 	    return -code break ""
-	} elseif {![doRowCget $row $win -hide] && !$data($col-hide) &&
+	} elseif {[isRowViewable $win $row] && !$data($col-hide) &&
 		  [isCellEditable $win $row $col]} {
 	    doEditCell $win $row $col 0 $cmd
 	    return -code break ""
@@ -2519,7 +2519,7 @@ proc tablelist::goToPrevNextLine {w amount row col cmd} {
 	incr row $amount
 	if {$row < 0 || $row > $data(lastRow)} {
 	    return 0
-	} elseif {![doRowCget $row $win -hide] &&
+	} elseif {[isRowViewable $win $row] &&
 		  [isCellEditable $win $row $col]} {
 	    doEditCell $win $row $col 0 $cmd
 	    return 1
@@ -2542,7 +2542,7 @@ proc tablelist::goToPriorNextPage {w amount} {
     upvar ::tablelist::ns${win}::data data
 
     #
-    # Check whether there is any non-hidden editable cell
+    # Check whether there is any viewable editable cell
     # above/below the current one, in the same column
     #
     set row $data(editRow)
@@ -2551,7 +2551,7 @@ proc tablelist::goToPriorNextPage {w amount} {
 	incr row $amount
 	if {$row < 0 || $row > $data(lastRow)} {
 	    return -code break ""
-	} elseif {![doRowCget $row $win -hide] &&
+	} elseif {[isRowViewable $win $row] &&
 		  [isCellEditable $win $row $col]} {
 	    break
 	}
