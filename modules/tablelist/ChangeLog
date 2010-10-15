@@ -1,3 +1,23 @@
+2010-10-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                          Bumped the version number to 5.2.
+	* *.txt:
+	* ../../examples/tablelist/*.tcl:
+
+	+ scripts/tablelist*.tcl: Added the "-fullseparators" option; added the
+	  tree styles "ambiance", "dust", "dustSand", "newWave", "plastik", and
+	  "radiance"; the implementation of collapse(all) and expand(all) no
+	  longer makes use of the -hide row configuration option; the move
+	  subcommand now supports moving an item outside its parent; fixed a
+	  few bugs related to binding scripts and hidden rows.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/tablelist.html:       Updated the documentation.
+	* doc/tablelistWidget.html:
+
+	* doc/*.png: New and updated screenshots.
+
 2010-08-20  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistWidget.tcl: Made deleting the whole content of a
