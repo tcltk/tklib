@@ -113,6 +113,9 @@
     <dd><code><b><a href="#forceeditendcommand">-forceeditendcommand</a></b>
     <i>boolean</i></code></dd>
 
+    <dd><code><b><a href="#fullseparators">-fullseparators</a></b>
+    <i>boolean</i></code></dd>
+
     <dd><code><b><a href="#height">-height</a></b> <i>lines</i></code></dd>
 
     <dd><code><b><a href="#incrarrowtype">-incrarrowtype</a></b>
@@ -247,9 +250,9 @@
     <i>columnIndex</i></code></dd>
 
     <dd><code><b><a href="#treestyle">-treestyle</a></b>
-    <b>aqua</b>|<b>baghira</b>|<b>gtk</b>|<b>klearlooks</b>|<b>oxygen1</b>|<b>oxygen2</b>|<b>phase</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plastique</b>|<b>vistaAero</b>|<b>vistaClassic</b>|<b>win7Aero</b>|<b>win7Classic</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b></code></dd>
+    <b>ambiance</b>|<b>aqua</b>|<b>baghira</b>|<b>dust</b>|<b>dustSand</b>|<b>gtk</b>|<b>klearlooks</b>|<b>newWave</b>|<b>oxygen1</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oxygen2</b>|<b>phase</b>|<b>plastik</b>|<b>plastique</b>|<b>radiance</b>|<b>vistaAero</b>|<b>vistaClassic</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win7Aero</b>|<b>win7Classic</b>|<b>winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b></code></dd>
 
     <dd><code><b><a href="#width">-width</a></b> <i>characters</i></code></dd>
 
@@ -755,8 +758,12 @@
     <dd><code><i>pathName</i> <b><a href=
     "#labeltag">labeltag</a></b></code></dd>
 
-    <dd><code><i>pathName</i> <b><a href="#move">move</a></b> <i>source</i>
-    <i>target</i></code></dd>
+    <dd><code><i>pathName</i> <b><a href="#move">move</a></b>
+    <i>sourceIndex</i> <i>targetIndex</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#move">move</a></b>
+    <i>sourceIndex</i> <i>targetParentNodeIndex</i>
+    <i>targetChildIndex</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#movecolumn">movecolumn</a></b>
     <i>sourceColumn</i> <i>targetColumn</i></code></dd>
@@ -1521,6 +1528,14 @@
         the <a href="#cell_editing">INTERACTIVE CELL EDITING</a> section for
         details on the editing process.</p>
 
+        <p>If the option's value is true and no value for the
+        <code><b>-editendcommand</b></code> option was specified, then on
+        normal termination of the editing process the cell's new contents will
+        be set to the text contained in the edit window, even if it has not
+        been changed interactively (but might have been returned by the command
+        given by the the <code><b><a href=
+        "#editstartcommand">-editstartcommand</a></b></code> option).</p>
+
         <p>Setting this option to true enables you to execute an arbitrary
         action whenever the interactive cell editing is finished.&nbsp; Just
         binding a script to the <code><b>&lt;Destroy&gt;</b></code> event for
@@ -1533,6 +1548,35 @@
         "#finishediting">finishediting</a></b></code> and <code><b><a href=
         "#cancelediting">cancelediting</a></b></code> subcommands,
         respectively.</p>
+      </blockquote>
+    </dd>
+
+    <dd>
+      <a name="fullseparators"></a>
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-fullseparators</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;fullSeparators</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;FullSeparators</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a boolean value that controls whether the separators (if
+        any) shall extend all of the way to the bottom of the tablelist's
+        body.&nbsp; The default is <code>0</code>, meaning that the height of
+        the separators will be adjusted to the widget's content, i.e., they
+        won't extend to the bottom of the tablelist's body if there is free
+        vertical space left below the widget's last row.</p>
       </blockquote>
     </dd>
 
@@ -3003,7 +3047,106 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
         displaying the expand/collapse controls, the indentation width, and
         whether expand/collapse controls and indentations are to be protected
         when selecting a row or cell.&nbsp; The currently supported values are
-        shown in the table below:</p>
+        shown at a glance below:</p>
+
+        <table border="2" cellspacing="0" cellpadding="3" rules="groups">
+          <colgroup span="1">
+          <colgroup span="1">
+          <colgroup span="1">
+          <colgroup span="1">
+
+          <tbody>
+            <tr align="center">
+              <td><img src="aqua.png" width="120" height="54"></td>
+              <td><img src="gtk.png" width="120" height="51"></td>
+              <td><img src="newWave.png" width="120" height="51"></td>
+              <td><img src="baghira.png" width="120" height="51"></td>
+              <td><img src="phase.png" width="120" height="51"></td>
+            </tr>
+
+            <tr align="center">
+              <td><code>aqua</code></td>
+              <td><code>gtk</code></td>
+              <td><code>newWave</code></td>
+              <td><code>baghira</code></td>
+              <td><code>phase</code></td>
+            </tr>
+          </tbody>
+
+          <tbody>
+            <tr align="center">
+              <td><img src="plastik.png" width="120" height="51"></td>
+              <td><img src="plastique.png" width="120" height="51"></td>
+              <td><img src="oxygen1.png" width="120" height="51"></td>
+              <td><img src="oxygen2.png" width="120" height="51"></td>
+              <td><img src="klearlooks.png" width="120" height="51"></td>
+            </tr>
+
+            <tr align="center">
+              <td><code>plastik</code></td>
+              <td><code>plastique</code></td>
+              <td><code>oxygen1</code></td>
+              <td><code>oxygen2</code></td>
+              <td><code>klearlooks</code></td>
+            </tr>
+          </tbody>
+
+          <tbody>
+            <tr align="center">
+              <td><img src="ambiance.png" width="120" height="60"></td>
+              <td><img src="dust.png" width="120" height="60"></td>
+              <td><img src="dustSand.png" width="120" height="60"></td>
+              <td><img src="radiance.png" width="120" height="60"></td>
+              <td></td>
+            </tr>
+
+            <tr align="center">
+              <td><code>ambiance</code></td>
+              <td><code>dust</code></td>
+              <td><code>dustSand</code></td>
+              <td><code>radiance</code></td>
+              <td></td>
+            </tr>
+          </tbody>
+
+          <tbody>
+            <tr align="center">
+              <td><img src="winnative.png" width="120" height="51"></td>
+              <td><img src="winxpBlue.png" width="120" height="51"></td>
+              <td><img src="winxpOlive.png" width="120" height="51"></td>
+              <td><img src="winxpSilver.png" width="120" height="51"></td>
+              <td></td>
+            </tr>
+
+            <tr align="center">
+              <td><code>winnative</code></td>
+              <td><code>winxpBlue</code></td>
+              <td><code>winxpOlive</code></td>
+              <td><code>winxpSilver</code></td>
+              <td></td>
+            </tr>
+
+          <tbody>
+            <tr align="center">
+              <td><img src="vistaAero.png" width="120" height="54"></td>
+              <td><img src="vistaClassic.png" width="120" height="51"></td>
+              <td><img src="win7Aero.png" width="120" height="54"></td>
+              <td><img src="win7Classic.png" width="120" height="51"></td>
+              <td></td>
+            </tr>
+
+            <tr align="center">
+              <td><code>vistaAero</code></td>
+              <td><code>vistaClassic</code></td>
+              <td><code>win7Aero</code></td>
+              <td><code>win7Classic</code></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>The following table contains a detailed description of these tree
+        styles, in alphabetical order:</p>
 
         <table border="2" cellspacing="0" cellpadding="3">
           <tr bgcolor="#FFFFE0">
@@ -3013,8 +3156,15 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           </tr>
 
           <tr>
+            <td><code><b>ambiance</b></code></td>
+            <td><img src="ambiance.png" width="120" height="60"></td>
+            <td>Inspired by the GTK+ theme Ambiance.&nbsp; Recommended to be
+            used with large fonts and images.</td>
+          </tr>
+
+          <tr>
             <td><code><b>aqua</b></code></td>
-            <td><img src="aqua.png" width="117" height="54"></td>
+            <td><img src="aqua.png" width="120" height="54"></td>
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
@@ -3034,7 +3184,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>baghira</b></code></td>
-            <td><img src="baghira.png" width="117" height="51"></td>
+            <td><img src="baghira.png" width="120" height="51"></td>
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
@@ -3048,8 +3198,22 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           </tr>
 
           <tr>
+            <td><code><b>dust</b></code></td>
+            <td><img src="dust.png" width="120" height="60"></td>
+            <td>Inspired by the GTK+ theme Dust.&nbsp; Recommended to be used
+            with large fonts and images.</td>
+          </tr>
+
+          <tr>
+            <td><code><b>dustSand</b></code></td>
+            <td><img src="dustSand.png" width="120" height="60"></td>
+            <td>Inspired by the GTK+ theme Dust Sand.&nbsp; Recommended to be
+            used with large fonts and images.</td>
+          </tr>
+
+          <tr>
             <td><code><b>gtk</b></code></td>
-            <td><img src="gtk.png" width="117" height="51"></td>
+            <td><img src="gtk.png" width="120" height="51"></td>
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
@@ -3071,7 +3235,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>klearlooks</b></code></td>
-            <td><img src="klearlooks.png" width="117" height="51"></td>
+            <td><img src="klearlooks.png" width="120" height="51"></td>
             <td>
               Inspired by the KDE 4 style Klearlooks.<br>
               <table border="0" cellpadding="0" cellspacing="0">
@@ -3085,20 +3249,26 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           </tr>
 
           <tr>
+            <td><code><b>newWave</b></code></td>
+            <td><img src="newWave.png" width="120" height="51"></td>
+            <td>Inspired by the GTK+ theme New Wave.</td>
+          </tr>
+
+          <tr>
             <td><code><b>oxygen1</b></code></td>
-            <td><img src="oxygen1.png" width="117" height="51"></td>
+            <td><img src="oxygen1.png" width="120" height="51"></td>
             <td>Inspired by the KDE 4 style Oxygen.</td>
           </tr>
 
           <tr>
             <td><code><b>oxygen2</b></code></td>
-            <td><img src="oxygen2.png" width="117" height="51"></td>
+            <td><img src="oxygen2.png" width="120" height="51"></td>
             <td>Inspired by the KDE 4 style Oxygen.</td>
           </tr>
 
           <tr>
             <td><code><b>phase</b></code></td>
-            <td><img src="phase.png" width="117" height="51"></td>
+            <td><img src="phase.png" width="120" height="51"></td>
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
@@ -3111,14 +3281,36 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           </tr>
 
           <tr>
+            <td><code><b>plastik</b></code></td>
+            <td><img src="plastik.png" width="120" height="51"></td>
+            <td>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                  <td>Tablelist_tile:&nbsp;</td>
+                  <td>Default for the <code><b>plastik</b></code> theme and the
+                  Qt style <code><b>plastik</b></code> within the
+                  <code><b>tileqt</b></code> theme.</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
             <td><code><b>plastique</b></code></td>
-            <td><img src="plastique.png" width="117" height="51"></td>
+            <td><img src="plastique.png" width="120" height="51"></td>
             <td>Inspired by the Qt and KDE 4 style Plastique.</td>
           </tr>
 
           <tr>
+            <td><code><b>radiance</b></code></td>
+            <td><img src="radiance.png" width="120" height="60"></td>
+            <td>Inspired by the GTK+ theme Radiance.&nbsp; Recommended to be
+            used with large fonts and images.</td>
+          </tr>
+
+          <tr>
             <td><code><b>vistaAero</b></code></td>
-            <td><img src="vistaAero.png" width="117" height="54"></td>
+            <td><img src="vistaAero.png" width="120" height="54"></td>
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
@@ -3137,7 +3329,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>vistaClassic</b></code></td>
-            <td><img src="vistaClassic.png" width="117" height="51"></td>
+            <td><img src="vistaClassic.png" width="120" height="51"></td>
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
@@ -3157,7 +3349,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>win7Aero</b></code></td>
-            <td><img src="win7Aero.png" width="117" height="54"></td>
+            <td><img src="win7Aero.png" width="120" height="54"></td>
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
@@ -3176,7 +3368,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>win7Classic</b></code></td>
-            <td><img src="win7Classic.png" width="117" height="51"></td>
+            <td><img src="win7Classic.png" width="120" height="51"></td>
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
@@ -3196,7 +3388,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>winnative</b></code></td>
-            <td><img src="winnative.png" width="117" height="51"></td>
+            <td><img src="winnative.png" width="120" height="51"></td>
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
@@ -3209,9 +3401,9 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
                   <td>Tablelist_tile:&nbsp;</td>
                   <td>Default for the themes <code><b>alt</b></code>,
                   <code><b>keramik</b></code>, <code><b>keramik_alt</b></code>,
-                  <code><b>plastik</b></code>, <code><b>winnative</b></code>,
-                  and <code><b>xpnative</b></code> with the Windows Classic
-                  style, as well as for most Qt styles within the
+                  <code><b>winnative</b></code>, and
+                  <code><b>xpnative</b></code> with the Windows Classic style,
+                  as well as for most Qt styles within the
                   <code><b>tileqt</b></code> theme.</td>
                 </tr>
               </table>
@@ -3220,7 +3412,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>winxpBlue</b></code></td>
-            <td><img src="winxpBlue.png" width="117" height="51"></td>
+            <td><img src="winxpBlue.png" width="120" height="51"></td>
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
@@ -3241,7 +3433,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>winxpOlive</b></code></td>
-            <td><img src="winxpOlive.png" width="117" height="51"></td>
+            <td><img src="winxpOlive.png" width="120" height="51"></td>
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
@@ -3261,7 +3453,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>winxpSilver</b></code></td>
-            <td><img src="winxpSilver.png" width="117" height="51"></td>
+            <td><img src="winxpSilver.png" width="120" height="51"></td>
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
@@ -3992,15 +4184,6 @@ proc formatDate clockVal {
           crash if all the rows of a tablelist widget are hidden.&nbsp; It is
           your responsibility to avoid such situations when using a Tk version
           having this bug!</p>
-
-          <p><b>REMARK:</b>&nbsp; Tablelist currently makes use of this row
-          configuration option in the implementation of the <code><b><a href=
-          "#collapse">collapse</a></b></code>, <code><b><a href=
-          "#collapseall">collapseall</a></b></code>, <code><b><a href=
-          "#expand">expand</a></b></code>, and <code><b><a href=
-          "#expandall">expandall</a></b></code> subcommands.&nbsp; For this
-          reason, it is not expected to use this option in application code for
-          tablelist widgets designed to display a tree hierarchy.</p>
         </dd>
 
         <dt><a name="row_name"></a><code><b>-name</b> <i>name</i></code></dt>
@@ -4267,20 +4450,6 @@ proc formatDate clockVal {
         tree structure can be displayed as expected.<br>
         &nbsp;</li>
 
-        <li>Do not set the <code><b><a href="#row_hide">-hide</a></b></code>
-        row configuration option for any item of the widget with the aid of the
-        <code><b><a href="#rowconfigure">rowconfigure</a></b></code>,
-        <code><b><a href="#configrowlist">configrowlist</a></b></code>,
-        <code><b><a href="#configrows">configrows</a></b></code>, or
-        <code><b><a href="#togglerowhide">togglerowhide</a></b></code>
-        subcommand, because Tablelist currently makes use of this row
-        configuration option in the implementation of the <code><b><a href=
-        "#collapse">collapse</a></b></code>, <code><b><a href=
-        "#collapseall">collapseall</a></b></code>, <code><b><a href=
-        "#expand">expand</a></b></code>, and <code><b><a href=
-        "#expandall">expandall</a></b></code> subcommands.<br>
-        &nbsp;</li>
-
         <li>Use the <code><b><a href=
         "#insertchildren">insertchild(ren)</a></b></code> or <code><b><a href=
         "#insertchildlist">insertchildlist</a></b></code> subcommand rather
@@ -4531,9 +4700,9 @@ proc formatDate clockVal {
 
       <p>In the widget command descriptions below, arguments named
       <code><i>index</i></code>, <code><i>first</i></code>,
-      <code><i>last</i></code>, <code><i>source</i></code>, and
-      <code><i>target</i></code> always contain row indices in one of the above
-      forms.</p>
+      <code><i>last</i></code>, <code><i>sourceIndex</i></code>, and
+      <code><i>targetIndex</i></code> always contain row indices in one of the
+      above forms.</p>
     </dd>
 
     <dt><a name="node_indices"></a><b>NODE INDICES</b></dt>
@@ -4546,8 +4715,9 @@ proc formatDate clockVal {
       item of the tablelist.
 
       <p>In the widget command descriptions below, arguments named
-      <code><i>nodeIndex</i></code> and <code><i>parentNodeIndex</i></code>
-      always contain node indices.</p>
+      <code><i>nodeIndex</i></code>, <code><i>parentNodeIndex</i></code>, and
+      <code><i>targetParentNodeIndex</i></code> always contain node
+      indices.</p>
     </dd>
 
     <dt><a name="col_indices"></a><b>COLUMN INDICES</b></dt>
@@ -6089,22 +6259,40 @@ upvar #0 [.tbl itemlistvar] itemList
         "tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a></b></code>.</dd>
 
         <dt><br>
-        <a name="move"></a><code><i>pathName</i> <b>move</b> <i>source</i>
-        <i>target</i></code></dt>
+        <a name="move"></a><code><i>pathName</i> <b>move</b> <i>sourceIndex</i>
+        <i>targetIndex</i></code><br>
+        <code><i>pathName</i> <b>move</b> <i>sourceIndex</i>
+        <i>targetParentNodeIndex</i> <i>targetChildIndex</i></code></dt>
 
         <dd>
-          Moves the item indicated by <code><i>source</i></code> just before
-          the one given by <code><i>target</i></code> if the tablelist's
+          The first form of the command moves the item indicated by
+          <code><i>sourceIndex</i></code> just before the one given by
+          <code><i>targetIndex</i></code> if the tablelist's
           <code><b><a href="#state">state</a></b></code> is not
-          <code><b>disabled</b></code>.&nbsp; If <code><i>target</i></code>
-          equals the nunber of items or is specified as <code><b>end</b></code>
-          then the source item is moved after the last one.&nbsp; Returns an
-          empty string.
+          <code><b>disabled</b></code>.&nbsp; If
+          <code><i>targetIndex</i></code> equals the nunber of items or is
+          specified as <code><b>end</b></code> then the source item is moved
+          after the last one.&nbsp; The item specified by
+          <code><i>targetIndex</i></code> must have the same parent as the one
+          given by <code><i>sourceIndex</i></code>, or else it must be the item
+          just below the last descendant of the source node's parent.
 
-          <p><b>REMARK:</b>&nbsp; In the current implementation, the items
-          specified by <code><i>source</i></code> and
-          <code><i>target</i></code> must have the same parent.&nbsp; This
-          restriction will be eliminated in some future Tablelist release.</p>
+          <p>The command's second form moves the item indicated by
+          <code><i>sourceIndex</i></code> just before the node having the
+          parent indicated by <code><i>targetParentNodeIndex</i></code> and the
+          index <code><i>targetChildIndex</i></code> in the parent's list of
+          children if the tablelist's <code><b><a href=
+          "#state">state</a></b></code> is not
+          <code><b>disabled</b></code>.&nbsp;
+          <code><i>targetChildIndex</i></code> must be a number or
+          <code><b>end</b></code>; if it equals the number of children of the
+          target parent node or is specified as <code><b>end</b></code> then
+          the source item is moved after the target parent node's last
+          child.</p>
+
+          <p>Both forms of the command preserve the node hierarchy under the
+          source item, by moving its descendants accordingly.&nbsp; The return
+          value is an empy string.</p>
         </dd>
 
         <dt><a name="movecolumn"></a><code><i>pathName</i> <b>movecolumn</b>
