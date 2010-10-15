@@ -9,7 +9,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.1
+package require tablelist_tile 5.2
 
 #
 # Add some entries to the Tk option database
@@ -51,7 +51,7 @@ proc displayContents dir {
 		  0 "Date Modified" left} \
 	-expandcommand expandCmd -collapsecommand collapseCmd \
 	-yscrollcommand [list $vsb set] -movablecolumns no -setgrid no \
-	-showseparators yes -height 20 -width 80
+	-showseparators yes -height 18 -width 80
     if {[$tbl cget -selectborderwidth] == 0} {
 	$tbl configure -spacing 1
     }
