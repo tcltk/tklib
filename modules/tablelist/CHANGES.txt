@@ -1,5 +1,46 @@
-What is new in Tablelist 5.1?
+What is new in Tablelist 5.2?
 -----------------------------
+
+1.  Added the "-fullseparators" configuration option (thanks to Kevin
+    Partin, Martyn Smith, and Harald Oehlmann for their proposals).
+
+2.  Added the tree styles "ambiance", "dust", "dustSand", "newWave",
+    "plastik", and "radiance".
+
+3.  The implementation of the "collapse(all)" and "expand(all)"
+    subcommands no longer makes use of the "-hide" row configuration
+    option, hence you are now free to set the latter (via
+    "rowconfigure", "configrowlist", "configrows", or "togglerowhide"),
+    regardless of whether the tablelist widget displays a tree
+    hierarchy or just a plain list.
+
+4.  The "move" subcommand now supports moving an item outside its parent.
+
+5.  Deleting the whole content of a tablelist widget has become
+    significantly faster (thanks to Harold Campbell for his input).
+
+6.  Worked around a peculiarity of the text widget related to tag
+    handling when deleting a range of lines from its end (thanks to
+    Batox for his bug report).
+
+7.  Minor improvements and bug-fixes in the binding scripts (thanks to
+    Bernhard Wallner, Batox, and Roger Niva for their bug reports).
+
+8.  Fixed a bug related to the "-selecttype cell" configuration option,
+    (re)introduced in Tablelist version 5.0 (thanks to Harold Campbell
+    and Dietmar Müller for their bug reports).
+
+9.  Fixed a bug related to row hiding via "configrowlist" or
+    "configrows", introduced in Tablelist version 5.0 (thanks to Michal
+    Sosnowski for his bug report).
+
+10. Fixed a long-standing bug related to tooltip support (thanks to
+    Trevor Williams for his bug report).
+
+11. Several further improvements and minor bug fixes.
+
+What was new in Tablelist 5.1?
+------------------------------
 
 This is a bugfix-only release.  The corrected files in the "scripts"
 directory are "tablelistBind.tcl", "tablelistSort.tcl",
