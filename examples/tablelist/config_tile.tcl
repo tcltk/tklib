@@ -5,7 +5,7 @@
 # Copyright (c) 2000-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.1
+package require tablelist_tile 5.2
 
 namespace eval demo {
     #
