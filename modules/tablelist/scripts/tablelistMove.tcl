@@ -7,9 +7,9 @@
 #------------------------------------------------------------------------------
 # tablelist::moveRow
 #
-# Processes the tablelist move subcommand.
+# Processes the 1st form of the tablelist move subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::moveRow {win source target {withDescendants 1}} {
+proc tablelist::moveRow {win source target} {
     upvar ::tablelist::ns${win}::data data
     if {$data(isDisabled) || $data(itemCount) == 0} {
 	return ""
@@ -33,6 +33,10 @@ proc tablelist::moveRow {win source target {withDescendants 1}} {
 	       "cannot move item with index \"$source\" before itself"
     }
 
+    if {$target == $source + 1} {
+	return ""
+    }
+
     set sourceItem [lindex $data(itemList) $source]
     set sourceKey [lindex $sourceItem end]
     if {$target == [nodeRow $win $sourceKey end 1]} {
@@ -41,19 +45,71 @@ proc tablelist::moveRow {win source target {withDescendants 1}} {
 
     set parentKey $data($sourceKey-parent)
     set parentEndRow [nodeRow $win $parentKey end 1]
-    if {($target <= [keyToRow $win $parentKey] || $target > $parentEndRow) &&
-	$withDescendants} {
+    if {($target <= [keyToRow $win $parentKey] || $target > $parentEndRow)} {
 	return -code error \
 	       "cannot move item with index \"$source\" outside its parent"
     }
 
-    if {$target != $parentEndRow} {
+    if {$target == $parentEndRow} {
+	set targetChildIdx end
+    } else {
 	set targetKey [lindex $data(keyList) $target]
-	if {[string compare $data($targetKey-parent) $parentKey] != 0 &&
-	    $withDescendants} {
+	if {[string compare $data($targetKey-parent) $parentKey] != 0} {
 	    return -code error \
 		   "cannot move item with index \"$source\" outside its parent"
 	}
+
+	set targetChildIdx \
+	    [lsearch -exact $data($parentKey-children) $targetKey]
+    }
+
+    return [moveNode $win $source $parentKey $targetChildIdx]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::moveNode
+#
+# Processes the 2nd form of the tablelist move subcommand.
+#------------------------------------------------------------------------------
+proc tablelist::moveNode {win source targetParentKey targetChildIdx \
+			 {withDescendants 1}} {
+    upvar ::tablelist::ns${win}::data data
+    if {$data(isDisabled) || $data(itemCount) == 0} {
+	return ""
+    }
+
+    #
+    # Adjust the indices to fit within the existing items and check them
+    #
+    if {$source > $data(lastRow)} {
+	set source $data(lastRow)
+    } elseif {$source < 0} {
+	set source 0
+    }
+    set target [nodeRow $win $targetParentKey $targetChildIdx 1]
+    if {$target < 0} {
+	set target 0
+    }
+    if {$target == $source} {
+	return -code error \
+	       "cannot move item with index \"$source\" before itself"
+    }
+
+    if {$target == $source + 1} {
+	return ""
+    }
+
+    set sourceItem [lindex $data(itemList) $source]
+    set sourceKey [lindex $sourceItem end]
+    if {$target == [nodeRow $win $sourceKey end 1]} {
+	return ""
+    }
+
+    set sourceDescCount [descCount $win $sourceKey]
+    if {$target > $source && $target <= $source + $sourceDescCount} {
+	return -code error \
+	       "cannot move item with index \"$source\" before\
+	        one of its descendants (except the first one)"
     }
 
     #
@@ -80,10 +136,15 @@ proc tablelist::moveRow {win source target {withDescendants 1}} {
 	    continue
 	}
 
+	#
+	# Check whether the 2nd tab character of the cell is selected
+	#
+	set textIdx [$w search $elide "\t" $textIdx+1c $line.end]
 	if {[lsearch -exact [$w tag names $textIdx] select] >= 0} {
 	    lappend selectedCols $col
 	}
-	set textIdx [$w search $elide "\t" $textIdx+1c $line.end]+1c
+
+	set textIdx $textIdx+1c
     }
     $w delete [expr {double($source + 1)}] [expr {double($source + 2)}]
 
@@ -136,9 +197,16 @@ proc tablelist::moveRow {win source target {withDescendants 1}} {
 		       $targetLine.0 $targetLine.end
 	}
     }
+    if {[info exists data($sourceKey-elide)]} {
+	$w tag add elidedRow $targetLine.0 $targetLine.end+1c
+    }
     if {[info exists data($sourceKey-hide)]} {
 	$w tag add hiddenRow $targetLine.0 $targetLine.end+1c
     }
+
+    set treeCol $data(treeCol)
+    set treeStyle $data(-treestyle)
+    set indentImg [doCellCget $source $treeCol $win -indent]
 
     #
     # Update the item list and the key -> row mapping
@@ -165,27 +233,70 @@ proc tablelist::moveRow {win source target {withDescendants 1}} {
     }
 
     #
-    # Update the tree information
+    # Elide the moved item if the target parent is collapsed or non-viewable
     #
-    set parentKey $data($sourceKey-parent)
-    set sourceChildIdx \
-	[lsearch -exact $data($parentKey-children) $sourceKey]
-    set data($parentKey-children) \
-	[lreplace $data($parentKey-children) $sourceChildIdx $sourceChildIdx]
-    if {$target == $parentEndRow} {
-	set lastChildRow [nodeRow $win $parentKey end 0]
-	set targetKey [lindex $data(keyList) $lastChildRow]
-    } else {
-	set targetKey [lindex $data(keyList) $target1]
+    set depth [depth $win $targetParentKey]
+    if {$depth != 0 &&
+	([string compare $data($targetParentKey,$treeCol-indent) \
+	  tablelist_${treeStyle}_collapsedImg$depth] == 0 || \
+	 [info exists data($targetParentKey-elide)] ||
+	 [info exists data($targetParentKey-hide)])} {
+	doRowConfig $target1 $win -elide 1
     }
-    ### set parentKey $data($targetKey-parent)
-    set targetChildIdx \
-	[lsearch -exact $data($parentKey-children) $targetKey]
-    if {$targetChildIdx == [llength $data($parentKey-children)]} {
-	lappend data($parentKey-children) $sourceKey
-    } else {
-	set data($parentKey-children) \
-	    [linsert $data($parentKey-children) $targetChildIdx $sourceKey]
+
+    if {$withDescendants} {
+	#
+	# Update the tree information
+	#
+	set sourceParentKey $data($sourceKey-parent)
+	set sourceChildIdx \
+	    [lsearch -exact $data($sourceParentKey-children) $sourceKey]
+	set data($sourceParentKey-children) \
+	    [lreplace $data($sourceParentKey-children) \
+	     $sourceChildIdx $sourceChildIdx]
+	set targetBuddyCount [llength $data($targetParentKey-children)]
+	if {[string first $targetChildIdx "end"] == 0} {
+	    set targetChildIdx $targetBuddyCount
+	}
+	if {$targetChildIdx >= $targetBuddyCount} {
+	    lappend data($targetParentKey-children) $sourceKey
+	} else {
+	    if {[string compare $sourceParentKey $targetParentKey] == 0 &&
+		$sourceChildIdx < $targetChildIdx} {
+		incr targetChildIdx -1
+	    }
+	    set data($targetParentKey-children) \
+		[linsert $data($targetParentKey-children) \
+		 $targetChildIdx $sourceKey]
+	}
+	set data($sourceKey-parent) $targetParentKey
+
+	#
+	# Mark the target parent item as expanded if it was just indented
+	#
+	if {$depth != 0 &&
+	    [string compare $data($targetParentKey,$treeCol-indent) \
+	     tablelist_${treeStyle}_indentedImg$depth] == 0} {
+	    set data($targetParentKey,$treeCol-indent) \
+		tablelist_${treeStyle}_expandedImg$depth
+	    if {[winfo exists $data(body).ind_$targetParentKey,$treeCol]} {
+		$data(body).ind_$targetParentKey,$treeCol configure -image \
+		    $data($targetParentKey,$treeCol-indent)
+	    }
+	}
+
+	#
+	# Update the indentation of the moved item
+	#
+	if {[regexp {^(.+)([0-9]+)$} $indentImg dummy base sourceDepth]} {
+	    incr depth
+	    variable maxIndentDepths
+	    if {$depth > $maxIndentDepths($treeStyle)} {
+		createTreeImgs $treeStyle $depth
+		set maxIndentDepths($treeStyle) $depth
+	    }
+	    doCellConfig $target1 $treeCol $win -indent $base$depth
+	}
     }
 
     #
@@ -209,15 +320,18 @@ proc tablelist::moveRow {win source target {withDescendants 1}} {
     #
     if {$data(anchorRow) == $source} {
 	set data(anchorRow) $target1
+	adjustRowIndex $win data(anchorRow) 1
     }
     if {$data(activeRow) == $source} {
-	set data(activeRow) $target1
+	set activeRow $target1
+	adjustRowIndex $win activeRow 1
+	set data(activeRow) $activeRow
     }
 
     #
-    # Invalidate the list of row indices indicating the non-hidden rows
+    # Invalidate the list of row indices indicating the viewable rows
     #
-    set data(nonHiddenRowList) {-1}
+    set data(viewableRowList) {-1}
 
     #
     # Select those source elements that were selected before
@@ -239,23 +353,47 @@ proc tablelist::moveRow {win source target {withDescendants 1}} {
 
     if {$withDescendants} {
 	#
+	# Save the source node's list of children and temporarily empty it
+	#
+	set sourceChildList $data($sourceKey-children)
+	set data($sourceKey-children) {}
+
+	#
 	# Move the source item's descendants
 	#
-	set sourceDescCount [descCount $win $sourceKey]
 	if {$source < $target} {
-	    for {set n 0} {$n < $sourceDescCount} {incr n} {
-		moveRow $win $source $target 0
-	    }
+	    set lastDescRow [expr {$source + $sourceDescCount - 1}]
+	    set increment -1
 	} else {
-	    for {set n 0} {$n < $sourceDescCount} {incr n} {
-		moveRow $win [incr source] [incr target] 0
+	    set lastDescRow [expr {$source + $sourceDescCount}]
+	    set increment 0
+	}
+	for {set n 0; set descRow $lastDescRow} {$n < $sourceDescCount} \
+	    {incr n; incr descRow $increment} {
+	    set indentImg [doCellCget $descRow $treeCol $win -indent]
+	    if {[regexp {^(.+)([0-9]+)$} $indentImg dummy base descDepth]} {
+		incr descDepth [expr {$depth - $sourceDepth}]
+		if {$descDepth > $maxIndentDepths($treeStyle)} {
+		    createTreeImgs $treeStyle $descDepth
+		    set maxIndentDepths($treeStyle) $descDepth
+		}
+		set descKey [lindex $data(keyList) $descRow]
+		set data($descKey,$treeCol-indent) $base$descDepth
 	    }
+
+	    moveNode $win $descRow $sourceKey end 0
 	}
 
 	#
-	# Adjust the elided text, restore the stripes in the body
-	# text widget, and redisplay the line numbers (if any)
+	# Restore the source node's list of children
 	#
+	set data($sourceKey-children) $sourceChildList
+
+	#
+	# Adjust the columns, restore the stripes in the body text widget,
+	# redisplay the line numbers (if any), and update the view
+	#
+	adjustColumns $win $treeCol 1
 	adjustElidedText $win
 	makeStripes $win
 	showLineNumbersWhenIdle $win

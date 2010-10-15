@@ -339,9 +339,14 @@ proc tablelist::defineTablelistBody {} {
 	}
     }
     bind TablelistBody <Double-Button-1> {
-	if {[$tablelist::W cget -editselectedonly]} {
-	    tablelist::condEditContainingCell $tablelist::W \
-		$tablelist::x $tablelist::y
+	if {[winfo exists %W]} {
+	    foreach {tablelist::W tablelist::x tablelist::y} \
+		[tablelist::convEventFields %W %x %y] {}
+
+	    if {[$tablelist::W cget -editselectedonly]} {
+		tablelist::condEditContainingCell $tablelist::W \
+		    $tablelist::x $tablelist::y
+	    }
 	}
     }
     bind TablelistBody <B1-Motion> {
@@ -371,29 +376,31 @@ proc tablelist::defineTablelistBody {} {
 	}
     }
     bind TablelistBody <ButtonRelease-1> {
-	foreach {tablelist::W tablelist::x tablelist::y} \
-	    [tablelist::convEventFields %W %x %y] {}
+	if {[winfo exists %W]} {
+	    foreach {tablelist::W tablelist::x tablelist::y} \
+		[tablelist::convEventFields %W %x %y] {}
 
-	set tablelist::priv(x) ""
-	set tablelist::priv(y) ""
-	after cancel $tablelist::priv(afterId)
-	set tablelist::priv(afterId) ""
-	set tablelist::priv(releaseTime) %t
-	set tablelist::priv(releasedInEditWin) 0
-	if {!$tablelist::priv(clickedExpCollCtrl)} {
-	    if {$tablelist::priv(clicked) &&
-		%t - $tablelist::priv(clickTime) < 300} {
-		tablelist::moveOrActivate $tablelist::W \
-		    $tablelist::priv(row) $tablelist::priv(col)
-	    } else {
-		tablelist::moveOrActivate $tablelist::W \
-		    [$tablelist::W nearest       $tablelist::y] \
-		    [$tablelist::W nearestcolumn $tablelist::x]
+	    set tablelist::priv(x) ""
+	    set tablelist::priv(y) ""
+	    after cancel $tablelist::priv(afterId)
+	    set tablelist::priv(afterId) ""
+	    set tablelist::priv(releaseTime) %t
+	    set tablelist::priv(releasedInEditWin) 0
+	    if {!$tablelist::priv(clickedExpCollCtrl)} {
+		if {$tablelist::priv(clicked) &&
+		    %t - $tablelist::priv(clickTime) < 300} {
+		    tablelist::moveOrActivate $tablelist::W \
+			$tablelist::priv(row) $tablelist::priv(col)
+		} else {
+		    tablelist::moveOrActivate $tablelist::W \
+			[$tablelist::W nearest       $tablelist::y] \
+			[$tablelist::W nearestcolumn $tablelist::x]
+		}
 	    }
+	    set tablelist::priv(clicked) 0
+	    set tablelist::priv(clickedExpCollCtrl) 0
+	    after 100 [list tablelist::condEvalInvokeCmd $tablelist::W]
 	}
-	set tablelist::priv(clicked) 0
-	set tablelist::priv(clickedExpCollCtrl) 0
-	after 100 [list tablelist::condEvalInvokeCmd $tablelist::W]
     }
     bind TablelistBody <Shift-Button-1> {
 	foreach {tablelist::W tablelist::x tablelist::y} \
@@ -1369,7 +1376,7 @@ proc tablelist::beginToggle {win row col} {
 proc tablelist::condEditActiveCell win {
     upvar ::tablelist::ns${win}::data data
     if {[string compare $data(-selecttype) "cell"] != 0 ||
-	[firstVisibleRow $win] < 0 || [firstVisibleCol $win] < 0} {
+	[firstViewableRow $win] < 0 || [firstViewableCol $win] < 0} {
 	return ""
     }
 
@@ -1468,7 +1475,7 @@ proc tablelist::nextPrevCell {win amount} {
 
 		if {$row == $oldRow && $col == $oldCol} {
 		    return -code break ""
-		} elseif {![doRowCget $row $win -hide] && !$data($col-hide)} {
+		} elseif {[isRowViewable $win $row] && !$data($col-hide)} {
 		    condChangeSelection $win $row $col
 		    return -code break ""
 		}
@@ -1505,7 +1512,7 @@ proc tablelist::upDown {win amount} {
 	incr row $amount
 	if {$row < 0 || $row > $data(lastRow)} {
 	    return ""
-	} elseif {![doRowCget $row $win -hide]} {
+	} elseif {[isRowViewable $win $row]} {
 	    condChangeSelection $win $row $col
 	    return ""
 	}
@@ -1619,8 +1626,8 @@ proc tablelist::homeEnd {win keysym} {
 	cell {
 	    set row $data(activeRow)
 	    switch $keysym {
-		Home { set col [firstVisibleCol $win] }
-		End  { set col [ lastVisibleCol $win] }
+		Home { set col [firstViewableCol $win] }
+		End  { set col [ lastViewableCol $win] }
 	    }
 	    changeSelection $win $row $col
 	}
@@ -1637,13 +1644,13 @@ proc tablelist::homeEnd {win keysym} {
 proc tablelist::firstLast {win target} {
     switch $target {
 	first {
-	    set row [firstVisibleRow $win]
-	    set col [firstVisibleCol $win]
+	    set row [firstViewableRow $win]
+	    set col [firstViewableCol $win]
 	}
 
 	last {
-	    set row [lastVisibleRow $win]
-	    set col [lastVisibleCol $win]
+	    set row [lastViewableRow $win]
+	    set col [lastViewableCol $win]
 	}
     }
 
@@ -1670,7 +1677,7 @@ proc tablelist::extendUpDown {win amount} {
 		incr row $amount
 		if {$row < 0 || $row > $data(lastRow)} {
 		    return ""
-		} elseif {![doRowCget $row $win -hide]} {
+		} elseif {[isRowViewable $win $row]} {
 		    ::$win activate $row
 		    ::$win see active
 		    motion $win $data(activeRow) -1
@@ -1686,7 +1693,7 @@ proc tablelist::extendUpDown {win amount} {
 		incr row $amount
 		if {$row < 0 || $row > $data(lastRow)} {
 		    return ""
-		} elseif {![doRowCget $row $win -hide]} {
+		} elseif {[isRowViewable $win $row]} {
 		    ::$win activatecell $row,$col
 		    ::$win seecell active
 		    motion $win $data(activeRow) $data(activeCol)
@@ -1751,8 +1758,8 @@ proc tablelist::extendToHomeEnd {win keysym} {
 	cell {
 	    set row $data(activeRow)
 	    switch $keysym {
-		Home { set col [firstVisibleCol $win] }
-		End  { set col [ lastVisibleCol $win] }
+		Home { set col [firstViewableCol $win] }
+		End  { set col [ lastViewableCol $win] }
 	    }
 
 	    switch -- $data(-selectmode) {
@@ -1783,13 +1790,13 @@ proc tablelist::extendToHomeEnd {win keysym} {
 proc tablelist::extendToFirstLast {win target} {
     switch $target {
 	first {
-	    set row [firstVisibleRow $win]
-	    set col [firstVisibleCol $win]
+	    set row [firstViewableRow $win]
+	    set col [firstViewableCol $win]
 	}
 
 	last {
-	    set row [lastVisibleRow $win]
-	    set col [lastVisibleCol $win]
+	    set row [lastViewableRow $win]
+	    set col [lastViewableCol $win]
 	}
     }
 
@@ -1936,14 +1943,14 @@ proc tablelist::selectAll win {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::firstVisibleRow
+# tablelist::firstViewableRow
 #
-# Returns the index of the first non-hidden row of the tablelist widget win.
+# Returns the index of the first viewable row of the tablelist widget win.
 #------------------------------------------------------------------------------
-proc tablelist::firstVisibleRow win {
+proc tablelist::firstViewableRow win {
     upvar ::tablelist::ns${win}::data data
     for {set row 0} {$row < $data(itemCount)} {incr row} {
-	if {![doRowCget $row $win -hide]} {
+	if {[isRowViewable $win $row]} {
 	    return $row
 	}
     }
@@ -1952,14 +1959,14 @@ proc tablelist::firstVisibleRow win {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::lastVisibleRow
+# tablelist::lastViewableRow
 #
-# Returns the index of the last non-hidden row of the tablelist widget win.
+# Returns the index of the last viewable row of the tablelist widget win.
 #------------------------------------------------------------------------------
-proc tablelist::lastVisibleRow win {
+proc tablelist::lastViewableRow win {
     upvar ::tablelist::ns${win}::data data
     for {set row $data(lastRow)} {$row >= 0} {incr row -1} {
-	if {![doRowCget $row $win -hide]} {
+	if {[isRowViewable $win $row]} {
 	    return $row
 	}
     }
@@ -1968,11 +1975,11 @@ proc tablelist::lastVisibleRow win {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::firstVisibleCol
+# tablelist::firstViewableCol
 #
 # Returns the index of the first non-hidden column of the tablelist widget win.
 #------------------------------------------------------------------------------
-proc tablelist::firstVisibleCol win {
+proc tablelist::firstViewableCol win {
     upvar ::tablelist::ns${win}::data data
     for {set col 0} {$col < $data(colCount)} {incr col} {
 	if {!$data($col-hide)} {
@@ -1984,11 +1991,11 @@ proc tablelist::firstVisibleCol win {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::lastVisibleCol
+# tablelist::lastViewableCol
 #
 # Returns the index of the last non-hidden column of the tablelist widget win.
 #------------------------------------------------------------------------------
-proc tablelist::lastVisibleCol win {
+proc tablelist::lastViewableCol win {
     upvar ::tablelist::ns${win}::data data
     for {set col $data(lastCol)} {$col >= 0} {incr col -1} {
 	if {!$data($col-hide)} {

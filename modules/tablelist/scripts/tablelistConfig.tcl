@@ -27,6 +27,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-editstartcommand)	{}
     lappend configSpecs(-expandcommand)		{}
     lappend configSpecs(-forceeditendcommand)	0
+    lappend configSpecs(-fullseparators)	0
     lappend configSpecs(-incrarrowtype)		up
     lappend configSpecs(-labelcommand)		{}
     lappend configSpecs(-labelcommand2)		{}
@@ -695,6 +696,14 @@ proc tablelist::doConfig {win opt val} {
 				[list ::tablelist::lostSelection $win] $win
 		    }
 		}
+		-fullseparators {
+		    #
+		    # Save the boolean value specified by val
+		    # in data($opt) and adjust the separators
+		    #
+		    set data($opt) [expr {$val ? 1 : 0}]
+		    adjustSepsWhenIdle $win
+		}
 		-height {
 		    #
 		    # Adjust the heights of the body text widget
@@ -703,10 +712,10 @@ proc tablelist::doConfig {win opt val} {
 		    #
 		    set val [format "%d" $val]	;# integer check with error msg
 		    if {$val <= 0} {
-			set nonHiddenRowCount \
-			    [expr {$data(itemCount) - $data(hiddenRowCount)}]
-			$data(body) configure $opt $nonHiddenRowCount
-			$data(lb) configure $opt $nonHiddenRowCount
+			set viewableRowCount [expr \
+			    {$data(itemCount) - $data(nonViewableRowCount)}]
+			$data(body) configure $opt $viewableRowCount
+			$data(lb) configure $opt $viewableRowCount
 		    } else {
 			$data(body) configure $opt $val
 			$data(lb) configure $opt $val
@@ -1060,7 +1069,8 @@ proc tablelist::doConfig {win opt val} {
 		    }
 		    set data($opt) $newStyle
 		    set data(protectIndents) [expr {![regexp \
-			{^(aqua|gtk|plastique|win7.+)$} $newStyle]}]
+			{^(a.+|dust.*|gtk|newWave|plastique|radiance|win7.+)$} \
+			$newStyle]}]
 		    set selCells [curCellSelection $win 1]
 		    foreach {key col} $selCells {
 			set row [keyToRow $win $key]
@@ -1965,6 +1975,109 @@ proc tablelist::doRowConfig {row win opt val} {
 	    }
 	}
 
+	-elide {
+	    set val [expr {$val ? 1 : 0}]
+	    set item [lindex $data(itemList) $row]
+	    set key [lindex $item end]
+	    set name $key$opt
+	    set line [expr {$row + 1}]
+	    set viewChanged 0
+
+	    if {$val} {					;# eliding the row
+		if {![info exists data($name)]} {
+		    set data($name) 1
+		    $w tag add elidedRow $line.0 $line.end+1c
+
+		    if {![info exists data($key-hide)]} {
+			rowSelection $win clear $row $row
+			incr data(nonViewableRowCount)
+			set viewChanged 1
+
+			if {$row == $data(editRow)} {
+			    doCancelEditing $win
+			}
+		    }
+		}
+	    } else {					;# uneliding the row
+		if {[info exists data($name)]} {
+		    unset data($name)
+		    $w tag remove elidedRow $line.0 $line.end+1c
+
+		    if {![info exists data($key-hide)]} {
+			incr data(nonViewableRowCount) -1
+			set viewChanged 1
+		    }
+		}
+	    }
+
+	    if {$viewChanged} {
+		#
+		# Adjust the heights of the body text widget
+		# and of the listbox child, if necessary
+		#
+		if {$data(-height) <= 0} {
+		    set viewableRowCount \
+			[expr {$data(itemCount) - $data(nonViewableRowCount)}]
+		    $w configure -height $viewableRowCount
+		    $data(lb) configure -height $viewableRowCount
+		}
+
+		#
+		# Build the list of those dynamic-width columns
+		# whose widths are affected by (un)hiding the row
+		#
+		set colWidthsChanged 0
+		set colIdxList {}
+		set displayedItem [lrange $item 0 $data(lastCol)]
+		if {$data(hasFmtCmds)} {
+		    set displayedItem [formatItem $win $key $row $displayedItem]
+		}
+		set col 0
+		foreach text [strToDispStr $displayedItem] \
+			{pixels alignment} $data(colList) {
+		    if {($data($col-hide) && !$canElide) || $pixels != 0} {
+			incr col
+			continue
+		    }
+
+		    getAuxData $win $key $col auxType auxWidth
+		    getIndentData $win $key $col indentWidth
+		    set cellFont [getCellFont $win $key $col]
+		    set elemWidth [getElemWidth $win $text $auxWidth \
+				   $indentWidth $cellFont]
+		    if {$val} {				;# hiding the row
+			if {$elemWidth == $data($col-elemWidth) &&
+			    [incr data($col-widestCount) -1] == 0} {
+			    set colWidthsChanged 1
+			    lappend colIdxList $col
+			}
+		    } else {				;# unhiding the row
+			if {$elemWidth == $data($col-elemWidth)} {
+			    incr data($col-widestCount)
+			} elseif {$elemWidth > $data($col-elemWidth)} {
+			    set data($col-elemWidth) $elemWidth
+			    set data($col-widestCount) 1
+			    if {$elemWidth > $data($col-reqPixels)} {
+				set data($col-reqPixels) $elemWidth
+				set colWidthsChanged 1
+			    }
+			}
+		    }
+
+		    incr col
+		}
+
+		#
+		# Invalidate the list of row indices indicating the
+		# viewable rows and adjust the columns if necessary
+		#
+		set data(viewableRowList) {-1}
+		if {$colWidthsChanged} {
+		    adjustColumns $win $colIdxList 1
+		}
+	    }
+	}
+
 	-font {
 	    #
 	    # Save the current cell fonts in a temporary array
@@ -2013,7 +2126,6 @@ proc tablelist::doRowConfig {row win opt val} {
 	    if {$data(hasFmtCmds)} {
 		set displayedItem [formatItem $win $key $row $displayedItem]
 	    }
-	    set rowIsHidden [info exists data($key-hide)]
 	    set colWidthsChanged 0
 	    set colIdxList {}
 	    set line [expr {$row + 1}]
@@ -2095,7 +2207,8 @@ proc tablelist::doRowConfig {row win opt val} {
 		    }
 		}
 
-		if {$pixels == 0 && !$rowIsHidden} {
+		if {$pixels == 0 && ![info exists data($key-elide)] &&
+		    ![info exists data($key-hide)]} {
 		    #
 		    # Check whether the width of the current column has changed
 		    #
@@ -2151,30 +2264,47 @@ proc tablelist::doRowConfig {row win opt val} {
 
 	    if {$val} {					;# hiding the row
 		if {![info exists data($name)]} {
-		    rowSelection $win clear $row $row
 		    set data($name) 1
-		    incr data(hiddenRowCount)
 		    $w tag add hiddenRow $line.0 $line.end+1c
-		    set viewChanged 1
 
-		    if {[string compare $callerProc "configureWidget"] == 0} {
-			adjustRowIndex $win data(anchorRow) 1
+		    if {![info exists data($key-elide)]} {
+			rowSelection $win clear $row $row
+			incr data(nonViewableRowCount)
+			set viewChanged 1
 
-			set activeRow $data(activeRow)
-			adjustRowIndex $win activeRow 1
-			set data(activeRow) $activeRow
-		    }
+			#
+			# Elide the descendants of this item
+			#
+			set fromRow [expr {$row + 1}]
+			set toRow [nodeRow $win $key end 1]
+			for {set _row $fromRow} {$_row < $toRow} {incr _row} {
+			    doRowConfig $_row $win -elide 1
+			}
 
-		    if {$row == $data(editRow)} {
-			doCancelEditing $win
+			if {[string match "*configureWidget" $callerProc]} {
+			    adjustRowIndex $win data(anchorRow) 1
+
+			    set activeRow $data(activeRow)
+			    adjustRowIndex $win activeRow 1
+			    set data(activeRow) $activeRow
+			}
+
+			if {$row == $data(editRow)} {
+			    doCancelEditing $win
+			}
 		    }
 		}
 	    } else {					;# unhiding the row
 		if {[info exists data($name)]} {
 		    unset data($name)
-		    incr data(hiddenRowCount) -1
 		    $w tag remove hiddenRow $line.0 $line.end+1c
-		    set viewChanged 1
+
+		    if {![info exists data($key-elide)]} {
+			incr data(nonViewableRowCount) -1
+			set viewChanged 1
+
+			expandSubCmd $win [list $row -partly]
+		    }
 		}
 	    }
 
@@ -2184,10 +2314,10 @@ proc tablelist::doRowConfig {row win opt val} {
 		# and of the listbox child, if necessary
 		#
 		if {$data(-height) <= 0} {
-		    set nonHiddenRowCount \
-			[expr {$data(itemCount) - $data(hiddenRowCount)}]
-		    $w configure -height $nonHiddenRowCount
-		    $data(lb) configure -height $nonHiddenRowCount
+		    set viewableRowCount \
+			[expr {$data(itemCount) - $data(nonViewableRowCount)}]
+		    $w configure -height $viewableRowCount
+		    $data(lb) configure -height $viewableRowCount
 		}
 
 		#
@@ -2237,9 +2367,9 @@ proc tablelist::doRowConfig {row win opt val} {
 
 		#
 		# Invalidate the list of row indices indicating the
-		# non-hidden rows and adjust the columns if necessary
+		# viewable rows and adjust the columns if necessary
 		#
-		set data(nonHiddenRowList) {-1}
+		set data(viewableRowList) {-1}
 		if {$colWidthsChanged} {
 		    adjustColumns $win $colIdxList 1
 		}
@@ -2250,7 +2380,7 @@ proc tablelist::doRowConfig {row win opt val} {
 		# is configureWidget, in order to make sure that only
 		# one event per caller proc invocation will be generated
 		#
-		if {[string compare $callerProc "configureWidget"] == 0} {
+		if {[string match "*configureWidget" $callerProc]} {
 		    makeStripesWhenIdle $win
 		    showLineNumbersWhenIdle $win
 		    updateViewWhenIdle $win
@@ -2347,7 +2477,6 @@ proc tablelist::doRowConfig {row win opt val} {
 	    } else {
 		set displayedItem $newItem
 	    }
-	    set rowIsHidden [info exists data($key-hide)]
 	    set line [expr {$row + 1}]
 	    set textIdx1 $line.1
 	    set col 0
@@ -2422,7 +2551,8 @@ proc tablelist::doRowConfig {row win opt val} {
 		    }
 		}
 
-		if {$pixels == 0 && !$rowIsHidden} {
+		if {$pixels == 0 && ![info exists data($key-elide)] &&
+		    ![info exists data($key-hide)]} {
 		    #
 		    # Check whether the width of the current column has changed
 		    #
@@ -2510,6 +2640,7 @@ proc tablelist::doRowCget {row win opt} {
 	    return [lrange $item 0 $data(lastCol)]
 	}
 
+	-elide -
 	-hide {
 	    set key [lindex $item end]
 	    if {[info exists data($key$opt)]} {
@@ -2752,7 +2883,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    # Adjust the columns if necessary
 	    #
-	    if {$pixels == 0 && ![info exists data($key-hide)]} {
+	    if {$pixels == 0 && ![info exists data($key-elide)] &&
+		![info exists data($key-hide)]} {
 		set text $textSav
 		set auxWidth $auxWidthSav
 		set indentWidth $indentWidthSav
@@ -2892,7 +3024,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    # Adjust the columns if necessary
 	    #
-	    if {$pixels == 0 && ![info exists data($key-hide)]} {
+	    if {$pixels == 0 && ![info exists data($key-elide)] &&
+		![info exists data($key-hide)]} {
 		set text $textSav
 		set auxWidth $auxWidthSav
 		set indentWidth $indentWidthSav
@@ -3032,7 +3165,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    # Adjust the columns if necessary
 	    #
-	    if {$pixels == 0 && ![info exists data($key-hide)]} {
+	    if {$pixels == 0 && ![info exists data($key-elide)] &&
+		![info exists data($key-hide)]} {
 		set text $textSav
 		set auxWidth $auxWidthSav
 		set indentWidth $indentWidthSav
@@ -3298,7 +3432,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    # Adjust the columns if necessary
 	    #
-	    if {$pixels == 0 && ![info exists data($key-hide)]} {
+	    if {$pixels == 0 && ![info exists data($key-elide)] &&
+		![info exists data($key-hide)]} {
 		set text $textSav
 		set auxWidth $auxWidthSav
 		set indentWidth $indentWidthSav
@@ -3488,7 +3623,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    # Adjust the columns if necessary
 	    #
-	    if {$pixels == 0 && ![info exists data($key-hide)]} {
+	    if {$pixels == 0 && ![info exists data($key-elide)] &&
+		![info exists data($key-hide)]} {
 		set text $textSav
 		set auxWidth $auxWidthSav
 		set indentWidth $indentWidthSav
@@ -3643,6 +3779,18 @@ proc tablelist::makeListVar {win varName} {
     # Set a trace on the new list variable
     #
     trace variable var wu $data(listVarTraceCmd)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::isRowViewable
+#
+# Checks whether the given row of the tablelist widget win is viewable.
+#------------------------------------------------------------------------------
+proc tablelist::isRowViewable {win row} {
+    upvar ::tablelist::ns${win}::data data
+    set key [lindex $data(keyList) $row]
+    return [expr {![info exists data($key-elide)] &&
+		  ![info exists data($key-hide)]}]
 }
 
 #------------------------------------------------------------------------------

@@ -342,7 +342,8 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 	    set item [lreplace $item $col $col $line]
 	    lappend newDescItemList $item
 	    set key [lindex $item end]
-	    if {![info exists data($key-hide)]} {
+	    if {![info exists data($key-elide)] &&
+		![info exists data($key-hide)]} {
 		incr line
 	    }
 	}
@@ -541,6 +542,9 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 	    }
 	}
 
+	if {[info exists data($key-elide)]} {
+	    $w tag add elidedRow $line.0 $line.end+1c
+	}
 	if {[info exists data($key-hide)]} {
 	    $w tag add hiddenRow $line.0 $line.end+1c
 	}
@@ -561,9 +565,9 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     }
 
     #
-    # Invalidate the list of row indices indicating the non-hidden rows
+    # Invalidate the list of row indices indicating the viewable rows
     #
-    set data(nonHiddenRowList) {-1}
+    set data(viewableRowList) {-1}
 
     #
     # Select the cells that were selected before

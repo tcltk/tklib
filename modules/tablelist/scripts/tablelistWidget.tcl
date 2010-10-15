@@ -103,6 +103,7 @@ namespace eval tablelist {
 	-forceeditendcommand	 {forceEditEndCommand	  ForceEditEndCommand w}
 	-foreground		 {foreground		  Foreground	      b}
 	-fg			 -foreground
+	-fullseparators		 {fullSeparators	  FullSeparators      w}
 	-height			 {height		  Height	      w}
 	-highlightbackground	 {highlightBackground	  HighlightBackground f}
 	-highlightcolor		 {highlightColor	  HighlightColor      f}
@@ -384,9 +385,10 @@ namespace eval tablelist {
     variable _sortOrders   [list -increasing -decreasing]
     variable scanCmdOpts   [list mark dragto]
     variable selCmdOpts    [list anchor clear includes set]
-    variable treeStyles    [list aqua baghira gtk klearlooks oxygen1 oxygen2 \
-				 phase plastique vistaAero vistaClassic \
-				 win7Aero win7Classic winnative \
+    variable treeStyles    [list ambiance aqua baghira dust dustSand gtk \
+				 klearlooks newWave oxygen1 oxygen2 phase \
+				 plastik plastique radiance vistaAero \
+				 vistaClassic win7Aero win7Classic winnative \
 				 winxpBlue winxpOlive winxpSilver]
 
     #
@@ -620,8 +622,8 @@ proc tablelist::tablelist args {
 	    hasFmtCmds		 0
 	    scrlColOffset	 0
 	    cellsToReconfig	 {}
-	    hiddenRowCount	 0
-	    nonHiddenRowList	 {-1}
+	    nonViewableRowCount	 0
+	    viewableRowList	 {-1}
 	    hiddenColCount	 0
 	    root-row		-1
 	    root-parent		 ""
@@ -744,9 +746,9 @@ proc tablelist::tablelist args {
 
     #
     # Create the "stripe", "select", "active", "disabled", "hiddenRow",
-    # "hiddenCol", and "elidedCol" tags in the body text widget.  Don't
-    # use the built-in "sel" tag because on Windows the selection in a
-    # text widget only becomes visible when the window gets the input
+    # "elidedRow", "hiddenCol", and "elidedCol" tags in the body text widget.
+    # Don't use the built-in "sel" tag because on Windows the selection in
+    # a text widget only becomes visible when the window gets the input
     # focus.  DO NOT CHANGE the order of creation of these tags!
     #
     $w tag configure stripe -background "" -foreground ""    ;# will be changed
@@ -755,9 +757,10 @@ proc tablelist::tablelist args {
     $w tag configure disabled -foreground ""		     ;# will be changed
     $w tag configure redraw -background black
     if {$canElide} {
-	$w tag configure hiddenRow -elide 1
-	$w tag configure hiddenCol -elide 1
-	$w tag configure elidedCol -elide 1
+	$w tag configure hiddenRow -elide 1	;# used for hiding a row
+	$w tag configure elidedRow -elide 1	;# used when collapsing a row
+	$w tag configure hiddenCol -elide 1	;# used for hiding a column
+	$w tag configure elidedCol -elide 1	;# used for horizontal scrolling
     }
 
     #
@@ -857,7 +860,7 @@ proc tablelist::activateSubCmd {win argList} {
     set index [rowIndex $win [lindex $argList 0] 0]
 
     #
-    # Adjust the index to fit within the existing non-hidden items
+    # Adjust the index to fit within the existing viewable items
     #
     adjustRowIndex $win index 1
 
@@ -884,7 +887,7 @@ proc tablelist::activatecellSubCmd {win argList} {
 
     #
     # Adjust the row and column indices to fit
-    # within the existing non-hidden elements
+    # within the existing viewable elements
     #
     adjustRowIndex $win row 1
     adjustColIndex $win col 1
@@ -1190,12 +1193,12 @@ proc tablelist::collapseSubCmd {win argList} {
     }
 
     #
-    # Hide the descendants of this item
+    # Elide the descendants of this item
     #
     set fromRow [expr {$index + 1}]
     set toRow [nodeRow $win $key end 1]
     for {set row $fromRow} {$row < $toRow} {incr row} {
-	doRowConfig $row $win -hide 1
+	doRowConfig $row $win -elide 1
 
 	if {$fullCollapsion} {
 	    set descKey [lindex $data(keyList) $row]
@@ -1209,7 +1212,7 @@ proc tablelist::collapseSubCmd {win argList} {
     if {![string match "collapse*SubCmd" $callerProc]} {
 	#
 	# Destroy the label and messsage widgets
-	# embedded into the descendants just hidden
+	# embedded into the descendants just elided
 	#
 	set widgets {}
 	set fromTextIdx [expr {double($fromRow + 1)}]
@@ -1299,7 +1302,7 @@ proc tablelist::collapseallSubCmd {win argList} {
 	}
 
 	#
-	# Hide the descendants of this item
+	# Elide the descendants of this item
 	#
 	incr childIdx
 	if {[llength $data($key-children)] != 0} {
@@ -1311,7 +1314,7 @@ proc tablelist::collapseallSubCmd {win argList} {
 		set toRow $data(itemCount)
 	    }
 	    for {set row $fromRow} {$row < $toRow} {incr row} {
-		doRowConfig $row $win -hide 1
+		doRowConfig $row $win -elide 1
 
 		if {$fullCollapsion} {
 		    set descKey [lindex $data(keyList) $row]
@@ -1324,7 +1327,7 @@ proc tablelist::collapseallSubCmd {win argList} {
 
 	    #
 	    # Destroy the label and messsage widgets
-	    # embedded into the descendants just hidden
+	    # embedded into the descendants just elided
 	    #
 	    set widgets {}
 	    set fromTextIdx [expr {double($fromRow + 1)}]
@@ -1887,7 +1890,9 @@ proc tablelist::expandSubCmd {win argList} {
 	return ""
     }
 
-    if {[string compare $data(-expandcommand) ""] != 0} {
+    set callerProc [lindex [info level -1] 0]
+    if {[string compare $callerProc "doRowConfig"] != 0 &&
+	[string compare $data(-expandcommand) ""] != 0} {
 	set data(keyBeingExpanded) $key
 	uplevel #0 $data(-expandcommand) [list $win $index]
 	set data(keyBeingExpanded) ""
@@ -1908,14 +1913,15 @@ proc tablelist::expandSubCmd {win argList} {
     }
 
     #
-    # Unhide the children if appropriate and
+    # Unelide the children if appropriate and
     # invoke this procedure recursively on them
     #
-    set isHidden [expr {[info exists data($key-hide)]}]
+    set isViewable [expr {![info exists data($key-elide)] &&
+			  ![info exists data($key-hide)]}]
     foreach childKey $data($key-children) {
 	set childRow [keyToRow $win $childKey]
-	if {!$isHidden} {
-	    doRowConfig $childRow $win -hide 0
+	if {$isViewable} {
+	    doRowConfig $childRow $win -elide 0
 	}
 	if {$fullExpansion} {
 	    expandSubCmd $win [list $childRow -fully]
@@ -1924,7 +1930,6 @@ proc tablelist::expandSubCmd {win argList} {
 	}
     }
 
-    set callerProc [lindex [info level -1] 0]
     if {![string match "expand*SubCmd" $callerProc]} {
 	makeStripes $win
 	showLineNumbersWhenIdle $win
@@ -1989,11 +1994,11 @@ proc tablelist::expandallSubCmd {win argList} {
 	}
 
 	#
-	# Unhide the children and invoke expandSubCmd on them
+	# Unelide the children and invoke expandSubCmd on them
 	#
 	foreach childKey $data($key-children) {
 	    set childRow [keyToRow $win $childKey]
-	    doRowConfig $childRow $win -hide 0
+	    doRowConfig $childRow $win -elide 0
 	    if {$fullExpansion} {
 		expandSubCmd $win [list $childRow -fully]
 	    } elseif {[string match "*expanded*" \
@@ -2270,7 +2275,7 @@ proc tablelist::getfullkeysSubCmd {win argList} {
 	foreach elem $first {
 	    set index [rowIndex $win $elem 0]
 	    if {$index >= 0 && $index < $data(itemCount)} {
-		lappend result [lindex $data(keyList) $index]
+		lappend result [lindex [lindex $data(itemList) $index] end]
 	    }
 	}
 
@@ -2509,16 +2514,17 @@ proc tablelist::insertchildlistSubCmd {win argList} {
     }
 
     #
-    # Hide the new items if the parent is collapsed or hidden
+    # Elide the new items if the parent is collapsed or non-viewable
     #
     set itemCount [llength $itemList]
     if {$depth != 0 &&
 	[string compare $parentKey $data(keyBeingExpanded)] != 0 &&
 	([string compare $data($parentKey,$treeCol-indent) \
 	  tablelist_${treeStyle}_collapsedImg$depth] == 0 || \
+	 [info exists data($parentKey-elide)] ||
 	 [info exists data($parentKey-hide)])} {
 	for {set n 0; set row $listIdx} {$n < $itemCount} {incr n; incr row} {
-	    doRowConfig $row $win -hide 1
+	    doRowConfig $row $win -elide 1
 	}
     }
 
@@ -2747,15 +2753,24 @@ proc tablelist::labeltagSubCmd {win argList} {
 # tablelist::moveSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::moveSubCmd {win argList} {
-    if {[llength $argList] != 2} {
-	mwutil::wrongNumArgs "$win move sourceIndex targetIndex"
+    set argCount [llength $argList]
+    if {$argCount < 2 || $argCount > 3} {
+	mwutil::wrongNumArgs "$win move sourceIndex targetIndex" \
+			     "$win move sourceIndex targetParentNodeIndex\
+			      targetChildIndex"
     }
 
     synchronize $win
     displayItems $win
     set source [rowIndex $win [lindex $argList 0] 0]
-    set target [rowIndex $win [lindex $argList 1] 1]
-    return [moveRow $win $source $target]
+    if {$argCount == 2} {
+	set target [rowIndex $win [lindex $argList 1] 1]
+	return [moveRow $win $source $target]
+    } else {
+	set targetParentKey [nodeIndexToKey $win [lindex $argList 1]]
+	set targetChildIdx [lindex $argList 2]
+	return [moveNode $win $source $targetParentKey $targetChildIdx]
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -3659,9 +3674,9 @@ proc tablelist::yviewSubCmd {win argList} {
 	    #
 	    # Command: $win yview
 	    #
-	    set totalNonHiddenCount \
-		[expr {$data(itemCount) - $data(hiddenRowCount)}]
-	    if {$totalNonHiddenCount == 0} {
+	    set totalViewableCount \
+		[expr {$data(itemCount) - $data(nonViewableRowCount)}]
+	    if {$totalViewableCount == 0} {
 		return [list 0 1]
 	    }
 	    set topTextIdx [$w index @0,0]
@@ -3677,13 +3692,13 @@ proc tablelist::yviewSubCmd {win argList} {
 	    if {[string compare [$w index @0,$y] [$w index @0,$y2]] == 0} {
 		incr btmRow -1	;# btm row incomplete in vertical direction
 	    }
-	    set upperNonHiddenCount \
-		[getNonHiddenRowCount $win 0 [expr {$topRow - 1}]]
-	    set winNonHiddenCount [getNonHiddenRowCount $win $topRow $btmRow]
-	    set fraction1 [expr {$upperNonHiddenCount/
-				 double($totalNonHiddenCount)}]
-	    set fraction2 [expr {($upperNonHiddenCount + $winNonHiddenCount)/
-				 double($totalNonHiddenCount)}]
+	    set upperViewableCount \
+		[getViewableRowCount $win 0 [expr {$topRow - 1}]]
+	    set winViewableCount [getViewableRowCount $win $topRow $btmRow]
+	    set fraction1 [expr {$upperViewableCount/
+				 double($totalViewableCount)}]
+	    set fraction2 [expr {($upperViewableCount + $winViewableCount)/
+				 double($totalViewableCount)}]
 	    return [list [format "%g" $fraction1] [format "%g" $fraction2]]
 	}
 
@@ -3692,7 +3707,7 @@ proc tablelist::yviewSubCmd {win argList} {
 	    # Command: $win yview <units>
 	    #
 	    set units [format "%d" [lindex $argList 0]]
-	    set row [nonHiddenRowOffsetToRowIndex $win $units]
+	    set row [viewableRowOffsetToRowIndex $win $units]
 	    $w yview $row
 	    adjustElidedText $win
 	    updateColors $win
@@ -3709,35 +3724,35 @@ proc tablelist::yviewSubCmd {win argList} {
 	    set argList [mwutil::getScrollInfo $argList]
 	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
 		set fraction [lindex $argList 1]
-		set totalNonHiddenCount \
-		    [expr {$data(itemCount) - $data(hiddenRowCount)}]
-		set offset [expr {int($fraction*$totalNonHiddenCount + 0.5)}]
-		set row [nonHiddenRowOffsetToRowIndex $win $offset]
+		set totalViewableCount \
+		    [expr {$data(itemCount) - $data(nonViewableRowCount)}]
+		set offset [expr {int($fraction*$totalViewableCount + 0.5)}]
+		set row [viewableRowOffsetToRowIndex $win $offset]
 		$w yview $row
 	    } else {
 		set number [lindex $argList 1]
 		if {[string compare [lindex $argList 2] "units"] == 0} {
 		    set topRow [expr {int([$w index @0,0]) - 1}]
-		    set upperNonHiddenCount \
-			[getNonHiddenRowCount $win 0 [expr {$topRow - 1}]]
-		    set offset [expr {$upperNonHiddenCount + $number}]
-		    set row [nonHiddenRowOffsetToRowIndex $win $offset]
+		    set upperViewableCount \
+			[getViewableRowCount $win 0 [expr {$topRow - 1}]]
+		    set offset [expr {$upperViewableCount + $number}]
+		    set row [viewableRowOffsetToRowIndex $win $offset]
 		    $w yview $row
 		} else {
 		    set absNumber [expr {abs($number)}]
 		    for {set n 0} {$n < $absNumber} {incr n} {
 			set topRow [expr {int([$w index @0,0]) - 1}]
 			set btmRow [expr {int([$w index @0,$data(btmY)]) - 1}]
-			set upperNonHiddenCount \
-			    [getNonHiddenRowCount $win 0 [expr {$topRow - 1}]]
-			set winNonHiddenCount \
-			    [getNonHiddenRowCount $win $topRow $btmRow]
-			set delta [expr {$winNonHiddenCount - 2}]
+			set upperViewableCount \
+			    [getViewableRowCount $win 0 [expr {$topRow - 1}]]
+			set winViewableCount \
+			    [getViewableRowCount $win $topRow $btmRow]
+			set delta [expr {$winViewableCount - 2}]
 			if {$number < 0} {
 			    set delta [expr {(-1)*$delta}]
 			}
-			set offset [expr {$upperNonHiddenCount + $delta}]
-			set row [nonHiddenRowOffsetToRowIndex $win $offset]
+			set offset [expr {$upperViewableCount + $delta}]
+			set row [viewableRowOffsetToRowIndex $win $offset]
 			$w yview $row
 		    }
 		}
@@ -3766,7 +3781,7 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 	anchor {
 	    #
 	    # Adjust the row and column indices to fit
-	    # within the existing non-hidden elements
+	    # within the existing viewable elements
 	    #
 	    adjustRowIndex $win firstRow 1
 	    adjustColIndex $win firstCol 1
@@ -3940,10 +3955,11 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 	    for {set row $firstRow; set line [expr {$firstRow + 1}]} \
 		{$row <= $lastRow} {set row $line; incr line} {
 		#
-		# Check whether the row is selectable and non-hidden
+		# Check whether the row is selectable and viewable
 		#
 		set key [lindex $data(keyList) $row]
 		if {[info exists data($key-selectable)] ||
+		    [info exists data($key-elide)] ||
 		    [info exists data($key-hide)]} {
 		    continue
 		}
@@ -4294,9 +4310,18 @@ proc tablelist::deleteRows {win first last updateListVar} {
 		incr data(rowTagRefCount) -1
 	    }
 	}
-	if {[info exists data($key-hide)]} {
+	set isElided [info exists data($key-elide)]
+	set isHidden [info exists data($key-hide)]
+	if {$isElided && $isHidden} {
+	    unset data($key-elide)
 	    unset data($key-hide)
-	    incr data(hiddenRowCount) -1
+	    incr data(nonViewableRowCount) -1
+	} elseif {$isElided} {
+	    unset data($key-elide)
+	    incr data(nonViewableRowCount) -1
+	} elseif {$isHidden} {
+	    unset data($key-hide)
+	    incr data(nonViewableRowCount) -1
 	}
 	foreach opt {-name -selectable -selectbackground -selectforeground} {
 	    if {[info exists data($key$opt)]} {
@@ -4377,6 +4402,20 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	set textIdx1 [expr {double($row)}]
     }
 
+    if {$last == $data(lastRow)} {
+	#
+	# Work around a peculiarity of the text widget:  Hide
+	# the newline character that ends the line preceding
+	# the first deleted one if it was hidden before
+	#
+	if {[lsearch -exact [$w tag names $textIdx1] elidedRow] >= 0} {
+	    $w tag add elidedRow $line.end
+	}
+	if {[lsearch -exact [$w tag names $textIdx1] hiddenRow] >= 0} {
+	    $w tag add hiddenRow $line.end
+	}
+    }
+
     if {$count == $data(itemCount)} {
 	set data(root-children) {}
     }
@@ -4441,17 +4480,18 @@ proc tablelist::deleteRows {win first last updateListVar} {
     # and of the listbox child, if necessary
     #
     if {$data(-height) <= 0} {
-	set nonHiddenRowCount [expr {$data(itemCount) - $data(hiddenRowCount)}]
-	$w configure -height $nonHiddenRowCount
-	$data(lb) configure -height $nonHiddenRowCount
+	set viewableRowCount \
+	    [expr {$data(itemCount) - $data(nonViewableRowCount)}]
+	$w configure -height $viewableRowCount
+	$data(lb) configure -height $viewableRowCount
     }
 
     #
     # Invalidate the list of row indices indicating the
-    # non-hidden rows, adjust the columns if necessary, and
+    # viewable rows, adjust the columns if necessary, and
     # schedule some operations for execution at idle time
     #
-    set data(nonHiddenRowList) {-1}
+    set data(viewableRowList) {-1}
     if {$colWidthsChanged} {
 	adjustColumns $win allCols 1
     }
@@ -4572,7 +4612,7 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
     set childCount [llength $data($parentKey-children)]
     if {$childIdx < 0} {
 	set childIdx 0
-    } elseif {$childIdx > $childCount} {
+    } elseif {$childIdx > $childCount} {	;# e.g., if $childIdx is "end"
 	set childIdx $childCount
     }
 
@@ -4741,7 +4781,8 @@ proc tablelist::displayItems win {
 	} else {
 	    $w insert $line.0 "\n"
 	}
-	if {$data(hiddenRowCount) != 0} {
+	if {$data(nonViewableRowCount) != 0} {
+	    $w tag remove elidedRow $line.0
 	    $w tag remove hiddenRow $line.0
 	}
 	set multilineData {}
@@ -4921,17 +4962,18 @@ proc tablelist::displayItems win {
     # and of the listbox child, if necessary
     #
     if {$data(-height) <= 0} {
-	set nonHiddenRowCount [expr {$data(itemCount) - $data(hiddenRowCount)}]
-	$w configure -height $nonHiddenRowCount
-	$data(lb) configure -height $nonHiddenRowCount
+	set viewableRowCount \
+	    [expr {$data(itemCount) - $data(nonViewableRowCount)}]
+	$w configure -height $viewableRowCount
+	$data(lb) configure -height $viewableRowCount
     }
 
     #
     # Invalidate the list of row indices indicating the
-    # non-hidden rows, adjust the columns if necessary, and
+    # viewable rows, adjust the columns if necessary, and
     # schedule some operations for execution at idle time
     #
-    set data(nonHiddenRowList) {-1}
+    set data(viewableRowList) {-1}
     if {$colWidthsChanged} {
 	adjustColumns $win {} 1
     }
@@ -5144,7 +5186,8 @@ proc tablelist::seeRow {win index} {
     adjustRowIndex $win index
     upvar ::tablelist::ns${win}::data data
     set key [lindex $data(keyList) $index]
-    if {$data(itemCount) == 0 || [info exists data($key-hide)]} {
+    if {$data(itemCount) == 0 || [info exists data($key-elide)] ||
+	[info exists data($key-hide)]} {
 	return ""
     }
 
@@ -5182,7 +5225,7 @@ proc tablelist::seeCell {win row col} {
     adjustRowIndex $win row
     adjustColIndex $win col
     set key [lindex $data(keyList) $row]
-    if {[info exists data($key-hide)]} {
+    if {[info exists data($key-elide)] || [info exists data($key-hide)]} {
 	return ""
     }
     if {$data(colCount) == 0} {
@@ -5363,7 +5406,7 @@ proc tablelist::rowSelection {win opt first last} {
     switch $opt {
 	anchor {
 	    #
-	    # Adjust the index to fit within the existing non-hidden items
+	    # Adjust the index to fit within the existing viewable items
 	    #
 	    adjustRowIndex $win first 1
 
@@ -5474,10 +5517,11 @@ proc tablelist::rowSelection {win opt first last} {
 	    for {set row $first; set line [expr {$first + 1}]} \
 		{$row <= $last} {set row $line; incr line} {
 		#
-		# Check whether the row is selectable and non-hidden
+		# Check whether the row is selectable and viewable
 		#
 		set key [lindex $data(keyList) $row]
 		if {[info exists data($key-selectable)] ||
+		    [info exists data($key-elide)] ||
 		    [info exists data($key-hide)]} {
 		    continue
 		}

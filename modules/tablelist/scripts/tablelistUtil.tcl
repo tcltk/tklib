@@ -229,9 +229,9 @@ proc tablelist::cellIndex {win idx checkRange} {
 # tablelist::adjustRowIndex
 #
 # Sets the row index specified by $rowName to the index of the nearest
-# (non-hidden) row.
+# (viewable) row.
 #------------------------------------------------------------------------------
-proc tablelist::adjustRowIndex {win rowName {forceNonHidden 0}} {
+proc tablelist::adjustRowIndex {win rowName {forceViewable 0}} {
     upvar ::tablelist::ns${win}::data data $rowName row
 
     #
@@ -247,18 +247,20 @@ proc tablelist::adjustRowIndex {win rowName {forceNonHidden 0}} {
 	set _row 0
     }
 
-    if {$forceNonHidden} {
+    if {$forceViewable} {
 	set _rowSav $_row
 	for {} {$_row < $data(itemCount)} {incr _row} {
 	    set key [lindex $data(keyList) $_row]
-	    if {![info exists data($key-hide)]} {
+	    if {![info exists data($key-elide)] &&
+		![info exists data($key-hide)]} {
 		set row $_row
 		return ""
 	    }
 	}
 	for {set _row [expr {$_rowSav - 1}]} {$_row >= 0} {incr _row -1} {
 	    set key [lindex $data(keyList) $_row]
-	    if {![info exists data($key-hide)]} {
+	    if {![info exists data($key-elide)] &&
+		![info exists data($key-hide)]} {
 		set row $_row
 		return ""
 	    }
@@ -273,9 +275,9 @@ proc tablelist::adjustRowIndex {win rowName {forceNonHidden 0}} {
 # tablelist::adjustColIndex
 #
 # Sets the column index specified by $colName to the index of the nearest
-# (non-hidden) column.
+# (viewable) column.
 #------------------------------------------------------------------------------
-proc tablelist::adjustColIndex {win colName {forceNonHidden 0}} {
+proc tablelist::adjustColIndex {win colName {forceViewable 0}} {
     upvar ::tablelist::ns${win}::data data $colName col
 
     #
@@ -291,7 +293,7 @@ proc tablelist::adjustColIndex {win colName {forceNonHidden 0}} {
 	set _col 0
     }
 
-    if {$forceNonHidden} {
+    if {$forceViewable} {
 	set _colSav $_col
 	for {} {$_col < $data(colCount)} {incr _col} {
 	    if {!$data($_col-hide)} {
@@ -2260,13 +2262,17 @@ proc tablelist::adjustSeps win {
     # Get the height to be applied to the separators
     #
     set w $data(body)
-    set textIdx [$w index @0,$data(btmY)]
-    set dlineinfo [$w dlineinfo $textIdx]
-    if {$data(itemCount) == 0 || [string compare $dlineinfo ""] == 0} {
-	set sepHeight 1
+    if {$data(-fullseparators)} {
+	set sepHeight [winfo height $w]
     } else {
-	foreach {x y width height baselinePos} $dlineinfo {}
-	set sepHeight [expr {$y + $height}]
+	set textIdx [$w index @0,$data(btmY)]
+	set dlineinfo [$w dlineinfo $textIdx]
+	if {$data(itemCount) == 0 || [string compare $dlineinfo ""] == 0} {
+	    set sepHeight 1
+	} else {
+	    foreach {x y width height baselinePos} $dlineinfo {}
+	    set sepHeight [expr {$y + $height}]
+	}
     }
 
     #
@@ -2801,7 +2807,7 @@ proc tablelist::computeColWidth {win col} {
 	}
 
 	set key [lindex $item end]
-	if {[info exists data($key-hide)]} {
+	if {[info exists data($key-elide)] || [info exists data($key-hide)]} {
 	    continue
 	}
 
@@ -3138,7 +3144,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 
 	set name [winfo name $path]
 	foreach {key col} [split [string range $name 4 end] ","] {}
-	if {[info exists data($key-hide)]} {
+	if {[info exists data($key-elide)] || [info exists data($key-hide)]} {
 	    continue
 	}
 
@@ -3494,7 +3500,8 @@ proc tablelist::adjustElidedText win {
 	for {set line $topLine; set row [expr {$line - 1}]} \
 	    {$line <= $btmLine} {set row $line; incr line} {
 	    set key [lindex $data(keyList) $row]
-	    if {[info exists data($key-hide)]} {
+	    if {[info exists data($key-elide)] ||
+		[info exists data($key-hide)]} {
 		continue
 	    }
 
@@ -3525,7 +3532,8 @@ proc tablelist::adjustElidedText win {
 	    for {set line $btmLine; set row [expr {$line - 1}]} \
 		{$line >= $topLine} {set line $row; incr row -1} {
 		set key [lindex $data(keyList) $row]
-		if {[info exists data($key-hide)]} {
+		if {[info exists data($key-elide)] ||
+		    [info exists data($key-hide)]} {
 		    continue
 		}
 
@@ -3602,7 +3610,8 @@ proc tablelist::adjustElidedText win {
 	for {set line $topLine; set row [expr {$line - 1}]} \
 	    {$line <= $btmLine} {set row $line; incr line} {
 	    set key [lindex $data(keyList) $row]
-	    if {![info exists data($key-hide)]} {
+	    if {![info exists data($key-elide)] &&
+		![info exists data($key-hide)]} {
 		if {[findTabs $win $line $firstCol $lastCol tabIdx1 tabIdx2]} {
 		    $w tag add elidedCol $tabIdx1 $tabIdx2+1c
 		}
@@ -3619,7 +3628,8 @@ proc tablelist::adjustElidedText win {
 	    for {set line $btmLine; set row [expr {$line - 1}]} \
 		{$line >= $topLine} {set line $row; incr row -1} {
 		set key [lindex $data(keyList) $row]
-		if {![info exists data($key-hide)]} {
+		if {![info exists data($key-elide)] &&
+		    ![info exists data($key-hide)]} {
 		    if {[findTabs $win $line $firstCol $lastCol \
 			 tabIdx1 tabIdx2]} {
 			$w tag add elidedCol $tabIdx1 $tabIdx2+1c
@@ -3892,6 +3902,9 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 	    }
 	}
 
+	if {[info exists data($key-elide)]} {
+	    $w tag add elidedRow $line.0 $line.end+1c
+	}
 	if {[info exists data($key-hide)]} {
 	    $w tag add hiddenRow $line.0 $line.end+1c
 	}
@@ -3997,7 +4010,8 @@ proc tablelist::redisplayCol {win col first last} {
 
 	set item [lindex $data(itemList) $row]
 	set key [lindex $item end]
-	if {!$allRows && [info exists data($key-hide)]} {
+	if {!$allRows && ([info exists data($key-elide)] ||
+			  [info exists data($key-hide)])} {
 	    continue
 	}
 
@@ -4099,7 +4113,8 @@ proc tablelist::makeStripes win {
 	for {set row 0; set line 1} {$row < $data(itemCount)} \
 	    {set row $line; incr line} {
 	    set key [lindex $data(keyList) $row]
-	    if {![info exists data($key-hide)]} {
+	    if {![info exists data($key-elide)] &&
+		![info exists data($key-hide)]} {
 		if {$inStripe} {
 		    $w tag add stripe $line.0 $line.end
 		}
@@ -4159,7 +4174,8 @@ proc tablelist::showLineNumbers win {
 	    set item [lreplace $item $col $col $line]
 	    lappend newItemList $item
 	    set key [lindex $item end]
-	    if {![info exists data($key-hide)]} {
+	    if {![info exists data($key-elide)] &&
+		![info exists data($key-hide)]} {
 		incr line
 	    }
 	}
@@ -4894,20 +4910,21 @@ proc tablelist::scrlColOffsetToXOffset {win scrlColOffset} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::getNonHiddenRowCount
+# tablelist::getViewableRowCount
 #
-# Returns the number of non-hidden rows of the tablelist widget win in the
+# Returns the number of viewable rows of the tablelist widget win in the
 # specified range.
 #------------------------------------------------------------------------------
-proc tablelist::getNonHiddenRowCount {win first last} {
+proc tablelist::getViewableRowCount {win first last} {
     upvar ::tablelist::ns${win}::data data
-    if {$data(hiddenRowCount) == 0} {
+    if {$data(nonViewableRowCount) == 0} {
 	return [expr {$last - $first + 1}]
     } else {
 	set count 0
 	for {set row $first} {$row <= $last} {incr row} {
 	    set key [lindex $data(keyList) $row]
-	    if {![info exists data($key-hide)]} {
+	    if {![info exists data($key-elide)] &&
+		![info exists data($key-hide)]} {
 		incr count
 	    }
 	}
@@ -4917,41 +4934,42 @@ proc tablelist::getNonHiddenRowCount {win first last} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::nonHiddenRowOffsetToRowIndex
+# tablelist::viewableRowOffsetToRowIndex
 #
-# Returns the row index corresponding to the given non-hidden row offset in the
+# Returns the row index corresponding to the given viewable row offset in the
 # tablelist widget win.
 #------------------------------------------------------------------------------
-proc tablelist::nonHiddenRowOffsetToRowIndex {win offset} {
+proc tablelist::viewableRowOffsetToRowIndex {win offset} {
     upvar ::tablelist::ns${win}::data data
-    if {$data(hiddenRowCount) == 0} {
+    if {$data(nonViewableRowCount) == 0} {
 	return $offset
     } else {
 	#
-	# Rebuild the list data(nonHiddenRowList) of the row
-	# indices indicating the non-hidden rows if needed
+	# Rebuild the list data(viewableRowList) of the row
+	# indices indicating the viewable rows if needed
 	#
-	if {[lindex $data(nonHiddenRowList) 0] == -1} {
-	    set data(nonHiddenRowList) {}
+	if {[lindex $data(viewableRowList) 0] == -1} {
+	    set data(viewableRowList) {}
 	    for {set row 0} {$row < $data(itemCount)} {incr row} {
 		set key [lindex $data(keyList) $row]
-		if {![info exists data($key-hide)]} {
-		    lappend data(nonHiddenRowList) $row
+		if {![info exists data($key-elide)] &&
+		    ![info exists data($key-hide)]} {
+		    lappend data(viewableRowList) $row
 		}
 	    }
 	}
 
-	set nonHiddenCount [llength $data(nonHiddenRowList)]
-	if {$nonHiddenCount == 0} {
+	set viewableCount [llength $data(viewableRowList)]
+	if {$viewableCount == 0} {
 	    return 0
 	} else {
-	    if {$offset >= $nonHiddenCount} {
-		set offset [expr {$nonHiddenCount - 1}]
+	    if {$offset >= $viewableCount} {
+		set offset [expr {$viewableCount - 1}]
 	    }
 	    if {$offset < 0} {
 		set offset 0
 	    }
-	    return [lindex $data(nonHiddenRowList) $offset]
+	    return [lindex $data(viewableRowList) $offset]
 	}
     }
 }
