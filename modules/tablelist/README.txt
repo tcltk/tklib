@@ -1,4 +1,4 @@
-               The Multi-Column Listbox Package Tablelist
+       The Multi-Column Listbox and Tree Widget Package Tablelist
 
                                    by
 
