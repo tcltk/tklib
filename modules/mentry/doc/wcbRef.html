@@ -1,0 +1,1143 @@
+<html>
+<head>
+  <title>Wcb Command Reference</title>
+
+  <meta name="Author" content="Csaba Nemethi">
+  <meta name="Keywords" content=
+  "callback, widget, Tk entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox, tile combobox, listbox, tablelist, text, ctext">
+  </head>
+
+<body bgcolor="#FFFFFF">
+  <div align="center">
+    <h1>Wcb Command Reference</h1>
+
+    <h3>by</h3>
+
+    <h2>Csaba Nemethi</h2>
+
+    <address>
+      <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
+    </address>
+  </div>
+
+  <hr>
+
+  <h2><a name="contents"></a>Contents</h2>
+
+  <ul>
+    <li><a href="#callback">The <code><b>wcb::callback</b></code>
+    Command</a></li>
+
+    <li><a href="#cbappend">The <code><b>wcb::cbappend</b></code>
+    Command</a></li>
+
+    <li><a href="#cbprepend">The <code><b>wcb::cbprepend</b></code>
+    Command</a></li>
+
+    <li><a href="#cancel">The <code><b>wcb::cancel</b></code> Command</a></li>
+
+    <li><a href="#canceled">The <code><b>wcb::canceled</b></code>
+    Command</a></li>
+
+    <li><a href="#extend">The <code><b>wcb::extend</b></code> Command</a></li>
+
+    <li><a href="#replace">The <code><b>wcb::replace</b></code>
+    Command</a></li>
+
+    <li><a href="#pathname">The <code><b>wcb::pathname</b></code>
+    Command</a></li>
+
+    <li><a href="#changeEntryText">The <code><b>wcb::changeEntryText</b></code>
+    Command</a></li>
+
+    <li><a href="#postInsertEntryLen">The
+    <code><b>wcb::postInsertEntryLen</b></code> Command</a></li>
+
+    <li><a href="#postInsertEntryText">The
+    <code><b>wcb::postInsertEntryText</b></code> Command</a></li>
+
+    <li><a href="#postDeleteEntryText">The
+    <code><b>wcb::postDeleteEntryText</b></code> Command</a></li>
+
+    <li><a href="#entrycb">Before-<code><b>insert</b></code> Callbacks for Tk
+    entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox, and tile
+    combobox Widgets</a></li>
+
+    <li><a href="#textcb">Before-<code><b>insert</b></code> Callbacks for text
+    and ctext Widgets</a></li>
+  </ul>
+
+  <div align="center">
+    <p><a href="index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2><a name="callback"></a>The <code><b>wcb::callback</b></code> Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>wcb::callback</code> - Retrieve, set, and remove widget
+    callbacks</dd>
+
+    <dt><br>
+    <b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>wcb::callback</b> <i>widgetName</i> <b>before</b>|<b>after</b> <i>option</i> ?<i>callback</i> <i>callback</i> ...?
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>
+      Retrieves, sets, or removes the callbacks for the Tk or tile entry,
+      BWidget Entry, Tk or tile spinbox, tile combobox, listbox, tablelist,
+      text, or ctext widget <code><i>widgetName</i></code>, the argument
+      <code><b>before</b></code> or <code><b>after</b></code>, and the command
+      corresponding to <code><i>option</i></code>.&nbsp; The values of the
+      <code><i>option</i></code> argument can be:<br>
+      &nbsp;
+
+      <ul>
+        <li><code><b>insert</b></code>, <code><b>delete</b></code>, or
+        <code><b>motion</b></code>, for a Tk or tile entry, BWidget Entry, Tk
+        or tile spinbox, tile combobox, text, or ctext widget;</li>
+
+	<li><code><b>replace</b></code>, for a text or ctext widget;</li>
+
+        <li><code><b>activate</b></code>, for a listbox or tablelist
+        widget;</li>
+
+        <li><code><b>selset</b></code> or <code><b>selclear</b></code>, for a
+        listbox, tablelist, text, or ctext widget;</li>
+
+        <li><code><b>activatecell</b></code>, <code><b>cellselset</b></code>,
+        or <code><b>cellselclear</b></code>, for a tablelist widget.</li>
+      </ul>
+    </dd>
+
+    <dd><br>
+    If no arguments after the <code><i>option</i></code> parameter are
+    specified, then the procedure just returns the current before- or
+    after-callback list, respectively, for the given widget operation.</dd>
+
+    <dd>
+      <br>
+      Otherwise:<br>
+      &nbsp;
+
+      <ul>
+        <li>If at least one of the arguments following the
+        <code><i>option</i></code> parameter is a nonempty string, then:<br>
+          &nbsp;
+
+          <ul>
+            <li>if called for the first time for this widget with at least one
+            nonempty argument following the <code><i>option</i></code>
+            parameter, then the procedure renames the Tcl command
+            <code><i>widgetName</i></code> to <code>_<i>widgetName</i></code>
+            and builds a new procedure <code><i>widgetName</i></code>, in which
+            the execution of the widget operations associated with the above
+            values of <code><i>option</i></code> is preceded by invocations of
+            the corresponding before-callbacks and followed by calls to the
+            corresponding after-callbacks, in the global scope;<br>
+            &nbsp;</li>
+
+            <li>it sets the callback list to the one built from these arguments
+            and returns the new list.<br>
+            &nbsp;</li>
+          </ul>
+        </li>
+
+        <li>If all arguments following the <code><i>option</i></code> parameter
+        are empty, then the procedure unregisters all the corresponding before-
+        or after-callbacks for the given widget and returns an empty
+        string.</li>
+      </ul>
+
+      <p>When a callback is invoked, the name of the original Tcl command for
+      the widget <code><i>widgetName</i></code> as well as the command
+      arguments are automatically appended to it as parameters.</p>
+
+      <p>The following table shows the widget subcommands corresponding to the
+      above values of <code><i>option</i></code>, together with the arguments
+      of these subcommands:</p>
+      
+      <br>
+      <a name="callback_table"></a>
+      <table border="2" cellspacing="0" cellpadding="4">
+        <tr bgcolor="#FFFFE0">
+          <th align="left">Widget</th>
+          <th align="left"><code><i>option</i></code></th>
+          <th align="left">Subcommand</th>
+          <th align="left">Arguments</th>
+        </tr>
+
+        <tr>
+          <td rowspan="3">Tk or tile entry,<br>
+          BWidget Entry,<br>
+          Tk or tile spinbox,<br>
+          or tile combobox</td>
+          <td><code><b>insert</b></code></td>
+          <td><code><b>insert</b></code></td>
+          <td><code><i>index</i> <i>string</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>delete</b></code></td>
+          <td><code><b>delete</b></code></td>
+          <td><code><i>from</i> ?<i>to</i>?</code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>motion</b></code></td>
+          <td><code><b>icursor</b></code></td>
+          <td><code><i>index</i></code></td>
+        </tr>
+
+        <tr>
+          <td rowspan="3">listbox</td>
+          <td><code><b>activate</b></code></td>
+          <td><code><b>activate</b></code></td>
+          <td><code><i>index</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>selset</b></code></td>
+          <td><code><b>selection set</b></code></td>
+          <td><code><i>first</i> ?<i>last</i>?</code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>selclear</b></code></td>
+          <td><code><b>selection clear</b></code></td>
+          <td><code><i>first</i> ?<i>last</i>?</code></td>
+        </tr>
+
+        <tr>
+          <td rowspan="6">tablelist</td>
+          <td><code><b>activate</b></code></td>
+          <td><code><b>activate</b></code></td>
+          <td><code><i>index</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>selset</b></code></td>
+          <td><code><b>selection set</b></code></td>
+          <td><code><i>first</i> ?<i>last</i>?</code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>selclear</b></code></td>
+          <td><code><b>selection clear</b></code></td>
+          <td><code><i>first</i> ?<i>last</i>?</code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>activatecell</b></code></td>
+          <td><code><b>activatecell</b></code></td>
+          <td><code><i>cellIndex</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>cellselset</b></code></td>
+          <td><code><b>cellselection set</b></code></td>
+          <td><code><i>first</i> ?<i>last</i>?</code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>cellselclear</b></code></td>
+          <td><code><b>cellselection clear</b></code></td>
+          <td><code><i>first</i> ?<i>last</i>?</code></td>
+        </tr>
+
+        <tr>
+          <td rowspan="6">text or ctext</td>
+          <td><code><b>insert</b></code></td>
+          <td><code><b>insert</b></code></td>
+          <td><code><i>index</i> <i>string</i> ?<i>tagList</i> <i>string</i>
+          <i>tagList</i> ...?</code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>delete</b></code></td>
+          <td><code><b>delete</b></code></td>
+          <td><code><i>from</i> ?<i>to</i>?</code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>replace</b></code></td>
+          <td><code><b>replace</b></code></td>
+          <td><code><i>from</i> <i>to</i> <i>string</i> ?<i>tagList</i>
+          <i>string</i> <i>tagList</i> ...?</code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>motion</b></code></td>
+          <td><code><b>mark set insert</b></code></td>
+          <td><code><i>index</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>selset</b></code></td>
+          <td><code><b>tag add sel</b></code></td>
+          <td><code><i>from</i> ?<i>to</i> <i>from</i> <i>to</i>
+          ...?</code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>selclear</b></code></td>
+          <td><code><b>tag remove sel</b></code></td>
+          <td><code><i>from</i> ?<i>to</i> <i>from</i> <i>to</i>
+          ...?</code></td>
+        </tr>
+      </table>
+
+      <br>
+      <h4>REMARKS:</h4>
+
+      <ol>
+        <li>You may abbreviate the words <code><b>before</b></code>,
+        <code><b>after</b></code>, <code><b>insert</b></code>,
+        <code><b>delete</b></code>, <code><b>replace</b></code>,
+        <code><b>motion</b></code>, and <code><b>activate</b></code> (the
+        latter for listbox widgets only) to a minimum of one character.&nbsp;
+        Similarly, the first four characters of the words
+        <code><b>selset</b></code> and <code><b>selclear</b></code>, the first
+        eight characters of <code><b>cellselset</b></code> and
+        <code><b>cellselclear</b></code>, and the first nine characters of
+        <code><b>activatecell</b></code> are sufficient for Wcb to recognize
+        these options.<br>
+        &nbsp;</li>
+
+        <li>After a successful invocation of this command with at least one
+        nonempty callback following the <code><i>option</i></code> argument,
+        you can use either the new procedure <code><i>widgetName</i></code> or
+        the original Tcl command <code>_<i>widgetName</i></code> to perform any
+        valid operation on the widget <code><i>widgetName</i></code>.&nbsp; Use
+        the old Tcl command <code>_<i>widgetName</i></code> if you want to
+        prevent the callbacks from being invoked when executing the respective
+        widget subcommand.<br>
+        &nbsp;</li>
+
+        <li>When destroying a widget <code><i>widgetName</i></code> for which
+        <code><b>wcb::callback</b></code> has replaced the corresponding Tcl
+        command with a new procedure, the original command
+        <code>_<i>widgetName</i></code> is deleted automatically by the Tcl
+        interpreter (this is not true in the case of a BWidget Entry,
+        tablelist, or ctext widget).&nbsp; The new widget procedure
+        <code><i>widgetName</i></code> would persist, but Wcb arranges for it
+        to be deleted from within a cleanup script bound to the
+        <code><b>&lt;Destroy&gt;</b></code> event.&nbsp; This cleanup script is
+        associated with a binding tag called <code><b>WcbCleanup</b></code>,
+        which is appended to the list of binding tags of the widget the first
+        time when registering some callbacks for it.&nbsp; (In the case of a
+        BWidget Entry, tablelist, or ctext widget, this script also deletes the
+        original Tcl command <code>_<i>widgetName</i></code>.)<br>
+        &nbsp;</li>
+
+        <li>The cleanup script mentioned above also unregisters all callbacks
+        defined for <code><i>widgetName</i></code>, thus ensuring that a widget
+        with the same path created later will not inherit them from the widget
+        just deleted (this can be important in some applications).&nbsp; For
+        this reason, you should be careful not to remove
+        <code><b>WcbCleanup</b></code> from the list of binding tags of the
+        given widget!</li>
+      </ol>
+    </dd>
+
+    <dt><br>
+    <b>KEYWORDS</b></dt>
+
+    <dd>callback, widget, Tk entry, tile entry, BWidget Entry, Tk spinbox, tile
+    spinbox, tile combobox, listbox, tablelist, text, ctext</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2><a name="cbappend"></a>The <code><b>wcb::cbappend</b></code> Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>wcb::cbappend</code> - Append to a callback list</dd>
+
+    <dt><br>
+    <b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>wcb::cbappend</b> <i>widgetName</i> <b>before</b>|<b>after</b> <i>option</i> ?<i>callback</i> <i>callback</i> ...?
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>This command is almost identical to <code><b><a href=
+    "#callback">wcb::callback</a></b></code>.&nbsp; The only difference is that
+    <code><b>wcb::cbappend</b></code> <i>appends</i> the arguments specified
+    after the <code><i>option</i></code> parameter to the current callback list
+    (if present), while <code><b>wcb::callback</b></code> <i>replaces</i> the
+    old callbacks with these arguments.</dd>
+
+    <dt><br>
+    <b>KEYWORDS</b></dt>
+
+    <dd>callback, append, widget</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2><a name="cbprepend"></a>The <code><b>wcb::cbprepend</b></code>
+  Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>wcb::cbprepend</code> - Prepend to a callback list</dd>
+
+    <dt><br>
+    <b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>wcb::cbprepend</b> <i>widgetName</i> <b>before</b>|<b>after</b> <i>option</i> ?<i>callback</i> <i>callback</i> ...?
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>This command is almost identical to <code><b><a href=
+    "#callback">wcb::callback</a></b></code>.&nbsp; The only difference is that
+    <code><b>wcb::cbprepend</b></code> <i>prepends</i> the arguments specified
+    after the <code><i>option</i></code> parameter to the current callback list
+    (if present), while <code><b>wcb::callback</b></code> <i>replaces</i> the
+    old callbacks with these arguments.</dd>
+
+    <dt><br>
+    <b>KEYWORDS</b></dt>
+
+    <dd>callback, prepend, widget</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2><a name="cancel"></a>The <code><b>wcb::cancel</b></code> Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>wcb::cancel</code> - Cancel a widget command</dd>
+
+    <dt><br>
+    <b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>wcb::cancel</b> ?<i>script</i>?
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>
+      This procedure is designed to be invoked from a before-callback for a
+      widget command.&nbsp; It cancels the execution of that command and of the
+      remaining callbacks, and evaluates the <code><i>script</i></code>
+      argument in the global scope.&nbsp; If this argument is not specified, it
+      defaults to the <code><b>bell</b></code> command.
+
+      <p>The return value is the one obtained from <code><i>script</i></code>
+      if this argument is specified and nonempty.&nbsp; Otherwise, the command
+      returns an empty string.</p>
+    </dd>
+
+    <dt><b>KEYWORDS</b></dt>
+
+    <dd>cancel, command, widget</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2><a name="canceled"></a>The <code><b>wcb::canceled</b></code> Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>wcb::canceled</code> - Query the canceled status of a widget
+    command</dd>
+
+    <dt><br>
+    <b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>wcb::canceled</b> <i>widgetName</i> <i>option</i>
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>Returns the value <code>1</code> if the most recent invocation of the
+    widget operation corresponding to <code><i>widgetName</i></code> and
+    <code><i>option</i></code> has been aborted by some before-callback by
+    invoking <code><b><a href="#cancel">wcb::cancel</a></b></code>; otherwise,
+    the return value is <code>0</code>.&nbsp; The arguments must fulfil the
+    same restrictions as in the case of the <code><b><a href=
+    "#callback">wcb::callback</a></b></code> command.</dd>
+
+    <dt><br>
+    <b>KEYWORDS</b></dt>
+
+    <dd>cancel, command, widget</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2><a name="extend"></a>The <code><b>wcb::extend</b></code> Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>wcb::extend</code> - Extend the argument list of a widget
+    command</dd>
+
+    <dt><br>
+    <b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>wcb::extend</b> ?<i>arg</i> <i>arg</i> ...?
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>
+      This procedure is designed to be invoked from a before-callback for a
+      widget command.&nbsp; It appends the values given in the optional
+      <code><i>arg</i></code> parameters to the argument list of that
+      command.&nbsp; The new argument list will be passed to the remaining
+      callbacks for that command, too.
+
+      <p>This procedure simply passes its parameters to the
+      <code><b>lappend</b></code> command, called for the argument list of the
+      respective widget operation.</p>
+    </dd>
+
+    <dt><b>KEYWORDS</b></dt>
+
+    <dd>extend, argument, command, widget</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2><a name="replace"></a>The <code><b>wcb::replace</b></code> Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>wcb::replace</code> - Replace arguments of a widget command with
+    new ones</dd>
+
+    <dt><br>
+    <b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>wcb::replace</b> <i>first</i> <i>last</i> ?<i>arg</i> <i>arg</i> ...?
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>
+      This procedure is designed to be invoked from a before-callback for a
+      widget command.&nbsp; It replaces the arguments having the indices
+      <code><i>first</i></code> through <code><i>last</i></code> of that
+      command with the optional <code><i>arg</i></code> parameters.&nbsp; The
+      new argument list will be passed to the remaining callbacks for that
+      command, too.&nbsp; The arguments are numbered from <code>0</code> (see
+      the <a href="#callback_table">table</a> in the description of the
+      <code><b><a href="#callback">wcb::callback</a></b></code> command).
+
+      <p>This procedure simply passes its parameters to the
+      <code><b>lreplace</b></code> command, called for the argument list of the
+      respective widget operation.</p>
+    </dd>
+
+    <dt><b>KEYWORDS</b></dt>
+
+    <dd>replace, argument, command, widget</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2><a name="pathname"></a>The <code><b>wcb::pathname</b></code> Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>wcb::pathname</code> - Query the path name of the widget
+    corresponding to a Tcl command name</dd>
+
+    <dt><br>
+    <b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>wcb::pathname</b> <i>origCmd</i>
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>
+      This procedure returns the path name of the widget corresponding to the
+      Tcl command name <code><i>origCmd</i></code> passed to a callback.
+
+      <p>When a before- or after-callback for a widget is invoked, the name of
+      the original Tcl command associated with that widget is automatically
+      appended to it as parameter.&nbsp; This procedure can be used within a
+      callback to derive the path name of the widget from the command name
+      passed to the callback as argument.&nbsp; It simply returns the string
+      range obtained from <code><i>origCmd</i></code> by removing the
+      <code>"::_"</code> prefix.</p>
+    </dd>
+
+    <dt><b>KEYWORDS</b></dt>
+
+    <dd>path name, command, widget</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2><a name="changeEntryText"></a>The
+  <code><b>wcb::changeEntryText</b></code> Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>wcb::changeEntryText</code> - Change the text of a Tk or tile
+    entry, BWidget Entry, Tk or tile spinbox, or tile combobox widget</dd>
+
+    <dt><br>
+    <b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>wcb::changeEntryText</b> <i>widgetName string</i>
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>
+      Replaces the text of the Tk or tile entry, BWidget Entry, Tk or tile
+      spinbox, or tile combobox widget <code><i>widgetName</i></code> with
+      <code><i>string</i></code>, by using the <code><b>delete</b></code> and
+      <code><b>insert</b></code> operations.&nbsp; If the first subcommand is
+      canceled by some before-<code><b>delete</b></code> callback then the
+      procedure returns without inserting the new text; if the second operation
+      is canceled by some before-<code><b>insert</b></code> callback then the
+      command restores the original contents of the widget.
+
+      <p>The procedure keeps the position of the insertion cursor.&nbsp; The
+      return value is <code>1</code> on success and <code>0</code> on failure,
+      i.e., if one of the attempted operations was canceled by some
+      before-callback.</p>
+    </dd>
+
+    <dt><b>KEYWORDS</b></dt>
+
+    <dd>Tk entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox, tile
+    combobox, widget</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2><a name="postInsertEntryLen"></a>The
+  <code><b>wcb::postInsertEntryLen</b></code> Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>wcb::postInsertEntryLen</code> - Query the would-be length of the
+    text in a Tk or tile entry, BWidget Entry, Tk or tile spinbox, or tile
+    combobox widget after text insertion</dd>
+
+    <dt><br>
+    <b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>wcb::postInsertEntryLen</b> <i>widgetName string</i>
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>Returns the length of the text that would be contained in the Tk or
+    tile entry, BWidget Entry, Tk or tile spinbox, or tile combobox widget
+    <code><i>widgetName</i></code> after inserting
+    <code><i>string</i></code>.</dd>
+
+    <dt><br>
+    <b>KEYWORDS</b></dt>
+
+    <dd>insert, Tk entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox,
+    tile combobox, widget</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2><a name="postInsertEntryText"></a>The
+  <code><b>wcb::postInsertEntryText</b></code> Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>wcb::postInsertEntryText</code> - Query the would-be text of a Tk
+    or tile entry, BWidget Entry, Tk or tile spinbox, or tile combobox widget
+    after text insertion</dd>
+
+    <dt><br>
+    <b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>wcb::postInsertEntryText</b> <i>widgetName index string</i>
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>Returns the text that would be contained in the Tk or tile entry,
+    BWidget Entry, Tk or tile spinbox, or tile combobox widget
+    <code><i>widgetName</i></code> after inserting <code><i>string</i></code>
+    before the character indicated by <code><i>index</i></code>.</dd>
+
+    <dt><br>
+    <b>KEYWORDS</b></dt>
+
+    <dd>insert, Tk entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox,
+    tile combobox, widget</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2><a name="postDeleteEntryText"></a>The
+  <code><b>wcb::postDeleteEntryText</b></code> Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>wcb::postDeleteEntryText</code> - Query the would-be text of a Tk
+    or tile entry, BWidget Entry, Tk or tile spinbox, or tile combobox widget
+    after text deletion</dd>
+
+    <dt><br>
+    <b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>wcb::postDeleteEntryText</b> <i>widgetName from</i> ?<i>to</i>?
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>
+      Returns the text that would be contained in the Tk or tile entry,
+      BWidget Entry, Tk or tile spinbox, or tile combobox widget
+      <code><i>widgetName</i></code> after deleting the characters starting
+      with the one indicated by the index <code><i>from</i></code> and stopping
+      just before <code><i>to</i></code>.&nbsp; If <code><i>to</i></code> is
+      not specified then the return value is the text that would be contained
+      in the widget after deleting the single character given by
+      <code><i>from</i></code>.
+
+      <p><b>REMARK:</b>&nbsp; This command has a variable number (2 or 3) of
+      arguments, because the <code><b>delete</b></code> subcommand of the Tcl
+      command associated with <code><i>widgetName</i></code> expects either one
+      or two indices as arguments.&nbsp; For this reason, the correct way to
+      invoke this command from within a before-<code><b>delete</b></code>
+      callback is as shown in the following example:
+
+      <blockquote>
+        <pre>
+proc myBeforeDeleteCallback {w args} {
+    #
+    # Get the text that would be contained in the widget after
+    # deleting the characters specified by $args, which stands
+    # for the one or two arguments passed to delete; pass these
+    # arguments to wcb::postDeleteEntryText by expanding $args
+    #
+    set newText [eval [list wcb::postDeleteEntryText $w] $args]
+    if {!<i>some_condition_on_</i>$newText} {
+        wcb::cancel
+    }
+}
+</pre>
+      </blockquote>
+
+      <p>The following alternative, more elegant solution requires Tcl/Tk 8.5
+      or later:</p>
+
+      <blockquote>
+        <pre>
+proc myBeforeDeleteCallback {w args} {
+    # . . .
+    set newText [wcb::postDeleteEntryText $w {*}$args]
+    . . .
+}
+</pre>
+      </blockquote>
+    </dd>
+
+    <dt><b>KEYWORDS</b></dt>
+
+    <dd>delete, Tk entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox,
+    tile combobox, widget</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2><a name="entrycb"></a>Before-<code><b>insert</b></code> Callbacks for Tk
+  entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox, and tile combobox
+  Widgets</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>wcb::checkStrFor*</code>, <code>wcb::convStrTo*</code>,
+    <code>wcb::checkEntryFor*</code>, <code>wcb::checkEntryLen</code> -
+    Before-<code><b>insert</b></code> callbacks for Tk entry, tile entry,
+    BWidget Entry, Tk spinbox, tile spinbox, and tile combobox widgets</dd>
+
+    <dt><br>
+    <b>SYNOPSIS</b><br>
+    &nbsp;</dt>
+
+    <dd>
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td><code><b>wcb::checkStrForRegExp</b></code></td>
+          <td align="right"><code><i>exp w idx str</i></code></td>
+        </tr>
+
+        <tr>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::checkStrForAlpha</b></code></td>
+          <td align="right"><code><i>w idx str</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::checkStrForNum</b></code></td>
+          <td align="right"><code><i>w idx str</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::checkStrForAlnum</b></code></td>
+          <td align="right"><code><i>w idx str</i></code></td>
+        </tr>
+
+        <tr>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::convStrToUpper</b></code></td>
+          <td align="right"><code><i>w idx str</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::convStrToLower</b></code></td>
+          <td align="right"><code><i>w idx str</i></code></td>
+        </tr>
+
+        <tr>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::checkEntryForInt</b></code></td>
+          <td align="right"><code><i>w idx str</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::checkEntryForUInt</b></code></td>
+          <td align="right"><code><i>max w idx str</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::checkEntryForReal</b></code></td>
+          <td align="right"><code><i>w idx str</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::checkEntryForFixed</b>&nbsp;</code></td>
+          <td align="right"><code><i>cnt w idx str</i></code></td>
+        </tr>
+
+        <tr>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::checkEntryLen</b></code></td>
+          <td align="right"><code><i>len w idx str</i></code></td>
+        </tr>
+      </table>
+    </dd>
+
+    <dt><br>
+    <b>DESCRIPTION</b></dt>
+
+    <dd>
+      The <code><b>wcb::checkStrForRegExp</b></code> callback checks whether
+      the string <code><i>str</i></code> to be inserted into the Tk or tile
+      entry, BWidget Entry, Tk or tile spinbox, or tile combobox widget
+      <code><i>w</i></code> is matched by the regular expression
+      <code><i>exp</i></code>; if not, it cancels the
+      <code><b>insert</b></code> operation.
+
+      <p>The three other <code><b>wcb::checkStrFor*</b></code> callbacks check
+      whether the string <code><i>str</i></code> to be inserted into the Tk or
+      tile entry, BWidget Entry, Tk or tile spinbox, or tile combobox widget
+      <code><i>w</i></code> is alphabetic, numeric, or alphanumeric,
+      respectively; if not, they cancel the <code><b>insert</b></code>
+      operation.&nbsp; These procedures just invoke the callback
+      <code><b>wcb::checkStrForRegExp</b></code>, passing to it the
+      Unicode-based patterns <code>{^[[:alpha:]]*$}</code>,
+      <code>{^[[:digit:]]*$}</code>, and <code>{^[[:alnum:]]*$}</code> for Tk
+      versions 8.1 or higher, and the ASCII patterns
+      <code>{^[A-Za-z]*$}</code>, <code>{^[0-9]*$}</code>, and
+      <code>{^[A-Za-z0-9]*$}</code> if Tk version 8.0 is being used.</p>
+
+      <p>The <code><b>wcb::convStrTo*</b></code> callbacks replace the string
+      <code><i>str</i></code> to be inserted into the Tk or tile entry, BWidget
+      Entry, Tk or tile spinbox, or tile combobox widget <code><i>w</i></code>
+      with its uppercase or lowercase equivalent, respectively.</p>
+
+      <p>The <code><b>wcb::checkEntryFor*</b></code> callbacks check whether
+      the text contained in the Tk or tile entry, BWidget Entry, Tk or tile
+      spinbox, or tile combobox widget <code><i>w</i></code> after inserting
+      the string <code><i>str</i></code> before the character indicated by the
+      index <code><i>idx</i></code> would represent (the starting part of) an
+      integer number, unsigned integer no greater than <code><i>max</i></code>,
+      real number, or real number in fixed-point format with at most
+      <code><i>cnt</i></code> digits after the decimal point, respectively; if
+      not, they cancel the <code><b>insert</b></code> operation.&nbsp;
+      <code><i>max</i></code> and <code><i>cnt</i></code> should be nonnegative
+      numbers or <code><b>*</b></code>;&nbsp; <code><i>max</i> =
+      <b>*</b></code>&nbsp; means: no upper bound for the Tk or tile entry,
+      BWidget Entry, Tk or tile spinbox, or tile combobox value, while&nbsp;
+      <code><i>cnt</i> = <b>*</b></code>&nbsp; stands for an unlimited number
+      of digits after the decimal point.</p>
+
+      <p>The <code><b>wcb::checkEntryLen</b></code> callback checks whether the
+      length of the text contained in the Tk or tile entry, BWidget Entry, Tk
+      or tile spinbox, or tile combobox widget <code><i>w</i></code> after
+      inserting the string <code><i>str</i></code> would be greater than
+      <code><i>len</i></code>; if yes, it cancels the
+      <code><b>insert</b></code> operation.</p>
+
+      <p>These callback procedures are implemented in the file
+      <code><b>wcbEntry.tcl</b></code>, contained in the
+      <code><b>scripts</b></code> directory.&nbsp; They return an empty
+      string.</p>
+    </dd>
+
+    <dt><b>KEYWORDS</b></dt>
+
+    <dd>callback, insert, Tk entry, tile entry, BWidget Entry, Tk spinbox, tile
+    spinbox, tile combobox, widget</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2><a name="textcb"></a>Before-<code><b>insert</b></code> Callbacks for text
+  and ctext Widgets</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>wcb::checkStrsFor*</code>, <code>wcb::convStrsTo*</code> -
+    Before-<code><b>insert</b></code> callbacks for text and ctext widgets</dd>
+
+    <dt><br>
+    <b>SYNOPSIS</b><br>
+    &nbsp;</dt>
+
+    <dd>
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td><code><b>wcb::checkStrsForRegExp</b>&nbsp;</code></td>
+          <td align="right"><code><i>exp w idx args</i></code></td>
+        </tr>
+
+        <tr>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::checkStrsForAlpha</b></code></td>
+          <td align="right"><code><i>w idx args</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::checkStrsForNum</b></code></td>
+          <td align="right"><code><i>w idx args</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::checkStrsForAlnum</b></code></td>
+          <td align="right"><code><i>w idx args</i></code></td>
+        </tr>
+
+        <tr>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::convStrsToUpper</b></code></td>
+          <td align="right"><code><i>w idx args</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>wcb::convStrsToLower</b></code></td>
+          <td align="right"><code><i>w idx args</i></code></td>
+        </tr>
+      </table>
+    </dd>
+
+    <dt><br>
+    <b>DESCRIPTION</b></dt>
+
+    <dd>
+      The <code><b>wcb::checkStrsForRegExp</b></code> callback checks whether
+      the strings to be inserted into the text or ctext widget
+      <code><i>w</i></code>, contained in the list <code><i>args</i></code> of
+      the form&nbsp; <code><i>string</i> ?<i>tagList</i> <i>string</i>
+      <i>tagList</i> ...?</code>,&nbsp; are matched by the regular expression
+      <code><i>exp</i></code>; if not, it cancels the
+      <code><b>insert</b></code> operation.
+
+      <p>The three other <code><b>wcb::checkStrsFor*</b></code> callbacks check
+      whether the strings to be inserted into the text or ctext widget
+      <code><i>w</i></code>, contained in the list <code><i>args</i></code> of
+      the form&nbsp; <code><i>string</i> ?<i>tagList</i> <i>string</i>
+      <i>tagList</i> ...?</code>,&nbsp; are alphabetic, numeric, or
+      alphanumeric, respectively; if not, they cancel the
+      <code><b>insert</b></code> operation.&nbsp; These procedures just invoke
+      the callback <code><b>wcb::checkStrsForRegExp</b></code>, passing to it
+      the Unicode-based patterns <code>{^[[:alpha:]\n]*$}</code>,
+      <code>{^[[:digit:]\n]*$}</code>, and <code>{^[[:alnum:]\n]*$}</code> for
+      Tk versions 8.1 or higher, and the ASCII patterns
+      <code>"^\[A-Za-z\n]*$"</code>, <code>"^\[0-9\n]*$"</code>, and
+      <code>"^\[A-Za-z0-9\n]*$"</code> if Tk version 8.0 is being used (in this
+      case, the presence of the <code>"\n"</code> makes the regular expressions
+      a bit ugly).</p>
+
+      <p>The <code><b>wcb::convStrsTo*</b></code> callbacks replace the strings
+      to be inserted into the text or ctext widget <code><i>w</i></code>,
+      contained in the list <code><i>args</i></code> of the form&nbsp;
+      <code><i>string</i> ?<i>tagList</i> <i>string</i> <i>tagList</i>
+      ...?</code>,&nbsp; with their uppercase or lowercase equivalents,
+      respectively.</p>
+
+      <p>These callback procedures are implemented in the file
+      <code><b>wcbText.tcl</b></code>, contained in the
+      <code><b>scripts</b></code> directory.&nbsp; They return an empty
+      string.</p>
+    </dd>
+
+    <dt><b>KEYWORDS</b></dt>
+
+    <dd>callback, insert, text, ctext, widget</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+</body>
+</html>
