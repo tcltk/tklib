@@ -45,6 +45,7 @@ Module history       _tcl  _man  _null
 Module ico           _tcl  _man  _null
 Module ipentry       _tcl  _man  _null
 Module khim          _tclm _man  _null
+Module mentry        _tab  _null _exa
 Module menubar       _tcl  _man  _exa
 Module ntext         _tcl  _man  _exa
 Module plotchart     _tcl  _man  _exa
@@ -53,6 +54,7 @@ Module swaplist      _tcl  _man  _null
 Module tablelist     _tab  _null _exa
 Module tkpiechart    _tcl  _man  _exa
 Module tooltip       _tcl  _man  _null
+Module wcb           _tab  _null _exa
 Module widget        _tcl  _man  _exa
 
 Application  dia
