@@ -1,3 +1,11 @@
+2010-12-07  Csaba Nemethi  <csaba.nemethi@t-online.de>
+
+	* examples/mentry:                  Added the modules mentry and wcb,
+	* examples/wcb:                     with examples.
+	* modules/mentry:
+	* modules/wcb:
+	* support/installation/modules.tcl:
+
 2010-08-23  Andreas Kupries  <andreask@activestate.com>
 
 	* apps/bitmap-editor: Additional functionality by Keith (mouse
