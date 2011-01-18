@@ -1,3 +1,9 @@
+2011-01-18  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* cursor.tcl [Bug 3160150]: Fixed usage of shorthand 'config' for
+	* cursor.man: 'configure'. Bumped version to 0.3.1.
+	* pkgIndex.tcl:
+
 2009-04-24  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* cursor.tcl (::cursor::restore): allow for depthfirst restore to

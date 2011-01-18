@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin cursor n 0.1]
+[manpage_begin cursor n 0.3.1]
 [copyright {Jeffrey Hobbs <jeff@hobbs.org>}]
 
 [moddesc   {Tk cursor routines}]
 [titledesc {Procedures to handle CURSOR data}]
 [require Tk]
-[require cursor [opt 0.1]]
+[require cursor [opt 0.3.1]]
 [description]
 
 The [package cursor] package provides commands to handle Tk cursors.
