@@ -7,10 +7,10 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: cursor.tcl,v 1.3 2009/04/24 22:03:48 hobbs Exp $
+# RCS: @(#) $Id: cursor.tcl,v 1.4 2011/01/18 18:17:17 andreas_kupries Exp $
 
 package require Tk 8.0
-package provide cursor 0.3
+package provide cursor 0.3.1
 
 namespace eval ::cursor {
     namespace export propagate restore display
@@ -65,7 +65,7 @@ proc ::cursor::propagate {w cursor} {
 
     # Ignores {} cursors or widgets that don't have a -cursor option
     if {![catch {set CURSOR($w) [$w cget -cursor]}] && $CURSOR($w) != ""} {
-	$w config -cursor $cursor
+	$w configure -cursor $cursor
     } else {
 	catch {unset CURSOR($w)}
     }
@@ -91,10 +91,10 @@ proc ::cursor::restore {w {cursor {}}} {
 	foreach child [winfo children $w] { restore $child $cursor }
     }
     if {[info exists CURSOR($w)]} {
-	$w config -cursor $CURSOR($w)
+	$w configure -cursor $CURSOR($w)
     } else {
 	# Not all widgets have -cursor
-	catch {$w config -cursor $cursor}
+	catch {$w configure -cursor $cursor}
     }
     if {!$depthfirst} {
 	foreach child [winfo children $w] { restore $child $cursor }
@@ -131,7 +131,7 @@ proc ::cursor::display {{root .}} {
     pack $t.sy -side right -fill y
     pack $t.lb -side right -fill both -expand 1
     eval [list $t.lb insert end] $cursors
-    bind $t.lb <Button-1> { %W config -cursor [%W get [%W nearest %y]] }
+    bind $t.lb <Button-1> { %W configure -cursor [%W get [%W nearest %y]] }
     wm deiconify $t
 }
 
