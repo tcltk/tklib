@@ -1,5 +1,12 @@
-What is new in Wcb 3.3?
+What is new in Wcb 3.4?
 -----------------------
+
+The only changes contained in this release are related to the package
+mechanism, needed for a better teacup support (tanks to Oliver Bienert
+and Andreas Kupries for discussions on this subject).
+
+What was new in Wcb 3.3?
+------------------------
 
 The only changes contained in this release are a few adaptations made
 necessary by submitting the package for inclusion in tklib (thanks to
