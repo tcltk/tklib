@@ -71,7 +71,7 @@ Wcb is available for free download from the Web page
 
     http://www.nemethi.de
 
-The distribution file is "wcb3.3.tar.gz" for UNIX and "wcb3_3.zip" for
+The distribution file is "wcb3.4.tar.gz" for UNIX and "wcb3_4.zip" for
 Windows.  These files contain the same information, except for the
 additional carriage return character preceding the linefeed at the end
 of each line in the text files for Windows.
@@ -91,15 +91,15 @@ locations of these library directories are given by the "tcl_library"
 and "tk_library" variables, respectively.
 
 To install Wcb on UNIX, "cd" to the desired directory and unpack the
-distribution file "wcb3.3.tar.gz":
+distribution file "wcb3.4.tar.gz":
 
-    gunzip -c wcb3.3.tar.gz | tar -xf -
+    gunzip -c wcb3.4.tar.gz | tar -xf -
 
-This command will create a directory named "wcb3.3", with the
+This command will create a directory named "wcb3.4", with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "wcb3_3.zip" into the directory "wcb3.3", with the
+distribution file "wcb3_4.zip" into the directory "wcb3.4", with the
 subdirectories "demos", "doc", and "scripts".
 
 How to use it?
