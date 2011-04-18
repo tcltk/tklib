@@ -1,11 +1,11 @@
-[comment {# RCS: @(#) $Id: ctext.man,v 1.7 2009/02/07 05:41:06 andreas_kupries Exp $}]
+[comment {# RCS: @(#) $Id: ctext.man,v 1.8 2011/04/18 19:49:48 andreas_kupries Exp $}]
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin ctext n 3.2]
+[manpage_begin ctext n 3.3]
 [copyright {George Peter Staplin <GeorgePS@XMission.com>}]
 [moddesc   {Ctext a text widget with highlighting support}]
 [titledesc {Ctext a text widget with highlighting support}]
 [require Tk]
-[require ctext [opt 3.2]]
+[require ctext [opt 3.3]]
 [description]
 
 The [package ctext] package provides the ctext widget which
