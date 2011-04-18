@@ -1,3 +1,7 @@
+2011-04-18  Andreas Kupries  <andreask@activestate.com>
+
+	* ctext.tcl: Reformatted for standard indentation.
+
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
