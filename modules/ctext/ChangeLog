@@ -1,5 +1,10 @@
 2011-04-18  Andreas Kupries  <andreask@activestate.com>
 
+	* ctext.tcl (ctext::linemapUpdateOffset): [Bug 3285751]: Applied
+	* ctext.man: patch by Wojciech Kocjan <zoro2@users.sourceforge.net>
+	* pkgIndex.tcl: enabling smooth scrolling for Tk 8.5 and
+	  higher. Bumped version to 3.3 (new, api-compatible feature).
+
 	* ctext.tcl: Reformatted for standard indentation.
 
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>

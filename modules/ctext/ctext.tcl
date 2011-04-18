@@ -1,9 +1,9 @@
 # By George Peter Staplin
 # See also the README for a list of contributors
-# RCS: @(#) $Id: ctext.tcl,v 1.8 2011/04/18 19:41:49 andreas_kupries Exp $
+# RCS: @(#) $Id: ctext.tcl,v 1.9 2011/04/18 19:49:48 andreas_kupries Exp $
 
 package require Tk
-package provide ctext 3.2
+package provide ctext 3.3
 
 namespace eval ctext {}
 
@@ -1052,8 +1052,57 @@ proc ctext::linemapUpdate {win args} {
 	}
 	set lastLine $line
     }
+    if {[llength $lineList] > 0} {
+	linemapUpdateOffset $win $lineList
+    }
     set endrow [lindex [split [$win._t index end-1c] .] 0]
     $win.l configure -width [string length $endrow]
+}
+
+# Starting with Tk 8.5 the text widget allows smooth scrolling; this
+# code calculates the offset for the line numbering text widget and
+# scrolls by the specified amount of pixels
+
+if {![catch {
+    package require Tk 8.5
+}]} {
+    proc ctext::linemapUpdateOffset {win lineList} {
+	# reset view for line numbering widget
+	$win.l yview 0.0
+
+	# find the first line that is visible and calculate the
+	# corresponding line in the line numbers widget
+	set lline 1
+	foreach line $lineList {
+	    set tystart [lindex [$win.t bbox $line.0] 1]
+	    if {$tystart != ""} {
+		break
+	    }
+	    incr lline
+	}
+
+	# return in case the line numbers text widget is not up to
+	# date
+	if {[catch {
+	    set lystart [lindex [$win.l bbox $lline.0] 1]
+	}]} {
+	    return
+	}
+
+	# return in case the bbox for any of the lines returned an
+	# empty value
+	if {($tystart == "") || ($lystart == "")} {
+	    return
+	}
+
+	# calculate the offset and then scroll by specified number of
+	# pixels
+	set offset [expr {$lystart - $tystart}]
+	$win.l yview scroll $offset pixels
+    }
+}  else  {
+    # Do not try to perform smooth scrolling if Tk is 8.4 or less.
+    proc ctext::linemapUpdateOffset {args} {}
 }
 
 proc ctext::modified {win value} {
