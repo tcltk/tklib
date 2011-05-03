@@ -2,7 +2,7 @@
 #
 #	This file implements package style::as.
 #
-# Copyright (c) 2003 ActiveState Corporation, a division of Sophos
+# Copyright (c) 2011 ActiveState Software Inc.
 #
 # Basic use:
 #
@@ -15,7 +15,7 @@
 package require Tk
 
 namespace eval style::as {
-    variable version 1.4
+    variable version 1.4.1
     variable highlightbg "#316AC5" ; # SystemHighlight
     variable highlightfg "white"   ; # SystemHighlightText
     variable bg          "white"   ; # SystemWindow
@@ -191,7 +191,6 @@ proc style::as::init_fonts {args} {
 	option add *Label.font		ASfont $prio
 	option add *Labelframe.font	ASfont $prio
 	option add *Listbox.font	ASfont $prio
-	option add *Menu.font		ASfont $prio
 	option add *Menubutton.font	ASfont $prio
 	option add *Message.font	ASfont $prio
 	option add *Radiobutton.font	ASfont $prio
@@ -199,6 +198,9 @@ proc style::as::init_fonts {args} {
 
 	option add *Table.font		ASfont $prio
 	option add *TreeCtrl*font	ASfont $prio
+    }
+    if {[tk windowingsystem] eq "x11"} {
+	option add *Menu.font		ASfont $prio
     }
 }
 
