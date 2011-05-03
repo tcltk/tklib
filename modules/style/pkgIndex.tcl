@@ -9,5 +9,5 @@
 # full path name of this file's directory.
 
 package ifneeded style 0.3 [list source [file join $dir style.tcl]]
-package ifneeded style::as 1.4 [list source [file join $dir as.tcl]]
+package ifneeded style::as 1.4.1 [list source [file join $dir as.tcl]]
 package ifneeded style::lobster 0.2 [list source [file join $dir lobster.tcl]]
