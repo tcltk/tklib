@@ -4,7 +4,7 @@
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content=
-  "tablelist, multi-column, listbox, widget, tile">
+  "tablelist, multi-column, listbox, tree, widget, tile">
 
   <style type="text/css">
     <!--
@@ -157,11 +157,11 @@
   <p>The bindings defined for the body of a tablelist widget make it behave
   just like a normal listbox.&nbsp; This includes the support for the virtual
   event <code>&lt;&lt;ListboxSelect&gt;&gt;</code> (which is equivalent to
-  <code>&lt;&lt;TablelistSelect&gt;&gt;</code>).&nbsp; In addition, version 2.3
-  or higher of the widget callback package Wcb (written in pure Tcl/Tk code as
-  well) can be used to define callbacks for the <code>activate</code>,&nbsp;
+  <code>&lt;&lt;TablelistSelect&gt;&gt;</code>).&nbsp; In addition, versions
+  2.3 or higher of the widget callback package Wcb (written in pure Tcl/Tk code
+  as well) can be used to define callbacks for the <code>activate</code>,&nbsp;
   <code>selection set</code>,&nbsp; and&nbsp; <code>selection
-  clear</code>&nbsp; commands, and Wcb version 3.0 or higher also supports
+  clear</code>&nbsp; commands, and Wcb versions 3.0 or higher also support
   callbacks for the <code>activatecell</code>,&nbsp; <code>cellselection
   set</code>,&nbsp; and&nbsp; <code>cellselection clear</code>&nbsp;
   commands.&nbsp; The download location of Wcb is</p>
@@ -175,11 +175,10 @@
   <h3><a name="ov_get"></a>How to get it?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist5.2.tar.gz</code> for UNIX and
-  <code>tablelist5_2.zip</code> for Windows.&nbsp; These files contain the
-  same information, except for the additional carriage return character
-  preceding the linefeed at the end of each line in the text files for
-  Windows.</p>
+  The distribution file is <code>tablelist5.3.tar.gz</code> for UNIX and
+  <code>tablelist5_3.zip</code> for Windows.&nbsp; These files contain the same
+  information, except for the additional carriage return character preceding
+  the linefeed at the end of each line in the text files for Windows.</p>
 
   <p>Tablelist is also hosted on SourceForge, as part of tklib, which in turn
   is contained in the tcllib project, having the address</p>
@@ -202,31 +201,30 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist5.2.tar.gz</code>:</p>
+  <code>tablelist5.3.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist5.2.tar.gz | tar -xf -
+gunzip -c tablelist5.3.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>tablelist5.2</code>, with
+  <p>This command will create a directory named <code>tablelist5.3</code>, with
   the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist5_2.zip</code> into the directory
-  <code>tablelist5.2</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist5_3.zip</code> into the directory
+  <code>tablelist5.3</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
-  <p>Note that the file <code>tablelistEdit.tcl</code> in the
-  <code>scripts</code> directory is only needed for applications making use of
-  interactive cell editing.&nbsp; Similarly, the file
-  <code>tablelistMove.tcl</code> in the same directory is only required for
-  scripts invoking the <code>move</code> or <code>movecolumn</code>
-  command.&nbsp; Finally, the file <code>tablelistThemes.tcl</code> is only
-  needed for applications using the package Tablelist_tile (see next
-  section).</p>
+  <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
+  directory is only needed for applications making use of interactive cell
+  editing.&nbsp; Similarly, the file <code>tablelistMove.tcl</code> in the same
+  directory is only required for scripts invoking the <code>move</code> or
+  <code>movecolumn</code> command.&nbsp; Finally, the file
+  <code>tablelistThemes.tcl</code> is only needed for applications using the
+  package Tablelist_tile (see next section).</p>
 
   <p>Next, you should check the exact version number of your Tcl/Tk
   distribution, given by the <code>tcl_patchLevel</code> and
@@ -247,11 +245,10 @@ gunzip -c tablelist5.2.tar.gz | tar -xf -
   releases starting with 8.0, but the original ones have a much better
   performance.</p>
 
-  <p>Being part of tklib, Tablelist is also included in the ActiveTcl and
-  TclTkAquaBI binary distributions.&nbsp; Notice that in these distributions
-  the Tablelist <code>demos</code> directory is replaced with some other
-  location.&nbsp; Please take this into account when reading the <a href=
-  "#examples">examples</a> below.</p>
+  <p>Notice that in tklib the Tablelist <code>demos</code> directory is
+  replaced with the subdirectory <code>tablelist</code> of the
+  <code>examples</code> directory.&nbsp; Please take this into account when
+  reading the <a href="#examples">examples</a> below.</p>
 
   <h3><a name="ov_use"></a>How to use it?</h3>
 
@@ -308,19 +305,21 @@ package provide Tablelist_tile ...
   if you want to prevent the corresponding packages from making themselves
   known under two different names each.&nbsp; Of course, by doing so you
   restrict the argument of&nbsp; <code>package require</code>&nbsp; to a single
-  name per package.&nbsp; Please note that <b>ActiveTcl versions 8.5 and
-  later use a modified package mechanism, which only exports the all-lowercase
-  names <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
+  name per package.</p>
+  
+  <p>Please note that <b>ActiveTcl versions 8.5 and later use a modified
+  package mechanism, which only exports the all-lowercase names
+  <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 5.2, then it is highly
-  recommended to specify the version number <code>5.2</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 5.3, then it is highly
+  recommended to specify the version number <code>5.3</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 5.2</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 5.3</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 5.2</code>.</p>
+  tablelist_tile 5.3</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -493,7 +492,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 5.2
+package require tablelist 5.3
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -526,7 +525,7 @@ To display the configuration options of an arbitrary widget, enter
 
   <blockquote>
     <pre>
-package require tablelist 5.2
+package require tablelist 5.3
 
 namespace eval demo {
     #
@@ -971,7 +970,7 @@ To display information about the children of an arbitrary widget, enter
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 5.2
+package require tablelist 5.3
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1272,11 +1271,11 @@ proc demo::putChildren {w tbl nodeIdx} {
 
   <p>We mark every newly created row corresponding to a child widget that has
   children itself as collapsed by invoking the <code><a href=
-  "tablelistWidget.html#collapse">collapse</a></code> subcommand.&nbsp;
-  This will prepend an expand/collapse control to the contents of the first
-  column, whose column index <code>0</code> is the default value of the
-  <code><a href="tablelistWidget.html#treecolumn">-treecolumn</a></code>
-  configuration option.</p>
+  "tablelistWidget.html#collapse">collapse</a></code> subcommand.&nbsp; This
+  will prepend an expand/collapse control to the contents of the first column,
+  whose column index <code>0</code> is the default value of the <code><a href=
+  "tablelistWidget.html#treecolumn">-treecolumn</a></code> configuration
+  option.</p>
 
   <p>We use the <code><a href=
   "tablelistWidget.html#rowattrib">rowattrib</a></code> tablelist subcommand to
@@ -1318,8 +1317,8 @@ proc demo::expandCmd {tbl row} {
   case.&nbsp; It also makes sure that the child items will be displayed in the
   order corresponding to the last sorting (if any), with the aid of the
   <code><a href="tablelistWidget.html#refreshsorting">refreshsorting</a></code>
-  tablelist subcommand.&nbsp; Any sorting (if needed) will only be performed
-  on the child items just inserted into the tablelist widget.</p>
+  tablelist subcommand.&nbsp; Any sorting (if needed) will only be performed on
+  the child items just inserted into the tablelist widget.</p>
 
   <p>The <code>demo::formatBoolean</code> and <code>demo::labelCmd</code>
   procedures mentioned above are trivial:</p>
@@ -1569,7 +1568,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 5.2
+package require tablelist 5.3
 
 #
 # Add some entries to the Tk option database
@@ -1580,9 +1579,9 @@ source [file join $dir option.tcl]
 #
 # Create three images
 #
-set clsdFolderImg [image create photo -file [file join $dir clsdFolder.gif]]
-set openFolderImg [image create photo -file [file join $dir openFolder.gif]]
-set fileImg       [image create photo -file [file join $dir file.gif]]
+image create photo clsdFolderImg -file [file join $dir clsdFolder.gif]
+image create photo openFolderImg -file [file join $dir openFolder.gif]
+image create photo fileImg       -file [file join $dir file.gif]
 
 #------------------------------------------------------------------------------
 # displayContents
@@ -1693,17 +1692,16 @@ proc putContents {dir tbl nodeIdx} {
     #
     # Insert an image into the first cell of each newly inserted row
     #
-    global clsdFolderImg fileImg
     foreach item $itemList {
         set name [lindex $item end]
         if {[string compare $name ""] == 0} {                   ;# file
-            $tbl cellconfigure $row,0 -image $fileImg
-        } else {                                                ;# subdirectory
-            $tbl cellconfigure $row,0 -image $clsdFolderImg
+            $tbl cellconfigure $row,0 -image fileImg
+        } else {                                                ;# directory
+            $tbl cellconfigure $row,0 -image clsdFolderImg
             $tbl rowattrib $row pathName $name
 
             #
-            # Mark the row as collapsed if the subdirectory is non-empty
+            # Mark the row as collapsed if the directory is non-empty
             #
             if {[file readable $name] &amp;&amp; [llength \
                 [glob -nocomplain -types {d f} -directory $name *]] != 0} {
@@ -1769,13 +1767,13 @@ proc formatString val {
 # itself in user-friendly format otherwise.
 #------------------------------------------------------------------------------
 proc formatSize val {
-    if {$val < 0} {
+    if {$val &lt; 0} {
         return ""
-    } elseif {$val < 1024} {
+    } elseif {$val &lt; 1024} {
         return "$val bytes"
-    } elseif {$val < 1048576} {
+    } elseif {$val &lt; 1048576} {
         return [format "%.1f KB" [expr {$val / 1024.0}]]
-    } elseif {$val < 1073741824} {
+    } elseif {$val &lt; 1073741824} {
         return [format "%.1f MB" [expr {$val / 1048576.0}]]
     } else {
         return [format "%.1f GB" [expr {$val / 1073741824.0}]]
@@ -1806,8 +1804,7 @@ proc expandCmd {tbl row} {
     }
 
     if {[$tbl childcount $row] != 0} {
-        global openFolderImg
-        $tbl cellconfigure $row,0 -image $openFolderImg
+        $tbl cellconfigure $row,0 -image openFolderImg
     }
 }
 
@@ -1818,8 +1815,7 @@ proc expandCmd {tbl row} {
 # tablelist widget tbl.
 #------------------------------------------------------------------------------
 proc collapseCmd {tbl row} {
-    global clsdFolderImg
-    $tbl cellconfigure $row,0 -image $clsdFolderImg
+    $tbl cellconfigure $row,0 -image clsdFolderImg
 }
 
 . . .
@@ -1926,8 +1922,8 @@ for {set n 0} { $n &lt; 8} {incr n} {
   a BWidget ComboBox used to edit the contents of one of its cells:</p>
 
   <p><img src="bwidget.png" alt=
-  "Serial Line Configuration - Please load this image!" width="677" height=
-  "373"></p>
+  "Serial Line Configuration - Please load this image!" width="784" height=
+  "369"></p>
 
   <p>Here is the relevant code segment from the script <code>bwidget.tcl</code>
   (the scripts <code>tileWidgets.tcl</code>, <code>iwidgets.tcl</code>, and
@@ -1935,8 +1931,8 @@ for {set n 0} { $n &lt; 8} {incr n} {
 
   <blockquote>
     <pre>
-package require Tk 8.3                          ;# because of entry validation
-package require tablelist 5.2
+package require Tk 8.4                          ;# because of "-compound"
+package require tablelist 5.3
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -1958,10 +1954,10 @@ tablelist::addBWidgetSpinBox
 tablelist::addBWidgetComboBox
 
 #
-# Create two images, to be displayed in tablelist cells with boolean values
+# Create the images "checkedImg" and "uncheckedImg", as well as 16 images of
+# names like "img#FF0000", displaying colors identified by names like "red"
 #
-set checkedImg   [image create photo -file [file join $dir checked.gif]]
-set uncheckedImg [image create photo -file [file join $dir unchecked.gif]]
+source [file join $dir images.tcl]
 
 #
 # Create a tablelist widget with editable columns (except the first one)
@@ -1977,7 +1973,8 @@ tablelist::tablelist $tbl \
               0 "Stop Bits"       center
               0 "Handshake"       left
               0 "Activation Date" center
-              0 "Activation Time" center} \
+              0 "Activation Time" center
+              0 "Cable Color"     left} \
     -editstartcommand editStartCmd -editendcommand editEndCmd \
     -height 0 -width 0
 if {[$tbl cget -selectborderwidth] == 0} {
@@ -1998,6 +1995,7 @@ $tbl columnconfigure 8 -name actDate   -editable yes -editwindow Entry \
     -formatcommand formatDate -sortmode integer
 $tbl columnconfigure 9 -name actTime   -editable yes -editwindow Entry \
     -formatcommand formatTime -sortmode integer
+$tbl columnconfigure 10 -name color    -editable yes -editwindow menubutton
 
 proc emptyStr   val { return "" }
 proc formatDate val { return [clock format $val -format "%Y-%m-%d"] }
@@ -2007,15 +2005,14 @@ proc formatTime val { return [clock format $val -format "%H:%M:%S"] }
 # Populate the tablelist widget; set the activation
 # date &amp; time to 10 minutes past the current clock value
 #
-set clock [clock seconds]
-incr clock 600
-for {set n 1} {$n &lt;= 8} {incr n} {
-    $tbl insert end [list $n 1 "Line $n" 9600 8 None 1 XON/XOFF $clock $clock]
-    $tbl cellconfigure end,available -image $checkedImg
-}
-for {set n 9} {$n &lt;= 16} {incr n} {
-    $tbl insert end [list $n 0 "Line $n" 9600 8 None 1 XON/XOFF $clock $clock]
-    $tbl cellconfigure end,available -image $uncheckedImg
+set clock [expr {[clock seconds] + 600}]
+for {set i 0; set n 1} {$i &lt; 16} {set i $n; incr n} {
+    $tbl insert end [list $n [expr {$i &lt; 8}] "Line $n" 9600 8 None 1 XON/XOFF \
+        $clock $clock [lindex $colorNames $i]]
+
+    set availImg [expr {($i &lt; 8) ? "checkedImg" : "uncheckedImg"}]
+    $tbl cellconfigure end,available -image $availImg
+    $tbl cellconfigure end,color -image img[lindex $colorValues $i]
 }
 
 set btn [button .btn -text "Close" -command exit]
@@ -2040,8 +2037,9 @@ pack $tbl -side top -expand yes -fill both
   <code>"ComboBox"</code>, respectively, which we then use in the
   <code><a href="tablelistWidget.html#col_editwindow">-editwindow</a></code>
   column configuration option to set the edit window for the columns no. 2,
-  ..., 9.&nbsp; In column no. 1 we use the Tk core checkbutton widget, which is
-  automatically registered for interactive cell editing.</p>
+  ..., 10.&nbsp; In columns no. 1 and 10 we use the Tk core checkbutton and
+  menubutton widgets, which are automatically registered for interactive cell
+  editing.</p>
 
   <p>Notice the use of the <code><a href=
   "tablelistWidget.html#col_name">-name</a></code> column configuration option,
@@ -2134,6 +2132,19 @@ proc editStartCmd {tbl row col text} {
         }
 
         . . .
+
+        color {
+            #
+            # Populate the menu
+            #
+            set menu [$w cget -menu]
+            foreach name $::colorNames {
+                set img img$::colors($name)
+                $menu add radiobutton -compound left -image $img -label $name \
+                    -command [list $w configure -compound left -image $img]
+            }
+            $menu entryconfigure 8 -columnbreak 1
+        }
     }
 
     return $text
@@ -2164,7 +2175,7 @@ proc editEndCmd {tbl row col text} {
             #
             # Update the image contained in the cell
             #
-            set img [expr {$text ? $::checkedImg : $::uncheckedImg}]
+            set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
             $tbl cellconfigure $row,$col -image $img
         }
 
@@ -2210,6 +2221,13 @@ proc editEndCmd {tbl row col text} {
         }
 
         . . .
+
+        color {
+            #
+            # Update the image contained in the cell
+            #
+            $tbl cellconfigure $row,$col -image img$::colors($text)
+        }
     }
 
     return $text
@@ -2220,14 +2238,15 @@ proc editEndCmd {tbl row col text} {
   <p>As mentioned above, the scripts <code>tileWidgets.tcl</code>,
   <code>iwidgets.tcl</code>, and <code>miscWidgets.tcl</code> are similar to
   <code>bwidget.tcl</code>.&nbsp; The first one makes use of the tile entry,
-  spinbox, combobox, and checkbutton widgets.&nbsp; The second one uses
-  (besides the Tk core checkbutton) the entryfield, spinint, combobox,
-  dateentry, and timeentry widgets from the Iwidgets package and the validation
-  facilities specific to that library.&nbsp; The third script makes use of the
-  entry, spinbox, and checkbutton widgets from the Tk core, Bryan Oakley's
-  combobox, and of the mentry widgets of type <code>"Date"</code> and
-  <code>"Time"</code>, and it performs the entry validation with the aid of the
-  Wcb package (which is required anyway for the Mentry library).</p>
+  spinbox, combobox, checkbutton, and menubutton widgets.&nbsp; The second one
+  uses (besides the Tk core checkbutton and menubutton) the entryfield,
+  spinint, combobox, dateentry, and timeentry widgets from the Iwidgets package
+  and the validation facilities specific to that library.&nbsp; The third
+  script makes use of the entry, spinbox, checkbutton, and menubutton widgets
+  from the Tk core, Bryan Oakley's combobox, and of the mentry widgets of type
+  <code>"Date"</code> and <code>"Time"</code>, and it performs the entry
+  validation with the aid of the Wcb package (which is required anyway for the
+  Mentry library).</p>
 
   <h3><a name="ex_windows"></a>A tablelist widget containing embedded
   windows</h3>
@@ -2251,7 +2270,7 @@ proc editEndCmd {tbl row col text} {
 
   <blockquote>
     <pre>
-package require tablelist 5.2
+package require tablelist 5.3
 
 wm title . "Tk Library Scripts"
 
@@ -2269,7 +2288,7 @@ catch {font create TkFixedFont -family Courier -size -12}
 #
 # Create an image to be displayed in buttons embedded in a tablelist widget
 #
-set openImg [image create photo -file [file join $dir open.gif]]
+image create photo openImg -file [file join $dir open.gif]
 
 #
 # Create a vertically scrolled tablelist widget with 5
@@ -2386,7 +2405,7 @@ proc createFrame {tbl row col w} {
 #------------------------------------------------------------------------------
 proc createButton {tbl row col w} {
     set key [$tbl getkeys $row]
-    button $w -image $::openImg -highlightthickness 0 -takefocus 0 \
+    button $w -image openImg -highlightthickness 0 -takefocus 0 \
               -command [list viewFile $tbl $key]
 }
 
@@ -2483,7 +2502,7 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
   <blockquote>
     <pre>
 package require Tk 8.3                          ;# because of entry validation
-package require tablelist 5.2
+package require tablelist 5.3
 </pre>
   </blockquote>
 
@@ -2491,7 +2510,7 @@ package require tablelist 5.2
 
   <blockquote>
     <pre>
-package require tablelist<span>_tile</span> 5.2
+package require tablelist<span>_tile</span> 5.3
 </pre>
   </blockquote>
 
@@ -2565,13 +2584,6 @@ set btn [<span>ttk::</span>button <span>$f</span>.btn -text "Close" -command exi
 </pre>
   </blockquote>
 
-  <p>That's all!&nbsp; The resulting window has a nice theme-specific
-  appearance:</p>
-
-  <p><img src="bwidget_tile.png" alt=
-  "Serial Line Configuration - Please load this image!" width="675" height=
-  "368"></p>
-
   <p>The script <code>option_tile.tcl</code> is nearly identical to
   <code>option.tcl</code>.&nbsp; Its tile-specific part uses the values written
   by the command <code><a href=
@@ -2602,11 +2614,12 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
   <p>The demo script <code>tileWidgets.tcl</code> uses not only the
   Tablelist_tile package for creating a tablelist widget with a modern
   theme-specific look &amp; feel, but also the tile entry, spinbox, combobox,
-  and checkbutton widgets for interactive cell editing:</p>
+  checkbutton, and menubutoon widgets for interactive cell editing.&nbsp; The
+  resulting window has a nice theme-specific appearance:</p>
 
   <p><img src="tileWidgets.png" alt=
-  "Serial Line Configuration - Please load this image!" width="675" height=
-  "368"></p>
+  "Serial Line Configuration - Please load this image!" width="782" height=
+  "364"></p>
 
   <p>The tile-based version of the demo script <code>embeddedWindows.tcl</code>
   contains a bit more changes, but most of them are not
