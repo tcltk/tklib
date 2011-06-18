@@ -1,7 +1,7 @@
 #==============================================================================
 # Main Tablelist_tile package module.
 #
-# Copyright (c) 2000-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tcl 8.4
@@ -9,7 +9,7 @@ package require Tk  8.4
 if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     package require tile 0.6
 }
-package require -exact tablelist::common 5.2
+package require -exact tablelist::common 5.3
 
 package provide tablelist_tile $::tablelist::version
 package provide Tablelist_tile $::tablelist::version

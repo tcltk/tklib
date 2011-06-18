@@ -1,5 +1,33 @@
-What is new in Tablelist 5.2?
+What is new in Tablelist 5.3?
 -----------------------------
+
+1. The interactive row move operation (i.e., local drag & drop) now
+   supports moving an item outside its parent and dropping it under
+   another item as a child (thanks to Dr. Detlef Groth for his
+   proposal, thorough testing, and discussions on this topic).
+
+2. Added the "-acceptchildcommand" configuration option, related to the
+   local drag & drop.
+
+3. New "searchcolumn" subcommand, supporting a rich set of options
+   (thanks to Matthew Callaghan, Adrian Davis, and Jeff Godfrey for
+   their proposals).
+
+4. New "getformatted", "getformattedcolumns", and "getformattedcells"
+   subcommands.
+
+5. Support for interactive cell editing with the aid of the Tk core and
+   tile menubutton widgets (thanks to Georgios Petasis for his
+   proposal).
+
+6. Support for the row indices "top" and "bottom" (thanks to Julian H J
+   Loaring and Paul Obermeier for their proposals).  Likewise, support
+   for the column indices "left" and "right".
+
+7. Numerous further improvements and minor bug fixes.
+
+What was new in Tablelist 5.2?
+------------------------------
 
 1.  Added the "-fullseparators" configuration option (thanks to Kevin
     Partin, Martyn Smith, and Harald Oehlmann for their proposals).
@@ -14,7 +42,8 @@ What is new in Tablelist 5.2?
     regardless of whether the tablelist widget displays a tree
     hierarchy or just a plain list.
 
-4.  The "move" subcommand now supports moving an item outside its parent.
+4.  The "move" subcommand now supports moving an item outside its
+    parent.
 
 5.  Deleting the whole content of a tablelist widget has become
     significantly faster (thanks to Harold Campbell for his input).
