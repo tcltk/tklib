@@ -5,10 +5,10 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
 #
-# Copyright (c) 2004-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.2
+package require tablelist_tile 5.3
 
 wm title . "Tile Library Scripts"
 
@@ -26,7 +26,7 @@ catch {font create TkFixedFont -family Courier -size -12}
 #
 # Create an image to be displayed in buttons embedded in a tablelist widget
 #
-set openImg [image create photo -file [file join $dir open.gif]]
+image create photo openImg -file [file join $dir open.gif]
 
 if {[tablelist::getCurrentTheme] eq "aqua"} {
     #
@@ -141,7 +141,7 @@ proc createFrame {tbl row col w} {
 #------------------------------------------------------------------------------
 proc createButton {tbl row col w} {
     set key [$tbl getkeys $row]
-    ttk::button $w -style Embedded.TButton -image $::openImg -takefocus 0 \
+    ttk::button $w -style Embedded.TButton -image openImg -takefocus 0 \
 		   -command [list viewFile $tbl $key]
 }
 
