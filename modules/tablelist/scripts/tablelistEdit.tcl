@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -18,7 +18,7 @@
 namespace eval tablelist {
     #
     # Register the Tk core widgets entry, text, checkbutton,
-    # and spinbox for interactive cell editing
+    # menubutton, and spinbox for interactive cell editing
     #
     proc addTkCoreWidgets {} {
 	set name entry
@@ -78,6 +78,26 @@ namespace eval tablelist {
 	    $name-useFormat	0 \
 	    $name-useReqWidth	1 \
 	    $name-usePadX	0 \
+	    $name-isEntryLike	0 \
+	    $name-focusWin	%W \
+	    $name-reservedKeys	{} \
+	]
+
+	set name menubutton
+	array set ::tablelist::editWin [list \
+	    $name-creationCmd	"createMenubutton %W" \
+	    $name-putValueCmd	{set [%W cget -textvariable] %T} \
+	    $name-getValueCmd	"%W cget -text" \
+	    $name-putTextCmd	{set [%W cget -textvariable] %T} \
+	    $name-getTextCmd	"%W cget -text" \
+	    $name-putListCmd	"" \
+	    $name-getListCmd	"" \
+	    $name-selectCmd	"" \
+	    $name-invokeCmd	"postMenubutton %W" \
+	    $name-fontOpt	-font \
+	    $name-useFormat	1 \
+	    $name-useReqWidth	0 \
+	    $name-usePadX	1 \
 	    $name-isEntryLike	0 \
 	    $name-focusWin	%W \
 	    $name-reservedKeys	{} \
@@ -189,6 +209,26 @@ namespace eval tablelist {
 	    $name-useFormat	0 \
 	    $name-useReqWidth	1 \
 	    $name-usePadX	0 \
+	    $name-isEntryLike	0 \
+	    $name-focusWin	%W \
+	    $name-reservedKeys	{} \
+	]
+
+	set name ttk::menubutton
+	array set ::tablelist::editWin [list \
+	    $name-creationCmd	"createTileMenubutton %W" \
+	    $name-putValueCmd	{set [%W cget -textvariable] %T} \
+	    $name-getValueCmd	"%W cget -text" \
+	    $name-putTextCmd	{set [%W cget -textvariable] %T} \
+	    $name-getTextCmd	"%W cget -text" \
+	    $name-putListCmd	"" \
+	    $name-getListCmd	"" \
+	    $name-selectCmd	"" \
+	    $name-invokeCmd	"event generate %W <space>" \
+	    $name-fontOpt	"" \
+	    $name-useFormat	1 \
+	    $name-useReqWidth	0 \
+	    $name-usePadX	1 \
 	    $name-isEntryLike	0 \
 	    $name-focusWin	%W \
 	    $name-reservedKeys	{} \
@@ -961,16 +1001,17 @@ proc tablelist::addIPv6AddrMentry {{name ipv6AddrMentry}} {
 # tablelist::checkEditWinName
 #
 # Generates an error if the given edit window name is one of "entry", "text",
-# "spinbox", "checkbutton", "ttk::entry", "ttk::spinbox", "ttk::combobox", or
-# "ttk::checkbutton".
+# "spinbox", "checkbutton", "menubutton", "ttk::entry", "ttk::spinbox",
+# "ttk::combobox", "ttk::checkbutton", or "ttk::menubutton".
 #------------------------------------------------------------------------------
 proc tablelist::checkEditWinName name {
-    if {[regexp {^(entry|text|spinbox|checkbutton)$} $name]} {
+    if {[regexp {^(entry|text|spinbox|checkbutton|menubutton)$} $name]} {
 	return -code error \
 	       "edit window name \"$name\" is reserved for Tk $name widgets"
     }
 
-    if {[regexp {^ttk::(entry|spinbox|combobox|checkbutton)$} $name]} {
+    if {[regexp {^ttk::(entry|spinbox|combobox|checkbutton|menubutton)$} \
+	 $name]} {
 	return -code error \
 	       "edit window name \"$name\" is reserved for tile $name widgets"
     }
@@ -1022,13 +1063,104 @@ proc tablelist::createCheckbutton {w args} {
 
     foreach {opt val} $args {
 	switch -- $opt {
-	    -font  {}
-	    -state { $w configure $opt $val }
+	    -state  { $w configure $opt $val }
+	    default {}
 	}
     }
 
     set win [getTablelistPath $w]
     $w configure -variable ::tablelist::ns${win}::data(editText)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::createMenubutton
+#
+# Creates a menubutton widget with the given path name for interactive cell
+# editing in a tablelist widget.
+#------------------------------------------------------------------------------
+proc tablelist::createMenubutton {w args} {
+    set win [getTablelistPath $w]
+    menubutton $w -anchor w -indicatoron 1 -justify left -padx 2 -pady 2 \
+	-relief raised -textvariable ::tablelist::ns${win}::data(editText)
+
+    foreach {opt val} $args {
+	$w configure $opt $val
+    }
+
+    variable winSys
+    upvar ::tablelist::ns${win}::data data
+    if {[string compare $winSys "aqua"] == 0} {
+	catch {
+	    set data(useCustomMDEFSav) $::tk::mac::useCustomMDEF
+	    set ::tk::mac::useCustomMDEF 1
+	}
+    }
+
+    set menu $w.menu
+    menu $menu -tearoff 0 -postcommand [list tablelist::postMenuCmd $w]
+    if {[string compare $winSys "x11"] == 0} {
+	$menu configure -background $data(-background) \
+			-foreground $data(-foreground) \
+			-activebackground $data(-selectbackground) \
+			-activeforeground $data(-selectforeground) \
+			-activeborderwidth $data(-selectborderwidth)
+    }
+
+    $w configure -menu $menu
+}
+
+#------------------------------------------------------------------------------
+# tablelist::postMenuCmd
+#
+# Activates the radiobutton entry of the menu associated with the menubutton
+# widget having the given path name whose -value option was set to the
+# menubutton's text.
+#------------------------------------------------------------------------------
+proc tablelist::postMenuCmd w {
+    set menu [$w cget -menu]
+    set last [$menu index last]
+    if {[string compare $last "none"] == 0} {
+	return ""
+    }
+
+    variable winSys
+    if {[string compare $winSys "x11"] == 0} {
+	set text [$w cget -text]
+	for {set idx 0} {$idx <= $last} {incr idx} {
+	    if {[string compare [$menu type $idx] "radiobutton"] == 0 &&
+		[string compare [$menu entrycget $idx -value] $text] == 0} {
+		$menu activate $idx
+	    }
+	}
+    } elseif {[string compare [winfo class $w] "TMenubutton"] == 0} {
+	if {[catch {set ::tk::Priv(popup) $menu}] != 0} {
+	    set ::tkPriv(popup) $menu
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::postMenubutton
+#
+# Posts a menubutton widget used for interactive cell editing in a tablelist
+# widget.
+#------------------------------------------------------------------------------
+proc tablelist::postMenubutton w {
+    variable winSys
+    if {[string compare $winSys "x11"] == 0} {
+	event generate $w <space>
+	return ""
+    }
+
+    if {[catch {
+	set ::tk::Priv(postedMb) ""
+	event generate $w <space>
+	set ::tk::Priv(postedMb) ""
+    }] != 0} {
+	set ::tkPriv(postedMb) ""
+	event generate $w <space>
+	set ::tkPriv(postedMb) ""
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -1196,8 +1328,8 @@ proc tablelist::createTileCheckbutton {w args} {
 
     foreach {opt val} $args {
 	switch -- $opt {
-	    -font  {}
-	    -state { $w configure $opt $val }
+	    -state  { $w configure $opt $val }
+	    default {}
 	}
     }
 
@@ -1288,6 +1420,54 @@ proc tablelist::createTileCheckbutton {w args} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::createTileMenubutton
+#
+# Creates a tile menubutton widget with the given path name for interactive
+# cell editing in a tablelist widget.
+#------------------------------------------------------------------------------
+proc tablelist::createTileMenubutton {w args} {
+    if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
+	package require tile 0.6
+    }
+    createTileAliases 
+
+    styleConfig Tablelist.TMenubutton -anchor w -justify left -padding 1 \
+				      -relief raised
+
+    set win [getTablelistPath $w]
+    ttk::menubutton $w -style Tablelist.TMenubutton \
+		       -textvariable ::tablelist::ns${win}::data(editText)
+
+    foreach {opt val} $args {
+	switch -- $opt {
+	    -state  { $w configure $opt $val }
+	    default {}
+	}
+    }
+
+    variable winSys
+    upvar ::tablelist::ns${win}::data data
+    if {[string compare $winSys "aqua"] == 0} {
+	catch {
+	    set data(useCustomMDEFSav) $::tk::mac::useCustomMDEF
+	    set ::tk::mac::useCustomMDEF 1
+	}
+    }
+
+    set menu $w.menu
+    menu $menu -tearoff 0 -postcommand [list tablelist::postMenuCmd $w]
+    if {[string compare $winSys "x11"] == 0} {
+	$menu configure -background $data(-background) \
+			-foreground $data(-foreground) \
+			-activebackground $data(-selectbackground) \
+			-activeforeground $data(-selectforeground) \
+			-activeborderwidth $data(-selectborderwidth)
+    }
+
+    $w configure -menu $menu
+}
+
+#------------------------------------------------------------------------------
 # tablelist::createIncrCombobox
 #
 # Creates an [incr Widgets] combobox with the given path name for interactive
@@ -1326,10 +1506,10 @@ proc tablelist::createOakleyCombobox {w args} {
 # tablelist::doEditCell
 #
 # Processes the tablelist editcell subcommand.  cmd may be an empty string,
-# condChangeSelection, or changeSelection.  charPos stands for the character
-# position component of the index in the body text widget of the character
-# underneath the mouse cursor if this command was invoked by clicking mouse
-# button 1 in the body of the tablelist widget.
+# "condChangeSelection", or "changeSelection".  charPos stands for the
+# character position component of the index in the body text widget of the
+# character underneath the mouse cursor if this command was invoked by clicking
+# mouse button 1 in the body of the tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     upvar ::tablelist::ns${win}::data data
@@ -1340,14 +1520,14 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     if {$data(editRow) == $row && $data(editCol) == $col} {
 	return ""
     }
+    if {$data(editRow) >= 0 && ![doFinishEditing $win]} {
+	return ""
+    }
     set item [lindex $data(itemList) $row]
     set key [lindex $item end]
     getIndentData $win $key $col indentWidth
     set pixels [colWidth $win $col -stretched]
     if {$indentWidth >= $pixels} {
-	return ""
-    }
-    if {$data(editRow) >= 0 && ![doFinishEditing $win]} {
 	return ""
     }
 
@@ -1384,14 +1564,15 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	destroy $f
 	return -code error $result
     }
-    catch {$w configure -relief ridge}
     catch {$w configure -highlightthickness 0}
     clearTakefocusOpt $w
     set class [winfo class $w]
     set isCheckbtn [string match "*Checkbutton" $class]
+    set isMenubtn [string match "*Menubutton" $class]
     set isText [expr {[string compare $class "Text"] == 0}]
     set isMentry [expr {[string compare $class "Mentry"] == 0}]
-    if {!$isCheckbtn} {
+    if {!$isCheckbtn && !$isMenubtn} {
+	catch {$w configure -relief ridge}
 	catch {$w configure -borderwidth 2}
     }
     if {$isText && $data($col-wrap) && $::tk_version >= 8.5} {
@@ -1475,12 +1656,35 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	if {[string compare $data(-editstartcommand) ""] != 0} {
 	    set text [uplevel #0 $data(-editstartcommand) \
 		      [list $win $row $col $text]]
+
+	    variable winSys
+	    if {[string compare $winSys "aqua"] == 0} {
+		catch {
+		    set ::tk::mac::useCustomMDEF $data(useCustomMDEFSav)
+		}
+	    }
+
 	    if {$data(canceled)} {
 		return ""
 	    }
+
 	    catch {
 		eval [strMap {"%W" "$w"  "%T" "$text"} \
 		      $editWin($name-putValueCmd)]
+	    }
+
+	    if {$isMenubtn} {
+		set menu [$w cget -menu]
+		set last [$menu index last]
+		if {[string compare $last "none"] != 0} {
+		    set varName [$w cget -textvariable]
+		    for {set idx 0} {$idx <= $last} {incr idx} {
+			if {[string compare [$menu type $idx] "radiobutton"]
+			    == 0} {
+			    $menu entryconfigure $idx -variable $varName
+			}
+		    }
+		}
 	    }
 	}
 
@@ -1856,8 +2060,8 @@ proc tablelist::adjustEditWindow {win pixels} {
 	incr pixels -$indentWidth
 	if {$auxWidth != 0} {				;# image or window
 	    if {$auxWidth + 5 <= $pixels} {
-		incr auxWidth 5
-		incr pixels -$auxWidth
+		incr auxWidth 3
+		incr pixels -[expr {$auxWidth + 2}]
 	    } elseif {$auxWidth <= $pixels} {
 		set pixels 0
 	    } else {
@@ -2018,6 +2222,28 @@ proc tablelist::saveEditConfigOpts w {
     foreach c [winfo children $w] {
 	saveEditConfigOpts $c
     }
+
+    if {[string match "*Menubutton" [winfo class $w]]} {
+	set menu [$w cget -menu]
+	set last [$menu index last]
+	set types {}
+
+	if {[string compare $last "none"] != 0} {
+	    for {set idx 0} {$idx <= $last} {incr idx} {
+		lappend types [$menu type $idx]
+		foreach configSet [$menu entryconfigure $idx] {
+		    set default [lindex $configSet 3]
+		    set current [lindex $configSet 4]
+		    if {[string compare $default $current] != 0} {
+			set opt [lindex $configSet 0]
+			set data($menu,$idx$opt) $current
+		    }
+		}
+	    }
+	}
+
+	set data($menu:types) $types
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -2124,6 +2350,20 @@ proc tablelist::restoreEditConfigOpts w {
 
     foreach c [winfo children $w] {
 	restoreEditConfigOpts $c
+    }
+
+    if {[string match "*Menubutton" [winfo class $w]]} {
+	set menu [$w cget -menu]
+	foreach type $data($menu:types) {
+	    $menu add $type
+	}
+	unset data($menu:types)
+
+	foreach name [array names data $menu,*] {
+	    regexp {^.+,(.+)(-.+)$} $name dummy idx opt
+	    $menu entryconfigure $idx $opt $data($name)
+	    unset data($name)
+	}
     }
 }
 
@@ -2413,6 +2653,13 @@ proc tablelist::finishEditing w {
 #------------------------------------------------------------------------------
 proc tablelist::goToNextPrevCell {w amount args} {
     if {[isComboTopMapped $w]} {
+	return ""
+    }
+
+    variable winSys
+    if {[string compare $winSys "aqua"] == 0 &&
+	([string compare $::tk::Priv(postedMb) ""] != 0 ||
+	 [string compare $::tk::Priv(popup) ""] != 0)} {
 	return ""
     }
 

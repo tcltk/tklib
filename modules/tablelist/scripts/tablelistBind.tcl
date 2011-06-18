@@ -8,7 +8,7 @@
 #   - Binding tag TablelistBody
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -892,14 +892,16 @@ proc tablelist::condBeginMove {win row} {
 
     set data(sourceRow) $row
     set sourceKey [lindex $data(keyList) $row]
-    set data(sourceEndRow) [nodeRow $win $sourceKey end 1]
-    set data(parentKey) $data($sourceKey-parent)
-    set data(parentEndRow) [nodeRow $win $data(parentKey) end 1]
+    set data(sourceEndRow) [nodeRow $win $sourceKey end]
+    set data(sourceDescCount) [descCount $win $sourceKey]
+
+    set data(sourceParentKey) $data($sourceKey-parent)
+    set data(sourceParentRow) [keyToRow $win $data(sourceParentKey)]
+    set data(sourceParentEndRow) [nodeRow $win $data(sourceParentKey) end]
 
     set topWin [winfo toplevel $win]
     set data(topEscBinding) [bind $topWin <Escape>]
-    bind $topWin <Escape> \
-	[list tablelist::cancelMove [strMap {"%" "%%"} $win]]
+    bind $topWin <Escape> [list tablelist::cancelMove [strMap {"%" "%%"} $win]]
 }
 
 #------------------------------------------------------------------------------
@@ -1140,33 +1142,95 @@ proc tablelist::condShowTarget {win y} {
     set w $data(body)
     incr y -[winfo y $w]
     set textIdx [$w index @0,$y]
-    set row [expr {int($textIdx) - 1}]
     set dlineinfo [$w dlineinfo $textIdx]
     set lineY [lindex $dlineinfo 1]
     set lineHeight [lindex $dlineinfo 3]
-    if {$y < $lineY + $lineHeight/2} {
-	set data(targetRow) $row
-	set gapY $lineY
+    set row [expr {int($textIdx) - 1}]
+
+    if {$::tk_version >= 8.3} {
+	if {$y < $lineY + $lineHeight/3} {
+	    set data(targetRow) $row
+	    set data(targetChildIdx) -1
+	    set gapY $lineY
+	} elseif {$y < $lineY + $lineHeight*2/3} {
+	    set data(targetRow) $row
+	    set data(targetChildIdx) 0
+	    set gapY [expr {$lineY + $lineHeight/2}]
+	} else {
+	    set y [expr {$lineY + $lineHeight}]
+	    set textIdx [$w index @0,$y]
+	    set row2 [expr {int($textIdx) - 1}]
+	    if {$row2 == $row} {
+		set row2 $data(itemCount)
+	    }
+	    set data(targetRow) $row2
+	    set data(targetChildIdx) -1
+	    set gapY $y
+	}
     } else {
-	set data(targetRow) [expr {$row + 1}]
-	set gapY [expr {$lineY + $lineHeight}]
+	if {$y < $lineY + $lineHeight/2} {
+	    set data(targetRow) $row
+	    set gapY $lineY
+	} else {
+	    set y [expr {$lineY + $lineHeight}]
+	    set textIdx [$w index @0,$y]
+	    set row2 [expr {int($textIdx) - 1}]
+	    if {$row2 == $row} {
+		set row2 $data(itemCount)
+	    }
+	    set data(targetRow) $row2
+	    set gapY $y
+	}
+	set data(targetChildIdx) -1
     }
 
-    if {$data(targetRow) != $data(parentEndRow)} {
-	set targetKey [lindex $data(keyList) $data(targetRow)]
+    #
+    # Get the key and node index of the potential target parent
+    #
+    if {$data(targetRow) > $data(lastRow)} {
+	if {$data(targetRow) > $data(sourceParentEndRow)} {
+	    set targetParentKey root
+	    set targetParentNodeIdx root
+	} else {
+	    set targetParentKey $data(sourceParentKey)
+	    set targetParentNodeIdx $data(sourceParentRow)
+	}
+    } elseif {$data(targetChildIdx) == 0} {
+	set targetParentKey [lindex $data(keyList) $data(targetRow)]
+	set targetParentNodeIdx $data(targetRow)
+    } else {
+	set targetParentKey [::$win parentkey $data(targetRow)]
+	set targetParentNodeIdx [keyToRow $win $targetParentKey]
+	if {$targetParentNodeIdx < 0} {
+	    set targetParentNodeIdx root
+	}
     }
-    if {$data(targetRow) == $data(sourceRow) ||
-	$data(targetRow) == $data(sourceEndRow) ||
-	$data(targetRow) <= [keyToRow $win $data(parentKey)] ||
-	$data(targetRow) > $data(parentEndRow) ||
-	($data(targetRow) != $data(parentEndRow) &&
-	 [string compare $data($targetKey-parent) $data(parentKey)] != 0)} {
+
+    if {($data(targetRow) == $data(sourceRow)) ||
+	($data(targetRow) == $data(sourceRow) - 1 &&
+	 $data(targetRow) == $data(sourceParentRow) &&
+	 $data(targetChildIdx) == 0) ||
+	($data(targetRow) == $data(sourceEndRow) &&
+	 $data(targetChildIdx) < 0) ||
+	($data(targetRow) > $data(sourceRow) &&
+	 $data(targetRow) <= $data(sourceRow) + $data(sourceDescCount)) ||
+	([string compare $data(sourceParentKey) $targetParentKey] != 0 &&
+	 ($::tk_version < 8.3 ||
+	 ([string compare $data(-acceptchildcommand) ""] != 0 &&
+	  ![uplevel #0 $data(-acceptchildcommand) \
+	    [list $win $targetParentNodeIdx $data(sourceRow)]])))} {
 	unset data(targetRow)
+	unset data(targetChildIdx)
 	$w configure -cursor $data(-cursor)
 	place forget $data(rowGap)
     } else {
 	$w configure -cursor $data(-movecursor)
-	place $data(rowGap) -anchor w -relwidth 1.0 -y $gapY
+	if {$data(targetChildIdx) == 0} {
+	    place $data(rowGap) -anchor w -y $gapY -height $lineHeight -width 5
+	} else {
+	    place $data(rowGap) -anchor w -y $gapY -height 4 \
+				-width [winfo width $data(hdrTxtFr)]
+	}
 	raise $data(rowGap)
     }
 }
@@ -1192,19 +1256,50 @@ proc tablelist::moveOrActivate {win row col} {
 
     upvar ::tablelist::ns${win}::data data
     if {[info exists data(sourceRow)]} {
-	set sourceRow $data(sourceRow)
+	set sourceKey [lindex $data(keyList) $data(sourceRow)]
 	unset data(sourceRow)
 	unset data(sourceEndRow)
-	unset data(parentKey)
-	unset data(parentEndRow)
+	unset data(sourceDescCount)
+	unset data(sourceParentKey)
+	unset data(sourceParentRow)
+	unset data(sourceParentEndRow)
 	bind [winfo toplevel $win] <Escape> $data(topEscBinding)
 	$data(body) configure -cursor $data(-cursor)
 	place forget $data(rowGap)
 
 	if {[info exists data(targetRow)]} {
-	    ::$win move $sourceRow $data(targetRow)
+	    if {$data(targetRow) > $data(lastRow)} {
+		if {[catch {::$win move $sourceKey $data(targetRow)}] != 0} {
+		    ::$win move $sourceKey root end
+		}
+	    } else {
+		set targetChildIdx $data(targetChildIdx)
+		if {$targetChildIdx == 0} {
+		    set targetParentKey [lindex $data(keyList) $data(targetRow)]
+
+		    #
+		    # The first expand invocation below is necessary in
+		    # case the target node has already children, while
+		    # the second one is needed in the opposite case.
+		    #
+		    ::$win expand $targetParentKey -partly
+		    ::$win move $sourceKey $targetParentKey $targetChildIdx
+		    ::$win expand $targetParentKey -partly
+		} else {
+		    set targetParentKey [::$win parentkey $data(targetRow)]
+		    set targetChildIdx [::$win childindex $data(targetRow)]
+		    ::$win move $sourceKey $targetParentKey $targetChildIdx
+		}
+	    }
+
 	    event generate $win <<TablelistRowMoved>>
 	    unset data(targetRow)
+	    unset data(targetChildIdx)
+	} else {
+	    switch $data(-selecttype) {
+		row  { ::$win activate $row }
+		cell { ::$win activatecell $row,$col }
+	    }
 	}
     } else {
 	switch $data(-selecttype) {
@@ -1295,9 +1390,12 @@ proc tablelist::cancelMove win {
 
     unset data(sourceRow)
     unset data(sourceEndRow)
-    unset data(parentKey)
-    unset data(parentEndRow)
+    unset data(sourceDescCount)
+    unset data(sourceParentKey)
+    unset data(sourceParentRow)
+    unset data(sourceParentEndRow)
     catch {unset data(targetRow)}
+    catch {unset data(targetChildIdx)}
     bind [winfo toplevel $win] <Escape> $data(topEscBinding)
     $data(body) configure -cursor $data(-cursor)
     place forget $data(rowGap)
@@ -2635,6 +2733,7 @@ proc tablelist::labelB1Up {w X} {
 	    redisplayCol $win $col 0 end
 	    adjustColumns $win {} 0
 	    stretchColumns $win $col
+	    updateColors $win
 	    event generate $win <<TablelistColumnResized>>
 	}
     } else {
@@ -2754,6 +2853,7 @@ proc tablelist::escape {win col} {
 	$data(body) tag remove visibleLines 1.0 end
 	$data(body) tag configure visibleLines -tabs {}
 	adjustColumns $win {} 1
+	updateColors $win
     } elseif {!$data(inClickedLabel)} {
 	configLabel $w -cursor $data(-cursor)
 	$data(hdrTxtFrCanv)$col configure -cursor $data(-cursor)

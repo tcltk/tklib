@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -76,6 +76,14 @@ proc tablelist::rowIndex {win idx endIsSize {checkRange 0}} {
 	} else {
 	    set index $data(lastRow)
 	}
+    } elseif {[string first $idx "top"] == 0} {
+	displayItems $win
+	set textIdx [$data(body) index @0,0]
+	set index [expr {int($textIdx) - 1}]
+    } elseif {[string first $idx "bottom"] == 0} {
+	displayItems $win
+	set textIdx [$data(body) index @0,$data(btmY)]
+	set index [expr {int($textIdx) - 1}]
     } elseif {[string first $idx "active"] == 0 && [string length $idx] >= 2} {
 	set index $data(activeRow)
     } elseif {[string first $idx "anchor"] == 0 && [string length $idx] >= 2} {
@@ -100,8 +108,8 @@ proc tablelist::rowIndex {win idx endIsSize {checkRange 0}} {
 	}
 	if {$row == $data(itemCount)} {
 	    return -code error \
-		   "bad row index \"$idx\": must be active, anchor,\
-		    end, @x,y, a number, a full key, or a name"
+		   "bad row index \"$idx\": must be active, anchor, end,\
+		    top, bottom, @x,y, a number, a full key, or a name"
 	}
     }
 
@@ -120,13 +128,17 @@ proc tablelist::rowIndex {win idx endIsSize {checkRange 0}} {
 # checked whether the numerical value corresponding to idx is within the
 # allowed range.
 #------------------------------------------------------------------------------
-proc tablelist::colIndex {win idx checkRange} {
+proc tablelist::colIndex {win idx checkRange {decrX 1}} {
     upvar ::tablelist::ns${win}::data data
 
     if {[catch {format "%d" $idx} index] == 0} {
 	# nothing
     } elseif {[string first $idx "end"] == 0} {
 	set index $data(lastCol)
+    } elseif {[string first $idx "left"] == 0} {
+	return [colIndex $win @0,0 $checkRange 0]
+    } elseif {[string first $idx "right"] == 0} {
+	return [colIndex $win @$data(rightX),0 $checkRange 0]
     } elseif {[string first $idx "active"] == 0 && [string length $idx] >= 2} {
 	set index $data(activeCol)
     } elseif {[string first $idx "anchor"] == 0 && [string length $idx] >= 2} {
@@ -134,12 +146,13 @@ proc tablelist::colIndex {win idx checkRange} {
     } elseif {[scan $idx "@%d,%d" x y] == 2} {
 	synchronize $win
 	displayItems $win
-	incr x -[winfo x $data(body)]
-	set bodyWidth [winfo width $data(body)]
-	if {$x >= $bodyWidth} {
-	    set x [expr {$bodyWidth - 1}]
-	} elseif {$x < 0} {
-	    set x 0
+	if {$decrX} {
+	    incr x -[winfo x $data(body)]
+	    if {$x > $data(rightX)} {
+		set x $data(rightX)
+	    } elseif {$x < 0} {
+		set x 0
+	    }
 	}
 	set x [expr {$x + [winfo rootx $data(body)]}]
 
@@ -169,7 +182,7 @@ proc tablelist::colIndex {win idx checkRange} {
 	if {$col == $data(colCount)} {
 	    return -code error \
 		   "bad column index \"$idx\": must be active, anchor,\
-		    end, @x,y, a number, or a name"
+		    end, left, right, @x,y, a number, or a name"
 	}
     }
 
@@ -211,10 +224,10 @@ proc tablelist::cellIndex {win idx checkRange} {
 	# nothing
     } else {
 	return -code error \
-	       "bad cell index \"$idx\": must be active, anchor,\
-		end, @x,y, or row,col, where row must be active,\
-		anchor, end, a number, a full key, or a name, and\
-		col must be active, anchor, end, a number, or a name"
+	       "bad cell index \"$idx\": must be active, anchor, end, @x,y,\
+		or row,col, where row must be active, anchor, end, top,\
+		bottom, a number, a full key, or a name, and col must be\
+		active, anchor, end, left, right, a number, or a name"
     }
 
     if {$checkRange && ($row < 0 || $row > $data(lastRow) ||
@@ -398,7 +411,7 @@ proc tablelist::descCount {win key} {
 # Returns the row of the child item identified by childIdx of the node given by
 # parentKey within the tablelist widget win.
 #------------------------------------------------------------------------------
-proc tablelist::nodeRow {win parentKey childIdx endIsSize} {
+proc tablelist::nodeRow {win parentKey childIdx} {
     upvar ::tablelist::ns${win}::data data
 
     if {[catch {format "%d" $childIdx} idx] == 0} {
@@ -410,13 +423,8 @@ proc tablelist::nodeRow {win parentKey childIdx endIsSize} {
 			  [descCount $win $parentKey] + 1}]
 	}
     } elseif {[string first $childIdx "end"] == 0} {
-	if {$endIsSize} {
-	    return [expr {[keyToRow $win $parentKey] +
-			  [descCount $win $parentKey] + 1}]
-	} else {
-	    set childKey [lindex $data($parentKey-children) end]
-	    return [keyToRow $win $childKey]
-	}
+	return [expr {[keyToRow $win $parentKey] +
+		      [descCount $win $parentKey] + 1}]
     } else {
 	return -code error \
 	       "bad child index \"$childIdx\": must be end or a number"
@@ -1258,7 +1266,7 @@ proc tablelist::adjustElem {win textName auxWidthName indentWidthName font
 	} else {				;# both aux. object and text
 	    if {$auxWidth + 5 <= $pixels} {
 		incr auxWidth 3
-		incr pixels -$auxWidth
+		incr pixels -[expr {$auxWidth + 2}]
 		set text [strRange $win $text $font $pixels $snipSide $snipStr]
 	    } elseif {$auxWidth <= $pixels} {
 		set text ""			;# can't display the text
@@ -1308,7 +1316,7 @@ proc tablelist::adjustMlElem {win listName auxWidthName indentWidthName font
 	} else {				;# both aux. object and text
 	    if {$auxWidth + 5 <= $pixels} {
 		incr auxWidth 3
-		incr pixels -$auxWidth
+		incr pixels -[expr {$auxWidth + 2}]
 		foreach str $list {
 		    lappend list2 \
 			[strRange $win $str $font $pixels $snipSide $snipStr]

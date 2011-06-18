@@ -12,7 +12,7 @@ exec tclsh "$0" ${1+"$@"}
 # 8.4a2), which causes excessive memory use when calling "info exists" on
 # non-existent array elements.
 #
-# Copyright (c) 2001-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2001-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 set procDef {
@@ -63,7 +63,8 @@ puts "\nMade backup copy \"tablelistWidget.tcl.BAK\"."
 puts "Created new version of the file \"tablelistWidget.tcl\"."
 
 foreach file {tablelistBind.tcl tablelistConfig.tcl tablelistEdit.tcl
-	      tablelistMove.tcl tablelistSort.tcl tablelistUtil.tcl} {
+	      tablelistMove.tcl tablelistSort.tcl tablelistThemes.tcl
+	      tablelistUtil.tcl} {
     file copy $file $file.BAK
 
     set fi [open $file.BAK r]

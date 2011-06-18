@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -18,6 +18,7 @@ proc tablelist::extendConfigSpecs {} {
     #
     # Extend some elements of the array configSpecs
     #
+    lappend configSpecs(-acceptchildcommand)	{}
     lappend configSpecs(-activestyle)		frame
     lappend configSpecs(-collapsecommand)	{}
     lappend configSpecs(-columns)		{}
@@ -143,6 +144,7 @@ proc tablelist::extendConfigSpecs {} {
 	}
     } else {
 	if {$::tk_version < 8.3} {
+	    unset configSpecs(-acceptchildcommand)
 	    unset configSpecs(-collapsecommand)
 	    unset configSpecs(-expandcommand)
 	    unset configSpecs(-titlecolumns)
@@ -567,6 +569,7 @@ proc tablelist::doConfig {win opt val} {
 			adjustColumns $win $whichWidths 1
 		    }
 		}
+		-acceptchildcommand -
 		-collapsecommand -
 		-editendcommand -
 		-editstartcommand -
@@ -2276,7 +2279,7 @@ proc tablelist::doRowConfig {row win opt val} {
 			# Elide the descendants of this item
 			#
 			set fromRow [expr {$row + 1}]
-			set toRow [nodeRow $win $key end 1]
+			set toRow [nodeRow $win $key end]
 			for {set _row $fromRow} {$_row < $toRow} {incr _row} {
 			    doRowConfig $_row $win -elide 1
 			}
@@ -2303,7 +2306,10 @@ proc tablelist::doRowConfig {row win opt val} {
 			incr data(nonViewableRowCount) -1
 			set viewChanged 1
 
-			expandSubCmd $win [list $row -partly]
+			if {[string match "*expanded*" \
+			     $data($key,$data(treeCol)-indent)]} {
+			    expandSubCmd $win [list $row -partly]
+			}
 		    }
 		}
 	    }
