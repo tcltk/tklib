@@ -1,3 +1,34 @@
+2011-06-18  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                          Bumped the version number to 5.3.
+	* *.txt:
+	* ../../examples/tablelist/*.tcl:
+
+	* scripts/tablelist*.tcl: Enhanced the interactive row move operation;
+	  added the -acceptchildcommand option; added the searchcolumn,
+	  getformatted, getformattedcolumns, and getformattedcells subcommands;
+	  added support for interactive cell editing with the aid of the Tk
+	  core and tile menubutton widgets; added support for the row indices
+	  "top" and "bottom" and for the column indices "left" and "right".
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/index.html:             Updated the documentation.
+	* doc/tablelist.html:
+	* doc/tablelistBWidget.html:
+	* doc/tablelistCombobox.html:
+	* doc/tablelistIwidgets.html:
+	* doc/tablelistMentry.html:
+	* doc/tablelistTile.html:
+	* doc/tablelistTkCore.html:
+	* doc/tablelistWidget.html:
+
+	* doc/bwidget.png:     Updated screenshots.
+	* doc/config.png:
+	* doc/tileWidgets.png:
+
+	* doc/bwidget_tile.png: Removed screenshot.
+
 2010-10-16  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* COPYRIGHT.txt: Minor corrections.
@@ -9,7 +40,7 @@
 	* *.txt:
 	* ../../examples/tablelist/*.tcl:
 
-	+ scripts/tablelist*.tcl: Added the "-fullseparators" option; added the
+	* scripts/tablelist*.tcl: Added the "-fullseparators" option; added the
 	  tree styles "ambiance", "dust", "dustSand", "newWave", "plastik", and
 	  "radiance"; the implementation of collapse(all) and expand(all) no
 	  longer makes use of the -hide row configuration option; the move
