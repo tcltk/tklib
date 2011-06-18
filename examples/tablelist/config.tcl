@@ -2,10 +2,10 @@
 # Demonstrates how to use a tablelist widget for displaying and editing the
 # configuration options of an arbitrary widget.
 #
-# Copyright (c) 2000-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.2
+package require tablelist 5.3
 
 namespace eval demo {
     #

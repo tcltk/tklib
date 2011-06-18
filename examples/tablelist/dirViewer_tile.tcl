@@ -6,10 +6,10 @@ exec wish "$0" ${1+"$@"}
 # Demonstrates how to use a tablelist widget for displaying the contents of a
 # directory.
 #
-# Copyright (c) 2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2010-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.2
+package require tablelist_tile 5.3
 
 #
 # Add some entries to the Tk option database
@@ -20,9 +20,9 @@ source [file join $dir option_tile.tcl]
 #
 # Create three images
 #
-set clsdFolderImg [image create photo -file [file join $dir clsdFolder.gif]]
-set openFolderImg [image create photo -file [file join $dir openFolder.gif]]
-set fileImg       [image create photo -file [file join $dir file.gif]]
+image create photo clsdFolderImg -file [file join $dir clsdFolder.gif]
+image create photo openFolderImg -file [file join $dir openFolder.gif]
+image create photo fileImg       -file [file join $dir file.gif]
 
 #
 # Work around the improper appearance of the tile scrollbars in the aqua theme
@@ -185,17 +185,16 @@ proc putContents {dir tbl nodeIdx} {
     #
     # Insert an image into the first cell of each newly inserted row
     #
-    global clsdFolderImg fileImg
     foreach item $itemList {
 	set name [lindex $item end]
 	if {[string compare $name ""] == 0} {			;# file
-	    $tbl cellconfigure $row,0 -image $fileImg
-	} else {						;# subdirectory
-	    $tbl cellconfigure $row,0 -image $clsdFolderImg
+	    $tbl cellconfigure $row,0 -image fileImg
+	} else {						;# directory
+	    $tbl cellconfigure $row,0 -image clsdFolderImg
 	    $tbl rowattrib $row pathName $name
 
 	    #
-	    # Mark the row as collapsed if the subdirectory is non-empty
+	    # Mark the row as collapsed if the directory is non-empty
 	    #
 	    if {[file readable $name] && [llength \
 		[glob -nocomplain -types {d f} -directory $name *]] != 0} {
@@ -270,8 +269,7 @@ proc expandCmd {tbl row} {
     }
 
     if {[$tbl childcount $row] != 0} {
-	global openFolderImg
-	$tbl cellconfigure $row,0 -image $openFolderImg
+	$tbl cellconfigure $row,0 -image openFolderImg
     }
 }
 
@@ -282,8 +280,7 @@ proc expandCmd {tbl row} {
 # tablelist widget tbl.
 #------------------------------------------------------------------------------
 proc collapseCmd {tbl row} {
-    global clsdFolderImg
-    $tbl cellconfigure $row,0 -image $clsdFolderImg
+    $tbl cellconfigure $row,0 -image clsdFolderImg
 }
 
 #------------------------------------------------------------------------------
@@ -293,7 +290,7 @@ proc collapseCmd {tbl row} {
 #------------------------------------------------------------------------------
 proc putContentsOfSelFolder tbl {
     set row [$tbl curselection]
-    if {[$tbl hasrowattrib $row pathName]} {		;# subdirectory item
+    if {[$tbl hasrowattrib $row pathName]} {		;# directory item
 	set dir [$tbl rowattrib $row pathName]
 	if {[file isdirectory $dir] && [file readable $dir]} {
 	    if {[llength [glob -nocomplain -types {d f} -directory $dir *]]
@@ -324,7 +321,7 @@ proc postPopupMenu {rootX rootY} {
     set tbl .tf.tbl
     set row [$tbl curselection]
     set menu .menu
-    if {[$tbl hasrowattrib $row pathName]} {		;# subdirectory item
+    if {[$tbl hasrowattrib $row pathName]} {		;# directory item
 	set dir [$tbl rowattrib $row pathName]
 	if {[file isdirectory $dir] && [file readable $dir]} {
 	    if {[llength [glob -nocomplain -types {d f} -directory $dir *]]
