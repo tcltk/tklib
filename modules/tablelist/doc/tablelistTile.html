@@ -37,6 +37,9 @@
 
     <li><a href="#checkbutton">Interactive Cell Editing Using the tile
     checkbutton Widget</a></li>
+
+    <li><a href="#menubutton">Interactive Cell Editing Using the tile
+    menubutton Widget</a></li>
   </ul>
 
   <div align="center">
@@ -47,7 +50,7 @@
 
   <h2><a name="overview"></a>Overview</h2>
 
-  <p>The tile theme engine is a compiled library extension for Tcl/Tk version
+  <p>The tile theme engine is a compiled library extension for Tcl/Tk versions
   8.4 or higher.&nbsp; Beginning with Tk 8.5a6, tile is integrated into the Tk
   core.&nbsp; For earlier Tk versions it can be downloaded from the address</p>
 
@@ -59,15 +62,14 @@
   </blockquote>
 
   <p>Tablelist supports interactive cell editing with the aid of the tile
-  entry, spinbox, combobox, and checkbutton widgets, accessed as
+  entry, spinbox, combobox, checkbutton, and menubutton widgets, accessed as
   <code><b>ttk::entry</b></code>, <code><b>ttk::spinbox</b></code>,
-  <code><b>ttk::combobox</b></code>, and <code><b>ttk::checkbutton</b></code>,
-  respectively.&nbsp; The version of the tile package must be 0.6 or higher
-  (the tile spinbox requires even tile 0.8.3 or later, or, alternatively, Tk
-  8.6 or later).&nbsp; Due to the rapidly growing importance of the tile
-  library, these widgets are automatically registered for cell editing, hence
-  the only action needed for using one of them for editing the cells of a given
-  column is as follows:</p>
+  <code><b>ttk::combobox</b></code>, <code><b>ttk::checkbutton</b></code>, and
+  <code><b>ttk::menubutton</b></code>, respectively.&nbsp; The version of the
+  tile package must be 0.6 or higher (the tile spinbox requires even tile 0.8.3
+  or later, or, alternatively, Tk 8.6 or later).&nbsp; These widgets are
+  automatically registered for cell editing, hence the only action needed for
+  using one of them for editing the cells of a given column is as follows:</p>
 
   <p>Use the tablelist widget's <code><b><a href=
   "tablelistWidget.html#columnconfigure">columnconfigure</a></b></code>
@@ -76,9 +78,9 @@
   and its <code><b><a href=
   "tablelistWidget.html#col_editwindow">-editwindow</a></b></code> option to
   <code><b>ttk::entry</b></code>, <code><b>ttk::spinbox</b></code>,
-  <code><b>ttk::combobox</b></code>, or <code><b>ttk::checkbutton</b></code>,
-  respectively.&nbsp; (These options are supported at cell level, too, with the
-  aid of the <code><b><a href=
+  <code><b>ttk::combobox</b></code>, <code><b>ttk::checkbutton</b></code>, or
+  <code><b>ttk::menubutton</b></code>, respectively.&nbsp; (These options are
+  supported at cell level, too, with the aid of the <code><b><a href=
   "tablelistWidget.html#cellconfigure">cellconfigure</a></b></code>
   subcommand.)</p>
 
@@ -232,6 +234,49 @@
     <b>KEYWORDS</b></dt>
 
     <dd>tablelist, editing, tile, checkbutton</dd>
+  </dl>
+
+  <hr>
+
+  <h2><a name="menubutton"></a>Interactive Cell Editing Using the tile
+  menubutton Widget.</h2>
+
+  <dl>
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>The temporary embedded tile menubutton widget used for interactive
+    cell editing will be created with explicitly set values for its
+    <code><b>-style</b></code> and <code><b>-textvariable</b></code>
+    options.&nbsp; In addition, a menu with its <code><b>-tearoff</b></code>
+    option set to <code>0</code> and an appropriate script as the value of its
+    <code><b>-postcommand</b></code> option is created and set as the value of
+    the menubutton's <code><b>-menu</b></code> option.&nbsp; In an X11
+    environment, the menu's appearance is adapted to that of the tablelist
+    widget by setting its <code><b>-background</b></code>,
+    <code><b>-foreground</b></code>, <code><b>-activebackground</b></code>,
+    <code><b>-activeforeground</b></code>, and
+    <code><b>-activeborderwidth</b></code> options to appropriate values.&nbsp;
+    You can use the script corresponding to the <code><b><a href=
+    "tablelistWidget.html#editstartcommand">-editstartcommand</a></b></code>
+    tablelist configuration option to set any other options of the menubutton
+    and/or its associated menu.&nbsp; You will, however, need this script in
+    the first place for populating the menu, preferably with radiobutton
+    entries.&nbsp; For every radiobutton entry added to the menu, the Tablelist
+    implementation will make sure that its value (which can be specified by
+    setting the entry's <code><b>-value</b></code> or
+    <code><b>-label</b></code> option) will be displayed in the menubutton as
+    its text when the entry is selected.&nbsp; (Tablelist achieves this by
+    setting the menu entry's <code><b>-variable</b></code> option to the value
+    of the menubutton's <code><b>-textvariable</b></code> option.)&nbsp; For
+    menu entries of types other than radiobutton (e.g., for command entries) it
+    is the responsibility of the application to make sure that the selected
+    entry's text will be shown in the menubutton (for example, with the aid of
+    the menu entry's <code><b>-command</b></code> option).</d>
+
+    <dt><br>
+    <b>KEYWORDS</b></dt>
+
+    <dd>tablelist, editing, tile, menubutton</dd>
   </dl>
 
   <div align="center">
