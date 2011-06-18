@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of the tablelist move and movecolumn subcommands.
 #
-# Copyright (c) 2003-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -28,23 +28,20 @@ proc tablelist::moveRow {win source target} {
     } elseif {$target < 0} {
 	set target 0
     }
+
+    set sourceItem [lindex $data(itemList) $source]
+    set sourceKey [lindex $sourceItem end]
+    if {$target == [nodeRow $win $sourceKey end]} {
+	return ""
+    }
+
     if {$target == $source} {
 	return -code error \
 	       "cannot move item with index \"$source\" before itself"
     }
 
-    if {$target == $source + 1} {
-	return ""
-    }
-
-    set sourceItem [lindex $data(itemList) $source]
-    set sourceKey [lindex $sourceItem end]
-    if {$target == [nodeRow $win $sourceKey end 1]} {
-	return ""
-    }
-
     set parentKey $data($sourceKey-parent)
-    set parentEndRow [nodeRow $win $parentKey end 1]
+    set parentEndRow [nodeRow $win $parentKey end]
     if {($target <= [keyToRow $win $parentKey] || $target > $parentEndRow)} {
 	return -code error \
 	       "cannot move item with index \"$source\" outside its parent"
@@ -86,30 +83,30 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
     } elseif {$source < 0} {
 	set source 0
     }
-    set target [nodeRow $win $targetParentKey $targetChildIdx 1]
+    set target [nodeRow $win $targetParentKey $targetChildIdx]
     if {$target < 0} {
 	set target 0
-    }
-    if {$target == $source} {
-	return -code error \
-	       "cannot move item with index \"$source\" before itself"
-    }
-
-    if {$target == $source + 1} {
-	return ""
     }
 
     set sourceItem [lindex $data(itemList) $source]
     set sourceKey [lindex $sourceItem end]
-    if {$target == [nodeRow $win $sourceKey end 1]} {
+    if {$target == [nodeRow $win $sourceKey end] && $withDescendants} {
 	return ""
     }
 
-    set sourceDescCount [descCount $win $sourceKey]
-    if {$target > $source && $target <= $source + $sourceDescCount} {
+    set sourceParentKey $data($sourceKey-parent)
+    if {[string compare $targetParentKey $sourceParentKey] == 0 &&
+	$target == $source && $withDescendants} {
 	return -code error \
-	       "cannot move item with index \"$source\" before\
-	        one of its descendants (except the first one)"
+	       "cannot move item with index \"$source\" before itself"
+    }
+
+    set sourceDescCount [descCount $win $sourceKey]
+    if {$target > $source && $target <= $source + $sourceDescCount &&
+	$withDescendants} {
+	return -code error \
+	       "cannot move item with index \"$source\"\
+	        before one of its descendants"
     }
 
     #
@@ -248,7 +245,6 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	#
 	# Update the tree information
 	#
-	set sourceParentKey $data($sourceKey-parent)
 	set sourceChildIdx \
 	    [lsearch -exact $data($sourceParentKey-children) $sourceKey]
 	set data($sourceParentKey-children) \
@@ -270,6 +266,22 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 		 $targetChildIdx $sourceKey]
 	}
 	set data($sourceKey-parent) $targetParentKey
+
+	#
+	# If the list of children of the source's parent has become empty
+	# then set the parent's indentation image to the indented one
+	#
+	if {[llength $data($sourceParentKey-children)] == 0 &&
+	    [info exists data($sourceParentKey,$treeCol-indent)]} {
+	    collapseSubCmd $win [list $sourceParentKey -partly]
+	    set data($sourceParentKey,$treeCol-indent) [strMap \
+		{"collapsed" "indented" "expanded" "indented"
+		 "Act" ""} $data($sourceParentKey,$treeCol-indent)]
+	    if {[winfo exists $w.ind_$sourceParentKey,$treeCol]} {
+		$w.ind_$sourceParentKey,$treeCol configure -image \
+		    $data($sourceParentKey,$treeCol-indent)
+	    }
+	}
 
 	#
 	# Mark the target parent item as expanded if it was just indented
@@ -374,7 +386,10 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	    if {[regexp {^(.+)([0-9]+)$} $indentImg dummy base descDepth]} {
 		incr descDepth [expr {$depth - $sourceDepth}]
 		if {$descDepth > $maxIndentDepths($treeStyle)} {
-		    createTreeImgs $treeStyle $descDepth
+		    for {set d $descDepth} {$d > $maxIndentDepths($treeStyle)} \
+			{incr d -1} {
+			createTreeImgs $treeStyle $d
+		    }
 		    set maxIndentDepths($treeStyle) $descDepth
 		}
 		set descKey [lindex $data(keyList) $descRow]
@@ -400,6 +415,18 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	updateColorsWhenIdle $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
+    }
+
+    #
+    # (Un)hide the newline character that ends the
+    # last line if the line itself is (not) hidden
+    #
+    foreach tag {elidedRow hiddenRow} {
+	if {[lsearch -exact [$w tag names end-1l] $tag] >= 0} {
+	    $w tag add $tag end-1c
+	} else {
+	    $w tag remove $tag end-1c
+	}
     }
 
     return ""

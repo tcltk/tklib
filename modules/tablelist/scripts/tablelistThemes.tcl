@@ -8,7 +8,7 @@
 #   - Private procedures performing RGB <-> HSV conversions
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2005-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1177,7 +1177,7 @@ proc tablelist::tileqtTheme {} {
     #
     if {[set val [getKdeConfigVal "General" "alternateBackground"]] eq ""} {
 	set stripeBg ""
-    } elseif {[string range $val 0 0] eq "#"} {
+    } elseif {[string index $val 0] eq "#"} {
 	set stripeBg $val
     } elseif {[scan $val "%d,%d,%d" r g b] == 3} {
 	set stripeBg [format "#%02x%02x%02x" $r $g $b]
@@ -1702,7 +1702,7 @@ proc tablelist::readKdeConfigVal {fileName group key} {
     set keyFound 0
     while {[gets $chan line] >= 0} {
 	set line [string trim $line]
-	if {[string range $line 0 0] eq "\["} {
+	if {[string index $line 0] eq "\["} {
 	    break
 	}
 
