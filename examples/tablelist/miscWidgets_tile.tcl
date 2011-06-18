@@ -5,12 +5,12 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 # Demonstrates the interactive tablelist cell editing with the aid of Bryan
 # Oakley's combobox, the mentry widgets of type "Date" and "Time", and of the
-# Tk core entry, spinbox, and checkbutton widgets.
+# Tk core entry, spinbox, checkbutton, and menubutton widgets.
 #
-# Copyright (c) 2004-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.2
+package require tablelist_tile 5.3
 package require combobox
 package require mentry
 
@@ -39,10 +39,10 @@ tablelist::addDateMentry Ymd -
 tablelist::addTimeMentry HMS :
 
 #
-# Create two images, to be displayed in tablelist cells with boolean values
+# Create the images "checkedImg" and "uncheckedImg", as well as 16 images of
+# names like "img#FF0000", displaying colors identified by names like "red"
 #
-set checkedImg   [image create photo -file [file join $dir checked.gif]]
-set uncheckedImg [image create photo -file [file join $dir unchecked.gif]]
+source [file join $dir images.tcl]
 
 #
 # Improve the window's appearance by using a tile
@@ -64,7 +64,8 @@ tablelist::tablelist $tbl \
 	      0 "Stop Bits"	  center
 	      0 "Handshake"	  left
 	      0 "Activation Date" center
-	      0 "Activation Time" center} \
+	      0 "Activation Time" center
+	      0 "Cable Color"	  left} \
     -editstartcommand editStartCmd -editendcommand editEndCmd \
     -height 0 -width 0
 if {[$tbl cget -selectborderwidth] == 0} {
@@ -85,6 +86,7 @@ $tbl columnconfigure 8 -name actDate   -editable yes -editwindow dateMentry \
     -formatcommand formatDate -sortmode integer
 $tbl columnconfigure 9 -name actTime   -editable yes -editwindow timeMentry \
     -formatcommand formatTime -sortmode integer
+$tbl columnconfigure 10 -name color    -editable yes -editwindow menubutton
 
 proc emptyStr   val { return "" }
 proc formatDate val { return [clock format $val -format "%Y-%m-%d"] }
@@ -94,15 +96,14 @@ proc formatTime val { return [clock format $val -format "%H:%M:%S"] }
 # Populate the tablelist widget; set the activation
 # date & time to 10 minutes past the current clock value
 #
-set clock [clock seconds]
-incr clock 600
-for {set n 1} {$n <= 8} {incr n} {
-    $tbl insert end [list $n 1 "Line $n" 9600 8 None 1 XON/XOFF $clock $clock]
-    $tbl cellconfigure end,available -image $checkedImg
-}
-for {set n 9} {$n <= 16} {incr n} {
-    $tbl insert end [list $n 0 "Line $n" 9600 8 None 1 XON/XOFF $clock $clock]
-    $tbl cellconfigure end,available -image $uncheckedImg
+set clock [expr {[clock seconds] + 600}]
+for {set i 0; set n 1} {$i < 16} {set i $n; incr n} {
+    $tbl insert end [list $n [expr {$i < 8}] "Line $n" 9600 8 None 1 XON/XOFF \
+	$clock $clock [lindex $colorNames $i]]
+
+    set availImg [expr {($i < 8) ? "checkedImg" : "uncheckedImg"}]
+    $tbl cellconfigure end,available -image $availImg
+    $tbl cellconfigure end,color -image img[lindex $colorValues $i]
 }
 
 set btn [ttk::button $f.btn -text "Close" -command exit]
@@ -180,6 +181,19 @@ proc editStartCmd {tbl row col text} {
 	    #
 	    $w configure -justify center
 	}
+
+	color {
+	    #
+	    # Populate the menu
+	    #
+	    set menu [$w cget -menu]
+	    foreach name $::colorNames {
+		set img img$::colors($name)
+		$menu add radiobutton -compound left -image $img -label $name \
+		    -command [list $w configure -compound left -image $img]
+	    }
+	    $menu entryconfigure 8 -columnbreak 1
+	}
     }
 
     return $text
@@ -208,7 +222,7 @@ proc editEndCmd {tbl row col text} {
 	    #
 	    # Update the image contained in the cell
 	    #
-	    set img [expr {$text ? $::checkedImg : $::uncheckedImg}]
+	    set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
 	    $tbl cellconfigure $row,$col -image $img
 	}
 
@@ -280,6 +294,13 @@ proc editEndCmd {tbl row col text} {
 		$tbl cellconfigure $row,actDate -text $actClock
 		return $actClock
 	    }
+	}
+
+	color {
+	    #
+	    # Update the image contained in the cell
+	    #
+	    $tbl cellconfigure $row,$col -image img$::colors($text)
 	}
     }
 
