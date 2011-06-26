@@ -28,8 +28,8 @@ if {[string compare $winSys "x11"] == 0} {
     option add *selectBackground	#678db2
     option add *selectForeground	white
 }
-option add *Tablelist.background	gray98
-option add *Tablelist.stripeBackground	#e0e8f0
+option add *Tablelist.background	white
+option add *Tablelist.stripeBackground	#e4e8ec
 option add *Tablelist.setGrid		yes
 option add *Tablelist.movableColumns	yes
 option add *Tablelist.labelCommand	tablelist::sortByColumn

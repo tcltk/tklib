@@ -36,8 +36,8 @@ namespace eval demo {
     }
     option add *DemoTop.tf.borderWidth			1
     option add *DemoTop.tf.relief			sunken
-    option add *DemoTop.tf.tbl.background		gray98
-    option add *DemoTop.tf.tbl.stripeBackground		#e0e8f0
+    option add *DemoTop.tf.tbl.background		white
+    option add *DemoTop.tf.tbl.stripeBackground		#e4e8ec
     option add *DemoTop.tf.tbl*Entry.background		white
     option add *DemoTop.tf.tbl.borderWidth		0
     option add *DemoTop.tf.tbl.setGrid			yes
