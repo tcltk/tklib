@@ -1,3 +1,34 @@
+2011-06-26  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                 Improvements related to Mac OS X Aqua.
+	* scripts/tablelistConfig.tcl:
+	* scripts/tablelistImages.tcl:
+	* scripts/tablelistSort.tcl:
+	* scripts/tablelistThemes.tcl:
+	* scripts/tablelistUtil.tcl:
+	* scripts/tablelistWidget.tcl:
+
+	* ../../examples/config.tcl:      Changed some colors.
+	* ../../examples/config_tile.tcl:
+	* ../../examples/option.tcl:
+	* ../../examples/option_tile.tcl:
+	* ../../examples/styles.tcl:
+	* ../../examples/styles_tile.tcl:
+
+	* doc/tablelist.html: Updated to reflect the changes made in the demo
+	  scripts.
+
+	* doc/aqua.png:                 Updated screenshots.
+	* doc/browse.png:
+	* doc/browseTree.png:
+	* doc/bwidget.png:
+	* doc/config.png:
+	* doc/dirViewer.png:
+	* doc/embeddedWindows.png:
+	* doc/embeddedWindows_tile.png:
+	* doc/styles.png:
+	* doc/tileWidgets.png:
+
 2011-06-18  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:                          Bumped the version number to 5.3.
