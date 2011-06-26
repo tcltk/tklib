@@ -365,6 +365,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     #
     set w $data(body)
     $w tag remove hiddenRow $firstDescLine.0 $lastDescLine.end
+    $w tag remove elidedRow $firstDescLine.0 $lastDescLine.end
     for {set line $firstDescLine} {$line <= $lastDescLine} {incr line} {
 	$w delete $line.0 $line.end
     }
@@ -634,7 +635,8 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     if {[string compare $winSys "aqua"] == 0} {
 	foreach col $data(arrowColList) {
 	    set canvas [list $data(hdrTxtFrCanv)$col]
-	    after idle "lower $canvas; raise $canvas"
+	    after idle [list lower $canvas]
+	    after idle [list raise $canvas]
 	}
     }
 

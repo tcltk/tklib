@@ -106,6 +106,21 @@ proc tablelist::altTheme {} {
 # tablelist::aquaTheme
 #------------------------------------------------------------------------------
 proc tablelist::aquaTheme {} {
+    switch [winfo rgb . systemMenuActive] {
+	"13621 29041 52685" {					;# Blue
+	    set stripeBg		#edf3fe
+	    set labelselectedBg		#7ab2e9
+	    set labelselectedpressedBg	#679ed5
+	    set arrowselectedColor	#385573
+	}
+	"24415 27499 31354" {					;# Graphite
+	    set stripeBg		#f0f0f0
+	    set labelselectedBg		#b6c2cd
+	    set labelselectedpressedBg	#a7b3be
+	    set arrowselectedColor	#575d63
+	}
+    }
+
     #
     # Get an approximation of alternateSelectedControlColor
     #
@@ -118,7 +133,6 @@ proc tablelist::aquaTheme {} {
 	"65535 53968 33154"	{ set selectBg #ff8a22 }
 	"50114 63994 37263"	{ set selectBg #66c547 }
 	"59879 47290 65535"	{ set selectBg #8c4eb8 }
-
 	default {
 	    set rgb [winfo rgb . systemHighlight]
 	    foreach {h s v} [eval rgb2hsv $rgb] {}
@@ -143,19 +157,19 @@ proc tablelist::aquaTheme {} {
 	-background		white \
 	-foreground		black \
 	-disabledforeground	#a3a3a3 \
-	-stripebackground	"" \
+	-stripebackground	$stripeBg \
 	-selectbackground	$selectBg \
 	-selectforeground	white \
 	-selectborderwidth	0 \
 	-font			{"Lucida Grande" 12} \
-        -labelbackground	#f4f4f4 \
-	-labeldisabledBg	#f4f4f4 \
-	-labelactiveBg		#f4f4f4 \
-	-labelpressedBg		#e4e4e4 \
-	-labelselectedBg	#86c4f2 \
-	-labelselectedpressedBg	#6fb7f0 \
+        -labelbackground	#e9e8e8 \
+	-labeldisabledBg	#e9e8e8 \
+	-labelactiveBg		#e9e8e8 \
+	-labelpressedBg		#d2d2d2 \
+	-labelselectedBg	$labelselectedBg \
+	-labelselectedpressedBg	$labelselectedpressedBg \
 	-labelforeground	black \
-	-labeldisabledFg	#a3a3a3 \
+	-labeldisabledFg	black \
 	-labelactiveFg		black \
 	-labelpressedFg		black \
 	-labelselectedFg	black \
@@ -163,7 +177,8 @@ proc tablelist::aquaTheme {} {
 	-labelfont		{"Lucida Grande" 11} \
 	-labelborderwidth	1 \
 	-labelpady		1 \
-	-arrowcolor		#777777 \
+	-arrowcolor		#717171 \
+	-arrowselectedColor	$arrowselectedColor \
 	-arrowstyle		flat7x7 \
 	-treestyle		aqua \
     ]
@@ -194,7 +209,7 @@ proc tablelist::AquativoTheme {} {
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
-	-arrowcolor		#777777 \
+	-arrowcolor		#717171 \
 	-arrowstyle		flat7x7 \
 	-treestyle		aqua \
     ]

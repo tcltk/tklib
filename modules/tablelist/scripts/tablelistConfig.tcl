@@ -289,7 +289,7 @@ proc tablelist::extendConfigSpecs {} {
 
 	    classic -
 	    aqua {
-		set arrowColor		#777777
+		set arrowColor		#717171
 		set arrowDisabledColor	#a3a3a3
 		set arrowStyle		flat7x7
 		set treeStyle		aqua

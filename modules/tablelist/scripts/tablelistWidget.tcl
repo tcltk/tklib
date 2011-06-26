@@ -67,6 +67,9 @@ namespace eval tablelist {
 	createTileAliases 
     }
 
+    variable specialAquaHandling [expr {$usingTile && $::tk_version >= 8.6 &&
+	[lsearch -exact [winfo server .] "AppKit"] >= 0}]
+
     #
     # The array configSpecs is used to handle configuration options.  The
     # names of its elements are the configuration options for the Tablelist
@@ -752,11 +755,11 @@ proc tablelist::tablelist args {
 		 TablelistKeyNav all]
 
     #
-    # Create the "stripe", "select", "active", "disabled", "hiddenRow",
-    # "elidedRow", "hiddenCol", and "elidedCol" tags in the body text widget.
-    # Don't use the built-in "sel" tag because on Windows the selection in
-    # a text widget only becomes visible when the window gets the input
-    # focus.  DO NOT CHANGE the order of creation of these tags!
+    # Create the "stripe", "select", "active", "disabled", "redraw",
+    # "hiddenRow", "elidedRow", "hiddenCol", and "elidedCol" tags in the body
+    # text widget.  Don't use the built-in "sel" tag because on Windows the
+    # selection in a text widget only becomes visible when the window gets
+    # the input focus.  DO NOT CHANGE the order of creation of these tags!
     #
     $w tag configure stripe -background "" -foreground ""    ;# will be changed
     $w tag configure select -relief raised
