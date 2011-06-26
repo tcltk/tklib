@@ -512,7 +512,7 @@ To display the configuration options of an arbitrary widget, enter
 
   <p><img src="config.png" alt=
   "Configuration Options - Please load this image!" width="725" height=
-  "369"></p>
+  "365"></p>
 
   <p>It is assumed that the Tcl command associated with the widget specified by
   <code>&lt;widgetName&gt;</code> has a <code>configure</code> subcommand
@@ -567,8 +567,8 @@ namespace eval demo {
     if {[string compare $winSys "classic"] == 0} {
         option add *DemoTop*background                  #dedede
     }
-    option add *DemoTop.tf.tbl.background               gray98
-    option add *DemoTop.tf.tbl.stripeBackground         #e0e8f0
+    option add *DemoTop.tf.tbl.background               white
+    option add *DemoTop.tf.tbl.stripeBackground         #e4e8ec
     option add *DemoTop.tf.tbl*Entry.background         white
     option add *DemoTop.tf.tbl.setGrid                  yes
     option add *DemoTop.bf.Button.width                 10
@@ -734,7 +734,7 @@ proc demo::displayConfig w {
   "tablelistWidget.html#stripebackground">-stripebackground</a></code>
   configuration option.&nbsp; According to this entry, every other row of the
   tablelist widget will be displayed in the background color
-  <code>#e0e8f0</code>, which improves the readability of the items and gives
+  <code>#e4e8ec</code>, which improves the readability of the items and gives
   the widget a nice appearance.</p>
 
   <p>We populate the tablelist by invoking the <code>demo::putConfig</code>
@@ -943,13 +943,13 @@ To display information about the children of an arbitrary widget, enter
   in the file <code>browse.tcl</code> is a multi-column listbox:</p>
 
   <p><img src="browse.png" alt="Widget Browser - Please load this image!"
-  width="544" height="271"></p>
+  width="557" height="267"></p>
 
   <p>The tablelist created by the procedure of the same name in the file
   <code>browseTree.tcl</code> is a multi-column tree widget:</p>
 
   <p><img src="browseTree.png" alt="Widget Browser - Please load this image!"
-  width="554" height="271"></p>
+  width="554" height="267"></p>
 
   <p>The <code>demo::displayChildren</code> command inserts some data of the
   children of the widget specified by <code>&lt;widgetName&gt;</code> into a
@@ -1837,7 +1837,7 @@ displayContents ""
   the following figure:</p>
 
   <p><img src="styles.png" alt="Styles - Please load this image!" width="606"
-  height="479"></p>
+  height="475"></p>
 
   <p>Here is the relevant code segment:</p>
 
@@ -1851,7 +1851,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
     set tbl .f.tbl$n
     tablelist::tablelist $tbl \
         -columntitles {"Label 0" "Label 1" "Label 2" "Label 3"} \
-        -background gray98 -height 4 -width 40 -stretch all
+        -background white -height 4 -width 40 -stretch all
     if {[$tbl cget -selectborderwidth] == 0} {
         $tbl configure -spacing 1
     }
@@ -1861,10 +1861,10 @@ for {set n 0} { $n &lt; 8} {incr n} {
             $tbl configure -showseparators yes
         }
         2 {
-            $tbl configure -stripebackground #e0e8f0
+            $tbl configure -stripebackground #e4e8ec
         }
         3 {
-            $tbl configure -stripebackground #e0e8f0 -showseparators yes
+            $tbl configure -stripebackground #e4e8ec -showseparators yes
         }
         4 {
             foreach col {1 3} {
@@ -1878,13 +1878,13 @@ for {set n 0} { $n &lt; 8} {incr n} {
             }
         }
         6 {
-            $tbl configure -stripebackground #e0e8f0
+            $tbl configure -stripebackground #e4e8ec
             foreach col {1 3} {
                 $tbl columnconfigure $col -background ivory
             }
         }
         7 {
-            $tbl configure -stripebackground #e0e8f0 -showseparators yes
+            $tbl configure -stripebackground #e4e8ec -showseparators yes
             foreach col {1 3} {
                 $tbl columnconfigure $col -background ivory
             }
@@ -2264,7 +2264,7 @@ proc editEndCmd {tbl row col text} {
   <code>active</code> state:</p>
 
   <p><img src="embeddedWindows.png" alt=
-  "Embedded Windows - Please load this image!" width="399" height="272"></p>
+  "Embedded Windows - Please load this image!" width="399" height="269"></p>
 
   <p>First, we create and populate the tablelist widget:</p>
 
@@ -2628,7 +2628,7 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
   the details.&nbsp; Here is a screenshot of the resulting window:</p>
 
   <p><img src="embeddedWindows_tile.png" alt=
-  "Embedded Windows - Please load this image!" width="397" height="266"></p>
+  "Embedded Windows - Please load this image!" width="397" height="262"></p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
