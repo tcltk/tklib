@@ -47,8 +47,8 @@ namespace eval demo {
     if {[string compare $winSys "classic"] == 0} {
 	option add *DemoTop*background			#dedede
     }
-    option add *DemoTop.tf.tbl.background		gray98
-    option add *DemoTop.tf.tbl.stripeBackground		#e0e8f0
+    option add *DemoTop.tf.tbl.background		white
+    option add *DemoTop.tf.tbl.stripeBackground		#e4e8ec
     option add *DemoTop.tf.tbl*Entry.background		white
     option add *DemoTop.tf.tbl.setGrid			yes
     option add *DemoTop.bf.Button.width			10

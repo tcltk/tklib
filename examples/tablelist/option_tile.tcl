@@ -22,8 +22,8 @@ if {[tablelist::getCurrentTheme] eq "aqua"} {
     option add *selectForeground  $tablelist::themeDefaults(-selectforeground)
 }
 option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)
-option add *Tablelist.background	gray98
-option add *Tablelist.stripeBackground	#e0e8f0
+option add *Tablelist.background	white
+option add *Tablelist.stripeBackground	#e4e8ec
 option add *Tablelist.setGrid		yes
 option add *Tablelist.movableColumns	yes
 option add *Tablelist.labelCommand	tablelist::sortByColumn
