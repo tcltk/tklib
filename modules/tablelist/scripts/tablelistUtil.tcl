@@ -1957,9 +1957,9 @@ proc tablelist::makeSortAndArrowColLists win {
     # Special handling for the "aqua" theme if Cocoa is being used:
     # Deselect all header labels and select that of the main sort column
     #
-    variable usingTile
-    if {$usingTile && [string compare [getCurrentTheme] "aqua"] == 0 &&
-	[lsearch -exact [winfo server .] "AppKit"] >= 0} {	;# using Cocoa
+    variable specialAquaHandling
+    if {[string compare [getCurrentTheme] "aqua"] == 0 &&
+	$specialAquaHandling} {
 	for {set col 0} {$col < $data(colCount)} {incr col} {
 	    configLabel $data(hdrTxtFrLbl)$col -selected 0
 	}
@@ -3137,6 +3137,9 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	$w tag add disabled $fromTextIdx $toTextIdx
     }
 
+    set hasExpCollCtrlSelImgs [expr {$::tk_version >= 8.3 &&
+	[info exists tablelist::$data(-treestyle)_collapsedSelImg]}]
+
     foreach {dummy path textIdx} [$w dump -window $fromTextIdx $toTextIdx] {
 	if {[string compare $path ""] == 0} {
 	    continue
@@ -3156,44 +3159,62 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	    continue
 	}
 
-	if {$updateAll} {
-	    set tagNames [$w tag names $textIdx]
-	    set selected [expr {[lsearch -exact $tagNames select] >= 0}]
-	}
+	#
+	# Make sure the window will be displayed as expected
+	#
+	lower $path
+	raise $path
+
+	set tagNames [$w tag names $textIdx]
+	set selected [expr {[lsearch -exact $tagNames select] >= 0}]
 
 	#
-	# If the widget is an indentation label then
-	# conditionally remove the "active" and "select"
-	# tags from its text position and the preceding one
+	# If the widget is an indentation label then conditionally remove the
+	# "active" and "select" tags from its text position and the preceding
+	# one, or change its image to become the "normal" or "selected" one
 	#
-	if {[string compare $path $w.ind_$key,$col] == 0 &&
-	    $data(protectIndents)} {
-	    set fromTextIdx [$w index $textIdx-1c]
-	    set toTextIdx   [$w index $textIdx+1c]
+	if {[string compare $path $w.ind_$key,$col] == 0} {
+	    if {$data(protectIndents)} {
+		set fromTextIdx [$w index $textIdx-1c]
+		set toTextIdx   [$w index $textIdx+1c]
 
-	    $w tag remove active $fromTextIdx $toTextIdx
+		$w tag remove active $fromTextIdx $toTextIdx
 
-	    if {$updateAll && $selected} {
-		$w tag remove select $fromTextIdx $toTextIdx
-		set selected 0
+		if {$updateAll && $selected} {
+		    $w tag remove select $fromTextIdx $toTextIdx
+		    set selected 0
 
-		foreach optTail {background foreground} {
-		    set opt -select$optTail
-		    foreach name  [list $col$opt $key$opt $key,$col$opt] \
-			    level [list col row cell] {
-			if {[info exists data($name)]} {
-			    $w tag remove $level$opt-$data($name) \
-				   $fromTextIdx $toTextIdx
+		    foreach optTail {background foreground} {
+			set opt -select$optTail
+			foreach name  [list $col$opt $key$opt $key,$col$opt] \
+				level [list col row cell] {
+			    if {[info exists data($name)]} {
+				$w tag remove $level$opt-$data($name) \
+				       $fromTextIdx $toTextIdx
+			    }
+			}
+
+			foreach name  [list $col-$optTail $key-$optTail \
+				       $key,$col-$optTail] \
+				level [list col row cell] {
+			    if {[info exists data($name)]} {
+				$w tag add $level-$optTail-$data($name) \
+				       $fromTextIdx $toTextIdx
+			    }
 			}
 		    }
+		}
+	    } elseif {$hasExpCollCtrlSelImgs} {
+		set curImgName [$path cget -image]
+		if {[regexp {^(.+)_(collapsed|expanded).*Img([0-9]+)$} \
+			     $curImgName dummy prefix state depth]} {
+		    set imgName ${prefix}_${state}Img$depth
+		    set selImgName ${prefix}_${state}SelImg$depth
+		    set newImgName [expr {$selected ? $selImgName : $imgName}]
 
-		    foreach name  [list $col-$optTail $key-$optTail \
-				   $key,$col-$optTail] \
-			    level [list col row cell] {
-			if {[info exists data($name)]} {
-			    $w tag add $level-$optTail-$data($name) \
-				   $fromTextIdx $toTextIdx
-			}
+		    if {[string compare $curImgName $newImgName] != 0} {
+			set data($key,$col-indent) $newImgName
+			$path configure -image $data($key,$col-indent)
 		    }
 		}
 	    }
@@ -3398,7 +3419,7 @@ proc tablelist::updateVScrlbar win {
 #------------------------------------------------------------------------------
 # tablelist::forceRedrawDelayed
 #
-# Arranges for the tablelist widget win to be redrawn 500 ms second later.
+# Arranges for the tablelist widget win to be redrawn 50 ms second later.
 #------------------------------------------------------------------------------
 proc tablelist::forceRedrawDelayed win {
     upvar ::tablelist::ns${win}::data data
@@ -3406,7 +3427,7 @@ proc tablelist::forceRedrawDelayed win {
 	return ""
     }
 
-    set data(redrawId) [after 500 [list tablelist::forceRedraw $win]]
+    set data(redrawId) [after 50 [list tablelist::forceRedraw $win]]
 }
 
 #------------------------------------------------------------------------------
@@ -3422,6 +3443,7 @@ proc tablelist::forceRedraw win {
     }
 
     set w $data(body)
+    $w tag raise redraw
     set fromTextIdx "[$w index @0,0] linestart"
     set toTextIdx "[$w index @0,$data(btmY)] lineend"
     $w tag add redraw $fromTextIdx $toTextIdx
@@ -4613,23 +4635,28 @@ proc tablelist::configCanvas {win col} {
 	    variable winSys
 	    if {[string compare $state "disabled"] == 0} {
 		set labelFg [$w cget -disabledforeground]
-	    } elseif {[string compare $state "active"] == 0 &&
-		      [string compare $winSys "classic"] != 0 &&
-		      [string compare $winSys "aqua"] != 0} {
+	    } elseif {[string compare $state "active"] == 0} {
 		set labelBg [$w cget -activebackground]
 		set labelFg [$w cget -activeforeground]
 	    }
 	}
     }
 
-    set w $data(hdrTxtFrCanv)$col
-    $w configure -background $labelBg
+    set canvas $data(hdrTxtFrCanv)$col
+    $canvas configure -background $labelBg
     sortRank$data($col-sortRank)$win configure -foreground $labelFg
 
+    variable specialAquaHandling
     if {$data(isDisabled)} {
-	fillArrows $w $data(-arrowdisabledcolor) $data(-arrowstyle)
+	fillArrows $canvas $data(-arrowdisabledcolor) $data(-arrowstyle)
+    } elseif {[string compare [winfo class $w] "TLabel"] == 0 &&
+	      [$w instate selected] && ![$win instate background] &&
+	      [string compare [getCurrentTheme] "aqua"] == 0 &&
+	      $specialAquaHandling} {
+	fillArrows $canvas $themeDefaults(-arrowselectedColor) \
+	    $data(-arrowstyle)
     } else {
-	fillArrows $w $data(-arrowcolor) $data(-arrowstyle)
+	fillArrows $canvas $data(-arrowcolor) $data(-arrowstyle)
     }
 }
 

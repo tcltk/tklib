@@ -24,7 +24,10 @@ What is new in Tablelist 5.3?
    Loaring and Paul Obermeier for their proposals).  Likewise, support
    for the column indices "left" and "right".
 
-7. Numerous further improvements and minor bug fixes.
+7. Adapted the appearance of tablelist widgets on the Macintosh to
+   current versions of OS X Aqua.
+
+8. Numerous further improvements and minor bug fixes.
 
 What was new in Tablelist 5.2?
 ------------------------------
