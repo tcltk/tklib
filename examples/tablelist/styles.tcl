@@ -47,7 +47,7 @@ for {set n 0} { $n < 8} {incr n} {
     set tbl .f.tbl$n
     tablelist::tablelist $tbl \
 	-columntitles {"Label 0" "Label 1" "Label 2" "Label 3"} \
-	-background gray98 -height 4 -width 40 -stretch all
+	-background white -height 4 -width 40 -stretch all
     if {[$tbl cget -selectborderwidth] == 0} {
 	$tbl configure -spacing 1
     }
@@ -57,10 +57,10 @@ for {set n 0} { $n < 8} {incr n} {
 	    $tbl configure -showseparators yes
 	}
 	2 {
-	    $tbl configure -stripebackground #e0e8f0
+	    $tbl configure -stripebackground #e4e8ec
 	}
 	3 {
-	    $tbl configure -stripebackground #e0e8f0 -showseparators yes
+	    $tbl configure -stripebackground #e4e8ec -showseparators yes
 	}
 	4 {
 	    foreach col {1 3} {
@@ -74,13 +74,13 @@ for {set n 0} { $n < 8} {incr n} {
 	    }
 	}
 	6 {
-	    $tbl configure -stripebackground #e0e8f0
+	    $tbl configure -stripebackground #e4e8ec
 	    foreach col {1 3} {
 		$tbl columnconfigure $col -background ivory
 	    }
 	}
 	7 {
-	    $tbl configure -stripebackground #e0e8f0 -showseparators yes
+	    $tbl configure -stripebackground #e4e8ec -showseparators yes
 	    foreach col {1 3} {
 		$tbl columnconfigure $col -background ivory
 	    }
