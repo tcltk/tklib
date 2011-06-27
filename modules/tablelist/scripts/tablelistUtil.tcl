@@ -1958,8 +1958,8 @@ proc tablelist::makeSortAndArrowColLists win {
     # Deselect all header labels and select that of the main sort column
     #
     variable specialAquaHandling
-    if {[string compare [getCurrentTheme] "aqua"] == 0 &&
-	$specialAquaHandling} {
+    if {$specialAquaHandling &&
+	[string compare [getCurrentTheme] "aqua"] == 0} {
 	for {set col 0} {$col < $data(colCount)} {incr col} {
 	    configLabel $data(hdrTxtFrLbl)$col -selected 0
 	}
@@ -4651,8 +4651,8 @@ proc tablelist::configCanvas {win col} {
 	fillArrows $canvas $data(-arrowdisabledcolor) $data(-arrowstyle)
     } elseif {[string compare [winfo class $w] "TLabel"] == 0 &&
 	      [$w instate selected] && ![$win instate background] &&
-	      [string compare [getCurrentTheme] "aqua"] == 0 &&
-	      $specialAquaHandling} {
+	      $specialAquaHandling &&
+	      [string compare [getCurrentTheme] "aqua"] == 0} {
 	fillArrows $canvas $themeDefaults(-arrowselectedColor) \
 	    $data(-arrowstyle)
     } else {
