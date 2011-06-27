@@ -1,3 +1,10 @@
+2011-06-27  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistImages.tcl: Further ipmrovements related to Mac OS X Aqua.
+	* scripts/tablelistUtil.tcl:
+
+	* doc/aqua.png: Updated screenshot.
+
 2011-06-26  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:                 Improvements related to Mac OS X Aqua.
