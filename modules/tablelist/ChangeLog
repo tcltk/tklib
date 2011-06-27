@@ -1,7 +1,7 @@
 2011-06-27  Csaba Nemethi <csaba.nemethi@t-online.de>
 
-	* scripts/tablelistImages.tcl: Further ipmrovements related to Mac OS X Aqua.
-	* scripts/tablelistUtil.tcl:
+	* scripts/tablelistImages.tcl: Further improvements related to Mac OS X
+	* scripts/tablelistUtil.tcl:   Aqua.
 
 	* doc/aqua.png: Updated screenshot.
 
