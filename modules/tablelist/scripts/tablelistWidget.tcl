@@ -755,9 +755,9 @@ proc tablelist::tablelist args {
 		 TablelistKeyNav all]
 
     #
-    # Create the "stripe", "select", "active", "disabled", "redraw",
-    # "hiddenRow", "elidedRow", "hiddenCol", and "elidedCol" tags in the body
-    # text widget.  Don't use the built-in "sel" tag because on Windows the
+    # Create the "stripe", "select", "active", "disabled", "hiddenRow",
+    # "elidedRow", "hiddenCol", and "elidedCol" tags in the body text
+    # widget.  Don't use the built-in "sel" tag because on Windows the
     # selection in a text widget only becomes visible when the window gets
     # the input focus.  DO NOT CHANGE the order of creation of these tags!
     #
@@ -765,7 +765,6 @@ proc tablelist::tablelist args {
     $w tag configure select -relief raised
     $w tag configure active -borderwidth ""		     ;# will be changed
     $w tag configure disabled -foreground ""		     ;# will be changed
-    $w tag configure redraw -background black
     if {$canElide} {
 	$w tag configure hiddenRow -elide 1	;# used for hiding a row
 	$w tag configure elidedRow -elide 1	;# used when collapsing a row

@@ -1,3 +1,8 @@
+2011-06-28  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl:   Solved some refresh problems on Mac OS X
+	* scripts/tablelistWidget.tcl: Aqua.
+
 2011-06-27  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistImages.tcl: Further improvements related to Mac OS X
