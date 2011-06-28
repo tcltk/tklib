@@ -3159,12 +3159,6 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	    continue
 	}
 
-	#
-	# Make sure the window will be displayed as expected
-	#
-	lower $path
-	raise $path
-
 	set tagNames [$w tag names $textIdx]
 	set selected [expr {[lsearch -exact $tagNames select] >= 0}]
 
@@ -3442,12 +3436,8 @@ proc tablelist::forceRedraw win {
 	unset data(redrawId)
     }
 
-    set w $data(body)
-    $w tag raise redraw
-    set fromTextIdx "[$w index @0,0] linestart"
-    set toTextIdx "[$w index @0,$data(btmY)] lineend"
-    $w tag add redraw $fromTextIdx $toTextIdx
-    $w tag remove redraw $fromTextIdx $toTextIdx
+    raise $data(body)
+    lower $data(body)
 }
 
 #------------------------------------------------------------------------------
