@@ -1951,16 +1951,16 @@ proc tablelist::clearTakefocusOpt w {
 # edit window to the number of lines currently contained in it.
 #------------------------------------------------------------------------------
 proc tablelist::adjustTextHeight {w args} {
-    if {$::tk_version < 8.5} {
-	#
-	# We can only count the logical lines (irrespective of wrapping)
-	#
-	scan [$w index end-1c] "%d" numLines
-    } else {
+    if {$::tk_version >= 8.5} {
 	#
 	# Count the display lines (taking into account the line wraps)
 	#
 	set numLines [$w count -displaylines 1.0 end]
+    } else {
+	#
+	# We can only count the logical lines (irrespective of wrapping)
+	#
+	scan [$w index end-1c] "%d" numLines
     }
     $w configure -height $numLines
 

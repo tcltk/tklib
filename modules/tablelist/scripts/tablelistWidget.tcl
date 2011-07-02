@@ -67,6 +67,9 @@ namespace eval tablelist {
 	createTileAliases 
     }
 
+    variable pngSupported [expr {$::tk_version >= 8.6 ||
+	($::tk_version == 8.5 && [catch {package require img::png}] == 0)}]
+
     variable specialAquaHandling [expr {$usingTile && $::tk_version >= 8.6 &&
 	[lsearch -exact [winfo server .] "AppKit"] >= 0}]
 
@@ -376,8 +379,8 @@ namespace eval tablelist {
     #
     variable activeStyles  [list frame none underline]
     variable alignments    [list left right center]
-    variable arrowStyles   [list flat6x4 flat7x4 flat7x5 flat7x7 \
-				 flat8x5 flat9x5 flat9x7 flat10x6 \
+    variable arrowStyles   [list flat6x4 flat7x4 flat7x5 flat7x7 flat8x5 \
+				 flat9x5 flat9x7 flat10x6 photo7x7 \
 				 sunken8x7 sunken10x9 sunken12x11]
     variable arrowTypes    [list up down]
     variable colWidthOpts  [list -requested -stretched -total]
@@ -398,6 +401,16 @@ namespace eval tablelist {
 				 plastik plastique radiance vistaAero \
 				 vistaClassic win7Aero win7Classic winnative \
 				 winxpBlue winxpOlive winxpSilver]
+
+    proc restrictArrowStyles {} {
+	variable pngSupported
+	if {!$pngSupported} {
+	    variable arrowStyles
+	    set idx [lsearch -exact $arrowStyles "photo7x7"]
+	    set arrowStyles [lreplace $arrowStyles $idx $idx]
+	}
+    }
+    restrictArrowStyles 
 
     #
     # The array maxIndentDepths holds the current max.

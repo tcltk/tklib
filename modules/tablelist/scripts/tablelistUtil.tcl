@@ -444,9 +444,7 @@ proc tablelist::keyToRow {win key} {
     } elseif {$data(keyToRowMapValid) && [info exists data($key-row)]} {
 	return $data($key-row)
     } else {
-	if {$::tk_version < 8.4} {
-	    return [lsearch -exact $data(keyList) $key]
-	} else {
+	if {$::tk_version >= 8.4} {
 	    #
 	    # Speed up the search by starting at the last found position
 	    #
@@ -460,6 +458,8 @@ proc tablelist::keyToRow {win key} {
 	    }
 
 	    return $row
+	} else {
+	    return [lsearch -exact $data(keyList) $key]
 	}
     }
 }
@@ -2052,7 +2052,7 @@ proc tablelist::setupColumns {win columns createLabels} {
     # Build the list data(colList), and create
     # the labels and canvases if requested
     #
-    regexp {^(flat|sunken)([0-9]+)x([0-9]+)$} $data(-arrowstyle) \
+    regexp {^(flat|sunken|photo)([0-9]+)x([0-9]+)$} $data(-arrowstyle) \
 	   dummy arrowRelief arrowWidth arrowHeight
     set widgetFont $data(-font)
     set oldColCount $data(colCount)
@@ -4636,15 +4636,8 @@ proc tablelist::configCanvas {win col} {
     $canvas configure -background $labelBg
     sortRank$data($col-sortRank)$win configure -foreground $labelFg
 
-    variable specialAquaHandling
     if {$data(isDisabled)} {
 	fillArrows $canvas $data(-arrowdisabledcolor) $data(-arrowstyle)
-    } elseif {[string compare [winfo class $w] "TLabel"] == 0 &&
-	      [$w instate selected] && ![$win instate background] &&
-	      $specialAquaHandling &&
-	      [string compare [getCurrentTheme] "aqua"] == 0} {
-	fillArrows $canvas $themeDefaults(-arrowselectedColor) \
-	    $data(-arrowstyle)
     } else {
 	fillArrows $canvas $data(-arrowcolor) $data(-arrowstyle)
     }
@@ -4666,7 +4659,11 @@ proc tablelist::fillArrows {w color arrowStyle} {
     getShadows $w $color darkColor lightColor
 
     foreach dir {Up Dn} {
-	triangle$dir$w configure -foreground $color -background $bgColor
+	#
+	# Need catch because the triangle may be a photo image
+	#
+	catch {triangle$dir$w configure -foreground $color -background $bgColor}
+
 	if {[string match "sunken*" $arrowStyle]} {
 	    darkLine$dir$w  configure -foreground $darkColor
 	    lightLine$dir$w configure -foreground $lightColor
@@ -4756,9 +4753,15 @@ proc tablelist::raiseArrow {win col} {
     variable directions
     set dir $directions($data(-incrarrowtype),$data($col-sortOrder))
 
-    $w raise triangle$dir
-    $w raise darkLine$dir
-    $w raise lightLine$dir
+    if {[string match "photo*" $data(-arrowstyle)]} {
+	$w itemconfigure triangle$dir -state normal
+	set dir [expr {([string compare $dir "Up"] == 0) ? "Dn" : "Up"}]
+	$w itemconfigure triangle$dir -state hidden
+    } else {
+	$w raise triangle$dir
+	$w raise darkLine$dir
+	$w raise lightLine$dir
+    }
 }
 
 #------------------------------------------------------------------------------
