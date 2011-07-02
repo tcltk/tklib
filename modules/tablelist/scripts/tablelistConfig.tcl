@@ -549,8 +549,8 @@ proc tablelist::doConfig {win opt val} {
 		    variable arrowStyles
 		    set data($opt) \
 			[mwutil::fullOpt "arrow style" $val $arrowStyles]
-		    regexp {^(flat|sunken)([0-9]+)x([0-9]+)$} $data($opt) \
-			   dummy relief width height
+		    regexp {^(flat|sunken|photo)([0-9]+)x([0-9]+)$} \
+			   $data($opt) dummy relief width height
 		    set data(arrowWidth) $width
 		    set data(arrowHeight) $height
 		    foreach w [info commands $data(hdrTxtFrCanv)*] {

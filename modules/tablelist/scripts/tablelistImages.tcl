@@ -153,6 +153,23 @@ static unsigned char triangleDn10x6_bits[] = {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::photo7x7Arrows
+#------------------------------------------------------------------------------
+proc tablelist::photo7x7Arrows w {
+    image create photo triangleUp$w -data "
+iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
+jwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAABl0RVh0
+U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuODc7gF0AAAA4SURBVBhXY2BABdpofDgXJNEIxBgK+ICC
+4VBJEA3iY+gC6UTRjawLJgnXDbMLJoGiOwxqFLpkGABJaAyABECXFAAAAABJRU5ErkJggg==
+"
+    image create photo triangleDn$w -data "
+iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAABGdBTUEAALGPC/xhBQAAABl0RVh0
+U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuODc7gF0AAAA4SURBVBhXY2RgYAgDYm0gRgdXQQIgiUYs
+GKyBD4jD0SRBfJA4GKDrRrEGWTeKLnTd2BwHNx7uagAdFAqmyM4oZAAAAABJRU5ErkJggg==
+"
+}
+
+#------------------------------------------------------------------------------
 # tablelist::sunken8x7Arrows
 #------------------------------------------------------------------------------
 proc tablelist::sunken8x7Arrows w {
@@ -428,12 +445,11 @@ wIDLmAcQSGDx4sCDoCUrDAgAOw==
 # tablelist::aquaTreeImgs
 #------------------------------------------------------------------------------
 proc tablelist::aquaTreeImgs {} {
-    set pngFormat [expr {$::tk_version >= 8.6 || ($::tk_version == 8.5 &&
-			 [catch {package require img::png}] == 0)}]
+    variable pngSupported
 
     variable aqua_collapsedImg
     variable aqua_collapsedSelImg
-    if {$pngFormat} {
+    if {$pngSupported} {
 	set aqua_collapsedImg \
 	    [image create photo tablelist_aqua_collapsedImg -data "
 iVBORw0KGgoAAAANSUhEUgAAABUAAAAOCAYAAADABlfOAAAABGdBTUEAALGPC/xhBQAAABl0RVh0
@@ -489,7 +505,7 @@ AAgxAP8JHEiwoMGDCBMqXCgwAEOEASI+LBix4sSGFS0+zJhxI0eHHjVOFHkR5MWTKA8GBAA7
 
     variable aqua_expandedImg
     variable aqua_expandedSelImg
-    if {$pngFormat} {
+    if {$pngSupported} {
 	set aqua_expandedImg \
 	    [image create photo tablelist_aqua_expandedImg -data "
 iVBORw0KGgoAAAANSUhEUgAAABUAAAAOCAYAAADABlfOAAAABGdBTUEAALGPC/xhBQAAABl0RVh0
@@ -695,12 +711,11 @@ QAYVIjJr1pwiA4KN/woQPHhwQAHQAQEAOw==
 # tablelist::gtkTreeImgs
 #------------------------------------------------------------------------------
 proc tablelist::gtkTreeImgs {} {
-    set pngFormat [expr {$::tk_version >= 8.6 || ($::tk_version == 8.5 &&
-			 [catch {package require img::png}] == 0)}]
+    variable pngSupported
 
     variable gtk_collapsedImg
     variable gtk_collapsedActImg
-    if {$pngFormat} {
+    if {$pngSupported} {
 	set gtk_collapsedImg \
 	    [image create photo tablelist_gtk_collapsedImg -data "
 iVBORw0KGgoAAAANSUhEUgAAABIAAAAOCAYAAAAi2ky3AAAABGdBTUEAALGPC/xhBQAAABl0RVh0
@@ -758,7 +773,7 @@ AAg0AP8JHEiwoMGDCAkGSIgwgACGBgM4hKhQ4kOK/yRaxKhRI8WOFyFqDClyIsaMJD+eXCkwIAA7
 
     variable gtk_expandedImg
     variable gtk_expandedActImg
-    if {$pngFormat} {
+    if {$pngSupported} {
 	set gtk_expandedImg \
 	    [image create photo tablelist_gtk_expandedImg -data "
 iVBORw0KGgoAAAANSUhEUgAAABIAAAAOCAYAAAAi2ky3AAAABGdBTUEAALGPC/xhBQAAABl0RVh0
@@ -864,12 +879,11 @@ AAgoAP8JHEiwoMGDCBMqXMiQIAAAAx8mfAiRokKKEhdabAixocePID8GBAA7
 # tablelist::newWaveTreeImgs
 #------------------------------------------------------------------------------
 proc tablelist::newWaveTreeImgs {} {
-    set pngFormat [expr {$::tk_version >= 8.6 || ($::tk_version == 8.5 &&
-			 [catch {package require img::png}] == 0)}]
+    variable pngSupported
 
     variable newWave_collapsedImg
     variable newWave_collapsedActImg
-    if {$pngFormat} {
+    if {$pngSupported} {
 	set newWave_collapsedImg \
 	    [image create photo tablelist_newWave_collapsedImg -data "
 iVBORw0KGgoAAAANSUhEUgAAABIAAAAOCAYAAAAi2ky3AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
@@ -934,7 +948,7 @@ HDIw6AhRQQcJESwKFPBAp0KfQIMWDAgAOw==
 
     variable newWave_expandedImg
     variable newWave_expandedActImg
-    if {$pngFormat} {
+    if {$pngSupported} {
 	set newWave_expandedImg \
 	    [image create photo tablelist_newWave_expandedImg -data "
 iVBORw0KGgoAAAANSUhEUgAAABIAAAAOCAYAAAAi2ky3AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
@@ -1281,12 +1295,11 @@ iCChrNmzEsJCeMC2rdsHEMIumEu37lwGYRMg2Mu3LwIFVQ80MEC4sGEDDkYqLKCAwIDHkAcQUHAR
 # tablelist::vistaAeroTreeImgs
 #------------------------------------------------------------------------------
 proc tablelist::vistaAeroTreeImgs {{treeStyle "vistaAero"}} {
-    set pngFormat [expr {$::tk_version >= 8.6 || ($::tk_version == 8.5 &&
-			 [catch {package require img::png}] == 0)}]
+    variable pngSupported
 
     variable ${treeStyle}_collapsedImg
     variable ${treeStyle}_collapsedActImg
-    if {$pngFormat} {
+    if {$pngSupported} {
 	set ${treeStyle}_collapsedImg \
 	    [image create photo tablelist_${treeStyle}_collapsedImg -data "
 iVBORw0KGgoAAAANSUhEUgAAAAoAAAAOCAYAAAAWo42rAAAABGdBTUEAALGPC/xhBQAAABl0RVh0
@@ -1343,7 +1356,7 @@ AAgwAP8JHEiwoMGDAwMg/BdAAMIAAxwaDHAg4sQDCAwoJBgAAQGJHAuA5DiS48KTCwMCADs=
 
     variable ${treeStyle}_expandedImg
     variable ${treeStyle}_expandedActImg
-    if {$pngFormat} {
+    if {$pngSupported} {
 	set ${treeStyle}_expandedImg \
 	    [image create photo tablelist_${treeStyle}_expandedImg -data "
 iVBORw0KGgoAAAANSUhEUgAAAAoAAAAOCAYAAAAWo42rAAAABGdBTUEAALGPC/xhBQAAABl0RVh0
