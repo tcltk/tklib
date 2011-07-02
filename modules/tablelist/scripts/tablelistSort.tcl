@@ -262,12 +262,12 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 		    -command $data($col-sortcommand)] descItemList
 	    } elseif {[string compare $data($col-sortmode) "asciinocase"]
 		== 0} {
-		if {$::tk_version < 8.5} {
-		    sortChildren $win $parentKey [list lsort -$order \
-			-index $col -command compareNoCase] descItemList
-		} else {
+		if {$::tk_version >= 8.5} {
 		    sortChildren $win $parentKey [list lsort -$order \
 			-index $col -ascii -nocase] descItemList
+		} else {
+		    sortChildren $win $parentKey [list lsort -$order \
+			-index $col -command compareNoCase] descItemList
 		}
 	    } else {
 		sortChildren $win $parentKey [list lsort -$order -index $col \
@@ -722,11 +722,11 @@ proc tablelist::sortList {win list} {
 			  $data($col-sortcommand) $list]
 	    } elseif {[string compare $data($col-sortmode) "asciinocase"]
 		== 0} {
-		if {$::tk_version < 8.5} {
+		if {$::tk_version >= 8.5} {
+		    set list [lsort -$order -index $col -ascii -nocase $list]
+		} else {
 		    set list [lsort -$order -index $col -command \
 			      compareNoCase $list]
-		} else {
-		    set list [lsort -$order -index $col -ascii -nocase $list]
 		}
 	    } else {
 		set list [lsort -$order -index $col -$data($col-sortmode) $list]

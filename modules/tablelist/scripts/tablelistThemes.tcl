@@ -111,13 +111,11 @@ proc tablelist::aquaTheme {} {
 	    set stripeBg		#edf3fe
 	    set labelselectedBg		#7ab2e9
 	    set labelselectedpressedBg	#679ed5
-	    set arrowselectedColor	#385573
 	}
 	"24415 27499 31354" {					;# Graphite
 	    set stripeBg		#f0f0f0
 	    set labelselectedBg		#b6c2cd
 	    set labelselectedpressedBg	#a7b3be
-	    set arrowselectedColor	#575d63
 	}
     }
 
@@ -178,10 +176,15 @@ proc tablelist::aquaTheme {} {
 	-labelborderwidth	1 \
 	-labelpady		1 \
 	-arrowcolor		#717171 \
-	-arrowselectedColor	$arrowselectedColor \
-	-arrowstyle		flat7x7 \
 	-treestyle		aqua \
     ]
+
+    variable pngSupported
+    if {$pngSupported} {
+	set themeDefaults(-arrowstyle) photo7x7
+    } else {
+	set themeDefaults(-arrowstyle) flat7x7
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -210,7 +213,7 @@ proc tablelist::AquativoTheme {} {
 	-labelborderwidth	2 \
 	-labelpady		1 \
 	-arrowcolor		#717171 \
-	-arrowstyle		flat7x7 \
+	-arrowstyle		flat8x5 \
 	-treestyle		aqua \
     ]
 }
@@ -240,8 +243,8 @@ proc tablelist::blueTheme {} {
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
-	-arrowcolor		"" \
-	-arrowstyle		sunken10x9 \
+	-arrowcolor		#2d2d66 \
+	-arrowstyle		flat9x5 \
 	-treestyle		gtk \
     ]
 }
@@ -1388,8 +1391,8 @@ proc tablelist::winxpblueTheme {} {
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
-	-arrowcolor		#aca899 \
-	-arrowstyle		flat9x5 \
+	-arrowcolor		#4d6185 \
+	-arrowstyle		flat7x4 \
 	-treestyle		winxpBlue \
     ]
 }
