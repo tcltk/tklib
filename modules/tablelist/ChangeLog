@@ -1,3 +1,19 @@
+2011-07-02  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                 New value "photo7x7" for the -arrowstyle
+	* scripts/mwutil.tcl:          configuration option; various further
+	* scripts/tablelistConfig.tcl: improvements.
+	* scripts/tablelistEdit.tcl:
+	* scripts/tablelistImages.tcl:
+	* scripts/tablelistSort.tcl:
+	* scripts/tablelistThemes.tcl:
+	* scripts/tablelistUtil.tcl:
+	* scripts/tablelistWidget.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/tablelistWidget.html: Updated to reflect the changes.
+
 2011-06-28  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistUtil.tcl:   Solved some refresh problems on Mac OS X
