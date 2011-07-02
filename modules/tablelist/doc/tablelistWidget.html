@@ -85,12 +85,12 @@
     <dd><code><b><a href="#arrowcolor">-arrowcolor</a></b>
     <i>color</i></code></dd>
 
-    <dd><code><b><a href="#arrowstyle">-arrowstyle</a></b>
-    <b>flat6x4</b>|<b>flat7x4</b>|<b>flat7x5</b>|<b>flat7x7</b>|<b>flat8x5</b>|<b>flat9x5</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flat9x7</b>|<b>flat10x6</b>|<b>sunken8x7</b>|<b>sunken10x9</b>|<b>sunken12x11</b></code></dd>
-
     <dd><code><b><a href="#arrowdisabledcolor">-arrowdisabledcolor</a></b>
     <i>color</i></code></dd>
+
+    <dd><code><b><a href="#arrowstyle">-arrowstyle</a></b>
+    <b>flat6x4</b>|<b>flat7x4</b>|<b>flat7x5</b>|<b>flat7x7</b>|<b>flat8x5</b>|<b>flat9x5</b>|<b>flat9x7</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flat10x6</b>|<b>photo7x7</b>|<b>sunken8x7</b>|<b>sunken10x9</b>|<b>sunken12x11</b></code></dd>
 
     <dd><code><b><a href="#collapsecommand">-collapsecommand</a></b>
     <i>command</i></code></dd>
@@ -1189,55 +1189,8 @@ proc acceptChildCmd {tbl targetParentNodeIdx sourceRow} {
         <code><b>sunken8x7</b></code>, respectively.&nbsp; Finally, for the
         windowing systems <code><b>classic</b></code> and
         <code><b>aqua</b></code> on the Macintosh, the default arrow color is
-        <code>#777777</code> and the default arrow style is
+        <code>#717171</code> and the default arrow style is
         <code><b>flat7x7</b></code>.</p>
-      </blockquote>
-    </dd>
-
-    <dd>
-      <a name="arrowstyle"></a>
-      <table border="0" cellpadding="0" cellspacing="0">
-        <tr>
-          <td>Command-Line Name:&nbsp;</td>
-          <td><code><b>-arrowstyle</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Name:</td>
-          <td><code><b>&nbsp;arrowStyle</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Class:</td>
-          <td><code><b>&nbsp;ArrowStyle</b></code></td>
-        </tr>
-      </table>
-
-      <blockquote>
-        <p>Specifies the relief, width, and height of the up- or down-arrow
-        placed into a column label by the <code><b><a href=
-        "#sortbycolumn">sortbycolumn</a></b></code> or <code><b><a href=
-        "#sortbycolumnlist">sortbycolumnlist</a></b></code> subcommand of the
-        Tcl command associated with the widget.&nbsp; This option is only
-        relevant if the value of the <code><b><a href=
-        "#showarrow">-showarrow</a></b></code> option is true.&nbsp; The
-        currently supported values are <code><b>flat6x4</b></code>,
-        <code><b>flat7x4</b></code>, <code><b>flat7x5</b></code>,
-        <code><b>flat7x7</b></code>, <code><b>flat8x5</b></code>,
-        <code><b>flat9x5</b></code>, <code><b>flat9x7</b></code>,
-        <code><b>flat10x6</b></code>, <code><b>sunken8x7</b></code>,
-        <code><b>sunken10x9</b></code>, and
-        <code><b>sunken12x11</b></code>.&nbsp; The default value depends on the
-        windowing system in the Tablelist package and on the current theme in
-        Tablelist_tile; see the description of the <code><b><a href=
-        "#arrowcolor">-arrowcolor</a></b></code> option for details.</p>
-
-        <p>Notice that, while the up- and down-arrows of most of the styles
-        listed above are drawn as triangles with flat or sunken relief, the
-        arrow styles <code><b>flat7x5</b></code>, <code><b>flat9x7</b></code>,
-        and <code><b>flat10x6</b></code> give rise to arrows displayed as
-        angles similar to the <code><b>&gt;</b></code> and
-        <code><b>&lt;</b></code> characters rotated by 90&deg;.</p>
       </blockquote>
     </dd>
 
@@ -1275,6 +1228,72 @@ proc acceptChildCmd {tbl targetParentNodeIdx sourceRow} {
         option, too; otherwise the latter's default value equals the default
         foreground color of the header labels in <code><b>disabled</b></code>
         state.</p>
+      </blockquote>
+    </dd>
+
+    <dd>
+      <a name="arrowstyle"></a>
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-arrowstyle</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;arrowStyle</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;ArrowStyle</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the relief, width, and height of the up- or down-arrow
+        placed into a column label by the <code><b><a href=
+        "#sortbycolumn">sortbycolumn</a></b></code> or <code><b><a href=
+        "#sortbycolumnlist">sortbycolumnlist</a></b></code> subcommand of the
+        Tcl command associated with the widget.&nbsp; This option is only
+        relevant if the value of the <code><b><a href=
+        "#showarrow">-showarrow</a></b></code> option is true.&nbsp; The
+        currently supported values are <code><b>flat6x4</b></code>,
+        <code><b>flat7x4</b></code>, <code><b>flat7x5</b></code>,
+        <code><b>flat7x7</b></code>, <code><b>flat8x5</b></code>,
+        <code><b>flat9x5</b></code>, <code><b>flat9x7</b></code>,
+        <code><b>flat10x6</b></code>, <code><b>photo7x7</b></code>,
+        <code><b>sunken8x7</b></code>, <code><b>sunken10x9</b></code>, and
+        <code><b>sunken12x11</b></code>.&nbsp; The default value depends on the
+        windowing system in the Tablelist package and on the current theme in
+        Tablelist_tile; see the description of the <code><b><a href=
+        "#arrowcolor">-arrowcolor</a></b></code> option for details.</p>
+
+        <p>While the sort arrows of the styles <code><b>flat*</b></code> and
+        <code><b>sunken*</b></code> are created from bitmaps, the arrow style
+        <code><b>photo7x7</b></code> uses PNG images that look and behave very
+        close to the native sort arrows on Mac OS X Aqua.&nbsp; This arrow
+        style is only supported if the Tk version is either 8.6 (with built-in
+        PNG support), or 8.5 and the <code><b>img::png</b></code> package can
+        be loaded into the interpreter.&nbsp; When supported,
+        <code><b>photo7x7</b></code> will be the default value of the
+        <code><b>-arrowstyle</b></code> option in Tablelist_tile with the
+        <code><b>aqua</b></code> theme (otherwise <code><b>flat7x7</b></code>
+        will be used as default).&nbsp; When using this arrow style, the
+        <code><b><a href="#arrowcolor">-arrowcolor</a></b></code> and
+        <code><b><a href=
+        "#arrowdisabledcolor">-arrowdisabledcolor</a></b></code> options have
+        no effect, but, due to the transparency information contained in the
+        PNG images, the arrows will automatically adapt their color to the
+        various states of the header labels, just like the native sort
+        arrows.</p>
+
+        <p>Notice that, while the up- and down-arrows of most of the styles
+        listed above are drawn as triangles with flat or sunken relief, the
+        arrow styles <code><b>flat7x5</b></code>, <code><b>flat9x7</b></code>,
+        and <code><b>flat10x6</b></code> give rise to arrows displayed as
+        angles similar to the <code><b>&gt;</b></code> and
+        <code><b>&lt;</b></code> characters rotated by 90&deg;.</p>
       </blockquote>
     </dd>
 
