@@ -1,5 +1,21 @@
-What is new in Tablelist 5.3?
------------------------------
+What is new in Tablelist 5.3.1?
+-------------------------------
+
+This release contains just one bug-fix and an enhancement:
+
+1. Fixed a bug related to the "-hide" row configuration option,
+   introduced in the previous Tablelist version (thanks to Ralf Fassel
+   and Michal Sosnowski for their bug reports).
+
+2. Extended the support for the native "Aqua-blue" background for the
+   header label of the sort column (which in the previous Tablelist
+   release was restricted to Tk versions 8.6 and above) to the Cocoa-
+   based Tk patch levels 8.5.9 and above (thanks to Kevin Walzer for
+   discussions on this topic and to Paul Obermeier for enabling me to
+   access the ActiveTcl 8.5.8 distribution for the Mac).
+
+What was new in Tablelist 5.3?
+------------------------------
 
 1. The interactive row move operation (i.e., local drag & drop) now
    supports moving an item outside its parent and dropping it under
@@ -162,12 +178,12 @@ What was new in Tablelist 4.12?
     support for the "keramik_alt" theme.
 
 6.  Support for the native "Aqua-blue" background, set for the header
-    label of the sort column (thanks to Kewin Walzer for his proposal
+    label of the sort column (thanks to Kevin Walzer for his proposal
     and valuable contribution).  For technical reasons, this feature is
     only supported for Mac-Tk versions using Cocoa.
 
 7.  Further improvements in the support for Mac OS X Aqua (thanks to
-    Daniel Steffen and Kewin Walzer for their valuable feedback).
+    Daniel Steffen and Kevin Walzer for their valuable feedback).
 
 8.  Improvements in the binding scripts related to interactive cell
     editing (thanks to Hadas Porat for discussions on this subject).
