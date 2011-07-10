@@ -107,12 +107,14 @@ proc tablelist::altTheme {} {
 #------------------------------------------------------------------------------
 proc tablelist::aquaTheme {} {
     switch [winfo rgb . systemMenuActive] {
-	"13621 29041 52685" {					;# Blue
+	"13621 29041 52685" -
+	"32256 44288 55552" {				;# Blue Cocoa/Carbon
 	    set stripeBg		#edf3fe
 	    set labelselectedBg		#7ab2e9
 	    set labelselectedpressedBg	#679ed5
 	}
-	"24415 27499 31354" {					;# Graphite
+	"24415 27499 31354" -
+	"39680 43776 48384" {				;# Graphite Cocoa/Carbon
 	    set stripeBg		#f0f0f0
 	    set labelselectedBg		#b6c2cd
 	    set labelselectedpressedBg	#a7b3be

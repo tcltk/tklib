@@ -70,7 +70,8 @@ namespace eval tablelist {
     variable pngSupported [expr {$::tk_version >= 8.6 ||
 	($::tk_version == 8.5 && [catch {package require img::png}] == 0)}]
 
-    variable specialAquaHandling [expr {$usingTile && $::tk_version >= 8.6 &&
+    variable specialAquaHandling [expr {$usingTile && ($::tk_version >= 8.6 ||
+	[regexp {^8\.5\.(9|[1-9][0-9])$} $::tk_patchLevel]) &&
 	[lsearch -exact [winfo server .] "AppKit"] >= 0}]
 
     #
