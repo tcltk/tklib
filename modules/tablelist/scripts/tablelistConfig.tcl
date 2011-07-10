@@ -2306,7 +2306,8 @@ proc tablelist::doRowConfig {row win opt val} {
 			incr data(nonViewableRowCount) -1
 			set viewChanged 1
 
-			if {[string match "*expanded*" \
+			if {[info exists data($key,$data(treeCol)-indent)] &&
+			    [string match "*expanded*" \
 			     $data($key,$data(treeCol)-indent)]} {
 			    expandSubCmd $win [list $row -partly]
 			}
