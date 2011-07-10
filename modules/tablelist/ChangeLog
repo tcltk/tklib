@@ -1,3 +1,17 @@
+2011-07-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:              Bumped the version number to 5.3.1.
+	* *.txt:
+	* doc/tablelist.html:
+
+	* scripts/tablelistConfig.tcl: Fixed a bug related to the -hide row
+	  configuration option, introduced in the previous release.
+
+	* scripts/tablelistThemes.tcl: Extended the support for the native
+	* scripts/tablelistWidget.tcl: "Aqua-blue" background for the header
+	  label of the sort column to the Cocoa-based Tk patch levels 8.5.9
+	  and above.
+
 2011-07-02  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:                 New value "photo7x7" for the -arrowstyle
