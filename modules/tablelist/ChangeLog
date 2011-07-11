@@ -1,3 +1,7 @@
+2011-07-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* ../../examples/tablelist/styles_tile.tcl: Minor improvements.
+
 2011-07-10  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:              Bumped the version number to 5.3.1.
