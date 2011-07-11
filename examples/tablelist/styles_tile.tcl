@@ -13,17 +13,6 @@ package require tablelist_tile 5.3
 wm title . "Tablelist Styles"
 
 #
-# Get the current windowing system ("x11", "win32", or
-# "aqua") and add some entries to the Tk option database
-#
-tablelist::setThemeDefaults
-if {[tablelist::getCurrentTheme] ne "aqua"} {
-    option add *selectBackground  $tablelist::themeDefaults(-selectbackground)
-    option add *selectForeground  $tablelist::themeDefaults(-selectforeground)
-    option add *selectBorderWidth $tablelist::themeDefaults(-selectborderwidth)
-}
-
-#
 # Improve the window's appearance by using a tile
 # frame as a container for the other widgets
 #
@@ -37,7 +26,7 @@ for {set n 0} { $n < 8} {incr n} {
     set tbl $f.f.tbl$n
     tablelist::tablelist $tbl \
 	-columntitles {"Label 0" "Label 1" "Label 2" "Label 3"} \
-	-background white -height 4 -width 40 -stretch all
+	-background white -stripebackground "" -height 4 -width 40 -stretch all
     if {[$tbl cget -selectborderwidth] == 0} {
 	$tbl configure -spacing 1
     }
