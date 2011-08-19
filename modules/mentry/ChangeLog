@@ -1,3 +1,14 @@
+2011-08-19  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:           Bumped the version number to 3.5.
+	* *.txt:
+	* doc/mentry.html:
+
+	* scripts/mentryWidget.tcl: Fixed a minor bug related to the handling
+	  of <Button-1> events.
+
+	* scripts/mwutil.tcl: Updated to the same version as in Tablelist 5.3.
+
 2010-12-07  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Added mentry to tklib.
