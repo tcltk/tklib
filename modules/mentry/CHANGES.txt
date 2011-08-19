@@ -1,5 +1,13 @@
-What is new in Mentry 3.4?
+What is new in Mentry 3.5?
 --------------------------
+
+1. Included the same version of the general mega-widget utility module
+   "mwutil.tcl" as in Tablelist release 5.3.
+
+2. Fixed a minor bug related to the handling of <Button-1> events.
+
+What was new in Mentry 3.4?
+---------------------------
 
 The only changes contained in this release are a few adaptations made
 necessary by submitting the package for inclusion in tklib (thanks to
