@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 1999-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1720,6 +1720,9 @@ proc mentry::labelButton1 w {
 	set bbox [$entry bbox end]
 	set x [expr {[lindex $bbox 0] + [lindex $bbox 2]}]
 	event generate $entry <Button-1> -x $x
+
+	variable entryClicked
+	set entryClicked 0
     }
 }
 
