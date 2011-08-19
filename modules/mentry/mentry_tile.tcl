@@ -1,7 +1,7 @@
 #==============================================================================
 # Main Mentry_tile package module.
 #
-# Copyright (c) 1999-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tcl 8.4
@@ -9,7 +9,7 @@ package require Tk  8.4
 if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     package require tile 0.6
 }
-package require -exact mentry::common 3.4
+package require -exact mentry::common 3.5
 
 package provide Mentry_tile $::mentry::version
 package provide mentry_tile $::mentry::version
