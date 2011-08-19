@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Public utility procedures
 #
-# Copyright (c) 2000-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tcl 8
@@ -20,7 +20,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.6
+    variable version	2.7
     variable library	[file dirname [info script]]
 
     #
@@ -382,11 +382,11 @@ proc mwutil::configureSubCmd {win configSpecsName configCmd cgetCmd argList} {
 	foreach opt [lsort [array names configSpecs]] {
 	    if {[llength $configSpecs($opt)] == 1} {
 		set alias $configSpecs($opt)
-		if {$::tk_version < 8.1} {
+		if {$::tk_version >= 8.1} {
+		    lappend result [list $opt $alias]
+		} else {
 		    set dbName [lindex $configSpecs($alias) 0]
 		    lappend result [list $opt $dbName]
-		} else {
-		    lappend result [list $opt $alias]
 		}
 	    } else {
 		set dbName [lindex $configSpecs($opt) 0]
