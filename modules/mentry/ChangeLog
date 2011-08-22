@@ -1,3 +1,9 @@
+2011-08-22  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                Eliminated the deprecated free-form scan
+	* scripts/mentryDateTime.tcl: from the implementation of the
+	  "mentry::getClockVal" command for Tcl versions 8.5 and above.
+
 2011-08-19  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:           Bumped the version number to 3.5.

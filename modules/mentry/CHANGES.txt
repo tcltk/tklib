@@ -4,7 +4,11 @@ What is new in Mentry 3.5?
 1. Included the same version of the general mega-widget utility module
    "mwutil.tcl" as in Tablelist release 5.3.
 
-2. Fixed a minor bug related to the handling of <Button-1> events.
+2. Eliminated the deprecated free-form scan from the implementation of
+   the "mentry::getClockVal" command for mentry widgets of types "Date",
+   "Time", and "DateTime" for Tcl versions 8.5 and above.
+
+3. Fixed a minor bug related to the handling of <Button-1> events.
 
 What was new in Mentry 3.4?
 ---------------------------
