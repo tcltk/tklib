@@ -503,10 +503,15 @@ proc mentry::getClockValFromDateMentry {win base useGMT} {
     #
     if {[info exists idxs(y)]} {
 	set yearIdx $idxs(y)
+	set year $vals($yearIdx)
+	set yearStr [format "%02d" $year]
+	set format "%y-%m-%d"
     } else {
 	set yearIdx $idxs(Y)
+	set year $vals($yearIdx)
+	set yearStr [format "%04d" $year]
+	set format "%Y-%m-%d"
     }
-    set year  $vals($yearIdx)
     set month $vals($idxs(m))
     set day   $vals($idxs(d))
 
@@ -528,8 +533,11 @@ proc mentry::getClockValFromDateMentry {win base useGMT} {
     # Now we have a valid date: try to convert it to an integer clock
     # value; generate an error if this fails (because of the year)
     #
-    if {[catch {clock scan $month/$day/$year -base $base -gmt $useGMT} res]
-	== 0} {
+    set cmd [list clock scan $yearStr-$month-$day -base $base -gmt $useGMT]
+    if {$::tcl_version >= 8.5} {
+	lappend cmd -format $format
+    }
+    if {[catch {eval $cmd} res] == 0} {
 	return $res
     } else {
 	tabToEntry [::$win entrypath $yearIdx]
@@ -589,13 +597,29 @@ proc mentry::getClockValFromTimeMentry {win base useGMT} {
 	    return -code error EMPTY
 	}
 	append timeStr " ${str}M"
+
+	if {$len == 2} {
+	    set format "%I:%M %p"
+	} else {
+	    set format "%I:%M:%S %p"
+	}
+    } else {
+	if {$len == 2} {
+	    set format "%H:%M"
+	} else {
+	    set format "%H:%M:%S"
+	}
     }
 
     #
     # Convert the time string built from the contents
     # of the widget to an integer clock value
     #
-    return [clock scan $timeStr -base $base -gmt $useGMT]
+    if {$::tcl_version >= 8.5} {
+	return [clock scan $timeStr -base $base -gmt $useGMT -format $format]
+    } else {
+	return [clock scan $timeStr -base $base -gmt $useGMT]
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -633,10 +657,15 @@ proc mentry::getClockValFromDateTimeMentry {win base useGMT} {
     #
     if {[info exists idxs(y)]} {
 	set yearIdx $idxs(y)
+	set year $vals($yearIdx)
+	set yearStr [format "%02d" $year]
+	set format "%y-%m-%d "
     } else {
 	set yearIdx $idxs(Y)
+	set year $vals($yearIdx)
+	set yearStr [format "%04d" $year]
+	set format "%Y-%m-%d "
     }
-    set year  $vals($yearIdx)
     set month $vals($idxs(m))
     set day   $vals($idxs(d))
 
@@ -654,7 +683,7 @@ proc mentry::getClockValFromDateTimeMentry {win base useGMT} {
 	return -code error BAD_DATE
     }
 
-    set dateTimeStr "$month/$day/$year "
+    set dateTimeStr "$yearStr-$month-$day "
 
     #
     # Scan the contents of the remaining numeric entry children;
@@ -700,13 +729,29 @@ proc mentry::getClockValFromDateTimeMentry {win base useGMT} {
 	    return -code error EMPTY
 	}
 	append dateTimeStr " ${str}M"
+
+	if {$len == 5} {
+	    append format "%I:%M %p"
+	} else {
+	    append format "%I:%M:%S %p"
+	}
+    } else {
+	if {$len == 5} {
+	    append format "%H:%M"
+	} else {
+	    append format "%H:%M:%S"
+	}
     }
 
     #
     # Now we have a valid date & time: try to convert it to an integer
     # clock value; generate an error if this fails (because of the year)
     #
-    if {[catch {clock scan $dateTimeStr -base $base -gmt $useGMT} res] == 0} {
+    set cmd [list clock scan $dateTimeStr -base $base -gmt $useGMT]
+    if {$::tcl_version >= 8.5} {
+	lappend cmd -format $format
+    }
+    if {[catch {eval $cmd} res] == 0} {
 	return $res
     } else {
 	tabToEntry [::$win entrypath $yearIdx]
