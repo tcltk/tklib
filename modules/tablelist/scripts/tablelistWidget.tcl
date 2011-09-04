@@ -91,8 +91,9 @@ namespace eval tablelist {
 	-acceptchildcommand	 {acceptChildCommand	  AcceptChildCommand  w}
 	-activestyle		 {activeStyle		  ActiveStyle	      w}
 	-arrowcolor		 {arrowColor		  ArrowColor	      w}
-	-arrowstyle		 {arrowStyle		  ArrowStyle	      w}
 	-arrowdisabledcolor	 {arrowDisabledColor	  ArrowDisabledColor  w}
+	-arrowstyle		 {arrowStyle		  ArrowStyle	      w}
+	-autoscan		 {autoScan		  AutoScan	      w}
 	-background		 {background		  Background	      b}
 	-bg			 -background
 	-borderwidth		 {borderWidth		  BorderWidth	      f}
@@ -137,6 +138,7 @@ namespace eval tablelist {
 	-movablerows		 {movableRows		  MovableRows	      w}
 	-movecolumncursor	 {moveColumnCursor	  MoveColumnCursor    w}
 	-movecursor		 {moveCursor		  MoveCursor	      w}
+	-populatecommand	 {populateCommand	  PopulateCommand     w}
 	-protecttitlecolumns	 {protectTitleColumns	  ProtectTitleColumns w}
 	-relief			 {relief		  Relief	      f}
 	-resizablecolumns	 {resizableColumns	  ResizableColumns    w}
@@ -352,9 +354,9 @@ namespace eval tablelist {
 	getkeys hasattrib hascellattrib hascolumnattrib hasrowattrib \
 	imagelabelpath index insert insertchild insertchildlist \
 	insertchildren insertcolumnlist insertcolumns insertlist \
-	iselemsnipped istitlesnipped itemlistvar labelpath labels labeltag \
-	move movecolumn nearest nearestcell nearestcolumn noderow parentkey \
-	refreshsorting rejectinput resetsortinfo rowattrib rowcget \
+	iselemsnipped isexpanded istitlesnipped itemlistvar labelpath labels \
+	labeltag move movecolumn nearest nearestcell nearestcolumn noderow \
+	parentkey refreshsorting rejectinput resetsortinfo rowattrib rowcget \
 	rowconfigure scan searchcolumn see seecell seecolumn selection \
 	separatorpath separators size sort sortbycolumn sortbycolumnlist \
 	sortcolumn sortcolumnlist sortorder sortorderlist togglecolumnhide \
@@ -381,7 +383,7 @@ namespace eval tablelist {
     variable activeStyles  [list frame none underline]
     variable alignments    [list left right center]
     variable arrowStyles   [list flat6x4 flat7x4 flat7x5 flat7x7 flat8x5 \
-				 flat9x5 flat9x7 flat10x6 photo7x7 \
+				 flat9x5 flat9x6 flat9x7 flat10x6 photo7x7 \
 				 sunken8x7 sunken10x9 sunken12x11]
     variable arrowTypes    [list up down]
     variable colWidthOpts  [list -requested -stretched -total]
@@ -1929,7 +1931,8 @@ proc tablelist::expandSubCmd {win argList} {
     set data($key,$col-indent) [strMap \
 	[list "collapsed" $state "expanded" $state] $data($key,$col-indent)]
     if {[string compare $state "indented"] == 0} {
-	set data($key,$col-indent) [strMap {"Act" ""} $data($key,$col-indent)]
+	set data($key,$col-indent) [strMap \
+	    {"Act" "" "Sel" ""} $data($key,$col-indent)]
     }
     if {[winfo exists $data(body).ind_$key,$col]} {
 	$data(body).ind_$key,$col configure -image $data($key,$col-indent)
@@ -2010,7 +2013,7 @@ proc tablelist::expandallSubCmd {win argList} {
 	    [list "collapsed" $state "expanded" $state] $data($key,$col-indent)]
 	if {[string compare $state "indented"] == 0} {
 	    set data($key,$col-indent) [strMap \
-		{"Act" ""} $data($key,$col-indent)]
+		{"Act" "" "Sel" ""} $data($key,$col-indent)]
 	}
 	if {[winfo exists $data(body).ind_$key,$col]} {
 	    $data(body).ind_$key,$col configure -image $data($key,$col-indent)
@@ -2887,6 +2890,27 @@ proc tablelist::iselemsnippedSubCmd {win argList} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::isexpandedSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::isexpandedSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win isexpanded index"
+    }
+
+    synchronize $win
+    displayItems $win
+    set row [rowIndex $win [lindex $argList 0] 0]
+    upvar ::tablelist::ns${win}::data data
+    set key [lindex $data(keyList) $row]
+    set treeCol $data(treeCol)
+    if {[info exists data($key,$treeCol-indent)]} {
+	return [string match "*expanded*" $data($key,$treeCol-indent)]
+    } else {
+	return 0
+    }
+}
+
+#------------------------------------------------------------------------------
 # tablelist::istitlesnippedSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::istitlesnippedSubCmd {win argList} {
@@ -3221,6 +3245,7 @@ proc tablelist::searchcolumnSubCmd {win argList} {
     }
 
     synchronize $win
+    displayItems $win
     set col [colIndex $win [lindex $argList 0] 1]
     set pattern [lindex $argList 1]
 
@@ -3246,7 +3271,7 @@ proc tablelist::searchcolumnSubCmd {win argList} {
     for {set n 2} {$n < $argCount} {incr n} {
 	set arg [lindex $argList $n]
 	set opt [mwutil::fullOpt "option" $arg $searchOpts]
-	switch $opt {
+	switch -- $opt {
 	    -all	{ set allMatches 1}
 	    -backwards	{ set backwards 1 }
 	    -check {
@@ -3290,11 +3315,26 @@ proc tablelist::searchcolumnSubCmd {win argList} {
 	set pattern [string tolower $pattern]
     }
 
+    upvar ::tablelist::ns${win}::data data
+    if {[string compare $data(-populatecommand) ""] != 0} {
+	#
+	# Populate the relevant subtree(s) if necessary
+	#
+	if {[string compare $parentKey "root"] == 0} {
+	    if {$descend} {
+		for {set row 0} {$row < $data(itemCount)} {incr row} {
+		    populate $win $row 1
+		}
+	    }
+	} else {
+	    populate $win [keyToRow $win $parentKey] $descend
+	}
+    }
+
     #
     # Build the list of row indices of the matching elements
     #
     set rowList {}
-    upvar ::tablelist::ns${win}::data data
     set useFormatCmd [expr {$formatted && [lindex $data(fmtCmdFlagList) $col]}]
     set childCount [llength $data($parentKey-children)]
     if {$childCount != 0} {
@@ -4743,7 +4783,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 		    collapseSubCmd $win [list $parentKey -partly]
 		    set data($parentKey,$col-indent) [strMap \
 			{"collapsed" "indented" "expanded" "indented"
-			 "Act" ""} $data($parentKey,$col-indent)]
+			 "Act" "" "Sel" ""} $data($parentKey,$col-indent)]
 		    if {[winfo exists $data(body).ind_$parentKey,$col]} {
 			$data(body).ind_$parentKey,$col configure -image \
 			    $data($parentKey,$col-indent)
@@ -5569,12 +5609,42 @@ proc tablelist::doScan {win opt x y} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::populate
+#
+# Helper procedure invoked in searchcolumnSubCmd.
+#------------------------------------------------------------------------------
+proc tablelist::populate {win index fully} {
+    upvar ::tablelist::ns${win}::data data
+    set key [lindex $data(keyList) $index]
+    set col $data(treeCol)
+    if {![info exists data($key,$col-indent)] ||
+	[string match "*indented*" $data($key,$col-indent)]} {
+	return ""
+    }
+
+    if {[llength $data($key-children)] == 0} {
+	uplevel #0 $data(-populatecommand) [list $win $index]
+    }
+
+    if {$fully} {
+	#
+	# Invoke this procedure recursively on the children
+	#
+	foreach childKey $data($key-children) {
+	    populate $win [keyToRow $win $childKey] 1
+	}
+    }
+
+    return ""
+}
+
+#------------------------------------------------------------------------------
 # tablelist::doesMatch
 #
 # Helper procedure invoked in searchcolumnSubCmd.
 #------------------------------------------------------------------------------
 proc doesMatch {win row col pattern value mode numeric noCase checkCmd} {
-    switch $mode {
+    switch -- $mode {
 	-exact {
 	    if {$numeric} {
 		set result [expr {$pattern == $value}]
