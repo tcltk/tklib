@@ -3392,17 +3392,6 @@ proc tablelist::updateVScrlbar win {
 
     if {[winfo viewable $win] && ![info exists data(colBeingResized)]} {
 	forceRedrawDelayed $win
-
-	variable winSys
-	if {[string compare $winSys "aqua"] == 0} {
-	    #
-	    # Work around a Tk bug on Mac OS X Aqua
-	    #
-	    if {[winfo exists $data(bodyFr)]} {
-		lower $data(bodyFr)
-		raise $data(bodyFr)
-	    }
-	}
     }
 
     if {$data(winCount) == 0 && $::tk_version < 8.5} {
@@ -3436,8 +3425,22 @@ proc tablelist::forceRedraw win {
 	unset data(redrawId)
     }
 
-    raise $data(body)
-    lower $data(body)
+    set w $data(body)
+    $w tag add redraw 1.0 end
+    $w tag remove redraw 1.0 end
+
+    variable winSys
+    if {[string compare $winSys "aqua"] == 0} {
+	#
+	# Work around a Tk bug on Mac OS X Aqua
+	#
+	raise $w
+	lower $w
+	if {[winfo exists $data(bodyFr)]} {
+	    lower $data(bodyFr)
+	    raise $data(bodyFr)
+	}
+    }
 }
 
 #------------------------------------------------------------------------------
