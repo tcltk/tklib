@@ -1,5 +1,34 @@
-What is new in Tablelist 5.3.1?
--------------------------------
+What is new in Tablelist 5.4?
+-----------------------------
+
+1. Added the "-populatecommand" configuration option, used by the
+   "searchcolumn" subcommand to insert child items on demand before
+   checking whether they contain the specified pattern.
+   
+2. Added the "-autoscroll" configuration option, which can be used to
+   deactivate the automatic scrolling triggered by leaving the
+   tablelist window with mouse button 1 down, in order to avoid any
+   conflicts with drag & drop via tkdnd (thanks to Patrick Fradin for
+   his valuable contribution).
+
+3. New "isexpanded" subcommand.
+
+4. New value "flat9x6" for the "-arrowstyle" configuration option.
+
+5. Adapted the tree style "oxygen2" to the look of current KDE 4
+   versions.
+
+6. Worked around some peculiarities of Tk on Mac OS X Aqua (thanks to
+   Torsten Berg for her problem report and discussions on this topic).
+
+7. Fixed a bug related to the tree style "aqua", introduced in
+   Tablelist version 5.3 (thanks to Julian H J Loaring for his bug
+   report).
+
+8. Numerous further improvements in the code and documentation.
+
+What was new in Tablelist 5.3.1?
+--------------------------------
 
 This release contains just one bug-fix and an enhancement:
 
