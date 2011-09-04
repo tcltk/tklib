@@ -9,7 +9,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2010-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.3
+package require tablelist_tile 5.4
 
 #
 # Add some entries to the Tk option database
@@ -38,27 +38,29 @@ if {[tablelist::getCurrentTheme] eq "aqua"} {
 #------------------------------------------------------------------------------
 proc displayContents dir {
     #
-    # Create a vertically scrolled tablelist widget with 3
-    # dynamic-width columns and interactive sort capability
+    # Create a scrolled tablelist widget with 3 dynamic-
+    # width columns and interactive sort capability
     #
     set tf .tf
     ttk::frame $tf
     set tbl $tf.tbl
     set vsb $tf.vsb
+    set hsb $tf.hsb
     tablelist::tablelist $tbl \
 	-columns {0 "Name"	    left
 		  0 "Size"	    right
 		  0 "Date Modified" left} \
 	-expandcommand expandCmd -collapsecommand collapseCmd \
-	-yscrollcommand [list $vsb set] -movablecolumns no -setgrid no \
-	-showseparators yes -height 18 -width 80
+	-xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set] \
+	-movablecolumns no -setgrid no -showseparators yes -height 18 -width 80
     if {[$tbl cget -selectborderwidth] == 0} {
 	$tbl configure -spacing 1
     }
     $tbl columnconfigure 0 -formatcommand formatString -sortmode dictionary
     $tbl columnconfigure 1 -formatcommand formatSize -sortmode integer
     $tbl columnconfigure 2 -formatcommand formatString
-    ttk::scrollbar $vsb -orient vertical -command [list $tbl yview]
+    ttk::scrollbar $vsb -orient vertical   -command [list $tbl yview]
+    ttk::scrollbar $hsb -orient horizontal -command [list $tbl xview]
 
     #
     # Create a pop-up menu with one command entry; bind the script
@@ -91,6 +93,7 @@ proc displayContents dir {
     #
     grid $tbl -row 0 -column 0 -sticky news
     grid $vsb -row 0 -column 1 -sticky ns
+    grid $hsb -row 1 -column 0 -sticky ew
     grid rowconfigure    $tf 0 -weight 1
     grid columnconfigure $tf 0 -weight 1
     pack $b1 $b2 $b3 -side left -expand yes -pady 10
