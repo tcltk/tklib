@@ -276,7 +276,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	    collapseSubCmd $win [list $sourceParentKey -partly]
 	    set data($sourceParentKey,$treeCol-indent) [strMap \
 		{"collapsed" "indented" "expanded" "indented"
-		 "Act" ""} $data($sourceParentKey,$treeCol-indent)]
+		 "Act" "" "Sel" ""} $data($sourceParentKey,$treeCol-indent)]
 	    if {[winfo exists $w.ind_$sourceParentKey,$treeCol]} {
 		$w.ind_$sourceParentKey,$treeCol configure -image \
 		    $data($sourceParentKey,$treeCol-indent)
@@ -300,7 +300,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	#
 	# Update the indentation of the moved item
 	#
-	if {[regexp {^(.+)([0-9]+)$} $indentImg dummy base sourceDepth]} {
+	if {[regexp {^(.+Img)([0-9]+)$} $indentImg dummy base sourceDepth]} {
 	    incr depth
 	    variable maxIndentDepths
 	    if {$depth > $maxIndentDepths($treeStyle)} {
@@ -383,7 +383,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	for {set n 0; set descRow $lastDescRow} {$n < $sourceDescCount} \
 	    {incr n; incr descRow $increment} {
 	    set indentImg [doCellCget $descRow $treeCol $win -indent]
-	    if {[regexp {^(.+)([0-9]+)$} $indentImg dummy base descDepth]} {
+	    if {[regexp {^(.+Img)([0-9]+)$} $indentImg dummy base descDepth]} {
 		incr descDepth [expr {$depth - $sourceDepth}]
 		if {$descDepth > $maxIndentDepths($treeStyle)} {
 		    for {set d $descDepth} {$d > $maxIndentDepths($treeStyle)} \

@@ -958,8 +958,9 @@ proc tablelist::beginSelect {win row col} {
 # tablelist::condAutoScan
 #
 # This procedure is invoked when the mouse leaves or enters the scrollable part
-# of a tablelist widget's body text child.  It either invokes the autoScan
-# procedure or cancels its invocation as an "after" command.
+# of a tablelist widget's body text child while button 1 is down.  It either
+# invokes the autoScan procedure or cancels its invocation as an "after"
+# command.
 #------------------------------------------------------------------------------
 proc tablelist::condAutoScan win {
     variable priv
@@ -994,11 +995,11 @@ proc tablelist::condAutoScan win {
 # tablelist::autoScan
 #
 # This procedure is invoked when the mouse leaves the scrollable part of a
-# tablelist widget's body text child.  It scrolls the child up, down, left, or
-# right, depending on where the mouse left the scrollable part of the
-# tablelist's body, and reschedules itself as an "after" command so that the
-# child continues to scroll until the mouse moves back into the window or the
-# mouse button is released.
+# tablelist widget's body text child while button 1 is down.  It scrolls the
+# child up, down, left, or right, depending on where the mouse left the
+# scrollable part of the tablelist's body, and reschedules itself as an "after"
+# command so that the child continues to scroll until the mouse moves back into
+# the window or the mouse button is released.
 #------------------------------------------------------------------------------
 proc tablelist::autoScan win {
     if {![winfo exists $win] || [string compare [::$win editwinpath] ""] != 0} {
@@ -1006,6 +1007,10 @@ proc tablelist::autoScan win {
     }
 
     upvar ::tablelist::ns${win}::data data
+    if {!$data(-autoscan)} {
+	return ""
+    }
+
     variable priv
     set w [::$win bodypath]
     set x [expr {$priv(x) - [winfo x $w]}]
