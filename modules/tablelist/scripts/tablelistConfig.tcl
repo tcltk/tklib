@@ -20,6 +20,7 @@ proc tablelist::extendConfigSpecs {} {
     #
     lappend configSpecs(-acceptchildcommand)	{}
     lappend configSpecs(-activestyle)		frame
+    lappend configSpecs(-autoscan)		1
     lappend configSpecs(-collapsecommand)	{}
     lappend configSpecs(-columns)		{}
     lappend configSpecs(-columntitles)		{}
@@ -38,6 +39,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-movablerows)		0
     lappend configSpecs(-movecolumncursor)	icon
     lappend configSpecs(-movecursor)		hand2
+    lappend configSpecs(-populatecommand)	{}
     lappend configSpecs(-protecttitlecolumns)	0
     lappend configSpecs(-resizablecolumns)	1
     lappend configSpecs(-resizecursor)		sb_h_double_arrow
@@ -147,6 +149,7 @@ proc tablelist::extendConfigSpecs {} {
 	    unset configSpecs(-acceptchildcommand)
 	    unset configSpecs(-collapsecommand)
 	    unset configSpecs(-expandcommand)
+	    unset configSpecs(-populatecommand)
 	    unset configSpecs(-titlecolumns)
 	    unset configSpecs(-treecolumn)
 	    unset configSpecs(-treestyle)
@@ -496,6 +499,21 @@ proc tablelist::doConfig {win opt val} {
 
 	w {
 	    switch -- $opt {
+		-acceptchildcommand -
+		-collapsecommand -
+		-editendcommand -
+		-editstartcommand -
+		-expandcommand -
+		-labelcommand -
+		-labelcommand2 -
+		-populatecommand -
+		-selectmode -
+		-sortcommand -
+		-tooltipaddcommand -
+		-tooltipdelcommand -
+		-yscrollcommand {
+		    set data($opt) $val
+		}
 		-activestyle {
 		    #
 		    # Configure the "active" tag and save the
@@ -569,19 +587,18 @@ proc tablelist::doConfig {win opt val} {
 			adjustColumns $win $whichWidths 1
 		    }
 		}
-		-acceptchildcommand -
-		-collapsecommand -
-		-editendcommand -
-		-editstartcommand -
-		-expandcommand -
-		-labelcommand -
-		-labelcommand2 -
-		-selectmode -
-		-sortcommand -
-		-tooltipaddcommand -
-		-tooltipdelcommand -
-		-yscrollcommand {
-		    set data($opt) $val
+		-autoscan -
+		-editselectedonly -
+		-forceeditendcommand -
+		-movablecolumns -
+		-movablerows -
+		-protecttitlecolumns -
+		-resizablecolumns -
+		-setfocus {
+		    #
+		    # Save the boolean value specified by val in data($opt)
+		    #
+		    set data($opt) [expr {$val ? 1 : 0}]
 		}
 		-columns {
 		    #
@@ -670,18 +687,6 @@ proc tablelist::doConfig {win opt val} {
 		    if {$data(isDisabled)} {
 			updateColorsWhenIdle $win
 		    }
-		}
-		-editselectedonly -
-		-forceeditendcommand -
-		-movablecolumns -
-		-movablerows -
-		-protecttitlecolumns -
-		-resizablecolumns -
-		-setfocus {
-		    #
-		    # Save the boolean value specified by val in data($opt)
-		    #
-		    set data($opt) [expr {$val ? 1 : 0}]
 		}
 		-exportselection {
 		    #
@@ -1056,9 +1061,9 @@ proc tablelist::doConfig {win opt val} {
 				{incr row} {
 				set oldImg \
 				    [doCellCget $row $treeCol $win -indent]
-				set newImg \
-				    [strMap [list $oldStyle $newStyle] $oldImg]
-				if {[regexp {^.+([0-9]+)$} $newImg \
+				set newImg [strMap \
+				    [list $oldStyle $newStyle "Sel" ""] $oldImg]
+				if {[regexp {^.+Img([0-9]+)$} $newImg \
 				     dummy depth]} {
 				    if {$depth > $maxIndentDepths($newStyle)} {
 					createTreeImgs $newStyle $depth
@@ -2027,7 +2032,7 @@ proc tablelist::doRowConfig {row win opt val} {
 
 		#
 		# Build the list of those dynamic-width columns
-		# whose widths are affected by (un)hiding the row
+		# whose widths are affected by (un)eliding the row
 		#
 		set colWidthsChanged 0
 		set colIdxList {}
@@ -2048,13 +2053,13 @@ proc tablelist::doRowConfig {row win opt val} {
 		    set cellFont [getCellFont $win $key $col]
 		    set elemWidth [getElemWidth $win $text $auxWidth \
 				   $indentWidth $cellFont]
-		    if {$val} {				;# hiding the row
+		    if {$val} {				;# eliding the row
 			if {$elemWidth == $data($col-elemWidth) &&
 			    [incr data($col-widestCount) -1] == 0} {
 			    set colWidthsChanged 1
 			    lappend colIdxList $col
 			}
-		    } else {				;# unhiding the row
+		    } else {				;# uneliding the row
 			if {$elemWidth == $data($col-elemWidth)} {
 			    incr data($col-widestCount)
 			} elseif {$elemWidth > $data($col-elemWidth)} {
