@@ -1,3 +1,40 @@
+2011-09-04  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                                         Bumped the version
+	* *.txt:                                         number to 5.4.
+	* ../../examples/tablelist/browse*.tcl:
+	* ../../examples/tablelist/bwidget*.tcl:
+	* ../../examples/tablelist/config*.tcl:
+	* ../../examples/tablelist/dirViewer*.tcl:
+	* ../../examples/tablelist/embeddedWindows*.tcl:
+	* ../../examples/tablelist/iwidgets*.tcl:
+	* ../../examples/tablelist/miscWidgets*.tcl:
+	* ../../examples/tablelist/styles*.tcl:
+	* ../../examples/tablelist/tileWidgets.tcl:
+
+	* scripts/tablelistBind.tcl:   Added the "-autoscroll" and
+	* scripts/tablelistConfig.tcl: "-populatecommand" options; added the
+	* scripts/tablelistMove.tcl:   "isexpanded" subcommand; fixed a bug
+	* scripts/tablelistWidget.tcl: related to the tree style "aqua"; minor
+	  bug fixes.
+
+	* scripts/tablelistImages.tcl: New arrow style "flat9x6"; adapted the
+	  tree style "oxygen2" to the look of current KDE 4 versions.
+
+	* scripts/tablelistUtil.tcl: Worked around some peculiarities of Tk on
+	  Mac OS X Aqua.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/tablelist.html:       Updated the documentation.
+	* doc/tablelistWidget.html:
+
+	* doc/config.png:    Updated screenshots.
+	* doc/dirViewer.png:
+	* doc/oxygen2.png:
+
+	* doc/arrowStyles.png : New picture, composed of screenshots.
+
 2011-07-11  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* ../../examples/tablelist/styles_tile.tcl: Minor improvements.
