@@ -175,11 +175,10 @@
   <h3><a name="ov_get"></a>How to get it?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist5.3.1.tar.gz</code> for UNIX and
-  <code>tablelist5_3_1.zip</code> for Windows.&nbsp; These files contain the
-  same information, except for the additional carriage return character
-  preceding the linefeed at the end of each line in the text files for
-  Windows.</p>
+  The distribution file is <code>tablelist5.4.tar.gz</code> for UNIX and
+  <code>tablelist5_4.zip</code> for Windows.&nbsp; These files contain the same
+  information, except for the additional carriage return character preceding
+  the linefeed at the end of each line in the text files for Windows.</p>
 
   <p>Tablelist is also hosted on SourceForge, as part of tklib, which in turn
   is contained in the tcllib project, having the address</p>
@@ -202,21 +201,21 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist5.3.1.tar.gz</code>:</p>
+  <code>tablelist5.4.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist5.3.1.tar.gz | tar -xf -
+gunzip -c tablelist5.4.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>tablelist5.3.1</code>,
-  with the subdirectories <code>demos</code>, <code>doc</code>, and
+  <p>This command will create a directory named <code>tablelist5.4</code>, with
+  the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist5_3_1.zip</code> into the directory
-  <code>tablelist5.3.1</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist5_4.zip</code> into the directory
+  <code>tablelist5.4</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -313,14 +312,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 5.3.1, then it is highly
-  recommended to specify the version number <code>5.3</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 5.4, then it is highly
+  recommended to specify the version number <code>5.4</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 5.3</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 5.4</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 5.3</code>.</p>
+  tablelist_tile 5.4</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -493,7 +492,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 5.3
+package require tablelist 5.4
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -511,8 +510,7 @@ To display the configuration options of an arbitrary widget, enter
 </pre>
   </blockquote>
 
-  <p><img src="config.png" alt=
-  "Configuration Options - Please load this image!" width="725" height=
+  <p><img src="config.png" alt="Configuration Options" width="725" height=
   "365"></p>
 
   <p>It is assumed that the Tcl command associated with the widget specified by
@@ -526,7 +524,7 @@ To display the configuration options of an arbitrary widget, enter
 
   <blockquote>
     <pre>
-package require tablelist 5.3
+package require tablelist 5.4
 
 namespace eval demo {
     #
@@ -943,14 +941,13 @@ To display information about the children of an arbitrary widget, enter
   <p>The tablelist created by the procedure <code>demo::displayChildren</code>
   in the file <code>browse.tcl</code> is a multi-column listbox:</p>
 
-  <p><img src="browse.png" alt="Widget Browser - Please load this image!"
-  width="557" height="267"></p>
+  <p><img src="browse.png" alt="Widget Browser" width="557" height="267"></p>
 
   <p>The tablelist created by the procedure of the same name in the file
   <code>browseTree.tcl</code> is a multi-column tree widget:</p>
 
-  <p><img src="browseTree.png" alt="Widget Browser - Please load this image!"
-  width="554" height="267"></p>
+  <p><img src="browseTree.png" alt="Widget Browser" width="554" height=
+  "267"></p>
 
   <p>The <code>demo::displayChildren</code> command inserts some data of the
   children of the widget specified by <code>&lt;widgetName&gt;</code> into a
@@ -971,7 +968,7 @@ To display information about the children of an arbitrary widget, enter
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 5.3
+package require tablelist 5.4
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1553,8 +1550,8 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <code>/</code> on UNIX and the local drives on Windows) in a tablelist used
   as multi-column tree widget:</p>
 
-  <p><img src="dirViewer.png" alt="Directory Viewer - Please load this image!"
-  width="585" height="403"></p>
+  <p><img src="dirViewer.png" alt="Directory Viewer" width="585" height=
+  "416"></p>
 
   <p>By double-clicking an item or invoking the single entry of a pop-up menu
   within the body of the tablelist, you can display the contents of the folder
@@ -1569,7 +1566,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 5.3
+package require tablelist 5.4
 
 #
 # Add some entries to the Tk option database
@@ -1591,27 +1588,29 @@ image create photo fileImg       -file [file join $dir file.gif]
 #------------------------------------------------------------------------------
 proc displayContents dir {
     #
-    # Create a vertically scrolled tablelist widget with 3
-    # dynamic-width columns and interactive sort capability
+    # Create a scrolled tablelist widget with 3 dynamic-
+    # width columns and interactive sort capability
     #
     set tf .tf
     frame $tf
     set tbl $tf.tbl
     set vsb $tf.vsb
+    set hsb $tf.hsb
     tablelist::tablelist $tbl \
         -columns {0 "Name"          left
                   0 "Size"          right
                   0 "Date Modified" left} \
         -expandcommand expandCmd -collapsecommand collapseCmd \
-        -yscrollcommand [list $vsb set] -movablecolumns no -setgrid no \
-        -showseparators yes -height 20 -width 80
+        -xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set] \
+        -movablecolumns no -setgrid no -showseparators yes -height 20 -width 80
     if {[$tbl cget -selectborderwidth] == 0} {
         $tbl configure -spacing 1
     }
     $tbl columnconfigure 0 -formatcommand formatString -sortmode dictionary
     $tbl columnconfigure 1 -formatcommand formatSize -sortmode integer
     $tbl columnconfigure 2 -formatcommand formatString
-    scrollbar $vsb -orient vertical -command [list $tbl yview]
+    scrollbar $vsb -orient vertical   -command [list $tbl yview]
+    scrollbar $hsb -orient horizontal -command [list $tbl xview]
 
     . . .
 
@@ -1837,8 +1836,7 @@ displayContents ""
   readability of their items.&nbsp; It creates 8 tablelist widgets, shown in
   the following figure:</p>
 
-  <p><img src="styles.png" alt="Styles - Please load this image!" width="606"
-  height="475"></p>
+  <p><img src="styles.png" alt="Styles" width="606" height="475"></p>
 
   <p>Here is the relevant code segment:</p>
 
@@ -1922,8 +1920,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   editing.&nbsp; The following figure shows the tablelist widget, together with
   a BWidget ComboBox used to edit the contents of one of its cells:</p>
 
-  <p><img src="bwidget.png" alt=
-  "Serial Line Configuration - Please load this image!" width="784" height=
+  <p><img src="bwidget.png" alt="Serial Line Configuration" width="784" height=
   "369"></p>
 
   <p>Here is the relevant code segment from the script <code>bwidget.tcl</code>
@@ -1933,7 +1930,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;# because of "-compound"
-package require tablelist 5.3
+package require tablelist 5.4
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2264,14 +2261,14 @@ proc editEndCmd {tbl row col text} {
   over the first header label, causing this label to appear in
   <code>active</code> state:</p>
 
-  <p><img src="embeddedWindows.png" alt=
-  "Embedded Windows - Please load this image!" width="399" height="269"></p>
+  <p><img src="embeddedWindows.png" alt="Embedded Windows" width="399" height=
+  "269"></p>
 
   <p>First, we create and populate the tablelist widget:</p>
 
   <blockquote>
     <pre>
-package require tablelist 5.3
+package require tablelist 5.4
 
 wm title . "Tk Library Scripts"
 
@@ -2503,7 +2500,7 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
   <blockquote>
     <pre>
 package require Tk 8.3                          ;# because of entry validation
-package require tablelist 5.3
+package require tablelist 5.4
 </pre>
   </blockquote>
 
@@ -2511,7 +2508,7 @@ package require tablelist 5.3
 
   <blockquote>
     <pre>
-package require tablelist<span>_tile</span> 5.3
+package require tablelist<span>_tile</span> 5.4
 </pre>
   </blockquote>
 
@@ -2618,9 +2615,8 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
   checkbutton, and menubutoon widgets for interactive cell editing.&nbsp; The
   resulting window has a nice theme-specific appearance:</p>
 
-  <p><img src="tileWidgets.png" alt=
-  "Serial Line Configuration - Please load this image!" width="782" height=
-  "364"></p>
+  <p><img src="tileWidgets.png" alt="Serial Line Configuration" width="782"
+  height="364"></p>
 
   <p>The tile-based version of the demo script <code>embeddedWindows.tcl</code>
   contains a bit more changes, but most of them are not
@@ -2628,8 +2624,8 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
   <code>embeddedWindows_tile.tcl</code> in the <code>demos</code> directory for
   the details.&nbsp; Here is a screenshot of the resulting window:</p>
 
-  <p><img src="embeddedWindows_tile.png" alt=
-  "Embedded Windows - Please load this image!" width="397" height="262"></p>
+  <p><img src="embeddedWindows_tile.png" alt="Embedded Windows" width="397"
+  height="262"></p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
