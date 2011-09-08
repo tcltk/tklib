@@ -67,7 +67,8 @@ namespace eval tablelist {
 	createTileAliases 
     }
 
-    variable pngSupported [expr {$::tk_version >= 8.6 ||
+    variable pngSupported [expr {($::tk_version >= 8.6 &&
+	![regexp {^8\.6(a[1-3]|b1)$} $::tk_patchLevel]) ||
 	($::tk_version == 8.5 && [catch {package require img::png}] == 0)}]
 
     variable specialAquaHandling [expr {$usingTile && ($::tk_version >= 8.6 ||

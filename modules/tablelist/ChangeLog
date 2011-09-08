@@ -1,3 +1,8 @@
+2011-09-08  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                 Improved the check for PNG support in Tk.
+	* scripts/tablelistWidget.tcl:
+
 2011-09-04  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:                                         Bumped the version
@@ -33,9 +38,9 @@
 	* doc/dirViewer.png:
 	* doc/oxygen2.png:
 
-	* doc/arrowStyles.png : New picture, composed of screenshots.
+	* doc/arrowStyles.png: New picture, composed of screenshots.
 
-2011-07-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+2411-07-11  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* ../../examples/tablelist/styles_tile.tcl: Minor improvements.
 

@@ -21,11 +21,14 @@ What is new in Tablelist 5.4?
 6. Worked around some peculiarities of Tk on Mac OS X Aqua (thanks to
    Torsten Berg for her problem report and discussions on this topic).
 
-7. Fixed a bug related to the tree style "aqua", introduced in
+7. Improved the check for PNG support in Tk (thanks to Ian Gay for his
+   posting on the Wiki related to this subject).
+
+8. Fixed a bug related to the tree style "aqua", introduced in
    Tablelist version 5.3 (thanks to Julian H J Loaring for his bug
    report).
 
-8. Numerous further improvements in the code and documentation.
+9. Numerous further improvements in the code and documentation.
 
 What was new in Tablelist 5.3.1?
 --------------------------------
