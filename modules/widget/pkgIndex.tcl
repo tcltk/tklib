@@ -17,7 +17,7 @@ if {![package vsatisfies [package provide Tcl] 8.4]} {return}
 ::tcl::pkgindex $dir widget::all 1.2.3 {
     widget			3.1	widget.tcl
     widget::arrowbutton	        1.0	arrowb.tcl
-    widget::calendar		0.96	calendar.tcl
+    widget::calendar		0.97	calendar.tcl
     widget::dateentry		0.93	dateentry.tcl
     widget::dialog		1.3.1	dialog.tcl
     widget::menuentry		1.0.1	mentry.tcl

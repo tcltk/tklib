@@ -7,7 +7,7 @@
 #
 # Copyright (c) 2008 Rüdiger Härtel
 #
-# RCS: @(#) $Id: calendar.tcl,v 1.10 2010/09/30 18:57:23 haertel Exp $
+# RCS: @(#) $Id: calendar.tcl,v 1.11 2011/09/12 16:22:14 andreas_kupries Exp $
 #
 
 #
@@ -657,7 +657,13 @@ snit::widgetadaptor widget::calendar {
 	}
 	weekdays,tr {pa'tesi sa \u00e7a pe cu cu'tesi pa}
 	today,tr {}
+	mn,pl {
+            . stycze\u0144 luty marzec kwiecie\u0144 maj czerwiec lipiec
+            sierpie\u0144 wrzesie\u0144 pa\u017adziernik listopad grudzie\u0144
+        }
+        weekdays,pl {Ni Po Wt \u015ar Cz Pi So}
+        today,pl {Dzisiaj jest}
     }
 }
 
-package provide widget::calendar 0.96
+package provide widget::calendar 0.97
