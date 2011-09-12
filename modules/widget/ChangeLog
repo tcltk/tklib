@@ -1,3 +1,9 @@
+2011-09-12  Andreas Kupries  <andreask@activestate.com>
+
+	* calendar.tcl: Added polish language definitions sent in
+	* pkgIndex.tcl: by J. Lewandowski. Bumped version to 0.97.
+	* widget_calendar.man: 
+
 2010-09-30  Ruediger Haertel <r_haertel@gmx.de>
 
 	* calendar.tcl: allow a -textvariable also from the dateentry
