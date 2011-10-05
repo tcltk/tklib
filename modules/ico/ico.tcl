@@ -3,9 +3,9 @@
 # Win32 ico manipulation code
 #
 # Copyright (c) 2003-2007 Aaron Faupell
-# Copyright (c) 2003-2004 ActiveState Corporation
+# Copyright (c) 2003-2011 ActiveState
 #
-# RCS: @(#) $Id: ico.tcl,v 1.31 2010/07/07 20:38:18 andreas_kupries Exp $
+# RCS: @(#) $Id: ico.tcl,v 1.32 2011/10/05 00:10:46 hobbs Exp $
 
 # Sample usage:
 #	set file bin/wish.exe
@@ -1388,6 +1388,73 @@ proc ::ico::getPEResName {fh start data} {
     }
 }
 
+# Application level command: Find icons in a file and show them.
+# Provided as a demonstration of pulling all icons by resource from a file.
+proc ::ico::Show {file args} {
+    package require BWidget
+
+    set parent .
+    parseOpts {window} $args
+
+    set file  [file normalize $file]
+    set icos  [icons $file]
+    set wname [string map {. _ : _} $file]
+
+    if {$parent eq "."} { set w "" } else { set w $parent }
+
+    set mf $w.iconsw
+    if {![winfo exists $mf]} {
+	set sw [ScrolledWindow $mf]
+	set sf [ScrollableFrame $mf.sf -constrainedwidth 1]
+	$sw setwidget $sf
+	pack $sw -fill both -expand 1
+	grid columnconfigure [$mf.sf getframe] 0 -weight 1
+    }
+    set mf [$mf.sf getframe]
+
+    set lf $mf.f$wname
+    if {[winfo exists $lf]} { destroy $lf }
+    if {![llength $icos]} {
+	label $lf -text "No icons in '$file'" -anchor w
+	grid $lf -sticky ew
+    } else {
+	labelframe $lf -text "[llength $icos] Icon resource(s) in '$file'"
+	grid $lf -sticky news
+	set sw [ScrolledWindow $lf.sw$wname]
+	set height 48
+	set fh [expr {[font metrics [$lf cget -font] -linespace] + 4}]
+	set sf [ScrollableFrame $lf.sf$wname -constrainedheight 1 \
+		    -height [expr {$height + $fh}]]
+	$sw setwidget $sf
+	set sf [$sf getframe]
+	pack $sw -fill both -expand 1
+	set col 0
+	foreach icon $icos {
+	    foreach mem [iconMembers $file $icon] {
+		foreach {name w h bpp} $mem { break }
+		# catch in case theres any icons with unsupported color
+		if {[catch {getIconByName $file $name} img]} {
+		    set txt "ERROR: $img"
+		    set lbl [label $sf.lbl$wname-$x -anchor w -text $txt]
+		    grid $lbl -sticky s -row 0 -column [incr col]
+		} else {
+		    set txt "$name: ${w}x${h} ${bpp}bpp"
+		    set lbl [label $sf.lbl$wname$name -anchor w -text $txt \
+				 -compound top -image $img]
+		    if {[image height $img] > $height} {
+			set height [image height $img]
+			$lf.sf$wname configure -height [expr {$height + $fh}]
+		    }
+		    grid $lbl -sticky s -row 0 -column [incr col]
+		}
+		update idletasks
+	    }
+	}
+    }
+    grid rowconfigure $parent 0 -weight 1
+    grid columnconfigure $parent 0 -weight 1
+}
+
 interp alias {} ::ico::getIconListDLL    {} ::ico::getIconListEXE
 interp alias {} ::ico::getIconMembersDLL {} ::ico::getIconMembersEXE
 interp alias {} ::ico::getRawIconDataDLL {} ::ico::getRawIconDataEXE
@@ -1397,4 +1464,4 @@ interp alias {} ::ico::getIconMembersICL {} ::ico::getIconMembersEXE
 interp alias {} ::ico::getRawIconDataICL {} ::ico::getRawIconDataEXE
 interp alias {} ::ico::writeIconICL      {} ::ico::writeIconEXE
 
-package provide ico 1.0.5
+package provide ico 1.1
