@@ -5,7 +5,7 @@
 # Copyright (c) 2003 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
 #
-# RCS: @(#) $Id: ico0.tcl,v 1.2 2007/02/23 23:28:33 hobbs Exp $
+# RCS: @(#) $Id: ico0.tcl,v 1.3 2011/10/05 00:10:46 hobbs Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -60,7 +60,7 @@ proc ::ico::getIconList {file args} {
     parseOpts type $args
     if {![info exists type]} {
         # $type wasn't specified - get it from the extension
-        set type [fileext $file]
+        set type [string trimleft [string toupper [fileext $file]] .]
     }
     if {![llength [info commands getIconList$type]]} {
 	return -code error "unsupported file format $type"
@@ -1123,19 +1123,10 @@ interp alias {} ::ico::getIconListICL    {} ::ico::getIconListEXE
 interp alias {} ::ico::getRawIconDataICL {} ::ico::getRawIconDataEXE
 interp alias {} ::ico::writeIconICL      {} ::ico::writeIconEXE
 
-proc ::ico::showaux {files} {
-    if {[llength $files]} {
-	set file [lindex $files 0]
-	Show $f
-	update
-	after 50 [list ::ico::showaux [lrange $files 1 end]]
-    }
-}
-
 # Application level command: Find icons in a file and show them.
 proc ::ico::Show {file args} {
     package require BWidget
-    
+
     set parent .
     parseOpts {type parent} $args
     if {![info exists type]} {
@@ -1199,4 +1190,4 @@ proc ::ico::Show {file args} {
     grid columnconfigure $parent 0 -weight 1
 }
 
-package provide ico 0.3.1
+package provide ico 0.3.2
