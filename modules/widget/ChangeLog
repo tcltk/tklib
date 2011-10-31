@@ -1,3 +1,9 @@
+2011-10-31  Andreas Kupries  <andreask@activestate.com>
+
+	* calendar.tcl (C-language): Extended to include 'pl' (Polish) as
+	* pkgIndex.tcl: viable language, per J. Lewandowski. Bumped
+	* widget_calendar.man: version to 0.98.
+
 2011-09-12  Andreas Kupries  <andreask@activestate.com>
 
 	* calendar.tcl: Added polish language definitions sent in

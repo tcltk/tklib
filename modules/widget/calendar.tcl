@@ -7,7 +7,7 @@
 #
 # Copyright (c) 2008 Rüdiger Härtel
 #
-# RCS: @(#) $Id: calendar.tcl,v 1.11 2011/09/12 16:22:14 andreas_kupries Exp $
+# RCS: @(#) $Id: calendar.tcl,v 1.12 2011/10/31 16:39:06 andreas_kupries Exp $
 #
 
 #
@@ -180,7 +180,7 @@ snit::widgetadaptor widget::calendar {
     method C-language {option value} {
 
 	set langs [list \
-		    de en es fr gr he it ja sv pt zh fi tr nl ru \
+		    de en es fr gr he it ja sv pl pt zh fi tr nl ru \
 		    crk  \
 		    crx-nak \
 		    crx-lhe \
@@ -666,4 +666,4 @@ snit::widgetadaptor widget::calendar {
     }
 }
 
-package provide widget::calendar 0.97
+package provide widget::calendar 0.98

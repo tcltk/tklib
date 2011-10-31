@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin widget_calendar n 0.97]
+[manpage_begin widget_calendar n 0.98]
 [moddesc   {widget::calendar Megawidget}]
 [titledesc {widget::calendar Megawidget}]
 [require Tcl 8.4]
 [require Tk 8.4]
 [require widget [opt 3.0]]
-[require widget::calendar [opt 0.97]]
+[require widget::calendar [opt 0.98]]
 [description]
 
 This package provides a calendar megawidget (snidget).
