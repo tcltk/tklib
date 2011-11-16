@@ -1,3 +1,13 @@
+2011-11-16  Ruediger Haertel <r_haertel@gmx.de>
+
+	* pkgIndex.tcl: Bumped package version to 1.00.
+	* widget_calendar.tcl: 
+	* calendar.tcl: - Update -textvariable and call -command when
+                          navigated by keyboard.
+                        - Refactored code so that mouse button select
+                          and keyboard navigation use the same code
+                        - Added key binding for the Home key.
+
 2011-11-16  Andreas Kupries  <andreask@activestate.com>
 
 	* dateentry.tcl: Added option -language, using the patch provided
