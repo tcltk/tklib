@@ -18,7 +18,7 @@ if {![package vsatisfies [package provide Tcl] 8.4]} {return}
     widget			3.1	widget.tcl
     widget::arrowbutton	        1.0	arrowb.tcl
     widget::calendar		0.98	calendar.tcl
-    widget::dateentry		0.93	dateentry.tcl
+    widget::dateentry		0.94	dateentry.tcl
     widget::dialog		1.3.1	dialog.tcl
     widget::menuentry		1.0.1	mentry.tcl
     widget::panelframe		1.1	panelframe.tcl
