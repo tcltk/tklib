@@ -1,3 +1,9 @@
+2011-11-16  Andreas Kupries  <andreask@activestate.com>
+
+	* dateentry.tcl: Added option -language, using the patch provided
+	* pkgIndex.tcl: by J. Lewandowski <j.lewandowski@gazeta.pl>. Bumped
+	  package version to 0.94.
+
 2011-10-31  Andreas Kupries  <andreask@activestate.com>
 
 	* calendar.tcl (C-language): Extended to include 'pl' (Polish) as
