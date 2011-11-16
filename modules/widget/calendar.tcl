@@ -7,7 +7,7 @@
 #
 # Copyright (c) 2008 Rüdiger Härtel
 #
-# RCS: @(#) $Id: calendar.tcl,v 1.12 2011/10/31 16:39:06 andreas_kupries Exp $
+# RCS: @(#) $Id: calendar.tcl,v 1.13 2011/11/16 22:04:51 andreas_kupries Exp $
 #
 
 #
@@ -88,20 +88,22 @@ snit::widgetadaptor widget::calendar {
 	set data(selyear)  $data(year)
 
 	# Binding for the 'day' tagged items
-	$win bind day <1>           [mymethod invoke]
+	$win bind day <1>           [mymethod adjust]
 
-	    # move days
+	# move days
 	bind $win <Left>            [mymethod adjust -1  0  0]
 	bind $win <Right>           [mymethod adjust  1  0  0]
-	    # move weeks
+	# move weeks
 	bind $win <Up>              [mymethod adjust -7  0  0]
 	bind $win <Down>            [mymethod adjust  7  0  0]
-	    # move months
+	# move months
 	bind $win <Control-Left>    [mymethod adjust  0 -1  0]
 	bind $win <Control-Right>   [mymethod adjust  0  1  0]
-	    # move years
+	# move years
 	bind $win <Control-Up>      [mymethod adjust  0  0 -1]
 	bind $win <Control-Down>    [mymethod adjust  0  0  1]
+
+	bind $win <Home>            [mymethod adjust today]
 
 	$self configurelist $args
 
@@ -257,57 +259,104 @@ snit::widgetadaptor widget::calendar {
     #
     #   Adjust internal values of the calendar and update the contents
     #   of the widget. This function is invoked by pressing the arrows
-    #   in the widget and on key bindings.
+    #   in the widget, on key bindings and by selecting a date with the
+    #   left mouse button.
     #
     # Arguments:
-    #   dday    - Difference in days
-    #   dmonth  - Difference in months
-    #   dyear   - Difference in years
+    #   a) when used with keyboard navigation
+    #     dday    - Difference in days
+    #     dmonth  - Difference in months
+    #     dyear   - Difference in years
+    #   b) when used with mouse button
+    #     ""      - empty
     #
     ##
-    method adjust {dday dmonth dyear} {
-	incr data(year)  $dyear
-	incr data(month) $dmonth
+    method adjust { args } {
 
-	set maxday [$self numberofdays $data(month) $data(year)]
+        switch [llength $args] {
+            0 {
+                # mouse button select
 
-	if { ($data(day) + $dday) < 1}  {
-	    incr data(month) -1
+                catch {focus -force $win} msg
 
-	    set maxday [$self numberofdays $data(month) $data(year)]
-	    set  data(day) [expr {($data(day) + $dday) % $maxday}]
+                set item      [$hull find withtag current]
+                set data(day) [$hull itemcget $item -text]
 
-	} else {
+            }
 
-	    if { ($data(day) + $dday) > $maxday } {
+            1 {
+                switch [lindex $args 0] {
+                    "today" {
+                        set Now [clock seconds]
+                        set data(day)   [clock format $Now -format %d]
+                        set data(month) [clock format $Now -format %m]
+                        set data(year)  [clock format $Now -format %Y]
+                    }
+                }
+            }
+            
+            3 {
+                # keyboard navigation
 
-		incr data(month) 1
-		set  data(day)   [expr {($data(day) + $dday) % $maxday}]
+                # favor foreach approach over lassign to be
+                # compatible with Tcl 8.4
+                foreach {dday dmonth dyear} $args {break}
+                incr data(year)  $dyear
+                incr data(month) $dmonth
 
-	    } else {
-		incr data(day) $dday
-	    }
+                set maxday [$self numberofdays $data(month) $data(year)]
+
+                if { ($data(day) + $dday) < 1}  {
+                    incr data(month) -1
+
+                    set maxday [$self numberofdays $data(month) $data(year)]
+                    set  data(day) [expr {($data(day) + $dday) % $maxday}]
+
+                } else {
+
+                    if { ($data(day) + $dday) > $maxday } {
+
+                        incr data(month) 1
+                        set  data(day)   [expr {($data(day) + $dday) % $maxday}]
+
+                    } else {
+                        incr data(day) $dday
+                    }
+                }
+
+                if { $data(month) > 12} {
+                    set  data(month) 1
+                    incr data(year)
+                }
+
+                if { $data(month) < 1}  {
+                    set  data(month) 12
+                    incr data(year)  -1
+                }
+
+
+                set maxday [$self numberofdays $data(month) $data(year)]
+                if { $maxday < $data(day) } {
+                    set data(day) $maxday
+                }
+            }
+        }
+
+        set data(selday)   $data(day)
+        set data(selmonth) $data(month)
+        set data(selyear)  $data(year)
+
+        set date    [clock scan   $data(month)/$data(day)/$data(year)]
+        set fmtdate [clock format $date -format $options(-dateformat)]
+
+	if {$options(-textvariable) ne {}} {
+		set $options(-textvariable) $fmtdate
 	}
 
-
-	if { $data(month) > 12} {
-	    set  data(month) 1
-	    incr data(year)
+	if {$options(-command) ne {}} {
+		# pass single arg of formatted date chosen
+		uplevel \#0 $options(-command) [list $fmtdate]
 	}
-
-	if { $data(month) < 1}  {
-	    set  data(month) 12
-	    incr data(year)  -1
-	}
-
-
-	set maxday [$self numberofdays $data(month) $data(year)]
-	if { $maxday < $data(day) } {
-	    set data(day) $maxday
-	}
-	set data(selday)   $data(day)
-	set data(selmonth) $data(month)
-	set data(selyear)  $data(year)
 
 	$self refresh
     }
@@ -467,33 +516,6 @@ snit::widgetadaptor widget::calendar {
     method getweek {day month year} {
 	set _date [clock scan $month/$day/$year]
 	return [clock format $_date -format %V]
-    }
-
-    method invoke {} {
-
-	catch {focus -force $win} msg
-	if { $msg ne "" } {
-	#    puts $msg
-	}
-	set item [$hull find withtag current]
-	set data(day) [$hull itemcget $item -text]
-
-	set data(selday) $data(day)
-	set data(selmonth) $data(month)
-	set data(selyear) $data(year)
-	set date    [clock scan   $data(month)/$data(day)/$data(year)]
-	set fmtdate [clock format $date -format $options(-dateformat)]
-
-	if {$options(-textvariable) ne {}} {
-	    set $options(-textvariable) $fmtdate
-	}
-
-	if {$options(-command) ne {}} {
-	    # pass single arg of formatted date chosen
-	    uplevel \#0 $options(-command) [list $fmtdate]
-	}
-
-	$self refresh
     }
 
     method formatMY {month year} {
@@ -666,4 +688,4 @@ snit::widgetadaptor widget::calendar {
     }
 }
 
-package provide widget::calendar 0.98
+package provide widget::calendar 0.99
