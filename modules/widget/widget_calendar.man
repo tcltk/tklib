@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin widget_calendar n 0.98]
+[manpage_begin widget_calendar n 1.00]
 [moddesc   {widget::calendar Megawidget}]
 [titledesc {widget::calendar Megawidget}]
 [require Tcl 8.4]
 [require Tk 8.4]
 [require widget [opt 3.0]]
-[require widget::calendar [opt 0.98]]
+[require widget::calendar [opt 1.00]]
 [description]
 
 This package provides a calendar megawidget (snidget).
@@ -46,11 +46,10 @@ Selects the background color for the day that has been selected. Default: #FFCC0
 [opt_def -language]
 
 Specify language of the calendar contents. The language is specified
-by abbreviations of the languge, for example: en - english, de -
-german ... 
+by abbreviations of the languge, for example: en - english, de - german ...
 It defaults to en.
 [para]
-Supported languages: en, de, fr, it, es, pt, ru, sv, zh, fi
+Supported languages: de en es fr gr he it ja sv pl pt zh fi tr nl ru crk crx-nak crx-lhe
 
 [opt_def -shadecolor]
 
@@ -83,7 +82,12 @@ with -dateformat.
 [section "DEFAULT BINDINGS"]
 
 On creation of the calendar widget the following bindings are installed.
+When pressing a key the command is invoked and the textvariable is
+updated.
+updated.
 [list_begin itemized]
+[item]
+Home - Move to the current date
 [item]
 Up - Move to week before current date
 [item]
