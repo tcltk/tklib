@@ -16,7 +16,7 @@
 #
 # See the example at the bottom.
 #
-# RCS: @(#) $Id: dateentry.tcl,v 1.5 2010/09/29 06:43:44 hobbs Exp $
+# RCS: @(#) $Id: dateentry.tcl,v 1.6 2011/11/16 18:09:12 andreas_kupries Exp $
 #
 
 # Creation and Options - widget::dateentry $path ...
@@ -29,6 +29,7 @@
 # Following are passed to widget::calendar component:
 #  -firstday
 #  -highlightcolor
+#  -language
 #
 # Methods
 #  $widget post   - display calendar dropdown
@@ -120,6 +121,7 @@ snit::widgetadaptor widget::dateentry {
     option -dateformat -default "%m/%d/%Y" -configuremethod C-passtocalendar
     option -font -default {Helvetica 9} -configuremethod C-passtocalendar
     option -textvariable -default {}
+    option -language -default en -configuremethod C-passtocalendar
 
     delegate option -highlightcolor to calendar
     delegate option -firstday to calendar
@@ -189,6 +191,7 @@ snit::widgetadaptor widget::dateentry {
 	    -textvariable [myvar formattedDate] \
 	    -dateformat $options(-dateformat) \
 	    -font $options(-font) \
+	    -language $options(-language)\
 	    -borderwidth 1 -relief solid
 	bind $calendar <Map> [list focus -force $calendar]
 
@@ -292,7 +295,7 @@ bind TDateEntry <ButtonRelease-1> { %W state !pressed }
 bind TDateEntryPopdown <Map> { ttk::globalGrab %W }
 bind TDateEntryPopdown <Unmap> { ttk::releaseGrab %W }
 
-package provide widget::dateentry 0.93
+package provide widget::dateentry 0.94
 
 ##############
 # TEST CODE ##
