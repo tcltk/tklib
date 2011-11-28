@@ -8,7 +8,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2004-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.4
+package require tablelist_tile 5.5
 
 wm title . "Tile Library Scripts"
 
@@ -54,17 +54,13 @@ if {[tablelist::getCurrentTheme] eq "aqua"} {
 }
 
 #
-# Improve the window's appearance by using a tile
-# frame as a container for the other widgets
-#
-set f [ttk::frame .f]
-
-#
 # Create a vertically scrolled tablelist widget with 5
 # dynamic-width columns and interactive sort capability
 #
-set tbl $f.tbl
-set vsb $f.vsb
+set tf .tf
+ttk::frame $tf -class ScrollArea
+set tbl $tf.tbl
+set vsb $tf.vsb
 tablelist::tablelist $tbl \
     -columns {0 "File Name" left
 	      0 "Bar Chart" center
@@ -163,19 +159,15 @@ proc viewFile {tbl key} {
     wm title $top "File \"$fileName\""
 
     #
-    # Improve the window's appearance by using a tile
-    # frame as a container for the other widgets
+    # Create a vertically scrolled text widget as a grandchild of the toplevel
     #
-    set f [ttk::frame $top.f]
-
-    #
-    # Create a vertically scrolled text widget as a child of the toplevel
-    #
-    set txt $f.txt
-    set vsb $f.vsb
+    set tf $top.tf
+    ttk::frame $tf -class ScrollArea
+    set txt $tf.txt
+    set vsb $tf.vsb
     text $txt -background white -font TkFixedFont -highlightthickness 0 \
 	      -setgrid yes -yscrollcommand [list $vsb set]
-    catch {$txt configure -tabstyle wordprocessor}		;# for Tk 8.5
+    catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5 and above
     ttk::scrollbar $vsb -orient vertical -command [list $txt yview]
 
     #
@@ -185,17 +177,20 @@ proc viewFile {tbl key} {
     $txt insert end [read $chan]
     close $chan
 
-    set btn [ttk::button $f.btn -text "Close" -command [list destroy $top]]
+    set bf $top.bf
+    ttk::frame $bf
+    set btn [ttk::button $bf.btn -text "Close" -command [list destroy $top]]
 
     #
     # Manage the widgets
     #
     grid $txt -row 0 -column 0 -sticky news
     grid $vsb -row 0 -column 1 -sticky ns
-    grid $btn -row 1 -column 0 -columnspan 2 -pady 10
-    grid rowconfigure    $f 0 -weight 1
-    grid columnconfigure $f 0 -weight 1
-    pack $f -expand yes -fill both
+    grid rowconfigure    $tf 0 -weight 1
+    grid columnconfigure $tf 0 -weight 1
+    pack $btn -pady 10
+    pack $bf -side bottom -fill x
+    pack $tf -side top -expand yes -fill both
 
     #
     # Mark the file as seen
@@ -215,14 +210,22 @@ for {set row 0} {$row < $rowCount} {incr row} {
     $tbl cellconfigure $row,3 -window createButton
 }
 
-set btn [ttk::button $f.btn -text "Close" -command exit]
+set bf .bf
+ttk::frame $bf
+set btn [ttk::button $bf.btn -text "Close" -command exit]
 
 #
 # Manage the widgets
 #
-grid $tbl -row 0 -column 0 -sticky news
-grid $vsb -row 0 -column 1 -sticky ns
-grid $btn -row 1 -column 0 -columnspan 2 -pady 10
-grid rowconfigure    $f 0 -weight 1
-grid columnconfigure $f 0 -weight 1
-pack $f -expand yes -fill both
+grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
+if {[tablelist::getCurrentTheme] eq "aqua"} {
+    grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
+    grid $vsb		   -row 1 -column 1 -sticky ns
+} else {
+    grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+}
+grid rowconfigure    $tf 1 -weight 1
+grid columnconfigure $tf 0 -weight 1
+pack $btn -pady 10
+pack $bf -side bottom -fill x
+pack $tf -side top -expand yes -fill both

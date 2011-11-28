@@ -9,7 +9,13 @@
 # "aqua") and add some entries to the Tk option database
 #
 if {[tk windowingsystem] eq "x11"} {
-    option add *Font		  TkDefaultFont
+    option add *Font			TkDefaultFont
+} else {
+    option add *ScrollArea.borderWidth			1
+    option add *ScrollArea.relief			sunken
+    option add *ScrollArea.Tablelist.borderWidth	0
+    option add *ScrollArea.Text.borderWidth		0
+    option add *ScrollArea.Text.highlightThickness	0
 }
 tablelist::setThemeDefaults
 if {[tablelist::getCurrentTheme] eq "aqua"} {
