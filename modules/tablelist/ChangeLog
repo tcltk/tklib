@@ -1,3 +1,24 @@
+2011-11-28  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl: Bumped the version number to 5.5.
+	* *.txt:
+
+	* ../../examples/tablelist/*.tcl: Bumped the version number to 5.5;
+	  better support for native look & feel, especially on Mac OS X.
+
+	* scripts/tablelistBind.tcl:   Hidden elements are no longer excluded
+	* scripts/tablelistConfig.tcl: from the selection; added the
+	* scripts/tablelistEdit.tcl:   "cornerpath" and "cornerlabelpath"
+	* scripts/tablelistImages.tcl: subcommands; added support for Mac OS X
+	* scripts/tablelistThemes.tcl: 10.7 (Lion); improved a few binding
+	* scripts/tablelistUtil.tcl:   scripts; fixed a bug related to embedded
+	* scripts/tablelistWidget.tcl: windows.
+
+	* doc/tablelist.html:       Updated the documentation.
+	* doc/tablelistWidget.html:
+
+	* doc/embeddedWindows.png: Updated screenshot.
+
 2011-09-08  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:                 Improved the check for PNG support in Tk.
