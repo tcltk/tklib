@@ -37,12 +37,9 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-listvariable)		{}
     lappend configSpecs(-movablecolumns)	0
     lappend configSpecs(-movablerows)		0
-    lappend configSpecs(-movecolumncursor)	icon
-    lappend configSpecs(-movecursor)		hand2
     lappend configSpecs(-populatecommand)	{}
     lappend configSpecs(-protecttitlecolumns)	0
     lappend configSpecs(-resizablecolumns)	1
-    lappend configSpecs(-resizecursor)		sb_h_double_arrow
     lappend configSpecs(-selecttype)		row
     lappend configSpecs(-setfocus)		1
     lappend configSpecs(-showarrow)		1
@@ -67,7 +64,7 @@ proc tablelist::extendConfigSpecs {} {
     # of the corresponding elements of the array configSpecs
     #
     set helpListbox .__helpListbox
-    for {set n 0} {[winfo exists $helpListbox]} {incr n} {
+    for {set n 2} {[winfo exists $helpListbox]} {incr n} {
 	set helpListbox .__helpListbox$n
     }
     listbox $helpListbox
@@ -308,6 +305,33 @@ proc tablelist::extendConfigSpecs {} {
 	    set maxIndentDepths($treeStyle) 0
 	}
     }
+
+    #
+    # Set the default values of the -movecolumncursor,
+    # -movecursor, and -resizecursor options
+    #
+    switch $winSys {
+	x11 -
+	win32 {
+	    set movecolumnCursor	icon
+	    set moveCursor		hand2
+	    set resizeCursor		sb_h_double_arrow
+	}
+
+	classic -
+	aqua {
+	    set movecolumnCursor	closedhand
+	    set moveCursor		pointinghand
+	    if {[catch {$helpLabel configure -cursor resizeleftright}] == 0} {
+		set resizeCursor	resizeleftright
+	    } else {
+		set resizeCursor	sb_h_double_arrow
+	    }
+	}
+    }
+    lappend configSpecs(-movecolumncursor)	$movecolumnCursor
+    lappend configSpecs(-movecursor)		$moveCursor
+    lappend configSpecs(-resizecursor)		$resizeCursor
 }
 
 #------------------------------------------------------------------------------
@@ -337,11 +361,12 @@ proc tablelist::doConfig {win opt val} {
 		}
 	    }
 	    $data(hdrTxt) configure $opt $val
-	    $data(hdrLbl) configure $opt $val
+	    $data(hdrFrLbl) configure $opt $val
+	    $data(cornerLbl) configure $opt $val
 	    foreach w [winfo children $data(hdrTxtFr)] {
 		$w configure $opt $val
 	    }
-	    set data($opt) [$data(hdrLbl) cget $opt]
+	    set data($opt) [$data(hdrFrLbl) cget $opt]
 	}
 
 	b {
@@ -425,7 +450,8 @@ proc tablelist::doConfig {win opt val} {
 	    # and save the properly formatted value of val in data($opt)
 	    #
 	    set optTail [string range $opt 6 end]	;# remove the -label
-	    configLabel $data(hdrLbl) -$optTail $val
+	    configLabel $data(hdrFrLbl) -$optTail $val
+	    configLabel $data(cornerLbl) -$optTail $val
 	    for {set col 0} {$col < $data(colCount)} {incr col} {
 		set w $data(hdrTxtFrLbl)$col
 		if {![info exists data($col$opt)]} {
@@ -435,7 +461,7 @@ proc tablelist::doConfig {win opt val} {
 	    if {$usingTile && [string compare $opt "-labelpady"] == 0} {
 		set data($opt) $val
 	    } else {
-		set data($opt) [$data(hdrLbl) cget -$optTail]
+		set data($opt) [$data(hdrFrLbl) cget -$optTail]
 	    }
 
 	    switch -- $opt {
@@ -458,6 +484,13 @@ proc tablelist::doConfig {win opt val} {
 		    # the height of the header frame)
 		    #
 		    adjustColumns $win allLabels 1
+
+		    set borderWidth [winfo pixels $win $data($opt)]
+		    if {$borderWidth < 0} {
+			set borderWidth 0
+		    }
+		    place configure $data(cornerLbl) -x -$borderWidth \
+			-width [expr {2*$borderWidth}]
 		}
 		-labeldisabledforeground {
 		    #
@@ -903,7 +936,8 @@ proc tablelist::doConfig {win opt val} {
 		    variable states
 		    set val [mwutil::fullOpt "state" $val $states]
 		    catch {
-			configLabel $data(hdrLbl) $opt $val
+			configLabel $data(hdrFrLbl) $opt $val
+			configLabel $data(cornerLbl) $opt $val
 			for {set col 0} {$col < $data(colCount)} {incr col} {
 			    configLabel $data(hdrTxtFrLbl)$col $opt $val
 			}
@@ -1358,8 +1392,6 @@ proc tablelist::doColConfig {col win opt val} {
 	    if {$newVal != $oldVal} {
 		if {!$canElide} {
 		    set selCells [curCellSelection $win]
-		} elseif {$newVal} {
-		    cellSelection $win clear 0 $col $data(lastRow) $col
 		}
 		set data($col$opt) $newVal
 		if {$newVal} {				;# hiding the column
@@ -1376,11 +1408,11 @@ proc tablelist::doColConfig {col win opt val} {
 		adjustColumns $win $col 1
 		if {!$canElide} {
 		    redisplay $win 0 $selCells
-		}
-		if {!$newVal &&
-		    [string compare $data(-selecttype) "row"] == 0} {
-		    foreach row [curSelection $win] {
-			rowSelection $win set $row $row
+		    if {!$newVal &&
+			[string compare $data(-selecttype) "row"] == 0} {
+			foreach row [curSelection $win] {
+			    rowSelection $win set $row $row
+			}
 		    }
 		}
 		updateViewWhenIdle $win
@@ -1997,7 +2029,6 @@ proc tablelist::doRowConfig {row win opt val} {
 		    $w tag add elidedRow $line.0 $line.end+1c
 
 		    if {![info exists data($key-hide)]} {
-			rowSelection $win clear $row $row
 			incr data(nonViewableRowCount)
 			set viewChanged 1
 
@@ -2276,7 +2307,6 @@ proc tablelist::doRowConfig {row win opt val} {
 		    $w tag add hiddenRow $line.0 $line.end+1c
 
 		    if {![info exists data($key-elide)]} {
-			rowSelection $win clear $row $row
 			incr data(nonViewableRowCount)
 			set viewChanged 1
 
