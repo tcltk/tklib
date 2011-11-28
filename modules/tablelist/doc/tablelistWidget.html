@@ -624,6 +624,12 @@
     "#containingcolumn">containingcolumn</a></b> <i>x</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
+    "#cornerlabelpath">cornerlabelpath</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#cornerpath">cornerpath</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
     "#curcellselection">curcellselection</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
@@ -2332,7 +2338,11 @@ for {set row 0} {$row &lt; 1000} {incr row} {
 
       <blockquote>
         <p>Specifies the mouse cursor to be used when moving a column
-        interactively.&nbsp; The default value is <code><b>icon</b></code>.</p>
+        interactively.&nbsp; The default value is <code><b>icon</b></code> on
+        the windowing systems <code><b>x11</b></code> and
+        <code><b>win32</b></code>, and the native cursor
+        <code><b>closedhand</b></code> on the Macintosh windowing systems
+        <code><b>classic</b></code> and <code><b>aqua</b></code>.</p>
       </blockquote>
     </dd>
 
@@ -2357,8 +2367,11 @@ for {set row 0} {$row &lt; 1000} {incr row} {
 
       <blockquote>
         <p>Specifies the mouse cursor to be used when moving a row
-        interactively.&nbsp; The default value is
-        <code><b>hand2</b></code>.</p>
+        interactively.&nbsp; The default value is <code><b>hand2</b></code> on
+        the windowing systems <code><b>x11</b></code> and
+        <code><b>win32</b></code>, and the native cursor
+        <code><b>pointinghand</b></code> on the Macintosh windowing systems
+        <code><b>classic</b></code> and <code><b>aqua</b></code>.</p>
       </blockquote>
     </dd>
 
@@ -2541,7 +2554,10 @@ proc expandCmd {tbl row} {
       <blockquote>
         <p>Specifies the mouse cursor to be used during interactive column
         resizing.&nbsp; The default value is
-        <code><b>sb_h_double_arrow</b></code>.</p>
+        <code><b>sb_h_double_arrow</b></code> on the windowing systems
+        <code><b>x11</b></code> and <code><b>win32</b></code>, and the native
+        cursor <code><b>resizeleftright</b></code> on the Macintosh windowing
+        systems <code><b>classic</b></code> and <code><b>aqua</b></code>.</p>
       </blockquote>
     </dd>
 
@@ -5480,14 +5496,14 @@ proc formatDate clockVal {
             <code><i>pathName</i> <b>cellselection</b> <b>set</b>
             <i>cellIndexList</i></code></dt>
 
-            <dd>Selects all of the selectable non-hidden elements in the range
-            between <code><i>firstCell</i></code> and
-            <code><i>lastCell</i></code>, inclusive, or corresponding to the
-            indices specified by the list <code><i>cellIndexList</i></code>,
-            without affecting the selection state of any other elements.&nbsp;
-            An element is viewed as selectable if and only if the value of the
-            <code><b><a href="#selectable">-selectable</a></b></code> option of
-            the row containing it is true.</dd>
+            <dd>Selects all of the selectable elements in the range between
+            <code><i>firstCell</i></code> and <code><i>lastCell</i></code>,
+            inclusive, or corresponding to the indices specified by the list
+            <code><i>cellIndexList</i></code>, without affecting the selection
+            state of any other elements.&nbsp; An element is viewed as
+            selectable if and only if the value of the <code><b><a href=
+            "#selectable">-selectable</a></b></code> option of the row
+            containing it is true.</dd>
           </dl>
         </dd>
 
@@ -5876,23 +5892,103 @@ eval [list <i>pathName</i> <a href=
         component).</dd>
 
         <dt><br>
-        <a name="curcellselection"></a><code><i>pathName</i>
+        <a name="cornerlabelpath"></a><code><i>pathName</i>
+        <b>cornerlabelpath</b></code></dt>
+
+        <dd>Returns the path name of the label widget contained in the frame
+        whose path can be retrieved with the aid of the <code><b><a href=
+        "#cornerpath">cornerpath</a></b></code> subcommand.&nbsp; When using
+        Tablelist_tile, the return value will be a ttk::label widget of the
+        same style as the header labels.&nbsp; The global visual options set
+        for the header labels are automatically applied to this (ttk::)label
+        widget, too.</dd>
+
+        <dt><br>
+        <a name="cornerpath"></a><code><i>pathName</i>
+        <b>cornerpath</b></code></dt>
+
+        <dd>
+          Returns the path name of a frame widget that is a sibling of the
+          tablelist and is automatically created and destroyed together with
+          the latter's header.&nbsp; This frame is called the <b>corner
+          frame</b>, because it is usually shown to the right of the tablelist
+          widget's top-right corner when managing the vertical scrollbar on Mac
+          OS X Aqua (see below).&nbsp; The corner frame contains a label or
+          ttk::label widget, depending on whether the package Tablelist or
+          Tablelist_tile is being used (see the <code><b><a href=
+          "#cornerlabelpath">cornerlabelpath</a></b></code> subcommand).&nbsp;
+          Whenever the height of the tablelist's header changes, the height of
+          the corner frame as well as that of the above-mentioned (ttk::)label
+          widget is adjusted accordingly.
+
+          <p>This subcommand enables you to manage the vertical scrollbar (if
+          any) to appear below the tablelist widget's header, thus respecting
+          the native look & feel on Mac OS X Aqua.&nbsp; As shown in the
+          following example, it is recommended to always create a scrolled
+          tablelist along with the scrollbar(s) as children of a (ttk::)frame
+          widget:</p>
+
+          <blockquote>
+            <pre>
+# Add some entries to the Tk option database
+set winSys [tk windowingsystem]
+if {[string compare $winSys "x11"] != 0} {
+    option add *ScrollArea.borderWidth                  1
+    option add *ScrollArea.relief                       sunken
+    option add *ScrollArea.Tablelist.borderWidth        0
+    option add *ScrollArea.Tablelist.highlightThickness 0
+}
+
+. . .
+
+# Create the tablelist and the scrollbars as
+# children of a frame of class ScrollArea
+set frm [(ttk::)frame ... -class ScrollArea]
+set tbl $frm.tbl
+set vsb $frm.vsb
+set hsb $frm.hsb
+tablelist::tablelist $tbl ... \
+    -xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set]
+scrollbar $vsb -orient vertical   -command [list $tbl yview]
+scrollbar $hsb -orient horizontal -command [list $tbl xview]
+
+. . .
+
+# Manage the widgets within the frame
+grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
+if {[string compare $winSys "aqua"] == 0} {
+    grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
+    grid $vsb              -row 1 -column 1 -sticky ns
+} else {
+    grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+}
+grid $hsb -row 2 -column 0 -sticky ew
+grid rowconfigure    $frm 1 -weight 1
+grid columnconfigure $frm 0 -weight 1
+
+# Manage the frame
+pack $frm -expand yes -fill both
+</pre>
+          </blockquote>
+        </dd>
+
+        <dt><a name="curcellselection"></a><code><i>pathName</i>
         <b>curcellselection</b></code></dt>
 
         <dd>Returns a list containing the canonical indices (of the form
         <code><i>row</i>,<i>col</i></code>, where <code><i>row</i></code> and
-        <code><i>col</i></code> are numbers) of all of the non-hidden elements
-        in the tablelist that are currently selected.&nbsp; If there are no
-        such elements in the tablelist then an empty string is returned.</dd>
+        <code><i>col</i></code> are numbers) of all of the elements in the
+        tablelist that are currently selected.&nbsp; If there are no such
+        elements in the tablelist then an empty string is returned.</dd>
 
         <dt><br>
         <a name="curselection"></a><code><i>pathName</i>
         <b>curselection</b></code></dt>
 
         <dd>Returns a list containing the numerical indices of all of the items
-        in the tablelist that contain at least one non-hidden selected
-        element.&nbsp; If there are no such items in the tablelist then an
-        empty string is returned.</dd>
+        in the tablelist that contain at least one selected element.&nbsp; If
+        there are no such items in the tablelist then an empty string is
+        returned.</dd>
 
         <dt><br>
         <a name="delete"></a><code><i>pathName</i> <b>delete</b> <i>first</i>
@@ -7164,8 +7260,8 @@ upvar #0 [.tbl itemlistvar] itemList
             <i>index</i></code></dt>
 
             <dd>Returns <code>1</code> if the item indicated by
-            <code><i>index</i></code> contains at least one non-hidden selected
-            cell, <code>0</code> if it doesn't.</dd>
+            <code><i>index</i></code> contains at least one selected cell,
+            <code>0</code> if it doesn't.</dd>
 
             <dt><br>
             <code><i>pathName</i> <b>selection</b> <b>set</b> <i>first</i>

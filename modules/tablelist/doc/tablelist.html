@@ -175,8 +175,8 @@
   <h3><a name="ov_get"></a>How to get it?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist5.4.tar.gz</code> for UNIX and
-  <code>tablelist5_4.zip</code> for Windows.&nbsp; These files contain the same
+  The distribution file is <code>tablelist5.5.tar.gz</code> for UNIX and
+  <code>tablelist5_5.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -201,21 +201,21 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist5.4.tar.gz</code>:</p>
+  <code>tablelist5.5.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist5.4.tar.gz | tar -xf -
+gunzip -c tablelist5.5.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>tablelist5.4</code>, with
+  <p>This command will create a directory named <code>tablelist5.5</code>, with
   the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist5_4.zip</code> into the directory
-  <code>tablelist5.4</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist5_5.zip</code> into the directory
+  <code>tablelist5.5</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -312,14 +312,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 5.4, then it is highly
-  recommended to specify the version number <code>5.4</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 5.5, then it is highly
+  recommended to specify the version number <code>5.5</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 5.4</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 5.5</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 5.4</code>.</p>
+  tablelist_tile 5.5</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -492,7 +492,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 5.4
+package require tablelist 5.5
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -524,7 +524,7 @@ To display the configuration options of an arbitrary widget, enter
 
   <blockquote>
     <pre>
-package require tablelist 5.4
+package require tablelist 5.5
 
 namespace eval demo {
     #
@@ -563,13 +563,10 @@ namespace eval demo {
         option add *DemoTop.tf.tbl.borderWidth          0
         option add *DemoTop.tf.tbl.highlightThickness   0
     }
-    if {[string compare $winSys "classic"] == 0} {
-        option add *DemoTop*background                  #dedede
-    }
     option add *DemoTop.tf.tbl.background               white
     option add *DemoTop.tf.tbl.stripeBackground         #e4e8ec
-    option add *DemoTop.tf.tbl*Entry.background         white
     option add *DemoTop.tf.tbl.setGrid                  yes
+    option add *DemoTop.tf.tbl*Entry.background         white
     option add *DemoTop.bf.Button.width                 10
 }
 
@@ -639,7 +636,20 @@ proc demo::displayConfig w {
     #
     # Manage the widgets
     #
-    . . .
+    grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
+    variable winSys
+    if {[string compare $winSys "aqua"] == 0} {
+        grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
+        grid $vsb              -row 1 -column 1 -sticky ns
+    } else {
+        grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+    }
+    grid $hsb -row 2 -column 0 -sticky ew
+    grid rowconfigure    $tf 1 -weight 1
+    grid columnconfigure $tf 0 -weight 1
+    pack $b1 $b2 $b3 -side left -expand yes -pady 10
+    pack $bf -side bottom -fill x
+    pack $tf -side top -expand yes -fill both
 
     #
     # Populate the tablelist with the configuration options of the given widget
@@ -735,6 +745,13 @@ proc demo::displayConfig w {
   tablelist widget will be displayed in the background color
   <code>#e4e8ec</code>, which improves the readability of the items and gives
   the widget a nice appearance.</p>
+
+  <p>The option database entries given for the windowing systems other than
+  <code>x11</code> are implicitly used when managing the tablelist widget and
+  the two scrollbars with the aid of <code>grid</code>.&nbsp; Notice how the
+  <code><a href="tablelistWidget.html#cornerpath">cornerpath</a></code>
+  subcommand enables us to achieve a native look &amp; feel with respect to the
+  vertical scrollbar on the windowing system <code>aqua</code>.</p>
 
   <p>We populate the tablelist by invoking the <code>demo::putConfig</code>
   procedure discussed below.&nbsp; The same script is associated with the
@@ -956,9 +973,9 @@ To display information about the children of an arbitrary widget, enter
   widget.&nbsp; By double-clicking an item or invoking the first entry of a
   pop-up menu within the body of the tablelist, you can display the data of the
   children of the widget corresponding to the selected item, and with the
-  second menu entry you can display its configuration options (see the previous
-  example for details).&nbsp; To go one level up, click on the <b>Parent</b>
-  button.</p>
+  second menu entry you can display its configuration options (see the <a href=
+  "#ex_config">previous example</a> for details).&nbsp; To go one level up,
+  click on the <b>Parent</b> button.</p>
 
   <p>There is a lot of code common to the scripts <code>browse.tcl</code> and
   <code>browseTree.tcl</code>.&nbsp; We will restrict the description below to
@@ -968,7 +985,7 @@ To display information about the children of an arbitrary widget, enter
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 5.4
+package require tablelist 5.5
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1411,12 +1428,12 @@ proc demo::updateItems tbl {
 </pre>
   </blockquote>
 
-  <p>As already mentioned in the previous example, each tablelist widget may
-  have any number of private attributes, which can be set and retrieved with
-  the aid of the <code><a href="tablelistWidget.html#attrib">attrib</a></code>
-  subcommand of the Tcl command corresponding to the widget.&nbsp; The
-  <code>afterId</code> attribute is set by the
-  <code>demo::updateItemsDelayed</code> procedure when sheduling the
+  <p>As already mentioned in the <a href="#ex_config">previous example</a>,
+  each tablelist widget may have any number of private attributes, which can be
+  set and retrieved with the aid of the <code><a href=
+  "tablelistWidget.html#attrib">attrib</a></code> subcommand of the Tcl command
+  corresponding to the widget.&nbsp; The <code>afterId</code> attribute is set
+  by the <code>demo::updateItemsDelayed</code> procedure when sheduling the
   <code>demo::updateItems</code> command for execution 500 ms later, but only
   if its value is an empty string.&nbsp; For this reason, the
   <code>demo::updateItems</code> procedure resets this attribute.&nbsp; It also
@@ -1559,14 +1576,14 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <b>Parent</b> button.</p>
 
   <p>There are a lot of similarities between this script and the one discussed
-  in the previous section.&nbsp; In the following we will only present a few
-  procedures that invoke tablelist commands not encounterd in the examples
-  above:</p>
+  in the <a href="#ex_browse">previous section</a>.&nbsp; In the following we
+  will only present a few procedures that invoke tablelist commands not
+  encountered in the examples above:</p>
 
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 5.4
+package require tablelist 5.5
 
 #
 # Add some entries to the Tk option database
@@ -1592,7 +1609,7 @@ proc displayContents dir {
     # width columns and interactive sort capability
     #
     set tf .tf
-    frame $tf
+    frame $tf -class ScrollArea
     set tbl $tf.tbl
     set vsb $tf.vsb
     set hsb $tf.hsb
@@ -1623,8 +1640,28 @@ proc displayContents dir {
 </pre>
   </blockquote>
 
-  <p>The procedure <code>displayContents</code> specifies a value not only for
-  the <code><a href=
+  <p>The procedure <code>displayContents</code> creates the tablelist widget
+  and the two scrollbars as children of a frame of class
+  <code>ScrollArea</code>.&nbsp; For this class, the file
+  <code>option.tcl</code>, <code>source</code>d into the main script, contains
+  some look &amp; feel related settings similar to the ones encountered in our
+  <a href="#ex_config">first example</a>:</p>
+
+  <blockquote>
+    <pre>
+if {[string compare $winSys "x11"] == 0} {
+    . . .
+} else {
+    option add *ScrollArea.borderWidth                  1
+    option add *ScrollArea.relief                       sunken
+    option add *ScrollArea.Tablelist.borderWidth        0
+    option add *ScrollArea.Tablelist.highlightThickness 0
+    . . .
+}
+</pre>
+  </blockquote>
+  
+  <p>The procedure specifies a value not only for the <code><a href=
   "tablelistWidget.html#expandcommand">-expandcommand</a></code> option of the
   tablelist it creates, but also for its <code><a href=
   "tablelistWidget.html#collapsecommand">-collapsecommand</a></code>
@@ -1719,9 +1756,9 @@ proc putContents {dir tbl nodeIdx} {
 
   <p>The main difference between the procedure <code>putContents</code> above
   and the procedure <code><a href="#putChildren">demo::putChildren</a></code>
-  described in the previous section is related to the way child items are
-  inserted into the tablelist widget.&nbsp; Instead of inserting them
-  individually with the aid of the <code><a href=
+  described in the <a href="#ex_browse">previous section</a> is related to the
+  way child items are inserted into the tablelist widget.&nbsp; Instead of
+  inserting them individually with the aid of the <code><a href=
   "tablelistWidget.html#insertchildren">insertchild(ren)</a></code> tablelist
   subcommand, here we add the relevant data to a list of items and then invoke
   the much more performant <code><a href=
@@ -1899,8 +1936,8 @@ for {set n 0} { $n &lt; 8} {incr n} {
   </blockquote>
 
   <p>The only configuration option used here but not discussed in the first
-  three examples (although already encountered in the previous one) is
-  <code><a href=
+  three examples (although already encountered in the <a href=
+  "#ex_dirViewer">previous one</a>) is <code><a href=
   "tablelistWidget.html#showseparators">-showseparators</a></code>.&nbsp; The
   visual effect it produces looks nice both by itself and combined with
   horizontal or vertical stripes, created by using the <code><a href=
@@ -1930,7 +1967,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;# because of "-compound"
-package require tablelist 5.4
+package require tablelist 5.5
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2262,13 +2299,13 @@ proc editEndCmd {tbl row col text} {
   <code>active</code> state:</p>
 
   <p><img src="embeddedWindows.png" alt="Embedded Windows" width="399" height=
-  "269"></p>
+  "268"></p>
 
   <p>First, we create and populate the tablelist widget:</p>
 
   <blockquote>
     <pre>
-package require tablelist 5.4
+package require tablelist 5.5
 
 wm title . "Tk Library Scripts"
 
@@ -2292,8 +2329,10 @@ image create photo openImg -file [file join $dir open.gif]
 # Create a vertically scrolled tablelist widget with 5
 # dynamic-width columns and interactive sort capability
 #
-set tbl .tbl
-set vsb .vsb
+set tf .tf
+frame $tf -class ScrollArea
+set tbl $tf.tbl
+set vsb $tf.vsb
 tablelist::tablelist $tbl \
     -columns {0 "File Name" left
               0 "Bar Chart" center
@@ -2425,13 +2464,15 @@ proc viewFile {tbl key} {
     wm title $top "File \"$fileName\""
 
     #
-    # Create a vertically scrolled text widget as a child of the toplevel
+    # Create a vertically scrolled text widget as a grandchild of the toplevel
     #
-    set txt $top.txt
-    set vsb $top.vsb
+    set tf $top.tf
+    frame $tf -class ScrollArea
+    set txt $tf.txt
+    set vsb $tf.vsb
     text $txt -background white -font TkFixedFont -setgrid yes \
               -yscrollcommand [list $vsb set]
-    catch {$txt configure -tabstyle wordprocessor}              ;# for Tk 8.5
+    catch {$txt configure -tabstyle wordprocessor}      ;# for Tk 8.5 and above
     scrollbar $vsb -orient vertical -command [list $txt yview]
 
     #
@@ -2491,16 +2532,16 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
   "#ov_tile">More on Tablelist_tile</a> section of this tutorial, it is quite
   easy to port an application using the Tablelist package to one based on
   Tablelist_tile.&nbsp; For example, let's see how to transform the demo script
-  <code>bwidget.tcl</code> into a tile-based one, called
-  <code>bwidget_tile.tcl</code>.&nbsp; The changes are shown below in red
-  color:</p>
+  <code><a href="#ex_editing">bwidget.tcl</a></code> into a tile-based one,
+  called <code>bwidget_tile.tcl</code>.&nbsp; The changes are shown below in
+  red color:</p>
 
   <p>First, we replace the starting lines</p>
 
   <blockquote>
     <pre>
 package require Tk 8.3                          ;# because of entry validation
-package require tablelist 5.4
+package require tablelist 5.5
 </pre>
   </blockquote>
 
@@ -2508,7 +2549,7 @@ package require tablelist 5.4
 
   <blockquote>
     <pre>
-package require tablelist<span>_tile</span> 5.4
+package require tablelist<span>_tile</span> 5.5
 </pre>
   </blockquote>
 
@@ -2592,10 +2633,7 @@ set btn [<span>ttk::</span>button <span>$f</span>.btn -text "Close" -command exi
 
   <blockquote>
     <pre>
-<span>if {[tk windowingsystem] eq "x11"} {
-    option add *Font              TkDefaultFont
-}
-tablelist::setThemeDefaults
+<span>tablelist::setThemeDefaults
 if {[tablelist::getCurrentTheme] eq "aqua"} {
     option add *Listbox.selectBackground \
                $tablelist::themeDefaults(-selectbackground)
@@ -2618,9 +2656,9 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
   <p><img src="tileWidgets.png" alt="Serial Line Configuration" width="782"
   height="364"></p>
 
-  <p>The tile-based version of the demo script <code>embeddedWindows.tcl</code>
-  contains a bit more changes, but most of them are not
-  Tablelist-specific.&nbsp; Please take a look at the file
+  <p>The tile-based version of the demo script <code><a href=
+  "#ex_windows">embeddedWindows.tcl</a></code> contains a bit more changes, but
+  most of them are not Tablelist-specific.&nbsp; Please take a look at the file
   <code>embeddedWindows_tile.tcl</code> in the <code>demos</code> directory for
   the details.&nbsp; Here is a screenshot of the resulting window:</p>
 
