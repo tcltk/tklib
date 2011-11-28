@@ -11,7 +11,7 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 
 package require Tk 8.4				;# because of "-compound"
-package require tablelist 5.4
+package require tablelist 5.5
 package require BWidget
 
 wm title . "Serial Line Configuration"

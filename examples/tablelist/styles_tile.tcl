@@ -8,7 +8,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2002-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.4
+package require tablelist_tile 5.5
 
 wm title . "Tablelist Styles"
 
@@ -73,7 +73,7 @@ for {set n 0} { $n < 8} {incr n} {
 }
 
 ttk::button $f.close -text "Close" -command exit
-frame $f.bottom -height 10
+ttk::frame $f.bottom -height 10
 
 #
 # Manage the widgets

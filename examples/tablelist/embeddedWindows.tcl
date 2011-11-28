@@ -8,7 +8,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2004-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.4
+package require tablelist 5.5
 
 wm title . "Tk Library Scripts"
 
@@ -32,8 +32,10 @@ image create photo openImg -file [file join $dir open.gif]
 # Create a vertically scrolled tablelist widget with 5
 # dynamic-width columns and interactive sort capability
 #
-set tbl .tbl
-set vsb .vsb
+set tf .tf
+frame $tf -class ScrollArea 
+set tbl $tf.tbl
+set vsb $tf.vsb
 tablelist::tablelist $tbl \
     -columns {0 "File Name" left
 	      0 "Bar Chart" center
@@ -128,13 +130,15 @@ proc viewFile {tbl key} {
     wm title $top "File \"$fileName\""
 
     #
-    # Create a vertically scrolled text widget as a child of the toplevel
+    # Create a vertically scrolled text widget as a grandchild of the toplevel
     #
-    set txt $top.txt
-    set vsb $top.vsb
+    set tf $top.tf
+    frame $tf -class ScrollArea 
+    set txt $tf.txt
+    set vsb $tf.vsb
     text $txt -background white -font TkFixedFont -setgrid yes \
 	      -yscrollcommand [list $vsb set]
-    catch {$txt configure -tabstyle wordprocessor}		;# for Tk 8.5
+    catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5 and above
     scrollbar $vsb -orient vertical -command [list $txt yview]
 
     #
@@ -151,9 +155,10 @@ proc viewFile {tbl key} {
     #
     grid $txt -row 0 -column 0 -sticky news
     grid $vsb -row 0 -column 1 -sticky ns
-    grid $btn -row 1 -column 0 -columnspan 2 -pady 10
-    grid rowconfigure    $top 0 -weight 1
-    grid columnconfigure $top 0 -weight 1
+    grid rowconfigure    $tf 0 -weight 1
+    grid columnconfigure $tf 0 -weight 1
+    pack $btn -side bottom -pady 10
+    pack $tf  -side top -expand yes -fill both
 
     #
     # Mark the file as seen
@@ -178,8 +183,14 @@ set btn [button .btn -text "Close" -command exit]
 #
 # Manage the widgets
 #
-grid $tbl -row 0 -column 0 -sticky news
-grid $vsb -row 0 -column 1 -sticky ns
-grid $btn -row 1 -column 0 -columnspan 2 -pady 10
-grid rowconfigure    . 0 -weight 1
-grid columnconfigure . 0 -weight 1
+grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
+if {[string compare $winSys "aqua"] == 0} {
+    grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
+    grid $vsb		   -row 1 -column 1 -sticky ns
+} else {
+    grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+}
+grid rowconfigure    $tf 1 -weight 1
+grid columnconfigure $tf 0 -weight 1
+pack $btn -side bottom -pady 10
+pack $tf  -side top -expand yes -fill both

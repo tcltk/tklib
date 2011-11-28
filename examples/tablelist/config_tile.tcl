@@ -5,7 +5,7 @@
 # Copyright (c) 2000-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.4
+package require tablelist_tile 5.5
 
 namespace eval demo {
     #
@@ -23,6 +23,10 @@ namespace eval demo {
     #
     if {[tk windowingsystem] eq "x11"} {
 	option add *DemoTop*Font			TkDefaultFont
+    } else {
+	option add *DemoTop.tf.borderWidth		1
+	option add *DemoTop.tf.relief			sunken
+	option add *DemoTop.tf.tbl.borderWidth		0
     }
     tablelist::setThemeDefaults
     variable currentTheme [tablelist::getCurrentTheme]
@@ -34,13 +38,10 @@ namespace eval demo {
 	option add *DemoTop*selectBorderWidth \
 		   $tablelist::themeDefaults(-selectborderwidth)
     }
-    option add *DemoTop.tf.borderWidth			1
-    option add *DemoTop.tf.relief			sunken
     option add *DemoTop.tf.tbl.background		white
     option add *DemoTop.tf.tbl.stripeBackground		#e4e8ec
-    option add *DemoTop.tf.tbl*Entry.background		white
-    option add *DemoTop.tf.tbl.borderWidth		0
     option add *DemoTop.tf.tbl.setGrid			yes
+    option add *DemoTop.tf.tbl*Entry.background		white
     option add *DemoTop.bf.TButton.width		10
 }
 
@@ -117,10 +118,15 @@ proc demo::displayConfig w {
     #
     # Manage the widgets
     #
-    grid $tbl -row 0 -column 0 -sticky news
-    grid $vsb -row 0 -column 1 -sticky ns
-    grid $hsb -row 1 -column 0 -sticky ew
-    grid rowconfigure    $tf 0 -weight 1
+    grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
+    if {[tablelist::getCurrentTheme] eq "aqua"} {
+	grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
+	grid $vsb	       -row 1 -column 1 -sticky ns
+    } else {
+	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+    }
+    grid $hsb -row 2 -column 0 -sticky ew
+    grid rowconfigure    $tf 1 -weight 1
     grid columnconfigure $tf 0 -weight 1
     pack $b1 $b2 $b3 -side left -expand yes -pady 10
     pack $bf -side bottom -fill x
