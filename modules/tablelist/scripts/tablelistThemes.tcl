@@ -106,18 +106,42 @@ proc tablelist::altTheme {} {
 # tablelist::aquaTheme
 #------------------------------------------------------------------------------
 proc tablelist::aquaTheme {} {
+    scan $::tcl_platform(osVersion) "%d" majorOSVersion
+    if {$majorOSVersion >= 11} {			;# OS X 10.7 or higher
+	set labelBg		#efefef
+	set labelpressedBg	#cbcbcb
+	set arrowColor		#afafaf
+    } else {
+	set labelBg		#e9e8e8
+	set labelpressedBg	#d2d2d2
+	set arrowColor		#717171
+    }
+
     switch [winfo rgb . systemMenuActive] {
 	"13621 29041 52685" -
 	"32256 44288 55552" {				;# Blue Cocoa/Carbon
-	    set stripeBg		#edf3fe
-	    set labelselectedBg		#7ab2e9
-	    set labelselectedpressedBg	#679ed5
+	    if {$majorOSVersion >= 11} {		;# OS X 10.7 or higher
+		set stripeBg			#f0f4f9
+		set labelselectedBg		#80b8f0
+		set labelselectedpressedBg	#417ddc
+	    } else {
+		set stripeBg			#edf3fe
+		set labelselectedBg		#7ab2e9
+		set labelselectedpressedBg	#679ed5
+	    }
 	}
+
 	"24415 27499 31354" -
 	"39680 43776 48384" {				;# Graphite Cocoa/Carbon
-	    set stripeBg		#f0f0f0
-	    set labelselectedBg		#b6c2cd
-	    set labelselectedpressedBg	#a7b3be
+	    if {$majorOSVersion >= 11} {		;# OS X 10.7 or higher
+		set stripeBg			#f4f5f7
+		set labelselectedBg		#9ba7b5
+		set labelselectedpressedBg	#636e88
+	    } else {
+		set stripeBg			#f0f0f0
+		set labelselectedBg		#b6c2cd
+		set labelselectedpressedBg	#a7b3be
+	    }
 	}
     }
 
@@ -162,10 +186,10 @@ proc tablelist::aquaTheme {} {
 	-selectforeground	white \
 	-selectborderwidth	0 \
 	-font			{"Lucida Grande" 12} \
-        -labelbackground	#e9e8e8 \
-	-labeldisabledBg	#e9e8e8 \
-	-labelactiveBg		#e9e8e8 \
-	-labelpressedBg		#d2d2d2 \
+        -labelbackground	$labelBg \
+	-labeldisabledBg	$labelBg \
+	-labelactiveBg		$labelBg \
+	-labelpressedBg		$labelpressedBg \
 	-labelselectedBg	$labelselectedBg \
 	-labelselectedpressedBg	$labelselectedpressedBg \
 	-labelforeground	black \
@@ -177,7 +201,7 @@ proc tablelist::aquaTheme {} {
 	-labelfont		{"Lucida Grande" 11} \
 	-labelborderwidth	1 \
 	-labelpady		1 \
-	-arrowcolor		#717171 \
+	-arrowcolor		$arrowColor \
 	-treestyle		aqua \
     ]
 

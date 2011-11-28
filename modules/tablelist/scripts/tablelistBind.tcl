@@ -143,6 +143,23 @@ proc tablelist::cleanup win {
 	bind $data(editwinTag) $event ""
     }
 
+    #
+    # Delete the bitmaps displaying the sort ranks
+    # and the images used to display the sort arrows
+    #
+    for {set rank 1} {$rank < 10} {incr rank} {
+	image delete sortRank$rank$win
+    }
+    for {set col 0} {$col < $data(colCount)} {incr col} {
+	set w $data(hdrTxtFrCanv)$col
+	foreach shape {triangleUp darkLineUp lightLineUp
+		       triangleDn darkLineDn lightLineDn} {
+	    catch {image delete $shape$w}
+	}
+    }
+
+    destroy $data(corner)
+
     namespace delete ::tablelist::ns$win
     catch {rename ::$win ""}
 }
@@ -294,9 +311,8 @@ proc tablelist::defineTablelistBody {} {
 	prevCol			""
 	prevActExpCollCtrlCell	""
 	selection		{}
-	clicked			0
-	clickTime		0
-	releaseTime		0
+	justClicked		0
+	justReleased		0
 	clickedInEditWin	0
 	clickedExpCollCtrl	0
     }
@@ -320,8 +336,8 @@ proc tablelist::defineTablelistBody {} {
 	    set tablelist::priv(y) $tablelist::y
 	    set tablelist::priv(row) [$tablelist::W nearest       $tablelist::y]
 	    set tablelist::priv(col) [$tablelist::W nearestcolumn $tablelist::x]
-	    set tablelist::priv(clicked) 1
-	    set tablelist::priv(clickTime) %t
+	    set tablelist::priv(justClicked) 1
+	    after 300 [list set tablelist::priv(justClicked) 0]
 	    set tablelist::priv(clickedInEditWin) 0
 	    if {[$tablelist::W cget -setfocus] &&
 		[string compare [$tablelist::W cget -state] "normal"] == 0} {
@@ -350,8 +366,7 @@ proc tablelist::defineTablelistBody {} {
 	}
     }
     bind TablelistBody <B1-Motion> {
-	if {$tablelist::priv(clicked) &&
-	    %t - $tablelist::priv(clickTime) < 300} {
+	if {$tablelist::priv(justClicked)} {
 	    continue
 	}
 
@@ -384,11 +399,11 @@ proc tablelist::defineTablelistBody {} {
 	    set tablelist::priv(y) ""
 	    after cancel $tablelist::priv(afterId)
 	    set tablelist::priv(afterId) ""
-	    set tablelist::priv(releaseTime) %t
+	    set tablelist::priv(justReleased) 1
+	    after 100 [list set tablelist::priv(justReleased) 0]
 	    set tablelist::priv(releasedInEditWin) 0
 	    if {!$tablelist::priv(clickedExpCollCtrl)} {
-		if {$tablelist::priv(clicked) &&
-		    %t - $tablelist::priv(clickTime) < 300} {
+		if {$tablelist::priv(justClicked)} {
 		    tablelist::moveOrActivate $tablelist::W \
 			$tablelist::priv(row) $tablelist::priv(col)
 		} else {
@@ -397,7 +412,6 @@ proc tablelist::defineTablelistBody {} {
 			[$tablelist::W nearestcolumn $tablelist::x]
 		}
 	    }
-	    set tablelist::priv(clicked) 0
 	    set tablelist::priv(clickedExpCollCtrl) 0
 	    after 100 [list tablelist::condEvalInvokeCmd $tablelist::W]
 	}

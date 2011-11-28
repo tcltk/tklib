@@ -2399,33 +2399,34 @@ proc tablelist::defineTablelistEdit {} {
 	# unexpectedly propagated to the edit window just created - make
 	# sure they won't be handled by the latter's default bindings
 	#
-	if {%t - $tablelist::priv(releaseTime) < 100} {
+	if {$tablelist::priv(justReleased)} {
 	    break
 	}
 
-	set tablelist::priv(clicked) 1
 	set tablelist::priv(clickedInEditWin) 1
 	focus %W
     }
     bind TablelistEdit <ButtonRelease-1> {
-	if {%t != 0} {				;# i.e., no generated event
+	if {%X >= 0} {				;# i.e., no generated event
 	    foreach {tablelist::W tablelist::x tablelist::y} \
 		[tablelist::convEventFields %W %x %y] {}
 
 	    set tablelist::priv(x) ""
 	    set tablelist::priv(y) ""
-	    set tablelist::priv(clicked) 0
 	    after cancel $tablelist::priv(afterId)
 	    set tablelist::priv(afterId) ""
-	    set tablelist::priv(releaseTime) %t
+	    set tablelist::priv(justReleased) 1
+	    after 100 [list set tablelist::priv(justReleased) 0]
 	    set tablelist::priv(releasedInEditWin) 1
-	    if {%t - $tablelist::priv(clickTime) < 300} {
-		tablelist::moveOrActivate $tablelist::W \
-		    $tablelist::priv(row) $tablelist::priv(col)
-	    } else {
-		tablelist::moveOrActivate $tablelist::W \
-		    [$tablelist::W nearest       $tablelist::y] \
-		    [$tablelist::W nearestcolumn $tablelist::x]
+	    if {!$tablelist::priv(clickedInEditWin)} {
+		if {$tablelist::priv(justClicked)} {
+		    tablelist::moveOrActivate $tablelist::W \
+			$tablelist::priv(row) $tablelist::priv(col)
+		} else {
+		    tablelist::moveOrActivate $tablelist::W \
+			[$tablelist::W nearest       $tablelist::y] \
+			[$tablelist::W nearestcolumn $tablelist::x]
+		}
 	    }
 	    after 100 [list tablelist::condEvalInvokeCmd $tablelist::W]
 	}
