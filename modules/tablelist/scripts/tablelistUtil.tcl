@@ -1967,6 +1967,7 @@ proc tablelist::makeSortAndArrowColLists win {
 	if {[llength $data(sortColList)] != 0} {
 	    set col [lindex $data(sortColList) 0]
 	    configLabel $data(hdrTxtFrLbl)$col -selected 1
+	    raise $data(hdrTxtFrLbl)$col
 	}
     }
 }
@@ -2147,7 +2148,7 @@ proc tablelist::setupColumns {win columns createLabels} {
 		    $w configure $opt $data($opt)
 		}
 	    }
-	    
+
 	    #
 	    # Replace the binding tag Canvas with $data(labelTag) and
 	    # TablelistArrow in the list of binding tags of the canvas
@@ -2173,9 +2174,16 @@ proc tablelist::setupColumns {win columns createLabels} {
     set data(hasFmtCmds) [expr {[lsearch -exact $data(fmtCmdFlagList) 1] >= 0}]
 
     #
-    # Clean up the data and attributes associated with the deleted columns
+    # Clean up the images, data, and attributes
+    # associated with the deleted columns
     #
     for {set col $data(colCount)} {$col < $oldColCount} {incr col} {
+	set w $data(hdrTxtFrCanv)$col
+	foreach shape {triangleUp darkLineUp lightLineUp
+		       triangleDn darkLineDn lightLineDn} {
+	    catch {image delete $shape$w}
+	}
+
 	deleteColData $win $col
 	deleteColAttribs $win $col
     }
@@ -2469,11 +2477,17 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 	    place $w -x [expr {$x - 1}] -relheight 1.0 -width 1
 	    lower $w
 	} else {
+	    set x2 $x
 	    set labelPixels [expr {$pixels + 2*$data(charWidth)}]
-	    if {$usingAquaTheme && $col < $data(lastCol)} {
+	    if {$usingAquaTheme} {
+		incr x2 -1
 		incr labelPixels
+		if {$col == 0} {
+		    incr x2 -1
+		    incr labelPixels
+		}
 	    }
-	    place $w -x $x -relheight 1.0 -width $labelPixels
+	    place $w -x $x2 -relheight 1.0 -width $labelPixels
 	}
 
 	#
@@ -2501,11 +2515,7 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 
 	incr col
     }
-    if {$usingAquaTheme} {
-	place $data(hdrLbl) -x [expr {$x - 1}]
-    } else {
-	place $data(hdrLbl) -x $x
-    }
+    place configure $data(hdrFr) -x $x
 
     #
     # Apply the value of tabs to the body text widget
@@ -2519,17 +2529,16 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
     #
     # Adjust the width and height of the frames data(hdrTxtFr) and data(hdr)
     #
-    set data(hdrPixels) $x
-    $data(hdrTxtFr) configure -width $data(hdrPixels)
+    $data(hdrTxtFr) configure -width $x
     if {$data(-width) <= 0} {
 	if {$stretchCols} {
-	    $data(hdr) configure -width $data(hdrPixels)
-	    $data(lb) configure -width \
-		      [expr {$data(hdrPixels) / $data(charWidth)}]
+	    $data(hdr) configure -width $x
+	    $data(lb) configure -width [expr {$x / $data(charWidth)}]
 	}
     } else {
 	$data(hdr) configure -width 0
     }
+    set data(hdrPixels) $x
     adjustHeaderHeight $win
 
     #
@@ -2877,7 +2886,7 @@ proc tablelist::adjustHeaderHeight win {
     # Compute the max. label height
     #
     upvar ::tablelist::ns${win}::data data
-    set maxLabelHeight [winfo reqheight $data(hdrLbl)]
+    set maxLabelHeight [winfo reqheight $data(hdrFrLbl)]
     for {set col 0} {$col < $data(colCount)} {incr col} {
 	set w $data(hdrTxtFrLbl)$col
 	if {[string compare [winfo manager $w] ""] == 0} {
@@ -2912,11 +2921,17 @@ proc tablelist::adjustHeaderHeight win {
     if {$data(-showlabels)} {
 	$data(hdr) configure -height $maxLabelHeight
 	place configure $data(hdrTxt) -y 0
-	place configure $data(hdrLbl) -y 0
+	place configure $data(hdrFr) -y 0
+
+	$data(corner) configure -height $maxLabelHeight
+	place configure $data(cornerLbl) -y 0
     } else {
 	$data(hdr) configure -height 1
 	place configure $data(hdrTxt) -y -1
-	place configure $data(hdrLbl) -y -1
+	place configure $data(hdrFr) -y -1
+
+	$data(corner) configure -height 1
+	place configure $data(cornerLbl) -y -1
     }
     adjustSepsWhenIdle $win
 }
@@ -4085,6 +4100,21 @@ proc tablelist::redisplayCol {win col first last} {
 	# Update the text widget's contents between the two tabs
 	#
 	if {[findTabs $win $line $col $col tabIdx1 tabIdx2]} {
+	    if {$auxType > 1 && $auxWidth > 0 && ![winfo exists $aux]} {
+		#
+		# Create a frame and evaluate the script that
+		# creates a child window within the frame
+		#
+		tk::frame $aux -borderwidth 0 -class TablelistWindow \
+			       -container 0 -height $data($key,$col-reqHeight) \
+			       -highlightthickness 0 -relief flat \
+			       -takefocus 0 -width $auxWidth
+		catch {$aux configure -padx 0 -pady 0}
+		bindtags $aux [linsert [bindtags $aux] 1 \
+			       $data(bodyTag) TablelistBody]
+		uplevel #0 $data($key,$col-window) [list $win $row $col $aux.w]
+	    }
+
 	    if {$multiline} {
 		updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript $aux $auxType \
 			     $auxWidth $indent $indentWidth $alignment
@@ -4625,12 +4655,16 @@ proc tablelist::configCanvas {win col} {
     } else {
 	catch {
 	    set state [$w cget -state]
-	    variable winSys
 	    if {[string compare $state "disabled"] == 0} {
 		set labelFg [$w cget -disabledforeground]
 	    } elseif {[string compare $state "active"] == 0} {
-		set labelBg [$w cget -activebackground]
-		set labelFg [$w cget -activeforeground]
+		variable winSys
+		if {!([string compare $winSys "classic"] == 0 ||
+		      [string compare $winSys "aqua"] == 0) ||
+		    $::tk_version > 8.4} {
+		    set labelBg [$w cget -activebackground]
+		    set labelFg [$w cget -activeforeground]
+		}
 	    }
 	}
     }

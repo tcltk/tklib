@@ -69,7 +69,7 @@ namespace eval tablelist {
 
     variable pngSupported [expr {($::tk_version >= 8.6 &&
 	![regexp {^8\.6(a[1-3]|b1)$} $::tk_patchLevel]) ||
-	($::tk_version == 8.5 && [catch {package require img::png}] == 0)}]
+	($::tk_version >= 8.5 && [catch {package require img::png}] == 0)}]
 
     variable specialAquaHandling [expr {$usingTile && ($::tk_version >= 8.6 ||
 	[regexp {^8\.5\.(9|[1-9][0-9])$} $::tk_patchLevel]) &&
@@ -347,22 +347,22 @@ namespace eval tablelist {
 	collapseall columnattrib columncget columnconfigure columncount \
 	columnindex columnwidth config configcelllist configcells \
 	configcolumnlist configcolumns configrowlist configrows configure \
-	containing containingcell containingcolumn curcellselection \
-	curselection depth delete deletecolumns descendantcount editcell \
-	editwintag editwinpath entrypath expand expandall expandedkeys \
-	fillcolumn finishediting formatinfo get getcells getcolumns \
-	getformatted getformattedcells getformattedcolumns getfullkeys \
-	getkeys hasattrib hascellattrib hascolumnattrib hasrowattrib \
-	imagelabelpath index insert insertchild insertchildlist \
-	insertchildren insertcolumnlist insertcolumns insertlist \
-	iselemsnipped isexpanded istitlesnipped itemlistvar labelpath labels \
-	labeltag move movecolumn nearest nearestcell nearestcolumn noderow \
-	parentkey refreshsorting rejectinput resetsortinfo rowattrib rowcget \
-	rowconfigure scan searchcolumn see seecell seecolumn selection \
-	separatorpath separators size sort sortbycolumn sortbycolumnlist \
-	sortcolumn sortcolumnlist sortorder sortorderlist togglecolumnhide \
-	togglerowhide toplevelkey unsetattrib unsetcellattrib \
-	unsetcolumnattrib unsetrowattrib windowpath xview yview]
+	containing containingcell containingcolumn cornerlabelpath cornerpath \
+	curcellselection curselection depth delete deletecolumns \
+	descendantcount editcell editwintag editwinpath entrypath expand \
+	expandall expandedkeys fillcolumn finishediting formatinfo get \
+	getcells getcolumns getformatted getformattedcells \
+	getformattedcolumns getfullkeys getkeys hasattrib hascellattrib \
+	hascolumnattrib hasrowattrib imagelabelpath index insert insertchild \
+	insertchildlist insertchildren insertcolumnlist insertcolumns \
+	insertlist iselemsnipped isexpanded istitlesnipped itemlistvar \
+	labelpath labels labeltag move movecolumn nearest nearestcell \
+	nearestcolumn noderow parentkey refreshsorting rejectinput \
+	resetsortinfo rowattrib rowcget rowconfigure scan searchcolumn see \
+	seecell seecolumn selection separatorpath separators size sort \
+	sortbycolumn sortbycolumnlist sortcolumn sortcolumnlist sortorder \
+	sortorderlist togglecolumnhide togglerowhide toplevelkey unsetattrib \
+	unsetcellattrib unsetcolumnattrib unsetrowattrib windowpath xview yview]
 
     proc restrictCmdOpts {} {
 	variable canElide
@@ -703,10 +703,20 @@ proc tablelist::tablelist args {
     set data(hdrTxtFr)		$data(hdrTxt).f
     set data(hdrTxtFrCanv)	$data(hdrTxtFr).c
     set data(hdrTxtFrLbl)	$data(hdrTxtFr).l
-    set data(hdrLbl)		$data(hdr).l
+    set data(hdrFr)		$data(hdr).f
+    set data(hdrFrLbl)		$data(hdrFr).l
     set data(colGap)		$data(hdr).g
     set data(lb)		$win.lb
     set data(sep)		$win.sep
+
+    #
+    # Get a unique name for the corner frame (a sibling of the tablelist widget)
+    #
+    set data(corner) $win-corner
+    for {set n 2} {[winfo exists $data(corner)]} {incr n} {
+	set data(corner) $data(corner)$n
+    }
+    set data(cornerLbl) $data(corner).l
 
     #
     # Create a child hierarchy used to hold the column labels.  The
@@ -715,6 +725,7 @@ proc tablelist::tablelist args {
     # to make it scrollable), which in turn fills the frame data(hdr)
     # (whose width and height can be set arbitrarily in pixels).
     #
+
     set w $data(hdr)			;# header frame
     tk::frame $w -borderwidth 0 -container 0 -height 0 -highlightthickness 0 \
 		 -relief flat -takefocus 0 -width 0
@@ -726,6 +737,7 @@ proc tablelist::tablelist args {
 	tablelist::updateHScrlbarWhenIdle $tablelist::W
     }
     pack $w -fill x
+
     set w $data(hdrTxt)			;# text widget within the header frame
     text $w -borderwidth 0 -highlightthickness 0 -insertwidth 0 \
 	    -padx 0 -pady 0 -state normal -takefocus 0 -wrap none
@@ -736,14 +748,40 @@ proc tablelist::tablelist args {
 			      -takefocus 0 -width 0
     catch {$data(hdrTxtFr) configure -padx 0 -pady 0}
     $w window create 1.0 -window $data(hdrTxtFr)
-    set w $data(hdrLbl)			;# filler label within the header frame
+
+    set w $data(hdrFr)			;# filler frame within the header frame
+    tk::frame $w -borderwidth 0 -container 0 -height 0 -highlightthickness 0 \
+		 -relief flat -takefocus 0 -width 0
+    catch {$w configure -padx 0 -pady 0}
+    place $w -relheight 1.0 -relwidth 1.0
+
+    set w $data(hdrFrLbl)		;# label within the filler frame
+    set x 0
     if {$usingTile} {
-	ttk::label $data(hdrTxtFrLbl)0 -style TablelistHeader.TLabel
+	ttk::label $w -style TablelistHeader.TLabel -image "" \
+		      -padding {1 1 1 1} -takefocus 0 -text "" \
+		      -textvariable "" -underline -1 -wraplength 0
+	if {[string compare [getCurrentTheme] "aqua"] == 0} {
+	    set x -1
+	}
+    } else {
+	tk::label $w -bitmap "" -highlightthickness 0 -image "" \
+		     -takefocus 0 -text "" -textvariable "" -underline -1 \
+		     -wraplength 0
+    }
+    place $w -x $x -relheight 1.0 -relwidth 1.0
+
+    set w $data(corner)			;# corner frame (outside the tablelist)
+    tk::frame $w -borderwidth 0 -container 0 -height 0 -highlightthickness 0 \
+		 -relief flat -takefocus 0 -width 0
+    catch {$w configure -padx 0 -pady 0}
+
+    set w $data(cornerLbl)		;# label within the corner frame
+    if {$usingTile} {
 	ttk::label $w -style TablelistHeader.TLabel -image "" \
 		      -padding {1 1 1 1} -takefocus 0 -text "" \
 		      -textvariable "" -underline -1 -wraplength 0
     } else {
-	tk::label $data(hdrTxtFrLbl)0 
 	tk::label $w -bitmap "" -highlightthickness 0 -image "" \
 		     -takefocus 0 -text "" -textvariable "" -underline -1 \
 		     -wraplength 0
@@ -1639,6 +1677,30 @@ proc tablelist::containingcolumnSubCmd {win argList} {
     synchronize $win
     displayItems $win
     return [containingCol $win $x]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::cornerlabelpathSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::cornerlabelpathSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win cornerlabelpath"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    return $data(cornerLbl)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::cornerpathSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::cornerpathSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win cornerpath"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    return $data(corner)
 }
 
 #------------------------------------------------------------------------------
@@ -3759,9 +3821,6 @@ proc tablelist::togglecolumnhideSubCmd {win argList} {
     if {$argCount == 1} {
 	foreach elem $first {
 	    set col [colIndex $win $elem 1]
-	    if {$canElide && !$data($col-hide)} {
-		cellSelection $win clear 0 $col $data(lastRow) $col
-	    }
 	    set data($col-hide) [expr {!$data($col-hide)}]
 	    if {$data($col-hide)} {
 		incr data(hiddenColCount)
@@ -3778,9 +3837,6 @@ proc tablelist::togglecolumnhideSubCmd {win argList} {
 	set last [colIndex $win [lindex $argList 1] 1]
 
 	for {set col $first} {$col <= $last} {incr col} {
-	    if {$canElide && !$data($col-hide)} {
-		cellSelection $win clear 0 $col $data(lastRow) $col
-	    }
 	    set data($col-hide) [expr {!$data($col-hide)}]
 	    if {$data($col-hide)} {
 		incr data(hiddenColCount)
@@ -4253,19 +4309,6 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 		set lastCol $tmp
 	    }
 
-	    #
-	    # Shrink the column range to be delimited by non-hidden columns
-	    #
-	    while {$firstCol <= $lastCol && $data($firstCol-hide)} {
-		incr firstCol
-	    }
-	    if {$firstCol > $lastCol} {
-		return ""
-	    }
-	    while {$lastCol >= $firstCol && $data($lastCol-hide)} {
-		incr lastCol -1
-	    }
-
 	    set firstTextIdx [expr {$firstRow + 1}].0
 	    set lastTextIdx [expr {$lastRow + 1}].end
 
@@ -4371,37 +4414,22 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 		set lastCol $tmp
 	    }
 
-	    #
-	    # Shrink the column range to be delimited by non-hidden columns
-	    #
-	    while {$firstCol <= $lastCol && $data($firstCol-hide)} {
-		incr firstCol
-	    }
-	    if {$firstCol > $lastCol} {
-		return ""
-	    }
-	    while {$lastCol >= $firstCol && $data($lastCol-hide)} {
-		incr lastCol -1
-	    }
-
 	    set w $data(body)
 	    variable canElide
 	    variable elide
 	    for {set row $firstRow; set line [expr {$firstRow + 1}]} \
 		{$row <= $lastRow} {set row $line; incr line} {
 		#
-		# Check whether the row is selectable and viewable
+		# Check whether the row is selectable
 		#
 		set key [lindex $data(keyList) $row]
-		if {[info exists data($key-selectable)] ||
-		    [info exists data($key-elide)] ||
-		    [info exists data($key-hide)]} {
+		if {[info exists data($key-selectable)]} {
 		    continue
 		}
 
 		#
-		# Select the relevant non-hidden elements of the row and
-		# handle the -(select)background and -(select)foreground
+		# Select the relevant elements of the row and handle
+		# the -(select)background and -(select)foreground
 		# cell and column configuration options for them
 		#
 		findTabs $win $line $firstCol $lastCol firstTabIdx lastTabIdx
@@ -4413,11 +4441,6 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 
 		    set textIdx2 \
 			[$w search $elide "\t" $textIdx1+1c $lastTabIdx+1c]+1c
-		    if {$data($col-hide)} {
-			set textIdx1 $textIdx2
-			continue
-		    }
-
 		    $w tag add select $textIdx1 $textIdx2
 		    foreach optTail {background foreground} {
 			set opt -select$optTail
@@ -4542,7 +4565,7 @@ proc tablelist::containingCol {win x} {
 #
 # Processes the tablelist curcellselection subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::curCellSelection {win {getKeys 0}} {
+proc tablelist::curCellSelection {win {getKeys 0} {viewableOnly 0}} {
     variable canElide
     variable elide
     upvar ::tablelist::ns${win}::data data
@@ -4552,27 +4575,37 @@ proc tablelist::curCellSelection {win {getKeys 0}} {
     #
     set result {}
     set w $data(body)
-    set selRange [$w tag nextrange select 1.0]
-    while {[llength $selRange] != 0} {
+    for {set selRange [$w tag nextrange select 1.0]} \
+	{[llength $selRange] != 0} \
+	{set selRange [$w tag nextrange select $selEnd]} {
 	foreach {selStart selEnd} $selRange {}
 	set line [expr {int($selStart)}]
 	set row [expr {$line - 1}]
+	if {$getKeys || $viewableOnly} {
+	    set key [lindex $data(keyList) $row]
+	}
+	if {$viewableOnly &&
+	    ([info exists data($key-elide)] || [info exists data($key-hide)])} {
+	    continue
+	}
 
 	#
 	# Get the index of the column starting at the text position selStart
 	#
 	set textIdx $line.0
 	for {set col 0} {$col < $data(colCount)} {incr col} {
-	    if {!$data($col-hide) || $canElide} {
-		if {[$w compare $selStart == $textIdx] ||
-		    [$w compare $selStart == $textIdx+1c] ||
-		    ([$w compare $selStart == $textIdx+2c] &&
-		     [string compare [$w get $textIdx+2c] "\t"] != 0)} {
-		    set firstCol $col
-		    break
-		} else {
-		    set textIdx [$w search $elide "\t" $textIdx+1c $selEnd]+1c
-		}
+	    if {$data($col-hide) && !$canElide} {
+		continue
+	    }
+
+	    if {[$w compare $selStart == $textIdx] ||
+		[$w compare $selStart == $textIdx+1c] ||
+		([$w compare $selStart == $textIdx+2c] &&
+		 [string compare [$w get $textIdx+2c] "\t"] != 0)} {
+		set firstCol $col
+		break
+	    } else {
+		set textIdx [$w search $elide "\t" $textIdx+1c $selEnd]+1c
 	    }
 	}
 
@@ -4580,26 +4613,25 @@ proc tablelist::curCellSelection {win {getKeys 0}} {
 	# Process the columns, starting at the found one
 	# and ending just before the text position selEnd
 	#
-	if {$getKeys} {
-	    set key [lindex $data(keyList) $row]
-	}
 	set textIdx [$w search $elide "\t" $textIdx+1c $selEnd]+1c
 	for {set col $firstCol} {$col < $data(colCount)} {incr col} {
-	    if {!$data($col-hide) || $canElide} {
+	    if {$data($col-hide) && !$canElide} {
+		continue
+	    }
+
+	    if {!($data($col-hide) && $viewableOnly)} {
 		if {$getKeys} {
 		    lappend result $key $col
 		} else {
 		    lappend result $row,$col
 		}
-		if {[$w compare $textIdx == $selEnd]} {
-		    break
-		} else {
-		    set textIdx [$w search $elide "\t" $textIdx+1c $selEnd]+1c
-		}
+	    }
+	    if {[$w compare $textIdx == $selEnd]} {
+		break
+	    } else {
+		set textIdx [$w search $elide "\t" $textIdx+1c $selEnd]+1c
 	    }
 	}
-
-	set selRange [$w tag nextrange select $selEnd]
     }
 
     return $result
@@ -6037,18 +6069,16 @@ proc tablelist::rowSelection {win opt first last} {
 	    for {set row $first; set line [expr {$first + 1}]} \
 		{$row <= $last} {set row $line; incr line} {
 		#
-		# Check whether the row is selectable and viewable
+		# Check whether the row is selectable
 		#
 		set key [lindex $data(keyList) $row]
-		if {[info exists data($key-selectable)] ||
-		    [info exists data($key-elide)] ||
-		    [info exists data($key-hide)]} {
+		if {[info exists data($key-selectable)]} {
 		    continue
 		}
 
 		#
-		# Select the non-hidden elements of the row and handle
-		# the -(select)background and -(select)foreground
+		# Select the elements of the row and handle the
+		# -(select)background and -(select)foreground
 		# cell and column configuration options for them
 		#
 		set textIdx1 $line.0
@@ -6059,11 +6089,6 @@ proc tablelist::rowSelection {win opt first last} {
 
 		    set textIdx2 \
 			[$w search $elide "\t" $textIdx1+1c $line.end]+1c
-		    if {$data($col-hide)} {
-			set textIdx1 $textIdx2
-			continue
-		    }
-
 		    $w tag add select $textIdx1 $textIdx2
 		    foreach optTail {background foreground} {
 			set opt -select$optTail
@@ -6117,8 +6142,8 @@ proc tablelist::rowSelection {win opt first last} {
 # tablelist widget win and someone attempts to retrieve it as a STRING.  It
 # returns part or all of the selection, as given by offset and maxChars.  The
 # string which is to be (partially) returned is built by joining all of the
-# selected elements of the (partly) selected rows together with tabs and the
-# rows themselves with newlines.
+# selected viewable elements of the (partly) selected viewable rows together
+# with tabs and the rows themselves with newlines.
 #------------------------------------------------------------------------------
 proc tablelist::fetchSelection {win offset maxChars} {
     upvar ::tablelist::ns${win}::data data
@@ -6128,7 +6153,7 @@ proc tablelist::fetchSelection {win offset maxChars} {
 
     set selection ""
     set prevRow -1
-    foreach cellIdx [curCellSelection $win] {
+    foreach cellIdx [curCellSelection $win 0 1] {
 	scan $cellIdx "%d,%d" row col
 	if {$row != $prevRow} {
 	    if {$prevRow != -1} {
@@ -6137,10 +6162,10 @@ proc tablelist::fetchSelection {win offset maxChars} {
 
 	    set prevRow $row
 	    set item [lindex $data(itemList) $row]
+	    set key [lindex $item end]
 	    set isFirstCol 1
 	}
 
-	set key [lindex $item end]
 	set text [lindex $item $col]
 	if {[lindex $data(fmtCmdFlagList) $col]} {
 	    set text [formatElem $win $key $row $col $text]
