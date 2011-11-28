@@ -9,7 +9,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2010-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.4
+package require tablelist_tile 5.5
 
 #
 # Add some entries to the Tk option database
@@ -42,7 +42,7 @@ proc displayContents dir {
     # width columns and interactive sort capability
     #
     set tf .tf
-    ttk::frame $tf
+    ttk::frame $tf -class ScrollArea
     set tbl $tf.tbl
     set vsb $tf.vsb
     set hsb $tf.hsb
@@ -91,10 +91,15 @@ proc displayContents dir {
     #
     # Manage the widgets
     #
-    grid $tbl -row 0 -column 0 -sticky news
-    grid $vsb -row 0 -column 1 -sticky ns
-    grid $hsb -row 1 -column 0 -sticky ew
-    grid rowconfigure    $tf 0 -weight 1
+    grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
+    if {[tablelist::getCurrentTheme] eq "aqua"} {
+	grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
+	grid $vsb	       -row 1 -column 1 -sticky ns
+    } else {
+	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+    }
+    grid $hsb -row 2 -column 0 -sticky ew
+    grid rowconfigure    $tf 1 -weight 1
     grid columnconfigure $tf 0 -weight 1
     pack $b1 $b2 $b3 -side left -expand yes -pady 10
     pack $bf -side bottom -fill x

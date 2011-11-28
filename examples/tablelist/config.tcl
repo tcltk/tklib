@@ -5,7 +5,7 @@
 # Copyright (c) 2000-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.4
+package require tablelist 5.5
 
 namespace eval demo {
     #
@@ -44,13 +44,10 @@ namespace eval demo {
 	option add *DemoTop.tf.tbl.borderWidth		0
 	option add *DemoTop.tf.tbl.highlightThickness	0
     }
-    if {[string compare $winSys "classic"] == 0} {
-	option add *DemoTop*background			#dedede
-    }
     option add *DemoTop.tf.tbl.background		white
     option add *DemoTop.tf.tbl.stripeBackground		#e4e8ec
-    option add *DemoTop.tf.tbl*Entry.background		white
     option add *DemoTop.tf.tbl.setGrid			yes
+    option add *DemoTop.tf.tbl*Entry.background		white
     option add *DemoTop.bf.Button.width			10
 }
 
@@ -120,10 +117,16 @@ proc demo::displayConfig w {
     #
     # Manage the widgets
     #
-    grid $tbl -row 0 -column 0 -sticky news
-    grid $vsb -row 0 -column 1 -sticky ns
-    grid $hsb -row 1 -column 0 -sticky ew
-    grid rowconfigure    $tf 0 -weight 1
+    grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
+    variable winSys
+    if {[string compare $winSys "aqua"] == 0} {
+	grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
+	grid $vsb	       -row 1 -column 1 -sticky ns
+    } else {
+	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+    }
+    grid $hsb -row 2 -column 0 -sticky ew
+    grid rowconfigure    $tf 1 -weight 1
     grid columnconfigure $tf 0 -weight 1
     pack $b1 $b2 $b3 -side left -expand yes -pady 10
     pack $bf -side bottom -fill x
