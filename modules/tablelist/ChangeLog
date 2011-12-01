@@ -1,3 +1,7 @@
+2011-12-01  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: Improvements for Mac OS X.
+
 2011-11-28  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl: Bumped the version number to 5.5.

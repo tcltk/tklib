@@ -2562,6 +2562,10 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 # sublabels.
 #------------------------------------------------------------------------------
 proc tablelist::adjustLabel {win col pixels alignment} {
+    variable usingTile
+    set usingAquaTheme \
+	[expr {$usingTile && [string compare [getCurrentTheme] "aqua"] == 0}]
+
     #
     # Apply some configuration options to the label and its sublabels (if any)
     #
@@ -2574,7 +2578,24 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 	set borderWidth 0
     }
     set padX [expr {$data(charWidth) - $borderWidth}]
-    configLabel $w -anchor $anchor -justify $alignment -padx $padX
+    set padL $padX
+    set padR $padX
+    set marginL $data(charWidth)
+    set marginR $data(charWidth)
+    if {$usingAquaTheme} {
+	incr padL
+	incr marginL
+	if {$col == 0} {
+	    incr padL
+	    incr marginL
+	}
+	set padding [$w cget -padding]
+	lset padding 0 $padL
+	lset padding 2 $padR
+	$w configure -anchor $anchor -justify $alignment -padding $padding
+    } else {
+	configLabel $w -anchor $anchor -justify $alignment -padx $padX
+    }
     if {[info exists data($col-labelimage)]} {
 	set imageWidth [image width $data($col-labelimage)]
 	$w-tl configure -anchor $anchor -justify $alignment
@@ -2743,19 +2764,19 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 	    place forget $w-tl
 	}
 
-	set margin $data(charWidth)
 	variable usingTile
 	switch $alignment {
 	    left {
 		place $w-il -in $w -anchor w -bordermode outside \
-			    -relx 0.0 -x $margin -rely 0.49
+			    -relx 0.0 -x $marginL -rely 0.49
+		raise $w-il
 		if {[string compare $text ""] != 0} {
 		    if {$usingTile} {
 			set padding [$w cget -padding]
-			lset padding 0 [expr {$padX + [winfo reqwidth $w-il]}]
+			lset padding 0 [incr padL [winfo reqwidth $w-il]]
 			$w configure -padding $padding -text $text
 		    } else {
-			set textX [expr {$margin + [winfo reqwidth $w-il]}]
+			set textX [expr {$marginL + [winfo reqwidth $w-il]}]
 			place $w-tl -in $w -anchor w -bordermode outside \
 				    -relx 0.0 -x $textX -rely 0.49
 		    }
@@ -2764,14 +2785,15 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 
 	    right {
 		place $w-il -in $w -anchor e -bordermode outside \
-			    -relx 1.0 -x -$margin -rely 0.49
+			    -relx 1.0 -x -$marginR -rely 0.49
+		raise $w-il
 		if {[string compare $text ""] != 0} {
 		    if {$usingTile} {
 			set padding [$w cget -padding]
-			lset padding 2 [expr {$padX + [winfo reqwidth $w-il]}]
+			lset padding 2 [incr padR [winfo reqwidth $w-il]]
 			$w configure -padding $padding -text $text
 		    } else {
-			set textX [expr {-$margin - [winfo reqwidth $w-il]}]
+			set textX [expr {-$marginR - [winfo reqwidth $w-il]}]
 			place $w-tl -in $w -anchor e -bordermode outside \
 				    -relx 1.0 -x $textX -rely 0.49
 		    }
@@ -2786,9 +2808,10 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 					[winfo reqwidth $w-tl]}]
 		    set iX [expr {-$reqWidth/2}]
 		    place $w-il -in $w -anchor w -relx 0.5 -x $iX -rely 0.49
+		    raise $w-il
 		    if {$usingTile} {
 			set padding [$w cget -padding]
-			lset padding 0 [expr {$padX + [winfo reqwidth $w-il]}]
+			lset padding 0 [incr padL [winfo reqwidth $w-il]]
 			$w configure -padding $padding -text $text
 		    } else {
 			set tX [expr {$reqWidth + $iX}]
@@ -4470,8 +4493,9 @@ proc tablelist::configLabel {w args} {
 	    -padx {
 		if {[string compare [winfo class $w] "TLabel"] == 0} {
 		    set padding [$w cget -padding]
-		    $w configure -padding \
-			[list $val [lindex $padding 1] $val [lindex $padding 3]]
+		    lset padding 0 $val
+		    lset padding 2 $val
+		    $w configure -padding $padding
 		} else {
 		    $w configure $opt $val
 		}
@@ -4481,8 +4505,9 @@ proc tablelist::configLabel {w args} {
 		if {[string compare [winfo class $w] "TLabel"] == 0} {
 		    set val [winfo pixels $w $val]
 		    set padding [$w cget -padding]
-		    $w configure -padding \
-			[list [lindex $padding 0] $val [lindex $padding 2] $val]
+		    lset padding 1 $val
+		    lset padding 3 $val
+		    $w configure -padding $padding
 		} else {
 		    $w configure $opt $val
 		}
