@@ -5895,13 +5895,12 @@ eval [list <i>pathName</i> <a href=
         <a name="cornerlabelpath"></a><code><i>pathName</i>
         <b>cornerlabelpath</b></code></dt>
 
-        <dd>Returns the path name of the label widget contained in the frame
-        whose path can be retrieved with the aid of the <code><b><a href=
-        "#cornerpath">cornerpath</a></b></code> subcommand.&nbsp; When using
-        Tablelist_tile, the return value will be a ttk::label widget of the
-        same style as the header labels.&nbsp; The global visual options set
-        for the header labels are automatically applied to this (ttk::)label
-        widget, too.</dd>
+        <dd>Returns the path name of the label widget contained in the corner
+        frame (see the <code><b><a href="#cornerpath">cornerpath</a></b></code>
+        subcommand.&nbsp; When using Tablelist_tile, the return value will be a
+        ttk::label widget of the same style as the header labels.&nbsp; The
+        global visual options set for the header labels are automatically
+        applied to this (ttk::)label widget, too.</dd>
 
         <dt><br>
         <a name="cornerpath"></a><code><i>pathName</i>
@@ -5911,15 +5910,15 @@ eval [list <i>pathName</i> <a href=
           Returns the path name of a frame widget that is a sibling of the
           tablelist and is automatically created and destroyed together with
           the latter's header.&nbsp; This frame is called the <b>corner
-          frame</b>, because it is usually shown to the right of the tablelist
-          widget's top-right corner when managing the vertical scrollbar on Mac
-          OS X Aqua (see below).&nbsp; The corner frame contains a label or
-          ttk::label widget, depending on whether the package Tablelist or
-          Tablelist_tile is being used (see the <code><b><a href=
-          "#cornerlabelpath">cornerlabelpath</a></b></code> subcommand).&nbsp;
-          Whenever the height of the tablelist's header changes, the height of
-          the corner frame as well as that of the above-mentioned (ttk::)label
-          widget is adjusted accordingly.
+          frame</b>, because it is designed to be shown to the right of the
+          tablelist widget's top-right corner when managing the vertical
+          scrollbar on Mac OS X Aqua (see below).&nbsp; The corner frame
+          contains a label or ttk::label widget, depending on whether the
+          package Tablelist or Tablelist_tile is being used (see the
+          <code><b><a href="#cornerlabelpath">cornerlabelpath</a></b></code>
+          subcommand).&nbsp; Whenever the height of the tablelist's header
+          changes, the height of the corner frame as well as that of the
+          above-mentioned (ttk::)label widget is updated accordingly.
 
           <p>This subcommand enables you to manage the vertical scrollbar (if
           any) to appear below the tablelist widget's header, thus respecting

@@ -1057,7 +1057,7 @@ proc tablelist::createCheckbutton {w args} {
 	aqua {
 	    checkbutton $w -borderwidth 0 -font "system" -padx 0 -pady 0
 	    [winfo parent $w] configure -width 16 -height 17
-	    place $w -x -3 -y -1
+	    place $w -x -4 -y -1
 	}
     }
 
