@@ -1,3 +1,8 @@
+2011-12-02  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistEdit.tcl: Minor improvements.
+	* doc/tablelistWidget.html:
+
 2011-12-01  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistUtil.tcl: Improvements for Mac OS X.
