@@ -8,8 +8,9 @@ What is new in Tablelist 5.5?
 2. Added the "cornerpath" and "cornerlabelpath" subcommands.  The first
    one makes it quite easy to respect the native Mac OS X look & feel,
    where the vertical scrollbar appears placed under the header (thanks
-   to Torsten Berg for her article on the Wiki that gave me the idea for
-   these subcommands).
+   to Torsten Berg for a related page on the Wiki, which provided me the
+   idea for these subcommands).  The "cornerpath" subcommand is now used
+   in all demo scrips that contain vertical scrollbars.
 
 3. Added support for the appearance-related changes introduced in Mac
    OS X 10.7 (Lion).
