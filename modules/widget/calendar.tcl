@@ -7,7 +7,7 @@
 #
 # Copyright (c) 2008 Rüdiger Härtel
 #
-# RCS: @(#) $Id: calendar.tcl,v 1.13 2011/11/16 22:04:51 andreas_kupries Exp $
+# RCS: @(#) $Id: calendar.tcl,v 1.14 2011/12/05 20:34:24 andreas_kupries Exp $
 #
 
 #
@@ -688,4 +688,4 @@ snit::widgetadaptor widget::calendar {
     }
 }
 
-package provide widget::calendar 0.99
+package provide widget::calendar 1
