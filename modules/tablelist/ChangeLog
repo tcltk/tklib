@@ -1,5 +1,10 @@
 2011-12-10  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* scripts/tablelistConfig.tcl: A few corrections related to the header
+	* scripts/tablelistUtil.tcl:   label colors in Tablelist_tile.
+
+2011-12-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* scripts/tablelistBind.tcl:   Removed the "-labelbackground" option
 	* scripts/tablelistConfig.tcl: from Tablelist_tile.
 	* scripts/tablelistThemes.tcl:
