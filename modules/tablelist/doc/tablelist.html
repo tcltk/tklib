@@ -423,23 +423,20 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
   programmer's point of view) between the packages Tablelist and Tablelist_tile
   is related to the supported configuration options:&nbsp; The
   <code>-highlightbackground</code>, <code>-highlightcolor</code>,
-  <code>-highlightthickness</code>, <code>-labelactivebackground</code>,
-  <code>-labelactiveforeground</code>, <code>-labeldisabledforeground</code>,
-  and <code>-labelheight</code> options (the latter at both widget and column
-  levels), present in the Tablelist package, are not supported by
-  Tablelist_tile.&nbsp; The first three are standard Tk widget options that are
-  not available for tile widgets.&nbsp; The others stand for the
+  <code>-highlightthickness</code>, <code>-labelbackground</code>,
+  <code>-labelactivebackground</code>, <code>-labelactiveforeground</code>,
+  <code>-labeldisabledforeground</code>, and <code>-labelheight</code> options
+  (the latter at both widget and column levels), present in the Tablelist
+  package, are not supported by Tablelist_tile.&nbsp; The first three are
+  standard Tk widget options that are not available for tile widgets.&nbsp; The
+  <code>-labelbackground</code> option stands for the <code>-background</code>
+  option of the column labels, and current versions of the tile engine don't
+  support setting the background color for these widgets with a special header
+  layout.&nbsp; The remaining options stand for the
   <code>-activebackground</code>, <code>-activeforeground</code>,
   <code>-disabledforeground</code>, and <code>-height</code> options of the
   column labels, and these configuration options are not supported for tile
   label widgets.</p>
-
-  <p>Notice that the <code>-labelbackground</code> tablelist option, which
-  stands for the <code>-background</code> option of the header labels (at both
-  widget and column levels) doesn't work as expected if the current theme is
-  <code>aqua</code>, <code>tileqt</code>, <code>vista</code>, or
-  <code>xpnative</code>, because these themes silently ignore any attempt to
-  change the background color of a tile header label.</p>
 
   <p>Also, take into account that in some themes, setting the
   <code>-labelborderwidth</code> option (at widget or column level) to a value
