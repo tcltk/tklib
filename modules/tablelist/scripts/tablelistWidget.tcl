@@ -253,6 +253,7 @@ namespace eval tablelist {
     lappend colConfigSpecs(-wrap)		- 0
 
     if {$usingTile} {
+	unset colConfigSpecs(-labelbackground)
 	unset colConfigSpecs(-labelheight)
     }
 

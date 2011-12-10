@@ -221,9 +221,8 @@ proc tablelist::updateConfigSpecs win {
     variable themeDefaults
     foreach opt {-background -foreground -disabledforeground -stripebackground
 		 -selectbackground -selectforeground -selectborderwidth -font
-		 -labelbackground -labelforeground -labelfont -labelborderwidth
-		 -labelpady -arrowcolor -arrowdisabledcolor -arrowstyle
-		 -treestyle} {
+		 -labelforeground -labelfont -labelborderwidth -labelpady
+		 -arrowcolor -arrowdisabledcolor -arrowstyle -treestyle} {
 	if {[string compare $data($opt) $tmp($opt)] == 0} {
 	    doConfig $win $opt $themeDefaults($opt)
 	}
