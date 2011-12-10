@@ -4439,11 +4439,11 @@ proc tablelist::configLabel {w args} {
 		    $w instate !selected {
 			set state [expr {$val ? "active" : "!active"}]
 			$w state $state
+			variable themeDefaults
 			if {$val} {
-			    variable themeDefaults
 			    set bg $themeDefaults(-labelactiveBg)
 			} else {
-			    set bg [$w cget -background]
+			    set bg $themeDefaults(-labelbackground)
 			}
 			foreach l [getSublabels $w] {
 			    $l configure -background $bg
@@ -4546,7 +4546,7 @@ proc tablelist::configLabel {w args} {
 			} elseif {[$w instate active]} {
 			    set bg $themeDefaults(-labelactiveBg)
 			} else {
-			    set bg [$w cget -background]
+			    set bg $themeDefaults(-labelbackground)
 			}
 		    }
 		    foreach l [getSublabels $w] {
@@ -4576,7 +4576,7 @@ proc tablelist::configLabel {w args} {
 			if {[$w instate pressed]} {
 			    set bg $themeDefaults(-labelpressedBg)
 			} else {
-			    set bg [$w cget -background]
+			    set bg $themeDefaults(-labelbackground)
 			}
 		    }
 		    foreach l [getSublabels $w] {
@@ -4594,6 +4594,7 @@ proc tablelist::configLabel {w args} {
 	    -state {
 		$w configure $opt $val
 		if {[string compare [winfo class $w] "TLabel"] == 0} {
+		    variable themeDefaults
 		    if {[string compare $val "disabled"] == 0} {
 			#
 			# Set the label's foreground color to the theme-
@@ -4601,7 +4602,6 @@ proc tablelist::configLabel {w args} {
 			#
 			$w configure -foreground ""
 
-			variable themeDefaults
 			set bg $themeDefaults(-labeldisabledBg)
 		    } else {
 			#
@@ -4618,7 +4618,7 @@ proc tablelist::configLabel {w args} {
 			    $w configure -foreground $fg
 			}
 
-			set bg [$w cget -background]
+			set bg $themeDefaults(-labelbackground)
 		    }
 		    foreach l [getSublabels $w] {
 			$l configure -background $bg
@@ -4698,6 +4698,8 @@ proc tablelist::configCanvas {win col} {
 
     if {[string compare [winfo class $w] "TLabel"] == 0} {
 	variable themeDefaults
+	set labelBg $themeDefaults(-labelbackground)
+
 	if {[$w instate disabled]} {
 	    set labelBg $themeDefaults(-labeldisabledBg)
 	    set labelFg $themeDefaults(-labeldisabledFg)

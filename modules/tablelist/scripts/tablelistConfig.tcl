@@ -1621,8 +1621,14 @@ proc tablelist::doColConfig {col win opt val} {
 				$l configure $opt2 $data($opt2)
 			    }
 			}
-			foreach opt2 {-background -foreground -font} {
-			    $l configure $opt2 [$w cget $opt2]
+			if {[string compare [winfo class $w] "TLabel"] == 0} {
+			    variable themeDefaults
+			    $l configure -background \
+					 $themeDefaults(-labelbackground)
+			} else {
+			    $l configure -background [$w cget -background]
+			    $l configure -foreground [$w cget -foreground]
+			    $l configure -font       [$w cget -font]
 			}
 			foreach opt2 {-activebackground -activeforeground
 				      -disabledforeground -state} {
