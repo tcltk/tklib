@@ -1899,8 +1899,8 @@ proc expandCmd {tbl row} {
 
       <blockquote>
         <p>Specifies the <code><b>-background</b></code> option for the header
-        labels.&nbsp; In the package Tablelist_tile this option has a
-        theme-specific default value.</p>
+        labels.&nbsp; This option is only supported by the Tablelist package,
+        but not by Tablelist_tile.</p>
       </blockquote>
     </dd>
 
@@ -4150,7 +4150,8 @@ proc formatDate clockVal {
         "#labeldisabledforeground">-labeldisabledforeground</a></b></code>
         options are only defined at widget level; there are no column
         configuration options with these names.&nbsp; The
-        <code><b>-labelheight</b></code> option is only supported by the
+        <code><b>-labelbackground</b></code> and
+	<code><b>-labelheight</b></code> options are only supported by the
         Tablelist package, but not by Tablelist_tile.</dd>
 
         <dt><br>
