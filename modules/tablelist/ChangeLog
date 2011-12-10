@@ -1,3 +1,19 @@
+2011-12-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl:   Removed the "-labelbackground" option
+	* scripts/tablelistConfig.tcl: from Tablelist_tile.
+	* scripts/tablelistThemes.tcl:
+	* scripts/tablelistWidget.tcl:
+
+	* scripts/tablelistUtil.tcl: Worked around a tile bug that caused the
+	  column labels in disabled state to no longer appear in the theme-
+	  specific disabled foreground color.
+
+	* CHANGES.txt:              Updated to reflect the changes.
+	* doc/tablelist.html:
+	* doc/tablelistThemes.html:
+	* doc/tablelistWidget.html:
+
 2011-12-04  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Slightly extended.
