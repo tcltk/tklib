@@ -86,7 +86,7 @@ proc tablelist::extendConfigSpecs {} {
     if {$usingTile} {
 	foreach opt {-highlightbackground -highlightcolor -highlightthickness
 		     -labelactivebackground -labelactiveforeground
-		     -labeldisabledforeground -labelheight} {
+		     -labelbackground -labeldisabledforeground -labelheight} {
 	    unset configSpecs($opt)
 	}
 
@@ -471,6 +471,8 @@ proc tablelist::doConfig {win opt val} {
 		    # Apply the value to $data(hdrTxt) and conditionally
 		    # to the canvases displaying up- or down-arrows
 		    #
+		    $helpLabel configure -$optTail $val
+		    set data($opt) [$helpLabel cget -$optTail]
 		    $data(hdrTxt) configure -$optTail $data($opt)
 		    foreach col $data(arrowColList) {
 			if {![info exists data($col$opt)]} {
@@ -1477,7 +1479,9 @@ proc tablelist::doColConfig {col win opt val} {
 		# formatted value of val in data($col$opt)
 		#
 		configLabel $w -$optTail $val
-		set data($col$opt) [$w cget -$optTail]
+		variable helpLabel
+		$helpLabel configure -$optTail $val
+		set data($col$opt) [$helpLabel cget -$optTail]
 	    }
 
 	    if {[lsearch -exact $data(arrowColList) $col] >= 0} {
