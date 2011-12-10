@@ -850,11 +850,11 @@ proc tablelist::condUpdateListVar win {
 proc tablelist::reconfigColLabels {win imgArrName col} {
     upvar ::tablelist::ns${win}::data data $imgArrName imgArr
 
-    set optList {-labelalign -labelbackground -labelborderwidth -labelfont
+    set optList {-labelalign -labelborderwidth -labelfont
 		 -labelforeground -labelpady -labelrelief}
     variable usingTile
     if {!$usingTile} {
-	lappend optList -labelheight
+	lappend optList -labelbackground -labelheight
     }
 
     foreach opt $optList {
@@ -4436,7 +4436,7 @@ proc tablelist::configLabel {w args} {
 	switch -- $opt {
 	    -active {
 		if {[string compare [winfo class $w] "TLabel"] == 0} {
-		    if {![$w instate selected]} {
+		    $w instate !selected {
 			set state [expr {$val ? "active" : "!active"}]
 			$w state $state
 			if {$val} {
@@ -4477,16 +4477,32 @@ proc tablelist::configLabel {w args} {
 	    }
 
 	    -background -
-	    -foreground -
 	    -font {
-		if {[string compare $val ""] == 0 &&
-		    [string compare [winfo class $w] "TLabel"] == 0} {
+		if {[string compare [winfo class $w] "TLabel"] == 0 &&
+		    [string compare $val ""] == 0} {
 		    variable themeDefaults
 		    set val $themeDefaults(-label[string range $opt 1 end])
 		}
 		$w configure $opt $val
 		foreach l [getSublabels $w] {
 		    $l configure $opt $val
+		}
+	    }
+
+	    -foreground {
+		if {[string compare [winfo class $w] "TLabel"] == 0} {
+		    if {[string compare $val ""] == 0} {
+			variable themeDefaults
+			set val $themeDefaults(-label[string range $opt 1 end])
+		    }
+		    $w instate !disabled {	;# workaround for a tile bug
+			$w configure $opt $val
+		    }
+		} else {
+		    $w configure $opt $val
+		    foreach l [getSublabels $w] {
+			$l configure $opt $val
+		    }
 		}
 	    }
 
@@ -4579,9 +4595,29 @@ proc tablelist::configLabel {w args} {
 		$w configure $opt $val
 		if {[string compare [winfo class $w] "TLabel"] == 0} {
 		    if {[string compare $val "disabled"] == 0} {
+			#
+			# Set the label's foreground color to the theme-
+			# specific one (needed because of a tile bug)
+			#
+			$w configure -foreground ""
+
 			variable themeDefaults
 			set bg $themeDefaults(-labeldisabledBg)
 		    } else {
+			#
+			# Restore the label's foreground color (needed
+			# because of the above-mentioned tile bug)
+			#
+			if {[parseLabelPath $w win col]} {
+			    upvar ::tablelist::ns${win}::data data
+			    if {[info exists data($col-labelforeground)]} {
+				set fg $data($col-labelforeground)
+			    } else {
+				set fg $data(-labelforeground)
+			    }
+			    $w configure -foreground $fg
+			}
+
 			set bg [$w cget -background]
 		    }
 		    foreach l [getSublabels $w] {
