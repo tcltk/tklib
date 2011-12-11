@@ -1,3 +1,7 @@
+2011-12-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt: Slightly modified.
+
 2011-12-10  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistConfig.tcl: A few corrections related to the header
