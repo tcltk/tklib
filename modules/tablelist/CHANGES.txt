@@ -21,14 +21,26 @@ What is new in Tablelist 5.5?
    change also works around the problem that on Mac OS X 10.7, Tk
    versions 8.5 and 8.6 can only use native and native-mapped cursors.
 
-5. Improved a few binding scripts (thanks to Ulrich Seidl for his bug
+5. Removed the "-labelbackground" option from Tablelist_tile, because
+   current versions of the tile engine no longer support setting the
+   background color for the header labels (and even with earlier tile
+   versions, some themes refused any attempt to change the background
+   color of the header labels).
+
+6. Adapted the code to some changes in current tile versions, to make
+   sure that in disabled state the tile-based column labels will appear
+   in the theme-specific disabled foreground color, as it was the case
+   with earlier tile versions (thanks to "tombert" for his related
+   posting on comp.lang.tcl).
+
+7. Improved a few binding scripts (thanks to Ulrich Seidl for his bug
    report and testing).
 
-6. Fixed a bug related to embedded windows in a tablelist used as a
+8. Fixed a bug related to embedded windows in a tablelist used as a
    tree widget (again, thanks to Ulrich Seidl for his bug report and
    testing).
 
-7. Several further improvements in the code, demo scripts, and
+9. Several further improvements in the code, demo scripts, and
    documentation.
 
 What was new in Tablelist 5.4?
