@@ -1,3 +1,10 @@
+2011-12-13  Ruediger Haertel <r_haertel@gmx.de>
+
+	* pkgIndex.tcl: Bumped package version to 0.95.
+	* widget_dateentry.tcl: 
+	* dateentry.tcl: - Bugfix:3458158, Adopt to changes of calendar v1.00
+			 - Provide a man page
+
 2011-11-16  Ruediger Haertel <r_haertel@gmx.de>
 
 	* pkgIndex.tcl: Bumped package version to 1.00.
