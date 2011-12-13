@@ -4491,11 +4491,12 @@ proc tablelist::configLabel {w args} {
 
 	    -foreground {
 		if {[string compare [winfo class $w] "TLabel"] == 0} {
-		    if {[string compare $val ""] == 0} {
-			variable themeDefaults
-			set val $themeDefaults(-label[string range $opt 1 end])
+		    variable themeDefaults
+		    if {[string compare $val \
+			 $themeDefaults(-labelforeground)] == 0} {
+			set val ""	;# for autom. adaptation to the states
 		    }
-		    $w instate !disabled {	;# workaround for a tile bug
+		    $w instate !disabled {
 			$w configure $opt $val
 		    }
 		} else {
@@ -4598,15 +4599,15 @@ proc tablelist::configLabel {w args} {
 		    if {[string compare $val "disabled"] == 0} {
 			#
 			# Set the label's foreground color to the theme-
-			# specific one (needed because of a tile bug)
+			# specific one (needed for current tile versions)
 			#
 			$w configure -foreground ""
 
 			set bg $themeDefaults(-labeldisabledBg)
 		    } else {
 			#
-			# Restore the label's foreground color (needed
-			# because of the above-mentioned tile bug)
+			# Restore the label's foreground color
+			# (needed for current tile versions)
 			#
 			if {[parseLabelPath $w win col]} {
 			    upvar ::tablelist::ns${win}::data data
@@ -4615,7 +4616,7 @@ proc tablelist::configLabel {w args} {
 			    } else {
 				set fg $data(-labelforeground)
 			    }
-			    $w configure -foreground $fg
+			    configLabel $w -foreground $fg
 			}
 
 			set bg $themeDefaults(-labelbackground)
@@ -4693,12 +4694,15 @@ proc tablelist::createArrows {w width height relief} {
 proc tablelist::configCanvas {win col} {
     upvar ::tablelist::ns${win}::data data
     set w $data(hdrTxtFrLbl)$col
-    set labelBg [$w cget -background]
-    set labelFg [$w cget -foreground]
 
     if {[string compare [winfo class $w] "TLabel"] == 0} {
 	variable themeDefaults
 	set labelBg $themeDefaults(-labelbackground)
+	set fg [$w cget -foreground]
+	set labelFg $fg
+	if {[string compare $fg ""] == 0} {
+	    set labelFg $themeDefaults(-labelforeground)
+	}
 
 	if {[$w instate disabled]} {
 	    set labelBg $themeDefaults(-labeldisabledBg)
@@ -4707,15 +4711,22 @@ proc tablelist::configCanvas {win col} {
 	    foreach state {active pressed selected} {
 		$w instate $state {
 		    set labelBg $themeDefaults(-label${state}Bg)
-		    set labelFg $themeDefaults(-label${state}Fg)
+		    if {[string compare $fg ""] == 0} {
+			set labelFg $themeDefaults(-label${state}Fg)
+		    }
 		}
-		if {[$w instate selected] && [$w instate pressed]} {
-		    set labelBg $themeDefaults(-labelselectedpressedBg)
+	    }
+	    $w instate {selected pressed} {
+		set labelBg $themeDefaults(-labelselectedpressedBg)
+		if {[string compare $fg ""] == 0} {
 		    set labelFg $themeDefaults(-labelselectedpressedFg)
 		}
 	    }
 	}
     } else {
+	set labelBg [$w cget -background]
+	set labelFg [$w cget -foreground]
+
 	catch {
 	    set state [$w cget -state]
 	    if {[string compare $state "disabled"] == 0} {
