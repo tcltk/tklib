@@ -16,7 +16,7 @@
 #
 # See the example at the bottom.
 #
-# RCS: @(#) $Id: dateentry.tcl,v 1.6 2011/11/16 18:09:12 andreas_kupries Exp $
+# RCS: @(#) $Id: dateentry.tcl,v 1.7 2011/12/13 21:28:00 haertel Exp $
 #
 
 # Creation and Options - widget::dateentry $path ...
@@ -124,7 +124,9 @@ snit::widgetadaptor widget::dateentry {
     option -language -default en -configuremethod C-passtocalendar
 
     delegate option -highlightcolor to calendar
-    delegate option -firstday to calendar
+    delegate option -shadecolor     to calendar
+    delegate option -firstday       to calendar
+    delegate option -showpast       to calendar
 
     component dropbox
     component calendar
@@ -179,20 +181,26 @@ snit::widgetadaptor widget::dateentry {
 
 	# Unpost on Escape or whenever user clicks outside the dropdown
 	bind $dropbox <Escape> [list $win unpost]
+	bind $dropbox <Return> [list $win DateAccepted]
+	bind $dropbox <space>  [list $win DateAccepted]
 	bind $dropbox <ButtonPress> [subst -nocommands {
 	    if {[string first "$dropbox" [winfo containing %X %Y]] != 0} {
 		$win unpost
-	    }
+	    } else {
+                $win DateAccepted
+            }
 	}]
 	bindtags $dropbox [linsert [bindtags $dropbox] 1 TDateEntryPopdown]
 
 	set calendar $dropbox.calendar
-	widget::calendar $calendar -command [mymethod DateChosen] \
+	widget::calendar $calendar \
 	    -textvariable [myvar formattedDate] \
 	    -dateformat $options(-dateformat) \
 	    -font $options(-font) \
 	    -language $options(-language)\
-	    -borderwidth 1 -relief solid
+	    -borderwidth 1 -relief solid 
+            
+
 	bind $calendar <Map> [list focus -force $calendar]
 
 	pack $calendar -expand 1 -fill both
@@ -258,22 +266,33 @@ snit::widgetadaptor widget::dateentry {
 	return [list $x $y]
     }
 
-    method DateChosen { args } {
+    #
+    #  DateAccepted --
+    #
+    #  Called when either Return or space was pressed, or when a date
+    #  was selected on mouse click.
+    #
+    #  Formats the date calls the -command if specified and then
+    #  updates the entry.
+    #
+    ##
+    method DateAccepted { args } {
 	upvar 0 $options(-textvariable) date
 
-	set waitVar 1
+        set waitVar 1
 	set date $formattedDate
 	set rawDate [clock scan $formattedDate -format $options(-dateformat)]
 	if { $options(-command) ne "" } {
 	    uplevel \#0 $options(-command) $formattedDate $rawDate
 	}
-	$self unpost
+        $self unpost
 
 	$hull configure -state normal
 	$hull delete 0 end
 	$hull insert end $formattedDate
 	$hull configure -state readonly
     }
+
 }
 
 # Bindings for menu portion.
@@ -287,6 +306,8 @@ bind TDateEntry <Leave>     { %W state !active }
 bind TDateEntry <<Invoke>>  { %W post }
 bind TDateEntry <Control-space> { %W post }
 bind TDateEntry <Escape>        { %W unpost }
+bind TDateEntry <Return>        { %W DateAccepted }
+bind TDateEntry <space>         { %W DateAccepted }
 
 bind TDateEntry <ButtonPress-1> { %W state pressed ; %W post }
 bind TDateEntry <ButtonRelease-1> { %W state !pressed }
@@ -295,7 +316,7 @@ bind TDateEntry <ButtonRelease-1> { %W state !pressed }
 bind TDateEntryPopdown <Map> { ttk::globalGrab %W }
 bind TDateEntryPopdown <Unmap> { ttk::releaseGrab %W }
 
-package provide widget::dateentry 0.94
+package provide widget::dateentry 0.95
 
 ##############
 # TEST CODE ##
@@ -303,7 +324,7 @@ package provide widget::dateentry 0.94
 
 if { [info script] eq $argv0 } {
     set auto_path [linsert $auto_path 0 [file dirname [info script]]]
-    package require widget::dateentry 0.93
+    package require widget::dateentry
     destroy {*}[winfo children .]
     proc getDate { args } {
 	puts [info level 0]
