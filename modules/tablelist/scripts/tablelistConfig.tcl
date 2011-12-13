@@ -86,7 +86,8 @@ proc tablelist::extendConfigSpecs {} {
     if {$usingTile} {
 	foreach opt {-highlightbackground -highlightcolor -highlightthickness
 		     -labelactivebackground -labelactiveforeground
-		     -labelbackground -labeldisabledforeground -labelheight} {
+		     -labelbackground -labelbg -labeldisabledforeground
+		     -labelheight} {
 	    unset configSpecs($opt)
 	}
 

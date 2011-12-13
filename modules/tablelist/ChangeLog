@@ -1,3 +1,8 @@
+2011-12-13  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistConfig.tcl: Improvements related to the header label
+	* scripts/tablelistUtil.tcl:   colors in Tablelist_tile.
+
 2011-12-11  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Slightly modified.
