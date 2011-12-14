@@ -25,4 +25,5 @@ modules/tkpiechart/pieperipherallabeler.man
 modules/tooltip/tooltip.man
 modules/widget/widget.man
 modules/widget/widget_calendar.man
+modules/widget/widget_dateentry.man
 modules/widget/widget_toolbar.man
