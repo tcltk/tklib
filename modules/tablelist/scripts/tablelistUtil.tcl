@@ -4492,9 +4492,9 @@ proc tablelist::configLabel {w args} {
 	    -foreground {
 		if {[string compare [winfo class $w] "TLabel"] == 0} {
 		    variable themeDefaults
-		    if {[string compare $val \
-			 $themeDefaults(-labelforeground)] == 0} {
-			set val ""	;# for autom. adaptation to the states
+		    if {[string compare [winfo rgb $w $val] [winfo rgb $w \
+			 $themeDefaults(-labelforeground)]] == 0} {
+			set val ""    ;# for automatic adaptation to the states
 		    }
 		    $w instate !disabled {
 			$w configure $opt $val

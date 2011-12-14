@@ -1,3 +1,8 @@
+2011-12-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: Minor improvement related to the
+	  "-labelforeground" option in Tablelist_tile.
+
 2011-12-13  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistConfig.tcl: Improvements related to the header label
