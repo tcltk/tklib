@@ -347,7 +347,7 @@ proc ::Plotchart::DrawContour {canv x y f cont} {
     #
     # Construct the class-colour list
     #
-    set cont [MakeContourClasses $f $cont]
+    set cont [MakeContourClasses $f $cont [expr {1-$contour_options(filled_contour)}]]
 
     set fmin  [lindex $cont 0 0]
     set fmax  [lindex $cont end 0]
@@ -1291,12 +1291,13 @@ proc ::Plotchart::C_polygon {canv xylist color {doTrans 1}} {
 # Arguments:
 #     values      List of values
 #     classes     Given list of classes or class/colours
+#     offset      Correction for calculating colours
 # Result:
 #     List of pairs of class limits and colours
 # Note:
 #     This should become more sophisticated!
 #
-proc ::Plotchart::MakeContourClasses {values classes} {
+proc ::Plotchart::MakeContourClasses {values classes offset} {
     variable contour_options
     variable colorMap
 
@@ -1339,7 +1340,7 @@ proc ::Plotchart::MakeContourClasses {values classes} {
 
     } elseif { [llength [lindex $classes 0]] == 1 } {
         #mbs#  Changed the above line from " == 2 " to " == 1 "
-        ::Plotchart::setColormapColors  [llength $classes]
+        ::Plotchart::setColormapColors  [llength $classes] $offset
         return $classes
     }
 
@@ -1372,10 +1373,11 @@ proc ::Plotchart::MakeContourClasses {values classes} {
 #     create a colormap with requested number of entries
 # Arguments:
 #     ncont       Number of colors in the colormap
+#     offset      Offset for interval
 # Result:
 #     List of colours
 #
-proc ::Plotchart::setColormapColors  {ncont} {
+proc ::Plotchart::setColormapColors  {ncont offset} {
     variable colorMapType
     variable colorMap
 
@@ -1395,7 +1397,11 @@ proc ::Plotchart::setColormapColors  {ncont} {
             set colorMap   {}
 
             for {set i 0} {$i <= $ncont} {incr i} {
-                set dh [expr {($hueStart - $hueEnd) / ($ncont - 1)}]
+                if { $ncont > 1 } {
+                    set dh [expr {($hueStart - $hueEnd) / ($ncont - $offset)}]
+                } else {
+                    set dh 0.0
+                }
                 set hue  [expr {$hueStart - ($i * $dh)}]
                 if {$hue < 0.0} {
                     set hue  [expr {360.0 + $hue}]
@@ -1445,7 +1451,7 @@ proc ::Plotchart::setColormapColors  {ncont} {
 
             for {set i 0} {$i <= $ncont} {incr i} {
 
-                set fval  [expr { double($i) / (double($ncont)-1) } ]
+                set fval  [expr { double($i) / (double($ncont)-$offset) } ]
                 set val   [expr { 1.0 - $fval }]
 
                 set r    [expr {int($fval * 65535)}]
@@ -1463,7 +1469,7 @@ proc ::Plotchart::setColormapColors  {ncont} {
 
             for {set i 0} {$i <= $ncont} {incr i} {
 
-                set fval  [expr { double($i) / (double($ncont)-1) } ]
+                set fval  [expr { double($i) / (double($ncont)-$offset) } ]
                 set val  [expr {0.4 + (0.5 * $fval) }]
 
                 set r    [expr {int($val * 65535)}]
@@ -1482,7 +1488,11 @@ proc ::Plotchart::setColormapColors  {ncont} {
             set colorMap   {}
 
             for {set i 0} {$i <= $ncont} {incr i} {
-                set dh [expr {($hueStart - $hueEnd) / ($ncont - 1)}]
+                if { $ncont > 1 } {
+                    set dh [expr {($hueStart - $hueEnd) / ($ncont - $offset)}]
+                } else {
+                    set dh 0.0
+                }
                 set hue  [expr {$hueStart - ($i * $dh)}]
                 if {$hue < 0.0} {
                     set hue  [expr {360.0 + $hue}]
@@ -1659,6 +1669,7 @@ proc ::Plotchart::Hsv2rgb {h s v} {
     }
     return [list $r $g $b]
 }
+
 # DrawIsolinesFunctionValues --
 #     Draw isolines in the given grid with given function values.
 # Arguments:
@@ -1728,6 +1739,85 @@ proc ::Plotchart::DrawIsolinesFunctionValues {canv xvec yvec fmat {cont {}}} {
   DrawIsolines $canv $xmat $ymat $fmat $cont
 }
 
+# DrawLegendIsolines --
+#
+#     Draw isolines in the legend for this plot
+#
+# Arguments:
+#     w           Canvas/plot to draw in
+#     values      List of values as used for the plot itself
+#     contours    Contour classes
+#
+# Result:
+#     None
+#
+# Side effect:
+#     Entries in the legend added
+#
+# Note:
+#     No support for an empty list of contour classes yet
+#
+proc ::Plotchart::DrawLegendIsolines {w values contours} {
+    variable data_series
+    variable colorMap
+
+    set contours [MakeContourClasses $values $contours 1]
+
+    set count 0
+    foreach class $contours colour $colorMap {
+        incr count
+        set data_series($w,isoline_$class,-colour) $colour
+        set data_series($w,isoline_$class,-type)   "line"
+
+        DrawLegend $w "isoline_$class" "$class"
+
+        if { $count == [llength $contours] } {
+            break
+        }
+    }
+}
+
+# DrawLegendShades --
+#
+#     Draw shades in the legend for this plot
+#
+# Arguments:
+#     w           Canvas/plot to draw in
+#     values      List of values as used for the plot itself
+#     contours    Contour classes
+#
+# Result:
+#     None
+#
+# Side effect:
+#     Entries in the legend added
+#
+# Note:
+#     No support for an empty list of contour classes yet
+#
+proc ::Plotchart::DrawLegendShades {w values contours} {
+    variable data_series
+    variable colorMap
+
+    set contours [MakeContourClasses $values $contours 0]
+
+    set count 0
+    set dir   "<"
+    foreach class $contours colour $colorMap {
+        incr count
+
+        if { $count == [llength $colorMap] } {
+            set dir ">"
+            set class [lindex $contours end]
+        }
+
+        set data_series($w,shade_${dir}_$class,-colour) $colour
+        set data_series($w,shade_${dir}_$class,-type)   "rectangle"
+
+        DrawLegend $w "shade_${dir}_$class" "$dir $class"
+    }
+}
+
 #
 # Define default colour maps
 #
@@ -1762,4 +1852,10 @@ namespace eval ::Plotchart {
 }
     set contour_options(colourmap) $contour_options(colourmap,detailed)
 }
+
+#
+# Define the default colour map
+#
+::Plotchart::colorMap jet
+
 # End of plotcontour.tcl

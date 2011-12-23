@@ -2,6 +2,88 @@
 #     Facilities for configuring the various procedures of Plotchart
 #
 
+
+# plotstyle --
+#     Plotting style mechanism (this proc needs to be first in this file, since
+#                               the namespace eval uses this proc)
+#
+# Arguments:
+#     cmd         subcommand to the plotstyle command
+#                 Can be configure|current|load|merge|names ('merge' not implemented yet)
+#     stylename   symbolic name of the style (defaults to 'default')
+#     args        additional optional arguments (only used in 'configure' subcommand)
+#
+# Result:
+#     The name of the current style (for subcommand 'current'),
+#     a list of available styles (for subcommand 'names'),
+#     else the empty string
+#
+# Side effects:
+#     Styles are created, loaded, or modified
+#
+proc ::Plotchart::plotstyle {cmd {stylename default} args} {
+    variable style
+    variable config
+    switch $cmd {
+        configure {
+            #
+            # 'plotstyle configure stylename type component property value ?type component property value ...?'
+            #
+            # register the 'default' style:
+            set newStyle false
+            if { [lsearch -exact $config(styles) $stylename] < 0 } {
+                # this is a new style -> register it:
+                lappend config(styles) $stylename
+                set newStyle true
+            }
+            foreach {type component property value} $args {
+                set style($stylename,$type,$component,$property) $value
+                if { $newStyle } {
+                    # also save the item as default, so it can be restored via plotconfig:
+                    set style($stylename,$type,$component,$property,default) $value
+                }
+            }
+            if { $config(currentstyle) eq $stylename } {
+                # load the modified style items:
+                foreach {type component property value} $args {
+                    set config($type,$component,$property) $value
+                }
+            }
+        }
+        current {
+            #
+            # 'plotstyle current'
+            #
+            return $config(currentstyle)
+        }
+        load {
+            #
+            # 'plotstyle load stylename'
+            #
+            if { [lsearch -exact $config(styles) $stylename] < 0 } {
+                return -code error "no such plotting style '$stylename'"
+            }
+            foreach {item value} [array get style $stylename,*] {
+                set item [string map [list $stylename, {}] $item]
+                set config($item) $value
+            }
+            set config(currentstyle) $stylename
+        }
+        merge {
+            #
+            # 'plotstyle merge stylename otherstylename pattern ?otherstylename pattern ...?'
+            #
+
+        }
+        names {
+            #
+            # 'plotstyle names'
+            #
+            return $config(styles)
+        }
+    }
+}
+
 namespace eval ::Plotchart {
     variable config
 
@@ -27,58 +109,100 @@ namespace eval ::Plotchart {
     }
 
     #
-    # Set default configuration options
+    # List of styles
     #
-    set config(charttypes) {xyplot xlogyplot logxyplot logxlogyplot
-                            piechart polarplot
-                            histogram horizbars vertbars ganttchart
-                            timechart stripchart isometric 3dplot 3dbars
-                            radialchart txplot 3dribbon boxplot windrose
-                            targetdiagram performance}
+    set config(styles) [list]
 
-    set config(xyplot,components)      {title margin text legend leftaxis rightaxis bottomaxis background}
-    set config(xlogyplot,components)   {title margin text legend leftaxis bottomaxis background}
-    set config(logxyplot,components)   {title margin text legend leftaxis bottomaxis background}
-    set config(logxlogyplot,components) {title margin text legend leftaxis bottomaxis background}
-    set config(piechart,components)    {title margin text legend labels background}
-    set config(polarplot,components)   {title margin text legend axis background}
-    set config(histogram,components)   {title margin text legend leftaxis rightaxis bottomaxis background}
-    set config(horizbars,components)   {title margin text legend leftaxis bottomaxis background}
-    set config(vertbars,components)    {title margin text legend leftaxis bottomaxis background}
-    set config(ganttchart,components)  {title margin text legend axis background}
-    set config(timechart,components)   {title margin text legend leftaxis bottomaxis background}
-    set config(stripchart,components)  {title margin text legend leftaxis bottomaxis background}
-    set config(isometric,components)   {title margin text legend leftaxis bottomaxis background}
-    set config(3dplot,components)      {title margin text legend xaxis yaxis zaxis background}
-    set config(3dbars,components)      {title margin text legend leftaxis bottomaxis background}
-    set config(radialchart,components) {title margin text legend leftaxis bottomaxis background}
-    set config(txplot,components)      {title margin text legend leftaxis rightaxis bottomaxis background}
-    set config(3dribbon,components)    {title margin text legend leftaxis bottomaxis background}
-    set config(boxplot,components)     {title margin text legend leftaxis bottomaxis background}
-    set config(windrose,components)    {title margin text legend axis background}
-    set config(targetdiagram,components) {title margin text legend leftaxis bottomaxis background limits}
-    set config(performance,components) {title margin text legend leftaxis bottomaxis background limits}
+    #
+    # The currently selected style
+    #
+    set config(currentstyle) {}
 
-    set config(axis,properties)        {color thickness font format ticklength textcolor labeloffset minorticks}
-    set config(leftaxis,properties)    $config(axis,properties)
-    set config(rightaxis,properties)   $config(axis,properties)
-    set config(topaxis,properties)     $config(axis,properties)
-    set config(bottomaxis,properties)  $config(axis,properties)
-    set config(xaxis,properties)       $config(axis,properties)
-    set config(yaxis,properties)       $config(axis,properties)
-    set config(zaxis,properties)       $config(axis,properties)
-    set config(margin,properties)      {left right top bottom}
-    set config(title,properties)       {textcolor font anchor}
-    set config(text,properties)        {textcolor font anchor}
-    set config(labels,properties)      {textcolor font}
-    set config(background,properties)  {outercolor innercolor}
-    set config(legend,properties)      {background border position}
-    set config(limits,properties)      {color}
+    #
+    # Define implemented chart types
+    #
+    set config(charttypes) {
+        xyplot xlogyplot logxyplot logxlogyplot
+        piechart spiralpie polarplot
+        histogram horizbars vertbars ganttchart
+        timechart stripchart isometric 3dplot 3dbars
+        radialchart txplot 3dribbon boxplot windrose
+        targetdiagram performance table
+    }
 
-    # TODO: default values
+    # define implemented components for each chart type:
+    foreach {type components} {
+        xyplot        {title margin text legend leftaxis rightaxis bottomaxis background mask}
+        xlogyplot     {title margin text legend leftaxis           bottomaxis background mask}
+        logxyplot     {title margin text legend leftaxis           bottomaxis background mask}
+        logxlogyplot  {title margin text legend leftaxis           bottomaxis background mask}
+        piechart      {title margin text legend                               background      labels slice}
+        spiralpie     {title margin text legend                               background      labels slice}
+        polarplot     {title margin text legend axis                          background}
+        histogram     {title margin text legend leftaxis rightaxis bottomaxis background mask}
+        horizbars     {title margin text legend leftaxis           bottomaxis background mask bar}
+        vertbars      {title margin text legend leftaxis           bottomaxis background mask bar}
+        ganttchart    {title margin text legend axis                          background}
+        timechart     {title margin text legend leftaxis           bottomaxis background}
+        stripchart    {title margin text legend leftaxis           bottomaxis background mask}
+        isometric     {title margin text legend leftaxis           bottomaxis background mask}
+        3dplot        {title margin text legend xaxis yaxis zaxis             background}
+        3dbars        {title margin text legend leftaxis           bottomaxis background}
+        radialchart   {title margin text legend leftaxis           bottomaxis background}
+        txplot        {title margin text legend leftaxis rightaxis bottomaxis background mask}
+        3dribbon      {title margin text legend leftaxis           bottomaxis background}
+        boxplot       {title margin text legend leftaxis           bottomaxis background mask bar}
+        windrose      {title margin text legend axis                          background}
+        targetdiagram {title margin text legend leftaxis           bottomaxis background mask limits}
+        performance   {title margin text legend leftaxis           bottomaxis background mask limits}
+        table         {title margin background header oddrow evenrow cell frame}
+    } {
+        set config($type,components) $components
+    }
+
+    # define implemented properties for each component:
+    # (the '-' means that the component inherits the properties of the previous component on the list)
+    foreach {component properties} {
+        leftaxis   {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render vtextoffset}
+        axis       {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render}
+        rightaxis  -
+        topaxis    -
+        bottomaxis -
+        xaxis      -
+        yaxis      -
+        zaxis      -
+        margin     {left right top bottom}
+        title      {textcolor font anchor background}
+        text        -
+        labels     {textcolor font placement sorted shownumbers format formatright}
+        background {outercolor innercolor}
+        legend     {background border position}
+        limits     {color}
+        bar        {barwidth innermargin outline}
+        mask       {draw}
+        header     {background font color height anchor}
+        oddrow     {background font color height anchor}
+        evenrow    {background font color height anchor}
+        cell       {background font color anchor leftspace rightspace topspace}
+        frame      {color outerwidth innerwidth}
+        slice      {outlinewidth outline startangle direction}
+    } {
+        if { $properties eq "-" } {
+            set properties $lastProperties
+        }
+        set config($component,properties) $properties
+        set lastProperties $properties
+    }
+
+    # get some font properties:
     canvas .invisibleCanvas
     set invisibleLabel [.invisibleCanvas create text 0 0 -text "M"]
 
+    foreach {char_width char_height} [FontMetrics .invisibleCanvas] {break}
+    set config(font,char_width)  $char_width
+    set config(font,char_height) $char_height
+
+    # values for the 'default' style:
     set _color       "black"
     set _font        [.invisibleCanvas itemcget $invisibleLabel -font]
     set _thickness   1
@@ -88,12 +212,6 @@ namespace eval ::Plotchart {
     set _textcolor   "black"
     set _anchor      n
     set _labeloffset 2
-
-    foreach {char_width char_height} [FontMetrics .invisibleCanvas] {break}
-
-    set config(font,char_width)  $char_width
-    set config(font,char_height) $char_height
-
     set _left        [expr {$char_width  * 8}]
     set _right       [expr {$char_width  * 4}]
     set _top         [expr {$char_height * 2}]
@@ -104,22 +222,62 @@ namespace eval ::Plotchart {
     set _background  "white"
     set _border      "black"
     set _position    "top-right"
+    set _barwidth    0.8
+    set _innermargin 0.2
+    set _outline     black
+    set _outlinewidth 1
+    set _vtextoffset 2
+    set _draw        1
+    set _shownumbers 1
+    set _showaxle    1
+    set _leftspace   5
+    set _rightspace  5
+    set _topspace    5
+    set _height      [expr {$char_height + 2*$_topspace}]
+    set _anchor      center
+    set _outerwidth  2
+    set _innerwidth  1
+    set _startangle  0
+    set _direction   +
+    set _placement   out    ;# piechart label placement: 'out' or 'in'
+    set _render      simple ;# rendering of text: 'simple' or 'text'
+    set _sorted      0      ;# piechart and spiral pie
+   #set _shownumbers 0      ;# piechart and spiral pie      - conflict with axes - see below
+   #set _format      "%s (%g)" ;# piechart and spiral pie
+    set _formatright ""        ;# piechart and spiral pie
+
 
     destroy .invisibleCanvas
 
+    #
+    # Define the 'default' style
+    #
     foreach type $config(charttypes) {
-        foreach comp $config($type,components) {
-            foreach prop $config($comp,properties) {
-                set config($type,$comp,$prop)         [set _$prop]
-                set config($type,$comp,$prop,default) [set _$prop]
+        foreach component $config($type,components) {
+            foreach property $config($component,properties) {
+                plotstyle configure "default" $type $component $property [set _$property]
             }
         }
+        #
+        # Default colour for title bar: same as outercolour
+        #
+        plotstyle configure "default" $type title background ""
     }
-
     #
     # Specific defaults
     #
-    set config(targetdiagram,limits,color) "gray"
+    plotstyle configure "default" targetdiagram limits color "gray"
+    plotstyle configure "default" table margin left 30 right 30
+    plotstyle configure "default" piechart  labels shownumbers 0
+    plotstyle configure "default" piechart  labels format      "%s (%g)"
+    plotstyle configure "default" spiralpie labels shownumbers 0
+    plotstyle configure "default" spiralpie labels format      "%s (%g)"
+    plotstyle configure "default" polarplot axis   color       "gray"
+
+    #
+    # load the style
+    #
+    plotstyle load default
 }
 
 # plotconfig --
@@ -143,8 +301,9 @@ namespace eval ::Plotchart {
 #     The command contains a lot of functionality, but its structure is
 #     fairly simple. No property has an empty string as a sensible value.
 #
-proc ::Plotchart::plotconfig {{charttype {}} {component {}} {property {}} {value {}}} {
+proc ::Plotchart::plotconfig {{charttype {}} {component {}} {property {}} args} {
     variable config
+    variable style
 
     if { $charttype == {} } {
         return $config(charttypes)
@@ -170,17 +329,21 @@ proc ::Plotchart::plotconfig {{charttype {}} {component {}} {property {}} {value
         }
     }
 
-    if { $value == {} } {
-        return $config($charttype,$component,$property)
-    } elseif { $value == "default" } {
-        set config($charttype,$component,$property) \
-            $config($charttype,$component,$property,default)
+    if { $args eq {} } {
         return $config($charttype,$component,$property)
     } else {
-        if { $value == "none" } {
-            set value ""
+        set args [linsert $args 0 $property]
+        foreach {property value} $args {
+            if { $value == "default" } {
+                set config($charttype,$component,$property) \
+                $style($config(currentstyle),$charttype,$component,$property)
+            } else {
+                if { $value == "none" } {
+                    set value ""
+                }
+                set config($charttype,$component,$property) $value
+            }
         }
-        set config($charttype,$component,$property) $value
     }
 }
 

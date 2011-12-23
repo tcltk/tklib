@@ -1,9 +1,76 @@
+2011-11-27  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotchart.man: Add documentation for removefromlegend and several options
+	* plotchart.tcl: Add method removefromlegend
+	* plotaxis.tcl: Add method to remove an entry from the legend (proposed and
+                 implemented by Frank CG)
+	* plotpriv.tcl: Corrected placement of labels for piechart
+
+2011-08-19  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotpriv.tcl: Restore centring of the piechart (if no options are given)
+
+2011-08-18  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotpriv.tcl: Added reference information for circle and 3D margins (solving
+	                title problems
+
+2011-08-17  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotpriv.tcl: Fix problem with right axis and -reference option for piecharts
+	* plotaxis.tcl: Added dash pattern to ticklines (patch by "Frank")
+
+2011-08-11  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotpriv.tcl: Fix problem with masks if multiple plots are used in one canvas
+	* plotpriv.tcl: Fix problem with titles - each plot box now gets its own title
+	* plotpriv.tcl: Update procedure for margins for circular plots (piecharts and polar plots)
+	* plotconfig.tcl: Change default colour for the axes in polar plots
+	                  Note: ***slight incompatibility***
+	                  Reason: the black lines and circles were too pronounced
+
+2011-07-26  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotaxis.tcl: Correct error in handling -format option for non-linear axes
+	* *.tcl: Many changes wrt supporting multiple plots in one canvas
+
+2011-01-25  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* *.tcl: Merging my version with that of Torsten
+	*        -axesbox implemented (still requires some changes!)
+	*        plotlist command implemented
+	*        extension to box-and-whiskers plot
+
+2010-09-19  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotchart.tcl: Support for custom labels with right axis
+	* plotaxis.tcl: Support for custom labels with right axis
+	* plotchart.man: Documentation of plotstyle, object subcommand and
+	                 multiple-plot option
+
+2010-09-12  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotchart.tcl: Support for multiple plots in a canvas (only barcharts now)
+	* plotpriv.tcl: Ditto
+	* plotaxis.tcl: Support for multple plots, and non-numeric custom labels
+	                (only x-axis for now)
+
+2010-09-06  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotchart.tcl: Added table chart
+	* plottable.tcl: Procedures for drawing table charts
+	* plotconfig.tcl: Style engine by Torsten
+	* plot-anim.tcl: Animation procedures by Torsten
+
+2010-09-03  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotchart.tcl: Merging versions by Torsten and myself
+	* plotpriv.tcl: ditto
+	* plotconfig.tcl: ditto (addition: style engine)
+	* plotobject.tcl: added (method: drawobject/object)
+
 2010-09-02  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotpriv.tcl: Fix bug in ScaleIsometric (division by integers; found by Torsten)
 
 2010-08-18  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotchart.tcl: Corrected export statement: createPolarplot
 	* plotchart.man: Corrected name of procedure: createPolarplot (found by Torsten Berg)
+
+2010-08-13  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotconfig.tcl: Added separate background colour for title,
+	  new options for axis
+	* plotaxis.tcl: New axis options - show numbers and show axle (or not)
+	* plotpriv.tcl: Separate background colour for title
+	* plotchart.man: Documentation for these options
 
 2010-08-12  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotchart.tcl: Added plotmethod to export
