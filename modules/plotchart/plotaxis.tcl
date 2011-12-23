@@ -51,7 +51,7 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
 
     set scaling($w,ydelt) $ydelt
 
-    $w delete yaxis
+    $w delete "yaxis && $w"
 
     set linecolor    $config($w,leftaxis,color)
     set textcolor    $config($w,leftaxis,textcolor)
@@ -61,9 +61,11 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
     set labeloffset  $config($w,leftaxis,labeloffset)
     set offtick      [expr {($ticklength > 0)? $ticklength+$labeloffset : $labeloffset}]
 
-    $w create line $scaling($w,pxmin) $scaling($w,pymin) \
-                   $scaling($w,pxmin) $scaling($w,pymax) \
-                   -fill $linecolor -tag yaxis -width $thickness
+    if { $config($w,leftaxis,showaxle) } {
+        $w create line $scaling($w,pxmin) $scaling($w,pymin) \
+                       $scaling($w,pxmin) $scaling($w,pymax) \
+                       -fill $linecolor -tag [list yaxis $w] -width $thickness
+    }
 
     set format $config($w,leftaxis,format)
     if { [info exists scaling($w,-format,y)] } {
@@ -81,17 +83,31 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
 
     set scaling($w,yaxis) {}
 
-    set ys {}
-    set yts {}
+    set ys      {}
+    set yts     {}
+    set ybackup {}
+    set numeric 1
 
     if { $ydelt eq {} } {
+
         foreach {arg val} $args {
             switch -exact -- $arg {
                 -ylabels {
                     set ys $val
+                    set ydbackup [expr {($scaling($w,ymax)-$scaling($w,ymin))/([llength $val]-1.0)}]
+                    set yb       $scaling($w,ymin)
+
                     foreach yval $val {
-                        lappend yts [expr {$yval+0.0}]
+                        if { [string is double $yval] } {
+                            lappend yts [expr {$yval+0.0}]
+                        } else {
+                            set numeric 0
+                            lappend yts $yval
+                        }
+                        lappend ybackup $yb
+                        set     yb      [expr {$yb + $ydbackup}]
                     }
+
                     set scaling($w,ydelt) $ys
                 }
                 default {
@@ -113,9 +129,13 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
         set dyminor [expr {$ydelt/($config($w,leftaxis,minorticks)+1.0)}]
     }
 
-    foreach y $ys yt $yts {
+    foreach y $ys yt $yts yb $ybackup {
 
-        foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $yt] {break}
+        if { $numeric } {
+            foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $yt] {break}
+        } else {
+            foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $yb] {break}
+        }
         set xcrd2 [expr {$xcrd-$ticklength}]
         set xcrd3 [expr {$xcrd-$offtick}]
 
@@ -126,20 +146,27 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
             # Use the default format %.12g - this is equivalent to setting
             # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
             #
-            set ylabel [format "%.12g" $yt]
-            if { $format != "" } {
-                set ylabel [FormatNumber $format $y]
+            if { [string is double $yt] } {
+                set ylabel [format "%.12g" $yt]
+                if { $format != "" } {
+                    set ylabel [FormatNumber $format $y]
+                }
+            } else {
+                set ylabel $yt
             }
-            $w create line $xcrd2 $ycrd $xcrd $ycrd -tag yaxis -fill $linecolor
-            $w create text $xcrd3 $ycrd -text $ylabel -tag yaxis -anchor e \
-                -fill $textcolor -font $textfont
+            $w create line $xcrd2 $ycrd $xcrd $ycrd -tag [list yaxis $w] -fill $linecolor
 
-            if { $ydelt != {} && $yt < $ym } {
+            if { $config($w,leftaxis,shownumbers) } {
+                $w create text $xcrd3 $ycrd -text $ylabel -tag [list yaxis $w] -anchor e \
+                    -fill $textcolor -font $textfont
+            }
+
+            if { $ydelt != {} && $numeric && $yt < $ym } {
                 for {set i 1} {$i <= $config($w,leftaxis,minorticks)} {incr i} {
                     set xcrd4  [expr {$xcrd-$ticklength*0.6}]
                     set yminor [expr {$yt  + $i * $dyminor}]
                     foreach {xcrd ycrd4} [coordsToPixel $w $scaling($w,xmin) $yminor] {break}
-                    $w create line $xcrd4 $ycrd4 $xcrd $ycrd4 -tag yaxis -fill $linecolor
+                    $w create line $xcrd4 $ycrd4 $xcrd $ycrd4 -tag [list yaxis $w] -fill $linecolor
                 }
             }
         }
@@ -153,18 +180,19 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
 #    ymin        Minimum y coordinate
 #    ymax        Maximum y coordinate
 #    ystep       Step size
+#    args        Options (currently: -ylabels list)
 # Result:
 #    None
 # Side effects:
 #    Axis drawn in canvas
 #
-proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
+proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt args } {
     variable scaling
     variable config
 
     set scaling($w,ydelt) $ydelt
 
-    $w delete raxis
+    $w delete "raxis && $w"
 
     set linecolor    $config($w,rightaxis,color)
     set textcolor    $config($w,rightaxis,textcolor)
@@ -174,9 +202,11 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
     set labeloffset  $config($w,leftaxis,labeloffset)
     set offtick      [expr {($ticklength > 0)? $ticklength+$labeloffset : $labeloffset}]
 
-    $w create line $scaling($w,pxmax) $scaling($w,pymin) \
-                   $scaling($w,pxmax) $scaling($w,pymax) \
-                   -fill $linecolor -tag raxis -width $thickness
+    if { $config($w,rightaxis,showaxle) } {
+        $w create line $scaling($w,pxmax) $scaling($w,pymin) \
+                       $scaling($w,pxmax) $scaling($w,pymax) \
+                       -fill $linecolor -tag [list raxis $w] -width $thickness
+    }
 
     set format $config($w,rightaxis,format)
     if { [info exists scaling($w,-format,y)] } {
@@ -191,43 +221,96 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt } {
         set ym $ymin
     }
     set yt      [expr {$ymin+0.0}]
-    set dyminor [expr {$ydelt/($config($w,rightaxis,minorticks)+1.0)}]
 
     set scaling($w,yaxis) {}
 
-    while { $y < $ym+0.0001*abs($ydelt) } {
+    set ys       {}
+    set yts      {}
+    set ybackup  {}
+    set numeric  1
 
-        foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmax) $yt] {break}
+    if { $ydelt eq {} } {
+
+        foreach {arg val} $args {
+            switch -exact -- $arg {
+                -ylabels {
+                    set ys $val
+                    set ydbackup [expr {($scaling($w,ymax)-$scaling($w,ymin))/([llength $val]-1.0)}]
+                    set yb       $scaling($w,ymin)
+
+                    foreach yval $val {
+                        if { [string is double $yval] } {
+                            lappend yts [expr {$yval+0.0}]
+                        } else {
+                            set numeric 0
+                            lappend yts $yval
+                        }
+                        lappend ybackup $yb
+                        set     yb      [expr {$yb + $ydbackup}]
+                    }
+
+                    set scaling($w,ydelt) $ys
+                }
+                default {
+                    error "Argument $arg not recognized"
+                }
+            }
+        }
+    } else {
+        set scaling($w,ydelt) $ydelt
+        while { $y < $ym+0.0001*abs($ydelt) } {
+            lappend ys $y
+            lappend yts $yt
+            set y  [expr {$y+abs($ydelt)}]
+            set yt [expr {$yt+$ydelt}]
+            if { abs($y) < 0.5*abs($ydelt) } {
+                set yt 0.0
+            }
+        }
+        set dyminor [expr {$ydelt/($config($w,rightaxis,minorticks)+1.0)}]
+    }
+
+
+    foreach y $ys yt $yts yb $ybackup {
+
+        if { $numeric } {
+            foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmax) $yt] {break}
+        } else {
+            foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmax) $yb] {break}
+        }
         set xcrd2 [expr {$xcrd+$ticklength}]
         set xcrd3 [expr {$xcrd+$offtick}]
 
-        lappend scaling($w,yaxis) $ycrd
+        if { $ycrd >= $scaling($w,pymin) && $ycrd <= $scaling($w,pymax) } {
+            lappend scaling($w,yaxis) $ycrd
 
-        #
-        # Use the default format %.12g - this is equivalent to setting
-        # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
-        #
-        set ylabel [format "%.12g" $yt]
-        if { $format != "" } {
-            set ylabel [FormatNumber $format $yt]
-        }
-        $w create line $xcrd2 $ycrd $xcrd $ycrd -tag raxis -fill $linecolor
-        $w create text $xcrd3 $ycrd -text $ylabel -tag raxis -anchor w \
-            -fill $textcolor -font $textfont
-
-        if { $ydelt != {} && $yt < $ym } {
-            for {set i 1} {$i <= $config($w,rightaxis,minorticks)} {incr i} {
-                set xcrd4  [expr {$xcrd-$ticklength*0.6}]
-                set yminor [expr {$yt  + $i * $dyminor}]
-                foreach {xcrd ycrd4} [coordsToPixel $w $scaling($w,xmin) $yminor] {break}
-                $w create line $xcrd4 $ycrd4 $xcrd $ycrd4 -tag yaxis -fill $linecolor
+            #
+            # Use the default format %.12g - this is equivalent to setting
+            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
+            #
+            if { [string is double $yt] } {
+                set ylabel [format "%.12g" $yt]
+                if { $format != "" } {
+                    set ylabel [FormatNumber $format $y]
+                }
+            } else {
+                set ylabel $yt
             }
-        }
+            $w create line $xcrd2 $ycrd $xcrd $ycrd -tag [list raxis $w] -fill $linecolor
 
-        set y  [expr {$y+abs($ydelt)}]
-        set yt [expr {$yt+$ydelt}]
-        if { abs($yt) < 0.5*abs($ydelt) } {
-            set yt 0.0
+            if { $config($w,leftaxis,shownumbers) } {
+                $w create text $xcrd3 $ycrd -text $ylabel -tag [list raxis $w] -anchor w \
+                    -fill $textcolor -font $textfont
+            }
+
+            if { $ydelt != {} && $numeric && $yt < $ym } {
+                for {set i 1} {$i <= $config($w,rightaxis,minorticks)} {incr i} {
+                    set xcrd4  [expr {$xcrd+$ticklength*0.6}]
+                    set yminor [expr {$yt  + $i * $dyminor}]
+                    foreach {xcrd ycrd4} [coordsToPixel $w $scaling($w,xmax) $yminor] {break}
+                    $w create line $xcrd4 $ycrd4 $xcrd $ycrd4 -tag [list raxis $w] -fill $linecolor
+                }
+            }
         }
     }
 }
@@ -250,7 +333,7 @@ proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
 
     set scaling($w,ydelt) $ydelt
 
-    $w delete yaxis
+    $w delete "yaxis && $w"
 
     set linecolor    $config($w,leftaxis,color)
     set textcolor    $config($w,leftaxis,textcolor)
@@ -260,9 +343,11 @@ proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
     set labeloffset  $config($w,leftaxis,labeloffset)
     set offtick      [expr {($ticklength > 0)? $ticklength+$labeloffset : $labeloffset}]
 
-    $w create line $scaling($w,pxmin) $scaling($w,pymin) \
-                   $scaling($w,pxmin) $scaling($w,pymax) \
-                   -fill $linecolor -tag yaxis -width $thickness
+    if { $config($w,leftaxis,showaxle) } {
+        $w create line $scaling($w,pxmin) $scaling($w,pymin) \
+                       $scaling($w,pxmin) $scaling($w,pymax) \
+                       -fill $linecolor -tag [list yaxis $w] -width $thickness
+    }
 
     set format $config($w,leftaxis,format)
     if { [info exists scaling($w,-format,y)] } {
@@ -299,13 +384,15 @@ proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
                 set ylabel [FormatNumber $format $y]
             }
             $w create line $xcrd2 $ycrd $xcrd $ycrd -tag yaxis -fill $linecolor
-            if { $factor == 1.0 } {
-                $w create text $xcrd3 $ycrd -text $ylabel -tag yaxis -anchor e \
+            if { $factor == 1.0 && $config($w,leftaxis,showaxle) } {
+                $w create text $xcrd3 $ycrd -text $ylabel -tag [list yaxis $w] -anchor e \
                     -fill $textcolor -font $textfont
             }
         }
         set y [expr {10.0*$y}]
     }
+
+    set scaling($w,ydelt) $ydelt
 }
 
 # DrawXaxis --
@@ -325,7 +412,7 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
     variable scaling
     variable config
 
-    $w delete xaxis
+    $w delete "xaxis && $w"
 
     set linecolor    $config($w,bottomaxis,color)
     set textcolor    $config($w,bottomaxis,textcolor)
@@ -335,9 +422,11 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
     set labeloffset  $config($w,leftaxis,labeloffset)
     set offtick      [expr {($ticklength > 0)? $ticklength+$labeloffset : $labeloffset}]
 
-    $w create line $scaling($w,pxmin) $scaling($w,pymax) \
-                   $scaling($w,pxmax) $scaling($w,pymax) \
-                   -fill $linecolor -tag xaxis
+    if { $config($w,bottomaxis,showaxle) } {
+        $w create line $scaling($w,pxmin) $scaling($w,pymax) \
+                       $scaling($w,pxmax) $scaling($w,pymax) \
+                       -fill $linecolor -tag [list xaxis $w] -width $thickness
+    }
 
     set format $config($w,bottomaxis,format)
     if { [info exists scaling($w,-format,x)] } {
@@ -354,20 +443,34 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
     set xt [expr {$xmin+0.0}]
     set scaling($w,xaxis) {}
 
-    set xs {}
-    set xts {}
+    set xs      {}
+    set xts     {}
+    set xbackup {}
+    set numeric 1
 
     if { $xdelt eq {} } {
-        console show
-        puts "X: $args"
+        set numeric 1
+
         foreach {arg val} $args {
             switch -exact -- $arg {
                 -xlabels {
-                    set xs $val
+                    set xs       $val
+                    set xdbackup [expr {($scaling($w,xmax)-$scaling($w,xmin))/([llength $val]-1.0)}]
+                    set xb       $scaling($w,xmin)
+
                     foreach xval $val {
-                        lappend xts [expr {$xval+0.0}]
+                        if { [string is double $xval] } {
+                            lappend xts [expr {$xval+0.0}]
+                        } else {
+                            set numeric 0
+                            lappend xts $xval
+                        }
+                        lappend xbackup $xb
+                        set     xb      [expr {$xb + $xdbackup}]
                     }
+
                     set scaling($w,xdelt) $xs
+
                 }
                 default {
                     error "Argument $arg not recognized"
@@ -377,8 +480,9 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
     } else {
         set scaling($w,xdelt) $xdelt
         while { $x < $xm+0.5*abs($xdelt) } {
-            lappend xs $x
-            lappend xts $xt
+            lappend xs       $x
+            lappend xts      $xt
+            lappend xbackup  $xt
             set x  [expr {$x+abs($xdelt)}]
             set xt [expr {$xt+$xdelt}]
             if { abs($x) < 0.5*abs($xdelt) } {
@@ -387,9 +491,13 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
         }
         set dxminor [expr {$xdelt/($config($w,bottomaxis,minorticks)+1.0)}]
     }
-    foreach x $xs xt $xts {
+    foreach x $xs xt $xts xb $xbackup {
 
-        foreach {xcrd ycrd} [coordsToPixel $w $xt $scaling($w,ymin)] {break}
+        if { $numeric } {
+            foreach {xcrd ycrd} [coordsToPixel $w $xt $scaling($w,ymin)] {break}
+        } else {
+            foreach {xcrd ycrd} [coordsToPixel $w $xb $scaling($w,ymin)] {break}
+        }
         set ycrd2 [expr {$ycrd+$ticklength}]
         set ycrd3 [expr {$ycrd+$offtick}]
 
@@ -400,21 +508,28 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
             # Use the default format %.12g - this is equivalent to setting
             # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
             #
-            set xlabel [format "%.12g" $xt]
-            if { $format != "" } {
-                set xlabel [FormatNumber $format $xt]
+            if { [string is double $xt] } {
+                set xlabel [format "%.12g" $xt]
+                if { $format != "" } {
+                    set xlabel [FormatNumber $format $xt]
+                }
+            } else {
+                set xlabel $xt
             }
 
-            $w create line $xcrd $ycrd2 $xcrd $ycrd -tag xaxis -fill $linecolor
-            $w create text $xcrd $ycrd3 -text $xlabel -tag xaxis -anchor n \
-                 -fill $textcolor -font $textfont
+            $w create line $xcrd $ycrd2 $xcrd $ycrd -tag [list xaxis $w] -fill $linecolor
 
-            if { $xdelt != {} && $xt < $xm } {
+            if { $config($w,bottomaxis,shownumbers) } {
+                $w create text $xcrd $ycrd3 -text $xlabel -tag [list xaxis $w] -anchor n \
+                     -fill $textcolor -font $textfont
+            }
+
+            if { $xdelt != {} && $numeric && $xt < $xm } {
                 for {set i 1} {$i <= $config($w,bottomaxis,minorticks)} {incr i} {
                     set ycrd4  [expr {$ycrd+$ticklength*0.6}]
                     set xminor [expr {$xt  + $i * $dxminor}]
                     foreach {xcrd4 ycrd} [coordsToPixel $w $xminor $scaling($w,ymin)] {break}
-                    $w create line $xcrd4 $ycrd4 $xcrd4 $ycrd -tag xaxis -fill $linecolor
+                    $w create line $xcrd4 $ycrd4 $xcrd4 $ycrd -tag [list xaxis $w] -fill $linecolor
                 }
             }
         }
@@ -438,7 +553,7 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
     variable scaling
     variable config
 
-    $w delete xaxis
+    $w delete "xaxis && $w"
 
     set linecolor    $config($w,bottomaxis,color)
     set textcolor    $config($w,bottomaxis,textcolor)
@@ -448,9 +563,11 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
     set labeloffset  $config($w,leftaxis,labeloffset)
     set offtick      [expr {($ticklength > 0)? $ticklength+$labeloffset : $labeloffset}]
 
-    $w create line $scaling($w,pxmin) $scaling($w,pymax) \
-                   $scaling($w,pxmax) $scaling($w,pymax) \
-                   -fill $linecolor -tag xaxis
+    if { $config($w,bottomaxis,showaxle) } {
+        $w create line $scaling($w,pxmin) $scaling($w,pymax) \
+                       $scaling($w,pxmax) $scaling($w,pymax) \
+                       -fill $linecolor -tag [list xaxis $w] -width $thickness
+    }
 
     set format $config($w,bottomaxis,format)
     if { [info exists scaling($w,-format,x)] } {
@@ -486,28 +603,30 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
                 if { $format != "" } {
                     set xlabel [FormatNumber $format $xt]
                 }
-                $w create line $xcrd $ycrd2 $xcrd $ycrd -tag xaxis -fill $linecolor
-                if { $factor == 1.0 } {
-                    $w create text $xcrd $ycrd3 -text $xlabel -tag xaxis -anchor n \
+                $w create line $xcrd $ycrd2 $xcrd $ycrd -tag [list xaxis $w] -fill $linecolor
+                if { $factor == 1.0 && $config($w,bottomaxis,shownumbers) } {
+                    $w create text $xcrd $ycrd3 -text $xlabel -tag [list xaxis $w] -anchor n \
                         -fill $textcolor -font $textfont
                 }
             }
         }
         set x [expr {10.0*$x}]
     }
+
+    set scaling($w,xdelt) $xdelt
 }
 
 # DrawXtext --
 #    Draw text to the x-axis
 # Arguments:
 #    w           Name of the canvas
-#    text        Text to be drawn
+#    args        Text to be drawn (more than one argument if rendering in on)
 # Result:
 #    None
 # Side effects:
 #    Text drawn in canvas
 #
-proc ::Plotchart::DrawXtext { w text } {
+proc ::Plotchart::DrawXtext { w args } {
     variable scaling
     variable config
 
@@ -517,7 +636,13 @@ proc ::Plotchart::DrawXtext { w text } {
     set xt [expr {($scaling($w,pxmin)+$scaling($w,pxmax))/2}]
     set yt [expr {$scaling($w,pymax)+$config($w,font,char_height)+4}]
 
-    $w create text $xt $yt -text $text -fill $textcolor -anchor n -font $textfont
+    $w delete "xtext && $w"
+    if {$config($w,bottomaxis,render) eq "simple"} {
+        $w create text $xt $yt -text [lindex $args 0] -fill $textcolor -anchor n -font $textfont -tags [list xtext $w]
+    } elseif {$config($w,bottomaxis,render) eq "text"} {
+        RenderText $w $xt $yt -text $args -anchor n -font $textfont -tags [list xtext $w] \
+           -fill $textcolor
+    }
 }
 
 # DrawYtext --
@@ -548,7 +673,8 @@ proc ::Plotchart::DrawYtext { w text } {
     }
     set yt [expr {$scaling($w,pymin)-$config($w,font,char_height)/2}]
 
-    $w create text $xt $yt -text $text -fill $textcolor -anchor $anchor -font $textfont
+    $w delete "ytext && $w"
+    $w create text $xt $yt -text $text -fill $textcolor -anchor $anchor -font $textfont -tags [list ytext $w]
 }
 
 # DrawVtext --
@@ -565,13 +691,16 @@ proc ::Plotchart::DrawYtext { w text } {
 #
 proc ::Plotchart::DrawVtext { w text } {
     variable scaling
+    variable config
 
     if { [package vsatisfies [package present Tk] 8.6] } {
         set bbox [$w bbox yaxis]
-        set xt [expr {[lindex $bbox 0] + 5}]
+        set xt [expr {[lindex $bbox 0] - $config($w,leftaxis,vtextoffset)}]
         set yt [expr {($scaling($w,pymin) + $scaling($w,pymax)) / 2}]
 
-        $w create text $xt $yt -text $text -fill black -anchor n -angle 90
+        $w delete "vtext && $w"
+        $w create text $xt $yt -text $text -fill black -anchor s -angle 90 -tags [list vtext $w] \
+            -font $config($w,leftaxis,font) -fill $config($w,leftaxis,textcolor)
     }
 }
 
@@ -611,7 +740,7 @@ proc ::Plotchart::DrawPolarAxes { w rad_max rad_step } {
         } else {
             set dir e
         }
-        $w create text $xtxt $ytxt -text $angle -anchor $dir -fill $textcolor -font $textfont
+        $w create text $xtxt $ytxt -text $angle -anchor $dir -fill $textcolor -font $textfont -tags [list polar $w]
 
         set angle [expr {$angle+30}]
     }
@@ -627,10 +756,11 @@ proc ::Plotchart::DrawPolarAxes { w rad_max rad_step } {
         foreach {xcrd   ytop}    [polarToPixel $w $rad   90.0] {break}
         foreach {xcrd   ybottom} [polarToPixel $w $rad  270.0] {break}
 
-        set oval [$w create oval $xleft $ytop $xright $ybottom -outline $linecolor -width $thickness -fill {}]
+        set oval [$w create oval $xleft $ytop $xright $ybottom -outline $linecolor -width $thickness -fill {} \
+                     -tags [list polar $w]]
         $w lower $oval
 
-        $w create text $xright [expr {$ytxt+3}] -text $rad -anchor n -fill $textcolor -font $textfont
+        $w create text $xright [expr {$ytxt+3}] -text $rad -anchor n -fill $textcolor -font $textfont -tags [list polar $w]
 
         set rad [expr {$rad+$rad_step}]
     }
@@ -656,39 +786,39 @@ proc ::Plotchart::DrawXlabels { w xlabels noseries } {
     set textfont   $config($w,bottomaxis,font)
     set thickness  $config($w,bottomaxis,thickness)
 
-    $w delete xaxis
+    $w delete "xaxis && $w"
 
     $w create line $scaling($w,pxmin) $scaling($w,pymax) \
                    $scaling($w,pxmax) $scaling($w,pymax) \
-                   -fill $linecolor -width $thickness -tag xaxis
+                   -fill $linecolor -width $thickness -tag [list xaxis $w]
 
-    if { $noseries != "stacked" } {
-        set x [expr {int($noseries)/(2.0*$noseries)}]
+    if { $noseries eq "stacked" } {
+        set x 1.0
     } else {
-        set x 0.5
+        set x 1.0
+        #set x [expr {0.5 + int($noseries)/(2.0*$noseries)}]
     }
     set scaling($w,ybase) {}
     foreach label $xlabels {
         foreach {xcrd ycrd} [coordsToPixel $w $x $scaling($w,ymin)] {break}
         set ycrd [expr {$ycrd+2}]
-        $w create text $xcrd $ycrd -text $label -tag xaxis -anchor n \
+        $w create text $xcrd $ycrd -text $label -tag [list xaxis $w] -anchor n \
             -fill $textcolor -font $textfont
         set x [expr {$x+1.0}]
 
         lappend scaling($w,ybase) 0.0
     }
 
-    set scaling($w,xbase) 0.0
-
     if { $noseries != "stacked" } {
         set scaling($w,stacked)  0
-        set scaling($w,xshift)   [expr {1.0/$noseries}]
-        set scaling($w,barwidth) [expr {1.0/$noseries}]
+        set scaling($w,xshift)   [expr {$config($w,bar,barwidth)/$noseries}]
+        set scaling($w,barwidth) [expr {$config($w,bar,barwidth)/$noseries}]
+        set scaling($w,xbase)    [expr {1.0 - $config($w,bar,barwidth)/2.0}]
     } else {
         set scaling($w,stacked)  1
         set scaling($w,xshift)   0.0
-        set scaling($w,barwidth) 0.8
-        set scaling($w,xbase)    0.1
+        set scaling($w,barwidth) $config($w,bar,barwidth)
+        set scaling($w,xbase)    [expr {1.0 - $config($w,bar,barwidth)/2.0}]
     }
 }
 
@@ -712,39 +842,39 @@ proc ::Plotchart::DrawYlabels { w ylabels noseries } {
     set textfont   $config($w,leftaxis,font)
     set thickness  $config($w,leftaxis,thickness)
 
-    $w delete yaxis
+    $w delete "yaxis && $w"
 
     $w create line $scaling($w,pxmin) $scaling($w,pymin) \
                    $scaling($w,pxmin) $scaling($w,pymax) \
-                   -fill $linecolor -width $thickness -tag yaxis
+                   -fill $linecolor -width $thickness -tag [list yaxis $w]
 
     if { $noseries != "stacked" } {
-        set y [expr {int($noseries)/(2.0*$noseries)}]
+        set y 1.0
+        #set y [expr {0.5 + int($noseries)/(2.0*$noseries)}]
     }  else {
-        set y 0.5
+        set y 1.0
     }
     set scaling($w,xbase) {}
     foreach label $ylabels {
         foreach {xcrd ycrd} [coordsToPixel $w $scaling($w,xmin) $y] {break}
         set xcrd [expr {$xcrd-2}]
-        $w create text $xcrd $ycrd -text $label -tag yaxis -anchor e \
+        $w create text $xcrd $ycrd -text $label -tag [list yaxis $w] -anchor e \
             -fill $textcolor -font $textfont
         set y [expr {$y+1.0}]
 
         lappend scaling($w,xbase) 0.0
     }
 
-    set scaling($w,ybase) 0.0
-
     if { $noseries != "stacked" } {
         set scaling($w,stacked)  0
-        set scaling($w,yshift)   [expr {1.0/$noseries}]
-        set scaling($w,barwidth) [expr {1.0/$noseries}]
+        set scaling($w,yshift)   [expr {$config($w,bar,barwidth)/$noseries}]
+        set scaling($w,barwidth) [expr {$config($w,bar,barwidth)/$noseries}]
+        set scaling($w,ybase)    [expr {1.0 - $config($w,bar,barwidth)/2.0}]
     } else {
         set scaling($w,stacked)  1
         set scaling($w,yshift)   0.0
-        set scaling($w,barwidth) 0.8
-        set scaling($w,ybase)    0.1
+        set scaling($w,barwidth) $config($w,bar,barwidth)
+        set scaling($w,ybase)    [expr {1.0 - $config($w,bar,barwidth)/2.0}]
     }
 }
 
@@ -772,6 +902,67 @@ proc ::Plotchart::YConfig { w args } {
     if { ! [string match "r*" $w] } {
         AxisConfig xyplot $w y DrawYaxis $args
     } else {
+        AxisConfig xyplot $w y DrawRightaxis $args
+    }
+}
+
+# LogXConfig, ... --
+#    Configure the x-axis for an logX-Y, X-logY or logX-logY plot
+# Arguments:
+#    w           Name of the canvas
+#    args        Option and value pairs
+# Result:
+#    None
+#
+proc ::Plotchart::XConfigLogXY { w args } {
+    AxisConfig logxyplot $w x DrawLogXaxis $args
+}
+
+proc ::Plotchart::XConfigXLogY { w args } {
+    AxisConfig xlogyplot $w x DrawXaxis $args
+}
+
+proc ::Plotchart::XConfigLogXLogY { w args } {
+    AxisConfig logxlogyplot $w x DrawLogXaxis $args
+}
+
+# LogYConfig --
+#    Configure the y-axis for an X-logY, X-logY or logX-logY plot
+# Arguments:
+#    w           Name of the canvas
+#    args        Option and value pairs
+# Result:
+#    None
+#
+proc ::Plotchart::YConfigLogXY { w args } {
+    if { ! [string match "r*" $w] } {
+        AxisConfig logxyplot $w y DrawYaxis $args
+    } else {
+        #
+        # TODO: this is not supported yet
+        #
+        AxisConfig xyplot $w y DrawRightaxis $args
+    }
+}
+
+proc ::Plotchart::YConfigXLogY { w args } {
+    if { ! [string match "r*" $w] } {
+        AxisConfig xlogyplot $w y DrawLogYaxis $args
+    } else {
+        #
+        # TODO: this is not supported yet
+        #
+        AxisConfig xyplot $w y DrawRightaxis $args
+    }
+}
+
+proc ::Plotchart::YConfigLogXLogY { w args } {
+    if { ! [string match "r*" $w] } {
+        AxisConfig logxlogyplot $w y DrawLogYaxis $args
+    } else {
+        #
+        # TODO: this is not supported yet
+        #
         AxisConfig xyplot $w y DrawRightaxis $args
     }
 }
@@ -829,11 +1020,11 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
                 set max  ${orient}max
                 set delt ${orient}delt
                 foreach [list $min $max $delt] $value {break}
-		#checker exclude warnVarRef
+                #checker exclude warnVarRef
                 set scaling($w,$min)  [set $min]
-		#checker exclude warnVarRef
+                #checker exclude warnVarRef
                 set scaling($w,$max)  [set $max]
-		#checker exclude warnVarRef
+                #checker exclude warnVarRef
                 set scaling($w,$delt) [set $delt]
             }
         }
@@ -843,23 +1034,55 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
         $w delete data
     }
 
+    set xmin $scaling($w,xmin)
+    set xmax $scaling($w,xmax)
+    set ymin $scaling($w,ymin)
+    set ymax $scaling($w,ymax)
+
+    switch -- $plottype {
+        "logxyplot" {
+            set xmin [expr {pow(10.0,$scaling($w,xmin))}]
+            set xmax [expr {pow(10.0,$scaling($w,xmax))}]
+        }
+        "xlogyplot" {
+            set ymin [expr {pow(10.0,$scaling($w,ymin))}]
+            set ymax [expr {pow(10.0,$scaling($w,ymax))}]
+        }
+        "logxlogyplot" {
+            set xmin [expr {pow(10.0,$scaling($w,xmin))}]
+            set xmax [expr {pow(10.0,$scaling($w,xmax))}]
+            set ymin [expr {pow(10.0,$scaling($w,ymin))}]
+            set ymax [expr {pow(10.0,$scaling($w,ymax))}]
+        }
+    }
+
+    set originalSystem $scaling($w,coordSystem)
+    set scaling($w,coordSystem) 0
+
+
     if { $orient == "x" } {
         if { [llength $scaling($w,xdelt)] == 1 } {
-            $drawmethod $w $scaling($w,xmin) $scaling($w,xmax) $scaling($w,xdelt)
+            #$drawmethod $w $scaling($w,xmin) $scaling($w,xmax) $scaling($w,xdelt)
+            $drawmethod $w $xmin $xmax $scaling($w,xdelt)
         } else {
-            $drawmethod $w $scaling($w,xmin) $scaling($w,xmax) {} -xlabels $scaling($w,xdelt)
+            #$drawmethod $w $scaling($w,xmin) $scaling($w,xmax) {} -xlabels $scaling($w,xdelt)
+            $drawmethod $w $xmin $xmax {} -xlabels $scaling($w,xdelt)
         }
     }
     if { $orient == "y" } {
         if { [llength $scaling($w,ydelt)] == 1 } {
-            $drawmethod $w $scaling($w,ymin) $scaling($w,ymax) $scaling($w,ydelt)
+            #$drawmethod $w $scaling($w,ymin) $scaling($w,ymax) $scaling($w,ydelt)
+            $drawmethod $w $ymin $ymax $scaling($w,ydelt)
         } else {
-            $drawmethod $w $scaling($w,ymin) $scaling($w,ymax) {} -ylabels $scaling($w,ydelt)
+            #$drawmethod $w $scaling($w,ymin) $scaling($w,ymax) {} -ylabels $scaling($w,ydelt)
+            $drawmethod $w $ymin $ymax {} -ylabels $scaling($w,ydelt)
         }
     }
     if { $orient == "z" } {
         $drawmethod $w $scaling($w,zmin) $scaling($w,zmax) $scaling($w,zdelt)
     }
+
+    set scaling($w,coordSystem) $originalSystem
 }
 
 # DrawXTicklines --
@@ -867,11 +1090,12 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
 # Arguments:
 #    w           Name of the canvas
 #    colour      Colour of the ticklines
+#    dash        Dash pattern
 # Result:
 #    None
 #
-proc ::Plotchart::DrawXTicklines { w {colour black} } {
-    DrawTicklines $w x $colour
+proc ::Plotchart::DrawXTicklines { w {colour black} {dash lines}} {
+    DrawTicklines $w x $colour $dash
 }
 
 # DrawYTicklines --
@@ -879,11 +1103,12 @@ proc ::Plotchart::DrawXTicklines { w {colour black} } {
 # Arguments:
 #    w           Name of the canvas
 #    colour      Colour of the ticklines
+#    dash        Dash pattern
 # Result:
 #    None
 #
-proc ::Plotchart::DrawYTicklines { w {colour black} } {
-    DrawTicklines $w y $colour
+proc ::Plotchart::DrawYTicklines { w {colour black} {dash lines}} {
+    DrawTicklines $w y $colour $dash
 }
 
 # DrawTicklines --
@@ -892,11 +1117,17 @@ proc ::Plotchart::DrawYTicklines { w {colour black} } {
 #    w           Name of the canvas
 #    axis        Which axis (x or y)
 #    colour      Colour of the ticklines
+#    dash        Dash pattern
 # Result:
 #    None
 #
-proc ::Plotchart::DrawTicklines { w axis {colour black} } {
+proc ::Plotchart::DrawTicklines { w axis colour dash } {
     variable scaling
+    variable pattern
+
+    if { ! [info exists pattern($dash)] } {
+        set dash "lines"
+    }
 
     if { $axis == "x" } {
         #
@@ -907,26 +1138,29 @@ proc ::Plotchart::DrawTicklines { w axis {colour black} } {
         } else {
             set botaxis taxis
         }
+        $w delete [list xtickline && $w]
         if { $colour != {} } {
             foreach x $scaling($w,$botaxis) {
                 $w create line $x $scaling($w,pymin) \
                                $x $scaling($w,pymax) \
-                               -fill $colour -tag xtickline
+                               -fill $colour -tag [list xtickline $w] \
+                               -dash $pattern($dash)
             }
-        } else {
-            $w delete xtickline
         }
     } else {
+        $w delete [list ytickline && $w]
         if { $colour != {} } {
             foreach y $scaling($w,yaxis) {
                 $w create line $scaling($w,pxmin) $y \
                                $scaling($w,pxmax) $y \
-                               -fill $colour -tag ytickline
+                               -fill $colour -tag [list ytickline $w] \
+                               -dash $pattern($dash)
             }
-        } else {
-            $w delete ytickline
         }
     }
+    $w raise [list xaxis && $w]
+    $w raise [list yaxis && $w]
+    $w raise [list raxis && $w]
 }
 
 # DefaultLegend --
@@ -947,6 +1181,7 @@ proc ::Plotchart::DefaultLegend { w } {
     set legend($w,series)     ""
     set legend($w,text)       ""
     set legend($w,move)       0
+    set legend($w,spacing)    10
 
     $w bind legendobj <ButtonPress-1>   [list ::Plotchart::LegendAnchor $w %x %y]
     $w bind legendobj <Motion>          [list ::Plotchart::LegendMove   $w %x %y]
@@ -982,6 +1217,15 @@ proc ::Plotchart::LegendConfigure { w args } {
                      return -code error "Unknown or invalid position: $value"
                  }
             }
+            "-font" {
+                set legend($w,font) $value
+            }
+            "-legendtype" {
+                set legend($w,legendtype) $value
+            }
+            "-spacing" {
+                set legend($w,spacing) $value
+            }
             default {
                 return -code error "Unknown or invalid option: $option (value: $value)"
             }
@@ -990,15 +1234,66 @@ proc ::Plotchart::LegendConfigure { w args } {
 }
 
 # DrawLegend --
-#    Draw or extend the legend
+#    Draw or extend the legend - add the item and draw
 # Arguments:
 #    w              Name of the canvas
 #    series         For which series?
 #    text           Text to be shown
+#    spacing        (Optionally) spacing between entries
 # Result:
 #    None
 #
-proc ::Plotchart::DrawLegend { w series text } {
+proc ::Plotchart::DrawLegend { w series text {spacing {}}} {
+    variable legend
+
+    if { [string match r* $w] } {
+        set w [string range $w 1 end]
+    }
+
+    # Append only if new item - not in list already
+    if { [lsearch -exact $legend($w,series) $series] < 0 } {
+        lappend legend($w,series) $series
+        lappend legend($w,text)   $text
+    }
+
+    ActuallyDrawLegend $w $spacing
+}
+
+# RemoveFromLegend --
+#    Remove an item from the legend and redraw it
+# Arguments:
+#    w              Name of the canvas
+#    series         For which series?
+# Result:
+#    None
+#
+proc ::Plotchart::RemoveFromLegend { w series } {
+    variable legend
+    variable scaling
+
+    if { [string match r* $w] } {
+        set w [string range $w 1 end]
+    }
+
+    #
+    # Remove item from list
+    #
+    set indx [lsearch -exact $legend($w,series) $series]
+    set legend($w,series) [lreplace $legend($w,series) $indx $indx]
+    set legend($w,text)   [lreplace $legend($w,text) $indx $indx]
+
+    ActuallyDrawLegend $w
+}
+
+# ActuallyDrawLegend --
+#    Actually draw the legend
+# Arguments:
+#    w              Name of the canvas
+#    spacing        (Optionally) spacing between entries
+# Result:
+#    None
+#
+proc ::Plotchart::ActuallyDrawLegend { w {spacing {}}} {
     variable legend
     variable scaling
     variable data_series
@@ -1007,12 +1302,10 @@ proc ::Plotchart::DrawLegend { w series text } {
         set w [string range $w 1 end]
     }
 
-    lappend legend($w,series) $series
-    lappend legend($w,text)   $text
     set legendw               $legend($w,canvas)
 
-    $legendw delete legend
-    $legendw delete legendbg
+    $legendw delete "legend   && $w"
+    $legendw delete "legendbg && $w"
 
     set y 0
     foreach series $legend($w,series) text $legend($w,text) {
@@ -1028,37 +1321,53 @@ proc ::Plotchart::DrawLegend { w series text } {
         if { [info exists data_series($w,legendtype)] } {
             set type $data_series($w,legendtype)
         }
+        if {[info exists legend($w,legendtype)]} {
+            set type $legend($w,legendtype)
+        }
         set width 1
         if { [info exists data_series($w,$series,-width)] } {
             set width $data_series($w,$series,-width)
+        }
+        set font TkTextFont
+        if {[info exists legend($w,font)]} {
+            set font $legend($w,font)
+        }
+        if {[info exists legend($w,spacing)] && $spacing == {}} {
+            set spacing $legend($w,spacing)
+        }
+        #
+        # Store this setting
+        #
+        if { $spacing != {} } {
+            set legend($w,spacing) $spacing
         }
 
         # TODO: line or rectangle!
 
         if { $type != "rectangle" } {
-            $legendw create line 0 $y 15 $y -fill $colour -tag {legend legendobj} -width $width
+            $legendw create line 0 $y 15 $y -fill $colour -tag [list legend legendobj $w] -width $width
 
             if { $type == "symbol" || $type == "both" } {
                 set symbol "dot"
                 if { [info exists data_series($w,$series,-symbol)] } {
                     set symbol $data_series($w,$series,-symbol)
                 }
-                DrawSymbolPixel $legendw $series 7 $y $symbol $colour [list legend legendobj legend_$series]
+                DrawSymbolPixel $legendw $series 7 $y $symbol $colour [list legend legendobj legend_$series $w]
             }
         } else {
             $legendw create rectangle 0 [expr {$y-3}] 15 [expr {$y+3}] \
-                -fill $colour -tag [list legend legendobj legend_$series]
+                -fill $colour -tag [list legend legendobj legend_$series $w]
         }
 
-        $legendw create text 25 $y -text $text -anchor w -tag [list legend legendobj legend_$series]
+        $legendw create text 25 $y -text $text -anchor w -tag [list legend legendobj legend_$series $w] -font $font
 
-        incr y 10   ;# TODO: size of font!
+        set y [expr {$y + $spacing}]   ;# TODO: size of font!
     }
 
     #
     # Now the frame and the background
     #
-    foreach {xl yt xr yb} [$legendw bbox legend] {break}
+    foreach {xl yt xr yb} [$legendw bbox "legend && $w"] {break}
 
     set xl [expr {$xl-2}]
     set xr [expr {$xr+2}]
@@ -1066,7 +1375,7 @@ proc ::Plotchart::DrawLegend { w series text } {
     set yb [expr {$yb+2}]
 
     $legendw create rectangle $xl $yt $xr $yb -fill $legend($w,background) \
-        -outline $legend($w,border) -tag {legendbg legendobj}
+        -outline $legend($w,border) -tag [list legendbg legendobj $w]
 
     $legendw raise legend
 
@@ -1094,8 +1403,8 @@ proc ::Plotchart::DrawLegend { w series text } {
         set dy 10
     }
 
-    $legendw move legend   $dx $dy
-    $legendw move legendbg $dx $dy
+    $legendw move "legend   && $w" $dx $dy
+    $legendw move "legendbg && $w" $dx $dy
 }
 
 # LegendAnchor --

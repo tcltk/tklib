@@ -18,6 +18,7 @@ namespace eval ::Plotchart {
    variable scaling
    variable methodProc
    variable data_series
+   variable pattern
 
    namespace export worldCoordinates viewPort coordsToPixel \
                     polarCoordinates setZoomPan \
@@ -35,7 +36,9 @@ namespace eval ::Plotchart {
                     create3DRibbonChart create3DRibbonPlot \
                     createXLogYPlot createLogXYPlot createLogXLogYPlot \
                     createWindrose createTargetDiagram createPerformanceProfile \
-                    plotconfig plotpack plotmethod
+                    createTableChart createTitleBar \
+                    createSpiralPie \
+                    plotstyle plotconfig plotpack plotmethod clearcanvas
 
    #
    # Array linking procedures with methods
@@ -65,6 +68,9 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,background)        BackgroundColour
    set methodProc(xyplot,legendconfig)      LegendConfigure
    set methodProc(xyplot,legend)            DrawLegend
+   set methodProc(xyplot,removefromlegend)  RemoveFromLegend
+   set methodProc(xyplot,legendisolines)    DrawLegendIsolines
+   set methodProc(xyplot,legendshades)      DrawLegendShades
    set methodProc(xyplot,balloon)           DrawBalloon
    set methodProc(xyplot,balloonconfig)     ConfigBalloon
    set methodProc(xyplot,plaintext)         DrawPlainText
@@ -79,26 +85,31 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,bindplot)          BindPlot
    set methodProc(xyplot,bindlast)          BindLast
    set methodProc(xyplot,contourlinesfunctionvalues)      DrawIsolinesFunctionValues
-   set methodProc(xyplot,contourlinesfunctionpoints)      DrawIsolinesFunctionPoints
    set methodProc(xyplot,plotfunc)          DrawFunction
+   set methodProc(xyplot,drawobject)        DrawObject
+   set methodProc(xyplot,object)            DrawObject
+   set methodProc(xyplot,plotlist)          DrawDataList
+   set methodProc(xyplot,plotarea)          GetPlotArea
    set methodProc(xlogyplot,title)          DrawTitle
    set methodProc(xlogyplot,xtext)          DrawXtext
    set methodProc(xlogyplot,ytext)          DrawYtext
    set methodProc(xlogyplot,vtext)          DrawVtext
-   set methodProc(xlogyplot,plot)           DrawLogYData
-   set methodProc(xlogyplot,dot)            DrawLogDot
+   set methodProc(xlogyplot,plot)           DrawData
+   set methodProc(xlogyplot,dot)            DrawDot
+   set methodProc(xlogyplot,labeldot)       DrawLabelDot
    set methodProc(xlogyplot,dotconfig)      DotConfigure
    set methodProc(xlogyplot,interval)       DrawLogInterval
    set methodProc(xlogyplot,trend)          DrawLogTrendLine
    set methodProc(xlogyplot,saveplot)       SavePlot
    set methodProc(xlogyplot,dataconfig)     DataConfig
-   set methodProc(xlogyplot,xconfig)        XConfig
-   set methodProc(xlogyplot,yconfig)        YConfig
+   set methodProc(xlogyplot,xconfig)        XConfigXlogY
+   set methodProc(xlogyplot,yconfig)        YConfigXLogY
    set methodProc(xlogyplot,xticklines)     DrawXTicklines
    set methodProc(xlogyplot,yticklines)     DrawYTicklines
    set methodProc(xlogyplot,background)     BackgroundColour
    set methodProc(xlogyplot,legendconfig)   LegendConfigure
    set methodProc(xlogyplot,legend)         DrawLegend
+   set methodProc(xlogyplot,removefromlegend) RemoveFromLegend
    set methodProc(xlogyplot,balloon)        DrawBalloon
    set methodProc(xlogyplot,balloonconfig)  ConfigBalloon
    set methodProc(xlogyplot,plaintext)      DrawPlainText
@@ -107,20 +118,22 @@ namespace eval ::Plotchart {
    set methodProc(logxyplot,xtext)          DrawXtext
    set methodProc(logxyplot,ytext)          DrawYtext
    set methodProc(logxyplot,vtext)          DrawVtext
-   set methodProc(logxyplot,plot)           DrawLogXData
-   set methodProc(logxyplot,dot)            DrawLogDot
+   set methodProc(logxyplot,plot)           DrawData
+   set methodProc(logxyplot,dot)            DrawDot
+   set methodProc(logxyplot,labeldot)       DrawLabelDot
    set methodProc(logxyplot,dotconfig)      DotConfigure
    set methodProc(logxyplot,interval)       DrawLogInterval
    set methodProc(logxyplot,trend)          DrawLogTrendLine
    set methodProc(logxyplot,saveplot)       SavePlot
    set methodProc(logxyplot,dataconfig)     DataConfig
-   set methodProc(logxyplot,xconfig)        XConfig
-   set methodProc(logxyplot,yconfig)        YConfig
+   set methodProc(logxyplot,xconfig)        XConfigLogXY
+   set methodProc(logxyplot,yconfig)        YConfigLogXY
    set methodProc(logxyplot,xticklines)     DrawXTicklines
    set methodProc(logxyplot,yticklines)     DrawYTicklines
    set methodProc(logxyplot,background)     BackgroundColour
    set methodProc(logxyplot,legendconfig)   LegendConfigure
    set methodProc(logxyplot,legend)         DrawLegend
+   set methodProc(logxyplot,removefromlegend) RemoveFromLegend
    set methodProc(logxyplot,balloon)        DrawBalloon
    set methodProc(logxyplot,balloonconfig)  ConfigBalloon
    set methodProc(logxyplot,plaintext)      DrawPlainText
@@ -129,20 +142,22 @@ namespace eval ::Plotchart {
    set methodProc(logxlogyplot,xtext)          DrawXtext
    set methodProc(logxlogyplot,ytext)          DrawYtext
    set methodProc(logxlogyplot,vtext)          DrawVtext
-   set methodProc(logxlogyplot,plot)           DrawLogXLogYData
-   set methodProc(logxlogyplot,dot)            DrawLogDot
+   set methodProc(logxlogyplot,plot)           DrawData
+   set methodProc(logxlogyplot,dot)            DrawDot
+   set methodProc(logxlogyplot,labeldot)       DrawLabelDot
    set methodProc(logxlogyplot,dotconfig)      DotConfigure
    set methodProc(logxlogyplot,interval)       DrawLogInterval
    set methodProc(logxlogyplot,trend)          DrawLogTrendLine
    set methodProc(logxlogyplot,saveplot)       SavePlot
    set methodProc(logxlogyplot,dataconfig)     DataConfig
-   set methodProc(logxlogyplot,xconfig)        XConfig
-   set methodProc(logxlogyplot,yconfig)        YConfig
+   set methodProc(logxlogyplot,xconfig)        XConfigLogXLogY
+   set methodProc(logxlogyplot,yconfig)        YConfigLogXLogY
    set methodProc(logxlogyplot,xticklines)     DrawXTicklines
    set methodProc(logxlogyplot,yticklines)     DrawYTicklines
    set methodProc(logxlogyplot,background)     BackgroundColour
    set methodProc(logxlogyplot,legendconfig)   LegendConfigure
    set methodProc(logxlogyplot,legend)         DrawLegend
+   set methodProc(logxlogyplot,removefromlegend) RemoveFromLegend
    set methodProc(logxlogyplot,balloon)        DrawBalloon
    set methodProc(logxlogyplot,balloonconfig)  ConfigBalloon
    set methodProc(logxlogyplot,plaintext)      DrawPlainText
@@ -155,23 +170,38 @@ namespace eval ::Plotchart {
    set methodProc(piechart,explode)            PieExplodeSegment
    set methodProc(piechart,plaintext)          DrawPlainText
    set methodProc(piechart,plaintextconfig)    ConfigPlainText
+   set methodProc(piechart,colours)            SetColours
+   set methodProc(piechart,drawobject)         DrawObject
+   set methodProc(piechart,object)             DrawObject
+   set methodProc(spiralpie,title)             DrawTitle
+   set methodProc(spiralpie,plot)              DrawSpiralPie
+   set methodProc(spiralpie,saveplot)          SavePlot
+   set methodProc(spiralpie,balloon)           DrawBalloon
+   set methodProc(spiralpie,balloonconfig)     ConfigBalloon
+   set methodProc(spiralpie,plaintext)         DrawPlainText
+   set methodProc(spiralpie,plaintextconfig)   ConfigPlainText
+   set methodProc(spiralpie,colours)           SetColours
+   set methodProc(spiralpie,drawobject)        DrawObject
+   set methodProc(spiralpie,object)            DrawObject
    set methodProc(polarplot,title)             DrawTitle
-   set methodProc(polarplot,plot)              DrawPolarData
+   set methodProc(polarplot,plot)              DrawData
    set methodProc(polarplot,saveplot)          SavePlot
    set methodProc(polarplot,dataconfig)        DataConfig
    set methodProc(polarplot,background)        BackgroundColour
    set methodProc(polarplot,legendconfig)      LegendConfigure
    set methodProc(polarplot,legend)            DrawLegend
+   set methodProc(polarplot,removefromlegend)  RemoveFromLegend
    set methodProc(polarplot,balloon)           DrawBalloon
    set methodProc(polarplot,balloonconfig)     ConfigBalloon
    set methodProc(polarplot,plaintext)         DrawPlainText
    set methodProc(polarplot,plaintextconfig)   ConfigPlainText
-   set methodProc(polarplot,labeldot)          DrawLabelDotPolar
+   set methodProc(polarplot,labeldot)          DrawLabelDot
    set methodProc(histogram,title)             DrawTitle
    set methodProc(histogram,xtext)             DrawXtext
    set methodProc(histogram,ytext)             DrawYtext
    set methodProc(histogram,vtext)             DrawVtext
    set methodProc(histogram,plot)              DrawHistogramData
+   set methodProc(histogram,plotcumulative)    DrawHistogramCumulative
    set methodProc(histogram,saveplot)          SavePlot
    set methodProc(histogram,dataconfig)        DataConfig
    set methodProc(histogram,xconfig)           XConfig
@@ -180,6 +210,7 @@ namespace eval ::Plotchart {
    set methodProc(histogram,background)        BackgroundColour
    set methodProc(histogram,legendconfig)      LegendConfigure
    set methodProc(histogram,legend)            DrawLegend
+   set methodProc(histogram,removefromlegend)  RemoveFromLegend
    set methodProc(histogram,balloon)           DrawBalloon
    set methodProc(histogram,balloonconfig)     ConfigBalloon
    set methodProc(histogram,plaintext)         DrawPlainText
@@ -198,10 +229,13 @@ namespace eval ::Plotchart {
    set methodProc(horizbars,config)            ConfigBar
    set methodProc(horizbars,legendconfig)      LegendConfigure
    set methodProc(horizbars,legend)            DrawLegend
+   set methodProc(horizbars,removefromlegend)  RemoveFromLegend
    set methodProc(horizbars,balloon)           DrawBalloon
    set methodProc(horizbars,balloonconfig)     ConfigBalloon
    set methodProc(horizbars,plaintext)         DrawPlainText
    set methodProc(horizbars,plaintextconfig)   ConfigPlainText
+   set methodProc(horizbars,drawobject)        DrawObject
+   set methodProc(horizbars,object)            DrawObject
    set methodProc(vertbars,title)              DrawTitle
    set methodProc(vertbars,xtext)              DrawXtext
    set methodProc(vertbars,ytext)              DrawYtext
@@ -216,10 +250,13 @@ namespace eval ::Plotchart {
    set methodProc(vertbars,config)             ConfigBar
    set methodProc(vertbars,legendconfig)       LegendConfigure
    set methodProc(vertbars,legend)             DrawLegend
+   set methodProc(vertbars,removefromlegend)   RemoveFromLegend
    set methodProc(vertbars,balloon)            DrawBalloon
    set methodProc(vertbars,balloonconfig)      ConfigBalloon
    set methodProc(vertbars,plaintext)          DrawPlainText
    set methodProc(vertbars,plaintextconfig)    ConfigPlainText
+   set methodProc(vertbars,drawobject)         DrawObject
+   set methodProc(vertbars,object)             DrawObject
    set methodProc(timechart,title)             DrawTitle
    set methodProc(timechart,period)            DrawTimePeriod
    set methodProc(timechart,milestone)         DrawTimeMilestone
@@ -263,10 +300,13 @@ namespace eval ::Plotchart {
    set methodProc(stripchart,background)       BackgroundColour
    set methodProc(stripchart,legendconfig)     LegendConfigure
    set methodProc(stripchart,legend)           DrawLegend
+   set methodProc(stripchart,removefromlegend) RemoveFromLegend
    set methodProc(stripchart,balloon)          DrawBalloon
    set methodProc(stripchart,balloonconfig)    ConfigBalloon
    set methodProc(stripchart,plaintext)        DrawPlainText
    set methodProc(stripchart,plaintextconfig)  ConfigPlainText
+   set methodProc(stripchart,drawobject)       DrawObject
+   set methodProc(stripchart,object)           DrawObject
    set methodProc(isometric,title)             DrawTitle
    set methodProc(isometric,xtext)             DrawXtext
    set methodProc(isometric,ytext)             DrawYtext
@@ -322,6 +362,7 @@ namespace eval ::Plotchart {
    set methodProc(txplot,background)           BackgroundColour
    set methodProc(txplot,legendconfig)         LegendConfigure
    set methodProc(txplot,legend)               DrawLegend
+   set methodProc(txplot,removefromlegend)     RemoveFromLegend
    set methodProc(txplot,balloon)              DrawBalloon
    set methodProc(txplot,balloonconfig)        ConfigBalloon
    set methodProc(txplot,plaintext)            DrawPlainText
@@ -345,10 +386,13 @@ namespace eval ::Plotchart {
    set methodProc(boxplot,background)          BackgroundColour
    set methodProc(boxplot,legendconfig)        LegendConfigure
    set methodProc(boxplot,legend)              DrawLegend
+   set methodProc(boxplot,removefromlegend)    RemoveFromLegend
    set methodProc(boxplot,balloon)             DrawBalloon
    set methodProc(boxplot,balloonconfig)       ConfigBalloon
    set methodProc(boxplot,plaintext)           DrawPlainText
    set methodProc(boxplot,plaintextconfig)     ConfigPlainText
+   set methodProc(boxplot,drawobject)          DrawObject
+   set methodProc(boxplot,object)              DrawObject
    set methodProc(windrose,plot)               DrawWindRoseData
    set methodProc(windrose,saveplot)           SavePlot
    set methodProc(windrose,title)              DrawTitle
@@ -361,6 +405,7 @@ namespace eval ::Plotchart {
    set methodProc(targetdiagram,background)    BackgroundColour
    set methodProc(targetdiagram,legendconfig)  LegendConfigure
    set methodProc(targetdiagram,legend)        DrawLegend
+   set methodProc(targetdiagram,removefromlegend) RemoveFromLegend
    set methodProc(targetdiagram,balloon)       DrawBalloon
    set methodProc(targetdiagram,balloonconfig) ConfigBalloon
    set methodProc(targetdiagram,plaintext)     DrawPlainText
@@ -388,10 +433,20 @@ namespace eval ::Plotchart {
    set methodProc(performance,background)      BackgroundColour
    set methodProc(performance,legendconfig)    LegendConfigure
    set methodProc(performance,legend)          DrawLegend
+   set methodProc(performance,removefromlegend) RemoveFromLegend
    set methodProc(performance,balloon)         DrawBalloon
    set methodProc(performance,balloonconfig)   ConfigBalloon
    set methodProc(performance,plaintext)       DrawPlainText
    set methodProc(performance,plaintextconfig) ConfigPlainText
+   set methodProc(table,title)                 DrawTitle
+   set methodProc(table,row)                   DrawRow
+   set methodProc(table,separator)             DrawSeparator
+   set methodProc(table,cellconfigure)         ConfigureTableCell
+   set methodProc(table,formatcommand)         SetFormatCommand
+   set methodProc(table,cellcoordinates)       TableCellCoordinates
+   set methodProc(table,worldcoordinates)      TableWorldCoordinates
+   set methodProc(table,topixels)              TableWorldToPixels
+   set methodProc(table,canvas)                GetCanvas
 
    #
    # Auxiliary parameters
@@ -402,16 +457,26 @@ namespace eval ::Plotchart {
    variable options
    variable option_keys
    variable option_values
-   set options       {-colour -color  -symbol -type -filled -fillcolour -boxwidth -width}
-   set option_keys   {-colour -colour -symbol -type -filled -fillcolour -boxwidth -width}
-   set option_values {-colour {...}
-                      -symbol {plus cross circle up down dot upfilled downfilled}
-                      -type {line symbol both}
-                      -filled {no up down}
-                      -fillcolour {...}
-                      -boxwidth   {...}
-                      -width      {...}
+   set options       {-colour -color  -symbol -type -filled -fillcolour -boxwidth -width -radius \
+      -whisker -whiskerwidth -mediancolour -medianwidth -style}
+   set option_keys   {-colour -colour -symbol -type -filled -fillcolour -boxwidth -width -radius \
+      -whisker -whiskerwidth -mediancolour -medianwidth -style}
+   set option_values {-colour       {...}
+                      -symbol       {plus cross circle up down dot upfilled downfilled}
+                      -type         {line symbol both rectangle}
+                      -filled       {no up down}
+                      -fillcolour   {...}
+                      -mediancolour {...}
+                      -medianwidth  {...}
+                      -boxwidth     {...}
+                      -width        {...}
+                      -radius       {...}
+                      -whisker      {IQR iqr extremes none}
+                      -whiskerwidth {...}
+                      -style        {filled spike symbol plateau stair}
                      }
+
+
 
    variable axis_options
    variable axis_option_clear
@@ -428,6 +493,8 @@ namespace eval ::Plotchart {
                            -axisoffset  {...}
                           }
    variable contour_options
+
+   array set pattern {lines {} dots1 {1 4} dots2 {1 8} dots3 {1 12} dots4 {1 16} dots5 {4 24}}
 }
 
 # setZoomPan --
@@ -471,9 +538,12 @@ proc ::Plotchart::setZoomPan { w } {
 proc ::Plotchart::viewPort { w pxmin pymin pxmax pymax } {
    variable scaling
 
+if {0} {
+   # Problematic for xyplot package when zooming in!
    if { $pxmin >= $pxmax || $pymin >= $pymax } {
       return -code error "Inconsistent bounds for viewport - increase canvas size or decrease margins"
    }
+}
 
    set scaling($w,pxmin)    $pxmin
    set scaling($w,pymin)    $pymin
@@ -578,6 +648,7 @@ proc ::Plotchart::world3DCoordinates { w xmin ymin zmin xmax ymax zmax } {
 #
 proc ::Plotchart::coordsToPixel { w xcrd ycrd } {
    variable scaling
+   variable torad
 
    if { $scaling($w,new) == 1 } {
       set scaling($w,new)     0
@@ -588,6 +659,31 @@ proc ::Plotchart::coordsToPixel { w xcrd ycrd } {
       set dy                  [expr {$scaling($w,ymax)-$scaling($w,ymin)}]
       set scaling($w,xfactor) [expr {$width/$dx}]
       set scaling($w,yfactor) [expr {$height/$dy}]
+   }
+
+   if { $scaling($w,coordSystem) != 0 } {
+       switch -- $scaling($w,coordSystem) {
+           1 {
+               # log X versus Y
+               set xcrd [expr {log10($xcrd)}]
+           }
+           2 {
+               # X versus log Y
+               set ycrd [expr {log10($ycrd)}]
+           }
+           3 {
+               # log X versus log Y
+               set xcrd [expr {log10($xcrd)}]
+               set ycrd [expr {log10($ycrd)}]
+           }
+           4 {
+               # radius versus angle
+               set rad  $xcrd
+               set phi  [expr {$ycrd*$torad}]
+               set xcrd [expr {$rad * cos($phi)}]
+               set ycrd [expr {$rad * sin($phi)}]
+           }
+       }
    }
 
    set xpix [expr {$scaling($w,pxmin)+($xcrd-$scaling($w,xmin))*$scaling($w,xfactor)}]
@@ -714,33 +810,76 @@ proc ::Plotchart::polarToPixel { w rad phi } {
    coordsToPixel $w $xcrd $ycrd
 }
 
+# clearcanvas --
+#    Remove all data concerning this canvas
+# Arguments:
+#    w           Name of the canvas
+# Result:
+#    None
+#
+proc ::Plotchart::clearcanvas { w } {
+   variable scaling
+   variable config
+   variable data_series
+
+   array unset scaling $w,*
+   array unset config $w,*
+   array unset data_series $w,*
+
+   $w delete all
+}
+
 # createXYPlot --
 #    Create a command for drawing an XY plot
 # Arguments:
 #    w           Name of the canvas
 #    xscale      Minimum, maximum and step for x-axis (initial)
 #    yscale      Minimum, maximum and step for y-axis
-#    args        Options (currently: "-xlabels list" and "-ylabels list")
+#    args        Options (currently: "-xlabels list" and "-ylabels list"
+#                "-box list" and "-axesbox list")
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the XY plot.
+#    By default the entire canvas will be dedicated to the XY plot.
 #    The plot will be drawn with axes
 #
 proc ::Plotchart::createXYPlot { w xscale yscale args} {
+
+    return [CreateXYPlotImpl xyplot $w $xscale $yscale $args]
+
+}
+
+# CreateXYPlotImpl --
+#    Actually create a command for drawing an XY plot or a stripchart
+# Arguments:
+#    prefix      Prefix for the command
+#    c           Name of the canvas
+#    xscale      Minimum, maximum and step for x-axis (initial)
+#    yscale      Minimum, maximum and step for y-axis
+#    argv        Options (currently: "-xlabels list" and "-ylabels list")
+# Result:
+#    Name of a new command
+#
+proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
    variable scaling
    variable data_series
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
 
-   set newchart "xyplot_$w"
-   interp alias {} $newchart {} ::Plotchart::PlotHandler xyplot $w
-   CopyConfig xyplot $w
+   ClearPlot $w
+
+   set newchart "${prefix}_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler $prefix $w
+   CopyConfig $prefix $w
    set scaling($w,eventobj) ""
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $argv] {break}
+   array set options $argv
+   array unset options -box
+   array unset options -axesbox
+
+   set scaling($w,coordSystem) 0
 
    foreach {xmin xmax xdelt} $xscale {break}
    foreach {ymin ymax ydelt} $yscale {break}
@@ -760,7 +899,7 @@ proc ::Plotchart::createXYPlot { w xscale yscale args} {
    worldCoordinates $w $xmin  $ymin  $xmax  $ymax
 
    if { $xdelt eq {} } {
-       foreach {arg val} $args {
+       foreach {arg val} [array get options] {
            switch -exact -- $arg {
                -xlabels {
                    DrawXaxis $w $xmin  $xmax  $xdelt $arg $val
@@ -777,7 +916,7 @@ proc ::Plotchart::createXYPlot { w xscale yscale args} {
        DrawXaxis   $w $xmin  $xmax  $xdelt
    }
    if { $ydelt eq {} } {
-       foreach {arg val} $args {
+       foreach {arg val} [array get options] {
            switch -exact -- $arg {
                -ylabels {
                    DrawYaxis $w $ymin  $ymax  $ydelt $arg $val
@@ -808,52 +947,47 @@ proc ::Plotchart::createXYPlot { w xscale yscale args} {
 #    w           Name of the canvas
 #    xscale      Minimum, maximum and step for x-axis (initial)
 #    yscale      Minimum, maximum and step for y-axis
+#    args        Options (currently: "-box list" and "-axesbox list")
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the stripchart.
+#    By default the entire canvas will be dedicated to the stripchart.
 #    The stripchart will be drawn with axes
 #
-proc ::Plotchart::createStripchart { w xscale yscale } {
-   variable data_series
+proc ::Plotchart::createStripchart { w xscale yscale args } {
 
-   set newchart [createXYPlot $w $xscale $yscale]
-
-   interp alias {} $newchart {}
-
-   set newchart "stripchart_$w"
-   interp alias {} $newchart {} ::Plotchart::PlotHandler stripchart $w
-   CopyConfig stripchart $w
-
-   return $newchart
+   return [CreateXYPlotImpl stripchart $w $xscale $yscale $args]
 }
 
 # createIsometricPlot --
 #    Create a command for drawing an "isometric" plot
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    xscale      Minimum and maximum for x-axis
 #    yscale      Minimum and maximum for y-axis
 #    stepsize    Step size for numbers on the axes or "noaxes"
+#    args        Options (currently: "-box list" and "-axesbox list")
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the plot
+#    By default the entire canvas will be dedicated to the plot
 #    The plot will be drawn with or without axes
 #
-proc ::Plotchart::createIsometricPlot { w xscale yscale stepsize } {
+proc ::Plotchart::createIsometricPlot { c xscale yscale stepsize args } {
+   variable scaling
    variable data_series
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
 
    set newchart "isometric_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler isometric $w
    CopyConfig isometric $w
 
    if { $stepsize != "noaxes" } {
-      foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+      foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
    } else {
       set pxmin 0
       set pymin 0
@@ -862,6 +996,8 @@ proc ::Plotchart::createIsometricPlot { w xscale yscale stepsize } {
       set pxmax [WidthCanvas $w]
       set pymax [HeightCanvas $w]
    }
+
+   set scaling($w,coordSystem) 0
 
    foreach {xmin xmax xdelt} $xscale {break}
    foreach {ymin ymax ydelt} $yscale {break}
@@ -887,27 +1023,32 @@ proc ::Plotchart::createIsometricPlot { w xscale yscale stepsize } {
 # createXLogYPlot --
 #    Create a command for drawing an XY plot (with a vertical logarithmic axis)
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    xscale      Minimum, maximum and step for x-axis (initial)
 #    yscale      Minimum, maximum and step for y-axis (step is ignored!)
+#    args        Options (currently: "-box list" and "-axesbox list")
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the XY plot.
+#    By default the entire canvas will be dedicated to the XY plot.
 #    The plot will be drawn with axes
 #
-proc ::Plotchart::createXLogYPlot { w xscale yscale } {
+proc ::Plotchart::createXLogYPlot { c xscale yscale args } {
+   variable scaling
    variable data_series
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
 
    set newchart "xlogyplot_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler xlogyplot $w
    CopyConfig xlogyplot $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
+
+   set scaling($w,coordSystem) 0 ;# Temporarily only - to avoid complications with the axes
 
    foreach {xmin xmax xdelt} $xscale {break}
    foreach {ymin ymax ydelt} $yscale {break}
@@ -933,33 +1074,42 @@ proc ::Plotchart::createXLogYPlot { w xscale yscale } {
    DefaultLegend    $w
    DefaultBalloon   $w
 
+   set scaling($w,coordSystem) 2
+
+   $newchart dataconfig labeldot -colour red -type symbol -symbol dot
+
    return $newchart
 }
 
 # createLogXYPlot --
 #    Create a command for drawing an XY plot (with a horizontal logarithmic axis)
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    xscale      Minimum, maximum and step for x-axis (step is ignored!)
 #    yscale      Minimum, maximum and step for y-axis (initial)
+#    args        Options (currently: "-box list" and "-axesbox list")
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the XY plot.
+#    By default the entire canvas will be dedicated to the XY plot.
 #    The plot will be drawn with axes
 #
-proc ::Plotchart::createLogXYPlot { w xscale yscale } {
+proc ::Plotchart::createLogXYPlot { c xscale yscale args } {
+   variable scaling
    variable data_series
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
 
    set newchart "logxyplot_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler logxyplot $w
    CopyConfig logxyplot $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
+
+   set scaling($w,coordSystem) 0 ;# Temporarily only - to avoid complications with the axes
 
    foreach {xmin xmax xdelt} $xscale {break}
    foreach {ymin ymax ydelt} $yscale {break}
@@ -984,33 +1134,43 @@ proc ::Plotchart::createLogXYPlot { w xscale yscale } {
    DefaultLegend    $w
    DefaultBalloon   $w
 
+   set scaling($w,coordSystem) 1
+
+   $newchart dataconfig labeldot -colour red -type symbol -symbol dot
+
    return $newchart
 }
 
 # createLogXLogYPlot --
 #    Create a command for drawing an XY plot (with a both logarithmic axis)
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    xscale      Minimum, maximum and step for x-axis (step is ignored!)
 #    yscale      Minimum, maximum and step for y-axis (step is ignored!)
+#    args        Options (currently: "-box list" and "-axesbox list")
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the XY plot.
+#    By default the entire canvas will be dedicated to the XY plot.
 #    The plot will be drawn with axes
 #
-proc ::Plotchart::createLogXLogYPlot { w xscale yscale } {
+proc ::Plotchart::createLogXLogYPlot { c xscale yscale args } {
+   variable scaling
+
    variable data_series
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
 
    set newchart "logxlogyplot_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler logxlogyplot $w
    CopyConfig logxlogyplot $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
+
+   set scaling($w,coordSystem) 0 ;# Temporarily only - to avoid complications with the axes
 
    foreach {xmin xmax xdelt} $xscale {break}
    foreach {ymin ymax ydelt} $yscale {break}
@@ -1035,34 +1195,43 @@ proc ::Plotchart::createLogXLogYPlot { w xscale yscale } {
    DefaultLegend    $w
    DefaultBalloon   $w
 
+   set scaling($w,coordSystem) 3
+
+   $newchart dataconfig labeldot -colour red -type symbol -symbol dot
+
    return $newchart
 }
 
 # createHistogram --
 #    Create a command for drawing a histogram
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    xscale      Minimum, maximum and step for x-axis (initial)
 #    yscale      Minimum, maximum and step for y-axis
+#    args        Options (currently: "-box list" and "-axesbox list")
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the histogram.
+#    By default the entire canvas will be dedicated to the histogram.
 #    The plot will be drawn with axes
 #    This is almost the same code as for an XY plot
 #
-proc ::Plotchart::createHistogram { w xscale yscale } {
+proc ::Plotchart::createHistogram { c xscale yscale args } {
    variable data_series
+   variable scaling
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
 
    set newchart "histogram_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler histogram $w
    CopyConfig histogram $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
+
+   set scaling($w,coordSystem) 0
 
    foreach {xmin xmax xdelt} $xscale {break}
    foreach {ymin ymax ydelt} $yscale {break}
@@ -1093,28 +1262,31 @@ proc ::Plotchart::createHistogram { w xscale yscale } {
 # createPiechart --
 #    Create a command for drawing a pie chart
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
+#    args        Additional arguments for placement and size of plot
+#                   -box, -reference, -units
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the pie chart.
+#    By default the entire canvas will be dedicated to the pie chart.
 #
-proc ::Plotchart::createPiechart { w } {
+proc ::Plotchart::createPiechart { c args} {
    variable data_series
    variable scaling
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
 
    set newchart "piechart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler piechart $w
    CopyConfig piechart $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsCircle $w] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsCircle $w {*}$args] {break}
 
    viewPort $w $pxmin $pymin $pxmax $pymax
-  #$w create oval $pxmin $pymin $pxmax $pymax
+   worldCoordinates $w -1 -1 1 1
 
    SetColours $w blue lightblue green yellow orange red magenta brown
    DefaultLegend  $w
@@ -1126,24 +1298,64 @@ proc ::Plotchart::createPiechart { w } {
    return $newchart
 }
 
+# createSpiralPie --
+#    Create a command for drawing a "spiral pie" chart
+# Arguments:
+#    c           Name of the canvas
+#    args        Additional arguments for placement and size of plot
+#                   -box, -reference, -units
+# Result:
+#    Name of a new command
+# Note:
+#    By default the entire canvas will be dedicated to the spiral pie chart.
+#
+proc ::Plotchart::createSpiralPie { c args} {
+   variable data_series
+   variable scaling
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
+
+   set newchart "spiralpie_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler spiralpie $w
+   CopyConfig spiralpie $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsCircle $w {*}$args] {break}
+
+   viewPort $w $pxmin $pymin $pxmax $pymax
+   worldCoordinates $w -1 -1 1 1
+
+   SetColours $w blue lightblue green yellow orange red magenta brown
+   DefaultLegend  $w
+   DefaultBalloon $w
+
+   set scaling($w,auto)      0
+
+   return $newchart
+}
+
 # createPolarplot --
 #    Create a command for drawing a polar plot
 # Arguments:
-#    w             Name of the canvas
+#    c             Name of the canvas
 #    radius_data   Maximum radius and step
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the polar plot
+#    By default the entire canvas will be dedicated to the polar plot
 #    Possible additional arguments (optional): nautical/mathematical
 #    step in phi
 #
-proc ::Plotchart::createPolarplot { w radius_data } {
+proc ::Plotchart::createPolarplot { c radius_data args } {
+   variable scaling
    variable data_series
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
 
    set newchart "polarplot_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler polarplot $w
@@ -1159,13 +1371,17 @@ proc ::Plotchart::createPolarplot { w radius_data } {
       return -code error "Maximum radius can not be zero or negative"
    }
 
-   foreach {pxmin pymin pxmax pymax} [MarginsCircle $w] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsCircle $w {*}$args] {break}
+
+   set scaling($w,coordSystem) 0
 
    viewPort         $w $pxmin     $pymin     $pxmax   $pymax
    polarCoordinates $w $rad_max
    DrawPolarAxes    $w $rad_max   $rad_step
    DefaultLegend    $w
    DefaultBalloon   $w
+
+   set scaling($w,coordSystem) 4
 
    $newchart dataconfig labeldot -colour red -type symbol -symbol dot
 
@@ -1175,190 +1391,242 @@ proc ::Plotchart::createPolarplot { w radius_data } {
 # createBarchart --
 #    Create a command for drawing a barchart with vertical bars
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    xlabels     List of labels for x-axis
 #    yscale      Minimum, maximum and step for y-axis
 #    noseries    Number of series or the keyword "stacked"
+#    args        (Optional) one or more options wrt the layout
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the barchart.
+#    By default the entire canvas will be dedicated to the barchart.
 #
-proc ::Plotchart::createBarchart { w xlabels yscale noseries } {
-   variable data_series
-   variable settings
+proc ::Plotchart::createBarchart { c xlabels yscale noseries args } {
+    variable data_series
+    variable settings
+    variable config
+    variable scaling
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+    set w [NewPlotInCanvas $c]
+    interp alias {} $w {} $c
 
-   set newchart "barchart_$w"
-   interp alias {} $newchart {} ::Plotchart::PlotHandler vertbars $w
-   CopyConfig vertbars $w
+    ClearPlot $w
 
-   set settings($w,showvalues)   0
-   set settings($w,valuefont)    ""
-   set settings($w,valuecolour)  black
-   set settings($w,valueformat)  %s
+    set newchart "barchart_$w"
+    interp alias {} $newchart {} ::Plotchart::PlotHandler vertbars $w
+    CopyConfig vertbars $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+    set settings($w,showvalues)   0
+    set settings($w,valuefont)    ""
+    set settings($w,valuecolour)  black
+    set settings($w,valueformat)  %s
 
-   set xmin  0.0
-   set xmax  [expr {[llength $xlabels] + 0.1}]
+    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
 
-   foreach {ymin ymax ydelt} $yscale {break}
+    set scaling($w,coordSystem) 0
 
-   if { $ydelt == 0.0 } {
-      return -code error "Step size can not be zero"
-   }
+    if { $noseries eq "stacked" } {
+        set xmin [expr {1.0 - $config($w,bar,barwidth)/2.0 - $config($w,bar,innermargin)}]
+        set xmax [expr {[llength $xlabels] + $config($w,bar,barwidth)/2.0 + $config($w,bar,innermargin)}]
+    } else {
+        set xmin [expr {1.0 - $config($w,bar,barwidth)/2.0 - $config($w,bar,innermargin)}]
+        set xmax [expr {[llength $xlabels] + $config($w,bar,barwidth)/2.0 + $config($w,bar,innermargin)}]
+    }
 
-   if { ($ymax-$ymin)*$ydelt < 0.0 } {
-      set ydelt [expr {-$ydelt}]
-   }
+    foreach {ymin ymax ydelt} $yscale {break}
 
-   viewPort         $w $pxmin $pymin $pxmax $pymax
-   worldCoordinates $w $xmin  $ymin  $xmax  $ymax
+    if { $ydelt == 0.0 } {
+        return -code error "Step size can not be zero"
+    }
 
-   DrawYaxis        $w $ymin  $ymax  $ydelt
-   DrawXlabels      $w $xlabels $noseries
-   DrawMask         $w
-   DefaultLegend    $w
-   set data_series($w,legendtype) "rectangle"
-   DefaultBalloon   $w
+    if { ($ymax-$ymin)*$ydelt < 0.0 } {
+        set ydelt [expr {-$ydelt}]
+    }
 
-   SetColours $w blue lightblue green yellow orange red magenta brown
+    viewPort         $w $pxmin $pymin $pxmax $pymax
+    worldCoordinates $w $xmin  $ymin  $xmax  $ymax
 
-   return $newchart
+    DrawYaxis        $w $ymin  $ymax  $ydelt
+    DrawXlabels      $w $xlabels $noseries
+    DrawMask         $w
+    DefaultLegend    $w
+    set data_series($w,legendtype) "rectangle"
+    DefaultBalloon   $w
+
+    SetColours $w blue lightblue green yellow orange red magenta brown
+
+    return $newchart
 }
 
 # createHorizontalBarchart --
 #    Create a command for drawing a barchart with horizontal bars
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    xscale      Minimum, maximum and step for x-axis
 #    ylabels     List of labels for y-axis
 #    noseries    Number of series or the keyword "stacked"
+#    args        (Optional) one or more options wrt the layout
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the barchart.
+#    By default the entire canvas will be dedicated to the barchart.
 #
-proc ::Plotchart::createHorizontalBarchart { w xscale ylabels noseries } {
-   variable data_series
-   variable config
-   variable settings
+proc ::Plotchart::createHorizontalBarchart { c xscale ylabels noseries args } {
+    variable data_series
+    variable config
+    variable settings
+    variable scaling
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+    set w [NewPlotInCanvas $c]
+    interp alias {} $w {} $c
 
-   set newchart "hbarchart_$w"
-   interp alias {} $newchart {} ::Plotchart::PlotHandler horizbars $w
-   CopyConfig horizbars $w
+    ClearPlot $w
 
-   set settings($w,showvalues)   0
-   set settings($w,valuefont)    ""
-   set settings($w,valuecolour)  black
-   set settings($w,valueformat)  %s
+    set newchart "hbarchart_$w"
+    interp alias {} $newchart {} ::Plotchart::PlotHandler horizbars $w
+    CopyConfig horizbars $w
 
-   set font      $config($w,leftaxis,font)
-   set xspacemax 0
-   foreach ylabel $ylabels {
-       set xspace [font measure $font $ylabel]
-       if { $xspace > $xspacemax } {
-           set xspacemax $xspace
-       }
-   }
-   set config($w,margin,left) [expr {$xspacemax+5}] ;# Slightly more space required!
+    set settings($w,showvalues)   0
+    set settings($w,valuefont)    ""
+    set settings($w,valuecolour)  black
+    set settings($w,valueformat)  %s
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+    set font      $config($w,leftaxis,font)
+    set xspacemax 0
+    foreach ylabel $ylabels {
+        set xspace [font measure $font $ylabel]
+        if { $xspace > $xspacemax } {
+            set xspacemax $xspace
+        }
+    }
+    set config($w,margin,left) [expr {$xspacemax+5}] ;# Slightly more space required!
 
-   set ymin  0.0
-   set ymax  [expr {[llength $ylabels] + 0.1}]
+    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
 
-   foreach {xmin xmax xdelt} $xscale {break}
+    set scaling($w,coordSystem) 0
 
-   if { $xdelt == 0.0 } {
-      return -code error "Step size can not be zero"
-   }
+    if { $noseries eq "stacked" } {
+        set ymin [expr {1.0 - $config($w,bar,barwidth)/2.0 - $config($w,bar,innermargin)}]
+        set ymax [expr {[llength $ylabels] + $config($w,bar,barwidth)/2.0 + $config($w,bar,innermargin)}]
+    } else {
+        set ymin [expr {1.0 - $config($w,bar,barwidth)/2.0 - $config($w,bar,innermargin)}]
+        set ymax [expr {[llength $ylabels] + $config($w,bar,barwidth)/2.0 + $config($w,bar,innermargin)}]
+    }
 
-   if { ($xmax-$xmin)*$xdelt < 0.0 } {
-      set xdelt [expr {-$xdelt}]
-   }
+    foreach {xmin xmax xdelt} $xscale {break}
 
-   viewPort         $w $pxmin $pymin $pxmax $pymax
-   worldCoordinates $w $xmin  $ymin  $xmax  $ymax
+    if { $xdelt == 0.0 } {
+        return -code error "Step size can not be zero"
+    }
 
-   DrawXaxis        $w $xmin  $xmax  $xdelt
-   DrawYlabels      $w $ylabels $noseries
-   DrawMask         $w
-   DefaultLegend    $w
-   set data_series($w,legendtype) "rectangle"
-   DefaultBalloon   $w
+    if { ($xmax-$xmin)*$xdelt < 0.0 } {
+        set xdelt [expr {-$xdelt}]
+    }
 
-   SetColours $w blue lightblue green yellow orange red magenta brown
+    viewPort         $w $pxmin $pymin $pxmax $pymax
+    worldCoordinates $w $xmin  $ymin  $xmax  $ymax
 
-   return $newchart
+    DrawXaxis        $w $xmin  $xmax  $xdelt
+    DrawYlabels      $w $ylabels $noseries
+    DrawMask         $w
+    DefaultLegend    $w
+    set data_series($w,legendtype) "rectangle"
+    DefaultBalloon   $w
+
+    SetColours $w blue lightblue green yellow orange red magenta brown
+
+    return $newchart
 }
 
 # createBoxplot --
 #    Create a command for drawing a plot with box-and-whiskers
 # Arguments:
 #    w           Name of the canvas
-#    xscale      Minimum, maximum and step for x-axis
-#    ylabels     List of labels for y-axis
+#    xdata       Minimum, maximum and step for x-axis OR list of labels for x-axis
+#                (depending on the value of 'orientation')
+#    ydata       Minimum, maximum and step for y-axis OR list of labels for y-axis
+#    orientation 'horizontal' boxes with xscale and ylabels (the default)
+#                or 'vertical' boxes with xlabels and yscale
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the boxplot.
+#    By default the entire canvas will be dedicated to the boxplot.
 #
-proc ::Plotchart::createBoxplot { w xscale ylabels } {
+proc ::Plotchart::createBoxplot { w xdata ydata {orientation horizontal}} {
    variable data_series
    variable config
+   variable settings
+   variable scaling
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   ClearPlot $w
 
    set newchart "boxplot_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler boxplot $w
    CopyConfig boxplot $w
 
-   set font      $config($w,leftaxis,font)
-   set xspacemax 0
-   foreach ylabel $ylabels {
-       set xspace [font measure $font $ylabel]
-       if { $xspace > $xspacemax } {
-           set xspacemax $xspace
-       }
+   if {$orientation eq "horizontal"} {
+      set font $config($w,leftaxis,font)
+      set xspacemax 0
+      foreach ylabel $ydata {
+         set xspace [font measure $font $ylabel]
+         if { $xspace > $xspacemax } {
+             set xspacemax $xspace
+         }
+      }
+      set config($w,margin,left) [expr {$xspacemax+5}] ;# Slightly more space required!
+   } elseif {$orientation eq "vertical"} {
+      # nothing here, just for completeness ...
+   } else {
+      return -code error "no such orientation '$orientation'. Must be 'horizontal' or 'vertical'"
    }
-   set config($w,margin,left) [expr {$xspacemax+5}] ;# Slightly more space required!
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+   set settings($w,orientation) $orientation
 
-   set ymin  0.0
-   set ymax  [expr {[llength $ylabels] + 0.1}]
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w {}] {break}
 
-   foreach {xmin xmax xdelt} $xscale {break}
+   set scaling($w,coordSystem) 0
 
-   if { $xdelt == 0.0 } {
-      return -code error "Step size can not be zero"
-   }
-
-   if { ($xmax-$xmin)*$xdelt < 0.0 } {
-      set xdelt [expr {-$xdelt}]
+   if {$orientation eq "horizontal"} {
+      set ymin [expr {1.0 - $config($w,bar,barwidth)/2.0 - $config($w,bar,innermargin)}]
+      set ymax [expr {[llength $ydata] + $config($w,bar,barwidth)/2.0 + $config($w,bar,innermargin)}]
+      foreach {xmin xmax xdelt} $xdata {break}
+      if { $xdelt == 0.0 } {
+         return -code error "Step size can not be zero"
+      }
+      if { ($xmax-$xmin)*$xdelt < 0.0 } {
+         set xdelt [expr {-$xdelt}]
+      }
+   } else {
+      set xmin [expr {1.0 - $config($w,bar,barwidth)/2.0 - $config($w,bar,innermargin)}]
+      set xmax [expr {[llength $xdata] + $config($w,bar,barwidth)/2.0 + $config($w,bar,innermargin)}]
+      foreach {ymin ymax ydelt} $ydata {break}
+      if { $ydelt == 0.0 } {
+         return -code error "Step size can not be zero"
+      }
+      if { ($ymax-$ymin)*$ydelt < 0.0 } {
+         set ydelt [expr {-$ydelt}]
+      }
    }
 
    viewPort         $w $pxmin $pymin $pxmax $pymax
    worldCoordinates $w $xmin  $ymin  $xmax  $ymax
 
-   DrawXaxis        $w $xmin  $xmax  $xdelt
-   DrawYlabels      $w $ylabels 1
+   if {$orientation eq "horizontal"} {
+      DrawXaxis        $w $xmin  $xmax  $xdelt
+      DrawYlabels      $w $ydata 1
+   } else {
+      DrawYaxis        $w $ymin  $ymax  $ydelt
+      DrawXlabels      $w $xdata 1
+   }
    DrawMask         $w
    DefaultLegend    $w
    set data_series($w,legendtype) "rectangle"
    DefaultBalloon   $w
 
-   set config($w,axisnames) $ylabels
+   if {$orientation eq "horizontal"} {
+      set config($w,axisnames) $ydata
+   } else {
+      set config($w,axisnames) $xdata
+   }
 
    return $newchart
 }
@@ -1374,15 +1642,13 @@ proc ::Plotchart::createBoxplot { w xscale ylabels } {
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the timechart.
+#    By default the entire canvas will be dedicated to the timechart.
 #
 proc ::Plotchart::createTimechart { w time_begin time_end args} {
    variable data_series
    variable scaling
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   ClearPlot $w
 
    set newchart "timechart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler timechart $w
@@ -1412,7 +1678,9 @@ proc ::Plotchart::createTimechart { w time_begin time_end args} {
        }
    }
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w 3 $ylabelwidth] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args 3 $ylabelwidth] {break}
+
+   set scaling($w,coordSystem) 0
 
    if { $barheight != 0 } {
        set noitems [expr {($pxmax-$pxmin)/double($barheight)}]
@@ -1450,7 +1718,7 @@ proc ::Plotchart::createTimechart { w time_begin time_end args} {
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the Gantt chart.
+#    By default the entire canvas will be dedicated to the Gantt chart.
 #    Most commands taken from time charts.
 #
 proc ::Plotchart::createGanttchart { w time_begin time_end args} {
@@ -1458,9 +1726,7 @@ proc ::Plotchart::createGanttchart { w time_begin time_end args} {
    variable data_series
    variable scaling
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   ClearPlot $w
 
    set newchart "ganttchart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler ganttchart $w
@@ -1498,7 +1764,9 @@ proc ::Plotchart::createGanttchart { w time_begin time_end args} {
        }
    }
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w 3 $ylabelwidth] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args 3 $ylabelwidth] {break}
+
+   set scaling($w,coordSystem) 0
 
    if { $barheight != 0 } {
        set noitems [expr {($pxmax-$pxmin)/double($barheight)}]
@@ -1572,20 +1840,21 @@ proc ::Plotchart::createGanttchart { w time_begin time_end args} {
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the 3D plot
+#    By default the entire canvas will be dedicated to the 3D plot
 #
 proc ::Plotchart::create3DPlot { w xscale yscale zscale } {
    variable data_series
+   variable scaling
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   ClearPlot $w
 
    set newchart "3dplot_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler 3dplot $w
    CopyConfig 3dplot $w
 
    foreach {pxmin pymin pxmax pymax} [Margins3DPlot $w] {break}
+
+   set scaling($w,coordSystem) 0
 
    foreach {xmin xmax xstep} $xscale {break}
    foreach {ymin ymax ystep} $yscale {break}
@@ -1613,20 +1882,21 @@ proc ::Plotchart::create3DPlot { w xscale yscale zscale } {
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the 3D plot
+#    By default the entire canvas will be dedicated to the 3D plot
 #
 proc ::Plotchart::create3DRibbonPlot { w yscale zscale } {
    variable data_series
+   variable scaling
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   ClearPlot $w
 
    set newchart "3dribbonplot_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler 3dribbonplot $w
    CopyConfig 3dplot $w
 
    foreach {pxmin pymin pxmax pymax} [Margins3DPlot $w] {break}
+
+   set scaling($w,coordSystem) 0
 
    foreach {xmin xmax xstep} {0.0 1.0 0.0} {break}
    foreach {ymin ymax ystep} $yscale {break}
@@ -1654,20 +1924,21 @@ proc ::Plotchart::create3DRibbonPlot { w yscale zscale } {
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the barchart.
+#    By default the entire canvas will be dedicated to the barchart.
 #
 proc ::Plotchart::create3DBarchart { w yscale nobars } {
    variable data_series
+   variable scaling
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   ClearPlot $w
 
    set newchart "3dbarchart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler 3dbars $w
    CopyConfig 3dbars $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w 4] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w {} 4] {break}
+
+   set scaling($w,coordSystem) 0
 
    set xmin  0.0
    set xmax  [expr {$nobars + 0.1}]
@@ -1704,21 +1975,22 @@ proc ::Plotchart::create3DBarchart { w yscale nobars } {
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the radial chart.
+#    By default the entire canvas will be dedicated to the radial chart.
 #
 proc ::Plotchart::createRadialchart { w names scale {style lines} } {
    variable settings
    variable data_series
+   variable scaling
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   ClearPlot $w
 
    set newchart "radialchart_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler radialchart $w
    CopyConfig radialchart $w
 
    foreach {pxmin pymin pxmax pymax} [MarginsCircle $w] {break}
+
+   set scaling($w,coordSystem) 0
 
    viewPort $w $pxmin $pymin $pxmax $pymax
    $w create oval $pxmin $pymin $pxmax $pymax
@@ -1744,21 +2016,22 @@ proc ::Plotchart::createRadialchart { w names scale {style lines} } {
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the TX plot.
+#    By default the entire canvas will be dedicated to the TX plot.
 #    The plot will be drawn with axes
 #
 proc ::Plotchart::createTXPlot { w tscale xscale } {
    variable data_series
+   variable scaling
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   ClearPlot $w
 
    set newchart "txplot_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler txplot $w
    CopyConfig txplot $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w {}] {break}
+
+   set scaling($w,coordSystem) 0
 
    foreach {tmin tmax tdelt} $tscale {break}
 
@@ -1796,6 +2069,7 @@ proc ::Plotchart::createTXPlot { w tscale xscale } {
 # Arguments:
 #    w           Name of the canvas
 #    yscale      Minimum, maximum and step for vertical axis
+#    args        Options (for now: -ylabels)
 # Result:
 #    Name of a new command
 # Note:
@@ -1803,10 +2077,17 @@ proc ::Plotchart::createTXPlot { w tscale xscale } {
 #    created prior to this one. Some of the properties from that
 #    command serve for this one too.
 #
-proc ::Plotchart::createRightAxis { w yscale } {
+proc ::Plotchart::createRightAxis { w yscale args } {
    variable data_series
    variable scaling
    variable config
+
+   if { [string match ".*" $w] } {
+       set w "00$w"
+   }
+   if { [regexp {[a-z]+_([0-9][0-9]\..*)} $w ==> wc] } {
+       set w $wc
+   }
 
    set newchart "right_$w"
 
@@ -1850,18 +2131,37 @@ proc ::Plotchart::createRightAxis { w yscale } {
 
    foreach {ymin ymax ydelt} $yscale {break}
 
+   set scaling(r$w,coordSystem) 0
+   set scaling(r$w,reference)   $scaling($w,reference)
+
    if { $ydelt == 0.0 } {
       return -code error "Step size can not be zero"
    }
 
-   if { ($ymax-$ymin)*$ydelt < 0.0 } {
+   if { $ydelt ne {} && ($ymax-$ymin)*$ydelt < 0.0 } {
       set ydelt [expr {-$ydelt}]
    }
 
    viewPort         r$w $pxmin $pymin $pxmax $pymax
    worldCoordinates r$w $xmin  $ymin  $xmax  $ymax
 
-   DrawRightaxis    r$w $ymin  $ymax  $ydelt
+   if { $ydelt eq {} } {
+       foreach {arg val} $args {
+           switch -exact -- $arg {
+               -ylabels {
+                   DrawRightaxis r$w $ymin  $ymax  $ydelt $arg $val
+               }
+               -xlabels {
+                   # Ignore
+               }
+               default {
+                   error "Argument $arg not recognized"
+               }
+           }
+       }
+   } else {
+       DrawRightaxis r$w $ymin $ymax $ydelt
+   }
 
    #DefaultLegend    r$w
    #DefaultBalloon   r$w
@@ -1879,20 +2179,21 @@ proc ::Plotchart::createRightAxis { w yscale } {
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the 3D chart
+#    By default the entire canvas will be dedicated to the 3D chart
 #
 proc ::Plotchart::create3DRibbonChart { w names yscale zscale } {
    variable data_series
+   variable scaling
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   ClearPlot $w
 
    set newchart "3dribbon_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler 3dribbon $w
    CopyConfig 3dribbon $w
 
    foreach {pxmin pymin pxmax pymax} [Margins3DPlot $w] {break}
+
+   set scaling($w,coordSystem) 0
 
    foreach {xmin xmax xstep} {0.0 1.0 0.0} {break}
    foreach {ymin ymax ystep} $yscale {break}
@@ -1926,16 +2227,15 @@ proc ::Plotchart::create3DRibbonChart { w names yscale zscale } {
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the windrose
+#    By default the entire canvas will be dedicated to the windrose
 #    Possible additional arguments (optional): nautical/mathematical
 #    step in phi
 #
 proc ::Plotchart::createWindRose { w radius_data {sectors 16}} {
     variable data_series
+    variable scaling
 
-    foreach s [array names data_series "$w,*"] {
-        unset data_series($s)
-    }
+    ClearPlot $w
 
     set newchart "windrose_$w"
     interp alias {} $newchart {} ::Plotchart::PlotHandler windrose $w
@@ -1952,6 +2252,8 @@ proc ::Plotchart::createWindRose { w radius_data {sectors 16}} {
     }
 
     foreach {pxmin pymin pxmax pymax} [MarginsCircle $w] {break}
+
+    set scaling($w,coordSystem) 0
 
     viewPort         $w $pxmin     $pymin     $pxmax   $pymax
     polarCoordinates $w $rad_max
@@ -1981,7 +2283,7 @@ proc ::Plotchart::createWindRose { w radius_data {sectors 16}} {
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the XY plot.
+#    By default the entire canvas will be dedicated to the XY plot.
 #    The plot will be drawn with axes
 #
 proc ::Plotchart::createTargetDiagram { w bounds {scale 1.0}} {
@@ -1989,15 +2291,15 @@ proc ::Plotchart::createTargetDiagram { w bounds {scale 1.0}} {
     variable data_series
     variable config
 
-    foreach s [array names data_series "$w,*"] {
-        unset data_series($s)
-    }
+    ClearPlot $w
 
     set newchart "targetdiagram_$w"
     interp alias {} $newchart {} ::Plotchart::PlotHandler targetdiagram $w
     CopyConfig targetdiagram $w
 
     foreach {pxmin pymin pxmax pymax} [MarginsSquare $w] {break}
+
+    set scaling($w,coordSystem) 0
 
     set extremes [determineScale [expr {-$scale}] $scale]
     foreach {xmin xmax xdelt} $extremes {break}
@@ -2048,23 +2350,23 @@ proc ::Plotchart::createTargetDiagram { w bounds {scale 1.0}} {
 # Result:
 #    Name of a new command
 # Note:
-#    The entire canvas will be dedicated to the XY plot.
+#    By default the entire canvas will be dedicated to the XY plot.
 #    The plot will be drawn with axes
 #
 proc ::Plotchart::createPerformanceProfile { w scale } {
    variable scaling
    variable data_series
 
-   foreach s [array names data_series "$w,*"] {
-      unset data_series($s)
-   }
+   ClearPlot $w
 
    set newchart "performance_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler performance $w
    CopyConfig performance $w
    set scaling($w,eventobj) ""
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w {}] {break}
+
+   set scaling($w,coordSystem) 0
 
    foreach {xmin xmax xdelt} [determineScale 1.0 $scale] {break}
    foreach {ymin ymax ydelt} {0.0 1.1 0.25} {break}
@@ -2084,6 +2386,101 @@ proc ::Plotchart::createPerformanceProfile { w scale } {
    return $newchart
 }
 
+# createTableChart --
+#    Create a command for drawing a table
+# Arguments:
+#    w           Name of the canvas
+#    columns     Names of the columns to be displayed
+#    widths      Optional list of column widths
+# Result:
+#    Name of a new command
+# Note:
+#    By default the entire canvas will be dedicated to the table
+#
+proc ::Plotchart::createTableChart { w columns {widths {}} } {
+   variable scaling
+   variable data_series
+
+   ClearPlot $w
+
+   set newchart "table_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler table $w
+   CopyConfig table $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w {}] {break}
+
+   set scaling($w,coordSystem) 0
+
+   set scaling($w,leftside)  {}
+   set scaling($w,rightside) {}
+   set scaling($w,pymin)     $pymin
+
+   set left $pxmin
+
+   if { [llength $widths] <= 1 } {
+       if { [llength $widths] == 0 } {
+           set column_width [expr {($pxmax-$pxmin)/[llength $columns]}]
+       } else {
+           set column_width $widths
+       }
+       foreach c $columns {
+           lappend scaling($w,leftside) $left
+           set right [expr {$left + $column_width}]
+           lappend scaling($w,rightside) $right
+           set left  [expr {$left + $column_width}]
+       }
+   } else {
+       if { [llength $widths] < [llength $columns] } {
+           return -code error "Number of widths should be at least the number of columns"
+       }
+
+       foreach width $widths {
+           lappend scaling($w,leftside) $left
+           set right [expr {$left + $width}]
+           lappend scaling($w,rightside) $right
+           set left  [expr {$left + $width}]
+       }
+   }
+
+   set scaling($w,formatcommand) ::Plotchart::DefaultFormat
+   set scaling($w,topside)       $pymin
+   set scaling($w,toptable)      $pymin
+   set scaling($w,row)           0
+
+   set scaling($w,cell,-background) ""
+   set scaling($w,cell,-color)      black
+
+   DrawTableFrame $w
+   DrawRow        $w $columns header
+
+   return $newchart
+}
+
+# createTitleBar --
+#    Create a command for drawing a title over the full width of the canvas
+# Arguments:
+#    w           Name of the canvas
+#    height      Height of the title bar
+# Result:
+#    Name of a new command
+#
+proc ::Plotchart::createTitleBar { w height } {
+   variable scaling
+   variable data_series
+
+   ClearPlot $w
+
+   set newchart "title_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler title $w
+   CopyConfig title $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w {}] {break}
+
+   # TODO!
+
+   return $newchart
+}
+
 # Load the private procedures
 #
 source [file join [file dirname [info script]] "plotpriv.tcl"]
@@ -2098,7 +2495,9 @@ source [file join [file dirname [info script]] "plotconfig.tcl"]
 source [file join [file dirname [info script]] "plotpack.tcl"]
 source [file join [file dirname [info script]] "plotbind.tcl"]
 source [file join [file dirname [info script]] "plotspecial.tcl"]
+source [file join [file dirname [info script]] "plotobject.tcl"]
+source [file join [file dirname [info script]] "plottable.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 1.9.2
+package provide Plotchart 2.0.0
