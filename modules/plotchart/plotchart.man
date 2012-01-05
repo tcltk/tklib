@@ -728,7 +728,7 @@ the type of the chart.
 
 [para]
 
-General subcommands for all types of charts. $anyplot is the command
+General subcommands for all types of charts. \$anyplot is the command
 returned by the creation command:
 
 [list_begin definitions]
@@ -2683,7 +2683,7 @@ Return a list of pixel coordinates valid for the given window.
 
 [list_begin arguments]
 [arg_def widget w in]
-Name of the canvas alias (as returned by \[\$anyplot canvas\]) in question.
+Name of the canvas alias (as returned by [lb]\$anyplot canvas[rb]) in question.
 
 [arg_def float x in]
 X-coordinate to be mapped.
@@ -2701,7 +2701,7 @@ Return a list of pixel coordinates valid for the given window.
 
 [list_begin arguments]
 [arg_def widget w in]
-Name of the canvas alias (as returned by \[\$anyplot canvas\]) in question.
+Name of the canvas alias (as returned by [lb]\$anyplot canvas[rb]) in question.
 
 [arg_def float x in]
 X-coordinate to be mapped.
@@ -2728,7 +2728,7 @@ creation routine for a polar plot always determines a square viewport.
 
 [list_begin arguments]
 [arg_def widget w in]
-Name of the canvas alias (as returned by \[\$anyplot canvas\]) in question.
+Name of the canvas alias (as returned by [lb]\$anyplot canvas[rb]) in question.
 
 [arg_def float radmax in]
 Maximum radius.
@@ -2749,7 +2749,7 @@ taken care of in the creation routine for polar plots.
 
 [list_begin arguments]
 [arg_def widget w in]
-Name of the canvas alias (as returned by \[\$anyplot canvas\]) in question.
+Name of the canvas alias (as returned by [lb]\$anyplot canvas[rb]) in question.
 
 [arg_def float rad in]
 Radius of the point.
@@ -2767,7 +2767,7 @@ Return a list of world coordinates valid for the given window.
 
 [list_begin arguments]
 [arg_def widget w in]
-Name of the canvas alias (as returned by \[\$anyplot canvas\]) in question.
+Name of the canvas alias (as returned by [lb]\$anyplot canvas[rb]) in question.
 
 [arg_def float x in]
 X-pixel to be mapped.
@@ -2784,7 +2784,7 @@ Return the index of the pie segment containing the pixel coordinates
 
 [list_begin arguments]
 [arg_def widget w in]
-Name of the canvas alias (as returned by \[\$anyplot canvas\]) in question,
+Name of the canvas alias (as returned by [lb]\$anyplot canvas[rb]) in question,
 holding a piechart.
 
 [arg_def float x in]
