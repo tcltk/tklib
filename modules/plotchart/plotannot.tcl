@@ -228,8 +228,8 @@ proc ::Plotchart::DrawBalloon { w x y text dir } {
 #    Plot plain text in a chart
 # Arguments:
 #    w           Name of the canvas
-#    x           X-coordinate of the point the arrow points to
-#    y           Y-coordinate of the point the arrow points to
+#    x           X-coordinate of the point the text is positioned to
+#    y           Y-coordinate of the point the text is positioned to
 #    text        Text to be drawn
 #    anchor      Anchor position (north, north-east, ..., defaults to centre)
 # Result:
@@ -254,6 +254,42 @@ proc ::Plotchart::DrawPlainText { w x y text {anchor centre} } {
          -justify $settings($w,textjustify) -anchor $anchor
 
     $w raise PlainText
+}
+
+# DrawTimeBalloon --
+#    Plot a balloon text in a TXPlot
+# Arguments:
+#    w           Name of the canvas
+#    time        Time-coordinate of the point the arrow points to
+#    y           Y-coordinate of the point the arrow points to
+#    text        Text in the balloon
+#    dir         Direction of the arrow (north, north-east, ...)
+# Result:
+#    None
+# Side effects:
+#    Text and polygon drawn in the chart
+#
+proc ::Plotchart::DrawTimeBalloon { w time y text dir } {
+
+    DrawBalloon $w [clock scan $time] $y $text $dir
+}
+
+# DrawTimePlainText --
+#    Plot plain text in a TXPlot
+# Arguments:
+#    w           Name of the canvas
+#    time        Time-coordinate of the point the text is positioned to
+#    y           Y-coordinate of the point the text is positioned to
+#    text        Text to be drawn
+#    anchor      Anchor position (north, north-east, ..., defaults to centre)
+# Result:
+#    None
+# Side effects:
+#    Text drawn in the chart
+#
+proc ::Plotchart::DrawTimePlainText { w time y text {anchor centre} } {
+
+    DrawPlainText $w [clock scan $time] $y $text $anchor
 }
 
 # BrightenColour --
