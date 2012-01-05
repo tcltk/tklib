@@ -1,3 +1,8 @@
+2012-01-05  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotchart.man: Add documentation for $p canvas and change to coordinate transformations
+	* plotchart.tcl: Additional method $p canvas and fixed problem with annotations in TXPlot
+	* plotannot.tcl: Fixed problem with annotations in TXPlot
+
 2011-11-27  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotchart.man: Add documentation for removefromlegend and several options
 	* plotchart.tcl: Add method removefromlegend
