@@ -748,6 +748,13 @@ different positions.
 [para]
 
 
+[call [cmd \$anyplot] canvas]
+
+Return the name of the canvas (or the alias if you use more than one plot within a
+canvas). Use this value for the coordinate transformations.
+[para]
+
+
 [call [cmd \$anyplot] saveplot [arg filename] [arg args]]
 
 Draws the plot into a file, using PostScript.
@@ -2676,7 +2683,7 @@ Return a list of pixel coordinates valid for the given window.
 
 [list_begin arguments]
 [arg_def widget w in]
-Name of the window (canvas widget) in question.
+Name of the canvas alias (as returned by \[\$anyplot canvas\]) in question.
 
 [arg_def float x in]
 X-coordinate to be mapped.
@@ -2694,7 +2701,7 @@ Return a list of pixel coordinates valid for the given window.
 
 [list_begin arguments]
 [arg_def widget w in]
-Name of the window (canvas widget) in question.
+Name of the canvas alias (as returned by \[\$anyplot canvas\]) in question.
 
 [arg_def float x in]
 X-coordinate to be mapped.
@@ -2721,7 +2728,7 @@ creation routine for a polar plot always determines a square viewport.
 
 [list_begin arguments]
 [arg_def widget w in]
-Name of the window (canvas widget) in question.
+Name of the canvas alias (as returned by \[\$anyplot canvas\]) in question.
 
 [arg_def float radmax in]
 Maximum radius.
@@ -2742,7 +2749,7 @@ taken care of in the creation routine for polar plots.
 
 [list_begin arguments]
 [arg_def widget w in]
-Name of the window (canvas widget) in question.
+Name of the canvas alias (as returned by \[\$anyplot canvas\]) in question.
 
 [arg_def float rad in]
 Radius of the point.
@@ -2760,7 +2767,7 @@ Return a list of world coordinates valid for the given window.
 
 [list_begin arguments]
 [arg_def widget w in]
-Name of the window (canvas widget) in question.
+Name of the canvas alias (as returned by \[\$anyplot canvas\]) in question.
 
 [arg_def float x in]
 X-pixel to be mapped.
@@ -2777,7 +2784,8 @@ Return the index of the pie segment containing the pixel coordinates
 
 [list_begin arguments]
 [arg_def widget w in]
-Name of the window (canvas widget) in question, holding a piechart.
+Name of the canvas alias (as returned by \[\$anyplot canvas\]) in question,
+holding a piechart.
 
 [arg_def float x in]
 X-pixel to be mapped.

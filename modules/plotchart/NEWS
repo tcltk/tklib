@@ -77,6 +77,10 @@ plotmethod:
 
 New subcommands:
 
+$anyplot canvas:
+    Return the alias for the canvas holding the plot. Useful for coordinate
+    transformations.
+
 $anyplot removefromcanvas:
     Remove an entry from the legend.
 
@@ -165,6 +169,10 @@ Improvements and bugfixes:
 
 
 Incompatibilities:
+
+- The coordsToPixel command and related commands need the _alias name_ for the canvas,
+  as there can be more than one plot or chart in a canvas. This is returned via the
+  new "$plot canvas" subcommand.
 
 - The default colour for the gridlines in polar plots has been changed to grey instead
   of black, as the black lines were too conspicuous
