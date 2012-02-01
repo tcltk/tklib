@@ -126,6 +126,7 @@ namespace eval ::Plotchart {
 proc ::Plotchart::DrawObject {w item series args} {
     variable data_series
     variable canvasObject
+    variable config
 
     #
     # check for existent object types
@@ -166,9 +167,19 @@ proc ::Plotchart::DrawObject {w item series args} {
     #
     # Transform coodinates into pixels:
     #
-    foreach {x y} $coords {
+    if {[info exists config($w,object,transposecoordinates)] && $config($w,object,transposecoordinates)} {
+        #
+        # Transposed coordinates
+        #
+        foreach {y x} $coords {
             foreach {pxcrd pycrd} [::Plotchart::coordsToPixel $w $x $y] {break}
             lappend pcoords $pxcrd $pycrd
+        }
+    } else {
+        foreach {x y} $coords {
+            foreach {pxcrd pycrd} [::Plotchart::coordsToPixel $w $x $y] {break}
+            lappend pcoords $pxcrd $pycrd
+        }
     }
 
     #

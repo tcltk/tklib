@@ -140,7 +140,7 @@ namespace eval ::Plotchart {
         spiralpie     {title margin text legend                               background      labels slice}
         polarplot     {title margin text legend axis                          background}
         histogram     {title margin text legend leftaxis rightaxis bottomaxis background mask}
-        horizbars     {title margin text legend leftaxis           bottomaxis background mask bar}
+        horizbars     {title margin text legend leftaxis           bottomaxis background mask bar object}
         vertbars      {title margin text legend leftaxis           bottomaxis background mask bar}
         ganttchart    {title margin text legend axis                          background}
         timechart     {title margin text legend leftaxis           bottomaxis background}
@@ -186,6 +186,7 @@ namespace eval ::Plotchart {
         cell       {background font color anchor leftspace rightspace topspace}
         frame      {color outerwidth innerwidth}
         slice      {outlinewidth outline startangle direction}
+        object     {transposecoordinates}
     } {
         if { $properties eq "-" } {
             set properties $lastProperties
@@ -243,8 +244,9 @@ namespace eval ::Plotchart {
     set _render      simple ;# rendering of text: 'simple' or 'text'
     set _sorted      0      ;# piechart and spiral pie
    #set _shownumbers 0      ;# piechart and spiral pie      - conflict with axes - see below
-   #set _format      "%s (%g)" ;# piechart and spiral pie
-    set _formatright ""        ;# piechart and spiral pie
+   #set _format      "%s (%g)"  ;# piechart and spiral pie
+    set _formatright ""         ;# piechart and spiral pie
+    set _transposecoordinates 0 ;# horizontal barchart
 
 
     destroy .invisibleCanvas
