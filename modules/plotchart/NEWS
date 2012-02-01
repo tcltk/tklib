@@ -156,6 +156,10 @@ For the text and labels along axes:
     axes can be set to "text", in which case superscript and subscript are
     possible.
 
+For horizontal barcharts:
+    -transposecoordinates  Make the y-coordinate the primary coordinate (effects the object submethod)
+                           (makes it easy to switch from vertical to horizontal barcharts if you have
+                           custom methods)
 
 Improvements and bugfixes:
 
