@@ -1,3 +1,14 @@
+2012-02-15  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* canvas_drag.man: Three new utility packages to help with
+	* canvas_drag.tcl: canvas tag lists, highlighting, and dragging.
+	* canvas_highlight.man: Plus an example application showing off
+	* canvas_highlight.tcl: all three.
+	* canvas_tags.man:
+	* canvas_tags.tcl:
+	* pkgIndex.tcl:
+	* ../../examples/canvas/demo_draghigh.tcl
+
 2010-08-26  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* canvas_mvg.tcl: New package. Partial conversion of canvas
