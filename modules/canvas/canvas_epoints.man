@@ -210,11 +210,11 @@ the actual storage of point information to an outside object.
 [para] If not specified it defaults to an empty string and is ignored
 by the editor, i.e. not invoked.
 
-[para] The three signatures of this command prefix are
+[para] The signatures of this command prefix are
 
 [list_begin definitions]
 [comment {= = == === ===== ======== ============= =====================}]
-[call [cmd cmd] [method add] [arg id] [arg x] [arg y]]
+[call [cmd cmd] [method add] [arg editorObj] [arg id] [arg x] [arg y]]
 
 This callback is invoked when a new point was added to the instance,
 either interactively, or programmatically.
@@ -230,7 +230,7 @@ of the new point in canvas coordinates.
 [para] The result of this method is ignored.
 
 [comment {= = == === ===== ======== ============= =====================}]
-[call [cmd cmd] [method remove] [arg id]]
+[call [cmd cmd] [method remove] [arg editorObj] [arg id]]
 
 This callback is invoked when a point removed from the editor
 instance.
@@ -240,7 +240,7 @@ instance.
 [para] The result of this method is ignored.
 
 [comment {= = == === ===== ======== ============= =====================}]
-[call [cmd cmd] [method {move start}] [arg id]]
+[call [cmd cmd] [method {move start}] [arg editorObj] [arg id]]
 
 This callback is invoked when the movement of a point in the editor
 instance has started.
@@ -251,7 +251,7 @@ moved.
 [para] The result of this method is ignored.
 
 [comment {= = == === ===== ======== ============= =====================}]
-[call [cmd cmd] [method {move delta}] [arg id] [arg x] [arg y] [arg dx] [arg dy]]
+[call [cmd cmd] [method {move delta}] [arg editorObj] [arg id] [arg x] [arg y] [arg dx] [arg dy]]
 
 This callback is invoked when the point moved in the editor instance.
 
@@ -272,7 +272,7 @@ in temporary storage until then.
 [para] The result of this method is ignored.
 
 [comment {= = == === ===== ======== ============= =====================}]
-[call [cmd cmd] [method {move done}] [arg id]]
+[call [cmd cmd] [method {move done}] [arg editorObj] [arg id]]
 
 This callback is invoked when the movement of a point in the editor
 instance is complete.
