@@ -177,7 +177,7 @@ snit::type ::canvas::edit::points {
 	set mydragactive 1
 	set grouptag [GetId $c $item]
 	set mydbox [$c bbox $grouptag]
-	Note move start $grouptag
+	Note {move start} $grouptag
 	return $grouptag
     }
 
@@ -187,7 +187,7 @@ snit::type ::canvas::edit::points {
 	#puts "Drag Move|$grouptag|$dx $dy|"
 	$c move $grouptag $dx $dy
 	lassign [Delta] px py dx dy
-	Note move delta $grouptag $px $py $dx $dy
+	Note {move delta} $grouptag $px $py $dx $dy
 	return $grouptag
     }
 
@@ -196,7 +196,7 @@ snit::type ::canvas::edit::points {
 	$self CheckCanvas $c
 	#puts "Drag Done|$grouptag|"
 	set mydragactive 0
-	set ok [Note move done $grouptag]
+	set ok [Note {move done} $grouptag]
 	lassign [Delta] px py dx dy
 	if {$ok} {
 	    # Commit to new location.
@@ -232,7 +232,7 @@ snit::type ::canvas::edit::points {
     proc Note {cmd args} {
 	upvar 1 options options self self
 	if {![llength $options(-point-cmd)]} return
-	return [{*}$options(-point-cmd) $cmd $self {*}$args]
+	return [{*}$options(-point-cmd) {*}$cmd $self {*}$args]
     }
 
     #### Generate a unique tag for a new point.
