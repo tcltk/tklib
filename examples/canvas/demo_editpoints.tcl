@@ -3,9 +3,9 @@
 # demo_editpoints.tcl --
 #
 # This demonstration script creates a canvas widget where you can edit
-# a cloud of points, i.e. add, rmeove, and drag point markers..
+# a cloud of points, i.e. add, remove, and drag point markers.
 #
-# RCS: @(#) $Id: demo_editpoints.tcl,v 1.1 2012/02/22 04:28:13 andreas_kupries Exp $
+# RCS: @(#) $Id: demo_editpoints.tcl,v 1.2 2012/02/22 04:42:07 andreas_kupries Exp $
 
 # Bindings
 #
