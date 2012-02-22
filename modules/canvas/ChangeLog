@@ -1,3 +1,10 @@
+2012-02-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* canvas_epoints.man: New package, an editor for point clouds, attachable
+	* canvas_epoints.tcl: to any canvas.
+	* pkgIndex.tcl:
+	* ../../examples/canvas/demo_editpoints.tcl:
+
 2012-02-15  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* canvas_drag.man: Three new utility packages to help with
