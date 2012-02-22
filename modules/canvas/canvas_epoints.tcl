@@ -3,16 +3,6 @@
 
 # Canvas Behavior Module. Editing a point cloud.
 
-## TODO ##
-#
-# - Provide options or methods to (de)activate the editor, i.e. add
-#   the ability to switch between passive display of the cloud and
-#   editing it. This is likely be needed to avoid interference when
-#   multiple point clouds are shown and available for editing on the
-#   same canvas.
-#
-## TODO END ##
-
 # - Create    point - B1 (canvas global)
 # - Remove    point - B2 (linked to -tag, current item)
 # - Drag/Move point - B3 (linked to -tag, current item)
