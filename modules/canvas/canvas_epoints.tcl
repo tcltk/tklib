@@ -227,12 +227,12 @@ snit::type ::canvas::edit::points {
     # # ## ### ##### ######## #############
     ## Class global commands for the actions in the previous section.
 
-    #### Generate notifcation about changes to the point cloud.
+    #### Generate notification about changes to the point cloud.
 
-    proc Note {args} {
+    proc Note {cmd args} {
 	upvar 1 options options self self
 	if {![llength $options(-point-cmd)]} return
-	return [{*}$options(-point-cmd) $self {*}$args]
+	return [{*}$options(-point-cmd) $cmd $self {*}$args]
     }
 
     #### Generate a unique tag for a new point.
