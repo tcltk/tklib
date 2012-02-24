@@ -1,19 +1,19 @@
 #!/bin/env tclsh8.5
 # -*- tcl -*-
 # # ## ### ##### ######## ############# #####################
-# demo_editpoints.tcl --
+# demo_ceditquad.tcl --
 #
 # This demonstration script creates a canvas widget where you can edit
-# a cloud of points, i.e. add, remove, and drag point markers.
+# a quadrilateral.
 #
-# RCS: @(#) $Id: demo_editpoints.tcl,v 1.3 2012/02/24 01:41:22 andreas_kupries Exp $
+# RCS: @(#) $Id: demo_editquadconvex.tcl,v 1.1 2012/02/24 01:41:22 andreas_kupries Exp $
 
 # # ## ### ##### ######## ############# #####################
 ## Bindings
 #
-# Button-1 : Create new point at mouse position.
-# Button-2 : Remove point at mouse position.
-# Button-3 : Start drag of point at mouse position.
+# Button-1 : Create new quad vertex at mouse position.
+# Button-2 : Remove quad vertex at mouse position.
+# Button-3 : Start drag of quad vertex at mouse position.
 
 # # ## ### ##### ######## ############# #####################
 ## Requirements
@@ -27,11 +27,11 @@ package require Tcl 8.5
 apply {{selfdir} {
     #puts ($selfdir)
     lappend ::auto_path $selfdir
-    lappend ::auto_path [file normalize $selfdir/../../modules/canvas]
+    lappend ::auto_path [file normalize $selfdir/../../modules]
 }} [file dirname [file normalize [info script]]]
 
 package require Tk
-package require canvas::edit::points
+package require canvas::edit::quadrilateral
 
 # # ## ### ##### ######## ############# #####################
 ## GUI
@@ -41,8 +41,8 @@ catch {destroy $w}
 wm withdraw .
 
 toplevel       $w
-wm title       $w "Canvas :: Editor :: Points"
-wm iconname    $w "CEPC"
+wm title       $w "Canvas :: Editor :: Convex Quadrilateral"
+wm iconname    $w "CEP"
 set c          $w.c
 
 label  $w.msg -text {} -relief raised -bd 2 -anchor w
@@ -69,29 +69,12 @@ grid $w.clear -row 2 -column 3               -sticky swen
 # # ## ### ##### ######## ############# #####################
 ## Setup the behavioral triggers and responses ...
 
-canvas::edit points EDITOR $c -data-cmd M
+canvas::edit quadrilateral EDITOR $c -data-cmd M -convex 1
 
 proc M {args} {
     global w
     $w.msg configure -text $args
-    lassign $args _ c m
-    #puts |$c|$m|
-    if {$c eq "move"} {
-	switch -exact -- $m {
-	    start {}
-	    delta {
-		global dx dy
-		lassign $args c m id x y dx dy
-		#puts "|$dx $dy|"
-	    }
-	    done {
-		global dx dy
-		#puts "|$dx $dy|[expr {hypot($dx,$dy)}]"
-		if {hypot($dx,$dy) > 200} { return 0 }
-	    }
-	}
-    }
-    return 1
+    return
 }
 
 # # ## ### ##### ######## ############# #####################

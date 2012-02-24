@@ -1,7 +1,31 @@
+2012-02-23  Andreas Kupries  <andreask@activestate.com>
+
+	* ../../examples/canvas/demo_editpoints.tcl: Tweaked demo GUIs
+	* ../../examples/canvas/demo_draghigh.tcl:
+
+	* canvas_epoints.man: Tweaked the options for callbacks a bit.
+	* canvas_epoints.tcl: All packages now use a -data-cmd options
+	  for the reporting of edit operations.
+
+	* canvas_equad.man: New package, an editor for a quadrilateral,
+	* canvas_equad.tcl: attachable to any canvas. Can be constrained
+	* pkgIndex.tcl: to accept only convex quadrilaterals.
+	* ../../examples/canvas/demo_editquad.tcl:
+	* ../../examples/canvas/demo_editquadconvex.tcl:
+
+	* canvas_epoly.man: New package, an editor for a poly-line,
+	* canvas_epoly.tcl: attachable to any canvas.
+	* pkgIndex.tcl:
+	* ../../examples/canvas/demo_editpoly.tcl:
+	
+	* canvas_trlines.tcl: New helper packages managing rubberbands.
+	* canvas_trlines.man:
+	* pkgIndex.tcl:
+
 2012-02-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
-	* canvas_epoints.man: New package, an editor for point clouds, attachable
-	* canvas_epoints.tcl: to any canvas.
+	* canvas_epoints.man: New package, an editor for point clouds,
+	* canvas_epoints.tcl: attachable to any canvas.
 	* pkgIndex.tcl:
 	* ../../examples/canvas/demo_editpoints.tcl:
 
@@ -14,7 +38,7 @@
 	* canvas_tags.man:
 	* canvas_tags.tcl:
 	* pkgIndex.tcl:
-	* ../../examples/canvas/demo_draghigh.tcl
+	* ../../examples/canvas/demo_draghigh.tcl:
 
 2010-08-26  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 

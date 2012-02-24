@@ -1,5 +1,5 @@
 [comment {-*- tcl -*- doctools manpage}]
-[set VERSION 0.1]
+[vset VERSION 0.1]
 [manpage_begin canvas::tag n [vset VERSION]]
 [moddesc   {Variations on a canvas}]
 [titledesc {Easier management of the tags on canvas items or item groups}]

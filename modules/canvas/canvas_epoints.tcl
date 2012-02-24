@@ -1,5 +1,5 @@
 ## -*- tcl -*-
-# # ## ### ##### ######## #############
+# # ## ### ##### ######## ############# #####################
 
 # Canvas Behavior Module. Editing a point cloud.
 
@@ -21,7 +21,7 @@
 # - Callback used to record editing activity (add, remove, move point)
 #   Default: NONE.
 
-# # ## ### ##### ######## #############
+# # ## ### ##### ######## ############# #####################
 ## Requisites
 
 package require Tcl 8.5
@@ -36,17 +36,17 @@ namespace eval ::canvas::edit {
     namespace ensemble create
 }
 
-# # ## ### ##### ######## #############
+# # ## ### ##### ######## ############# #####################
 ## API
 
 snit::type ::canvas::edit::points {
-    # # ## ### ##### ######## #############
+    # # ## ### ##### ######## ############# #####################
     ## Life cycle, and configuration
 
     option -tag           -default POINT -readonly 1 ; # Tag identifying our points
     option -create-cmd    -default {}    -readonly 1 ; # Callback invoked to create new points.
     option -highlight-cmd -default {}    -readonly 1 ; # Callback to highlight a dragged point.
-    option -point-cmd     -default {}    -readonly 1 ; # Callback for point edit operations
+    option -data-cmd      -default {}    -readonly 1 ; # Callback for point edit operations
 
     constructor {c args} {
 	set mycanvas $c
@@ -67,7 +67,7 @@ snit::type ::canvas::edit::points {
 	return
     }
 
-    # # ## ### ##### ######## #############
+    # # ## ### ##### ######## ############# #####################
     ## API.
 
     method disable {} {
@@ -105,7 +105,7 @@ snit::type ::canvas::edit::points {
 	return
     }
 
-    # # ## ### ##### ######## #############
+    # # ## ### ##### ######## ############# #####################
     ## Manage the canvas bindings (point creation and removal,
     ## dragging, highlighting).
 
@@ -140,7 +140,7 @@ snit::type ::canvas::edit::points {
 	return
     }
 
-    # # ## ### ##### ######## #############
+    # # ## ### ##### ######## ############# #####################
     ## The actions invoked by the bindings managed in the previous
     ## section.
 
@@ -224,15 +224,15 @@ snit::type ::canvas::edit::points {
 	return 1
     }
 
-    # # ## ### ##### ######## #############
+    # # ## ### ##### ######## ############# #####################
     ## Class global commands for the actions in the previous section.
 
     #### Generate notification about changes to the point cloud.
 
     proc Note {cmd args} {
 	upvar 1 options options self self
-	if {![llength $options(-point-cmd)]} return
-	return [{*}$options(-point-cmd) {*}$cmd $self {*}$args]
+	if {![llength $options(-data-cmd)]} return
+	return [{*}$options(-data-cmd) {*}$cmd $self {*}$args]
     }
 
     #### Generate a unique tag for a new point.
@@ -289,26 +289,26 @@ snit::type ::canvas::edit::points {
 	return [list $px $py $dx $dy]
     }
 
-    # # ## ### ##### ######## #############
+    # # ## ### ##### ######## ############# #####################
     ## Instance state
 
     variable mycanvas     {} ; # Instance command of the canvas widget
 			       # the editor works with.
-    variable mycounter    0  ; # Counter for NewId to generate
+    variable mycounter     0 ; # Counter for NewId to generate
 			       # identifiers for point markers.
-    variable mydragactive 0  ; # Flag, true when a drag is running, to
+    variable mydragactive  0 ; # Flag, true when a drag is running, to
 			       # veto un-highlighting.
-    variable mydbox      {}  ; # The bounding box of the items dragged
+    variable mydbox       {} ; # The bounding box of the items dragged
 			       # around, to compute full deltas and
 			       # absolute location during the drag.
-    variable myactive     0  ; # Flag, true when the editor bindings are
+    variable myactive      0 ; # Flag, true when the editor bindings are
                                # set on the canvas, enabling editing.
     variable myloc -array {} ; # Internal data base mapping from point
 			       # id to point location, for the
 			       # calculation of absolute coordinates
 			       # during dragging.
 
-    # # ## ### ##### ######## #############
+    # # ## ### ##### ######## ############# #####################
     ## Default implementations for the configurable callbacks to
     ## create and highlight the edited points.
 
@@ -349,14 +349,14 @@ snit::type ::canvas::edit::points {
 	return -code error "Canvas mismatch, ours is $mycanvas, called with $c"
     }
 
-    # # ## ### ##### ######## #############
+    # # ## ### ##### ######## ############# #####################
 }
 
-# # ## ### ##### ######## #############
+# # ## ### ##### ######## ############# #####################
 ## Ready
 
 package provide canvas::edit::points 0.1
 return
 
-# # ## ### ##### ######## #############
+# # ## ### ##### ######## ############# #####################
 ## Scrap yard.
