@@ -1,20 +1,23 @@
 #!/bin/env tclsh8.5
 # -*- tcl -*-
+# # ## ### ##### ######## ############# #####################
+# demo_draghigh.tcl --
 #
-# This demonstration script creates a canvas widget showing a 2-D plot
-# with data points that can be dragged with the mouse and show various
-# form of highlighting.
+# This demonstration script creates a canvas widget showing a 2-D
+# plot with data points that can be dragged with the mouse.
 #
-# RCS: @(#) $Id: demo_draghigh.tcl,v 1.1 2012/02/16 05:36:13 andreas_kupries Exp $
+# RCS: @(#) $Id: demo_draghigh.tcl,v 1.2 2012/02/24 01:41:22 andreas_kupries Exp $
 
-# Bindings
+# # ## ### ##### ######## ############# #####################
+## Bindings
 #
 # Blue circles   - Drag items with Button-3 - Highlighted by adding a red ring.
 # Red rectangles - Drag group with Button-3 - Highlighted by turning yellow.
 # Green circle   - Drag alone with Button-3
 #                - Drag all circles with Shift-Button-3
 
-# Notes on the code:
+# # ## ### ##### ######## ############# #####################
+## Notes on the code:
 #
 # The drag callbacks _POINT1 and _POINTA interact with the
 # highlighting of this group of markers, as handled by _RING.
@@ -46,16 +49,27 @@
 # - Similarly, to remove the group tag we identify the items to modify
 #   through that very tag.
 
-# # ## ### ##### ######## #############
+# # ## ### ##### ######## ############# #####################
 ## Requirements
 
 package require Tcl 8.5
+
+# Extend the package search path so that this demonstration works with
+# the non-installed tklib packages well. A regular application should
+# not require this.
+
+apply {{selfdir} {
+    #puts ($selfdir)
+    lappend ::auto_path $selfdir
+    lappend ::auto_path [file normalize $selfdir/../../modules/canvas]
+}} [file dirname [file normalize [info script]]]
+
 package require Tk
 package require canvas::drag
 package require canvas::highlight
 package require canvas::tag
 
-# # ## ### ##### ######## #############
+# # ## ### ##### ######## ############# #####################
 ## GUI
 
 set w .plot
@@ -63,28 +77,27 @@ catch {destroy $w}
 wm withdraw .
 
 toplevel       $w
-wm title       $w "Canvas Drag & Highlight"
+wm title       $w "Canvas :: Drag & Highlight"
 wm iconname    $w "CDH"
 set c          $w.c
 
 button $w.exit -command ::exit -text Exit
-pack   $w.exit -side bottom -anchor w
+canvas $c -relief raised -width 450 -height 300 -bd 2
 
-canvas $c -relief raised -width 450 -height 300
-pack   $c -side top -fill x
+pack $w.exit -side bottom -anchor w
+pack $c -side top -fill x
 
-# # ## ### ##### ######## #############
+# # ## ### ##### ######## ############# #####################
 ## Setup the behavioral triggers and responses ...
 
-canvas::highlight on $c POINT _RING
-canvas::drag group   $c POINT _POINT1
-canvas::drag group   $c HANDLE _POINTA \
-    -event Shift-3
+canvas::highlight on $c POINT  _RING
+canvas::drag group   $c POINT  _POINT1
+canvas::drag group   $c HANDLE _POINTA -event Shift-3
 
 canvas::highlight on $c MEGA  _COLOR
 canvas::drag group   $c MEGA  _MEGA
 
-# # ## ### ##### ######## #############
+# # ## ### ##### ######## ############# #####################
 ## Callback implementations - Dragging
 
 proc _MEGA  {cmd c item} {
@@ -134,7 +147,7 @@ proc _POINT1 {cmd c item} {
     }
 }
 
-# # ## ### ##### ######## #############
+# # ## ### ##### ######## ############# #####################
 ## Callback implementations - Highlight 1
 
 namespace eval _RING {
@@ -170,7 +183,7 @@ proc _RING::off {c ring} {
     return 1
 }
 
-# # ## ### ##### ######## #############
+# # ## ### ##### ######## ############# #####################
 ## Callback implementations - Highlight 2
 
 namespace eval _COLOR {
@@ -190,7 +203,7 @@ proc _COLOR::off {c cd} {
     return 1
 }
 
-# # ## ### ##### ######## #############
+# # ## ### ##### ######## ############# #####################
 ## Data points scattered around for us to act on.
 
 foreach point {
@@ -222,7 +235,7 @@ foreach point {
     $c addtag point withtag $item
 }
 
-# # ## ### ##### ######## #############
+# # ## ### ##### ######## ############# #####################
 ## Invoke event loop.
 
 vwait __forever__
