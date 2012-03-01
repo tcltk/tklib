@@ -53,7 +53,7 @@ two ways:
 
 [list_begin definitions]
 [comment {= = == === ===== ======== ============= =====================}]
-[call [cmd {*}cmd] [method on] [arg canvas] [arg item]]
+[call [cmd "{*}cmd"] [method on] [arg canvas] [arg item]]
 
 This form is invoked when the mouse has entered (one of) the item(s)
 the highlight was set up for. The callback now has to perform any
@@ -69,7 +69,7 @@ does it have to actually reconfigure the item (group). In the latter
 case the callback simply serves as easy enter/leave notification.
 
 [comment {= = == === ===== ======== ============= =====================}]
-[call [cmd {*}cmd] [method off] [arg canvas] [arg clientdata]]
+[call [cmd "{*}cmd"] [method off] [arg canvas] [arg clientdata]]
 
 This form is invoked when the mouse has left (one of) the item(s) of
 the currently active the highlight. The callback now has to perform

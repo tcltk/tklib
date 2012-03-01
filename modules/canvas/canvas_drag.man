@@ -80,7 +80,7 @@ ways:
 
 [list_begin definitions]
 [comment {= = == === ===== ======== ============= =====================}]
-[call [cmd {*}cmd] [method start] [arg canvas] [arg item]]
+[call [cmd "{*}cmd"] [method start] [arg canvas] [arg item]]
 
 This form is invoked when has initiated dragging using drag handle
 identified by the canvas [arg item] id.
@@ -94,7 +94,7 @@ callback for its use. In this manner the drag callback is able to
 maintain custom state from start to movement.
 
 [comment {= = == === ===== ======== ============= =====================}]
-[call [cmd {*}cmd] [method move] [arg canvas] [arg clientdata] [arg dx] [arg dy]]
+[call [cmd "{*}cmd"] [method move] [arg canvas] [arg clientdata] [arg dx] [arg dy]]
 
 This form is invoked when the mouse moved during a drag operation.
 
@@ -108,7 +108,7 @@ callback for its use. In this manner the drag callback is able to
 maintain custom state from movement to movement.
 
 [comment {= = == === ===== ======== ============= =====================}]
-[call [cmd {*}cmd] [method done] [arg canvas] [arg clientdata]]
+[call [cmd "{*}cmd"] [method done] [arg canvas] [arg clientdata]]
 
 This form is invoked when the drag operation ends.
 
