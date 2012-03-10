@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1379,6 +1379,15 @@ proc tablelist::createTileCheckbutton {w args} {
 		    [winfo parent $w] configure -width 17 -height 18
 		    place $w -x -1 -y -2
 		}
+		cde -
+		cleanlooks {
+		    [winfo parent $w] configure -width 13 -height 13
+		    place $w -x -1
+		}
+		gtk+ {
+		    [winfo parent $w] configure -width 15 -height 15
+		    place $w -x -1 -y -1
+		}
 		kde_xp {
 		    [winfo parent $w] configure -width 13 -height 13
 		    place $w -x 0
@@ -1387,6 +1396,14 @@ proc tablelist::createTileCheckbutton {w args} {
 		thinkeramik {
 		    [winfo parent $w] configure -width 16 -height 16
 		    place $w -x 0
+		}
+		motif {
+		    [winfo parent $w] configure -width 13 -height 13
+		    place $w -x -2
+		}
+		oxygen {
+		    [winfo parent $w] configure -width 19 -height 18
+		    place $w -x -1 -y -1
 		}
 		default {
 		    set height [winfo reqheight $w]
@@ -1601,7 +1618,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	$b delete $editIdx $tabIdx2
     } else {
 	getAuxData $win $data(editKey) $data(editCol) auxType auxWidth
-	if {$auxWidth == 0} {				;# no image or window
+	if {$auxType == 0 || $auxType > 1} {			;# no image
 	    set editIdx $textIdx
 	    $b delete $editIdx $tabIdx2
 	} elseif {[string compare $alignment "right"] == 0} {
@@ -1780,7 +1797,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	}
     } elseif {!$isCheckbtn} {
 	update idletasks
-	if {![winfo exists $win]} {		;# because of update idletasks
+	if {![namespace exists ::tablelist::ns${win}]} {
 	    return ""
 	}
 	$f configure -height [winfo reqheight $w]
@@ -1793,7 +1810,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	place $w -relwidth 1.0 -relheight 1.0
 	adjustEditWindow $win $pixels
 	update idletasks
-	if {![winfo exists $win]} {		;# because of update idletasks
+	if {![namespace exists ::tablelist::ns${win}]} {
 	    return ""
 	}
     }
@@ -1919,11 +1936,6 @@ proc tablelist::doFinishEditing win {
 
 	focus $data(body)
 	event generate $win <<TablelistCellUpdated>>
-    }
-
-    update idletasks
-    if {![winfo exists $win]} {			;# because of update idletasks
-	return 0
     }
 
     updateViewWhenIdle $win
@@ -2058,7 +2070,7 @@ proc tablelist::adjustEditWindow {win pixels} {
 	set auxWidth 0
     } else {
 	incr pixels -$indentWidth
-	if {$auxWidth != 0} {				;# image or window
+	if {$auxType == 1} {					;# image
 	    if {$auxWidth + 5 <= $pixels} {
 		incr auxWidth 3
 		incr pixels -[expr {$auxWidth + 2}]
@@ -2074,14 +2086,8 @@ proc tablelist::adjustEditWindow {win pixels} {
     if {$indentWidth != 0} {
 	insertOrUpdateIndent $data(body) editIndentMark $indent $indentWidth
     }
-    if {$auxWidth != 0} {
-	if {$auxType == 1} {					;# image
-	    setImgLabelWidth $data(body) editAuxMark $auxWidth
-	} else {						;# window
-	    if {[winfo exists $aux] && [$aux cget -width] != $auxWidth} {
-		$aux configure -width $auxWidth
-	    }
-	}
+    if {$auxType == 1} {					;# image
+	setImgLabelWidth $data(body) editAuxMark $auxWidth
     }
 
     #

@@ -8,7 +8,7 @@
 #   - Binding tag TablelistBody
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -188,7 +188,7 @@ proc tablelist::updateConfigSpecs win {
     #
     # This might be an "after idle" callback; check whether the window exists
     #
-    if {![winfo exists $win]} {
+    if {![namespace exists ::tablelist::ns${win}]} {
 	return ""
     }
 
@@ -197,7 +197,12 @@ proc tablelist::updateConfigSpecs win {
     if {[string compare $currentTheme $data(currentTheme)] == 0} {
 	if {[string compare $currentTheme "tileqt"] == 0} {
 	    set widgetStyle [tileqt_currentThemeName]
-	    set colorScheme [getKdeConfigVal "KDE" "colorScheme"]
+	    if {[info exists ::env(KDE_SESSION_VERSION)] &&
+		[string compare $::env(KDE_SESSION_VERSION) ""] != 0} {
+		set colorScheme [getKdeConfigVal "General" "ColorScheme"]
+	    } else {
+		set colorScheme [getKdeConfigVal "KDE" "colorScheme"]
+	    }
 	    if {[string compare $widgetStyle $data(widgetStyle)] == 0 &&
 		[string compare $colorScheme $data(colorScheme)] == 0} {
 		return ""
@@ -262,7 +267,12 @@ proc tablelist::updateConfigSpecs win {
     set data(themeDefaults) [array get themeDefaults]
     if {[string compare $currentTheme "tileqt"] == 0} {
 	set data(widgetStyle) [tileqt_currentThemeName]
-	set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
+	if {[info exists ::env(KDE_SESSION_VERSION)] &&
+	    [string compare $::env(KDE_SESSION_VERSION) ""] != 0} {
+	    set data(colorScheme) [getKdeConfigVal "General" "ColorScheme"]
+	} else {
+	    set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
+	}
     } else {
 	set data(widgetStyle) ""
 	set data(colorScheme) ""
@@ -1015,7 +1025,8 @@ proc tablelist::condAutoScan win {
 # the window or the mouse button is released.
 #------------------------------------------------------------------------------
 proc tablelist::autoScan win {
-    if {![winfo exists $win] || [string compare [::$win editwinpath] ""] != 0} {
+    if {![namespace exists ::tablelist::ns${win}] ||
+	[string compare [::$win editwinpath] ""] != 0} {
 	return ""
     }
 
@@ -1340,7 +1351,7 @@ proc tablelist::condEvalInvokeCmd win {
     #
     # This is an "after 100" callback; check whether the window exists
     #
-    if {![winfo exists $win]} {
+    if {![namespace exists ::tablelist::ns${win}]} {
 	return ""
     }
 
@@ -2854,7 +2865,7 @@ proc tablelist::escape {win col} {
     if {[info exists data(colBeingResized)]} {	;# resize operation in progress
 	configLabel $w -cursor $data(-cursor)
 	update idletasks
-	if {![winfo exists $win]} {		;# because of update idletasks
+	if {![namespace exists ::tablelist::ns${win}]} {
 	    return ""
 	}
 	if {[winfo exists $data(focus)]} {
@@ -2899,7 +2910,7 @@ proc tablelist::escape {win col} {
 # mouse moves back into the window or the mouse button is released.
 #------------------------------------------------------------------------------
 proc tablelist::horizAutoScan win {
-    if {![winfo exists $win]} {
+    if {![namespace exists ::tablelist::ns${win}]} {
 	return ""
     }
 
