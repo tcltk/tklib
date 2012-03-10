@@ -7,7 +7,7 @@
 #   - Private procedures related to tile themes
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2006-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2006-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -350,8 +350,8 @@ proc mentry::tileqtTheme {} {
 	-selectbackground	$selectBg \
 	-selectforeground	$selectFg \
 	-selectborderwidth	0 \
-	-borderwidth		2 \
-	-labelpady		{3 2} \
+	-borderwidth		3 \
+	-labelpady		{3 3} \
     ]
 }
 
@@ -487,6 +487,12 @@ proc mentry::getKdeConfigVal {group key} {
 proc mentry::makeKdeDirList {} {
     variable kdeDirList {}
 
+    if {[info exists ::env(KDE_SESSION_VERSION)]} {
+	set ver $::env(KDE_SESSION_VERSION)
+    } else {
+	set ver ""
+    }
+
     if {[info exists ::env(USER)] && $::env(USER) eq "root"} {
 	set name "KDEROOTHOME"
     } else {
@@ -495,7 +501,7 @@ proc mentry::makeKdeDirList {} {
     if {[info exists ::env($name)] && $::env($name) ne ""} {
 	set localKdeDir [file normalize $::env($name)]
     } elseif {[info exists ::env(HOME)] && $::env(HOME) ne ""} {
-	set localKdeDir [file normalize [file join $::env(HOME) ".kde"]]
+	set localKdeDir [file normalize [file join $::env(HOME) ".kde$ver"]]
     }
     if {[info exists localKdeDir] && $localKdeDir ne "-"} {
 	lappend kdeDirList $localKdeDir
@@ -511,10 +517,10 @@ proc mentry::makeKdeDirList {} {
 	lappend kdeDirList $::env(KDEDIR)
     }
 
-    set prefix [exec kde-config --prefix]
+    set prefix [exec kde$ver-config --expandvars --prefix]
     lappend kdeDirList $prefix
 
-    set execPrefix [exec kde-config --expandvars --exec-prefix]
+    set execPrefix [exec kde$ver-config --expandvars --exec-prefix]
     if {$execPrefix ne $prefix} {
 	lappend kdeDirList $execPrefix
     }

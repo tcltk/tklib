@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of a multi-entry widget for IPv6 addresses.
 #
-# Copyright (c) 2009-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2009-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
