@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -2357,10 +2357,13 @@ proc tablelist::getSepX {} {
 	if {([string compare $currentTheme "aqua"] == 0) ||
 	    ([string compare $currentTheme "xpnative"] == 0 && $xpStyle)} {
 	    set x 0
-	} elseif {[string compare $currentTheme "tileqt"] == 0 &&
-		  [string compare [string tolower [tileqt_currentThemeName]] \
-		   "qtcurve"] == 0} {
-	    set x 2
+	} elseif {[string compare $currentTheme "tileqt"] == 0} {
+	    switch -- [string tolower [tileqt_currentThemeName]] {
+		cleanlooks -
+		gtk+ -
+		oxygen		{ set x 0 }
+		qtcurve		{ set x 2 }
+	    }
 	}
     }
 
@@ -3274,7 +3277,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		set bg $data(-selectbackground)
 	    }
 
-	    if {$isMessage} {
+	    if {$isMessage || $isTblWin} {
 		if {[info exists data($key,$col-selectforeground)]} {
 		    set fg $data($key,$col-selectforeground)
 		} elseif {[info exists data($key-selectforeground)]} {
@@ -3301,7 +3304,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		set bg $data(-stripebackground)
 	    }
 
-	    if {$isMessage} {
+	    if {$isMessage || $isTblWin} {
 		if {[info exists data($key,$col-foreground)]} {
 		    set fg $data($key,$col-foreground)
 		} elseif {[info exists data($key-foreground)]} {
@@ -3323,6 +3326,11 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	}
 	if {$isMessage && [string compare [$path cget -foreground] $fg] != 0} {
 	    $path configure -foreground $fg
+	}
+	if {$isTblWin && [info exists data($key,$col-windowupdate)]} {
+	    uplevel #0 $data($key,$col-windowupdate) [list \
+		$win [keyToRow $win $key] $col $path.w \
+		-background $bg -foreground $fg]
 	}
     }
 }
