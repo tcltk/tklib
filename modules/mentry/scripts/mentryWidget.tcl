@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 1999-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -42,18 +42,28 @@ namespace eval mentry {
 
 	if {[string compare [info commands ::ttk::style] ""] == 0} {
 	    interp alias {} ::mentry::style	{} ::style
+	    if {[string compare $::tile::version "0.7"] >= 0} {
+		interp alias {} ::mentry::styleConfig {} ::style configure
+	    } else {
+		interp alias {} ::mentry::styleConfig {} ::style default
+	    }
 	    interp alias {} ::mentry::getThemes	{} ::tile::availableThemes
 	    interp alias {} ::mentry::setTheme	{} ::tile::setTheme
 
+	    interp alias {} ::mentry::tileqt_kdeStyleChangeNotification \
+			 {} ::tile::theme::tileqt::kdeStyleChangeNotification
 	    interp alias {} ::mentry::tileqt_currentThemeName \
 			 {} ::tile::theme::tileqt::currentThemeName
 	    interp alias {} ::mentry::tileqt_currentThemeColour \
 			 {} ::tile::theme::tileqt::currentThemeColour
 	} else {
-	    interp alias {} ::mentry::style	{} ::ttk::style
-	    interp alias {} ::mentry::getThemes	{} ::ttk::themes
-	    interp alias {} ::mentry::setTheme	{} ::ttk::setTheme
+	    interp alias {} ::mentry::style        {} ::ttk::style
+	    interp alias {} ::mentry::styleConfig  {} ::ttk::style configure
+	    interp alias {} ::mentry::getThemes    {} ::ttk::themes
+	    interp alias {} ::mentry::setTheme     {} ::ttk::setTheme
 
+	    interp alias {} ::mentry::tileqt_kdeStyleChangeNotification \
+			 {} ::ttk::theme::tileqt::kdeStyleChangeNotification
 	    interp alias {} ::mentry::tileqt_currentThemeName \
 			 {} ::ttk::theme::tileqt::currentThemeName
 	    interp alias {} ::mentry::tileqt_currentThemeColour \
@@ -147,6 +157,9 @@ namespace eval mentry {
 	    # Append theme-specific values to some
 	    # elements of the array configSpecs
 	    #
+	    if {[string compare [getCurrentTheme] "tileqt"] == 0} {
+		tileqt_kdeStyleChangeNotification 
+	    }
 	    setThemeDefaults
 
 	    #
@@ -409,10 +422,28 @@ proc mentry::mentry args {
 	set data(themeDefaults) [array get themeDefaults]
 	if {[string compare $data(currentTheme) "tileqt"] == 0} {
 	    set data(widgetStyle) [tileqt_currentThemeName]
-	    set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
+	    if {[info exists ::env(KDE_SESSION_VERSION)] &&
+		[string compare $::env(KDE_SESSION_VERSION) ""] != 0} {
+		set data(colorScheme) [getKdeConfigVal "General" "ColorScheme"]
+	    } else {
+		set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
+	    }
 	} else {
 	    set data(widgetStyle) ""
 	    set data(colorScheme) ""
+	}
+    }
+
+    #
+    # Take into account that some scripts start by
+    # destroying all children of the root window
+    #
+    variable helpEntry
+    if {![winfo exists $helpEntry]} {
+	if {$usingTile} {
+	    ttk::entry $helpEntry -takefocus 0
+	} else {
+	    tk::entry $helpEntry -takefocus 0
 	}
     }
 
@@ -464,11 +495,11 @@ proc mentry::doConfig {win opt val} {
 	    # Save the properly formatted value of val
 	    # in data($opt) and apply it to all children
 	    #
-	    configEntry $helpEntry $opt $val
+	    $helpEntry configure $opt $val
 	    set val [$helpEntry cget $opt]
 	    set data($opt) $val
 	    foreach w [entries $win] {
-		$w configure $opt $val
+		configEntry $w $opt $val
 	    }
 	    foreach w [labels $win] {
 		$w configure $opt $val
@@ -515,11 +546,22 @@ proc mentry::doConfig {win opt val} {
 		# Save the properly formatted value of val in
 		# data($opt) and apply it to all entry children
 		#
-		configEntry $helpEntry $opt $val
+		$helpEntry configure $opt $val
 		set val [$helpEntry cget $opt]
 		set data($opt) $val
-		foreach w [entries $win] {
-		    $w configure $opt $val
+		if {[string compare $opt "-background"] == 0 && $usingTile} {
+		    #
+		    # Most themes support the -fieldbackground option for the
+		    # style element Entry.field.  The aqua theme supports the
+		    # -background option instead.  Some themes (like plastik,
+		    # tileqt, vista, and xpnative) don't support either of them.
+		    #
+		    styleConfig $win.TEntry -fieldbackground $val \
+					    -background      $val
+		} else {
+		    foreach w [entries $win] {
+			configEntry $w $opt $val
+		    }
 		}
 
 		#
@@ -679,7 +721,8 @@ proc mentry::createChildren {win body} {
 			 -relief flat -takefocus 0
 	    catch {$f configure -padx 0 -pady 0}
 	    set w $f.e
-	    ttk::entry $w -takefocus 0 -textvariable "" -width $width
+	    ttk::entry $w -style $win.TEntry -takefocus 0 -textvariable "" \
+			  -width $width
 	} else {
 	    set w [entryPath $win $n]
 	    tk::entry $w -borderwidth 0 -highlightthickness 0 \
@@ -695,7 +738,7 @@ proc mentry::createChildren {win body} {
 		upvar data($opt) val
 		$w configure $opt ${val}($n)
 	    } elseif {[regexp {[ec]} [lindex $configSpecs($opt) 2]]} {
-		$w configure $opt $data($opt)
+		configEntry $w $opt $data($opt)
 	    }
 	}
 
@@ -1426,7 +1469,12 @@ proc mentry::updateConfigSpecs win {
     if {[string compare $currentTheme $data(currentTheme)] == 0} {
 	if {[string compare $currentTheme "tileqt"] == 0} {
 	    set widgetStyle [tileqt_currentThemeName]
-	    set colorScheme [getKdeConfigVal "KDE" "colorScheme"]
+	    if {[info exists ::env(KDE_SESSION_VERSION)] &&
+		[string compare $::env(KDE_SESSION_VERSION) ""] != 0} {
+		set colorScheme [getKdeConfigVal "General" "ColorScheme"]
+	    } else {
+		set colorScheme [getKdeConfigVal "KDE" "colorScheme"]
+	    }
 	    if {[string compare $widgetStyle $data(widgetStyle)] == 0 &&
 		[string compare $colorScheme $data(colorScheme)] == 0} {
 		return ""
@@ -1459,6 +1507,15 @@ proc mentry::updateConfigSpecs win {
     mentry::adjustChildren $win
 
     #
+    # Most themes support the -fieldbackground option for the
+    # style element Entry.field.  The aqua theme supports the
+    # -background option instead.  Some themes (like plastik,
+    # tileqt, vista, and xpnative) don't support either of them.
+    #
+    styleConfig $win.TEntry -fieldbackground $data(-background) \
+			    -background      $data(-background)
+
+    #
     # Set the foreground color of the label children
     #
     if {[string compare $data(-state) "disabled"] == 0} {
@@ -1476,7 +1533,12 @@ proc mentry::updateConfigSpecs win {
     set data(themeDefaults) [array get themeDefaults]
     if {[string compare $currentTheme "tileqt"] == 0} {
 	set data(widgetStyle) [tileqt_currentThemeName]
-	set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
+	if {[info exists ::env(KDE_SESSION_VERSION)] &&
+	    [string compare $::env(KDE_SESSION_VERSION) ""] != 0} {
+	    set data(colorScheme) [getKdeConfigVal "General" "ColorScheme"]
+	} else {
+	    set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
+	}
     } else {
 	set data(widgetStyle) ""
 	set data(colorScheme) ""
@@ -1735,7 +1797,7 @@ proc mentry::labelButton1 w {
 proc mentry::parseChildPath {w winName indexName} {
     upvar $winName win $indexName index
 
-    regexp {^(.+)\.[fel]([0-9]+)(\.e)?$} $w dummy win index
+    return [regexp {^(.+)\.[fel]([0-9]+)(\.e)?$} $w dummy win index]
 }
 
 #
@@ -1954,14 +2016,48 @@ proc mentry::entryViewCursor w {
 proc mentry::configEntry {w args} {
     foreach {opt val} $args {
 	switch -- $opt {
-	    -background -
-	    -foreground {
-		if {[string compare $val ""] == 0 &&
-		    [string compare [winfo class $w] "TEntry"] == 0} {
-		    variable themeDefaults
-		    set val $themeDefaults($opt)
+	    -background {
+		if {[string compare [winfo class $w] "TEntry"] != 0} {
+		    $w configure $opt $val
 		}
+	    }
+
+	    -foreground {
+		if {[string compare [winfo class $w] "TEntry"] == 0} {
+		    variable themeDefaults
+		    if {[string compare [winfo rgb $w $val] [winfo rgb $w \
+			 $themeDefaults(-foreground)]] == 0} {
+			set val ""    ;# for automatic adaptation to the states
+		    }
+		    $w instate !disabled {
+			$w configure $opt $val
+		    }
+		} else {
+		    $w configure $opt $val
+		}
+	    }
+
+	    -state {
 		$w configure $opt $val
+		if {[string compare [winfo class $w] "TEntry"] == 0} {
+		    variable themeDefaults
+		    if {[string compare $val "disabled"] == 0} {
+			#
+			# Set the entry's foreground color to the theme-
+			# specific one (needed for current tile versions)
+			#
+			$w configure -foreground ""
+		    } else {
+			#
+			# Restore the entry's foreground color
+			# (needed for current tile versions)
+			#
+			if {[parseChildPath $w win n]} {
+			    upvar ::mentry::ns${win}::data data
+			    configEntry $w -foreground $data(-foreground)
+			}
+		    }
+		}
 	    }
 
 	    default {
