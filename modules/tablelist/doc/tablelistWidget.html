@@ -11,6 +11,8 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
+    <h2>For Tablelist Version 5.6</h2>
+
     <h3>by</h3>
 
     <h2>Csaba Nemethi</h2>
@@ -260,9 +262,11 @@
     <i>columnIndex</i></code></dd>
 
     <dd><code><b><a href="#treestyle">-treestyle</a></b>
-    <b>ambiance</b>|<b>aqua</b>|<b>baghira</b>|<b>dust</b>|<b>dustSand</b>|<b>gtk</b>|<b>klearlooks</b>|<b>newWave</b>|<b>oxygen1</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oxygen2</b>|<b>phase</b>|<b>plastik</b>|<b>plastique</b>|<b>radiance</b>|<b>vistaAero</b>|<b>vistaClassic</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win7Aero</b>|<b>win7Classic</b>|<b>winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b></code></dd>
+    <b>adwaita</b>|<b>ambiance</b>|<b>aqua</b>|<b>baghira</b>|<b>dust</b>|<b>dustSand</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk</b>|<b>klearlooks</b>|<b>mint</b>|<b>newWave</b>|<b>oxygen1</b>|<b>oxygen2</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;phase</b>|<b>plastik</b>|<b>plastique</b>|<b>radiance</b>|<b>ubuntu</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vistaAero</b>|<b>vistaClassic</b>|<b>win7Aero</b>|<b>win7Classic</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b></code></dd>
 
     <dd><code><b><a href="#width">-width</a></b> <i>characters</i></code></dd>
 
@@ -438,6 +442,9 @@
     <i>command</i></code></dd>
 
     <dd><code><b><a href="#cell_windowdestroy">-windowdestroy</a></b>
+    <i>command</i></code></dd>
+
+    <dd><code><b><a href="#cell_windowupdate">-windowupdate</a></b>
     <i>command</i></code></dd>
 
     <dt><br>
@@ -3333,58 +3340,41 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           <colgroup span="1"></colgroup>
           <colgroup span="1"></colgroup>
           <colgroup span="1"></colgroup>
+          <colgroup span="1"></colgroup>
 
           <tbody>
             <tr align="center">
               <td><img src="aqua.png" width="120" height="54"></td>
               <td><img src="gtk.png" width="120" height="51"></td>
               <td><img src="newWave.png" width="120" height="51"></td>
-              <td><img src="baghira.png" width="120" height="51"></td>
-              <td><img src="phase.png" width="120" height="51"></td>
+              <td><img src="ubuntu.png" width="120" height="51"></td>
+              <td><img src="mint.png" width="120" height="51"></td>
             </tr>
 
             <tr align="center">
               <td><code>aqua</code></td>
               <td><code>gtk</code></td>
               <td><code>newWave</code></td>
-              <td><code>baghira</code></td>
-              <td><code>phase</code></td>
+              <td><code>ubuntu</code></td>
+              <td><code>mint</code></td>
             </tr>
           </tbody>
 
           <tbody>
             <tr align="center">
-              <td><img src="plastik.png" width="120" height="51"></td>
-              <td><img src="plastique.png" width="120" height="51"></td>
+              <td><img src="baghira.png" width="120" height="51"></td>
+              <td><img src="phase.png" width="120" height="51"></td>
               <td><img src="oxygen1.png" width="120" height="51"></td>
               <td><img src="oxygen2.png" width="120" height="51"></td>
               <td><img src="klearlooks.png" width="120" height="51"></td>
             </tr>
 
             <tr align="center">
-              <td><code>plastik</code></td>
-              <td><code>plastique</code></td>
+              <td><code>baghira</code></td>
+              <td><code>phase</code></td>
               <td><code>oxygen1</code></td>
               <td><code>oxygen2</code></td>
               <td><code>klearlooks</code></td>
-            </tr>
-          </tbody>
-
-          <tbody>
-            <tr align="center">
-              <td><img src="ambiance.png" width="120" height="60"></td>
-              <td><img src="dust.png" width="120" height="60"></td>
-              <td><img src="dustSand.png" width="120" height="60"></td>
-              <td><img src="radiance.png" width="120" height="60"></td>
-              <td></td>
-            </tr>
-
-            <tr align="center">
-              <td><code>ambiance</code></td>
-              <td><code>dust</code></td>
-              <td><code>dustSand</code></td>
-              <td><code>radiance</code></td>
-              <td></td>
             </tr>
           </tbody>
 
@@ -3394,7 +3384,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               <td><img src="winxpBlue.png" width="120" height="51"></td>
               <td><img src="winxpOlive.png" width="120" height="51"></td>
               <td><img src="winxpSilver.png" width="120" height="51"></td>
-              <td></td>
+              <td><img src="plastik.png" width="120" height="51"></td>
             </tr>
 
             <tr align="center">
@@ -3402,7 +3392,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               <td><code>winxpBlue</code></td>
               <td><code>winxpOlive</code></td>
               <td><code>winxpSilver</code></td>
-              <td></td>
+              <td><code>plastik</code></td>
             </tr>
           </tbody>
 
@@ -3412,7 +3402,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               <td><img src="vistaClassic.png" width="120" height="51"></td>
               <td><img src="win7Aero.png" width="120" height="54"></td>
               <td><img src="win7Classic.png" width="120" height="51"></td>
-              <td></td>
+              <td><img src="plastique.png" width="120" height="51"></td>
             </tr>
 
             <tr align="center">
@@ -3420,21 +3410,40 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               <td><code>vistaClassic</code></td>
               <td><code>win7Aero</code></td>
               <td><code>win7Classic</code></td>
-              <td></td>
+              <td><code>plastique</code></td>
+            </tr>
+          </tbody>
+
+          <tbody>
+            <tr align="center">
+              <td><img src="ambiance.png" width="120" height="63"></td>
+              <td><img src="dust.png" width="120" height="63"></td>
+              <td><img src="dustSand.png" width="120" height="63"></td>
+              <td><img src="radiance.png" width="120" height="63"></td>
+              <td><img src="adwaita.png" width="120" height="63"></td>
+            </tr>
+
+            <tr align="center">
+              <td><code>ambiance</code></td>
+              <td><code>dust</code></td>
+              <td><code>dustSand</code></td>
+              <td><code>radiance</code></td>
+              <td><code>adwaita</code></td>
             </tr>
           </tbody>
         </table>
 
-        <p>If the tree style is <code><b>aqua</b></code>,
-        <code><b>gtk</b></code>, <code><b>newWave</b></code>,
-        <code><b>oxygen2</b></code>, <code><b>vistaAero</b></code>, or
-        <code><b>win7Aero</b></code> and the Tk version is either 8.6 (with
-        built-in PNG support) or 8.5 and the <code><b>img::png</b></code>
-        package can be loaded into the interpreter, then the images used for
-        displaying the expand/collapse controls are PNG images with alpha
-        channel.&nbsp; Otherwise (i.e., for the other tree styles or in the
-        absence of PNG support) GIF images are used for the expand/collapse
-        controls.</p>
+        <p>If the tree style is <code><b>adwaita</b></code>,
+        <code><b>aqua</b></code>, <code><b>gtk</b></code>,
+        <code><b>mint</b></code>, <code><b>newWave</b></code>,
+        <code><b>oxygen2</b></code>, <code><b>ubuntu</b></code>,
+        <code><b>vistaAero</b></code>, or <code><b>win7Aero</b></code> and the
+        Tk version is either 8.6 (with built-in PNG support) or 8.5 and the
+        <code><b>img::png</b></code> package can be loaded into the
+        interpreter, then the images used for displaying the expand/collapse
+        controls are PNG images with alpha channel.&nbsp; Otherwise (i.e., for
+        the other tree styles or in the absence of PNG support) GIF images are
+        used for the expand/collapse controls.</p>
 
         <p>The following table contains a detailed description of the tree
         styles, in alphabetical order:</p>
@@ -3447,8 +3456,15 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           </tr>
 
           <tr>
+            <td><code><b>adwaita</b></code></td>
+            <td><img src="adwaita.png" width="120" height="63"></td>
+            <td>Inspired by the GTK+ 3 theme Adwaita.&nbsp; Recommended to be
+            used with large fonts and images.</td>
+          </tr>
+
+          <tr>
             <td><code><b>ambiance</b></code></td>
-            <td><img src="ambiance.png" width="120" height="60"></td>
+            <td><img src="ambiance.png" width="120" height="63"></td>
             <td>Inspired by the GTK+ theme Ambiance.&nbsp; Recommended to be
             used with large fonts and images.</td>
           </tr>
@@ -3480,9 +3496,10 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the Qt style <code><b>baghira</b></code>
-                  within the <code><b>tileqt</b></code> theme.&nbsp; Also used
-                  by some flavors of <code><b>qtcurve</b></code>.</td>
+                  <td>Default for the Qt styles <code><b>baghira</b></code>,
+                  <code><b>cde</b></code>, and <code><b>motif</b></code> within
+                  the <code><b>tileqt</b></code> theme.&nbsp; Also used by some
+                  flavors of <code><b>qtcurve</b></code>.</td>
                 </tr>
               </table>
             </td>
@@ -3490,14 +3507,14 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>dust</b></code></td>
-            <td><img src="dust.png" width="120" height="60"></td>
+            <td><img src="dust.png" width="120" height="63"></td>
             <td>Inspired by the GTK+ theme Dust.&nbsp; Recommended to be used
             with large fonts and images.</td>
           </tr>
 
           <tr>
             <td><code><b>dustSand</b></code></td>
-            <td><img src="dustSand.png" width="120" height="60"></td>
+            <td><img src="dustSand.png" width="120" height="63"></td>
             <td>Inspired by the GTK+ theme Dust Sand.&nbsp; Recommended to be
             used with large fonts and images.</td>
           </tr>
@@ -3518,7 +3535,9 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
                   <code><b>clam</b></code>, <code><b>classic</b></code>,
                   <code><b>default</b></code>, <code><b>kroc</b></code>,
                   <code><b>sriv</b></code>, <code><b>srivlg</b></code>, and
-                  <code><b>step</b></code>.</td>
+                  <code><b>step</b></code>, as well as for the Qt style
+                  <code><b>gtk+</b></code> within the
+                  <code><b>tileqt</b></code> theme.</td>
                 </tr>
               </table>
             </td>
@@ -3540,6 +3559,13 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           </tr>
 
           <tr>
+            <td><code><b>mint</b></code></td>
+            <td><img src="mint.png" width="120" height="51"></td>
+            <td>Inspired by a few GTK+ 3 themes bundled with the Mint Linux
+            distribution.</td>
+          </tr>
+
+          <tr>
             <td><code><b>newWave</b></code></td>
             <td><img src="newWave.png" width="120" height="51"></td>
             <td>Inspired by the GTK+ theme New Wave.</td>
@@ -3554,7 +3580,15 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           <tr>
             <td><code><b>oxygen2</b></code></td>
             <td><img src="oxygen2.png" width="120" height="51"></td>
-            <td>Inspired by the KDE 4 style Oxygen.</td>
+            <td>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                  <td>Tablelist_tile:&nbsp;</td>
+                  <td>Default for the Qt style <code><b>oxygen</b></code>
+                  within the <code><b>tileqt</b></code> theme.</td>
+                </tr>
+              </table>
+            </td>
           </tr>
 
           <tr>
@@ -3589,14 +3623,29 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           <tr>
             <td><code><b>plastique</b></code></td>
             <td><img src="plastique.png" width="120" height="51"></td>
-            <td>Inspired by the Qt and KDE 4 style Plastique.</td>
+            <td>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                  <td>Tablelist_tile:&nbsp;</td>
+                  <td>Default for the Qt style <code><b>plastique</b></code>
+                  within the <code><b>tileqt</b></code> theme.</td>
+                </tr>
+              </table>
+            </td>
           </tr>
 
           <tr>
             <td><code><b>radiance</b></code></td>
-            <td><img src="radiance.png" width="120" height="60"></td>
+            <td><img src="radiance.png" width="120" height="63"></td>
             <td>Inspired by the GTK+ theme Radiance.&nbsp; Recommended to be
             used with large fonts and images.</td>
+          </tr>
+
+          <tr>
+            <td><code><b>ubuntu</b></code></td>
+            <td><img src="ubuntu.png" width="120" height="51"></td>
+            <td>Inspired by a couple of GTK+ 3 themes bundled with the Ubuntu
+            Linux distribution.</td>
           </tr>
 
           <tr>
@@ -4151,7 +4200,7 @@ proc formatDate clockVal {
         options are only defined at widget level; there are no column
         configuration options with these names.&nbsp; The
         <code><b>-labelbackground</b></code> and
-	<code><b>-labelheight</b></code> options are only supported by the
+        <code><b>-labelheight</b></code> options are only supported by the
         Tablelist package, but not by Tablelist_tile.</dd>
 
         <dt><br>
@@ -4670,7 +4719,7 @@ proc formatDate clockVal {
         On the other hand, if the column is of dynamic width then this option
         will be ignored and both the cell's text and its embedded window (if
         any) will be displayed as usual.&nbsp; The easiest way to avoid this
-        discrepancy is to set the cell's text to an empy string or make sure
+        discrepancy is to set the cell's text to an empty string or make sure
         that the column's elements are always displayed as empty strings, by
         using the <code><b><a href=
         "#col_formatcommand">-formatcommand</a></b></code> column configuration
@@ -4731,7 +4780,66 @@ proc formatDate clockVal {
         "#cell_window">-window</a></b></code> cell configuration option.</dd>
 
         <dt><br>
-        The <code><b>-background</b></code>, <code><b>-font</b></code>,
+        <a name="cell_windowupdate"></a><code><b>-windowupdate</b>
+        <i>command</i></code></dt>
+
+        <dd>
+          Specifies a Tcl command responsible for adapting the background and
+          foreground colors of a window embedded into the cell to the current
+          background and foreground colors of the cell itself.&nbsp; The
+          current cell colors depend on whether the tablelist widget's
+          <code><b><a href="#state">state</a></b></code> is
+          <code><b>normal</b></code> or <code><b>disabled</b></code>, whether
+          the cell is selected, and whether its row is displayed with the
+          colors specified by the
+          <code><b><a href="#stripebackground">-stripebackground</a></b></code>
+          and
+          <code><b><a href="#stripeforeground">-stripeforeground</a></b></code>
+          options.&nbsp; The command is automatically concatenated with the
+          name of the tablelist widget, the cell's row and column indices, the
+          path name of the embedded window, the option name
+          <code><b>-background</b></code> and the cell's current background
+          color, as well as the option name <code><b>-foreground</b></code> and
+          the cell's current foreground color.&nbsp; The resulting script is
+          then evaluated in the global scope.&nbsp; The specified command can
+          use the colors passed to it as arguments to set the corresponding
+          colors of the embedded window to the same values.
+
+          <p>For example, if the embedded window is a text widget and you want
+          for its background and foreground colors to be automatically adapted
+          to the cell's current background and foreground colors, then you can
+          achieve this by setting the <code><b>-windowupdate</b></code> cell
+          configuration option to <code>updateWindow</code>, where the latter
+          is the procedure implemented as follows:</p>
+
+          <blockquote>
+            <pre>
+proc updateWindow {tbl row col w args} {
+    eval [list $w configure] $args
+}
+</pre>
+          </blockquote>
+
+          <p>With Tcl/Tk 8.5 or above, you can use the more compact form</p>
+
+          <blockquote>
+            <pre>
+proc updateWindow {tbl row col w args} {
+    $w configure {*}$args
+}
+</pre>
+          </blockquote>
+
+          <p>In this example, <code>args</code> is a list of the form</p>
+
+          <blockquote>
+            <pre>
+-background <i>backgroundColor</i> -foreground <i>foregroundColor</i>
+</pre>
+          </blockquote>
+        </dd>
+
+        <dt>The <code><b>-background</b></code>, <code><b>-font</b></code>,
         <code><b>-foreground</b></code>, <code><b>-selectbackground</b></code>,
         and <code><b>-selectforeground</b></code> cell configuration options
         override the options of the same names set at row, column, or widget
@@ -6808,7 +6916,7 @@ upvar #0 [.tbl itemlistvar] itemList
 
           <p>Both forms of the command preserve the node hierarchy under the
           source item, by moving its descendants accordingly.&nbsp; The return
-          value is an empy string.</p>
+          value is an empty string.</p>
         </dd>
 
         <dt><a name="movecolumn"></a><code><i>pathName</i> <b>movecolumn</b>
