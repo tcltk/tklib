@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of the tablelist move and movecolumn subcommands.
 #
-# Copyright (c) 2003-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -233,11 +233,11 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
     # Elide the moved item if the target parent is collapsed or non-viewable
     #
     set depth [depth $win $targetParentKey]
-    if {$depth != 0 &&
-	([string compare $data($targetParentKey,$treeCol-indent) \
-	  tablelist_${treeStyle}_collapsedImg$depth] == 0 || \
-	 [info exists data($targetParentKey-elide)] ||
-	 [info exists data($targetParentKey-hide)])} {
+    if {([info exists data($targetParentKey,$treeCol-indent)] && \
+	 [string compare $data($targetParentKey,$treeCol-indent) \
+	  tablelist_${treeStyle}_collapsedImg$depth] == 0) ||
+	[info exists data($targetParentKey-elide)] ||
+	[info exists data($targetParentKey-hide)]} {
 	doRowConfig $target1 $win -elide 1
     }
 
@@ -286,7 +286,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	#
 	# Mark the target parent item as expanded if it was just indented
 	#
-	if {$depth != 0 &&
+	if {[info exists data($targetParentKey,$treeCol-indent)] &&
 	    [string compare $data($targetParentKey,$treeCol-indent) \
 	     tablelist_${treeStyle}_indentedImg$depth] == 0} {
 	    set data($targetParentKey,$treeCol-indent) \
@@ -457,7 +457,7 @@ proc tablelist::moveCol {win source target} {
     if {[winfo viewable $win]} {
 	purgeWidgets $win
 	update idletasks
-	if {![winfo exists $win]} {		;# because of update idletasks
+	if {![namespace exists ::tablelist::ns${win}]} {
 	    return ""
 	}
     }

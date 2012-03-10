@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -95,6 +95,9 @@ proc tablelist::extendConfigSpecs {} {
 	# Append theme-specific values to some elements of the
 	# array configSpecs and initialize some tree resources
 	#
+	if {[string compare [getCurrentTheme] "tileqt"] == 0} {
+	    tileqt_kdeStyleChangeNotification 
+	}
 	setThemeDefaults
 	variable themeDefaults
 	set treeStyle $themeDefaults(-treestyle)
@@ -1113,9 +1116,17 @@ proc tablelist::doConfig {win opt val} {
 			}
 		    }
 		    set data($opt) $newStyle
-		    set data(protectIndents) [expr {![regexp \
-			{^(a.+|dust.*|gtk|newWave|plastique|radiance|win7.+)$} \
-			$newStyle]}]
+		    switch -glob $newStyle {
+			baghira -
+			klearlooks -
+			oxygen? -
+			phase -
+			plastik -
+			vista* -
+			winnative -
+			winxp*		{ set data(protectIndents) 1 }
+			default		{ set data(protectIndents) 0 }
+		    }
 		    set selCells [curCellSelection $win 1]
 		    foreach {key col} $selCells {
 			set row [keyToRow $win $key]
@@ -2983,16 +2994,17 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    # Delete data($name) or save the specified value in it
 	    #
+	    set imgLabel $w.img_$key,$col
 	    if {[string compare $val ""] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		    incr data(imgCount) -1
+		    destroy $imgLabel
 		}
 	    } else {
 		if {![info exists data($name)]} {
 		    incr data(imgCount)
 		}
-		set imgLabel $w.img_$key,$col
 		if {[winfo exists $imgLabel] &&
 		    [string compare $val $data($name)] != 0} {
 		    destroy $imgLabel
@@ -3124,16 +3136,17 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    # Delete data($name) or save the specified value in it
 	    #
+	    set indentLabel $w.ind_$key,$col
 	    if {[string compare $val ""] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		    incr data(indentCount) -1
+		    destroy $indentLabel
 		}
 	    } else {
 		if {![info exists data($name)]} {
 		    incr data(indentCount)
 		}
-		set indentLabel $w.ind_$key,$col
 		if {[winfo exists $indentLabel] &&
 		    [string compare $val $data($name)] != 0} {
 		    destroy $indentLabel
@@ -3539,6 +3552,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    # Delete data($name) or save the specified value in it
 	    #
+	    set aux $w.frm_$key,$col
 	    if {[string compare $val ""] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
@@ -3555,13 +3569,12 @@ proc tablelist::doCellConfig {row col win opt val} {
 			    [lreplace $data(cellsToReconfig) $n $n]
 		    }
 		    incr data(winCount) -1
+		    destroy $aux
 		}
 	    } else {
 		if {![info exists data($name)]} {
 		    incr data(winCount)
 		}
-		set aux $w.frm_$key,$col
-		set existsAux [winfo exists $aux]
 		if {[info exists data($name)] &&
 		    [string compare $val $data($name)] != 0} {
 		    destroy $aux
@@ -3707,7 +3720,8 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    updateViewWhenIdle $win
 	}
 
-	-windowdestroy {
+	-windowdestroy -
+	-windowupdate {
 	    set key [lindex $data(keyList) $row]
 	    set name $key,$col$opt
 
@@ -3876,7 +3890,7 @@ proc tablelist::reconfigWindows win {
     # Force any geometry manager calculations to be completed first
     #
     update idletasks
-    if {![winfo exists $win]} {			;# because of update idletasks
+    if {![namespace exists ::tablelist::ns${win}::data]} {
 	return ""
     }
 

@@ -8,7 +8,7 @@
 #   - Private procedures performing RGB <-> HSV conversions
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2005-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -595,29 +595,36 @@ proc tablelist::stepTheme {} {
 #
 # Tested with the following Qt styles:
 #
-#   Acqua              KDE_XP                     Motif Plus     SGI
-#   B3/KDE             Keramik                    MS Windows 9x  System-Series
-#   Baghira            Light Style, 2nd revision  Phase          System++
-#   CDE                Light Style, 3rd revision  Plastik        ThinKeramik
-#   HighColor Classic  Lipstik                    Platinum
-#   HighContrast       Marble                     QtCurve
-#   KDE Classic        Motif                      RISC OS
+#   Acqua              KDE Classic                Motif Plus     RISC OS
+#   B3/KDE             KDE_XP                     MS Windows 9x  SGI
+#   Baghira            Keramik                    Oxygen         System-Series
+#   CDE                Light Style, 2nd revision  Phase          System++
+#   Cleanlooks         Light Style, 3rd revision  Plastik        ThinKeramik
+#   GTK+ Style         Lipstik                    Plastique
+#   HighColor Classic  Marble                     Platinum
+#   HighContrast       Motif                      QtCurve
 #
-# Supported color schemes:
+# Supported KDE 1/2/3 color schemes:
 #
-#   Aqua Blue                     Ice (FreddyK)      Point Reyes Green
-#   Aqua Graphite                 KDE 1              Pumpkin
-#   Atlas Green                   KDE 2              Redmond 2000
-#   BeOS                          Keramik            Redmond 95
-#   Blue Slate                    Keramik Emerald    Redmond XP
-#   CDE                           Keramik White      Solaris
-#   Dark Blue                     Lipstik Noble      Storm
-#   Desert Red                    Lipstik Standard   SuSE, old & new
-#   Digital CDE                   Lipstik White      SUSE-kdm
-#   EveX                          Media Peach        System
-#   High Contrast Black Text      Next               Thin Keramik, old & new
-#   High Contrast Yellow on Blue  Pale Gray          Thin Keramik II
+#   Aqua Blue                     Ice (FreddyK)     Point Reyes Green
+#   Aqua Graphite                 KDE 1             Pumpkin
+#   Atlas Green                   KDE 2             Redmond 2000
+#   BeOS                          Keramik           Redmond 95
+#   Blue Slate                    Keramik Emerald   Redmond XP
+#   CDE                           Keramik White     Solaris
+#   Dark Blue                     Lipstik Noble     Storm
+#   Desert Red                    Lipstik Standard  SuSE, old & new
+#   Digital CDE                   Lipstik White     SUSE-kdm
+#   EveX                          Media Peach       System
+#   High Contrast Black Text      Next              Thin Keramik, old & new
+#   High Contrast Yellow on Blue  Pale Gray         Thin Keramik II
 #   High Contrast White Text      Plastik
+#
+# Supported KDE 4 color schemes:
+#
+#   Honeycomb       Oxygen (= Standard)  Steel       Zion (Reversed)
+#   Norway          Oxygen Cold          Wonton Soup
+#   Obsidian Coast  Oxygen-Molecule 3.0  Zion
 #------------------------------------------------------------------------------
 proc tablelist::tileqtTheme {} {
     set bg		[tileqt_currentThemeColour -background]
@@ -632,6 +639,9 @@ proc tablelist::tileqtTheme {} {
     set labelDisFg	[tileqt_currentThemeColour -disabled -buttonText]
     set style		[string tolower [tileqt_currentThemeName]]
     set pressedBg	$labelBg
+
+	    puts "$bg $labelBg"
+	    puts $style
 
     #
     # For most Qt styles the label colors depend on the color scheme:
@@ -1182,6 +1192,78 @@ proc tablelist::tileqtTheme {} {
 		"thinkeramik"	{ set labelBg #f1f1e8;  set pressedBg #dbdad0 }
 	    }
 	}
+
+	"#d4d7d0 #babdb7" {	;# color scheme "Honeycomb"
+	    switch -- $style {
+		"cde" -
+		"motif"				      { set pressedBg #b1b4ae }
+		"plastique"	{ set labelBg #b8bbb5;  set pressedBg #c1c4be }
+	    }
+	}
+
+	"#ebe2d2 #f7f2e8" {	;# color scheme "Norway"
+	    switch -- $style {
+		"cde" -
+		"motif"				      { set pressedBg #c8bba3 }
+		"plastique"	{ set labelBg #f4f0e6;  set pressedBg #d6cfbf }
+	    }
+	}
+
+	"#302f2f #403f3e" {	;# color scheme "Obsidian Coast"
+	    switch -- $style {
+		"cde" -
+		"motif"				      { set pressedBg #2a2929 }
+		"plastique"	{ set labelBg #3f3e3d;  set pressedBg #2b2a2a }
+	    }
+	}
+
+	"#d6d2d0 #dfdcd9" {	;# color schemes "Oxygen" and "Standard"
+	    switch -- $style {
+		"cde" -
+		"motif"				      { set pressedBg #b6aeaa }
+		"plastique"	{ set labelBg #dddad7;  set pressedBg #c3bfbe }
+	    }
+	}
+
+	"#e0dfde #e8e7e6" {	;# c. s. "Oxygen Cold" and "Oxygen-Molecule 3.0"
+	    switch -- $style {
+		"cde" -
+		"motif"				      { set pressedBg #bbb9b8 }
+		"plastique"	{ set labelBg #e6e5e4;  set pressedBg #cdcccb }
+	    }
+	}
+
+	"#e0dfd8 #e8e7df" {	;# color scheme "Steel"
+	    switch -- $style {
+		"cde" -
+		"motif"				      { set pressedBg #babab4 }
+		"plastique"	{ set labelBg #e6e5dd;  set pressedBg #cdccc5 }
+	    }
+	}
+
+	"#494e58 #525863" {	;# color scheme "Wonton Soup"
+	    switch -- $style {
+		"cde" -
+		"motif"				      { set pressedBg #3f444c }
+		"plastique"	{ set labelBg #515762;  set pressedBg #424650 }
+	    }
+	}
+
+	"#fcfcfc #ffffff" {	;# color scheme "Zion"
+	    switch -- $style {
+		"cde" -
+		"motif"				      { set pressedBg #dedede }
+		"plastique"	{ set labelBg #f9f9f9;  set pressedBg #e5e5e5 }
+	    }
+	}
+
+	"#101010 #000000" {	;# color scheme "Zion (Reversed)"
+	    switch -- $style {
+		"cde" -
+		"motif"				      { set pressedBg #5e5e5e }
+		"plastique"	{ set labelBg #000000;  set pressedBg #0e0e0e }
+	    }
+	}
     }
 
     #
@@ -1192,11 +1274,16 @@ proc tablelist::tileqtTheme {} {
 	    set labelBg #e7e7e7;  set labelFg #000000;  set pressedBg #8fbeec
 	}
 
+	"gtk+" {
+	    set labelBg #e8e7e6;                        set pressedBg $labelBg
+	}
+
 	"kde_xp" {
 	    set labelBg #ebeadb;  set labelFg #000000;  set pressedBg #faf8f3
 	}
 
-	"lipstik" {
+	"lipstik" -
+	"oxygen" {
 	    set labelBg $bg;                            set pressedBg $labelBg
 	}
 
@@ -1218,9 +1305,13 @@ proc tablelist::tileqtTheme {} {
     # The stripe background color is specified
     # by a global KDE configuration option:
     #
-    if {[set val [getKdeConfigVal "General" "alternateBackground"]] eq ""} {
-	set stripeBg ""
-    } elseif {[string index $val 0] eq "#"} {
+    if {[info exists ::env(KDE_SESSION_VERSION)] &&
+	$::env(KDE_SESSION_VERSION) ne ""} {
+	set val [getKdeConfigVal "Colors:View" "BackgroundAlternate"]
+    } else {
+	set val [getKdeConfigVal "General" "alternateBackground"]
+    }
+    if {$val eq "" || [string index $val 0] eq "#"} {
 	set stripeBg $val
     } elseif {[scan $val "%d,%d,%d" r g b] == 3} {
 	set stripeBg [format "#%02x%02x%02x" $r $g $b]
@@ -1241,6 +1332,10 @@ proc tablelist::tileqtTheme {} {
 
 	"baghira"	{ set arrowColor $labelFg;  set arrowStyle flat7x7 }
 
+	"cleanlooks" -
+	"gtk+" -
+	"oxygen"	{ set arrowColor $labelFg;  set arrowStyle flat9x6 }
+
 	"phase"		{ set arrowColor $labelFg;  set arrowStyle flat6x4 }
 
 	"qtcurve"	{ set arrowColor $labelFg;  set arrowStyle flat7x5 }
@@ -1255,9 +1350,14 @@ proc tablelist::tileqtTheme {} {
     # The tree style depends on the current Qt style:
     #
     switch -- $style {
-	"baghira"	{ set treeStyle baghira }
+	"baghira" -
+	"cde" -
+	"motif"		{ set treeStyle baghira }
+	"gtk+"		{ set treeStyle gtk }
+	"oxygen"	{ set treeStyle oxygen2 }
 	"phase"		{ set treeStyle phase }
 	"plastik"	{ set treeStyle plastik }
+	"plastique"	{ set treeStyle plastique }
 	"qtcurve"	{ set treeStyle klearlooks }
 	default		{ set treeStyle winnative }
     }
@@ -1676,6 +1776,12 @@ proc tablelist::getKdeConfigVal {group key} {
 proc tablelist::makeKdeDirList {} {
     variable kdeDirList {}
 
+    if {[info exists ::env(KDE_SESSION_VERSION)]} {
+	set ver $::env(KDE_SESSION_VERSION)
+    } else {
+	set ver ""
+    }
+
     if {[info exists ::env(USER)] && $::env(USER) eq "root"} {
 	set name "KDEROOTHOME"
     } else {
@@ -1684,7 +1790,7 @@ proc tablelist::makeKdeDirList {} {
     if {[info exists ::env($name)] && $::env($name) ne ""} {
 	set localKdeDir [file normalize $::env($name)]
     } elseif {[info exists ::env(HOME)] && $::env(HOME) ne ""} {
-	set localKdeDir [file normalize [file join $::env(HOME) ".kde"]]
+	set localKdeDir [file normalize [file join $::env(HOME) ".kde$ver"]]
     }
     if {[info exists localKdeDir] && $localKdeDir ne "-"} {
 	lappend kdeDirList $localKdeDir
@@ -1700,10 +1806,10 @@ proc tablelist::makeKdeDirList {} {
 	lappend kdeDirList $::env(KDEDIR)
     }
 
-    set prefix [exec kde-config --prefix]
+    set prefix [exec kde$ver-config --expandvars --prefix]
     lappend kdeDirList $prefix
 
-    set execPrefix [exec kde-config --expandvars --exec-prefix]
+    set execPrefix [exec kde$ver-config --expandvars --exec-prefix]
     if {$execPrefix ne $prefix} {
 	lappend kdeDirList $execPrefix
     }

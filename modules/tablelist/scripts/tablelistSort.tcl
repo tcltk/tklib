@@ -7,7 +7,7 @@
 #   - Public procedures related to sorting
 #   - Private procedures implementing the sorting
 #
-# Copyright (c) 2000-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -142,7 +142,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     if {[winfo viewable $win] && $sortAllItems} {
 	purgeWidgets $win
 	update idletasks
-	if {![winfo exists $win]} {		;# because of update idletasks
+	if {![namespace exists ::tablelist::ns${win}]} {
 	    return ""
 	}
     }

@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -47,6 +47,8 @@ namespace eval tablelist {
 	    interp alias {} ::tablelist::getThemes  {} ::tile::availableThemes
 	    interp alias {} ::tablelist::setTheme   {} ::tile::setTheme
 
+	    interp alias {} ::tablelist::tileqt_kdeStyleChangeNotification \
+			 {} ::tile::theme::tileqt::kdeStyleChangeNotification
 	    interp alias {} ::tablelist::tileqt_currentThemeName \
 			 {} ::tile::theme::tileqt::currentThemeName
 	    interp alias {} ::tablelist::tileqt_currentThemeColour \
@@ -57,6 +59,8 @@ namespace eval tablelist {
 	    interp alias {} ::tablelist::getThemes    {} ::ttk::themes
 	    interp alias {} ::tablelist::setTheme     {} ::ttk::setTheme
 
+	    interp alias {} ::tablelist::tileqt_kdeStyleChangeNotification \
+			 {} ::ttk::theme::tileqt::kdeStyleChangeNotification
 	    interp alias {} ::tablelist::tileqt_currentThemeName \
 			 {} ::ttk::theme::tileqt::currentThemeName
 	    interp alias {} ::tablelist::tileqt_currentThemeColour \
@@ -329,6 +333,7 @@ namespace eval tablelist {
 	-text			{text			Text		}
 	-window			{window			Window		}
 	-windowdestroy		{windowDestroy		WindowDestroy	}
+	-windowupdate		{windowUpdate		WindowUpdate	}
     }
 
     #
@@ -401,11 +406,11 @@ namespace eval tablelist {
     variable sortOpts      [list -increasing -decreasing]
     variable sortOrders    [list increasing decreasing]
     variable states	   [list disabled normal]
-    variable treeStyles    [list ambiance aqua baghira dust dustSand gtk \
-				 klearlooks newWave oxygen1 oxygen2 phase \
-				 plastik plastique radiance vistaAero \
-				 vistaClassic win7Aero win7Classic winnative \
-				 winxpBlue winxpOlive winxpSilver]
+    variable treeStyles    [list adwaita ambiance aqua baghira dust dustSand \
+				 gtk klearlooks mint newWave oxygen1 oxygen2 \
+				 phase plastik plastique radiance ubuntu \
+				 vistaAero vistaClassic win7Aero win7Classic \
+				 winnative winxpBlue winxpOlive winxpSilver]
 
     proc restrictArrowStyles {} {
 	variable pngSupported
@@ -682,7 +687,12 @@ proc tablelist::tablelist args {
 	set data(themeDefaults) [array get themeDefaults]
 	if {[string compare $data(currentTheme) "tileqt"] == 0} {
 	    set data(widgetStyle) [tileqt_currentThemeName]
-	    set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
+	    if {[info exists ::env(KDE_SESSION_VERSION)] &&
+		[string compare $::env(KDE_SESSION_VERSION) ""] != 0} {
+		set data(colorScheme) [getKdeConfigVal "General" "ColorScheme"]
+	    } else {
+		set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
+	    }
 	} else {
 	    set data(widgetStyle) ""
 	    set data(colorScheme) ""
@@ -846,6 +856,19 @@ proc tablelist::tablelist args {
     # Create the bitmaps needed to display the sort ranks
     #
     createSortRankImgs $win
+
+    #
+    # Take into account that some scripts start by
+    # destroying all children of the root window
+    #
+    variable helpLabel
+    if {![winfo exists $helpLabel]} {
+	if {$usingTile} {
+	    ttk::label $helpLabel -takefocus 0
+	} else {
+	    tk::label $helpLabel -takefocus 0
+	}
+    }
 
     #
     # Configure the widget according to the command-line
@@ -1340,7 +1363,7 @@ proc tablelist::collapseallSubCmd {win argList} {
     if {[winfo viewable $win]} {
 	purgeWidgets $win
 	update idletasks
-	if {![winfo exists $win]} {		;# because of update idletasks
+	if {![namespace exists ::tablelist::ns${win}]} {
 	    return ""
 	}
     }
@@ -2776,7 +2799,7 @@ proc tablelist::insertchildlistSubCmd {win argList} {
     # Mark the parent item as expanded if it was just indented
     #
     set depth [depth $win $parentKey]
-    if {$depth != 0 &&
+    if {[info exists data($parentKey,$treeCol-indent)] &&
 	[string compare $data($parentKey,$treeCol-indent) \
 	 tablelist_${treeStyle}_indentedImg$depth] == 0} {
 	set data($parentKey,$treeCol-indent) \
@@ -2791,11 +2814,11 @@ proc tablelist::insertchildlistSubCmd {win argList} {
     # Elide the new items if the parent is collapsed or non-viewable
     #
     set itemCount [llength $itemList]
-    if {$depth != 0 &&
-	[string compare $parentKey $data(keyBeingExpanded)] != 0 &&
-	([string compare $data($parentKey,$treeCol-indent) \
-	  tablelist_${treeStyle}_collapsedImg$depth] == 0 || \
-	 [info exists data($parentKey-elide)] ||
+    if {[string compare $parentKey $data(keyBeingExpanded)] != 0 &&
+	(([info exists data($parentKey,$treeCol-indent)] && \
+	  [string compare $data($parentKey,$treeCol-indent) \
+	   tablelist_${treeStyle}_collapsedImg$depth] == 0) || \
+	 [info exists data($parentKey-elide)] || \
 	 [info exists data($parentKey-hide)])} {
 	for {set n 0; set row $listIdx} {$n < $itemCount} {incr n; incr row} {
 	    doRowConfig $row $win -elide 1
@@ -4750,7 +4773,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	updateColors $win
 	$w tag remove active 1.0 end
 	update idletasks
-	if {![winfo exists $win]} {		;# because of update idletasks
+	if {![namespace exists ::tablelist::ns${win}]} {
 	    return ""
 	}
     }
@@ -4842,7 +4865,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 		}
 	    }
 	    foreach opt {-editable -editwindow -selectbackground
-			 -selectforeground -windowdestroy} {
+			 -selectforeground -windowdestroy -windowupdate} {
 		if {[info exists data($key,$col$opt)]} {
 		    unset data($key,$col$opt)
 		}
@@ -5757,7 +5780,7 @@ proc tablelist::seeCell {win row col} {
     #
     # This might be an "after idle" callback; check whether the window exists
     #
-    if {![winfo exists $win]} {
+    if {![namespace exists ::tablelist::ns${win}]} {
 	return ""
     }
 
@@ -5791,7 +5814,7 @@ proc tablelist::seeCell {win row col} {
     # Force any geometry manager calculations to be completed first
     #
     update idletasks
-    if {![winfo exists $win]} {			;# because of update idletasks
+    if {![namespace exists ::tablelist::ns${win}]} {
 	return ""
     }
 
