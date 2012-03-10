@@ -1,5 +1,33 @@
-What is new in Tablelist 5.5?
+What is new in Tablelist 5.6?
 -----------------------------
+
+1. Added the tree styles "adwaita", "mint", and "ubuntu", inspired by a
+   few GTK+ 3 themes on popular Linux distributions.
+
+2. Added the "-windowupdate" cell configuration option (thanks to Trevor
+   Williams for his valuable contribution).
+
+3. Embedded windows are now hidden during interactive cell editing
+   (thanks to Trevor Willims for discussions on this subject).
+
+4. Extended the support for the "tileqt" theme to work on KDE 4, too.
+
+5. Guarded against the case that a tablelist widget is deleted and its
+   name is reused for a widget of a different class (thanks to Roger
+   Niva for his valuable input).
+
+6. Guarded against scripts that start by destroying all children of the
+   root window (thanks to Helmut Giese and Gerhard Kubu for drawing my
+   attention to this case).
+
+7. Minor improvements in the documentation (thanks to Glenn Herteg for
+   his proposal).
+
+8. Fixed a bug related to the "move" subcommand, introduced in Tablelist
+   version 5.2 (thanks to "DrS" for his bug report).
+
+What was new in Tablelist 5.5?
+------------------------------
 
 1. Hidden tablelist elements are no longer excluded from the selection
    (thanks to Martyn Smith for his proposal).  (They are, however,
@@ -24,7 +52,7 @@ What is new in Tablelist 5.5?
 5. Removed the "-labelbackground" option from Tablelist_tile, because
    current versions of the tile engine no longer support setting the
    background color for the header labels (and even with earlier tile
-   versions, some themes refused any attempt to change the background
+   versions, some themes ignored any attempt to change the background
    color of the header labels).
 
 6. Adapted the code to some changes in current tile versions, to make
