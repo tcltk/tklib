@@ -1,5 +1,25 @@
-What is new in Mentry 3.5?
+What is new in Mentry 3.6?
 --------------------------
+
+1. The "-background" option in the package Mentry_tile now works for
+   the great majority of themes.  The most notable exceptions are the
+   themes "plastik", "tileqt", "vista", and "xpnative", which ignore any
+   attempt to set the background color for ttk::entry widgets.
+
+2. Adapted the code to some changes in current tile versions, to make
+   sure that in disabled state the tile-based ttk::entry components of
+   mentry widgets will appear in the theme-specific disabled foreground
+   color, as it was the case with earlier tile versions.
+
+3. Extended the support for the "tileqt" theme to work on KDE 4, too.
+
+4. Guarded against scripts that start by destroying all children of the
+   root window.
+
+5. Minor improvements in the documentation.
+
+What was new in Mentry 3.5?
+---------------------------
 
 1. Included the same version of the general mega-widget utility module
    "mwutil.tcl" as in Tablelist release 5.3.
