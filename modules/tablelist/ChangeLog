@@ -1,3 +1,31 @@
+2012-03-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                Bumped the version number to 5.6; updated the
+	* COPYRIGHT.txt:        copyright information.
+	* README.txt:
+	* ../../examples/*.tcl:
+
+	* scripts/*.tcl: Added the tree styles "adwaita", "mint", and "ubuntu";
+	  added the "-windowupdate" cell configuration option; embedded windows
+	  are now hidden during interactive cell editing; extended the support
+	  for the "tileqt" theme to work on KDE 4, too; guarded against the
+	  case that a tablelist widget is deleted and its name is reused for a
+	  widget of a different class; guarded against scripts that start by
+	  destroying all children of the root window; fixed a bug related to
+	  the "move" subcommand; updated the copyright information.
+
+	* CHANGES.txt: Updated to reflect the changes; minor improvements.
+	* doc/*.html:
+
+	* doc/adwaita.png: Added screenshots.
+	* doc/mint.png:
+	* doc/ubuntu.png:
+
+	* doc/ambiance.png: Updated screenshots.
+	* doc/dust.png:
+	* doc/dustSand.png:
+	* doc/radiance.png:
+
 2011-12-14  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistUtil.tcl: Minor improvement related to the
