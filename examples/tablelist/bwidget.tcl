@@ -7,11 +7,11 @@ exec wish "$0" ${1+"$@"}
 # widgets from the BWidget package and of the Tk core checkbutton and
 # menubutton widgets.
 #
-# Copyright (c) 2004-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.4				;# because of "-compound"
-package require tablelist 5.5
+package require tablelist 5.6
 package require BWidget
 
 wm title . "Serial Line Configuration"

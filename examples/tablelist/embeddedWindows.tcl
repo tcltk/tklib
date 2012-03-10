@@ -5,10 +5,10 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
 #
-# Copyright (c) 2004-2011  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.5
+package require tablelist 5.6
 
 wm title . "Tk Library Scripts"
 
