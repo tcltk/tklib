@@ -1,3 +1,21 @@
+2012-03-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 3.6; updated the
+	* COPYRIGHT.txt: copyright information.
+	* README.txt:
+
+	* scripts/*.tcl: Improved the impleementation of the "-background"
+	  option in Mentry_tile; made sure to use the theme-specific disabled
+	  foreground color in Mentry_tile; extended the support for the
+	  "tileqt" theme to work on KDE 4, too; guarded against scripts that
+	  start by destroying all children of the root window; updated the
+	  copyright information.
+
+	* CHANGES.txt: Updated to reflect the changes; minor improvements.
+	* doc/*.html:
+
+	* ../../examples/*.tcl: Updated the copyright information.
+
 2011-08-22  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:                Eliminated the deprecated free-form scan
