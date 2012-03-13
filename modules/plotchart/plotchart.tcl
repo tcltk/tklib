@@ -2413,17 +2413,21 @@ proc ::Plotchart::createPerformanceProfile { w scale } {
 # createTableChart --
 #    Create a command for drawing a table
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    columns     Names of the columns to be displayed
-#    widths      Optional list of column widths
+#    args        Optional list of column widths and/or -box list
+#                to position the table
 # Result:
 #    Name of a new command
 # Note:
 #    By default the entire canvas will be dedicated to the table
 #
-proc ::Plotchart::createTableChart { w columns {widths {}} } {
+proc ::Plotchart::createTableChart { c columns args } {
    variable scaling
    variable data_series
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
 
    ClearPlot $w
 
@@ -2431,7 +2435,16 @@ proc ::Plotchart::createTableChart { w columns {widths {}} } {
    interp alias {} $newchart {} ::Plotchart::PlotHandler table $w
    CopyConfig table $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w {}] {break}
+   if { [llength $args] == 0 } {
+       set widths {}
+   } elseif { [string index [lindex $args 0] 0] != "-" } {
+       set widths [lindex $args 0]
+       set args   [lrange $args 1 end]
+   } else {
+       set widths {}
+   }
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
 
    set scaling($w,coordSystem) 0
 
