@@ -1,7 +1,6 @@
-2012-01-05  Arjen Markus  <arjenmarkus@users.sourceforge.net>
-	* plotchart.man: Add documentation for $p canvas and change to coordinate transformations
-	* plotchart.tcl: Additional method $p canvas and fixed problem with annotations in TXPlot
-	* plotannot.tcl: Fixed problem with annotations in TXPlot
+2012-03-13  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plotaxis.tcl: Only plot a symbol in the legend, if that is the requested type
+	* plotchart.tcl: Implement the -box/-axesbox option for table charts
 
 2011-11-27  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotchart.man: Add documentation for removefromlegend and several options

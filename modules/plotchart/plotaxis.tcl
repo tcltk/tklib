@@ -1345,7 +1345,9 @@ proc ::Plotchart::ActuallyDrawLegend { w {spacing {}}} {
         # TODO: line or rectangle!
 
         if { $type != "rectangle" } {
-            $legendw create line 0 $y 15 $y -fill $colour -tag [list legend legendobj $w] -width $width
+            if { $type == "line" || $type == "both" } {
+                $legendw create line 0 $y 15 $y -fill $colour -tag [list legend legendobj $w] -width $width
+            }
 
             if { $type == "symbol" || $type == "both" } {
                 set symbol "dot"
