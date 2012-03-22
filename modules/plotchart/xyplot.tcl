@@ -4,7 +4,10 @@
 #
 package require Tcl 8.5
 package require Tk 8.5
-package require Plotchart 1.5
+
+source plotchart.tcl
+
+package require Plotchart 2.0
 package require cmdline
 package provide xyplot 1.0.1
 
@@ -71,6 +74,7 @@ proc xyplot::create { path args } {
     bind $c <ButtonRelease-1> [list xyplot::zoom_end $path %x %y]
     bind $c <3> [list xyplot::unzoom $path]
     bind $c <Configure> [list xyplot::do_resize $path]
+
     set data($f,c) $c
     set data($f,sbx) $sbx
     set data($f,sby) $sby
@@ -208,6 +212,7 @@ proc xyplot::draw { path {scale {}} } {
     }
     $data($path,c) delete all
     set s [::Plotchart::createXYPlot $data($path,c) {0.0 1.0 1.0} {0.0 1.0 1.0}]
+    set data($path,cxy) [$s canvas]
 
     if {[string length $data($path,title)]} {
 	$s title $data($path,title)
@@ -304,8 +309,8 @@ proc xyplot::zoom_end { path x y } {
     $data($path,c) delete zoom_window
     set zoom_x1 [$data($path,c) canvasx $x]
     set zoom_y1 [$data($path,c) canvasy $y]
-    lassign [::Plotchart::pixelToCoords $data($path,c) $data($path,zoom_x0) $data($path,zoom_y0)] x0 y0
-    lassign [::Plotchart::pixelToCoords $data($path,c) $zoom_x1             $zoom_y1            ] x1 y1
+    lassign [::Plotchart::pixelToCoords $data($path,cxy) $data($path,zoom_x0) $data($path,zoom_y0)] x0 y0
+    lassign [::Plotchart::pixelToCoords $data($path,cxy) $zoom_x1             $zoom_y1            ] x1 y1
     if {$x0==$x1 || $y0==$y1} {
 	return
     }
@@ -546,7 +551,7 @@ proc xyplot::cget { path option args } {
 }
 
 # Test
-if {0} {
+if {1} {
 set xydata1 {}
 set xydata2 {}
 set xydata3 {}
