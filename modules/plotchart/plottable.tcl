@@ -224,15 +224,21 @@ proc ::Plotchart::DrawSeparator { w } {
 #
 proc ::Plotchart::ConfigureTableCell { w args } {
     variable scaling
+    variable config
 
     foreach {key value} $args {
         switch -- $key {
             "-background" -
             "-color"      -
             "-font"       -
-            "-anchor"     -
             "-justify"    {
                 set scaling($w,cell,$key) $value
+            }
+            "-anchor"     {
+                #
+                # Problem: this takes effect in the _next_ cell!
+                #
+                set config($w,cell,anchor) $value
             }
             default {
                 return -code error "Unknown cell property: $key"
