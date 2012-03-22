@@ -1,3 +1,10 @@
+2012-03-22  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* xyplot.tcl: Repair incompatibility introduced in Plotchart 2.0 vis-a-vis coordsToPixel
+	*             and pixelToCoords
+
+2012-03-14  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* plottable.tcl: Correct support for the -anchor option - not entirely satisfactory yet
+
 2012-03-13  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* plotaxis.tcl: Only plot a symbol in the legend, if that is the requested type
 	* plotchart.tcl: Implement the -box/-axesbox option for table charts
