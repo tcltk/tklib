@@ -5253,7 +5253,6 @@ proc tablelist::displayItems win {
     set padY [expr {[$w cget -spacing1] == 0}]
     set wasEmpty [expr {[llength $data(rowsToDisplay)] == $data(itemCount)}]
     set isEmpty $wasEmpty
-    set colWidthsChanged 0
     foreach row $data(rowsToDisplay) {
 	set line [expr {$row + 1}]
 	set item [lindex $data(itemList) $row]
@@ -5311,10 +5310,6 @@ proc tablelist::displayItems win {
 		    } elseif {$textWidth > $data($col-elemWidth)} {
 			set data($col-elemWidth) $textWidth
 			set data($col-widestCount) 1
-			if {$textWidth > $data($col-reqPixels)} {
-			    set data($col-reqPixels) $textWidth
-			    set colWidthsChanged 1
-			}
 		    }
 		}
 		if {$pixels != 0} {
@@ -5389,10 +5384,6 @@ proc tablelist::displayItems win {
 		    } elseif {$textWidth > $data($col-elemWidth)} {
 			set data($col-elemWidth) $textWidth
 			set data($col-widestCount) 1
-			if {$textWidth > $data($col-reqPixels)} {
-			    set data($col-reqPixels) $textWidth
-			    set colWidthsChanged 1
-			}
 		    }
 		}
 		if {$pixels != 0} {
@@ -5457,6 +5448,21 @@ proc tablelist::displayItems win {
 	    [expr {$data(itemCount) - $data(nonViewableRowCount)}]
 	$w configure -height $viewableRowCount
 	$data(lb) configure -height $viewableRowCount
+    }
+
+    #
+    # Check whether the width of any column has changed
+    #
+    set colWidthsChanged 0
+    set col 0
+    foreach {pixels alignment} $data(colList) {
+	if {$pixels == 0} {			;# convention: dynamic width
+	    if {$data($col-elemWidth) > $data($col-reqPixels)} {
+		set data($col-reqPixels) $data($col-elemWidth)
+		set colWidthsChanged 1
+	    }
+	}
+	incr col
     }
 
     #
