@@ -468,7 +468,8 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 
 		if {$multiline} {
 		    lappend insertArgs "\t\t" $cellTags
-		    lappend multilineData $col $text $colFont $pixels $alignment
+		    lappend multilineData $col $text $cellFont $pixels \
+					  $alignment
 		} else {
 		    lappend insertArgs "\t$text\t" $cellTags
 		}
@@ -608,12 +609,16 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 	set selRows [curSelection $win]
 	if {[llength $selRows] == 1} {
 	    set selRow [lindex $selRows 0]
-	    if {$selRow >= $firstDescRow && $selRow <= $lastDescRow} {
+	    set selKey [lindex $data(keyList) $selRow]
+	    if {$selRow >= $firstDescRow && $selRow <= $lastDescRow &&
+		![info exists data($selKey-elide)]} {
 		seeRow $win $selRow
 	    }
 	} elseif {[string compare [focus -lastfor $w] $w] == 0} {
+	    set activeKey [lindex $data(keyList) $data(activeRow)]
 	    if {$data(activeRow) >= $firstDescRow &&
-		$data(activeRow) <= $lastDescRow} {
+		$data(activeRow) <= $lastDescRow &&
+		![info exists data($activeKey-elide)]} {
 		seeRow $win $data(activeRow)
 	    }
 	}
