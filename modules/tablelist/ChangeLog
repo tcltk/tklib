@@ -1,3 +1,14 @@
+2012-03-24  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt: Slightly extended.
+
+	* scripts/tablelistBind.tcl:   Minor improvements.
+	* scripts/tablelistSort.tcl:
+	* scripts/tablelistUtil.tcl:
+	* scripts/tablelistWidget.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
 2012-03-10  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:                Bumped the version number to 5.6; updated the
