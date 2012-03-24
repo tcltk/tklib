@@ -8,7 +8,7 @@ What is new in Tablelist 5.6?
    Williams for his valuable contribution).
 
 3. Embedded windows are now hidden during interactive cell editing
-   (thanks to Trevor Willims for discussions on this subject).
+   (thanks to Trevor Williams for discussions on this subject).
 
 4. Extended the support for the "tileqt" theme to work on KDE 4, too.
 
@@ -25,6 +25,8 @@ What is new in Tablelist 5.6?
 
 8. Fixed a bug related to the "move" subcommand, introduced in Tablelist
    version 5.2 (thanks to "DrS" for his bug report).
+
+9. Several further improvements and minor bug fixes.
 
 What was new in Tablelist 5.5?
 ------------------------------
