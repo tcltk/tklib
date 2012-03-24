@@ -1499,8 +1499,12 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
     }
 
     if {$auxWidth == 0} {				;# no image or window
-	$w delete $index1 $index2
-	$w insert $index1 $text
+	if {$::tk_version >= 8.5} {
+	    $w replace $index1 $index2 $text
+	} else {
+	    $w delete $index1 $index2
+	    $w insert $index1 $text
+	}
     } else {
 	#
 	# Check whether the image label or the frame containing a
@@ -3134,8 +3138,9 @@ proc tablelist::moveActiveTag win {
 # tablelist::updateColorsWhenIdle
 #
 # Arranges for the background and foreground colors of the label, frame, and
-# message widgets containing the currently visible images and multiline
-# elements of the tablelist widget win to be updated at idle time.
+# message widgets containing the currently visible images, embedded windows,
+# and multiline elements of the tablelist widget win to be updated at idle
+# time.
 #------------------------------------------------------------------------------
 proc tablelist::updateColorsWhenIdle win {
     upvar ::tablelist::ns${win}::data data
@@ -3366,7 +3371,7 @@ proc tablelist::updateScrlColOffset win {
     set maxScrlColOffset [getMaxScrlColOffset $win]
     if {$data(scrlColOffset) > $maxScrlColOffset} {
 	set data(scrlColOffset) $maxScrlColOffset
-	adjustElidedTextWhenIdle $win
+	adjustElidedText $win
     }
 }
 
@@ -3521,21 +3526,6 @@ proc tablelist::purgeWidgets win {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::adjustElidedTextWhenIdle
-#
-# Arranges for the elided text ranges of the body text child of the tablelist
-# widget win to be updated at idle time.
-#------------------------------------------------------------------------------
-proc tablelist::adjustElidedTextWhenIdle win {
-    upvar ::tablelist::ns${win}::data data
-    if {[info exists data(elidedId)]} {
-	return ""
-    }
-
-    set data(elidedId) [after idle [list tablelist::adjustElidedText $win]]
-}
-
-#------------------------------------------------------------------------------
 # tablelist::adjustElidedText
 #
 # Updates the elided text ranges of the body text child of the tablelist widget
@@ -3543,11 +3533,6 @@ proc tablelist::adjustElidedTextWhenIdle win {
 #------------------------------------------------------------------------------
 proc tablelist::adjustElidedText win {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(elidedId)]} {
-	after cancel $data(elidedId)
-	unset data(elidedId)
-    }
-
     if {$data(itemCount) == 0 || [info exists data(dispId)]} {
 	return ""
     }
@@ -3883,7 +3868,8 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 
 		if {$multiline} {
 		    lappend insertArgs "\t\t" $cellTags
-		    lappend multilineData $col $text $cellFont $alignment
+		    lappend multilineData $col $text $cellFont $pixels \
+					  $alignment
 		} else {
 		    lappend insertArgs "\t$text\t" $cellTags
 		}
@@ -3901,7 +3887,7 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 	    #
 	    # Embed the message widgets displaying multiline elements
 	    #
-	    foreach {col text font alignment} $multilineData {
+	    foreach {col text font pixels alignment} $multilineData {
 		if {[findTabs $win $line $col $col tabIdx1 tabIdx2]} {
 		    set msgScript [list ::tablelist::displayText $win $key \
 				   $col $text $font $pixels $alignment]
@@ -4115,11 +4101,12 @@ proc tablelist::redisplayCol {win col first last} {
 	}
 	if {$multiline} {
 	    set list [split $text "\n"]
+	    set snipSide2 $snipSide
 	    if {$data($col-wrap)} {
-		set snipSide ""
+		set snipSide2 ""
 	    }
 	    adjustMlElem $win list auxWidth indentWidth $cellFont \
-			 $pixels $snipSide $snipStr
+			 $pixels $snipSide2 $snipStr
 	    set msgScript [list ::tablelist::displayText $win $key $col \
 			   [join $list "\n"] $cellFont $maxTextWidth $alignment]
 	} else {

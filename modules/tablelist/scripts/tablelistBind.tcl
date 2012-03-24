@@ -102,13 +102,13 @@ proc tablelist::cleanup win {
     # Cancel the execution of all delayed updateKeyToRowMap, adjustSeps,
     # makeStripes, showLineNumbers, stretchColumns, updateColors,
     # updateScrlColOffset, updateHScrlbar, updateVScrlbar, updateView,
-    # adjustElidedText, synchronize, displayItems, horizAutoScan, forceRedraw,
+    # synchronize, displayItems, horizAutoScan, forceRedraw,
     # doCellConfig, redisplay, redisplayCol, and destroyWidgets commands
     #
     upvar ::tablelist::ns${win}::data data
-    foreach id {mapId sepsId stripesId lineNumsId stretchId colorId offsetId \
-		hScrlbarId vScrlbarId viewId elidedId syncId dispId afterId
-		redrawId reconfigId} {
+    foreach id {mapId sepsId stripesId lineNumsId stretchId colorId offsetId
+		hScrlbarId vScrlbarId viewId syncId dispId afterId redrawId
+		reconfigId} {
 	if {[info exists data($id)]} {
 	    after cancel $data($id)
 	}
