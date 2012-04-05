@@ -190,6 +190,7 @@ set auto_index(::tablelist::purgeWidgets) [list source [file join $dir tablelist
 set auto_index(::tablelist::adjustElidedText) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::redisplayWhenIdle) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::redisplay) [list source [file join $dir tablelistUtil.tcl]]
+set auto_index(::tablelist::redisplayVisibleItems) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::redisplayColWhenIdle) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::redisplayCol) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::makeStripesWhenIdle) [list source [file join $dir tablelistUtil.tcl]]
