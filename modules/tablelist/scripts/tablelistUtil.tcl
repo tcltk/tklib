@@ -3372,6 +3372,7 @@ proc tablelist::updateScrlColOffset win {
     if {$data(scrlColOffset) > $maxScrlColOffset} {
 	set data(scrlColOffset) $maxScrlColOffset
 	adjustElidedText $win
+	redisplayVisibleItems $win
     }
 }
 
@@ -3851,27 +3852,22 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 			}
 		    }
 
-		    set snipSide \
-			$snipSides($alignment,$data($col-changesnipside))
 		    if {$multiline} {
 			set list [split $text "\n"]
+			set snipSide \
+			    $snipSides($alignment,$data($col-changesnipside))
 			if {$data($col-wrap)} {
 			    set snipSide ""
 			}
 			set text [joinList $win $list $cellFont \
 				  $pixels $snipSide $snipStr]
-		    } else {
-			set text [strRange $win $text $cellFont \
-				  $pixels $snipSide $snipStr]
 		    }
 		}
 
+		lappend insertArgs "\t\t" $cellTags
 		if {$multiline} {
-		    lappend insertArgs "\t\t" $cellTags
 		    lappend multilineData $col $text $cellFont $pixels \
 					  $alignment
-		} else {
-		    lappend insertArgs "\t$text\t" $cellTags
 		}
 
 		incr col
@@ -3987,6 +3983,7 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
     # Adjust the elided text and restore the stripes in the body text widget
     #
     adjustElidedText $win
+    redisplayVisibleItems $win
     makeStripes $win
 
     #
@@ -3994,6 +3991,133 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
     #
     if {$editCol >= 0} {
 	doEditCell $win $editRow $editCol 1
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::redisplayVisibleItems
+#
+# Redisplays the visible items of the tablelist widget win.
+#------------------------------------------------------------------------------
+proc tablelist::redisplayVisibleItems win {
+    upvar ::tablelist::ns${win}::data data
+    if {$data(itemCount) == 0} {
+	return ""
+    }
+
+    variable canElide
+    variable elide
+    variable snipSides
+
+    displayItems $win
+    set w $data(body)
+    set topLine [expr {int([$w index @0,0])}]
+    set btmLine [expr {int([$w index @0,$data(btmY)])}]
+    set snipStr $data(-snipstring)
+
+    for {set line $topLine; set row [expr {$line - 1}]} \
+	{$line <= $btmLine} {set row $line; incr line} {
+	set item [lindex $data(itemList) $row]
+	set key [lindex $item end]
+	if {[info exists data($key-elide)] || [info exists data($key-hide)]} {
+	    continue
+	}
+
+	#
+	# Format the item
+	#
+	set dispItem [lrange $item 0 $data(lastCol)]
+	if {$data(hasFmtCmds)} {
+	    set dispItem [formatItem $win $key $row $dispItem]
+	}
+
+	set tabIdx1 $line.0
+	set col 0
+	foreach text [strToDispStr $dispItem] \
+		colFont $data(colFontList) \
+		colTags $data(colTagsList) \
+		{pixels alignment} $data(colList) {
+	    if {$data($col-hide) && !$canElide} {
+		incr col
+		continue
+	    }
+
+	    set tabIdx2 [$w search $elide "\t" $tabIdx1+1c $line.end]
+
+	    if {[string compare $text ""] == 0 ||
+		[$w count -chars $tabIdx1 $tabIdx2] > 1 ||
+		($row == $data(editRow) && $col == $data(editCol))} {
+		set tabIdx1 [$w index $tabIdx2]+1c
+		incr col
+		continue
+	    }
+
+	    if {$pixels == 0} {			;# convention: dynamic width
+		if {$data($col-maxPixels) > 0} {
+		    if {$data($col-reqPixels) > $data($col-maxPixels)} {
+			set pixels $data($col-maxPixels)
+		    }
+		}
+	    }
+	    if {$pixels != 0} {
+		incr pixels $data($col-delta)
+	    }
+
+	    #
+	    # Adjust the cell text and the image or window width
+	    #
+	    set multiline [string match "*\n*" $text]
+	    set aux [getAuxData $win $key $col auxType auxWidth $pixels]
+	    set indent [getIndentData $win $key $col indentWidth]
+	    set maxTextWidth $pixels
+	    if {[info exists data($key,$col-font)]} {
+		set cellFont $data($key,$col-font)
+	    } elseif {[info exists data($key-font)]} {
+		set cellFont $data($key-font)
+	    } else {
+		set cellFont $colFont
+	    }
+	    if {$pixels != 0} {
+		set maxTextWidth \
+		    [getMaxTextWidth $pixels $auxWidth $indentWidth]
+
+		if {$data($col-wrap) && !$multiline} {
+		    if {[font measure $cellFont -displayof $win $text] >
+			$maxTextWidth} {
+			set multiline 1
+		    }
+		}
+	    }
+	    set snipSide $snipSides($alignment,$data($col-changesnipside))
+	    if {$multiline} {
+		set list [split $text "\n"]
+		if {$data($col-wrap)} {
+		    set snipSide ""
+		}
+		adjustMlElem $win list auxWidth indentWidth $cellFont \
+			     $pixels $snipSide $snipStr
+		set msgScript [list ::tablelist::displayText $win $key $col \
+		    [join $list "\n"] $cellFont $maxTextWidth $alignment]
+	    } else {
+		adjustElem $win text auxWidth indentWidth $cellFont \
+			   $pixels $snipSide $snipStr
+	    }
+
+	    #
+	    # Update the text widget's contents between the two tabs
+	    #
+	    $w mark set tabMark2 [$w index $tabIdx2]
+	    if {$multiline} {
+		updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript $aux $auxType \
+			     $auxWidth $indent $indentWidth $alignment
+	    } else {
+		updateCell $w $tabIdx1+1c $tabIdx2 $text $aux $auxType \
+			   $auxWidth $indent $indentWidth $alignment
+	    }
+
+	    set tabIdx1 [$w index tabMark2+1c]
+	    incr col
+	}
     }
 }
 
@@ -4299,6 +4423,7 @@ proc tablelist::updateView win {
     }
 
     adjustElidedText $win
+    redisplayVisibleItems $win
     updateColors $win
     adjustSeps $win
     updateVScrlbar $win
@@ -4989,6 +5114,7 @@ proc tablelist::changeScrlColOffset {win scrlColOffset} {
     if {$scrlColOffset != $data(scrlColOffset)} {
 	set data(scrlColOffset) $scrlColOffset
 	adjustElidedText $win
+	redisplayVisibleItems $win
     }
 }
 
