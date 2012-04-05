@@ -1,32 +1,35 @@
 What is new in Tablelist 5.6?
 -----------------------------
 
-1. Added the tree styles "adwaita", "mint", and "ubuntu", inspired by a
-   few GTK+ 3 themes on popular Linux distributions.
+1.  Added the tree styles "adwaita", "mint", and "ubuntu", inspired by a
+    few GTK+ 3 themes on popular Linux distributions.
 
-2. Added the "-windowupdate" cell configuration option (thanks to Trevor
-   Williams for his valuable contribution).
+2.  Added the "-windowupdate" cell configuration option (thanks to
+    Trevor Williams for his valuable contribution).
 
-3. Embedded windows are now hidden during interactive cell editing
-   (thanks to Trevor Williams for discussions on this subject).
+3.  The item insertion and sorting have become significantly faster,
+    especially when using static-width columns.
 
-4. Extended the support for the "tileqt" theme to work on KDE 4, too.
+4.  Embedded windows are now hidden during interactive cell editing
+    (thanks to Trevor Williams for discussions on this subject).
 
-5. Guarded against the case that a tablelist widget is deleted and its
-   name is reused for a widget of a different class (thanks to Roger
-   Niva for his valuable input).
+5.  Extended the support for the "tileqt" theme to work on KDE 4, too.
 
-6. Guarded against scripts that start by destroying all children of the
-   root window (thanks to Helmut Giese and Gerhard Kubu for drawing my
-   attention to this case).
+6.  Improvements in the documentation (thanks to Glenn Herteg for his
+    proposal).
 
-7. Minor improvements in the documentation (thanks to Glenn Herteg for
-   his proposal).
+7.  Guarded against the case that a tablelist widget is deleted and its
+    name is reused for a widget of a different class (thanks to Roger
+    Niva for his valuable input).
 
-8. Fixed a bug related to the "move" subcommand, introduced in Tablelist
-   version 5.2 (thanks to "DrS" for his bug report).
+8.  Guarded against scripts that start by destroying all children of the
+    root window (thanks to Helmut Giese and Gerhard Kubu for drawing my
+    attention to this case).
 
-9. Several further improvements and minor bug fixes.
+9.  Fixed a bug related to the "move" subcommand, introduced in
+    Tablelist version 5.2 (thanks to "DrS" for his bug report).
+
+10. Several further improvements and minor bug fixes.
 
 What was new in Tablelist 5.5?
 ------------------------------
