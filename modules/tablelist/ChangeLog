@@ -1,3 +1,16 @@
+2012-04-05  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:              Updated to reflect the changes.
+	* doc/tablelistWidget.html:
+
+	* scripts/tablelistBind.tcl:   Optimizations related to item insertion
+	* scripts/tablelistMove.tcl:   and sorting.
+	* scripts/tablelistSort.tcl:
+	* scripts/tablelistUtil.tcl:
+	* scripts/tablelistWidget.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
 2012-03-24  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Slightly extended.
