@@ -451,27 +451,22 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 			}
 		    }
 
-		    set snipSide \
-			$snipSides($alignment,$data($col-changesnipside))
 		    if {$multiline} {
 			set list [split $text "\n"]
+			set snipSide \
+			    $snipSides($alignment,$data($col-changesnipside))
 			if {$data($col-wrap)} {
 			    set snipSide ""
 			}
 			set text [joinList $win $list $cellFont \
 				  $pixels $snipSide $snipStr]
-		    } else {
-			set text [strRange $win $text $cellFont \
-				  $pixels $snipSide $snipStr]
 		    }
 		}
 
+		lappend insertArgs "\t\t" $cellTags
 		if {$multiline} {
-		    lappend insertArgs "\t\t" $cellTags
 		    lappend multilineData $col $text $cellFont $pixels \
 					  $alignment
-		} else {
-		    lappend insertArgs "\t$text\t" $cellTags
 		}
 
 		incr col
@@ -628,6 +623,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     # Adjust the elided text and restore the stripes in the body text widget
     #
     adjustElidedText $win
+    redisplayVisibleItems $win
     makeStripes $win
     updateColorsWhenIdle $win
     adjustSepsWhenIdle $win

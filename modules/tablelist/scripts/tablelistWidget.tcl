@@ -1328,6 +1328,7 @@ proc tablelist::collapseSubCmd {win argList} {
 	makeStripes $win
 	showLineNumbersWhenIdle $win
 	adjustElidedText $win
+	redisplayVisibleItems $win
 	updateColorsWhenIdle $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
@@ -1445,6 +1446,7 @@ proc tablelist::collapseallSubCmd {win argList} {
     makeStripes $win
     showLineNumbersWhenIdle $win
     adjustElidedText $win
+    redisplayVisibleItems $win
     updateColorsWhenIdle $win
     adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
@@ -2047,6 +2049,7 @@ proc tablelist::expandSubCmd {win argList} {
 	makeStripes $win
 	showLineNumbersWhenIdle $win
 	adjustElidedText $win
+	redisplayVisibleItems $win
 	updateColorsWhenIdle $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
@@ -2124,6 +2127,7 @@ proc tablelist::expandallSubCmd {win argList} {
     makeStripes $win
     showLineNumbersWhenIdle $win
     adjustElidedText $win
+    redisplayVisibleItems $win
     updateColorsWhenIdle $win
     adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
@@ -4225,6 +4229,7 @@ proc tablelist::yviewSubCmd {win argList} {
 	    set row [viewableRowOffsetToRowIndex $win $units]
 	    $w yview $row
 	    adjustElidedText $win
+	    redisplayVisibleItems $win
 	    updateColors $win
 	    adjustSepsWhenIdle $win
 	    updateVScrlbarWhenIdle $win
@@ -4273,6 +4278,7 @@ proc tablelist::yviewSubCmd {win argList} {
 		}
 	    }
 	    adjustElidedText $win
+	    redisplayVisibleItems $win
 	    updateColors $win
 	    adjustSepsWhenIdle $win
 	    updateVScrlbarWhenIdle $win
@@ -5322,26 +5328,21 @@ proc tablelist::displayItems win {
 			}
 		    }
 
-		    set snipSide \
-			$snipSides($alignment,$data($col-changesnipside))
 		    if {$multiline} {
+			set list [split $text "\n"]
+			set snipSide \
+			    $snipSides($alignment,$data($col-changesnipside))
 			if {$data($col-wrap)} {
 			    set snipSide ""
 			}
-			set list [split $text "\n"]
 			set text [joinList $win $list $colFont \
-				  $pixels $snipSide $snipStr]
-		    } else {
-			set text [strRange $win $text $colFont \
 				  $pixels $snipSide $snipStr]
 		    }
 		}
 
+		lappend insertArgs "\t\t" $colTags
 		if {$multiline} {
-		    lappend insertArgs "\t\t" $colTags
 		    lappend multilineData $col $text $colFont $pixels $alignment
-		} else {
-		    lappend insertArgs "\t$text\t" $colTags
 		}
 		incr col
 	    }
@@ -5396,27 +5397,22 @@ proc tablelist::displayItems win {
 			}
 		    }
 
-		    set snipSide \
-			$snipSides($alignment,$data($col-changesnipside))
 		    if {$multiline} {
+			set list [split $text "\n"]
+			set snipSide \
+			    $snipSides($alignment,$data($col-changesnipside))
 			if {$data($col-wrap)} {
 			    set snipSide ""
 			}
-			set list [split $text "\n"]
 			set text [joinList $win $list $widgetFont \
-				  $pixels $snipSide $snipStr]
-		    } else {
-			set text [strRange $win $text $widgetFont \
 				  $pixels $snipSide $snipStr]
 		    }
 		}
 
+		append insertStr "\t\t"
 		if {$multiline} {
-		    append insertStr "\t\t"
 		    lappend multilineData $col $text $widgetFont \
 					  $pixels $alignment
-		} else {
-		    append insertStr "\t$text\t"
 		}
 		incr col
 	    }
@@ -5624,6 +5620,7 @@ proc tablelist::doScan {win opt x y} {
 
 	if {[string compare $opt "dragto"] == 0} {
 	    adjustElidedText $win
+	    redisplayVisibleItems $win
 	    updateColors $win
 	    adjustSepsWhenIdle $win
 	    updateVScrlbarWhenIdle $win
@@ -5663,6 +5660,7 @@ proc tablelist::doScan {win opt x y} {
 	#
 	changeScrlColOffset $win [scrlXOffsetToColOffset $win $scrlXOffset]
 	adjustElidedText $win
+	redisplayVisibleItems $win
 	updateColors $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
@@ -5773,7 +5771,7 @@ proc tablelist::seeRow {win index} {
     $data(body) see [expr {double($index + 1)}]
     $data(body) xview moveto [lindex [$data(hdrTxt) xview] 0]
 
-    updateViewWhenIdle $win
+    updateView $win
     return ""
 }
 
@@ -5970,7 +5968,7 @@ proc tablelist::seeCell {win row col} {
 	$b delete 1.0 end
     }
 
-    updateViewWhenIdle $win
+    updateView $win
     return ""
 }
 
