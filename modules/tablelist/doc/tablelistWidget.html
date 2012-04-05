@@ -1439,11 +1439,15 @@ proc acceptChildCmd {tbl targetParentNodeIdx sourceRow} {
         <p>The default value of this option is an empty list, specifying that
         initially the widget has no columns.</p>
 
-        <p><b>REMARK:</b>&nbsp; Whenever possible, you should specify the value
-        zero for the column widths, i.e., use <b>dynamic-width</b>
-        columns.&nbsp; Besides being more user-friendly, dynamic-width columns
-        have the main advantage that they increase the performance of the item
-        insertion and sorting quite significantly.</p>
+        <p><b>REMARK:</b>&nbsp; Columns whose width was specified as zero are
+        called <b>dynamic-width</b> columns.&nbsp; In general, they are more
+        user-friendly than their <b>static-width</b> counterparts, being that
+        their widths are automatically adapted to their contents.&nbsp; On the
+        other hand, the static-width columns perform significantly better on
+        item insertion and sorting than the dynamic-width ones, due to some
+        optimizations introduced in Tablelist version 5.6.&nbsp; (Prior to that
+        release, the above-mentioned operations were faster with dynamic-width
+        columns than with static-width ones.)</p>
       </blockquote>
     </dd>
 
