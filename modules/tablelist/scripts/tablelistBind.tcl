@@ -2508,6 +2508,7 @@ proc tablelist::labelB1Motion {w X x y} {
 
 	    adjustColumns $win {} 0
 	    adjustElidedText $win
+	    redisplayVisibleItems $win
 	    updateColors $win
 	    updateVScrlbarWhenIdle $win
 	}

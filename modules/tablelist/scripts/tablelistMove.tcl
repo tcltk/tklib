@@ -410,6 +410,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	#
 	adjustColumns $win $treeCol 1
 	adjustElidedText $win
+	redisplayVisibleItems $win
 	makeStripes $win
 	showLineNumbersWhenIdle $win
 	updateColorsWhenIdle $win
