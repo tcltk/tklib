@@ -551,7 +551,7 @@ proc xyplot::cget { path option args } {
 }
 
 # Test
-if {1} {
+if {0} {
 set xydata1 {}
 set xydata2 {}
 set xydata3 {}

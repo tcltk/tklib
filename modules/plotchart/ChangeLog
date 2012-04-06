@@ -1,3 +1,7 @@
+2012-04-06  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* xyplot.tcl: Turn off test code and return to UNIX file format
+        * plotchart.tcl: Return to UNIX file format
+
 2012-03-22  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* xyplot.tcl: Repair incompatibility introduced in Plotchart 2.0 vis-a-vis coordsToPixel
 	*             and pixelToCoords
