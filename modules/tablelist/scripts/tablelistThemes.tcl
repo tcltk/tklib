@@ -640,9 +640,6 @@ proc tablelist::tileqtTheme {} {
     set style		[string tolower [tileqt_currentThemeName]]
     set pressedBg	$labelBg
 
-	    puts "$bg $labelBg"
-	    puts $style
-
     #
     # For most Qt styles the label colors depend on the color scheme:
     #

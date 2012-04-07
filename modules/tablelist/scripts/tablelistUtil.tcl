@@ -4045,9 +4045,9 @@ proc tablelist::redisplayVisibleItems win {
 	    set tabIdx2 [$w search $elide "\t" $tabIdx1+1c $line.end]
 
 	    if {[string compare $text ""] == 0 ||
-		[$w count -chars $tabIdx1 $tabIdx2] > 1 ||
+		[string compare [$w get $tabIdx1+1c $tabIdx2] ""] != 0 ||
 		($row == $data(editRow) && $col == $data(editCol))} {
-		set tabIdx1 [$w index $tabIdx2]+1c
+		set tabIdx1 [$w index $tabIdx2+1c]
 		incr col
 		continue
 	    }

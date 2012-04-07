@@ -1349,10 +1349,14 @@ proc tablelist::createTileCheckbutton {w args} {
 	}
 
 	blue -
-	vista -
 	winxpblue {
 	    set height [winfo reqheight $w]
 	    [winfo parent $w] configure -width $height -height $height
+	    place $w -x 0
+	}
+
+	clam {
+	    [winfo parent $w] configure -width 11 -height 11
 	    place $w -x 0
 	}
 
@@ -1402,8 +1406,8 @@ proc tablelist::createTileCheckbutton {w args} {
 		    place $w -x -2
 		}
 		oxygen {
-		    [winfo parent $w] configure -width 19 -height 18
-		    place $w -x -1 -y -1
+		    [winfo parent $w] configure -width 17 -height 17
+		    place $w -x -2 -y -1
 		}
 		default {
 		    set height [winfo reqheight $w]
@@ -1413,12 +1417,7 @@ proc tablelist::createTileCheckbutton {w args} {
 	    }
 	}
 
-	winnative {
-	    set height [winfo reqheight $w]
-	    [winfo parent $w] configure -width $height -height $height
-	    place $w -x -2
-	}
-
+	winnative -
 	xpnative {
 	    set height [winfo reqheight $w]
 	    [winfo parent $w] configure -width $height -height $height
