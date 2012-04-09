@@ -1056,8 +1056,8 @@ proc tablelist::createCheckbutton {w args} {
 
 	aqua {
 	    checkbutton $w -borderwidth 0 -font "system" -padx 0 -pady 0
-	    [winfo parent $w] configure -width 16 -height 17
-	    place $w -x -4 -y -1
+	    [winfo parent $w] configure -width 16 -height 16
+	    place $w -x -4 -y -2
 	}
     }
 
@@ -1384,9 +1384,15 @@ proc tablelist::createTileCheckbutton {w args} {
 		    place $w -x -1 -y -2
 		}
 		cde -
-		cleanlooks {
+		cleanlooks -
+		motif {
 		    [winfo parent $w] configure -width 13 -height 13
-		    place $w -x -1
+		    if {[info exists ::env(KDE_SESSION_VERSION)] &&
+			[string compare $::env(KDE_SESSION_VERSION) ""] != 0} {
+			place $w -x -2
+		    } else {
+			place $w -x 0
+		    }
 		}
 		gtk+ {
 		    [winfo parent $w] configure -width 15 -height 15
@@ -1400,10 +1406,6 @@ proc tablelist::createTileCheckbutton {w args} {
 		thinkeramik {
 		    [winfo parent $w] configure -width 16 -height 16
 		    place $w -x 0
-		}
-		motif {
-		    [winfo parent $w] configure -width 13 -height 13
-		    place $w -x -2
 		}
 		oxygen {
 		    [winfo parent $w] configure -width 17 -height 17
