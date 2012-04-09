@@ -1,3 +1,8 @@
+2012-04-09  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistEdit.tcl: Minor improvements related to Tk and tile
+	  checkbuttons used as edit windows.
+
 2012-04-07  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistEdit.tcl:   Small corrections and improvements.
