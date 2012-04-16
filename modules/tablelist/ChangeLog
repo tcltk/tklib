@@ -1,3 +1,8 @@
+2012-04-16  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:               Fixed a bug related to the "move"
+	* scripts/tablelistMove.tcl: subcommand.
+
 2012-04-09  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistEdit.tcl: Minor improvements related to Tk and tile
