@@ -26,8 +26,9 @@ What is new in Tablelist 5.6?
     root window (thanks to Helmut Giese and Gerhard Kubu for drawing my
     attention to this case).
 
-9.  Fixed a bug related to the "move" subcommand, introduced in
-    Tablelist version 5.2 (thanks to "DrS" for his bug report).
+9.  Fixed two bugs related to the "move" subcommand, introduced in
+    Tablelist version 5.2 (thanks to "DrS" and Trevor Williams for their
+    bug reports).
 
 10. Several further improvements and minor bug fixes.
 

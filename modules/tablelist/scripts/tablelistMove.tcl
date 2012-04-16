@@ -245,12 +245,12 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	#
 	# Update the tree information
 	#
+	set targetBuddyCount [llength $data($targetParentKey-children)]
 	set sourceChildIdx \
 	    [lsearch -exact $data($sourceParentKey-children) $sourceKey]
 	set data($sourceParentKey-children) \
 	    [lreplace $data($sourceParentKey-children) \
 	     $sourceChildIdx $sourceChildIdx]
-	set targetBuddyCount [llength $data($targetParentKey-children)]
 	if {[string first $targetChildIdx "end"] == 0} {
 	    set targetChildIdx $targetBuddyCount
 	}
