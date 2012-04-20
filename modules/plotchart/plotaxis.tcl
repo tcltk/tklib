@@ -890,6 +890,18 @@ proc ::Plotchart::XConfig { w args } {
     AxisConfig xyplot $w x DrawXaxis $args
 }
 
+# TConfig --
+#    Configure the time-axis for an TX plot
+# Arguments:
+#    w           Name of the canvas
+#    args        Option and value pairs
+# Result:
+#    None
+#
+proc ::Plotchart::TConfig { w args } {
+    AxisConfig txplot $w x DrawTimeaxis $args
+}
+
 # YConfig --
 #    Configure the y-axis for an XY plot
 # Arguments:
@@ -1488,10 +1500,11 @@ proc ::Plotchart::DrawTimeaxis { w tmin tmax tdelt } {
     set textfont   $config($w,bottomaxis,font)
     set thickness  $config($w,bottomaxis,thickness)
     set ticklength $config($w,bottomaxis,ticklength)
+    set justify    $config($w,bottomaxis,justify)
     set offtick    [expr {($ticklength > 0)? $ticklength+2 : 2}]
 
-
-    set scaling($w,tdelt) $tdelt
+   #set scaling($w,tdelt) $tdelt
+    set scaling($w,xdelt) $tdelt
 
     $w delete taxis
 
@@ -1504,8 +1517,14 @@ proc ::Plotchart::DrawTimeaxis { w tmin tmax tdelt } {
         set format $scaling($w,-format,x)
     }
 
-    set ttmin  [clock scan $tmin]
-    set ttmax  [clock scan $tmax]
+    if { ! [string is double -strict $tmin] } {
+        set ttmin  [clock scan $tmin]
+        set ttmax  [clock scan $tmax]
+    } else {
+        set ttmin $tmin
+        set ttmax $tmax
+    }
+
     set t      [expr {int($ttmin)}]
     set ttdelt [expr {$tdelt*86400.0}]
 
@@ -1526,11 +1545,12 @@ proc ::Plotchart::DrawTimeaxis { w tmin tmax tdelt } {
         }
         $w create line $xcrd $ycrd2 $xcrd $ycrd -tag taxis -fill $linecolor
         $w create text $xcrd $ycrd3 -text $tlabel -tag taxis -anchor n \
-            -fill $textcolor -font $textfont
+            -fill $textcolor -font $textfont -justify $justify
         set t [expr {int($t+$ttdelt)}]
     }
 
-    set scaling($w,tdelt) $tdelt
+   #set scaling($w,tdelt) $tdelt
+    set scaling($w,xdelt) $tdelt
 }
 
 # RescalePlot --

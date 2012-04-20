@@ -1,6 +1,11 @@
-2012-04-06  Arjen Markus  <arjenmarkus@users,sourceforge.net>
-	* xyplot.tcl: Turn off test code and return to UNIX file format
-        * plotchart.tcl: Return to UNIX file format
+2012-04-20  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Repair setZoomPan and introduce new axis configuration
+	                 routine (for time-axis). Introduce -justify for axis labels
+	* plotaxis.tcl: New axis configuration routine so that date/time format
+	                works properly
+	* plotconfig.tcl: Default for new axis option -justify
+	* slidercnv.tcl: Add setZoomPan command for easy testing, use grid for resizing
+	* texttxplot.tcl: Add change of date/time format for testing
 
 2012-03-22  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* xyplot.tcl: Repair incompatibility introduced in Plotchart 2.0 vis-a-vis coordsToPixel
