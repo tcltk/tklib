@@ -164,7 +164,7 @@ namespace eval ::Plotchart {
     # (the '-' means that the component inherits the properties of the previous component on the list)
     foreach {component properties} {
         leftaxis   {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render vtextoffset}
-        axis       {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render}
+        axis       {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render justify}
         rightaxis  -
         topaxis    -
         bottomaxis -
@@ -247,6 +247,7 @@ namespace eval ::Plotchart {
    #set _format      "%s (%g)"  ;# piechart and spiral pie
     set _formatright ""         ;# piechart and spiral pie
     set _transposecoordinates 0 ;# horizontal barchart
+    set _justify     "left"
 
 
     destroy .invisibleCanvas

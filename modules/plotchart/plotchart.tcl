@@ -372,7 +372,7 @@ namespace eval ::Plotchart {
    set methodProc(txplot,interval)             DrawInterval
    set methodProc(txplot,saveplot)             SavePlot
    set methodProc(txplot,dataconfig)           DataConfig
-   set methodProc(txplot,xconfig)              XConfig
+   set methodProc(txplot,xconfig)              TConfig
    set methodProc(txplot,yconfig)              YConfig
    set methodProc(txplot,xticklines)           DrawXTicklines
    set methodProc(txplot,yticklines)           DrawYTicklines
@@ -505,9 +505,9 @@ namespace eval ::Plotchart {
    variable axis_options
    variable axis_option_clear
    variable axis_option_values
-   set axis_options       {-format -ticklength -ticklines -scale -minorticks -labeloffset -axisoffset}
-   set axis_option_clear  { 0       0           0          1      0           0            0         }
-   set axis_option_config { 0       1           0          0      1           1            1         }
+   set axis_options       {-format -ticklength -ticklines -scale -minorticks -labeloffset -axisoffset -justify}
+   set axis_option_clear  { 0       0           0          1      0           0            0          1}
+   set axis_option_config { 0       1           0          0      1           1            1          1}
    set axis_option_values {-format      {...}
                            -ticklength  {...}
                            -ticklines   {0 1}
@@ -515,6 +515,7 @@ namespace eval ::Plotchart {
                            -minorticks  {...}
                            -labeloffset {...}
                            -axisoffset  {...}
+                           -justify     {left center right}
                           }
    variable contour_options
 
@@ -530,20 +531,28 @@ namespace eval ::Plotchart {
 # Side effect:
 #    Bindings set up
 #
-proc ::Plotchart::setZoomPan { w } {
+proc ::Plotchart::setZoomPan { c } {
+   variable scaling
+
+   if { ! [info exists scaling($c,new)] } {
+       set w "00$c"
+   } else {
+       set w $c
+   }
+
    set sqrt2  [expr {sqrt(2.0)}]
    set sqrt05 [expr {sqrt(0.5)}]
 
-   bind $w <Control-Button-1> [list ::Plotchart::ScaleItems $w %x %y $sqrt2]
-   bind $w <Control-Prior>    [list ::Plotchart::ScaleItems $w %x %y $sqrt2]
-   bind $w <Control-Button-2> [list ::Plotchart::ScaleItems $w %x %y $sqrt05]
-   bind $w <Control-Button-3> [list ::Plotchart::ScaleItems $w %x %y $sqrt05]
-   bind $w <Control-Next>     [list ::Plotchart::ScaleItems $w %x %y $sqrt05]
-   bind $w <Control-Up>       [list ::Plotchart::MoveItems  $w   0 -40]
-   bind $w <Control-Down>     [list ::Plotchart::MoveItems  $w   0  40]
-   bind $w <Control-Left>     [list ::Plotchart::MoveItems  $w -40   0]
-   bind $w <Control-Right>    [list ::Plotchart::MoveItems  $w  40   0]
-   focus $w
+   bind $c <Control-Button-1> [list ::Plotchart::ScaleItems $w %x %y $sqrt2]
+   bind $c <Control-Prior>    [list ::Plotchart::ScaleItems $w %x %y $sqrt2]
+   bind $c <Control-Button-2> [list ::Plotchart::ScaleItems $w %x %y $sqrt05]
+   bind $c <Control-Button-3> [list ::Plotchart::ScaleItems $w %x %y $sqrt05]
+   bind $c <Control-Next>     [list ::Plotchart::ScaleItems $w %x %y $sqrt05]
+   bind $c <Control-Up>       [list ::Plotchart::MoveItems  $w   0 -40]
+   bind $c <Control-Down>     [list ::Plotchart::MoveItems  $w   0  40]
+   bind $c <Control-Left>     [list ::Plotchart::MoveItems  $w -40   0]
+   bind $c <Control-Right>    [list ::Plotchart::MoveItems  $w  40   0]
+   focus $c
 }
 
 # viewPort --
