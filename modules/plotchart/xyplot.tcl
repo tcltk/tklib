@@ -5,8 +5,6 @@
 package require Tcl 8.5
 package require Tk 8.5
 
-source plotchart.tcl
-
 package require Plotchart 2.0
 package require cmdline
 package provide xyplot 1.0.1
@@ -551,7 +549,7 @@ proc xyplot::cget { path option args } {
 }
 
 # Test
-if {0} {
+if {1} {
 set xydata1 {}
 set xydata2 {}
 set xydata3 {}
