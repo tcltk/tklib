@@ -1,3 +1,9 @@
+2012-05-11  Andreas Kupries  <andreask@activestate.com>
+
+	* ../../examples/canvas/osm.tcl: Integrated code/patch contributed
+	  by <tomasz@tuxteam.de> to use the new map::geocode::nominatim
+	  package for the resolution of geographical names.
+
 2012-02-23  Andreas Kupries  <andreask@activestate.com>
 
 	* ../../examples/canvas/demo_editpoints.tcl: Tweaked demo GUIs

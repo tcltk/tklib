@@ -88,6 +88,7 @@ package require map::slippy             ; # Slippy utilities
 package require map::slippy::fetcher    ; # Slippy server access
 package require map::slippy::cache      ; # Local slippy tile cache
 #package require map::slippy::prefetcher ; # Agressive prefetch
+package require map::geocode::nominatim ;# geo name resolution
 
 package require snit             ; # canvas::sqmap dependency
 package require uevent::onidle   ; # ditto
@@ -207,6 +208,8 @@ proc GUI {} {
     listbox                .lm   -listvariable ::locations \
         -selectmode single -exportselection 0
 
+    button                 .srch -command {SearchLoc $::srchtext}     -text Search
+    entry                  .srchtext                  -textvariable ::srchtext
     button                 .exit -command exit        -text Exit
     button                 .goto -command GotoMark    -text Goto
     button                 .clr  -command ClearPoints -text {Clear Points}
@@ -219,9 +222,9 @@ proc GUI {} {
     # ---------------------------------------------------------
     # layout of the elements
 
-    grid .sl   -row 1 -column 0 -sticky swen -columnspan 2
-    #grid .z    -row 1 -column 2 -sticky wen
-    grid .sw   -row 1 -column 3 -sticky swen -columnspan 6
+    grid .sl   -row 2 -column 0 -sticky swen -columnspan 2
+    #grid .z    -row 2 -column 2 -sticky wen
+    grid .sw   -row 2 -column 3 -sticky swen -columnspan 6
 
     place .z -in .map -x .2i -y .2i -anchor nw
 
@@ -233,8 +236,12 @@ proc GUI {} {
     grid .loc  -row 0 -column 6 -sticky wen
     grid .dist -row 0 -column 7 -sticky wen
 
+    grid .srch     -row 1 -column 0 -sticky wen
+    grid .srchtext -row 1 -column 1 -columnspan 7 -sticky wen
+
     grid rowconfigure . 0 -weight 0
-    grid rowconfigure . 1 -weight 1
+    grid rowconfigure . 1 -weight 0
+    grid rowconfigure . 2 -weight 1
 
     grid columnconfigure . 0 -weight 0
     grid columnconfigure . 1 -weight 0
@@ -662,6 +669,32 @@ proc GetInitialMark {} {
     .lm selection anchor $n
     GotoMark
 }
+
+# ### ### ### ######### ######### #########
+
+##+##########################################################################
+#
+# # Search: initiate a geo search; SearchDone picks up the results and
+# # puts the results in the locations listbox
+#
+
+proc bgerror {err} {
+    puts "BGERROR: $err"
+}
+
+proc SearchLoc {qry} {
+    if { ! [info exists ::Searcher] } {
+        set ::Searcher [::map::geocode::nominatim Searcher -callback SearchLocDone]
+    }
+    $::Searcher search $qry
+}
+
+proc SearchLocDone {result} {
+    foreach loc $result {
+        poi [dict get $loc lat]  [dict get $loc lon]  [dict get $loc display_name]
+    }
+}
+
 # ### ### ### ######### ######### #########
 
 proc ShowGrid {} {
