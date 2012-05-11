@@ -84,7 +84,7 @@ package require crosshair
 package require img::png
 package require tooltip
 
-package require map::slippy             ; # Slippy utilities
+package require map::slippy 0.5         ; # Slippy utilities
 package require map::slippy::fetcher    ; # Slippy server access
 package require map::slippy::cache      ; # Local slippy tile cache
 #package require map::slippy::prefetcher ; # Agressive prefetch
@@ -634,9 +634,10 @@ proc ClearMarks {} {
     return
 }
 
-proc poi {lat lon comment} {
+proc poi {lat lon comment args} {
     global lmarks locations
-    lappend lmarks [list $lat $lon]
+    lappend lmarks [list $lat $lon [lindex $args 0]]
+    # first optional arg: an attributes dict:
     lappend locations $comment
     return
 }
@@ -653,15 +654,36 @@ proc GotoMouse {} {
 }
 
 proc GotoMark {} {
-    global lmarks zoom
+    global lmarks zoom provider
     set sel [.lm curselection]
     if {![llength $sel]} return
     set sel [lindex $sel 0]
     set sel [lindex $lmarks $sel]
-    foreach {lat lon} $sel break
+    foreach {lat lon attrs} $sel break
+
+    if { [dict exists $attrs boundingbox] } {
+        global viewport
+        foreach {x0 y0 x1 y1} $viewport break
+        set z [map::slippy fit geobox \
+                   [list [expr $x1 - $x0] [expr $y1 - $y0]] \
+                   [dict get $attrs boundingbox] \
+                   0 [expr {[$provider levels] - 1}]]
+        if {$z != $zoom} {
+            set zoom $z
+            ZOOM .map $zoom
+        }
+        # Debug: draw a red rectangle to show bbox:
+        foreach {lat0 lat1 lon0 lon1} [dict get $attrs boundingbox] break
+        foreach {_ y0 x0} [map::slippy geo 2point [list $zoom $lat0 $lon0]] break
+        foreach {_ y1 x1} [map::slippy geo 2point [list $zoom $lat1 $lon1]] break
+        .map create rectangle $x0 $y0 $x1 $y1 -width 2 -outline red 
+        # End debug
+    }
+
     Goto [list $zoom $lat $lon]
     return
 }
+
 proc GetInitialMark {} {
     set n [expr {int(rand()*[llength $::locations])}]
     .lm selection clear 0 end
@@ -691,7 +713,11 @@ proc SearchLoc {qry} {
 
 proc SearchLocDone {result} {
     foreach loc $result {
-        poi [dict get $loc lat]  [dict get $loc lon]  [dict get $loc display_name]
+        poi \
+	    [dict get $loc lat] \
+	    [dict get $loc lon] \
+	    [dict get $loc display_name] \
+	    $loc
     }
 }
 
