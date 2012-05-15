@@ -132,30 +132,30 @@ namespace eval ::Plotchart {
 
     # define implemented components for each chart type:
     foreach {type components} {
-        xyplot        {title margin text legend leftaxis rightaxis bottomaxis background mask}
-        xlogyplot     {title margin text legend leftaxis           bottomaxis background mask}
-        logxyplot     {title margin text legend leftaxis           bottomaxis background mask}
-        logxlogyplot  {title margin text legend leftaxis           bottomaxis background mask}
-        piechart      {title margin text legend                               background      labels slice}
-        spiralpie     {title margin text legend                               background      labels slice}
-        polarplot     {title margin text legend axis                          background}
-        histogram     {title margin text legend leftaxis rightaxis bottomaxis background mask}
-        horizbars     {title margin text legend leftaxis           bottomaxis background mask bar object}
-        vertbars      {title margin text legend leftaxis           bottomaxis background mask bar}
-        ganttchart    {title margin text legend axis                          background}
-        timechart     {title margin text legend leftaxis           bottomaxis background}
-        stripchart    {title margin text legend leftaxis           bottomaxis background mask}
-        isometric     {title margin text legend leftaxis           bottomaxis background mask}
-        3dplot        {title margin text legend xaxis yaxis zaxis             background}
-        3dbars        {title margin text legend leftaxis           bottomaxis background}
-        radialchart   {title margin text legend leftaxis           bottomaxis background}
-        txplot        {title margin text legend leftaxis rightaxis bottomaxis background mask}
-        3dribbon      {title margin text legend leftaxis           bottomaxis background}
-        boxplot       {title margin text legend leftaxis           bottomaxis background mask bar}
-        windrose      {title margin text legend axis                          background}
-        targetdiagram {title margin text legend leftaxis           bottomaxis background mask limits}
-        performance   {title margin text legend leftaxis           bottomaxis background mask limits}
-        table         {title margin background header oddrow evenrow cell frame}
+        xyplot        {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
+        xlogyplot     {title subtitle margin text legend leftaxis           bottomaxis background mask}
+        logxyplot     {title subtitle margin text legend leftaxis           bottomaxis background mask}
+        logxlogyplot  {title subtitle margin text legend leftaxis           bottomaxis background mask}
+        piechart      {title subtitle margin text legend                               background      labels slice}
+        spiralpie     {title subtitle margin text legend                               background      labels slice}
+        polarplot     {title subtitle margin text legend axis                          background}
+        histogram     {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
+        horizbars     {title subtitle margin text legend leftaxis           bottomaxis background mask bar object}
+        vertbars      {title subtitle margin text legend leftaxis           bottomaxis background mask bar}
+        ganttchart    {title subtitle margin text legend axis                          background}
+        timechart     {title subtitle margin text legend leftaxis           bottomaxis background}
+        stripchart    {title subtitle margin text legend leftaxis           bottomaxis background mask}
+        isometric     {title subtitle margin text legend leftaxis           bottomaxis background mask}
+        3dplot        {title subtitle margin text legend xaxis yaxis zaxis             background}
+        3dbars        {title subtitle margin text legend leftaxis           bottomaxis background}
+        radialchart   {title subtitle margin text legend leftaxis           bottomaxis background}
+        txplot        {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
+        3dribbon      {title subtitle margin text legend leftaxis           bottomaxis background}
+        boxplot       {title subtitle margin text legend leftaxis           bottomaxis background mask bar}
+        windrose      {title subtitle margin text legend axis                          background}
+        targetdiagram {title subtitle margin text legend leftaxis           bottomaxis background mask limits}
+        performance   {title subtitle margin text legend leftaxis           bottomaxis background mask limits}
+        table         {title subtitle margin background header oddrow evenrow cell frame}
     } {
         set config($type,components) $components
     }
@@ -173,6 +173,7 @@ namespace eval ::Plotchart {
         zaxis      -
         margin     {left right top bottom}
         title      {textcolor font anchor background}
+        subtitle   {textcolor font anchor background}
         text        -
         labels     {textcolor font placement sorted shownumbers format formatright}
         background {outercolor innercolor}
