@@ -100,7 +100,7 @@ proc ::Plotchart::SavePlot { w filename args } {
             return -code error "Unknown option: $opt - must be: -format or -plotregion"
         }
     }
-    if {$options(-plotregion) eq "bbox" && $options(-format) ne ""ps} {
+    if {$options(-plotregion) eq "bbox" && $options(-format) ne "ps"} {
         return -code error "'-plotregion bbox' can only be used together with '-format ps'"
     }
     if {$options(-format) ne "ps"} {
@@ -851,6 +851,48 @@ proc ::Plotchart::DrawTitle { w title {position center}} {
     set bgobj [$w create rectangle $offx $offy $width $theight -fill $titlecolour -tag [list titlebackground $ref] -outline $titlecolour]
     $w raise titlebackground
     $w raise title
+    $w raise ytext
+}
+
+# DrawSubtitle --
+#    Draw the subtitle
+# Arguments:
+#    w           Name of the canvas
+#    title       Title to appear above the graph
+# Result:
+#    None
+# Side effects:
+#    Text string drawn
+#
+proc ::Plotchart::DrawSubtitle { w title } {
+    variable scaling
+    variable config
+
+    set ref    $scaling($w,reference)
+    set offx   $scaling($ref,refx)
+    set width  [WidthCanvas $w]
+    set pymin  $scaling($w,pymin)
+
+    set tx [expr {($offx + $width)/2}]
+    set offy   [lindex [$w bbox title] end]
+    if { $offy == {} } {
+        set $scaling($ref,refy)
+    }
+
+    $w delete "subtitle && $ref"
+    set obj [$w create text $tx [expr {$offy + 3 + [$w cget -borderwidth]}] -text $title \
+                -tags [list subtitle $ref] -font $config($w,subtitle,font) \
+                -fill $config($w,subtitle,textcolor) -anchor n]
+
+    set titlecolour $config($w,subtitle,background)
+    if { $titlecolour == "" } {
+        set titlecolour $config($w,background,outercolor)
+    }
+    set bbox    [$w bbox $obj]
+    set theight [lindex $bbox end]
+    set bgobj [$w create rectangle $offx $offy $width $theight -fill $titlecolour -tag [list subtitlebackground $ref] -outline $titlecolour]
+    $w raise subtitlebackground
+    $w raise subtitle
     $w raise ytext
 }
 
