@@ -44,6 +44,7 @@ namespace eval ::Plotchart {
    # Array linking procedures with methods
    #
    set methodProc(xyplot,title)             DrawTitle
+   set methodProc(xyplot,subtitle)          DrawSubtitle
    set methodProc(xyplot,xtext)             DrawXtext
    set methodProc(xyplot,ytext)             DrawYtext
    set methodProc(xyplot,vtext)             DrawVtext

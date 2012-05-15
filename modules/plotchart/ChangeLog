@@ -1,3 +1,13 @@
+2012-05-14  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotaxis.tcl: Correct drawing of time-axis - labels were sometimes drawn to the right
+	                of the whole plot (Note: same problem can occur with other types of axis,
+	                but may be less likely in that context)
+
+2012-05-07  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Add a subtitle command (for the moment: XY-plots only)
+	* plotpriv.tcl: Implement a subtitle command
+	* plotconfig.tcl: Implement the configuration options for the subtitle
+
 2012-04-23  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* xyplot.tcl: Remove explicit sourcing of "plotchart.tcl" - left-over from testing
 

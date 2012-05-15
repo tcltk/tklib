@@ -1530,7 +1530,7 @@ proc ::Plotchart::DrawTimeaxis { w tmin tmax tdelt } {
 
     set scaling($w,taxis) {}
 
-    while { $t < $ttmax+0.5*$ttdelt } {
+    while { $t <= $ttmax } {
 
         foreach {xcrd ycrd} [coordsToPixel $w $t $scaling($w,ymin)] {break}
         set ycrd2 [expr {$ycrd+$ticklength}]
