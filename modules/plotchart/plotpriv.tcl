@@ -66,18 +66,6 @@ proc ::Plotchart::HeightCanvas {w {useref 1}} {
     return $height
 }
 
-# GetCanvas --
-#    Return the widget name for the canvas
-# Arguments:
-#    w           Name of the canvas
-# Result:
-#    Height in pixels
-#
-proc ::Plotchart::GetCanvas {w} {
-
-    return $w
-}
-
 # SavePlot --
 #    Save the plot/chart to a PostScript file (using default options)
 # Arguments:
