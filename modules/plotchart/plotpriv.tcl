@@ -550,6 +550,24 @@ proc ::Plotchart::GetPlotArea { w } {
    return [list $scaling($w,pxmin) $scaling($w,pymin) $scaling($w,pxmax) $scaling($w,pymax) $width $height]
 }
 
+# CopyScalingData --
+#    Copy the scaling data for coordsToPixel and friends if needed
+# Arguments:
+#    w           Name of the plot
+#    c           Name of the canvas
+# Result:
+#    None
+#
+proc ::Plotchart::CopyScalingData { w c } {
+   variable scaling
+
+   if { [string match "00*" $w] } {
+       foreach var {new xmin xmax ymin ymax pxmin pxmax pymin pymax coordSystem xfactor yfactor} {
+           set scaling($c,$var) $scaling($w,$var)
+       }
+   }
+}
+
 # SetColours --
 #    Set the colours for those plots that treat them as a global resource
 # Arguments:

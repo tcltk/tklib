@@ -970,6 +970,14 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
    DefaultLegend    $w
    DefaultBalloon   $w
 
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
+
+   #
+   # Prepare labeldots
+   #
    $newchart dataconfig labeldot -colour red -type symbol -symbol dot
 
    return $newchart
@@ -1051,6 +1059,11 @@ proc ::Plotchart::createIsometricPlot { c xscale yscale stepsize args } {
    DefaultLegend  $w
    DefaultBalloon $w
 
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
+
    return $newchart
 }
 
@@ -1109,6 +1122,11 @@ proc ::Plotchart::createXLogYPlot { c xscale yscale args } {
    DefaultBalloon   $w
 
    set scaling($w,coordSystem) 2
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
 
    $newchart dataconfig labeldot -colour red -type symbol -symbol dot
 
@@ -1169,6 +1187,11 @@ proc ::Plotchart::createLogXYPlot { c xscale yscale args } {
    DefaultBalloon   $w
 
    set scaling($w,coordSystem) 1
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
 
    $newchart dataconfig labeldot -colour red -type symbol -symbol dot
 
@@ -1231,6 +1254,11 @@ proc ::Plotchart::createLogXLogYPlot { c xscale yscale args } {
 
    set scaling($w,coordSystem) 3
 
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
+
    $newchart dataconfig labeldot -colour red -type symbol -symbol dot
 
    return $newchart
@@ -1290,6 +1318,11 @@ proc ::Plotchart::createHistogram { c xscale yscale args } {
    DefaultLegend    $w
    DefaultBalloon   $w
 
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
+
    return $newchart
 }
 
@@ -1329,6 +1362,11 @@ proc ::Plotchart::createPiechart { c args} {
    set scaling($w,auto)      0
    set scaling($w,exploded) -1
 
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
+
    return $newchart
 }
 
@@ -1366,6 +1404,11 @@ proc ::Plotchart::createSpiralPie { c args} {
    DefaultBalloon $w
 
    set scaling($w,auto)      0
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
 
    return $newchart
 }
@@ -1416,6 +1459,11 @@ proc ::Plotchart::createPolarplot { c radius_data args } {
    DefaultBalloon   $w
 
    set scaling($w,coordSystem) 4
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
 
    $newchart dataconfig labeldot -colour red -type symbol -symbol dot
 
@@ -1488,6 +1536,11 @@ proc ::Plotchart::createBarchart { c xlabels yscale noseries args } {
     DefaultBalloon   $w
 
     SetColours $w blue lightblue green yellow orange red magenta brown
+
+    #
+    # Take care of the compatibility for coordsToPixel and friends
+    #
+    CopyScalingData $w $c
 
     return $newchart
 }
@@ -1568,6 +1621,11 @@ proc ::Plotchart::createHorizontalBarchart { c xscale ylabels noseries args } {
     DefaultBalloon   $w
 
     SetColours $w blue lightblue green yellow orange red magenta brown
+
+    #
+    # Take care of the compatibility for coordsToPixel and friends
+    #
+    CopyScalingData $w $c
 
     return $newchart
 }
@@ -1661,6 +1719,11 @@ proc ::Plotchart::createBoxplot { w xdata ydata {orientation horizontal}} {
    } else {
       set config($w,axisnames) $xdata
    }
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
 
    return $newchart
 }
@@ -2200,6 +2263,11 @@ proc ::Plotchart::createRightAxis { w yscale args } {
    #DefaultLegend    r$w
    #DefaultBalloon   r$w
 
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
+
    return $newchart
 }
 
@@ -2499,6 +2567,11 @@ proc ::Plotchart::createTableChart { c columns args } {
 
    DrawTableFrame $w
    DrawRow        $w $columns header
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
 
    return $newchart
 }
