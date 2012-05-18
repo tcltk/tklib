@@ -1,3 +1,7 @@
+2012-05-18  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotpack.tcl: Correct regular expression to extract the canvas name (it was too greedy; patch by Frank)
+	* plotpriv.tcl: Remove overwritten version of GetCanvas (the proper one is in plotpack.tcl)
+
 2012-05-14  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotaxis.tcl: Correct drawing of time-axis - labels were sometimes drawn to the right
 	                of the whole plot (Note: same problem can occur with other types of axis,

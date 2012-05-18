@@ -22,7 +22,7 @@ namespace eval ::Plotchart {
 #     Name of the widget
 #
 proc ::Plotchart::GetCanvas {cmd} {
-    regsub {^[^_]+_} $cmd "" w
+    regsub {^[^_]+_%} $cmd "" w
     return $w
 }
 
