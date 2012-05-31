@@ -1454,7 +1454,7 @@ so that the total number of values in xvec (resp. yvec) is nx * ny.
 The classes determine which contour lines are drawn. If a value on one of
 the corners is missing, the contour lines in that cell will not be
 drawn.
-[nl]
+[para]
 Entries in the legend are drawn via the [emph legendisolines] subcommand.
 
 
@@ -1490,7 +1490,7 @@ The function values are given at these corners. The
 classes determine which contour lines are drawn. If a value on one of
 the corners is missing, the contour lines in that cell will not be
 drawn.
-[nl]
+[para]
 Entries in the legend are drawn via the [emph legendisolines] subcommand.
 
 [list_begin arguments]
@@ -1519,14 +1519,14 @@ classes are determined automatically.
 
 Draw filled contours for the values given on the grid. (The use of this
 method is identical to the "contourlines" method).
-[nl]
+[para]
 Entries in the legend are drawn via the [emph legendshades] subcommand.
 
 [call [cmd \$xyplot] contourbox [arg xcrd] [arg ycrd] [arg values] [opt classes]]
 
 Draw the cells as filled quadrangles. The colour is determined from
 the average of the values on all four corners.
-[nl]
+[para]
 Entries in the legend are drawn via the [emph legendshades] subcommand.
 
 
