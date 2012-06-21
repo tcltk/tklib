@@ -12,7 +12,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: Makefile.in,v 1.7 2009/11/25 20:01:48 andreas_kupries Exp $
+# RCS: @(#) $Id: Makefile.in,v 1.8 2012/06/21 18:15:24 andreas_kupries Exp $
 
 #========================================================================
 # Nothing of the variables below this line need to be changed.  Please
@@ -26,6 +26,7 @@ srcdir		= @srcdir@
 top_srcdir	= @top_srcdir@
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
+bindir		= @bindir@
 libdir		= @libdir@
 mandir		= @mandir@
 
@@ -52,19 +53,20 @@ install:
 	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/installer.tcl` \
 		-no-examples -no-html \
 		-pkg-path   $(DESTDIR)$(pkglibdir) \
+		-app-path   $(DESTDIR)$(bindir) \
 		-nroff-path $(DESTDIR)$(mandir)/mann \
 		-no-wait -no-gui
 
 install-libraries:
 	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/installer.tcl` \
 		-pkg-path   $(DESTDIR)$(pkglibdir) \
-		-no-examples -no-html -no-nroff \
+		-no-apps -no-examples -no-html -no-nroff \
 		-no-wait -no-gui
 
 install-doc:
 	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/installer.tcl` \
 		-nroff-path $(DESTDIR)$(mandir)/mann \
-		-no-examples -no-pkgs -no-html \
+		-no-apps -no-examples -no-pkgs -no-html \
 		-no-wait -no-gui
 
 test:
