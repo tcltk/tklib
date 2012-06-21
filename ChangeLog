@@ -1,7 +1,14 @@
+2012-06-21  Andreas Kupries  <andreask@activestate.com>
+
+	* Makefile.in (install, install-libraries, install-doc):
+	  [Bug 3536133]: Added missing -app-path and -no-apps
+	  options. Thanks to Georgios Petasis <petasis@users.sourceforge.net>.
+
 2010-12-14  Rüdiger Härtel <r_haertel@gmx.de>
-	* support/devl/sak/doc/kwic.txt:	added widget_dateentry.man
-	* support/devl/sak/doc/manpages.txt:	so that it is build and
-	* support/devl/sak/doc/toc.txt:		installed
+
+	* support/devel/sak/doc/kwic.txt:	added widget_dateentry.man
+	* support/devel/sak/doc/manpages.txt:	so that it is build and
+	* support/devel/sak/doc/toc.txt:	installed
 
 2010-12-07  Csaba Nemethi  <csaba.nemethi@t-online.de>
 
