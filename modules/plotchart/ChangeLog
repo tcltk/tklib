@@ -1,11 +1,13 @@
-2012-05-31  Arjen Markus  <arjenmarkus@users,sourceforge.net>
-	* plotchart.tcl: Update the man page - get rid of [nl] deprecated markup
+2012-07-30  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Add a "deletedata" subcommand (limitation: only for xy-plots)
+	* plotpriv.tcl: Implement a first version of a deletedata subcommand
+	* plotchart.man: Document the deletedata subcommand
 
 2012-05-18  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotpack.tcl: Correct regular expression to extract the canvas name (it was too greedy; patch by Frank)
 	* plotpriv.tcl: Remove overwritten version of GetCanvas (the proper one is in plotpack.tcl)
-	* plotchart.tcl: Introduce the private procedure CopyScalingData to remove an incompatibility with 
-			 previous versions
+        * plotchart.tcl: Introduce the private procedure CopyScalingData to remove an incompatibility with
+                         previous versions
 
 2012-05-14  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotaxis.tcl: Correct drawing of time-axis - labels were sometimes drawn to the right
