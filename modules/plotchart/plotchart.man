@@ -1134,6 +1134,20 @@ List of coordinates and drawing options
 [list_end]
 
 
+[call [cmd \$anyplot] deletedata]
+
+Remove the lines, symbols and other graphical object associated with the
+actual data from the plot.
+[para]
+[emph Note:] Currently implemented for xy-plots only
+[para]
+[emph Note:] The existing options for data series and the legend entry are
+kept as they were.
+[para]
+[emph Note:] Currently there are side effects if the canvas contains more than
+one plot.
+
+
 [list_end]
 [para]
 

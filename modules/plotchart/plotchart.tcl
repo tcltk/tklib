@@ -92,6 +92,7 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,plotlist)          DrawDataList
    set methodProc(xyplot,plotarea)          GetPlotArea
    set methodProc(xyplot,canvas)            GetCanvas
+   set methodProc(xyplot,deletedata)        DeleteData
    set methodProc(xlogyplot,title)          DrawTitle
    set methodProc(xlogyplot,xtext)          DrawXtext
    set methodProc(xlogyplot,ytext)          DrawYtext

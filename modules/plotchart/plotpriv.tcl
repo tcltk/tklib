@@ -4017,3 +4017,29 @@ proc ::Plotchart::RenderTextDo {canvas string xp1 yp1 xp2 yp2 advance fontOption
       set render(posvert) $ypos
    }
 }
+
+# DeleteData --
+#     Delete the data elements and the associated resources
+#
+# Arguments:
+#     w          Name of the canvas (actually the plot)
+#
+# Result:
+#     None
+# Side effects:
+#     The data elements in the canvas are removed and the
+#     last known data points are removed from the resources.
+#     However, the rest (legend, options for data series) is not.
+#     This is deliberate: you may simply want to refresh the
+#     data.
+#
+proc ::Plotchart::DeleteData {w} {
+    variable data_series
+    variable scaling
+
+    foreach elem [array names data_series $w,*,x] {
+         unset -nocomplain data_series($elem)
+    }
+
+    $w delete data
+}
