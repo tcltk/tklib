@@ -2267,7 +2267,7 @@ proc ::Plotchart::createRightAxis { w yscale args } {
    #
    # Take care of the compatibility for coordsToPixel and friends
    #
-   CopyScalingData $w $c
+   CopyScalingData $w [GetCanvas $newchart]
 
    return $newchart
 }

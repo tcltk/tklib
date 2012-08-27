@@ -1,3 +1,7 @@
+2012-08-27  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Correct small problem with right axis
+	* plotaxis.tcl: Implement a different method for labelling the axes
+
 2012-07-30  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Add a "deletedata" subcommand (limitation: only for xy-plots)
 	* plotpriv.tcl: Implement a first version of a deletedata subcommand
