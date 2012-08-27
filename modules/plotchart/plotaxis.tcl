@@ -32,6 +32,34 @@ proc ::Plotchart::FormatNumber { format number } {
     return $string
 }
 
+# Ceil, Floor --
+#     Compute ceil and floor in an absolute sense
+#
+# Arguments:
+#     value      Extreme value to "round"
+#     step       Step to use for rounding
+#
+proc ::Plotchart::Floor {value step} {
+
+    if { $value > 0.0 } {
+        set result [expr {floor(($value+0.0)/$step) * $step}]
+    } else {
+        set result [expr {ceil(($value+0.0)/$step) * $step}]
+    }
+
+    return $result
+}
+proc ::Plotchart::Ceil {value step} {
+
+    if { $value > 0.0 } {
+        set result [expr {ceil(($value+0.0)/$step) * $step}]
+    } else {
+        set result [expr {floor(($value+0.0)/$step) * $step}]
+    }
+
+    return $result
+}
+
 # DrawYaxis --
 #    Draw the y-axis
 # Arguments:
@@ -73,13 +101,14 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
     }
 
     if { $ymax > $ymin } {
-        set y [expr {$ymin+0.0}]  ;# Make sure we have the number in the right format
-        set ym $ymax
+        set y  [Ceil $ymin $ydelt]
+        set ym [Floor $ymax $ydelt]
+        set yt $y
     } else {
-        set y [expr {$ymax+0.0}]
-        set ym $ymin
+        set y  [Floor $ymax $ydelt]
+        set ym [Ceil $ymin $ydelt]
+        set yt $ym
     }
-    set yt [expr {$ymin+0.0}]
 
     set scaling($w,yaxis) {}
 
@@ -139,7 +168,7 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
         set xcrd2 [expr {$xcrd-$ticklength}]
         set xcrd3 [expr {$xcrd-$offtick}]
 
-        if { $ycrd >= $scaling($w,pymin) && $ycrd <= $scaling($w,pymax) } {
+        if { $ycrd >= $scaling($w,pymin)-1 && $ycrd <= $scaling($w,pymax)+1 } {
             lappend scaling($w,yaxis) $ycrd
 
             #
@@ -214,13 +243,14 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt args } {
     }
 
     if { $ymax > $ymin } {
-        set y [expr {$ymin+0.0}]  ;# Make sure we have the number in the right format
-        set ym $ymax
+        set y  [Ceil $ymin $ydelt]
+        set ym [Floor $ymax $ydelt]
+        set yt $y
     } else {
-        set y [expr {$ymax+0.0}]
-        set ym $ymin
+        set y  [Floor $ymax $ydelt]
+        set ym [Ceil $ymin $ydelt]
+        set yt $ym
     }
-    set yt      [expr {$ymin+0.0}]
 
     set scaling($w,yaxis) {}
 
@@ -281,7 +311,7 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt args } {
         set xcrd2 [expr {$xcrd+$ticklength}]
         set xcrd3 [expr {$xcrd+$offtick}]
 
-        if { $ycrd >= $scaling($w,pymin) && $ycrd <= $scaling($w,pymax) } {
+        if { $ycrd >= $scaling($w,pymin)-1 && $ycrd <= $scaling($w,pymax)+1 } {
             lappend scaling($w,yaxis) $ycrd
 
             #
@@ -434,13 +464,15 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
     }
 
     if { $xmax > $xmin } {
-        set x [expr {$xmin+0.0}]  ;# Make sure we have the number in the right format
-        set xm $xmax
+        set x  [Ceil $xmin $xdelt]
+        set xm [Floor $xmax $xdelt]
+        set xt $x
     } else {
-        set x [expr {$xmax+0.0}]
-        set xm $xmin
+        set x  [Floor $xmax $xdelt]
+        set xm [Ceil $xmin $xdelt]
+        set xt $xm
     }
-    set xt [expr {$xmin+0.0}]
+
     set scaling($w,xaxis) {}
 
     set xs      {}
@@ -501,7 +533,7 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
         set ycrd2 [expr {$ycrd+$ticklength}]
         set ycrd3 [expr {$ycrd+$offtick}]
 
-        if { $xcrd >= $scaling($w,pxmin) && $xcrd <= $scaling($w,pxmax) } {
+        if { $xcrd >= $scaling($w,pxmin)-1 && $xcrd <= $scaling($w,pxmax)+1 } {
             lappend scaling($w,xaxis) $xcrd
 
             #
