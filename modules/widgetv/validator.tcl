@@ -116,6 +116,11 @@ proc ::widget::validator::detach {w} {
 
 proc ::widget::validator::validate {w} {
     variable attached
+
+    if {![dict exists $attached $w]} {
+	return -code error "Unable to validate, $w not known"
+    }
+
     set state [dict get $attached $w]
     dict with state {} ; # => class, color, previous, command
 
