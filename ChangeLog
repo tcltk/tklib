@@ -1,5 +1,6 @@
 2012-08-27  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
+	* support/installation/modules.tcl: Added the new widgetl module.
 	* support/installation/modules.tcl: Added the new widgetv module.
 
 2012-06-21  Andreas Kupries  <andreask@activestate.com>
