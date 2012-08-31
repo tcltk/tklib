@@ -14,7 +14,7 @@
 #
 # Copyright (c) 2012 ActiveState Software Inc. Rewrite of original.
 #
-# RCS: @(#) $Id: listsimple.tcl,v 1.1 2012/08/28 05:05:34 andreas_kupries Exp $
+# RCS: @(#) $Id: listsimple.tcl,v 1.2 2012/08/31 21:01:37 andreas_kupries Exp $
 
 # XXX TODO: Define a style for the whole megawidget (WidgetListEntry)
 # XXX TODO: Ensure automatic definition of the style in all themes, on
@@ -616,6 +616,9 @@ snit::widget ::widget::listsimple {
 	# ... link to widget, if present
 	if {![winfo exists $win.l]} return
 	$win.l configure -listvariable $value
+
+	# ... force revalidation of the entry (duplicate check status may change)
+	widget::validator validate $win.e
 	return
     }
 
@@ -644,7 +647,6 @@ snit::widget ::widget::listsimple {
 
 if 0 {
     proc P {args} { puts "$args -- $::L" }
-    package require famfamfam::silk
     ::widget::listsimple .l -listvariable ::L
     pack .l -fill both -expand 1
     trace add variable ::L write P
@@ -666,7 +668,6 @@ if 1 {
 	    .l configure -skin-tip-main XXX
 	}
     }
-    package require famfamfam::silk
     ::widget::listsimple .l -listvariable ::L -values V
     pack .l -fill both -expand 1
     trace add variable ::L write P
