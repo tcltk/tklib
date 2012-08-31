@@ -1,3 +1,10 @@
+2012-08-31  Andreas Kupries  <andreask@activestate.com>
+
+	* widget_listentry.man: New, widget documentation.
+	* widget_listsimple.man: New, widget documentation.
+	* listentry.tcl: Small bugfix. Revalidate entry field
+	* listsimple.tcl: when -list-variable changes.
+
 2012-08-27  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* initial release v0.1

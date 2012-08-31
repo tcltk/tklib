@@ -56,7 +56,7 @@ Module tkpiechart    _tcl  _man  _exa
 Module tooltip       _tcl  _man  _null
 Module wcb           _tab  _null _exa
 Module widget        _tcl  _man  _exa
-Module widgetl       _tcl  _null _null
+Module widgetl       _tcl  _man  _null
 Module widgetv       _tcl  _man  _null
 
 Application  dia
