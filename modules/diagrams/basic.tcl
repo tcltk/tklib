@@ -59,11 +59,12 @@ snit::type ::diagram::basic {
 	# common validation types
 	set dzero [snit::double  ${selfns}::D0 -min 0]
 	set dmin  [snit::double  ${selfns}::D1 -min 0];# 0 exclusive.
-	set imin  [snit::integer ${selfns}::I1 -min 1]
+	set izero [snit::integer ${selfns}::I0 -min 0]
+	#set imin  [snit::integer ${selfns}::I1 -min 1]
 
 	# general element style
 
-	$core new attribute stroke    linked {linewidth  1}  type $imin
+	$core new attribute stroke    linked {linewidth  1}  type $izero
 	$core new attribute style     linked {linestyle  {}} transform [myproc LineStyle]
 	$core new attribute color     linked {linecolor  black}
 	$core new attribute fillcolor linked {fillcolor  {}}
@@ -1275,4 +1276,4 @@ namespace eval ::diagram::basic::geo {
 # # ## ### ##### ######## ############# ######################
 ## Ready
 
-package provide diagram::basic 1
+package provide diagram::basic 1.0.1
