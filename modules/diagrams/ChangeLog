@@ -1,3 +1,9 @@
+2012-10-05  Andreas Kupries <andreask@activestate.com>
+
+	* basic.tcl: Modified minimum line-width to 0 (zero).
+	* pkgIndex.tcl: This enables things like hidden boxes.
+	  Version bumped to 1.0.1 (Considered a bugfix).
+
 2010-09-30  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* application.tcl: Extended the GUI, use a notebook to allow
