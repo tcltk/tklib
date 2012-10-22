@@ -6,7 +6,7 @@
 #
 # Copyright (c) 2012 ActiveState Software Inc. Rewrite of original.
 #
-# RCS: @(#) $Id: listentry.tcl,v 1.2 2012/08/31 21:01:37 andreas_kupries Exp $
+# RCS: @(#) $Id: listentry.tcl,v 1.3 2012/10/22 18:03:52 andreas_kupries Exp $
 
 # XXX TODO: Define a style for the whole megawidget (WidgetOrderedList)
 # XXX TODO: Ensure automatic definition of the style in all themes, on
@@ -1082,7 +1082,7 @@ if 0 {
     pack .l -fill both -expand 1
     trace add variable ::L write P
 }
-if 1 {
+if 0 {
     # Combobox! Unordered, unique, no transform, no browsing
     # Plus dynamic-reskin demo triggered on list size.
     proc V {cmd args} {
@@ -1191,5 +1191,5 @@ if 0 {
 
 # # ## ### ##### ######## ############# #####################
 ## Ready
-package provide widget::listentry 0.1
+package provide widget::listentry 0.1.1
 return
