@@ -1,3 +1,35 @@
+
+2012-10-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 5.7.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* scripts/*.tcl: Added the "cellbbox" and "editinfo" subcommands;
+	  adapted the tree styles "ubuntu" and "mint" to the latest Ubuntu
+	  Linux and Linux Mint releases; minor change related to the
+	  ttk::combobox widget used as edit window; increased use of virtual
+	  events; worked around a bug in some earlier Tk versions, related to
+	  checkbuttons without indicator; replaced the "namespace exists"
+	  occurrences with "array exists"; fixed a copy & paste bug related to
+	  embedded windows; fixed a long-standing bug related to the
+	  "cancelediting" subcommand and the "-forceeditendcommand" option;
+	  fixed a long-standing minor bug related to the "-labelbg" column
+	  configuration option in Tablelist_tile; several further improvements.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/*.tcl: Bumped the version number to 5.7; several
+	  improvements.
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* doc/bwidget.png:     Updated screenshots.
+	* doc/mint.png:
+	* doc/tileWidgets.png:
+	* doc/ubuntu.png:
+
 2012-04-16  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:               Fixed a bug related to the "move"
