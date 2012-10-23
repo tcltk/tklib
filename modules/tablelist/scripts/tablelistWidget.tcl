@@ -258,6 +258,7 @@ namespace eval tablelist {
 
     if {$usingTile} {
 	unset colConfigSpecs(-labelbackground)
+	unset colConfigSpecs(-labelbg)
 	unset colConfigSpecs(-labelheight)
     }
 
@@ -348,15 +349,15 @@ namespace eval tablelist {
     #
     variable cmdOpts [list \
 	activate activatecell applysorting attrib bbox bodypath bodytag \
-	cancelediting cellattrib cellcget cellconfigure cellindex \
+	cancelediting cellattrib cellbbox cellcget cellconfigure cellindex \
 	cellselection cget childcount childindex childkeys collapse \
 	collapseall columnattrib columncget columnconfigure columncount \
 	columnindex columnwidth config configcelllist configcells \
 	configcolumnlist configcolumns configrowlist configrows configure \
 	containing containingcell containingcolumn cornerlabelpath cornerpath \
 	curcellselection curselection depth delete deletecolumns \
-	descendantcount editcell editwintag editwinpath entrypath expand \
-	expandall expandedkeys fillcolumn finishediting formatinfo get \
+	descendantcount editcell editinfo editwinpath editwintag entrypath \
+	expand expandall expandedkeys fillcolumn finishediting formatinfo get \
 	getcells getcolumns getformatted getformattedcells \
 	getformattedcolumns getfullkeys getkeys hasattrib hascellattrib \
 	hascolumnattrib hasrowattrib imagelabelpath index insert insertchild \
@@ -642,6 +643,7 @@ proc tablelist::tablelist args {
 	    arrowColList	 {}
 	    sortColList		 {}
 	    sortOrder		 ""
+	    editKey		 ""
 	    editRow		-1
 	    editCol		-1
 	    fmtKey		 ""
@@ -821,9 +823,9 @@ proc tablelist::tablelist args {
 		 TablelistKeyNav all]
 
     #
-    # Create the "stripe", "select", "active", "disabled", "hiddenRow",
-    # "elidedRow", "hiddenCol", and "elidedCol" tags in the body text
-    # widget.  Don't use the built-in "sel" tag because on Windows the
+    # Create the "stripe", "select", "active", "disabled", "redraw",
+    # "hiddenRow", "elidedRow", "hiddenCol", and "elidedCol" tags in the body
+    # text widget.  Don't use the built-in "sel" tag because on Windows the
     # selection in a text widget only becomes visible when the window gets
     # the input focus.  DO NOT CHANGE the order of creation of these tags!
     #
@@ -831,6 +833,7 @@ proc tablelist::tablelist args {
     $w tag configure select -relief raised
     $w tag configure active -borderwidth ""		     ;# will be changed
     $w tag configure disabled -foreground ""		     ;# will be changed
+    $w tag configure redraw -relief sunken
     if {$canElide} {
 	$w tag configure hiddenRow -elide 1	;# used for hiding a row
 	$w tag configure elidedRow -elide 1	;# used when collapsing a row
@@ -1025,10 +1028,12 @@ proc tablelist::bboxSubCmd {win argList} {
     set spacing1 [$w cget -spacing1]
     set spacing3 [$w cget -spacing3]
     foreach {x y width height baselinePos} $dlineinfo {}
-    lappend bbox [expr {$x + [winfo x $w]}] \
-		 [expr {$y + [winfo y $w] + $spacing1}] \
-		 $width [expr {$height - $spacing1 - $spacing3}]
-    return $bbox
+    incr height -[expr {$spacing1 + $spacing3}]
+    if {$height < 0} {
+	set height 0
+    }
+    return [list [expr {$x + [winfo x $w]}] \
+		 [expr {$y + [winfo y $w] + $spacing1}] $width $height]
 }
 
 #------------------------------------------------------------------------------
@@ -1082,6 +1087,28 @@ proc tablelist::cellattribSubCmd {win argList} {
     upvar ::tablelist::ns${win}::data data
     set key [lindex $data(keyList) $row]
     return [mwutil::attribSubCmd $win $key,$col [lrange $argList 1 end]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::cellbboxSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::cellbboxSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win cellbbox cellIndex"
+    }
+
+    synchronize $win
+    foreach {row col} [cellIndex $win [lindex $argList 0] 0] {}
+    upvar ::tablelist::ns${win}::data data
+    if {$row < 0 || $row > $data(lastRow) ||
+	$col < 0 || $col > $data(lastCol)} {
+	return {}
+    }
+
+    foreach {x y width height} [bboxSubCmd $win $row] {}
+    set w $data(hdrTxtFrLbl)$col
+    return [list [expr {[winfo rootx $w] - [winfo rootx $win]}] $y \
+		 [winfo width $w] $height]
 }
 
 #------------------------------------------------------------------------------
@@ -1364,7 +1391,7 @@ proc tablelist::collapseallSubCmd {win argList} {
     if {[winfo viewable $win]} {
 	purgeWidgets $win
 	update idletasks
-	if {![namespace exists ::tablelist::ns${win}]} {
+	if {![array exists ::tablelist::ns${win}::data]} {
 	    return ""
 	}
     }
@@ -1927,15 +1954,15 @@ proc tablelist::editcellSubCmd {win argList} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::editwintagSubCmd
+# tablelist::editinfoSubCmd
 #------------------------------------------------------------------------------
-proc tablelist::editwintagSubCmd {win argList} {
+proc tablelist::editinfoSubCmd {win argList} {
     if {[llength $argList] != 0} {
-	mwutil::wrongNumArgs "$win editwintag"
+	mwutil::wrongNumArgs "$win editinfo"
     }
 
     upvar ::tablelist::ns${win}::data data
-    return $data(editwinTag)
+    return [list $data(editKey) $data(editRow) $data(editCol)]
 }
 
 #------------------------------------------------------------------------------
@@ -1952,6 +1979,18 @@ proc tablelist::editwinpathSubCmd {win argList} {
     } else {
 	return ""
     }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::editwintagSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::editwintagSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win editwintag"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    return $data(editwinTag)
 }
 
 #------------------------------------------------------------------------------
@@ -4779,7 +4818,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	updateColors $win
 	$w tag remove active 1.0 end
 	update idletasks
-	if {![namespace exists ::tablelist::ns${win}]} {
+	if {![array exists ::tablelist::ns${win}::data]} {
 	    return ""
 	}
     }
@@ -5784,7 +5823,7 @@ proc tablelist::seeCell {win row col} {
     #
     # This might be an "after idle" callback; check whether the window exists
     #
-    if {![namespace exists ::tablelist::ns${win}]} {
+    if {![array exists ::tablelist::ns${win}::data]} {
 	return ""
     }
 
@@ -5818,7 +5857,7 @@ proc tablelist::seeCell {win row col} {
     # Force any geometry manager calculations to be completed first
     #
     update idletasks
-    if {![namespace exists ::tablelist::ns${win}]} {
+    if {![array exists ::tablelist::ns${win}::data]} {
 	return ""
     }
 
