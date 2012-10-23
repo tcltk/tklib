@@ -458,7 +458,7 @@ proc tablelist::moveCol {win source target} {
     if {[winfo viewable $win]} {
 	purgeWidgets $win
 	update idletasks
-	if {![namespace exists ::tablelist::ns${win}]} {
+	if {![array exists ::tablelist::ns${win}::data]} {
 	    return ""
 	}
     }

@@ -184,7 +184,7 @@ namespace eval tablelist {
 	    $name-putListCmd	"" \
 	    $name-getListCmd	"" \
 	    $name-selectCmd	"" \
-	    $name-invokeCmd	"event generate %W <Down>" \
+	    $name-invokeCmd	"event generate %W <Button-1>" \
 	    $name-fontOpt	-font \
 	    $name-useFormat	1 \
 	    $name-useReqWidth	0 \
@@ -1034,7 +1034,7 @@ proc tablelist::createCheckbutton {w args} {
 	    }
 
 	    checkbutton $w -borderwidth 2 -indicatoron 0 -image $uncheckedImg \
-			   -selectimage $checkedImg -selectcolor ""
+			   -selectimage $checkedImg
 	    if {$::tk_version >= 8.4} {
 		$w configure -offrelief sunken
 	    }
@@ -1564,7 +1564,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     bindtags $f [lreplace [bindtags $f] 1 1 $data(editwinTag) TablelistEdit]
     bind $f <Destroy> {
 	array set tablelist::ns[winfo parent [winfo parent %W]]::data \
-		  {editRow -1  editCol -1}
+		  {editKey ""  editRow -1  editCol -1}
 	if {[catch {tk::CancelRepeat}] != 0} {
 	    tkCancelRepeat 
 	}
@@ -1671,6 +1671,13 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	catch {
 	    eval [strMap {"%W" "$w"  "%T" "$text"} $editWin($name-putValueCmd)]
 	}
+
+	#
+	# Save the edit window's text
+	#
+	set data(origEditText) \
+	    [eval [strMap {"%W" "$w"} $editWin($name-getTextCmd)]]
+
 	if {[string compare $data(-editstartcommand) ""] != 0} {
 	    set text [uplevel #0 $data(-editstartcommand) \
 		      [list $win $row $col $text]]
@@ -1707,7 +1714,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	}
 
 	#
-	# Save the edit window's text
+	# Save the edit window's text again
 	#
 	set data(origEditText) \
 	    [eval [strMap {"%W" "$w"} $editWin($name-getTextCmd)]]
@@ -1798,7 +1805,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	}
     } elseif {!$isCheckbtn} {
 	update idletasks
-	if {![namespace exists ::tablelist::ns${win}]} {
+	if {![array exists ::tablelist::ns${win}::data]} {
 	    return ""
 	}
 	$f configure -height [winfo reqheight $w]
@@ -1811,7 +1818,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	place $w -relwidth 1.0 -relheight 1.0
 	adjustEditWindow $win $pixels
 	update idletasks
-	if {![namespace exists ::tablelist::ns${win}]} {
+	if {![array exists ::tablelist::ns${win}::data]} {
 	    return ""
 	}
     }

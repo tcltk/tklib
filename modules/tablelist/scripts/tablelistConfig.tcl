@@ -385,9 +385,9 @@ proc tablelist::doConfig {win opt val} {
 	    switch -- $opt {
 		-background {
 		    #
-		    # Apply the value to the frame (because of
-		    # the shadow colors of its 3-D border), to
-		    # the separators, and to the "disabled" tag
+		    # Apply the value to the frame (because of the shadow
+		    # colors of its 3-D border), to the separators,
+		    # to the header frame, and to the "disabled" tag
 		    #
 		    if {$usingTile} {
 			styleConfig Frame$win.TFrame $opt $val
@@ -400,6 +400,7 @@ proc tablelist::doConfig {win opt val} {
 			    }
 			}
 		    }
+		    $data(hdr) configure $opt $val
 		    $w tag configure disabled $opt $val
 		    updateColorsWhenIdle $win
 		}
@@ -3890,7 +3891,7 @@ proc tablelist::reconfigWindows win {
     # Force any geometry manager calculations to be completed first
     #
     update idletasks
-    if {![namespace exists ::tablelist::ns${win}::data]} {
+    if {![array exists ::tablelist::ns${win}::data]} {
 	return ""
     }
 

@@ -188,7 +188,7 @@ proc tablelist::updateConfigSpecs win {
     #
     # This might be an "after idle" callback; check whether the window exists
     #
-    if {![namespace exists ::tablelist::ns${win}]} {
+    if {![array exists ::tablelist::ns${win}::data]} {
 	return ""
     }
 
@@ -227,8 +227,14 @@ proc tablelist::updateConfigSpecs win {
     foreach opt {-background -foreground -disabledforeground -stripebackground
 		 -selectbackground -selectforeground -selectborderwidth -font
 		 -labelforeground -labelfont -labelborderwidth -labelpady
-		 -arrowcolor -arrowdisabledcolor -arrowstyle -treestyle} {
+		 -treestyle} {
 	if {[string compare $data($opt) $tmp($opt)] == 0} {
+	    doConfig $win $opt $themeDefaults($opt)
+	}
+    }
+    if {[string compare $data(-arrowcolor) $tmp(-arrowcolor)] == 0 &&
+	[string compare $data(-arrowstyle) $tmp(-arrowstyle)] == 0} {
+	foreach opt {-arrowcolor -arrowdisabledcolor -arrowstyle} {
 	    doConfig $win $opt $themeDefaults($opt)
 	}
     }
@@ -469,16 +475,34 @@ proc tablelist::defineTablelistBody {} {
     bind TablelistBody <KP_Subtract> {
 	tablelist::plusMinus [tablelist::getTablelistPath %W] minus
     }
-    bind TablelistBody <Up> {
+
+    foreach {virtual event} {
+	PrevLine <Up>            NextLine <Down>
+	PrevChar <Left>          NextChar <Right>
+	LineStart <Home>         LineEnd <End>
+	PrevWord <Control-Left>  NextWord <Control-Right>
+
+	SelectPrevLine <Shift-Up>     SelectNextLine <Shift-Down>
+	SelectPrevChar <Shift-Left>   SelectNextChar <Shift-Right>
+	SelectLineStart <Shift-Home>  SelectLineEnd <Shift-End>
+	SelectAll <Control-slash>     SelectNone <Control-backslash>} {
+	if {[llength [event info <<$virtual>>]] == 0} {
+	    set eventArr($virtual) $event
+	} else {
+	    set eventArr($virtual) <<$virtual>>
+	}
+    }
+
+    bind TablelistBody $eventArr(PrevLine) {
 	tablelist::upDown [tablelist::getTablelistPath %W] -1
     }
-    bind TablelistBody <Down> {
+    bind TablelistBody $eventArr(NextLine) {
 	tablelist::upDown [tablelist::getTablelistPath %W] 1
     }
-    bind TablelistBody <Left> {
+    bind TablelistBody $eventArr(PrevChar) {
 	tablelist::leftRight [tablelist::getTablelistPath %W] -1
     }
-    bind TablelistBody <Right> {
+    bind TablelistBody $eventArr(NextChar) {
 	tablelist::leftRight [tablelist::getTablelistPath %W] 1
     }
     bind TablelistBody <Prior> {
@@ -487,10 +511,10 @@ proc tablelist::defineTablelistBody {} {
     bind TablelistBody <Next> {
 	tablelist::priorNext [tablelist::getTablelistPath %W] 1
     }
-    bind TablelistBody <Home> {
+    bind TablelistBody $eventArr(LineStart) {
 	tablelist::homeEnd [tablelist::getTablelistPath %W] Home
     }
-    bind TablelistBody <End> {
+    bind TablelistBody $eventArr(LineEnd) {
 	tablelist::homeEnd [tablelist::getTablelistPath %W] End
     }
     bind TablelistBody <Control-Home> {
@@ -499,22 +523,22 @@ proc tablelist::defineTablelistBody {} {
     bind TablelistBody <Control-End> {
 	tablelist::firstLast [tablelist::getTablelistPath %W] last
     }
-    bind TablelistBody <Shift-Up> {
+    bind TablelistBody $eventArr(SelectPrevLine) {
 	tablelist::extendUpDown [tablelist::getTablelistPath %W] -1
     }
-    bind TablelistBody <Shift-Down> {
+    bind TablelistBody $eventArr(SelectNextLine) {
 	tablelist::extendUpDown [tablelist::getTablelistPath %W] 1
     }
-    bind TablelistBody <Shift-Left> {
+    bind TablelistBody $eventArr(SelectPrevChar) {
 	tablelist::extendLeftRight [tablelist::getTablelistPath %W] -1
     }
-    bind TablelistBody <Shift-Right> {
+    bind TablelistBody $eventArr(SelectNextChar) {
 	tablelist::extendLeftRight [tablelist::getTablelistPath %W] 1
     }
-    bind TablelistBody <Shift-Home> {
+    bind TablelistBody $eventArr(SelectLineStart) {
 	tablelist::extendToHomeEnd [tablelist::getTablelistPath %W] Home
     }
-    bind TablelistBody <Shift-End> {
+    bind TablelistBody $eventArr(SelectLineEnd) {
 	tablelist::extendToHomeEnd [tablelist::getTablelistPath %W] End
     }
     bind TablelistBody <Shift-Control-Home> {
@@ -550,10 +574,10 @@ proc tablelist::defineTablelistBody {} {
     bind TablelistBody <Escape> {
 	tablelist::cancelSelection [tablelist::getTablelistPath %W]
     }
-    bind TablelistBody <Control-slash> {
+    bind TablelistBody $eventArr(SelectAll) {
 	tablelist::selectAll [tablelist::getTablelistPath %W]
     }
-    bind TablelistBody <Control-backslash> {
+    bind TablelistBody $eventArr(SelectNone) {
 	set tablelist::W [tablelist::getTablelistPath %W]
 
 	if {[string compare [$tablelist::W cget -selectmode] "browse"] != 0} {
@@ -632,8 +656,9 @@ proc tablelist::defineTablelistBody {} {
 	}
     }
 
-    foreach event {<<Copy>> <Control-Left> <Control-Right>
-		   <Control-Prior> <Control-Next> <Button-2> <B2-Motion>} {
+    foreach event {<Control-Left> <<PrevWord>> <Control-Right> <<NextWord>>
+		   <Control-Prior> <Control-Next> <<Copy>>
+		   <Button-2> <B2-Motion>} {
 	set script [strMap {
 	    "%W" "$tablelist::W"  "%x" "$tablelist::x"  "%y" "$tablelist::y"
 	} [bind Listbox $event]]
@@ -723,7 +748,7 @@ proc tablelist::updateExpCollCtrl {w x y} {
 	    [string compare $data($key-parent) "root"] == 0} {
 	    set imgName [$indentLabel cget -image]
 	    if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img([0-9]+)$} \
-			 $imgName dummy treeStyle state depth]} {
+			 $imgName dummy treeStyle mode depth]} {
 		#
 		# The mouse position is in the tablelist body, to the left
 		# of an expand/collapse control of a top-level item:  Handle
@@ -734,7 +759,7 @@ proc tablelist::updateExpCollCtrl {w x y} {
 	} elseif {[string compare $w $indentLabel] == 0} {
 	    set imgName [$w cget -image]
 	    if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img([0-9]+)$} \
-			 $imgName dummy treeStyle state depth]} {
+			 $imgName dummy treeStyle mode depth]} {
 		#
 		# The mouse position is in an expand/collapse
 		# image (which ends with the expand/collapse
@@ -804,7 +829,7 @@ proc tablelist::wasExpCollCtrlClicked {w x y} {
 	[string compare $data($key-parent) "root"] == 0} {
 	set imgName [$indentLabel cget -image]
 	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img([0-9]+)$} \
-		     $imgName dummy treeStyle state depth]} {
+		     $imgName dummy treeStyle mode depth]} {
 	    #
 	    # The mouse position is in the tablelist body, to the left
 	    # of an expand/collapse control of a top-level item:  Handle
@@ -815,7 +840,7 @@ proc tablelist::wasExpCollCtrlClicked {w x y} {
     } elseif {[string compare $w $indentLabel] == 0} {
 	set imgName [$w cget -image]
 	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img([0-9]+)$} \
-		     $imgName dummy treeStyle state depth]} {
+		     $imgName dummy treeStyle mode depth]} {
 	    #
 	    # The mouse position is in an expand/collapse
 	    # image (which ends with the expand/collapse
@@ -840,7 +865,7 @@ proc tablelist::wasExpCollCtrlClicked {w x y} {
     #
     # Toggle the state of the expand/collapse control
     #
-    if {[string compare $state "collapsed"] == 0} {
+    if {[string compare $mode "collapsed"] == 0} {
 	::$win expand $row -partly
     } else {
 	::$win collapse $row -partly
@@ -1025,7 +1050,7 @@ proc tablelist::condAutoScan win {
 # the window or the mouse button is released.
 #------------------------------------------------------------------------------
 proc tablelist::autoScan win {
-    if {![namespace exists ::tablelist::ns${win}] ||
+    if {![array exists ::tablelist::ns${win}::data] ||
 	[string compare [::$win editwinpath] ""] != 0} {
 	return ""
     }
@@ -1351,7 +1376,7 @@ proc tablelist::condEvalInvokeCmd win {
     #
     # This is an "after 100" callback; check whether the window exists
     #
-    if {![namespace exists ::tablelist::ns${win}]} {
+    if {![array exists ::tablelist::ns${win}::data]} {
 	return ""
     }
 
@@ -1530,12 +1555,12 @@ proc tablelist::plusMinus {win keysym} {
 	set indentLabel $data(body).ind_$key,$col
 	set imgName [$indentLabel cget -image]
 	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img([0-9]+)$} \
-		     $imgName dummy treeStyle state depth]} {
+		     $imgName dummy treeStyle mode depth]} {
 	    if {[string compare $keysym "plus"] == 0 &&
-		[string compare $state "collapsed"] == 0} {
+		[string compare $mode "collapsed"] == 0} {
 		set op "expand"
 	    } elseif {[string compare $keysym "minus"] == 0 &&
-		      [string compare $state "expanded"] == 0} {
+		      [string compare $mode "expanded"] == 0} {
 		set op "collapse"
 	    }
 	}
@@ -1666,10 +1691,10 @@ proc tablelist::leftRight {win amount} {
 	set indentLabel $data(body).ind_$key,$col
 	set imgName [$indentLabel cget -image]
 	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img([0-9]+)$} \
-		     $imgName dummy treeStyle state depth]} {
-	    if {$amount > 0 && [string compare $state "collapsed"] == 0} {
+		     $imgName dummy treeStyle mode depth]} {
+	    if {$amount > 0 && [string compare $mode "collapsed"] == 0} {
 		set op "expand"
-	    } elseif {$amount < 0 && [string compare $state "expanded"] == 0} {
+	    } elseif {$amount < 0 && [string compare $mode "expanded"] == 0} {
 		set op "collapse"
 	    }
 	}
@@ -2866,7 +2891,7 @@ proc tablelist::escape {win col} {
     if {[info exists data(colBeingResized)]} {	;# resize operation in progress
 	configLabel $w -cursor $data(-cursor)
 	update idletasks
-	if {![namespace exists ::tablelist::ns${win}]} {
+	if {![array exists ::tablelist::ns${win}::data]} {
 	    return ""
 	}
 	if {[winfo exists $data(focus)]} {
@@ -2911,7 +2936,7 @@ proc tablelist::escape {win col} {
 # mouse moves back into the window or the mouse button is released.
 #------------------------------------------------------------------------------
 proc tablelist::horizAutoScan win {
-    if {![namespace exists ::tablelist::ns${win}]} {
+    if {![array exists ::tablelist::ns${win}::data]} {
 	return ""
     }
 
