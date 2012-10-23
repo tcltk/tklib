@@ -6,7 +6,7 @@
 
 package require Tcl 8
 package require Tk  8
-package require -exact tablelist::common 5.6
+package require -exact tablelist::common 5.7
 
 package provide tablelist $::tablelist::version
 package provide Tablelist $::tablelist::version
