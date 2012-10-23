@@ -1,5 +1,48 @@
-What is new in Tablelist 5.6?
+What is new in Tablelist 5.7?
 -----------------------------
+
+1.  Added the "cellbbox" subcommand.
+
+2.  Added the "editinfo" subcommand (thanks to Trevor Williams for his
+    proposal).
+
+3.  Adapted the tree styles "ubuntu" and "mint" to the latest Ubuntu
+    Linux and Linux Mint releases.
+
+4.  Minor change related to the ttk::combobox widget used as edit window
+    (thanks to Julian H J Loaring for his input).
+
+5.  Improved the multi-platform support by increased use of virtual
+    events.
+
+6.  Worked around a bug in some earlier Tk versions, related to
+    checkbuttons without indicator (thanks to Allan Silverstein for his
+    input).
+
+7.  Restored the support for Tcl/Tk versions earlier than 8.4, which has
+    been broken since the previous Tablelist release, due to the use of
+    the "namespace exists" command, introduced in Tcl 8.4 (thanks to
+    Ralf Fassel for drawing my attention to this issue).
+
+8.  Fixed a copy & paste bug related to embedded windows, introduced in
+    the previous Tablelist version (thanks to Heng Li and David Hanks
+    for their bug reports).
+
+9.  Fixed a long-standing bug related to the "cancelediting" subcommand
+    and the "-forceeditendcommand" option (thanks to Julian H J Loaring
+    for his bug report).
+
+10. Fixed a long-standing minor bug that caused the "-labelbg" column
+    configuration option to be accepted by Tablelist_tile, contrary to
+    the option of the same name at widget level (thanks to Bernhard
+    Wallner for his bug report).
+
+11. Several further improvements in the code and demo scripts (thanks to
+    Patrick Fradin for his valuable contribution and to Marianne Baumann
+    for her input related to the "-showlabels" option).
+
+What was new in Tablelist 5.6?
+------------------------------
 
 1.  Added the tree styles "adwaita", "mint", and "ubuntu", inspired by a
     few GTK+ 3 themes on popular Linux distributions.
@@ -23,7 +66,7 @@ What is new in Tablelist 5.6?
     Niva for his valuable input).
 
 8.  Guarded against scripts that start by destroying all children of the
-    root window (thanks to Helmut Giese and Gerhard Kubu for drawing my
+    root window (thanks to Helmut Giese and Gerhard Kraus for drawing my
     attention to this case).
 
 9.  Fixed two bugs related to the "move" subcommand, introduced in

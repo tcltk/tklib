@@ -18,7 +18,7 @@
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 5.6</h2>
+    <h2>For Tablelist Version 5.7</h2>
 
     <h3>by</h3>
 
@@ -177,8 +177,8 @@
   <h3><a name="ov_get"></a>How to get it?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist5.6.tar.gz</code> for UNIX and
-  <code>tablelist5_6.zip</code> for Windows.&nbsp; These files contain the same
+  The distribution file is <code>tablelist5.7.tar.gz</code> for UNIX and
+  <code>tablelist5_7.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -203,21 +203,21 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist5.6.tar.gz</code>:</p>
+  <code>tablelist5.7.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist5.6.tar.gz | tar -xf -
+gunzip -c tablelist5.7.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>tablelist5.6</code>, with
+  <p>This command will create a directory named <code>tablelist5.7</code>, with
   the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist5_6.zip</code> into the directory
-  <code>tablelist5.6</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist5_7.zip</code> into the directory
+  <code>tablelist5.7</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -308,20 +308,20 @@ package provide Tablelist_tile ...
   known under two different names each.&nbsp; Of course, by doing so you
   restrict the argument of&nbsp; <code>package require</code>&nbsp; to a single
   name per package.</p>
-  
+
   <p>Please note that <b>ActiveTcl versions 8.5 and later use a modified
   package mechanism, which only exports the all-lowercase names
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 5.6, then it is highly
-  recommended to specify the version number <code>5.6</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 5.7, then it is highly
+  recommended to specify the version number <code>5.7</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 5.6</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 5.7</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 5.6</code>.</p>
+  tablelist_tile 5.7</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -491,7 +491,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 5.6
+package require tablelist 5.7
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -523,7 +523,7 @@ To display the configuration options of an arbitrary widget, enter
 
   <blockquote>
     <pre>
-package require tablelist 5.6
+package require tablelist 5.7
 
 namespace eval demo {
     #
@@ -984,7 +984,7 @@ To display information about the children of an arbitrary widget, enter
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 5.6
+package require tablelist 5.7
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1003,7 +1003,7 @@ source [file join $demo::dir config.tcl]
 #------------------------------------------------------------------------------
 # demo::displayChildren
 #
-# Displays information on the children of the widget w in a tablelist widget 
+# Displays information on the children of the widget w in a tablelist widget
 # contained in a newly created top-level widget.  Returns the name of the
 # tablelist widget.
 #------------------------------------------------------------------------------
@@ -1272,7 +1272,7 @@ proc demo::putChildren {w tbl nodeIdx} {
   of the parent node's list of children with the aid of the <code><a href=
   "tablelistWidget.html#insertchildren">insertchild(ren)</a></code>
   subcommand.</p>
-  
+
   <p>For each child widget, we invoke the <code><a href=
   "tablelistWidget.html#cellconfigure">cellconfigure</a></code> tablelist
   operation to set the value of the <code>-image</code> option of the
@@ -1582,7 +1582,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 5.6
+package require tablelist 5.7
 
 #
 # Add some entries to the Tk option database
@@ -1659,7 +1659,7 @@ if {[string compare $winSys "x11"] == 0} {
 }
 </pre>
   </blockquote>
-  
+
   <p>The procedure specifies a value not only for the <code><a href=
   "tablelistWidget.html#expandcommand">-expandcommand</a></code> option of the
   tablelist it creates, but also for its <code><a href=
@@ -1680,7 +1680,11 @@ proc putContents {dir tbl nodeIdx} {
 
     if {[string compare $nodeIdx "root"] == 0} {
         if {[string compare $dir ""] == 0} {
-            wm title . "Contents of the Workspace"
+            if {[llength [file volumes]] == 1} {
+                wm title . "Contents of the File System"
+            } else {
+                wm title . "Contents of the File Systems"
+            }
         } else {
             wm title . "Contents of the Directory \"[file nativename $dir]\""
         }
@@ -1956,7 +1960,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   editing.&nbsp; The following figure shows the tablelist widget, together with
   a BWidget ComboBox used to edit the contents of one of its cells:</p>
 
-  <p><img src="bwidget.png" alt="Serial Line Configuration" width="784" height=
+  <p><img src="bwidget.png" alt="Serial Line Configuration" width="757" height=
   "369"></p>
 
   <p>Here is the relevant code segment from the script <code>bwidget.tcl</code>
@@ -1966,7 +1970,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;# because of "-compound"
-package require tablelist 5.6
+package require tablelist 5.7
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2008,7 +2012,7 @@ tablelist::tablelist $tbl \
               0 "Handshake"       left
               0 "Activation Date" center
               0 "Activation Time" center
-              0 "Cable Color"     left} \
+              0 "Cable Color"     center} \
     -editstartcommand editStartCmd -editendcommand editEndCmd \
     -height 0 -width 0
 if {[$tbl cget -selectborderwidth] == 0} {
@@ -2029,7 +2033,8 @@ $tbl columnconfigure 8 -name actDate   -editable yes -editwindow Entry \
     -formatcommand formatDate -sortmode integer
 $tbl columnconfigure 9 -name actTime   -editable yes -editwindow Entry \
     -formatcommand formatTime -sortmode integer
-$tbl columnconfigure 10 -name color    -editable yes -editwindow menubutton
+$tbl columnconfigure 10 -name color    -editable yes -editwindow menubutton \
+    -formatcommand emptyStr
 
 proc emptyStr   val { return "" }
 proc formatDate val { return [clock format $val -format "%Y-%m-%d"] }
@@ -2169,15 +2174,16 @@ proc editStartCmd {tbl row col text} {
 
         color {
             #
-            # Populate the menu
+            # Populate the menu and make sure the menubutton will display the
+            # color name rather than $text, which is "", due to -formatcommand
             #
             set menu [$w cget -menu]
             foreach name $::colorNames {
-                set img img$::colors($name)
-                $menu add radiobutton -compound left -image $img -label $name \
-                    -command [list $w configure -compound left -image $img]
+                $menu add radiobutton -compound left \
+                    -image img$::colors($name) -label $name
             }
             $menu entryconfigure 8 -columnbreak 1
+            return [$tbl cellcget $row,$col -text]
         }
     }
 
@@ -2227,7 +2233,7 @@ proc editEndCmd {tbl row col text} {
 
         actDate {
             #
-            # Get the activation date in seconds from the last argument 
+            # Get the activation date in seconds from the last argument
             #
             if {[catch {clock scan $text} actDate] != 0} {
                 bell
@@ -2304,7 +2310,7 @@ proc editEndCmd {tbl row col text} {
 
   <blockquote>
     <pre>
-package require tablelist 5.6
+package require tablelist 5.7
 
 wm title . "Tk Library Scripts"
 
@@ -2316,7 +2322,7 @@ source [file join $dir option.tcl]
 
 #
 # Create the font TkFixedFont if not yet present
-# 
+#
 catch {font create TkFixedFont -family Courier -size -12}
 
 #
@@ -2540,7 +2546,7 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
   <blockquote>
     <pre>
 package require Tk 8.3                          ;# because of entry validation
-package require tablelist 5.6
+package require tablelist 5.7
 </pre>
   </blockquote>
 
@@ -2548,7 +2554,7 @@ package require tablelist 5.6
 
   <blockquote>
     <pre>
-package require tablelist<span>_tile</span> 5.6
+package require tablelist<span>_tile</span> 5.7
 </pre>
   </blockquote>
 
@@ -2652,7 +2658,7 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
   checkbutton, and menubutoon widgets for interactive cell editing.&nbsp; The
   resulting window has a nice theme-specific appearance:</p>
 
-  <p><img src="tileWidgets.png" alt="Serial Line Configuration" width="782"
+  <p><img src="tileWidgets.png" alt="Serial Line Configuration" width="755"
   height="364"></p>
 
   <p>The tile-based version of the demo script <code><a href=
