@@ -11,7 +11,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 5.6</h2>
+    <h2>For Tablelist Version 5.7</h2>
 
     <h3>by</h3>
 
@@ -519,6 +519,9 @@
     <i>cellIndex</i> ?<i>name</i>? ?<i>value</i> <i>name</i> <i>value</i>
     ...?</code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#cellbbox">cellbbox</a></b>
+    <i>cellIndex</i></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#cellcget">cellcget</a></b>
     <i>cellIndex</i> <i>option</i></code></dd>
 
@@ -664,10 +667,13 @@
     <i>cellIndex</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
-    "#editwintag">editwintag</a></b></code></dd>
+    "#editinfo">editinfo</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#editwinpath">editwinpath</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#editwintag">editwintag</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#entrypath">entrypath</a></b></code></dd>
@@ -1483,7 +1489,7 @@ proc acceptChildCmd {tbl targetParentNodeIdx sourceRow} {
 <i>title</i> <i>title</i> ...
 </pre>
         </blockquote>
-        
+
         <p>is equivalent to setting the <code><b><a href=
         "#columns">-columns</a></b></code> option to the value given by the
         list</p>
@@ -4093,7 +4099,7 @@ proc formatDate clockVal {
 
           <p>then the text displayed in the cell will be the date in the
           specified format, not the time value in seconds.</p>
-          
+
           <p>This option is also used by Tablelist when building the return
           values of the <code><b><a href=
           "#getformatted">getformatted</a></b></code>, <code><b><a href=
@@ -4536,7 +4542,7 @@ proc formatDate clockVal {
           <code>0</code>.&nbsp; After toggling the hidden state of a row, the
           <code><b>&lt;&lt;TablelistRowHiddenStateChanged&gt;&gt;</b></code>
           virtual event is generated.&nbsp;
-          
+
           <p>For technical reasons (the use of the <code><b>-elide</b></code>
           option for a text widget tag), this option is not supported for Tk
           versions earlier than 8.3.</p>
@@ -5516,6 +5522,22 @@ proc updateWindow {tbl row col w args} {
         <code><i>name</i></code> may be an arbitrary string.</dd>
 
         <dt><br>
+        <a name="cellbbox"></a><code><i>pathName</i> <b>cellbbox</b>
+        <i>cellIndex</i></code></dt>
+
+        <dd>Returns a list of four numbers describing the bounding box of the
+        cell given by <code><i>cellIndex</i></code>.&nbsp; The first two
+        elements of the list give the x and y coordinates of the upper-left
+        corner of the screen area covered by the cell (specified in pixels
+        relative to the widget) and the last two elements give the width and
+        height of the area, in pixels.&nbsp; If no part of the cell given by
+        <code><i>cellIndex</i></code> is visible on the screen, or if
+        <code><i>cellIndex</i></code> refers to a non-existent cell, then the
+        result is an empty string; if the cell is partially visible, the result
+        gives the full area of the cell, including any parts that are not
+        visible.</dd>
+
+        <dt><br>
         <a name="cellcget"></a><code><i>pathName</i> <b>cellcget</b>
         <i>cellIndex</i> <i>option</i></code></dt>
 
@@ -6162,6 +6184,33 @@ pack $frm -expand yes -fill both
         details on editablity and on the editing process.</dd>
 
         <dt><br>
+        <a name="editinfo"></a><code><i>pathName</i>
+        <b>editinfo</b></code></dt>
+
+        <dd>Returns a three-element list containing information about the
+        tablelist cell whose content is being edited.&nbsp; The first element
+        of the list is the full key (of the form
+        <code><b>k</b><i>number</i></code>) associated with the item containing
+        the tablelist element that is being edited.&nbsp; The second and third
+        elements are the cell's row and column indices.&nbsp; If currently no
+        cell is being edited then the return value is the list&nbsp; <code>{""
+        -1 -1}</code>.</dd>
+
+        <dt><br>
+        <a name="editwinpath"></a><code><i>pathName</i>
+        <b>editwinpath</b></code></dt>
+
+        <dd>Returns the path name of the temporary embedded widget used for
+        interactive cell editing, created by the <code><b><a href=
+        "#editcell">editcell</a></b></code> subcommand.&nbsp; If no cell is
+        currently being edited then the return value is an empty string.&nbsp;
+        This subcommand enables you to access the edit window from within the
+        commands specified by the <code><b><a href=
+        "#editstartcommand">-editstartcommand</a></b></code> and
+        <code><b><a href="#editendcommand">-editendcommand</a></b></code>
+        configuration options.</dd>
+
+        <dt><br>
         <a name="editwintag"></a><code><i>pathName</i>
         <b>editwintag</b></code></dt>
 
@@ -6179,7 +6228,7 @@ pack $frm -expand yes -fill both
           list of binding tags of the edit window components mentioned above,
           and is designed to be used when defining individual binding scripts
           for controlling the interactive cell editing.
-          
+
           <p>For example, the following command will replace the standard
           behavior of the <code>Return</code> key during cell editing in the
           tablelist widget <code>.tbl</code> with that of the <code>Tab</code>
@@ -6192,21 +6241,7 @@ bind [.tbl editwintag] &lt;Return&gt; "[bind TablelistEdit &lt;Tab&gt;]; break"
           </blockquote>
         </dd>
 
-        <dt><a name="editwinpath"></a><code><i>pathName</i>
-        <b>editwinpath</b></code></dt>
-
-        <dd>Returns the path name of the temporary embedded widget used for
-        interactive cell editing, created by the <code><b><a href=
-        "#editcell">editcell</a></b></code> subcommand.&nbsp; If no cell is
-        currently being edited then the return value is an empty string.&nbsp;
-        This subcommand enables you to access the edit window from within the
-        commands specified by the <code><b><a href=
-        "#editstartcommand">-editstartcommand</a></b></code> and
-        <code><b><a href="#editendcommand">-editendcommand</a></b></code>
-        configuration options.</dd>
-
-        <dt><br>
-        <a name="entrypath"></a><code><i>pathName</i>
+        <dt><a name="entrypath"></a><code><i>pathName</i>
         <b>entrypath</b></code></dt>
 
         <dd>Returns the path name of the entry or entry-like component of the
@@ -6334,9 +6369,9 @@ bind [.tbl editwintag] &lt;Return&gt; "[bind TablelistEdit &lt;Tab&gt;]; break"
           <i>explicit</i> invocation of this subcommand is needed, in order to
           make sure that the cell just being edited gets updated with the text
           entered by the user.&nbsp; For example, if a tablelist widget is part
-          of a dialog used for editing some data, then the binding script
-          associated with the button designed to accept the data should call
-          this subcommand, because otherwise, if the button is pressed during
+          of a dialog used for editing some data, then the command associated
+          with the button designed to accept the data should call this
+          subcommand, because otherwise, if the button is pressed during
           interactive cell editing then the text entered into the edit window
           will get lost.</p>
         </dd>
@@ -6354,8 +6389,7 @@ bind [.tbl editwintag] &lt;Return&gt; "[bind TablelistEdit &lt;Tab&gt;]; break"
           of the list is the full key (of the form
           <code><b>k</b><i>number</i></code>) associated with the item
           containing the tablelist element that is being formatted.&nbsp; The
-          second and third elements of the list are the cell's row and column
-          indices.
+          second and third elements are the cell's row and column indices.
 
           <p><b>REMARK:</b>&nbsp; This subcommand is needed in cases where the
           result of the formatting should depend on the cell's row.&nbsp; To be
@@ -6502,7 +6536,7 @@ proc formatValue {tbl val} {
           the command returns the list of all of the full keys associated with
           the tablelist items corresponding to the indices specified by
           <code><i>indexList</i></code>.
-          
+
           <p>Each item of a tablelist widget has a unique sequence number that
           remains unchanged until the item is deleted, thus acting as a key
           that uniquely identifies the item even if the latter's position
@@ -6527,7 +6561,7 @@ proc formatValue {tbl val} {
           item); otherwise the command returns the list of all of the sequence
           numbers associated with the tablelist items corresponding to the
           indices specified by <code><i>indexList</i></code>.
-          
+
           <p>Each item of a tablelist widget has a unique sequence number that
           remains unchanged until the item is deleted, thus acting as a key
           that uniquely identifies the item even if the latter's position
@@ -8010,7 +8044,7 @@ proc printClickedCell {w x y} {
       binding tag <code><b>TablelistBody</b></code> is only valid if the
       selection mode is <code><b>single</b></code> or
       <code><b>multiple</b></code>:</p>
-      
+
       <blockquote>
         <p>If mouse button 1 is clicked on an item and then dragged outside
         that item, and the value of the <code><b><a href=
@@ -8033,18 +8067,18 @@ proc printClickedCell {w x y} {
 
         <p>Notice that, depending on the current mouse position during the
         local drag &amp; drop, there can be a corresponding potential target
-        row or not.&nbsp; For instance, a tree item cannot be moved before one
-        of its descendants and not all items might be allowed to have children
-        or to become top-level ones (example: in a file manager, regular file
-        items cannot be parents of other items and should not be allowed to
-        become top-level ones).&nbsp; To decide whether the row corresponding
-        to the y-coordinate of the current mouse position represents a valid
-        potential target, the Tablelist code first checks whether moving the
-        source item before that row or making it a child of the latter is
-        allowed from the point of view of the general tree structure.&nbsp; If
-        this is the case and the move operation would change the source item's
-        parent (and the Tk version is at least 8.3), then the command specified
-        by the <code><b><a href=
+        row or not.&nbsp; For instance, a tree item cannot become a sibling of
+        one of its descendants, and not all items might be allowed to have
+        children or to become top-level ones (example: in a file manager,
+        regular file items cannot be parents of other items and should not be
+        allowed to become top-level ones).&nbsp; To decide whether the row
+        corresponding to the y-coordinate of the current mouse position
+        represents a valid potential target, the Tablelist code first checks
+        whether moving the source item before that row or making it a child of
+        the latter is allowed from the point of view of the general tree
+        structure.&nbsp; If this is the case and the move operation would
+        change the source item's parent (and the Tk version is at least 8.3),
+        then the command specified by the <code><b><a href=
         "#acceptchildcommand">-acceptchildcommand</a></b></code> configuration
         option is used to decide whether to allow to move the dragged item to
         the intended target position:&nbsp; If the value of this option is an
