@@ -6,7 +6,7 @@
 #==============================================================================
 
 package require Tk 8.3
-package require tablelist 5.6
+package require tablelist 5.7
 
 namespace eval demo {
     variable dir [file dirname [info script]]

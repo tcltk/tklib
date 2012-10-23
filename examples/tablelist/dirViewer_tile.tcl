@@ -9,7 +9,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2010-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.6
+package require tablelist_tile 5.7
 
 #
 # Add some entries to the Tk option database
@@ -145,7 +145,11 @@ proc putContents {dir tbl nodeIdx} {
 
     if {[string compare $nodeIdx "root"] == 0} {
 	if {[string compare $dir ""] == 0} {
-	    wm title . "Contents of the Workspace"
+	    if {[llength [file volumes]] == 1} {
+		wm title . "Contents of the File System"
+	    } else {
+		wm title . "Contents of the File Systems"
+	    }
 	} else {
 	    wm title . "Contents of the Directory \"[file nativename $dir]\""
 	}
