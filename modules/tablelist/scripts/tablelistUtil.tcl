@@ -3247,9 +3247,9 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	    } elseif {$hasExpCollCtrlSelImgs} {
 		set curImgName [$path cget -image]
 		if {[regexp {^(.+)_(collapsed|expanded).*Img([0-9]+)$} \
-			     $curImgName dummy prefix state depth]} {
-		    set imgName ${prefix}_${state}Img$depth
-		    set selImgName ${prefix}_${state}SelImg$depth
+			     $curImgName dummy prefix mode depth]} {
+		    set imgName ${prefix}_${mode}Img$depth
+		    set selImgName ${prefix}_${mode}SelImg$depth
 		    set newImgName [expr {$selected ? $selImgName : $imgName}]
 
 		    if {[string compare $curImgName $newImgName] != 0} {
@@ -3478,13 +3478,15 @@ proc tablelist::forceRedraw win {
     }
 
     set w $data(body)
-    $w tag add redraw 1.0 end
-    $w tag remove redraw 1.0 end
+    set fromTextIdx "[$w index @0,0] linestart"
+    set toTextIdx "[$w index @0,$data(btmY)] lineend"
+    $w tag add redraw $fromTextIdx $toTextIdx
+    $w tag remove redraw $fromTextIdx $toTextIdx
 
     variable winSys
     if {[string compare $winSys "aqua"] == 0} {
 	#
-	# Work around a Tk bug on Mac OS X Aqua
+	# Work around some Tk bugs on Mac OS X Aqua
 	#
 	raise $w
 	lower $w

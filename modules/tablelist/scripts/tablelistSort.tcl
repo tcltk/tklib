@@ -142,7 +142,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     if {[winfo viewable $win] && $sortAllItems} {
 	purgeWidgets $win
 	update idletasks
-	if {![namespace exists ::tablelist::ns${win}]} {
+	if {![array exists ::tablelist::ns${win}::data]} {
 	    return ""
 	}
     }
