@@ -11,7 +11,7 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 
 package require Tk 8.4				;# because of "-compound"
-package require tablelist 5.6
+package require tablelist 5.7
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -53,7 +53,7 @@ tablelist::tablelist $tbl \
 	      0 "Handshake"	  left
 	      0 "Activation Date" center
 	      0 "Activation Time" center
-	      0 "Cable Color"	  left} \
+	      0 "Cable Color"	  center} \
     -editstartcommand editStartCmd -editendcommand editEndCmd \
     -height 0 -width 0
 if {[$tbl cget -selectborderwidth] == 0} {
@@ -74,7 +74,8 @@ $tbl columnconfigure 8 -name actDate   -editable yes -editwindow Entry \
     -formatcommand formatDate -sortmode integer
 $tbl columnconfigure 9 -name actTime   -editable yes -editwindow Entry \
     -formatcommand formatTime -sortmode integer
-$tbl columnconfigure 10 -name color    -editable yes -editwindow menubutton
+$tbl columnconfigure 10 -name color    -editable yes -editwindow menubutton \
+    -formatcommand emptyStr
 
 proc emptyStr   val { return "" }
 proc formatDate val { return [clock format $val -format "%Y-%m-%d"] }
@@ -179,15 +180,16 @@ proc editStartCmd {tbl row col text} {
 
 	color {
 	    #
-	    # Populate the menu
+	    # Populate the menu and make sure the menubutton will display the
+	    # color name rather than $text, which is "", due to -formatcommand
 	    #
 	    set menu [$w cget -menu]
 	    foreach name $::colorNames {
-		set img img$::colors($name)
-		$menu add radiobutton -compound left -image $img -label $name \
-		    -command [list $w configure -compound left -image $img]
+		$menu add radiobutton -compound left \
+		    -image img$::colors($name) -label $name
 	    }
 	    $menu entryconfigure 8 -columnbreak 1
+	    return [$tbl cellcget $row,$col -text]
 	}
     }
 
