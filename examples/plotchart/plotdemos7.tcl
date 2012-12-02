@@ -20,8 +20,7 @@ package require Plotchart
 canvas .c  -background white -width 400 -height 200
 canvas .c2 -background white -width 400 -height 200
 canvas .c3 -background white -width 400 -height 200
-canvas .c4 -background white -width 400 -height 200
-pack   .c .c2 .c3 .c4 -fill both -side top
+pack   .c .c2 .c3 -fill both -side top
 
 toplevel .h
 canvas .h.c  -background white -width 400 -height 200
@@ -111,12 +110,15 @@ $s title "Cardioid"
 
 set s [::Plotchart::createBarchart .h.c {A B C D E} {0.0 10.0 2.0} 2.5]
 
-$s legend series1 "Series 1"
-$s legend series2 "Series 2"
-
 $s plot series1 {1.0 4.0 6.0 1.0 7.0} red
 $s plot series2 {0.0 3.0 7.0 9.3 2.0} green
 $s title "Arbitrary data"
+
+#
+# Legend _after_ the data - then the colors are known!
+#
+$s legend series1 "Series 1"
+$s legend series2 "Series 2"
 
 
 set s [::Plotchart::createBarchart .h.c2 {A B C D E} {0.0 20.0 5.0} stacked]
