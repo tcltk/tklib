@@ -92,16 +92,17 @@ proc ::Plotchart::SavePlot { w filename args } {
         return -code error "'-plotregion bbox' can only be used together with '-format ps'"
     }
     if {$options(-format) ne "ps"} {
+        regexp {\..*} $w c
         package require Img
         #
         # This is a kludge:
         # Somehow tkwait does not always work (on Windows XP, that is)
         #
-        raise [winfo toplevel $w]
-        # tkwait visibility [winfo toplevel $w]
+        raise [winfo toplevel $c]
+        # tkwait visibility [winfo toplevel $c]
         after 2000 {set ::Plotchart::waited 0}
         vwait ::Plotchart::waited
-        set img [image create photo -data $w -format window]
+        set img [image create photo -data $c -format window]
         $img write $filename -format $options(-format)
     } else {
         #
@@ -2156,6 +2157,19 @@ proc ::Plotchart::DrawHistogramData { w series xcrd ycrd } {
 
    set data_series($w,$series,x)       $xcrd
    set data_series($w,$series,pystair) $pycrd
+
+   #
+   # Store the data for use in bindlast subcommand
+   #
+   set data_series($w,$series,px1)     $pxold
+   set data_series($w,$series,py1)     $pyold
+   set data_series($w,$series,px2)     $pxcrd
+   set data_series($w,$series,py2)     $pycrd
+
+   if { $style == "symbol" } {
+       set data_series($w,$series,px1)     $pxcrd
+       set data_series($w,$series,py1)     $pycrd
+   }
 }
 
 # DrawHistogramCumulative --

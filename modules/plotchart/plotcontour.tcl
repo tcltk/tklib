@@ -273,7 +273,7 @@ proc ::Plotchart::Draw3DFunctionContour { w function {cont {}} } {
     set contour_options(filled_contour) 1
     set noTrans 0
 
-    ::Plotchart::setColormapColors  [llength $cont]
+    ::Plotchart::setColormapColors  [llength $cont] 0.0
 
     set nxcells $scaling($w,nxcells)
     set nycells $scaling($w,nycells)
@@ -1336,7 +1336,7 @@ proc ::Plotchart::MakeContourClasses {values classes offset} {
         # Now that we know how many entries (ncont), create
         # the colormap colors
         #
-        ::Plotchart::setColormapColors  [expr {[llength $classes] + 1}]
+        ::Plotchart::setColormapColors  [expr {[llength $classes] + 1}] $offset
 
     } elseif { [llength [lindex $classes 0]] == 1 } {
         #mbs#  Changed the above line from " == 2 " to " == 1 "

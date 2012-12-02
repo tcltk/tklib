@@ -6,7 +6,7 @@
 #    The private functions are contained in the files "sourced"
 #    at the end.
 #
-package require Tcl 8.4
+package require Tcl 8.5
 package require Tk
 
 # Plotchart --
@@ -225,6 +225,7 @@ namespace eval ::Plotchart {
    set methodProc(histogram,plaintext)         DrawPlainText
    set methodProc(histogram,plaintextconfig)   ConfigPlainText
    set methodProc(histogram,canvas)            GetCanvas
+   set methodProc(histogram,bindlast)          BindLastHistogram
    set methodProc(horizbars,title)             DrawTitle
    set methodProc(horizbars,xtext)             DrawXtext
    set methodProc(horizbars,ytext)             DrawYtext
@@ -483,10 +484,10 @@ namespace eval ::Plotchart {
    variable options
    variable option_keys
    variable option_values
-   set options       {-colour -color  -symbol -type -filled -fillcolour -boxwidth -width -radius \
-      -whisker -whiskerwidth -mediancolour -medianwidth -style}
-   set option_keys   {-colour -colour -symbol -type -filled -fillcolour -boxwidth -width -radius \
-      -whisker -whiskerwidth -mediancolour -medianwidth -style}
+   set options       {-colour -color  -symbol -type -filled -fillcolour -fillcolor -boxwidth -width -radius \
+      -whisker -whiskerwidth -mediancolour -mediancolor  -medianwidth -style}
+   set option_keys   {-colour -colour -symbol -type -filled -fillcolour -fillcolour -boxwidth -width -radius \
+      -whisker -whiskerwidth -mediancolour -mediancolour -medianwidth -style}
    set option_values {-colour       {...}
                       -symbol       {plus cross circle up down dot upfilled downfilled}
                       -type         {line symbol both rectangle}
@@ -1029,6 +1030,10 @@ proc ::Plotchart::createIsometricPlot { c xscale yscale stepsize args } {
    interp alias {} $newchart {} ::Plotchart::PlotHandler isometric $w
    CopyConfig isometric $w
 
+   set scaling($w,reference) $w
+   set scaling($w,xfactor)   1.0
+   set scaling($w,yfactor)   1.0
+
    if { $stepsize != "noaxes" } {
       foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
    } else {
@@ -1360,8 +1365,11 @@ proc ::Plotchart::createPiechart { c args} {
    DefaultLegend  $w
    DefaultBalloon $w
 
-   set scaling($w,auto)      0
-   set scaling($w,exploded) -1
+   set scaling($w,auto)         0
+   set scaling($w,exploded)    -1
+   set scaling($w,coordSystem)  0     ;# Dummies
+   set scaling($w,xfactor)      1.0
+   set scaling($w,yfactor)      1.0
 
    #
    # Take care of the compatibility for coordsToPixel and friends
@@ -1634,7 +1642,7 @@ proc ::Plotchart::createHorizontalBarchart { c xscale ylabels noseries args } {
 # createBoxplot --
 #    Create a command for drawing a plot with box-and-whiskers
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    xdata       Minimum, maximum and step for x-axis OR list of labels for x-axis
 #                (depending on the value of 'orientation')
 #    ydata       Minimum, maximum and step for y-axis OR list of labels for y-axis
@@ -1645,11 +1653,14 @@ proc ::Plotchart::createHorizontalBarchart { c xscale ylabels noseries args } {
 # Note:
 #    By default the entire canvas will be dedicated to the boxplot.
 #
-proc ::Plotchart::createBoxplot { w xdata ydata {orientation horizontal}} {
+proc ::Plotchart::createBoxplot { c xdata ydata {orientation horizontal}} {
    variable data_series
    variable config
    variable settings
    variable scaling
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
 
    ClearPlot $w
 
@@ -1861,6 +1872,10 @@ proc ::Plotchart::createGanttchart { w time_begin time_end args} {
            }
        }
    }
+
+   set scaling($w,reference) $w
+   set scaling($w,xfactor)   1.0
+   set scaling($w,yfactor)   1.0
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args 3 $ylabelwidth] {break}
 
@@ -2569,11 +2584,6 @@ proc ::Plotchart::createTableChart { c columns args } {
    DrawTableFrame $w
    DrawRow        $w $columns header
 
-   #
-   # Take care of the compatibility for coordsToPixel and friends
-   #
-   CopyScalingData $w $c
-
    return $newchart
 }
 
@@ -2621,4 +2631,4 @@ source [file join [file dirname [info script]] "plottable.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.0.0
+package provide Plotchart 2.0.1

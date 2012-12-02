@@ -63,6 +63,45 @@ proc ::Plotchart::BindLast {w series event cmd} {
         [list ::Plotchart::BindCmd $x $y $w $cmd]
 }
 
+# BindLastHistogram --
+#     Bind an event to the last rectangle created in a histogram
+#
+# Arguments:
+#     w               Widget
+#     series          Data series in question
+#     event           Type of event
+#     cmd             Command to execute
+#
+# Result:
+#     None
+#
+proc ::Plotchart::BindLastHistogram {w series event cmd} {
+    variable data_series
+
+    set style "filled"
+
+    if { [info exists data_series($w,$series,-style)] } {
+        set style $data_series($w,$series,-style)
+    }
+
+    set pxmin $data_series($w,$series,px1)
+    set y1    $data_series($w,$series,py1)
+    set pxmax $data_series($w,$series,px2)
+    set y2    $data_series($w,$series,py2)
+
+    if { $style != "filled" } {
+        set pymin [expr {$y1-5}]
+        set pymax [expr {$y2+5}]
+    } else {
+        set pymin $y1
+        set pymax $y2
+    }
+    set object [$w create rectangle $pxmin $pymin $pxmax $pymax -fill {} -outline {}]
+
+    $w bind $object $event \
+        [list ::Plotchart::BindCmd $pxmax $y2 $w $cmd]
+}
+
 # BindCmd --
 #     Call the command that is bound to the event
 #
