@@ -2,7 +2,7 @@ if {![package vsatisfies [package provide Tcl] 8.5]} {
     # PRAGMA: returnok
     return
 }
-package ifneeded Plotchart 2.0.0 [list source [file join $dir plotchart.tcl]]
+package ifneeded Plotchart 2.0.1 [list source [file join $dir plotchart.tcl]]
 if {![package vsatisfies [package provide Tcl] 8.5]} {
     # PRAGMA: returnok
     return
