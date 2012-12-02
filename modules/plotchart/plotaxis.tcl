@@ -41,6 +41,10 @@ proc ::Plotchart::FormatNumber { format number } {
 #
 proc ::Plotchart::Floor {value step} {
 
+    if { $step eq "" } {
+        return $value
+    }
+
     if { $value > 0.0 } {
         set result [expr {floor(($value+0.0)/$step) * $step}]
     } else {
@@ -50,6 +54,10 @@ proc ::Plotchart::Floor {value step} {
     return $result
 }
 proc ::Plotchart::Ceil {value step} {
+
+    if { $step eq "" } {
+        return $value
+    }
 
     if { $value > 0.0 } {
         set result [expr {ceil(($value+0.0)/$step) * $step}]
@@ -1351,8 +1359,11 @@ proc ::Plotchart::ActuallyDrawLegend { w {spacing {}}} {
     $legendw delete "legend   && $w"
     $legendw delete "legendbg && $w"
 
-    set y 0
+    set y          0
+    set hasEntries 0
     foreach series $legend($w,series) text $legend($w,text) {
+
+        set hasEntries 1
 
         set colour "black"
         if { [info exists data_series($w,$series,-colour)] } {
@@ -1411,8 +1422,12 @@ proc ::Plotchart::ActuallyDrawLegend { w {spacing {}}} {
     }
 
     #
-    # Now the frame and the background
+    # Now the frame and the background, but only if we do have any legend entries
     #
+    if { ! $hasEntries } {
+        return
+    }
+
     foreach {xl yt xr yb} [$legendw bbox "legend && $w"] {break}
 
     set xl [expr {$xl-2}]

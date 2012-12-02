@@ -40,12 +40,14 @@ proc ::Plotchart::GetCanvas {cmd} {
 #
 proc ::Plotchart::plotpack {w dir args} {
     variable packing
+    variable scaling
 
     if { ![info exists packing($w,top)] } {
-        set packing($w,top)    0
-        set packing($w,left)   0
-        set packing($w,right)  [WidthCanvas  $w]
-        set packing($w,bottom) [HeightCanvas $w]
+        set scaling($w,reference) $w
+        set packing($w,top)       0
+        set packing($w,left)      0
+        set packing($w,right)     [WidthCanvas  $w]
+        set packing($w,bottom)    [HeightCanvas $w]
     }
     set top    $packing($w,top)
     set left   $packing($w,left)
@@ -53,7 +55,7 @@ proc ::Plotchart::plotpack {w dir args} {
     set bottom $packing($w,bottom)
 
     foreach p $args {
-        set save [canvas:save [GetCanvas $p]]
+        set save [canvas:save [$p canvas]]
         switch -- $dir {
             "top" {
                  set xmove 0
@@ -61,19 +63,19 @@ proc ::Plotchart::plotpack {w dir args} {
                  canvas:restore $w $save
                  $w move __NEW__ $xmove $ymove
                  $w dtag all __NEW__
-                 set cwidth [WidthCanvas [GetCanvas $p]]
+                 set cwidth [WidthCanvas [$p canvas]]
                  if { $left < $cwidth } {
                      set left $cwidth
                  }
-                 set top  [expr {$top+[HeightCanvas [GetCanvas $p]]}]
+                 set top  [expr {$top+[HeightCanvas [$p canvas]]}]
             }
             "bottom" {
                  set xmove 0
-                 set ymove [expr {$bottom-[HeightCanvas [GetCanvas $p]]}]
+                 set ymove [expr {$bottom-[HeightCanvas [$p canvas]]}]
                  canvas:restore $w $save
                  $w move __NEW__ $xmove $ymove
                  $w dtag all __NEW__
-                 set cwidth [WidthCanvas [GetCanvas $p]]
+                 set cwidth [WidthCanvas [$p canvas]]
                  if { $left < $cwidth } {
                      set left $cwidth
                  }
@@ -85,14 +87,14 @@ proc ::Plotchart::plotpack {w dir args} {
                  canvas:restore $w $save
                  $w move __NEW__ $xmove $ymove
                  $w dtag all __NEW__
-                 set left [expr {$left+[WidthCanvas [GetCanvas $p]]}]
-                 set cheight [HeightCanvas [GetCanvas $p]]
+                 set left [expr {$left+[WidthCanvas [$p canvas]]}]
+                 set cheight [HeightCanvas [$p canvas]]
                  if { $top < $cheight } {
                      set top $cheight
                  }
             }
             "right" {
-                 set xmove [expr {$right-[WidthCanvas [GetCanvas $p]]}]
+                 set xmove [expr {$right-[WidthCanvas [$p canvas]]}]
                  set ymove 0
                  canvas:restore $w $save
                  $w move __NEW__ $xmove $ymove
