@@ -13,6 +13,7 @@
 #
 # RCS: @(#) $Id: chatwidget.tcl,v 1.4 2008/06/20 22:53:54 patthoyts Exp $
 
+package require Tcl 8.5
 package require Tk 8.5
 
 namespace eval chatwidget {

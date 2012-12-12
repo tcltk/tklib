@@ -43,6 +43,7 @@
 # The code below creates the Ntext class bindings for text widgets.
 #-------------------------------------------------------------------------
 
+package require Tcl 8.5
 package require Tk 8.5
 
 # Mouse bindings: use ::ntext::Bcount to deal with out-of-order multiple
