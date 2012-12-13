@@ -1,22 +1,28 @@
-set rcsId {$Id: labarray.tcl,v 1.20 1998/06/07 13:47:02 jfontain Exp $}
+# copyright (C) 1995-2004 Jean-Luc Fontaine (mailto:jfontain@free.fr)
 
-class canvasLabelsArray {
+package require Tk 8.3
+package require stooop
+
+
+::stooop::class canvasLabelsArray {
 
     proc canvasLabelsArray {this canvas args} switched {$args} {
-        set canvasLabelsArray::($this,canvas) $canvas
+        set ($this,canvas) $canvas
         # use an empty image as an origin marker with only 2 coordinates
-        set canvasLabelsArray::($this,origin) [$canvas create image 0 0 -tags canvasLabelsArray($this)]
-        set canvasLabelsArray::($this,labels) {}
+        set ($this,origin)\
+            [$canvas create image 0 0 -tags canvasLabelsArray($this)]
+        set ($this,labels) {}
         switched::complete $this
     }
 
     proc ~canvasLabelsArray {this} {
-        eval ::delete $canvasLabelsArray::($this,labels)
-        $canvasLabelsArray::($this,canvas) delete canvasLabelsArray($this)                                 ;# delete remaining items
+        eval ::stooop::delete $($this,labels)
+        # delete remaining items
+        $($this,canvas) delete canvasLabelsArray($this)
     }
 
     proc options {this} {
-        # force width initialization for internals initialization
+        # force width initialization for internals initialization:
         return [list\
             [list -justify left left]\
             [list -width 100]\
@@ -30,75 +36,68 @@ class canvasLabelsArray {
     }
 
     proc set-width {this value} {
-        set canvasLabelsArray::($this,width) [winfo fpixels $canvasLabelsArray::($this,canvas) $value]
+        set ($this,width) [winfo fpixels $($this,canvas) $value]
+        update $this
+    }
+
+    proc manage {this label} {                          ;# must be a canvasLabel
+        $($this,canvas) addtag canvasLabelsArray($this)\
+            withtag canvasLabel($label)
+        lappend ($this,labels) $label
+        update $this
+    }
+
+    proc delete {this label} {
+        set index [lsearch -exact $($this,labels) $label]
+        if {$index < 0} {
+            error "invalid label $label for canvas labels array $this"
+        }
+        set ($this,labels) [lreplace $($this,labels) $index $index]
+        ::stooop::delete $label
         update $this
     }
 
     proc update {this} {
-        set index 0
-        foreach label $canvasLabelsArray::($this,labels) {
-            position $this $label $index
-            incr index
-        }
-    }
-
-    proc manage {this label} {                                                                              ;# must be a canvasLabel
-        $canvasLabelsArray::($this,canvas) addtag canvasLabelsArray($this) withtag canvasLabel($label)
-        set index [llength $canvasLabelsArray::($this,labels)]
-        lappend canvasLabelsArray::($this,labels) $label
-        position $this $label $index
-    }
-
-    proc delete {this label} {
-        set index [lsearch -exact $canvasLabelsArray::($this,labels) $label]
-        if {$index<0} {
-            error "invalid label $label for canvas labels array $this"
-        }
-        set canvasLabelsArray::($this,labels) [lreplace $canvasLabelsArray::($this,labels) $index $index]
-        ::delete $label
-        foreach label [lrange $canvasLabelsArray::($this,labels) $index end] {
-            position $this $label $index
-            incr index
-        }
-    }
-
-    proc position {this label index} {
-        set canvas $canvasLabelsArray::($this,canvas)
-
-        foreach {x y} [$canvas coords $canvasLabelsArray::($this,origin)] {}
-        set coordinates [$canvas bbox canvasLabel($label)]
-        set y [expr {$y+(($index/2)*([lindex $coordinates 3]-[lindex $coordinates 1]))}]           ;# take label height into account
-
-        switch $switched::($this,-justify) {                                                        ;# arrange labels in two columns
-            left {
-                set x [expr {$x+(($index%2)*($canvasLabelsArray::($this,width)/2.0))}]
-                set anchor nw
+        set canvas $($this,canvas)
+        set halfWidth [expr {round($($this,width) / 2.0)}]
+        foreach {xOrigin yOrigin} [$canvas coords $($this,origin)] {}
+        set x 0; set y 0
+        set height 0
+        set column 0
+        foreach label $($this,labels) {
+            foreach {left top right bottom}\
+                [$canvas bbox canvasLabel($label)] {}
+            set wide [expr {($right - $left) > $halfWidth}]
+            if {$wide} {
+                # label does not fit in a half width so open a new line
+                set x 0; incr y $height; set height 0
             }
-            right {
-                set x [expr {$x+((($index%2)+1)*($canvasLabelsArray::($this,width)/2.0))}]
-                set anchor ne
+            switched::configure $label -anchor nw
+            # do an absolute positioning using label tag:
+            foreach {xDelta yDelta} [$canvas coords canvasLabel($label)] {}
+            $canvas move canvasLabel($label) [expr {$xOrigin + $x - $xDelta}]\
+                [expr {$yOrigin + $y - $yDelta}]
+            set value [expr {$bottom - $top}]
+            if {$value > $height} {         ;# keep track of current line height
+                set height $value
             }
-            default {                                                                                            ;# should be center
-                set x [expr {$x+((1.0+(2*($index%2)))*$canvasLabelsArray::($this,width)/4)}]
-                set anchor n
+            if {([incr x $halfWidth] > $halfWidth) || $wide} {
+                set x 0; incr y $height; set height 0
             }
         }
-        switched::configure $label -anchor $anchor
-        foreach {xDelta yDelta} [$canvas coords canvasLabel($label)] {}                ;# do an absolute positioning using label tag
-        $canvas move canvasLabel($label) [expr {$x-$xDelta}] [expr {$y-$yDelta}]
     }
 
     proc labels {this} {
-        return $canvasLabelsArray::($this,labels)
+        return $($this,labels)
     }
 
     proc height {this} {
-        set number [llength $canvasLabelsArray::($this,labels)]
-        if {$number==0} {
+        set list [$($this,canvas) bbox canvasLabelsArray($this)]
+        if {[llength $list] == 0} {
             return 0
         }
-        set coordinates [$canvasLabelsArray::($this,canvas) bbox canvasLabel([lindex $canvasLabelsArray::($this,labels) 0])]
-        return [expr {(($number+1)/2)*([lindex $coordinates 3]-[lindex $coordinates 1])}]
+        foreach {left top right bottom} $list {}
+        return [expr {$bottom - $top}]
     }
 
 }
