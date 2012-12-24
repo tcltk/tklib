@@ -734,13 +734,24 @@ proc ::Plotchart::DrawVtext { w text } {
     variable config
 
     if { [package vsatisfies [package present Tk] 8.6] } {
-        set bbox [$w bbox yaxis]
-        set xt [expr {[lindex $bbox 0] - $config($w,leftaxis,vtextoffset)}]
         set yt [expr {($scaling($w,pymin) + $scaling($w,pymax)) / 2}]
 
-        $w delete "vtext && $w"
-        $w create text $xt $yt -text $text -fill black -anchor s -angle 90 -tags [list vtext $w] \
-            -font $config($w,leftaxis,font) -fill $config($w,leftaxis,textcolor)
+        if { [string match "r*" $w] } {
+            set anchor n
+            set bbox   [$w bbox raxis]
+            set tag    "rvtext"
+            set axis   "rightaxis"
+            set xt   [expr {[lindex $bbox 2] + $config($w,rightaxis,vtextoffset)}]
+        } else {
+            set anchor s
+            set bbox [$w bbox yaxis]
+            set tag  "vtext"
+            set axis "leftaxis"
+            set xt   [expr {[lindex $bbox 0] - $config($w,leftaxis,vtextoffset)}]
+        }
+        $w delete "$tag && $w"
+        $w create text $xt $yt -text $text -fill black -anchor $anchor -angle 90 -tags [list $tag $w] \
+            -font $config($w,$axis,font) -fill $config($w,$axis,textcolor)
     }
 }
 

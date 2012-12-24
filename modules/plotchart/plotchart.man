@@ -426,7 +426,7 @@ Names for the spokes.
 [arg_def float scale in]
 Scale value to determine the position of the data along the spokes.
 
-[arg_def float style in]
+[arg_def string style in]
 Style of the chart (optional). One of:
 [list_begin itemized]
 [item]
