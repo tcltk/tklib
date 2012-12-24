@@ -1,3 +1,8 @@
+2012-12-20  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.man: Correction in data type for style
+	* plotaxis.tcl: Implement vertical text for right axis (patch provided by Frank Gover)
+	* plotconfig.tcl: Add options to the right axis for vertical text (patch provided by Frank Gover)
+
 2012-12-02  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Add options -fillcolor and -mediancolor, methods bindlast for histograms and deletedata for xyplots
 	* plotchart.tcl: Changed required version of Tcl to 8.5

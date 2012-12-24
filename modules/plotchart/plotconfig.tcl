@@ -164,8 +164,8 @@ namespace eval ::Plotchart {
     # (the '-' means that the component inherits the properties of the previous component on the list)
     foreach {component properties} {
         leftaxis   {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render vtextoffset}
-        axis       {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render justify}
         rightaxis  -
+        axis       {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render justify}
         topaxis    -
         bottomaxis -
         xaxis      -
