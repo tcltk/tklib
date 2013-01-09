@@ -1,3 +1,17 @@
+2011-xx-xx  Keith Nash  <kjnash@users.sourceforge.net>
+
+	* Update to correspond to tk8.x/text.tcl 1.41.4.3 (tagged Tk 8.5.9),
+	  1.46.
+	* Don't call private commands from tk8.x/text.tcl (for improved
+	  compatibility with all versions of Tk 8.5.x, 8.6.x).
+	* Adapt bindings to have Mac-like behaviour on the Mac.
+	* Show correct cursor for insert/overwrite when there are multiple
+	  widgets.
+	* Fix "Smart End" to handle trailing whitespace.
+	* Different behaviour for "Smart Home" in corner case with wrapped
+	  leading whitespace.
+	* Update docs and examples.
+
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*

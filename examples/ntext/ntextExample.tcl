@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 
 package require Tk
 
-# Copyright (c) 2005-2007 Keith Nash.
+# Copyright (c) 2005-2011 Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -29,17 +29,18 @@ set ::ntext::classicMouseSelect 0
 set ::ntext::classicAnchor      0
 
 # Whether to activate certain traditional "extra" bindings
-variable classicExtras            1
+variable classicExtras          1
 
 #  Whether to use new or classic word boundary detection:
 set ::ntext::classicWordBreak   0
 
-pack [text .right ] -side right
+. configure -bg #d0cfce
+pack [text .right ] -side right -padx 2 -pady 2
 .right configure -width 28 -height 12 -wrap word -font {{Courier} -15} -bg white
 .right insert end "  I use the Ntext bindings.\n\n$message"
 
 bindtags .right {.right Ntext . all}
 
-pack [text .left ] -side right
-.left configure -width 28 -height 12 -wrap word -font {{Courier} -15} -bg #FFFFEE
+pack [text .left ] -side right -padx 2 -pady 2
+.left configure -width 28 -height 12 -wrap word -font {{Courier} -15} -bg #FFFFCC
 .left insert end "  I use the (default) Text bindings.\n\n$message"

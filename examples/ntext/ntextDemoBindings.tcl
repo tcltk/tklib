@@ -1,8 +1,10 @@
 #!/bin/sh
-# the next line restarts using wish \
-exec wish "$0" "$@"
+# the next line restarts using tclsh \
+exec tclsh "$0" "$@"
 
-# Copyright (c) 2005-2007 Keith Nash.
+package require Tk
+
+# Copyright (c) 2005-2011 Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -36,7 +38,7 @@ set ::ntext::classicMouseSelect 0
 # Whether Shift-Button-1 has a variable or fixed anchor:
 set ::ntext::classicAnchor      0
 
-# Whether the traditional "extra" bindings are activated:
+# Whether the traditional "extra" bindings are activated (default is 0):
 set ::ntext::classicExtras      1
 
 # Whether to use new or classic word boundary detection:
@@ -45,8 +47,11 @@ set ::ntext::classicWordBreak   0
 # Set to 0 to align wrapped display lines with the first display line of the logical line:
 set ::ntext::classicWrap        1
 
-pack [frame .rhf] -side right -anchor nw
-pack [text .rhf.new ]
+set col #e0dfde
+. configure -bg $col
+
+pack [frame .rhf -bg $col] -side right -anchor nw
+pack [text .rhf.new ] -padx 2
 bindtags .rhf.new {.rhf.new Ntext . all}
 
 .rhf.new configure -wrap word -undo 1
@@ -54,34 +59,46 @@ bindtags .rhf.new {.rhf.new Ntext . all}
 .rhf.new insert end "  I use the Ntext bindings.\n\n$message"
 .rhf.new edit separator
 
-pack [frame .lhf] -side left -anchor ne
-pack [text .lhf.classic ]
-.lhf.classic configure -width 42 -height 29 -wrap word -undo 1 -font {{Courier} -15} -bg #FFFFEE
+pack [frame .lhf -bg $col] -side left -anchor ne
+pack [text .lhf.classic ] -padx 2
+.lhf.classic configure -width 42 -height 29 -wrap word -undo 1 -font {{Courier} -15} -bg #FFFFCC
 .lhf.classic insert end "  I use the (default) Text bindings.\n\n$message"
 .lhf.classic edit separator
-pack [label  .lhf.m -text "(The controls do not apply\nto the left-hand text widget)"]
+pack [label  .lhf.m -bg $col -text "(The controls do not apply\nto the left-hand text widget)"]
 
-pack [frame .rhf.h] -fill x
-pack [radiobutton .rhf.h.on  -text "On " -variable ::ntext::classicMouseSelect -value 1] -side right
-pack [radiobutton .rhf.h.off -text "Off" -variable ::ntext::classicMouseSelect -value 0] -side right
-pack [label  .rhf.h.l -text "classicMouseSelect: "] -side right
+pack [frame .rhf.h -bg $col] -fill x
+pack [radiobutton .rhf.h.on  -bg $col -text "On " -variable ::ntext::classicMouseSelect -value 1] -side right
+pack [radiobutton .rhf.h.off -bg $col -text "Off" -variable ::ntext::classicMouseSelect -value 0] -side right
+pack [label  .rhf.h.l -bg $col -text "classicMouseSelect: "] -side right
 
-pack [frame .rhf.g] -anchor ne
-pack [radiobutton .rhf.g.on  -text "On " -variable ::ntext::classicAnchor -value 1] -side right
-pack [radiobutton .rhf.g.off -text "Off" -variable ::ntext::classicAnchor -value 0] -side right
-pack [label  .rhf.g.l -text "classicAnchor: "] -side right
+pack [frame .rhf.g -bg $col] -anchor ne
+pack [radiobutton .rhf.g.on  -bg $col -text "On " -variable ::ntext::classicAnchor -value 1] -side right
+pack [radiobutton .rhf.g.off -bg $col -text "Off" -variable ::ntext::classicAnchor -value 0] -side right
+pack [label  .rhf.g.l -bg $col -text "classicAnchor: "] -side right
 
-pack [frame .rhf.k] -anchor ne
-pack [radiobutton .rhf.k.on  -text "On " -variable ::ntext::classicExtras -value 1] -side right
-pack [radiobutton .rhf.k.off -text "Off" -variable ::ntext::classicExtras -value 0] -side right
-pack [label  .rhf.k.l -text "classicExtras: "] -side right
+pack [frame .rhf.k -bg $col] -anchor ne
+pack [radiobutton .rhf.k.on  -bg $col -text "On " -variable ::ntext::classicExtras -value 1] -side right
+pack [radiobutton .rhf.k.off -bg $col -text "Off" -variable ::ntext::classicExtras -value 0] -side right
+pack [label  .rhf.k.l -bg $col -text "classicExtras: "] -side right
 
-pack [frame .rhf.j] -anchor ne
+pack [frame .rhf.j -bg $col] -anchor ne
 set wordBreakChoice new
-pack [radiobutton .rhf.j.wind -text "On (Windows)" -variable wordBreakChoice -value "windows" -command {setPattern}] -side right
-pack [radiobutton .rhf.j.unix -text "On (Unix)" -variable wordBreakChoice -value "unix" -command {setPattern}] -side right
-pack [radiobutton .rhf.j.off  -text "Off" -variable wordBreakChoice -value "new" -command {setPattern}] -side right
-pack [label  .rhf.j.l -text "classicWordBreak: "] -side right
+pack [radiobutton .rhf.j.wind -bg $col -text "On (Windows)" -variable wordBreakChoice -value "windows" -command {setPattern}] -side right
+pack [radiobutton .rhf.j.unix -bg $col -text "On (Unix)" -variable wordBreakChoice -value "unix" -command {setPattern}] -side right
+pack [radiobutton .rhf.j.off  -bg $col -text "Off" -variable wordBreakChoice -value "new" -command {setPattern}] -side right
+pack [label  .rhf.j.l -bg $col -text "classicWordBreak: "] -side right
+
+pack [frame .rhf.m -bg $col] -anchor ne
+pack [radiobutton .rhf.m.on  -bg $col -text "On " -variable ::ntext::classicSelection -value 1] -side right
+pack [radiobutton .rhf.m.off -bg $col -text "Off" -variable ::ntext::classicSelection -value 0] -side right
+pack [label  .rhf.m.l -bg $col -text "classicSelection: "] -side right
+
+if {[tk windowingsystem] eq "aqua"} {
+pack [frame .rhf.n -bg $col -bg $col] -anchor ne -pady {0 10}
+pack [radiobutton .rhf.n.on  -bg $col -text "On " -variable ::ntext::strictAqua -value 1] -side right
+pack [radiobutton .rhf.n.off -bg $col -text "Off" -variable ::ntext::strictAqua -value 0] -side right
+pack [label  .rhf.n.l -bg $col -text "strictAqua: "] -side right
+}
 
 proc setPattern {} {
     global wordBreakChoice
