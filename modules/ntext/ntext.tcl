@@ -13,7 +13,8 @@
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
 
-##### START OF CODE THAT IS MODIFIED text.tcl 1.41.4.3 tagged Tk 8.5.9, 1.46
+##### START OF CODE THAT IS MODIFIED text.tcl, versions tagged
+# core-8-5-12, core-8-6-0 and the trunk artifact # of checkin # dated #
 
 #-------------------------------------------------------------------------
 # Elements of ::tk::Priv that are used in this file:
@@ -127,6 +128,7 @@ switch -exact -- [tk windowingsystem] {
     "aqua" {
 	# Official bindings
 	# See http://support.apple.com/kb/HT1343
+	# The traditional Tk <Control-Key-slash>, <Control-Key-backslash> will no longer work on the Mac.
 	event add <<NtextSelectAll>>		<Command-Key-a>
 	event add <<NtextSelectNone>>		<Option-Command-Key-a>
 	event add <<NtextNextChar>>		<Right>
@@ -145,12 +147,19 @@ switch -exact -- [tk windowingsystem] {
 	event add <<NtextSelectPrevLine>>	<Shift-Up>
 	event add <<NtextNextLine>>		<Down>
 	event add <<NtextSelectNextLine>>	<Shift-Down>
-	# Not official, but logical extensions of above. Also derived from
-	# bindings present in MS Word on OSX.
-	event add <<NtextPrevPara>>		<Option-Up>
-	event add <<NtextNextPara>>		<Option-Down>
-	event add <<NtextSelectPrevPara>>	<Shift-Option-Up>
-	event add <<NtextSelectNextPara>>	<Shift-Option-Down>
+
+	# tk.tcl says "Not official, but logical extensions of above. Also
+	# derived from bindings present in MS Word on OSX."
+	# Ntext leaves these events undefined on the Mac.
+	# However, other Mac applications do not behave this way.  Ntext offers
+	# users a choice.  It is unhelpful to provide behavior that is
+	# discordant with the name and intention of these virtual events, so we
+	# use the raw events instead, and leave these virtual events undefined.
+	#
+	# event add <<NtextPrevPara>>		<Option-Up>
+	# event add <<NtextNextPara>>		<Option-Down>
+	# event add <<NtextSelectPrevPara>>	<Shift-Option-Up>
+	# event add <<NtextSelectNextPara>>	<Shift-Option-Down>
 
 	# Unwanted bindings on Aqua:
 	# In tk8.6/text.tcl these are listed as "Official bindings"
@@ -176,13 +185,13 @@ switch -exact -- [tk windowingsystem] {
 # ------------------------------------------------------------------------------
 # These "emacs-like bindings" are used in the Text binding tag; in Tk 8.6 they
 # were removed for the win32 windowing system, and they were added to the
-# virtual events <<NextChar>> etc for the other windowing systems.
+# virtual events <<NtextNextChar>> etc for the other windowing systems.
 #
 # Ntext makes these events optional, including for win32.  The events are
 # managed by a write trace on the variable ::ntext::classicExtras.
 #
 # The loss of the "emacs-like bindings" from Text for win32 allows the use of
-# <Control-a> for <<SelectAll>>; however this usage is also common in X11
+# <Control-a> for <<NtextSelectAll>>; however this usage is also common in X11
 # applications, and illustrates why the "emacs-like bindings" are often a bad
 # idea: they often conflict with bindings used by win32/x11 applications,
 # e.g. <Control-n> for "New Document", <Control-p> for "Print".
@@ -328,70 +337,64 @@ bind Ntext <Control-1> {
 }
 bind Ntext <Double-Control-1> { # nothing }
 bind Ntext <Control-B1-Motion> { # nothing }
-#bind Ntext <Left>
+
 bind Ntext <<NtextPrevChar>> {
     ntext::AdjustInsert %W left
     ntext::TextSetCursor %W insert-1displayindices
 }
-#bind Ntext <Right>
+
 bind Ntext <<NtextNextChar>> {
     ntext::AdjustInsert %W right
     ntext::TextSetCursor %W insert+1displayindices
 }
-bind Ntext <Up> {
+bind Ntext <<NtextPrevLine>> {
     ntext::AdjustInsert %W left
     ntext::TextSetCursor %W [ntext::TextUpDownLine %W -1]
 }
-bind Ntext <Down> {
+bind Ntext <<NtextNextLine>> {
     ntext::AdjustInsert %W right
     ntext::TextSetCursor %W [ntext::TextUpDownLine %W 1]
 }
-#bind Ntext <Shift-Left>
 bind Ntext <<NtextSelectPrevChar>> {
     ntext::TextKeySelect %W [%W index {insert - 1displayindices}]
 }
-#bind Ntext <Shift-Right>
 bind Ntext <<NtextSelectNextChar>> {
     ntext::TextKeySelect %W [%W index {insert + 1displayindices}]
 }
-bind Ntext <Shift-Up> {
+bind Ntext <<NtextSelectPrevLine>> {
     ntext::TextKeySelect %W [ntext::TextUpDownLine %W -1]
 }
-bind Ntext <Shift-Down> {
+bind Ntext <<NtextSelectNextLine>> {
     ntext::TextKeySelect %W [ntext::TextUpDownLine %W 1]
 }
-#bind Ntext <Control-Left>
 bind Ntext <<NtextPrevWord>> {
     ntext::AdjustInsert %W left
     ntext::TextSetCursor %W \
 	    [ntext::TextPrevPos %W insert ntext::new_startOfPreviousWord]
 }
-#bind Ntext <Control-Right>
 bind Ntext <<NtextNextWord>> {
     ntext::AdjustInsert %W right
     ntext::TextSetCursor %W [ntext::TextNextWord %W insert]
 }
-bind Ntext <Control-Up> {
+bind Ntext <<NtextPrevPara>> {
     ntext::AdjustInsert %W left
     ntext::TextSetCursor %W [ntext::TextPrevPara %W insert]
 }
-bind Ntext <Control-Down> {
+bind Ntext <<NtextNextPara>> {
     ntext::AdjustInsert %W right
     ntext::TextSetCursor %W [ntext::TextNextPara %W insert]
 }
-#bind Ntext <Control-Shift-Left>
 bind Ntext <<NtextSelectPrevWord>> {
     ntext::TextKeySelect %W \
 	    [ntext::TextPrevPos %W insert ntext::new_startOfPreviousWord]
 }
-#bind Ntext <Control-Shift-Right>
 bind Ntext <<NtextSelectNextWord>> {
     ntext::TextKeySelect %W [ntext::TextNextWord %W insert]
 }
-bind Ntext <Control-Shift-Up> {
+bind Ntext <<NtextSelectPrevPara>> {
     ntext::TextKeySelect %W [ntext::TextPrevPara %W insert]
 }
-bind Ntext <Control-Shift-Down> {
+bind Ntext <<NtextSelectNextPara>> {
     ntext::TextKeySelect %W [ntext::TextNextPara %W insert]
 }
 bind Ntext <Prior> {
@@ -415,21 +418,17 @@ bind Ntext <Control-Next> {
     %W xview scroll 1 page
 }
 
-#bind Ntext <Home>
 bind Ntext <<NtextLineStart>> {
     ntext::AdjustInsert %W left
     ntext::TextSetCursor %W  [::ntext::HomeIndex %W insert]
 }
-#bind Ntext <Shift-Home>
 bind Ntext <<NtextSelectLineStart>> {
     ntext::TextKeySelect %W [::ntext::HomeIndex %W insert]
 }
-#bind Ntext <End>
 bind Ntext <<NtextLineEnd>> {
     ntext::AdjustInsert %W right
     ntext::TextSetCursor %W  [::ntext::EndIndex %W insert]
 }
-#bind Ntext <Shift-End>
 bind Ntext <<NtextSelectLineEnd>> {
     ntext::TextKeySelect %W [::ntext::EndIndex %W insert]
 }
@@ -518,10 +517,10 @@ bind Ntext <Shift-Select> {
     set tk::Priv(selectMode) char
     ntext::TextKeyExtend %W insert
 }
-bind Ntext <Control-slash> {
+bind Ntext <<NtextSelectAll>> {
     %W tag add sel 1.0 end
 }
-bind Ntext <Control-backslash> {
+bind Ntext <<NtextSelectNone>> {
     %W tag remove sel 1.0 end
     if {[%W cget -autoseparators]} {
 	%W edit separator
@@ -745,18 +744,33 @@ if {[tk windowingsystem] eq "aqua"} {
 # Macintosh only bindings:
 
 if {[tk windowingsystem] eq "aqua"} {
+# The following virtual events are not defined on the Mac platform:
+#   <<NtextPrevPara>>
+#   <<NtextNextPara>>
+#   <<NtextSelectPrevPara>>
+#   <<NtextSelectNextPara>>
+# Ntext uses the raw events <Option-Up>, <Option-Down>, <Shift-Option-Up>,
+# <Shift-Option-Down> instead.
+#
+# In contrast, the Text binding tag uses virtual events.
 
 # Some of the bindings above for non-virtual events must be replaced.
+# Other Mac-specific bindings must be added.
+
+
+# (1) Prior/Next with/without Modifier Keys.
 
 # In non-Aqua, <Prior>, <Next> and modifications with Shift move the insert
-# mark - they behave like <Up>, <Down> but with a larger increment.  The Control
-# modifier scrolls horizontally without moving the insert mark.
+# mark - they behave like <Up>/<<NtextPrevLine>>, <Down>/<<NtextNextLine>>
+# but with a larger increment.  With the Control modifier, scrolling is
+# horizontal and does NOT move the insert mark.
 
-# In Aqua, <Prior>, <Next> do not move the insert mark; The Control modifier
-# does move the insert mark, and the Shift modifier moves the insert mark and
-# extends the selection.
+# In Aqua, <Prior>, <Next> do NOT move the insert mark; The Control modifier
+# DOES move the insert mark, and the Shift modifier DOES move the insert mark
+# AND also extends the selection.
+#
 # In Tk, if <Control-Shift-Prior> is undefined it does same as <Control-Prior>,
-# not <Shift-Prior>.
+# not the same as <Shift-Prior>.
 # This behavior agrees with other Mac applications, but leaves the Mac with no
 # keyboard bindings for scrolling +/-x.
 
@@ -797,6 +811,11 @@ bind Ntext <Option-Next> {
 bind Ntext <Command-Prior> {# nothing}
 bind Ntext <Command-Next>  {# nothing}
 
+
+# (2) Home/End with/without Modifier Keys.
+# This usage is conventional Mac behavior; note that tk.tcl makes
+# these events do <<?Select?Line(Start|End)>> like on other platforms.
+
 bind Ntext <Home> {
     %W see 1.0
 }
@@ -820,13 +839,22 @@ bind Ntext <Control-End> {# nothing}
 bind Ntext <Command-End> {# nothing}
 bind Ntext <Option-End>  {# nothing}
 
-# These default bindings are OK for the Mac:
+
+###
 # <Up>, <Down>, <Shift-Up>, <Shift-Down> (move by 1 line)
+# Wrapped as <<NtextPrevLine>>, <<NtextNextLine>>, <<NtextSelectPrevLine>>,
+# <<NtextSelectNextLine>>.
+# Same for all platforms, no changes needed for the Mac.
+###
+
+
+# (3) Command-Up, Command-Down, with/without Shift Modifier.
 
 # <Command-Up>, <Command-Down>, <Command-Shift-Up>, <Command-Shift-Down> are
 # implemented below, and are the Mac equivalents of
 # <Control-Home>, <Control-Shift-Home>, <Control-End>, <Control-Shift-End>
-# respectively.
+# respectively.  We could define some events -
+# <<NtextTop>>, <<NtextSelectTop>>, <<NtextBottom>>, <<NtextSelectBottom>>
 
 bind Ntext <Command-Up> {
     #ntext::AdjustInsert %W left
@@ -844,39 +872,25 @@ bind Ntext <Command-Shift-Down> {
 }
 
 
-# These bindings are implemented below, and depend on the value of strictAqua:
-# <Option-Up> <Option-Down> <Shift-Option-Up> <Shift-Option-Down>
-# <Control-Up>, <Control-Down>, <Control-Shift-Up>, <Control-Shift-Down>
-# The Option bindings are not available on other platforms.
-# The Control bindings differ from those on other platforms.
+# (4) Control-Up, Control-Down, with/without Shift Modifier.
+
+# These bindings are implemented below, differ from the Control bindings on
+# other platforms, and depend on the value of strictAqua:
 
 # if {$::ntext::strictAqua}
 # Try to do what other Mac applications do:
 # Control-Up   does the same as <Prior>, and does not move the insert mark.
 # Control-Down does the same as <Next>,  and does not move the insert mark.
 # Control-Shift-(Up|Down) do nothing.
-# Option-Up goes to the previous {start of a logical line}.
-# Option-Down goes to the next {end of a logical line}.
-# Shift-Option-(Up|Down) allow selection.
 
 # if {!$::ntext::strictAqua}
 # The behavior differs from that of other Aqua applications.
+# Scrolling up/down by "paragraph", with movement of the insert mark.
+#
 # Control and Option do the same as each other, the same as the non-Mac Control
 # bindings (above), and the same as these bindings of the traditional Tk Text
-# widget on the Mac:
-# <Control-Up>, <Control-Down>, <Control-Shift-Up>, <Control-Shift-Down>.
+# widget on the Mac.
 
-# In the case when {$::ntext::strictAqua}:
-# (1) The bindings for ?Shift?-Option-(Up|Down) are Aqua-like - navigate up/down
-#     to the start/end of successive paragraphs respectively.
-# (2) The bindings for ?Shift?-Control-(Up|Down) are Aqua-like - scrolling
-# without moving the insert mark (if no Shift), no effect (if Shift).
-#
-# In the case when {!$::ntext::strictAqua}:
-# (1) The bindings for ?Shift?-Option-(Up|Down) are the same as Text's Aqua
-#     bindings - navigate up/down to the start of successive paragraphs.
-# (2) The bindings for ?Shift?-Control-(Up|Down) are the same as for
-#     ?Shift?-Option-(Up|Down).
 
 bind Ntext <Control-Up> {
     if {$::ntext::strictAqua} {
@@ -917,6 +931,30 @@ bind Ntext <Control-Shift-Down> {
     }
 }
 
+
+
+# (5)  Virtual Event ?Select?(Prev|Next)
+# or - Option-Up, Option-Down, with/without Shift Modifier
+# These Option (Alt key) bindings are not provided on other platforms.
+# The response depend on the value of strictAqua.
+
+# if {$::ntext::strictAqua}
+# Do what other Mac applications do: logical line navigation.
+#
+# - Option-Up goes to the previous {start of a logical line}.
+# - Option-Down goes to the next {end of a logical line}.
+# - Shift-Option-(Up|Down) allow selection.
+# ?? Navigate up/down to the start of successive paragraphs.
+
+# if {!$::ntext::strictAqua}
+# Scrolling up/down by "paragraph", with movement of the insert mark.
+# As expected for the name and intended behavior of the virtual events.
+#
+# This behavior differs from that of other Aqua applications.
+# Control and Option do the same as each other, the same as the non-Mac Control
+# bindings (above), and the same as these bindings of the traditional Tk Text
+# widget on the Mac.
+# ?? Navigate up/down to the start of successive paragraphs.
 
 bind Ntext <Option-Up> {
     if {$::ntext::strictAqua} {
@@ -959,12 +997,17 @@ bind Ntext <Shift-Option-Down> {
     }
 }
 
-# Control-v
+
+# (6) Control-v - a Mac-only binding to scroll down a page.
+#
 # Mac TextEdit and Xcode move the insert mark as well as scrolling.
 # Do the same here, using ntext::TextScrollPages. In contrast, Text's
 # tk::TextScrollPages only scrolls, and does not move the insert mark.
+# Does the same as the Mac's <Control-Next>.
+#
 # N.B. There seems to be no counterpart binding for scrolling up.  Don't Mac
 # users need to scroll up as well as down? Feedback from Mac users please.
+
 bind Ntext <Control-v> {
 ##    tk::TextScrollPages %W 1
 #    %W yview scroll 1 pages
