@@ -58,15 +58,22 @@
 package require Tcl 8.5
 package require Tk  8.5
 
-if {$::tk_version eq "8.5"} {
-    # indent-
-
-# These events are defined in tk8.6/tk.tcl but not in tk8.5/tk.tcl.
-# We backport the new events in 8.6 (except <<ContextMenu>>), which are relevant
-# to text widget bindings.
+# ------------------------------------------------------------------------------
+# Define the set of common virtual events.
+# ------------------------------------------------------------------------------
+# These events are the ones from tk8.6/tk.tcl that are relevant to text widget
+# bindings, renamed with the "Ntext" prefix, and modified as noted in comments.
+#
+# On MacOS X Aqua:
+# - the Control key is modifier "Control"
+# - the Alt     key is modifier "Option"
+# For discussion of Modifier Keys, see http://wiki.tcl.tk/28331
+# ------------------------------------------------------------------------------
 
 switch -exact -- [tk windowingsystem] {
     "x11" {
+	event add <<NtextSelectAll>>		<Control-Key-slash>
+	event add <<NtextSelectNone>>		<Control-Key-backslash>
 	event add <<NtextNextChar>>		<Right>
 	event add <<NtextSelectNextChar>>	<Shift-Right>
 	event add <<NtextPrevChar>>		<Left>
@@ -79,9 +86,23 @@ switch -exact -- [tk windowingsystem] {
 	event add <<NtextSelectLineStart>>	<Shift-Home>
 	event add <<NtextLineEnd>>		<End>
 	event add <<NtextSelectLineEnd>>	<Shift-End>
-
+	event add <<NtextPrevLine>>		<Up>
+	event add <<NtextNextLine>>		<Down>
+	event add <<NtextSelectPrevLine>>	<Shift-Up>
+	event add <<NtextSelectNextLine>>	<Shift-Down>
+	event add <<NtextPrevPara>>		<Control-Up>
+	event add <<NtextNextPara>>		<Control-Down>
+	event add <<NtextSelectPrevPara>>	<Control-Shift-Up>
+	event add <<NtextSelectNextPara>>	<Control-Shift-Down>
     }
     "win32" {
+	# Tk 8.6 also adds <Control-Key-a> <Control-Lock-Key-A> to
+	# <<NtextSelectAll>>, adding this usage to win32 for the first time,
+	# and removing all the "emacs-like bindings" from win32 in order to
+	# avoid conflict.
+#	event add <<NtextSelectAll>>		<Control-Key-a> <Control-Lock-Key-A>
+	event add <<NtextSelectAll>>		<Control-Key-slash>
+	event add <<NtextSelectNone>>		<Control-Key-backslash>
 	event add <<NtextNextChar>>		<Right>
 	event add <<NtextSelectNextChar>>	<Shift-Right>
 	event add <<NtextPrevChar>>		<Left>
@@ -94,10 +115,20 @@ switch -exact -- [tk windowingsystem] {
 	event add <<NtextSelectLineStart>>	<Shift-Home>
 	event add <<NtextLineEnd>>		<End>
 	event add <<NtextSelectLineEnd>>	<Shift-End>
+	event add <<NtextPrevLine>>		<Up>
+	event add <<NtextNextLine>>		<Down>
+	event add <<NtextSelectPrevLine>>	<Shift-Up>
+	event add <<NtextSelectNextLine>>	<Shift-Down>
+	event add <<NtextPrevPara>>		<Control-Up>
+	event add <<NtextNextPara>>		<Control-Down>
+	event add <<NtextSelectPrevPara>>	<Control-Shift-Up>
+	event add <<NtextSelectNextPara>>	<Control-Shift-Down>
     }
     "aqua" {
 	# Official bindings
 	# See http://support.apple.com/kb/HT1343
+	event add <<NtextSelectAll>>		<Command-Key-a>
+	event add <<NtextSelectNone>>		<Option-Command-Key-a>
 	event add <<NtextNextChar>>		<Right>
 	event add <<NtextSelectNextChar>>	<Shift-Right>
 	event add <<NtextPrevChar>>		<Left>
@@ -110,35 +141,68 @@ switch -exact -- [tk windowingsystem] {
 	event add <<NtextSelectLineStart>>	<Shift-Command-Left>
 	event add <<NtextLineEnd>>		<Command-Right>
 	event add <<NtextSelectLineEnd>>	<Shift-Command-Right>
-
+	event add <<NtextPrevLine>>		<Up>
+	event add <<NtextSelectPrevLine>>	<Shift-Up>
+	event add <<NtextNextLine>>		<Down>
+	event add <<NtextSelectNextLine>>	<Shift-Down>
 	# Not official, but logical extensions of above. Also derived from
 	# bindings present in MS Word on OSX.
+	event add <<NtextPrevPara>>		<Option-Up>
+	event add <<NtextNextPara>>		<Option-Down>
+	event add <<NtextSelectPrevPara>>	<Shift-Option-Up>
+	event add <<NtextSelectNextPara>>	<Shift-Option-Down>
 
 	# Unwanted bindings on Aqua:
-	# text.tcl 8.6 says the first two are "Official Aqua"
-	# event add <<NtextLineStart>>        <Home>
-	# event add <<NtextSelectLineStart>>  <Shift-Home>
-	# event add <<NtextLineEnd>>          <End>
-	# event add <<NtextSelectLineEnd>>    <Shift-End>
+	# In tk8.6/text.tcl these are listed as "Official bindings"
+	# event add <<NtextLineStart>>		<Home>
+	# event add <<NtextSelectLineStart>>	<Shift-Home>
+	# event add <<NtextLineEnd>>		<End>
+	# event add <<NtextSelectLineEnd>>	<Shift-End>
 
-	# The Command bindings are official Aqua, the Control bindings are not.
-	# In text-based applications, the Control bindings typically
+	# Unofficial bindings.
+	# In text-based applications, Control bindings typically
 	# do either the same as "s/Control/Command/", or the same as
 	# "s/Control/Option/".  We go with the former, cf. TextEdit.
 
-	event add <<NtextLineStart>>        <Control-Left>
-	event add <<NtextSelectLineStart>>  <Control-Shift-Left>
-	event add <<NtextLineEnd>>          <Control-Right>
-	event add <<NtextSelectLineEnd>>    <Control-Shift-Right>
+	event add <<NtextLineStart>>		<Control-Left>
+	event add <<NtextSelectLineStart>>	<Control-Shift-Left>
+	event add <<NtextLineEnd>>		<Control-Right>
+	event add <<NtextSelectLineEnd>>	<Control-Shift-Right>
 
     }
 }
-    # On MacOS X Aqua:
-    # - the Control key is modifier "Control"
-    # - the Alt     key is modifier "Option"
 
-# indent+
-} ;# end if
+
+# ------------------------------------------------------------------------------
+# These "emacs-like bindings" are used in the Text binding tag; in Tk 8.6 they
+# were removed for the win32 windowing system, and they were added to the
+# virtual events <<NextChar>> etc for the other windowing systems.
+#
+# Ntext makes these events optional, including for win32.  The events are
+# managed by a write trace on the variable ::ntext::classicExtras.
+#
+# The loss of the "emacs-like bindings" from Text for win32 allows the use of
+# <Control-a> for <<SelectAll>>; however this usage is also common in X11
+# applications, and illustrates why the "emacs-like bindings" are often a bad
+# idea: they often conflict with bindings used by win32/x11 applications,
+# e.g. <Control-n> for "New Document", <Control-p> for "Print".
+#
+# In Ntext the "emacs-like bindings" are switched off by default.
+# ------------------------------------------------------------------------------
+
+# event add <<NtextNextChar>>		<Control-Key-f> <Control-Lock-Key-F>
+# event add <<NtextSelectNextChar>>	<Control-Key-F> <Control-Lock-Key-f>
+# event add <<NtextPrevChar>>		<Control-Key-b> <Control-Lock-Key-B>
+# event add <<NtextSelectPrevChar>>	<Control-Key-B> <Control-Lock-Key-b>
+# event add <<NtextLineStart>>		<Control-Key-a> <Control-Lock-Key-A>
+# event add <<NtextSelectLineStart>>	<Control-Key-A> <Control-Lock-Key-a>
+# event add <<NtextLineEnd>>		<Control-Key-e> <Control-Lock-Key-E>
+# event add <<NtextSelectLineEnd>>	<Control-Key-E> <Control-Lock-Key-e>
+# event add <<NtextPrevLine>>		<Control-Key-p> <Control-Lock-Key-P>
+# event add <<NtextSelectPrevLine>>	<Control-Key-P> <Control-Lock-Key-p>
+# event add <<NtextNextLine>>		<Control-Key-n> <Control-Lock-Key-N>
+# event add <<NtextSelectNextLine>>	<Control-Key-N> <Control-Lock-Key-n>
+
 
 
 #-------------------------------------------------------------------------
@@ -1076,8 +1140,43 @@ variable tcl_match_startOfPreviousWord
 variable Bcount             0
 variable OldFirst          {}
 
+### FIXME indent the above
 
+    variable EmacsEvents {
+	<<NtextNextChar>>		<Control-Key-f> <Control-Lock-Key-F>
+	<<NtextSelectNextChar>> 	<Control-Key-F> <Control-Lock-Key-f>
+	<<NtextPrevChar>>		<Control-Key-b> <Control-Lock-Key-B>
+	<<NtextSelectPrevChar>> 	<Control-Key-B> <Control-Lock-Key-b>
+	<<NtextLineStart>>		<Control-Key-a> <Control-Lock-Key-A>
+	<<NtextSelectLineStart>>	<Control-Key-A> <Control-Lock-Key-a>
+	<<NtextLineEnd>>		<Control-Key-e> <Control-Lock-Key-E>
+	<<NtextSelectLineEnd>>  	<Control-Key-E> <Control-Lock-Key-e>
+	<<NtextPrevLine>>		<Control-Key-p> <Control-Lock-Key-P>
+	<<NtextSelectPrevLine>> 	<Control-Key-P> <Control-Lock-Key-p>
+	<<NtextNextLine>>		<Control-Key-n> <Control-Lock-Key-N>
+	<<NtextSelectNextLine>> 	<Control-Key-N> <Control-Lock-Key-n>
+    }
+
+    trace add variable ::ntext::classicExtras write ::ntext::EmacsBindings
 }
+
+
+proc ::ntext::EmacsBindings {argVarName var2 op} {
+    variable EmacsEvents
+    variable classicExtras
+
+    if {[string is true -strict $classicExtras]} {
+        set operation add
+    } else {
+        set operation delete
+    }
+
+    foreach {virtual real1 real2} $EmacsEvents {
+        event $operation $real1 $real2
+    }
+    return
+}
+
 
 ##### End of namespace definition.  Now define the procs.
 
