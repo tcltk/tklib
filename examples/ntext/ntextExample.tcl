@@ -36,11 +36,11 @@ set ::ntext::classicWordBreak   0
 
 . configure -bg #d0cfce
 pack [text .right ] -side right -padx 2 -pady 2
-.right configure -width 28 -height 12 -wrap word -font {{Courier} -15} -bg white
+.right configure -width 28 -height 12 -wrap word -undo 1 -font {{Courier} -15} -bg white
 .right insert end "  I use the Ntext bindings.\n\n$message"
 
 bindtags .right {.right Ntext . all}
 
 pack [text .left ] -side right -padx 2 -pady 2
-.left configure -width 28 -height 12 -wrap word -font {{Courier} -15} -bg #FFFFCC
+.left configure -width 28 -height 12 -wrap word -undo 1 -font {{Courier} -15} -bg #FFFFCC
 .left insert end "  I use the (default) Text bindings.\n\n$message"

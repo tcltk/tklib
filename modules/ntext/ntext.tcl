@@ -4,8 +4,6 @@
 # This file defines the Ntext bindings for Tk text widgets and provides
 # procedures that help in implementing the bindings.
 #
-# $Id: ntext.tcl $
-#
 # Copyright (c) 1992-1994 The Regents of the University of California.
 # Copyright (c) 1994-1997 Sun Microsystems, Inc.
 # Copyright (c) 1998 by Scriptics Corporation.
@@ -69,52 +67,52 @@ if {$::tk_version eq "8.5"} {
 
 switch -exact -- [tk windowingsystem] {
     "x11" {
-	event add <<NextChar>>		<Right>
-	event add <<SelectNextChar>>	<Shift-Right>
-	event add <<PrevChar>>		<Left>
-	event add <<SelectPrevChar>>	<Shift-Left>
-	event add <<NextWord>>		<Control-Right>
-	event add <<SelectNextWord>>	<Shift-Control-Right>
-	event add <<PrevWord>>		<Control-Left>
-	event add <<SelectPrevWord>>	<Shift-Control-Left>
-	event add <<LineStart>>		<Home>
-	event add <<SelectLineStart>>	<Shift-Home>
-	event add <<LineEnd>>		<End>
-	event add <<SelectLineEnd>>	<Shift-End>
+	event add <<NtextNextChar>>		<Right>
+	event add <<NtextSelectNextChar>>	<Shift-Right>
+	event add <<NtextPrevChar>>		<Left>
+	event add <<NtextSelectPrevChar>>	<Shift-Left>
+	event add <<NtextNextWord>>		<Control-Right>
+	event add <<NtextSelectNextWord>>	<Control-Shift-Right>
+	event add <<NtextPrevWord>>		<Control-Left>
+	event add <<NtextSelectPrevWord>>	<Control-Shift-Left>
+#	event add <<NtextLineStart>>		<Home>
+#	event add <<NtextSelectLineStart>>	<Shift-Home>
+#	event add <<NtextLineEnd>>		<End>
+#	event add <<NtextSelectLineEnd>>	<Shift-End>
 
     }
     "win32" {
-	event add <<NextChar>>		<Right>
-	event add <<SelectNextChar>>	<Shift-Right>
-	event add <<PrevChar>>		<Left>
-	event add <<SelectPrevChar>>	<Shift-Left>
-	event add <<NextWord>>		<Control-Right>
-	event add <<SelectNextWord>>	<Shift-Control-Right>
-	event add <<PrevWord>>		<Control-Left>
-	event add <<SelectPrevWord>>	<Shift-Control-Left>
-	event add <<LineStart>>		<Home>
-	event add <<SelectLineStart>>	<Shift-Home>
-	event add <<LineEnd>>		<End>
-	event add <<SelectLineEnd>>	<Shift-End>
+	event add <<NtextNextChar>>		<Right>
+	event add <<NtextSelectNextChar>>	<Shift-Right>
+	event add <<NtextPrevChar>>		<Left>
+	event add <<NtextSelectPrevChar>>	<Shift-Left>
+	event add <<NtextNextWord>>		<Control-Right>
+	event add <<NtextSelectNextWord>>	<Control-Shift-Right>
+	event add <<NtextPrevWord>>		<Control-Left>
+	event add <<NtextSelectPrevWord>>	<Control-Shift-Left>
+#	event add <<NtextLineStart>>		<Home>
+#	event add <<NtextSelectLineStart>>	<Shift-Home>
+#	event add <<NtextLineEnd>>		<End>
+#	event add <<NtextSelectLineEnd>>	<Shift-End>
     }
     "aqua" {
 	# Official bindings
 	# See http://support.apple.com/kb/HT1343
-	event add <<NextChar>>		<Right>
-	event add <<SelectNextChar>>	<Shift-Right>
-	event add <<PrevChar>>		<Left>
-	event add <<SelectPrevChar>>	<Shift-Left>
-	event add <<NextWord>>		<Option-Right>
-	event add <<SelectNextWord>>	<Shift-Option-Right>
-	event add <<PrevWord>>		<Option-Left>
-	event add <<SelectPrevWord>>	<Shift-Option-Left>
+	event add <<NtextNextChar>>		<Right>
+	event add <<NtextSelectNextChar>>	<Shift-Right>
+	event add <<NtextPrevChar>>		<Left>
+	event add <<NtextSelectPrevChar>>	<Shift-Left>
+	event add <<NtextNextWord>>		<Option-Right>
+	event add <<NtextSelectNextWord>>	<Shift-Option-Right>
+	event add <<NtextPrevWord>>		<Option-Left>
+	event add <<NtextSelectPrevWord>>	<Shift-Option-Left>
 
-	event add <<SelectLineStart>>	<Shift-Home> <Shift-Command-Left>
-	event add <<SelectLineEnd>>	<Shift-End> <Shift-Command-Right>
+#	event add <<NtextSelectLineStart>>	<Shift-Home> <Shift-Command-Left>
+#	event add <<NtextSelectLineEnd>>	<Shift-End> <Shift-Command-Right>
 	# Not official, but logical extensions of above. Also derived from
 	# bindings present in MS Word on OSX.
-	event add <<LineStart>>		<Home> <Command-Left>
-	event add <<LineEnd>>		<End> <Command-Right>
+#	event add <<NtextLineStart>>		<Home> <Command-Left>
+#	event add <<NtextLineEnd>>		<End> <Command-Right>
     }
 }
     # On MacOS X Aqua:
@@ -129,16 +127,16 @@ switch -exact -- [tk windowingsystem] {
 
 switch -exact -- [tk windowingsystem] {
     "x11" {
-	event add <<nLineStart>>	<Home>
-	event add <<nSelectLineStart>>	<Shift-Home>
-	event add <<nLineEnd>>		<End>
-	event add <<nSelectLineEnd>>	<Shift-End>
+	event add <<NtextLineStart>>	<Home>
+	event add <<NtextSelectLineStart>>	<Shift-Home>
+	event add <<NtextLineEnd>>		<End>
+	event add <<NtextSelectLineEnd>>	<Shift-End>
     }
     "win32" {
-	event add <<nLineStart>>	<Home>
-	event add <<nSelectLineStart>>	<Shift-Home>
-	event add <<nLineEnd>>		<End>
-	event add <<nSelectLineEnd>>	<Shift-End>
+	event add <<NtextLineStart>>	<Home>
+	event add <<NtextSelectLineStart>>	<Shift-Home>
+	event add <<NtextLineEnd>>		<End>
+	event add <<NtextSelectLineEnd>>	<Shift-End>
     }
     "aqua" {
 	# The Command bindings are official Aqua, the Control bindings are not.
@@ -146,21 +144,21 @@ switch -exact -- [tk windowingsystem] {
 	# do either the same as "s/Control/Command/", or the same as
 	# "s/Control/Option/".  We go with the former, cf. TextEdit.
 
-	event add <<nLineStart>>        <Command-Left>
-	event add <<nLineStart>>        <Control-Left>
-	event add <<nSelectLineStart>>  <Shift-Command-Left>
-	event add <<nSelectLineStart>>  <Shift-Control-Left>
-	event add <<nLineEnd>>          <Command-Right>
-	event add <<nLineEnd>>          <Control-Right>
-	event add <<nSelectLineEnd>>    <Shift-Command-Right>
-	event add <<nSelectLineEnd>>    <Shift-Control-Right>
+	event add <<NtextLineStart>>        <Command-Left>
+	event add <<NtextLineStart>>        <Control-Left>
+	event add <<NtextSelectLineStart>>  <Shift-Command-Left>
+	event add <<NtextSelectLineStart>>  <Control-Shift-Left>
+	event add <<NtextLineEnd>>          <Command-Right>
+	event add <<NtextLineEnd>>          <Control-Right>
+	event add <<NtextSelectLineEnd>>    <Shift-Command-Right>
+	event add <<NtextSelectLineEnd>>    <Control-Shift-Right>
 
 	# Unwanted bindings on Aqua:
 	# text.tcl 8.6 says the first two are "Official Aqua"
-	#event add <<nLineStart>>        <Home>
-	#event add <<nSelectLineStart>>  <Shift-Home>
-	#event add <<nLineEnd>>          <End>
-	#event add <<nSelectLineEnd>>    <Shift-End>
+	#event add <<NtextLineStart>>        <Home>
+	#event add <<NtextSelectLineStart>>  <Shift-Home>
+	#event add <<NtextLineEnd>>          <End>
+	#event add <<NtextSelectLineEnd>>    <Shift-End>
     }
 }
 
@@ -288,12 +286,12 @@ bind Ntext <Control-1> {
 bind Ntext <Double-Control-1> { # nothing }
 bind Ntext <Control-B1-Motion> { # nothing }
 #bind Ntext <Left>
-bind Ntext <<PrevChar>> {
+bind Ntext <<NtextPrevChar>> {
     ntext::AdjustInsert %W left
     ntext::TextSetCursor %W insert-1displayindices
 }
 #bind Ntext <Right>
-bind Ntext <<NextChar>> {
+bind Ntext <<NtextNextChar>> {
     ntext::AdjustInsert %W right
     ntext::TextSetCursor %W insert+1displayindices
 }
@@ -306,11 +304,11 @@ bind Ntext <Down> {
     ntext::TextSetCursor %W [ntext::TextUpDownLine %W 1]
 }
 #bind Ntext <Shift-Left>
-bind Ntext <<SelectPrevChar>> {
+bind Ntext <<NtextSelectPrevChar>> {
     ntext::TextKeySelect %W [%W index {insert - 1displayindices}]
 }
 #bind Ntext <Shift-Right>
-bind Ntext <<SelectNextChar>> {
+bind Ntext <<NtextSelectNextChar>> {
     ntext::TextKeySelect %W [%W index {insert + 1displayindices}]
 }
 bind Ntext <Shift-Up> {
@@ -320,13 +318,13 @@ bind Ntext <Shift-Down> {
     ntext::TextKeySelect %W [ntext::TextUpDownLine %W 1]
 }
 #bind Ntext <Control-Left>
-bind Ntext <<PrevWord>> {
+bind Ntext <<NtextPrevWord>> {
     ntext::AdjustInsert %W left
     ntext::TextSetCursor %W \
 	    [ntext::TextPrevPos %W insert ntext::new_startOfPreviousWord]
 }
 #bind Ntext <Control-Right>
-bind Ntext <<NextWord>> {
+bind Ntext <<NtextNextWord>> {
     ntext::AdjustInsert %W right
     ntext::TextSetCursor %W [ntext::TextNextWord %W insert]
 }
@@ -338,19 +336,19 @@ bind Ntext <Control-Down> {
     ntext::AdjustInsert %W right
     ntext::TextSetCursor %W [ntext::TextNextPara %W insert]
 }
-#bind Ntext <Shift-Control-Left>
-bind Ntext <<SelectPrevWord>> {
+#bind Ntext <Control-Shift-Left>
+bind Ntext <<NtextSelectPrevWord>> {
     ntext::TextKeySelect %W \
 	    [ntext::TextPrevPos %W insert ntext::new_startOfPreviousWord]
 }
-#bind Ntext <Shift-Control-Right>
-bind Ntext <<SelectNextWord>> {
+#bind Ntext <Control-Shift-Right>
+bind Ntext <<NtextSelectNextWord>> {
     ntext::TextKeySelect %W [ntext::TextNextWord %W insert]
 }
-bind Ntext <Shift-Control-Up> {
+bind Ntext <Control-Shift-Up> {
     ntext::TextKeySelect %W [ntext::TextPrevPara %W insert]
 }
-bind Ntext <Shift-Control-Down> {
+bind Ntext <Control-Shift-Down> {
     ntext::TextKeySelect %W [ntext::TextNextPara %W insert]
 }
 bind Ntext <Prior> {
@@ -375,21 +373,21 @@ bind Ntext <Control-Next> {
 }
 
 #bind Ntext <Home>
-bind Ntext <<nLineStart>> {
+bind Ntext <<NtextLineStart>> {
     ntext::AdjustInsert %W left
     ntext::TextSetCursor %W  [::ntext::HomeIndex %W insert]
 }
 #bind Ntext <Shift-Home>
-bind Ntext <<nSelectLineStart>> {
+bind Ntext <<NtextSelectLineStart>> {
     ntext::TextKeySelect %W [::ntext::HomeIndex %W insert]
 }
 #bind Ntext <End>
-bind Ntext <<nLineEnd>> {
+bind Ntext <<NtextLineEnd>> {
     ntext::AdjustInsert %W right
     ntext::TextSetCursor %W  [::ntext::EndIndex %W insert]
 }
 #bind Ntext <Shift-End>
-bind Ntext <<nSelectLineEnd>> {
+bind Ntext <<NtextSelectLineEnd>> {
     ntext::TextKeySelect %W [::ntext::EndIndex %W insert]
 }
 bind Ntext <Control-Home> {
@@ -714,7 +712,7 @@ if {[tk windowingsystem] eq "aqua"} {
 # In Aqua, <Prior>, <Next> do not move the insert mark; The Control modifier
 # does move the insert mark, and the Shift modifier moves the insert mark and
 # extends the selection.
-# In Tk, if <Shift-Control-Prior> is undefined it does same as <Control-Prior>,
+# In Tk, if <Control-Shift-Prior> is undefined it does same as <Control-Prior>,
 # not <Shift-Prior>.
 # This behavior agrees with other Mac applications, but leaves the Mac with no
 # keyboard bindings for scrolling +/-x.
@@ -813,7 +811,7 @@ bind Ntext <Command-Shift-Down> {
 # Try to do what other Mac applications do:
 # Control-Up   does the same as <Prior>, and does not move the insert mark.
 # Control-Down does the same as <Next>,  and does not move the insert mark.
-# Shift-Control-(Up|Down) do nothing.
+# Control-Shift-(Up|Down) do nothing.
 # Option-Up goes to the previous {start of a logical line}.
 # Option-Down goes to the next {end of a logical line}.
 # Shift-Option-(Up|Down) allow selection.
@@ -857,7 +855,7 @@ bind Ntext <Control-Down> {
 	ntext::TextSetCursor %W [ntext::TextNextPara %W insert]
     }
 }
-bind Ntext <Shift-Control-Up> {
+bind Ntext <Control-Shift-Up> {
     if {$::ntext::strictAqua} {
 	# Like Aqua's TextEdit
 	# Do Nothing
@@ -866,7 +864,7 @@ bind Ntext <Shift-Control-Up> {
 	ntext::TextKeySelect %W [ntext::TextPrevPara %W insert]
     }
 }
-bind Ntext <Shift-Control-Down> {
+bind Ntext <Control-Shift-Down> {
     if {$::ntext::strictAqua} {
 	# Like Aqua's TextEdit
 	# Do Nothing
@@ -931,7 +929,7 @@ bind Ntext <Control-v> {
     ntext::TextSetCursor %W [ntext::TextScrollPages %W +1 preScroll]
 }
 
-bind Ntext <Shift-Control-v> {# nothing}
+bind Ntext <Control-Shift-v> {# nothing}
 
 # End of Mac only bindings
 }
@@ -1173,7 +1171,7 @@ proc ::ntext::TextButton1 {w x y} {
     }
     # Allow focus in any case on Windows, because that will let the
     # selection be displayed even for state disabled text widgets.
-    if {$::tcl_platform(platform) eq "windows" \
+    if {[tk windowingsystem] eq "win32" \
 	    || [$w cget -state] eq "normal"} {
 	focus $w
     }
@@ -2378,7 +2376,7 @@ proc ::ntext::initializeMatchPatterns {} {
 	set tcl_punctchars "\[${punct}-\]"
 	set tcl_spacechars "\[${space}\]"
 	set tcl_word1chars "\[^${punct}${space}-\]"
-    } elseif {$::tcl_platform(platform) eq "windows"} {
+    } elseif {[tk windowingsystem] eq "win32"} {
 	# Windows style - any but a unicode space char
 	set tcl_word1chars "\\S"
 	set tcl_spacechars "\\s"
