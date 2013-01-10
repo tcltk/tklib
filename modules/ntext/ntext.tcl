@@ -75,10 +75,10 @@ switch -exact -- [tk windowingsystem] {
 	event add <<NtextSelectNextWord>>	<Control-Shift-Right>
 	event add <<NtextPrevWord>>		<Control-Left>
 	event add <<NtextSelectPrevWord>>	<Control-Shift-Left>
-#	event add <<NtextLineStart>>		<Home>
-#	event add <<NtextSelectLineStart>>	<Shift-Home>
-#	event add <<NtextLineEnd>>		<End>
-#	event add <<NtextSelectLineEnd>>	<Shift-End>
+	event add <<NtextLineStart>>		<Home>
+	event add <<NtextSelectLineStart>>	<Shift-Home>
+	event add <<NtextLineEnd>>		<End>
+	event add <<NtextSelectLineEnd>>	<Shift-End>
 
     }
     "win32" {
@@ -90,10 +90,10 @@ switch -exact -- [tk windowingsystem] {
 	event add <<NtextSelectNextWord>>	<Control-Shift-Right>
 	event add <<NtextPrevWord>>		<Control-Left>
 	event add <<NtextSelectPrevWord>>	<Control-Shift-Left>
-#	event add <<NtextLineStart>>		<Home>
-#	event add <<NtextSelectLineStart>>	<Shift-Home>
-#	event add <<NtextLineEnd>>		<End>
-#	event add <<NtextSelectLineEnd>>	<Shift-End>
+	event add <<NtextLineStart>>		<Home>
+	event add <<NtextSelectLineStart>>	<Shift-Home>
+	event add <<NtextLineEnd>>		<End>
+	event add <<NtextSelectLineEnd>>	<Shift-End>
     }
     "aqua" {
 	# Official bindings
@@ -106,13 +106,31 @@ switch -exact -- [tk windowingsystem] {
 	event add <<NtextSelectNextWord>>	<Shift-Option-Right>
 	event add <<NtextPrevWord>>		<Option-Left>
 	event add <<NtextSelectPrevWord>>	<Shift-Option-Left>
+	event add <<NtextLineStart>>		<Command-Left>
+	event add <<NtextSelectLineStart>>	<Shift-Command-Left>
+	event add <<NtextLineEnd>>		<Command-Right>
+	event add <<NtextSelectLineEnd>>	<Shift-Command-Right>
 
-#	event add <<NtextSelectLineStart>>	<Shift-Home> <Shift-Command-Left>
-#	event add <<NtextSelectLineEnd>>	<Shift-End> <Shift-Command-Right>
 	# Not official, but logical extensions of above. Also derived from
 	# bindings present in MS Word on OSX.
-#	event add <<NtextLineStart>>		<Home> <Command-Left>
-#	event add <<NtextLineEnd>>		<End> <Command-Right>
+
+	# Unwanted bindings on Aqua:
+	# text.tcl 8.6 says the first two are "Official Aqua"
+	# event add <<NtextLineStart>>        <Home>
+	# event add <<NtextSelectLineStart>>  <Shift-Home>
+	# event add <<NtextLineEnd>>          <End>
+	# event add <<NtextSelectLineEnd>>    <Shift-End>
+
+	# The Command bindings are official Aqua, the Control bindings are not.
+	# In text-based applications, the Control bindings typically
+	# do either the same as "s/Control/Command/", or the same as
+	# "s/Control/Option/".  We go with the former, cf. TextEdit.
+
+	event add <<NtextLineStart>>        <Control-Left>
+	event add <<NtextSelectLineStart>>  <Control-Shift-Left>
+	event add <<NtextLineEnd>>          <Control-Right>
+	event add <<NtextSelectLineEnd>>    <Control-Shift-Right>
+
     }
 }
     # On MacOS X Aqua:
@@ -122,45 +140,6 @@ switch -exact -- [tk windowingsystem] {
 # indent+
 } ;# end if
 
-# Define some more events, because we want something slightly different from the
-# official Tk 8.6 events, but we don't want to change the latter.
-
-switch -exact -- [tk windowingsystem] {
-    "x11" {
-	event add <<NtextLineStart>>	<Home>
-	event add <<NtextSelectLineStart>>	<Shift-Home>
-	event add <<NtextLineEnd>>		<End>
-	event add <<NtextSelectLineEnd>>	<Shift-End>
-    }
-    "win32" {
-	event add <<NtextLineStart>>	<Home>
-	event add <<NtextSelectLineStart>>	<Shift-Home>
-	event add <<NtextLineEnd>>		<End>
-	event add <<NtextSelectLineEnd>>	<Shift-End>
-    }
-    "aqua" {
-	# The Command bindings are official Aqua, the Control bindings are not.
-	# In text-based applications, the Control bindings typically
-	# do either the same as "s/Control/Command/", or the same as
-	# "s/Control/Option/".  We go with the former, cf. TextEdit.
-
-	event add <<NtextLineStart>>        <Command-Left>
-	event add <<NtextLineStart>>        <Control-Left>
-	event add <<NtextSelectLineStart>>  <Shift-Command-Left>
-	event add <<NtextSelectLineStart>>  <Control-Shift-Left>
-	event add <<NtextLineEnd>>          <Command-Right>
-	event add <<NtextLineEnd>>          <Control-Right>
-	event add <<NtextSelectLineEnd>>    <Shift-Command-Right>
-	event add <<NtextSelectLineEnd>>    <Control-Shift-Right>
-
-	# Unwanted bindings on Aqua:
-	# text.tcl 8.6 says the first two are "Official Aqua"
-	#event add <<NtextLineStart>>        <Home>
-	#event add <<NtextSelectLineStart>>  <Shift-Home>
-	#event add <<NtextLineEnd>>          <End>
-	#event add <<NtextSelectLineEnd>>    <Shift-End>
-    }
-}
 
 #-------------------------------------------------------------------------
 # The code below creates the Ntext class bindings for text widgets.
