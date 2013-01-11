@@ -13,8 +13,10 @@
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
 
-##### START OF CODE THAT IS MODIFIED text.tcl, versions tagged
-# core-8-5-12, core-8-6-0 and the trunk artifact # of checkin # dated #
+##### START OF CODE THAT IS MODIFIED from the following versions of text.tcl:
+# 2012-06-10 artifact 8d483c2687 tagged core-8-5-12
+# 2012-08-10 artifact 64f6248909 checkin 43e436d51d to trunk (8.6)
+# 2012-08-26 artifact 09848650aa tagged core-8-6-0
 
 #-------------------------------------------------------------------------
 # Elements of ::tk::Priv that are used in this file:
@@ -197,6 +199,8 @@ switch -exact -- [tk windowingsystem] {
 # e.g. <Control-n> for "New Document", <Control-p> for "Print".
 #
 # In Ntext the "emacs-like bindings" are switched off by default.
+# The virtual events give a small saving in repeated code, but at the need to trace variables to
+# keep tk_strictMotif.
 # ------------------------------------------------------------------------------
 
 # event add <<NtextNextChar>>		<Control-Key-f> <Control-Lock-Key-F>
@@ -584,36 +588,12 @@ if {[tk windowingsystem] eq "aqua"} {
 }
 
 # Additional emacs-like bindings:
-
-bind Ntext <Control-a> {
-    if {$::ntext::classicExtras && !$tk_strictMotif} {
-	ntext::AdjustInsert %W left
-	ntext::TextSetCursor %W {insert display linestart}
-    }
-}
-bind Ntext <Control-b> {
-    if {$::ntext::classicExtras && !$tk_strictMotif} {
-	ntext::AdjustInsert %W left
-	ntext::TextSetCursor %W insert-1displayindices
-    }
-}
+# cf. <Delete>, but not fixed for TextCursorInSelection and no see
 bind Ntext <Control-d> {
     if {$::ntext::classicExtras && !$tk_strictMotif &&
 	    [%W compare end != insert+1c]} {
 	%W delete insert
 	ntext::AdjustIndentOneLine %W insert
-    }
-}
-bind Ntext <Control-e> {
-    if {$::ntext::classicExtras && !$tk_strictMotif} {
-	ntext::AdjustInsert %W right
-	ntext::TextSetCursor %W {insert display lineend}
-    }
-}
-bind Ntext <Control-f> {
-    if {$::ntext::classicExtras && !$tk_strictMotif} {
-	ntext::AdjustInsert %W right
-	ntext::TextSetCursor %W insert+1displayindices
     }
 }
 bind Ntext <Control-k> {
@@ -627,23 +607,11 @@ bind Ntext <Control-k> {
 	ntext::AdjustIndentOneLine %W insert
     }
 }
-bind Ntext <Control-n> {
-    if {$::ntext::classicExtras && !$tk_strictMotif} {
-	ntext::AdjustInsert %W right
-	ntext::TextSetCursor %W [ntext::TextUpDownLine %W 1]
-    }
-}
 bind Ntext <Control-o> {
     if {$::ntext::classicExtras && !$tk_strictMotif} {
 	%W insert insert \n
 	%W mark set insert insert-1c
 	ntext::AdjustIndentOneLine %W "insert + 1 line"
-    }
-}
-bind Ntext <Control-p> {
-    if {$::ntext::classicExtras && !$tk_strictMotif} {
-	ntext::AdjustInsert %W left
-	ntext::TextSetCursor %W [ntext::TextUpDownLine %W -1]
     }
 }
 bind Ntext <Control-t> {
@@ -676,6 +644,9 @@ bind Ntext <<Redo>> {
     }
 }
 
+# Which platforms use the Meta modifier?
+# Not Mac, PC/Windows or PC/Linux with standard keyboard.
+# If you know, please give details at http://wiki.tcl.tk/28331
 bind Ntext <Meta-b> {
     if {!$tk_strictMotif} {
 	ntext::AdjustInsert %W left
@@ -742,8 +713,7 @@ if {[tk windowingsystem] eq "aqua"} {
 }
 
 # Macintosh only bindings:
-
-if {[tk windowingsystem] eq "aqua"} {
+#
 # The following virtual events are not defined on the Mac platform:
 #   <<NtextPrevPara>>
 #   <<NtextNextPara>>
@@ -752,11 +722,12 @@ if {[tk windowingsystem] eq "aqua"} {
 # Ntext uses the raw events <Option-Up>, <Option-Down>, <Shift-Option-Up>,
 # <Shift-Option-Down> instead.
 #
-# In contrast, the Text binding tag uses virtual events.
+# In contrast, tk.tcl, text.tcl, and the Text binding tag use virtual events.
+# For discussion, see the virtual event definitions above.
 
+if {[tk windowingsystem] eq "aqua"} {
 # Some of the bindings above for non-virtual events must be replaced.
 # Other Mac-specific bindings must be added.
-
 
 # (1) Prior/Next with/without Modifier Keys.
 
@@ -933,10 +904,9 @@ bind Ntext <Control-Shift-Down> {
 
 
 
-# (5)  Virtual Event ?Select?(Prev|Next)
-# or - Option-Up, Option-Down, with/without Shift Modifier
+# (5) Option-Up, Option-Down, with/without Shift Modifier
 # These Option (Alt key) bindings are not provided on other platforms.
-# The response depend on the value of strictAqua.
+# The outcome depends on the value of strictAqua.
 
 # if {$::ntext::strictAqua}
 # Do what other Mac applications do: logical line navigation.
@@ -1021,7 +991,7 @@ bind Ntext <Control-Shift-v> {# nothing}
 }
 
 # A few additional bindings of my own.
-
+# cf. <BackSpace>, but not fixed for TextCursorInSelection
 bind Ntext <Control-h> {
     if {$::ntext::classicExtras && (!$tk_strictMotif)
 	    && [%W compare insert != 1.0]} {
@@ -1201,6 +1171,7 @@ variable OldFirst          {}
     }
 
     trace add variable ::ntext::classicExtras write ::ntext::EmacsBindings
+    trace add variable ::tk_strictMotif       write ::ntext::EmacsBindings
 }
 
 
@@ -1208,7 +1179,7 @@ proc ::ntext::EmacsBindings {argVarName var2 op} {
     variable EmacsEvents
     variable classicExtras
 
-    if {[string is true -strict $classicExtras]} {
+    if {$::ntext::classicExtras && !$::tk_strictMotif} {
         set operation add
     } else {
         set operation delete
