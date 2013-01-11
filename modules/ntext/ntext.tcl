@@ -2928,4 +2928,4 @@ proc ::ntext::IntToColor {pix range} {
 
 ::ntext::initializeMatchPatterns
 
-package provide ntext 0.9b1
+package provide ntext 0.9b2
