@@ -10,8 +10,10 @@ package require Tk
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 
 ### This demo explores ntext indentation
+
 ### For a short example, see ntextExample.tcl
 ### To explore the ntext options, try ntextDemoBindings.tcl
+### To explore vertical scrolling on the Mac, try ntextDemoMacScrolling.tcl
 
 ### Points to note when using ntext's indent facilities are commented and numbered (1) to (6).
 

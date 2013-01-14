@@ -10,8 +10,10 @@ package require Tk
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 
 ### This demo explores the ntext options
+
 ### For a short example, see ntextExample.tcl
 ### To explore ntext indentation, try ntextDemoIndent.tcl
+### To explore vertical scrolling on the Mac, try ntextDemoMacScrolling.tcl
 
 # This string defines the text that will be displayed in each widget:
 set message {QOTW:  "C/C++, which is used by 16% of users, is the most popular programming language, but Tcl, used by 0%, seems to be the language of choice for the highest scoring users."
@@ -46,6 +48,17 @@ set ::ntext::classicWordBreak   0
 
 # Set to 0 to align wrapped display lines with the first display line of the logical line:
 set ::ntext::classicWrap        1
+
+# Set to 0 to follow Mac Aqua conventions on placement of the insert mark
+# when a selection is cancelled by keyboard navigation:
+# Has effect on all platforms.  Default value is 0 on Aqua, 1 on other platforms.
+# set ::ntext::classicSelection   1
+
+# Set to 1 to follow Mac Aqua conventions on vertical scrolling with the
+# Up/Down cursor keys and the Control or Option ("Alt") modifier keys.
+# Has effect only on Aqua.
+# set ::ntext::strictAqua         0
+
 
 set col #e0dfde
 . configure -bg $col

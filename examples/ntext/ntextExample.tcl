@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 
 package require Tk
 
-# Copyright (c) 2005-2011 Keith Nash.
+# Copyright (c) 2005-2013 Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -14,13 +14,18 @@ package require Tk
 
 ### To explore the ntext options, try ntextDemoBindings.tcl
 ### To explore ntext indentation, try ntextDemoIndent.tcl
+### To explore vertical scrolling on the Mac, try ntextDemoMacScrolling.tcl
 
-# This string defines the text that will be displayed in each widget:
-set message {QOTW:  "C/C++, which is used by 16% of users, is the most popular programming language, but Tcl, used by 0%, seems to be the language of choice for the highest scoring users."
-}
-# End of string for widget text.
+. configure -bg #d0cfce
 
 package require ntext
+
+# This string defines the text that will be displayed in each widget:
+set message {The source code for this example shows how simple it is to deploy ntext.  It is necessary to "package require" the ntext package, and then call the "bindtags" command for any text widget in which you wish to use the Ntext bindings...}
+
+# ...and if you do not like the ntext default bindings, you can override some
+# of them by setting these variables (ntextDemoBindings.tcl has a live demo):
+
 
 #  Whether Shift-Button-1 ignores changes made by the kbd to the insert mark:
 set ::ntext::classicMouseSelect 0
@@ -34,13 +39,29 @@ variable classicExtras          1
 #  Whether to use new or classic word boundary detection:
 set ::ntext::classicWordBreak   0
 
-. configure -bg #d0cfce
-pack [text .right ] -side right -padx 2 -pady 2
-.right configure -width 28 -height 12 -wrap word -undo 1 -font {{Courier} -15} -bg white
-.right insert end "  I use the Ntext bindings.\n\n$message"
+# Set to 0 to follow Mac Aqua conventions on placement of the insert mark
+# when a selection is cancelled by keyboard navigation:
+set ::ntext::classicSelection   1
 
+# Set to 1 to follow Mac Aqua conventions on vertical scrolling with the
+# Up/Down cursor keys and the Control or Option ("Alt") modifier keys.
+# Has effect only on Aqua.
+set ::ntext::strictAqua         1
+
+
+# Create two identical text widgets:
+pack [text .left ] -side left -padx 2 -pady 2
+pack [text .right] -side left -padx 2 -pady 2
+.left  configure -width 28 -height 14 -wrap word -undo 1 -font {{Courier} -15}
+.right configure -width 28 -height 14 -wrap word -undo 1 -font {{Courier} -15}
+
+# Give them different background colors:
+.left  configure -bg #FFFFCC
+.right configure -bg white
+
+# Write slightly different text to each one:
+.left  insert end "  I use the (default) Text bindings.\n\n$message"
+.right insert end "  I use the Ntext bindings.\n\n\n$message"
+
+# Finally, enable Ntext for the right-hand widget:
 bindtags .right {.right Ntext . all}
-
-pack [text .left ] -side right -padx 2 -pady 2
-.left configure -width 28 -height 12 -wrap word -undo 1 -font {{Courier} -15} -bg #FFFFCC
-.left insert end "  I use the (default) Text bindings.\n\n$message"

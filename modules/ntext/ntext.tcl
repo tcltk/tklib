@@ -1186,7 +1186,7 @@ proc ::ntext::EmacsBindings {argVarName var2 op} {
     }
 
     foreach {virtual real1 real2} $EmacsEvents {
-        event $operation $real1 $real2
+        event $operation $virtual $real1 $real2
     }
     return
 }
