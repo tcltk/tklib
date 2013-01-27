@@ -143,7 +143,12 @@ proc ::Plotchart::DrawRow { w values {option {}} } {
             $w create rectangle $left $scaling($w,topside) $right [expr {$scaling($w,topside)+$config($w,header,height)}] \
                 -tag cellbg -fill $scaling($w,cell,-background) -outline $scaling($w,cell,-background)
 
-            $w create text $xpos $ypos -text $v -fill $config($w,header,color) -anchor $anchor
+            if { [info exists config($w,header,font)] } {  
+                $w create text $xpos $ypos -text $v -fill $config($w,header,color) -anchor $anchor \
+                    -font $config($w,header,font)
+            } else {
+                $w create text $xpos $ypos -text $v -fill $config($w,header,color) -anchor $anchor
+            }
         }
     } else {
 
@@ -169,8 +174,13 @@ proc ::Plotchart::DrawRow { w values {option {}} } {
                     -tag cellbg -fill $scaling($w,cell,-background) -outline $scaling($w,cell,-background)
             }
 
-            $w create text $xpos $ypos -text $text -anchor $anchor -tag celltext \
+            if { [info exists scaling($w,cell,-font)] } {
+                $w create text $xpos $ypos -text $text -anchor $anchor -tag celltext \
+                    -fill $scaling($w,cell,-color) -font $scaling($w,cell,-font)
+            } else {
+                $w create text $xpos $ypos -text $text -anchor $anchor -tag celltext \
                 -fill $scaling($w,cell,-color)
+            }    
             incr column
         }
     }

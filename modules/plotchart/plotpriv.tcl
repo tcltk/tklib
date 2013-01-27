@@ -478,10 +478,10 @@ proc ::Plotchart::MarginsCircle { w args } {
         set pxmax [expr {$pxmin + $width}]
         set pymax [expr {$pymin + $height}]
 
-        set scaling($w,refx)      $refX
-        set scaling($w,refy)      $refY
-        set scaling($w,refwidth)  [expr {$refX + $width}]
-        set scaling($w,refheight) [expr {$refY + $height}]
+        set scaling($w,refx)      $pxmin
+        set scaling($w,refy)      $pymin
+        set scaling($w,refwidth)  [expr {$pxmin + $width}]
+        set scaling($w,refheight) [expr {$pymin + $height}]
    } else {
         set scaling($w,refx)      0
         set scaling($w,refy)      [$w cget -borderwidth]
@@ -758,8 +758,10 @@ proc ::Plotchart::DrawMask { w } {
         set offx   0
         set offy   0
     }
-    set width  [expr {[WidthCanvas  $w 0] + 1}]
-    set height [expr {[HeightCanvas $w 0] + 1}]
+    #set width  [expr {[WidthCanvas  $w 0] + 1}]
+    #set height [expr {[HeightCanvas $w 0] + 1}]
+    set width  [expr {$pxmax + $config($w,margin,right)}]
+    set height [expr {$pymax + $config($w,margin,bottom)}]
 
     set colour $config($w,background,outercolor)
 
