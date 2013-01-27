@@ -1224,6 +1224,8 @@ proc ::Plotchart::DrawTicklines { w axis colour dash } {
     $w raise [list xaxis && $w]
     $w raise [list yaxis && $w]
     $w raise [list raxis && $w]
+    $w raise legendbg
+    $w raise legend
 }
 
 # DefaultLegend --
@@ -1564,11 +1566,11 @@ proc ::Plotchart::DrawTimeaxis { w tmin tmax tdelt } {
    #set scaling($w,tdelt) $tdelt
     set scaling($w,xdelt) $tdelt
 
-    $w delete taxis
+    $w delete "taxis && $w"
 
     $w create line $scaling($w,pxmin) $scaling($w,pymax) \
                    $scaling($w,pxmax) $scaling($w,pymax) \
-                   -fill $linecolor -width $thickness -tag taxis
+                   -fill $linecolor -width $thickness -tag [list taxis $w]
 
     set format $config($w,bottomaxis,format)
     if { [info exists scaling($w,-format,x)] } {
@@ -1601,8 +1603,8 @@ proc ::Plotchart::DrawTimeaxis { w tmin tmax tdelt } {
         } else {
             set tlabel [clock format $t -format "%Y-%m-%d"]
         }
-        $w create line $xcrd $ycrd2 $xcrd $ycrd -tag taxis -fill $linecolor
-        $w create text $xcrd $ycrd3 -text $tlabel -tag taxis -anchor n \
+        $w create line $xcrd $ycrd2 $xcrd $ycrd -tag [list taxis $w] -fill $linecolor
+        $w create text $xcrd $ycrd3 -text $tlabel -tag [list taxis $w] -anchor n \
             -fill $textcolor -font $textfont -justify $justify
         set t [expr {int($t+$ttdelt)}]
     }
