@@ -94,6 +94,7 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,canvas)            GetCanvas
    set methodProc(xyplot,deletedata)        DeleteData
    set methodProc(xlogyplot,title)          DrawTitle
+   set methodProc(xlogyplot,subtitle)       DrawSubtitle
    set methodProc(xlogyplot,xtext)          DrawXtext
    set methodProc(xlogyplot,ytext)          DrawYtext
    set methodProc(xlogyplot,vtext)          DrawVtext
@@ -118,7 +119,9 @@ namespace eval ::Plotchart {
    set methodProc(xlogyplot,plaintext)      DrawPlainText
    set methodProc(xlogyplot,plaintextconfig) ConfigPlainText
    set methodProc(xlogyplot,canvas)         GetCanvas
+   set methodProc(xlogyplot,deletedata)     DeleteData
    set methodProc(logxyplot,title)          DrawTitle
+   set methodProc(logxyplot,subtitle)       DrawSubtitle
    set methodProc(logxyplot,xtext)          DrawXtext
    set methodProc(logxyplot,ytext)          DrawYtext
    set methodProc(logxyplot,vtext)          DrawVtext
@@ -143,7 +146,9 @@ namespace eval ::Plotchart {
    set methodProc(logxyplot,plaintext)      DrawPlainText
    set methodProc(logxyplot,plaintextconfig)   ConfigPlainText
    set methodProc(logxyplot,canvas)         GetCanvas
+   set methodProc(logxyplot,deletedata)     DeleteData
    set methodProc(logxlogyplot,title)          DrawTitle
+   set methodProc(logxlogyplot,subtitle)       DrawSubtitle
    set methodProc(logxlogyplot,xtext)          DrawXtext
    set methodProc(logxlogyplot,ytext)          DrawYtext
    set methodProc(logxlogyplot,vtext)          DrawVtext
@@ -168,7 +173,9 @@ namespace eval ::Plotchart {
    set methodProc(logxlogyplot,plaintext)      DrawPlainText
    set methodProc(logxlogyplot,plaintextconfig) ConfigPlainText
    set methodProc(logxlogyplot,canvas)         GetCanvas
+   set methodProc(logxlogyplot,deletedata)     DeleteData
    set methodProc(piechart,title)              DrawTitle
+   set methodProc(piechart,subtitle)           DrawSubtitle
    set methodProc(piechart,plot)               DrawPie
    set methodProc(piechart,saveplot)           SavePlot
    set methodProc(piechart,balloon)            DrawBalloon
@@ -181,6 +188,7 @@ namespace eval ::Plotchart {
    set methodProc(piechart,object)             DrawObject
    set methodProc(piechart,canvas)             GetCanvas
    set methodProc(spiralpie,title)             DrawTitle
+   set methodProc(spiralpie,subtitle)          DrawSubtitle
    set methodProc(spiralpie,plot)              DrawSpiralPie
    set methodProc(spiralpie,saveplot)          SavePlot
    set methodProc(spiralpie,balloon)           DrawBalloon
@@ -192,6 +200,7 @@ namespace eval ::Plotchart {
    set methodProc(spiralpie,object)            DrawObject
    set methodProc(spiralpie,canvas)            GetCanvas
    set methodProc(polarplot,title)             DrawTitle
+   set methodProc(polarplot,subtitle)          DrawSubtitle
    set methodProc(polarplot,plot)              DrawData
    set methodProc(polarplot,saveplot)          SavePlot
    set methodProc(polarplot,dataconfig)        DataConfig
@@ -205,7 +214,9 @@ namespace eval ::Plotchart {
    set methodProc(polarplot,plaintextconfig)   ConfigPlainText
    set methodProc(polarplot,labeldot)          DrawLabelDot
    set methodProc(polarplot,canvas)            GetCanvas
+   set methodProc(polarplot,deletedata)        DeleteData
    set methodProc(histogram,title)             DrawTitle
+   set methodProc(histogram,subtitle)          DrawSubtitle
    set methodProc(histogram,xtext)             DrawXtext
    set methodProc(histogram,ytext)             DrawYtext
    set methodProc(histogram,vtext)             DrawVtext
@@ -226,7 +237,9 @@ namespace eval ::Plotchart {
    set methodProc(histogram,plaintextconfig)   ConfigPlainText
    set methodProc(histogram,canvas)            GetCanvas
    set methodProc(histogram,bindlast)          BindLastHistogram
+   set methodProc(histogram,deletedata)        DeleteData
    set methodProc(horizbars,title)             DrawTitle
+   set methodProc(horizbars,subtitle)          DrawSubtitle
    set methodProc(horizbars,xtext)             DrawXtext
    set methodProc(horizbars,ytext)             DrawYtext
    set methodProc(horizbars,vtext)             DrawVtext
@@ -248,7 +261,9 @@ namespace eval ::Plotchart {
    set methodProc(horizbars,drawobject)        DrawObject
    set methodProc(horizbars,object)            DrawObject
    set methodProc(horizbars,canvas)            GetCanvas
+   set methodProc(horizbars,deletedata)        DeleteData
    set methodProc(vertbars,title)              DrawTitle
+   set methodProc(vertbars,subtitle)           DrawSubtitle
    set methodProc(vertbars,xtext)              DrawXtext
    set methodProc(vertbars,ytext)              DrawYtext
    set methodProc(vertbars,vtext)              DrawVtext
@@ -270,7 +285,9 @@ namespace eval ::Plotchart {
    set methodProc(vertbars,drawobject)         DrawObject
    set methodProc(vertbars,object)             DrawObject
    set methodProc(vertbars,canvas)             GetCanvas
+   set methodProc(vertbars,deletedata)         DeleteData
    set methodProc(timechart,title)             DrawTitle
+   set methodProc(timechart,subtitle)          DrawSubtitle
    set methodProc(timechart,period)            DrawTimePeriod
    set methodProc(timechart,milestone)         DrawTimeMilestone
    set methodProc(timechart,vertline)          DrawTimeVertLine
@@ -283,7 +300,9 @@ namespace eval ::Plotchart {
    set methodProc(timechart,hscroll)           ConnectHorizScrollbar
    set methodProc(timechart,vscroll)           ConnectVertScrollbar
    set methodProc(timechart,canvas)            GetCanvas
+   set methodProc(timechart,deletedata)        DeleteData
    set methodProc(ganttchart,title)            DrawTitle
+   set methodProc(ganttchart,subtitle)         DrawSubtitle
    set methodProc(ganttchart,period)           DrawGanttPeriod
    set methodProc(ganttchart,task)             DrawGanttPeriod
    set methodProc(ganttchart,milestone)        DrawGanttMilestone
@@ -303,6 +322,7 @@ namespace eval ::Plotchart {
    set methodProc(ganttchart,vscroll)          ConnectVertScrollbar
    set methodProc(ganttchart,canvas)           GetCanvas
    set methodProc(stripchart,title)            DrawTitle
+   set methodProc(stripchart,subtitle)         DrawSubtitle
    set methodProc(stripchart,xtext)            DrawXtext
    set methodProc(stripchart,ytext)            DrawYtext
    set methodProc(stripchart,vtext)            DrawVtext
@@ -323,7 +343,9 @@ namespace eval ::Plotchart {
    set methodProc(stripchart,drawobject)       DrawObject
    set methodProc(stripchart,object)           DrawObject
    set methodProc(stripchart,canvas)           GetCanvas
+   set methodProc(stripchart,deletedata)       DeleteData
    set methodProc(isometric,title)             DrawTitle
+   set methodProc(isometric,subtitle)          DrawSubtitle
    set methodProc(isometric,xtext)             DrawXtext
    set methodProc(isometric,ytext)             DrawYtext
    set methodProc(isometric,vtext)             DrawVtext
@@ -335,7 +357,9 @@ namespace eval ::Plotchart {
    set methodProc(isometric,plaintext)         DrawPlainText
    set methodProc(isometric,plaintextconfig)   ConfigPlainText
    set methodProc(isometric,canvas)            GetCanvas
+   set methodProc(isometric,deletedata)        DeleteData
    set methodProc(3dplot,title)                DrawTitle
+   set methodProc(3dplot,subtitle)             DrawSubtitle
    set methodProc(3dplot,plotfunc)             Draw3DFunction
    set methodProc(3dplot,plotdata)             Draw3DData
    set methodProc(3dplot,plotline)             Draw3DLineFrom3Dcoordinates
@@ -350,7 +374,9 @@ namespace eval ::Plotchart {
    set methodProc(3dplot,plotfuncont)          Draw3DFunctionContour
    set methodProc(3dplot,background)           BackgroundColour
    set methodProc(3dplot,canvas)               GetCanvas
+   set methodProc(3dplot,deletedata)           DeleteData
    set methodProc(3dbars,title)                DrawTitle
+   set methodProc(3dbars,subtitle)             DrawSubtitle
    set methodProc(3dbars,plot)                 Draw3DBar
    set methodProc(3dbars,yconfig)              YConfig
    set methodProc(3dbars,saveplot)             SavePlot
@@ -360,14 +386,18 @@ namespace eval ::Plotchart {
    set methodProc(3dbars,plaintext)            DrawPlainText
    set methodProc(3dbars,plaintextconfig)      ConfigPlainText
    set methodProc(3dbars,canvas)               GetCanvas
+   set methodProc(3dbars,deletedata)           DeleteData
    set methodProc(radialchart,title)           DrawTitle
+   set methodProc(radialchart,subtitle)        DrawSubtitle
    set methodProc(radialchart,plot)            DrawRadial
    set methodProc(radialchart,saveplot)        SavePlot
    set methodProc(radialchart,balloon)         DrawBalloon
    set methodProc(radialchart,plaintext)       DrawPlainText
    set methodProc(radialchart,plaintextconfig) ConfigPlainText
    set methodProc(radialchart,canvas)          GetCanvas
+   set methodProc(radialchart,deletedata)      DeleteData
    set methodProc(txplot,title)                DrawTitle
+   set methodProc(txplot,subtitle)             DrawSubtitle
    set methodProc(txplot,xtext)                DrawXtext
    set methodProc(txplot,ytext)                DrawYtext
    set methodProc(txplot,vtext)                DrawVtext
@@ -388,13 +418,17 @@ namespace eval ::Plotchart {
    set methodProc(txplot,plaintext)            DrawTimePlainText
    set methodProc(txplot,plaintextconfig)      ConfigPlainText
    set methodProc(txplot,canvas)               GetCanvas
+   set methodProc(txplot,deletedata)           DeleteData
    set methodProc(3dribbon,title)              DrawTitle
+   set methodProc(3dribbon,subtitle)           DrawSubtitle
    set methodProc(3dribbon,saveplot)           SavePlot
    set methodProc(3dribbon,line)               Draw3DLine
    set methodProc(3dribbon,area)               Draw3DArea
    set methodProc(3dribbon,background)         BackgroundColour
    set methodProc(3dribbon,canvas)             GetCanvas
+   set methodProc(3dribbon,deletedata)         DeleteData
    set methodProc(boxplot,title)               DrawTitle
+   set methodProc(boxplot,subtitle)            DrawSubtitle
    set methodProc(boxplot,xtext)               DrawXtext
    set methodProc(boxplot,ytext)               DrawYtext
    set methodProc(boxplot,vtext)               DrawVtext
@@ -416,11 +450,14 @@ namespace eval ::Plotchart {
    set methodProc(boxplot,drawobject)          DrawObject
    set methodProc(boxplot,object)              DrawObject
    set methodProc(boxplot,canvas)              GetCanvas
+   set methodProc(boxplot,deletedata)          DeleteData
    set methodProc(windrose,plot)               DrawWindRoseData
    set methodProc(windrose,saveplot)           SavePlot
    set methodProc(windrose,title)              DrawTitle
+   set methodProc(windrose,subtitle)           DrawSubtitle
    set methodProc(windrose,canvas)             GetCanvas
    set methodProc(targetdiagram,title)         DrawTitle
+   set methodProc(targetdiagram,subtitle)      DrawSubtitle
    set methodProc(targetdiagram,xtext)         DrawXtext
    set methodProc(targetdiagram,ytext)         DrawYtext
    set methodProc(targetdiagram,vtext)         DrawVtext
@@ -436,7 +473,9 @@ namespace eval ::Plotchart {
    set methodProc(targetdiagram,plaintextconfig) ConfigPlainText
    set methodProc(targetdiagram,dataconfig)    DataConfig
    set methodProc(targetdiagram,canvas)        GetCanvas
+   set methodProc(targetdiagram,deletedata)    DeleteData
    set methodProc(3dribbonplot,title)          DrawTitle
+   set methodProc(3dribbonplot,subtitle)       DrawSubtitle
    set methodProc(3dribbonplot,plot)           Draw3DRibbon
    set methodProc(3dribbonplot,saveplot)       SavePlot
    set methodProc(3dribbonplot,xconfig)        XConfig
@@ -444,7 +483,9 @@ namespace eval ::Plotchart {
    set methodProc(3dribbonplot,zconfig)        ZConfig
    set methodProc(3dribbonplot,background)     BackgroundColour
    set methodProc(3dribbonplot,canvas)         GetCanvas
+   set methodProc(3dribbonplot,deletedata)     DeleteData
    set methodProc(performance,title)           DrawTitle
+   set methodProc(performance,subtitle)        DrawSubtitle
    set methodProc(performance,xtext)           DrawXtext
    set methodProc(performance,ytext)           DrawYtext
    set methodProc(performance,vtext)           DrawVtext
@@ -465,7 +506,9 @@ namespace eval ::Plotchart {
    set methodProc(performance,plaintext)       DrawPlainText
    set methodProc(performance,plaintextconfig) ConfigPlainText
    set methodProc(performance,canvas)          GetCanvas
+   set methodProc(performance,deletedata)      DeleteData
    set methodProc(table,title)                 DrawTitle
+   set methodProc(table,subtitle)              DrawSubtitle
    set methodProc(table,row)                   DrawRow
    set methodProc(table,separator)             DrawSeparator
    set methodProc(table,cellconfigure)         ConfigureTableCell
@@ -1648,16 +1691,22 @@ proc ::Plotchart::createHorizontalBarchart { c xscale ylabels noseries args } {
 #    ydata       Minimum, maximum and step for y-axis OR list of labels for y-axis
 #    orientation 'horizontal' boxes with xscale and ylabels (the default)
 #                or 'vertical' boxes with xlabels and yscale
+#    args        Optional arguments (-box, -axesbox etc.)
 # Result:
 #    Name of a new command
 # Note:
 #    By default the entire canvas will be dedicated to the boxplot.
 #
-proc ::Plotchart::createBoxplot { c xdata ydata {orientation horizontal}} {
+proc ::Plotchart::createBoxplot { c xdata ydata {orientation horizontal} args} {
    variable data_series
    variable config
    variable settings
    variable scaling
+
+   if { $orientation ne "horizontal" && $orientation ne "vertical" } {
+       set args [concat $orientation $args]
+       set orientation "horizontal"
+   }
 
    set w [NewPlotInCanvas $c]
    interp alias {} $w {} $c
@@ -1685,7 +1734,7 @@ proc ::Plotchart::createBoxplot { c xdata ydata {orientation horizontal}} {
    }
    set settings($w,orientation) $orientation
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w {}] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
 
    set scaling($w,coordSystem) 0
 
@@ -1946,18 +1995,22 @@ proc ::Plotchart::createGanttchart { w time_begin time_end args} {
 # create3DPlot --
 #    Create a simple 3D plot
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    xscale      Minimum, maximum and step for x-axis (initial)
 #    yscale      Minimum, maximum and step for y-axis
 #    zscale      Minimum, maximum and step for z-axis
+#    args        Optional arguments (-box.) -- not yet!
 # Result:
 #    Name of a new command
 # Note:
 #    By default the entire canvas will be dedicated to the 3D plot
 #
-proc ::Plotchart::create3DPlot { w xscale yscale zscale } {
+proc ::Plotchart::create3DPlot { c xscale yscale zscale args } {
    variable data_series
    variable scaling
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
 
    ClearPlot $w
 
@@ -1983,23 +2036,33 @@ proc ::Plotchart::create3DPlot { w xscale yscale zscale } {
 
    SetColours $w grey black
 
+   #
+   # TODO: Take care of the compatibility for coordsToPixel and friends
+   #
+   set scaling($w,xfactor) 1.0
+   CopyScalingData $w $c
+
    return $newchart
 }
 
 # create3DRibbonPlot --
 #    Create a simple 3D plot that allows for ribbons
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    yscale      Minimum, maximum and step for y-axis
 #    zscale      Minimum, maximum and step for z-axis
+#    args        Optional arguments (-box etc)
 # Result:
 #    Name of a new command
 # Note:
 #    By default the entire canvas will be dedicated to the 3D plot
 #
-proc ::Plotchart::create3DRibbonPlot { w yscale zscale } {
+proc ::Plotchart::create3DRibbonPlot { c yscale zscale args } {
    variable data_series
    variable scaling
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
 
    ClearPlot $w
 
@@ -2025,23 +2088,34 @@ proc ::Plotchart::create3DRibbonPlot { w yscale zscale } {
 
    SetColours $w grey black
 
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   set scaling($w,xfactor) 1.0
+   CopyScalingData $w $c
+
    return $newchart
 }
 
 # create3DBarchart --
 #    Create a command for drawing a barchart with vertical 3D bars
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    yscale      Minimum, maximum and step for y-axis
 #    nobars      Number of bars to be drawn
+#    args        Optional arguments (-box etc)
 # Result:
 #    Name of a new command
 # Note:
 #    By default the entire canvas will be dedicated to the barchart.
 #
-proc ::Plotchart::create3DBarchart { w yscale nobars } {
+proc ::Plotchart::create3DBarchart { c yscale nobars args } {
    variable data_series
    variable scaling
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
 
    ClearPlot $w
 
@@ -2049,7 +2123,7 @@ proc ::Plotchart::create3DBarchart { w yscale nobars } {
    interp alias {} $newchart {} ::Plotchart::PlotHandler 3dbars $w
    CopyConfig 3dbars $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w {} 4] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args 4] {break}
 
    set scaling($w,coordSystem) 0
 
@@ -2075,25 +2149,39 @@ proc ::Plotchart::create3DBarchart { w yscale nobars } {
    DefaultLegend    $w
    DefaultBalloon   $w
 
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
+
    return $newchart
 }
 
 # createRadialchart --
 #    Create a command for drawing a radial chart
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    names       Names of the spokes
 #    scale       Scale factor for the data
 #    style       (Optional) style of the chart (lines, cumulative or filled)
+#    args        Optional arguments (-box etc)
 # Result:
 #    Name of a new command
 # Note:
 #    By default the entire canvas will be dedicated to the radial chart.
 #
-proc ::Plotchart::createRadialchart { w names scale {style lines} } {
+proc ::Plotchart::createRadialchart { c names scale {style lines} args } {
    variable settings
    variable data_series
    variable scaling
+
+   if { $style ni {lines cumulative filled} } {
+       set args  [concat $style $args]
+       set style "lines"
+   }
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
 
    ClearPlot $w
 
@@ -2101,7 +2189,7 @@ proc ::Plotchart::createRadialchart { w names scale {style lines} } {
    interp alias {} $newchart {} ::Plotchart::PlotHandler radialchart $w
    CopyConfig radialchart $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsCircle $w] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsCircle $w {*}$args] {break}
 
    set scaling($w,coordSystem) 0
 
@@ -2116,25 +2204,40 @@ proc ::Plotchart::createRadialchart { w names scale {style lines} } {
    DefaultLegend  $w
    DefaultBalloon $w
 
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   set scaling($w,xmin)    0.0
+   set scaling($w,ymin)    0.0
+   set scaling($w,xmax)    1.0
+   set scaling($w,ymax)    1.0
+   set scaling($w,xfactor) 1.0
+   set scaling($w,yfactor) 1.0
+   CopyScalingData $w $c
+
    return $newchart
 }
 
 # createTXPlot --
 #    Create a command for drawing a TX plot (x versus date/time)
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    tscale      Minimum, maximum and step for date/time-axis (initial)
 #                (values must be valid dates and the step is in days)
 #    xscale      Minimum, maximum and step for vertical axis
+#    args        Optional arguments (-box etc.)
 # Result:
 #    Name of a new command
 # Note:
 #    By default the entire canvas will be dedicated to the TX plot.
 #    The plot will be drawn with axes
 #
-proc ::Plotchart::createTXPlot { w tscale xscale } {
+proc ::Plotchart::createTXPlot { c tscale xscale args } {
    variable data_series
    variable scaling
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
 
    ClearPlot $w
 
@@ -2142,7 +2245,7 @@ proc ::Plotchart::createTXPlot { w tscale xscale } {
    interp alias {} $newchart {} ::Plotchart::PlotHandler txplot $w
    CopyConfig txplot $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w {}] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
 
    set scaling($w,coordSystem) 0
 
@@ -2173,6 +2276,11 @@ proc ::Plotchart::createTXPlot { w tscale xscale } {
    DrawMask         $w
    DefaultLegend    $w
    DefaultBalloon   $w
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w [GetCanvas $newchart]
 
    return $newchart
 }
@@ -2290,18 +2398,22 @@ proc ::Plotchart::createRightAxis { w yscale args } {
 # create3DRibbonChart --
 #    Create a chart that can display 3D lines and areas
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    names       Labels along the x-axis
 #    yscale      Minimum, maximum and step for y-axis
 #    zscale      Minimum, maximum and step for z-axis
+#    args        Optional arguments (-box etc.) -- not yet
 # Result:
 #    Name of a new command
 # Note:
 #    By default the entire canvas will be dedicated to the 3D chart
 #
-proc ::Plotchart::create3DRibbonChart { w names yscale zscale } {
+proc ::Plotchart::create3DRibbonChart { c names yscale zscale } {
    variable data_series
    variable scaling
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
 
    ClearPlot $w
 
@@ -2332,6 +2444,12 @@ proc ::Plotchart::create3DRibbonChart { w names yscale zscale } {
 
    SetColours $w grey black
 
+   #
+   # TODO: Take care of the compatibility for coordsToPixel and friends
+   #
+   set scaling($w,xfactor) 1.0
+   CopyScalingData $w $c
+
    return $newchart
 }
 
@@ -2339,9 +2457,10 @@ proc ::Plotchart::create3DRibbonChart { w names yscale zscale } {
 #     Create a new command for plotting a windrose
 #
 # Arguments:
-#    w             Name of the canvas
+#    c             Name of the canvas
 #    radius_data   Maximum radius and step
 #    sectors       Number of sectors (default: 16)
+#    args          Optional arguments (-box etc.)
 # Result:
 #    Name of a new command
 # Note:
@@ -2349,9 +2468,17 @@ proc ::Plotchart::create3DRibbonChart { w names yscale zscale } {
 #    Possible additional arguments (optional): nautical/mathematical
 #    step in phi
 #
-proc ::Plotchart::createWindRose { w radius_data {sectors 16}} {
+proc ::Plotchart::createWindRose { c radius_data {sectors 16} args} {
     variable data_series
     variable scaling
+
+    if { ![string is integer $sectors] } {
+        set args [concat $sectors $args]
+        set sectors 16
+    }
+
+    set w [NewPlotInCanvas $c]
+    interp alias {} $w {} $c
 
     ClearPlot $w
 
@@ -2369,7 +2496,7 @@ proc ::Plotchart::createWindRose { w radius_data {sectors 16}} {
         return -code error "Maximum radius can not be zero or negative"
     }
 
-    foreach {pxmin pymin pxmax pymax} [MarginsCircle $w] {break}
+    foreach {pxmin pymin pxmax pymax} [MarginsCircle $w {*}$args] {break}
 
     set scaling($w,coordSystem) 0
 
@@ -2388,6 +2515,11 @@ proc ::Plotchart::createWindRose { w radius_data {sectors 16}} {
     set data_series($w,increment_angle) [expr {360.0/$sectors}]
     set data_series($w,count_data)      0
 
+    #
+    # TODO: Take care of the compatibility for coordsToPixel and friends
+    #
+    set scaling($w,xfactor) 1.0
+    CopyScalingData $w $c
 
     return $newchart
 }
@@ -2395,19 +2527,28 @@ proc ::Plotchart::createWindRose { w radius_data {sectors 16}} {
 # createTargetDiagram --
 #    Create a command for drawing a target diagram
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    bounds      List of radii to indicate bounds for the skill
 #    scale       Scale of the axes - defaults to 1
+#    args        Optional arguments (-box etc.)
 # Result:
 #    Name of a new command
 # Note:
-#    By default the entire canvas will be dedicated to the XY plot.
+#    By default the entire canvas will be dedicated to the target diagram.
 #    The plot will be drawn with axes
 #
-proc ::Plotchart::createTargetDiagram { w bounds {scale 1.0}} {
+proc ::Plotchart::createTargetDiagram { c bounds {scale 1.0} args} {
     variable scaling
     variable data_series
     variable config
+
+    if { ! [string is double $scale] } {
+        set args [concat $scale $args]
+        set scale 1.0
+    }
+
+    set w [NewPlotInCanvas $c]
+    interp alias {} $w {} $c
 
     ClearPlot $w
 
@@ -2456,6 +2597,10 @@ proc ::Plotchart::createTargetDiagram { w bounds {scale 1.0}} {
         $w create oval $pxmin $pymin $pxmax $pymax -outline $config($w,limits,color) -tag limits
     }
 
+    #
+    # Take care of the compatibility for coordsToPixel and friends
+    #
+    CopyScalingData $w $c
 
     return $newchart
 }
@@ -2463,17 +2608,21 @@ proc ::Plotchart::createTargetDiagram { w bounds {scale 1.0}} {
 # createPerformanceProfile --
 #    Create a command for drawing a performance profile
 # Arguments:
-#    w           Name of the canvas
+#    c           Name of the canvas
 #    scale       Maximum value for the x-axis
+#    args        Optional arguments (-box etc.)
 # Result:
 #    Name of a new command
 # Note:
 #    By default the entire canvas will be dedicated to the XY plot.
 #    The plot will be drawn with axes
 #
-proc ::Plotchart::createPerformanceProfile { w scale } {
+proc ::Plotchart::createPerformanceProfile { c scale args } {
    variable scaling
    variable data_series
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
 
    ClearPlot $w
 
@@ -2500,6 +2649,10 @@ proc ::Plotchart::createPerformanceProfile { w scale } {
    LegendConfigure  $w -position bottom-right
    DefaultBalloon   $w
 
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
 
    return $newchart
 }
