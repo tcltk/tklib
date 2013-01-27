@@ -1223,7 +1223,7 @@ proc ::Plotchart::DrawTicklines { w axis colour dash } {
     }
     $w raise [list xaxis && $w]
     $w raise [list yaxis && $w]
-    $w raise [list raxis && $w]
+    $w raise [list raxis && r$w]
     $w raise legendbg
     $w raise legend
 }

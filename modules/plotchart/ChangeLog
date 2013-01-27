@@ -1,3 +1,23 @@
+2013-01-27  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Set version to 2.0.2
+	* pkgIndex.tcl: Set version to 2.0.2
+	* plotchart.man: Refine description of the first argument for createRightAxis
+	* plotaxis.tcl: Refine raising commands because of legend and right axis
+
+2012-12-30  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Add support for -box for remaining chart types (note: margins for square-based plots
+	                 still require work)
+	* plotaxis.tcl: Adjust the tags for the time axis (include the widget)
+	* plotpriv.tcl: Adjust the margins to make multiple plots more useful
+	* plotspecial.tcl: Remove left-over print command
+
+2012-12-29  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.man: Document the subtitle command
+	* plotchart.tcl: Add the subtitle command to all chart types and the deletedata command
+	                 to those types for which it makes sense
+	                 Add support for -box etc. for two-dimensional chart types
+	* plottable.tcl: Properly implement the font option (for cells and headers)
+
 2012-12-20  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.man: Correction in data type for style
 	* plotaxis.tcl: Implement vertical text for right axis (patch provided by Frank Gover)
