@@ -676,18 +676,23 @@ labels at the y-axis.
 [list_end]
 
 
-[call [cmd ::Plotchart::createRightAxis] [arg w] [arg yaxis]]
+[call [cmd ::Plotchart::createRightAxis] [arg w_or_plot] [arg yaxis]]
 
 Create a plot command that will use a right axis instead of the left
-axis (configuration type: inherited from the existing plot). The widget
-(w) must already contain an ordinary plot, as the
-horizontal axis and other properties are reused. To plot data using the
+axis (configuration type: inherited from the existing plot). The canvas widget
+must already contain an ordinary plot, as the
+horizontal axis and other properties are reused. Preferably use the
+plot command, as with multiple plots in a canvas (also when redefining an existing
+plot!), the wrong geometry might be used.
+[nl]
+To plot data using the
 right axis, use this new command, to plot data using the [emph left]
 axis, use the original plot command.
 
 [list_begin arguments]
-[arg_def widget w in]
-Name of the [emph existing] canvas widget to hold the plot.
+[arg_def widget w_or_plot in]
+Name of the [emph existing] canvas widget to hold the plot or preferably the
+plot command for the plot with the left axis.
 
 [arg_def list yaxis in]
 A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order.
@@ -747,6 +752,15 @@ different positions.
 [list_end]
 [para]
 
+[call [cmd \$anyplot] subtitle [arg text]]
+
+Specify the subtitle of the whole chart.
+
+[list_begin arguments]
+[arg_def string text in]
+The text of the subtitle to be drawn.
+[list_end]
+[para]
 
 [call [cmd \$anyplot] canvas]
 
