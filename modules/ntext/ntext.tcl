@@ -7,7 +7,7 @@
 # Copyright (c) 1992-1994 The Regents of the University of California.
 # Copyright (c) 1994-1997 Sun Microsystems, Inc.
 # Copyright (c) 1998 by Scriptics Corporation.
-# Copyright (c) 2005-2011 additions by Keith Nash.
+# Copyright (c) 2005-2013 additions by Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -75,6 +75,10 @@ package require Tk  8.5
 
 switch -exact -- [tk windowingsystem] {
     "x11" {
+	event add <<NtextCut>>		<Control-Key-x> <Key-F20> <Control-Lock-Key-X>
+	event add <<NtextCopy>>		<Control-Key-c> <Key-F16> <Control-Lock-Key-C>
+	event add <<NtextPaste>>		<Control-Key-v> <Key-F18> <Control-Lock-Key-V>
+
 	event add <<NtextSelectAll>>		<Control-Key-slash>
 	event add <<NtextSelectNone>>		<Control-Key-backslash>
 	event add <<NtextNextChar>>		<Right>
@@ -99,6 +103,11 @@ switch -exact -- [tk windowingsystem] {
 	event add <<NtextSelectNextPara>>	<Control-Shift-Down>
     }
     "win32" {
+
+	event add <<NtextCut>>		<Control-Key-x> <Shift-Key-Delete> <Control-Lock-Key-X>
+	event add <<NtextCopy>>		<Control-Key-c> <Control-Key-Insert> <Control-Lock-Key-C>
+	event add <<NtextPaste>>		<Control-Key-v> <Shift-Key-Insert> <Control-Lock-Key-V>
+
 	# Tk 8.6 also adds <Control-Key-a> <Control-Lock-Key-A> to
 	# <<NtextSelectAll>>, adding this usage to win32 for the first time,
 	# and removing all the "emacs-like bindings" from win32 in order to
@@ -128,6 +137,11 @@ switch -exact -- [tk windowingsystem] {
 	event add <<NtextSelectNextPara>>	<Control-Shift-Down>
     }
     "aqua" {
+## FIXME check Aqua, probably should be <Command-Lock-Key-X> etc
+	event add <<NtextCut>> <Command-Key-x> <Key-F2> <Control-Lock-Key-X> <Shift-Key-Delete>
+	event add <<NtextCopy>> <Command-Key-c> <Key-F3> <Control-Lock-Key-C> <Control-Key-Insert>
+	event add <<NtextPaste>> <Command-Key-v> <Key-F4> <Control-Lock-Key-V> <Shift-Key-Insert>
+
 	# Official bindings
 	# See http://support.apple.com/kb/HT1343
 	# The traditional Tk <Control-Key-slash>, <Control-Key-backslash> will no longer work on the Mac.
@@ -182,6 +196,16 @@ switch -exact -- [tk windowingsystem] {
 
     }
 }
+
+#    event add <<Cut>>   <Shift-Key-Delete>
+#    event add <<Copy>>  <Control-Key-Insert>
+#    event add <<Paste>> <Shift-Key-Insert>
+# 8.5 does this only for win32, and it is unaffected by tk_strictMotif --
+#      cf. 8.5.11, core-8.5-branch at 2013-01-14
+# 8.6 adds and removes these events for X11 using a trace on tk_strictMotif --
+# trace exists only for X11; 8.6 adds events for win32 irrespective of tk_strictMotif
+#
+# We want the extra bindings for X11 on 8.5, so it is most sensible to create NtextCut etc.  Also add them for Aqua.
 
 
 # ------------------------------------------------------------------------------
@@ -251,6 +275,8 @@ bind Ntext <Double-1> {
     set tk::Priv(selectMode) word
     ntext::TextSelectTo %W %x %y
     catch {%W mark set insert sel.first}
+#>> move the anchor to the end of the selection - don't leave it at the previous position (here, single click)
+#>>    catch {%W mark set [ntext::TextAnchor %W] sel.last}
 }
 # ignore an out-of-order triple click.  This has no adverse consequences.
 bind Ntext <Triple-1> {
@@ -261,6 +287,8 @@ bind Ntext <Triple-1> {
     set tk::Priv(selectMode) line
     ntext::TextSelectTo %W %x %y
     catch {%W mark set insert sel.first}
+#>> move the anchor to the end of the selection - don't leave it at the previous position
+#>>    catch {%W mark set [ntext::TextAnchor %W] sel.last}
 }
 # don't care if a quadruple click is out-of-order (i.e. follows a quadruple
 # click, not a triple click).
@@ -269,6 +297,8 @@ bind Ntext <Quadruple-1> {
 }
 bind Ntext <Shift-1> {
     set ::ntext::Bcount 1
+#>> move the anchor to the end of the selection - don't leave it at the previous position
+#>> catch {%W mark set [ntext::TextAnchor %W] sel.last}
     if {(!$::ntext::classicMouseSelect) && ([%W tag ranges sel] eq "")} {
 	# Move the selection anchor mark to the old insert mark
 	# Should the mark's gravity be set?
@@ -289,6 +319,8 @@ bind Ntext <Shift-1> {
 #   *always* preceded by a single-click.
 #   So in this case run the same code as <Shift-1> before doing <Double-Shift-1>
 bind Ntext <Double-Shift-1>	{
+#>> move the anchor to the end of the selection - don't leave it at the previous position
+#>> catch {%W mark set [ntext::TextAnchor %W] sel.last}
     if {$::ntext::Bcount != 1} {
 	set ::ntext::Bcount 1
 	if {(!$::ntext::classicMouseSelect) && ([%W tag ranges sel] eq "")} {
@@ -503,6 +535,20 @@ bind Ntext <BackSpace> {
     %W see insert
 }
 
+# This is present in early versions of
+# 8.5 and intercepts the Shift-Backspace event.
+catch {bind Ntext <Terminate_Server> {
+    if {[ntext::TextCursorInSelection %W]} {
+	set ::ntext::OldFirst [%W index sel.first]
+	%W delete sel.first sel.last
+	ntext::AdjustIndentOneLine %W $::ntext::OldFirst
+    } elseif {[%W compare insert != 1.0]} {
+	%W delete insert-1c
+	ntext::AdjustIndentOneLine %W insert
+    }
+    %W see insert
+}}
+
 bind Ntext <Control-space> {
     if {$::ntext::classicExtras} {
 	%W mark set [ntext::TextAnchor %W] insert
@@ -530,13 +576,13 @@ bind Ntext <<NtextSelectNone>> {
 	%W edit separator
     }
 }
-bind Ntext <<Cut>> {
+bind Ntext <<NtextCut>> {
     ntext::new_textCut %W
 }
-bind Ntext <<Copy>> {
+bind Ntext <<NtextCopy>> {
     ntext::new_textCopy %W
 }
-bind Ntext <<Paste>> {
+bind Ntext <<NtextPaste>> {
     ntext::new_textPaste %W
 }
 bind Ntext <<Clear>> {
@@ -629,7 +675,9 @@ bind Ntext <<Undo>> {
 	%W edit separator
     }
     if {![catch { %W edit undo }]} {
-	# the undo stack does not record tags - so we need to reapply them
+	# Cancel the selection so that Undo does not mess it up.
+	%W tag remove sel 0.0 end
+	# The undo stack does not record tags - so we need to reapply them.
 	ntext::AdjustIndentMultipleLines %W 1.0 end
     }
     if {[%W cget -autoseparators]} {
@@ -639,7 +687,9 @@ bind Ntext <<Undo>> {
 
 bind Ntext <<Redo>> {
     if {![catch { %W edit redo }]} {
-	# the redo stack does not record tags - so we need to reapply them
+	# Cancel the selection so that Redo does not mess it up.
+	%W tag remove sel 0.0 end
+	# The redo stack does not record tags - so we need to reapply them.
 	ntext::AdjustIndentMultipleLines %W 1.0 end
     }
 }
@@ -1175,22 +1225,36 @@ variable OldFirst          {}
 }
 
 
-proc ::ntext::EmacsBindings {argVarName var2 op} {
+proc ::ntext::EmacsBindings {argVarName var2 action} {
     variable EmacsEvents
     variable classicExtras
 
     if {$::ntext::classicExtras && !$::tk_strictMotif} {
-        set operation add
+        set op add
     } else {
-        set operation delete
+        set op delete
     }
 
     foreach {virtual real1 real2} $EmacsEvents {
-        event $operation $virtual $real1 $real2
+        event $op $virtual $real1 $real2
     }
+
+    if {[tk windowingsystem] eq "x11"} {
+        if {!$::tk_strictMotif} {
+            set op2 add
+        } else {
+            set op2 delete
+        }
+
+        event $op2 <<NtextCut>> <Control-Key-w> <Control-Lock-Key-W> <Shift-Key-Delete>
+        event $op2 <<NtextCopy>> <Meta-Key-w> <Meta-Lock-Key-W> <Control-Key-Insert>
+        event $op2 <<NtextPaste>> <Control-Key-y> <Control-Lock-Key-Y> <Shift-Key-Insert>
+    }
+
     return
 }
 
+set ::tk_strictMotif $::tk_strictMotif
 
 ##### End of namespace definition.  Now define the procs.
 
@@ -1421,9 +1485,13 @@ proc ::ntext::TextSelectTo {w x y {extend 0}} {
 	}
     }
     if {$Priv(mouseMoved) || ($Priv(selectMode) ne "char")} {
-	$w tag remove sel 0.0 end
+#>> move the anchor to the end of the selection - don't leave it at the previous position
+#>> catch {%W mark set [ntext::TextAnchor %W] sel.last}
+	# Rearrange operations so that selection is never full-empty-full.
+#	$w tag remove sel 0.0 end
 	$w mark set insert $cur
 	$w tag add sel $first $last
+	$w tag remove sel 1.0 $first
 	$w tag remove sel $last end
 	update idletasks
     }
@@ -1457,10 +1525,14 @@ proc ::ntext::TextKeyExtend {w index} {
 	set first $anchorname
 	set last $cur
     }
-    $w tag remove sel 0.0 $first
+    # Rearrange operations so that selection is never full-empty-full.
+    # $w tag remove sel 0.0 $first
     $w tag add sel $first $last
+    $w tag remove sel 0.0 $first
     $w tag remove sel $last end
 }
+#>> move the anchor to the end of the selection - don't leave it at the previous position
+#>> catch {%W mark set [ntext::TextAnchor %W] sel.last}
 
 
 # ::tk::TextPasteSelection --
@@ -1589,8 +1661,9 @@ proc ::ntext::TextKeySelect {w new} {
 	    set first $anchorname
 	    set last $new
 	}
-	$w tag remove sel 1.0 $first
+	# Rearrange operations so that selection is never full-empty-full.
 	$w tag add sel $first $last
+	$w tag remove sel 1.0 $first
 	$w tag remove sel $last end
     }
     $w mark set insert $new
@@ -2258,18 +2331,18 @@ proc ::ntext::EndIndex {w index} {
     # from the first trailing whitespace character to the logical line end.
     if {[$w count -displaylines $index $firstTrailing] <= 0} {
 	# We're on the last display line
-	if {$index eq $firstTrailing} {
-	    # $index is at the first character of trailing whitespace.
-	    set end $lle
-	} else {
-	    # $index is on the last display line, but not at the first
-	    # character of trailing whitespace.
+	if {$index eq $lle} {
+	    # $index is at the logical line end.
 	    set end $firstTrailing
+	} else {
+	    # $index is on the last display line, but not at the logical line
+	    # end.
+	    set end $lle
 	}
     } else {
 	if {$dle eq $index} {
 	    # $index is at the end of a display line other than the last.
-	    set end $firstTrailing
+	    set end $lle
 	} else {
 	    # $index is not on the last display line, and is not at its display
 	    # line's end.
