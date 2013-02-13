@@ -1,0 +1,183 @@
+
+<html><head>
+<title>datefield - Tk datefield widget</title>
+<style type="text/css"><!--
+    HTML {
+	background: 	#FFFFFF;
+	color: 		black;
+    }
+    BODY {
+	background: 	#FFFFFF;
+	color:	 	black;
+    }
+    DIV.doctools {
+	margin-left:	10%;
+	margin-right:	10%;
+    }
+    DIV.doctools H1,DIV.doctools H2 {
+	margin-left:	-5%;
+    }
+    H1, H2, H3, H4 {
+	margin-top: 	1em;
+	font-family:	sans-serif;
+	font-size:	large;
+	color:		#005A9C;
+	background: 	transparent;
+	text-align:		left;
+    }
+    H1.title {
+	text-align: center;
+    }
+    UL,OL {
+	margin-right: 0em;
+	margin-top: 3pt;
+	margin-bottom: 3pt;
+    }
+    UL LI {
+	list-style: disc;
+    }
+    OL LI {
+	list-style: decimal;
+    }
+    DT {
+	padding-top: 	1ex;
+    }
+    UL.toc,UL.toc UL, UL.toc UL UL {
+	font:		normal 12pt/14pt sans-serif;
+	list-style:	none;
+    }
+    LI.section, LI.subsection {
+	list-style: 	none;
+	margin-left: 	0em;
+	text-indent:	0em;
+	padding: 	0em;
+    }
+    PRE {
+	display: 	block;
+	font-family:	monospace;
+	white-space:	pre;
+	margin:		0%;
+	padding-top:	0.5ex;
+	padding-bottom:	0.5ex;
+	padding-left:	1ex;
+	padding-right:	1ex;
+	width:		100%;
+    }
+    PRE.example {
+	color: 		black;
+	background: 	#f5dcb3;
+	border:		1px solid black;
+    }
+    UL.requirements LI, UL.syntax LI {
+	list-style: 	none;
+	margin-left: 	0em;
+	text-indent:	0em;
+	padding:	0em;
+    }
+    DIV.synopsis {
+	color: 		black;
+	background: 	#80ffff;
+	border:		1px solid black;
+	font-family:	serif;
+	margin-top: 	1em;
+	margin-bottom: 	1em;
+    }
+    UL.syntax {
+	margin-top: 	1em;
+	border-top:	1px solid black;
+    }
+    UL.requirements {
+	margin-bottom: 	1em;
+	border-bottom:	1px solid black;
+    }
+--></style>
+</head>
+<! -- Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/www/tklib/files/modules/datefield/datefield.html' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; Keith Vetter &lt;keith@ebook.gemstar.com&gt;
+   -->
+<! -- CVS: $Id$ datefield.n
+   -->
+<body><div class="doctools">
+<hr> [
+  <a href="../../../../toc.html">Main Table Of Contents</a>
+| <a href="../../../toc.html">Table Of Contents</a>
+| <a href="../../../../index.html">Keyword Index</a>
+| <a href="/tklib">Home</a>
+] <hr>
+<h1 class="title">datefield(n) 0.2 tklib &quot;Tk datefield widget&quot;</h1>
+<div id="name" class="section"><h2><a name="name">Name</a></h2>
+<p>datefield - Tk datefield widget</p>
+</div>
+<div id="toc" class="section"><h2><a name="toc">Table Of Contents</a></h2>
+<ul class="toc">
+<li class="section"><a href="#toc">Table Of Contents</a></li>
+<li class="section"><a href="#synopsis">Synopsis</a></li>
+<li class="section"><a href="#section1">Description</a></li>
+<li class="section"><a href="#section2">COMMANDS</a></li>
+<li class="section"><a href="#section3">OPTIONS</a></li>
+<li class="section"><a href="#section4">EXAMPLE</a></li>
+<li class="section"><a href="#see-also">See Also</a></li>
+<li class="section"><a href="#keywords">Keywords</a></li>
+<li class="section"><a href="#copyright">Copyright</a></li>
+</ul>
+</div>
+<div id="synopsis" class="section"><h2><a name="synopsis">Synopsis</a></h2>
+<div class="synopsis">
+<ul class="requirements">
+<li>package require <b class="pkgname">Tk</b></li>
+<li>package require <b class="pkgname">datefield <span class="opt">?0.2?</span></b></li>
+</ul>
+<ul class="syntax">
+<li><a href="#1"><b class="cmd">::datefield::datefield</b> <i class="arg">widgetpath</i> <span class="opt">?<i class="arg">options</i>?</span></a></li>
+</ul>
+</div>
+</div>
+<div id="section1" class="section"><h2><a name="section1">Description</a></h2>
+<p>The <b class="package">datefield</b> package provides the datefield widget which
+is an enhanced text entry widget for the purpose of date entry. Only
+valid dates of the form MM/DD/YYYY can be entered.</p>
+<p>The datefield widget is, in fact, just an entry widget with
+specialized bindings. This means all the command and options for an
+entry widget apply equally here.</p>
+</div>
+<div id="section2" class="section"><h2><a name="section2">COMMANDS</a></h2>
+<dl class="definitions">
+<dt><a name="1"><b class="cmd">::datefield::datefield</b> <i class="arg">widgetpath</i> <span class="opt">?<i class="arg">options</i>?</span></a></dt>
+<dd><p>Creates and configures a date field widget.</p></dd>
+</dl>
+</div>
+<div id="section3" class="section"><h2><a name="section3">OPTIONS</a></h2>
+<p>See the <b class="cmd"><a href="../../../../index.html#key60">entry</a></b> manual entry for details on all available options.</p>
+</div>
+<div id="section4" class="section"><h2><a name="section4">EXAMPLE</a></h2>
+<pre class="example">
+ package require datefield
+ 
+ wm title . &quot;Datefield example&quot;
+ proc DayOfWeek {args} {
+     set now [clock scan $::myDate]
+     set ::myDate2 [clock format $now -format %A]
+ }
+ trace variable myDate w DayOfWeek
+ 
+ ::datefield::datefield .df -textvariable myDate
+ label .l1 -text &quot;Enter a date:&quot;   -anchor e
+ label .l2 -text &quot;That date is a:&quot; -anchor e
+ label .l3 -textvariable myDate2 -relief sunken -width 12
+ 
+ grid .l1 .df -sticky ew
+ grid .l2 .l3 -sticky ew
+ focus .df
+</pre>
+</div>
+<div id="see-also" class="section"><h2><a name="see-also">See Also</a></h2>
+<p>clock(n), entry(n)</p>
+</div>
+<div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
+<p><a href="../../../../index.html#key59">clock</a>, <a href="../../../../index.html#key60">entry</a>, <a href="../../../../index.html#key10">widget</a></p>
+</div>
+<div id="copyright" class="section"><h2><a name="copyright">Copyright</a></h2>
+<p>Copyright &copy; Keith Vetter &lt;keith@ebook.gemstar.com&gt;</p>
+</div>
+</div></body></html>

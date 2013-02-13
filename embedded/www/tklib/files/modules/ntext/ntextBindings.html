@@ -1,0 +1,192 @@
+
+<html><head>
+<title>ntextBindings - Alternative Bindings for the Text Widget</title>
+<style type="text/css"><!--
+    HTML {
+	background: 	#FFFFFF;
+	color: 		black;
+    }
+    BODY {
+	background: 	#FFFFFF;
+	color:	 	black;
+    }
+    DIV.doctools {
+	margin-left:	10%;
+	margin-right:	10%;
+    }
+    DIV.doctools H1,DIV.doctools H2 {
+	margin-left:	-5%;
+    }
+    H1, H2, H3, H4 {
+	margin-top: 	1em;
+	font-family:	sans-serif;
+	font-size:	large;
+	color:		#005A9C;
+	background: 	transparent;
+	text-align:		left;
+    }
+    H1.title {
+	text-align: center;
+    }
+    UL,OL {
+	margin-right: 0em;
+	margin-top: 3pt;
+	margin-bottom: 3pt;
+    }
+    UL LI {
+	list-style: disc;
+    }
+    OL LI {
+	list-style: decimal;
+    }
+    DT {
+	padding-top: 	1ex;
+    }
+    UL.toc,UL.toc UL, UL.toc UL UL {
+	font:		normal 12pt/14pt sans-serif;
+	list-style:	none;
+    }
+    LI.section, LI.subsection {
+	list-style: 	none;
+	margin-left: 	0em;
+	text-indent:	0em;
+	padding: 	0em;
+    }
+    PRE {
+	display: 	block;
+	font-family:	monospace;
+	white-space:	pre;
+	margin:		0%;
+	padding-top:	0.5ex;
+	padding-bottom:	0.5ex;
+	padding-left:	1ex;
+	padding-right:	1ex;
+	width:		100%;
+    }
+    PRE.example {
+	color: 		black;
+	background: 	#f5dcb3;
+	border:		1px solid black;
+    }
+    UL.requirements LI, UL.syntax LI {
+	list-style: 	none;
+	margin-left: 	0em;
+	text-indent:	0em;
+	padding:	0em;
+    }
+    DIV.synopsis {
+	color: 		black;
+	background: 	#80ffff;
+	border:		1px solid black;
+	font-family:	serif;
+	margin-top: 	1em;
+	margin-bottom: 	1em;
+    }
+    UL.syntax {
+	margin-top: 	1em;
+	border-top:	1px solid black;
+    }
+    UL.requirements {
+	margin-bottom: 	1em;
+	border-bottom:	1px solid black;
+    }
+--></style>
+</head>
+<! -- Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/www/tklib/files/modules/ntext/ntextBindings.html' by tcllib/doctools with format 'html'
+   -->
+<! -- CVS: $Id$ ntextBindings.n
+   -->
+<body><div class="doctools">
+<hr> [
+  <a href="../../../../toc.html">Main Table Of Contents</a>
+| <a href="../../../toc.html">Table Of Contents</a>
+| <a href="../../../../index.html">Keyword Index</a>
+| <a href="/tklib">Home</a>
+] <hr>
+<h1 class="title">ntextBindings(n) 0.81 tklib &quot;Alternative Bindings for the Text Widget&quot;</h1>
+<div id="name" class="section"><h2><a name="name">Name</a></h2>
+<p>ntextBindings - Alternative Bindings for the Text Widget</p>
+</div>
+<div id="toc" class="section"><h2><a name="toc">Table Of Contents</a></h2>
+<ul class="toc">
+<li class="section"><a href="#toc">Table Of Contents</a></li>
+<li class="section"><a href="#synopsis">Synopsis</a></li>
+<li class="section"><a href="#section1">Description</a></li>
+<li class="section"><a href="#section2">CONFIGURATION OPTIONS</a></li>
+<li class="section"><a href="#section3">EXAMPLE</a></li>
+<li class="section"><a href="#see-also">See Also</a></li>
+<li class="section"><a href="#keywords">Keywords</a></li>
+</ul>
+</div>
+<div id="synopsis" class="section"><h2><a name="synopsis">Synopsis</a></h2>
+<div class="synopsis">
+<ul class="requirements">
+<li>package require <b class="pkgname">Tcl 8.5</b></li>
+<li>package require <b class="pkgname">Tk 8.5</b></li>
+<li>package require <b class="pkgname">ntext <span class="opt">?0.81?</span></b></li>
+</ul>
+</div>
+</div>
+<div id="section1" class="section"><h2><a name="section1">Description</a></h2>
+<p>The <b class="package"><a href="ntext.html">ntext</a></b> package provides a binding tag named <em>Ntext</em> for use by text widgets in place of the default <em>Text</em> binding tag.</p>
+<p>The <em>Text</em> binding tag provides around one hundred bindings to the text widget (the exact number is platform-dependent).  A few of these behave in a way that is different from most contemporary text-editing applications.  <em>Ntext</em> aims to provide more familiar behaviour.</p>
+<p>Features of the <em>Ntext</em> bindings that differ from the default <em>Text</em> bindings:</p>
+<ul class="itemized">
+<li><p>Clicking near the end of a (logical) line moves the cursor to the end of that line <em>(not the start of the next line)</em>.  If the widget is in <i class="arg">-wrap</i> <i class="arg">word</i> mode, the same rule applies to display lines.</p></li>
+<li><p>Double-clicking or dragging near the end of a (logical) line will highlight/select characters from the end of that line <em>(not the next line, or the region at the end of the line where there are no characters)</em>.  If the widget is in <i class="arg">-wrap</i> <i class="arg">word</i> mode, the same rule applies to display lines.</p></li>
+<li><p>The <em>End</em> key implements &quot;Smart End&quot; (successive keypresses move the cursor to the end of the display line, then to the end of the logical line); the <em>Home</em> key implements &quot;Smart Home&quot; (which is similar to &quot;Smart End&quot;, but also toggles between the beginning and end of leading whitespace).</p></li>
+<li><p>When a selection exists, a &lt;&lt;Paste&gt;&gt; operation (e.g. &lt;Control-v&gt;) overwrites the selection (as most editors do), and does so on all platforms.</p></li>
+<li><p>The &lt;Insert&gt; key toggles between &quot;Insert&quot; and &quot;Overwrite&quot; modes for keyboard input.  <em>(In contrast, the Text binding tag uses &lt;Insert&gt; as a method to paste the &quot;primary selection&quot;, a task that can be accomplished instead by mouse middle-click.)</em></p></li>
+<li><p>The &lt;Escape&gt; key clears the selection.</p></li>
+<li><p>Selecting with &lt;Shift-Button1&gt; selects from the previous position of the insertion cursor. <em>(In the Text binding tag, the selection anchor may be the position of the previous mouse click.)</em></p></li>
+<li><p>&lt;Shift-Button1&gt; operations do not alter the selection anchor. <em>(In the Text binding tag, they do.)</em></p></li>
+<li><p>By default, the <em>Ntext</em> binding tag does not provide several of the Control-key bindings supplied by the <em>Text</em> binding tag.  Modern keyboards offer alternatives, such as cursor keys for navigation; modern applications often use the Control-key bindings for other purposes (e.g. &lt;Control-p&gt; for &quot;print&quot;).</p></li>
+</ul>
+<p>The last three cases, the behavior of <em>Text</em> is often useful, so <em>Ntext</em> gives you the option of retaining it, by setting variables defined in the ::ntext namespace to 1 (instead of their default 0).  Explaining these features in more detail:</p>
+<ul class="itemized">
+<li><p>If the mouse is clicked at position A, then the keyboard is used to move the cursor to B, then shift is held down, and the mouse is clicked at C: the <em>Text</em> binding tag gives a selection from A to C; the <em>Ntext</em> gives a selection from B to C.  If you want <em>Ntext</em> to behave like <em>Text</em> in this respect, set <b class="variable">::ntext::classicMouseSelect</b> to 1.</p></li>
+<li><p>The <em>Text</em> binding tag allows successive &lt;Shift-Button-1&gt; events to change both ends of the selection, by moving the selection anchor to the end of the selection furthest from the mouse click.  Instead, the <em>Ntext</em> binding tag fixes the anchor, and multiple Shift-Button-1 events can only move the non-anchored end of the selection.  If you want <em>Ntext</em> to behave like <em>Text</em> in this respect, set <b class="variable">::ntext::classicAnchor</b> to 1.  In both <em>Text</em> and <em>Ntext</em>, keyboard navigation with the Shift key held down alters the selection and keeps the selection anchor fixed.</p></li>
+<li><p>The following &quot;extra&quot; <em>Text</em> bindings are switched off by default, but can be activated in <em>Ntext</em> by setting <b class="variable">::ntext::classicExtras</b> to 1: &lt;Control-a&gt;, &lt;Control-b&gt;, &lt;Control-d&gt;, &lt;Control-e&gt;, &lt;Control-f&gt;, &lt;Control-h&gt;, &lt;Control-i&gt;, &lt;Control-k&gt;, &lt;Control-n&gt;, &lt;Control-o&gt;, &lt;Control-p&gt;, &lt;Control-t&gt;, &lt;Control-space&gt;, &lt;Control-Shift-space&gt;.</p></li>
+</ul>
+</div>
+<div id="section2" class="section"><h2><a name="section2">CONFIGURATION OPTIONS</a></h2>
+<p><em>Ntext</em> provides alternatives to a number of behaviours of the classic <em>Text</em> binding tag.  Where there is an option, the <em>Ntext</em> behaviour is switched on by default, except for display-line indentation which is discussed on a separate page at <i class="term"><a href="ntextIndent.html">ntextIndent</a></i>.</p>
+<p>The behaviour of <em>Ntext</em> may be configured application-wide by setting the values of a number of namespace variables:</p>
+<p><b class="variable">::ntext::classicAnchor</b></p>
+<ul class="itemized">
+<li><p><b class="const">0</b> - (default value) selects <em>Ntext</em> behaviour, i.e. the anchor point is fixed</p></li>
+<li><p><b class="const">1</b> - selects classic <em>Text</em> behaviour, i.e. the anchor point is variable</p></li>
+</ul>
+<p><b class="variable">::ntext::classicExtras</b></p>
+<ul class="itemized">
+<li><p><b class="const">0</b> - (default value) selects <em>Ntext</em> behaviour, i.e. several &quot;extra&quot; <em>Text</em> bindings are de-activated</p></li>
+<li><p><b class="const">1</b> - selects classic <em>Text</em> behaviour, i.e. the &quot;extra&quot; <em>Text</em> bindings are activated</p></li>
+</ul>
+<p><b class="variable">::ntext::classicMouseSelect</b></p>
+<ul class="itemized">
+<li><p><b class="const">0</b> - (default value) selects <em>Ntext</em> behaviour, i.e. the anchor point for mouse selection operations is moved by keyboard navigation</p></li>
+<li><p><b class="const">1</b> - selects classic <em>Text</em> behaviour</p></li>
+</ul>
+<p><b class="variable">::ntext::overwrite</b></p>
+<ul class="itemized">
+<li><p><b class="const">0</b> - (initial value) text typed at the keyboard is inserted into the widget</p></li>
+<li><p><b class="const">1</b> - text typed at the keyboard overwrites text already in the widget</p></li>
+<li><p>The value is toggled by the <em>Insert</em> key.</p></li>
+</ul>
+</div>
+<div id="section3" class="section"><h2><a name="section3">EXAMPLE</a></h2>
+<p>To use <em>Ntext</em> but keep classic <em>Text</em> 's variable-anchor feature:</p>
+<pre class="example">
+package require ntext
+text .t
+set ::ntext::classicAnchor 1
+bindtags .t {.t Ntext . all}
+</pre>
+</div>
+<div id="see-also" class="section"><h2><a name="see-also">See Also</a></h2>
+<p><a href="../../../../index.html#key6">bindtags</a>, <a href="ntext.html">ntext</a>, <a href="ntextIndent.html">ntextIndent</a>, <a href="../../../../index.html#key8">text</a></p>
+</div>
+<div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
+<p><a href="../../../../index.html#key6">bindtags</a>, <a href="../../../../index.html#key8">text</a></p>
+</div>
+</div></body></html>
