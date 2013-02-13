@@ -684,7 +684,7 @@ must already contain an ordinary plot, as the
 horizontal axis and other properties are reused. Preferably use the
 plot command, as with multiple plots in a canvas (also when redefining an existing
 plot!), the wrong geometry might be used.
-[nl]
+[para]
 To plot data using the
 right axis, use this new command, to plot data using the [emph left]
 axis, use the original plot command.
