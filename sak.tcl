@@ -7,7 +7,7 @@ exec tclsh "$0" ${1+"$@"}
 # SAK = Swiss Army Knife.
 
 set distribution   [file dirname [info script]]
-lappend auto_path  [file join $distribution modules]
+set auto_path      [linsert $auto_path 0 [file join $distribution modules]]
 lappend auto_path  [file join $distribution/../tcllib modules]
 
 set critcldefault {}
@@ -179,6 +179,7 @@ proc ipackages {args} {
 	    regsub {([0-9]) \[.*$}  $line {\1} line
 
 	    foreach {n v} $line break
+	    set v [string trimright $v \\]
 
 	    if {![info exists p($n)]} {
 		set p($n) [list $v $m]
@@ -186,9 +187,9 @@ proc ipackages {args} {
 		# We have multiple versions of the same package. We
 		# remember all versions.
 
-		foreach {vlist m} $p($n) break
+		foreach {vlist mx} $p($n) break
 		lappend vlist $v
-		set p($n) [list [lsort -uniq -dict $vlist] $m]
+		set p($n) [list [lsort -uniq -dict $vlist] $mx]
 	    }
 	}
 	close $f
@@ -383,7 +384,7 @@ proc ppackages {args} {
     unset p
 
     set ppcache($args) $pp
-    return $pp
+    return $pp 
 }
 
 proc xNULL    {args} {}
@@ -481,20 +482,35 @@ proc xcopyfile {src dest} {
 }
 
 proc xcopy {src dest recurse {pattern *}} {
-    foreach file [glob [file join $src $pattern]] {
-        set base [file tail $file]
-	set sub  [file join $dest $base]
-	if {0 == [string compare CVS $base]} {continue}
-        if {[file isdirectory $file]} then {
-	    if {$recurse} {
-		xcopy $file $sub $recurse $pattern
+    if {[string equal $pattern *] || !$recurse} {
+	foreach file [glob [file join $src $pattern]] {
+	    set base [file tail $file]
+	    set sub  [file join $dest $base]
+	    if {0 == [string compare CVS $base]} {continue}
+	    if {[file isdirectory $file]} then {
+		if {$recurse} {
+		    xcopy $file $sub $recurse $pattern
+		}
+	    } else {
+		xcopyfile $file $sub
 	    }
-        } else {
-            xcopyfile $file $sub
-        }
+	}
+    } else {
+	foreach file [glob [file join $src *]] {
+	    set base [file tail $file]
+	    set sub  [file join $dest $base]
+	    if {[string equal CVS $base]} {continue}
+	    if {[file isdirectory $file]} then {
+		if {$recurse} {
+		    xcopy $file $sub $recurse $pattern
+		}
+	    } else {
+		if {![string match $pattern $base]} {continue}
+		xcopyfile $file $sub
+	    }
+	}
     }
 }
-
 
 proc xxcopy {src dest recurse {pattern *}} {
     global package_name
@@ -695,7 +711,7 @@ proc getpdesc  {} {
 
     package require sak::doc
     sak::doc::Gen desc l $argv
-
+    
     array set _ {}
     foreach file [glob -nocomplain doc/desc/*.l] {
         set f [open $file r]
@@ -1177,7 +1193,7 @@ proc modified-modules {} {
 	# Look for 'Released and tagged' within
 	# the first four lines of the file. If
 	# not present assume that the line is
-	# deeper down, indicatating that the module
+	# deeper down, indicating that the module
 	# has been modified since the last release.
 
 	set f [open $cl r]
@@ -1195,7 +1211,6 @@ proc modified-modules {} {
 	}
 	close $f
     }
-
     return $modified
 }
 
@@ -1445,7 +1460,7 @@ proc ::dsrs::Final {} {
 
 	    # We are writing over code required by ourselves.
 	    # For easy recovery in case of problems we save
-	    # the original
+	    # the original 
 
 	    puts "    *Saving original of code important to docstrip/regen itself*"
 	    write_out $o.bak [get_input $o]
@@ -1500,158 +1515,6 @@ proc __packages {} {
 proc __provided {} {
     array set packages [ppackages]
     nparray packages
-    return
-}
-
-
-proc __vcompare {} {
-    global argv
-    set oldplist [lindex $argv 0]
-    pkg-compare $oldplist
-    return
-}
-
-proc __rstatus {} {
-    global distribution approved
-
-    catch {
-	set f [file join $distribution .APPROVE]
-	set f [open $f r]
-	while {![eof $f]} {
-	    if {[gets $f line] < 0} continue
-	    set line [string trim $line]
-	    if {$line == {}} continue
-	    set approved($line) .
-	}
-	close $f
-    }
-    pkg-compare [location_PACKAGES]
-    return
-}
-
-proc pkg-compare {oldplist} {
-    global approved ; array set approved {}
-
-    getpackage struct::set struct/sets.tcl
-
-    array set curpkg [ipackages]
-    array set oldpkg [loadpkglist $oldplist]
-    array set mod {}
-    array set changed {}
-    foreach m [modified-modules] {
-	set mod($m) .
-    }
-
-    foreach p [array names curpkg] {
-	set __($p) .
-	foreach {vlist module} $curpkg($p) break
-	set curpkg($p) $vlist
-	set changed($p) [info exists mod($module)]
-    }
-    foreach p [array names oldpkg] {set __($p) .}
-    set unified [lsort [array names __]]
-    unset __
-
-    set maxl 0
-    foreach name $unified {
-        if {[string length $name] > $maxl} {
-            set maxl [string length $name]
-        }
-    }
-
-    set maxm 0
-    foreach m [modules] {
-        if {[string length $m] > $maxm} {
-            set maxm [string length $m]
-        }
-    }
-
-    set lastm ""
-    foreach m [lsort -dict [modules]] {
-	set packages {}
-	foreach {p ___} [ppackages $m] {
-	    lappend packages $p
-	}
-	foreach name [lsort -dict $packages] {
-	    set skip 0
-	    set suffix ""
-	    set prefix "   "
-	    if {![info exists curpkg($name)]} {set curpkg($name) {}}
-	    if {![info exists oldpkg($name)]} {
-		set oldpkg($name) {}
-		set suffix " NEW"
-		set prefix "Nn "
-		set skip 1
-	    }
-	    if {!$skip} {
-		# Draw attention to changed packages where version is
-		# unchanged.
-
-		set vequal [struct::set equal $oldpkg($name) $curpkg($name)]
-
-		if {$changed($name)} {
-		    if {$vequal} {
-			# Changed according to ChangeLog, Version is not. ALERT.
-			set prefix "!! "
-			set suffix "\t<<< MISMATCH. Version ==, ChangeLog ++"
-		    } else {
-			# Both changelog and version number indicate a change.
-			# Small alert, have to classify the order of changes.
-			set prefix "cv "
-			set suffix "\t=== Classify changes."
-		    }
-		} else {
-		    if {$vequal} {
-			# Versions are unchanged, changelog also indicates no change.
-			# No particular attention here.
-		    } else {
-			# Versions changed, but according to changelog nothing in code. ALERT.
-			set prefix "!! "
-			set suffix "\t<<< MISMATCH. ChangeLog ==, Version ++"
-		    }
-		}
-		if {[info exists approved($name)]} {
-		    set prefix "   "
-		    set suffix ""
-		}
-	    }
-
-	    # To handle multiple versions we match the found versions up
-	    # by major version. We assume that we have only one version
-	    # per major version. This allows us to detect changes within
-	    # each major version, new major versions, etc.
-
-	    array set om {} ; foreach v $oldpkg($name) {set om([lindex [split $v .] 0]) $v}
-	    array set cm {} ; foreach v $curpkg($name) {set cm([lindex [split $v .] 0]) $v}
-
-	    set all [lsort -dict [struct::set union [array names om] [array names cm]]]
-
-	    sakdebug {
-		puts @@@@@@@@@@@@@@@@
-		parray om
-		parray cm
-		puts all\ $all
-		puts @@@@@@@@@@@@@@@@
-	    }
-
-	    foreach v $all {
-		if {![string equal $m $lastm]} {
-		    set mdis $m
-		} else {
-		    set mdis ""
-		}
-		set lastm $m
-
-		if {[info exists om($v)]} {set ov $om($v)} else {set ov "--"}
-		if {[info exists cm($v)]} {set cv $cm($v)} else {set cv "--"}
-
-		puts stdout ${prefix}[format "%-*s %-*s %-*s %-*s" \
-					  $maxm $mdis $maxl $name 8 $ov 8 $cv]$suffix
-	    }
-
-	    unset om cm
-	}
-    }
     return
 }
 
@@ -1724,8 +1587,15 @@ proc __critcl {} {
         # -debug and -clean only work with critcl >= v04
         switch -exact -- $option {
             -keep  { append flags " -keep" }
-            -debug { append flags " -debug" }
+            -debug {
+		append flags " -debug [lindex $argv 1]"
+		set argv [lreplace $argv 0 0]
+	    }
             -clean { append flags " -clean" }
+            -target {
+		append flags " -target [lindex $argv 1]"
+		set argv [lreplace $argv 0 0]
+	    }
             -- { set argv [lreplace $argv 0 0]; break }
             default { break }
         }
@@ -1792,7 +1662,7 @@ proc critcl_module {pkg {extra ""}} {
     set target [file join $distribution modules]
     catch {
         puts "$critcl $extra -force -libdir [list $target] -pkg [list $pkg] $files"
-        eval exec $critcl $extra -force -libdir [list $target] -pkg [list $pkg] $files
+        eval exec $critcl $extra -force -libdir [list $target] -pkg [list $pkg] $files 
     } r
     puts $r
     return
@@ -2182,7 +2052,7 @@ proc _validate_all {} {
     }
     if {$nagelfar == {}} {puts "  Tool 'nagelfar' not found, no check"}
 
-    if {($frink == {}) || ($procheck == {}) || ($tclchecker == {})
+    if {($frink == {}) || ($procheck == {}) || ($tclchecker == {}) 
         || ($nagelfar == {})} {
 	puts "------------------------------------------------------"
     }
@@ -2202,7 +2072,7 @@ proc _validate_all {} {
 	puts "------------------------------------------------------"
     }
     if {$nagelfar    !={}} {
-    	run-nagelfar
+    	run-nagelfar 
 	puts "------------------------------------------------------"
     }
     puts ""
@@ -2258,13 +2128,13 @@ proc _validate_module {m} {
     set procheck [auto_execok procheck]
     set nagelfar [auto_execok nagelfar]
     set tclchecker [auto_execok tclchecker]
-
+    
     if {$frink    == {}} {puts "  Tool 'frink'    not found, no check"}
     if {($procheck == {}) || ($tclchecker == {})} {
 	puts "  Tools 'procheck'/'tclchecker' not found, no check"
     }
     if {$nagelfar == {}} {puts "  Tool 'nagelfar' not found, no check"}
-
+    
     if {($frink == {}) || ($procheck == {}) || ($tclchecker == {}) ||
     	($nagelfar == {})} {
 	puts "------------------------------------------------------"
@@ -2364,7 +2234,7 @@ proc __release {} {
 
 	*
 	* Released and tagged $pname $package_version ========================
-	*
+	* 
 
 "
 
@@ -2382,22 +2252,6 @@ proc __release {} {
     }
 
     gd-gen-packages
-    return
-}
-
-proc __approve {} {
-    global argv distribution
-
-    # Record the package as approved. This will suppress any alerts
-    # for that package by rstatus. Required for packages which have
-    # been classified, and for packages where a MISMATCH is bogus (due
-    # to several packages sharing a ChangeLog)
-
-    set f [open [file join $distribution .APPROVE] a]
-    foreach package $argv {
-	puts $f $package
-    }
-    close $f
     return
 }
 
