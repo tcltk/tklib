@@ -20,6 +20,12 @@ proc ::sak::localdoc::usage {} {
 proc ::sak::localdoc::run {} {
     set noe [info nameofexecutable]
 
+    set dtplite [auto_execok dtplite]
+    if {$dtplite == {}} {
+	put stderr "Need dtplite, not found in the PATH"
+	return
+    }
+
     # Relative path is necessary to handle possibility of fossil
     # repository and website as child of a larger website. Absolute
     # adressing may not point to our root, but the outer site.
@@ -31,7 +37,7 @@ proc ::sak::localdoc::run {} {
 
     # Indeed, not working for the nested pages.
     # Use absolute, for main location.
-    set nav /tcllib
+    set nav /tklib
 
     puts "Removing old documentation..."
     file delete -force embedded
@@ -43,7 +49,7 @@ proc ::sak::localdoc::run {} {
     sak::doc::index __dummy__
 
     puts "Generating manpages..."
-    exec 2>@ stderr >@ stdout $noe apps/dtplite \
+    exec 2>@ stderr >@ stdout $noe $dtplite \
 	-exclude {*/doctools/tests/*} \
 	-exclude {*/support/*} \
 	-ext n \
@@ -59,7 +65,7 @@ proc ::sak::localdoc::run {} {
     } [fileutil::cat support/devel/sak/doc/toc.txt]]
 
     puts "Generating HTML... Pass 1, draft..."
-    exec 2>@ stderr >@ stdout $noe apps/dtplite \
+    exec 2>@ stderr >@ stdout $noe $dtplite \
 	-toc $toc \
 	-nav Home $nav \
 	-exclude {*/doctools/tests/*} \
@@ -69,7 +75,7 @@ proc ::sak::localdoc::run {} {
 	html .
 
     puts "Generating HTML... Pass 2, resolving cross-references..."
-    exec 2>@ stderr >@ stdout $noe apps/dtplite \
+    exec 2>@ stderr >@ stdout $noe $dtplite \
 	-toc $toc \
 	-nav Home $nav \
 	-exclude {*/doctools/tests/*} \
