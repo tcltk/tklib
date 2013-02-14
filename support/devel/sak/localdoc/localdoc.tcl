@@ -32,7 +32,7 @@ proc ::sak::localdoc::run {} {
     #set nav /home
 
     # NOTE: This may not work for the deeper nested manpages.
-    # doc/tip/embedded/www/tcoc.html
+    # doc/tip/embedded/www/toc.html
     #set nav ../../../../../home
 
     # Indeed, not working for the nested pages.
@@ -61,7 +61,7 @@ proc ::sak::localdoc::run {} {
 
     set toc [string map {
 	.man     .html
-	modules/ tcllib/files/modules/
+	modules/ tklib/files/modules/
     } [fileutil::cat support/devel/sak/doc/toc.txt]]
 
     puts "Generating HTML... Pass 1, draft..."
