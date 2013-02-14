@@ -11,6 +11,10 @@
 # Copyright (c) 2008 Andreas Kupries. Added ability to provide the tracking
 #               information to external users.
 #
+# Copyright (c) 2013 Frank Gover, Andreas Kupries. Added ability to
+#               bound the crosshairs to an area of the canvas. Useful
+#               for plots.
+#	(Actual code inspired by Frank's, but modified and extended (multiple bboxes)).
 
 # ### ### ### ######### ######### #########
 ## Requisites
@@ -48,6 +52,7 @@ namespace eval ::crosshair {}
 proc ::crosshair::crosshair { w args } {
     variable config
     set opts(args) $args
+    set opts(hidden) 0
     bindtags $w [linsert [bindtags $w] 1 Crosshair]
     set config($w) [array get opts]
     return
@@ -113,6 +118,8 @@ proc ::crosshair::configure { w args } {
 	array set flags $opts(args)
 	array set flags $args
 	set opts(args) [array get flags]
+
+	# Immediately apply to a visible crosshair
 	if { [info exists opts(hhairl)] } {
 	    eval [list $w itemconfig $opts(hhairl)] $args
 	    eval [list $w itemconfig $opts(hhairr)] $args
@@ -122,6 +129,93 @@ proc ::crosshair::configure { w args } {
 	set config($w) [array get opts]
     }
     return $opts(args)
+}
+
+#----------------------------------------------------------------------
+#
+# ::crosshair::bbox_add --
+#
+#       Confines the crosshairs to a rectangular area in the canvas widget.
+#	Multiple calls add areas, each allowing the crosshairs.
+#
+#	NOTE: Bounding boxes can overlap to the point of being identical.
+#
+# Parameters:
+#       w - Path name of the widget
+#       bbox - Area in the canvas. A list of 4 numbers in the form
+#		{bbox_llx bbox_lly bbox_urx bbox_ury}
+#            where:
+#                 bbox-llx = Lower left  X coordinate of the area
+#                 bbox-lly = Lower left  Y coordinate of the area
+#                 bbox-urx = Upper right X coordinate of the area
+#                 bbox-ury = Upper right Y coordinate of the area
+#
+# Result:
+#	A token identifying the bounding box, for future removal.
+#
+#----------------------------------------------------------------------
+
+proc ::crosshair::bbox_add { w bbox } {
+    variable config
+    if { ![info exists config($w)] } {
+	return -code error "no crosshairs in $w"
+    }
+    array set opts $config($w)
+    lappend opts(bbox) $bbox
+    set config($w) [array get opts]
+
+    set token bbox$w/[llength $opts(bbox)]
+
+    return $token
+}
+
+#----------------------------------------------------------------------
+#
+# ::crosshair::bbox_remove --
+#
+#       Remove a bounding box for the crosshairs, identified by token.
+#	The crosshairs are confined to the remaining boxes, or not at
+#	all if no boxes remain.
+#
+#	NOTE: Bounding boxes can overlap to the point of being identical.
+#
+# Parameters:
+#       token - The bbox token, identifying both canvas and bbox in it.
+#
+# Result:
+#	Nothing.
+#
+#----------------------------------------------------------------------
+
+proc ::crosshair::bbox_remove { token } {
+    variable config
+    if {![regexp {^bbox([^/]+)/(\d+)$} -> w index]} {
+	return -code error "Expected a bbox token, got \"$token\""
+    }
+    if { ![info exists config($w)] } {
+	return -code error "no crosshairs in $w"
+    }
+    array set opts $config($w)
+
+    # Replace chosen box with nothing.
+    incr index -1
+    set newboxes [lreplace $opts(bbox) $index $index {}]
+
+    # Remove empty boxes from the end of the list.
+    while {[llength $newboxes] && ![llength [lindex $newboxes end]]} {
+	set newboxes [lreplace $newboxes end end]
+    }
+
+    if {![llength $newboxes]} {
+	# Nothing left, disable entirely
+	unset opts(bbox)
+    } else {
+	# Keep remainder.
+	set opts(bbox) $newboxes
+    }
+
+    set config($w) [array get opts]
+    return
 }
 
 #----------------------------------------------------------------------
@@ -206,15 +300,14 @@ proc ::crosshair::Hide { w } {
     variable config
     if { ![info exists config($w)] } return
     array set opts $config($w)
-    if { ![info exists opts(hhairl)] } return
-    $w delete $opts(hhairl)
-    $w delete $opts(hhairr)
-    $w delete $opts(vhaird)
-    $w delete $opts(vhairu)
-    unset opts(hhairl)
-    unset opts(hhairr)
-    unset opts(vhairu)
-    unset opts(vhaird)
+
+    # Already hidden, do nothing
+    if { $opts(hidden) } return
+    set opts(hidden) 1
+
+    # Destroy the parts of a visible cross-hair
+    Kill $w opts
+
     set config($w) [array get opts]
     return
 }
@@ -247,15 +340,99 @@ proc ::crosshair::Unhide { w x y } {
     variable config
     if { ![info exists config($w)] } return
     array set opts $config($w)
-    if { ![info exists opts(hhairl)] } {
-	set opts(hhairl) [eval [list $w create line 0 0 0 0] $opts(args)]
-	set opts(hhairr) [eval [list $w create line 0 0 0 0] $opts(args)]
-	set opts(vhaird) [eval [list $w create line 0 0 0 0] $opts(args)]
-	set opts(vhairu) [eval [list $w create line 0 0 0 0] $opts(args)]
-    }
-    set config($w) [array get opts]
+
+    # Already unhidden, do nothing
+    if { !$opts(hidden) } return
+    set opts(hidden) 0
+
+    # Recreate cross-hair. This takes the bounding boxes, if any, into
+    # account, i.e. if we are out of bounds nothing will appear.
     Move $w $x $y
     return
+}
+
+proc ::crosshair::GetBoundaries { w x y llxv llyv urxv uryv } {
+    upvar 1 $llxv llx $llyv lly $urxv urx $uryv ury
+    variable config
+    array set opts $config($w)
+
+    # Defaults
+    set llx [$w canvasx 0]
+    set lly [$w canvasy 0]
+    set urx [$w canvasx [winfo width  $w]]
+    set ury [$w canvasy [winfo height $w]]
+
+    # (x) No boxes confining the crosshair.
+    if {![info exists opts(bbox)]} {
+	#puts ANY($x,$y)
+	return 1
+    }
+
+    # Determine active boundaries based on the boxes we are in (or not).
+
+    # NOTE: This is linear in the number of active boundaries on the
+    # canvas. If this is a really large number this will become
+    # slow. If that happens consider creation and maintenance of some
+    # fast data structure (R-tree, or similar) which can take
+    # advantage of overlap and nesting to quickly rule out large
+    # areas. Note that such a structure has its own price in time,
+    # memory, and code complexity.
+
+    set first 1
+    foreach box $opts(bbox) {
+	# Ignore removed boxes, not yet cleaned up. Note that we have
+	# at least one active box here to touch by the loop. If we had
+	# none the bbox_remove command ensured that (x) above
+	# triggered.
+	if {![llength $box]} continue
+
+	# Ignore all boxes we are outside of. They do not go into the
+	# boundary calculation.
+	if {[Outside $box $x $y]} continue
+
+	# Unfold the box data and check if its boundaries are better
+	# (less restrictive) than we currently have, or if this is the
+	# first restriction.
+	set nllx [lindex $box 0]
+	set nlly [lindex $box 1]
+	set nurx [lindex $box 2]
+	set nury [lindex $box 3]
+
+	if {$first || ($nllx < $llx)} { set llx $nllx }
+	if {$first || ($nlly > $lly)} { set lly $nlly }
+	if {$first || ($nurx > $urx)} { set urx $nurx }
+	if {$first || ($nury < $ury)} { set ury $nury }
+
+	set first 0
+    }
+
+    if {$first} {
+	# We have boxes limiting us (See both (x)), and we are outside
+	# of all of them. Time to hide the crosshairs.
+	#puts OUT($x,$y)
+	return 0
+    }
+
+    # We are inside of some box and have the proper boundaries of
+    # visibility.
+    #puts LIMIT($x,$y):$llx,$lly,$urx,$ury
+    return 1
+}
+
+proc ::crosshair::Outside { box x y } {
+    # Unfold box
+    set llx [lindex $box 0]
+    set lly [lindex $box 1]
+    set urx [lindex $box 2]
+    set ury [lindex $box 3]
+
+    #puts \tTEST($x,$y):$llx,$lly,$urx,$ury:[expr {($x < $llx) || ($x > $urx) || ($y < $lly) || ($y > $ury)}]
+
+    # Test each edge
+    expr {($x < $llx) ||
+	  ($x > $urx) ||
+	  ($y < $lly) ||
+	  ($y > $ury)}
 }
 
 #----------------------------------------------------------------------
@@ -285,30 +462,91 @@ proc ::crosshair::Unhide { w x y } {
 proc ::crosshair::Move { w x y } {
     variable config
     array set opts $config($w)
-    set opts(x) [$w canvasx $x]
-    set opts(y) [$w canvasy $y]
-    set opts(x0) [$w canvasx 0]
-    set opts(x1) [$w canvasx [winfo width $w]]
-    set opts(y0) [$w canvasy 0]
-    set opts(y1) [$w canvasy [winfo height $w]]
+
+    set x [$w canvasx $x]
+    set y [$w canvasy $y]
+    set opts(x) $x
+    set opts(y) $y
+
+    if {[GetBoundaries $w $x $y opts(x0) opts(y0) opts(x1) opts(y1)]} {
+	# In bounds, create or move.
+	Place $w opts
+    } else {
+	# We are out of bounds. Kill the crosshair.
+	Kill $w opts
+    }
+
+    # Store changes back.
+    set config($w) [array get opts]
+
+    # And run the tracking callback, if active.
+    if {![info exists opts(track)]} return
+    uplevel \#0 [linsert $opts(track) end \
+		     $w $opts(x) $opts(y) \
+		     $opts(x0) $opts(y0) $opts(x1) $opts(y1)]
+    return
+}
+
+# ### ### ### ######### ######### #########
+## Create, destroy, or modify the parts of a crosshair.
+
+proc ::crosshair::Place {w ov} {
+    upvar 1 $ov opts
+
+    # +/-4 is the minimal possible distance which still prevents the
+    # canvas from choosing the crosshairs as 'current' object under
+    # the cursor.
+    set n 4
+
+    set x  $opts(x)
+    set y  $opts(y)
+    set x0 $opts(x0)
+    set y0 $opts(y0)
+    set x1 $opts(x1)
+    set y1 $opts(y1)
+    set ax [expr {$x-$n}]
+    set bx [expr {$x+$n}]
+    set ay [expr {$y-$n}]
+    set by [expr {$y+$n}]
+
     if { [info exists opts(hhairl)] } {
-	# +/-4 is the minimal possible distance which still prevents
-	# the canvas from choosing the crosshairs as 'current' object
-	# under the cursor.
-	set n 4
-	$w coords $opts(hhairl) $opts(x0) $opts(y) [expr {$opts(x)-$n}] $opts(y)
-	$w coords $opts(hhairr) [expr {$opts(x)+$n}] $opts(y) $opts(x1) $opts(y)
-	$w coords $opts(vhairu) $opts(x) $opts(y0) $opts(x) [expr {$opts(y)-$n}]
-	$w coords $opts(vhaird) $opts(x) [expr {$opts(y)+$n}] $opts(x) $opts(y1)
+	# Modify a visible crosshair.
+
+	$w coords $opts(hhairl) $x0 $y $ax $y
+	$w coords $opts(hhairr) $bx $y $x1 $y
+	$w coords $opts(vhairu) $x $y0 $x $ay
+	$w coords $opts(vhaird) $x $by $x $y1
+
 	$w raise $opts(hhairl)
 	$w raise $opts(hhairr)
 	$w raise $opts(vhaird)
 	$w raise $opts(vhairu)
+    } else {
+	# Create a newly visible crosshair. After unhide and/or
+	# entering into one of the active bboxes, if any.
+
+	set opts(hhairl) [eval [list $w create line $x0 $y $ax $y] $opts(args)]
+	set opts(hhairr) [eval [list $w create line $bx $y $x1 $y] $opts(args)]
+	set opts(vhaird) [eval [list $w create line $x $y0 $x $ay] $opts(args)]
+	set opts(vhairu) [eval [list $w create line $x $by $x $y1] $opts(args)]
     }
-    set config($w) [array get opts]
-    if {[info exists opts(track)]} {
-	uplevel \#0 [linsert $opts(track) end $w $opts(x) $opts(y) $opts(x0) $opts(y0) $opts(x1) $opts(y1)]
-    }
+    return
+}
+
+proc ::crosshair::Kill {w ov} {
+    upvar 1 $ov opts
+
+    if { ![info exists opts(hhairl)] } return
+
+    $w delete $opts(hhairl)
+    $w delete $opts(hhairr)
+    $w delete $opts(vhaird)
+    $w delete $opts(vhairu)
+
+    unset opts(hhairl)
+    unset opts(hhairr)
+    unset opts(vhairu)
+    unset opts(vhaird)
     return
 }
 
@@ -333,4 +571,4 @@ namespace eval ::crosshair {
 # ### ### ### ######### ######### #########
 ## Ready
 
-package provide crosshair 1.0.2
+package provide crosshair 1.1
