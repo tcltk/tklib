@@ -1,8 +1,14 @@
+2013-02-13  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* crosshair.tcl: [Bug 3603562]: Allow the confinement of the
+	* crosshair.man: crosshairs to one or more rectangular bounding
+	* pkgIndex.tcl: boxes. Bumped version to 1.1.
+
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
 	* Released and tagged Tklib 0.5 ========================
-	* 
+	*
 
 2008-11-27  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
@@ -27,4 +33,4 @@
 
 	* crosshair.man: New module and package, crosshairs for
 	* crosshair.tcl: Tk canvas. By Kevin Kenny.
-	* pkgIndex.tcl: 
+	* pkgIndex.tcl:
