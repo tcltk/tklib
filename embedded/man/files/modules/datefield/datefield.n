@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/datefield/datefield.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/datefield/datefield.n' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) Keith Vetter <keith@ebook.gemstar.com>
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
@@ -291,7 +291,9 @@ See the \fBentry\fR manual entry for details on all available options.
 .SH "SEE ALSO"
 clock(n), entry(n)
 .SH KEYWORDS
-clock, entry, widget
+clock, date, dateentry, entry, widget
+.SH CATEGORY
+Widget
 .SH COPYRIGHT
 .nf
 Copyright (c) Keith Vetter <keith@ebook.gemstar.com>

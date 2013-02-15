@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/widget/widget_dateentry.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/widget/widget_dateentry.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,10 +237,10 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "widget_dateentry" n 0.95 tklib "widget::dateentry Megawidget"
+.TH "widget_dateentry" n 0.95 tklib "Various megawidgets"
 .BS
 .SH NAME
-widget_dateentry \- widget::dateentry Megawidget
+widget_dateentry \- Date Entry Megawidget
 .SH SYNOPSIS
 package require \fBTcl  8.4\fR
 .sp
@@ -318,4 +318,6 @@ Control-space - Show calendar window
 
 .CE
 .SH KEYWORDS
-calendar, megawidget, snit, widget
+date, dateentry, megawidget, snit, widget
+.SH CATEGORY
+Widget

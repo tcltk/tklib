@@ -357,13 +357,13 @@ tklib
 \fIfiles/modules/tooltip/tooltip.n\fR: Tooltip management
 .TP
 \fBwidget\fR
-\fIfiles/modules/widget/widget.n\fR: Megawidget package
+\fIfiles/modules/widget/widget.n\fR: Megawidget bundle
 .TP
 \fBwidget_calendar\fR
-\fIfiles/modules/widget/widget_calendar.n\fR: widget::calendar Megawidget
+\fIfiles/modules/widget/widget_calendar.n\fR: Calendar Megawidget
 .TP
 \fBwidget_dateentry\fR
-\fIfiles/modules/widget/widget_dateentry.n\fR: widget::dateentry Megawidget
+\fIfiles/modules/widget/widget_dateentry.n\fR: Date Entry Megawidget
 .TP
 \fBwidget_listentry\fR
 \fIfiles/modules/widgetl/widget_listentry.n\fR: widget::listentry widget
@@ -372,7 +372,7 @@ tklib
 \fIfiles/modules/widgetl/widget_listsimple.n\fR: widget::listsimple widget
 .TP
 \fBwidget_toolbar\fR
-\fIfiles/modules/widget/widget_toolbar.n\fR: widget::toolbar Megawidget
+\fIfiles/modules/widget/widget_toolbar.n\fR: Toolbar Megawidget
 .TP
 \fBwidget_validator\fR
 \fIfiles/modules/widgetv/widget_validator.n\fR: widget::validator behaviour
