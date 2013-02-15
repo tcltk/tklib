@@ -3,6 +3,9 @@
 [copyright {Keith Vetter <keith@ebook.gemstar.com>}]
 [moddesc {Tk datefield widget}]
 [titledesc {Tk datefield widget}]
+[category Widget]
+[see_also entry(n) clock(n)]
+[keywords entry widget clock dateentry date]
 [require Tk]
 [require datefield [opt 0.2]]
 [description]
@@ -53,6 +56,4 @@ See the [cmd entry] manual entry for details on all available options.
  focus .df
 }]
 
-[see_also entry(n) clock(n)]
-[keywords entry widget clock]
 [manpage_end]

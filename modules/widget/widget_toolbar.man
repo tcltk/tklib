@@ -1,7 +1,9 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin widget_toolbar n 3.0]
-[moddesc   {widget::toolbar Megawidget}]
-[titledesc {widget::toolbar Megawidget}]
+[moddesc   {Various megawidgets}]
+[titledesc {Toolbar Megawidget}]
+[category Widget]
+[keywords megawidget snit widget toolbar]
 [require Tcl 8.4]
 [require Tk 8.4]
 [require widget [opt 3.0]]
@@ -59,5 +61,4 @@ $t add separator -pad {2 4}
 $t add button [button .c -text bar]
 }]
 
-[keywords megawidget snit widget]
 [manpage_end]

@@ -2,6 +2,8 @@
 [manpage_begin ipentry n 0.3]
 [moddesc   {An IP address entry widget}]
 [titledesc {An IP address entry widget}]
+[category Widget]
+[keywords entry {ip address} network]
 [require Tcl 8.4]
 [require Tk 8.4]
 [require ipentry [opt 0.3]]
@@ -110,8 +112,5 @@ Standard widget options. See [cmd options] for a description of their
 meanings and values.
 
 [list_end]
-
-
-[keywords entry {ip address}]
 [manpage_end]
 

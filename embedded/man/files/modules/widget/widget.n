@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/widget/widget.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/widget/widget.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,10 +237,10 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "widget" n 3.0 tklib "Megawidget package"
+.TH "widget" n 3.0 tklib "Various megawidgets"
 .BS
 .SH NAME
-widget \- Megawidget package
+widget \- Megawidget bundle
 .SH SYNOPSIS
 package require \fBTcl  8.4\fR
 .sp
@@ -327,4 +327,6 @@ pack [widget::superframe .f -type separator -text "SuperFrame:"]
 
 .CE
 .SH KEYWORDS
-megawidget, snit, widget
+bundle, calendar, dateentry, dialog, megawidget, menu, panelframe, ruler, screenruler, scrolledwindow, snit, statusbar, superframe, toolbar, widget
+.SH CATEGORY
+Widget
