@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/widget/widget_calendar.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/widget/widget_calendar.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,10 +237,10 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "widget_calendar" n 1.00 tklib "widget::calendar Megawidget"
+.TH "widget_calendar" n 1.00 tklib "Various megawidgets"
 .BS
 .SH NAME
-widget_calendar \- widget::calendar Megawidget
+widget_calendar \- Calendar Megawidget
 .SH SYNOPSIS
 package require \fBTcl  8.4\fR
 .sp
@@ -337,4 +337,6 @@ Control-Down - Move to year after current date
 
 .CE
 .SH KEYWORDS
-megawidget, snit, widget
+calendar, date, megawidget, snit, widget
+.SH CATEGORY
+Widget
