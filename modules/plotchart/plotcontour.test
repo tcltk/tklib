@@ -131,6 +131,7 @@ tcltest::test Plotcontours-1.0 {Informal test for plotcontour} {
 
     set c [canvas .c  -background white \
 	       -width 500 -height 500]
+    lappend windows $c
 
     pack   $c  -fill both -side top
 
