@@ -479,13 +479,20 @@ proc ::crosshair::Move { w x y } {
     set opts(x) $x
     set opts(y) $y
 
-    if {[GetBoundaries $w $x $y opts(x0) opts(y0) opts(x1) opts(y1)]} {
-	# In bounds, create or move.
-	Place $w opts
-    } else {
-	# We are out of bounds. Kill the crosshair.
+    if {![GetBoundaries $w $x $y opts(x0) opts(y0) opts(x1) opts(y1)]} {
+	# We are out of bounds. Kill the crosshair, store changes, and
+	# return. This last disables the use of the tracking
+	# callback. The crosshairs track only inside the allowed
+	# boxes.
 	Kill $w opts
+
+	# Store changes back.
+	set config($w) [array get opts]
+	return
     }
+
+    # Inside the boundaries, create or move.
+    Place $w opts
 
     # Store changes back.
     set config($w) [array get opts]
