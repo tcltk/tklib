@@ -1,3 +1,9 @@
+2013-02-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* crosshair.tcl: [Bug 3603562]: Tweaks and fixes for robustness.
+	* ../../examples/canvas/crosshair_for_axes.tcl: Examples of bounded
+	* ../../examples/canvas/crosshair_for_multixyplot.tcl: crosshairs.
+
 2013-02-13  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* crosshair.tcl: [Bug 3603562]: Allow the confinement of the

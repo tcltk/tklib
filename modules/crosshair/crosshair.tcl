@@ -5,8 +5,7 @@
 # This package displays a mouse-tracking crosshair in the canvas widget.
 #
 # Copyright (c) 2003 by Kevin B. Kenny. All rights reserved.
-# Redistribution permitted under the terms in
-#  http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/tcl/tcl/license.terms?rev=1.3&content-type=text/plain
+# Redistribution permitted under the terms of the Tcl License.
 #
 # Copyright (c) 2008 Andreas Kupries. Added ability to provide the tracking
 #               information to external users.
@@ -161,11 +160,22 @@ proc ::crosshair::bbox_add { w bbox } {
 	return -code error "no crosshairs in $w"
     }
     array set opts $config($w)
+
+    # Sort the coordinates and make sure the bbox is in format
+    # "lower-left upper-right". The larger Y is on the lower left and
+    # the larger X is on the upper right.
+
+    set x_coords [lsort -real -increasing [list [lindex $bbox 0] [lindex $bbox 2]]]
+    set y_coords [lsort -real -decreasing [list [lindex $bbox 1] [lindex $bbox 3]]]
+
+    set bbox [list \
+		  [lindex $x_coords 0] [lindex $y_coords 0] \
+		  [lindex $x_coords 1] [lindex $y_coords 1]]
+
     lappend opts(bbox) $bbox
     set config($w) [array get opts]
 
     set token bbox$w/[llength $opts(bbox)]
-
     return $token
 }
 
@@ -428,11 +438,12 @@ proc ::crosshair::Outside { box x y } {
 
     #puts \tTEST($x,$y):$llx,$lly,$urx,$ury:[expr {($x < $llx) || ($x > $urx) || ($y < $lly) || ($y > $ury)}]
 
-    # Test each edge
-    expr {($x < $llx) ||
-	  ($x > $urx) ||
-	  ($y < $lly) ||
-	  ($y > $ury)}
+    # Test each edge. Note that the border lines are considered as "outside".
+
+    expr {($x <= $llx) ||
+	  ($x >= $urx) ||
+	  ($y >= $lly) ||
+	  ($y <= $ury)}
 }
 
 #----------------------------------------------------------------------
