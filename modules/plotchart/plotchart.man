@@ -5,7 +5,7 @@
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.5]]
 [require Tk [opt 8.5]]
-[require Plotchart [opt 2.0.2]]
+[require Plotchart [opt 2.1.0]]
 
 [description]
 [para]
@@ -835,6 +835,61 @@ Text to drawn to the y-axis
 
 [list_end]
 
+[para]
+
+
+[call [cmd \$anyplot] xsubtext [arg text]]
+
+Specify the subtext of the (horizontal) x-axis, for those plots that have
+a straight x-axis. This text is drawn below the primary text.
+[nl]
+Since this involves positioning the primary text and setting margins, you need to
+set the option "usesubtext" for the bottom axis via the plotstyle command. The relevant
+options are: usesubtext, subtextcolor and subtextfont.
+
+[list_begin arguments]
+[arg_def string text in]
+The secondary text of the x-axis label to be drawn.
+
+[list_end]
+[para]
+
+
+[call [cmd \$anyplot] ysubtext [arg text]]
+
+Specify the subtext of the (vertical) y-axis, for those plots that have
+a straight y-axis. This text is drawn below the primary text, for both
+axes on the left and the right.
+[nl]
+Since this involves positioning the primary text and setting margins, you need to
+set the option "usesubtext" for the left or right axis via the plotstyle command. The relevant
+options are: usesubtext, subtextcolor and subtextfont.
+
+[list_begin arguments]
+[arg_def string text in]
+The secondary text of the y-axis label to be drawn.
+
+[list_end]
+[para]
+
+
+[call [cmd \$anyplot] vsubtext [arg text]]
+
+Specify the subtext of the (vertical) y-axis, for those plots that have
+a straight y-axis. This text is drawn to the [emph right] of the primary text, for both
+axes on the left and the right.
+[nl]
+Since this involves positioning the primary text and setting margins, you need to
+set the option "usesubtext" for the left or right axis via the plotstyle command. The relevant
+options are: usevsubtext, subvtextcolor and subvtextfont. (Note the "v" to distinguish this
+option from the text at the top of a vertical axis that is drawn via [term "\$anyplot ytext"] or
+[term "\$anyplot ysubtext"].)
+
+[list_begin arguments]
+[arg_def string text in]
+The secondary (vertical) text of the y-axis label to be drawn.
+
+[list_end]
 [para]
 
 
