@@ -54,9 +54,16 @@ source [file join [file dirname [info script]] plotchart.tcl]
 proc matchNumbers {expected actual} {
     set match 1
     foreach a $actual e $expected {
-	if { abs($a - $e) > 0.5e-9*(abs($a)+abs($e)) } {
-	    set match 0
-	    break
+	if { $e != 0.0 } {
+	    if { abs($a - $e) > 0.5e-9*(abs($a)+abs($e)) } {
+		set match 0
+		break
+	}
+    } else {
+	    if { abs($a) > 0.5e-9 } {
+		set match 0
+		break
+	   }
 	}
     }
     return $match
@@ -86,6 +93,9 @@ customMatch numbers matchNumbers
 # done by the creation procedure
 #
 
+#
+# World coordinates to pixels: Linear scales
+#
 test Plotchart-1.1 {World coordinates to pixel - basic 1} -match numbers -body {
     set ::Plotchart::scaling(window,coordSystem) 0
     ::Plotchart::worldCoordinates "window"    0.0     0.0 100.0 1000.0
@@ -114,77 +124,193 @@ test Plotchart-1.4 {World coordinates to pixel - ordering} -match numbers -body 
     ::Plotchart::coordsToPixel    "window" 100 100
 } -result {110 110}
 
-
-
-
-test Plotchart-2.1 {Pixel to world coordinates - basic 1} -match numbers -body {
+#
+# World coordinates to pixels: Log scales
+#
+test Plotchart-1.5 {World coordinates to pixel - logX-Y} -match numbers -body {
     set ::Plotchart::scaling(window,coordSystem) 1
+
+    set xmin [expr {log10(1.0)}]
+    set xmax [expr {log10(100.0)}]
+
+    ::Plotchart::worldCoordinates "window"    $xmin 0.0 $xmax 1000.0
+    ::Plotchart::viewPort         "window"    0     0   100   100
+    set result [concat                                      \
+        [::Plotchart::coordsToPixel    "window"     1    0] \
+        [::Plotchart::coordsToPixel    "window"   100 1000] \
+        [::Plotchart::coordsToPixel    "window"    10  500] \
+    ]
+} -result {0 100 100 0 50 50}
+
+test Plotchart-1.6 {World coordinates to pixel - X-logY} -match numbers -body {
+    set ::Plotchart::scaling(window,coordSystem) 2
+
+    set ymin [expr {log10(1.0)}]
+    set ymax [expr {log10(1000.0)}]
+
+    ::Plotchart::worldCoordinates "window"    0.0  $ymin 100.0 $ymax
+    ::Plotchart::viewPort         "window"    0    0     100   100
+    set result [concat                                      \
+        [::Plotchart::coordsToPixel    "window"     0    1] \
+        [::Plotchart::coordsToPixel    "window"   100 1000] \
+        [::Plotchart::coordsToPixel    "window"    50  [expr {sqrt(1000)}]] \
+    ]
+} -result {0 100 100 0 50 50}
+
+test Plotchart-1.7 {World coordinates to pixel - logX-logY} -match numbers -body {
+    set ::Plotchart::scaling(window,coordSystem) 3
+
+    set xmin [expr {log10(1.0)}]
+    set xmax [expr {log10(100.0)}]
+    set ymin [expr {log10(1.0)}]
+    set ymax [expr {log10(1000.0)}]
+
+    ::Plotchart::worldCoordinates "window"    $xmin $ymin $xmax $ymax
+    ::Plotchart::viewPort         "window"    0     0     100   100
+    set result [concat                                      \
+        [::Plotchart::coordsToPixel    "window"     1    1] \
+        [::Plotchart::coordsToPixel    "window"   100 1000] \
+        [::Plotchart::coordsToPixel    "window"    10  [expr {sqrt(1000)}]] \
+    ]
+} -result {0 100 100 0 50 50}
+
+test Plotchart-1.8 {World coordinates to pixel - radial coordinates} -match numbers -body {
+    set ::Plotchart::scaling(window,coordSystem) 4
+    ::Plotchart::polarCoordinates "window"   10
+    ::Plotchart::viewPort         "window"    0       0   100    100
+    set result [concat                                      \
+        [::Plotchart::coordsToPixel    "window"     0    0] \
+        [::Plotchart::coordsToPixel    "window"    10   90] \
+        [::Plotchart::coordsToPixel    "window"     5  180] \
+    ]
+} -result {50 50 50 0 25 50}
+
+#
+# Pixels to world coordinates: Linear scales
+#
+test Plotchart-2.1 {Pixel to world coordinates - basic 1} -match numbers -body {
+    set ::Plotchart::scaling(window,coordSystem) 0
     ::Plotchart::viewPort         "window"   10      20   110    120
     ::Plotchart::worldCoordinates "window"    0.0     0.0 100.0 1000.0
     ::Plotchart::pixelToCoords    "window"  10  20
 } -result {0 1000}
 
 test Plotchart-2.2 {Pixel to world coordinates - basic 2} -match numbers -body {
-    set ::Plotchart::scaling(window,coordSystem) 1
+    set ::Plotchart::scaling(window,coordSystem) 0
     ::Plotchart::viewPort         "window"   10      20   110    120
     ::Plotchart::worldCoordinates "window"    0.0     0.0 100.0 1000.0
     ::Plotchart::pixelToCoords    "window"  110  120
 } -result {100 0}
 
 test Plotchart-2.3 {Pixel to world coordinates - ordering} -match numbers -body {
-    set ::Plotchart::scaling(window,coordSystem) 1
+    set ::Plotchart::scaling(window,coordSystem) 0
     ::Plotchart::worldCoordinates "window"    0.0     0.0 100.0 1000.0
     ::Plotchart::viewPort         "window"   10      20   110    120
     ::Plotchart::pixelToCoords    "window"  110  120
 } -result {100 0}
 
-test Plotchart-2.4 {Nice scale 1} -match numbers -body {
+#
+# Pixels to world coordinates: Log scales
+#
+test Plotchart-2.4 {Pixel to world coordinates - logX-Y} -match numbers -body {
+    set ::Plotchart::scaling(window,coordSystem) 1
+
+    set xmin [expr {log10(1.0)}]
+    set xmax [expr {log10(100.0)}]
+
+    ::Plotchart::worldCoordinates "window"    $xmin 0.0 $xmax 1000.0
+    ::Plotchart::viewPort         "window"    0     0   100   100
+    set result [concat                                      \
+        [::Plotchart::pixelToCoords    "window"     0  100] \
+        [::Plotchart::pixelToCoords    "window"   100    0] \
+        [::Plotchart::pixelToCoords    "window"    50   50] \
+    ]
+} -result {1 0 100 1000 10 500}
+
+test Plotchart-2.5 {Pixel to world coordinates - X-logY} -match numbers -body {
+    set ::Plotchart::scaling(window,coordSystem) 2
+
+    set ymin [expr {log10(1.0)}]
+    set ymax [expr {log10(1000.0)}]
+
+    ::Plotchart::worldCoordinates "window"    0.0  $ymin 100.0 $ymax
+    ::Plotchart::viewPort         "window"    0    0     100   100
+    set result [concat                                      \
+        [::Plotchart::pixelToCoords    "window"     0  100] \
+        [::Plotchart::pixelToCoords    "window"   100    0] \
+        [::Plotchart::pixelToCoords    "window"    50   50] \
+    ]
+} -result [list 0 1 100 1000 50 [expr {sqrt(1000)}]]
+
+test Plotchart-2.6 {Pixel to world coordinates - logX-logY} -match numbers -body {
+    set ::Plotchart::scaling(window,coordSystem) 3
+
+    set xmin [expr {log10(1.0)}]
+    set xmax [expr {log10(100.0)}]
+    set ymin [expr {log10(1.0)}]
+    set ymax [expr {log10(1000.0)}]
+
+    ::Plotchart::worldCoordinates "window"    $xmin $ymin $xmax $ymax
+    ::Plotchart::viewPort         "window"    0     0     100   100
+    set result [concat                                      \
+        [::Plotchart::pixelToCoords    "window"     0  100] \
+        [::Plotchart::pixelToCoords    "window"   100    0] \
+        [::Plotchart::pixelToCoords    "window"    50   50] \
+    ]
+} -result [list 1 1 100 1000 10 [expr {sqrt(1000)}]]
+
+#
+# Constructing nice scales
+#
+test Plotchart-3.1 {Nice scale 1} -match numbers -body {
     ::Plotchart::determineScale 0.1 1.0
 } -result {0.0 1.0 0.2}
 
-test Plotchart-2.5 {Nice scale 2} -match numbers -body {
+test Plotchart-3.2 {Nice scale 2} -match numbers -body {
     ::Plotchart::determineScale 0.001 0.01
 } -result {0.0 0.01 0.002}
 
-test Plotchart-2.6 {Nice scale 3} -match numbers -body {
+test Plotchart-3.3 {Nice scale 3} -match numbers -body {
     ::Plotchart::determineScale -0.2 0.9
 } -result {-0.2 1.0 0.2}
 
-test Plotchart-2.7 {Nice scale 4} -match numbers -body {
+test Plotchart-3.4 {Nice scale 4} -match numbers -body {
     ::Plotchart::determineScale -0.25 0.85
 } -result {-0.4 1.0 0.2}
 
-test Plotchart-2.8 {Nice scale 5} -match numbers -body {
+test Plotchart-3.5 {Nice scale 5} -match numbers -body {
     ::Plotchart::determineScale -0.25 0.7999
 } -result {-0.4 0.8 0.2}
 
-test Plotchart-2.9 {Nice scale 6} -match numbers -body {
+test Plotchart-3.6 {Nice scale 6} -match numbers -body {
     ::Plotchart::determineScale 10001 10010
 } -result {10000 10010 2}
 
-test Plotchart-2.10 {Nice scale 7} -match numbers -body {
+test Plotchart-3.7 {Nice scale 7} -match numbers -body {
     ::Plotchart::determineScale 10001 10015
 } -result {10000 10015 5}
 
-test Plotchart-2.11 {Nice scale 8} -match numbers -body {
+test Plotchart-3.8 {Nice scale 8} -match numbers -body {
     ::Plotchart::determineScale -1.7 26.8
 } -result {-10.0 30.0 10.0}
 
-test Plotchart-2.12 {Nice scale 9} -match numbers -body {
+test Plotchart-3.9 {Nice scale 9} -match numbers -body {
     ::Plotchart::determineScale 0.99999999999999911  1.0000000000000007
 } -result {0.999999994 1.000000006 2e-009}
 
-test Plotchart-2.13 {Nice scale from list} -match numbers -body {
+test Plotchart-3.10 {Nice scale from list} -match numbers -body {
     ::Plotchart::determineScaleFromList {-0.25 -0.1 0.6 0.6 0.85}
 } -result {-0.4 1.0 0.2}
 
-test Plotchart-2.14 {Nice scale from list with missing data} -match numbers -body {
+test Plotchart-3.11 {Nice scale from list with missing data} -match numbers -body {
     ::Plotchart::determineScaleFromList {-0.25 -0.1 0.6 {} {} {} 0.6 0.85}
 } -result {-0.4 1.0 0.2}
 
 
-
-test Plotchart-3.1 {XY-plot} -constraints tk -body {
+#
+# Graphical tests: plotting data
+#
+test Plotchart-4.1 {XY-plot} -constraints tk -body {
     canvas .c -width 300 -height 200 -bg white
     pack   .c -fill both
     .c delete all
@@ -226,7 +352,7 @@ test Plotchart-3.1 {XY-plot} -constraints tk -body {
 } -result 1 ;# {}
 
 
-test Plotchart-3.2 {Piechart} -constraints tk -body {
+test Plotchart-4.2 {Piechart} -constraints tk -body {
     canvas .c -width 300 -height 200 -bg white
     pack   .c -fill both
     .c delete all
@@ -245,7 +371,7 @@ test Plotchart-3.2 {Piechart} -constraints tk -body {
 
 } -result 1
 
-test Plotchart-3.3 {Polar plot} -constraints tk -body {
+test Plotchart-4.3 {Polar plot} -constraints tk -body {
     canvas .c -width 300 -height 200 -bg white
     pack   .c -fill both
     .c delete all
@@ -268,7 +394,7 @@ test Plotchart-3.3 {Polar plot} -constraints tk -body {
     set res
 } -result 1
 
-test Plotchart-3.4 {Barchart} -constraints tk -body {
+test Plotchart-4.4 {Barchart} -constraints tk -body {
     canvas .c -width 300 -height 200 -bg white
     pack   .c -fill both
     .c delete all
@@ -288,7 +414,7 @@ test Plotchart-3.4 {Barchart} -constraints tk -body {
     set res
 } -result 1
 
-test Plotchart-3.5 {Barchart (stacked)} -constraints tk -body {
+test Plotchart-4.5 {Barchart (stacked)} -constraints tk -body {
     canvas .c -width 300 -height 200 -bg white
     pack   .c -fill both
     .c delete all
@@ -308,7 +434,7 @@ test Plotchart-3.5 {Barchart (stacked)} -constraints tk -body {
     set res
 } -result 1
 
-test Plotchart-3.6 {Horizontal barchart} -constraints tk -body {
+test Plotchart-4.6 {Horizontal barchart} -constraints tk -body {
     canvas .c -width 300 -height 200 -bg white
     pack   .c -fill both
     .c delete all
@@ -328,7 +454,7 @@ test Plotchart-3.6 {Horizontal barchart} -constraints tk -body {
     set res
 } -result 1
 
-test Plotchart-3.7 {Horizontal barchart (stacked)} -constraints tk -body {
+test Plotchart-4.7 {Horizontal barchart (stacked)} -constraints tk -body {
     canvas .c -width 300 -height 200 -bg white
     pack   .c -fill both
     .c delete all
@@ -348,7 +474,7 @@ test Plotchart-3.7 {Horizontal barchart (stacked)} -constraints tk -body {
     set res
 } -result 1
 
-test Plotchart-3.8 {Timechart} -constraints tk -body {
+test Plotchart-4.8 {Timechart} -constraints tk -body {
     canvas .c -width 300 -height 200 -bg white
     pack   .c -fill both
     .c delete all
@@ -375,7 +501,7 @@ test Plotchart-3.8 {Timechart} -constraints tk -body {
 
 } -result 1
 
-test Plotchart-3.9 {Stripchart} -constraints tk -body {
+test Plotchart-4.9 {Stripchart} -constraints tk -body {
     canvas .c -width 300 -height 200 -bg white
     pack   .c -fill both
     .c delete all
@@ -408,7 +534,7 @@ test Plotchart-3.9 {Stripchart} -constraints tk -body {
     set res
 } -result 1
 
-test Plotchart-3.10 {Isometric plot} -constraints tk -body {
+test Plotchart-4.10 {Isometric plot} -constraints tk -body {
     canvas .c -width 300 -height 200 -bg white
     pack   .c -fill both
     .c delete all
@@ -442,7 +568,7 @@ test Plotchart-3.10 {Isometric plot} -constraints tk -body {
     set result 1
 } -result 1
 
-test Plotchart-3.11 {Histogram} -constraints tk -body {
+test Plotchart-4.11 {Histogram} -constraints tk -body {
     canvas .c -width 300 -height 200 -bg white
     pack   .c -fill both
     .c delete all
@@ -476,7 +602,11 @@ test Plotchart-3.11 {Histogram} -constraints tk -body {
     set res
 } -result 1 ;# {}
 
-test Plotchart-4.1 {XY-plot - balloon} -constraints tk -body {
+
+#
+# Graphical tests: annotations and various plot/chart types
+#
+test Plotchart-5.1 {XY-plot - balloon} -constraints tk -body {
     canvas .c -width 300 -height 200 -bg white
     pack   .c -fill both
     .c delete all
@@ -519,7 +649,7 @@ test Plotchart-4.1 {XY-plot - balloon} -constraints tk -body {
     set res
 } -result 1 ;# {}
 
-test Plotchart-5.1 {Gantt chart} -constraints tk -body {
+test Plotchart-5.2 {Gantt chart} -constraints tk -body {
     canvas .c -width 600 -height 200 -bg white
     pack   .c -fill both
     .c delete all
@@ -549,7 +679,7 @@ test Plotchart-5.1 {Gantt chart} -constraints tk -body {
     set res
 } -result 1 ;# {}
 
-test Plotchart-6.1 {3D Bars} -constraints tk -body {
+test Plotchart-5.3 {3D Bars} -constraints tk -body {
     canvas .c -width 600 -height 200 -bg white
     pack   .c -fill both
     .c delete all
@@ -576,7 +706,7 @@ test Plotchart-6.1 {3D Bars} -constraints tk -body {
 } -result 1 ;# {}
 
 
-test Plotchart-7.1 {Radial chart} -constraints tk -body {
+test Plotchart-5.4 {Radial chart} -constraints tk -body {
     canvas .c -width 600 -height 400 -bg white
     pack   .c -fill both
     .c delete all
@@ -598,7 +728,7 @@ test Plotchart-7.1 {Radial chart} -constraints tk -body {
 } -result 1 ;# {}
 
 
-test Plotchart-7.2 {Filled radial chart} -constraints tk -body {
+test Plotchart-5.5 {Filled radial chart} -constraints tk -body {
     canvas .c -width 600 -height 400 -bg white
     pack   .c -fill both
     .c delete all
@@ -620,7 +750,7 @@ test Plotchart-7.2 {Filled radial chart} -constraints tk -body {
 } -result 1 ;# {}
 
 
-test Plotchart-7.3 {Filled radial chart} -constraints tk -body {
+test Plotchart-5.6 {Filled radial chart} -constraints tk -body {
     canvas .c -width 600 -height 400 -bg white
     pack   .c -fill both
     .c delete all
