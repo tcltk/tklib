@@ -685,6 +685,37 @@ proc ::Plotchart::DrawXtext { w args } {
     }
 }
 
+# DrawXsubtext --
+#    Draw subtext to the x-axis
+# Arguments:
+#    w           Name of the canvas
+#    args        Text to be drawn (more than one argument if rendering in on)
+# Result:
+#    None
+# Side effects:
+#    Text drawn in canvas
+#
+proc ::Plotchart::DrawXsubtext { w args } {
+    variable scaling
+    variable config
+
+    set textcolor  $config($w,bottomaxis,subtextcolor)
+    set textfont   $config($w,bottomaxis,subtextfont)
+
+    set char_height [font metrics $textfont -linespace]
+
+    set xt [expr {($scaling($w,pxmin)+$scaling($w,pxmax))/2}]
+    set yt [expr {$scaling($w,pymax)+2*$char_height+4}]
+
+    $w delete "xsubtext && $w"
+    if {$config($w,bottomaxis,render) eq "simple"} {
+        $w create text $xt $yt -text [lindex $args 0] -fill $textcolor -anchor n -font $textfont -tags [list xsubtext $w]
+    } elseif {$config($w,bottomaxis,render) eq "text"} {
+        RenderText $w $xt $yt -text $args -anchor n -font $textfont -tags [list xsubtext $w] \
+           -fill $textcolor
+    }
+}
+
 # DrawYtext --
 #    Draw text to the y-axis
 # Arguments:
@@ -705,16 +736,58 @@ proc ::Plotchart::DrawYtext { w text } {
         set textfont   $config($w,leftaxis,font)
         set xt         $scaling($w,pxmin)
         set anchor     se
+        set usesubtext $config($w,leftaxis,usesubtext)
     } else {
         set textcolor  $config($w,rightaxis,textcolor)
         set textfont   $config($w,rightaxis,font)
         set xt $scaling($w,pxmax)
         set anchor     sw
+        set usesubtext $config($w,rightaxis,usesubtext)
     }
-    set yt [expr {$scaling($w,pymin)-$config($w,font,char_height)/2}]
+
+    if { $usesubtext } {
+        set char_height [font metrics $textfont -linespace]
+        set yt [expr {$scaling($w,pymin)-$config($w,font,char_height)/2 - $char_height}]
+    } else {
+        set yt [expr {$scaling($w,pymin)-$config($w,font,char_height)/2}]
+    }
 
     $w delete "ytext && $w"
     $w create text $xt $yt -text $text -fill $textcolor -anchor $anchor -font $textfont -tags [list ytext $w]
+}
+
+# DrawYsubtext --
+#    Draw subtext to the y-axis
+# Arguments:
+#    w           Name of the canvas
+#    text        Text to be drawn
+# Result:
+#    None
+# Side effects:
+#    Text drawn in canvas
+#
+proc ::Plotchart::DrawYsubtext { w text } {
+    variable scaling
+    variable config
+
+    if { [string match "r*" $w] == 0 } {
+        set textcolor  $config($w,leftaxis,subtextcolor)
+        set textfont   $config($w,leftaxis,subtextfont)
+        set xt         $scaling($w,pxmin)
+        set anchor     se
+    } else {
+        set textcolor  $config($w,rightaxis,subtextcolor)
+        set textfont   $config($w,rightaxis,subtextfont)
+        set xt $scaling($w,pxmax)
+        set anchor     sw
+    }
+
+    set char_height [font metrics $textfont -linespace]
+
+    set yt [expr {$scaling($w,pymin)-$char_height/2+4}]
+
+    $w delete "ysubtext && $w"
+    $w create text $xt $yt -text $text -fill $textcolor -anchor $anchor -font $textfont -tags [list ysubtext $w]
 }
 
 # DrawVtext --
@@ -734,24 +807,70 @@ proc ::Plotchart::DrawVtext { w text } {
     variable config
 
     if { [package vsatisfies [package present Tk] 8.6] } {
+
         set yt [expr {($scaling($w,pymin) + $scaling($w,pymax)) / 2}]
 
         if { [string match "r*" $w] } {
             set anchor n
-            set bbox   [$w bbox raxis]
+            set bbox   [$w bbox "raxis && $w"]
             set tag    "rvtext"
             set axis   "rightaxis"
             set xt   [expr {[lindex $bbox 2] + $config($w,rightaxis,vtextoffset)}]
         } else {
             set anchor s
-            set bbox [$w bbox yaxis]
+            set bbox [$w bbox "yaxis && $w"]
             set tag  "vtext"
             set axis "leftaxis"
             set xt   [expr {[lindex $bbox 0] - $config($w,leftaxis,vtextoffset)}]
         }
+
+        if { $config($w,$axis,usevsubtext) } {
+            set char_height [font metrics $config($w,$axis,font) -linespace]
+            set xt          [expr {$xt - $char_height - 4}]
+        }
+
         $w delete "$tag && $w"
         $w create text $xt $yt -text $text -fill black -anchor $anchor -angle 90 -tags [list $tag $w] \
             -font $config($w,$axis,font) -fill $config($w,$axis,textcolor)
+    }
+}
+
+# DrawVsubtext --
+#    Draw vertical subtext to the y-axis
+# Arguments:
+#    w           Name of the canvas
+#    text        Text to be drawn
+# Result:
+#    None
+# Side effects:
+#    Text drawn in canvas
+# Note:
+#    This requires Tk 8.6 or later
+#
+proc ::Plotchart::DrawVsubtext { w text } {
+    variable scaling
+    variable config
+
+    if { [package vsatisfies [package present Tk] 8.6] } {
+        set yt [expr {($scaling($w,pymin) + $scaling($w,pymax)) / 2}]
+
+        if { [string match "r*" $w] } {
+            set anchor n
+            set bbox   [$w bbox "raxis && $w"]
+            set tag    "rvsubtext"
+            set axis   "rightaxis"
+            set xt   [expr {[lindex $bbox 2] + $config($w,rightaxis,vtextoffset)}]
+        } else {
+            set anchor s
+            set bbox [$w bbox "yaxis && $w"]
+            set tag  "vsubtext"
+            set axis "leftaxis"
+            set xt   [expr {[lindex $bbox 0] - $config($w,leftaxis,vtextoffset)}]
+        }
+
+        $w delete "$tag && $w"
+        $w create text $xt $yt -text $text -fill black -anchor $anchor -angle 90 -tags [list $tag $w] \
+            -font $config($w,$axis,vsubtextfont) -fill $config($w,$axis,vsubtextcolor)
     }
 }
 

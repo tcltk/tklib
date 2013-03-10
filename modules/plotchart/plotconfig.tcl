@@ -163,7 +163,7 @@ namespace eval ::Plotchart {
     # define implemented properties for each component:
     # (the '-' means that the component inherits the properties of the previous component on the list)
     foreach {component properties} {
-        leftaxis   {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render vtextoffset subtextcolor subtextfont subvtextfont subvtextcolor usesubtext usesubvtext}
+        leftaxis   {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render vtextoffset subtextcolor subtextfont vsubtextfont vsubtextcolor usesubtext usevsubtext}
         rightaxis  -
         axis       {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render justify subtextcolor subtextfont usesubtext}
         topaxis    -
@@ -209,10 +209,10 @@ namespace eval ::Plotchart {
     set _font          [.invisibleCanvas itemcget $invisibleLabel -font]
     set _subtextfont   $_font
     set _subtextcolor  $_color
-    set _subvtextfont  $_font
-    set _subvtextcolor $_color
+    set _vsubtextfont  $_font
+    set _vsubtextcolor $_color
     set _usesubtext    0
-    set _usesubvtext   0
+    set _usevsubtext   0
     set _thickness     1
     set _format        ""
     set _ticklength    3
