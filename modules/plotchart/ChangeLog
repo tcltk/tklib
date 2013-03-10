@@ -1,3 +1,11 @@
+2013-03-10  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Basic support for subtexts with axes, accurate factor "torad", pixelToCoords extended
+	* plotchart.test: Extended tests for coordinate transformations
+	* plotaxis.tcl: Support for subtexts
+	* plotconfig.tcl: Support for subtexts
+	* plotspecial.tcl: Removed debug output
+	* pkgIndex.tcl: Bumped version to 2.1
+
 2013-01-27  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Set version to 2.0.2
 	* pkgIndex.tcl: Set version to 2.0.2
