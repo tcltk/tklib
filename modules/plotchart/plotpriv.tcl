@@ -231,9 +231,17 @@ proc ::Plotchart::MarginsRectangle { w argv {notext 2.0} {text_width 8}} {
     if { $margin_right < $config($w,margin,right) } {
         set margin_right $config($w,margin,right)
     }
+    if { $config($w,rightaxis,usesubvtext) } {
+        set char_height [font metrics $config($w,rightaxis,subvtextfont) -linespace]
+        set margin_right [expr {$margin_right + $char_height + 4}]
+    }
     set margin_bottom [expr {$char_height * 2 + 2}]
     if { $margin_bottom < $config($w,margin,bottom) } {
         set margin_bottom $config($w,margin,bottom)
+    }
+    if { $config($w,bottomaxis,usesubtext) } {
+        set char_height [font metrics $config($w,bottomaxis,subtextfont) -linespace]
+        set margin_bottom [expr {$margin_bottom + $char_height}]
     }
 
     set pxmin [expr {$char_width*$text_width}]
@@ -243,6 +251,14 @@ proc ::Plotchart::MarginsRectangle { w argv {notext 2.0} {text_width 8}} {
     set pymin [expr {int($char_height*$notext) + [$w cget -borderwidth]}]
     if { $pymin < $config($w,margin,top) } {
         set pymin $config($w,margin,top)
+    }
+    if { $config($w,leftaxis,usesubtext) || $config($w,rightaxis,usesubtext) } {
+        set char_height [font metrics $config($w,bottomaxis,subtextfont) -linespace]
+        set pymin [expr {$pymin + $char_height}]
+    }
+    if { $config($w,leftaxis,usesubvtext) } {
+        set char_height [font metrics $config($w,bottomaxis,subvtextfont) -linespace]
+        set pxmin [expr {$pxmin + $char_height + 4}]
     }
 
     array set options $argv
