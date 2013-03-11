@@ -1,7 +1,7 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/crosshair/crosshair.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/crosshair/crosshair\&.n' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 2003 Kevin Kenny
-'\" Copyright (c) 2008 (docs) Andreas Kupries <andreas_kupries@users.sourceforge.net>
+'\" Copyright (c) 2008 (docs) Andreas Kupries <andreas_kupries@users\&.sourceforge\&.net>
 '\" Copyright (c) 2013 Frank Gover, Andreas Kupries
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
@@ -240,22 +240,22 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "crosshair" n 1.1 tklib "Crosshairs"
+.TH "crosshair" n 1\&.1 tklib "Crosshairs"
 .BS
 .SH NAME
 crosshair \- Crosshairs for Tk canvas
 .SH SYNOPSIS
-package require \fBTcl  ?8.4?\fR
+package require \fBTcl  ?8\&.4?\fR
 .sp
-package require \fBTk  ?8.4?\fR
+package require \fBTk  ?8\&.4?\fR
 .sp
-package require \fBcrosshair  ?1.1?\fR
+package require \fBcrosshair  ?1\&.1?\fR
 .sp
-\fBcrosshair::crosshair\fR \fIw\fR ?\fIarg\fR...?
+\fBcrosshair::crosshair\fR \fIw\fR ?\fIarg\fR\&.\&.\&.?
 .sp
 \fBcrosshair::off\fR \fIw\fR
 .sp
-\fBcrosshair::configure\fR \fIw\fR ?\fIarg\fR...?
+\fBcrosshair::configure\fR \fIw\fR ?\fIarg\fR\&.\&.\&.?
 .sp
 \fBcrosshair::track\fR \fBon\fR \fIw\fR \fIcmdprefix\fR
 .sp
@@ -268,80 +268,80 @@ package require \fBcrosshair  ?1.1?\fR
 .BE
 .SH DESCRIPTION
 The \fBcrosshair\fR package provides commands to (de)activate and
-track crosshairs on canvas widgets.
+track crosshairs on canvas widgets\&.
 .SH API
 The following commands are exported to the public:
 .TP
-\fBcrosshair::crosshair\fR \fIw\fR ?\fIarg\fR...?
+\fBcrosshair::crosshair\fR \fIw\fR ?\fIarg\fR\&.\&.\&.?
 This command activates the display of a pair of cross-hairs for the
-canvas widget \fIw\fR. The cross-hairs track the pointing device. The
-result of the command is the empty string.
+canvas widget \fIw\fR\&. The cross-hairs track the pointing device\&. The
+result of the command is the empty string\&.
 .sp
 All arguments after the widget \fIw\fR are treated as options as for a
-canvas line item in \fIw\fR. Of particular interest are \fB-fill\fR
-and \fB-dash\fR.
+canvas line item in \fIw\fR\&. Of particular interest are \fB-fill\fR
+and \fB-dash\fR\&.
 .TP
 \fBcrosshair::off\fR \fIw\fR
-This command removes the cross-hairs from the canvas widget \fIw\fR.
-Nothing is done if the widget had no cross-hairs. The result of the
-command is the empty string.
+This command removes the cross-hairs from the canvas widget \fIw\fR\&.
+Nothing is done if the widget had no cross-hairs\&. The result of the
+command is the empty string\&.
 .TP
-\fBcrosshair::configure\fR \fIw\fR ?\fIarg\fR...?
+\fBcrosshair::configure\fR \fIw\fR ?\fIarg\fR\&.\&.\&.?
 This command changes the appearance of the cross-hairs in the canvas
-widget \fIw\fR. It is an error to call it for a canvas which has no
-cross-hairs.
+widget \fIw\fR\&. It is an error to call it for a canvas which has no
+cross-hairs\&.
 .sp
 All arguments after the widget \fIw\fR are treated as options as for a
-canvas line item in \fIw\fR. Of particular interest are \fB-fill\fR
-and \fB-dash\fR.
+canvas line item in \fIw\fR\&. Of particular interest are \fB-fill\fR
+and \fB-dash\fR\&.
 .sp
-The result of the command are the current configuration settings.
+The result of the command are the current configuration settings\&.
 .TP
 \fBcrosshair::track\fR \fBon\fR \fIw\fR \fIcmdprefix\fR
 This command activates reporting of the location of the cross-hairs in
-the canvas widget \fIw\fR. It is an error to use this command for a
-canvas which has no cross-hairs. The result of the command is the
-empty string.
+the canvas widget \fIw\fR\&. It is an error to use this command for a
+canvas which has no cross-hairs\&. The result of the command is the
+empty string\&.
 .sp
 After the invokation of this command the specified command prefix
 \fIcmdprefix\fR will be called whenever the mouse moves within the
-canvas, with 7 arguments. These are, in order:
+canvas, with 7 arguments\&. These are, in order:
 .RS
 .IP [1]
 The widget \fIw\fR
 .IP [2]
-The x-location of the cross-hairs, in pixels.
+The x-location of the cross-hairs, in pixels\&.
 .IP [3]
-The y-location of the cross-hairs, in pixels.
+The y-location of the cross-hairs, in pixels\&.
 .IP [4]
-The x-location of the top-left corner of the viewport, in pixels.
+The x-location of the top-left corner of the viewport, in pixels\&.
 .IP [5]
-The y-location of the top-left corner of the viewport, in pixels.
+The y-location of the top-left corner of the viewport, in pixels\&.
 .IP [6]
-The x-location of the bottom-right corner of the viewport, in pixels.
+The x-location of the bottom-right corner of the viewport, in pixels\&.
 .IP [7]
-The y-location of the bottom-right corner of the viewport, in pixels.
+The y-location of the bottom-right corner of the viewport, in pixels\&.
 .RE
 .IP
-A previously existing callback for \fIw\fR will be disabled. I.e. per
+A previously existing callback for \fIw\fR will be disabled\&. I\&.e\&. per
 canvas widget with cross-hairs only one callback reporting their
-location is possible.
+location is possible\&.
 .TP
 \fBcrosshair::track\fR \fBoff\fR \fIw\fR
 This command disables the reporting of the location of the cross-hairs
-in the canvas widget \fIw\fR. It is an error to use this command for a
-canvas which has no cross-hairs. The result of the command is the
-empty string.
+in the canvas widget \fIw\fR\&. It is an error to use this command for a
+canvas which has no cross-hairs\&. The result of the command is the
+empty string\&.
 .TP
 \fBcrosshair::bbox_add\fR \fIw\fR \fIbbox\fR
-This command adds a bounding box to the crosshairs for canvas \fIw\fR.
-The crosshairs will only be active within that area.
+This command adds a bounding box to the crosshairs for canvas \fIw\fR\&.
+The crosshairs will only be active within that area\&.
 .sp
 The result of the command is a token with which the bounding
-box can be removed again, see \fBcrosshair::bbox_remove\fR below.
+box can be removed again, see \fBcrosshair::bbox_remove\fR below\&.
 .sp
 The bounding box \fIbbox\fR is specified thorugh a list of 4
-values, the lower left and upper right corners of the box. The order
+values, the lower left and upper right corners of the box\&. The order
 of values in the list is:
 .CS
 
@@ -349,27 +349,27 @@ llx lly urx ury
 .CE
 .sp
 Note that this command can be used multiple times, each call
-adding one more bounding box. In such a case the visible area is the
-\fIunion\fR of all the specified bounding boxes.
+adding one more bounding box\&. In such a case the visible area is the
+\fIunion\fR of all the specified bounding boxes\&.
 .TP
 \fBcrosshair::bbox_remove\fR \fItoken\fR
 This command removes the bounding box specified by the \fItoken\fR (a
 result of \fBcrosshair::bbox_add\fR) from the crosshairs for its
-canvas widget.
+canvas widget\&.
 .PP
 .SH "BUGS, IDEAS, FEEDBACK"
 This document, and the package it describes, will undoubtedly contain
-bugs and other problems.
+bugs and other problems\&.
 Please report such in the category \fItklib :: crosshair\fR of the
-\fITcllib SF Trackers\fR [http://sourceforge.net/tracker/?group_id=12883].
+\fITcllib SF Trackers\fR [http://sourceforge\&.net/tracker/?group_id=12883]\&.
 Please also report any ideas for enhancements you may have for either
-package and/or documentation.
+package and/or documentation\&.
 .SH KEYWORDS
 canvas, cross-hairs, location, tracking, viewport
 .SH COPYRIGHT
 .nf
 Copyright (c) 2003 Kevin Kenny
-Copyright (c) 2008 (docs) Andreas Kupries <andreas_kupries@users.sourceforge.net>
+Copyright (c) 2008 (docs) Andreas Kupries <andreas_kupries@users\&.sourceforge\&.net>
 Copyright (c) 2013 Frank Gover, Andreas Kupries
 
 .fi

@@ -1,6 +1,6 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/ctext/ctext.n' by tcllib/doctools with format 'nroff'
-'\" Copyright (c) George Peter Staplin <GeorgePS@XMission.com>
+'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/ctext/ctext\&.n' by tcllib/doctools with format 'nroff'
+'\" Copyright (c) George Peter Staplin <GeorgePS@XMission\&.com>
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -238,14 +238,14 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "ctext" n 3.3 tklib "Ctext a text widget with highlighting support"
+.TH "ctext" n 3\&.3 tklib "Ctext a text widget with highlighting support"
 .BS
 .SH NAME
 ctext \- Ctext a text widget with highlighting support
 .SH SYNOPSIS
 package require \fBTk \fR
 .sp
-package require \fBctext  ?3.3?\fR
+package require \fBctext  ?3\&.3?\fR
 .sp
 \fBctext\fR \fIpathName\fR ?\fIoptions\fR?
 .sp
@@ -281,112 +281,112 @@ package require \fBctext  ?3.3?\fR
 .sp
 \fIpathName\fR \fBappend\fR
 .sp
-\fIpathName\fR \fBconfigure\fR \fIoption\fR \fIvalue\fR ?...?
+\fIpathName\fR \fBconfigure\fR \fIoption\fR \fIvalue\fR ?\&.\&.\&.?
 .sp
 .BE
 .SH DESCRIPTION
 The \fBctext\fR package provides the ctext widget which
 is an enhanced text widget with support for configurable syntax
-highlighting and some extra commands.
+highlighting and some extra commands\&.
 .PP
 Ctext overloads the text widget and provides
 new commands, named \fBhighlight\fR, \fBcopy\fR, \fBpaste\fR,\fBcut\fR,
-\fBappend\fR, and \fBedit\fR.  It also provides several
-commands that allow you to define classes.
-Each class corresponds to a tag in the widget.
+\fBappend\fR, and \fBedit\fR\&.  It also provides several
+commands that allow you to define classes\&.
+Each class corresponds to a tag in the widget\&.
 .SH COMMANDS
 .TP
 \fBctext\fR \fIpathName\fR ?\fIoptions\fR?
-Creates and configures a ctext widget.
+Creates and configures a ctext widget\&.
 .PP
 .SH HIGHLIGHTING
-Highlighting is controlled with text widget tags, that are called highlight classes.
-The \fIclass\fR is a tag name and can be configured like any text widget tag.
-Four types of highlight classes are supported. All highlight classes are automatically used
-by the \fBhighlight\fR method of the widget.
+Highlighting is controlled with text widget tags, that are called highlight classes\&.
+The \fIclass\fR is a tag name and can be configured like any text widget tag\&.
+Four types of highlight classes are supported\&. All highlight classes are automatically used
+by the \fBhighlight\fR method of the widget\&.
 .TP
 \fB::ctext::addHighlightClass\fR \fIpathName\fR \fIclass\fR \fIcolor\fR \fIkeywordlist\fR
-Add a highlighting class \fIclass\fR to the ctext widget \fIpathName\fR.
-The highligthing will be done with the color \fIcolor\fR. All words in the \fIkeywordlist\fR will be
-highlighted.
+Add a highlighting class \fIclass\fR to the ctext widget \fIpathName\fR\&.
+The highligthing will be done with the color \fIcolor\fR\&. All words in the \fIkeywordlist\fR will be
+highlighted\&.
 .CS
 
 
 	# highlight some tcl keywords
-	::ctext::addHighlightClass .t tclkeywords red [list set info interp uplevel upvar]]
+	::ctext::addHighlightClass \&.t tclkeywords red [list set info interp uplevel upvar]]
 
 .CE
 .TP
 \fB::ctext::addHighlightClassWithOnlyCharStart\fR \fIpathName\fR \fIclass\fR \fIcolor\fR \fIchar\fR
-Add a highlighting class \fIclass\fR to the ctext widget \fIpathName\fR.
-The highligthing will be done with the color \fIcolor\fR. All words starting with \fIchar\fR will be
-highlighted.
+Add a highlighting class \fIclass\fR to the ctext widget \fIpathName\fR\&.
+The highligthing will be done with the color \fIcolor\fR\&. All words starting with \fIchar\fR will be
+highlighted\&.
 .CS
 
 
-	::ctext::addHighlightClassWithOnlyCharStart .t vars blue \\$
+	::ctext::addHighlightClassWithOnlyCharStart \&.t vars blue \\$
 
 .CE
 .TP
 \fB::ctext::addHighlightClassForSpecialChars\fR \fIpathName\fR \fIclass\fR \fIcolor\fR \fIcharstring\fR
-Add a highlighting class \fIclass\fR to the ctext widget \fIpathName\fR.
-The highligthing will be done with the color \fIcolor\fR. All chars in \fIcharstring\fR will be
-highlighted.
+Add a highlighting class \fIclass\fR to the ctext widget \fIpathName\fR\&.
+The highligthing will be done with the color \fIcolor\fR\&. All chars in \fIcharstring\fR will be
+highlighted\&.
 .TP
 \fB::ctext::addHighlightClassForRegexp\fR \fIpathName\fR \fIclass\fR \fIcolor\fR \fIpattern\fR
-Add a highlighting class \fIclass\fR to the ctext widget \fIpathName\fR.
-The highligthing will be done with the color \fIcolor\fR. All text parts matching the regexp \fIpattern\fR
-will be highligthed.
+Add a highlighting class \fIclass\fR to the ctext widget \fIpathName\fR\&.
+The highligthing will be done with the color \fIcolor\fR\&. All text parts matching the regexp \fIpattern\fR
+will be highligthed\&.
 .TP
 \fB::ctext::clearHighlightClasses\fR \fIpathName\fR
-Remove all highlight classes from the widget \fIpathName\fR.
+Remove all highlight classes from the widget \fIpathName\fR\&.
 .TP
 \fB::ctext::getHighlightClasses\fR \fIpathName\fR
-List all highlight classes for the widget \fIpathName\fR.
+List all highlight classes for the widget \fIpathName\fR\&.
 .TP
 \fB::ctext::deleteHighlightClass\fR \fIpathName\fR \fIclass\fR
 Delete the highlight class \fIclass\fR from the widget \fIpathName\fR
 .TP
 \fB::ctext::enableComments\fR \fIenable\fR
-Enable C comment highlighting. The \fIclass\fR for c-style comments is \fB_cComment\fR.
-The C comment highlighting is disabled by default.
+Enable C comment highlighting\&. The \fIclass\fR for c-style comments is \fB_cComment\fR\&.
+The C comment highlighting is disabled by default\&.
 .TP
 \fB::ctext::disableComments\fR \fIenable\fR
-Disable C comment highlighting.
+Disable C comment highlighting\&.
 .PP
 .SH "WIDGET COMMANDS"
 Each ctext widget created with the above command supports the following
 commands and options in addition to the standard text widget commands and
-options.
+options\&.
 .TP
 \fIpathName\fR \fBhighlight\fR \fIstartIndex\fR \fIendIndex\fR
-Highlight the text between \fIstartIndex\fR and \fIendIndex\fR.
+Highlight the text between \fIstartIndex\fR and \fIendIndex\fR\&.
 .TP
 \fIpathName\fR \fBfastdelete\fR \fIindex1\fR ?\fIindex2\fR?
-Delete text range without updating the highlighting. Arguments
+Delete text range without updating the highlighting\&. Arguments
 are identical to the \fIpathName\fR \fBdelete\fR command inherited from
-the standard text widget.
+the standard text widget\&.
 .TP
 \fIpathName\fR \fBfastinsert\fR
-Insert text without updating the highlighting. Arguments
+Insert text without updating the highlighting\&. Arguments
 are identical to the \fIpathName\fR \fBinsert\fR command inherited from
-the standard text widget.
+the standard text widget\&.
 .TP
 \fIpathName\fR \fBcopy\fR
-Call \fBtk_textCopy\fR for the ctext instance.
+Call \fBtk_textCopy\fR for the ctext instance\&.
 .TP
 \fIpathName\fR \fBcut\fR
-Call \fBtk_textCut\fR for the ctext instance.
+Call \fBtk_textCut\fR for the ctext instance\&.
 .TP
 \fIpathName\fR \fBpaste\fR
-Call \fBtk_textPaste\fR for the ctext instance.
+Call \fBtk_textPaste\fR for the ctext instance\&.
 .TP
 \fIpathName\fR \fBappend\fR
-Append the current selection to the clipboard.
+Append the current selection to the clipboard\&.
 .TP
-\fIpathName\fR \fBconfigure\fR \fIoption\fR \fIvalue\fR ?...?
-Set the options for the ctext widget. Each option name must be followed
-the new value.
+\fIpathName\fR \fBconfigure\fR \fIoption\fR \fIvalue\fR ?\&.\&.\&.?
+Set the options for the ctext widget\&. Each option name must be followed
+the new value\&.
 .PP
 .SH "WIDGET OPTIONS"
 .LP
@@ -399,7 +399,7 @@ Database Class:	\fB\fR
 .fi
 .IP
 Creates (-linemap 1) or deletes (-linemap 0) a line number list on the
-left of the widget. The default is to have a linemap displayed.
+left of the widget\&. The default is to have a linemap displayed\&.
 .LP
 .nf
 .ta 6c
@@ -409,9 +409,9 @@ Database Class:	\fB\fR
 
 .fi
 .IP
-Changes the foreground of the linemap.
+Changes the foreground of the linemap\&.
 The default is the same color as the main text
-widget.
+widget\&.
 .LP
 .nf
 .ta 6c
@@ -421,9 +421,9 @@ Database Class:	\fB\fR
 
 .fi
 .IP
-Changes the background of the linemap.
+Changes the background of the linemap\&.
 The default is the same color as the main text
-widget.
+widget\&.
 .LP
 .nf
 .ta 6c
@@ -434,7 +434,7 @@ Database Class:	\fB\fR
 .fi
 .IP
 Changes the selected
-line foreground.  The default is black.
+line foreground\&.  The default is black\&.
 .LP
 .nf
 .ta 6c
@@ -445,7 +445,7 @@ Database Class:	\fB\fR
 .fi
 .IP
 Changes the selected line
-background.  The default is yellow.
+background\&.  The default is yellow\&.
 .LP
 .nf
 .ta 6c
@@ -458,17 +458,17 @@ Database Class:	\fB\fR
 Calls a procedure or command
 with the \fIpathName\fR of the ctext window, the \fItype\fR which is
 either \fBmarked\fR or \fBunmarked\fR, and finally the line
-number selected.
+number selected\&.
 The proc prototype is:
 .CS
 
 
-proc linemark_cmd {win type line}.
+proc linemark_cmd {win type line}\&.
 
 .CE
 .IP
 See also
-ctext_test_interactive.tcl
+ctext_test_interactive\&.tcl
 .LP
 .nf
 .ta 6c
@@ -480,7 +480,7 @@ Database Class:	\fB\fR
 .IP
 Takes a boolean value which defines
 whether or not to highlight text which is inserted
-or deleted.  The default is 1.
+or deleted\&.  The default is 1\&.
 .LP
 .nf
 .ta 6c
@@ -492,7 +492,7 @@ Database Class:	\fB\fR
 .IP
 Takes a boolean value which
 specifies whether or not lines in the linemap
-are markable with the mouse.  The default is 1.
+are markable with the mouse\&.  The default is 1\&.
 .PP
 .SH EXAMPLE
 .CS
@@ -502,47 +502,47 @@ are markable with the mouse.  The default is 1.
 	package require ctext
 
 	proc main {} {
-	pack [frame .f] -fill both -expand 1
-	pack [scrollbar .f.s -command {.f.t yview}] -side right -fill y
+	pack [frame \&.f] -fill both -expand 1
+	pack [scrollbar \&.f\&.s -command {\&.f\&.t yview}] -side right -fill y
 
-	pack [ctext .f.t -bg black -fg white -insertbackground yellow  -yscrollcommand {.f.s set}] -fill both -expand 1
+	pack [ctext \&.f\&.t -bg black -fg white -insertbackground yellow  -yscrollcommand {\&.f\&.s set}] -fill both -expand 1
 
-	ctext::addHighlightClass .f.t widgets purple  [list ctext button label text frame toplevel  scrollbar checkbutton canvas listbox menu menubar menubutton  radiobutton scale entry message tk_chooseDir tk_getSaveFile  tk_getOpenFile tk_chooseColor tk_optionMenu]
+	ctext::addHighlightClass \&.f\&.t widgets purple  [list ctext button label text frame toplevel  scrollbar checkbutton canvas listbox menu menubar menubutton  radiobutton scale entry message tk_chooseDir tk_getSaveFile  tk_getOpenFile tk_chooseColor tk_optionMenu]
 
-	ctext::addHighlightClass .f.t flags orange  [list -text -command -yscrollcommand  -xscrollcommand -background -foreground -fg -bg  -highlightbackground -y -x -highlightcolor -relief -width  -height -wrap -font -fill -side -outline -style -insertwidth  -textvariable -activebackground -activeforeground -insertbackground  -anchor -orient -troughcolor -nonewline -expand -type -message  -title -offset -in -after -yscroll -xscroll -forward -regexp -count  -exact -padx -ipadx -filetypes -all -from -to -label -value -variable  -regexp -backwards -forwards -bd -pady -ipady -state -row -column  -cursor -highlightcolors -linemap -menu -tearoff -displayof -cursor  -underline -tags -tag]
+	ctext::addHighlightClass \&.f\&.t flags orange  [list -text -command -yscrollcommand  -xscrollcommand -background -foreground -fg -bg  -highlightbackground -y -x -highlightcolor -relief -width  -height -wrap -font -fill -side -outline -style -insertwidth  -textvariable -activebackground -activeforeground -insertbackground  -anchor -orient -troughcolor -nonewline -expand -type -message  -title -offset -in -after -yscroll -xscroll -forward -regexp -count  -exact -padx -ipadx -filetypes -all -from -to -label -value -variable  -regexp -backwards -forwards -bd -pady -ipady -state -row -column  -cursor -highlightcolors -linemap -menu -tearoff -displayof -cursor  -underline -tags -tag]
 
-	ctext::addHighlightClass .f.t stackControl red  {proc uplevel namespace while for foreach if else}
-	ctext::addHighlightClassWithOnlyCharStart .f.t vars mediumspringgreen "\\$"
-	ctext::addHighlightClass .f.t variable_funcs gold {set global variable unset}
-	ctext::addHighlightClassForSpecialChars .f.t brackets green {[]{}}
-	ctext::addHighlightClassForRegexp .f.t paths lightblue {\\.[a-zA-Z0-9\\_\\-]+}
-	ctext::addHighlightClassForRegexp .f.t comments khaki {#[^\\n\\r]*}
-	.f.t fastinsert end [info body main]
+	ctext::addHighlightClass \&.f\&.t stackControl red  {proc uplevel namespace while for foreach if else}
+	ctext::addHighlightClassWithOnlyCharStart \&.f\&.t vars mediumspringgreen "\\$"
+	ctext::addHighlightClass \&.f\&.t variable_funcs gold {set global variable unset}
+	ctext::addHighlightClassForSpecialChars \&.f\&.t brackets green {[]{}}
+	ctext::addHighlightClassForRegexp \&.f\&.t paths lightblue {\\\&.[a-zA-Z0-9\\_\\-]+}
+	ctext::addHighlightClassForRegexp \&.f\&.t comments khaki {#[^\\n\\r]*}
+	\&.f\&.t fastinsert end [info body main]
 
-	pack [frame .f1] -fill x
+	pack [frame \&.f1] -fill x
 
-	.f.t highlight 1.0 end
+	\&.f\&.t highlight 1\&.0 end
 
-	pack [button .f1.exit -text Exit -command exit] -side left
+	pack [button \&.f1\&.exit -text Exit -command exit] -side left
 
-	pack [entry .e] -side bottom -fill x
-	.e insert end "ctext::deleteHighlightClass .f.t "
-	bind .e <Return> {eval [.e get]}
+	pack [entry \&.e] -side bottom -fill x
+	\&.e insert end "ctext::deleteHighlightClass \&.f\&.t "
+	bind \&.e <Return> {eval [\&.e get]}
 	}
 	main
 
 
 .CE
-Further examples are in the source package for ctext.
+Further examples are in the source package for ctext\&.
 .SH THANKS
 Kevin Kenny, Neil Madden, Jeffrey Hobbs, Richard Suchenwirth,
-Johan Bengtsson, Mac Cody, Günther, Andreas Sievers, and Michael Schlenker.
+Johan Bengtsson, Mac Cody, Günther, Andreas Sievers, and Michael Schlenker\&.
 .SH "SEE ALSO"
 re_syntax, text
 .SH KEYWORDS
 syntax highlighting, text, widget
 .SH COPYRIGHT
 .nf
-Copyright (c) George Peter Staplin <GeorgePS@XMission.com>
+Copyright (c) George Peter Staplin <GeorgePS@XMission\&.com>
 
 .fi

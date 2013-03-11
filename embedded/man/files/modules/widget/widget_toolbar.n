@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/widget/widget_toolbar.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/widget/widget_toolbar\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,18 +237,18 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "widget_toolbar" n 3.0 tklib "Various megawidgets"
+.TH "widget_toolbar" n 3\&.0 tklib "Various megawidgets"
 .BS
 .SH NAME
 widget_toolbar \- Toolbar Megawidget
 .SH SYNOPSIS
-package require \fBTcl  8.4\fR
+package require \fBTcl  8\&.4\fR
 .sp
-package require \fBTk  8.4\fR
+package require \fBTk  8\&.4\fR
 .sp
-package require \fBwidget  ?3.0?\fR
+package require \fBwidget  ?3\&.0?\fR
 .sp
-package require \fBwidget::toolbar  ?1.0?\fR
+package require \fBwidget::toolbar  ?1\&.0?\fR
 .sp
 \fBwidget::toolbar\fR \fIpathname\fR ?options?
 .sp
@@ -256,7 +256,7 @@ getframe
 .sp
 add ?item? ?args?
 .sp
-delete item1 ?item2? ?...?
+delete item1 ?item2? ?\&.\&.\&.?
 .sp
 itemcget symbol option
 .sp
@@ -264,12 +264,12 @@ itemconfigure symbol ?args?
 .sp
 items ?pattern?
 .sp
-remove ?-destroy? item1 ?item2? ?...?
+remove ?-destroy? item1 ?item2? ?\&.\&.\&.?
 .sp
 .BE
 .SH DESCRIPTION
-This package provides a toolbar megawidget (snidget).
-It makes use of the Tile/Ttk themed widget set.
+This package provides a toolbar megawidget (snidget)\&.
+It makes use of the Tile/Ttk themed widget set\&.
 .PP
 .TP
 \fBwidget::toolbar\fR \fIpathname\fR ?options?
@@ -278,7 +278,7 @@ getframe
 .TP
 add ?item? ?args?
 .TP
-delete item1 ?item2? ?...?
+delete item1 ?item2? ?\&.\&.\&.?
 .TP
 itemcget symbol option
 .TP
@@ -286,7 +286,7 @@ itemconfigure symbol ?args?
 .TP
 items ?pattern?
 .TP
-remove ?-destroy? item1 ?item2? ?...?
+remove ?-destroy? item1 ?item2? ?\&.\&.\&.?
 .PP
 .SH "WIDGET OPTIONS"
 .TP
@@ -311,11 +311,11 @@ remove ?-destroy? item1 ?item2? ?...?
 
 
 package require widget::toolbar ; # or widget::all
-set t [widget::toolbar .t]
+set t [widget::toolbar \&.t]
 pack $t -fill x -expand 1
-$t add button [button .b -text foo]
+$t add button [button \&.b -text foo]
 $t add separator -pad {2 4}
-$t add button [button .c -text bar]
+$t add button [button \&.c -text bar]
 
 .CE
 .SH KEYWORDS

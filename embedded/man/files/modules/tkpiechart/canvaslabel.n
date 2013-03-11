@@ -1,6 +1,6 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/tkpiechart/canvaslabel.n' by tcllib/doctools with format 'nroff'
-'\" Copyright (c) 1995-2004 Jean-Luc Fontaine <jfontain@free.fr>
+'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/tkpiechart/canvaslabel\&.n' by tcllib/doctools with format 'nroff'
+'\" Copyright (c) 1995-2004 Jean-Luc Fontaine <jfontain@free\&.fr>
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -238,16 +238,16 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "canvasLabel" n 6.6 tklib "canvasLabel class"
+.TH "canvasLabel" n 6\&.6 tklib "canvasLabel class"
 .BS
 .SH NAME
 canvasLabel \- tkpiechart canvas label class
 .SH SYNOPSIS
-package require \fBstooop  4.1\fR
+package require \fBstooop  4\&.1\fR
 .sp
-package require \fBswitched  2.2\fR
+package require \fBswitched  2\&.2\fR
 .sp
-package require \fBtkpiechart  6.6\fR
+package require \fBtkpiechart  6\&.6\fR
 .sp
 \fBstooop::new\fR \fBcanvasLabel\fR \fIcanvas\fR ?options?
 .sp
@@ -259,76 +259,76 @@ package require \fBtkpiechart  6.6\fR
 .sp
 .BE
 .SH DESCRIPTION
-The canvasLabel class brings some Tk label widget functionality to the canvas text item, such as a background and a border.
+The canvasLabel class brings some Tk label widget functionality to the canvas text item, such as a background and a border\&.
 .PP
-The canvasLabel is built with a bullet rectangle on the left side of the text. The relief changes according to the select state, with a traditionally sunken relief when selected.
+The canvasLabel is built with a bullet rectangle on the left side of the text\&. The relief changes according to the select state, with a traditionally sunken relief when selected\&.
 .PP
-The label has a specific tag, which can be used to retrieve the coordinates of the object or move it, thanks to the canvas facilities.
+The label has a specific tag, which can be used to retrieve the coordinates of the object or move it, thanks to the canvas facilities\&.
 .TP
 \fBstooop::new\fR \fBcanvasLabel\fR \fIcanvas\fR ?options?
-Creates a canvasLabel object in the specified Tk canvas. The canvasLabel object identifier is returned (referred to as \fIcanvasLabelObject\fR in this document).
+Creates a canvasLabel object in the specified Tk canvas\&. The canvasLabel object identifier is returned (referred to as \fIcanvasLabelObject\fR in this document)\&.
 .TP
 \fBswitched::configure\fR \fIcanvasLabelObject\fR ?options?
-Configures a canvasLabel object or returns all the options with their current values if no options are passed as parameters.
+Configures a canvasLabel object or returns all the options with their current values if no options are passed as parameters\&.
 .TP
 \fBswitched::cget\fR \fIcanvasLabelObject\fR \fIoption\fR
-Returns an option value for the specified canvasLabel object.
+Returns an option value for the specified canvasLabel object\&.
 .TP
 \fBstooop::delete\fR \fIcanvasLabelObject\fR
-Deletes the specified canvasLabel object.
+Deletes the specified canvasLabel object\&.
 .PP
 .SH OPTIONS
 .TP
 \fB-anchor\fR value
-Specifies the anchor position of the rectangle and the text, relative to the positioning point. The behavior is similar to the \fB-anchor\fR option of the \fBcanvas\fR \fItext\fR item, except that the rectangle is taken into account. The default is \fIcenter\fR.
+Specifies the anchor position of the rectangle and the text, relative to the positioning point\&. The behavior is similar to the \fB-anchor\fR option of the \fBcanvas\fR \fItext\fR item, except that the rectangle is taken into account\&. The default is \fIcenter\fR\&.
 .TP
 \fB-background\fR color
-Specifies the background color of the bullet rectangle, as in the \fB-fill\fR option of the \fBcanvas\fR \fIrectangle\fR item. The default is transparent (empty string).
+Specifies the background color of the bullet rectangle, as in the \fB-fill\fR option of the \fBcanvas\fR \fIrectangle\fR item\&. The default is transparent (empty string)\&.
 .TP
 \fB-bordercolor\fR color
-Specifies the border color of the rectangle, as in the \fB-outline\fR option of the \fBcanvas\fR \fIrectangle\fR item. The default is black.
+Specifies the border color of the rectangle, as in the \fB-outline\fR option of the \fBcanvas\fR \fIrectangle\fR item\&. The default is black\&.
 .TP
 \fB-borderwidth\fR value
-Specifies the border width of the rectangle, as in the \fB-width\fR option of the \fBcanvas\fR \fIrectangle\fR item. By default, the width is 1 pixel, which is the minimum width.
+Specifies the border width of the rectangle, as in the \fB-width\fR option of the \fBcanvas\fR \fIrectangle\fR item\&. By default, the width is 1 pixel, which is the minimum width\&.
 .TP
 \fB-bulletwidth\fR value
-Specifies the width of the rectangle placed to the left of the text. Defaults to \fI10\fR.
+Specifies the width of the rectangle placed to the left of the text\&. Defaults to \fI10\fR\&.
 .TP
 \fB-font\fR value
-Specifies the font of the text, as in the \fB-font\fR option of the \fBcanvas\fR \fItext\fR item. The default is system dependent.
+Specifies the font of the text, as in the \fB-font\fR option of the \fBcanvas\fR \fItext\fR item\&. The default is system dependent\&.
 .TP
 \fB-foreground\fR color
-Specifies the color of the text, as in the \fB-fill\fR option of the \fBcanvas\fR \fItext\fR item. The default is black.
+Specifies the color of the text, as in the \fB-fill\fR option of the \fBcanvas\fR \fItext\fR item\&. The default is black\&.
 .TP
 \fB-justify\fR value
-Specifies how to justify the text, as in the \fB-justify\fR option of the \fBcanvas\fR \fItext\fR item. The default is \fIleft\fR.
+Specifies how to justify the text, as in the \fB-justify\fR option of the \fBcanvas\fR \fItext\fR item\&. The default is \fIleft\fR\&.
 .TP
 \fB-minimumwidth\fR value
-The total label width will not go below the specified value, but may be larger if the label text requires it.
+The total label width will not go below the specified value, but may be larger if the label text requires it\&.
 .TP
 \fB-padding\fR value
-Specifies how much space to leave between the text and the closest rectangle edge. Units are identical to those specified in the \fBcanvas\fR \fICOORDINATES\fR manual section.
+Specifies how much space to leave between the text and the closest rectangle edge\&. Units are identical to those specified in the \fBcanvas\fR \fICOORDINATES\fR manual section\&.
 .TP
 \fB-scale\fR list
-List of 2 floating point numbers used to set the scaling factor in the x and y axis. Scaling is applied immediately and defaults to 1.
+List of 2 floating point numbers used to set the scaling factor in the x and y axis\&. Scaling is applied immediately and defaults to 1\&.
 .TP
 \fB-select\fR boolean
-Sets the label state.
+Sets the label state\&.
 .TP
 \fB-selectrelief\fR value
-Either \fIflat\fR, \fIraised\fR or \fIsunken\fR. Specifies the 3D effect desired for the text area when the label is selected.
+Either \fIflat\fR, \fIraised\fR or \fIsunken\fR\&. Specifies the 3D effect desired for the text area when the label is selected\&.
 .TP
 \fB-stipple\fR bitmap
-Specifies the stipple pattern filling the rectangle, as in the \fB-stipple\fR option of the \fBcanvas\fR \fIrectangle\fR item. There is no bitmap by default.
+Specifies the stipple pattern filling the rectangle, as in the \fB-stipple\fR option of the \fBcanvas\fR \fIrectangle\fR item\&. There is no bitmap by default\&.
 .TP
 \fB-text\fR text
-Specifies the string to be displayed in the text area, as in the \fB-text\fR option of the \fBcanvas\fR \fItext\fR item. The default is an empty string.
+Specifies the string to be displayed in the text area, as in the \fB-text\fR option of the \fBcanvas\fR \fItext\fR item\&. The default is an empty string\&.
 .TP
 \fB-textbackground\fR color
-Specifies the color of the text area background.
+Specifies the color of the text area background\&.
 .TP
 \fB-width\fR value
-Specifies a maximum line length for the text, as in the \fB-width\fR option of the \fBcanvas\fR \fItext\fR item. The default is \fI0\fR.
+Specifies a maximum line length for the text, as in the \fB-width\fR option of the \fBcanvas\fR \fItext\fR item\&. The default is \fI0\fR\&.
 .PP
 .SH TAGS
 The labeler has the following specific tag (see the \fBcanvas\fR manual page \fIITEM IDS AND TAGS\fR section for more information):
@@ -341,6 +341,6 @@ pie, pieBoxLabeler, piePeripheralLabeler
 canvas, labeler, pie, slice
 .SH COPYRIGHT
 .nf
-Copyright (c) 1995-2004 Jean-Luc Fontaine <jfontain@free.fr>
+Copyright (c) 1995-2004 Jean-Luc Fontaine <jfontain@free\&.fr>
 
 .fi
