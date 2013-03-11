@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/getstring/tk_getString.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/getstring/tk_getString\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,35 +237,35 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "getstring" n 0.1 tklib "A dialog which prompts for a string input"
+.TH "getstring" n 0\&.1 tklib "A dialog which prompts for a string input"
 .BS
 .SH NAME
 getstring \- A string dialog
 .SH SYNOPSIS
-package require \fBTcl  8.4\fR
+package require \fBTcl  8\&.4\fR
 .sp
-package require \fBgetstring  ?0.1?\fR
+package require \fBgetstring  ?0\&.1?\fR
 .sp
 \fB::getstring::tk_getString\fR \fIpathName\fR \fIvariable\fR \fItext\fR ?options?
 .sp
 .BE
 .SH DESCRIPTION
 This package provides a dialog which consists of an Entry, OK, and
-Cancel buttons.
+Cancel buttons\&.
 .PP
 .TP
 \fB::getstring::tk_getString\fR \fIpathName\fR \fIvariable\fR \fItext\fR ?options?
-Creates a dialog which prompts the user with \fItext\fR to input a text string.
+Creates a dialog which prompts the user with \fItext\fR to input a text string\&.
 The contents of the entry are put in the \fIvariable\fR upon closure of the
-dialog. The command returns a boolean indicating if the user pressed OK or
-not. If -geometry is not specified, the dialog is centered in its parent
-toplevel unless its parent is . in which case the dialog is centered in the
-screen.
+dialog\&. The command returns a boolean indicating if the user pressed OK or
+not\&. If -geometry is not specified, the dialog is centered in its parent
+toplevel unless its parent is \&. in which case the dialog is centered in the
+screen\&.
 Options:
 -title
 -allowempty a boolean argument indicating if the dialog should accept an empty entry
--entryoptions simply passes its arguments through to the entry widget. This is valuble for performing extra validation
-using the Entry widget validation hooks.
+-entryoptions simply passes its arguments through to the entry widget\&. This is valuble for performing extra validation
+using the Entry widget validation hooks\&.
 -geometry specifies the geometry of the window
 .PP
 .SH EXAMPLE
@@ -275,7 +275,7 @@ using the Entry widget validation hooks.
 package require getstring
 namespace import getstring::*
 
-if {[tk_getString .gs text "Feed me a string please:"]} {
+if {[tk_getString \&.gs text "Feed me a string please:"]} {
     puts "user entered: $text"
 }
 

@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/khim/khim.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/khim/khim\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,14 +237,14 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "khim" n 1.0 tklib "Kevin's Hacky Input Method"
+.TH "khim" n 1\&.0 tklib "Kevin's Hacky Input Method"
 .BS
 .SH NAME
 khim \- Provides key bindings for entering international characters on a keyboard that does not support them
 .SH SYNOPSIS
 package require \fBTcl \fR
 .sp
-package require \fBkhim  ?1.0?\fR
+package require \fBkhim  ?1\&.0?\fR
 .sp
 \fB::khim::getOptions\fR \fIpath\fR
 .sp
@@ -258,152 +258,152 @@ package require \fBkhim  ?1.0?\fR
 .SH DESCRIPTION
 This package provides a set of key bindings to allow
 a user to enter arbitrary characters on a keyboard that
-does not support them.  It works by designating some seldom-used key
+does not support them\&.  It works by designating some seldom-used key
 of the keyboard as a "Compose" key (this key is distinct from any key
 so labeled, and is often "Pause," "F12" or "L2"), and having the
 "Compose" key, followed by a two-key sequence, have the effect of
-inserting some character in a widget.
+inserting some character in a widget\&.
 In addition, the "Compose" key, when struck twice in succession,
 brings up a dialog containing a Unicode character map, allowing
-arbitrary characters to be inserted.
+arbitrary characters to be inserted\&.
 .PP
 The vast bulk of the package's functionality is implemented in a
-single bindtag, \fBKHIM\fR.  An application can request that any
+single bindtag, \fBKHIM\fR\&.  An application can request that any
 text or entry widget use the package to allow for entry of arbitrary
 characters by placing this binding tag ahead of the \fBText\fR or
 \fBEntry\fR binding tag for the widget:
 .CS
 
 
-text .t -width 80 -height 24
-bindtags .t {.t KHIM Text . all}
+text \&.t -width 80 -height 24
+bindtags \&.t {\&.t KHIM Text \&. all}
 
 .CE
 Note that the \fBKHIM\fR tag must precede the \fBText\fR or
 \fBEntry\fR class binding, or the package will not function
-correctly.
+correctly\&.
 .SH PROCEDURES
 In addition to commands supporting the KHIM binding tag, the following
 commands are exported from the package:
 .TP
 \fB::khim::getOptions\fR \fIpath\fR
 Posts a top-level modal dialog with the path name \fIpath\fR that
-prompts the user for KHIM options.  The user is allowed to reconfigure
+prompts the user for KHIM options\&.  The user is allowed to reconfigure
 the key sequences for the "Compose" key, change the choice of key to
 use for the "Compose" function, and enable/disable the KHIM key
-bindings entirely.
+bindings entirely\&.
 .TP
 \fB::khim::getConfig\fR
 Returns a Tcl script that restores the current configuration of KHIM:
 the enabled/disabled state, the choice of "Compose" key, and the key
-sequences that may be composed.  This script is designed to be
+sequences that may be composed\&.  This script is designed to be
 saved to a configuration file for use in a subsequent invocation of
 the same application:
 .CS
 
 
 # Save KHIM configuration
-set f [open ~/.khimrc w]
+set f [open ~/\&.khimrc w]
 puts $f [::khim::getConfig]
 close $f
 
 # Restore KHIM configuration
-source ~/.khimrc
+source ~/\&.khimrc
 
 .CE
 .TP
 \fB::khim::setConfig\fR \fIversion\fR \fIenabled\fR \fIcompose\fR \fImap\fR
-Restores an earlier saved configuration.  Few, if any, applications
+Restores an earlier saved configuration\&.  Few, if any, applications
 will call this command in any other way than to evaluate it as
-returned from \fB::khim::getConfig\fR.
+returned from \fB::khim::getConfig\fR\&.
 .TP
 \fB::khim::showHelp\fR \fIpath\fR
 Displays a top-level dialog giving user-level help for KHIM; the
-dialog will have the path name \fIpath\fR.
+dialog will have the path name \fIpath\fR\&.
 .PP
 .SH LOCALISATION
 .PP
 Programmers who wish to make KHIM available in a non-English-speaking
-locale may do so by providing a \fB.msg\fR file with the appropriate
-localised text.  The catalog requires the following messages:
+locale may do so by providing a \fB\&.msg\fR file with the appropriate
+localised text\&.  The catalog requires the following messages:
 .TP
 \fBApply\fR
 Text that will appear on the "Apply" button in the dialog that sets
-KHIM options.
+KHIM options\&.
 .TP
 \fBCancel\fR
-Text that will appear on the "Cancel" button in several dialogs.
+Text that will appear on the "Cancel" button in several dialogs\&.
 .TP
 \fBChange\fR
 Text that will appear on the "Change" button, which alters the binding
 of a pair of composed characters (creating or replacing as
-appropriate).
+appropriate)\&.
 .TP
 \fBCharacter\fR
 Text that will appear on the label of the entry widget that accepts a
-character resulting from a composed sequence.
+character resulting from a composed sequence\&.
 .TP
 \fB{Compose Key}\fR
 Window title for a dialog that prompts the user to strike the key that
-will be used for the "Compose" key.
+will be used for the "Compose" key\&.
 .TP
 \fB{Compose key:}\fR
 Label that identifies a component showing the "Compose" key choice in
-the KHIM options dialog.
+the KHIM options dialog\&.
 .TP
 \fB{Composed sequence must be two characters long}\fR
 Error message that is displayed if the user attempts to define a
-"Compose" sequence that is shorter or longer than two characters.
+"Compose" sequence that is shorter or longer than two characters\&.
 .TP
 \fBDelete\fR
-Text for a button that deletes a "Compose" sequence.
+Text for a button that deletes a "Compose" sequence\&.
 .TP
-\fBHelp...\fR
-Text for a button that displays the KHIM user help dialog.
+\fBHelp\&.\&.\&.\fR
+Text for a button that displays the KHIM user help dialog\&.
 .TP
 \fBHELPTEXT\fR
-Complete text for the user-level help for KHIM.  Refer to
-"\fIen.msg\fR" for the English-language version of the help.
+Complete text for the user-level help for KHIM\&.  Refer to
+"\fIen\&.msg\fR" for the English-language version of the help\&.
 .TP
 \fB{Input key sequence}\fR
 Text for a label of the entry widget that prompts the user for a
-two-character sequence to use with the "Compose" key.
+two-character sequence to use with the "Compose" key\&.
 .TP
 \fB{Insert Character}\fR
 Window title of the dialog box that displays a Unicode character map
-and prompts the user to select a character to insert.
+and prompts the user to select a character to insert\&.
 .TP
 \fB{Key sequences}\fR
 Text for a label at the head of a listbox showing the composed
-sequences that are currently bound.
+sequences that are currently bound\&.
 .TP
 \fB{KHIM Controls}\fR
-Window title for the dialog box that prompts for KHIM settings.
+Window title for the dialog box that prompts for KHIM settings\&.
 .TP
 \fB{KHIM Help}\fR
-Window title for the window that display help text for KHIM.
+Window title for the window that display help text for KHIM\&.
 .TP
 \fBOK\fR
-Label for the OK button on several dialogs.
+Label for the OK button on several dialogs\&.
 .TP
 \fBSelect code page:\fR
-Label for a spinbox that prompts the user for a Unicode code page number.
+Label for a spinbox that prompts the user for a Unicode code page number\&.
 .TP
 \fBSELECT COMPOSE KEY\fR
 A message, which should be composed in short lines, prompting the user
-to press the key that will become the "Compose" key in KHIM.
+to press the key that will become the "Compose" key in KHIM\&.
 .TP
-\fBUnicode...\fR
+\fBUnicode\&.\&.\&.\fR
 Text for a button that brings up the character map to select the
-character to which a composed sequence binds.
+character to which a composed sequence binds\&.
 .TP
 \fB{Use KHIM}\fR
 Text for a checkbutton that asks whether the user wishes to use KHIM
-to manage composed key sequences.
+to manage composed key sequences\&.
 .PP
 .SH ACKNOWLEDGMENTS
 KHIM was originally inspired by the key bindings that Brent Welch
-developed for the 'sedit' editor used in the 'exmh' mail user agent.
-The code for KHIM is entirely separate from that for 'sedit'.
+developed for the 'sedit' editor used in the 'exmh' mail user agent\&.
+The code for KHIM is entirely separate from that for 'sedit'\&.
 .SH KEYWORDS
 character, i18n, input, international, method

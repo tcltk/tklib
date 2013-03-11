@@ -1,6 +1,6 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/datefield/datefield.n' by tcllib/doctools with format 'nroff'
-'\" Copyright (c) Keith Vetter <keith@ebook.gemstar.com>
+'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/datefield/datefield\&.n' by tcllib/doctools with format 'nroff'
+'\" Copyright (c) Keith Vetter <keith@ebook\&.gemstar\&.com>
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -238,54 +238,54 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "datefield" n 0.2 tklib "Tk datefield widget"
+.TH "datefield" n 0\&.2 tklib "Tk datefield widget"
 .BS
 .SH NAME
 datefield \- Tk datefield widget
 .SH SYNOPSIS
 package require \fBTk \fR
 .sp
-package require \fBdatefield  ?0.2?\fR
+package require \fBdatefield  ?0\&.2?\fR
 .sp
 \fB::datefield::datefield\fR \fIwidgetpath\fR ?\fIoptions\fR?
 .sp
 .BE
 .SH DESCRIPTION
 The \fBdatefield\fR package provides the datefield widget which
-is an enhanced text entry widget for the purpose of date entry. Only
-valid dates of the form MM/DD/YYYY can be entered.
+is an enhanced text entry widget for the purpose of date entry\&. Only
+valid dates of the form MM/DD/YYYY can be entered\&.
 .PP
 The datefield widget is, in fact, just an entry widget with
-specialized bindings. This means all the command and options for an
-entry widget apply equally here.
+specialized bindings\&. This means all the command and options for an
+entry widget apply equally here\&.
 .SH COMMANDS
 .TP
 \fB::datefield::datefield\fR \fIwidgetpath\fR ?\fIoptions\fR?
-Creates and configures a date field widget.
+Creates and configures a date field widget\&.
 .PP
 .SH OPTIONS
-See the \fBentry\fR manual entry for details on all available options.
+See the \fBentry\fR manual entry for details on all available options\&.
 .SH EXAMPLE
 .CS
 
 
  package require datefield
 
- wm title . "Datefield example"
+ wm title \&. "Datefield example"
  proc DayOfWeek {args} {
      set now [clock scan $::myDate]
      set ::myDate2 [clock format $now -format %A]
  }
  trace variable myDate w DayOfWeek
 
- ::datefield::datefield .df -textvariable myDate
- label .l1 -text "Enter a date:"   -anchor e
- label .l2 -text "That date is a:" -anchor e
- label .l3 -textvariable myDate2 -relief sunken -width 12
+ ::datefield::datefield \&.df -textvariable myDate
+ label \&.l1 -text "Enter a date:"   -anchor e
+ label \&.l2 -text "That date is a:" -anchor e
+ label \&.l3 -textvariable myDate2 -relief sunken -width 12
 
- grid .l1 .df -sticky ew
- grid .l2 .l3 -sticky ew
- focus .df
+ grid \&.l1 \&.df -sticky ew
+ grid \&.l2 \&.l3 -sticky ew
+ focus \&.df
 
 .CE
 .SH "SEE ALSO"
@@ -296,6 +296,6 @@ clock, date, dateentry, entry, widget
 Widget
 .SH COPYRIGHT
 .nf
-Copyright (c) Keith Vetter <keith@ebook.gemstar.com>
+Copyright (c) Keith Vetter <keith@ebook\&.gemstar\&.com>
 
 .fi

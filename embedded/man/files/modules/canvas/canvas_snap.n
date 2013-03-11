@@ -1,6 +1,6 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/canvas/canvas_snap.n' by tcllib/doctools with format 'nroff'
-'\" Copyright (c) 2004 George Petasis (http://wiki.tcl.tk/1404)
+'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/canvas/canvas_snap\&.n' by tcllib/doctools with format 'nroff'
+'\" Copyright (c) 2004 George Petasis (http://wiki\&.tcl\&.tk/1404)
 '\" Copyright (c) 2010 Documentation, Andreas Kupries
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
@@ -239,16 +239,16 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "canvas::snap" n 1.0.1 tklib "Variations on a canvas"
+.TH "canvas::snap" n 1\&.0\&.1 tklib "Variations on a canvas"
 .BS
 .SH NAME
 canvas::snap \- Canvas snapshot to Tk photo image
 .SH SYNOPSIS
-package require \fBTcl  8.5\fR
+package require \fBTcl  8\&.5\fR
 .sp
-package require \fBTk  8.5\fR
+package require \fBTk  8\&.5\fR
 .sp
-package require \fBcanvas::snap  ?1.0.1?\fR
+package require \fBcanvas::snap  ?1\&.0\&.1?\fR
 .sp
 package require \fBimg::window \fR
 .sp
@@ -257,23 +257,23 @@ package require \fBimg::window \fR
 .BE
 .SH DESCRIPTION
 This package provides a command to take snapshots of arbitrary
-canvases.
+canvases\&.
 .SH API
 .TP
 \fB::canvas::snap\fR \fIpathName\fR
-Takes a snapshot of the canvas \fIpathName\fR. The result is the name
-of a new Tk photo image containing the snapshot.
+Takes a snapshot of the canvas \fIpathName\fR\&. The result is the name
+of a new Tk photo image containing the snapshot\&.
 .sp
-\fINote\fR that this command has a side-effect. To avoid having white
+\fINote\fR that this command has a side-effect\&. To avoid having white
 rectangles where other windows may overlap the canvas this command
 forces the toplevel window the canvas is in to the top of the stacking
-order.
+order\&.
 .PP
 .SH KEYWORDS
 canvas, image, photo, print screen, snapshot
 .SH COPYRIGHT
 .nf
-Copyright (c) 2004 George Petasis (http://wiki.tcl.tk/1404)
+Copyright (c) 2004 George Petasis (http://wiki\&.tcl\&.tk/1404)
 Copyright (c) 2010 Documentation, Andreas Kupries
 
 .fi

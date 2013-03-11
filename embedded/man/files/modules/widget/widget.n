@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/widget/widget.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/widget/widget\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,16 +237,16 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "widget" n 3.0 tklib "Various megawidgets"
+.TH "widget" n 3\&.0 tklib "Various megawidgets"
 .BS
 .SH NAME
 widget \- Megawidget bundle
 .SH SYNOPSIS
-package require \fBTcl  8.4\fR
+package require \fBTcl  8\&.4\fR
 .sp
-package require \fBTk  8.4\fR
+package require \fBTk  8\&.4\fR
 .sp
-package require \fBwidget  ?3.0?\fR
+package require \fBwidget  ?3\&.0?\fR
 .sp
 package require \fBsnit \fR
 .sp
@@ -276,8 +276,8 @@ package require \fBsnit \fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides megawidgets based on the snit oo system (snidgets).
-It makes use of the Tile/Ttk themed widget set.
+This package provides megawidgets based on the snit oo system (snidgets)\&.
+It makes use of the Tile/Ttk themed widget set\&.
 .PP
 .TP
 \fBwidget::validate\fR \fIas\fR ?options?
@@ -323,7 +323,7 @@ options:
 
 
 package require widget::superframe ; # or widget::all
-pack [widget::superframe .f -type separator -text "SuperFrame:"]
+pack [widget::superframe \&.f -type separator -text "SuperFrame:"]
 
 .CE
 .SH KEYWORDS

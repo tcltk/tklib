@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/ipentry/ipentry.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/ipentry/ipentry\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,20 +237,20 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "ipentry" n 0.3 tklib "An IP address entry widget"
+.TH "ipentry" n 0\&.3 tklib "An IP address entry widget"
 .BS
 .SH NAME
 ipentry \- An IP address entry widget
 .SH SYNOPSIS
-package require \fBTcl  8.4\fR
+package require \fBTcl  8\&.4\fR
 .sp
-package require \fBTk  8.4\fR
+package require \fBTk  8\&.4\fR
 .sp
-package require \fBipentry  ?0.3?\fR
+package require \fBipentry  ?0\&.3?\fR
 .sp
-\fB::ipentry::ipentry\fR \fIpathName\fR ?\fIoption\fR \fIvalue\fR...?
+\fB::ipentry::ipentry\fR \fIpathName\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 .sp
-\fB::ipentry::ipentry6\fR \fIpathName\fR ?\fIoption\fR \fIvalue\fR...?
+\fB::ipentry::ipentry6\fR \fIpathName\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 .sp
 \fIpathName\fR \fBcomplete\fR
 .sp
@@ -260,57 +260,57 @@ package require \fBipentry  ?0.3?\fR
 .sp
 \fIpathName\fR \fBicursor\fR \fIindex\fR
 .sp
-\fIpathName\fR \fBconfigure\fR \fIoption\fR \fIvalue\fR...
+\fIpathName\fR \fBconfigure\fR \fIoption\fR \fIvalue\fR\&.\&.\&.
 .sp
 \fIpathName\fR \fBcget\fR \fIoption\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides a widget for the entering of a IP address.
+This package provides a widget for the entering of a IP address\&.
 .PP
 .TP
-\fB::ipentry::ipentry\fR \fIpathName\fR ?\fIoption\fR \fIvalue\fR...?
+\fB::ipentry::ipentry\fR \fIpathName\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 Creates a new IPv4 ipentry widget and configures it with the given options and
-their values.
+their values\&.
 .TP
-\fB::ipentry::ipentry6\fR \fIpathName\fR ?\fIoption\fR \fIvalue\fR...?
-Creates a new ipentry widget for the entry of an IPv6 address. All options
-are the same as the IPv4 widget.
+\fB::ipentry::ipentry6\fR \fIpathName\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
+Creates a new ipentry widget for the entry of an IPv6 address\&. All options
+are the same as the IPv4 widget\&.
 .PP
 Each widget created with the command above supports the following methods:
 .TP
 \fIpathName\fR \fBcomplete\fR
-Returns a boolean value. True indicates that the entry contains a
-complete IP address, meaning all fields have a value. In some cases
-IPv6 address are valid when fields are missing. You will need to do your
-own validation to detect this.
+Returns a boolean value\&. True indicates that the entry contains a
+complete IP address, meaning all fields have a value\&. In some cases
+IPv6 address are valid when fields are missing\&. You will need to do your
+own validation to detect this\&.
 .TP
 \fIpathName\fR \fBget\fR
-Returns the contents of the entry as a list consisting of 4 or 8 elements.
+Returns the contents of the entry as a list consisting of 4 or 8 elements\&.
 .TP
 \fIpathName\fR \fBinsert\fR \fIiplist\fR
 IPv4
-Takes a list of 4 elements and inserts one into each quad of the entry, in order.
-All values in the list must be empty or integers. Values outside the range 0 to 255
-are modified to be within the range.
+Takes a list of 4 elements and inserts one into each quad of the entry, in order\&.
+All values in the list must be empty or integers\&. Values outside the range 0 to 255
+are modified to be within the range\&.
 IPv6
-Takes a list of 8 elements and inserts one into each quad of the entry, in order.
-All values in the list must be empty or 1 to 4 hex digits.
+Takes a list of 8 elements and inserts one into each quad of the entry, in order\&.
+All values in the list must be empty or 1 to 4 hex digits\&.
 .TP
 \fIpathName\fR \fBicursor\fR \fIindex\fR
-Sets the position of the widgets insertion cursor. Only integer values between
-0 and 15 are valid for ipentry and 0 to 31 for ipentry6.
+Sets the position of the widgets insertion cursor\&. Only integer values between
+0 and 15 are valid for ipentry and 0 to 31 for ipentry6\&.
 Setting the icursor will only have an effect if the widget
-already has the input focus.
+already has the input focus\&.
 .TP
-\fIpathName\fR \fBconfigure\fR \fIoption\fR \fIvalue\fR...
-Modifies the configuration of the widget. For options and
-their meaning see the widget options section.
+\fIpathName\fR \fBconfigure\fR \fIoption\fR \fIvalue\fR\&.\&.\&.
+Modifies the configuration of the widget\&. For options and
+their meaning see the widget options section\&.
 .TP
 \fIpathName\fR \fBcget\fR \fIoption\fR
 Returns information about the current configuration of the widget, for
-the specified option. For options and their meaning see the widget
-options section.
+the specified option\&. For options and their meaning see the widget
+options section\&.
 .PP
 .SH "WIDGET OPTIONS"
 .LP
@@ -322,11 +322,11 @@ Database Class:	\fBVariable\fR
 
 .fi
 .IP
-The name of a variable which holds the value of the IP address.
-The value must be a string of the form NNN.NNN.NNN.NNN for IPv4 or
-HHHH:HHHH:HHHH:HHHH:HHHH:HHHH:HHHH:HHHH for IPv6 where H is a hex digit.
+The name of a variable which holds the value of the IP address\&.
+The value must be a string of the form NNN\&.NNN\&.NNN\&.NNN for IPv4 or
+HHHH:HHHH:HHHH:HHHH:HHHH:HHHH:HHHH:HHHH for IPv6 where H is a hex digit\&.
 The variable will be modified to represent a valid IP address if it is not
-already.
+already\&.
 .LP
 .nf
 .ta 6c
@@ -337,7 +337,7 @@ Database Class:	\fBState\fR
 .fi
 .IP
 Specifies one of three states for the entry: \fBnormal\fR,
-\fBdisabled\fR, or \fBreadonly\fR.
+\fBdisabled\fR, or \fBreadonly\fR\&.
 .LP
 .nf
 .ta 6c
@@ -459,8 +459,8 @@ Database Class:	\fBBackground\fR
 
 .fi
 .IP
-Standard widget options. See \fBoptions\fR for a description of their
-meanings and values.
+Standard widget options\&. See \fBoptions\fR for a description of their
+meanings and values\&.
 .PP
 .SH KEYWORDS
 entry, ip address, network

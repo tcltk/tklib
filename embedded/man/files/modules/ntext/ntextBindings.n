@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/ntext/ntextBindings.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/ntext/ntextBindings\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,73 +237,73 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "ntextBindings" n 0.81 tklib "Alternative Bindings for the Text Widget"
+.TH "ntextBindings" n 0\&.81 tklib "Alternative Bindings for the Text Widget"
 .BS
 .SH NAME
 ntextBindings \- Alternative Bindings for the Text Widget
 .SH SYNOPSIS
-package require \fBTcl  8.5\fR
+package require \fBTcl  8\&.5\fR
 .sp
-package require \fBTk  8.5\fR
+package require \fBTk  8\&.5\fR
 .sp
-package require \fBntext  ?0.81?\fR
+package require \fBntext  ?0\&.81?\fR
 .sp
 .BE
 .SH DESCRIPTION
-The \fBntext\fR package provides a binding tag named \fINtext\fR for use by text widgets in place of the default \fIText\fR binding tag.
+The \fBntext\fR package provides a binding tag named \fINtext\fR for use by text widgets in place of the default \fIText\fR binding tag\&.
 .PP
-The \fIText\fR binding tag provides around one hundred bindings to the text widget (the exact number is platform-dependent).  A few of these behave in a way that is different from most contemporary text-editing applications.  \fINtext\fR aims to provide more familiar behaviour.
+The \fIText\fR binding tag provides around one hundred bindings to the text widget (the exact number is platform-dependent)\&.  A few of these behave in a way that is different from most contemporary text-editing applications\&.  \fINtext\fR aims to provide more familiar behaviour\&.
 .PP
 Features of the \fINtext\fR bindings that differ from the default \fIText\fR bindings:
 .IP \(bu
-Clicking near the end of a (logical) line moves the cursor to the end of that line \fI(not the start of the next line)\fR.  If the widget is in \fI-wrap\fR \fIword\fR mode, the same rule applies to display lines.
+Clicking near the end of a (logical) line moves the cursor to the end of that line \fI(not the start of the next line)\fR\&.  If the widget is in \fI-wrap\fR \fIword\fR mode, the same rule applies to display lines\&.
 .IP \(bu
-Double-clicking or dragging near the end of a (logical) line will highlight/select characters from the end of that line \fI(not the next line, or the region at the end of the line where there are no characters)\fR.  If the widget is in \fI-wrap\fR \fIword\fR mode, the same rule applies to display lines.
+Double-clicking or dragging near the end of a (logical) line will highlight/select characters from the end of that line \fI(not the next line, or the region at the end of the line where there are no characters)\fR\&.  If the widget is in \fI-wrap\fR \fIword\fR mode, the same rule applies to display lines\&.
 .IP \(bu
-The \fIEnd\fR key implements "Smart End" (successive keypresses move the cursor to the end of the display line, then to the end of the logical line); the \fIHome\fR key implements "Smart Home" (which is similar to "Smart End", but also toggles between the beginning and end of leading whitespace).
+The \fIEnd\fR key implements "Smart End" (successive keypresses move the cursor to the end of the display line, then to the end of the logical line); the \fIHome\fR key implements "Smart Home" (which is similar to "Smart End", but also toggles between the beginning and end of leading whitespace)\&.
 .IP \(bu
-When a selection exists, a <<Paste>> operation (e.g. <Control-v>) overwrites the selection (as most editors do), and does so on all platforms.
+When a selection exists, a <<Paste>> operation (e\&.g\&. <Control-v>) overwrites the selection (as most editors do), and does so on all platforms\&.
 .IP \(bu
-The <Insert> key toggles between "Insert" and "Overwrite" modes for keyboard input.  \fI(In contrast, the Text binding tag uses <Insert> as a method to paste the "primary selection", a task that can be accomplished instead by mouse middle-click.)\fR
+The <Insert> key toggles between "Insert" and "Overwrite" modes for keyboard input\&.  \fI(In contrast, the Text binding tag uses <Insert> as a method to paste the "primary selection", a task that can be accomplished instead by mouse middle-click\&.)\fR
 .IP \(bu
-The <Escape> key clears the selection.
+The <Escape> key clears the selection\&.
 .IP \(bu
-Selecting with <Shift-Button1> selects from the previous position of the insertion cursor. \fI(In the Text binding tag, the selection anchor may be the position of the previous mouse click.)\fR
+Selecting with <Shift-Button1> selects from the previous position of the insertion cursor\&. \fI(In the Text binding tag, the selection anchor may be the position of the previous mouse click\&.)\fR
 .IP \(bu
-<Shift-Button1> operations do not alter the selection anchor. \fI(In the Text binding tag, they do.)\fR
+<Shift-Button1> operations do not alter the selection anchor\&. \fI(In the Text binding tag, they do\&.)\fR
 .IP \(bu
-By default, the \fINtext\fR binding tag does not provide several of the Control-key bindings supplied by the \fIText\fR binding tag.  Modern keyboards offer alternatives, such as cursor keys for navigation; modern applications often use the Control-key bindings for other purposes (e.g. <Control-p> for "print").
+By default, the \fINtext\fR binding tag does not provide several of the Control-key bindings supplied by the \fIText\fR binding tag\&.  Modern keyboards offer alternatives, such as cursor keys for navigation; modern applications often use the Control-key bindings for other purposes (e\&.g\&. <Control-p> for "print")\&.
 .PP
-The last three cases, the behavior of \fIText\fR is often useful, so \fINtext\fR gives you the option of retaining it, by setting variables defined in the ::ntext namespace to 1 (instead of their default 0).  Explaining these features in more detail:
+The last three cases, the behavior of \fIText\fR is often useful, so \fINtext\fR gives you the option of retaining it, by setting variables defined in the ::ntext namespace to 1 (instead of their default 0)\&.  Explaining these features in more detail:
 .IP \(bu
-If the mouse is clicked at position A, then the keyboard is used to move the cursor to B, then shift is held down, and the mouse is clicked at C: the \fIText\fR binding tag gives a selection from A to C; the \fINtext\fR gives a selection from B to C.  If you want \fINtext\fR to behave like \fIText\fR in this respect, set \fB::ntext::classicMouseSelect\fR to 1.
+If the mouse is clicked at position A, then the keyboard is used to move the cursor to B, then shift is held down, and the mouse is clicked at C: the \fIText\fR binding tag gives a selection from A to C; the \fINtext\fR gives a selection from B to C\&.  If you want \fINtext\fR to behave like \fIText\fR in this respect, set \fB::ntext::classicMouseSelect\fR to 1\&.
 .IP \(bu
-The \fIText\fR binding tag allows successive <Shift-Button-1> events to change both ends of the selection, by moving the selection anchor to the end of the selection furthest from the mouse click.  Instead, the \fINtext\fR binding tag fixes the anchor, and multiple Shift-Button-1 events can only move the non-anchored end of the selection.  If you want \fINtext\fR to behave like \fIText\fR in this respect, set \fB::ntext::classicAnchor\fR to 1.  In both \fIText\fR and \fINtext\fR, keyboard navigation with the Shift key held down alters the selection and keeps the selection anchor fixed.
+The \fIText\fR binding tag allows successive <Shift-Button-1> events to change both ends of the selection, by moving the selection anchor to the end of the selection furthest from the mouse click\&.  Instead, the \fINtext\fR binding tag fixes the anchor, and multiple Shift-Button-1 events can only move the non-anchored end of the selection\&.  If you want \fINtext\fR to behave like \fIText\fR in this respect, set \fB::ntext::classicAnchor\fR to 1\&.  In both \fIText\fR and \fINtext\fR, keyboard navigation with the Shift key held down alters the selection and keeps the selection anchor fixed\&.
 .IP \(bu
-The following "extra" \fIText\fR bindings are switched off by default, but can be activated in \fINtext\fR by setting \fB::ntext::classicExtras\fR to 1: <Control-a>, <Control-b>, <Control-d>, <Control-e>, <Control-f>, <Control-h>, <Control-i>, <Control-k>, <Control-n>, <Control-o>, <Control-p>, <Control-t>, <Control-space>, <Control-Shift-space>.
+The following "extra" \fIText\fR bindings are switched off by default, but can be activated in \fINtext\fR by setting \fB::ntext::classicExtras\fR to 1: <Control-a>, <Control-b>, <Control-d>, <Control-e>, <Control-f>, <Control-h>, <Control-i>, <Control-k>, <Control-n>, <Control-o>, <Control-p>, <Control-t>, <Control-space>, <Control-Shift-space>\&.
 .PP
 .SH "CONFIGURATION OPTIONS"
-\fINtext\fR provides alternatives to a number of behaviours of the classic \fIText\fR binding tag.  Where there is an option, the \fINtext\fR behaviour is switched on by default, except for display-line indentation which is discussed on a separate page at \fIntextIndent\fR.
+\fINtext\fR provides alternatives to a number of behaviours of the classic \fIText\fR binding tag\&.  Where there is an option, the \fINtext\fR behaviour is switched on by default, except for display-line indentation which is discussed on a separate page at \fIntextIndent\fR\&.
 .PP
 The behaviour of \fINtext\fR may be configured application-wide by setting the values of a number of namespace variables:
 .PP
 \fB::ntext::classicAnchor\fR
 .IP \(bu
-\fB0\fR - (default value) selects \fINtext\fR behaviour, i.e. the anchor point is fixed
+\fB0\fR - (default value) selects \fINtext\fR behaviour, i\&.e\&. the anchor point is fixed
 .IP \(bu
-\fB1\fR - selects classic \fIText\fR behaviour, i.e. the anchor point is variable
+\fB1\fR - selects classic \fIText\fR behaviour, i\&.e\&. the anchor point is variable
 .PP
 .PP
 \fB::ntext::classicExtras\fR
 .IP \(bu
-\fB0\fR - (default value) selects \fINtext\fR behaviour, i.e. several "extra" \fIText\fR bindings are de-activated
+\fB0\fR - (default value) selects \fINtext\fR behaviour, i\&.e\&. several "extra" \fIText\fR bindings are de-activated
 .IP \(bu
-\fB1\fR - selects classic \fIText\fR behaviour, i.e. the "extra" \fIText\fR bindings are activated
+\fB1\fR - selects classic \fIText\fR behaviour, i\&.e\&. the "extra" \fIText\fR bindings are activated
 .PP
 .PP
 \fB::ntext::classicMouseSelect\fR
 .IP \(bu
-\fB0\fR - (default value) selects \fINtext\fR behaviour, i.e. the anchor point for mouse selection operations is moved by keyboard navigation
+\fB0\fR - (default value) selects \fINtext\fR behaviour, i\&.e\&. the anchor point for mouse selection operations is moved by keyboard navigation
 .IP \(bu
 \fB1\fR - selects classic \fIText\fR behaviour
 .PP
@@ -314,7 +314,7 @@ The behaviour of \fINtext\fR may be configured application-wide by setting the v
 .IP \(bu
 \fB1\fR - text typed at the keyboard overwrites text already in the widget
 .IP \(bu
-The value is toggled by the \fIInsert\fR key.
+The value is toggled by the \fIInsert\fR key\&.
 .PP
 .SH EXAMPLE
 To use \fINtext\fR but keep classic \fIText\fR 's variable-anchor feature:
@@ -322,9 +322,9 @@ To use \fINtext\fR but keep classic \fIText\fR 's variable-anchor feature:
 
 
 package require ntext
-text .t
+text \&.t
 set ::ntext::classicAnchor 1
-bindtags .t {.t Ntext . all}
+bindtags \&.t {\&.t Ntext \&. all}
 
 .CE
 .SH "SEE ALSO"
