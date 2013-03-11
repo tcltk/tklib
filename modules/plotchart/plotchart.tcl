@@ -46,8 +46,11 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,title)             DrawTitle
    set methodProc(xyplot,subtitle)          DrawSubtitle
    set methodProc(xyplot,xtext)             DrawXtext
+   set methodProc(xyplot,xsubtext)          DrawXsubtext
    set methodProc(xyplot,ytext)             DrawYtext
+   set methodProc(xyplot,ysubtext)          DrawYsubtext
    set methodProc(xyplot,vtext)             DrawVtext
+   set methodProc(xyplot,vsubtext)          DrawVsubtext
    set methodProc(xyplot,plot)              DrawData
    set methodProc(xyplot,dot)               DrawDot
    set methodProc(xyplot,dotconfig)         DotConfigure
@@ -96,8 +99,11 @@ namespace eval ::Plotchart {
    set methodProc(xlogyplot,title)          DrawTitle
    set methodProc(xlogyplot,subtitle)       DrawSubtitle
    set methodProc(xlogyplot,xtext)          DrawXtext
+   set methodProc(xlogyplot,xsubtext)       DrawXsubtext
    set methodProc(xlogyplot,ytext)          DrawYtext
+   set methodProc(xlogyplot,ysubtext)       DrawYsubtext
    set methodProc(xlogyplot,vtext)          DrawVtext
+   set methodProc(xlogyplot,vsubtext)       DrawVsubtext
    set methodProc(xlogyplot,plot)           DrawData
    set methodProc(xlogyplot,dot)            DrawDot
    set methodProc(xlogyplot,labeldot)       DrawLabelDot
@@ -123,8 +129,11 @@ namespace eval ::Plotchart {
    set methodProc(logxyplot,title)          DrawTitle
    set methodProc(logxyplot,subtitle)       DrawSubtitle
    set methodProc(logxyplot,xtext)          DrawXtext
+   set methodProc(logxyplot,xsubtext)       DrawXsubtext
    set methodProc(logxyplot,ytext)          DrawYtext
+   set methodProc(logxyplot,ysubtext)       DrawYsubtext
    set methodProc(logxyplot,vtext)          DrawVtext
+   set methodProc(logxyplot,vsubtext)       DrawVsubtext
    set methodProc(logxyplot,plot)           DrawData
    set methodProc(logxyplot,dot)            DrawDot
    set methodProc(logxyplot,labeldot)       DrawLabelDot
@@ -150,8 +159,11 @@ namespace eval ::Plotchart {
    set methodProc(logxlogyplot,title)          DrawTitle
    set methodProc(logxlogyplot,subtitle)       DrawSubtitle
    set methodProc(logxlogyplot,xtext)          DrawXtext
+   set methodProc(logxlogyplot,xsubtext)       DrawXsubtext
    set methodProc(logxlogyplot,ytext)          DrawYtext
+   set methodProc(logxlogyplot,ysubtext)       DrawYsubtext
    set methodProc(logxlogyplot,vtext)          DrawVtext
+   set methodProc(logxlogyplot,vsubtext)       DrawVsubtext
    set methodProc(logxlogyplot,plot)           DrawData
    set methodProc(logxlogyplot,dot)            DrawDot
    set methodProc(logxlogyplot,labeldot)       DrawLabelDot
@@ -218,8 +230,11 @@ namespace eval ::Plotchart {
    set methodProc(histogram,title)             DrawTitle
    set methodProc(histogram,subtitle)          DrawSubtitle
    set methodProc(histogram,xtext)             DrawXtext
+   set methodProc(histogram,xsubtext)          DrawXsubtext
    set methodProc(histogram,ytext)             DrawYtext
+   set methodProc(histogram,ysubtext)          DrawYsubtext
    set methodProc(histogram,vtext)             DrawVtext
+   set methodProc(histogram,vsubtext)          DrawVsubtext
    set methodProc(histogram,plot)              DrawHistogramData
    set methodProc(histogram,plotcumulative)    DrawHistogramCumulative
    set methodProc(histogram,saveplot)          SavePlot
@@ -241,8 +256,11 @@ namespace eval ::Plotchart {
    set methodProc(horizbars,title)             DrawTitle
    set methodProc(horizbars,subtitle)          DrawSubtitle
    set methodProc(horizbars,xtext)             DrawXtext
+   set methodProc(horizbars,xsubtext)          DrawXsubtext
    set methodProc(horizbars,ytext)             DrawYtext
+   set methodProc(horizbars,ysubtext)          DrawYsubtext
    set methodProc(horizbars,vtext)             DrawVtext
+   set methodProc(horizbars,vsubtext)          DrawVsubtext
    set methodProc(horizbars,plot)              DrawHorizBarData
    set methodProc(horizbars,xticklines)        DrawXTicklines
    set methodProc(horizbars,background)        BackgroundColour
@@ -265,8 +283,11 @@ namespace eval ::Plotchart {
    set methodProc(vertbars,title)              DrawTitle
    set methodProc(vertbars,subtitle)           DrawSubtitle
    set methodProc(vertbars,xtext)              DrawXtext
+   set methodProc(vertbars,xsubtext)           DrawXsubtext
    set methodProc(vertbars,ytext)              DrawYtext
+   set methodProc(vertbars,ysubtext)           DrawYsubtext
    set methodProc(vertbars,vtext)              DrawVtext
+   set methodProc(vertbars,vsubtext)           DrawVsubtext
    set methodProc(vertbars,plot)               DrawVertBarData
    set methodProc(vertbars,background)         BackgroundColour
    set methodProc(vertbars,yticklines)         DrawYTicklines
@@ -324,8 +345,11 @@ namespace eval ::Plotchart {
    set methodProc(stripchart,title)            DrawTitle
    set methodProc(stripchart,subtitle)         DrawSubtitle
    set methodProc(stripchart,xtext)            DrawXtext
+   set methodProc(stripchart,xsubtext)         DrawXsubtext
    set methodProc(stripchart,ytext)            DrawYtext
+   set methodProc(stripchart,ysubtext)         DrawYsubtext
    set methodProc(stripchart,vtext)            DrawVtext
+   set methodProc(stripchart,vsubtext)         DrawVsubtext
    set methodProc(stripchart,plot)             DrawStripData
    set methodProc(stripchart,saveplot)         SavePlot
    set methodProc(stripchart,dataconfig)       DataConfig
@@ -347,8 +371,11 @@ namespace eval ::Plotchart {
    set methodProc(isometric,title)             DrawTitle
    set methodProc(isometric,subtitle)          DrawSubtitle
    set methodProc(isometric,xtext)             DrawXtext
+   set methodProc(isometric,xsubtext)          DrawXsubtext
    set methodProc(isometric,ytext)             DrawYtext
+   set methodProc(isometric,ysubtext)          DrawYsubtext
    set methodProc(isometric,vtext)             DrawVtext
+   set methodProc(isometric,vsubtext)          DrawVsubtext
    set methodProc(isometric,plot)              DrawIsometricData
    set methodProc(isometric,saveplot)          SavePlot
    set methodProc(isometric,background)        BackgroundColour
@@ -399,8 +426,11 @@ namespace eval ::Plotchart {
    set methodProc(txplot,title)                DrawTitle
    set methodProc(txplot,subtitle)             DrawSubtitle
    set methodProc(txplot,xtext)                DrawXtext
+   set methodProc(txplot,xsubtext)             DrawXsubtext
    set methodProc(txplot,ytext)                DrawYtext
+   set methodProc(txplot,ysubtext)             DrawYsubtext
    set methodProc(txplot,vtext)                DrawVtext
+   set methodProc(txplot,vsubtext)             DrawVsubtext
    set methodProc(txplot,plot)                 DrawTimeData
    set methodProc(txplot,interval)             DrawInterval
    set methodProc(txplot,saveplot)             SavePlot
@@ -430,8 +460,11 @@ namespace eval ::Plotchart {
    set methodProc(boxplot,title)               DrawTitle
    set methodProc(boxplot,subtitle)            DrawSubtitle
    set methodProc(boxplot,xtext)               DrawXtext
+   set methodProc(boxplot,xsubtext)            DrawXsubtext
    set methodProc(boxplot,ytext)               DrawYtext
+   set methodProc(boxplot,ysubtext)            DrawYsubtext
    set methodProc(boxplot,vtext)               DrawVtext
+   set methodProc(boxplot,vsubtext)            DrawVsubtext
    set methodProc(boxplot,plot)                DrawBoxData
    set methodProc(boxplot,saveplot)            SavePlot
    set methodProc(boxplot,dataconfig)          DataConfig
@@ -459,8 +492,11 @@ namespace eval ::Plotchart {
    set methodProc(targetdiagram,title)         DrawTitle
    set methodProc(targetdiagram,subtitle)      DrawSubtitle
    set methodProc(targetdiagram,xtext)         DrawXtext
+   set methodProc(targetdiagram,xsubtext)      DrawXsubtext
    set methodProc(targetdiagram,ytext)         DrawYtext
+   set methodProc(targetdiagram,ysubtext)      DrawYsubtext
    set methodProc(targetdiagram,vtext)         DrawVtext
+   set methodProc(targetdiagram,vsubtext)      DrawVsubtext
    set methodProc(targetdiagram,plot)          DrawTargetData
    set methodProc(targetdiagram,saveplot)      SavePlot
    set methodProc(targetdiagram,background)    BackgroundColour
@@ -487,8 +523,11 @@ namespace eval ::Plotchart {
    set methodProc(performance,title)           DrawTitle
    set methodProc(performance,subtitle)        DrawSubtitle
    set methodProc(performance,xtext)           DrawXtext
+   set methodProc(performance,xsubtext)        DrawXsubtext
    set methodProc(performance,ytext)           DrawYtext
+   set methodProc(performance,ysubtext)        DrawYsubtext
    set methodProc(performance,vtext)           DrawVtext
+   set methodProc(performance,vsubtext)        DrawVsubtext
    set methodProc(performance,plot)            DrawPerformanceData
    set methodProc(performance,dot)             DrawDot
    set methodProc(performance,saveplot)        SavePlot
@@ -522,7 +561,7 @@ namespace eval ::Plotchart {
    # Auxiliary parameters
    #
    variable torad
-   set torad [expr {3.1415926/180.0}]
+   set torad [expr {acos(-1.0)/180.0}]
 
    variable options
    variable option_keys
@@ -837,6 +876,32 @@ proc ::Plotchart::pixelToCoords { w xpix ypix } {
 
    set xcrd [expr {$scaling($w,xmin)+($xpix-$scaling($w,pxmin))/$scaling($w,xfactor)}]
    set ycrd [expr {$scaling($w,ymax)-($ypix-$scaling($w,pymin))/$scaling($w,yfactor)}]
+
+   if { $scaling($w,coordSystem) != 0 } {
+       switch -- $scaling($w,coordSystem) {
+           1 {
+               # log X versus Y
+               set xcrd [expr {10.0**$xcrd}]
+           }
+           2 {
+               # X versus log Y
+               set ycrd [expr {10.0**$ycrd}]
+           }
+           3 {
+               # log X versus log Y
+               set xcrd [expr {10.0**$xcrd}]
+               set ycrd [expr {10.0**$ycrd}]
+           }
+           4 {
+               # radius versus angle
+               set rad  [expr {hypot($xcrd,$ycrd)}]
+               set phi  [expr {atan2($xycrd,$xcrd)/$torad}]
+               set xcrd $rad
+               set ycrd $phi
+           }
+       }
+   }
+
    return [list $xcrd $ycrd]
 }
 
