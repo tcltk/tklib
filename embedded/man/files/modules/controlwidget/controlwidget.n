@@ -1,9 +1,9 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/controlwidget/controlwidget.n' by tcllib/doctools with format 'nroff'
-'\" Copyright (c) 2010 Ron Fox <rfox@...>
-'\" Copyright (c) 2010 Gerhard Reithofer <...@...>
-'\" Copyright (c) 2010 Marco Maggi <...@...>
-'\" Copyright (c) 2010 Arjen Markus <arjenmarkus@users.sourceforge.net>
+'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/controlwidget/controlwidget\&.n' by tcllib/doctools with format 'nroff'
+'\" Copyright (c) 2010 Ron Fox <rfox@\&.\&.\&.>
+'\" Copyright (c) 2010 Gerhard Reithofer <\&.\&.\&.@\&.\&.\&.>
+'\" Copyright (c) 2010 Marco Maggi <\&.\&.\&.@\&.\&.\&.>
+'\" Copyright (c) 2010 Arjen Markus <arjenmarkus@users\&.sourceforge\&.net>
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -241,18 +241,18 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "controlwidget" n 0.1 tklib "controlwidget"
+.TH "controlwidget" n 0\&.1 tklib "controlwidget"
 .BS
 .SH NAME
 controlwidget \- Collection of widgets for displaying and controlling numerical values
 .SH SYNOPSIS
-package require \fBTcl  ?8.5?\fR
+package require \fBTcl  ?8\&.5?\fR
 .sp
-package require \fBTk  ?8.5?\fR
+package require \fBTk  ?8\&.5?\fR
 .sp
-package require \fBsnit  ?2.0?\fR
+package require \fBsnit  ?2\&.0?\fR
 .sp
-package require \fBcontrolwidget  ?0.1?\fR
+package require \fBcontrolwidget  ?0\&.1?\fR
 .sp
 \fB::controlwidget::meter\fR \fIw\fR \fIargs\fR
 .sp
@@ -289,50 +289,50 @@ package require \fBcontrolwidget  ?0.1?\fR
 .BE
 .SH DESCRIPTION
 .PP
-The controlwidget package focuses on the display and interactive control of numerical values.
+The controlwidget package focuses on the display and interactive control of numerical values\&.
 It mimicks several of the meters and controls found in laboratory settings but also
-daily life: volt meters, equalizers and tachometers to name a few. They can be seen as alternatives
-for the \fIscale widget\fR.
+daily life: volt meters, equalizers and tachometers to name a few\&. They can be seen as alternatives
+for the \fIscale widget\fR\&.
 .PP
 \fINote:\fR The package has not sofar been tested extensively, and that may result in
-an unexpected appearance if you use sizes that are different than the defaults. Also
+an unexpected appearance if you use sizes that are different than the defaults\&. Also
 not all options for the coloring of the various parts and fonts and so on have been tested, so that
-may be another source of bugs.
+may be another source of bugs\&.
 .PP
 A last note: some parts have not been included in any option, most notably the colors of
-parts that require lighter and darker shades to cooperate.
+parts that require lighter and darker shades to cooperate\&.
 .SH "TYPES OF WIDGETS"
 The package distinguishes several typed of widgets:
 .IP \(bu
 Vertical meters: the value of the variable is translated into a vertical position, like with
-the coloured bars you find on your stereo installation.
+the coloured bars you find on your stereo installation\&.
 .IP \(bu
-Angle displays: the value of the variable is related to the angle of a needle, like with tachometers.
+Angle displays: the value of the variable is related to the angle of a needle, like with tachometers\&.
 .IP \(bu
 Interactive widgets: most widgets allow you to change the value of the variable by pressing the mouse button
-on the needle and shifting it up and down or left and right.
+on the needle and shifting it up and down or left and right\&.
 .IP \(bu
-Non-interactive widgets: some widgets, like the thermometer widget, do not allow such interaction.
+Non-interactive widgets: some widgets, like the thermometer widget, do not allow such interaction\&.
 .IP \(bu
 Logical or choice widgets: some widgets display the values as either on/off (or true/false) or as
-one of a set of discrete choices.
+one of a set of discrete choices\&.
 .PP
 All widgets have in common, however, that you can connect them to a variable and that changing the variable
-changes the display. Forthermore, all widgets have the set and get methods to interact with the value that
-the widget displays (whether that is stored in a global variable or not).
+changes the display\&. Forthermore, all widgets have the set and get methods to interact with the value that
+the widget displays (whether that is stored in a global variable or not)\&.
 .PP
 They also have in common that their appearance and behaviour is determined by one or more options that
-you can set at creation time and often later on as well. The widgets are all based on the \fIsnit\fR
-package, so that the methods \fBconfigure\fR and \fBcget\fR are available to set and get these options.
+you can set at creation time and often later on as well\&. The widgets are all based on the \fIsnit\fR
+package, so that the methods \fBconfigure\fR and \fBcget\fR are available to set and get these options\&.
 .SH COMMANDS
 Currently the package contains these widgets of the \fIvertical meter\fR type:
 .TP
 \fB::controlwidget::meter\fR \fIw\fR \fIargs\fR
-Create a vertical meter consisting of an axis and a moveable arrow.
+Create a vertical meter consisting of an axis and a moveable arrow\&.
 .RS
 .TP
 widget \fIw\fR (in)
-Name of the widget to be created.
+Name of the widget to be created\&.
 .TP
 arguments \fIargs\fR (in)
 List of key-value pairs, controlling the appearance and behaviour of the widget:
@@ -362,12 +362,12 @@ Whether the arrow can be moved interactively or not
 .RE
 .TP
 \fB::controlwidget::slider\fR \fIw\fR \fIargs\fR
-Create a widget containing one or more vertical sliders and an axis. You can shift the slider handles
-interactively via the mouse.
+Create a widget containing one or more vertical sliders and an axis\&. You can shift the slider handles
+interactively via the mouse\&.
 .RS
 .TP
 widget \fIw\fR (in)
-Name of the widget to be created.
+Name of the widget to be created\&.
 .TP
 arguments \fIargs\fR (in)
 List of key-value pairs, controlling the appearance and behaviour of the widget:
@@ -400,12 +400,12 @@ Width of the troughs holding the sliders
 .RE
 .TP
 \fB::controlwidget::equalizerBar\fR \fIw\fR \fIargs\fR
-Create a widget containing one or more vertical bars resembling those found on hifi graphical equalizers.
-Note that it is a read-only widget.
+Create a widget containing one or more vertical bars resembling those found on hifi graphical equalizers\&.
+Note that it is a read-only widget\&.
 .RS
 .TP
 widget \fIw\fR (in)
-Name of the widget to be created.
+Name of the widget to be created\&.
 .TP
 arguments \fIargs\fR (in)
 List of key-value pairs, controlling the appearance and behaviour of the widget:
@@ -448,7 +448,7 @@ Create a thermometer widget (read-only)
 .RS
 .TP
 widget \fIw\fR (in)
-Name of the widget to be created.
+Name of the widget to be created\&.
 .TP
 arguments \fIargs\fR (in)
 List of key-value pairs, controlling the appearance and behaviour of the widget:
@@ -504,11 +504,11 @@ Use a logarithmic axis (true) or a linear axis (false)
 The package contains the following widget based on angle displays:
 .TP
 \fB::controlwidget::voltmeter\fR \fIw\fR \fIargs\fR
-Create a voltmeter-like widget.
+Create a voltmeter-like widget\&.
 .RS
 .TP
 widget \fIw\fR (in)
-Name of the widget to be created.
+Name of the widget to be created\&.
 .TP
 arguments \fIargs\fR (in)
 List of key-value pairs, controlling the appearance and behaviour of the widget:
@@ -527,7 +527,7 @@ The minimum value for data in the display
 The maximum value for data in the display
 .TP
 \fBlabels\fR list
-The labels to be shown along the scale. (These are simply considered texts, so no
+The labels to be shown along the scale\&. (These are simply considered texts, so no
 relation with the minimum and maximum perse)
 .TP
 \fBtitle\fR string
@@ -572,14 +572,14 @@ Color of the title below the dial
 .RE
 .TP
 \fB::controlwidget::tachometer\fR \fIw\fR \fIargs\fR
-Create a tachometer-like widget.
+Create a tachometer-like widget\&.
 .RS
 .TP
 widget \fIw\fR (in)
-Name of the widget to be created.
+Name of the widget to be created\&.
 .TP
 arguments \fIargs\fR (in)
-List of key-value pairs, controlling the appearance and behaviour of the widget. In addition
+List of key-value pairs, controlling the appearance and behaviour of the widget\&. In addition
 to the ones given for the voltmeter widget:
 .RS
 .TP
@@ -604,12 +604,12 @@ Color for the needle and the pin
 .RE
 .TP
 \fB::controlwidget::rdial\fR \fIw\fR \fIargs\fR
-Create a rotating dial. You can drag the dial to change the value. With the shift button
-depressed the value changes slowly, with the control button depressed it changes fast.
+Create a rotating dial\&. You can drag the dial to change the value\&. With the shift button
+depressed the value changes slowly, with the control button depressed it changes fast\&.
 .RS
 .TP
 widget \fIw\fR (in)
-Name of the widget to be created.
+Name of the widget to be created\&.
 .TP
 arguments \fIargs\fR (in)
 List of key-value pairs, controlling the appearance and behaviour of the widget:
@@ -659,8 +659,8 @@ All these widgets have the following methods:
 Return the current value or values shown in the widget
 .TP
 \fB$widget\fR set \fIvalue\fR
-Reset the value or values shown in the widget. If the widget is associated with
-a variable, that variable is set as well.
+Reset the value or values shown in the widget\&. If the widget is associated with
+a variable, that variable is set as well\&.
 .RS
 .TP
 value \fIdouble/list\fR
@@ -670,14 +670,14 @@ New value or values for the widget
 Two further widgets are available, meant to display logical values:
 .TP
 \fB::controlwidget::led\fR \fIw\fR \fIargs\fR
-Create a LED-like widget.
+Create a LED-like widget\&.
 .RS
 .TP
 widget \fIw\fR (in)
-Name of the widget to be created.
+Name of the widget to be created\&.
 .TP
 arguments \fIargs\fR (in)
-List of key-value pairs, controlling the appearance and behaviour of the widget. In addition
+List of key-value pairs, controlling the appearance and behaviour of the widget\&. In addition
 to the ones given for the voltmeter widget:
 .RS
 .TP
@@ -696,14 +696,14 @@ Color to use for the "off" state
 .RE
 .TP
 \fB::controlwidget::radioMatrix\fR \fIw\fR \fIargs\fR
-Create a matrix of radio buttons that behaves as a single widget.
+Create a matrix of radio buttons that behaves as a single widget\&.
 .RS
 .TP
 widget \fIw\fR (in)
-Name of the widget to be created.
+Name of the widget to be created\&.
 .TP
 arguments \fIargs\fR (in)
-List of key-value pairs, controlling the appearance and behaviour of the widget. In addition
+List of key-value pairs, controlling the appearance and behaviour of the widget\&. In addition
 to the ones given for the voltmeter widget:
 .RS
 .TP
@@ -720,7 +720,7 @@ Number of rows in the matrix
 Number of columns in the matrix
 .TP
 \fBcommand\fR list
-Command associated with the radio buttons. Invoked when the active radio button changes.
+Command associated with the radio buttons\&. Invoked when the active radio button changes\&.
 .RE
 .RE
 .PP
@@ -754,8 +754,8 @@ Index of the radio button to be set
 .RE
 .PP
 .SH ACKNOWLEDGMENTS
-The code for most of these widgets first appeared on the Wiki. In many cases, Arjen Markus merely
-refactored the code a bit and "snitified" some of them. The original code was developed by the following people:
+The code for most of these widgets first appeared on the Wiki\&. In many cases, Arjen Markus merely
+refactored the code a bit and "snitified" some of them\&. The original code was developed by the following people:
 .IP \(bu
 Vertical meter, LED display, radio matrix: Ron Fox
 .IP \(bu
@@ -769,9 +769,9 @@ Code for moving the needle: ?
 controlling, displaying, numerical values, scale widget
 .SH COPYRIGHT
 .nf
-Copyright (c) 2010 Ron Fox <rfox@...>
-Copyright (c) 2010 Gerhard Reithofer <...@...>
-Copyright (c) 2010 Marco Maggi <...@...>
-Copyright (c) 2010 Arjen Markus <arjenmarkus@users.sourceforge.net>
+Copyright (c) 2010 Ron Fox <rfox@\&.\&.\&.>
+Copyright (c) 2010 Gerhard Reithofer <\&.\&.\&.@\&.\&.\&.>
+Copyright (c) 2010 Marco Maggi <\&.\&.\&.@\&.\&.\&.>
+Copyright (c) 2010 Arjen Markus <arjenmarkus@users\&.sourceforge\&.net>
 
 .fi
