@@ -1,10 +1,10 @@
 # $Id: package_rpm.txt,v 1.1 2009/02/07 05:18:22 andreas_kupries Exp $
 
-%define version @PACKAGE_VERSION@
+%define version 0.6
 %define directory /usr
 
 Summary: The standard Tk library
-Name: @PACKAGE_NAME@
+Name: tklib
 Version: %{version}
 Release: 2
 Copyright: BSD

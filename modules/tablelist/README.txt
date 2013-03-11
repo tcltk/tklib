@@ -97,7 +97,7 @@ Windows.
 Tablelist is also hosted on SourceForge, as part of tklib, which in
 turn is contained in the tcllib project, having the address
 
-    http://sourceforge.net/projects/tcllib
+    http://core.tcl.tk/tklib
 
 How to install it?
 ------------------
