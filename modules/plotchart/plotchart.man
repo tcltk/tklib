@@ -842,7 +842,7 @@ Text to drawn to the y-axis
 
 Specify the subtext of the (horizontal) x-axis, for those plots that have
 a straight x-axis. This text is drawn below the primary text.
-[nl]
+[para]
 Since this involves positioning the primary text and setting margins, you need to
 set the option "usesubtext" for the bottom axis via the plotstyle command. The relevant
 options are: usesubtext, subtextcolor and subtextfont.
@@ -860,7 +860,7 @@ The secondary text of the x-axis label to be drawn.
 Specify the subtext of the (vertical) y-axis, for those plots that have
 a straight y-axis. This text is drawn below the primary text, for both
 axes on the left and the right.
-[nl]
+[para]
 Since this involves positioning the primary text and setting margins, you need to
 set the option "usesubtext" for the left or right axis via the plotstyle command. The relevant
 options are: usesubtext, subtextcolor and subtextfont.
@@ -878,7 +878,7 @@ The secondary text of the y-axis label to be drawn.
 Specify the subtext of the (vertical) y-axis, for those plots that have
 a straight y-axis. This text is drawn to the [emph right] of the primary text, for both
 axes on the left and the right.
-[nl]
+[para]
 Since this involves positioning the primary text and setting margins, you need to
 set the option "usesubtext" for the left or right axis via the plotstyle command. The relevant
 options are: usevsubtext, vsubtextcolor and vsubtextfont. (Note the "v" to distinguish this
