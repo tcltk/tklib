@@ -2,9 +2,9 @@ Overview
 ========
 
     38 new packages                in 9  modules
-    8  changed packages            in 7  modules
+    9  changed packages            in 8  modules
     1  internally changed packages in 1  modules
-    14 unchanged packages          in 12 modules
+    13 unchanged packages          in 11 modules
     75 packages, total             in 27 modules, total
 
 New in tklib 0.6
@@ -65,24 +65,25 @@ Changes from tklib 0.5 to 0.6
 
                                     tklib 0.5     tklib 0.6
     Module      Package             Old Version   New Version   Comments
-    ----------- ------------------- ------------- ------------- ----------
+    ----------- ------------------- ------------- ------------- --------------
     canvas      canvas::sqmap       0.2           0.3.1         B D EF
                 canvas::zoom        0.1           0.2.1         B D
-    ----------- ------------------- ------------- ------------- ----------
+    ----------- ------------------- ------------- ------------- --------------
+    crosshair   crosshair           1.0.2         1.1           EF
     ctext       ctext               3.2           3.3           EF
     cursor      cursor              0.2           0.3.1         B
-    ----------- ------------------- ------------- ------------- ----------
+    ----------- ------------------- ------------- ------------- --------------
     ico         ico                               0.3.2         B EF
                 ico                 1.0.3         1.1           B EF
-    ----------- ------------------- ------------- ------------- ----------
-    plotchart   Plotchart           1.6.1                       B D EF
-                Plotchart                         2.0.2         B D EF
-    ----------- ------------------- ------------- ------------- ----------
+    ----------- ------------------- ------------- ------------- --------------
+    plotchart   Plotchart           1.6.1                       API B D EF T
+                Plotchart                         2.1.0         API B D EF T
+    ----------- ------------------- ------------- ------------- --------------
     style       style::as           1.4           1.4.1         B
-    ----------- ------------------- ------------- ------------- ----------
+    ----------- ------------------- ------------- ------------- --------------
     tablelist   tablelist::common   4.10.1                      B D EF
                 tablelist::common                 5.7           B D EF
-    ----------- ------------------- ------------- ------------- ----------
+    ----------- ------------------- ------------- ------------- --------------
 
 Invisible changes (documentation, testsuites)
 =============================================
@@ -96,9 +97,8 @@ Invisible changes (documentation, testsuites)
 Unchanged
 =========
 
-    autoscroll, chatwidget, crosshair, datefield, getstring,
-    history, ipentry, khim, ntext, style, style::lobster, swaplist,
-    tipstack, tooltip
+    autoscroll, chatwidget, datefield, getstring, history, ipentry,
+    khim, ntext, style, style::lobster, swaplist, tipstack, tooltip
 
 Legend  Change  Details Comments
         ------  ------- ---------
