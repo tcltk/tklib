@@ -21,9 +21,9 @@ proc ::sak::localdoc::run {} {
     package require cmdline
     package require fileutil
     package require textutil::repeat
-    package require doctools
-    package require doctools::toc
-    package require doctools::idx
+    package require doctools      1
+    package require doctools::toc 1
+    package require doctools::idx 1
     package require dtplite
 
     set nav ../../../../home
