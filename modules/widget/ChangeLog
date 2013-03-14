@@ -1,3 +1,9 @@
+2013-03-13  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* calendar.tcl: [Bug 3458158, 3607261]: Fixed broken bindings of
+	* dateentry.tcl: "widget::calendar" which in turn broke "widget::dateentry".
+	* pkgIndex.tcl: Bumped calendar to 1.0.1, dateentry to 0.96.
+
 2011-12-13  Ruediger Haertel <r_haertel@gmx.de>
 
 	* pkgIndex.tcl: Bumped package version to 0.95.
