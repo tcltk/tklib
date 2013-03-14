@@ -22,6 +22,7 @@
 # -language       -default en   Supported languages: de, en, es, fr, gr,
 #                                he, it, ja, sv, pt, zh, fi ,tr, nl, ru,
 #                                crk, crx-nak, crx-lhe
+# -enablecmdonkey -default 1
 #
 #  All other options to canvas
 #
@@ -62,6 +63,7 @@ snit::widgetadaptor widget::calendar {
     option -language       -default en            -configuremethod C-language
     option -showpast       -default 1             -configuremethod C-refresh \
 						  -type {snit::boolean}
+    option -enablecmdonkey -default 1
 
 
     variable fullrefresh 1
@@ -104,6 +106,9 @@ snit::widgetadaptor widget::calendar {
 	bind $win <Control-Down>    [mymethod adjust  0  0  1]
 
 	bind $win <Home>            [mymethod adjust today]
+	bind $win <space>           [mymethod adjust Return]
+	bind $win <Return>          [mymethod adjust Return]
+	bind $win <KP_Enter>        [mymethod adjust Return]
 
 	$self configurelist $args
 
@@ -273,6 +278,7 @@ snit::widgetadaptor widget::calendar {
     ##
     method adjust { args } {
 
+        set CallCmd 1
         switch [llength $args] {
             0 {
                 # mouse button select
@@ -292,6 +298,8 @@ snit::widgetadaptor widget::calendar {
                         set data(month) [clock format $Now -format %m]
                         set data(year)  [clock format $Now -format %Y]
                     }
+                    "Return" {
+                    }
                 }
             }
             
@@ -303,6 +311,8 @@ snit::widgetadaptor widget::calendar {
                 foreach {dday dmonth dyear} $args {break}
                 incr data(year)  $dyear
                 incr data(month) $dmonth
+
+                set CallCmd $options(-enablecmdonkey)
 
                 set maxday [$self numberofdays $data(month) $data(year)]
 
@@ -349,16 +359,16 @@ snit::widgetadaptor widget::calendar {
         set date    [clock scan   $data(month)/$data(day)/$data(year)]
         set fmtdate [clock format $date -format $options(-dateformat)]
 
-	if {$options(-textvariable) ne {}} {
-		set $options(-textvariable) $fmtdate
-	}
+        if { $CallCmd && $options(-textvariable) ne {}} {
+            set $options(-textvariable) $fmtdate
+        }
 
-	if {$options(-command) ne {}} {
-		# pass single arg of formatted date chosen
-		uplevel \#0 $options(-command) [list $fmtdate]
-	}
+        if { $CallCmd && $options(-command) ne {}} {
+            # pass single arg of formatted date chosen
+            uplevel \#0 $options(-command) [list $fmtdate]
+        }
 
-	$self refresh
+        $self refresh
     }
 
     method cbutton {x y w command} {
@@ -688,4 +698,5 @@ snit::widgetadaptor widget::calendar {
     }
 }
 
-package provide widget::calendar 1
+package provide widget::calendar 1.0.1
+
