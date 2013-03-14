@@ -181,13 +181,9 @@ snit::widgetadaptor widget::dateentry {
 
 	# Unpost on Escape or whenever user clicks outside the dropdown
 	bind $dropbox <Escape> [list $win unpost]
-	bind $dropbox <Return> [list $win DateAccepted]
-	bind $dropbox <space>  [list $win DateAccepted]
 	bind $dropbox <ButtonPress> [subst -nocommands {
 	    if {[string first "$dropbox" [winfo containing %X %Y]] != 0} {
 		$win unpost
-	    } else {
-                $win DateAccepted
             }
 	}]
 	bindtags $dropbox [linsert [bindtags $dropbox] 1 TDateEntryPopdown]
@@ -198,8 +194,8 @@ snit::widgetadaptor widget::dateentry {
 	    -dateformat $options(-dateformat) \
 	    -font $options(-font) \
 	    -language $options(-language)\
-	    -borderwidth 1 -relief solid 
-            
+	    -borderwidth 1 -relief solid \
+            -enablecmdonkey 0 -command [mymethod DateChosen]
 
 	bind $calendar <Map> [list focus -force $calendar]
 
@@ -267,16 +263,15 @@ snit::widgetadaptor widget::dateentry {
     }
 
     #
-    #  DateAccepted --
+    #  DateChosen --
     #
-    #  Called when either Return or space was pressed, or when a date
-    #  was selected on mouse click.
+    #  Called from the calendar when a date was selected.
     #
-    #  Formats the date calls the -command if specified and then
-    #  updates the entry.
+    #  Formats the date, calls the callback -command if specified and
+    #  then updates the entry.
     #
     ##
-    method DateAccepted { args } {
+    method DateChosen { args } {
 	upvar 0 $options(-textvariable) date
 
         set waitVar 1
@@ -292,7 +287,6 @@ snit::widgetadaptor widget::dateentry {
 	$hull insert end $formattedDate
 	$hull configure -state readonly
     }
-
 }
 
 # Bindings for menu portion.
@@ -306,8 +300,6 @@ bind TDateEntry <Leave>     { %W state !active }
 bind TDateEntry <<Invoke>>  { %W post }
 bind TDateEntry <Control-space> { %W post }
 bind TDateEntry <Escape>        { %W unpost }
-bind TDateEntry <Return>        { %W DateAccepted }
-bind TDateEntry <space>         { %W DateAccepted }
 
 bind TDateEntry <ButtonPress-1> { %W state pressed ; %W post }
 bind TDateEntry <ButtonRelease-1> { %W state !pressed }
@@ -316,7 +308,7 @@ bind TDateEntry <ButtonRelease-1> { %W state !pressed }
 bind TDateEntryPopdown <Map> { ttk::globalGrab %W }
 bind TDateEntryPopdown <Unmap> { ttk::releaseGrab %W }
 
-package provide widget::dateentry 0.95
+package provide widget::dateentry 0.96
 
 ##############
 # TEST CODE ##
