@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/controlwidget/controlwidget\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/controlwidget/controlwidget\&.n' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 2010 Ron Fox <rfox@\&.\&.\&.>
 '\" Copyright (c) 2010 Gerhard Reithofer <\&.\&.\&.@\&.\&.\&.>
 '\" Copyright (c) 2010 Marco Maggi <\&.\&.\&.@\&.\&.\&.>

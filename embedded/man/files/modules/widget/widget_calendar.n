@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/widget/widget_calendar\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/widget/widget_calendar\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,7 +237,7 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "widget_calendar" n 1\&.00 tklib "Various megawidgets"
+.TH "widget_calendar" n 1\&.0\&.1 tklib "Various megawidgets"
 .BS
 .SH NAME
 widget_calendar \- Calendar Megawidget
@@ -248,7 +248,7 @@ package require \fBTk  8\&.4\fR
 .sp
 package require \fBwidget  ?3\&.0?\fR
 .sp
-package require \fBwidget::calendar  ?1\&.00?\fR
+package require \fBwidget::calendar  ?1\&.0\&.1?\fR
 .sp
 \fBwidget::calendar\fR \fIpathname\fR ?options?
 .sp
