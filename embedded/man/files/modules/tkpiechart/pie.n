@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/tkpiechart/pie\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/tkpiechart/pie\&.n' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 1995-2004 Jean-Luc Fontaine <jfontain@free\&.fr>
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk

@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/widget/widget_dateentry\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/widget/widget_dateentry\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,7 +237,7 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "widget_dateentry" n 0\&.95 tklib "Various megawidgets"
+.TH "widget_dateentry" n 0\&.96 tklib "Various megawidgets"
 .BS
 .SH NAME
 widget_dateentry \- Date Entry Megawidget
@@ -248,7 +248,7 @@ package require \fBTk  8\&.4\fR
 .sp
 package require \fBwidget  ?3\&.0?\fR
 .sp
-package require \fBwidget::dateentry  ?0\&.95?\fR
+package require \fBwidget::dateentry  ?0\&.96?\fR
 .sp
 \fBwidget::dateentry\fR \fIpathname\fR ?options?
 .sp
