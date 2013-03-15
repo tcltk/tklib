@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/net/nas/data/andreask/Dev/Tcllib/tklib/embedded/man/files/modules/canvas/canvas_mvg\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/canvas/canvas_mvg\&.n' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 2010 Wolf-Dieter Busch (http://wiki\&.tcl\&.tk/15505)
 '\" Copyright (c) 2010 Documentation, Andreas Kupries
 '\"
