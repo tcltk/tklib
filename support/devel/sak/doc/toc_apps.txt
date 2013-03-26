@@ -1,0 +1,6 @@
+[toc_begin {Table Of Contents} {}]
+[division_start Applications]
+[item apps/bitmap-editor.man bitmap-editor {Editor for XBM images}]
+[item apps/dia.man           dia           {Lightweight Diagram Processor}]
+[division_end]
+[toc_end]

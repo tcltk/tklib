@@ -1,3 +1,9 @@
+2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	*
+	* Released and tagged Tklib 0.6 ========================
+	* 
+
 2011-04-18  Andreas Kupries  <andreask@activestate.com>
 
 	* ctext.tcl (ctext::linemapUpdateOffset): [Bug 3285751]: Applied

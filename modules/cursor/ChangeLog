@@ -1,3 +1,9 @@
+2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	*
+	* Released and tagged Tklib 0.6 ========================
+	* 
+
 2011-01-18  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* cursor.tcl [Bug 3160150]: Fixed usage of shorthand 'config' for
