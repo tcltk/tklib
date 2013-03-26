@@ -11,6 +11,7 @@ exec tclsh "$0" ${1+"$@"}
 ## For data files found relative to the example's location.
 
 set selfdir  [file dirname [file normalize [info script]]]
+#lappend auto_path $selfdir/../../modules
 
 source $selfdir/citygrid.tcl
 
@@ -26,6 +27,8 @@ package require struct::set      ; # citygrid.tcl
 package require snit             ; # canvas::sqmap dependency
 package require uevent::onidle   ; # ditto
 package require cache::async 0.2 ; # ditto
+
+#puts [package ifneeded crosshair [package present crosshair]]
 
 # ### ### ### ######### ######### #########
 
@@ -49,6 +52,10 @@ proc GUI {} {
     .map configure -cursor tcross
     crosshair::crosshair .map -width 0 -fill \#999999 -dash {.}
     crosshair::track on  .map TRACK
+
+    puts [crosshair::bbox_add .map {100 100 300 300}]
+    puts [crosshair::bbox_add .map {50 50 150 150}]
+
 
     set tile [city::tile]
     set city [expr {$tile * 64}]
