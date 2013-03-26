@@ -66,12 +66,12 @@ Changes from tklib 0.5 to 0.6
                                     tklib 0.5     tklib 0.6
     Module      Package             Old Version   New Version   Comments
     ----------- ------------------- ------------- ------------- --------------
-    canvas      canvas::sqmap       0.2           0.3.1         B D EF
+    canvas      canvas::sqmap       0.2           0.3.1         EF
                 canvas::zoom        0.1           0.2.1         B D
     ----------- ------------------- ------------- ------------- --------------
     crosshair   crosshair           1.0.2         1.1           EF
     ctext       ctext               3.2           3.3           EF
-    cursor      cursor              0.2           0.3.1         B
+    cursor      cursor              0.2           0.3.1         B EF
     ----------- ------------------- ------------- ------------- --------------
     ico         ico                               0.3.2         B EF
                 ico                 1.0.3         1.1           B EF
