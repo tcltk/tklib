@@ -1,3 +1,9 @@
+2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	*
+	* Released and tagged Tklib 0.6 ========================
+	* 
+
 2011-03-13  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl: Minor changes related to the package mechanism, for better
