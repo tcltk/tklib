@@ -1,3 +1,9 @@
+2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	*
+	* Released and tagged Tklib 0.6 ========================
+	* 
+
 2010-09-10  Andreas Kupries  <andreask@activestate.com>
 
 	* controlwidget.tcl: Fixed the mess with controlwidget sourcing

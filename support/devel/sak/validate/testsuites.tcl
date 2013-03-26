@@ -25,13 +25,13 @@ namespace eval ::sak::validate::testsuites {
 
 # ###
 
-proc ::sak::validate::testsuites {modules mode stem} {
-    testsuites::run $modules $mode $stem
+proc ::sak::validate::testsuites {modules mode stem tclv} {
+    testsuites::run $modules $mode $stem $tclv
     testsuites::summary
     return
 }
 
-proc ::sak::validate::testsuites::run {modules mode stem} {
+proc ::sak::validate::testsuites::run {modules mode stem tclv} {
     sak::feedback::init $mode $stem
     sak::feedback::first log  "\[ Testsuites \] =================================================="
     sak::feedback::first unc  "\[ Testsuites \] =================================================="
@@ -139,7 +139,9 @@ proc ::sak::validate::testsuites::Setup {} {
 	interp eval $ip [list ::rename $c {}]
     }
 
-    interp eval $ip [list ::namespace delete ::tcl]
+    if {![package vsatisfies [package present Tcl] 8.6]} {
+	interp eval $ip [list ::namespace delete ::tcl]
+    }
     interp eval $ip [list ::rename namespace {}]
     interp eval $ip [list ::rename rename    {}]
 

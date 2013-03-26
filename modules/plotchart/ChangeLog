@@ -1,3 +1,9 @@
+2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	*
+	* Released and tagged Tklib 0.6 ========================
+	* 
+
 2013-03-10  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Basic support for subtexts with axes, accurate factor "torad", pixelToCoords extended
 	* plotchart.test: Extended tests for coordinate transformations
