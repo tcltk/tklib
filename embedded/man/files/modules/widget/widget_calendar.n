@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/widget/widget_calendar.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/widget/widget_calendar\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,24 +237,24 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "widget_calendar" n 1.00 tklib "Various megawidgets"
+.TH "widget_calendar" n 1\&.0\&.1 tklib "Various megawidgets"
 .BS
 .SH NAME
 widget_calendar \- Calendar Megawidget
 .SH SYNOPSIS
-package require \fBTcl  8.4\fR
+package require \fBTcl  8\&.4\fR
 .sp
-package require \fBTk  8.4\fR
+package require \fBTk  8\&.4\fR
 .sp
-package require \fBwidget  ?3.0?\fR
+package require \fBwidget  ?3\&.0?\fR
 .sp
-package require \fBwidget::calendar  ?1.00?\fR
+package require \fBwidget::calendar  ?1\&.0\&.1?\fR
 .sp
 \fBwidget::calendar\fR \fIpathname\fR ?options?
 .sp
 .BE
 .SH DESCRIPTION
-This package provides a calendar megawidget (snidget).
+This package provides a calendar megawidget (snidget)\&.
 .PP
 .TP
 \fBwidget::calendar\fR \fIpathname\fR ?options?
@@ -263,51 +263,51 @@ This package provides a calendar megawidget (snidget).
 .PP
 .TP
 \fB-command\fR
-A script to evaluate when a date was selected.
+A script to evaluate when a date was selected\&.
 .TP
 \fB-dateformat\fR
-The format of the date that is returned. Default: %m/%d/%Y.
+The format of the date that is returned\&. Default: %m/%d/%Y\&.
 .TP
 \fB-firstday\fR
-Set first day the week, Either sunday or monday. It defaults to monday.
+Set first day the week, Either sunday or monday\&. It defaults to monday\&.
 .TP
 \fB-font\fR
-Select the font used in the widget. It defaults to Helvetica 9.
+Select the font used in the widget\&. It defaults to Helvetica 9\&.
 .TP
 \fB-highlightcolor\fR
-Selects the background color for the day that has been selected. Default: #FFCC00
+Selects the background color for the day that has been selected\&. Default: #FFCC00
 .TP
 \fB-language\fR
-Specify language of the calendar contents. The language is specified
-by abbreviations of the languge, for example: en - english, de - german ...
-It defaults to en.
+Specify language of the calendar contents\&. The language is specified
+by abbreviations of the languge, for example: en - english, de - german \&.\&.\&.
+It defaults to en\&.
 .sp
 Supported languages: de en es fr gr he it ja sv pl pt zh fi tr nl ru crk crx-nak crx-lhe
 .TP
 \fB-shadecolor\fR
-Selects the color of the parts that have a shaded background. Default: #888888
+Selects the color of the parts that have a shaded background\&. Default: #888888
 .TP
 \fB-showpast\fR
-Specify if the past shall be shown. It is a boolean value and defaults
-to 1.
+Specify if the past shall be shown\&. It is a boolean value and defaults
+to 1\&.
 .TP
 \fB-textvariable\fR
-Specifies the name of a variable whose value is linked to the entry widget's contents.
+Specifies the name of a variable whose value is linked to the entry widget's contents\&.
 Whenever the variable changes value, the widget's contents are updated, and
-vice versa.
+vice versa\&.
 .PP
 .SH "WIDGET COMMAND"
 \fIpathname\fR \fBget\fR ?\fIwhat\fR?
 .PP
-Returns a part of the selected date or 'all'. The argument \fIwhat\fR selects
-the part. Valid values for \fIwhat\fR are: day, month, year and all.
+Returns a part of the selected date or 'all'\&. The argument \fIwhat\fR selects
+the part\&. Valid values for \fIwhat\fR are: day, month, year and all\&.
 \'all' is the default and returns the complete date in the format given
-with -dateformat.
+with -dateformat\&.
 .SH "DEFAULT BINDINGS"
-On creation of the calendar widget the following bindings are installed.
+On creation of the calendar widget the following bindings are installed\&.
 When pressing a key the command is invoked and the textvariable is
-updated.
-updated.
+updated\&.
+updated\&.
 .IP \(bu
 Home - Move to the current date
 .IP \(bu
@@ -332,7 +332,7 @@ Control-Down - Move to year after current date
 
 
     package require widget::calendar ; # or widget::all
-    set t [widget::calendar .t]
+    set t [widget::calendar \&.t]
     pack $t -fill x -expand 1
 
 .CE

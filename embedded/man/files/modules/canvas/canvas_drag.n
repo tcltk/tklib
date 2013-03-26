@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/canvas/canvas_drag.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/canvas/canvas_drag\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,24 +237,24 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "canvas::drag" n 0.1 tklib "Variations on a canvas"
+.TH "canvas::drag" n 0\&.1 tklib "Variations on a canvas"
 .BS
 .SH NAME
 canvas::drag \- Manage the dragging of canvas items or item groups
 .SH SYNOPSIS
-package require \fBTcl  8.5\fR
+package require \fBTcl  8\&.5\fR
 .sp
-package require \fBTk  8.5\fR
+package require \fBTk  8\&.5\fR
 .sp
-package require \fBcanvas::drag  ?0.1?\fR
+package require \fBcanvas::drag  ?0\&.1?\fR
 .sp
-\fB::canvas::drag\fR \fBon\fR \fIcanvas\fR \fItagOrId\fR \fIcmd\fR \fIoption\fR...
+\fB::canvas::drag\fR \fBon\fR \fIcanvas\fR \fItagOrId\fR \fIcmd\fR \fIoption\fR\&.\&.\&.
 .sp
 \fB::canvas::drag\fR \fBoff\fR \fIcanvas\fR \fItagOrId\fR
 .sp
-\fB::canvas::drag\fR \fBitem\fR \fIcanvas\fR \fItagOrId\fR \fIoption\fR...
+\fB::canvas::drag\fR \fBitem\fR \fIcanvas\fR \fItagOrId\fR \fIoption\fR\&.\&.\&.
 .sp
-\fB::canvas::drag\fR \fBgroup\fR \fIcanvas\fR \fItagOrId\fR \fIcmd\fR \fIoption\fR...
+\fB::canvas::drag\fR \fBgroup\fR \fIcanvas\fR \fItagOrId\fR \fIcmd\fR \fIoption\fR\&.\&.\&.
 .sp
 \fB{*}cmd\fR \fBstart\fR \fIcanvas\fR \fIitem\fR
 .sp
@@ -266,55 +266,55 @@ package require \fBcanvas::drag  ?0.1?\fR
 .SH DESCRIPTION
 This package provides utility commands to setup and rmeove dragging of
 items or item groups on a canvas, hiding all complexity regarding
-bindings from the user.
+bindings from the user\&.
 .SH API
 .TP
-\fB::canvas::drag\fR \fBon\fR \fIcanvas\fR \fItagOrId\fR \fIcmd\fR \fIoption\fR...
+\fB::canvas::drag\fR \fBon\fR \fIcanvas\fR \fItagOrId\fR \fIcmd\fR \fIoption\fR\&.\&.\&.
 This command initializes item dragging on the \fIcanvas\fR widget,
-with the items used as drag handles identified by \fItagOrId\fR.
+with the items used as drag handles identified by \fItagOrId\fR\&.
 The command prefix \fIcmd\fR, invoked for drag start and movement, is
 responsible for the initialization and actual execution of the drag
-operation.
+operation\&.
 .sp
 The signature of the command prefix is described later, in
-section \fBDrag callback\fR.
+section \fBDrag callback\fR\&.
 .sp
 Similarly, the accepted options and their values are described
 in section \fBOptions\fR
 .sp
-The result of the command is the empty string.
+The result of the command is the empty string\&.
 .TP
 \fB::canvas::drag\fR \fBoff\fR \fIcanvas\fR \fItagOrId\fR
 This command removes any drag operation set on the items of canvas
-\fIcanvas\fR identified by \fItagOrId\fR.
+\fIcanvas\fR identified by \fItagOrId\fR\&.
 .sp
-The result of the command is the empty string.
+The result of the command is the empty string\&.
 .TP
-\fB::canvas::drag\fR \fBitem\fR \fIcanvas\fR \fItagOrId\fR \fIoption\fR...
+\fB::canvas::drag\fR \fBitem\fR \fIcanvas\fR \fItagOrId\fR \fIoption\fR\&.\&.\&.
 This is a convenience command wrapped around method \fBon\fR (see above)
-to drag single items of the \fIcanvas\fR widget, identified by \fItagOrId\fR.
+to drag single items of the \fIcanvas\fR widget, identified by \fItagOrId\fR\&.
 .sp
-It uses an internal standard callback for this.
+It uses an internal standard callback for this\&.
 .sp
-The result of the command is the empty string.
+The result of the command is the empty string\&.
 .TP
-\fB::canvas::drag\fR \fBgroup\fR \fIcanvas\fR \fItagOrId\fR \fIcmd\fR \fIoption\fR...
+\fB::canvas::drag\fR \fBgroup\fR \fIcanvas\fR \fItagOrId\fR \fIcmd\fR \fIoption\fR\&.\&.\&.
 This is a convenience command wrapped around method \fBon\fR (see above)
-to drag single items of the \fIcanvas\fR widget, identified by \fItagOrId\fR.
+to drag single items of the \fIcanvas\fR widget, identified by \fItagOrId\fR\&.
 .sp
-It uses an internal standard callback for this. The callback
+It uses an internal standard callback for this\&. The callback
 \fIcmd\fR specified has the same signature as the \fBDrag callback\fR,
 except that
 .RS
 .IP [1]
-The \fBmove\fR method is not invoked.
+The \fBmove\fR method is not invoked\&.
 .IP [2]
 The result of the \fBstart\fR method \fIhas to be\fR a
-canvas tag refering to the whole group of items to move. In other words,
-it must convert from drag handle (item id) to dragged groupt (tag).
+canvas tag refering to the whole group of items to move\&. In other words,
+it must convert from drag handle (item id) to dragged groupt (tag)\&.
 .RE
 .sp
-The result of the command is the empty string.
+The result of the command is the empty string\&.
 .PP
 .SS "DRAG CALLBACK"
 The drag callback is a command prefix invoked in the following two
@@ -322,41 +322,41 @@ ways:
 .TP
 \fB{*}cmd\fR \fBstart\fR \fIcanvas\fR \fIitem\fR
 This form is invoked when has initiated dragging using drag handle
-identified by the canvas \fIitem\fR id.
+identified by the canvas \fIitem\fR id\&.
 The callback now has to perform anything necessary for its type of
-drag operation.
+drag operation\&.
 .sp
-The result of the command can be anything. It is stored by the
+The result of the command can be anything\&. It is stored by the
 system as client information and passed unchanged to the movement
-callback for its use. In this manner the drag callback is able to
-maintain custom state from start to movement.
+callback for its use\&. In this manner the drag callback is able to
+maintain custom state from start to movement\&.
 .TP
 \fB{*}cmd\fR \fBmove\fR \fIcanvas\fR \fIclientdata\fR \fIdx\fR \fIdy\fR
-This form is invoked when the mouse moved during a drag operation.
+This form is invoked when the mouse moved during a drag operation\&.
 It is invoked with the client data from the start callback (or the
 previous move callback) and the distances the mouse has traveled in
-horizontal and vertical directions.
+horizontal and vertical directions\&.
 .sp
-The result of the command can be anything. It is stored by the
+The result of the command can be anything\&. It is stored by the
 system as client information and passed unchanged to the next movement
-callback for its use. In this manner the drag callback is able to
-maintain custom state from movement to movement.
+callback for its use\&. In this manner the drag callback is able to
+maintain custom state from movement to movement\&.
 .TP
 \fB{*}cmd\fR \fBdone\fR \fIcanvas\fR \fIclientdata\fR
-This form is invoked when the drag operation ends.
+This form is invoked when the drag operation ends\&.
 It is invoked with the client data from the last movement callback (or
-start callback if there had been no motion).
+start callback if there had been no motion)\&.
 .sp
-The result of the command is ignored.
+The result of the command is ignored\&.
 .PP
 .SS OPTIONS
 The commands to create drag operations (\fBon\fR, \fBitem\fR,
 and \fBgroup\fR) all accept the following options to configure the
-new drag.
+new drag\&.
 .TP
 \fB-event\fR \fIspec\fR
 The value of this option specifies the mouse button used to initiate
-the drag operation, and the keyboard modifier, if any. Examples of
+the drag operation, and the keyboard modifier, if any\&. Examples of
 specifications:
 .sp
 To initiate a drag operation by pressing mouse button 3 on a
@@ -366,7 +366,7 @@ drag handle, use:
  -event 3
 .CE
 .IP
-This is the default as well, if the option is not specified.
+This is the default as well, if the option is not specified\&.
 .sp
 To initiate a drag operation by pressing mouse button 2 on a
 drag handle while holding down the Control key, use:

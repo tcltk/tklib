@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/ico/ico.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/ico/ico\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,28 +237,28 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "ico" n 1.0.5 tklib "Windows ICO handling"
+.TH "ico" n 1\&.0\&.5 tklib "Windows ICO handling"
 .BS
 .SH NAME
 ico \- Reading and writing windows icons
 .SH SYNOPSIS
-package require \fBTcl  8.4\fR
+package require \fBTcl  8\&.4\fR
 .sp
-package require \fBico  ?1.0.5?\fR
+package require \fBico  ?1\&.0\&.5?\fR
 .sp
-\fB::ico::icons\fR \fIfile\fR ?\fIoption\fR \fIvalue\fR...?
+\fB::ico::icons\fR \fIfile\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 .sp
-\fB::ico::iconMembers\fR \fIfile\fR \fIname\fR ?\fIoption\fR \fIvalue\fR...?
+\fB::ico::iconMembers\fR \fIfile\fR \fIname\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 .sp
-\fB::ico::getIcon\fR \fIfile\fR \fIname\fR ?\fIoption\fR \fIvalue\fR...?
+\fB::ico::getIcon\fR \fIfile\fR \fIname\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 .sp
-\fB::ico::getIconByName\fR \fIfile\fR \fIname\fR ?\fIoption\fR \fIvalue\fR...?
+\fB::ico::getIconByName\fR \fIfile\fR \fIname\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 .sp
-\fB::ico::getFileIcon\fR \fIfile\fR ?\fIoption\fR \fIvalue\fR...?
+\fB::ico::getFileIcon\fR \fIfile\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 .sp
-\fB::ico::writeIcon\fR \fIfile\fR \fIname\fR \fIdepth\fR \fIdata\fR ?\fIoption\fR \fIvalue\fR...?
+\fB::ico::writeIcon\fR \fIfile\fR \fIname\fR \fIdepth\fR \fIdata\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 .sp
-\fB::ico::copyIcon\fR \fIfile\fR \fIindex\fR \fIfile2\fR \fIindex2\fR ?\fIoption\fR \fIvalue\fR...?
+\fB::ico::copyIcon\fR \fIfile\fR \fIindex\fR \fIfile2\fR \fIindex2\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 .sp
 \fB::ico::EXEtoICO\fR \fIfile\fR ?dir?
 .sp
@@ -266,51 +266,51 @@ package require \fBico  ?1.0.5?\fR
 .sp
 \fB::ico::transparentColor\fR \fIimage\fR \fIcolor\fR
 .sp
-\fB::ico::Show\fR \fIfile\fR ?\fIoption\fR \fIvalue\fR...?
+\fB::ico::Show\fR \fIfile\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 .sp
 .BE
 .SH DESCRIPTION
 This package provides functions for reading and writing Windows icons
-from ICO, EXE, DLL, ICL, and BMP files.
-As used in this module an icon is a visual representation of an object.
+from ICO, EXE, DLL, ICL, and BMP files\&.
+As used in this module an icon is a visual representation of an object\&.
 An icon consists of one or more images usually with varying resolution
-and color depth. Each icon and image has a resource identifier which
-may be a text string or a positive integer value. Most commands use this
-identifier to specify which icon or image to operate on.
+and color depth\&. Each icon and image has a resource identifier which
+may be a text string or a positive integer value\&. Most commands use this
+identifier to specify which icon or image to operate on\&.
 .SH API
 .TP
-\fB::ico::icons\fR \fIfile\fR ?\fIoption\fR \fIvalue\fR...?
+\fB::ico::icons\fR \fIfile\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 Returns a list of icons found in \fIfile\fR where each element is the
-name or numeric ID. Recognizes the following options:
+name or numeric ID\&. Recognizes the following options:
 .RS
 .TP
 \fB-type\fR fileFormat
 .RE
 .sp
 .TP
-\fB::ico::iconMembers\fR \fIfile\fR \fIname\fR ?\fIoption\fR \fIvalue\fR...?
-Returns a list of images that make up the icon with ID \fIname\fR. Each element is itself a
-sublist in the format {name width height bpp}. Recognizes the following options:
+\fB::ico::iconMembers\fR \fIfile\fR \fIname\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
+Returns a list of images that make up the icon with ID \fIname\fR\&. Each element is itself a
+sublist in the format {name width height bpp}\&. Recognizes the following options:
 .RS
 .TP
 \fB-type\fR fileFormat
 .RE
 .sp
 .TP
-\fB::ico::getIcon\fR \fIfile\fR \fIname\fR ?\fIoption\fR \fIvalue\fR...?
-Extracts the icon with ID \fIname\fR from \fIfile\fR.
+\fB::ico::getIcon\fR \fIfile\fR \fIname\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
+Extracts the icon with ID \fIname\fR from \fIfile\fR\&.
 The default \fB-format\fR is \fBimage\fR which will return the
-name of a Tk image containing the icon. The resolution and color depth
-are selected with the ?-res?, ?-bpp?, and ?-exact? options.
-If -exact is specified and there is no exact match, an error is thrown.
+name of a Tk image containing the icon\&. The resolution and color depth
+are selected with the ?-res?, ?-bpp?, and ?-exact? options\&.
+If -exact is specified and there is no exact match, an error is thrown\&.
 Optionally \fB-image\fR may be used to specify the name of the Tk
-image that is created. If \fB-format\fR is \fBcolors\fR then a
-list of color names in the #RRGGBB format is returned. Each list element
-is a horizontal row. Each horizontal row contains a list of colors for
-all the pixels in that row from left to right. If \fB-format\fR is
-\fBname\fR then the resource name of the image chosen is returned.
-This is useful for calling writeIcon or getIconByName.
-Recognizes the following \fIoption\fRs.
+image that is created\&. If \fB-format\fR is \fBcolors\fR then a
+list of color names in the #RRGGBB format is returned\&. Each list element
+is a horizontal row\&. Each horizontal row contains a list of colors for
+all the pixels in that row from left to right\&. If \fB-format\fR is
+\fBname\fR then the resource name of the image chosen is returned\&.
+This is useful for calling writeIcon or getIconByName\&.
+Recognizes the following \fIoption\fRs\&.
 .RS
 .TP
 \fB-type\fR fileFormat
@@ -327,11 +327,11 @@ Recognizes the following \fIoption\fRs.
 .RE
 .sp
 .TP
-\fB::ico::getIconByName\fR \fIfile\fR \fIname\fR ?\fIoption\fR \fIvalue\fR...?
-Extracts the image with ID \fIname\fR from \fIfile\fR. This name should be the name of a
+\fB::ico::getIconByName\fR \fIfile\fR \fIname\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
+Extracts the image with ID \fIname\fR from \fIfile\fR\&. This name should be the name of a
 specific image as returned by \fB::ico::iconMembers\fR, not an icon name returned from
-\fB::ico::icons\fR. If there is no matching resource ID
-in \fIfile\fR an error is thrown. Recognizes the following options:
+\fB::ico::icons\fR\&. If there is no matching resource ID
+in \fIfile\fR an error is thrown\&. Recognizes the following options:
 .RS
 .TP
 \fB-type\fR fileFormat
@@ -340,12 +340,12 @@ in \fIfile\fR an error is thrown. Recognizes the following options:
 .RE
 .sp
 .TP
-\fB::ico::getFileIcon\fR \fIfile\fR ?\fIoption\fR \fIvalue\fR...?
-This command is only functional when running under Windows. It reads the Windows
+\fB::ico::getFileIcon\fR \fIfile\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
+This command is only functional when running under Windows\&. It reads the Windows
 registry to determine the display icon for \fIfile\fR as it would appear in Explorer
-or similar. \fIfile\fR does not need to exist and may also be specified as a file
-extension with a leading dot. If \fIfile\fR is a directory or you specify the
-special name \fBFolder\fR then the icon representing a folder is returned. This
+or similar\&. \fIfile\fR does not need to exist and may also be specified as a file
+extension with a leading dot\&. If \fIfile\fR is a directory or you specify the
+special name \fBFolder\fR then the icon representing a folder is returned\&. This
 command takes the same arguments and usage as \fBgetIcon\fR:
 .RS
 .TP
@@ -361,42 +361,42 @@ command takes the same arguments and usage as \fBgetIcon\fR:
 .RE
 .sp
 .TP
-\fB::ico::writeIcon\fR \fIfile\fR \fIname\fR \fIdepth\fR \fIdata\fR ?\fIoption\fR \fIvalue\fR...?
-Writes an image to \fIfile\fR. \fIname\fR is the resource identifier of the
-image in \fIfile\fR to write.
+\fB::ico::writeIcon\fR \fIfile\fR \fIname\fR \fIdepth\fR \fIdata\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
+Writes an image to \fIfile\fR\&. \fIname\fR is the resource identifier of the
+image in \fIfile\fR to write\&.
 When writing to an EXE, DLL, or ICL file you may only overwrite existing icons with an
-icon of the same dimensions and color depth. No icons may be added to these file types.
+icon of the same dimensions and color depth\&. No icons may be added to these file types\&.
 .sp
-When writing to BMP the name is ignored as this type can contain only one image. This means
-if the file already existed it is completely overwritten.
+When writing to BMP the name is ignored as this type can contain only one image\&. This means
+if the file already existed it is completely overwritten\&.
 .sp
 When writing to an ICO or ICODATA file if the name
 specified does not exist then an image is appended and will be named the next in sequence
-(the specified name is ignored). Images in ICO and ICODATA files may be overwritten with differing
-dimensions or color depths.
+(the specified name is ignored)\&. Images in ICO and ICODATA files may be overwritten with differing
+dimensions or color depths\&.
 Note that you will get strange results when displaying icons if you fail to change every image
-which makes up a given icon.
+which makes up a given icon\&.
 .RS
 .TP
 integer \fIdepth\fR (in)
 This argument must have a value of \fB1\fR, \fB4\fR, \fB8\fR,
-\fB24\fR, or \fB32\fR. If \fIdata\fR has more colors than the
-color depth allows an error will be generated.
+\fB24\fR, or \fB32\fR\&. If \fIdata\fR has more colors than the
+color depth allows an error will be generated\&.
 .TP
 options \fIdata\fR (in)
 This argument is either a list of colors in the format returned by
-\fB::ico::getIcon -format colors\fR or the name of a Tk image.
+\fB::ico::getIcon -format colors\fR or the name of a Tk image\&.
 .RE
 .sp
-Recognizes the following \fIoption\fRs.
+Recognizes the following \fIoption\fRs\&.
 .RS
 .TP
 \fB-type\fR fileFormat
 .RE
 .sp
 .TP
-\fB::ico::copyIcon\fR \fIfile\fR \fIindex\fR \fIfile2\fR \fIindex2\fR ?\fIoption\fR \fIvalue\fR...?
-Copies the icon at \fIindex\fR in \fIfile\fR to \fIindex2\fR in \fIfile2\fR.
+\fB::ico::copyIcon\fR \fIfile\fR \fIindex\fR \fIfile2\fR \fIindex2\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
+Copies the icon at \fIindex\fR in \fIfile\fR to \fIindex2\fR in \fIfile2\fR\&.
 .RS
 .TP
 \fB-fromtype\fR fileFormat
@@ -406,7 +406,7 @@ Copies the icon at \fIindex\fR in \fIfile\fR to \fIindex2\fR in \fIfile2\fR.
 .sp
 .TP
 \fB::ico::EXEtoICO\fR \fIfile\fR ?dir?
-Extracts all icons from the executable \fIfile\fR to ICO files placed in \fIdir\fR. ?dir? defaults to the directory \fIfile\fR is located in. Icon files will be named in the form \fIfile\fR-ID.ico where ID is the icon resource identifier.
+Extracts all icons from the executable \fIfile\fR to ICO files placed in \fIdir\fR\&. ?dir? defaults to the directory \fIfile\fR is located in\&. Icon files will be named in the form \fIfile\fR-ID\&.ico where ID is the icon resource identifier\&.
 .RS
 .TP
 \fB-type\fR fileFormat
@@ -415,18 +415,18 @@ Extracts all icons from the executable \fIfile\fR to ICO files placed in \fIdir\
 .TP
 \fB::ico::clearCache\fR ?file?
 The \fB::ico::getIconList\fR command caches icon offsets inside EXE, DLL, ICL,
-and ICO files in order to speed up extraction.  This command clears that
-cache for the specific ?file? or all files.
+and ICO files in order to speed up extraction\&.  This command clears that
+cache for the specific ?file? or all files\&.
 .TP
 \fB::ico::transparentColor\fR \fIimage\fR \fIcolor\fR
-If \fIimage\fR is a single word it is assumed to be the name of a Tk image.
-All pixels matching \fIcolor\fR in the \fIimage\fR will be set transparent.
+If \fIimage\fR is a single word it is assumed to be the name of a Tk image\&.
+All pixels matching \fIcolor\fR in the \fIimage\fR will be set transparent\&.
 Alternatively, \fIimage\fR may be a color list in which case a modified list
-is returned.
+is returned\&.
 .TP
-\fB::ico::Show\fR \fIfile\fR ?\fIoption\fR \fIvalue\fR...?
+\fB::ico::Show\fR \fIfile\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 Application level command which displays a window showing all the
-icons in \fIfile\fR and their name.
+icons in \fIfile\fR and their name\&.
 .RS
 .TP
 \fB-type\fR fileFormat
@@ -438,23 +438,23 @@ icons in \fIfile\fR and their name.
 .CS
 
 
-    button .explore -image [::ico::getIcon explorer.exe 0 -name explore -res 16 -bpp 8]
+    button \&.explore -image [::ico::getIcon explorer\&.exe 0 -name explore -res 16 -bpp 8]
 
-    set i [lsearch -inline [::ico::iconMembers tclkit.exe 0] {* 32 32 8}]
-    set colorlist [::ico::getIconByName tclkit.exe [lindex $i 0] -format colors]
+    set i [lsearch -inline [::ico::iconMembers tclkit\&.exe 0] {* 32 32 8}]
+    set colorlist [::ico::getIconByName tclkit\&.exe [lindex $i 0] -format colors]
 
 .CE
 .SH LIMITATIONS
-Icons may not be added or removed from file types other than ICO. Icons in these files
-may only be replaced with icons of the same dimensions and color depth.
+Icons may not be added or removed from file types other than ICO\&. Icons in these files
+may only be replaced with icons of the same dimensions and color depth\&.
 .PP
 Icons of 8bpp or lower must include black in the pallete, this means if your icon does
 not have black in it, you will need to leave a color free so that it may be included by
-writeIcon.
+writeIcon\&.
 .PP
-There is currently no way to read alpha channel information from 32bpp icons.
+There is currently no way to read alpha channel information from 32bpp icons\&.
 .PP
 Tk images do not have an alpha channel so the only way to write a true 32bpp icon is from
-a color list. writing a 32bpp icon from a Tkimage is identical to writing a 24bpp icon.
+a color list\&. writing a 32bpp icon from a Tkimage is identical to writing a 24bpp icon\&.
 .SH KEYWORDS
 dll, entry, exe, ico, icon

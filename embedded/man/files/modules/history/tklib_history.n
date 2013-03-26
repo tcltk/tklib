@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/history/tklib_history.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/history/tklib_history\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,16 +237,16 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "history" n 0.1 tklib "Provides a history for Entry widgets"
+.TH "history" n 0\&.1 tklib "Provides a history for Entry widgets"
 .BS
 .SH NAME
 history \- Provides a history for Entry widgets
 .SH SYNOPSIS
-package require \fBTcl  8.4\fR
+package require \fBTcl  8\&.4\fR
 .sp
-package require \fBTk  8.4\fR
+package require \fBTk  8\&.4\fR
 .sp
-package require \fBhistory  ?0.1?\fR
+package require \fBhistory  ?0\&.1?\fR
 .sp
 \fB::history::init\fR \fIpathName\fR ?length?
 .sp
@@ -264,46 +264,46 @@ bell
 .sp
 .BE
 .SH DESCRIPTION
-This package provides a convenient history mechanism for Entry widgets.
-The history may be accessed with the up and down arrow keys.
+This package provides a convenient history mechanism for Entry widgets\&.
+The history may be accessed with the up and down arrow keys\&.
 .PP
 .TP
 \fB::history::init\fR \fIpathName\fR ?length?
-Arranges to remember the history of the named Entry widget. An optional length
-determines the number of history entries to keep. This may be changed later
-with \fB::history::configure\fR. History entries must be added with the
-\fB::history::add\fR command before they can be seen.
+Arranges to remember the history of the named Entry widget\&. An optional length
+determines the number of history entries to keep\&. This may be changed later
+with \fB::history::configure\fR\&. History entries must be added with the
+\fB::history::add\fR command before they can be seen\&.
 .TP
 \fB::history::remove\fR \fIpathName\fR
 Forgets all history entries for the Entry \fIpathName\fR and removes the history
-bindings.
+bindings\&.
 .TP
 \fB::history::add\fR \fIpathName\fR \fItext\fR
 This command is used to add history entries to an Entry that has previously had
-\fB::history::init\fR called on it. This command should be called from your Entry
-handler with the contents of the entry (or whatever you wish to add to the history).
+\fB::history::init\fR called on it\&. This command should be called from your Entry
+handler with the contents of the entry (or whatever you wish to add to the history)\&.
 .TP
 \fB::history::get\fR \fIpathName\fR
 This command returns a list containing the history entries for the Entry \fIpathName\fR
 .TP
 \fB::history::clear\fR \fIpathName\fR
-This command clears the history list for the named Entry.
+This command clears the history list for the named Entry\&.
 .TP
 \fB::history::configure\fR \fIpathName\fR \fIoption\fR ?value?
-This command queries or sets configuration options. Currently the options recognized
-are \fIlength\fR and \fIalert\fR. Setting the length determines the number of history entries to keep for
-the named Entry. Alert specifies the command to run when the user reaches the end of the history, it defaults to
+This command queries or sets configuration options\&. Currently the options recognized
+are \fIlength\fR and \fIalert\fR\&. Setting the length determines the number of history entries to keep for
+the named Entry\&. Alert specifies the command to run when the user reaches the end of the history, it defaults to
 .TP
 bell
-. Although configure requires a \fIpathName\fR argument, the setting for alert is global and the path is ignored.
+\&. Although configure requires a \fIpathName\fR argument, the setting for alert is global and the path is ignored\&.
 .PP
 .CS
 
 
-entry .e
-bind .e <Return> [list ProcessEntry %W]
-::history::init .e
-pack .e
+entry \&.e
+bind \&.e <Return> [list ProcessEntry %W]
+::history::init \&.e
+pack \&.e
 
 proc ProcessEntry {w} {
     set text [$w get]

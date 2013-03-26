@@ -215,15 +215,6 @@ proc ainstall {} {
 	    catch {file delete -force $adst}
 	    file copy -force $aexe    $adst
 	}
-
-	if {[file exists $aexe.man]} {
-	    if {$config(doc,nroff)} {
-		_manfile $aexe.man nroff n $config(doc,nroff,path)
-	    }
-	    if {$config(doc,html)} {
-		_manfile $aexe.man html html $config(doc,html,path)
-	    }
-	}
     }
     return
 }
@@ -246,12 +237,16 @@ proc doinstall {} {
     if {$config(pkg)}       {
 	xinstall   pkg $config(pkg,path)
 	gen_main_index $config(pkg,path) $package_name $package_version
-	if {$config(doc,nroff)} {
-	    xinstall doc nroff n    $config(doc,nroff,path)
+    }
+    if {$config(doc,nroff)} {
+	foreach dir [glob -directory $distribution/embedded/man/files/modules *] {
+	    xcopy $dir $config(doc,nroff,path) 1
 	}
-	if {$config(doc,html)}  {
-	    xinstall doc html  html $config(doc,html,path)
-	}
+	xcopy $distribution/embedded/man/files/apps $config(doc,nroff,path) 1
+    }
+    if {$config(doc,html)}  {
+	#xinstall doc html  html $config(doc,html,path)
+	xcopy $distribution/embedded/www $config(doc,html,path) 1
     }
     if {$config(exa)}       {xinstall exa $config(exa,path)}
     if {$config(app)}       {ainstall}
@@ -591,6 +586,10 @@ proc main {} {
 }
 
 # --------------------------------------------------------------
-main
+if {[catch {
+    main
+}]} {
+    puts $errorInfo
+}
 exit 0
 # --------------------------------------------------------------
