@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/apps/bitmap-editor.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/apps/bitmap-editor\&.n' by tcllib/doctools with format 'nroff'
 '\" Copyright (c)
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
@@ -238,7 +238,7 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "bitmap-editor" n 1.0 tklib "Bitmap handling"
+.TH "bitmap-editor" n 1\&.0 tklib "Bitmap handling"
 .BS
 .SH NAME
 bitmap-editor \- Editor for XBM images
@@ -249,31 +249,31 @@ bitmap-editor \- Editor for XBM images
 .SH DESCRIPTION
 .PP
 The application described by this document, \fBbitmap-editor\fR, is
-a simple editor for XBM based bitmap images.
+a simple editor for XBM based bitmap images\&.
 Written by Keith Vetter the original code can be found at
-\fIhttp://wiki.tcl.tk/6298\fR.
+\fIhttp://wiki\&.tcl\&.tk/6298\fR\&.
 .SS "COMMAND LINE"
 .TP
 \fBbitmap-editor\fR ?\fIxbmfile\fR?
 Invoked without argument the editor GUI will be opened and show a
-standard bitmap to edit. Invoked with an argument it is expected to be
+standard bitmap to edit\&. Invoked with an argument it is expected to be
 the path to a bitmap file in XBM format, and the contained bitmap is
-shown.
+shown\&.
 .RS
 .TP
 path \fIxbmfile\fR (in/out)
 This argument specifies the path to a bitmap file in XBM format, whose
-contents is to shown and edited by the application.
+contents is to shown and edited by the application\&.
 .RE
 .sp
 .PP
 .SH "BUGS, IDEAS, FEEDBACK"
 This document, and the application it describes, will undoubtedly
-contain bugs and other problems.
+contain bugs and other problems\&.
 Please report such in the category \fIbitmap\fR of the
-\fITcllib SF Trackers\fR [http://sourceforge.net/tracker/?group_id=12883].
+\fITcllib SF Trackers\fR [http://sourceforge\&.net/tracker/?group_id=12883]\&.
 Please also report any ideas for enhancements you may have for either
-application and/or documentation.
+application and/or documentation\&.
 .SH KEYWORDS
 bitmap, editor, image, pixel, xbm
 .SH CATEGORY

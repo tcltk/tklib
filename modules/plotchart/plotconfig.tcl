@@ -133,28 +133,28 @@ namespace eval ::Plotchart {
     # define implemented components for each chart type:
     foreach {type components} {
         xyplot        {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
-        xlogyplot     {title subtitle margin text legend leftaxis           bottomaxis background mask}
-        logxyplot     {title subtitle margin text legend leftaxis           bottomaxis background mask}
-        logxlogyplot  {title subtitle margin text legend leftaxis           bottomaxis background mask}
+        xlogyplot     {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
+        logxyplot     {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
+        logxlogyplot  {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
         piechart      {title subtitle margin text legend                               background      labels slice}
         spiralpie     {title subtitle margin text legend                               background      labels slice}
         polarplot     {title subtitle margin text legend axis                          background}
         histogram     {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
-        horizbars     {title subtitle margin text legend leftaxis           bottomaxis background mask bar object}
-        vertbars      {title subtitle margin text legend leftaxis           bottomaxis background mask bar}
+        horizbars     {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask bar object}
+        vertbars      {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask bar}
         ganttchart    {title subtitle margin text legend axis                          background}
-        timechart     {title subtitle margin text legend leftaxis           bottomaxis background}
-        stripchart    {title subtitle margin text legend leftaxis           bottomaxis background mask}
-        isometric     {title subtitle margin text legend leftaxis           bottomaxis background mask}
+        timechart     {title subtitle margin text legend leftaxis rightaxis bottomaxis background}
+        stripchart    {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
+        isometric     {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
         3dplot        {title subtitle margin text legend xaxis yaxis zaxis             background}
-        3dbars        {title subtitle margin text legend leftaxis           bottomaxis background}
-        radialchart   {title subtitle margin text legend leftaxis           bottomaxis background}
+        3dbars        {title subtitle margin text legend leftaxis rightaxis bottomaxis background}
+        radialchart   {title subtitle margin text legend leftaxis rightaxis bottomaxis background}
         txplot        {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
-        3dribbon      {title subtitle margin text legend leftaxis           bottomaxis background}
-        boxplot       {title subtitle margin text legend leftaxis           bottomaxis background mask bar}
+        3dribbon      {title subtitle margin text legend leftaxis rightaxis bottomaxis background}
+        boxplot       {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask bar}
         windrose      {title subtitle margin text legend axis                          background}
-        targetdiagram {title subtitle margin text legend leftaxis           bottomaxis background mask limits}
-        performance   {title subtitle margin text legend leftaxis           bottomaxis background mask limits}
+        targetdiagram {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask limits}
+        performance   {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask limits}
         table         {title subtitle margin background header oddrow evenrow cell frame}
     } {
         set config($type,components) $components
@@ -163,9 +163,9 @@ namespace eval ::Plotchart {
     # define implemented properties for each component:
     # (the '-' means that the component inherits the properties of the previous component on the list)
     foreach {component properties} {
-        leftaxis   {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render vtextoffset}
+        leftaxis   {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render vtextoffset subtextcolor subtextfont vsubtextfont vsubtextcolor usesubtext usevsubtext}
         rightaxis  -
-        axis       {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render justify}
+        axis       {color thickness font format ticklength textcolor labeloffset minorticks shownumbers showaxle render justify subtextcolor subtextfont usesubtext}
         topaxis    -
         bottomaxis -
         xaxis      -
@@ -205,50 +205,56 @@ namespace eval ::Plotchart {
     set config(font,char_height) $char_height
 
     # values for the 'default' style:
-    set _color       "black"
-    set _font        [.invisibleCanvas itemcget $invisibleLabel -font]
-    set _thickness   1
-    set _format      ""
-    set _ticklength  3
-    set _minorticks  0
-    set _textcolor   "black"
-    set _anchor      n
-    set _labeloffset 2
-    set _left        [expr {$char_width  * 8}]
-    set _right       [expr {$char_width  * 4}]
-    set _top         [expr {$char_height * 2}]
-    set _bottom      [expr {$char_height * 2 + 2}]
-    set _bgcolor     "white"
-    set _outercolor  "white"
-    set _innercolor  "white"  ;# Not implemented yet: "$w lower data" gets in the way
-    set _background  "white"
-    set _border      "black"
-    set _position    "top-right"
-    set _barwidth    0.8
-    set _innermargin 0.2
-    set _outline     black
-    set _outlinewidth 1
-    set _vtextoffset 2
-    set _draw        1
-    set _shownumbers 1
-    set _showaxle    1
-    set _leftspace   5
-    set _rightspace  5
-    set _topspace    5
-    set _height      [expr {$char_height + 2*$_topspace}]
-    set _anchor      center
-    set _outerwidth  2
-    set _innerwidth  1
-    set _startangle  0
-    set _direction   +
-    set _placement   out    ;# piechart label placement: 'out' or 'in'
-    set _render      simple ;# rendering of text: 'simple' or 'text'
-    set _sorted      0      ;# piechart and spiral pie
-   #set _shownumbers 0      ;# piechart and spiral pie      - conflict with axes - see below
-   #set _format      "%s (%g)"  ;# piechart and spiral pie
-    set _formatright ""         ;# piechart and spiral pie
+    set _color         "black"
+    set _font          [.invisibleCanvas itemcget $invisibleLabel -font]
+    set _subtextfont   $_font
+    set _subtextcolor  $_color
+    set _vsubtextfont  $_font
+    set _vsubtextcolor $_color
+    set _usesubtext    0
+    set _usevsubtext   0
+    set _thickness     1
+    set _format        ""
+    set _ticklength    3
+    set _minorticks    0
+    set _textcolor     "black"
+    set _anchor        n
+    set _labeloffset   2
+    set _left          [expr {$char_width  * 8}]
+    set _right         [expr {$char_width  * 4}]
+    set _top           [expr {$char_height * 2}]
+    set _bottom        [expr {$char_height * 2 + 2}]
+    set _bgcolor       "white"
+    set _outercolor    "white"
+    set _innercolor    "white"  ;# Not implemented yet: "$w lower data" gets in the way
+    set _background    "white"
+    set _border        "black"
+    set _position      "top-right"
+    set _barwidth      0.8
+    set _innermargin   0.2
+    set _outline       black
+    set _outlinewidth  1
+    set _vtextoffset   2
+    set _draw          1
+    set _shownumbers   1
+    set _showaxle      1
+    set _leftspace     5
+    set _rightspace    5
+    set _topspace      5
+    set _height        [expr {$char_height + 2*$_topspace}]
+    set _anchor        center
+    set _outerwidth    2
+    set _innerwidth    1
+    set _startangle    0
+    set _direction     +
+    set _placement     out    ;# piechart label placement: 'out' or 'in'
+    set _render        simple ;# rendering of text: 'simple' or 'text'
+    set _sorted        0      ;# piechart and spiral pie
+   #set _shownumbers   0      ;# piechart and spiral pie      - conflict with axes - see below
+   #set _format        "%s (%g)"  ;# piechart and spiral pie
+    set _formatright   ""         ;# piechart and spiral pie
     set _transposecoordinates 0 ;# horizontal barchart
-    set _justify     "left"
+    set _justify       "left"
 
 
     destroy .invisibleCanvas

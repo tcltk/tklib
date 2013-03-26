@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/canvas/canvas_highlight.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/canvas/canvas_highlight\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,16 +237,16 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "canvas::highlight" n 0.1 tklib "Variations on a canvas"
+.TH "canvas::highlight" n 0\&.1 tklib "Variations on a canvas"
 .BS
 .SH NAME
 canvas::highlight \- Manage the highlighting of canvas items or item groups
 .SH SYNOPSIS
-package require \fBTcl  8.5\fR
+package require \fBTcl  8\&.5\fR
 .sp
-package require \fBTk  8.5\fR
+package require \fBTk  8\&.5\fR
 .sp
-package require \fBcanvas::highlight  ?0.1?\fR
+package require \fBcanvas::highlight  ?0\&.1?\fR
 .sp
 \fB::canvas::highlight\fR \fBon\fR \fIcanvas\fR \fItagOrId\fR \fIcmd\fR
 .sp
@@ -260,35 +260,35 @@ package require \fBcanvas::highlight  ?0.1?\fR
 .SH DESCRIPTION
 This package provides utility commands for setting up and tearing down
 of highlights for canvas items or item groups, the latter identified
-by a tag.
+by a tag\&.
 .SH API
 .TP
 \fB::canvas::highlight\fR \fBon\fR \fIcanvas\fR \fItagOrId\fR \fIcmd\fR
 This command sets up a general highlight, with the items of canvas
 \fIcanvas\fR to highlight in this manner identified by \fItagOrId\fR
-and the \fIcmd\fR prefix providing the implementation, i.e. the how to
-perform the highlight.
+and the \fIcmd\fR prefix providing the implementation, i\&.e\&. the how to
+perform the highlight\&.
 .sp
 The signature of the command prefix is described later, in
-section \fBHighlight callback\fR.
+section \fBHighlight callback\fR\&.
 .sp
-The result of the command is the empty string.
+The result of the command is the empty string\&.
 .sp
 Limitations:
 .RS
 .IP [1]
-When a highlight is active no other highlight can be activated.
-This means that nested highlights are not possible.
+When a highlight is active no other highlight can be activated\&.
+This means that nested highlights are not possible\&.
 .IP [2]
 The system may break if a highlight is removed from within its
-highlight callback.
+highlight callback\&.
 .RE
 .TP
 \fB::canvas::highlight\fR \fBoff\fR \fIcanvas\fR \fItagOrId\fR
 This command removes any highlight set on the items of canvas
-\fIcanvas\fR identified by \fItagOrId\fR.
+\fIcanvas\fR identified by \fItagOrId\fR\&.
 .sp
-The result of the command is the empty string.
+The result of the command is the empty string\&.
 .PP
 .SS "HIGHLIGHT CALLBACK"
 The highlight callback is a command prefix invoked in the following
@@ -296,26 +296,26 @@ two ways:
 .TP
 \fB{*}cmd\fR \fBon\fR \fIcanvas\fR \fIitem\fR
 This form is invoked when the mouse has entered (one of) the item(s)
-the highlight was set up for. The callback now has to perform any
-reconfiguration necessary to highlight the item (group).
+the highlight was set up for\&. The callback now has to perform any
+reconfiguration necessary to highlight the item (group)\&.
 .sp
-The result of the command can be anything. It is stored by the
+The result of the command can be anything\&. It is stored by the
 system as client information and passed unchanged to the un-highlight
-callback for its use. In this manner the highlight callback is able to
-maintain custom state from highlighting to un-highlighting.
+callback for its use\&. In this manner the highlight callback is able to
+maintain custom state from highlighting to un-highlighting\&.
 .sp
 Note that the callback does not have to maintain state, nor
-does it have to actually reconfigure the item (group). In the latter
-case the callback simply serves as easy enter/leave notification.
+does it have to actually reconfigure the item (group)\&. In the latter
+case the callback simply serves as easy enter/leave notification\&.
 .TP
 \fB{*}cmd\fR \fBoff\fR \fIcanvas\fR \fIclientdata\fR
 This form is invoked when the mouse has left (one of) the item(s) of
-the currently active the highlight. The callback now has to perform
-any reconfiguration necessary to un-highlight the item (group).
+the currently active the highlight\&. The callback now has to perform
+any reconfiguration necessary to un-highlight the item (group)\&.
 .sp
 The result of the command must be a boolean value with the
-usual value to be \fBtrue\fR. By returning \fBfalse\fR instead the
-callback can veto the removal of the highlight.
+usual value to be \fBtrue\fR\&. By returning \fBfalse\fR instead the
+callback can veto the removal of the highlight\&.
 .PP
 .SH KEYWORDS
 canvas, enter callback, highlighting, leave callback

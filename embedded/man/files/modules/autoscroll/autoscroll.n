@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/autoscroll/autoscroll.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/autoscroll/autoscroll\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,14 +237,14 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "autoscroll" n 1.1 tklib "Automatic mapping of scrollbars"
+.TH "autoscroll" n 1\&.1 tklib "Automatic mapping of scrollbars"
 .BS
 .SH NAME
 autoscroll \- Provides for a scrollbar to automatically mapped and unmapped as needed
 .SH SYNOPSIS
 package require \fBTcl \fR
 .sp
-package require \fBautoscroll  ?1.1?\fR
+package require \fBautoscroll  ?1\&.1?\fR
 .sp
 \fB::autoscroll::autoscroll\fR \fIscrollbar\fR
 .sp
@@ -258,47 +258,47 @@ package require \fBautoscroll  ?1.1?\fR
 .SH DESCRIPTION
 This package allows scrollbars to be mapped and
 unmapped as needed depending on the size and
-content of the scrollbars scrolled widget. The
+content of the scrollbars scrolled widget\&. The
 scrollbar must be managed by either pack or grid,
-other geometry managers are not supported.
+other geometry managers are not supported\&.
 .PP
 When managed by pack, any geometry changes made in the
 scrollbars parent between the time a scrollbar is
-unmapped, and when it is mapped will be lost. It is
+unmapped, and when it is mapped will be lost\&. It is
 an error to destroy any of the scrollbars siblings while the
-scrollbar is unmapped. When managed by grid, if anything
+scrollbar is unmapped\&. When managed by grid, if anything
 becomes gridded in the same row and column the scrollbar
-occupied it will be replaced by the scrollbar when remapped.
+occupied it will be replaced by the scrollbar when remapped\&.
 .PP
 This package may be used on any scrollbar-like widget
 as long as it supports the \fBset\fR subcommand in the same
-style as scrollbar. If the \fBset\fR subcommand is not used
-then this package will have no effect.
+style as scrollbar\&. If the \fBset\fR subcommand is not used
+then this package will have no effect\&.
 .PP
 .TP
 \fB::autoscroll::autoscroll\fR \fIscrollbar\fR
 Arranges for the already existing scrollbar \fBscrollbar\fR
-to be mapped and unmapped as needed.
+to be mapped and unmapped as needed\&.
 .TP
 \fB::autoscroll::unautoscroll\fR \fIscrollbar\fR
-Returns the named scrollbar to its original static state.
+Returns the named scrollbar to its original static state\&.
 .TP
 \fB::autoscroll::wrap\fR
 Arranges for all scrollbars created after this command is run
-to be automatically mapped and unmapped as needed.
+to be automatically mapped and unmapped as needed\&.
 .TP
 \fB::autoscroll::unwrap\fR
-Turns off the automatic autoscrolling of all new scrollbars.
+Turns off the automatic autoscrolling of all new scrollbars\&.
 Does not effect existing scrollbars
 .PP
 .CS
 
 
-text .t -yscrollcommand ".scrolly set"
-scrollbar .scrolly -orient v -command ".t yview"
-pack .scrolly -side right -fill y
-pack .t -side left -fill both -expand 1
-::autoscroll::autoscroll .scrolly
+text \&.t -yscrollcommand "\&.scrolly set"
+scrollbar \&.scrolly -orient v -command "\&.t yview"
+pack \&.scrolly -side right -fill y
+pack \&.t -side left -fill both -expand 1
+::autoscroll::autoscroll \&.scrolly
 
 .CE
 .SH KEYWORDS

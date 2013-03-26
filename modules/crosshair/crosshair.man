@@ -1,12 +1,13 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin crosshair n 1.0.2]
+[manpage_begin crosshair n 1.1]
 [copyright {2003 Kevin Kenny}]
 [copyright {2008 (docs) Andreas Kupries <andreas_kupries@users.sourceforge.net>}]
+[copyright {2013 Frank Gover, Andreas Kupries}]
 [moddesc   Crosshairs]
 [titledesc {Crosshairs for Tk canvas}]
 [require Tcl [opt 8.4]]
 [require Tk  [opt 8.4]]
-[require crosshair [opt 1.0.2]]
+[require crosshair [opt 1.1]]
 [keywords canvas cross-hairs tracking viewport location]
 
 [description]
@@ -92,9 +93,32 @@ in the canvas widget [arg w]. It is an error to use this command for a
 canvas which has no cross-hairs. The result of the command is the
 empty string.
 
+
+[call [cmd crosshair::bbox_add] [arg w] [arg bbox]]
+
+This command adds a bounding box to the crosshairs for canvas [arg w].
+The crosshairs will only be active within that area.
+
+[para] The result of the command is a token with which the bounding
+box can be removed again, see [cmd crosshair::bbox_remove] below.
+
+[para] The bounding box [arg bbox] is specified thorugh a list of 4
+values, the lower left and upper right corners of the box. The order
+of values in the list is:
+
+[example {llx lly urx ury}]
+
+[para] Note that this command can be used multiple times, each call
+adding one more bounding box. In such a case the visible area is the
+[emph union] of all the specified bounding boxes.
+
+[call [cmd crosshair::bbox_remove] [arg token]]
+
+This command removes the bounding box specified by the [arg token] (a
+result of [cmd crosshair::bbox_add]) from the crosshairs for its
+canvas widget.
+
 [list_end]
-
-
 
 [section {BUGS, IDEAS, FEEDBACK}]
 

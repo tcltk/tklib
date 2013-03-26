@@ -94,18 +94,21 @@
 </head>
 <! -- Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/www/tklib/files/modules/crosshair/crosshair.html' by tcllib/doctools with format 'html'
    -->
-<! -- Copyright &copy; 2003 Kevin Kenny   -- Copyright &copy; 2008 (docs) Andreas Kupries &lt;andreas_kupries@users.sourceforge.net&gt;
+<! -- Copyright &copy; 2003 Kevin Kenny   -- Copyright &copy; 2008 (docs) Andreas Kupries &lt;andreas_kupries@users.sourceforge.net&gt;   -- Copyright &copy; 2013 Frank Gover, Andreas Kupries
    -->
 <! -- CVS: $Id$ crosshair.n
    -->
 <body><div class="doctools">
 <hr> [
-  <a href="../../../../toc.html">Main Table Of Contents</a>
+   <a href="../../../../../../../../home">Tcllib Home</a>
+| <a href="../../../../toc.html">Main Table Of Contents</a>
 | <a href="../../../toc.html">Table Of Contents</a>
 | <a href="../../../../index.html">Keyword Index</a>
-| <a href="/tklib">Home</a>
-] <hr>
-<h1 class="title">crosshair(n) 1.0.2 tklib &quot;Crosshairs&quot;</h1>
+| <a href="../../../../toc0.html">Categories</a>
+| <a href="../../../../toc1.html">Modules</a>
+| <a href="../../../../toc2.html">Applications</a>
+ ] <hr>
+<h1 class="title">crosshair(n) 1.1 tklib &quot;Crosshairs&quot;</h1>
 <div id="name" class="section"><h2><a name="name">Name</a></h2>
 <p>crosshair - Crosshairs for Tk canvas</p>
 </div>
@@ -125,7 +128,7 @@
 <ul class="requirements">
 <li>package require <b class="pkgname">Tcl <span class="opt">?8.4?</span></b></li>
 <li>package require <b class="pkgname">Tk <span class="opt">?8.4?</span></b></li>
-<li>package require <b class="pkgname">crosshair <span class="opt">?1.0.2?</span></b></li>
+<li>package require <b class="pkgname">crosshair <span class="opt">?1.1?</span></b></li>
 </ul>
 <ul class="syntax">
 <li><a href="#1"><b class="cmd">crosshair::crosshair</b> <i class="arg">w</i> <span class="opt">?<i class="arg">arg</i>...?</span></a></li>
@@ -133,6 +136,8 @@
 <li><a href="#3"><b class="cmd">crosshair::configure</b> <i class="arg">w</i> <span class="opt">?<i class="arg">arg</i>...?</span></a></li>
 <li><a href="#4"><b class="cmd">crosshair::track</b> <b class="method">on</b> <i class="arg">w</i> <i class="arg">cmdprefix</i></a></li>
 <li><a href="#5"><b class="cmd">crosshair::track</b> <b class="method">off</b> <i class="arg">w</i></a></li>
+<li><a href="#6"><b class="cmd">crosshair::bbox_add</b> <i class="arg">w</i> <i class="arg">bbox</i></a></li>
+<li><a href="#7"><b class="cmd">crosshair::bbox_remove</b> <i class="arg">token</i></a></li>
 </ul>
 </div>
 </div>
@@ -187,6 +192,22 @@ location is possible.</p></dd>
 in the canvas widget <i class="arg">w</i>. It is an error to use this command for a
 canvas which has no cross-hairs. The result of the command is the
 empty string.</p></dd>
+<dt><a name="6"><b class="cmd">crosshair::bbox_add</b> <i class="arg">w</i> <i class="arg">bbox</i></a></dt>
+<dd><p>This command adds a bounding box to the crosshairs for canvas <i class="arg">w</i>.
+The crosshairs will only be active within that area.</p>
+<p>The result of the command is a token with which the bounding
+box can be removed again, see <b class="cmd">crosshair::bbox_remove</b> below.</p>
+<p>The bounding box <i class="arg">bbox</i> is specified thorugh a list of 4
+values, the lower left and upper right corners of the box. The order
+of values in the list is:</p>
+<pre class="example">llx lly urx ury</pre>
+<p>Note that this command can be used multiple times, each call
+adding one more bounding box. In such a case the visible area is the
+<em>union</em> of all the specified bounding boxes.</p></dd>
+<dt><a name="7"><b class="cmd">crosshair::bbox_remove</b> <i class="arg">token</i></a></dt>
+<dd><p>This command removes the bounding box specified by the <i class="arg">token</i> (a
+result of <b class="cmd">crosshair::bbox_add</b>) from the crosshairs for its
+canvas widget.</p></dd>
 </dl>
 </div>
 <div id="section3" class="section"><h2><a name="section3">BUGS, IDEAS, FEEDBACK</a></h2>
@@ -198,10 +219,11 @@ Please also report any ideas for enhancements you may have for either
 package and/or documentation.</p>
 </div>
 <div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
-<p><a href="../../../../index.html#key10">canvas</a>, <a href="../../../../index.html#key139">cross-hairs</a>, <a href="../../../../index.html#key138">location</a>, <a href="../../../../index.html#key112">tracking</a>, <a href="../../../../index.html#key137">viewport</a></p>
+<p><a href="../../../../index.html#key10">canvas</a>, <a href="../../../../index.html#key140">cross-hairs</a>, <a href="../../../../index.html#key139">location</a>, <a href="../../../../index.html#key112">tracking</a>, <a href="../../../../index.html#key138">viewport</a></p>
 </div>
 <div id="copyright" class="section"><h2><a name="copyright">Copyright</a></h2>
 <p>Copyright &copy; 2003 Kevin Kenny<br>
-Copyright &copy; 2008 (docs) Andreas Kupries &lt;andreas_kupries@users.sourceforge.net&gt;</p>
+Copyright &copy; 2008 (docs) Andreas Kupries &lt;andreas_kupries@users.sourceforge.net&gt;<br>
+Copyright &copy; 2013 Frank Gover, Andreas Kupries</p>
 </div>
 </div></body></html>

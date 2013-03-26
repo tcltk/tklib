@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/widget/widget_dateentry.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/widget/widget_dateentry\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,26 +237,26 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "widget_dateentry" n 0.95 tklib "Various megawidgets"
+.TH "widget_dateentry" n 0\&.96 tklib "Various megawidgets"
 .BS
 .SH NAME
 widget_dateentry \- Date Entry Megawidget
 .SH SYNOPSIS
-package require \fBTcl  8.4\fR
+package require \fBTcl  8\&.4\fR
 .sp
-package require \fBTk  8.4\fR
+package require \fBTk  8\&.4\fR
 .sp
-package require \fBwidget  ?3.0?\fR
+package require \fBwidget  ?3\&.0?\fR
 .sp
-package require \fBwidget::dateentry  ?0.95?\fR
+package require \fBwidget::dateentry  ?0\&.96?\fR
 .sp
 \fBwidget::dateentry\fR \fIpathname\fR ?options?
 .sp
 .BE
 .SH DESCRIPTION
-This package provides a dateentry megawidget (snidget).
-It is based on an ttk::entry. All widget commands of the ttk::entry
-are available for the dateentry.
+This package provides a dateentry megawidget (snidget)\&.
+It is based on an ttk::entry\&. All widget commands of the ttk::entry
+are available for the dateentry\&.
 .PP
 .TP
 \fBwidget::dateentry\fR \fIpathname\fR ?options?
@@ -265,42 +265,42 @@ are available for the dateentry.
 .PP
 .TP
 \fB-command\fR
-A script to evaluate when a date was selected.
+A script to evaluate when a date was selected\&.
 .TP
 \fB-dateformat\fR
-The format of the date that is returned. Default: %m/%d/%Y.
+The format of the date that is returned\&. Default: %m/%d/%Y\&.
 .TP
 \fB-firstday\fR
-See the calendar man page.
+See the calendar man page\&.
 .TP
 \fB-font\fR
-Select the font used in the widget. It defaults to Helvetica 9.
+Select the font used in the widget\&. It defaults to Helvetica 9\&.
 .TP
 \fB-highlightcolor\fR
-See the calendar man page.
+See the calendar man page\&.
 .TP
 \fB-language\fR
-See the calendar man page.
+See the calendar man page\&.
 .TP
 \fB-shadecolor\fR
-See the calendar man page.
+See the calendar man page\&.
 .TP
 \fB-showpast\fR
-See the calendar man page.
+See the calendar man page\&.
 .TP
 \fB-textvariable\fR
-Specifies the name of a variable whose value is linked to the entry widget's contents.
+Specifies the name of a variable whose value is linked to the entry widget's contents\&.
 Whenever the variable changes value, the widget's contents are updated, and
-vice versa.
+vice versa\&.
 .PP
 .SH "WIDGET COMMAND"
 \fIpathname\fR \fBget\fR
-Returns the selected date.
+Returns the selected date\&.
 .SH "DEFAULT BINDINGS"
-On creation of the dateentry widget the following bindings are installed.
-For navigation within the calendar, see its manpage.
+On creation of the dateentry widget the following bindings are installed\&.
+For navigation within the calendar, see its manpage\&.
 .IP \(bu
-Button-1 - Accept and select the date and close the calendar window.
+Button-1 - Accept and select the date and close the calendar window\&.
 .IP \(bu
 Return, space - Accept the selected date and close the calendar window
 .IP \(bu
@@ -313,7 +313,7 @@ Control-space - Show calendar window
 
 
     package require widget::dateentry; # or widget::all
-    set t [widget::dateentry .de]
+    set t [widget::dateentry \&.de]
     pack $t -fill x -expand 1
 
 .CE
