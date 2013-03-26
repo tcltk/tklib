@@ -1,6 +1,6 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/canvas/canvas_mvg.n' by tcllib/doctools with format 'nroff'
-'\" Copyright (c) 2010 Wolf-Dieter Busch (http://wiki.tcl.tk/15505)
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/canvas/canvas_mvg\&.n' by tcllib/doctools with format 'nroff'
+'\" Copyright (c) 2010 Wolf-Dieter Busch (http://wiki\&.tcl\&.tk/15505)
 '\" Copyright (c) 2010 Documentation, Andreas Kupries
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
@@ -239,14 +239,14 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "canvas::mvg" n 1.0.1 tklib "Variations on a canvas"
+.TH "canvas::mvg" n 1\&.0\&.1 tklib "Variations on a canvas"
 .BS
 .SH NAME
 canvas::mvg \- Canvas to ImageMagick MVG vector format
 .SH SYNOPSIS
-package require \fBTcl  8.5\fR
+package require \fBTcl  8\&.5\fR
 .sp
-package require \fBTk  8.5\fR
+package require \fBTk  8\&.5\fR
 .sp
 package require \fBcanvas::mvg  ?1?\fR
 .sp
@@ -255,18 +255,18 @@ package require \fBcanvas::mvg  ?1?\fR
 .BE
 .SH DESCRIPTION
 This package provides a command to convert a canvas' contents to
-ImageMagick's MVG vector format.
+ImageMagick's MVG vector format\&.
 .SH API
 .TP
 \fB::canvas::mvg\fR \fIpathName\fR
-Dump the contents of the canvas \fIpathName\fR. The result is a string
-in ImageMagick's MVG vector format.
+Dump the contents of the canvas \fIpathName\fR\&. The result is a string
+in ImageMagick's MVG vector format\&.
 .PP
 .SH KEYWORDS
 canvas, graphics, imagemagick, magick vector graphics, mvg, print screen, serialization, vector graphics
 .SH COPYRIGHT
 .nf
-Copyright (c) 2010 Wolf-Dieter Busch (http://wiki.tcl.tk/15505)
+Copyright (c) 2010 Wolf-Dieter Busch (http://wiki\&.tcl\&.tk/15505)
 Copyright (c) 2010 Documentation, Andreas Kupries
 
 .fi

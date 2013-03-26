@@ -1,6 +1,6 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/apps/dia.n' by tcllib/doctools with format 'nroff'
-'\" Copyright (c) 2010 Andreas Kupries <andreas_kupries@users.sourceforge.net>
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/apps/dia\&.n' by tcllib/doctools with format 'nroff'
+'\" Copyright (c) 2010 Andreas Kupries <andreas_kupries@users\&.sourceforge\&.net>
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -238,14 +238,14 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "dia" n 1.0 tklib "Documentation toolbox"
+.TH "dia" n 1\&.0 tklib "Documentation toolbox"
 .BS
 .SH NAME
 dia \- Lightweight Diagram Processor
 .SH SYNOPSIS
-\fBdia\fR \fBshow\fR \fIinputfile\fR...
+\fBdia\fR \fBshow\fR \fIinputfile\fR\&.\&.\&.
 .sp
-\fBdia\fR \fBconvert\fR \fB-o\fR \fIoutput\fR \fIformat\fR \fIinputfile\fR...
+\fBdia\fR \fBconvert\fR \fB-o\fR \fIoutput\fR \fIformat\fR \fIinputfile\fR\&.\&.\&.
 .sp
 .BE
 .SH DESCRIPTION
@@ -253,69 +253,69 @@ dia \- Lightweight Diagram Processor
 The application described by this document, \fBdia\fR, is a
 lightweight processor for tklib diagram files
 .PP
-\fBdia\fR is based upon the package \fBdiagram\fR.
-See it for examples and language reference.
+\fBdia\fR is based upon the package \fBdiagram\fR\&.
+See it for examples and language reference\&.
 .SS "USE CASES"
 \fBdia\fR was written with the following two use cases in
-mind.
+mind\&.
 .PP
 .IP [1]
-Processing and display of one or more diagram files.
+Processing and display of one or more diagram files\&.
 .IP [2]
-Batch conversion of one or more diagram files into raster image files.
+Batch conversion of one or more diagram files into raster image files\&.
 .PP
 .PP
 .SS "COMMAND LINE"
 .TP
-\fBdia\fR \fBshow\fR \fIinputfile\fR...
-This is the form for use case [1]. The application opens a gui
+\fBdia\fR \fBshow\fR \fIinputfile\fR\&.\&.\&.
+This is the form for use case [1]\&. The application opens a gui
 showing the list of input files to the left, allowing the user to
-choose which of them to render to the canvas on the right.
+choose which of them to render to the canvas on the right\&.
 .TP
-\fBdia\fR \fBconvert\fR \fB-o\fR \fIoutput\fR \fIformat\fR \fIinputfile\fR...
-This is the form for use case [2]. The application converts
-the input files into raster image of the specified \fIformat\fR.
+\fBdia\fR \fBconvert\fR \fB-o\fR \fIoutput\fR \fIformat\fR \fIinputfile\fR\&.\&.\&.
+This is the form for use case [2]\&. The application converts
+the input files into raster image of the specified \fIformat\fR\&.
 .RS
 .TP
 path \fIoutput\fR (in)
-This argument specifies where to write the generated image. It can
-be the path to a file or directory.
+This argument specifies where to write the generated image\&. It can
+be the path to a file or directory\&.
 .sp
 If the \fIoutput\fR does not exist then [file dirname $output]
-has to exist and must be a writable directory.
+has to exist and must be a writable directory\&.
 .sp
 In case of multiple input files the generated image will be written to
 a file in the directory, and the name of that file will be derived
-from the \fIinputfile\fR, and \fIformat\fR.
+from the \fIinputfile\fR, and \fIformat\fR\&.
 .sp
 In case of a single input file the generated image will be written to
-the file.
+the file\&.
 .TP
 (handle) \fIformat\fR (in)
 This argument specifies the image format to convert the diagrams into
-when processing the input. The application recognizes all formats
-supported by the \fBImg\fR package, i.e. for which it can load a
+when processing the input\&. The application recognizes all formats
+supported by the \fBImg\fR package, i\&.e\&. for which it can load a
 package \fBimg::\fBformat\fR\fR
 .TP
 path \fIinputfile\fR (in)
-This argument specifies the path to the diagram file to process. It
-has to exist, must be readable, and written in \fIdiagram\fR format.
+This argument specifies the path to the diagram file to process\&. It
+has to exist, must be readable, and written in \fIdiagram\fR format\&.
 .RE
 .sp
 .PP
 .SH "BUGS, IDEAS, FEEDBACK"
 This document, and the application it describes, will undoubtedly
-contain bugs and other problems.
+contain bugs and other problems\&.
 Please report such in the category \fIdiagram\fR of the
-\fITcllib SF Trackers\fR [http://sourceforge.net/tracker/?group_id=12883].
+\fITcllib SF Trackers\fR [http://sourceforge\&.net/tracker/?group_id=12883]\&.
 Please also report any ideas for enhancements you may have for either
-application and/or documentation.
+application and/or documentation\&.
 .SH KEYWORDS
 canvas, conversion, diagram, vector
 .SH CATEGORY
 Documentation tools
 .SH COPYRIGHT
 .nf
-Copyright (c) 2010 Andreas Kupries <andreas_kupries@users.sourceforge.net>
+Copyright (c) 2010 Andreas Kupries <andreas_kupries@users\&.sourceforge\&.net>
 
 .fi

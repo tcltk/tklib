@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/canvas/canvas_tags.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/canvas/canvas_tags\&.n' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -237,79 +237,79 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "canvas::tag" n 0.1 tklib "Variations on a canvas"
+.TH "canvas::tag" n 0\&.1 tklib "Variations on a canvas"
 .BS
 .SH NAME
 canvas::tag \- Easier management of the tags on canvas items or item groups
 .SH SYNOPSIS
-package require \fBTcl  8.5\fR
+package require \fBTcl  8\&.5\fR
 .sp
-package require \fBTk  8.5\fR
+package require \fBTk  8\&.5\fR
 .sp
-package require \fBcanvas::tag  ?0.1?\fR
+package require \fBcanvas::tag  ?0\&.1?\fR
 .sp
-\fB::canvas::tag\fR \fBappend\fR \fIcanvas\fR \fItagOrId\fR \fItag\fR...
+\fB::canvas::tag\fR \fBappend\fR \fIcanvas\fR \fItagOrId\fR \fItag\fR\&.\&.\&.
 .sp
-\fB::canvas::tag\fR \fBprepend\fR \fIcanvas\fR \fItagOrId\fR \fItag\fR...
+\fB::canvas::tag\fR \fBprepend\fR \fIcanvas\fR \fItagOrId\fR \fItag\fR\&.\&.\&.
 .sp
-\fB::canvas::tag\fR \fBappend\fR \fIcanvas\fR \fItagOrId\fR \fIindex\fR \fItag\fR...
+\fB::canvas::tag\fR \fBappend\fR \fIcanvas\fR \fItagOrId\fR \fIindex\fR \fItag\fR\&.\&.\&.
 .sp
-\fB::canvas::tag\fR \fBremove\fR \fIcanvas\fR \fItagOrId\fR \fItag\fR...
+\fB::canvas::tag\fR \fBremove\fR \fIcanvas\fR \fItagOrId\fR \fItag\fR\&.\&.\&.
 .sp
 \fB::canvas::tag\fR \fBmatch\fR \fIcanvas\fR \fItagOrId\fR \fIpattern\fR
 .sp
 .BE
 .SH DESCRIPTION
 This package provides utility commands for easier management of the
-tag lists associated with canvas items or item groups.
+tag lists associated with canvas items or item groups\&.
 .PP
 The problem with the existing canvas API is that a tag list can
 only be set as a whole, making adding and removing of tags from such
 lists relatively complex operations reading the current tag list,
-modifying it, and then writing the changed list back.
+modifying it, and then writing the changed list back\&.
 .PP
 The commands provided by this package hide all this complexity
-from the user.
+from the user\&.
 .SH API
 .TP
-\fB::canvas::tag\fR \fBappend\fR \fIcanvas\fR \fItagOrId\fR \fItag\fR...
-This command adds the tags \fItag\fR... to the tag list for the items
-identified by the \fItagOrId\fR in the \fIcanvas\fR widget. The new
-tags are added at the end of the list.
+\fB::canvas::tag\fR \fBappend\fR \fIcanvas\fR \fItagOrId\fR \fItag\fR\&.\&.\&.
+This command adds the tags \fItag\fR\&.\&.\&. to the tag list for the items
+identified by the \fItagOrId\fR in the \fIcanvas\fR widget\&. The new
+tags are added at the end of the list\&.
 .sp
-The result of the command is the empty string.
+The result of the command is the empty string\&.
 .TP
-\fB::canvas::tag\fR \fBprepend\fR \fIcanvas\fR \fItagOrId\fR \fItag\fR...
-This command adds the tags \fItag\fR... to the tag list for the items
-identified by the \fItagOrId\fR in the \fIcanvas\fR widget. The new
-tags are added at the beginning of the list.
+\fB::canvas::tag\fR \fBprepend\fR \fIcanvas\fR \fItagOrId\fR \fItag\fR\&.\&.\&.
+This command adds the tags \fItag\fR\&.\&.\&. to the tag list for the items
+identified by the \fItagOrId\fR in the \fIcanvas\fR widget\&. The new
+tags are added at the beginning of the list\&.
 .sp
-The result of the command is the empty string.
+The result of the command is the empty string\&.
 .TP
-\fB::canvas::tag\fR \fBappend\fR \fIcanvas\fR \fItagOrId\fR \fIindex\fR \fItag\fR...
-This command adds the tags \fItag\fR... to the tag list for the items
-identified by the \fItagOrId\fR in the \fIcanvas\fR widget. The new
-tags are inserted before the element at \fIindex\fR.
+\fB::canvas::tag\fR \fBappend\fR \fIcanvas\fR \fItagOrId\fR \fIindex\fR \fItag\fR\&.\&.\&.
+This command adds the tags \fItag\fR\&.\&.\&. to the tag list for the items
+identified by the \fItagOrId\fR in the \fIcanvas\fR widget\&. The new
+tags are inserted before the element at \fIindex\fR\&.
 .sp
-\fIindex\fR \fB0\fR refers to the beginning of the list.
+\fIindex\fR \fB0\fR refers to the beginning of the list\&.
 .sp
-\fIindex\fR \fBend\fR refers to after the end of the list.
+\fIindex\fR \fBend\fR refers to after the end of the list\&.
 .sp
-The result of the command is the empty string.
+The result of the command is the empty string\&.
 .TP
-\fB::canvas::tag\fR \fBremove\fR \fIcanvas\fR \fItagOrId\fR \fItag\fR...
-This command removes the named tags \fItag\fR... from the tag list for the items
-identified by the \fItagOrId\fR in the \fIcanvas\fR widget.
+\fB::canvas::tag\fR \fBremove\fR \fIcanvas\fR \fItagOrId\fR \fItag\fR\&.\&.\&.
+This command removes the named tags \fItag\fR\&.\&.\&. from the tag list for the items
+identified by the \fItagOrId\fR in the \fIcanvas\fR widget\&.
 .sp
-The result of the command is the empty string.
+The result of the command is the empty string\&.
 .TP
 \fB::canvas::tag\fR \fBmatch\fR \fIcanvas\fR \fItagOrId\fR \fIpattern\fR
 This command finds all tags for the items identified by the
 \fItagOrId\fR in the \fIcanvas\fR widget which match the glob
-\fIpattern\fR.
+\fIpattern\fR\&.
 .sp
-The result of the command is a list of the matching tags. Which
-may be empty.
+The result of the command is a list of the matching tags\&. Which
+may be empty\&.
 .PP
 .SH KEYWORDS
 append tag, canvas, insert tag, remove tag, tags
