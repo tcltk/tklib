@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/apps/dia\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/apps/diagram-viewer\&.n' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 2010 Andreas Kupries <andreas_kupries@users\&.sourceforge\&.net>
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
@@ -238,25 +238,25 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "dia" n 1\&.0 tklib "Documentation toolbox"
+.TH "diagram-viewer" n 1\&.0 tklib "Documentation toolbox"
 .BS
 .SH NAME
-dia \- Lightweight Diagram Processor
+diagram-viewer \- Lightweight Diagram Processor
 .SH SYNOPSIS
-\fBdia\fR \fBshow\fR \fIinputfile\fR\&.\&.\&.
+\fBdiagram-viewer\fR \fBshow\fR \fIinputfile\fR\&.\&.\&.
 .sp
-\fBdia\fR \fBconvert\fR \fB-o\fR \fIoutput\fR \fIformat\fR \fIinputfile\fR\&.\&.\&.
+\fBdiagram-viewer\fR \fBconvert\fR \fB-o\fR \fIoutput\fR \fIformat\fR \fIinputfile\fR\&.\&.\&.
 .sp
 .BE
 .SH DESCRIPTION
 .PP
-The application described by this document, \fBdia\fR, is a
+The application described by this document, \fBdiagram-viewer\fR, is a
 lightweight processor for tklib diagram files
 .PP
-\fBdia\fR is based upon the package \fBdiagram\fR\&.
+\fBdiagram-viewer\fR is based upon the package \fBdiagram\fR\&.
 See it for examples and language reference\&.
 .SS "USE CASES"
-\fBdia\fR was written with the following two use cases in
+\fBdiagram-viewer\fR was written with the following two use cases in
 mind\&.
 .PP
 .IP [1]
@@ -267,12 +267,12 @@ Batch conversion of one or more diagram files into raster image files\&.
 .PP
 .SS "COMMAND LINE"
 .TP
-\fBdia\fR \fBshow\fR \fIinputfile\fR\&.\&.\&.
+\fBdiagram-viewer\fR \fBshow\fR \fIinputfile\fR\&.\&.\&.
 This is the form for use case [1]\&. The application opens a gui
 showing the list of input files to the left, allowing the user to
 choose which of them to render to the canvas on the right\&.
 .TP
-\fBdia\fR \fBconvert\fR \fB-o\fR \fIoutput\fR \fIformat\fR \fIinputfile\fR\&.\&.\&.
+\fBdiagram-viewer\fR \fBconvert\fR \fB-o\fR \fIoutput\fR \fIformat\fR \fIinputfile\fR\&.\&.\&.
 This is the form for use case [2]\&. The application converts
 the input files into raster image of the specified \fIformat\fR\&.
 .RS
