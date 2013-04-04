@@ -59,7 +59,7 @@ Module widget        _tcl  _man  _exa
 Module widgetl       _tcl  _man  _null
 Module widgetv       _tcl  _man  _null
 
-Application  dia
+Application  diagram-viewer
 Application  bitmap-editor
 
 # @@ Registration END

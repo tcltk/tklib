@@ -302,11 +302,11 @@ tklib
 \fBdatefield\fR
 \fIfiles/modules/datefield/datefield\&.n\fR: Tk datefield widget
 .TP
-\fBdia\fR
-\fIfiles/apps/dia\&.n\fR: Lightweight Diagram Processor
-.TP
 \fBdiagram\fR
 \fIfiles/modules/diagrams/diagram\&.n\fR: Diagram drawing
+.TP
+\fBdiagram-viewer\fR
+\fIfiles/apps/diagram-viewer\&.n\fR: Lightweight Diagram Processor
 .TP
 \fBgetstring\fR
 \fIfiles/modules/getstring/tk_getString\&.n\fR: A string dialog

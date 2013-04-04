@@ -370,11 +370,11 @@ canvasLabel
 \fBfiles/modules/crosshair/crosshair\&.n\fR
 crosshair
 .TP
-\fBfiles/apps/dia\&.n\fR
-dia
-.TP
 \fBfiles/modules/diagrams/diagram\&.n\fR
 diagram
+.TP
+\fBfiles/apps/diagram-viewer\&.n\fR
+diagram-viewer
 .TP
 \fBfiles/modules/tkpiechart/pie\&.n\fR
 pie
@@ -448,8 +448,8 @@ controlwidget
 conversion
 .RS
 .TP
-\fBfiles/apps/dia\&.n\fR
-dia
+\fBfiles/apps/diagram-viewer\&.n\fR
+diagram-viewer
 .RE
 convex
 .RS
@@ -547,11 +547,11 @@ widget_dateentry
 diagram
 .RS
 .TP
-\fBfiles/apps/dia\&.n\fR
-dia
-.TP
 \fBfiles/modules/diagrams/diagram\&.n\fR
 diagram
+.TP
+\fBfiles/apps/diagram-viewer\&.n\fR
+diagram-viewer
 .RE
 dialog
 .RS
@@ -1291,11 +1291,11 @@ widget_validator
 vector
 .RS
 .TP
-\fBfiles/apps/dia\&.n\fR
-dia
-.TP
 \fBfiles/modules/diagrams/diagram\&.n\fR
 diagram
+.TP
+\fBfiles/apps/diagram-viewer\&.n\fR
+diagram-viewer
 .RE
 vector graphics
 .RS
