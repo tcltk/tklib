@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -349,10 +349,10 @@ namespace eval tablelist {
     #
     variable cmdOpts [list \
 	activate activatecell applysorting attrib bbox bodypath bodytag \
-	cancelediting cellattrib cellbbox cellcget cellconfigure cellindex \
-	cellselection cget childcount childindex childkeys collapse \
-	collapseall columnattrib columncget columnconfigure columncount \
-	columnindex columnwidth config configcelllist configcells \
+	canceledediting cancelediting cellattrib cellbbox cellcget \
+	cellconfigure cellindex cellselection cget childcount childindex \
+	childkeys collapse collapseall columnattrib columncget columnconfigure \
+	columncount columnindex columnwidth config configcelllist configcells \
 	configcolumnlist configcolumns configrowlist configrows configure \
 	containing containingcell containingcolumn cornerlabelpath cornerpath \
 	curcellselection curselection depth delete deletecolumns \
@@ -430,28 +430,17 @@ namespace eval tablelist {
     variable maxIndentDepths
 
     #
-    # Define the procedure strToDispStr, which returns the string
-    # obtained by replacing all \t characters in its argument with
-    # \\t, as well as the procedure strMap, needed because the
-    # "string map" command is not available in Tcl 8.0 and 8.1.0.
+    # Define the command mapTabs, which returns the string obtained by
+    # replacing all \t characters in its argument with \\t, as well as
+    # the commands strMap and isInteger, needed because the "string map"
+    # and "string is" commands were not available in Tcl 8.0 and 8.1.0
     #
     if {[catch {string map {} ""}] == 0} {
-	proc strToDispStr str {
-	    if {[string match "*\t*" $str]} {
-		return [string map {"\t" "\\t"} $str]
-	    } else {
-		return $str
-	    }
-	}
-
-	interp alias {} ::tablelist::strMap {} string map
+	interp alias {} ::tablelist::mapTabs {} string map {"\t" "\\t"}
+	interp alias {} ::tablelist::strMap  {} string map
     } else {
-	proc strToDispStr str {
-	    if {[string match "*\t*" $str]} {
-		regsub -all "\t" $str "\\t" str
-	    }
-
-	    return $str
+	proc mapTabs str {
+	    return [regsub -all "\t" $str "\\t"]
 	}
 
 	proc strMap {charMap str} {
@@ -463,6 +452,27 @@ namespace eval tablelist {
 	    }
 
 	    return $str
+	}
+    }
+    if {[catch {string is integer "0"}] == 0} {
+	interp alias {} ::tablelist::isInteger {} string is integer -strict
+    } else {
+	proc isInteger str {
+	    return [expr {[catch {format "%d" $str}] == 0}]
+	}
+    }
+
+    #
+    # Define the command genVirtualEvent, needed because the -data option of the
+    # "event generate" command was not available in Tk versions earlier than 8.5
+    #
+    if {[catch {event generate . <<__>> -data ""}] == 0} {
+	proc genVirtualEvent {win event userData} {
+	    event generate $win $event -data $userData
+	}
+    } else {
+	proc genVirtualEvent {win event userData} {
+	    event generate $win $event
 	}
     }
 
@@ -646,6 +656,7 @@ proc tablelist::tablelist args {
 	    editKey		 ""
 	    editRow		-1
 	    editCol		-1
+	    canceled		 0
 	    fmtKey		 ""
 	    fmtRow		-1
 	    fmtCol		-1
@@ -1061,6 +1072,18 @@ proc tablelist::bodytagSubCmd {win argList} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::cancelededitingSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::cancelededitingSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win canceledediting"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    return $data(canceled)
+}
+
+#------------------------------------------------------------------------------
 # tablelist::canceleditingSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::canceleditingSubCmd {win argList} {
@@ -1359,8 +1382,6 @@ proc tablelist::collapseSubCmd {win argList} {
 	updateColorsWhenIdle $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
-
-	event generate $win <<TablelistRowHiddenStateChanged>>
     }
 
     return ""
@@ -1477,7 +1498,6 @@ proc tablelist::collapseallSubCmd {win argList} {
     updateColorsWhenIdle $win
     adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
-    event generate $win <<TablelistRowHiddenStateChanged>>
     return ""
 }
 
@@ -2092,7 +2112,6 @@ proc tablelist::expandSubCmd {win argList} {
 	updateColorsWhenIdle $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
-	event generate $win <<TablelistRowHiddenStateChanged>>
     }
 
     return ""
@@ -2170,7 +2189,6 @@ proc tablelist::expandallSubCmd {win argList} {
     updateColorsWhenIdle $win
     adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
-    event generate $win <<TablelistRowHiddenStateChanged>>
     return ""
 }
 
@@ -2989,7 +3007,9 @@ proc tablelist::iselemsnippedSubCmd {win argList} {
     if {[lindex $data(fmtCmdFlagList) $col]} {
 	set fullText [formatElem $win $key $row $col $fullText]
     }
-    set fullText [strToDispStr $fullText]
+    if {[string match "*\t*" $fullText]} {
+	set fullText [mapTabs $fullText]
+    }
 
     set pixels [lindex $data(colList) [expr {2*$col}]]
     if {$pixels == 0} {				;# convention: dynamic width
@@ -3938,7 +3958,7 @@ proc tablelist::togglecolumnhideSubCmd {win argList} {
     }
 
     updateViewWhenIdle $win
-    event generate $win <<TablelistColHiddenStateChanged>>
+    genVirtualEvent $win <<TablelistColHiddenStateChanged>> $colIdxList
     return ""
 }
 
@@ -3959,12 +3979,14 @@ proc tablelist::togglerowhideSubCmd {win argList} {
     #
     # Toggle the value of the -hide option of the specified rows
     #
+    set rowIdxList {}
     set count 0
     if {$argCount == 1} {
 	foreach elem $first {
 	    set row [rowIndex $win $elem 0 1]
 	    doRowConfig $row $win -hide [expr {![doRowCget $row $win -hide]}]
 	    incr count
+	    lappend rowIdxList $row
 	}
     } else {
 	set firstRow [rowIndex $win $first 0 1]
@@ -3972,6 +3994,7 @@ proc tablelist::togglerowhideSubCmd {win argList} {
 	for {set row $firstRow} {$row <= $lastRow} {incr row} {
 	    doRowConfig $row $win -hide [expr {![doRowCget $row $win -hide]}]
 	    incr count
+	    lappend rowIdxList $row
 	}
     }
 
@@ -3979,7 +4002,7 @@ proc tablelist::togglerowhideSubCmd {win argList} {
 	makeStripesWhenIdle $win
 	showLineNumbersWhenIdle $win
 	updateViewWhenIdle $win
-	event generate $win <<TablelistRowHiddenStateChanged>>
+	genVirtualEvent $win <<TablelistRowHiddenStateChanged>> $rowIdxList
     }
 
     return ""
@@ -4378,17 +4401,17 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 		set lastCol $tmp
 	    }
 
-	    set firstTextIdx [expr {$firstRow + 1}].0
-	    set lastTextIdx [expr {$lastRow + 1}].end
+	    set fromTextIdx [expr {$firstRow + 1}].0
+	    set toTextIdx [expr {$lastRow + 1}].end
 
 	    #
-	    # Find the (partly) selected lines of the body text
-	    # widget in the text range specified by the two indices
+	    # Find the (partly) selected lines of the body text widget
+	    # in the text range specified by the two cell indices
 	    #
 	    set w $data(body)
 	    variable canElide
 	    variable elide
-	    set selRange [$w tag nextrange select $firstTextIdx $lastTextIdx]
+	    set selRange [$w tag nextrange select $fromTextIdx $toTextIdx]
 	    while {[llength $selRange] != 0} {
 		set selStart [lindex $selRange 0]
 		set line [expr {int($selStart)}]
@@ -4396,9 +4419,7 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 		set key [lindex $data(keyList) $row]
 
 		#
-		# Deselect the relevant elements of the row and handle
-		# the -(select)background and -(select)foreground
-		# cell and column configuration options for them
+		# Deselect the relevant elements of the row
 		#
 		findTabs $win $line $firstCol $lastCol firstTabIdx lastTabIdx
 		set textIdx1 $firstTabIdx
@@ -4410,29 +4431,11 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 		    set textIdx2 \
 			[$w search $elide "\t" $textIdx1+1c $lastTabIdx+1c]+1c
 		    $w tag remove select $textIdx1 $textIdx2
-		    foreach optTail {background foreground} {
-			set opt -select$optTail
-			foreach name  [list $col$opt $key$opt $key,$col$opt] \
-				level [list col row cell] {
-			    if {[info exists data($name)]} {
-				$w tag remove $level$opt-$data($name) \
-				       $textIdx1 $textIdx2
-			    }
-			}
-			foreach name  [list $col-$optTail $key-$optTail \
-				       $key,$col-$optTail] \
-				level [list col row cell] {
-			    if {[info exists data($name)]} {
-				$w tag add $level-$optTail-$data($name) \
-				       $textIdx1 $textIdx2
-			    }
-			}
-		    }
 		    set textIdx1 $textIdx2
 		}
 
 		set selRange \
-		    [$w tag nextrange select "$selStart lineend" $lastTextIdx]
+		    [$w tag nextrange select "$selStart lineend" $toTextIdx]
 	    }
 
 	    updateColorsWhenIdle $win
@@ -4497,9 +4500,7 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 		}
 
 		#
-		# Select the relevant elements of the row and handle
-		# the -(select)background and -(select)foreground
-		# cell and column configuration options for them
+		# Select the relevant elements of the row
 		#
 		findTabs $win $line $firstCol $lastCol firstTabIdx lastTabIdx
 		set textIdx1 $firstTabIdx
@@ -4511,25 +4512,6 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 		    set textIdx2 \
 			[$w search $elide "\t" $textIdx1+1c $lastTabIdx+1c]+1c
 		    $w tag add select $textIdx1 $textIdx2
-		    foreach optTail {background foreground} {
-			set opt -select$optTail
-			foreach name  [list $col$opt $key$opt $key,$col$opt] \
-				level [list col row cell] {
-			    if {[info exists data($name)]} {
-				$w tag add $level$opt-$data($name) \
-				       $textIdx1 $textIdx2
-			    }
-			}
-			foreach name  [list $col-$optTail $key-$optTail \
-				       $key,$col-$optTail] \
-				level [list col row cell] {
-			    if {[info exists data($name)]} {
-				set tag $level-$optTail-$data($name)
-				$w tag remove $level-$optTail-$data($name) \
-				       $textIdx1 $textIdx2
-			    }
-			}
-		    }
 		    set textIdx1 $textIdx2
 		}
 	    }
@@ -4782,10 +4764,12 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	    if {$data(hasFmtCmds)} {
 		set dispItem [formatItem $win $key $row $dispItem]
 	    }
+	    if {[string match "*\t*" $dispItem]} {
+		set dispItem [mapTabs $dispItem]
+	    }
 
 	    set col 0
-	    foreach text [strToDispStr $dispItem] \
-		    {pixels alignment} $data(colList) {
+	    foreach text $dispItem {pixels alignment} $data(colList) {
 		if {($data($col-hide) && !$canElide) || $pixels != 0} {
 		    incr col
 		    continue
@@ -4843,7 +4827,9 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	foreach opt {-background -foreground -font} {
 	    if {[info exists data($key$opt)]} {
 		unset data($key$opt)
-		incr data(rowTagRefCount) -1
+		if {[string compare $opt "-font"] == 0} {
+		    incr data(rowTagRefCount) -1
+		}
 	    }
 	}
 	set isElided [info exists data($key-elide)]
@@ -4906,7 +4892,9 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	    foreach opt {-background -foreground -font} {
 		if {[info exists data($key,$col$opt)]} {
 		    unset data($key,$col$opt)
-		    incr data(cellTagRefCount) -1
+		    if {[string compare $opt "-font"] == 0} {
+			incr data(cellTagRefCount) -1
+		    }
 		}
 	    }
 	    foreach opt {-editable -editwindow -selectbackground
@@ -5310,6 +5298,9 @@ proc tablelist::displayItems win {
 	if {$data(hasFmtCmds)} {
 	    set dispItem [formatItem $win $key $row $dispItem]
 	}
+	if {[string match "*\t*" $dispItem]} {
+	    set dispItem [mapTabs $dispItem]
+	}
 
 	if {$isEmpty} {
 	    set isEmpty 0
@@ -5324,7 +5315,7 @@ proc tablelist::displayItems win {
 	set col 0
 	if {$data(hasColTags)} {
 	    set insertArgs {}
-	    foreach text [strToDispStr $dispItem] \
+	    foreach text $dispItem \
 		    colFont $data(colFontList) \
 		    colTags $data(colTagsList) \
 		    {pixels alignment} $data(colList) {
@@ -5395,8 +5386,7 @@ proc tablelist::displayItems win {
 
 	} else {
 	    set insertStr ""
-	    foreach text [strToDispStr $dispItem] \
-		    {pixels alignment} $data(colList) {
+	    foreach text $dispItem {pixels alignment} $data(colList) {
 		if {$data($col-hide) && !$canElide} {
 		    incr col
 		    continue
@@ -5557,7 +5547,7 @@ proc tablelist::insertCols {win colIdx argList} {
 	set alignment left
 	if {[incr n] < $argCount} {
 	    set next [lindex $argList $n]
-	    if {[catch {format "%d" $next}] == 0} {	;# integer check
+	    if {[isInteger $next]} {
 		incr n -1
 	    } else {
 		mwutil::fullOpt "alignment" $next $alignments
@@ -6043,60 +6033,9 @@ proc tablelist::rowSelection {win opt first last} {
 		set last $tmp
 	    }
 
-	    set firstTextIdx [expr {$first + 1}].0
-	    set lastTextIdx [expr {$last + 1}].end
-
-	    #
-	    # Find the (partly) selected lines of the body text
-	    # widget in the text range specified by the two indices
-	    #
-	    set w $data(body)
-	    variable canElide
-	    variable elide
-	    set selRange [$w tag nextrange select $firstTextIdx $lastTextIdx]
-	    while {[llength $selRange] != 0} {
-		set selStart [lindex $selRange 0]
-
-		$w tag remove select $selStart "$selStart lineend"
-
-		#
-		# Handle the -(select)background and -(select)foreground cell
-		# and column configuration options for each element of the row
-		#
-		set row [expr {int($selStart) - 1}]
-		set key [lindex $data(keyList) $row]
-		set textIdx1 "$selStart linestart"
-		for {set col 0} {$col < $data(colCount)} {incr col} {
-		    if {$data($col-hide) && !$canElide} {
-			continue
-		    }
-
-		    set textIdx2 [$w search $elide "\t" \
-				  $textIdx1+1c "$selStart lineend"]+1c
-		    foreach optTail {background foreground} {
-			set opt -select$optTail
-			foreach name  [list $col$opt $key$opt $key,$col$opt] \
-				level [list col row cell] {
-			    if {[info exists data($name)]} {
-				$w tag remove $level$opt-$data($name) \
-				       $textIdx1 $textIdx2
-			    }
-			}
-			foreach name  [list $col-$optTail $key-$optTail \
-				       $key,$col-$optTail] \
-				level [list col row cell] {
-			    if {[info exists data($name)]} {
-				$w tag add $level-$optTail-$data($name) \
-				       $textIdx1 $textIdx2
-			    }
-			}
-		    }
-		    set textIdx1 $textIdx2
-		}
-
-		set selRange \
-		    [$w tag nextrange select "$selStart lineend" $lastTextIdx]
-	    }
+	    set fromTextIdx [expr {$first + 1}].0
+	    set toTextIdx [expr {$last + 1}].end
+	    $data(body) tag remove select $fromTextIdx $toTextIdx
 
 	    updateColorsWhenIdle $win
 	    return ""
@@ -6104,13 +6043,9 @@ proc tablelist::rowSelection {win opt first last} {
 
 	includes {
 	    set w $data(body)
-	    set textIdx [expr {double($first + 1)}]
-	    set selRange [$w tag nextrange select $textIdx "$textIdx lineend"]
-	    if {[llength $selRange] > 0} {
-		return 1
-	    } else {
-		return 0
-	    }
+	    set line [expr {$first + 1}]
+	    set selRange [$w tag nextrange select $line.0 $line.end]
+	    return [expr {[llength $selRange] > 0}]
 	}
 
 	set {
@@ -6139,43 +6074,8 @@ proc tablelist::rowSelection {win opt first last} {
 		# Check whether the row is selectable
 		#
 		set key [lindex $data(keyList) $row]
-		if {[info exists data($key-selectable)]} {
-		    continue
-		}
-
-		#
-		# Select the elements of the row and handle the
-		# -(select)background and -(select)foreground
-		# cell and column configuration options for them
-		#
-		set textIdx1 $line.0
-		for {set col 0} {$col < $data(colCount)} {incr col} {
-		    if {$data($col-hide) && !$canElide} {
-			continue
-		    }
-
-		    set textIdx2 \
-			[$w search $elide "\t" $textIdx1+1c $line.end]+1c
-		    $w tag add select $textIdx1 $textIdx2
-		    foreach optTail {background foreground} {
-			set opt -select$optTail
-			foreach name  [list $col$opt $key$opt $key,$col$opt] \
-				level [list col row cell] {
-			    if {[info exists data($name)]} {
-				$w tag add $level$opt-$data($name) \
-				       $textIdx1 $textIdx2
-			    }
-			}
-			foreach name  [list $col-$optTail $key-$optTail \
-				       $key,$col-$optTail] \
-				level [list col row cell] {
-			    if {[info exists data($name)]} {
-				$w tag remove $level-$optTail-$data($name) \
-				       $textIdx1 $textIdx2
-			    }
-			}
-		    }
-		    set textIdx1 $textIdx2
+		if {![info exists data($key-selectable)]} {
+		    $w tag add select $line.0 $line.end
 		}
 	    }
 
