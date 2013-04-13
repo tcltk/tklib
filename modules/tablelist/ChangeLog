@@ -1,3 +1,30 @@
+2013-04-12  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 5.8.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* scripts/*.tcl: Support for interactive cell editing with the aid of
+	  the ctext widget; added the "canceledediting" subcommand; sped up the
+	  "selection" and "cellselection" subcommands by orders of magnitude;
+	  significally reduced the performance penalty imposed by the
+	  "-(select)background" and "-(select)foreground options at column,
+	  row, and cell levels; improved the keyboard traversal during
+	  interactive cell editing; using the "-data" option for most virtual
+	  events; improvements related to the selection mode "extended";
+	  further code improvements; eliminated a regression introduced in
+	  Tablelist 5.6, related to vertical scrolling under Tk 8.5 or later in
+	  the presence of embedded images or windows.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/*.tcl: Bumped the version number to 5.8.
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* doc/*.html: Added a "Virtual Events" section to the reference manual;
+	  updated to reflect the changes.
+
 2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
