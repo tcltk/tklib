@@ -1,5 +1,45 @@
-What is new in Tablelist 5.7?
+What is new in Tablelist 5.8?
 -----------------------------
+
+1.  Support for interactive cell editing with the aid of the ctext
+    widget (thanks to Sait Dogru for his proposal).
+
+2.  Added the "canceledediting" subcommand (thanks to Martyn Smith for
+    his proposal).
+
+3.  The "selection" and "cellselection" subcommands have become by
+    orders of magnitude faster (thanks to Jean-Francois Beaud for his
+    input that motivated me to speed up these subcommands).
+
+4.  The "-(select)background" and "-(select)foreground options at
+    column, row, and cell levels now impose by far less performance
+    penalty than in earlier Tablelist versions.
+
+5.  The keyboard traversal during interactive cell editing is now aware
+    of changes like appending a new row, performed by the procedure
+    specified as the value of the "-editendcommand" configuration option
+    (thanks to Andreas Leitgeb for his proposal).
+
+6.  For Tk versions 8.5 or later, most virtual events are now generated
+    with the "-data" option set to a suitable event-specific value
+    (thanks to Christian Gollwitzer, Andreas Leitgeb, and Nagu for their
+    proposals).
+
+7.  Improvements related to the selection mode "extended".
+
+8.  Further code improvements (thanks to Harald Oehlmann for his
+    valuable contribution).
+
+9.  Added a "Virtual Events" section to the reference manual (thanks to
+    Andreas Leitgeb for his proposal).
+
+10. Eliminated a regression introduced in Tablelist version 5.6, related
+    to vertical scrolling under Tk 8.5 or later in the presence of
+    embedded images or windows (thanks to Patrick Fradin for reporting
+    this issue).
+
+What was new in Tablelist 5.7?
+------------------------------
 
 1.  Added the "cellbbox" subcommand.
 
@@ -374,7 +414,7 @@ What was new in Tablelist 4.11?
 3.  Besides with <Button-3>, the optimal column width can now be set
     with <Double-Button-1> in the resize area of the column's header.
     Similarly, the effect of <Shift-Button-3> can also be achieved with
-    <Shuft-Double-Button-1> in the column label's resize area.
+    <Shift-Double-Button-1> in the column label's resize area.
 
 4.  Support for Windows Vista (thanks to Jeremy Cowgar for his input).
 
