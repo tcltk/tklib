@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -68,8 +68,8 @@ namespace eval tablelist {
 proc tablelist::rowIndex {win idx endIsSize {checkRange 0}} {
     upvar ::tablelist::ns${win}::data data
 
-    if {[catch {format "%d" $idx} index] == 0} {
-	# nothing
+    if {[isInteger $idx]} {
+	set index [expr {int($idx)}]
     } elseif {[string first $idx "end"] == 0} {
 	if {$endIsSize} {
 	    set index $data(itemCount)
@@ -131,8 +131,8 @@ proc tablelist::rowIndex {win idx endIsSize {checkRange 0}} {
 proc tablelist::colIndex {win idx checkRange {decrX 1}} {
     upvar ::tablelist::ns${win}::data data
 
-    if {[catch {format "%d" $idx} index] == 0} {
-	# nothing
+    if {[isInteger $idx]} {
+	set index [expr {int($idx)}]
     } elseif {[string first $idx "end"] == 0} {
 	set index $data(lastCol)
     } elseif {[string first $idx "left"] == 0} {
@@ -414,9 +414,9 @@ proc tablelist::descCount {win key} {
 proc tablelist::nodeRow {win parentKey childIdx} {
     upvar ::tablelist::ns${win}::data data
 
-    if {[catch {format "%d" $childIdx} idx] == 0} {
-	if {$idx < [llength $data($parentKey-children)]} {
-	    set childKey [lindex $data($parentKey-children) $idx]
+    if {[isInteger $childIdx]} {
+	if {$childIdx < [llength $data($parentKey-children)]} {
+	    set childKey [lindex $data($parentKey-children) $childIdx]
 	    return [keyToRow $win $childKey]
 	} else {
 	    return [expr {[keyToRow $win $parentKey] +
@@ -601,7 +601,7 @@ proc tablelist::deleteColData {win col} {
     #
     foreach name [array names data k*,$col-*] {
 	unset data($name)
-	if {[string match "k*,$col-\[bf\]*" $name]} {
+	if {[string match "k*,$col-font" $name]} {
 	    incr data(cellTagRefCount) -1
 	} elseif {[string match "k*,$col-image" $name]} {
 	    incr data(imgCount) -1
@@ -1902,13 +1902,6 @@ proc tablelist::makeColFontAndTagLists win {
 	    lappend data(colFontList) $widgetFont
 	}
 
-	foreach opt {-background -foreground} {
-	    if {[info exists data($col$opt)]} {
-		lappend tagNames col$opt-$data($col$opt)
-		set data(hasColTags) 1
-	    }
-	}
-
 	if {$viewable && $data($col-hide) && $canElide} {
 	    lappend tagNames hiddenCol
 	    set data(hasColTags) 1
@@ -2018,7 +2011,7 @@ proc tablelist::setupColumns {win columns createLabels} {
 	set alignment left
 	if {[incr n] < $argCount} {
 	    set next [lindex $columns $n]
-	    if {[catch {format "%d" $next}] == 0} {	;# integer check
+	    if {[isInteger $next]} {
 		incr n -1
 	    } else {
 		set alignment [mwutil::fullOpt "alignment" $next $alignments]
@@ -2862,7 +2855,9 @@ proc tablelist::computeColWidth {win col} {
 	if {$fmtCmdFlag} {
 	    set text [formatElem $win $key $row $col $text]
 	}
-	set text [strToDispStr $text]
+	if {[string match "*\t*" $text]} {
+	    set text [mapTabs $text]
+	}
 	getAuxData $win $key $col auxType auxWidth
 	getIndentData $win $key $col indentWidth
 	set cellFont [getCellFont $win $key $col]
@@ -3179,8 +3174,71 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	return ""
     }
 
-    if {$updateAll && $data(isDisabled)} {
-	$w tag add disabled $fromTextIdx $toTextIdx
+    if {$updateAll} {
+	if {$data(isDisabled)} {
+	    $w tag add disabled $fromTextIdx $toTextIdx
+	}
+
+	set topLine [expr {int([$w index @0,0])}]
+	set btmLine [expr {int([$w index @0,$data(btmY)])}]
+	for {set line $topLine; set row [expr {$line - 1}]} \
+	    {$line <= $btmLine} {set row $line; incr line} {
+	    set key [lindex $data(keyList) $row]
+	    if {[info exists data($key-elide)] ||
+		[info exists data($key-hide)]} {
+		continue
+	    }
+
+	    #
+	    # Handle the -(select)background and -(select)foreground
+	    # column, row, and cell configuration options in this row
+	    #
+	    set textIdx1 $line.0
+	    for {set col 0} {$col < $data(colCount)} {incr col} {
+		if {$data($col-hide) && !$canElide} {
+		    continue
+		}
+
+		set tabIdx2 [$w search -elide "\t" $textIdx1+1c $line.end]
+		set selected [expr \
+		    {[lsearch -exact [$w tag names $tabIdx2] select] >= 0}]
+		set textIdx2 $tabIdx2+1c
+		foreach optTail {background foreground} {
+		    set normalOpt -$optTail
+		    set selectOpt -select$optTail
+		    foreach level      [list col row cell] \
+			    normalName [list $col$normalOpt $key$normalOpt \
+					$key,$col$normalOpt] \
+			    selectName [list $col$selectOpt $key$selectOpt \
+					$key,$col$selectOpt] {
+			if {$selected} {
+			    if {[info exists data($normalName)]} {
+				$w tag remove \
+				       $level$normalOpt-$data($normalName) \
+				       $textIdx1 $textIdx2
+			    }
+			    if {[info exists data($selectName)]} {
+				$w tag add \
+				       $level$selectOpt-$data($selectName) \
+				       $textIdx1 $textIdx2
+			    }
+			} else {
+			    if {[info exists data($selectName)]} {
+				$w tag remove \
+				       $level$selectOpt-$data($selectName) \
+				       $textIdx1 $textIdx2
+			    }
+			    if {[info exists data($normalName)]} {
+				$w tag add \
+				       $level$normalOpt-$data($normalName) \
+				       $textIdx1 $textIdx2
+			    }
+			}
+		    }
+		}
+		set textIdx1 $textIdx2
+	    }
+	}
     }
 
     set hasExpCollCtrlSelImgs [expr {$::tk_version >= 8.3 &&
@@ -3810,7 +3868,9 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 		if {$fmtCmdFlag} {
 		    set text [formatElem $win $key $row $col $text]
 		}
-		set text [strToDispStr $text]
+		if {[string match "*\t*" $text]} {
+		    set text [mapTabs $text]
+		}
 
 		#
 		# Build the list of tags to be applied to the cell
@@ -3825,11 +3885,6 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 		    if {[info exists data($key,$col-font)]} {
 			set cellFont $data($key,$col-font)
 			lappend cellTags cell-font-$data($key,$col-font)
-		    }
-		    foreach opt {-background -foreground} {
-			if {[info exists data($key,$col$opt)]} {
-			    lappend cellTags cell$opt-$data($key,$col$opt)
-			}
 		    }
 		}
 
@@ -3913,7 +3968,9 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 		if {$fmtCmdFlag} {
 		    set text [formatElem $win $key $row $col $text]
 		}
-		set text [strToDispStr $text]
+		if {[string match "*\t*" $text]} {
+		    set text [mapTabs $text]
+		}
 
 		#
 		# Build the list of tags to be applied to the cell
@@ -3929,11 +3986,6 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 			set cellFont $data($key,$col-font)
 			lappend cellTags cell-font-$data($key,$col-font)
 		    }
-		    foreach opt {-background -foreground} {
-			if {[info exists data($key,$col$opt)]} {
-			    lappend cellTags cell$opt-$data($key,$col$opt)
-			}
-		    }
 		}
 
 		#
@@ -3948,10 +4000,8 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 	}
 
 	if {$rowTagRefCount != 0} {
-	    foreach opt {-background -foreground -font} {
-		if {[info exists data($key$opt)]} {
-		    $w tag add row$opt-$data($key$opt) $line.0 $line.end
-		}
+	    if {[info exists data($key-font)]} {
+		$w tag add row-font-$data($key-font) $line.0 $line.end
 	    }
 	}
 
@@ -4032,10 +4082,13 @@ proc tablelist::redisplayVisibleItems win {
 	if {$data(hasFmtCmds)} {
 	    set dispItem [formatItem $win $key $row $dispItem]
 	}
+	if {[string match "*\t*" $dispItem]} {
+	    set dispItem [mapTabs $dispItem]
+	}
 
 	set tabIdx1 $line.0
 	set col 0
-	foreach text [strToDispStr $dispItem] \
+	foreach text $dispItem \
 		colFont $data(colFontList) \
 		colTags $data(colTagsList) \
 		{pixels alignment} $data(colList) {
@@ -4046,6 +4099,10 @@ proc tablelist::redisplayVisibleItems win {
 
 	    set tabIdx2 [$w search $elide "\t" $tabIdx1+1c $line.end]
 
+	    #
+	    # Nothing to do if the text is empty or is already displayed,
+	    # or if interactive editing for this cell is in progress
+	    #
 	    if {[string compare $text ""] == 0 ||
 		[string compare [$w get $tabIdx1+1c $tabIdx2] ""] != 0 ||
 		($row == $data(editRow) && $col == $data(editCol))} {
@@ -4066,10 +4123,19 @@ proc tablelist::redisplayVisibleItems win {
 	    }
 
 	    #
-	    # Adjust the cell text and the image or window width
+	    # Nothing to do if the cell has an image or window
+	    #
+	    set aux [getAuxData $win $key $col auxType auxWidth $pixels]
+	    if {$auxWidth != 0} {
+		set tabIdx1 [$w index $tabIdx2+1c]
+		incr col
+		continue
+	    }
+
+	    #
+	    # Adjust the cell text
 	    #
 	    set multiline [string match "*\n*" $text]
-	    set aux [getAuxData $win $key $col auxType auxWidth $pixels]
 	    set indent [getIndentData $win $key $col indentWidth]
 	    set maxTextWidth $pixels
 	    if {[info exists data($key,$col-font)]} {
@@ -4203,7 +4269,9 @@ proc tablelist::redisplayCol {win col first last} {
 	if {$fmtCmdFlag} {
 	    set text [formatElem $win $key $row $col $text]
 	}
-	set text [strToDispStr $text]
+	if {[string match "*\t*" $text]} {
+	    set text [mapTabs $text]
+	}
 	set multiline [string match "*\n*" $text]
 	set aux [getAuxData $win $key $col auxType auxWidth $pixels]
 	set indent [getIndentData $win $key $col indentWidth]

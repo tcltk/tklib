@@ -7,7 +7,7 @@
 #   - Public procedures related to sorting
 #   - Private procedures implementing the sorting
 #
-# Copyright (c) 2000-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -57,7 +57,9 @@ proc tablelist::sortByColumn {win col} {
     # Sort the widget's contents based on the given column
     #
     if {[catch {::$win sortbycolumn $col -$sortOrder} result] == 0} {
-	event generate $win <<TablelistColumnSorted>>
+	set userData [list $col $sortOrder]
+	genVirtualEvent $win <<TablelistColumnSorted>> $userData
+
 	return $sortOrder
     } else {
 	return -code error $result
@@ -116,7 +118,9 @@ proc tablelist::addToSortColumns {win col} {
     #
     if {[catch {::$win sortbycolumnlist $sortColList $sortOrderList} result]
 	== 0} {
-	event generate $win <<TablelistColumnsSorted>>
+	set userData [list $sortColList $sortOrderList]
+	genVirtualEvent $win <<TablelistColumnsSorted>> $userData
+
 	return $sortOrder
     } else {
 	return -code error $result
@@ -386,6 +390,9 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 	if {$data(hasFmtCmds)} {
 	    set dispItem [formatItem $win $key $row $dispItem]
 	}
+	if {[string match "*\t*" $dispItem]} {
+	    set dispItem [mapTabs $dispItem]
+	}
 
 	#
 	# Clip the elements if necessary and
@@ -400,7 +407,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 	if {$isSimple} {
 	    set insertArgs {}
 	    set multilineData {}
-	    foreach text [strToDispStr $dispItem] \
+	    foreach text $dispItem \
 		    colFont $data(colFontList) \
 		    colTags $data(colTagsList) \
 		    {pixels alignment} $data(colList) {
@@ -422,11 +429,6 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 		    if {[info exists data($key,$col-font)]} {
 			set cellFont $data($key,$col-font)
 			lappend cellTags cell-font-$data($key,$col-font)
-		    }
-		    foreach opt {-background -foreground} {
-			if {[info exists data($key,$col$opt)]} {
-			    lappend cellTags cell$opt-$data($key,$col$opt)
-			}
 		    }
 		}
 
@@ -490,7 +492,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 	    }
 
 	} else {
-	    foreach text [strToDispStr $dispItem] \
+	    foreach text $dispItem \
 		    colFont $data(colFontList) \
 		    colTags $data(colTagsList) \
 		    {pixels alignment} $data(colList) {
@@ -513,11 +515,6 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 			set cellFont $data($key,$col-font)
 			lappend cellTags cell-font-$data($key,$col-font)
 		    }
-		    foreach opt {-background -foreground} {
-			if {[info exists data($key,$col$opt)]} {
-			    lappend cellTags cell$opt-$data($key,$col$opt)
-			}
-		    }
 		}
 
 		#
@@ -532,10 +529,8 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 	}
 
 	if {$rowTagRefCount != 0} {
-	    foreach opt {-background -foreground -font} {
-		if {[info exists data($key$opt)]} {
-		    $w tag add row$opt-$data($key$opt) $line.0 $line.end
-		}
+	    if {[info exists data($key-font)]} {
+		$w tag add row-font-$data($key-font) $line.0 $line.end
 	    }
 	}
 
