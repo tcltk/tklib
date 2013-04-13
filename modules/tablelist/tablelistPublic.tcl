@@ -1,14 +1,14 @@
 #==============================================================================
 # Main Tablelist and Tablelist_tile package module.
 #
-# Copyright (c) 2000-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	5.7
+    variable version	5.8
     variable library	[DIR]
 
     #
@@ -32,7 +32,7 @@ namespace eval ::tablelist {
     namespace export	addBWidgetEntry addBWidgetSpinBox addBWidgetComboBox
     namespace export    addIncrEntryfield addIncrDateTimeWidget \
 			addIncrSpinner addIncrSpinint addIncrCombobox
-    namespace export	addOakleyCombobox
+    namespace export	addCtext addOakleyCombobox
     namespace export	addDateMentry addTimeMentry addDateTimeMentry \
 			addFixedPointMentry addIPAddrMentry addIPv6AddrMentry
 }
