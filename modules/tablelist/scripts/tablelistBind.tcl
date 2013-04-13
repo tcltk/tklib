@@ -8,7 +8,7 @@
 #   - Binding tag TablelistBody
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -780,7 +780,8 @@ proc tablelist::updateExpCollCtrl {w x y} {
     set prevCellIdx $priv(prevActExpCollCtrlCell)
     if {[string compare $prevCellIdx ""] != 0 &&
 	[info exists data($prevCellIdx-indent)] &&
-	(!$inExpCollCtrl || [string compare $prevCellIdx $key,$col] != 0)} {
+	(!$inExpCollCtrl || [string compare $prevCellIdx $key,$col] != 0) &&
+	[winfo exists $data(body).ind_$prevCellIdx]} {
 	set data($prevCellIdx-indent) \
 	    [strMap {"Act" ""} $data($prevCellIdx-indent)]
 	$data(body).ind_$prevCellIdx configure -image $data($prevCellIdx-indent)
@@ -798,7 +799,7 @@ proc tablelist::updateExpCollCtrl {w x y} {
     if {[info exists ${treeStyle}_collapsedActImg]} {
 	set data($key,$col-indent) [strMap {"expanded" "expandedAct"
 	    "collapsed" "collapsedAct"} $data($key,$col-indent)]
-	$data(body).ind_$key,$col configure -image $data($key,$col-indent)
+	$indentLabel configure -image $data($key,$col-indent)
 	set priv(prevActExpCollCtrlCell) $key,$col
     }
 }
@@ -1140,10 +1141,20 @@ proc tablelist::motion {win row col} {
 		    event generate $win <<TablelistSelect>>
 		}
 		extended {
-		    if {[string compare $priv(prevRow) ""] != 0} {
-			::$win selection clear anchor $priv(prevRow)
+		    set prevRow $priv(prevRow)
+		    if {[string compare $prevRow ""] == 0} {
+			set prevRow $row
+			::$win selection set $row
 		    }
-		    ::$win selection set anchor $row
+
+		    if {[::$win selection includes anchor]} {
+			::$win selection clear $prevRow $row
+			::$win selection set anchor $row
+		    } else {
+			::$win selection set $prevRow $row
+			::$win selection clear anchor $row
+		    }
+
 		    set priv(prevRow) $row
 		    event generate $win <<TablelistSelect>>
 		}
@@ -1164,12 +1175,25 @@ proc tablelist::motion {win row col} {
 		    event generate $win <<TablelistSelect>>
 		}
 		extended {
-		    if {[string compare $priv(prevRow) ""] != 0 &&
-			[string compare $priv(prevCol) ""] != 0} {
-			::$win cellselection clear anchor \
-			       $priv(prevRow),$priv(prevCol)
+		    set prevRow $priv(prevRow)
+		    set prevCol $priv(prevCol)
+		    if {[string compare $prevRow ""] == 0 ||
+			[string compare $prevCol ""] == 0} {
+			set prevRow $row
+			set prevcol $col
+			::$win cellselection set $row,$col
 		    }
-		    ::$win cellselection set anchor $row,$col
+
+		    if {[::$win cellselection includes anchor]} {
+			::$win cellselection clear \
+			       $prevRow,$priv(prevCol) $row,$col
+			::$win cellselection set anchor $row,$col
+		    } else {
+			::$win cellselection set \
+			       $prevRow,$priv(prevCol) $row,$col
+			::$win cellselection clear anchor $row,$col
+		    }
+
 		    set priv(prevRow) $row
 		    set priv(prevCol) $col
 		    event generate $win <<TablelistSelect>>
@@ -1310,7 +1334,7 @@ proc tablelist::moveOrActivate {win row col} {
 
     upvar ::tablelist::ns${win}::data data
     if {[info exists data(sourceRow)]} {
-	set sourceKey [lindex $data(keyList) $data(sourceRow)]
+	set sourceRow $data(sourceRow)
 	unset data(sourceRow)
 	unset data(sourceEndRow)
 	unset data(sourceDescCount)
@@ -1322,33 +1346,45 @@ proc tablelist::moveOrActivate {win row col} {
 	place forget $data(rowGap)
 
 	if {[info exists data(targetRow)]} {
-	    if {$data(targetRow) > $data(lastRow)} {
-		if {[catch {::$win move $sourceKey $data(targetRow)}] != 0} {
-		    ::$win move $sourceKey root end
+	    set targetRow $data(targetRow)
+	    unset data(targetRow)
+
+	    if {$targetRow > $data(lastRow)} {
+		if {[catch {::$win move $sourceRow $targetRow}] == 0} {
+		    set targetParentNodeIdx [::$win parentkey $sourceRow]
+		} else {
+		    ::$win move $sourceRow root end
+		    set targetParentNodeIdx root
 		}
+
+		set targetChildIdx [::$win childcount $targetParentNodeIdx]
 	    } else {
 		set targetChildIdx $data(targetChildIdx)
+		unset data(targetChildIdx)
+
 		if {$targetChildIdx == 0} {
-		    set targetParentKey [lindex $data(keyList) $data(targetRow)]
+		    set targetParentNodeIdx $targetRow
 
 		    #
 		    # The first expand invocation below is necessary in
 		    # case the target node has already children, while
 		    # the second one is needed in the opposite case.
 		    #
-		    ::$win expand $targetParentKey -partly
-		    ::$win move $sourceKey $targetParentKey $targetChildIdx
-		    ::$win expand $targetParentKey -partly
+		    ::$win expand $targetParentNodeIdx -partly
+		    ::$win move $sourceRow $targetParentNodeIdx $targetChildIdx
+		    ::$win expand $targetParentNodeIdx -partly
 		} else {
-		    set targetParentKey [::$win parentkey $data(targetRow)]
-		    set targetChildIdx [::$win childindex $data(targetRow)]
-		    ::$win move $sourceKey $targetParentKey $targetChildIdx
+		    set targetParentNodeIdx [::$win parentkey $targetRow]
+		    set targetChildIdx [::$win childindex $targetRow]
+		    ::$win move $sourceRow $targetParentNodeIdx $targetChildIdx
 		}
 	    }
 
-	    event generate $win <<TablelistRowMoved>>
-	    unset data(targetRow)
-	    unset data(targetChildIdx)
+	    if {[string compare $targetParentNodeIdx "root"] != 0} {
+		set targetParentNodeIdx [::$win index $targetParentNodeIdx]
+	    }
+	    set userData [list $sourceRow $targetParentNodeIdx $targetChildIdx]
+	    genVirtualEvent $win <<TablelistRowMoved>> $userData
 	} else {
 	    switch $data(-selecttype) {
 		row  { ::$win activate $row }
@@ -2789,7 +2825,8 @@ proc tablelist::labelB1Up {w X} {
 	    adjustColumns $win {} 0
 	    stretchColumns $win $col
 	    updateColors $win
-	    event generate $win <<TablelistColumnResized>>
+
+	    genVirtualEvent $win <<TablelistColumnResized>> $col
 	}
     } else {
 	if {[info exists data(X)]} {
@@ -2824,9 +2861,12 @@ proc tablelist::labelB1Up {w X} {
 	    $data(hdrTxtFrCanv)$col configure -cursor $data(-cursor)
 	    if {[info exists data(targetCol)]} {
 		moveCol $win $col $data(targetCol)
-		event generate $win <<TablelistColumnMoved>>
+
+		set userData [list $col $data(targetCol)]
+		genVirtualEvent $win <<TablelistColumnMoved>> $userData
+
+		unset data(targetCol)
 	    }
-	    catch {unset data(targetCol)}
 	}
     }
 
@@ -2852,7 +2892,8 @@ proc tablelist::labelB3Down {w shiftPressed} {
 	} else {
 	    doColConfig $col $win -width 0
 	}
-	event generate $win <<TablelistColumnResized>>
+
+	genVirtualEvent $win <<TablelistColumnResized>> $col
     }
 }
 
@@ -2873,7 +2914,8 @@ proc tablelist::labelDblB1 {w x shiftPressed} {
 	} else {
 	    doColConfig $col $win -width 0
 	}
-	event generate $win <<TablelistColumnResized>>
+
+	genVirtualEvent $win <<TablelistColumnResized>> $col
     }
 }
 

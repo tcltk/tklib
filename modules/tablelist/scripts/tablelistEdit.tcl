@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -541,6 +541,38 @@ proc tablelist::addIncrCombobox {{name combobox}} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::addCtext
+#
+# Registers the ctext widget for interactive cell editing.
+#------------------------------------------------------------------------------
+proc tablelist::addCtext {{name ctext}} {
+    checkEditWinName $name
+
+    array set ::tablelist::editWin [list \
+	$name-creationCmd	"ctext %W -padx 2 -pady 2 -wrap none" \
+	$name-putValueCmd	"%W delete 1.0 end; %W insert 1.0 %T" \
+	$name-getValueCmd	"%W get 1.0 end-1c" \
+	$name-putTextCmd	"%W delete 1.0 end; %W insert 1.0 %T" \
+	$name-getTextCmd	"%W get 1.0 end-1c" \
+	$name-putListCmd	"" \
+	$name-getListCmd	"" \
+	$name-selectCmd		"" \
+	$name-invokeCmd		"" \
+	$name-fontOpt		-font \
+	$name-useFormat		1 \
+	$name-useReqWidth	0 \
+	$name-usePadX		0 \
+	$name-isEntryLike	1 \
+	$name-focusWin		%W.t \
+	$name-reservedKeys	{Left Right Up Down Prior Next
+				 Control-Home Control-End Meta-b Meta-f
+				 Control-p Control-n Meta-less Meta-greater} \
+    ]
+
+    return $name
+}
+
+#------------------------------------------------------------------------------
 # tablelist::addOakleyCombobox
 #
 # Registers Bryan Oakley's combobox widget for interactive cell editing.
@@ -861,10 +893,10 @@ proc tablelist::addFixedPointMentry {cnt1 cnt2 args} {
     #
     # Check the arguments cnt1 and cnt2
     #
-    if {[catch {format %d $cnt1}] != 0 || $cnt1 <= 0} {
+    if {![isInteger $cnt1] || $cnt1 <= 0} {
 	return -code error "expected positive integer but got \"$cnt1\""
     }
-    if {[catch {format %d $cnt2}] != 0 || $cnt2 <= 0} {
+    if {![isInteger $cnt2] || $cnt2 <= 0} {
 	return -code error "expected positive integer but got \"$cnt2\""
     }
 
@@ -1587,7 +1619,8 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     set class [winfo class $w]
     set isCheckbtn [string match "*Checkbutton" $class]
     set isMenubtn [string match "*Menubutton" $class]
-    set isText [expr {[string compare $class "Text"] == 0}]
+    set isText [expr {[string compare $class "Text"] == 0 ||
+		      [string compare $class "Ctext"] == 0}]
     set isMentry [expr {[string compare $class "Mentry"] == 0}]
     if {!$isCheckbtn && !$isMenubtn} {
 	catch {$w configure -relief ridge}
@@ -1790,8 +1823,12 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     if {$isText} {
 	if {[string compare [$w cget -wrap] "none"] == 0 ||
 	    $::tk_version < 8.5} {
-	    scan [$w index end-1c] "%d" numLines
+	    set numLines [expr {int([$w index end-1c])}]
 	    $w configure -height $numLines
+	    update idletasks				;# needed for ctext
+	    if {![array exists ::tablelist::ns${win}::data]} {
+		return ""
+	    }
 	    $f configure -height [winfo reqheight $w]
 	} else {
 	    bind $w <Configure> {
@@ -1844,6 +1881,7 @@ proc tablelist::doCancelEditing win {
     #
     # Invoke the command specified by the -editendcommand option if needed
     #
+    set data(canceled) 1
     if {$data(-forceeditendcommand) &&
 	[string compare $data(-editendcommand) ""] != 0} {
 	uplevel #0 $data(-editendcommand) \
@@ -1864,8 +1902,9 @@ proc tablelist::doCancelEditing win {
     }
 
     focus $data(body)
-    set data(canceled) 1
-    event generate $win <<TablelistCellRestored>>
+
+    set userData [list $row $col]
+    genVirtualEvent $win <<TablelistCellRestored>> $userData
 
     updateViewWhenIdle $win
     return ""
@@ -1943,7 +1982,9 @@ proc tablelist::doFinishEditing win {
 	}
 
 	focus $data(body)
-	event generate $win <<TablelistCellUpdated>>
+
+	set userData [list $row $col]
+	genVirtualEvent $win <<TablelistCellUpdated>> $userData
     }
 
     updateViewWhenIdle $win
@@ -1967,7 +2008,7 @@ proc tablelist::clearTakefocusOpt w {
 # tablelist::adjustTextHeight
 #
 # This procedure is an after-insert and after-delete callback asociated with a
-# text widget used for interactive cell editing.  It sets the height of the
+# (c)text widget used for interactive cell editing.  It sets the height of the
 # edit window to the number of lines currently contained in it.
 #------------------------------------------------------------------------------
 proc tablelist::adjustTextHeight {w args} {
@@ -1980,7 +2021,7 @@ proc tablelist::adjustTextHeight {w args} {
 	#
 	# We can only count the logical lines (irrespective of wrapping)
 	#
-	scan [$w index end-1c] "%d" numLines
+	set numLines [expr {int([$w index end-1c])}]
     }
     $w configure -height $numLines
 
@@ -2164,7 +2205,8 @@ proc tablelist::saveEditData win {
     set w $data(bodyFrEd)
     set entry $data(editFocus)
     set class [winfo class $w]
-    set isText [expr {[string compare $class "Text"] == 0}]
+    set isText [expr {[string compare $class "Text"] == 0 ||
+		      [string compare $class "Ctext"] == 0}]
     set isMentry [expr {[string compare $class "Mentry"] == 0}]
 
     #
@@ -2271,7 +2313,8 @@ proc tablelist::restoreEditData win {
     set w $data(bodyFrEd)
     set entry $data(editFocus)
     set class [winfo class $w]
-    set isText [expr {[string compare $class "Text"] == 0}]
+    set isText [expr {[string compare $class "Text"] == 0 ||
+		      [string compare $class "Ctext"] == 0}]
     set isMentry [expr {[string compare $class "Mentry"] == 0}]
     set isIncrDateTimeWidget [regexp {^(Date.+|Time.+)$} $class]
 
@@ -2450,7 +2493,8 @@ proc tablelist::defineTablelistEdit {} {
     bind TablelistEdit <Escape>       { tablelist::cancelEditing %W }
     foreach key {Return KP_Enter} {
 	bind TablelistEdit <$key> {
-	    if {[string compare [winfo class %W] "Text"] == 0} {
+	    if {[string compare [winfo class %W] "Text"] == 0 ||
+		[string compare [winfo class %W] "Ctext"] == 0} {
 		tablelist::insertChar %W "\n"
 	    } else {
 		tablelist::finishEditing %W
@@ -2603,7 +2647,8 @@ proc tablelist::defineTablelistEdit {} {
 #------------------------------------------------------------------------------
 proc tablelist::insertChar {w str} {
     set class [winfo class $w]
-    if {[string compare $class "Text"] == 0} {
+    if {[string compare $class "Text"] == 0 ||
+	[string compare $class "Ctext"] == 0} {
 	if {[string compare $str "\n"] == 0} {
 	    eval [strMap {"%W" "$w"} [bind Text <Return>]]
 	} else {
@@ -2690,6 +2735,10 @@ proc tablelist::goToNextPrevCell {w amount args} {
 	set cmd changeSelection
     }
 
+    if {![doFinishEditing $win]} {
+	return ""
+    }
+
     set oldRow $row
     set oldCol $col
 
@@ -2737,6 +2786,10 @@ proc tablelist::goLeftRight {w amount} {
     set row $data(editRow)
     set col $data(editCol)
 
+    if {![doFinishEditing $win]} {
+	return ""
+    }
+
     while 1 {
 	incr col $amount
 	if {$col < 0 || $col > $data(lastCol)} {
@@ -2776,6 +2829,10 @@ proc tablelist::goUpDown {w amount} {
 proc tablelist::goToPrevNextLine {w amount row col cmd} {
     set win [getTablelistPath $w]
     upvar ::tablelist::ns${win}::data data
+
+    if {![doFinishEditing $win]} {
+	return ""
+    }
 
     while 1 {
 	incr row $amount
