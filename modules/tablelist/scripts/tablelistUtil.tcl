@@ -4123,10 +4123,12 @@ proc tablelist::redisplayVisibleItems win {
 	    }
 
 	    #
-	    # Nothing to do if the cell has an image or window
+	    # Nothing to do if the cell has an image
+	    # or window, or contains multiline text
 	    #
 	    set aux [getAuxData $win $key $col auxType auxWidth $pixels]
-	    if {$auxWidth != 0} {
+	    set multiline [string match "*\n*" $text]
+	    if {$auxWidth != 0 || $multiline} {
 		set tabIdx1 [$w index $tabIdx2+1c]
 		incr col
 		continue
@@ -4135,7 +4137,6 @@ proc tablelist::redisplayVisibleItems win {
 	    #
 	    # Adjust the cell text
 	    #
-	    set multiline [string match "*\n*" $text]
 	    set indent [getIndentData $win $key $col indentWidth]
 	    set maxTextWidth $pixels
 	    if {[info exists data($key,$col-font)]} {
@@ -4152,36 +4153,25 @@ proc tablelist::redisplayVisibleItems win {
 		if {$data($col-wrap) && !$multiline} {
 		    if {[font measure $cellFont -displayof $win $text] >
 			$maxTextWidth} {
-			set multiline 1
+			#
+			# The element is displayed as multiline text
+			#
+			set tabIdx1 [$w index $tabIdx2+1c]
+			incr col
+			continue
 		    }
 		}
 	    }
 	    set snipSide $snipSides($alignment,$data($col-changesnipside))
-	    if {$multiline} {
-		set list [split $text "\n"]
-		if {$data($col-wrap)} {
-		    set snipSide ""
-		}
-		adjustMlElem $win list auxWidth indentWidth $cellFont \
-			     $pixels $snipSide $snipStr
-		set msgScript [list ::tablelist::displayText $win $key $col \
-		    [join $list "\n"] $cellFont $maxTextWidth $alignment]
-	    } else {
-		adjustElem $win text auxWidth indentWidth $cellFont \
-			   $pixels $snipSide $snipStr
-	    }
+	    adjustElem $win text auxWidth indentWidth $cellFont $pixels \
+		       $snipSide $snipStr
 
 	    #
 	    # Update the text widget's contents between the two tabs
 	    #
 	    $w mark set tabMark2 [$w index $tabIdx2]
-	    if {$multiline} {
-		updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript $aux $auxType \
-			     $auxWidth $indent $indentWidth $alignment
-	    } else {
-		updateCell $w $tabIdx1+1c $tabIdx2 $text $aux $auxType \
-			   $auxWidth $indent $indentWidth $alignment
-	    }
+	    updateCell $w $tabIdx1+1c $tabIdx2 $text $aux $auxType \
+		       $auxWidth $indent $indentWidth $alignment
 
 	    set tabIdx1 [$w index tabMark2+1c]
 	    incr col
