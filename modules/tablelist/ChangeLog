@@ -1,3 +1,7 @@
+2013-04-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: Minor optimization.
+
 2013-04-12  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 5.8.
