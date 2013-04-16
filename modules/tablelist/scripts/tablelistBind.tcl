@@ -905,6 +905,7 @@ proc tablelist::condEditContainingCell {win x y} {
 	set canEdit [expr {$row >= 0 && $col >= 0 &&
 		     [isCellEditable $win $row $col]}]
     }
+
     if {$canEdit} {
 	#
 	# Get the coordinates relative to the
@@ -915,9 +916,9 @@ proc tablelist::condEditContainingCell {win x y} {
 	incr y -[winfo y $w]
 	scan [$w index @$x,$y] "%d.%d" line charPos
 	doEditCell $win $row $col 0 "" $charPos
-    } else {
+    } elseif {$data(editRow) >= 0} {
 	#
-	# Finish a possibly active cell editing
+	# Finish the current editing
 	#
 	doFinishEditing $win
     }
