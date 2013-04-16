@@ -1,3 +1,7 @@
+2013-04-16  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl: Minor improvement.
+
 2013-04-14  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistUtil.tcl: Minor optimization.
