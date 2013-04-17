@@ -1,3 +1,9 @@
+2013-04-17  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistSort.tcl:   Using "-algn top" for the embedded
+	* scripts/tablelistUtil.tcl:   message widgets displaying multiline
+	* scripts/tablelistWidget.tcl: texts.
+
 2013-04-16  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl: Minor improvement.
