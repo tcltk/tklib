@@ -1447,7 +1447,7 @@ proc tablelist::insertMlElem {w index msgScript aux auxType alignment} {
     set padY [expr {[$w cget -spacing1] == 0}]
 
     if {$auxType == 0} {				;# no image or window
-	$w window create $index -pady $padY -create $msgScript
+	$w window create $index -align top -pady $padY -create $msgScript
     } elseif {[string compare $alignment "right"] == 0} {
 	if {$auxType == 1} {					;# image
 	    set aux [lreplace $aux 4 4 e]
@@ -1460,9 +1460,9 @@ proc tablelist::insertMlElem {w index msgScript aux auxType alignment} {
 	    }
 	    $w window create $index -padx 1 -pady $padY -window $aux
 	}
-	$w window create $index -pady $padY -create $msgScript
+	$w window create $index -align top -pady $padY -create $msgScript
     } else {
-	$w window create $index -pady $padY -create $msgScript
+	$w window create $index -align top -pady $padY -create $msgScript
 	if {$auxType == 1} {					;# image
 	    set aux [lreplace $aux 4 4 w]
 	    $w window create $index -padx 1 -pady $padY -create $aux
@@ -1611,7 +1611,8 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 	set padY [expr {[$w cget -spacing1] == 0}]
 	if {[catch {$w window cget $index1 -create} script] == 0 &&
 	    [string match "::tablelist::displayText*" $script]} {
-	    $w window configure $index1 -pady $padY -create $msgScript
+	    $w window configure $index1 \
+		      -align top -pady $padY -create $msgScript
 
 	    set path [lindex [$w dump -window $index1] 1]
 	    if {[string compare $path ""] != 0 &&
@@ -1622,7 +1623,7 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 	    if {!$areEqual} {
 		$w delete $index1
 	    }
-	    $w window create $index1 -pady $padY -create $msgScript
+	    $w window create $index1 -align top -pady $padY -create $msgScript
 	}
     } else {
 	#
@@ -1699,7 +1700,8 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 	    set padY [expr {[$w cget -spacing1] == 0}]
 	    if {[catch {$w window cget $index -create} script] == 0 &&
 		[string match "::tablelist::displayText*" $script]} {
-		$w window configure $index -pady $padY -create $msgScript
+		$w window configure $index \
+			  -align top -pady $padY -create $msgScript
 
 		set path [lindex [$w dump -window $index] 1]
 		if {[string compare $path ""] != 0 &&
@@ -1707,10 +1709,12 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 		    eval $msgScript
 		}
 	    } elseif {[string compare $alignment "right"] == 0} {
-		$w window create index2Mark-1c -pady $padY -create $msgScript
+		$w window create index2Mark-1c \
+			  -align top -pady $padY -create $msgScript
 		$w delete $index1 index2Mark-2c
 	    } else {
-		$w window create $index1+1c -pady $padY -create $msgScript
+		$w window create $index1+1c \
+			  -align top -pady $padY -create $msgScript
 		$w delete $index1+2c index2Mark
 	    }
 	} else {
@@ -1836,7 +1840,8 @@ proc tablelist::appendComplexElem {win key row col text pixels alignment
 	if {$multiline} {
 	    $w insert $line.end "\t\t" $cellTags
 	    set padY [expr {[$w cget -spacing1] == 0}]
-	    $w window create $line.end-1c -pady $padY -create $msgScript
+	    $w window create $line.end-1c \
+		      -align top -pady $padY -create $msgScript
 	} else {
 	    $w insert $line.end "\t$text\t" $cellTags
 	}
@@ -3944,7 +3949,8 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 		if {[findTabs $win $line $col $col tabIdx1 tabIdx2]} {
 		    set msgScript [list ::tablelist::displayText $win $key \
 				   $col $text $font $pixels $alignment]
-		    $w window create $tabIdx2 -pady $padY -create $msgScript
+		    $w window create $tabIdx2 \
+			      -align top -pady $padY -create $msgScript
 		}
 	    }
 

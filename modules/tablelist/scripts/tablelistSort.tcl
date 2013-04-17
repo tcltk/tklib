@@ -488,7 +488,8 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 		findTabs $win $line $col $col tabIdx1 tabIdx2
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col $text $font $pixels $alignment]
-		$w window create $tabIdx2 -pady $padY -create $msgScript
+		$w window create $tabIdx2 \
+			  -align top -pady $padY -create $msgScript
 	    }
 
 	} else {
