@@ -3184,6 +3184,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	    $w tag add disabled $fromTextIdx $toTextIdx
 	}
 
+	variable canElide
 	set topLine [expr {int([$w index @0,0])}]
 	set btmLine [expr {int([$w index @0,$data(btmY)])}]
 	for {set line $topLine; set row [expr {$line - 1}]} \
