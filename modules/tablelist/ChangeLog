@@ -1,3 +1,7 @@
+2013-04-19  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: Small correction.
+
 2013-04-17  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistSort.tcl:   Using "-algn top" for the embedded
