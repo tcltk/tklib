@@ -4917,6 +4917,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 		unset data($key,$col-indent)
 		incr data(indentCount) -1
 	    }
+	    destroy $w.msg_$key,$col
 	}
 
 	foreach name [array names attribs $key,*-*] {
