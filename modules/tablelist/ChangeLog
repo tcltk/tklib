@@ -1,6 +1,6 @@
 2013-04-20  Csaba Nemethi <csaba.nemethi@t-online.de>
 
-	* README.txt:               Slightly extended.
+	* CHANGES.txt:               Slightly extended.
 	* doc/tablelistWidget.html:
 
 	* scripts/tablelistBind.tcl: Minor improvement.
