@@ -27,16 +27,21 @@ What is new in Tablelist 5.8?
 
 7.  Improvements related to the selection mode "extended".
 
-8.  Further code improvements (thanks to Harald Oehlmann for his
-    valuable contribution).
-
-9.  Added a "Virtual Events" section to the reference manual (thanks to
-    Andreas Leitgeb for his proposal).
-
-10. Eliminated a regression introduced in Tablelist version 5.6, related
+8.  Eliminated a regression introduced in Tablelist version 5.6, related
     to vertical scrolling under Tk 8.5 or later in the presence of
     embedded images or windows (thanks to Patrick Fradin for reporting
     this issue).
+
+9.  Worked around a peculiarity of Tk on Windows, related to deleting an
+    embedded window while resizing a text widget interactively (thanks
+    to Harald Oehlmann for his bug report and discussions on this
+    topic).
+
+10. Further code improvements (thanks to Harald Oehlmann for his
+    valuable contribution).
+
+11. Added a "Virtual Events" section to the reference manual (thanks to
+    Andreas Leitgeb for his proposal).
 
 What was new in Tablelist 5.7?
 ------------------------------
