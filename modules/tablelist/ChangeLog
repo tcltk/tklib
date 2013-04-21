@@ -1,3 +1,14 @@
+2013-04-20  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* README.txt:               Slightly extended.
+	* doc/tablelistWidget.html:
+
+	* scripts/tablelistBind.tcl: Minor improvement.
+
+	* scripts/tablelistUtil.tcl:   Worked around a peculiarity of Tk on
+	* scripts/tablelistWidget.tcl: Windows, related to deleting an embedded
+	  window while resizing a text widget interactively.
+
 2013-04-19  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistUtil.tcl: Small correction.
