@@ -360,6 +360,9 @@ proc tablelist::defineTablelistBody {} {
 	    }
 	    if {[tablelist::wasExpCollCtrlClicked %W %x %y]} {
 		set tablelist::priv(clickedExpCollCtrl) 1
+		if {[string compare [$tablelist::W editwinpath] ""] != 0} {
+		    tablelist::doFinishEditing $tablelist::W
+		}
 	    } else {
 		tablelist::condEditContainingCell $tablelist::W \
 		    $tablelist::x $tablelist::y
