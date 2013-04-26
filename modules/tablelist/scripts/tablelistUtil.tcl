@@ -1499,6 +1499,17 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
     }
 
     if {$auxWidth == 0} {				;# no image or window
+	#
+	# Work around a Tk peculiarity on Windows, related to deleting
+	# an embedded window while resizing a text widget interactively
+	#
+	set path [lindex [$w dump -window $index1] 1]
+	if {[string compare $path ""] != 0 &&
+	    [string compare [winfo class $path] "Message"] == 0} {
+	    $path configure -text ""
+	    $w window configure $index1 -window ""
+	}
+
 	if {$::tk_version >= 8.5} {
 	    $w replace $index1 $index2 $text
 	} else {
@@ -1513,13 +1524,16 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
 	if {$auxType == 1} {					;# image
 	    if {[setImgLabelWidth $w $index1 $auxWidth]} {
 		set auxFound 1
-		$w delete $index1+1c $index2
+		set fromIdx $index1+1c
+		set toIdx $index2
 	    } elseif {[setImgLabelWidth $w $index2-1c $auxWidth]} {
 		set auxFound 1
-		$w delete $index1 $index2-1c
+		set fromIdx $index1
+		set toIdx $index2-1c
 	    } else {
 		set auxFound 0
-		$w delete $index1 $index2
+		set fromIdx $index1
+		set toIdx $index2
 	    }
 	} else {						;# window
 	    if {[$aux cget -width] != $auxWidth} {
@@ -1529,16 +1543,32 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
 	    if {[string compare [lindex [$w dump -window $index1] 1] \
 		 $aux] == 0} {
 		set auxFound 1
-		$w delete $index1+1c $index2
+		set fromIdx $index1+1c
+		set toIdx $index2
 	    } elseif {[string compare [lindex [$w dump -window $index2-1c] 1] \
 		       $aux] == 0} {
 		set auxFound 1
-		$w delete $index1 $index2-1c
+		set fromIdx $index1
+		set toIdx $index2-1c
 	    } else {
 		set auxFound 0
-		$w delete $index1 $index2
+		set fromIdx $index1
+		set toIdx $index2
 	    }
 	}
+
+	#
+	# Work around a Tk peculiarity on Windows, related to deleting
+	# an embedded window while resizing a text widget interactively
+	#
+	set path [lindex [$w dump -window $fromIdx] 1]
+	if {[string compare $path ""] != 0 &&
+	    [string compare [winfo class $path] "Message"] == 0} {
+	    $path configure -text ""
+	    $w window configure $fromIdx -window ""
+	}
+
+	$w delete $fromIdx $toIdx
 
 	if {$auxFound} {
 	    #
@@ -3102,9 +3132,10 @@ proc tablelist::stretchColumns {win colOfFixedDelta} {
     }
 
     #
-    # Adjust the columns
+    # Adjust the columns and schedule a view update for execution at idle time
     #
     adjustColumns $win {} 0
+    updateViewWhenIdle $win 1
 }
 
 #------------------------------------------------------------------------------
@@ -3175,7 +3206,8 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	set updateAll 0
     }
 
-    if {$data(itemCount) == 0 || $data(colCount) == 0} {
+    if {$data(itemCount) == 0 || $data(colCount) == 0 ||
+	[info exists data(dispId)]} {
 	return ""
     }
 
@@ -3184,6 +3216,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	    $w tag add disabled $fromTextIdx $toTextIdx
 	}
 
+	variable canElide
 	set topLine [expr {int([$w index @0,0])}]
 	set btmLine [expr {int([$w index @0,$data(btmY)])}]
 	for {set line $topLine; set row [expr {$line - 1}]} \
@@ -4467,10 +4500,14 @@ proc tablelist::showLineNumbers win {
 # Arranges for the visible part of the tablelist widget win to be updated
 # at idle time.
 #------------------------------------------------------------------------------
-proc tablelist::updateViewWhenIdle win {
+proc tablelist::updateViewWhenIdle {win {reschedule 0}} {
     upvar ::tablelist::ns${win}::data data
     if {[info exists data(viewId)]} {
-	return ""
+	if {$reschedule} {
+	    after cancel $data(viewId)
+	} else {
+	    return ""
+	}
     }
 
     set data(viewId) [after idle [list tablelist::updateView $win]]
