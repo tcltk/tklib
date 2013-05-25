@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 2.0.2]
+[manpage_begin Plotchart n 2.1.1]
 [copyright {2011 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.5]]
 [require Tk [opt 8.5]]
-[require Plotchart [opt 2.1.0]]
+[require Plotchart [opt 2.1.1]]
 
 [description]
 [para]
