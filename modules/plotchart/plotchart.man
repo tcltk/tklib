@@ -3714,7 +3714,7 @@ as you can also use custom labels (the option -xlabels) if the axis is "static".
 Since this is not the case for stripcharts, this was not an option (Tcllib/Tklib bug 3613718).
 
 The example below illustrates how to use the -timeformat option. The -gmt option
-merely suppresses the handling of daylight saving time by the [clock format] command.
+merely suppresses the handling of daylight saving time by the [lb]clock format[rb] command.
 
 [example {
 package require Plotchart
@@ -3731,7 +3731,7 @@ set s [Plotchart::createStripchart .c [list $start $stop 7200] {0 10 1} -timefor
 foreach {x y} {0 0 2 5 5 2 9 9 12 10} {
     set x [expr {$start + 3600 * $x}] ;# Convert hour to clock seconds
     $s plot a $x $y
-}]
+}}]
 
 The [emph plot] subcommand simply interprets the x and y data as straightforward
 numbers, so that you need to do the conversion from date/time to "clock seconds" yourself.
