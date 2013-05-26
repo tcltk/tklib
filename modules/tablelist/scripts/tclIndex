@@ -294,6 +294,7 @@ set auto_index(::tablelist::getCellFont) [list source [file join $dir tablelistC
 set auto_index(::tablelist::reconfigWindows) [list source [file join $dir tablelistConfig.tcl]]
 set auto_index(::tablelist::isCellEditable) [list source [file join $dir tablelistConfig.tcl]]
 set auto_index(::tablelist::getEditWindow) [list source [file join $dir tablelistConfig.tcl]]
+set auto_index(::tablelist::getVAlignment) [list source [file join $dir tablelistConfig.tcl]]
 set auto_index(::tablelist::flat6x4Arrows) [list source [file join $dir tablelistImages.tcl]]
 set auto_index(::tablelist::flat7x4Arrows) [list source [file join $dir tablelistImages.tcl]]
 set auto_index(::tablelist::flat7x5Arrows) [list source [file join $dir tablelistImages.tcl]]
