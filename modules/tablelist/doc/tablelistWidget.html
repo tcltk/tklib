@@ -11,7 +11,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 5.8</h2>
+    <h2>For Tablelist Version 5.9</h2>
 
     <h3>by</h3>
 
@@ -365,9 +365,18 @@
     <dd><code><b><a href="#col_stretchable">-stretchable</a></b>
     <i>boolean</i></code></dd>
 
+    <dd><code><b><a href="#col_stripebackground">-stripebackground</a></b>
+    <i>color</i></code></dd>
+
+    <dd><code><b><a href="#col_stripeforeground">-stripeforeground</a></b>
+    <i>color</i></code></dd>
+
     <dd><code><b><a href="#col_text">-text</a></b> <i>list</i></code></dd>
 
     <dd><code><b><a href="#col_title">-title</a></b> <i>title</i></code></dd>
+
+    <dd><code><b><a href="#col_valign">-valign</a></b>
+    <b>center</b>|<b>top</b>|<b>bottom</b></code></dd>
 
     <dd><code><b><a href="#col_width">-width</a></b> <i>width</i></code></dd>
     <dd><code><b><a href="#col_wrap">-wrap</a></b> <i>boolean</i></code></dd>
@@ -431,6 +440,9 @@
     <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#cell_text">-text</a></b> <i>text</i></code></dd>
+
+    <dd><code><b><a href="#cell_valign">-valign</a></b>
+    <b>center</b>|<b>top</b>|<b>bottom</b></code></dd>
 
     <dd><code><b><a href="#cell_window">-window</a></b>
     <i>command</i></code></dd>
@@ -4332,6 +4344,22 @@ proc formatDate clockVal {
         be reflected in the other.</dd>
 
         <dt><br>
+        <a name="col_stripebackground"></a><code><b>-stripebackground</b>
+        <i>color</i></code></dt>
+
+        <dd>Specifies the background color to use when displaying the contents
+        of a cell in the given column if the cell's row belongs to a
+        stripe.</dd>
+
+        <dt><br>
+        <a name="col_stripeforeground"></a><code><b>-stripeforeground</b>
+        <i>color</i></code></dt>
+
+        <dd>Specifies the foreground color to use when displaying the contents
+        of a cell in the given column if the cell's row belongs to a
+        stripe.</dd>
+
+        <dt><br>
         <a name="col_text"></a><code><b>-text</b> <i>list</i></code></dt>
 
         <dd>Specifies a list of strings to be displayed in the cells of the
@@ -4348,6 +4376,22 @@ proc formatDate clockVal {
         the <code><b><a href="#columns">-columns</a></b></code> option for the
         tablelist widget; changes in either will automatically be reflected in
         the other.</dd>
+
+        <dt><br>
+        <a name="col_valign"></a><code><b>-valign</b>
+        <i>verticalAlignment</i></code></dt>
+
+        <dd>Specifies the vertical alignment of embedded images and windows
+        displayed in the given column.&nbsp; The
+        <code><i>verticalAlignment</i></code> must be one of
+        <code><b>center</b></code> (which is the default),
+        <code><b>top</b></code>, or <code><b>bottom</b></code>.&nbsp;
+        Especially in rows containing multi-line elements, embedded images or
+        windows are often not as tall as the rows themselves; in such cases,
+        this option enables you to control the column-dependent vertical
+        alignment of these embedded objects.&nbsp; The value of this option can
+        be overridden for individual cells by using the <a href=
+        "#cell_valign">cell configuration option</a> of the same name.</dd>
 
         <dt><br>
         <a name="col_width"></a><code><b>-width</b> <i>width</i></code></dt>
@@ -4386,7 +4430,9 @@ proc formatDate clockVal {
         <dt><br>
         The <code><b>-background</b></code>, <code><b>-font</b></code>,
         <code><b>-foreground</b></code>, <code><b>-selectbackground</b></code>,
-        and <code><b>-selectforeground</b></code> column configuration options
+        <code><b>-selectforeground</b></code>,
+        <code><b>-stripebackground</b></code>, and
+        <code><b>-stripeforeground</b></code> column configuration options
         override the options of the same names set at widget level (but not the
         ones set at cell or row level) if the specified value is not an empty
         string.&nbsp; See the <a href="#colors_and_fonts">COLORS AND FONTS</a>
@@ -4637,6 +4683,17 @@ proc formatDate clockVal {
         <code><b>disabled</b></code> then this option will be ignored.</dd>
 
         <dt><br>
+        <a name="cell_valign"></a><code><b>-valign</b>
+        <i>verticalAlignment</i></code></dt>
+
+        <dd>Specifies the vertical alignment of the embedded image or window
+        displayed in the cell (if any).&nbsp; The default value is
+        <code><b>center</b></code>.&nbsp; This option overrides <a href=
+        "#col_valign">the one of the same name</a> for the column containing
+        the given cell, and may have the same values as its column-related
+        counterpart.</dd>
+
+        <dt><br>
         <a name="cell_window"></a><code><b>-window</b>
         <i>command</i></code></dt>
 
@@ -4698,15 +4755,16 @@ proc formatDate clockVal {
           <code><b><a href="#stripebackground">-stripebackground</a></b></code>
           and
           <code><b><a href="#stripeforeground">-stripeforeground</a></b></code>
-          options.&nbsp; The command is automatically concatenated with the
-          name of the tablelist widget, the cell's row and column indices, the
-          path name of the embedded window, the option name
-          <code><b>-background</b></code> and the cell's current background
-          color, as well as the option name <code><b>-foreground</b></code> and
-          the cell's current foreground color.&nbsp; The resulting script is
-          then evaluated in the global scope.&nbsp; The specified command can
-          use the colors passed to it as arguments to set the corresponding
-          colors of the embedded window to the same values.
+          widget or column configuration options.&nbsp; The command is
+          automatically concatenated with the name of the tablelist widget, the
+          cell's row and column indices, the path name of the embedded window,
+          the option name <code><b>-background</b></code> and the cell's
+          current background color, as well as the option name
+          <code><b>-foreground</b></code> and the cell's current foreground
+          color.&nbsp; The resulting script is then evaluated in the global
+          scope.&nbsp; The specified command can use the colors passed to it as
+          arguments to set the corresponding colors of the embedded window to
+          the same values.
 
           <p>For example, if the embedded window is a text or ctext widget and
           you want for its background and foreground colors to be automatically
@@ -4857,11 +4915,14 @@ proc updateWindow {tbl row col w args} {
       "#cellconfigure">cellconfigure</a></b></code> (or <code><b><a href=
       "#configcelllist">configcelllist</a></b></code>, or <code><b><a href=
       "#configcells">configcells</a></b></code>) subcommands of the Tcl command
-      associated with the tablelist widget.&nbsp; For this reason, a particular
-      cell can have up to four values for one and the same color or font
-      option.&nbsp; If these values conflict, then the option specified at the
-      highest priority level is used.&nbsp; The decreasing priority order is
-      cell, row, column, widget.
+      associated with the tablelist widget.&nbsp; Likewise, the
+      <code><b>-stripebackground</b></code> and
+      <code><b>-stripeforeground</b></code> options can also be specified at
+      column level.&nbsp; For this reason, a particular cell can have up to
+      four values for one and the same color or font option.&nbsp; If these
+      values conflict, then the option specified at the highest priority level
+      is used.&nbsp; The decreasing priority order is cell, row, column,
+      widget.
 
       <p>If one of these options hasn't been specified at cell, row, or column
       level, or if its value for that level is an empty string (this is
@@ -5066,24 +5127,24 @@ proc updateWindow {tbl row col w args} {
         <tr>
           <td><code><b>&lt;&lt;TablelistCellRestored&gt;&gt;</b></code></td>
           <td>Generated by the <code><b><a href=
-	  "#cancelediting">cancelediting</a></b></code> subcommand.</td>
+          "#cancelediting">cancelediting</a></b></code> subcommand.</td>
           <td>A list consisting of the numerical row and column indices of the
-	  cell whose content is being edited.</td>
+          cell whose content is being edited.</td>
         </tr>
 
         <tr>
           <td><code><b>&lt;&lt;TablelistCellUpdated&gt;&gt;</b></code></td>
           <td>Generated by the <code><b><a href=
-	  "#finishediting">finishediting</a></b></code> subcommand.</td>
+          "#finishediting">finishediting</a></b></code> subcommand.</td>
           <td>A list consisting of the numerical row and column indices of the
-	  cell whose content is being edited.</td>
+          cell whose content is being edited.</td>
         </tr>
 
         <tr>
           <td><code><b>&lt;&lt;TablelistColHiddenStateChanged&gt;&gt;</b></code></td>
           <td>Generated whenever the hidden state of one or more columns is
           toggled by using the <code><b><a href=
-	  "#columnconfigure">columnconfigure</a></b></code>, <code><b><a href=
+          "#columnconfigure">columnconfigure</a></b></code>, <code><b><a href=
           "#configcolumnlist">configcolumnlist</a></b></code>,
           <ccode><b><a href="#configcolumns">configcolumns</a></b></code>, or
           <ccode><b><a href="#togglecolumnhide">togglecolumnhide</a></b></code>
@@ -5133,7 +5194,7 @@ proc updateWindow {tbl row col w args} {
           <td><code><b>&lt;&lt;TablelistRowHiddenStateChanged&gt;&gt;</b></code></td>
           <td>Generated whenever the hidden state of one or more rows is
           toggled by using the <code><b><a href=
-	  "#rowconfigure">rowconfigure</a></b></code>, <code><b><a href=
+          "#rowconfigure">rowconfigure</a></b></code>, <code><b><a href=
           "#configrowlist">configrowlist</a></b></code>, <ccode><b><a href=
           "#configrows">configrows</a></b></code>, or <ccode><b><a href=
           "#togglerowhide">togglerowhide</a></b></code> subcommand.</td>
@@ -5154,14 +5215,14 @@ proc updateWindow {tbl row col w args} {
           <td><code><b>&lt;&lt;TablelistSelect&gt;&gt;</b></code>,
           <code><b>&lt;&lt;ListboxSelect&gt;&gt;</b></code></td>
           <td>Generated by the default bindings whenever the selection changes
-	  in the tablelist widget due to user interaction.</td>
+          in the tablelist widget due to user interaction.</td>
           <td>Not used.</td>
         </tr>
 
         <tr>
           <td><code><b>&lt;&lt;TablelistSelectionLost&gt;&gt;</b></code></td>
           <td>Sent to the tablelist widget whenever it loses ownership of the
-	  PRIMARY selection.</td>
+          PRIMARY selection.</td>
           <td>Not used.</td>
         </tr>
       </table>
