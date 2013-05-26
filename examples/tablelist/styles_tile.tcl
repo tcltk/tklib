@@ -8,7 +8,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2002-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.8
+package require tablelist_tile 5.9
 
 wm title . "Tablelist Styles"
 
@@ -55,13 +55,15 @@ for {set n 0} { $n < 8} {incr n} {
 	6 {
 	    $tbl configure -stripebackground #e4e8ec
 	    foreach col {1 3} {
-		$tbl columnconfigure $col -background ivory
+		$tbl columnconfigure $col -background ivory \
+		    -stripebackground #d8dcd1
 	    }
 	}
 	7 {
 	    $tbl configure -stripebackground #e4e8ec -showseparators yes
 	    foreach col {1 3} {
-		$tbl columnconfigure $col -background ivory
+		$tbl columnconfigure $col -background ivory \
+		    -stripebackground #d8dcd1
 	    }
 	}
     }
