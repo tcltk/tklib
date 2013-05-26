@@ -233,8 +233,11 @@ namespace eval tablelist {
 	-sortcommand		{sortCommand		SortCommand	}
 	-sortmode		{sortMode		SortMode	}
 	-stretchable		{stretchable		Stretchable	}
+	-stripebackground	{stripeBackground	Background	}
+	-stripeforeground	{stripeForeground	Foreground	}
 	-text			{text			Text		}
 	-title			{title			Title		}
+	-valign			{valign			Valign		}
 	-width			{width			Width		}
 	-wrap			{wrap			Wrap		}
     }
@@ -253,6 +256,7 @@ namespace eval tablelist {
     lappend colConfigSpecs(-showlinenumbers)	- 0
     lappend colConfigSpecs(-sortmode)		- ascii
     lappend colConfigSpecs(-stretchable)	- 0
+    lappend colConfigSpecs(-valign)		- center
     lappend colConfigSpecs(-width)		- 0
     lappend colConfigSpecs(-wrap)		- 0
 
@@ -332,6 +336,7 @@ namespace eval tablelist {
 	-selectforeground	{selectForeground	Background	}
 	-stretchwindow		{stretchWindow		StretchWindow	}
 	-text			{text			Text		}
+	-valign			{valign			Valign		}
 	-window			{window			Window		}
 	-windowdestroy		{windowDestroy		WindowDestroy	}
 	-windowupdate		{windowUpdate		WindowUpdate	}
@@ -343,6 +348,7 @@ namespace eval tablelist {
     lappend cellConfigSpecs(-editable)		- 0
     lappend cellConfigSpecs(-editwindow)	- entry
     lappend cellConfigSpecs(-stretchwindow)	- 0
+    lappend cellConfigSpecs(-valign)		- center
 
     #
     # Use a list to facilitate the handling of the command options 
@@ -412,6 +418,7 @@ namespace eval tablelist {
 				 phase plastik plastique radiance ubuntu \
 				 vistaAero vistaClassic win7Aero win7Classic \
 				 winnative winxpBlue winxpOlive winxpSilver]
+    variable valignments   [list center top bottom]
 
     proc restrictArrowStyles {} {
 	variable pngSupported
@@ -4264,6 +4271,9 @@ proc tablelist::yviewSubCmd {win argList} {
 	    set btmTextIdx [$w index @0,$data(btmY)]
 	    set topRow [expr {int($topTextIdx) - 1}]
 	    set btmRow [expr {int($btmTextIdx) - 1}]
+	    if {$btmRow > $data(lastRow)} {		;# text widget bug
+		set btmRow $data(lastRow)
+	    }
 	    foreach {x y width height baselinePos} [$w dlineinfo $topTextIdx] {}
 	    if {$y < 0} {
 		incr topRow	;# top row incomplete in vertical direction
@@ -4325,6 +4335,9 @@ proc tablelist::yviewSubCmd {win argList} {
 		    for {set n 0} {$n < $absNumber} {incr n} {
 			set topRow [expr {int([$w index @0,0]) - 1}]
 			set btmRow [expr {int([$w index @0,$data(btmY)]) - 1}]
+			if {$btmRow > $data(lastRow)} {	;# text widget bug
+			    set btmRow $data(lastRow)
+			}
 			set upperViewableCount \
 			    [getViewableRowCount $win 0 [expr {$topRow - 1}]]
 			set winViewableCount \

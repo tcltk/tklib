@@ -1795,6 +1795,35 @@ proc tablelist::doColConfig {col win opt val} {
 	    }
 	}
 
+	-stripebackground -
+	-stripeforeground {
+	    set w $data(body)
+	    set name $col$opt
+
+	    if {[string compare $val ""] == 0} {
+		if {[info exists data($name)]} {
+		    unset data($name)
+		}
+	    } else {
+		#
+		# Configure the tag col$opt-$val in the body text widget
+		#
+		set tag col$opt-$val
+		set optTail [string range $opt 7 end]	;# remove the -stripe
+		$w tag configure $tag -$optTail $val
+		$w tag raise $tag stripe
+
+		#
+		# Save val in data($name)
+		#
+		set data($name) $val
+	    }
+
+	    if {!$data(isDisabled)} {
+		updateColorsWhenIdle $win
+	    }
+	}
+
 	-text {
 	    if {$data(isDisabled)} {
 		return ""
@@ -1833,6 +1862,19 @@ proc tablelist::doColConfig {col win opt val} {
 	    set idx [expr {3*$col + 1}]
 	    set data(-columns) [lreplace $data(-columns) $idx $idx $val]
 	    adjustColumns $win l$col 1
+	}
+
+	-valign {
+	    #
+	    # Save the properly formatted value of val in data($col$opt) and
+	    # make sure the given column will be redisplayed at idle time
+	    #
+	    variable valignments
+	    set val [mwutil::fullOpt "vertical alignment" $val $valignments]
+	    if {[string compare $val $data($col$opt)] != 0} {
+		set data($col$opt) $val
+		redisplayColWhenIdle $win $col
+	    }
 	}
 
 	-width {
@@ -2168,13 +2210,13 @@ proc tablelist::doRowConfig {row win opt val} {
 		    #
 		    set textIdx2 [$w search $elide "\t" $textIdx1 $line.end]
 		    if {$multiline} {
-			updateMlCell $w $textIdx1 $textIdx2 $msgScript \
-				     $aux $auxType $auxWidth \
-				     $indent $indentWidth $alignment
+			updateMlCell $w $textIdx1 $textIdx2 $msgScript $aux \
+				     $auxType $auxWidth $indent $indentWidth \
+				     $alignment [getVAlignment $win $key $col]
 		    } else {
-			updateCell $w $textIdx1 $textIdx2 $text \
-				   $aux $auxType $auxWidth \
-				   $indent $indentWidth $alignment
+			updateCell $w $textIdx1 $textIdx2 $text $aux \
+				   $auxType $auxWidth $indent $indentWidth \
+				   $alignment [getVAlignment $win $key $col]
 		    }
 		}
 
@@ -2444,7 +2486,7 @@ proc tablelist::doRowConfig {row win opt val} {
 	    set line [expr {$row + 1}]
 	    set textIdx1 $line.1
 	    set col 0
-	    foreach text $displayedItem] {pixels alignment} $data(colList) {
+	    foreach text $displayedItem {pixels alignment} $data(colList) {
 		if {$data($col-hide) && !$canElide} {
 		    incr col
 		    continue
@@ -2504,13 +2546,13 @@ proc tablelist::doRowConfig {row win opt val} {
 		    #
 		    set textIdx2 [$w search $elide "\t" $textIdx1 $line.end]
 		    if {$multiline} {
-			updateMlCell $w $textIdx1 $textIdx2 $msgScript \
-				     $aux $auxType $auxWidth \
-				     $indent $indentWidth $alignment
+			updateMlCell $w $textIdx1 $textIdx2 $msgScript $aux \
+				     $auxType $auxWidth $indent $indentWidth \
+				     $alignment [getVAlignment $win $key $col]
 		    } else {
-			updateCell $w $textIdx1 $textIdx2 $text \
-				   $aux $auxType $auxWidth \
-				   $indent $indentWidth $alignment
+			updateCell $w $textIdx1 $textIdx2 $text $aux \
+				   $auxType $auxWidth $indent $indentWidth \
+				   $alignment [getVAlignment $win $key $col]
 		    }
 		}
 
@@ -2595,11 +2637,8 @@ proc tablelist::doRowConfig {row win opt val} {
 #------------------------------------------------------------------------------
 proc tablelist::doRowCget {row win opt} {
     upvar ::tablelist::ns${win}::data data
-
-    #
-    # Return the value of the specified row configuration option
-    #
     set item [lindex $data(itemList) $row]
+
     switch -- $opt {
 	-text {
 	    return [lrange $item 0 $data(lastCol)]
@@ -2813,13 +2852,13 @@ proc tablelist::doCellConfig {row col win opt val} {
 		    #
 		    findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
 		    if {$multiline} {
-			updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript \
-				     $aux $auxType $auxWidth \
-				     $indent $indentWidth $alignment
+			updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript $aux \
+				     $auxType $auxWidth $indent $indentWidth \
+				     $alignment [getVAlignment $win $key $col]
 		    } else {
-			updateCell $w $tabIdx1+1c $tabIdx2 $text \
-				   $aux $auxType $auxWidth \
-				   $indent $indentWidth $alignment
+			updateCell $w $tabIdx1+1c $tabIdx2 $text $aux \
+				   $auxType $auxWidth $indent $indentWidth \
+				   $alignment [getVAlignment $win $key $col]
 		    }
 		}
 	    }
@@ -2958,13 +2997,13 @@ proc tablelist::doCellConfig {row col win opt val} {
 		#
 		findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
 		if {$multiline} {
-		    updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript \
-				 $aux $auxType $auxWidth \
-				 $indent $indentWidth $alignment
+		    updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript $aux \
+				 $auxType $auxWidth $indent $indentWidth \
+				 $alignment [getVAlignment $win $key $col]
 		} else {
-		    updateCell $w $tabIdx1+1c $tabIdx2 $text \
-			       $aux $auxType $auxWidth \
-			       $indent $indentWidth $alignment
+		    updateCell $w $tabIdx1+1c $tabIdx2 $text $aux \
+			       $auxType $auxWidth $indent $indentWidth \
+			       $alignment [getVAlignment $win $key $col]
 		}
 	    }
 
@@ -3102,13 +3141,13 @@ proc tablelist::doCellConfig {row col win opt val} {
 		#
 		findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
 		if {$multiline} {
-		    updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript \
-				 $aux $auxType $auxWidth \
-				 $indent $indentWidth $alignment
+		    updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript $aux \
+				 $auxType $auxWidth $indent $indentWidth \
+				 $alignment [getVAlignment $win $key $col]
 		} else {
-		    updateCell $w $tabIdx1+1c $tabIdx2 $text \
-			       $aux $auxType $auxWidth \
-			       $indent $indentWidth $alignment
+		    updateCell $w $tabIdx1+1c $tabIdx2 $text $aux \
+			       $auxType $auxWidth $indent $indentWidth \
+			       $alignment [getVAlignment $win $key $col]
 		}
 	    }
 
@@ -3254,13 +3293,13 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
 	    if {$multiline} {
-		updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript \
-			     $aux $auxType $auxWidth \
-			     $indent $indentWidth $alignment
+		updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript $aux \
+			     $auxType $auxWidth $indent $indentWidth \
+			     $alignment [getVAlignment $win $key $col]
 	    } else {
-		updateCell $w $tabIdx1+1c $tabIdx2 $text \
-			   $aux $auxType $auxWidth \
-			   $indent $indentWidth $alignment
+		updateCell $w $tabIdx1+1c $tabIdx2 $text $aux \
+			   $auxType $auxWidth $indent $indentWidth \
+			   $alignment [getVAlignment $win $key $col]
 	    }
 	}
 
@@ -3337,13 +3376,13 @@ proc tablelist::doCellConfig {row col win opt val} {
 		#
 		findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
 		if {$multiline} {
-		    updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript \
-				 $aux $auxType $auxWidth \
-				 $indent $indentWidth $alignment
+		    updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript $aux \
+				 $auxType $auxWidth $indent $indentWidth \
+				 $alignment [getVAlignment $win $key $col]
 		} else {
-		    updateCell $w $tabIdx1+1c $tabIdx2 $text \
-			       $aux $auxType $auxWidth \
-			       $indent $indentWidth $alignment
+		    updateCell $w $tabIdx1+1c $tabIdx2 $text $aux \
+			       $auxType $auxWidth $indent $indentWidth \
+			       $alignment [getVAlignment $win $key $col]
 		}
 	    }
 
@@ -3404,6 +3443,18 @@ proc tablelist::doCellConfig {row col win opt val} {
 
 	    showLineNumbersWhenIdle $win
 	    updateViewWhenIdle $win
+	}
+
+	-valign {
+	    #
+	    # Save the properly formatted value of val in
+	    # data($key,$col$opt) and redisplay the cell
+	    #
+	    variable valignments
+	    set val [mwutil::fullOpt "vertical alignment" $val $valignments]
+	    set key [lindex $data(keyList) $row]
+	    set data($key,$col$opt) $val
+	    redisplayCol $win $col $row $row
 	}
 
 	-window {
@@ -3549,13 +3600,13 @@ proc tablelist::doCellConfig {row col win opt val} {
 		#
 		findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
 		if {$multiline} {
-		    updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript \
-				 $aux $auxType $auxWidth \
-				 $indent $indentWidth $alignment
+		    updateMlCell $w $tabIdx1+1c $tabIdx2 $msgScript $aux \
+				 $auxType $auxWidth $indent $indentWidth \
+				 $alignment [getVAlignment $win $key $col]
 		} else {
-		    updateCell $w $tabIdx1+1c $tabIdx2 $text \
-			       $aux $auxType $auxWidth \
-			       $indent $indentWidth $alignment
+		    updateCell $w $tabIdx1+1c $tabIdx2 $text $aux \
+			       $auxType $auxWidth $indent $indentWidth \
+			       $alignment [getVAlignment $win $key $col]
 		}
 	    }
 
@@ -3619,11 +3670,6 @@ proc tablelist::doCellConfig {row col win opt val} {
 # of the tablelist widget win.
 #------------------------------------------------------------------------------
 proc tablelist::doCellCget {row col win opt} {
-    upvar ::tablelist::ns${win}::data data
-
-    #
-    # Return the value of the specified cell configuration option
-    #
     switch -- $opt {
 	-editable {
 	    return [isCellEditable $win $row $col]
@@ -3634,6 +3680,7 @@ proc tablelist::doCellCget {row col win opt} {
 	}
 
 	-stretchwindow {
+	    upvar ::tablelist::ns${win}::data data
 	    set key [lindex $data(keyList) $row]
 	    if {[info exists data($key,$col$opt)]} {
 		return $data($key,$col$opt)
@@ -3643,10 +3690,18 @@ proc tablelist::doCellCget {row col win opt} {
 	}
 
 	-text {
+	    upvar ::tablelist::ns${win}::data data
 	    return [lindex [lindex $data(itemList) $row] $col]
 	}
 
+	-valign {
+	    upvar ::tablelist::ns${win}::data data
+	    set key [lindex $data(keyList) $row]
+	    return [getVAlignment $win $key $col]
+	}
+
 	default {
+	    upvar ::tablelist::ns${win}::data data
 	    set key [lindex $data(keyList) $row]
 	    if {[info exists data($key,$col$opt)]} {
 		return $data($key,$col$opt)
@@ -3813,5 +3868,20 @@ proc tablelist::getEditWindow {win row col} {
 	return $data($col-editwindow)
     } else {
 	return "entry"
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::getVAlignment
+#
+# Returns the value of the -valign option at cell or column level for the given
+# cell of the tablelist widget win.
+#------------------------------------------------------------------------------
+proc tablelist::getVAlignment {win key col} {
+    upvar ::tablelist::ns${win}::data data
+    if {[info exists data($key,$col-valign)]} {
+	return $data($key,$col-valign)
+    } else {
+	return $data($col-valign)
     }
 }

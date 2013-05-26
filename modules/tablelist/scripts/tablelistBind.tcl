@@ -2543,6 +2543,9 @@ proc tablelist::labelB1Motion {w X x y} {
 	    set b $data(body)
 	    set btmTextIdx [$b index @0,$data(btmY)]
 	    set btmRow [expr {int($btmTextIdx) - 1}]
+	    if {$btmRow > $data(lastRow)} {		;# text widget bug
+		set btmRow $data(lastRow)
+	    }
 	    while {$btmRow > $data(btmRow)} {
 		$b tag add visibleLines [expr {double($data(btmRow) + 2)}] \
 					"$btmTextIdx lineend"
@@ -2552,6 +2555,9 @@ proc tablelist::labelB1Motion {w X x y} {
 
 		set btmTextIdx [$b index @0,$data(btmY)]
 		set btmRow [expr {int($btmTextIdx) - 1}]
+		if {$btmRow > $data(lastRow)} {		;# text widget bug
+		    set btmRow $data(lastRow)
+		}
 	    }
 
 	    #
