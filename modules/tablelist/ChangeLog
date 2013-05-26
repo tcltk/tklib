@@ -1,3 +1,32 @@
+2013-05-26  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 5.9.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* scripts/*.tcl: Added the "-valign" column and cell configuration
+	  option; added the "-stripebackground" and "-stripeforeground" column
+	  configuration options; improvements for Windows 7; workaround for a
+	  text widget bug in Tk versions 8.5 and later; corrected a typo in the
+	  implementation of the "rowconfigure" subcommnad; fixed a bug related
+	  to resetting the "-(select)background" and "-(select)foreground
+	  options at column, row, and cell levels.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/*.tcl: Bumped the version number to 5.9.
+
+	* ../../examples/config_tile.tcl: Improvements for Windows 7.
+
+	* ../../examples/styles.tcl:      Using the "-stripebackground" option
+	* ../../examples/styles_tile.tcl: at column level, too.
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* doc/styles.png:   Updated screenshots.
+	* doc/win7Aero.png:
+
 2013-04-23  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Slightly extended.
