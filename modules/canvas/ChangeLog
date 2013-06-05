@@ -1,3 +1,8 @@
+2013-06-05  Andreas Kupries  <andreask@activestate.com>
+
+	* canvas_gradient.man: [Ticket [3651bb1b96]] Integrated
+	* canvas_gradient.tcl: MaxJarek's canvas gradient package.
+
 2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
