@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/widget/widget_dateentry\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'widget_dateentry\&.man' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -317,6 +317,13 @@ Control-space - Show calendar window
     pack $t -fill x -expand 1
 
 .CE
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fIwidget::dateentry\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH KEYWORDS
 date, dateentry, megawidget, snit, widget
 .SH CATEGORY

@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/widget/widget\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'widget\&.man' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -326,6 +326,13 @@ package require widget::superframe ; # or widget::all
 pack [widget::superframe \&.f -type separator -text "SuperFrame:"]
 
 .CE
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fIwidget\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH KEYWORDS
 bundle, calendar, dateentry, dialog, megawidget, menu, panelframe, ruler, screenruler, scrolledwindow, snit, statusbar, superframe, toolbar, widget
 .SH CATEGORY

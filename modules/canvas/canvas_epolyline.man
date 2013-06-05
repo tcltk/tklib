@@ -1,13 +1,15 @@
 [vset VERSION 0.1]
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin canvas::edit::polyline n [vset VERSION]]
+[keywords canvas]
+[keywords editing]
+[keywords polyline]
 [moddesc   {Variations on a canvas}]
 [titledesc {Editing a polyline on a canvas}]
 [require Tcl 8.5]
 [require Tk 8.5]
 [require canvas::edit::points [opt 0.1]]
 [require canvas::edit::polyline [opt [vset VERSION]]]
-[keywords canvas editing polyline]
 [description]
 
 This package provides a class whose instances handle editing a single
@@ -72,7 +74,6 @@ is ignored if the editor is already disabled.
 
 [para] The complementary method is [method enable]. The interogatory
 method for the current state is [method active].
-
 
 [comment {= = == === ===== ======== ============= =====================}]
 [call [cmd objectName] [method active]]
@@ -161,7 +162,6 @@ taken as signal that the callback vetoed the creation of the vertex.
 
 [list_end]
 
-
 [comment {= = == === ===== ======== ============= =====================}]
 [comment {= = == === ===== ======== ============= =====================}]
 [opt_def -highlight-cmd [arg command-prefix]]
@@ -235,4 +235,6 @@ with each location a pair of x- and y-coordinates.
 
 [list_end][comment callback-signatures]
 [list_end][comment options]
+[vset CATEGORY canvas]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

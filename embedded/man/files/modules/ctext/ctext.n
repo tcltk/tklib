@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/ctext/ctext\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'ctext\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) George Peter Staplin <GeorgePS@XMission\&.com>
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
@@ -537,6 +537,13 @@ Further examples are in the source package for ctext\&.
 .SH THANKS
 Kevin Kenny, Neil Madden, Jeffrey Hobbs, Richard Suchenwirth,
 Johan Bengtsson, Mac Cody, Günther, Andreas Sievers, and Michael Schlenker\&.
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fIctext\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH "SEE ALSO"
 re_syntax, text
 .SH KEYWORDS

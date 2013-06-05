@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/tooltip/tooltip\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'tooltip\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 1996-2008, Jeffrey Hobbs
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
@@ -374,6 +374,13 @@ tooltip::tooltip \&.txt -tag TIP-1 "tooltip one text"
 \&.txt insert end "An example of a " {} "tooltip" TIP-1 " tag\&.\\n" {}
 
 .CE
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fItooltip\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH KEYWORDS
 balloon, help, hover, tooltip
 .SH COPYRIGHT
