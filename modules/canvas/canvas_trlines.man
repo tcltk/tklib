@@ -1,12 +1,15 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
 [manpage_begin canvas::track::lines n [vset VERSION]]
+[keywords canvas]
+[keywords crosshair]
+[keywords rubberband]
+[keywords tracking]
 [moddesc   {Variations on a canvas}]
 [titledesc {Manage a group of rubber band lines}]
 [require Tcl 8.5]
 [require Tk 8.5]
 [require canvas::tag [opt [vset VERSION]]]
-[keywords canvas tracking rubberband crosshair]
 [description]
 
 This package provides a utility class managing the drawing of set of semi-crosshair (rubberband) lines.
