@@ -1,9 +1,13 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin widget_calendar n 1.0.1]
+[keywords calendar]
+[keywords date]
+[keywords megawidget]
+[keywords snit]
+[keywords widget]
 [moddesc   {Various megawidgets}]
 [titledesc {Calendar Megawidget}]
 [category Widget]
-[keywords megawidget snit widget calendar date]
 [require Tcl 8.4]
 [require Tk 8.4]
 [require widget [opt 3.0]]
@@ -68,7 +72,6 @@ Specifies the name of a variable whose value is linked to the entry widget's con
 Whenever the variable changes value, the widget's contents are updated, and
 vice versa.
 
-
 [list_end]
 
 [section "WIDGET COMMAND"]
@@ -115,7 +118,6 @@ Control-Down - Move to year after current date
     set t [widget::calendar .t]
     pack $t -fill x -expand 1
 }]
-
-
-[keywords megawidget snit widget]
+[vset CATEGORY widget::calendar]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

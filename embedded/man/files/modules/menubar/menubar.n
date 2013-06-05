@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/menubar/menubar\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'menubar\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 2009 Tom Krehbiel <krehbiel\&.tom@gmail\&.com> All rights reserved\&.
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
@@ -893,8 +893,20 @@ pout "Example started \&.\&.\&."
 .PP
 This implementation uses TclOO so it requires 8\&.6\&. The code has been
 tested on Windows (Vista), Linux and OSX (10\&.4)\&.
-.SH "SEE ALSO"
-\fIA command that creates menubar objects\fR [http://wiki\&.tcl\&.tk/25231], \fImenu\fR [http://www\&.tcl\&.tk/man/tcl8\&.6/TkCmd/menu\&.htm]
+.SH REFERENCES
+See also
+.IP [1]
+\fImenu\fR [http://www\&.tcl\&.tk/man/tcl8\&.6/TkCmd/menu\&.htm]
+.IP [2]
+\fIA command that creates menubar objects\fR [http://wiki\&.tcl\&.tk/25231]
+.PP
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fImenubar\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH COPYRIGHT
 .nf
 Copyright (c) 2009 Tom Krehbiel <krehbiel\&.tom@gmail\&.com> All rights reserved\&.

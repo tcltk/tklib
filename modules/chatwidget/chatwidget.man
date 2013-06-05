@@ -1,5 +1,12 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin chatwidget n 1.0.0]
+[see_also text(n)]
+[keywords chat]
+[keywords chatwidget]
+[keywords {composite widget}]
+[keywords irc]
+[keywords mega-widget]
+[keywords widget]
 [moddesc   {Composite widget for chat applications}]
 [titledesc {Provides a multi-paned view suitable for display of chat room or irc channel information}]
 [require Tk 8.5]
@@ -40,7 +47,7 @@ provided are currently passed directly to the main chat text widget.
 [call [cmd \$widget] topic [arg command] [arg args]]
 
 The chat widget can display a topic string, for instance the topic or
-name given to a multi-user chatroom or irc channel. 
+name given to a multi-user chatroom or irc channel.
 [list_begin commands]
 [cmd_def show]
 Enable display of the topic.
@@ -52,14 +59,14 @@ Set the topic text to [arg topic].
 
 [call [cmd \$widget] name [arg nick] [arg args]]
 
-Control the names and tags associated with names. 
+Control the names and tags associated with names.
 [list_begin commands]
 [cmd_def "list [opt [arg -full]]"]
 Returns a list of all the user names from the names view. If [opt \
 -full] is given then the list returned is a list of lists where each
 sublist is made up of the nick followed by any options that have been
 set on this nick entry. This may be used to examine any application
-specific options that may be applied to a nick when using the 
+specific options that may be applied to a nick when using the
 [cmd add] command.
 [cmd_def "add [arg nick] [opt [arg options]]"]
 [cmd_def "delete [arg nick]"]
@@ -88,11 +95,10 @@ for all available commands.
 
 [call [cmd \$widget] chat [arg args]]
 
-Passthrough to the chat text widget. See the [cmd text] widget manual for 
+Passthrough to the chat text widget. See the [cmd text] widget manual for
 all available commands.
 
 [list_end]
-
 
 [section EXAMPLE]
 
@@ -115,7 +121,6 @@ pack .chat -side top -fill both -expand 1
 A more extensive example is available by examining the code for the picoirc
 program in the tclapps repository which ties the tcllib [package picoirc] package to this
 [package chatwidget] package to create a simple irc client.
-
-[see_also text(n)]
-[keywords widget {mega-widget} {composite widget} chat irc chatwidget]
+[vset CATEGORY chatwidget]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

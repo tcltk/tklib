@@ -1,9 +1,13 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin widget_dateentry n 0.96]
+[keywords date]
+[keywords dateentry]
+[keywords megawidget]
+[keywords snit]
+[keywords widget]
 [moddesc   {Various megawidgets}]
 [titledesc {Date Entry Megawidget}]
 [category Widget]
-[keywords megawidget snit widget dateentry date]
 [require Tcl 8.4]
 [require Tk 8.4]
 [require widget [opt 3.0]]
@@ -65,7 +69,6 @@ Specifies the name of a variable whose value is linked to the entry widget's con
 Whenever the variable changes value, the widget's contents are updated, and
 vice versa.
 
-
 [list_end]
 
 [section "WIDGET COMMAND"]
@@ -96,5 +99,6 @@ Control-space - Show calendar window
     set t [widget::dateentry .de]
     pack $t -fill x -expand 1
 }]
-
+[vset CATEGORY widget::dateentry]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

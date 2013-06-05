@@ -1,15 +1,17 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin ipentry n 0.3]
+[keywords entry]
+[keywords {ip address}]
+[keywords network]
 [moddesc   {An IP address entry widget}]
 [titledesc {An IP address entry widget}]
 [category Widget]
-[keywords entry {ip address} network]
 [require Tcl 8.4]
 [require Tk 8.4]
 [require ipentry [opt 0.3]]
 [description]
 
-This package provides a widget for the entering of a IP address. 
+This package provides a widget for the entering of a IP address.
 
 [para]
 
@@ -18,7 +20,7 @@ This package provides a widget for the entering of a IP address.
 [call [cmd ::ipentry::ipentry] [arg pathName] [opt "[arg option] [arg value]..."]]
 
 Creates a new IPv4 ipentry widget and configures it with the given options and
-their values. 
+their values.
 
 [call [cmd ::ipentry::ipentry6] [arg pathName] [opt "[arg option] [arg value]..."]]
 
@@ -26,7 +28,6 @@ Creates a new ipentry widget for the entry of an IPv6 address. All options
 are the same as the IPv4 widget.
 
 [list_end]
-
 
 Each widget created with the command above supports the following methods:
 
@@ -74,7 +75,6 @@ options section.
 
 [list_end]
 
-
 [section {Widget options}]
 
 [list_begin tkoptions]
@@ -112,5 +112,6 @@ Standard widget options. See [cmd options] for a description of their
 meanings and values.
 
 [list_end]
+[vset CATEGORY ipentry]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]
-

@@ -1,22 +1,18 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin menubar n 0.5]
-
-[copyright "2009 Tom Krehbiel <krehbiel.tom@gmail.com> All rights reserved."]
-
+[copyright {2009 Tom Krehbiel <krehbiel.tom@gmail.com> All rights reserved.}]
 [titledesc "Creates an instance of the [emph menubar] Class."]
 [moddesc   {Create and manipulate menubars}]
-
 [require Tcl 8.6]
 [require Tk 8.6]
 [require menubar [opt 0.5]]
-
 [description]
 
 [list_begin definitions]
 [call [cmd {menubar new}]  [opt options]]
 [list_end]
 
-[para] 
+[para]
 Create and return a new instance of the menubar class. The
 menubar class encapsulates the definition, installation and
 dynamic behavior of a menubar. The class doesn't depend on a
@@ -25,7 +21,6 @@ framework (e.g. Bwidget, IWidget, Snit, etc.). Unlike other Tk
 widget commands, the menubar command doesn't have a [emph pathName]
 argument because menubars are handled by the window manager (i.e. wm)
 and not the application.
-
 
 [section {Options}]
 
@@ -52,7 +47,7 @@ platform specific.
 
 [para]
 An instance of the menubar class provides methods for compiling a
-description of the menubar, configuring menu items and 
+description of the menubar, configuring menu items and
 installing the menubar in toplevel windows.
 
 [para]
@@ -102,8 +97,8 @@ found in other tcl/tk menubar implementation. Some of these are:
 
 	A menu contains an ordered list of items called entries.
 	Menu entries have a type and the menubar class supports the
-	following 6 entry types: 
-	[emph Command], [emph Checkbutton], [emph Radiobutton], [emph Separator], [emph Group] and [emph Menu]. 
+	following 6 entry types:
+	[emph Command], [emph Checkbutton], [emph Radiobutton], [emph Separator], [emph Group] and [emph Menu].
 
 	[def {ENTRY LABEL}]
 
@@ -133,8 +128,8 @@ found in other tcl/tk menubar implementation. Some of these are:
 
 	[call [arg mBarInst] [cmd define] [arg body]]
 
-	Compiles [emph body] into a tree of menu entries which define the 
-	visual layout of the menubar. The [emph body] argument 
+	Compiles [emph body] into a tree of menu entries which define the
+	visual layout of the menubar. The [emph body] argument
 	describes the layout using the following syntax, where the
 	elements of the syntax are described below.
 
@@ -159,11 +154,11 @@ scope          ::= '' | '@' | '='
 
 	[list_begin definitions]
 
-	[def {C - Command}] 
+	[def {C - Command}]
 	The C type entry is the most common type of entry. This entry executes
 	a command when it is invoked.
 
-	[def {X - Checkbutton}] 
+	[def {X - Checkbutton}]
 	A X type entry behaves much like a Tk checkbutton
 	widget. When it is invoked it toggles back and forth between
 	a selected and deselected states. The value of a checkbutton
@@ -172,33 +167,33 @@ scope          ::= '' | '@' | '='
 	then include a trailing plus (+) with the tag name. See SCOPE CONTROL
 	below for a description of the scope indicator.
 
-	[def {R - Radiobutton}] 
+	[def {R - Radiobutton}]
 	A R type menu entry behaves much like a Tk radiobutton widget. Each
 	radiobutton entry is a member of a radiobutton group that
 	controls the behavior of the radiobuttons in the group. All
 	radiobuttons in a group are given the same tag name. In the
 	example below Red, Green and Blue all have the same tag and are
 	therefore all in the same radiobutton group. A trailing plus
-	(+) on the tag name of a radiobutton entry will cause the entry to be 
+	(+) on the tag name of a radiobutton entry will cause the entry to be
 	the initially selected entry. See SCOPE CONTROL
 	below for a description of the scope indicator.
 
-	[def {S - Separator}] 
+	[def {S - Separator}]
 	A S type menu entry is an entry that is displayed either as a horizontal
 	dividing line or a label. Separators are not active elements of a menu and
 	have no associated behavior if they are invoked. If <stext> is two dashes
 	(i.e. '--') then the separator will be displayed as a horizontal line
 	otherwise <stext> will be displayed as a bold label surrounded by double
-	dashes (e.g. "-- <stext> --") with a lightgray background. 
+	dashes (e.g. "-- <stext> --") with a lightgray background.
 
-	[def {G - Command Group}] 
+	[def {G - Command Group}]
 	The G type menu entry marks a location in the menu tree where
 	entries can be dynamically added and removed. Menu extension can only
-	occur at the end of a menu so G type entries must be the last item on a menu. 
+	occur at the end of a menu so G type entries must be the last item on a menu.
 	A G	type entry is rendered as a separator line. The [emph group.<xxx>]
 	sub-commands are used to manipulate command group entries.
 
-	[def {M - Menu}] 
+	[def {M - Menu}]
 	An M type entry is used to define both menubar menus and cascading
 	menus. Menu entries are the most complicated of the 6 menu types.
 	A menu entry is composed of three list elements. The first element
@@ -209,9 +204,8 @@ scope          ::= '' | '@' | '='
 	menu. The final element of the list is a LIST VALUE.
 
 	[list_end]
-	
-[list_end]
 
+[list_end]
 
 [list_begin definitions]
 
@@ -223,7 +217,7 @@ scope          ::= '' | '@' | '='
 	is used to initialize the installed menubar. Normally the tcl
 	script will contain calls to various menubar methods to perform
 	the initialization. The initialization code is only run once
-	when the menubar is installed. The namespace in which the [emph install] 
+	when the menubar is installed. The namespace in which the [emph install]
 	method is executed becomes the default namespace for callback commands
 	(see [emph menu.namespace] below for more details).
 
@@ -259,17 +253,16 @@ value        ::= <tag> <option-value> <nl>
 
 [list_end]
 
-
 [list_begin definitions]
 
 	[call [arg mBarInst] [cmd menu.namespace] [arg {tag namespace}]]
 
 		Change the namespace for a sub-tree of the menubar
-		starting at entry [emph tag]. The new value will be [emph namespace]. 
+		starting at entry [emph tag]. The new value will be [emph namespace].
 		Each entry in the menubar tree has an
 		associated namespace which will be used for its callback
 		procedure. The default namespace is the namespace where
-		the [emph install]  method was executed. The [emph namespace] 
+		the [emph install]  method was executed. The [emph namespace]
 		method can be used to change the namespace
 		that will be used for callbacks in a sub-tree of the
 		menubar. This method can only be used in the context of
@@ -278,9 +271,9 @@ value        ::= <tag> <option-value> <nl>
 [list_end]
 
 [list_begin definitions]
-		
+
 	[call [arg mBarInst] [cmd menu.hide] [arg tag]]
-	
+
 		Remove (hide) a menubar entry. When a
 		menubar tree is defined all entries are visible by default.
 		This method can be used to hide a menubar entry.
@@ -300,11 +293,10 @@ value        ::= <tag> <option-value> <nl>
 
 [section {Methods - tag.xxx}]
 
-
 [list_begin definitions]
 
 	[call [arg mBarInst] [cmd tag.add] [arg {tag value}]]
-	
+
 		Add a user defined [emph tag] value. The [emph tag.add] method
 		adds a new tag-value pair to the the tags defined for a
 		menubar. User defined tags are different from the tags
@@ -322,14 +314,14 @@ value        ::= <tag> <option-value> <nl>
 	[call [arg mBarInst] [cmd tag.configure] [arg {pathName tag ?option value ...option value?}]]
 
 		Given the [emph pathName] of a toplevel window and a [emph tag] this method configures the
-		menu entry associated with the tag and return an empty string. 
+		menu entry associated with the tag and return an empty string.
 
 			[list_begin definitions]
 
 			[def [arg {Standard Options}]]
-			
+
 			These option are the same as those described for menu entries in the Tk [emph menu] documentation.
-			
+
 			[list_begin options]
 			[opt_def -activebackground]
 			[opt_def -activeforeground]
@@ -351,23 +343,23 @@ value        ::= <tag> <option-value> <nl>
 			[emph { }]
 
 			[def {Class Specific Options}]
-			
+
 			[list_begin options]
 			[opt_def -bind {{uline accel sequence}}]
 			The value of the [emph -bind] option is three element list where the values are as follows.
-			
+
 			[list_begin definitions]
-			[def {uline}] 
+			[def {uline}]
 			  An integer index of a character to underline in the entry.
 			  This value performs the same function as the Tk [emph menu] -underline option.
 			  If this value is an empty string then no underlining is performed.
-			[def {accel}] 
+			[def {accel}]
 			  A string to display at the right side of the menu
 			  entry. The string normally describes an accelerator keystroke sequence that
 			  may be typed to invoke the same function as the menu entry.
 			  This value performs the same function as the Tk [emph menu] -accelerator option.
 			  If this value is an empty string then no accelerator is displayed.
-			[def {sequence}] 
+			[def {sequence}]
 			  A bind sequence that will cause the entries associated command to fire.
 			[list_end]
 
@@ -408,7 +400,7 @@ value        ::= <tag> <option-value> <nl>
 [list_begin definitions]
 
 	[call [arg mBarInst] [cmd tag.cget] [arg {pathName tag ?option?}]]
-	
+
 	Returns the value of the configuration option given by [emph option]
 	or the value of a user defined tag. The option argument may be any
 	of the options accepted by the [emph tag.configure] method for the
@@ -419,31 +411,30 @@ value        ::= <tag> <option-value> <nl>
 
 [section {Methods - group.xxx}]
 
-
 [list_begin definitions]
 
 	[call [arg mBarInst] [cmd group.add] [arg {tag label ?cmd? ?accel? ?sequence? ?state?}]]
-	
+
 	Add a command to the group with tag name [emph tag]. This method
 	appends a new command entry to the end of a command group. The order of the
 	arguments is fixed but arguments to the right can be ignored. Arguments to
 	this method have the following meaning.
-	
+
 	[list_begin arguments]
 	[arg_def tag (string)]		The tag name of the command group.
 	[arg_def label (string)]	The displayed label for the menu entry.
 	[arg_def cmd (string)]		A command prefix that will be used for callback command.
 	[arg_def accel (string)]	An accelerator string that will be displayed next to the entry label.
-	[arg_def sequence (string)]	A bind sequence that will be bound to the callback command. 
+	[arg_def sequence (string)]	A bind sequence that will be bound to the callback command.
 	[arg_def state (enum)]		Sets the active state of the command. One of:  normal, disabled, active
 	[list_end]
-	
+
 [list_end]
 
 [list_begin definitions]
 
 	[call [arg mBarInst] [cmd group.delete] [arg {tag label}]]
-	
+
 	Delete a command from a group with tag name [emph tag]. This method
 	deletes command [emph label] from a command group.
 
@@ -452,7 +443,7 @@ value        ::= <tag> <option-value> <nl>
 [list_begin definitions]
 
 	[call [arg mBarInst] [cmd group.move] [arg {direction tag label}]]
-	
+
 	Change the position of an entry in a group with tag name [emph tag].
 	The [emph direction] argument is the direction ('up' or 'down') the
 	entry will be moved. The entry that is moved has the name [emph label].
@@ -462,10 +453,10 @@ value        ::= <tag> <option-value> <nl>
 [list_begin definitions]
 
 	[call [arg mBarInst] [cmd group.configure] [arg {tag label ?option value ...option value?}]]
-	
+
 	Configure the options of an entry in the command group with
-	tag name [emph tag]. This method is similar to the [emph tag.configure] 
-	method except that it works on entries in a command group. Set documentation 
+	tag name [emph tag]. This method is similar to the [emph tag.configure]
+	method except that it works on entries in a command group. Set documentation
 	for the [emph tag.configure] method (above) for more details on command
 	entry options.
 
@@ -474,7 +465,7 @@ value        ::= <tag> <option-value> <nl>
 [list_begin definitions]
 
 	[call [arg mBarInst] [cmd group.serialize] [arg {tag}]]
-	
+
 	Return a string serialization of the entries in a command group. The
 	argument [emph tag] is the tag name for the group that is to be serialized.
 	The resulting serialization is a list containing three
@@ -487,7 +478,7 @@ value        ::= <tag> <option-value> <nl>
 [list_begin definitions]
 
 	[call [arg mBarInst] [cmd group.deserialize] [arg {tag stream}]]
-	
+
 	Replace the contents of group tag [emph tag] with the commands
 	defined in the serialization [emph stream]. The original contents of
 	the group are lost.
@@ -504,7 +495,7 @@ value        ::= <tag> <option-value> <nl>
 	Execution of this method will cause state storage to be allocated
 	for the new notebook tab. The pathname for the notebook tab is passed
 	as an argument to the method.
-	
+
 [list_end]
 
 [list_begin definitions]
@@ -513,8 +504,7 @@ value        ::= <tag> <option-value> <nl>
 
 	This command deallocates the state store for a notebook tab. The
 	pathname for the notebook tab is passed as an argument to the method.
-	
-	
+
 [list_end]
 
 [list_begin definitions]
@@ -525,7 +515,7 @@ value        ::= <tag> <option-value> <nl>
 	radiobuttons that have notebook tab scope control. When this method is
 	executed it will move the value associated with tag into the tab store
 	for the tab identified by pathname.
-	
+
 [list_end]
 
 [list_begin definitions]
@@ -533,10 +523,9 @@ value        ::= <tag> <option-value> <nl>
 	[call [arg mBarInst] [cmd notebook.restoreTabValues] [arg {pathname}]]
 
 	This method should be place in a bind script that is triggered by
-	a notebooks <<NotebookTabChanged>> event. 
-	
-[list_end]
+	a notebooks <<NotebookTabChanged>> event.
 
+[list_end]
 
 [section "Scope Control"]
 
@@ -672,25 +661,19 @@ wm focusmodel . active
 pout "Example started ..."
 [example_end]
 
-
 [section Caveats]
 
 [para]
 This implementation uses TclOO so it requires 8.6. The code has been
 tested on Windows (Vista), Linux and OSX (10.4).
 
-[see_also [uri http://www.tcl.tk/man/tcl8.6/TkCmd/menu.htm menu]]
-[see_also [uri http://wiki.tcl.tk/25231 {A command that creates menubar objects}]]
+[section References]
+See also
+[list_begin enumerated]
+[enum] [uri http://www.tcl.tk/man/tcl8.6/TkCmd/menu.htm menu]
+[enum] [uri http://wiki.tcl.tk/25231 {A command that creates menubar objects}]
+[list_end]
 
+[vset CATEGORY menubar]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]
-
-
-
-
-
-
-
-
-
-
-

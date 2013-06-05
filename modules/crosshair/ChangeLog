@@ -1,3 +1,10 @@
+2013-04-26  Andreas Kupries  <andreask@activestate.com>
+
+	* crosshair.tcl: [Bug 3603562]: Integrated changes made by Frank
+	* pkgIndex.tcl: to automatically track changes in canvas scale,
+	* ../../examples/canvas/crosshair_scaled.tcl: i.e. zooming. Bumped
+	  version to 1.2 (new feature). New example for scaling.
+
 2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*

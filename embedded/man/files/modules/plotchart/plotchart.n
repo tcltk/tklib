@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/plotchart/plotchart\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'plotchart\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 2011 Arjen Markus <arjenmarkus@users\&.sourceforge\&.net>
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
@@ -3670,7 +3670,6 @@ pack [canvas \&.c -bg white -height 300] -fill both -expand yes
 
 set t [::Plotchart::createTableChart \&.c {"Column 1" "Column 2" "Column 3"} 80]
 
-
 proc setColor {table widget row col value} {
     $table cellconfigure -background white -color black
     if { $value < 2\&.0 } {
@@ -4031,6 +4030,13 @@ Marker line to indicate a "current" value
 Box drawn from quantiles
 .RE
 .PP
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fIplotchart\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH KEYWORDS
 3D bars, 3D surfaces, bar charts, charts, coordinate transformations, coordinates, graphical presentation, isometric plots, pie charts, plotting, polar plots, strip charts, tables, time charts, xy-plots
 .SH COPYRIGHT

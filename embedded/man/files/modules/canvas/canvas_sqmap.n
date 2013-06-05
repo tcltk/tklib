@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/canvas/canvas_sqmap\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'canvas_sqmap\&.man' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -357,5 +357,12 @@ forgets an image this means only that the association between a grid
 cell and shown image is broken\&. The image is \fInot\fR
 deleted\&. Managing the lifecycle of the images shown by the canvas is
 responsibility of the user of the canvas\&.
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fIcanvas\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH KEYWORDS
 canvas, cell, grid, image, map, square map, tile

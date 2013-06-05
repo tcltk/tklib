@@ -1,5 +1,20 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin Plotchart n 2.1.1]
+[keywords {3D bars}]
+[keywords {3D surfaces}]
+[keywords {bar charts}]
+[keywords charts]
+[keywords {coordinate transformations}]
+[keywords coordinates]
+[keywords {graphical presentation}]
+[keywords {isometric plots}]
+[keywords {pie charts}]
+[keywords plotting]
+[keywords {polar plots}]
+[keywords {strip charts}]
+[keywords tables]
+[keywords {time charts}]
+[keywords xy-plots]
 [copyright {2011 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
@@ -147,7 +162,6 @@ the empty string.
 [list_end]
 [para]
 
-
 [call [cmd ::Plotchart::createStripchart] [arg w] [arg xaxis] [arg yaxis] [arg args]]
 
 Create a new strip chart (configuration type: stripchart). The
@@ -173,7 +187,6 @@ Zero or more options - see the XY-plot for more information.
 
 [list_end]
 [para]
-
 
 [call [cmd ::Plotchart::createTXPlot] [arg w] [arg timeaxis] [arg xaxis] [arg args]]
 
@@ -201,7 +214,6 @@ Zero or more options - see the XY-plot for more information.
 [list_end]
 [para]
 
-
 [call [cmd ::Plotchart::createXLogYPlot] [arg w] [arg xaxis] [arg yaxis] [arg args]]
 
 Create a new xy-plot where the y-axis has a logarithmic scale (configuration type: xlogyplot).
@@ -228,7 +240,6 @@ Zero or more options - see the XY-plot for more information.
 [list_end]
 [para]
 
-
 [call [cmd ::Plotchart::createLogXYPlot] [arg w] [arg xaxis] [arg yaxis] [arg args]]
 
 Create a new xy-plot where the x-axis has a logarithmic scale (configuration type: logxyplot).
@@ -254,7 +265,6 @@ Zero or more options - see the XY-plot for more information.
 
 [list_end]
 [para]
-
 
 [call [cmd ::Plotchart::createLogXLogYPlot] [arg w] [arg xaxis] [arg yaxis] [arg args]]
 
@@ -300,7 +310,6 @@ Zero or more options - see the XY-plot for more information.
 [list_end]
 [para]
 
-
 [call [cmd ::Plotchart::createWindrose] [arg w] [arg radius_data] [arg sectors]]
 
 Create a new windrose diagram. The diagram will consist of concentric
@@ -322,7 +331,6 @@ Number of sectors to use (defaults to 16).
 
 [list_end]
 [para]
-
 
 [call [cmd ::Plotchart::createIsometricPlot] [arg w] [arg xaxis] [arg yaxis] [arg stepsize]]
 
@@ -348,7 +356,6 @@ draw any of the axes.
 [list_end]
 [para]
 
-
 [call [cmd ::Plotchart::createHistogram] [arg w] [arg xaxis] [arg yaxis]]
 
 Create a new histogram (configuration type: histogram).
@@ -365,7 +372,6 @@ A 3-element list containing minimum, maximum and stepsize for the y-axis, in thi
 
 [list_end]
 [para]
-
 
 [call [cmd ::Plotchart::create3DPlot] [arg w] [arg xaxis] [arg yaxis] [arg zaxis]]
 
@@ -387,7 +393,6 @@ A 3-element list containing minimum, maximum and stepsize for the z-axis, in thi
 [list_end]
 [para]
 
-
 [call [cmd ::Plotchart::create3DRibbonPlot] [arg w] [arg yaxis] [arg zaxis]]
 
 Create a new 3D ribbon plot. It is a simplification of the full 3D plot and allows for
@@ -406,7 +411,6 @@ A 3-element list containing minimum, maximum and stepsize for the z-axis, in thi
 [list_end]
 [para]
 
-
 [call [cmd ::Plotchart::createPiechart] [arg w]]
 
 Create a new piechart (configuration type: piechart).
@@ -417,7 +421,6 @@ Name of the [emph existing] canvas widget to hold the plot.
 
 [list_end]
 [para]
-
 
 [call [cmd ::Plotchart::createSpiralPie] [arg w]]
 
@@ -431,7 +434,6 @@ Name of the [emph existing] canvas widget to hold the plot.
 
 [list_end]
 [para]
-
 
 [call [cmd ::Plotchart::createRadialchart] [arg w] [arg names] [arg scale] [arg style]]
 
@@ -463,7 +465,6 @@ accumulated
 
 [list_end]
 [para]
-
 
 [call [cmd ::Plotchart::createBarchart] [arg w] [arg xlabels] [arg yaxis] [arg noseries]]
 
@@ -503,7 +504,6 @@ integer number greater than zero (if [const stacked] is not used).
 [list_end]
 [para]
 
-
 [call [cmd ::Plotchart::createHorizontalBarchart] [arg w] [arg xaxis] [arg ylabel] [arg noseries]]
 
 Create a new barchart with horizontal bars (configuration type: horizbars). The vertical axis will
@@ -535,7 +535,6 @@ integer number greater than zero (if [const stacked] is not used).
 [list_end]
 [para]
 
-
 [call [cmd ::Plotchart::create3DBarchart] [arg w] [arg yaxis] [arg nobars]]
 
 Create a new barchart with 3D vertical bars (configuration type: 3dbars). The horizontal axis will
@@ -556,7 +555,6 @@ The number of bars that will be plotted.
 
 [list_end]
 [para]
-
 
 [call [cmd ::Plotchart::create3DRibbonChart] [arg w] [arg names] [arg yaxis] [arg zaxis]]
 
@@ -588,7 +586,6 @@ The number of bars that will be plotted.
 [list_end]
 [para]
 
-
 [call [cmd ::Plotchart::createBoxplot] [arg w] [arg xdata] [arg ydata] [arg orientation]]
 
 Create a new boxplot with horizontal or vertical boxes (box-and-whiskers) (configuration type: boxplot). Depending
@@ -617,7 +614,6 @@ also determines the interpretation of the xdata and ydata arguments.
 
 [list_end]
 [para]
-
 
 [call [cmd ::Plotchart::createTimechart] [arg w] [arg time_begin] [arg time_end] [arg args]]
 
@@ -653,7 +649,6 @@ labels at the y-axis.
 [list_end]
 
 [list_end]
-
 
 [call [cmd ::Plotchart::createGanttchart] [arg w] [arg time_begin] [arg time_end] [arg args]]
 
@@ -697,7 +692,6 @@ labels at the y-axis.
 
 [list_end]
 
-
 [call [cmd ::Plotchart::createRightAxis] [arg w_or_plot] [arg yaxis]]
 
 Create a plot command that will use a right axis instead of the left
@@ -720,7 +714,6 @@ plot command for the plot with the left axis.
 A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order.
 
 [list_end]
-
 
 [call [cmd ::Plotchart::createTableChart] [arg w] [arg columns] [opt widths]]
 
@@ -790,7 +783,6 @@ Return the name of the canvas (or the alias if you use more than one plot within
 canvas). Use this value for the coordinate transformations.
 [para]
 
-
 [call [cmd \$anyplot] saveplot [arg filename] [arg args]]
 
 Draws the plot into a file, using PostScript.
@@ -822,7 +814,6 @@ two seconds. It is not ideal, but it seems to work better.
 [list_end]
 [para]
 
-
 [call [cmd \$anyplot] xtext [arg text]]
 
 Specify the title of the (horizontal) x-axis, for those plots that have
@@ -834,7 +825,6 @@ The text of the x-axis label to be drawn.
 
 [list_end]
 [para]
-
 
 [call [cmd \$anyplot] ytext [arg text]]
 
@@ -859,7 +849,6 @@ Text to drawn to the y-axis
 
 [para]
 
-
 [call [cmd \$anyplot] xsubtext [arg text]]
 
 Specify the subtext of the (horizontal) x-axis, for those plots that have
@@ -875,7 +864,6 @@ The secondary text of the x-axis label to be drawn.
 
 [list_end]
 [para]
-
 
 [call [cmd \$anyplot] ysubtext [arg text]]
 
@@ -893,7 +881,6 @@ The secondary text of the y-axis label to be drawn.
 
 [list_end]
 [para]
-
 
 [call [cmd \$anyplot] vsubtext [arg text]]
 
@@ -913,7 +900,6 @@ The secondary (vertical) text of the y-axis label to be drawn.
 
 [list_end]
 [para]
-
 
 [call [cmd \$anyplot] xconfig [option -option] [arg value] ...]
 
@@ -942,12 +928,10 @@ maximum and stepsize for the axis, in this order.
 [list_end]
 [para]
 
-
 [call [cmd \$anyplot] yconfig [option -option] [arg value] ...]
 
 Set one or more configuration parameters for the y-axis. This method
 accepts the same options and values as the method [method xconfig].
-
 
 [call [cmd \$anyplot] background [arg part] [arg colour_or_image] [arg dir] [opt brightness]]
 
@@ -982,7 +966,6 @@ Indicates whether the colour should become brighter (bright) or darker (dark). D
 [list_end]
 [para]
 
-
 [call [cmd \$anyplot] xticklines [arg colour] [opt dash]]
 
 Draw vertical ticklines at each tick location
@@ -1001,7 +984,6 @@ The actual effect depends on the platform.
 [list_end]
 [para]
 
-
 [call [cmd \$anyplot] yticklines [arg colour] [opt dash]]
 
 Draw horizontal ticklines at each tick location
@@ -1019,7 +1001,6 @@ The actual effect depends on the platform.
 
 [list_end]
 [para]
-
 
 [call [cmd \$anyplot] legend [arg series] [arg text] [opt spacing]]
 
@@ -1042,7 +1023,6 @@ Optional argument to specify the vertical spacing between the entries (in pixels
 [list_end]
 [para]
 
-
 [call [cmd \$anyplot] removefromlegend [arg series]]
 
 Remove an entry for a series from the legend and redraw it.
@@ -1054,7 +1034,6 @@ Name of the data series to be removed.
 
 [list_end]
 [para]
-
 
 [call [cmd \$anyplot] legendconfig [option -option] [arg value] ...]
 
@@ -1089,7 +1068,6 @@ bottom-left or bottom-right. (Default value is top-right.)
 [list_end]
 [para]
 
-
 [call [cmd \$anyplot] balloon [arg x] [arg y] [arg text] [arg dir]]
 
 Add balloon text to the plot (except for 3D plots). The arrow will point
@@ -1115,7 +1093,6 @@ south, south-west, west or north-west.
 
 [list_end]
 [para]
-
 
 [call [cmd \$anyplot] balloonconfig [arg args]]
 
@@ -1150,7 +1127,6 @@ Length factor for the arrow (in pixels)
 
 [list_end]
 
-
 [call [cmd \$anyplot] plaintext [arg x] [arg y] [arg text] [arg dir]]
 
 Add plain text to the plot (except for 3D plots). The text is positioned at
@@ -1177,7 +1153,6 @@ south, south-west, west or north-west.
 [list_end]
 [para]
 
-
 [call [cmd \$anyplot] plaintextconfig [arg args]]
 
 Configure the plain text annotation for the plot. The new settings will be used
@@ -1196,7 +1171,6 @@ Colour for the text (synonym: textcolor)
 
 [list_end]
 
-
 [call [cmd \$anyplot] object [arg itemtype] [arg series] [arg args]]
 
 Draw a canvas item in the plot where the coordinates are scaled using the
@@ -1209,7 +1183,6 @@ barcharts, and piecharts.
 [emph Note:] To add an entry in the legend for the object, you can use the
 [term dataconfig] subcommand with a type "rectangle". This will cause a rectangle
 to be shown.
-
 
 [list_begin arguments]
 
@@ -1224,7 +1197,6 @@ List of coordinates and drawing options
 
 [list_end]
 
-
 [call [cmd \$anyplot] deletedata]
 
 Remove the lines, symbols and other graphical object associated with the
@@ -1237,7 +1209,6 @@ kept as they were.
 [para]
 [emph Note:] Currently there are side effects if the canvas contains more than
 one plot.
-
 
 [list_end]
 [para]
@@ -1348,7 +1319,6 @@ X-coordinate of the new data point
 Y-coordinate of the new data point
 [list_end]
 
-
 [call [cmd \$xyplot] interval [arg series] [arg xcrd] [arg ymin] [arg ymax] [opt ycentr]]
 
 Add a vertical error interval to the plot. The interval is drawn from
@@ -1372,7 +1342,6 @@ Maximum y-coordinate of the interval.
 Y-coordinate to draw the symbol at (optional)
 
 [list_end]
-
 
 [call [cmd \$xyplot] box-and-whiskers [arg series] [arg xcrd] [arg ycrd]]
 
@@ -1450,7 +1419,6 @@ Y-component or the angle of the vector
 
 [list_end]
 
-
 [call [cmd \$xyplot] vectorconfig [arg series] [option -option] [arg value] ...]]
 
 Set the vector drawing options for a particular series
@@ -1479,7 +1447,6 @@ positive y-axis) or "nautical" (0 is "north" and 90 is "east").
 [list_end]
 [para]
 
-
 [call [cmd \$xyplot] dot [arg series] [arg xcrd] [arg ycrd] [arg value]]
 
 Draw a dot in the plot. The size and colour is determined by the value
@@ -1500,7 +1467,6 @@ Y-coordinate of the point where the arrow appears
 Value determining size and colour
 
 [list_end]
-
 
 [call [cmd \$xyplot] dotconfig [arg series] [option -option] [arg value] ...]]
 
@@ -1546,7 +1512,6 @@ setting a list of classes and setting the [emph scalebyvalue] option on.
 [list_end]
 [para]
 
-
 [call [cmd \$xyplot] contourlines [arg xcrd] [arg ycrd] [arg values] [opt classes]]
 
 Draw contour lines for the values given on the grid. The grid is defined
@@ -1561,7 +1526,6 @@ the corners is missing, the contour lines in that cell will not be
 drawn.
 [para]
 Entries in the legend are drawn via the [emph legendisolines] subcommand.
-
 
 [list_begin arguments]
 [arg_def list xcrd in]
@@ -1619,7 +1583,6 @@ classes are determined automatically.
 
 [list_end]
 
-
 [call [cmd \$xyplot] contourfill [arg xcrd] [arg ycrd] [arg values] [opt classes]]
 
 Draw filled contours for the values given on the grid. (The use of this
@@ -1633,7 +1596,6 @@ Draw the cells as filled quadrangles. The colour is determined from
 the average of the values on all four corners.
 [para]
 Entries in the legend are drawn via the [emph legendshades] subcommand.
-
 
 [call [cmd \$xyplot] colorMap [arg colours]]
 
@@ -1658,7 +1620,6 @@ cool: colours from cyan via blue to magenta
 
 [list_end]
 
-
 [call [cmd \$xyplot] legendisolines [arg values] [arg classes]]
 
 Add the contour classes to the legend as coloured lines. The text indicates the
@@ -1672,7 +1633,6 @@ if the list of classes is empty.
 The list of classes as used for the actual drawing.
 [list_end]
 
-
 [call [cmd \$xyplot] legendshades [arg values] [arg classes]]
 
 Add the contour classes to the legend as coloured rectangles. The text indicates the
@@ -1685,7 +1645,6 @@ if the list of classes is empty.
 [arg_def list values in]
 The list of classes as used for the actual drawing.
 [list_end]
-
 
 [call [cmd \$xyplot] grid [arg xcrd] [arg ycrd]]
 
@@ -1729,7 +1688,6 @@ Upper bound for the band
 [list_end]
 [para]
 
-
 [call [cmd \$xyplot] labeldot [arg x] [arg y] [arg text] [arg orient]]
 Draw a label and a symbol in the plot. The label will appear near the
 symbol. The label will be drawn in grey, so as not to be too
@@ -1758,7 +1716,6 @@ appears left of the symbol).
 
 [list_end]
 [para]
-
 
 For [emph {polar plots}]:
 
@@ -1837,7 +1794,6 @@ List of values in ascending order that represent the contour levels
 [list_end]
 [para]
 
-
 [call [cmd \$plot3d] gridsize [arg nxcells] [arg nycells]]
 
 Set the grid size in the two directions. Together they determine how
@@ -1854,7 +1810,6 @@ greater than zero.
 
 [list_end]
 [para]
-
 
 [call [cmd \$plot3d] plotdata [arg data]]
 
@@ -1878,7 +1833,6 @@ columns. Example:
 [list_end]
 [para]
 
-
 [call [cmd \$plot3d] colours [arg fill] [arg border]]
 
 Configure the colours to use for polygon borders and inner area.
@@ -1892,7 +1846,6 @@ The colour to use for filling the polygons.
 The colour to use for the border of the polygons.
 
 [list_end]
-
 
 [call [cmd \$plot3d] ribbon [arg yzpairs]]
 
@@ -2101,7 +2054,6 @@ If given, "top-down" or "bottom-up", to indicate the direction in which the colo
 If given, "bright" or "dark" (defaulting to "bright"). The colour will change to respectively
 white or black, depending on the direction.
 
-
 [list_end]
 
 [call [cmd \$barchart] config [option -option] [arg value] ...]
@@ -2258,7 +2210,6 @@ The colour of the ribbon/area.
 [list_end]
 [list_end]
 
-
 For [emph boxplots]:
 
 [list_begin definitions]
@@ -2280,7 +2231,6 @@ determined from this list.
 
 [list_end]
 [list_end]
-
 
 For [emph timecharts]:
 
@@ -2305,7 +2255,6 @@ The colour of the bar (defaults to black).
 [list_end]
 [para]
 
-
 [call [cmd \$timechart] milestone [arg text] [arg time] [arg colour]]
 
 Add a [term milestone] (represented as an point-down triangle) to the
@@ -2324,7 +2273,6 @@ The colour of the triangle (defaults to black).
 [list_end]
 [para]
 
-
 [call [cmd \$timechart] vertline [arg text] [arg time]]
 
 Add a vertical line (to indicate the start of the month for instance)
@@ -2340,7 +2288,6 @@ Time at which the line must be positioned.
 
 [list_end]
 
-
 [call [cmd \$timechart] hscroll [arg scrollbar]]
 
 Connect a horizontal scrollbar to the chart. See also the section on
@@ -2351,7 +2298,6 @@ scrolling.
 The horizontal scrollbar that is to be connected to the chart
 
 [list_end]
-
 
 [call [cmd \$timechart] vscroll [arg scrollbar]]
 
@@ -2392,7 +2338,6 @@ The percentage of the task that is completed.
 [list_end]
 [para]
 
-
 [call [cmd \$ganttchart] milestone [arg text] [arg time] [arg colour]]
 
 Add a [term milestone] (represented as an point-down triangle) to the
@@ -2411,7 +2356,6 @@ The colour of the triangle (defaults to black).
 [list_end]
 [para]
 
-
 [call [cmd \$ganttchart] vertline [arg text] [arg time]]
 
 Add a vertical line (to indicate the start of the month for instance)
@@ -2427,7 +2371,6 @@ Time at which the line must be positioned.
 
 [list_end]
 [para]
-
 
 [call [cmd \$ganttchart] connect [arg from] [arg to]]
 
@@ -2451,7 +2394,6 @@ task at which the arrow ends.
 [list_end]
 [para]
 
-
 [call [cmd \$ganttchart] summary [arg text] [arg args]]
 
 Add a summary item that spans all the tasks listed. The graphical
@@ -2471,7 +2413,6 @@ shifted down to make room for the summary.
 
 [list_end]
 [para]
-
 
 [call [cmd \$ganttchart] color [arg keyword] [arg newcolor]]
 
@@ -2505,7 +2446,6 @@ The new colour for the chosen items.
 [list_end]
 [para]
 
-
 [call [cmd \$ganttchart] font [arg keyword] [arg newfont]]
 
 Set the font of a part of the Gantt chart. These fonts hold for all
@@ -2528,7 +2468,6 @@ The new font for the chosen items.
 
 [list_end]
 
-
 [call [cmd \$ganttchart] hscroll [arg scrollbar]]
 
 Connect a horizontal scrollbar to the chart. See also the section on
@@ -2539,7 +2478,6 @@ scrolling.
 The horizontal scrollbar that is to be connected to the chart
 
 [list_end]
-
 
 [call [cmd \$ganttchart] vscroll [arg scrollbar]]
 
@@ -2580,7 +2518,6 @@ The colour of the rectangle.
 [list_end]
 [para]
 
-
 [call [cmd \$isoplot] plot filled-rectangle [arg x1] [arg y1] [arg x2] [arg y2] [arg colour]]
 
 Plot a rectangle filled with the given colour.
@@ -2604,7 +2541,6 @@ The colour of the rectangle.
 [list_end]
 [para]
 
-
 [call [cmd \$isoplot] plot circle [arg xc] [arg yc] [arg radius] [arg colour]]
 
 Plot the outline of a circle.
@@ -2621,7 +2557,6 @@ The colour of the circle.
 
 [list_end]
 [para]
-
 
 [call [cmd \$isoplot] plot filled-circle [arg xc] [arg yc] [arg radius] [arg colour]]
 
@@ -2682,10 +2617,8 @@ layout of multiline text.
 
 [list_end]
 
-
 There are a number of public procedures that may be useful in specific
 situations: [emph "Pro memorie"].
-
 
 [section {COORDINATE TRANSFORMATIONS}]
 
@@ -2722,7 +2655,6 @@ Bottom-most pixel coordinate.
 [list_end]
 [para]
 
-
 [call [cmd ::Plotchart::worldCoordinates] [arg w] [arg xmin] [arg ymin] [arg xmax] [arg ymax]]
 
 Set the extreme world coordinates for window [arg w]. The world
@@ -2747,7 +2679,6 @@ Y-coordinate to be mapped to top side of viewport.
 
 [list_end]
 [para]
-
 
 [call [cmd ::Plotchart::world3DCoordinates] [arg w] [arg xmin] [arg ymin] [arg zmin] [arg xmax] [arg ymax] [arg zmax]]
 
@@ -2781,7 +2712,6 @@ Z-coordinate to be mapped to top side of viewport.
 [list_end]
 [para]
 
-
 [call [cmd ::Plotchart::coordsToPixel] [arg w] [arg x] [arg y]]
 
 Return a list of pixel coordinates valid for the given window.
@@ -2798,7 +2728,6 @@ Y-coordinate to be mapped.
 
 [list_end]
 [para]
-
 
 [call [cmd ::Plotchart::coords3DToPixel] [arg w] [arg x] [arg y] [arg z]]
 
@@ -2820,7 +2749,6 @@ Z-coordinate to be mapped.
 [list_end]
 [para]
 
-
 [call [cmd ::Plotchart::polarCoordinates] [arg w] [arg radmax]]
 
 Set the extreme polar coordinates for window [arg w]. The angle always
@@ -2840,7 +2768,6 @@ Maximum radius.
 
 [list_end]
 [para]
-
 
 [call [cmd ::Plotchart::polarToPixel] [arg w] [arg rad] [arg phi]]
 
@@ -2864,7 +2791,6 @@ Angle to the positive x-axis.
 
 [list_end]
 [para]
-
 
 [call [cmd ::Plotchart::pixelToCoords] [arg w] [arg x] [arg y]]
 
@@ -2942,7 +2868,6 @@ inverted axis. Defaults to 0 (the axis will be from minimum to maximum)
 [list_end]
 [list_end]
 
-
 [section {MISSING VALUES}]
 Often data that need to be plotted contain gaps - in a series of
 measurement data, they can occur because the equipment failed, a sample
@@ -2974,7 +2899,6 @@ given.
 For time charts and Gantt charts missing values cause errors - there is
 no use for them there.
 [list_end]
-
 
 [section {OTHER OUTPUT FORMATS}]
 
@@ -3029,7 +2953,6 @@ Take care of the currently fixed text size properties
 
 [list_end]
 
-
 [section {SPECIAL EFFECTS}]
 
 As an example of some special effects you can achieve, here is the
@@ -3082,7 +3005,6 @@ throw an error.
 [list_end]
 [list_end]
 
-
 [section RESIZING]
 
 [package Plotchart] has not been designed to create plots and charts
@@ -3129,7 +3051,6 @@ proc doResize {} {
 
     set redo [after 50 doPlot]
 }}]
-
 
 [emph "Please note:"]
 The code above will work fine for barcharts and many other types of
@@ -3185,7 +3106,6 @@ resize the window, the canvases inside are resized too. If you zoom in,
 you can scroll the plot via the scrollbars that are automatically
 attached.
 
-
 [section "ZOOMING IN"]
 
 As the Plotchart package does not keep track of the data itself,
@@ -3208,7 +3128,6 @@ The method works very simply:
 [example {
    $p rescale {newxmin newxmax newxstep} {newymin newymax newystep}
 }]
-
 
 [section "CONFIGURATION OPTIONS"]
 
@@ -3429,11 +3348,9 @@ Finally the [emph frame] component uses [emph color], [emph outerwidth]
 [emph innerwidth] (for the width of lines separating columns and rows).
 [list_end]
 
-
 [list_end]
 
 See the examples in plotdemos7.tcl for its use.
-
 
 [section "SCROLLING FOR TIMECHARTS AND GANTT CHARTS"]
 
@@ -3497,7 +3414,6 @@ The original extent of the chart is from 1 january 2004 to 31 december
 2004. But because of the addition of vertical lines in 2005 and
 more items than was specified at the creation of the chart, both the
 horizontal and the vertical scrollbar will be enabled.
-
 
 [section "SPECIALISED PLOTS"]
 
@@ -3576,7 +3492,6 @@ List of measured values (missing values are represented as empty strings; only i
 both the x and the y values are given, is the pair used in the computations)
 [list_end]
 
-
 [call [cmd ::Plotchart::createPerformanceProfile] [arg w] [arg max]]
 
 Create a diagram to show the performance of various numerical methods (or solvers). The idea is
@@ -3652,7 +3567,6 @@ set p [::Plotchart::createXYPlot .c {0 100 10} {0 20 5}]
 $p doodle 40 10
 }]
 
-
 [section "TABLE CHARTS"]
 To show what you can do with table charts, here is a simple example that
 plots a number of random data. The colours depend on the range that the
@@ -3667,7 +3581,6 @@ pack [canvas .c -bg white -height 300] -fill both -expand yes
 ::Plotchart::plotconfig table frame color red
 
 set t [::Plotchart::createTableChart .c {"Column 1" "Column 2" "Column 3"} 80]
-
 
 proc setColor {table widget row col value} {
     $table cellconfigure -background white -color black
@@ -3700,7 +3613,6 @@ for {set i 0} {$i < 9} {incr i} {
 
     $t row $row
 }}]
-
 
 [section "CONTROL DISPLAYS"]
 TODO
@@ -3834,7 +3746,6 @@ of plot "\$p1" and the top of the axis is at the same heigt as well -
 because the axes are positioned at a point 0 pixels to the left and 0
 pixels below the north-east corner.
 
-
 [section {INTERACTIVE USE}]
 [emph Plotchart] has several features for interactive use (cf. [sectref {NOTES ON TAGS}]):
 
@@ -3941,7 +3852,6 @@ foreach x {1 2 5 10 20 50 100 200 500 1000} {
     $p bindlast series1 <Enter> [list showAnnotation $p %W]
 }
 }]
-
 
 [section {NOTES ON TAGS}]
 
@@ -4072,12 +3982,10 @@ The text associated with the bars has no tags. The ribbon lines and areas have n
 [para]
 Tags used are: frame, cellbg and celltext
 
-
 [emph "In addition:"]
 To implement multiple plots and charts in a single canvas, all items
 also get as a tag the plot/chart they belong to. This enables Plotchart
 to manipulate only those items.
-
 
 [section {TODO - SOME PRIVATE NOTES}]
 
@@ -4102,11 +4010,6 @@ Box drawn from quantiles
 [list_end]
 
 [list_end]
-
-
-[keywords {graphical presentation} plotting charts {xy-plots}]
-[keywords {bar charts} {strip charts} {polar plots}]
-[keywords {isometric plots} {pie charts} {time charts}]
-[keywords {3D surfaces} {3D bars} {coordinates}]
-[keywords {coordinate transformations} {tables}]
+[vset CATEGORY plotchart]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

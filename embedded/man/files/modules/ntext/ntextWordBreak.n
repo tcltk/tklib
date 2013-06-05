@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/ntext/ntextWordBreak\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'ntextWordBreak\&.man' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -346,11 +346,17 @@ To define a different set of word-boundary detection rules:
 package require ntext
 text \&.t
 bindtags \&.t {\&.t Ntext \&. all}
-::ntext::createMatchPatterns \\
-  {[[:space:][:cntrl:]]} {[[:punct:]]} {[^[:punct:][:space:][:cntrl:]]}
+::ntext::createMatchPatterns  {[[:space:][:cntrl:]]} {[[:punct:]]} {[^[:punct:][:space:][:cntrl:]]}
 
 .CE
 See regexp, re_syntax for more information\&.
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fIntext\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH "SEE ALSO"
 bindtags, ntext, re_syntax, regexp, text
 .SH KEYWORDS
