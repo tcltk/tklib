@@ -213,4 +213,6 @@ There is currently no way to read alpha channel information from 32bpp icons.
 
 Tk images do not have an alpha channel so the only way to write a true 32bpp icon is from
 a color list. writing a 32bpp icon from a Tkimage is identical to writing a 24bpp icon.
+[vset CATEGORY ico]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

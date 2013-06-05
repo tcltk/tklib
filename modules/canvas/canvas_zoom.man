@@ -63,4 +63,6 @@ order.
 
 The widget supports no methods beyond the standard ([method configure],
 [method cget], etc.).
+[vset CATEGORY canvas]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

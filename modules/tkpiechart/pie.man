@@ -88,4 +88,6 @@ All sizes related to pies are stored as floating point numbers. The coordinates 
 
 [section LIMITATIONS]
 If the number of slices is too big, identical colors will be used for some of the slices. You may set your own colors in this case.
+[vset CATEGORY tkpiechart]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

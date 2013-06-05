@@ -137,4 +137,6 @@ widget::validator attach .n pink {apply {text {
     expr {$text ni {{} blub}}
 }}}
 }]
+[vset CATEGORY widget::validator]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

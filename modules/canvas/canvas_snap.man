@@ -35,4 +35,6 @@ forces the toplevel window the canvas is in to the top of the stacking
 order.
 
 [list_end]
+[vset CATEGORY canvas]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

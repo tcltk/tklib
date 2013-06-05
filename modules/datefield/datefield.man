@@ -58,4 +58,6 @@ See the [cmd entry] manual entry for details on all available options.
  grid .l2 .l3 -sticky ew
  focus .df
 }]
+[vset CATEGORY datefield]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

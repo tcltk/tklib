@@ -285,4 +285,6 @@ method returns [const false] the move is vetoed and rollbed back.
 
 [list_end][comment callback-signatures]
 [list_end][comment options]
+[vset CATEGORY canvas]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

@@ -112,4 +112,6 @@ Standard widget options. See [cmd options] for a description of their
 meanings and values.
 
 [list_end]
+[vset CATEGORY ipentry]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

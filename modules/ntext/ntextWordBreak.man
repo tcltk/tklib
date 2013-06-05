@@ -133,4 +133,6 @@ bindtags .t {.t Ntext . all}
 }]
 
 See regexp, re_syntax for more information.
+[vset CATEGORY ntext]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

@@ -177,4 +177,6 @@ to manage composed key sequences.
 KHIM was originally inspired by the key bindings that Brent Welch
 developed for the 'sedit' editor used in the 'exmh' mail user agent.
 The code for KHIM is entirely separate from that for 'sedit'.
+[vset CATEGORY khim]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

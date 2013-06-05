@@ -118,4 +118,6 @@ Control-Down - Move to year after current date
     set t [widget::calendar .t]
     pack $t -fill x -expand 1
 }]
+[vset CATEGORY widget::calendar]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

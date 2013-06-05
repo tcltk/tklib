@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/chatwidget/chatwidget\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'chatwidget\&.man' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -358,6 +358,13 @@ pack \&.chat -side top -fill both -expand 1
 A more extensive example is available by examining the code for the picoirc
 program in the tclapps repository which ties the tcllib \fBpicoirc\fR package to this
 \fBchatwidget\fR package to create a simple irc client\&.
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fIchatwidget\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH "SEE ALSO"
 text(n)
 .SH KEYWORDS

@@ -63,4 +63,6 @@ $t add button [button .b -text foo]
 $t add separator -pad {2 4}
 $t add button [button .c -text bar]
 }]
+[vset CATEGORY widget::toolbar]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

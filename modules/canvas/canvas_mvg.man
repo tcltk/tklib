@@ -30,4 +30,6 @@ Dump the contents of the canvas [arg pathName]. The result is a string
 in ImageMagick's MVG vector format.
 
 [list_end]
+[vset CATEGORY canvas]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

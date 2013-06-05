@@ -83,4 +83,6 @@ usual value to be [const true]. By returning [const false] instead the
 callback can veto the removal of the highlight.
 
 [list_end]
+[vset CATEGORY canvas]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

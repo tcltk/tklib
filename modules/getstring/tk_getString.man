@@ -46,4 +46,6 @@ if {[tk_getString .gs text "Feed me a string please:"]} {
 }
 
 }]
+[vset CATEGORY getstring]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

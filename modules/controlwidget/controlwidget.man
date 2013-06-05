@@ -508,4 +508,6 @@ Voltmeter and tachometer: Marco Maggi
 [item]
 Code for moving the needle: ?
 [list_end]
+[vset CATEGORY controlwidget]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

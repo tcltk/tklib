@@ -243,136 +243,136 @@ tklib
 .RS
 .TP
 \fBautoscroll\fR
-\fIfiles/modules/autoscroll/autoscroll\&.n\fR: Provides for a scrollbar to automatically mapped and unmapped as needed
+\fIfiles/modules/autoscroll/autoscroll.n\fR: Provides for a scrollbar to automatically mapped and unmapped as needed
 .TP
 \fBbitmap-editor\fR
-\fIfiles/apps/bitmap-editor\&.n\fR: Editor for XBM images
+\fIfiles/apps/bitmap-editor.n\fR: Editor for XBM images
 .TP
 \fBcanvas::drag\fR
-\fIfiles/modules/canvas/canvas_drag\&.n\fR: Manage the dragging of canvas items or item groups
+\fIfiles/modules/canvas/canvas_drag.n\fR: Manage the dragging of canvas items or item groups
 .TP
 \fBcanvas::edit::points\fR
-\fIfiles/modules/canvas/canvas_epoints\&.n\fR: Editing a cloud of points on a canvas
+\fIfiles/modules/canvas/canvas_epoints.n\fR: Editing a cloud of points on a canvas
 .TP
 \fBcanvas::edit::polyline\fR
-\fIfiles/modules/canvas/canvas_epolyline\&.n\fR: Editing a polyline on a canvas
+\fIfiles/modules/canvas/canvas_epolyline.n\fR: Editing a polyline on a canvas
 .TP
 \fBcanvas::edit::quadrilateral\fR
-\fIfiles/modules/canvas/canvas_equad\&.n\fR: Editing a quadrilateral on a canvas
+\fIfiles/modules/canvas/canvas_equad.n\fR: Editing a quadrilateral on a canvas
 .TP
 \fBcanvas::highlight\fR
-\fIfiles/modules/canvas/canvas_highlight\&.n\fR: Manage the highlighting of canvas items or item groups
+\fIfiles/modules/canvas/canvas_highlight.n\fR: Manage the highlighting of canvas items or item groups
 .TP
 \fBcanvas::mvg\fR
-\fIfiles/modules/canvas/canvas_mvg\&.n\fR: Canvas to ImageMagick MVG vector format
+\fIfiles/modules/canvas/canvas_mvg.n\fR: Canvas to ImageMagick MVG vector format
 .TP
 \fBcanvas::snap\fR
-\fIfiles/modules/canvas/canvas_snap\&.n\fR: Canvas snapshot to Tk photo image
+\fIfiles/modules/canvas/canvas_snap.n\fR: Canvas snapshot to Tk photo image
 .TP
 \fBcanvas::sqmap\fR
-\fIfiles/modules/canvas/canvas_sqmap\&.n\fR: Canvas with map background based on square tiles
+\fIfiles/modules/canvas/canvas_sqmap.n\fR: Canvas with map background based on square tiles
 .TP
 \fBcanvas::tag\fR
-\fIfiles/modules/canvas/canvas_tags\&.n\fR: Easier management of the tags on canvas items or item groups
+\fIfiles/modules/canvas/canvas_tags.n\fR: Easier management of the tags on canvas items or item groups
 .TP
 \fBcanvas::track::lines\fR
-\fIfiles/modules/canvas/canvas_trlines\&.n\fR: Manage a group of rubber band lines
+\fIfiles/modules/canvas/canvas_trlines.n\fR: Manage a group of rubber band lines
 .TP
 \fBcanvas::zoom\fR
-\fIfiles/modules/canvas/canvas_zoom\&.n\fR: Zoom control for canvas::sqmap
+\fIfiles/modules/canvas/canvas_zoom.n\fR: Zoom control for canvas::sqmap
 .TP
 \fBcanvasLabel\fR
-\fIfiles/modules/tkpiechart/canvaslabel\&.n\fR: tkpiechart canvas label class
+\fIfiles/modules/tkpiechart/canvaslabel.n\fR: tkpiechart canvas label class
 .TP
 \fBchatwidget\fR
-\fIfiles/modules/chatwidget/chatwidget\&.n\fR: Provides a multi-paned view suitable for display of chat room or irc channel information
+\fIfiles/modules/chatwidget/chatwidget.n\fR: Provides a multi-paned view suitable for display of chat room or irc channel information
 .TP
 \fBcontrolwidget\fR
-\fIfiles/modules/controlwidget/controlwidget\&.n\fR: Collection of widgets for displaying and controlling numerical values
+\fIfiles/modules/controlwidget/controlwidget.n\fR: Collection of widgets for displaying and controlling numerical values
 .TP
 \fBcrosshair\fR
-\fIfiles/modules/crosshair/crosshair\&.n\fR: Crosshairs for Tk canvas
+\fIfiles/modules/crosshair/crosshair.n\fR: Crosshairs for Tk canvas
 .TP
 \fBctext\fR
-\fIfiles/modules/ctext/ctext\&.n\fR: Ctext a text widget with highlighting support
+\fIfiles/modules/ctext/ctext.n\fR: Ctext a text widget with highlighting support
 .TP
 \fBcursor\fR
-\fIfiles/modules/cursor/cursor\&.n\fR: Procedures to handle CURSOR data
+\fIfiles/modules/cursor/cursor.n\fR: Procedures to handle CURSOR data
 .TP
 \fBdatefield\fR
-\fIfiles/modules/datefield/datefield\&.n\fR: Tk datefield widget
+\fIfiles/modules/datefield/datefield.n\fR: Tk datefield widget
 .TP
 \fBdiagram\fR
-\fIfiles/modules/diagrams/diagram\&.n\fR: Diagram drawing
+\fIfiles/modules/diagrams/diagram.n\fR: Diagram drawing
 .TP
 \fBdiagram-viewer\fR
-\fIfiles/apps/diagram-viewer\&.n\fR: Lightweight Diagram Processor
+\fIfiles/apps/diagram-viewer.n\fR: Lightweight Diagram Processor
 .TP
 \fBgetstring\fR
-\fIfiles/modules/getstring/tk_getString\&.n\fR: A string dialog
+\fIfiles/modules/getstring/tk_getString.n\fR: A string dialog
 .TP
 \fBhistory\fR
-\fIfiles/modules/history/tklib_history\&.n\fR: Provides a history for Entry widgets
+\fIfiles/modules/history/tklib_history.n\fR: Provides a history for Entry widgets
 .TP
 \fBico\fR
-\fIfiles/modules/ico/ico\&.n\fR: Reading and writing windows icons
+\fIfiles/modules/ico/ico.n\fR: Reading and writing windows icons
 .TP
 \fBipentry\fR
-\fIfiles/modules/ipentry/ipentry\&.n\fR: An IP address entry widget
+\fIfiles/modules/ipentry/ipentry.n\fR: An IP address entry widget
 .TP
 \fBkhim\fR
-\fIfiles/modules/khim/khim\&.n\fR: Provides key bindings for entering international characters on a keyboard that does not support them
+\fIfiles/modules/khim/khim.n\fR: Provides key bindings for entering international characters on a keyboard that does not support them
 .TP
 \fBmenubar\fR
-\fIfiles/modules/menubar/menubar\&.n\fR: Creates an instance of the  Class\&.
+\fIfiles/modules/menubar/menubar.n\fR: Creates an instance of the  Class.
 .TP
 \fBntext\fR
-\fIfiles/modules/ntext/ntext\&.n\fR: Alternative Bindings for the Text Widget
+\fIfiles/modules/ntext/ntext.n\fR: Alternative Bindings for the Text Widget
 .TP
 \fBntextBindings\fR
-\fIfiles/modules/ntext/ntextBindings\&.n\fR: Alternative Bindings for the Text Widget
+\fIfiles/modules/ntext/ntextBindings.n\fR: Alternative Bindings for the Text Widget
 .TP
 \fBntextIndent\fR
-\fIfiles/modules/ntext/ntextIndent\&.n\fR: ntext Indentation for the Text Widget
+\fIfiles/modules/ntext/ntextIndent.n\fR: ntext Indentation for the Text Widget
 .TP
 \fBntextWordBreak\fR
-\fIfiles/modules/ntext/ntextWordBreak\&.n\fR: ntext Word Boundary Detection for the Text Widget
+\fIfiles/modules/ntext/ntextWordBreak.n\fR: ntext Word Boundary Detection for the Text Widget
 .TP
 \fBpie\fR
-\fIfiles/modules/tkpiechart/pie\&.n\fR: 2D or 3D pie chart object in a canvas
+\fIfiles/modules/tkpiechart/pie.n\fR: 2D or 3D pie chart object in a canvas
 .TP
 \fBpieBoxLabeler\fR
-\fIfiles/modules/tkpiechart/pieboxlabeler\&.n\fR: tkpiechart pie box style labeler class
+\fIfiles/modules/tkpiechart/pieboxlabeler.n\fR: tkpiechart pie box style labeler class
 .TP
 \fBpiePeripheralLabeler\fR
-\fIfiles/modules/tkpiechart/pieperipherallabeler\&.n\fR: tkpiechart pie peripheral style labeler class
+\fIfiles/modules/tkpiechart/pieperipherallabeler.n\fR: tkpiechart pie peripheral style labeler class
 .TP
 \fBPlotchart\fR
-\fIfiles/modules/plotchart/plotchart\&.n\fR: Simple plotting and charting package
+\fIfiles/modules/plotchart/plotchart.n\fR: Simple plotting and charting package
 .TP
 \fBswaplist\fR
-\fIfiles/modules/swaplist/swaplist\&.n\fR: A dialog which allows a user to move options between two lists
+\fIfiles/modules/swaplist/swaplist.n\fR: A dialog which allows a user to move options between two lists
 .TP
 \fBtooltip\fR
-\fIfiles/modules/tooltip/tooltip\&.n\fR: Tooltip management
+\fIfiles/modules/tooltip/tooltip.n\fR: Tooltip management
 .TP
 \fBwidget\fR
-\fIfiles/modules/widget/widget\&.n\fR: Megawidget bundle
+\fIfiles/modules/widget/widget.n\fR: Megawidget bundle
 .TP
 \fBwidget_calendar\fR
-\fIfiles/modules/widget/widget_calendar\&.n\fR: Calendar Megawidget
+\fIfiles/modules/widget/widget_calendar.n\fR: Calendar Megawidget
 .TP
 \fBwidget_dateentry\fR
-\fIfiles/modules/widget/widget_dateentry\&.n\fR: Date Entry Megawidget
+\fIfiles/modules/widget/widget_dateentry.n\fR: Date Entry Megawidget
 .TP
 \fBwidget_listentry\fR
-\fIfiles/modules/widgetl/widget_listentry\&.n\fR: widget::listentry widget
+\fIfiles/modules/widgetl/widget_listentry.n\fR: widget::listentry widget
 .TP
 \fBwidget_listsimple\fR
-\fIfiles/modules/widgetl/widget_listsimple\&.n\fR: widget::listsimple widget
+\fIfiles/modules/widgetl/widget_listsimple.n\fR: widget::listsimple widget
 .TP
 \fBwidget_toolbar\fR
-\fIfiles/modules/widget/widget_toolbar\&.n\fR: Toolbar Megawidget
+\fIfiles/modules/widget/widget_toolbar.n\fR: Toolbar Megawidget
 .TP
 \fBwidget_validator\fR
-\fIfiles/modules/widgetv/widget_validator\&.n\fR: widget::validator behaviour
+\fIfiles/modules/widgetv/widget_validator.n\fR: widget::validator behaviour
