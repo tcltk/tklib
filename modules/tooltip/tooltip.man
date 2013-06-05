@@ -140,4 +140,6 @@ pack [text .txt]
 tooltip::tooltip .txt -tag TIP-1 "tooltip one text"
 .txt insert end "An example of a " {} "tooltip" TIP-1 " tag.\n" {}
 }]
+[vset CATEGORY tooltip]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

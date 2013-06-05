@@ -39,4 +39,6 @@ Selecting a cursor name will display it in that dialog.  This is
 simply for viewing any available cursors on the platform.
 
 [list_end]
+[vset CATEGORY cursor]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

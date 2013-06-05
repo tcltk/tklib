@@ -248,4 +248,6 @@ with each location a pair of x- and y-coordinates.
 
 [list_end][comment callback-signatures]
 [list_end][comment options]
+[vset CATEGORY canvas]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

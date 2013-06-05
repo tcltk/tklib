@@ -80,4 +80,6 @@ options:
 package require widget::superframe ; # or widget::all
 pack [widget::superframe .f -type separator -text "SuperFrame:"]
 }]
+[vset CATEGORY widget]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

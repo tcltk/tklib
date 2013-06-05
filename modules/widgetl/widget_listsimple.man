@@ -229,4 +229,6 @@ widget. This option defaults to [const yellow].
 [comment {% % %% %%% %%%%% %%%%%%%% %%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%}]
 [section Example]
 [example {}]
+[vset CATEGORY widget::listsimple]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

@@ -99,4 +99,6 @@ Control-space - Show calendar window
     set t [widget::dateentry .de]
     pack $t -fill x -expand 1
 }]
+[vset CATEGORY widget::dateentry]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

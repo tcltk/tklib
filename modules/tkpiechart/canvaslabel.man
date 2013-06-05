@@ -72,4 +72,6 @@ The labeler has the following specific tag (see the [syscmd canvas] manual page 
 [list_begin itemized]
   [item]canvasLabel(canvasLabelObject)
 [list_end]
+[vset CATEGORY tkpiechart]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

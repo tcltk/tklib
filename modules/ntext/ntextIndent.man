@@ -144,4 +144,6 @@ To switch to [arg -wrap] [arg char] mode:
 .t configure -wrap char
 ::ntext::wrapIndent .t
 }]
+[vset CATEGORY ntext]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

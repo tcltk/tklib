@@ -3956,4 +3956,6 @@ Box drawn from quantiles
 [list_end]
 
 [list_end]
+[vset CATEGORY plotchart]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

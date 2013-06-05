@@ -136,4 +136,6 @@ forgets an image this means only that the association between a grid
 cell and shown image is broken. The image is [emph not]
 deleted. Managing the lifecycle of the images shown by the canvas is
 responsibility of the user of the canvas.
+[vset CATEGORY canvas]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

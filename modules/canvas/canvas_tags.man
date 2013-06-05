@@ -77,4 +77,6 @@ This command finds all tags for the items identified by the
 may be empty.
 
 [list_end]
+[vset CATEGORY canvas]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

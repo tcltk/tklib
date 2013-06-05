@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/tkpiechart/pie\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'pie\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 1995-2004 Jean-Luc Fontaine <jfontain@free\&.fr>
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
@@ -357,6 +357,13 @@ For example, the whole pie can be moved using the \fBcanvas\fR \fBmove\fR comman
 All sizes related to pies are stored as floating point numbers\&. The coordinates and sizes are specified in screen units, which are floating point numbers optionally followed by one of several letters as specified in the \fBcanvas\fR \fICOORDINATES\fR manual section\&.
 .SH LIMITATIONS
 If the number of slices is too big, identical colors will be used for some of the slices\&. You may set your own colors in this case\&.
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fItkpiechart\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH "SEE ALSO"
 canvasLabel, pieBoxLabeler, piePeripheralLabeler
 .SH KEYWORDS

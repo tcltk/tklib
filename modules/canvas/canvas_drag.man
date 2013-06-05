@@ -146,4 +146,6 @@ drag handle while holding down the Control key, use:
 [example { -event Control-2 }]
 
 [list_end]
+[vset CATEGORY canvas]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

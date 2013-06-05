@@ -121,4 +121,6 @@ pack .chat -side top -fill both -expand 1
 A more extensive example is available by examining the code for the picoirc
 program in the tclapps repository which ties the tcllib [package picoirc] package to this
 [package chatwidget] package to create a simple irc client.
+[vset CATEGORY chatwidget]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

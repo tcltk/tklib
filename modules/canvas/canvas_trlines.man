@@ -77,4 +77,6 @@ This method ends the tracking of the current set of lines and removes
 them from the canvas.
 
 [list_end]
+[vset CATEGORY canvas]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

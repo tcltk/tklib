@@ -265,4 +265,6 @@ Further examples are in the source package for ctext.
 [section THANKS]
 Kevin Kenny, Neil Madden, Jeffrey Hobbs, Richard Suchenwirth,
 Johan Bengtsson, Mac Cody, Günther, Andreas Sievers, and Michael Schlenker.
+[vset CATEGORY ctext]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

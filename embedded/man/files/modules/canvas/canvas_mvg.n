@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/canvas/canvas_mvg\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'canvas_mvg\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 2010 Wolf-Dieter Busch (http://wiki\&.tcl\&.tk/15505)
 '\" Copyright (c) 2010 Documentation, Andreas Kupries
 '\"
@@ -262,6 +262,13 @@ ImageMagick's MVG vector format\&.
 Dump the contents of the canvas \fIpathName\fR\&. The result is a string
 in ImageMagick's MVG vector format\&.
 .PP
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fIcanvas\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH KEYWORDS
 canvas, graphics, imagemagick, magick vector graphics, mvg, print screen, serialization, vector graphics
 .SH COPYRIGHT

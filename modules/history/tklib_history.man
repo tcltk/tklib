@@ -65,4 +65,6 @@ proc ProcessEntry {w} {
 }
 
 }]
+[vset CATEGORY entry::history]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]
