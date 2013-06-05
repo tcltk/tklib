@@ -35,6 +35,6 @@
 [section {Language Reference}]	[include include/language.inc]
 [section {Diagram Classes}]     [include include/developers.inc]
 [section References]
-[vset CATEGORY {tklib :: diagram}]
-[comment {[include ../../common/feedback.inc]}]
+[vset CATEGORY diagram]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

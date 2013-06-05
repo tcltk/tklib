@@ -1,20 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin menubar n 0.5]
-[see_also {[uri}]
-[see_also {A command that creates menubar objects}]
-[see_also http://wiki.tcl.tk/25231]
-[see_also http://www.tcl.tk/man/tcl8.6/TkCmd/menu.htm]
-[see_also menu]
-
-[copyright "2009 Tom Krehbiel <krehbiel.tom@gmail.com> All rights reserved."]
-
+[copyright {2009 Tom Krehbiel <krehbiel.tom@gmail.com> All rights reserved.}]
 [titledesc "Creates an instance of the [emph menubar] Class."]
 [moddesc   {Create and manipulate menubars}]
-
 [require Tcl 8.6]
 [require Tk 8.6]
 [require menubar [opt 0.5]]
-
 [description]
 
 [list_begin definitions]
@@ -675,4 +666,14 @@ pout "Example started ..."
 [para]
 This implementation uses TclOO so it requires 8.6. The code has been
 tested on Windows (Vista), Linux and OSX (10.4).
+
+[section References]
+See also
+[list_begin enumerated]
+[enum] [uri http://www.tcl.tk/man/tcl8.6/TkCmd/menu.htm menu]
+[enum] [uri http://wiki.tcl.tk/25231 {A command that creates menubar objects}]
+[list_end]
+
+[vset CATEGORY menubar]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

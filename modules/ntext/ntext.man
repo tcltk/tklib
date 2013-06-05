@@ -117,4 +117,6 @@ bindtags .t {.t Ntext . all}
 }]
 
 See bindtags for more information.
+[vset CATEGORY ntext]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

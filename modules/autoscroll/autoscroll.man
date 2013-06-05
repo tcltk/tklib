@@ -63,4 +63,6 @@ pack .scrolly -side right -fill y
 pack .t -side left -fill both -expand 1
 ::autoscroll::autoscroll .scrolly
 }]
+[vset CATEGORY autoscroll]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

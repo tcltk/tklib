@@ -327,4 +327,6 @@ widget. This option defaults to [const yellow].
 [comment {% % %% %%% %%%%% %%%%%%%% %%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%}]
 [section Example]
 [example {}]
+[vset CATEGORY widget::listentry]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

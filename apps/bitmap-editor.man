@@ -51,4 +51,6 @@ Please report such in the category [emph bitmap] of the
 
 Please also report any ideas for enhancements you may have for either
 application and/or documentation.
+[vset CATEGORY bitmap-editor]
+[include ../support/devel/doc/feedback.inc]
 [manpage_end]

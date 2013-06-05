@@ -105,4 +105,6 @@ text .t
 set ::ntext::classicAnchor 1
 bindtags .t {.t Ntext . all}
 }]
+[vset CATEGORY ntext]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]
