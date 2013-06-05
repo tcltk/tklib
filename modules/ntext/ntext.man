@@ -1,5 +1,16 @@
 [comment {-*- tcl -*- ntext manpage}]
 [manpage_begin ntext n 0.81]
+[see_also bindtags]
+[see_also ntextBindings]
+[see_also ntextIndent]
+[see_also ntextWordBreak]
+[see_also re_syntax]
+[see_also regexp]
+[see_also text]
+[keywords bindtags]
+[keywords re_syntax]
+[keywords regexp]
+[keywords text]
 [moddesc   {Alternative Bindings for the Text Widget}]
 [titledesc {Alternative Bindings for the Text Widget}]
 [require Tcl 8.5]
@@ -41,7 +52,6 @@ See Section [sectref EXAMPLE] for how to apply the [emph Ntext] binding tag in p
 [emph Ntext] provides alternatives to a number of behaviours of the classic [emph Text] binding tag.  Where there is an option, the [emph Ntext] behaviour (except for display-line indentation) is switched on by default.
 
 [para]
-
 
 The behaviour of [emph Ntext] may be configured application-wide by setting the values of a number of namespace variables:
 [para]
@@ -107,7 +117,4 @@ bindtags .t {.t Ntext . all}
 }]
 
 See bindtags for more information.
-[see_also ntextWordBreak ntextIndent ntextBindings]
-[see_also text bindtags regexp re_syntax]
-[keywords text bindtags regexp re_syntax]
 [manpage_end]

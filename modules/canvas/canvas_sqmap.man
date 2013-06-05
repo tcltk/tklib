@@ -1,5 +1,12 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin canvas::sqmap n 0.3.1]
+[keywords canvas]
+[keywords cell]
+[keywords grid]
+[keywords image]
+[keywords map]
+[keywords {square map}]
+[keywords tile]
 [moddesc   {Variations on a canvas}]
 [titledesc {Canvas with map background based on square tiles}]
 [require Tcl 8.4]
@@ -31,7 +38,6 @@ options and methods described below.
 The result of the command is [arg pathName].
 
 [list_end]
-
 
 [subsection Options]
 
@@ -92,8 +98,6 @@ reported that there is no actual image to be shown.
 
 [list_end]
 
-
-
 [subsection Methods]
 
 [list_begin definitions]
@@ -108,14 +112,12 @@ containing row and column number, in this order.
 Note that an image is allowed to be associated with and displayed in
 multiple cells of the canvas.
 
-
 [call [arg canvasName] [method {image unset}] [arg cell]]
 
 Invoking this method declares the specified [arg cell] of the
 background as empty, an existing image shown by this cell will be
 forgotten.  The cell is given as a 2-element list containing row and
 column number, in this order.
-
 
 [call [arg canvasName] [method flush]]
 
@@ -126,7 +128,6 @@ simply forget all images without being able to reload them.
 
 [list_end]
 
-
 [section {Image ownership}]
 
 Note that the canvas [emph {does not}] take ownership of the images it
@@ -135,8 +136,4 @@ forgets an image this means only that the association between a grid
 cell and shown image is broken. The image is [emph not]
 deleted. Managing the lifecycle of the images shown by the canvas is
 responsibility of the user of the canvas.
-
-
-[keywords map {square map} canvas tile grid cell image]
 [manpage_end]
-

@@ -1,5 +1,7 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin history n 0.1]
+[keywords entry]
+[keywords history]
 [moddesc   {Provides a history for Entry widgets}]
 [titledesc {Provides a history for Entry widgets}]
 [require Tcl 8.4]
@@ -26,13 +28,11 @@ with [cmd ::history::configure]. History entries must be added with the
 Forgets all history entries for the Entry [arg pathName] and removes the history
 bindings.
 
-
 [call [cmd ::history::add] [arg pathName] [arg text]]
 
 This command is used to add history entries to an Entry that has previously had
 [cmd ::history::init] called on it. This command should be called from your Entry
 handler with the contents of the entry (or whatever you wish to add to the history).
-
 
 [call [cmd ::history::get] [arg pathName]]
 
@@ -65,7 +65,4 @@ proc ProcessEntry {w} {
 }
 
 }]
-
-[keywords entry history]
 [manpage_end]
-

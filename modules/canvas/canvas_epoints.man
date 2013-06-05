@@ -1,12 +1,15 @@
 [vset VERSION 0.1]
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin canvas::edit::points n [vset VERSION]]
+[keywords canvas]
+[keywords editing]
+[keywords {point cloud}]
+[keywords points]
 [moddesc   {Variations on a canvas}]
 [titledesc {Editing a cloud of points on a canvas}]
 [require Tcl 8.5]
 [require Tk 8.5]
 [require canvas::edit::points [opt [vset VERSION]]]
-[keywords canvas editing {point cloud} points]
 [description]
 
 This package provides a class whose instances handle editing a cloud
@@ -72,7 +75,6 @@ is ignored if the editor is already disabled.
 
 [para] The complementary method is [method enable]. The interogatory
 method for the current state is [method active].
-
 
 [comment {= = == === ===== ======== ============= =====================}]
 [call [cmd objectName] [method active]]
@@ -155,7 +157,6 @@ arbitrary shape.
 taken as signal that the callback vetoed the creation of the point.
 
 [list_end]
-
 
 [comment {= = == === ===== ======== ============= =====================}]
 [comment {= = == === ===== ======== ============= =====================}]

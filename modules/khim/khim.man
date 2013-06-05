@@ -1,5 +1,10 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin khim n 1.0]
+[keywords character]
+[keywords i18n]
+[keywords input]
+[keywords international]
+[keywords method]
 [moddesc   {Kevin's Hacky Input Method}]
 [titledesc {Provides key bindings for entering international characters on a keyboard that does not support them}]
 [require Tcl]
@@ -28,7 +33,7 @@ characters by placing this binding tag ahead of the [const Text] or
 [example {
 text .t -width 80 -height 24
 bindtags .t {.t KHIM Text . all}
-}]	
+}]
 
 Note that the [const KHIM] tag must precede the [const Text] or
 [const Entry] class binding, or the package will not function
@@ -172,6 +177,4 @@ to manage composed key sequences.
 KHIM was originally inspired by the key bindings that Brent Welch
 developed for the 'sedit' editor used in the 'exmh' mail user agent.
 The code for KHIM is entirely separate from that for 'sedit'.
-
-[keywords input method international character i18n]
 [manpage_end]

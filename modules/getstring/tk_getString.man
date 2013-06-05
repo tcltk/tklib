@@ -1,5 +1,8 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin getstring n 0.1]
+[keywords dialog]
+[keywords entry]
+[keywords string]
 [moddesc   {A dialog which prompts for a string input}]
 [titledesc {A string dialog}]
 [require Tcl 8.4]
@@ -21,7 +24,7 @@ The contents of the entry are put in the [arg variable] upon closure of the
 dialog. The command returns a boolean indicating if the user pressed OK or
 not. If -geometry is not specified, the dialog is centered in its parent
 toplevel unless its parent is . in which case the dialog is centered in the
-screen. 
+screen.
 
 Options:
 -title
@@ -43,7 +46,4 @@ if {[tk_getString .gs text "Feed me a string please:"]} {
 }
 
 }]
-
-[keywords entry dialog string]
 [manpage_end]
-

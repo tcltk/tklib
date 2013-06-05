@@ -1,5 +1,10 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin ico n 1.0.5]
+[keywords dll]
+[keywords entry]
+[keywords exe]
+[keywords ico]
+[keywords icon]
 [moddesc   {Windows ICO handling}]
 [titledesc {Reading and writing windows icons}]
 [require Tcl 8.4]
@@ -15,7 +20,6 @@ and color depth. Each icon and image has a resource identifier which
 may be a text string or a positive integer value. Most commands use this
 identifier to specify which icon or image to operate on.
 
-
 [section API]
 
 [list_begin definitions]
@@ -29,7 +33,6 @@ name or numeric ID. Recognizes the following options:
 [opt_def -type fileFormat]
 [list_end]
 [para]
-
 
 [call [cmd ::ico::iconMembers] [arg file] [arg name] [opt "[arg option] [arg value]..."]]
 
@@ -127,12 +130,10 @@ This argument must have a value of [const 1], [const 4], [const 8],
 [const 24], or [const 32]. If [arg data] has more colors than the
 color depth allows an error will be generated.
 
-
 [arg_def options data in]
 
 This argument is either a list of colors in the format returned by
 [cmd {::ico::getIcon -format colors}] or the name of a Tk image.
-
 
 [list_end]
 [para]
@@ -144,7 +145,6 @@ Recognizes the following [arg option]s.
 [list_end]
 [para]
 
-
 [call [cmd ::ico::copyIcon] [arg file] [arg index] [arg file2] [arg index2] [opt "[arg option] [arg value]..."]]
 
 Copies the icon at [arg index] in [arg file] to [arg index2] in [arg file2].
@@ -155,7 +155,6 @@ Copies the icon at [arg index] in [arg file] to [arg index2] in [arg file2].
 [list_end]
 [para]
 
-
 [call [cmd ::ico::EXEtoICO] [arg file] [opt dir]]
 
 Extracts all icons from the executable [arg file] to ICO files placed in [arg dir]. [opt dir] defaults to the directory [arg file] is located in. Icon files will be named in the form [arg file]-ID.ico where ID is the icon resource identifier.
@@ -165,13 +164,11 @@ Extracts all icons from the executable [arg file] to ICO files placed in [arg di
 [list_end]
 [para]
 
-
 [call [cmd ::ico::clearCache] [opt file]]
 
 The [cmd ::ico::getIconList] command caches icon offsets inside EXE, DLL, ICL,
 and ICO files in order to speed up extraction.  This command clears that
 cache for the specific [opt file] or all files.
-
 
 [call [cmd ::ico::transparentColor] [arg image] [arg color]]
 
@@ -179,7 +176,6 @@ If [arg image] is a single word it is assumed to be the name of a Tk image.
 All pixels matching [arg color] in the [arg image] will be set transparent.
 Alternatively, [arg image] may be a color list in which case a modified list
 is returned.
-
 
 [call [cmd ::ico::Show] [arg file] [opt "[arg option] [arg value]..."]]
 
@@ -191,7 +187,6 @@ icons in [arg file] and their name.
 [opt_def -parent pathName]
 [list_end]
 [list_end]
-
 
 [section EXAMPLE]
 
@@ -218,7 +213,4 @@ There is currently no way to read alpha channel information from 32bpp icons.
 
 Tk images do not have an alpha channel so the only way to write a true 32bpp icon is from
 a color list. writing a 32bpp icon from a Tkimage is identical to writing a 24bpp icon.
-
-[keywords entry icon ico exe dll]
 [manpage_end]
-

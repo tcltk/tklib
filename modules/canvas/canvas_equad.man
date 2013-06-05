@@ -1,13 +1,18 @@
 [vset VERSION 0.1]
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin canvas::edit::quadrilateral n [vset VERSION]]
+[keywords canvas]
+[keywords concave]
+[keywords convex]
+[keywords editing]
+[keywords non-convex]
+[keywords quadrilateral]
 [moddesc   {Variations on a canvas}]
 [titledesc {Editing a quadrilateral on a canvas}]
 [require Tcl 8.5]
 [require Tk 8.5]
 [require canvas::edit::points [opt 0.1]]
 [require canvas::edit::quadrilateral [opt [vset VERSION]]]
-[keywords canvas editing quadrilateral convex concave non-convex]
 [description]
 
 This package provides a class whose instances handle the editing of a
@@ -72,7 +77,6 @@ is ignored if the editor is already disabled.
 
 [para] The complementary method is [method enable]. The interogatory
 method for the current state is [method active].
-
 
 [comment {= = == === ===== ======== ============= =====================}]
 [call [cmd objectName] [method active]]
@@ -170,7 +174,6 @@ arbitrary shape.
 
 [list_end]
 
-
 [comment {= = == === ===== ======== ============= =====================}]
 [comment {= = == === ===== ======== ============= =====================}]
 [opt_def -highlight-cmd [arg command-prefix]]
@@ -242,7 +245,6 @@ callback, whereas [arg coordinates] is a list of vertex locations,
 with each location a pair of x- and y-coordinates.
 
 [para] The result of this method is ignored.
-
 
 [list_end][comment callback-signatures]
 [list_end][comment options]
