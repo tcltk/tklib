@@ -1,5 +1,9 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin controlwidget n 0.1]
+[keywords controlling]
+[keywords displaying]
+[keywords {numerical values}]
+[keywords {scale widget}]
 [copyright {2010 Ron Fox <rfox@...>}]
 [copyright {2010 Gerhard Reithofer <...@...>}]
 [copyright {2010 Marco Maggi <...@...>}]
@@ -19,7 +23,6 @@ It mimicks several of the meters and controls found in laboratory settings but a
 daily life: volt meters, equalizers and tachometers to name a few. They can be seen as alternatives
 for the [emph "scale widget"].
 
-
 [para]
 [emph Note:] The package has not sofar been tested extensively, and that may result in
 an unexpected appearance if you use sizes that are different than the defaults. Also
@@ -29,7 +32,6 @@ may be another source of bugs.
 [para]
 A last note: some parts have not been included in any option, most notably the colors of
 parts that require lighter and darker shades to cooperate.
-
 
 [section "TYPES OF WIDGETS"]
 The package distinguishes several typed of widgets:
@@ -63,7 +65,6 @@ the widget displays (whether that is stored in a global variable or not).
 They also have in common that their appearance and behaviour is determined by one or more options that
 you can set at creation time and often later on as well. The widgets are all based on the [emph snit]
 package, so that the methods [method configure] and [method cget] are available to set and get these options.
-
 
 [section COMMANDS]
 Currently the package contains these widgets of the [emph "vertical meter"] type:
@@ -105,8 +106,6 @@ Whether the arrow can be moved interactively or not
 
 [list_end]
 
-
-
 [call [cmd ::controlwidget::slider] [arg w] [arg args]]
 Create a widget containing one or more vertical sliders and an axis. You can shift the slider handles
 interactively via the mouse.
@@ -145,8 +144,6 @@ Width of the troughs holding the sliders
 [list_end]
 
 [list_end]
-
-
 
 [call [cmd ::controlwidget::equalizerBar] [arg w] [arg args]]
 Create a widget containing one or more vertical bars resembling those found on hifi graphical equalizers.
@@ -193,8 +190,6 @@ Threshold value, determines at what level the color changes
 
 [list_end]
 
-
-
 [call [cmd ::controlwidget::thermometer] [arg w] [arg args]]
 Create a thermometer widget (read-only)
 
@@ -229,8 +224,6 @@ Color of the line
 
 [list_end]
 
-
-
 These widgets all use a vertical axis and have the following options in common for configuring the
 axis:
 
@@ -261,8 +254,6 @@ Number of minor tickmarks to draw between two major tickmarks
 Use a logarithmic axis (true) or a linear axis (false)
 
 [list_end]
-
-
 
 The package contains the following widget based on angle displays:
 
@@ -323,7 +314,6 @@ Color of the title below the dial
 
 [list_end]
 
-
 [call [cmd ::controlwidget::tachometer] [arg w] [arg args]]
 Create a tachometer-like widget.
 
@@ -350,7 +340,6 @@ Color for the needle and the pin
 [list_end]
 
 [list_end]
-
 
 [call [cmd ::controlwidget::rdial] [arg w] [arg args]]
 Create a rotating dial. You can drag the dial to change the value. With the shift button
@@ -396,8 +385,6 @@ The foreground color of the widget (the marker lines)
 
 [list_end]
 
-
-
 All these widgets have the following methods:
 
 [list_begin definitions]
@@ -415,7 +402,6 @@ New value or values for the widget
 [list_end]
 
 [list_end]
-
 
 Two further widgets are available, meant to display logical values:
 
@@ -471,8 +457,6 @@ Command associated with the radio buttons. Invoked when the active radio button 
 
 [list_end]
 
-
-
 The LED widget has the following public methods:
 
 [list_begin definitions]
@@ -493,8 +477,6 @@ New state for the LED widget
 
 [list_end]
 
-
-
 The radioMatrix widget has two public methods:
 
 [list_begin definitions]
@@ -512,10 +494,6 @@ Index of the radio button to be set
 
 [list_end]
 
-
-
-
-
 [section ACKNOWLEDGMENTS]
 The code for most of these widgets first appeared on the Wiki. In many cases, Arjen Markus merely
 refactored the code a bit and "snitified" some of them. The original code was developed by the following people:
@@ -530,6 +508,6 @@ Voltmeter and tachometer: Marco Maggi
 [item]
 Code for moving the needle: ?
 [list_end]
-
-[keywords {numerical values} {displaying} {controlling} {scale widget}]
+[vset CATEGORY controlwidget]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

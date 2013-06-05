@@ -1,12 +1,15 @@
 [vset VERSION 0.1]
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin canvas::highlight n [vset VERSION]]
+[keywords canvas]
+[keywords {enter callback}]
+[keywords highlighting]
+[keywords {leave callback}]
 [moddesc   {Variations on a canvas}]
 [titledesc {Manage the highlighting of canvas items or item groups}]
 [require Tcl 8.5]
 [require Tk 8.5]
 [require canvas::highlight [opt [vset VERSION]]]
-[keywords canvas highlighting {enter callback} {leave callback}]
 [description]
 
 This package provides utility commands for setting up and tearing down
@@ -29,7 +32,7 @@ section [sectref {Highlight callback}].
 
 [para] The result of the command is the empty string.
 
-[para] Limitations: 
+[para] Limitations:
 [list_begin enumerated]
 [enum] When a highlight is active no other highlight can be activated.
        This means that nested highlights are not possible.
@@ -80,4 +83,6 @@ usual value to be [const true]. By returning [const false] instead the
 callback can veto the removal of the highlight.
 
 [list_end]
+[vset CATEGORY canvas]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

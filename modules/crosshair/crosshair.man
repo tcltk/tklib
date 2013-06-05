@@ -1,5 +1,10 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin crosshair n 1.1]
+[keywords canvas]
+[keywords cross-hairs]
+[keywords location]
+[keywords tracking]
+[keywords viewport]
 [copyright {2003 Kevin Kenny}]
 [copyright {2008 (docs) Andreas Kupries <andreas_kupries@users.sourceforge.net>}]
 [copyright {2013 Frank Gover, Andreas Kupries}]
@@ -8,7 +13,6 @@
 [require Tcl [opt 8.4]]
 [require Tk  [opt 8.4]]
 [require crosshair [opt 1.1]]
-[keywords canvas cross-hairs tracking viewport location]
 
 [description]
 
@@ -33,13 +37,11 @@ All arguments after the widget [arg w] are treated as options as for a
 canvas line item in [arg w]. Of particular interest are [option -fill]
 and [option -dash].
 
-
 [call [cmd crosshair::off] [arg w]]
 
 This command removes the cross-hairs from the canvas widget [arg w].
 Nothing is done if the widget had no cross-hairs. The result of the
 command is the empty string.
-
 
 [call [cmd crosshair::configure] [arg w] [opt [arg arg]...]]
 
@@ -56,7 +58,6 @@ and [option -dash].
 [para]
 
 The result of the command are the current configuration settings.
-
 
 [call [cmd crosshair::track] [method on] [arg w] [arg cmdprefix]]
 
@@ -85,14 +86,12 @@ A previously existing callback for [arg w] will be disabled. I.e. per
 canvas widget with cross-hairs only one callback reporting their
 location is possible.
 
-
 [call [cmd crosshair::track] [method off] [arg w]]
 
 This command disables the reporting of the location of the cross-hairs
 in the canvas widget [arg w]. It is an error to use this command for a
 canvas which has no cross-hairs. The result of the command is the
 empty string.
-
 
 [call [cmd crosshair::bbox_add] [arg w] [arg bbox]]
 
@@ -130,5 +129,6 @@ Please report such in the category [emph {tklib :: crosshair}] of the
 
 Please also report any ideas for enhancements you may have for either
 package and/or documentation.
-
+[vset CATEGORY crosshair]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

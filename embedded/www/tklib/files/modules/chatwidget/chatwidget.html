@@ -92,7 +92,7 @@
     }
 --></style>
 </head>
-<! -- Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/www/tklib/files/modules/chatwidget/chatwidget.html' by tcllib/doctools with format 'html'
+<! -- Generated from file 'chatwidget.man' by tcllib/doctools with format 'html'
    -->
 <! -- CVS: $Id$ chatwidget.n
    -->
@@ -118,6 +118,7 @@
 <li class="section"><a href="#section2">COMMANDS</a></li>
 <li class="section"><a href="#section3">WIDGET COMMANDS</a></li>
 <li class="section"><a href="#section4">EXAMPLE</a></li>
+<li class="section"><a href="#section5">Bugs, Ideas, Feedback</a></li>
 <li class="section"><a href="#see-also">See Also</a></li>
 <li class="section"><a href="#keywords">Keywords</a></li>
 </ul>
@@ -181,7 +182,7 @@ name given to a multi-user chatroom or irc channel.</p>
 <dd><p>Returns a list of all the user names from the names view. If <span class="opt">?-full?</span> is given then the list returned is a list of lists where each
 sublist is made up of the nick followed by any options that have been
 set on this nick entry. This may be used to examine any application
-specific options that may be applied to a nick when using the 
+specific options that may be applied to a nick when using the
 <b class="cmd">add</b> command.</p></dd>
 <dt><b class="cmd">add <i class="arg">nick</i> <span class="opt">?<i class="arg">options</i>?</span></b></dt>
 <dd></dd>
@@ -202,7 +203,7 @@ display of this element in the widget.</p></dd>
 <dd><p>Passthrough to the entry text widget. See the <b class="cmd"><a href="../../../../index.html#key7">text</a></b> widget manual
 for all available commands.</p></dd>
 <dt><a name="8"><b class="cmd">$widget</b> chat <i class="arg">args</i></a></dt>
-<dd><p>Passthrough to the chat text widget. See the <b class="cmd"><a href="../../../../index.html#key7">text</a></b> widget manual for 
+<dd><p>Passthrough to the chat text widget. See the <b class="cmd"><a href="../../../../index.html#key7">text</a></b> widget manual for
 all available commands.</p></dd>
 </dl>
 </div>
@@ -224,10 +225,18 @@ pack .chat -side top -fill both -expand 1
 program in the tclapps repository which ties the tcllib <b class="package">picoirc</b> package to this
 <b class="package">chatwidget</b> package to create a simple irc client.</p>
 </div>
+<div id="section5" class="section"><h2><a name="section5">Bugs, Ideas, Feedback</a></h2>
+<p>This document, and the package it describes, will undoubtedly contain
+bugs and other problems.
+Please report such in the category <em>chatwidget</em> of the
+<a href="http://core.tcl.tk/tklib/reportlist">Tklib Trackers</a>.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation.</p>
+</div>
 <div id="see-also" class="section"><h2><a name="see-also">See Also</a></h2>
 <p>text(n)</p>
 </div>
 <div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
-<p><a href="../../../../index.html#key28">chat</a>, <a href="../../../../index.html#key27">chatwidget</a>, <a href="../../../../index.html#key30">composite widget</a>, <a href="../../../../index.html#key29">irc</a>, <a href="../../../../index.html#key31">mega-widget</a>, <a href="../../../../index.html#key1">widget</a></p>
+<p><a href="../../../../index.html#key17">chat</a>, <a href="../../../../index.html#key16">chatwidget</a>, <a href="../../../../index.html#key20">composite widget</a>, <a href="../../../../index.html#key18">irc</a>, <a href="../../../../index.html#key19">mega-widget</a>, <a href="../../../../index.html#key10">widget</a></p>
 </div>
 </div></body></html>

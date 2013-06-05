@@ -1,12 +1,23 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin widget n 3.0]
+[keywords bundle]
+[keywords calendar]
+[keywords dateentry]
+[keywords dialog]
+[keywords megawidget]
+[keywords menu]
+[keywords panelframe]
+[keywords ruler]
+[keywords screenruler]
+[keywords scrolledwindow]
+[keywords snit]
+[keywords statusbar]
+[keywords superframe]
+[keywords toolbar]
+[keywords widget]
 [moddesc   {Various megawidgets}]
 [titledesc {Megawidget bundle}]
 [category Widget]
-[keywords megawidget snit widget bundle]
-[keywords toolbar calendar dialog menu]
-[keywords panelframe ruler statusbar dateentry]
-[keywords superframe screenruler scrolledwindow]
 [require Tcl 8.4]
 [require Tk 8.4]
 [require widget [opt 3.0]] [require snit]
@@ -31,11 +42,8 @@ commands:
 [call [cmd widget::calendar] [arg pathname] [opt options]]
 options:
 
-
 [call [cmd widget::dateentry] [arg pathname] [opt options]]
 options:
-
-
 
 [call [cmd widget::dialog] [arg pathname] [opt options]]
 options:
@@ -72,5 +80,6 @@ options:
 package require widget::superframe ; # or widget::all
 pack [widget::superframe .f -type separator -text "SuperFrame:"]
 }]
-
+[vset CATEGORY widget]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

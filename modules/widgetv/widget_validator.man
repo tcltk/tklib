@@ -1,15 +1,16 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin widget_validator n 0.1]
+[keywords invalid]
+[keywords {state management}]
+[keywords ttk::combobox]
+[keywords ttk::entry]
+[keywords validation]
+[keywords {widget validation}]
 [moddesc   {widget::validator behaviour}]
 [titledesc {widget::validator behaviour}]
 [require Tcl 8.5]
 [require Tk 8.5]
 [require widget::validator [opt 0.1]]
-[keywords validation]
-[keywords {widget validation}]
-[keywords ttk::entry ttk::combobox]
-[keywords invalid]
-[keywords {state management}]
 [description]
 
 This package provides a unified validation API
@@ -64,7 +65,6 @@ may be rendered temporarily (partially) non-functional.
 Similarly, if the validator is detached while a different
 behaviour is also attached its restoration of configuration
 settings may render the other non-functional
-
 
 [comment {= = == === ===== ======== ============= =====================}]
 [call [cmd widget::validator] [method detach] [arg w]]
@@ -137,4 +137,6 @@ widget::validator attach .n pink {apply {text {
     expr {$text ni {{} blub}}
 }}}
 }]
+[vset CATEGORY widget::validator]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

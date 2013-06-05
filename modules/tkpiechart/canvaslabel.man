@@ -1,5 +1,12 @@
 [comment {-*- tk -*- canvasLabel manpage}]
 [manpage_begin canvasLabel n 6.6]
+[see_also pie]
+[see_also pieBoxLabeler]
+[see_also piePeripheralLabeler]
+[keywords canvas]
+[keywords labeler]
+[keywords pie]
+[keywords slice]
 [copyright {1995-2004 Jean-Luc Fontaine <jfontain@free.fr>}]
 [moddesc   {canvasLabel class}]
 [titledesc {tkpiechart canvas label class}]
@@ -65,7 +72,6 @@ The labeler has the following specific tag (see the [syscmd canvas] manual page 
 [list_begin itemized]
   [item]canvasLabel(canvasLabelObject)
 [list_end]
-
-[see_also pie pieBoxLabeler piePeripheralLabeler]
-[keywords pie slice labeler canvas]
+[vset CATEGORY tkpiechart]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

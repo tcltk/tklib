@@ -1,5 +1,11 @@
 [comment {-*- tcl -*- ntextBindings manpage}]
 [manpage_begin ntextBindings n 0.81]
+[see_also bindtags]
+[see_also ntext]
+[see_also ntextIndent]
+[see_also text]
+[keywords bindtags]
+[keywords text]
 [moddesc   {Alternative Bindings for the Text Widget}]
 [titledesc {Alternative Bindings for the Text Widget}]
 [require Tcl 8.5]
@@ -99,10 +105,6 @@ text .t
 set ::ntext::classicAnchor 1
 bindtags .t {.t Ntext . all}
 }]
-
-
-[see_also ntext]
-[see_also ntextIndent]
-[see_also text bindtags]
-[keywords text bindtags]
+[vset CATEGORY ntext]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]
