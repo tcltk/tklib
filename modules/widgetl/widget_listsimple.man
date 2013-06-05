@@ -1,5 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin widget_listsimple n 0.1]
+[keywords {data entry lists}]
+[keywords {data entry set of strings}]
+[keywords {data entry unordered list}]
+[keywords {list entry panel}]
+[keywords {set entry panel}]
+[keywords widget]
 [moddesc   {widget::listsimple widget}]
 [titledesc {widget::listsimple widget}]
 [require Tcl 8.5]
@@ -11,9 +17,6 @@
 [require tooltip]
 [require img::png]
 [require msgcat]
-[keywords {list entry panel} {data entry lists} widget]
-[keywords {set entry panel} {data entry unordered list}]
-[keywords {data entry set of strings}]
 [description]
 
 This package provides a megawidget for the interactive entry of unordered lists.
@@ -39,7 +42,6 @@ This command creates and configures new instances of the widget.
 [para] The result of the command is the pathname of the new widget.
 
 [list_end]
-
 
 [comment {% % %% %%% %%%%% %%%%%%%% %%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%}]
 [comment {% % %% %%% %%%%% %%%%%%%% %%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%}]
@@ -172,7 +174,6 @@ duplicate values into the main list, regardless of the validity of the
 input otherwise. This is in keeping with that this widget is meant for
 the entry of unordered lists, essentially a set of strings.
 
-
 [list_end][comment {--- options ---------------------------------------}]
 
 [comment {% % %% %%% %%%%% %%%%%%%% %%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%}]
@@ -224,9 +225,10 @@ widget. This option defaults to [const yellow].
 
 [list_end]
 
-
 [comment {% % %% %%% %%%%% %%%%%%%% %%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%}]
 [comment {% % %% %%% %%%%% %%%%%%%% %%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%}]
 [section Example]
 [example {}]
+[vset CATEGORY widget::listsimple]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

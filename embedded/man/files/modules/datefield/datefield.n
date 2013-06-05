@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/datefield/datefield\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'datefield\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) Keith Vetter <keith@ebook\&.gemstar\&.com>
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
@@ -288,6 +288,13 @@ See the \fBentry\fR manual entry for details on all available options\&.
  focus \&.df
 
 .CE
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fIdatefield\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH "SEE ALSO"
 clock(n), entry(n)
 .SH KEYWORDS
