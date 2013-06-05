@@ -11,7 +11,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 5.7</h2>
+    <h2>For Tablelist Version 5.9</h2>
 
     <h3>by</h3>
 
@@ -271,12 +271,6 @@
     <dd><code><b><a href="#width">-width</a></b> <i>characters</i></code></dd>
 
     <dt><br>
-    <a href="#description">DESCRIPTION</a></dt>
-
-    <dt><br>
-    <a href="#colors_and_fonts">COLORS AND FONTS</a></dt>
-
-    <dt><br>
     <a href="#col_options">COLUMN CONFIGURATION OPTIONS</a></dt>
 
     <dd><code><b><a href="#col_align">-align</a></b>
@@ -371,9 +365,18 @@
     <dd><code><b><a href="#col_stretchable">-stretchable</a></b>
     <i>boolean</i></code></dd>
 
+    <dd><code><b><a href="#col_stripebackground">-stripebackground</a></b>
+    <i>color</i></code></dd>
+
+    <dd><code><b><a href="#col_stripeforeground">-stripeforeground</a></b>
+    <i>color</i></code></dd>
+
     <dd><code><b><a href="#col_text">-text</a></b> <i>list</i></code></dd>
 
     <dd><code><b><a href="#col_title">-title</a></b> <i>title</i></code></dd>
+
+    <dd><code><b><a href="#col_valign">-valign</a></b>
+    <b>center</b>|<b>top</b>|<b>bottom</b></code></dd>
 
     <dd><code><b><a href="#col_width">-width</a></b> <i>width</i></code></dd>
     <dd><code><b><a href="#col_wrap">-wrap</a></b> <i>boolean</i></code></dd>
@@ -438,6 +441,9 @@
 
     <dd><code><b><a href="#cell_text">-text</a></b> <i>text</i></code></dd>
 
+    <dd><code><b><a href="#cell_valign">-valign</a></b>
+    <b>center</b>|<b>top</b>|<b>bottom</b></code></dd>
+
     <dd><code><b><a href="#cell_window">-window</a></b>
     <i>command</i></code></dd>
 
@@ -448,11 +454,20 @@
     <i>command</i></code></dd>
 
     <dt><br>
+    <a href="#description">DESCRIPTION</a></dt>
+
+    <dt><br>
+    <a href="#colors_and_fonts">COLORS AND FONTS</a></dt>
+
+    <dt><br>
     <a href="#tree_widget">USING A TABLELIST AS MULTI-COLUMN TREE
     WIDGET</a></dt>
 
     <dt><br>
     <a href="#cell_editing">INTERACTIVE CELL EDITING</a></dt>
+
+    <dt><br>
+    <a href="#virtual_events">VIRTUAL EVENTS</a></dt>
 
     <dt><br>
     <a href="#row_indices">ROW INDICES</a></dt>
@@ -511,6 +526,9 @@
     "#bodypath">bodypath</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#bodytag">bodytag</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#canceledediting">canceledediting</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#cancelediting">cancelediting</a></b></code></dd>
@@ -3855,122 +3873,6 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
       </blockquote>
     </dd>
 
-    <dt><a name="description"></a><b>DESCRIPTION</b></dt>
-
-    <dd>The <code><b>tablelist::tablelist</b></code> command creates a new
-    window named <code><i>pathName</i></code> and of the class
-    <code><b>Tablelist</b></code>, and makes it into a <b>tablelist</b>
-    widget.&nbsp; Additional options, described above, may be specified on the
-    command line or in the option database to configure aspects of the
-    tablelist such as its colors, font, and columns.&nbsp; The
-    <code><b>tablelist::tablelist</b></code> command returns its
-    <code><i>pathName</i></code> argument.&nbsp; At the time this command is
-    invoked, there must not exist a window named <code><i>pathName</i></code>,
-    but <code><i>pathName</i></code>'s parent must exist.</dd>
-
-    <dd><br>
-    A tablelist is a multi-column listbox and tree widget, implemented as a
-    mega-widget, consisting of a <b>body</b> and a <b>header</b>.&nbsp; The
-    body displays a list of <b>items</b>, one per line.&nbsp; Each item is a
-    list of <b>elements</b>, which are aligned in columns.&nbsp; In other
-    words, an item is the contents of a row, and an element is the text
-    contained in a cell.&nbsp; The header consists of label widgets displaying
-    the column titles.&nbsp; The labels can be used, among others, for
-    interactive column resizing and column-based sorting of the items, as
-    described below.</dd>
-
-    <dd><br>
-    Each cell and each header label of a tablelist widget can also contain an
-    image, which is placed to the left or right of the text, depending on the
-    column's alignment.&nbsp; Instead of an image, a tablelist cell can also
-    contain an embedded window, placed to the left or right of the text, just
-    like an embedded image.</dd>
-
-    <dd><br>
-    When a tablelist is used as a tree widget, one of its columns will display
-    the tree hierarchy with the aid of indentations and expand/collapse
-    controls.&nbsp; The Tablelist package provides a great variety of tree
-    styles controlling the look &amp; feel of that column, and chooses the
-    correct default style depending on the windowing system, operating system
-    version, and tile theme.&nbsp; In a tablelist used as a multi-column tree
-    widget, every row is at the same time a tree <b>node</b>, having exactly
-    one <b>parent</b> node and any number of <b>child</b> nodes.&nbsp; The
-    tree's origin is the invisible <b>root</b> node, which has no parent itself
-    and whose children are the <b>top-level</b> nodes.</dd>
-
-    <dd><br>
-    The elements of a tablelist widget can, per default, be only edited
-    programmatically.&nbsp; However, interactive editing can be enabled for
-    individual cells and for entire columns.&nbsp; Per default, the interactive
-    cell editing uses a temporary embedded entry widget, thus making sure that
-    all the validation facilities available for entry widgets can be used
-    during the editing process.&nbsp; A great variety of widgets from the
-    packages BWidget, Iwidgets, combobox (by Bryan Oakley), and Mentry (or
-    Mentry_tile), as well as Tk core text, spinbox, checkbutton, and menubutton
-    widgets, along with tile entry, spinbox, combobox, checkbutton, and
-    menubutton widgets are also supported as temporary embedded widgets used
-    for cell editing.&nbsp; In addition, a rich set of keyboard bindings is
-    provided for a comfortable navigation between the editable cells.</dd>
-
-    <dd><br>
-    When first created, a new tablelist widget has no items.&nbsp; Items may be
-    added, deleted, or updated using widget commands described below.&nbsp; In
-    addition, one or more items or elements may be selected.&nbsp; If a
-    tablelist widget is exporting its selection (see the
-    <code><b>-exportselection</b></code> option), then it will observe the
-    standard X11 protocols for handling the selection.&nbsp; Tablelist widget
-    selections are available as types <code><b>STRING</b></code> and
-    <code><b>UTF8_STRING</b></code>; the value of the selection will be a text
-    built by taking all of the rows having at least one non-hidden selected
-    element, joining these elements together with tabs, and the resulting
-    strings in turn with newlines.&nbsp; If a tablelist widget that is
-    exporting its selection is the selection owner and some other window claims
-    ownership of the selection away from it, then the virtual event
-    <code><b>&lt;&lt;TablelistSelectionLost&gt;&gt;</b></code> is
-    generated.</dd>
-
-    <dd><br>
-    It is not necessary for all the elements to be displayed in the tablelist
-    widget at once; commands described below may be used to change the view in
-    the window.&nbsp; Tablelist widgets allow scrolling in both directions
-    using the standard <code><b>-xscrollcommand</b></code> and
-    <code><b>-yscrollcommand</b></code> options.&nbsp; They also support
-    scanning, as described below.</dd>
-
-    <dd><br>
-    Each tablelist widget, as well as each tablelist column, row, and cell may
-    have any number of <b>attributes</b>, which can be used in commands that
-    create or manipulate tablelist widgets for particular purposes.</dd>
-
-    <dt><br>
-    <a name="colors_and_fonts"></a><b>COLORS AND FONTS</b></dt>
-
-    <dd>
-      The <code><b>-background</b></code>, <code><b>-font</b></code>,
-      <code><b>-foreground</b></code>, <code><b>-selectbackground</b></code>,
-      and <code><b>-selectforeground</b></code> options can also be specified
-      at column, row, and cell level, by using the <code><b><a href=
-      "#columnconfigure">columnconfigure</a></b></code> (or <code><b><a href=
-      "#configcolumnlist">configcolumnlist</a></b></code>, or <code><b><a href=
-      "#configcolumns">configcolumns</a></b></code>), <code><b><a href=
-      "#rowconfigure">rowconfigure</a></b></code> (or <code><b><a href=
-      "#configrowlist">configrowlist</a></b></code>, or <code><b><a href=
-      "#configrows">configrows</a></b></code>), and <code><b><a href=
-      "#cellconfigure">cellconfigure</a></b></code> (or <code><b><a href=
-      "#configcelllist">configcelllist</a></b></code>, or <code><b><a href=
-      "#configcells">configcells</a></b></code>) subcommands of the Tcl command
-      associated with the tablelist widget.&nbsp; For this reason, a particular
-      cell can have up to four values for one and the same color or font
-      option.&nbsp; If these values conflict, then the option specified at the
-      highest priority level is used.&nbsp; The decreasing priority order is
-      cell, row, column, widget.
-
-      <p>If one of these options hasn't been specified at cell, row, or column
-      level, or if its value for that level is an empty string (this is
-      explicitly allowed), then that option will not be used at that particular
-      level.</p>
-    </dd>
-
     <dt><a name="col_options"></a><b>COLUMN CONFIGURATION OPTIONS</b></dt>
 
     <dd>The following options are currently supported by the <code><b><a href=
@@ -4044,7 +3946,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
         the registration commands for widgets from the packages <a href=
         "tablelistBWidget.html">BWidget</a>, <a href=
         "tablelistIwidgets.html">Iwidgets</a>, <a href=
-        "tablelistCombobox.html">combobox</a> (by Bryan Oakley), and <a href=
+        "tablelistCombobox.html">combobox</a> (by Bryan Oakley), <a href=
+        "tablelistCtext.html">ctext</a>, and <a href=
         "tablelistMentry.html">Mentry (or Mentry_tile)</a>.&nbsp; For example,
         you can use&nbsp; <code><b>-editwindow ComboBox</b></code>&nbsp;
         <i>after</i> registering the ComboBox widget for interactive cell
@@ -4162,7 +4065,8 @@ proc formatDate clockVal {
         exporting its selection.&nbsp; The default value is
         <code>0</code>.&nbsp; After toggling the hidden state of a column, the
         <code><b>&lt;&lt;TablelistColHiddenStateChanged&gt;&gt;</b></code>
-        virtual event is generated.</dd>
+        virtual event is generated, with its <code><b>-data</b></code> option
+        set to the numerical column index for Tk versions 8.5 or higher.</dd>
 
         <dt><br>
         <a name="col_labelalign"></a><code><b>-labelalign</b>
@@ -4440,6 +4344,22 @@ proc formatDate clockVal {
         be reflected in the other.</dd>
 
         <dt><br>
+        <a name="col_stripebackground"></a><code><b>-stripebackground</b>
+        <i>color</i></code></dt>
+
+        <dd>Specifies the background color to use when displaying the contents
+        of a cell in the given column if the cell's row belongs to a
+        stripe.</dd>
+
+        <dt><br>
+        <a name="col_stripeforeground"></a><code><b>-stripeforeground</b>
+        <i>color</i></code></dt>
+
+        <dd>Specifies the foreground color to use when displaying the contents
+        of a cell in the given column if the cell's row belongs to a
+        stripe.</dd>
+
+        <dt><br>
         <a name="col_text"></a><code><b>-text</b> <i>list</i></code></dt>
 
         <dd>Specifies a list of strings to be displayed in the cells of the
@@ -4456,6 +4376,22 @@ proc formatDate clockVal {
         the <code><b><a href="#columns">-columns</a></b></code> option for the
         tablelist widget; changes in either will automatically be reflected in
         the other.</dd>
+
+        <dt><br>
+        <a name="col_valign"></a><code><b>-valign</b>
+        <i>verticalAlignment</i></code></dt>
+
+        <dd>Specifies the vertical alignment of embedded images and windows
+        displayed in the given column.&nbsp; The
+        <code><i>verticalAlignment</i></code> must be one of
+        <code><b>center</b></code> (which is the default),
+        <code><b>top</b></code>, or <code><b>bottom</b></code>.&nbsp;
+        Especially in rows containing multi-line elements, embedded images or
+        windows are often not as tall as the rows themselves; in such cases,
+        this option enables you to control the column-dependent vertical
+        alignment of these embedded objects.&nbsp; The value of this option can
+        be overridden for individual cells by using the <a href=
+        "#cell_valign">cell configuration option</a> of the same name.</dd>
 
         <dt><br>
         <a name="col_width"></a><code><b>-width</b> <i>width</i></code></dt>
@@ -4494,7 +4430,9 @@ proc formatDate clockVal {
         <dt><br>
         The <code><b>-background</b></code>, <code><b>-font</b></code>,
         <code><b>-foreground</b></code>, <code><b>-selectbackground</b></code>,
-        and <code><b>-selectforeground</b></code> column configuration options
+        <code><b>-selectforeground</b></code>,
+        <code><b>-stripebackground</b></code>, and
+        <code><b>-stripeforeground</b></code> column configuration options
         override the options of the same names set at widget level (but not the
         ones set at cell or row level) if the specified value is not an empty
         string.&nbsp; See the <a href="#colors_and_fonts">COLORS AND FONTS</a>
@@ -4541,7 +4479,8 @@ proc formatDate clockVal {
           exporting its selection.&nbsp; The default value is
           <code>0</code>.&nbsp; After toggling the hidden state of a row, the
           <code><b>&lt;&lt;TablelistRowHiddenStateChanged&gt;&gt;</b></code>
-          virtual event is generated.&nbsp;
+          virtual event is generated, with its <code><b>-data</b></code> option
+          set to the numerical row index for Tk versions 8.5 or higher.&nbsp;
 
           <p>For technical reasons (the use of the <code><b>-elide</b></code>
           option for a text widget tag), this option is not supported for Tk
@@ -4744,6 +4683,17 @@ proc formatDate clockVal {
         <code><b>disabled</b></code> then this option will be ignored.</dd>
 
         <dt><br>
+        <a name="cell_valign"></a><code><b>-valign</b>
+        <i>verticalAlignment</i></code></dt>
+
+        <dd>Specifies the vertical alignment of the embedded image or window
+        displayed in the cell (if any).&nbsp; The default value is
+        <code><b>center</b></code>.&nbsp; This option overrides <a href=
+        "#col_valign">the one of the same name</a> for the column containing
+        the given cell, and may have the same values as its column-related
+        counterpart.</dd>
+
+        <dt><br>
         <a name="cell_window"></a><code><b>-window</b>
         <i>command</i></code></dt>
 
@@ -4805,22 +4755,23 @@ proc formatDate clockVal {
           <code><b><a href="#stripebackground">-stripebackground</a></b></code>
           and
           <code><b><a href="#stripeforeground">-stripeforeground</a></b></code>
-          options.&nbsp; The command is automatically concatenated with the
-          name of the tablelist widget, the cell's row and column indices, the
-          path name of the embedded window, the option name
-          <code><b>-background</b></code> and the cell's current background
-          color, as well as the option name <code><b>-foreground</b></code> and
-          the cell's current foreground color.&nbsp; The resulting script is
-          then evaluated in the global scope.&nbsp; The specified command can
-          use the colors passed to it as arguments to set the corresponding
-          colors of the embedded window to the same values.
+          widget or column configuration options.&nbsp; The command is
+          automatically concatenated with the name of the tablelist widget, the
+          cell's row and column indices, the path name of the embedded window,
+          the option name <code><b>-background</b></code> and the cell's
+          current background color, as well as the option name
+          <code><b>-foreground</b></code> and the cell's current foreground
+          color.&nbsp; The resulting script is then evaluated in the global
+          scope.&nbsp; The specified command can use the colors passed to it as
+          arguments to set the corresponding colors of the embedded window to
+          the same values.
 
-          <p>For example, if the embedded window is a text widget and you want
-          for its background and foreground colors to be automatically adapted
-          to the cell's current background and foreground colors, then you can
-          achieve this by setting the <code><b>-windowupdate</b></code> cell
-          configuration option to <code>updateWindow</code>, where the latter
-          is the procedure implemented as follows:</p>
+          <p>For example, if the embedded window is a text or ctext widget and
+          you want for its background and foreground colors to be automatically
+          adapted to the cell's current background and foreground colors, then
+          you can achieve this by setting the <code><b>-windowupdate</b></code>
+          cell configuration option to <code>updateWindow</code>, where the
+          latter is the procedure implemented as follows:</p>
 
           <blockquote>
             <pre>
@@ -4860,7 +4811,127 @@ proc updateWindow {tbl row col w args} {
     </dd>
 
     <dt><br>
-    <a name="tree_widget"></a><b>USING A TABLELIST AS MULTI-COLUMN TREE WIDGET</b></dt>
+    <a name="description"></a><b>DESCRIPTION</b></dt>
+
+    <dd>The <code><b>tablelist::tablelist</b></code> command creates a new
+    window named <code><i>pathName</i></code> and of the class
+    <code><b>Tablelist</b></code>, and makes it into a <b>tablelist</b>
+    widget.&nbsp; Additional options, described above, may be specified on the
+    command line or in the option database to configure aspects of the
+    tablelist such as its colors, font, and columns.&nbsp; The
+    <code><b>tablelist::tablelist</b></code> command returns its
+    <code><i>pathName</i></code> argument.&nbsp; At the time this command is
+    invoked, there must not exist a window named <code><i>pathName</i></code>,
+    but <code><i>pathName</i></code>'s parent must exist.</dd>
+
+    <dd><br>
+    A tablelist is a multi-column listbox and tree widget, implemented as a
+    mega-widget, consisting of a <b>body</b> and a <b>header</b>.&nbsp; The
+    body displays a list of <b>items</b>, one per line.&nbsp; Each item is a
+    list of <b>elements</b>, which are aligned in columns.&nbsp; In other
+    words, an item is the contents of a row, and an element is the text
+    contained in a cell.&nbsp; The header consists of label widgets displaying
+    the column titles.&nbsp; The labels can be used, among others, for
+    interactive column resizing and column-based sorting of the items, as
+    described below.</dd>
+
+    <dd><br>
+    Each cell and each header label of a tablelist widget can also contain an
+    image, which is placed to the left or right of the text, depending on the
+    column's alignment.&nbsp; Instead of an image, a tablelist cell can also
+    contain an embedded window, placed to the left or right of the text, just
+    like an embedded image.</dd>
+
+    <dd><br>
+    When a tablelist is used as a tree widget, one of its columns will display
+    the tree hierarchy with the aid of indentations and expand/collapse
+    controls.&nbsp; The Tablelist package provides a great variety of tree
+    styles controlling the look &amp; feel of that column, and chooses the
+    correct default style depending on the windowing system, operating system
+    version, and tile theme.&nbsp; In a tablelist used as a multi-column tree
+    widget, every row is at the same time a tree <b>node</b>, having exactly
+    one <b>parent</b> node and any number of <b>child</b> nodes.&nbsp; The
+    tree's origin is the invisible <b>root</b> node, which has no parent itself
+    and whose children are the <b>top-level</b> nodes.</dd>
+
+    <dd><br>
+    The elements of a tablelist widget can, per default, be only edited
+    programmatically.&nbsp; However, interactive editing can be enabled for
+    individual cells and for entire columns.&nbsp; Per default, the interactive
+    cell editing uses a temporary embedded entry widget, thus making sure that
+    all the validation facilities available for entry widgets can be used
+    during the editing process.&nbsp; A great variety of widgets from the
+    packages BWidget, Iwidgets, combobox (by Bryan Oakley), ctext, and Mentry
+    (or Mentry_tile), as well as Tk core text, spinbox, checkbutton, and
+    menubutton widgets, along with tile entry, spinbox, combobox, checkbutton,
+    and menubutton widgets are also supported as temporary embedded widgets
+    used for cell editing.&nbsp; In addition, a rich set of keyboard bindings
+    is provided for a comfortable navigation between the editable cells.</dd>
+
+    <dd><br>
+    When first created, a new tablelist widget has no items.&nbsp; Items may be
+    added, deleted, or updated using widget commands described below.&nbsp; In
+    addition, one or more items or elements may be selected.&nbsp; If a
+    tablelist widget is exporting its selection (see the
+    <code><b>-exportselection</b></code> option), then it will observe the
+    standard X11 protocols for handling the selection.&nbsp; Tablelist widget
+    selections are available as types <code><b>STRING</b></code> and
+    <code><b>UTF8_STRING</b></code>; the value of the selection will be a text
+    built by taking all of the rows having at least one non-hidden selected
+    element, joining these elements together with tabs, and the resulting
+    strings in turn with newlines.&nbsp; If a tablelist widget that is
+    exporting its selection is the selection owner and some other window claims
+    ownership of the selection away from it, then the virtual event
+    <code><b>&lt;&lt;TablelistSelectionLost&gt;&gt;</b></code> is
+    generated.</dd>
+
+    <dd><br>
+    It is not necessary for all the elements to be displayed in the tablelist
+    widget at once; commands described below may be used to change the view in
+    the window.&nbsp; Tablelist widgets allow scrolling in both directions
+    using the standard <code><b>-xscrollcommand</b></code> and
+    <code><b>-yscrollcommand</b></code> options.&nbsp; They also support
+    scanning, as described below.</dd>
+
+    <dd><br>
+    Each tablelist widget, as well as each tablelist column, row, and cell may
+    have any number of <b>attributes</b>, which can be used in commands that
+    create or manipulate tablelist widgets for particular purposes.</dd>
+
+    <dt><br>
+    <a name="colors_and_fonts"></a><b>COLORS AND FONTS</b></dt>
+
+    <dd>
+      The <code><b>-background</b></code>, <code><b>-font</b></code>,
+      <code><b>-foreground</b></code>, <code><b>-selectbackground</b></code>,
+      and <code><b>-selectforeground</b></code> options can also be specified
+      at column, row, and cell level, by using the <code><b><a href=
+      "#columnconfigure">columnconfigure</a></b></code> (or <code><b><a href=
+      "#configcolumnlist">configcolumnlist</a></b></code>, or <code><b><a href=
+      "#configcolumns">configcolumns</a></b></code>), <code><b><a href=
+      "#rowconfigure">rowconfigure</a></b></code> (or <code><b><a href=
+      "#configrowlist">configrowlist</a></b></code>, or <code><b><a href=
+      "#configrows">configrows</a></b></code>), and <code><b><a href=
+      "#cellconfigure">cellconfigure</a></b></code> (or <code><b><a href=
+      "#configcelllist">configcelllist</a></b></code>, or <code><b><a href=
+      "#configcells">configcells</a></b></code>) subcommands of the Tcl command
+      associated with the tablelist widget.&nbsp; Likewise, the
+      <code><b>-stripebackground</b></code> and
+      <code><b>-stripeforeground</b></code> options can also be specified at
+      column level.&nbsp; For this reason, a particular cell can have up to
+      four values for one and the same color or font option.&nbsp; If these
+      values conflict, then the option specified at the highest priority level
+      is used.&nbsp; The decreasing priority order is cell, row, column,
+      widget.
+
+      <p>If one of these options hasn't been specified at cell, row, or column
+      level, or if its value for that level is an empty string (this is
+      explicitly allowed), then that option will not be used at that particular
+      level.</p>
+    </dd>
+
+    <dt><a name="tree_widget"></a><b>USING A TABLELIST AS MULTI-COLUMN TREE
+    WIDGET</b></dt>
 
     <dd>
       When using a tablelist widget to display a tree hierarchy, there are a
@@ -4920,11 +4991,12 @@ proc updateWindow {tbl row col w args} {
     "#col_editwindow">column</a> or <a href="#cell_editwindow">cell</a>
     configuration option to specify another widget instead of an entry, like a
     Tk core text, spinbox, checkbutton, or menubutton widget, or a tile entry,
-    spinbox, combobox, checkbutton, or menubutton, or one of the 18 currently
+    spinbox, combobox, checkbutton, or menubutton, or one of the 19 currently
     supported widgets from the packages <a href=
     "tablelistBWidget.html">BWidget</a>, <a href=
     "tablelistIwidgets.html">Iwidgets</a>, <a href=
-    "tablelistCombobox.html">combobox</a> (by Bryan Oakley), and <a href=
+    "tablelistCombobox.html">combobox</a> (by Bryan Oakley), <a href=
+    "tablelistCtext.html">ctext</a>, and <a href=
     "tablelistMentry.html">Mentry (or Mentry_tile)</a>.&nbsp; Before specifying
     a widget from one of these library packages as the value of the
     <code><b>-editwindow</b></code> column or cell configuration option, you
@@ -4977,21 +5049,21 @@ proc updateWindow {tbl row col w args} {
     "#edit_bindings">DEFAULT BINDINGS FOR INTERACTIVE CELL EDITING</a>
     section.&nbsp; For example, in entry or entry-like components of the edit
     window, <code>Control-i</code> inserts a tab, <code>Control-j</code>
-    inserts a newline, and if the edit window is a text widget then
+    inserts a newline, and if the edit window is a text or ctext widget then
     <code>Return</code> and <code>KP_Enter</code> insert a newline character,
     too.&nbsp; <code>Tab</code> and <code>Shift-Tab</code> are used for
     navigation between the editable cells, just like <code>Alt-Left</code>,
     <code>Alt-Right</code>, <code>Alt-Up</code>, <code>Alt-Down</code>,
     <code>Alt-Prior</code>, <code>Alt-Next</code>, <code>Alt-Home</code>, and
     <code>Alt-End</code> (as well as <code>Control-Home</code> and
-    <code>Control-End</code>, except in the case of a text widget).&nbsp; On
-    Mac OS Classic and Mac OS X Aqua the <code>Command</code> key is used
-    instead of <code>Alt</code>.&nbsp; The editing can be aborted with the
-    <code>Escape</code> key (or by invoking the <code><b><a href=
+    <code>Control-End</code>, except in the case of a text or ctext
+    widget).&nbsp; On Mac OS Classic and Mac OS X Aqua the <code>Command</code>
+    key is used instead of <code>Alt</code>.&nbsp; The editing can be aborted
+    with the <code>Escape</code> key (or by invoking the <code><b><a href=
     "#cancelediting">cancelediting</a></b></code> subcommand) and terminated
     normally with <code>Return</code> or <code>KP_Enter</code> (together with
-    <code>Control</code> for a text widget).&nbsp; The bindings for the keys
-    used for normal termination of the editing just invoke the
+    <code>Control</code> for a text or ctext widget).&nbsp; The bindings for
+    the keys used for normal termination of the editing just invoke the
     <code><b><a href="#finishediting">finishediting</a></b></code> subcommand;
     the latter can also be called explicitly to terminate the editing
     programmatically.&nbsp; Normal termination is also triggered by clicking
@@ -5024,6 +5096,137 @@ proc updateWindow {tbl row col w args} {
     its external representation.&nbsp; See the description of the
     <code><b><a href="#forceeditendcommand">-forceeditendcommand</a></b></code>
     option for more about the invocation of the command mentioned above.</dd>
+
+    <dt><br>
+    <a name="virtual_events"></a><b>VIRTUAL EVENTS</b></dt>
+
+    <dd>Tablelist defines a few virtual events for the purposes of
+    notification, and makes use of the&nbsp; <code><b>event
+    generate</b></code>&nbsp; command to send them to the tablelist widget in
+    question (whose path name will be the value of the <code><b>%W</b></code>
+    substitution in event scripts).&nbsp; When using Tk 8.5 or above, most of
+    these virtual events are generated with their <code><b>-data</b></code>
+    option set to an appropriate event-specific value.&nbsp; Binding scripts
+    can access this user data as the value of the <code><b>%d</b></code>
+    substitution.&nbsp; Unfortunately, the <code><b>-data</b></code> option
+    to&nbsp; <code><b>event generate</b></code>&nbsp; was not supported by Tk
+    versions earlier than 8.5.&nbsp; For these Tk versions, the&nbsp;
+    <code><b>event generate</b></code>&nbsp; command will be invoked without
+    the <code><b>-data</b></code> option.</dd>
+
+    <dd>
+      <p>The virtual events generated by Tablelist are as follows:</p>
+
+      <table border="2" cellspacing="0" cellpadding="3">
+        <tr bgcolor="#FFFFE0">
+          <th align="left">Virtual Event</th>
+          <th align="left">Description</th>
+          <th align="left">User Data (for Tk 8.5 or Later)</th>
+        </tr>
+
+        <tr>
+          <td><code><b>&lt;&lt;TablelistCellRestored&gt;&gt;</b></code></td>
+          <td>Generated by the <code><b><a href=
+          "#cancelediting">cancelediting</a></b></code> subcommand.</td>
+          <td>A list consisting of the numerical row and column indices of the
+          cell whose content is being edited.</td>
+        </tr>
+
+        <tr>
+          <td><code><b>&lt;&lt;TablelistCellUpdated&gt;&gt;</b></code></td>
+          <td>Generated by the <code><b><a href=
+          "#finishediting">finishediting</a></b></code> subcommand.</td>
+          <td>A list consisting of the numerical row and column indices of the
+          cell whose content is being edited.</td>
+        </tr>
+
+        <tr>
+          <td><code><b>&lt;&lt;TablelistColHiddenStateChanged&gt;&gt;</b></code></td>
+          <td>Generated whenever the hidden state of one or more columns is
+          toggled by using the <code><b><a href=
+          "#columnconfigure">columnconfigure</a></b></code>, <code><b><a href=
+          "#configcolumnlist">configcolumnlist</a></b></code>,
+          <ccode><b><a href="#configcolumns">configcolumns</a></b></code>, or
+          <ccode><b><a href="#togglecolumnhide">togglecolumnhide</a></b></code>
+          subcommand.</td>
+          <td>A list consisting of the numerical indices of the columns whose
+          hidden state changed.</td>
+        </tr>
+
+        <tr>
+          <td><code><b>&lt;&lt;TablelistColumnMoved&gt;&gt;</b></code></td>
+          <td>Generated by the default bindings whenever a column is moved
+          interactively to a new position.</td>
+          <td>A list consisting of the two arguments passed to the
+          <code><b><a href="#movecolumn">movecolumn</a></b></code>
+          subcommand, invoked for moving the source column to the target
+          position.</td>
+        </tr>
+
+        <tr>
+          <td><code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code></td>
+          <td>Generated by the default bindings whenever a column is resized
+          interactively.</td>
+          <td>The numerical index of the column that was resized.</td>
+        </tr>
+
+        <tr>
+          <td><code><b>&lt;&lt;TablelistColumnSorted&gt;&gt;</b></code></td>
+          <td>Generated by the <code><b><a href=
+          "tablelistColSort.html#sortByColumn">tablelist::sortByColumn</a></b></code>
+          command.</td>
+          <td>A list consisting of the numerical column index and the sort
+          order (<code><b>decreasing</b></code> or
+          <code><b>increasing</b></code>).</td>
+        </tr>
+
+        <tr>
+          <td><code><b>&lt;&lt;TablelistColumnsSorted&gt;&gt;</b></code></td>
+          <td>Generated by the <code><b><a href=
+          "tablelistColSort.html#addToSortColumns">tablelist::addToSortColumns</a></b></code> command.</td>
+          <td>A list consisting of the two lists passed to the
+          <code><b><a href=
+          "tablelistWidget.html#sortbycolumnlist">sortbycolumnlist</a></b></code>
+          subcommand, invoked to perform the multi-column sorting.</td>
+        </tr>
+
+        <tr>
+          <td><code><b>&lt;&lt;TablelistRowHiddenStateChanged&gt;&gt;</b></code></td>
+          <td>Generated whenever the hidden state of one or more rows is
+          toggled by using the <code><b><a href=
+          "#rowconfigure">rowconfigure</a></b></code>, <code><b><a href=
+          "#configrowlist">configrowlist</a></b></code>, <ccode><b><a href=
+          "#configrows">configrows</a></b></code>, or <ccode><b><a href=
+          "#togglerowhide">togglerowhide</a></b></code> subcommand.</td>
+          <td>A list consisting of the numerical indices of the rows whose
+          hidden state changed.</td>
+        </tr>
+
+        <tr>
+          <td><code><b>&lt;&lt;TablelistRowMoved&gt;&gt;</b></code></td>
+          <td>Generated by the default bindings whenever a row is moved
+          interactively to a new position.</td>
+          <td>A list consisting of the three arguments passed to the second
+          form of the <code><b><a href="#move">move</a></b></code> subcommand,
+          invoked for moving the source row to the target position.</td>
+        </tr>
+
+        <tr>
+          <td><code><b>&lt;&lt;TablelistSelect&gt;&gt;</b></code>,
+          <code><b>&lt;&lt;ListboxSelect&gt;&gt;</b></code></td>
+          <td>Generated by the default bindings whenever the selection changes
+          in the tablelist widget due to user interaction.</td>
+          <td>Not used.</td>
+        </tr>
+
+        <tr>
+          <td><code><b>&lt;&lt;TablelistSelectionLost&gt;&gt;</b></code></td>
+          <td>Sent to the tablelist widget whenever it loses ownership of the
+          PRIMARY selection.</td>
+          <td>Not used.</td>
+        </tr>
+      </table>
+    </dd>
 
     <dt><br>
     <a name="row_indices"></a><b>ROW INDICES</b></dt>
@@ -5480,7 +5683,26 @@ proc updateWindow {tbl row col w args} {
         also for the separators, multi-line cells, and embedded images.</dd>
 
         <dt><br>
-        <a name="cancelediting"></a><code><i>pathName</i>
+        <a name="canceledediting"></a><code><i>pathName</i>
+        <b>canceledediting</b></code></dt>
+
+        <dd>
+          Returns the value <code>1</code> if the most recent interactive cell
+          editing was canceled (by the user or programmatically, with the aid
+          of the <code><b><a href="#cancelediting">cancelediting</a></b></code>
+          subcommand) and <code>0</code> otherwise.
+
+          <p><b>REMARK:</b>&nbsp; By invoking this subcommand from within the
+          Tcl command specified by the <code><b><a href=
+          "#editendcommand">-editendcommand</a></b></code> configuration
+          option, you can find out whether the editing session was canceled or
+          terminated normally.&nbsp; Remember that this Tcl command will be
+          invoked in both cases mentioned above if the <code><b><a href=
+          "#forceeditendcommand">-forceeditendcommand</a></b></code> option was
+          set to true.</p>
+        </dd>
+
+        <dt><a name="cancelediting"></a><code><i>pathName</i>
         <b>cancelediting</b></code></dt>
 
         <dd>This subcommand cancels the interactive editing of the contents of
@@ -5496,9 +5718,13 @@ proc updateWindow {tbl row col w args} {
         is being edited.&nbsp; The return value is an empty string.&nbsp;
         Immediately before returning this value, the command generates the
         virtual event
-        <code><b>&lt;&lt;TablelistCellRestored&gt;&gt;</b></code>.&nbsp; If no
-        cell was being edited when the command was invoked then an empty string
-        is returned without generating a virtual event.</dd>
+        <code><b>&lt;&lt;TablelistCellRestored&gt;&gt;</b></code>.&nbsp; For Tk
+        versions 8.5 or higher, this virtual event is generated with its
+        <code><b>-data</b></code> option set to a list consisting of the
+        numerical row and column indices of the cell whose content is being
+        edited.&nbsp; If no cell was being edited when the command was invoked
+        then an empty string is returned without generating a virtual
+        event.</dd>
 
         <dt><br>
         <a name="cellattrib"></a><code><i>pathName</i> <b>cellattrib</b>
@@ -6250,8 +6476,8 @@ bind [.tbl editwintag] &lt;Return&gt; "[bind TablelistEdit &lt;Tab&gt;]; break"
         subcommand.&nbsp; If no cell is currently being edited or the editing
         is taking place with the aid of a Tk or tile checkbutton, Tk or tile
         menubutton, or mentry widget, then the return value is an empty string;
-        otherwise it is the path name of a Tk or tile entry, Tk text, Tk or
-        tile spinbox, or BWidget Entry widget, which can be the edit window
+        otherwise it is the path name of a Tk or tile entry, text or ctext, Tk
+        or tile spinbox, or BWidget Entry widget, which can be the edit window
         itself or one of its descendants.&nbsp; This subcommand enables you to
         access the entry or entry-like component of the temporary embedded
         widget from within the commands specified by the <code><b><a href=
@@ -6354,16 +6580,21 @@ bind [.tbl editwintag] &lt;Return&gt; "[bind TablelistEdit &lt;Tab&gt;]; break"
           value <code>0</code>.&nbsp; In all the other cases, the return value
           is <code>1</code>.&nbsp; Immediately before returning the value
           <code>1</code>, the command generates the virtual event
-          <code><b>&lt;&lt;TablelistCellUpdated&gt;&gt;</b></code>.&nbsp; If no
-          cell was being edited when the command was invoked then the same
-          value <code>1</code> is returned but no virtual event is generated.
+          <code><b>&lt;&lt;TablelistCellUpdated&gt;&gt;</b></code>.&nbsp; For
+          Tk versions 8.5 or higher, this virtual event is generated with its
+          <code><b>-data</b></code> option set to a list consisting of the
+          numerical row and column indices of the cell whose content is being
+          edited.&nbsp; If no cell was being edited when the command was
+          invoked then the same value <code>1</code> is returned but no virtual
+          event is generated.
 
           <p>This subcommand is called <i>implicitly</i> by pressing
           <code>Return</code> or <code>KP_Enter</code> (together with
-          <code>Control</code> if the edit window is a text widget) when
-          editing a cell, or by clicking with the left mouse button anywhere in
-          the tablelist's body, outside the cell just being edited, or moving
-          into another editable cell by using keyboard navigation.</p>
+          <code>Control</code> if the edit window is a text or ctext widget)
+          when editing a cell, or by clicking with the left mouse button
+          anywhere in the tablelist's body, outside the cell just being edited,
+          or moving into another editable cell by using keyboard
+          navigation.</p>
 
           <p><b>REMARK:</b>&nbsp; There are also situations where an
           <i>explicit</i> invocation of this subcommand is needed, in order to
@@ -7653,8 +7884,11 @@ upvar #0 [.tbl itemlistvar] itemList
         columns whose visibility is to be toggled.&nbsp; Returns an empty
         string.&nbsp; After toggling the hidden state of the specified columns,
         the <code><b>&lt;&lt;TablelistColHiddenStateChanged&gt;&gt;</b></code>
-        virtual event is generated.&nbsp; The main advantage of using this
-        command instead of invoking <code><b><a href=
+        virtual event is generated.&nbsp; For Tk versions 8.5 or higher, this
+        virtual event is generated with its <code><b>-data</b></code> option
+        set to a list consisting of the numerical column indices of the columns
+        whose <code><b>-hide</b></code> option was toggled.&nbsp; The main
+        advantage of using this command instead of invoking <code><b><a href=
         "#columnconfigure">columnconfigure</a></b></code> for each of the
         specified columns is that it causes only one redisplay of the widget's
         contents, thus being significantly faster.</dd>
@@ -7675,9 +7909,12 @@ upvar #0 [.tbl itemlistvar] itemList
           visibility is to be toggled.&nbsp; Returns an empty string.&nbsp;
           After toggling the hidden state of the specified rows, the
           <code><b>&lt;&lt;TablelistRowHiddenStateChanged&gt;&gt;</b></code>
-          virtual event is generated.&nbsp; Just like the
-          <code><b>-hide</b></code> row configuration option, this subcommand
-          is not supported for Tk versions earlier than 8.3.
+          virtual event is generated.&nbsp; For Tk versions 8.5 or higher, this
+          virtual event is generated with its <code><b>-data</b></code> option
+          set to a list consisting of the numerical row indices of the rows
+          whose <code><b>-hide</b></code> option was toggled.&nbsp; Just like
+          the <code><b>-hide</b></code> row configuration option, this
+          subcommand is not supported for Tk versions earlier than 8.3.
 
           <p><b>CAUTION:</b>&nbsp; Tk versions 8.3 - 8.4.12 had a bug that
           caused a segmentation fault if the whole content of a text widget was
@@ -8063,7 +8300,15 @@ proc printClickedCell {w x y} {
         configuration option.&nbsp; After releasing mouse button 1 in the
         presence of a valid target, the source item is moved before the target
         row or just before the latter's first child, and the virtual event
-        <code><b>&lt;&lt;TablelistRowMoved&gt;&gt;</b></code> is generated.</p>
+        <code><b>&lt;&lt;TablelistRowMoved&gt;&gt;</b></code> is
+        generated.&nbsp; For Tk versions 8.5 or higher, this virtual event is
+        is generated with its <code><b>-data</b></code> option set to a list
+        consisting of the three arguments passed to the second form of the
+        <code><b><a href="#move">move</a></b></code> subcommand, invoked for
+        moving the source row to its new position.&nbsp; All the three list
+        elements will be numerical values, except the second one
+        (<code><i>targetParentNodeIndex</i></code>), which can also be
+        <code><b>root</b></code>.</p>
 
         <p>Notice that, depending on the current mouse position during the
         local drag &amp; drop, there can be a corresponding potential target
@@ -8142,7 +8387,8 @@ proc printClickedCell {w x y} {
         configuration option.&nbsp; When the column resize operation is
         finished, the virtual event
         <code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code> is
-        generated.<br>
+        generated, with its <code><b>-data</b></code> option set to the
+        numerical column index for Tk versions 8.5 or higher.<br>
         &nbsp;</li>
 
         <li>If mouse button 1 is pressed over a header label but outside the
@@ -8161,7 +8407,12 @@ proc printClickedCell {w x y} {
         mouse button 1, the source column is moved before the one indicated by
         the gap mentioned above and the virtual event
         <code><b>&lt;&lt;TablelistColumnMoved&gt;&gt;</b></code> is
-        generated.<br>
+        generated.&nbsp; For Tk versions 8.5 or higher, this virtual event is
+        generated with its <code><b>-data</b></code> option set to a list
+        consisting of the two arguments passed to the <code><b><a href=
+        "#movecolumn">movecolumn</a></b></code> subcommand, invoked for
+        moving the source column to its new position.&nbsp; Both list elements
+        will be numerical column indices.<br>
         &nbsp;</li>
 
         <li>If mouse button 1 is pressed over a header label but outside the
@@ -8198,8 +8449,10 @@ proc printClickedCell {w x y} {
         "#col_maxwidth">-maxwidth</a></b></code> column configuration option),
         and the virtual event
         <code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code> is
-        generated.&nbsp; The same action is triggered by double-clicking the
-        resize area of a header label.<br>
+        generated, with its <code><b>-data</b></code> option set to the
+        numerical column index for Tk versions 8.5 or higher.&nbsp; The same
+        action is triggered by double-clicking the resize area of a header
+        label.<br>
         &nbsp;</li>
 
         <li>The Tablelist package defines the virtual event
@@ -8214,9 +8467,10 @@ proc printClickedCell {w x y} {
         corresponding to that label are true, then the width of that column is
         set to its last static width (if any) and the virtual event
         <code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code> is
-        generated.&nbsp; The same action is triggered by double-clicking the
-        resize area of a header label with the <code>Shift</code> key held
-        down.</li>
+        generated, with its <code><b>-data</b></code> option set to the
+        numerical column index for Tk versions 8.5 or higher.&nbsp; The same
+        action is triggered by double-clicking the resize area of a header
+        label with the <code>Shift</code> key held down.</li>
       </ol>
 
       <p>If the tablelist's <code><b><a href="#state">state</a></b></code> is
@@ -8287,10 +8541,10 @@ bind [.tbl labeltag] &lt;Button-3&gt; {
         insertion cursor.<br>
         &nbsp;</li>
 
-        <li>If the edit window is a text widget then <code>Return</code> and
-        <code>KP_Enter</code> insert a newline character at the point of the
-        insertion cursor.&nbsp; Otherwise they terminate the editing and
-        destroy the edit window.<br>
+        <li>If the edit window is a text or ctext widget then
+        <code>Return</code> and <code>KP_Enter</code> insert a newline
+        character at the point of the insertion cursor.&nbsp; Otherwise they
+        terminate the editing and destroy the edit window.<br>
         &nbsp;</li>
 
         <li><code>Control-Return</code> and <code>Control-KP_Enter</code>
@@ -8313,8 +8567,8 @@ bind [.tbl labeltag] &lt;Button-3&gt; {
         next/previous editable cell of the tablelist, select the contents of
         the edit window's first entry or entry-like component (if any), and set
         the insertion cursor to its end.&nbsp; If the new edit window is a text
-        widget then its contents are left unselected.&nbsp; Notice that these
-        bindings replace the common inter-widget navigation via
+        or ctext widget then its contents are left unselected.&nbsp; Notice
+        that these bindings replace the common inter-widget navigation via
         <code>Tab</code> and <code>Shift-Tab</code> with inter-cell
         navigation.&nbsp; Just like in the case of the text widget,
         <code>Control-Tab</code> and <code>Control-Shift-Tab</code> are
@@ -8335,13 +8589,13 @@ bind [.tbl labeltag] &lt;Button-3&gt; {
         the edit window into the previous/next editable cell of the row,
         selects the contents of the edit window's first entry or entry-like
         component (if any), and sets the insertion cursor to its end.&nbsp; If
-        the new edit window is a text widget then its contents are left
-        unselected.&nbsp; The key sequence
+        the new edit window is a text or ctext widget then its contents are
+        left unselected.&nbsp; The key sequence
         <code>Meta-Left</code>/<code>Meta-Right</code> has the same effect as
         <code>Alt-Left</code>/<code>Alt-Right</code>.&nbsp; If
         <code><b>tk_strictMotif</b></code> is false and the edit window is not
-        a text widget then <code>Meta-b</code> and <code>Meta-f</code> behave
-        the same as <code>Alt-Left</code> and <code>Alt-Right</code>,
+        a text or ctext widget then <code>Meta-b</code> and <code>Meta-f</code>
+        behave the same as <code>Alt-Left</code> and <code>Alt-Right</code>,
         respectively.&nbsp; If the edit window is a Tk or tile checkbutton or
         menubutton widget then <code>Left</code>/<code>Right</code> has the
         same effect as <code>Alt-Left</code>/<code>Alt-Right</code>.<br>
@@ -8354,17 +8608,19 @@ bind [.tbl labeltag] &lt;Button-3&gt; {
         the edit window one line up/down within the column, selects the
         contents of the edit window's first entry or entry-like component (if
         any), and sets the insertion cursor to its end.&nbsp; If the new edit
-        window is a text widget then its contents are left unselected.&nbsp;
-        The key sequence <code>Meta-Up</code>/<code>Meta-Down</code> has the
-        same effect as <code>Alt-Up</code>/<code>Alt-Down</code>.&nbsp; If
+        window is a text or ctext widget then its contents are left
+        unselected.&nbsp; The key sequence
+        <code>Meta-Up</code>/<code>Meta-Down</code> has the same effect as
+        <code>Alt-Up</code>/<code>Alt-Down</code>.&nbsp; If
         <code><b>tk_strictMotif</b></code> is false and the edit window is not
-        a text widget or an Iwidgets combobox, then <code>Control-p</code> and
-        <code>Control-n</code> behave the same as <code>Alt-Up</code> and
-        <code>Alt-Down</code>, respectively.&nbsp; If the edit window is a Tk
-        or tile entry, Tk or tile checkbutton, Tk or tile menubutton, BWidget
-        Entry, Iwidgets entryfield/spinner/spinint, or a mentry widget of type
-        <code>"FixedPoint"</code>, then <code>Up</code>/<code>Down</code> has
-        the same effect as <code>Alt-Up</code>/<code>Alt-Down</code>.<br>
+        a text or ctext widget or an Iwidgets combobox, then
+        <code>Control-p</code> and <code>Control-n</code> behave the same as
+        <code>Alt-Up</code> and <code>Alt-Down</code>, respectively.&nbsp; If
+        the edit window is a Tk or tile entry, Tk or tile checkbutton, Tk or
+        tile menubutton, BWidget Entry, Iwidgets entryfield/spinner/spinint, or
+        a mentry widget of type <code>"FixedPoint"</code>, then
+        <code>Up</code>/<code>Down</code> has the same effect as
+        <code>Alt-Up</code>/<code>Alt-Down</code>.<br>
         &nbsp;</li>
 
         <li>When editing a cell that is not the first/last editable cell within
@@ -8374,11 +8630,12 @@ bind [.tbl labeltag] &lt;Button-3&gt; {
         the edit window up/down by one page within the column, selects the
         contents of the edit window's first entry or entry-like component (if
         any), and sets the insertion cursor to its end.&nbsp; If the new edit
-        window is a text widget then its contents are left unselected.&nbsp;
-        The key sequence <code>Meta-Prior</code>/<code>Meta-Next</code> has the
-        same effect as <code>Alt-Prior</code>/<code>Alt-Next</code>.&nbsp; If
-        the edit window is not a text widget, BWidget SpinBox, Oakley combobox,
-        or a mentry widget of type <code>"Date"</code>, <code>"Time"</code>,
+        window is a text or ctext widget then its contents are left
+        unselected.&nbsp; The key sequence
+        <code>Meta-Prior</code>/<code>Meta-Next</code> has the same effect as
+        <code>Alt-Prior</code>/<code>Alt-Next</code>.&nbsp; If the edit window
+        is not a text or ctext widget, BWidget SpinBox, Oakley combobox, or a
+        mentry widget of type <code>"Date"</code>, <code>"Time"</code>,
         <code>"DateTime"</code>, <code>"IPAddr"</code>, or
         <code>"IPv6Addr"</code>, then <code>Prior</code>/<code>Next</code> has
         the same effect as <code>Alt-Prior</code>/<code>Alt-Next</code>.<br>
@@ -8391,14 +8648,15 @@ bind [.tbl labeltag] &lt;Button-3&gt; {
         the edit window into the first/last editable cell of the tablelist,
         selects the contents of the edit window's first entry or entry-like
         component (if any), and sets the insertion cursor to its end.&nbsp; If
-        the new edit window is a text widget then its contents are left
-        unselected.&nbsp; The key sequence
+        the new edit window is a text or ctext widget then its contents are
+        left unselected.&nbsp; The key sequence
         <code>Meta-Home</code>/<code>Meta-End</code> has the same effect as
         <code>Alt-Home</code>/<code>Alt-End</code>.&nbsp; If
         <code><b>tk_strictMotif</b></code> is false and the edit window is not
-        a text widget then <code>Meta-&lt;</code> and <code>Meta-&gt;</code>
-        behave the same as <code>Alt-Home</code> and <code>Alt-End</code>,
-        respectively.&nbsp; If the edit window is not a text widget then
+        a text or ctext widget then <code>Meta-&lt;</code> and
+        <code>Meta-&gt;</code> behave the same as <code>Alt-Home</code> and
+        <code>Alt-End</code>, respectively.&nbsp; If the edit window is not a
+        text or ctext widget then
         <code>Control-Home</code>/<code>Control-End</code> has the same effect
         as <code>Alt-Home</code>/<code>Alt-End</code>.</li>
       </ol>

@@ -2,10 +2,10 @@
 # Demonstrates how to use a tablelist widget for displaying and editing the
 # configuration options of an arbitrary widget.
 #
-# Copyright (c) 2000-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.7
+package require tablelist_tile 5.9
 
 namespace eval demo {
     #
@@ -29,6 +29,9 @@ namespace eval demo {
 	option add *DemoTop.tf.tbl.borderWidth		0
     }
     tablelist::setThemeDefaults
+    set foreground [winfo rgb . $tablelist::themeDefaults(-foreground)]
+    set selectFg   [winfo rgb . $tablelist::themeDefaults(-selectforeground)]
+    set selectFgEqForeground [expr {$selectFg eq $foreground}]
     variable currentTheme [tablelist::getCurrentTheme]
     if {$currentTheme ne "aqua"} {
 	option add *DemoTop*selectBackground \
@@ -175,8 +178,12 @@ proc demo::putConfig {w tbl} {
 	    set current [lindex $configSet 4]
 	    if {[string compare $default $current] != 0} {
 		foreach col {0 4} {
-		    $tbl cellconfigure end,$col \
-			 -foreground red -selectforeground yellow
+		    $tbl cellconfigure end,$col -foreground red
+		    if {$demo::selectFgEqForeground} {
+			$tbl cellconfigure end,$col -selectforeground red
+		    } else {
+			$tbl cellconfigure end,$col -selectforeground yellow
+		    }
 		}
 	    }
 	}
@@ -247,8 +254,12 @@ proc demo::applyValue {tbl row col text} {
 	}
     } else {
 	foreach col {0 4} {
-	    $tbl cellconfigure $row,$col \
-		 -foreground red -selectforeground yellow
+	    $tbl cellconfigure $row,$col -foreground red
+	    if {$demo::selectFgEqForeground} {
+		$tbl cellconfigure $row,$col -selectforeground red
+	    } else {
+		$tbl cellconfigure $row,$col -selectforeground yellow
+	    }
 	}
     }
 

@@ -1,5 +1,5 @@
 apps/bitmap-editor.man
-apps/dia.man
+apps/diagram-viewer.man
 modules/autoscroll/autoscroll.man
 modules/canvas/canvas_drag.man
 modules/canvas/canvas_epoints.man

@@ -1,5 +1,14 @@
 [comment {-*- tcl -*- ntextWordBreak manpage}]
 [manpage_begin ntextWordBreak n 0.81]
+[see_also bindtags]
+[see_also ntext]
+[see_also re_syntax]
+[see_also regexp]
+[see_also text]
+[keywords bindtags]
+[keywords re_syntax]
+[keywords regexp]
+[keywords text]
 [moddesc   {ntext Word Boundary Detection for the Text Widget}]
 [titledesc {ntext Word Boundary Detection for the Text Widget}]
 [require Tcl 8.5]
@@ -30,7 +39,6 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
    After changing this value, [emph Ntext] 's regexp matching patterns should be recalculated.  See [sectref FUNCTIONS] for details and advanced configuration options.
 [list_end]
 [para]
-
 
 [section {Advanced Use}]
 [comment {no subsection in my dtp kit}]
@@ -120,13 +128,11 @@ To define a different set of word-boundary detection rules:
 package require ntext
 text .t
 bindtags .t {.t Ntext . all}
-::ntext::createMatchPatterns \ 
+::ntext::createMatchPatterns \
   {[[:space:][:cntrl:]]} {[[:punct:]]} {[^[:punct:][:space:][:cntrl:]]}
 }]
 
 See regexp, re_syntax for more information.
-
-[see_also ntext]
-[see_also text bindtags regexp re_syntax]
-[keywords text bindtags regexp re_syntax]
+[vset CATEGORY ntext]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

@@ -10,7 +10,7 @@
   <div align="center">
     <h1>Commands for Interactive Sorting by One or More Columns</h1>
 
-    <h2>For Tablelist Version 5.7</h2>
+    <h2>For Tablelist Version 5.9</h2>
 
     <h3>by</h3>
 
@@ -111,8 +111,12 @@
 
       <p>After sorting the items, the virtual event
       <code><b>&lt;&lt;TablelistColumnSorted&gt;&gt;</b></code> is
-      generated.&nbsp; The command returns the corresponding sort order, as
-      <code><b>decreasing</b></code> or <code><b>increasing</b></code>.</p>
+      generated.&nbsp; For Tk versions 8.5 or higher, this virtual event is
+      generated with its <code><b>-data</b></code> option set to a list
+      consisting of the numerical column index and the sort order
+      (<code><b>decreasing</b></code> or <code><b>increasing</b></code>).&nbsp;
+      The command returns the sort order, as <code><b>decreasing</b></code> or
+      <code><b>increasing</b></code>.</p>
 
       <p>If the specified column's <code><b><a href=
       "tablelistWidget.html#col_showlinenumbers">-showlinenumbers</a></b></code>
@@ -183,9 +187,12 @@
       <p>After sorting the items by passing the two updated lists to the
       <code><b>sortbycolumnlist</b></code> subcommand, the virtual event
       <code><b>&lt;&lt;TablelistColumnsSorted&gt;&gt;</b></code> (note the
-      plural form!) is generated.&nbsp; The command returns the new sort order
-      corresponding to the given column, as <code><b>decreasing</b></code> or
-      <code><b>increasing</b></code>.</p>
+      plural form!) is generated.&nbsp; For Tk versions 8.5 or higher, this
+      virtual event is generated with its <code><b>-data</b></code> option set
+      to a list consisting of the two above-mentioned updated lists passed to
+      <code><b>sortbycolumnlist</b></code> as arguments.&nbsp; The command
+      returns the new sort order corresponding to the given column, as
+      <code><b>decreasing</b></code> or <code><b>increasing</b></code>.</p>
 
       <p>If the specified column's <code><b><a href=
       "tablelistWidget.html#col_showlinenumbers">-showlinenumbers</a></b></code>

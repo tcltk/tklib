@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of the tablelist move and movecolumn subcommands.
 #
-# Copyright (c) 2003-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -159,9 +159,11 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
     if {$data(hasFmtCmds)} {
 	set dispItem [formatItem $win $sourceKey $source $dispItem]
     }
+    if {[string match "*\t*" $dispItem]} {
+	set dispItem [mapTabs $dispItem]
+    }
     set col 0
-    foreach text [strToDispStr $dispItem] \
-	    colTags $data(colTagsList) \
+    foreach text $dispItem colTags $data(colTagsList) \
 	    {pixels alignment} $data(colList) {
 	if {$data($col-hide) && !$canElide} {
 	    incr col
@@ -173,10 +175,8 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	#
 	set cellFont [getCellFont $win $sourceKey $col]
 	set cellTags $colTags
-	foreach opt {-background -foreground -font} {
-	    if {[info exists data($sourceKey,$col$opt)]} {
-		lappend cellTags cell$opt-$data($sourceKey,$col$opt)
-	    }
+	if {[info exists data($sourceKey,$col-font)]} {
+	    lappend cellTags cell-font-$data($sourceKey,$col-font)
 	}
 
 	#
@@ -188,11 +188,8 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 
 	incr col
     }
-    foreach opt {-background -foreground -font} {
-	if {[info exists data($sourceKey$opt)]} {
-	    $w tag add row$opt-$data($sourceKey$opt) \
-		       $targetLine.0 $targetLine.end
-	}
+    if {[info exists data($sourceKey-font)]} {
+	$w tag add row-font-$data($sourceKey-font) $targetLine.0 $targetLine.end
     }
     if {[info exists data($sourceKey-elide)]} {
 	$w tag add elidedRow $targetLine.0 $targetLine.end+1c

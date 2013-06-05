@@ -56,8 +56,8 @@ hierarchy with the aid of indentations and expand/collapse controls.
 Interactive editing of the elements of a tablelist widget can be
 enabled for individual cells and for entire columns.  A great variety
 of widgets from the Tk core and from the packages tile, BWidget,
-Iwidgets, combobox, and Mentry (or Mentry_tile) is supported for being
-used as embedded edit window.  In addition, a rich set of keyboard
+Iwidgets, combobox, ctext, and Mentry (or Mentry_tile) is supported for
+being used as embedded edit window.  In addition, a rich set of keyboard
 bindings is provided for a comfortable navigation between the editable
 cells.
 
@@ -88,14 +88,13 @@ How to get it?
 --------------
 
 Tablelist is available for free download from the same URL as Wcb.  The
-distribution file is "tablelist5.7.tar.gz" for UNIX and
-"tablelist5_7.zip" for Windows.  These files contain the same
+distribution file is "tablelist5.9.tar.gz" for UNIX and
+"tablelist5_9.zip" for Windows.  These files contain the same
 information, except for the additional carriage return character
 preceding the linefeed at the end of each line in the text files for
 Windows.
 
-Tablelist is also hosted on SourceForge, as part of tklib, which in
-turn is contained in the tcllib project, having the address
+Tablelist is also included in tklib, which has the address
 
     http://core.tcl.tk/tklib
 
@@ -109,15 +108,15 @@ locations of these library directories are given by the "tcl_library"
 and "tk_library" variables, respectively.
 
 To install Tablelist on UNIX, "cd" to the desired directory and unpack
-the distribution file "tablelist5.7.tar.gz":
+the distribution file "tablelist5.9.tar.gz":
 
-    gunzip -c tablelist5.7.tar.gz | tar -xf -
+    gunzip -c tablelist5.9.tar.gz | tar -xf -
 
-This command will create a directory named "tablelist5.7", with the
+This command will create a directory named "tablelist5.9", with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "tablelist5_7.zip" into the directory "tablelist5.7",
+distribution file "tablelist5_9.zip" into the directory "tablelist5.9",
 with the subdirectories "demos", "doc", and "scripts".
 
 The file "tablelistEdit.tcl" in the "scripts" directory is only needed

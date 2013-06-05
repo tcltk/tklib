@@ -161,21 +161,22 @@ proc ::crosshair::bbox_add { w bbox } {
     }
     array set opts $config($w)
 
-    # Sort the coordinates and make sure the bbox is in format
-    # "lower-left upper-right". The larger Y is on the lower left and
-    # the larger X is on the upper right.
+    if {[info exists opts(bbox)]} {
+	set len [llength $opts(bbox)]
+    } else {
+	set len 0
+    }
+    set token bbox$w/$len
 
-    set x_coords [lsort -real -increasing [list [lindex $bbox 0] [lindex $bbox 2]]]
-    set y_coords [lsort -real -decreasing [list [lindex $bbox 1] [lindex $bbox 3]]]
-
-    set bbox [list \
-		  [lindex $x_coords 0] [lindex $y_coords 0] \
-		  [lindex $x_coords 1] [lindex $y_coords 1]]
-
-    lappend opts(bbox) $bbox
+    lappend opts(bbox) $token
     set config($w) [array get opts]
+ 
+    foreach {nllx nlly nurx nury} $bbox break
+    # Tcl 8.4 foreach-as-lassign hack
+    set rect [$w create rect \
+		  $nllx $nlly $nurx $nury \
+		  -tags $token -state hidden]
 
-    set token bbox$w/[llength $opts(bbox)]
     return $token
 }
 
@@ -225,6 +226,10 @@ proc ::crosshair::bbox_remove { token } {
     }
 
     set config($w) [array get opts]
+    
+    #--- Delete Bbox
+    $w delete $token 
+    
     return
 }
 
@@ -389,24 +394,24 @@ proc ::crosshair::GetBoundaries { w x y llxv llyv urxv uryv } {
     # memory, and code complexity.
 
     set first 1
-    foreach box $opts(bbox) {
+    foreach token $opts(bbox) {
 	# Ignore removed boxes, not yet cleaned up. Note that we have
 	# at least one active box here to touch by the loop. If we had
 	# none the bbox_remove command ensured that (x) above
 	# triggered.
-	if {![llength $box]} continue
+	if {$token eq {}} continue
 
-	# Ignore all boxes we are outside of. They do not go into the
-	# boundary calculation.
+	# Get the box data, then test for usability. Ignore all boxes
+	# we are outside of. They are not used for the boundary
+	# calculation.
+	set box [$w coords $token]
 	if {[Outside $box $x $y]} continue
 
 	# Unfold the box data and check if its boundaries are better
 	# (less restrictive) than we currently have, or if this is the
 	# first restriction.
-	set nllx [lindex $box 0]
-	set nlly [lindex $box 1]
-	set nurx [lindex $box 2]
-	set nury [lindex $box 3]
+
+	foreach {nllx nlly nurx nury} $box break
 
 	if {$first || ($nllx < $llx)} { set llx $nllx }
 	if {$first || ($nlly > $lly)} { set lly $nlly }
@@ -431,19 +436,17 @@ proc ::crosshair::GetBoundaries { w x y llxv llyv urxv uryv } {
 
 proc ::crosshair::Outside { box x y } {
     # Unfold box
-    set llx [lindex $box 0]
-    set lly [lindex $box 1]
-    set urx [lindex $box 2]
-    set ury [lindex $box 3]
-
+    foreach {llx lly urx ury} $box break
+ 
     #puts \tTEST($x,$y):$llx,$lly,$urx,$ury:[expr {($x < $llx) || ($x > $urx) || ($y < $lly) || ($y > $ury)}]
 
-    # Test each edge. Note that the border lines are considered as "outside".
+    # Test each edge. Note that the border lines are considered as
+    # "outside".
 
     expr {($x <= $llx) ||
 	  ($x >= $urx) ||
-	  ($y >= $lly) ||
-	  ($y <= $ury)}
+	  ($y <= $lly) ||
+	  ($y >= $ury)}
 }
 
 #----------------------------------------------------------------------
@@ -589,4 +592,4 @@ namespace eval ::crosshair {
 # ### ### ### ######### ######### #########
 ## Ready
 
-package provide crosshair 1.1
+package provide crosshair 1.2

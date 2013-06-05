@@ -1,3 +1,92 @@
+2013-05-26  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 5.9.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* scripts/*.tcl: Added the "-valign" column and cell configuration
+	  option; added the "-stripebackground" and "-stripeforeground" column
+	  configuration options; improvements for Windows 7; workaround for a
+	  text widget bug in Tk versions 8.5 and later; corrected a typo in the
+	  implementation of the "rowconfigure" subcommnad; fixed a bug related
+	  to resetting the "-(select)background" and "-(select)foreground
+	  options at column, row, and cell levels.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/*.tcl: Bumped the version number to 5.9.
+
+	* ../../examples/config_tile.tcl: Improvements for Windows 7.
+
+	* ../../examples/styles.tcl:      Using the "-stripebackground" option
+	* ../../examples/styles_tile.tcl: at column level, too.
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* doc/styles.png:   Updated screenshots.
+	* doc/win7Aero.png:
+
+2013-04-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt: Slightly extended.
+
+2013-04-20  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:               Slightly extended.
+	* doc/tablelistWidget.html:
+
+	* scripts/tablelistBind.tcl: Minor improvement.
+
+	* scripts/tablelistUtil.tcl:   Worked around a peculiarity of Tk on
+	* scripts/tablelistWidget.tcl: Windows, related to deleting an embedded
+	  window while resizing a text widget interactively.
+
+2013-04-19  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: Small correction.
+
+2013-04-17  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistSort.tcl:   Using "-algn top" for the embedded
+	* scripts/tablelistUtil.tcl:   message widgets displaying multiline
+	* scripts/tablelistWidget.tcl: texts.
+
+2013-04-16  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl: Minor improvement.
+
+2013-04-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: Minor optimization.
+
+2013-04-12  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 5.8.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* scripts/*.tcl: Support for interactive cell editing with the aid of
+	  the ctext widget; added the "canceledediting" subcommand; sped up the
+	  "selection" and "cellselection" subcommands by orders of magnitude;
+	  significally reduced the performance penalty imposed by the
+	  "-(select)background" and "-(select)foreground options at column,
+	  row, and cell levels; improved the keyboard traversal during
+	  interactive cell editing; using the "-data" option for most virtual
+	  events; improvements related to the selection mode "extended";
+	  further code improvements; eliminated a regression introduced in
+	  Tablelist 5.6, related to vertical scrolling under Tk 8.5 or later in
+	  the presence of embedded images or windows.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/*.tcl: Bumped the version number to 5.8.
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* doc/*.html: Added a "Virtual Events" section to the reference manual;
+	  updated to reflect the changes.
+
 2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*

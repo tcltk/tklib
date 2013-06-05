@@ -5,10 +5,10 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 # Demonstrates some ways of improving the look & feel of a tablelist widget.
 #
-# Copyright (c) 2002-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2002-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.7
+package require tablelist 5.9
 
 wm title . "Tablelist Styles"
 
@@ -23,20 +23,15 @@ if {[catch {tk windowingsystem} winSys] != 0} {
 	macintosh { set winSys classic }
     }
 }
-switch $winSys {
-    x11 {
-	#
-	# Create the font TkDefaultFont if not yet present
-	#
-	catch {font create TkDefaultFont -family Helvetica -size -12}
+if {[string compare $winSys "x11"] == 0} {
+    #
+    # Create the font TkDefaultFont if not yet present
+    #
+    catch {font create TkDefaultFont -family Helvetica -size -12}
 
-	option add *Font		TkDefaultFont
-	option add *selectBackground	#678db2
-	option add *selectForeground	white
-    }
-    classic {
-	option add *background		#dedede
-    }
+    option add *Font			TkDefaultFont
+    option add *selectBackground	#678db2
+    option add *selectForeground	white
 }
 
 #
@@ -76,13 +71,15 @@ for {set n 0} { $n < 8} {incr n} {
 	6 {
 	    $tbl configure -stripebackground #e4e8ec
 	    foreach col {1 3} {
-		$tbl columnconfigure $col -background ivory
+		$tbl columnconfigure $col -background ivory \
+		    -stripebackground #d8dcd1
 	    }
 	}
 	7 {
 	    $tbl configure -stripebackground #e4e8ec -showseparators yes
 	    foreach col {1 3} {
-		$tbl columnconfigure $col -background ivory
+		$tbl columnconfigure $col -background ivory \
+		    -stripebackground #d8dcd1
 	    }
 	}
     }

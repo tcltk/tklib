@@ -8,7 +8,7 @@
 #   - Private procedures performing RGB <-> HSV conversions
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2005-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1396,8 +1396,6 @@ proc tablelist::vistaTheme {} {
 	-foreground		SystemWindowText \
 	-disabledforeground	SystemDisabledText \
 	-stripebackground	"" \
-	-selectbackground	SystemHighlight \
-	-selectforeground	SystemHighlightText \
 	-selectborderwidth	0 \
 	-font			TkTextFont \
 	-labelforeground	SystemButtonText \
@@ -1409,9 +1407,7 @@ proc tablelist::vistaTheme {} {
 
     switch [winfo rgb . SystemHighlight] {
 	"13107 39321 65535" {					;# Aero
-	    set themeDefaults(-selectbackground) #d8effb
-	    set themeDefaults(-selectforeground) SystemWindowText
-
+	    set selectFg	SystemWindowText
 	    set labelBg		#f8f9fa
 	    set activeBg	#c3eeff
 	    set pressedBg	#95d8f7
@@ -1421,13 +1417,17 @@ proc tablelist::vistaTheme {} {
 	    set arrowStyle	flat7x4
 
 	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
+		set selectBg	#d8effb
 		set treeStyle	vistaAero
 	    } else {						;# Win 7
+		set selectBg	#cee2fc
 		set treeStyle	win7Aero
 	    }
 	}
 
 	default {						;# Win Classic
+	    set selectBg	SystemHighlight
+	    set selectFg	SystemHighlightText
 	    set labelBg		SystemButtonFace
 	    set activeBg	SystemButtonFace
 	    set pressedBg	SystemButtonFace
@@ -1445,6 +1445,8 @@ proc tablelist::vistaTheme {} {
     }
 
     array set themeDefaults [list \
+	-selectbackground	$selectBg \
+	-selectforeground	$selectFg \
         -labelbackground	$labelBg \
 	-labeldisabledBg	$labelBg \
 	-labelactiveBg		$activeBg \
@@ -1530,8 +1532,6 @@ proc tablelist::xpnativeTheme {} {
 	-foreground		SystemWindowText \
 	-disabledforeground	SystemDisabledText \
 	-stripebackground	"" \
-	-selectbackground	SystemHighlight \
-	-selectforeground	SystemHighlightText \
 	-selectborderwidth	0 \
 	-font			TkTextFont \
 	-labelforeground	SystemButtonText \
@@ -1544,6 +1544,8 @@ proc tablelist::xpnativeTheme {} {
     switch [winfo rgb . SystemHighlight] {
 	"12593 27242 50629" {					;# Win XP Blue
 	    set xpStyle		1
+	    set selectBg	SystemHighlight
+	    set selectFg	SystemHighlightText
 	    set labelBg		#ebeadb
 	    set activeBg	#faf8f3
 	    set pressedBg	#dedfd8
@@ -1561,6 +1563,8 @@ proc tablelist::xpnativeTheme {} {
 
 	"37779 41120 28784" {					;# Win XP Olive
 	    set xpStyle		1
+	    set selectBg	SystemHighlight
+	    set selectFg	SystemHighlightText
 	    set labelBg		#ebeadb
 	    set activeBg	#faf8f3
 	    set pressedBg	#dedfd8
@@ -1578,6 +1582,8 @@ proc tablelist::xpnativeTheme {} {
 
 	"45746 46260 49087" {					;# Win XP Silver
 	    set xpStyle		1
+	    set selectBg	SystemHighlight
+	    set selectFg	SystemHighlightText
 	    set labelBg		#f9fafd
 	    set activeBg	#fefefe
 	    set pressedBg	#ececf3
@@ -1594,9 +1600,7 @@ proc tablelist::xpnativeTheme {} {
 	}
 
 	"13107 39321 65535" {					;# Aero
-	    set themeDefaults(-selectbackground) #d8effb
-	    set themeDefaults(-selectforeground) SystemWindowText
-
+	    set selectFg	SystemWindowText
 	    set xpStyle		0
 	    set labelBg		#f8f9fa
 	    set activeBg	#c3eeff
@@ -1607,13 +1611,17 @@ proc tablelist::xpnativeTheme {} {
 	    set arrowStyle	flat7x4
 
 	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
+		set selectBg	#d8effb
 		set treeStyle	vistaAero
 	    } else {						;# Win 7
+		set selectBg	#cee2fc
 		set treeStyle	win7Aero
 	    }
 	}
 
 	default {						;# Win Classic
+	    set selectBg	SystemHighlight
+	    set selectFg	SystemHighlightText
 	    set xpStyle		0
 	    set labelBg		SystemButtonFace
 	    set activeBg	SystemButtonFace
@@ -1632,6 +1640,8 @@ proc tablelist::xpnativeTheme {} {
     }
 
     array set themeDefaults [list \
+	-selectbackground	$selectBg \
+	-selectforeground	$selectFg \
         -labelbackground	$labelBg \
 	-labeldisabledBg	$labelBg \
 	-labelactiveBg		$activeBg \

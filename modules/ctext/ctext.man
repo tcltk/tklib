@@ -1,6 +1,11 @@
 [comment {# RCS: @(#) $Id: ctext.man,v 1.8 2011/04/18 19:49:48 andreas_kupries Exp $}]
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin ctext n 3.3]
+[see_also re_syntax]
+[see_also text]
+[keywords {syntax highlighting}]
+[keywords text]
+[keywords widget]
 [copyright {George Peter Staplin <GeorgePS@XMission.com>}]
 [moddesc   {Ctext a text widget with highlighting support}]
 [titledesc {Ctext a text widget with highlighting support}]
@@ -141,7 +146,6 @@ the new value.
 
 [list_end]
 
-
 [section {WIDGET OPTIONS}]
 
 [list_begin tkoptions]
@@ -172,7 +176,7 @@ line foreground.  The default is black.
 
 Changes the selected line
 background.  The default is yellow.
-	
+
 [tkoption_def -linemap_mark_command "" ""]
 
 Calls a procedure or command
@@ -206,7 +210,7 @@ are markable with the mouse.  The default is 1.
 [example {
 	package require Tk
 	package require ctext
-	
+
 	proc main {} {
 	pack [frame .f] -fill both -expand 1
 	pack [scrollbar .f.s -command {.f.t yview}] -side right -fill y
@@ -241,11 +245,11 @@ are markable with the mouse.  The default is 1.
 	ctext::addHighlightClassForRegexp .f.t paths lightblue {\.[a-zA-Z0-9\_\-]+}
 	ctext::addHighlightClassForRegexp .f.t comments khaki {#[^\n\r]*}
 	.f.t fastinsert end [info body main]
-	
+
 	pack [frame .f1] -fill x
 
 	.f.t highlight 1.0 end
-	
+
 	pack [button .f1.exit -text Exit -command exit] -side left
 
 	pack [entry .e] -side bottom -fill x
@@ -253,15 +257,14 @@ are markable with the mouse.  The default is 1.
 	bind .e <Return> {eval [.e get]}
 	}
 	main
-	
+
 }]
 
 Further examples are in the source package for ctext.
 
 [section THANKS]
 Kevin Kenny, Neil Madden, Jeffrey Hobbs, Richard Suchenwirth,
-Johan Bengtsson, Mac Cody, Günther, Andreas Sievers, and Michael Schlenker.
-
-[see_also text re_syntax]
-[keywords text widget "syntax highlighting"]
+Johan Bengtsson, Mac Cody, GÃ¼nther, Andreas Sievers, and Michael Schlenker.
+[vset CATEGORY ctext]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]
