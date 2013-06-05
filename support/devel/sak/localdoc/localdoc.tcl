@@ -51,8 +51,8 @@ proc ::sak::localdoc::run {} {
 
     set map  {
 	.man     .html
-	modules/ tcllib/files/modules/
-	apps/    tcllib/files/apps/
+	modules/ tklib/files/modules/
+	apps/    tklib/files/apps/
     }
 
     set toc  [string map $map [fileutil::cat support/devel/sak/doc/toc.txt]]
@@ -64,7 +64,7 @@ proc ::sak::localdoc::run {} {
     dtplite::do \
 	[list \
 	     -toc $toc \
-	     -nav {Tcllib Home} $nav \
+	     -nav {Tklib Home} $nav \
 	     -post+toc Categories $cats \
 	     -post+toc Modules $mods \
 	     -post+toc Applications $apps \
@@ -78,7 +78,7 @@ proc ::sak::localdoc::run {} {
     dtplite::do \
 	[list \
 	     -toc $toc \
-	     -nav {Tcllib Home} $nav \
+	     -nav {Tklib Home} $nav \
 	     -post+toc Categories $cats \
 	     -post+toc Modules $mods \
 	     -post+toc Applications $apps \

@@ -1,3 +1,11 @@
+2013-04-03  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* apps/diagram-viewer: Renamed 'dia' to avoid clashes with the
+	* apps/diagram-viewer.man: Gnome 'dia' application.
+	* support/installation/modules.tcl:
+
+	* 
+
 2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*

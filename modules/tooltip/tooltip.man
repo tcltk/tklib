@@ -1,5 +1,9 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin tooltip n 1.4.4]
+[keywords balloon]
+[keywords help]
+[keywords hover]
+[keywords tooltip]
 [copyright {1996-2008, Jeffrey Hobbs}]
 [moddesc   {Tooltip management}]
 [titledesc {Tooltip management}]
@@ -25,13 +29,13 @@ Manage the tooltip package using the following subcommands.
 
 [opt_def clear [arg index]]
 
-Prevents the specified widgets from showing tooltips. [arg pattern] 
+Prevents the specified widgets from showing tooltips. [arg pattern]
 is a glob pattern and defaults to matching all widgets.
 
 [opt_def delay [opt [arg millisecs]]]
 
 Query or set the hover delay. This is the interval that the pointer must remain
-over the widget before the tooltip is displayed. The delay is specified in 
+over the widget before the tooltip is displayed. The delay is specified in
 milliseconds and must be greater than 50ms.
 With no argument the current delay is returned.
 
@@ -136,6 +140,6 @@ pack [text .txt]
 tooltip::tooltip .txt -tag TIP-1 "tooltip one text"
 .txt insert end "An example of a " {} "tooltip" TIP-1 " tag.\n" {}
 }]
-
-[keywords tooltip hover balloon help]
+[vset CATEGORY tooltip]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

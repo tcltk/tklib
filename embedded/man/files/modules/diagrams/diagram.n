@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/diagrams/diagram\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'diagram\&.man' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -3205,6 +3205,13 @@ and directin, and operations on it\&.
 General support class handling various vector operations\&.
 .PP
 .SH REFERENCES
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fIdiagram\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH KEYWORDS
 2D geometry, arc, arrow, box, canvas, circle, diagram, diamond, drawing, drum, ellipse, image, interpolation, intersection, line, move, picture, plane geometry, plotting, point, raster image, spline, text, vector
 .SH CATEGORY

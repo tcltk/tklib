@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/man/files/modules/ico/ico\&.n' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'ico\&.man' by tcllib/doctools with format 'nroff'
 '\"
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -456,5 +456,12 @@ There is currently no way to read alpha channel information from 32bpp icons\&.
 .PP
 Tk images do not have an alpha channel so the only way to write a true 32bpp icon is from
 a color list\&. writing a 32bpp icon from a Tkimage is identical to writing a 24bpp icon\&.
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fIico\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH KEYWORDS
 dll, entry, exe, ico, icon

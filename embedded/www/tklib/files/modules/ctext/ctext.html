@@ -92,7 +92,7 @@
     }
 --></style>
 </head>
-<! -- Generated from file '/home/aku/Projects/Tcllib/tklib/embedded/www/tklib/files/modules/ctext/ctext.html' by tcllib/doctools with format 'html'
+<! -- Generated from file 'ctext.man' by tcllib/doctools with format 'html'
    -->
 <! -- Copyright &copy; George Peter Staplin &lt;GeorgePS@XMission.com&gt;
    -->
@@ -100,7 +100,7 @@
    -->
 <body><div class="doctools">
 <hr> [
-   <a href="../../../../../../../../home">Tcllib Home</a>
+   <a href="../../../../../../../../home">Tklib Home</a>
 | <a href="../../../../toc.html">Main Table Of Contents</a>
 | <a href="../../../toc.html">Table Of Contents</a>
 | <a href="../../../../index.html">Keyword Index</a>
@@ -123,6 +123,7 @@
 <li class="section"><a href="#section5">WIDGET OPTIONS</a></li>
 <li class="section"><a href="#section6">EXAMPLE</a></li>
 <li class="section"><a href="#section7">THANKS</a></li>
+<li class="section"><a href="#section8">Bugs, Ideas, Feedback</a></li>
 <li class="section"><a href="#see-also">See Also</a></li>
 <li class="section"><a href="#keywords">Keywords</a></li>
 <li class="section"><a href="#copyright">Copyright</a></li>
@@ -312,7 +313,6 @@ are markable with the mouse.  The default is 1.</p></dd>
 <pre class="example">
 	package require Tk
 	package require ctext
-	
 	proc main {} {
 	pack [frame .f] -fill both -expand 1
 	pack [scrollbar .f.s -command {.f.t yview}] -side right -fill y
@@ -326,17 +326,14 @@ are markable with the mouse.  The default is 1.</p></dd>
 	ctext::addHighlightClassForRegexp .f.t paths lightblue {\.[a-zA-Z0-9\_\-]+}
 	ctext::addHighlightClassForRegexp .f.t comments khaki {#[^\n\r]*}
 	.f.t fastinsert end [info body main]
-	
 	pack [frame .f1] -fill x
 	.f.t highlight 1.0 end
-	
 	pack [button .f1.exit -text Exit -command exit] -side left
 	pack [entry .e] -side bottom -fill x
 	.e insert end &quot;ctext::deleteHighlightClass .f.t &quot;
 	bind .e &lt;Return&gt; {eval [.e get]}
 	}
 	main
-	
 </pre>
 <p>Further examples are in the source package for ctext.</p>
 </div>
@@ -344,11 +341,19 @@ are markable with the mouse.  The default is 1.</p></dd>
 <p>Kevin Kenny, Neil Madden, Jeffrey Hobbs, Richard Suchenwirth,
 Johan Bengtsson, Mac Cody, G&uuml;nther, Andreas Sievers, and Michael Schlenker.</p>
 </div>
+<div id="section8" class="section"><h2><a name="section8">Bugs, Ideas, Feedback</a></h2>
+<p>This document, and the package it describes, will undoubtedly contain
+bugs and other problems.
+Please report such in the category <em>ctext</em> of the
+<a href="http://core.tcl.tk/tklib/reportlist">Tklib Trackers</a>.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation.</p>
+</div>
 <div id="see-also" class="section"><h2><a name="see-also">See Also</a></h2>
-<p><a href="../../../../index.html#key6">re_syntax</a>, <a href="../../../../index.html#key7">text</a></p>
+<p><a href="../../../../index.html#key8">re_syntax</a>, <a href="../../../../index.html#key7">text</a></p>
 </div>
 <div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
-<p><a href="../../../../index.html#key15">syntax highlighting</a>, <a href="../../../../index.html#key7">text</a>, <a href="../../../../index.html#key1">widget</a></p>
+<p><a href="../../../../index.html#key15">syntax highlighting</a>, <a href="../../../../index.html#key7">text</a>, <a href="../../../../index.html#key10">widget</a></p>
 </div>
 <div id="copyright" class="section"><h2><a name="copyright">Copyright</a></h2>
 <p>Copyright &copy; George Peter Staplin &lt;GeorgePS@XMission.com&gt;</p>

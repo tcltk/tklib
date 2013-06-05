@@ -1,5 +1,12 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin widget_listentry n 0.1]
+[keywords {data entry lists}]
+[keywords {data entry ordered list}]
+[keywords {data entry set of strings}]
+[keywords {data entry unordered list}]
+[keywords {list entry panel}]
+[keywords {set entry panel}]
+[keywords widget]
 [moddesc   {widget::listentry widget}]
 [titledesc {widget::listentry widget}]
 [require Tcl 8.5]
@@ -11,10 +18,6 @@
 [require tooltip]
 [require img::png]
 [require msgcat]
-[keywords {list entry panel} {data entry lists} widget]
-[keywords {set entry panel} {data entry unordered list}]
-[keywords {data entry ordered list}]
-[keywords {data entry set of strings}]
 [description]
 
 This package provides a megawidget for the interactive entry of
@@ -41,7 +44,6 @@ This command creates and configures new instances of the widget.
 [para] The result of the command is the pathname of the new widget.
 
 [list_end]
-
 
 [comment {= = == === ===== ======== ============= =====================}]
 [comment {% % %% %%% %%%%% %%%%%%%% %%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%}]
@@ -111,7 +113,6 @@ options can however be set both during construction- and runtime.
 [subsection {Widget Construction-Time Only Options}]
 
 [list_begin options][comment {--- options -----------------------------}]
-
 
 [comment {_ _ __ ___ _____ ________ _____________ _____________________}]
 [opt_def -ordered boolean]
@@ -223,7 +224,6 @@ where [arg text] is the string to transform.
 
 [para] The default is to not transform the entered strings.
 
-
 [comment {_ _ __ ___ _____ ________ _____________ _____________________}]
 [opt_def -browse cmdprefix]
 
@@ -323,9 +323,10 @@ widget. This option defaults to [const yellow].
 
 [list_end]
 
-
 [comment {% % %% %%% %%%%% %%%%%%%% %%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%}]
 [comment {% % %% %%% %%%%% %%%%%%%% %%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%}]
 [section Example]
 [example {}]
+[vset CATEGORY widget::listentry]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]

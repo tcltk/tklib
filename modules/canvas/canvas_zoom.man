@@ -1,5 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin canvas::zoom n 0.2.1]
+[keywords zoom]
 [moddesc   {Variations on a canvas}]
 [titledesc {Zoom control for canvas::sqmap}]
 [require Tcl 8.4]
@@ -27,7 +28,6 @@ following sections.
 The result of the command is [arg pathName].
 
 [list_end]
-
 
 [subsection Options]
 
@@ -63,8 +63,6 @@ order.
 
 The widget supports no methods beyond the standard ([method configure],
 [method cget], etc.).
-
-
-[keywords zoom]
+[vset CATEGORY canvas]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]
-
