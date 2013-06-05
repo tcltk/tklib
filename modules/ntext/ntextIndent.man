@@ -1,5 +1,14 @@
 [comment {-*- tcl -*- ntextIndent manpage}]
 [manpage_begin ntextIndent n 0.81]
+[see_also bindtags]
+[see_also ntext]
+[see_also re_syntax]
+[see_also regexp]
+[see_also text]
+[keywords bindtags]
+[keywords re_syntax]
+[keywords regexp]
+[keywords text]
 [moddesc   {ntext Indentation for the Text Widget}]
 [titledesc {ntext Indentation for the Text Widget}]
 [require Tcl 8.5]
@@ -96,7 +105,6 @@ If the widget is in [arg -word] [arg wrap] mode, and if [var ::ntext::classicWra
 In other cases, i.e. if the widget is in [arg -word] [arg char] or [arg -word] [arg none] mode, or if [var ::ntext::classicWrap] is set to [const 1],  [fun ::ntext::wrapIndent] will remove the indentation of the logical lines within the range specified by the function's arguments.
 [list_end]
 
-
 [section EXAMPLES]
 
 To switch on [emph Ntext] 's indentation and use it in widget .t:
@@ -136,11 +144,4 @@ To switch to [arg -wrap] [arg char] mode:
 .t configure -wrap char
 ::ntext::wrapIndent .t
 }]
-
-
-
-
-[see_also ntext]
-[see_also text bindtags regexp re_syntax]
-[keywords text bindtags regexp re_syntax]
 [manpage_end]

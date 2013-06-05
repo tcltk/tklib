@@ -1,5 +1,10 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin canvas::snap n 1.0.1]
+[keywords canvas]
+[keywords image]
+[keywords photo]
+[keywords {print screen}]
+[keywords snapshot]
 [copyright {2004 George Petasis (http://wiki.tcl.tk/1404)}]
 [copyright {2010 Documentation, Andreas Kupries}]
 [moddesc   {Variations on a canvas}]
@@ -30,7 +35,4 @@ forces the toplevel window the canvas is in to the top of the stacking
 order.
 
 [list_end]
-
-[keywords canvas photo image snapshot {print screen}]
 [manpage_end]
-

@@ -1,12 +1,13 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
 [manpage_begin canvas::drag n [vset VERSION]]
+[keywords canvas]
+[keywords dragging]
 [moddesc   {Variations on a canvas}]
 [titledesc {Manage the dragging of canvas items or item groups}]
 [require Tcl 8.5]
 [require Tk 8.5]
 [require canvas::drag [opt [vset VERSION]]]
-[keywords canvas dragging]
 [description]
 
 This package provides utility commands to setup and rmeove dragging of

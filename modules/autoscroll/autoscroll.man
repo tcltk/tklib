@@ -1,5 +1,7 @@
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin autoscroll n 1.1]
+[keywords scroll]
+[keywords scrollbar]
 [moddesc   {Automatic mapping of scrollbars}]
 [titledesc {Provides for a scrollbar to automatically mapped and unmapped as needed}]
 [require Tcl]
@@ -61,7 +63,4 @@ pack .scrolly -side right -fill y
 pack .t -side left -fill both -expand 1
 ::autoscroll::autoscroll .scrolly
 }]
-
-
-[keywords scroll scrollbar]
 [manpage_end]

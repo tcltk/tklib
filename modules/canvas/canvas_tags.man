@@ -1,12 +1,16 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
 [manpage_begin canvas::tag n [vset VERSION]]
+[keywords {append tag}]
+[keywords canvas]
+[keywords {insert tag}]
+[keywords {remove tag}]
+[keywords tags]
 [moddesc   {Variations on a canvas}]
 [titledesc {Easier management of the tags on canvas items or item groups}]
 [require Tcl 8.5]
 [require Tk 8.5]
 [require canvas::tag [opt [vset VERSION]]]
-[keywords canvas tags {append tag} {remove tag} {insert tag}]
 [description]
 
 This package provides utility commands for easier management of the
