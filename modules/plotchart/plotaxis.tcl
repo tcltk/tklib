@@ -489,10 +489,6 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
     set numeric 1
     set gmt     0
 
-    console show
-    puts $args
-    puts [lsearch $args "-timeformat"]
-
     if { $xdelt eq {} } {
         set numeric 1
 
@@ -584,7 +580,6 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
             $w create line $xcrd $ycrd2 $xcrd $ycrd -tag [list xaxis $w] -fill $linecolor
 
             if { $config($w,bottomaxis,shownumbers) } {
-                puts "$xcrd - $ycrd3"
                 $w create text $xcrd $ycrd3 -text $xlabel -tag [list xaxis $w] -anchor n \
                      -fill $textcolor -font $textfont
             }
