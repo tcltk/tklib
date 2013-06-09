@@ -1,3 +1,6 @@
+2013-06-09  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotaxis.tcl: Remove leftover print statements
+
 2013-05-25  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Implement the options -timeformat and -gmt as per bug 3613718
 	* plotpriv.tcl: Use the original axis options to reconstruct the axis for stripcharts
