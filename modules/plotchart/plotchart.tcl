@@ -1042,11 +1042,14 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
    viewPort         $w $pxmin $pymin $pxmax $pymax
    worldCoordinates $w $xmin  $ymin  $xmax  $ymax
 
-   if { $xdelt eq {} } {
+   if { $xdelt eq {} || [lsearch $argv "-timeformat"] >= 0 } {
+       set known_args {}
        foreach {arg val} [array get options] {
            switch -exact -- $arg {
-               -xlabels {
-                   DrawXaxis $w $xmin  $xmax  $xdelt $arg $val
+               -xlabels    -
+               -timeformat -
+               -gmt        {
+                   lappend known_args $arg $val
                }
                -ylabels {
                    # Ignore
@@ -1056,6 +1059,7 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
                }
            }
        }
+       DrawXaxis   $w $xmin  $xmax  $xdelt {*}$known_args
    } else {
        DrawXaxis   $w $xmin  $xmax  $xdelt
    }
@@ -1090,6 +1094,11 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
    #
    $newchart dataconfig labeldot -colour red -type symbol -symbol dot
 
+   #
+   # Store the options for later use (especially stripcharts)
+   #
+   set scaling($w,axisoptions) $argv
+
    return $newchart
 }
 
@@ -1106,7 +1115,13 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
 #    By default the entire canvas will be dedicated to the stripchart.
 #    The stripchart will be drawn with axes
 #
+#    The option "-xlabels" makes no sense for stripcharts.
+#
 proc ::Plotchart::createStripchart { w xscale yscale args } {
+
+   if { [lsearch $args "-xlabels"] >= 0 } {
+       return -code error "The option \"-xlabels\" is invalid - use \"-timeformat\" if you want date/time labels"
+   }
 
    return [CreateXYPlotImpl stripchart $w $xscale $yscale $args]
 }
