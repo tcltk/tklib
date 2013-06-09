@@ -1,5 +1,5 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 2.0.2]
+[manpage_begin Plotchart n 2.1.1]
 [keywords {3D bars}]
 [keywords {3D surfaces}]
 [keywords {bar charts}]
@@ -20,7 +20,7 @@
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.5]]
 [require Tk [opt 8.5]]
-[require Plotchart [opt 2.1.0]]
+[require Plotchart [opt 2.1.1]]
 
 [description]
 [para]
@@ -153,12 +153,16 @@ the empty string.
 [emph "-box {measures}:"] See [sectref "ARRANGING MULTIPLE PLOTS IN A CANVAS"]
 [item]
 [emph "-axesbox {measures}:"] See [sectref "ARRANGING MULTIPLE PLOTS IN A CANVAS"]
+[item]
+[emph "-timeformat format:"] See [sectref "USING DATE/TIME LABELS"]
+[item]
+[emph "-gmt 0/1:"] See [sectref "USING DATE/TIME LABELS"]
 [list_end]
 
 [list_end]
 [para]
 
-[call [cmd ::Plotchart::createStripchart] [arg w] [arg xaxis] [arg yaxis]]
+[call [cmd ::Plotchart::createStripchart] [arg w] [arg xaxis] [arg yaxis] [arg args]]
 
 Create a new strip chart (configuration type: stripchart). The
 only difference to a regular XY plot is
@@ -178,10 +182,13 @@ A 3-element list containing minimum, maximum and stepsize for the y-axis, in thi
 For an inverted axis, where the maximum appears at the bottom,
 use: maximum, minimum and a [emph negative] stepsize.
 
+[arg_def list args in]
+Zero or more options - see the XY-plot for more information.
+
 [list_end]
 [para]
 
-[call [cmd ::Plotchart::createTXPlot] [arg w] [arg timeaxis] [arg xaxis]]
+[call [cmd ::Plotchart::createTXPlot] [arg w] [arg timeaxis] [arg xaxis] [arg args]]
 
 Create a new time-x-plot (configuration type: txplot). The horizontal axis represents the date/time
 of the data and the vertical axis the values themselves.
@@ -201,10 +208,13 @@ vertical axis, in this order.
 For an inverted axis, where the maximum appears at the bottom,
 use: maximum, minimum and a [emph negative] stepsize.
 
+[arg_def list args in]
+Zero or more options - see the XY-plot for more information.
+
 [list_end]
 [para]
 
-[call [cmd ::Plotchart::createXLogYPlot] [arg w] [arg xaxis] [arg yaxis]]
+[call [cmd ::Plotchart::createXLogYPlot] [arg w] [arg xaxis] [arg yaxis] [arg args]]
 
 Create a new xy-plot where the y-axis has a logarithmic scale (configuration type: xlogyplot).
 [para]
@@ -224,10 +234,13 @@ use: maximum, minimum and a [emph negative] stepsize.
 A 2-element list containing minimum and maximum for the y-axis, in this order.
 Note that an inverted logarithmic axis is [emph not] supported.
 
+[arg_def list args in]
+Zero or more options - see the XY-plot for more information.
+
 [list_end]
 [para]
 
-[call [cmd ::Plotchart::createLogXYPlot] [arg w] [arg xaxis] [arg yaxis]]
+[call [cmd ::Plotchart::createLogXYPlot] [arg w] [arg xaxis] [arg yaxis] [arg args]]
 
 Create a new xy-plot where the x-axis has a logarithmic scale (configuration type: logxyplot).
 [para]
@@ -247,10 +260,13 @@ A 3-element list containing minimum, maximum and stepsize for the y-axis, in thi
 For an inverted axis, where the maximum appears on the left-hand side,
 use: maximum, minimum and a [emph negative] stepsize.
 
+[arg_def list args in]
+Zero or more options - see the XY-plot for more information.
+
 [list_end]
 [para]
 
-[call [cmd ::Plotchart::createLogXLogYPlot] [arg w] [arg xaxis] [arg yaxis]]
+[call [cmd ::Plotchart::createLogXLogYPlot] [arg w] [arg xaxis] [arg yaxis] [arg args]]
 
 Create a new xy-plot where both the x-axis and the y-axis have a logarithmic scale
 (configuration type: logxlogyplot).
@@ -270,10 +286,13 @@ Note that an inverted logarithmic axis is [emph not] supported.
 A 2-element list containing minimum and maximum for the y-axis, in this order.
 Note that an inverted logarithmic axis is [emph not] supported.
 
+[arg_def list args in]
+Zero or more options - see the XY-plot for more information.
+
 [list_end]
 [para]
 
-[call [cmd ::Plotchart::createPolarPlot] [arg w] [arg radius_data]]
+[call [cmd ::Plotchart::createPolarPlot] [arg w] [arg radius_data] [arg args]]
 
 Create a new polar plot (configuration type: polarplot).
 
@@ -284,6 +303,9 @@ Name of the [emph existing] canvas widget to hold the plot.
 [arg_def list radius_data in]
 A 2-element list containing maximum radius and stepsize for the radial
 axis, in this order.
+
+[arg_def list args in]
+Zero or more options - see the XY-plot for more information.
 
 [list_end]
 [para]
@@ -3594,6 +3616,38 @@ for {set i 0} {$i < 9} {incr i} {
 
 [section "CONTROL DISPLAYS"]
 TODO
+
+
+[section "USING DATE/TIME LABELS"]
+The options -timeformat and -gmt are used to control the display of date/time
+labels along the x-axis for those plot types for which it makes sense. These
+options were implemented to take care of date/time labels for stripcharts,
+as you can also use custom labels (the option -xlabels) if the axis is "static".
+Since this is not the case for stripcharts, this was not an option (Tcllib/Tklib bug 3613718).
+
+The example below illustrates how to use the -timeformat option. The -gmt option
+merely suppresses the handling of daylight saving time by the [lb]clock format[rb] command.
+
+[example {
+package require Plotchart
+
+pack [canvas .c -width 500 -bg white]
+
+#
+# Note that we need to present the x values as clock seconds
+#
+set start [clock scan  "0:00"]
+set stop  [clock scan "10:00"]
+set s [Plotchart::createStripchart .c [list $start $stop 7200] {0 10 1} -timeformat "%H:%M"]
+
+foreach {x y} {0 0 2 5 5 2 9 9 12 10} {
+    set x [expr {$start + 3600 * $x}] ;# Convert hour to clock seconds
+    $s plot a $x $y
+}}]
+
+The [emph plot] subcommand simply interprets the x and y data as straightforward
+numbers, so that you need to do the conversion from date/time to "clock seconds" yourself.
+
 
 [section "ARRANGING MULTIPLE PLOTS IN A CANVAS"]
 

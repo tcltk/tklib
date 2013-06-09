@@ -1046,7 +1046,7 @@ proc ::Plotchart::DrawStripData { w series xcrd ycrd } {
       set ymax  $scaling($w,ymax)
 
       worldCoordinates $w $xmin $ymin $xmax $ymax
-      DrawXaxis $w $xmin $xmax $xdelt
+      DrawXaxis $w $xmin $xmax $xdelt {*}$scaling($w,axisoptions)
 
       foreach {pxminorg pyminorg} [coordsToPixel $w $xminorg $ymin] {break}
       foreach {pxmin pymin}       [coordsToPixel $w $xmin    $ymin] {break}

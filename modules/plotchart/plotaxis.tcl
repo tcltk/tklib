@@ -487,6 +487,7 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
     set xts     {}
     set xbackup {}
     set numeric 1
+    set gmt     0
 
     if { $xdelt eq {} } {
         set numeric 1
@@ -513,7 +514,7 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
 
                 }
                 default {
-                    error "Argument $arg not recognized"
+                    error "Argument $arg not recognized or incorrectly used"
                 }
             }
         }
@@ -530,10 +531,25 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
             }
         }
         set dxminor [expr {$xdelt/($config($w,bottomaxis,minorticks)+1.0)}]
+
+        foreach {arg val} $args {
+            switch -exact -- $arg {
+                -timeformat {
+                    # Format the axis labels via [clock format]
+                    set numeric    2
+                    set timeformat $val
+                    set scaling($w,xdelt) $xdelt
+                }
+                -gmt {
+                    set gmt $val
+                }
+            }
+        }
     }
+
     foreach x $xs xt $xts xb $xbackup {
 
-        if { $numeric } {
+        if { $numeric > 0 } {
             foreach {xcrd ycrd} [coordsToPixel $w $xt $scaling($w,ymin)] {break}
         } else {
             foreach {xcrd ycrd} [coordsToPixel $w $xb $scaling($w,ymin)] {break}
@@ -549,9 +565,13 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
             # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
             #
             if { [string is double $xt] } {
-                set xlabel [format "%.12g" $xt]
-                if { $format != "" } {
-                    set xlabel [FormatNumber $format $xt]
+                if { $numeric == 1 } {
+                    set xlabel [format "%.12g" $xt]
+                    if { $format != "" } {
+                        set xlabel [FormatNumber $format $xt]
+                    }
+                } else {
+                    set xlabel [clock format [expr {int($xt)}] -format $timeformat -gmt $gmt]
                 }
             } else {
                 set xlabel $xt

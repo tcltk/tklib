@@ -1,8 +1,20 @@
+2013-06-09  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotaxis.tcl: Remove leftover print statements
+
+2013-05-25  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Implement the options -timeformat and -gmt as per bug 3613718
+	* plotpriv.tcl: Use the original axis options to reconstruct the axis for stripcharts
+	* plotaxis.tcl: Implement the options -timeformat and -gmt
+	* plotchart.man: Document the options -timeformat and -gmt
+	* pkgIndex.tcl: Bumped version to 2.1.1
+	* test_stripchart.tcl: Test and demonstraton of stripchart with date/time
+
+
 2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
 	* Released and tagged Tklib 0.6 ========================
-	* 
+	*
 
 2013-03-10  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Basic support for subtexts with axes, accurate factor "torad", pixelToCoords extended
