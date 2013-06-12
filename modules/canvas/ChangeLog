@@ -1,3 +1,7 @@
+2013-06-12  Andreas Kupries  <andreask@activestate.com>
+
+	* pkgIndex.tcl: Fixed oops. Forgot to add new package to index.
+
 2013-06-05  Andreas Kupries  <andreask@activestate.com>
 
 	* canvas_gradient.man: [Ticket [3651bb1b96]] Integrated
