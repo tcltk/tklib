@@ -1,3 +1,6 @@
+2013-06-12  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Correct the version number in the [package provide] command
+
 2013-06-09  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotaxis.tcl: Remove leftover print statements
 
