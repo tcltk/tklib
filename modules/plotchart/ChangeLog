@@ -1,5 +1,16 @@
+2013-06-15  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Implemented a ternary diagram
+	* plotpriv.tcl:  Implemented methods for a ternary diagram
+	* plotaxis.tcl:  Implemented methods for a ternary diagram
+	* plotconfig.tcl: Implemented methods for a ternary diagram
+	* plotchart.man: Documented the ternary diagram and its methods
+	* pkgIndex.tcl:  Bumped the version to 2.2.0
+
 2013-06-12  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Correct the version number in the [package provide] command
+	* plotchart.tcl: Add new command: eraseplot to erase an existing plot
+	* plotchart.man: Documented the new command eraseplot
+	* pkgIndex.tcl:  Bumped the version to 2.1.2
 
 2013-06-09  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotaxis.tcl: Remove leftover print statements

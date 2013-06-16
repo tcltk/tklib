@@ -22,7 +22,7 @@ namespace eval ::Plotchart {
 
    namespace export worldCoordinates viewPort coordsToPixel \
                     polarCoordinates setZoomPan \
-                    world3DCoordinates coordsToPixel \
+                    world3DCoordinates \
                     coords3DToPixel polarToPixel \
                     pixelToCoords pixelToIndex \
                     determineScale determineScaleFromList \
@@ -37,8 +37,8 @@ namespace eval ::Plotchart {
                     createXLogYPlot createLogXYPlot createLogXLogYPlot \
                     createWindrose createTargetDiagram createPerformanceProfile \
                     createTableChart createTitleBar \
-                    createSpiralPie \
-                    plotstyle plotconfig plotpack plotmethod clearcanvas
+                    createSpiralPie createTernaryDiagram \
+                    plotstyle plotconfig plotpack plotmethod clearcanvas eraseplot
 
    #
    # Array linking procedures with methods
@@ -556,6 +556,18 @@ namespace eval ::Plotchart {
    set methodProc(table,worldcoordinates)      TableWorldCoordinates
    set methodProc(table,topixels)              TableWorldToPixels
    set methodProc(table,canvas)                GetCanvas
+   set methodProc(ternary,title)               DrawTitle
+   set methodProc(ternary,subtitle)            DrawSubtitle
+   set methodProc(ternary,plaintext)           DrawPlainText
+   set methodProc(ternary,plaintextconfig)     ConfigPlainText
+   set methodProc(ternary,saveplot)            SavePlot
+   set methodProc(ternary,text)                DrawTernaryText
+   set methodProc(ternary,plot)                DrawTernaryData
+   set methodProc(ternary,line)                DrawTernaryLine
+   set methodProc(ternary,fill)                DrawTernaryFill
+   set methodProc(ternary,ticklines)           DrawTernaryTicklines
+   set methodProc(ternary,dataconfig)          DataConfig
+   set methodProc(ternary,canvas)              GetCanvas
 
    #
    # Auxiliary parameters
@@ -567,9 +579,9 @@ namespace eval ::Plotchart {
    variable option_keys
    variable option_values
    set options       {-colour -color  -symbol -type -filled -fillcolour -fillcolor -boxwidth -width -radius \
-      -whisker -whiskerwidth -mediancolour -mediancolor  -medianwidth -style}
+      -whisker -whiskerwidth -mediancolour -mediancolor  -medianwidth -style -smooth}
    set option_keys   {-colour -colour -symbol -type -filled -fillcolour -fillcolour -boxwidth -width -radius \
-      -whisker -whiskerwidth -mediancolour -mediancolour -medianwidth -style}
+      -whisker -whiskerwidth -mediancolour -mediancolour -medianwidth -style -smooth}
    set option_values {-colour       {...}
                       -symbol       {plus cross circle up down dot upfilled downfilled}
                       -type         {line symbol both rectangle}
@@ -583,9 +595,8 @@ namespace eval ::Plotchart {
                       -whisker      {IQR iqr extremes none}
                       -whiskerwidth {...}
                       -style        {filled spike symbol plateau stair}
+                      -smooth       {0 1 no yes false true}
                      }
-
-
 
    variable axis_options
    variable axis_option_clear
@@ -761,10 +772,11 @@ proc ::Plotchart::world3DCoordinates { w xmin ymin zmin xmax ymax zmax } {
 #    w           Name of the canvas
 #    xcrd        X-coordinate
 #    ycrd        Y-coordinate
+#    zcrd        Z-coordinate (for ternary diagrams)
 # Result:
 #    List of two elements, x- and y-coordinates in pixels
 #
-proc ::Plotchart::coordsToPixel { w xcrd ycrd } {
+proc ::Plotchart::coordsToPixel { w xcrd ycrd {zcrd {}} } {
    variable scaling
    variable torad
 
@@ -800,6 +812,12 @@ proc ::Plotchart::coordsToPixel { w xcrd ycrd } {
                set phi  [expr {$ycrd*$torad}]
                set xcrd [expr {$rad * cos($phi)}]
                set ycrd [expr {$rad * sin($phi)}]
+           }
+           5 {
+               # ternary diagram
+               set abc  [expr {$xcrd + $ycrd +$zcrd}]
+               set xcrd [expr {0.5 * (2.0*$ycrd + $zcrd) / $abc}]
+               set ycrd [expr {0.5 * sqrt(3.0) * $zcrd / $abc}]
            }
        }
    }
@@ -860,7 +878,7 @@ proc ::Plotchart::coords3DToPixel { w xcrd ycrd zcrd } {
 # Result:
 #    List of two elements, x- and y-coordinates in world coordinate system
 #
-proc ::Plotchart::pixelToCoords { w xpix ypix } {
+proc ::Plotchart::pixelToCoords { w xpix ypix {zpix {}} } {
    variable scaling
 
    if { $scaling($w,new) == 1 } {
@@ -898,6 +916,10 @@ proc ::Plotchart::pixelToCoords { w xpix ypix } {
                set phi  [expr {atan2($xycrd,$xcrd)/$torad}]
                set xcrd $rad
                set ycrd $phi
+           }
+           5 {
+               # ternary diagram - not supported
+               return -code error "pixelToCoords not supported for ternary diagrams"
            }
        }
    }
@@ -971,6 +993,39 @@ proc ::Plotchart::clearcanvas { w } {
    array unset data_series $w,*
 
    $w delete all
+}
+
+# eraseplot --
+#    Remove all data concerning the given plot/chart
+# Arguments:
+#    p           Name of the canvas
+# Result:
+#    None
+#
+proc ::Plotchart::eraseplot { p } {
+   variable scaling
+   variable config
+   variable data_series
+
+   set w [$p canvas]
+
+   array unset scaling $w,*
+   array unset config $w,*
+   array unset data_series $w,*
+
+   scan $w "%02d%s" index canvas
+
+   if { $scaling($canvas,plots) == $index } {
+       if { $index == 0 } {
+           array unset scaling $canvas,plots
+       } else {
+           incr scaling($canvas,plots) -1
+       }
+   }
+
+   $w delete $w
+
+   interp alias {} $p {}
 }
 
 # createXYPlot --
@@ -2845,6 +2900,70 @@ proc ::Plotchart::createTitleBar { w height } {
    return $newchart
 }
 
+# createTernaryDiagram --
+#    Create a command for drawing a ternary diagram
+# Arguments:
+#    c           Name of the canvas
+#    args        Options: -fractions 1/0, -steps number
+# Result:
+#    Name of a new command
+#
+proc ::Plotchart::createTernaryDiagram { c args } {
+   variable scaling
+   variable data_series
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
+
+   set newchart "ternary_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler ternary $w
+   CopyConfig ternary $w
+   set scaling($w,eventobj) ""
+
+   foreach {pxmin pymin pxmax pymax} [MarginsTernary $w $args] {break}
+ #  foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
+   array set options $args
+   array unset options -box
+   array unset options -axesbox
+
+   set scaling($w,coordSystem) 0
+
+   set xmin    0.0
+   set ymin    0.0
+   set xmax  100.0
+   set ymax  100.0
+   set xdelt  20.0
+
+   if { [info exists options(-fractions)] && $options(-fractions) } {
+       set xmax  1.0
+       set ymax  1.0
+       set deltx 0.2
+   }
+   if { [info exists options(-steps)] && $options(-steps) > 0 } {
+       set xdelt [expr {$xmax/double($options(-steps))}]
+   }
+
+   viewPort         $w $pxmin $pymin $pxmax $pymax
+   worldCoordinates $w 0.0    0.0    1.0    [expr {sqrt(3.0)/2.0}] ;# Two different coordinate systems!
+
+   set scaling($w,coordSystem) 5
+   set scaling($w,ternarymax)  $xmax
+   DrawTernaryAxes  $w $xmin  $xmax  $xdelt
+
+   DrawTernaryMask  $w
+   DefaultLegend    $w
+   DefaultBalloon   $w
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
+
+   return $newchart
+}
+
 # Load the private procedures
 #
 source [file join [file dirname [info script]] "plotpriv.tcl"]
@@ -2864,4 +2983,4 @@ source [file join [file dirname [info script]] "plottable.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.1.1
+package provide Plotchart 2.2.0
