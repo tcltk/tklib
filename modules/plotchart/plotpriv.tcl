@@ -552,6 +552,54 @@ proc ::Plotchart::Margins3DPlot { w } {
    return [list $pxmin $pymin $pxmax $pymax]
 }
 
+# MarginsTernary --
+#    Determine the margins for a ternary diagram
+# Arguments:
+#    w           Name of the plot
+#    argv        List of options
+#    notext      Number of lines of text to make room for at the top
+#                (default: 2.0)
+#    text_width  Number of characters to be displayed at most on left
+#                (default: 8)
+# Result:
+#    List of four values
+#
+proc ::Plotchart::MarginsTernary { w argv {notext 2.0} {text_width 8}} {
+    variable config
+
+    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $argv $notext $text_width] {break}
+
+    #
+    # Determine what the largest isosceles triangle is that fits in this rectangle
+    #
+    set width  [expr {$pxmax-$pxmin+1}]
+    set height [expr {$pymax-$pymin+1}]
+
+    set triangleheight [expr {sqrt(3.0)/2.0 * $width}]
+    set trianglewidth  [expr {$height / (sqrt(3.0)/2.0)}]
+
+    if { $triangleheight > $height } {
+        #
+        # Shrink the width
+        #
+        set dx    [expr {int(($width - $trianglewidth)/2.0)}]
+        set pxmin [expr {$pxmin + $dx}]
+        set pxmax [expr {$pxmax - $dx}]
+        set config($w,margin,right) [expr {$config($w,margin,right) + $dx}]
+    } else {
+        #
+        # Shrink the height
+        #
+        set dy    [expr {int(($height - $triangleheight)/2.0)}]
+        set pymin [expr {$pymin + $dy}]
+        set pymax [expr {$pymax - $dy}]
+        set config($w,margin,bottom) [expr {$config($w,margin,bottom) + $dy}]
+    }
+
+    puts "New margins: $pxmin $pymin $pxmax $pymax"
+    return [list $pxmin $pymin $pxmax $pymax]
+}
+
 # GetPlotArea --
 #    Return the area reserved for the plot
 # Arguments:
@@ -824,6 +872,53 @@ proc ::Plotchart::DrawScrollMask { w } {
    $w lower topmask
    $w lower horizmask
    $w lower vertmask
+}
+
+# DrawTernaryMask --
+#    Draw the stuff that masks the data lines outside the ternary diagram
+# Arguments:
+#    w           Name of the canvas
+# Result:
+#    None
+# Side effects:
+#    Several polygons drawn in the background colour
+#
+proc ::Plotchart::DrawTernaryMask { w } {
+    variable scaling
+    variable config
+
+    if { $config($w,mask,draw) == 0 } {
+        return
+    }
+
+    if { [string match {[0-9]*} $w] } {
+        set c [string range $w 2 end]
+    } else {
+        set c $w
+    }
+
+    set pxmin  [expr {$scaling($w,pxmin)-1}]
+    set pymin  [expr {$scaling($w,pymin)-1}]
+    set pxmax  $scaling($w,pxmax)
+    set pymax  $scaling($w,pymax)
+    set offx   0
+    set offy   0
+
+    set width  [expr {$pxmax + $config($w,margin,right)}]
+    set height [expr {$pymax + $config($w,margin,bottom)}]
+
+    set colour $config($w,background,outercolor)
+
+    $w delete "mask && $w"
+
+    set pxmid [expr {($pxmin+$pxmax)/2.0}]
+
+    $w create polygon   $offx  $offy  $pxmid $offy $pxmid $pymin $pxmin $pymax $offx $pymax \
+        -fill $colour -outline $colour -tag [list mask $w]
+    $w create rectangle $offx  $height $width $pymax  -fill $colour -outline $colour -tag [list mask $w]
+    $w create polygon   $width $offy  $pxmid $offy $pxmid $pymin $pxmax $pymax $width $pymax \
+        -fill $colour -outline $colour -tag [list mask $w]
+    $w lower mask
 }
 
 # DrawTitle --
@@ -1163,6 +1258,80 @@ proc ::Plotchart::DrawInterval { w series xcrd ymin ymax {ycentr {}} } {
       }
       DrawSymbolPixel $w $series $pxcrd $pycentr $symbol $colour [list data data_$series]
    }
+
+   $w lower data
+}
+
+# DrawTernaryData --
+#    Draw a single data point in a ternary diagram
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    xcrd        X coordinate
+#    ycrd        Y coordinate
+#    zcrd        Z coordinate
+#    text        Text to be drawn next to the data point
+#    dir         Direction (optional)
+# Result:
+#    None
+# Side effects:
+#    New data drawn in canvas
+#
+proc ::Plotchart::DrawTernaryData { w series xcrd ycrd zcrd text {dir w} } {
+   variable data_series
+   variable scaling
+   variable config
+
+   #
+   # Check for missing values
+   #
+   if { $xcrd == "" || $ycrd == "" } {
+       return
+   }
+
+   #
+   # Draw the symbol
+   #
+   set colour "black"
+   if { [info exists data_series($w,$series,-colour)] } {
+      set colour $data_series($w,$series,-colour)
+   }
+
+   set type "line"
+   if { [info exists data_series($w,$series,-type)] } {
+      set type $data_series($w,$series,-type)
+   }
+   set filled "no"
+   if { [info exists data_series($w,$series,-filled)] } {
+      set filled $data_series($w,$series,-filled)
+   }
+   set fillcolour white
+   if { [info exists data_series($w,$series,-fillcolour)] } {
+      set fillcolour $data_series($w,$series,-fillcolour)
+   }
+
+   foreach {pxcrd pycrd} [coordsToPixel $w $xcrd $ycrd $zcrd] {break}
+
+   set symbol "dot"
+   if { [info exists data_series($w,$series,-symbol)] } {
+       set symbol $data_series($w,$series,-symbol)
+   }
+   DrawSymbolPixel $w $series $pxcrd $pycrd $symbol $colour [list data data_$series]
+
+   set dx 0
+   set dy 0
+   switch $dir {
+       "w"  { set dx  7            }
+       "nw" { set dx  7; set dy -7 }
+       "n"  {            set dy -7 }
+       "ne" { set dx -7; set dy -7 }
+       "e"  { set dx -7            }
+       "se" { set dx -7; set dy  7 }
+       "s"  {            set dy  7 }
+       "sw" { set dx  7; set dy -7 }
+   }
+   $w create text [expr {$pxcrd+$dx}] [expr {$pycrd+$dy}] -text $text -anchor $dir \
+       -font $config($w,text,font) -fill $config($w,text,textcolor) -tags [list data data_$series]
 
    $w lower data
 }
@@ -3889,6 +4058,85 @@ proc ::Plotchart::DrawDataList { w series xlist ylist {every {}} } {
     }
 
     $w lower [list data && $w]
+}
+
+# DrawTernaryLine --
+#    Draw a line given by a list of data points in a ternary diagram
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    coords      List of X,Y,Z coordinates
+# Result:
+#    None
+# Side effects:
+#    New line drawn in canvas
+#
+proc ::Plotchart::DrawTernaryLine { w series coords } {
+   variable data_series
+   variable scaling
+
+   set pcoords {}
+   foreach {xcrd ycrd zcrd} $coords {
+       foreach {pxcrd pycrd} [coordsToPixel $w $xcrd $ycrd $zcrd] {break}
+       lappend pcoords $pxcrd $pycrd
+   }
+
+   set colour "black"
+   if { [info exists data_series($w,$series,-colour)] } {
+      set colour $data_series($w,$series,-colour)
+   }
+   set smooth 0
+   if { [info exists data_series($w,$series,-smooth)] } {
+      set smooth $data_series($w,$series,-smooth)
+   }
+   set width 1
+   if { [info exists data_series($w,$series,-width)] } {
+      set colour $data_series($w,$series,-width)
+   }
+
+   $w create line $pcoords -fill $colour -smooth $smooth -width $width -tags [list data data_$series]
+
+   $w lower data
+}
+
+# DrawTernaryFill --
+#    Draw a filled polygon given by a list of data points in a ternary diagram
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    coords      List of X,Y,Z coordinates
+# Result:
+#    None
+# Side effects:
+#    New polygon drawn in canvas
+#
+proc ::Plotchart::DrawTernaryFill { w series coords } {
+   variable data_series
+   variable scaling
+
+   set pcoords {}
+   foreach {xcrd ycrd zcrd} $coords {
+       foreach {pxcrd pycrd} [coordsToPixel $w $xcrd $ycrd $zcrd] {break}
+       lappend pcoords $pxcrd $pycrd
+   }
+
+   set colour "black"
+   if { [info exists data_series($w,$series,-colour)] } {
+      set colour $data_series($w,$series,-colour)
+   }
+   set smooth 0
+   if { [info exists data_series($w,$series,-smooth)] } {
+      set smooth $data_series($w,$series,-smooth)
+   }
+   set width 1
+   if { [info exists data_series($w,$series,-width)] } {
+      set colour $data_series($w,$series,-width)
+   }
+
+   $w create polygon $pcoords -outline $colour -fill $colour -smooth $smooth -width $width \
+       -tags [list data data_$series]
+
+   $w lower data
 }
 
 # RenderText --
