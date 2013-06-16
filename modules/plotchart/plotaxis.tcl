@@ -676,6 +676,132 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
     set scaling($w,xdelt) $xdelt
 }
 
+# DrawTernaryAxes --
+#    Draw the three axes of a ternary diagram
+# Arguments:
+#    w           Name of the canvas
+#    xmin        Minimum axis coordinate
+#    xmax        Maximum axis coordinate
+#    xstep       Step size
+# Result:
+#    None
+# Side effects:
+#    Two axes drawn in canvas
+#
+proc ::Plotchart::DrawTernaryAxes { w xmin xmax xdelt } {
+    variable scaling
+    variable config
+
+    $w delete "ternaryaxis && $w"
+
+    set linecolor    $config($w,axis,color)
+    set textcolor    $config($w,axis,textcolor)
+    set textfont     $config($w,axis,font)
+    set ticklength   $config($w,axis,ticklength)
+    set thickness    $config($w,axis,thickness)
+    set labeloffset  $config($w,axis,labeloffset)
+    set offtick      [expr {($ticklength > 0)? $ticklength+$labeloffset : $labeloffset}]
+
+    if { $config($w,axis,showaxle) } {
+        $w create line [expr {($scaling($w,pxmin)+$scaling($w,pxmax))/2.0}] $scaling($w,pymin) \
+                       $scaling($w,pxmin) $scaling($w,pymax) \
+                       -fill $linecolor -tag [list ternaryaxis $w] -width $thickness
+        $w create line [expr {($scaling($w,pxmin)+$scaling($w,pxmax))/2.0}] $scaling($w,pymin) \
+                       $scaling($w,pxmax) $scaling($w,pymax) \
+                       -fill $linecolor -tag [list ternaryaxis $w] -width $thickness
+        $w create line $scaling($w,pxmin) $scaling($w,pymax) $scaling($w,pxmax) $scaling($w,pymax) \
+                       -fill $linecolor -tag [list ternaryaxis $w] -width $thickness
+    }
+
+    set format $config($w,axis,format)
+
+    if { $xmax > $xmin } {
+        set x  [Ceil $xmin $xdelt]
+        set xm [Floor $xmax $xdelt]
+        set xt $x
+    } else {
+        set x  [Floor $xmax $xdelt]
+        set xm [Ceil $xmin $xdelt]
+        set xt $xm
+    }
+
+    set scaling($w,axis) {}
+
+    set xs      {}
+    set xts     {}
+    set xbackup {}
+
+    set scaling($w,ternarydelt) $xdelt
+    while { $x < $xm+0.0001*abs($xdelt) } {
+        lappend xs $x
+        lappend xts $xt
+        set x  [expr {$x+abs($xdelt)}]
+        set xt [expr {$xt+$xdelt}]
+        if { abs($x) < 0.5*abs($xdelt) } {
+            set xt 0.0
+        }
+    }
+    set dxminor [expr {$xdelt/($config($w,axis,minorticks)+1.0)}]
+
+    foreach x $xs xt $xts xb $xbackup {
+
+        foreach {xcrdl ycrdl} [coordsToPixel $w [expr {$scaling($w,ternarymax)-$xt}] 0.0 $xt] {break}
+        foreach {xcrdr ycrdr} [coordsToPixel $w 0.0 [expr {$scaling($w,ternarymax)-$xt}] $xt] {break}
+        foreach {xcrdb ycrdb} [coordsToPixel $w $xt [expr {$scaling($w,ternarymax)-$xt}] 0.0] {break}
+
+        set xcrdl2 [expr {$xcrdl-$ticklength}]
+        set xcrdl3 [expr {$xcrdl-$offtick}]
+        set xcrdr2 [expr {$xcrdr+$ticklength}]
+        set xcrdr3 [expr {$xcrdr+$offtick}]
+        set ycrdb2 [expr {$ycrdb+$ticklength}]
+        set ycrdb3 [expr {$ycrdb+$offtick}]
+
+        if { $ycrdl >= $scaling($w,pymin)-1 && $ycrdl <= $scaling($w,pymax)+1 } {
+            lappend scaling($w,ternaryaxis) $xt
+
+            #
+            # Use the default format %.12g - this is equivalent to setting
+            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
+            #
+            set ylabell [format "%.12g" $xt]
+            set ylabelr [format "%.12g" [expr {$scaling($w,ternarymax)-$xt}]]
+            set xlabelb [format "%.12g" $xt]
+            if { $format != "" } {
+                 set ylabell [FormatNumber $format $xt]
+                 set ylabelr [FormatNumber $format [expr {$scaling($w,ternarymax)-$xt}]]
+                 set xlabelb [FormatNumber $format $xt]
+            }
+            $w create line $xcrdl2 $ycrdl  $xcrdl $ycrdl -tag [list ternaryaxis $w] -fill $linecolor
+            $w create line $xcrdr2 $ycrdr  $xcrdr $ycrdr -tag [list ternaryaxis $w] -fill $linecolor
+            $w create line $xcrdb  $ycrdb2 $xcrdb $ycrdb -tag [list ternaryaxis $w] -fill $linecolor
+
+            if { $config($w,axis,shownumbers) } {
+                $w create text $xcrdl3 $ycrdl -text $ylabell -tag [list ternaryaxis $w] -anchor e \
+                    -fill $textcolor -font $textfont
+                $w create text $xcrdr3 $ycrdr -text $ylabelr -tag [list ternaryaxis $w] -anchor w \
+                    -fill $textcolor -font $textfont
+                $w create text $xcrdb $ycrdb3 -text $xlabelb -tag [list ternaryaxis $w] -anchor n \
+                    -fill $textcolor -font $textfont
+            }
+
+            if { $xdelt != {} && $xt < $xm } {
+                for {set i 1} {$i <= $config($w,axis,minorticks)} {incr i} {
+                    set yminor [expr {$xt  + $i * $dxminor}]
+                    foreach {xcrdl  ycrd4} [coordsToPixel $w [expr {$scaling($w,ternarymax)-$yminor}] 0.0 $yminor] {break}
+                    foreach {xcrdr  ycrd4} [coordsToPixel $w 0.0 [expr {$scaling($w,ternarymax)-$yminor}] $yminor] {break}
+                    foreach {xcrdb4 ycrdb} [coordsToPixel $w [expr {$scaling($w,ternarymax)-$yminor}] $yminor 0.0] {break}
+                    set xcrdl4 [expr {$xcrdl-$ticklength*0.6}]
+                    set xcrdr4 [expr {$xcrdr+$ticklength*0.6}]
+                    set ycrdb4 [expr {$ycrdb+$ticklength*0.6}]
+                    $w create line $xcrdl4 $ycrd4  $xcrdl  $ycrd4 -tag [list ternaryaxis $w] -fill $linecolor
+                    $w create line $xcrdr4 $ycrd4  $xcrdr  $ycrd4 -tag [list ternaryaxis $w] -fill $linecolor
+                    $w create line $xcrdb4 $ycrdb4 $xcrdb4 $ycrdb -tag [list ternaryaxis $w] -fill $linecolor
+                }
+            }
+        }
+    }
+}
+
 # DrawXtext --
 #    Draw text to the x-axis
 # Arguments:
@@ -892,6 +1018,39 @@ proc ::Plotchart::DrawVsubtext { w text } {
         $w create text $xt $yt -text $text -fill black -anchor $anchor -angle 90 -tags [list $tag $w] \
             -font $config($w,$axis,vsubtextfont) -fill $config($w,$axis,vsubtextcolor)
     }
+}
+
+# DrawTernaryText --
+#    Draw text to the corners of a ternary diagram
+# Arguments:
+#    w           Name of the canvas
+#    xtext       Text to left corner
+#    ytext       Text to right corner
+#    ztext       Text to top corner
+# Result:
+#    None
+# Side effects:
+#    Text drawn in canvas
+#
+proc ::Plotchart::DrawTernaryText { w xtext ytext ztext } {
+    variable scaling
+    variable config
+
+    set textcolor  $config($w,bottomaxis,textcolor)
+    set textfont   $config($w,bottomaxis,font)
+
+    set xl [expr {$scaling($w,pxmin) - 5}]
+    set yl [expr {$scaling($w,pymax) - 10}]
+    set xr [expr {$scaling($w,pxmax) + 5}]
+    set yr [expr {$scaling($w,pymax) - 10}]
+    set xt [expr {($scaling($w,pxmin)+$scaling($w,pxmax))/2.0 - 5}]
+    set yt [expr {$scaling($w,pymin) - 5}]
+
+    $w delete "ternarytext && $w"
+
+    $w create text $xl $yl -text $xtext -tags [list ternarytext $w] -font $config($w,text,font) -fill $config($w,text,textcolor) -anchor se
+    $w create text $xr $yr -text $ytext -tags [list ternarytext $w] -font $config($w,text,font) -fill $config($w,text,textcolor) -anchor sw
+    $w create text $xt $yt -text $ztext -tags [list ternarytext $w] -font $config($w,text,font) -fill $config($w,text,textcolor) -anchor s
 }
 
 # DrawPolarAxes --
@@ -1363,6 +1522,50 @@ proc ::Plotchart::DrawTicklines { w axis colour dash } {
     $w raise [list xaxis && $w]
     $w raise [list yaxis && $w]
     $w raise [list raxis && r$w]
+    $w raise legendbg
+    $w raise legend
+}
+
+# DrawTernaryTicklines --
+#    Draw the ticklines in a ternary diagram
+# Arguments:
+#    w           Name of the canvas
+#    axis        Which axis (x or y)
+#    colour      Colour of the ticklines (optional)
+#    dash        Dash pattern (optional)
+# Result:
+#    None
+#
+proc ::Plotchart::DrawTernaryTicklines { w axis {colour grey} {dash lines} } {
+    variable scaling
+    variable pattern
+
+    if { ! [info exists pattern($dash)] } {
+        set dash "lines"
+    }
+
+    $w delete [list ternarytickline && $w]
+
+    if { $colour != {} } {
+        foreach v $scaling($w,ternaryaxis) {
+            foreach {pxcrdl pycrdh} [coordsToPixel $w [expr {$scaling($w,ternarymax)-$v}] 0.0 $v]  {break}
+            foreach {pxcrdr pycrdh} [coordsToPixel $w 0.0 [expr {$scaling($w,ternarymax)-$v}] $v]  {break}
+            foreach {pxcrdb pycrdb} [coordsToPixel $w $v  [expr {$scaling($w,ternarymax)-$v}] 0.0] {break}
+            foreach {pxcrdi pycrdb} [coordsToPixel $w [expr {$scaling($w,ternarymax)-$v}] $v  0.0] {break}
+
+            $w create line $pxcrdl $pycrdh $pxcrdr $pycrdh \
+                           -fill $colour -tag [list ternarytickline $w] \
+                           -dash $pattern($dash)
+            $w create line $pxcrdl $pycrdh $pxcrdi $pycrdb \
+                           -fill $colour -tag [list ternarytickline $w] \
+                           -dash $pattern($dash)
+            $w create line $pxcrdr $pycrdh $pxcrdb $pycrdb \
+                           -fill $colour -tag [list ternarytickline $w] \
+                           -dash $pattern($dash)
+        }
+    }
+
+    $w raise [list ternaryaxis && $w]
     $w raise legendbg
     $w raise legend
 }
