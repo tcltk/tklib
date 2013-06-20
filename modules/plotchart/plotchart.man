@@ -4220,10 +4220,6 @@ Box drawn from quantiles
 
 [list_end]
 
-
-[keywords {graphical presentation} plotting charts {xy-plots}]
-[keywords {bar charts} {strip charts} {polar plots}]
-[keywords {isometric plots} {pie charts} {time charts}]
-[keywords {3D surfaces} {3D bars} {coordinates}]
-[keywords {coordinate transformations} {tables}]
+[vset CATEGORY plotchart]                                                        <
+[include ../../support/devel/doc/feedback.inc]                                   <
 [manpage_end]
