@@ -1,3 +1,6 @@
+2013-06-20  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.man: Restored "epilogue" of the man page
+
 2013-06-15  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Implemented a ternary diagram
 	* plotpriv.tcl:  Implemented methods for a ternary diagram
