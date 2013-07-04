@@ -1,3 +1,8 @@
+2013-07-04  Andreas Kupries  <andreask@activestate.com>
+
+	* msgs/de.msg: [Bug 6af0aca06c]: Removed superfluous closing
+	brace. Thanks to gregor.ebbing@gmx.de for the report.
+
 2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
