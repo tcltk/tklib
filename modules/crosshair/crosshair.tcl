@@ -80,11 +80,11 @@ proc ::crosshair::off { w } {
     if { ![info exists config($w)] } return
     array set opts $config($w)
     if { [winfo exists $w] } {
-	Hide
+	Hide $w
 	set bindtags [bindtags $w]
-	set pos [lsearch -exact $bindtags Configure]
+	set pos [lsearch -exact $bindtags Crosshair]
 	if { $pos >= 0 } {
-	    eval [list bindtags $w] [lreplace $bindtags $pos $pos]
+	    bindtags $w [lreplace $bindtags $pos $pos]
 	}
     }
     unset config($w)
