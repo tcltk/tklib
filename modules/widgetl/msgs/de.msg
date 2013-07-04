@@ -5,7 +5,7 @@ namespace eval ::widget::listentry {
     msgcat::mcset de wle.up              Rauf
     msgcat::mcset de wle.down            Runter
     msgcat::mcset de wle.browse          Suche...
-    msgcat::mcset de wle.tip.add         {Fuege neues Element in die Liste ein}}
+    msgcat::mcset de wle.tip.add         {Fuege neues Element in die Liste ein}
     msgcat::mcset de wle.tip.remove      {Entferne die ausgewaehlten Elemente aus der Liste}
     msgcat::mcset de wle.tip.up          {Schiebe die ausgewaehlten Elemente hoch}
     msgcat::mcset de wle.tip.down        {Schiebe die ausgewaehlten Elemente runter}
