@@ -238,7 +238,7 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "Plotchart" n 2\&.0\&.2 tklib "Plotchart"
+.TH "Plotchart" n 2\&.2\&.0 tklib "Plotchart"
 .BS
 .SH NAME
 Plotchart \- Simple plotting and charting package
@@ -247,21 +247,21 @@ package require \fBTcl  ?8\&.5?\fR
 .sp
 package require \fBTk  ?8\&.5?\fR
 .sp
-package require \fBPlotchart  ?2\&.1\&.0?\fR
+package require \fBPlotchart  ?2\&.2\&.0?\fR
 .sp
 \fB::Plotchart::createXYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 .sp
-\fB::Plotchart::createStripchart\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR
+\fB::Plotchart::createStripchart\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 .sp
-\fB::Plotchart::createTXPlot\fR \fIw\fR \fItimeaxis\fR \fIxaxis\fR
+\fB::Plotchart::createTXPlot\fR \fIw\fR \fItimeaxis\fR \fIxaxis\fR \fIargs\fR
 .sp
-\fB::Plotchart::createXLogYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR
+\fB::Plotchart::createXLogYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 .sp
-\fB::Plotchart::createLogXYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR
+\fB::Plotchart::createLogXYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 .sp
-\fB::Plotchart::createLogXLogYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR
+\fB::Plotchart::createLogXLogYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 .sp
-\fB::Plotchart::createPolarPlot\fR \fIw\fR \fIradius_data\fR
+\fB::Plotchart::createPolarPlot\fR \fIw\fR \fIradius_data\fR \fIargs\fR
 .sp
 \fB::Plotchart::createWindrose\fR \fIw\fR \fIradius_data\fR \fIsectors\fR
 .sp
@@ -296,6 +296,8 @@ package require \fBPlotchart  ?2\&.1\&.0?\fR
 \fB::Plotchart::createRightAxis\fR \fIw_or_plot\fR \fIyaxis\fR
 .sp
 \fB::Plotchart::createTableChart\fR \fIw\fR \fIcolumns\fR ?widths?
+.sp
+\fB::Plotchart::createTernaryDiagram\fR \fIw\fR \fIargs\fR
 .sp
 \fB$anyplot\fR title \fItext\fR \fIposition\fR
 .sp
@@ -481,6 +483,16 @@ package require \fBPlotchart  ?2\&.1\&.0?\fR
 .sp
 \fB$table\fR cellconfigure \fIargs\fR
 .sp
+\fB$ternary\fR plot \fIseries\fR \fIxcrd\fR \fIycrd\fR \fIzcrd\fR \fItext\fR \fIdir\fR
+.sp
+\fB$ternary\fR line \fIseries\fR \fIcoords\fR
+.sp
+\fB$ternary\fR fill \fIseries\fR \fIcoords\fR
+.sp
+\fB$ternary\fR text \fIxtext\fR \fIytext\fR \fIztext\fR
+.sp
+\fB$ternary\fR ticklines \fIcolour\fR
+.sp
 \fB::Plotchart::viewPort\fR \fIw\fR \fIpxmin\fR \fIpymin\fR \fIpxmax\fR \fIpymax\fR
 .sp
 \fB::Plotchart::worldCoordinates\fR \fIw\fR \fIxmin\fR \fIymin\fR \fIxmax\fR \fIymax\fR
@@ -506,6 +518,8 @@ package require \fBPlotchart  ?2\&.1\&.0?\fR
 \fB::Plotchart::plotconfig\fR \fIcharttype\fR \fIcomponent\fR \fIproperty\fR \fIvalue\fR
 .sp
 \fB::Plotchart::plotstyle\fR \fIsubcmd\fR \fIstyle\fR \fIargs\fR
+.sp
+\fB::Plotchart::eraseplot\fR \fIanyplot\fR
 .sp
 \fB::Plotchart::createTargetDiagram\fR \fIw\fR \fIlimits\fR \fIscale\fR
 .sp
@@ -571,6 +585,8 @@ Polar plots, where the coordinates are polar instead of cartesian\&.
 .IP \(bu
 Histograms, for plotting statistical information\&.
 .IP \(bu
+Barcharts, piecharts, Gantt charts, time charts\&.
+.IP \(bu
 Isometric plots, where the scale of the coordinates in the two
 directions is always the same, i\&.e\&. a circle in world coordinates
 appears as a circle on the screen\&.
@@ -592,9 +608,10 @@ important moments in time are represented by triangles\&.
 .PP
 With version 1\&.5 a new command has been introduced: plotconfig, which
 can be used to configure the plot options for particular types of plots
-and charts (cf\&. \fBCONFIGURATION OPTIONS\fR)
+and charts (cf\&. \fBCONFIGURATION OPTIONS AND OTHER COMMANDS\fR)
 With version 1\&.8\&.3 several new features were introduced, which allow more interactivity
 (cf\&. \fBINTERACTIVE USE\fR)
+With version 2\&.0 it has become possible to put several plots or charts in one canvas\&.
 .SH "PLOT CREATION COMMANDS"
 You create the plot or chart with one single command and then fill the
 plot with data:
@@ -631,11 +648,15 @@ the empty string\&.
 \fI-box {measures}:\fR See \fBARRANGING MULTIPLE PLOTS IN A CANVAS\fR
 .IP \(bu
 \fI-axesbox {measures}:\fR See \fBARRANGING MULTIPLE PLOTS IN A CANVAS\fR
+.IP \(bu
+\fI-timeformat format:\fR See \fBUSING DATE/TIME LABELS\fR
+.IP \(bu
+\fI-gmt 0/1:\fR See \fBUSING DATE/TIME LABELS\fR
 .RE
 .RE
 .sp
 .TP
-\fB::Plotchart::createStripchart\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR
+\fB::Plotchart::createStripchart\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 Create a new strip chart (configuration type: stripchart)\&. The
 only difference to a regular XY plot is
 that the x-axis will be automatically adjusted when the x-coordinate
@@ -653,10 +674,13 @@ list \fIyaxis\fR (in)
 A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order\&.
 For an inverted axis, where the maximum appears at the bottom,
 use: maximum, minimum and a \fInegative\fR stepsize\&.
+.TP
+list \fIargs\fR (in)
+Zero or more options - see the XY-plot for more information\&.
 .RE
 .sp
 .TP
-\fB::Plotchart::createTXPlot\fR \fIw\fR \fItimeaxis\fR \fIxaxis\fR
+\fB::Plotchart::createTXPlot\fR \fIw\fR \fItimeaxis\fR \fIxaxis\fR \fIargs\fR
 Create a new time-x-plot (configuration type: txplot)\&. The horizontal axis represents the date/time
 of the data and the vertical axis the values themselves\&.
 .RS
@@ -674,10 +698,13 @@ A 3-element list containing minimum, maximum and stepsize for the
 vertical axis, in this order\&.
 For an inverted axis, where the maximum appears at the bottom,
 use: maximum, minimum and a \fInegative\fR stepsize\&.
+.TP
+list \fIargs\fR (in)
+Zero or more options - see the XY-plot for more information\&.
 .RE
 .sp
 .TP
-\fB::Plotchart::createXLogYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR
+\fB::Plotchart::createXLogYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 Create a new xy-plot where the y-axis has a logarithmic scale (configuration type: xlogyplot)\&.
 .sp
 The data should be given as for a linear scale, as the logarithmic transformation
@@ -695,10 +722,13 @@ use: maximum, minimum and a \fInegative\fR stepsize\&.
 list \fIyaxis\fR (in)
 A 2-element list containing minimum and maximum for the y-axis, in this order\&.
 Note that an inverted logarithmic axis is \fInot\fR supported\&.
+.TP
+list \fIargs\fR (in)
+Zero or more options - see the XY-plot for more information\&.
 .RE
 .sp
 .TP
-\fB::Plotchart::createLogXYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR
+\fB::Plotchart::createLogXYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 Create a new xy-plot where the x-axis has a logarithmic scale (configuration type: logxyplot)\&.
 .sp
 The data should be given as for a linear scale, as the logarithmic transformation
@@ -716,10 +746,13 @@ list \fIyaxis\fR (in)
 A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order\&.
 For an inverted axis, where the maximum appears on the left-hand side,
 use: maximum, minimum and a \fInegative\fR stepsize\&.
+.TP
+list \fIargs\fR (in)
+Zero or more options - see the XY-plot for more information\&.
 .RE
 .sp
 .TP
-\fB::Plotchart::createLogXLogYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR
+\fB::Plotchart::createLogXLogYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 Create a new xy-plot where both the x-axis and the y-axis have a logarithmic scale
 (configuration type: logxlogyplot)\&.
 .sp
@@ -737,10 +770,13 @@ Note that an inverted logarithmic axis is \fInot\fR supported\&.
 list \fIyaxis\fR (in)
 A 2-element list containing minimum and maximum for the y-axis, in this order\&.
 Note that an inverted logarithmic axis is \fInot\fR supported\&.
+.TP
+list \fIargs\fR (in)
+Zero or more options - see the XY-plot for more information\&.
 .RE
 .sp
 .TP
-\fB::Plotchart::createPolarPlot\fR \fIw\fR \fIradius_data\fR
+\fB::Plotchart::createPolarPlot\fR \fIw\fR \fIradius_data\fR \fIargs\fR
 Create a new polar plot (configuration type: polarplot)\&.
 .RS
 .TP
@@ -750,6 +786,9 @@ Name of the \fIexisting\fR canvas widget to hold the plot\&.
 list \fIradius_data\fR (in)
 A 2-element list containing maximum radius and stepsize for the radial
 axis, in this order\&.
+.TP
+list \fIargs\fR (in)
+Zero or more options - see the XY-plot for more information\&.
 .RE
 .sp
 .TP
@@ -1134,6 +1173,22 @@ list \fIwidths\fR (in)
 If given, either a single value, the width in pixels for all columns or
 for each column the width of that column\&. If not given, the table is
 spread out over the width of the canvas (minus the margins)\&.
+.RE
+.sp
+.TP
+\fB::Plotchart::createTernaryDiagram\fR \fIw\fR \fIargs\fR
+Create a command to draw a ternary diagram (configuration type: ternary)\&. You can draw
+individual (labelled) data points in the diagram, lines and filled polygons\&.
+.RS
+.TP
+widget \fIw\fR (in)
+Name of the canvas widget to hold the ternary diagram\&.
+.TP
+list \fIargs\fR (in)
+Zero or more option-value pairs to influence the position and the appearance of the
+diagram\&. In addition to the positioning options (-box and -axesbox) the diagram supports:
+\fI-fractions yes/no\fR, to display numbers 0 to 1 instead of 0 to 100% and \fI-steps number\fR
+to influence the number of labels along the three sides\&.
 .RE
 .sp
 .PP
@@ -2163,7 +2218,7 @@ List of pairs of yz-coordinates
 .RE
 .PP
 .PP
-For \fIxy plots\fR, \fIstripcharts\fR, \fIhistograms\fR and \fIpolar plots\fR:
+For \fIxy plots\fR, \fIstripcharts\fR, \fIhistograms\fR, \fIpolar plots\fR and \fIternary diagrams\fR:
 .TP
 \fB$xyplot\fR dataconfig \fIseries\fR \fB-option\fR \fIvalue\fR \&.\&.\&.
 Set the value for one or more options regarding the drawing of data of
@@ -2222,6 +2277,10 @@ The style to be used for histograms:
 .IP \(bu
 \fBstair\fR: Draw a continuous stair-like line connecting the data points
 .RE
+.TP
+\fBsmooth\fR boolean
+(Used with ternary diagrams) Whether to draw the lines and filled polygons with the
+smooth option on (rounded corners) or not\&.
 .RE
 .PP
 .PP
@@ -2802,6 +2861,78 @@ the position of the text within the cell and -justify controls the
 layout of multiline text\&.
 .RE
 .PP
+For \fIternary diagrams\fR you can use the following subcommands:
+.TP
+\fB$ternary\fR plot \fIseries\fR \fIxcrd\fR \fIycrd\fR \fIzcrd\fR \fItext\fR \fIdir\fR
+Draw a single data point with a label\&. The three coordinates are scaled so that a unique point
+in the triangle results\&. A label is drawn next to it\&.
+.RS
+.TP
+string \fIseries\fR (in)
+Name of the data series the point belongs to (used to determine colour and symbol)
+.TP
+float \fIxcrd\fR (in)
+X-coordinate of the data point (refers to the lower-left corner)\&.
+.TP
+float \fIycrd\fR (in)
+Y-coordinate of the data point (refers to the lower-right corner)\&.
+.TP
+float \fIzcrd\fR (in)
+Z-coordinate of the data point (refers to the top corner)\&.
+.TP
+string \fItext\fR (in)
+Label describing the data point\&.
+.TP
+string \fIdir\fR (in)
+Optional string indicating the direction in which to plot the label (e, n, etc\&.)
+.RE
+.TP
+\fB$ternary\fR line \fIseries\fR \fIcoords\fR
+Draw a continuous line based on the given coordinates (triplets)\&.
+.RS
+.TP
+string \fIseries\fR (in)
+Name of the data series the line belongs to (used to determine colour and smoothness)
+.TP
+list \fIcoords\fR (in)
+The coordinates of the points that determine the line (note that a point is defined by
+three coordinates)\&.
+.RE
+.TP
+\fB$ternary\fR fill \fIseries\fR \fIcoords\fR
+Draw a filled polygon based on the given coordinates (triplets)\&.
+.RS
+.TP
+string \fIseries\fR (in)
+Name of the data series the polygon belongs to (used to determine colour and smoothness)
+.TP
+list \fIcoords\fR (in)
+The coordinates of the points that determine the polygon (note that a point is defined by
+three coordinates)\&.
+.RE
+.TP
+\fB$ternary\fR text \fIxtext\fR \fIytext\fR \fIztext\fR
+Draw text at the three corners of the diagram to identify the components\&.
+.RS
+.TP
+string \fIxtext\fR (in)
+Text to be plotted at the lower-left corner
+.TP
+string \fIytext\fR (in)
+Text to be plotted at the lower-right corner
+.TP
+string \fIztext\fR (in)
+Text to be plotted at the top corner
+.RE
+.TP
+\fB$ternary\fR ticklines \fIcolour\fR
+Draw ticklines to facilitate reading off the diagram\&.
+.RS
+.TP
+string \fIcolour\fR (in)
+Optional argument used as the colour of the ticklines\&. Defaults to grey\&.
+.RE
+.PP
 There are a number of public procedures that may be useful in specific
 situations: \fIPro memorie\fR\&.
 .SH "COORDINATE TRANSFORMATIONS"
@@ -3261,9 +3392,10 @@ The method works very simply:
    $p rescale {newxmin newxmax newxstep} {newymin newymax newystep}
 
 .CE
-.SH "CONFIGURATION OPTIONS"
+.SH "CONFIGURATION OPTIONS AND OTHER COMMANDS"
 The commands \fBplotconfig\fR and \fBplotstyle\fR can be used to set all
-manner of options\&. The syntax is:
+manner of options\&. The command \fBeraseplot\fR can be used to completely erase a plot or
+chart\&. The syntax of these commands is:
 .TP
 \fB::Plotchart::plotconfig\fR \fIcharttype\fR \fIcomponent\fR \fIproperty\fR \fIvalue\fR
 Set a new value for the property of a component in a particular chart or
@@ -3453,6 +3585,17 @@ subcommand however\&.
 Finally the \fIframe\fR component uses \fIcolor\fR, \fIouterwidth\fR
 (for the width of the line surrounding the whole table) and
 \fIinnerwidth\fR (for the width of lines separating columns and rows)\&.
+.RE
+.RS
+.TP
+\fB::Plotchart::eraseplot\fR \fIanyplot\fR
+Erase the plot/chart with all resources connected to it\&.
+.RS
+.TP
+string \fIanyplot\fR (in)
+The plot/chart command\&. All canvas items associated with this command and all
+internal resources will be removed, including the plot/chart command itself\&.
+.RE
 .RE
 .PP
 See the examples in plotdemos7\&.tcl for its use\&.
@@ -3670,6 +3813,7 @@ pack [canvas \&.c -bg white -height 300] -fill both -expand yes
 
 set t [::Plotchart::createTableChart \&.c {"Column 1" "Column 2" "Column 3"} 80]
 
+
 proc setColor {table widget row col value} {
     $table cellconfigure -background white -color black
     if { $value < 2\&.0 } {
@@ -3704,6 +3848,35 @@ for {set i 0} {$i < 9} {incr i} {
 .CE
 .SH "CONTROL DISPLAYS"
 TODO
+.SH "USING DATE/TIME LABELS"
+The options -timeformat and -gmt are used to control the display of date/time
+labels along the x-axis for those plot types for which it makes sense\&. These
+options were implemented to take care of date/time labels for stripcharts,
+as you can also use custom labels (the option -xlabels) if the axis is "static"\&.
+Since this is not the case for stripcharts, this was not an option (Tcllib/Tklib bug 3613718)\&.
+The example below illustrates how to use the -timeformat option\&. The -gmt option
+merely suppresses the handling of daylight saving time by the [clock format] command\&.
+.CS
+
+
+package require Plotchart
+
+pack [canvas \&.c -width 500 -bg white]
+
+#
+# Note that we need to present the x values as clock seconds
+#
+set start [clock scan  "0:00"]
+set stop  [clock scan "10:00"]
+set s [Plotchart::createStripchart \&.c [list $start $stop 7200] {0 10 1} -timeformat "%H:%M"]
+
+foreach {x y} {0 0 2 5 5 2 9 9 12 10} {
+    set x [expr {$start + 3600 * $x}] ;# Convert hour to clock seconds
+    $s plot a $x $y
+}
+.CE
+The \fIplot\fR subcommand simply interprets the x and y data as straightforward
+numbers, so that you need to do the conversion from date/time to "clock seconds" yourself\&.
 .SH "ARRANGING MULTIPLE PLOTS IN A CANVAS"
 The command \fIplotpack\fR allows you to copy the contents of a plot
 into another canvas widget\&. This canvas widget does not act as a
@@ -4030,6 +4203,7 @@ Marker line to indicate a "current" value
 Box drawn from quantiles
 .RE
 .PP
+<
 .SH "BUGS, IDEAS, FEEDBACK"
 This document, and the package it describes, will undoubtedly contain
 bugs and other problems\&.
@@ -4037,8 +4211,7 @@ Please report such in the category \fIplotchart\fR of the
 \fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
 Please also report any ideas for enhancements you may have for either
 package and/or documentation\&.
-.SH KEYWORDS
-3D bars, 3D surfaces, bar charts, charts, coordinate transformations, coordinates, graphical presentation, isometric plots, pie charts, plotting, polar plots, strip charts, tables, time charts, xy-plots
+<
 .SH COPYRIGHT
 .nf
 Copyright (c) 2011 Arjen Markus <arjenmarkus@users\&.sourceforge\&.net>

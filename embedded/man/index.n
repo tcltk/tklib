@@ -247,18 +247,6 @@ tklib
 \fBfiles/modules/diagrams/diagram.n\fR
 diagram
 .RE
-3D bars
-.RS
-.TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
-.RE
-3D surfaces
-.RS
-.TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
-.RE
 append tag
 .RS
 .TP
@@ -277,17 +265,17 @@ arrow
 \fBfiles/modules/diagrams/diagram.n\fR
 diagram
 .RE
+background
+.RS
+.TP
+\fBfiles/modules/canvas/canvas_gradient.n\fR
+canvas::gradient
+.RE
 balloon
 .RS
 .TP
 \fBfiles/modules/tooltip/tooltip.n\fR
 tooltip
-.RE
-bar charts
-.RS
-.TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
 .RE
 bindtags
 .RS
@@ -346,6 +334,9 @@ canvas::edit::polyline
 \fBfiles/modules/canvas/canvas_equad.n\fR
 canvas::edit::quadrilateral
 .TP
+\fBfiles/modules/canvas/canvas_gradient.n\fR
+canvas::gradient
+.TP
 \fBfiles/modules/canvas/canvas_highlight.n\fR
 canvas::highlight
 .TP
@@ -397,12 +388,6 @@ character
 \fBfiles/modules/khim/khim.n\fR
 khim
 .RE
-charts
-.RS
-.TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
-.RE
 chat
 .RS
 .TP
@@ -426,6 +411,12 @@ clock
 .TP
 \fBfiles/modules/datefield/datefield.n\fR
 datefield
+.RE
+color gradient
+.RS
+.TP
+\fBfiles/modules/canvas/canvas_gradient.n\fR
+canvas::gradient
 .RE
 composite widget
 .RS
@@ -456,18 +447,6 @@ convex
 .TP
 \fBfiles/modules/canvas/canvas_equad.n\fR
 canvas::edit::quadrilateral
-.RE
-coordinate transformations
-.RS
-.TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
-.RE
-coordinates
-.RS
-.TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
 .RE
 cross-hairs
 .RS
@@ -661,11 +640,11 @@ exe
 \fBfiles/modules/ico/ico.n\fR
 ico
 .RE
-graphical presentation
+gradients
 .RS
 .TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
+\fBfiles/modules/canvas/canvas_gradient.n\fR
+canvas::gradient
 .RE
 graphics
 .RS
@@ -726,6 +705,9 @@ image
 .TP
 \fBfiles/apps/bitmap-editor.n\fR
 bitmap-editor
+.TP
+\fBfiles/modules/canvas/canvas_gradient.n\fR
+canvas::gradient
 .TP
 \fBfiles/modules/canvas/canvas_snap.n\fR
 canvas::snap
@@ -789,12 +771,6 @@ irc
 .TP
 \fBfiles/modules/chatwidget/chatwidget.n\fR
 chatwidget
-.RE
-isometric plots
-.RS
-.TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
 .RE
 labeler
 .RS
@@ -952,12 +928,6 @@ pieBoxLabeler
 \fBfiles/modules/tkpiechart/pieperipherallabeler.n\fR
 piePeripheralLabeler
 .RE
-pie charts
-.RS
-.TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
-.RE
 pixel
 .RS
 .TP
@@ -975,9 +945,6 @@ plotting
 .TP
 \fBfiles/modules/diagrams/diagram.n\fR
 diagram
-.TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
 .RE
 point
 .RS
@@ -996,12 +963,6 @@ points
 .TP
 \fBfiles/modules/canvas/canvas_epoints.n\fR
 canvas::edit::points
-.RE
-polar plots
-.RS
-.TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
 .RE
 polyline
 .RS
@@ -1183,12 +1144,6 @@ string
 \fBfiles/modules/getstring/tk_getString.n\fR
 getstring
 .RE
-strip charts
-.RS
-.TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
-.RE
 superframe
 .RS
 .TP
@@ -1200,12 +1155,6 @@ syntax highlighting
 .TP
 \fBfiles/modules/ctext/ctext.n\fR
 ctext
-.RE
-tables
-.RS
-.TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
 .RE
 tags
 .RS
@@ -1239,12 +1188,6 @@ tile
 .TP
 \fBfiles/modules/canvas/canvas_sqmap.n\fR
 canvas::sqmap
-.RE
-time charts
-.RS
-.TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
 .RE
 toolbar
 .RS
@@ -1339,6 +1282,12 @@ widget_listsimple
 \fBfiles/modules/widget/widget_toolbar.n\fR
 widget_toolbar
 .RE
+widget background
+.RS
+.TP
+\fBfiles/modules/canvas/canvas_gradient.n\fR
+canvas::gradient
+.RE
 widget validation
 .RS
 .TP
@@ -1350,12 +1299,6 @@ xbm
 .TP
 \fBfiles/apps/bitmap-editor.n\fR
 bitmap-editor
-.RE
-xy-plots
-.RS
-.TP
-\fBfiles/modules/plotchart/plotchart.n\fR
-Plotchart
 .RE
 zoom
 .RS
