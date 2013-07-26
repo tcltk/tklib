@@ -8,6 +8,7 @@
 [item modules/canvas/canvas_epoints.man   canvas::edit::points        {Editing a cloud of points on a canvas}]
 [item modules/canvas/canvas_epolyline.man canvas::edit::polyline      {Editing a polyline on a canvas}]
 [item modules/canvas/canvas_equad.man     canvas::edit::quadrilateral {Editing a quadrilateral on a canvas}]
+[item modules/canvas/canvas_gradient.man  canvas::gradient            {Canvas with a gradient background}]
 [item modules/canvas/canvas_highlight.man canvas::highlight           {Manage the highlighting of canvas items or item groups}]
 [item modules/canvas/canvas_mvg.man       canvas::mvg                 {Canvas to ImageMagick MVG vector format}]
 [item modules/canvas/canvas_snap.man      canvas::snap                {Canvas snapshot to Tk photo image}]
