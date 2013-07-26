@@ -5,6 +5,7 @@ modules/canvas/canvas_drag.man
 modules/canvas/canvas_epoints.man
 modules/canvas/canvas_epolyline.man
 modules/canvas/canvas_equad.man
+modules/canvas/canvas_gradient.man
 modules/canvas/canvas_highlight.man
 modules/canvas/canvas_mvg.man
 modules/canvas/canvas_snap.man

@@ -108,7 +108,7 @@
 | <a href="../../../../toc1.html">Modules</a>
 | <a href="../../../../toc2.html">Applications</a>
  ] <hr>
-<h1 class="title">Plotchart(n) 2.0.2 tklib &quot;Plotchart&quot;</h1>
+<h1 class="title">Plotchart(n) 2.2.0 tklib &quot;Plotchart&quot;</h1>
 <div id="name" class="section"><h2><a name="name">Name</a></h2>
 <p>Plotchart - Simple plotting and charting package</p>
 </div>
@@ -126,17 +126,17 @@
 <li class="section"><a href="#section8">ROOM FOR IMPROVEMENT</a></li>
 <li class="section"><a href="#section9">RESIZING</a></li>
 <li class="section"><a href="#section10">ZOOMING IN</a></li>
-<li class="section"><a href="#section11">CONFIGURATION OPTIONS</a></li>
+<li class="section"><a href="#section11">CONFIGURATION OPTIONS AND OTHER COMMANDS</a></li>
 <li class="section"><a href="#section12">SCROLLING FOR TIMECHARTS AND GANTT CHARTS</a></li>
 <li class="section"><a href="#section13">SPECIALISED PLOTS</a></li>
 <li class="section"><a href="#section14">TABLE CHARTS</a></li>
 <li class="section"><a href="#section15">CONTROL DISPLAYS</a></li>
-<li class="section"><a href="#section16">ARRANGING MULTIPLE PLOTS IN A CANVAS</a></li>
-<li class="section"><a href="#section17">INTERACTIVE USE</a></li>
-<li class="section"><a href="#section18">NOTES ON TAGS</a></li>
-<li class="section"><a href="#section19">TODO - SOME PRIVATE NOTES</a></li>
-<li class="section"><a href="#section20">Bugs, Ideas, Feedback</a></li>
-<li class="section"><a href="#keywords">Keywords</a></li>
+<li class="section"><a href="#section16">USING DATE/TIME LABELS</a></li>
+<li class="section"><a href="#section17">ARRANGING MULTIPLE PLOTS IN A CANVAS</a></li>
+<li class="section"><a href="#section18">INTERACTIVE USE</a></li>
+<li class="section"><a href="#section19">NOTES ON TAGS</a></li>
+<li class="section"><a href="#section20">TODO - SOME PRIVATE NOTES</a></li>
+<li class="section"><a href="#section21">Bugs, Ideas, Feedback</a></li>
 <li class="section"><a href="#copyright">Copyright</a></li>
 </ul>
 </div>
@@ -145,16 +145,16 @@
 <ul class="requirements">
 <li>package require <b class="pkgname">Tcl <span class="opt">?8.5?</span></b></li>
 <li>package require <b class="pkgname">Tk <span class="opt">?8.5?</span></b></li>
-<li>package require <b class="pkgname">Plotchart <span class="opt">?2.1.0?</span></b></li>
+<li>package require <b class="pkgname">Plotchart <span class="opt">?2.2.0?</span></b></li>
 </ul>
 <ul class="syntax">
 <li><a href="#1"><b class="cmd">::Plotchart::createXYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i> <i class="arg">args</i></a></li>
-<li><a href="#2"><b class="cmd">::Plotchart::createStripchart</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i></a></li>
-<li><a href="#3"><b class="cmd">::Plotchart::createTXPlot</b> <i class="arg">w</i> <i class="arg">timeaxis</i> <i class="arg">xaxis</i></a></li>
-<li><a href="#4"><b class="cmd">::Plotchart::createXLogYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i></a></li>
-<li><a href="#5"><b class="cmd">::Plotchart::createLogXYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i></a></li>
-<li><a href="#6"><b class="cmd">::Plotchart::createLogXLogYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i></a></li>
-<li><a href="#7"><b class="cmd">::Plotchart::createPolarPlot</b> <i class="arg">w</i> <i class="arg">radius_data</i></a></li>
+<li><a href="#2"><b class="cmd">::Plotchart::createStripchart</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i> <i class="arg">args</i></a></li>
+<li><a href="#3"><b class="cmd">::Plotchart::createTXPlot</b> <i class="arg">w</i> <i class="arg">timeaxis</i> <i class="arg">xaxis</i> <i class="arg">args</i></a></li>
+<li><a href="#4"><b class="cmd">::Plotchart::createXLogYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i> <i class="arg">args</i></a></li>
+<li><a href="#5"><b class="cmd">::Plotchart::createLogXYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i> <i class="arg">args</i></a></li>
+<li><a href="#6"><b class="cmd">::Plotchart::createLogXLogYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i> <i class="arg">args</i></a></li>
+<li><a href="#7"><b class="cmd">::Plotchart::createPolarPlot</b> <i class="arg">w</i> <i class="arg">radius_data</i> <i class="arg">args</i></a></li>
 <li><a href="#8"><b class="cmd">::Plotchart::createWindrose</b> <i class="arg">w</i> <i class="arg">radius_data</i> <i class="arg">sectors</i></a></li>
 <li><a href="#9"><b class="cmd">::Plotchart::createIsometricPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i> <i class="arg">stepsize</i></a></li>
 <li><a href="#10"><b class="cmd">::Plotchart::createHistogram</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i></a></li>
@@ -172,119 +172,126 @@
 <li><a href="#22"><b class="cmd">::Plotchart::createGanttchart</b> <i class="arg">w</i> <i class="arg">time_begin</i> <i class="arg">time_end</i> <i class="arg">args</i></a></li>
 <li><a href="#23"><b class="cmd">::Plotchart::createRightAxis</b> <i class="arg">w_or_plot</i> <i class="arg">yaxis</i></a></li>
 <li><a href="#24"><b class="cmd">::Plotchart::createTableChart</b> <i class="arg">w</i> <i class="arg">columns</i> <span class="opt">?widths?</span></a></li>
-<li><a href="#25"><b class="cmd">$anyplot</b> title <i class="arg">text</i> <i class="arg">position</i></a></li>
-<li><a href="#26"><b class="cmd">$anyplot</b> subtitle <i class="arg">text</i></a></li>
-<li><a href="#27"><b class="cmd">$anyplot</b> canvas</a></li>
-<li><a href="#28"><b class="cmd">$anyplot</b> saveplot <i class="arg">filename</i> <i class="arg">args</i></a></li>
-<li><a href="#29"><b class="cmd">$anyplot</b> xtext <i class="arg">text</i></a></li>
-<li><a href="#30"><b class="cmd">$anyplot</b> ytext <i class="arg">text</i></a></li>
-<li><a href="#31"><b class="cmd">$anyplot</b> vtext <i class="arg">text</i></a></li>
-<li><a href="#32"><b class="cmd">$anyplot</b> xsubtext <i class="arg">text</i></a></li>
-<li><a href="#33"><b class="cmd">$anyplot</b> ysubtext <i class="arg">text</i></a></li>
-<li><a href="#34"><b class="cmd">$anyplot</b> vsubtext <i class="arg">text</i></a></li>
-<li><a href="#35"><b class="cmd">$anyplot</b> xconfig <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
-<li><a href="#36"><b class="cmd">$anyplot</b> yconfig <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
-<li><a href="#37"><b class="cmd">$anyplot</b> background <i class="arg">part</i> <i class="arg">colour_or_image</i> <i class="arg">dir</i> <span class="opt">?brightness?</span></a></li>
-<li><a href="#38"><b class="cmd">$anyplot</b> xticklines <i class="arg">colour</i> <span class="opt">?dash?</span></a></li>
-<li><a href="#39"><b class="cmd">$anyplot</b> yticklines <i class="arg">colour</i> <span class="opt">?dash?</span></a></li>
-<li><a href="#40"><b class="cmd">$anyplot</b> legend <i class="arg">series</i> <i class="arg">text</i> <span class="opt">?spacing?</span></a></li>
-<li><a href="#41"><b class="cmd">$anyplot</b> removefromlegend <i class="arg">series</i></a></li>
-<li><a href="#42"><b class="cmd">$anyplot</b> legendconfig <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
-<li><a href="#43"><b class="cmd">$anyplot</b> balloon <i class="arg">x</i> <i class="arg">y</i> <i class="arg">text</i> <i class="arg">dir</i></a></li>
-<li><a href="#44"><b class="cmd">$anyplot</b> balloonconfig <i class="arg">args</i></a></li>
-<li><a href="#45"><b class="cmd">$anyplot</b> plaintext <i class="arg">x</i> <i class="arg">y</i> <i class="arg">text</i> <i class="arg">dir</i></a></li>
-<li><a href="#46"><b class="cmd">$anyplot</b> plaintextconfig <i class="arg">args</i></a></li>
-<li><a href="#47"><b class="cmd">$anyplot</b> object <i class="arg">itemtype</i> <i class="arg">series</i> <i class="arg">args</i></a></li>
-<li><a href="#48"><b class="cmd">$anyplot</b> deletedata</a></li>
-<li><a href="#49"><b class="cmd">$xyplot</b> plot <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></li>
-<li><a href="#50"><b class="cmd">$xyplot</b> plotlist <i class="arg">series</i> <i class="arg">xlist</i> <i class="arg">ylist</i> <i class="arg">every</i></a></li>
-<li><a href="#51"><b class="cmd">$histogram</b> plotcumulative <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></li>
-<li><a href="#52"><b class="cmd">$xyplot</b> trend <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></li>
-<li><a href="#53"><b class="cmd">$xyplot</b> rchart <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></li>
-<li><a href="#54"><b class="cmd">$xyplot</b> interval <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ymin</i> <i class="arg">ymax</i> <span class="opt">?ycentr?</span></a></li>
-<li><a href="#55"><b class="cmd">$xyplot</b> box-and-whiskers <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></li>
-<li><a href="#56"><b class="cmd">$xyplot</b> vector <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">ucmp</i> <i class="arg">vcmp</i></a></li>
-<li><a href="#57"><b class="cmd">$xyplot</b> vectorconfig <i class="arg">series</i> <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
-<li><a href="#58"><b class="cmd">$xyplot</b> dot <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">value</i></a></li>
-<li><a href="#59"><b class="cmd">$xyplot</b> dotconfig <i class="arg">series</i> <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
-<li><a href="#60"><b class="cmd">$xyplot</b> contourlines <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">values</i> <span class="opt">?classes?</span></a></li>
-<li><a href="#61"><b class="cmd">$xyplot</b> contourlinesfunctionvalues <i class="arg">xvec</i> <i class="arg">yvec</i> <i class="arg">valuesmat</i> <span class="opt">?classes?</span></a></li>
-<li><a href="#62"><b class="cmd">$xyplot</b> contourfill <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">values</i> <span class="opt">?classes?</span></a></li>
-<li><a href="#63"><b class="cmd">$xyplot</b> contourbox <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">values</i> <span class="opt">?classes?</span></a></li>
-<li><a href="#64"><b class="cmd">$xyplot</b> colorMap <i class="arg">colours</i></a></li>
-<li><a href="#65"><b class="cmd">$xyplot</b> legendisolines <i class="arg">values</i> <i class="arg">classes</i></a></li>
-<li><a href="#66"><b class="cmd">$xyplot</b> legendshades <i class="arg">values</i> <i class="arg">classes</i></a></li>
-<li><a href="#67"><b class="cmd">$xyplot</b> grid <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></li>
-<li><a href="#68"><b class="cmd">$xyplot</b> xband <i class="arg">ymin</i> <i class="arg">ymax</i></a></li>
-<li><a href="#69"><b class="cmd">$xyplot</b> yband <i class="arg">xmin</i> <i class="arg">xmax</i></a></li>
-<li><a href="#70"><b class="cmd">$xyplot</b> labeldot <i class="arg">x</i> <i class="arg">y</i> <i class="arg">text</i> <i class="arg">orient</i></a></li>
-<li><a href="#71"><b class="cmd">$polarplot</b> plot <i class="arg">series</i> <i class="arg">radius</i> <i class="arg">angle</i></a></li>
-<li><a href="#72"><b class="cmd">$windrose</b> plot <i class="arg">data</i> <i class="arg">colour</i></a></li>
-<li><a href="#73"><b class="cmd">$plot3d</b> plotfunc <i class="arg">function</i></a></li>
-<li><a href="#74"><b class="cmd">$plot3d</b> plotfuncont <i class="arg">function</i> <i class="arg">contours</i></a></li>
-<li><a href="#75"><b class="cmd">$plot3d</b> gridsize <i class="arg">nxcells</i> <i class="arg">nycells</i></a></li>
-<li><a href="#76"><b class="cmd">$plot3d</b> plotdata <i class="arg">data</i></a></li>
-<li><a href="#77"><b class="cmd">$plot3d</b> colours <i class="arg">fill</i> <i class="arg">border</i></a></li>
-<li><a href="#78"><b class="cmd">$plot3d</b> ribbon <i class="arg">yzpairs</i></a></li>
-<li><a href="#79"><b class="cmd">$plot3d</b> plot <i class="arg">yzpairs</i></a></li>
-<li><a href="#80"><b class="cmd">$xyplot</b> dataconfig <i class="arg">series</i> <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
-<li><a href="#81"><b class="cmd">$pie</b> plot <i class="arg">data</i></a></li>
-<li><a href="#82"><b class="cmd">$pie</b> colours <i class="arg">colour1</i> <i class="arg">colour2</i> ...</a></li>
-<li><a href="#83"><b class="cmd">$pie</b> explode <i class="arg">segment</i></a></li>
-<li><a href="#84"><b class="cmd">$radial</b> plot <i class="arg">data</i> <i class="arg">colour</i> <i class="arg">thickness</i></a></li>
-<li><a href="#85"><b class="cmd">$pie</b> colours <i class="arg">colour1</i> <i class="arg">colour2</i> ...</a></li>
-<li><a href="#86"><b class="cmd">$barchart</b> plot <i class="arg">series</i> <i class="arg">ydata</i> <i class="arg">colour</i> <span class="opt">?dir?</span> <span class="opt">?brightness?</span></a></li>
-<li><a href="#87"><b class="cmd">$barchart</b> config <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
-<li><a href="#88"><b class="cmd">$barchart</b> plot <i class="arg">series</i> <i class="arg">xdata</i> <i class="arg">colour</i> <span class="opt">?dir?</span> <span class="opt">?brightness?</span></a></li>
-<li><a href="#89"><b class="cmd">$barchart</b> config <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
-<li><a href="#90"><b class="cmd">$barchart</b> plot <i class="arg">label</i> <i class="arg">yvalue</i> <i class="arg">colour</i></a></li>
-<li><a href="#91"><b class="cmd">$barchart</b> config <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
-<li><a href="#92"><b class="cmd">$ribbon</b> line <i class="arg">xypairs</i> <i class="arg">colour</i></a></li>
-<li><a href="#93"><b class="cmd">$ribbon</b> area <i class="arg">xypairs</i> <i class="arg">colour</i></a></li>
-<li><a href="#94"><b class="cmd">$boxplot</b> plot <i class="arg">series</i> <i class="arg">label</i> <i class="arg">values</i></a></li>
-<li><a href="#95"><b class="cmd">$timechart</b> period <i class="arg">text</i> <i class="arg">time_begin</i> <i class="arg">time_end</i> <i class="arg">colour</i></a></li>
-<li><a href="#96"><b class="cmd">$timechart</b> milestone <i class="arg">text</i> <i class="arg">time</i> <i class="arg">colour</i></a></li>
-<li><a href="#97"><b class="cmd">$timechart</b> vertline <i class="arg">text</i> <i class="arg">time</i></a></li>
-<li><a href="#98"><b class="cmd">$timechart</b> hscroll <i class="arg">scrollbar</i></a></li>
-<li><a href="#99"><b class="cmd">$timechart</b> vscroll <i class="arg">scrollbar</i></a></li>
-<li><a href="#100"><b class="cmd">$ganttchart</b> task <i class="arg">text</i> <i class="arg">time_begin</i> <i class="arg">time_end</i> <i class="arg">completed</i></a></li>
-<li><a href="#101"><b class="cmd">$ganttchart</b> milestone <i class="arg">text</i> <i class="arg">time</i> <i class="arg">colour</i></a></li>
-<li><a href="#102"><b class="cmd">$ganttchart</b> vertline <i class="arg">text</i> <i class="arg">time</i></a></li>
-<li><a href="#103"><b class="cmd">$ganttchart</b> connect <i class="arg">from</i> <i class="arg">to</i></a></li>
-<li><a href="#104"><b class="cmd">$ganttchart</b> summary <i class="arg">text</i> <i class="arg">args</i></a></li>
-<li><a href="#105"><b class="cmd">$ganttchart</b> color <i class="arg">keyword</i> <i class="arg">newcolor</i></a></li>
-<li><a href="#106"><b class="cmd">$ganttchart</b> font <i class="arg">keyword</i> <i class="arg">newfont</i></a></li>
-<li><a href="#107"><b class="cmd">$ganttchart</b> hscroll <i class="arg">scrollbar</i></a></li>
-<li><a href="#108"><b class="cmd">$ganttchart</b> vscroll <i class="arg">scrollbar</i></a></li>
-<li><a href="#109"><b class="cmd">$isoplot</b> plot rectangle <i class="arg">x1</i> <i class="arg">y1</i> <i class="arg">x2</i> <i class="arg">y2</i> <i class="arg">colour</i></a></li>
-<li><a href="#110"><b class="cmd">$isoplot</b> plot filled-rectangle <i class="arg">x1</i> <i class="arg">y1</i> <i class="arg">x2</i> <i class="arg">y2</i> <i class="arg">colour</i></a></li>
-<li><a href="#111"><b class="cmd">$isoplot</b> plot circle <i class="arg">xc</i> <i class="arg">yc</i> <i class="arg">radius</i> <i class="arg">colour</i></a></li>
-<li><a href="#112"><b class="cmd">$isoplot</b> plot filled-circle <i class="arg">xc</i> <i class="arg">yc</i> <i class="arg">radius</i> <i class="arg">colour</i></a></li>
-<li><a href="#113"><b class="cmd">$table</b> row <i class="arg">items</i></a></li>
-<li><a href="#114"><b class="cmd">$table</b> separator</a></li>
-<li><a href="#115"><b class="cmd">$table</b> formatcommand <i class="arg">procname</i></a></li>
-<li><a href="#116"><b class="cmd">$table</b> cellconfigure <i class="arg">args</i></a></li>
-<li><a href="#117"><b class="cmd">::Plotchart::viewPort</b> <i class="arg">w</i> <i class="arg">pxmin</i> <i class="arg">pymin</i> <i class="arg">pxmax</i> <i class="arg">pymax</i></a></li>
-<li><a href="#118"><b class="cmd">::Plotchart::worldCoordinates</b> <i class="arg">w</i> <i class="arg">xmin</i> <i class="arg">ymin</i> <i class="arg">xmax</i> <i class="arg">ymax</i></a></li>
-<li><a href="#119"><b class="cmd">::Plotchart::world3DCoordinates</b> <i class="arg">w</i> <i class="arg">xmin</i> <i class="arg">ymin</i> <i class="arg">zmin</i> <i class="arg">xmax</i> <i class="arg">ymax</i> <i class="arg">zmax</i></a></li>
-<li><a href="#120"><b class="cmd">::Plotchart::coordsToPixel</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i></a></li>
-<li><a href="#121"><b class="cmd">::Plotchart::coords3DToPixel</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i> <i class="arg">z</i></a></li>
-<li><a href="#122"><b class="cmd">::Plotchart::polarCoordinates</b> <i class="arg">w</i> <i class="arg">radmax</i></a></li>
-<li><a href="#123"><b class="cmd">::Plotchart::polarToPixel</b> <i class="arg">w</i> <i class="arg">rad</i> <i class="arg">phi</i></a></li>
-<li><a href="#124"><b class="cmd">::Plotchart::pixelToCoords</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i></a></li>
-<li><a href="#125"><b class="cmd">::Plotchart::pixelToIndex</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i></a></li>
-<li><a href="#126"><b class="cmd">::Plotchart::determineScale</b> <i class="arg">xmin</i> <i class="arg">xmax</i> <i class="arg">inverted</i></a></li>
-<li><a href="#127"><b class="cmd">::Plotchart::determineScaleFromList</b> <i class="arg">values</i> <i class="arg">inverted</i></a></li>
-<li><a href="#128"><b class="cmd">::Plotchart::plotconfig</b> <i class="arg">charttype</i> <i class="arg">component</i> <i class="arg">property</i> <i class="arg">value</i></a></li>
-<li><a href="#129"><b class="cmd">::Plotchart::plotstyle</b> <i class="arg">subcmd</i> <i class="arg">style</i> <i class="arg">args</i></a></li>
-<li><a href="#130"><b class="cmd">::Plotchart::createTargetDiagram</b> <i class="arg">w</i> <i class="arg">limits</i> <i class="arg">scale</i></a></li>
-<li><a href="#131"><b class="cmd">$target</b> plot <i class="arg">series</i> <i class="arg">xvalues</i> <i class="arg">yvalues</i></a></li>
-<li><a href="#132"><b class="cmd">::Plotchart::createPerformanceProfile</b> <i class="arg">w</i> <i class="arg">max</i></a></li>
-<li><a href="#133"><b class="cmd">$performance</b> plot <i class="arg">series_and_data_pairs</i></a></li>
-<li><a href="#134"><b class="cmd">::Plotchart::plotmethod</b> <i class="arg">charttype</i> <i class="arg">methodname</i> <i class="arg">plotproc</i></a></li>
-<li><a href="#135"><b class="cmd">::Plotchart::plotpack</b> <i class="arg">w</i> <i class="arg">dir</i> <i class="arg">args</i></a></li>
-<li><a href="#136"><b class="cmd">$anyplot</b> bindplot <i class="arg">event</i> <i class="arg">command</i> <i class="arg">args</i></a></li>
-<li><a href="#137"><b class="cmd">$anyplot</b> bindlast <i class="arg">series</i> <i class="arg">event</i> <i class="arg">command</i></a></li>
+<li><a href="#25"><b class="cmd">::Plotchart::createTernaryDiagram</b> <i class="arg">w</i> <i class="arg">args</i></a></li>
+<li><a href="#26"><b class="cmd">$anyplot</b> title <i class="arg">text</i> <i class="arg">position</i></a></li>
+<li><a href="#27"><b class="cmd">$anyplot</b> subtitle <i class="arg">text</i></a></li>
+<li><a href="#28"><b class="cmd">$anyplot</b> canvas</a></li>
+<li><a href="#29"><b class="cmd">$anyplot</b> saveplot <i class="arg">filename</i> <i class="arg">args</i></a></li>
+<li><a href="#30"><b class="cmd">$anyplot</b> xtext <i class="arg">text</i></a></li>
+<li><a href="#31"><b class="cmd">$anyplot</b> ytext <i class="arg">text</i></a></li>
+<li><a href="#32"><b class="cmd">$anyplot</b> vtext <i class="arg">text</i></a></li>
+<li><a href="#33"><b class="cmd">$anyplot</b> xsubtext <i class="arg">text</i></a></li>
+<li><a href="#34"><b class="cmd">$anyplot</b> ysubtext <i class="arg">text</i></a></li>
+<li><a href="#35"><b class="cmd">$anyplot</b> vsubtext <i class="arg">text</i></a></li>
+<li><a href="#36"><b class="cmd">$anyplot</b> xconfig <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
+<li><a href="#37"><b class="cmd">$anyplot</b> yconfig <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
+<li><a href="#38"><b class="cmd">$anyplot</b> background <i class="arg">part</i> <i class="arg">colour_or_image</i> <i class="arg">dir</i> <span class="opt">?brightness?</span></a></li>
+<li><a href="#39"><b class="cmd">$anyplot</b> xticklines <i class="arg">colour</i> <span class="opt">?dash?</span></a></li>
+<li><a href="#40"><b class="cmd">$anyplot</b> yticklines <i class="arg">colour</i> <span class="opt">?dash?</span></a></li>
+<li><a href="#41"><b class="cmd">$anyplot</b> legend <i class="arg">series</i> <i class="arg">text</i> <span class="opt">?spacing?</span></a></li>
+<li><a href="#42"><b class="cmd">$anyplot</b> removefromlegend <i class="arg">series</i></a></li>
+<li><a href="#43"><b class="cmd">$anyplot</b> legendconfig <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
+<li><a href="#44"><b class="cmd">$anyplot</b> balloon <i class="arg">x</i> <i class="arg">y</i> <i class="arg">text</i> <i class="arg">dir</i></a></li>
+<li><a href="#45"><b class="cmd">$anyplot</b> balloonconfig <i class="arg">args</i></a></li>
+<li><a href="#46"><b class="cmd">$anyplot</b> plaintext <i class="arg">x</i> <i class="arg">y</i> <i class="arg">text</i> <i class="arg">dir</i></a></li>
+<li><a href="#47"><b class="cmd">$anyplot</b> plaintextconfig <i class="arg">args</i></a></li>
+<li><a href="#48"><b class="cmd">$anyplot</b> object <i class="arg">itemtype</i> <i class="arg">series</i> <i class="arg">args</i></a></li>
+<li><a href="#49"><b class="cmd">$anyplot</b> deletedata</a></li>
+<li><a href="#50"><b class="cmd">$xyplot</b> plot <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></li>
+<li><a href="#51"><b class="cmd">$xyplot</b> plotlist <i class="arg">series</i> <i class="arg">xlist</i> <i class="arg">ylist</i> <i class="arg">every</i></a></li>
+<li><a href="#52"><b class="cmd">$histogram</b> plotcumulative <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></li>
+<li><a href="#53"><b class="cmd">$xyplot</b> trend <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></li>
+<li><a href="#54"><b class="cmd">$xyplot</b> rchart <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></li>
+<li><a href="#55"><b class="cmd">$xyplot</b> interval <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ymin</i> <i class="arg">ymax</i> <span class="opt">?ycentr?</span></a></li>
+<li><a href="#56"><b class="cmd">$xyplot</b> box-and-whiskers <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></li>
+<li><a href="#57"><b class="cmd">$xyplot</b> vector <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">ucmp</i> <i class="arg">vcmp</i></a></li>
+<li><a href="#58"><b class="cmd">$xyplot</b> vectorconfig <i class="arg">series</i> <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
+<li><a href="#59"><b class="cmd">$xyplot</b> dot <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">value</i></a></li>
+<li><a href="#60"><b class="cmd">$xyplot</b> dotconfig <i class="arg">series</i> <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
+<li><a href="#61"><b class="cmd">$xyplot</b> contourlines <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">values</i> <span class="opt">?classes?</span></a></li>
+<li><a href="#62"><b class="cmd">$xyplot</b> contourlinesfunctionvalues <i class="arg">xvec</i> <i class="arg">yvec</i> <i class="arg">valuesmat</i> <span class="opt">?classes?</span></a></li>
+<li><a href="#63"><b class="cmd">$xyplot</b> contourfill <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">values</i> <span class="opt">?classes?</span></a></li>
+<li><a href="#64"><b class="cmd">$xyplot</b> contourbox <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">values</i> <span class="opt">?classes?</span></a></li>
+<li><a href="#65"><b class="cmd">$xyplot</b> colorMap <i class="arg">colours</i></a></li>
+<li><a href="#66"><b class="cmd">$xyplot</b> legendisolines <i class="arg">values</i> <i class="arg">classes</i></a></li>
+<li><a href="#67"><b class="cmd">$xyplot</b> legendshades <i class="arg">values</i> <i class="arg">classes</i></a></li>
+<li><a href="#68"><b class="cmd">$xyplot</b> grid <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></li>
+<li><a href="#69"><b class="cmd">$xyplot</b> xband <i class="arg">ymin</i> <i class="arg">ymax</i></a></li>
+<li><a href="#70"><b class="cmd">$xyplot</b> yband <i class="arg">xmin</i> <i class="arg">xmax</i></a></li>
+<li><a href="#71"><b class="cmd">$xyplot</b> labeldot <i class="arg">x</i> <i class="arg">y</i> <i class="arg">text</i> <i class="arg">orient</i></a></li>
+<li><a href="#72"><b class="cmd">$polarplot</b> plot <i class="arg">series</i> <i class="arg">radius</i> <i class="arg">angle</i></a></li>
+<li><a href="#73"><b class="cmd">$windrose</b> plot <i class="arg">data</i> <i class="arg">colour</i></a></li>
+<li><a href="#74"><b class="cmd">$plot3d</b> plotfunc <i class="arg">function</i></a></li>
+<li><a href="#75"><b class="cmd">$plot3d</b> plotfuncont <i class="arg">function</i> <i class="arg">contours</i></a></li>
+<li><a href="#76"><b class="cmd">$plot3d</b> gridsize <i class="arg">nxcells</i> <i class="arg">nycells</i></a></li>
+<li><a href="#77"><b class="cmd">$plot3d</b> plotdata <i class="arg">data</i></a></li>
+<li><a href="#78"><b class="cmd">$plot3d</b> colours <i class="arg">fill</i> <i class="arg">border</i></a></li>
+<li><a href="#79"><b class="cmd">$plot3d</b> ribbon <i class="arg">yzpairs</i></a></li>
+<li><a href="#80"><b class="cmd">$plot3d</b> plot <i class="arg">yzpairs</i></a></li>
+<li><a href="#81"><b class="cmd">$xyplot</b> dataconfig <i class="arg">series</i> <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
+<li><a href="#82"><b class="cmd">$pie</b> plot <i class="arg">data</i></a></li>
+<li><a href="#83"><b class="cmd">$pie</b> colours <i class="arg">colour1</i> <i class="arg">colour2</i> ...</a></li>
+<li><a href="#84"><b class="cmd">$pie</b> explode <i class="arg">segment</i></a></li>
+<li><a href="#85"><b class="cmd">$radial</b> plot <i class="arg">data</i> <i class="arg">colour</i> <i class="arg">thickness</i></a></li>
+<li><a href="#86"><b class="cmd">$pie</b> colours <i class="arg">colour1</i> <i class="arg">colour2</i> ...</a></li>
+<li><a href="#87"><b class="cmd">$barchart</b> plot <i class="arg">series</i> <i class="arg">ydata</i> <i class="arg">colour</i> <span class="opt">?dir?</span> <span class="opt">?brightness?</span></a></li>
+<li><a href="#88"><b class="cmd">$barchart</b> config <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
+<li><a href="#89"><b class="cmd">$barchart</b> plot <i class="arg">series</i> <i class="arg">xdata</i> <i class="arg">colour</i> <span class="opt">?dir?</span> <span class="opt">?brightness?</span></a></li>
+<li><a href="#90"><b class="cmd">$barchart</b> config <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
+<li><a href="#91"><b class="cmd">$barchart</b> plot <i class="arg">label</i> <i class="arg">yvalue</i> <i class="arg">colour</i></a></li>
+<li><a href="#92"><b class="cmd">$barchart</b> config <b class="option">-option</b> <i class="arg">value</i> ...</a></li>
+<li><a href="#93"><b class="cmd">$ribbon</b> line <i class="arg">xypairs</i> <i class="arg">colour</i></a></li>
+<li><a href="#94"><b class="cmd">$ribbon</b> area <i class="arg">xypairs</i> <i class="arg">colour</i></a></li>
+<li><a href="#95"><b class="cmd">$boxplot</b> plot <i class="arg">series</i> <i class="arg">label</i> <i class="arg">values</i></a></li>
+<li><a href="#96"><b class="cmd">$timechart</b> period <i class="arg">text</i> <i class="arg">time_begin</i> <i class="arg">time_end</i> <i class="arg">colour</i></a></li>
+<li><a href="#97"><b class="cmd">$timechart</b> milestone <i class="arg">text</i> <i class="arg">time</i> <i class="arg">colour</i></a></li>
+<li><a href="#98"><b class="cmd">$timechart</b> vertline <i class="arg">text</i> <i class="arg">time</i></a></li>
+<li><a href="#99"><b class="cmd">$timechart</b> hscroll <i class="arg">scrollbar</i></a></li>
+<li><a href="#100"><b class="cmd">$timechart</b> vscroll <i class="arg">scrollbar</i></a></li>
+<li><a href="#101"><b class="cmd">$ganttchart</b> task <i class="arg">text</i> <i class="arg">time_begin</i> <i class="arg">time_end</i> <i class="arg">completed</i></a></li>
+<li><a href="#102"><b class="cmd">$ganttchart</b> milestone <i class="arg">text</i> <i class="arg">time</i> <i class="arg">colour</i></a></li>
+<li><a href="#103"><b class="cmd">$ganttchart</b> vertline <i class="arg">text</i> <i class="arg">time</i></a></li>
+<li><a href="#104"><b class="cmd">$ganttchart</b> connect <i class="arg">from</i> <i class="arg">to</i></a></li>
+<li><a href="#105"><b class="cmd">$ganttchart</b> summary <i class="arg">text</i> <i class="arg">args</i></a></li>
+<li><a href="#106"><b class="cmd">$ganttchart</b> color <i class="arg">keyword</i> <i class="arg">newcolor</i></a></li>
+<li><a href="#107"><b class="cmd">$ganttchart</b> font <i class="arg">keyword</i> <i class="arg">newfont</i></a></li>
+<li><a href="#108"><b class="cmd">$ganttchart</b> hscroll <i class="arg">scrollbar</i></a></li>
+<li><a href="#109"><b class="cmd">$ganttchart</b> vscroll <i class="arg">scrollbar</i></a></li>
+<li><a href="#110"><b class="cmd">$isoplot</b> plot rectangle <i class="arg">x1</i> <i class="arg">y1</i> <i class="arg">x2</i> <i class="arg">y2</i> <i class="arg">colour</i></a></li>
+<li><a href="#111"><b class="cmd">$isoplot</b> plot filled-rectangle <i class="arg">x1</i> <i class="arg">y1</i> <i class="arg">x2</i> <i class="arg">y2</i> <i class="arg">colour</i></a></li>
+<li><a href="#112"><b class="cmd">$isoplot</b> plot circle <i class="arg">xc</i> <i class="arg">yc</i> <i class="arg">radius</i> <i class="arg">colour</i></a></li>
+<li><a href="#113"><b class="cmd">$isoplot</b> plot filled-circle <i class="arg">xc</i> <i class="arg">yc</i> <i class="arg">radius</i> <i class="arg">colour</i></a></li>
+<li><a href="#114"><b class="cmd">$table</b> row <i class="arg">items</i></a></li>
+<li><a href="#115"><b class="cmd">$table</b> separator</a></li>
+<li><a href="#116"><b class="cmd">$table</b> formatcommand <i class="arg">procname</i></a></li>
+<li><a href="#117"><b class="cmd">$table</b> cellconfigure <i class="arg">args</i></a></li>
+<li><a href="#118"><b class="cmd">$ternary</b> plot <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">zcrd</i> <i class="arg">text</i> <i class="arg">dir</i></a></li>
+<li><a href="#119"><b class="cmd">$ternary</b> line <i class="arg">series</i> <i class="arg">coords</i></a></li>
+<li><a href="#120"><b class="cmd">$ternary</b> fill <i class="arg">series</i> <i class="arg">coords</i></a></li>
+<li><a href="#121"><b class="cmd">$ternary</b> text <i class="arg">xtext</i> <i class="arg">ytext</i> <i class="arg">ztext</i></a></li>
+<li><a href="#122"><b class="cmd">$ternary</b> ticklines <i class="arg">colour</i></a></li>
+<li><a href="#123"><b class="cmd">::Plotchart::viewPort</b> <i class="arg">w</i> <i class="arg">pxmin</i> <i class="arg">pymin</i> <i class="arg">pxmax</i> <i class="arg">pymax</i></a></li>
+<li><a href="#124"><b class="cmd">::Plotchart::worldCoordinates</b> <i class="arg">w</i> <i class="arg">xmin</i> <i class="arg">ymin</i> <i class="arg">xmax</i> <i class="arg">ymax</i></a></li>
+<li><a href="#125"><b class="cmd">::Plotchart::world3DCoordinates</b> <i class="arg">w</i> <i class="arg">xmin</i> <i class="arg">ymin</i> <i class="arg">zmin</i> <i class="arg">xmax</i> <i class="arg">ymax</i> <i class="arg">zmax</i></a></li>
+<li><a href="#126"><b class="cmd">::Plotchart::coordsToPixel</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i></a></li>
+<li><a href="#127"><b class="cmd">::Plotchart::coords3DToPixel</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i> <i class="arg">z</i></a></li>
+<li><a href="#128"><b class="cmd">::Plotchart::polarCoordinates</b> <i class="arg">w</i> <i class="arg">radmax</i></a></li>
+<li><a href="#129"><b class="cmd">::Plotchart::polarToPixel</b> <i class="arg">w</i> <i class="arg">rad</i> <i class="arg">phi</i></a></li>
+<li><a href="#130"><b class="cmd">::Plotchart::pixelToCoords</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i></a></li>
+<li><a href="#131"><b class="cmd">::Plotchart::pixelToIndex</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i></a></li>
+<li><a href="#132"><b class="cmd">::Plotchart::determineScale</b> <i class="arg">xmin</i> <i class="arg">xmax</i> <i class="arg">inverted</i></a></li>
+<li><a href="#133"><b class="cmd">::Plotchart::determineScaleFromList</b> <i class="arg">values</i> <i class="arg">inverted</i></a></li>
+<li><a href="#134"><b class="cmd">::Plotchart::plotconfig</b> <i class="arg">charttype</i> <i class="arg">component</i> <i class="arg">property</i> <i class="arg">value</i></a></li>
+<li><a href="#135"><b class="cmd">::Plotchart::plotstyle</b> <i class="arg">subcmd</i> <i class="arg">style</i> <i class="arg">args</i></a></li>
+<li><a href="#136"><b class="cmd">::Plotchart::eraseplot</b> <i class="arg">anyplot</i></a></li>
+<li><a href="#137"><b class="cmd">::Plotchart::createTargetDiagram</b> <i class="arg">w</i> <i class="arg">limits</i> <i class="arg">scale</i></a></li>
+<li><a href="#138"><b class="cmd">$target</b> plot <i class="arg">series</i> <i class="arg">xvalues</i> <i class="arg">yvalues</i></a></li>
+<li><a href="#139"><b class="cmd">::Plotchart::createPerformanceProfile</b> <i class="arg">w</i> <i class="arg">max</i></a></li>
+<li><a href="#140"><b class="cmd">$performance</b> plot <i class="arg">series_and_data_pairs</i></a></li>
+<li><a href="#141"><b class="cmd">::Plotchart::plotmethod</b> <i class="arg">charttype</i> <i class="arg">methodname</i> <i class="arg">plotproc</i></a></li>
+<li><a href="#142"><b class="cmd">::Plotchart::plotpack</b> <i class="arg">w</i> <i class="arg">dir</i> <i class="arg">args</i></a></li>
+<li><a href="#143"><b class="cmd">$anyplot</b> bindplot <i class="arg">event</i> <i class="arg">command</i> <i class="arg">args</i></a></li>
+<li><a href="#144"><b class="cmd">$anyplot</b> bindlast <i class="arg">series</i> <i class="arg">event</i> <i class="arg">command</i></a></li>
 </ul>
 </div>
 </div>
@@ -320,6 +327,7 @@ automatically. The result is a kind of sliding window on the data
 series.</p></li>
 <li><p>Polar plots, where the coordinates are polar instead of cartesian.</p></li>
 <li><p>Histograms, for plotting statistical information.</p></li>
+<li><p>Barcharts, piecharts, Gantt charts, time charts.</p></li>
 <li><p>Isometric plots, where the scale of the coordinates in the two
 directions is always the same, i.e. a circle in world coordinates
 appears as a circle on the screen.</p>
@@ -336,9 +344,10 @@ important moments in time are represented by triangles.</p></li>
 </ul>
 <p>With version 1.5 a new command has been introduced: plotconfig, which
 can be used to configure the plot options for particular types of plots
-and charts (cf. <span class="sectref"><a href="#section11">CONFIGURATION OPTIONS</a></span>)
+and charts (cf. <span class="sectref"><a href="#section11">CONFIGURATION OPTIONS AND OTHER COMMANDS</a></span>)
 With version 1.8.3 several new features were introduced, which allow more interactivity
-(cf. <span class="sectref"><a href="#section17">INTERACTIVE USE</a></span>)</p>
+(cf. <span class="sectref"><a href="#section18">INTERACTIVE USE</a></span>)
+With version 2.0 it has become possible to put several plots or charts in one canvas.</p>
 </div>
 <div id="section2" class="section"><h2><a name="section2">PLOT CREATION COMMANDS</a></h2>
 <p>You create the plot or chart with one single command and then fill the
@@ -366,11 +375,13 @@ otherwise they are positioned with equal distance, based on the number
 of labels. Note: this only works if the stepsize of the xaxis argument is
 the empty string.</p></li>
 <li><p><em>-ylabels {labels}:</em> Similarly, custom labels for the y-axis.</p></li>
-<li><p><em>-box {measures}:</em> See <span class="sectref"><a href="#section16">ARRANGING MULTIPLE PLOTS IN A CANVAS</a></span></p></li>
-<li><p><em>-axesbox {measures}:</em> See <span class="sectref"><a href="#section16">ARRANGING MULTIPLE PLOTS IN A CANVAS</a></span></p></li>
+<li><p><em>-box {measures}:</em> See <span class="sectref"><a href="#section17">ARRANGING MULTIPLE PLOTS IN A CANVAS</a></span></p></li>
+<li><p><em>-axesbox {measures}:</em> See <span class="sectref"><a href="#section17">ARRANGING MULTIPLE PLOTS IN A CANVAS</a></span></p></li>
+<li><p><em>-timeformat format:</em> See <span class="sectref"><a href="#section16">USING DATE/TIME LABELS</a></span></p></li>
+<li><p><em>-gmt 0/1:</em> See <span class="sectref"><a href="#section16">USING DATE/TIME LABELS</a></span></p></li>
 </ul></dd>
 </dl></dd>
-<dt><a name="2"><b class="cmd">::Plotchart::createStripchart</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i></a></dt>
+<dt><a name="2"><b class="cmd">::Plotchart::createStripchart</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i> <i class="arg">args</i></a></dt>
 <dd><p>Create a new strip chart (configuration type: stripchart). The
 only difference to a regular XY plot is
 that the x-axis will be automatically adjusted when the x-coordinate
@@ -385,8 +396,10 @@ Note that an inverted x-axis is <em>not</em> supported for this type of plot.</p
 <dd><p>A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order.
 For an inverted axis, where the maximum appears at the bottom,
 use: maximum, minimum and a <em>negative</em> stepsize.</p></dd>
+<dt>list <i class="arg">args</i> (in)</dt>
+<dd><p>Zero or more options - see the XY-plot for more information.</p></dd>
 </dl></dd>
-<dt><a name="3"><b class="cmd">::Plotchart::createTXPlot</b> <i class="arg">w</i> <i class="arg">timeaxis</i> <i class="arg">xaxis</i></a></dt>
+<dt><a name="3"><b class="cmd">::Plotchart::createTXPlot</b> <i class="arg">w</i> <i class="arg">timeaxis</i> <i class="arg">xaxis</i> <i class="arg">args</i></a></dt>
 <dd><p>Create a new time-x-plot (configuration type: txplot). The horizontal axis represents the date/time
 of the data and the vertical axis the values themselves.</p>
 <dl class="arguments">
@@ -401,8 +414,10 @@ Note that an inverted time-axis is <em>not</em> supported.</p></dd>
 vertical axis, in this order.
 For an inverted axis, where the maximum appears at the bottom,
 use: maximum, minimum and a <em>negative</em> stepsize.</p></dd>
+<dt>list <i class="arg">args</i> (in)</dt>
+<dd><p>Zero or more options - see the XY-plot for more information.</p></dd>
 </dl></dd>
-<dt><a name="4"><b class="cmd">::Plotchart::createXLogYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i></a></dt>
+<dt><a name="4"><b class="cmd">::Plotchart::createXLogYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i> <i class="arg">args</i></a></dt>
 <dd><p>Create a new xy-plot where the y-axis has a logarithmic scale (configuration type: xlogyplot).</p>
 <p>The data should be given as for a linear scale, as the logarithmic transformation
 is taken of internally.</p>
@@ -416,8 +431,10 @@ use: maximum, minimum and a <em>negative</em> stepsize.</p></dd>
 <dt>list <i class="arg">yaxis</i> (in)</dt>
 <dd><p>A 2-element list containing minimum and maximum for the y-axis, in this order.
 Note that an inverted logarithmic axis is <em>not</em> supported.</p></dd>
+<dt>list <i class="arg">args</i> (in)</dt>
+<dd><p>Zero or more options - see the XY-plot for more information.</p></dd>
 </dl></dd>
-<dt><a name="5"><b class="cmd">::Plotchart::createLogXYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i></a></dt>
+<dt><a name="5"><b class="cmd">::Plotchart::createLogXYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i> <i class="arg">args</i></a></dt>
 <dd><p>Create a new xy-plot where the x-axis has a logarithmic scale (configuration type: logxyplot).</p>
 <p>The data should be given as for a linear scale, as the logarithmic transformation
 is taken of internally.</p>
@@ -431,8 +448,10 @@ Note that an inverted logarithmic axis is <em>not</em> supported.</p></dd>
 <dd><p>A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order.
 For an inverted axis, where the maximum appears on the left-hand side,
 use: maximum, minimum and a <em>negative</em> stepsize.</p></dd>
+<dt>list <i class="arg">args</i> (in)</dt>
+<dd><p>Zero or more options - see the XY-plot for more information.</p></dd>
 </dl></dd>
-<dt><a name="6"><b class="cmd">::Plotchart::createLogXLogYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i></a></dt>
+<dt><a name="6"><b class="cmd">::Plotchart::createLogXLogYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i> <i class="arg">args</i></a></dt>
 <dd><p>Create a new xy-plot where both the x-axis and the y-axis have a logarithmic scale
 (configuration type: logxlogyplot).</p>
 <p>The data should be given as for a linear scale, as the logarithmic transformation
@@ -446,8 +465,10 @@ Note that an inverted logarithmic axis is <em>not</em> supported.</p></dd>
 <dt>list <i class="arg">yaxis</i> (in)</dt>
 <dd><p>A 2-element list containing minimum and maximum for the y-axis, in this order.
 Note that an inverted logarithmic axis is <em>not</em> supported.</p></dd>
+<dt>list <i class="arg">args</i> (in)</dt>
+<dd><p>Zero or more options - see the XY-plot for more information.</p></dd>
 </dl></dd>
-<dt><a name="7"><b class="cmd">::Plotchart::createPolarPlot</b> <i class="arg">w</i> <i class="arg">radius_data</i></a></dt>
+<dt><a name="7"><b class="cmd">::Plotchart::createPolarPlot</b> <i class="arg">w</i> <i class="arg">radius_data</i> <i class="arg">args</i></a></dt>
 <dd><p>Create a new polar plot (configuration type: polarplot).</p>
 <dl class="arguments">
 <dt>widget <i class="arg">w</i> (in)</dt>
@@ -455,6 +476,8 @@ Note that an inverted logarithmic axis is <em>not</em> supported.</p></dd>
 <dt>list <i class="arg">radius_data</i> (in)</dt>
 <dd><p>A 2-element list containing maximum radius and stepsize for the radial
 axis, in this order.</p></dd>
+<dt>list <i class="arg">args</i> (in)</dt>
+<dd><p>Zero or more options - see the XY-plot for more information.</p></dd>
 </dl></dd>
 <dt><a name="8"><b class="cmd">::Plotchart::createWindrose</b> <i class="arg">w</i> <i class="arg">radius_data</i> <i class="arg">sectors</i></a></dt>
 <dd><p>Create a new windrose diagram. The diagram will consist of concentric
@@ -739,6 +762,18 @@ determines the number of columns.</p></dd>
 for each column the width of that column. If not given, the table is
 spread out over the width of the canvas (minus the margins).</p></dd>
 </dl></dd>
+<dt><a name="25"><b class="cmd">::Plotchart::createTernaryDiagram</b> <i class="arg">w</i> <i class="arg">args</i></a></dt>
+<dd><p>Create a command to draw a ternary diagram (configuration type: ternary). You can draw
+individual (labelled) data points in the diagram, lines and filled polygons.</p>
+<dl class="arguments">
+<dt>widget <i class="arg">w</i> (in)</dt>
+<dd><p>Name of the canvas widget to hold the ternary diagram.</p></dd>
+<dt>list <i class="arg">args</i> (in)</dt>
+<dd><p>Zero or more option-value pairs to influence the position and the appearance of the
+diagram. In addition to the positioning options (-box and -axesbox) the diagram supports:
+<i class="term">-fractions yes/no</i>, to display numbers 0 to 1 instead of 0 to 100% and <i class="term">-steps number</i>
+to influence the number of labels along the three sides.</p></dd>
+</dl></dd>
 </dl>
 </div>
 <div id="section3" class="section"><h2><a name="section3">PLOT METHODS</a></h2>
@@ -749,7 +784,7 @@ the type of the chart.</p>
 <p>General subcommands for all types of charts. \$anyplot is the command
 returned by the creation command:</p>
 <dl class="definitions">
-<dt><a name="25"><b class="cmd">$anyplot</b> title <i class="arg">text</i> <i class="arg">position</i></a></dt>
+<dt><a name="26"><b class="cmd">$anyplot</b> title <i class="arg">text</i> <i class="arg">position</i></a></dt>
 <dd><p>Specify the title of the whole chart.</p>
 <dl class="arguments">
 <dt>string <i class="arg">text</i> (in)</dt>
@@ -759,16 +794,16 @@ returned by the creation command:</p>
 alternatively use &quot;left&quot; or &quot;right&quot;. You can use multiple titles with
 different positions.</p></dd>
 </dl></dd>
-<dt><a name="26"><b class="cmd">$anyplot</b> subtitle <i class="arg">text</i></a></dt>
+<dt><a name="27"><b class="cmd">$anyplot</b> subtitle <i class="arg">text</i></a></dt>
 <dd><p>Specify the subtitle of the whole chart.</p>
 <dl class="arguments">
 <dt>string <i class="arg">text</i> (in)</dt>
 <dd><p>The text of the subtitle to be drawn.</p></dd>
 </dl></dd>
-<dt><a name="27"><b class="cmd">$anyplot</b> canvas</a></dt>
+<dt><a name="28"><b class="cmd">$anyplot</b> canvas</a></dt>
 <dd><p>Return the name of the canvas (or the alias if you use more than one plot within a
 canvas). Use this value for the coordinate transformations.</p></dd>
-<dt><a name="28"><b class="cmd">$anyplot</b> saveplot <i class="arg">filename</i> <i class="arg">args</i></a></dt>
+<dt><a name="29"><b class="cmd">$anyplot</b> saveplot <i class="arg">filename</i> <i class="arg">args</i></a></dt>
 <dd><p>Draws the plot into a file, using PostScript.</p>
 <dl class="arguments">
 <dt>string <i class="arg">filename</i> (in)</dt>
@@ -790,28 +825,28 @@ window in the task bar. Similar things happen on Windows XP.</p>
 of waiting for the visibility of the window, the procedure simply waits
 two seconds. It is not ideal, but it seems to work better.</p></dd>
 </dl></dd>
-<dt><a name="29"><b class="cmd">$anyplot</b> xtext <i class="arg">text</i></a></dt>
+<dt><a name="30"><b class="cmd">$anyplot</b> xtext <i class="arg">text</i></a></dt>
 <dd><p>Specify the title of the (horizontal) x-axis, for those plots that have
 a straight x-axis.</p>
 <dl class="arguments">
 <dt>string <i class="arg">text</i> (in)</dt>
 <dd><p>The text of the x-axis label to be drawn.</p></dd>
 </dl></dd>
-<dt><a name="30"><b class="cmd">$anyplot</b> ytext <i class="arg">text</i></a></dt>
+<dt><a name="31"><b class="cmd">$anyplot</b> ytext <i class="arg">text</i></a></dt>
 <dd><p>Specify the title of the (horizontal) y-axis, for those plots that have
 a straight y-axis.</p>
 <dl class="arguments">
 <dt>string <i class="arg">text</i> (in)</dt>
 <dd><p>The text of the y-axis label to be drawn.</p></dd>
 </dl></dd>
-<dt><a name="31"><b class="cmd">$anyplot</b> vtext <i class="arg">text</i></a></dt>
+<dt><a name="32"><b class="cmd">$anyplot</b> vtext <i class="arg">text</i></a></dt>
 <dd><p>Draw a <em>vertical</em> label to the y-axis. Note: this requires Tk 8.6
 or later, for older versions it does nothing.</p>
 <dl class="arguments">
 <dt>string <i class="arg">text</i> (in)</dt>
 <dd><p>Text to drawn to the y-axis</p></dd>
 </dl></dd>
-<dt><a name="32"><b class="cmd">$anyplot</b> xsubtext <i class="arg">text</i></a></dt>
+<dt><a name="33"><b class="cmd">$anyplot</b> xsubtext <i class="arg">text</i></a></dt>
 <dd><p>Specify the subtext of the (horizontal) x-axis, for those plots that have
 a straight x-axis. This text is drawn below the primary text.</p>
 <p>Since this involves positioning the primary text and setting margins, you need to
@@ -821,7 +856,7 @@ options are: usesubtext, subtextcolor and subtextfont.</p>
 <dt>string <i class="arg">text</i> (in)</dt>
 <dd><p>The secondary text of the x-axis label to be drawn.</p></dd>
 </dl></dd>
-<dt><a name="33"><b class="cmd">$anyplot</b> ysubtext <i class="arg">text</i></a></dt>
+<dt><a name="34"><b class="cmd">$anyplot</b> ysubtext <i class="arg">text</i></a></dt>
 <dd><p>Specify the subtext of the (vertical) y-axis, for those plots that have
 a straight y-axis. This text is drawn below the primary text, for both
 axes on the left and the right.</p>
@@ -832,7 +867,7 @@ options are: usesubtext, subtextcolor and subtextfont.</p>
 <dt>string <i class="arg">text</i> (in)</dt>
 <dd><p>The secondary text of the y-axis label to be drawn.</p></dd>
 </dl></dd>
-<dt><a name="34"><b class="cmd">$anyplot</b> vsubtext <i class="arg">text</i></a></dt>
+<dt><a name="35"><b class="cmd">$anyplot</b> vsubtext <i class="arg">text</i></a></dt>
 <dd><p>Specify the subtext of the (vertical) y-axis, for those plots that have
 a straight y-axis. This text is drawn to the <em>right</em> of the primary text, for both
 axes on the left and the right.</p>
@@ -845,7 +880,7 @@ option from the text at the top of a vertical axis that is drawn via <i class="t
 <dt>string <i class="arg">text</i> (in)</dt>
 <dd><p>The secondary (vertical) text of the y-axis label to be drawn.</p></dd>
 </dl></dd>
-<dt><a name="35"><b class="cmd">$anyplot</b> xconfig <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
+<dt><a name="36"><b class="cmd">$anyplot</b> xconfig <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
 <dd><p>Set one or more configuration parameters for the x-axis.
 The following options are supported:</p>
 <dl class="options">
@@ -860,10 +895,10 @@ The following options are supported:</p>
 maximum and stepsize for the axis, in this order.</p>
 <p><em>Beware:</em> Setting this option will clear all data from the plot.</p></dd>
 </dl></dd>
-<dt><a name="36"><b class="cmd">$anyplot</b> yconfig <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
+<dt><a name="37"><b class="cmd">$anyplot</b> yconfig <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
 <dd><p>Set one or more configuration parameters for the y-axis. This method
 accepts the same options and values as the method <b class="method">xconfig</b>.</p></dd>
-<dt><a name="37"><b class="cmd">$anyplot</b> background <i class="arg">part</i> <i class="arg">colour_or_image</i> <i class="arg">dir</i> <span class="opt">?brightness?</span></a></dt>
+<dt><a name="38"><b class="cmd">$anyplot</b> background <i class="arg">part</i> <i class="arg">colour_or_image</i> <i class="arg">dir</i> <span class="opt">?brightness?</span></a></dt>
 <dd><p>Set the background of a part of the plot</p>
 <dl class="arguments">
 <dt>string <i class="arg">part</i></dt>
@@ -885,7 +920,7 @@ or right-left.</p></dd>
 <dt>string <i class="arg">brightness</i></dt>
 <dd><p>Indicates whether the colour should become brighter (bright) or darker (dark). Defaults to bright</p></dd>
 </dl></dd>
-<dt><a name="38"><b class="cmd">$anyplot</b> xticklines <i class="arg">colour</i> <span class="opt">?dash?</span></a></dt>
+<dt><a name="39"><b class="cmd">$anyplot</b> xticklines <i class="arg">colour</i> <span class="opt">?dash?</span></a></dt>
 <dd><p>Draw vertical ticklines at each tick location</p>
 <dl class="arguments">
 <dt>string <i class="arg">colour</i></dt>
@@ -896,7 +931,7 @@ Defaults to &quot;black&quot;</p></dd>
 Possible values: lines, dots1, dots2, dots3, dots4, dots5.
 The actual effect depends on the platform.</p></dd>
 </dl></dd>
-<dt><a name="39"><b class="cmd">$anyplot</b> yticklines <i class="arg">colour</i> <span class="opt">?dash?</span></a></dt>
+<dt><a name="40"><b class="cmd">$anyplot</b> yticklines <i class="arg">colour</i> <span class="opt">?dash?</span></a></dt>
 <dd><p>Draw horizontal ticklines at each tick location</p>
 <dl class="arguments">
 <dt>string <i class="arg">colour</i></dt>
@@ -907,7 +942,7 @@ Defaults to &quot;black&quot;</p></dd>
 Possible values: lines, dots1, dots2, dots3, dots4, dots5.
 The actual effect depends on the platform.</p></dd>
 </dl></dd>
-<dt><a name="40"><b class="cmd">$anyplot</b> legend <i class="arg">series</i> <i class="arg">text</i> <span class="opt">?spacing?</span></a></dt>
+<dt><a name="41"><b class="cmd">$anyplot</b> legend <i class="arg">series</i> <i class="arg">text</i> <span class="opt">?spacing?</span></a></dt>
 <dd><p>Add an entry to the legend. The series determines which graphical
 symbol is to be used. (As a side effect the legend is actually drawn.)</p>
 <dl class="arguments">
@@ -920,13 +955,13 @@ symbol (if any) that will be drawn.</p></dd>
 <dd><p>Optional argument to specify the vertical spacing between the entries (in pixels).
 (Note that this spacing will be reused later.)</p></dd>
 </dl></dd>
-<dt><a name="41"><b class="cmd">$anyplot</b> removefromlegend <i class="arg">series</i></a></dt>
+<dt><a name="42"><b class="cmd">$anyplot</b> removefromlegend <i class="arg">series</i></a></dt>
 <dd><p>Remove an entry for a series from the legend and redraw it.</p>
 <dl class="arguments">
 <dt>string <i class="arg">series</i></dt>
 <dd><p>Name of the data series to be removed.</p></dd>
 </dl></dd>
-<dt><a name="42"><b class="cmd">$anyplot</b> legendconfig <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
+<dt><a name="43"><b class="cmd">$anyplot</b> legendconfig <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
 <dd><p>Set one or more options for the legend. The legend is drawn as a
 rectangle with text and graphics inside.</p>
 <dl class="options">
@@ -948,7 +983,7 @@ plot. May be one of: rectangle or line.</p></dd>
 <dd><p>Set the position of the legend. May be one of: top-left, top-right,
 bottom-left or bottom-right. (Default value is top-right.)</p></dd>
 </dl></dd>
-<dt><a name="43"><b class="cmd">$anyplot</b> balloon <i class="arg">x</i> <i class="arg">y</i> <i class="arg">text</i> <i class="arg">dir</i></a></dt>
+<dt><a name="44"><b class="cmd">$anyplot</b> balloon <i class="arg">x</i> <i class="arg">y</i> <i class="arg">text</i> <i class="arg">dir</i></a></dt>
 <dd><p>Add balloon text to the plot (except for 3D plots). The arrow will point
 to the given x- and y-coordinates. For xy-graphs and such, the
 coordinates are directly related to the axes; for vertical barcharts the
@@ -965,7 +1000,7 @@ horizontal barcharts.</p>
 <dd><p>Direction of the arrow, one of: north, north-east, east, south-east,
 south, south-west, west or north-west.</p></dd>
 </dl></dd>
-<dt><a name="44"><b class="cmd">$anyplot</b> balloonconfig <i class="arg">args</i></a></dt>
+<dt><a name="45"><b class="cmd">$anyplot</b> balloonconfig <i class="arg">args</i></a></dt>
 <dd><p>Configure the balloon text for the plot. The new settings will be used
 for the next balloon text.</p>
 <dl class="options">
@@ -986,7 +1021,7 @@ for the next balloon text.</p>
 <dt><b class="option">arrowsize</b> value</dt>
 <dd><p>Length factor for the arrow (in pixels)</p></dd>
 </dl></dd>
-<dt><a name="45"><b class="cmd">$anyplot</b> plaintext <i class="arg">x</i> <i class="arg">y</i> <i class="arg">text</i> <i class="arg">dir</i></a></dt>
+<dt><a name="46"><b class="cmd">$anyplot</b> plaintext <i class="arg">x</i> <i class="arg">y</i> <i class="arg">text</i> <i class="arg">dir</i></a></dt>
 <dd><p>Add plain text to the plot (except for 3D plots). The text is positioned at
 the given x- and y-coordinates. For xy-graphs and such, the
 coordinates are directly related to the axes; for vertical barcharts the
@@ -1003,7 +1038,7 @@ horizontal barcharts.</p>
 <dd><p>Anchor for the text, one of: north, north-east, east, south-east,
 south, south-west, west or north-west.</p></dd>
 </dl></dd>
-<dt><a name="46"><b class="cmd">$anyplot</b> plaintextconfig <i class="arg">args</i></a></dt>
+<dt><a name="47"><b class="cmd">$anyplot</b> plaintextconfig <i class="arg">args</i></a></dt>
 <dd><p>Configure the plain text annotation for the plot. The new settings will be used
 for the next plain text.</p>
 <dl class="options">
@@ -1014,7 +1049,7 @@ for the next plain text.</p>
 <dt><b class="option">textcolour</b> colour</dt>
 <dd><p>Colour for the text (synonym: textcolor)</p></dd>
 </dl></dd>
-<dt><a name="47"><b class="cmd">$anyplot</b> object <i class="arg">itemtype</i> <i class="arg">series</i> <i class="arg">args</i></a></dt>
+<dt><a name="48"><b class="cmd">$anyplot</b> object <i class="arg">itemtype</i> <i class="arg">series</i> <i class="arg">args</i></a></dt>
 <dd><p>Draw a canvas item in the plot where the coordinates are scaled using the
 coordinate system of the plot. In addition to the standard canvas types, it
 also supports circles, dots and crosses.</p>
@@ -1031,7 +1066,7 @@ to be shown.</p>
 <dt>list <i class="arg">args</i> (in)</dt>
 <dd><p>List of coordinates and drawing options</p></dd>
 </dl></dd>
-<dt><a name="48"><b class="cmd">$anyplot</b> deletedata</a></dt>
+<dt><a name="49"><b class="cmd">$anyplot</b> deletedata</a></dt>
 <dd><p>Remove the lines, symbols and other graphical object associated with the
 actual data from the plot.</p>
 <p><em>Note:</em> Currently implemented for xy-plots only</p>
@@ -1046,7 +1081,7 @@ and only the option <b class="option">-format</b> has any effect.</p>
 <p>For <em>xy plots</em>, <em>stripcharts</em>, <em>histograms</em> and
 <em>time-x-plots</em>:</p>
 <dl class="definitions">
-<dt><a name="49"><b class="cmd">$xyplot</b> plot <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></dt>
+<dt><a name="50"><b class="cmd">$xyplot</b> plot <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></dt>
 <dd><p>Add a data point to the plot.</p>
 <dl class="arguments">
 <dt>string <i class="arg">series</i> (in)</dt>
@@ -1061,7 +1096,7 @@ date/time that can be read with the <em>clock scan</em> command).</p></dd>
 <p>For <em>xy plots</em> there is the additional command <em>plotlist</em>,
 which is useful for plotting a large amount of data:</p>
 <dl class="definitions">
-<dt><a name="50"><b class="cmd">$xyplot</b> plotlist <i class="arg">series</i> <i class="arg">xlist</i> <i class="arg">ylist</i> <i class="arg">every</i></a></dt>
+<dt><a name="51"><b class="cmd">$xyplot</b> plotlist <i class="arg">series</i> <i class="arg">xlist</i> <i class="arg">ylist</i> <i class="arg">every</i></a></dt>
 <dd><p>Draw a series of data as a whole. If symbols are asked for, draw them only
 for every Nth data point.</p>
 <dl class="arguments">
@@ -1083,14 +1118,14 @@ bar starts at the y-axis on the left. To completely fill the range
 of the x-axis, you should draw a bar at the maximum x-coordinate.</p>
 <p>For histograms you can also use the <b class="const">plotcumulative</b> command:</p>
 <dl class="definitions">
-<dt><a name="51"><b class="cmd">$histogram</b> plotcumulative <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></dt>
+<dt><a name="52"><b class="cmd">$histogram</b> plotcumulative <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></dt>
 <dd></dd>
 </dl>
 <p>The arguments mean exactly the same as for the <b class="const">plot</b> command, but
 the data are accumulated to the previous values.</p>
 <p>For <em>xy plots</em>:</p>
 <dl class="definitions">
-<dt><a name="52"><b class="cmd">$xyplot</b> trend <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></dt>
+<dt><a name="53"><b class="cmd">$xyplot</b> trend <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></dt>
 <dd><p>Draw or update a trend line using the data given sofar.</p>
 <dl class="arguments">
 <dt>string <i class="arg">series</i> (in)</dt>
@@ -1100,7 +1135,7 @@ the data are accumulated to the previous values.</p>
 <dt>float <i class="arg">ycrd</i> (in)</dt>
 <dd><p>Y-coordinate of the new data point</p></dd>
 </dl></dd>
-<dt><a name="53"><b class="cmd">$xyplot</b> rchart <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></dt>
+<dt><a name="54"><b class="cmd">$xyplot</b> rchart <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></dt>
 <dd><p>Draw data in the same way as the plot method, but with two lines added
 that indicate the expected range (+/- 3*standard deviation) of the data.</p>
 <dl class="arguments">
@@ -1111,7 +1146,7 @@ that indicate the expected range (+/- 3*standard deviation) of the data.</p>
 <dt>float <i class="arg">ycrd</i> (in)</dt>
 <dd><p>Y-coordinate of the new data point</p></dd>
 </dl></dd>
-<dt><a name="54"><b class="cmd">$xyplot</b> interval <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ymin</i> <i class="arg">ymax</i> <span class="opt">?ycentr?</span></a></dt>
+<dt><a name="55"><b class="cmd">$xyplot</b> interval <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ymin</i> <i class="arg">ymax</i> <span class="opt">?ycentr?</span></a></dt>
 <dd><p>Add a vertical error interval to the plot. The interval is drawn from
 ymin to ymax. If the ycentr argument is given, a symbol is drawn at that
 position.</p>
@@ -1127,7 +1162,7 @@ position.</p>
 <dt>float <i class="arg">ycentr</i> (in)</dt>
 <dd><p>Y-coordinate to draw the symbol at (optional)</p></dd>
 </dl></dd>
-<dt><a name="55"><b class="cmd">$xyplot</b> box-and-whiskers <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></dt>
+<dt><a name="56"><b class="cmd">$xyplot</b> box-and-whiskers <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></dt>
 <dd><p>Draw a box and whiskers in the plot. If the argument <i class="term">xcrd</i> is a
 list of
 several values and the argument <i class="term">ycrd</i> is a single value, a
@@ -1163,7 +1198,7 @@ that draws the median within the box (default: 1 pixel).</p>
 </dl>
 <p>The box ends at the 1st and 3rd quartile, while the whiskers by default
 are plotted to span 1.5 IQR (interquartile range) from the 1st and 3rd quartile.</p></dd>
-<dt><a name="56"><b class="cmd">$xyplot</b> vector <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">ucmp</i> <i class="arg">vcmp</i></a></dt>
+<dt><a name="57"><b class="cmd">$xyplot</b> vector <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">ucmp</i> <i class="arg">vcmp</i></a></dt>
 <dd><p>Draw a vector in the plot. The vector can be given as either cartesian
 coordinates or as length/angle, where the angle is in degrees and is
 interpreted according to the mathematical convention or the nautical.
@@ -1181,7 +1216,7 @@ interpretation.</p></dd>
 <dt>float <i class="arg">ycentr</i> (in)</dt>
 <dd><p>Y-component or the angle of the vector</p></dd>
 </dl></dd>
-<dt><a name="57"><b class="cmd">$xyplot</b> vectorconfig <i class="arg">series</i> <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
+<dt><a name="58"><b class="cmd">$xyplot</b> vectorconfig <i class="arg">series</i> <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
 <dd><p>]
 Set the vector drawing options for a particular series</p>
 <dl class="arguments">
@@ -1205,7 +1240,7 @@ synonym: centered)</p></dd>
 (the angle 0 coincides with the positive x-axis, 90 coincides with the
 positive y-axis) or &quot;nautical&quot; (0 is &quot;north&quot; and 90 is &quot;east&quot;).</p></dd>
 </dl></dd>
-<dt><a name="58"><b class="cmd">$xyplot</b> dot <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">value</i></a></dt>
+<dt><a name="59"><b class="cmd">$xyplot</b> dot <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">value</i></a></dt>
 <dd><p>Draw a dot in the plot. The size and colour is determined by the value
 and by the options set for the series it belongs to.
 (See the dotconfig subcommand)</p>
@@ -1219,7 +1254,7 @@ and by the options set for the series it belongs to.
 <dt>float <i class="arg">value</i> (in)</dt>
 <dd><p>Value determining size and colour</p></dd>
 </dl></dd>
-<dt><a name="59"><b class="cmd">$xyplot</b> dotconfig <i class="arg">series</i> <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
+<dt><a name="60"><b class="cmd">$xyplot</b> dotconfig <i class="arg">series</i> <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
 <dd><p>]
 Set the dot drawing options for a particular series</p>
 <dl class="arguments">
@@ -1257,7 +1292,7 @@ scaled by the value.</p>
 <p>You can combine the colouring by value and the scaling by value by
 setting a list of classes and setting the <em>scalebyvalue</em> option on.</p></dd>
 </dl></dd>
-<dt><a name="60"><b class="cmd">$xyplot</b> contourlines <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">values</i> <span class="opt">?classes?</span></a></dt>
+<dt><a name="61"><b class="cmd">$xyplot</b> contourlines <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">values</i> <span class="opt">?classes?</span></a></dt>
 <dd><p>Draw contour lines for the values given on the grid. The grid is defined
 by the xcrd and ycrd arguments. The xcrd argument (resp. ycrd)
 is expected to be a matrix, implemented as a list of lists which gives the
@@ -1284,7 +1319,7 @@ classes are determined automatically.</p>
 <em>Note:</em> The xcrd argument is generally made of nypoints identical rows, while
 each row of ycrd is made with one single value.</p></dd>
 </dl></dd>
-<dt><a name="61"><b class="cmd">$xyplot</b> contourlinesfunctionvalues <i class="arg">xvec</i> <i class="arg">yvec</i> <i class="arg">valuesmat</i> <span class="opt">?classes?</span></a></dt>
+<dt><a name="62"><b class="cmd">$xyplot</b> contourlinesfunctionvalues <i class="arg">xvec</i> <i class="arg">yvec</i> <i class="arg">valuesmat</i> <span class="opt">?classes?</span></a></dt>
 <dd><p>Draw contour lines for the values given on the grid. The grid is defined
 by the xvec and yvec arguments. Here, xvec (resp. yvec) is a list of x-coordinates
 (resp. y-coordinates). The number of values in xvec (resp. yvec) is the number of points in
@@ -1308,15 +1343,15 @@ the class value and the colour to be used). If empty or missing, the
 classes are determined automatically.</p>
 <p><em>Note:</em> The class values must enclose the whole range of values.</p></dd>
 </dl></dd>
-<dt><a name="62"><b class="cmd">$xyplot</b> contourfill <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">values</i> <span class="opt">?classes?</span></a></dt>
+<dt><a name="63"><b class="cmd">$xyplot</b> contourfill <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">values</i> <span class="opt">?classes?</span></a></dt>
 <dd><p>Draw filled contours for the values given on the grid. (The use of this
 method is identical to the &quot;contourlines&quot; method).</p>
 <p>Entries in the legend are drawn via the <em>legendshades</em> subcommand.</p></dd>
-<dt><a name="63"><b class="cmd">$xyplot</b> contourbox <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">values</i> <span class="opt">?classes?</span></a></dt>
+<dt><a name="64"><b class="cmd">$xyplot</b> contourbox <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">values</i> <span class="opt">?classes?</span></a></dt>
 <dd><p>Draw the cells as filled quadrangles. The colour is determined from
 the average of the values on all four corners.</p>
 <p>Entries in the legend are drawn via the <em>legendshades</em> subcommand.</p></dd>
-<dt><a name="64"><b class="cmd">$xyplot</b> colorMap <i class="arg">colours</i></a></dt>
+<dt><a name="65"><b class="cmd">$xyplot</b> colorMap <i class="arg">colours</i></a></dt>
 <dd><p>Set the colours to be used with the contour methods. The argument is
 either a predefined colourmap (grey/gray, jet, hot or cool)
 or a list of colours. When selecting the colours for actually drawing the
@@ -1331,7 +1366,7 @@ contours, the given colours will be interpolated (based on the HLS scheme).</p>
 <li><p>cool: colours from cyan via blue to magenta</p></li>
 </ul></dd>
 </dl></dd>
-<dt><a name="65"><b class="cmd">$xyplot</b> legendisolines <i class="arg">values</i> <i class="arg">classes</i></a></dt>
+<dt><a name="66"><b class="cmd">$xyplot</b> legendisolines <i class="arg">values</i> <i class="arg">classes</i></a></dt>
 <dd><p>Add the contour classes to the legend as coloured lines. The text indicates the
 values.</p>
 <dl class="arguments">
@@ -1341,7 +1376,7 @@ if the list of classes is empty.</p></dd>
 <dt>list <i class="arg">values</i> (in)</dt>
 <dd><p>The list of classes as used for the actual drawing.</p></dd>
 </dl></dd>
-<dt><a name="66"><b class="cmd">$xyplot</b> legendshades <i class="arg">values</i> <i class="arg">classes</i></a></dt>
+<dt><a name="67"><b class="cmd">$xyplot</b> legendshades <i class="arg">values</i> <i class="arg">classes</i></a></dt>
 <dd><p>Add the contour classes to the legend as coloured rectangles. The text indicates the
 values.</p>
 <dl class="arguments">
@@ -1351,7 +1386,7 @@ if the list of classes is empty.</p></dd>
 <dt>list <i class="arg">values</i> (in)</dt>
 <dd><p>The list of classes as used for the actual drawing.</p></dd>
 </dl></dd>
-<dt><a name="67"><b class="cmd">$xyplot</b> grid <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></dt>
+<dt><a name="68"><b class="cmd">$xyplot</b> grid <i class="arg">xcrd</i> <i class="arg">ycrd</i></a></dt>
 <dd><p>Draw the grid cells as lines connecting the (valid) grid points.</p>
 <dl class="arguments">
 <dt>list <i class="arg">xcrd</i> (in)</dt>
@@ -1359,7 +1394,7 @@ if the list of classes is empty.</p></dd>
 <dt>list <i class="arg">ycrd</i> (in)</dt>
 <dd><p>List of lists, each value is an y-coordinate for a grid cell corner</p></dd>
 </dl></dd>
-<dt><a name="68"><b class="cmd">$xyplot</b> xband <i class="arg">ymin</i> <i class="arg">ymax</i></a></dt>
+<dt><a name="69"><b class="cmd">$xyplot</b> xband <i class="arg">ymin</i> <i class="arg">ymax</i></a></dt>
 <dd><p>Draw a light grey band in the plot, ranging over the full x-axis. This
 can be used to indicate a &quot;typical&quot; range for the data.</p>
 <dl class="arguments">
@@ -1368,7 +1403,7 @@ can be used to indicate a &quot;typical&quot; range for the data.</p>
 <dt>float <i class="arg">ymax</i> (in)</dt>
 <dd><p>Upper bound for the band</p></dd>
 </dl></dd>
-<dt><a name="69"><b class="cmd">$xyplot</b> yband <i class="arg">xmin</i> <i class="arg">xmax</i></a></dt>
+<dt><a name="70"><b class="cmd">$xyplot</b> yband <i class="arg">xmin</i> <i class="arg">xmax</i></a></dt>
 <dd><p>Draw a light grey band in the plot, ranging over the full y-axis. This
 can be used to indicate a &quot;typical&quot; range for the data.</p>
 <dl class="arguments">
@@ -1377,7 +1412,7 @@ can be used to indicate a &quot;typical&quot; range for the data.</p>
 <dt>float <i class="arg">xmax</i> (in)</dt>
 <dd><p>Upper bound for the band</p></dd>
 </dl></dd>
-<dt><a name="70"><b class="cmd">$xyplot</b> labeldot <i class="arg">x</i> <i class="arg">y</i> <i class="arg">text</i> <i class="arg">orient</i></a></dt>
+<dt><a name="71"><b class="cmd">$xyplot</b> labeldot <i class="arg">x</i> <i class="arg">y</i> <i class="arg">text</i> <i class="arg">orient</i></a></dt>
 <dd><p>Draw a label and a symbol in the plot. The label will appear near the
 symbol. The label will be drawn in grey, so as not to be too
 conspicuous.</p>
@@ -1399,7 +1434,7 @@ appears left of the symbol).</p></dd>
 </dl>
 <p>For <em>polar plots</em>:</p>
 <dl class="definitions">
-<dt><a name="71"><b class="cmd">$polarplot</b> plot <i class="arg">series</i> <i class="arg">radius</i> <i class="arg">angle</i></a></dt>
+<dt><a name="72"><b class="cmd">$polarplot</b> plot <i class="arg">series</i> <i class="arg">radius</i> <i class="arg">angle</i></a></dt>
 <dd><p>Add a data point to the polar plot.</p>
 <dl class="arguments">
 <dt>string <i class="arg">series</i> (in)</dt>
@@ -1412,7 +1447,7 @@ appears left of the symbol).</p></dd>
 </dl>
 <p>For <em>wind rose diagrams</em>:</p>
 <dl class="definitions">
-<dt><a name="72"><b class="cmd">$windrose</b> plot <i class="arg">data</i> <i class="arg">colour</i></a></dt>
+<dt><a name="73"><b class="cmd">$windrose</b> plot <i class="arg">data</i> <i class="arg">colour</i></a></dt>
 <dd><p>Draw the data contained in the <i class="term">data</i> argument. The data are added to
 the existing spokes towards the outer circle.</p>
 <dl class="arguments">
@@ -1424,7 +1459,7 @@ the existing spokes towards the outer circle.</p>
 </dl>
 <p>For <em>3D plots</em>:</p>
 <dl class="definitions">
-<dt><a name="73"><b class="cmd">$plot3d</b> plotfunc <i class="arg">function</i></a></dt>
+<dt><a name="74"><b class="cmd">$plot3d</b> plotfunc <i class="arg">function</i></a></dt>
 <dd><p>Plot a function defined over two variables <b class="variable">x</b> and <b class="variable">y</b>.
 The resolution is determined by the set grid sizes (see the method
 <b class="method">gridsize</b> for more information).</p>
@@ -1434,7 +1469,7 @@ The resolution is determined by the set grid sizes (see the method
 y coordinates. The procedure has to accept two float arguments (x is
 first argument, y is second) and return a floating-point value.</p></dd>
 </dl></dd>
-<dt><a name="74"><b class="cmd">$plot3d</b> plotfuncont <i class="arg">function</i> <i class="arg">contours</i></a></dt>
+<dt><a name="75"><b class="cmd">$plot3d</b> plotfuncont <i class="arg">function</i> <i class="arg">contours</i></a></dt>
 <dd><p>Plot a function defined over two variables <b class="variable">x</b> and <b class="variable">y</b> using
 the contour levels in <b class="variable">contours</b> to colour the surface.
 The resolution is determined by the set grid sizes (see the method
@@ -1448,7 +1483,7 @@ first argument, y is second) and return a floating-point value.</p></dd>
 <dd><p>List of values in ascending order that represent the contour levels
 (the boundaries between the colours in the contour map).</p></dd>
 </dl></dd>
-<dt><a name="75"><b class="cmd">$plot3d</b> gridsize <i class="arg">nxcells</i> <i class="arg">nycells</i></a></dt>
+<dt><a name="76"><b class="cmd">$plot3d</b> gridsize <i class="arg">nxcells</i> <i class="arg">nycells</i></a></dt>
 <dd><p>Set the grid size in the two directions. Together they determine how
 many polygons will be drawn for a function plot.</p>
 <dl class="arguments">
@@ -1459,7 +1494,7 @@ greater than zero.</p></dd>
 <dd><p>Number of grid cells in y direction. Has to be an integer number
 greater than zero.</p></dd>
 </dl></dd>
-<dt><a name="76"><b class="cmd">$plot3d</b> plotdata <i class="arg">data</i></a></dt>
+<dt><a name="77"><b class="cmd">$plot3d</b> plotdata <i class="arg">data</i></a></dt>
 <dd><p>Plot a matrix of data.</p>
 <dl class="arguments">
 <dt>list <i class="arg">data</i> (in)</dt>
@@ -1475,7 +1510,7 @@ columns. Example:</p>
 </pre>
 </dd>
 </dl></dd>
-<dt><a name="77"><b class="cmd">$plot3d</b> colours <i class="arg">fill</i> <i class="arg">border</i></a></dt>
+<dt><a name="78"><b class="cmd">$plot3d</b> colours <i class="arg">fill</i> <i class="arg">border</i></a></dt>
 <dd><p>Configure the colours to use for polygon borders and inner area.</p>
 <dl class="arguments">
 <dt>color <i class="arg">fill</i> (in)</dt>
@@ -1483,7 +1518,7 @@ columns. Example:</p>
 <dt>color <i class="arg">border</i> (in)</dt>
 <dd><p>The colour to use for the border of the polygons.</p></dd>
 </dl></dd>
-<dt><a name="78"><b class="cmd">$plot3d</b> ribbon <i class="arg">yzpairs</i></a></dt>
+<dt><a name="79"><b class="cmd">$plot3d</b> ribbon <i class="arg">yzpairs</i></a></dt>
 <dd><p>Plot a ribbon based on the pairs of yz-coordinates. The colours for
 the ribbon itself and the edge are taken from the colours option.</p>
 <dl class="arguments">
@@ -1493,7 +1528,7 @@ the ribbon itself and the edge are taken from the colours option.</p>
 </dl>
 <p>For 3D ribbon plots:</p>
 <dl class="definitions">
-<dt><a name="79"><b class="cmd">$plot3d</b> plot <i class="arg">yzpairs</i></a></dt>
+<dt><a name="80"><b class="cmd">$plot3d</b> plot <i class="arg">yzpairs</i></a></dt>
 <dd><p>Plot a ribbon based on the pairs of yz-coordinates. The colours for
 the ribbon itself and the edge are taken from the colours option.</p>
 <dl class="arguments">
@@ -1501,9 +1536,9 @@ the ribbon itself and the edge are taken from the colours option.</p>
 <dd><p>List of pairs of yz-coordinates</p></dd>
 </dl></dd>
 </dl>
-<p>For <em>xy plots</em>, <em>stripcharts</em>, <em>histograms</em> and <em>polar plots</em>:</p>
+<p>For <em>xy plots</em>, <em>stripcharts</em>, <em>histograms</em>, <em>polar plots</em> and <em>ternary diagrams</em>:</p>
 <dl class="definitions">
-<dt><a name="80"><b class="cmd">$xyplot</b> dataconfig <i class="arg">series</i> <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
+<dt><a name="81"><b class="cmd">$xyplot</b> dataconfig <i class="arg">series</i> <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
 <dd><p>Set the value for one or more options regarding the drawing of data of
 a specific series.</p>
 <dl class="arguments">
@@ -1545,18 +1580,21 @@ of: <b class="const">no</b>, <b class="const">up</b> or <b class="const">down</b
 <li><p><b class="const">plateau</b>: Draw a horizontal line at the height of the data point</p></li>
 <li><p><b class="const">stair</b>: Draw a continuous stair-like line connecting the data points</p></li>
 </ul></dd>
+<dt><b class="option">smooth</b> boolean</dt>
+<dd><p>(Used with ternary diagrams) Whether to draw the lines and filled polygons with the
+smooth option on (rounded corners) or not.</p></dd>
 </dl></dd>
 </dl>
 <p>For <em>piecharts</em> and <em>spiral pies</em>:</p>
 <dl class="definitions">
-<dt><a name="81"><b class="cmd">$pie</b> plot <i class="arg">data</i></a></dt>
+<dt><a name="82"><b class="cmd">$pie</b> plot <i class="arg">data</i></a></dt>
 <dd><p>Fill a piechart.</p>
 <dl class="arguments">
 <dt>list <i class="arg">data</i> (in)</dt>
 <dd><p>A list of pairs (labels and values). The values determine the relative
 size of the circle segments. The labels are drawn beside the circle.</p></dd>
 </dl></dd>
-<dt><a name="82"><b class="cmd">$pie</b> colours <i class="arg">colour1</i> <i class="arg">colour2</i> ...</a></dt>
+<dt><a name="83"><b class="cmd">$pie</b> colours <i class="arg">colour1</i> <i class="arg">colour2</i> ...</a></dt>
 <dd><p>Set the colours to be used.</p>
 <dl class="arguments">
 <dt>color <i class="arg">colour1</i> (in)</dt>
@@ -1564,7 +1602,7 @@ size of the circle segments. The labels are drawn beside the circle.</p></dd>
 <dt>color <i class="arg">colour2</i> (in)</dt>
 <dd><p>The second colour, and so on.</p></dd>
 </dl></dd>
-<dt><a name="83"><b class="cmd">$pie</b> explode <i class="arg">segment</i></a></dt>
+<dt><a name="84"><b class="cmd">$pie</b> explode <i class="arg">segment</i></a></dt>
 <dd><p>Explode a segment (that is: move one segment out of the circle). If the segment is
 indicated as &quot;auto&quot;, then you can click on a segment. This will be exploded instead of
 any previously exploded segment.</p>
@@ -1575,7 +1613,7 @@ any previously exploded segment.</p>
 </dl>
 <p>For <em>radial charts</em>:</p>
 <dl class="definitions">
-<dt><a name="84"><b class="cmd">$radial</b> plot <i class="arg">data</i> <i class="arg">colour</i> <i class="arg">thickness</i></a></dt>
+<dt><a name="85"><b class="cmd">$radial</b> plot <i class="arg">data</i> <i class="arg">colour</i> <i class="arg">thickness</i></a></dt>
 <dd><p>Draw a new line in the radial chart</p>
 <dl class="arguments">
 <dt>list <i class="arg">data</i> (in)</dt>
@@ -1586,7 +1624,7 @@ from the centre of the line connecting the spokes.</p></dd>
 <dt>int <i class="arg">thickness</i> (in)</dt>
 <dd><p>An optional argument for the thickness of the line.</p></dd>
 </dl></dd>
-<dt><a name="85"><b class="cmd">$pie</b> colours <i class="arg">colour1</i> <i class="arg">colour2</i> ...</a></dt>
+<dt><a name="86"><b class="cmd">$pie</b> colours <i class="arg">colour1</i> <i class="arg">colour2</i> ...</a></dt>
 <dd><p>Set the colours to be used.</p>
 <dl class="arguments">
 <dt>color <i class="arg">colour1</i> (in)</dt>
@@ -1597,7 +1635,7 @@ from the centre of the line connecting the spokes.</p></dd>
 </dl>
 <p>For <em>vertical barcharts</em>:</p>
 <dl class="definitions">
-<dt><a name="86"><b class="cmd">$barchart</b> plot <i class="arg">series</i> <i class="arg">ydata</i> <i class="arg">colour</i> <span class="opt">?dir?</span> <span class="opt">?brightness?</span></a></dt>
+<dt><a name="87"><b class="cmd">$barchart</b> plot <i class="arg">series</i> <i class="arg">ydata</i> <i class="arg">colour</i> <span class="opt">?dir?</span> <span class="opt">?brightness?</span></a></dt>
 <dd><p>Add a data series to a barchart.</p>
 <dl class="arguments">
 <dt>string <i class="arg">series</i> (in)</dt>
@@ -1613,7 +1651,7 @@ from the centre of the line connecting the spokes.</p></dd>
 <dd><p>If given, &quot;bright&quot; or &quot;dark&quot; (defaulting to &quot;bright&quot;). The colour will change to respectively
 white or black, depending on the direction.</p></dd>
 </dl></dd>
-<dt><a name="87"><b class="cmd">$barchart</b> config <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
+<dt><a name="88"><b class="cmd">$barchart</b> config <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
 <dd><p>Set options for drawing the bars.</p>
 <dl class="options">
 <dt><b class="option">showvalues</b> boolean</dt>
@@ -1628,7 +1666,7 @@ white or black, depending on the direction.</p></dd>
 </dl>
 <p>For <em>horizontal barcharts</em>:</p>
 <dl class="definitions">
-<dt><a name="88"><b class="cmd">$barchart</b> plot <i class="arg">series</i> <i class="arg">xdata</i> <i class="arg">colour</i> <span class="opt">?dir?</span> <span class="opt">?brightness?</span></a></dt>
+<dt><a name="89"><b class="cmd">$barchart</b> plot <i class="arg">series</i> <i class="arg">xdata</i> <i class="arg">colour</i> <span class="opt">?dir?</span> <span class="opt">?brightness?</span></a></dt>
 <dd><p>Add a data series to a barchart.</p>
 <dl class="arguments">
 <dt>string <i class="arg">series</i> (in)</dt>
@@ -1644,7 +1682,7 @@ white or black, depending on the direction.</p></dd>
 <dd><p>If given, &quot;bright&quot; or &quot;dark&quot; (defaulting to &quot;bright&quot;). The colour will change to respectively
 white or black, depending on the direction.</p></dd>
 </dl></dd>
-<dt><a name="89"><b class="cmd">$barchart</b> config <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
+<dt><a name="90"><b class="cmd">$barchart</b> config <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
 <dd><p>Set options for drawing the bars.</p>
 <dl class="options">
 <dt><b class="option">showvalues</b> boolean</dt>
@@ -1659,7 +1697,7 @@ white or black, depending on the direction.</p></dd>
 </dl>
 <p>For <em>3D barcharts</em>:</p>
 <dl class="definitions">
-<dt><a name="90"><b class="cmd">$barchart</b> plot <i class="arg">label</i> <i class="arg">yvalue</i> <i class="arg">colour</i></a></dt>
+<dt><a name="91"><b class="cmd">$barchart</b> plot <i class="arg">label</i> <i class="arg">yvalue</i> <i class="arg">colour</i></a></dt>
 <dd><p>Add the next bar to the barchart.</p>
 <dl class="arguments">
 <dt>string <i class="arg">label</i> (in)</dt>
@@ -1669,7 +1707,7 @@ white or black, depending on the direction.</p></dd>
 <dt>color <i class="arg">colour</i> (in)</dt>
 <dd><p>The colour of the column.</p></dd>
 </dl></dd>
-<dt><a name="91"><b class="cmd">$barchart</b> config <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
+<dt><a name="92"><b class="cmd">$barchart</b> config <b class="option">-option</b> <i class="arg">value</i> ...</a></dt>
 <dd><p>Set one or more configuration parameters. The following options are
 supported:</p>
 <dl class="options">
@@ -1691,7 +1729,7 @@ supported:</p>
 </dl>
 <p>For <em>3D ribbon charts</em>:</p>
 <dl class="definitions">
-<dt><a name="92"><b class="cmd">$ribbon</b> line <i class="arg">xypairs</i> <i class="arg">colour</i></a></dt>
+<dt><a name="93"><b class="cmd">$ribbon</b> line <i class="arg">xypairs</i> <i class="arg">colour</i></a></dt>
 <dd><p>Plot the given xy-pairs as a ribbon in the chart</p>
 <dl class="arguments">
 <dt>list <i class="arg">xypairs</i> (in)</dt>
@@ -1699,7 +1737,7 @@ supported:</p>
 <dt>color <i class="arg">colour</i> (in)</dt>
 <dd><p>The colour of the ribbon.</p></dd>
 </dl></dd>
-<dt><a name="93"><b class="cmd">$ribbon</b> area <i class="arg">xypairs</i> <i class="arg">colour</i></a></dt>
+<dt><a name="94"><b class="cmd">$ribbon</b> area <i class="arg">xypairs</i> <i class="arg">colour</i></a></dt>
 <dd><p>Plot the given xy-pairs as a ribbon with a filled area in front. The
 effect is that of a box with the data as its upper surface.</p>
 <dl class="arguments">
@@ -1711,7 +1749,7 @@ effect is that of a box with the data as its upper surface.</p>
 </dl>
 <p>For <em>boxplots</em>:</p>
 <dl class="definitions">
-<dt><a name="94"><b class="cmd">$boxplot</b> plot <i class="arg">series</i> <i class="arg">label</i> <i class="arg">values</i></a></dt>
+<dt><a name="95"><b class="cmd">$boxplot</b> plot <i class="arg">series</i> <i class="arg">label</i> <i class="arg">values</i></a></dt>
 <dd><p>Add a box-and-whisker to the plot. The dataconfig command can be used to customize
 the box-and-whisker (see the box-and-whiskers command for the xyplot for details).</p>
 <dl class="arguments">
@@ -1726,7 +1764,7 @@ determined from this list.</p></dd>
 </dl>
 <p>For <em>timecharts</em>:</p>
 <dl class="definitions">
-<dt><a name="95"><b class="cmd">$timechart</b> period <i class="arg">text</i> <i class="arg">time_begin</i> <i class="arg">time_end</i> <i class="arg">colour</i></a></dt>
+<dt><a name="96"><b class="cmd">$timechart</b> period <i class="arg">text</i> <i class="arg">time_begin</i> <i class="arg">time_end</i> <i class="arg">colour</i></a></dt>
 <dd><p>Add a time period to the chart.</p>
 <dl class="arguments">
 <dt>string <i class="arg">text</i> (in)</dt>
@@ -1738,7 +1776,7 @@ determined from this list.</p></dd>
 <dt>color <i class="arg">colour</i> (in)</dt>
 <dd><p>The colour of the bar (defaults to black).</p></dd>
 </dl></dd>
-<dt><a name="96"><b class="cmd">$timechart</b> milestone <i class="arg">text</i> <i class="arg">time</i> <i class="arg">colour</i></a></dt>
+<dt><a name="97"><b class="cmd">$timechart</b> milestone <i class="arg">text</i> <i class="arg">time</i> <i class="arg">colour</i></a></dt>
 <dd><p>Add a <i class="term">milestone</i> (represented as an point-down triangle) to the
 chart.</p>
 <dl class="arguments">
@@ -1749,7 +1787,7 @@ chart.</p>
 <dt>color <i class="arg">colour</i> (in)</dt>
 <dd><p>The colour of the triangle (defaults to black).</p></dd>
 </dl></dd>
-<dt><a name="97"><b class="cmd">$timechart</b> vertline <i class="arg">text</i> <i class="arg">time</i></a></dt>
+<dt><a name="98"><b class="cmd">$timechart</b> vertline <i class="arg">text</i> <i class="arg">time</i></a></dt>
 <dd><p>Add a vertical line (to indicate the start of the month for instance)
 to the chart.</p>
 <dl class="arguments">
@@ -1759,14 +1797,14 @@ date/time for instance).</p></dd>
 <dt>string <i class="arg">time</i> (in)</dt>
 <dd><p>Time at which the line must be positioned.</p></dd>
 </dl></dd>
-<dt><a name="98"><b class="cmd">$timechart</b> hscroll <i class="arg">scrollbar</i></a></dt>
+<dt><a name="99"><b class="cmd">$timechart</b> hscroll <i class="arg">scrollbar</i></a></dt>
 <dd><p>Connect a horizontal scrollbar to the chart. See also the section on
 scrolling.</p>
 <dl class="arguments">
 <dt>widget <i class="arg">scrollbar</i> (in)</dt>
 <dd><p>The horizontal scrollbar that is to be connected to the chart</p></dd>
 </dl></dd>
-<dt><a name="99"><b class="cmd">$timechart</b> vscroll <i class="arg">scrollbar</i></a></dt>
+<dt><a name="100"><b class="cmd">$timechart</b> vscroll <i class="arg">scrollbar</i></a></dt>
 <dd><p>Connect a vertical scrollbar to the chart. See also the section on
 scrolling.</p>
 <dl class="arguments">
@@ -1776,7 +1814,7 @@ scrolling.</p>
 </dl>
 <p>For <em>Gantt charts</em>:</p>
 <dl class="definitions">
-<dt><a name="100"><b class="cmd">$ganttchart</b> task <i class="arg">text</i> <i class="arg">time_begin</i> <i class="arg">time_end</i> <i class="arg">completed</i></a></dt>
+<dt><a name="101"><b class="cmd">$ganttchart</b> task <i class="arg">text</i> <i class="arg">time_begin</i> <i class="arg">time_end</i> <i class="arg">completed</i></a></dt>
 <dd><p>Add a task with its period and level of completion to the chart. Returns
 a list of canvas items that can be used for further manipulations, like
 connecting two tasks.</p>
@@ -1790,7 +1828,7 @@ connecting two tasks.</p>
 <dt>float <i class="arg">completed</i> (in)</dt>
 <dd><p>The percentage of the task that is completed.</p></dd>
 </dl></dd>
-<dt><a name="101"><b class="cmd">$ganttchart</b> milestone <i class="arg">text</i> <i class="arg">time</i> <i class="arg">colour</i></a></dt>
+<dt><a name="102"><b class="cmd">$ganttchart</b> milestone <i class="arg">text</i> <i class="arg">time</i> <i class="arg">colour</i></a></dt>
 <dd><p>Add a <i class="term">milestone</i> (represented as an point-down triangle) to the
 chart.</p>
 <dl class="arguments">
@@ -1801,7 +1839,7 @@ chart.</p>
 <dt>color <i class="arg">colour</i> (in)</dt>
 <dd><p>The colour of the triangle (defaults to black).</p></dd>
 </dl></dd>
-<dt><a name="102"><b class="cmd">$ganttchart</b> vertline <i class="arg">text</i> <i class="arg">time</i></a></dt>
+<dt><a name="103"><b class="cmd">$ganttchart</b> vertline <i class="arg">text</i> <i class="arg">time</i></a></dt>
 <dd><p>Add a vertical line (to indicate the start of the month for instance)
 to the chart.</p>
 <dl class="arguments">
@@ -1811,7 +1849,7 @@ date/time for instance).</p></dd>
 <dt>string <i class="arg">time</i> (in)</dt>
 <dd><p>Time at which the line must be positioned.</p></dd>
 </dl></dd>
-<dt><a name="103"><b class="cmd">$ganttchart</b> connect <i class="arg">from</i> <i class="arg">to</i></a></dt>
+<dt><a name="104"><b class="cmd">$ganttchart</b> connect <i class="arg">from</i> <i class="arg">to</i></a></dt>
 <dd><p>Add an arrow that connects the <em>from</em> task with the <em>to</em> task.</p>
 <dl class="arguments">
 <dt>list <i class="arg">from</i> (in)</dt>
@@ -1826,7 +1864,7 @@ shifted down to make room for the summary.</p></dd>
 <dd><p>The list of items returned by the &quot;task&quot; command that represents the
 task at which the arrow ends.</p></dd>
 </dl></dd>
-<dt><a name="104"><b class="cmd">$ganttchart</b> summary <i class="arg">text</i> <i class="arg">args</i></a></dt>
+<dt><a name="105"><b class="cmd">$ganttchart</b> summary <i class="arg">text</i> <i class="arg">args</i></a></dt>
 <dd><p>Add a summary item that spans all the tasks listed. The graphical
 representation is a thick bar running from the leftmost task to the
 rightmost.</p>
@@ -1839,7 +1877,7 @@ shifted down!</p>
 <dd><p>One or more tasks (the lists returned by the &quot;task&quot; command). They are
 shifted down to make room for the summary.</p></dd>
 </dl></dd>
-<dt><a name="105"><b class="cmd">$ganttchart</b> color <i class="arg">keyword</i> <i class="arg">newcolor</i></a></dt>
+<dt><a name="106"><b class="cmd">$ganttchart</b> color <i class="arg">keyword</i> <i class="arg">newcolor</i></a></dt>
 <dd><p>Set the colour of a part of the Gantt chart. These colours hold for all
 items of that type.</p>
 <dl class="arguments">
@@ -1858,7 +1896,7 @@ of a task</p></li>
 <dt>string <i class="arg">newcolor</i> (in)</dt>
 <dd><p>The new colour for the chosen items.</p></dd>
 </dl></dd>
-<dt><a name="106"><b class="cmd">$ganttchart</b> font <i class="arg">keyword</i> <i class="arg">newfont</i></a></dt>
+<dt><a name="107"><b class="cmd">$ganttchart</b> font <i class="arg">keyword</i> <i class="arg">newfont</i></a></dt>
 <dd><p>Set the font of a part of the Gantt chart. These fonts hold for all
 items of that type.</p>
 <dl class="arguments">
@@ -1872,14 +1910,14 @@ items of that type.</p>
 <dt>string <i class="arg">newfont</i> (in)</dt>
 <dd><p>The new font for the chosen items.</p></dd>
 </dl></dd>
-<dt><a name="107"><b class="cmd">$ganttchart</b> hscroll <i class="arg">scrollbar</i></a></dt>
+<dt><a name="108"><b class="cmd">$ganttchart</b> hscroll <i class="arg">scrollbar</i></a></dt>
 <dd><p>Connect a horizontal scrollbar to the chart. See also the section on
 scrolling.</p>
 <dl class="arguments">
 <dt>widget <i class="arg">scrollbar</i> (in)</dt>
 <dd><p>The horizontal scrollbar that is to be connected to the chart</p></dd>
 </dl></dd>
-<dt><a name="108"><b class="cmd">$ganttchart</b> vscroll <i class="arg">scrollbar</i></a></dt>
+<dt><a name="109"><b class="cmd">$ganttchart</b> vscroll <i class="arg">scrollbar</i></a></dt>
 <dd><p>Connect a vertical scrollbar to the chart. See also the section on
 scrolling.</p>
 <dl class="arguments">
@@ -1889,7 +1927,7 @@ scrolling.</p>
 </dl>
 <p>For <em>isometric plots</em> (to be extended):</p>
 <dl class="definitions">
-<dt><a name="109"><b class="cmd">$isoplot</b> plot rectangle <i class="arg">x1</i> <i class="arg">y1</i> <i class="arg">x2</i> <i class="arg">y2</i> <i class="arg">colour</i></a></dt>
+<dt><a name="110"><b class="cmd">$isoplot</b> plot rectangle <i class="arg">x1</i> <i class="arg">y1</i> <i class="arg">x2</i> <i class="arg">y2</i> <i class="arg">colour</i></a></dt>
 <dd><p>Plot the outlines of a rectangle.</p>
 <dl class="arguments">
 <dt>float <i class="arg">x1</i> (in)</dt>
@@ -1903,7 +1941,7 @@ scrolling.</p>
 <dt>color <i class="arg">colour</i> (in)</dt>
 <dd><p>The colour of the rectangle.</p></dd>
 </dl></dd>
-<dt><a name="110"><b class="cmd">$isoplot</b> plot filled-rectangle <i class="arg">x1</i> <i class="arg">y1</i> <i class="arg">x2</i> <i class="arg">y2</i> <i class="arg">colour</i></a></dt>
+<dt><a name="111"><b class="cmd">$isoplot</b> plot filled-rectangle <i class="arg">x1</i> <i class="arg">y1</i> <i class="arg">x2</i> <i class="arg">y2</i> <i class="arg">colour</i></a></dt>
 <dd><p>Plot a rectangle filled with the given colour.</p>
 <dl class="arguments">
 <dt>float <i class="arg">x1</i> (in)</dt>
@@ -1917,7 +1955,7 @@ scrolling.</p>
 <dt>color <i class="arg">colour</i> (in)</dt>
 <dd><p>The colour of the rectangle.</p></dd>
 </dl></dd>
-<dt><a name="111"><b class="cmd">$isoplot</b> plot circle <i class="arg">xc</i> <i class="arg">yc</i> <i class="arg">radius</i> <i class="arg">colour</i></a></dt>
+<dt><a name="112"><b class="cmd">$isoplot</b> plot circle <i class="arg">xc</i> <i class="arg">yc</i> <i class="arg">radius</i> <i class="arg">colour</i></a></dt>
 <dd><p>Plot the outline of a circle.</p>
 <dl class="arguments">
 <dt>float <i class="arg">xc</i> (in)</dt>
@@ -1927,7 +1965,7 @@ scrolling.</p>
 <dt>color <i class="arg">colour</i> (in)</dt>
 <dd><p>The colour of the circle.</p></dd>
 </dl></dd>
-<dt><a name="112"><b class="cmd">$isoplot</b> plot filled-circle <i class="arg">xc</i> <i class="arg">yc</i> <i class="arg">radius</i> <i class="arg">colour</i></a></dt>
+<dt><a name="113"><b class="cmd">$isoplot</b> plot filled-circle <i class="arg">xc</i> <i class="arg">yc</i> <i class="arg">radius</i> <i class="arg">colour</i></a></dt>
 <dd><p>Plot a circle filled with the given colour.</p>
 <dl class="arguments">
 <dt>float <i class="arg">xc</i> (in)</dt>
@@ -1940,16 +1978,16 @@ scrolling.</p>
 </dl>
 <p>For <em>tables</em> you can use the following subcommands:</p>
 <dl class="definitions">
-<dt><a name="113"><b class="cmd">$table</b> row <i class="arg">items</i></a></dt>
+<dt><a name="114"><b class="cmd">$table</b> row <i class="arg">items</i></a></dt>
 <dd><p>Draw a single row of items. The appearance of the items can be
 controlled explicitly via the format command.</p>
 <dl class="arguments">
 <dt>list <i class="arg">items</i> (in)</dt>
 <dd><p>List of text items to be drawn, one per column</p></dd>
 </dl></dd>
-<dt><a name="114"><b class="cmd">$table</b> separator</a></dt>
+<dt><a name="115"><b class="cmd">$table</b> separator</a></dt>
 <dd><p>Draw a horizontal line to separate two rows</p></dd>
-<dt><a name="115"><b class="cmd">$table</b> formatcommand <i class="arg">procname</i></a></dt>
+<dt><a name="116"><b class="cmd">$table</b> formatcommand <i class="arg">procname</i></a></dt>
 <dd><p>Set the procedure that controls the formatting of items. By default
 items are simply drawn as centered text.</p>
 <dl class="arguments">
@@ -1960,7 +1998,7 @@ proc procname {table widget row column value} {...}
 </pre>
 <p>Use the cellconfigure subcommand to set the attributes per cell.</p></dd>
 </dl></dd>
-<dt><a name="116"><b class="cmd">$table</b> cellconfigure <i class="arg">args</i></a></dt>
+<dt><a name="117"><b class="cmd">$table</b> cellconfigure <i class="arg">args</i></a></dt>
 <dd><p>Set the attributes for the next cell(s) to be drawn.</p>
 <dl class="arguments">
 <dt>list <i class="arg">args</i> (in)</dt>
@@ -1968,6 +2006,60 @@ proc procname {table widget row column value} {...}
 -cell sets the foreground colour, -font sets the text font, -anchor sets
 the position of the text within the cell and -justify controls the
 layout of multiline text.</p></dd>
+</dl></dd>
+</dl>
+<p>For <em>ternary diagrams</em> you can use the following subcommands:</p>
+<dl class="definitions">
+<dt><a name="118"><b class="cmd">$ternary</b> plot <i class="arg">series</i> <i class="arg">xcrd</i> <i class="arg">ycrd</i> <i class="arg">zcrd</i> <i class="arg">text</i> <i class="arg">dir</i></a></dt>
+<dd><p>Draw a single data point with a label. The three coordinates are scaled so that a unique point
+in the triangle results. A label is drawn next to it.</p>
+<dl class="arguments">
+<dt>string <i class="arg">series</i> (in)</dt>
+<dd><p>Name of the data series the point belongs to (used to determine colour and symbol)</p></dd>
+<dt>float <i class="arg">xcrd</i> (in)</dt>
+<dd><p>X-coordinate of the data point (refers to the lower-left corner).</p></dd>
+<dt>float <i class="arg">ycrd</i> (in)</dt>
+<dd><p>Y-coordinate of the data point (refers to the lower-right corner).</p></dd>
+<dt>float <i class="arg">zcrd</i> (in)</dt>
+<dd><p>Z-coordinate of the data point (refers to the top corner).</p></dd>
+<dt>string <i class="arg">text</i> (in)</dt>
+<dd><p>Label describing the data point.</p></dd>
+<dt>string <i class="arg">dir</i> (in)</dt>
+<dd><p>Optional string indicating the direction in which to plot the label (e, n, etc.)</p></dd>
+</dl></dd>
+<dt><a name="119"><b class="cmd">$ternary</b> line <i class="arg">series</i> <i class="arg">coords</i></a></dt>
+<dd><p>Draw a continuous line based on the given coordinates (triplets).</p>
+<dl class="arguments">
+<dt>string <i class="arg">series</i> (in)</dt>
+<dd><p>Name of the data series the line belongs to (used to determine colour and smoothness)</p></dd>
+<dt>list <i class="arg">coords</i> (in)</dt>
+<dd><p>The coordinates of the points that determine the line (note that a point is defined by
+three coordinates).</p></dd>
+</dl></dd>
+<dt><a name="120"><b class="cmd">$ternary</b> fill <i class="arg">series</i> <i class="arg">coords</i></a></dt>
+<dd><p>Draw a filled polygon based on the given coordinates (triplets).</p>
+<dl class="arguments">
+<dt>string <i class="arg">series</i> (in)</dt>
+<dd><p>Name of the data series the polygon belongs to (used to determine colour and smoothness)</p></dd>
+<dt>list <i class="arg">coords</i> (in)</dt>
+<dd><p>The coordinates of the points that determine the polygon (note that a point is defined by
+three coordinates).</p></dd>
+</dl></dd>
+<dt><a name="121"><b class="cmd">$ternary</b> text <i class="arg">xtext</i> <i class="arg">ytext</i> <i class="arg">ztext</i></a></dt>
+<dd><p>Draw text at the three corners of the diagram to identify the components.</p>
+<dl class="arguments">
+<dt>string <i class="arg">xtext</i> (in)</dt>
+<dd><p>Text to be plotted at the lower-left corner</p></dd>
+<dt>string <i class="arg">ytext</i> (in)</dt>
+<dd><p>Text to be plotted at the lower-right corner</p></dd>
+<dt>string <i class="arg">ztext</i> (in)</dt>
+<dd><p>Text to be plotted at the top corner</p></dd>
+</dl></dd>
+<dt><a name="122"><b class="cmd">$ternary</b> ticklines <i class="arg">colour</i></a></dt>
+<dd><p>Draw ticklines to facilitate reading off the diagram.</p>
+<dl class="arguments">
+<dt>string <i class="arg">colour</i> (in)</dt>
+<dd><p>Optional argument used as the colour of the ticklines. Defaults to grey.</p></dd>
 </dl></dd>
 </dl>
 <p>There are a number of public procedures that may be useful in specific
@@ -1979,7 +2071,7 @@ there are a number of commands that can be used to convert world
 coordinates to pixels and vice versa.
 These include:</p>
 <dl class="definitions">
-<dt><a name="117"><b class="cmd">::Plotchart::viewPort</b> <i class="arg">w</i> <i class="arg">pxmin</i> <i class="arg">pymin</i> <i class="arg">pxmax</i> <i class="arg">pymax</i></a></dt>
+<dt><a name="123"><b class="cmd">::Plotchart::viewPort</b> <i class="arg">w</i> <i class="arg">pxmin</i> <i class="arg">pymin</i> <i class="arg">pxmax</i> <i class="arg">pymax</i></a></dt>
 <dd><p>Set the viewport for window <i class="arg">w</i>. Should be used in cooperation
 with <b class="cmd">::Plotchart::worldCoordinates</b>.</p>
 <dl class="arguments">
@@ -1995,7 +2087,7 @@ starts with 0 at the top!).</p></dd>
 <dt>float <i class="arg">pymax</i> (in)</dt>
 <dd><p>Bottom-most pixel coordinate.</p></dd>
 </dl></dd>
-<dt><a name="118"><b class="cmd">::Plotchart::worldCoordinates</b> <i class="arg">w</i> <i class="arg">xmin</i> <i class="arg">ymin</i> <i class="arg">xmax</i> <i class="arg">ymax</i></a></dt>
+<dt><a name="124"><b class="cmd">::Plotchart::worldCoordinates</b> <i class="arg">w</i> <i class="arg">xmin</i> <i class="arg">ymin</i> <i class="arg">xmax</i> <i class="arg">ymax</i></a></dt>
 <dd><p>Set the extreme world coordinates for window <i class="arg">w</i>. The world
 coordinates need not be in ascending order (i.e. xmin can be larger
 than xmax, so that a reversal of the x-axis is achieved).</p>
@@ -2011,7 +2103,7 @@ than xmax, so that a reversal of the x-axis is achieved).</p>
 <dt>float <i class="arg">ymax</i> (in)</dt>
 <dd><p>Y-coordinate to be mapped to top side of viewport.</p></dd>
 </dl></dd>
-<dt><a name="119"><b class="cmd">::Plotchart::world3DCoordinates</b> <i class="arg">w</i> <i class="arg">xmin</i> <i class="arg">ymin</i> <i class="arg">zmin</i> <i class="arg">xmax</i> <i class="arg">ymax</i> <i class="arg">zmax</i></a></dt>
+<dt><a name="125"><b class="cmd">::Plotchart::world3DCoordinates</b> <i class="arg">w</i> <i class="arg">xmin</i> <i class="arg">ymin</i> <i class="arg">zmin</i> <i class="arg">xmax</i> <i class="arg">ymax</i> <i class="arg">zmax</i></a></dt>
 <dd><p>Set the extreme three-dimensional world coordinates for window
 <i class="arg">w</i>. The world coordinates need not be in ascending order (i.e. xmin
 can be larger than xmax, so that a reversal of the x-axis is
@@ -2032,7 +2124,7 @@ achieved).</p>
 <dt>float <i class="arg">zmax</i> (in)</dt>
 <dd><p>Z-coordinate to be mapped to top side of viewport.</p></dd>
 </dl></dd>
-<dt><a name="120"><b class="cmd">::Plotchart::coordsToPixel</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i></a></dt>
+<dt><a name="126"><b class="cmd">::Plotchart::coordsToPixel</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i></a></dt>
 <dd><p>Return a list of pixel coordinates valid for the given window.</p>
 <dl class="arguments">
 <dt>widget <i class="arg">w</i> (in)</dt>
@@ -2042,7 +2134,7 @@ achieved).</p>
 <dt>float <i class="arg">y</i> (in)</dt>
 <dd><p>Y-coordinate to be mapped.</p></dd>
 </dl></dd>
-<dt><a name="121"><b class="cmd">::Plotchart::coords3DToPixel</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i> <i class="arg">z</i></a></dt>
+<dt><a name="127"><b class="cmd">::Plotchart::coords3DToPixel</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i> <i class="arg">z</i></a></dt>
 <dd><p>Return a list of pixel coordinates valid for the given window.</p>
 <dl class="arguments">
 <dt>widget <i class="arg">w</i> (in)</dt>
@@ -2054,7 +2146,7 @@ achieved).</p>
 <dt>float <i class="arg">y</i> (in)</dt>
 <dd><p>Z-coordinate to be mapped.</p></dd>
 </dl></dd>
-<dt><a name="122"><b class="cmd">::Plotchart::polarCoordinates</b> <i class="arg">w</i> <i class="arg">radmax</i></a></dt>
+<dt><a name="128"><b class="cmd">::Plotchart::polarCoordinates</b> <i class="arg">w</i> <i class="arg">radmax</i></a></dt>
 <dd><p>Set the extreme polar coordinates for window <i class="arg">w</i>. The angle always
 runs from 0 to 360 degrees and the radius starts at 0. Hence you only
 need to give the maximum radius.
@@ -2067,7 +2159,7 @@ creation routine for a polar plot always determines a square viewport.</p>
 <dt>float <i class="arg">radmax</i> (in)</dt>
 <dd><p>Maximum radius.</p></dd>
 </dl></dd>
-<dt><a name="123"><b class="cmd">::Plotchart::polarToPixel</b> <i class="arg">w</i> <i class="arg">rad</i> <i class="arg">phi</i></a></dt>
+<dt><a name="129"><b class="cmd">::Plotchart::polarToPixel</b> <i class="arg">w</i> <i class="arg">rad</i> <i class="arg">phi</i></a></dt>
 <dd><p>Wrapper for a call to <b class="cmd">::Plotchart::coordsToPixel</b>, which assumes
 the world coordinates and viewport are set appropriately. Converts
 polar coordinates to pixel coordinates.
@@ -2082,7 +2174,7 @@ taken care of in the creation routine for polar plots.</p>
 <dt>float <i class="arg">phi</i> (in)</dt>
 <dd><p>Angle to the positive x-axis.</p></dd>
 </dl></dd>
-<dt><a name="124"><b class="cmd">::Plotchart::pixelToCoords</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i></a></dt>
+<dt><a name="130"><b class="cmd">::Plotchart::pixelToCoords</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i></a></dt>
 <dd><p>Return a list of world coordinates valid for the given window.</p>
 <dl class="arguments">
 <dt>widget <i class="arg">w</i> (in)</dt>
@@ -2092,7 +2184,7 @@ taken care of in the creation routine for polar plots.</p>
 <dt>float <i class="arg">y</i> (in)</dt>
 <dd><p>Y-pixel to be mapped.</p></dd>
 </dl></dd>
-<dt><a name="125"><b class="cmd">::Plotchart::pixelToIndex</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i></a></dt>
+<dt><a name="131"><b class="cmd">::Plotchart::pixelToIndex</b> <i class="arg">w</i> <i class="arg">x</i> <i class="arg">y</i></a></dt>
 <dd><p>Return the index of the pie segment containing the pixel coordinates
 (x,y)</p>
 <dl class="arguments">
@@ -2108,7 +2200,7 @@ holding a piechart.</p></dd>
 <p>Furthermore there is a routine to determine &quot;pretty&quot; numbers for use
 with an axis:</p>
 <dl class="definitions">
-<dt><a name="126"><b class="cmd">::Plotchart::determineScale</b> <i class="arg">xmin</i> <i class="arg">xmax</i> <i class="arg">inverted</i></a></dt>
+<dt><a name="132"><b class="cmd">::Plotchart::determineScale</b> <i class="arg">xmin</i> <i class="arg">xmax</i> <i class="arg">inverted</i></a></dt>
 <dd><p>Determine &quot;pretty&quot; numbers from the given range and return a list
 containing the minimum, maximum and stepsize that can be used for a
 (linear) axis.</p>
@@ -2121,7 +2213,7 @@ containing the minimum, maximum and stepsize that can be used for a
 <dd><p>Optional argument: if 1, then the returned list produces an
 inverted axis. Defaults to 0 (the axis will be from minimum to maximum)</p></dd>
 </dl></dd>
-<dt><a name="127"><b class="cmd">::Plotchart::determineScaleFromList</b> <i class="arg">values</i> <i class="arg">inverted</i></a></dt>
+<dt><a name="133"><b class="cmd">::Plotchart::determineScaleFromList</b> <i class="arg">values</i> <i class="arg">inverted</i></a></dt>
 <dd><p>Determine &quot;pretty&quot; numbers from the given list of values and return a list
 containing the minimum, maximum and stepsize that can be used for a
 (linear) axis.</p>
@@ -2331,11 +2423,12 @@ lines, not symbols.</p>
    $p rescale {newxmin newxmax newxstep} {newymin newymax newystep}
 </pre>
 </div>
-<div id="section11" class="section"><h2><a name="section11">CONFIGURATION OPTIONS</a></h2>
+<div id="section11" class="section"><h2><a name="section11">CONFIGURATION OPTIONS AND OTHER COMMANDS</a></h2>
 <p>The commands <b class="cmd">plotconfig</b> and <b class="cmd">plotstyle</b> can be used to set all
-manner of options. The syntax is:</p>
+manner of options. The command <b class="cmd">eraseplot</b> can be used to completely erase a plot or
+chart. The syntax of these commands is:</p>
 <dl class="definitions">
-<dt><a name="128"><b class="cmd">::Plotchart::plotconfig</b> <i class="arg">charttype</i> <i class="arg">component</i> <i class="arg">property</i> <i class="arg">value</i></a></dt>
+<dt><a name="134"><b class="cmd">::Plotchart::plotconfig</b> <i class="arg">charttype</i> <i class="arg">component</i> <i class="arg">property</i> <i class="arg">value</i></a></dt>
 <dd><p>Set a new value for the property of a component in a particular chart or
 plot type or query its current value. Changed properties only have effect for
 the consecutive plots, not for the ones already created. Each argument is optional.</p>
@@ -2363,7 +2456,7 @@ If the value is &quot;default&quot;, the default value will be restored.</p>
 <p>Note, that in some cases an empty value is useful. Use &quot;none&quot; in this
 case - it can be useful for colours and for formats.</p></dd>
 </dl></dd>
-<dt><a name="129"><b class="cmd">::Plotchart::plotstyle</b> <i class="arg">subcmd</i> <i class="arg">style</i> <i class="arg">args</i></a></dt>
+<dt><a name="135"><b class="cmd">::Plotchart::plotstyle</b> <i class="arg">subcmd</i> <i class="arg">style</i> <i class="arg">args</i></a></dt>
 <dd><p>Manipulate the <em>style</em> in which subsequent plots will be drawn. The
 default style is &quot;default&quot;, but you can define and load any number of
 other styles.</p>
@@ -2475,6 +2568,15 @@ subcommand however.</p></li>
 (for the width of the line surrounding the whole table) and
 <em>innerwidth</em> (for the width of lines separating columns and rows).</p></li>
 </ul>
+<dl class="definitions">
+<dt><a name="136"><b class="cmd">::Plotchart::eraseplot</b> <i class="arg">anyplot</i></a></dt>
+<dd><p>Erase the plot/chart with all resources connected to it.</p>
+<dl class="arguments">
+<dt>string <i class="arg">anyplot</i> (in)</dt>
+<dd><p>The plot/chart command. All canvas items associated with this command and all
+internal resources will be removed, including the plot/chart command itself.</p></dd>
+</dl></dd>
+</dl>
 </li>
 </ul>
 <p>See the examples in plotdemos7.tcl for its use.</p>
@@ -2554,7 +2656,7 @@ Desmond Higham and Nicholas Higham
 <p>Most of the general methods for XY-plots work for these plots as well, but their
 creation and the methods to plot the data are very specific.</p>
 <dl class="definitions">
-<dt><a name="130"><b class="cmd">::Plotchart::createTargetDiagram</b> <i class="arg">w</i> <i class="arg">limits</i> <i class="arg">scale</i></a></dt>
+<dt><a name="137"><b class="cmd">::Plotchart::createTargetDiagram</b> <i class="arg">w</i> <i class="arg">limits</i> <i class="arg">scale</i></a></dt>
 <dd><p>Create a new target diagram with circles indicating specific limits. The x-axis represents the
 unbiased &quot;root-mean-square difference&quot; (typically varying between -1 and 1) and the y-axis
 represents the normalised bias.</p>
@@ -2568,7 +2670,7 @@ represents the normalised bias.</p>
 <dd><p>Scale for the axes - defaults to 1, but if the model results are a poor fit, then
 that may be too small a value. Both axes are scaled in the same way.</p></dd>
 </dl></dd>
-<dt><a name="131"><b class="cmd">$target</b> plot <i class="arg">series</i> <i class="arg">xvalues</i> <i class="arg">yvalues</i></a></dt>
+<dt><a name="138"><b class="cmd">$target</b> plot <i class="arg">series</i> <i class="arg">xvalues</i> <i class="arg">yvalues</i></a></dt>
 <dd><p>The plot method takes two series of data of the same length, the first one
 representing the model results, the second one represent the measurements
 or, more general, the data that need to be reproduced.</p>
@@ -2582,7 +2684,7 @@ or, more general, the data that need to be reproduced.</p>
 <dd><p>List of measured values (missing values are represented as empty strings; only if
 both the x and the y values are given, is the pair used in the computations)</p></dd>
 </dl></dd>
-<dt><a name="132"><b class="cmd">::Plotchart::createPerformanceProfile</b> <i class="arg">w</i> <i class="arg">max</i></a></dt>
+<dt><a name="139"><b class="cmd">::Plotchart::createPerformanceProfile</b> <i class="arg">w</i> <i class="arg">max</i></a></dt>
 <dd><p>Create a diagram to show the performance of various numerical methods (or solvers). The idea is
 to first run these methods on a set of problems and measure their performance. The smaller the
 number the better. Then these methods are compared via a so-called performance profile:
@@ -2594,7 +2696,7 @@ the data are scaled and ordered, such that the best method ends up highest.</p>
 <dt>float <i class="arg">max</i> (in)</dt>
 <dd><p>Maximum value for the x-axis (the x-axis is the scaled performance of the series).</p></dd>
 </dl></dd>
-<dt><a name="133"><b class="cmd">$performance</b> plot <i class="arg">series_and_data_pairs</i></a></dt>
+<dt><a name="140"><b class="cmd">$performance</b> plot <i class="arg">series_and_data_pairs</i></a></dt>
 <dd><p>Plot the data for each given method. The data are identified by the series name and the
 appearance is controlled via prior dataconfig subcommand.</p>
 <dl class="arguments">
@@ -2605,7 +2707,7 @@ appearance is controlled via prior dataconfig subcommand.</p>
 <p>The command <i class="term">plotmethod</i> can be used to add new methods for a particular
 plot or chart type. It is intended to help you develop specialised graphical displays.</p>
 <dl class="definitions">
-<dt><a name="134"><b class="cmd">::Plotchart::plotmethod</b> <i class="arg">charttype</i> <i class="arg">methodname</i> <i class="arg">plotproc</i></a></dt>
+<dt><a name="141"><b class="cmd">::Plotchart::plotmethod</b> <i class="arg">charttype</i> <i class="arg">methodname</i> <i class="arg">plotproc</i></a></dt>
 <dd><p>Adds a new method for the given plot or chart type. The method is implemented by the
 command or procedure given in the plotproc argument. The procedure will be called with
 two extra arguments, the name of the created plot and the canvas widget that contains
@@ -2674,14 +2776,38 @@ for {set i 0} {$i &lt; 9} {incr i} {
 <div id="section15" class="section"><h2><a name="section15">CONTROL DISPLAYS</a></h2>
 <p>TODO</p>
 </div>
-<div id="section16" class="section"><h2><a name="section16">ARRANGING MULTIPLE PLOTS IN A CANVAS</a></h2>
+<div id="section16" class="section"><h2><a name="section16">USING DATE/TIME LABELS</a></h2>
+<p>The options -timeformat and -gmt are used to control the display of date/time
+labels along the x-axis for those plot types for which it makes sense. These
+options were implemented to take care of date/time labels for stripcharts,
+as you can also use custom labels (the option -xlabels) if the axis is &quot;static&quot;.
+Since this is not the case for stripcharts, this was not an option (Tcllib/Tklib bug 3613718).
+The example below illustrates how to use the -timeformat option. The -gmt option
+merely suppresses the handling of daylight saving time by the [clock format] command.</p>
+<pre class="example">
+package require Plotchart
+pack [canvas .c -width 500 -bg white]
+#
+# Note that we need to present the x values as clock seconds
+#
+set start [clock scan  &quot;0:00&quot;]
+set stop  [clock scan &quot;10:00&quot;]
+set s [Plotchart::createStripchart .c [list $start $stop 7200] {0 10 1} -timeformat &quot;%H:%M&quot;]
+foreach {x y} {0 0 2 5 5 2 9 9 12 10} {
+    set x [expr {$start + 3600 * $x}] ;# Convert hour to clock seconds
+    $s plot a $x $y
+}</pre>
+<p>The <em>plot</em> subcommand simply interprets the x and y data as straightforward
+numbers, so that you need to do the conversion from date/time to &quot;clock seconds&quot; yourself.</p>
+</div>
+<div id="section17" class="section"><h2><a name="section17">ARRANGING MULTIPLE PLOTS IN A CANVAS</a></h2>
 <p>The command <i class="term">plotpack</i> allows you to copy the contents of a plot
 into another canvas widget. This canvas widget does not act as a
 composite plot, but it can be saved as a PostScript file for instance:
 Note: the command simply takes a snapshot of the plots/charts as they
 are at that moment.</p>
 <dl class="definitions">
-<dt><a name="135"><b class="cmd">::Plotchart::plotpack</b> <i class="arg">w</i> <i class="arg">dir</i> <i class="arg">args</i></a></dt>
+<dt><a name="142"><b class="cmd">::Plotchart::plotpack</b> <i class="arg">w</i> <i class="arg">dir</i> <i class="arg">args</i></a></dt>
 <dd><p>Copy the contents of the plots/charts into another widget, in a manner
 similar to the <i class="term">pack</i> geometry manager.</p>
 <dl class="arguments">
@@ -2743,8 +2869,8 @@ of plot &quot;\$p1&quot; and the top of the axis is at the same heigt as well -
 because the axes are positioned at a point 0 pixels to the left and 0
 pixels below the north-east corner.</p>
 </div>
-<div id="section17" class="section"><h2><a name="section17">INTERACTIVE USE</a></h2>
-<p><em>Plotchart</em> has several features for interactive use (cf. <span class="sectref"><a href="#section18">NOTES ON TAGS</a></span>):</p>
+<div id="section18" class="section"><h2><a name="section18">INTERACTIVE USE</a></h2>
+<p><em>Plotchart</em> has several features for interactive use (cf. <span class="sectref"><a href="#section19">NOTES ON TAGS</a></span>):</p>
 <ul class="itemized">
 <li><p>The legend can be moved around by pressing mouse button 1 in the legend's box and
 keeping it down.</p></li>
@@ -2757,7 +2883,7 @@ define actions that are to be taken when the user clicks on an element of the pl
 you can use the tags on the various canvas elements to define other bindings.</p>
 <p>The <em>bindplot</em> and <em>bindlast</em> are defined as follows:</p>
 <dl class="definitions">
-<dt><a name="136"><b class="cmd">$anyplot</b> bindplot <i class="arg">event</i> <i class="arg">command</i> <i class="arg">args</i></a></dt>
+<dt><a name="143"><b class="cmd">$anyplot</b> bindplot <i class="arg">event</i> <i class="arg">command</i> <i class="arg">args</i></a></dt>
 <dd><p>Register a command that will be run whenever the given event occurs in the plot.</p>
 <dl class="arguments">
 <dt>string <i class="arg">event</i></dt>
@@ -2771,7 +2897,7 @@ so that the procedure has the signature:</p>
 </pre>
 <p>assuming the argument &quot;command&quot; is: {cmd A B C}</p></dd>
 </dl></dd>
-<dt><a name="137"><b class="cmd">$anyplot</b> bindlast <i class="arg">series</i> <i class="arg">event</i> <i class="arg">command</i></a></dt>
+<dt><a name="144"><b class="cmd">$anyplot</b> bindlast <i class="arg">series</i> <i class="arg">event</i> <i class="arg">command</i></a></dt>
 <dd><p>Register a command that will be run when the event occurs within the neighbourhood of
 the last point added to the given series. (You can use directly after inserting
 a data point. All such commands will remain active).</p>
@@ -2821,7 +2947,7 @@ foreach x {1 2 5 10 20 50 100 200 500 1000} {
 }
 </pre>
 </div>
-<div id="section18" class="section"><h2><a name="section18">NOTES ON TAGS</a></h2>
+<div id="section19" class="section"><h2><a name="section19">NOTES ON TAGS</a></h2>
 <p>The implementation of <em>Plotchart</em> relies heavily on the canvas's
 ability to identify graphical objects by tags and to change the drawing order of
 the objects. This section documents the tags that are used.</p>
@@ -2899,7 +3025,7 @@ To implement multiple plots and charts in a single canvas, all items
 also get as a tag the plot/chart they belong to. This enables Plotchart
 to manipulate only those items.</p>
 </div>
-<div id="section19" class="section"><h2><a name="section19">TODO - SOME PRIVATE NOTES</a></h2>
+<div id="section20" class="section"><h2><a name="section20">TODO - SOME PRIVATE NOTES</a></h2>
 <p>I have the following wishlist:</p>
 <ul class="itemized">
 <li><p>Isometric plots - allow new items to be implemented easily.</p></li>
@@ -2912,17 +3038,16 @@ to manipulate only those items.</p>
 </ul>
 </li>
 </ul>
+<p>&lt;</p>
 </div>
-<div id="section20" class="section"><h2><a name="section20">Bugs, Ideas, Feedback</a></h2>
+<div id="section21" class="section"><h2><a name="section21">Bugs, Ideas, Feedback</a></h2>
 <p>This document, and the package it describes, will undoubtedly contain
 bugs and other problems.
 Please report such in the category <em>plotchart</em> of the
 <a href="http://core.tcl.tk/tklib/reportlist">Tklib Trackers</a>.
 Please also report any ideas for enhancements you may have for either
-package and/or documentation.</p>
-</div>
-<div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
-<p><a href="../../../../index.html#key54">3D bars</a>, <a href="../../../../index.html#key51">3D surfaces</a>, <a href="../../../../index.html#key50">bar charts</a>, <a href="../../../../index.html#key45">charts</a>, <a href="../../../../index.html#key42">coordinate transformations</a>, <a href="../../../../index.html#key52">coordinates</a>, <a href="../../../../index.html#key46">graphical presentation</a>, <a href="../../../../index.html#key48">isometric plots</a>, <a href="../../../../index.html#key53">pie charts</a>, <a href="../../../../index.html#key49">plotting</a>, <a href="../../../../index.html#key41">polar plots</a>, <a href="../../../../index.html#key55">strip charts</a>, <a href="../../../../index.html#key43">tables</a>, <a href="../../../../index.html#key44">time charts</a>, <a href="../../../../index.html#key47">xy-plots</a></p>
+package and/or documentation.
+                                   &lt;</p>
 </div>
 <div id="copyright" class="section"><h2><a name="copyright">Copyright</a></h2>
 <p>Copyright &copy; 2011 Arjen Markus &lt;arjenmarkus@users.sourceforge.net&gt;</p>
