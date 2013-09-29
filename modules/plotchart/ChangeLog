@@ -1,5 +1,6 @@
 2013-09-29  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Add dummy scaling parameters for spiral pies
+	* plotpriv.tcl: Use [string first] instead of fixed size in WidthCanvas and HeightCanvas (see ticket 40ae42af80c61618720510ba6648bef183e6b894)
 	* plotconfig.tcl: Add dummy axis componennts for table charts
 	* examples: Add sh-bang, remove source statements (always package require instead), catch console show
 	* pkgIndex.tcl: Bumped the version to 2.2.1
