@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 2.2.0]
-[copyright {2011 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
+[manpage_begin Plotchart n 2.2.1]
+[copyright {2013 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.5]]
 [require Tk [opt 8.5]]
-[require Plotchart [opt 2.2.0]]
+[require Plotchart [opt 2.2.1]]
 
 [description]
 [para]
@@ -1579,8 +1579,8 @@ by the xcrd and ycrd arguments. The xcrd argument (resp. ycrd)
 is expected to be a matrix, implemented as a list of lists which gives the
 x-coordinates (resp. y-coordinates) of the grid cell corners.
 The function values are given at these corners.
-The number of rows in xvec (resp. yvec) is ny and each row contains nx values
-so that the total number of values in xvec (resp. yvec) is nx * ny.
+The number of rows in xcrd (resp. ycrd) is ny and each row contains nx values
+so that the total number of values in xcrd (resp. ycrd) is nx * ny.
 The classes determine which contour lines are drawn. If a value on one of
 the corners is missing, the contour lines in that cell will not be
 drawn.
@@ -1624,14 +1624,14 @@ drawn.
 Entries in the legend are drawn via the [emph legendisolines] subcommand.
 
 [list_begin arguments]
-[arg_def list xcrd in]
+[arg_def list xvec in]
 List of x-coordinates in increasing order.
 
-[arg_def list ycrd in]
+[arg_def list yvec in]
 List y-coordinates in increasing order.
 
 [arg_def list valuesmat in]
-List of lists, each value is the value at a grid cell corner.
+List of ny lists of nx values, each value is the value at a grid cell corner.
 The total number of values is valuesmat is nx * ny.
 
 [arg_def list classes in]
