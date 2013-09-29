@@ -1,8 +1,11 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
 # slidercnv.tcl --
 #     Use the canvas as a way to store data
 #
-source plotchart.tcl
-package require Plotchart 2.0
+package require Plotchart
 
 namespace eval demo {
 

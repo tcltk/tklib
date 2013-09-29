@@ -1,7 +1,10 @@
+#! /bin/sh
+# -*- tcl -*- \
+exec tclsh "$0" ${1+"$@"}
+
 # testneedle.tcl --
 #     Introduce a new plot method: draw a "needle" for each data point
 #
-source plotchart.tcl
 package require Plotchart
 
 pack [canvas .c]

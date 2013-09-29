@@ -1,3 +1,9 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk
+
 # plotdemos16.tcl --
 #     Test performance profiles
 #
@@ -11,9 +17,7 @@
 #         SIAM, 2005, Philadephia
 #
 #
-source ../../plotchart.tcl
 package require Plotchart
-
 
 #
 # Performance profile

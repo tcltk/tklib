@@ -1,3 +1,9 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk
+
 # plotdemos13.tcl --
 #     Check the performance of xy-plots with large amounts of data
 #

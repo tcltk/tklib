@@ -1,7 +1,13 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk
+
 # plotdemos11.tcl --
 #     Test and demonstrate log X-Y plots and log-log plots
 #
-package require Plotchart 1.8
+package require Plotchart
 
 #
 # Log X plot of y = log(x)
