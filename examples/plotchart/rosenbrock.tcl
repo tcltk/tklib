@@ -1,3 +1,7 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
 #
 # rosenbrock.demo3.test.tcl --
 #   Plot the contours of the Rosenbrock function with
@@ -10,7 +14,7 @@
 # Copyright 2008-2009 Michael Baudin
 #
 
-package require Plotchart 1.8
+package require Plotchart
 package require cmdline
 
 set width 500

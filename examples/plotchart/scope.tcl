@@ -1,3 +1,7 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
 # scope.tcl --
 #  Timing test of oscilloscope mode.
 #  Two traces are plotted.

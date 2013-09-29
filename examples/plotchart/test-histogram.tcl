@@ -1,7 +1,10 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
 # test-histogram.tcl --
 #     Example of a histogram plot with filled background
 #
-source plotchart.tcl
 package require Plotchart
 
 pack [canvas .c -width 400 -height 300 -bg white]

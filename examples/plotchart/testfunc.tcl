@@ -1,7 +1,12 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk
+
 # testfunc.tcl --
 #     Test the plotfunc method
 #
-source plotchart.tcl
 package require Plotchart
 
 grid [canvas .c -width 500 -height 500]

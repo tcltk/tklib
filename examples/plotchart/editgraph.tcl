@@ -1,11 +1,16 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk
+
 # editgraph.tcl --
 #     Widget to edit data series graphically
 #
 #     Note:
 #     Not as elegant as could be with bindings via Plotchart itself
 #
-#package require Plotchart
-source plotchart.tcl
+package require Plotchart
 
 namespace eval ::Editgraph {
 

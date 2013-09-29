@@ -1,3 +1,7 @@
+#! /bin/sh
+# -*- tcl -*- \
+exec tclsh "$0" ${1+"$@"}
+
 # xyplot_demo.tcl --
 #     Demonstration of the xyplot package
 #

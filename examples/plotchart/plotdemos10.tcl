@@ -1,7 +1,13 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk
+
 # plotdemos10.tcl --
 #     Test and demonstrate wind roses, bands in xy-plots, vertical text and label-dots
 #
-package require Plotchart 1.7
+package require Plotchart
 
 #
 # Wind rose diagram
@@ -42,6 +48,6 @@ $p labeldot 6 20 "Point 2" e
 $p labeldot 9 10 "Point 3" n
 $p labeldot 9 30 "Point 4" s
 
-if { [package vsatisfies Tk 8.6] } {
+if { [package vsatisfies [package provide Tk] 8.6] } {
     $p vtext "Vertical axis label"
 }

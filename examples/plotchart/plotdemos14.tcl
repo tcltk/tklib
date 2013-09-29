@@ -1,3 +1,9 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk
+
 # plotdemos14.tcl --
 #     Test target diagrams
 #
@@ -10,7 +16,6 @@
 #         Journal of Marine Systems 76 (2009) 64-82
 #         DOI: 10.1016/j.jmarsys.2008.05.014
 #
-source ../../plotchart.tcl
 package require Plotchart
 
 
