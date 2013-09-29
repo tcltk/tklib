@@ -1590,7 +1590,11 @@ proc ::Plotchart::createSpiralPie { c args} {
    DefaultLegend  $w
    DefaultBalloon $w
 
-   set scaling($w,auto)      0
+   set scaling($w,auto)         0
+  #set scaling($w,exploded)    -1     ;# Not implemented (yet)
+   set scaling($w,coordSystem)  0     ;# Dummies
+   set scaling($w,xfactor)      1.0
+   set scaling($w,yfactor)      1.0
 
    #
    # Take care of the compatibility for coordsToPixel and friends
