@@ -20,7 +20,7 @@ proc ::Plotchart::WidthCanvas {w {useref 1}} {
     set ref $scaling($w,reference)
 
     if { [string match {[0-9]*} $w] } {
-        set w [string range $w 2 end]
+        set w [string range $w [string first . $w] end]
     }
 
     if { [info exists scaling($ref,refwidth)] && $useref } {
@@ -51,7 +51,7 @@ proc ::Plotchart::HeightCanvas {w {useref 1}} {
     set ref $scaling($w,reference)
 
     if { [string match {[0-9]*} $w] } {
-        set w [string range $w 2 end]
+        set w [string range $w [string first . $w] end]
     }
 
     if { [info exists scaling($ref,refheight)] && $useref } {
