@@ -1,10 +1,14 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk
+
 # plotdemos17.tcl --
 #     Demonstrate how to configure the axes
 #
 #
-source ../../plotchart.tcl
 package require Plotchart
-
 
 #
 # Set up three plots

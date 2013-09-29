@@ -1,4 +1,7 @@
-source plotchart.tcl
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
 package require Plotchart
 
 proc convex {u v} {
@@ -22,7 +25,7 @@ for {set i 0} { $i < 20 } { incr i } {
     lappend yv [expr {($i-10)*0.5}]
 }
 
-console show
+catch { console show }
 set zv {}
 foreach y $yv {
     set row {}

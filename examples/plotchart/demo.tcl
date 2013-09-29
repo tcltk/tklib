@@ -1,7 +1,12 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk
+
 #  demo.tcl --
 #      Demo program for Plotchart
 #
-source d:/tcl-programs/plotchart/cvs-dir/plotchart.tcl
 package require Plotchart
 
 proc demo {code} {

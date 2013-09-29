@@ -1,10 +1,13 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
 # test-spiralpie.tcl --
 #
 # Options:
 # -shownumbers
 # -sorted
 #
-source plotchart.tcl
 package require Plotchart
 
 pack [canvas .c1 -width 300 -height 300] \

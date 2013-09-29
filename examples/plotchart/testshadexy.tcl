@@ -1,10 +1,13 @@
+#! /bin/sh
+# -*- tcl -*- \
+exec tclsh "$0" ${1+"$@"}
+
 # testshadexy.tcl --
 #     Demonstrate how to mark data with a shaded background
 #
 #     TODO:
 #     Command to get the (extreme) axis values from a plot
 #
-source plotchart.tcl
 package require Plotchart
 
 pack [canvas .c -width 400 -height 300]

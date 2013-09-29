@@ -1,8 +1,11 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
 # plotdemos9.tcl --
 #     Test wind roses, bands in xy-plots, vertical text and label-dots
 #
 package require Plotchart
-
 
 #
 # Wind rose diagram

@@ -1,3 +1,9 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk
+
 # plotdemos15.tcl --
 #     Demo adapted from the Wiki:
 #
@@ -7,7 +13,6 @@
 # by Keith Vetter, April 2010
 #
 
-source ../../plotchart.tcl
 package require Plotchart
 
 set yscale [list 0 40 5]          ;# Y axis is miles along route

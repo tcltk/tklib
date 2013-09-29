@@ -1,11 +1,13 @@
+#! /bin/sh
+# -*- tcl -*- \
+exec tclsh "$0" ${1+"$@"}
+
 # test_stripchart.tcl --
 #     Problem 3613718 on SF regarding stripcharts and custom labels
 #
 #     Reported by Donal
 #
 #     Use case: date/time
-
-source plotchart.tcl
 
 pack [canvas .c]
 

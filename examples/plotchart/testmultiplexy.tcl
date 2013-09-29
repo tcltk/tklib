@@ -1,10 +1,13 @@
+#! /bin/sh
+# -*- tcl -*- \
+exec tclsh "$0" ${1+"$@"}
+
 # testmultiplexy.tcl --
 #     Test multiple XY-plots in one canvas
 #
 #     Note:
 #     log-y-axis erases linear y-axis
 #
-source plotchart.tcl
 
 package require Plotchart
 

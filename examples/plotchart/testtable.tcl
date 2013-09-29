@@ -1,7 +1,10 @@
+#! /bin/sh
+# -*- tcl -*- \
+exec tclsh "$0" ${1+"$@"}
+
 # testtable.tcl --
 #     Small program to test the table chart
 #
-source plotchart.tcl
 
 package require Plotchart
 

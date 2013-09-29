@@ -1,7 +1,10 @@
+#! /bin/sh
+# -*- tcl -*- \
+exec tclsh "$0" ${1+"$@"}
+
 # testxypie.tcl --
 #     Test the combination of an xy-plot with two piecharts
 #
-source plotchart.tcl
 package require Plotchart
 
 pack [canvas .c -width 700 -height 500 -background grey]
@@ -18,6 +21,3 @@ $p1 title "XY-plot with embedded piecharts"
 
 $p3 plot {First 5 Second 6 Third 10 Fourth 2}
 $p4 plot {First 5 Second 6 Third 10 Fourth 2}
-
-console show
-

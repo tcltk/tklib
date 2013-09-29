@@ -1,8 +1,11 @@
+#! /bin/sh
+# -*- tcl -*- \
+exec tclsh "$0" ${1+"$@"}
+
 # testmask.tcl --
 #     Show that different plot windows within a single
 #     canvas produce the "right" set of masks
 #
-source plotchart.tcl
 package require Plotchart
 
 pack [canvas .c -width 700 -height 500 -background grey]
@@ -23,6 +26,3 @@ $p1 title "Multiple plots with one x-axis"
 set p4 [::Plotchart::createXYPlot .c {0.0 100.0 10.0} {0.0 19.9  5.0} -box {400 0 300 500}]
 
 $p4 title "Green title background"
-
-console show
-

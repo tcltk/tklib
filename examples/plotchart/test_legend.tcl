@@ -23,7 +23,7 @@ wm geometry . 300x300+50+50
 
 pack $c_id -side top -fill both -expand 1
 
-console show
+catch { console show }
 
 set max 10
 set min -10

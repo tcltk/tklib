@@ -1,7 +1,13 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk
+
 # plotdemos12.tcl --
 #     Test and demonstrate the interactive facilities of Plotchart
 #
-package require Plotchart 1.8
+package require Plotchart
 
 #
 # Procedure for showing the coordinates
