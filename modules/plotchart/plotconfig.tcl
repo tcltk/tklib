@@ -127,7 +127,7 @@ namespace eval ::Plotchart {
         histogram horizbars vertbars ganttchart
         timechart stripchart isometric 3dplot 3dbars
         radialchart txplot 3dribbon boxplot windrose
-        targetdiagram performance table
+        targetdiagram performance table ternary
     }
 
     # define implemented components for each chart type:
@@ -156,6 +156,7 @@ namespace eval ::Plotchart {
         targetdiagram {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask limits}
         performance   {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask limits}
         table         {title subtitle margin background header oddrow evenrow cell frame leftaxis rightaxis bottomaxis}
+        ternary       {title subtitle margin text legend axis leftaxis rightaxis bottomaxis background mask}
     } {
         set config($type,components) $components
     }
