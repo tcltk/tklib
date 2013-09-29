@@ -1,3 +1,9 @@
+2013-09-29  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Add dummy scaling parameters for spiral pies
+	* plotconfig.tcl: Add dummy axis componennts for table charts
+	* examples: Add sh-bang, remove source statements (always package require instead), catch console show
+	* pkgIndex.tcl: Bumped the version to 2.2.1
+
 2013-06-20  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.man: Restored "epilogue" of the man page
 
