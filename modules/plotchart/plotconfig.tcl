@@ -155,10 +155,12 @@ namespace eval ::Plotchart {
         windrose      {title subtitle margin text legend axis                          background}
         targetdiagram {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask limits}
         performance   {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask limits}
-        table         {title subtitle margin background header oddrow evenrow cell frame}
+        table         {title subtitle margin background header oddrow evenrow cell frame leftaxis rightaxis bottomaxis}
     } {
         set config($type,components) $components
     }
+
+    # Note on the table components: The axes are dummy components!
 
     # define implemented properties for each component:
     # (the '-' means that the component inherits the properties of the previous component on the list)
