@@ -1,5 +1,12 @@
-# demo-tachometer.tcl --
+#! /bin/sh
+# -*- tcl -*- \
+exec tclsh "$0" ${1+"$@"}
 
+package require Tk
+
+# demo-tachometer.tcl --
+#     Demonstration of tachometer control widgets
+#
 package require controlwidget
 
 # main --
