@@ -1,5 +1,12 @@
-# demo-voltmeter.tcl --
+#! /bin/sh
+# -*- tcl -*- \
+exec tclsh "$0" ${1+"$@"}
 
+package require Tk
+
+# demo-voltmeter.tcl --
+#     Demonstration of voltmeter control widgets
+#
 package require controlwidget
 
 # main --

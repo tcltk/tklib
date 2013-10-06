@@ -1,8 +1,12 @@
+2010-10-06  Arjen Markus <arjenmarkus@users.sourceforge.net>
+	* demo-*.tcl: Added shebang and package require statements as per ticket 19721eff15
+	* demo-meters.tcl: Changed line-endings to UNIX convention as per ticket af953d9fbf
+
 2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
 	* Released and tagged Tklib 0.6 ========================
-	* 
+	*
 
 2010-09-10  Andreas Kupries  <andreask@activestate.com>
 
