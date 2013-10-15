@@ -19,6 +19,7 @@ proc tablelist::extendConfigSpecs {} {
     # Extend some elements of the array configSpecs
     #
     lappend configSpecs(-acceptchildcommand)	{}
+    lappend configSpecs(-acceptdropcommand)	{}
     lappend configSpecs(-activestyle)		frame
     lappend configSpecs(-autoscan)		1
     lappend configSpecs(-collapsecommand)	{}
@@ -31,6 +32,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-forceeditendcommand)	0
     lappend configSpecs(-fullseparators)	0
     lappend configSpecs(-incrarrowtype)		up
+    lappend configSpecs(-instanttoggle)		0
     lappend configSpecs(-labelcommand)		{}
     lappend configSpecs(-labelcommand2)		{}
     lappend configSpecs(-labelrelief)		raised
@@ -53,6 +55,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-stripeforeground)	{}
     lappend configSpecs(-stripeheight)		1
     lappend configSpecs(-targetcolor)		black
+    lappend configSpecs(-tight)			0
     lappend configSpecs(-titlecolumns)		0
     lappend configSpecs(-tooltipaddcommand)	{}
     lappend configSpecs(-tooltipdelcommand)	{}
@@ -120,8 +123,8 @@ proc tablelist::extendConfigSpecs {} {
 		}
 	    }
 	}
-	if {[string compare [package provide ttk::theme::aqua] ""] != 0 ||
-	    [string compare [package provide tile::theme::aqua] ""] != 0} {
+	if {[string length [package provide ttk::theme::aqua]] != 0 ||
+	    [string length [package provide tile::theme::aqua]] != 0} {
 	    style theme settings "aqua" {
 		if {[info exists tile::patchlevel] &&
 		    [string compare $tile::patchlevel "0.6.4"] < 0} {
@@ -441,7 +444,7 @@ proc tablelist::doConfig {win opt val} {
 			    $data(sep) configure -background $val
 			}
 		    }
-		    if {[string compare $data(-disabledforeground) ""] == 0} {
+		    if {[string length $data(-disabledforeground)] == 0} {
 			$w tag configure disabled $opt $val
 		    }
 		    updateColorsWhenIdle $win
@@ -540,6 +543,7 @@ proc tablelist::doConfig {win opt val} {
 	w {
 	    switch -- $opt {
 		-acceptchildcommand -
+		-acceptdropcommand -
 		-collapsecommand -
 		-editendcommand -
 		-editstartcommand -
@@ -584,7 +588,7 @@ proc tablelist::doConfig {win opt val} {
 		    # Save the properly formatted value of val in data($opt)
 		    # and set the color of the normal or disabled arrows
 		    #
-		    if {[string compare $val ""] == 0} {
+		    if {[string length $val] == 0} {
 			set data($opt) ""
 		    } else {
 			$helpLabel configure -foreground $val
@@ -630,6 +634,7 @@ proc tablelist::doConfig {win opt val} {
 		-autoscan -
 		-editselectedonly -
 		-forceeditendcommand -
+		-instanttoggle -
 		-movablecolumns -
 		-movablerows -
 		-protecttitlecolumns -
@@ -715,7 +720,7 @@ proc tablelist::doConfig {win opt val} {
 		    # save the properly formatted value of val in data($opt)
 		    #
 		    set w $data(body)
-		    if {[string compare $val ""] == 0} {
+		    if {[string length $val] == 0} {
 			$w tag configure disabled -fgstipple gray50 \
 				-foreground $data(-foreground)
 			set data($opt) ""
@@ -790,7 +795,7 @@ proc tablelist::doConfig {win opt val} {
 		    #
 		    makeListVar $win $val
 		    set data($opt) $val
-		    if {[string compare $val ""] == 0} {
+		    if {[string length $val] == 0} {
 			set data(hasListVar) 0
 		    } else {
 			set data(hasListVar) 1
@@ -853,7 +858,7 @@ proc tablelist::doConfig {win opt val} {
 			set spacing 0
 		    }
 		    $w configure -spacing1 [expr {$spacing + $pixVal}] \
-				 -spacing3 [expr {$spacing + $pixVal + 1}]
+			-spacing3 [expr {$spacing + $pixVal + !$data(-tight)}]
 		    $data(lb) configure $opt $val
 		    redisplayWhenIdle $win
 		    updateViewWhenIdle $win
@@ -925,7 +930,7 @@ proc tablelist::doConfig {win opt val} {
 			set selectBd 0
 		    }
 		    $w configure -spacing1 [expr {$pixVal + $selectBd}] \
-				 -spacing3 [expr {$pixVal + $selectBd + 1}]
+			-spacing3 [expr {$pixVal + $selectBd + !$data(-tight)}]
 		    set data($opt) $val
 		    redisplayWhenIdle $win
 		    updateViewWhenIdle $win
@@ -1016,6 +1021,17 @@ proc tablelist::doConfig {win opt val} {
 		    $data(rowGap) configure -background $val
 		    $data(colGap) configure -background $val
 		    set data($opt) [$data(rowGap) cget -background]
+		}
+		-tight {
+		    #
+		    # Save the boolean value specified by val
+		    # in data($opt) and adjust the line spacing
+		    #
+		    set data($opt) [expr {$val ? 1 : 0}]
+		    set w $data(body)
+		    set spacing1 [$w cget -spacing1]
+		    $w configure -spacing3 [expr {$spacing1 + !$data($opt)}]
+		    updateViewWhenIdle $win
 		}
 		-titlecolumns {
 		    #
@@ -1218,7 +1234,7 @@ proc tablelist::doColConfig {col win opt val} {
 	    set w $data(body)
 	    set name $col$opt
 
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		}
@@ -1289,7 +1305,7 @@ proc tablelist::doColConfig {col win opt val} {
 		}
 	    }
 
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		}
@@ -1339,7 +1355,7 @@ proc tablelist::doColConfig {col win opt val} {
 	}
 
 	-formatcommand {
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($col$opt)]} {
 		    unset data($col$opt)
 		}
@@ -1406,7 +1422,7 @@ proc tablelist::doColConfig {col win opt val} {
 	}
 
 	-labelalign {
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		#
 		# Unset data($col$opt)
 		#
@@ -1445,7 +1461,7 @@ proc tablelist::doColConfig {col win opt val} {
 	-labelforeground {
 	    set w $data(hdrTxtFrLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		#
 		# Apply the value of the corresponding widget
 		# configuration option to the col'th label and
@@ -1475,7 +1491,7 @@ proc tablelist::doColConfig {col win opt val} {
 	-labelborderwidth {
 	    set w $data(hdrTxtFrLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		#
 		# Apply the value of the corresponding widget configuration
 		# option to the col'th label and unset data($col$opt)
@@ -1503,7 +1519,7 @@ proc tablelist::doColConfig {col win opt val} {
 	-labelcommand2 -
 	-name -
 	-sortcommand {
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($col$opt)]} {
 		    unset data($col$opt)
 		}
@@ -1515,7 +1531,7 @@ proc tablelist::doColConfig {col win opt val} {
 	-labelfont {
 	    set w $data(hdrTxtFrLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		#
 		# Apply the value of the corresponding widget
 		# configuration option to the col'th label and
@@ -1545,7 +1561,7 @@ proc tablelist::doColConfig {col win opt val} {
 	-labelpady {
 	    set w $data(hdrTxtFrLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		#
 		# Apply the value of the corresponding widget configuration
 		# option to the col'th label and unset data($col$opt)
@@ -1576,7 +1592,7 @@ proc tablelist::doColConfig {col win opt val} {
 
 	-labelimage {
 	    set w $data(hdrTxtFrLbl)$col
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		foreach l [getSublabels $w] {
 		    destroy $l
 		}
@@ -1645,7 +1661,7 @@ proc tablelist::doColConfig {col win opt val} {
 	-labelrelief {
 	    set w $data(hdrTxtFrLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		#
 		# Apply the value of the corresponding widget configuration
 		# option to the col'th label and unset data($col$opt)
@@ -1690,7 +1706,7 @@ proc tablelist::doColConfig {col win opt val} {
 	    set w $data(body)
 	    set name $col$opt
 
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		}
@@ -1800,7 +1816,7 @@ proc tablelist::doColConfig {col win opt val} {
 	    set w $data(body)
 	    set name $col$opt
 
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		}
@@ -1962,7 +1978,7 @@ proc tablelist::doRowConfig {row win opt val} {
 	    set key [lindex $data(keyList) $row]
 	    set name $key$opt
 
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		}
@@ -2108,7 +2124,7 @@ proc tablelist::doRowConfig {row win opt val} {
 		$w tag remove row$opt-$data($name) $line.0 $line.end
 	    }
 
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		    incr data(rowTagRefCount) -1
@@ -2410,7 +2426,7 @@ proc tablelist::doRowConfig {row win opt val} {
 
 	-name {
 	    set key [lindex $data(keyList) $row]
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($key$opt)]} {
 		    unset data($key$opt)
 		}
@@ -2441,7 +2457,7 @@ proc tablelist::doRowConfig {row win opt val} {
 	    set key [lindex $data(keyList) $row]
 	    set name $key$opt
 
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		}
@@ -2693,7 +2709,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    set key [lindex $data(keyList) $row]
 	    set name $key,$col$opt
 
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		}
@@ -2753,7 +2769,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 		$w tag remove cell$opt-$data($name) $tabIdx1 $tabIdx2+1c
 	    }
 
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		    incr data(cellTagRefCount) -1
@@ -2914,7 +2930,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    # Delete data($name) or save the specified value in it
 	    #
 	    set imgLabel $w.img_$key,$col
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		    incr data(imgCount) -1
@@ -3058,7 +3074,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    # Delete data($name) or save the specified value in it
 	    #
 	    set indentLabel $w.ind_$key,$col
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		    incr data(indentCount) -1
@@ -3190,7 +3206,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    set key [lindex $data(keyList) $row]
 	    set name $key,$col$opt
 
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		}
@@ -3475,7 +3491,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    # Delete data($name) or save the specified value in it
 	    #
 	    set aux $w.frm_$key,$col
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		    unset data($key,$col-reqWidth)
@@ -3652,7 +3668,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    # Delete data($name) or save the specified value in it
 	    #
-	    if {[string compare $val ""] == 0} {
+	    if {[string length $val] == 0} {
 		if {[info exists data($name)]} {
 		    unset data($name)
 		}
@@ -3720,7 +3736,7 @@ proc tablelist::doCellCget {row col win opt} {
 #------------------------------------------------------------------------------
 proc tablelist::makeListVar {win varName} {
     upvar ::tablelist::ns${win}::data data
-    if {[string compare $varName ""] == 0} {
+    if {[string length $varName] == 0} {
 	#
 	# If there is an old list variable associated with the
 	# widget then remove the trace set on this variable

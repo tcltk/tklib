@@ -186,7 +186,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     #
     set descItemList {}
     if {[llength $sortColList] == 1 && [lindex $sortColList 0] == -1} {
-	if {[string compare $data(-sortcommand) ""] == 0} {
+	if {[string length $data(-sortcommand)] == 0} {
 	    return -code error "value of the -sortcommand option is empty"
 	}
 
@@ -490,6 +490,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 			       $col $text $font $pixels $alignment]
 		$w window create $tabIdx2 \
 			  -align top -pady $padY -create $msgScript
+		$w tag add elidedWin $tabIdx2
 	    }
 
 	} else {
@@ -583,7 +584,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     #
     foreach type {anchor active} {
 	upvar 0 ${type}Key key2
-	if {[string compare $key2 ""] != 0} {
+	if {[string length $key2] != 0} {
 	    set data(${type}Row) [keyToRow $win $key2]
 	}
     }
@@ -691,7 +692,7 @@ proc tablelist::sortList {win list} {
     }
 
     if {[llength $sortColList] == 1 && [lindex $sortColList 0] == -1} {
-	if {[string compare $data(-sortcommand) ""] == 0} {
+	if {[string length $data(-sortcommand)] == 0} {
 	    return -code error "value of the -sortcommand option is empty"
 	}
 

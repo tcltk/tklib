@@ -174,28 +174,32 @@ static unsigned char triangleDn10x6_bits[] = {
 # tablelist::photo7x7Arrows
 #------------------------------------------------------------------------------
 proc tablelist::photo7x7Arrows w {
+    foreach dir {Up Dn} {
+	image create photo triangle$dir$w
+    }
+
     variable winSys
     scan $::tcl_platform(osVersion) "%d" majorOSVersion
     if {[string compare $winSys "aqua"] == 0 && $majorOSVersion >= 11} {
-	image create photo triangleUp$w -data "
+	triangleUp$w put "
 iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAABGdBTUEAALGPC/xhBQAAABp0RVh0
 U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAR0lEQVQYV2NgQAXuaHw4Vw7ISgBiEI0C
 mIC8DKgkiAbx4UAXKgHSCcIgPhiwAXERmiSIDxJnsEeTgOm2Z/j//78vEOdhwb4AF2kfq0RukjYA
 AAAASUVORK5CYII=
 "
-	image create photo triangleDn$w -data "
+	triangleDn$w put "
 iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAABGdBTUEAALGPC/xhBQAAABp0RVh0
 U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAOklEQVQYV2P8//8/Az5gD5QswIJB4gxs
 QJyABYPEwUAXTRLEhwMmICsCqgBEg/goQA4qCaKxAndkUQD3PQsKFZt/JgAAAABJRU5ErkJggg==
 "
     } else {
-	image create photo triangleUp$w -data "
+	triangleUp$w put "
 iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAABl0RVh0
 U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuODc7gF0AAAA4SURBVBhXY2BABdpofDgXJNEIxBgK+ICC
 4VBJEA3iY+gC6UTRjawLJgnXDbMLJoGiOwxqFLpkGABJaAyABECXFAAAAABJRU5ErkJggg==
 "
-	image create photo triangleDn$w -data "
+	triangleDn$w put "
 iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAABGdBTUEAALGPC/xhBQAAABl0RVh0
 U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuODc7gF0AAAA4SURBVBhXY2RgYAgDYm0gRgdXQQIgiUYs
 GKyBD4jD0SRBfJA4GKDrRrEGWTeKLnTd2BwHNx7uagAdFAqmyM4oZAAAAABJRU5ErkJggg==
