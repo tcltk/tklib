@@ -1,3 +1,31 @@
+2013-10-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 5.10.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* scripts/*.tcl: Added the "-acceptdropcommand", "-instanttoggle",
+	  and "-tight" configuration options; added the "isviewable" and
+	  "viewablerowcount" subcommands; improvements related to the value of
+	  the "-data" option for the virtual events <<TablelistColumnMoved>>
+	  and <<TablelistRowMoved>>; sped up the "delete" subcommand; restored
+	  the support for some earlier Tcl/Tk versions; improved the package
+	  loading mechanism; guarded against potential item insertions or
+	  deletions from within the commnad specified as the value of the
+	  "-editendcommand" option; guarded against deletion of embedded images
+	  or windows from within the commnad specified as the value of the
+	  "-tooltipaddcommand" option.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/*.tcl: Bumped the version number to 5.10.
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* doc/config.png: Updated screenshots.
+	* doc/styles.png:
+
 2013-05-26  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 5.9.
