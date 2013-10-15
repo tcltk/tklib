@@ -11,7 +11,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 5.9</h2>
+    <h2>For Tablelist Version 5.10</h2>
 
     <h3>by</h3>
 
@@ -81,6 +81,9 @@
     <dd><code><b><a href="#acceptchildcommand">-acceptchildcommand</a></b>
     <i>command</i></code></dd>
 
+    <dd><code><b><a href="#acceptdropcommand">-acceptdropcommand</a></b>
+    <i>command</i></code></dd>
+
     <dd><code><b><a href="#activestyle">-activestyle</a></b>
     <b>frame</b>|<b>none</b>|<b>underline</b></code></dd>
 
@@ -129,6 +132,9 @@
 
     <dd><code><b><a href="#incrarrowtype">-incrarrowtype</a></b>
     <b>up</b>|<b>down</b></code></dd>
+
+    <dd><code><b><a href="#instanttoggle">-instanttoggle</a></b>
+    <i>boolean</i></code></dd>
 
     <dd><code><b><a href=
     "#labelactivebackground">-labelactivebackground</a></b>
@@ -248,6 +254,8 @@
 
     <dd><code><b><a href="#targetcolor">-targetcolor</a></b>
     <i>color</i></code></dd>
+
+    <dd><code><b><a href="#tight">-tight</a></b> <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#titlecolumns">-titlecolumns</a></b>
     <i>number</i></code></dd>
@@ -820,6 +828,9 @@
     "#istitlesnipped">istitlesnipped</a></b> <i>columnIndex</i>
     <i>fullTextName</i></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#isviewable">isviewable</a></b>
+    <i>index</i></code></dd>
+
     <dd><code><i>pathName</i> <b><a href=
     "#itemlistvar">itemlistvar</a></b></code></dd>
 
@@ -979,6 +990,10 @@
     "#unsetrowattrib">unsetrowattrib</a></b> <i>index</i>
     <i>name</i></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#viewablerowcount">viewablerowcount</a></b> ?<i>first</i>
+    <i>last</i>?</code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#windowpath">windowpath</a></b>
     <i>cellIndex</i></code></dd>
 
@@ -1128,7 +1143,8 @@
         node index of the would-be new parent node, and the row index of the
         dragged item, the resulting script is evaluated in the global scope,
         and the return value (which must be a boolean) will determine whether
-        to allow to move the source item to the current mouse position.</p>
+        to allow to move the source item to the current mouse position as a
+        child of the given parent node.</p>
 
         <p>For example, in the case of a tablelist widget used as a file
         manager, in which the top-level items represent volumes mounted on the
@@ -1152,6 +1168,53 @@ proc acceptChildCmd {tbl targetParentNodeIdx sourceRow} {
         <p>For technical reasons (the use of the <code><b>-elide</b></code>
         text widget tag option for collapsing a row), this option is not
         supported for Tk versions earlier than 8.3.</p>
+      </blockquote>
+    </dd>
+
+    <dd>
+      <br>
+      <a name="acceptdropcommand"></a>
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-acceptdropcommand</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;acceptDropCommand</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;AcceptDropCommand</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a Tcl command used to decide whether a given tablelist
+        row may accept a specified item being <a href="#drag_and_drop">moved
+        interactively</a> to be dropped as a sibling just before that
+        row.&nbsp; The specified command is automatically concatenated with the
+        name of the tablelist widget, the row index of the would-be new target,
+        and the row index of the dragged item, the resulting script is
+        evaluated in the global scope, and the return value (which must be a
+        boolean) will determine whether to allow to move the source item to the
+        current mouse position, just before the given row.</p>
+
+        <p>For example, to make sure that the position of the last row of a
+        tablelist widget won't be affected by the interactive row move
+        operation, the command specified by this option might look like in the
+        code below:</p>
+
+        <blockquote>
+          <pre>
+proc acceptDropCmd {tbl targetRow sourceRow} {
+    set rowCount [[$tbl size]
+    return [expr {$sourceRow != $rowCount - 1 && $targetRow &lt; $rowCount}]
+}
+</pre>
+        </blockquote>
       </blockquote>
     </dd>
 
@@ -1847,6 +1910,37 @@ proc expandCmd {tbl row} {
     </dd>
 
     <dd>
+      <a name="instanttoggle"></a>
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-instanttoggle</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;instantToggle</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;InstantToggle</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a boolean value that controls whether the interactive cell
+        editing with the aid of a Tk or tile checkbutton widget, if started
+        with the left mouse button, will be finished immediately after
+        automatically toggling the checked state of the temporary embedded
+        checkbutton.&nbsp; The default value is <code>0</code>, meaning that a
+        mouse click into the cell will only start the editing session (and
+        automatically toggle the checkbutton's checked state), but not also
+        finish it.</p>
+      </blockquote>
+    </dd>
+
+    <dd>
       <a name="labelactivebackground"></a>
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
@@ -2448,7 +2542,7 @@ for {set row 0} {$row &lt; 1000} {incr row} {
         <p><b>REMARK:</b>&nbsp; There are many similarities between this option
         and <code><b><a href=
         "#expandcommand">-expandcommand</a></b></code>.&nbsp; Both options are
-        used int the first place to insert children on demand.&nbsp; The main
+        used in the first place to insert children on demand.&nbsp; The main
         differences between them are as follows:</p>
 
         <ol>
@@ -2858,7 +2952,8 @@ proc expandCmd {tbl row} {
       <blockquote>
         <p>Specifies additional space to provide above and below each row of
         the widget.&nbsp; The option's value may have any of the standard forms
-        for screen distances.&nbsp; It defaults to <code>0</code>.</p>
+        for screen distances.&nbsp; It defaults to <code>0</code>.&nbsp; See
+        also the <code><b><a href="#tight">-tight</a></b></code> option.</p>
       </blockquote>
     </dd>
 
@@ -3108,6 +3203,40 @@ proc expandCmd {tbl row} {
         tablelist's body or header to indicate the target position when moving
         a row or column interactively.&nbsp; The default value is
         <code><b>black</b></code>.</p>
+      </blockquote>
+    </dd>
+
+    <dd>
+      <a name="tight"></a>
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-tight</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;tight</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Tight</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a boolean value that determines whether to eliminate the
+        one-pixel additional space left below each tablelist row for Tk listbox
+        compatibility.&nbsp; The default value is <code>0</code>, which draws a
+        one-pixel additional space below each row, just like a Tk core
+        listbox.</p>
+
+        <p><b>REMARK:</b>&nbsp; You can set this option to true and at the same
+        time provide additional space above and below each row with the aid of
+        the <code><b><a href="#spacing">-spacing</a></b></code> configuratiom
+        option.&nbsp; As a result, the space below each row will be the same as
+        above the row (and not one pixel higher).</p>
       </blockquote>
     </dd>
 
@@ -5069,7 +5198,11 @@ proc updateWindow {tbl row col w args} {
     programmatically.&nbsp; Normal termination is also triggered by clicking
     with the left mouse button anywhere in the tablelist's body, outside the
     cell just being edited, or moving into another editable cell by using
-    keyboard navigation.</dd>
+    keyboard navigation.&nbsp; If the editing was started with the left mouse
+    button, the edit window is a Tk or tile checkbutton, and the value of the
+    <code><b><a href="#instanttoggle">-instanttoggle</a></b></code> option is
+    true, then the normal termination of the editing will take place
+    automatically, without any user interaction.</dd>
 
     <dd><br>
     When normal termination of the editing process occurs, the Tcl command
@@ -5124,7 +5257,7 @@ proc updateWindow {tbl row col w args} {
           <th align="left">User Data (for Tk 8.5 or Later)</th>
         </tr>
 
-        <tr>
+        <tr valign="top">
           <td><code><b>&lt;&lt;TablelistCellRestored&gt;&gt;</b></code></td>
           <td>Generated by the <code><b><a href=
           "#cancelediting">cancelediting</a></b></code> subcommand.</td>
@@ -5132,7 +5265,7 @@ proc updateWindow {tbl row col w args} {
           cell whose content is being edited.</td>
         </tr>
 
-        <tr>
+        <tr valign="top">
           <td><code><b>&lt;&lt;TablelistCellUpdated&gt;&gt;</b></code></td>
           <td>Generated by the <code><b><a href=
           "#finishediting">finishediting</a></b></code> subcommand.</td>
@@ -5140,7 +5273,7 @@ proc updateWindow {tbl row col w args} {
           cell whose content is being edited.</td>
         </tr>
 
-        <tr>
+        <tr valign="top">
           <td><code><b>&lt;&lt;TablelistColHiddenStateChanged&gt;&gt;</b></code></td>
           <td>Generated whenever the hidden state of one or more columns is
           toggled by using the <code><b><a href=
@@ -5153,24 +5286,27 @@ proc updateWindow {tbl row col w args} {
           hidden state changed.</td>
         </tr>
 
-        <tr>
+        <tr valign="top">
           <td><code><b>&lt;&lt;TablelistColumnMoved&gt;&gt;</b></code></td>
           <td>Generated by the default bindings whenever a column is moved
           interactively to a new position.</td>
-          <td>A list consisting of the two arguments passed to the
-          <code><b><a href="#movecolumn">movecolumn</a></b></code>
-          subcommand, invoked for moving the source column to the target
-          position.</td>
+          <td>A list of length 4, whose first two elements are identical to the
+          two arguments passed to the <code><b><a href=
+          "#movecolumn">movecolumn</a></b></code> subcommand invoked for
+          moving the source column to the target position, and the last two
+          elements are the corresponding column names, retrieved with
+          the aid of the&nbsp; <code><b><a href="#columncget">columncget</a>
+          ... -name</b></code>&nbsp; subcommand.</td>
         </tr>
 
-        <tr>
+        <tr valign="top">
           <td><code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code></td>
           <td>Generated by the default bindings whenever a column is resized
           interactively.</td>
           <td>The numerical index of the column that was resized.</td>
         </tr>
 
-        <tr>
+        <tr valign="top">
           <td><code><b>&lt;&lt;TablelistColumnSorted&gt;&gt;</b></code></td>
           <td>Generated by the <code><b><a href=
           "tablelistColSort.html#sortByColumn">tablelist::sortByColumn</a></b></code>
@@ -5180,7 +5316,7 @@ proc updateWindow {tbl row col w args} {
           <code><b>increasing</b></code>).</td>
         </tr>
 
-        <tr>
+        <tr valign="top">
           <td><code><b>&lt;&lt;TablelistColumnsSorted&gt;&gt;</b></code></td>
           <td>Generated by the <code><b><a href=
           "tablelistColSort.html#addToSortColumns">tablelist::addToSortColumns</a></b></code> command.</td>
@@ -5190,7 +5326,7 @@ proc updateWindow {tbl row col w args} {
           subcommand, invoked to perform the multi-column sorting.</td>
         </tr>
 
-        <tr>
+        <tr valign="top">
           <td><code><b>&lt;&lt;TablelistRowHiddenStateChanged&gt;&gt;</b></code></td>
           <td>Generated whenever the hidden state of one or more rows is
           toggled by using the <code><b><a href=
@@ -5202,16 +5338,21 @@ proc updateWindow {tbl row col w args} {
           hidden state changed.</td>
         </tr>
 
-        <tr>
+        <tr valign="top">
           <td><code><b>&lt;&lt;TablelistRowMoved&gt;&gt;</b></code></td>
           <td>Generated by the default bindings whenever a row is moved
           interactively to a new position.</td>
-          <td>A list consisting of the three arguments passed to the second
-          form of the <code><b><a href="#move">move</a></b></code> subcommand,
-          invoked for moving the source row to the target position.</td>
+          <td>A list of length 3, whose elements are derived from the arguments
+          passed to the second form of the <code><b><a href=
+          "#move">move</a></b></code> subcommand invoked for moving the source
+          row to the target position.&nbsp; The first list element will be the
+          full key corresponding to the first argument, the second one will be
+          <code><b>root</b></code> or the full key corresponding to the second
+          argument, and the third list element will be identical to the third
+          argument passed to the <code><b>move</b></code> subcommand.</td>
         </tr>
 
-        <tr>
+        <tr valign="top">
           <td><code><b>&lt;&lt;TablelistSelect&gt;&gt;</b></code>,
           <code><b>&lt;&lt;ListboxSelect&gt;&gt;</b></code></td>
           <td>Generated by the default bindings whenever the selection changes
@@ -5219,7 +5360,7 @@ proc updateWindow {tbl row col w args} {
           <td>Not used.</td>
         </tr>
 
-        <tr>
+        <tr valign="top">
           <td><code><b>&lt;&lt;TablelistSelectionLost&gt;&gt;</b></code></td>
           <td>Sent to the tablelist widget whenever it loses ownership of the
           PRIMARY selection.</td>
@@ -6594,7 +6735,11 @@ bind [.tbl editwintag] &lt;Return&gt; "[bind TablelistEdit &lt;Tab&gt;]; break"
           when editing a cell, or by clicking with the left mouse button
           anywhere in the tablelist's body, outside the cell just being edited,
           or moving into another editable cell by using keyboard
-          navigation.</p>
+          navigation.&nbsp; If the editing was started with the left mouse
+          button, the edit window is a Tk or tile checkbutton, and the value of
+          the <code><b><a href="#instanttoggle">-instanttoggle</a></b></code>
+          option is true, then this subcommand will be invoked automatically,
+          without any user interaction.</p>
 
           <p><b>REMARK:</b>&nbsp; There are also situations where an
           <i>explicit</i> invocation of this subcommand is needed, in order to
@@ -7070,7 +7215,7 @@ eval [list <i>pathName</i> <a href=
         <a name="isexpanded"></a><code><i>pathName</i> <b>isexpanded</b>
         <i>index</i></code></dt>
 
-        <dd>Returns the value <code>1</code> if the item indicated by
+        <dd>Returns the value <code>1</code> if the row indicated by
         <code><i>index</i></code> is expanded and <code>0</code>
         otherwise.</dd>
 
@@ -7087,6 +7232,16 @@ eval [list <i>pathName</i> <a href=
         this command occurs within the procedure specified as the value of the
         <code><b><a href="#tooltipaddcommand">-tooltipaddcommand</a></b></code>
         configuration option.</dd>
+
+        <dt><br>
+        <a name="isviewable"></a><code><i>pathName</i> <b>isviewable</b>
+        <i>index</i></code></dt>
+
+        <dd>Returns the value <code>1</code> if the row indicated by
+        <code><i>index</i></code> is viewable and <code>0</code>
+        otherwise.&nbsp; A tablelist row is considered viewable if (and only
+        if) the value of its <code><b><a href="#row_hide">-hide</a></b></code>
+        option is false and all its ancestors are (partly) expanded.</dd>
 
         <dt><br>
         <a name="itemlistvar"></a><code><i>pathName</i>
@@ -7411,9 +7566,10 @@ upvar #0 [.tbl itemlistvar] itemList
           of the first matching element is returned as result (unless the
           option <code><b>-all</b></code> is specified).&nbsp; If not, the
           return value is <code>-1</code>.&nbsp; One or more of the following
-          options may be specified to control the search:
+          options may be specified to control the search:<br>
+          &nbsp;
 
-          <p><table border="0" cellpadding="0" cellspacing="0">
+          <table border="0" cellpadding="0" cellspacing="0">
             <tr valign="top">
               <td><code><b>-all</b></code></td>
               <td>Changes the result to be the list of all matching row
@@ -7536,7 +7692,7 @@ upvar #0 [.tbl itemlistvar] itemList
               <code><i>index</i></code>.&nbsp; This option makes it easy to
               provide incremental search.</td>
             </tr>
-          </table></p>
+          </table>
 
           <p>If all matching style options <code><b>-exact</b></code>,
           <code><b>-glob</b></code>, and <code><b>-regexp</b></code> are
@@ -7962,6 +8118,19 @@ upvar #0 [.tbl itemlistvar] itemList
         <code><i>index</i></code>.&nbsp; Returns an empty string.</dd>
 
         <dt><br>
+        <a name="viewablerowcount"></a><code><i>pathName</i>
+        <b>viewablerowcount</b> ?<i>first</i> <i>last</i>?</code></dt>
+
+        <dd>Returns the number of viewable rows in the index range given by
+        <code><i>first</i></code> and <code><i>last</i></code>.&nbsp; If these
+        optional indices are not specified then <code><i>first</i></code>
+        defaults to <code>0</code> and <code><i>last</i></code> defaults to one
+        less the total number of items, i.e., the index range comprises all
+        rows.&nbsp; A tablelist row is considered viewable if (and only if) the
+        value of its <code><b><a href="#row_hide">-hide</a></b></code> option
+        is false and all its ancestors are (partly) expanded.</dd>
+
+        <dt><br>
         <a name="windowpath"></a><code><i>pathName</i> <b>windowpath</b>
         <i>cellIndex</i></code></dt>
 
@@ -8302,13 +8471,15 @@ proc printClickedCell {w x y} {
         row or just before the latter's first child, and the virtual event
         <code><b>&lt;&lt;TablelistRowMoved&gt;&gt;</b></code> is
         generated.&nbsp; For Tk versions 8.5 or higher, this virtual event is
-        is generated with its <code><b>-data</b></code> option set to a list
-        consisting of the three arguments passed to the second form of the
-        <code><b><a href="#move">move</a></b></code> subcommand, invoked for
-        moving the source row to its new position.&nbsp; All the three list
-        elements will be numerical values, except the second one
-        (<code><i>targetParentNodeIndex</i></code>), which can also be
-        <code><b>root</b></code>.</p>
+        is generated with its <code><b>-data</b></code> option set to a list of
+        length 3, whose elements are derived from the arguments passed to the
+        second form of the <code><b><a href="#move">move</a></b></code>
+        subcommand invoked for moving the source row to its new position.&nbsp;
+        The first list element will be the full key corresponding to the first
+        argument, the second one will be <code><b>root</b></code> or the full
+        key corresponding to the second argument, and the third list element
+        will be identical to the third argument passed to the
+        <code><b>move</b></code> subcommand.</p>
 
         <p>Notice that, depending on the current mouse position during the
         local drag &amp; drop, there can be a corresponding potential target
@@ -8323,17 +8494,22 @@ proc printClickedCell {w x y} {
         the latter is allowed from the point of view of the general tree
         structure.&nbsp; If this is the case and the move operation would
         change the source item's parent (and the Tk version is at least 8.3),
-        then the command specified by the <code><b><a href=
+        and the command specified as the value of the <code><b><a href=
         "#acceptchildcommand">-acceptchildcommand</a></b></code> configuration
-        option is used to decide whether to allow to move the dragged item to
-        the intended target position:&nbsp; If the value of this option is an
-        empty string then the move operation is allowed (and the target
-        position is visualized as described above).&nbsp; Otherwise the command
-        is concatenated with the name of the tablelist widget, the node index
-        of the would-be new parent node, and the row index of the dragged item,
-        the resulting script is evaluated in the global scope, and the return
-        value (which must be a boolean) will determine whether to allow to move
-        the source item to the current mouse position.</p>
+        option is a nonempty string, then this command is concatenated with the
+        name of the tablelist widget, the node index of the would-be new parent
+        node, and the row index of the dragged item, the resulting script is
+        evaluated in the global scope, and if the return value (which must be a
+        boolean) is false, then the source item will not be allowed to be moved
+        to the current mouse position.&nbsp; Likewise, if the command specified
+        as the value of the <code><b><a href=
+        "#acceptdropcommand">-acceptdropcommand</a></b></code> configuration
+        option is a nonempty string, then this command is concatenated with the
+        name of the tablelist widget, the row index of the would-be new target
+        row, and the row index of the dragged item, the resulting script is
+        evaluated in the global scope, and if the return value (which must be a
+        boolean) is false, then the source item will not be allowed to be moved
+        to the current mouse position.</p>
       </blockquote>
 
       <p>Finally, the following bindings associated with the binding tag
@@ -8408,11 +8584,14 @@ proc printClickedCell {w x y} {
         the gap mentioned above and the virtual event
         <code><b>&lt;&lt;TablelistColumnMoved&gt;&gt;</b></code> is
         generated.&nbsp; For Tk versions 8.5 or higher, this virtual event is
-        generated with its <code><b>-data</b></code> option set to a list
-        consisting of the two arguments passed to the <code><b><a href=
-        "#movecolumn">movecolumn</a></b></code> subcommand, invoked for
-        moving the source column to its new position.&nbsp; Both list elements
-        will be numerical column indices.<br>
+        generated with its <code><b>-data</b></code> option set to a list of
+        length 4, whose first two elements are identical to the two numerical
+        column indices passed to the <code><b><a href=
+        "#movecolumn">movecolumn</a></b></code> subcommand invoked for moving
+        the source column to its new position, and the last two elements are
+        the corresponding column names, retrieved with the aid of the&nbsp;
+        <code><b><a href="#columncget">columncget</a> ...
+        -name</b></code>&nbsp; subcommand.<br>
         &nbsp;</li>
 
         <li>If mouse button 1 is pressed over a header label but outside the

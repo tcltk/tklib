@@ -18,7 +18,7 @@
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 5.9</h2>
+    <h2>For Tablelist Version 5.10</h2>
 
     <h3>by</h3>
 
@@ -177,10 +177,11 @@
   <h3><a name="ov_get"></a>How to get it?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist5.9.tar.gz</code> for UNIX and
-  <code>tablelist5_9.zip</code> for Windows.&nbsp; These files contain the same
-  information, except for the additional carriage return character preceding
-  the linefeed at the end of each line in the text files for Windows.</p>
+  The distribution file is <code>tablelist5.10.tar.gz</code> for UNIX and
+  <code>tablelist5_10.zip</code> for Windows.&nbsp; These files contain the
+  same information, except for the additional carriage return character
+  preceding the linefeed at the end of each line in the text files for
+  Windows.</p>
 
   <p>Tablelist is also included in tklib, which has the address</p>
 
@@ -201,21 +202,21 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist5.9.tar.gz</code>:</p>
+  <code>tablelist5.10.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist5.9.tar.gz | tar -xf -
+gunzip -c tablelist5.10.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>tablelist5.9</code>, with
-  the subdirectories <code>demos</code>, <code>doc</code>, and
+  <p>This command will create a directory named <code>tablelist5.10</code>,
+  with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist5_9.zip</code> into the directory
-  <code>tablelist5.9</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist5_10.zip</code> into the directory
+  <code>tablelist5.10</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -312,14 +313,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 5.9, then it is highly
-  recommended to specify the version number <code>5.9</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 5.10, then it is highly
+  recommended to specify the version number <code>5.10</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 5.9</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 5.10</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 5.9</code>.</p>
+  tablelist_tile 5.10</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -489,7 +490,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 5.9
+package require tablelist 5.10
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -521,7 +522,7 @@ To display the configuration options of an arbitrary widget, enter
 
   <blockquote>
     <pre>
-package require tablelist 5.9
+package require tablelist 5.10
 
 namespace eval demo {
     #
@@ -982,7 +983,7 @@ To display information about the children of an arbitrary widget, enter
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 5.9
+package require tablelist 5.10
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1580,7 +1581,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 5.9
+package require tablelist 5.10
 
 #
 # Add some entries to the Tk option database
@@ -1904,29 +1905,27 @@ for {set n 0} { $n &lt; 8} {incr n} {
             $tbl configure -stripebackground #e4e8ec -showseparators yes
         }
         4 {
-            foreach col {1 3} {
-                $tbl columnconfigure $col -background ivory
-            }
+            $tbl columnconfigure 1 -background LightYellow
+            $tbl columnconfigure 3 -background LightCyan
         }
         5 {
             $tbl configure -showseparators yes
-            foreach col {1 3} {
-                $tbl columnconfigure $col -background ivory
-            }
+            $tbl columnconfigure 1 -background LightYellow
+            $tbl columnconfigure 3 -background LightCyan
         }
         6 {
             $tbl configure -stripebackground #e4e8ec
-            foreach col {1 3} {
-                $tbl columnconfigure $col -background ivory \
-                    -stripebackground #d8dcd1
-            }
+            $tbl columnconfigure 1 -background LightYellow \
+                -stripebackground #e5e5c9
+            $tbl columnconfigure 3 -background LightCyan \
+                -stripebackground #c9e5e5
         }
         7 {
             $tbl configure -stripebackground #e4e8ec -showseparators yes
-            foreach col {1 3} {
-                $tbl columnconfigure $col -background ivory \
-                    -stripebackground #d8dcd1
-            }
+            $tbl columnconfigure 1 -background LightYellow \
+                -stripebackground #e5e5c9
+            $tbl columnconfigure 3 -background LightCyan \
+                -stripebackground #c9e5e5
         }
     }
 
@@ -1970,7 +1969,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;# because of "-compound"
-package require tablelist 5.9
+package require tablelist 5.10
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2310,7 +2309,7 @@ proc editEndCmd {tbl row col text} {
 
   <blockquote>
     <pre>
-package require tablelist 5.9
+package require tablelist 5.10
 
 wm title . "Tk Library Scripts"
 
@@ -2546,7 +2545,7 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
   <blockquote>
     <pre>
 package require Tk 8.3                          ;# because of entry validation
-package require tablelist 5.9
+package require tablelist 5.10
 </pre>
   </blockquote>
 
@@ -2554,7 +2553,7 @@ package require tablelist 5.9
 
   <blockquote>
     <pre>
-package require tablelist<span>_tile</span> 5.9
+package require tablelist<span>_tile</span> 5.10
 </pre>
   </blockquote>
 

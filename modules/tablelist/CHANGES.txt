@@ -1,5 +1,53 @@
-What is new in Tablelist 5.9?
------------------------------
+What is new in Tablelist 5.10?
+------------------------------
+
+1.  Added the "-acceptdropcommand" configuration option, used to control
+    whether the local drag & drop may move a specified item just before
+    a given row (thanks to Nagu and Georgios Petasis for discussions on
+    this subject).
+
+2.  Added the "-instanttoggle" configuration option, related to the cell
+    editing with the aid of a Tk or tile checkbutton (thanks to Rich
+    Wellner for his proposal and discussions on this topic).
+
+3.  Added the "-tight" configuration option, used to eliminate the
+    one-pixel additional space left below each tablelist row for Tk
+    listbox compatibility (thanks to Koen Breugelmans for his proposal
+    and discussions on this subject).
+
+4.  Added the "isviewable" and "viewablerowcount" subcommands (thanks to
+    Nagu for proposing the latter).
+
+5.  Improvements related to the value of the "-data" option for the
+    virtual events <<TablelistColumnMoved>> and <<TablelistRowMoved>>
+    (thanks to Georgios Petasis for discussions on this topic).
+
+6.  The item deletion has become significantly faster, especially in
+    tablelists used as tree widgets and in the presence of embedded
+    images and/or multi-line elements (thanks to Rob Ratcliff and Rene
+    Zaumseil for requesting this improvement).
+
+7.  Restored the support for Tcl/Tk versions earlier than 8.3, by
+    cleaning up the use of elided text in the underlying text widget.
+    Similarly, restored the support for Tcl/Tk 8.0, by cleaning up the
+    use of "regsub" and that of the <MouseWheel> event (thanks to Joerg
+    Mueck for reporting the first two issues).
+
+8.  Improved the package loading mechanism (thanks to Paul Obermeier for
+    his bug report).
+
+9.  Guarded against potential item insertions or deletions from within
+    the  command specified as the value of the "-editendcommand" option
+    (thanks to Julian H J Loaring for his bug report).
+
+10. Guarded against deletion of embedded images or windows from within
+    the  command specified as the value of the "-tooltipaddcommand"
+    option (thanks to Jan Kandziora for his bug report).
+
+11. Several further code improvements and minor bug fixes.
+
+What was new in Tablelist 5.9?
+------------------------------
 
 1. Added the "-valign" column and cell configuration option, for
    controlling the vertical alignment of embedded images and windows
@@ -16,7 +64,7 @@ What is new in Tablelist 5.9?
    lines are elided (thanks to Bernhard Wallner for his bug report).
 
 5. Corrected a typo in the implementation of the "rowconfigure"
-   subcommnad, introduced in the last Tablelist version (thanks to Jerzy
+   sub command, introduced in the last Tablelist version (thanks to Jerzy
    Witkowski for reporting this bug).
 
 6. Fixed a bug related to resetting the "-(select)background" and
