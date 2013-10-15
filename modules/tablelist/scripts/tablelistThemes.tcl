@@ -46,7 +46,7 @@ proc tablelist::setThemeDefaults {} {
 	array set themeDefaults [style configure .]
     }
 
-    if {[string compare $themeDefaults(-arrowcolor) ""] == 0} {
+    if {[string length $themeDefaults(-arrowcolor)] == 0} {
 	set themeDefaults(-arrowdisabledcolor) ""
     } else {
 	set themeDefaults(-arrowdisabledcolor) $themeDefaults(-labeldisabledFg)
