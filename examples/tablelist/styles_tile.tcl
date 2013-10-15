@@ -8,7 +8,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2002-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.9
+package require tablelist_tile 5.10
 
 wm title . "Tablelist Styles"
 
@@ -42,29 +42,27 @@ for {set n 0} { $n < 8} {incr n} {
 	    $tbl configure -stripebackground #e4e8ec -showseparators yes
 	}
 	4 {
-	    foreach col {1 3} {
-		$tbl columnconfigure $col -background ivory
-	    }
+	    $tbl columnconfigure 1 -background LightYellow
+	    $tbl columnconfigure 3 -background LightCyan
 	}
 	5 {
 	    $tbl configure -showseparators yes
-	    foreach col {1 3} {
-		$tbl columnconfigure $col -background ivory
-	    }
+	    $tbl columnconfigure 1 -background LightYellow
+	    $tbl columnconfigure 3 -background LightCyan
 	}
 	6 {
 	    $tbl configure -stripebackground #e4e8ec
-	    foreach col {1 3} {
-		$tbl columnconfigure $col -background ivory \
-		    -stripebackground #d8dcd1
-	    }
+	    $tbl columnconfigure 1 -background LightYellow \
+		-stripebackground #e5e5c9
+	    $tbl columnconfigure 3 -background LightCyan \
+		-stripebackground #c9e5e5
 	}
 	7 {
 	    $tbl configure -stripebackground #e4e8ec -showseparators yes
-	    foreach col {1 3} {
-		$tbl columnconfigure $col -background ivory \
-		    -stripebackground #d8dcd1
-	    }
+	    $tbl columnconfigure 1 -background LightYellow \
+		-stripebackground #e5e5c9
+	    $tbl columnconfigure 3 -background LightCyan \
+		-stripebackground #c9e5e5
 	}
     }
 

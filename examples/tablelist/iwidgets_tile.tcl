@@ -10,7 +10,7 @@ exec wish "$0" ${1+"$@"}
 # Copyright (c) 2004-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.9
+package require tablelist_tile 5.10
 package require Iwidgets
 
 wm title . "Serial Line Configuration"
