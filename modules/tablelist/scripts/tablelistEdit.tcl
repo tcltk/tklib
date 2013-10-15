@@ -1420,7 +1420,7 @@ proc tablelist::createTileCheckbutton {w args} {
 		motif {
 		    [winfo parent $w] configure -width 13 -height 13
 		    if {[info exists ::env(KDE_SESSION_VERSION)] &&
-			[string compare $::env(KDE_SESSION_VERSION) ""] != 0} {
+			[string length $::env(KDE_SESSION_VERSION)] != 0} {
 			place $w -x -2
 		    } else {
 			place $w -x 0
@@ -1449,6 +1449,12 @@ proc tablelist::createTileCheckbutton {w args} {
 		    place $w -x 0
 		}
 	    }
+	}
+
+	vista {
+	    set height [winfo reqheight $w]
+	    [winfo parent $w] configure -width $height -height $height
+	    place $w -x 0
 	}
 
 	winnative -
@@ -1711,7 +1717,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	set data(origEditText) \
 	    [eval [strMap {"%W" "$w"} $editWin($name-getTextCmd)]]
 
-	if {[string compare $data(-editstartcommand) ""] != 0} {
+	if {[string length $data(-editstartcommand)] != 0} {
 	    set text [uplevel #0 $data(-editstartcommand) \
 		      [list $win $row $col $text]]
 
@@ -1753,8 +1759,8 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	    [eval [strMap {"%W" "$w"} $editWin($name-getTextCmd)]]
 	set data(rejected) 0
 
-	if {[string compare $editWin($name-getListCmd) ""] != 0 &&
-	    [string compare $editWin($name-selectCmd) ""] != 0} {
+	if {[string length $editWin($name-getListCmd)] != 0 &&
+	    [string length $editWin($name-selectCmd)] != 0} {
 	    #
 	    # Select the edit window's item corresponding to text
 	    #
@@ -1767,7 +1773,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	#
 	# Evaluate the optional command passed as argument
 	#
-	if {[string compare $cmd ""] != 0} {
+	if {[string length $cmd] != 0} {
 	    eval [list $cmd $win $row $col]
 	}
 
@@ -1883,7 +1889,7 @@ proc tablelist::doCancelEditing win {
     #
     set data(canceled) 1
     if {$data(-forceeditendcommand) &&
-	[string compare $data(-editendcommand) ""] != 0} {
+	[string length $data(-editendcommand)] != 0} {
 	uplevel #0 $data(-editendcommand) \
 		[list $win $row $col $data(origEditText)]
     }
@@ -1943,7 +1949,7 @@ proc tablelist::doFinishEditing win {
 	} text] != 0} {
 	    set data(rejected) 1
 	}
-	if {[string compare $data(-editendcommand) ""] != 0} {
+	if {[string length $data(-editendcommand)] != 0} {
 	    set text \
 		[uplevel #0 $data(-editendcommand) [list $win $row $col $text]]
 	}
@@ -2184,7 +2190,7 @@ proc tablelist::setEditWinFont win {
     upvar ::tablelist::ns${win}::data data
     set name [getEditWindow $win $data(editRow) $data(editCol)]
     variable editWin
-    if {[string compare $editWin($name-fontOpt) ""] == 0} {
+    if {[string length $editWin($name-fontOpt)] == 0} {
 	return ""
     }
 
@@ -2215,7 +2221,7 @@ proc tablelist::saveEditData win {
     set name [getEditWindow $win $data(editRow) $data(editCol)]
     variable editWin
     set data(editText) [eval [strMap {"%W" "$w"} $editWin($name-getTextCmd)]]
-    if {[string compare $editWin($name-getListCmd) ""] != 0} {
+    if {[string length $editWin($name-getListCmd)] != 0} {
 	set data(editList) \
 	    [eval [strMap {"%W" "$w"} $editWin($name-getListCmd)]]
     }
@@ -2323,16 +2329,16 @@ proc tablelist::restoreEditData win {
     #
     set name [getEditWindow $win $data(editRow) $data(editCol)]
     variable editWin
-    if {[string compare $editWin($name-putTextCmd) ""] != 0} {
+    if {[string length $editWin($name-putTextCmd)] != 0} {
 	eval [strMap {"%W" "$w"  "%T" "$data(editText)"} \
 	      $editWin($name-putTextCmd)]
     }
-    if {[string compare $editWin($name-putListCmd) ""] != 0 &&
-	[string compare $data(editList) ""] != 0} {
+    if {[string length $editWin($name-putListCmd)] != 0 &&
+	[string length $data(editList)] != 0} {
 	eval [strMap {"%W" "$w"  "%L" "$data(editList)"} \
 	      $editWin($name-putListCmd)]
     }
-    if {[string compare $editWin($name-selectCmd) ""] != 0 &&
+    if {[string length $editWin($name-selectCmd)] != 0 &&
 	[set idx [lsearch -exact $data(editList) $data(editText)]] >= 0} {
 	eval [strMap {"%W" "$w"  "%I" "$idx"} $editWin($name-selectCmd)]
     }
@@ -2657,12 +2663,12 @@ proc tablelist::insertChar {w str} {
 	return -code break ""
     } elseif {[regexp {^(T?Entry|TCombobox|T?Spinbox)$} $class]} {
 	if {[string match "T*" $class]} {
-	    if {[string compare [info procs "::ttk::entry::Insert"] ""] != 0} {
+	    if {[string length [info procs "::ttk::entry::Insert"]] != 0} {
 		ttk::entry::Insert $w $str
 	    } else {
 		tile::entry::Insert $w $str
 	    }
-	} elseif {[string compare [info procs "::tk::EntryInsert"] ""] != 0} {
+	} elseif {[string length [info procs "::tk::EntryInsert"]] != 0} {
 	    tk::EntryInsert $w $str
 	} else {
 	    tkEntryInsert $w $str
@@ -2718,8 +2724,8 @@ proc tablelist::goToNextPrevCell {w amount args} {
 
     variable winSys
     if {[string compare $winSys "aqua"] == 0 &&
-	([string compare $::tk::Priv(postedMb) ""] != 0 ||
-	 [string compare $::tk::Priv(popup) ""] != 0)} {
+	([string length $::tk::Priv(postedMb)] != 0 ||
+	 [string length $::tk::Priv(popup)] != 0)} {
 	return ""
     }
 
@@ -2961,7 +2967,8 @@ proc tablelist::hasMouseWheelBindings w {
 	set bindTags [bindtags $w]
 	return [expr {([lsearch -exact $bindTags "MentryDateTime"] >= 0 ||
 		       [lsearch -exact $bindTags "MentryMeridian"] >= 0 ||
-		       [lsearch -exact $bindTags "MentryIPAddr"] >= 0) &&
+		       [lsearch -exact $bindTags "MentryIPAddr"] >= 0 ||
+		       [lsearch -exact $bindTags "MentryIPv6Addr"] >= 0) &&
 		      ($mentry::version >= 3.2)}]
     }
 }

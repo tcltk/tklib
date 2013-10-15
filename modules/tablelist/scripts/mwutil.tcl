@@ -20,7 +20,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.7
+    variable version	2.8
     variable library	[file dirname [info script]]
 
     #
@@ -154,7 +154,7 @@ proc mwutil::processTraversal {w class event} {
 
     if {[string compare $target $win] != 0} {
 	set focus [focus]
-	if {[string compare $focus ""] != 0} {
+	if {[string length $focus] != 0} {
 	    event generate $focus <<TraverseOut>>
 	}
 
@@ -228,7 +228,7 @@ proc mwutil::configureWidget {win configSpecsName configCmd cgetCmd \
 	    set dbName [lindex $configSpecs($opt) 0]
 	    set dbClass [lindex $configSpecs($opt) 1]
 	    set dbValue [option get $win $dbName $dbClass]
-	    if {[string compare $dbValue ""] == 0} {
+	    if {[string length $dbValue] == 0} {
 		set default [lindex $configSpecs($opt) 3]
 		eval $configCmd [list $win $opt $default]
 	    } else {
