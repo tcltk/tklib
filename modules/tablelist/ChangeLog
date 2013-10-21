@@ -1,3 +1,10 @@
+2013-10-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt: Slightly extended.
+
+	* scripts/tablelistBind.tcl: Guarded against column deletions from
+	* scripts/tablelistUtil.tcl: within non-default binding scripts.
+
 2013-10-15  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 5.10.

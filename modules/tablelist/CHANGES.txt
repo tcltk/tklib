@@ -25,26 +25,30 @@ What is new in Tablelist 5.10?
 6.  The item deletion has become significantly faster, especially in
     tablelists used as tree widgets and in the presence of embedded
     images and/or multi-line elements (thanks to Rob Ratcliff and Rene
-    Zaumseil for requesting this improvement).
+    Zaumseil for requesting this performance improvement).
 
-7.  Restored the support for Tcl/Tk versions earlier than 8.3, by
+7.  Guarded against column deletions from within non-default binding
+    scripts for the header labels (thanks to Ulrich Seidl for his
+    input).
+
+8.  Restored the support for Tcl/Tk versions earlier than 8.3, by
     cleaning up the use of elided text in the underlying text widget.
     Similarly, restored the support for Tcl/Tk 8.0, by cleaning up the
     use of "regsub" and that of the <MouseWheel> event (thanks to Joerg
     Mueck for reporting the first two issues).
 
-8.  Improved the package loading mechanism (thanks to Paul Obermeier for
+9.  Improved the package loading mechanism (thanks to Paul Obermeier for
     his bug report).
 
-9.  Guarded against potential item insertions or deletions from within
-    the  command specified as the value of the "-editendcommand" option
+10. Guarded against potential item insertions or deletions from within
+    the command specified as the value of the "-editendcommand" option
     (thanks to Julian H J Loaring for his bug report).
 
-10. Guarded against deletion of embedded images or windows from within
-    the  command specified as the value of the "-tooltipaddcommand"
+11. Guarded against deletion of embedded images or windows from within
+    the command specified as the value of the "-tooltipaddcommand"
     option (thanks to Jan Kandziora for his bug report).
 
-11. Several further code improvements and minor bug fixes.
+12. Several further code improvements and minor bug fixes.
 
 What was new in Tablelist 5.9?
 ------------------------------
@@ -64,7 +68,7 @@ What was new in Tablelist 5.9?
    lines are elided (thanks to Bernhard Wallner for his bug report).
 
 5. Corrected a typo in the implementation of the "rowconfigure"
-   sub command, introduced in the last Tablelist version (thanks to Jerzy
+   subcommand, introduced in the last Tablelist version (thanks to Jerzy
    Witkowski for reporting this bug).
 
 6. Fixed a bug related to resetting the "-(select)background" and
