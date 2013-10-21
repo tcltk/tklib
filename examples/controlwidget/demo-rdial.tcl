@@ -1,5 +1,12 @@
-# demo-rdial.tcl --
+#! /bin/sh
+# -*- tcl -*- \
+exec tclsh "$0" ${1+"$@"}
 
+package require Tk
+
+# demo-rdial.tcl --
+#     Demonstration of various dial control widget
+#
 package require controlwidget
 
 array set disp_value {rs -30.0 rh 120.0 rv 10.0}

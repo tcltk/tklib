@@ -1,3 +1,9 @@
+#! /bin/sh
+# -*- tcl -*- \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk
+
 # demo-meters.tcl --
 #     Straightforward demonstration of various meters
 
