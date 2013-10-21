@@ -4713,6 +4713,10 @@ proc tablelist::getSublabels w {
 # from the path name w of a header label.
 #------------------------------------------------------------------------------
 proc tablelist::parseLabelPath {w winName colName} {
+    if {![winfo exists $w]} {
+	return 0
+    }
+
     upvar $winName win $colName col
     return [regexp {^(\..+)\.hdr\.t\.f\.l([0-9]+)$} $w dummy win col]
 }

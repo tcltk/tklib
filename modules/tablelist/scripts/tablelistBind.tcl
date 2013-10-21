@@ -2372,7 +2372,10 @@ proc tablelist::defineTablelistArrow {} {
 # whether the pointer is on its right border or not.
 #------------------------------------------------------------------------------
 proc tablelist::labelEnter {w X Y x} {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
     configLabel $w -cursor $data(-cursor)
 
@@ -2414,13 +2417,15 @@ proc tablelist::labelEnter {w X Y x} {
 # a tablelist widget.  It removes the tooltip and deactivates the label.
 #------------------------------------------------------------------------------
 proc tablelist::labelLeave {w X x y} {
-    parseLabelPath $w win col
-    upvar ::tablelist::ns${win}::data data
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
 
     #
     # The following code is needed because the event
     # can also occur in a widget placed into the label
     #
+    upvar ::tablelist::ns${win}::data data
     set hdrX [winfo rootx $data(hdr)]
     if {$X >= $hdrX && $X < $hdrX + [winfo width $data(hdr)] &&
 	$x >= 1 && $x < [winfo width $w] - 1 &&
@@ -2455,7 +2460,10 @@ proc tablelist::labelLeave {w X x y} {
 # label's relief so it can be restored later, and changes the relief to sunken.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Down {w x shiftPressed} {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
     if {$data(isDisabled) ||
 	[info exists data(colBeingResized)]} {	;# resize operation in progress
@@ -2539,7 +2547,10 @@ proc tablelist::labelB1Down {w x shiftPressed} {
 # visualized if the columns are movable.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Motion {w X x y} {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
     if {!$data(labelClicked)} {
 	return ""
@@ -2730,7 +2741,10 @@ proc tablelist::labelB1Motion {w X x y} {
 # accordingly.  Otherwise it changes the label's relief to sunken.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Enter w {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
     if {!$data(labelClicked)} {
 	return ""
@@ -2758,7 +2772,10 @@ proc tablelist::labelB1Enter w {
 # if the columns are movable, then it changes the mouse cursor, too.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Leave {w x y} {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
     if {!$data(labelClicked) ||
 	[info exists data(colBeingResized)]} {	;# resize operation in progress
@@ -2793,7 +2810,10 @@ proc tablelist::labelB1Leave {w x y} {
 # if the columns are movable.
 #------------------------------------------------------------------------------
 proc tablelist::labelB1Up {w X} {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
     if {!$data(labelClicked)} {
 	return ""
@@ -2919,7 +2939,10 @@ proc tablelist::labelB1Up {w X} {
 # to hold all the elements (including the label).
 #------------------------------------------------------------------------------
 proc tablelist::labelB3Down {w shiftPressed} {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
     if {!$data(isDisabled) &&
 	$data(-resizablecolumns) && $data($col-resizable)} {
@@ -2941,7 +2964,10 @@ proc tablelist::labelB3Down {w shiftPressed} {
 # procedure performs the same action as labelB3Down.
 #------------------------------------------------------------------------------
 proc tablelist::labelDblB1 {w x shiftPressed} {
-    parseLabelPath $w win col
+    if {![parseLabelPath $w win col]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
     if {!$data(isDisabled) && [inResizeArea $w $x col] &&
 	$data(-resizablecolumns) && $data($col-resizable)} {
@@ -3058,9 +3084,12 @@ proc tablelist::horizAutoScan win {
 # left.
 #------------------------------------------------------------------------------
 proc tablelist::inResizeArea {w x colName} {
-    upvar $colName col
-    parseLabelPath $w dummy _col
+    if {![parseLabelPath $w dummy _col]} {
+	return 0
+    }
 
+
+    upvar $colName col
     if {$x >= [winfo width $w] - 5} {
 	set col $_col
 	return 1
