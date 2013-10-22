@@ -1,3 +1,10 @@
+2013-10-22  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt: Slightly extended.
+
+	* scripts/tablelistUtil.tcl: Fixed a bug related to column deletion if
+	  the "-selecttype" option has the value "cell".
+
 2013-10-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Slightly extended.
