@@ -48,7 +48,10 @@ What is new in Tablelist 5.10?
     the command specified as the value of the "-tooltipaddcommand"
     option (thanks to Jan Kandziora for his bug report).
 
-12. Several further code improvements and minor bug fixes.
+12. Fixed a bug related to column deletion if the "-selecttype" option
+    has the value "cell" (thanks to Ulrich Seidl for his bug report).
+
+13. Several further code improvements and minor bug fixes.
 
 What was new in Tablelist 5.9?
 ------------------------------
