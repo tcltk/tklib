@@ -665,9 +665,18 @@ proc tablelist::deleteColAttribs {win col} {
 proc tablelist::moveColData {oldArrName newArrName imgArrName oldCol newCol} {
     upvar $oldArrName oldArr $newArrName newArr $imgArrName imgArr
 
-    foreach specialCol {activeCol anchorCol editCol -treecolumn treeCol} {
+    foreach specialCol {editCol -treecolumn treeCol} {
 	if {$oldArr($specialCol) == $oldCol} {
 	    set newArr($specialCol) $newCol
+	}
+    }
+
+    set callerProc [lindex [info level -1] 0]
+    if {[string compare $callerProc "moveCol"] == 0} {
+	foreach specialCol {activeCol anchorCol} {
+	    if {$oldArr($specialCol) == $oldCol} {
+		set newArr($specialCol) $newCol
+	    }
 	}
     }
 
@@ -3199,7 +3208,8 @@ proc tablelist::moveActiveTag win {
     if {[string compare $data(-selecttype) "row"] == 0} {
 	$w tag add active $activeLine.0 $activeLine.end
 	updateColors $win $activeLine.0 $activeLine.end
-    } elseif {$activeLine > 0 && !$data($activeCol-hide)} {
+    } elseif {$activeLine > 0 && $activeCol < $data(colCount) &&
+	      !$data($activeCol-hide)} {
 	findTabs $win $activeLine $activeCol $activeCol tabIdx1 tabIdx2
 	$w tag add active $tabIdx1 $tabIdx2+1c
 	updateColors $win $tabIdx1 $tabIdx2+1c
@@ -4127,6 +4137,13 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 	if {$col < $data(colCount)} {
 	    cellSelection $win set $row $col $row $col
 	}
+    }
+
+    #
+    # Conditionally move the "active" tag to the active line or cell
+    #
+    if {$data(ownsFocus)} {
+	moveActiveTag $win
     }
 
     #
