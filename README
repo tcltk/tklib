@@ -4,7 +4,10 @@ Welcome to the tklib, the Tk Standard Library.  This package is
 intended to be a collection of Tcl packages that provide utility
 functions useful to a large collection of Tcl programmers.
 
-The home web site for this code is http://core.tcl.tk/tklib/ .
+The home web site for this code is
+
+    http://core.tcl.tk/tklib/
+
 At this web site, you will find mailing lists, web forums, databases
 for bug reports and feature requests, the CVS repository (browsable on
 the web, or read-only accessible via CVS ), and more.
@@ -57,7 +60,7 @@ will be added to tklib:
 
 When adding a module to tklib, be sure to add it to the files listed below.
 
-* installed_modules.tcl
+* support/installation/modules.tcl
 
   contains a table listing all modules to be installed, modules
   excluded, and names the actions to be taken during installation
@@ -94,7 +97,7 @@ the CVS directory), and should contain the following files:
 * source code		*.tcl
 * package index		pkgIndex.tcl
 * tests			*.test
-* documentation		*.man, *.n, *.xml
+* documentation		*.man (doctools, prefered), *.n, *.xml
 
 If you do not follow this directory structure, the tklib Makefile
 will fail to locate the files from the new module.
