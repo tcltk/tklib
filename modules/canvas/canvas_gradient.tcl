@@ -124,6 +124,9 @@ proc ::canvas::gradient::DrawGradient {canvas args} {
     ## actual drawing command.
 
     Draw_$direction
+
+    ## Lower the newly created gradient items into the background
+    $canvas lower canvas::gradient
     return
 }
 
@@ -271,5 +274,5 @@ proc ::canvas::gradient::GetNextColor {i} {
 # ### ### ### ######### ######### #########
 ## Ready
 
-package provide canvas::gradient 0.1
+package provide canvas::gradient 0.2
 return
