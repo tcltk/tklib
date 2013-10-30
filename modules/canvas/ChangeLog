@@ -1,3 +1,10 @@
+2013-10-30  Andreas Kupries  <andreask@activestate.com>
+
+	* canvas_gradient.man: [Ticket [3dee7d95ca]] Lower the
+	* canvas_gradient.tcl: canvas items of the gradient to make
+	* pkgIndex.tcl: them background instead of having them obscuring
+	  other items. Version bumped to 0.2.
+
 2013-06-12  Andreas Kupries  <andreask@activestate.com>
 
 	* pkgIndex.tcl: Fixed oops. Forgot to add new package to index.
