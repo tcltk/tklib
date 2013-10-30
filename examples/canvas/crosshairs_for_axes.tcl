@@ -1,3 +1,9 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk
+
 # test_axis.tcl --
 #     Test the drawing of the axis: nice rounded values?
 #     And vertical text to right axis?
@@ -12,11 +18,7 @@
 #     Floor and Ceil and less stringent check for bounds!
 #
 
-set base [file dirname [file dirname [file dirname [file normalize [info script]]]]]
-
-source "$base/modules/plotchart/plotchart.tcl"
-source "$base/modules/crosshair/crosshair.tcl"
-
+package require crosshair
 package require Plotchart
 
 grid [canvas .c1] [canvas .c2]

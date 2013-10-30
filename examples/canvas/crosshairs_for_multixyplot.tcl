@@ -1,11 +1,13 @@
+#! /bin/sh
+# The next line restarts with tclsh \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk
+
 # test_txplot.tcl --
 #     Test the -box options for time-x-plots
 
-set base [file dirname [file dirname [file dirname [file normalize [info script]]]]]
-
-source "$base/modules/plotchart/plotchart.tcl"
-source "$base/modules/crosshair/crosshair.tcl"
-
+package require crosshair
 package require Plotchart
 
 pack [canvas .c -width 600 -height 410 -bg white]

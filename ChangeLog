@@ -1,6 +1,14 @@
+2013-10-30  Andreas Kupries (AS Senior Dev)  <andreask@activestate.com>
+
+	* examples/canvas/crosshairs_for_axes.tcl: [Ticket [19721eff15]].
+	* examples/canvas/crosshairs_for_multixyplot.tcl: Updated canvas
+	* examples/canvas/crosshairs_scaled.tcl: examples for runnability
+	  against an installed tklib. Patch by stu.
+
 2013-10-30  Andreas Kupries  <andreask@activestate.com>
 
-	* README: [Ticket [678c8ac255]]. Updated file references.
+	* README: [Ticket [678c8ac255]]. Updated file references. Reported
+	  by Arjen Markus.
 
 2013-04-03  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
@@ -8,13 +16,11 @@
 	* apps/diagram-viewer.man: Gnome 'dia' application.
 	* support/installation/modules.tcl:
 
-	* 
-
 2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
 	* Released and tagged Tklib 0.6 ========================
-	* 
+	*
 
 2012-08-27  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
@@ -176,8 +182,7 @@
 	* install_actions.tcl:    'install_actions' to install message
 	                          catalogs.
 	* configure:              Regenerated.
-	
-	
+
 2006-04-26  Andreas Kupries <andreask@activestate.com>
 
 	* sak.tcl (gd-gen-tap): modified to strip non-version characters
@@ -280,7 +285,7 @@
 	* New module 'tkpiechart'. This has been donated by Jean-Luc
 	  Fontaine. Thanks. It is based on his stoop OO package, found in
 	  our sibling 'Tcllib'.
-	
+
 	* installed_modules.tcl: Added tkpiechart to the list of installed
 	  modules.
 
