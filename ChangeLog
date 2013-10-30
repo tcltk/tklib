@@ -1,3 +1,7 @@
+2013-10-30  Andreas Kupries  <andreask@activestate.com>
+
+	* README: [Ticket [678c8ac255]]. Updated file references.
+
 2013-04-03  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	* apps/diagram-viewer: Renamed 'dia' to avoid clashes with the
