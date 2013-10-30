@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [comment {- -- ---- -------- ---------------- -------------------------------}]
-[manpage_begin canvas::gradient n 0.1]
+[manpage_begin canvas::gradient n 0.2]
 [keywords background]
 [keywords canvas]
 [keywords {color gradient}]
@@ -15,6 +15,7 @@
 [titledesc {Canvas with a gradient background}]
 [require Tcl 8.5]
 [require Tk 8.5]
+[require canvas::gradient [opt 0.2]]
 [description]
 
 This package provides a command to set background gradients on canvases.
