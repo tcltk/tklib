@@ -76,10 +76,10 @@ $r plot right 40.0 0.02
 demo {
 set p [::Plotchart::createBoxplot .cnv {0 40 5} {A B C D E F}]
 
-$p plot A {0 1 2 5 7 1 4 5 0.6 5 5.5}
-$p plot C {2 2 3 6 1.5 3}
+$p plot data A {0 1 2 5 7 1 4 5 0.6 5 5.5}
+$p plot data C {2 2 3 6 1.5 3}
 
-$p plot E {2 3 3 4 7 8 9 9 10 10 11 11 11 14 15 17 17 20 24 29}
+$p plot data E {2 3 3 4 7 8 9 9 10 10 11 11 11 14 15 17 17 20 24 29}
 }
 
 # Histograms and the like
