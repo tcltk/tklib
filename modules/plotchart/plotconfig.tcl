@@ -142,7 +142,7 @@ namespace eval ::Plotchart {
         histogram     {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
         horizbars     {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask bar object}
         vertbars      {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask bar}
-        ganttchart    {title subtitle margin text legend axis                          background}
+        ganttchart    {title subtitle margin text legend axis     leftaxis  rightaxis  bottomaxis background}
         timechart     {title subtitle margin text legend leftaxis rightaxis bottomaxis background}
         stripchart    {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
         isometric     {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
