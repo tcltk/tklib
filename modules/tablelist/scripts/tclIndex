@@ -396,6 +396,8 @@ set auto_index(::tablelist::expandSubCmd) [list source [file join $dir tablelist
 set auto_index(::tablelist::expandallSubCmd) [list source [file join $dir tablelistWidget.tcl]]
 set auto_index(::tablelist::expandedkeysSubCmd) [list source [file join $dir tablelistWidget.tcl]]
 set auto_index(::tablelist::fillcolumnSubCmd) [list source [file join $dir tablelistWidget.tcl]]
+set auto_index(::tablelist::findcolumnnameSubCmd) [list source [file join $dir tablelistWidget.tcl]]
+set auto_index(::tablelist::findrownameSubCmd) [list source [file join $dir tablelistWidget.tcl]]
 set auto_index(::tablelist::finisheditingSubCmd) [list source [file join $dir tablelistWidget.tcl]]
 set auto_index(::tablelist::formatinfoSubCmd) [list source [file join $dir tablelistWidget.tcl]]
 set auto_index(::tablelist::getSubCmd) [list source [file join $dir tablelistWidget.tcl]]
