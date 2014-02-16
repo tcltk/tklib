@@ -5,7 +5,7 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 # Demonstrates how to implement a multi-entry widget for Ethernet addresses.
 #
-# Copyright (c) 1999-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require mentry_tile
