@@ -33,10 +33,11 @@ GENERAL solution to problems like the following:
     insertion cursor in a Tk or tile entry, BWidget Entry, Tk or tile
     spinbox, tile combobox, text, or ctext widget is moved?
   - How to define a command to be called automatically when selecting a
-    listbox element, a tablelist row or cell, or a range of characters
-    in a text or ctext widget?
-  - How to protect any or all items of a listbox or a range of
-    characters in a text or ctext widget from being selected?
+    listbox element, a tablelist row or cell, a tile treeview item, or
+    a range of characters in a text or ctext widget?
+  - How to protect any or all items/elements of a listbox, tablelist, or
+    tile treeview, or a range of characters in a text or ctext widget
+    from being selected?
 
 In most books, FAQs, newsgroup articles, and widget sets, you can find
 INDIVIDUAL solutions to some of the above problems by means of widget
@@ -48,14 +49,14 @@ The Wcb package goes a completely different way:  Based on redefining
 the Tcl command corresponding to a widget, the main Wcb procedure
 "wcb::callback" enables you to associate arbitrary commands with some Tk
 entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox, tile
-combobox, listbox, tablelist, text, and ctext widget operations.  These
-commands will be invoked automatically in the global scope whenever the
-respective widget operation is executed.  You can request that these
-commands be called either before or after executing the respective
-widget operation, i.e., you can define both before- and after-callbacks.
-From within a before-callback, you can cancel the respective widget
-command by invoking the procedure "wcb::cancel", or modify its arguments
-by calling "wcb::extend" or "wcb::replace".
+combobox, listbox, tablelist, tile treeview, text, and ctext widget
+operations.  These commands will be invoked automatically in the global
+scope whenever the respective widget operation is executed.  You can
+request that these commands be called either before or after executing
+the respective widget operation, i.e., you can define both before- and
+after-callbacks.  From within a before-callback, you can cancel the
+respective widget command by invoking the procedure "wcb::cancel", or
+modify its arguments by calling "wcb::extend" or "wcb::replace".
 
 Besides these (and four other) general-purpose commands, the Wcb
 package exports four utility procedures for Tk entry, tile entry,
@@ -71,13 +72,12 @@ Wcb is available for free download from the Web page
 
     http://www.nemethi.de
 
-The distribution file is "wcb3.4.tar.gz" for UNIX and "wcb3_4.zip" for
+The distribution file is "wcb3.5.tar.gz" for UNIX and "wcb3_5.zip" for
 Windows.  These files contain the same information, except for the
 additional carriage return character preceding the linefeed at the end
 of each line in the text files for Windows.
 
-Wcb is also hosted on SourceForge, as part of tklib, which in turn is
-contained in the tcllib project, having the address
+Wcb is also included in tklib, which has the address
 
     http://core.tcl.tk/tklib
 
@@ -91,15 +91,15 @@ locations of these library directories are given by the "tcl_library"
 and "tk_library" variables, respectively.
 
 To install Wcb on UNIX, "cd" to the desired directory and unpack the
-distribution file "wcb3.4.tar.gz":
+distribution file "wcb3.5.tar.gz":
 
-    gunzip -c wcb3.4.tar.gz | tar -xf -
+    gunzip -c wcb3.5.tar.gz | tar -xf -
 
-This command will create a directory named "wcb3.4", with the
+This command will create a directory named "wcb3.5", with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "wcb3_4.zip" into the directory "wcb3.4", with the
+distribution file "wcb3_5.zip" into the directory "wcb3.5", with the
 subdirectories "demos", "doc", and "scripts".
 
 How to use it?
