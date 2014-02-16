@@ -7,7 +7,7 @@ exec wish "$0" ${1+"$@"}
 #	wcb::postInsertEntryText <entry> <index> <string>
 #	wcb::cancel
 #
-# Copyright (c) 1999-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require wcb
