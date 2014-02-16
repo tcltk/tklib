@@ -4,13 +4,15 @@
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content="mentry, widget, entry, label">
+
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
 <body bgcolor="#FFFFFF">
   <div align="center">
     <h1>The <code><b>mentry::mentry</b></code> Command</h1>
 
-    <h2>For Mentry Version 3.6</h2>
+    <h2>For Mentry Version 3.7</h2>
 
     <h3>by</h3>
 
@@ -20,10 +22,9 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
-
   <hr>
 
-  <h2><a name="contents"></a>Contents</h2>
+  <h2 id="contents">Contents</h2>
 
   <ul>
     <li><a href="#quick_ref">Quick Reference</a></li>
@@ -34,19 +35,17 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="quick_ref"></a>Quick Reference</h2>
+  <h2 id="quick_ref">Quick Reference</h2>
 
   <dl>
     <dt><a href="#name">NAME</a></dt>
 
-    <dd><code>mentry::mentry</code> - Create and manipulate multi-entry
+    <dd><code>mentry::mentry</code> &ndash; Create and manipulate multi-entry
     widgets</dd>
 
-    <dt><br>
-    <a href="#synopsis">SYNOPSIS</a></dt>
+    <dt class="tm"><a href="#synopsis">SYNOPSIS</a></dt>
 
     <dd>
       <pre>
@@ -104,14 +103,17 @@
     <dd><code><b><a href="#textvariable">-textvariable</a></b>
     <i>array</i></code></dd>
 
-    <dt><br>
-    <a href="#indices">INDICES</a></dt>
+    <dt class="tm"><a href="#indices">INDICES</a></dt>
 
-    <dt><br>
-    <a href="#description">DESCRIPTION</a></dt>
+    <dd>
+      <pre>
+<i>number</i>  <b>end</b>
+</pre>
+    </dd>
 
-    <dt><br>
-    <a href="#widget_command">WIDGET COMMAND</a></dt>
+    <dt><a href="#description">DESCRIPTION</a></dt>
+
+    <dt class="tm"><a href="#widget_command">WIDGET COMMAND</a></dt>
 
     <dd><code><i>pathName</i> <b><a href="#adjustentry">adjustentry</a></b>
     <i>index</i> <i>string</i></code></dd>
@@ -180,11 +182,9 @@
     <dd><code><i>pathName</i> <b><a href="#unsetattrib">unsetattrib</a></b>
     <i>name</i></code></dd>
 
-    <dt><br>
-    <a href="#bindings">DEFAULT BINDINGS</a></dt>
+    <dt class="tm"><a href="#bindings">DEFAULT BINDINGS</a></dt>
 
-    <dt><br>
-    <a href="#keywords">KEYWORDS</a></dt>
+    <dt class="tm"><a href="#keywords">KEYWORDS</a></dt>
 
     <dd>mentry, widget, entry, label</dd>
   </dl>
@@ -193,19 +193,17 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="detailed_ref"></a>Detailed Reference</h2>
+  <h2 id="detailed_ref">Detailed Reference</h2>
 
   <dl>
-    <dt><a name="name"></a><b>NAME</b></dt>
+    <dt id="name"><b>NAME</b></dt>
 
-    <dd><code>mentry::mentry</code> - Create and manipulate multi-entry
+    <dd><code>mentry::mentry</code> &ndash; Create and manipulate multi-entry
     widgets</dd>
 
-    <dt><br>
-    <a name="synopsis"></a><b>SYNOPSIS</b></dt>
+    <dt class="tm" id="synopsis"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -213,7 +211,7 @@
 </pre>
     </dd>
 
-    <dt><a name="std_options"></a><b>STANDARD OPTIONS</b></dt>
+    <dt id="std_options"><b>STANDARD OPTIONS</b></dt>
 
     <dd>
       <pre>
@@ -226,8 +224,7 @@
     widget options.&nbsp; These options are only supported by the Mentry
     package, but not by Mentry_tile.</dd>
 
-    <dt><br>
-    <a name="child_options"></a><b>OPTIONS FOR ALL ENTRY AND LABEL
+    <dt class="tm" id="child_options"><b>OPTIONS FOR ALL ENTRY AND LABEL
     CHILDREN</b></dt>
 
     <dd>
@@ -247,16 +244,15 @@
     the <code><b><a href="#setentryfont">setentryfont</a></b></code> subcommand
     of the Tcl command associated with the mentry widget for changing the value
     of the <code><b>-font</b></code> option of one of its entry children.</dd>
-    
-    <dd><br>
-    When using the package Mentry_tile, these options have theme-specific
-    default values.&nbsp; The common abbreviations <code><b>-bg</b></code> (for
-    <code><b>-background</b></code>) and <code><b>-fg</b></code> (for
-    <code><b>-foreground</b></code>) are supported for both classical and
-    tile-based mentry widgets.</dd>
 
-    <dt><br>
-    <a name="entry_options"></a><b>OPTIONS FOR ALL ENTRY CHILDREN</b></dt>
+    <dd class="tm">When using the package Mentry_tile, these options have
+    theme-specific default values.&nbsp; The common abbreviations
+    <code><b>-bg</b></code> (for <code><b>-background</b></code>) and
+    <code><b>-fg</b></code> (for <code><b>-foreground</b></code>) are supported
+    for both classical and tile-based mentry widgets.</dd>
+
+    <dt class="tm" id="entry_options"><b>OPTIONS FOR ALL ENTRY
+    CHILDREN</b></dt>
 
     <dd>
       <pre>
@@ -287,25 +283,25 @@
     <code><b>-vcmd</b></code> (for <code><b>-validatecommand</b></code>) are
     supported for both classical and tile-based mentry widgets.</dd>
 
-    <dt><br>
-    <a name="widget_options"></a><b>WIDGET-SPECIFIC OPTIONS</b></dt>
+    <dt class="tm" id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
 
-    <dd>
-      <br>
-      <a name="body"></a>
+    <dd class="tm" id="body">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
+
           <td><code><b>-body</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
+
           <td><code><b>&nbsp;body</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
+
           <td><code><b>&nbsp;Body</b></code></td>
         </tr>
       </table>
@@ -326,7 +322,7 @@
         the number of characters that can be inserted into it; this maximal
         length remains unchanged even if the entry's width is set to a new
         value later on.</p>
-        
+
         <p>The width of an entry child and the text displayed in a label may be
         changed by using the <code><b>configure</b></code> subcommand of the
         Tcl command corresponding to that child.&nbsp; However, applying this
@@ -340,21 +336,23 @@
       </blockquote>
     </dd>
 
-    <dd>
-      <a name="disabledbackground"></a>
+    <dd id="disabledbackground">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
+
           <td><code><b>-disabledbackground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
+
           <td><code><b>&nbsp;disabledBackground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
+
           <td><code><b>&nbsp;DisabledBackground</b></code></td>
         </tr>
       </table>
@@ -369,21 +367,23 @@
       </blockquote>
     </dd>
 
-    <dd>
-      <a name="disabledforeground"></a>
+    <dd id="disabledforeground">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
+
           <td><code><b>-disabledforeground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
+
           <td><code><b>&nbsp;disabledForeground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
+
           <td><code><b>&nbsp;DisabledForeground</b></code></td>
         </tr>
       </table>
@@ -398,21 +398,23 @@
       </blockquote>
     </dd>
 
-    <dd>
-      <a name="readonlybackground"></a>
+    <dd id="readonlybackground">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
+
           <td><code><b>-readonlybackground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
+
           <td><code><b>&nbsp;readonlyBackground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
+
           <td><code><b>&nbsp;ReadonlyBackground</b></code></td>
         </tr>
       </table>
@@ -427,21 +429,23 @@
       </blockquote>
     </dd>
 
-    <dd>
-      <a name="takefocus"></a>
+    <dd id="takefocus">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
+
           <td><code><b>-takefocus</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
+
           <td><code><b>&nbsp;takeFocus</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
+
           <td><code><b>&nbsp;TakeFocus</b></code></td>
         </tr>
       </table>
@@ -459,21 +463,23 @@
       </blockquote>
     </dd>
 
-    <dd>
-      <a name="textvariable"></a>
+    <dd id="textvariable">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
+
           <td><code><b>-textvariable</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
+
           <td><code><b>&nbsp;textvariable</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
+
           <td><code><b>&nbsp;Variable</b></code></td>
         </tr>
       </table>
@@ -493,7 +499,7 @@
       </blockquote>
     </dd>
 
-    <dt><a name="description"></a><b>DESCRIPTION</b></dt>
+    <dt id="description"><b>DESCRIPTION</b></dt>
 
     <dd>The <code><b>mentry::mentry</b></code> command creates a new window
     named <code><i>pathName</i></code> and of the class
@@ -506,21 +512,19 @@
     <code><i>pathName</i></code>, but <code><i>pathName</i></code>'s parent
     must exist.</dd>
 
-    <dd><br>
-    The word <i>mentry</i> is an abbreviation of <i>multi-entry</i>.&nbsp; A
-    mentry is a mega-widget consisting of any number of entries separated by
-    labels, all embedded in a frame.&nbsp; Due to appropriately chosen
-    configuration options for the entries and labels, a mentry widget looks
-    like one single entry containing preinserted text pieces that cannot be
-    moved, changed, or deleted by the user.</dd>
+    <dd class="tm">The word <i>mentry</i> is an abbreviation of
+    <i>multi-entry</i>.&nbsp; A mentry is a mega-widget consisting of any
+    number of entries separated by labels, all embedded in a frame.&nbsp; Due
+    to appropriately chosen configuration options for the entries and labels, a
+    mentry widget looks like one single entry containing preinserted text
+    pieces that cannot be moved, changed, or deleted by the user.</dd>
 
-    <dd><br>
-    As described above, the initial width of each entry child (specified by the
-    <code><b><a href="#body">-body</a></b></code> configuration option) also
-    determines the maximal number of characters that can be inserted into
-    it.&nbsp; This is achieved with the aid of the <code><b><a href=
-    "wcbRef.html#callback">wcb::callback</a></b></code> command, by registering
-    the <code><b><a href=
+    <dd class="tm">As described above, the initial width of each entry child
+    (specified by the <code><b><a href="#body">-body</a></b></code>
+    configuration option) also determines the maximal number of characters that
+    can be inserted into it.&nbsp; This is achieved with the aid of the
+    <code><b><a href="wcbRef.html#callback">wcb::callback</a></b></code>
+    command, by registering the <code><b><a href=
     "wcbRef.html#entrycb">wcb::checkEntryLen</a></b></code>
     before-<code><b>insert</b></code> callback with the entry child.&nbsp; In
     order to keep this callback, additional before-<code><b>insert</b></code>
@@ -540,10 +544,9 @@
     must be the last after-<code><b>motion</b></code> callback for each entry
     child.</dd>
 
-    <dd><br>
-    Each mentry widget may have any number of <b>attributes</b>, which can be
-    used in commands that create or manipulate mentry widgets for particular
-    purposes.&nbsp; For example, each date mentry created by the
+    <dd class="tm">Each mentry widget may have any number of <b>attributes</b>,
+    which can be used in commands that create or manipulate mentry widgets for
+    particular purposes.&nbsp; For example, each date mentry created by the
     <code><b><a href=
     "mentryDateTime.html#dateMentry">mentry::dateMentry</a></b></code> command
     has a <code><b>type</b></code> attribute having the value
@@ -554,22 +557,19 @@
     <code><b><a href=
     "mentryDateTime.html#getClockVal">mentry::getClockVal</a></b></code>.</dd>
 
-    <dt><br>
-    <a name="indices"></a><b>INDICES</b></dt>
+    <dt class="tm" id="indices"><b>INDICES</b></dt>
 
-    <dd>
-      Some of the widget commands for mentries take an index as argument.&nbsp;
-      An index specifies a particular entry or label child of the mentry, in
-      any of the following ways:<br>
-      &nbsp;
+    <dd>Some of the widget commands for mentries take an index as
+    argument.&nbsp; An index specifies a particular entry or label child of the
+    mentry, in any of the following ways:</dd>
 
-      <table border="0" cellpadding="0" cellspacing="0">
+    <dd class="tm">
+      <table border="0" cellpadding="6" cellspacing="0">
         <tr valign="top">
-          <td width="75"><code><i>number</i></code></td>
+          <td><code><i>number&nbsp;&nbsp;</i></code></td>
 
           <td>Specifies the child as a numerical index, where <code>0</code>
-          corresponds to the first entry or label child.<br>
-          &nbsp;</td>
+          corresponds to the first entry or label child.</td>
         </tr>
 
         <tr valign="top">
@@ -578,13 +578,13 @@
           <td>Indicates the last entry or label child of the mentry.</td>
         </tr>
       </table>
-
-      <p>The word <code><b>end</b></code> can be abbreviated as
-      <code><b>en</b></code> or <code><b>e</b></code>.&nbsp; Out-of-range
-      indices are automatically rounded to the nearest legal value.</p>
     </dd>
 
-    <dt><a name="widget_command"></a><b>WIDGET COMMAND</b></dt>
+    <dd class="tm">The word <code><b>end</b></code> can be abbreviated as
+    <code><b>en</b></code> or <code><b>e</b></code>.&nbsp; Out-of-range indices
+    are automatically rounded to the nearest legal value.</dd>
+
+    <dt class="tm" id="widget_command"><b>WIDGET COMMAND</b></dt>
 
     <dd>
       The <code><b>mentry::mentry</b></code> command creates a new Tcl command
@@ -605,32 +605,29 @@
 
     <dd>
       <dl>
-        <dt><br>
-        <a name="adjustentry"></a><code><i>pathName</i> <b>adjustentry</b>
-        <i>index</i> <i>string</i></code></dt>
+        <dt class="tm" id="adjustentry"><code><i>pathName</i>
+        <b>adjustentry</b> <i>index</i> <i>string</i></code></dt>
 
         <dd>Increases the width in pixels of the entry child identified by
         <code><i>index</i></code> if needed, to make it just large enough for
         texts of the child-specific maximal length, consisting of characters
         contained in the <code><i>string</i></code> argument.&nbsp; Returns an
         empty string.</dd>
-        
-        <dd><br>
-        For example, when constructing a mentry widget whose components will
-        accept up to two uppercase hexadecimal digits only, by passing the
-        string <code>"0123456789ABCDEF"</code> to this subcommand you can make
-        sure that the entry children will have optimal widths, just large
-        enough to display not only the decimal digits, but also up to two
-        letters in the range <code>A</code> - <code>F</code> (which need more
-        room than the decimal digits when using a proportionally-spaced
+
+        <dd class="tm">For example, when constructing a mentry widget whose
+        components will accept up to two uppercase hexadecimal digits only, by
+        passing the string <code>"0123456789ABCDEF"</code> to this subcommand
+        you can make sure that the entry children will have optimal widths,
+        just large enough to display not only the decimal digits, but also up
+        to two letters in the range <code>A</code> - <code>F</code> (which need
+        more room than the decimal digits when using a proportionally-spaced
         font).&nbsp; It is recommended to invoke this subcommand even if the
         allowed characters are restricted to the digits <code>0</code> -
         <code>9</code> only, because in some fonts not all decimal digits have
         the same width.</dd>
 
-        <dt><br>
-        <a name="attrib"></a><code><i>pathName</i> <b>attrib</b> ?<i>name</i>?
-        ?<i>value</i> <i>name</i> <i>value</i> ...?</code></dt>
+        <dt class="tm" id="attrib"><code><i>pathName</i> <b>attrib</b>
+        ?<i>name</i>? ?<i>value</i> <i>name</i> <i>value</i> ...?</code></dt>
 
         <dd>Queries or modifies the attributes of the widget.&nbsp; If no
         <code><i>name</i></code> is specified, the command returns a list of
@@ -647,17 +644,15 @@
         value(s); in this case the return value is an empty string.&nbsp;
         <code><i>name</i></code> may be an arbitrary string.</dd>
 
-        <dt><br>
-        <a name="cget"></a><code><i>pathName</i> <b>cget</b>
+        <dt class="tm" id="cget"><code><i>pathName</i> <b>cget</b>
         <i>option</i></code></dt>
 
         <dd>Returns the current value of the configuration option given by
         <code><i>option</i></code>, which may have any of the values accepted
         by the <code><b>mentry::mentry</b></code> command.</dd>
 
-        <dt><br>
-        <a name="clear"></a><code><i>pathName</i> <b>clear</b> <i>first</i>
-        ?<i>last</i>?</code></dt>
+        <dt class="tm" id="clear"><code><i>pathName</i> <b>clear</b>
+        <i>first</i> ?<i>last</i>?</code></dt>
 
         <dd>Erases the contents of one or more entry children of the
         widget.&nbsp; <code><i>first</i></code> and <code><i>last</i></code>
@@ -666,8 +661,7 @@
         defaults to <code><i>first</i></code>, i.e., a single entry child is
         cleared.&nbsp; The return value is an empty string.</dd>
 
-        <dt><br>
-        <a name="configure"></a><code><i>pathName</i> <b>configure</b>
+        <dt class="tm" id="configure"><code><i>pathName</i> <b>configure</b>
         ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i>
         ...?</code></dt>
 
@@ -687,34 +681,30 @@
         string.&nbsp; <code><i>option</i></code> may have any of the values
         accepted by the <code><b>mentry::mentry</b></code> command.</dd>
 
-        <dt><br>
-        <a name="entries"></a><code><i>pathName</i> <b>entries</b></code></dt>
+        <dt class="tm" id="entries"><code><i>pathName</i>
+        <b>entries</b></code></dt>
 
         <dd>Returns a list containing the path names of all entry children of
         the widget.</dd>
 
-        <dt><br>
-        <a name="entrycount"></a><code><i>pathName</i>
+        <dt class="tm" id="entrycount"><code><i>pathName</i>
         <b>entrycount</b></code></dt>
 
         <dd>Returns the number of all entry children of the widget.</dd>
 
-        <dt><br>
-        <a name="entrylimit"></a><code><i>pathName</i> <b>entrylimit</b>
+        <dt class="tm" id="entrylimit"><code><i>pathName</i> <b>entrylimit</b>
         <i>index</i></code></dt>
 
         <dd>Returns the number of characters that can be inserted into the
         entry child identfied by <code><i>index</i></code>.</dd>
 
-        <dt><br>
-        <a name="entrypath"></a><code><i>pathName</i> <b>entrypath</b>
+        <dt class="tm" id="entrypath"><code><i>pathName</i> <b>entrypath</b>
         <i>index</i></code></dt>
 
         <dd>Returns the path name of the entry child identfied by
         <code><i>index</i></code>.</dd>
 
-        <dt><br>
-        <a name="getarray"></a><code><i>pathName</i> <b>getarray</b>
+        <dt class="tm" id="getarray"><code><i>pathName</i> <b>getarray</b>
         <i>array</i></code></dt>
 
         <dd>For each entry child of the widget, the command assigns the string
@@ -723,14 +713,13 @@
         start with <code>0</code>.&nbsp; The return value is an empty
         string.</dd>
 
-        <dt><br>
-        <a name="getlist"></a><code><i>pathName</i> <b>getlist</b></code></dt>
+        <dt class="tm" id="getlist"><code><i>pathName</i>
+        <b>getlist</b></code></dt>
 
         <dd>Returns a list containing the strings of all entry children of the
         widget.</dd>
 
-        <dt><br>
-        <a name="getstring"></a><code><i>pathName</i>
+        <dt class="tm" id="getstring"><code><i>pathName</i>
         <b>getstring</b></code></dt>
 
         <dd>Returns a string built by concatenating the strings contained in
@@ -741,15 +730,13 @@
         by the text of the first label, which in turn is followed by the string
         of the second entry, and so on.</dd>
 
-        <dt><br>
-        <a name="hasattrib"></a><code><i>pathName</i> <b>hasattrib</b>
+        <dt class="tm" id="hasattrib"><code><i>pathName</i> <b>hasattrib</b>
         <i>name</i></code></dt>
 
         <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
         exists and <code>0</code> otherwise.</dd>
 
-        <dt><br>
-        <a name="isempty"></a><code><i>pathName</i> <b>isempty</b>
+        <dt class="tm" id="isempty"><code><i>pathName</i> <b>isempty</b>
         ?<i>index</i>?</code></dt>
 
         <dd>If <code><i>index</i></code> is specified then the command returns
@@ -760,8 +747,7 @@
         the entry children of the widget are all empty and <code>0</code>
         otherwise.</dd>
 
-        <dt><br>
-        <a name="isfull"></a><code><i>pathName</i> <b>isfull</b>
+        <dt class="tm" id="isfull"><code><i>pathName</i> <b>isfull</b>
         ?<i>index</i>?</code></dt>
 
         <dd>If <code><i>index</i></code> is specified then the command returns
@@ -774,28 +760,25 @@
         characters that can be inserted into the respective entries (i.e., if
         all entry children are full) and <code>0</code> otherwise.</dd>
 
-        <dt><br>
-        <a name="labelcount"></a><code><i>pathName</i>
+        <dt class="tm" id="labelcount"><code><i>pathName</i>
         <b>labelcount</b></code></dt>
 
         <dd>Returns the number of all label children of the widget.</dd>
 
-        <dt><br>
-        <a name="labelpath"></a><code><i>pathName</i> <b>labelpath</b>
+        <dt class="tm" id="labelpath"><code><i>pathName</i> <b>labelpath</b>
         <i>index</i></code></dt>
 
         <dd>Returns the path name of the label child identfied by
         <code><i>index</i></code>.</dd>
 
-        <dt><br>
-        <a name="labels"></a><code><i>pathName</i> <b>labels</b></code></dt>
+        <dt class="tm" id="labels"><code><i>pathName</i>
+        <b>labels</b></code></dt>
 
         <dd>Returns a list containing the path names of all label children of
         the widget.</dd>
 
-        <dt><br>
-        <a name="put"></a><code><i>pathName</i> <b>put</b> <i>startIndex</i>
-        ?<i>string</i> <i>string</i> ...?</code></dt>
+        <dt class="tm" id="put"><code><i>pathName</i> <b>put</b>
+        <i>startIndex</i> ?<i>string</i> <i>string</i> ...?</code></dt>
 
         <dd>Replaces the texts of the entry children whose indices are greater
         than or equal to <code><i>startIndex</i></code> with the corresponding
@@ -809,24 +792,21 @@
         cases, the command keeps the position of the insertion cursor in all
         entry children.</dd>
 
-        <dt><br>
-        <a name="setentryextrawidth"></a><code><i>pathName</i>
+        <dt class="tm" id="setentryextrawidth"><code><i>pathName</i>
         <b>setentryextrawidth</b> <i>index</i> <i>amount</i></code></dt>
 
         <dd>Specifies additonal width to provide for the entry child identified
         by <code><i>index</i></code>.&nbsp; <code><i>amount</i></code> may have
         any of the standard forms for screen distances (e.g., a number of
         pixels).&nbsp; The return value is an empty string.</dd>
- 
-        <dd><br>
-        Notice that changing the width of an entry child has no impact on the
-        number of characters that can be inserted into it, which remains set to
-        the corresponding component of the value of the mentry's
+
+        <dd class="tm">Notice that changing the width of an entry child has no
+        impact on the number of characters that can be inserted into it, which
+        remains set to the corresponding component of the value of the mentry's
         <code><b><a href="#body">-body</a></b></code> option.</dd>
 
-        <dt><br>
-        <a name="setentryfont"></a><code><i>pathName</i> <b>setentryfont</b>
-        <i>index</i> <i>font</i></code></dt>
+        <dt class="tm" id="setentryfont"><code><i>pathName</i>
+        <b>setentryfont</b> <i>index</i> <i>font</i></code></dt>
 
         <dd>Sets the font of the entry child identified by
         <code><i>index</i></code> to the value given by
@@ -837,9 +817,8 @@
         the appearance of the tile-based mentry widget.&nbsp; The return value
         is an empty string.</dd>
 
-        <dt><br>
-        <a name="setentrywidth"></a><code><i>pathName</i> <b>setentrywidth</b>
-        <i>index</i> <i>width</i></code></dt>
+        <dt class="tm" id="setentrywidth"><code><i>pathName</i>
+        <b>setentrywidth</b> <i>index</i> <i>width</i></code></dt>
 
         <dd>Sets the width of the entry child identified by
         <code><i>index</i></code> to the number of characters given by
@@ -849,63 +828,57 @@
         this command also performs some additional steps necessary for updating
         the appearance of the tile-based mentry widget.&nbsp; The return value
         is an empty string.</dd>
- 
-        <dd><br>
-        Notice that changing the width of an entry child has no impact on the
-        number of characters that can be inserted into it, which remains set to
-        the corresponding component of the value of the mentry's
+
+        <dd class="tm">Notice that changing the width of an entry child has no
+        impact on the number of characters that can be inserted into it, which
+        remains set to the corresponding component of the value of the mentry's
         <code><b><a href="#body">-body</a></b></code> option.</dd>
 
-        <dt><br>
-        <a name="unsetattrib"></a><code><i>pathName</i> <b>unsetattrib</b>
-        <i>name</i></code></dt>
+        <dt class="tm" id="unsetattrib"><code><i>pathName</i>
+        <b>unsetattrib</b> <i>name</i></code></dt>
 
         <dd>Unsets the attribute <code><i>name</i></code>.&nbsp; Returns an
         empty string.</dd>
       </dl>
     </dd>
 
-    <dt><br>
-    <a name="bindings"></a><b>DEFAULT BINDINGS</b></dt>
+    <dt class="tm" id="bindings"><b>DEFAULT BINDINGS</b></dt>
+
+    <dd>The <code><b>mentry::mentry</b></code> command partially redefines the
+    bindings of the children of the mentry widget it creates:</dd>
 
     <dd>
-      The <code><b>mentry::mentry</b></code> command partially redefines the
-      bindings of the children of the mentry widget it creates:<br>
-      &nbsp;
-
       <ol>
-        <li>Clicking mouse button 1 in a label child positions the insertion
-        cursor to the end of the last enabled entry preceding the label, sets
-        the input focus to that entry, and clears any selection in it.<br>
-        &nbsp;</li>
+        <li class="tm">Clicking mouse button 1 in a label child positions the
+        insertion cursor to the end of the last enabled entry preceding the
+        label, sets the input focus to that entry, and clears any selection in
+        it.</li>
 
-        <li>If in a non-empty entry child a character is typed that is
-        contained in the label following that entry (if any), then the focus is
-        moved to the next enabled entry child, the contents of that entry are
-        selected, and the insertion cursor is set to its end.<br>
-        &nbsp;</li>
+        <li class="tm">If in a non-empty entry child a character is typed that
+        is contained in the label following that entry (if any), then the focus
+        is moved to the next enabled entry child, the contents of that entry
+        are selected, and the insertion cursor is set to its end.</li>
 
-        <li>At the beginning of an entry child that is not the first enabled
-        entry within the widget, the <code>Left</code> key clears the selection
-        in that entry, moves the focus to the previous enabled entry child, and
-        sets the insertion cursor to the end of that widget.&nbsp; Similarly,
-        at the end of an entry child that is not the last enabled entry within
-        the widget, the <code>Right</code> key clears the selection in that
-        entry, moves the focus to the next enabled entry child, and sets the
-        insertion cursor to the beginning of that widget.&nbsp; If
-        <code><b>tk_strictMotif</b></code> is false then <code>Control-b</code>
-        and <code>Control-f</code> behave the same as <code>Left</code> and
-        <code>Right</code>, respectively.<br>
-        &nbsp;</li>
+        <li class="tm">At the beginning of an entry child that is not the first
+        enabled entry within the widget, the <code>Left</code> key clears the
+        selection in that entry, moves the focus to the previous enabled entry
+        child, and sets the insertion cursor to the end of that widget.&nbsp;
+        Similarly, at the end of an entry child that is not the last enabled
+        entry within the widget, the <code>Right</code> key clears the
+        selection in that entry, moves the focus to the next enabled entry
+        child, and sets the insertion cursor to the beginning of that
+        widget.&nbsp; If <code><b>tk_strictMotif</b></code> is false then
+        <code>Control-b</code> and <code>Control-f</code> behave the same as
+        <code>Left</code> and <code>Right</code>, respectively.</li>
 
-        <li>In an entry child that is not the first enabled entry within the
-        widget, <code>Control-Left</code> moves the focus to the previous
-        enabled entry child, selects the contents of that widget, and sets the
-        insertion cursor to its end; if there is no enabled entry child to the
-        left of the current one then <code>Control-Left</code> moves the
-        insertion cursor to the beginning of the current entry and clears the
-        selection in that widget.&nbsp; Similarly, in an entry child that is
-        not the last enabled entry within the widget,
+        <li class="tm">In an entry child that is not the first enabled entry
+        within the widget, <code>Control-Left</code> moves the focus to the
+        previous enabled entry child, selects the contents of that widget, and
+        sets the insertion cursor to its end; if there is no enabled entry
+        child to the left of the current one then <code>Control-Left</code>
+        moves the insertion cursor to the beginning of the current entry and
+        clears the selection in that widget.&nbsp; Similarly, in an entry child
+        that is not the last enabled entry within the widget,
         <code>Control-Right</code> moves the focus to the next enabled entry
         child, selects the contents of that widget, and sets the insertion
         cursor to its end; if there is no enabled entry child to the right of
@@ -914,46 +887,42 @@
         widget.&nbsp; If <code><b>tk_strictMotif</b></code> is false then
         <code>Meta-b</code> and <code>Meta-f</code> behave the same as
         <code>Control-Left</code> and <code>Control-Right</code>,
-        respectively.<br>
-        &nbsp;</li>
+        respectively.</li>
 
-        <li>The <code>Home</code> key clears the selection in the current entry
-        widget, moves the focus to the first enabled entry child, and sets the
-        insertion cursor to the beginning of that widget.&nbsp; Similarly, the
-        <code>End</code> key clears the selection in the current entry widget,
-        moves the focus to the last enabled entry child, and sets the insertion
-        cursor to the end of that widget.&nbsp; If
+        <li class="tm">The <code>Home</code> key clears the selection in the
+        current entry widget, moves the focus to the first enabled entry child,
+        and sets the insertion cursor to the beginning of that widget.&nbsp;
+        Similarly, the <code>End</code> key clears the selection in the current
+        entry widget, moves the focus to the last enabled entry child, and sets
+        the insertion cursor to the end of that widget.&nbsp; If
         <code><b>tk_strictMotif</b></code> is false then <code>Control-a</code>
         and <code>Control-e</code> behave the same as <code>Home</code> and
-        <code>End</code>, respectively.<br>
-        &nbsp;</li>
+        <code>End</code>, respectively.</li>
 
-        <li><code>Shift-Home</code> moves the focus to the first enabled entry
-        child, sets the insertion cursor to the beginning of that widget, and
-        either extends the selection to that position, or clears the selection
-        in the current entry and selects the contents of the new widget,
-        depending upon whether the current entry is the first enabled entry
-        child or not.&nbsp; Similarly, <code>Shift-End</code> moves the focus
-        to the last enabled entry child, sets the insertion cursor to the end
-        of that widget, and either extends the selection to that position, or
-        clears the selection in the current entry and selects the contents of
-        the new widget, depending upon whether the current entry is the last
-        enabled entry child or not.<br>
-        &nbsp;</li>
+        <li class="tm"><code>Shift-Home</code> moves the focus to the first
+        enabled entry child, sets the insertion cursor to the beginning of that
+        widget, and either extends the selection to that position, or clears
+        the selection in the current entry and selects the contents of the new
+        widget, depending upon whether the current entry is the first enabled
+        entry child or not.&nbsp; Similarly, <code>Shift-End</code> moves the
+        focus to the last enabled entry child, sets the insertion cursor to the
+        end of that widget, and either extends the selection to that position,
+        or clears the selection in the current entry and selects the contents
+        of the new widget, depending upon whether the current entry is the last
+        enabled entry child or not.</li>
 
-        <li>The <code>BackSpace</code> key deletes the selection if there is
-        one in the current entry.&nbsp; Otherwise, it deletes either the
-        character to the left of the insertion cursor in the current entry, or
-        the last character of the previous enabled entry child.&nbsp; The
+        <li class="tm">The <code>BackSpace</code> key deletes the selection if
+        there is one in the current entry.&nbsp; Otherwise, it deletes either
+        the character to the left of the insertion cursor in the current entry,
+        or the last character of the previous enabled entry child.&nbsp; The
         latter takes place at the beginning of an entry child that is not the
         first enabled entry within the widget; in this case, the
         <code>BackSpace</code> key also moves the focus to the previous enabled
         entry child and sets the insertion cursor to its end.&nbsp; If
         <code><b>tk_strictMotif</b></code> is false then <code>Control-h</code>
-        behaves the same as <code>BackSpace</code>.<br>
-        &nbsp;</li>
+        behaves the same as <code>BackSpace</code>.</li>
 
-        <li>If <code><b>tk_strictMotif</b></code> is false then
+        <li class="tm">If <code><b>tk_strictMotif</b></code> is false then
         <code>Meta-d</code> deletes all characters to the right of the
         insertion cursor within the current entry, while
         <code>Meta-BackSpace</code> and <code>Meta-Delete</code> delete either
@@ -967,8 +936,7 @@
       </ol>
     </dd>
 
-    <dt><br>
-    <a name="keywords"></a><b>KEYWORDS</b></dt>
+    <dt class="tm" id="keywords"><b>KEYWORDS</b></dt>
 
     <dd>mentry, widget, entry, label</dd>
   </dl>

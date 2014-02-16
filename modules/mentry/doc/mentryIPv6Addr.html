@@ -4,13 +4,15 @@
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content="mentry, widget, IPv6 address">
+
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
 <body bgcolor="#FFFFFF">
   <div align="center">
     <h1>Multi-Entry Widgets for IPv6 Addresses</h1>
 
-    <h2>For Mentry Version 3.6</h2>
+    <h2>For Mentry Version 3.7</h2>
 
     <h3>by</h3>
 
@@ -20,10 +22,9 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
-
   <hr>
 
-  <h2><a name="contents"></a>Contents</h2>
+  <h2 id="contents">Contents</h2>
 
   <ul>
     <li><a href="#ipv6AddrMentry">The
@@ -39,20 +40,18 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="ipv6AddrMentry"></a>The
-  <code><b>mentry::ipv6AddrMentry</b></code> Command</h2>
+  <h2 id="ipv6AddrMentry">The <code><b>mentry::ipv6AddrMentry</b></code>
+  Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>mentry::ipv6AddrMentry</code> - Create and manipulate mentry
-    widgets for IPv6 addresses</dd>
+    <dd><code>mentry::ipv6AddrMentry</code> &ndash; Create and manipulate
+    mentry widgets for IPv6 addresses</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -70,13 +69,11 @@
     <code><b><a href="mentryWidget.html">mentry::mentry</a></b></code>
     command.</dd>
 
-    <dd><br>
-    The command sets the <code><b>type</b></code> attribute of the widget to
-    the value <code>"IPv6Addr"</code> and returns the name of the newly created
-    widget.</dd>
+    <dd class="tm">The command sets the <code><b>type</b></code> attribute of
+    the widget to the value <code>"IPv6Addr"</code> and returns the name of the
+    newly created widget.</dd>
 
-    <dt><br>
-    <b>DEFAULT BINDINGS</b></dt>
+    <dt class="tm"><b>DEFAULT BINDINGS</b></dt>
 
     <dd>The <code><b>mentry::ipv6AddrMentry</b></code> command defines four new
     keyboard bindings for the entry children of the mentry widget it
@@ -89,15 +86,14 @@
     0.&nbsp; If the entry is empty then all of these keys insert the value
     <code>0</code> into the entry.</dd>
 
-    <dd><br>
-    The actions performed by the <code>Up</code> and <code>Down</code> keys can
-    also be triggered by rolling the mouse wheel.&nbsp; In addition, on Mac OS
-    Classic and Mac OS X Aqua, the actions performed by the <code>Prior</code>
-    and <code>Next</code> keys can also be triggered by rolling the mouse wheel
-    while holding down the <code>Option</code> key.</dd>
+    <dd class="tm">The actions performed by the <code>Up</code> and
+    <code>Down</code> keys can also be triggered by rolling the mouse
+    wheel.&nbsp; In addition, on Mac OS Classic and Mac OS X Aqua, the actions
+    performed by the <code>Prior</code> and <code>Next</code> keys can also be
+    triggered by rolling the mouse wheel while holding down the
+    <code>Option</code> key.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>mentry, widget, IPv6 address</dd>
   </dl>
@@ -106,20 +102,17 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="putIPAddr"></a>The <code><b>mentry::putIPv6Addr</b></code>
-  Command</h2>
+  <h2 id="putIPAddr">The <code><b>mentry::putIPv6Addr</b></code> Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>mentry::putIPv6Addr</code> - Output an IPv6 address to a mentry
-    of type <code>"IPv6Addr"</code></dd>
+    <dd><code>mentry::putIPv6Addr</code> &ndash; Output an IPv6 address to a
+    mentry of type <code>"IPv6Addr"</code></dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -136,15 +129,14 @@
     checked by examining the widget's <code><b>type</b></code> attribute, which
     must have the value <code>"IPv6Addr"</code>).</dd>
 
-    <dd><br>
-    The address is expected to consist of up to eight colon-separated groups of
-    one to four hexadecimal digits each.&nbsp; in case of less than eight
-    groups, the address must include exactly one double-colon (<code>::</code>)
-    (representing consecutive groups of zeros).&nbsp; The command generates an
-    error if the address is invalid.</dd>
+    <dd class="tm">The address is expected to consist of up to eight
+    colon-separated groups of one to four hexadecimal digits each.&nbsp; in
+    case of less than eight groups, the address must include exactly one
+    double-colon (<code>::</code>) (representing consecutive groups of
+    zeros).&nbsp; The command generates an error if the address is
+    invalid.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>mentry, widget, IPv6 address</dd>
   </dl>
@@ -153,20 +145,17 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="getIPv6Addr"></a>The <code><b>mentry::getIPv6Addr</b></code>
-  Command</h2>
+  <h2 id="getIPv6Addr">The <code><b>mentry::getIPv6Addr</b></code> Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>mentry::getIPv6Addr</code> - Get an IPv6 address from a mentry of
-    type <code>"IPv6Addr"</code></dd>
+    <dd><code>mentry::getIPv6Addr</code> &ndash; Get an IPv6 address from a
+    mentry of type <code>"IPv6Addr"</code></dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -182,13 +171,11 @@
     command (this is checked by examining the widget's <code><b>type</b></code>
     attribute, which must have the value <code>"IPv6Addr"</code>).</dd>
 
-    <dd><br>
-    If any entry child of the widget is empty, the command sets the focus to
-    the first such entry, generates an error, and returns the string
-    <code>"EMPTY"</code>.</dd>
+    <dd class="tm">If any entry child of the widget is empty, the command sets
+    the focus to the first such entry, generates an error, and returns the
+    string <code>"EMPTY"</code>.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>mentry, widget, IPv6 address</dd>
   </dl>
