@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of a multi-entry widget for IPv6 addresses.
 #
-# Copyright (c) 2009-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2009-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -18,17 +18,19 @@ namespace eval mentry {
     bind MentryIPv6Addr <Prior>	{ mentry::incrIPv6AddrComp %W  10 }
     bind MentryIPv6Addr <Next>	{ mentry::incrIPv6AddrComp %W -10 }
     variable winSys
-    if {[string compare $winSys "classic"] == 0 ||
-	[string compare $winSys "aqua"] == 0} {
-	bind MentryIPv6Addr <MouseWheel> {
-	    mentry::incrIPv6AddrComp %W %D
-	}
-	bind MentryIPv6Addr <Option-MouseWheel> {
-	    mentry::incrIPv6AddrComp %W [expr {10 * %D}]
-	}
-    } else {
-	bind MentryIPv6Addr <MouseWheel> {
-	    mentry::incrIPv6AddrComp %W [expr {%D / 120}]
+    catch {
+	if {[string compare $winSys "classic"] == 0 ||
+	    [string compare $winSys "aqua"] == 0} {
+	    bind MentryIPv6Addr <MouseWheel> {
+		mentry::incrIPv6AddrComp %W %D
+	    }
+	    bind MentryIPv6Addr <Option-MouseWheel> {
+		mentry::incrIPv6AddrComp %W [expr {10 * %D}]
+	    }
+	} else {
+	    bind MentryIPv6Addr <MouseWheel> {
+		mentry::incrIPv6AddrComp %W [expr {%D / 120}]
+	    }
 	}
     }
     if {[string compare $winSys "x11"] == 0} {
@@ -205,7 +207,7 @@ proc mentry::checkIfIPv6AddrMentry win {
 #------------------------------------------------------------------------------
 proc mentry::incrIPv6AddrComp {w amount} {
     set str [$w get]
-    if {[string compare $str ""] == 0} {
+    if {[string length $str] == 0} {
 	#
 	# Insert a "0"
 	#

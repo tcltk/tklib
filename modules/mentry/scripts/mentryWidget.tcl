@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 1999-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -40,7 +40,7 @@ namespace eval mentry {
 	    return ""
 	}
 
-	if {[string compare [info commands ::ttk::style] ""] == 0} {
+	if {[string length [info commands ::ttk::style]] == 0} {
 	    interp alias {} ::mentry::style	{} ::style
 	    if {[string compare $::tile::version "0.7"] >= 0} {
 		interp alias {} ::mentry::styleConfig {} ::style configure
@@ -423,7 +423,7 @@ proc mentry::mentry args {
 	if {[string compare $data(currentTheme) "tileqt"] == 0} {
 	    set data(widgetStyle) [tileqt_currentThemeName]
 	    if {[info exists ::env(KDE_SESSION_VERSION)] &&
-		[string compare $::env(KDE_SESSION_VERSION) ""] != 0} {
+		[string length $::env(KDE_SESSION_VERSION)] != 0} {
 		set data(colorScheme) [getKdeConfigVal "General" "ColorScheme"]
 	    } else {
 		set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
@@ -518,7 +518,7 @@ proc mentry::doConfig {win opt val} {
 
 	e {
 	    if {[string compare $opt "-textvariable"] == 0 &&
-		[string compare $val ""] != 0} {
+		[string length $val] != 0} {
 		#
 		# The text variable must be an array
 		#
@@ -582,7 +582,7 @@ proc mentry::doConfig {win opt val} {
 				set labelBg $data(-readonlybackground)
 			    }
 			}
-			if {[string compare $labelBg ""] == 0} {
+			if {[string length $labelBg] == 0} {
 			    set labelBg $val
 			}
 		    }
@@ -612,7 +612,7 @@ proc mentry::doConfig {win opt val} {
 			    set labelState normal
 			}
 		    }
-		    if {[string compare $labelBg ""] == 0} {
+		    if {[string length $labelBg] == 0} {
 			set labelBg $data(-background)
 		    }
 		    foreach w [labels $win] {
@@ -734,7 +734,7 @@ proc mentry::createChildren {win body} {
 	#
 	foreach opt $configOpts {
 	    if {[string compare $opt "-textvariable"] == 0 &&
-		[string compare $data($opt) ""] != 0} {
+		[string length $data($opt)] != 0} {
 		upvar data($opt) val
 		$w configure $opt ${val}($n)
 	    } elseif {[regexp {[ec]} [lindex $configSpecs($opt) 2]]} {
@@ -824,7 +824,7 @@ proc mentry::createChildren {win body} {
 		    set labelState normal
 		}
 	    }
-	    if {[string compare $labelBg ""] == 0} {
+	    if {[string length $labelBg] == 0} {
 		set labelBg $data(-background)
 	    }
 	    $w configure -background $labelBg -state $labelState
@@ -1024,7 +1024,7 @@ proc mentry::mentryWidgetCmd {win args} {
 	    switch $argCount {
 		1 {
 		    foreach w [entries $win] {
-			if {[string compare [$w get] ""] != 0} {
+			if {[string length [$w get]] != 0} {
 			    return 0
 			}
 		    }
@@ -1033,7 +1033,7 @@ proc mentry::mentryWidgetCmd {win args} {
 		2 {
 		    set n [childIndex [lindex $args 1] $data(maxEntryIdx)]
 		    set w [entryPath $win $n]
-		    return [expr {[string compare [$w get] ""] == 0}]
+		    return [expr {[string length [$w get]] == 0}]
 		}
 		default {
 		    mwutil::wrongNumArgs "$win $cmd ?index?"
@@ -1192,7 +1192,7 @@ proc mentry::putSubCmd {win startIdx strList} {
     # that the after-insert callback condTabToNext will not change it
     #
     set focus [focus -displayof $win]
-    if {[string compare $focus ""] != 0 && [string compare $focus "."] != 0 &&
+    if {[string length $focus] != 0 && [string compare $focus "."] != 0 &&
 	([string compare [winfo parent $focus] $win] == 0 ||
 	 [string compare [winfo parent [winfo parent $focus]] $win] == 0)} {
 	focus [winfo toplevel $win]
@@ -1370,7 +1370,7 @@ proc mentry::childIndex {n max} {
 proc mentry::condTabToNext {width win n w idx str} {
     if {[$w index insert] == $width &&
 	[string compare [focus -displayof $win] [entryPath $win $n]] == 0 &&
-	[string compare [set next [nextNormal $win $n]] ""] != 0} {
+	[string length [set next [nextNormal $win $n]]] != 0} {
 	tabToEntry $next
     }
 }
@@ -1395,12 +1395,12 @@ proc mentry::condGoToNeighbor {win n w idx} {
     }
 
     if {$idx < 0 &&
-	[string compare [set prev [prevNormal $win $n]] ""] != 0} {
+	[string length [set prev [prevNormal $win $n]]] != 0} {
 	$w selection clear
 	focus $prev
 	entrySetCursor $prev end
     } elseif {$idx > [$w index end] &&
-	      [string compare [set next [nextNormal $win $n]] ""] != 0} {
+	      [string length [set next [nextNormal $win $n]]] != 0} {
 	$w selection clear
 	focus $next
 	entrySetCursor $next 0
@@ -1470,7 +1470,7 @@ proc mentry::updateConfigSpecs win {
 	if {[string compare $currentTheme "tileqt"] == 0} {
 	    set widgetStyle [tileqt_currentThemeName]
 	    if {[info exists ::env(KDE_SESSION_VERSION)] &&
-		[string compare $::env(KDE_SESSION_VERSION) ""] != 0} {
+		[string length $::env(KDE_SESSION_VERSION)] != 0} {
 		set colorScheme [getKdeConfigVal "General" "ColorScheme"]
 	    } else {
 		set colorScheme [getKdeConfigVal "KDE" "colorScheme"]
@@ -1534,7 +1534,7 @@ proc mentry::updateConfigSpecs win {
     if {[string compare $currentTheme "tileqt"] == 0} {
 	set data(widgetStyle) [tileqt_currentThemeName]
 	if {[info exists ::env(KDE_SESSION_VERSION)] &&
-	    [string compare $::env(KDE_SESSION_VERSION) ""] != 0} {
+	    [string length $::env(KDE_SESSION_VERSION)] != 0} {
 	    set data(colorScheme) [getKdeConfigVal "General" "ColorScheme"]
 	} else {
 	    set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
@@ -1557,7 +1557,7 @@ proc mentry::updateConfigSpecs win {
 proc mentry::tabToPrev w {
     parseChildPath $w win n
     set prev [prevNormal $win $n]
-    if {[string compare $prev ""] != 0} {
+    if {[string length $prev] != 0} {
 	tabToEntry $prev
     } else {
 	entrySetCursor $w 0
@@ -1577,7 +1577,7 @@ proc mentry::tabToPrev w {
 proc mentry::tabToNext w {
     parseChildPath $w win n
     set next [nextNormal $win $n]
-    if {[string compare $next ""] != 0} {
+    if {[string length $next] != 0} {
 	tabToEntry $next
     } else {
 	entrySetCursor $w end
@@ -1695,7 +1695,7 @@ proc mentry::backSpace w {
 	$w delete sel.first sel.last
     } else {
 	if {[$w index insert] == 0 &&
-	    [string compare [set prev [prevNormal $win $n]] ""] != 0} {
+	    [string length [set prev [prevNormal $win $n]]] != 0} {
 	    focus $prev
 	    entrySetCursor $prev end
 	    set w $prev
@@ -1728,7 +1728,7 @@ proc mentry::backSpace w {
 proc mentry::delToLeft w {
     parseChildPath $w win n
     if {[$w index insert] == 0 &&
-	[string compare [set prev [prevNormal $win $n]] ""] != 0} {
+	[string length [set prev [prevNormal $win $n]]] != 0} {
 	$w selection clear
 	focus $prev
 	$prev delete 0 end
@@ -1756,12 +1756,12 @@ proc mentry::procLabelChars {w char} {
 	return ""
     }
 
-    if {[string compare [$w get] ""] == 0} {
+    if {[string length [$w get]] == 0} {
 	return -code break ""
     }
 
     set next [nextNormal $win $n]
-    if {[string compare $next ""] != 0} {
+    if {[string length $next] != 0} {
 	tabToEntry $next
     }
     return -code break ""
@@ -1778,7 +1778,7 @@ proc mentry::labelButton1 w {
     parseChildPath $w win n
     incr n
     set entry [prevNormal $win $n]
-    if {[string compare $entry ""] != 0} {
+    if {[string length $entry] != 0} {
 	set bbox [$entry bbox end]
 	set x [expr {[lindex $bbox 0] + [lindex $bbox 2]}]
 	event generate $entry <Button-1> -x $x
