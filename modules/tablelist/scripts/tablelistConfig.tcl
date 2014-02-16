@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -363,7 +363,7 @@ proc tablelist::doConfig {win opt val} {
 	    # properly formatted value of val in data($opt)
 	    #
 	    foreach w [winfo children $win] {
-		if {[regexp {^(body|hdr|sep([0-9]+)?)$} [winfo name $w]]} {
+		if {[regexp {^(body|hdr|h?sep[0-9]*)$} [winfo name $w]]} {
 		    $w configure $opt $val
 		}
 	    }
@@ -398,7 +398,7 @@ proc tablelist::doConfig {win opt val} {
 		    } else {
 			$win configure $opt $val
 			foreach c [winfo children $win] {
-			    if {[regexp {^sep[0-9]+$} [winfo name $c]]} {
+			    if {[regexp {^(sep[0-9]+|hsep)$} [winfo name $c]]} {
 				$c configure $opt $val
 			    }
 			}
@@ -434,7 +434,7 @@ proc tablelist::doConfig {win opt val} {
 		-foreground {
 		    #
 		    # Set the background color of the main separator
-		    # frame (if any) to the specified value, and apply
+		    # (if any) to the specified value, and apply
 		    # this value to the "disabled" tag if needed
 		    #
 		    if {$usingTile} {
@@ -900,7 +900,7 @@ proc tablelist::doConfig {win opt val} {
 			createSeps $win
 		    } elseif {$oldVal && !$data($opt)} {
 			foreach w [winfo children $win] {
-			    if {[regexp {^sep[0-9]+$} [winfo name $w]]} {
+			    if {[regexp {^(sep[0-9]+|hsep)$} [winfo name $w]]} {
 				destroy $w
 			    }
 			}
@@ -1627,8 +1627,8 @@ proc tablelist::doColConfig {col win opt val} {
 			} else {
 			    $l configure -background [$w cget -background]
 			    $l configure -foreground [$w cget -foreground]
-			    $l configure -font       [$w cget -font]
 			}
+			$l configure -font [$w cget -font]
 			foreach opt2 {-activebackground -activeforeground
 				      -disabledforeground -state} {
 			    catch {$l configure $opt2 [$w cget $opt2]}
@@ -1841,7 +1841,7 @@ proc tablelist::doColConfig {col win opt val} {
 	}
 
 	-text {
-	    if {$data(isDisabled)} {
+	    if {$data(isDisabled) || $data($col-showlinenumbers)} {
 		return ""
 	    }
 
