@@ -1,3 +1,21 @@
+2014-02-16  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                Bumped the version number to 3.5.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* ../../examples/*.tcl:
+
+	* scripts/*.tcl: Support for the tile treeview widget; minor
+	  performance improvements.
+
+	* scripts/tclIndex: Newly generated.
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* doc/*.html: Updated to reflect the changes; numerous improvements.
+
+	* doc/stylesheet.css: Added stylesheet file.
+
 2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
