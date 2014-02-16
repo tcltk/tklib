@@ -1,3 +1,32 @@
+2014-02-16  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 5.11.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* scripts/*.tcl: Added the "findrowname" and "findcolumnname"
+	  subcommands; collapsing a row no longer leads to renumbering the
+	  lines; placing a horizontal separator below the last tablelist row if
+	  "-showseparators" is true and "-fullseparators" is false; worked
+	  around a peculiarity of Tk on Windows, which caused problems when
+	  resizing the tablelist window in the presence of embedded images or
+	  multi-line elements; added the missing actualization of the active
+	  and anchor row indices after moving an item to a different position;
+	  fixed two bugs in Tablelist_tile, related to header labels with
+	  embedded images; numerous further improvements.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/*.tcl: Bumped the version number to 5.11.
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* doc/*.html: Updated to reflect the changes; numerous improvements.
+
+	* doc/stylesheet.css: Added stylesheet file.
+
+	* doc/arrowStyles.png: Updated the screenshot.
+
 2013-10-22  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Slightly extended.
