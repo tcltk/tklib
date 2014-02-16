@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -411,8 +411,7 @@ proc tablelist::addIncrDateTimeWidget {widgetType args} {
 
 	default {
 	    mwutil::wrongNumArgs "addIncrDateTimeWidget\
-				  datefield|dateentry|timefield|timeentry\
-				  ?-seconds? ?name?"
+		    datefield|dateentry|timefield|timeentry ?-seconds? ?name?"
 	}
     }
     checkEditWinName $name

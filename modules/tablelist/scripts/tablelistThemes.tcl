@@ -8,7 +8,7 @@
 #   - Private procedures performing RGB <-> HSV conversions
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2005-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -109,7 +109,7 @@ proc tablelist::aquaTheme {} {
     if {$majorOSVersion >= 11} {			;# OS X 10.7 or higher
 	set labelBg		#efefef
 	set labelpressedBg	#cbcbcb
-	set arrowColor		#afafaf
+	set arrowColor		#777777
     } else {
 	set labelBg		#e9e8e8
 	set labelpressedBg	#d2d2d2
