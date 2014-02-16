@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains Wcb procedures for tablelist widgets.
 #
-# Copyright (c) 1999-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2002-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
