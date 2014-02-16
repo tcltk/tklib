@@ -1,5 +1,34 @@
-What is new in Tablelist 5.10?
+What is new in Tablelist 5.11?
 ------------------------------
+
+1. Added the "findrowname" and "findcolumnname" subcommands (thanks to
+   Adrian Medrano Calvo for his proposal and discussions on this
+   subject).
+
+2. Collapsing a row no longer leads to renumbering the lines for the
+   purpose of updating a column configured to display the line numbers
+   (thanks to Will Duquette for his proposal).
+
+3. For improved appearance, if the value of the "-showseparators" option
+   is true and that of the "-fullseparators" option is false, then a
+   horizontal separator is now placed just below the last tablelist row
+   (thanks to Allan Silverstein for his proposal).
+
+4. Worked around a peculiarity of Tk on Windows, which caused problems
+   when resizing the tablelist window in the presence of embedded images
+   or multi-line elements (thanks to Will Duquette for his bug report).
+
+5. Added the missing actualization of the active and anchor row indices
+   after moving an item to a different position (thanks to Will Duquette
+   for his bug report).
+
+6. Fixed two bugs in Tablelist_tile, related to header labels with
+   embedded images (thanks to Ulrich Seidl for his bug reports).
+
+7. Numerous further improvements in the code and documentation.
+
+What was new in Tablelist 5.10?
+-------------------------------
 
 1.  Added the "-acceptdropcommand" configuration option, used to control
     whether the local drag & drop may move a specified item just before
