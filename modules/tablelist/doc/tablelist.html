@@ -6,19 +6,14 @@
   <meta name="Keywords" content=
   "tablelist, multi-column, listbox, tree, widget, tile">
 
-  <style type="text/css">
-    <!--
-      pre {background: #F2F2F2}
-      span {color: #E00000}
-    -->
-  </style>
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
 <body bgcolor="#FFFFFF">
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 5.10</h2>
+    <h2>For Tablelist Version 5.11</h2>
 
     <h3>by</h3>
 
@@ -28,21 +23,20 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
-
   <hr>
 
-  <h2><a name="contents"></a>Contents</h2>
+  <h2 id="contents">Contents</h2>
 
   <h4><a href="#overview">Overview</a></h4>
 
   <ul>
     <li><a href="#ov_what">What is Tablelist?</a></li>
 
-    <li><a href="#ov_get">How to get it?</a></li>
+    <li><a href="#ov_get">How to Get It?</a></li>
 
-    <li><a href="#ov_install">How to install it?</a></li>
+    <li><a href="#ov_install">How to Install It?</a></li>
 
-    <li><a href="#ov_use">How to use it?</a></li>
+    <li><a href="#ov_use">How to Use It?</a></li>
 
     <li><a href="#ov_tile">More on Tablelist_tile</a></li>
   </ul>
@@ -50,35 +44,34 @@
   <h4><a href="#examples">Examples</a></h4>
 
   <ul>
-    <li><a href="#ex_config">A tablelist widget for displaying and editing
-    configuration options</a></li>
+    <li><a href="#ex_config">A tablelist Widget for Displaying and Editing
+    Configuration Options</a></li>
 
-    <li><a href="#ex_browse">Two widget browsers based on a tablelist</a></li>
+    <li><a href="#ex_browse">Two Widget Browsers Based on a tablelist</a></li>
 
-    <li><a href="#ex_dirViewer">A directory viewer based on a
+    <li><a href="#ex_dirViewer">A Directory Viewer Based on a
     tablelist</a></li>
 
-    <li><a href="#ex_styles">Improving the look &amp; feel of a tablelist
-    widget</a></li>
+    <li><a href="#ex_styles">Improving the Look &amp; Feel of a tablelist
+    Widget</a></li>
 
-    <li><a href="#ex_editing">Advanced interactive tablelist cell
-    editing</a></li>
+    <li><a href="#ex_editing">Advanced Interactive tablelist Cell
+    Editing</a></li>
 
-    <li><a href="#ex_windows">A tablelist widget containing embedded
-    windows</a></li>
+    <li><a href="#ex_windows">A tablelist Widget Containing Embedded
+    Windows</a></li>
 
-    <li><a href="#ex_tile">Tile-based demo scripts</a></li>
+    <li><a href="#ex_tile">Tile-Based Demo Scripts</a></li>
   </ul>
 
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="overview"></a>Overview</h2>
+  <h2 id="overview">Overview</h2>
 
-  <h3><a name="ov_what"></a>What is Tablelist?</h3>
+  <h3 id="ov_what">What is Tablelist?</h3>
 
   <p>Tablelist is a library package for Tcl/Tk versions 8.0 or higher, written
   in pure Tcl/Tk code.&nbsp; It contains:</p>
@@ -174,11 +167,11 @@
     </address>
   </blockquote>
 
-  <h3><a name="ov_get"></a>How to get it?</h3>
+  <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist5.10.tar.gz</code> for UNIX and
-  <code>tablelist5_10.zip</code> for Windows.&nbsp; These files contain the
+  The distribution file is <code>tablelist5.11.tar.gz</code> for UNIX and
+  <code>tablelist5_11.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -191,7 +184,7 @@
     </address>
   </blockquote>
 
-  <h3><a name="ov_install"></a>How to install it?</h3>
+  <h3 id="ov_install">How to Install It?</h3>
 
   <p>Install the package as a subdirectory of one of the directories given by
   the <code>auto_path</code> variable.&nbsp; For example, you can install it as
@@ -202,21 +195,21 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist5.10.tar.gz</code>:</p>
+  <code>tablelist5.11.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist5.10.tar.gz | tar -xf -
+gunzip -c tablelist5.11.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>tablelist5.10</code>,
+  <p>This command will create a directory named <code>tablelist5.11</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist5_10.zip</code> into the directory
-  <code>tablelist5.10</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist5_11.zip</code> into the directory
+  <code>tablelist5.11</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -251,7 +244,7 @@ gunzip -c tablelist5.10.tar.gz | tar -xf -
   <code>examples</code> directory.&nbsp; Please take this into account when
   reading the <a href="#examples">examples</a> below.</p>
 
-  <h3><a name="ov_use"></a>How to use it?</h3>
+  <h3 id="ov_use">How to Use It?</h3>
 
   <p>The Tablelist distribution provides two packages, called <b>Tablelist</b>
   and <b>Tablelist_tile</b>.&nbsp; The main difference between the two is that
@@ -313,14 +306,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 5.10, then it is highly
-  recommended to specify the version number <code>5.10</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 5.11, then it is highly
+  recommended to specify the version number <code>5.11</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 5.10</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 5.11</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 5.10</code>.</p>
+  tablelist_tile 5.11</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -356,7 +349,7 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     options.</li>
   </ul>
 
-  <h3><a name="ov_tile"></a>More on Tablelist_tile</h3>
+  <h3 id="ov_tile">More on Tablelist_tile</h3>
 
   <p>A tablelist widget consists of a body (containing the items) and a header
   (displaying the column titles).&nbsp; Both components are contained in a
@@ -455,13 +448,12 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="examples"></a>Examples</h2>
+  <h2 id="examples">Examples</h2>
 
-  <h3><a name="ex_config"></a>A tablelist widget for displaying and editing
-  configuration options</h3>
+  <h3 id="ex_config">A tablelist Widget for Displaying and Editing
+  Configuration Options</h3>
 
   <p>The file <code>config.tcl</code> in the <code>demos</code> directory
   contains a procedure <code>demo::displayConfig</code> that displays the
@@ -490,7 +482,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 5.10
+package require tablelist 5.11
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -508,8 +500,12 @@ To display the configuration options of an arbitrary widget, enter
 </pre>
   </blockquote>
 
-  <p><img src="config.png" alt="Configuration Options" width="725" height=
-  "365"></p>
+  <p>The result looks like in the following figure:</p>
+
+  <blockquote>
+    <img src="config.png" alt="Configuration Options" width="725" height=
+    "365">
+  </blockquote>
 
   <p>It is assumed that the Tcl command associated with the widget specified by
   <code>&lt;widgetName&gt;</code> has a <code>configure</code> subcommand
@@ -522,7 +518,7 @@ To display the configuration options of an arbitrary widget, enter
 
   <blockquote>
     <pre>
-package require tablelist 5.10
+package require tablelist 5.11
 
 namespace eval demo {
     #
@@ -725,8 +721,8 @@ proc demo::displayConfig w {
   <p>If the default value of the <code>-selectborderwidth</code> option is
   <code>0</code> (this is the case on the Windows and Macintosh platforms, and
   also in an X11 envronment with Tk 8.5 or above) then we use the
-  <code><b><a href="tablelistWidget.html#spacing">-spacing</a></b></code>
-  option to provide some additional space above and below the rows.</p>
+  <code><a href="tablelistWidget.html#spacing">-spacing</a></code> option to
+  provide some additional space above and below the rows.</p>
 
   <p>For the last two columns of the tablelist we use the <code><a href=
   "tablelistWidget.html#col_maxwidth">-maxwidth</a></code> column configuration
@@ -933,7 +929,7 @@ proc demo::applyValue {tbl row col text} {
   canonical option value, thus making sure that the latter will become the new
   contents of the cell that was just edited.</p>
 
-  <h3><a name="ex_browse"></a>Two widget browsers based on a tablelist</h3>
+  <h3 id="ex_browse">Two Widget Browsers Based on a tablelist</h3>
 
   <p>The files <code>browse.tcl</code> and <code>browseTree.tcl</code> in the
   <code>demos</code> directory contain a procedure
@@ -956,13 +952,16 @@ To display information about the children of an arbitrary widget, enter
   <p>The tablelist created by the procedure <code>demo::displayChildren</code>
   in the file <code>browse.tcl</code> is a multi-column listbox:</p>
 
-  <p><img src="browse.png" alt="Widget Browser" width="557" height="267"></p>
+  <blockquote>
+    <img src="browse.png" alt="Widget Browser" width="557" height="267">
+  </blockquote>
 
   <p>The tablelist created by the procedure of the same name in the file
   <code>browseTree.tcl</code> is a multi-column tree widget:</p>
 
-  <p><img src="browseTree.png" alt="Widget Browser" width="554" height=
-  "267"></p>
+  <blockquote>
+    <img src="browseTree.png" alt="Widget Browser" width="554" height="267">
+  </blockquote>
 
   <p>The <code>demo::displayChildren</code> command inserts some data of the
   children of the widget specified by <code>&lt;widgetName&gt;</code> into a
@@ -983,7 +982,7 @@ To display information about the children of an arbitrary widget, enter
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 5.10
+package require tablelist 5.11
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1186,8 +1185,7 @@ proc demo::displayChildren w {
   <p>We populate the tablelist by invoking the <code>demo::putChildren</code>
   procedure, implemented as follows:</p>
 
-  <a name="putChildren"></a>
-  <blockquote>
+  <blockquote id="putChildren">
     <pre>
 #------------------------------------------------------------------------------
 # demo::putChildren
@@ -1558,15 +1556,16 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   calls itself recursively to restore the expanded states of that row's
   children.</p>
 
-  <h3><a name="ex_dirViewer"></a>A directory viewer based on a tablelist</h3>
+  <h3 id="ex_dirViewer">A Directory Viewer Based on a tablelist</h3>
 
   <p>The script <code>dirViewer.tcl</code> in the <code>demos</code> directory
   displays the contents of the volumes mounted on the system (e.g., the root
   <code>/</code> on UNIX and the local drives on Windows) in a tablelist used
   as multi-column tree widget:</p>
 
-  <p><img src="dirViewer.png" alt="Directory Viewer" width="585" height=
-  "416"></p>
+  <blockquote>
+    <img src="dirViewer.png" alt="Directory Viewer" width="585" height="416">
+  </blockquote>
 
   <p>By double-clicking an item or invoking the single entry of a pop-up menu
   within the body of the tablelist, you can display the contents of the folder
@@ -1581,7 +1580,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 5.10
+package require tablelist 5.11
 
 #
 # Add some entries to the Tk option database
@@ -1867,15 +1866,16 @@ displayContents ""
   <code>displayContents</code> with an empty string as argument, i.e., displays
   the volumes mounted on the system.</p>
 
-  <h3><a name="ex_styles"></a>Improving the look &amp; feel of a tablelist
-  widget</h3>
+  <h3 id="ex_styles">Improving the Look &amp; Feel of a tablelist Widget</h3>
 
   <p>The script <code>styles.tcl</code> in the <code>demos</code> directory
   demonstrates some ways of making tablelist widgets smarter and improving the
   readability of their items.&nbsp; It creates 8 tablelist widgets, shown in
   the following figure:</p>
 
-  <p><img src="styles.png" alt="Styles" width="606" height="475"></p>
+  <blockquote>
+    <img src="styles.png" alt="Styles" width="606" height="475">
+  </blockquote>
 
   <p>Here is the relevant code segment:</p>
 
@@ -1948,7 +1948,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   "tablelistWidget.html#columnconfigure">columnconfigure</a></code> subcommand,
   respectively.</p>
 
-  <h3><a name="ex_editing"></a>Advanced interactive tablelist cell editing</h3>
+  <h3 id="ex_editing">Advanced Interactive tablelist Cell Editing</h3>
 
   <p>The scripts <code>tileWidgets.tcl</code>, <code>bwidget.tcl</code>,
   <code>iwidgets.tcl</code>, and <code>miscWidgets.tcl</code> in the
@@ -1959,8 +1959,10 @@ for {set n 0} { $n &lt; 8} {incr n} {
   editing.&nbsp; The following figure shows the tablelist widget, together with
   a BWidget ComboBox used to edit the contents of one of its cells:</p>
 
-  <p><img src="bwidget.png" alt="Serial Line Configuration" width="757" height=
-  "369"></p>
+  <blockquote>
+    <img src="bwidget.png" alt="Serial Line Configuration" width="757" height=
+    "369">
+  </blockquote>
 
   <p>Here is the relevant code segment from the script <code>bwidget.tcl</code>
   (the scripts <code>tileWidgets.tcl</code>, <code>iwidgets.tcl</code>, and
@@ -1969,7 +1971,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;# because of "-compound"
-package require tablelist 5.10
+package require tablelist 5.11
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2287,8 +2289,7 @@ proc editEndCmd {tbl row col text} {
   validation with the aid of the Wcb package (which is required anyway for the
   Mentry library).</p>
 
-  <h3><a name="ex_windows"></a>A tablelist widget containing embedded
-  windows</h3>
+  <h3 id="ex_windows">A tablelist Widget Containing Embedded Windows</h3>
 
   <p>The script <code>embeddedWindows.tcl</code> in the <code>demos</code>
   directory creates a tablelist widget whose items correspond to the Tk library
@@ -2302,14 +2303,16 @@ proc editEndCmd {tbl row col text} {
   over the first header label, causing this label to appear in
   <code>active</code> state:</p>
 
-  <p><img src="embeddedWindows.png" alt="Embedded Windows" width="399" height=
-  "268"></p>
+  <blockquote>
+    <img src="embeddedWindows.png" alt="Embedded Windows" width="399" height=
+    "268">
+  </blockquote>
 
   <p>First, we create and populate the tablelist widget:</p>
 
   <blockquote>
     <pre>
-package require tablelist 5.10
+package require tablelist 5.11
 
 wm title . "Tk Library Scripts"
 
@@ -2529,7 +2532,7 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
 </pre>
   </blockquote>
 
-  <h3><a name="ex_tile"></a>Tile-based demo scripts</h3>
+  <h3 id="ex_tile">Tile-Based Demo Scripts</h3>
 
   <p>The Tablelist distribution contains also tile-based counterparts of the
   demo scripts discussed above.&nbsp; As described in the <a href=
@@ -2538,14 +2541,14 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
   Tablelist_tile.&nbsp; For example, let's see how to transform the demo script
   <code><a href="#ex_editing">bwidget.tcl</a></code> into a tile-based one,
   called <code>bwidget_tile.tcl</code>.&nbsp; The changes are shown below in
-  red color:</p>
+  <span>red</span> color:</p>
 
   <p>First, we replace the starting lines</p>
 
   <blockquote>
     <pre>
 package require Tk 8.3                          ;# because of entry validation
-package require tablelist 5.10
+package require tablelist 5.11
 </pre>
   </blockquote>
 
@@ -2553,7 +2556,7 @@ package require tablelist 5.10
 
   <blockquote>
     <pre>
-package require tablelist<span>_tile</span> 5.10
+package require tablelist<span>_tile</span> 5.11
 </pre>
   </blockquote>
 
@@ -2657,8 +2660,10 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
   checkbutton, and menubutoon widgets for interactive cell editing.&nbsp; The
   resulting window has a nice theme-specific appearance:</p>
 
-  <p><img src="tileWidgets.png" alt="Serial Line Configuration" width="755"
-  height="364"></p>
+  <blockquote>
+    <img src="tileWidgets.png" alt="Serial Line Configuration" width="755"
+    height="364">
+  </blockquote>
 
   <p>The tile-based version of the demo script <code><a href=
   "#ex_windows">embeddedWindows.tcl</a></code> contains a bit more changes, but
@@ -2666,8 +2671,10 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
   <code>embeddedWindows_tile.tcl</code> in the <code>demos</code> directory for
   the details.&nbsp; Here is a screenshot of the resulting window:</p>
 
-  <p><img src="embeddedWindows_tile.png" alt="Embedded Windows" width="397"
-  height="262"></p>
+  <blockquote>
+    <img src="embeddedWindows_tile.png" alt="Embedded Windows" width="397"
+    height="262">
+  </blockquote>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=

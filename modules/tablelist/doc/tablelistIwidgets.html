@@ -4,13 +4,15 @@
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content="tablelist, editing, Iwidgets">
+
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
 <body bgcolor="#FFFFFF">
   <div align="center">
     <h1>Interactive Tablelist Cell Editing Using the Iwidgets Package</h1>
 
-    <h2>For Tablelist Version 5.10</h2>
+    <h2>For Tablelist Version 5.11</h2>
 
     <h3>by</h3>
 
@@ -20,10 +22,9 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
-
   <hr>
 
-  <h2><a name="contents"></a>Contents</h2>
+  <h2 id="contents">Contents</h2>
 
   <ul>
     <li><a href="#overview">Overview</a></li>
@@ -47,10 +48,9 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="overview"></a>Overview</h2>
+  <h2 id="overview">Overview</h2>
 
   <p>The Iwidgets package (also known as [incr Widgets]) is a library extension
   for Tcl/Tk versions 8.0 or higher, written in pure Tcl/Tk code.&nbsp; It
@@ -73,10 +73,9 @@
 
   <ol>
     <li>Register the desired widget for interactive cell editing by invoking
-    one of the commands described in this reference page.<br>
-    &nbsp;</li>
+    one of the commands described in this reference page.</li>
 
-    <li>Use the tablelist widget's <code><b><a href=
+    <li class="tm">Use the tablelist widget's <code><b><a href=
     "tablelistWidget.html#columnconfigure">columnconfigure</a></b></code>
     subcommand to set the given column's <code><b><a href=
     "tablelistWidget.html#col_editable">-editable</a></b></code> option to true
@@ -92,20 +91,19 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="entryfield"></a>The
-  <code><b>tablelist::addIncrEntryfield</b></code> Command</h2>
+  <h2 id="entryfield">The <code><b>tablelist::addIncrEntryfield</b></code>
+  Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>tablelist::addIncrEntryfield</code> - Register the entryfield
-    widget from the Iwidgets package for interactive cell editing</dd>
+    <dd><code>tablelist::addIncrEntryfield</code> &ndash; Register the
+    entryfield widget from the Iwidgets package for interactive cell
+    editing</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -126,8 +124,7 @@
     <code><b>entryfield</b></code>.&nbsp; The command returns its
     <code><i>name</i></code> argument.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, editing, Iwidgets, entryfield</dd>
   </dl>
@@ -136,21 +133,19 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="dateTime"></a>The
-  <code><b>tablelist::addIncrDateTimeWidget</b></code> Command</h2>
+  <h2 id="dateTime">The <code><b>tablelist::addIncrDateTimeWidget</b></code>
+  Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>tablelist::addIncrDateTimeWidget</code> - Register the datefield,
-    dateentry, timefield, or timeentry widget from the Iwidgets package for
-    interactive cell editing</dd>
+    <dd><code>tablelist::addIncrDateTimeWidget</code> &ndash; Register the
+    datefield, dateentry, timefield, or timeentry widget from the Iwidgets
+    package for interactive cell editing</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -184,10 +179,9 @@
     by the first argument.&nbsp; The command returns its
     <code><i>name</i></code> argument.</dd>
 
-    <dd><br>
-    When editing a cell with the aid of the temporary embedded datefield,
-    dateentry, timefield, or timeentry widget associated with the above
-    <code><i>name</i></code>, you can use the script corresponding to the
+    <dd class="tm">When editing a cell with the aid of the temporary embedded
+    datefield, dateentry, timefield, or timeentry widget associated with the
+    above <code><i>name</i></code>, you can use the script corresponding to the
     <code><b><a href=
     "tablelistWidget.html#editstartcommand">-editstartcommand</a></b></code>
     tablelist configuration option to set any of the widget's options, like
@@ -197,8 +191,7 @@
     widgets, with the values <code><b>civilian</b></code> and
     <code><b>military</b></code>).</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, editing, Iwidgets, datefield, dateentry, timefield,
     timeentry</dd>
@@ -208,20 +201,18 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="spinner"></a>The <code><b>tablelist::addIncrSpinner</b></code>
+  <h2 id="spinner">The <code><b>tablelist::addIncrSpinner</b></code>
   Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>tablelist::addIncrSpinner</code> - Register the spinner widget
-    from the Iwidgets package for interactive cell editing</dd>
+    <dd><code>tablelist::addIncrSpinner</code> &ndash; Register the spinner
+    widget from the Iwidgets package for interactive cell editing</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -242,17 +233,15 @@
     <code><b>spinner</b></code>.&nbsp; The command returns its
     <code><i>name</i></code> argument.</dd>
 
-    <dd><br>
-    When editing a cell with the aid of the temporary embedded spinner widget
-    associated with the above <code><i>name</i></code>, you can use the script
-    corresponding to the <code><b><a href=
+    <dd class="tm">When editing a cell with the aid of the temporary embedded
+    spinner widget associated with the above <code><i>name</i></code>, you can
+    use the script corresponding to the <code><b><a href=
     "tablelistWidget.html#editstartcommand">-editstartcommand</a></b></code>
     tablelist configuration option to define validations for the widget or set
     any of its other options, like <code><b>-decrement</b></code> and
     <code><b>-increment</b></code>.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, editing, Iwidgets, spinner</dd>
   </dl>
@@ -261,20 +250,18 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="spinint"></a>The <code><b>tablelist::addIncrSpinint</b></code>
+  <h2 id="spinint">The <code><b>tablelist::addIncrSpinint</b></code>
   Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>tablelist::addIncrSpinint</code> - Register the spinint widget
-    from the Iwidgets package for interactive cell editing</dd>
+    <dd><code>tablelist::addIncrSpinint</code> &ndash; Register the spinint
+    widget from the Iwidgets package for interactive cell editing</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -295,17 +282,15 @@
     <code><b>spinint</b></code>.&nbsp; The command returns its
     <code><i>name</i></code> argument.</dd>
 
-    <dd><br>
-    When editing a cell with the aid of the temporary embedded spinint widget
-    associated with the above <code><i>name</i></code>, you can use the script
-    corresponding to the <code><b><a href=
+    <dd class="tm">When editing a cell with the aid of the temporary embedded
+    spinint widget associated with the above <code><i>name</i></code>, you can
+    use the script corresponding to the <code><b><a href=
     "tablelistWidget.html#editstartcommand">-editstartcommand</a></b></code>
     tablelist configuration option to define validations for the widget or set
     any of its other options, like <code><b>-range</b></code>,
     <code><b>-step</b></code>, and <code><b>-wrap</b></code>.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, editing, Iwidgets, spinint</dd>
   </dl>
@@ -314,20 +299,18 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="combobox"></a>The <code><b>tablelist::addIncrCombobox</b></code>
+  <h2 id="combobox">The <code><b>tablelist::addIncrCombobox</b></code>
   Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>tablelist::addIncrCombobox</code> - Register the combobox widget
-    from the Iwidgets package for interactive cell editing</dd>
+    <dd><code>tablelist::addIncrCombobox</code> &ndash; Register the combobox
+    widget from the Iwidgets package for interactive cell editing</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -348,9 +331,8 @@
     <code><b>combobox</b></code>.&nbsp; The command returns its
     <code><i>name</i></code> argument.</dd>
 
-    <dd><br>
-    The temporary embedded combobox widget associated with the above
-    <code><i>name</i></code> will be created with its
+    <dd class="tm">The temporary embedded combobox widget associated with the
+    above <code><i>name</i></code> will be created with its
     <code><b>-editable</b></code> option set to <code>1</code>.&nbsp; You can
     use the script corresponding to the <code><b><a href=
     "tablelistWidget.html#editstartcommand">-editstartcommand</a></b></code>
@@ -359,8 +341,7 @@
     using the combobox widget's&nbsp; <code><b>insert list</b></code>&nbsp;
     subcommand).</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, editing, Iwidgets, combobox</dd>
   </dl>
