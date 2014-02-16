@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of the tablelist move and movecolumn subcommands.
 #
-# Copyright (c) 2003-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -109,6 +109,14 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	        before one of its descendants"
     }
 
+    set w $data(body)
+    if {$data(anchorRow) != $source} {
+	$w mark set anchorRowMark [expr {double($data(anchorRow) + 1)}]
+    }
+    if {$data(activeRow) != $source} {
+	$w mark set activeRowMark [expr {double($data(activeRow) + 1)}]
+    }
+
     #
     # Save some data of the edit window if present
     #
@@ -122,7 +130,6 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
     # Build the list of column indices of the selected cells
     # within the source line and then delete that line
     #
-    set w $data(body)
     set selectedCols {}
     set line [expr {$source + 1}]
     set textIdx [expr {double($line)}]
@@ -325,16 +332,22 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
     }
 
     #
-    # Update anchorRow and activeRow if needed
+    # Update anchorRow and activeRow
     #
     if {$data(anchorRow) == $source} {
 	set data(anchorRow) $target1
 	adjustRowIndex $win data(anchorRow) 1
+    } else {
+	set anchorTextIdx [$w index anchorRowMark]
+	set data(anchorRow) [expr {int($anchorTextIdx) - 1}]
     }
     if {$data(activeRow) == $source} {
 	set activeRow $target1
 	adjustRowIndex $win activeRow 1
 	set data(activeRow) $activeRow
+    } else {
+	set activeTextIdx [$w index activeRowMark]
+	set data(activeRow) [expr {int($activeTextIdx) - 1}]
     }
 
     #

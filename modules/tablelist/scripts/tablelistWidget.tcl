@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -360,26 +360,27 @@ namespace eval tablelist {
 	activate activatecell applysorting attrib bbox bodypath bodytag \
 	canceledediting cancelediting cellattrib cellbbox cellcget \
 	cellconfigure cellindex cellselection cget childcount childindex \
-	childkeys collapse collapseall columnattrib columncget columnconfigure \
-	columncount columnindex columnwidth config configcelllist configcells \
-	configcolumnlist configcolumns configrowlist configrows configure \
-	containing containingcell containingcolumn cornerlabelpath cornerpath \
-	curcellselection curselection depth delete deletecolumns \
-	descendantcount editcell editinfo editwinpath editwintag entrypath \
-	expand expandall expandedkeys fillcolumn finishediting formatinfo get \
-	getcells getcolumns getformatted getformattedcells \
+	childkeys collapse collapseall columnattrib columncget \
+	columnconfigure columncount columnindex columnwidth config \
+	configcelllist configcells configcolumnlist configcolumns \
+	configrowlist configrows configure containing containingcell \
+	containingcolumn cornerlabelpath cornerpath curcellselection \
+	curselection depth delete deletecolumns descendantcount editcell \
+	editinfo editwinpath editwintag entrypath expand expandall \
+	expandedkeys fillcolumn findcolumnname findrowname finishediting \
+	formatinfo get getcells getcolumns getformatted getformattedcells \
 	getformattedcolumns getfullkeys getkeys hasattrib hascellattrib \
 	hascolumnattrib hasrowattrib imagelabelpath index insert insertchild \
 	insertchildlist insertchildren insertcolumnlist insertcolumns \
 	insertlist iselemsnipped isexpanded istitlesnipped isviewable \
 	itemlistvar labelpath labels labeltag move movecolumn nearest \
-	nearestcell nearestcolumn noderow parentkey refreshsorting rejectinput \
-	resetsortinfo rowattrib rowcget rowconfigure scan searchcolumn see \
-	seecell seecolumn selection separatorpath separators size sort \
-	sortbycolumn sortbycolumnlist sortcolumn sortcolumnlist sortorder \
-	sortorderlist togglecolumnhide togglerowhide toplevelkey unsetattrib \
-	unsetcellattrib unsetcolumnattrib unsetrowattrib viewablerowcount \
-	windowpath xview yview]
+	nearestcell nearestcolumn noderow parentkey refreshsorting \
+	rejectinput resetsortinfo rowattrib rowcget rowconfigure scan \
+	searchcolumn see seecell seecolumn selection separatorpath separators \
+	size sort sortbycolumn sortbycolumnlist sortcolumn sortcolumnlist \
+	sortorder sortorderlist togglecolumnhide togglerowhide toplevelkey \
+	unsetattrib unsetcellattrib unsetcolumnattrib unsetrowattrib \
+	viewablerowcount windowpath xview yview]
 
     proc restrictCmdOpts {} {
 	variable canElide
@@ -406,6 +407,7 @@ namespace eval tablelist {
     variable arrowTypes    [list up down]
     variable colWidthOpts  [list -requested -stretched -total]
     variable expCollOpts   [list -fully -partly]
+    variable findOpts      [list -descend -parent]
     variable scanOpts      [list mark dragto]
     variable searchOpts    [list -all -backwards -check -descend -exact \
 				 -formatted -glob -nocase -not -numeric \
@@ -653,6 +655,7 @@ proc tablelist::tablelist args {
 	    colCount		 0
 	    lastCol		-1
 	    treeCol		 0
+	    gotConfigureEvent	 0
 	    rightX		 0
 	    btmY		 0
 	    rowTagRefCount	 0
@@ -745,6 +748,7 @@ proc tablelist::tablelist args {
     set data(colGap)		$data(hdr).g
     set data(lb)		$win.lb
     set data(sep)		$win.sep
+    set data(hsep)		$win.hsep
 
     #
     # Get a unique name for the corner frame (a sibling of the tablelist widget)
@@ -833,6 +837,7 @@ proc tablelist::tablelist args {
 	    -insertwidth 0 -padx 0 -pady 0 -state normal -takefocus 0 -wrap none
     bind $w <Configure> {
 	set tablelist::W [winfo parent %W]
+	set tablelist::ns${tablelist::W}::data(gotConfigureEvent) 1
 	set tablelist::ns${tablelist::W}::data(rightX) [expr {%w - 1}]
 	set tablelist::ns${tablelist::W}::data(btmY) [expr {%h - 1}]
 	tablelist::makeColFontAndTagLists $tablelist::W
@@ -1390,7 +1395,6 @@ proc tablelist::collapseSubCmd {win argList} {
 	set data(activeRow) $activeRow
 
 	makeStripes $win
-	showLineNumbersWhenIdle $win
 	adjustElidedText $win
 	redisplayVisibleItems $win
 	updateColorsWhenIdle $win
@@ -1507,7 +1511,6 @@ proc tablelist::collapseallSubCmd {win argList} {
     set data(activeRow) $activeRow
 
     makeStripes $win
-    showLineNumbersWhenIdle $win
     adjustElidedText $win
     redisplayVisibleItems $win
     updateColorsWhenIdle $win
@@ -2120,7 +2123,6 @@ proc tablelist::expandSubCmd {win argList} {
 
     if {![string match "expand*SubCmd" $callerProc]} {
 	makeStripes $win
-	showLineNumbersWhenIdle $win
 	adjustElidedText $win
 	redisplayVisibleItems $win
 	updateColorsWhenIdle $win
@@ -2197,7 +2199,6 @@ proc tablelist::expandallSubCmd {win argList} {
     }
 
     makeStripes $win
-    showLineNumbersWhenIdle $win
     adjustElidedText $win
     redisplayVisibleItems $win
     updateColorsWhenIdle $win
@@ -2266,6 +2267,101 @@ proc tablelist::fillcolumnSubCmd {win argList} {
     redisplayColWhenIdle $win $colIdx
     updateViewWhenIdle $win
     return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::findcolumnnameSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::findcolumnnameSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win findcolumnname name"
+    }
+
+    set name [lindex $argList 0]
+    set nameIsEmpty [expr {[string length $name] == 0}]
+
+    upvar ::tablelist::ns${win}::data data
+    for {set col 0} {$col < $data(colCount)} {incr col} {
+	set hasName [info exists data($col-name)]
+	if {($hasName && [string compare $name $data($col-name)] == 0) ||
+	    (!$hasName && $nameIsEmpty)} {
+	    return $col
+	}
+    }
+
+    return -1
+}
+
+#------------------------------------------------------------------------------
+# tablelist::findrownameSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::findrownameSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1} {
+	mwutil::wrongNumArgs "$win findrowname name ?-descend?\
+			      ?-parent nodeIndex?"
+    }
+
+    synchronize $win
+    set name [lindex $argList 0]
+    set nameIsEmpty [expr {[string length $name] == 0}]
+
+    #
+    # Initialize some processing parameters
+    #
+    set parentKey root
+    set descend 0						;# boolean
+
+    #
+    # Parse the argument list
+    #
+    variable findOpts
+    for {set n 1} {$n < $argCount} {incr n} {
+	set arg [lindex $argList $n]
+	set opt [mwutil::fullOpt "option" $arg $findOpts]
+	switch -- $opt {
+	    -descend { set descend 1 }
+	    -parent {
+		if {$n == $argCount - 1} {
+		    return -code error "value for \"$arg\" missing"
+		}
+
+		incr n
+		set parentKey [nodeIndexToKey $win [lindex $argList $n]]
+	    }
+	}
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    set childCount [llength $data($parentKey-children)]
+    if {$childCount == 0} {
+	return -1
+    }
+
+    if {$descend} {
+	set fromChildKey [lindex $data($parentKey-children) 0]
+	set fromRow [keyToRow $win $fromChildKey]
+	set toRow [nodeRow $win $parentKey end]
+	for {set row $fromRow} {$row < $toRow} {incr row} {
+	    set key [lindex $data(keyList) $row]
+	    set hasName [info exists data($key-name)]
+	    if {($hasName && [string compare $name $data($key-name)] == 0) ||
+		(!$hasName && $nameIsEmpty)} {
+		return $row
+	    }
+	}
+    } else {
+	for {set childIdx 0} {$childIdx < $childCount} {incr childIdx} {
+	    set key [lindex $data($parentKey-children) $childIdx]
+	    set hasName [info exists data($key-name)]
+	    if {($hasName && [string compare $name $data($key-name)] == 0) ||
+		(!$hasName && $nameIsEmpty)} {
+		return [keyToRow $win $key]
+	    }
+	}
+    }
+
+    return -1
 }
 
 #------------------------------------------------------------------------------
@@ -2354,9 +2450,8 @@ proc tablelist::getSubCmd {win argList} {
 proc tablelist::getcellsSubCmd {win argList} {
     set argCount [llength $argList]
     if {$argCount < 1 || $argCount > 2} {
-	mwutil::wrongNumArgs \
-		"$win getcells firstCellIndex lastCellIndex" \
-		"$win getcells cellIndexList"
+	mwutil::wrongNumArgs "$win getcells firstCellIndex lastCellIndex" \
+			     "$win getcells cellIndexList"
     }
 
     synchronize $win
@@ -2844,7 +2939,7 @@ proc tablelist::insertSubCmd {win argList} {
 #------------------------------------------------------------------------------
 proc tablelist::insertchildlistSubCmd {win argList} {
     if {[llength $argList] != 3} {
-	mwutil::wrongNumArgs "$win insertchildlist parentNodeIndex childIndex \
+	mwutil::wrongNumArgs "$win insertchildlist parentNodeIndex childIndex\
 			      itemList"
     }
 
@@ -3008,7 +3103,6 @@ proc tablelist::iselemsnippedSubCmd {win argList} {
     }
 
     synchronize $win
-    displayItems $win
     foreach {row col} [cellIndex $win [lindex $argList 0] 1] {}
     set fullTextName [lindex $argList 1]
     upvar 2 $fullTextName fullText
@@ -3161,9 +3255,9 @@ proc tablelist::labeltagSubCmd {win argList} {
 proc tablelist::moveSubCmd {win argList} {
     set argCount [llength $argList]
     if {$argCount < 2 || $argCount > 3} {
-	mwutil::wrongNumArgs "$win move sourceIndex targetIndex" \
-			     "$win move sourceIndex targetParentNodeIndex\
-			      targetChildIndex"
+	mwutil::wrongNumArgs \
+		"$win move sourceIndex targetIndex" \
+		"$win move sourceIndex targetParentNodeIndex targetChildIndex"
     }
 
     synchronize $win
@@ -3420,7 +3514,6 @@ proc tablelist::searchcolumnSubCmd {win argList} {
     }
 
     synchronize $win
-    displayItems $win
     set col [colIndex $win [lindex $argList 0] 1]
     set pattern [lindex $argList 1]
 

@@ -7,7 +7,7 @@
 #   - Public procedures related to sorting
 #   - Private procedures implementing the sorting
 #
-# Copyright (c) 2000-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -346,8 +346,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 	    set item [lreplace $item $col $col $line]
 	    lappend newDescItemList $item
 	    set key [lindex $item end]
-	    if {![info exists data($key-elide)] &&
-		![info exists data($key-hide)]} {
+	    if {![info exists data($key-hide)]} {
 		incr line
 	    }
 	}

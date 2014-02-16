@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -100,14 +100,15 @@ proc tablelist::rowIndex {win idx endIsSize {checkRange 0}} {
 	if {$index > $data(lastRow)} {			;# text widget bug
 	    set index $data(lastRow)
 	}
-    } elseif {[set row [keyToRow $win $idx]] >= 0} {
-	set index $row
+    } elseif {[scan $idx "k%d" num] == 1} {
+	set index [keyToRow $win k$num]
     } else {
+	set idxIsEmpty [expr {[string length $idx] == 0}]
 	for {set row 0} {$row < $data(itemCount)} {incr row} {
 	    set key [lindex $data(keyList) $row]
 	    set hasName [info exists data($key-name)]
 	    if {($hasName && [string compare $idx $data($key-name)] == 0) ||
-		(!$hasName && [string length $idx] == 0)} {
+		(!$hasName && $idxIsEmpty)} {
 		set index $row
 		break
 	    }
@@ -177,10 +178,11 @@ proc tablelist::colIndex {win idx checkRange {decrX 1}} {
 	}
 	set index $lastVisibleCol
     } else {
+	set idxIsEmpty [expr {[string length $idx] == 0}]
 	for {set col 0} {$col < $data(colCount)} {incr col} {
 	    set hasName [info exists data($col-name)]
 	    if {($hasName && [string compare $idx $data($col-name)] == 0) ||
-		(!$hasName && [string length $idx] == 0)} {
+		(!$hasName && $idxIsEmpty)} {
 		set index $col
 		break
 	    }
@@ -2299,6 +2301,7 @@ proc tablelist::createSeps win {
     set sepX [getSepX]
     variable usingTile
     upvar ::tablelist::ns${win}::data data
+
     for {set col 0} {$col < $data(colCount)} {incr col} {
 	#
 	# Create the col'th separator and attach it to
@@ -2324,6 +2327,25 @@ proc tablelist::createSeps win {
 	#
 	bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) TablelistBody]
     }
+
+    #
+    # Create the horizontal separator
+    #
+    set w $data(hsep)
+    if {$usingTile} {
+	ttk::separator $w -style Seps$win.TSeparator -cursor $data(-cursor) \
+			  -takefocus 0
+    } else {
+	tk::frame $w -background $data(-background) -borderwidth 1 \
+		     -container 0 -cursor $data(-cursor) -height 2 \
+		     -highlightthickness 0 -relief sunken -takefocus 0
+    }
+
+    #
+    # Replace the binding tag TSeparator or Frame with $data(bodyTag) and
+    # TablelistBody in the list of binding tags of the horizontal separator
+    #
+    bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) TablelistBody]
     
     adjustSepsWhenIdle $win
 }
@@ -2357,19 +2379,32 @@ proc tablelist::adjustSeps win {
     }
 
     #
-    # Get the height to be applied to the separators
+    # Get the height to be applied to the column separators
+    # and place or unmanage the horizontal separator
     #
     set w $data(body)
     if {$data(-fullseparators)} {
 	set sepHeight [winfo height $w]
+
+	if {[winfo exists $data(hsep)]} {
+	    place forget $data(hsep)
+	}
     } else {
 	set textIdx [$w index @0,$data(btmY)]
 	set dlineinfo [$w dlineinfo $textIdx]
 	if {$data(itemCount) == 0 || [string length $dlineinfo] == 0} {
-	    set sepHeight 1
+	    set sepHeight 0
 	} else {
 	    foreach {x y width height baselinePos} $dlineinfo {}
 	    set sepHeight [expr {$y + $height}]
+	}
+
+	if {$data(-showseparators) && $sepHeight > 0 &&
+	    $sepHeight < [winfo height $w]} {
+	    place $data(hsep) -in $w -y $sepHeight \
+			      -width [winfo reqwidth $data(hdrTxtFr)]
+	} elseif {[winfo exists $data(hsep)]} {
+	    place forget $data(hsep)
 	}
     }
 
@@ -2386,36 +2421,45 @@ proc tablelist::adjustSeps win {
 	    break
 	}
     }
+    set mainSepHeight [expr {$sepHeight + [winfo height $data(hdr)] - 1}]
     set w $data(sep)
-    if {$col < 0} {
+    if {$col < 0 || $mainSepHeight == 0} {
 	if {[winfo exists $w]} {
 	    place forget $w
 	}
     } else {
-	place $w -in $data(hdrTxtFrLbl)$col -anchor ne -bordermode outside \
-		 -height [expr {$sepHeight + [winfo height $data(hdr)] - 1}] \
-		 -relx 1.0 -x [getSepX] -y 1
 	if {!$data(-showlabels)} {
-	    place configure $w -y 2
+	    incr mainSepHeight
 	}
+	place $w -in $data(hdrTxtFrLbl)$col -anchor ne -bordermode outside \
+		 -height $mainSepHeight -relx 1.0 -x [getSepX] -y 1
 	raise $w
     }
 
     #
-    # Set the height and vertical position of each separator
+    # Set the height and vertical position of the other column separators
     #
     variable usingTile
-    if {$data(-showlabels)} {
+    if {$sepHeight == 0} {
+	set relY 0.0
+	set y -10
+    } elseif {$data(-showlabels)} {
 	set relY 1.0
 	if {$usingTile} {
 	    set y 0
 	} else {
-	    incr sepHeight
 	    set y -1
+	    incr sepHeight
 	}
     } else {
 	set relY 0.0
-	set y 2
+	if {$usingTile} {
+	    set y 1
+	    incr sepHeight 1
+	} else {
+	    set y 0
+	    incr sepHeight 2
+	}
     }
     foreach w [winfo children $win] {
 	if {[regexp {^sep[0-9]+$} [winfo name $w]]} {
@@ -2443,8 +2487,8 @@ proc tablelist::getSepX {} {
 	    switch -- [string tolower [tileqt_currentThemeName]] {
 		cleanlooks -
 		gtk+ -
-		oxygen		{ set x 0 }
-		qtcurve		{ set x 2 }
+		oxygen	{ set x 0 }
+		qtcurve	{ set x 2 }
 	    }
 	}
     }
@@ -2663,6 +2707,9 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 	set borderWidth 0
     }
     set padX [expr {$data(charWidth) - $borderWidth}]
+    if {$padX < 0} {
+	set padX 0
+    }
     set padL $padX
     set padR $padX
     set marginL $data(charWidth)
@@ -2855,16 +2902,14 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 		place $w-il -in $w -anchor w -bordermode outside \
 			    -relx 0.0 -x $marginL -rely 0.49
 		raise $w-il
-		if {[string length $text] != 0} {
-		    if {$usingTile} {
-			set padding [$w cget -padding]
-			lset padding 0 [incr padL [winfo reqwidth $w-il]]
-			$w configure -padding $padding -text $text
-		    } else {
-			set textX [expr {$marginL + [winfo reqwidth $w-il]}]
-			place $w-tl -in $w -anchor w -bordermode outside \
-				    -relx 0.0 -x $textX -rely 0.49
-		    }
+		if {$usingTile} {
+		    set padding [$w cget -padding]
+		    lset padding 0 [incr padL [winfo reqwidth $w-il]]
+		    $w configure -padding $padding -text $text
+		} elseif {[string length $text] != 0} {
+		    set textX [expr {$marginL + [winfo reqwidth $w-il]}]
+		    place $w-tl -in $w -anchor w -bordermode outside \
+				-relx 0.0 -x $textX -rely 0.49
 		}
 	    }
 
@@ -2872,20 +2917,24 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 		place $w-il -in $w -anchor e -bordermode outside \
 			    -relx 1.0 -x -$marginR -rely 0.49
 		raise $w-il
-		if {[string length $text] != 0} {
-		    if {$usingTile} {
-			set padding [$w cget -padding]
-			lset padding 2 [incr padR [winfo reqwidth $w-il]]
-			$w configure -padding $padding -text $text
-		    } else {
-			set textX [expr {-$marginR - [winfo reqwidth $w-il]}]
-			place $w-tl -in $w -anchor e -bordermode outside \
-				    -relx 1.0 -x $textX -rely 0.49
-		    }
+		if {$usingTile} {
+		    set padding [$w cget -padding]
+		    lset padding 2 [incr padR [winfo reqwidth $w-il]]
+		    $w configure -padding $padding -text $text
+		} elseif {[string length $text] != 0} {
+		    set textX [expr {-$marginR - [winfo reqwidth $w-il]}]
+		    place $w-tl -in $w -anchor e -bordermode outside \
+				-relx 1.0 -x $textX -rely 0.49
 		}
 	    }
 
 	    center {
+		if {$usingTile} {
+		    set padding [$w cget -padding]
+		    lset padding 0 [incr padL [winfo reqwidth $w-il]]
+		    $w configure -padding $padding -text $text
+		}
+
 		if {[string length $text] == 0} {
 		    place $w-il -in $w -anchor center -relx 0.5 -x 0 -rely 0.49
 		} else {
@@ -2893,16 +2942,12 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 					[winfo reqwidth $w-tl]}]
 		    set iX [expr {-$reqWidth/2}]
 		    place $w-il -in $w -anchor w -relx 0.5 -x $iX -rely 0.49
-		    raise $w-il
-		    if {$usingTile} {
-			set padding [$w cget -padding]
-			lset padding 0 [incr padL [winfo reqwidth $w-il]]
-			$w configure -padding $padding -text $text
-		    } else {
+		    if {!$usingTile} {
 			set tX [expr {$reqWidth + $iX}]
 			place $w-tl -in $w -anchor e -relx 0.5 -x $tX -rely 0.49
 		    }
 		}
+		raise $w-il
 	    }
 	}
     }
@@ -2972,9 +3017,14 @@ proc tablelist::computeLabelWidth {win col} {
     upvar ::tablelist::ns${win}::data data
     set w $data(hdrTxtFrLbl)$col
     if {[info exists data($col-labelimage)]} {
-	set netLabelWidth \
-	    [expr {[winfo reqwidth $w-il] + [winfo reqwidth $w-tl]}]
-    } else {							;# no image
+	variable usingTile
+	if {$usingTile} {
+	    set netLabelWidth [expr {[winfo reqwidth $w] - 2*$data(charWidth)}]
+	} else {
+	    set netLabelWidth \
+		[expr {[winfo reqwidth $w-il] + [winfo reqwidth $w-tl]}]
+	}
+    } else {
 	set netLabelWidth [expr {[winfo reqwidth $w] - 2*$data(charWidth)}]
     }
 
@@ -3601,7 +3651,11 @@ proc tablelist::updateVScrlbar win {
 	forceRedrawDelayed $win
     }
 
-    purgeWidgets $win
+    if {$data(gotConfigureEvent)} {
+	set data(gotConfigureEvent) 0
+    } else {
+	purgeWidgets $win
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -4554,8 +4608,7 @@ proc tablelist::showLineNumbers win {
 	    set item [lreplace $item $col $col $line]
 	    lappend newItemList $item
 	    set key [lindex $item end]
-	    if {![info exists data($key-elide)] &&
-		![info exists data($key-hide)]} {
+	    if {![info exists data($key-hide)]} {
 		incr line
 	    }
 	}
@@ -4569,13 +4622,9 @@ proc tablelist::showLineNumbers win {
     }
 
     #
-    # Update the list variable if present
+    # Update the list variable if present, and adjust the columns
     #
     condUpdateListVar $win
-
-    #
-    # Adjust the columns
-    #
     adjustColumns $win $colIdxList 1
     return ""
 }
