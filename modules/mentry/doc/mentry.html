@@ -5,19 +5,14 @@
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content="mentry, widget, entry, label">
 
-  <style type="text/css">
-    <!--
-      pre {background: #F2F2F2}
-      span {color: #E00000}
-    -->
-  </style>
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
 <body bgcolor="#FFFFFF">
   <div align="center">
     <h1>Mentry Programmer's Guide</h1>
 
-    <h2>For Mentry Version 3.6</h2>
+    <h2>For Mentry Version 3.7</h2>
 
     <h3>by</h3>
 
@@ -27,21 +22,20 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
-
   <hr>
 
-  <h2><a name="contents"></a>Contents</h2>
+  <h2 id="contents">Contents</h2>
 
   <h4><a href="#overview">Overview</a></h4>
 
   <ul>
     <li><a href="#ov_what">What is Mentry?</a></li>
 
-    <li><a href="#ov_get">How to get it?</a></li>
+    <li><a href="#ov_get">How to Get It?</a></li>
 
-    <li><a href="#ov_install">How to install it?</a></li>
+    <li><a href="#ov_install">How to Install It?</a></li>
 
-    <li><a href="#ov_use">How to use it?</a></li>
+    <li><a href="#ov_use">How to Use It?</a></li>
 
     <li><a href="#ov_tile">More on Mentry_tile</a></li>
   </ul>
@@ -49,25 +43,24 @@
   <h4><a href="#examples">Examples</a></h4>
 
   <ul>
-    <li><a href="#ex_phoneNumber">A mentry widget for phone numbers</a></li>
+    <li><a href="#ex_phoneNumber">A mentry Widget for Phone Numbers</a></li>
 
-    <li><a href="#ex_ethernetAddr">A mentry widget for Ethernet
-    addresses</a></li>
+    <li><a href="#ex_ethernetAddr">A mentry Widget for Ethernet
+    Addresses</a></li>
 
-    <li><a href="#ex_dateTime">Using mentry widgets for date and time</a></li>
+    <li><a href="#ex_dateTime">Using mentry Widgets for Date and Time</a></li>
 
-    <li><a href="#ex_tile">Tile-based demo scripts</a></li>
+    <li><a href="#ex_tile">Tile-Based Demo Scripts</a></li>
   </ul>
 
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="overview"></a>Overview</h2>
+  <h2 id="overview">Overview</h2>
 
-  <h3><a name="ov_what"></a>What is Mentry?</h3>
+  <h3 id="ov_what">What is Mentry?</h3>
 
   <p>Mentry is a library package for Tcl/Tk versions 8.0 or higher, written in
   pure Tcl/Tk code.&nbsp; It contains:</p>
@@ -124,8 +117,8 @@
     </address>
   </blockquote>
 
-  <p><a name="ov_example"></a>It is very easy to create a multi-entry
-  widget.&nbsp; For example, the command</p>
+  <p id="ov_example">It is very easy to create a multi-entry widget.&nbsp; For
+  example, the command</p>
 
   <blockquote>
     <pre>
@@ -149,25 +142,23 @@ foreach w [.me entries] {
   thus providing a comfortable and safe user interface for editing 10-digit
   phone numbers.</p>
 
-  <h3><a name="ov_get"></a>How to get it?</h3>
+  <h3 id="ov_get">How to Get It?</h3>
 
   <p>Mentry is available for free download from the same URL as Wcb.&nbsp; The
-  distribution file is <code>mentry3.6.tar.gz</code> for UNIX and
-  <code>mentry3_6.zip</code> for Windows.&nbsp; These files contain the same
+  distribution file is <code>mentry3.7.tar.gz</code> for UNIX and
+  <code>mentry3_7.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
-  <p>Mentry is also hosted on SourceForge, as part of tklib, which in turn is
-  contained in the tcllib project, having the address</p>
+  <p>Mentry is also included in tklib, which has the address</p>
 
   <blockquote>
     <address>
-      <a href=
-      "http://core.tcl.tk/tklib">http://core.tcl.tk/tklib</a>
+      <a href="http://core.tcl.tk/tklib">http://core.tcl.tk/tklib</a>
     </address>
   </blockquote>
 
-  <h3><a name="ov_install"></a>How to install it?</h3>
+  <h3 id="ov_install">How to Install It?</h3>
 
   <p>Install the package as a subdirectory of one of the directories given by
   the <code>auto_path</code> variable.&nbsp; For example, you can install it as
@@ -177,21 +168,21 @@ foreach w [.me entries] {
   respectively.</p>
 
   <p>To install Mentry <i>on UNIX</i>, <code>cd</code> to the desired directory
-  and unpack the distribution file <code>mentry3.6.tar.gz</code>:</p>
+  and unpack the distribution file <code>mentry3.7.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c mentry3.6.tar.gz | tar -xf -
+gunzip -c mentry3.7.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>mentry3.6</code>, with
+  <p>This command will create a directory named <code>mentry3.7</code>, with
   the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>mentry3_6.zip</code> into the directory
-  <code>mentry3.6</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>mentry3_7.zip</code> into the directory
+  <code>mentry3.7</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>mentryThemes.tcl</code> in the <code>scripts</code>
@@ -203,7 +194,7 @@ gunzip -c mentry3.6.tar.gz | tar -xf -
   directory.&nbsp; Please take this into account when reading the <a href=
   "#examples">examples</a> below.</p>
 
-  <h3><a name="ov_use"></a>How to use it?</h3>
+  <h3 id="ov_use">How to Use It?</h3>
 
   <p>The Mentry distribution provides two packages, called <b>Mentry</b> and
   <b>Mentry_tile</b>.&nbsp; The main difference between the two is that
@@ -258,7 +249,7 @@ package provide Mentry_tile ...
   corresponding packages from making themselves known under two different names
   each.&nbsp; Of course, by doing so you restrict the argument of&nbsp;
   <code>package require</code>&nbsp; to a single name per package.</p>
-  
+
   <p>Please note that <b>ActiveTcl versions 8.5 and later use a modified
   package mechanism, which only exports the all-lowercase names
   <code>mentry</code> and <code>mentry_tile</code></b>.&nbsp; For this reason,
@@ -300,7 +291,7 @@ namespace import mentry::<i>pattern</i> ?mentry::<i>pattern ...</i>?
     options.</li>
   </ul>
 
-  <h3><a name="ov_tile"></a>More on Mentry_tile</h3>
+  <h3 id="ov_tile">More on Mentry_tile</h3>
 
   <p>As mentioned above, a mentry widget consists of entry and label widgets,
   embedded in a frame.&nbsp; While in the Mentry package all of these
@@ -313,7 +304,7 @@ namespace import mentry::<i>pattern</i> ?mentry::<i>pattern ...</i>?
   rather than a frame.&nbsp; This somewhat complicated layout is needed because
   in several themes it is not possible to draw flat, borderless tile enty
   widgets.</p>
-  
+
   <p>From the above it follows that <b>the package Mentry_tile will only work
   as expected if the Tk <code>frame</code> and <code>label</code> commands
   haven't been overridden by using&nbsp; <code>namespace import -force
@@ -387,12 +378,11 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="examples"></a>Examples</h2>
+  <h2 id="examples">Examples</h2>
 
-  <h3><a name="ex_phoneNumber"></a>A mentry widget for phone numbers</h3>
+  <h3 id="ex_phoneNumber">A mentry Widget for Phone Numbers</h3>
 
   <p>Let's resume the <a href="#ov_example">example</a> mentioned in the
   Overview in a bit more systematical manner.&nbsp; First, we will write a
@@ -618,8 +608,7 @@ proc checkIfPhoneNumberMentry win {
   application displaying the following figure:</p>
 
   <blockquote>
-    <p><img src="phonenumber.png" alt="Phone Number - Please load this image!"
-    width="228" height="201"></p>
+    <img src="phonenumber.png" alt="Phone Number" width="228" height="201">
   </blockquote>
 
   <p>Here is the relevant code fragment:</p>
@@ -681,7 +670,7 @@ focus [.f.me entrypath 0]
 </pre>
   </blockquote>
 
-  <h3><a name="ex_ethernetAddr"></a>A mentry widget for Ethernet addresses</h3>
+  <h3 id="ex_ethernetAddr">A mentry Widget for Ethernet Addresses</h3>
 
   <p>Ethernet addresses are usuallly written in the form
   <code>"XX:XX:XX:XX:XX:XX"</code>, where each <code>"X"</code> is a
@@ -829,11 +818,11 @@ proc getEthernetAddr win {
   Ethernet addresses looks like in the following figure:</p>
 
   <blockquote>
-    <p><img src="ethernetaddr.png" alt=
-    "Ethernet Address - Please load this image!" width="248" height="215"></p>
+    <img src="ethernetaddr.png" alt="Ethernet Address" width="248"
+    height="215">
   </blockquote>
 
-  <h3><a name="ex_dateTime"></a>Using mentry widgets for date and time</h3>
+  <h3 id="ex_dateTime">Using mentry Widgets for Date and Time</h3>
 
   <p>Multi-entry widgets can be used to display and edit date and time in a
   great variety of formats.&nbsp; The Mentry package contains ready-to-use
@@ -848,10 +837,9 @@ proc getEthernetAddr win {
     <code>"y"</code> or <code>"Y"</code>, known from the&nbsp; <code>clock
     format</code>&nbsp; command.&nbsp; Another argument expected by the
     procedure is the string (usually a single character) to be displayed in the
-    labels separating the three components of the date.<br>
-    &nbsp;</li>
+    labels separating the three components of the date.</li>
 
-    <li>Similarly, the procedure <code><a href=
+    <li class="tm">Similarly, the procedure <code><a href=
     "mentryDateTime.html#timeMentry">mentry::timeMentry</a></code> creates a
     new mentry widget for displaying and editing a time according to the format
     passed to the command as a two- or three-character string consisting of the
@@ -864,10 +852,9 @@ proc getEthernetAddr win {
     <code>"I"</code> stands for&nbsp; <code>"%I:%M %p"</code>&nbsp; or&nbsp;
     <code>"%I:%M:%S %p"</code>&nbsp; (i.e., with AM/PM indicator).&nbsp; The
     procedure expects the separator string (which is usually the
-    <code>":"</code> character) as another command-line argument.<br>
-    &nbsp;</li>
+    <code>":"</code> character) as another command-line argument.</li>
 
-    <li>Finally, the procedure <code><a href=
+    <li class="tm">Finally, the procedure <code><a href=
     "mentryDateTime.html#dateTimeMentry">mentry::dateTimeentry</a></code>
     creates a new mentry widget for displaying and editing a date &amp; time
     according to the format passed to the command as a 5- or 6-character
@@ -954,8 +941,7 @@ pack .f.lDate .f.date .f.gap .f.lTime .f.time -side left
   2</code>&nbsp; and&nbsp; <code>timeIdx = 1</code>:</p>
 
   <blockquote>
-    <p><img src="datetime1.png" alt="Date &amp; Time - Please load this image!"
-    width="243" height="183"></p>
+    <img src="datetime1.png" alt="Date &amp; Time" width="243" height="183">
   </blockquote>
 
   <p>The demo script <code>datetime2.tcl</code> displays both the date and time
@@ -977,8 +963,7 @@ pack .f.l .f.me
   </blockquote>
 
   <blockquote>
-    <p><img src="datetime2.png" alt="Date &amp; Time - Please load this image!"
-    width="232" height="183"></p>
+    <img src="datetime2.png" alt="Date &amp; Time" width="232" height="183">
   </blockquote>
 
   <p>The Mentry package exports two further commands for date, time, and date
@@ -991,10 +976,9 @@ pack .f.l .f.me
     specified as its first argument to a date, time, or date &amp; time mentry
     widget, passed to it as the second parameter.&nbsp; Like the
     &nbsp;<code>clock format</code>&nbsp; command, the procedure accepts the
-    optional argument pair&nbsp; <code>-gmt <i>boolean</i></code>.<br>
-    &nbsp;</li>
+    optional argument pair&nbsp; <code>-gmt <i>boolean</i></code>.</li>
 
-    <li>The procedure <code><a href=
+    <li class="tm">The procedure <code><a href=
     "mentryDateTime.html#getClockVal">mentry::getClockVal</a></code> returns
     the clock value corresponding to the date, time, or date &amp; time
     contained in the date, time, or date &amp; time mentry specified as its
@@ -1108,7 +1092,7 @@ focus [.f.me entrypath 0]
 </pre>
   </blockquote>
 
-  <h3><a name="ex_tile"></a>Tile-based demo scripts</h3>
+  <h3 id="ex_tile">Tile-Based Demo Scripts</h3>
 
   <p>The Mentry distribution contains also tile-based counterparts of the demo
   scripts discussed above.&nbsp; As described in the <a href="#ov_tile">More on
@@ -1116,8 +1100,8 @@ focus [.f.me entrypath 0]
   application using the Mentry package to one based on Mentry_tile.&nbsp; For
   example, let's see how to transform the demo script
   <code>phonenumber.tcl</code> into a tile-based one, called
-  <code>phonenumber_tile.tcl</code>.&nbsp; The changes are shown below in red
-  color:</p>
+  <code>phonenumber_tile.tcl</code>.&nbsp; The changes are shown below in
+  <span>red</span> color:</p>
 
   <blockquote>
     <pre>
@@ -1186,8 +1170,8 @@ focus [<span>.base</span>.f.me entrypath 0]
   appearance:</p>
 
   <blockquote>
-    <p><img src="phonenumber_tile.png" alt=
-    "Phone Number - Please load this image!" width="226" height="189"></p>
+    <img src="phonenumber_tile.png" alt="Phone Number" width="226"
+    height="189">
   </blockquote>
 
   <p>The only Mentry-specific change in the code above consists of the use of
