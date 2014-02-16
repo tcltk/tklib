@@ -44,3 +44,4 @@ set auto_index(::wcb::areAllEmptyStrings) [list source [file join $dir wcbCommon
 set auto_index(::wcb::redefWidgetCmd) [list source [file join $dir wcbCommon.tcl]]
 set auto_index(::wcb::processCmd) [list source [file join $dir wcbCommon.tcl]]
 set auto_index(::wcb::listboxWidgetCmd) [list source [file join $dir wcbListbox.tcl]]
+set auto_index(::wcb::treeviewWidgetCmd) [list source [file join $dir wcbTreeview.tcl]]
