@@ -4,13 +4,15 @@
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content="tablelist, binding script">
+
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
 <body bgcolor="#FFFFFF">
   <div align="center">
     <h1>Helper Commands Used in Tablelist Binding Scripts</h1>
 
-    <h2>For Tablelist Version 5.10</h2>
+    <h2>For Tablelist Version 5.11</h2>
 
     <h3>by</h3>
 
@@ -20,10 +22,9 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
-
   <hr>
 
-  <h2><a name="contents"></a>Contents</h2>
+  <h2 id="contents">Contents</h2>
 
   <ul>
     <li><a href="#overview">Overview</a></li>
@@ -41,14 +42,13 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="overview"></a>Overview</h2>
+  <h2 id="overview">Overview</h2>
 
   <p>The commands described in this reference page are designed to be used in
   binding scripts associated with the binding tags whose names are returned by
-  the <code><b><a href= "tablelistWidget.html#bodytag">bodytag</a></b></code>
+  the <code><b><a href="tablelistWidget.html#bodytag">bodytag</a></b></code>
   and <code><b><a href="tablelistWidget.html#labeltag">labeltag</a></b></code>
   subcommands of the Tcl command associated with a tablelist widget.&nbsp; The
   first two of these commands are also used in the default binding scripts
@@ -62,20 +62,18 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="convEventFields"></a>The
-  <code><b>tablelist::convEventFields</b></code> Command</h2>
+  <h2 id="convEventFields">The <code><b>tablelist::convEventFields</b></code>
+  Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>tablelist::convEventFields</code> - Convert event fields relative
-    to a descendant of a tablelist widget</dd>
+    <dd><code>tablelist::convEventFields</code> &ndash; Convert event fields
+    relative to a descendant of a tablelist widget</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -92,8 +90,7 @@
     relative to this descendant.&nbsp; The command returns these values as the
     components of a list consisting of three elements.</dd>
 
-    <dd>
-      <br>
+    <dd class="tm">
       In a binding script, the descendant widget corresponds to the event field
       <code><b>%W</b></code>, which can be the tablelist's body, one of the
       separator frames, a label widget displaying an embedded image, or (a
@@ -124,20 +121,18 @@ foreach {tablelist::W tablelist::x tablelist::y} \
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="getTablelistPath"></a>The
-  <code><b>tablelist::getTablelistPath</b></code> Command</h2>
+  <h2 id="getTablelistPath">The <code><b>tablelist::getTablelistPath</b></code>
+  Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>tablelist::getTablelistPath</code> - Get the path name of a
+    <dd><code>tablelist::getTablelistPath</code> &ndash; Get the path name of a
     tablelist widget from the path name of one of its descendants</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -150,17 +145,15 @@ foreach {tablelist::W tablelist::x tablelist::y} \
     <dd>This command gets the path name of a tablelist widget from the path
     name <code><i>descendantPathName</i></code> of one of its descendants.</dd>
 
-    <dd><br>
-    In a binding script, the descendant widget corresponds to the event field
-    <code><b>%W</b></code>, which can be the tablelist's body, one of the
-    separator frames, a label widget displaying an embedded image, or (a
-    descendant of) an embedded window.&nbsp; It can also be a header label or
-    of an additional widget placed by Tablelist into a header label for
-    displaying a header image or a sort arrow.&nbsp; The return value is often
-    assigned to the help variable <code><b>tablelist::W</b></code>.</dd>
+    <dd class="tm">In a binding script, the descendant widget corresponds to
+    the event field <code><b>%W</b></code>, which can be the tablelist's body,
+    one of the separator frames, a label widget displaying an embedded image,
+    or (a descendant of) an embedded window.&nbsp; It can also be a header
+    label or of an additional widget placed by Tablelist into a header label
+    for displaying a header image or a sort arrow.&nbsp; The return value is
+    often assigned to the help variable <code><b>tablelist::W</b></code>.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, path name, binding script</dd>
   </dl>
@@ -169,20 +162,18 @@ foreach {tablelist::W tablelist::x tablelist::y} \
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="getTablelistColumn"></a>The
+  <h2 id="getTablelistColumn">The
   <code><b>tablelist::getTablelistColumn</b></code> Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>tablelist::getTablelistColumn</code> - Get the column number from
-    the path name of a tablelist header label</dd>
+    <dd><code>tablelist::getTablelistColumn</code> &ndash; Get the column
+    number from the path name of a tablelist header label</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -197,13 +188,11 @@ foreach {tablelist::W tablelist::x tablelist::y} \
     an additional widget placed by Tablelist into a header label for displaying
     a header image or a sort arrow.</dd>
 
-    <dd><br>
-    In a binding script, the command argument corresponds to the event field
-    <code><b>%W</b></code>.&nbsp; The return value is often assigned to the
-    help variable <code><b>tablelist::col</b></code>.</dd>
+    <dd class="tm">In a binding script, the command argument corresponds to the
+    event field <code><b>%W</b></code>.&nbsp; The return value is often
+    assigned to the help variable <code><b>tablelist::col</b></code>.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, path name, binding script</dd>
   </dl>

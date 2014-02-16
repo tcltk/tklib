@@ -4,13 +4,15 @@
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content="tablelist, editing, Mentry">
+
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
 <body bgcolor="#FFFFFF">
   <div align="center">
     <h1>Interactive Tablelist Cell Editing Using the Mentry Package</h1>
 
-    <h2>For Tablelist Version 5.10</h2>
+    <h2>For Tablelist Version 5.11</h2>
 
     <h3>by</h3>
 
@@ -20,10 +22,9 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
-
   <hr>
 
-  <h2><a name="contents"></a>Contents</h2>
+  <h2 id="contents">Contents</h2>
 
   <ul>
     <li><a href="#overview">Overview</a></li>
@@ -50,10 +51,9 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="overview"></a>Overview</h2>
+  <h2 id="overview">Overview</h2>
 
   <p>The multi-entry package Mentry is a library extension for Tcl/Tk versions
   8.0 or higher, written in pure Tcl/Tk code.&nbsp; Its download location
@@ -72,17 +72,15 @@
 
   <p>Tablelist supports interactive cell editing with the aid of the mentry
   widgets of type <code>"Date"</code>, <code>"Time"</code>,
-  <code>"DateTime</code>, <code>"FixedPoint"</code>,
-  <code>"IPAddr"</code>, and <code>"IPv6Addr"</code>.&nbsp; The steps needed
-  for using one of these widgets for editing the cells of a given column are as
-  follows:</p>
+  <code>"DateTime</code>, <code>"FixedPoint"</code>, <code>"IPAddr"</code>, and
+  <code>"IPv6Addr"</code>.&nbsp; The steps needed for using one of these
+  widgets for editing the cells of a given column are as follows:</p>
 
   <ol>
     <li>Register the desired widget for interactive cell editing by invoking
-    one of the commands described in this reference page.<br>
-    &nbsp;</li>
+    one of the commands described in this reference page.</li>
 
-    <li>Use the tablelist widget's <code><b><a href=
+    <li class="tm">Use the tablelist widget's <code><b><a href=
     "tablelistWidget.html#columnconfigure">columnconfigure</a></b></code>
     subcommand to set the given column's <code><b><a href=
     "tablelistWidget.html#col_editable">-editable</a></b></code> option to true
@@ -98,20 +96,17 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="Date"></a>The <code><b>tablelist::addDateMentry</b></code>
-  Command</h2>
+  <h2 id="Date">The <code><b>tablelist::addDateMentry</b></code> Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>tablelist::addDateMentry</code> - Register the mentry widget of
-    type <code>"Date"</code> for interactive cell editing</dd>
+    <dd><code>tablelist::addDateMentry</code> &ndash; Register the mentry
+    widget of type <code>"Date"</code> for interactive cell editing</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -139,11 +134,10 @@
     <code><b>dateMentry</b></code>.&nbsp; The command returns its
     <code><i>name</i></code> argument.</dd>
 
-    <dd><br>
-    A tablelist column having the above <code><i>name</i></code> as the value
-    of its <code><b>-editwindow</b></code> option must contain as internal cell
-    values date information in seconds (displayed with the aid of a command
-    given by the <code><b><a href=
+    <dd class="tm">A tablelist column having the above <code><i>name</i></code>
+    as the value of its <code><b>-editwindow</b></code> option must contain as
+    internal cell values date information in seconds (displayed with the aid of
+    a command given by the <code><b><a href=
     "tablelistWidget.html#col_formatcommand">-formatcommand</a></b></code>
     column configuration option).&nbsp; The <code><b><a href=
     "tablelistWidget.html#finishediting">finishediting</a></b></code>
@@ -161,8 +155,7 @@
     "tablelistWidget.html#rejectinput">rejectinput</a></b></code>
     subcommand.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, editing, Mentry, date</dd>
   </dl>
@@ -171,20 +164,17 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="Time"></a>The <code><b>tablelist::addTimeMentry</b></code>
-  Command</h2>
+  <h2 id="Time">The <code><b>tablelist::addTimeMentry</b></code> Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>tablelist::addTimeMentry</code> - Register the mentry widget of
-    type <code>"Time"</code> for interactive cell editing</dd>
+    <dd><code>tablelist::addTimeMentry</code> &ndash; Register the mentry
+    widget of type <code>"Time"</code> for interactive cell editing</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -212,11 +202,10 @@
     <code><b>timeMentry</b></code>.&nbsp; The command returns its
     <code><i>name</i></code> argument.</dd>
 
-    <dd><br>
-    A tablelist column having the above <code><i>name</i></code> as the value
-    of its <code><b>-editwindow</b></code> option must contain as internal cell
-    values time information in seconds (displayed with the aid of a command
-    given by the <code><b><a href=
+    <dd class="tm">A tablelist column having the above <code><i>name</i></code>
+    as the value of its <code><b>-editwindow</b></code> option must contain as
+    internal cell values time information in seconds (displayed with the aid of
+    a command given by the <code><b><a href=
     "tablelistWidget.html#col_formatcommand">-formatcommand</a></b></code>
     column configuration option).&nbsp; The <code><b><a href=
     "tablelistWidget.html#finishediting">finishediting</a></b></code>
@@ -233,8 +222,7 @@
     "tablelistWidget.html#rejectinput">rejectinput</a></b></code>
     subcommand.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, editing, Mentry, time</dd>
   </dl>
@@ -243,20 +231,18 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="DateTime"></a>The
-  <code><b>tablelist::addDateTimeMentry</b></code> Command</h2>
+  <h2 id="DateTime">The <code><b>tablelist::addDateTimeMentry</b></code>
+  Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>tablelist::addDateTimeMentry</code> - Register the mentry widget
-    of type <code>"DateTime"</code> for interactive cell editing</dd>
+    <dd><code>tablelist::addDateTimeMentry</code> &ndash; Register the mentry
+    widget of type <code>"DateTime"</code> for interactive cell editing</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -285,11 +271,10 @@
     <code><b>dateTimeMentry</b></code>.&nbsp; The command returns its
     <code><i>name</i></code> argument.</dd>
 
-    <dd><br>
-    A tablelist column having the above <code><i>name</i></code> as the value
-    of its <code><b>-editwindow</b></code> option must contain as internal cell
-    values date &amp; time information in seconds (displayed with the aid of a
-    command given by the <code><b><a href=
+    <dd class="tm">A tablelist column having the above <code><i>name</i></code>
+    as the value of its <code><b>-editwindow</b></code> option must contain as
+    internal cell values date &amp; time information in seconds (displayed with
+    the aid of a command given by the <code><b><a href=
     "tablelistWidget.html#col_formatcommand">-formatcommand</a></b></code>
     column configuration option).&nbsp; The <code><b><a href=
     "tablelistWidget.html#finishediting">finishediting</a></b></code>
@@ -307,8 +292,7 @@
     "tablelistWidget.html#rejectinput">rejectinput</a></b></code>
     subcommand.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, editing, Mentry, date, time</dd>
   </dl>
@@ -317,20 +301,18 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="FixedPoint"></a>The
-  <code><b>tablelist::addFixedPointMentry</b></code> Command</h2>
+  <h2 id="FixedPoint">The <code><b>tablelist::addFixedPointMentry</b></code>
+  Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>tablelist::addFixedPointMentry</code> - Register the mentry
+    <dd><code>tablelist::addFixedPointMentry</code> &ndash; Register the mentry
     widget of type <code>"FixedPoint"</code> for interactive cell editing</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -359,10 +341,9 @@
     of the optional <code><b>-comma</b></code> argument.&nbsp; The command
     returns its <code><i>name</i></code> argument.</dd>
 
-    <dd><br>
-    A tablelist column having the above <code><i>name</i></code> as the value
-    of its <code><b>-editwindow</b></code> option must contain real numbers as
-    internal cell values.&nbsp; The <code><b><a href=
+    <dd class="tm">A tablelist column having the above <code><i>name</i></code>
+    as the value of its <code><b>-editwindow</b></code> option must contain
+    real numbers as internal cell values.&nbsp; The <code><b><a href=
     "tablelistWidget.html#finishediting">finishediting</a></b></code>
     subcommand of the Tcl command associated with the tablelist widget will
     retrieve the contents of the embedded window used for interactive cell
@@ -377,8 +358,7 @@
     "tablelistWidget.html#rejectinput">rejectinput</a></b></code>
     subcommand.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, editing, Mentry, real number</dd>
   </dl>
@@ -387,20 +367,18 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="IPAddr"></a>The <code><b>tablelist::addIPAddrMentry</b></code>
+  <h2 id="IPAddr">The <code><b>tablelist::addIPAddrMentry</b></code>
   Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>tablelist::addIPAddrMentry</code> - Register the mentry widget of
-    type <code>"IPAddr"</code> for interactive cell editing</dd>
+    <dd><code>tablelist::addIPAddrMentry</code> &ndash; Register the mentry
+    widget of type <code>"IPAddr"</code> for interactive cell editing</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -422,10 +400,9 @@
     <code><b>ipAddrMentry</b></code>.&nbsp; The command returns its
     <code><i>name</i></code> argument.</dd>
 
-    <dd><br>
-    A tablelist column having the above <code><i>name</i></code> as the value
-    of its <code><b>-editwindow</b></code> option must contain IP addresses as
-    internal cell values.&nbsp; The <code><b><a href=
+    <dd class="tm">A tablelist column having the above <code><i>name</i></code>
+    as the value of its <code><b>-editwindow</b></code> option must contain IP
+    addresses as internal cell values.&nbsp; The <code><b><a href=
     "tablelistWidget.html#finishediting">finishediting</a></b></code>
     subcommand of the Tcl command associated with the tablelist widget will
     retrieve the contents of the embedded window used for interactive cell
@@ -440,8 +417,7 @@
     "tablelistWidget.html#rejectinput">rejectinput</a></b></code>
     subcommand.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, editing, Mentry, IP address</dd>
   </dl>
@@ -450,20 +426,18 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="IPv6Addr"></a>The
-  <code><b>tablelist::addIPv6AddrMentry</b></code> Command</h2>
+  <h2 id="IPv6Addr">The <code><b>tablelist::addIPv6AddrMentry</b></code>
+  Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>tablelist::addIPv6AddrMentry</code> - Register the mentry widget
-    of type <code>"IPv6Addr"</code> for interactive cell editing</dd>
+    <dd><code>tablelist::addIPv6AddrMentry</code> &ndash; Register the mentry
+    widget of type <code>"IPv6Addr"</code> for interactive cell editing</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -485,10 +459,9 @@
     <code><b>ipv6AddrMentry</b></code>.&nbsp; The command returns its
     <code><i>name</i></code> argument.</dd>
 
-    <dd><br>
-    A tablelist column having the above <code><i>name</i></code> as the value
-    of its <code><b>-editwindow</b></code> option must contain IPv6 addresses
-    as internal cell values.&nbsp; The <code><b><a href=
+    <dd class="tm">A tablelist column having the above <code><i>name</i></code>
+    as the value of its <code><b>-editwindow</b></code> option must contain
+    IPv6 addresses as internal cell values.&nbsp; The <code><b><a href=
     "tablelistWidget.html#finishediting">finishediting</a></b></code>
     subcommand of the Tcl command associated with the tablelist widget will
     retrieve the contents of the embedded window used for interactive cell
@@ -503,8 +476,7 @@
     "tablelistWidget.html#rejectinput">rejectinput</a></b></code>
     subcommand.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, editing, Mentry, IPv6 address</dd>
   </dl>

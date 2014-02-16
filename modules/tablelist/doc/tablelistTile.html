@@ -4,13 +4,15 @@
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content="tablelist, editing, tile">
+
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
 <body bgcolor="#FFFFFF">
   <div align="center">
     <h1>Interactive Tablelist Cell Editing Using Tile Widgets</h1>
 
-    <h2>For Tablelist Version 5.10</h2>
+    <h2>For Tablelist Version 5.11</h2>
 
     <h3>by</h3>
 
@@ -20,10 +22,9 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
-
   <hr>
 
-  <h2><a name="contents"></a>Contents</h2>
+  <h2 id="contents">Contents</h2>
 
   <ul>
     <li><a href="#overview">Overview</a></li>
@@ -47,10 +48,9 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="overview"></a>Overview</h2>
+  <h2 id="overview">Overview</h2>
 
   <p>The tile theme engine is a compiled library extension for Tcl/Tk versions
   8.4 or higher.&nbsp; Beginning with Tk 8.5a6, tile is integrated into the Tk
@@ -105,26 +105,22 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="entry"></a>Interactive Cell Editing Using the tile entry
-  Widget</h2>
+  <h2 id="entry">Interactive Cell Editing Using the tile entry Widget</h2>
 
   <dl>
     <dt><b>DESCRIPTION</b></dt>
 
-    <dd>
-      The temporary embedded tile entry widget used for interactive cell
-      editing will be created with an explicitly set value for its
-      <code><b>-style</b></code> option.&nbsp; Apart from its theme-specific
-      appearance, it behaves just like its Tk core counterpart.
+    <dd>The temporary embedded tile entry widget used for interactive cell
+    editing will be created with an explicitly set value for its
+    <code><b>-style</b></code> option.&nbsp; Apart from its theme-specific
+    appearance, it behaves just like its Tk core counterpart.</dd>
 
-      <p>If an application uses the tile entry widget for interactive cell
-      editing and also the Wcb package (even if not for that widget), then the
-      version of Wcb must be 3.1 or higher (because earlier Wcb releases didn't
-      support any tile widgets).</p>
-    </dd>
+    <dd class="tm">If an application uses the tile entry widget for interactive
+    cell editing and also the Wcb package (even if not for that widget), then
+    the version of Wcb must be 3.1 or higher (because earlier Wcb releases
+    didn't support any tile widgets).</dd>
 
     <dt><b>KEYWORDS</b></dt>
 
@@ -135,34 +131,30 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="spinbox"></a>Interactive Cell Editing Using the tile spinbox
-  Widget</h2>
+  <h2 id="spinbox">Interactive Cell Editing Using the tile spinbox Widget</h2>
 
   <dl>
     <dt><b>DESCRIPTION</b></dt>
 
-    <dd>
-      The temporary embedded tile spinbox widget used for interactive cell
-      editing will be created with an explicitly set value for its
-      <code><b>-style</b></code> option and with its <code><b>-state</b></code>
-      option set to <code><b>normal</b></code>, which makes the widget
-      editable.&nbsp; You can use the script corresponding to the
-      <code><b><a href=
-      "tablelistWidget.html#editstartcommand">-editstartcommand</a></b></code>
-      tablelist configuration option to set the state of the spinbox to
-      <code><b>readonly</b></code> or define validations for it, as well as for
-      setting its (range of) values and its <code><b>-wrap</b></code>
-      option.&nbsp; Apart from its theme-specific appearance, it behaves just
-      like its Tk core counterpart.
+    <dd>The temporary embedded tile spinbox widget used for interactive cell
+    editing will be created with an explicitly set value for its
+    <code><b>-style</b></code> option and with its <code><b>-state</b></code>
+    option set to <code><b>normal</b></code>, which makes the widget
+    editable.&nbsp; You can use the script corresponding to the
+    <code><b><a href=
+    "tablelistWidget.html#editstartcommand">-editstartcommand</a></b></code>
+    tablelist configuration option to set the state of the spinbox to
+    <code><b>readonly</b></code> or define validations for it, as well as for
+    setting its (range of) values and its <code><b>-wrap</b></code>
+    option.&nbsp; Apart from its theme-specific appearance, it behaves just
+    like its Tk core counterpart.</dd>
 
-      <p>If an application uses the tile spinbox widget for interactive cell
-      editing and also the Wcb package (even if not for that widget), then the
-      version of Wcb must be 3.2 or higher (because the support for the new
-      tile spinbox widget was added to Wcb in its version 3.2).</p>
-    </dd>
+    <dd class="tm">If an application uses the tile spinbox widget for
+    interactive cell editing and also the Wcb package (even if not for that
+    widget), then the version of Wcb must be 3.2 or higher (because the support
+    for the new tile spinbox widget was added to Wcb in its version 3.2).</dd>
 
     <dt><b>KEYWORDS</b></dt>
 
@@ -173,33 +165,30 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="combobox"></a>Interactive Cell Editing Using the tile combobox
+  <h2 id="combobox">Interactive Cell Editing Using the tile combobox
   Widget</h2>
 
   <dl>
     <dt><b>DESCRIPTION</b></dt>
 
-    <dd>
-      The temporary embedded tile combobox widget used for interactive cell
-      editing will be created with an explicitly set value for its
-      <code><b>-style</b></code> option and with its <code><b>-state</b></code>
-      option set to <code><b>normal</b></code>, which makes the widget
-      editable.&nbsp; You can use the script corresponding to the
-      <code><b><a href=
-      "tablelistWidget.html#editstartcommand">-editstartcommand</a></b></code>
-      tablelist configuration option to set the state of the combobox to
-      <code><b>readonly</b></code> or define validations for it, as well as for
-      populating its listbox component (with the aid of the combobox widget's
-      <code><b>-values</b></code> option).
+    <dd>The temporary embedded tile combobox widget used for interactive cell
+    editing will be created with an explicitly set value for its
+    <code><b>-style</b></code> option and with its <code><b>-state</b></code>
+    option set to <code><b>normal</b></code>, which makes the widget
+    editable.&nbsp; You can use the script corresponding to the
+    <code><b><a href=
+    "tablelistWidget.html#editstartcommand">-editstartcommand</a></b></code>
+    tablelist configuration option to set the state of the combobox to
+    <code><b>readonly</b></code> or define validations for it, as well as for
+    populating its listbox component (with the aid of the combobox widget's
+    <code><b>-values</b></code> option).</dd>
 
-      <p>If an application uses the tile combobox widget for interactive cell
-      editing and also the Wcb package (even if not for that widget), then the
-      version of Wcb must be 3.1 or higher (because earlier Wcb releases didn't
-      support any tile widgets).</p>
-    </dd>
+    <dd class="tm">If an application uses the tile combobox widget for
+    interactive cell editing and also the Wcb package (even if not for that
+    widget), then the version of Wcb must be 3.1 or higher (because earlier Wcb
+    releases didn't support any tile widgets).</dd>
 
     <dt><b>KEYWORDS</b></dt>
 
@@ -210,11 +199,10 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="checkbutton"></a>Interactive Cell Editing Using the tile
-  checkbutton Widget.</h2>
+  <h2 id="checkbutton">Interactive Cell Editing Using the tile checkbutton
+  Widget.</h2>
 
   <dl>
     <dt><b>DESCRIPTION</b></dt>
@@ -232,22 +220,20 @@
     to change these options if the cells have the same internal values
     <code>0</code> and <code>1</code>.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, editing, tile, checkbutton</dd>
   </dl>
-
   <hr>
 
-  <h2><a name="menubutton"></a>Interactive Cell Editing Using the tile
-  menubutton Widget.</h2>
+  <h2 id="menubutton">Interactive Cell Editing Using the tile menubutton
+  Widget.</h2>
 
   <dl>
     <dt><b>DESCRIPTION</b></dt>
 
-    <dd>The temporary embedded tile menubutton widget used for interactive
-    cell editing will be created with explicitly set values for its
+    <dd>The temporary embedded tile menubutton widget used for interactive cell
+    editing will be created with explicitly set values for its
     <code><b>-style</b></code> and <code><b>-textvariable</b></code>
     options.&nbsp; In addition, a menu with its <code><b>-tearoff</b></code>
     option set to <code>0</code> and an appropriate script as the value of its
@@ -275,8 +261,7 @@
     entry's text will be shown in the menubutton (for example, with the aid of
     the menu entry's <code><b>-command</b></code> option).</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>tablelist, editing, tile, menubutton</dd>
   </dl>
