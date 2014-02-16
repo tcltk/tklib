@@ -4,18 +4,16 @@
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content=
-  "callback, widget, Tk entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox, tile combobox, listbox, tablelist, text, ctext">
+  "callback, widget, Tk entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox, tile combobox, listbox, tablelist, tile treeview, text, ctext">
 
-  <style type="text/css">
-    <!--
-      pre {background: #F2F2F2}
-    -->
-  </style>
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
 <body bgcolor="#FFFFFF">
   <div align="center">
     <h1>Wcb Programmer's Guide</h1>
+
+    <h2>For Wcb Version 3.5</h2>
 
     <h3>by</h3>
 
@@ -25,49 +23,47 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
-
   <hr>
 
-  <h2><a name="contents"></a>Contents</h2>
+  <h2 id="contents">Contents</h2>
 
   <h4><a href="#overview">Overview</a></h4>
 
   <ul>
-    <li><a href="#ov_problems">Some common problems</a></li>
+    <li><a href="#ov_problems">Some Common Problems</a></li>
 
-    <li><a href="#ov_wcb">The Wcb package</a></li>
+    <li><a href="#ov_wcb">The Wcb Package</a></li>
 
-    <li><a href="#ov_get">How to get it?</a></li>
+    <li><a href="#ov_get">How to Get It?</a></li>
 
-    <li><a href="#ov_install">How to install it?</a></li>
+    <li><a href="#ov_install">How to Install It?</a></li>
 
-    <li><a href="#ov_use">How to use it?</a></li>
+    <li><a href="#ov_use">How to Use It?</a></li>
   </ul>
 
   <h4><a href="#examples">Examples</a></h4>
 
   <ul>
-    <li><a href="#ex_entry">Some before-<code>insert</code> callbacks for entry
-    widgets</a></li>
+    <li><a href="#ex_entry">Some before-<code>insert</code> Callbacks for entry
+    Widgets</a></li>
 
-    <li><a href="#ex_listbox1">A <code>selset</code> callback for a
-    listbox</a></li>
+    <li><a href="#ex_listbox1">A <code>selset</code> Callback for a listbox
+    Widget</a></li>
 
-    <li><a href="#ex_listbox2">An <code>activate</code> callback for a
-    listbox</a></li>
+    <li><a href="#ex_listbox2">An <code>activate</code> Callback for a listbox
+    Widget</a></li>
 
-    <li><a href="#ex_text">Seven callbacks for a text widget</a></li>
+    <li><a href="#ex_text">Seven Callbacks for a text Widget</a></li>
   </ul>
 
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="overview"></a>Overview</h2>
+  <h2 id="overview">Overview</h2>
 
-  <h3><a name="ov_problems"></a>Some common problems</h3>
+  <h3 id="ov_problems">Some Common Problems</h3>
 
   <p>Many Tcl/Tk programmers are confronted with questions like the
   following:</p>
@@ -98,11 +94,12 @@
     tile combobox, text, or ctext widget is moved?</li>
 
     <li>How to define a command to be called automatically when selecting a
-    listbox element, a tablelist row or cell, or a range of characters in a
-    text or ctext widget?</li>
+    listbox element, a tablelist row or cell, a tile treeview item, or a range
+    of characters in a text or ctext widget?</li>
 
-    <li>How to protect any or all items of a listbox or a range of characters
-    in a text or ctext widget from being selected?</li>
+    <li>How to protect any or all items/elements of a listbox, tablelist, or
+    tile treeview, or a range of characters in a text or ctext widget from
+    being selected?</li>
   </ul>
 
   <p>In most books, FAQs, newsgroup articles, and widget sets, you can find
@@ -122,23 +119,24 @@
   mechanism for text widgets.&nbsp; However, also these improvements are of
   <i>individual</i> nature.</p>
 
-  <h3><a name="ov_wcb"></a>The Wcb package</h3>
+  <h3 id="ov_wcb">The Wcb Package</h3>
 
   <p>The <b>W</b>idget <b>c</b>all<b>b</b>ack package Wcb provides a completely
   different, <i>general</i> solution to the above problems:&nbsp; Based on
   redefining the Tcl command corresponding to a widget, the main Wcb procedure
   <code><a href="wcbRef.html#callback">wcb::callback</a></code> enables you to
   associate arbitrary commands with some Tk entry, tile entry, BWidget Entry,
-  Tk spinbox, tile spinbox, tile combobox, listbox, tablelist, text, and ctext
-  widget operations.&nbsp; These commands will be invoked automatically in the
-  global scope whenever the respective widget operation is executed.&nbsp; You
-  can request that these commands be called either before or after executing
-  the respective widget operation, i.e., you can define both <b>before-</b> and
-  <b>after-callbacks</b>.&nbsp; From within a before-callback, you can cancel
-  the respective widget command by invoking the procedure <code><a href=
-  "wcbRef.html#cancel">wcb::cancel</a></code>, or modify its arguments by
-  calling <code><a href="wcbRef.html#extend">wcb::extend</a></code> or
-  <code><a href="wcbRef.html#replace">wcb::replace</a></code>.</p>
+  Tk spinbox, tile spinbox, tile combobox, listbox, tablelist, tile treeview,
+  text, and ctext widget operations.&nbsp; These commands will be invoked
+  automatically in the global scope whenever the respective widget operation is
+  executed.&nbsp; You can request that these commands be called either before
+  or after executing the respective widget operation, i.e., you can define both
+  <b>before-</b> and <b>after-callbacks</b>.&nbsp; From within a
+  before-callback, you can cancel the respective widget command by invoking the
+  procedure <code><a href="wcbRef.html#cancel">wcb::cancel</a></code>, or
+  modify its arguments by calling <code><a href=
+  "wcbRef.html#extend">wcb::extend</a></code> or <code><a href=
+  "wcbRef.html#replace">wcb::replace</a></code>.</p>
 
   <p>Besides these (and four other) general-purpose commands, the Wcb package
   exports four utility procedures for Tk entry, tile entry, BWidget Entry, Tk
@@ -153,7 +151,7 @@
   completely platform-independent and very easy to install.&nbsp; It requires
   version 8.0 or higher of both Tcl and Tk.</p>
 
-  <h3><a name="ov_get"></a>How to get it?</h3>
+  <h3 id="ov_get">How to Get It?</h3>
 
   <p>Wcb is available for free download from the Web page</p>
 
@@ -163,22 +161,20 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>wcb3.4.tar.gz</code> for UNIX and
-  <code>wcb3_4.zip</code> for Windows.&nbsp; These files contain the same
+  <p>The distribution file is <code>wcb3.5.tar.gz</code> for UNIX and
+  <code>wcb3_5.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
-  <p>Wcb is also hosted on SourceForge, as part of tklib, which in turn is
-  contained in the tcllib project, having the address</p>
+  <p>Wcb is also included in tklib, which has the address</p>
 
   <blockquote>
     <address>
-      <a href=
-      "http://core.tcl.tk/tklib">http://core.tcl.tk/tklib</a>
+      <a href="http://core.tcl.tk/tklib">http://core.tcl.tk/tklib</a>
     </address>
   </blockquote>
 
-  <h3><a name="ov_install"></a>How to install it?</h3>
+  <h3 id="ov_install">How to Install It?</h3>
 
   <p>Install the package as a subdirectory of one of the directories given by
   the <code>auto_path</code> variable.&nbsp; For example, you can install it as
@@ -188,29 +184,29 @@
   respectively.</p>
 
   <p>To install Wcb <i>on UNIX</i>, <code>cd</code> to the desired directory
-  and unpack the distribution file <code>wcb3.4.tar.gz</code>:</p>
+  and unpack the distribution file <code>wcb3.5.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c wcb3.4.tar.gz | tar -xf -
+gunzip -c wcb3.5.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>wcb3.4</code>, with the
+  <p>This command will create a directory named <code>wcb3.5</code>, with the
   subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>wcb3_4.zip</code> into the directory
-  <code>wcb3.4</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>wcb3_5.zip</code> into the directory
+  <code>wcb3.5</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
-  <p>Notice that in tklib the Wcb <code>demos</code> directory is replaced
-  with the subdirectory <code>wcb</code> of the <code>examples</code>
+  <p>Notice that in tklib the Wcb <code>demos</code> directory is replaced with
+  the subdirectory <code>wcb</code> of the <code>examples</code>
   directory.&nbsp; Please take this into account when reading the <a href=
   "#examples">examples</a> below.</p>
 
-  <h3><a name="ov_use"></a>How to use it?</h3>
+  <h3 id="ov_use">How to Use It?</h3>
 
   <p>To be able to access the commands and variables defined in the package
   Wcb, your scripts must contain one of the lines</p>
@@ -236,12 +232,12 @@ package provide Wcb ...
   you want to prevent the package from making itself known under two different
   names.&nbsp; Of course, by doing so you restrict the argument of&nbsp;
   <code>package require</code>&nbsp; to a single name.</p>
-  
+
   <p>Please note that <b>ActiveTcl versions 8.5 and later use a modified
   package mechanism, which only exports the all-lowercase name
   <code>wcb</code></b>.&nbsp; For this reason, the <a href=
-  "#examples">examples</a> below use the statement&nbsp;
-  <code>package require wcb</code>.</p></p>
+  "#examples">examples</a> below use the statement&nbsp; <code>package require
+  wcb</code>.</p>
 
   <p>Since the package Wcb is implemented in its own namespace called
   <code>wcb</code>, you must either invoke the</p>
@@ -272,21 +268,19 @@ namespace import wcb::<i>pattern</i> ?wcb::<i>pattern ...</i>?
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="examples"></a>Examples</h2>
+  <h2 id="examples">Examples</h2>
 
-  <h3><a name="ex_entry"></a>Some before-<code>insert</code> callbacks for
-  entry widgets</h3>
+  <h3 id="ex_entry">Some before-<code>insert</code> Callbacks for entry
+  Widgets</h3>
 
   <p>The script <code>entrytest.tcl</code> in the <code>demos</code> directory
   creates three entry widgets with the constraints shown in the following
   figure:</p>
 
   <blockquote>
-    <p><img src="entrytest.png" alt="entrytest - Please load this image!"
-    width="309" height="262"></p>
+    <img src="entrytest.png" alt="entrytest" width="309" height="262">
   </blockquote>
 
   <p>For the topmost entry <code>.e1</code> we define two
@@ -369,8 +363,7 @@ wcb::callback .e3 before insert {wcb::checkEntryLen 10} \
 </pre>
   </blockquote>
 
-  <h3><a name="ex_listbox1"></a>A <code>selset</code> callback for a
-  listbox</h3>
+  <h3 id="ex_listbox1">A <code>selset</code> Callback for a listbox Widget</h3>
 
   <p>In the case of a listbox, you will probably most often want to define a
   callback for the&nbsp; <code>selection set</code>&nbsp; widget
@@ -388,8 +381,7 @@ wcb::callback .e3 before insert {wcb::checkEntryLen 10} \
   the corresponding bitmap in the label <code>.picture</code>.</p>
 
   <blockquote>
-    <p><img src="listboxtest1.png" alt="listboxtest1 - Please load this image!"
-    width="179" height="145"></p>
+    <img src="listboxtest1.png" alt="listboxtest1" width="179" height="145">
   </blockquote>
 
   <p>Here is the relevant code fragment from the script
@@ -405,7 +397,7 @@ set dirName [file join $tk_library demos images]
 #
 frame .spacer -width 10
 listbox .lb -height 0 -width 0 -background gray98
-if {$tk_version < 8.5} {
+if {$tk_version &lt; 8.5} {
     set pattern [file join $dirName *.bmp] 
 } else { 
     set pattern [file join $dirName *.xbm]
@@ -445,8 +437,8 @@ proc showBitmap {w first args} {
   the empty list or the optional second index passed to the&nbsp;
   <code>selection set</code>&nbsp; command.</p>
 
-  <h3><a name="ex_listbox2"></a>An <code>activate</code> callback for a
-  listbox</h3>
+  <h3 id="ex_listbox2">An <code>activate</code> Callback for a listbox
+  Widget</h3>
 
   <p>The listbox used in the preceding example has the default selection mode
   <code>browse</code>, hence the before-<code>selset</code> callback
@@ -460,8 +452,7 @@ proc showBitmap {w first args} {
   within the listbox.</p>
 
   <blockquote>
-    <p><img src="listboxtest2.png" alt="listboxtest2 - Please load this image!"
-    width="189" height="216"></p>
+    <img src="listboxtest2.png" alt="listboxtest2" width="189" height="216">
   </blockquote>
 
   <p>To solve this problem, we can either change the selection mode to have the
@@ -524,14 +515,13 @@ proc showPicture {w idx} {
 </pre>
   </blockquote>
 
-  <h3><a name="ex_text"></a>Seven callbacks for a text widget</h3>
+  <h3 id="ex_text">Seven Callbacks for a text Widget</h3>
 
   <p>The script <code>texttest1.tcl</code> in the <code>demos</code> directory
   creates the text widget shown in the following figure:</p>
 
   <blockquote>
-    <p><img src="texttest1.png" alt="texttest1 - Please load this image!"
-    width="364" height="279"></p>
+    <img src="texttest1.png" alt="texttest1" width="364" height="279">
   </blockquote>
 
   <p>Here is the relevant code fragment:</p>
@@ -718,8 +708,7 @@ set index [$w index insert]
   shown in the following figure:</p>
 
   <blockquote>
-    <p><img src="texttest2.png" alt="texttest2- Please load this image!" width=
-    "364" height="279"></p>
+    <img src="texttest2.png" alt="texttest2" width= "364" height="279">
   </blockquote>
 
   <p>Most of the code contained in the script <code>texttest2.tcl</code> is
