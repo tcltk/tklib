@@ -1,8 +1,17 @@
-What is new in Wcb 3.4?
+What is new in Wcb 3.5?
 -----------------------
 
+1. Support for the tile treeview widget.
+
+2. Minor performance improvements.
+
+3. Improved and updated the documentation.
+
+What was new in Wcb 3.4?
+------------------------
+
 The only changes contained in this release are related to the package
-mechanism, needed for a better teacup support (tanks to Oliver Bienert
+mechanism, needed for a better teacup support (thanks to Oliver Bienert
 and Andreas Kupries for discussions on this subject).
 
 What was new in Wcb 3.3?
