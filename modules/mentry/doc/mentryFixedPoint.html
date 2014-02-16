@@ -4,6 +4,8 @@
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content="mentry, widget, real number">
+
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
 <body bgcolor="#FFFFFF">
@@ -11,7 +13,7 @@
     <h1>Multi-Entry Widgets for Real Numbers<br>
     in Fixed-Point Format</h1>
 
-    <h2>For Mentry Version 3.6</h2>
+    <h2>For Mentry Version 3.7</h2>
 
     <h3>by</h3>
 
@@ -21,10 +23,9 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
-
   <hr>
 
-  <h2><a name="contents"></a>Contents</h2>
+  <h2 id="contents">Contents</h2>
 
   <ul>
     <li><a href="#fixedPointMentry">The
@@ -40,20 +41,18 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="fixedPointMentry"></a>The
-  <code><b>mentry::fixedPointMentry</b></code> Command</h2>
+  <h2 id="fixedPointMentry">The <code><b>mentry::fixedPointMentry</b></code>
+  Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>mentry::fixedPointMentry</code> - Create and manipulate mentry
-    widgets for real numbers in fixed-point format</dd>
+    <dd><code>mentry::fixedPointMentry</code> &ndash; Create and manipulate
+    mentry widgets for real numbers in fixed-point format</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -75,13 +74,11 @@
     are the same as in the case of the <code><b><a href=
     "mentryWidget.html">mentry::mentry</a></b></code> command.</dd>
 
-    <dd><br>
-    The command sets the <code><b>type</b></code> attribute of the widget to
-    the value <code>"FixedPoint"</code> and returns the name of the newly
-    created widget.</dd>
+    <dd class="tm">The command sets the <code><b>type</b></code> attribute of
+    the widget to the value <code>"FixedPoint"</code> and returns the name of
+    the newly created widget.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>mentry, widget, real number</dd>
   </dl>
@@ -90,20 +87,17 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="putReal"></a>The <code><b>mentry::putReal</b></code>
-  Command</h2>
+  <h2 id="putReal">The <code><b>mentry::putReal</b></code> Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>mentry::putReal</code> - Output a real number to a mentry of type
-    <code>"FixedPoint"</code></dd>
+    <dd><code>mentry::putReal</code> &ndash; Output a real number to a mentry
+    of type <code>"FixedPoint"</code></dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -120,12 +114,11 @@
     is checked by examining the widget's <code><b>type</b></code> attribute,
     which must have the value <code>"FixedPoint"</code>).</dd>
 
-    <dd><br>
-    The command generates an error if the number does not fit into the widget
-    because it has too many characters before the decimal point.</dd>
+    <dd class="tm">The command generates an error if the number does not fit
+    into the widget because it has too many characters before the decimal
+    point.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>mentry, widget, real number</dd>
   </dl>
@@ -134,20 +127,17 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="getReal"></a>The <code><b>mentry::getReal</b></code>
-  Command</h2>
+  <h2 id="getReal">The <code><b>mentry::getReal</b></code> Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>mentry::getReal</code> - Get a real number from a mentry of type
-    <code>"FixedPoint"</code></dd>
+    <dd><code>mentry::getReal</code> &ndash; Get a real number from a mentry of
+    type <code>"FixedPoint"</code></dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -164,13 +154,11 @@
     is checked by examining the widget's <code><b>type</b></code> attribute,
     which must have the value <code>"FixedPoint"</code>).</dd>
 
-    <dd><br>
-    If both entry children of the widget are empty, the command sets the focus
-    to the first entry child, generates an error, and returns the string
-    <code>"EMPTY"</code>.</dd>
+    <dd class="tm">If both entry children of the widget are empty, the command
+    sets the focus to the first entry child, generates an error, and returns
+    the string <code>"EMPTY"</code>.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>mentry, widget, real number</dd>
   </dl>

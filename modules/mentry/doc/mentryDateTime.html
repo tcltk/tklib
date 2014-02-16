@@ -4,13 +4,15 @@
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content="mentry, widget, date, time, clock">
+
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
 <body bgcolor="#FFFFFF">
   <div align="center">
     <h1>Multi-Entry Widgets for Date and Time</h1>
 
-    <h2>For Mentry Version 3.6</h2>
+    <h2>For Mentry Version 3.7</h2>
 
     <h3>by</h3>
 
@@ -20,10 +22,9 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
-
   <hr>
 
-  <h2><a name="contents"></a>Contents</h2>
+  <h2 id="contents">Contents</h2>
 
   <ul>
     <li><a href="#dateMentry">The <code><b>mentry::dateMentry</b></code>
@@ -45,20 +46,17 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="dateMentry"></a>The <code><b>mentry::dateMentry</b></code>
-  Command</h2>
+  <h2 id="dateMentry">The <code><b>mentry::dateMentry</b></code> Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>mentry::dateMentry</code> - Create and manipulate mentry widgets
-    for date</dd>
+    <dd><code>mentry::dateMentry</code> &ndash; Create and manipulate mentry
+    widgets for date</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -86,14 +84,12 @@
     <code><b><a href="mentryWidget.html">mentry::mentry</a></b></code>
     command.</dd>
 
-    <dd><br>
-    The command sets the <code><b>type</b></code> attribute of the widget to
-    the value <code>"Date"</code>, saves the value of
+    <dd class="tm">The command sets the <code><b>type</b></code> attribute of
+    the widget to the value <code>"Date"</code>, saves the value of
     <code><i>format</i></code> in its <code><b>format</b></code> attribute, and
     returns the name of the newly created widget.</dd>
 
-    <dt><br>
-    <b>DEFAULT BINDINGS</b></dt>
+    <dt class="tm"><b>DEFAULT BINDINGS</b></dt>
 
     <dd>The <code><b>mentry::dateMentry</b></code> command defines four new
     keyboard bindings for the entry children of the mentry widget it
@@ -108,15 +104,14 @@
     entry is empty then all of these keys insert the child-specific minimum
     value into the entry.</dd>
 
-    <dd><br>
-    The actions performed by the <code>Up</code> and <code>Down</code> keys can
-    also be triggered by rolling the mouse wheel.&nbsp; In addition, on Mac OS
-    Classic and Mac OS X Aqua, the actions performed by the <code>Prior</code>
-    and <code>Next</code> keys can also be triggered by rolling the mouse wheel
-    while holding down the <code>Option</code> key.</dd>
+    <dd class="tm">The actions performed by the <code>Up</code> and
+    <code>Down</code> keys can also be triggered by rolling the mouse
+    wheel.&nbsp; In addition, on Mac OS Classic and Mac OS X Aqua, the actions
+    performed by the <code>Prior</code> and <code>Next</code> keys can also be
+    triggered by rolling the mouse wheel while holding down the
+    <code>Option</code> key.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>mentry, widget, date</dd>
   </dl>
@@ -125,20 +120,17 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="timeMentry"></a>The <code><b>mentry::timeMentry</b></code>
-  Command</h2>
+  <h2 id="timeMentry">The <code><b>mentry::timeMentry</b></code> Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>mentry::timeMentry</code> - Create and manipulate mentry widgets
-    for time</dd>
+    <dd><code>mentry::timeMentry</code> &ndash; Create and manipulate mentry
+    widgets for time</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -167,14 +159,12 @@
     are the same as in the case of the <code><b><a href=
     "mentryWidget.html">mentry::mentry</a></b></code> command.</dd>
 
-    <dd><br>
-    The command sets the <code><b>type</b></code> attribute of the widget to
-    the value <code>"Time"</code>, saves the value of
+    <dd class="tm">The command sets the <code><b>type</b></code> attribute of
+    the widget to the value <code>"Time"</code>, saves the value of
     <code><i>format</i></code> in its <code><b>format</b></code> attribute, and
     returns the name of the newly created widget.</dd>
 
-    <dt><br>
-    <b>DEFAULT BINDINGS</b></dt>
+    <dt class="tm"><b>DEFAULT BINDINGS</b></dt>
 
     <dd>The <code><b>mentry::timeMentry</b></code> command defines four new
     keyboard bindings for the entry children of the mentry widget it
@@ -189,15 +179,14 @@
     entry is empty then all of these keys insert the child-specific minimum
     value into the entry.</dd>
 
-    <dd><br>
-    The actions performed by the <code>Up</code> and <code>Down</code> keys can
-    also be triggered by rolling the mouse wheel.&nbsp; In addition, on Mac OS
-    Classic and Mac OS X Aqua, the actions performed by the <code>Prior</code>
-    and <code>Next</code> keys can also be triggered by rolling the mouse wheel
-    while holding down the <code>Option</code> key.</dd>
+    <dd class="tm">The actions performed by the <code>Up</code> and
+    <code>Down</code> keys can also be triggered by rolling the mouse
+    wheel.&nbsp; In addition, on Mac OS Classic and Mac OS X Aqua, the actions
+    performed by the <code>Prior</code> and <code>Next</code> keys can also be
+    triggered by rolling the mouse wheel while holding down the
+    <code>Option</code> key.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>mentry, widget, time</dd>
   </dl>
@@ -206,20 +195,18 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="dateTimeMentry"></a>The
-  <code><b>mentry::dateTimeMentry</b></code> Command</h2>
+  <h2 id="dateTimeMentry">The <code><b>mentry::dateTimeMentry</b></code>
+  Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>mentry::dateTimeMentry</code> - Create and manipulate mentry
-    widgets for date &amp; time</dd>
+    <dd><code>mentry::dateTimeMentry</code> &ndash; Create and manipulate
+    mentry widgets for date &amp; time</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -259,14 +246,12 @@
     are the same as in the case of the <code><b><a href=
     "mentryWidget.html">mentry::mentry</a></b></code> command.</dd>
 
-    <dd><br>
-    The command sets the <code><b>type</b></code> attribute of the widget to
-    the value <code>"DateTime"</code>, saves the value of
+    <dd class="tm">The command sets the <code><b>type</b></code> attribute of
+    the widget to the value <code>"DateTime"</code>, saves the value of
     <code><i>format</i></code> in its <code><b>format</b></code> attribute, and
     returns the name of the newly created widget.</dd>
 
-    <dt><br>
-    <b>DEFAULT BINDINGS</b></dt>
+    <dt class="tm"><b>DEFAULT BINDINGS</b></dt>
 
     <dd>The <code><b>mentry::dateTimeMentry</b></code> command defines four new
     keyboard bindings for the entry children of the mentry widget it
@@ -281,15 +266,14 @@
     entry is empty then all of these keys insert the child-specific minimum
     value into the entry.</dd>
 
-    <dd><br>
-    The actions performed by the <code>Up</code> and <code>Down</code> keys can
-    also be triggered by rolling the mouse wheel.&nbsp; In addition, on Mac OS
-    Classic and Mac OS X Aqua, the actions performed by the <code>Prior</code>
-    and <code>Next</code> keys can also be triggered by rolling the mouse wheel
-    while holding down the <code>Option</code> key.</dd>
+    <dd class="tm">The actions performed by the <code>Up</code> and
+    <code>Down</code> keys can also be triggered by rolling the mouse
+    wheel.&nbsp; In addition, on Mac OS Classic and Mac OS X Aqua, the actions
+    performed by the <code>Prior</code> and <code>Next</code> keys can also be
+    triggered by rolling the mouse wheel while holding down the
+    <code>Option</code> key.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>mentry, widget, date, time</dd>
   </dl>
@@ -298,20 +282,17 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="putClockVal"></a>The <code><b>mentry::putClockVal</b></code>
-  Command</h2>
+  <h2 id="putClockVal">The <code><b>mentry::putClockVal</b></code> Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>mentry::putClockVal</code> - Output a clock value to a date,
-    time, or date &amp; time mentry</dd>
+    <dd><code>mentry::putClockVal</code> &ndash; Output a clock value to a
+    date, time, or date &amp; time mentry</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -331,15 +312,13 @@
     attribute, which must have the value <code>"Date"</code>,
     <code>"Time"</code>, or <code>"DateTime"</code>).</dd>
 
-    <dd><br>
-    Like in the case of the&nbsp; <code><b>clock format</b></code>&nbsp;
-    command, the optional argument pair&nbsp; <code><b>-gmt</b>
-    <i>boolean</i></code> specifies whether the clock value is to be formatted
-    as Greenwich Mean Time or according to the local timezone as defined by the
-    operating environment.</dd>
+    <dd class="tm">Like in the case of the&nbsp; <code><b>clock
+    format</b></code>&nbsp; command, the optional argument pair&nbsp;
+    <code><b>-gmt</b> <i>boolean</i></code> specifies whether the clock value
+    is to be formatted as Greenwich Mean Time or according to the local
+    timezone as defined by the operating environment.</dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>mentry, widget, date, time, clock</dd>
   </dl>
@@ -348,20 +327,17 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
-
   <hr>
 
-  <h2><a name="getClockVal"></a>The <code><b>mentry::getClockVal</b></code>
-  Command</h2>
+  <h2 id="getClockVal">The <code><b>mentry::getClockVal</b></code> Command</h2>
 
   <dl>
     <dt><b>NAME</b></dt>
 
-    <dd><code>mentry::getClockVal</code> - Get the clock value from a date,
-    time, or date &amp; time mentry</dd>
+    <dd><code>mentry::getClockVal</code> &ndash; Get the clock value from a
+    date, time, or date &amp; time mentry</dd>
 
-    <dt><br>
-    <b>SYNOPSIS</b></dt>
+    <dt class="tm"><b>SYNOPSIS</b></dt>
 
     <dd>
       <pre>
@@ -381,26 +357,24 @@
     attribute, which must have the value <code>"Date"</code>,
     <code>"Time"</code>, or <code>"DateTime"</code>).</dd>
 
-    <dd><br>
-    Like in the case of the&nbsp; <code><b>clock scan</b></code>&nbsp; command,
-    the optional argument pair&nbsp; <code><b>-base</b>
-    <i>clockValue</i></code> specifies that the date contained in
-    <code><i>clockValue</i></code> is to be used when getting the clock value
-    from the given mentry widget, and the optional argument pair&nbsp;
-    <code><b>-gmt</b> <i>boolean</i></code> specifies whether the clock value
-    is to be calculated relative to Greenwich Mean Time or according to the
-    local timezone as defined by the operating environment.</dd>
+    <dd class="tm">Like in the case of the&nbsp; <code><b>clock
+    scan</b></code>&nbsp; command, the optional argument pair&nbsp;
+    <code><b>-base</b> <i>clockValue</i></code> specifies that the date
+    contained in <code><i>clockValue</i></code> is to be used when getting the
+    clock value from the given mentry widget, and the optional argument
+    pair&nbsp; <code><b>-gmt</b> <i>boolean</i></code> specifies whether the
+    clock value is to be calculated relative to Greenwich Mean Time or
+    according to the local timezone as defined by the operating
+    environment.</dd>
 
-    <dd>
-      <br>
-      If an error occurs during the conversion, the command sets the focus to
-      the first erronous entry child, generates an error, and returns one of
-      the values contained in the following table:<br>
-      &nbsp;
+    <dd class="tm">If an error occurs during the conversion, the command sets
+    the focus to the first erronous entry child, generates an error, and
+    returns one of the values contained in the following table:</dd>
 
-      <table border="2" cellspacing="0" cellpadding="4">
+    <dd class="tm">
+      <table border="2" cellspacing="0" cellpadding="3">
         <tr bgcolor="#FFFFE0">
-          <th align="left">Return value</th>
+          <th align="left" nowrap>Return Value</th>
 
           <th align="left">Meaning</th>
         </tr>
@@ -437,8 +411,7 @@
       </table>
     </dd>
 
-    <dt><br>
-    <b>KEYWORDS</b></dt>
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>mentry, widget, date, time, clock</dd>
   </dl>
