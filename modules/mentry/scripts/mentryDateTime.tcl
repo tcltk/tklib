@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of multi-entry widgets for date and time.
 #
-# Copyright (c) 1999-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -31,21 +31,23 @@ namespace eval mentry {
     bind MentryMeridian <Prior>	{ mentry::setMeridian %W "P" }
     bind MentryMeridian <Next>	{ mentry::setMeridian %W "A" }
     variable winSys
-    if {[string compare $winSys "classic"] == 0 ||
-	[string compare $winSys "aqua"] == 0} {
-	bind MentryDateTime <MouseWheel> {
-	    mentry::incrDateTimeComp %W %D
+    catch {
+	if {[string compare $winSys "classic"] == 0 ||
+	    [string compare $winSys "aqua"] == 0} {
+	    bind MentryDateTime <MouseWheel> {
+		mentry::incrDateTimeComp %W %D
+	    }
+	    bind MentryDateTime <Option-MouseWheel> {
+		mentry::incrDateTimeComp %W [expr {10 * %D}]
+	    }
+	} else {
+	    bind MentryDateTime <MouseWheel> {
+		mentry::incrDateTimeComp %W [expr {%D / 120}]
+	    }
 	}
-	bind MentryDateTime <Option-MouseWheel> {
-	    mentry::incrDateTimeComp %W [expr {10 * %D}]
+	bind MentryMeridian <MouseWheel> {
+	    mentry::setMeridian %W [expr {(%D < 0) ? "A" : "P"}]
 	}
-    } else {
-	bind MentryDateTime <MouseWheel> {
-	    mentry::incrDateTimeComp %W [expr {%D / 120}]
-	}
-    }
-    bind MentryMeridian <MouseWheel> {
-	mentry::setMeridian %W [expr {(%D < 0) ? "A" : "P"}]
     }
     if {[string compare $winSys "x11"] == 0} {
 	bind MentryDateTime <Button-4> {
@@ -485,7 +487,7 @@ proc mentry::getClockValFromDateMentry {win base useGMT} {
     for {set n 0} {$n < 3} {incr n} {
 	set w [::$win entrypath $n]
 	set str [$w get]
-	if {[string compare $str ""] == 0} {
+	if {[string length $str] == 0} {
 	    focus $w
 	    return -code error EMPTY
 	}
@@ -505,12 +507,12 @@ proc mentry::getClockValFromDateMentry {win base useGMT} {
 	set yearIdx $idxs(y)
 	set year $vals($yearIdx)
 	set yearStr [format "%02d" $year]
-	set format "%y-%m-%d"
+	set format %m/%d/%y
     } else {
 	set yearIdx $idxs(Y)
 	set year $vals($yearIdx)
 	set yearStr [format "%04d" $year]
-	set format "%Y-%m-%d"
+	set format %m/%d/%Y
     }
     set month $vals($idxs(m))
     set day   $vals($idxs(d))
@@ -533,7 +535,7 @@ proc mentry::getClockValFromDateMentry {win base useGMT} {
     # Now we have a valid date: try to convert it to an integer clock
     # value; generate an error if this fails (because of the year)
     #
-    set cmd [list clock scan $yearStr-$month-$day -base $base -gmt $useGMT]
+    set cmd [list clock scan $month/$day/$yearStr -base $base -gmt $useGMT]
     if {$::tcl_version >= 8.5} {
 	lappend cmd -format $format
     }
@@ -563,7 +565,7 @@ proc mentry::getClockValFromTimeMentry {win base useGMT} {
     for {set n 0} {$n < $len} {incr n} {
 	set w [::$win entrypath $n]
 	set str [$w get]
-	if {[string compare $str ""] == 0} {
+	if {[string length $str] == 0} {
 	    if {$n == 2} {
 		set str 00
 		::$win put $n 00
@@ -592,7 +594,7 @@ proc mentry::getClockValFromTimeMentry {win base useGMT} {
     if {$meridianFlag} {
 	set w [::$win entrypath $len]
 	set str [$w get]
-	if {[string compare $str ""] == 0} {
+	if {[string length $str] == 0} {
 	    focus $w
 	    return -code error EMPTY
 	}
@@ -639,7 +641,7 @@ proc mentry::getClockValFromDateTimeMentry {win base useGMT} {
     for {set n 0} {$n < 3} {incr n} {
 	set w [::$win entrypath $n]
 	set str [$w get]
-	if {[string compare $str ""] == 0} {
+	if {[string length $str] == 0} {
 	    focus $w
 	    return -code error EMPTY
 	}
@@ -659,12 +661,12 @@ proc mentry::getClockValFromDateTimeMentry {win base useGMT} {
 	set yearIdx $idxs(y)
 	set year $vals($yearIdx)
 	set yearStr [format "%02d" $year]
-	set format "%y-%m-%d "
+	set format "%m/%d/%y "
     } else {
 	set yearIdx $idxs(Y)
 	set year $vals($yearIdx)
 	set yearStr [format "%04d" $year]
-	set format "%Y-%m-%d "
+	set format "%m/%d/%Y "
     }
     set month $vals($idxs(m))
     set day   $vals($idxs(d))
@@ -683,7 +685,7 @@ proc mentry::getClockValFromDateTimeMentry {win base useGMT} {
 	return -code error BAD_DATE
     }
 
-    set dateTimeStr "$yearStr-$month-$day "
+    set dateTimeStr "$month/$day/$yearStr "
 
     #
     # Scan the contents of the remaining numeric entry children;
@@ -695,7 +697,7 @@ proc mentry::getClockValFromDateTimeMentry {win base useGMT} {
     for {set n 3} {$n < $len} {incr n} {
 	set w [::$win entrypath $n]
 	set str [$w get]
-	if {[string compare $str ""] == 0} {
+	if {[string length $str] == 0} {
 	    if {$n == 5} {
 		set str 00
 		::$win put $n 00
@@ -724,7 +726,7 @@ proc mentry::getClockValFromDateTimeMentry {win base useGMT} {
     if {$meridianFlag} {
 	set w [::$win entrypath $len]
 	set str [$w get]
-	if {[string compare $str ""] == 0} {
+	if {[string length $str] == 0} {
 	    focus $w
 	    return -code error EMPTY
 	}
@@ -776,7 +778,7 @@ proc mentry::incrDateTimeComp {w amount} {
     set field [string index [::$win attrib format] $n]
 
     set str [$w get]
-    if {[string compare $str ""] == 0} {
+    if {[string length $str] == 0} {
 	#
 	# Insert the entry's min. value
 	#
@@ -827,7 +829,7 @@ proc mentry::incrDateTimeComp {w amount} {
 # value.
 #------------------------------------------------------------------------------
 proc mentry::setMeridian {w str} {
-    if {[string compare [$w get] ""] == 0} {
+    if {[string length [$w get]] == 0} {
 	#
 	# Insert an "A"
 	#

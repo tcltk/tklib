@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of a multi-entry widget for IP addresses.
 #
-# Copyright (c) 1999-2012  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -18,17 +18,19 @@ namespace eval mentry {
     bind MentryIPAddr <Prior>	{ mentry::incrIPAddrComp %W  10 }
     bind MentryIPAddr <Next>	{ mentry::incrIPAddrComp %W -10 }
     variable winSys
-    if {[string compare $winSys "classic"] == 0 ||
-	[string compare $winSys "aqua"] == 0} {
-	bind MentryIPAddr <MouseWheel> {
-	    mentry::incrIPAddrComp %W %D
-	}
-	bind MentryIPAddr <Option-MouseWheel> {
-	    mentry::incrIPAddrComp %W [expr {10 * %D}]
-	}
-    } else {
-	bind MentryIPAddr <MouseWheel> {
-	    mentry::incrIPAddrComp %W [expr {%D / 120}]
+    catch {
+	if {[string compare $winSys "classic"] == 0 ||
+	    [string compare $winSys "aqua"] == 0} {
+	    bind MentryIPAddr <MouseWheel> {
+		mentry::incrIPAddrComp %W %D
+	    }
+	    bind MentryIPAddr <Option-MouseWheel> {
+		mentry::incrIPAddrComp %W [expr {10 * %D}]
+	    }
+	} else {
+	    bind MentryIPAddr <MouseWheel> {
+		mentry::incrIPAddrComp %W [expr {%D / 120}]
+	    }
 	}
     }
     if {[string compare $winSys "x11"] == 0} {
@@ -126,7 +128,7 @@ proc mentry::getIPAddr win {
     for {set n 0} {$n < 4} {incr n} {
 	set w [::$win entrypath $n]
 	set str [$w get]
-	if {[string compare $str ""] == 0} {
+	if {[string length $str] == 0} {
 	    focus $w
 	    return -code error EMPTY
 	}
@@ -167,7 +169,7 @@ proc mentry::checkIfIPAddrMentry win {
 #------------------------------------------------------------------------------
 proc mentry::incrIPAddrComp {w amount} {
     set str [$w get]
-    if {[string compare $str ""] == 0} {
+    if {[string length $str] == 0} {
 	#
 	# Insert a "0"
 	#
