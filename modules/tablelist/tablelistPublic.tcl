@@ -1,14 +1,14 @@
 #==============================================================================
 # Main Tablelist and Tablelist_tile package module.
 #
-# Copyright (c) 2000-2013  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	5.10
+    variable version	5.11
     variable library
     if {$tcl_version >= 8.4} {
 	set library	[file normalize [DIR]]
