@@ -4,7 +4,7 @@
 # REMARK: Everything stated below for text widgets is valid for ctext widgets,
 #	  too.
 #
-# Copyright (c) 1999-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
