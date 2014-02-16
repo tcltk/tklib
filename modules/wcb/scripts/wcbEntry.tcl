@@ -6,7 +6,7 @@
 #         BWidget Entry widgets, too.  Similarly, everything stated below for
 #         spinbox widgets is valid for tile spinbox widgets, too.
 #
-# Copyright (c) 1999-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #

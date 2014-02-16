@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains common Wcb procedures.
 #
-# Copyright (c) 1999-2010  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -35,9 +35,11 @@ namespace eval wcb {
 #					Tk or tile spinbox, tile combobox,
 #				 	text, or ctext widget;
 #   - "replace",			for a text or ctext widget;
-#   - "activate",			for a listbox or tablelist widget;
-#   - "selset" or "selclear",		for a listbox, tablelist, text, or
-#					ctext widget;
+#   - "activate",			for a listbox, tablelist, or tile
+#					treeview widget;
+#   - "selset" or "selclear",		for a listbox, tablelist, tile treeview,
+#					text, or ctext widget;
+#   - "seladd" or "seltoggle",		for a tile treeview widget;
 #   - "activatecell", "cellselset", or
 #     "cellselclear",			for a tablelist widget.
 #
@@ -54,6 +56,7 @@ namespace eval wcb {
 #     associated with the above values of option is preceded by invocations of
 #     the corresponding before-callbacks and followed by calls to the
 #     corresponding after-callbacks, in the global scope;
+#
 #   - it sets the callback list to the one built from these arguments and
 #     returns the new list.
 #
@@ -108,6 +111,9 @@ proc wcb::callback {w when option args} {
 	    Tablelist {
 		set widgetCmd tablelistWidgetCmd
 	    }
+	    Treeview {
+		set widgetCmd treeviewWidgetCmd
+	    }
 	    Text -
 	    Ctext {
 		set widgetCmd textWidgetCmd
@@ -159,7 +165,7 @@ proc wcb::cancel {{script bell}} {
     variable data
     set data(canceled-[info level 1]) 1
 
-    if {[string compare $script ""] != 0} {
+    if {[string length $script] != 0} {
 	uplevel #0 $script
     }
 }
@@ -217,7 +223,7 @@ proc wcb::replace {first last args} {
 }
 
 #------------------------------------------------------------------------------
-# wvb::pathname
+# wcb::pathname
 #
 # Returns the path name of the widget corresponding to the Tcl command origCmd
 # (which is supposed to be of the form "::_pathName").
@@ -245,7 +251,7 @@ proc wcb::cleanup w {
     }
 
     catch {rename ::$w ""}
-    catch {rename ::_$w ""}		;# necessary for tablelist widgets
+    catch {rename ::_$w ""}  ;# for BWidget Entry, tablelist, and ctext widgets
 }
 
 #------------------------------------------------------------------------------
@@ -309,6 +315,24 @@ proc wcb::fullCallbackOpt {w opt} {
 	    }
 	}
 
+	Treeview {
+	    if {[string first $opt "activate"] == 0} {
+		set opt activate
+	    } elseif {[string first $opt "selset"] == 0 && $opLen >= 4} {
+		set opt selset
+	    } elseif {[string first $opt "seladd"] == 0 && $opLen >= 4} {
+		set opt seladd
+	    } elseif {[string first $opt "selclear"] == 0 && $opLen >= 4} {
+		set opt selclear
+	    } elseif {[string first $opt "seltoggle"] == 0 && $opLen >= 4} {
+		set opt seltoggle
+	    } else {
+		return -code error \
+		       "bad option \"$opt\": must be activate, selset, seladd,\
+			selclear, or seltoggle"
+	    }
+	}
+
 	Text -
 	Ctext {
 	    if {[string first $opt "insert"] == 0} {
@@ -332,9 +356,9 @@ proc wcb::fullCallbackOpt {w opt} {
 
 	default {
 	    return -code error \
-		   "window \"$w\" is not a Tk or tile entry,\
-		    BWidget Entry, Tk or tile spinbox, tile combobox,\
-		    listbox, tablelist, text, or ctext widget"
+		   "window \"$w\" is not a Tk or tile entry, BWidget Entry,\
+		    Tk or tile spinbox, tile combobox, listbox, tablelist,\
+		    tile treeview, text, or ctext widget"
 	}
     }
 
@@ -348,7 +372,7 @@ proc wcb::fullCallbackOpt {w opt} {
 #------------------------------------------------------------------------------
 proc wcb::areAllEmptyStrings lst {
     foreach elem $lst {
-	if {[string compare $elem ""] != 0} {
+	if {[string length $elem] != 0} {
 	    return 0
 	}
     }
@@ -407,7 +431,7 @@ proc wcb::processCmd {w wcbOp cmdOp argList} {
     #
     if {[info exists data($w-before-$wcbOp)]} {
 	foreach cb $data($w-before-$wcbOp) {
-	    if {[string compare $cb ""] != 0} {
+	    if {[string length $cb] != 0} {
 		#
 		# Set the two array elements that might be changed
 		# by cancel, extend, or replace, invoked (directly
@@ -449,7 +473,7 @@ proc wcb::processCmd {w wcbOp cmdOp argList} {
     #
     if {[info exists data($w-after-$wcbOp)]} {
 	foreach cb $data($w-after-$wcbOp) {
-	    if {[string compare $cb ""] != 0} {
+	    if {[string length $cb] != 0} {
 		uplevel #0 $cb $orig $argList
 	    }
 	}
