@@ -2298,9 +2298,9 @@ proc tablelist::setupColumns {win columns createLabels} {
 # Creates and manages the separators in the tablelist widget win.
 #------------------------------------------------------------------------------
 proc tablelist::createSeps win {
-    set sepX [getSepX]
-    variable usingTile
     upvar ::tablelist::ns${win}::data data
+    variable usingTile
+    set sepX [getSepX]
 
     for {set col 0} {$col < $data(colCount)} {incr col} {
 	#
@@ -2378,6 +2378,11 @@ proc tablelist::adjustSeps win {
 	unset data(sepsId)
     }
 
+    variable winSys
+    set onWindows [expr {[string compare $winSys "win32"] == 0}]
+    variable usingTile
+    set sepX [getSepX]
+
     #
     # Get the height to be applied to the column separators
     # and place or unmanage the horizontal separator
@@ -2401,8 +2406,12 @@ proc tablelist::adjustSeps win {
 
 	if {$data(-showseparators) && $sepHeight > 0 &&
 	    $sepHeight < [winfo height $w]} {
-	    place $data(hsep) -in $w -y $sepHeight \
-			      -width [winfo reqwidth $data(hdrTxtFr)]
+	    set width [expr {[winfo reqwidth $data(hdrTxtFr)] + $sepX -
+			     [winfo reqheight $data(hsep)] + 1}]
+	    if {$onWindows && !$usingTile} {
+		incr width
+	    }
+	    place $data(hsep) -in $w -y $sepHeight -width $width
 	} elseif {[winfo exists $data(hsep)]} {
 	    place forget $data(hsep)
 	}
@@ -2432,33 +2441,33 @@ proc tablelist::adjustSeps win {
 	    incr mainSepHeight
 	}
 	place $w -in $data(hdrTxtFrLbl)$col -anchor ne -bordermode outside \
-		 -height $mainSepHeight -relx 1.0 -x [getSepX] -y 1
+		 -height $mainSepHeight -relx 1.0 -x $sepX -y 1
 	raise $w
     }
 
     #
     # Set the height and vertical position of the other column separators
     #
-    variable usingTile
     if {$sepHeight == 0} {
 	set relY 0.0
 	set y -10
     } elseif {$data(-showlabels)} {
 	set relY 1.0
-	if {$usingTile} {
+	if {$usingTile || $onWindows} {
 	    set y 0
+	    incr sepHeight 1
 	} else {
 	    set y -1
-	    incr sepHeight
+	    incr sepHeight 2
 	}
     } else {
 	set relY 0.0
-	if {$usingTile} {
+	if {$usingTile || $onWindows} {
 	    set y 1
-	    incr sepHeight 1
+	    incr sepHeight 2
 	} else {
 	    set y 0
-	    incr sepHeight 2
+	    incr sepHeight 3
 	}
     }
     foreach w [winfo children $win] {
