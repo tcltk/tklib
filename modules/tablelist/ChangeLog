@@ -1,3 +1,8 @@
+2014-02-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: Minor improvements related to the
+	  separators.
+
 2014-02-16  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 5.11.
