@@ -2124,7 +2124,7 @@ proc tablelist::setupColumns {win columns createLabels} {
 	    destroy $w
 	}
 	foreach w [winfo children $win] {
-	    if {[regexp {^sep[0-9]+$} [winfo name $w]]} {
+	    if {[regexp {^(sep[0-9]+|hsep)$} [winfo name $w]]} {
 		destroy $w
 	    }
 	}
