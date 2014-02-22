@@ -1,3 +1,7 @@
+2014-02-22  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl: Minor correction.
+
 2014-02-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistUtil.tcl: Minor improvements related to the
