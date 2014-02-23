@@ -1,3 +1,8 @@
+2014-02-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistUtil.tcl:   Workarounds for text widget bugs.
+	* scripts/tablelistWidget.tcl:
+
 2014-02-22  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistUtil.tcl: Minor correction.
