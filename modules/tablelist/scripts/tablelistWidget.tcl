@@ -868,6 +868,8 @@ proc tablelist::tablelist args {
 	$w tag configure elidedRow -elide 1	;# used when collapsing a row
 	$w tag configure hiddenCol -elide 1	;# used for hiding a column
 	$w tag configure elidedCol -elide 1	;# used for horizontal scrolling
+    }
+    if {$::tk_version >= 8.5} {
 	$w tag configure elidedWin -elide 1	;# used for eliding a window
     }
 

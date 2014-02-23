@@ -2395,8 +2395,13 @@ proc tablelist::adjustSeps win {
 	    place forget $data(hsep)
 	}
     } else {
-	set textIdx [$w index @0,$data(btmY)]
-	set dlineinfo [$w dlineinfo $textIdx]
+	set btmTextIdx [$w index @0,$data(btmY)]
+	set btmLine [expr {int($btmTextIdx)}]
+	if {$btmLine > $data(itemCount)} {		;# text widget bug
+	    set btmLine $data(itemCount)
+	    set btmTextIdx [expr {double($btmLine)}]
+	}
+	set dlineinfo [$w dlineinfo $btmTextIdx]
 	if {$data(itemCount) == 0 || [string length $dlineinfo] == 0} {
 	    set sepHeight 0
 	} else {
