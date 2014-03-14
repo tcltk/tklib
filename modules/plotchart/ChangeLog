@@ -1,3 +1,6 @@
+2014-03-14  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Forgot to bump the version to 2.2.2 in the "provide" statement (ticket 530c40d269eb3bc4523115e121c38e7a6c047632)
+
 2014-02-06  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotconfig.tcl: Add dummy axis components for Gantt charts
 	* examples/demo.tcl: Corrected call to plot subcommand for boxplots (series argument was missing)
