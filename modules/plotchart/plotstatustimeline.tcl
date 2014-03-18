@@ -38,7 +38,8 @@ namespace eval ::Plotchart {
    set methodProc(statustimeline,object)            DrawObject
    set methodProc(statustimeline,canvas)            GetCanvas
    set methodProc(statustimeline,deletedata)        DeleteData
-   
+   set methodProc(statustimeline,vertline)          DrawStatusTimelineVertLine
+
    namespace export createStatusTimeline
 }
 
@@ -106,8 +107,13 @@ proc ::Plotchart::createStatusTimeline { c xscale ylabels args } {
 
     viewPort         $w $pxmin $pymin $pxmax $pymax
     worldCoordinates $w $xmin  $ymin  $xmax  $ymax
-
-    DrawXaxis        $w $xmin  $xmax  $xdelt
+    set drawaxis 1
+    if {[set idx [lsearch $args -xaxis]] >= 0} {
+      set drawaxis [string is true [lindex $args $idx+1]]
+    }
+    if {$drawaxis} {
+      DrawXaxis        $w $xmin  $xmax  $xdelt
+    }
     DrawYlabels      $w $ylabels stacked
     DrawMask         $w
     DefaultLegend    $w
@@ -123,8 +129,6 @@ proc ::Plotchart::createStatusTimeline { c xscale ylabels args } {
 
     return $newchart
 }
-
-
 
 # DrawHorizBarData --
 #    Draw the horizontal bars
@@ -152,8 +156,8 @@ proc ::Plotchart::DrawStatusTimelineData { w series time_begin time_end {colour 
      set ybott [expr {$scaling($w,current)+$scaling($w,dy)}]
      foreach {x y} [coordsToPixel $w $scaling($w,xmin) $ytext] {break}
 
-     $w create text 5 $y -text $series -anchor w \
-        -tags [list vertscroll above item_[expr {int($scaling($w,current))}]]
+     #$w create text 5 $y -text $series -anchor w \
+     #   -tags [list vertscroll above item_[expr {int($scaling($w,current))}]]
      set item item_[expr {int($scaling($w,current))}]
      set data_series($w,$series) [list $ytext $ytopp $ybott $item]
    } else {
@@ -177,7 +181,6 @@ proc ::Plotchart::DrawStatusTimelineData { w series time_begin time_end {colour 
 
    foreach {x1 y1} [coordsToPixel $w $xmin $ytopp] {break}
    foreach {x2 y2} [coordsToPixel $w $xmax $ybott              ] {break}
-   puts [list $series $x1 $y1 $x2 $y2]
    $w create rectangle $x1 $y1 $x2 $y2 -fill $colour \
        -tags [list $w vertscroll horizscroll below $item]
 
@@ -186,4 +189,40 @@ proc ::Plotchart::DrawStatusTimelineData { w series time_begin time_end {colour 
    set scaling($w,current) [expr {$scaling($w,current)-1.0}]
 
    RescaleChart $w
+}
+
+# DrawTimeVertLine --
+#    Draw a vertical line with a label
+# Arguments:
+#    w           Name of the canvas
+#    text        Text to identify the line
+#    time        Time for which the line is drawn
+# Result:
+#    None
+# Side effects:
+#    Line drawn in canvas
+#
+proc ::Plotchart::DrawStatusTimelineVertLine { w text time args} {
+   variable data_series
+   variable scaling
+
+   #
+   # Draw the text first
+   #
+   if {![string is double $time]} {
+     set xtime [clock scan $time]
+   } else {
+    set xtime $time
+   }
+   #
+   # Draw the line
+   #
+   foreach {x1 y1} [coordsToPixel $w $xtime $scaling($w,ymin)] {break}
+   foreach {x2 y2} [coordsToPixel $w $xtime $scaling($w,ymax)] {break}
+
+   $w create line $x1 $y1 $x2 $y2 {*}$args -tags [list $w horizscroll timeline tline]
+   $w create text $x1 [expr {$y1+10}] -text $text -anchor n -tags [list $w horizscroll timeline]
+
+
+   $w raise topmask
 }
