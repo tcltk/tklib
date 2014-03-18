@@ -197,6 +197,7 @@ proc ::Plotchart::DrawStatusTimelineData { w series time_begin time_end {colour 
 #    w           Name of the canvas
 #    text        Text to identify the line
 #    time        Time for which the line is drawn
+#    args        Formatting for the line (any form acceptable to canvas itemconfigure)
 # Result:
 #    None
 # Side effects:
