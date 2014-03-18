@@ -2984,7 +2984,8 @@ source [file join [file dirname [info script]] "plotbind.tcl"]
 source [file join [file dirname [info script]] "plotspecial.tcl"]
 source [file join [file dirname [info script]] "plotobject.tcl"]
 source [file join [file dirname [info script]] "plottable.tcl"]
+source [file join [file dirname [info script]] "plotstatustimeline.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.2.2
+package provide Plotchart 2.2.3

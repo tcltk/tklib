@@ -1,3 +1,6 @@
+2014-03-18  Sean Woods  <yoda@etoyoc.com>
+	* plotchart.tcl: Added a new chart "Statue Timeline"
+
 2014-03-14  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Forgot to bump the version to 2.2.2 in the "provide" statement (ticket 530c40d269eb3bc4523115e121c38e7a6c047632)
 
