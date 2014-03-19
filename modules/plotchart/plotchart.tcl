@@ -37,7 +37,7 @@ namespace eval ::Plotchart {
                     createXLogYPlot createLogXYPlot createLogXLogYPlot \
                     createWindrose createTargetDiagram createPerformanceProfile \
                     createTableChart createTitleBar \
-                    createSpiralPie createTernaryDiagram \
+                    createSpiralPie createTernaryDiagram createStatusTimeline \
                     plotstyle plotconfig plotpack plotmethod clearcanvas eraseplot
 
    #
@@ -2988,4 +2988,4 @@ source [file join [file dirname [info script]] "plotstatustimeline.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.2.3
+package provide Plotchart 2.3.0
