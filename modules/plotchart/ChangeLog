@@ -1,3 +1,10 @@
+2014-03-19  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Add source file "plotstatustimeline.tcl" - supplied by Sean Woods
+	* plotstatustimeline.tcl: New source file implementing the new status timeline plot type - supplied by Sean Woods
+	* plotdemos18.tcl: New example illustrating the new status timeline plot type - supplied by Sean Woods
+	* plotchart.man: Description of the new plot type
+	* pkgIndex.tcl: Bumped the version to 2.3.0 because of the new plot type
+
 2014-03-14  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Forgot to bump the version to 2.2.2 in the "provide" statement (ticket 530c40d269eb3bc4523115e121c38e7a6c047632)
 

@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 2.2.1]
+[manpage_begin Plotchart n 2.3.0]
 [copyright {2013 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.5]]
 [require Tk [opt 8.5]]
-[require Plotchart [opt 2.2.1]]
+[require Plotchart [opt 2.3.0]]
 
 [description]
 [para]
@@ -765,6 +765,32 @@ Zero or more option-value pairs to influence the position and the appearance of 
 diagram. In addition to the positioning options (-box and -axesbox) the diagram supports:
 [term "-fractions yes/no"], to display numbers 0 to 1 instead of 0 to 100% and [term "-steps number"]
 to influence the number of labels along the three sides.
+
+[list_end]
+[para]
+
+
+[call [cmd ::Plotchart::createStatusTimeline] [arg w] [arg xaxis] [arg ylabel] [arg args]]
+
+Create a command to draw a so-called status timeline. Its layout is similar to a horizontal
+barchart, but the bars are drawn in different colours, each representing the status of
+the item as it varies over time (the horizontal axis).
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the canvas widget to hold the ternary diagram.
+
+[arg_def list xaxis in]
+A 3-element list containing minimum, maximum and stepsize for the x-axis, in this order.
+
+[arg_def list ylabels in]
+List of labels for the y-axis. Its length also determines the number of
+bars that will be plotted per series.
+
+[arg_def list args in]
+Zero or more option-value pairs to influence the position and the appearance of the
+diagram. In addition to the positioning options (-box and -axesbox) the diagram supports:
+[term "-xaxis yes/no"], to turn displaying the numeric labels on or off.
 
 [list_end]
 [para]
@@ -2787,8 +2813,46 @@ Optional argument used as the colour of the ticklines. Defaults to grey.
 [list_end]
 [list_end]
 
-There are a number of public procedures that may be useful in specific
-situations: [emph "Pro memorie"].
+
+For [emph {status timeline plots}] you can use the following subcommands:
+
+[list_begin definitions]
+[call [cmd \$timeline] plot [arg series] [arg item] [arg start] [arg stop] [arg color]]
+Draw a bar in the given colour from [term start] to [term stop] for the item [term item].
+The item is a convenient label - there is no relation to the labels along the axis.
+The items are drawn from bottom to top.
+
+[list_begin arguments]
+[arg_def string item in]
+Name to identify the bar. See remark above.
+
+[arg_def float start in]
+X-coordinate (or time) at which the bar starts
+
+[arg_def float stop in]
+X-coordinate (or time) at which the bar stops
+
+[arg_def string color in]
+Colour to use for the bar. Defaults to black.
+[list_end]
+
+
+[call [cmd \$timeline] vertline [arg text] [arg time] [arg args]]
+Draw a vertical line to indicate a significant moment.
+
+[list_begin arguments]
+[arg_def string text in]
+Text to identify the moment.
+
+[arg_def float time in]
+X-coordinate (or time) at which the line is to be drawn
+
+[arg_def list args in]
+Individual optional arguments that will be passed to the [term "create line"] subcommand
+of the underlying canvas. This way you can set the colour or the line width
+of the vertical line.
+[list_end]
+[list_end]
 
 
 [section {COORDINATE TRANSFORMATIONS}]
