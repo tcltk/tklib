@@ -5,8 +5,7 @@ exec tclsh "$0" ${1+"$@"}
 # plotdemos7.tcl --
 #     This test/demo script focuses on customising the plots
 #
-
-package require Tcl 8.4
+package require Tcl 8.5
 package require Tk
 package require Plotchart
 
@@ -153,10 +152,12 @@ set s [::Plotchart::createTimechart .v.c3 "1 january 2004" \
 
 $s period "Spring" "1 march 2004" "1 june 2004" green
 $s period "Summer" "1 june 2004" "1 september 2004" yellow
+$s addperiod "21 september 2004" "21 october 2004" blue
 $s vertline "1 jan" "1 january 2004"
-$s vertline "1 apr" "1 april 2004"
+$s vertline "1 apr" "1 april 2004" lime
 $s vertline "1 jul" "1 july 2004"
 $s vertline "1 oct" "1 october 2004"
 $s milestone "Longest day" "21 july 2004"
+$s addmilestone "21 december 2004"
 $s title "Seasons (northern hemisphere)"
 

@@ -1,3 +1,13 @@
+2014-06-21  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Add new commands for timecharts (addperiod, addmilestone and option to vertline)
+	                 as suggested by Nick Matthews; also the interpolatedata command for 3D-plots
+	* plotchart.man: Document new commands for timecharts, document new tags for 3D-plots
+	* plotpriv.tcl: Implement the new commands for timecharts and interpolatedata for 3D-plots
+	* plot3d.tcl: Add tags for the data objects (data and line) and method interpolatedata
+	* plotdemos1.tcl: Illustrate the new interpolate subcommand for 3D-plots
+	* plotdemos7.tcl: Illustrate the new subcommands for timecharts
+	* pkgIndex.tcl: Bumped the version to 2.3.1 because of the new commands and improvements
+
 2014-03-19  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Add source file "plotstatustimeline.tcl" - supplied by Sean Woods
 	* plotstatustimeline.tcl: New source file implementing the new status timeline plot type - supplied by Sean Woods
