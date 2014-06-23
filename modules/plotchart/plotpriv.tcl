@@ -5,6 +5,12 @@
 #    This source file contains the private functions.
 #    It is the companion of "plotchart.tcl"
 #
+# To do:
+#    The procedures DrawTimePeriod and DrawAdditionalPeriod
+#    share a lot of code - add two driver procedures and
+#    parameterise?
+#    Similar for DrawMilestone and DrawAdditionalMilestone
+#
 
 # WidthCanvas --
 #    Return the width of the canvas
@@ -2442,6 +2448,44 @@ proc ::Plotchart::DrawTimePeriod { w text time_begin time_end {colour black}} {
    RescaleChart $w
 }
 
+# DrawAdditionalPeriod --
+#    Draw an additional period on the same level (no text)
+# Arguments:
+#    w           Name of the canvas
+#    time_begin  Start time
+#    time_end    Stop time
+#    colour      The colour to use (optional)
+# Result:
+#    None
+# Side effects:
+#    Data bars drawn in canvas
+#
+proc ::Plotchart::DrawAdditionalPeriod { w time_begin time_end {colour black}} {
+   variable data_series
+   variable scaling
+
+   set scaling($w,current) [expr {$scaling($w,current)+1.0}]
+
+   #
+   # Draw the bar to indicate the period
+   #
+   set xmin  [clock scan $time_begin]
+   set xmax  [clock scan $time_end]
+   set ybott [expr {$scaling($w,current)+$scaling($w,dy)}]
+
+   foreach {x1 y1} [coordsToPixel $w $xmin $scaling($w,current)] {break}
+   foreach {x2 y2} [coordsToPixel $w $xmax $ybott              ] {break}
+
+   $w create rectangle $x1 $y1 $x2 $y2 -fill $colour \
+       -tags [list $w vertscroll horizscroll below item_[expr {int($scaling($w,current))}]]
+
+   ReorderChartItems $w
+
+   set scaling($w,current) [expr {$scaling($w,current)-1.0}]
+
+   RescaleChart $w
+}
+
 # DrawTimeVertLine --
 #    Draw a vertical line with a label
 # Arguments:
@@ -2474,7 +2518,7 @@ proc ::Plotchart::DrawTimeVertLine { w text time {colour black}} {
    foreach {x1 y1} [coordsToPixel $w $xtime $scaling($w,ymin)] {break}
    foreach {x2 y2} [coordsToPixel $w $xtime $scaling($w,ymax)] {break}
 
-   $w create line $x1 $y1 $x2 $y2 -fill black -tags [list $w horizscroll timeline tline]
+   $w create line $x1 $y1 $x2 $y2 -fill $colour -tags [list $w horizscroll timeline tline]
 
    $w raise topmask
 }
@@ -2489,7 +2533,7 @@ proc ::Plotchart::DrawTimeVertLine { w text time {colour black}} {
 # Result:
 #    None
 # Side effects:
-#    Line drawn in canvas
+#    Triangle drawn in canvas
 #
 proc ::Plotchart::DrawTimeMilestone { w text time {colour black}} {
    variable data_series
@@ -2503,6 +2547,47 @@ proc ::Plotchart::DrawTimeMilestone { w text time {colour black}} {
 
    $w create text 5 $y -text $text -anchor w \
        -tags [list vertscroll above item_[expr {int($scaling($w,current))}]]
+
+   #
+   # Draw an upside-down triangle to indicate the time
+   #
+   set xcentre [clock scan $time]
+   set ytop    $scaling($w,current)
+   set ybott   [expr {$scaling($w,current)+0.8*$scaling($w,dy)}]
+
+   foreach {x1 y1} [coordsToPixel $w $xcentre $ybott] {break}
+   foreach {x2 y2} [coordsToPixel $w $xcentre $ytop]  {break}
+
+   set x2 [expr {$x1-0.4*($y1-$y2)}]
+   set x3 [expr {$x1+0.4*($y1-$y2)}]
+   set y3 $y2
+
+   $w create polygon $x1 $y1 $x2 $y2 $x3 $y3 -fill $colour \
+       -tags [list $w vertscroll horizscroll below item_[expr {int($scaling($w,current))}]]
+
+   ReorderChartItems $w
+
+   set scaling($w,current) [expr {$scaling($w,current)-1.0}]
+
+   RescaleChart $w
+}
+
+# DrawAdditionalMilestone --
+#    Draw an additional "milestone"
+# Arguments:
+#    w           Name of the canvas
+#    time        Time for which the milestone is drawn
+#    colour      Optionally the colour
+# Result:
+#    None
+# Side effects:
+#    Triangle drawn in canvas
+#
+proc ::Plotchart::DrawAdditionalMilestone { w time {colour black}} {
+   variable data_series
+   variable scaling
+
+   set scaling($w,current) [expr {$scaling($w,current)+1.0}]
 
    #
    # Draw an upside-down triangle to indicate the time

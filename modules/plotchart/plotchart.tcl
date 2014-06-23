@@ -310,7 +310,9 @@ namespace eval ::Plotchart {
    set methodProc(timechart,title)             DrawTitle
    set methodProc(timechart,subtitle)          DrawSubtitle
    set methodProc(timechart,period)            DrawTimePeriod
+   set methodProc(timechart,addperiod)         DrawAdditionalPeriod
    set methodProc(timechart,milestone)         DrawTimeMilestone
+   set methodProc(timechart,addmilestone)      DrawAdditionalMilestone
    set methodProc(timechart,vertline)          DrawTimeVertLine
    set methodProc(timechart,saveplot)          SavePlot
    set methodProc(timechart,background)        BackgroundColour
@@ -389,6 +391,7 @@ namespace eval ::Plotchart {
    set methodProc(3dplot,subtitle)             DrawSubtitle
    set methodProc(3dplot,plotfunc)             Draw3DFunction
    set methodProc(3dplot,plotdata)             Draw3DData
+   set methodProc(3dplot,interpolatedata)      InterpolateData3D
    set methodProc(3dplot,plotline)             Draw3DLineFrom3Dcoordinates
    set methodProc(3dplot,gridsize)             GridSize3D
    set methodProc(3dplot,ribbon)               Draw3DRibbon
@@ -2988,4 +2991,4 @@ source [file join [file dirname [info script]] "plotstatustimeline.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.3.0
+package provide Plotchart 2.3.1

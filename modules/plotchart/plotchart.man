@@ -5,7 +5,7 @@
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.5]]
 [require Tk [opt 8.5]]
-[require Plotchart [opt 2.3.0]]
+[require Plotchart [opt 2.3.1]]
 
 [description]
 [para]
@@ -1929,6 +1929,25 @@ columns. Example:
 [list_end]
 [para]
 
+[call [cmd \$plot3d] interpolatedata [arg data] [arg contours]]
+
+Plot the data using bilinear interpolation with
+the contour levels in [var contours] to colour the surface.
+
+The resolution is determined by the set grid sizes (see the method
+[method gridsize] for more information).
+
+[list_begin arguments]
+[arg_def list data in]
+The data to be plotted, just as for the plotdata subcommand.
+
+[arg_def list contours in]
+List of values in ascending order that represent the contour levels
+(the boundaries between the colours in the contour map).
+
+[list_end]
+[para]
+
 
 [call [cmd \$plot3d] colours [arg fill] [arg border]]
 
@@ -2361,6 +2380,24 @@ The colour of the bar (defaults to black).
 [list_end]
 [para]
 
+[call [cmd \$timechart] addperiod [arg time_begin] [arg time_end] [arg colour]]
+
+Add a new period to the current row in the chart. This allows you to highlight several periods
+in the same row. No new text is drawn.
+
+[list_begin arguments]
+[arg_def string time_begin in]
+Start time of the period.
+
+[arg_def string time_end in]
+Stop time of the period.
+
+[arg_def color colour in]
+The colour of the bar (defaults to black).
+
+[list_end]
+[para]
+
 
 [call [cmd \$timechart] milestone [arg text] [arg time] [arg colour]]
 
@@ -2380,11 +2417,25 @@ The colour of the triangle (defaults to black).
 [list_end]
 [para]
 
+[call [cmd \$timechart] addmilestone [arg time] [arg colour]]
 
-[call [cmd \$timechart] vertline [arg text] [arg time]]
+Add another [term milestone] to the current row in the chart.
+
+[list_begin arguments]
+[arg_def string time in]
+Time at which the milestone must be positioned.
+
+[arg_def color colour in]
+The colour of the triangle (defaults to black).
+
+[list_end]
+[para]
+
+
+[call [cmd \$timechart] vertline [arg text] [arg time] [arg colour]]
 
 Add a vertical line (to indicate the start of the month for instance)
-to the chart.
+to the chart in the specified colour.
 
 [list_begin arguments]
 [arg_def string text in]
@@ -2393,6 +2444,9 @@ date/time for instance).
 
 [arg_def string time in]
 Time at which the line must be positioned.
+
+[arg_def color colour in]
+The colour of the line to be drawn (defaults to black)
 
 [list_end]
 
@@ -4238,7 +4292,12 @@ No tags are used.
 [para]
 [emph "3D plots and 3D ribbon plots:"]
 [para]
-No tags are used for the data objects, only for the axes.
+Tags are used for the axes and for the data objects:
+[list_begin itemized]
+[item]
+[emph data] - The general tag to identify graphical objects associated with data.
+[emph line] - The tag used for lines created with the plotline subcommand.
+[list_end]
 
 [para]
 [emph "Charts decorated with 3D effects:"]
