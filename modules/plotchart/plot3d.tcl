@@ -195,7 +195,7 @@ proc ::Plotchart::Draw3DFunction { w function } {
 
          $w create polygon $px11 $py11 $px21 $py21 $px22 $py22 \
                            $px12 $py12 $px11 $py11 \
-                           -fill $fill -outline $border
+                           -fill $fill -outline $border -tags data
       }
    }
 }
@@ -253,9 +253,77 @@ proc ::Plotchart::Draw3DData { w data } {
 
          $w create polygon $px11 $py11 $px21 $py21 $px22 $py22 \
                            $px12 $py12 $px11 $py11 \
-                           -fill $fill -outline $border
+                           -fill $fill -outline $border -tags data
       }
    }
+}
+
+# InterpolateData3D --
+#    Interpolate and plot a function of x and y based on a grid of data
+# Arguments:
+#    w           Name of the canvas
+#    data        Nested list of data in the form of a matrix
+#    cont        Contour levels
+# Result:
+#    None
+# Side effect:
+#    The plot of the function - given the grid of data
+#
+proc ::Plotchart::InterpolateData3D { w data cont } {
+   variable scaling
+
+   #
+   # Store the scale values
+   #
+   set s(xmin) $scaling($w,xmin)
+   set s(xmax) $scaling($w,xmax)
+   set s(ymin) $scaling($w,ymin)
+   set s(ymax) $scaling($w,ymax)
+   set s(nx)   [expr {[llength [lindex $data 0]] - 1}]
+   set s(ny)   [expr {[llength $data] - 1}]
+
+   Draw3DFunctionContour $w InterpolateData3DXY $cont
+}
+
+# InterpolateData3DXY --
+#    Interpolate the data and return the value
+# Arguments:
+#    x           X-coordinate
+#    y           Y-coordinate
+# Result:
+#    None
+# Side effect:
+#    The plot of the function - given the grid of data
+#
+proc ::Plotchart::InterpolateData3DXY { x y } {
+   upvar 2 data data
+   upvar 2 s    s
+
+   set x [expr {$s(nx) * ($x - $s(xmin)) / ($s(xmax) - $s(xmin))}]
+   set y [expr {$s(ny) * ($y - $s(ymin)) / ($s(ymax) - $s(ymin))}]
+
+   set ix1 [expr {int($x)}]
+   set ix2 [expr {$ix1 + 1}]
+   set iy1 [expr {int($y)}]
+   set iy2 [expr {$iy1 + 1}]
+
+   if {$ix2 > $s(nx)-1 } {
+      set ix2 $ix1
+   }
+   if {$iy2 > $s(ny)-1 } {
+      set iy2 $iy1
+   }
+
+   set wx  [expr {$x - $ix1}]
+   set wy  [expr {$y - $iy1}]
+
+   set z11 [lindex $data $iy1 $ix1]
+   set z12 [lindex $data $iy1 $ix2]
+   set z21 [lindex $data $iy2 $ix1]
+   set z22 [lindex $data $iy2 $ix2]
+
+   return [expr {$z11 + $wx * ($z12 - $z11) + $wy * ($z21 - $z11) +
+                 $wx * $wy * ($z22 + $z11 - $z12 - $z21)}]
 }
 
 # Draw3DRibbon --
@@ -299,7 +367,7 @@ proc ::Plotchart::Draw3DRibbon { w yzData } { variable scaling
         foreach {px22 py22} [::Plotchart::coords3DToPixel $w $x2 $y2 $z2] break
         $w create polygon $px11 $py11 $px21 $py21 $px22 $py22 \
             $px12 $py12 $px11 $py11 \
-            -fill $fill -outline $border
+            -fill $fill -outline $border -tags data
     }
 }
 
@@ -338,7 +406,7 @@ proc ::Plotchart::Draw3DLineFrom3Dcoordinates { w data colour } {
    }
 
    foreach {xb yb} [lrange $coords 0 end-2] {xe ye} [lrange $coords 2 end] c [lrange $colours 0 end-1] {
-       $w create line $xb $yb $xe $ye -fill $c
+       $w create line $xb $yb $xe $ye -fill $c -tags line
    }
 }
 
