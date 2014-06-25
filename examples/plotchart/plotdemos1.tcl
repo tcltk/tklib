@@ -2,8 +2,6 @@
 # -*- tcl -*- \
 exec tclsh "$0" ${1+"$@"}
 
-set auto_path [concat ../../modules/plotchart $auto_path]
-
 package require Tcl 8.5
 package require Tk
 package require Plotchart
