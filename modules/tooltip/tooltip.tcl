@@ -243,7 +243,10 @@ proc ::tooltip::register {w args} {
             return $w,$tag
 	} else {
 	    set tooltip($w) $key
-	    bindtags $w [linsert [bindtags $w] end "Tooltip"]
+	    set tags [bindtags $w]
+	    if {[lsearch -exact $tags "Tooltip"] == -1} {
+            bindtags $w [linsert $tags end "Tooltip"]
+        }
 	    return $w
 	}
     }
