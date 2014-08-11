@@ -243,7 +243,11 @@ proc ::tooltip::register {w args} {
             return $w,$tag
 	} else {
 	    set tooltip($w) $key
-	    bindtags $w [linsert [bindtags $w] end "Tooltip"]
+	    # Note: Add the necessary bindings only once.
+	    set tags [bindtags $w]
+	    if {[lsearch -exact $tags "Tooltip"] == -1} {
+		bindtags $w [linsert $tags end "Tooltip"]
+	    }
 	    return $w
 	}
     }
@@ -479,4 +483,4 @@ proc ::tooltip::enableTag {w tag} {
     $w tag bind $tag <Any-Button> +[namespace code hide]
 }
 
-package provide tooltip 1.4.4
+package provide tooltip 1.4.5
