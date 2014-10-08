@@ -11,7 +11,7 @@ exec wish "$0" ${1+"$@"}
 #==============================================================================
 
 package require Tk 8.4		;# because of "-compound" and the spinbox widget
-package require tablelist 5.11
+package require tablelist 5.12
 package require combobox
 package require mentry
 
