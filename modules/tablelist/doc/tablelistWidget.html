@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 5.11</h2>
+    <h2>For Tablelist Version 5.12</h2>
 
     <h3>by</h3>
 
@@ -93,8 +93,9 @@
     <i>color</i></code></dd>
 
     <dd><code><b><a href="#arrowstyle">-arrowstyle</a></b>
-    <b>flat6x4</b>|<b>flat7x4</b>|<b>flat7x5</b>|<b>flat7x7</b>|<b>flat8x5</b>|<b>flat9x5</b>|<b>flat9x6</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flat9x7</b>|<b>flat10x6</b>|<b>photo7x7</b>|<b>sunken8x7</b>|<b>sunken10x9</b>|<b>sunken12x11</b></code></dd>
+    <b>flat5x3</b>|<b>flat5x4</b>|<b>flat6x4</b>|<b>flat7x4</b>|<b>flat7x5</b>|<b>flat7x7</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flat8x5</b>|<b>flat9x5</b>|<b>flat9x6</b>|<b>flat9x7</b>|<b>flat10x6</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;photo7x7</b>|<b>sunken8x7</b>|<b>sunken10x9</b>|<b>sunken12x11</b></code></dd>
 
     <dd><code><b><a href="#autoscan">-autoscan</a></b>
     <i>boolean</i></code></dd>
@@ -108,6 +109,9 @@
 
     <dd><code><b><a href="#columntitles">-columntitles</a></b> {<i>title</i>
     <i>title</i> ...}</code></dd>
+
+    <dd><code><b><a href="#customdragsource">-customdragsource</a></b>
+    <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#editendcommand">-editendcommand</a></b>
     <i>command</i></code></dd>
@@ -214,6 +218,9 @@
     <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#showarrow">-showarrow</a></b>
+    <i>boolean</i></code></dd>
+
+    <dd><code><b><a href="#showhorizseparator">-showhorizseparator</a></b>
     <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#showlabels">-showlabels</a></b>
@@ -467,6 +474,9 @@
 
     <dt class="tm"><a href="#cell_editing">INTERACTIVE CELL EDITING</a></dt>
 
+    <dt class="tm"><a href="#drag_and_drop_support">DRAG &amp; DROP
+    SUPPORT</a></dt>
+
     <dt class="tm"><a href="#virtual_events">VIRTUAL EVENTS</a></dt>
 
     <dt class="tm"><a href="#row_indices">ROW INDICES</a></dt>
@@ -485,7 +495,7 @@
 </pre>
     </dd>
 
-    <dt><a href="#col_indices">COLUMN INDICES</a>&gt;</dt>
+    <dt><a href="#col_indices">COLUMN INDICES</a></dt>
 
     <dd>
       <pre>
@@ -710,7 +720,7 @@
     <dd><code><i>pathName</i> <b><a href=
     "#findcolumnname">findcolumnname</a></b> <i>name</i></code></dd>
 
-    <dd><code><i>pathName</i> <b><a href="#findrowname"> findrowname</a></b>
+    <dd><code><i>pathName</i> <b><a href="#findrowname">findrowname</a></b>
     <i>name</i> ?<b>-descend</b>? ?<b>-parent</b> <i>nodeIndex</i>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
@@ -783,6 +793,9 @@
 
     <dd><code><i>pathName</i> <b><a href="#hasrowattrib">hasrowattrib</a></b>
     <i>index</i> <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#hidetargetmark">hidetargetmark</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#imagelabelpath">imagelabelpath</a></b> <i>cellIndex</i></code></dd>
@@ -931,6 +944,10 @@
     <dd><code><i>pathName</i> <b><a href=
     "#separators">separators</a></b></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#showtargetmark">showtargetmark</a></b> <b>before</b>|<b>inside</b>
+    <i>index</i></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#size">size</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#sort">sort</a></b>
@@ -954,6 +971,12 @@
 
     <dd><code><i>pathName</i> <b><a href=
     "#sortorderlist">sortorderlist</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#targetmarkpath">targetmarkpath</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#targetmarkpos">targetmarkpos</a></b>
+    <i>y</i> ?<b>-any</b>|<b>-horizontal</b>|<b>-vertical</b>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#togglecolumnhide">togglecolumnhide</a></b> <i>firstColumn</i>
@@ -1127,14 +1150,14 @@
 
       <blockquote>
         <p>Specifies a Tcl command used to decide whether a given tablelist
-        node may accept a specified item being <a href="#drag_and_drop">moved
-        interactively</a> as a child.&nbsp; The specified command is
-        automatically concatenated with the name of the tablelist widget, the
-        node index of the would-be new parent node, and the row index of the
-        dragged item, the resulting script is evaluated in the global scope,
-        and the return value (which must be a boolean) will determine whether
-        to allow to move the source item to the current mouse position as a
-        child of the given parent node.</p>
+        node may accept a specified item being <a href=
+        "#local_drag_and_drop">moved interactively</a> as a child.&nbsp; The
+        specified command is automatically concatenated with the name of the
+        tablelist widget, the node index of the would-be new parent node, and
+        the row index of the dragged item, the resulting script is evaluated in
+        the global scope, and the return value (which must be a boolean) will
+        determine whether to allow to move the source item to the current mouse
+        position as a child of the given parent node.</p>
 
         <p>For example, in the case of a tablelist widget used as a file
         manager, in which the top-level items represent volumes mounted on the
@@ -1145,10 +1168,10 @@
           <pre>
 proc acceptChildCmd {tbl targetParentNodeIdx sourceRow} {
     if {[string compare $targetParentNodeIdx "root"] == 0} {
-        # Allow only volumes as top-level items
-        return [expr {[$tbl depth $sourceRow] == 1}]
+        <i># Allow only volumes as top-level items</i>
+        return [expr {[$tbl <a href="#depth">depth</a> $sourceRow] == 1}]
     } else {
-        # Allow only directories as parent items
+        <i># Allow only directories as parent items</i>
         return [<i>$targetParentNodeIdx represents a directory</i>]
     }
 }
@@ -1184,7 +1207,7 @@ proc acceptChildCmd {tbl targetParentNodeIdx sourceRow} {
 
       <blockquote>
         <p>Specifies a Tcl command used to decide whether a given tablelist row
-        may accept a specified item being <a href="#drag_and_drop">moved
+        may accept a specified item being <a href="#local_drag_and_drop">moved
         interactively</a> to be dropped as a sibling just before that
         row.&nbsp; The specified command is automatically concatenated with the
         name of the tablelist widget, the row index of the would-be new target,
@@ -1201,7 +1224,7 @@ proc acceptChildCmd {tbl targetParentNodeIdx sourceRow} {
         <blockquote>
           <pre>
 proc acceptDropCmd {tbl targetRow sourceRow} {
-    set rowCount [[$tbl size]
+    set rowCount [[$tbl <a href="#size">size</a>]
     return [expr {$sourceRow != $rowCount - 1 &amp;&amp; $targetRow &lt; $rowCount}]
 }
 </pre>
@@ -1367,7 +1390,8 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         Tcl command associated with the widget.&nbsp; This option is only
         relevant if the value of the <code><b><a href=
         "#showarrow">-showarrow</a></b></code> option is true.&nbsp; The
-        currently supported values are <code><b>flat6x4</b></code>,
+        currently supported values are <code><b>flat5x3</b></code>,
+        <code><b>flat5x4</b></code>, <code><b>flat6x4</b></code>,
         <code><b>flat7x4</b></code>, <code><b>flat7x5</b></code>,
         <code><b>flat7x7</b></code>, <code><b>flat8x5</b></code>,
         <code><b>flat9x5</b></code>, <code><b>flat9x6</b></code>,
@@ -1379,8 +1403,8 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         Tablelist_tile; see the description of the <code><b><a href=
         "#arrowcolor">-arrowcolor</a></b></code> option for details.</p>
 
-        <p><img src="arrowStyles.png" alt="Arrow Styles" width="560" height=
-        "57"></p>
+        <p><img src="arrowStyles.png" alt="Arrow Styles" width="640" height=
+        "63"></p>
 
         <p>While the sort arrows of the styles <code><b>flat*</b></code> and
         <code><b>sunken*</b></code> are created from bitmaps, the arrow style
@@ -1429,9 +1453,20 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         automatic scrolling when the mouse leaves the tablelist window with
         button 1 down.&nbsp; The default is <code>1</code>, meaning that
         automatic scrolling will be in effect, just like in the case of the Tk
-        listbox widget.&nbsp; However, when using the tkdnd package, you might
-        want to set this option to <code>0</code>, in order to avoid any
-        conflicts between the drag &amp; drop and the automatic scrolling.</p>
+        listbox widget.&nbsp; However, when using the TkDND package or some
+        other drag &amp; drop implementation, you might want to set this option
+        to <code>0</code>, in order to avoid any conflicts between the drag
+        operation and the automatic scrolling.</p>
+
+        <p><b>REMARK:</b>&nbsp; Starting with Tablelist version 5.12, this
+        option has become obsolete, because the default bindings now suppress
+        the above-mentioned automatic scrolling if the tablelist's body
+        component was registered as a drag source for mouse button 1 via
+        the&nbsp; <code><b>tkdnd::drag_source register</b></code>&nbsp; or the
+        BWidget <code><b>DragSite::register</b></code> command, or the
+        tablelist's <code><b><a href=
+        "#customdragsource">-customdragsource</a></b></code> option was set to
+        true.</p>
       </blockquote>
     </dd>
 
@@ -1600,6 +1635,39 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
       </blockquote>
     </dd>
 
+    <dd id="customdragsource">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+
+          <td><code><b>-customdragsource</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+
+          <td><code><b>&nbsp;customDragSource</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+
+          <td><code><b>&nbsp;CustomDragSource</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a boolean value that indicates whether the tablelist
+        widget is a drag source for some drag &amp; drop implementation other
+        than TkDND and the drag &amp; drop framework included in BWidget.&nbsp;
+        If true then the default bindings will perform an automatic <a href=
+        "#global_drag_and_drop">drag-friendly handling of the selection</a> and
+        will suppress the automatic scrolling when the mouse leaves the
+        tablelist window with button 1 down.&nbsp; The default is
+        <code>0</code>.</p>
+      </blockquote>
+    </dd>
+
     <dd id="editendcommand">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
@@ -1754,20 +1822,20 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         <blockquote>
           <pre>
 proc expandCmd {tbl row} {
-    if {[$tbl childcount $row] == 0} {
-        # Get the name of the directory whose leaf name is
-        # displayed in the first cell of the specified row
-        set dir [$tbl rowattrib $row pathName]
+    if {[$tbl <a href="#childcount">childcount</a> $row] == 0} {
+        <i># Get the name of the directory whose leaf name is
+        # displayed in the first cell of the specified row</i>
+        set dir [$tbl <a href="#rowattrib">rowattrib</a> $row pathName]
 
-        # Display the contents of the directory $dir
-        # as child items of the one identified by $row
+        <i># Display the contents of the directory $dir
+        # as child items of the one identified by $row</i>
         putContents $dir $tbl $row
     }
 
-    # The rest is just eye candy:
-    if {[$tbl childcount $row] != 0} {
-        # Update the image displayed in the row's first cell
-        $tbl cellconfigure $row,0 -image openFolderImg
+    <i># The rest is just eye candy:</i>
+    if {[$tbl <a href="#childcount">childcount</a> $row] != 0} {
+        <i># Update the image displayed in the row's first cell</i>
+        $tbl <a href="#cellconfigure">cellconfigure</a> $row,0 -image openFolderImg
     }
 }
 </pre>
@@ -1888,11 +1956,14 @@ proc expandCmd {tbl row} {
       </table>
 
       <blockquote>
-        <p>Specifies the desired height for the window, in lines.&nbsp; If zero
-        or less then the desired height for the window is made just large
-        enough to hold the header and all the items in the tablelist widget,
-        provided that no column-, row-, or cell-specific fonts are used and no
-        embedded images or windows are displayed in the widget's cells.</p>
+        <p>Specifies the desired height for the window, in units of characters
+        in the font given by the <code><b>-font</b></code> option.&nbsp; This
+        is at the same time the desired height in lines, provided that no
+        column-, row-, or cell-specific fonts, multi-line elements, or embedded
+        images or windows will make any of the rows higher than the
+        others.&nbsp; With this restriction, if the option's value is zero or
+        less then the window's height is made just large enough to hold the
+        header and all the items in the tablelist widget.</p>
       </blockquote>
     </dd>
 
@@ -2410,7 +2481,7 @@ tablelist::tablelist .tbl ... -listvariable var
 set var {}
 for {set row 0} {$row &lt; 1000} {incr row} {
     lappend var ...
-    .tbl cellconfigure $row,3 -image ...
+    .tbl <a href="#cellconfigure">cellconfigure</a> $row,3 -image ...
 }
 </pre>
         </blockquote>
@@ -2425,7 +2496,7 @@ for {set row 0} {$row &lt; 1000} {incr row} {
     lappend var ...
 }
 for {set row 0} {$row &lt; 1000} {incr row} {
-    .tbl cellconfigure $row,3 -image ...
+    .tbl <a href="#cellconfigure">cellconfigure</a> $row,3 -image ...
 }
 </pre>
         </blockquote>
@@ -2635,12 +2706,12 @@ for {set row 0} {$row &lt; 1000} {incr row} {
         <blockquote>
           <pre>
 proc populateCmd {tbl row} {
-    # Get the name of the directory whose leaf name is
-    # displayed in the first cell of the specified row
-    set dir [$tbl rowattrib $row pathName]
+    <i># Get the name of the directory whose leaf name is
+    # displayed in the first cell of the specified row</i>
+    set dir [$tbl <a href="#rowattrib">rowattrib</a> $row pathName]
 
-    # Display the contents of the directory $dir
-    # as child items of the one identified by $row
+    <i># Display the contents of the directory $dir
+    # as child items of the one identified by $row</i>
     putContents $dir $tbl $row
 }
 </pre>
@@ -2653,14 +2724,14 @@ proc populateCmd {tbl row} {
         <blockquote>
           <pre>
 proc expandCmd {tbl row} {
-    if {[$tbl childcount $row] == 0} {
+    if {[$tbl <a href="#childcount">childcount</a> $row] == 0} {
         populateCmd $tbl $row
     }
 
-    # The rest is just eye candy:
-    if {[$tbl childcount $row] != 0} {
-        # Update the image displayed in the row's first cell
-        $tbl cellconfigure $row,0 -image openFolderImg
+    <i># The rest is just eye candy:</i>
+    if {[$tbl <a href="#childcount">childcount</a> $row] != 0} {
+        <i># Update the image displayed in the row's first cell</i>
+        $tbl <a href="#cellconfigure">cellconfigure</a> $row,0 -image openFolderImg
     }
 }
 </pre>
@@ -2892,6 +2963,38 @@ proc expandCmd {tbl row} {
       </blockquote>
     </dd>
 
+    <dd id="showhorizseparator">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+
+          <td><code><b>-showhorizseparator</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+
+          <td><code><b>&nbsp;showHorizSeparator</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+
+          <td><code><b>&nbsp;ShowHorizSeparator</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a boolean value that controls whether to place a
+        horizontal separator just below the last row if the value of the
+        <code><b><a href="#showseparators">-showseparators</a></b></code>
+        option is true, that of the <code><b><a href=
+        "#fullseparators">-fullseparators</a></b></code> option is false, and
+        there is free space left between the last row and the bottom of the
+        tablelist window.&nbsp; The default value is <code>1</code>.</p>
+      </blockquote>
+    </dd>
+
     <dd id="showlabels">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
@@ -2950,7 +3053,9 @@ proc expandCmd {tbl row} {
         this option is true.&nbsp; In this case, a horizontal separator will
         also be created and placed just below the last row, provided that the
         value of the <code><b><a href=
-        "#fullseparators">-fullseparators</a></b></code> option is false and
+        "#showhorizseparator">-showhorizseparator</a></b></code> option is
+        true, that of the <code><b><a href=
+        "#fullseparators">-fullseparators</a></b></code> option is false, and
         there is free space left between the last row and the bottom of the
         tablelist window.</p>
 
@@ -3311,10 +3416,14 @@ proc expandCmd {tbl row} {
       </table>
 
       <blockquote>
-        <p>Specifies the color of the temporary gap displayed in the
-        tablelist's body or header to indicate the target position when moving
-        a row or column interactively.&nbsp; The default value is
-        <code><b>black</b></code>.</p>
+        <p>Specifies the color of the gap displayed in the tablelist's body or
+        header to indicate the target position when moving a row or column
+        interactively.&nbsp; The target indicator belonging to the tablelist's
+        body can also be displayed explicitly with the aid of the
+        <code><b><a href="#showtargetmark">showtargetmark</a></b></code>
+        subcommand, and its path name can be retrieved via <code><b><a href=
+        "#targetmarkpath">targetmarkpath</a></b></code>.&nbsp; The default
+        value is <code><b>black</b></code>.</p>
       </blockquote>
     </dd>
 
@@ -3442,15 +3551,18 @@ proc expandCmd {tbl row} {
         strings.</p>
 
         <p>For example, consider the procedure <code>tooltipAddCmd</code> shown
-        below, which makes use of the <code>DynamicHelp::add</code> command
-        from the BWidget package to display the full cell and label texts as
-        tooltips for the cells and header labels with snipped contents.</p>
+        below, which makes use of the <code><b>DynamicHelp::add</b></code>
+        command from the BWidget package to display the full cell and label
+        texts as tooltips for the cells and header labels with snipped
+        contents.</p>
 
         <blockquote>
           <pre>
 proc tooltipAddCmd {tbl row col} {
-    if {($row &gt;= 0 &amp;&amp; [$tbl iselemsnipped $row,$col fullText]) ||
-        ($row &lt;  0 &amp;&amp; [$tbl istitlesnipped $col fullText])} {
+    if {($row &gt;= 0 &amp;&amp; [$tbl <a href=
+"#iselemsnipped">iselemsnipped</a> $row,$col fullText]) ||
+        ($row &lt;  0 &amp;&amp; [$tbl <a href=
+"#istitlesnipped">istitlesnipped</a> $col fullText])} {
         DynamicHelp::add $tbl -text $fullText
     }
 }
@@ -3465,14 +3577,17 @@ proc tooltipAddCmd {tbl row col} {
 </pre>
         </blockquote>
 
-        <p>If you prefer to use the <code>tooltip::tooltip</code> command from
-        the tooltip package contained in tklib then the procedure becomes</p>
+        <p>If you prefer to use the <code><b>tooltip::tooltip</b></code>
+        command from the tooltip package contained in tklib then the procedure
+        becomes</p>
 
         <blockquote>
           <pre>
 proc tooltipAddCmd {tbl row col} {
-    if {($row &gt;= 0 &amp;&amp; [$tbl iselemsnipped $row,$col fullText]) ||
-        ($row &lt;  0 &amp;&amp; [$tbl istitlesnipped $col fullText])} {
+    if {($row &gt;= 0 &amp;&amp; [$tbl <a href=
+"#iselemsnipped">iselemsnipped</a> $row,$col fullText]) ||
+        ($row &lt;  0 &amp;&amp; [$tbl <a href=
+"#istitlesnipped">istitlesnipped</a> $col fullText])} {
         tooltip::tooltip $tbl $fullText
     }
 }
@@ -3488,9 +3603,9 @@ proc tooltipAddCmd {tbl row col} {
         </blockquote>
 
         <p>Please note that in the less common case that the name of your
-        tablelist widget contains spaces, the <code>tooltip::tooltip
-        clear</code>command won't work as expected.&nbsp; As a workaround you
-        can use the slightly modified approach shown below:</p>
+        tablelist widget contains spaces, the&nbsp; <code><b>tooltip::tooltip
+        clear</b></code>&nbsp; command won't work as expected.&nbsp; As a
+        workaround you can use the slightly modified approach shown below:</p>
 
         <blockquote>
           <pre>
@@ -3633,7 +3748,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <td><img src="gtk.png" alt="gtk" width="120" height="51"></td>
 
-              <td><img src="newWave.png" alt="newWave" width="120" height=
+              <td><img src="adwaita.png" alt="adwaita" width="120" height=
               "51"></td>
 
               <td><img src="ubuntu.png" alt="ubuntu" width="120" height=
@@ -3647,7 +3762,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <td><code>gtk</code></td>
 
-              <td><code>newWave</code></td>
+              <td><code>adwaita</code></td>
 
               <td><code>ubuntu</code></td>
 
@@ -3750,6 +3865,9 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tbody>
             <tr align="center">
+              <td><img src="newWave.png" alt="newWave" width="120" height=
+              "63"></td>
+
               <td><img src="ambiance.png" alt="ambiance" width="120" height=
               "63"></td>
 
@@ -3760,12 +3878,11 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <td><img src="radiance.png" alt="radiance" width="120" height=
               "63"></td>
-
-              <td><img src="adwaita.png" alt="adwaita" width="120" height=
-              "63"></td>
             </tr>
 
             <tr align="center">
+              <td><code>newWave</code></td>
+
               <td><code>ambiance</code></td>
 
               <td><code>dust</code></td>
@@ -3773,23 +3890,21 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               <td><code>dustSand</code></td>
 
               <td><code>radiance</code></td>
-
-              <td><code>adwaita</code></td>
             </tr>
           </tbody>
         </table>
 
         <p>If the tree style is <code><b>aqua</b></code>,
-        <code><b>gtk</b></code>, <code><b>newWave</b></code>,
+        <code><b>gtk</b></code>, <code><b>adwaita</b></code>,
         <code><b>ubuntu</b></code>, <code><b>mint</b></code>,
-        <code><b>oxygen2</b></code>, <code><b>vistaAero</b></code>, or
-        <code><b>win7Aero</b></code> and the Tk version is either 8.6 (with
-        built-in PNG support) or 8.5 and the <code><b>img::png</b></code>
-        package can be loaded into the interpreter, then the images used for
-        displaying the expand/collapse controls are PNG images with alpha
-        channel.&nbsp; Otherwise (i.e., for the other tree styles or in the
-        absence of PNG support) GIF images are used for the expand/collapse
-        controls.</p>
+        <code><b>oxygen2</b></code>, <code><b>vistaAero</b></code>,
+        <code><b>win7Aero</b></code>, or <code><b>newWave</b></code>, and the
+        Tk version is either 8.6 (with built-in PNG support) or 8.5 and the
+        <code><b>img::png</b></code> package can be loaded into the
+        interpreter, then the images used for displaying the expand/collapse
+        controls are PNG images with alpha channel.&nbsp; Otherwise (i.e., for
+        the other tree styles or in the absence of PNG support) GIF images are
+        used for the expand/collapse controls.</p>
 
         <p>The following table contains a detailed description of the tree
         styles, in alphabetical order:</p>
@@ -3807,10 +3922,9 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><code><b>adwaita</b></code></td>
 
             <td><img src="adwaita.png" alt="adwaita" width="120" height=
-            "63"></td>
+            "51"></td>
 
-            <td>Inspired by the GTK+ 3 theme Adwaita.&nbsp; Recommended to be
-            used with large fonts and images.</td>
+            <td>Inspired by the GTK+ 3 theme Adwaita.</td>
           </tr>
 
           <tr>
@@ -3941,7 +4055,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
             <td><img src="mint.png" alt="mint" width="120" height="51"></td>
 
-            <td>Inspired by a few GTK+ 3 themes bundled with the Mint Linux
+            <td>Inspired by a few GTK+ 3 themes bundled with the Linux Mint
             distribution.</td>
           </tr>
 
@@ -3949,9 +4063,10 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><code><b>newWave</b></code></td>
 
             <td><img src="newWave.png" alt="newWave" width="120" height=
-            "51"></td>
+            "63"></td>
 
-            <td>Inspired by the GTK+ theme New Wave.</td>
+            <td>Inspired by the GTK+ theme New Wave.&nbsp; Recommended to be
+            used with large fonts and images.</td>
           </tr>
 
           <tr>
@@ -4819,16 +4934,17 @@ proc formatDate clockVal {
         <dd>Specifies whether to display those elements of the given column
         that don't fit into their cells in word-wrapped multi-line rather than
         snipped form.&nbsp; The default value is <code>0</code>.&nbsp; If the
-        specified column has static width and the value of this option is true
-        then elements of the column that are too long to be displayed in a
-        single line will be broken up into several lines.&nbsp; The same
-        applies to the individual lines of the multi-line elements (i.e.,
-        elements containing newline characters): they will also be wrapped if
-        necessary, thus giving rise to additional line breaks.&nbsp; In both
-        cases, the line breaks are chosen at word boundaries wherever possible,
-        and they are only used for the external representation of the strings
-        contained in the given column, without affecting the internal contents
-        of the cells.</dd>
+        specified column has static width or a nonzero <code><b><a href=
+        "#col_maxwidth">-maxwidth</a></b></code> value and the value of this
+        option is true, then elements of the column that are too long to be
+        displayed in a single line will be broken up into several lines.&nbsp;
+        The same applies to the individual lines of the multi-line elements
+        (i.e., elements containing newline characters): they will also be
+        wrapped if necessary, thus giving rise to additional line breaks.&nbsp;
+        In both cases, the line breaks are chosen at word boundaries wherever
+        possible, and they are only used for the external representation of the
+        strings contained in the given column, without affecting the internal
+        contents of the cells.</dd>
       </dl>
     </dd>
 
@@ -5467,6 +5583,204 @@ proc updateWindow {tbl row col w args} {
     <code><b><a href="#forceeditendcommand">-forceeditendcommand</a></b></code>
     option for more about the invocation of the command mentioned above.</dd>
 
+    <dt class="tm" id="drag_and_drop_support"><b>DRAG &amp; DROP
+    SUPPORT</b></dt>
+
+    <dd>As <a href="#global_drag_and_drop">described in detail</a> in the
+    "DEFAULT AND INDIVIDUAL BINDINGS FOR THE TABLELIST BODY" section, the
+    default binding scripts perform an automatic drag-friendly handling of the
+    selection and of pointer movements with mouse button 1 down if the
+    tablelist widget's <code><b><a href=
+    "#customdragsource">-customdragsource</a></b></code> opton was set to true
+    or its body component was registered as a drag source for mouse button 1
+    via the&nbsp; <code><b>tkdnd::drag_source register</b></code>&nbsp; or the
+    BWidget <code><b>DragSite::register</b></code> command.</dd>
+
+    <dd class="tm">On the other hand, you can also register a tablelist widget
+    as a TkDND drop target, by invoking the&nbsp; <code><b>tkdnd::drop_target
+    register</b></code>&nbsp; command.&nbsp; Similarly, you can register the
+    body component of a tablelist widget as a drop target for the drag &amp;
+    drop framework included in BWidget, with the aid of the
+    <code><b>DropSite::register</b></code> command.&nbsp; (Notice that for
+    BWidget it is necessary to register the tablelist's <i>body</i> rather than
+    the widget itself.)</dd>
+
+    <dd class="tm">The action to be triggered by a drop event over a tablelist
+    widget might depend on the row under the mouse and the vertical position of
+    the mouse pointer within the containing row (if any).&nbsp; For example,
+    your application might insert one or more new siblings before or after the
+    row in question, or a child item having that row as parent, depending on
+    the vertical position of the mouse pointer within the containing row.&nbsp;
+    Alternatively, the drop event might update the item under the mouse, using
+    the data associated with the drag source, or perform some other,
+    application-specific action.&nbsp; In any case, you can significantly
+    increase the user-friendliness of your application by displaying a target
+    indicator (a horizontal gap or vertical bar) before or inside the row that
+    will be affected by the drop.&nbsp; The examples below demonstrate how to
+    achieve this for a tablelist widget <code>$tbl</code> with the aid of the
+    <code><b><a href="#showtargetmark">showtargetmark</a></b></code>,
+    <code><b><a href="#hidetargetmark">hidetargetmark</a></b></code>,
+    <code><b><a href="#targetmarkpos">targetmarkpos</a></b></code>, and
+    <code><b><a href="#targetmarkpath">targetmarkpath</a></b></code>
+    subcommands.</dd>
+
+    <dd class="tm">
+      <b>TkDND EXAMPLE:</b>&nbsp; For an introduction to TkDND see the online
+      <a href="http://wiki.tcl.tk/36708">TkDND Tutorial</a> by Georgios
+      Petasis.&nbsp; For the following example it is strongly recommended to
+      use TkDND version 2.7 or later, which can be downloaded from the location
+      
+      <blockquote>
+        <address>
+          <a href=
+          "http://sourceforge.net/projects/tkdnd/files/">http://sourceforge.net/projects/tkdnd/files/</a>
+        </address>
+      </blockquote>
+
+      <blockquote>
+        <pre>
+package require tkdnd 2.7
+
+tkdnd::drop_target register $tbl DND_Text
+
+bind $tbl &lt;&lt;DropEnter&gt;&gt;    { onTblDropEnterOrPos %W %X %Y %a %b }
+bind $tbl &lt;&lt;DropPosition&gt;&gt; { onTblDropEnterOrPos %W %X %Y %a %b }
+bind $tbl &lt;&lt;DropLeave&gt;&gt;    { %W <a href=
+"#hidetargetmark">hidetargetmark</a> }
+bind $tbl &lt;&lt;Drop&gt;&gt;         { onTblDrop %W %A %D }
+
+proc onTblDropEnterOrPos {tbl rootX rootY actions buttons} {
+    global place row
+    set y [expr {$rootY - [winfo rooty $tbl]}]
+    foreach {place row} [$tbl <a href="#targetmarkpos">targetmarkpos</a> $y] {}
+
+    if {<i>some_optional_excluding_condition</i>} {
+        $tbl <a href="#hidetargetmark">hidetargetmark</a>
+        return refuse_drop
+    } else {
+        $tbl <a href="#showtargetmark">showtargetmark</a> $place $row
+        return copy ;<i># for example</i>
+    }
+}
+
+proc onTblDrop {tbl action data} {
+    <span>handleTblDrop</span> $tbl $data
+    return $action
+}
+</pre>
+      </blockquote>
+    </dd>
+
+    <dd class="tm">
+      <b>BWidget EXAMPLE:</b>&nbsp; For an introduction to drag &amp; drop with
+      BWidget see the online tutorial <a href=
+      "http://wiki.tcl.tk/16126">BWidget example: Drag and Drop Demo</a> by
+      Kevin Walzer.&nbsp; The <code><b>DropSite::*</b></code> commands used in
+      the following example are described in the "DropSite" reference page
+      included in the BWidget distribution.&nbsp; When using this drag &amp;
+      drop framework, you will have to register not only the tablelist's body,
+      but also its target indicator as drop sites, to make sure that the target
+      mark won't get hidden by moving the mouse cursor over it with mouse
+      button 1 down:
+
+      <blockquote>
+        <pre>
+package require BWidget
+
+foreach w [list [$tbl <a href="#bodypath">bodypath</a>] [$tbl <a href=
+"#targetmarkpath">targetmarkpath</a>]] {
+    DropSite::register $w -dropovercmd tblDropOverCmd -dropcmd tblDropCmd \
+        -droptypes ...
+}
+
+proc tblDropOverCmd {dropTarget dragSrc event rootX rootY op dataType data} {
+    <i># $event may be "enter", "motion", or "leave"</i>
+    set tbl [<a href="tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a> $dropTarget]
+    if {[string equal $event "leave"]} {
+        set newWidget [winfo containing -displayof $dropTarget $rootX $rootY]
+        if {![string equal $newWidget [$tbl <a href="#targetmarkpath">targetmarkpath</a>]] &amp;&amp;
+            ![string equal $newWidget [$tbl <a href="#bodypath">bodypath</a>]]} {
+            $tbl <a href="#hidetargetmark">hidetargetmark</a>
+            return 2 ;<i># refuse the drop and re-invoke the callback on motion events</i>
+        }
+    }
+    
+    global place row
+    set y [expr {$rootY - [winfo rooty $tbl]}]
+    foreach {place row} [$tbl <a href="#targetmarkpos">targetmarkpos</a> $y] {}
+
+    if {<i>some_optional_excluding_condition</i>} {
+        $tbl <a href="#hidetargetmark">hidetargetmark</a>
+        DropSite::setcursor dot
+        return 2 ;<i># refuse the drop and re-invoke the callback on motion events</i>
+    } else {
+        $tbl <a href="#showtargetmark">showtargetmark</a> $place $row
+        DropSite::setcursor based_arrow_down
+        return 3 ;<i># accept the drop and re-invoke the callback on motion events</i>
+    }
+}
+
+proc tblDropCmd {dropTarget dragSrc rootX rootY op dataType data} {
+    set tbl [<a href="tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a> $dropTarget]
+    <span>handleTblDrop</span> $tbl $data
+    return ""
+}
+</pre>
+      </blockquote>
+    </dd>
+
+    <dd class="tm">
+      In both examples above, you can restrict the type of the supported drop
+      target indicator by appending the argument
+      <code><b>-horizontal</b></code> or <code><b>-vertical</b></code> to the
+      <a href="#targetmarkpos">targetmarkpos</a> invocation.&nbsp; When passing
+      the <code><b>-vertical</b></code> option, you will have to extend the
+      <code><b>if</b></code> statement following that subcommand invocation as
+      follows:
+
+      <blockquote>
+        <pre>
+    if {$row &lt; 0 || <i>some_optional_excluding_condition</i>} {
+</pre>
+      </blockquote>
+    </dd>
+
+    <dd class="tm">
+      Both examples above invoke the <code>handleTblDrop</code> procedure,
+      implemented as follows:
+
+      <blockquote>
+        <pre>
+proc handleTblDrop {tbl data} {
+    $tbl <a href="#hidetargetmark">hidetargetmark</a>
+    global place row
+
+    if {[string equal $place "before"]}
+        if {$row &lt; [$tbl <a href="#size">size</a>]} {
+            <i># Insert a sibling of the item indicated by $row, built from $data
+            # (For a flat tablelist replace the following 2 lines with
+            # "set key [$tbl <a href="#insert">insert</a> $row ...]")</i>
+            set key [$tbl <a href="#insertchildren">insertchild</a> [$tbl <a href="#parentkey">parentkey</a> $row] \
+                     [$tbl <a href="#childindex">childindex</a> $row] ...]
+        } else {
+            <i># Append a top-level item built from $data
+            # (For a flat tablelist replace the following line with
+            # "set key [$tbl <a href="#insert">insert</a> end ...]")</i>
+            set key [$tbl <a href="#insertchildren">insertchild</a> root end ...]
+        }
+    } else { ;<i># "inside"</i>
+        <i># Insert a child of the item indicated by $row, built from $data
+        # Alternatively, update the item indicated by $row, using $data</i>
+        set key [$tbl <a href="#insertchildren">insertchild</a> $row 0 ...]
+        $tbl <a href="#expand">expand</a> $row -partly
+    }
+
+    . . .
+}
+</pre>
+      </blockquote>
+    </dd>
+
     <dt class="tm" id="virtual_events"><b>VIRTUAL EVENTS</b></dt>
 
     <dd>Tablelist defines a few virtual events for the purposes of
@@ -5697,10 +6011,11 @@ proc updateWindow {tbl row col w args} {
           <td>Indicates the end of the tablelist.&nbsp; For most commands this
           refers to the last item in the tablelist, but for a few commands such
           as <code><b><a href="#index">index</a></b></code>, <code><b><a href=
-          "#insert">insert</a></b></code>, and <code><b><a href=
-          "#insertlist">insertlist</a></b></code>, as well as for the target of
-          the <code><b><a href="#move">move</a></b></code> command it refers to
-          the item just after the last one.</td>
+          "#insert">insert</a></b></code>, <code><b><a href=
+          "#insertlist">insertlist</a></b></code>, and&nbsp; <code><b><a href=
+          "#showtargetmark">showtargetmark before</a></b></code>,&nbsp; as well
+          as for the target of the <code><b><a href="#move">move</a></b></code>
+          command it refers to the item just after the last one.</td>
         </tr>
 
         <tr valign="top">
@@ -6637,7 +6952,7 @@ eval [list <i>pathName</i> <a href=
 
           <blockquote>
             <pre>
-# Add some entries to the Tk option database
+<i># Add some entries to the Tk option database</i>
 set winSys [tk windowingsystem]
 if {[string compare $winSys "x11"] != 0} {
     option add *ScrollArea.borderWidth                  1
@@ -6648,8 +6963,8 @@ if {[string compare $winSys "x11"] != 0} {
 
 . . .
 
-# Create the tablelist and the scrollbars as
-# children of a frame of class ScrollArea
+<i># Create the tablelist and the scrollbars as
+# children of a frame of class ScrollArea</i>
 set frm [(ttk::)frame ... -class ScrollArea]
 set tbl $frm.tbl
 set vsb $frm.vsb
@@ -6661,10 +6976,10 @@ scrollbar $hsb -orient horizontal -command [list $tbl xview]
 
 . . .
 
-# Manage the widgets within the frame
+<i># Manage the widgets within the frame</i>
 grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
 if {[string compare $winSys "aqua"] == 0} {
-    grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
+    grid [$tbl <span>cornerpath</span>] -row 0 -column 1 -sticky ew
     grid $vsb              -row 1 -column 1 -sticky ns
 } else {
     grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
@@ -6673,7 +6988,7 @@ grid $hsb -row 2 -column 0 -sticky ew
 grid rowconfigure    $frm 1 -weight 1
 grid columnconfigure $frm 0 -weight 1
 
-# Manage the frame
+<i># Manage the frame</i>
 pack $frm -expand yes -fill both
 </pre>
           </blockquote>
@@ -6800,7 +7115,8 @@ pack $frm -expand yes -fill both
 
           <blockquote>
             <pre>
-bind [.tbl editwintag] &lt;Return&gt; "[bind TablelistEdit &lt;Tab&gt;]; break"
+bind [.tbl <span>editwintag</span>] &lt;Return&gt; "[bind <a href=
+"#edit_bindings">TablelistEdit</a> &lt;Tab&gt;]; break"
 </pre>
           </blockquote>
         </dd>
@@ -6990,13 +7306,14 @@ bind [.tbl editwintag] &lt;Return&gt; "[bind TablelistEdit &lt;Tab&gt;]; break"
 
           <blockquote>
             <pre>
-.tbl columnconfigure 1 -formatcommand [list formatValue .tbl]
+.tbl <a href="#columnconfigure">columnconfigure</a> 1 <a href=
+"#col_formatcommand">-formatcommand</a> [list formatValue .tbl]
 
 proc formatValue {tbl val} {
-    # Get information about the cell whose content is being formatted
-    foreach {key row col} [$tbl formatinfo] {}
+    <i># Get information about the cell whose content is being formatted</i>
+    foreach {key row col} [$tbl <span>formatinfo</span>] {}
 
-    # Return a string depending on $val and $row (or $key)
+    <i># Return a string depending on $val and $row (or $key)</i>
     . . .
 }
 </pre>
@@ -7175,6 +7492,20 @@ proc formatValue {tbl val} {
         <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
         for the row given by <code><i>index</i></code> exists and
         <code>0</code> otherwise.</dd>
+
+        <dt class="tm" id="hidetargetmark"><code><i>pathName</i>
+        <b>hidetargetmark</b></code></dt>
+
+        <dd>Hides the horizontal gap or vertical bar displayed by the
+        <code><b><a href="#showtargetmark">showtargetmark</a></b></code>
+        command.&nbsp; No error is generated if the target indicator is not
+        visible at the time the command is invoked.</dd>
+
+        <dd class="tm">This command is designed to be used during a drag &amp;
+        drop operation for which the tablelist widget (or its body component)
+        was registered as a drop target.&nbsp; See the <a href=
+        "#drag_and_drop_support">DRAG &amp; DROP SUPPORT</a> section for
+        details and examples.</dd>
 
         <dt class="tm" id="imagelabelpath"><code><i>pathName</i>
         <b>imagelabelpath</b> <i>cellIndex</i></code></dt>
@@ -7362,7 +7693,7 @@ eval [list <i>pathName</i> <a href=
         widgets, created on demand).&nbsp; The return value is the list of full
         keys associated with the items just inserted.</dd>
 
-        <dd>
+        <dd class="tm">
           This command has the same effect as
 
           <blockquote>
@@ -7444,7 +7775,7 @@ eval [list <i>pathName</i> <a href=
 
           <blockquote>
             <pre>
-upvar #0 [.tbl itemlistvar] itemList
+upvar #0 [.tbl <span>itemlistvar</span>] itemList
 </pre>
           </blockquote>
         </dd>
@@ -8006,6 +8337,27 @@ upvar #0 [.tbl itemlistvar] itemList
         "#showseparators">-showseparators</a></b></code> configuration
         option.</dd>
 
+        <dt class="tm" id="showtargetmark"><code><i>pathName</i>
+        <b>showtargetmark</b> <b>before</b>|<b>inside</b>
+        <i>index</i></code></dt>
+
+        <dd>Displays a drop target indicator having the form of a horizontal
+        gap or vertical bar before or inside the row specified by
+        <code><i>index</i></code>.&nbsp; If the subcommand's name is followed
+        by <code><b>before</b></code> and <code><i>index</i></code> equals the
+        number of items or is specified as <code><b>end</b></code> then the
+        horizontal gap will be shown just <i>after</i> the tablelist's last
+        row.&nbsp; If the subcommand is used with the
+        <code><b>inside</b></code> option then the index
+        <code><b>end</b></code> is interpreted as indicating the widget's last
+        item.</dd>
+
+        <dd class="tm">This command is designed to be used during a drag &amp;
+        drop operation for which the tablelist widget (or its body component)
+        was registered as a drop target.&nbsp; See the <a href=
+        "#drag_and_drop_support">DRAG &amp; DROP SUPPORT</a> section for
+        details and examples.</dd>
+
         <dt class="tm" id="size"><code><i>pathName</i> <b>size</b></code></dt>
 
         <dd>Returns the total number of items in the tablelist widget.</dd>
@@ -8173,6 +8525,43 @@ upvar #0 [.tbl itemlistvar] itemList
         <a href="#col_sortcommand">column</a> configuration option, then the
         return value of this subcommand refers to the sorting in progress
         rather than the most recent one.</dd>
+
+        <dt class="tm" id="targetmarkpath"><code><i>pathName</i>
+        <b>targetmarkpath</b></code></dt>
+
+        <dd>Returns the path name of the drop target indicator (displayed as a
+        horizontal gap or vertical bar) belonging to the tablelist's body.</dd>
+
+        <dt class="tm" id="targetmarkpos"><code><i>pathName</i>
+        <b>targetmarkpos</b> <i>y</i>
+        ?<b>-any</b>|<b>-horizontal</b>|<b>-vertical</b>?</code></dt>
+
+        <dd>Given a y-coordinate within the tablelist window, this command
+        returns a two-element list containing the arguments to be passed to the
+        <code><b><a href="#showtargetmark">showtargetmark</a></b></code>
+        subcommand in order to display the drop target indicator corresponding
+        to that y-coordinate.&nbsp; The first list element will be the string
+        <code><b>before</b></code> or <code><b>inside</b></code>, and the
+        second one a numerical row index.&nbsp; These list elements depend on
+        the relative position of <code><i>y</i></code> within the containing
+        row (if any), as well as on the optional second argument:&nbsp; The
+        default option <code><b>-any</b></code> allows both
+        <code><b>before</b></code> and <code><b>inside</b></code> as first
+        element of the result list, while the options
+        <code><b>-horizontal</b></code> and <code><b>-vertical</b></code>
+        restrict the value of the first list element to
+        <code><b>before</b></code> and <code><b>inside</b></code>,
+        respectively.&nbsp; If the option <code><b>-vertical</b></code> was
+        specified and no tablelist item contains the given y-position, then the
+        return value is the list&nbsp; <code>{<b>inside</b> -1}</code>.&nbsp;
+        The coordinate <code><i>y</i></code> is expected to be relative to the
+        tablelist window itself (not its body component).</dd>
+
+        <dd class="tm">This command is designed to be used during a drag &amp;
+        drop operation for which the tablelist widget (or its body component)
+        was registered as a drop target.&nbsp; See the <a href=
+        "#drag_and_drop_support">DRAG &amp; DROP SUPPORT</a> section for
+        details and examples.</dd>
 
         <dt class="tm" id="togglecolumnhide"><code><i>pathName</i>
         <b>togglecolumnhide</b> <i>firstColumn</i> <i>lastColumn</i></code><br>
@@ -8428,7 +8817,8 @@ upvar #0 [.tbl itemlistvar] itemList
       <blockquote>
         <pre>
 foreach {tablelist::W tablelist::x tablelist::y} \
-    [tablelist::convEventFields %W %x %y] {}
+    [<a href=
+"tablelistBinding.html#convEventFields">tablelist::convEventFields</a> %W %x %y] {}
 </pre>
       </blockquote>
     </dd>
@@ -8449,7 +8839,8 @@ foreach {tablelist::W tablelist::x tablelist::y} \
 
       <blockquote>
         <pre>
-set tablelist::W [tablelist::getTablelistPath %W]
+set tablelist::W [<a href=
+"tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a> %W]
 </pre>
       </blockquote>
     </dd>
@@ -8473,10 +8864,11 @@ set tablelist::W [tablelist::getTablelistPath %W]
 
       <blockquote>
         <pre>
-bind [.tbl bodytag] &lt;Button-1&gt; {
+bind [.tbl <a href="#bodytag">bodytag</a>] &lt;Button-1&gt; {
     foreach {tablelist::W tablelist::x tablelist::y} \
-        [tablelist::convEventFields %W %x %y] {}
-    puts "clicked on cell [.tbl containingcell $tablelist::x $tablelist::y]"
+        [<a href=
+"tablelistBinding.html#convEventFields">tablelist::convEventFields</a> %W %x %y] {}
+    puts "clicked on cell [.tbl <a href="#containingcell">containingcell</a> $tablelist::x $tablelist::y]"
 }
 </pre>
       </blockquote>
@@ -8495,10 +8887,11 @@ bind [.tbl bodytag] &lt;Button-1&gt; {
 
       <blockquote>
         <pre>
-bind [.tbl bodytag] &lt;Button-1&gt; {printClickedCell %W %x %y}<br>
+bind [.tbl <a href="#bodytag">bodytag</a>] &lt;Button-1&gt; {printClickedCell %W %x %y}<br>
 proc printClickedCell {w x y} {
-    foreach {tbl x y} [tablelist::convEventFields $w $x $y] {}
-    puts "clicked on cell [$tbl containingcell $x $y]"
+    foreach {tbl x y} [<a href=
+"tablelistBinding.html#convEventFields">tablelist::convEventFields</a> $w $x $y] {}
+    puts "clicked on cell [$tbl <a href="#containingcell">containingcell</a> $x $y]"
 }
 </pre>
       </blockquote>
@@ -8581,10 +8974,11 @@ proc printClickedCell {w x y} {
     aware of any changes to tablelist selection.&nbsp; Both events will be
     generated independently of the selection type.</dd>
 
-    <dd class="tm" id="drag_and_drop">
-      The following binding associated with the binding tag
-      <code><b>TablelistBody</b></code> is only valid if the selection mode is
-      <code><b>single</b></code> or <code><b>multiple</b></code>:
+    <dd class="tm" id="local_drag_and_drop">
+      <b>LOCAL DRAG &amp; DROP:</b>&nbsp; The following binding associated with
+      the binding tag <code><b>TablelistBody</b></code> is only valid if the
+      selection mode is <code><b>single</b></code> or
+      <code><b>multiple</b></code>:
 
       <blockquote>
         <p>If mouse button 1 is clicked on an item and then dragged outside
@@ -8606,7 +9000,7 @@ proc printClickedCell {w x y} {
         row or just before the latter's first child, and the virtual event
         <code><b>&lt;&lt;TablelistRowMoved&gt;&gt;</b></code> is
         generated.&nbsp; For Tk versions 8.5 or higher, this virtual event is
-        is generated with its <code><b>-data</b></code> option set to a list of
+        generated with its <code><b>-data</b></code> option set to a list of
         length 3, whose elements are derived from the arguments passed to the
         second form of the <code><b><a href="#move">move</a></b></code>
         subcommand invoked for moving the source row to its new position.&nbsp;
@@ -8645,12 +9039,64 @@ proc printClickedCell {w x y} {
         evaluated in the global scope, and if the return value (which must be a
         boolean) is false, then the source item will not be allowed to be moved
         to the current mouse position.</p>
+
+        <p>Recall that if the selection mode is <code><b>multiple</b></code>
+        then <i>pressing</i> mouse button 1 on a selected item or element
+        normally deselects that item or element (depending on the selection
+        type).&nbsp; However, if in addition the value of the <code><b><a href=
+        "#movablerows">-movablerows</a></b></code> configuration option is true
+        then the clicked row is a potential drag source for the local drag
+        &amp; drop operation described above, and for this reason the clicked
+        item or element will only be deselected when <i>releasing</i> mouse
+        button 1 over the same item or element.</p>
       </blockquote>
     </dd>
 
-    <dd>Finally, the following bindings associated with the binding tag
-    <code><b>TablelistBody</b></code> apply to tablelists used as tree
-    widgets:</dd>
+    <dd class="tm" id="global_drag_and_drop"><b>DRAG SOURCE SUPPORT FOR GLOBAL
+    DRAG &amp; DROP:</b>&nbsp; Besides the local drag &amp; drop, the default
+    bindings also support the TkDND compiled extension and the drag &amp; drop
+    framework included in BWidget, as well as custom drag &amp; drop
+    implementations.&nbsp; A tablelist widget is viewed as a <b>drag source for
+    mouse button 1</b> if its body component was registered as such via
+    the&nbsp; <code><b>tkdnd::drag_source register</b></code>&nbsp; or the
+    Widget <code><b>DragSite::register</b></code> command, or the tablelist's
+    <code><b><a href="#customdragsource">-customdragsource</a></b></code>
+    option was set to true.&nbsp; The default bindings provide drag source
+    support as described below:</dd>
+
+    <dd>
+      <ol>
+        <li class="tm">If the selection mode is <code><b>extended</b></code>
+        then <i>pressing</i> mouse button 1 on a selected item or element
+        normally deselects all the other items or elements (depending on the
+        selection type).&nbsp; However, if the tablelist is a drag source for
+        mouse button 1, then the other items or elements will only be
+        deselected when <i>releasing</i> mouse button 1 over the clicked item
+        or element.&nbsp; This is because the mouse click might be followed by
+        a drag, intended for all currently selected items or elements.</li>
+
+        <li class="tm">Similarly, if the selection mode is
+        <code><b>multiple</b></code> then <i>pressing</i> mouse button 1 on a
+        selected item or element normally deselects that item or element
+        (depending on the selection type).&nbsp; However, if the tablelist is a
+        drag source for mouse button 1, then the clicked item or element will
+        only be deselected when <i>releasing</i> mouse button 1 over the same
+        item or element.&nbsp; Again, this is because the mouse click might be
+        followed by a drag, intended for all currently selected items or
+        elements.</li>
+
+        <li class="tm">Whenever the mouse leaves the tablelist window with
+        button 1 down. the default bindings normally perform an automatic
+        scrolling, just like in the case of the Tk listbox widget.&nbsp;
+        However, if the tablelist is a drag source for mouse button 1, then the
+        automatic scrolling will be suppressed, in order to avoid any conflicts
+        with the drag operation.</li>
+      </ol>
+    </dd>
+
+    <dd class="tm"><b>TREE WIDGET BINDINGS:</b>&nbsp; The following bindings
+    associated with the binding tag <code><b>TablelistBody</b></code> apply to
+    tablelists used as tree widgets:</dd>
 
     <dd>
       <ol>
@@ -8801,8 +9247,9 @@ proc printClickedCell {w x y} {
 
       <blockquote>
         <pre>
-bind [.tbl labeltag] &lt;Button-3&gt; {
-    puts "right-clicked on header label no. [tablelist::getTablelistColumn %W]"
+bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
+    puts "right-clicked on header label no. [<a href=
+"tablelistBinding.html#getTablelistColumn">tablelist::getTablelistColumn</a> %W]"
     break
 }
 </pre>
