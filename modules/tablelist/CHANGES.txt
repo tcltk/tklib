@@ -1,5 +1,48 @@
-What is new in Tablelist 5.11?
+What is new in Tablelist 5.12?
 ------------------------------
+
+1. Added the "-customdragsource" configuration option, used to indicate
+   whether the tablelist widget is a drag source for some drag & drop
+   implementation other than TkDND and the drag & drop framework
+   included in BWidget.
+
+2. Improvements and extensions in the default binding scripts.  Besides
+   providing full compatibility with the Tk listbox, they now perform an
+   automatic drag-friendly handling of the selection and of pointer
+   movements with mouse button 1 down if the "-customdragsource" option
+   was set to true or the tablelist's body was registered as a TkDND or
+   BWidget drag source (thanks to Will Duquette for his proposal).  The
+   same holds true for the local drag & drop via the "move" subcommand.
+
+3. Added the "hidetargetmark", "showtargetmark", "targetmarkpath", and
+   "targetmarkpos" subcommands, for enhanced drop target support (thanks
+   to Trevor Williams for his proposal).
+
+4. Added a "Drag & Drop Support" section to the reference manual, with
+   examples demonstrating the use of the new subcommands mentioned
+   above in a tablelist widget registered as a TkDND or BWidget drop
+   target.
+
+5. The visibility of the horizontal separator placed just below the last
+   tablelist row if the value of the "-showseparators" option is true
+   and that of the "-fullseparators" option is false, can now be 
+   controlled with the aid of the new "-showhorizseparator"
+   configuration option (thanks to Martyn Smith for his proposal).
+
+6. New values "flat5x3" and "flat5x4" for the "-arrowstyle"
+   configuration option, suiting current versions of the Ubuntu Linux
+   distribution.
+
+7. Adapted the look & feel of the tree styles "adwaita", "ubuntu", and
+   "mint" to current versions of the GTK+ 3 theme Adwaita and of the
+   Linux distributions Ubuntu Linux and Linux Mint, respectively.
+
+8. Fixed a long-standing bug related to horizontal scrolling in an empty
+   tablelist widget with positve "-titlecolumns" value (thanks to Ulrich
+   Seidl for his bug report).
+
+What was new in Tablelist 5.11?
+-------------------------------
 
 1. Added the "findrowname" and "findcolumnname" subcommands (thanks to
    Adrian Medrano Calvo for his proposal and discussions on this
@@ -289,7 +332,7 @@ What was new in Tablelist 5.4?
    "searchcolumn" subcommand to insert child items on demand before
    checking whether they contain the specified pattern.
    
-2. Added the "-autoscroll" configuration option, which can be used to
+2. Added the "-autoscan" configuration option, which can be used to
    deactivate the automatic scrolling triggered by leaving the
    tablelist window with mouse button 1 down, in order to avoid any
    conflicts with drag & drop via tkdnd (thanks to Patrick Fradin for
@@ -395,7 +438,7 @@ What was new in Tablelist 5.2?
 
 8.  Fixed a bug related to the "-selecttype cell" configuration option,
     (re)introduced in Tablelist version 5.0 (thanks to Harold Campbell
-    and Dietmar Müller for their bug reports).
+    and Dietmar Mueller for their bug reports).
 
 9.  Fixed a bug related to row hiding via "configrowlist" or
     "configrows", introduced in Tablelist version 5.0 (thanks to Michal
@@ -620,7 +663,7 @@ What was new in Tablelist 4.9?
 
 1.  Added the "-wrap" column configuration option, which makes it
     possible to display long texts in word-wrapped multi-line rather
-    than snipped form (thanks to Alexander Schöpe and Anant Adke for
+    than snipped form (thanks to Alexander Schoepe and Anant Adke for
     their proposals).  Also, added support for interactive cell editing
     with a word- or char-wrapped text widget when using Tk 8.5 (thanks
     to Juberi Rajib for discussions on this topic).
@@ -675,7 +718,7 @@ What was new in Tablelist 4.8?
 
 This release fixes a few nasty bugs related to the optimized item
 insertion, introduced in the previous Tablelist version (thanks to
-Harold Campbell, Roger Niva, and Jörg Klingseisen for their bug
+Harold Campbell, Roger Niva, and Joerg Klingseisen for their bug
 reports).
 
 What was new in Tablelist 4.7?
@@ -796,7 +839,7 @@ What was new in Tablelist 4.5?
     displayed much faster than in earlier Tablelist versions.
 
 4.  New column configuration option "-showlinenumbers" (thanks to Rolf
-    Schroedter and Sean Xu for their proposals and to Kathrin Kläs for
+    Schroedter and Sean Xu for their proposals and to Kathrin Klaes for
     testing the implementation).
 
 5.  Support for tile-based multi-entry widgets (introduced in Mentry
@@ -869,7 +912,7 @@ What was new in Tablelist 4.4?
     bug report).
 
 9.  Improved the handling of the virtual event <<ThemeChanged>> (thanks
-    to Wofgang Großer for his bug report).
+    to Wofgang Grosser for his bug report).
 
 10. Fixed a long-standing bug related to hidden columns (thanks to Dave
     Leslie for his bug report).
@@ -1124,7 +1167,7 @@ What was new in Tablelist 3.8?
    body and the header of a tablelist widget having title columns.
 
 6. Fixed a bug related to the "-titlecolumns" option, introduced in the
-   previous Tablelist release (thanks to Alexander Schöpe for his bug
+   previous Tablelist release (thanks to Alexander Schoepe for his bug
    report).
 
 7. Fixed a typo in the implementation of the "seecell" subcommand,
@@ -1221,7 +1264,7 @@ What was new in Tablelist 3.5?
 1.  New configuration option "-selecttype" with the values "row" and
     "cell", and new binding scripts supporting these two selection
     types (thanks to Kevin Partin for his proposal and to Dietmar
-    Müller for his valuable contribution).
+    Mueller for his valuable contribution).
 
 2.  New subcommands "activatecell", "cellselection", and
     "curcellselection", used in the binding scripts mentioned above.
@@ -1280,7 +1323,7 @@ What was new in Tablelist 3.4?
     for his proposal).
 
 5.  The <Shift-Button-3> event in a column label now restores the
-    column's last static width (thanks to Dietmar Müller for his
+    column's last static width (thanks to Dietmar Mueller for his
     valuable input).
 
 6.  Changing a tablelist's font now updates the column widths
@@ -1302,7 +1345,7 @@ What was new in Tablelist 3.4?
     valuable input).
 
 12. Many improvements in the documentation, including a new Quick
-    Reference section (thanks to Dietmar Müller for his valuable
+    Reference section (thanks to Dietmar Mueller for his valuable
     contribution).
 
 What was new in Tablelist 3.3?
