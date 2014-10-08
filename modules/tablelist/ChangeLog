@@ -1,3 +1,28 @@
+2014-10-08  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 5.12.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/*.tcl: Added the "-customdragsource" and "-showseparators"
+	  configuration options; added the "showtargetmark", "hidetargetmark",
+	  "targetmarkpos", and "targetmarkpath" subcommands; made the default
+	  binding scripts drag-friendly; new values "flat5x3" and "flat5x4" for
+	  the "-arrowstyle" option; updated the tree styles "adwaita",
+	  "ubuntu", and "mint"; fixed a bug related to horizontal scrolling in
+	  an empty tablelist widget with positive "-titlecolumns" value.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/*.tcl: Bumped the version number to 5.12.
+
+	* doc/*.html: Updated to reflect the changes; added a "Drag & Drop
+	  Support" section to the reference manual.
+
+	* doc/*.png: Updated several screenshots.
+
 2014-02-23  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistUtil.tcl:   Workarounds for text widget bugs.
