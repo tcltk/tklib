@@ -25,6 +25,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-collapsecommand)	{}
     lappend configSpecs(-columns)		{}
     lappend configSpecs(-columntitles)		{}
+    lappend configSpecs(-customdragsource)	0
     lappend configSpecs(-editendcommand)	{}
     lappend configSpecs(-editselectedonly)	0
     lappend configSpecs(-editstartcommand)	{}
@@ -45,6 +46,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-selecttype)		row
     lappend configSpecs(-setfocus)		1
     lappend configSpecs(-showarrow)		1
+    lappend configSpecs(-showhorizseparator)	1
     lappend configSpecs(-showlabels)		1
     lappend configSpecs(-showseparators)	0
     lappend configSpecs(-snipstring)		...
@@ -632,6 +634,7 @@ proc tablelist::doConfig {win opt val} {
 		    }
 		}
 		-autoscan -
+		-customdragsource -
 		-editselectedonly -
 		-forceeditendcommand -
 		-instanttoggle -
@@ -749,7 +752,8 @@ proc tablelist::doConfig {win opt val} {
 				[list ::tablelist::lostSelection $win] $win
 		    }
 		}
-		-fullseparators {
+		-fullseparators -
+		-showhorizseparator {
 		    #
 		    # Save the boolean value specified by val
 		    # in data($opt) and adjust the separators

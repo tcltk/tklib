@@ -108,6 +108,7 @@ namespace eval tablelist {
 	-columns		 {columns		  Columns	      w}
 	-columntitles		 {columnTitles		  ColumnTitles	      w}
 	-cursor			 {cursor		  Cursor	      c}
+	-customdragsource	 {customDragSource	  CustomDragSource    w}
 	-disabledforeground	 {disabledForeground	  DisabledForeground  w}
 	-editendcommand		 {editEndCommand	  EditEndCommand      w}
 	-editselectedonly	 {editSelectedOnly	  EditSelectedOnly    w}
@@ -158,6 +159,7 @@ namespace eval tablelist {
 	-setfocus		 {setFocus		  SetFocus	      w}
 	-setgrid		 {setGrid		  SetGrid	      w}
 	-showarrow		 {showArrow		  ShowArrow	      w}
+	-showhorizseparator	 {showHorizSeparator	  ShowHorizSeparator  w}
 	-showlabels		 {showLabels		  ShowLabels	      w}
 	-showseparators		 {showSeparators	  ShowSeparators      w}
 	-snipstring		 {snipString		  SnipString	      w}
@@ -370,17 +372,18 @@ namespace eval tablelist {
 	expandedkeys fillcolumn findcolumnname findrowname finishediting \
 	formatinfo get getcells getcolumns getformatted getformattedcells \
 	getformattedcolumns getfullkeys getkeys hasattrib hascellattrib \
-	hascolumnattrib hasrowattrib imagelabelpath index insert insertchild \
-	insertchildlist insertchildren insertcolumnlist insertcolumns \
-	insertlist iselemsnipped isexpanded istitlesnipped isviewable \
-	itemlistvar labelpath labels labeltag move movecolumn nearest \
-	nearestcell nearestcolumn noderow parentkey refreshsorting \
+	hascolumnattrib hasrowattrib hidetargetmark imagelabelpath index \
+	insert insertchild insertchildlist insertchildren insertcolumnlist \
+	insertcolumns insertlist iselemsnipped isexpanded istitlesnipped \
+	isviewable itemlistvar labelpath labels labeltag move movecolumn \
+	nearest nearestcell nearestcolumn noderow parentkey refreshsorting \
 	rejectinput resetsortinfo rowattrib rowcget rowconfigure scan \
 	searchcolumn see seecell seecolumn selection separatorpath separators \
-	size sort sortbycolumn sortbycolumnlist sortcolumn sortcolumnlist \
-	sortorder sortorderlist togglecolumnhide togglerowhide toplevelkey \
-	unsetattrib unsetcellattrib unsetcolumnattrib unsetrowattrib \
-	viewablerowcount windowpath xview yview]
+	showtargetmark size sort sortbycolumn sortbycolumnlist sortcolumn \
+	sortcolumnlist sortorder sortorderlist targetmarkpath targetmarkpos \
+	togglecolumnhide togglerowhide toplevelkey unsetattrib \
+	unsetcellattrib unsetcolumnattrib unsetrowattrib viewablerowcount \
+	windowpath xview yview]
 
     proc restrictCmdOpts {} {
 	variable canElide
@@ -401,19 +404,22 @@ namespace eval tablelist {
     #
     variable activeStyles  [list frame none underline]
     variable alignments    [list left right center]
-    variable arrowStyles   [list flat6x4 flat7x4 flat7x5 flat7x7 flat8x5 \
-				 flat9x5 flat9x6 flat9x7 flat10x6 photo7x7 \
+    variable arrowStyles   [list flat5x3 flat5x4 flat6x4 flat7x4 \
+				 flat7x5 flat7x7 flat8x5 flat9x5 \
+				 flat9x6 flat9x7 flat10x6 photo7x7 \
 				 sunken8x7 sunken10x9 sunken12x11]
     variable arrowTypes    [list up down]
     variable colWidthOpts  [list -requested -stretched -total]
     variable expCollOpts   [list -fully -partly]
     variable findOpts      [list -descend -parent]
+    variable gapTypeOpts   [list -any -horizontal -vertical]
     variable scanOpts      [list mark dragto]
     variable searchOpts    [list -all -backwards -check -descend -exact \
 				 -formatted -glob -nocase -not -numeric \
 				 -parent -regexp -start]
     variable selectionOpts [list anchor clear includes set]
     variable selectTypes   [list row cell]
+    variable targetOpts    [list before inside]
     variable sortModes     [list ascii asciinocase command dictionary \
 				 integer real]
     variable sortOpts      [list -increasing -decreasing]
@@ -1053,7 +1059,7 @@ proc tablelist::bboxSubCmd {win argList} {
     upvar ::tablelist::ns${win}::data data
     set w $data(body)
     set dlineinfo [$w dlineinfo [expr {double($index + 1)}]]
-    if {$data(itemCount) == 0 || [string length $dlineinfo] == 0} {
+    if {$data(itemCount) == 0 || [llength $dlineinfo] == 0} {
 	return {}
     }
 
@@ -1399,7 +1405,7 @@ proc tablelist::collapseSubCmd {win argList} {
 	makeStripes $win
 	adjustElidedText $win
 	redisplayVisibleItems $win
-	updateColorsWhenIdle $win
+	updateColors $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
     }
@@ -1515,7 +1521,7 @@ proc tablelist::collapseallSubCmd {win argList} {
     makeStripes $win
     adjustElidedText $win
     redisplayVisibleItems $win
-    updateColorsWhenIdle $win
+    updateColors $win
     adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
     return ""
@@ -2127,7 +2133,7 @@ proc tablelist::expandSubCmd {win argList} {
 	makeStripes $win
 	adjustElidedText $win
 	redisplayVisibleItems $win
-	updateColorsWhenIdle $win
+	updateColors $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
     }
@@ -2203,7 +2209,7 @@ proc tablelist::expandallSubCmd {win argList} {
     makeStripes $win
     adjustElidedText $win
     redisplayVisibleItems $win
-    updateColorsWhenIdle $win
+    updateColors $win
     adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
     return ""
@@ -2883,6 +2889,19 @@ proc tablelist::hasrowattribSubCmd {win argList} {
     upvar ::tablelist::ns${win}::data data
     set key [lindex $data(keyList) $row]
     return [mwutil::hasattribSubCmd $win $key [lindex $argList 1]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::hidetargetmarkSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::hidetargetmarkSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win hidetargetmark"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    place forget $data(rowGap)
+    return ""
 }
 
 #------------------------------------------------------------------------------
@@ -3851,6 +3870,70 @@ proc tablelist::separatorsSubCmd {win argList} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::showtargetmarkSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::showtargetmarkSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win showtargetmark before|inside index"
+    }
+
+    variable targetOpts
+    set opt [mwutil::fullOpt "option" [lindex $argList 0] $targetOpts]
+    set index [lindex $argList 1]
+
+    upvar ::tablelist::ns${win}::data data
+    set w $data(body)
+
+    switch $opt {
+	before {
+	    set row [rowIndex $win $index 1]
+	    if {$data(itemCount) == 0} {
+		set y 0
+	    } elseif {$row >= $data(itemCount)} {
+		set dlineinfo [$w dlineinfo [expr {double($data(itemCount))}]]
+		if {[llength $dlineinfo] == 0} {
+		    return ""
+		}
+
+		set lineY [lindex $dlineinfo 1]
+		set lineHeight [lindex $dlineinfo 3]
+		set y [expr {$lineY + $lineHeight}]
+	    } else {
+		if {$row < 0} {
+		    set row 0
+		}
+		set dlineinfo [$w dlineinfo [expr {double($row + 1)}]]
+		if {[llength $dlineinfo] == 0} {
+		    return ""
+		}
+
+		set y [lindex $dlineinfo 1]
+	    }
+
+	    place $data(rowGap) -anchor w -y $y -height 4 \
+				-width [winfo width $data(hdrTxtFr)]
+	}
+
+	inside {
+	    set row [rowIndex $win $index 0 1]
+	    set dlineinfo [$w dlineinfo [expr {double($row + 1)}]]
+	    if {[llength $dlineinfo] == 0} {
+		return ""
+	    }
+
+	    set lineY [lindex $dlineinfo 1]
+	    set lineHeight [lindex $dlineinfo 3]
+	    set y [expr {$lineY + $lineHeight/2}]
+
+	    place $data(rowGap) -anchor w -y $y -height $lineHeight -width 6
+	}
+    }
+
+    raise $data(rowGap)
+    return ""
+}
+
+#------------------------------------------------------------------------------
 # tablelist::sizeSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::sizeSubCmd {win argList} {
@@ -3999,6 +4082,98 @@ proc tablelist::sortorderlistSubCmd {win argList} {
     }
 
     return $sortOrderList
+}
+
+#------------------------------------------------------------------------------
+# tablelist::targetmarkpathSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::targetmarkpathSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win targetmarkpath"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    return $data(rowGap)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::targetmarkposSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::targetmarkposSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs "$win targetmarkpos y ?-any|-horizontal|-vertical?"
+    }
+
+    set y [format "%d" [lindex $argList 0]]
+    if {$argCount == 1} {
+	set opt -any
+    } else {
+	variable gapTypeOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 1] $gapTypeOpts]
+    }
+
+    synchronize $win
+    displayItems $win
+
+    switch -- $opt {
+	-any {
+	    set row [containingRow $win $y relOffset]
+	    if {$row < 0} {
+		set place before
+		upvar ::tablelist::ns${win}::data data
+		set row [expr {
+		    ($y < [winfo y $data(body)]) ? 0 : $data(itemCount)
+		}]
+	    } elseif {$relOffset < 0.25} {
+		set place before
+	    } elseif {$relOffset < 0.75} {
+		set place inside
+	    } else {
+		set place before
+		if {[isexpandedSubCmd $win $row]} {
+		    incr row
+		} else {
+		    #
+		    # Get the containing row's next sibling
+		    #
+		    set childIdx [childindexSubCmd $win $row]
+		    set row [noderowSubCmd $win [list \
+			     [parentkeySubCmd $win $row] [incr childIdx]]]
+		}
+	    }
+
+	    return [list $place $row]
+	}
+
+	-horizontal {
+	    set row [containingRow $win $y relOffset]
+	    if {$row < 0} {
+		upvar ::tablelist::ns${win}::data data
+		set row [expr {
+		    ($y < [winfo y $data(body)]) ? 0 : $data(itemCount)
+		}]
+	    } elseif {$relOffset >= 0.5} {
+		if {[isexpandedSubCmd $win $row]} {
+		    incr row
+		} else {
+		    #
+		    # Get the containing row's next sibling
+		    #
+		    set childIdx [childindexSubCmd $win $row]
+		    set row [noderowSubCmd $win [list \
+			     [parentkeySubCmd $win $row] [incr childIdx]]]
+		}
+	    }
+
+	    return [list before $row]
+	}
+
+	-vertical {
+	    set row [containingRow $win $y]
+	    return [list inside $row]
+	}
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -4304,7 +4479,7 @@ proc tablelist::xviewSubCmd {win argList} {
 		}
 	    } else {
 		changeScrlColOffset $win $units
-		updateColorsWhenIdle $win
+		updateColors $win
 	    }
 	    return ""
 	}
@@ -4376,7 +4551,7 @@ proc tablelist::xviewSubCmd {win argList} {
 			changeScrlColOffset $win $scrlColOffset
 		    }
 		}
-		updateColorsWhenIdle $win
+		updateColors $win
 	    }
 	    variable winSys
 	    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
@@ -4726,7 +4901,7 @@ proc tablelist::colWidth {win col opt} {
 #
 # Processes the tablelist containing subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::containingRow {win y} {
+proc tablelist::containingRow {win y {relOffsetName ""}} {
     upvar ::tablelist::ns${win}::data data
     if {$data(itemCount) == 0} {
 	return -1
@@ -4740,8 +4915,17 @@ proc tablelist::containingRow {win y} {
     }
 
     set dlineinfo [$w dlineinfo [expr {double($row + 1)}]]
-    if {[string length $dlineinfo] != 0 &&
-	$y < [lindex $dlineinfo 1] + [lindex $dlineinfo 3]} {
+    set lineY [lindex $dlineinfo 1]
+    set lineHeight [lindex $dlineinfo 3]
+    if {[llength $dlineinfo] != 0 && $y < $lineY + $lineHeight} {
+	if {[string length $relOffsetName] != 0} {
+	    upvar $relOffsetName relOffset
+	    if {$y == $lineY + $lineHeight -1} {
+		set relOffset 1.0
+	    } else {
+		set relOffset [expr {double($y - $lineY) / $lineHeight}]
+	    }
+	}
 	return $row
     } else {
 	return -1
@@ -5118,7 +5302,10 @@ proc tablelist::deleteRows {win first last updateListVar} {
     #
     if {$last != $data(lastRow)} {
 	set data(keyToRowMapValid) 0
-	updateKeyToRowMapWhenIdle $win
+	if {![info exists data(mapId)]} {
+	    set data(mapId) \
+		[after idle [list tablelist::updateKeyToRowMap $win]]
+	}
     }
 
     incr data(lastRow) -$count
@@ -5368,7 +5555,10 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
     #
     if {!$appendingItems} {
 	set data(keyToRowMapValid) 0
-	updateKeyToRowMapWhenIdle $win
+	if {![info exists data(mapId)]} {
+	    set data(mapId) \
+		[after idle [list tablelist::updateKeyToRowMap $win]]
+	}
     }
 
     if {![info exists data(dispId)]} {
