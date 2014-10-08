@@ -473,21 +473,6 @@ proc tablelist::keyToRow {win key} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::updateKeyToRowMapWhenIdle
-#
-# Arranges for the key -> row map associated with the tablelist widget win to
-# be updated at idle time.
-#------------------------------------------------------------------------------
-proc tablelist::updateKeyToRowMapWhenIdle win {
-    upvar ::tablelist::ns${win}::data data
-    if {[info exists data(mapId)]} {
-	return ""
-    }
-
-    set data(mapId) [after idle [list tablelist::updateKeyToRowMap $win]]
-}
-
-#------------------------------------------------------------------------------
 # tablelist::updateKeyToRowMap
 #
 # Updates the key -> row map associated with the tablelist widget win.
@@ -2402,15 +2387,15 @@ proc tablelist::adjustSeps win {
 	    set btmTextIdx [expr {double($btmLine)}]
 	}
 	set dlineinfo [$w dlineinfo $btmTextIdx]
-	if {$data(itemCount) == 0 || [string length $dlineinfo] == 0} {
+	if {$data(itemCount) == 0 || [llength $dlineinfo] == 0} {
 	    set sepHeight 0
 	} else {
 	    foreach {x y width height baselinePos} $dlineinfo {}
 	    set sepHeight [expr {$y + $height}]
 	}
 
-	if {$data(-showseparators) && $sepHeight > 0 &&
-	    $sepHeight < [winfo height $w]} {
+	if {$data(-showhorizseparator) && $data(-showseparators) &&
+	    $sepHeight > 0 && $sepHeight < [winfo height $w]} {
 	    set width [expr {[winfo reqwidth $data(hdrTxtFr)] + $sepX -
 			     [winfo reqheight $data(hsep)] + 1}]
 	    if {$onWindows && !$usingTile} {
@@ -3455,16 +3440,19 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		}
 	    } elseif {$hasExpCollCtrlSelImgs} {
 		set curImgName [$path cget -image]
-		if {[regexp {^(.+)_(collapsed|expanded).*Img([0-9]+)$} \
-			     $curImgName dummy prefix mode depth]} {
-		    set imgName ${prefix}_${mode}Img$depth
-		    set selImgName ${prefix}_${mode}SelImg$depth
-		    set newImgName [expr {$selected ? $selImgName : $imgName}]
+		if {$selected} {
+		    set newImgName [strMap {
+			"SelActImg" "SelActImg" "ActImg" SelActImg"
+			"SelImg" "SelImg" "collapsedImg" "collapsedSelImg"
+			"expandedImg" "expandedSelImg"
+		    } $curImgName]
+		} else {
+		    set newImgName [strMap {"Sel" ""} $curImgName]
+		}
 
-		    if {[string compare $curImgName $newImgName] != 0} {
-			set data($key,$col-indent) $newImgName
-			$path configure -image $data($key,$col-indent)
-		    }
+		if {[string compare $curImgName $newImgName] != 0} {
+		    set data($key,$col-indent) $newImgName
+		    $path configure -image $data($key,$col-indent)
 		}
 	    }
 	}
@@ -3661,8 +3649,9 @@ proc tablelist::updateVScrlbar win {
 	eval $data(-yscrollcommand) [yviewSubCmd $win {}]
     }
 
-    if {[winfo viewable $win] && ![info exists data(colBeingResized)]} {
-	forceRedrawDelayed $win
+    if {[winfo viewable $win] && ![info exists data(colBeingResized)] &&
+	![info exists data(redrawId)]} {
+	set data(redrawId) [after 50 [list tablelist::forceRedraw $win]]
     }
 
     if {$data(gotConfigureEvent)} {
@@ -3670,20 +3659,6 @@ proc tablelist::updateVScrlbar win {
     } else {
 	purgeWidgets $win
     }
-}
-
-#------------------------------------------------------------------------------
-# tablelist::forceRedrawDelayed
-#
-# Arranges for the tablelist widget win to be redrawn 50 ms second later.
-#------------------------------------------------------------------------------
-proc tablelist::forceRedrawDelayed win {
-    upvar ::tablelist::ns${win}::data data
-    if {[info exists data(redrawId)]} {
-	return ""
-    }
-
-    set data(redrawId) [after 50 [list tablelist::forceRedraw $win]]
 }
 
 #------------------------------------------------------------------------------
@@ -3755,7 +3730,7 @@ proc tablelist::purgeWidgets win {
 #------------------------------------------------------------------------------
 proc tablelist::adjustElidedText win {
     upvar ::tablelist::ns${win}::data data
-    if {$data(itemCount) == 0 || [info exists data(dispId)]} {
+    if {[info exists data(dispId)]} {
 	return ""
     }
 
