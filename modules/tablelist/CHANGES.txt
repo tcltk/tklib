@@ -1,5 +1,19 @@
-What is new in Tablelist 5.12?
-------------------------------
+What is new in Tablelist 5.12.1?
+--------------------------------
+
+This is a bugfix-only release.  The corrected files in the "scripts"
+directory are "tablelistEdit.tcl" and "tablelistUtil.tcl".
+
+1. Appended the missing 4th argument to the two invocations of the
+   procedure "tablelist::moveOrActivate" in the file
+   "tablelistEdit.tcl" (thanks to Patrick Fradin and Ralf Fassel for
+   their bug reports).
+
+2. Fixed a typo in the file "tablelistUtil.tcl" (Thanks to Patrick
+   Fradin for reporting this bug).
+
+What was new in Tablelist 5.12?
+-------------------------------
 
 1. Added the "-customdragsource" configuration option, used to indicate
    whether the tablelist widget is a drag source for some drag & drop
