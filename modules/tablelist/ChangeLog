@@ -1,3 +1,18 @@
+2014-10-19  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:              Bumped the version number to 5.12.1.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* doc/index.html:
+	* doc/tablelist.html:
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/tablelistEdit.tcl: Appended the missing 4th argument to the
+	  two invocations of the procedure "tablelist::moveOrActivate".
+
+	* scripts/tablelistUtil.tcl: Fixed a typo.
+
 2014-10-08  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 5.12.
