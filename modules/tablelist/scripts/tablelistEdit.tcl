@@ -2483,11 +2483,15 @@ proc tablelist::defineTablelistEdit {} {
 	    if {!$tablelist::priv(clickedInEditWin)} {
 		if {$tablelist::priv(justClicked)} {
 		    tablelist::moveOrActivate $tablelist::W \
-			$tablelist::priv(row) $tablelist::priv(col)
+			$tablelist::priv(row) $tablelist::priv(col) 1
 		} else {
 		    tablelist::moveOrActivate $tablelist::W \
 			[$tablelist::W nearest       $tablelist::y] \
-			[$tablelist::W nearestcolumn $tablelist::x]
+			[$tablelist::W nearestcolumn $tablelist::x] \
+			[expr {$tablelist::x >= 0 &&
+			       $tablelist::x < [winfo width $tablelist::W] &&
+			       $tablelist::y >= [winfo y $tablelist::W.body] &&
+			       $tablelist::y < [winfo height $tablelist::W]}]
 		}
 	    }
 	    after 100 [list tablelist::condEvalInvokeCmd $tablelist::W]

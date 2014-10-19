@@ -3442,7 +3442,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		set curImgName [$path cget -image]
 		if {$selected} {
 		    set newImgName [strMap {
-			"SelActImg" "SelActImg" "ActImg" SelActImg"
+			"SelActImg" "SelActImg" "ActImg" "SelActImg"
 			"SelImg" "SelImg" "collapsedImg" "collapsedSelImg"
 			"expandedImg" "expandedSelImg"
 		    } $curImgName]
