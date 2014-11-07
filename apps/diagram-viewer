@@ -1,6 +1,5 @@
-#!bin/bash
-# -*- tcl -*- \
-exec tclsh "$0" ${1+"$@"}
+#!/usr/bin/env tclsh
+## -*- tcl -*-
 
 # @@ Meta Begin
 # Application dia 1.0
