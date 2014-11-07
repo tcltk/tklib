@@ -1,6 +1,5 @@
-#!/bin/sh
-# The next line is executed by /bin/sh, but not tcl \
-    exec wish $0 ${1+"$@"}
+#!/usr/bin/env wish
+## -*- tcl -*-
 
 package require Tcl 8.4
 
@@ -411,7 +410,7 @@ proc OpenBMP {} {
     DisplayBMPFile $fname
 }
 
-proc DisplayBMPFile {file} {
+proc DisplayBMPFile {fname} {
     global S
 
     if {[catch {set FIN [open $fname r]} emsg]} {
