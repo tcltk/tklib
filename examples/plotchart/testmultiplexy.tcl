@@ -1,6 +1,5 @@
-#! /bin/sh
-# -*- tcl -*- \
-exec tclsh "$0" ${1+"$@"}
+#!/usr/bin/env tclsh
+## -*- tcl -*-
 
 # testmultiplexy.tcl --
 #     Test multiple XY-plots in one canvas

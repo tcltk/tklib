@@ -1,6 +1,5 @@
-#! /bin/sh
-# -*- tcl -*- \
-exec tclsh "$0" ${1+"$@"}
+#!/usr/bin/env tclsh
+## -*- tcl -*-
 
 # testxypie.tcl --
 #     Test the combination of an xy-plot with two piecharts

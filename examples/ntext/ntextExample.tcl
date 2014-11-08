@@ -1,6 +1,5 @@
-#!/bin/sh
-# the next line restarts using tclsh \
-exec tclsh "$0" "$@"
+#!/usr/bin/env tclsh
+## -*- tcl -*-
 
 package require Tk
 

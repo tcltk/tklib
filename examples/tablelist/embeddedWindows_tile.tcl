@@ -1,7 +1,5 @@
-#!/bin/sh
-# the next line restarts using wish \
-exec wish "$0" ${1+"$@"}
-
+#!/usr/bin/env wish
+## -*- tcl -*-
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
 #
