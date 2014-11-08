@@ -1,7 +1,5 @@
-#!/bin/sh
-# the next line restarts using wish \
-exec wish "$0" ${1+"$@"}
-
+#!/usr/bin/env wish
+## -*- tcl -*-
 #==============================================================================
 # Demonstrates some ways of improving the look & feel of a tablelist widget.
 #

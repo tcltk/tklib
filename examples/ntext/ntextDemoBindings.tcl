@@ -1,7 +1,5 @@
-#!/bin/sh
-# the next line restarts using wish \
-exec wish "$0" "$@"
-
+#!/usr/bin/env wish
+## -*- tcl -*-
 # Copyright (c) 2005-2007 Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution

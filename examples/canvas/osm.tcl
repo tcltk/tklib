@@ -1,6 +1,5 @@
-#!/bin/sh
-# -*- tcl -*- \
-exec tclsh8.5 "$0" ${1+"$@"}
+#!/usr/bin/env tclsh8.5
+## -*- tcl -*-
 # ### ### ### ######### ######### #########
 
 ## DEMO. Uses openstreetmap to show a tile-based world map.

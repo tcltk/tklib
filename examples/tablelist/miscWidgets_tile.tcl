@@ -1,7 +1,5 @@
-#!/bin/sh
-# the next line restarts using wish \
-exec wish "$0" ${1+"$@"}
-
+#!/usr/bin/env wish
+## -*- tcl -*-
 #==============================================================================
 # Demonstrates the interactive tablelist cell editing with the aid of Bryan
 # Oakley's combobox, the mentry widgets of type "Date" and "Time", and of the

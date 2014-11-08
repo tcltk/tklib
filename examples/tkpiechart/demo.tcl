@@ -1,17 +1,14 @@
-#!/bin/sh
-# the next line restarts using the interpreter \
-exec wish "$0" "$@"
+#!/usr/bin/env wish
+## -*- tcl -*-
 
 package require Tk
 
 # copyright (C) 1995-2004 Jean-Luc Fontaine (mailto:jfontain@free.fr)
 
-
 package require stooop 4.1
 namespace import stooop::*
 package require switched 2.2
 package require tkpiechart 6.3
-
 
 pack [label .m -relief sunken -text\
     "you may move a pie by holding down mouse button 1 over any part of it"\

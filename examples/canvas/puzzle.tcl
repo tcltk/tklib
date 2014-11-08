@@ -1,6 +1,5 @@
-#!/bin/sh
-# -*- tcl -*- \
-exec tclsh "$0" ${1+"$@"}
+#!/usr/bin/env tclsh
+## -*- tcl -*-
 # ### ### ### ######### ######### #########
 
 ## DEMO. Slice image into tiles and show them, in order, or randomly

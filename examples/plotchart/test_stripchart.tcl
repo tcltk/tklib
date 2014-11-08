@@ -1,6 +1,5 @@
-#! /bin/sh
-# -*- tcl -*- \
-exec tclsh "$0" ${1+"$@"}
+#!/usr/bin/env tclsh
+## -*- tcl -*-
 
 # test_stripchart.tcl --
 #     Problem 3613718 on SF regarding stripcharts and custom labels
