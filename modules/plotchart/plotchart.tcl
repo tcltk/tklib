@@ -1038,7 +1038,7 @@ proc ::Plotchart::eraseplot { p } {
 #    xscale      Minimum, maximum and step for x-axis (initial)
 #    yscale      Minimum, maximum and step for y-axis
 #    args        Options (currently: "-xlabels list" and "-ylabels list"
-#                "-box list" and "-axesbox list")
+#                "-box list" and "-axesbox list", "-axesatzero 0/1")
 # Result:
 #    Name of a new command
 # Note:
@@ -1100,6 +1100,31 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
    viewPort         $w $pxmin $pymin $pxmax $pymax
    worldCoordinates $w $xmin  $ymin  $xmax  $ymax
 
+   #
+   # TODO: use them in the style?
+   #
+   set axesatzero 0
+   set isometric  0 ;# Not implemented yet
+
+   foreach {arg val} [array get options] {
+       switch -exact -- $arg {
+           -axesatzero {
+               set axesatzero $val
+           }
+           -isometric {
+               set isometric $val
+           }
+       }
+   }
+
+   if { $isometric } {
+       ScaleIsometric $w $xmin $ymin $xmax $ymax
+       foreach v {xmin ymin xmax ymax} {
+           set $v $scaling($w,$v)
+       }
+   }
+
+
    if { $xdelt eq {} || [lsearch $argv "-timeformat"] >= 0 } {
        set known_args {}
        foreach {arg val} [array get options] {
@@ -1109,7 +1134,9 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
                -gmt        {
                    lappend known_args $arg $val
                }
-               -ylabels {
+               -axesatzero -
+               -isometric  -
+               -ylabels    {
                    # Ignore
                }
                default {
@@ -1127,7 +1154,9 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
                -ylabels {
                    DrawYaxis $w $ymin  $ymax  $ydelt $arg $val
                }
-               -xlabels {
+               -axesatzero -
+               -isometric  -
+               -xlabels    {
                    # Ignore
                }
                default {
@@ -1138,6 +1167,12 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
    } else {
        DrawYaxis        $w $ymin  $ymax  $ydelt
    }
+
+   if { $axesatzero } {
+       MoveAxesToZero $w $xmin $xmax $ymin $ymax
+   }
+
+
    DrawMask         $w
    DefaultLegend    $w
    DefaultBalloon   $w
@@ -1457,7 +1492,7 @@ proc ::Plotchart::createLogXLogYPlot { c xscale yscale args } {
 #    c           Name of the canvas
 #    xscale      Minimum, maximum and step for x-axis (initial)
 #    yscale      Minimum, maximum and step for y-axis
-#    args        Options (currently: "-box list" and "-axesbox list")
+#    args        Options (currently: "-box list" and "-axesbox list", -xlabels and -ylabels)
 # Result:
 #    Name of a new command
 # Note:
@@ -1479,6 +1514,9 @@ proc ::Plotchart::createHistogram { c xscale yscale args } {
    CopyConfig histogram $w
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
+   array set options $args
+   array unset options -box
+   array unset options -axesbox
 
    set scaling($w,coordSystem) 0
 
@@ -1489,18 +1527,52 @@ proc ::Plotchart::createHistogram { c xscale yscale args } {
       return -code error "Step size can not be zero"
    }
 
-   if { ($xmax-$xmin)*$xdelt < 0.0 } {
+   if { $xdelt != {} && ($xmax-$xmin)*$xdelt < 0.0 } {
       set xdelt [expr {-$xdelt}]
    }
-   if { ($ymax-$ymin)*$ydelt < 0.0 } {
+   if { $ydelt != {} && ($ymax-$ymin)*$ydelt < 0.0 } {
       set ydelt [expr {-$ydelt}]
    }
 
    viewPort         $w $pxmin $pymin $pxmax $pymax
    worldCoordinates $w $xmin  $ymin  $xmax  $ymax
 
-   DrawYaxis        $w $ymin  $ymax  $ydelt
-   DrawXaxis        $w $xmin  $xmax  $xdelt
+   if { $xdelt eq {} } {
+       set known_args {}
+       foreach {arg val} [array get options] {
+           switch -exact -- $arg {
+               -xlabels    {
+                   DrawXaxis $w $xmin  $xmax  $xdelt $arg $val
+               }
+               -ylabels {
+                   # Ignore
+               }
+               default {
+                   error "Argument $arg not recognized"
+               }
+           }
+       }
+   } else {
+       DrawXaxis   $w $xmin  $xmax  $xdelt
+   }
+   if { $ydelt eq {} } {
+       foreach {arg val} [array get options] {
+           switch -exact -- $arg {
+               -ylabels {
+                   DrawYaxis $w $ymin  $ymax  $ydelt $arg $val
+               }
+               -xlabels {
+                   # Ignore
+               }
+               default {
+                   error "Argument $arg not recognized"
+               }
+           }
+       }
+   } else {
+       DrawYaxis   $w $ymin  $ymax  $ydelt
+   }
+
    DrawMask         $w
    DefaultLegend    $w
    DefaultBalloon   $w
@@ -2991,4 +3063,4 @@ source [file join [file dirname [info script]] "plotstatustimeline.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.3.1
+package provide Plotchart 2.3.2
