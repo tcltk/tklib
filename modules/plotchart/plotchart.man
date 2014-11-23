@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 2.3.0]
+[manpage_begin Plotchart n 2.3.2]
 [copyright {2013 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.5]]
 [require Tk [opt 8.5]]
-[require Plotchart [opt 2.3.1]]
+[require Plotchart [opt 2.3.2]]
 
 [description]
 [para]
@@ -148,6 +148,12 @@ the empty string.
 [emph "-timeformat format:"] See [sectref "USING DATE/TIME LABELS"]
 [item]
 [emph "-gmt 0/1:"] See [sectref "USING DATE/TIME LABELS"]
+[item]
+[emph "-axestozero:"] Draw the axes at the origin (1), or at the sides of the plot area (0, default).
+This option is implemented for XY plots only.
+[item]
+[emph "-isometric:"] Rescale the axes, so that a square in the coordinates appears as a square on the
+screen (1), or use the given extremes (0, default). This option is implemented for XY plots only.
 [list_end]
 
 [list_end]
@@ -355,7 +361,7 @@ draw any of the axes.
 [para]
 
 
-[call [cmd ::Plotchart::createHistogram] [arg w] [arg xaxis] [arg yaxis]]
+[call [cmd ::Plotchart::createHistogram] [arg w] [arg xaxis] [arg yaxis] [arg args]
 
 Create a new histogram (configuration type: histogram).
 
@@ -368,6 +374,9 @@ A 3-element list containing minimum, maximum and stepsize for the x-axis, in thi
 
 [arg_def list yaxis in]
 A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order.
+
+[arg_def list args in]
+Zero or more options - see the XY-plot for more information.
 
 [list_end]
 [para]
@@ -1949,9 +1958,10 @@ List of values in ascending order that represent the contour levels
 [para]
 
 
-[call [cmd \$plot3d] colours [arg fill] [arg border]]
+[call [cmd \$plot3d] colour [arg fill] [arg border]]
 
-Configure the colours to use for polygon borders and inner area.
+Configure the colour to use for polygon borders and inner area.
+[emph Note:] The "color" subcommand is a synonym.
 
 [list_begin arguments]
 

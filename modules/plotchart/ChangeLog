@@ -1,3 +1,12 @@
+2014-11-23  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Support -xlabels and -ylabels option (request by Ron Fox), also implement -isometric for
+	                 XY-plots (request by Nick F.)
+	* plotaxis.tcl: Support -axestozero option (request by Necrosporus)
+	* plotchart.man: Describe new options -axestozero and -isometric
+	* plotchart.man: Corrected error in documentation (ticket 2733f5a9517e312e1f43d81f7bb546feaf375a99)
+	* pkgIndex.tcl: Bumped version to 2.3.2
+	* xyplot.tcl: Disable running the example code at the end
+
 2014-06-21  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Add new commands for timecharts (addperiod, addmilestone and option to vertline)
 	                 as suggested by Nick Matthews; also the interpolatedata command for 3D-plots
