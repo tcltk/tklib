@@ -361,7 +361,7 @@ draw any of the axes.
 [para]
 
 
-[call [cmd ::Plotchart::createHistogram] [arg w] [arg xaxis] [arg yaxis] [arg args]
+[call [cmd ::Plotchart::createHistogram] [arg w] [arg xaxis] [arg yaxis] [arg args]]
 
 Create a new histogram (configuration type: histogram).
 
