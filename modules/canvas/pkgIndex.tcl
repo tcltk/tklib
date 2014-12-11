@@ -9,6 +9,7 @@ package ifneeded canvas::edit::quadrilateral 0.1   [list source [file join $dir 
 package ifneeded canvas::gradient            0.2   [list source [file join $dir canvas_gradient.tcl]]
 package ifneeded canvas::highlight           0.1   [list source [file join $dir canvas_highlight.tcl]]
 package ifneeded canvas::mvg                 1     [list source [file join $dir canvas_mvg.tcl]]
+package ifneeded canvas::pdf                 1     [list source [file join $dir canvas_pdf.tcl]]
 package ifneeded canvas::snap                1.0.1 [list source [file join $dir canvas_snap.tcl]]
 package ifneeded canvas::tag                 0.1   [list source [file join $dir canvas_tags.tcl]]
 package ifneeded canvas::track::lines        0.1   [list source [file join $dir canvas_trlines.tcl]]
