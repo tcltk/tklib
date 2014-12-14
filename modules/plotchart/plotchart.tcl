@@ -1795,7 +1795,7 @@ proc ::Plotchart::createBarchart { c xlabels yscale noseries args } {
     worldCoordinates $w $xmin  $ymin  $xmax  $ymax
 
     DrawYaxis        $w $ymin  $ymax  $ydelt
-    DrawXlabels      $w $xlabels $noseries
+    DrawXlabels      $w $xlabels $noseries $args
     DrawMask         $w
     DefaultLegend    $w
     set data_series($w,legendtype) "rectangle"
@@ -3063,4 +3063,4 @@ source [file join [file dirname [info script]] "plotstatustimeline.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.3.2
+package provide Plotchart 2.3.3
