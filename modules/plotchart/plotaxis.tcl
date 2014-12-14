@@ -1121,12 +1121,13 @@ proc ::Plotchart::DrawPolarAxes { w rad_max rad_step } {
 #    w           Name of the canvas
 #    xlabels     List of labels
 #    noseries    Number of series or "stacked"
+#    arguments   Options (key-value pairs). Currently: -xlabelangles $angle
 # Result:
 #    None
 # Side effects:
 #    Axis drawn in canvas
 #
-proc ::Plotchart::DrawXlabels { w xlabels noseries } {
+proc ::Plotchart::DrawXlabels { w xlabels noseries arguments} {
     variable scaling
     variable config
 
@@ -1141,6 +1142,25 @@ proc ::Plotchart::DrawXlabels { w xlabels noseries } {
                    $scaling($w,pxmax) $scaling($w,pymax) \
                    -fill $linecolor -width $thickness -tag [list xaxis $w]
 
+    set angle  0
+    set anchor n
+    foreach {key value} $arguments {
+        switch -- $key {
+            "-xlabelangle" {
+                 set angle $value
+                 if { $angle > 0 } {
+                     set anchor ne
+                 }
+                 if { $angle < 0 } {
+                     set anchor nw
+                 }
+            }
+        }
+    }
+    if { ! [package vsatisfies [package present Tk] 8.6] } {
+        set angle {}
+    }
+
     if { $noseries eq "stacked" } {
         set x 1.0
     } else {
@@ -1151,8 +1171,13 @@ proc ::Plotchart::DrawXlabels { w xlabels noseries } {
     foreach label $xlabels {
         foreach {xcrd ycrd} [coordsToPixel $w $x $scaling($w,ymin)] {break}
         set ycrd [expr {$ycrd+2}]
-        $w create text $xcrd $ycrd -text $label -tag [list xaxis $w] -anchor n \
-            -fill $textcolor -font $textfont
+        if { $angle == {} } {
+            $w create text $xcrd $ycrd -text $label -tag [list xaxis $w] -anchor n \
+                -fill $textcolor -font $textfont
+        } else {
+            $w create text $xcrd $ycrd -text $label -tag [list xaxis $w] -anchor $anchor -angle $angle \
+                -fill $textcolor -font $textfont
+        }
         set x [expr {$x+1.0}]
 
         lappend scaling($w,ybase) 0.0
@@ -1420,6 +1445,10 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
     set originalSystem $scaling($w,coordSystem)
     set scaling($w,coordSystem) 0
 
+    worldCoordinates $w $xmin $ymin $xmax $ymax
+
+    console show
+    puts "$orient: $xmin $xmax $scaling($w,xdelt)"
 
     if { $orient == "x" } {
         if { [llength $scaling($w,xdelt)] == 1 } {
