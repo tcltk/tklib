@@ -1,14 +1,14 @@
 #!/usr/bin/env wish
-## -*- tcl -*-
+
 #==============================================================================
 # Demonstrates the interactive tablelist cell editing with the aid of some
 # widgets from the BWidget package and of the Tk core checkbutton and
 # menubutton widgets.
 #
-# Copyright (c) 2004-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.12
+package require tablelist_tile 5.13
 package require BWidget
 
 wm title . "Serial Line Configuration"
