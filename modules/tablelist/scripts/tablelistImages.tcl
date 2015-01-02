@@ -3,7 +3,7 @@
 # argument w specifies a canvas displaying a sort arrow, while the argument win
 # stands for a tablelist widget.
 #
-# Copyright (c) 2006-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2006-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -86,13 +86,13 @@ proc tablelist::flat7x5Arrows w {
 #define triangleUp7x5_width 7
 #define triangleUp7x5_height 5
 static unsigned char triangleUp7x5_bits[] = {
-   0x08, 0x1c, 0x3e, 0x77, 0x63};
+   0x08, 0x1c, 0x3e, 0x7f, 0x7f};
 "
     image create bitmap triangleDn$w -data "
 #define triangleDn7x5_width 7
 #define triangleDn7x5_height 5
 static unsigned char triangleDn7x5_bits[] = {
-   0x63, 0x77, 0x3e, 0x1c, 0x08};
+   0x7f, 0x7f, 0x3e, 0x1c, 0x08};
 "
 }
 
@@ -158,6 +158,78 @@ proc tablelist::flat9x6Arrows w {
 #define triangleUp9x6_width 9
 #define triangleUp9x6_height 6
 static unsigned char triangleUp9x6_bits[] = {
+   0x10, 0x00, 0x38, 0x00, 0x7c, 0x00, 0xfe, 0x00, 0xff, 0x01, 0xff, 0x01};
+"
+    image create bitmap triangleDn$w -data "
+#define triangleDn9x6_width 9
+#define triangleDn9x6_height 6
+static unsigned char triangleDn9x6_bits[] = {
+   0xff, 0x01, 0xff, 0x01, 0xfe, 0x00, 0x7c, 0x00, 0x38, 0x00, 0x10, 0x00};
+"
+}
+
+#------------------------------------------------------------------------------
+# tablelist::flatAngle7x4Arrows
+#------------------------------------------------------------------------------
+proc tablelist::flatAngle7x4Arrows w {
+    image create bitmap triangleUp$w -data "
+#define triangleUp7x4_width 7
+#define triangleUp7x4_height 4
+static unsigned char triangleUp7x4_bits[] = {
+   0x08, 0x1c, 0x36, 0x63};
+"
+    image create bitmap triangleDn$w -data "
+#define triangleDn7x4_width 7
+#define triangleDn7x4_height 4
+static unsigned char triangleDn7x4_bits[] = {
+   0x63, 0x36, 0x1c, 0x08};
+"
+}
+
+#------------------------------------------------------------------------------
+# tablelist::flatAngle7x5Arrows
+#------------------------------------------------------------------------------
+proc tablelist::flatAngle7x5Arrows w {
+    image create bitmap triangleUp$w -data "
+#define triangleUp7x5_width 7
+#define triangleUp7x5_height 5
+static unsigned char triangleUp7x5_bits[] = {
+   0x08, 0x1c, 0x3e, 0x77, 0x63};
+"
+    image create bitmap triangleDn$w -data "
+#define triangleDn7x5_width 7
+#define triangleDn7x5_height 5
+static unsigned char triangleDn7x5_bits[] = {
+   0x63, 0x77, 0x3e, 0x1c, 0x08};
+"
+}
+
+#------------------------------------------------------------------------------
+# tablelist::flatAngle9x5Arrows
+#------------------------------------------------------------------------------
+proc tablelist::flatAngle9x5Arrows w {
+    image create bitmap triangleUp$w -data "
+#define triangleUp9x5_width 9
+#define triangleUp9x5_height 5
+static unsigned char triangleUp9x5_bits[] = {
+   0x10, 0x00, 0x38, 0x00, 0x6c, 0x00, 0xc6, 0x00, 0x83, 0x01};
+"
+    image create bitmap triangleDn$w -data "
+#define triangleDn9x5_width 9
+#define triangleDn9x5_height 5
+static unsigned char triangleDn9x5_bits[] = {
+   0x83, 0x01, 0xc6, 0x00, 0x6c, 0x00, 0x38, 0x00, 0x10, 0x00};
+"
+}
+
+#------------------------------------------------------------------------------
+# tablelist::flatAngle9x6Arrows
+#------------------------------------------------------------------------------
+proc tablelist::flatAngle9x6Arrows w {
+    image create bitmap triangleUp$w -data "
+#define triangleUp9x6_width 9
+#define triangleUp9x6_height 6
+static unsigned char triangleUp9x6_bits[] = {
    0x10, 0x00, 0x38, 0x00, 0x7c, 0x00, 0xee, 0x00, 0xc7, 0x01, 0x83, 0x01};
 "
     image create bitmap triangleDn$w -data "
@@ -169,9 +241,9 @@ static unsigned char triangleDn9x6_bits[] = {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::flat9x7Arrows
+# tablelist::flatAngle9x7Arrows
 #------------------------------------------------------------------------------
-proc tablelist::flat9x7Arrows w {
+proc tablelist::flatAngle9x7Arrows w {
     image create bitmap triangleUp$w -data "
 #define triangleUp9x7_width 9
 #define triangleUp9x7_height 7
@@ -189,9 +261,9 @@ static unsigned char triangleDn9x7_bits[] = {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::flat10x6Arrows
+# tablelist::flatAngle10x6Arrows
 #------------------------------------------------------------------------------
-proc tablelist::flat10x6Arrows w {
+proc tablelist::flatAngle10x6Arrows w {
     image create bitmap triangleUp$w -data "
 #define triangleUp10x6_width 10
 #define triangleUp10x6_height 6
@@ -203,6 +275,26 @@ static unsigned char triangleUp10x6_bits[] = {
 #define triangleDn10x6_height 6
 static unsigned char triangleDn10x6_bits[] = {
    0x03, 0x03, 0x87, 0x03, 0xce, 0x01, 0xfc, 0x00, 0x78, 0x00, 0x30, 0x00};
+"
+}
+
+#------------------------------------------------------------------------------
+# tablelist::flatAngle10x7Arrows
+#------------------------------------------------------------------------------
+proc tablelist::flatAngle10x7Arrows w {
+    image create bitmap triangleUp$w -data "
+#define triangleUp10x7_width 10
+#define triangleUp10x7_height 7
+static unsigned char triangleUp10x7_bits[] = {
+   0x30, 0x00, 0x78, 0x00, 0xfc, 0x00, 0xfe, 0x01, 0xcf, 0x03, 0x87, 0x03,
+   0x03, 0x03};
+"
+    image create bitmap triangleDn$w -data "
+#define triangleDn10x7_width 10
+#define triangleDn10x7_height 7
+static unsigned char triangleDn10x6_bits[] = {
+   0x03, 0x03, 0x87, 0x03, 0xcf, 0x03, 0xfe, 0x01, 0xfc, 0x00, 0x78, 0x00,
+   0x30, 0x00};
 "
 }
 
@@ -1178,6 +1270,120 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAAQAA4A
 AAgoAP8JHEiwoMGDCBMqXMiQIAAAAx8mfAiRokKKEhdabAixocePID8GBAA7
 "
+}
+
+#------------------------------------------------------------------------------
+# tablelist::mateTreeImgs
+#------------------------------------------------------------------------------
+proc tablelist::mateTreeImgs {} {
+    foreach mode {collapsed expanded collapsedAct expandedAct} {
+	variable mate_${mode}Img \
+		 [image create photo tablelist_mate_${mode}Img]
+    }
+
+    variable pngSupported
+    if {$pngSupported} {
+	tablelist_mate_collapsedImg put "
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
+jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
+LjEwMPRyoQAAAI5JREFUKFOVzsENQEAQBdApQAEaUIAyFKARVxGJCsRBAdwUgLg4KGx9VnYmMmvj
+8JKf2f+TJWPMb+oxRD2GcCCK5MMXDkQLZPLRhwPRATP0kMjSGwc7qmF4cgHqlznYYgkNtLDDCrEc
+3F0XeNTBBiOksuy6LtjRBNcgl6U3DnZUyUcfDp6vaNRjiHr8ZugEGr3O4KKrCEAAAAAASUVORK5C
+YII=
+"
+	tablelist_mate_expandedImg put "
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
+jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
+LjEwMPRyoQAAAI1JREFUKFOV0L0NwjAQhuEbgAG8AAMwgJdhDbr0UFKkygIoKZEiKgYzb5zEnMkp
+J4rHsr/7KSwppb+ZoccMPWbomQ+RiPeO42ZoGbyjw0V54KwHcm+5iARMW29o0KLHQQ/k3urBVgy4
+4oWo66WverAV0/YnRl3TtsH3U8JvbWWHIicrX5mhxww9ZrgvyQcolMcXU9O+JgAAAABJRU5ErkJg
+gg==
+"
+	tablelist_mate_collapsedActImg put "
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
+jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
+LjEwMPRyoQAAAI1JREFUKFOVkMENgzAMRf8WTNEpmIFZOgGDcKsqem3FBSE6ERO4P8SKLWSIenjK
+i/MtW4GI/E1YrBEWa5gAjX+4wgRYyd0/nmECbNo4kdaHjpgAXzKSWX0g4comOfggL/LWe5p88w17
+tog1fUgKp4mdD5dskdy06Nn70BGTHH6S6tebnKwSERZrhMVrBD8rI88WMxe4BQAAAABJRU5ErkJg
+gg==
+"
+	tablelist_mate_expandedActImg put "
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
+jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
+LjEwMPRyoQAAAH9JREFUKFOVkNENgDAIBZnFSbqHU7hDp3EDExNTHQyh0kotKfHjVI73+BAQ8Tem
+9DClhyk9ngdAJK4Bc1eSYiJOYlNwYdWFnK0fAEFCB7ETfITnSRdythnoqgS5yO+o9zXXDHRVwkzS
+O00v3p8SvruCLQEWyxdM6WFKD1OOQbgBANvLoUTXnyUAAAAASUVORK5CYII=
+"
+    } else {
+	tablelist_mate_collapsedImg put "
+R0lGODlhDQAOAPcAAAAAADw8PEBAQEVFRUdHR0hISElJSVVVVVxcXF1dXWlpaW1tbW9vb319fYCA
+gIKCgoSEhI2Njba2tgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAANAA4A
+AAg0AP8JHEiwoMGDCBMmLCBB4b8ABhQoDOAgQYAICANAaMBAAIGDGhcMQJDxwICJDxyqXKkyIAA7
+"
+	tablelist_mate_expandedImg put "
+R0lGODlhDQAOAPcAAAAAADw8PEJCQkREREdHR09PT1BQUFJSUl9fX2VlZWlpaXFxcXJycn19fYSE
+hJ2dnQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAANAA4A
+AAgzAP8JHEiwoMGDCBMmDMCwYQCDChA4mHjgwcEACxokMJCwAAMBCg0QGKDw38OSKFOqRBgQADs=
+"
+	tablelist_mate_collapsedActImg put "
+R0lGODlhDQAOAPcAAAAAADw8PD09PT8/P0FBQUZGRkhISElJSVJSUlNTU1VVVVdXV15eXoiIiAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAANAA4A
+AAgzAP8JHEiwoMGDCBMmFNBA4b8AAgooDJCAQAAGCAMsQHAA4kGNBgQQyDggwEQFDlOqTBkQADs=
+"
+	tablelist_mate_expandedActImg put "
+R0lGODlhDQAOAPcAAAAAADw8PD09PT4+PkBAQENDQ0ZGRlVVVQAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAANAA4A
+AAgxAP8JHEiwoMGDCBMmDMCwYQCDAwQYmBjgwMEABAoMeIgQI8eOAQYo/PdxpMmTKA0GBAA7
+"
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -2238,7 +2444,7 @@ proc tablelist::createTreeImgs {treeStyle depth} {
 	set delta [expr {($depth - 1) * 4}]
 	incr width $delta
 	incr x $delta
-    } elseif {[regexp {^(ubuntu|vistaClassic|win7Classic)$} $treeStyle]} {
+    } elseif {[regexp {^(mate|ubuntu|vistaClassic|win7Classic)$} $treeStyle]} {
 	set delta [expr {($depth - 1) * 2}]
 	incr width -$delta
 	incr x -$delta

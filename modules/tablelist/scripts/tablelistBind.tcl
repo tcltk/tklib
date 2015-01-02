@@ -8,7 +8,7 @@
 #   - Binding tag TablelistBody
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -485,10 +485,10 @@ proc tablelist::defineTablelistBody {} {
     }
 
     foreach {virtual event} {
-	PrevLine <Up>            NextLine <Down>
-	PrevChar <Left>          NextChar <Right>
-	LineStart <Home>         LineEnd <End>
-	PrevWord <Control-Left>  NextWord <Control-Right>
+	PrevLine <Up>		 NextLine <Down>
+	PrevChar <Left>		 NextChar <Right>
+	LineStart <Home>	 LineEnd <End>
+	PrevWord <Control-Left>	 NextWord <Control-Right>
 
 	SelectPrevLine <Shift-Up>     SelectNextLine <Shift-Down>
 	SelectPrevChar <Shift-Left>   SelectNextChar <Shift-Right>
@@ -686,6 +686,28 @@ proc tablelist::defineTablelistBody {} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::invokeMotionHandler
+#
+# Invokes the procedure handleMotionDelayed for the body of the tablelist
+# widget win and the current pointer coordinates.
+#------------------------------------------------------------------------------
+proc tablelist::invokeMotionHandler win {
+    upvar ::tablelist::ns${win}::data data
+    set w $data(body)
+    set X [winfo pointerx $w]
+    set Y [winfo pointery $w]
+    if {$X >= 0 && $Y >= 0} {	;# the mouse pointer is on the same screen as w
+	set x [expr {$X - [winfo rootx $w]}]
+	set y [expr {$Y - [winfo rooty $w]}]
+    } else {
+	set x -1
+	set y -1
+    }
+
+    handleMotionDelayed $w $x $y $X $Y <Motion>
+}
+
+#------------------------------------------------------------------------------
 # tablelist::handleMotionDelayed
 #
 # This procedure is invoked when the mouse pointer enters or leaves the body of
@@ -695,17 +717,20 @@ proc tablelist::defineTablelistBody {} {
 proc tablelist::handleMotionDelayed {w x y X Y event} {
     set win [getTablelistPath $w]
     upvar ::tablelist::ns${win}::data data
-    set data(tooltipData)     [list $w $x $y $X $Y $event]
-    set data(expCollCtrlData) [list $w $x $y]
+    set data(motionData) [list $w $x $y $X $Y $event]
     if {![info exists data(motionId)]} {
 	set data(motionId) [after 100 [list tablelist::handleMotion $win]]
+    }
+
+    if {[string compare $event "<Enter>"] == 0} {
+	set data(justEntered) 1
     }
 }
 
 #------------------------------------------------------------------------------
 # tablelist::handleMotion
 #
-# Invokes the procedures showOrHideTooltip and updateExpCollCtrl.
+# Invokes the procedures showOrHideTooltip, updateCursor, and updateExpCollCtrl.
 #------------------------------------------------------------------------------
 proc tablelist::handleMotion win {
     upvar ::tablelist::ns${win}::data data
@@ -714,11 +739,30 @@ proc tablelist::handleMotion win {
 	unset data(motionId)
     }
 
-    foreach {w x y X Y event} $data(tooltipData) {}
-    showOrHideTooltip $w $x $y $X $Y $event
+    set data(justEntered) 0
 
-    foreach {w x y} $data(expCollCtrlData) {}
-    updateExpCollCtrl $w $x $y
+    foreach {w x y X Y event} $data(motionData) {}
+    foreach {win _x _y} [convEventFields $w $x $y] {}
+
+    #
+    # Get the containing cell from the coordinates relative to the tablelist
+    #
+    set row [containingRow $win $_y]
+    set col [containingCol $win $_x]
+
+    showOrHideTooltip $win $row $col $X $Y
+    updateExpCollCtrl $win $w $row $col $x
+
+    #
+    # Make sure updateCursor won't change the cursor of an embedded window
+    #
+    if {[string match "$data(body).frm_k*" $w] &&
+	[string compare [winfo parent $w] $data(body)] == 0 &&
+	[string compare $event "<Leave>"] != 0} {
+	set row -1
+	set col -1
+    }
+    updateCursor $win $row $col
 }
 
 #------------------------------------------------------------------------------
@@ -727,29 +771,11 @@ proc tablelist::handleMotion win {
 # If the pointer has crossed a cell boundary then the procedure removes the old
 # tooltip and displays the one corresponding to the new cell.
 #------------------------------------------------------------------------------
-proc tablelist::showOrHideTooltip {w x y X Y event} {
-    if {![winfo exists $w]} {
-	return ""
-    }
-
-    foreach {win _x _y} [convEventFields $w $x $y] {}
+proc tablelist::showOrHideTooltip {win row col X Y} {
     upvar ::tablelist::ns${win}::data data
     if {[string length $data(-tooltipaddcommand)] == 0 ||
-	[string length $data(-tooltipdelcommand)] == 0} {
-	return ""
-    }
-
-    #
-    # Get the containing cell from the coordinates relative to the parent
-    #
-    if {[string compare $event "<Leave>"] == 0} {
-	set row -1
-	set col -1
-    } else {
-	set row [containingRow $win $_y]
-	set col [containingCol $win $_x]
-    }
-    if {[string compare $row,$col $data(prevCell)] == 0} {
+	[string length $data(-tooltipdelcommand)] == 0 ||
+	[string compare $row,$col $data(prevCell)] == 0} {
 	return ""
     }
 
@@ -776,14 +802,7 @@ proc tablelist::showOrHideTooltip {w x y X Y event} {
 #
 # Activates or deactivates the expand/collapse control under the mouse pointer.
 #------------------------------------------------------------------------------
-proc tablelist::updateExpCollCtrl {w x y} {
-    if {![winfo exists $w]} {
-	return ""
-    }
-
-    foreach {win _x _y} [convEventFields $w $x $y] {}
-    set row [containingRow $win $_y]
-    set col [containingCol $win $_x]
+proc tablelist::updateExpCollCtrl {win w row col x} {
     upvar ::tablelist::ns${win}::data data
     set key [lindex $data(keyList) $row]
     set indentLabel $data(body).ind_$key,$col
@@ -853,6 +872,95 @@ proc tablelist::updateExpCollCtrl {w x y} {
 	} $data($key,$col-indent)]
 	$indentLabel configure -image $data($key,$col-indent)
 	set priv(prevActExpCollCtrlCell) $key,$col
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::updateCursor
+#
+# Updates the cursor of the body component of the tablelist widget win, over
+# the specified cell containing the mouse pointer.
+#------------------------------------------------------------------------------
+proc tablelist::updateCursor {win row col} {
+    upvar ::tablelist::ns${win}::data data
+    if {$data(inEditWin)} {
+	set cursor $data(-cursor)
+    } elseif {$data(-showeditcursor)} {
+	if {$data(-editselectedonly) &&
+	    ![::$win cellselection includes $row,$col]} {
+	    set editable 0
+	} else {
+	    set editable [expr {$row >= 0 && $col >= 0 &&
+			  [isCellEditable $win $row $col]}]
+	}
+
+	if {$editable} {
+	    if {$row == $data(editRow) && $col == $data(editCol)} {
+		set cursor $data(-cursor)
+	    } else {
+		variable editCursor
+		if {![info exists editCursor]} {
+		    makeEditCursor 
+		}
+		set cursor $editCursor
+	    }
+	} else {
+	    set cursor $data(-cursor)
+	}
+
+	#
+	# Special handling for cell editing with the aid of BWidget
+	# ComboBox. Oakley combobox, or Tk menubutton widgets
+	#
+	if {$data(editRow) >= 0 && $data(editCol) >= 0} {
+	    foreach c [winfo children $data(bodyFrEd)] {
+		set class [winfo class $c]
+		if {([string compare $class "Toplevel"] == 0 ||
+		     [string compare $class "Menu"] == 0) &&
+		     [winfo ismapped $c]} {
+		    set cursor $data(-cursor)
+		    break
+		}
+	    }
+	}
+    } else {
+	set cursor $data(-cursor)
+    }
+
+    if {[string compare [$data(body) cget -cursor] $cursor] != 0} {
+	$data(body) configure -cursor $cursor
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::makeEditCursor
+#
+# Creates the platform-specific edit cursor.
+#------------------------------------------------------------------------------
+proc tablelist::makeEditCursor {} {
+    variable editCursor
+    variable winSys
+
+    if {[string compare $winSys "win32"] == 0} {
+	variable library
+	set cursorName "pencil.cur"
+	set cursorFile [file join $library scripts $cursorName]
+	if {$::tcl_version >= 8.4} {
+	    set cursorFile [file normalize $cursorFile]
+	}
+	set editCursor [list @$cursorFile]
+
+	#
+	# Make sure it will work for starpacks, too
+	#
+	variable helpLabel
+	if {[catch {$helpLabel configure -cursor $editCursor}] != 0} {
+	    set tempDir $::env(TEMP)
+	    file copy -force $cursorFile $tempDir
+	    set editCursor [list @[file join $tempDir $cursorName]]
+	}
+    } else {
+	set editCursor pencil
     }
 }
 
@@ -950,15 +1058,25 @@ proc tablelist::condEditContainingCell {win x y} {
     set col [containingCol $win $x]
 
     upvar ::tablelist::ns${win}::data data
-    if {$data(-editselectedonly) &&
-	![::$win cellselection includes $row,$col]} {
-	set canEdit 0
+    if {$data(justEntered) || ($data(-editselectedonly) &&
+	![::$win cellselection includes $row,$col])} {
+	set editable 0
     } else {
-	set canEdit [expr {$row >= 0 && $col >= 0 &&
-		     [isCellEditable $win $row $col]}]
+	set editable [expr {$row >= 0 && $col >= 0 &&
+		      [isCellEditable $win $row $col]}]
     }
 
-    if {$canEdit} {
+    #
+    # The following check is sometimes needed on OS X if
+    # editing with the aid of a menubutton is in progress
+    #
+    variable editCursor
+    if {$data(-showeditcursor) && [info exists editCursor] &&
+	[string compare [$data(body) cget -cursor] $editCursor] != 0} {
+	set editable 0
+    }
+
+    if {$editable} {
 	#
 	# Get the coordinates relative to the
 	# tablelist body and invoke doEditCell
@@ -3027,7 +3145,7 @@ proc tablelist::labelB1Up {w X} {
 	$data(body) tag configure visibleLines -tabs {}
 
 	if {$data(colResized)} {
-	    redisplayCol $win $col 0 end
+	    redisplayCol $win $col 0 last
 	    adjustColumns $win {} 0
 	    stretchColumns $win $col
 	    updateColors $win
