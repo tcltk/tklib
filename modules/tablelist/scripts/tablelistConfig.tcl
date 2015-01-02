@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -46,6 +46,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-selecttype)		row
     lappend configSpecs(-setfocus)		1
     lappend configSpecs(-showarrow)		1
+    lappend configSpecs(-showeditcursor)	1
     lappend configSpecs(-showhorizseparator)	1
     lappend configSpecs(-showlabels)		1
     lappend configSpecs(-showseparators)	0
@@ -298,9 +299,20 @@ proc tablelist::extendConfigSpecs {} {
 
 	    classic -
 	    aqua {
-		set arrowColor		#717171
+		scan $::tcl_platform(osVersion) "%d" majorOSVersion
+		if {$majorOSVersion >= 14} {		;# OS X 10.10 or higher
+		    set arrowColor	#404040
+		    set arrowStyle	flatAngle7x4
+		} else {
+		    set arrowColor	#717171
+		    variable pngSupported
+		    if {$pngSupported} {
+			set arrowStyle	photo7x7
+		    } else {
+			set arrowStyle	flat7x7
+		    }
+		}
 		set arrowDisabledColor	#a3a3a3
-		set arrowStyle		flat7x7
 		set treeStyle		aqua
 	    }
 	}
@@ -613,7 +625,7 @@ proc tablelist::doConfig {win opt val} {
 		    variable arrowStyles
 		    set data($opt) \
 			[mwutil::fullOpt "arrow style" $val $arrowStyles]
-		    regexp {^(flat|sunken|photo)([0-9]+)x([0-9]+)$} \
+		    regexp {^(flat|flatAngle|sunken|photo)([0-9]+)x([0-9]+)$} \
 			   $data($opt) dummy relief width height
 		    set data(arrowWidth) $width
 		    set data(arrowHeight) $height
@@ -635,7 +647,6 @@ proc tablelist::doConfig {win opt val} {
 		}
 		-autoscan -
 		-customdragsource -
-		-editselectedonly -
 		-forceeditendcommand -
 		-instanttoggle -
 		-movablecolumns -
@@ -734,6 +745,16 @@ proc tablelist::doConfig {win opt val} {
 		    }
 		    if {$data(isDisabled)} {
 			updateColorsWhenIdle $win
+		    }
+		}
+		-editselectedonly {
+		    #
+		    # Save the boolean value specified by val in data($opt)
+		    # and invoke the motion handler if necessary
+		    #
+		    set data($opt) [expr {$val ? 1 : 0}]
+		    if {$data(-showeditcursor)} {
+			invokeMotionHandler $win
 		    }
 		}
 		-exportselection {
@@ -884,6 +905,14 @@ proc tablelist::doConfig {win opt val} {
 		    set data($opt) [expr {$val ? 1 : 0}]
 		    makeSortAndArrowColLists $win
 		    adjustColumns $win allLabels 1
+		}
+		-showeditcursor {
+		    #
+		    # Save the boolean value specified by val in
+		    # data($opt) and invoke the motion handler
+		    #
+		    set data($opt) [expr {$val ? 1 : 0}]
+		    invokeMotionHandler $win
 		}
 		-showlabels {
 		    #
@@ -1274,12 +1303,36 @@ proc tablelist::doColConfig {col win opt val} {
 	    }
 	}
 
-	-editable -
-	-resizable {
+	-changetitlesnipside {
 	    #
-	    # Save the boolean value specified by val in data($col$opt)
+	    # Save the boolean value specified by val in
+	    # data($col$opt) and adjust the col'th label
 	    #
 	    set data($col$opt) [expr {$val ? 1 : 0}]
+	    set pixels [lindex $data(colList) [expr {2*$col}]]
+	    if {$pixels == 0} {			;# convention: dynamic width
+		if {$data($col-maxPixels) > 0} {
+		    if {$data($col-reqPixels) > $data($col-maxPixels)} {
+			set pixels $data($col-maxPixels)
+		    }
+		}
+	    }
+	    if {$pixels != 0} {	
+		incr pixels $data($col-delta)
+	    }
+	    set alignment [lindex $data(colList) [expr {2*$col + 1}]]
+	    adjustLabel $win $col $pixels $alignment
+	}
+
+	-editable {
+	    #
+	    # Save the boolean value specified by val in data($col$opt)
+	    # and invoke the motion handler if necessary
+	    #
+	    set data($col$opt) [expr {$val ? 1 : 0}]
+	    if {$data(-showeditcursor)} {
+		invokeMotionHandler $win
+	    }
 	}
 
 	-editwindow {
@@ -1703,6 +1756,13 @@ proc tablelist::doColConfig {col win opt val} {
 	    adjustColumns $win $col 1
 	    redisplayColWhenIdle $win $col
 	    updateViewWhenIdle $win
+	}
+
+	-resizable {
+	    #
+	    # Save the boolean value specified by val in data($col$opt)
+	    #
+	    set data($col$opt) [expr {$val ? 1 : 0}]
 	}
 
 	-selectbackground -
@@ -2739,9 +2799,13 @@ proc tablelist::doCellConfig {row col win opt val} {
 	-editable {
 	    #
 	    # Save the boolean value specified by val in data($key,$col$opt)
+	    # and invoke the motion handler if necessary
 	    #
 	    set key [lindex $data(keyList) $row]
 	    set data($key,$col$opt) [expr {$val ? 1 : 0}]
+	    if {$data(-showeditcursor)} {
+		invokeMotionHandler $win
+	    }
 	}
 
 	-editwindow {

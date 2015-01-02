@@ -7,7 +7,7 @@
 #   - Public procedures related to sorting
 #   - Private procedures implementing the sorting
 #
-# Copyright (c) 2000-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -266,7 +266,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 		    -command $data($col-sortcommand)] descItemList
 	    } elseif {[string compare $data($col-sortmode) "asciinocase"]
 		== 0} {
-		if {$::tk_version >= 8.5} {
+		if {$::tcl_version >= 8.5} {
 		    sortChildren $win $parentKey [list lsort -$order \
 			-index $col -ascii -nocase] descItemList
 		} else {
@@ -367,8 +367,8 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     # to empty each line individually than to invoke a global delete command.
     #
     set w $data(body)
-    $w tag remove hiddenRow $firstDescLine.0 $lastDescLine.end
-    $w tag remove elidedRow $firstDescLine.0 $lastDescLine.end
+    $w tag remove hiddenRow $firstDescLine.0 $lastDescLine.end+1c
+    $w tag remove elidedRow $firstDescLine.0 $lastDescLine.end+1c
     for {set line $firstDescLine} {$line <= $lastDescLine} {incr line} {
 	$w delete $line.0 $line.end
     }
@@ -719,7 +719,7 @@ proc tablelist::sortList {win list} {
 			  $data($col-sortcommand) $list]
 	    } elseif {[string compare $data($col-sortmode) "asciinocase"]
 		== 0} {
-		if {$::tk_version >= 8.5} {
+		if {$::tcl_version >= 8.5} {
 		    set list [lsort -$order -index $col -ascii -nocase $list]
 		} else {
 		    set list [lsort -$order -index $col -command \
