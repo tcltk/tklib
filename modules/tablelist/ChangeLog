@@ -1,3 +1,7 @@
+2015-01-03  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/tablelistWidget.html: Minor improvements.
+
 2015-01-02  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:                Bumped the version number to 5.13.
