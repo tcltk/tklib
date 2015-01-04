@@ -1,3 +1,7 @@
+2015-01-04  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt: Eliminated the non-ASCII characters.
+
 2015-01-03  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/tablelistWidget.html: Minor improvements.
