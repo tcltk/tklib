@@ -661,7 +661,7 @@ What was new in Tablelist 4.10?
 
 1.  Support for individual binding scripts controlling the interactive
     cell editing, with the aid of the new "editwintag" subcommand
-    (thanks to Óscar Fuentes for his valuable input).
+    (thanks to Oscar Fuentes for his valuable input).
 
 2.  Complemented the "attrib" subcommand with the new subcommands
     "hasattrib" and "unsetattrib".
@@ -958,7 +958,7 @@ What was new in Tablelist 4.4?
     with snit widgetadaptors (thanks to Rolf Ade for his bug-fix).
 
 8.  Corrected a typo in the implementation of the "move" subcommand,
-    introduced in the previous release (thanks to Jérome Siot for his
+    introduced in the previous release (thanks to Jerome Siot for his
     bug report).
 
 9.  Improved the handling of the virtual event <<ThemeChanged>> (thanks
@@ -1602,7 +1602,7 @@ What was new in Tablelist 2.7?
    Chevreux for reporting this bug).
 
 5. Fixed a bug in the binding scripts for the binding tag
-   "TablelistBody" (thanks to Miguel Bañón for his bug report).
+   "TablelistBody" (thanks to Miguel Bagnon for his bug report).
 
 6. Applied a patch proposed by Jeff Adamczak that works around a bug in
    the "lsort" command, present in Tcl versions 8.0 - 8.3.2.
