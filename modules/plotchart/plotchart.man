@@ -480,7 +480,7 @@ accumulated
 [para]
 
 
-[call [cmd ::Plotchart::createBarchart] [arg w] [arg xlabels] [arg yaxis] [arg noseries]]
+[call [cmd ::Plotchart::createBarchart] [arg w] [arg xlabels] [arg yaxis] [arg noseries] [arg args]]
 
 Create a new barchart with vertical bars (configuration type: vertbars). The horizontal axis will
 display the labels contained in the argument [arg xlabels]. The number
@@ -514,6 +514,11 @@ A 3-element list containing minimum, maximum and stepsize for the y-axis, in thi
 [arg_def int|[const stacked] noseries in]
 The number of data series that will be plotted. This has to be an
 integer number greater than zero (if [const stacked] is not used).
+
+[arg_def string args in]
+One or more key-value pairs defining the options. Specific to barcharts: [const -xlabelangle] value,
+the angle under which the labels should be drawn. This defaults to 0 - horizontal text. This option
+is especially useful if you have fairly long labels.
 
 [list_end]
 [para]

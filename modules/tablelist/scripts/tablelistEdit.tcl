@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -93,7 +93,7 @@ namespace eval tablelist {
 	    $name-putListCmd	"" \
 	    $name-getListCmd	"" \
 	    $name-selectCmd	"" \
-	    $name-invokeCmd	"postMenubutton %W" \
+	    $name-invokeCmd	"event generate %W <space>" \
 	    $name-fontOpt	-font \
 	    $name-useFormat	1 \
 	    $name-useReqWidth	0 \
@@ -316,7 +316,7 @@ proc tablelist::addBWidgetComboBox {{name ComboBox}} {
     checkEditWinName $name
 
     array set ::tablelist::editWin [list \
-	$name-creationCmd	"ComboBox %W -editable 1 -width 0" \
+	$name-creationCmd	"createBWidgetComboBox %W" \
 	$name-putValueCmd	"%W configure -text %T" \
 	$name-getValueCmd	"%W cget -text" \
 	$name-putTextCmd	"%W configure -text %T" \
@@ -802,7 +802,7 @@ proc tablelist::addDateTimeMentry {fmt dateSep timeSep args} {
 		 fields(0) fields(1) fields(2) fields(3) fields(4) fields(5)]} {
 	return -code error \
 	       "bad format \"$fmt\": must be a string of length 5 or 6,\
-	        with the first 3 characters consisting of the letters d, m,\
+		with the first 3 characters consisting of the letters d, m,\
 		and y or Y, followed by H or I, then M, and optionally by S"
     }
 
@@ -1088,7 +1088,7 @@ proc tablelist::createCheckbutton {w args} {
 	aqua {
 	    checkbutton $w -borderwidth 0 -font "system" -padx 0 -pady 0
 	    [winfo parent $w] configure -width 16 -height 16
-	    place $w -x -4 -y -2
+	    place $w -x -4 -y -3
 	}
     }
 
@@ -1129,6 +1129,11 @@ proc tablelist::createMenubutton {w args} {
 
     set menu $w.menu
     menu $menu -tearoff 0 -postcommand [list tablelist::postMenuCmd $w]
+    foreach event {<Map> <Unmap>} {
+	bind $menu $event {
+	    tablelist::invokeMotionHandler [tablelist::getTablelistPath %W]
+	}
+    }
     if {[string compare $winSys "x11"] == 0} {
 	$menu configure -background $data(-background) \
 			-foreground $data(-foreground) \
@@ -1149,48 +1154,37 @@ proc tablelist::createMenubutton {w args} {
 #------------------------------------------------------------------------------
 proc tablelist::postMenuCmd w {
     set menu [$w cget -menu]
-    set last [$menu index last]
-    if {[string compare $last "none"] == 0} {
-	return ""
-    }
-
     variable winSys
     if {[string compare $winSys "x11"] == 0} {
-	set text [$w cget -text]
-	for {set idx 0} {$idx <= $last} {incr idx} {
-	    if {[string compare [$menu type $idx] "radiobutton"] == 0 &&
-		[string compare [$menu entrycget $idx -value] $text] == 0} {
-		$menu activate $idx
+	set last [$menu index last]
+	if {[string compare $last "none"] != 0} {
+	    set text [$w cget -text]
+	    for {set idx 0} {$idx <= $last} {incr idx} {
+		if {[string compare [$menu type $idx] "radiobutton"] == 0 &&
+		    [string compare [$menu entrycget $idx -value] $text] == 0} {
+		    $menu activate $idx
+		}
 	    }
 	}
-    } elseif {[string compare [winfo class $w] "TMenubutton"] == 0} {
-	if {[catch {set ::tk::Priv(popup) $menu}] != 0} {
-	    set ::tkPriv(popup) $menu
+    } else {
+	if {[catch {set ::tk::Priv(postedMb) ""}] != 0} {
+	    set ::tkPriv(postedMb) ""
 	}
-    }
-}
 
-#------------------------------------------------------------------------------
-# tablelist::postMenubutton
-#
-# Posts a menubutton widget used for interactive cell editing in a tablelist
-# widget.
-#------------------------------------------------------------------------------
-proc tablelist::postMenubutton w {
-    variable winSys
-    if {[string compare $winSys "x11"] == 0} {
-	event generate $w <space>
-	return ""
-    }
+	if {[string compare [winfo class $w] "TMenubutton"] == 0} {
+	    if {[catch {set ::tk::Priv(popup) $menu}] != 0} {
+		set ::tkPriv(popup) $menu
+	    }
+	}
 
-    if {[catch {
-	set ::tk::Priv(postedMb) ""
-	event generate $w <space>
-	set ::tk::Priv(postedMb) ""
-    }] != 0} {
-	set ::tkPriv(postedMb) ""
-	event generate $w <space>
-	set ::tkPriv(postedMb) ""
+	if {[string compare $winSys "aqua"] == 0} {
+	    set win [getTablelistPath $w]
+	    upvar ::tablelist::ns${win}::data data
+	    if {[string compare [$data(body) cget -cursor] $data(-cursor)]
+		!= 0} {
+		$data(body) configure -cursor $data(-cursor)
+	    }
+	}
     }
 }
 
@@ -1347,9 +1341,9 @@ proc tablelist::createTileCheckbutton {w args} {
     #
     set currentTheme [getCurrentTheme]
     if {[string compare $currentTheme "aqua"] == 0} {
-	catch { style layout Tablelist.TCheckbutton { Checkbutton.button } }
+	catch {style layout Tablelist.TCheckbutton { Checkbutton.button }}
     } else {
-	catch { style layout Tablelist.TCheckbutton { Checkbutton.indicator } }
+	catch {style layout Tablelist.TCheckbutton { Checkbutton.indicator }}
 	styleConfig Tablelist.TCheckbutton -indicatormargin 0
     }
 
@@ -1370,8 +1364,8 @@ proc tablelist::createTileCheckbutton {w args} {
     #
     switch $currentTheme {
 	aqua {
-	    [winfo parent $w] configure -width 16 -height 17
-	    place $w -x -3 -y -2
+	    [winfo parent $w] configure -width 16 -height 16
+	    place $w -x -3 -y -3
 	}
 
 	Aquativo {
@@ -1523,6 +1517,23 @@ proc tablelist::createTileMenubutton {w args} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::createBWidgetComboBox
+#
+# Creates a BWidget ComboBox widget with the given path name for interactive
+# cell editing in a tablelist widget.
+#------------------------------------------------------------------------------
+proc tablelist::createBWidgetComboBox {w args} {
+    eval [list ComboBox $w -editable 1 -width 0] $args
+    ComboBox::_create_popup $w
+
+    foreach event {<Map> <Unmap>} {
+	bind $w.shell.listb $event {
+	    tablelist::invokeMotionHandler [tablelist::getTablelistPath %W]
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
 # tablelist::createIncrCombobox
 #
 # Creates an [incr Widgets] combobox with the given path name for interactive
@@ -1530,6 +1541,12 @@ proc tablelist::createTileMenubutton {w args} {
 #------------------------------------------------------------------------------
 proc tablelist::createIncrCombobox {w args} {
     eval [list iwidgets::combobox $w -dropdown 1 -editable 1 -width 0] $args
+
+    foreach event {<Map> <Unmap>} {
+	bind [$w component list] $event {+
+	    tablelist::invokeMotionHandler [tablelist::getTablelistPath %W]
+	}
+    }
 
     #
     # Make sure that the entry component will receive the input focus
@@ -1546,6 +1563,12 @@ proc tablelist::createIncrCombobox {w args} {
 #------------------------------------------------------------------------------
 proc tablelist::createOakleyCombobox {w args} {
     eval [list combobox::combobox $w -editable 1 -width 0] $args
+
+    foreach event {<Map> <Unmap>} {
+	bind $w.top.list $event {
+	    tablelist::invokeMotionHandler [tablelist::getTablelistPath %W]
+	}
+    }
 
     #
     # Repack the widget's components, to make sure that the
@@ -1588,7 +1611,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 
     #
     # Create a frame to be embedded into the tablelist's body, together with
-    # a child of column-specific type; replace the binding tag Frame with
+    # a child of column/cell-specific type; replace the binding tag Frame with
     # $data(editwinTag) and TablelistEdit in the frame's list of binding tags
     #
     seeCell $win $row $col
@@ -1599,16 +1622,6 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 		 -highlightthickness 0 -relief flat -takefocus 0
     catch {$f configure -padx 0 -pady 0}
     bindtags $f [lreplace [bindtags $f] 1 1 $data(editwinTag) TablelistEdit]
-    bind $f <Destroy> {
-	array set tablelist::ns[winfo parent [winfo parent %W]]::data \
-		  {editKey ""  editRow -1  editCol -1}
-	if {[catch {tk::CancelRepeat}] != 0} {
-	    tkCancelRepeat 
-	}
-	if {[catch {ttk::CancelRepeat}] != 0} {
-	    catch {tile::CancelRepeat}
-	}
-    }
     set name [getEditWindow $win $row $col]
     variable editWin
     set creationCmd [strMap {"%W" "$w"} $editWin($name-creationCmd)]
@@ -1637,6 +1650,33 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     set alignment [lindex $data(colList) [expr {2*$col + 1}]]
     if {!$isText && !$isMentry} {
 	catch {$w configure -justify $alignment}
+    }
+
+    #
+    # Define some bindings for the above frame
+    #
+    bind $f <Enter> {
+	set tablelist::W [tablelist::getTablelistPath %W]
+	set tablelist::ns${tablelist::W}::data(inEditWin) 1
+	tablelist::invokeMotionHandler $tablelist::W
+    }
+    bind $f <Leave> {
+	set tablelist::W [tablelist::getTablelistPath %W]
+	set tablelist::ns${tablelist::W}::data(inEditWin) 0
+	set tablelist::ns${tablelist::W}::data(prevCell) -1,-1
+	tablelist::invokeMotionHandler $tablelist::W
+    }
+    bind $f <Destroy> {
+	set tablelist::W [tablelist::getTablelistPath %W]
+	array set tablelist::ns${tablelist::W}::data \
+	      {editKey ""  editRow -1  editCol -1  inEditWin 0  prevCell -1,-1}
+	if {[catch {tk::CancelRepeat}] != 0} {
+	    tkCancelRepeat 
+	}
+	if {[catch {ttk::CancelRepeat}] != 0} {
+	    catch {tile::CancelRepeat}
+	}
+	tablelist::invokeMotionHandler $tablelist::W
     }
 
     #
@@ -1722,9 +1762,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 
 	    variable winSys
 	    if {[string compare $winSys "aqua"] == 0} {
-		catch {
-		    set ::tk::mac::useCustomMDEF $data(useCustomMDEFSav)
-		}
+		catch {set ::tk::mac::useCustomMDEF $data(useCustomMDEFSav)}
 	    }
 
 	    if {$data(canceled)} {
@@ -2513,7 +2551,7 @@ proc tablelist::defineTablelistEdit {} {
 	    tablelist::finishEditing %W
 	}
     }
-    bind TablelistEdit <Tab>          { tablelist::goToNextPrevCell %W  1 }
+    bind TablelistEdit <Tab>	      { tablelist::goToNextPrevCell %W  1 }
     bind TablelistEdit <Shift-Tab>    { tablelist::goToNextPrevCell %W -1 }
     bind TablelistEdit <<PrevWindow>> { tablelist::goToNextPrevCell %W -1 }
     foreach modifier $modList {
