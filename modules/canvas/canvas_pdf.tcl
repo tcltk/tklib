@@ -31,7 +31,7 @@ proc ::canvas::pdf {canvas} {
     # back into memory for the caller to use.
 
     set pdf [::pdf4tcl::new %AUTO% -paper {9.5c 6.0c}]
-    $pdf canvas .canvas -width 9.2c
+    $pdf canvas $canvas -width 9.2c
     $pdf write -file $tmp
     $pdf destroy
 
@@ -47,5 +47,5 @@ proc ::canvas::pdf {canvas} {
 # ### ### ### ######### ######### #########
 ## Ready
 
-package provide canvas::pdf 1
+package provide canvas::pdf 1.0.1
 return
