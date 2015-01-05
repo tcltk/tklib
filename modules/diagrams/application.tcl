@@ -48,7 +48,13 @@ proc ::diagram::application {arguments} {
 
 proc ::diagram::application::showerror {text} {
     global argv0
-    puts stderr "$argv0: $text"
+    if {[catch {package present Tk}]} {
+        puts stderr "$argv0: $text"
+    } else {
+        tk_messageBox -type ok -icon error \
+	    -title "Error in application" \
+	    -message "$argv0: $text"
+    }
     exit 1
 }
 
@@ -466,5 +472,5 @@ proc ::diagram::application::Run::MakeInterpreter {} {
 }
 
 # # ## ### ##### ######## ############# #####################
-package provide diagram::application 1.2
+package provide diagram::application 1.3
 return
