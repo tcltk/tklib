@@ -1,3 +1,11 @@
+2014-12-14  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Introduce an option -xlabelangle for barcharts (request by Frank Gover)
+	* plotaxis.tcl: Implement the option -xlabelangle for the labels of barcharts, also add a call
+	                to worldCoordinates to reset the scaling (cause of xconfig -scale not working
+	                correctly)
+	* plotpriv.tcl: Correct the margins if subtext is used (required for the masking rectangles)
+	* pkgIndex.tcl: Bumped version to 2.3.3
+
 2014-11-23  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Support -xlabels and -ylabels option (request by Ron Fox), also implement -isometric for
 	                 XY-plots (request by Nick F.)

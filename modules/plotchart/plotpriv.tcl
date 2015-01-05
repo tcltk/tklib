@@ -250,6 +250,9 @@ proc ::Plotchart::MarginsRectangle { w argv {notext 2.0} {text_width 8}} {
         set margin_bottom [expr {$margin_bottom + $char_height}]
     }
 
+    set config($w,margin,right)  $margin_right
+    set config($w,margin,bottom) $margin_bottom
+
     set pxmin [expr {$char_width*$text_width}]
     if { $pxmin < $config($w,margin,left) } {
         set pxmin $config($w,margin,left)

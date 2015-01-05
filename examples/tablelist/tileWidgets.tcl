@@ -1,13 +1,13 @@
 #!/usr/bin/env wish
-## -*- tcl -*-
+
 #==============================================================================
 # Demonstrates the interactive tablelist cell editing with the aid of some
 # widgets from the tile package and of the Tk core spinbox widget.
 #
-# Copyright (c) 2005-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.12
+package require tablelist_tile 5.13
 
 wm title . "Serial Line Configuration"
 

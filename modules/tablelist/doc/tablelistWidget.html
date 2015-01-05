@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 5.12</h2>
+    <h2>For Tablelist Version 5.13</h2>
 
     <h3>by</h3>
 
@@ -93,9 +93,9 @@
     <i>color</i></code></dd>
 
     <dd><code><b><a href="#arrowstyle">-arrowstyle</a></b>
-    <b>flat5x3</b>|<b>flat5x4</b>|<b>flat6x4</b>|<b>flat7x4</b>|<b>flat7x5</b>|<b>flat7x7</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flat8x5</b>|<b>flat9x5</b>|<b>flat9x6</b>|<b>flat9x7</b>|<b>flat10x6</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;photo7x7</b>|<b>sunken8x7</b>|<b>sunken10x9</b>|<b>sunken12x11</b></code></dd>
+    <b>flat5x3</b>|<b>flat5x4</b>|<b>flat6x4</b>|<b>flat7x4</b>|<b>flat7x5</b>|<b>flat7x7</b>|<b>flat8x5</b>|<b>flat9x5</b>|<b>flat9x6</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flatAngle7x4</b>|<b>flatAngle7x5</b>|<b>flatAngle9x5</b>|<b>flatAngle9x6</b>|<b>flat1Angle9x7</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flatAngle10x6</b>|<b>flatAngle10x7</b>|<b>photo7x7</b>|<b>sunken8x7</b>|<b>sunken10x9</b>|<b>sunken12x11</b></code></dd>
 
     <dd><code><b><a href="#autoscan">-autoscan</a></b>
     <i>boolean</i></code></dd>
@@ -220,6 +220,9 @@
     <dd><code><b><a href="#showarrow">-showarrow</a></b>
     <i>boolean</i></code></dd>
 
+    <dd><code><b><a href="#showeditcursor">-showeditcursor</a></b>
+    <i>boolean</i></code></dd>
+
     <dd><code><b><a href="#showhorizseparator">-showhorizseparator</a></b>
     <i>boolean</i></code></dd>
 
@@ -276,8 +279,8 @@
     <i>columnIndex</i></code></dd>
 
     <dd><code><b><a href="#treestyle">-treestyle</a></b>
-    <b>adwaita</b>|<b>ambiance</b>|<b>aqua</b>|<b>baghira</b>|<b>dust</b>|<b>dustSand</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk</b>|<b>klearlooks</b>|<b>mint</b>|<b>newWave</b>|<b>oxygen1</b>|<b>oxygen2</b>|<br>
+    <b>adwaita</b>|<b>ambiance</b>|<b>aqua</b>|<b>baghira</b>|<b>dust</b>|<b>dustSand</b>|<b>gtk</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;klearlooks</b>|<b>mate</b>|<b>mint</b>|<b>newWave</b>|<b>oxygen1</b>|<b>oxygen2</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;phase</b>|<b>plastik</b>|<b>plastique</b>|<b>radiance</b>|<b>ubuntu</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vistaAero</b>|<b>vistaClassic</b>|<b>win7Aero</b>|<b>win7Classic</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b></code></dd>
@@ -294,6 +297,10 @@
     <i>color</i></code></dd>
 
     <dd><code><b><a href="#col_changesnipside">-changesnipside</a></b>
+    <i>boolean</i></code></dd>
+
+    <dd><code><b><a href=
+    "#col_changetitlesnipside">-changetitlesnipside</a></b>
     <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#col_editable">-editable</a></b>
@@ -483,7 +490,7 @@
 
     <dd>
       <pre>
-<i>number</i>  <b>k</b><i>number</i>  <b>active</b>  <b>anchor</b>  <b>end</b>  <b>top</b>  <b>bottom</b>  <b>@</b><i>x</i><b>,</b><i>y</i>  <i>name</i>
+<i>number</i>  <b>k</b><i>number</i>  <b>active</b>  <b>anchor</b>  <b>end</b>  <b>last</b>  <b>top</b>  <b>bottom</b>  <b>@</b><i>x</i><b>,</b><i>y</i>  <i>name</i>
 </pre>
     </dd>
 
@@ -491,7 +498,7 @@
 
     <dd>
       <pre>
-<b>root</b>  <i>number</i>  <b>k</b><i>number</i>  <b>active</b>  <b>anchor</b>  <b>end</b>  <b>top</b>  <b>bottom</b>  <b>@</b><i>x</i><b>,</b><i>y</i>  <i>name</i>
+<b>root</b>  <i>number</i>  <b>k</b><i>number</i>  <b>active</b>  <b>anchor</b>  <b>end</b>  <b>last</b>  <b>top</b>  <b>bottom</b>  <b>@</b><i>x</i><b>,</b><i>y</i>  <i>name</i>
 </pre>
     </dd>
 
@@ -499,7 +506,7 @@
 
     <dd>
       <pre>
-<i>number</i>  <b>active</b>  <b>anchor</b>  <b>end</b>  <b>left</b>  <b>right</b>  <b>@</b><i>x</i><b>,</b><i>y</i>  <i>name</i>
+<i>number</i>  <b>active</b>  <b>anchor</b>  <b>end</b>  <b>last</b>  <b>left</b>  <b>right</b>  <b>@</b><i>x</i><b>,</b><i>y</i>  <i>name</i>
 </pre>
     </dd>
 
@@ -507,10 +514,10 @@
 
     <dd>
       <pre>
-<i>row</i><b>,</b><i>col</i>  <b>active</b>  <b>anchor</b>  <b>end</b>  <b>@</b><i>x</i><b>,</b><i>y</i>
+<i>row</i><b>,</b><i>col</i>  <b>active</b>  <b>anchor</b>  <b>end</b>  <b>last</b>  <b>@</b><i>x</i><b>,</b><i>y</i>
 
-    <i>row</i>: <i>number</i>  <b>k</b><i>number</i>  <b>active</b>  <b>anchor</b>  <b>end</b>  <b>top</b>  <b>bottom</b>  <i>name</i>
-    <i>col</i>: <i>number</i>  <b>active</b>  <b>anchor</b>  <b>end</b>  <b>left</b>  <b>right</b>  <i>name</i>
+    <i>row</i>: <i>number</i>  <b>k</b><i>number</i>  <b>active</b>  <b>anchor</b>  <b>end</b>  <b>last</b>  <b>top</b>  <b>bottom</b>  <i>name</i>
+    <i>col</i>: <i>number</i>  <b>active</b>  <b>anchor</b>  <b>end</b>  <b>last</b>  <b>left</b>  <b>right</b>  <i>name</i>
 </pre>
     </dd>
 
@@ -1316,9 +1323,15 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         <code><b>flat9x5</b></code>, <code><b>flat7x4</b></code>, and
         <code><b>sunken8x7</b></code>, respectively.&nbsp; Finally, for the
         windowing systems <code><b>classic</b></code> and
-        <code><b>aqua</b></code> on the Macintosh, the default arrow color is
-        <code>#717171</code> and the default arrow style is
-        <code><b>flat7x7</b></code>.</p>
+        <code><b>aqua</b></code> on the Macintosh, the default arrow color and
+        style depend on the version of the operating system:&nbsp; Starting
+        with version 10.10 (Yosemite) of Mac OS X, the default arrow color for
+        the windowing system <code><b>aqua</b></code> is <code>#404040</code>
+        and the default arrow style is <code><b>flatAngle7x4</b></code>.&nbsp;
+        For earlier operating system versions, the default values are the arrow
+        color <code>#717171</code> and the arrow style
+        <code><b>flat7x7</b></code> (or <code><b>photo7x7</b></code>, in the
+        presence of PNG support).</p>
       </blockquote>
     </dd>
 
@@ -1383,8 +1396,8 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
       </table>
 
       <blockquote>
-        <p>Specifies the relief, width, and height of the up- or down-arrow
-        placed into a column label by the <code><b><a href=
+        <p>Specifies the relief, shape, width, and height of the up- or
+        down-arrow placed into a column label by the <code><b><a href=
         "#sortbycolumn">sortbycolumn</a></b></code> or <code><b><a href=
         "#sortbycolumnlist">sortbycolumnlist</a></b></code> subcommand of the
         Tcl command associated with the widget.&nbsp; This option is only
@@ -1395,30 +1408,34 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         <code><b>flat7x4</b></code>, <code><b>flat7x5</b></code>,
         <code><b>flat7x7</b></code>, <code><b>flat8x5</b></code>,
         <code><b>flat9x5</b></code>, <code><b>flat9x6</b></code>,
-        <code><b>flat9x7</b></code>, <code><b>flat10x6</b></code>,
-        <code><b>photo7x7</b></code>, <code><b>sunken8x7</b></code>,
-        <code><b>sunken10x9</b></code>, and <code><b>sunken12x11</b></code>, as
-        shown in the picture below.&nbsp; The default value depends on the
-        windowing system in the Tablelist package and on the current theme in
-        Tablelist_tile; see the description of the <code><b><a href=
-        "#arrowcolor">-arrowcolor</a></b></code> option for details.</p>
+        <code><b>flatAngle7x4</b></code>, <code><b>flatAngle7x5</b></code>,
+        <code><b>flatAngle9x5</b></code>, <code><b>flatAngle9x6</b></code>,
+        <code><b>flatAngle9x7</b></code>, <code><b>flatAngle10x6</b></code>,
+        <code><b>flatAngle10x7</b></code>, <code><b>photo7x7</b></code>,
+        <code><b>sunken8x7</b></code>, <code><b>sunken10x9</b></code>, and
+        <code><b>sunken12x11</b></code>, as shown in the picture below.&nbsp;
+        The default value depends on the windowing system in the Tablelist
+        package and on the current theme in Tablelist_tile; see the description
+        of the <code><b><a href="#arrowcolor">-arrowcolor</a></b></code> option
+        for details.</p>
 
-        <p><img src="arrowStyles.png" alt="Arrow Styles" width="640" height=
-        "63"></p>
+        <p><img src="arrowStyles.png" alt="Arrow Styles" width="516" height=
+        "95"></p>
 
         <p>While the sort arrows of the styles <code><b>flat*</b></code> and
         <code><b>sunken*</b></code> are created from bitmaps, the arrow style
         <code><b>photo7x7</b></code> uses PNG images that look and behave very
-        close to the native sort arrows on Mac OS X Aqua.&nbsp; This arrow
-        style is only supported if the Tk version is either 8.6 (with built-in
-        PNG support), or 8.5 and the <code><b>img::png</b></code> package can
-        be loaded into the interpreter.&nbsp; When supported,
-        <code><b>photo7x7</b></code> will be the default value of the
-        <code><b>-arrowstyle</b></code> option in Tablelist_tile with the
-        <code><b>aqua</b></code> theme (otherwise <code><b>flat7x7</b></code>
-        will be used as default).&nbsp; When using this arrow style, the
-        <code><b><a href="#arrowcolor">-arrowcolor</a></b></code> and
-        <code><b><a href=
+        close to the native sort arrows on Mac OS X Aqua versions earlier than
+        10.10 (Yosemite).&nbsp; This arrow style is only supported if the Tk
+        version is either 8.6 (with built-in PNG support), or 8.5 and the
+        <code><b>img::png</b></code> package can be loaded into the
+        interpreter.&nbsp; When supported, <code><b>photo7x7</b></code> will be
+        the default value of the <code><b>-arrowstyle</b></code> option in
+        Tablelist_tile with the <code><b>aqua</b></code> theme for Mac OS X
+        versions earlier than 10.10 (otherwise <code><b>flat7x7</b></code> will
+        be used as default for these earlier OS X versions).&nbsp; When using
+        this arrow style, the <code><b><a href=
+        "#arrowcolor">-arrowcolor</a></b></code> and <code><b><a href=
         "#arrowdisabledcolor">-arrowdisabledcolor</a></b></code> options have
         no effect, but, due to the transparency information contained in the
         PNG images, the arrows will automatically adapt their color to the
@@ -1960,10 +1977,11 @@ proc expandCmd {tbl row} {
         in the font given by the <code><b>-font</b></code> option.&nbsp; This
         is at the same time the desired height in lines, provided that no
         column-, row-, or cell-specific fonts, multi-line elements, or embedded
-        images or windows will make any of the rows higher than the
-        others.&nbsp; With this restriction, if the option's value is zero or
-        less then the window's height is made just large enough to hold the
-        header and all the items in the tablelist widget.</p>
+        images or windows will make the height of any of the rows different
+        from the one corresponding to the above-mentioned font.&nbsp; With this
+        restriction, if the option's value is zero or less, then the window's
+        height is made just large enough to hold all the items in the tablelist
+        widget.</p>
       </blockquote>
     </dd>
 
@@ -2963,6 +2981,58 @@ proc expandCmd {tbl row} {
       </blockquote>
     </dd>
 
+    <dd id="showeditcursor">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+
+          <td><code><b>-showeditcursor</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+
+          <td><code><b>&nbsp;showEditCursor</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+
+          <td><code><b>&nbsp;ShowEditCursor</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a boolean value indicating whether the mouse cursor should
+        change automatically to one having the shape of a pencil whenever a
+        click with mouse button 1 would start an editing session.&nbsp; The
+        default value is <code>1</code>.</p>
+
+        <p><b>REMARK:</b>&nbsp; On X11 and Mac OS X Aqua, the cursor set by
+        Tablelist when a mouse klick would start the interactive cell editing,
+        is Tk's built-in cursor <code><b>pencil</b></code>.&nbsp; Since on
+        Windows this cursor is ugly and not really usable, the edit cursor
+        shown by Tablelist on this platform will be the one loaded from the
+        file <code>pencil.cur</code>, located in the <code>scripts</code>
+        subdirectory of the Tablelist installation directory.&nbsp; If the
+        application was started as a starpack containing the Tablelist package,
+        then the edit cursor will be loaded from a copy of this file, created
+        automatically by Tablelist in the user's <code>Temp</code>
+        directory.</p>
+
+        <p>The file <code>pencil.cur</code> is a copy of the file&nbsp;
+        <code>Ubuntu Handwriting.cur</code>,&nbsp; downloaded from the
+        address</p>
+
+        <blockquote>
+          <address>
+            <a href=
+            "http://www.rw-designer.com/cursor-detail/46745">http://www.rw-designer.com/cursor-detail/46745</a>
+          </address>
+        </blockquote>
+      </blockquote>
+    </dd>
+
     <dd id="showhorizseparator">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
@@ -3224,10 +3294,11 @@ proc expandCmd {tbl row} {
         <code><b>all</b></code> or a list of column indices in any of the forms
         described in the <a href="#col_indices">COLUMN INDICES</a> section
         below.&nbsp; In the second case, the specified column indices are
-        replaced with their numerical equivalents, except for the index
-        <code><b>end</b></code>, which is viewed as a dynamic column index
-        whose numerical equivalent might change during program execution and
-        therefore will be recomputed every time the columns are
+        replaced with their numerical equivalents, except for
+        <code><b>end</b></code> and <code><b>last</b></code>, which are viewed
+        as dynamic column indices whose numerical equivalent (i.e., the index
+        of the tablelist's last column) might change during program execution
+        and therefore will be recomputed every time the columns are
         stretched.&nbsp; The list will be updated automatically whenever
         columns are inserted, deleted, or moved.&nbsp; The number of pixels by
         which a column is stretched is proportional to its width in
@@ -3732,18 +3803,16 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
         shown at a glance below:</p>
 
         <table border="2" cellspacing="0" cellpadding="3" rules="groups">
-          <colgroup span="1"></colgroup>
+          <colgroup></colgroup>
 
-          <colgroup span="1"></colgroup>
+          <colgroup></colgroup>
 
-          <colgroup span="1"></colgroup>
+          <colgroup></colgroup>
 
-          <colgroup span="1"></colgroup>
+          <colgroup></colgroup>
 
-          <colgroup span="1"></colgroup>
-
-          <tbody>
-            <tr align="center">
+          <tbody align="center">
+            <tr>
               <td><img src="aqua.png" alt="aqua" width="120" height="54"></td>
 
               <td><img src="gtk.png" alt="gtk" width="120" height="51"></td>
@@ -3753,29 +3822,45 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <td><img src="ubuntu.png" alt="ubuntu" width="120" height=
               "51"></td>
-
-              <td><img src="mint.png" alt="mint" width="120" height="51"></td>
             </tr>
 
-            <tr align="center">
-              <td><code>aqua</code></td>
+            <tr>
+              <th><code>aqua</code></th>
 
-              <td><code>gtk</code></td>
+              <th><code>gtk</code></th>
 
-              <td><code>adwaita</code></td>
+              <th><code>adwaita</code></th>
 
-              <td><code>ubuntu</code></td>
-
-              <td><code>mint</code></td>
+              <th><code>ubuntu</code></th>
             </tr>
           </tbody>
 
-          <tbody>
-            <tr align="center">
-              <td><img src="baghira.png" alt="baghira" width="120" height=
+          <tbody align="center">
+            <tr>
+              <td><img src="mint.png" alt="mint" width="120" height="51"></td>
+
+              <td><img src="mate.png" alt="mate" width="120" height="51"></td>
+
+              <td><img src="newWave.png" alt="newWave" width="120" height=
               "51"></td>
 
-              <td><img src="phase.png" alt="phase" width="120" height=
+              <td></td>
+            </tr>
+
+            <tr>
+              <th><code>mint</code></th>
+
+              <th><code>mate</code></th>
+
+              <th><code>newWave</code></th>
+
+              <th></th>
+            </tr>
+          </tbody>
+
+          <tbody align="center">
+            <tr>
+              <td><img src="plastique.png" alt="plastique" width="120" height=
               "51"></td>
 
               <td><img src="oxygen1.png" alt="oxygen1" width="120" height=
@@ -3788,21 +3873,44 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               height="51"></td>
             </tr>
 
-            <tr align="center">
-              <td><code>baghira</code></td>
+            <tr>
+              <th><code>plastique</code></th>
 
-              <td><code>phase</code></td>
+              <th><code>oxygen1</code></th>
 
-              <td><code>oxygen1</code></td>
+              <th><code>oxygen2</code></th>
 
-              <td><code>oxygen2</code></td>
-
-              <td><code>klearlooks</code></td>
+              <th><code>klearlooks</code></th>
             </tr>
           </tbody>
 
-          <tbody>
-            <tr align="center">
+          <tbody align="center">
+            <tr>
+              <td><img src="plastik.png" alt="plastik" width="120" height=
+              "51"></td>
+
+              <td><img src="baghira.png" alt="baghira" width="120" height=
+              "51"></td>
+
+              <td><img src="phase.png" alt="phase" width="120" height=
+              "51"></td>
+
+              <td></td>
+            </tr>
+
+            <tr>
+              <th><code>plastik</code></th>
+
+              <th><code>baghira</code></th>
+
+              <th><code>phase</code></th>
+
+              <th></th>
+            </tr>
+          </tbody>
+
+          <tbody align="center">
+            <tr>
               <td><img src="winnative.png" alt="winnative" width="120" height=
               "51"></td>
 
@@ -3814,26 +3922,21 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <td><img src="winxpSilver.png" alt="winxpSilver" width="120"
               height="51"></td>
-
-              <td><img src="plastik.png" alt="plastik" width="120" height=
-              "51"></td>
             </tr>
 
-            <tr align="center">
-              <td><code>winnative</code></td>
+            <tr>
+              <th><code>winnative</code></th>
 
-              <td><code>winxpBlue</code></td>
+              <th><code>winxpBlue</code></th>
 
-              <td><code>winxpOlive</code></td>
+              <th><code>winxpOlive</code></th>
 
-              <td><code>winxpSilver</code></td>
-
-              <td><code>plastik</code></td>
+              <th><code>winxpSilver</code></th>
             </tr>
           </tbody>
 
-          <tbody>
-            <tr align="center">
+          <tbody align="center">
+            <tr>
               <td><img src="vistaAero.png" alt="vistaAero" width="120" height=
               "54"></td>
 
@@ -3845,29 +3948,21 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <td><img src="win7Classic.png" alt="win7Classic" width="120"
               height="51"></td>
-
-              <td><img src="plastique.png" alt="plastique" width="120" height=
-              "51"></td>
             </tr>
 
-            <tr align="center">
-              <td><code>vistaAero</code></td>
+            <tr>
+              <th><code>vistaAero</code></th>
 
-              <td><code>vistaClassic</code></td>
+              <th><code>vistaClassic</code></th>
 
-              <td><code>win7Aero</code></td>
+              <th><code>win7Aero</code></th>
 
-              <td><code>win7Classic</code></td>
-
-              <td><code>plastique</code></td>
+              <th><code>win7Classic</code></th>
             </tr>
           </tbody>
 
-          <tbody>
-            <tr align="center">
-              <td><img src="newWave.png" alt="newWave" width="120" height=
-              "63"></td>
-
+          <tbody align="center">
+            <tr>
               <td><img src="ambiance.png" alt="ambiance" width="120" height=
               "63"></td>
 
@@ -3880,16 +3975,14 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               "63"></td>
             </tr>
 
-            <tr align="center">
-              <td><code>newWave</code></td>
+            <tr>
+              <th><code>ambiance</code></th>
 
-              <td><code>ambiance</code></td>
+              <th><code>dust</code></th>
 
-              <td><code>dust</code></td>
+              <th><code>dustSand</code></th>
 
-              <td><code>dustSand</code></td>
-
-              <td><code>radiance</code></td>
+              <th><code>radiance</code></th>
             </tr>
           </tbody>
         </table>
@@ -3897,14 +3990,15 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
         <p>If the tree style is <code><b>aqua</b></code>,
         <code><b>gtk</b></code>, <code><b>adwaita</b></code>,
         <code><b>ubuntu</b></code>, <code><b>mint</b></code>,
-        <code><b>oxygen2</b></code>, <code><b>vistaAero</b></code>,
-        <code><b>win7Aero</b></code>, or <code><b>newWave</b></code>, and the
-        Tk version is either 8.6 (with built-in PNG support) or 8.5 and the
-        <code><b>img::png</b></code> package can be loaded into the
-        interpreter, then the images used for displaying the expand/collapse
-        controls are PNG images with alpha channel.&nbsp; Otherwise (i.e., for
-        the other tree styles or in the absence of PNG support) GIF images are
-        used for the expand/collapse controls.</p>
+        <code><b>mate</b></code>, <code><b>newWave</b></code>,
+        <code><b>oxygen2</b></code>, <code><b>vistaAero</b></code>, or
+        <code><b>win7Aero</b></code>, and the Tk version is either 8.6 (with
+        built-in PNG support) or 8.5 and the <code><b>img::png</b></code>
+        package can be loaded into the interpreter, then the images used for
+        displaying the expand/collapse controls are PNG images with alpha
+        channel.&nbsp; Otherwise (i.e., for the other tree styles or in the
+        absence of PNG support) GIF images are used for the expand/collapse
+        controls.</p>
 
         <p>The following table contains a detailed description of the tree
         styles, in alphabetical order:</p>
@@ -4051,6 +4145,14 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           </tr>
 
           <tr>
+            <td><code><b>mate</b></code></td>
+
+            <td><img src="mate.png" alt="mate" width="120" height="51"></td>
+
+            <td>Inspired by a few GTK+ themes of the MATE desktop.</td>
+          </tr>
+
+          <tr>
             <td><code><b>mint</b></code></td>
 
             <td><img src="mint.png" alt="mint" width="120" height="51"></td>
@@ -4063,10 +4165,9 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><code><b>newWave</b></code></td>
 
             <td><img src="newWave.png" alt="newWave" width="120" height=
-            "63"></td>
+            "51"></td>
 
-            <td>Inspired by the GTK+ theme New Wave.&nbsp; Recommended to be
-            used with large fonts and images.</td>
+            <td>Inspired by the GTK+ theme New Wave.</td>
           </tr>
 
           <tr>
@@ -4459,6 +4560,17 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
         <code><b>left</b></code> or <code><b>center</b></code> and prepended to
         them in case the alignment is <code><b>right</b></code>.</dd>
 
+        <dt class="tm" id= "col_changetitlesnipside">
+        <code><b>-changetitlesnipside</b> <i>boolean</i></code></dt>
+
+        <dd>Specifies whether to override the alignment-specific default
+        position of the <a href="#snipstring">snip indicator</a> when
+        displaying the column's title.&nbsp; The default value is
+        <code>0</code>, meaning that the snip string will be appended to the
+        title if the column's alignment is <code><b>left</b></code> or
+        <code><b>center</b></code> and prepended to it in case the alignment is
+        <code><b>right</b></code>.</dd>
+
         <dt class="tm" id="col_editable"><code><b>-editable</b>
         <i>boolean</i></code></dt>
 
@@ -4687,12 +4799,13 @@ proc formatDate clockVal {
         "#cell_indices">CELL INDICES</a> section.&nbsp; To avoid ambiguities,
         column names should be different from any other forms of column indices
         (like numbers, <code><b>active</b></code>, <code><b>anchor</b></code>,
-        <code><b>end</b></code>, <code><b>left</b></code>,
-        <code><b>right</b></code>, or any of their abbreviations).&nbsp; They
-        should also be different from (any abbreviations of) the string
-        <code><b>all</b></code>, which may be specified as the value of the
-        <code><b><a href="#stretch">-stretch</a></b></code> configuration
-        option.&nbsp; The default value is an empty string.</dd>
+        <code><b>end</b></code>, <code><b>last</b></code>,
+        <code><b>left</b></code>, <code><b>right</b></code>, or any of their
+        abbreviations).&nbsp; They should also be different from (any
+        abbreviations of) the string <code><b>all</b></code>, which may be
+        specified as the value of the <code><b><a href=
+        "#stretch">-stretch</a></b></code> configuration option.&nbsp; The
+        default value is an empty string.</dd>
 
         <dt class="tm" id="col_resizable"><code><b>-resizable</b>
         <i>boolean</i></code></dt>
@@ -5021,8 +5134,9 @@ proc formatDate clockVal {
         row names should be different from any other forms of row indices (like
         numbers, full keys, <code><b>active</b></code>,
         <code><b>anchor</b></code>, <code><b>end</b></code>,
-        <code><b>top</b></code>, <code><b>bottom</b></code>, or any of their
-        abbreviations).&nbsp; The default value is an empty string.</dd>
+        <code><b>last</b></code>, <code><b>top</b></code>,
+        <code><b>bottom</b></code>, or any of their abbreviations).&nbsp; The
+        default value is an empty string.</dd>
 
         <dt class="tm" id="row_selectable"><code><b>-selectable</b>
         <i>boolean</i></code></dt>
@@ -6019,6 +6133,12 @@ proc handleTblDrop {tbl data} {
         </tr>
 
         <tr valign="top">
+          <td><code><b>last</b></code></td>
+
+          <td>Indicates the last item of the tablelist.</td>
+        </tr>
+
+        <tr valign="top">
           <td><code><b>top</b></code></td>
 
           <td>Indicates the topmost item visible in the tablelist window.</td>
@@ -6123,6 +6243,12 @@ proc handleTblDrop {tbl data} {
         </tr>
 
         <tr valign="top">
+          <td><code><b>last</b></code></td>
+
+          <td>Indicates the last column of the tablelist.</td>
+        </tr>
+
+        <tr valign="top">
           <td><code><b>left</b></code></td>
 
           <td>Indicates the leftmost column visible in the tablelist
@@ -6183,10 +6309,11 @@ proc handleTblDrop {tbl data} {
           <code><i>row</i></code> may be a number, a full key (of the form
           <code><b>k</b><i>number</i></code>), <code><b>active</b></code>,
           <code><b>anchor</b></code>, <code><b>end</b></code> (where the latter
-          indicates the last row in the tablelist), <code><b>top</b></code>,
-          <code><b>bottom</b></code>, or a row name.&nbsp;
-          <code><i>col</i></code> may be a number, <code><b>active</b></code>,
-          <code><b>anchor</b></code>, <code><b>end</b></code>,
+          indicates the last row in the tablelist), <code><b>last</b></code>,
+          <code><b>top</b></code>, <code><b>bottom</b></code>, or a row
+          name.&nbsp; <code><i>col</i></code> may be a number,
+          <code><b>active</b></code>, <code><b>anchor</b></code>,
+          <code><b>end</b></code>, <code><b>last</b></code>,
           <code><b>left</b></code>, <code><b>right</b></code>, or a column
           name.</td>
         </tr>
@@ -6215,6 +6342,13 @@ proc handleTblDrop {tbl data} {
           <td><code><b>end</b></code></td>
 
           <td>Indicates the last cell in the last row of the tablelist.</td>
+        </tr>
+
+        <tr valign="top">
+          <td><code><b>last</b></code></td>
+
+          <td>Indicates the last cell in the last row of the tablelist (same as
+          <code><b>end</b></code>).</td>
         </tr>
 
         <tr valign="top">
@@ -6943,12 +7077,12 @@ eval [list <i>pathName</i> <a href=
         widget is updated accordingly.</dd>
 
         <dd class="tm">
-          This subcommand enables you to manage the vertical scrollbar (if any)
-          to appear below the tablelist widget's header, thus respecting the
-          native look &amp; feel on Mac OS X Aqua.&nbsp; As shown in the
-          following example, it is recommended to always create a scrolled
-          tablelist along with the scrollbar(s) as children of a (ttk::)frame
-          widget:
+          <b>REMARK:</b>&nbsp; This subcommand enables you to manage the
+          vertical scrollbar (if any) to appear below the tablelist widget's
+          header, thus respecting the native look &amp; feel on Mac OS X
+          Aqua.&nbsp; As shown in the following example, it is recommended to
+          always create a scrolled tablelist along with the scrollbar(s) as
+          children of a (ttk::)frame widget:
 
           <blockquote>
             <pre>
@@ -7518,13 +7652,38 @@ proc formatValue {tbl val} {
         image is currently embedded into the cell then the return value is an
         empty string.</dd>
 
+        <dd class="tm">
+          <b>REMARK:</b>&nbsp; This subcommand comes in handy if you want to
+          associate a binding script with the embedded images.&nbsp; The
+          recommended way to achieve this is shown in the following example:
+
+          <blockquote>
+            <pre>
+bind [.tbl <a href="#bodytag">bodytag</a>] &lt;Button-1&gt; {printClickedImage %W %x %y}<br>
+proc printClickedImage {w x y} {
+    foreach {tbl x y} [<a href=
+"tablelistBinding.html#convEventFields">tablelist::convEventFields</a> $w $x $y] {}
+    set cellIdx [$tbl <a href="#containingcell">containingcell</a> $x $y]
+    scan $cellIdx "%d,%d" row col
+    if {$row &gt;= 0 &amp;&amp; $col &gt;= 0 &amp;&amp;
+        [string compare $w [$tbl <span>imagelabelpath</span> $cellIdx]] == 0} {
+        puts "clicked the image of cell $cellIdx"
+    }
+}
+</pre>
+          </blockquote>
+        </dd>
+
         <dt class="tm" id="index"><code><i>pathName</i> <b>index</b>
         <i>index</i></code></dt>
 
         <dd>Returns the integer row index value that corresponds to
-        <code><i>index</i></code>.&nbsp; If <code><i>index</i></code> is
-        <code><b>end</b></code> then the return value is the number of items in
-        the tablelist (not the index of the last item).</dd>
+        <code><i>index</i></code>.&nbsp; For compatibility with the Tk core
+        listbox, if <code><i>index</i></code> is <code><b>end</b></code> then
+        the return value is the number of items in the tablelist (not the index
+        of the last item).&nbsp; To get the numerical index of the last item,
+        you can pass the word <code><b>last</b></code> as
+        <code><i>index</i></code> argument.</dd>
 
         <dt class="tm" id="insert"><code><i>pathName</i> <b>insert</b>
         <i>index</i> ?<i>item</i> <i>item</i> ...?</code></dt>
@@ -7558,8 +7717,9 @@ proc formatValue {tbl val} {
         <code><i>childIndex</i></code> if the tablelist's <code><b><a href=
         "#state">state</a></b></code> is not
         <code><b>disabled</b></code>.&nbsp; <code><i>childIndex</i></code> must
-        be a number or <code><b>end</b></code>; if it equals the number of
-        children of the node given by <code><i>parentNodeIndex</i></code> or is
+        be a number, <code><b>last</b></code> (specifying the parent's last
+        child), or <code><b>end</b></code>; if it equals the number of children
+        of the node given by <code><i>parentNodeIndex</i></code> or is
         specified as <code><b>end</b></code> then the new items are added to
         the end of the parent's list of children.&nbsp; Tabulator characters
         are displayed as <code>\t</code> (i.e., a backslash followed by a
@@ -7601,8 +7761,9 @@ eval [list <i>pathName</i> <a href=
         just before the item given by <code><i>childIndex</i></code> if the
         tablelist's <code><b><a href="#state">state</a></b></code> is not
         <code><b>disabled</b></code>.&nbsp; <code><i>childIndex</i></code> must
-        be a number or <code><b>end</b></code>; if it equals the number of
-        children of the node given by <code><i>parentNodeIndex</i></code> or is
+        be a number, <code><b>last</b></code> (specifying the parent's last
+        child), or <code><b>end</b></code>; if it equals the number of children
+        of the node given by <code><i>parentNodeIndex</i></code> or is
         specified as <code><b>end</b></code> then the new items are added to
         the end of the parent's list of children.&nbsp; Tabulator characters
         are displayed as <code>\t</code> (i.e., a backslash followed by a
@@ -7848,8 +8009,9 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
         <code><i>targetChildIndex</i></code> in the parent's list of children
         if the tablelist's <code><b><a href="#state">state</a></b></code> is
         not <code><b>disabled</b></code>.&nbsp;
-        <code><i>targetChildIndex</i></code> must be a number or
-        <code><b>end</b></code>; if it equals the number of children of the
+        <code><i>targetChildIndex</i></code> must be a number,
+        <code><b>last</b></code> (specifying the target parent's last child),
+        or <code><b>end</b></code>; if it equals the number of children of the
         target parent node or is specified as <code><b>end</b></code> then the
         source item is moved after the target parent node's last child.</dd>
 
@@ -7902,7 +8064,8 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
         <dd>Returns the numerical row index of the node having the parent
         indicated by <code><i>parentNodeIndex</i></code> and the index
         <code><i>childIndex</i></code> in the parent's list of children.&nbsp;
-        <code><i>childIndex</i></code> must be a number or
+        <code><i>childIndex</i></code> must be a number,
+        <code><b>last</b></code> (specifying the parent's last child), or
         <code><b>end</b></code>; if it equals the number of children of the
         parent node or is specified as <code><b>end</b></code> then the return
         value will be the row index of the item following the parent node's

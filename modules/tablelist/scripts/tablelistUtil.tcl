@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -76,6 +76,8 @@ proc tablelist::rowIndex {win idx endIsSize {checkRange 0}} {
 	} else {
 	    set index $data(lastRow)
 	}
+    } elseif {[string first $idx "last"] == 0} {
+	set index $data(lastRow)
     } elseif {[string first $idx "top"] == 0} {
 	displayItems $win
 	set textIdx [$data(body) index @0,0]
@@ -115,7 +117,7 @@ proc tablelist::rowIndex {win idx endIsSize {checkRange 0}} {
 	}
 	if {$row == $data(itemCount)} {
 	    return -code error \
-		   "bad row index \"$idx\": must be active, anchor, end,\
+		   "bad row index \"$idx\": must be active, anchor, end, last,\
 		    top, bottom, @x,y, a number, a full key, or a name"
 	}
     }
@@ -140,7 +142,8 @@ proc tablelist::colIndex {win idx checkRange {decrX 1}} {
 
     if {[isInteger $idx]} {
 	set index [expr {int($idx)}]
-    } elseif {[string first $idx "end"] == 0} {
+    } elseif {[string first $idx "end"] == 0 ||
+	      [string first $idx "last"] == 0} {
 	set index $data(lastCol)
     } elseif {[string first $idx "left"] == 0} {
 	return [colIndex $win @0,0 $checkRange 0]
@@ -190,7 +193,7 @@ proc tablelist::colIndex {win idx checkRange {decrX 1}} {
 	if {$col == $data(colCount)} {
 	    return -code error \
 		   "bad column index \"$idx\": must be active, anchor,\
-		    end, left, right, @x,y, a number, or a name"
+		    end, last, left, right, @x,y, a number, or a name"
 	}
     }
 
@@ -217,7 +220,8 @@ proc tablelist::cellIndex {win idx checkRange} {
 	[catch {rowIndex $win [lindex $lst 0] 0} row] == 0 &&
 	[catch {colIndex $win [lindex $lst 1] 0} col] == 0} {
 	# nothing
-    } elseif {[string first $idx "end"] == 0} {
+    } elseif {[string first $idx "end"] == 0 ||
+	      [string first $idx "last"] == 0} {
 	set row [rowIndex $win $idx 0]
 	set col [colIndex $win $idx 0]
     } elseif {[string first $idx "active"] == 0 && [string length $idx] >= 2} {
@@ -232,10 +236,10 @@ proc tablelist::cellIndex {win idx checkRange} {
 	# nothing
     } else {
 	return -code error \
-	       "bad cell index \"$idx\": must be active, anchor, end, @x,y,\
-		or row,col, where row must be active, anchor, end, top,\
-		bottom, a number, a full key, or a name, and col must be\
-		active, anchor, end, left, right, a number, or a name"
+	       "bad cell index \"$idx\": must be active, anchor, end, last,\
+	        @x,y, or row,col, where row must be active, anchor, end, last,\
+		top, bottom, a number, a full key, or a name, and col must be\
+		active, anchor, end, last, left, right, a number, or a name"
     }
 
     if {$checkRange && ($row < 0 || $row > $data(lastRow) ||
@@ -352,8 +356,8 @@ proc tablelist::nodeIndexToKey {win idx} {
 	}
     } else {
 	return -code error \
-	       "bad node index \"$idx\": must be root, active, anchor,\
-	        end, last, @x,y, a number, a full key, or a name"
+	       "bad node index \"$idx\": must be root, active, anchor, end,\
+		last, top, bottom, @x,y, a number, a full key, or a name"
     }
 }
 
@@ -433,9 +437,12 @@ proc tablelist::nodeRow {win parentKey childIdx} {
     } elseif {[string first $childIdx "end"] == 0} {
 	return [expr {[keyToRow $win $parentKey] +
 		      [descCount $win $parentKey] + 1}]
+    } elseif {[string first $childIdx "last"] == 0} {
+	set childKey [lindex $data($parentKey-children) end]
+	return [keyToRow $win $childKey]
     } else {
 	return -code error \
-	       "bad child index \"$childIdx\": must be end or a number"
+	       "bad child index \"$childIdx\": must be end, last, or a number"
     }
 }
 
@@ -452,7 +459,7 @@ proc tablelist::keyToRow {win key} {
     } elseif {$data(keyToRowMapValid) && [info exists data($key-row)]} {
 	return $data($key-row)
     } else {
-	if {$::tk_version >= 8.4} {
+	if {$::tcl_version >= 8.4} {
 	    #
 	    # Speed up the search by starting at the last found position
 	    #
@@ -553,7 +560,8 @@ proc tablelist::sortStretchableColList win {
 
     set containsEnd 0
     foreach elem $data(-stretch) {
-	if {[string first $elem "end"] == 0} {
+	if {[string first $elem "end"] == 0 ||
+	    [string first $elem "last"] == 0} {
 	    set containsEnd 1
 	} else {
 	    set tmp([colIndex $win $elem 0]) ""
@@ -611,7 +619,7 @@ proc tablelist::deleteColData {win col} {
     if {[string compare $data(-stretch) "all"] != 0} {
 	set stretchableCols {}
 	foreach elem $data(-stretch) {
-	    if {[string first $elem "end"] == 0 || $elem != $col} {
+	    if {$elem != $col} {
 		lappend stretchableCols $elem
 	    }
 	}
@@ -723,7 +731,7 @@ proc tablelist::moveColData {oldArrName newArrName imgArrName oldCol newCol} {
 	[string compare $oldArr(-stretch) "all"] != 0} {
 	set stretchableCols {}
 	foreach elem $oldArr(-stretch) {
-	    if {[string first $elem "end"] != 0 && $elem == $oldCol} {
+	    if {$elem == $oldCol} {
 		lappend stretchableCols $newCol
 	    } else {
 		lappend stretchableCols $elem
@@ -1452,7 +1460,7 @@ proc tablelist::insertElem {w index text aux auxType alignment valignment} {
 # precede it otherwise.
 #------------------------------------------------------------------------------
 proc tablelist::insertMlElem {w index msgScript aux auxType alignment
-                              valignment} {
+			      valignment} {
     set index [$w index $index]
     set padY [expr {[$w cget -spacing1] == 0}]
 
@@ -1617,7 +1625,7 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
 		set index $index1+1c
 	    }
 	    if {[string compare $valignment [$w window cget $index1 -align]]
-	        != 0} {
+		!= 0} {
 		$w window configure $index1 -align $valignment
 	    }
 	    $w insert $index $text
@@ -1753,7 +1761,7 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 		set msgIdx $index1+1c
 	    }
 	    if {[string compare $valignment [$w window cget $auxIdx -align]]
-	        != 0} {
+		!= 0} {
 		$w window configure $auxIdx -align $valignment
 	    }
 
@@ -2121,8 +2129,8 @@ proc tablelist::setupColumns {win columns createLabels} {
     # Build the list data(colList), and create
     # the labels and canvases if requested
     #
-    regexp {^(flat|sunken|photo)([0-9]+)x([0-9]+)$} $data(-arrowstyle) \
-	   dummy arrowRelief arrowWidth arrowHeight
+    regexp {^(flat|flatAngle|sunken|photo)([0-9]+)x([0-9]+)$} \
+	   $data(-arrowstyle) dummy arrowRelief arrowWidth arrowHeight
     set widgetFont $data(-font)
     set oldColCount $data(colCount)
     set data(colList) {}
@@ -2151,8 +2159,9 @@ proc tablelist::setupColumns {win columns createLabels} {
 	    set data($col-elide) 0
 	    foreach {name val} {delta 0  lastStaticWidth 0  maxPixels 0
 				sortOrder ""  sortRank 0  isSnipped 0
-				changesnipside 0  editable 0  editwindow entry
-				hide 0  maxwidth 0  resizable 1  showarrow 1
+				changesnipside 0  changetitlesnipside 0
+				editable 0  editwindow entry  hide 0
+				maxwidth 0  resizable 1  showarrow 1
 				showlinenumbers 0  sortmode ascii
 				valign center  wrap 0} {
 		if {![info exists data($col-$name)]} {
@@ -2806,7 +2815,7 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 	#
 	set lessPixels [expr {$pixels - $spacePixels}]
 	variable snipSides
-	set snipSide $snipSides($alignment,0)
+	set snipSide $snipSides($alignment,$data($col-changetitlesnipside))
 	if {$imageWidth == 0} {				;# no image
 	    if {[string length $title] == 0} {
 		set text $spaces
@@ -4359,7 +4368,7 @@ proc tablelist::redisplayColWhenIdle {win col} {
     }
 
     set data($col-redispId) \
-	[after idle [list tablelist::redisplayCol $win $col 0 end]]
+	[after idle [list tablelist::redisplayCol $win $col 0 last]]
 }
 
 #------------------------------------------------------------------------------
@@ -4370,7 +4379,7 @@ proc tablelist::redisplayColWhenIdle {win col} {
 #------------------------------------------------------------------------------
 proc tablelist::redisplayCol {win col first last} {
     upvar ::tablelist::ns${win}::data data
-    set allRows [expr {$first == 0 && [string compare $last "end"] == 0}]
+    set allRows [expr {$first == 0 && [string compare $last "last"] == 0}]
     if {$allRows && [info exists data($col-redispId)]} {
 	after cancel $data($col-redispId)
 	unset data($col-redispId)
@@ -4380,7 +4389,7 @@ proc tablelist::redisplayCol {win col first last} {
 	$col > $data(lastCol) || $data($col-hide)} {
 	return ""
     }
-    if {[string compare $last "end"] == 0} {
+    if {[string compare $last "last"] == 0} {
 	set last $data(lastRow)
     }
 
@@ -5058,7 +5067,9 @@ proc tablelist::configCanvas {win col} {
 	if {[$w instate disabled]} {
 	    set labelBg $themeDefaults(-labeldisabledBg)
 	    set labelFg $themeDefaults(-labeldisabledFg)
-	} elseif {![$win instate background]} {
+	} elseif {[$win instate background]} {
+	    set labelBg $themeDefaults(-labeldeactivatedBg)
+	} else {
 	    foreach state {active pressed selected} {
 		$w instate $state {
 		    set labelBg $themeDefaults(-label${state}Bg)

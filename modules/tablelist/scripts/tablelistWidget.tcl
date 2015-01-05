@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -126,8 +126,8 @@ namespace eval tablelist {
 	-highlightthickness	 {highlightThickness	  HighlightThickness  f}
 	-incrarrowtype		 {incrArrowType		  IncrArrowType	      w}
 	-instanttoggle		 {instantToggle		  InstantToggle	      w}
-	-labelactivebackground	 {labelActiveBackground	  Foreground          l}
-	-labelactiveforeground	 {labelActiveForeground	  Background          l}
+	-labelactivebackground	 {labelActiveBackground	  Foreground	      l}
+	-labelactiveforeground	 {labelActiveForeground	  Background	      l}
 	-labelbackground	 {labelBackground	  Background	      l}
 	-labelbg		 -labelbackground
 	-labelborderwidth	 {labelBorderWidth	  BorderWidth	      l}
@@ -159,6 +159,7 @@ namespace eval tablelist {
 	-setfocus		 {setFocus		  SetFocus	      w}
 	-setgrid		 {setGrid		  SetGrid	      w}
 	-showarrow		 {showArrow		  ShowArrow	      w}
+	-showeditcursor		 {showEditCursor	  ShowEditCursor      w}
 	-showhorizseparator	 {showHorizSeparator	  ShowHorizSeparator  w}
 	-showlabels		 {showLabels		  ShowLabels	      w}
 	-showseparators		 {showSeparators	  ShowSeparators      w}
@@ -198,72 +199,74 @@ namespace eval tablelist {
     # Tablelist widget class.  The value of an array element is either an alias
     # name or a list containing the database name and class.
     #
-    #	Command-Line Name	{Database Name		Database Class	}
-    #	-----------------------------------------------------------------
+    #	Command-Line Name	{Database Name		Database Class	    }
+    #	---------------------------------------------------------------------
     #
     variable colConfigSpecs
     array set colConfigSpecs {
-	-align			{align			Align		}
-	-background		{background		Background	}
+	-align			{align			Align		    }
+	-background		{background		Background	    }
 	-bg			-background
-	-changesnipside		{changeSnipSide		ChangeSnipSide	}
-	-editable		{editable		Editable	}
-	-editwindow		{editWindow		EditWindow	}
-	-font			{font			Font		}
-	-foreground		{foreground		Foreground	}
+	-changesnipside		{changeSnipSide		ChangeSnipSide	    }
+	-changetitlesnipside	{changeTitleSnipSide	ChangeTitleSnipSide }
+	-editable		{editable		Editable	    }
+	-editwindow		{editWindow		EditWindow	    }
+	-font			{font			Font		    }
+	-foreground		{foreground		Foreground	    }
 	-fg			-foreground
-	-formatcommand		{formatCommand		FormatCommand	}
-	-hide			{hide			Hide		}
-	-labelalign		{labelAlign		Align		}
-	-labelbackground	{labelBackground	Background	}
+	-formatcommand		{formatCommand		FormatCommand	    }
+	-hide			{hide			Hide		    }
+	-labelalign		{labelAlign		Align		    }
+	-labelbackground	{labelBackground	Background	    }
 	-labelbg		-labelbackground
-	-labelborderwidth	{labelBorderWidth	BorderWidth	}
+	-labelborderwidth	{labelBorderWidth	BorderWidth	    }
 	-labelbd		-labelborderwidth
-	-labelcommand		{labelCommand		LabelCommand	}
-	-labelcommand2		{labelCommand2		LabelCommand2	}
-	-labelfont		{labelFont		Font		}
-	-labelforeground	{labelForeground	Foreground	}
+	-labelcommand		{labelCommand		LabelCommand	    }
+	-labelcommand2		{labelCommand2		LabelCommand2	    }
+	-labelfont		{labelFont		Font		    }
+	-labelforeground	{labelForeground	Foreground	    }
 	-labelfg		-labelforeground
-	-labelheight		{labelHeight		Height		}
-	-labelimage		{labelImage		Image		}
-	-labelpady		{labelPadY		Pad		}
-	-labelrelief		{labelRelief		Relief		}
-	-maxwidth		{maxWidth		MaxWidth	}
-	-name			{name			Name		}
-	-resizable		{resizable		Resizable	}
-	-selectbackground	{selectBackground	Foreground	}
-	-selectforeground	{selectForeground	Background	}
-	-showarrow		{showArrow		ShowArrow	}
-	-showlinenumbers	{showLineNumbers	ShowLineNumbers }
-	-sortcommand		{sortCommand		SortCommand	}
-	-sortmode		{sortMode		SortMode	}
-	-stretchable		{stretchable		Stretchable	}
-	-stripebackground	{stripeBackground	Background	}
-	-stripeforeground	{stripeForeground	Foreground	}
-	-text			{text			Text		}
-	-title			{title			Title		}
-	-valign			{valign			Valign		}
-	-width			{width			Width		}
-	-wrap			{wrap			Wrap		}
+	-labelheight		{labelHeight		Height		    }
+	-labelimage		{labelImage		Image		    }
+	-labelpady		{labelPadY		Pad		    }
+	-labelrelief		{labelRelief		Relief		    }
+	-maxwidth		{maxWidth		MaxWidth	    }
+	-name			{name			Name		    }
+	-resizable		{resizable		Resizable	    }
+	-selectbackground	{selectBackground	Foreground	    }
+	-selectforeground	{selectForeground	Background	    }
+	-showarrow		{showArrow		ShowArrow	    }
+	-showlinenumbers	{showLineNumbers	ShowLineNumbers	    }
+	-sortcommand		{sortCommand		SortCommand	    }
+	-sortmode		{sortMode		SortMode	    }
+	-stretchable		{stretchable		Stretchable	    }
+	-stripebackground	{stripeBackground	Background	    }
+	-stripeforeground	{stripeForeground	Foreground	    }
+	-text			{text			Text		    }
+	-title			{title			Title		    }
+	-valign			{valign			Valign		    }
+	-width			{width			Width		    }
+	-wrap			{wrap			Wrap		    }
     }
 
     #
     # Extend some elements of the array colConfigSpecs
     #
-    lappend colConfigSpecs(-align)		- left
-    lappend colConfigSpecs(-changesnipside)	- 0
-    lappend colConfigSpecs(-editable)		- 0
-    lappend colConfigSpecs(-editwindow)		- entry
-    lappend colConfigSpecs(-hide)		- 0
-    lappend colConfigSpecs(-maxwidth)		- 0
-    lappend colConfigSpecs(-resizable)		- 1
-    lappend colConfigSpecs(-showarrow)		- 1
-    lappend colConfigSpecs(-showlinenumbers)	- 0
-    lappend colConfigSpecs(-sortmode)		- ascii
-    lappend colConfigSpecs(-stretchable)	- 0
-    lappend colConfigSpecs(-valign)		- center
-    lappend colConfigSpecs(-width)		- 0
-    lappend colConfigSpecs(-wrap)		- 0
+    lappend colConfigSpecs(-align)			- left
+    lappend colConfigSpecs(-changesnipside)		- 0
+    lappend colConfigSpecs(-changetitlesnipside)	- 0
+    lappend colConfigSpecs(-editable)			- 0
+    lappend colConfigSpecs(-editwindow)			- entry
+    lappend colConfigSpecs(-hide)			- 0
+    lappend colConfigSpecs(-maxwidth)			- 0
+    lappend colConfigSpecs(-resizable)			- 1
+    lappend colConfigSpecs(-showarrow)			- 1
+    lappend colConfigSpecs(-showlinenumbers)		- 0
+    lappend colConfigSpecs(-sortmode)			- ascii
+    lappend colConfigSpecs(-stretchable)		- 0
+    lappend colConfigSpecs(-valign)			- center
+    lappend colConfigSpecs(-width)			- 0
+    lappend colConfigSpecs(-wrap)			- 0
 
     if {$usingTile} {
 	unset colConfigSpecs(-labelbackground)
@@ -404,10 +407,11 @@ namespace eval tablelist {
     #
     variable activeStyles  [list frame none underline]
     variable alignments    [list left right center]
-    variable arrowStyles   [list flat5x3 flat5x4 flat6x4 flat7x4 \
-				 flat7x5 flat7x7 flat8x5 flat9x5 \
-				 flat9x6 flat9x7 flat10x6 photo7x7 \
-				 sunken8x7 sunken10x9 sunken12x11]
+    variable arrowStyles   [list flat5x3 flat5x4 flat6x4 flat7x4 flat7x5 \
+				 flat7x7 flat8x5 flat9x5 flat9x6 flatAngle7x4 \
+				 flatAngle7x5 flatAngle9x5 flatAngle9x6 \
+				 flatAngle9x7 flatAngle10x6 flatAngle10x7 \
+				 photo7x7 sunken8x7 sunken10x9 sunken12x11]
     variable arrowTypes    [list up down]
     variable colWidthOpts  [list -requested -stretched -total]
     variable expCollOpts   [list -fully -partly]
@@ -426,10 +430,11 @@ namespace eval tablelist {
     variable sortOrders    [list increasing decreasing]
     variable states	   [list disabled normal]
     variable treeStyles    [list adwaita ambiance aqua baghira dust dustSand \
-				 gtk klearlooks mint newWave oxygen1 oxygen2 \
-				 phase plastik plastique radiance ubuntu \
-				 vistaAero vistaClassic win7Aero win7Classic \
-				 winnative winxpBlue winxpOlive winxpSilver]
+				 gtk klearlooks mate mint newWave oxygen1 \
+				 oxygen2 phase plastik plastique radiance \
+				 ubuntu vistaAero vistaClassic win7Aero \
+				 win7Classic winnative winxpBlue winxpOlive \
+				 winxpSilver]
     variable valignments   [list center top bottom]
 
     proc restrictArrowStyles {} {
@@ -698,6 +703,8 @@ proc tablelist::tablelist args {
 	    searchStartIdx	 0
 	    keyBeingExpanded	 ""
 	    destroyIdList	 {}
+	    justEntered		 0
+	    inEditWin		 0
 	}
 
 	#
@@ -1247,6 +1254,7 @@ proc tablelist::cellselectionSubCmd {win argList} {
 	    }
 
 	    updateColors $win
+	    invokeMotionHandler $win
 	    return ""
 	}
     }
@@ -3820,6 +3828,7 @@ proc tablelist::selectionSubCmd {win argList} {
 	    }
 
 	    updateColors $win
+	    invokeMotionHandler $win
 	    return ""
 	}
     }
@@ -3997,7 +4006,7 @@ proc tablelist::sortbycolumnlistSubCmd {win argList} {
     set argCount [llength $argList]
     if {$argCount < 1 || $argCount > 2} {
 	mwutil::wrongNumArgs "$win sortbycolumnlist columnIndexList\
-	                      ?sortOrderList?"
+			      ?sortOrderList?"
     }
 
     synchronize $win
@@ -4640,7 +4649,7 @@ proc tablelist::yviewSubCmd {win argList} {
 	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
 		set data(fraction) [lindex $argList 1]
 		if {![info exists data(moveToId)]} {
-		    set data(moveToId) [after 10 [list tablelist::moveTo $win]]
+		    set data(moveToId) [after 1 [list tablelist::moveTo $win]]
 		}
 		return ""
 	    } else {
@@ -6457,9 +6466,20 @@ proc tablelist::moveTo win {
 	[expr {$data(itemCount) - $data(nonViewableRowCount)}]
     set offset [expr {int($data(fraction)*$totalViewableCount + 0.5)}]
     set row [viewableRowOffsetToRowIndex $win $offset]
-    $data(body) yview $row
 
-    updateView $win
+    set w $data(body)
+    set topTextIdx [$w index @0,0]
+    set topRow [expr {int($topTextIdx) - 1}]
+    foreach {x y width height baselinePos} [$w dlineinfo $topTextIdx] {}
+    if {$y < 0} {
+	incr topRow	;# top row incomplete in vertical direction
+    }
+
+    if {$row != $topRow} {
+	$w yview $row
+	updateView $win
+    }
+
     return ""
 }
 
