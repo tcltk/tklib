@@ -1,3 +1,7 @@
+2015-01-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl: Made the "handleMotion" proc more robust.
+
 2015-01-04  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Eliminated the non-ASCII characters.
