@@ -730,7 +730,7 @@ proc tablelist::handleMotionDelayed {w x y X Y event} {
 #------------------------------------------------------------------------------
 # tablelist::handleMotion
 #
-# Invokes the procedures showOrHideTooltip, updateCursor, and updateExpCollCtrl.
+# Invokes the procedures showOrHideTooltip, updateExpCollCtrl, and updateCursor.
 #------------------------------------------------------------------------------
 proc tablelist::handleMotion win {
     upvar ::tablelist::ns${win}::data data
@@ -742,11 +742,15 @@ proc tablelist::handleMotion win {
     set data(justEntered) 0
 
     foreach {w x y X Y event} $data(motionData) {}
-    foreach {win _x _y} [convEventFields $w $x $y] {}
+    if {![winfo exists $w]} {
+	invokeMotionHandler $win
+	return ""
+    }
 
     #
     # Get the containing cell from the coordinates relative to the tablelist
     #
+    foreach {win _x _y} [convEventFields $w $x $y] {}
     set row [containingRow $win $_y]
     set col [containingCol $win $_x]
 
@@ -762,6 +766,7 @@ proc tablelist::handleMotion win {
 	set row -1
 	set col -1
     }
+
     updateCursor $win $row $col
 }
 
