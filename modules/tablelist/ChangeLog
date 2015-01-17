@@ -1,3 +1,7 @@
+2015-01-17  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl: Minor improvement.
+
 2015-01-10  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl: Made the "handleMotion" proc more robust.
