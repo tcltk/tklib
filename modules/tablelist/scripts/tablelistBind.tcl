@@ -1076,7 +1076,8 @@ proc tablelist::condEditContainingCell {win x y} {
     # editing with the aid of a menubutton is in progress
     #
     variable editCursor
-    if {$data(-showeditcursor) && [info exists editCursor] &&
+    if {($row != $data(editRow) || $col != $data(editCol)) &&
+	$data(-showeditcursor) && [info exists editCursor] &&
 	[string compare [$data(body) cget -cursor] $editCursor] != 0} {
 	set editable 0
     }
