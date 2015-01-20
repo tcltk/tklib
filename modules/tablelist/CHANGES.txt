@@ -15,7 +15,8 @@ What is new in Tablelist 5.13?
 
 4. Added the "-showeditcursor" configuration option, used to let the
    cursor take on the shape of a pencil whenever a mouse klick would
-   start an editing session (thanks to Rene Zaumseil for his proposal).
+   start an editing session (thanks to Rene Zaumseil and Cesare
+   Bavazzano for their proposals).
 
 5. New column configuration option "-changetitlesnipside", which allows
    you to override the alignment-specific default snip side for the
