@@ -181,16 +181,16 @@ by the <b class="method">highlight</b> method of the widget.</p>
 <dl class="definitions">
 <dt><a name="2"><b class="cmd">::ctext::addHighlightClass</b> <i class="arg">pathName</i> <i class="arg">class</i> <i class="arg">color</i> <i class="arg">keywordlist</i></a></dt>
 <dd><p>Add a highlighting class <i class="arg">class</i> to the ctext widget <i class="arg">pathName</i>.
-The highligthing will be done with the color <i class="arg">color</i>. All words in the <i class="arg">keywordlist</i> will be
+The highlighting will be done with the color <i class="arg">color</i>. All words in the <i class="arg">keywordlist</i> will be
 highlighted.</p>
 <pre class="example">
 	# highlight some tcl keywords
-	::ctext::addHighlightClass .t tclkeywords red [list set info interp uplevel upvar]]
+	::ctext::addHighlightClass .t tclkeywords red [list set info interp uplevel upvar]
  </pre>
 </dd>
 <dt><a name="3"><b class="cmd">::ctext::addHighlightClassWithOnlyCharStart</b> <i class="arg">pathName</i> <i class="arg">class</i> <i class="arg">color</i> <i class="arg">char</i></a></dt>
 <dd><p>Add a highlighting class <i class="arg">class</i> to the ctext widget <i class="arg">pathName</i>.
-The highligthing will be done with the color <i class="arg">color</i>. All words starting with <i class="arg">char</i> will be
+The highlighting will be done with the color <i class="arg">color</i>. All words starting with <i class="arg">char</i> will be
 highlighted.</p>
 <pre class="example">
 	::ctext::addHighlightClassWithOnlyCharStart .t vars blue \$
@@ -198,11 +198,11 @@ highlighted.</p>
 </dd>
 <dt><a name="4"><b class="cmd">::ctext::addHighlightClassForSpecialChars</b> <i class="arg">pathName</i> <i class="arg">class</i> <i class="arg">color</i> <i class="arg">charstring</i></a></dt>
 <dd><p>Add a highlighting class <i class="arg">class</i> to the ctext widget <i class="arg">pathName</i>.
-The highligthing will be done with the color <i class="arg">color</i>. All chars in <i class="arg">charstring</i> will be
+The highlighting will be done with the color <i class="arg">color</i>. All chars in <i class="arg">charstring</i> will be
 highlighted.</p></dd>
 <dt><a name="5"><b class="cmd">::ctext::addHighlightClassForRegexp</b> <i class="arg">pathName</i> <i class="arg">class</i> <i class="arg">color</i> <i class="arg">pattern</i></a></dt>
 <dd><p>Add a highlighting class <i class="arg">class</i> to the ctext widget <i class="arg">pathName</i>.
-The highligthing will be done with the color <i class="arg">color</i>. All text parts matching the regexp <i class="arg">pattern</i>
+The highlighting will be done with the color <i class="arg">color</i>. All text parts matching the regexp <i class="arg">pattern</i>
 will be highligthed.</p></dd>
 <dt><a name="6"><b class="cmd">::ctext::clearHighlightClasses</b> <i class="arg">pathName</i></a></dt>
 <dd><p>Remove all highlight classes from the widget <i class="arg">pathName</i>.</p></dd>
