@@ -73,7 +73,6 @@ proc ::Plotchart::DrawTargetData { w series xvalues yvalues } {
     set sstar2 [expr {$sumx2 / $sumy2}]
     set rmsd   [expr {sqrt(1.0 + $sstar2 - 2.0 * sqrt($sstar2) * $corrxy)}]
 
-
     DataConfig $w $series -type symbol
     DrawData $w $series $rmsd $bstar
 }
@@ -153,8 +152,65 @@ proc ::Plotchart::DrawPerformanceData { w profiledata } {
                 set  yprev $y
             }
             incr count
-
-            puts "$series: $v $y"
         }
     }
+}
+
+# DrawDataNormalPlot --
+#    Compute the coordinates for the empirical distribution and draw the series
+#    in a normal distribution plot
+#
+# Arguments:
+#    w                  Name of the canvas
+#    series             Name of the series
+#    mean               Estimated mean
+#    stdev              Estimated standard deviation
+#    data               Actual data
+# Result:
+#    None
+#
+# Note:
+#    The value of "a" is adopted from the corresponding Wikipedia page,
+#    which in turn adopted it from the R "stats" package (qqnorm function)
+#
+proc ::Plotchart::DrawDataNormalPlot { w series mean stdev data } {
+    set n   [llength $data]
+    set a   0.375
+    if { $n > 10 } {
+        set a 0.5
+    }
+
+    set idx 1
+    foreach x [lsort -real -increasing $data] {
+        if { $x != {} } {
+            set xn [expr {($x - $mean) / $stdev}]
+            set pn [expr {($idx - $a) / ($n + 1 - 2.0 * $a)}]
+            set yn [::math::statistics::Inverse-cdf-normal 0.0 1.0 $pn]
+
+            puts "$x -- $xn -- $pn -- $yn"
+
+            DrawData $w $series $xn $yn
+        } else {
+            DrawData $w $series {}  {}
+        }
+        incr idx
+    }
+}
+
+# DrawDiagonalNormalPlot --
+#    Draw the diagonal line in a normal distribution plot
+#
+# Arguments:
+#    w                  Name of the canvas
+# Result:
+#    None
+#
+# Note:
+#    You can use the "diagonal" series to configure its colour
+#
+proc ::Plotchart::DrawDiagonalNormalPlot { w } {
+    variable scaling
+
+    DrawData $w diagonal $scaling($w,xmin) $scaling($w,ymin)
+    DrawData $w diagonal $scaling($w,xmax) $scaling($w,ymax)
 }

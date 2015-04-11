@@ -1,3 +1,8 @@
+2015-04-11  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Properly place the table wrt a title and subtitle, take care of fonts (patch by Frank Gover)
+	* plottable.tcl: Correct drawing of the row in a table, take care of fonts (patch by Frank Gover)
+	* plotconfig.tcl: Extend calculation of font metrics, optional font and linespacing (patch by Frank Gover)
+
 2014-12-14  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Introduce an option -xlabelangle for barcharts (request by Frank Gover)
 	* plotaxis.tcl: Implement the option -xlabelangle for the labels of barcharts, also add a call
