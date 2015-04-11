@@ -3,7 +3,6 @@
 # testtable.tcl --
 #     Small program to test the table chart
 #
-source ../../modules/plotchart/plotchart.tcl
 package require Plotchart
 
 pack [canvas .c  -bg white -height 300] \
