@@ -3,7 +3,7 @@
 # testtable.tcl --
 #     Small program to test the table chart
 #
-
+source ../../modules/plotchart/plotchart.tcl
 package require Plotchart
 
 pack [canvas .c  -bg white -height 300] \
@@ -12,6 +12,7 @@ pack [canvas .c  -bg white -height 300] \
 
 ::Plotchart::plotconfig table frame outerwidth 3
 ::Plotchart::plotconfig table frame color red
+::Plotchart::plotconfig table subtitle font {Courier 14}
 
 set t [::Plotchart::createTableChart .c {"Column 1" "Column 2" "Column 3"} 80]
 

@@ -75,7 +75,7 @@ proc ::Plotchart::Ceil {value step} {
 #    ymin        Minimum y coordinate
 #    ymax        Maximum y coordinate
 #    ystep       Step size
-#    args        Options (currently: -ylabels list)
+#    args        Options (currently: -ylabels list and -altylabels list)
 # Result:
 #    None
 # Side effects:
@@ -146,6 +146,15 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
                     }
 
                     set scaling($w,ydelt) $ys
+                }
+                -altylabels {
+                    set numeric 0
+                    foreach {yval ylabel} $val {
+                        lappend yts     $ylabel
+                        lappend ybackup $yval
+                    }
+
+                    set scaling($w,ydelt) $ylabel
                 }
                 default {
                     error "Argument $arg not recognized"

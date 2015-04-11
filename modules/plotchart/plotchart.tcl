@@ -571,6 +571,17 @@ namespace eval ::Plotchart {
    set methodProc(ternary,ticklines)           DrawTernaryTicklines
    set methodProc(ternary,dataconfig)          DataConfig
    set methodProc(ternary,canvas)              GetCanvas
+   set methodProc(distnormal,title)            DrawTitle
+   set methodProc(distnormal,subtitle)         DrawSubtitle
+   set methodProc(distnormal,xtext)            DrawXtext
+   set methodProc(distnormal,xsubtext)         DrawXsubtext
+   set methodProc(distnormal,ytext)            DrawYtext
+   set methodProc(distnormal,ysubtext)         DrawYsubtext
+   set methodProc(distnormal,vtext)            DrawVtext
+   set methodProc(distnormal,vsubtext)         DrawVsubtext
+   set methodProc(distnormal,plot)             DrawDataNormalPlot
+   set methodProc(distnormal,diagonal)         DrawDiagonalNormalPlot
+   set methodProc(distnormal,dataconfig)       DataConfig
 
    #
    # Auxiliary parameters
@@ -1058,7 +1069,7 @@ proc ::Plotchart::createXYPlot { w xscale yscale args} {
 #    c           Name of the canvas
 #    xscale      Minimum, maximum and step for x-axis (initial)
 #    yscale      Minimum, maximum and step for y-axis
-#    argv        Options (currently: "-xlabels list" and "-ylabels list")
+#    argv        Options (currently: "-xlabels list" and "-ylabels list" and "-altylabels list")
 # Result:
 #    Name of a new command
 #
@@ -1074,6 +1085,7 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
    set newchart "${prefix}_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler $prefix $w
    CopyConfig $prefix $w
+
    set scaling($w,eventobj) ""
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $argv] {break}
@@ -1136,7 +1148,8 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
                }
                -axesatzero -
                -isometric  -
-               -ylabels    {
+               -ylabels    -
+               -altylabels {
                    # Ignore
                }
                default {
@@ -1151,7 +1164,8 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
    if { $ydelt eq {} } {
        foreach {arg val} [array get options] {
            switch -exact -- $arg {
-               -ylabels {
+               -ylabels    -
+               -altylabels {
                    DrawYaxis $w $ymin  $ymax  $ydelt $arg $val
                }
                -axesatzero -
@@ -2884,6 +2898,7 @@ proc ::Plotchart::createPerformanceProfile { c scale args } {
 #    By default the entire canvas will be dedicated to the table
 #
 proc ::Plotchart::createTableChart { c columns args } {
+   variable config
    variable scaling
    variable data_series
 
@@ -2941,8 +2956,9 @@ proc ::Plotchart::createTableChart { c columns args } {
    }
 
    set scaling($w,formatcommand) ::Plotchart::DefaultFormat
-   set scaling($w,topside)       $pymin
-   set scaling($w,toptable)      $pymin
+   set scaling($w,topside)       [expr $pymin + [lindex [FontMetrics $w $config($w,subtitle,font) 1] 1]]
+   set scaling($w,toptable)      [expr $pymin + [lindex [FontMetrics $w $config($w,subtitle,font) 1] 1]]
+
    set scaling($w,row)           0
 
    set scaling($w,cell,-background) ""
@@ -3043,6 +3059,44 @@ proc ::Plotchart::createTernaryDiagram { c args } {
    return $newchart
 }
 
+# createNormalPlot --
+#    Create a command for drawing a normal distribution plot
+# Arguments:
+#    w           Name of the canvas
+#    xscale      List of minimum, maximum and step size for the x-axis
+#                (normalised!)
+#    args        Options: as for XYPlot
+# Result:
+#    Name of a new command
+#
+# Note:
+#    Requires the math::statistics package, hence the condition
+#
+#    The y-scale is essentially the same as the x-scale, but with
+#    an alternative labelling to display the probability.
+#
+if { ! [catch {package require math::statistics}] } {
+proc ::Plotchart::createNormalPlot { w xscale args } {
+
+    set p [CreateXYPlotImpl distnormal $w $xscale [lreplace $xscale end end {}] \
+             [concat -altylabels \
+                 [list [list [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.001] 0.001 \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.010] 0.01  \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.100] 0.10  \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.200] 0.20  \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.500] 0.50  \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.800] 0.80  \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.900] 0.90  \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.990] 0.99  \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.999] 0.999]] $args]]
+
+   $p xtext "Normalised values"
+   $p vtext "Probability"
+
+   return $p
+}
+}
+
 # Load the private procedures
 #
 source [file join [file dirname [info script]] "plotpriv.tcl"]
@@ -3063,4 +3117,4 @@ source [file join [file dirname [info script]] "plotstatustimeline.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.3.3
+package provide Plotchart 2.3.4
