@@ -1,6 +1,7 @@
 #!/usr/bin/env tclsh
 ## -*- tcl -*-
 
+source ../../modules/plotchart/plotchart.tcl
 package require Tcl 8.5
 package require Tk
 package require Plotchart
@@ -155,7 +156,9 @@ set s [::Plotchart::create3DPlot .h3.c {0 10 3} {-10 10 10} {0 10 2.5}]
 $s title "3D Plot"
 $s plotfunc cowboyhat
 
-set s [::Plotchart::create3DPlot .h3.c2 {0 10 3} {-10 10 10} {0 10 2.5}]
+::Plotchart::plotconfig 3dplot xaxis format "%4.2f"
+
+set s [::Plotchart::create3DPlot .h3.c2 {0 10 3} {-10 10 10} {0 10 2.5} -xlabels {A B C}]
 $s title "3D Plot - data "
 $s colour "green" "black"
 $s plotdata { {1.0 2.0 1.0 0.0} {1.1 3.0 1.1 -0.5} {3.0 1.0 4.0 5.0} }

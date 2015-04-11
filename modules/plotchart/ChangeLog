@@ -1,7 +1,12 @@
 2015-04-11  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Properly place the table wrt a title and subtitle, take care of fonts (patch by Frank Gover)
+	                 Support setting axis labels at 3D plot (patch by Frank Gover)
 	* plottable.tcl: Correct drawing of the row in a table, take care of fonts (patch by Frank Gover)
 	* plotconfig.tcl: Extend calculation of font metrics, optional font and linespacing (patch by Frank Gover)
+	* plot3d.tcl:    Support formatting of the numerical axis labels for 3D plots (requested by Frank Gover)
+	* plotchart.man: Bumped version to 2.3.4, added documentation of the tags for bars in a barchart.
+	* pkgIndex.tcl:  Bumped version to 2.3.4
+	* plotdemos1.tcl: Small changes to the 3D plot demo - axis labels and formatting
 
 2014-12-14  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Introduce an option -xlabelangle for barcharts (request by Frank Gover)

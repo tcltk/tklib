@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 2.3.2]
+[manpage_begin Plotchart n 2.3.4]
 [copyright {2013 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.5]]
 [require Tk [opt 8.5]]
-[require Plotchart [opt 2.3.2]]
+[require Plotchart [opt 2.3.4]]
 
 [description]
 [para]
@@ -382,7 +382,7 @@ Zero or more options - see the XY-plot for more information.
 [para]
 
 
-[call [cmd ::Plotchart::create3DPlot] [arg w] [arg xaxis] [arg yaxis] [arg zaxis]]
+[call [cmd ::Plotchart::create3DPlot] [arg w] [arg xaxis] [arg yaxis] [arg zaxis] [arg args]]
 
 Create a new 3D plot.
 
@@ -398,6 +398,10 @@ A 3-element list containing minimum, maximum and stepsize for the y-axis, in thi
 
 [arg_def list zaxis in]
 A 3-element list containing minimum, maximum and stepsize for the z-axis, in this order.
+
+[arg_def list args in]
+Optional list of options (keyword-value pairs). Currently supported: -xlabels to set the
+labels for the x-axis.
 
 [list_end]
 [para]
@@ -2171,7 +2175,7 @@ For [emph {vertical barcharts}]:
 [list_begin definitions]
 [call [cmd \$barchart] plot [arg series] [arg ydata] [arg colour] [opt dir] [opt brightness]]
 
-Add a data series to a barchart.
+Add a data series to a barchart. The bars are tagged with a tag "data_\$series" to identify them.
 
 [list_begin arguments]
 [arg_def string series in]
@@ -2221,7 +2225,7 @@ For [emph {horizontal barcharts}]:
 [list_begin definitions]
 [call [cmd \$barchart] plot [arg series] [arg xdata] [arg colour] [opt dir] [opt brightness]]
 
-Add a data series to a barchart.
+Add a data series to a barchart. The bars are tagged with a tag "data_\$series" to identify them.
 
 [list_begin arguments]
 [arg_def string series in]
