@@ -37,6 +37,7 @@ proc ::Plotchart::Draw3DAxes { w xmin  ymin  zmin
                                  xmax  ymax  zmax
                                  xstep ystep zstep
                                  {names {}}        } {
+   variable config
    variable scaling
 
    $w delete axis3d
@@ -67,20 +68,27 @@ proc ::Plotchart::Draw3DAxes { w xmin  ymin  zmin
    #
    # Numbers to the z-axis
    #
+   set format $config($w,zaxis,format)
    set z $zmin
    while { $z < $zmax+0.5*$zstep } {
       foreach {xcrd ycrd} [coords3DToPixel $w $xmin $ymin $z] {break}
       set xcrd2 [expr {$xcrd-3}]
       set xcrd3 [expr {$xcrd-5}]
 
+      set zt [format "%.12g" $z]
+      if { $format != "" } {
+          set zt [FormatNumber $format $z]
+      }
+
       $w create line $xcrd2 $ycrd $xcrd $ycrd -tag axis3d
-      $w create text $xcrd3 $ycrd -text $z -tag axis3d -anchor e
+      $w create text $xcrd3 $ycrd -text $zt -tag axis3d -anchor e
       set z [expr {$z+$zstep}]
    }
 
    #
    # Numbers or labels to the x-axis (shown on the right!)
    #
+   set format $config($w,xaxis,format)
    if { $xstep > 0 } {
        if { $names eq "" } {
            set x $xmin
@@ -90,7 +98,12 @@ proc ::Plotchart::Draw3DAxes { w xmin  ymin  zmin
                set xcrd3 [expr {$xcrd+6}]
 
                $w create line $xcrd2 $ycrd $xcrd $ycrd -tag axis3d
-               $w create text $xcrd3 $ycrd -text $x -tag axis3d -anchor w
+
+               set xt [format "%.12g" $x]
+               if { $format != "" } {
+                   set xt [FormatNumber $format $x]
+               }
+               $w create text $xcrd3 $ycrd -text $xt -tag axis3d -anchor w
                set x [expr {$x+$xstep}]
            }
        } else {
@@ -108,14 +121,20 @@ proc ::Plotchart::Draw3DAxes { w xmin  ymin  zmin
    #
    # Numbers to the y-axis (shown in front!)
    #
+   set format $config($w,yaxis,format)
    set y $ymin
    while { $y < $ymax+0.5*$ystep } {
       foreach {xcrd ycrd} [coords3DToPixel $w $xmin $y $zmin] {break}
       set ycrd2 [expr {$ycrd+3}]
       set ycrd3 [expr {$ycrd+5}]
 
+      set yt [format "%.12g" $y]
+      if { $format != "" } {
+          set yt [FormatNumber $format $y]
+      }
+
       $w create line $xcrd $ycrd2 $xcrd $ycrd -tag axis3d
-      $w create text $xcrd $ycrd3 -text $y -tag axis3d -anchor n
+      $w create text $xcrd $ycrd3 -text $yt -tag axis3d -anchor n
       set y [expr {$y+$ystep}]
    }
 

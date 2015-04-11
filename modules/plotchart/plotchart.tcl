@@ -2257,8 +2257,16 @@ proc ::Plotchart::create3DPlot { c xscale yscale zscale args } {
    viewPort           $w $pxmin $pymin $pxmax $pymax
    world3DCoordinates $w $xmin  $ymin  $zmin  $xmax  $ymax $zmax
 
+   set names {}
+   foreach {keyword value} $args {
+       switch -- $keyword {
+           "-xlabels" {
+                set names $value
+           }
+       }
+   }
    Draw3DAxes         $w $xmin  $ymin  $zmin  $xmax  $ymax $zmax \
-                         $xstep $ystep $zstep
+                         $xstep $ystep $zstep $names
    DefaultLegend      $w
    DefaultBalloon     $w
 
