@@ -1456,9 +1456,6 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
 
     worldCoordinates $w $xmin $ymin $xmax $ymax
 
-    console show
-    puts "$orient: $xmin $xmax $scaling($w,xdelt)"
-
     if { $orient == "x" } {
         if { [llength $scaling($w,xdelt)] == 1 } {
             #$drawmethod $w $scaling($w,xmin) $scaling($w,xmax) $scaling($w,xdelt)
