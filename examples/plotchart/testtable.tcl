@@ -31,7 +31,6 @@ proc setColor {table widget row col value} {
 # Command must already exist ...
 $t formatcommand setColor
 
-console show
 $t title "Demonstration of table charts"
 $t separator
 
