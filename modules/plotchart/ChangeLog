@@ -1,3 +1,6 @@
+2015-04-13  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotaxis.tcl: Remove [console show] from AxisConfig procedure (ticket f0edc6c7bebd5abc|f0edc6c7be)
+
 2015-04-11  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Properly place the table wrt a title and subtitle, take care of fonts (patch by Frank Gover)
 	                 Support setting axis labels at 3D plot (patch by Frank Gover)
