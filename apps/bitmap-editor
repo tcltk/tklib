@@ -403,6 +403,7 @@ proc ParseBMP {raw} {
 #
 
 proc OpenBMP {} {
+    global S
     set types { {{BMP Files} {.bmp}} {{All Files} * }}
     set fname [tk_getOpenFile -defaultextension ".bmp" -initialfile $S(fname) \
                    -filetypes $types]
