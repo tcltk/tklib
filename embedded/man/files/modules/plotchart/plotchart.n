@@ -1,75 +1,82 @@
 '\"
 '\" Generated from file 'plotchart\&.man' by tcllib/doctools with format 'nroff'
-'\" Copyright (c) 2011 Arjen Markus <arjenmarkus@users\&.sourceforge\&.net>
+'\" Copyright (c) 2013 Arjen Markus <arjenmarkus@users\&.sourceforge\&.net>
 '\"
-'\" The definitions below are for supplemental macros used in Tcl/Tk
-'\" manual entries.
-'\"
-'\" .AP type name in/out ?indent?
-'\"	Start paragraph describing an argument to a library procedure.
-'\"	type is type of argument (int, etc.), in/out is either "in", "out",
-'\"	or "in/out" to describe whether procedure reads or modifies arg,
-'\"	and indent is equivalent to second arg of .IP (shouldn't ever be
-'\"	needed;  use .AS below instead)
-'\"
-'\" .AS ?type? ?name?
-'\"	Give maximum sizes of arguments for setting tab stops.  Type and
-'\"	name are examples of largest possible arguments that will be passed
-'\"	to .AP later.  If args are omitted, default tab stops are used.
-'\"
-'\" .BS
-'\"	Start box enclosure.  From here until next .BE, everything will be
-'\"	enclosed in one large box.
-'\"
-'\" .BE
-'\"	End of box enclosure.
-'\"
-'\" .CS
-'\"	Begin code excerpt.
-'\"
-'\" .CE
-'\"	End code excerpt.
-'\"
-'\" .VS ?version? ?br?
-'\"	Begin vertical sidebar, for use in marking newly-changed parts
-'\"	of man pages.  The first argument is ignored and used for recording
-'\"	the version when the .VS was added, so that the sidebars can be
-'\"	found and removed when they reach a certain age.  If another argument
-'\"	is present, then a line break is forced before starting the sidebar.
-'\"
-'\" .VE
-'\"	End of vertical sidebar.
-'\"
-'\" .DS
-'\"	Begin an indented unfilled display.
-'\"
-'\" .DE
-'\"	End of indented unfilled display.
-'\"
-'\" .SO
-'\"	Start of list of standard options for a Tk widget.  The
-'\"	options follow on successive lines, in four columns separated
-'\"	by tabs.
-'\"
-'\" .SE
-'\"	End of list of standard options for a Tk widget.
-'\"
-'\" .OP cmdName dbName dbClass
-'\"	Start of description of a specific option.  cmdName gives the
-'\"	option's name as specified in the class command, dbName gives
-'\"	the option's name in the option database, and dbClass gives
-'\"	the option's class in the option database.
-'\"
-'\" .UL arg1 arg2
-'\"	Print arg1 underlined, then print arg2 normally.
-'\"
-'\" RCS: @(#) $Id: man.macros,v 1.1 2009/01/30 04:56:47 andreas_kupries Exp $
-'\"
-'\"	# Set up traps and other miscellaneous stuff for Tcl/Tk man pages.
+.TH "Plotchart" n 2\&.3\&.4 tklib "Plotchart"
+.\" The -*- nroff -*- definitions below are for supplemental macros used
+.\" in Tcl/Tk manual entries.
+.\"
+.\" .AP type name in/out ?indent?
+.\"	Start paragraph describing an argument to a library procedure.
+.\"	type is type of argument (int, etc.), in/out is either "in", "out",
+.\"	or "in/out" to describe whether procedure reads or modifies arg,
+.\"	and indent is equivalent to second arg of .IP (shouldn't ever be
+.\"	needed;  use .AS below instead)
+.\"
+.\" .AS ?type? ?name?
+.\"	Give maximum sizes of arguments for setting tab stops.  Type and
+.\"	name are examples of largest possible arguments that will be passed
+.\"	to .AP later.  If args are omitted, default tab stops are used.
+.\"
+.\" .BS
+.\"	Start box enclosure.  From here until next .BE, everything will be
+.\"	enclosed in one large box.
+.\"
+.\" .BE
+.\"	End of box enclosure.
+.\"
+.\" .CS
+.\"	Begin code excerpt.
+.\"
+.\" .CE
+.\"	End code excerpt.
+.\"
+.\" .VS ?version? ?br?
+.\"	Begin vertical sidebar, for use in marking newly-changed parts
+.\"	of man pages.  The first argument is ignored and used for recording
+.\"	the version when the .VS was added, so that the sidebars can be
+.\"	found and removed when they reach a certain age.  If another argument
+.\"	is present, then a line break is forced before starting the sidebar.
+.\"
+.\" .VE
+.\"	End of vertical sidebar.
+.\"
+.\" .DS
+.\"	Begin an indented unfilled display.
+.\"
+.\" .DE
+.\"	End of indented unfilled display.
+.\"
+.\" .SO ?manpage?
+.\"	Start of list of standard options for a Tk widget. The manpage
+.\"	argument defines where to look up the standard options; if
+.\"	omitted, defaults to "options". The options follow on successive
+.\"	lines, in three columns separated by tabs.
+.\"
+.\" .SE
+.\"	End of list of standard options for a Tk widget.
+.\"
+.\" .OP cmdName dbName dbClass
+.\"	Start of description of a specific option.  cmdName gives the
+.\"	option's name as specified in the class command, dbName gives
+.\"	the option's name in the option database, and dbClass gives
+.\"	the option's class in the option database.
+.\"
+.\" .UL arg1 arg2
+.\"	Print arg1 underlined, then print arg2 normally.
+.\"
+.\" .QW arg1 ?arg2?
+.\"	Print arg1 in quotes, then arg2 normally (for trailing punctuation).
+.\"
+.\" .PQ arg1 ?arg2?
+.\"	Print an open parenthesis, arg1 in quotes, then arg2 normally
+.\"	(for trailing punctuation) and then a closing parenthesis.
+.\"
+.\"	# Set up traps and other miscellaneous stuff for Tcl/Tk man pages.
 .if t .wh -1.3i ^B
 .nr ^l \n(.l
 .ad b
-'\"	# Start an argument description
+.\"	# Start an argument description
 .de AP
 .ie !"\\$4"" .TP \\$4
 .el \{\
@@ -78,7 +85,7 @@
 .\}
 .ta \\n()Au \\n()Bu
 .ie !"\\$3"" \{\
-\&\\$1	\\fI\\$2\\fP	(\\$3)
+\&\\$1 \\fI\\$2\\fP (\\$3)
 .\".b
 .\}
 .el \{\
@@ -91,7 +98,7 @@
 .\}
 .\}
 ..
-'\"	# define tabbing values for .AP
+.\"	# define tabbing values for .AP
 .de AS
 .nr )A 10n
 .if !"\\$1"" .nr )A \\w'\\$1'u+3n
@@ -101,9 +108,9 @@
 .nr )C \\n()Bu+\\w'(in/out)'u+2n
 ..
 .AS Tcl_Interp Tcl_CreateInterp in/out
-'\"	# BS - start boxed text
-'\"	# ^y = starting y location
-'\"	# ^b = 1
+.\"	# BS - start boxed text
+.\"	# ^y = starting y location
+.\"	# ^b = 1
 .de BS
 .br
 .mk ^y
@@ -113,7 +120,7 @@
 .if n \l'\\n(.lu\(ul'
 .if n .fi
 ..
-'\"	# BE - end boxed text (draw box now)
+.\"	# BE - end boxed text (draw box now)
 .de BE
 .nf
 .ti 0
@@ -133,16 +140,16 @@
 .br
 .nr ^b 0
 ..
-'\"	# VS - start vertical sidebar
-'\"	# ^Y = starting y location
-'\"	# ^v = 1 (for troff;  for nroff this doesn't matter)
+.\"	# VS - start vertical sidebar
+.\"	# ^Y = starting y location
+.\"	# ^v = 1 (for troff;  for nroff this doesn't matter)
 .de VS
 .if !"\\$2"" .br
 .mk ^Y
 .ie n 'mc \s12\(br\s0
 .el .nr ^v 1u
 ..
-'\"	# VE - end of vertical sidebar
+.\"	# VE - end of vertical sidebar
 .de VE
 .ie n 'mc
 .el \{\
@@ -157,9 +164,9 @@
 .\}
 .nr ^v 0
 ..
-'\"	# Special macro to handle page bottom:  finish off current
-'\"	# box/sidebar if in box/sidebar mode, then invoked standard
-'\"	# page bottom macro.
+.\"	# Special macro to handle page bottom:  finish off current
+.\"	# box/sidebar if in box/sidebar mode, then invoked standard
+.\"	# page bottom macro.
 .de ^B
 .ev 2
 'ti 0
@@ -186,34 +193,36 @@
 .mk ^Y
 .\}
 ..
-'\"	# DS - begin display
+.\"	# DS - begin display
 .de DS
 .RS
 .nf
 .sp
 ..
-'\"	# DE - end display
+.\"	# DE - end display
 .de DE
 .fi
 .RE
 .sp
 ..
-'\"	# SO - start of list of standard options
+.\"	# SO - start of list of standard options
 .de SO
+'ie '\\$1'' .ds So \\fBoptions\\fR
+'el .ds So \\fB\\$1\\fR
 .SH "STANDARD OPTIONS"
 .LP
 .nf
-.ta 4c 8c 12c
+.ta 5.5c 11c
 .ft B
 ..
-'\"	# SE - end of list of standard options
+.\"	# SE - end of list of standard options
 .de SE
 .fi
 .ft R
 .LP
-See the \\fBoptions\\fR manual entry for details on the standard options.
+See the \\*(So manual entry for details on the standard options.
 ..
-'\"	# OP - start of full description for a single option
+.\"	# OP - start of full description for a single option
 .de OP
 .LP
 .nf
@@ -224,21 +233,43 @@ Database Class:	\\fB\\$3\\fR
 .fi
 .IP
 ..
-'\"	# CS - begin code excerpt
+.\"	# CS - begin code excerpt
 .de CS
 .RS
 .nf
 .ta .25i .5i .75i 1i
 ..
-'\"	# CE - end code excerpt
+.\"	# CE - end code excerpt
 .de CE
 .fi
 .RE
 ..
+.\"	# UL - underline word
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.TH "Plotchart" n 2\&.2\&.0 tklib "Plotchart"
+.\"	# QW - apply quotation marks to word
+.de QW
+.ie '\\*(lq'"' ``\\$1''\\$2
+.\"" fix emacs highlighting
+.el \\*(lq\\$1\\*(rq\\$2
+..
+.\"	# PQ - apply parens and quotation marks to word
+.de PQ
+.ie '\\*(lq'"' (``\\$1''\\$2)\\$3
+.\"" fix emacs highlighting
+.el (\\*(lq\\$1\\*(rq\\$2)\\$3
+..
+.\"	# QR - quoted range
+.de QR
+.ie '\\*(lq'"' ``\\$1''\\-``\\$2''\\$3
+.\"" fix emacs highlighting
+.el \\*(lq\\$1\\*(rq\\-\\*(lq\\$2\\*(rq\\$3
+..
+.\"	# MT - "empty" string
+.de MT
+.QW ""
+..
 .BS
 .SH NAME
 Plotchart \- Simple plotting and charting package
@@ -247,7 +278,7 @@ package require \fBTcl  ?8\&.5?\fR
 .sp
 package require \fBTk  ?8\&.5?\fR
 .sp
-package require \fBPlotchart  ?2\&.2\&.0?\fR
+package require \fBPlotchart  ?2\&.3\&.4?\fR
 .sp
 \fB::Plotchart::createXYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 .sp
@@ -267,9 +298,9 @@ package require \fBPlotchart  ?2\&.2\&.0?\fR
 .sp
 \fB::Plotchart::createIsometricPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIstepsize\fR
 .sp
-\fB::Plotchart::createHistogram\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR
+\fB::Plotchart::createHistogram\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 .sp
-\fB::Plotchart::create3DPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIzaxis\fR
+\fB::Plotchart::create3DPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIzaxis\fR \fIargs\fR
 .sp
 \fB::Plotchart::create3DRibbonPlot\fR \fIw\fR \fIyaxis\fR \fIzaxis\fR
 .sp
@@ -279,7 +310,7 @@ package require \fBPlotchart  ?2\&.2\&.0?\fR
 .sp
 \fB::Plotchart::createRadialchart\fR \fIw\fR \fInames\fR \fIscale\fR \fIstyle\fR
 .sp
-\fB::Plotchart::createBarchart\fR \fIw\fR \fIxlabels\fR \fIyaxis\fR \fInoseries\fR
+\fB::Plotchart::createBarchart\fR \fIw\fR \fIxlabels\fR \fIyaxis\fR \fInoseries\fR \fIargs\fR
 .sp
 \fB::Plotchart::createHorizontalBarchart\fR \fIw\fR \fIxaxis\fR \fIylabel\fR \fInoseries\fR
 .sp
@@ -298,6 +329,8 @@ package require \fBPlotchart  ?2\&.2\&.0?\fR
 \fB::Plotchart::createTableChart\fR \fIw\fR \fIcolumns\fR ?widths?
 .sp
 \fB::Plotchart::createTernaryDiagram\fR \fIw\fR \fIargs\fR
+.sp
+\fB::Plotchart::createStatusTimeline\fR \fIw\fR \fIxaxis\fR \fIylabel\fR \fIargs\fR
 .sp
 \fB$anyplot\fR title \fItext\fR \fIposition\fR
 .sp
@@ -403,7 +436,9 @@ package require \fBPlotchart  ?2\&.2\&.0?\fR
 .sp
 \fB$plot3d\fR plotdata \fIdata\fR
 .sp
-\fB$plot3d\fR colours \fIfill\fR \fIborder\fR
+\fB$plot3d\fR interpolatedata \fIdata\fR \fIcontours\fR
+.sp
+\fB$plot3d\fR colour \fIfill\fR \fIborder\fR
 .sp
 \fB$plot3d\fR ribbon \fIyzpairs\fR
 .sp
@@ -441,9 +476,13 @@ package require \fBPlotchart  ?2\&.2\&.0?\fR
 .sp
 \fB$timechart\fR period \fItext\fR \fItime_begin\fR \fItime_end\fR \fIcolour\fR
 .sp
+\fB$timechart\fR addperiod \fItime_begin\fR \fItime_end\fR \fIcolour\fR
+.sp
 \fB$timechart\fR milestone \fItext\fR \fItime\fR \fIcolour\fR
 .sp
-\fB$timechart\fR vertline \fItext\fR \fItime\fR
+\fB$timechart\fR addmilestone \fItime\fR \fIcolour\fR
+.sp
+\fB$timechart\fR vertline \fItext\fR \fItime\fR \fIcolour\fR
 .sp
 \fB$timechart\fR hscroll \fIscrollbar\fR
 .sp
@@ -492,6 +531,10 @@ package require \fBPlotchart  ?2\&.2\&.0?\fR
 \fB$ternary\fR text \fIxtext\fR \fIytext\fR \fIztext\fR
 .sp
 \fB$ternary\fR ticklines \fIcolour\fR
+.sp
+\fB$timeline\fR plot \fIseries\fR \fIitem\fR \fIstart\fR \fIstop\fR \fIcolor\fR
+.sp
+\fB$timeline\fR vertline \fItext\fR \fItime\fR \fIargs\fR
 .sp
 \fB::Plotchart::viewPort\fR \fIw\fR \fIpxmin\fR \fIpymin\fR \fIpxmax\fR \fIpymax\fR
 .sp
@@ -652,6 +695,12 @@ the empty string\&.
 \fI-timeformat format:\fR See \fBUSING DATE/TIME LABELS\fR
 .IP \(bu
 \fI-gmt 0/1:\fR See \fBUSING DATE/TIME LABELS\fR
+.IP \(bu
+\fI-axestozero:\fR Draw the axes at the origin (1), or at the sides of the plot area (0, default)\&.
+This option is implemented for XY plots only\&.
+.IP \(bu
+\fI-isometric:\fR Rescale the axes, so that a square in the coordinates appears as a square on the
+screen (1), or use the given extremes (0, default)\&. This option is implemented for XY plots only\&.
 .RE
 .RE
 .sp
@@ -833,7 +882,7 @@ draw any of the axes\&.
 .RE
 .sp
 .TP
-\fB::Plotchart::createHistogram\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR
+\fB::Plotchart::createHistogram\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 Create a new histogram (configuration type: histogram)\&.
 .RS
 .TP
@@ -845,10 +894,13 @@ A 3-element list containing minimum, maximum and stepsize for the x-axis, in thi
 .TP
 list \fIyaxis\fR (in)
 A 3-element list containing minimum, maximum and stepsize for the y-axis, in this order\&.
+.TP
+list \fIargs\fR (in)
+Zero or more options - see the XY-plot for more information\&.
 .RE
 .sp
 .TP
-\fB::Plotchart::create3DPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIzaxis\fR
+\fB::Plotchart::create3DPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIzaxis\fR \fIargs\fR
 Create a new 3D plot\&.
 .RS
 .TP
@@ -863,6 +915,10 @@ A 3-element list containing minimum, maximum and stepsize for the y-axis, in thi
 .TP
 list \fIzaxis\fR (in)
 A 3-element list containing minimum, maximum and stepsize for the z-axis, in this order\&.
+.TP
+list \fIargs\fR (in)
+Optional list of options (keyword-value pairs)\&. Currently supported: -xlabels to set the
+labels for the x-axis\&.
 .RE
 .sp
 .TP
@@ -931,7 +987,7 @@ accumulated
 .RE
 .sp
 .TP
-\fB::Plotchart::createBarchart\fR \fIw\fR \fIxlabels\fR \fIyaxis\fR \fInoseries\fR
+\fB::Plotchart::createBarchart\fR \fIw\fR \fIxlabels\fR \fIyaxis\fR \fInoseries\fR \fIargs\fR
 Create a new barchart with vertical bars (configuration type: vertbars)\&. The horizontal axis will
 display the labels contained in the argument \fIxlabels\fR\&. The number
 of series given by \fInoseries\fR determines both the width of the
@@ -960,6 +1016,11 @@ A 3-element list containing minimum, maximum and stepsize for the y-axis, in thi
 int|\fBstacked\fR \fInoseries\fR (in)
 The number of data series that will be plotted\&. This has to be an
 integer number greater than zero (if \fBstacked\fR is not used)\&.
+.TP
+string \fIargs\fR (in)
+One or more key-value pairs defining the options\&. Specific to barcharts: \fB-xlabelangle\fR value,
+the angle under which the labels should be drawn\&. This defaults to 0 - horizontal text\&. This option
+is especially useful if you have fairly long labels\&.
 .RE
 .sp
 .TP
@@ -1189,6 +1250,29 @@ Zero or more option-value pairs to influence the position and the appearance of 
 diagram\&. In addition to the positioning options (-box and -axesbox) the diagram supports:
 \fI-fractions yes/no\fR, to display numbers 0 to 1 instead of 0 to 100% and \fI-steps number\fR
 to influence the number of labels along the three sides\&.
+.RE
+.sp
+.TP
+\fB::Plotchart::createStatusTimeline\fR \fIw\fR \fIxaxis\fR \fIylabel\fR \fIargs\fR
+Create a command to draw a so-called status timeline\&. Its layout is similar to a horizontal
+barchart, but the bars are drawn in different colours, each representing the status of
+the item as it varies over time (the horizontal axis)\&.
+.RS
+.TP
+widget \fIw\fR (in)
+Name of the canvas widget to hold the ternary diagram\&.
+.TP
+list \fIxaxis\fR (in)
+A 3-element list containing minimum, maximum and stepsize for the x-axis, in this order\&.
+.TP
+list \fIylabels\fR (in)
+List of labels for the y-axis\&. Its length also determines the number of
+bars that will be plotted per series\&.
+.TP
+list \fIargs\fR (in)
+Zero or more option-value pairs to influence the position and the appearance of the
+diagram\&. In addition to the positioning options (-box and -axesbox) the diagram supports:
+\fI-xaxis yes/no\fR, to turn displaying the numeric labels on or off\&.
 .RE
 .sp
 .PP
@@ -1899,8 +1983,8 @@ by the xcrd and ycrd arguments\&. The xcrd argument (resp\&. ycrd)
 is expected to be a matrix, implemented as a list of lists which gives the
 x-coordinates (resp\&. y-coordinates) of the grid cell corners\&.
 The function values are given at these corners\&.
-The number of rows in xvec (resp\&. yvec) is ny and each row contains nx values
-so that the total number of values in xvec (resp\&. yvec) is nx * ny\&.
+The number of rows in xcrd (resp\&. ycrd) is ny and each row contains nx values
+so that the total number of values in xcrd (resp\&. ycrd) is nx * ny\&.
 The classes determine which contour lines are drawn\&. If a value on one of
 the corners is missing, the contour lines in that cell will not be
 drawn\&.
@@ -1941,14 +2025,14 @@ drawn\&.
 Entries in the legend are drawn via the \fIlegendisolines\fR subcommand\&.
 .RS
 .TP
-list \fIxcrd\fR (in)
+list \fIxvec\fR (in)
 List of x-coordinates in increasing order\&.
 .TP
-list \fIycrd\fR (in)
+list \fIyvec\fR (in)
 List y-coordinates in increasing order\&.
 .TP
 list \fIvaluesmat\fR (in)
-List of lists, each value is the value at a grid cell corner\&.
+List of ny lists of nx values, each value is the value at a grid cell corner\&.
 The total number of values is valuesmat is nx * ny\&.
 .TP
 list \fIclasses\fR (in)
@@ -2185,8 +2269,25 @@ columns\&. Example:
 .RE
 .sp
 .TP
-\fB$plot3d\fR colours \fIfill\fR \fIborder\fR
-Configure the colours to use for polygon borders and inner area\&.
+\fB$plot3d\fR interpolatedata \fIdata\fR \fIcontours\fR
+Plot the data using bilinear interpolation with
+the contour levels in \fBcontours\fR to colour the surface\&.
+The resolution is determined by the set grid sizes (see the method
+\fBgridsize\fR for more information)\&.
+.RS
+.TP
+list \fIdata\fR (in)
+The data to be plotted, just as for the plotdata subcommand\&.
+.TP
+list \fIcontours\fR (in)
+List of values in ascending order that represent the contour levels
+(the boundaries between the colours in the contour map)\&.
+.RE
+.sp
+.TP
+\fB$plot3d\fR colour \fIfill\fR \fIborder\fR
+Configure the colour to use for polygon borders and inner area\&.
+\fINote:\fR The "color" subcommand is a synonym\&.
 .RS
 .TP
 color \fIfill\fR (in)
@@ -2349,7 +2450,7 @@ The second colour, and so on\&.
 For \fIvertical barcharts\fR:
 .TP
 \fB$barchart\fR plot \fIseries\fR \fIydata\fR \fIcolour\fR ?dir? ?brightness?
-Add a data series to a barchart\&.
+Add a data series to a barchart\&. The bars are tagged with a tag "data_\\$series" to identify them\&.
 .RS
 .TP
 string \fIseries\fR (in)
@@ -2391,7 +2492,7 @@ Format string to use for formatting the values
 For \fIhorizontal barcharts\fR:
 .TP
 \fB$barchart\fR plot \fIseries\fR \fIxdata\fR \fIcolour\fR ?dir? ?brightness?
-Add a data series to a barchart\&.
+Add a data series to a barchart\&. The bars are tagged with a tag "data_\\$series" to identify them\&.
 .RS
 .TP
 string \fIseries\fR (in)
@@ -2537,6 +2638,22 @@ The colour of the bar (defaults to black)\&.
 .RE
 .sp
 .TP
+\fB$timechart\fR addperiod \fItime_begin\fR \fItime_end\fR \fIcolour\fR
+Add a new period to the current row in the chart\&. This allows you to highlight several periods
+in the same row\&. No new text is drawn\&.
+.RS
+.TP
+string \fItime_begin\fR (in)
+Start time of the period\&.
+.TP
+string \fItime_end\fR (in)
+Stop time of the period\&.
+.TP
+color \fIcolour\fR (in)
+The colour of the bar (defaults to black)\&.
+.RE
+.sp
+.TP
 \fB$timechart\fR milestone \fItext\fR \fItime\fR \fIcolour\fR
 Add a \fImilestone\fR (represented as an point-down triangle) to the
 chart\&.
@@ -2553,9 +2670,21 @@ The colour of the triangle (defaults to black)\&.
 .RE
 .sp
 .TP
-\fB$timechart\fR vertline \fItext\fR \fItime\fR
+\fB$timechart\fR addmilestone \fItime\fR \fIcolour\fR
+Add another \fImilestone\fR to the current row in the chart\&.
+.RS
+.TP
+string \fItime\fR (in)
+Time at which the milestone must be positioned\&.
+.TP
+color \fIcolour\fR (in)
+The colour of the triangle (defaults to black)\&.
+.RE
+.sp
+.TP
+\fB$timechart\fR vertline \fItext\fR \fItime\fR \fIcolour\fR
 Add a vertical line (to indicate the start of the month for instance)
-to the chart\&.
+to the chart in the specified colour\&.
 .RS
 .TP
 string \fItext\fR (in)
@@ -2564,6 +2693,9 @@ date/time for instance)\&.
 .TP
 string \fItime\fR (in)
 Time at which the line must be positioned\&.
+.TP
+color \fIcolour\fR (in)
+The colour of the line to be drawn (defaults to black)
 .RE
 .TP
 \fB$timechart\fR hscroll \fIscrollbar\fR
@@ -2933,8 +3065,43 @@ string \fIcolour\fR (in)
 Optional argument used as the colour of the ticklines\&. Defaults to grey\&.
 .RE
 .PP
-There are a number of public procedures that may be useful in specific
-situations: \fIPro memorie\fR\&.
+For \fIstatus timeline plots\fR you can use the following subcommands:
+.TP
+\fB$timeline\fR plot \fIseries\fR \fIitem\fR \fIstart\fR \fIstop\fR \fIcolor\fR
+Draw a bar in the given colour from \fIstart\fR to \fIstop\fR for the item \fIitem\fR\&.
+The item is a convenient label - there is no relation to the labels along the axis\&.
+The items are drawn from bottom to top\&.
+.RS
+.TP
+string \fIitem\fR (in)
+Name to identify the bar\&. See remark above\&.
+.TP
+float \fIstart\fR (in)
+X-coordinate (or time) at which the bar starts
+.TP
+float \fIstop\fR (in)
+X-coordinate (or time) at which the bar stops
+.TP
+string \fIcolor\fR (in)
+Colour to use for the bar\&. Defaults to black\&.
+.RE
+.TP
+\fB$timeline\fR vertline \fItext\fR \fItime\fR \fIargs\fR
+Draw a vertical line to indicate a significant moment\&.
+.RS
+.TP
+string \fItext\fR (in)
+Text to identify the moment\&.
+.TP
+float \fItime\fR (in)
+X-coordinate (or time) at which the line is to be drawn
+.TP
+list \fIargs\fR (in)
+Individual optional arguments that will be passed to the \fIcreate line\fR subcommand
+of the underlying canvas\&. This way you can set the colour or the line width
+of the vertical line\&.
+.RE
+.PP
 .SH "COORDINATE TRANSFORMATIONS"
 Besides the commands that deal with the plots and charts directly,
 there are a number of commands that can be used to convert world
@@ -4170,7 +4337,11 @@ No tags are used\&.
 .PP
 \fI3D plots and 3D ribbon plots:\fR
 .PP
-No tags are used for the data objects, only for the axes\&.
+Tags are used for the axes and for the data objects:
+.IP \(bu
+\fIdata\fR - The general tag to identify graphical objects associated with data\&.
+\fIline\fR - The tag used for lines created with the plotline subcommand\&.
+.PP
 .PP
 \fICharts decorated with 3D effects:\fR
 .PP
@@ -4214,6 +4385,6 @@ package and/or documentation\&.
 <
 .SH COPYRIGHT
 .nf
-Copyright (c) 2011 Arjen Markus <arjenmarkus@users\&.sourceforge\&.net>
+Copyright (c) 2013 Arjen Markus <arjenmarkus@users\&.sourceforge\&.net>
 
 .fi
