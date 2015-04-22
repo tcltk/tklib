@@ -1,7 +1,6 @@
 #!/usr/bin/env tclsh
 ## -*- tcl -*-
 
-source ../../modules/plotchart/plotchart.tcl
 package require Tcl 8.5
 package require Tk
 package require Plotchart
