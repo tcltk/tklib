@@ -1,4 +1,4 @@
-[comment {-*- tcl -*- doctools manpage}
+[comment {-*- tcl -*- doctools manpage}]
 [manpage_begin notifywindow n 1.0]
 [copyright {2015 Kevin Walzer/WordTech Communications LLC <kw@codebykevin.com>}]
 [keywords tk]
@@ -18,7 +18,7 @@ This package provides a low-key, unobtrusive window for alerts and notifications
 
 Posts the toplevel notification window with the "msg" string, which should not exceed 40 characters, and an optional image, which should be 16x16 pixels. 
 
-[call [cmd ::notifywindow::demo]
+[call [cmd ::notifywindow::demo]]
 
 Simple demo that illustrates how the package works.
 
