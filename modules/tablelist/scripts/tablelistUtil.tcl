@@ -3255,6 +3255,7 @@ proc tablelist::stretchColumns {win colOfFixedDelta} {
 proc tablelist::moveActiveTag win {
     upvar ::tablelist::ns${win}::data data
     set w $data(body)
+    $w tag remove curRow 1.0 end
     $w tag remove active 1.0 end
 
     if {$data(itemCount) == 0 || $data(colCount) == 0} {
@@ -3268,9 +3269,10 @@ proc tablelist::moveActiveTag win {
 	updateColors $win $activeLine.0 $activeLine.end
     } elseif {$activeLine > 0 && $activeCol < $data(colCount) &&
 	      !$data($activeCol-hide)} {
+	$w tag add curRow $activeLine.0 $activeLine.end
 	findTabs $win $activeLine $activeCol $activeCol tabIdx1 tabIdx2
 	$w tag add active $tabIdx1 $tabIdx2+1c
-	updateColors $win $tabIdx1 $tabIdx2+1c
+	updateColors $win $activeLine.0 $activeLine.end
     }
 }
 
@@ -3324,6 +3326,13 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	    $w tag add disabled $fromTextIdx $toTextIdx
 	}
 
+	if {[string length $data(-colorizecommand)] == 0} {
+	    set hasColorizeCmd 0
+	} else {
+	    set hasColorizeCmd 1
+	    set colorizeCmd $data(-colorizecommand)
+	}
+
 	variable canElide
 	variable elide
 	set topLine [expr {int([$w index @0,0])}]
@@ -3354,6 +3363,9 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		}
 
 		set tabIdx2 [$w search $elide "\t" $textIdx1+1c $line.end]
+		if {[string length $tabIdx2] == 0} {
+		    break
+		}
 		set textIdx2 $tabIdx2+1c
 
 		set cellTagNames [$w tag names $tabIdx2]
@@ -3393,6 +3405,12 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 			    }
 			}
 		    }
+		}
+
+		if {$hasColorizeCmd} {
+		    set tabIdx1 [$w index $textIdx1]
+		    uplevel #0 $colorizeCmd [list $win $w $key $row $col \
+			$tabIdx1 $tabIdx2 $inStripe $selected]
 		}
 
 		set textIdx1 $textIdx2
@@ -3435,6 +3453,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		set fromTextIdx [$w index $textIdx-1c]
 		set toTextIdx   [$w index $textIdx+1c]
 
+		$w tag remove curRow $fromTextIdx $toTextIdx
 		$w tag remove active $fromTextIdx $toTextIdx
 
 		if {$updateAll && $selected} {
@@ -3446,6 +3465,16 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 			}
 		    }
 		    set selected 0
+		    foreach optTail {background foreground} {
+			set opt -$optTail
+			foreach level [list col row cell] \
+				name  [list $col$opt $key$opt $key,$col$opt] {
+			    if {[info exists data($name)]} {
+				$w tag add $level$opt-$data($name) \
+				       $fromTextIdx $toTextIdx
+			    }
+			}
+		    }
 		}
 	    } elseif {$hasExpCollCtrlSelImgs} {
 		set curImgName [$path cget -image]

@@ -3002,7 +3002,7 @@ proc tablelist::isKeyReserved {w keySym} {
 # one of its descendants, has mouse wheel bindings.
 #------------------------------------------------------------------------------
 proc tablelist::hasMouseWheelBindings w {
-    if {[string compare [winfo class $w] "TCombobox"] == 0} {
+    if {[regexp {^(Text|Ctext|TCombobox|TSpinbox)$} [winfo class $w]]} {
 	return 1
     } else {
 	set bindTags [bindtags $w]

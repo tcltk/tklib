@@ -96,8 +96,8 @@ proc tablelist::altTheme {} {
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
-	-arrowcolor		"" \
-	-arrowstyle		sunken10x9 \
+	-arrowcolor		black \
+	-arrowstyle		flat7x5 \
 	-treestyle		winnative \
     ]
 }
@@ -335,8 +335,8 @@ proc tablelist::clamTheme {} {
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
-	-arrowcolor		"" \
-	-arrowstyle		sunken10x9 \
+	-arrowcolor		black \
+	-arrowstyle		flat7x5 \
 	-treestyle		gtk \
     ]
 }
@@ -405,8 +405,8 @@ proc tablelist::defaultTheme {} {
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	1 \
 	-labelpady		1 \
-	-arrowcolor		"" \
-	-arrowstyle		sunken10x9 \
+	-arrowcolor		black \
+	-arrowstyle		flat7x5 \
 	-treestyle		gtk \
     ]
 }
@@ -501,8 +501,8 @@ proc tablelist::krocTheme {} {
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
-	-arrowcolor		"" \
-	-arrowstyle		sunken10x9 \
+	-arrowcolor		black \
+	-arrowstyle		flat7x5 \
 	-treestyle		gtk \
     ]
 }
@@ -565,8 +565,8 @@ proc tablelist::srivTheme {} {
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
-	-arrowcolor		"" \
-	-arrowstyle		sunken10x9 \
+	-arrowcolor		black \
+	-arrowstyle		flat7x5 \
 	-treestyle		gtk \
     ]
 }
@@ -597,8 +597,8 @@ proc tablelist::srivlgTheme {} {
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
-	-arrowcolor		"" \
-	-arrowstyle		sunken10x9 \
+	-arrowcolor		black \
+	-arrowstyle		flat7x5 \
 	-treestyle		gtk \
     ]
 }
@@ -629,8 +629,8 @@ proc tablelist::stepTheme {} {
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
-	-arrowcolor		"" \
-	-arrowstyle		sunken10x9 \
+	-arrowcolor		black \
+	-arrowstyle		flat7x5 \
 	-treestyle		gtk \
     ]
 }
