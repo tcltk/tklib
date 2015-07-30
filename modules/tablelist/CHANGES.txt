@@ -1,5 +1,47 @@
-What is new in Tablelist 5.13?
+What is new in Tablelist 5.14?
 ------------------------------
+
+1. Added the "-colorizecommand" configuration option, enabling you to
+   change the colors of arbitrary character regions within the cells of
+   the currently visible tablelist rows (thanks to Peter Spjuth for his
+   proposal).
+
+2. The "curcellselection" and "curselection" subcommands now accept an
+   optional argument with the possible values "-all", "-nonhidden", and
+   "-viewable" (thanks to Will Duquette for his proposal).
+
+3. Added the tree styles "plain1", ..., "plain4", "bicolor1", ...,
+   "bicolor4", and "classic1", ..., "classic4", suitable for use with
+   large fonts and images (needed on high-resolution displays) (thanks
+   to Harald Oehlmann for his proposal).
+
+4  Added the arrow style "flat8x4" and the tree style "ubuntu2", suiting
+   version 15.04 of the Ubuntu Linux distribution.
+
+5. Added the tree style "yuyo", inspired by the GTK+ theme Yuyo on
+   Ubuntu MATE.
+
+6. Changed the default arrow color "" and arrow style "sunken10x9" to
+   "black" and "flat7x5" on the windowing system "x11" and for the tile
+   themes "alt", "clam", "default", "kroc", "sriv", "srivlg", and "step"
+   (POTENTIAL INCOMPATIBILITY!).
+
+7. In case of "-selecttype cell", the row containing the active cell is
+   now displayed with raised relief (thanks to Holger Jakobs for his
+   proposal).
+
+8. Guarded against invocations of the "update" command from within
+   binding scripts associated with the <<TablelistSelect>> virtual
+   event (thanks to Martyn Smith for his bug report and discussions on
+   this topic).
+
+9. Worked around some unexpected events in certain X11 environments,
+   which prevented Tablelist 5.13 from starting the interactive cell
+   editing in such environments (thanks to Toni Giorgino for his bug
+   report and helping me to reproduce this problem).
+
+What was new in Tablelist 5.13?
+-------------------------------
 
 1. Added support for Mac OS X 10.10 (Yosemite) (thanks to Kevin Walzer
    for his proposal).
@@ -14,7 +56,7 @@ What is new in Tablelist 5.13?
    MATE desktop.
 
 4. Added the "-showeditcursor" configuration option, used to let the
-   cursor take on the shape of a pencil whenever a mouse klick would
+   cursor take on the shape of a pencil whenever a mouse click would
    start an editing session (thanks to Rene Zaumseil and Cesare
    Bavazzano for their proposals).
 
