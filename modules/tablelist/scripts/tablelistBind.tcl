@@ -88,6 +88,7 @@ proc tablelist::removeActiveTag win {
     upvar ::tablelist::ns${win}::data data
     set data(ownsFocus) 0
 
+    $data(body) tag remove curRow 1.0 end
     $data(body) tag remove active 1.0 end
 }
 
@@ -102,7 +103,7 @@ proc tablelist::cleanup win {
     # Cancel the execution of all delayed handleMotion, updateKeyToRowMap,
     # adjustSeps, makeStripes, showLineNumbers, stretchColumns, updateColors,
     # updateScrlColOffset, updateHScrlbar, updateVScrlbar, updateView,
-    # synchronize, displayItems, moveTo, horizAutoScan, forceRedraw,
+    # synchronize, displayItems, moveTo, autoScan, horizAutoScan, forceRedraw,
     # doCellConfig, redisplay, redisplayCol, and destroyWidgets commands
     #
     upvar ::tablelist::ns${win}::data data
@@ -336,7 +337,7 @@ proc tablelist::defineTablelistBody {} {
 
     foreach event {<Enter> <Motion> <Leave>} {
 	bind TablelistBody $event [format {
-	    tablelist::handleMotionDelayed %%W %%x %%y %%X %%Y %s
+	    tablelist::handleMotionDelayed %%W %%x %%y %%X %%Y %%m %s
 	} $event]
     }
     bind TablelistBody <Button-1> {
@@ -704,7 +705,7 @@ proc tablelist::invokeMotionHandler win {
 	set y -1
     }
 
-    handleMotionDelayed $w $x $y $X $Y <Motion>
+    handleMotionDelayed $w $x $y $X $Y "" <Motion>
 }
 
 #------------------------------------------------------------------------------
@@ -714,7 +715,7 @@ proc tablelist::invokeMotionHandler win {
 # a tablelist widget or one of its separators, or is moving within it.  It
 # schedules the execution of the handleMotion procedure 100 ms later.
 #------------------------------------------------------------------------------
-proc tablelist::handleMotionDelayed {w x y X Y event} {
+proc tablelist::handleMotionDelayed {w x y X Y mode event} {
     set win [getTablelistPath $w]
     upvar ::tablelist::ns${win}::data data
     set data(motionData) [list $w $x $y $X $Y $event]
@@ -722,7 +723,8 @@ proc tablelist::handleMotionDelayed {w x y X Y event} {
 	set data(motionId) [after 100 [list tablelist::handleMotion $win]]
     }
 
-    if {[string compare $event "<Enter>"] == 0} {
+    if {[string compare $event "<Enter>"] == 0 &&
+	[string compare $mode "NotifyNormal"] == 0} {
 	set data(justEntered) 1
     }
 }
@@ -1292,7 +1294,10 @@ proc tablelist::autoScan win {
     }
 
     motion $win [::$win nearest $priv(y)] [::$win nearestcolumn $priv(x)] 1
-    set priv(afterId) [after $ms [list tablelist::autoScan $win]]
+    if {[string length $tablelist::priv(x)] != 0 &&
+	[string length $tablelist::priv(y)] != 0} {
+	set priv(afterId) [after $ms [list tablelist::autoScan $win]]
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -1729,10 +1734,6 @@ proc tablelist::condEvalInvokeCmd win {
     #
     # Evaluate the edit window's invoke command
     #
-    update
-    if {![winfo exists $w]} {				;# because of update
-	return ""
-    }
     eval [strMap {"%W" "$w"} $editWin($name-invokeCmd)]
     set data(invoked) 1
 
@@ -3313,9 +3314,10 @@ proc tablelist::escape {win col} {
 # tablelist::horizAutoScan
 #
 # This procedure is invoked when the mouse leaves the scrollable part of a
-# tablelist widget's header frame.  It scrolls the header and reschedules
-# itself as an after command so that the header continues to scroll until the
-# mouse moves back into the window or the mouse button is released.
+# tablelist widget's header frame while button 1 is down.  It scrolls the
+# header and reschedules itself as an after command so that the header
+# continues to scroll until the mouse moves back into the window or the mouse
+# button is released.
 #------------------------------------------------------------------------------
 proc tablelist::horizAutoScan win {
     if {![array exists ::tablelist::ns${win}::data]} {

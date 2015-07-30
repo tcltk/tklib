@@ -105,6 +105,7 @@ namespace eval tablelist {
 	-borderwidth		 {borderWidth		  BorderWidth	      f}
 	-bd			 -borderwidth
 	-collapsecommand	 {collapseCommand	  CollapseCommand     w}
+	-colorizecommand	 {colorizeCommand	  ColorizeCommand     w}
 	-columns		 {columns		  Columns	      w}
 	-columntitles		 {columnTitles		  ColumnTitles	      w}
 	-cursor			 {cursor		  Cursor	      c}
@@ -408,12 +409,14 @@ namespace eval tablelist {
     variable activeStyles  [list frame none underline]
     variable alignments    [list left right center]
     variable arrowStyles   [list flat5x3 flat5x4 flat6x4 flat7x4 flat7x5 \
-				 flat7x7 flat8x5 flat9x5 flat9x6 flatAngle7x4 \
-				 flatAngle7x5 flatAngle9x5 flatAngle9x6 \
-				 flatAngle9x7 flatAngle10x6 flatAngle10x7 \
-				 photo7x7 sunken8x7 sunken10x9 sunken12x11]
+				 flat7x7 flat8x4 flat8x5 flat9x5 flat9x6 \
+				 flatAngle7x4 flatAngle7x5 flatAngle9x5 \
+				 flatAngle9x6 flatAngle9x7 flatAngle10x6 \
+				 flatAngle10x7 photo7x7 sunken8x7 sunken10x9 \
+				 sunken12x11]
     variable arrowTypes    [list up down]
     variable colWidthOpts  [list -requested -stretched -total]
+    variable curSelOpts    [list -all -nonhidden -viewable]
     variable expCollOpts   [list -fully -partly]
     variable findOpts      [list -descend -parent]
     variable gapTypeOpts   [list -any -horizontal -vertical]
@@ -429,12 +432,14 @@ namespace eval tablelist {
     variable sortOpts      [list -increasing -decreasing]
     variable sortOrders    [list increasing decreasing]
     variable states	   [list disabled normal]
-    variable treeStyles    [list adwaita ambiance aqua baghira dust dustSand \
-				 gtk klearlooks mate mint newWave oxygen1 \
-				 oxygen2 phase plastik plastique radiance \
-				 ubuntu vistaAero vistaClassic win7Aero \
-				 win7Classic winnative winxpBlue winxpOlive \
-				 winxpSilver]
+    variable treeStyles    [list adwaita ambiance aqua baghira bicolor1 \
+				 bicolor2 bicolor3 bicolor4 classic1 classic2 \
+				 classic3 classic4 dust dustSand gtk \
+				 klearlooks mate mint newWave oxygen1 oxygen2 \
+				 phase plain1 plain2 plain3 plain4 plastik \
+				 plastique radiance ubuntu ubuntu2 vistaAero \
+				 vistaClassic win7Aero win7Classic winnative \
+				 winxpBlue winxpOlive winxpSilver yuyo]
     variable valignments   [list center top bottom]
 
     proc restrictArrowStyles {} {
@@ -873,6 +878,7 @@ proc tablelist::tablelist args {
     #
     $w tag configure stripe -background "" -foreground ""    ;# will be changed
     $w tag configure select -relief raised
+    $w tag configure curRow -borderwidth 1 -relief raised
     $w tag configure active -borderwidth ""		     ;# will be changed
     $w tag configure disabled -foreground ""		     ;# will be changed
     $w tag configure redraw -relief sunken
@@ -1813,26 +1819,47 @@ proc tablelist::cornerpathSubCmd {win argList} {
 # tablelist::curcellselectionSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::curcellselectionSubCmd {win argList} {
-    if {[llength $argList] != 0} {
-	mwutil::wrongNumArgs "$win curcellselection"
+    set argCount [llength $argList]
+    if {$argCount > 1} {
+	mwutil::wrongNumArgs "$win curcellselection\
+			      ?-all|-nonhidden||-viewable?"
     }
+
+    if {$argCount == 0} {
+	set constraint 0
+    } else {
+	variable curSelOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 0] $curSelOpts]
+	set constraint [lsearch -exact $curSelOpts $opt]
+    }
+    
 
     synchronize $win
     displayItems $win
-    return [curCellSelection $win]
+    return [curCellSelection $win 0 $constraint]
 }
 
 #------------------------------------------------------------------------------
 # tablelist::curselectionSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::curselectionSubCmd {win argList} {
-    if {[llength $argList] != 0} {
-	mwutil::wrongNumArgs "$win curselection"
+    set argCount [llength $argList]
+    if {$argCount > 1} {
+	mwutil::wrongNumArgs "$win curselection\
+			      ?-all|-nonhidden||-viewable?"
+    }
+
+    if {$argCount == 0} {
+	set constraint 0
+    } else {
+	variable curSelOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 0] $curSelOpts]
+	set constraint [lsearch -exact $curSelOpts $opt]
     }
 
     synchronize $win
     displayItems $win
-    return [curSelection $win]
+    return [curSelection $win $constraint]
 }
 
 #------------------------------------------------------------------------------
@@ -4968,9 +4995,10 @@ proc tablelist::containingCol {win x} {
 #------------------------------------------------------------------------------
 # tablelist::curCellSelection
 #
-# Processes the tablelist curcellselection subcommand.
+# Processes the tablelist curcellselection subcommand.  Meaning of the last
+# optional argument: 0: all; 1: nonhidden only; 2: viewable only.
 #------------------------------------------------------------------------------
-proc tablelist::curCellSelection {win {getKeys 0} {viewableOnly 0}} {
+proc tablelist::curCellSelection {win {getKeys 0} {constraint 0}} {
     variable canElide
     variable elide
     upvar ::tablelist::ns${win}::data data
@@ -4986,11 +5014,12 @@ proc tablelist::curCellSelection {win {getKeys 0} {viewableOnly 0}} {
 	foreach {selStart selEnd} $selRange {}
 	set line [expr {int($selStart)}]
 	set row [expr {$line - 1}]
-	if {$getKeys || $viewableOnly} {
+	if {$getKeys || $constraint != 0} {
 	    set key [lindex $data(keyList) $row]
 	}
-	if {$viewableOnly &&
-	    ([info exists data($key-elide)] || [info exists data($key-hide)])} {
+	if {($constraint == 1 && [info exists data($key-hide)]) ||
+	    ($constraint == 2 && ([info exists data($key-hide)] ||
+	     [info exists data($key-elide)]))} {
 	    continue
 	}
 
@@ -5005,8 +5034,7 @@ proc tablelist::curCellSelection {win {getKeys 0} {viewableOnly 0}} {
 
 	    if {[$w compare $selStart == $textIdx] ||
 		[$w compare $selStart == $textIdx+1c] ||
-		([$w compare $selStart == $textIdx+2c] &&
-		 [string compare [$w get $textIdx+2c] "\t"] != 0)} {
+		[$w compare $selStart == $textIdx+2c]} {
 		set firstCol $col
 		break
 	    } else {
@@ -5024,7 +5052,7 @@ proc tablelist::curCellSelection {win {getKeys 0} {viewableOnly 0}} {
 		continue
 	    }
 
-	    if {!($data($col-hide) && $viewableOnly)} {
+	    if {$constraint == 0 || !$data($col-hide)} {
 		if {$getKeys} {
 		    lappend result $key $col
 		} else {
@@ -5045,9 +5073,10 @@ proc tablelist::curCellSelection {win {getKeys 0} {viewableOnly 0}} {
 #------------------------------------------------------------------------------
 # tablelist::curSelection
 #
-# Processes the tablelist curselection subcommand.
+# Processes the tablelist curselection subcommand.  Meaning of the optional
+# argument: 0: all; 1: nonhidden only; 2: viewable only.
 #------------------------------------------------------------------------------
-proc tablelist::curSelection win {
+proc tablelist::curSelection {win {constraint 0}} {
     #
     # Find the (partly) selected lines of the body text widget
     #
@@ -5057,7 +5086,17 @@ proc tablelist::curSelection win {
     set selRange [$w tag nextrange select 1.0]
     while {[llength $selRange] != 0} {
 	set selStart [lindex $selRange 0]
-	lappend result [expr {int($selStart) - 1}]
+	set row [expr {int($selStart) - 1}]
+	if {$constraint == 0} {
+	    lappend result $row
+	} else {
+	    set key [lindex $data(keyList) $row]
+	    if {($constraint == 1 && ![info exists data($key-hide)]) ||
+		($constraint == 2 && ![info exists data($key-hide)] &&
+		 ![info exists data($key-elide)])} {
+		lappend result $row
+	    }
+	}
 
 	set selRange [$w tag nextrange select "$selStart lineend"]
     }
@@ -6506,7 +6545,7 @@ proc tablelist::fetchSelection {win offset maxChars} {
 
     set selection ""
     set prevRow -1
-    foreach cellIdx [curCellSelection $win 0 1] {
+    foreach cellIdx [curCellSelection $win 0 2] {
 	scan $cellIdx "%d,%d" row col
 	if {$row != $prevRow} {
 	    if {$prevRow != -1} {

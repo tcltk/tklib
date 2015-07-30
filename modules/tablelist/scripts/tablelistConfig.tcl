@@ -23,6 +23,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-activestyle)		frame
     lappend configSpecs(-autoscan)		1
     lappend configSpecs(-collapsecommand)	{}
+    lappend configSpecs(-colorizecommand)	{}
     lappend configSpecs(-columns)		{}
     lappend configSpecs(-columntitles)		{}
     lappend configSpecs(-customdragsource)	0
@@ -227,9 +228,9 @@ proc tablelist::extendConfigSpecs {} {
 	#
 	switch $winSys {
 	    x11 {
-		set arrowColor		{}
-		set arrowDisabledColor	{}
-		set arrowStyle		sunken10x9
+		set arrowColor		black
+		set arrowDisabledColor	#a3a3a3
+		set arrowStyle		flat7x5
 		set treeStyle		gtk
 	    }
 
@@ -559,6 +560,7 @@ proc tablelist::doConfig {win opt val} {
 		-acceptchildcommand -
 		-acceptdropcommand -
 		-collapsecommand -
+		-colorizecommand -
 		-editendcommand -
 		-editstartcommand -
 		-expandcommand -
@@ -995,11 +997,13 @@ proc tablelist::doConfig {win opt val} {
 			disabled {
 			    $w tag add disabled 1.0 end
 			    $w tag configure select -relief flat
+			    $w tag configure curRow -relief flat
 			    set data(isDisabled) 1
 			}
 			normal {
 			    $w tag remove disabled 1.0 end
 			    $w tag configure select -relief raised
+			    $w tag configure curRow -relief raised
 			    set data(isDisabled) 0
 			}
 		    }
