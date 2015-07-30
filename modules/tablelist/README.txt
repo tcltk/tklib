@@ -88,8 +88,8 @@ How to get it?
 --------------
 
 Tablelist is available for free download from the same URL as Wcb.  The
-distribution file is "tablelist5.13.tar.gz" for UNIX and
-"tablelist5_13.zip" for Windows.  These files contain the same
+distribution file is "tablelist5.14.tar.gz" for UNIX and
+"tablelist5_14.zip" for Windows.  These files contain the same
 information, except for the additional carriage return character
 preceding the linefeed at the end of each line in the text files for
 Windows.
@@ -108,16 +108,16 @@ locations of these library directories are given by the "tcl_library"
 and "tk_library" variables, respectively.
 
 To install Tablelist on UNIX, "cd" to the desired directory and unpack
-the distribution file "tablelist5.13.tar.gz":
+the distribution file "tablelist5.14.tar.gz":
 
-    gunzip -c tablelist5.13.tar.gz | tar -xf -
+    gunzip -c tablelist5.14.tar.gz | tar -xf -
 
-This command will create a directory named "tablelist5.13", with the
+This command will create a directory named "tablelist5.14", with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "tablelist5_13.zip" into the directory
-"tablelist5.13", with the subdirectories "demos", "doc", and "scripts".
+distribution file "tablelist5_14.zip" into the directory
+"tablelist5.14", with the subdirectories "demos", "doc", and "scripts".
 
 The file "tablelistEdit.tcl" in the "scripts" directory is only needed
 for applications making use of interactive cell editing.  Similarly, the
