@@ -1,3 +1,51 @@
+2015-07-30  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                Bumped the version number to 5.14.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* ../../examples/*.tcl:
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/*.tcl: Added the "-colorizecommand" configuration option; The
+	  "curcellselection" and "curselection" subcommands now accept an
+	  optional argument; Added the arrow style "flat8x4"; Added the tree
+	  styles "ubuntu2", "yuyo", "plain1", ..., "plain4", "bicolor1", ...,
+	  "bicolor4", and "classic1", ..., "classic4"; Changes related to the
+	  default arrow color and style; In case of "-selecttype cell", the row
+	  containing the active cell is now displayed with raised relief;
+	  Guarded against invocations of the "update" command from within
+	  binding scripts associated with the <<TablelistSelect>> virtual
+	  event; Worked around some unexpected events in certain X11
+	  environments, which prevented Tablelist 5.13 from starting the
+	  interactive cell editing in such environments.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/*.html: Updated to reflect the changes.
+
+	* doc/arrowStyles.png:      Updated screenshots.
+	* doc/baghira.png:
+	* doc/browse*.png:
+	* doc/bwidget.png:
+	* doc/config.png:
+	* doc/dirViewer.png:
+	* doc/embeddedWindows*.png:
+	* doc/klearlooks.png:
+	* doc/oxygen*.png:
+	* doc/phase.png:
+	* doc/plasti*.png:
+	* doc/styles.png:
+	* doc/tileWidgets.png:
+
+	* doc/bicolor*.png: Added screenshots.
+	* doc/classic*.png:
+	* doc/plain*.png:
+	* doc/ubuntu2.png:
+	* doc/yuyo.png:
+
+	* ../../examples/*.gif: Updated images.
+
 2015-01-20  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Slightly extended.
