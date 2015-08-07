@@ -1,3 +1,12 @@
+2015-08-07  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistImages.tcl: Improved a few tree styles.
+
+	* doc/bicolor*.png:         Updated screenshots.
+	* doc/classic*.png:
+	* doc/plain*.png:
+	* doc/tablelistWidget.html:
+
 2015-07-30  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:                Bumped the version number to 5.14.
