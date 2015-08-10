@@ -1076,7 +1076,14 @@ proc tablelist::createCheckbutton {w args} {
 	    checkbutton $w -borderwidth 0 -font {"MS Sans Serif" 8} \
 			   -padx 0 -pady 0
 	    [winfo parent $w] configure -width 13 -height 13
-	    place $w -x -1 -y -1
+	    switch [winfo reqheight $w] {
+		17	{ set y -1 }
+		20	{ set y -3 }
+		25	{ set y -5 }
+		31	{ set y -8 }
+		default	{ set y -1 }
+	    }
+	    place $w -x -1 -y $y
 	}
 
 	classic {
