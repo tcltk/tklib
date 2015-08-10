@@ -1,3 +1,8 @@
+2015-08-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistEdit.tcl: Minor improvements.
+	* doc/tablelistWidget.html:
+
 2015-08-07  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistImages.tcl: Improved a few tree styles.
