@@ -1,3 +1,17 @@
+2015-08-19  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistImages.tcl: Added automatic scaling for the tree
+	  styles "vistaAero", "vistaClassic", "win7Aero", and "win7Classic on
+	  Windows 7 and later.
+
+	* scripts/tclIndex: Newly generated.
+
+	* CHANGES.txt:              Updated to reflect the changes.
+	* doc/tablelistWidget.html:
+
+	* doc/vistaAero.png: Updated screenshots.
+	* doc/win7Aero.png:
+
 2015-08-10  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistEdit.tcl: Minor improvements.
