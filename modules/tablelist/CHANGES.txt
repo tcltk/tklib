@@ -12,8 +12,11 @@ What is new in Tablelist 5.14?
 
 3. Added the tree styles "plain1", ..., "plain4", "bicolor1", ...,
    "bicolor4", and "classic1", ..., "classic4", suitable for use with
-   large fonts and images (needed on high-resolution displays) (thanks
-   to Harald Oehlmann for his proposal).
+   large fonts and images (needed on high-resolution displays).  In
+   addition, on Windows 7 and later, the sizes used by the tree styles
+   "vistaAero", "vistaClassic", "win7Aero", and "win7Classic" are now
+   automatically adapted to the current system-wide DPI scaling level
+   (thanks to Harald Oehlmann for his proposal).
 
 4  Added the arrow style "flat8x4" and the tree style "ubuntu2", suiting
    version 15.04 of the Ubuntu Linux distribution.
