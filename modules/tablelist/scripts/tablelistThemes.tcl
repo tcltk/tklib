@@ -1451,6 +1451,14 @@ proc tablelist::vistaTheme {} {
 	-labelfont		TkDefaultFont \
     ]
 
+    variable scaling
+    switch $scaling {
+	100 { set arrowStyle	flat7x4 }
+	125 { set arrowStyle	flat9x5 }
+	150 { set arrowStyle	flat11x6 }
+	200 { set arrowStyle	flat15x8 }
+    }
+
     switch [winfo rgb . SystemHighlight] {
 	"13107 39321 65535" {					;# Aero
 	    set selectFg	SystemWindowText
@@ -1460,7 +1468,6 @@ proc tablelist::vistaTheme {} {
 	    set labelBd		4
 	    set labelPadY	4
 	    set arrowColor	#569bc0
-	    set arrowStyle	flat7x4
 
 	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
 		set selectBg	#d8effb
@@ -1480,7 +1487,6 @@ proc tablelist::vistaTheme {} {
 	    set labelBd		2
 	    set labelPadY	0
 	    set arrowColor	SystemButtonShadow
-	    set arrowStyle	flat7x4
 
 	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
 		set treeStyle	vistaClassic
@@ -1657,7 +1663,14 @@ proc tablelist::xpnativeTheme {} {
 	    set labelBd		4
 	    set labelPadY	4
 	    set arrowColor	#569bc0
-	    set arrowStyle	flat7x4
+
+	    variable scaling
+	    switch $scaling {
+		100 { set arrowStyle	flat7x4 }
+		125 { set arrowStyle	flat9x5 }
+		150 { set arrowStyle	flat11x6 }
+		200 { set arrowStyle	flat15x8 }
+	    }
 
 	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
 		set selectBg	#d8effb
@@ -1678,7 +1691,14 @@ proc tablelist::xpnativeTheme {} {
 	    set labelBd		2
 	    set labelPadY	0
 	    set arrowColor	SystemButtonShadow
-	    set arrowStyle	flat7x4
+
+	    variable scaling
+	    switch $scaling {
+		100 { set arrowStyle	flat7x4 }
+		125 { set arrowStyle	flat9x5 }
+		150 { set arrowStyle	flat11x6 }
+		200 { set arrowStyle	flat15x8 }
+	    }
 
 	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
 		set treeStyle	vistaClassic

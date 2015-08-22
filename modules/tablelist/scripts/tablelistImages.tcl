@@ -187,6 +187,44 @@ static unsigned char triangleDn9x6_bits[] = {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::flat11x6Arrows
+#------------------------------------------------------------------------------
+proc tablelist::flat11x6Arrows w {
+    image create bitmap triangleUp$w -data "
+#define triangleUp11x6_width 11
+#define triangleUp11x6_height 6
+static unsigned char triangleUp11x6_bits[] = {
+   0x20, 0x00, 0x70, 0x00, 0xf8, 0x00, 0xfc, 0x01, 0xfe, 0x03, 0xff, 0x07};
+"
+    image create bitmap triangleDn$w -data "
+#define triangleDn11x6_width 11
+#define triangleDn11x6_height 6
+static unsigned char triangleDn11x6_bits[] = {
+   0xff, 0x07, 0xfe, 0x03, 0xfc, 0x01, 0xf8, 0x00, 0x70, 0x00, 0x20, 0x00};
+"
+}
+
+#------------------------------------------------------------------------------
+# tablelist::flat15x8Arrows
+#------------------------------------------------------------------------------
+proc tablelist::flat15x8Arrows w {
+    image create bitmap triangleUp$w -data "
+#define triangleUp15x8_width 15
+#define triangleUp15x8_height 8
+static unsigned char triangleUp15x8_bits[] = {
+   0x80, 0x00, 0xc0, 0x01, 0xe0, 0x03, 0xf0, 0x07, 0xf8, 0x0f, 0xfc, 0x1f,
+   0xfe, 0x3f, 0xff, 0x7f};
+"
+    image create bitmap triangleDn$w -data "
+#define triangleDn15x8_width 15
+#define triangleDn15x8_height 8
+static unsigned char triangleDn15x8_bits[] = {
+   0xff, 0x7f, 0xfe, 0x3f, 0xfc, 0x1f, 0xf8, 0x0f, 0xf0, 0x07, 0xe0, 0x03,
+   0xc0, 0x01, 0x80, 0x00};
+"
+}
+
+#------------------------------------------------------------------------------
 # tablelist::flatAngle7x4Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flatAngle7x4Arrows w {
@@ -1778,7 +1816,8 @@ AQA7
 # tablelist::vistaAeroTreeImgs
 #------------------------------------------------------------------------------
 proc tablelist::vistaAeroTreeImgs {{treeStyle "vistaAero"}} {
-    vistaAeroTreeImgs_[getScalingPercentage] $treeStyle
+    variable scaling
+    vistaAeroTreeImgs_$scaling $treeStyle
 }
 
 #------------------------------------------------------------------------------
@@ -2019,7 +2058,8 @@ SLrc/jDKSauF4TIAtAJCp4GDaJHlhabVyk7uGwVczWVeru98AgA7
 # tablelist::vistaClassicTreeImgs
 #------------------------------------------------------------------------------
 proc tablelist::vistaClassicTreeImgs {{treeStyle "vistaClassic"}} {
-    vistaClassicTreeImgs_[getScalingPercentage] $treeStyle
+    variable scaling
+    vistaClassicTreeImgs_$scaling $treeStyle
 }
 
 #------------------------------------------------------------------------------
@@ -2240,14 +2280,16 @@ proc tablelist::createTreeImgs {treeStyle depth} {
     set width [expr {$depth * $baseWidth}]
     set x [expr {($depth - 1) * $baseWidth}]
     if {[regexp {^(vistaAero|win7Aero)$} $treeStyle]} {
-	switch [getScalingPercentage] {
+	variable scaling
+	switch $scaling {
 	    100 { set factor  0 }
 	    125 { set factor -3 }
 	    150 { set factor -6 }
 	    200 { set factor -11 }
 	}
     } elseif {[regexp {^(vistaClassic|win7Classic)$} $treeStyle]} {
-	switch [getScalingPercentage] {
+	variable scaling
+	switch $scaling {
 	    100 { set factor -2 }
 	    125 { set factor -5 }
 	    150 { set factor -8 }
@@ -2285,38 +2327,5 @@ proc tablelist::createTreeImgs {treeStyle depth} {
 		    tablelist_${treeStyle}_${mode}${modif}Img -to $x 0
 	    }
 	}
-    }
-}
-
-#------------------------------------------------------------------------------
-# tablelist::getScalingPercentage
-#------------------------------------------------------------------------------
-proc tablelist::getScalingPercentage {} {
-    variable winSys
-    if {[string compare $winSys "win32"] == 0 &&
-	$::tcl_platform(osVersion) >= 6.1} {		;# Windows 7 or later
-	variable scaling
-	if {[info exists scaling]} {
-	    return $scaling
-	} else {
-	    package require registry
-	    set key "HKEY_CURRENT_USER\\Control Panel\\Desktop"
-	    if {[catch {registry get $key LogPixels} value] == 0} {
-		if {$value <= 96} {
-		    set scaling 100
-		} elseif {$value <= 120} {
-		    set scaling 125
-		} elseif {$value <= 144} {
-		    set scaling 150
-		} else {
-		    set scaling 200
-		}
-	    } else {
-		set scaling 100
-	    }
-	    return $scaling
-	}
-    } else {
-	return 100
     }
 }
