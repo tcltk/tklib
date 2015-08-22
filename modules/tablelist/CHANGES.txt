@@ -13,16 +13,18 @@ What is new in Tablelist 5.14?
 3. Added the tree styles "plain1", ..., "plain4", "bicolor1", ...,
    "bicolor4", and "classic1", ..., "classic4", suitable for use with
    large fonts and images (needed on high-resolution displays).  In
-   addition, on Windows 7 and later, the sizes used by the tree styles
-   "vistaAero", "vistaClassic", "win7Aero", and "win7Classic" are now
-   automatically adapted to the current system-wide DPI scaling level
-   (thanks to Harald Oehlmann for his proposal).
+   addition, the sizes used by the tree styles "vistaAero",
+   "vistaClassic", "win7Aero", and "win7Classic" are now automatically
+   adapted to the display's scaling level (thanks to Harald Oehlmann for
+   his proposal).
 
-4  Added the arrow style "flat8x4" and the tree style "ubuntu2", suiting
-   version 15.04 of the Ubuntu Linux distribution.
+4. On Windows Vista and later, automatic scaling is now performed for
+   the default arrow style, too.  This made is necessary to add the
+   arrow styles "flat11x6" and "flat15x8".
 
-5. Added the tree style "yuyo", inspired by the GTK+ theme Yuyo on
-   Ubuntu MATE.
+5  Added the arrow style "flat8x4" and the tree style "ubuntu2", suiting
+   version 15.04 of the Ubuntu Linux distribution.  Similarly, added the
+   tree style "yuyo", inspired by the GTK+ theme Yuyo on Ubuntu MATE.
 
 6. Changed the default arrow color "" and arrow style "sunken10x9" to
    "black" and "flat7x5" on the windowing system "x11" and for the tile
