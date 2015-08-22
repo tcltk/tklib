@@ -1,3 +1,15 @@
+2015-08-22  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistConfig.tcl: Added automatic scaling for the default
+	* scripts/tablelistImages.tcl: arrow style on Windows Vista and later;
+	* scripts/tablelistThemes.tcl: Minor scaling-related improvemnts.
+	* scripts/tablelistWidget.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
+	* CHANGES.txt:              Updated to reflect the changes.
+	* doc/tablelistWidget.html:
+
 2015-08-19  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistImages.tcl: Added automatic scaling for the tree
