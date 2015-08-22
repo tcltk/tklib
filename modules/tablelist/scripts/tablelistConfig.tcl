@@ -267,30 +267,42 @@ proc tablelist::extendConfigSpecs {} {
 		    set arrowDisabledColor	SystemDisabledText
 
 		} elseif {$::tcl_platform(osVersion) == 6.0} {	;# Win Vista
+		    variable scaling
+		    switch $scaling {
+			100 { set arrowStyle	flat7x4 }
+			125 { set arrowStyle	flat9x5 }
+			150 { set arrowStyle	flat11x6 }
+			200 { set arrowStyle	flat15x8 }
+		    }
+
 		    switch [winfo rgb . SystemHighlight] {
 			"13107 39321 65535" {			;# Vista Aero
 			    set arrowColor	#569bc0
-			    set arrowStyle	flat7x4
 			    set treeStyle	vistaAero
 			}
 			default {				;# Win Classic
 			    set arrowColor	SystemButtonShadow
-			    set arrowStyle	flat7x4
 			    set treeStyle	vistaClassic
 			}
 		    }
 		    set arrowDisabledColor	SystemDisabledText
 
 		} else {					;# Win 7
+		    variable scaling
+		    switch $scaling {
+			100 { set arrowStyle	flat7x4 }
+			125 { set arrowStyle	flat9x5 }
+			150 { set arrowStyle	flat11x6 }
+			200 { set arrowStyle	flat15x8 }
+		    }
+
 		    switch [winfo rgb . SystemHighlight] {
 			"13107 39321 65535" {			;# Win 7 Aero
 			    set arrowColor	#569bc0
-			    set arrowStyle	flat7x4
 			    set treeStyle	win7Aero
 			}
 			default {				;# Win Classic
 			    set arrowColor	SystemButtonShadow
-			    set arrowStyle	flat7x4
 			    set treeStyle	win7Classic
 			}
 		    }

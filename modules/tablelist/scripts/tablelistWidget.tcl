@@ -80,6 +80,24 @@ namespace eval tablelist {
 	[lsearch -exact [winfo server .] "AppKit"] >= 0}]
 
     #
+    # Get the scaling percentage (100, 125, 150, or 200)
+    #
+    proc getScalingPercentage {} {
+	variable scaling
+	set factor [tk scaling]
+	if {$factor < 1.4} {
+	    set scaling 100 
+	} elseif {$factor < 1.7} {
+	    set scaling 125 
+	} elseif {$factor < 2.1} {
+	    set scaling 150 
+	} else {
+	    set scaling 200
+	}
+    }
+    getScalingPercentage 
+
+    #
     # The array configSpecs is used to handle configuration options.  The
     # names of its elements are the configuration options for the Tablelist
     # class.  The value of an array element is either an alias name or a list
@@ -410,10 +428,10 @@ namespace eval tablelist {
     variable alignments    [list left right center]
     variable arrowStyles   [list flat5x3 flat5x4 flat6x4 flat7x4 flat7x5 \
 				 flat7x7 flat8x4 flat8x5 flat9x5 flat9x6 \
-				 flatAngle7x4 flatAngle7x5 flatAngle9x5 \
-				 flatAngle9x6 flatAngle9x7 flatAngle10x6 \
-				 flatAngle10x7 photo7x7 sunken8x7 sunken10x9 \
-				 sunken12x11]
+				 flat11x6 flat15x8 flatAngle7x4 flatAngle7x5 \
+				 flatAngle9x5 flatAngle9x6 flatAngle9x7 \
+				 flatAngle10x6 flatAngle10x7 photo7x7 \
+				 sunken8x7 sunken10x9 sunken12x11]
     variable arrowTypes    [list up down]
     variable colWidthOpts  [list -requested -stretched -total]
     variable curSelOpts    [list -all -nonhidden -viewable]
