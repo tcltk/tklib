@@ -187,8 +187,6 @@ proc ::Plotchart::DrawDataNormalPlot { w series mean stdev data } {
             set pn [expr {($idx - $a) / ($n + 1 - 2.0 * $a)}]
             set yn [::math::statistics::Inverse-cdf-normal 0.0 1.0 $pn]
 
-            puts "$x -- $xn -- $pn -- $yn"
-
             DrawData $w $series $xn $yn
         } else {
             DrawData $w $series {}  {}
