@@ -1,26 +1,24 @@
 
-  generated: {2015-09-21 10:39:44 UTC}
+  generated: {2015-09-24 19:44:17 UTC}
+  release: trunk
+  name: tklib
   description: {A companion to Tcllib, for Tk related packages}
-  name: Tk
   uuid: 0abc2148a96d04fcd83241ed33d804ede942d5d3
   distribution/ {
     official {
       class: fossil
-      project-name: Tk
+      project-name: {Tk Library Source Code}
       project-code: 0abc2148a96d04fcd83241ed33d804ede942d5d3
       release: trunk
-      url: http://core.tcl.tk/tklib
+      url: http://fossil.etoyoc.com/fossil/tklib
+      project-short-name: tklib
     }
   }
   release/ {
     trunk {
       distribution: official
       checkout: trunk
-      timestamp: {2015-09-21 10:39:44 UTC}
-    }
-    tklib-0-6 {
-      version: 0.6
-      checkout: tklib-0-6
+      timestamp: {2015-09-24 19:44:17 UTC}
     }
   }
   application/ {

@@ -120,7 +120,7 @@ sak-help:
 	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/sak.tcl` help
 
 shed:
-	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/../sherpa/sherpa.tcl` shed generate `pwd` tool/tool.tcl
+	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/../sherpa/sherpa.tcl` shed generate `pwd` support/tool.tcl
 
 .PHONY: all binaries clean depend distclean doc install installdirs libraries test shed
 
