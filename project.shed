@@ -1,859 +1,348 @@
 
-  generated: {2015-09-25 01:55:10 UTC}
-  release: trunk
-  name: tklib
-  description: {A companion to Tcllib, for Tk related packages}
-  uuid: 0abc2148a96d04fcd83241ed33d804ede942d5d3
-  installer: sak
-  distribution/ {
-    official {
-      name: official
-      class: fossil
-      project-name: {Tk Library Source Code}
-      project-code: 0abc2148a96d04fcd83241ed33d804ede942d5d3
-      release: trunk
-      url: http://fossil.etoyoc.com/fossil/tklib
-      project-short-name: tklib
-    }
+uuid: 0abc2148a96d04fcd83241ed33d804ede942d5d3
+name: tklib
+version: {}
+class: generic
+description: {A companion to Tcllib, for Tk related packages}
+distribution: fossil
+generated: {2015-09-26 02:10:42 UTC}
+release: trunk
+release/ {
+  {
+    uuid: 5e980f78-1a28-4789-8989-7d79e887b798
+    name: trunk
+    version: {}
+    checkout: trunk
+    class: release
+    timestamp: {2015-09-26 02:10:42 UTC}
   }
-  release/ {
-    trunk {
-      name: trunk
-      distribution: official
-      checkout: trunk
-      timestamp: {2015-09-25 01:55:10 UTC}
-    }
-    tklib-0-6 {
-      name: tklib-0-6
-      version: 0.6
-      checkout: tklib-0-6
-    }
+  {
+    uuid: 015f6185-d2ad-49a7-a77f-8e82987c84b8
+    name: tklib-0-6
+    version: 0.6
+    checkout: tklib-0-6
+    class: generic
+    format: fossil
+    project: 0abc2148a96d04fcd83241ed33d804ede942d5d3
+    project-code: 0abc2148a96d04fcd83241ed33d804ede942d5d3
+    project-name: {Tk Library Source Code}
+    project-short-name: tklib
+    release: trunk
+    url: http://fossil.etoyoc.com/fossil/tklib
   }
-  application/ {
-    bitmap-editor {
-      name: bitmap-editor
-      file: apps/bitmap-editor
-      class: script
-      teacup_type: Application
-      version: 1.0
-      platform: tcl
-      summary: {Bitmap Editor}
-      description: {This application is an editor for bitmaps, read from and
+}
+distribution/ {
+  {
+    uuid: 015f6185-d2ad-49a7-a77f-8e82987c84b8
+    name: tklib-0-6
+    version: 0.6
+    checkout: tklib-0-6
+    class: generic
+    format: fossil
+    project: 0abc2148a96d04fcd83241ed33d804ede942d5d3
+    project-code: 0abc2148a96d04fcd83241ed33d804ede942d5d3
+    project-name: {Tk Library Source Code}
+    project-short-name: tklib
+    release: trunk
+    url: http://fossil.etoyoc.com/fossil/tklib
+  }
+}
+file/ {
+  {
+    uuid: 58f5faf4-cfb2-4c35-99d6-73a1c8c6d424
+    name: bitmap-editor
+    version: 1
+    author: {Keith Vetter}
+    category: {Editing bitmaps}
+    class: application
+    description: {This application is an editor for bitmaps, read from and
 written to files in XBM format (X Bitmap).
 }
-      category: {Editing bitmaps}
-      subject: {bitmap xbm editor}
-      require: {{Tcl 8.4} Tk}
-      author: {Keith Vetter}
-      license: BSD
-    }
-    diagram-viewer {
-      name: diagram-viewer
-      file: apps/diagram-viewer
-      class: script
-      teacup_type: Application
-      version: 1.0
-      platform: tcl
-      summary: {Lightweight Diagram Processor}
-      description: {This application is a processor for documents
+    file: apps/bitmap-editor
+    format: {}
+    license: BSD
+    package-require: {{Tcl 8.4} Tk}
+    platform: tcl
+    require: {{Tcl 8.4} Tk}
+    subject: {bitmap xbm editor}
+    summary: {Bitmap Editor}
+    teacup_type: Application
+  }
+  {
+    uuid: 58b097b3-9e08-4682-aaff-ccda63321dac
+    name: diagram-viewer
+    version: 1
+    author: {Andreas Kupries}
+    category: {Processing tklib diagrams}
+    class: application
+    description: {This application is a processor for documents
 written in the tklib diagram language. It
 should cover the most common use cases,
 rendering to canvas for display, and batch
 conversion to raster images.
 }
-      category: {Processing tklib diagrams}
-      subject: {canvas image {raster image}}
-      require: diagram::application
-      author: {Andreas Kupries}
-      license: BSD
-    }
+    file: apps/diagram-viewer
+    format: {}
+    license: BSD
+    package-require: diagram::application
+    platform: tcl
+    require: diagram::application
+    subject: {canvas image {raster image}}
+    summary: {Lightweight Diagram Processor}
+    teacup_type: Application
   }
-  module/ {
-    autoscroll {
-      name: autoscroll
-      path: modules/autoscroll
-      class: tcl
-      sources: autoscroll.tcl
-      package-require: Tk
-      package-provide: {{autoscroll 1.1}}
-    }
-    canvas {
-      name: canvas
-      path: modules/canvas
-      class: tcl
-      sources: {canvas_drag.tcl canvas_epoints.tcl canvas_epolyline.tcl canvas_equad.tcl canvas_gradient.tcl canvas_highlight.tcl canvas_mvg.tcl canvas_snap.tcl canvas_sqmap.tcl canvas_tags.tcl canvas_trlines.tcl canvas_zoom.tcl}
-      package-require: {{cache::async 0.3} canvas::drag canvas::edit::points canvas::highlight canvas::tag canvas::track::lines img::window snit {Tcl 8.4} {Tcl 8.5} Tk {Tk 8.5} uevent::onidle}
-      package-provide: {{canvas::drag 0.1} {canvas::edit::points 0.1} {canvas::edit::polyline 0.1} {canvas::edit::quadrilateral 0.1} {canvas::gradient 0.2} {canvas::highlight 0.1} {canvas::mvg 1} {canvas::snap 1.0.1} {canvas::sqmap 0.3.1} {canvas::tag 0.1} {canvas::track::lines 0.1} {canvas::zoom 0.2.1}}
-    }
-    chatwidget {
-      name: chatwidget
-      path: modules/chatwidget
-      class: tcl
-      sources: chatwidget.tcl
-      package-require: {{Tcl 8.5} {Tk 8.5}}
-      package-provide: {{chatwidget {$chatwidget::version}}}
-    }
-    controlwidget {
-      name: controlwidget
-      path: modules/controlwidget
-      class: tcl
-      sources: {bindDown.tcl controlwidget.tcl led.tcl radioMatrix.tcl rdial.tcl tachometer.tcl vertical_meter.tcl voltmeter.tcl}
-      package-require: {bindDown led meter radioMatrix rdial snit tachometer Tk {Tk 8.5} voltmeter}
-      package-provide: {{bindDown 1.0} {controlwidget 0.1} {led 1.0} {radioMatrix 1.0} {rdial 0.3} {tachometer 0.1} {meter 1.0} {voltmeter 0.1}}
-    }
-    crosshair {
-      name: crosshair
-      path: modules/crosshair
-      class: tcl
-      sources: crosshair.tcl
-      package-require: {{Tcl 8.4} {Tk 8.4}}
-      package-provide: {{crosshair 1.2}}
-    }
-    ctext {
-      name: ctext
-      path: modules/ctext
-      class: tcl
-      sources: {ctext.tcl ctext_scroll_test.tcl ctext_tcl.tcl ctext_test.tcl ctext_test_c.tcl ctext_test_interactive.tcl ctext_test_ws.tcl function_finder.tcl install.tcl}
-      package-require: Tk
-      package-provide: {{ctext 3.3} {ctext_tcl 0.8}}
-    }
-    cursor {
-      name: cursor
-      path: modules/cursor
-      class: tcl
-      sources: cursor.tcl
-      package-require: {{Tk 8.0}}
-      package-provide: {{cursor 0.3.1}}
-    }
-    datefield {
-      name: datefield
-      path: modules/datefield
-      class: tcl
-      sources: datefield.tcl
-      package-require: {{Tk 8.0}}
-      package-provide: {{datefield 0.2}}
-    }
-    diagrams {
-      name: diagrams
-      path: modules/diagrams
-      class: tcl
-      sources: {application.tcl attributes.tcl basic.tcl core.tcl diagram.tcl direction.tcl element.tcl navigation.tcl point.tcl}
-      package-require: {diagram::attribute diagram::basic diagram::core diagram::direction diagram::element diagram::navigation diagram::point fileutil {math::geometry 1.1.2} namespacex snit struct::queue struct::set struct::stack {Tcl 8.5} {Tk 8.5}}
-      package-provide: {{diagram::application 1.2} {diagram::attribute 1} {diagram::basic 1.0.1} {diagram::core 1} {diagram 1} {diagram::direction 1} {diagram::element 1} {diagram::navigation 1} {diagram::point 1}}
-    }
-    getstring {
-      name: getstring
-      path: modules/getstring
-      class: tcl
-      sources: tk_getString.tcl
-      package-require: Tk
-      package-provide: {{getstring 0.1}}
-    }
-    history {
-      name: history
-      path: modules/history
-      class: tcl
-      sources: history.tcl
-      package-require: Tk
-      package-provide: {{history 0.1}}
-    }
-    ico {
-      name: ico
-      path: modules/ico
-      class: tcl
-      sources: {ico.tcl ico0.tcl}
-      package-require: {{Tcl 8.4}}
-      package-provide: {{ico 1.1} {ico 0.3.2}}
-    }
-    ipentry {
-      name: ipentry
-      path: modules/ipentry
-      class: tcl
-      sources: ipentry.tcl
-      package-require: Tk
-      package-provide: {{ipentry 0.3}}
-    }
-    khim {
-      name: khim
-      path: modules/khim
-      class: tcl
-      sources: khim.tcl
-      package-require: {{autoscroll 1.0} {msgcat 1.2} {Tcl 8.4} {Tk 8.4}}
-      package-provide: {{khim 1.0.1}}
-    }
-    mentry {
-      name: mentry
-      path: modules/mentry
-      class: tcl
-      sources: {mentry.tcl mentry_tile.tcl mentryPublic.tcl}
-      package-require: {{-exact mentry::common 3.7} {Tcl 8.4} {Tk 8.4}}
-      package-provide: {{mentry {$::mentry::version}} {mentry_tile {$::mentry::version}} {mentry::common {$::mentry::version}}}
-    }
-    menubar {
-      name: menubar
-      path: modules/menubar
-      class: tcl
-      sources: {debug.tcl menubar.tcl node.tcl tree.tcl}
-      package-require: {menubar menubar::node menubar::tree TclOO Tk}
-      package-provide: {{menubar::debug 0.5} {menubar 0.5} {menubar::node 0.5} {menubar::tree 0.5}}
-    }
-    notifywindow {
-      name: notifywindow
-      path: modules/notifywindow
-      class: tcl
-      sources: notifywindow.tcl
-      package-require: {}
-      package-provide: {{notifywindow 1.0}}
-    }
-    ntext {
-      name: ntext
-      path: modules/ntext
-      class: tcl
-      sources: ntext.tcl
-      package-require: {{Tcl 8.5} {Tk 8.5}}
-      package-provide: {{ntext 0.81}}
-    }
-    plotchart {
-      name: plotchart
-      path: modules/plotchart
-      class: tcl
-      sources: {plot3d.tcl plotanim.tcl plotannot.tcl plotaxis.tcl plotbind.tcl plotbusiness.tcl plotchart.tcl plotcombined.tcl plotconfig.tcl plotcontour.tcl plotgantt.tcl plotobject.tcl plotpack.tcl plotpriv.tcl plotscada.tcl plotspecial.tcl plotstatustimeline.tcl plottable.tcl scaling.tcl xyplot.tcl}
-      package-require: {cmdline Plotchart {Plotchart 2.0} {Tcl 8.5} Tk {Tk 8.5}}
-      package-provide: {{plotanim 0.2} {Plotchart 2.3.4} {xyplot 1.0.1}}
-    }
-    style {
-      name: style
-      path: modules/style
-      class: tcl
-      sources: {as.tcl lobster.tcl style.tcl}
-      package-require: Tk
-      package-provide: {{style::as {$style::as::version}} {style::lobster 0.2} {style 0.3}}
-    }
-    swaplist {
-      name: swaplist
-      path: modules/swaplist
-      class: tcl
-      sources: swaplist.tcl
-      package-require: Tk
-      package-provide: {{swaplist 0.2}}
-    }
-    tablelist {
-      name: tablelist
-      path: modules/tablelist
-      class: tcl
-      sources: {tablelist.tcl tablelist_tile.tcl tablelistPublic.tcl}
-      package-require: {{-exact tablelist::common 5.14} {Tcl 8} {Tcl 8.4} {Tk 8} {Tk 8.4}}
-      package-provide: {{Tablelist {$::tablelist::version}} {Tablelist_tile {$::tablelist::version}} {tablelist::common {$::tablelist::version}}}
-    }
-    tkpiechart {
-      name: tkpiechart
-      path: modules/tkpiechart
-      class: tcl
-      require: {{Tk 8.3} stooop {Tk 8.3} stooop {Tk 8.3} stooop {Tk 8.3} stooop {Tk 8.3} stooop {Tk 8.3} stooop {Tk 8.3} stooop {Tk 8.3} stooop {Tk 8.3} stooop {Tk 8.3} stooop}
-      sources: {boxlabel.tcl canlabel.tcl labarray.tcl objselec.tcl perilabel.tcl pie.tcl pielabel.tcl relirect.tcl selector.tcl slice.tcl tkpiechart.tcl}
-      package-require: {}
-      package-provide: {{tkpiechart 6.6}}
-    }
-    tooltip {
-      name: tooltip
-      path: modules/tooltip
-      class: tcl
-      sources: {tipstack.tcl tooltip.tcl}
-      package-require: {msgcat {Tk 8.4} tooltip}
-      package-provide: {{tipstack 1.0.1} {tooltip 1.4.5}}
-    }
-    wcb {
-      name: wcb
-      path: modules/wcb
-      class: tcl
-      sources: wcb.tcl
-      package-require: {{Tcl 8} {Tk 8}}
-      package-provide: {{Wcb {$wcb::version}}}
-    }
-    widget {
-      name: widget
-      path: modules/widget
-      class: tcl
-      sources: {arrowb.tcl calendar.tcl dateentry.tcl dialog.tcl mentry.tcl panelframe.tcl ruler.tcl scrollw.tcl statusbar.tcl stext.tcl superframe.tcl toolbar.tcl widget.tcl}
-      package-require: {msgcat snit {Tk 8.4} widget {widget 3} widget::calendar widget::scrolledwindow}
-      package-provide: {{widget::arrowbutton 1} {widget::calendar 1.0.1} {widget::dateentry 0.96} {widget::dialog 1.3.1} {widget::menuentry 1.0.1} {widget::panelframe 1.1} {widget::screenruler 1.2} {widget::scrolledwindow 1.2.1} {widget::statusbar 1.2.1} {widget::scrolledtext 1.0} {widget::superframe 1.0.1} {widget::toolbar 1.2.1} {widget 3.1}}
-    }
-    widgetl {
-      name: widgetl
-      path: modules/widgetl
-      class: tcl
-      sources: {listentry.tcl listsimple.tcl}
-      package-require: {img::png msgcat snit {Tcl 8.5} {Tk 8.5} tooltip widget::scrolledwindow widget::validator}
-      package-provide: {{widget::listentry 0.1.1} {widget::listsimple 0.1.1}}
-    }
-    widgetv {
-      name: widgetv
-      path: modules/widgetv
-      class: tcl
-      sources: validator.tcl
-      package-require: {{Tcl 8.5} {Tk 8.5}}
-      package-provide: {{widget::validator 0.1}}
-    }
+}
+module/ {
+  {
+    uuid: 5f2971a9-26ce-446a-a815-ac1fcfc08d36
+    name: autoscroll
+    version: {}
+    class: source
+    package-provide: {{autoscroll 1.1}}
+    package-require: Tk
+    path: modules/autoscroll
   }
-  package/ {
-    {autoscroll 1.1} {
-      name: autoscroll
-      file: autoscroll.tcl
-      require: Tk
-      version: 1.1
-      module: autoscroll
-    }
-    {canvas::drag 0.1} {
-      name: canvas::drag
-      file: canvas_drag.tcl
-      require: {{Tcl 8.5} Tk}
-      version: 0.1
-      module: canvas
-    }
-    {canvas::edit::points 0.1} {
-      name: canvas::edit::points
-      file: canvas_epoints.tcl
-      require: {{Tcl 8.5} Tk snit canvas::drag canvas::highlight canvas::tag}
-      version: 0.1
-      module: canvas
-    }
-    {canvas::edit::polyline 0.1} {
-      name: canvas::edit::polyline
-      file: canvas_epolyline.tcl
-      require: {{Tcl 8.5} Tk snit canvas::track::lines canvas::edit::points}
-      version: 0.1
-      module: canvas
-    }
-    {canvas::edit::quadrilateral 0.1} {
-      name: canvas::edit::quadrilateral
-      file: canvas_equad.tcl
-      require: {{Tcl 8.5} Tk snit canvas::edit::points canvas::track::lines}
-      version: 0.1
-      module: canvas
-    }
-    {canvas::gradient 0.2} {
-      name: canvas::gradient
-      file: canvas_gradient.tcl
-      require: {{Tcl 8.5} {Tk 8.5}}
-      version: 0.2
-      module: canvas
-    }
-    {canvas::highlight 0.1} {
-      name: canvas::highlight
-      file: canvas_highlight.tcl
-      require: {{Tcl 8.5} Tk}
-      version: 0.1
-      module: canvas
-    }
-    {canvas::mvg 1} {
-      name: canvas::mvg
-      file: canvas_mvg.tcl
-      require: {{Tcl 8.5} {Tk 8.5}}
-      version: 1
-      module: canvas
-    }
-    {canvas::snap 1.0.1} {
-      name: canvas::snap
-      file: canvas_snap.tcl
-      require: {{Tcl 8.5} {Tk 8.5} img::window}
-      version: 1.0.1
-      module: canvas
-    }
-    {canvas::sqmap 0.3.1} {
-      name: canvas::sqmap
-      file: canvas_sqmap.tcl
-      require: {{Tcl 8.4} Tk snit uevent::onidle {cache::async 0.3}}
-      version: 0.3.1
-      module: canvas
-    }
-    {canvas::tag 0.1} {
-      name: canvas::tag
-      file: canvas_tags.tcl
-      require: {{Tcl 8.5} Tk}
-      version: 0.1
-      module: canvas
-    }
-    {canvas::track::lines 0.1} {
-      name: canvas::track::lines
-      file: canvas_trlines.tcl
-      require: {{Tcl 8.5} Tk snit}
-      version: 0.1
-      module: canvas
-    }
-    {canvas::zoom 0.2.1} {
-      name: canvas::zoom
-      file: canvas_zoom.tcl
-      require: {{Tcl 8.4} Tk snit uevent::onidle}
-      version: 0.2.1
-      module: canvas
-    }
-    {chatwidget {$chatwidget::version}} {
-      name: chatwidget
-      file: chatwidget.tcl
-      require: {{Tcl 8.5} {Tk 8.5}}
-      version: {$chatwidget::version}
-      module: chatwidget
-    }
-    {bindDown 1.0} {
-      name: bindDown
-      file: bindDown.tcl
-      version: 1.0
-      module: controlwidget
-    }
-    {controlwidget 0.1} {
-      name: controlwidget
-      file: controlwidget.tcl
-      require: {{Tk 8.5} snit bindDown meter led rdial tachometer voltmeter radioMatrix}
-      version: 0.1
-      module: controlwidget
-    }
-    {led 1.0} {
-      name: led
-      file: led.tcl
-      version: 1.0
-      require: {Tk snit bindDown}
-      module: controlwidget
-    }
-    {radioMatrix 1.0} {
-      name: radioMatrix
-      file: radioMatrix.tcl
-      version: 1.0
-      require: {Tk snit bindDown}
-      module: controlwidget
-    }
-    {rdial 0.3} {
-      name: rdial
-      file: rdial.tcl
-      require: {{Tk 8.5} snit}
-      version: 0.3
-      module: controlwidget
-    }
-    {tachometer 0.1} {
-      name: tachometer
-      file: tachometer.tcl
-      require: {{Tk 8.5} snit}
-      version: 0.1
-      module: controlwidget
-    }
-    {meter 1.0} {
-      name: meter
-      file: vertical_meter.tcl
-      version: 1.0
-      require: {Tk snit bindDown}
-      module: controlwidget
-    }
-    {voltmeter 0.1} {
-      name: voltmeter
-      file: voltmeter.tcl
-      require: {{Tk 8.5} snit}
-      version: 0.1
-      module: controlwidget
-    }
-    {crosshair 1.2} {
-      name: crosshair
-      file: crosshair.tcl
-      require: {{Tcl 8.4} {Tk 8.4}}
-      version: 1.2
-      module: crosshair
-    }
-    {ctext 3.3} {
-      name: ctext
-      file: ctext.tcl
-      require: Tk
-      version: 3.3
-      module: ctext
-    }
-    {ctext_tcl 0.8} {
-      name: ctext_tcl
-      file: ctext_tcl.tcl
-      version: 0.8
-      module: ctext
-    }
-    {cursor 0.3.1} {
-      name: cursor
-      file: cursor.tcl
-      require: {{Tk 8.0}}
-      version: 0.3.1
-      module: cursor
-    }
-    {datefield 0.2} {
-      name: datefield
-      file: datefield.tcl
-      require: {{Tk 8.0}}
-      version: 0.2
-      module: datefield
-    }
-    {diagram::application 1.2} {
-      name: diagram::application
-      file: application.tcl
-      require: {{Tcl 8.5} {Tk 8.5} fileutil}
-      version: 1.2
-      module: diagrams
-    }
-    {diagram::attribute 1} {
-      name: diagram::attribute
-      file: attributes.tcl
-      require: {{Tcl 8.5} snit struct::queue}
-      version: 1
-      module: diagrams
-    }
-    {diagram::basic 1.0.1} {
-      name: diagram::basic
-      file: basic.tcl
-      require: {{Tcl 8.5} snit {math::geometry 1.1.2} diagram::point}
-      version: 1.0.1
-      module: diagrams
-    }
-    {diagram::core 1} {
-      name: diagram::core
-      file: core.tcl
-      require: {{Tcl 8.5} snit diagram::direction diagram::element diagram::navigation diagram::point diagram::attribute namespacex struct::set {math::geometry 1.1.2}}
-      version: 1
-      module: diagrams
-    }
-    {diagram 1} {
-      name: diagram
-      file: diagram.tcl
-      require: {{Tcl 8.5} diagram::core diagram::basic snit}
-      version: 1
-      module: diagrams
-    }
-    {diagram::direction 1} {
-      name: diagram::direction
-      file: direction.tcl
-      require: {{Tcl 8.5} snit}
-      version: 1
-      module: diagrams
-    }
-    {diagram::element 1} {
-      name: diagram::element
-      file: element.tcl
-      require: {{Tcl 8.5} snit {math::geometry 1.1.2} diagram::point}
-      version: 1
-      module: diagrams
-    }
-    {diagram::navigation 1} {
-      name: diagram::navigation
-      file: navigation.tcl
-      require: {{Tcl 8.5} snit struct::stack diagram::point}
-      version: 1
-      module: diagrams
-    }
-    {diagram::point 1} {
-      name: diagram::point
-      file: point.tcl
-      require: {{Tcl 8.5} {math::geometry 1.1.2}}
-      version: 1
-      module: diagrams
-    }
-    {getstring 0.1} {
-      name: getstring
-      file: tk_getString.tcl
-      require: Tk
-      version: 0.1
-      module: getstring
-    }
-    {history 0.1} {
-      name: history
-      file: history.tcl
-      require: Tk
-      version: 0.1
-      module: history
-    }
-    {ico 1.1} {
-      name: ico
-      file: ico.tcl
-      require: {{Tcl 8.4}}
-      version: 1.1
-      module: ico
-    }
-    {ico 0.3.2} {
-      name: ico
-      file: ico0.tcl
-      require: {{Tcl 8.4}}
-      version: 0.3.2
-      module: ico
-    }
-    {ipentry 0.3} {
-      name: ipentry
-      file: ipentry.tcl
-      require: Tk
-      version: 0.3
-      module: ipentry
-    }
-    {khim 1.0.1} {
-      name: khim
-      file: khim.tcl
-      require: {{Tcl 8.4} {Tk 8.4} {msgcat 1.2} {autoscroll 1.0}}
-      version: 1.0.1
-      module: khim
-    }
-    {mentry {$::mentry::version}} {
-      name: mentry
-      file: mentry.tcl
-      require: {{-exact mentry::common 3.7}}
-      version: {$::mentry::version}
-      module: mentry
-    }
-    {mentry_tile {$::mentry::version}} {
-      name: mentry_tile
-      file: mentry_tile.tcl
-      require: {{Tcl 8.4} {Tk 8.4} {-exact mentry::common 3.7}}
-      version: {$::mentry::version}
-      module: mentry
-    }
-    {mentry::common {$::mentry::version}} {
-      name: mentry::common
-      file: mentryPublic.tcl
-      version: {$::mentry::version}
-      module: mentry
-    }
-    {menubar::debug 0.5} {
-      name: menubar::debug
-      file: debug.tcl
-      require: {TclOO menubar}
-      version: 0.5
-      module: menubar
-    }
-    {menubar 0.5} {
-      name: menubar
-      file: menubar.tcl
-      require: {Tk TclOO menubar::tree}
-      version: 0.5
-      module: menubar
-    }
-    {menubar::node 0.5} {
-      name: menubar::node
-      file: node.tcl
-      require: TclOO
-      version: 0.5
-      module: menubar
-    }
-    {menubar::tree 0.5} {
-      name: menubar::tree
-      file: tree.tcl
-      require: {TclOO menubar::node}
-      version: 0.5
-      module: menubar
-    }
-    {notifywindow 1.0} {
-      name: notifywindow
-      file: notifywindow.tcl
-      version: 1.0
-      module: notifywindow
-    }
-    {ntext 0.81} {
-      name: ntext
-      file: ntext.tcl
-      require: {{Tcl 8.5} {Tk 8.5}}
-      version: 0.81
-      module: ntext
-    }
-    {plotanim 0.2} {
-      name: plotanim
-      file: plotanim.tcl
-      require: {{Tk 8.5} Plotchart}
-      version: 0.2
-      module: plotchart
-    }
-    {Plotchart 2.3.4} {
-      name: Plotchart
-      file: plotchart.tcl
-      require: {{Tcl 8.5} Tk}
-      version: 2.3.4
-      module: plotchart
-    }
-    {xyplot 1.0.1} {
-      name: xyplot
-      file: xyplot.tcl
-      require: {{Tcl 8.5} {Tk 8.5} {Plotchart 2.0} cmdline}
-      version: 1.0.1
-      module: plotchart
-    }
-    {style::as {$style::as::version}} {
-      name: style::as
-      file: as.tcl
-      require: Tk
-      version: {$style::as::version}
-      module: style
-    }
-    {style::lobster 0.2} {
-      name: style::lobster
-      file: lobster.tcl
-      require: Tk
-      version: 0.2
-      module: style
-    }
-    {style 0.3} {
-      name: style
-      file: style.tcl
-      version: 0.3
-      module: style
-    }
-    {swaplist 0.2} {
-      name: swaplist
-      file: swaplist.tcl
-      require: Tk
-      version: 0.2
-      module: swaplist
-    }
-    {Tablelist {$::tablelist::version}} {
-      name: Tablelist
-      file: tablelist.tcl
-      require: {{Tcl 8} {Tk 8} {-exact tablelist::common 5.14}}
-      version: {$::tablelist::version}
-      module: tablelist
-    }
-    {Tablelist_tile {$::tablelist::version}} {
-      name: Tablelist_tile
-      file: tablelist_tile.tcl
-      require: {{Tcl 8.4} {Tk 8.4} {-exact tablelist::common 5.14}}
-      version: {$::tablelist::version}
-      module: tablelist
-    }
-    {tablelist::common {$::tablelist::version}} {
-      name: tablelist::common
-      file: tablelistPublic.tcl
-      version: {$::tablelist::version}
-      module: tablelist
-    }
-    {tkpiechart 6.6} {
-      name: tkpiechart
-      file: tkpiechart.tcl
-      version: 6.6
-      module: tkpiechart
-    }
-    {tipstack 1.0.1} {
-      name: tipstack
-      file: tipstack.tcl
-      require: tooltip
-      version: 1.0.1
-      module: tooltip
-    }
-    {tooltip 1.4.5} {
-      name: tooltip
-      file: tooltip.tcl
-      require: {{Tk 8.4} msgcat}
-      version: 1.4.5
-      module: tooltip
-    }
-    {Wcb {$wcb::version}} {
-      name: Wcb
-      file: wcb.tcl
-      require: {{Tcl 8} {Tk 8}}
-      version: {$wcb::version}
-      module: wcb
-    }
-    {widget::arrowbutton 1} {
-      name: widget::arrowbutton
-      file: arrowb.tcl
-      require: widget
-      version: 1
-      module: widget
-    }
-    {widget::calendar 1.0.1} {
-      name: widget::calendar
-      file: calendar.tcl
-      require: widget
-      version: 1.0.1
-      module: widget
-    }
-    {widget::dateentry 0.96} {
-      name: widget::dateentry
-      file: dateentry.tcl
-      require: {widget widget::calendar}
-      version: 0.96
-      module: widget
-    }
-    {widget::dialog 1.3.1} {
-      name: widget::dialog
-      file: dialog.tcl
-      require: {snit msgcat}
-      version: 1.3.1
-      module: widget
-    }
-    {widget::menuentry 1.0.1} {
-      name: widget::menuentry
-      file: mentry.tcl
-      require: widget
-      version: 1.0.1
-      module: widget
-    }
-    {widget::panelframe 1.1} {
-      name: widget::panelframe
-      file: panelframe.tcl
-      require: widget
-      version: 1.1
-      module: widget
-    }
-    {widget::screenruler 1.2} {
-      name: widget::screenruler
-      file: ruler.tcl
-      require: {{widget 3}}
-      version: 1.2
-      module: widget
-    }
-    {widget::scrolledwindow 1.2.1} {
-      name: widget::scrolledwindow
-      file: scrollw.tcl
-      require: widget
-      version: 1.2.1
-      module: widget
-    }
-    {widget::statusbar 1.2.1} {
-      name: widget::statusbar
-      file: statusbar.tcl
-      require: widget
-      version: 1.2.1
-      module: widget
-    }
-    {widget::scrolledtext 1.0} {
-      name: widget::scrolledtext
-      file: stext.tcl
-      require: {widget widget::scrolledwindow}
-      version: 1.0
-      module: widget
-    }
-    {widget::superframe 1.0.1} {
-      name: widget::superframe
-      file: superframe.tcl
-      require: widget
-      version: 1.0.1
-      module: widget
-    }
-    {widget::toolbar 1.2.1} {
-      name: widget::toolbar
-      file: toolbar.tcl
-      require: widget
-      version: 1.2.1
-      module: widget
-    }
-    {widget 3.1} {
-      name: widget
-      file: widget.tcl
-      require: {{Tk 8.4} snit}
-      version: 3.1
-      module: widget
-    }
-    {widget::listentry 0.1.1} {
-      name: widget::listentry
-      file: listentry.tcl
-      require: {{Tcl 8.5} {Tk 8.5} snit widget::scrolledwindow widget::validator tooltip msgcat img::png}
-      version: 0.1.1
-      module: widgetl
-    }
-    {widget::listsimple 0.1.1} {
-      name: widget::listsimple
-      file: listsimple.tcl
-      require: {{Tcl 8.5} {Tk 8.5} snit widget::scrolledwindow widget::validator tooltip msgcat img::png}
-      version: 0.1.1
-      module: widgetl
-    }
-    {widget::validator 0.1} {
-      name: widget::validator
-      file: validator.tcl
-      require: {{Tcl 8.5} {Tk 8.5}}
-      version: 0.1
-      module: widgetv
-    }
+  {
+    uuid: c693ca59-f9d0-4f66-b40b-fd373bceeb85
+    name: canvas
+    version: {}
+    class: source
+    package-provide: {{canvas::drag 0.1} {canvas::edit::points 0.1} {canvas::edit::polyline 0.1} {canvas::edit::quadrilateral 0.1} {canvas::gradient 0.2} {canvas::highlight 0.1} {canvas::mvg 1} {canvas::snap 1.0.1} {canvas::sqmap 0.3.1} {canvas::tag 0.1} {canvas::track::lines 0.1} {canvas::zoom 0.2.1}}
+    package-require: {{cache::async 0.3} canvas::drag canvas::edit::points canvas::highlight canvas::tag canvas::track::lines img::window snit {Tcl 8.4} {Tcl 8.5} Tk {Tk 8.5} uevent::onidle}
+    path: modules/canvas
   }
+  {
+    uuid: c0c3ecb3-2be6-4a03-8be9-be410c486d45
+    name: chatwidget
+    version: {}
+    class: source
+    package-provide: {{chatwidget {$chatwidget::version}}}
+    package-require: {{Tcl 8.5} {Tk 8.5}}
+    path: modules/chatwidget
+  }
+  {
+    uuid: 3bd21d7a-d7e8-4bd9-b485-552379894875
+    name: controlwidget
+    version: {}
+    class: source
+    package-provide: {{bindDown 1.0} {controlwidget 0.1} {led 1.0} {meter 1.0} {radioMatrix 1.0} {rdial 0.3} {tachometer 0.1} {voltmeter 0.1}}
+    package-require: {bindDown led meter radioMatrix rdial snit tachometer Tk {Tk 8.5} voltmeter}
+    path: modules/controlwidget
+  }
+  {
+    uuid: a9fd4661-3749-4c4c-a60d-5938899cfe4a
+    name: crosshair
+    version: {}
+    class: source
+    package-provide: {{crosshair 1.2}}
+    package-require: {{Tcl 8.4} {Tk 8.4}}
+    path: modules/crosshair
+  }
+  {
+    uuid: 760337ae-03f0-4bbc-9a0c-0743df59ba62
+    name: ctext
+    version: {}
+    class: source
+    package-provide: {{ctext 3.3} {ctext_tcl 0.8}}
+    package-require: Tk
+    path: modules/ctext
+  }
+  {
+    uuid: 1e3a2b71-aebf-468b-b0b9-4a3afa0362aa
+    name: cursor
+    version: {}
+    class: source
+    package-provide: {{cursor 0.3.1}}
+    package-require: {{Tk 8.0}}
+    path: modules/cursor
+  }
+  {
+    uuid: d346fe2b-8b13-4c35-af19-67382151fa4e
+    name: datefield
+    version: {}
+    class: source
+    package-provide: {{datefield 0.2}}
+    package-require: {{Tk 8.0}}
+    path: modules/datefield
+  }
+  {
+    uuid: 23429df7-77bc-4681-a52e-ca3759d292cb
+    name: diagrams
+    version: {}
+    class: source
+    package-provide: {{diagram 1} {diagram::application 1.2} {diagram::attribute 1} {diagram::basic 1.0.1} {diagram::core 1} {diagram::direction 1} {diagram::element 1} {diagram::navigation 1} {diagram::point 1}}
+    package-require: {diagram::attribute diagram::basic diagram::core diagram::direction diagram::element diagram::navigation diagram::point fileutil {math::geometry 1.1.2} namespacex snit struct::queue struct::set struct::stack {Tcl 8.5} {Tk 8.5}}
+    path: modules/diagrams
+  }
+  {
+    uuid: a5140d6b-0f90-40fd-8eac-3fb9db1d71c1
+    name: getstring
+    version: {}
+    class: source
+    package-provide: {{getstring 0.1}}
+    package-require: Tk
+    path: modules/getstring
+  }
+  {
+    uuid: 48769780-2035-4256-b454-f1565efa0e20
+    name: history
+    version: {}
+    class: source
+    package-provide: {{history 0.1}}
+    package-require: Tk
+    path: modules/history
+  }
+  {
+    uuid: 5966fadd-c668-4d94-a016-2765e36cd390
+    name: ico
+    version: {}
+    class: source
+    package-provide: {{ico 0.3.2} {ico 1.1}}
+    package-require: {{Tcl 8.4}}
+    path: modules/ico
+  }
+  {
+    uuid: 724214e5-57ab-4881-acee-f06b2f0472e2
+    name: ipentry
+    version: {}
+    class: source
+    package-provide: {{ipentry 0.3}}
+    package-require: Tk
+    path: modules/ipentry
+  }
+  {
+    uuid: 8d3b7a3a-efdc-466b-bb52-ae621b62bfc5
+    name: khim
+    version: {}
+    class: source
+    package-provide: {{khim 1.0.1}}
+    package-require: {{autoscroll 1.0} {msgcat 1.2} {Tcl 8.4} {Tk 8.4}}
+    path: modules/khim
+  }
+  {
+    uuid: 9df739f9-a92b-435b-a89a-fed6a487a537
+    name: mentry
+    version: {}
+    class: source
+    package-provide: {{mentry {$::mentry::version}} {mentry::common {$::mentry::version}} {Mentry_tile ...} {mentry_tile {$::mentry::version}}}
+    package-require: {{-exact mentry::common 3.7} mentry {Mentry ?<i>version</i>?} {mentry ?<i>version</i>?} mentry<span>_tile</span> {Mentry_tile ?<i>version</i>?} {mentry_tile ?<i>version</i>?} {Tcl 8} {Tcl 8.4} {Tk 8} {Tk 8.4}}
+    path: modules/mentry
+  }
+  {
+    uuid: 5abb1089-95d0-44e9-bcf9-c24a8203d384
+    name: menubar
+    version: {}
+    class: source
+    package-provide: {{menubar 0.5} {menubar::debug 0.5} {menubar::node 0.5} {menubar::tree 0.5}}
+    package-require: {menubar menubar::node menubar::tree Tcl TclOO Tk}
+    path: modules/menubar
+  }
+  {
+    uuid: 4736fcbc-86cc-4f6d-a4c6-e3fea1cfe2a3
+    name: notifywindow
+    version: {}
+    class: source
+    package-provide: {{notifywindow 1.0}}
+    package-require: {}
+    path: modules/notifywindow
+  }
+  {
+    uuid: b354b361-0e16-4b44-89ac-3426e1c504ac
+    name: ntext
+    version: {}
+    class: source
+    package-provide: {{ntext 0.81}}
+    package-require: {{Tcl 8.5} {Tk 8.5}}
+    path: modules/ntext
+  }
+  {
+    uuid: 2a9f223e-22c3-47bc-9019-7d6e09129633
+    name: plotchart
+    version: {}
+    class: source
+    package-provide: {{plotanim 0.2} {Plotchart 2.3.4} {xyplot 1.0.1}}
+    package-require: {cmdline Plotchart {Plotchart 2.0} {Tcl 8.5} Tk {Tk 8.5}}
+    path: modules/plotchart
+  }
+  {
+    uuid: 777c794a-10b7-4dd0-ae7e-f6eff21ac62f
+    name: style
+    version: {}
+    class: source
+    package-provide: {{style 0.3} {style::as {$style::as::version}} {style::lobster 0.2}}
+    package-require: Tk
+    path: modules/style
+  }
+  {
+    uuid: 0654ed09-38b3-4bcf-89f5-04f0248dddcc
+    name: swaplist
+    version: {}
+    class: source
+    package-provide: {{swaplist 0.2}}
+    package-require: Tk
+    path: modules/swaplist
+  }
+  {
+    uuid: 65bbe209-c620-44b7-a639-fc94a93564b1
+    name: tablelist
+    version: {}
+    class: source
+    package-provide: {{Tablelist {$::tablelist::version}} {tablelist::common {$::tablelist::version}} {Tablelist_tile ...} {Tablelist_tile {$::tablelist::version}}}
+    package-require: {{-exact tablelist::common 5.14} BWidget {tablelist 5.14} {Tablelist ?<i>version</i>?} {tablelist ?<i>version</i>?} {tablelist<span>_tile</span> 5.14} {Tablelist_tile ?<i>version</i>?} {tablelist_tile ?<i>version</i>?} {Tcl 8} {Tcl 8.4} {Tk 8} {Tk 8.3} {Tk 8.4} {tkdnd 2.7}}
+    path: modules/tablelist
+  }
+  {
+    uuid: 191aa8ed-ae08-4a87-b0f7-e9322a4d3ad2
+    name: tkpiechart
+    version: {}
+    class: source
+    package-provide: {{tkpiechart 6.6}}
+    package-require: {stooop {Tk 8.3}}
+    path: modules/tkpiechart
+  }
+  {
+    uuid: e0eb4297-cf84-45cb-8833-1a5928f9cefa
+    name: tooltip
+    version: {}
+    class: source
+    package-provide: {{tipstack 1.0.1} {tooltip 1.4.5}}
+    package-require: {msgcat {Tk 8.4} tooltip}
+    path: modules/tooltip
+  }
+  {
+    uuid: 4d83497e-dd71-4842-951d-7695d8d97693
+    name: wcb
+    version: {}
+    class: source
+    package-provide: {{Wcb ...} {Wcb {$wcb::version}}}
+    package-require: {{Tcl 8} {Tk 8} {Wcb ?<i>version</i>?} {wcb ?<i>version</i>?}}
+    path: modules/wcb
+  }
+  {
+    uuid: a8cd3f36-bdf0-4bd4-be0a-4ffca7f93a94
+    name: widget
+    version: {}
+    class: source
+    package-provide: {{widget 3.1} {widget::arrowbutton 1} {widget::calendar 1.0.1} {widget::dateentry 0.96} {widget::dialog 1.3.1} {widget::menuentry 1.0.1} {widget::panelframe 1.1} {widget::screenruler 1.2} {widget::scrolledtext 1.0} {widget::scrolledwindow 1.2.1} {widget::statusbar 1.2.1} {widget::superframe 1.0.1} {widget::toolbar 1.2.1}}
+    package-require: {msgcat snit {Tk 8.4} widget {widget 3} widget::calendar widget::scrolledwindow}
+    path: modules/widget
+  }
+  {
+    uuid: cbd85d92-227a-4b88-bf6b-7468ed6ea7ca
+    name: widgetl
+    version: {}
+    class: source
+    package-provide: {{widget::listentry 0.1.1} {widget::listsimple 0.1.1}}
+    package-require: {img::png msgcat snit {Tcl 8.5} {Tk 8.5} tooltip widget::scrolledwindow widget::validator}
+    path: modules/widgetl
+  }
+  {
+    uuid: fdcb0139-236d-4d9a-81b9-becb268e7c0e
+    name: widgetv
+    version: {}
+    class: source
+    package-provide: {{widget::validator 0.1}}
+    package-require: {{Tcl 8.5} {Tk 8.5}}
+    path: modules/widgetv
+  }
+}

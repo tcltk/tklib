@@ -3,19 +3,21 @@
 ###
 my shed set name: tklib
 my shed set installer: sak
-my release add tklib-0-6 {
+my add {
+  name: tklib-0-6
+  linktype: release
   version: 0.6
   checkout: tklib-0-6
 }
 
 foreach file [glob [file join $::TOOL_ROOT apps *]] {
   if {[file extension $file] ne {}} continue
-  my application scan $file
+  my scan $file {class: application}
 }
 
 ###
 # Build the module section
 ###
 foreach path [glob [file join $::TOOL_ROOT modules *]] {
-  my module scan $path
+  my scan $path {class: source}
 }
