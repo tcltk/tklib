@@ -9,167 +9,166 @@
     class: generic
     description: {A companion to Tcllib, for Tk related packages}
     distribution: fossil
-    generated: {2015-10-15 15:13:33 UTC}
+    generated: {2015-10-15 16:35:23 UTC}
     release: trunk
   }
   release/ {
-    015f6185-d2ad-49a7-a77f-8e82987c84b8
-    58b097b3-9e08-4682-aaff-ccda63321dac
+    c549edafac92b2769bbe5dfb826ba3462bba38fb
+    b66de2c1e029839bb4e9778b77a84e2f52828e7d
   }
   distribution/ {
-    58f5faf4-cfb2-4c35-99d6-73a1c8c6d424
+    518aecfbb2dc6cd21b2829713ac246bc99926bd0
   }
   file/ {
-    5f2971a9-26ce-446a-a815-ac1fcfc08d36
-    65c0225d-2180-4317-90e3-fd010ed43a12
+    322c6ff8f1355f65ad3b19a959665424e7ce0d58
+    580fa47fe4880808e9147fd4420bc639304b6e87
   }
   module/ {
-    c693ca59-f9d0-4f66-b40b-fd373bceeb85
-    afc30a02-e098-44a1-8dc5-5e9a55d635e6
-    fa356a86-ddb2-4d06-86ac-7babcbed498c
-    3cd9d031-1022-4366-8750-f205d6df912a
-    ea0d6f5f-e1e0-4cbd-980d-77311de0c476
-    5cd626f7-2645-48af-a14c-f57a26cc68db
-    d1114c92-1115-4146-ab24-fc9817d4deba
-    80ff8561-6ab3-4bb5-9ff8-36a3195c68ca
-    f802c2e0-de0b-45fc-b2be-db173d393fa6
-    aaee0fec-cd67-4864-97f3-e7d9fc7e8fd4
-    2a9f223e-22c3-47bc-9019-7d6e09129633
-    f511d83c-9be6-48cc-8e39-46cdfe6d27b2
-    4b19bb74-6af2-4683-bc02-9a2a2dbb18a5
-    90398ca8-4a9c-4a38-b13d-a6627ddcc172
-    69c32e11-8f9d-4c93-bdf2-4910570f2a97
-    e7d95e90-1e21-4e98-ace8-c4f8f7581255
-    ab9676e3-6d4e-48eb-9d3d-740040217c7a
-    c731657f-5dad-4f15-acb0-0ebbd7a2533e
-    24435d38-3d04-4e30-b741-6e86e2d72325
-    d4e2725d-7095-43c2-9f79-b1d56835474b
-    1aef71e6-2999-4fe6-af35-b5c978843c10
-    9395babc-008e-41c8-8169-d4b90ffcb362
-    99c8291d-4f4b-4fb3-b36f-e0941b007cee
-    39229d0b-f305-465c-9349-41dee6b220ad
-    5c8046b9-7b0c-420d-abaf-39e98ac7a81f
-    37411998-b33d-491d-b461-f0340d64548d
-    ae5fa8ea-089a-4333-beea-98e65e0409b0
-    1ff06180-bf3e-4772-87aa-b3a11dfd3db6
+    2cfab13cbe47d25bbcd87fff971d7d21a6182c64
+    3953e9dc081712b19c1acbe0435526c86e14708b
+    da438664fd662398343777fadf74a3ec10754509
+    f2d4316cfe55702d72026e04c7aa4ada3a9d8076
+    73277c7d9ab336b5c19c3baa399a204f7ea688a1
+    6101472f389ff119c06489959cc240b97aa778cd
+    8a1a44280499c3a578a639ab77a50f4e183e4ea5
+    258b85e356d3049bcb595fd9f5e142348baf4f80
+    c86c06f6b46ef5e4ae36b9c0e037a2e9fbb01774
+    22aebc959e1bd13766fa33dae07258d0c89d23a6
+    acf8bed942a7b38ac39fbad4618bec2d0fd928be
+    6c34768e088c875c0bdb12db683edb0f20403c68
+    dfaad1830ac3667325290ca4c975cd78d8876fb8
+    8680eb373e226057f1bacc26123527247b216cb4
+    2bea18158c728ed98d8060757d71cf7c6e1a4d05
+    415e572ddbb25c9ecc02d73744b590e468cae61f
+    d5915542e81ce77fec88552e8f8db0ede6e0580a
+    e5353312905b69f28a4e5001bf62a27cfe6ba1e2
+    fc5d4658bcb1636d17926cc5ca86afb5adbb1507
+    36ec3520b0fc381448bc0b7d4ea4bdf2fce12d1d
+    add3741956e021fbd025adf4ad2662242a9cc70b
+    f973676a8bd34e4de523254e6d150135e97e1b1d
+    e0b2d1eb53352a7ff6a5c6f6c77636e96a64ca83
+    d13434a192313f0f078f87a7e940e369f2bce05e
+    e63921c51c8017125418e969fd47a6e92f97dca1
+    4445ad9046028d56856d1dfc2dd4e0fef80ceaf1
+    0fac8df23ae7befc5fc00112576d3748506f77bf
+    e4b97e9c0f85a2a3cab4e831148669485c06ba59
   }
   package/ {
-    0d5a8117-4d18-4241-ade6-0fd66ddd5dd1
-    79e77324-a150-4800-a621-0875125b7f9e
-    94823bb3-8eb7-41de-9c86-bd61eea61e13
-    1e358603-efd1-4a5f-86e0-d6fc84a30cf1
-    12fe114b-9f61-43a6-b121-dbbc31c1ab4e
-    c0c3ecb3-2be6-4a03-8be9-be410c486d45
-    3bd21d7a-d7e8-4bd9-b485-552379894875
-    2e66e1fe-24d0-4543-b0f1-00a054ef5c79
-    46e4a997-20d0-445e-8ec8-06707b9856a6
-    abd9ff80-4954-4393-8dd8-a916b653304b
-    c77cd8ef-6a91-4a91-8a05-44a180221a75
-    6e4f4940-6573-4a5c-aaee-7747c72c245c
-    d2633738-2e86-485d-ae24-70fd87942eef
-    89563f64-e66d-46f5-b2b2-a823fb6c6068
-    b3c3b409-e21b-4768-839b-12f2032413fe
-    83f9afc9-3f8b-481e-ab3a-d820fa74588b
-    1e3a2b71-aebf-468b-b0b9-4a3afa0362aa
-    d346fe2b-8b13-4c35-af19-67382151fa4e
-    23429df7-77bc-4681-a52e-ca3759d292cb
-    044583d3-9f20-4858-bcb2-8ea789cdd247
-    3941e36f-247d-4c52-8997-2c41e7c4eb61
-    29e6611a-7c08-43a8-96da-1954081f884c
-    bf22ef1f-6e12-45be-a066-b7e2493230b5
-    5c819102-252b-444a-99d6-95cbc713092e
-    cb1d3377-f1cf-4f91-b358-7a87ac0d8695
-    aa2abfb4-33fd-4a41-9b0b-e71511274846
-    2df7a0c0-e72d-4943-a9cb-54f39e2ed362
-    613b2c98-1b5e-405f-a0c0-e71aae6125b6
-    753818bd-7863-4001-9ed8-f9ca081a9cc4
-    6d5bd59a-fb49-40d5-b246-5e660e9334ea
-    d2c8d9ea-4c1b-4f77-8c91-ca24d30129dc
-    70553614-1a25-442b-b670-c507b8732405
-    67763f6f-5f3a-486e-ba53-ac1393b5058d
-    4656e45b-7751-462e-a810-f2b5fbc4cb42
-    65fbab50-8218-484a-a22a-26f576b42790
-    644b904b-193a-4c69-be3b-0d4c70c2a3f9
-    fdd2c205-af41-470f-9366-25b15531051b
-    3cc8781f-3531-44aa-b681-24ad49706015
-    35840196-f235-446b-9915-5e6173b387cc
-    ef4b270c-a1eb-4095-925d-296e6db840d1
-    5d122410-533c-4ad8-b3d9-222895cef732
-    092daf5d-6616-45e0-971c-0a01737c23c9
-    2d88c444-c059-4d14-8a18-9b763aad2097
-    08fba9e3-372f-48f5-a154-a2525914b00b
-    1c69c8f6-6070-4530-acbd-1b0c40684cfe
-    65bbe209-c620-44b7-a639-fc94a93564b1
-    e67bc858-1d58-414d-bf13-91df4bd2d71a
-    50778687-4c53-4bb3-bfdb-40e3bda825c4
-    6618f8fd-2bf1-4f60-9d30-fd8df4a3782b
-    d0873b69-9c3f-4a96-ba06-a4105f8ab473
-    24e8fa3b-6adf-4fdc-aef9-c8a265720d50
-    a0c992f8-5059-41c0-a0cd-a14a72411dc6
-    24c55549-efae-4755-9222-b2f8903372d9
-    c2f2c366-0543-4bef-8f82-2f8aa7206084
-    dc37bb4d-8bed-46db-a5da-09062c546ed3
-    9aa52683-3fe5-4742-8cc3-e29d1ec192cf
-    8540d617-d426-4f3c-a97c-87b9722097d9
-    b0e3f495-1588-4fd6-bb90-aa27a116561e
-    b14a1ae9-1416-426e-9210-942eafde8751
-    0eca1eb4-8645-4c05-9b8e-5052efb43e1d
-    d5601a06-6132-41e1-a8ff-c6f67b0c2e33
-    191aa8ed-ae08-4a87-b0f7-e9322a4d3ad2
-    b0101463-1273-4e43-b1d6-063b10def2ad
-    f8d7649e-0006-4643-a7cb-3d2ba5ae7a88
-    3f70dc8a-16a5-494c-a8b1-8a24d742d135
-    4987b7e3-d03a-43d8-aece-cfb036c76d65
-    33fde5e2-b9c8-474d-b190-1655c00d16e0
-    26dc32d8-5d29-4983-8a77-dc68acb9b30b
-    6108029a-3f05-4856-8037-c8f06fb193b2
-    e299a234-e18f-4ade-be26-8b142342c4f5
-    23c108ed-013f-4ebb-9707-272b1e5aeef6
-    d4358f2a-5d13-47f9-8770-f3e9fae6c359
-    a6446d71-ced7-4e66-8f86-7c6cd362aa7d
-    7cbfd426-ee32-40d9-bc70-6fd79fb9fe2f
-    9c9dbe2f-b9be-446d-a4e4-32b70437c2c9
-    4f325c85-5411-4965-a699-7c6eb5df14b0
-    ea073479-dc4a-48ed-a297-40284e8de480
-    0fb3799b-6ca3-47f9-b42f-44017102dce2
-    26457728-eb61-467d-9a5d-50e420f43262
-    e5550320-c444-439c-b728-d0b2e41fd960
-    084354a9-a6d0-4c5f-abe1-4431fddbd1dc
-    b2598a65-29e5-4203-a6ce-abdfd6a00e95
-    7031b4d0-4439-4433-8f06-da2c00245c96
-    c17bb842-52b2-411a-8e2f-90d62b15f538
+    58dbe95f92b4baaa30839099dfd73141bfabd2b4
+    d8f089466c84b3c5568504cf71222c15f352f976
+    9a1678bab38ced31a4b6421fd0f9d35d35b323a8
+    43384f34c20b2279dbb10558949bfadbc641dbc3
+    48b650252ffebf2a89174c3513eeb91df4d05bf9
+    29f10a04299734340569a5276f97f68abd5faeb8
+    283e08fb2324f64885dd0b4fd3b2be97d1580e41
+    56bda6ff5e649e1eb3be0c3917f605bb0d5b4ff8
+    ca47564d16c93360b64bdf5a80dc07bc2e0dede0
+    18bf3ae27bc9c793b38882a929ab9cb41ce7ea84
+    6c3f5af5f0057bfca68ed9c3f0a21fc98dcb2d08
+    632d13f24af5b7e6c3226229487c54557aa770a0
+    e01d877cc29122ebdab32e72da8242bcd96c465e
+    bf9ff1458f3b3aeab5b11353a9e9c954461736e3
+    507141ca6d25ef639bca9e9fa3a5d80af5d1c835
+    38f9e219157c50f581ee23c272cd8962bd5e8333
+    c77b6c188837d80dd4fb80b4868284872859610a
+    5a6eb17c288befaf603a77caff14fee3ecff0b38
+    9d2134c05fbd0d3dfedad53357802a7704cd00a8
+    b545906e28affc28e528f88498e375f1e6f50c1c
+    130377ff9a872d0c5e05e577595d790997efab94
+    b439f32e3c01e65831864e0f168f288020e9e850
+    9618d1127de41baffd8297c66aa69c49124ecfab
+    7b5d12ea5fcc2332f8b4211aa37e720d3680d498
+    a59b016918e9314aeb40ba2c45f4e4e958ffd658
+    a62f573a8f3327335528ed68064165fd046de5ab
+    dd0d39f2bf7a7d1325856c28c83bc4fbd4f90d13
+    43ef0b83781fa49d6ea9fcc43b743fa21d20d037
+    51344e3872726848b2853e7c9055b9f3f01b8db9
+    d3e6c24a4b6ef4a9002936df31164b22378d765d
+    5d24ca069b7624cd1cb4bd226cb89b0c61fd2d18
+    ca296d021ccffd75746085ed3f5a8dda5ae66608
+    e2834ea0deb972de05bd1693e4796fbead164c57
+    e70873bedb024059bcdfa7f8f9492292952255e9
+    e021ff9d9eb2d17a04bf2969bb003df597cc6319
+    ab7a811cfd31cac7725dc8d7e9d83376e054877b
+    cc7018150cb6dd1ffc059f2b526fdd4c5f75cb02
+    c5f8f5076bfd5ec443ba6037c7af653afdcbd9b2
+    f4389350c6a57418088d11ee4f691d3e56c5cd80
+    1635430114ebb6b6cd3342e7c53365e17e50bb38
+    65de0d4e11dfcae525891096a759b272f7540a44
+    76dd4e32d522bc2200e9d8bb398d21a19ae0f0bf
+    ad2dca7834a202dc7179c14003cecf989d7897c9
+    7367346a70b771480ef7dcb1192fcec6a8000170
+    017ecbc59d9a620f0779a933ed051df430b420f0
+    c3e4c582240b314c75e141359674d154cd7f863a
+    4dca0b223483ada0bff9e15c869c7c04173e871e
+    53ff141c0109246d3cab7f62a512db1f2eb1f613
+    653eec3e605ef1077e597cde1cdcd26bcf01a824
+    facfc7c66ca2915ed684381e50c8718cae0be4ba
+    09c7f1e64fc5a0841cf800cd8c0cd88c2b9198c8
+    5f07824f2d644a90f09bd18d8aaf272c3a29c89c
+    3496b3a2d634c1089ae2e684131223884b6bf4a9
+    0d7631adecc2e1e008129e7994bf8603798d88ee
+    199a12422897f5f35542174905f233ef5fd4dab1
+    3f90e40688bd8571f68f4698bd2b3733d83bce59
+    11146c8b65d2222c758336a2e7516c83a832c547
+    7539e713390e63fdd66eee9b0810705be566b3e8
+    34928b3c641438b733465bc5cc0943a15ac9601e
+    bb1409e88482b1fc1b3afc0af5a46b7c0ce23d74
+    7386578566d332bb8dc1411bd3eb62336c61011e
+    9f324be577c60ab5a8987f6580db6446617a713c
+    8e22e5d9825e87062e5759a77c5f841e83d213cd
+    67d3736801f59fe45554ee6c8508e054d78a9022
+    567a596efd080e7831c06731f66b0a7b4aab7f98
+    2865afc83f02a761103ce617bf03115a4dae870a
+    9a5ced6fdfd9fc7ae13b4cfef945e4b46fba1f9d
+    103cb0fd806023f467dccb0985d3c99835d750d1
+    98d91f1a36b5f791aa4ce1032524fc9129524315
+    6827a949bcafd300f20b807a3aeada63b673b8ab
+    dac28e09fb7f9b8eb38f2b28eb2aac46555f4ad5
+    eb7bdef16c312f6a1a99c333c997cce49a4a302d
+    48bcf003252e009dcd2d4c1f51952db91b18188e
+    0485edfad1ffeeb8023c1559a230b4268f69bf02
+    18d2c7c1bd1c87b8363a271c01a311c5c61736e7
+    3657cad2d0c2a0f0a2b846705f5b22062bd537b1
+    b009bee9ea5c86f7ec1a020daa40026c8aa4a77d
+    296dd248d8c1c861e1289a60c423caf225fc4df5
+    b983dc6fdb515b8d3df1e77de61e3f339836ce84
+    4ea440b96a795eb2d06fd50c0d4e814f9a5625e3
+    d28fc62bf4896948cd0a7631fda1d3c74b25b088
+    2cb7f2d0438d93891be3d729026ba430d741d61e
+    a636cc4f85d40d7aa4c1f730fdbebd3bae2bde8e
+    46f458a1dcc0390e0075918eeaedec82b3a45f66
   }
 }
-015f6185-d2ad-49a7-a77f-8e82987c84b8 {
+c549edafac92b2769bbe5dfb826ba3462bba38fb {
   entity {
     name: trunk
-    shed_class: generic
+    shed_class: release
     version: {}
   }
   meta {
     checkout: trunk
-    class: release
-    timestamp: {2015-10-15 15:13:33 UTC}
+    class: generic
+    timestamp: {2015-10-15 16:35:23 UTC}
   }
 }
-58f5faf4-cfb2-4c35-99d6-73a1c8c6d424 {
+518aecfbb2dc6cd21b2829713ac246bc99926bd0 {
   entity {
     name: fossil
-    shed_class: generic
+    shed_class: distribution
     version: {}
   }
   meta {
     class: generic
     format: fossil
     project: 0abc2148a96d04fcd83241ed33d804ede942d5d3
-    project-code: 0abc2148a96d04fcd83241ed33d804ede942d5d3
     project-name: {Tk Library Source Code}
     project-short-name: tklib
     release: trunk
     url: http://fossil.etoyoc.com/fossil/tklib
   }
 }
-58b097b3-9e08-4682-aaff-ccda63321dac {
+b66de2c1e029839bb4e9778b77a84e2f52828e7d {
   entity {
     name: tklib-0-6
     shed_class: generic
@@ -180,7 +179,7 @@
     class: generic
   }
 }
-5f2971a9-26ce-446a-a815-ac1fcfc08d36 {
+322c6ff8f1355f65ad3b19a959665424e7ce0d58 {
   entity {
     name: bitmap-editor
     shed_class: file
@@ -204,7 +203,7 @@ written to files in XBM format (X Bitmap).
     teacup_type: Application
   }
 }
-65c0225d-2180-4317-90e3-fd010ed43a12 {
+580fa47fe4880808e9147fd4420bc639304b6e87 {
   entity {
     name: diagram-viewer
     shed_class: file
@@ -231,7 +230,7 @@ conversion to raster images.
     teacup_type: Application
   }
 }
-c693ca59-f9d0-4f66-b40b-fd373bceeb85 {
+2cfab13cbe47d25bbcd87fff971d7d21a6182c64 {
   entity {
     name: autoscroll
     shed_class: module
@@ -244,10 +243,10 @@ c693ca59-f9d0-4f66-b40b-fd373bceeb85 {
     path: modules/autoscroll
   }
   package/ {
-    0d5a8117-4d18-4241-ade6-0fd66ddd5dd1
+    58dbe95f92b4baaa30839099dfd73141bfabd2b4
   }
 }
-0d5a8117-4d18-4241-ade6-0fd66ddd5dd1 {
+58dbe95f92b4baaa30839099dfd73141bfabd2b4 {
   entity {
     name: autoscroll
     shed_class: package
@@ -258,7 +257,7 @@ c693ca59-f9d0-4f66-b40b-fd373bceeb85 {
     file: autoscroll.tcl
   }
 }
-afc30a02-e098-44a1-8dc5-5e9a55d635e6 {
+3953e9dc081712b19c1acbe0435526c86e14708b {
   entity {
     name: canvas
     shed_class: module
@@ -271,21 +270,21 @@ afc30a02-e098-44a1-8dc5-5e9a55d635e6 {
     path: modules/canvas
   }
   package/ {
-    79e77324-a150-4800-a621-0875125b7f9e
-    94823bb3-8eb7-41de-9c86-bd61eea61e13
-    1e358603-efd1-4a5f-86e0-d6fc84a30cf1
-    12fe114b-9f61-43a6-b121-dbbc31c1ab4e
-    c0c3ecb3-2be6-4a03-8be9-be410c486d45
-    3bd21d7a-d7e8-4bd9-b485-552379894875
-    2e66e1fe-24d0-4543-b0f1-00a054ef5c79
-    46e4a997-20d0-445e-8ec8-06707b9856a6
-    abd9ff80-4954-4393-8dd8-a916b653304b
-    c77cd8ef-6a91-4a91-8a05-44a180221a75
-    6e4f4940-6573-4a5c-aaee-7747c72c245c
-    d2633738-2e86-485d-ae24-70fd87942eef
+    d8f089466c84b3c5568504cf71222c15f352f976
+    9a1678bab38ced31a4b6421fd0f9d35d35b323a8
+    43384f34c20b2279dbb10558949bfadbc641dbc3
+    48b650252ffebf2a89174c3513eeb91df4d05bf9
+    29f10a04299734340569a5276f97f68abd5faeb8
+    283e08fb2324f64885dd0b4fd3b2be97d1580e41
+    56bda6ff5e649e1eb3be0c3917f605bb0d5b4ff8
+    ca47564d16c93360b64bdf5a80dc07bc2e0dede0
+    18bf3ae27bc9c793b38882a929ab9cb41ce7ea84
+    6c3f5af5f0057bfca68ed9c3f0a21fc98dcb2d08
+    632d13f24af5b7e6c3226229487c54557aa770a0
+    e01d877cc29122ebdab32e72da8242bcd96c465e
   }
 }
-79e77324-a150-4800-a621-0875125b7f9e {
+d8f089466c84b3c5568504cf71222c15f352f976 {
   entity {
     name: canvas::drag
     shed_class: package
@@ -296,7 +295,7 @@ afc30a02-e098-44a1-8dc5-5e9a55d635e6 {
     file: canvas_drag.tcl
   }
 }
-94823bb3-8eb7-41de-9c86-bd61eea61e13 {
+9a1678bab38ced31a4b6421fd0f9d35d35b323a8 {
   entity {
     name: canvas::edit::points
     shed_class: package
@@ -307,7 +306,7 @@ afc30a02-e098-44a1-8dc5-5e9a55d635e6 {
     file: canvas_epoints.tcl
   }
 }
-1e358603-efd1-4a5f-86e0-d6fc84a30cf1 {
+43384f34c20b2279dbb10558949bfadbc641dbc3 {
   entity {
     name: canvas::edit::polyline
     shed_class: package
@@ -318,7 +317,7 @@ afc30a02-e098-44a1-8dc5-5e9a55d635e6 {
     file: canvas_epolyline.tcl
   }
 }
-12fe114b-9f61-43a6-b121-dbbc31c1ab4e {
+48b650252ffebf2a89174c3513eeb91df4d05bf9 {
   entity {
     name: canvas::edit::quadrilateral
     shed_class: package
@@ -329,7 +328,7 @@ afc30a02-e098-44a1-8dc5-5e9a55d635e6 {
     file: canvas_equad.tcl
   }
 }
-c0c3ecb3-2be6-4a03-8be9-be410c486d45 {
+29f10a04299734340569a5276f97f68abd5faeb8 {
   entity {
     name: canvas::gradient
     shed_class: package
@@ -340,7 +339,7 @@ c0c3ecb3-2be6-4a03-8be9-be410c486d45 {
     file: canvas_gradient.tcl
   }
 }
-3bd21d7a-d7e8-4bd9-b485-552379894875 {
+283e08fb2324f64885dd0b4fd3b2be97d1580e41 {
   entity {
     name: canvas::highlight
     shed_class: package
@@ -351,7 +350,7 @@ c0c3ecb3-2be6-4a03-8be9-be410c486d45 {
     file: canvas_highlight.tcl
   }
 }
-2e66e1fe-24d0-4543-b0f1-00a054ef5c79 {
+56bda6ff5e649e1eb3be0c3917f605bb0d5b4ff8 {
   entity {
     name: canvas::mvg
     shed_class: package
@@ -362,7 +361,7 @@ c0c3ecb3-2be6-4a03-8be9-be410c486d45 {
     file: canvas_mvg.tcl
   }
 }
-46e4a997-20d0-445e-8ec8-06707b9856a6 {
+ca47564d16c93360b64bdf5a80dc07bc2e0dede0 {
   entity {
     name: canvas::snap
     shed_class: package
@@ -373,7 +372,7 @@ c0c3ecb3-2be6-4a03-8be9-be410c486d45 {
     file: canvas_snap.tcl
   }
 }
-abd9ff80-4954-4393-8dd8-a916b653304b {
+18bf3ae27bc9c793b38882a929ab9cb41ce7ea84 {
   entity {
     name: canvas::sqmap
     shed_class: package
@@ -384,7 +383,7 @@ abd9ff80-4954-4393-8dd8-a916b653304b {
     file: canvas_sqmap.tcl
   }
 }
-c77cd8ef-6a91-4a91-8a05-44a180221a75 {
+6c3f5af5f0057bfca68ed9c3f0a21fc98dcb2d08 {
   entity {
     name: canvas::tag
     shed_class: package
@@ -395,7 +394,7 @@ c77cd8ef-6a91-4a91-8a05-44a180221a75 {
     file: canvas_tags.tcl
   }
 }
-6e4f4940-6573-4a5c-aaee-7747c72c245c {
+632d13f24af5b7e6c3226229487c54557aa770a0 {
   entity {
     name: canvas::track::lines
     shed_class: package
@@ -406,7 +405,7 @@ c77cd8ef-6a91-4a91-8a05-44a180221a75 {
     file: canvas_trlines.tcl
   }
 }
-d2633738-2e86-485d-ae24-70fd87942eef {
+e01d877cc29122ebdab32e72da8242bcd96c465e {
   entity {
     name: canvas::zoom
     shed_class: package
@@ -417,7 +416,7 @@ d2633738-2e86-485d-ae24-70fd87942eef {
     file: canvas_zoom.tcl
   }
 }
-fa356a86-ddb2-4d06-86ac-7babcbed498c {
+da438664fd662398343777fadf74a3ec10754509 {
   entity {
     name: chatwidget
     shed_class: module
@@ -430,10 +429,10 @@ fa356a86-ddb2-4d06-86ac-7babcbed498c {
     path: modules/chatwidget
   }
   package/ {
-    89563f64-e66d-46f5-b2b2-a823fb6c6068
+    bf9ff1458f3b3aeab5b11353a9e9c954461736e3
   }
 }
-89563f64-e66d-46f5-b2b2-a823fb6c6068 {
+bf9ff1458f3b3aeab5b11353a9e9c954461736e3 {
   entity {
     name: chatwidget
     shed_class: package
@@ -444,7 +443,7 @@ fa356a86-ddb2-4d06-86ac-7babcbed498c {
     file: chatwidget.tcl
   }
 }
-3cd9d031-1022-4366-8750-f205d6df912a {
+f2d4316cfe55702d72026e04c7aa4ada3a9d8076 {
   entity {
     name: controlwidget
     shed_class: module
@@ -457,17 +456,17 @@ fa356a86-ddb2-4d06-86ac-7babcbed498c {
     path: modules/controlwidget
   }
   package/ {
-    b3c3b409-e21b-4768-839b-12f2032413fe
-    83f9afc9-3f8b-481e-ab3a-d820fa74588b
-    1e3a2b71-aebf-468b-b0b9-4a3afa0362aa
-    d346fe2b-8b13-4c35-af19-67382151fa4e
-    23429df7-77bc-4681-a52e-ca3759d292cb
-    044583d3-9f20-4858-bcb2-8ea789cdd247
-    3941e36f-247d-4c52-8997-2c41e7c4eb61
-    29e6611a-7c08-43a8-96da-1954081f884c
+    507141ca6d25ef639bca9e9fa3a5d80af5d1c835
+    38f9e219157c50f581ee23c272cd8962bd5e8333
+    c77b6c188837d80dd4fb80b4868284872859610a
+    5a6eb17c288befaf603a77caff14fee3ecff0b38
+    9d2134c05fbd0d3dfedad53357802a7704cd00a8
+    b545906e28affc28e528f88498e375f1e6f50c1c
+    130377ff9a872d0c5e05e577595d790997efab94
+    b439f32e3c01e65831864e0f168f288020e9e850
   }
 }
-b3c3b409-e21b-4768-839b-12f2032413fe {
+507141ca6d25ef639bca9e9fa3a5d80af5d1c835 {
   entity {
     name: bindDown
     shed_class: package
@@ -478,7 +477,7 @@ b3c3b409-e21b-4768-839b-12f2032413fe {
     file: bindDown.tcl
   }
 }
-83f9afc9-3f8b-481e-ab3a-d820fa74588b {
+38f9e219157c50f581ee23c272cd8962bd5e8333 {
   entity {
     name: controlwidget
     shed_class: package
@@ -489,7 +488,7 @@ b3c3b409-e21b-4768-839b-12f2032413fe {
     file: controlwidget.tcl
   }
 }
-1e3a2b71-aebf-468b-b0b9-4a3afa0362aa {
+c77b6c188837d80dd4fb80b4868284872859610a {
   entity {
     name: led
     shed_class: package
@@ -500,7 +499,7 @@ b3c3b409-e21b-4768-839b-12f2032413fe {
     file: led.tcl
   }
 }
-d346fe2b-8b13-4c35-af19-67382151fa4e {
+5a6eb17c288befaf603a77caff14fee3ecff0b38 {
   entity {
     name: radioMatrix
     shed_class: package
@@ -511,7 +510,7 @@ d346fe2b-8b13-4c35-af19-67382151fa4e {
     file: radioMatrix.tcl
   }
 }
-23429df7-77bc-4681-a52e-ca3759d292cb {
+9d2134c05fbd0d3dfedad53357802a7704cd00a8 {
   entity {
     name: rdial
     shed_class: package
@@ -522,7 +521,7 @@ d346fe2b-8b13-4c35-af19-67382151fa4e {
     file: rdial.tcl
   }
 }
-044583d3-9f20-4858-bcb2-8ea789cdd247 {
+b545906e28affc28e528f88498e375f1e6f50c1c {
   entity {
     name: tachometer
     shed_class: package
@@ -533,7 +532,7 @@ d346fe2b-8b13-4c35-af19-67382151fa4e {
     file: tachometer.tcl
   }
 }
-3941e36f-247d-4c52-8997-2c41e7c4eb61 {
+130377ff9a872d0c5e05e577595d790997efab94 {
   entity {
     name: meter
     shed_class: package
@@ -544,7 +543,7 @@ d346fe2b-8b13-4c35-af19-67382151fa4e {
     file: vertical_meter.tcl
   }
 }
-29e6611a-7c08-43a8-96da-1954081f884c {
+b439f32e3c01e65831864e0f168f288020e9e850 {
   entity {
     name: voltmeter
     shed_class: package
@@ -555,7 +554,7 @@ d346fe2b-8b13-4c35-af19-67382151fa4e {
     file: voltmeter.tcl
   }
 }
-ea0d6f5f-e1e0-4cbd-980d-77311de0c476 {
+73277c7d9ab336b5c19c3baa399a204f7ea688a1 {
   entity {
     name: crosshair
     shed_class: module
@@ -568,10 +567,10 @@ ea0d6f5f-e1e0-4cbd-980d-77311de0c476 {
     path: modules/crosshair
   }
   package/ {
-    bf22ef1f-6e12-45be-a066-b7e2493230b5
+    9618d1127de41baffd8297c66aa69c49124ecfab
   }
 }
-bf22ef1f-6e12-45be-a066-b7e2493230b5 {
+9618d1127de41baffd8297c66aa69c49124ecfab {
   entity {
     name: crosshair
     shed_class: package
@@ -582,7 +581,7 @@ bf22ef1f-6e12-45be-a066-b7e2493230b5 {
     file: crosshair.tcl
   }
 }
-5cd626f7-2645-48af-a14c-f57a26cc68db {
+6101472f389ff119c06489959cc240b97aa778cd {
   entity {
     name: ctext
     shed_class: module
@@ -595,11 +594,11 @@ bf22ef1f-6e12-45be-a066-b7e2493230b5 {
     path: modules/ctext
   }
   package/ {
-    5c819102-252b-444a-99d6-95cbc713092e
-    cb1d3377-f1cf-4f91-b358-7a87ac0d8695
+    7b5d12ea5fcc2332f8b4211aa37e720d3680d498
+    a59b016918e9314aeb40ba2c45f4e4e958ffd658
   }
 }
-5c819102-252b-444a-99d6-95cbc713092e {
+7b5d12ea5fcc2332f8b4211aa37e720d3680d498 {
   entity {
     name: ctext
     shed_class: package
@@ -610,7 +609,7 @@ bf22ef1f-6e12-45be-a066-b7e2493230b5 {
     file: ctext.tcl
   }
 }
-cb1d3377-f1cf-4f91-b358-7a87ac0d8695 {
+a59b016918e9314aeb40ba2c45f4e4e958ffd658 {
   entity {
     name: ctext_tcl
     shed_class: package
@@ -621,7 +620,7 @@ cb1d3377-f1cf-4f91-b358-7a87ac0d8695 {
     file: ctext_tcl.tcl
   }
 }
-d1114c92-1115-4146-ab24-fc9817d4deba {
+8a1a44280499c3a578a639ab77a50f4e183e4ea5 {
   entity {
     name: cursor
     shed_class: module
@@ -634,10 +633,10 @@ d1114c92-1115-4146-ab24-fc9817d4deba {
     path: modules/cursor
   }
   package/ {
-    aa2abfb4-33fd-4a41-9b0b-e71511274846
+    a62f573a8f3327335528ed68064165fd046de5ab
   }
 }
-aa2abfb4-33fd-4a41-9b0b-e71511274846 {
+a62f573a8f3327335528ed68064165fd046de5ab {
   entity {
     name: cursor
     shed_class: package
@@ -648,7 +647,7 @@ aa2abfb4-33fd-4a41-9b0b-e71511274846 {
     file: cursor.tcl
   }
 }
-80ff8561-6ab3-4bb5-9ff8-36a3195c68ca {
+258b85e356d3049bcb595fd9f5e142348baf4f80 {
   entity {
     name: datefield
     shed_class: module
@@ -661,10 +660,10 @@ aa2abfb4-33fd-4a41-9b0b-e71511274846 {
     path: modules/datefield
   }
   package/ {
-    2df7a0c0-e72d-4943-a9cb-54f39e2ed362
+    dd0d39f2bf7a7d1325856c28c83bc4fbd4f90d13
   }
 }
-2df7a0c0-e72d-4943-a9cb-54f39e2ed362 {
+dd0d39f2bf7a7d1325856c28c83bc4fbd4f90d13 {
   entity {
     name: datefield
     shed_class: package
@@ -675,7 +674,7 @@ aa2abfb4-33fd-4a41-9b0b-e71511274846 {
     file: datefield.tcl
   }
 }
-f802c2e0-de0b-45fc-b2be-db173d393fa6 {
+c86c06f6b46ef5e4ae36b9c0e037a2e9fbb01774 {
   entity {
     name: diagrams
     shed_class: module
@@ -688,18 +687,18 @@ f802c2e0-de0b-45fc-b2be-db173d393fa6 {
     path: modules/diagrams
   }
   package/ {
-    613b2c98-1b5e-405f-a0c0-e71aae6125b6
-    753818bd-7863-4001-9ed8-f9ca081a9cc4
-    6d5bd59a-fb49-40d5-b246-5e660e9334ea
-    d2c8d9ea-4c1b-4f77-8c91-ca24d30129dc
-    70553614-1a25-442b-b670-c507b8732405
-    67763f6f-5f3a-486e-ba53-ac1393b5058d
-    4656e45b-7751-462e-a810-f2b5fbc4cb42
-    65fbab50-8218-484a-a22a-26f576b42790
-    644b904b-193a-4c69-be3b-0d4c70c2a3f9
+    43ef0b83781fa49d6ea9fcc43b743fa21d20d037
+    51344e3872726848b2853e7c9055b9f3f01b8db9
+    d3e6c24a4b6ef4a9002936df31164b22378d765d
+    5d24ca069b7624cd1cb4bd226cb89b0c61fd2d18
+    ca296d021ccffd75746085ed3f5a8dda5ae66608
+    e2834ea0deb972de05bd1693e4796fbead164c57
+    e70873bedb024059bcdfa7f8f9492292952255e9
+    e021ff9d9eb2d17a04bf2969bb003df597cc6319
+    ab7a811cfd31cac7725dc8d7e9d83376e054877b
   }
 }
-613b2c98-1b5e-405f-a0c0-e71aae6125b6 {
+43ef0b83781fa49d6ea9fcc43b743fa21d20d037 {
   entity {
     name: diagram::application
     shed_class: package
@@ -710,7 +709,7 @@ f802c2e0-de0b-45fc-b2be-db173d393fa6 {
     file: application.tcl
   }
 }
-753818bd-7863-4001-9ed8-f9ca081a9cc4 {
+51344e3872726848b2853e7c9055b9f3f01b8db9 {
   entity {
     name: diagram::attribute
     shed_class: package
@@ -721,7 +720,7 @@ f802c2e0-de0b-45fc-b2be-db173d393fa6 {
     file: attributes.tcl
   }
 }
-6d5bd59a-fb49-40d5-b246-5e660e9334ea {
+d3e6c24a4b6ef4a9002936df31164b22378d765d {
   entity {
     name: diagram::basic
     shed_class: package
@@ -732,7 +731,7 @@ f802c2e0-de0b-45fc-b2be-db173d393fa6 {
     file: basic.tcl
   }
 }
-d2c8d9ea-4c1b-4f77-8c91-ca24d30129dc {
+5d24ca069b7624cd1cb4bd226cb89b0c61fd2d18 {
   entity {
     name: diagram::core
     shed_class: package
@@ -743,7 +742,7 @@ d2c8d9ea-4c1b-4f77-8c91-ca24d30129dc {
     file: core.tcl
   }
 }
-70553614-1a25-442b-b670-c507b8732405 {
+ca296d021ccffd75746085ed3f5a8dda5ae66608 {
   entity {
     name: diagram
     shed_class: package
@@ -754,7 +753,7 @@ d2c8d9ea-4c1b-4f77-8c91-ca24d30129dc {
     file: diagram.tcl
   }
 }
-67763f6f-5f3a-486e-ba53-ac1393b5058d {
+e2834ea0deb972de05bd1693e4796fbead164c57 {
   entity {
     name: diagram::direction
     shed_class: package
@@ -765,7 +764,7 @@ d2c8d9ea-4c1b-4f77-8c91-ca24d30129dc {
     file: direction.tcl
   }
 }
-4656e45b-7751-462e-a810-f2b5fbc4cb42 {
+e70873bedb024059bcdfa7f8f9492292952255e9 {
   entity {
     name: diagram::element
     shed_class: package
@@ -776,7 +775,7 @@ d2c8d9ea-4c1b-4f77-8c91-ca24d30129dc {
     file: element.tcl
   }
 }
-65fbab50-8218-484a-a22a-26f576b42790 {
+e021ff9d9eb2d17a04bf2969bb003df597cc6319 {
   entity {
     name: diagram::navigation
     shed_class: package
@@ -787,7 +786,7 @@ d2c8d9ea-4c1b-4f77-8c91-ca24d30129dc {
     file: navigation.tcl
   }
 }
-644b904b-193a-4c69-be3b-0d4c70c2a3f9 {
+ab7a811cfd31cac7725dc8d7e9d83376e054877b {
   entity {
     name: diagram::point
     shed_class: package
@@ -798,7 +797,7 @@ d2c8d9ea-4c1b-4f77-8c91-ca24d30129dc {
     file: point.tcl
   }
 }
-aaee0fec-cd67-4864-97f3-e7d9fc7e8fd4 {
+22aebc959e1bd13766fa33dae07258d0c89d23a6 {
   entity {
     name: getstring
     shed_class: module
@@ -811,10 +810,10 @@ aaee0fec-cd67-4864-97f3-e7d9fc7e8fd4 {
     path: modules/getstring
   }
   package/ {
-    fdd2c205-af41-470f-9366-25b15531051b
+    cc7018150cb6dd1ffc059f2b526fdd4c5f75cb02
   }
 }
-fdd2c205-af41-470f-9366-25b15531051b {
+cc7018150cb6dd1ffc059f2b526fdd4c5f75cb02 {
   entity {
     name: getstring
     shed_class: package
@@ -825,7 +824,7 @@ fdd2c205-af41-470f-9366-25b15531051b {
     file: tk_getString.tcl
   }
 }
-2a9f223e-22c3-47bc-9019-7d6e09129633 {
+acf8bed942a7b38ac39fbad4618bec2d0fd928be {
   entity {
     name: history
     shed_class: module
@@ -838,10 +837,10 @@ fdd2c205-af41-470f-9366-25b15531051b {
     path: modules/history
   }
   package/ {
-    3cc8781f-3531-44aa-b681-24ad49706015
+    c5f8f5076bfd5ec443ba6037c7af653afdcbd9b2
   }
 }
-3cc8781f-3531-44aa-b681-24ad49706015 {
+c5f8f5076bfd5ec443ba6037c7af653afdcbd9b2 {
   entity {
     name: history
     shed_class: package
@@ -852,7 +851,7 @@ fdd2c205-af41-470f-9366-25b15531051b {
     file: history.tcl
   }
 }
-f511d83c-9be6-48cc-8e39-46cdfe6d27b2 {
+6c34768e088c875c0bdb12db683edb0f20403c68 {
   entity {
     name: ico
     shed_class: module
@@ -865,11 +864,11 @@ f511d83c-9be6-48cc-8e39-46cdfe6d27b2 {
     path: modules/ico
   }
   package/ {
-    35840196-f235-446b-9915-5e6173b387cc
-    ef4b270c-a1eb-4095-925d-296e6db840d1
+    f4389350c6a57418088d11ee4f691d3e56c5cd80
+    1635430114ebb6b6cd3342e7c53365e17e50bb38
   }
 }
-35840196-f235-446b-9915-5e6173b387cc {
+f4389350c6a57418088d11ee4f691d3e56c5cd80 {
   entity {
     name: ico
     shed_class: package
@@ -880,7 +879,7 @@ f511d83c-9be6-48cc-8e39-46cdfe6d27b2 {
     file: ico.tcl
   }
 }
-ef4b270c-a1eb-4095-925d-296e6db840d1 {
+1635430114ebb6b6cd3342e7c53365e17e50bb38 {
   entity {
     name: ico
     shed_class: package
@@ -891,7 +890,7 @@ ef4b270c-a1eb-4095-925d-296e6db840d1 {
     file: ico0.tcl
   }
 }
-4b19bb74-6af2-4683-bc02-9a2a2dbb18a5 {
+dfaad1830ac3667325290ca4c975cd78d8876fb8 {
   entity {
     name: ipentry
     shed_class: module
@@ -904,10 +903,10 @@ ef4b270c-a1eb-4095-925d-296e6db840d1 {
     path: modules/ipentry
   }
   package/ {
-    5d122410-533c-4ad8-b3d9-222895cef732
+    65de0d4e11dfcae525891096a759b272f7540a44
   }
 }
-5d122410-533c-4ad8-b3d9-222895cef732 {
+65de0d4e11dfcae525891096a759b272f7540a44 {
   entity {
     name: ipentry
     shed_class: package
@@ -918,7 +917,7 @@ ef4b270c-a1eb-4095-925d-296e6db840d1 {
     file: ipentry.tcl
   }
 }
-90398ca8-4a9c-4a38-b13d-a6627ddcc172 {
+8680eb373e226057f1bacc26123527247b216cb4 {
   entity {
     name: khim
     shed_class: module
@@ -931,10 +930,10 @@ ef4b270c-a1eb-4095-925d-296e6db840d1 {
     path: modules/khim
   }
   package/ {
-    092daf5d-6616-45e0-971c-0a01737c23c9
+    76dd4e32d522bc2200e9d8bb398d21a19ae0f0bf
   }
 }
-092daf5d-6616-45e0-971c-0a01737c23c9 {
+76dd4e32d522bc2200e9d8bb398d21a19ae0f0bf {
   entity {
     name: khim
     shed_class: package
@@ -945,7 +944,7 @@ ef4b270c-a1eb-4095-925d-296e6db840d1 {
     file: khim.tcl
   }
 }
-69c32e11-8f9d-4c93-bdf2-4910570f2a97 {
+2bea18158c728ed98d8060757d71cf7c6e1a4d05 {
   entity {
     name: mentry
     shed_class: module
@@ -958,13 +957,13 @@ ef4b270c-a1eb-4095-925d-296e6db840d1 {
     path: modules/mentry
   }
   package/ {
-    2d88c444-c059-4d14-8a18-9b763aad2097
-    08fba9e3-372f-48f5-a154-a2525914b00b
-    1c69c8f6-6070-4530-acbd-1b0c40684cfe
-    65bbe209-c620-44b7-a639-fc94a93564b1
+    ad2dca7834a202dc7179c14003cecf989d7897c9
+    7367346a70b771480ef7dcb1192fcec6a8000170
+    017ecbc59d9a620f0779a933ed051df430b420f0
+    c3e4c582240b314c75e141359674d154cd7f863a
   }
 }
-2d88c444-c059-4d14-8a18-9b763aad2097 {
+ad2dca7834a202dc7179c14003cecf989d7897c9 {
   entity {
     name: mentry
     shed_class: package
@@ -975,7 +974,7 @@ ef4b270c-a1eb-4095-925d-296e6db840d1 {
     file: mentry.tcl
   }
 }
-08fba9e3-372f-48f5-a154-a2525914b00b {
+7367346a70b771480ef7dcb1192fcec6a8000170 {
   entity {
     name: mentry::common
     shed_class: package
@@ -986,7 +985,7 @@ ef4b270c-a1eb-4095-925d-296e6db840d1 {
     file: mentryPublic.tcl
   }
 }
-1c69c8f6-6070-4530-acbd-1b0c40684cfe {
+017ecbc59d9a620f0779a933ed051df430b420f0 {
   entity {
     name: mentry_tile
     shed_class: package
@@ -997,7 +996,7 @@ ef4b270c-a1eb-4095-925d-296e6db840d1 {
     file: mentry_tile.tcl
   }
 }
-65bbe209-c620-44b7-a639-fc94a93564b1 {
+c3e4c582240b314c75e141359674d154cd7f863a {
   entity {
     name: Mentry_tile
     shed_class: package
@@ -1008,7 +1007,7 @@ ef4b270c-a1eb-4095-925d-296e6db840d1 {
     file: mentry.html
   }
 }
-e7d95e90-1e21-4e98-ace8-c4f8f7581255 {
+415e572ddbb25c9ecc02d73744b590e468cae61f {
   entity {
     name: menubar
     shed_class: module
@@ -1021,13 +1020,13 @@ e7d95e90-1e21-4e98-ace8-c4f8f7581255 {
     path: modules/menubar
   }
   package/ {
-    e67bc858-1d58-414d-bf13-91df4bd2d71a
-    50778687-4c53-4bb3-bfdb-40e3bda825c4
-    6618f8fd-2bf1-4f60-9d30-fd8df4a3782b
-    d0873b69-9c3f-4a96-ba06-a4105f8ab473
+    4dca0b223483ada0bff9e15c869c7c04173e871e
+    53ff141c0109246d3cab7f62a512db1f2eb1f613
+    653eec3e605ef1077e597cde1cdcd26bcf01a824
+    facfc7c66ca2915ed684381e50c8718cae0be4ba
   }
 }
-e67bc858-1d58-414d-bf13-91df4bd2d71a {
+4dca0b223483ada0bff9e15c869c7c04173e871e {
   entity {
     name: menubar::debug
     shed_class: package
@@ -1038,7 +1037,7 @@ e67bc858-1d58-414d-bf13-91df4bd2d71a {
     file: debug.tcl
   }
 }
-50778687-4c53-4bb3-bfdb-40e3bda825c4 {
+53ff141c0109246d3cab7f62a512db1f2eb1f613 {
   entity {
     name: menubar
     shed_class: package
@@ -1049,7 +1048,7 @@ e67bc858-1d58-414d-bf13-91df4bd2d71a {
     file: menubar.tcl
   }
 }
-6618f8fd-2bf1-4f60-9d30-fd8df4a3782b {
+653eec3e605ef1077e597cde1cdcd26bcf01a824 {
   entity {
     name: menubar::node
     shed_class: package
@@ -1060,7 +1059,7 @@ e67bc858-1d58-414d-bf13-91df4bd2d71a {
     file: node.tcl
   }
 }
-d0873b69-9c3f-4a96-ba06-a4105f8ab473 {
+facfc7c66ca2915ed684381e50c8718cae0be4ba {
   entity {
     name: menubar::tree
     shed_class: package
@@ -1071,7 +1070,7 @@ d0873b69-9c3f-4a96-ba06-a4105f8ab473 {
     file: tree.tcl
   }
 }
-ab9676e3-6d4e-48eb-9d3d-740040217c7a {
+d5915542e81ce77fec88552e8f8db0ede6e0580a {
   entity {
     name: notifywindow
     shed_class: module
@@ -1084,10 +1083,10 @@ ab9676e3-6d4e-48eb-9d3d-740040217c7a {
     path: modules/notifywindow
   }
   package/ {
-    24e8fa3b-6adf-4fdc-aef9-c8a265720d50
+    09c7f1e64fc5a0841cf800cd8c0cd88c2b9198c8
   }
 }
-24e8fa3b-6adf-4fdc-aef9-c8a265720d50 {
+09c7f1e64fc5a0841cf800cd8c0cd88c2b9198c8 {
   entity {
     name: notifywindow
     shed_class: package
@@ -1098,7 +1097,7 @@ ab9676e3-6d4e-48eb-9d3d-740040217c7a {
     file: notifywindow.tcl
   }
 }
-c731657f-5dad-4f15-acb0-0ebbd7a2533e {
+e5353312905b69f28a4e5001bf62a27cfe6ba1e2 {
   entity {
     name: ntext
     shed_class: module
@@ -1111,10 +1110,10 @@ c731657f-5dad-4f15-acb0-0ebbd7a2533e {
     path: modules/ntext
   }
   package/ {
-    a0c992f8-5059-41c0-a0cd-a14a72411dc6
+    5f07824f2d644a90f09bd18d8aaf272c3a29c89c
   }
 }
-a0c992f8-5059-41c0-a0cd-a14a72411dc6 {
+5f07824f2d644a90f09bd18d8aaf272c3a29c89c {
   entity {
     name: ntext
     shed_class: package
@@ -1125,7 +1124,7 @@ a0c992f8-5059-41c0-a0cd-a14a72411dc6 {
     file: ntext.tcl
   }
 }
-24435d38-3d04-4e30-b741-6e86e2d72325 {
+fc5d4658bcb1636d17926cc5ca86afb5adbb1507 {
   entity {
     name: plotchart
     shed_class: module
@@ -1138,12 +1137,12 @@ a0c992f8-5059-41c0-a0cd-a14a72411dc6 {
     path: modules/plotchart
   }
   package/ {
-    24c55549-efae-4755-9222-b2f8903372d9
-    c2f2c366-0543-4bef-8f82-2f8aa7206084
-    dc37bb4d-8bed-46db-a5da-09062c546ed3
+    3496b3a2d634c1089ae2e684131223884b6bf4a9
+    0d7631adecc2e1e008129e7994bf8603798d88ee
+    199a12422897f5f35542174905f233ef5fd4dab1
   }
 }
-24c55549-efae-4755-9222-b2f8903372d9 {
+3496b3a2d634c1089ae2e684131223884b6bf4a9 {
   entity {
     name: plotanim
     shed_class: package
@@ -1154,7 +1153,7 @@ a0c992f8-5059-41c0-a0cd-a14a72411dc6 {
     file: plotanim.tcl
   }
 }
-c2f2c366-0543-4bef-8f82-2f8aa7206084 {
+0d7631adecc2e1e008129e7994bf8603798d88ee {
   entity {
     name: Plotchart
     shed_class: package
@@ -1165,7 +1164,7 @@ c2f2c366-0543-4bef-8f82-2f8aa7206084 {
     file: plotchart.tcl
   }
 }
-dc37bb4d-8bed-46db-a5da-09062c546ed3 {
+199a12422897f5f35542174905f233ef5fd4dab1 {
   entity {
     name: xyplot
     shed_class: package
@@ -1176,7 +1175,7 @@ dc37bb4d-8bed-46db-a5da-09062c546ed3 {
     file: xyplot.tcl
   }
 }
-d4e2725d-7095-43c2-9f79-b1d56835474b {
+36ec3520b0fc381448bc0b7d4ea4bdf2fce12d1d {
   entity {
     name: style
     shed_class: module
@@ -1189,12 +1188,12 @@ d4e2725d-7095-43c2-9f79-b1d56835474b {
     path: modules/style
   }
   package/ {
-    9aa52683-3fe5-4742-8cc3-e29d1ec192cf
-    8540d617-d426-4f3c-a97c-87b9722097d9
-    b0e3f495-1588-4fd6-bb90-aa27a116561e
+    3f90e40688bd8571f68f4698bd2b3733d83bce59
+    11146c8b65d2222c758336a2e7516c83a832c547
+    7539e713390e63fdd66eee9b0810705be566b3e8
   }
 }
-9aa52683-3fe5-4742-8cc3-e29d1ec192cf {
+3f90e40688bd8571f68f4698bd2b3733d83bce59 {
   entity {
     name: style::as
     shed_class: package
@@ -1205,7 +1204,7 @@ d4e2725d-7095-43c2-9f79-b1d56835474b {
     file: as.tcl
   }
 }
-8540d617-d426-4f3c-a97c-87b9722097d9 {
+11146c8b65d2222c758336a2e7516c83a832c547 {
   entity {
     name: style::lobster
     shed_class: package
@@ -1216,7 +1215,7 @@ d4e2725d-7095-43c2-9f79-b1d56835474b {
     file: lobster.tcl
   }
 }
-b0e3f495-1588-4fd6-bb90-aa27a116561e {
+7539e713390e63fdd66eee9b0810705be566b3e8 {
   entity {
     name: style
     shed_class: package
@@ -1227,7 +1226,7 @@ b0e3f495-1588-4fd6-bb90-aa27a116561e {
     file: style.tcl
   }
 }
-1aef71e6-2999-4fe6-af35-b5c978843c10 {
+add3741956e021fbd025adf4ad2662242a9cc70b {
   entity {
     name: swaplist
     shed_class: module
@@ -1240,10 +1239,10 @@ b0e3f495-1588-4fd6-bb90-aa27a116561e {
     path: modules/swaplist
   }
   package/ {
-    b14a1ae9-1416-426e-9210-942eafde8751
+    34928b3c641438b733465bc5cc0943a15ac9601e
   }
 }
-b14a1ae9-1416-426e-9210-942eafde8751 {
+34928b3c641438b733465bc5cc0943a15ac9601e {
   entity {
     name: swaplist
     shed_class: package
@@ -1254,7 +1253,7 @@ b14a1ae9-1416-426e-9210-942eafde8751 {
     file: swaplist.tcl
   }
 }
-9395babc-008e-41c8-8169-d4b90ffcb362 {
+f973676a8bd34e4de523254e6d150135e97e1b1d {
   entity {
     name: tablelist
     shed_class: module
@@ -1267,13 +1266,13 @@ b14a1ae9-1416-426e-9210-942eafde8751 {
     path: modules/tablelist
   }
   package/ {
-    0eca1eb4-8645-4c05-9b8e-5052efb43e1d
-    d5601a06-6132-41e1-a8ff-c6f67b0c2e33
-    191aa8ed-ae08-4a87-b0f7-e9322a4d3ad2
-    b0101463-1273-4e43-b1d6-063b10def2ad
+    bb1409e88482b1fc1b3afc0af5a46b7c0ce23d74
+    7386578566d332bb8dc1411bd3eb62336c61011e
+    9f324be577c60ab5a8987f6580db6446617a713c
+    8e22e5d9825e87062e5759a77c5f841e83d213cd
   }
 }
-0eca1eb4-8645-4c05-9b8e-5052efb43e1d {
+bb1409e88482b1fc1b3afc0af5a46b7c0ce23d74 {
   entity {
     name: Tablelist
     shed_class: package
@@ -1284,7 +1283,7 @@ b14a1ae9-1416-426e-9210-942eafde8751 {
     file: tablelist.tcl
   }
 }
-d5601a06-6132-41e1-a8ff-c6f67b0c2e33 {
+7386578566d332bb8dc1411bd3eb62336c61011e {
   entity {
     name: tablelist::common
     shed_class: package
@@ -1295,7 +1294,7 @@ d5601a06-6132-41e1-a8ff-c6f67b0c2e33 {
     file: tablelistPublic.tcl
   }
 }
-191aa8ed-ae08-4a87-b0f7-e9322a4d3ad2 {
+9f324be577c60ab5a8987f6580db6446617a713c {
   entity {
     name: Tablelist_tile
     shed_class: package
@@ -1306,7 +1305,7 @@ d5601a06-6132-41e1-a8ff-c6f67b0c2e33 {
     file: tablelist_tile.tcl
   }
 }
-b0101463-1273-4e43-b1d6-063b10def2ad {
+8e22e5d9825e87062e5759a77c5f841e83d213cd {
   entity {
     name: Tablelist_tile
     shed_class: package
@@ -1317,7 +1316,7 @@ b0101463-1273-4e43-b1d6-063b10def2ad {
     file: tablelist.html
   }
 }
-99c8291d-4f4b-4fb3-b36f-e0941b007cee {
+e0b2d1eb53352a7ff6a5c6f6c77636e96a64ca83 {
   entity {
     name: tkpiechart
     shed_class: module
@@ -1330,10 +1329,10 @@ b0101463-1273-4e43-b1d6-063b10def2ad {
     path: modules/tkpiechart
   }
   package/ {
-    f8d7649e-0006-4643-a7cb-3d2ba5ae7a88
+    67d3736801f59fe45554ee6c8508e054d78a9022
   }
 }
-f8d7649e-0006-4643-a7cb-3d2ba5ae7a88 {
+67d3736801f59fe45554ee6c8508e054d78a9022 {
   entity {
     name: tkpiechart
     shed_class: package
@@ -1344,7 +1343,7 @@ f8d7649e-0006-4643-a7cb-3d2ba5ae7a88 {
     file: tkpiechart.tcl
   }
 }
-39229d0b-f305-465c-9349-41dee6b220ad {
+d13434a192313f0f078f87a7e940e369f2bce05e {
   entity {
     name: tooltip
     shed_class: module
@@ -1357,11 +1356,11 @@ f8d7649e-0006-4643-a7cb-3d2ba5ae7a88 {
     path: modules/tooltip
   }
   package/ {
-    3f70dc8a-16a5-494c-a8b1-8a24d742d135
-    4987b7e3-d03a-43d8-aece-cfb036c76d65
+    567a596efd080e7831c06731f66b0a7b4aab7f98
+    2865afc83f02a761103ce617bf03115a4dae870a
   }
 }
-3f70dc8a-16a5-494c-a8b1-8a24d742d135 {
+567a596efd080e7831c06731f66b0a7b4aab7f98 {
   entity {
     name: tipstack
     shed_class: package
@@ -1372,7 +1371,7 @@ f8d7649e-0006-4643-a7cb-3d2ba5ae7a88 {
     file: tipstack.tcl
   }
 }
-4987b7e3-d03a-43d8-aece-cfb036c76d65 {
+2865afc83f02a761103ce617bf03115a4dae870a {
   entity {
     name: tooltip
     shed_class: package
@@ -1383,7 +1382,7 @@ f8d7649e-0006-4643-a7cb-3d2ba5ae7a88 {
     file: tooltip.tcl
   }
 }
-5c8046b9-7b0c-420d-abaf-39e98ac7a81f {
+e63921c51c8017125418e969fd47a6e92f97dca1 {
   entity {
     name: wcb
     shed_class: module
@@ -1396,11 +1395,11 @@ f8d7649e-0006-4643-a7cb-3d2ba5ae7a88 {
     path: modules/wcb
   }
   package/ {
-    33fde5e2-b9c8-474d-b190-1655c00d16e0
-    26dc32d8-5d29-4983-8a77-dc68acb9b30b
+    9a5ced6fdfd9fc7ae13b4cfef945e4b46fba1f9d
+    103cb0fd806023f467dccb0985d3c99835d750d1
   }
 }
-33fde5e2-b9c8-474d-b190-1655c00d16e0 {
+9a5ced6fdfd9fc7ae13b4cfef945e4b46fba1f9d {
   entity {
     name: Wcb
     shed_class: package
@@ -1411,7 +1410,7 @@ f8d7649e-0006-4643-a7cb-3d2ba5ae7a88 {
     file: wcb.tcl
   }
 }
-26dc32d8-5d29-4983-8a77-dc68acb9b30b {
+103cb0fd806023f467dccb0985d3c99835d750d1 {
   entity {
     name: Wcb
     shed_class: package
@@ -1422,7 +1421,7 @@ f8d7649e-0006-4643-a7cb-3d2ba5ae7a88 {
     file: wcb.html
   }
 }
-37411998-b33d-491d-b461-f0340d64548d {
+4445ad9046028d56856d1dfc2dd4e0fef80ceaf1 {
   entity {
     name: widget
     shed_class: module
@@ -1435,22 +1434,22 @@ f8d7649e-0006-4643-a7cb-3d2ba5ae7a88 {
     path: modules/widget
   }
   package/ {
-    6108029a-3f05-4856-8037-c8f06fb193b2
-    e299a234-e18f-4ade-be26-8b142342c4f5
-    23c108ed-013f-4ebb-9707-272b1e5aeef6
-    d4358f2a-5d13-47f9-8770-f3e9fae6c359
-    a6446d71-ced7-4e66-8f86-7c6cd362aa7d
-    7cbfd426-ee32-40d9-bc70-6fd79fb9fe2f
-    9c9dbe2f-b9be-446d-a4e4-32b70437c2c9
-    4f325c85-5411-4965-a699-7c6eb5df14b0
-    ea073479-dc4a-48ed-a297-40284e8de480
-    0fb3799b-6ca3-47f9-b42f-44017102dce2
-    26457728-eb61-467d-9a5d-50e420f43262
-    e5550320-c444-439c-b728-d0b2e41fd960
-    084354a9-a6d0-4c5f-abe1-4431fddbd1dc
+    98d91f1a36b5f791aa4ce1032524fc9129524315
+    6827a949bcafd300f20b807a3aeada63b673b8ab
+    dac28e09fb7f9b8eb38f2b28eb2aac46555f4ad5
+    eb7bdef16c312f6a1a99c333c997cce49a4a302d
+    48bcf003252e009dcd2d4c1f51952db91b18188e
+    0485edfad1ffeeb8023c1559a230b4268f69bf02
+    18d2c7c1bd1c87b8363a271c01a311c5c61736e7
+    3657cad2d0c2a0f0a2b846705f5b22062bd537b1
+    b009bee9ea5c86f7ec1a020daa40026c8aa4a77d
+    296dd248d8c1c861e1289a60c423caf225fc4df5
+    b983dc6fdb515b8d3df1e77de61e3f339836ce84
+    4ea440b96a795eb2d06fd50c0d4e814f9a5625e3
+    d28fc62bf4896948cd0a7631fda1d3c74b25b088
   }
 }
-6108029a-3f05-4856-8037-c8f06fb193b2 {
+98d91f1a36b5f791aa4ce1032524fc9129524315 {
   entity {
     name: widget::arrowbutton
     shed_class: package
@@ -1461,7 +1460,7 @@ f8d7649e-0006-4643-a7cb-3d2ba5ae7a88 {
     file: arrowb.tcl
   }
 }
-e299a234-e18f-4ade-be26-8b142342c4f5 {
+6827a949bcafd300f20b807a3aeada63b673b8ab {
   entity {
     name: widget::calendar
     shed_class: package
@@ -1472,7 +1471,7 @@ e299a234-e18f-4ade-be26-8b142342c4f5 {
     file: calendar.tcl
   }
 }
-23c108ed-013f-4ebb-9707-272b1e5aeef6 {
+dac28e09fb7f9b8eb38f2b28eb2aac46555f4ad5 {
   entity {
     name: widget::dateentry
     shed_class: package
@@ -1483,7 +1482,7 @@ e299a234-e18f-4ade-be26-8b142342c4f5 {
     file: dateentry.tcl
   }
 }
-d4358f2a-5d13-47f9-8770-f3e9fae6c359 {
+eb7bdef16c312f6a1a99c333c997cce49a4a302d {
   entity {
     name: widget::dialog
     shed_class: package
@@ -1494,7 +1493,7 @@ d4358f2a-5d13-47f9-8770-f3e9fae6c359 {
     file: dialog.tcl
   }
 }
-a6446d71-ced7-4e66-8f86-7c6cd362aa7d {
+48bcf003252e009dcd2d4c1f51952db91b18188e {
   entity {
     name: widget::menuentry
     shed_class: package
@@ -1505,7 +1504,7 @@ a6446d71-ced7-4e66-8f86-7c6cd362aa7d {
     file: mentry.tcl
   }
 }
-7cbfd426-ee32-40d9-bc70-6fd79fb9fe2f {
+0485edfad1ffeeb8023c1559a230b4268f69bf02 {
   entity {
     name: widget::panelframe
     shed_class: package
@@ -1516,7 +1515,7 @@ a6446d71-ced7-4e66-8f86-7c6cd362aa7d {
     file: panelframe.tcl
   }
 }
-9c9dbe2f-b9be-446d-a4e4-32b70437c2c9 {
+18d2c7c1bd1c87b8363a271c01a311c5c61736e7 {
   entity {
     name: widget::screenruler
     shed_class: package
@@ -1527,7 +1526,7 @@ a6446d71-ced7-4e66-8f86-7c6cd362aa7d {
     file: ruler.tcl
   }
 }
-4f325c85-5411-4965-a699-7c6eb5df14b0 {
+3657cad2d0c2a0f0a2b846705f5b22062bd537b1 {
   entity {
     name: widget::scrolledwindow
     shed_class: package
@@ -1538,7 +1537,7 @@ a6446d71-ced7-4e66-8f86-7c6cd362aa7d {
     file: scrollw.tcl
   }
 }
-ea073479-dc4a-48ed-a297-40284e8de480 {
+b009bee9ea5c86f7ec1a020daa40026c8aa4a77d {
   entity {
     name: widget::statusbar
     shed_class: package
@@ -1549,7 +1548,7 @@ ea073479-dc4a-48ed-a297-40284e8de480 {
     file: statusbar.tcl
   }
 }
-0fb3799b-6ca3-47f9-b42f-44017102dce2 {
+296dd248d8c1c861e1289a60c423caf225fc4df5 {
   entity {
     name: widget::scrolledtext
     shed_class: package
@@ -1560,7 +1559,7 @@ ea073479-dc4a-48ed-a297-40284e8de480 {
     file: stext.tcl
   }
 }
-26457728-eb61-467d-9a5d-50e420f43262 {
+b983dc6fdb515b8d3df1e77de61e3f339836ce84 {
   entity {
     name: widget::superframe
     shed_class: package
@@ -1571,7 +1570,7 @@ ea073479-dc4a-48ed-a297-40284e8de480 {
     file: superframe.tcl
   }
 }
-e5550320-c444-439c-b728-d0b2e41fd960 {
+4ea440b96a795eb2d06fd50c0d4e814f9a5625e3 {
   entity {
     name: widget::toolbar
     shed_class: package
@@ -1582,7 +1581,7 @@ e5550320-c444-439c-b728-d0b2e41fd960 {
     file: toolbar.tcl
   }
 }
-084354a9-a6d0-4c5f-abe1-4431fddbd1dc {
+d28fc62bf4896948cd0a7631fda1d3c74b25b088 {
   entity {
     name: widget
     shed_class: package
@@ -1593,7 +1592,7 @@ e5550320-c444-439c-b728-d0b2e41fd960 {
     file: widget.tcl
   }
 }
-ae5fa8ea-089a-4333-beea-98e65e0409b0 {
+0fac8df23ae7befc5fc00112576d3748506f77bf {
   entity {
     name: widgetl
     shed_class: module
@@ -1606,11 +1605,11 @@ ae5fa8ea-089a-4333-beea-98e65e0409b0 {
     path: modules/widgetl
   }
   package/ {
-    b2598a65-29e5-4203-a6ce-abdfd6a00e95
-    7031b4d0-4439-4433-8f06-da2c00245c96
+    2cb7f2d0438d93891be3d729026ba430d741d61e
+    a636cc4f85d40d7aa4c1f730fdbebd3bae2bde8e
   }
 }
-b2598a65-29e5-4203-a6ce-abdfd6a00e95 {
+2cb7f2d0438d93891be3d729026ba430d741d61e {
   entity {
     name: widget::listentry
     shed_class: package
@@ -1621,7 +1620,7 @@ b2598a65-29e5-4203-a6ce-abdfd6a00e95 {
     file: listentry.tcl
   }
 }
-7031b4d0-4439-4433-8f06-da2c00245c96 {
+a636cc4f85d40d7aa4c1f730fdbebd3bae2bde8e {
   entity {
     name: widget::listsimple
     shed_class: package
@@ -1632,7 +1631,7 @@ b2598a65-29e5-4203-a6ce-abdfd6a00e95 {
     file: listsimple.tcl
   }
 }
-1ff06180-bf3e-4772-87aa-b3a11dfd3db6 {
+e4b97e9c0f85a2a3cab4e831148669485c06ba59 {
   entity {
     name: widgetv
     shed_class: module
@@ -1645,10 +1644,10 @@ b2598a65-29e5-4203-a6ce-abdfd6a00e95 {
     path: modules/widgetv
   }
   package/ {
-    c17bb842-52b2-411a-8e2f-90d62b15f538
+    46f458a1dcc0390e0075918eeaedec82b3a45f66
   }
 }
-c17bb842-52b2-411a-8e2f-90d62b15f538 {
+46f458a1dcc0390e0075918eeaedec82b3a45f66 {
   entity {
     name: widget::validator
     shed_class: package
