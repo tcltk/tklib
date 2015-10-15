@@ -1,26 +1,164 @@
 
-uuid: 0abc2148a96d04fcd83241ed33d804ede942d5d3
-name: tklib
-version: {}
-class: generic
-description: {A companion to Tcllib, for Tk related packages}
-distribution: fossil
-generated: {2015-09-26 02:10:42 UTC}
-release: trunk
-release/ {
-  {
-    uuid: 5e980f78-1a28-4789-8989-7d79e887b798
-    name: trunk
+0abc2148a96d04fcd83241ed33d804ede942d5d3 {
+  entity {
+    name: tklib
+    shed_class: project
     version: {}
+  }
+  meta {
+    class: generic
+    description: {A companion to Tcllib, for Tk related packages}
+    distribution: fossil
+    generated: {2015-10-15 15:13:33 UTC}
+    release: trunk
+  }
+  release/ {
+    015f6185-d2ad-49a7-a77f-8e82987c84b8
+    58b097b3-9e08-4682-aaff-ccda63321dac
+  }
+  distribution/ {
+    58f5faf4-cfb2-4c35-99d6-73a1c8c6d424
+  }
+  file/ {
+    5f2971a9-26ce-446a-a815-ac1fcfc08d36
+    65c0225d-2180-4317-90e3-fd010ed43a12
+  }
+  module/ {
+    c693ca59-f9d0-4f66-b40b-fd373bceeb85
+    afc30a02-e098-44a1-8dc5-5e9a55d635e6
+    fa356a86-ddb2-4d06-86ac-7babcbed498c
+    3cd9d031-1022-4366-8750-f205d6df912a
+    ea0d6f5f-e1e0-4cbd-980d-77311de0c476
+    5cd626f7-2645-48af-a14c-f57a26cc68db
+    d1114c92-1115-4146-ab24-fc9817d4deba
+    80ff8561-6ab3-4bb5-9ff8-36a3195c68ca
+    f802c2e0-de0b-45fc-b2be-db173d393fa6
+    aaee0fec-cd67-4864-97f3-e7d9fc7e8fd4
+    2a9f223e-22c3-47bc-9019-7d6e09129633
+    f511d83c-9be6-48cc-8e39-46cdfe6d27b2
+    4b19bb74-6af2-4683-bc02-9a2a2dbb18a5
+    90398ca8-4a9c-4a38-b13d-a6627ddcc172
+    69c32e11-8f9d-4c93-bdf2-4910570f2a97
+    e7d95e90-1e21-4e98-ace8-c4f8f7581255
+    ab9676e3-6d4e-48eb-9d3d-740040217c7a
+    c731657f-5dad-4f15-acb0-0ebbd7a2533e
+    24435d38-3d04-4e30-b741-6e86e2d72325
+    d4e2725d-7095-43c2-9f79-b1d56835474b
+    1aef71e6-2999-4fe6-af35-b5c978843c10
+    9395babc-008e-41c8-8169-d4b90ffcb362
+    99c8291d-4f4b-4fb3-b36f-e0941b007cee
+    39229d0b-f305-465c-9349-41dee6b220ad
+    5c8046b9-7b0c-420d-abaf-39e98ac7a81f
+    37411998-b33d-491d-b461-f0340d64548d
+    ae5fa8ea-089a-4333-beea-98e65e0409b0
+    1ff06180-bf3e-4772-87aa-b3a11dfd3db6
+  }
+  package/ {
+    0d5a8117-4d18-4241-ade6-0fd66ddd5dd1
+    79e77324-a150-4800-a621-0875125b7f9e
+    94823bb3-8eb7-41de-9c86-bd61eea61e13
+    1e358603-efd1-4a5f-86e0-d6fc84a30cf1
+    12fe114b-9f61-43a6-b121-dbbc31c1ab4e
+    c0c3ecb3-2be6-4a03-8be9-be410c486d45
+    3bd21d7a-d7e8-4bd9-b485-552379894875
+    2e66e1fe-24d0-4543-b0f1-00a054ef5c79
+    46e4a997-20d0-445e-8ec8-06707b9856a6
+    abd9ff80-4954-4393-8dd8-a916b653304b
+    c77cd8ef-6a91-4a91-8a05-44a180221a75
+    6e4f4940-6573-4a5c-aaee-7747c72c245c
+    d2633738-2e86-485d-ae24-70fd87942eef
+    89563f64-e66d-46f5-b2b2-a823fb6c6068
+    b3c3b409-e21b-4768-839b-12f2032413fe
+    83f9afc9-3f8b-481e-ab3a-d820fa74588b
+    1e3a2b71-aebf-468b-b0b9-4a3afa0362aa
+    d346fe2b-8b13-4c35-af19-67382151fa4e
+    23429df7-77bc-4681-a52e-ca3759d292cb
+    044583d3-9f20-4858-bcb2-8ea789cdd247
+    3941e36f-247d-4c52-8997-2c41e7c4eb61
+    29e6611a-7c08-43a8-96da-1954081f884c
+    bf22ef1f-6e12-45be-a066-b7e2493230b5
+    5c819102-252b-444a-99d6-95cbc713092e
+    cb1d3377-f1cf-4f91-b358-7a87ac0d8695
+    aa2abfb4-33fd-4a41-9b0b-e71511274846
+    2df7a0c0-e72d-4943-a9cb-54f39e2ed362
+    613b2c98-1b5e-405f-a0c0-e71aae6125b6
+    753818bd-7863-4001-9ed8-f9ca081a9cc4
+    6d5bd59a-fb49-40d5-b246-5e660e9334ea
+    d2c8d9ea-4c1b-4f77-8c91-ca24d30129dc
+    70553614-1a25-442b-b670-c507b8732405
+    67763f6f-5f3a-486e-ba53-ac1393b5058d
+    4656e45b-7751-462e-a810-f2b5fbc4cb42
+    65fbab50-8218-484a-a22a-26f576b42790
+    644b904b-193a-4c69-be3b-0d4c70c2a3f9
+    fdd2c205-af41-470f-9366-25b15531051b
+    3cc8781f-3531-44aa-b681-24ad49706015
+    35840196-f235-446b-9915-5e6173b387cc
+    ef4b270c-a1eb-4095-925d-296e6db840d1
+    5d122410-533c-4ad8-b3d9-222895cef732
+    092daf5d-6616-45e0-971c-0a01737c23c9
+    2d88c444-c059-4d14-8a18-9b763aad2097
+    08fba9e3-372f-48f5-a154-a2525914b00b
+    1c69c8f6-6070-4530-acbd-1b0c40684cfe
+    65bbe209-c620-44b7-a639-fc94a93564b1
+    e67bc858-1d58-414d-bf13-91df4bd2d71a
+    50778687-4c53-4bb3-bfdb-40e3bda825c4
+    6618f8fd-2bf1-4f60-9d30-fd8df4a3782b
+    d0873b69-9c3f-4a96-ba06-a4105f8ab473
+    24e8fa3b-6adf-4fdc-aef9-c8a265720d50
+    a0c992f8-5059-41c0-a0cd-a14a72411dc6
+    24c55549-efae-4755-9222-b2f8903372d9
+    c2f2c366-0543-4bef-8f82-2f8aa7206084
+    dc37bb4d-8bed-46db-a5da-09062c546ed3
+    9aa52683-3fe5-4742-8cc3-e29d1ec192cf
+    8540d617-d426-4f3c-a97c-87b9722097d9
+    b0e3f495-1588-4fd6-bb90-aa27a116561e
+    b14a1ae9-1416-426e-9210-942eafde8751
+    0eca1eb4-8645-4c05-9b8e-5052efb43e1d
+    d5601a06-6132-41e1-a8ff-c6f67b0c2e33
+    191aa8ed-ae08-4a87-b0f7-e9322a4d3ad2
+    b0101463-1273-4e43-b1d6-063b10def2ad
+    f8d7649e-0006-4643-a7cb-3d2ba5ae7a88
+    3f70dc8a-16a5-494c-a8b1-8a24d742d135
+    4987b7e3-d03a-43d8-aece-cfb036c76d65
+    33fde5e2-b9c8-474d-b190-1655c00d16e0
+    26dc32d8-5d29-4983-8a77-dc68acb9b30b
+    6108029a-3f05-4856-8037-c8f06fb193b2
+    e299a234-e18f-4ade-be26-8b142342c4f5
+    23c108ed-013f-4ebb-9707-272b1e5aeef6
+    d4358f2a-5d13-47f9-8770-f3e9fae6c359
+    a6446d71-ced7-4e66-8f86-7c6cd362aa7d
+    7cbfd426-ee32-40d9-bc70-6fd79fb9fe2f
+    9c9dbe2f-b9be-446d-a4e4-32b70437c2c9
+    4f325c85-5411-4965-a699-7c6eb5df14b0
+    ea073479-dc4a-48ed-a297-40284e8de480
+    0fb3799b-6ca3-47f9-b42f-44017102dce2
+    26457728-eb61-467d-9a5d-50e420f43262
+    e5550320-c444-439c-b728-d0b2e41fd960
+    084354a9-a6d0-4c5f-abe1-4431fddbd1dc
+    b2598a65-29e5-4203-a6ce-abdfd6a00e95
+    7031b4d0-4439-4433-8f06-da2c00245c96
+    c17bb842-52b2-411a-8e2f-90d62b15f538
+  }
+}
+015f6185-d2ad-49a7-a77f-8e82987c84b8 {
+  entity {
+    name: trunk
+    shed_class: generic
+    version: {}
+  }
+  meta {
     checkout: trunk
     class: release
-    timestamp: {2015-09-26 02:10:42 UTC}
+    timestamp: {2015-10-15 15:13:33 UTC}
   }
-  {
-    uuid: 015f6185-d2ad-49a7-a77f-8e82987c84b8
-    name: tklib-0-6
-    version: 0.6
-    checkout: tklib-0-6
+}
+58f5faf4-cfb2-4c35-99d6-73a1c8c6d424 {
+  entity {
+    name: fossil
+    shed_class: generic
+    version: {}
+  }
+  meta {
     class: generic
     format: fossil
     project: 0abc2148a96d04fcd83241ed33d804ede942d5d3
@@ -31,27 +169,24 @@ release/ {
     url: http://fossil.etoyoc.com/fossil/tklib
   }
 }
-distribution/ {
-  {
-    uuid: 015f6185-d2ad-49a7-a77f-8e82987c84b8
+58b097b3-9e08-4682-aaff-ccda63321dac {
+  entity {
     name: tklib-0-6
+    shed_class: generic
     version: 0.6
+  }
+  meta {
     checkout: tklib-0-6
     class: generic
-    format: fossil
-    project: 0abc2148a96d04fcd83241ed33d804ede942d5d3
-    project-code: 0abc2148a96d04fcd83241ed33d804ede942d5d3
-    project-name: {Tk Library Source Code}
-    project-short-name: tklib
-    release: trunk
-    url: http://fossil.etoyoc.com/fossil/tklib
   }
 }
-file/ {
-  {
-    uuid: 58f5faf4-cfb2-4c35-99d6-73a1c8c6d424
+5f2971a9-26ce-446a-a815-ac1fcfc08d36 {
+  entity {
     name: bitmap-editor
+    shed_class: file
     version: 1
+  }
+  meta {
     author: {Keith Vetter}
     category: {Editing bitmaps}
     class: application
@@ -68,10 +203,14 @@ written to files in XBM format (X Bitmap).
     summary: {Bitmap Editor}
     teacup_type: Application
   }
-  {
-    uuid: 58b097b3-9e08-4682-aaff-ccda63321dac
+}
+65c0225d-2180-4317-90e3-fd010ed43a12 {
+  entity {
     name: diagram-viewer
+    shed_class: file
     version: 1
+  }
+  meta {
     author: {Andreas Kupries}
     category: {Processing tklib diagrams}
     class: application
@@ -92,257 +231,1431 @@ conversion to raster images.
     teacup_type: Application
   }
 }
-module/ {
-  {
-    uuid: 5f2971a9-26ce-446a-a815-ac1fcfc08d36
+c693ca59-f9d0-4f66-b40b-fd373bceeb85 {
+  entity {
     name: autoscroll
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{autoscroll 1.1}}
     package-require: Tk
     path: modules/autoscroll
   }
-  {
-    uuid: c693ca59-f9d0-4f66-b40b-fd373bceeb85
+  package/ {
+    0d5a8117-4d18-4241-ade6-0fd66ddd5dd1
+  }
+}
+0d5a8117-4d18-4241-ade6-0fd66ddd5dd1 {
+  entity {
+    name: autoscroll
+    shed_class: package
+    version: 1.1
+  }
+  meta {
+    class: package
+    file: autoscroll.tcl
+  }
+}
+afc30a02-e098-44a1-8dc5-5e9a55d635e6 {
+  entity {
     name: canvas
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{canvas::drag 0.1} {canvas::edit::points 0.1} {canvas::edit::polyline 0.1} {canvas::edit::quadrilateral 0.1} {canvas::gradient 0.2} {canvas::highlight 0.1} {canvas::mvg 1} {canvas::snap 1.0.1} {canvas::sqmap 0.3.1} {canvas::tag 0.1} {canvas::track::lines 0.1} {canvas::zoom 0.2.1}}
     package-require: {{cache::async 0.3} canvas::drag canvas::edit::points canvas::highlight canvas::tag canvas::track::lines img::window snit {Tcl 8.4} {Tcl 8.5} Tk {Tk 8.5} uevent::onidle}
     path: modules/canvas
   }
-  {
-    uuid: c0c3ecb3-2be6-4a03-8be9-be410c486d45
+  package/ {
+    79e77324-a150-4800-a621-0875125b7f9e
+    94823bb3-8eb7-41de-9c86-bd61eea61e13
+    1e358603-efd1-4a5f-86e0-d6fc84a30cf1
+    12fe114b-9f61-43a6-b121-dbbc31c1ab4e
+    c0c3ecb3-2be6-4a03-8be9-be410c486d45
+    3bd21d7a-d7e8-4bd9-b485-552379894875
+    2e66e1fe-24d0-4543-b0f1-00a054ef5c79
+    46e4a997-20d0-445e-8ec8-06707b9856a6
+    abd9ff80-4954-4393-8dd8-a916b653304b
+    c77cd8ef-6a91-4a91-8a05-44a180221a75
+    6e4f4940-6573-4a5c-aaee-7747c72c245c
+    d2633738-2e86-485d-ae24-70fd87942eef
+  }
+}
+79e77324-a150-4800-a621-0875125b7f9e {
+  entity {
+    name: canvas::drag
+    shed_class: package
+    version: 0.1
+  }
+  meta {
+    class: package
+    file: canvas_drag.tcl
+  }
+}
+94823bb3-8eb7-41de-9c86-bd61eea61e13 {
+  entity {
+    name: canvas::edit::points
+    shed_class: package
+    version: 0.1
+  }
+  meta {
+    class: package
+    file: canvas_epoints.tcl
+  }
+}
+1e358603-efd1-4a5f-86e0-d6fc84a30cf1 {
+  entity {
+    name: canvas::edit::polyline
+    shed_class: package
+    version: 0.1
+  }
+  meta {
+    class: package
+    file: canvas_epolyline.tcl
+  }
+}
+12fe114b-9f61-43a6-b121-dbbc31c1ab4e {
+  entity {
+    name: canvas::edit::quadrilateral
+    shed_class: package
+    version: 0.1
+  }
+  meta {
+    class: package
+    file: canvas_equad.tcl
+  }
+}
+c0c3ecb3-2be6-4a03-8be9-be410c486d45 {
+  entity {
+    name: canvas::gradient
+    shed_class: package
+    version: 0.2
+  }
+  meta {
+    class: package
+    file: canvas_gradient.tcl
+  }
+}
+3bd21d7a-d7e8-4bd9-b485-552379894875 {
+  entity {
+    name: canvas::highlight
+    shed_class: package
+    version: 0.1
+  }
+  meta {
+    class: package
+    file: canvas_highlight.tcl
+  }
+}
+2e66e1fe-24d0-4543-b0f1-00a054ef5c79 {
+  entity {
+    name: canvas::mvg
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: canvas_mvg.tcl
+  }
+}
+46e4a997-20d0-445e-8ec8-06707b9856a6 {
+  entity {
+    name: canvas::snap
+    shed_class: package
+    version: 1.0.1
+  }
+  meta {
+    class: package
+    file: canvas_snap.tcl
+  }
+}
+abd9ff80-4954-4393-8dd8-a916b653304b {
+  entity {
+    name: canvas::sqmap
+    shed_class: package
+    version: 0.3.1
+  }
+  meta {
+    class: package
+    file: canvas_sqmap.tcl
+  }
+}
+c77cd8ef-6a91-4a91-8a05-44a180221a75 {
+  entity {
+    name: canvas::tag
+    shed_class: package
+    version: 0.1
+  }
+  meta {
+    class: package
+    file: canvas_tags.tcl
+  }
+}
+6e4f4940-6573-4a5c-aaee-7747c72c245c {
+  entity {
+    name: canvas::track::lines
+    shed_class: package
+    version: 0.1
+  }
+  meta {
+    class: package
+    file: canvas_trlines.tcl
+  }
+}
+d2633738-2e86-485d-ae24-70fd87942eef {
+  entity {
+    name: canvas::zoom
+    shed_class: package
+    version: 0.2.1
+  }
+  meta {
+    class: package
+    file: canvas_zoom.tcl
+  }
+}
+fa356a86-ddb2-4d06-86ac-7babcbed498c {
+  entity {
     name: chatwidget
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{chatwidget {$chatwidget::version}}}
     package-require: {{Tcl 8.5} {Tk 8.5}}
     path: modules/chatwidget
   }
-  {
-    uuid: 3bd21d7a-d7e8-4bd9-b485-552379894875
+  package/ {
+    89563f64-e66d-46f5-b2b2-a823fb6c6068
+  }
+}
+89563f64-e66d-46f5-b2b2-a823fb6c6068 {
+  entity {
+    name: chatwidget
+    shed_class: package
+    version: {$chatwidget::version}
+  }
+  meta {
+    class: package
+    file: chatwidget.tcl
+  }
+}
+3cd9d031-1022-4366-8750-f205d6df912a {
+  entity {
     name: controlwidget
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{bindDown 1.0} {controlwidget 0.1} {led 1.0} {meter 1.0} {radioMatrix 1.0} {rdial 0.3} {tachometer 0.1} {voltmeter 0.1}}
     package-require: {bindDown led meter radioMatrix rdial snit tachometer Tk {Tk 8.5} voltmeter}
     path: modules/controlwidget
   }
-  {
-    uuid: a9fd4661-3749-4c4c-a60d-5938899cfe4a
+  package/ {
+    b3c3b409-e21b-4768-839b-12f2032413fe
+    83f9afc9-3f8b-481e-ab3a-d820fa74588b
+    1e3a2b71-aebf-468b-b0b9-4a3afa0362aa
+    d346fe2b-8b13-4c35-af19-67382151fa4e
+    23429df7-77bc-4681-a52e-ca3759d292cb
+    044583d3-9f20-4858-bcb2-8ea789cdd247
+    3941e36f-247d-4c52-8997-2c41e7c4eb61
+    29e6611a-7c08-43a8-96da-1954081f884c
+  }
+}
+b3c3b409-e21b-4768-839b-12f2032413fe {
+  entity {
+    name: bindDown
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: bindDown.tcl
+  }
+}
+83f9afc9-3f8b-481e-ab3a-d820fa74588b {
+  entity {
+    name: controlwidget
+    shed_class: package
+    version: 0.1
+  }
+  meta {
+    class: package
+    file: controlwidget.tcl
+  }
+}
+1e3a2b71-aebf-468b-b0b9-4a3afa0362aa {
+  entity {
+    name: led
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: led.tcl
+  }
+}
+d346fe2b-8b13-4c35-af19-67382151fa4e {
+  entity {
+    name: radioMatrix
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: radioMatrix.tcl
+  }
+}
+23429df7-77bc-4681-a52e-ca3759d292cb {
+  entity {
+    name: rdial
+    shed_class: package
+    version: 0.3
+  }
+  meta {
+    class: package
+    file: rdial.tcl
+  }
+}
+044583d3-9f20-4858-bcb2-8ea789cdd247 {
+  entity {
+    name: tachometer
+    shed_class: package
+    version: 0.1
+  }
+  meta {
+    class: package
+    file: tachometer.tcl
+  }
+}
+3941e36f-247d-4c52-8997-2c41e7c4eb61 {
+  entity {
+    name: meter
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: vertical_meter.tcl
+  }
+}
+29e6611a-7c08-43a8-96da-1954081f884c {
+  entity {
+    name: voltmeter
+    shed_class: package
+    version: 0.1
+  }
+  meta {
+    class: package
+    file: voltmeter.tcl
+  }
+}
+ea0d6f5f-e1e0-4cbd-980d-77311de0c476 {
+  entity {
     name: crosshair
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{crosshair 1.2}}
     package-require: {{Tcl 8.4} {Tk 8.4}}
     path: modules/crosshair
   }
-  {
-    uuid: 760337ae-03f0-4bbc-9a0c-0743df59ba62
+  package/ {
+    bf22ef1f-6e12-45be-a066-b7e2493230b5
+  }
+}
+bf22ef1f-6e12-45be-a066-b7e2493230b5 {
+  entity {
+    name: crosshair
+    shed_class: package
+    version: 1.2
+  }
+  meta {
+    class: package
+    file: crosshair.tcl
+  }
+}
+5cd626f7-2645-48af-a14c-f57a26cc68db {
+  entity {
     name: ctext
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{ctext 3.3} {ctext_tcl 0.8}}
     package-require: Tk
     path: modules/ctext
   }
-  {
-    uuid: 1e3a2b71-aebf-468b-b0b9-4a3afa0362aa
+  package/ {
+    5c819102-252b-444a-99d6-95cbc713092e
+    cb1d3377-f1cf-4f91-b358-7a87ac0d8695
+  }
+}
+5c819102-252b-444a-99d6-95cbc713092e {
+  entity {
+    name: ctext
+    shed_class: package
+    version: 3.3
+  }
+  meta {
+    class: package
+    file: ctext.tcl
+  }
+}
+cb1d3377-f1cf-4f91-b358-7a87ac0d8695 {
+  entity {
+    name: ctext_tcl
+    shed_class: package
+    version: 0.8
+  }
+  meta {
+    class: package
+    file: ctext_tcl.tcl
+  }
+}
+d1114c92-1115-4146-ab24-fc9817d4deba {
+  entity {
     name: cursor
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{cursor 0.3.1}}
     package-require: {{Tk 8.0}}
     path: modules/cursor
   }
-  {
-    uuid: d346fe2b-8b13-4c35-af19-67382151fa4e
+  package/ {
+    aa2abfb4-33fd-4a41-9b0b-e71511274846
+  }
+}
+aa2abfb4-33fd-4a41-9b0b-e71511274846 {
+  entity {
+    name: cursor
+    shed_class: package
+    version: 0.3.1
+  }
+  meta {
+    class: package
+    file: cursor.tcl
+  }
+}
+80ff8561-6ab3-4bb5-9ff8-36a3195c68ca {
+  entity {
     name: datefield
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{datefield 0.2}}
     package-require: {{Tk 8.0}}
     path: modules/datefield
   }
-  {
-    uuid: 23429df7-77bc-4681-a52e-ca3759d292cb
+  package/ {
+    2df7a0c0-e72d-4943-a9cb-54f39e2ed362
+  }
+}
+2df7a0c0-e72d-4943-a9cb-54f39e2ed362 {
+  entity {
+    name: datefield
+    shed_class: package
+    version: 0.2
+  }
+  meta {
+    class: package
+    file: datefield.tcl
+  }
+}
+f802c2e0-de0b-45fc-b2be-db173d393fa6 {
+  entity {
     name: diagrams
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{diagram 1} {diagram::application 1.2} {diagram::attribute 1} {diagram::basic 1.0.1} {diagram::core 1} {diagram::direction 1} {diagram::element 1} {diagram::navigation 1} {diagram::point 1}}
     package-require: {diagram::attribute diagram::basic diagram::core diagram::direction diagram::element diagram::navigation diagram::point fileutil {math::geometry 1.1.2} namespacex snit struct::queue struct::set struct::stack {Tcl 8.5} {Tk 8.5}}
     path: modules/diagrams
   }
-  {
-    uuid: a5140d6b-0f90-40fd-8eac-3fb9db1d71c1
+  package/ {
+    613b2c98-1b5e-405f-a0c0-e71aae6125b6
+    753818bd-7863-4001-9ed8-f9ca081a9cc4
+    6d5bd59a-fb49-40d5-b246-5e660e9334ea
+    d2c8d9ea-4c1b-4f77-8c91-ca24d30129dc
+    70553614-1a25-442b-b670-c507b8732405
+    67763f6f-5f3a-486e-ba53-ac1393b5058d
+    4656e45b-7751-462e-a810-f2b5fbc4cb42
+    65fbab50-8218-484a-a22a-26f576b42790
+    644b904b-193a-4c69-be3b-0d4c70c2a3f9
+  }
+}
+613b2c98-1b5e-405f-a0c0-e71aae6125b6 {
+  entity {
+    name: diagram::application
+    shed_class: package
+    version: 1.2
+  }
+  meta {
+    class: package
+    file: application.tcl
+  }
+}
+753818bd-7863-4001-9ed8-f9ca081a9cc4 {
+  entity {
+    name: diagram::attribute
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: attributes.tcl
+  }
+}
+6d5bd59a-fb49-40d5-b246-5e660e9334ea {
+  entity {
+    name: diagram::basic
+    shed_class: package
+    version: 1.0.1
+  }
+  meta {
+    class: package
+    file: basic.tcl
+  }
+}
+d2c8d9ea-4c1b-4f77-8c91-ca24d30129dc {
+  entity {
+    name: diagram::core
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: core.tcl
+  }
+}
+70553614-1a25-442b-b670-c507b8732405 {
+  entity {
+    name: diagram
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: diagram.tcl
+  }
+}
+67763f6f-5f3a-486e-ba53-ac1393b5058d {
+  entity {
+    name: diagram::direction
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: direction.tcl
+  }
+}
+4656e45b-7751-462e-a810-f2b5fbc4cb42 {
+  entity {
+    name: diagram::element
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: element.tcl
+  }
+}
+65fbab50-8218-484a-a22a-26f576b42790 {
+  entity {
+    name: diagram::navigation
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: navigation.tcl
+  }
+}
+644b904b-193a-4c69-be3b-0d4c70c2a3f9 {
+  entity {
+    name: diagram::point
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: point.tcl
+  }
+}
+aaee0fec-cd67-4864-97f3-e7d9fc7e8fd4 {
+  entity {
     name: getstring
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{getstring 0.1}}
     package-require: Tk
     path: modules/getstring
   }
-  {
-    uuid: 48769780-2035-4256-b454-f1565efa0e20
+  package/ {
+    fdd2c205-af41-470f-9366-25b15531051b
+  }
+}
+fdd2c205-af41-470f-9366-25b15531051b {
+  entity {
+    name: getstring
+    shed_class: package
+    version: 0.1
+  }
+  meta {
+    class: package
+    file: tk_getString.tcl
+  }
+}
+2a9f223e-22c3-47bc-9019-7d6e09129633 {
+  entity {
     name: history
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{history 0.1}}
     package-require: Tk
     path: modules/history
   }
-  {
-    uuid: 5966fadd-c668-4d94-a016-2765e36cd390
+  package/ {
+    3cc8781f-3531-44aa-b681-24ad49706015
+  }
+}
+3cc8781f-3531-44aa-b681-24ad49706015 {
+  entity {
+    name: history
+    shed_class: package
+    version: 0.1
+  }
+  meta {
+    class: package
+    file: history.tcl
+  }
+}
+f511d83c-9be6-48cc-8e39-46cdfe6d27b2 {
+  entity {
     name: ico
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{ico 0.3.2} {ico 1.1}}
     package-require: {{Tcl 8.4}}
     path: modules/ico
   }
-  {
-    uuid: 724214e5-57ab-4881-acee-f06b2f0472e2
+  package/ {
+    35840196-f235-446b-9915-5e6173b387cc
+    ef4b270c-a1eb-4095-925d-296e6db840d1
+  }
+}
+35840196-f235-446b-9915-5e6173b387cc {
+  entity {
+    name: ico
+    shed_class: package
+    version: 1.1
+  }
+  meta {
+    class: package
+    file: ico.tcl
+  }
+}
+ef4b270c-a1eb-4095-925d-296e6db840d1 {
+  entity {
+    name: ico
+    shed_class: package
+    version: 0.3.2
+  }
+  meta {
+    class: package
+    file: ico0.tcl
+  }
+}
+4b19bb74-6af2-4683-bc02-9a2a2dbb18a5 {
+  entity {
     name: ipentry
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{ipentry 0.3}}
     package-require: Tk
     path: modules/ipentry
   }
-  {
-    uuid: 8d3b7a3a-efdc-466b-bb52-ae621b62bfc5
+  package/ {
+    5d122410-533c-4ad8-b3d9-222895cef732
+  }
+}
+5d122410-533c-4ad8-b3d9-222895cef732 {
+  entity {
+    name: ipentry
+    shed_class: package
+    version: 0.3
+  }
+  meta {
+    class: package
+    file: ipentry.tcl
+  }
+}
+90398ca8-4a9c-4a38-b13d-a6627ddcc172 {
+  entity {
     name: khim
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{khim 1.0.1}}
     package-require: {{autoscroll 1.0} {msgcat 1.2} {Tcl 8.4} {Tk 8.4}}
     path: modules/khim
   }
-  {
-    uuid: 9df739f9-a92b-435b-a89a-fed6a487a537
+  package/ {
+    092daf5d-6616-45e0-971c-0a01737c23c9
+  }
+}
+092daf5d-6616-45e0-971c-0a01737c23c9 {
+  entity {
+    name: khim
+    shed_class: package
+    version: 1.0.1
+  }
+  meta {
+    class: package
+    file: khim.tcl
+  }
+}
+69c32e11-8f9d-4c93-bdf2-4910570f2a97 {
+  entity {
     name: mentry
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{mentry {$::mentry::version}} {mentry::common {$::mentry::version}} {Mentry_tile ...} {mentry_tile {$::mentry::version}}}
     package-require: {{-exact mentry::common 3.7} mentry {Mentry ?<i>version</i>?} {mentry ?<i>version</i>?} mentry<span>_tile</span> {Mentry_tile ?<i>version</i>?} {mentry_tile ?<i>version</i>?} {Tcl 8} {Tcl 8.4} {Tk 8} {Tk 8.4}}
     path: modules/mentry
   }
-  {
-    uuid: 5abb1089-95d0-44e9-bcf9-c24a8203d384
+  package/ {
+    2d88c444-c059-4d14-8a18-9b763aad2097
+    08fba9e3-372f-48f5-a154-a2525914b00b
+    1c69c8f6-6070-4530-acbd-1b0c40684cfe
+    65bbe209-c620-44b7-a639-fc94a93564b1
+  }
+}
+2d88c444-c059-4d14-8a18-9b763aad2097 {
+  entity {
+    name: mentry
+    shed_class: package
+    version: {$::mentry::version}
+  }
+  meta {
+    class: package
+    file: mentry.tcl
+  }
+}
+08fba9e3-372f-48f5-a154-a2525914b00b {
+  entity {
+    name: mentry::common
+    shed_class: package
+    version: {$::mentry::version}
+  }
+  meta {
+    class: package
+    file: mentryPublic.tcl
+  }
+}
+1c69c8f6-6070-4530-acbd-1b0c40684cfe {
+  entity {
+    name: mentry_tile
+    shed_class: package
+    version: {$::mentry::version}
+  }
+  meta {
+    class: package
+    file: mentry_tile.tcl
+  }
+}
+65bbe209-c620-44b7-a639-fc94a93564b1 {
+  entity {
+    name: Mentry_tile
+    shed_class: package
+    version: ...
+  }
+  meta {
+    class: package
+    file: mentry.html
+  }
+}
+e7d95e90-1e21-4e98-ace8-c4f8f7581255 {
+  entity {
     name: menubar
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{menubar 0.5} {menubar::debug 0.5} {menubar::node 0.5} {menubar::tree 0.5}}
     package-require: {menubar menubar::node menubar::tree Tcl TclOO Tk}
     path: modules/menubar
   }
-  {
-    uuid: 4736fcbc-86cc-4f6d-a4c6-e3fea1cfe2a3
+  package/ {
+    e67bc858-1d58-414d-bf13-91df4bd2d71a
+    50778687-4c53-4bb3-bfdb-40e3bda825c4
+    6618f8fd-2bf1-4f60-9d30-fd8df4a3782b
+    d0873b69-9c3f-4a96-ba06-a4105f8ab473
+  }
+}
+e67bc858-1d58-414d-bf13-91df4bd2d71a {
+  entity {
+    name: menubar::debug
+    shed_class: package
+    version: 0.5
+  }
+  meta {
+    class: package
+    file: debug.tcl
+  }
+}
+50778687-4c53-4bb3-bfdb-40e3bda825c4 {
+  entity {
+    name: menubar
+    shed_class: package
+    version: 0.5
+  }
+  meta {
+    class: package
+    file: menubar.tcl
+  }
+}
+6618f8fd-2bf1-4f60-9d30-fd8df4a3782b {
+  entity {
+    name: menubar::node
+    shed_class: package
+    version: 0.5
+  }
+  meta {
+    class: package
+    file: node.tcl
+  }
+}
+d0873b69-9c3f-4a96-ba06-a4105f8ab473 {
+  entity {
+    name: menubar::tree
+    shed_class: package
+    version: 0.5
+  }
+  meta {
+    class: package
+    file: tree.tcl
+  }
+}
+ab9676e3-6d4e-48eb-9d3d-740040217c7a {
+  entity {
     name: notifywindow
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{notifywindow 1.0}}
     package-require: {}
     path: modules/notifywindow
   }
-  {
-    uuid: b354b361-0e16-4b44-89ac-3426e1c504ac
+  package/ {
+    24e8fa3b-6adf-4fdc-aef9-c8a265720d50
+  }
+}
+24e8fa3b-6adf-4fdc-aef9-c8a265720d50 {
+  entity {
+    name: notifywindow
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: notifywindow.tcl
+  }
+}
+c731657f-5dad-4f15-acb0-0ebbd7a2533e {
+  entity {
     name: ntext
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{ntext 0.81}}
     package-require: {{Tcl 8.5} {Tk 8.5}}
     path: modules/ntext
   }
-  {
-    uuid: 2a9f223e-22c3-47bc-9019-7d6e09129633
+  package/ {
+    a0c992f8-5059-41c0-a0cd-a14a72411dc6
+  }
+}
+a0c992f8-5059-41c0-a0cd-a14a72411dc6 {
+  entity {
+    name: ntext
+    shed_class: package
+    version: 0.81
+  }
+  meta {
+    class: package
+    file: ntext.tcl
+  }
+}
+24435d38-3d04-4e30-b741-6e86e2d72325 {
+  entity {
     name: plotchart
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{plotanim 0.2} {Plotchart 2.3.4} {xyplot 1.0.1}}
     package-require: {cmdline Plotchart {Plotchart 2.0} {Tcl 8.5} Tk {Tk 8.5}}
     path: modules/plotchart
   }
-  {
-    uuid: 777c794a-10b7-4dd0-ae7e-f6eff21ac62f
+  package/ {
+    24c55549-efae-4755-9222-b2f8903372d9
+    c2f2c366-0543-4bef-8f82-2f8aa7206084
+    dc37bb4d-8bed-46db-a5da-09062c546ed3
+  }
+}
+24c55549-efae-4755-9222-b2f8903372d9 {
+  entity {
+    name: plotanim
+    shed_class: package
+    version: 0.2
+  }
+  meta {
+    class: package
+    file: plotanim.tcl
+  }
+}
+c2f2c366-0543-4bef-8f82-2f8aa7206084 {
+  entity {
+    name: Plotchart
+    shed_class: package
+    version: 2.3.4
+  }
+  meta {
+    class: package
+    file: plotchart.tcl
+  }
+}
+dc37bb4d-8bed-46db-a5da-09062c546ed3 {
+  entity {
+    name: xyplot
+    shed_class: package
+    version: 1.0.1
+  }
+  meta {
+    class: package
+    file: xyplot.tcl
+  }
+}
+d4e2725d-7095-43c2-9f79-b1d56835474b {
+  entity {
     name: style
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{style 0.3} {style::as {$style::as::version}} {style::lobster 0.2}}
     package-require: Tk
     path: modules/style
   }
-  {
-    uuid: 0654ed09-38b3-4bcf-89f5-04f0248dddcc
+  package/ {
+    9aa52683-3fe5-4742-8cc3-e29d1ec192cf
+    8540d617-d426-4f3c-a97c-87b9722097d9
+    b0e3f495-1588-4fd6-bb90-aa27a116561e
+  }
+}
+9aa52683-3fe5-4742-8cc3-e29d1ec192cf {
+  entity {
+    name: style::as
+    shed_class: package
+    version: {$style::as::version}
+  }
+  meta {
+    class: package
+    file: as.tcl
+  }
+}
+8540d617-d426-4f3c-a97c-87b9722097d9 {
+  entity {
+    name: style::lobster
+    shed_class: package
+    version: 0.2
+  }
+  meta {
+    class: package
+    file: lobster.tcl
+  }
+}
+b0e3f495-1588-4fd6-bb90-aa27a116561e {
+  entity {
+    name: style
+    shed_class: package
+    version: 0.3
+  }
+  meta {
+    class: package
+    file: style.tcl
+  }
+}
+1aef71e6-2999-4fe6-af35-b5c978843c10 {
+  entity {
     name: swaplist
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{swaplist 0.2}}
     package-require: Tk
     path: modules/swaplist
   }
-  {
-    uuid: 65bbe209-c620-44b7-a639-fc94a93564b1
+  package/ {
+    b14a1ae9-1416-426e-9210-942eafde8751
+  }
+}
+b14a1ae9-1416-426e-9210-942eafde8751 {
+  entity {
+    name: swaplist
+    shed_class: package
+    version: 0.2
+  }
+  meta {
+    class: package
+    file: swaplist.tcl
+  }
+}
+9395babc-008e-41c8-8169-d4b90ffcb362 {
+  entity {
     name: tablelist
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{Tablelist {$::tablelist::version}} {tablelist::common {$::tablelist::version}} {Tablelist_tile ...} {Tablelist_tile {$::tablelist::version}}}
     package-require: {{-exact tablelist::common 5.14} BWidget {tablelist 5.14} {Tablelist ?<i>version</i>?} {tablelist ?<i>version</i>?} {tablelist<span>_tile</span> 5.14} {Tablelist_tile ?<i>version</i>?} {tablelist_tile ?<i>version</i>?} {Tcl 8} {Tcl 8.4} {Tk 8} {Tk 8.3} {Tk 8.4} {tkdnd 2.7}}
     path: modules/tablelist
   }
-  {
-    uuid: 191aa8ed-ae08-4a87-b0f7-e9322a4d3ad2
+  package/ {
+    0eca1eb4-8645-4c05-9b8e-5052efb43e1d
+    d5601a06-6132-41e1-a8ff-c6f67b0c2e33
+    191aa8ed-ae08-4a87-b0f7-e9322a4d3ad2
+    b0101463-1273-4e43-b1d6-063b10def2ad
+  }
+}
+0eca1eb4-8645-4c05-9b8e-5052efb43e1d {
+  entity {
+    name: Tablelist
+    shed_class: package
+    version: {$::tablelist::version}
+  }
+  meta {
+    class: package
+    file: tablelist.tcl
+  }
+}
+d5601a06-6132-41e1-a8ff-c6f67b0c2e33 {
+  entity {
+    name: tablelist::common
+    shed_class: package
+    version: {$::tablelist::version}
+  }
+  meta {
+    class: package
+    file: tablelistPublic.tcl
+  }
+}
+191aa8ed-ae08-4a87-b0f7-e9322a4d3ad2 {
+  entity {
+    name: Tablelist_tile
+    shed_class: package
+    version: {$::tablelist::version}
+  }
+  meta {
+    class: package
+    file: tablelist_tile.tcl
+  }
+}
+b0101463-1273-4e43-b1d6-063b10def2ad {
+  entity {
+    name: Tablelist_tile
+    shed_class: package
+    version: ...
+  }
+  meta {
+    class: package
+    file: tablelist.html
+  }
+}
+99c8291d-4f4b-4fb3-b36f-e0941b007cee {
+  entity {
     name: tkpiechart
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{tkpiechart 6.6}}
     package-require: {stooop {Tk 8.3}}
     path: modules/tkpiechart
   }
-  {
-    uuid: e0eb4297-cf84-45cb-8833-1a5928f9cefa
+  package/ {
+    f8d7649e-0006-4643-a7cb-3d2ba5ae7a88
+  }
+}
+f8d7649e-0006-4643-a7cb-3d2ba5ae7a88 {
+  entity {
+    name: tkpiechart
+    shed_class: package
+    version: 6.6
+  }
+  meta {
+    class: package
+    file: tkpiechart.tcl
+  }
+}
+39229d0b-f305-465c-9349-41dee6b220ad {
+  entity {
     name: tooltip
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{tipstack 1.0.1} {tooltip 1.4.5}}
     package-require: {msgcat {Tk 8.4} tooltip}
     path: modules/tooltip
   }
-  {
-    uuid: 4d83497e-dd71-4842-951d-7695d8d97693
+  package/ {
+    3f70dc8a-16a5-494c-a8b1-8a24d742d135
+    4987b7e3-d03a-43d8-aece-cfb036c76d65
+  }
+}
+3f70dc8a-16a5-494c-a8b1-8a24d742d135 {
+  entity {
+    name: tipstack
+    shed_class: package
+    version: 1.0.1
+  }
+  meta {
+    class: package
+    file: tipstack.tcl
+  }
+}
+4987b7e3-d03a-43d8-aece-cfb036c76d65 {
+  entity {
+    name: tooltip
+    shed_class: package
+    version: 1.4.5
+  }
+  meta {
+    class: package
+    file: tooltip.tcl
+  }
+}
+5c8046b9-7b0c-420d-abaf-39e98ac7a81f {
+  entity {
     name: wcb
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{Wcb ...} {Wcb {$wcb::version}}}
     package-require: {{Tcl 8} {Tk 8} {Wcb ?<i>version</i>?} {wcb ?<i>version</i>?}}
     path: modules/wcb
   }
-  {
-    uuid: a8cd3f36-bdf0-4bd4-be0a-4ffca7f93a94
+  package/ {
+    33fde5e2-b9c8-474d-b190-1655c00d16e0
+    26dc32d8-5d29-4983-8a77-dc68acb9b30b
+  }
+}
+33fde5e2-b9c8-474d-b190-1655c00d16e0 {
+  entity {
+    name: Wcb
+    shed_class: package
+    version: {$wcb::version}
+  }
+  meta {
+    class: package
+    file: wcb.tcl
+  }
+}
+26dc32d8-5d29-4983-8a77-dc68acb9b30b {
+  entity {
+    name: Wcb
+    shed_class: package
+    version: ...
+  }
+  meta {
+    class: package
+    file: wcb.html
+  }
+}
+37411998-b33d-491d-b461-f0340d64548d {
+  entity {
     name: widget
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{widget 3.1} {widget::arrowbutton 1} {widget::calendar 1.0.1} {widget::dateentry 0.96} {widget::dialog 1.3.1} {widget::menuentry 1.0.1} {widget::panelframe 1.1} {widget::screenruler 1.2} {widget::scrolledtext 1.0} {widget::scrolledwindow 1.2.1} {widget::statusbar 1.2.1} {widget::superframe 1.0.1} {widget::toolbar 1.2.1}}
     package-require: {msgcat snit {Tk 8.4} widget {widget 3} widget::calendar widget::scrolledwindow}
     path: modules/widget
   }
-  {
-    uuid: cbd85d92-227a-4b88-bf6b-7468ed6ea7ca
+  package/ {
+    6108029a-3f05-4856-8037-c8f06fb193b2
+    e299a234-e18f-4ade-be26-8b142342c4f5
+    23c108ed-013f-4ebb-9707-272b1e5aeef6
+    d4358f2a-5d13-47f9-8770-f3e9fae6c359
+    a6446d71-ced7-4e66-8f86-7c6cd362aa7d
+    7cbfd426-ee32-40d9-bc70-6fd79fb9fe2f
+    9c9dbe2f-b9be-446d-a4e4-32b70437c2c9
+    4f325c85-5411-4965-a699-7c6eb5df14b0
+    ea073479-dc4a-48ed-a297-40284e8de480
+    0fb3799b-6ca3-47f9-b42f-44017102dce2
+    26457728-eb61-467d-9a5d-50e420f43262
+    e5550320-c444-439c-b728-d0b2e41fd960
+    084354a9-a6d0-4c5f-abe1-4431fddbd1dc
+  }
+}
+6108029a-3f05-4856-8037-c8f06fb193b2 {
+  entity {
+    name: widget::arrowbutton
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: arrowb.tcl
+  }
+}
+e299a234-e18f-4ade-be26-8b142342c4f5 {
+  entity {
+    name: widget::calendar
+    shed_class: package
+    version: 1.0.1
+  }
+  meta {
+    class: package
+    file: calendar.tcl
+  }
+}
+23c108ed-013f-4ebb-9707-272b1e5aeef6 {
+  entity {
+    name: widget::dateentry
+    shed_class: package
+    version: 0.96
+  }
+  meta {
+    class: package
+    file: dateentry.tcl
+  }
+}
+d4358f2a-5d13-47f9-8770-f3e9fae6c359 {
+  entity {
+    name: widget::dialog
+    shed_class: package
+    version: 1.3.1
+  }
+  meta {
+    class: package
+    file: dialog.tcl
+  }
+}
+a6446d71-ced7-4e66-8f86-7c6cd362aa7d {
+  entity {
+    name: widget::menuentry
+    shed_class: package
+    version: 1.0.1
+  }
+  meta {
+    class: package
+    file: mentry.tcl
+  }
+}
+7cbfd426-ee32-40d9-bc70-6fd79fb9fe2f {
+  entity {
+    name: widget::panelframe
+    shed_class: package
+    version: 1.1
+  }
+  meta {
+    class: package
+    file: panelframe.tcl
+  }
+}
+9c9dbe2f-b9be-446d-a4e4-32b70437c2c9 {
+  entity {
+    name: widget::screenruler
+    shed_class: package
+    version: 1.2
+  }
+  meta {
+    class: package
+    file: ruler.tcl
+  }
+}
+4f325c85-5411-4965-a699-7c6eb5df14b0 {
+  entity {
+    name: widget::scrolledwindow
+    shed_class: package
+    version: 1.2.1
+  }
+  meta {
+    class: package
+    file: scrollw.tcl
+  }
+}
+ea073479-dc4a-48ed-a297-40284e8de480 {
+  entity {
+    name: widget::statusbar
+    shed_class: package
+    version: 1.2.1
+  }
+  meta {
+    class: package
+    file: statusbar.tcl
+  }
+}
+0fb3799b-6ca3-47f9-b42f-44017102dce2 {
+  entity {
+    name: widget::scrolledtext
+    shed_class: package
+    version: 1
+  }
+  meta {
+    class: package
+    file: stext.tcl
+  }
+}
+26457728-eb61-467d-9a5d-50e420f43262 {
+  entity {
+    name: widget::superframe
+    shed_class: package
+    version: 1.0.1
+  }
+  meta {
+    class: package
+    file: superframe.tcl
+  }
+}
+e5550320-c444-439c-b728-d0b2e41fd960 {
+  entity {
+    name: widget::toolbar
+    shed_class: package
+    version: 1.2.1
+  }
+  meta {
+    class: package
+    file: toolbar.tcl
+  }
+}
+084354a9-a6d0-4c5f-abe1-4431fddbd1dc {
+  entity {
+    name: widget
+    shed_class: package
+    version: 3.1
+  }
+  meta {
+    class: package
+    file: widget.tcl
+  }
+}
+ae5fa8ea-089a-4333-beea-98e65e0409b0 {
+  entity {
     name: widgetl
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{widget::listentry 0.1.1} {widget::listsimple 0.1.1}}
     package-require: {img::png msgcat snit {Tcl 8.5} {Tk 8.5} tooltip widget::scrolledwindow widget::validator}
     path: modules/widgetl
   }
-  {
-    uuid: fdcb0139-236d-4d9a-81b9-becb268e7c0e
+  package/ {
+    b2598a65-29e5-4203-a6ce-abdfd6a00e95
+    7031b4d0-4439-4433-8f06-da2c00245c96
+  }
+}
+b2598a65-29e5-4203-a6ce-abdfd6a00e95 {
+  entity {
+    name: widget::listentry
+    shed_class: package
+    version: 0.1.1
+  }
+  meta {
+    class: package
+    file: listentry.tcl
+  }
+}
+7031b4d0-4439-4433-8f06-da2c00245c96 {
+  entity {
+    name: widget::listsimple
+    shed_class: package
+    version: 0.1.1
+  }
+  meta {
+    class: package
+    file: listsimple.tcl
+  }
+}
+1ff06180-bf3e-4772-87aa-b3a11dfd3db6 {
+  entity {
     name: widgetv
+    shed_class: module
     version: {}
+  }
+  meta {
     class: source
     package-provide: {{widget::validator 0.1}}
     package-require: {{Tcl 8.5} {Tk 8.5}}
     path: modules/widgetv
+  }
+  package/ {
+    c17bb842-52b2-411a-8e2f-90d62b15f538
+  }
+}
+c17bb842-52b2-411a-8e2f-90d62b15f538 {
+  entity {
+    name: widget::validator
+    shed_class: package
+    version: 0.1
+  }
+  meta {
+    class: package
+    file: validator.tcl
   }
 }
