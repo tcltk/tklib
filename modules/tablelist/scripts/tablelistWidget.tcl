@@ -80,24 +80,6 @@ namespace eval tablelist {
 	[lsearch -exact [winfo server .] "AppKit"] >= 0}]
 
     #
-    # Get the scaling percentage (100, 125, 150, or 200)
-    #
-    proc getScalingPercentage {} {
-	variable scaling
-	set factor [tk scaling]
-	if {$factor < 1.4} {
-	    set scaling 100 
-	} elseif {$factor < 1.7} {
-	    set scaling 125 
-	} elseif {$factor < 2.1} {
-	    set scaling 150 
-	} else {
-	    set scaling 200
-	}
-    }
-    getScalingPercentage 
-
-    #
     # The array configSpecs is used to handle configuration options.  The
     # names of its elements are the configuration options for the Tablelist
     # class.  The value of an array element is either an alias name or a list
@@ -430,8 +412,9 @@ namespace eval tablelist {
 				 flat7x7 flat8x4 flat8x5 flat9x5 flat9x6 \
 				 flat11x6 flat15x8 flatAngle7x4 flatAngle7x5 \
 				 flatAngle9x5 flatAngle9x6 flatAngle9x7 \
-				 flatAngle10x6 flatAngle10x7 photo7x7 \
-				 sunken8x7 sunken10x9 sunken12x11]
+				 flatAngle10x6 flatAngle10x7 flatAngle11x6 \
+				 flatAngle15x8 photo7x7 sunken8x7 sunken10x9 \
+				 sunken12x11]
     variable arrowTypes    [list up down]
     variable colWidthOpts  [list -requested -stretched -total]
     variable curSelOpts    [list -all -nonhidden -viewable]
@@ -456,8 +439,9 @@ namespace eval tablelist {
 				 klearlooks mate mint newWave oxygen1 oxygen2 \
 				 phase plain1 plain2 plain3 plain4 plastik \
 				 plastique radiance ubuntu ubuntu2 vistaAero \
-				 vistaClassic win7Aero win7Classic winnative \
-				 winxpBlue winxpOlive winxpSilver yuyo]
+				 vistaClassic win7Aero win7Classic win10 \
+				 winnative winxpBlue winxpOlive winxpSilver \
+				 yuyo]
     variable valignments   [list center top bottom]
 
     proc restrictArrowStyles {} {
@@ -3791,8 +3775,13 @@ proc tablelist::seeSubCmd {win argList} {
     synchronize $win
     displayItems $win
     set index [rowIndex $win [lindex $argList 0] 0]
-    seeRow $win $index
-    return ""
+    if {[winfo viewable $win] ||
+	[llength [$win.body tag nextrange elidedWin 1.0 end]] == 0} {
+	return [seeRow $win $index]
+    } else {
+	after 0 [list tablelist::seeRow $win $index]
+	return ""
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -3806,10 +3795,11 @@ proc tablelist::seecellSubCmd {win argList} {
     synchronize $win
     displayItems $win
     foreach {row col} [cellIndex $win [lindex $argList 0] 0] {}
-    if {[winfo viewable $win]} {
+    if {[winfo viewable $win] &&
+	[llength [$win.body tag nextrange elidedWin 1.0 end]] == 0} {
 	return [seeCell $win $row $col]
     } else {
-	after idle [list tablelist::seeCell $win $row $col]
+	after 0 [list tablelist::seeCell $win $row $col]
 	return ""
     }
 }
@@ -3825,10 +3815,11 @@ proc tablelist::seecolumnSubCmd {win argList} {
     synchronize $win
     displayItems $win
     set col [colIndex $win [lindex $argList 0] 0]
-    if {[winfo viewable $win]} {
+    if {[winfo viewable $win] &&
+	[llength [$win.body tag nextrange elidedWin 1.0 end]] == 0} {
 	return [seeCell $win [rowIndex $win @0,0 0] $col]
     } else {
-	after idle [list tablelist::seeCell $win [rowIndex $win @0,0 0] $col]
+	after 0 [list tablelist::seeCell $win [rowIndex $win @0,0 0] $col]
 	return ""
     }
 }
@@ -4676,7 +4667,9 @@ proc tablelist::yviewSubCmd {win argList} {
 	    #
 	    set units [format "%d" [lindex $argList 0]]
 	    set row [viewableRowOffsetToRowIndex $win $units]
-	    $w yview $row
+	    if {![yviewTextRow $win $row]} {
+		return ""
+	    }
 	    adjustElidedText $win
 	    redisplayVisibleItems $win
 	    updateColors $win
@@ -4705,7 +4698,9 @@ proc tablelist::yviewSubCmd {win argList} {
 			[getViewableRowCount $win 0 [expr {$topRow - 1}]]
 		    set offset [expr {$upperViewableCount + $number}]
 		    set row [viewableRowOffsetToRowIndex $win $offset]
-		    $w yview $row
+		    if {![yviewTextRow $win $row]} {
+			return ""
+		    }
 		} else {
 		    set absNumber [expr {abs($number)}]
 		    for {set n 0} {$n < $absNumber} {incr n} {
@@ -4724,7 +4719,9 @@ proc tablelist::yviewSubCmd {win argList} {
 			}
 			set offset [expr {$upperViewableCount + $delta}]
 			set row [viewableRowOffsetToRowIndex $win $offset]
-			$w yview $row
+			if {![yviewTextRow $win $row]} {
+			    return ""
+			}
 		    }
 		}
 
@@ -5912,7 +5909,6 @@ proc tablelist::displayItems win {
     showLineNumbersWhenIdle $win
     updateViewWhenIdle $win
 
-    activeTrace $win data activeRow w
     if {$wasEmpty} {
 	$w xview moveto [lindex [$data(hdrTxt) xview] 0]
     }
@@ -6185,6 +6181,13 @@ proc doesMatch {win row col pattern value mode numeric noCase checkCmd} {
 #------------------------------------------------------------------------------
 proc tablelist::seeRow {win index} {
     #
+    # This might be an "after 0" callback; check whether the window exists
+    #
+    if {![array exists ::tablelist::ns${win}::data]} {
+	return ""
+    }
+
+    #
     # Adjust the index to fit within the existing items
     #
     adjustRowIndex $win index
@@ -6206,7 +6209,9 @@ proc tablelist::seeRow {win index} {
     # Bring the given row into the window and restore
     # the horizontal view in the body text widget
     #
-    $data(body) see [expr {double($index + 1)}]
+    if {![seeTextIdx $win [expr {double($index + 1)}]]} {
+	return ""
+    }
     $data(body) xview moveto [lindex [$data(hdrTxt) xview] 0]
 
     updateView $win
@@ -6220,7 +6225,7 @@ proc tablelist::seeRow {win index} {
 #------------------------------------------------------------------------------
 proc tablelist::seeCell {win row col} {
     #
-    # This might be an "after idle" callback; check whether the window exists
+    # This might be an "after 0" callback; check whether the window exists
     #
     if {![array exists ::tablelist::ns${win}::data]} {
 	return ""
@@ -6287,7 +6292,9 @@ proc tablelist::seeCell {win row col} {
 		#
 		# Bring the cell's left edge into view
 		#
-		$b see $tabIdx1
+		if {![seeTextIdx $win $tabIdx1]} {
+		    return ""
+		}
 		$h xview moveto [lindex [$b xview] 0]
 
 		#
@@ -6308,7 +6315,9 @@ proc tablelist::seeCell {win row col} {
 		#
 		# Bring the cell's left edge into view
 		#
-		$b see $tabIdx1
+		if {![seeTextIdx $win $tabIdx1]} {
+		    return ""
+		}
 		set winWidth [winfo width $h]
 		if {[winfo width $data(hdrTxtFrLbl)$col] > $winWidth} {
 		    #
@@ -6333,7 +6342,9 @@ proc tablelist::seeCell {win row col} {
 		#
 		# Bring the cell's right edge into view
 		#
-		$b see $nextIdx
+		if {![seeTextIdx $win $nextIdx]} {
+		    return ""
+		}
 		$h xview moveto [lindex [$b xview] 0]
 
 		#
@@ -6357,7 +6368,9 @@ proc tablelist::seeCell {win row col} {
 	#
 	# Bring the cell's row into view
 	#
-	$b see [expr {double($row + 1)}]
+	if {![seeTextIdx $win [expr {double($row + 1)}]]} {
+	    return ""
+	}
 
 	set scrlWindowWidth [getScrlWindowWidth $win]
 
@@ -6529,15 +6542,69 @@ proc tablelist::moveTo win {
     set topRow [expr {int($topTextIdx) - 1}]
     foreach {x y width height baselinePos} [$w dlineinfo $topTextIdx] {}
     if {$y < 0} {
-	incr topRow	;# top row incomplete in vertical direction
+	incr topRow		;# top row incomplete in vertical direction
     }
 
     if {$row != $topRow} {
-	$w yview $row
-	updateView $win
+	if {[yviewTextRow $win $row]} {
+	    updateView $win
+	}
     }
 
     return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::seeTextIdx
+#
+# Wraps the "see" command of the body text widget of the tablelist widget win.
+#------------------------------------------------------------------------------
+proc tablelist::seeTextIdx {win textIdx} {
+    upvar ::tablelist::ns${win}::data data
+    set w $data(body)
+    $w see $textIdx
+
+    if {[llength [$w tag nextrange elidedWin 1.0 end]] == 0} {
+	return 1
+    }
+
+    set fromTextIdx "[$w index @0,0] linestart"
+    set toTextIdx "[$w index @0,$data(btmY)] lineend"
+    $w tag remove elidedWin $fromTextIdx $toTextIdx
+    update idletasks
+    if {![array exists ::tablelist::ns${win}::data]} {
+	return 0
+    }
+
+    $w see $textIdx
+    return 1
+}
+
+#------------------------------------------------------------------------------
+# tablelist::yviewTextRow
+#
+# Wraps the "yview <row>" command of the body text widget of the tablelist
+# widget win.
+#------------------------------------------------------------------------------
+proc tablelist::yviewTextRow {win row} {
+    upvar ::tablelist::ns${win}::data data
+    set w $data(body)
+    $w yview $row
+
+    if {[llength [$w tag nextrange elidedWin 1.0 end]] == 0} {
+	return 1
+    }
+
+    set fromTextIdx "[$w index @0,0] linestart"
+    set toTextIdx "[$w index @0,$data(btmY)] lineend"
+    $w tag remove elidedWin $fromTextIdx $toTextIdx
+    update idletasks
+    if {![array exists ::tablelist::ns${win}::data]} {
+	return 0
+    }
+
+    $w yview $row
+    return 1
 }
 
 #

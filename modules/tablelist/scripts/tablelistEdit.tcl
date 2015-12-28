@@ -1080,6 +1080,7 @@ proc tablelist::createCheckbutton {w args} {
 		17	{ set y -1 }
 		20	{ set y -3 }
 		25	{ set y -5 }
+		30 -
 		31	{ set y -8 }
 		default	{ set y -1 }
 	    }
