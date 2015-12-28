@@ -6,15 +6,32 @@
 
 namespace eval ::tablelist {
     #
+    # Gets the scaling percentage (100, 125, 150, or 200).
+    #
+    proc scalingPercentage {} {
+	set factor [tk scaling]
+	if {$factor < 1.50} {
+	    return 100 
+	} elseif {$factor < 1.83} {
+	    return 125 
+	} elseif {$factor < 2.33} {
+	    return 150 
+	} else {
+	    return 200
+	}
+    }
+
+    #
     # Public variables:
     #
-    variable version	5.14
+    variable version	5.15
     variable library
     if {$tcl_version >= 8.4} {
 	set library	[file normalize [DIR]]
     } else {
 	set library	[DIR]			;# no "file normalize" yet
     }
+    variable scalingpct	[scalingPercentage]
 
     #
     # Creates a new tablelist widget:
