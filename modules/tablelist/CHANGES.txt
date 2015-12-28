@@ -1,5 +1,28 @@
-What is new in Tablelist 5.14?
+What is new in Tablelist 5.15?
 ------------------------------
+
+1. Support for Windows 10, including the new tree style "win10", whose
+   size is automatically adapted to the display's scaling level.
+
+2. Added the arrow styles "flatAngle11x6" and "flatAngle15x8", needed
+   for automatic scaling of the default arrow style "flatAngle7x4" on
+   Windows 10.
+
+3. The variable "tablelist::scalingpct", used by Tablelist when adapting
+   the sizes of several tree styles to the display's DPI scaling level,
+   is now documented in Tablelist Programmer's Guide.
+
+4. Worked around a text widget bug introduced in Tk 8.5.18 and 8.6.4
+   (fixed for the next Tk versions).
+
+5. Fixed a bug that prevented the subcommands "see end", "see last", and
+   "yview moveto 1" from working as expected if the tablelist widget
+   contains multi-line cells or large images (thanks to Harald Oehlmann
+   for his bug report and to Francois Vogel for discussions on this
+   subject).
+
+What was new in Tablelist 5.14?
+-------------------------------
 
 1. Added the "-colorizecommand" configuration option, enabling you to
    change the colors of arbitrary character regions within the cells of
