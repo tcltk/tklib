@@ -6,7 +6,7 @@
 # Copyright (c) 2002-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.14
+package require tablelist 5.15
 
 wm title . "Tablelist Styles"
 
@@ -50,10 +50,10 @@ for {set n 0} { $n < 8} {incr n} {
 	    $tbl configure -showseparators yes
 	}
 	2 {
-	    $tbl configure -stripebackground #e4e8ec
+	    $tbl configure -stripebackground #f0f0f0
 	}
 	3 {
-	    $tbl configure -stripebackground #e4e8ec -showseparators yes
+	    $tbl configure -stripebackground #f0f0f0 -showseparators yes
 	}
 	4 {
 	    $tbl columnconfigure 1 -background LightYellow
@@ -65,18 +65,18 @@ for {set n 0} { $n < 8} {incr n} {
 	    $tbl columnconfigure 3 -background LightCyan
 	}
 	6 {
-	    $tbl configure -stripebackground #e4e8ec
+	    $tbl configure -stripebackground #f0f0f0
 	    $tbl columnconfigure 1 -background LightYellow \
-		-stripebackground #e5e5c9
+		-stripebackground #f0f0d2
 	    $tbl columnconfigure 3 -background LightCyan \
-		-stripebackground #c9e5e5
+		-stripebackground #d2f0f0
 	}
 	7 {
-	    $tbl configure -stripebackground #e4e8ec -showseparators yes
+	    $tbl configure -stripebackground #f0f0f0 -showseparators yes
 	    $tbl columnconfigure 1 -background LightYellow \
-		-stripebackground #e5e5c9
+		-stripebackground #f0f0d2
 	    $tbl columnconfigure 3 -background LightCyan \
-		-stripebackground #c9e5e5
+		-stripebackground #d2f0f0
 	}
     }
 

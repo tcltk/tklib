@@ -36,7 +36,7 @@ if {[string compare $winSys "x11"] == 0} {
     option add *ScrollArea.Text.highlightThickness	0
 }
 option add *Tablelist.background	white
-option add *Tablelist.stripeBackground	#e4e8ec
+option add *Tablelist.stripeBackground	#f0f0f0
 option add *Tablelist.setGrid		yes
 option add *Tablelist.movableColumns	yes
 option add *Tablelist.labelCommand	tablelist::sortByColumn
