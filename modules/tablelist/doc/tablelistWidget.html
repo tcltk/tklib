@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 5.14</h2>
+    <h2>For Tablelist Version 5.15</h2>
 
     <h3>by</h3>
 
@@ -96,8 +96,8 @@
     <b>flat5x3</b>|<b>flat5x4</b>|<b>flat6x4</b>|<b>flat7x4</b>|<b>flat7x5</b>|<b>flat7x7</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flat8x4</b>|<b>flat8x5</b>|<b>flat9x5</b>|<b>flat9x6</b>|<b>flat11x6</b>|<b>flat15x8</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flatAngle7x4</b>|<b>flatAngle7x5</b>|<b>flatAngle9x5</b>|<b>flatAngle9x6</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flat1Angle9x7</b>|<b>flatAngle10x6</b>|<b>flatAngle10x7</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;photo7x7</b>|<b>sunken8x7</b>|<b>sunken10x9</b>|<b>sunken12x11</b></code></dd>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flatAngle9x7</b>|<b>flatAngle10x6</b>|<b>flatAngle10x7</b>|<b>flatAngle11x6</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flatAngle15x8</b>|<b>photo7x7</b>|<b>sunken8x7</b>|<b>sunken10x9</b>|<b>sunken12x11</b></code></dd>
 
     <dd><code><b><a href="#autoscan">-autoscan</a></b>
     <i>boolean</i></code></dd>
@@ -288,7 +288,7 @@
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classic1</b>|<b>classic2</b>|<b>classic3</b>|<b>classic4</b>|<b>dust</b>|<b>dustSand</b>|<b>gtk</b>|<b>klearlooks</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mate</b>|<b>mint</b>|<b>newWave</b>|<b>oxygen1</b>|<b>oxygen2</b>|<b>phase</b>|<b>plain1</b>|<b>plain2</b>|<b>plain3</b>|<b>plain4</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plastik</b>|<b>plastique</b>|<b>radiance</b>|<b>ubuntu</b>|<b>ubuntu2</b>|<b>vistaAero</b>|<b>vistaClassic</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win7Aero</b>|<b>win7Classic</b>|<b>winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b>|<b>yuyo</b></code></dd>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win7Aero</b>|<b>win7Classic</b>|<b>win10</b>|<b>winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b>|<b>yuyo</b></code></dd>
 
     <dd><code><b><a href="#width">-width</a></b> <i>characters</i></code></dd>
 
@@ -1324,9 +1324,10 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         themes, like <code><b>alt</b></code>, <code><b>default</b></code>, and
         <code><b>clam</b></code>.&nbsp; On the windowing system
         <code><b>win32</b></code>, the default arrow color is
-        <code>#569bc0</code> for Windows Vista and later, <code>#aca899</code>
-        for Windows XP, and an empty string for older Windows versions, paired
-        with the default arrow style <code><b>flat7x4</b></code>,
+        <code>#595959</code> for Windows 10, <code>#569bc0</code> for Windows
+        Vista, 7, and 8, <code>#aca899</code> for Windows XP, and an empty
+        string for older Windows versions, paired with the default arrow style
+        <code><b>flatAngle7x4</b></code>, <code><b>flat7x4</b></code>,
         <code><b>flat9x5</b></code>, and <code><b>sunken8x7</b></code>,
         respectively.&nbsp; Finally, for the windowing systems
         <code><b>classic</b></code> and <code><b>aqua</b></code> on the
@@ -1427,21 +1428,26 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         <code><b>flatAngle7x5</b></code>, <code><b>flatAngle9x5</b></code>,
         <code><b>flatAngle9x6</b></code>, <code><b>flatAngle9x7</b></code>,
         <code><b>flatAngle10x6</b></code>, <code><b>flatAngle10x7</b></code>,
+        <code><b>flatAngle11x6</b></code>, <code><b>flatAngle15x8</b></code>,
         <code><b>photo7x7</b></code>, <code><b>sunken8x7</b></code>,
         <code><b>sunken10x9</b></code>, and <code><b>sunken12x11</b></code>, as
-        shown in the picture below.&nbsp; The default value depends on the
-        windowing system in the Tablelist package and on the current theme in
-        Tablelist_tile; see the description of the <code><b><a href=
-        "#arrowcolor">-arrowcolor</a></b></code> option for details.&nbsp; As
-        mentioned there, the default arrow style on Windows Vista and later is
-        <code><b>flat7x4</b></code>.&nbsp; While this is in most cases true,
-        notice that the default chosen by Tablelist can also be
+        shown in the picture below (except <code><b>photo7x7</b></code>).&nbsp;
+        The default value depends on the windowing system in the Tablelist
+        package and on the current theme in Tablelist_tile; see the description
+        of the <code><b><a href="#arrowcolor">-arrowcolor</a></b></code> option
+        for details.&nbsp; As mentioned there, the default arrow style on
+        Windows 10 is <code><b>flatAngle7x4</b></code>.&nbsp; While this is in
+        most cases true, notice that the default chosen by Tablelist can also
+        be <code><b>flatAngle9x5</b></code>, <code><b>flatAngle11x6</b></code>,
+        or <code><b>flatAngle15x8</b></code>, depending on the display's
+        scaling level.&nbsp; Similarly, on Windows Vista, 7, and 8, the default
+        chosen by Tablelist will be <code><b>flat7x4</b></code>,
         <code><b>flat9x5</b></code>, <code><b>flat11x6</b></code>, or
-        <code><b>flat15x8</b></code> (the last two are not shown in the picture
-        below), depending on the display's scaling level.</p>
+        <code><b>flat15x8</b></code>, depending on the display's scaling
+        level.</p>
 
         <p><img src="arrowStyles.png" alt="Arrow Styles" width="432" height=
-        "154"></p>
+        "176"></p>
 
         <p>While the sort arrows of the styles <code><b>flat*</b></code> and
         <code><b>sunken*</b></code> are created from bitmaps, the arrow style
@@ -3923,6 +3929,9 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <colgroup></colgroup>
 
+          <colgroup></colgroup>
+
+
           <tbody align="center">
             <tr>
               <td><img src="aqua.png" alt="aqua" width="120" height="54"></td>
@@ -3932,7 +3941,10 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               <td><img src="adwaita.png" alt="adwaita" width="120" height=
               "51"></td>
 
-              <td><img src="newWave.png" alt="newWave" width="120" height=
+              <td><img src="ubuntu.png" alt="ubuntu" width="120" height=
+              "51"></td>
+
+              <td><img src="ubuntu2.png" alt="ubuntu2" width="120" height=
               "51"></td>
             </tr>
 
@@ -3943,7 +3955,9 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <th><code>adwaita</code></th>
 
-              <th><code>newWave</code></th>
+              <th><code>ubuntu</code></th>
+
+              <th><code>ubuntu2</code></th>
             </tr>
           </tbody>
 
@@ -3953,10 +3967,12 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <td><img src="mate.png" alt="mate" width="120" height="51"></td>
 
-              <td><img src="ubuntu.png" alt="ubuntu" width="120" height=
+              <td><img src="yuyo.png" alt="yuyo" width="120" height="51"></td>
+
+              <td><img src="newWave.png" alt="newWave" width="120" height=
               "51"></td>
 
-              <td><img src="ubuntu2.png" alt="ubuntu2" width="120" height=
+              <td><img src="plastique.png" alt="plastique" width="120" height=
               "51"></td>
             </tr>
 
@@ -3965,40 +3981,20 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <th><code>mate</code></th>
 
-              <th><code>ubuntu</code></th>
+              <th><code>yuyo</code></th>
 
-              <th><code>ubuntu2</code></th>
+              <th><code>newWave</code></th>
+
+              <th><code>plastique</code></th>
             </tr>
           </tbody>
 
           <tbody align="center">
             <tr>
-              <td><img src="yuyo.png" alt="yuyo" width="120" height="51"></td>
-
-              <td><img src="plastique.png" alt="plastique" width="120" height=
-              "51"></td>
-
               <td><img src="oxygen1.png" alt="oxygen1" width="120" height=
               "51"></td>
 
               <td><img src="oxygen2.png" alt="oxygen2" width="120" height=
-              "51"></td>
-            </tr>
-
-            <tr>
-              <th><code>yuyo</code></th>
-
-              <th><code>plastique</code></th>
-
-              <th><code>oxygen1</code></th>
-
-              <th><code>oxygen2</code></th>
-            </tr>
-          </tbody>
-
-          <tbody align="center">
-            <tr>
-              <td><img src="plastik.png" alt="plastik" width="120" height=
               "51"></td>
 
               <td><img src="klearlooks.png" alt="klearlooks" width="120"
@@ -4012,7 +4008,9 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             </tr>
 
             <tr>
-              <th><code>plastik</code></th>
+              <th><code>oxygen1</code></th>
+
+              <th><code>oxygen2</code></th>
 
               <th><code>klearlooks</code></th>
 
@@ -4024,6 +4022,9 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tbody align="center">
             <tr>
+              <td><img src="plastik.png" alt="plastik" width="120" height=
+              "51"></td>
+
               <td><img src="winnative.png" alt="winnative" width="120" height=
               "51"></td>
 
@@ -4038,6 +4039,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             </tr>
 
             <tr>
+              <th><code>plastik</code></th>
+
               <th><code>winnative</code></th>
 
               <th><code>winxpBlue</code></th>
@@ -4061,6 +4064,9 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <td><img src="win7Classic.png" alt="win7Classic" width="120"
               height="51"></td>
+
+              <td><img src="win10.png" alt="win110" width="120" height=
+              "54"></td>
             </tr>
 
             <tr>
@@ -4071,6 +4077,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               <th><code>win7Aero</code></th>
 
               <th><code>win7Classic</code></th>
+
+              <th><code>win10</code></th>
             </tr>
           </tbody>
 
@@ -4086,6 +4094,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <td><img src="radiance.png" alt="radiance" width="120" height=
               "63"></td>
+
+              <td></td>
             </tr>
 
             <tr>
@@ -4096,15 +4106,18 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               <th><code>dustSand</code></th>
 
               <th><code>radiance</code></th>
+
+              <th></th>
             </tr>
           </tbody>
         </table>
 
         <p>The sizes used by the tree styles <code><b>vistaAero</b></code>,
-        <code><b>vistaClassic</b></code>, <code><b>win7Aero</b></code>, and
-        <code><b>win7Classic</b></code> are <i>automatically</i> adapted to the
-        display's scaling level.&nbsp; Platform-independent <i>manual</i>
-        scaling is supported by the following tree styles:</p>
+        <code><b>vistaClassic</b></code>, <code><b>win7Aero</b></code>,
+        <code><b>win7Classic</b></code>, and <code><b>win10</b></code> are
+        <i>automatically</i> adapted to the display's scaling level.&nbsp;
+        Platform-independent <i>manual</i> scaling is supported by the
+        following tree styles:</p>
 
         <table border="2" cellspacing="0" cellpadding="3" rules="groups">
           <colgroup></colgroup>
@@ -4208,17 +4221,18 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
         <p>If the tree style is <code><b>aqua</b></code>,
         <code><b>gtk</b></code>, <code><b>adwaita</b></code>,
-        <code><b>newWave</b></code>, <code><b>mint</b></code>,
-        <code><b>mate</b></code>, <code><b>ubuntu</b></code>,
-        <code><b>ubuntu2</b></code>, <code><b>oxygen2</b></code>,
+        <code><b>ubuntu</b></code>, <code><b>ubuntu2</b></code>,
+        <code><b>mint</b></code>, <code><b>mate</b></code>,
+        <code><b>newWave</b></code>, <code><b>oxygen2</b></code>,
         <code><b>vistaAero</b></code>, <code><b>win7Aero</b></code>,
-        <code><b>plain*</b></code>, or <code><b>bicolor*</b></code>, and the
-        Tk version is either 8.6 (with built-in PNG support) or 8.5 and the
-        <code><b>img::png</b></code> package can be loaded into the
-        interpreter, then the images used for displaying the expand/collapse
-        controls are PNG images with alpha channel.&nbsp; Otherwise (i.e., for
-        the other tree styles or in the absence of PNG support) GIF images are
-        used for the expand/collapse controls.</p>
+        <code><b>win10</b></code>, <code><b>plain*</b></code>, or
+        <code><b>bicolor*</b></code>, and the Tk version is either 8.6 (with
+        built-in PNG support) or 8.5 and the <code><b>img::png</b></code>
+        package can be loaded into the interpreter, then the images used for
+        displaying the expand/collapse controls are PNG images with alpha
+        channel.&nbsp; Otherwise (i.e., for the other tree styles or in the
+        absence of PNG support) GIF images are used for the expand/collapse
+        controls.</p>
 
         <p>The following table contains a detailed description of the tree
         styles, in alphabetical order:</p>
@@ -4612,14 +4626,14 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
                   <td>Tablelist:&nbsp;</td>
 
                   <td>Default for the windowing system
-                  <code><b>win32</b></code> on Windows 7 and later.</td>
+                  <code><b>win32</b></code> on Windows 7 and 8.</td>
                 </tr>
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
 
                   <td>Default for the <code><b>vista</b></code> theme on
-                  Windows 7 and later, with the Aero style.</td>
+                  Windows 7 and 8, with the Aero style.</td>
                 </tr>
               </table>
             </td>
@@ -4637,7 +4651,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
                   <td>Tablelist:&nbsp;</td>
 
                   <td>Default for the windowing system
-                  <code><b>win32</b></code> on Windows 7 with the Windows
+                  <code><b>win32</b></code> on Windows 7 and 8 with the Windows
                   Classic style.</td>
                 </tr>
 
@@ -4645,7 +4659,31 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
                   <td>Tablelist_tile:&nbsp;</td>
 
                   <td>Default for the <code><b>vista</b></code> theme on
-                  Windows 7 with the Windows Classic style.</td>
+                  Windows 7 and 8 with the Windows Classic style.</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code><b>win10</b></code></td>
+
+            <td><img src="win10.png" alt="win10" width="120" height="54"></td>
+
+            <td>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                  <td>Tablelist:&nbsp;</td>
+
+                  <td>Default for the windowing system
+                  <code><b>win32</b></code> on Windows 10.</td>
+                </tr>
+
+                <tr valign="top">
+                  <td>Tablelist_tile:&nbsp;</td>
+
+                  <td>Default for the <code><b>vista</b></code> theme on
+                  Windows 10.</td>
                 </tr>
               </table>
             </td>
@@ -8710,7 +8748,7 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
         the cell into view next to the title columns or at the right edge of
         the window.</dd>
 
-        <dt class="tm">id="seecolumn"&gt;<code><i>pathName</i> <b>seecolumn</b>
+        <dt class="tm" id="seecolumn"><code><i>pathName</i> <b>seecolumn</b>
         <i>columnIndex</i></code></dt>
 
         <dd>Adjusts the view in the tablelist so that the column given by
