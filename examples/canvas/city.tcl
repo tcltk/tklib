@@ -1,6 +1,5 @@
-#!/bin/sh
-# -*- tcl -*- \
-exec tclsh "$0" ${1+"$@"}
+#!/usr/bin/env tclsh
+## -*- tcl -*-
 # ### ### ### ######### ######### #########
 
 ## DEMO. Show pseudo-city map using semi-random (*) street tiles.

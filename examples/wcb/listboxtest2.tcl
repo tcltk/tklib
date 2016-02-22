@@ -1,7 +1,5 @@
-#!/bin/sh
-# the next line restarts using wish \
-exec wish "$0" ${1+"$@"}
-
+#!/usr/bin/env wish
+## -*- tcl -*-
 #==============================================================================
 # Demo:	wcb::callback <listbox> before activate <callback>
 #

@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -80,6 +80,24 @@ namespace eval tablelist {
 	[lsearch -exact [winfo server .] "AppKit"] >= 0}]
 
     #
+    # Get the scaling percentage (100, 125, 150, or 200)
+    #
+    proc getScalingPercentage {} {
+	variable scaling
+	set factor [tk scaling]
+	if {$factor < 1.4} {
+	    set scaling 100 
+	} elseif {$factor < 1.7} {
+	    set scaling 125 
+	} elseif {$factor < 2.1} {
+	    set scaling 150 
+	} else {
+	    set scaling 200
+	}
+    }
+    getScalingPercentage 
+
+    #
     # The array configSpecs is used to handle configuration options.  The
     # names of its elements are the configuration options for the Tablelist
     # class.  The value of an array element is either an alias name or a list
@@ -105,9 +123,11 @@ namespace eval tablelist {
 	-borderwidth		 {borderWidth		  BorderWidth	      f}
 	-bd			 -borderwidth
 	-collapsecommand	 {collapseCommand	  CollapseCommand     w}
+	-colorizecommand	 {colorizeCommand	  ColorizeCommand     w}
 	-columns		 {columns		  Columns	      w}
 	-columntitles		 {columnTitles		  ColumnTitles	      w}
 	-cursor			 {cursor		  Cursor	      c}
+	-customdragsource	 {customDragSource	  CustomDragSource    w}
 	-disabledforeground	 {disabledForeground	  DisabledForeground  w}
 	-editendcommand		 {editEndCommand	  EditEndCommand      w}
 	-editselectedonly	 {editSelectedOnly	  EditSelectedOnly    w}
@@ -125,8 +145,8 @@ namespace eval tablelist {
 	-highlightthickness	 {highlightThickness	  HighlightThickness  f}
 	-incrarrowtype		 {incrArrowType		  IncrArrowType	      w}
 	-instanttoggle		 {instantToggle		  InstantToggle	      w}
-	-labelactivebackground	 {labelActiveBackground	  Foreground          l}
-	-labelactiveforeground	 {labelActiveForeground	  Background          l}
+	-labelactivebackground	 {labelActiveBackground	  Foreground	      l}
+	-labelactiveforeground	 {labelActiveForeground	  Background	      l}
 	-labelbackground	 {labelBackground	  Background	      l}
 	-labelbg		 -labelbackground
 	-labelborderwidth	 {labelBorderWidth	  BorderWidth	      l}
@@ -158,6 +178,8 @@ namespace eval tablelist {
 	-setfocus		 {setFocus		  SetFocus	      w}
 	-setgrid		 {setGrid		  SetGrid	      w}
 	-showarrow		 {showArrow		  ShowArrow	      w}
+	-showeditcursor		 {showEditCursor	  ShowEditCursor      w}
+	-showhorizseparator	 {showHorizSeparator	  ShowHorizSeparator  w}
 	-showlabels		 {showLabels		  ShowLabels	      w}
 	-showseparators		 {showSeparators	  ShowSeparators      w}
 	-snipstring		 {snipString		  SnipString	      w}
@@ -196,72 +218,74 @@ namespace eval tablelist {
     # Tablelist widget class.  The value of an array element is either an alias
     # name or a list containing the database name and class.
     #
-    #	Command-Line Name	{Database Name		Database Class	}
-    #	-----------------------------------------------------------------
+    #	Command-Line Name	{Database Name		Database Class	    }
+    #	---------------------------------------------------------------------
     #
     variable colConfigSpecs
     array set colConfigSpecs {
-	-align			{align			Align		}
-	-background		{background		Background	}
+	-align			{align			Align		    }
+	-background		{background		Background	    }
 	-bg			-background
-	-changesnipside		{changeSnipSide		ChangeSnipSide	}
-	-editable		{editable		Editable	}
-	-editwindow		{editWindow		EditWindow	}
-	-font			{font			Font		}
-	-foreground		{foreground		Foreground	}
+	-changesnipside		{changeSnipSide		ChangeSnipSide	    }
+	-changetitlesnipside	{changeTitleSnipSide	ChangeTitleSnipSide }
+	-editable		{editable		Editable	    }
+	-editwindow		{editWindow		EditWindow	    }
+	-font			{font			Font		    }
+	-foreground		{foreground		Foreground	    }
 	-fg			-foreground
-	-formatcommand		{formatCommand		FormatCommand	}
-	-hide			{hide			Hide		}
-	-labelalign		{labelAlign		Align		}
-	-labelbackground	{labelBackground	Background	}
+	-formatcommand		{formatCommand		FormatCommand	    }
+	-hide			{hide			Hide		    }
+	-labelalign		{labelAlign		Align		    }
+	-labelbackground	{labelBackground	Background	    }
 	-labelbg		-labelbackground
-	-labelborderwidth	{labelBorderWidth	BorderWidth	}
+	-labelborderwidth	{labelBorderWidth	BorderWidth	    }
 	-labelbd		-labelborderwidth
-	-labelcommand		{labelCommand		LabelCommand	}
-	-labelcommand2		{labelCommand2		LabelCommand2	}
-	-labelfont		{labelFont		Font		}
-	-labelforeground	{labelForeground	Foreground	}
+	-labelcommand		{labelCommand		LabelCommand	    }
+	-labelcommand2		{labelCommand2		LabelCommand2	    }
+	-labelfont		{labelFont		Font		    }
+	-labelforeground	{labelForeground	Foreground	    }
 	-labelfg		-labelforeground
-	-labelheight		{labelHeight		Height		}
-	-labelimage		{labelImage		Image		}
-	-labelpady		{labelPadY		Pad		}
-	-labelrelief		{labelRelief		Relief		}
-	-maxwidth		{maxWidth		MaxWidth	}
-	-name			{name			Name		}
-	-resizable		{resizable		Resizable	}
-	-selectbackground	{selectBackground	Foreground	}
-	-selectforeground	{selectForeground	Background	}
-	-showarrow		{showArrow		ShowArrow	}
-	-showlinenumbers	{showLineNumbers	ShowLineNumbers }
-	-sortcommand		{sortCommand		SortCommand	}
-	-sortmode		{sortMode		SortMode	}
-	-stretchable		{stretchable		Stretchable	}
-	-stripebackground	{stripeBackground	Background	}
-	-stripeforeground	{stripeForeground	Foreground	}
-	-text			{text			Text		}
-	-title			{title			Title		}
-	-valign			{valign			Valign		}
-	-width			{width			Width		}
-	-wrap			{wrap			Wrap		}
+	-labelheight		{labelHeight		Height		    }
+	-labelimage		{labelImage		Image		    }
+	-labelpady		{labelPadY		Pad		    }
+	-labelrelief		{labelRelief		Relief		    }
+	-maxwidth		{maxWidth		MaxWidth	    }
+	-name			{name			Name		    }
+	-resizable		{resizable		Resizable	    }
+	-selectbackground	{selectBackground	Foreground	    }
+	-selectforeground	{selectForeground	Background	    }
+	-showarrow		{showArrow		ShowArrow	    }
+	-showlinenumbers	{showLineNumbers	ShowLineNumbers	    }
+	-sortcommand		{sortCommand		SortCommand	    }
+	-sortmode		{sortMode		SortMode	    }
+	-stretchable		{stretchable		Stretchable	    }
+	-stripebackground	{stripeBackground	Background	    }
+	-stripeforeground	{stripeForeground	Foreground	    }
+	-text			{text			Text		    }
+	-title			{title			Title		    }
+	-valign			{valign			Valign		    }
+	-width			{width			Width		    }
+	-wrap			{wrap			Wrap		    }
     }
 
     #
     # Extend some elements of the array colConfigSpecs
     #
-    lappend colConfigSpecs(-align)		- left
-    lappend colConfigSpecs(-changesnipside)	- 0
-    lappend colConfigSpecs(-editable)		- 0
-    lappend colConfigSpecs(-editwindow)		- entry
-    lappend colConfigSpecs(-hide)		- 0
-    lappend colConfigSpecs(-maxwidth)		- 0
-    lappend colConfigSpecs(-resizable)		- 1
-    lappend colConfigSpecs(-showarrow)		- 1
-    lappend colConfigSpecs(-showlinenumbers)	- 0
-    lappend colConfigSpecs(-sortmode)		- ascii
-    lappend colConfigSpecs(-stretchable)	- 0
-    lappend colConfigSpecs(-valign)		- center
-    lappend colConfigSpecs(-width)		- 0
-    lappend colConfigSpecs(-wrap)		- 0
+    lappend colConfigSpecs(-align)			- left
+    lappend colConfigSpecs(-changesnipside)		- 0
+    lappend colConfigSpecs(-changetitlesnipside)	- 0
+    lappend colConfigSpecs(-editable)			- 0
+    lappend colConfigSpecs(-editwindow)			- entry
+    lappend colConfigSpecs(-hide)			- 0
+    lappend colConfigSpecs(-maxwidth)			- 0
+    lappend colConfigSpecs(-resizable)			- 1
+    lappend colConfigSpecs(-showarrow)			- 1
+    lappend colConfigSpecs(-showlinenumbers)		- 0
+    lappend colConfigSpecs(-sortmode)			- ascii
+    lappend colConfigSpecs(-stretchable)		- 0
+    lappend colConfigSpecs(-valign)			- center
+    lappend colConfigSpecs(-width)			- 0
+    lappend colConfigSpecs(-wrap)			- 0
 
     if {$usingTile} {
 	unset colConfigSpecs(-labelbackground)
@@ -370,17 +394,18 @@ namespace eval tablelist {
 	expandedkeys fillcolumn findcolumnname findrowname finishediting \
 	formatinfo get getcells getcolumns getformatted getformattedcells \
 	getformattedcolumns getfullkeys getkeys hasattrib hascellattrib \
-	hascolumnattrib hasrowattrib imagelabelpath index insert insertchild \
-	insertchildlist insertchildren insertcolumnlist insertcolumns \
-	insertlist iselemsnipped isexpanded istitlesnipped isviewable \
-	itemlistvar labelpath labels labeltag move movecolumn nearest \
-	nearestcell nearestcolumn noderow parentkey refreshsorting \
+	hascolumnattrib hasrowattrib hidetargetmark imagelabelpath index \
+	insert insertchild insertchildlist insertchildren insertcolumnlist \
+	insertcolumns insertlist iselemsnipped isexpanded istitlesnipped \
+	isviewable itemlistvar labelpath labels labeltag move movecolumn \
+	nearest nearestcell nearestcolumn noderow parentkey refreshsorting \
 	rejectinput resetsortinfo rowattrib rowcget rowconfigure scan \
 	searchcolumn see seecell seecolumn selection separatorpath separators \
-	size sort sortbycolumn sortbycolumnlist sortcolumn sortcolumnlist \
-	sortorder sortorderlist togglecolumnhide togglerowhide toplevelkey \
-	unsetattrib unsetcellattrib unsetcolumnattrib unsetrowattrib \
-	viewablerowcount windowpath xview yview]
+	showtargetmark size sort sortbycolumn sortbycolumnlist sortcolumn \
+	sortcolumnlist sortorder sortorderlist targetmarkpath targetmarkpos \
+	togglecolumnhide togglerowhide toplevelkey unsetattrib \
+	unsetcellattrib unsetcolumnattrib unsetrowattrib viewablerowcount \
+	windowpath xview yview]
 
     proc restrictCmdOpts {} {
 	variable canElide
@@ -401,29 +426,38 @@ namespace eval tablelist {
     #
     variable activeStyles  [list frame none underline]
     variable alignments    [list left right center]
-    variable arrowStyles   [list flat6x4 flat7x4 flat7x5 flat7x7 flat8x5 \
-				 flat9x5 flat9x6 flat9x7 flat10x6 photo7x7 \
+    variable arrowStyles   [list flat5x3 flat5x4 flat6x4 flat7x4 flat7x5 \
+				 flat7x7 flat8x4 flat8x5 flat9x5 flat9x6 \
+				 flat11x6 flat15x8 flatAngle7x4 flatAngle7x5 \
+				 flatAngle9x5 flatAngle9x6 flatAngle9x7 \
+				 flatAngle10x6 flatAngle10x7 photo7x7 \
 				 sunken8x7 sunken10x9 sunken12x11]
     variable arrowTypes    [list up down]
     variable colWidthOpts  [list -requested -stretched -total]
+    variable curSelOpts    [list -all -nonhidden -viewable]
     variable expCollOpts   [list -fully -partly]
     variable findOpts      [list -descend -parent]
+    variable gapTypeOpts   [list -any -horizontal -vertical]
     variable scanOpts      [list mark dragto]
     variable searchOpts    [list -all -backwards -check -descend -exact \
 				 -formatted -glob -nocase -not -numeric \
 				 -parent -regexp -start]
     variable selectionOpts [list anchor clear includes set]
     variable selectTypes   [list row cell]
+    variable targetOpts    [list before inside]
     variable sortModes     [list ascii asciinocase command dictionary \
 				 integer real]
     variable sortOpts      [list -increasing -decreasing]
     variable sortOrders    [list increasing decreasing]
     variable states	   [list disabled normal]
-    variable treeStyles    [list adwaita ambiance aqua baghira dust dustSand \
-				 gtk klearlooks mint newWave oxygen1 oxygen2 \
-				 phase plastik plastique radiance ubuntu \
-				 vistaAero vistaClassic win7Aero win7Classic \
-				 winnative winxpBlue winxpOlive winxpSilver]
+    variable treeStyles    [list adwaita ambiance aqua baghira bicolor1 \
+				 bicolor2 bicolor3 bicolor4 classic1 classic2 \
+				 classic3 classic4 dust dustSand gtk \
+				 klearlooks mate mint newWave oxygen1 oxygen2 \
+				 phase plain1 plain2 plain3 plain4 plastik \
+				 plastique radiance ubuntu ubuntu2 vistaAero \
+				 vistaClassic win7Aero win7Classic winnative \
+				 winxpBlue winxpOlive winxpSilver yuyo]
     variable valignments   [list center top bottom]
 
     proc restrictArrowStyles {} {
@@ -692,6 +726,8 @@ proc tablelist::tablelist args {
 	    searchStartIdx	 0
 	    keyBeingExpanded	 ""
 	    destroyIdList	 {}
+	    justEntered		 0
+	    inEditWin		 0
 	}
 
 	#
@@ -860,6 +896,7 @@ proc tablelist::tablelist args {
     #
     $w tag configure stripe -background "" -foreground ""    ;# will be changed
     $w tag configure select -relief raised
+    $w tag configure curRow -borderwidth 1 -relief raised
     $w tag configure active -borderwidth ""		     ;# will be changed
     $w tag configure disabled -foreground ""		     ;# will be changed
     $w tag configure redraw -relief sunken
@@ -1053,7 +1090,7 @@ proc tablelist::bboxSubCmd {win argList} {
     upvar ::tablelist::ns${win}::data data
     set w $data(body)
     set dlineinfo [$w dlineinfo [expr {double($index + 1)}]]
-    if {$data(itemCount) == 0 || [string length $dlineinfo] == 0} {
+    if {$data(itemCount) == 0 || [llength $dlineinfo] == 0} {
 	return {}
     }
 
@@ -1241,6 +1278,7 @@ proc tablelist::cellselectionSubCmd {win argList} {
 	    }
 
 	    updateColors $win
+	    invokeMotionHandler $win
 	    return ""
 	}
     }
@@ -1399,7 +1437,7 @@ proc tablelist::collapseSubCmd {win argList} {
 	makeStripes $win
 	adjustElidedText $win
 	redisplayVisibleItems $win
-	updateColorsWhenIdle $win
+	updateColors $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
     }
@@ -1515,7 +1553,7 @@ proc tablelist::collapseallSubCmd {win argList} {
     makeStripes $win
     adjustElidedText $win
     redisplayVisibleItems $win
-    updateColorsWhenIdle $win
+    updateColors $win
     adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
     return ""
@@ -1799,26 +1837,47 @@ proc tablelist::cornerpathSubCmd {win argList} {
 # tablelist::curcellselectionSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::curcellselectionSubCmd {win argList} {
-    if {[llength $argList] != 0} {
-	mwutil::wrongNumArgs "$win curcellselection"
+    set argCount [llength $argList]
+    if {$argCount > 1} {
+	mwutil::wrongNumArgs "$win curcellselection\
+			      ?-all|-nonhidden||-viewable?"
     }
+
+    if {$argCount == 0} {
+	set constraint 0
+    } else {
+	variable curSelOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 0] $curSelOpts]
+	set constraint [lsearch -exact $curSelOpts $opt]
+    }
+    
 
     synchronize $win
     displayItems $win
-    return [curCellSelection $win]
+    return [curCellSelection $win 0 $constraint]
 }
 
 #------------------------------------------------------------------------------
 # tablelist::curselectionSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::curselectionSubCmd {win argList} {
-    if {[llength $argList] != 0} {
-	mwutil::wrongNumArgs "$win curselection"
+    set argCount [llength $argList]
+    if {$argCount > 1} {
+	mwutil::wrongNumArgs "$win curselection\
+			      ?-all|-nonhidden||-viewable?"
+    }
+
+    if {$argCount == 0} {
+	set constraint 0
+    } else {
+	variable curSelOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 0] $curSelOpts]
+	set constraint [lsearch -exact $curSelOpts $opt]
     }
 
     synchronize $win
     displayItems $win
-    return [curSelection $win]
+    return [curSelection $win $constraint]
 }
 
 #------------------------------------------------------------------------------
@@ -2127,7 +2186,7 @@ proc tablelist::expandSubCmd {win argList} {
 	makeStripes $win
 	adjustElidedText $win
 	redisplayVisibleItems $win
-	updateColorsWhenIdle $win
+	updateColors $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
     }
@@ -2203,7 +2262,7 @@ proc tablelist::expandallSubCmd {win argList} {
     makeStripes $win
     adjustElidedText $win
     redisplayVisibleItems $win
-    updateColorsWhenIdle $win
+    updateColors $win
     adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
     return ""
@@ -2883,6 +2942,19 @@ proc tablelist::hasrowattribSubCmd {win argList} {
     upvar ::tablelist::ns${win}::data data
     set key [lindex $data(keyList) $row]
     return [mwutil::hasattribSubCmd $win $key [lindex $argList 1]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::hidetargetmarkSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::hidetargetmarkSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win hidetargetmark"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    place forget $data(rowGap)
+    return ""
 }
 
 #------------------------------------------------------------------------------
@@ -3801,6 +3873,7 @@ proc tablelist::selectionSubCmd {win argList} {
 	    }
 
 	    updateColors $win
+	    invokeMotionHandler $win
 	    return ""
 	}
     }
@@ -3848,6 +3921,70 @@ proc tablelist::separatorsSubCmd {win argList} {
     }
 
     return [lsort -dictionary $sepList]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::showtargetmarkSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::showtargetmarkSubCmd {win argList} {
+    if {[llength $argList] != 2} {
+	mwutil::wrongNumArgs "$win showtargetmark before|inside index"
+    }
+
+    variable targetOpts
+    set opt [mwutil::fullOpt "option" [lindex $argList 0] $targetOpts]
+    set index [lindex $argList 1]
+
+    upvar ::tablelist::ns${win}::data data
+    set w $data(body)
+
+    switch $opt {
+	before {
+	    set row [rowIndex $win $index 1]
+	    if {$data(itemCount) == 0} {
+		set y 0
+	    } elseif {$row >= $data(itemCount)} {
+		set dlineinfo [$w dlineinfo [expr {double($data(itemCount))}]]
+		if {[llength $dlineinfo] == 0} {
+		    return ""
+		}
+
+		set lineY [lindex $dlineinfo 1]
+		set lineHeight [lindex $dlineinfo 3]
+		set y [expr {$lineY + $lineHeight}]
+	    } else {
+		if {$row < 0} {
+		    set row 0
+		}
+		set dlineinfo [$w dlineinfo [expr {double($row + 1)}]]
+		if {[llength $dlineinfo] == 0} {
+		    return ""
+		}
+
+		set y [lindex $dlineinfo 1]
+	    }
+
+	    place $data(rowGap) -anchor w -y $y -height 4 \
+				-width [winfo width $data(hdrTxtFr)]
+	}
+
+	inside {
+	    set row [rowIndex $win $index 0 1]
+	    set dlineinfo [$w dlineinfo [expr {double($row + 1)}]]
+	    if {[llength $dlineinfo] == 0} {
+		return ""
+	    }
+
+	    set lineY [lindex $dlineinfo 1]
+	    set lineHeight [lindex $dlineinfo 3]
+	    set y [expr {$lineY + $lineHeight/2}]
+
+	    place $data(rowGap) -anchor w -y $y -height $lineHeight -width 6
+	}
+    }
+
+    raise $data(rowGap)
+    return ""
 }
 
 #------------------------------------------------------------------------------
@@ -3914,7 +4051,7 @@ proc tablelist::sortbycolumnlistSubCmd {win argList} {
     set argCount [llength $argList]
     if {$argCount < 1 || $argCount > 2} {
 	mwutil::wrongNumArgs "$win sortbycolumnlist columnIndexList\
-	                      ?sortOrderList?"
+			      ?sortOrderList?"
     }
 
     synchronize $win
@@ -3999,6 +4136,98 @@ proc tablelist::sortorderlistSubCmd {win argList} {
     }
 
     return $sortOrderList
+}
+
+#------------------------------------------------------------------------------
+# tablelist::targetmarkpathSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::targetmarkpathSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win targetmarkpath"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    return $data(rowGap)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::targetmarkposSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::targetmarkposSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs "$win targetmarkpos y ?-any|-horizontal|-vertical?"
+    }
+
+    set y [format "%d" [lindex $argList 0]]
+    if {$argCount == 1} {
+	set opt -any
+    } else {
+	variable gapTypeOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 1] $gapTypeOpts]
+    }
+
+    synchronize $win
+    displayItems $win
+
+    switch -- $opt {
+	-any {
+	    set row [containingRow $win $y relOffset]
+	    if {$row < 0} {
+		set place before
+		upvar ::tablelist::ns${win}::data data
+		set row [expr {
+		    ($y < [winfo y $data(body)]) ? 0 : $data(itemCount)
+		}]
+	    } elseif {$relOffset < 0.25} {
+		set place before
+	    } elseif {$relOffset < 0.75} {
+		set place inside
+	    } else {
+		set place before
+		if {[isexpandedSubCmd $win $row]} {
+		    incr row
+		} else {
+		    #
+		    # Get the containing row's next sibling
+		    #
+		    set childIdx [childindexSubCmd $win $row]
+		    set row [noderowSubCmd $win [list \
+			     [parentkeySubCmd $win $row] [incr childIdx]]]
+		}
+	    }
+
+	    return [list $place $row]
+	}
+
+	-horizontal {
+	    set row [containingRow $win $y relOffset]
+	    if {$row < 0} {
+		upvar ::tablelist::ns${win}::data data
+		set row [expr {
+		    ($y < [winfo y $data(body)]) ? 0 : $data(itemCount)
+		}]
+	    } elseif {$relOffset >= 0.5} {
+		if {[isexpandedSubCmd $win $row]} {
+		    incr row
+		} else {
+		    #
+		    # Get the containing row's next sibling
+		    #
+		    set childIdx [childindexSubCmd $win $row]
+		    set row [noderowSubCmd $win [list \
+			     [parentkeySubCmd $win $row] [incr childIdx]]]
+		}
+	    }
+
+	    return [list before $row]
+	}
+
+	-vertical {
+	    set row [containingRow $win $y]
+	    return [list inside $row]
+	}
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -4304,7 +4533,7 @@ proc tablelist::xviewSubCmd {win argList} {
 		}
 	    } else {
 		changeScrlColOffset $win $units
-		updateColorsWhenIdle $win
+		updateColors $win
 	    }
 	    return ""
 	}
@@ -4376,7 +4605,7 @@ proc tablelist::xviewSubCmd {win argList} {
 			changeScrlColOffset $win $scrlColOffset
 		    }
 		}
-		updateColorsWhenIdle $win
+		updateColors $win
 	    }
 	    variable winSys
 	    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
@@ -4465,7 +4694,7 @@ proc tablelist::yviewSubCmd {win argList} {
 	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
 		set data(fraction) [lindex $argList 1]
 		if {![info exists data(moveToId)]} {
-		    set data(moveToId) [after 10 [list tablelist::moveTo $win]]
+		    set data(moveToId) [after 1 [list tablelist::moveTo $win]]
 		}
 		return ""
 	    } else {
@@ -4726,7 +4955,7 @@ proc tablelist::colWidth {win col opt} {
 #
 # Processes the tablelist containing subcommand.
 #------------------------------------------------------------------------------
-proc tablelist::containingRow {win y} {
+proc tablelist::containingRow {win y {relOffsetName ""}} {
     upvar ::tablelist::ns${win}::data data
     if {$data(itemCount) == 0} {
 	return -1
@@ -4740,8 +4969,17 @@ proc tablelist::containingRow {win y} {
     }
 
     set dlineinfo [$w dlineinfo [expr {double($row + 1)}]]
-    if {[string length $dlineinfo] != 0 &&
-	$y < [lindex $dlineinfo 1] + [lindex $dlineinfo 3]} {
+    set lineY [lindex $dlineinfo 1]
+    set lineHeight [lindex $dlineinfo 3]
+    if {[llength $dlineinfo] != 0 && $y < $lineY + $lineHeight} {
+	if {[string length $relOffsetName] != 0} {
+	    upvar $relOffsetName relOffset
+	    if {$y == $lineY + $lineHeight -1} {
+		set relOffset 1.0
+	    } else {
+		set relOffset [expr {double($y - $lineY) / $lineHeight}]
+	    }
+	}
 	return $row
     } else {
 	return -1
@@ -4775,9 +5013,10 @@ proc tablelist::containingCol {win x} {
 #------------------------------------------------------------------------------
 # tablelist::curCellSelection
 #
-# Processes the tablelist curcellselection subcommand.
+# Processes the tablelist curcellselection subcommand.  Meaning of the last
+# optional argument: 0: all; 1: nonhidden only; 2: viewable only.
 #------------------------------------------------------------------------------
-proc tablelist::curCellSelection {win {getKeys 0} {viewableOnly 0}} {
+proc tablelist::curCellSelection {win {getKeys 0} {constraint 0}} {
     variable canElide
     variable elide
     upvar ::tablelist::ns${win}::data data
@@ -4793,11 +5032,12 @@ proc tablelist::curCellSelection {win {getKeys 0} {viewableOnly 0}} {
 	foreach {selStart selEnd} $selRange {}
 	set line [expr {int($selStart)}]
 	set row [expr {$line - 1}]
-	if {$getKeys || $viewableOnly} {
+	if {$getKeys || $constraint != 0} {
 	    set key [lindex $data(keyList) $row]
 	}
-	if {$viewableOnly &&
-	    ([info exists data($key-elide)] || [info exists data($key-hide)])} {
+	if {($constraint == 1 && [info exists data($key-hide)]) ||
+	    ($constraint == 2 && ([info exists data($key-hide)] ||
+	     [info exists data($key-elide)]))} {
 	    continue
 	}
 
@@ -4812,8 +5052,7 @@ proc tablelist::curCellSelection {win {getKeys 0} {viewableOnly 0}} {
 
 	    if {[$w compare $selStart == $textIdx] ||
 		[$w compare $selStart == $textIdx+1c] ||
-		([$w compare $selStart == $textIdx+2c] &&
-		 [string compare [$w get $textIdx+2c] "\t"] != 0)} {
+		[$w compare $selStart == $textIdx+2c]} {
 		set firstCol $col
 		break
 	    } else {
@@ -4831,7 +5070,7 @@ proc tablelist::curCellSelection {win {getKeys 0} {viewableOnly 0}} {
 		continue
 	    }
 
-	    if {!($data($col-hide) && $viewableOnly)} {
+	    if {$constraint == 0 || !$data($col-hide)} {
 		if {$getKeys} {
 		    lappend result $key $col
 		} else {
@@ -4852,9 +5091,10 @@ proc tablelist::curCellSelection {win {getKeys 0} {viewableOnly 0}} {
 #------------------------------------------------------------------------------
 # tablelist::curSelection
 #
-# Processes the tablelist curselection subcommand.
+# Processes the tablelist curselection subcommand.  Meaning of the optional
+# argument: 0: all; 1: nonhidden only; 2: viewable only.
 #------------------------------------------------------------------------------
-proc tablelist::curSelection win {
+proc tablelist::curSelection {win {constraint 0}} {
     #
     # Find the (partly) selected lines of the body text widget
     #
@@ -4864,7 +5104,17 @@ proc tablelist::curSelection win {
     set selRange [$w tag nextrange select 1.0]
     while {[llength $selRange] != 0} {
 	set selStart [lindex $selRange 0]
-	lappend result [expr {int($selStart) - 1}]
+	set row [expr {int($selStart) - 1}]
+	if {$constraint == 0} {
+	    lappend result $row
+	} else {
+	    set key [lindex $data(keyList) $row]
+	    if {($constraint == 1 && ![info exists data($key-hide)]) ||
+		($constraint == 2 && ![info exists data($key-hide)] &&
+		 ![info exists data($key-elide)])} {
+		lappend result $row
+	    }
+	}
 
 	set selRange [$w tag nextrange select "$selStart lineend"]
     }
@@ -5118,7 +5368,10 @@ proc tablelist::deleteRows {win first last updateListVar} {
     #
     if {$last != $data(lastRow)} {
 	set data(keyToRowMapValid) 0
-	updateKeyToRowMapWhenIdle $win
+	if {![info exists data(mapId)]} {
+	    set data(mapId) \
+		[after idle [list tablelist::updateKeyToRowMap $win]]
+	}
     }
 
     incr data(lastRow) -$count
@@ -5368,7 +5621,10 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
     #
     if {!$appendingItems} {
 	set data(keyToRowMapValid) 0
-	updateKeyToRowMapWhenIdle $win
+	if {![info exists data(mapId)]} {
+	    set data(mapId) \
+		[after idle [list tablelist::updateKeyToRowMap $win]]
+	}
     }
 
     if {![info exists data(dispId)]} {
@@ -6267,9 +6523,20 @@ proc tablelist::moveTo win {
 	[expr {$data(itemCount) - $data(nonViewableRowCount)}]
     set offset [expr {int($data(fraction)*$totalViewableCount + 0.5)}]
     set row [viewableRowOffsetToRowIndex $win $offset]
-    $data(body) yview $row
 
-    updateView $win
+    set w $data(body)
+    set topTextIdx [$w index @0,0]
+    set topRow [expr {int($topTextIdx) - 1}]
+    foreach {x y width height baselinePos} [$w dlineinfo $topTextIdx] {}
+    if {$y < 0} {
+	incr topRow	;# top row incomplete in vertical direction
+    }
+
+    if {$row != $topRow} {
+	$w yview $row
+	updateView $win
+    }
+
     return ""
 }
 
@@ -6296,7 +6563,7 @@ proc tablelist::fetchSelection {win offset maxChars} {
 
     set selection ""
     set prevRow -1
-    foreach cellIdx [curCellSelection $win 0 1] {
+    foreach cellIdx [curCellSelection $win 0 2] {
 	scan $cellIdx "%d,%d" row col
 	if {$row != $prevRow} {
 	    if {$prevRow != -1} {

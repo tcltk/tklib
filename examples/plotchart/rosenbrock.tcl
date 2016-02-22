@@ -1,6 +1,5 @@
-#! /bin/sh
-# The next line restarts with tclsh \
-exec tclsh "$0" ${1+"$@"}
+#!/usr/bin/env tclsh
+## -*- tcl -*-
 
 #
 # rosenbrock.demo3.test.tcl --

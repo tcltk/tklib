@@ -1,6 +1,5 @@
-#! /bin/sh
-# -*- tcl -*- \
-exec tclsh "$0" ${1+"$@"}
+#!/usr/bin/env tclsh
+## -*- tcl -*-
 
 package require Tk
 
@@ -35,9 +34,6 @@ proc main { argc argv } \
 
     grid .t1 .s1 .t2 .s2 .b -padx 2 -pady 2
     wm deiconify .
-
-    console show
-
 
     vwait forever
     #tachometer::destructor .t1

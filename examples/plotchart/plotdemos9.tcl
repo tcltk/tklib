@@ -1,6 +1,5 @@
-#! /bin/sh
-# The next line restarts with tclsh \
-exec tclsh "$0" ${1+"$@"}
+#!/usr/bin/env tclsh
+## -*- tcl -*-
 
 # plotdemos9.tcl --
 #     Test wind roses, bands in xy-plots, vertical text and label-dots

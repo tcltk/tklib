@@ -1,17 +1,15 @@
-#!/bin/sh
-# the next line restarts using wish \
-exec wish "$0" ${1+"$@"}
+#!/usr/bin/env wish
 
 #==============================================================================
 # Demonstrates the interactive tablelist cell editing with the aid of Bryan
 # Oakley's combobox, the mentry widgets of type "Date" and "Time", and of the
 # Tk core entry, spinbox, checkbutton, and menubutton widgets.
 #
-# Copyright (c) 2004-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.4		;# because of "-compound" and the spinbox widget
-package require tablelist 5.11
+package require tablelist 5.14
 package require combobox
 package require mentry
 

@@ -1,3 +1,43 @@
+2015-04-13  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotaxis.tcl: Remove [console show] from AxisConfig procedure (ticket f0edc6c7bebd5abc|f0edc6c7be)
+
+2015-04-11  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Properly place the table wrt a title and subtitle, take care of fonts (patch by Frank Gover)
+	                 Support setting axis labels at 3D plot (patch by Frank Gover)
+	* plottable.tcl: Correct drawing of the row in a table, take care of fonts (patch by Frank Gover)
+	* plotconfig.tcl: Extend calculation of font metrics, optional font and linespacing (patch by Frank Gover)
+	* plot3d.tcl:    Support formatting of the numerical axis labels for 3D plots (requested by Frank Gover)
+	* plotchart.man: Bumped version to 2.3.4, added documentation of the tags for bars in a barchart.
+	* pkgIndex.tcl:  Bumped version to 2.3.4
+	* plotdemos1.tcl: Small changes to the 3D plot demo - axis labels and formatting
+
+2014-12-14  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Introduce an option -xlabelangle for barcharts (request by Frank Gover)
+	* plotaxis.tcl: Implement the option -xlabelangle for the labels of barcharts, also add a call
+	                to worldCoordinates to reset the scaling (cause of xconfig -scale not working
+	                correctly)
+	* plotpriv.tcl: Correct the margins if subtext is used (required for the masking rectangles)
+	* pkgIndex.tcl: Bumped version to 2.3.3
+
+2014-11-23  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Support -xlabels and -ylabels option (request by Ron Fox), also implement -isometric for
+	                 XY-plots (request by Nick F.)
+	* plotaxis.tcl: Support -axestozero option (request by Necrosporus)
+	* plotchart.man: Describe new options -axestozero and -isometric
+	* plotchart.man: Corrected error in documentation (ticket 2733f5a9517e312e1f43d81f7bb546feaf375a99)
+	* pkgIndex.tcl: Bumped version to 2.3.2
+	* xyplot.tcl: Disable running the example code at the end
+
+2014-06-21  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl: Add new commands for timecharts (addperiod, addmilestone and option to vertline)
+	                 as suggested by Nick Matthews; also the interpolatedata command for 3D-plots
+	* plotchart.man: Document new commands for timecharts, document new tags for 3D-plots
+	* plotpriv.tcl: Implement the new commands for timecharts and interpolatedata for 3D-plots
+	* plot3d.tcl: Add tags for the data objects (data and line) and method interpolatedata
+	* plotdemos1.tcl: Illustrate the new interpolate subcommand for 3D-plots
+	* plotdemos7.tcl: Illustrate the new subcommands for timecharts
+	* pkgIndex.tcl: Bumped the version to 2.3.1 because of the new commands and improvements
+
 2014-03-19  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl: Add source file "plotstatustimeline.tcl" - supplied by Sean Woods
 	* plotstatustimeline.tcl: New source file implementing the new status timeline plot type - supplied by Sean Woods

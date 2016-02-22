@@ -1,8 +1,7 @@
-#! /bin/sh
-# -*- tcl -*- \
-exec tclsh "$0" ${1+"$@"}
+#!/usr/bin/env tclsh
+## -*- tcl -*-
 
-package require Tcl 8.4
+package require Tcl 8.5
 package require Tk
 package require Plotchart
 
@@ -149,16 +148,24 @@ proc cowboyhat {x y} {
 toplevel .h3
 canvas .h3.c  -bg white -width 400 -height 300
 canvas .h3.c2 -bg white -width 400 -height 250
-pack .h3.c .h3.c2
+canvas .h3.c3 -bg white -width 400 -height 250
+pack .h3.c .h3.c2 .h3.c3
 
 set s [::Plotchart::create3DPlot .h3.c {0 10 3} {-10 10 10} {0 10 2.5}]
 $s title "3D Plot"
 $s plotfunc cowboyhat
 
-set s [::Plotchart::create3DPlot .h3.c2 {0 10 3} {-10 10 10} {0 10 2.5}]
+::Plotchart::plotconfig 3dplot xaxis format "%4.2f"
+
+set s [::Plotchart::create3DPlot .h3.c2 {0 10 3} {-10 10 10} {0 10 2.5} -xlabels {A B C}]
 $s title "3D Plot - data "
 $s colour "green" "black"
 $s plotdata { {1.0 2.0 1.0 0.0} {1.1 3.0 1.1 -0.5} {3.0 1.0 4.0 5.0} }
+
+set s [::Plotchart::create3DPlot .h3.c3 {0 10 3} {-10 10 10} {0 10 2.5}]
+$s title "3D Plot - data "
+$s colour "green" "black"
+$s interpolatedata { {1.0 2.0 1.0 0.0} {1.1 3.0 1.1 -0.5} {3.0 1.0 4.0 5.0} } {0.0 0.5 1.0 1.5 2.0}
 
 
 set s [::Plotchart::createTXPlot .c4 {2006-01-01 2007-01-01 120} {0.0 100.0 20.0}]

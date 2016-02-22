@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -23,8 +23,10 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-activestyle)		frame
     lappend configSpecs(-autoscan)		1
     lappend configSpecs(-collapsecommand)	{}
+    lappend configSpecs(-colorizecommand)	{}
     lappend configSpecs(-columns)		{}
     lappend configSpecs(-columntitles)		{}
+    lappend configSpecs(-customdragsource)	0
     lappend configSpecs(-editendcommand)	{}
     lappend configSpecs(-editselectedonly)	0
     lappend configSpecs(-editstartcommand)	{}
@@ -45,6 +47,8 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-selecttype)		row
     lappend configSpecs(-setfocus)		1
     lappend configSpecs(-showarrow)		1
+    lappend configSpecs(-showeditcursor)	1
+    lappend configSpecs(-showhorizseparator)	1
     lappend configSpecs(-showlabels)		1
     lappend configSpecs(-showseparators)	0
     lappend configSpecs(-snipstring)		...
@@ -224,9 +228,9 @@ proc tablelist::extendConfigSpecs {} {
 	#
 	switch $winSys {
 	    x11 {
-		set arrowColor		{}
-		set arrowDisabledColor	{}
-		set arrowStyle		sunken10x9
+		set arrowColor		black
+		set arrowDisabledColor	#a3a3a3
+		set arrowStyle		flat7x5
 		set treeStyle		gtk
 	    }
 
@@ -263,30 +267,42 @@ proc tablelist::extendConfigSpecs {} {
 		    set arrowDisabledColor	SystemDisabledText
 
 		} elseif {$::tcl_platform(osVersion) == 6.0} {	;# Win Vista
+		    variable scaling
+		    switch $scaling {
+			100 { set arrowStyle	flat7x4 }
+			125 { set arrowStyle	flat9x5 }
+			150 { set arrowStyle	flat11x6 }
+			200 { set arrowStyle	flat15x8 }
+		    }
+
 		    switch [winfo rgb . SystemHighlight] {
 			"13107 39321 65535" {			;# Vista Aero
 			    set arrowColor	#569bc0
-			    set arrowStyle	flat7x4
 			    set treeStyle	vistaAero
 			}
 			default {				;# Win Classic
 			    set arrowColor	SystemButtonShadow
-			    set arrowStyle	flat7x4
 			    set treeStyle	vistaClassic
 			}
 		    }
 		    set arrowDisabledColor	SystemDisabledText
 
 		} else {					;# Win 7
+		    variable scaling
+		    switch $scaling {
+			100 { set arrowStyle	flat7x4 }
+			125 { set arrowStyle	flat9x5 }
+			150 { set arrowStyle	flat11x6 }
+			200 { set arrowStyle	flat15x8 }
+		    }
+
 		    switch [winfo rgb . SystemHighlight] {
 			"13107 39321 65535" {			;# Win 7 Aero
 			    set arrowColor	#569bc0
-			    set arrowStyle	flat7x4
 			    set treeStyle	win7Aero
 			}
 			default {				;# Win Classic
 			    set arrowColor	SystemButtonShadow
-			    set arrowStyle	flat7x4
 			    set treeStyle	win7Classic
 			}
 		    }
@@ -296,9 +312,20 @@ proc tablelist::extendConfigSpecs {} {
 
 	    classic -
 	    aqua {
-		set arrowColor		#717171
+		scan $::tcl_platform(osVersion) "%d" majorOSVersion
+		if {$majorOSVersion >= 14} {		;# OS X 10.10 or higher
+		    set arrowColor	#404040
+		    set arrowStyle	flatAngle7x4
+		} else {
+		    set arrowColor	#717171
+		    variable pngSupported
+		    if {$pngSupported} {
+			set arrowStyle	photo7x7
+		    } else {
+			set arrowStyle	flat7x7
+		    }
+		}
 		set arrowDisabledColor	#a3a3a3
-		set arrowStyle		flat7x7
 		set treeStyle		aqua
 	    }
 	}
@@ -545,6 +572,7 @@ proc tablelist::doConfig {win opt val} {
 		-acceptchildcommand -
 		-acceptdropcommand -
 		-collapsecommand -
+		-colorizecommand -
 		-editendcommand -
 		-editstartcommand -
 		-expandcommand -
@@ -611,7 +639,7 @@ proc tablelist::doConfig {win opt val} {
 		    variable arrowStyles
 		    set data($opt) \
 			[mwutil::fullOpt "arrow style" $val $arrowStyles]
-		    regexp {^(flat|sunken|photo)([0-9]+)x([0-9]+)$} \
+		    regexp {^(flat|flatAngle|sunken|photo)([0-9]+)x([0-9]+)$} \
 			   $data($opt) dummy relief width height
 		    set data(arrowWidth) $width
 		    set data(arrowHeight) $height
@@ -632,7 +660,7 @@ proc tablelist::doConfig {win opt val} {
 		    }
 		}
 		-autoscan -
-		-editselectedonly -
+		-customdragsource -
 		-forceeditendcommand -
 		-instanttoggle -
 		-movablecolumns -
@@ -733,6 +761,16 @@ proc tablelist::doConfig {win opt val} {
 			updateColorsWhenIdle $win
 		    }
 		}
+		-editselectedonly {
+		    #
+		    # Save the boolean value specified by val in data($opt)
+		    # and invoke the motion handler if necessary
+		    #
+		    set data($opt) [expr {$val ? 1 : 0}]
+		    if {$data(-showeditcursor)} {
+			invokeMotionHandler $win
+		    }
+		}
 		-exportselection {
 		    #
 		    # Save the boolean value specified by val in
@@ -749,7 +787,8 @@ proc tablelist::doConfig {win opt val} {
 				[list ::tablelist::lostSelection $win] $win
 		    }
 		}
-		-fullseparators {
+		-fullseparators -
+		-showhorizseparator {
 		    #
 		    # Save the boolean value specified by val
 		    # in data($opt) and adjust the separators
@@ -881,6 +920,14 @@ proc tablelist::doConfig {win opt val} {
 		    makeSortAndArrowColLists $win
 		    adjustColumns $win allLabels 1
 		}
+		-showeditcursor {
+		    #
+		    # Save the boolean value specified by val in
+		    # data($opt) and invoke the motion handler
+		    #
+		    set data($opt) [expr {$val ? 1 : 0}]
+		    invokeMotionHandler $win
+		}
 		-showlabels {
 		    #
 		    # Save the boolean value specified by val in data($opt)
@@ -962,11 +1009,13 @@ proc tablelist::doConfig {win opt val} {
 			disabled {
 			    $w tag add disabled 1.0 end
 			    $w tag configure select -relief flat
+			    $w tag configure curRow -relief flat
 			    set data(isDisabled) 1
 			}
 			normal {
 			    $w tag remove disabled 1.0 end
 			    $w tag configure select -relief raised
+			    $w tag configure curRow -relief raised
 			    set data(isDisabled) 0
 			}
 		    }
@@ -1270,12 +1319,36 @@ proc tablelist::doColConfig {col win opt val} {
 	    }
 	}
 
-	-editable -
-	-resizable {
+	-changetitlesnipside {
 	    #
-	    # Save the boolean value specified by val in data($col$opt)
+	    # Save the boolean value specified by val in
+	    # data($col$opt) and adjust the col'th label
 	    #
 	    set data($col$opt) [expr {$val ? 1 : 0}]
+	    set pixels [lindex $data(colList) [expr {2*$col}]]
+	    if {$pixels == 0} {			;# convention: dynamic width
+		if {$data($col-maxPixels) > 0} {
+		    if {$data($col-reqPixels) > $data($col-maxPixels)} {
+			set pixels $data($col-maxPixels)
+		    }
+		}
+	    }
+	    if {$pixels != 0} {	
+		incr pixels $data($col-delta)
+	    }
+	    set alignment [lindex $data(colList) [expr {2*$col + 1}]]
+	    adjustLabel $win $col $pixels $alignment
+	}
+
+	-editable {
+	    #
+	    # Save the boolean value specified by val in data($col$opt)
+	    # and invoke the motion handler if necessary
+	    #
+	    set data($col$opt) [expr {$val ? 1 : 0}]
+	    if {$data(-showeditcursor)} {
+		invokeMotionHandler $win
+	    }
 	}
 
 	-editwindow {
@@ -1699,6 +1772,13 @@ proc tablelist::doColConfig {col win opt val} {
 	    adjustColumns $win $col 1
 	    redisplayColWhenIdle $win $col
 	    updateViewWhenIdle $win
+	}
+
+	-resizable {
+	    #
+	    # Save the boolean value specified by val in data($col$opt)
+	    #
+	    set data($col$opt) [expr {$val ? 1 : 0}]
 	}
 
 	-selectbackground -
@@ -2735,9 +2815,13 @@ proc tablelist::doCellConfig {row col win opt val} {
 	-editable {
 	    #
 	    # Save the boolean value specified by val in data($key,$col$opt)
+	    # and invoke the motion handler if necessary
 	    #
 	    set key [lindex $data(keyList) $row]
 	    set data($key,$col$opt) [expr {$val ? 1 : 0}]
+	    if {$data(-showeditcursor)} {
+		invokeMotionHandler $win
+	    }
 	}
 
 	-editwindow {

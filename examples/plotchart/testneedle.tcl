@@ -1,6 +1,5 @@
-#! /bin/sh
-# -*- tcl -*- \
-exec tclsh "$0" ${1+"$@"}
+#!/usr/bin/env tclsh
+## -*- tcl -*-
 
 # testneedle.tcl --
 #     Introduce a new plot method: draw a "needle" for each data point

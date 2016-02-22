@@ -1,7 +1,7 @@
 #==============================================================================
 # Creates some images.
 #
-# Copyright (c) 2011-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2011-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #

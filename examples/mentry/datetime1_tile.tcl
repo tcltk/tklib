@@ -1,7 +1,5 @@
-#!/bin/sh
-# the next line restarts using wish \
-exec wish "$0" ${1+"$@"}
-
+#!/usr/bin/env wish
+## -*- tcl -*-
 #==============================================================================
 # Demo:	mentry::dateMentry, mentry::timeMentry, mentry::putClockVal,
 #	mentry::getClockVal.

@@ -1,15 +1,13 @@
-#!/bin/sh
-# the next line restarts using wish \
-exec wish "$0" ${1+"$@"}
+#!/usr/bin/env wish
 
 #==============================================================================
 # Demonstrates the interactive tablelist cell editing with the aid of some
 # widgets from the tile package and of the Tk core spinbox widget.
 #
-# Copyright (c) 2005-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.11
+package require tablelist_tile 5.14
 
 wm title . "Serial Line Configuration"
 

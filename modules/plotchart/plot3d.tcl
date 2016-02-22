@@ -37,6 +37,7 @@ proc ::Plotchart::Draw3DAxes { w xmin  ymin  zmin
                                  xmax  ymax  zmax
                                  xstep ystep zstep
                                  {names {}}        } {
+   variable config
    variable scaling
 
    $w delete axis3d
@@ -67,20 +68,27 @@ proc ::Plotchart::Draw3DAxes { w xmin  ymin  zmin
    #
    # Numbers to the z-axis
    #
+   set format $config($w,zaxis,format)
    set z $zmin
    while { $z < $zmax+0.5*$zstep } {
       foreach {xcrd ycrd} [coords3DToPixel $w $xmin $ymin $z] {break}
       set xcrd2 [expr {$xcrd-3}]
       set xcrd3 [expr {$xcrd-5}]
 
+      set zt [format "%.12g" $z]
+      if { $format != "" } {
+          set zt [FormatNumber $format $z]
+      }
+
       $w create line $xcrd2 $ycrd $xcrd $ycrd -tag axis3d
-      $w create text $xcrd3 $ycrd -text $z -tag axis3d -anchor e
+      $w create text $xcrd3 $ycrd -text $zt -tag axis3d -anchor e
       set z [expr {$z+$zstep}]
    }
 
    #
    # Numbers or labels to the x-axis (shown on the right!)
    #
+   set format $config($w,xaxis,format)
    if { $xstep > 0 } {
        if { $names eq "" } {
            set x $xmin
@@ -90,7 +98,12 @@ proc ::Plotchart::Draw3DAxes { w xmin  ymin  zmin
                set xcrd3 [expr {$xcrd+6}]
 
                $w create line $xcrd2 $ycrd $xcrd $ycrd -tag axis3d
-               $w create text $xcrd3 $ycrd -text $x -tag axis3d -anchor w
+
+               set xt [format "%.12g" $x]
+               if { $format != "" } {
+                   set xt [FormatNumber $format $x]
+               }
+               $w create text $xcrd3 $ycrd -text $xt -tag axis3d -anchor w
                set x [expr {$x+$xstep}]
            }
        } else {
@@ -108,14 +121,20 @@ proc ::Plotchart::Draw3DAxes { w xmin  ymin  zmin
    #
    # Numbers to the y-axis (shown in front!)
    #
+   set format $config($w,yaxis,format)
    set y $ymin
    while { $y < $ymax+0.5*$ystep } {
       foreach {xcrd ycrd} [coords3DToPixel $w $xmin $y $zmin] {break}
       set ycrd2 [expr {$ycrd+3}]
       set ycrd3 [expr {$ycrd+5}]
 
+      set yt [format "%.12g" $y]
+      if { $format != "" } {
+          set yt [FormatNumber $format $y]
+      }
+
       $w create line $xcrd $ycrd2 $xcrd $ycrd -tag axis3d
-      $w create text $xcrd $ycrd3 -text $y -tag axis3d -anchor n
+      $w create text $xcrd $ycrd3 -text $yt -tag axis3d -anchor n
       set y [expr {$y+$ystep}]
    }
 
@@ -195,7 +214,7 @@ proc ::Plotchart::Draw3DFunction { w function } {
 
          $w create polygon $px11 $py11 $px21 $py21 $px22 $py22 \
                            $px12 $py12 $px11 $py11 \
-                           -fill $fill -outline $border
+                           -fill $fill -outline $border -tags data
       }
    }
 }
@@ -253,9 +272,77 @@ proc ::Plotchart::Draw3DData { w data } {
 
          $w create polygon $px11 $py11 $px21 $py21 $px22 $py22 \
                            $px12 $py12 $px11 $py11 \
-                           -fill $fill -outline $border
+                           -fill $fill -outline $border -tags data
       }
    }
+}
+
+# InterpolateData3D --
+#    Interpolate and plot a function of x and y based on a grid of data
+# Arguments:
+#    w           Name of the canvas
+#    data        Nested list of data in the form of a matrix
+#    cont        Contour levels
+# Result:
+#    None
+# Side effect:
+#    The plot of the function - given the grid of data
+#
+proc ::Plotchart::InterpolateData3D { w data cont } {
+   variable scaling
+
+   #
+   # Store the scale values
+   #
+   set s(xmin) $scaling($w,xmin)
+   set s(xmax) $scaling($w,xmax)
+   set s(ymin) $scaling($w,ymin)
+   set s(ymax) $scaling($w,ymax)
+   set s(nx)   [expr {[llength [lindex $data 0]] - 1}]
+   set s(ny)   [expr {[llength $data] - 1}]
+
+   Draw3DFunctionContour $w InterpolateData3DXY $cont
+}
+
+# InterpolateData3DXY --
+#    Interpolate the data and return the value
+# Arguments:
+#    x           X-coordinate
+#    y           Y-coordinate
+# Result:
+#    None
+# Side effect:
+#    The plot of the function - given the grid of data
+#
+proc ::Plotchart::InterpolateData3DXY { x y } {
+   upvar 2 data data
+   upvar 2 s    s
+
+   set x [expr {$s(nx) * ($x - $s(xmin)) / ($s(xmax) - $s(xmin))}]
+   set y [expr {$s(ny) * ($y - $s(ymin)) / ($s(ymax) - $s(ymin))}]
+
+   set ix1 [expr {int($x)}]
+   set ix2 [expr {$ix1 + 1}]
+   set iy1 [expr {int($y)}]
+   set iy2 [expr {$iy1 + 1}]
+
+   if {$ix2 > $s(nx)-1 } {
+      set ix2 $ix1
+   }
+   if {$iy2 > $s(ny)-1 } {
+      set iy2 $iy1
+   }
+
+   set wx  [expr {$x - $ix1}]
+   set wy  [expr {$y - $iy1}]
+
+   set z11 [lindex $data $iy1 $ix1]
+   set z12 [lindex $data $iy1 $ix2]
+   set z21 [lindex $data $iy2 $ix1]
+   set z22 [lindex $data $iy2 $ix2]
+
+   return [expr {$z11 + $wx * ($z12 - $z11) + $wy * ($z21 - $z11) +
+                 $wx * $wy * ($z22 + $z11 - $z12 - $z21)}]
 }
 
 # Draw3DRibbon --
@@ -299,7 +386,7 @@ proc ::Plotchart::Draw3DRibbon { w yzData } { variable scaling
         foreach {px22 py22} [::Plotchart::coords3DToPixel $w $x2 $y2 $z2] break
         $w create polygon $px11 $py11 $px21 $py21 $px22 $py22 \
             $px12 $py12 $px11 $py11 \
-            -fill $fill -outline $border
+            -fill $fill -outline $border -tags data
     }
 }
 
@@ -338,7 +425,7 @@ proc ::Plotchart::Draw3DLineFrom3Dcoordinates { w data colour } {
    }
 
    foreach {xb yb} [lrange $coords 0 end-2] {xe ye} [lrange $coords 2 end] c [lrange $colours 0 end-1] {
-       $w create line $xb $yb $xe $ye -fill $c
+       $w create line $xb $yb $xe $ye -fill $c -tags line
    }
 }
 

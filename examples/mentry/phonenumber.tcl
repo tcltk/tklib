@@ -1,7 +1,5 @@
-#!/bin/sh
-# the next line restarts using wish \
-exec wish "$0" ${1+"$@"}
-
+#!/usr/bin/env wish
+## -*- tcl -*-
 #==============================================================================
 # Demonstrates how to implement a multi-entry widget for 10-digit phone numbers.
 #

@@ -75,7 +75,7 @@ proc ::Plotchart::Ceil {value step} {
 #    ymin        Minimum y coordinate
 #    ymax        Maximum y coordinate
 #    ystep       Step size
-#    args        Options (currently: -ylabels list)
+#    args        Options (currently: -ylabels list and -altylabels list)
 # Result:
 #    None
 # Side effects:
@@ -147,6 +147,15 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
 
                     set scaling($w,ydelt) $ys
                 }
+                -altylabels {
+                    set numeric 0
+                    foreach {yval ylabel} $val {
+                        lappend yts     $ylabel
+                        lappend ybackup $yval
+                    }
+
+                    set scaling($w,ydelt) $ylabel
+                }
                 default {
                     error "Argument $arg not recognized"
                 }
@@ -194,7 +203,7 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
             $w create line $xcrd2 $ycrd $xcrd $ycrd -tag [list yaxis $w] -fill $linecolor
 
             if { $config($w,leftaxis,shownumbers) } {
-                $w create text $xcrd3 $ycrd -text $ylabel -tag [list yaxis $w] -anchor e \
+                $w create text $xcrd3 $ycrd -text $ylabel -tag [list yaxis $w label] -anchor e \
                     -fill $textcolor -font $textfont
             }
 
@@ -337,7 +346,7 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt args } {
             $w create line $xcrd2 $ycrd $xcrd $ycrd -tag [list raxis $w] -fill $linecolor
 
             if { $config($w,leftaxis,shownumbers) } {
-                $w create text $xcrd3 $ycrd -text $ylabel -tag [list raxis $w] -anchor w \
+                $w create text $xcrd3 $ycrd -text $ylabel -tag [list raxis $w label] -anchor w \
                     -fill $textcolor -font $textfont
             }
 
@@ -580,7 +589,7 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
             $w create line $xcrd $ycrd2 $xcrd $ycrd -tag [list xaxis $w] -fill $linecolor
 
             if { $config($w,bottomaxis,shownumbers) } {
-                $w create text $xcrd $ycrd3 -text $xlabel -tag [list xaxis $w] -anchor n \
+                $w create text $xcrd $ycrd3 -text $xlabel -tag [list xaxis $w label] -anchor n \
                      -fill $textcolor -font $textfont
             }
 
@@ -1121,12 +1130,13 @@ proc ::Plotchart::DrawPolarAxes { w rad_max rad_step } {
 #    w           Name of the canvas
 #    xlabels     List of labels
 #    noseries    Number of series or "stacked"
+#    arguments   Options (key-value pairs). Currently: -xlabelangles $angle
 # Result:
 #    None
 # Side effects:
 #    Axis drawn in canvas
 #
-proc ::Plotchart::DrawXlabels { w xlabels noseries } {
+proc ::Plotchart::DrawXlabels { w xlabels noseries arguments} {
     variable scaling
     variable config
 
@@ -1141,6 +1151,25 @@ proc ::Plotchart::DrawXlabels { w xlabels noseries } {
                    $scaling($w,pxmax) $scaling($w,pymax) \
                    -fill $linecolor -width $thickness -tag [list xaxis $w]
 
+    set angle  0
+    set anchor n
+    foreach {key value} $arguments {
+        switch -- $key {
+            "-xlabelangle" {
+                 set angle $value
+                 if { $angle > 0 } {
+                     set anchor ne
+                 }
+                 if { $angle < 0 } {
+                     set anchor nw
+                 }
+            }
+        }
+    }
+    if { ! [package vsatisfies [package present Tk] 8.6] } {
+        set angle {}
+    }
+
     if { $noseries eq "stacked" } {
         set x 1.0
     } else {
@@ -1151,8 +1180,13 @@ proc ::Plotchart::DrawXlabels { w xlabels noseries } {
     foreach label $xlabels {
         foreach {xcrd ycrd} [coordsToPixel $w $x $scaling($w,ymin)] {break}
         set ycrd [expr {$ycrd+2}]
-        $w create text $xcrd $ycrd -text $label -tag [list xaxis $w] -anchor n \
-            -fill $textcolor -font $textfont
+        if { $angle == {} } {
+            $w create text $xcrd $ycrd -text $label -tag [list xaxis $w] -anchor n \
+                -fill $textcolor -font $textfont
+        } else {
+            $w create text $xcrd $ycrd -text $label -tag [list xaxis $w] -anchor $anchor -angle $angle \
+                -fill $textcolor -font $textfont
+        }
         set x [expr {$x+1.0}]
 
         lappend scaling($w,ybase) 0.0
@@ -1420,6 +1454,7 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
     set originalSystem $scaling($w,coordSystem)
     set scaling($w,coordSystem) 0
 
+    worldCoordinates $w $xmin $ymin $xmax $ymax
 
     if { $orient == "x" } {
         if { [llength $scaling($w,xdelt)] == 1 } {
@@ -2058,4 +2093,75 @@ proc ::Plotchart::DrawRoseAxes { w rad_max rad_step } {
 
         set rad [expr {$rad+$rad_step}]
     }
+}
+
+# MoveAxesToZero --
+#     Move the axes to the origin of the plot if applicable
+# Arguments:
+#     w           Name of the canvas
+#     xmin        Minimum x coordinate
+#     xmax        Maximum x coordinate
+#     ymin        Minimum y coordinate
+#     ymax        Maximum y coordinate
+# Result:
+#     None
+# Side effects:
+#     Axles and axis labels moved
+#
+proc ::Plotchart::MoveAxesToZero { w xmin xmax ymin ymax } {
+
+    #
+    # Check that the move is possible
+    #
+    set movex 0
+    set movey 0
+    if { $xmin < 0.0 && $xmax > 0.0 } {
+        set movey 1 ;# Note: this is correct!
+    }
+    if { $xmin > 0.0 && $xmax < 0.0 } {
+        set movey 1
+    }
+    if { $ymin < 0.0 && $ymax > 0.0 } {
+        set movex 1
+    }
+    if { $ymin > 0.0 && $ymax < 0.0 } {
+        set movex 1
+    }
+
+    #
+    # First move the axle and labels
+    #
+    lassign [coordsToPixel $w $xmin $ymin] x1 y1
+    lassign [coordsToPixel $w 0.0   0.0  ] x2 y2
+
+    if { $movex } {
+        $w move "xaxis && $w" 0 [expr {$y2 - $y1}]
+    }
+    if { $movey } {
+        $w move "yaxis && $w" [expr {$x2 - $x1}] 0
+    }
+
+    #
+    # Then move the labels at the axes
+    #
+    # First the x-axis
+    #
+    if { $movex } {
+        foreach id [$w find withtag "xaxis && $w && label"] {
+            lassign [$w coords $id] x y
+            if { $x > $x2-10 && $x < $x2+10 && $y > $y2-10 && $y < $y2+10 } {
+                $w itemconfigure $id -anchor ne
+                $w move $id -3 0
+            }
+        }
+    }
+    if { $movey } {
+        foreach id [$w find withtag "yaxis && $w && label"] {
+            lassign [$w coords $id] x y
+            if { $x > $x2-10 && $x < $x2+10 && $y > $y2-10 && $y < $y2+10 } {
+                $w itemconfigure $id -anchor se
+            }
+        }
+    }
+
 }

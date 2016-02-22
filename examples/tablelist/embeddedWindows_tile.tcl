@@ -1,14 +1,12 @@
-#!/bin/sh
-# the next line restarts using wish \
-exec wish "$0" ${1+"$@"}
+#!/usr/bin/env wish
 
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
 #
-# Copyright (c) 2004-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.11
+package require tablelist_tile 5.14
 
 wm title . "Tile Library Scripts"
 

@@ -91,13 +91,19 @@ namespace eval ::Plotchart {
     #     Determine the font metrics
     #
     # Arguments:
-    #     w         Canvas to be used
+    #     w               Canvas to be used
+    #     font            (Optional) font to be used instead of the default
+    #     add_line_space  (Optional) add linespacing or not
     #
     # Result:
     #     List of character width and height
     #
-    proc FontMetrics {w} {
-        set item        [$w create text 0 0 -text "M"]
+    proc FontMetrics {w {font {}} {add_line_space 0}} {
+            if { $font != {} } {
+               set item        [$w create text 0 0 -font $font -text "M"]
+            } else {
+               set item        [$w create text 0 0 -text "M"]
+            }
         set bbox        [$w bbox $item]
         set char_width  [expr {[lindex $bbox 2] - [lindex $bbox 0]}]
         set char_height [expr {[lindex $bbox 3] - [lindex $bbox 1]}]
@@ -105,6 +111,9 @@ namespace eval ::Plotchart {
         if { $char_height < 14 } { set char_height 14 }
         $w delete $item
 
+            if {$add_line_space} {
+               set $char_height [expr $char_height + [font metrics $font -linespace]]
+            }
         return [list $char_width $char_height]
     }
 
@@ -127,7 +136,7 @@ namespace eval ::Plotchart {
         histogram horizbars vertbars ganttchart
         timechart stripchart isometric 3dplot 3dbars
         radialchart txplot 3dribbon boxplot windrose
-        targetdiagram performance table ternary
+        targetdiagram performance table ternary distnormal
     }
 
     # define implemented components for each chart type:
@@ -157,6 +166,7 @@ namespace eval ::Plotchart {
         performance   {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask limits}
         table         {title subtitle margin background header oddrow evenrow cell frame leftaxis rightaxis bottomaxis}
         ternary       {title subtitle margin text legend axis leftaxis rightaxis bottomaxis background mask}
+        distnormal    {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
     } {
         set config($type,components) $components
     }

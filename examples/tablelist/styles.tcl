@@ -1,14 +1,12 @@
-#!/bin/sh
-# the next line restarts using wish \
-exec wish "$0" ${1+"$@"}
+#!/usr/bin/env wish
 
 #==============================================================================
 # Demonstrates some ways of improving the look & feel of a tablelist widget.
 #
-# Copyright (c) 2002-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2002-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.11
+package require tablelist 5.14
 
 wm title . "Tablelist Styles"
 
