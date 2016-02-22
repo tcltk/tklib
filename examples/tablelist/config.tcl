@@ -5,7 +5,7 @@
 # Copyright (c) 2000-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.14
+package require tablelist 5.15
 
 namespace eval demo {
     #
@@ -45,7 +45,7 @@ namespace eval demo {
 	option add *DemoTop.tf.tbl.highlightThickness	0
     }
     option add *DemoTop.tf.tbl.background		white
-    option add *DemoTop.tf.tbl.stripeBackground		#e4e8ec
+    option add *DemoTop.tf.tbl.stripeBackground		#f0f0f0
     option add *DemoTop.tf.tbl.setGrid			yes
     option add *DemoTop.tf.tbl*Entry.background		white
     option add *DemoTop.bf.Button.width			10

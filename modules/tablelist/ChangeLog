@@ -1,3 +1,37 @@
+2015-12-28  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                Bumped the version number to 5.15.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* ../../examples/*.tcl:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/tablelistConfig.tcl: Added the tree style "win10" and the
+	* scripts/tablelistEdit.tcl:   arrow styles "flatAngle11x6" and
+	* scripts/tablelistImages.tcl: "flatAngle15x8"; Worked around a text
+	* scripts/tablelistThemes.tcl: widget bug introduced in Tk 8.5.18 and
+	* scripts/tablelistWidget.tcl: 8.6.4; Fixed a bug that prevented the
+	  subcommands "see end", "see last", and "yview moveto 1" from working
+	  as expected if the tablelist widget contains multi-line cells or large
+	  images.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/arrowStyles.png:      Updated screenshots.
+	* doc/browse*.png:
+	* doc/bwidget.png:
+	* doc/config.png:
+	* doc/dirViewer.png:
+	* doc/embeddedWindows*.png:
+	* doc/styles.png:
+	* doc/tileWidgets.png:
+	* doc/vista*.png:
+	* doc/win7*.png:
+
+	* doc/win10.png: Added screenshot.
+
 2015-08-22  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistConfig.tcl: Added automatic scaling for the default
