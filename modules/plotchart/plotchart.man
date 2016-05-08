@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 2.3.4]
+[manpage_begin Plotchart n 2.3.5]
 [copyright {2013 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.5]]
 [require Tk [opt 8.5]]
-[require Plotchart [opt 2.3.4]]
+[require Plotchart [opt 2.3.5]]
 
 [description]
 [para]
@@ -1147,13 +1147,17 @@ to position the legend outside the actual plot.
 [opt_def font font]
 Set the font used to draw the text next to the symbol.
 
-[opt_def legendtype]
+[opt_def legendtype type]
 Override the type of the legend, that is pre-defined for the current type of
 plot. May be one of: rectangle or line.
 
 [opt_def position corner]
 Set the position of the legend. May be one of: top-left, top-right,
 bottom-left or bottom-right. (Default value is top-right.)
+
+[opt_def spacing pixels]
+Set the vertical spacing between entries in the legend (in pixels).
+bottom-left or bottom-right. (Default value is 10 pixels.)
 
 [list_end]
 [para]
@@ -3521,7 +3525,8 @@ It takes the same options as the [cmd plotconfig] command.
 The name of the plot style to manipulate
 
 [arg_def list args in]
-The new options for the style - see the [cmd plotconfig] command for details
+The new options for the style. Each option is described by: chart type, component of the chart,
+property of the component and the new value for the property - see the [cmd plotconfig] command for details.
 
 [list_end]
 [list_end]

@@ -1002,9 +1002,9 @@ proc ::Plotchart::clearcanvas { w } {
    variable config
    variable data_series
 
-   array unset scaling $w,*
-   array unset config $w,*
-   array unset data_series $w,*
+   array unset scaling *$w,*
+   array unset config *$w,*
+   array unset data_series *$w,*
 
    $w delete all
 }
@@ -3125,4 +3125,4 @@ source [file join [file dirname [info script]] "plotstatustimeline.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.3.4
+package provide Plotchart 2.3.5

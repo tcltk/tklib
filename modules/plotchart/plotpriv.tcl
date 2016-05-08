@@ -4004,10 +4004,10 @@ proc ::Plotchart::ClearPlot {w} {
     variable data_series
     variable scaling
 
-    foreach s [array names data_series "$w,*"] {
+    foreach s [array names data_series "*$w,*"] {
         unset data_series($s)
     }
-    foreach s [array names scaling "$w,*"] {
+    foreach s [array names scaling "*$w,*"] {
         unset scaling($s)
     }
     #$w delete $w
