@@ -1,4 +1,10 @@
 2015-04-13  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.man: Correct descripton of plotstyle command, add description of -spacing option for legendconfig
+	* plotchart.tcl: Correct clearcanvas command (bug reported by Keith Vetter - consequence of new naming convention)
+	* plotpriv.tcl:  Correct ClearPlot subcommand (bug reported by Keith Vetter)
+	* pkgIndex.tcl:  Bumped version to 2.3.5
+
+2015-04-13  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotaxis.tcl: Remove [console show] from AxisConfig procedure (ticket f0edc6c7bebd5abc|f0edc6c7be)
 
 2015-04-11  Arjen Markus  <arjenmarkus@users,sourceforge.net>
