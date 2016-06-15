@@ -3,10 +3,10 @@
 #==============================================================================
 # Demonstrates some ways of improving the look & feel of a tablelist widget.
 #
-# Copyright (c) 2002-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2002-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.15
+package require tablelist_tile 5.16
 
 wm title . "Tablelist Styles"
 
