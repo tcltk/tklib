@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -2255,11 +2255,14 @@ proc tablelist::setupColumns {win columns createLabels} {
     # Clean up the images, data, and attributes
     # associated with the deleted columns
     #
+    set imgNames [image names]
     for {set col $data(colCount)} {$col < $oldColCount} {incr col} {
 	set w $data(hdrTxtFrCanv)$col
 	foreach shape {triangleUp darkLineUp lightLineUp
 		       triangleDn darkLineDn lightLineDn} {
-	    catch {image delete $shape$w}
+	    if {[lsearch -exact $imgNames $shape$w] >= 0} {
+		image delete $shape$w
+	    }
 	}
 
 	deleteColData $win $col
@@ -2530,6 +2533,7 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
     upvar ::tablelist::ns${win}::data data
     set data(hdrPixels) 0
     variable canElide
+    variable centerArrows
     set tabs {}
     set col 0
     set x 0
@@ -2584,20 +2588,28 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 	if {[lsearch -exact $data(arrowColList) $col] >= 0 &&
 	    !$data($col-elide) && !$data($col-hide)} {
 	    #
-	    # Place the canvas to the left side of the label if the
+	    # Center the canvas horizontally just below the upper edge of
+	    # the label, or place it to the left side of the label if the
 	    # latter is right-justified and to its right side otherwise
 	    #
-	    set y 0
-	    if {([winfo reqheight $w] - [winfo reqheight $canvas]) % 2 == 0 &&
-		$data(arrowHeight) == 5} {
-		set y -1
-	    }
-	    if {[string compare $labelAlignment "right"] == 0} {
-		place $canvas -in $w -anchor w -bordermode outside \
-			      -relx 0.0 -x $data(charWidth) -rely 0.49 -y $y
+	    if {$centerArrows} {
+		place $canvas -in $w -anchor n -bordermode outside \
+			      -relx 0.5 -y 1
 	    } else {
-		place $canvas -in $w -anchor e -bordermode outside \
-			      -relx 1.0 -x -$data(charWidth) -rely 0.49 -y $y
+		set y 0
+		if {([winfo reqheight $w] - [winfo reqheight $canvas]) % 2 == 0
+		    && $data(arrowHeight) == 5} {
+		    set y -1
+		}
+		if {[string compare $labelAlignment "right"] == 0} {
+		    place $canvas -in $w -anchor w -bordermode outside \
+				  -relx 0.0 -x $data(charWidth) \
+				  -rely 0.49 -y $y
+		} else {
+		    place $canvas -in $w -anchor e -bordermode outside \
+				  -relx 1.0 -x -$data(charWidth) \
+				  -rely 0.49 -y $y
+		}
 	    }
 	    raise $canvas
 	} else {
@@ -2748,8 +2760,9 @@ proc tablelist::adjustLabel {win col pixels alignment} {
     #
     set title [lindex $data(-columns) [expr {3*$col + 1}]]
     set labelFont [$w cget -font]
+    set spaces ""
+    set spacePixels 0
     if {[lsearch -exact $data(arrowColList) $col] >= 0} {
-	set spaceWidth [font measure $labelFont -displayof $w " "]
 	set canvas $data(hdrTxtFrCanv)$col
 	set canvasWidth $data(arrowWidth)
 	if {[llength $data(arrowColList)] > 1} {
@@ -2758,16 +2771,18 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 		    -image sortRank$data($col-sortRank)$win
 	}
 	$canvas configure -width $canvasWidth
-	set spaces "  "
-	set n 2
-	while {$n*$spaceWidth < $canvasWidth + $data(charWidth)} {
-	    append spaces " "
-	    incr n
+
+	variable centerArrows
+	if {!$centerArrows} {
+	    set spaceWidth [font measure $labelFont -displayof $w " "]
+	    set spaces "  "
+	    set n 2
+	    while {$n*$spaceWidth < $canvasWidth + $data(charWidth)} {
+		append spaces " "
+		incr n
+	    }
+	    set spacePixels [expr {$n * $spaceWidth}]
 	}
-	set spacePixels [expr {$n * $spaceWidth}]
-    } else {
-	set spaces ""
-	set spacePixels 0
     }
 
     set data($col-isSnipped) 0
@@ -5037,7 +5052,8 @@ proc tablelist::configLabel {w args} {
 proc tablelist::createArrows {w width height relief} {
     if {$height < 6} {
 	set wHeight 6
-	set y 1
+	variable centerArrows
+	set y [expr {$centerArrows ? 0 : 1}]
     } else {
 	set wHeight $height
 	set y 0
@@ -5049,10 +5065,13 @@ proc tablelist::createArrows {w width height relief} {
     # Delete any existing arrow image items from
     # the canvas and the corresponding images
     #
+    set imgNames [image names]
     foreach shape {triangleUp darkLineUp lightLineUp
 		   triangleDn darkLineDn lightLineDn} {
 	$w delete $shape
-	catch {image delete $shape$w}
+	if {[lsearch -exact $imgNames $shape$w] >= 0} {
+	    image delete $shape$w
+	}
     }
 
     #
@@ -5060,9 +5079,12 @@ proc tablelist::createArrows {w width height relief} {
     # corresponding to the procedure's arguments
     #
     $relief${width}x${height}Arrows $w
+    set imgNames [image names]
     foreach shape {triangleUp darkLineUp lightLineUp
 		   triangleDn darkLineDn lightLineDn} {
-	catch {$w create image 0 $y -anchor nw -image $shape$w -tags $shape}
+	if {[lsearch -exact $imgNames $shape$w] >= 0} {
+	    $w create image 0 $y -anchor nw -image $shape$w -tags $shape
+	}
     }
 
     #
@@ -5161,10 +5183,9 @@ proc tablelist::fillArrows {w color arrowStyle} {
     getShadows $w $color darkColor lightColor
 
     foreach dir {Up Dn} {
-	#
-	# Need catch because the triangle may be a photo image
-	#
-	catch {triangle$dir$w configure -foreground $color -background $bgColor}
+	if {[string compare [image type triangle$dir$w] "bitmap"] == 0} {
+	    triangle$dir$w configure -foreground $color -background $bgColor
+	}
 
 	if {[string match "sunken*" $arrowStyle]} {
 	    darkLine$dir$w  configure -foreground $darkColor
