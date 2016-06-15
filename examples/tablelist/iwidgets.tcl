@@ -5,11 +5,11 @@
 # widgets from the Iwidgets package and of the Tk core checkbutton and
 # menubutton widgets.
 #
-# Copyright (c) 2004-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.4				;# because of "-compound"
-package require tablelist 5.15
+package require tablelist 5.16
 package require Iwidgets
 
 wm title . "Serial Line Configuration"
