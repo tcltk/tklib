@@ -1,3 +1,42 @@
+2016-06-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                Bumped the version number to 5.16.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* ../../examples/*.tcl:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/tablelistConfig.tcl: Made the sort arrows look more native on
+	* scripts/tablelistEdit.tcl:   Windows Vista and later; support for
+	* scripts/tablelistImages.tcl: fully qualified edit window names of the
+	* scripts/tablelistThemes.tcl: form "::ttk::*"; improvements related to
+	* scripts/tablelistUtil.tcl:   the "move" and "movecolumn" subcommands
+	* scripts/tablelistWidget.tcl: and to the deletion of the images used
+	  in sort arrows; drastically increased the speed of the "collapse" and
+	  "collapseall" subcommands with the "-fully" option; fixed a bug
+	  related to the "curcellselection" subcommand.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/ambiance.png:         Updated screenshots.
+	* doc/arrowStyles.png:
+	* doc/bicolor*.png:
+	* doc/browse*.png:
+	* doc/bwidget.png:
+	* doc/classic*.png:
+	* doc/config.png:
+	* doc/dirViewer.png:
+	* doc/dust*.png:
+	* doc/embeddedWindows*.png:
+	* doc/plain*.png:
+	* doc/radiance.png:
+	* doc/styles.png:
+	* doc/tileWidgets.png:
+
+	* doc/arrowStyles_vista.png: Added screenshot.
+
 2015-12-28  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:                Bumped the version number to 5.15.
