@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -268,20 +268,26 @@ proc tablelist::extendConfigSpecs {} {
 
 		} elseif {$::tcl_platform(osVersion) == 6.0} {	;# Win Vista
 		    variable scalingpct
-		    switch $scalingpct {
-			100 { set arrowStyle	flat7x4 }
-			125 { set arrowStyle	flat9x5 }
-			150 { set arrowStyle	flat11x6 }
-			200 { set arrowStyle	flat15x8 }
-		    }
 
 		    switch [winfo rgb . SystemHighlight] {
 			"13107 39321 65535" {			;# Vista Aero
 			    set arrowColor	#569bc0
+			    switch $scalingpct {
+				100 { set arrowStyle	photo7x4 }
+				125 { set arrowStyle	photo9x5 }
+				150 { set arrowStyle	photo11x6 }
+				200 { set arrowStyle	photo15x8 }
+			    }
 			    set treeStyle	vistaAero
 			}
 			default {				;# Win Classic
 			    set arrowColor	SystemButtonShadow
+			    switch $scalingpct {
+				100 { set arrowStyle	flat7x4 }
+				125 { set arrowStyle	flat9x5 }
+				150 { set arrowStyle	flat11x6 }
+				200 { set arrowStyle	flat15x8 }
+			    }
 			    set treeStyle	vistaClassic
 			}
 		    }
@@ -289,20 +295,26 @@ proc tablelist::extendConfigSpecs {} {
 
 		} elseif {$::tcl_platform(osVersion) < 10.0} {	;# Win 7/8
 		    variable scalingpct
-		    switch $scalingpct {
-			100 { set arrowStyle	flat7x4 }
-			125 { set arrowStyle	flat9x5 }
-			150 { set arrowStyle	flat11x6 }
-			200 { set arrowStyle	flat15x8 }
-		    }
 
 		    switch [winfo rgb . SystemHighlight] {
 			"13107 39321 65535" {			;# Win 7/8 Aero
 			    set arrowColor	#569bc0
+			    switch $scalingpct {
+				100 { set arrowStyle	photo7x4 }
+				125 { set arrowStyle	photo9x5 }
+				150 { set arrowStyle	photo11x6 }
+				200 { set arrowStyle	photo15x8 }
+			    }
 			    set treeStyle	win7Aero
 			}
 			default {				;# Win Classic
 			    set arrowColor	SystemButtonShadow
+			    switch $scalingpct {
+				100 { set arrowStyle	flat7x4 }
+				125 { set arrowStyle	flat9x5 }
+				150 { set arrowStyle	flat11x6 }
+				200 { set arrowStyle	flat15x8 }
+			    }
 			    set treeStyle	win7Classic
 			}
 		    }
@@ -379,6 +391,14 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-movecolumncursor)	$movecolumnCursor
     lappend configSpecs(-movecursor)		$moveCursor
     lappend configSpecs(-resizecursor)		$resizeCursor
+
+    variable centerArrows 0
+    if {[string compare $winSys "win32"] == 0 &&
+	$::tcl_platform(osVersion) >= 6.0 &&
+	[string compare [winfo rgb . SystemHighlight] \
+			"13107 39321 65535"] == 0} {
+	set centerArrows 1
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -3789,7 +3809,7 @@ proc tablelist::doCellCget {row col win opt} {
 	}
 
 	-editwindow {
-	    return [getEditWindow $win $row $col]
+	    return [getEditWindow $win $row $col 0]
 	}
 
 	-stretchwindow {
@@ -3972,16 +3992,23 @@ proc tablelist::isCellEditable {win row col} {
 # Returns the value of the -editwindow option at cell or column level for the
 # given cell of the tablelist widget win.
 #------------------------------------------------------------------------------
-proc tablelist::getEditWindow {win row col} {
+proc tablelist::getEditWindow {win row col {skipLeadingColons 1}} {
     upvar ::tablelist::ns${win}::data data
     set key [lindex $data(keyList) $row]
     if {[info exists data($key,$col-editwindow)]} {
-	return $data($key,$col-editwindow)
+	set name $data($key,$col-editwindow)
     } elseif {[info exists data($col-editwindow)]} {
-	return $data($col-editwindow)
+	set name $data($col-editwindow)
     } else {
 	return "entry"
     }
+
+    if {[regexp {^::ttk::(entry|spinbox|combobox|checkbutton|menubutton)$} \
+	 $name] && $skipLeadingColons} {
+	set name [string range $name 2 end]
+    }
+
+    return $name
 }
 
 #------------------------------------------------------------------------------

@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -21,8 +21,10 @@ namespace eval tablelist {
     # menubutton, and spinbox for interactive cell editing
     #
     proc addTkCoreWidgets {} {
+	variable editWin
+
 	set name entry
-	array set ::tablelist::editWin [list \
+	array set editWin [list \
 	    $name-creationCmd	"$name %W -width 0" \
 	    $name-putValueCmd	"%W delete 0 end; %W insert 0 %T" \
 	    $name-getValueCmd	"%W get" \
@@ -42,7 +44,7 @@ namespace eval tablelist {
 	]
 
 	set name text
-	array set ::tablelist::editWin [list \
+	array set editWin [list \
 	    $name-creationCmd	"$name %W -padx 2 -pady 2 -wrap none" \
 	    $name-putValueCmd	"%W delete 1.0 end; %W insert 1.0 %T" \
 	    $name-getValueCmd	"%W get 1.0 end-1c" \
@@ -64,7 +66,7 @@ namespace eval tablelist {
 	]
 
 	set name checkbutton
-	array set ::tablelist::editWin [list \
+	array set editWin [list \
 	    $name-creationCmd	"createCheckbutton %W" \
 	    $name-putValueCmd	{set [%W cget -variable] %T} \
 	    $name-getValueCmd	{set [%W cget -variable]} \
@@ -84,7 +86,7 @@ namespace eval tablelist {
 	]
 
 	set name menubutton
-	array set ::tablelist::editWin [list \
+	array set editWin [list \
 	    $name-creationCmd	"createMenubutton %W" \
 	    $name-putValueCmd	{set [%W cget -textvariable] %T} \
 	    $name-getValueCmd	"%W cget -text" \
@@ -108,7 +110,7 @@ namespace eval tablelist {
 	}
 
 	set name spinbox
-	array set ::tablelist::editWin [list \
+	array set editWin [list \
 	    $name-creationCmd	"$name %W -width 0" \
 	    $name-putValueCmd	"%W delete 0 end; %W insert 0 %T" \
 	    $name-getValueCmd	"%W get" \
@@ -130,12 +132,14 @@ namespace eval tablelist {
     addTkCoreWidgets 
 
     #
-    # Register the tile widgets ttk::entry, ttk::spinbox,
-    # ttk::combobox, and ttk::checkbutton for interactive cell editing
+    # Register the tile widgets ttk::entry, ttk::spinbox, ttk::combobox,
+    # ttk::checkbutton, and ttk::menubutton for interactive cell editing
     #
     proc addTileWidgets {} {
+	variable editWin
+
 	set name ttk::entry
-	array set ::tablelist::editWin [list \
+	array set editWin [list \
 	    $name-creationCmd	"createTileEntry %W" \
 	    $name-putValueCmd	"%W delete 0 end; %W insert 0 %T" \
 	    $name-getValueCmd	"%W get" \
@@ -155,7 +159,7 @@ namespace eval tablelist {
 	]
 
 	set name ttk::spinbox
-	array set ::tablelist::editWin [list \
+	array set editWin [list \
 	    $name-creationCmd	"createTileSpinbox %W" \
 	    $name-putValueCmd	"%W delete 0 end; %W insert 0 %T" \
 	    $name-getValueCmd	"%W get" \
@@ -175,7 +179,7 @@ namespace eval tablelist {
 	]
 
 	set name ttk::combobox
-	array set ::tablelist::editWin [list \
+	array set editWin [list \
 	    $name-creationCmd	"createTileCombobox %W" \
 	    $name-putValueCmd	"%W set %T" \
 	    $name-getValueCmd	"%W get" \
@@ -195,7 +199,7 @@ namespace eval tablelist {
 	]
 
 	set name ttk::checkbutton
-	array set ::tablelist::editWin [list \
+	array set editWin [list \
 	    $name-creationCmd	"createTileCheckbutton %W" \
 	    $name-putValueCmd	{set [%W cget -variable] %T} \
 	    $name-getValueCmd	{set [%W cget -variable]} \
@@ -215,7 +219,7 @@ namespace eval tablelist {
 	]
 
 	set name ttk::menubutton
-	array set ::tablelist::editWin [list \
+	array set editWin [list \
 	    $name-creationCmd	"createTileMenubutton %W" \
 	    $name-putValueCmd	{set [%W cget -textvariable] %T} \
 	    $name-getValueCmd	"%W cget -text" \
@@ -233,6 +237,10 @@ namespace eval tablelist {
 	    $name-focusWin	%W \
 	    $name-reservedKeys	{} \
 	]
+
+	foreach {name value} [array get editWin ttk::*-creationCmd] {
+	    set editWin(::$name) $value
+	}
     }
     if {$::tk_version >= 8.4 && [llength [package versions tile]] > 0} {
 	addTileWidgets 
@@ -253,7 +261,8 @@ namespace eval tablelist {
 proc tablelist::addBWidgetEntry {{name Entry}} {
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	"Entry %W -width 0" \
 	$name-putValueCmd	"%W delete 0 end; %W insert 0 %T" \
 	$name-getValueCmd	"%W get" \
@@ -284,7 +293,8 @@ proc tablelist::addBWidgetEntry {{name Entry}} {
 proc tablelist::addBWidgetSpinBox {{name SpinBox}} {
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	"SpinBox %W -editable 1 -width 0" \
 	$name-putValueCmd	"%W configure -text %T" \
 	$name-getValueCmd	"%W cget -text" \
@@ -315,7 +325,8 @@ proc tablelist::addBWidgetSpinBox {{name SpinBox}} {
 proc tablelist::addBWidgetComboBox {{name ComboBox}} {
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	"createBWidgetComboBox %W" \
 	$name-putValueCmd	"%W configure -text %T" \
 	$name-getValueCmd	"%W cget -text" \
@@ -346,7 +357,8 @@ proc tablelist::addBWidgetComboBox {{name ComboBox}} {
 proc tablelist::addIncrEntryfield {{name entryfield}} {
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	"iwidgets::entryfield %W -width 0" \
 	$name-putValueCmd	"%W clear; %W insert 0 %T" \
 	$name-getValueCmd	"%W get" \
@@ -416,7 +428,8 @@ proc tablelist::addIncrDateTimeWidget {widgetType args} {
     }
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	"iwidgets::$widgetType %W" \
 	$name-putValueCmd	"%W show %T" \
 	$name-getValueCmd	"%W get" \
@@ -434,13 +447,13 @@ proc tablelist::addIncrDateTimeWidget {widgetType args} {
 	$name-reservedKeys	{Left Right Up Down} \
     ]
     if {$useClicks} {
-	lappend ::tablelist::editWin($name-getValueCmd) -clicks
-	set ::tablelist::editWin($name-useFormat) 0
+	lappend editWin($name-getValueCmd) -clicks
+	set editWin($name-useFormat) 0
     }
     if {[string match "date*" $widgetType]} {
-	set ::tablelist::editWin($name-focusWin) {[%W component date]}
+	set editWin($name-focusWin) {[%W component date]}
     } else {
-	set ::tablelist::editWin($name-focusWin) {[%W component time]}
+	set editWin($name-focusWin) {[%W component time]}
     }
 
     return $name
@@ -455,7 +468,8 @@ proc tablelist::addIncrDateTimeWidget {widgetType args} {
 proc tablelist::addIncrSpinner {{name spinner}} {
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	"iwidgets::spinner %W -width 0" \
 	$name-putValueCmd	"%W clear; %W insert 0 %T" \
 	$name-getValueCmd	"%W get" \
@@ -486,7 +500,8 @@ proc tablelist::addIncrSpinner {{name spinner}} {
 proc tablelist::addIncrSpinint {{name spinint}} {
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	"iwidgets::spinint %W -width 0" \
 	$name-putValueCmd	"%W clear; %W insert 0 %T" \
 	$name-getValueCmd	"%W get" \
@@ -517,7 +532,8 @@ proc tablelist::addIncrSpinint {{name spinint}} {
 proc tablelist::addIncrCombobox {{name combobox}} {
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	"createIncrCombobox %W" \
 	$name-putValueCmd	"%W clear entry; %W insert entry 0 %T" \
 	$name-getValueCmd	"%W get" \
@@ -547,7 +563,8 @@ proc tablelist::addIncrCombobox {{name combobox}} {
 proc tablelist::addCtext {{name ctext}} {
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	"ctext %W -padx 2 -pady 2 -wrap none" \
 	$name-putValueCmd	"%W delete 1.0 end; %W insert 1.0 %T" \
 	$name-getValueCmd	"%W get 1.0 end-1c" \
@@ -579,7 +596,8 @@ proc tablelist::addCtext {{name ctext}} {
 proc tablelist::addOakleyCombobox {{name combobox}} {
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	"createOakleyCombobox %W" \
 	$name-putValueCmd	"%W delete 0 end; %W insert 0 %T" \
 	$name-getValueCmd	"%W get" \
@@ -688,7 +706,8 @@ proc tablelist::addDateMentry {fmt sep args} {
     }
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	[list mentry::dateMentry %W $fmt $sep] \
 	$name-putValueCmd	"mentry::putClockVal %T %W -gmt $useGMT" \
 	$name-getValueCmd	"mentry::getClockVal %W -gmt $useGMT" \
@@ -764,7 +783,8 @@ proc tablelist::addTimeMentry {fmt sep args} {
     }
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	[list mentry::timeMentry %W $fmt $sep] \
 	$name-putValueCmd	"mentry::putClockVal %T %W -gmt $useGMT" \
 	$name-getValueCmd	"mentry::getClockVal %W -gmt $useGMT" \
@@ -857,7 +877,8 @@ proc tablelist::addDateTimeMentry {fmt dateSep timeSep args} {
     }
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	[list mentry::dateTimeMentry %W $fmt \
 				      $dateSep $timeSep] \
 	$name-putValueCmd	"mentry::putClockVal %T %W -gmt $useGMT" \
@@ -936,7 +957,8 @@ proc tablelist::addFixedPointMentry {cnt1 cnt2 args} {
     }
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	[list mentry::fixedPointMentry %W $cnt1 $cnt2] \
 	$name-putValueCmd	"mentry::putReal %T %W" \
 	$name-getValueCmd	"mentry::getReal %W" \
@@ -955,7 +977,7 @@ proc tablelist::addFixedPointMentry {cnt1 cnt2 args} {
 	$name-reservedKeys	{Left Right} \
     ]
     if {$useComma} {
-	lappend ::tablelist::editWin($name-creationCmd) -comma
+	lappend editWin($name-creationCmd) -comma
     }
 
     return $name
@@ -970,7 +992,8 @@ proc tablelist::addFixedPointMentry {cnt1 cnt2 args} {
 proc tablelist::addIPAddrMentry {{name ipAddrMentry}} {
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	"mentry::ipAddrMentry %W" \
 	$name-putValueCmd	"mentry::putIPAddr %T %W" \
 	$name-getValueCmd	"mentry::getIPAddr %W" \
@@ -1001,7 +1024,8 @@ proc tablelist::addIPAddrMentry {{name ipAddrMentry}} {
 proc tablelist::addIPv6AddrMentry {{name ipv6AddrMentry}} {
     checkEditWinName $name
 
-    array set ::tablelist::editWin [list \
+    variable editWin
+    array set editWin [list \
 	$name-creationCmd	"mentry::ipv6AddrMentry %W" \
 	$name-putValueCmd	"mentry::putIPv6Addr %T %W" \
 	$name-getValueCmd	"mentry::getIPv6Addr %W" \
@@ -1041,7 +1065,7 @@ proc tablelist::checkEditWinName name {
 	       "edit window name \"$name\" is reserved for Tk $name widgets"
     }
 
-    if {[regexp {^ttk::(entry|spinbox|combobox|checkbutton|menubutton)$} \
+    if {[regexp {^(::)?ttk::(entry|spinbox|combobox|checkbutton|menubutton)$} \
 	 $name]} {
 	return -code error \
 	       "edit window name \"$name\" is reserved for tile $name widgets"

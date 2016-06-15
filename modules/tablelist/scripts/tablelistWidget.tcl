@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -413,7 +413,8 @@ namespace eval tablelist {
 				 flat11x6 flat15x8 flatAngle7x4 flatAngle7x5 \
 				 flatAngle9x5 flatAngle9x6 flatAngle9x7 \
 				 flatAngle10x6 flatAngle10x7 flatAngle11x6 \
-				 flatAngle15x8 photo7x7 sunken8x7 sunken10x9 \
+				 flatAngle15x8 photo7x4 photo7x7 photo9x5 \
+				 photo11x6 photo15x8 sunken8x7 sunken10x9 \
 				 sunken12x11]
     variable arrowTypes    [list up down]
     variable colWidthOpts  [list -requested -stretched -total]
@@ -1384,7 +1385,21 @@ proc tablelist::collapseSubCmd {win argList} {
 	if {$fullCollapsion} {
 	    set descKey [lindex $data(keyList) $row]
 	    if {[llength $data($descKey-children)] != 0} {
-		collapseSubCmd $win [list [keyToRow $win $descKey] -fully]
+		if {[string length $data(-collapsecommand)] != 0} {
+		    uplevel #0 $data(-collapsecommand) \
+			[list $win [keyToRow $win $descKey]]
+		}
+
+		#
+		# Change the descendant's indentation image
+		# from the expanded to the collapsed one
+		#
+		set data($descKey,$col-indent) [strMap \
+		    {"expanded" "collapsed"} $data($descKey,$col-indent)]
+		if {[winfo exists $data(body).ind_$descKey,$col]} {
+		    $data(body).ind_$descKey,$col configure -image \
+			$data($descKey,$col-indent)
+		}
 	    }
 	}
     }
@@ -1463,7 +1478,7 @@ proc tablelist::collapseallSubCmd {win argList} {
     set childIdx 0
     set childCount [llength $data(root-children)]
     foreach key $data(root-children) {
-	if {![info exists data($key,$col-indent)]} {
+	if {[llength $data($key-children)] == 0} {
 	    incr childIdx
 	    continue
 	}
@@ -1499,8 +1514,22 @@ proc tablelist::collapseallSubCmd {win argList} {
 		if {$fullCollapsion} {
 		    set descKey [lindex $data(keyList) $row]
 		    if {[llength $data($descKey-children)] != 0} {
-			collapseSubCmd $win \
-			    [list [keyToRow $win $descKey] -fully]
+			if {[string length $data(-collapsecommand)] != 0} {
+			    uplevel #0 $data(-collapsecommand) \
+				[list $win [keyToRow $win $descKey]]
+			}
+
+			#
+			# Change the descendant's indentation image
+			# from the expanded to the collapsed one
+			#
+			set data($descKey,$col-indent) \
+			    [strMap {"expanded" "collapsed"} \
+				    $data($descKey,$col-indent)]
+			if {[winfo exists $data(body).ind_$descKey,$col]} {
+			    $data(body).ind_$descKey,$col configure -image \
+				$data($descKey,$col-indent)
+			}
 		    }
 		}
 	    }
@@ -5049,7 +5078,8 @@ proc tablelist::curCellSelection {win {getKeys 0} {constraint 0}} {
 
 	    if {[$w compare $selStart == $textIdx] ||
 		[$w compare $selStart == $textIdx+1c] ||
-		[$w compare $selStart == $textIdx+2c]} {
+		[$w compare $selStart == $textIdx+2c] &&
+		[string compare [$w get $textIdx+2c] "\t"] != 0} {
 		set firstCol $col
 		break
 	    } else {

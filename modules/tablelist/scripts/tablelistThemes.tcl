@@ -8,7 +8,7 @@
 #   - Private procedures performing RGB <-> HSV conversions
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2005-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1454,23 +1454,38 @@ proc tablelist::vistaTheme {} {
     switch [winfo rgb . SystemHighlight] {
 	"13107 39321 65535" {					;# Aero
 	    set selectFg	SystemWindowText
-	    set labelBg		#f8f9fa
-	    set activeBg	#c3eeff
-	    set pressedBg	#95d8f7
 	    set labelBd		4
 	    set labelPadY	4
 
 	    variable scalingpct
-	    if {$::tcl_platform(osVersion) < 10.0} {		;# Win Vista/7/8
+	    if {$::tcl_platform(osVersion) < 6.2} {		;# Win Vista/7
+		set labelBg	#ffffff
+		set activeBg	#e3f7ff
+		set pressedBg	#Bce4f9
 		set arrowColor	#569bc0
 
 		switch $scalingpct {
-		    100 { set arrowStyle	flat7x4 }
-		    125 { set arrowStyle	flat9x5 }
-		    150 { set arrowStyle	flat11x6 }
-		    200 { set arrowStyle	flat15x8 }
+		    100 { set arrowStyle	photo7x4 }
+		    125 { set arrowStyle	photo9x5 }
+		    150 { set arrowStyle	photo11x6 }
+		    200 { set arrowStyle	photo15x8 }
+		}
+	    } elseif {$::tcl_platform(osVersion) < 10.0} {	;# Win 8
+		set labelBg	#fcfcfc
+		set activeBg	#f4f9ff
+		set pressedBg	#f9fafb
+		set arrowColor	#569bc0
+
+		switch $scalingpct {
+		    100 { set arrowStyle	photo7x4 }
+		    125 { set arrowStyle	photo9x5 }
+		    150 { set arrowStyle	photo11x6 }
+		    200 { set arrowStyle	photo15x8 }
 		}
 	    } else {						;# Win 10
+		set labelBg	#ffffff
+		set activeBg	#d9ebf9
+		set pressedBg	#bcdcf4
 		set arrowColor	#595959
 
 		switch $scalingpct {
@@ -1484,8 +1499,11 @@ proc tablelist::vistaTheme {} {
 	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
 		set selectBg	#d8effb
 		set treeStyle	vistaAero
-	    } elseif {$::tcl_platform(osVersion) < 10.0} {	;# Win 7/8
+	    } elseif {$::tcl_platform(osVersion) == 6.1} {	;# Win 7
 		set selectBg	#cee2fc
+		set treeStyle	win7Aero
+	    } elseif {$::tcl_platform(osVersion) < 10.0} {	;# Win 8
+		set selectBg	#cbe8f6
 		set treeStyle	win7Aero
 	    } else {						;# Win 10
 		set selectBg	#cce8ff
@@ -1680,23 +1698,38 @@ proc tablelist::xpnativeTheme {} {
 	"13107 39321 65535" {					;# Aero
 	    set selectFg	SystemWindowText
 	    set xpStyle		0
-	    set labelBg		#f8f9fa
-	    set activeBg	#c3eeff
-	    set pressedBg	#95d8f7
 	    set labelBd		4
 	    set labelPadY	4
 
 	    variable scalingpct
-	    if {$::tcl_platform(osVersion) < 10.0} {		;# Win Vista/7/8
+	    if {$::tcl_platform(osVersion) < 6.2} {		;# Win Vista/7
+		set labelBg	#ffffff
+		set activeBg	#e3f7ff
+		set pressedBg	#Bce4f9
 		set arrowColor	#569bc0
 
 		switch $scalingpct {
-		    100 { set arrowStyle	flat7x4 }
-		    125 { set arrowStyle	flat9x5 }
-		    150 { set arrowStyle	flat11x6 }
-		    200 { set arrowStyle	flat15x8 }
+		    100 { set arrowStyle	photo7x4 }
+		    125 { set arrowStyle	photo9x5 }
+		    150 { set arrowStyle	photo11x6 }
+		    200 { set arrowStyle	photo15x8 }
+		}
+	    } elseif {$::tcl_platform(osVersion) < 10.0} {	;# Win 8
+		set labelBg	#fcfcfc
+		set activeBg	#f4f9ff
+		set pressedBg	#f9fafb
+		set arrowColor	#569bc0
+
+		switch $scalingpct {
+		    100 { set arrowStyle	photo7x4 }
+		    125 { set arrowStyle	photo9x5 }
+		    150 { set arrowStyle	photo11x6 }
+		    200 { set arrowStyle	photo15x8 }
 		}
 	    } else {						;# Win 10
+		set labelBg	#ffffff
+		set activeBg	#d9ebf9
+		set pressedBg	#bcdcf4
 		set arrowColor	#595959
 
 		switch $scalingpct {
@@ -1710,8 +1743,11 @@ proc tablelist::xpnativeTheme {} {
 	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
 		set selectBg	#d8effb
 		set treeStyle	vistaAero
-	    } elseif {$::tcl_platform(osVersion) < 10.0} {	;# Win 7/8
+	    } elseif {$::tcl_platform(osVersion) == 6.1} {	;# Win 7
 		set selectBg	#cee2fc
+		set treeStyle	win7Aero
+	    } elseif {$::tcl_platform(osVersion) < 10.0} {	;# Win 8
+		set selectBg	#cbe8f6
 		set treeStyle	win7Aero
 	    } else {						;# Win 10
 		set selectBg	#cce8ff
