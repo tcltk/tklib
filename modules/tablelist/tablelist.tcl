@@ -1,12 +1,12 @@
 #==============================================================================
 # Main Tablelist package module.
 #
-# Copyright (c) 2000-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tcl 8
 package require Tk  8
-package require -exact tablelist::common 5.15
+package require -exact tablelist::common 5.16
 
 package provide tablelist $::tablelist::version
 package provide Tablelist $::tablelist::version
