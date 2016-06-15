@@ -1,5 +1,30 @@
-What is new in Tablelist 5.15?
+What is new in Tablelist 5.16?
 ------------------------------
+
+1. On Windows Vista, 7, 8, and 10, the sort arrows are now shown
+   horizontally centered in the header labels and attached to their top
+   edges.
+
+2. Added the arrow style "photo7x4" as well as its automatically scaled
+   versions "photo9x5", "photo11x6", and "photo15x8", used as defaults
+   on Windows Vista, 7, and 8.
+
+3. Support for fully qualified edit window names of the form "::ttk::*"
+   (thanks to Adrian Medrano Calvo for his proposal).
+
+4. Improvements related to the "move" and "movecolumn" subcommands as
+   well as to the handling of the images used in sort arrows (thanks to
+   Adrian Medrano Calvo and Torsten Berg for their proposals).
+
+5  Drastically increased the speed of the "collapse" and "collapseall"
+   subcommands with the "-fully" option (thanks to Ulrich Seidl for
+   reporting the pure performance of "collapseall -fully").
+
+6. Fixed a bug related to the "curcellselection" subcommand (thanks to
+   Juge for his bug report).
+
+What was new in Tablelist 5.15?
+-------------------------------
 
 1. Support for Windows 10, including the new tree style "win10", whose
    size is automatically adapted to the display's scaling level.
@@ -1989,7 +2014,7 @@ What was new in Tablelist 1.0?
 
 1.  New "-resizable" option for the "columnconfigure" subcommand.
 
-2.  New "labels" subcommand. returning the list of the header labels.
+2.  New "labels" subcommand, returning the list of the header labels.
 
 3.  The "-disabledforeground" and "-state" configuration options no
     longer require Tk version 8.3 or higher.
