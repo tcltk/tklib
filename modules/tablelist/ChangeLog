@@ -1,3 +1,13 @@
+2016-08-09  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl:   Added the "-autofinishediting" option;
+	* scripts/tablelistConfig.tcl: adapted the implementation of the
+	* scripts/tablelistEdit.tcl:   "delete" subcommand to the changed text
+	* scripts/tablelistWidget.tcl: widget behavior in Tk 8.6.5.
+
+	* CHANGES.txt:              Updated to reflect the changes.
+	* doc/tablelistWidget.html:
+
 2016-06-15  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:                Bumped the version number to 5.16.
