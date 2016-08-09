@@ -95,7 +95,7 @@ namespace eval tablelist {
 	    $name-putListCmd	"" \
 	    $name-getListCmd	"" \
 	    $name-selectCmd	"" \
-	    $name-invokeCmd	"event generate %W <space>" \
+	    $name-invokeCmd	"event generate %W <Button-1>" \
 	    $name-fontOpt	-font \
 	    $name-useFormat	1 \
 	    $name-useReqWidth	0 \
@@ -228,7 +228,7 @@ namespace eval tablelist {
 	    $name-putListCmd	"" \
 	    $name-getListCmd	"" \
 	    $name-selectCmd	"" \
-	    $name-invokeCmd	"event generate %W <space>" \
+	    $name-invokeCmd	"event generate %W <Button-1>" \
 	    $name-fontOpt	"" \
 	    $name-useFormat	1 \
 	    $name-useReqWidth	0 \
@@ -1238,7 +1238,7 @@ proc tablelist::createTileEntry {w args} {
     # -borderwidth 2 setting, set the padding to another value.
     #
     set win [getTablelistPath $w]
-    switch [getCurrentTheme] {
+    switch -- [getCurrentTheme] {
 	aqua {
 	    set padding {0 0 0 -1}
 	}
@@ -1289,7 +1289,7 @@ proc tablelist::createTileSpinbox {w args} {
     # -borderwidth 2 setting, set the padding to another value.
     #
     set win [getTablelistPath $w]
-    switch [getCurrentTheme] {
+    switch -- [getCurrentTheme] {
 	aqua {
 	    set padding {0 0 0 -1}
 	}
@@ -1394,7 +1394,7 @@ proc tablelist::createTileCheckbutton {w args} {
     # Adjust the dimensions of the tile checkbutton's parent
     # and manage the checkbutton, depending on the current theme
     #
-    switch $currentTheme {
+    switch -- $currentTheme {
 	aqua {
 	    [winfo parent $w] configure -width 16 -height 16
 	    place $w -x -3 -y -3
@@ -1805,17 +1805,16 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 		eval [strMap {"%W" "$w"  "%T" "$text"} \
 		      $editWin($name-putValueCmd)]
 	    }
+	}
 
-	    if {$isMenubtn} {
-		set menu [$w cget -menu]
-		set last [$menu index last]
-		if {[string compare $last "none"] != 0} {
-		    set varName [$w cget -textvariable]
-		    for {set idx 0} {$idx <= $last} {incr idx} {
-			if {[string compare [$menu type $idx] "radiobutton"]
-			    == 0} {
-			    $menu entryconfigure $idx -variable $varName
-			}
+	if {$isMenubtn} {
+	    set menu [$w cget -menu]
+	    set last [$menu index last]
+	    if {[string compare $last "none"] != 0} {
+		set varName [$w cget -textvariable]
+		for {set idx 0} {$idx <= $last} {incr idx} {
+		    if {[string compare [$menu type $idx] "radiobutton"] == 0} {
+			$menu entryconfigure $idx -variable $varName
 		    }
 		}
 	    }
@@ -1888,6 +1887,67 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 		focus $comp
 		$comp icursor end
 		$comp selection range 0 end
+	    }
+	}
+    }
+
+    if {$data(-autofinishediting)} {
+	#
+	# Make sure that selecting a combobox or menu
+	# entry will automatically finish the editing
+	#
+	switch $class {
+	    TCombobox {
+		bind $w <<ComboboxSelected>> \
+		    {+ [tablelist::getTablelistPath %W] finishediting}
+	    }
+
+	    ComboBox {					;# BWidget
+		set cmd [$w cget -modifycmd]
+		$w configure -modifycmd [format {
+		    eval [list %s]
+		    after 0 [list %s finishediting]
+		} $cmd $win]
+	    }
+
+	    Combobox {					;# IWidgets or Oakley
+		if {[catch {$w cget -selectioncommand} cmd] == 0} {  ;# IWidgets
+		    set cmd [$w cget -selectioncommand]
+		    $w configure -selectioncommand [format {
+			eval [list %s]
+			after 0 [list %s finishediting]
+		    } $cmd $win]
+		} elseif {[catch {$w cget -command} cmd] == 0} {     ;# Oakley
+		    if {[string length $cmd] == 0} {
+			proc ::tablelist::comboboxCmd {w val} [format {
+			    after 0 [list %s finishediting]
+			} $win]
+		    } else {
+			proc ::tablelist::comboboxCmd {w val} [format {
+			    eval [list %s $w $val]
+			    after 0 [list %s finishediting]
+			} $cmd $win]
+		    }
+		    $w configure -command ::tablelist::comboboxCmd
+		}
+	    }
+
+	    Menubutton -
+	    TMenubutton {
+		set menu [$w cget -menu]
+		set last [$menu index last]
+		if {[string compare $last "none"] != 0} {
+		    for {set idx 0} {$idx <= $last} {incr idx} {
+			if {[regexp {^(command|checkbutton|radiobutton)$} \
+			     [$menu type $idx]]} {
+			    set cmd [$menu entrycget $idx -command]
+			    $menu entryconfigure $idx -command [format {
+				eval [list %s]
+				after 0 [list %s finishediting]
+			    } $cmd $win]
+			}
+		    }
+		}
 	    }
 	}
     }

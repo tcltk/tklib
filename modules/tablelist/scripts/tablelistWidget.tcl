@@ -99,6 +99,7 @@ namespace eval tablelist {
 	-arrowcolor		 {arrowColor		  ArrowColor	      w}
 	-arrowdisabledcolor	 {arrowDisabledColor	  ArrowDisabledColor  w}
 	-arrowstyle		 {arrowStyle		  ArrowStyle	      w}
+	-autofinishediting	 {autoFinishEditing	  AutoFinishEditing   w}
 	-autoscan		 {autoScan		  AutoScan	      w}
 	-background		 {background		  Background	      b}
 	-bg			 -background
@@ -5248,6 +5249,12 @@ proc tablelist::deleteRows {win first last updateListVar} {
     $w delete [expr {double($first + 1)}] [expr {double($first + $rest + 1)}]
 
     if {$last == $data(lastRow)} {
+	#
+	# Delete the newline character that ends
+	# the line preceding the first deleted one
+	#
+	$w delete $first.end
+
 	#
 	# Work around a peculiarity of the text widget:  Hide
 	# the newline character that ends the line preceding

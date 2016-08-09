@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of the tablelist move and movecolumn subcommands.
 #
-# Copyright (c) 2003-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -31,13 +31,8 @@ proc tablelist::moveRow {win source target} {
 
     set sourceItem [lindex $data(itemList) $source]
     set sourceKey [lindex $sourceItem end]
-    if {$target == [nodeRow $win $sourceKey end]} {
+    if {$target == [nodeRow $win $sourceKey end] || $target == $source} {
 	return ""
-    }
-
-    if {$target == $source} {
-	return -code error \
-	       "cannot move item with index \"$source\" before itself"
     }
 
     set parentKey $data($sourceKey-parent)
@@ -97,8 +92,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
     set sourceParentKey $data($sourceKey-parent)
     if {[string compare $targetParentKey $sourceParentKey] == 0 &&
 	$target == $source && $withDescendants} {
-	return -code error \
-	       "cannot move item with index \"$source\" before itself"
+	return ""
     }
 
     set sourceDescCount [descCount $win $sourceKey]
@@ -458,10 +452,7 @@ proc tablelist::moveCol {win source target} {
     #
     # Check the indices
     #
-    if {$target == $source} {
-	return -code error \
-	       "cannot move column with index \"$source\" before itself"
-    } elseif {$target == $source + 1} {
+    if {$target == $source || $target == $source + 1} {
 	return ""
     }
 
