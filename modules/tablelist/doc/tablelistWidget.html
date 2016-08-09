@@ -100,6 +100,9 @@
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flatAngle15x8</b>|<b>photo7x4</b>|<b>photo7x7</b>|<b>photo9x5</b>|<b>photo11x6</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;photo15x8</b>|<b>sunken8x7</b>|<b>sunken10x9</b>|<b>sunken12x11</b></code></dd>
 
+    <dd><code><b><a href="#autofinishediting">-autofinishediting</a></b>
+    <i>boolean</i></code></dd>
+
     <dd><code><b><a href="#autoscan">-autoscan</a></b>
     <i>boolean</i></code></dd>
 
@@ -1455,10 +1458,10 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         <p>While the sort arrows of the styles <code><b>flat*</b></code> and
         <code><b>sunken*</b></code> are created from bitmaps, the arrow styles
         <code><b>photo7x4</b></code>, <code><b>photo9x5</b></code>,
-	<code><b>photo11x6</b></code>, and <code><b>photo15x8</b></code> use
-	GIF images that look very close to the native sort arrows on Windows
-	Vista, 7, and 8.&nbsp; When using one of these styles, the <code><b><a
-	href="#arrowcolor">-arrowcolor</a></b></code> and <code><b><a href=
+        <code><b>photo11x6</b></code>, and <code><b>photo15x8</b></code> use
+        GIF images that look very close to the native sort arrows on Windows
+        Vista, 7, and 8.&nbsp; When using one of these styles, the <code><b><a
+        href="#arrowcolor">-arrowcolor</a></b></code> and <code><b><a href=
         "#arrowdisabledcolor">-arrowdisabledcolor</a></b></code> options have
         no effect.</p>
         
@@ -1470,13 +1473,13 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         "638" height= "123"></p>
 
         <p>The arrow style <code><b>photo7x7</b></code> uses PNG images that
-	look and behave very close to the native sort arrows on Mac OS X Aqua
-	versions earlier than 10.10 (Yosemite).&nbsp; This arrow style is only
-	supported if the Tk version is either 8.6 (with built-in PNG support),
-	or 8.5 and the <code><b>img::png</b></code> package can be loaded into
-	the interpreter.&nbsp; When supported, <code><b>photo7x7</b></code>
-	will be the default value of the <code><b>-arrowstyle</b></code> option
-	in Tablelist_tile with the <code><b>aqua</b></code> theme for Mac OS X
+        look and behave very close to the native sort arrows on Mac OS X Aqua
+        versions earlier than 10.10 (Yosemite).&nbsp; This arrow style is only
+        supported if the Tk version is either 8.6 (with built-in PNG support),
+        or 8.5 and the <code><b>img::png</b></code> package can be loaded into
+        the interpreter.&nbsp; When supported, <code><b>photo7x7</b></code>
+        will be the default value of the <code><b>-arrowstyle</b></code> option
+        in Tablelist_tile with the <code><b>aqua</b></code> theme for Mac OS X
         versions earlier than 10.10 (otherwise <code><b>flat7x7</b></code> will
         be used as default for these earlier OS X versions).&nbsp; When using
         this arrow style, the <code><b><a href=
@@ -1486,6 +1489,37 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         PNG images, the arrows will automatically adapt their color to the
         various states of the header labels, just like the native sort
         arrows.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="autofinishediting">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+
+          <td><code><b>-autofinishediting</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+
+          <td><code><b>&nbsp;autoFinishEditing</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+
+          <td><code><b>&nbsp;AutoFinishEditing</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a boolean value that controls whether the interactive cell
+        editing with the aid of a tile combobox, BWidget ComboBox, Iwidgets
+        combobox, Oakley combobox, Tk core menubutton, or tile menubutton
+        widget will be finished automatically by selecting an entry of the
+        combobox or of the menu associated with the menubutton.&nbsp; The
+        default value is <code>0</code>.</p>
       </blockquote>
     </dd>
 
@@ -6011,7 +6045,12 @@ proc updateWindow {tbl row col w args} {
     button, the edit window is a Tk or tile checkbutton, and the value of the
     <code><b><a href="#instanttoggle">-instanttoggle</a></b></code> option is
     true, then the normal termination of the editing will take place
-    automatically, without any user interaction.</dd>
+    automatically, without any user interaction.&nbsp; Similarly, if the edit
+    window is one of the four combobox widgets supported by Tablelist or a
+    menubutton widget, and the value of the <code><b><a href=
+    "#autofinishediting">-autofinishediting</a></b></code> option is true, then
+    selecting a combobox or menu entry will auomatically terminate the editing
+    session.</dd>
 
     <dd class="tm">When normal termination of the editing process occurs, the
     Tcl command associated with the tablelist widget compares the edit window's
@@ -7766,7 +7805,12 @@ bind [.tbl <span>editwintag</span>] &lt;Return&gt; "[bind <a href=
         or tile checkbutton, and the value of the <code><b><a href=
         "#instanttoggle">-instanttoggle</a></b></code> option is true, then
         this subcommand will be invoked automatically, without any user
-        interaction.</dd>
+        interaction.&nbsp; Similarly, if the edit window is one of the four
+        combobox widgets supported by Tablelist or a menubutton widget, and the
+        value of the <code><b><a href=
+        "#autofinishediting">-autofinishediting</a></b></code> option is true,
+        then selecting a combobox or menu entry will auomatically invoke this
+        subcommand and thus termate the editing session.</dd>
 
         <dd class="tm"><b>REMARK:</b>&nbsp; There are also situations where an
         <i>explicit</i> invocation of this subcommand is needed, in order to
