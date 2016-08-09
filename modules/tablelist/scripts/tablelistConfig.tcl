@@ -21,6 +21,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-acceptchildcommand)	{}
     lappend configSpecs(-acceptdropcommand)	{}
     lappend configSpecs(-activestyle)		frame
+    lappend configSpecs(-autofinishediting)	0
     lappend configSpecs(-autoscan)		1
     lappend configSpecs(-collapsecommand)	{}
     lappend configSpecs(-colorizecommand)	{}
@@ -692,6 +693,7 @@ proc tablelist::doConfig {win opt val} {
 			adjustColumns $win $whichWidths 1
 		    }
 		}
+		-autofinishediting -
 		-autoscan -
 		-customdragsource -
 		-forceeditendcommand -

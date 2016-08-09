@@ -8,7 +8,7 @@
 #   - Binding tag TablelistBody
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -151,11 +151,14 @@ proc tablelist::cleanup win {
     for {set rank 1} {$rank < 10} {incr rank} {
 	image delete sortRank$rank$win
     }
+    set imgNames [image names]
     for {set col 0} {$col < $data(colCount)} {incr col} {
 	set w $data(hdrTxtFrCanv)$col
 	foreach shape {triangleUp darkLineUp lightLineUp
 		       triangleDn darkLineDn lightLineDn} {
-	    catch {image delete $shape$w}
+	    if {[lsearch -exact $imgNames $shape$w] >= 0} {
+		image delete $shape$w
+	    }
 	}
     }
 
@@ -1765,8 +1768,12 @@ proc tablelist::cancelMove win {
     unset data(sourceParentKey)
     unset data(sourceParentRow)
     unset data(sourceParentEndRow)
-    catch {unset data(targetRow)}
-    catch {unset data(targetChildIdx)}
+    if {[info exists data(targetRow)]} {
+	unset data(targetRow)
+    }
+    if {[info exists data(targetChildIdx)]} {
+	unset data(targetChildIdx)
+    }
     bind [winfo toplevel $win] <Escape> $data(topEscBinding)
     $data(body) configure -cursor $data(-cursor)
     place forget $data(rowGap)
@@ -2990,7 +2997,9 @@ proc tablelist::labelB1Motion {w X x y} {
 		       $targetCol < $data(-titlecolumns)) ||
 		      ($col < $data(-titlecolumns) &&
 		       $targetCol > $data(-titlecolumns))))} {
-		    catch {unset data(targetCol)}
+		    if {[info exists data(targetCol)]} {
+			unset data(targetCol)
+		    }
 		    configLabel $w -cursor $data(-cursor)
 		    $data(hdrTxtFrCanv)$col configure -cursor $data(-cursor)
 		    place forget $data(colGap)
@@ -3300,7 +3309,9 @@ proc tablelist::escape {win col} {
 	}
 	bind [winfo toplevel $win] <Escape> $data(topEscBinding)
 	place forget $data(colGap)
-	catch {unset data(targetCol)}
+	if {[info exists data(targetCol)]} {
+	    unset data(targetCol)
+	}
 	if {[info exists data(X)]} {
 	    unset data(X)
 	    after cancel $data(afterId)
