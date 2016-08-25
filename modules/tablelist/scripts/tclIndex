@@ -350,6 +350,7 @@ set auto_index(::tablelist::gtkTreeImgs) [list source [file join $dir tablelistI
 set auto_index(::tablelist::klearlooksTreeImgs) [list source [file join $dir tablelistImages.tcl]]
 set auto_index(::tablelist::mateTreeImgs) [list source [file join $dir tablelistImages.tcl]]
 set auto_index(::tablelist::mintTreeImgs) [list source [file join $dir tablelistImages.tcl]]
+set auto_index(::tablelist::mint2TreeImgs) [list source [file join $dir tablelistImages.tcl]]
 set auto_index(::tablelist::newWaveTreeImgs) [list source [file join $dir tablelistImages.tcl]]
 set auto_index(::tablelist::oxygen1TreeImgs) [list source [file join $dir tablelistImages.tcl]]
 set auto_index(::tablelist::oxygen2TreeImgs) [list source [file join $dir tablelistImages.tcl]]
