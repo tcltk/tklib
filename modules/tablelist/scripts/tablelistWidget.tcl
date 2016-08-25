@@ -438,12 +438,12 @@ namespace eval tablelist {
     variable treeStyles    [list adwaita ambiance aqua baghira bicolor1 \
 				 bicolor2 bicolor3 bicolor4 classic1 classic2 \
 				 classic3 classic4 dust dustSand gtk \
-				 klearlooks mate mint newWave oxygen1 oxygen2 \
-				 phase plain1 plain2 plain3 plain4 plastik \
-				 plastique radiance ubuntu ubuntu2 vistaAero \
-				 vistaClassic win7Aero win7Classic win10 \
-				 winnative winxpBlue winxpOlive winxpSilver \
-				 yuyo]
+				 klearlooks mate mint mint2 newWave oxygen1 \
+				 oxygen2 phase plain1 plain2 plain3 plain4 \
+				 plastik plastique radiance ubuntu ubuntu2 \
+				 vistaAero vistaClassic win7Aero win7Classic \
+				 win10 winnative winxpBlue winxpOlive \
+				 winxpSilver yuyo]
     variable valignments   [list center top bottom]
 
     proc restrictArrowStyles {} {
