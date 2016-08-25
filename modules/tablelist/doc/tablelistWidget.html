@@ -290,7 +290,7 @@
     <dd><code><b><a href="#treestyle">-treestyle</a></b>
     <b>adwaita</b>|<b>ambiance</b>|<b>aqua</b>|<b>baghira</b>|<b>bicolor1</b>|<b>bicolor2</b>|<b>bicolor3</b>|<b>bicolor4</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classic1</b>|<b>classic2</b>|<b>classic3</b>|<b>classic4</b>|<b>dust</b>|<b>dustSand</b>|<b>gtk</b>|<b>klearlooks</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mate</b>|<b>mint</b>|<b>newWave</b>|<b>oxygen1</b>|<b>oxygen2</b>|<b>phase</b>|<b>plain1</b>|<b>plain2</b>|<b>plain3</b>|<b>plain4</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mate</b>|<b>mint</b>|<b>mint2</b>|<b>newWave</b>|<b>oxygen1</b>|<b>oxygen2</b>|<b>phase</b>|<b>plain1</b>|<b>plain2</b>|<b>plain3</b>|<b>plain4</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plastik</b>|<b>plastique</b>|<b>radiance</b>|<b>ubuntu</b>|<b>ubuntu2</b>|<b>vistaAero</b>|<b>vistaClassic</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win7Aero</b>|<b>win7Classic</b>|<b>win10</b>|<b>winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b>|<b>yuyo</b></code></dd>
 
@@ -4017,12 +4017,12 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <tr>
               <td><img src="mint.png" alt="mint" width="120" height="51"></td>
 
+              <td><img src="mint2.png" alt="mint2" width="120" height=
+              "51"></td>
+
               <td><img src="mate.png" alt="mate" width="120" height="51"></td>
 
               <td><img src="yuyo.png" alt="yuyo" width="120" height="51"></td>
-
-              <td><img src="newWave.png" alt="newWave" width="120" height=
-              "51"></td>
 
               <td><img src="plastique.png" alt="plastique" width="120" height=
               "51"></td>
@@ -4031,11 +4031,11 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <tr>
               <th><code>mint</code></th>
 
+              <th><code>mint2</code></th>
+
               <th><code>mate</code></th>
 
               <th><code>yuyo</code></th>
-
-              <th><code>newWave</code></th>
 
               <th><code>plastique</code></th>
             </tr>
@@ -4147,7 +4147,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               <td><img src="radiance.png" alt="radiance" width="120" height=
               "63"></td>
 
-              <td></td>
+              <td><img src="newWave.png" alt="newWave.png" width="120" height=
+              "63"></td>
             </tr>
 
             <tr>
@@ -4159,7 +4160,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <th><code>radiance</code></th>
 
-              <th></th>
+              <th><code>newWave</code></th>
             </tr>
           </tbody>
         </table>
@@ -4274,17 +4275,17 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
         <p>If the tree style is <code><b>aqua</b></code>,
         <code><b>gtk</b></code>, <code><b>adwaita</b></code>,
         <code><b>ubuntu</b></code>, <code><b>ubuntu2</b></code>,
-        <code><b>mint</b></code>, <code><b>mate</b></code>,
-        <code><b>newWave</b></code>, <code><b>oxygen2</b></code>,
+        <code><b>mint</b></code>, <code><b>mint2</b></code>,
+        <code><b>mate</b></code>, <code><b>oxygen2</b></code>,
         <code><b>vistaAero</b></code>, <code><b>win7Aero</b></code>,
-        <code><b>win10</b></code>, <code><b>plain*</b></code>, or
-        <code><b>bicolor*</b></code>, and the Tk version is either 8.6 (with
-        built-in PNG support) or 8.5 and the <code><b>img::png</b></code>
-        package can be loaded into the interpreter, then the images used for
-        displaying the expand/collapse controls are PNG images with alpha
-        channel.&nbsp; Otherwise (i.e., for the other tree styles or in the
-        absence of PNG support) GIF images are used for the expand/collapse
-        controls.</p>
+        <code><b>win10</b></code>, <code><b>newWave</b></code>,
+        <code><b>plain*</b></code>, or <code><b>bicolor*</b></code>, and the Tk
+        version is either 8.6 (with built-in PNG support) or 8.5 and the
+        <code><b>img::png</b></code> package can be loaded into the
+        interpreter, then the images used for displaying the expand/collapse
+        controls are PNG images with alpha channel.&nbsp; Otherwise (i.e., for
+        the other tree styles or in the absence of PNG support) GIF images are
+        used for the expand/collapse controls.</p>
 
         <p>The following table contains a detailed description of the tree
         styles, in alphabetical order:</p>
@@ -4483,12 +4484,22 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           </tr>
 
           <tr>
+            <td><code><b>mint2</b></code></td>
+
+            <td><img src="mint2.png" alt="mint" width="120" height="51"></td>
+
+            <td>Inspired by a few GTK+ 3 themes bundled with version 18 the
+            Linux Mint distribution.</td>
+          </tr>
+
+          <tr>
             <td><code><b>newWave</b></code></td>
 
             <td><img src="newWave.png" alt="newWave" width="120" height=
-            "51"></td>
+            "63"></td>
 
-            <td>Inspired by the GTK+ theme New Wave.</td>
+            <td>Inspired by the GTK+ theme New Wave.&nbsp; Recommended to be
+            used with large fonts and images.</td>
           </tr>
 
           <tr>
@@ -4611,8 +4622,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><img src="ubuntu2.png" alt="ubuntu2" width="120" height=
             "51"></td>
 
-            <td>Inspired by a couple of GTK+ 3 themes bundled with version
-            15.04 of the Ubuntu Linux distribution.</td>
+            <td>Inspired by a couple of GTK+ 3 themes bundled with versions
+            15.04 and later of the Ubuntu Linux distribution.</td>
           </tr>
 
           <tr>
