@@ -1,3 +1,14 @@
+2016-08-25  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistImages.tcl: Added the tree style "mint2"; improved a
+	* scripts/tablelistWidget.tcl: few tree styles.
+
+	* scripts/tclIndex: Newly generated.
+
+	* CHANGES.txt:              Updated to reflect the changes.
+	* doc/tablelistWidget.html:
+	* doc/*.png:
+
 2016-08-09  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl:   Added the "-autofinishediting" option;
