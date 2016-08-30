@@ -857,6 +857,7 @@ proc tablelist::tablelist args {
     set w $data(body)
     text $w -borderwidth 0 -exportselection 0 -highlightthickness 0 \
 	    -insertwidth 0 -padx 0 -pady 0 -state normal -takefocus 0 -wrap none
+    catch {$w configure -undo 0};  # because of a text widget issue in Tk 8.6.6
     bind $w <Configure> {
 	set tablelist::W [winfo parent %W]
 	set tablelist::ns${tablelist::W}::data(gotConfigureEvent) 1
