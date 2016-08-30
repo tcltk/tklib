@@ -1,3 +1,10 @@
+2016-08-30  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistWidget.tcl: Worked around a text widget issue in Tk
+	  8.6.6.
+
+	* CHANGES.txt: Updated to reflect the above change.
+
 2016-08-25  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistImages.tcl: Added the tree style "mint2"; improved a
