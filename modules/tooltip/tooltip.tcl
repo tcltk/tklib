@@ -6,7 +6,7 @@
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
-# 
+#
 # RCS: @(#) $Id: tooltip.tcl,v 1.16 2008/12/01 23:37:16 hobbs Exp $
 #
 # Initiated: 28 October 1996
@@ -176,7 +176,12 @@ proc ::tooltip::register {w args} {
     set key [lindex $args 0]
     while {[string match -* $key]} {
 	switch -- $key {
-	    -index	{
+	    -- {
+		    set args [lreplace $args 0 0]
+		    set key [lindex $args 0]
+		    break
+		}
+	    -index {
 		if {[catch {$w entrycget 1 -label}]} {
 		    return -code error "widget \"$w\" does not seem to be a\
 			    menu, which is required for the -index switch"
@@ -205,7 +210,7 @@ proc ::tooltip::register {w args} {
                 }
                 set args [lreplace $args 0 1]
             }
-	    default	{
+	    default {
 		return -code error "unknown option \"$key\":\
 			should be -index, -items or -tag"
 	    }
@@ -214,7 +219,7 @@ proc ::tooltip::register {w args} {
     }
     if {[llength $args] != 1} {
 	return -code error "wrong # args: should be \"tooltip widget\
-		?-index index? ?-items item? ?-tag tag? message\""
+		?-index index? ?-items item? ?-tag tag? ?--? message\""
     }
     if {$key eq ""} {
 	clear $w
@@ -483,4 +488,4 @@ proc ::tooltip::enableTag {w tag} {
     $w tag bind $tag <Any-Button> +[namespace code hide]
 }
 
-package provide tooltip 1.4.5
+package provide tooltip 1.4.6

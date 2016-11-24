@@ -1,14 +1,18 @@
+2016-11-24  Arjen Markus  <arjenmarkus@users.sourceforge.net>
+	* tooltip.man, pkgIndex.tcl: Increment to 1.4.6
+	* tooltip.tcl, tooltip.man: Apply patch by stwo to allow tooltips starting with a minus sign (ticket 3106443)
+
 2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
 	* Released and tagged Tklib 0.6 ========================
-	* 
+	*
 
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
 	* Released and tagged Tklib 0.5 ========================
-	* 
+	*
 
 2008-12-01  Jeff Hobbs  <jeffh@ActiveState.com>
 
@@ -90,13 +94,13 @@
 
 	*
 	* Released and tagged Tklib 0.4.1 ========================
-	* 
+	*
 
 2005-11-02  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
 	*
 	* Released and tagged Tklib 0.4 ========================
-	* 
+	*
 
 2005-08-12  Andreas Kupries <andreask@activestate.com>
 
