@@ -212,7 +212,7 @@ proc ::tooltip::register {w args} {
             }
 	    default {
 		return -code error "unknown option \"$key\":\
-			should be -index, -items or -tag"
+			should be -index, -items, -tag or --"
 	    }
 	}
 	set key [lindex $args 0]
