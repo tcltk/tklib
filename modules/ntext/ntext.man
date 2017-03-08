@@ -1,21 +1,10 @@
 [comment {-*- tcl -*- ntext manpage}]
-[manpage_begin ntext n 0.81]
-[see_also bindtags]
-[see_also ntextBindings]
-[see_also ntextIndent]
-[see_also ntextWordBreak]
-[see_also re_syntax]
-[see_also regexp]
-[see_also text]
-[keywords bindtags]
-[keywords re_syntax]
-[keywords regexp]
-[keywords text]
+[manpage_begin ntext n 0.9.0]
 [moddesc   {Alternative Bindings for the Text Widget}]
 [titledesc {Alternative Bindings for the Text Widget}]
 [require Tcl 8.5]
 [require Tk 8.5]
-[require ntext [opt 0.81]]
+[require ntext [opt 0.9.0]]
 [description]
 
 The purpose of the [package ntext] package is to make the text widget behave more like other text-editing applications. It makes the text widget more useful for implementing a text editor, and makes it behave in a way that will be more familiar to most users.
@@ -47,11 +36,30 @@ The remainder of this page describes the basic use and configuration of all thre
 
 See Section [sectref EXAMPLE] for how to apply the [emph Ntext] binding tag in place of the [emph Text] binding tag.
 
+[section COMMANDS]
+
+[list_begin definitions]
+
+[call [cmd ::ntext::new_textCopy] [arg pathName]]
+
+Replacement for ::tk_textCopy.
+
+[call [cmd ::ntext::new_textCut] [arg pathName]]
+
+Replacement for ::tk_textCut that also maintains [emph Ntext] indentation (see [term ntextIndent]).
+
+[call [cmd ::ntext::new_textPaste] [arg pathName]]
+
+Replacement for ::tk_textPaste that also maintains [emph Ntext] indentation (see [term ntextIndent]).
+
+[list_end]
+
 [section {CONFIGURATION OPTIONS}]
 
 [emph Ntext] provides alternatives to a number of behaviours of the classic [emph Text] binding tag.  Where there is an option, the [emph Ntext] behaviour (except for display-line indentation) is switched on by default.
 
 [para]
+
 
 The behaviour of [emph Ntext] may be configured application-wide by setting the values of a number of namespace variables:
 [para]
@@ -79,6 +87,14 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
    [const 1] - selects classic [emph Text] behaviour
 [list_end]
 [para]
+[var ::ntext::classicSelection]
+[list_begin itemized]
+[item]
+   [const 0] - (default value on Aqua) selects Mac-like behaviour, i.e. when a navigation keystroke cancels a selection, the insert mark first moves to the end of the selection determined by the navigation direction of the keystroke, and then the keystroke is applied.
+[item]
+   [const 1] - (default value except on Aqua) selects PC-like behaviour (the same as classic [emph Text]), i.e. when a navigation keystroke cancels a selection, the insert mark is not moved before the keystroke is applied.
+[list_end]
+[para]
 [var ::ntext::classicWordBreak]
 [list_begin itemized]
 [item]
@@ -104,8 +120,20 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
 [item]
    [const 1] - text typed at the keyboard overwrites text already in the widget
 [item]
-   The value is toggled by the [emph Insert] key.
+   The value is toggled by the [emph Insert] key (except on Aqua where there is no such key).
 [list_end]
+[para]
+[var ::ntext::classicParagraphs]
+[list_begin itemized]
+[item]
+   [const 0] - (default value) on Aqua, certain keyboard bindings are made to behave in the same way as the Mac application TextEdit.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>.
+[item]
+   [const 1] - on Aqua, certain keyboard bindings are made to behave in the same way as classic [emph Text], ignoring the conventions of Mac OS Aqua.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>.
+[list_end]
+
+[section BUGS]
+
+This version of [package ntext] is intended to be compatible with all releases of [package Tk] 8.5 and 8.6, and with the branches [emph core-8-5-branch] and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug.
 
 [section EXAMPLE]
 
@@ -117,6 +145,7 @@ bindtags .t {.t Ntext . all}
 }]
 
 See bindtags for more information.
-[vset CATEGORY ntext]
-[include ../../support/devel/doc/feedback.inc]
+[see_also ntextWordBreak ntextIndent ntextBindings]
+[see_also text bindtags regexp re_syntax]
+[keywords text bindtags regexp re_syntax]
 [manpage_end]
