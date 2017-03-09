@@ -14,17 +14,13 @@
 #
 
 ##### START OF CODE THAT IS MODIFIED from the following versions of text.tcl:
-
-#>2015-10-09 artifact e9c33ef1   check-in 553899e9   to branch core-8-5-branch
-# 2012-06-10 artifact 8d483c2687 check-in 71242c4310 to branch core-8-5-branch
-#            artifact tagged core-8-5-12, core-8-5-13, core-8-5-14
 #
-#>2016-09-27 artifact 31ce0d23   check-in 01b81b19   to trunk (8.6)
-#>2016-09-27 artifact 530d3c1b   check-in 6b21cc27   to trunk (8.6)
-# 2013-01-13 artifact a6c9901d31 check-in 57245f1276 to trunk (8.6)
-# 2012-08-11 artifact 09848650aa check-in e5769e97a0 to trunk (8.6)
-#            artifact tagged core-8-6-0
-# 2012-08-10 artifact 64f6248909 check-in 43e436d51d to trunk (8.6)
+# branch core-8-6-branch
+#   2015-10-09 artifact [e9c33ef1] part of check-in [553899e9]
+# branch core-8-5-branch
+#   2015-10-04 artifact [6af61544] part of check-in [55133bde]
+# trunk
+#   2016-09-27 artifact [530d3c1b] part of check-in [6b21cc27]
 
 #-------------------------------------------------------------------------
 # Elements of ::tk::Priv that are used in this file:
@@ -383,11 +379,15 @@ bind Ntext <ButtonRelease-1> {
 }
 bind Ntext <Control-1> {
     %W mark set insert @%x,%y
+    # An operation that moves the insert mark without making it
+    # one end of the selection must insert an autoseparator
     if {[%W cget -autoseparators]} {
 	%W edit separator
     }
 }
+# stop an accidental double click triggering <Double-Button-1>
 bind Ntext <Double-Control-1> { # nothing }
+# stop an accidental movement triggering <B1-Motion>
 bind Ntext <Control-B1-Motion> { # nothing }
 
 bind Ntext <<NtextPrevChar>> {
@@ -588,6 +588,8 @@ bind Ntext <<NtextSelectAll>> {
 }
 bind Ntext <<NtextSelectNone>> {
     %W tag remove sel 1.0 end
+    # An operation that clears the selection must insert an autoseparator,
+    # because the selection operation may have moved the insert mark
     if {[%W cget -autoseparators]} {
 	%W edit separator
     }
@@ -602,10 +604,18 @@ bind Ntext <<NtextPaste>> {
     ntext::new_textPaste %W
 }
 bind Ntext <<Clear>> {
+    # Make <<Clear>> an atomic operation on the Undo stack,
+    # i.e. separate it from other delete operations on either side
     if {[%W tag nextrange sel 1.0 end] ne ""} {
+	if {[%W cget -autoseparators]} {
+	    %W edit separator
+	}
 	set ::ntext::OldFirst [%W index sel.first]
 	%W delete sel.first sel.last
 	ntext::AdjustIndentOneLine %W $::ntext::OldFirst
+	if {[%W cget -autoseparators]} {
+	    %W edit separator
+	}
     }
 }
 bind Ntext <<PasteSelection>> {
@@ -681,7 +691,6 @@ bind Ntext <Control-t> {
 	ntext::TextTranspose %W
     }
 }
-
 bind Ntext <<Undo>> {
     # An Undo operation may remove the separator at the top of the Undo stack.
     # Then the item at the top of the stack gets merged with the subsequent
@@ -700,7 +709,6 @@ bind Ntext <<Undo>> {
 	%W edit separator
     }
 }
-
 bind Ntext <<Redo>> {
     if {![catch { %W edit redo }]} {
 	# Cancel the selection so that Redo does not mess it up.
@@ -2050,10 +2058,13 @@ proc ::ntext::new_textCopy w {
 # LocalOldFirst is never off by one: the final newline of the widget cannot
 # be deleted.
 
-# >> text.tcl has this now, but without $w configure -autoseparators
+# >> text.tcl has this now, but without $w configure -autoseparators 0|1 -- is this needed?
+# >> It switches off -autoseparators for the duration - do not accept the system's auto-generated separators.
 
 proc ::ntext::new_textCut w {
     if {![catch {set data [$w get sel.first sel.last]}]} {
+        # make <<Cut>> an atomic operation on the Undo stack,
+        # i.e. separate it from other delete operations on either side
 	set oldSeparator [$w cget -autoseparators]
 	if {$oldSeparator} {
 	    $w configure -autoseparators 0
@@ -3001,4 +3012,4 @@ proc ::ntext::IntToColor {pix range} {
 
 ::ntext::initializeMatchPatterns
 
-package provide ntext 0.9b5
+package provide ntext 1.0b1
