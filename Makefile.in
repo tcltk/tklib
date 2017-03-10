@@ -101,17 +101,17 @@ uninstall-binaries:
 
 
 html-doc:
-	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/sak.tcl` html
+	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/sak.tcl` doc html
 nroff-doc:
-	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/sak.tcl` nroff
+	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/sak.tcl` doc nroff
 tmml-doc:
-	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/sak.tcl` tmml
+	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/sak.tcl` doc tmml
 wiki-doc:
-	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/sak.tcl` wiki
+	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/sak.tcl` doc wiki
 latex-doc:
-	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/sak.tcl` ps
+	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/sak.tcl` doc ps
 list-doc:
-	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/sak.tcl` list
+	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/sak.tcl` doc list
 
 check:
 	$(TCLSH_PROG) `$(CYGPATH) $(srcdir)/sak.tcl` validate
