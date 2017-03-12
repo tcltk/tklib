@@ -981,13 +981,11 @@ proc ::Plotchart::pixelToIndex { w xpix ypix } {
 # Result:
 #    List of two elements, x- and y-coordinates in pixels
 #
+# Note:
+#    Deprecated - use coordsToPixel instead
+#
 proc ::Plotchart::polarToPixel { w rad phi } {
-   variable torad
-
-   set xcrd [expr {$rad*cos($phi*$torad)}]
-   set ycrd [expr {$rad*sin($phi*$torad)}]
-
-   coordsToPixel $w $xcrd $ycrd
+   coordsToPixel $w $rad $phi
 }
 
 # clearcanvas --

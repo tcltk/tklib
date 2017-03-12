@@ -132,6 +132,28 @@ proc ::Plotchart::SavePlot { w filename args } {
     }
 }
 
+# PolarToPixelPriv --
+#    Convert polar coordinates to pixel coordinates
+# Arguments:
+#    w           Name of the canvas
+#    rad         Radius of the point
+#    phi         Angle of the point (degrees)
+# Result:
+#    List of two elements, x- and y-coordinates in pixels
+#
+# Note:
+#    This is the original version, to be used by the creation routines only.
+#    It has been replaced by coordsToPixel for general use.
+#
+proc ::Plotchart::PolarToPixelPriv { w rad phi } {
+   variable torad
+
+   set xcrd [expr {$rad*cos($phi*$torad)}]
+   set ycrd [expr {$rad*sin($phi*$torad)}]
+
+   coordsToPixel $w $xcrd $ycrd
+}
+
 # DetermineFromAxesBox --
 #    Determine the layout from the information in an axes box
 # Arguments:
