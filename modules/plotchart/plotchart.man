@@ -3089,13 +3089,9 @@ Maximum radius.
 
 [call [cmd ::Plotchart::polarToPixel] [arg w] [arg rad] [arg phi]]
 
-Wrapper for a call to [cmd ::Plotchart::coordsToPixel], which assumes
-the world coordinates and viewport are set appropriately. Converts
-polar coordinates to pixel coordinates.
-
-[emph Note:] To be useful it should be accompanied by a matching
-[cmd ::Plotchart::worldCoordinates] procedure. This is automatically
-taken care of in the creation routine for polar plots.
+Wrapper for a call to [cmd ::Plotchart::coordsToPixel].
+[emph Note:] This procedure has been deprecated - you should
+use the procedure [cmd ::Plotchart::coordsToPixel] instead.
 
 [list_begin arguments]
 [arg_def widget w in]

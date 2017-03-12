@@ -1087,19 +1087,20 @@ proc ::Plotchart::DrawPolarAxes { w rad_max rad_step } {
     #
     set angle 0.0
 
-    foreach {xcentre ycentre} [polarToPixel $w 0.0 0.0] {break}
+    foreach {xcentre ycentre} [PolarToPixelPriv $w 0.0 0.0] {break}
 
     while { $angle < 360.0 } {
-        foreach {xcrd ycrd} [polarToPixel $w $rad_max $angle] {break}
-        foreach {xtxt ytxt} [polarToPixel $w [expr {1.05*$rad_max}] $angle] {break}
+        foreach {xcrd ycrd} [PolarToPixelPriv $w $rad_max $angle] {break}
+        foreach {xtxt ytxt} [PolarToPixelPriv $w [expr {1.05*$rad_max}] $angle] {break}
         $w create line $xcentre $ycentre $xcrd $ycrd -fill $linecolor -width $thickness
         if { $xcrd > $xcentre } {
             set dir w
         } else {
             set dir e
         }
-        $w create text $xtxt $ytxt -text $angle -anchor $dir -fill $textcolor -font $textfont -tags [list polar $w]
-
+        if { $config($w,axis,shownumbers) } {
+            $w create text $xtxt $ytxt -text $angle -anchor $dir -fill $textcolor -font $textfont -tags [list polar $w]
+        }
         set angle [expr {$angle+30}]
     }
 
@@ -1109,16 +1110,18 @@ proc ::Plotchart::DrawPolarAxes { w rad_max rad_step } {
     set rad $rad_step
 
     while { $rad < $rad_max+0.5*$rad_step } {
-        foreach {xright ytxt}    [polarToPixel $w $rad    0.0] {break}
-        foreach {xleft  ycrd}    [polarToPixel $w $rad  180.0] {break}
-        foreach {xcrd   ytop}    [polarToPixel $w $rad   90.0] {break}
-        foreach {xcrd   ybottom} [polarToPixel $w $rad  270.0] {break}
+        foreach {xright ytxt}    [PolarToPixelPriv $w $rad    0.0] {break}
+        foreach {xleft  ycrd}    [PolarToPixelPriv $w $rad  180.0] {break}
+        foreach {xcrd   ytop}    [PolarToPixelPriv $w $rad   90.0] {break}
+        foreach {xcrd   ybottom} [PolarToPixelPriv $w $rad  270.0] {break}
 
         set oval [$w create oval $xleft $ytop $xright $ybottom -outline $linecolor -width $thickness -fill {} \
                      -tags [list polar $w]]
         $w lower $oval
 
-        $w create text $xright [expr {$ytxt+3}] -text $rad -anchor n -fill $textcolor -font $textfont -tags [list polar $w]
+        if { $config($w,axis,shownumbers) } {
+            $w create text $xright [expr {$ytxt+3}] -text $rad -anchor n -fill $textcolor -font $textfont -tags [list polar $w]
+        }
 
         set rad [expr {$rad+$rad_step}]
     }
@@ -2058,19 +2061,19 @@ proc ::Plotchart::RescalePlot { w xscale yscale } {
 proc ::Plotchart::DrawRoseAxes { w rad_max rad_step } {
 
     #
-    # Draw the spikes
+    # Draw the spokes
     #
     set angle 0.0
 
-    foreach {xcentre ycentre} [polarToPixel $w 0.0 0.0] {break}
+    foreach {xcentre ycentre} [PolarToPixelPriv $w 0.0 0.0] {break}
 
     foreach {angle text dir} {
          90  North s
         180  West  e
         270  South n
           0  East  w } {
-        foreach {xcrd ycrd} [polarToPixel $w $rad_max $angle] {break}
-        foreach {xtxt ytxt} [polarToPixel $w [expr {1.05*$rad_max}] $angle] {break}
+        foreach {xcrd ycrd} [PolarToPixelPriv $w $rad_max $angle] {break}
+        foreach {xtxt ytxt} [PolarToPixelPriv $w [expr {1.05*$rad_max}] $angle] {break}
         $w create line $xcentre $ycentre $xcrd $ycrd
         $w create text $xtxt    $ytxt    -text $text -anchor $dir
     }
@@ -2081,11 +2084,11 @@ proc ::Plotchart::DrawRoseAxes { w rad_max rad_step } {
     set rad $rad_step
 
     while { $rad < $rad_max+0.5*$rad_step } {
-        foreach {xtxt   ytxt}    [polarToPixel $w $rad   45.0] {break}
-        foreach {xright ycrd}    [polarToPixel $w $rad    0.0] {break}
-        foreach {xleft  ycrd}    [polarToPixel $w $rad  180.0] {break}
-        foreach {xcrd   ytop}    [polarToPixel $w $rad   90.0] {break}
-        foreach {xcrd   ybottom} [polarToPixel $w $rad  270.0] {break}
+        foreach {xtxt   ytxt}    [PolarToPixelPriv $w $rad   45.0] {break}
+        foreach {xright ycrd}    [PolarToPixelPriv $w $rad    0.0] {break}
+        foreach {xleft  ycrd}    [PolarToPixelPriv $w $rad  180.0] {break}
+        foreach {xcrd   ytop}    [PolarToPixelPriv $w $rad   90.0] {break}
+        foreach {xcrd   ybottom} [PolarToPixelPriv $w $rad  270.0] {break}
 
         $w create oval $xleft $ytop $xright $ybottom
 
