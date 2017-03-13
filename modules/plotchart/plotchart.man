@@ -5,7 +5,7 @@
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.5]]
 [require Tk [opt 8.5]]
-[require Plotchart [opt 2.3.5]]
+[require Plotchart [opt 2.4.0]]
 
 [description]
 [para]
@@ -1344,7 +1344,7 @@ Y-coordinate of the new point.
 [list_end]
 [para]
 
-For [emph {xy plots}] there is the additional command [emph plotlist],
+For [emph "xy, x-log y, log-x-y, log-x-log-y plots"] there is the additional command [emph plotlist],
 which is useful for plotting a large amount of data:
 
 [list_begin definitions]
@@ -1355,13 +1355,36 @@ for every Nth data point.
 
 [list_begin arguments]
 [arg_def string series in]
-Name of the data series the new point belongs to.
+Name of the data series the new line belongs to.
 
 [arg_def float xlist in]
 List of X-coordinates for the data series.
 
 [arg_def float ycrd in]
 List of Y-coordinates for the data series.
+
+[arg_def int every in]
+Optional argument stating how often a symbol (if any) should be drawn.
+If left out, use a simple heuristic: N = sqrt(number of data points).
+[list_end]
+[list_end]
+
+Another command for [emph "xy, x-log y, log-x-y, log-x-log-y plots"] is [emph region] to draw filled polygons:
+
+[list_begin definitions]
+[call [cmd \$xyplot] region [arg series] [arg xlist] [arg ylist]]
+
+Draw a filled polygon (region).
+
+[list_begin arguments]
+[arg_def string series in]
+Name of the data series the new region belongs to.
+
+[arg_def float xlist in]
+List of X-coordinates for the region.
+
+[arg_def float ycrd in]
+List of Y-coordinates for the region.
 
 [arg_def int every in]
 Optional argument stating how often a symbol (if any) should be drawn.

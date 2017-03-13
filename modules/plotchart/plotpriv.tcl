@@ -627,7 +627,6 @@ proc ::Plotchart::MarginsTernary { w argv {notext 2.0} {text_width 8}} {
         set config($w,margin,bottom) [expr {$config($w,margin,bottom) + $dy}]
     }
 
-    puts "New margins: $pxmin $pymin $pxmax $pymax"
     return [list $pxmin $pymin $pxmax $pymax]
 }
 
@@ -1231,6 +1230,60 @@ proc ::Plotchart::DrawLogXData { w series xcrd ycrd } {
 proc ::Plotchart::DrawLogXLogYData { w series xcrd ycrd } {
 
     DrawData $w $series [expr {log10($xcrd)}] [expr {log10($ycrd)}]
+}
+
+# DrawRegion --
+#    Draw a filled region an XY-plot (and variants)
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    xcrds       List of x coordinates
+#    ycrds       List of y coordinates
+# Result:
+#    None
+# Side effects:
+#    Filled polygon drawn in canvas
+#
+proc ::Plotchart::DrawRegion { w series xcrds ycrds } {
+   variable data_series
+   variable scaling
+
+   #
+   # Convert the coordinates
+   #
+   set pxy {}
+   foreach xcrd $xcrds ycrd $ycrds {
+       foreach {px py} [coordsToPixel $w $xcrd $ycrd] {break}
+       lappend pxy $px $py
+   }
+
+   #
+   # Get the configuration options
+   #
+   set filled "no"
+   if { [info exists data_series($w,$series,-filled)] } {
+      set filled $data_series($w,$series,-filled)
+   }
+
+   set colour "black"
+   if { [info exists data_series($w,$series,-colour)] } {
+      set colour $data_series($w,$series,-colour)
+   }
+
+   set fillcolour white
+   if { [info exists data_series($w,$series,-fillcolour)] } {
+      set fillcolour $data_series($w,$series,-fillcolour)
+   }
+
+   set width 1
+   if { [info exists data_series($w,$series,-width)] } {
+      set width $data_series($w,$series,-width)
+   }
+
+   $w create polygon $pxy \
+       -fill $fillcolour -outline $colour -width $width -tag [list data data_$series]
+
+   $w lower data
 }
 
 # DrawInterval --
