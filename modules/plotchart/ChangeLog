@@ -1,3 +1,9 @@
+2017-03-13  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.man: Describe the "region" command
+	* plotchart.tcl: Add the "region" command and extend the "plotlist" command to other plot types
+	* plotpriv.tcl:  Add the DrawRegion procedure that implements the "region" command
+	* pkgIndex.tcl:  Bumped version to 2.4.0 (more extensions to follow)
+
 2017-03-12  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.man: Deprecate polarToPixel
 	* plotchart.tcl: Deprecate polarToPixel
