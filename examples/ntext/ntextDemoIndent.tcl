@@ -24,8 +24,9 @@ set message {    This demo shows ntext's indentation facilities.  These are swit
 
   To try the demo - place the cursor at the start of a paragraph and change the amount of initial space. The paragraph is a logical line of text; its first display line may have leading whitespace, and ntext indents any subsequent (wrapped) display lines to match the first.
 	This paragraph is indented by a tab. Again, the display lines are all indented to match the first.
- Try any text-widget operation, and test whether ntext's handling of display line indentation is satisfactory.  Ntext is part of Tklib - please report any bugs at
- http://sourceforge.net/projects/tcllib/
+ Try any text-widget operation, and test whether ntext's handling of display line indentation is satisfactory.  Ntext is part of Tklib - please report any bugs to:
+
+ http://core.tcl.tk/tklib/reportlist
 }
 # End of string for widget text.
 
@@ -60,7 +61,7 @@ pack [text .lhf.classic ] -padx 2
 .lhf.classic configure -width 42 -height 26 -wrap word -undo 1 -font {{Courier} -15} -bg #FFFFCC
 .lhf.classic insert end "  I use the (default) Text bindings.\n\n$message"
 .lhf.classic edit separator
-pack [label  .lhf.m -bg $col -text "(The controls do not apply\nto the left-hand text widget)"]
+pack [label  .lhf.m -bg $col -text "(The radiobuttons and tab settings do not\napply to the left-hand text widget)"]
 
 pack [frame .rhf.h -bg $col] -fill x
 ### (5) When indentation is switched on or off, call ::ntext::wrapIndent to calculate or clear indentation for the entire widget:

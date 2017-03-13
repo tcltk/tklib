@@ -1,10 +1,10 @@
 [comment {-*- tcl -*- ntext manpage}]
-[manpage_begin ntext n 0.9.0]
+[manpage_begin ntext n 1.0b1]
 [moddesc   {Alternative Bindings for the Text Widget}]
 [titledesc {Alternative Bindings for the Text Widget}]
 [require Tcl 8.5]
 [require Tk 8.5]
-[require ntext [opt 0.9.0]]
+[require ntext [opt 1.0b1]]
 [description]
 
 The purpose of the [package ntext] package is to make the text widget behave more like other text-editing applications. It makes the text widget more useful for implementing a text editor, and makes it behave in a way that will be more familiar to most users.
@@ -69,6 +69,8 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
    [const 0] - (default value) selects [emph Ntext] behaviour, i.e. the anchor point is fixed
 [item]
    [const 1] - selects classic [emph Text] behaviour, i.e. the anchor point is variable
+[item]
+   For more information see [term ntextBindings]
 [list_end]
 [para]
 [var ::ntext::classicExtras]
@@ -77,6 +79,8 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
    [const 0] - (default value) selects [emph Ntext] behaviour, i.e. several traditional [emph Text] bindings are de-activated
 [item]
    [const 1] - selects classic [emph Text] behaviour, i.e. all [emph Text] bindings are activated
+[item]
+   For more information see [term ntextBindings]
 [list_end]
 [para]
 [var ::ntext::classicMouseSelect]
@@ -85,6 +89,8 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
    [const 0] - (default value) selects [emph Ntext] behaviour, i.e. the anchor point for mouse selection operations is moved by keyboard navigation
 [item]
    [const 1] - selects classic [emph Text] behaviour
+[item]
+   For more information see [term ntextBindings]
 [list_end]
 [para]
 [var ::ntext::classicSelection]
@@ -93,6 +99,8 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
    [const 0] - (default value on Aqua) selects Mac-like behaviour, i.e. when a navigation keystroke cancels a selection, the insert mark first moves to the end of the selection determined by the navigation direction of the keystroke, and then the keystroke is applied.
 [item]
    [const 1] - (default value except on Aqua) selects PC-like behaviour (the same as classic [emph Text]), i.e. when a navigation keystroke cancels a selection, the insert mark is not moved before the keystroke is applied.
+[item]
+   For more information see [term ntextBindings]
 [list_end]
 [para]
 [var ::ntext::classicWordBreak]
@@ -111,6 +119,8 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
    [const 0] - selects [emph Ntext] behaviour, i.e. display lines of text widgets in [arg -wrap] [arg word] mode are indented to match the initial whitespace of the first display line of a logical line.  If the widget already holds text when this value is set, a function call may be necessary.  See [term ntextIndent] for detailed instructions on the use of [emph Ntext] 's indentation.
 [item]
    [const 1] - (default value) selects classic [emph Text] behaviour, i.e. no indentation
+[item]
+   For more information see [term ntextIndent]
 [list_end]
 [para]
 [var ::ntext::overwrite]
@@ -121,6 +131,8 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
    [const 1] - text typed at the keyboard overwrites text already in the widget
 [item]
    The value is toggled by the [emph Insert] key (except on Aqua where there is no such key).
+[item]
+   For more information see [term ntextBindings]
 [list_end]
 [para]
 [var ::ntext::classicParagraphs]
@@ -129,11 +141,13 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
    [const 0] - (default value) on Aqua, certain keyboard bindings are made to behave in the same way as the Mac application TextEdit.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>.
 [item]
    [const 1] - on Aqua, certain keyboard bindings are made to behave in the same way as classic [emph Text], ignoring the conventions of Mac OS Aqua.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>.
+[item]
+   For more information see [term ntextBindings]
 [list_end]
 
 [section BUGS]
 
-This version of [package ntext] is intended to be compatible with all releases of [package Tk] 8.5 and 8.6, and with the branches [emph core-8-5-branch] and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug.
+This version of [package ntext] is intended to be compatible with all releases of [package Tk] 8.5 and 8.6, and with the branches [emph core-8-5-branch], [emph core-8-6-branch], and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug. Please report such in the category [emph ntext] of the [uri http://core.tcl.tk/tklib/reportlist {Tklib Trackers}].
 
 [section EXAMPLE]
 

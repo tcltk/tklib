@@ -1,1 +1,1 @@
-package ifneeded ntext 0.9b5 [list source [file join $dir ntext.tcl]]
+package ifneeded ntext 1.0b1 [list source [file join $dir ntext.tcl]]

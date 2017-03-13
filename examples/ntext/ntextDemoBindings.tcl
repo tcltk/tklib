@@ -77,7 +77,7 @@ pack [text .lhf.classic ] -padx 2
 .lhf.classic configure -width 42 -height 29 -wrap word -undo 1 -font {{Courier} -15} -bg #FFFFCC
 .lhf.classic insert end "  I use the (default) Text bindings.\n\n$message"
 .lhf.classic edit separator
-pack [label  .lhf.m -bg $col -text "(The controls do not apply\nto the left-hand text widget)"]
+pack [label  .lhf.m -bg $col -text "(The radiobutton controls do not\napply to the left-hand text widget)"]
 
 pack [frame .rhf.h -bg $col] -fill x
 pack [radiobutton .rhf.h.on  -bg $col -text "On " -variable ::ntext::classicMouseSelect -value 1] -side right

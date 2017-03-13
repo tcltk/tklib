@@ -1,10 +1,10 @@
 [comment {-*- tcl -*- ntextIndent manpage}]
-[manpage_begin ntextIndent n 0.9.0]
+[manpage_begin ntextIndent n 1.0b1]
 [moddesc   {ntext Indentation for the Text Widget}]
 [titledesc {ntext Indentation for the Text Widget}]
 [require Tcl 8.5]
 [require Tk 8.5]
-[require ntext [opt 0.9.0]]
+[require ntext [opt 1.0b1]]
 [description]
 
 The [package ntext] package provides a binding tag named [emph Ntext] for use by text widgets in place of the default [emph Text] binding tag.
@@ -116,7 +116,7 @@ In other cases, i.e. if the widget is in [arg -word] [arg char] or [arg -word] [
 
 [section BUGS]
 
-This version of [package ntext] is intended to be compatible with all releases of [package Tk] 8.5 and 8.6, and with the branches [emph core-8-5-branch] and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug.
+This version of [package ntext] is intended to be compatible with all releases of [package Tk] 8.5 and 8.6, and with the branches [emph core-8-5-branch], [emph core-8-6-branch], and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug. Please report such in the category [emph ntext] of the [uri http://core.tcl.tk/tklib/reportlist {Tklib Trackers}].
 
 [section EXAMPLES]
 

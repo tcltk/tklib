@@ -7,7 +7,7 @@
 # Copyright (c) 1992-1994 The Regents of the University of California.
 # Copyright (c) 1994-1997 Sun Microsystems, Inc.
 # Copyright (c) 1998 by Scriptics Corporation.
-# Copyright (c) 2005-2013 additions by Keith Nash.
+# Copyright (c) 2005-2017 additions by Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -21,6 +21,8 @@
 #   2015-10-04 artifact [6af61544] part of check-in [55133bde]
 # trunk
 #   2016-09-27 artifact [530d3c1b] part of check-in [6b21cc27]
+#
+# Not yet adapted to revised text widget by Gregor Cramer, or to Androwish.
 
 #-------------------------------------------------------------------------
 # Elements of ::tk::Priv that are used in this file:
@@ -147,9 +149,12 @@ switch -exact -- [tk windowingsystem] {
 	event add <<NtextPaste>> <Command-Key-v> <Key-F4> <Command-Lock-Key-V>
 	# Consider <<NtextCut>>, different combinations of the Shift and Lock
 	# keyboard modifiers, and valid bindings.
-	# On Cocoa,  <Command-Shift-Key-x> will fire,     <Command-Lock-Shift-Key-x> will not.
-	# On Carbon, <Command-Shift-Key-X> will not fire, <Command-Lock-Shift-Key-X> will.
-	# This doesn't matter much, because the user will not be using Shift here.
+	# On Cocoa,  <Command-Shift-Key-x> will fire,
+	#            <Command-Lock-Shift-Key-x> will not.
+	# On Carbon, <Command-Shift-Key-X> will not fire,
+	#            <Command-Lock-Shift-Key-X> will.
+	# This doesn't matter much, because the user will not
+	# be using Shift here.
 	#
 	# <Shift-Key-Delete>, <Control-Key-Insert>, <Shift-Key-Insert> are not
 	# standard bindings for Cut/Copy/Paste on the Mac - even with "Help" in
@@ -223,9 +228,11 @@ switch -exact -- [tk windowingsystem] {
 # 8.5 does this only for win32, and it is unaffected by tk_strictMotif --
 #      cf. 8.5.11, core-8.5-branch at 2013-01-14
 # 8.6 adds and removes these events for X11 using a trace on tk_strictMotif --
-# trace exists only for X11; 8.6 adds events for win32 irrespective of tk_strictMotif
+# trace exists only for X11; 8.6 adds events for win32 irrespective of
+# the value of tk_strictMotif
 #
-# We want the extra bindings for X11 on 8.5, so it is most sensible to create NtextCut etc.  Also add them for Aqua.
+# We want the extra bindings for X11 on 8.5, so it is most sensible to create
+# NtextCut etc.  Also add them for Aqua.
 
 
 # ------------------------------------------------------------------------------
@@ -294,7 +301,9 @@ bind Ntext <Double-1> {
     set ::ntext::Bcount 2
     set tk::Priv(selectMode) word
     ntext::TextSelectTo %W %x %y
-    catch {%W mark set insert sel.first}
+    catch {%W mark set insert sel.last}
+    catch {%W mark set [ntext::TextAnchor %W] sel.first}
+    catch {%W mark gravity [ntext::TextAnchor %W] right}
 }
 # ignore an out-of-order triple click.  This has no adverse consequences.
 bind Ntext <Triple-1> {
@@ -304,7 +313,9 @@ bind Ntext <Triple-1> {
     set ::ntext::Bcount 3
     set tk::Priv(selectMode) line
     ntext::TextSelectTo %W %x %y
-    catch {%W mark set insert sel.first}
+    catch {%W mark set insert sel.last}
+    catch {%W mark set [ntext::TextAnchor %W] sel.first}
+    catch {%W mark gravity [ntext::TextAnchor %W] right}
 }
 # don't care if a quadruple click is out-of-order (i.e. follows a quadruple
 # click, not a triple click).
@@ -314,8 +325,8 @@ bind Ntext <Quadruple-1> {
 bind Ntext <Shift-1> {
     set ::ntext::Bcount 1
     if {(!$::ntext::classicMouseSelect) && ([%W tag ranges sel] eq "")} {
-	# Move the selection anchor mark to the old insert mark
-	# Should the mark's gravity be set?
+	# Move the selection anchor mark to the old insert mark.
+	# The anchor mark's gravity will be set by TextSelectTo.
 	%W mark set [ntext::TextAnchor %W] insert
     }
     if {$::ntext::classicAnchor} {
@@ -336,8 +347,8 @@ bind Ntext <Double-Shift-1>	{
     if {$::ntext::Bcount != 1} {
 	set ::ntext::Bcount 1
 	if {(!$::ntext::classicMouseSelect) && ([%W tag ranges sel] eq "")} {
-	    # Move the selection anchor mark to the old insert mark
-	    # Should the mark's gravity be set?
+	    # Move the selection anchor mark to the old insert mark.
+	    # The anchor mark's gravity will be set by TextSelectTo.
 	    %W mark set [ntext::TextAnchor %W] insert
 	}
 	if {$::ntext::classicAnchor} {
@@ -530,9 +541,19 @@ bind Ntext <Return> {
 }
 bind Ntext <Delete> {
     if {[ntext::TextCursorInSelection %W]} {
+	# When deleting the selection, make this an atomic operation on the Undo
+	# stack, i.e. separate it from other delete operations on either side.
+	if {[%W cget -autoseparators]} {
+	    %W edit separator
+	} else {
+	}
 	set ::ntext::OldFirst [%W index sel.first]
 	%W delete sel.first sel.last
 	ntext::AdjustIndentOneLine %W $::ntext::OldFirst
+	if {[%W cget -autoseparators]} {
+	    %W edit separator
+	} else {
+	}
     } elseif {[%W compare end != insert+1c]} {
 	%W delete insert
 	ntext::AdjustIndentOneLine %W insert
@@ -568,10 +589,12 @@ catch {bind Ntext <Terminate_Server> {
 bind Ntext <Control-space> {
     if {$::ntext::classicExtras} {
 	%W mark set [ntext::TextAnchor %W] insert
+	%W mark gravity [ntext::TextAnchor %W] right
     }
 }
 bind Ntext <Select> {
     %W mark set [ntext::TextAnchor %W] insert
+    %W mark gravity [ntext::TextAnchor %W] right
 }
 bind Ntext <Control-Shift-space> {
     if {$::ntext::classicExtras} {
@@ -1130,6 +1153,10 @@ bind Ntext <Configure> {
     ::ntext::AdjustIndentMultipleLines %W 1.0 end
 }
 
+bind Ntext <Destroy> {
+    unset -nocomplain ::ntext::OldSelectMode(%W)
+}
+
 
 ##### End of bindings. Now define the namespace and its variables.
 
@@ -1198,7 +1225,8 @@ namespace eval ::ntext {
     # modified by the user's script.
     variable Bcount             0
     variable OldFirst          {}
-
+    variable OldSelectMode
+    # array
 
     if {[tk windowingsystem] eq "aqua"} {
 	variable EmacsEvents {
@@ -1330,7 +1358,7 @@ proc ::ntext::TextButton1 {w x y} {
     $w mark set insert [TextClosestGap $w $x $y]
     $w mark set $anchorname insert
     # Set the anchor mark's gravity depending on the click position
-    # relative to the gap
+    # relative to the gap:
     set bbox [$w bbox [$w index $anchorname]]
     if {$x > [lindex $bbox 0]} {
 	$w mark gravity $anchorname right
@@ -1347,28 +1375,6 @@ proc ::ntext::TextButton1 {w x y} {
 	$w edit separator
     }
 }
-
-# ::tk::TextSelectTo --
-# This procedure is invoked to extend the selection, typically when
-# dragging it with the mouse.  Depending on the selection mode (character,
-# word, line) it selects in different-sized units.  This procedure
-# ignores mouse motions initially until the mouse has moved from
-# one character to another or until there have been multiple clicks.
-#
-# Note that the 'anchor' is implemented programmatically using
-# a text widget mark, and uses a name that will be unique for each
-# text widget (even when there are multiple peers).  Currently the
-# anchor is considered private to Tk, hence the name 'tk::anchor$i'.
-# Name changed from tk::anchor$w to [tk::TextAnchor $w] in text.tcl v1.42,
-# v1.41.4.1 tagged Tk 8.5.6.
-#
-# Arguments:
-# w -		The text window in which the button was pressed.
-# x -		Mouse x position.
-# y - 		Mouse y position.
-
-# ::ntext::TextSelectTo is copied from ::tk with modifications:
-# modified to prevent word selection from crossing a line end.
 
 # If text.tcl is sufficiently recent to have ::tk::Priv(textanchoruid), this
 # forces it to be initialized.
@@ -1393,26 +1399,166 @@ proc ::ntext::TextAnchor {w} {
     return $Priv(textanchor,$w)
 }
 
+# Command to move the anchor to the end of the "recorded selection" that
+# is furthest from $idx.
+
+proc ::ntext::RepelAnchor {w idx} {
+    set anchorname [TextAnchor $w]
+
+    set distFirst [$w count -displaychars ntext::left::$anchorname $idx]
+    set distLast  [$w count -displaychars ntext::right::$anchorname  $idx]
+    if {abs($distFirst) < abs($distLast)} {
+	$w mark set     $anchorname [$w index ntext::right::$anchorname]
+	$w mark gravity $anchorname left
+    } else {
+	$w mark set     $anchorname [$w index ntext::left::$anchorname]
+	$w mark gravity $anchorname right
+    }
+    return
+}
+
+# Command abstracted from TextSelectTo because it is now called twice.
+# Extend first/last to word boundaries, but do not allow a "word" to straddle
+# a display line boundary (or, in -wrap char mode, a logical line boundary).
+
+proc ::ntext::WordBounds {w lineType first last} {
+    # Now find word boundaries
+    set first1 [$w index "$first + 1c"]
+    set last1  [$w index "$last - 1c"]
+    if {[$w count -$lineType $first $first1] != 0} {
+	set first1 [$w index $first]
+    } else {
+    }
+    if {[$w count -$lineType $last $last1] != 0} {
+	set last1 [$w index $last]
+    } else {
+    }
+    set first2 [TextPrevPos $w "$first1" \
+	    ntext::new_wordBreakBefore]
+    set last2  [TextNextPos $w "$last1"  \
+	    ntext::new_wordBreakAfter]
+    # Don't allow a "word" to straddle a display line boundary (or,
+    # in -wrap char mode, a logical line boundary).
+    # WARNING This is not the right result if -wrap word has been
+    # forced into -wrap char because a word is too long - but it is hard to
+    # produce sensible results in this case.
+    if {[$w count -$lineType $first2 $first] != 0} {
+	set first [$w index "$first display linestart"]
+    } else {
+	set first $first2
+    }
+    if {[$w count -$lineType $last2 $last] != 0} {
+	set last [$w index "$last display lineend"]
+    } else {
+	set last $last2
+    }
+    return [list $first $last]
+}
+
+
+# ::tk::TextSelectTo --
+# This procedure is invoked to extend the selection, typically when
+# dragging it with the mouse*.  Depending on the selection mode (character,
+# word, line) it selects in different-sized units.  This procedure
+# ignores mouse motions initially until the mouse has moved from
+# one character to another or until there have been multiple clicks.
+#
+# Note that the 'anchor' is implemented programmatically using
+# a text widget mark, and uses a name that will be unique for each
+# text widget (even when there are multiple peers).  Currently the
+# anchor is considered private to Tk, hence the name 'tk::anchor$i'.
+# Name changed from tk::anchor$w to [tk::TextAnchor $w] in text.tcl v1.42,
+# v1.41.4.1 tagged Tk 8.5.6.
+#
+# Changes the selection and the insert mark.  Now also sets the anchor mark.
+# (Previously did not set the anchor mark unless it was undefined.)
+#
+# Arguments:
+# w -		The text window in which the button was pressed.
+# x -		Mouse x position.
+# y - 		Mouse y position.
+# extend -	Unused
+
+# * Such mouse drag operations are <B1-Motion>, <B1-Leave> (TextSelectTo
+#   called via TextAutoScan).
+#   TextSelectTo is also called by the bindings to <Double-1>, <Triple-1>,
+#   <Shift-1>, <Double-Shift-1>, <Triple-Shift-1>.
+
+# ::ntext::TextSelectTo is copied from ::tk with modifications:
+# - modified to prevent word selection from crossing a line end.
+# - modified to improve repeated selection by word and line - to stop
+#   expansion/contraction of the selection at the "wrong" end, in operations
+#   that are intended to alter the selection ar the cursor end.
+# - modified to set the anchor and insert marks for each call
+#
+# - The command sets the insert mark and anchor to the ends of the selection.
+# - The command sets the insert mark to the end of the selection that is closest
+#   to the mouse position $cur.
+# - The gravity of the anchor is set so it is facing the selection.
+# - Internally the command sometimes uses its own anchor marks,
+#   ntext::left::$anchorname and ntext::right::$anchorname.  These delimit a
+#   "recorded selection" which is used when there are multiple operations in
+#   selectMode "word" or "line".
+# - These marks are set and used only by TextSelectTo and by RepelAnchor which
+#   is called only from TextSelectTo.
+# - The command also uses the array ::ntext::OldSelectMode to record state.
+#   The Ntext binding to <Destroy> garbage-collects the array.
+
 proc ::ntext::TextSelectTo {w x y {extend 0}} {
     variable ::tk::Priv
+    variable OldSelectMode
 
     set anchorname [TextAnchor $w]
     set cur [TextClosestGap $w $x $y]
     if {[catch {$w index $anchorname}]} {
 	$w mark set $anchorname $cur
+	# Right gravity is set by default.
+	# Could set gravity as in TextButton1, but the value in this case is
+	# not important.
     }
-    set anchor [$w index $anchorname]
-    if {[$w compare $cur != $anchor] || (abs($Priv(pressX) - $x) >= 3)} {
+
+    if {[$w compare $cur != $anchorname] || (abs($Priv(pressX) - $x) >= 3)} {
 	set Priv(mouseMoved) 1
     }
+
+    set selectionExists [expr {[$w tag ranges sel] ne ""}]
+    if {[catch {$w index ntext::left::$anchorname}]} {
+	$w mark set ntext::left::$anchorname $cur
+	# Right gravity is set by default.
+	# The gravity value is irrelevant.
+    }
+    if {[catch {$w index ntext::right::$anchorname}]} {
+	$w mark set ntext::right::$anchorname $cur
+	# Right gravity is set by default.
+	# The gravity value is irrelevant.
+    }
+    if {(![info exists OldSelectMode($w)]) || (!$selectionExists)} {
+	set OldSelectMode($w) char
+    }
+
+    if {(!$selectionExists) || ($OldSelectMode($w) eq "char")} {
+	$w mark set ntext::left::$anchorname  $anchorname
+	$w mark set ntext::right::$anchorname $anchorname
+    }
+
     switch -- $Priv(selectMode) {
 	char {
+	    if {$selectionExists && $OldSelectMode($w) ne "char"} {
+		# Move the anchor to the end of the "recorded selection"
+		# that is furthest from $cur.  (If oldSelectMode is char, keep
+		# the existing anchor.)
+		RepelAnchor $w $cur
+	    } else {
+		$w mark set ntext::left::$anchorname  $anchorname
+		$w mark set ntext::right::$anchorname $anchorname
+	    }
+
 	    if {[$w compare $cur < $anchorname]} {
 		set first $cur
-		set last $anchorname
+		set last  [$w index $anchorname]
 	    } else {
-		set first $anchorname
-		set last $cur
+		set first [$w index $anchorname]
+		set last  $cur
 	    }
 	}
 	word {
@@ -1423,6 +1569,18 @@ proc ::ntext::TextSelectTo {w x y {extend 0}} {
 	    } else {
 		set lineType lines
 	    }
+	    # The gravity of the "selection anchor" mark.
+	    # - The anchor's gravity is explicitly used only here.
+	    # - In text.tcl the anchor mark's gravity is set by
+	    #   ::tk::TextButton1 depending on the click position relative to
+	    #   the gap.
+	    # - In ntext.tcl, the anchor mark's gravity is also set in other
+	    #   places, to prevent inappropriate growth of the selection when
+	    #   the value is tested here.  When the anchor is at an end of the
+	    #   selection, its gravity always faces the selected text.
+	    # - The gravity of the insert mark, and of the ntext::* "recorded
+	    #   selection" marks, are never explicitly used, and their values
+	    #   are always "right".
 	    if {[$w mark gravity $anchorname] eq "right"} {
 		set first $anchorname
 		set last "$anchorname + 1c"
@@ -1438,78 +1596,131 @@ proc ::ntext::TextSelectTo {w x y {extend 0}} {
 		} else {
 		}
 	    }
-	    if {($last eq $first) && ([$w index $first] eq $cur)} {
+	    if {[$w compare $last == $first] && [$w compare $cur == $first]} {
 		# Use $first and $last as above; further extension will straddle
 		# a display line. Better to have no selection than a bad one.
+		set StoreAnchors 1
 	    } else {
-		# Extend range (if necessary) based on the current point
+		set first0 $first
+		set last0  $last
+		if {$selectionExists && $OldSelectMode($w) eq "char"} {
+		    # Do WordBounds calc but without cur.  This computes the
+		    # ntext::* anchor marks.  This code is necessary if the user
+		    # has used character selection to extend the selection, and
+		    # then come here by using word selection.
+		    # Compute ntext::* anchor marks on the transition from
+		    # "char" to "word" selection.
+		    lassign [WordBounds $w $lineType $first $last] first last
+		    # The new selection will be a single word.
+		    $w mark set ntext::left::$anchorname $first
+		    $w mark set ntext::right::$anchorname $last
+		    set OldSelectMode($w) word
+		    set StoreAnchors 0
+		} else {
+		    set StoreAnchors 1
+		}
+
+		# Now do the conventional/text.tcl WordBounds calc with cur.
+		set first $first0
+		set last  $last0
+		set extend 0
+		# Extend range (if necessary) to include the current point
 		if {[$w compare $cur < $first]} {
 		    set first $cur
+		    if {    ($OldSelectMode($w) eq "line")
+		         && [$w compare $last == "$last linestart"]
+		    } {
+			# This kludge stops the selection growing by one word in
+			# the wrong direction.
+			set last "$last-1c"
+			set extend 1
+		    } else {
+		    }
 		} elseif {[$w compare $cur > $last]} {
 		    set last $cur
 		}
 
-		# Now find word boundaries
-		set first1 [$w index "$first + 1c"]
-		set last1  [$w index "$last - 1c"]
-		if {[$w count -$lineType $first $first1] != 0} {
-		    set first1 [$w index $first]
+		lassign [WordBounds $w $lineType $first $last] first last
+		if {$extend} {
+		    set last [$w index $last+1c]
 		} else {
 		}
-		if {[$w count -$lineType $last $last1] != 0} {
-		    set last1 [$w index $last]
-		} else {
-		}
-		set first2 [TextPrevPos $w "$first1" \
-			ntext::new_wordBreakBefore]
-		set last2  [TextNextPos $w "$last1"  \
-			ntext::new_wordBreakAfter]
-		# Don't allow a "word" to straddle a display line boundary (or,
-		# in -wrap char mode, a logical line boundary). This is not the
-		# right result if -wrap word has been forced into -wrap char
-		# because a word is too long.
-		if {[$w count -$lineType $first2 $first] != 0} {
-		    set first [$w index "$first display linestart"]
-		} else {
-		    set first $first2
-		}
-		if {[$w count -$lineType $last2 $last] != 0} {
-		    set last [$w index "$last display lineend"]
-		} else {
-		    set last $last2
-		}
+	    }
+	    if {    (!$selectionExists)
+	         && ($OldSelectMode($w) eq "char")
+	         && $StoreAnchors
+	    } {
+		# Compute ntext::* anchor marks on the transition from "char"
+		# to "word" selection.
+		# The new selection will be a single word.
+		$w mark set ntext::left::$anchorname $first
+		$w mark set ntext::right::$anchorname $last
+		set OldSelectMode($w) word
 	    }
 	}
 	line {
-	    # Set initial range based only on the anchor
-	    set first "$anchorname linestart"
-	    set last "$anchorname lineend"
+	    if {$selectionExists && $OldSelectMode($w) eq "line"} {
+		# Use saved values.  Take care to avoid "creep" by one line
+		# per call due to "lineend+1c".
+		set first "ntext::left::$anchorname"
+		set last "ntext::right::$anchorname"
+	    } else {
+		# Compute ntext::* anchor marks if OldSelectMode is not "line"
+		# or (unlikely) if there is no existing selection.
+		# The "recorded selection" is based only on the anchor.
+		set first "$anchorname linestart"
+		set last "$anchorname lineend+1c"
+		$w mark set ntext::left::$anchorname $first
+		$w mark set ntext::right::$anchorname $last
+		set OldSelectMode($w) line
+	    }
 
 	    # Extend range (if necessary) based on the current point
 	    if {[$w compare $cur < $first]} {
 		set first "$cur linestart"
 	    } elseif {[$w compare $cur > $last]} {
-		set last "$cur lineend"
+		set last "$cur lineend+1c"
 	    }
 	    set first [$w index $first]
-	    set last [$w index "$last + 1c"]
+	    set last [$w index $last]
 	}
     }
     if {$Priv(mouseMoved) || ($Priv(selectMode) ne "char")} {
+        # Set the insert mark and anchor to the ends of the selection.
+        # The insert mark is the end that is closest to the mouse position $cur.
+	set distFirst [$w count -displaychars $first $cur]
+	set distLast  [$w count -displaychars $last  $cur]
+	if {abs($distFirst) < abs($distLast)} {
+	    set newInsert $first
+	    set newAnchor $last
+	    set newGrav   left
+	} else {
+	    set newInsert $last
+	    set newAnchor $first
+	    set newGrav   right
+	}
+#	$w mark set insert $cur
+	$w mark set insert $newInsert
+	$w mark set $anchorname $newAnchor
+	$w mark gravity $anchorname $newGrav
+
 	# Rearrange operations so that selection is never full-empty-full.
 #	$w tag remove sel 0.0 end
-	$w mark set insert $cur
 	$w tag add sel $first $last
 	$w tag remove sel 1.0 $first
 	$w tag remove sel $last end
 	update idletasks
     }
+    return
 }
 
 # ::tk::TextKeyExtend --
 # This procedure handles extending the selection from the keyboard,
 # where the point to extend to is really the boundary between two
 # characters rather than a particular character.
+#
+# Changes the selection.  Does not set the anchor mark unless
+# it is undefined. Does not set the insert mark.
 #
 # Arguments:
 # w -		The text window.
@@ -1519,26 +1730,35 @@ proc ::ntext::TextSelectTo {w x y {extend 0}} {
 # here because versions of text.tcl before 1.41.4.1 (8.5.6) have an earlier
 # incompatible version.
 
+# Called only by bindings to <Control-Shift-space> and <Shift-Select>.
+# Extends the selection from the anchor to the index (the actual argument is
+# the insert mark).
+
 proc ::ntext::TextKeyExtend {w index} {
 
     set anchorname [TextAnchor $w]
     set cur [$w index $index]
     if {[catch {$w index $anchorname}]} {
 	$w mark set $anchorname $cur
+	# Right gravity is set by default.
     }
-    set anchor [$w index $anchorname]
+
     if {[$w compare $cur < $anchorname]} {
 	set first $cur
-	set last $anchorname
+	set last  $anchorname
+	set grav  left
     } else {
 	set first $anchorname
-	set last $cur
+	set last  $cur
+	set grav  right
     }
     # Rearrange operations so that selection is never full-empty-full.
     # $w tag remove sel 0.0 $first
     $w tag add sel $first $last
     $w tag remove sel 0.0 $first
     $w tag remove sel $last end
+    $w mark gravity $anchorname $grav
+    return
 }
 
 
@@ -1610,6 +1830,7 @@ proc ::ntext::TextAutoScan {w} {
     set Priv(afterId) [after 50 [list ntext::TextAutoScan $w]]
 }
 
+
 # ::tk::TextSetCursor
 # Move the insertion cursor to a given position in a text.  Also
 # clears the selection, if there is one in the text, and makes sure
@@ -1656,22 +1877,28 @@ proc ::ntext::TextKeySelect {w new} {
     if {[$w tag nextrange sel 1.0 end] eq ""} {
 	if {[$w compare $new < insert]} {
 	    $w tag add sel $new insert
+	    $w mark set $anchorname insert
+	    $w mark gravity $anchorname left
 	} else {
 	    $w tag add sel insert $new
+	    $w mark set $anchorname insert
+	    $w mark gravity $anchorname right
 	}
-	$w mark set $anchorname insert
     } else {
 	if {[$w compare $new < $anchorname]} {
 	    set first $new
-	    set last $anchorname
+	    set last  $anchorname
+	    set grav  left
 	} else {
 	    set first $anchorname
-	    set last $new
+	    set last  $new
+	    set grav  right
 	}
 	# Rearrange operations so that selection is never full-empty-full.
 	$w tag add sel $first $last
 	$w tag remove sel 1.0 $first
 	$w tag remove sel $last end
+	$w mark gravity $anchorname $grav
     }
     $w mark set insert $new
     $w see insert
@@ -1697,6 +1924,8 @@ proc ::ntext::TextKeySelect {w new} {
 # here because versions of text.tcl before 1.41.4.1 (8.5.6) have an earlier
 # incompatible version.
 
+# Called by <Shift-1>, <Double-Shift-1> iff ($::ntext::classicAnchor).
+
 proc ::ntext::TextResetAnchor {w index} {
     if {[$w tag ranges sel] eq ""} {
 	# Don't move the anchor if there is no selection now; this
@@ -1711,10 +1940,12 @@ proc ::ntext::TextResetAnchor {w index} {
     set c [$w index sel.last]
     if {[$w compare $a < $b]} {
 	$w mark set $anchorname sel.last
+	$w mark gravity $anchorname left
 	return
     }
     if {[$w compare $a > $c]} {
 	$w mark set $anchorname sel.first
+	$w mark gravity $anchorname right
 	return
     }
     scan $a "%d.%d" lineA chA
@@ -1727,15 +1958,19 @@ proc ::ntext::TextResetAnchor {w index} {
 	}
 	if {[string length [$w get $b $a]] < ($total/2)} {
 	    $w mark set $anchorname sel.last
+	    $w mark gravity $anchorname left
 	} else {
 	    $w mark set $anchorname sel.first
+	    $w mark gravity $anchorname right
 	}
 	return
     }
     if {($lineA-$lineB) < ($lineC-$lineA)} {
 	$w mark set $anchorname sel.last
+	$w mark gravity $anchorname left
     } else {
 	$w mark set $anchorname sel.first
+	$w mark gravity $anchorname right
     }
 }
 
@@ -1782,6 +2017,7 @@ proc ::ntext::TextInsert {w s} {
 	if {$compound} {
 	    $w configure -autoseparators 0
 	    $w edit separator
+	} else {
 	}
 	$w delete sel.first sel.last
     } elseif {$::ntext::overwrite && ($s ne "\n") && ($s ne "\t") &&
@@ -1793,6 +2029,7 @@ proc ::ntext::TextInsert {w s} {
 	    # When undoing an overwrite, the insert mark is left
 	    # in the "wrong" place - after and not before the change.
 	    # Some non-Tk editors do this too.
+	} else {
 	}
 	$w delete insert
     }
@@ -2058,9 +2295,6 @@ proc ::ntext::new_textCopy w {
 # LocalOldFirst is never off by one: the final newline of the widget cannot
 # be deleted.
 
-# >> text.tcl has this now, but without $w configure -autoseparators 0|1 -- is this needed?
-# >> It switches off -autoseparators for the duration - do not accept the system's auto-generated separators.
-
 proc ::ntext::new_textCut w {
     if {![catch {set data [$w get sel.first sel.last]}]} {
         # make <<Cut>> an atomic operation on the Undo stack,
@@ -2110,6 +2344,7 @@ proc ::ntext::new_textPaste w {
 	    set LocalOldFirst [$w index sel.first]
 	    $w mark set ntextIndentMark sel.last
 	    # right gravity mark, survives deletion
+
 	    $w delete sel.first sel.last
 	    $w insert $LocalOldFirst $sel
 	    AdjustIndentMultipleLines $w $LocalOldFirst ntextIndentMark
@@ -2921,7 +3156,6 @@ proc ::ntext::RemoveIndentOneLine {textWidget index} {
 
     foreach tag $tagNames {
 	if {[string range $tag 0 19] eq "ntextAlignLM2Indent="} {
-	    #### puts $tag
 	    $textWidget tag remove $tag $lineStart $nextLineStart
 	}
     }
@@ -2966,7 +3200,6 @@ proc ::ntext::RemoveIndentMultipleLines {textWidget index1 index2} {
 
 	foreach tag $tagNames {
 	    if {[string range $tag 0 19] eq  "ntextAlignLM2Indent="} {
-		#### puts $tag
 		$textWidget tag remove $tag 1.0 end
 	    }
 	}

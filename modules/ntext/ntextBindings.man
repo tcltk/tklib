@@ -1,10 +1,10 @@
 [comment {-*- tcl -*- ntextBindings manpage}]
-[manpage_begin ntextBindings n 0.9.0]
+[manpage_begin ntextBindings n 1.0b1]
 [moddesc   {Alternative Bindings for the Text Widget}]
 [titledesc {Alternative Bindings for the Text Widget}]
 [require Tcl 8.5]
 [require Tk 8.5]
-[require ntext [opt 0.9.0]]
+[require ntext [opt 1.0b1]]
 [description]
 
 The [package ntext] package provides a binding tag named [emph Ntext] for use by text widgets in place of the default [emph Text] binding tag.
@@ -113,7 +113,7 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
 
 [section INTERNALS]
 
-In order to remain independent of the version of [package Tk] (8.5 or 8.6), [package ntext] defines its own virtual events, and uses them in the [emph Ntext] binding tag.
+In order to remain independent of the version of [package Tk] (8.5 or 8.6), [package ntext] defines its own virtual events.  These new virtual events are used only in the [emph Ntext] binding tag, and therefore do not interfere with the real or virtual events used in other code.
 [para]
 
 These events include <<NtextCut>>, <<NtextCopy>>, <<NtextPaste>> which are used in place of <<Cut>>, <<Copy>>, <<Paste>> respectively.
@@ -124,7 +124,7 @@ The definition of the virtual event <<NtextCut>> (etc) is similar to that of <<C
 
 [section BUGS]
 
-This version of [package ntext] is intended to be compatible with all releases of [package Tk] 8.5 and 8.6, and with the branches [emph core-8-5-branch] and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug.
+This version of [package ntext] is intended to be compatible with all releases of [package Tk] 8.5 and 8.6, and with the branches [emph core-8-5-branch], [emph core-8-6-branch], and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug. Please report such in the category [emph ntext] of the [uri http://core.tcl.tk/tklib/reportlist {Tklib Trackers}].
 
 [section EXAMPLE]
 
