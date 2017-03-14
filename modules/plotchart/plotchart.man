@@ -1374,7 +1374,9 @@ Another command for [emph "xy, x-log y, log-x-y, log-x-log-y plots"] is [emph re
 [list_begin definitions]
 [call [cmd \$xyplot] region [arg series] [arg xlist] [arg ylist]]
 
-Draw a filled polygon (region).
+Draw a filled polygon (region). The configuration of the series influences the polygon as follows:
+[term -fillcolour] is used to fill the polygon, [term -colour] is used for the boundary (set it to {} if
+no boundary is required and [term -width] determines the width of the boundary.
 
 [list_begin arguments]
 [arg_def string series in]
