@@ -1369,7 +1369,7 @@ If left out, use a simple heuristic: N = sqrt(number of data points).
 [list_end]
 [list_end]
 
-Another command for [emph "xy, x-log y, log-x-y, log-x-log-y plots"] is [emph region] to draw filled polygons:
+Other commands for [emph "xy, x-log y, log-x-y, log-x-log-y plots"] are [emph region] and [emph minmax] to draw filled polygons:
 
 [list_begin definitions]
 [call [cmd \$xyplot] region [arg series] [arg xlist] [arg ylist]]
@@ -1387,10 +1387,30 @@ List of X-coordinates for the region.
 
 [arg_def float ycrd in]
 List of Y-coordinates for the region.
+[list_end]
 
-[arg_def int every in]
-Optional argument stating how often a symbol (if any) should be drawn.
-If left out, use a simple heuristic: N = sqrt(number of data points).
+[call [cmd \$xyplot] minmax [arg series] [arg xcrd] [arg ymin] [arg ymax]]
+
+Draw a filled strip representing a minimum and a maximum. The configuration of the series influences the polygon as follows:
+[term -fillcolour] is used to fill the polygon, [term -colour] is used for the boundary (set it to {} if
+no boundary is required and [term -width] determines the width of the boundary.
+[nl]
+The arguments [term ymin] and [term ymax] may be empty to get an extra vertex in the strip. If both
+are empty, a new strip is started. For best results, the x-coordinate should be specified in ascending
+order.
+
+[list_begin arguments]
+[arg_def string series in]
+Name of the data series the new min/max strip belongs to.
+
+[arg_def float xcrd in]
+X-coordinate for the strip.
+
+[arg_def float ymin in]
+The minimum y-coordinate for the strip.
+
+[arg_def float ymax in]
+The maximum y-coordinate for the strip.
 [list_end]
 [list_end]
 [para]

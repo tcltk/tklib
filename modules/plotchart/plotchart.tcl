@@ -60,6 +60,7 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,vectorconfig)      VectorConfigure
    set methodProc(xyplot,rchart)            DrawRchart
    set methodProc(xyplot,region)            DrawRegion
+   set methodProc(xyplot,minmax)            DrawMinMax
    set methodProc(xyplot,grid)              DrawGrid
    set methodProc(xyplot,contourlines)      DrawIsolines
    set methodProc(xyplot,contourfill)       DrawShades
@@ -108,6 +109,7 @@ namespace eval ::Plotchart {
    set methodProc(xlogyplot,plot)           DrawData
    set methodProc(xlogyplot,plotlist)       DrawDataList
    set methodProc(xlogyplot,region)         DrawRegion
+   set methodProc(xlogyplot,minmax)         DrawMinMax
    set methodProc(xlogyplot,dot)            DrawDot
    set methodProc(xlogyplot,labeldot)       DrawLabelDot
    set methodProc(xlogyplot,dotconfig)      DotConfigure
@@ -140,6 +142,7 @@ namespace eval ::Plotchart {
    set methodProc(logxyplot,plot)           DrawData
    set methodProc(logxyplot,plotlist)       DrawDataList
    set methodProc(logxyplot,region)         DrawRegion
+   set methodProc(logxyplot,minmax)         DrawMinMax
    set methodProc(logxyplot,dot)            DrawDot
    set methodProc(logxyplot,labeldot)       DrawLabelDot
    set methodProc(logxyplot,dotconfig)      DotConfigure
@@ -172,6 +175,7 @@ namespace eval ::Plotchart {
    set methodProc(logxlogyplot,plot)           DrawData
    set methodProc(logxlogyplot,plotlist)       DrawDataList
    set methodProc(logxlogyplot,region)         DrawRegion
+   set methodProc(logxlogyplot,minmax)         DrawMinMax
    set methodProc(logxlogyplot,dot)            DrawDot
    set methodProc(logxlogyplot,labeldot)       DrawLabelDot
    set methodProc(logxlogyplot,dotconfig)      DotConfigure
@@ -222,6 +226,7 @@ namespace eval ::Plotchart {
    set methodProc(polarplot,subtitle)          DrawSubtitle
    set methodProc(polarplot,plot)              DrawData
    set methodProc(polarplot,region)            DrawRegion
+   set methodProc(polarplot,minmax)            DrawMinMax
    set methodProc(polarplot,saveplot)          SavePlot
    set methodProc(polarplot,dataconfig)        DataConfig
    set methodProc(polarplot,background)        BackgroundColour
@@ -3131,4 +3136,4 @@ source [file join [file dirname [info script]] "plotstatustimeline.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.4.0
+package provide Plotchart 2.4.1

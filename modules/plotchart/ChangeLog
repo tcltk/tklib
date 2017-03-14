@@ -1,3 +1,10 @@
+2017-03-14  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.man:  Describe the "minmax" command
+	* plotchart.tcl:  Add the "minmax" command
+	* plotpriv.tcl:   Add the DrawMinMax procedure that implements the "minmax" command
+	* pkgIndex.tcl:   Bumped version to 2.4.1
+	* testregion.tcl: New test/demo script for demostrating the region and minmax commands
+
 2017-03-13  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.man: Describe the "region" command
 	* plotchart.tcl: Add the "region" command and extend the "plotlist" command to other plot types

@@ -1286,6 +1286,116 @@ proc ::Plotchart::DrawRegion { w series xcrds ycrds } {
    $w lower data
 }
 
+# DrawMinMax --
+#    Draw a filled region representing a band of minimum and maximum values in an XY-plot (and variants)
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    xcrd        X coordinate
+#    ymin        Minimum y coordinate
+#    ymax        Maximum y coordinate
+# Result:
+#    None
+# Side effects:
+#    Filled polygon drawn in canvas
+# Note:
+#    ymin and ymax may be empty strings
+#
+proc ::Plotchart::DrawMinMax { w series xcrd ymin ymax } {
+   variable data_series
+   variable scaling
+
+   #
+   # Do we have a break?
+   #
+   if { $ymin eq {} && $ymax eq {} } {
+       unset -nocomplain data_series($w,$series,minmaxid)
+       return
+   }
+
+   #
+   # If not, create the canvas item with the right colours and other attributes
+   #
+   set hasmin 1
+   set hasmax 1
+   if { $ymin eq {} } {
+       set hasmin 0
+       set ymin   $ymax
+   }
+   if { $ymax eq {} } {
+       set hasmax 0
+       set ymax   $ymin
+   }
+   set ycrd $ymin
+
+   if { ![info exists data_series($w,$series,minmaxid)] } {
+      foreach {px py} [coordsToPixel $w $xcrd $ycrd] {break}
+
+      set pxy [list $px $py $px $py $px $py]
+
+      #
+      # Get the configuration options
+      #
+      set filled "no"
+      if { [info exists data_series($w,$series,-filled)] } {
+         set filled $data_series($w,$series,-filled)
+      }
+
+      set colour "black"
+      if { [info exists data_series($w,$series,-colour)] } {
+         set colour $data_series($w,$series,-colour)
+      }
+
+      set fillcolour white
+      if { [info exists data_series($w,$series,-fillcolour)] } {
+         set fillcolour $data_series($w,$series,-fillcolour)
+      }
+
+      set width 1
+      if { [info exists data_series($w,$series,-width)] } {
+         set width $data_series($w,$series,-width)
+      }
+
+      set data_series($w,$series,minmaxid) \
+         [$w create polygon $pxy \
+             -fill $fillcolour -outline $colour -width $width -tag [list data data_$series]]
+
+      $w lower data
+
+      set data_series($w,$series,minx) $xcrd
+      set data_series($w,$series,miny) $ymin
+      set data_series($w,$series,maxx) $xcrd
+      set data_series($w,$series,maxy) $ymax
+   }
+
+   #
+   # We have one or two new points - add them
+   #
+   if { $hasmin } {
+       lappend data_series($w,$series,minx) $xcrd
+       lappend data_series($w,$series,miny) $ymin
+   }
+   if { $hasmax } {
+       set data_series($w,$series,maxx) [concat $xcrd $data_series($w,$series,maxx)]
+       set data_series($w,$series,maxy) [concat $ymax $data_series($w,$series,maxy)]
+   }
+
+   #
+   # Convert the coordinates
+   #
+   set pxy {}
+   foreach xcrd $data_series($w,$series,minx) ycrd $data_series($w,$series,miny) {
+       foreach {px py} [coordsToPixel $w $xcrd $ycrd] {break}
+       lappend pxy $px $py
+   }
+   foreach xcrd $data_series($w,$series,maxx) ycrd $data_series($w,$series,maxy) {
+       foreach {px py} [coordsToPixel $w $xcrd $ycrd] {break}
+       lappend pxy $px $py
+   }
+
+   $w coords $data_series($w,$series,minmaxid) $pxy
+}
+
 # DrawInterval --
 #    Draw the data as an error interval in an XY-plot
 # Arguments:
