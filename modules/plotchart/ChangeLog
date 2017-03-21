@@ -1,3 +1,8 @@
+2017-03-21  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl:  Correct omission - dot plotting command for polar plots
+	* plotpriv.tcl:   Remove obsolete procedures (DrawLog*Dot and DrawPolarDot) - they have been replaced by DrawDot
+	                  Store the coordinates of the last dot, so that "bindlast" will work properly for dots as well
+
 2017-03-14  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.man:  Describe the "minmax" command
 	* plotchart.tcl:  Add the "minmax" command

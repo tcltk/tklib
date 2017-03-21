@@ -237,6 +237,7 @@ namespace eval ::Plotchart {
    set methodProc(polarplot,balloonconfig)     ConfigBalloon
    set methodProc(polarplot,plaintext)         DrawPlainText
    set methodProc(polarplot,plaintextconfig)   ConfigPlainText
+   set methodProc(polarplot,dot)               DrawDot
    set methodProc(polarplot,labeldot)          DrawLabelDot
    set methodProc(polarplot,canvas)            GetCanvas
    set methodProc(polarplot,deletedata)        DeleteData
