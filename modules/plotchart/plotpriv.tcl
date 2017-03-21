@@ -3449,43 +3449,10 @@ proc ::Plotchart::DrawDot { w series xcrd ycrd value } {
         }
     }
 
+    set data_series($w,$series,x) $xcrd
+    set data_series($w,$series,y) $ycrd
+
     $w lower [list data && $w]
-}
-
-# DrawLog*Dot, DrawPolarDot --
-#    Draw a dot at the given coordinates - variants for logarithmic axes and polar axis
-# Arguments:
-#    w           Name of the canvas
-#    series      Data series (identifier for the vectors)
-#    xcrd        X coordinate of start or centre
-#    ycrd        Y coordinate of start or centre
-#    value       Value to be used
-# Result:
-#    None
-# Side effects:
-#    New oval drawn in canvas
-#
-proc ::Plotchart::DrawLogXDot { w series xcrd ycrd value } {
-
-    DrawDot $w $series [expr {log10($xcrd)}] $ycrd $value
-}
-
-proc ::Plotchart::DrawLogYDot { w series xcrd ycrd value } {
-
-    DrawDot $w $series $xcrd [expr {log10($ycrd)}] $value
-}
-
-proc ::Plotchart::DrawLogXLogYDot { w series xcrd ycrd value } {
-
-    DrawDot $w $series [expr {log10($xcrd)}] [expr {log10($ycrd)}] $value
-}
-
-proc ::Plotchart::DrawPolarDot { w series rad phi value } {
-   variable torad
-   set xcrd [expr {$rad*cos($phi*$torad)}]
-   set ycrd [expr {$rad*sin($phi*$torad)}]
-
-   DrawDot $w $series $xcrd $ycrd $value
 }
 
 # DrawRchart --
