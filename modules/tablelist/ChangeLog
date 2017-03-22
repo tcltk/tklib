@@ -1,3 +1,32 @@
+2017-03-22  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                Bumped the version number to 5.17.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* ../../examples/*.tcl:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added the tree styles "arc", "blueMenta", "menta",
+	  "ubuntuMate", and "ubuntu3"; added the "dicttoitem" and "itemtodict"
+	  subcommands; added support for the virtual event
+	  <<TablelistViewUpdated>>; added bindings for toggling the selection
+	  state of individual items and elements; added support for the
+	  keyboard shortcuts <Control-a> and <Shift-Control-A> as alternatives
+	  to <Control-slash> and <Control-backslash>; improvements related to
+	  vertical scrolling.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/arc.png:        Added screenshots.
+	* doc/blueMenta.png:
+	* doc/menta.png:
+	* doc/ubuntuMate.png:
+	* doc/ubuntu3.png:
+
+	* doc/*.png: Updated screenshots.
+
 2016-08-30  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistWidget.tcl: Worked around a text widget issue in Tk
