@@ -2,11 +2,11 @@
 # Demonstrates how to use a tablelist widget for displaying information about
 # the children of an arbitrary widget.
 #
-# Copyright (c) 2010-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2010-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.3
-package require tablelist 5.16
+package require tablelist 5.17
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -55,7 +55,7 @@ proc demo::displayChildren w {
     set tbl $tf.tbl
     set vsb $tf.vsb
     tablelist::tablelist $tbl \
-	-columns {0 "Path Name"	left
+	-columns {0 "Name"	left
 		  0 "Class"	left
 		  0 "X"		right
 		  0 "Y"		right
@@ -424,7 +424,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
 
     foreach key [$tbl childkeys $nodeIdx] {
 	set pathName [$tbl rowattrib $key pathName]
-	if {[info exists expandedWidgets($pathName)]} {
+	if {[info exists expandedWidgets($)]} {
 	    $tbl expand $key -partly
 	    restoreExpandedStates $tbl $key expandedWidgets
 	}

@@ -2,10 +2,10 @@
 # Demonstrates how to use a tablelist widget for displaying and editing the
 # configuration options of an arbitrary widget.
 #
-# Copyright (c) 2000-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.16
+package require tablelist 5.17
 
 namespace eval demo {
     #
@@ -36,7 +36,7 @@ namespace eval demo {
 	catch {font create TkDefaultFont -family Helvetica -size -12}
 
 	option add *DemoTop*Font			TkDefaultFont
-	option add *DemoTop*selectBackground		#678db2
+	option add *DemoTop*selectBackground		#5294e2
 	option add *DemoTop*selectForeground		white
     } else {
 	option add *DemoTop.tf.borderWidth		1
