@@ -8,7 +8,7 @@
 #   - Binding tag TablelistBody
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -559,29 +559,32 @@ proc tablelist::defineTablelistBody {} {
     bind TablelistBody <Shift-Control-End> {
 	tablelist::extendToFirstLast [tablelist::getTablelistPath %W] last
     }
-    bind TablelistBody <space> {
-	set tablelist::W [tablelist::getTablelistPath %W]
+    foreach event {<space> <Select>} {
+	bind TablelistBody $event {
+	    set tablelist::W [tablelist::getTablelistPath %W]
 
-	tablelist::beginSelect $tablelist::W \
-	    [$tablelist::W index active] [$tablelist::W columnindex active]
+	    tablelist::beginSelect $tablelist::W \
+		[$tablelist::W index active] [$tablelist::W columnindex active]
+	}
     }
-    bind TablelistBody <Select> {
-	set tablelist::W [tablelist::getTablelistPath %W]
+    foreach event {<Shift-Control-space> <Shift-Select>} {
+	bind TablelistBody $event {
+	    set tablelist::W [tablelist::getTablelistPath %W]
 
-	tablelist::beginSelect $tablelist::W \
-	    [$tablelist::W index active] [$tablelist::W columnindex active]
+	    tablelist::beginExtend $tablelist::W \
+		[$tablelist::W index active] [$tablelist::W columnindex active]
+	}
     }
-    bind TablelistBody <Control-Shift-space> {
-	set tablelist::W [tablelist::getTablelistPath %W]
+    foreach event {<Control-space> <Control-Select>} {
+	bind TablelistBody $event {
+	    if {!$tablelist::strictTk} {
+		set tablelist::W [tablelist::getTablelistPath %W]
 
-	tablelist::beginExtend $tablelist::W \
-	    [$tablelist::W index active] [$tablelist::W columnindex active]
-    }
-    bind TablelistBody <Shift-Select> {
-	set tablelist::W [tablelist::getTablelistPath %W]
-
-	tablelist::beginExtend $tablelist::W \
-	    [$tablelist::W index active] [$tablelist::W columnindex active]
+		tablelist::beginToggle $tablelist::W \
+		    [$tablelist::W index active] \
+		    [$tablelist::W columnindex active]
+	    }
+	}
     }
     bind TablelistBody <Escape> {
 	tablelist::cancelSelection [tablelist::getTablelistPath %W]
@@ -639,6 +642,23 @@ proc tablelist::defineTablelistBody {} {
 		[tablelist::getTablelistPath %W] xview scroll \
 		    [expr {-(%D / 120) * 4}] units
 		break
+	    }
+
+	    foreach event {<Control-Key-a> <Control-Lock-Key-A>} {
+		bind TablelistBody $event {
+		    tablelist::selectAll [tablelist::getTablelistPath %W]
+		}
+	    }
+	    foreach event {<Shift-Control-Key-A> <Shift-Control-Lock-Key-a>} {
+		bind TablelistBody $event {
+		    set tablelist::W [tablelist::getTablelistPath %W]
+
+		    if {[string compare [$tablelist::W cget -selectmode] \
+			 "browse"] != 0} {
+			$tablelist::W selection clear 0 end
+			event generate $tablelist::W <<TablelistSelect>>
+		    }
+		}
 	    }
 	}
     }
@@ -1809,32 +1829,57 @@ proc tablelist::beginExtend {win row col} {
 #------------------------------------------------------------------------------
 proc tablelist::beginToggle {win row col} {
     upvar ::tablelist::ns${win}::data data
-    if {[string compare $data(-selectmode) "extended"] != 0} {
-	return ""
-    }
-
-    variable priv
     switch $data(-selecttype) {
 	row {
-	    set priv(selection) [::$win curselection]
-	    set priv(prevRow) $row
-	    ::$win selection anchor $row
-	    if {[::$win selection includes $row]} {
-		::$win selection clear $row
+	    if {[string compare $data(-selectmode) "extended"] == 0} {
+		variable priv
+		set priv(selection) [::$win curselection]
+		set priv(prevRow) $row
+		::$win selection anchor $row
+		if {[::$win selection includes $row]} {
+		    ::$win selection clear $row
+		} else {
+		    ::$win selection set $row
+		}
 	    } else {
-		::$win selection set $row
+		variable strictTk
+		if {$strictTk} {
+		    return ""
+		}
+
+		if {[::$win selection includes $row]} {
+		    ::$win selection clear $row
+		} else {
+		    beginSelect $win $row $col
+		    return ""
+		}
 	    }
 	}
 
 	cell {
-	    set priv(selection) [::$win curcellselection]
-	    set priv(prevRow) $row
-	    set priv(prevCol) $col
-	    ::$win cellselection anchor $row,$col
-	    if {[::$win cellselection includes $row,$col]} {
-		::$win cellselection clear $row,$col
+	    if {[string compare $data(-selectmode) "extended"] == 0} {
+		variable priv
+		set priv(selection) [::$win curcellselection]
+		set priv(prevRow) $row
+		set priv(prevCol) $col
+		::$win cellselection anchor $row,$col
+		if {[::$win cellselection includes $row,$col]} {
+		    ::$win cellselection clear $row,$col
+		} else {
+		    ::$win cellselection set $row,$col
+		}
 	    } else {
-		::$win cellselection set $row,$col
+		variable strictTk
+		if {$strictTk} {
+		    return ""
+		}
+
+		if {[::$win cellselection includes $row,$col]} {
+		    ::$win cellselection clear $row,$col
+		} else {
+		    beginSelect $win $row $col
+		    return ""
+		}
 	    }
 	}
     }

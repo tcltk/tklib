@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -372,23 +372,23 @@ namespace eval tablelist {
 	configcelllist configcells configcolumnlist configcolumns \
 	configrowlist configrows configure containing containingcell \
 	containingcolumn cornerlabelpath cornerpath curcellselection \
-	curselection depth delete deletecolumns descendantcount editcell \
-	editinfo editwinpath editwintag entrypath expand expandall \
+	curselection depth delete deletecolumns descendantcount dicttoitem \
+	editcell editinfo editwinpath editwintag entrypath expand expandall \
 	expandedkeys fillcolumn findcolumnname findrowname finishediting \
 	formatinfo get getcells getcolumns getformatted getformattedcells \
 	getformattedcolumns getfullkeys getkeys hasattrib hascellattrib \
 	hascolumnattrib hasrowattrib hidetargetmark imagelabelpath index \
 	insert insertchild insertchildlist insertchildren insertcolumnlist \
 	insertcolumns insertlist iselemsnipped isexpanded istitlesnipped \
-	isviewable itemlistvar labelpath labels labeltag move movecolumn \
-	nearest nearestcell nearestcolumn noderow parentkey refreshsorting \
-	rejectinput resetsortinfo rowattrib rowcget rowconfigure scan \
-	searchcolumn see seecell seecolumn selection separatorpath separators \
-	showtargetmark size sort sortbycolumn sortbycolumnlist sortcolumn \
-	sortcolumnlist sortorder sortorderlist targetmarkpath targetmarkpos \
-	togglecolumnhide togglerowhide toplevelkey unsetattrib \
-	unsetcellattrib unsetcolumnattrib unsetrowattrib viewablerowcount \
-	windowpath xview yview]
+	isviewable itemlistvar itemtodict labelpath labels labeltag move \
+	movecolumn nearest nearestcell nearestcolumn noderow parentkey \
+	refreshsorting rejectinput resetsortinfo rowattrib rowcget \
+	rowconfigure scan searchcolumn see seecell seecolumn selection \
+	separatorpath separators showtargetmark size sort sortbycolumn \
+	sortbycolumnlist sortcolumn sortcolumnlist sortorder sortorderlist \
+	targetmarkpath targetmarkpos togglecolumnhide togglerowhide \
+	toplevelkey unsetattrib unsetcellattrib unsetcolumnattrib \
+	unsetrowattrib viewablerowcount windowpath xview yview]
 
     proc restrictCmdOpts {} {
 	variable canElide
@@ -400,6 +400,11 @@ namespace eval tablelist {
 		set idx [lsearch -exact $cmdOpts $opt]
 		set cmdOpts [lreplace $cmdOpts $idx $idx]
 	    }
+	}
+
+	if {$::tk_version < 8.5} {
+	    set idx [lsearch -exact $cmdOpts "dicttoitem"]
+	    set cmdOpts [lreplace $cmdOpts $idx $idx]
 	}
     }
     restrictCmdOpts 
@@ -435,12 +440,13 @@ namespace eval tablelist {
     variable sortOpts      [list -increasing -decreasing]
     variable sortOrders    [list increasing decreasing]
     variable states	   [list disabled normal]
-    variable treeStyles    [list adwaita ambiance aqua baghira bicolor1 \
-				 bicolor2 bicolor3 bicolor4 classic1 classic2 \
-				 classic3 classic4 dust dustSand gtk \
-				 klearlooks mate mint mint2 newWave oxygen1 \
-				 oxygen2 phase plain1 plain2 plain3 plain4 \
-				 plastik plastique radiance ubuntu ubuntu2 \
+    variable treeStyles    [list adwaita ambiance aqua arc baghira bicolor1 \
+				 bicolor2 bicolor3 bicolor4 blueMenta \
+				 classic1 classic2 classic3 classic4 dust \
+				 dustSand gtk klearlooks mate menta mint \
+				 mint2 newWave oxygen1 oxygen2 phase plain1 \
+				 plain2 plain3 plain4 plastik plastique \
+				 radiance ubuntu ubuntu2 ubuntu3 ubuntuMate \
 				 vistaAero vistaClassic win7Aero win7Classic \
 				 win10 winnative winxpBlue winxpOlive \
 				 winxpSilver yuyo]
@@ -461,6 +467,11 @@ namespace eval tablelist {
     # indentation depth for every tree style in use
     #
     variable maxIndentDepths
+
+    #
+    # Whether to support strictly Tk core listbox compatible bindings only
+    #
+    variable strictTk 0
 
     #
     # Define the command mapTabs, which returns the string obtained by
@@ -2053,6 +2064,35 @@ proc tablelist::descendantcountSubCmd {win argList} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::dicttoitemSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::dicttoitemSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win dicttoitem dictionary"
+    }
+
+    set origDict [lindex $argList 0]
+    set newDict {}
+    dict for {key val} $origDict {
+	set col [colIndex $win $key 1]
+	dict set newDict $col $val
+    }
+
+    set item {}
+    upvar ::tablelist::ns${win}::data data
+    for {set col 0} {$col < $data(colCount)} {incr col} {
+	if {[dict exists $newDict $col]} {
+	    set elem [dict get $newDict $col]
+	} else {
+	    set elem ""
+	}
+	lappend item $elem
+    }
+
+    return $item
+}
+
+#------------------------------------------------------------------------------
 # tablelist::editcellSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::editcellSubCmd {win argList} {
@@ -3294,6 +3334,29 @@ proc tablelist::itemlistvarSubCmd {win argList} {
     }
 
     return ::tablelist::ns${win}::data(itemList)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::itemtodictSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::itemtodictSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win itemtodict item"
+    }
+
+    set item [lindex $argList 0]
+    set dictionary {}
+    upvar ::tablelist::ns${win}::data data
+    for {set col 0} {$col < $data(colCount)} {incr col} {
+	if {[info exists data($col-name)]} {
+	    set key $data($col-name)
+	} else {
+	    set key $col
+	}
+	dict set dictionary $key [lindex $item $col]
+    }
+
+    return $dictionary
 }
 
 #------------------------------------------------------------------------------
@@ -4698,14 +4761,13 @@ proc tablelist::yviewSubCmd {win argList} {
 	    #
 	    set units [format "%d" [lindex $argList 0]]
 	    set row [viewableRowOffsetToRowIndex $win $units]
-	    if {![yviewTextRow $win $row]} {
-		return ""
-	    }
+	    $w yview $row
 	    adjustElidedText $win
 	    redisplayVisibleItems $win
 	    updateColors $win
 	    adjustSepsWhenIdle $win
 	    updateVScrlbarWhenIdle $win
+	    updateIdletasksDelayed 
 	    return ""
 	}
 
@@ -4729,9 +4791,7 @@ proc tablelist::yviewSubCmd {win argList} {
 			[getViewableRowCount $win 0 [expr {$topRow - 1}]]
 		    set offset [expr {$upperViewableCount + $number}]
 		    set row [viewableRowOffsetToRowIndex $win $offset]
-		    if {![yviewTextRow $win $row]} {
-			return ""
-		    }
+		    $w yview $row
 		} else {
 		    set absNumber [expr {abs($number)}]
 		    for {set n 0} {$n < $absNumber} {incr n} {
@@ -4750,9 +4810,7 @@ proc tablelist::yviewSubCmd {win argList} {
 			}
 			set offset [expr {$upperViewableCount + $delta}]
 			set row [viewableRowOffsetToRowIndex $win $offset]
-			if {![yviewTextRow $win $row]} {
-			    return ""
-			}
+			$w yview $row
 		    }
 		}
 
@@ -4761,6 +4819,7 @@ proc tablelist::yviewSubCmd {win argList} {
 		updateColors $win
 		adjustSepsWhenIdle $win
 		updateVScrlbarWhenIdle $win
+		updateIdletasksDelayed 
 		return ""
 	    }
 	}
@@ -6096,6 +6155,7 @@ proc tablelist::doScan {win opt x y} {
 	    updateColors $win
 	    adjustSepsWhenIdle $win
 	    updateVScrlbarWhenIdle $win
+	    updateIdletasksDelayed 
 	}
     } elseif {[string compare $opt "mark"] == 0} {
 	$w scan mark 0 $y
@@ -6136,6 +6196,7 @@ proc tablelist::doScan {win opt x y} {
 	updateColors $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
+	updateIdletasksDelayed 
     }
 
     return ""
@@ -6584,9 +6645,9 @@ proc tablelist::moveTo win {
     }
 
     if {$row != $topRow} {
-	if {[yviewTextRow $win $row]} {
-	    updateView $win
-	}
+	$w yview $row
+	updateView $win
+	updateIdletasksDelayed 
     }
 
     return ""
@@ -6619,30 +6680,30 @@ proc tablelist::seeTextIdx {win textIdx} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::yviewTextRow
+# tablelist::updateIdletasksDelayed
 #
-# Wraps the "yview <row>" command of the body text widget of the tablelist
-# widget win.
+# Schedules the execution of "update idletasks" 100 ms later.
 #------------------------------------------------------------------------------
-proc tablelist::yviewTextRow {win row} {
-    upvar ::tablelist::ns${win}::data data
-    set w $data(body)
-    $w yview $row
+proc tablelist::updateIdletasksDelayed {} {
+    variable idletasksId
+    if {![info exists idletasksId]} {
+	set idletasksId [after 100 [list tablelist::updateIdletasks]]
+    }
+}
 
-    if {[llength [$w tag nextrange elidedWin 1.0 end]] == 0} {
-	return 1
+#------------------------------------------------------------------------------
+# tablelist::updateIdletasks
+#
+# Invokes "update idletasks".
+#------------------------------------------------------------------------------
+proc tablelist::updateIdletasks {} {
+    variable idletasksId
+    if {[info exists idletasksId]} {
+	after cancel $idletasksId
+	unset idletasksId
     }
 
-    set fromTextIdx "[$w index @0,0] linestart"
-    set toTextIdx "[$w index @0,$data(btmY)] lineend"
-    $w tag remove elidedWin $fromTextIdx $toTextIdx
     update idletasks
-    if {![array exists ::tablelist::ns${win}::data]} {
-	return 0
-    }
-
-    $w yview $row
-    return 1
 }
 
 #
