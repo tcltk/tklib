@@ -1,5 +1,42 @@
-What is new in Tablelist 5.16?
+What is new in Tablelist 5.17?
 ------------------------------
+
+1. Added the tree styles "arc", "blueMenta", "menta", "ubuntuMate", and
+   "ubuntu3", inspired by the Arc icon theme (of the GTK 2/3 theme Arc)
+   and some GTK 3 themes of the latest versions of the MATE desktop and
+   Ubuntu Linux distribution, respectively.
+
+2. Added the "dicttoitem" and "itemtodict" subcommands (thanks to Denis
+   Rheault for his proposal).
+
+3. Support for the new virtual event <<TablelistViewUpdated>>,
+   generated when the tablelist widget has finished updating its view
+   (thanks to Martyn Smith for his proposal).
+
+4. Added the boolean variable tablelist::strictTk, which controls the
+   strict listbox-compatibility of the default bindings.  If its value
+   is false (which is the default) then <Control-Button-1> now toggles
+   the selection state of the item or element under the mouse in all
+   selection modes, and <Control-space> and <Control-Select> toggle the
+   selection state of the active item or element (thanks to Alexandru
+   Dadalau for discussions on a related subject).
+
+5. The default bindings on X11 and Windows now support the keyboard
+   shortcuts <Control-a> and <Shift-Control-A> as alternatives to the
+   key sequences <Control-slash> (for "Select All") and
+   <Control-backslash> (for "Deselect All") (thanks to Juge, Alexandru
+   Dadalau, Christian Gollwitzer, Rich, and Andreas Leitgeb for
+   discussions on a related subject).
+
+6. Improvements related to vertical scrolling, especially in the
+   presence of embedded images or multi-line elements (thanks to Olivier
+   Jolet for discussions on this subject).
+
+7. Improvements in the documentation (thanks to Adam Jensen for his
+   input).
+
+What was new in Tablelist 5.16?
+-------------------------------
 
 1.  Added the "-autofinishediting" configuration option, relevant for
     interactive cell editing via a combobox or menubutton widget (thanks
@@ -156,7 +193,7 @@ directory are "tablelistEdit.tcl" and "tablelistUtil.tcl".
    "tablelistEdit.tcl" (thanks to Patrick Fradin and Ralf Fassel for
    their bug reports).
 
-2. Fixed a typo in the file "tablelistUtil.tcl" (Thanks to Patrick
+2. Fixed a typo in the file "tablelistUtil.tcl" (thanks to Patrick
    Fradin for reporting this bug).
 
 What was new in Tablelist 5.12?

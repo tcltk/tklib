@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 5.16</h2>
+    <h2>For Tablelist Version 5.17</h2>
 
     <h3>by</h3>
 
@@ -288,10 +288,10 @@
     <i>columnIndex</i></code></dd>
 
     <dd><code><b><a href="#treestyle">-treestyle</a></b>
-    <b>adwaita</b>|<b>ambiance</b>|<b>aqua</b>|<b>baghira</b>|<b>bicolor1</b>|<b>bicolor2</b>|<b>bicolor3</b>|<b>bicolor4</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classic1</b>|<b>classic2</b>|<b>classic3</b>|<b>classic4</b>|<b>dust</b>|<b>dustSand</b>|<b>gtk</b>|<b>klearlooks</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mate</b>|<b>mint</b>|<b>mint2</b>|<b>newWave</b>|<b>oxygen1</b>|<b>oxygen2</b>|<b>phase</b>|<b>plain1</b>|<b>plain2</b>|<b>plain3</b>|<b>plain4</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plastik</b>|<b>plastique</b>|<b>radiance</b>|<b>ubuntu</b>|<b>ubuntu2</b>|<b>vistaAero</b>|<b>vistaClassic</b>|<br>
+    <b>adwaita</b>|<b>ambiance</b>|<b>aqua</b>|<b>arc</b>|<b>baghira</b>|<b>bicolor1</b>|<b>bicolor2</b>|<b>bicolor3</b>|<b>bicolor4</b>|<b>blueMenta</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classic1</b>|<b>classic2</b>|<b>classic3</b>|<b>classic4</b>|<b>dust</b>|<b>dustSand</b>|<b>gtk</b>|<b>klearlooks</b>|<b>mate</b>|<b>menta</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mint</b>|<b>mint2</b>|<b>newWave</b>|<b>oxygen1</b>|<b>oxygen2</b>|<b>phase</b>|<b>plain1</b>|<b>plain2</b>|<b>plain3</b>|<b>plain4</b>|<b>plastik</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plastique</b>|<b>radiance</b>|<b>ubuntu</b>|<b>ubuntu2</b>|<b>ubuntu3</b>|<b>ubuntuMate</b>|<b>vistaAero</b>|<b>vistaClassic</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win7Aero</b>|<b>win7Classic</b>|<b>win10</b>|<b>winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b>|<b>yuyo</b></code></dd>
 
     <dd><code><b><a href="#width">-width</a></b> <i>characters</i></code></dd>
@@ -708,6 +708,9 @@
     <dd><code><i>pathName</i> <b><a href=
     "#descendantcount">descendantcount</a></b> <i>nodeIndex</i></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#dicttoitem">dicttoitem</a></b> <i>dictionary</i></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#editcell">editcell</a></b>
     <i>cellIndex</i></code></dd>
 
@@ -861,6 +864,9 @@
 
     <dd><code><i>pathName</i> <b><a href=
     "#itemlistvar">itemlistvar</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#itemtodict">itemtodict</a></b> <i>item</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#labelpath">labelpath</a></b>
     <i>columnIndex</i></code></dd>
@@ -1464,7 +1470,7 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         href="#arrowcolor">-arrowcolor</a></b></code> and <code><b><a href=
         "#arrowdisabledcolor">-arrowdisabledcolor</a></b></code> options have
         no effect.</p>
-        
+
         <p>On Windows Vista, 7, 8, and 10, the sort arrows are shown
         horizontally centered in the header labels, just below their top
         edges:<p>
@@ -1688,7 +1694,8 @@ proc myColorizeCmd {tbl body key row col tabIdx1 tabIdx2 inStripe selected} { ..
         the use of some other tag configuration options (particularly
         <code><b>-elide</b></code> and <code><b>-font</b></code>) can cause
         conflicts with the way Tablelist renders the elements, thus giving rise
-        to various layout problems within the body of your tablelist widget!<p> 
+        to various layout problems within the body of your tablelist
+        widget!</p>
       </blockquote>
     </dd>
 
@@ -3983,14 +3990,16 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <colgroup></colgroup>
 
+          <colgroup></colgroup>
 
           <tbody align="center">
             <tr>
-              <td><img src="aqua.png" alt="aqua" width="120" height="54"></td>
-
               <td><img src="gtk.png" alt="gtk" width="120" height="51"></td>
 
               <td><img src="adwaita.png" alt="adwaita" width="120" height=
+              "51"></td>
+
+              <td><img src="blueMenta.png" alt="blueMenta" width="120" height=
               "51"></td>
 
               <td><img src="ubuntu.png" alt="ubuntu" width="120" height=
@@ -3998,18 +4007,23 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <td><img src="ubuntu2.png" alt="ubuntu2" width="120" height=
               "51"></td>
+
+              <td><img src="ubuntu3.png" alt="ubuntu3" width="120" height=
+              "51"></td>
             </tr>
 
             <tr>
-              <th><code>aqua</code></th>
-
               <th><code>gtk</code></th>
 
               <th><code>adwaita</code></th>
 
+              <th><code>blueMenta</code></th>
+
               <th><code>ubuntu</code></th>
 
               <th><code>ubuntu2</code></th>
+
+              <th><code>ubuntu3</code></th>
             </tr>
           </tbody>
 
@@ -4022,10 +4036,13 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <td><img src="mate.png" alt="mate" width="120" height="51"></td>
 
-              <td><img src="yuyo.png" alt="yuyo" width="120" height="51"></td>
-
-              <td><img src="plastique.png" alt="plastique" width="120" height=
+              <td><img src="menta.png" alt="menta" width="120" height=
               "51"></td>
+
+              <td><img src="ubuntuMate.png" alt="ubuntuMate" width="120"
+              height="51"></td>
+
+              <td><img src="yuyo.png" alt="yuyo" width="120" height="51"></td>
             </tr>
 
             <tr>
@@ -4035,14 +4052,18 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <th><code>mate</code></th>
 
-              <th><code>yuyo</code></th>
+              <th><code>menta</code></th>
 
-              <th><code>plastique</code></th>
+              <th><code>ubuntuMate</code></th>
+
+              <th><code>yuyo</code></th>
             </tr>
           </tbody>
 
           <tbody align="center">
             <tr>
+              <td><img src="arc.png" alt="arc" width="120" height="51"></td>
+
               <td><img src="oxygen1.png" alt="oxygen1" width="120" height=
               "51"></td>
 
@@ -4060,6 +4081,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             </tr>
 
             <tr>
+              <th><code>arc</code></th>
+
               <th><code>oxygen1</code></th>
 
               <th><code>oxygen2</code></th>
@@ -4074,6 +4097,9 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tbody align="center">
             <tr>
+              <td><img src="plastique.png" alt="plastique" width="120" height=
+              "51"></td>
+
               <td><img src="plastik.png" alt="plastik" width="120" height=
               "51"></td>
 
@@ -4091,6 +4117,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             </tr>
 
             <tr>
+              <th><code>plastique</code></th>
+
               <th><code>plastik</code></th>
 
               <th><code>winnative</code></th>
@@ -4119,6 +4147,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <td><img src="win10.png" alt="win110" width="120" height=
               "54"></td>
+
+              <td><img src="aqua.png" alt="aqua" width="120" height="54"></td>
             </tr>
 
             <tr>
@@ -4131,6 +4161,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               <th><code>win7Classic</code></th>
 
               <th><code>win10</code></th>
+
+              <th><code>aqua</code></th>
             </tr>
           </tbody>
 
@@ -4149,6 +4181,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
               <td><img src="newWave.png" alt="newWave.png" width="120" height=
               "63"></td>
+
+              <td></td>
             </tr>
 
             <tr>
@@ -4161,6 +4195,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               <th><code>radiance</code></th>
 
               <th><code>newWave</code></th>
+
+              <th></th>
             </tr>
           </tbody>
         </table>
@@ -4272,20 +4308,23 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           </tbody>
         </table>
 
-        <p>If the tree style is <code><b>aqua</b></code>,
-        <code><b>gtk</b></code>, <code><b>adwaita</b></code>,
+        <p>If the tree style is <code><b>gtk</b></code>,
+        <code><b>adwaita</b></code>, <code><b>blueMenta</code></b>,
         <code><b>ubuntu</b></code>, <code><b>ubuntu2</b></code>,
-        <code><b>mint</b></code>, <code><b>mint2</b></code>,
-        <code><b>mate</b></code>, <code><b>oxygen2</b></code>,
+        <code><b>ubuntu3</b></code>, <code><b>mint</b></code>,
+        <code><b>mint2</b></code>, <code><b>mate</b></code>,
+        <code><b>menta</b></code>, <code><b>ubuntuMate</b></code>,
+        <code><b>arc</b></code>, <code><b>oxygen2</b></code>,
         <code><b>vistaAero</b></code>, <code><b>win7Aero</b></code>,
-        <code><b>win10</b></code>, <code><b>newWave</b></code>,
-        <code><b>plain*</b></code>, or <code><b>bicolor*</b></code>, and the Tk
-        version is either 8.6 (with built-in PNG support) or 8.5 and the
-        <code><b>img::png</b></code> package can be loaded into the
-        interpreter, then the images used for displaying the expand/collapse
-        controls are PNG images with alpha channel.&nbsp; Otherwise (i.e., for
-        the other tree styles or in the absence of PNG support) GIF images are
-        used for the expand/collapse controls.</p>
+        <code><b>win10</b></code>, <code><b>aqua</b></code>,
+        <code><b>newWave</b></code>, <code><b>plain*</b></code>, or
+        <code><b>bicolor*</b></code>, and the Tk version is either 8.6 (with
+        built-in PNG support) or 8.5 and the <code><b>img::png</b></code>
+        package can be loaded into the interpreter, then the images used for
+        displaying the expand/collapse controls are PNG images with alpha
+        channel.&nbsp; Otherwise (i.e., for the other tree styles or in the
+        absence of PNG support) GIF images are used for the expand/collapse
+        controls.</p>
 
         <p>The following table contains a detailed description of the tree
         styles, in alphabetical order:</p>
@@ -4305,7 +4344,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><img src="adwaita.png" alt="adwaita" width="120" height=
             "51"></td>
 
-            <td>Inspired by the GTK+ 3 theme Adwaita.</td>
+            <td>Inspired by the GTK 3 theme Adwaita.</td>
           </tr>
 
           <tr>
@@ -4314,7 +4353,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><img src="ambiance.png" alt="ambiance" width="120" height=
             "63"></td>
 
-            <td>Inspired by the GTK+ theme Ambiance.&nbsp; Recommended to be
+            <td>Inspired by the GTK 2 theme Ambiance.&nbsp; Recommended to be
             used with large fonts and images.</td>
           </tr>
 
@@ -4341,6 +4380,14 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
                 </tr>
               </table>
             </td>
+          </tr>
+
+          <tr>
+            <td><code><b>arc</b></code></td>
+
+            <td><img src="arc.png" alt="arc" width="120" height="51"></td>
+
+            <td>Inspired by the Arc icon theme (of the GTK 2/3 theme Arc).</td>
           </tr>
 
           <tr>
@@ -4390,11 +4437,21 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           </tr>
 
           <tr>
+            <td><code><b>blueMenta</b></code></td>
+
+            <td><img src="blueMenta.png" alt="blueMenta" width="120" height=
+            "51"></td>
+
+            <td>Inspired by the GTK 3 theme BlueMenta of versions 1.14 and
+            later of the MATE desktop.</td>
+          </tr>
+
+          <tr>
             <td><code><b>dust</b></code></td>
 
             <td><img src="dust.png" alt="dust" width="120" height="63"></td>
 
-            <td>Inspired by the GTK+ theme Dust.&nbsp; Recommended to be used
+            <td>Inspired by the GTK 2 theme Dust.&nbsp; Recommended to be used
             with large fonts and images.</td>
           </tr>
 
@@ -4403,7 +4460,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
             <td><img src="dust.png" alt="dust" width="120" height="63"></td>
 
-            <td>Inspired by the GTK+ theme Dust.&nbsp; Recommended to be used
+            <td>Inspired by the GTK 2 theme Dust.&nbsp; Recommended to be used
             with large fonts and images.</td>
           </tr>
 
@@ -4413,7 +4470,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><img src="dustSand.png" alt="dustSand" width="120" height=
             "63"></td>
 
-            <td>Inspired by the GTK+ theme Dust Sand.&nbsp; Recommended to be
+            <td>Inspired by the GTK 2 theme Dust Sand.&nbsp; Recommended to be
             used with large fonts and images.</td>
           </tr>
 
@@ -4471,7 +4528,17 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
             <td><img src="mate.png" alt="mate" width="120" height="51"></td>
 
-            <td>Inspired by a few GTK+ themes of the MATE desktop.</td>
+            <td>Inspired by a few GTK 2 themes of versions earlier than 1.14 of
+            the MATE desktop.</td>
+          </tr>
+
+          <tr>
+            <td><code><b>menta</b></code></td>
+
+            <td><img src="menta.png" alt="menta" width="120" height="51"></td>
+
+            <td>Inspired by the GTK 3 theme Menta of versions 1.14 and later
+            of the MATE desktop.</td>
           </tr>
 
           <tr>
@@ -4479,8 +4546,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
             <td><img src="mint.png" alt="mint" width="120" height="51"></td>
 
-            <td>Inspired by a few GTK+ 3 themes bundled with the Linux Mint
-            distribution.</td>
+            <td>Inspired by a few GTK 3 themes bundled with versions earlier
+            than 18 of the Linux Mint distribution.</td>
           </tr>
 
           <tr>
@@ -4488,8 +4555,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
             <td><img src="mint2.png" alt="mint" width="120" height="51"></td>
 
-            <td>Inspired by a few GTK+ 3 themes bundled with version 18 the
-            Linux Mint distribution.</td>
+            <td>Inspired by a few GTK 3 themes bundled with versions 18 and
+            later of the Linux Mint distribution.</td>
           </tr>
 
           <tr>
@@ -4498,7 +4565,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><img src="newWave.png" alt="newWave" width="120" height=
             "63"></td>
 
-            <td>Inspired by the GTK+ theme New Wave.&nbsp; Recommended to be
+            <td>Inspired by the GTK 2 theme New Wave.&nbsp; Recommended to be
             used with large fonts and images.</td>
           </tr>
 
@@ -4602,7 +4669,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><img src="radiance.png" alt="radiance" width="120" height=
             "63"></td>
 
-            <td>Inspired by the GTK+ theme Radiance.&nbsp; Recommended to be
+            <td>Inspired by the GTK 2 theme Radiance.&nbsp; Recommended to be
             used with large fonts and images.</td>
           </tr>
 
@@ -4612,8 +4679,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><img src="ubuntu.png" alt="ubuntu" width="120" height=
             "51"></td>
 
-            <td>Inspired by a couple of GTK+ 3 themes bundled with the Ubuntu
-            Linux distribution.</td>
+            <td>Inspired by a couple of GTK 3 themes bundled with versions
+            earlier than 15.4 of the Ubuntu Linux distribution.</td>
           </tr>
 
           <tr>
@@ -4622,8 +4689,28 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><img src="ubuntu2.png" alt="ubuntu2" width="120" height=
             "51"></td>
 
-            <td>Inspired by a couple of GTK+ 3 themes bundled with versions
-            15.04 and later of the Ubuntu Linux distribution.</td>
+            <td>Inspired by a couple of GTK 3 themes bundled with versions
+            15.04 &#150; 16.04 of the Ubuntu Linux distribution.</td>
+          </tr>
+
+          <tr>
+            <td><code><b>ubuntu3</b></code></td>
+
+            <td><img src="ubuntu3.png" alt="ubuntu3" width="120" height=
+            "51"></td>
+
+            <td>Inspired by a couple of GTK 3 themes bundled with version
+            16.10 of the Ubuntu Linux distribution.</td>
+          </tr>
+
+          <tr>
+            <td><code><b>ubuntuMate</b></code></td>
+
+            <td><img src="ubuntuMate.png" alt="ubuntuMate" width="120" height=
+            "51"></td>
+
+            <td>Inspired by the themes Ambiant-MATE and Radiant-MATE bundled
+            with version 16.10 of the Ubuntu MATE distribution.</td>
           </tr>
 
           <tr>
@@ -4866,7 +4953,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
             <td><img src="yuyo.png" alt="yuyo" width="120" height="51"></td>
 
-            <td>Inspired by the GTK+ theme Yuyo on Ubuntu MATE.</td>
+            <td>Inspired by the GTK 2 theme Yuyo on Ubuntu MATE.</td>
           </tr>
         </table>
 
@@ -6135,7 +6222,7 @@ proc updateWindow {tbl row col w args} {
       <a href="http://wiki.tcl.tk/36708">TkDND Tutorial</a> by Georgios
       Petasis.&nbsp; For the following example it is strongly recommended to
       use TkDND version 2.7 or later, which can be downloaded from the location
-      
+
       <blockquote>
         <address>
           <a href=
@@ -6210,7 +6297,7 @@ proc tblDropOverCmd {dropTarget dragSrc event rootX rootY op dataType data} {
             return 2 ;<i># refuse the drop and re-invoke the callback on motion events</i>
         }
     }
-    
+
     global place row
     set y [expr {$rootY - [winfo rooty $tbl]}]
     foreach {place row} [$tbl <a href="#targetmarkpos">targetmarkpos</a> $y] {}
@@ -6446,6 +6533,17 @@ proc handleTblDrop {tbl data} {
 
           <td>Sent to the tablelist widget whenever it loses ownership of the
           PRIMARY selection.</td>
+
+          <td>Not used.</td>
+        </tr>
+
+        <tr valign="top">
+          <td><code><b>&lt;&lt;TablelistViewUpdated&gt;&gt;</b></code></td>
+
+          <td>Generated whenever the tablelist widget has finished updating its
+          view.&nbsp; Updating the view of a tablelist widget is a complex
+          operation, which, for performance reasons, is performed at idle
+          time.</td>
 
           <td>Not used.</td>
         </tr>
@@ -7601,6 +7699,36 @@ pack $frm -expand yes -fill both
         <code><b>root</b></code> then the return value will be the number of
         items of the tablelist widget.</dd>
 
+        <dt class="tm" id="dicttoitem"><code><i>pathName</i>
+        <b>dicttoitem</b> <i>dictionary</i></code></dt>
+
+        <dd>Returns a tablelist item corresponding to the dictionary indicated
+        by <code><i>dictionary</i></code>.&nbsp; Each key in the specified
+        dictionary is expected to be a valid column index, in any of the forms
+        described in the <a href="#col_indices">COLUMN INDICES</a> section
+        (e.g., a number or a column name).&nbsp; The values corresponding to
+        the keys will be interpreted as the elements of the resulting tablelist
+        item.&nbsp; If the number of distinct numerical equivalents of the keys
+        (see the <code><a href="#columnindex">columnindex</a></b></code>
+        subcommand) is less than the number of columns then the elements
+        corresponding to the missing column indices will be set to empty
+        strings.</dd>
+
+        <dd class="tm">For example, if your tablelist widget has 3 columns, of
+        which the first two were configured with&nbsp; <code><a href=
+        "#col_name">-name</a> forename</code>&nbsp; and&nbsp; <code><a href=
+        "#col_name">-name</a> surname</code>,&nbsp; respectively, and you pass
+        the dictionary&nbsp; <code>{forename Joe&nbsp; surname
+        Black}</code>&nbsp; to the <code><b>dicttoitem</b></code> subcommand,
+        then the return value will be the list&nbsp; <code>{Joe Black
+        {}}</code>.&nbsp; If the user swaps the first two columns, then, for
+        the same dictionary, the subcommand will return the list&nbsp;
+        <code>{Black Joe {}}</code>.</dd>
+
+        <dd class="tm">For technical reasons (the use of the
+        <code><b>dict</b></code> command), this subcommand is not supported for
+        Tcl versions earlier than 8.5.</dd>
+
         <dt class="tm" id="editcell"><code><i>pathName</i> <b>editcell</b>
         <i>cellIndex</i></code></dt>
 
@@ -8380,6 +8508,48 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
         for creating text files, HTML output, XML data, database commands,
         etc.&nbsp; This should, however, be a strictly readonly access;
         otherwise the results will be unpredictable!</dd>
+
+        <dt class="tm" id="itemtodict"><code><i>pathName</i>
+        <b>itemtodict</b> <i>item</i></code></dt>
+
+        <dd>Returns a dictionary built from the tablelist item indicated by
+        <code><i>item</i></code>.&nbsp; The dictionary's keys will be column
+        numbers or names, and the values will be the corresponding elements of
+        the given item.&nbsp; For each column number <code><i>col</i></code>,
+        if the corresponding column name (returned by&nbsp;
+        <code><i>pathName</i> <b><a href=
+        "#columncget">columncget</a></b> <i>col</i> -name</code>)&nbsp; is a
+        nonempty string then this name will be used as dictionary key,
+        otherwise the numerical column index <code><i>col</i></code>.</dd>
+
+        <dd class="tm">
+          For example, if your tablelist widget has 3 columns, of which the
+          first two were configured with&nbsp; <code><a href=
+          "#col_name">-name</a> forename</code>&nbsp; and&nbsp; <code><a href=
+          "#col_name">-name</a> surname</code>,&nbsp; respectively, and you
+          pass the item
+
+          <blockquote>
+            <pre>
+{Joe Black "Young Man in Coffee Shop"}
+</pre>
+          </blockquote>
+        </dd>
+
+        <dd>
+          to the <code><b>itemtodict</b></code> subcommand, then the return
+          value will be the dictionary
+
+          <blockquote>
+            <pre>
+{forename Joe  surname Black  2 {Young Man in Coffee Shop}}
+</pre>
+          </blockquote>
+        </dd>
+
+        <dd>For technical reasons (the use of the <code><b>dict</b></code>
+        command), this subcommand is not supported for Tcl versions earlier
+        than 8.5.</dd>
 
         <dt class="tm" id="labelpath"><code><i>pathName</i> <b>labelpath</b>
         <i>columnIndex</i></code></dt>
@@ -9453,12 +9623,11 @@ set tablelist::W [<a href=
 
       <blockquote>
         <pre>
-bind [.tbl <a href="#bodytag">bodytag</a>] &lt;Button-1&gt; {
-    foreach {tablelist::W tablelist::x tablelist::y} \
-        [<a href=
-"tablelistBinding.html#convEventFields">tablelist::convEventFields</a> %W %x %y] {}
-    puts "clicked on cell [.tbl <a href="#containingcell">containingcell</a> $tablelist::x $tablelist::y]"
-}
+bind [.tbl <a href="#bodytag">bodytag</a>] &lt;Button-1&gt; {printClickedCell %W %x %y}<br>
+proc printClickedCell {w x y} {
+    foreach {tbl x y} [<a href=
+"tablelistBinding.html#convEventFields">tablelist::convEventFields</a> $w $x $y] {}
+    puts "clicked on cell [$tbl <a href="#containingcell">containingcell</a> $x $y]"
 </pre>
       </blockquote>
     </dd>
@@ -9469,59 +9638,94 @@ bind [.tbl <a href="#bodytag">bodytag</a>] &lt;Button-1&gt; {
     same event handling for the separators, multi-line cells, and embedded
     images as for the rest of the tablelist's body.</dd>
 
-    <dd class="tm">
-      The following improved version of the binding script above uses a
-      procedure and thus eliminates the need for prefixing the converted
-      variables with <code>"tablelist::"</code>:
+    <dd class="tm"><b>COMPATIBILITY WITH THE listbox WIDGET:</b>&nbsp; The
+    default bindings associated with the binding tag
+    <code><b>TablelistBody</b></code> ensure that the body component of a
+    tablelist has the same behavior as a Tk core listbox widget.&nbsp; Whether
+    this is strictly valid, is controlled by the boolean variable
+    <code><b>tablelist::strictTk</b></code>.&nbsp; For improved
+    user-friendliness and compatibility with other frameworks, this variable
+    has the default value <code>0</code>, which enables a few
+    Tablelist-specific extensions and changes:</dd>
 
-      <blockquote>
-        <pre>
-bind [.tbl <a href="#bodytag">bodytag</a>] &lt;Button-1&gt; {printClickedCell %W %x %y}<br>
-proc printClickedCell {w x y} {
-    foreach {tbl x y} [<a href=
-"tablelistBinding.html#convEventFields">tablelist::convEventFields</a> $w $x $y] {}
-    puts "clicked on cell [$tbl <a href="#containingcell">containingcell</a> $x $y]"
-}
-</pre>
-      </blockquote>
+    <dd>
+      <ul>
+        <li class="tm">If <code><b>tablelist::strictTk</b></code> is true then
+        all default bindings associated with the binding tag
+        <code><b>TablelistBody</b></code> give rise to exactly the same
+        behavior as the default bindings associated with the binding tag
+        <code><b>Listbox</b></code>.</li>
+
+        <li class="tm">If <code><b>tablelist::strictTk</b></code> is false
+        then, <i>in all selection modes</i>, the selection state of individual
+        tablelist items or elements (depending on the selection type) can be
+        toggled with the aid of <code>Control-Button-1</code>,
+        <code>Control-space</code>, and <code>Control-Select</code> (see
+        below).</li>
+      </ol>
     </dd>
 
-    <dd>The bindings associated with the binding tag
-    <code><b>TablelistBody</b></code>, created automatically by the
-    <code><b>tablelist::tablelist</b></code> command, ensure that the body
-    component of a tablelist has the same default behavior as a listbox
-    widget.&nbsp; If the selection type is <code><b>row</b></code> (which is
-    the default) then everything described in the "DEFAULT BINDINGS" section of
-    the <b>listbox</b> manual entry applies to the body component of a
-    tablelist, too.&nbsp; The only difference is that the word "element" in
-    that manual page has to be replaced with "item" when applying the
-    description to the body of a tablelist widget.</dd>
-
-    <dd class="tm">If the selection type is <code><b>cell</b></code> then
-    everything described in the "DEFAULT BINDINGS" section of the
-    <b>listbox</b> manual entry applies to the body component of a tablelist,
-    too, with the following extensions and changes:</dd>
+    <dd class="tm"><b>BINDINGS FOR THE SELECTION TYPE
+    <code>row</code>:</b>&nbsp; If the selection type is
+    <code><b>row</b></code> (which is the default) then everything described in
+    the "DEFAULT BINDINGS" section of the <b>listbox</b> manual entry applies
+    to the body component of a tablelist, too.&nbsp; The only difference is
+    that the word "element" in that manual page has to be replaced with "item"
+    when applying the description to the body of a tablelist widget.&nbsp; In
+    addition:</dd>
 
     <dd>
       <ol>
-        <li class="tm">If <code>Tab</code> or <code>Shift-Tab</code> is
-        pressed, the location cursor (active element) moves to the
-        next/previous element.&nbsp; If the selection mode is
-        <code><b>browse</b></code> or <code><b>extended</b></code> then the new
-        active element is also selected and all other elements are
-        deselected.&nbsp; In <code><b>extended</b></code> mode the new active
-        element becomes the selection anchor.&nbsp; Notice that these bindings
-        replace the common inter-widget navigation via <code>Tab</code> and
-        <code>Shift-Tab</code> with inter-cell navigation.&nbsp; Just like in
-        the case of the text widget, <code>Control-Tab</code> and
-        <code>Control-Shift-Tab</code> are intended to be used for
-        widget-to-widget keyboard navigation.&nbsp; Unfortunately, this won't
-        always work because some window managers intercept the latter key
-        sequences and use them for their own purposes (like inter-workplace
-        navigation).&nbsp; For this reason, Tablelist supports the additional
-        key sequences <code>Meta-Tab</code> and <code>Meta-Shift-Tab</code> as
-        replacements for <code>Control-Tab</code> and
-        <code>Control-Shift-Tab</code>, respectively.</li>
+        <li class="tm">If <code><b>tablelist::strictTk</b></code> is false
+        (which is the default) then pressing button 1 with the
+        <code>Control</code> key down toggles the selection state of the item
+        under the mouse.&nbsp; If the selection mode is
+        <code><b>extended</b></code> then additional actions apply, as
+        described in the <b>listbox</b> manual entry.&nbsp; If the selection
+        mode is <code><b>single</b></code> or <code><b>browse</b></code> and
+        the selection state of the item changes from unselected to selected
+        then any other selected items will be deselected, just as if button 1
+        had been pressed without the <code>Control</code> key down.</li>
+
+        <li class="tm">Again, if <code><b>tablelist::strictTk</b></code> is
+        false, then <code>Control-space</code> and <code>Control-Select</code>
+        toggle the selection state of the active item just as if button 1 had
+        been pressed over this item with the <code>Control</code> key
+        down.</li>
+      </ol>
+    </dd>
+
+    <dd class="tm"><b>BINDINGS FOR THE SELECTION TYPE
+    <code>cell</code>:</b>&nbsp; If the selection type is
+    <code><b>cell</b></code> then everything described in the "DEFAULT
+    BINDINGS" section of the <b>listbox</b> manual entry applies to the body
+    component of a tablelist, too, with the following extensions and
+    changes:</dd>
+
+    <dd>
+      <ol>
+        <li class="tm">
+          If <code>Tab</code> or <code>Shift-Tab</code> is pressed, the
+          location cursor (active element) moves to the next/previous
+          element.&nbsp; If the selection mode is <code><b>browse</b></code> or
+          <code><b>extended</b></code> then the new active element is also
+          selected and all other elements are deselected.&nbsp; In
+          <code><b>extended</b></code> mode the new active element becomes the
+          selection anchor.
+
+          <p>Notice that these bindings replace the common inter-widget
+          navigation via <code>Tab</code> and <code>Shift-Tab</code> with
+          inter-cell navigation.&nbsp; Just like in the case of the text
+          widget, <code>Control-Tab</code> and <code>Control-Shift-Tab</code>
+          are intended to be used for widget-to-widget keyboard
+          navigation.&nbsp; Unfortunately, this won't always work because some
+          window managers intercept the latter key sequences and use them for
+          their own purposes (like inter-workplace navigation).&nbsp; For this
+          reason, Tablelist supports the additional key sequences
+          <code>Meta-Tab</code> and <code>Meta-Shift-Tab</code> as replacements
+          for <code>Control-Tab</code> and <code>Control-Shift-Tab</code>,
+          respectively.</p>
+        </li>
 
         <li class="tm">If the <code>Left</code> or <code>Right</code> key is
         pressed, the location cursor (active element) moves to the
@@ -9552,6 +9756,75 @@ proc printClickedCell {w x y} {
         <li class="tm">If the location cursor is in an editable cell then
         <code>Return</code> and <code>KP_Enter</code> start the interactive
         editing of the active element.</li>
+
+        <li class="tm">If <code><b>tablelist::strictTk</b></code> is false
+        (which is the default) then pressing button 1 with the
+        <code>Control</code> key down toggles the selection state of the
+        element under the mouse.&nbsp; If the selection mode is
+        <code><b>extended</b></code> then additional actions apply, as
+        described in the <b>listbox</b> manual entry.&nbsp; If the selection
+        mode is <code><b>single</b></code> or <code><b>browse</b></code> and
+        the selection state of the element changes from unselected to selected
+        then any other selected elements will be deselected, just as if button
+        1 had been pressed without the <code>Control</code> key
+        down.</li>
+
+        <li class="tm">Again, if <code><b>tablelist::strictTk</b></code> is
+        false, then <code>Control-space</code> and <code>Control-Select</code>
+        toggle the selection state of the active element just as if button 1
+        had been pressed over this element with the <code>Control</code> key
+        down.</li>
+      </ol>
+    </dd>
+
+    <dd class="tm"><b>BINDINGS FOR SELECT ALL AND DESELECT ALL:</b>&nbsp; The
+    following additional bindings associated with the binding tag
+    <code><b>TablelistBody</b></code> are valid on the windowing systems
+    <code><b>x11</b></code> and <code><b>win32</b></code>:</dd>
+
+    <dd>
+      <ol>
+        <li class="tm">
+          <code>Control-a</code> behaves the same as
+          <code>Control-slash</code>, i.e., it selects everything in the
+          widget, except in <code><b>single</b></code> and
+          <code><b>browse</b></code> modes, in which case it selects the active
+          item or element (depending on the selection type) and deselects
+          everything else.
+
+          <p><b>REMARK 1:</b>&nbsp; The default widget bindings in current Tk
+          versions on Windows already support <code>Control-a</code> as an
+          alternative to <code>Control-slash</code>.&nbsp; In Tablelist this is
+          now valid on X11, too.</p>
+
+          <p><b>REMARK 2:</b>&nbsp; On Mac OS X Aqua, the default widget
+          bindings in current Tk versions use the key sequence
+          <code>Command-a</code> <i>instead of</i>
+          <code>Control-slash</code>.</p>
+        </li>
+
+        <li class="tm">
+          <code>Shift-Control-A</code> behaves the same as
+          <code>Control-backslash</code>, i.e., it deselects everything in the
+          widget, except in <code><b>browse</b></code> mode where it has no
+          effect.
+
+          <p><b>REMARK 1:</b>&nbsp; This shortcut comes in handy on Windows
+          when using, e.g., a French or German keyboard, because in this case
+          Tk fails to recognize the <code>Control-backslash</code> key sequence
+          (for which one has to press <code>Control</code>, <code>AltGr</code>,
+          and a third key: <code>_</code> on a French and <code>&szlig;</code>
+	  on a German keyboard).&nbsp; Moreover, on many keyboards it is quite
+	  difficult (if not even impossible) to generate the
+          <code>Control-backslash</code> key sequence, fact which makes the
+          support for this alternative shortcut even more useful on both X11
+          and Windows.</p>
+
+          <p><b>REMARK 2:</b>&nbsp; On Mac OS X Aqua, the default widget
+          bindings in current Tk versions use the key sequence
+          <code>Option-Command-a</code> <i>instead of</i>
+          <code>Control-backslash</code>.</p>
+        </li>
       </ol>
     </dd>
 
@@ -9902,25 +10175,28 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
         into the cell that was just clicked into if the latter is
         editable.</li>
 
-        <li class="tm">When editing a cell that is not the only editable cell
-        of the tablelist widget, <code>Tab</code> and <code>Shift-Tab</code>
-        terminate the editing in the current cell, move the edit window into
-        the next/previous editable cell of the tablelist, select the contents
-        of the edit window's first entry or entry-like component (if any), and
-        set the insertion cursor to its end.&nbsp; If the new edit window is a
-        text or ctext widget then its contents are left unselected.&nbsp;
-        Notice that these bindings replace the common inter-widget navigation
-        via <code>Tab</code> and <code>Shift-Tab</code> with inter-cell
-        navigation.&nbsp; Just like in the case of the text widget,
-        <code>Control-Tab</code> and <code>Control-Shift-Tab</code> are
-        intended to be used for widget-to-widget keyboard navigation during
-        interactive cell editing.&nbsp; Unfortunately, this won't always work
-        because some window managers intercept the latter key sequences and use
-        them for their own purposes (like inter-workplace navigation).&nbsp;
-        For this reason, Tablelist supports the additional key sequences
-        <code>Meta-Tab</code> and <code>Meta-Shift-Tab</code> as replacements
-        for <code>Control-Tab</code> and <code>Control-Shift-Tab</code>,
-        respectively.</li>
+        <li class="tm">
+          When editing a cell that is not the only editable cell of the
+          tablelist widget, <code>Tab</code> and <code>Shift-Tab</code>
+          terminate the editing in the current cell, move the edit window into
+          the next/previous editable cell of the tablelist, select the contents
+          of the edit window's first entry or entry-like component (if any),
+          and set the insertion cursor to its end.&nbsp; If the new edit window
+          is a text or ctext widget then its contents are left unselected.
+
+          <p>Notice that these bindings replace the common inter-widget
+          navigation via <code>Tab</code> and <code>Shift-Tab</code> with
+          inter-cell navigation.&nbsp; Just like in the case of the text
+          widget, <code>Control-Tab</code> and <code>Control-Shift-Tab</code>
+          are intended to be used for widget-to-widget keyboard navigation
+          during interactive cell editing.&nbsp; Unfortunately, this won't
+          always work because some window managers intercept the latter key
+          sequences and use them for their own purposes (like inter-workplace
+          navigation).&nbsp; For this reason, Tablelist supports the additional
+          key sequences <code>Meta-Tab</code> and <code>Meta-Shift-Tab</code>
+          as replacements for <code>Control-Tab</code> and
+          <code>Control-Shift-Tab</code>, respectively.</p>
+        </li>
 
         <li class="tm">When editing a cell that is not the first/last editable
         cell within its row, <code>Alt-Left</code>/<code>Alt-Right</code>
