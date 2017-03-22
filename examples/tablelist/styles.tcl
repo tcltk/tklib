@@ -3,10 +3,10 @@
 #==============================================================================
 # Demonstrates some ways of improving the look & feel of a tablelist widget.
 #
-# Copyright (c) 2002-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2002-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.16
+package require tablelist 5.17
 
 wm title . "Tablelist Styles"
 
@@ -28,7 +28,7 @@ if {[string compare $winSys "x11"] == 0} {
     catch {font create TkDefaultFont -family Helvetica -size -12}
 
     option add *Font			TkDefaultFont
-    option add *selectBackground	#678db2
+    option add *selectBackground	#5294e2
     option add *selectForeground	white
 }
 

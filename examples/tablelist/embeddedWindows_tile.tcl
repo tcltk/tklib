@@ -3,10 +3,10 @@
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
 #
-# Copyright (c) 2004-2016  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.16
+package require tablelist_tile 5.17
 
 wm title . "Tile Library Scripts"
 
@@ -77,7 +77,15 @@ ttk::scrollbar $vsb -orient vertical -command [list $tbl yview]
 
 proc emptyStr val { return "" }
 
-eval font create BoldFont [font actual [$tbl cget -font]] -weight bold
+#
+# Create a bold font
+#
+set tblFont [$tbl cget -font]
+set size [font actual $tblFont -size]
+if {$size == 0} {					;# e.g., on Ubuntu
+    set size -12
+}
+eval font create BoldFont [font actual $tblFont] -size $size -weight bold
 
 #
 # Populate the tablelist widget
