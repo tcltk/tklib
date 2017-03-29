@@ -46,18 +46,12 @@
 #			and auto-scanning.
 #-------------------------------------------------------------------------
 
-# -char
-# +pressX
-# +textanchoruid
-# +textanchor,$w
-# +textPosOrig
 
 #-------------------------------------------------------------------------------
 # ntext no longer uses private commands ::tk::* from tk8.x/text.tcl.  Any
 # necessary commands are defined below in the ::ntext namespace, even if the
-# corresponding ::tk::* command from tk8.x/text.tcl v1.46/v1.41.4.3 is
-# identical.  This makes ntext less likely to break in future if tk8.x/text.tcl
-# is modified.
+# corresponding ::tk::* command from tk8.x/text.tcl is identical.  This makes
+# ntext less likely to break in future if tk8.x/text.tcl is modified.
 #
 # ntext still uses the private array ::tk::Priv (shared with text.tcl etc) and
 # the private command ::tk::GetSelection (from tk.tcl).  There is a small risk
@@ -73,7 +67,7 @@ package require Tk  8.5
 # These events are the ones from tk8.6/tk.tcl that are relevant to text widget
 # bindings, renamed with the "Ntext" prefix, and modified as noted in comments.
 #
-# On MacOS X Aqua:
+# On macOS/Aqua:
 # - the Control key is modifier "Control"
 # - the Alt     key is modifier "Option"
 # For discussion of Modifier Keys, see http://wiki.tcl.tk/28331
@@ -82,9 +76,17 @@ package require Tk  8.5
 
 switch -exact -- [tk windowingsystem] {
     "x11" {
-	event add <<NtextCut>>		<Control-Key-x> <Key-F20> <Control-Lock-Key-X>
-	event add <<NtextCopy>>		<Control-Key-c> <Key-F16> <Control-Lock-Key-C>
+	# With the exception of points (1) to (3) below, the events <<Ntext*>>
+	# are defined the same way as <<*>> in tk.tcl.
+	event add <<NtextCut>>			<Control-Key-x> <Key-F20> <Control-Lock-Key-X>
+	event add <<NtextCopy>>			<Control-Key-c> <Key-F16> <Control-Lock-Key-C>
 	event add <<NtextPaste>>		<Control-Key-v> <Key-F18> <Control-Lock-Key-V>
+
+	# (1) Use tk.tcl events for these:
+	# event add <<PasteSelection>>
+	# event add <<Undo>>
+	# event add <<Redo>>
+	# event add <<ContextMenu>>
 
 	event add <<NtextSelectAll>>		<Control-Key-slash>
 	event add <<NtextSelectNone>>		<Control-Key-backslash>
@@ -108,18 +110,32 @@ switch -exact -- [tk windowingsystem] {
 	event add <<NtextNextPara>>		<Control-Down>
 	event add <<NtextSelectPrevPara>>	<Control-Shift-Up>
 	event add <<NtextSelectNextPara>>	<Control-Shift-Down>
+
+	# (2) Use tk.tcl events for these:
+	# event add <<PrevWindow>>
+	# event add <<ToggleSelection>>
+	# (3) Define Emacs bindings in ::ntext::EmacsBindings the same way as in
+	#     tk.tcl.
     }
     "win32" {
+	# With the exception of points (1) to (4) below, the events <<Ntext*>>
+	# are defined the same way as <<*>> in tk.tcl.
 
 	event add <<NtextCut>>		<Control-Key-x> <Shift-Key-Delete> <Control-Lock-Key-X>
 	event add <<NtextCopy>>		<Control-Key-c> <Control-Key-Insert> <Control-Lock-Key-C>
 	event add <<NtextPaste>>	<Control-Key-v> <Shift-Key-Insert> <Control-Lock-Key-V>
 
-	# Tk 8.6 also adds <Control-Key-a> <Control-Lock-Key-A> to
-	# <<NtextSelectAll>>, adding this usage to win32 for the first time,
-	# and removing all the "emacs-like bindings" from win32 in order to
+	# (1) Use tk.tcl events for these:
+	# event add <<PasteSelection>>
+	# event add <<Undo>>
+	# event add <<Redo>>
+	# event add <<ContextMenu>>
+
+	# (2) Tk 8.6 also adds <Control-Key-a> <Control-Lock-Key-A> to
+	# <<SelectAll>>, adding this usage to win32 for the first time,
+	# and removing all the "Emacs-like bindings" from win32 in order to
 	# avoid conflict.
-#	event add <<NtextSelectAll>>		<Control-Key-a> <Control-Lock-Key-A>
+	# event add <<NtextSelectAll>>		<Control-Key-a> <Control-Lock-Key-A>
 	event add <<NtextSelectAll>>		<Control-Key-slash>
 	event add <<NtextSelectNone>>		<Control-Key-backslash>
 	event add <<NtextNextChar>>		<Right>
@@ -142,28 +158,40 @@ switch -exact -- [tk windowingsystem] {
 	event add <<NtextNextPara>>		<Control-Down>
 	event add <<NtextSelectPrevPara>>	<Control-Shift-Up>
 	event add <<NtextSelectNextPara>>	<Control-Shift-Down>
+	# (3) Use tk.tcl events for these:
+	# event add <<ToggleSelection>>
+	# (4) Define Emacs bindings in ::ntext::EmacsBindings the same way as in
+	#     tk.tcl, but make them optional not omitted.
     }
     "aqua" {
+	# With the exception of points (1) to (5) below, the events <<Ntext*>>
+	# are defined the same way as <<*>> in tk.tcl.
+
 	event add <<NtextCut>>   <Command-Key-x> <Key-F2> <Command-Lock-Key-X>
 	event add <<NtextCopy>>  <Command-Key-c> <Key-F3> <Command-Lock-Key-C>
 	event add <<NtextPaste>> <Command-Key-v> <Key-F4> <Command-Lock-Key-V>
-	# Consider <<NtextCut>>, different combinations of the Shift and Lock
-	# keyboard modifiers, and valid bindings.
-	# On Cocoa,  <Command-Shift-Key-x> will fire,
-	#            <Command-Lock-Shift-Key-x> will not.
-	# On Carbon, <Command-Shift-Key-X> will not fire,
-	#            <Command-Lock-Shift-Key-X> will.
-	# This doesn't matter much, because the user will not
-	# be using Shift here.
-	#
+
 	# <Shift-Key-Delete>, <Control-Key-Insert>, <Shift-Key-Insert> are not
-	# standard bindings for Cut/Copy/Paste on the Mac - even with "Help" in
-	# place of the non-existent "Insert" key.
+	# standard bindings for Cut/Copy/Paste on macOS/Aqua - even with "Help"
+	# in place of the non-existent "Insert" key.
 	#
 	# Official bindings
 	# See http://support.apple.com/kb/HT1343
 	# The traditional Tk <Control-Key-slash>, <Control-Key-backslash> will
-	# no longer work on the Mac.
+	# no longer work on macOS/Aqua.
+
+	# (1) Use the tk.tcl events for these:
+	# event add <<PasteSelection>>
+	# event add <<Clear>>
+	# event add <<ContextMenu>>
+	# event add <<Undo>>
+	# event add <<Redo>>
+
+	# (2) Allow the "Lock" modifier in the first two events (not done in tk.tcl).
+	# (3) Define Emacs bindings in ::ntext::EmacsBindings the same way as in
+	#     tk.tcl, but make them optional not mandatory.
+	# For aqua the optional Emacs bindings are compatible with these "a"
+	# commands because the Emacs bindings do not use the "Command" modifier.
 	event add <<NtextSelectAll>>		<Command-Key-a> <Command-Lock-Key-A>
 	event add <<NtextSelectNone>>		<Option-Command-Key-a> <Option-Command-Lock-Key-A>
 	event add <<NtextNextChar>> 		<Right>
@@ -183,77 +211,87 @@ switch -exact -- [tk windowingsystem] {
 	event add <<NtextNextLine>> 		<Down>
 	event add <<NtextSelectNextLine>>	<Shift-Down>
 
-	# tk.tcl says "Not official, but logical extensions of above. Also
-	# derived from bindings present in MS Word on OSX."
-	# Ntext leaves these events undefined on the Mac.
-	# However, other Mac applications do not behave this way.  Ntext offers
-	# users a choice.  It is unhelpful to provide behavior that is
-	# discordant with the name and intention of these virtual events, so we
-	# use the raw events instead, and leave these virtual events undefined.
+	# (4) Omit these bindings which tk.tcl describes as "Not official, but
+	#     logical extensions of above. Also derived from bindings present in
+	#     MS Word on [macOS]."
+	#     However, other macOS/Aqua applications do not behave this way.
+	#
+	# Ntext does not define these virtual events on macOS/Aqua.
+	# Keyboard navigation works differently on macOS/Aqua from other
+	# platforms (notably, whether or not an event moves the insert mark),
+	# and it is unhelpful use the same virtual-event name to implement
+	# different behavior on different platforms.
+	# We implement the macOS/Aqua-specific behavior using raw events, and
+	# leave these virtual events undefined.
 	#
 	# event add <<NtextPrevPara>>		<Option-Up>
 	# event add <<NtextNextPara>>		<Option-Down>
 	# event add <<NtextSelectPrevPara>>	<Shift-Option-Up>
 	# event add <<NtextSelectNextPara>>	<Shift-Option-Down>
 
-	# Unwanted bindings on Aqua:
-	# In tk8.6/text.tcl these are listed as "Official bindings"
+	#     Unwanted bindings on Aqua:
+	# (5) In tk.tcl these are listed as "Official bindings"
+	# As above, we implement the macOS/Aqua-specific behavior using raw
+	# events, not virtual events.
 	# event add <<NtextLineStart>>		<Home>
 	# event add <<NtextSelectLineStart>>	<Shift-Home>
 	# event add <<NtextLineEnd>>		<End>
 	# event add <<NtextSelectLineEnd>>	<Shift-End>
-
-	# Unofficial bindings.
-	# In text-based applications, Control bindings typically
-	# do either the same as "s/Control/Command/", or the same as
-	# "s/Control/Option/".  We go with the former, cf. TextEdit.
-        # Recent versions of Aqua intercept <Control-(Up|Down|Left|Right)>, so
-        # we no longer support these bindings.  We add a null binding so that
-        # the event is not interpreted as <(Up|Down|Left|Right)> on older
-        # versions of OS X.
-
-	# event add <<NtextLineStart>>		<Control-Left>
-	# event add <<NtextSelectLineStart>>	<Control-Shift-Left>
-	# event add <<NtextLineEnd>>		<Control-Right>
-	# event add <<NtextSelectLineEnd>>	<Control-Shift-Right>
-
-        bind Ntext <Control-Left>  {# nothing}
-        bind Ntext <Control-Right> {# nothing}
+# FIXME/check - cf. <<NtextLineStart>> and <Home>, etc.
+# Compare all with other macOS/Aqua applications.
     }
 }
 
+# ------------------------------------------------------------------------------
+# Clipboard events and tk_strictMotif
+# ------------------------------------------------------------------------------
 #    event add <<Cut>>   <Shift-Key-Delete>
 #    event add <<Copy>>  <Control-Key-Insert>
 #    event add <<Paste>> <Shift-Key-Insert>
 # 8.5 does this only for win32, and it is unaffected by tk_strictMotif --
 #      cf. 8.5.11, core-8.5-branch at 2013-01-14
 # 8.6 adds and removes these events for X11 using a trace on tk_strictMotif --
-# trace exists only for X11; 8.6 adds events for win32 irrespective of
+# the trace exists only for X11; 8.6 adds events for win32 irrespective of
 # the value of tk_strictMotif
 #
 # We want the extra bindings for X11 on 8.5, so it is most sensible to create
-# NtextCut etc.  Also add them for Aqua.
+# NtextCut etc.
+# ------------------------------------------------------------------------------
 
+# In tk.tcl, the "Emacs bindings" are added here, for the aqua case only -
+# they are not included for win32, and in x11 they are optional, applied with a
+# trace.
+# In ntext the Emacs bindings are optional for all windowingsystems.
 
 # ------------------------------------------------------------------------------
-# These "emacs-like bindings" are used in the Text binding tag; in Tk 8.6 they
-# were removed for the win32 windowing system, and they were added to the
-# virtual events <<NtextNextChar>> etc for the other windowing systems.
+# "Emacs-like bindings"
+# ------------------------------------------------------------------------------
+# These "Emacs-like bindings" (to characters "abefnp") are used in the Text
+# binding tag.  In tk.tcl in Tk 8.6 they were removed for the win32
+# windowingsystem, and they were added to the definitions of the virtual events
+# <<NtextNextChar>> etc for the other windowing systems.
+# Later versions of tk.tcl also removed the Emacs bindings
+# from the virtual-event definitions for x11, and for that windowingsystem only
+# they used a write trace on ::tk_strictMotif to add or remove the bindings by
+# calling the command ::tk::EventMotifBindings.  I.e. the Emacs bindings are
+# always on for aqua, always off for win32, and optional for x11.
 #
-# Ntext makes these events optional, including for win32.  The events are
-# managed by a write trace on the variable ::ntext::classicExtras.
+# Ntext makes all these events optional, including for win32.  The events are
+# managed by a write trace on the variables ::ntext::classicExtras and
+# ::tk_strictMotif which calls the command ::ntext::EmacsBindings.
 #
-# The loss of the "emacs-like bindings" from Text for win32 allows the use of
+# The loss of the "Emacs-like bindings" from Text for win32 allows the use of
 # <Control-a> for <<NtextSelectAll>>; however this usage is also common in X11
-# applications, and illustrates why the "emacs-like bindings" are often a bad
+# applications, and illustrates why the "Emacs-like bindings" are often a bad
 # idea: they often conflict with bindings used by win32/x11 applications,
 # e.g. <Control-n> for "New Document", <Control-p> for "Print".
 #
-# In Ntext the "emacs-like bindings" are switched off by default.
-# The virtual events give a small saving in repeated code, but at the expense
-# of tracing variables to maintain tk_strictMotif.
-# ------------------------------------------------------------------------------
-
+# In Ntext the "Emacs-like bindings" are switched off by default.
+#
+# Binding to virtual events instead of real events give a small saving in
+# repeated code, but at the expense of tracing variables to maintain
+# the effects of ::tk_strictMotif and ::ntext::classicExtras.
+#
 # event add <<NtextNextChar>>		<Control-Key-f> <Control-Lock-Key-F>
 # event add <<NtextSelectNextChar>>	<Control-Key-F> <Control-Lock-Key-f>
 # event add <<NtextPrevChar>>		<Control-Key-b> <Control-Lock-Key-B>
@@ -266,7 +304,11 @@ switch -exact -- [tk windowingsystem] {
 # event add <<NtextSelectPrevLine>>	<Control-Key-P> <Control-Lock-Key-p>
 # event add <<NtextNextLine>>		<Control-Key-n> <Control-Lock-Key-N>
 # event add <<NtextSelectNextLine>>	<Control-Key-N> <Control-Lock-Key-n>
-
+# (For Aqua, the real events may also have a "Shift" modifier.)
+#
+# Other "Emacs-like bindings" (to characters "dkot") are not associated with
+# virtual events and are defined in the code below.
+# ------------------------------------------------------------------------------
 
 
 #-------------------------------------------------------------------------
@@ -682,7 +724,7 @@ if {[tk windowingsystem] eq "aqua"} {
     bind Ntext <Command-KeyPress> {# nothing}
 }
 
-# Additional emacs-like bindings:
+# Additional Emacs-like bindings:
 # cf. <Delete>, but not fixed for TextCursorInSelection and no see
 bind Ntext <Control-d> {
     if {$::ntext::classicExtras && !$tk_strictMotif &&
@@ -742,7 +784,7 @@ bind Ntext <<Redo>> {
 }
 
 # Which platforms use the Meta modifier?
-# Not Mac, PC/Windows or PC/Linux with standard keyboard.
+# Not macOS/Aqua, PC/Windows or PC/Linux with standard keyboard.
 # If you know, please give details at http://wiki.tcl.tk/28331
 bind Ntext <Meta-b> {
     if {!$tk_strictMotif} {
@@ -792,7 +834,7 @@ bind Ntext <Meta-Delete> {
     ntext::AdjustIndentOneLine %W insert
 }
 
-# Non-Macintosh bindings:
+# Non-macOS/Aqua bindings:
 
 if {[tk windowingsystem] eq "aqua"} {
     # There is no insert/overwrite switch.  The widget is always in insert mode.
@@ -809,9 +851,9 @@ if {[tk windowingsystem] eq "aqua"} {
     }
 }
 
-# Macintosh only bindings:
+# macOS/Aqua only bindings:
 #
-# The following virtual events are not defined on the Mac platform:
+# The following virtual events are not defined on the macOS/Aqua platform:
 #   <<NtextPrevPara>>
 #   <<NtextNextPara>>
 #   <<NtextSelectPrevPara>>
@@ -824,7 +866,17 @@ if {[tk windowingsystem] eq "aqua"} {
 
 if {[tk windowingsystem] eq "aqua"} {
 # Some of the bindings above for non-virtual events must be replaced.
-# Other Mac-specific bindings must be added.
+# Other macOS/Aqua-specific bindings must be added.
+
+
+# (0) Non-Printing Keypresses
+
+# On Aqua versions where non-printing keypresses emit a character, those events
+# use the Mod4 modifier.  The binding below prevents binding to <KeyPress>, but
+# not to a more specific binding, if it exists.  E.g. <KeyPress-F5> etc are
+# deemed more specific.
+
+catch {bind Ntext <Mod4-KeyPress> {# nothing}}
 
 # (1) Prior/Next with/without Modifier Keys.
 
@@ -833,22 +885,14 @@ if {[tk windowingsystem] eq "aqua"} {
 # but with a larger increment.  With the Control modifier, scrolling is
 # horizontal and does NOT move the insert mark.
 
-# In Aqua, <Prior>, <Next> do NOT move the insert mark; The Control modifier
+# In Aqua, <Prior>, <Next> DO NOT move the insert mark; The Control modifier
 # DOES move the insert mark, and the Shift modifier DOES move the insert mark
 # AND also extends the selection.
 #
 # In Tk, if <Control-Shift-Prior> is undefined it does same as <Control-Prior>,
 # not the same as <Shift-Prior>.
-# This behavior agrees with other Mac applications, but leaves the Mac with no
-# keyboard bindings for scrolling +/-x.
-
-
-# On Aqua versions where non-printing keypresses emit a character, those events
-# use this modifier.  The binding below prevents binding to <KeyPress>, but not
-# to a more specific binding, if it exists.  E.g. <KeyPress-F5> etc are deemed
-# more specific.
-
-catch {bind Ntext <Mod4-KeyPress> {# nothing}}
+# (FIXME/clarify) This behavior agrees with other macOS/Aqua applications, but it leaves
+# macOS/Aqua with no keyboard bindings for scrolling +/-x.
 
 bind Ntext <Control-Prior> {
     ntext::AdjustInsert %W left
@@ -889,7 +933,7 @@ bind Ntext <Command-Next>  {# nothing}
 
 
 # (2) Home/End with/without Modifier Keys.
-# This usage is conventional Mac behavior; note that tk.tcl makes
+# This usage is conventional macOS/Aqua behavior; note that tk.tcl makes
 # these events do <<?Select?Line(Start|End)>> like on other platforms.
 
 bind Ntext <Home> {
@@ -923,14 +967,14 @@ bind Ntext <Option-End>        {# nothing}
 # <Up>, <Down>, <Shift-Up>, <Shift-Down> (move by 1 line)
 # Wrapped as <<NtextPrevLine>>, <<NtextNextLine>>, <<NtextSelectPrevLine>>,
 # <<NtextSelectNextLine>>.
-# Same for all platforms, no changes needed for the Mac.
+# Same for all platforms, no changes needed for macOS/Aqua.
 ###
 
 
 # (3) Command-Up, Command-Down, with/without Shift Modifier.
 
 # <Command-Up>, <Command-Down>, <Command-Shift-Up>, <Command-Shift-Down> are
-# implemented below, and are the Mac equivalents of
+# implemented below, and are the macOS/Aqua equivalents of
 # <Control-Home>, <Control-Shift-Home>, <Control-End>, <Control-Shift-End>
 # respectively.  We could define some events -
 # <<NtextTop>>, <<NtextSelectTop>>, <<NtextBottom>>, <<NtextSelectBottom>>
@@ -951,13 +995,19 @@ bind Ntext <Command-Shift-Down> {
 }
 
 
-# (4) Control-Up, Control-Down, with/without Shift Modifier.
+# (4) Control-(Left|Right|Up|Down), with/without Shift Modifier.
+#
+# In recent versions of macOS/Aqua, these keyboard events are intercepted by the
+# windowing system, and are not delivered to the application.
+#
+# These null bindings ensure that these events are not interpreted as
+# <(Up|Down|Left|Right)> on older versions of macOS/Aqua that do not
+# intercept these events.
 
-# In recent versions of OS X, these keyboard events are intercepted by the
-# windowing system.
-
-bind Ntext <Control-Up>   {# nothing}
-bind Ntext <Control-Down> {# nothing}
+bind Ntext <Control-Left>  {# nothing}
+bind Ntext <Control-Right> {# nothing}
+bind Ntext <Control-Up>    {# nothing}
+bind Ntext <Control-Down>  {# nothing}
 
 
 # (5) Option-Up, Option-Down, with/without Shift Modifier
@@ -965,14 +1015,14 @@ bind Ntext <Control-Down> {# nothing}
 # The outcome depends on the value of classicParagraphs.
 
 # if {$::ntext::classicParagraphs}
-# Do what non-Mac Tk applications do (for Control-Up etc): navigate between
+# Do what non-macOS/Aqua Tk applications do (for Control-Up etc): navigate between
 # paragraph starts, with movement of the insert mark.  The start of a paragraph
 # is the first non-blank character after a blank line.
 #
 # This behavior differs from that of other Aqua applications.
 
 # if {!$::ntext::classicParagraphs}
-# Do what other Mac applications do: logical line navigation, with
+# Do what other macOS/Aqua applications do: logical line navigation, with
 # movement of the insert mark.
 #
 # - Option-Up goes to the previous {start of a logical line}.
@@ -1021,16 +1071,16 @@ bind Ntext <Shift-Option-Down> {
 }
 
 
-# (6) Control-v - a Mac-only binding to scroll down a page.
+# (6) Control-v - a macOS/Aqua-only binding to scroll down a page.
 #
-# Mac TextEdit and Xcode move the insert mark as well as scrolling.
+# macOS/Aqua TextEdit and Xcode move the insert mark as well as scrolling.
 # Do the same here, using ntext::TextScrollPages. In contrast, Text's
 # tk::TextScrollPages only scrolls, and does not move the insert mark.
-# Does the same as the Mac's <Control-Next>.
+# Does the same as macOS/Aqua's <Control-Next>.
 #
 # N.B. There seems to be no counterpart binding for scrolling up.  Don't Mac
 # users need to scroll up as well as down? Feedback from Mac users please.
-
+#
 # Remove this binding.
 
 #bind Ntext <Control-v> {
@@ -1042,7 +1092,7 @@ bind Ntext <Shift-Option-Down> {
 
 # bind Ntext <Control-Shift-v> {# nothing}
 
-# End of Mac only bindings
+# End of macOS/Aqua-only bindings
 }
 
 # A few additional bindings of my own.
@@ -1081,7 +1131,7 @@ if {[tk windowingsystem] eq "aqua"} {
 }
 set ::tk::Priv(prevPos) {}
 
-# The MouseWheel will typically only fire on Windows and MacOS X.
+# The MouseWheel will typically only fire on Windows and macOS/Aqua.
 # However, someone could use the "event generate" command to produce one
 # on other platforms.  We must be careful not to round -ve values of %D
 # down to zero.
@@ -1208,8 +1258,8 @@ namespace eval ::ntext {
         variable classicSelection   1
     }
 
-    # Whether or not the Mac bindings <?Shift-?Option-(Up|Down)> should use
-    # classic Tk paragraphs rather than trying to emulate those of other Mac
+    # Whether or not the macOS/Aqua bindings <?Shift-?Option-(Up|Down)> should use
+    # classic Tk paragraphs rather than trying to emulate those of other macOS/Aqua
     # applications:
     variable classicParagraphs      0
 
@@ -1265,6 +1315,13 @@ namespace eval ::ntext {
 }
 
 
+##### End of namespace definition.  Now define the procs.
+
+# ::ntext::EmacsBindings --
+# Command bound to traces on variables ::ntext::classicExtras and
+# ::tk_strictMotif, to add or remove the "Emacs bindings" whenever the values
+# of these variables change.
+
 proc ::ntext::EmacsBindings {argVarName var2 action} {
     variable EmacsEvents
     variable classicExtras
@@ -1294,9 +1351,8 @@ proc ::ntext::EmacsBindings {argVarName var2 action} {
     return
 }
 
+# Trigger the trace, to call ::ntext::EmacsBindings for the first time.
 set ::tk_strictMotif $::tk_strictMotif
-
-##### End of namespace definition.  Now define the procs.
 
 # ::tk::TextClosestGap --
 # Given x and y coordinates, this procedure finds the closest boundary
@@ -1308,7 +1364,7 @@ set ::tk_strictMotif $::tk_strictMotif
 # x -		X-coordinate within the window.
 # y -		Y-coordinate within the window.
 
-# ::ntext::TextClosestGap is copied from ::tk with modifications:
+# ::ntext::TextClosestGap --
 # modified to fix the jump-to-next-line issue.
 
 proc ::ntext::TextClosestGap {w x y} {
@@ -1345,8 +1401,8 @@ proc ::ntext::TextClosestGap {w x y} {
 # x -		The x-coordinate of the button press.
 # y -		The x-coordinate of the button press.
 
-# ::ntext::TextButton1 is copied from ::tk with no modifications:
-# so it calls functions in ::ntext, not ::tk
+# ::ntext::TextButton1 --
+# Modified to call TextAnchor not tk::TextAnchor.
 
 proc ::ntext::TextButton1 {w x y} {
     variable ::tk::Priv
@@ -1358,7 +1414,7 @@ proc ::ntext::TextButton1 {w x y} {
     $w mark set insert [TextClosestGap $w $x $y]
     $w mark set $anchorname insert
     # Set the anchor mark's gravity depending on the click position
-    # relative to the gap:
+    # relative to the gap
     set bbox [$w bbox [$w index $anchorname]]
     if {$x > [lindex $bbox 0]} {
 	$w mark gravity $anchorname right
@@ -1388,8 +1444,8 @@ if {[info exists ::tk::Priv(textanchoruid)]} {
     # text.tcl may increment this variable but will not re-initialize it.
 }
 
-# ::ntext::TextAnchor -- identical to v1.46 ::tk::TextAnchor, provided
-# here because versions of text.tcl before 1.41.4.1 (8.5.6) 1.42 do not have it.
+# ::ntext::TextAnchor --
+# Modified to use ::tk::Priv despite change of namespace.
 
 proc ::ntext::TextAnchor {w} {
     variable ::tk::Priv
@@ -1399,6 +1455,7 @@ proc ::ntext::TextAnchor {w} {
     return $Priv(textanchor,$w)
 }
 
+# ::ntext::RepelAnchor --
 # Command to move the anchor to the end of the "recorded selection" that
 # is furthest from $idx.
 
@@ -1417,7 +1474,8 @@ proc ::ntext::RepelAnchor {w idx} {
     return
 }
 
-# Command abstracted from TextSelectTo because it is now called twice.
+# ::ntext::WordBounds --
+# Command abstracted from ::ntext::TextSelectTo because it is now called twice.
 # Extend first/last to word boundaries, but do not allow a "word" to straddle
 # a display line boundary (or, in -wrap char mode, a logical line boundary).
 
@@ -1433,10 +1491,8 @@ proc ::ntext::WordBounds {w lineType first last} {
 	set last1 [$w index $last]
     } else {
     }
-    set first2 [TextPrevPos $w "$first1" \
-	    ntext::new_wordBreakBefore]
-    set last2  [TextNextPos $w "$last1"  \
-	    ntext::new_wordBreakAfter]
+    set first2 [TextPrevPos $w "$first1" ntext::new_wordBreakBefore]
+    set last2  [TextNextPos $w "$last1"  ntext::new_wordBreakAfter]
     # Don't allow a "word" to straddle a display line boundary (or,
     # in -wrap char mode, a logical line boundary).
     # WARNING This is not the right result if -wrap word has been
@@ -1455,7 +1511,6 @@ proc ::ntext::WordBounds {w lineType first last} {
     return [list $first $last]
 }
 
-
 # ::tk::TextSelectTo --
 # This procedure is invoked to extend the selection, typically when
 # dragging it with the mouse*.  Depending on the selection mode (character,
@@ -1467,11 +1522,6 @@ proc ::ntext::WordBounds {w lineType first last} {
 # a text widget mark, and uses a name that will be unique for each
 # text widget (even when there are multiple peers).  Currently the
 # anchor is considered private to Tk, hence the name 'tk::anchor$i'.
-# Name changed from tk::anchor$w to [tk::TextAnchor $w] in text.tcl v1.42,
-# v1.41.4.1 tagged Tk 8.5.6.
-#
-# Changes the selection and the insert mark.  Now also sets the anchor mark.
-# (Previously did not set the anchor mark unless it was undefined.)
 #
 # Arguments:
 # w -		The text window in which the button was pressed.
@@ -1483,26 +1533,36 @@ proc ::ntext::WordBounds {w lineType first last} {
 #   called via TextAutoScan).
 #   TextSelectTo is also called by the bindings to <Double-1>, <Triple-1>,
 #   <Shift-1>, <Double-Shift-1>, <Triple-Shift-1>.
+#
+# The command changes the selection and the insert mark.
 
-# ::ntext::TextSelectTo is copied from ::tk with modifications:
-# - modified to prevent word selection from crossing a line end.
-# - modified to improve repeated selection by word and line - to stop
+# ::ntext::TextSelectTo --
+# This extensively modified command also sets the anchor mark (unlike
+# tk::TextSelectTo which does not set the anchor mark unless it is undefined).
+#
+# Modifications:
+# - prevent word selection from crossing a line end.
+# - improve repeated selection by word and line - to stop
 #   expansion/contraction of the selection at the "wrong" end, in operations
 #   that are intended to alter the selection ar the cursor end.
-# - modified to set the anchor and insert marks for each call
+# - set the anchor and insert marks for each call.
 #
-# - The command sets the insert mark and anchor to the ends of the selection.
 # - The command sets the insert mark to the end of the selection that is closest
-#   to the mouse position $cur.
+#   to the mouse position $cur.  It sets the anchor to the other end of the
+#   selection.
 # - The gravity of the anchor is set so it is facing the selection.
 # - Internally the command sometimes uses its own anchor marks,
 #   ntext::left::$anchorname and ntext::right::$anchorname.  These delimit a
-#   "recorded selection" which is used when there are multiple operations in
-#   selectMode "word" or "line".
-# - These marks are set and used only by TextSelectTo and by RepelAnchor which
-#   is called only from TextSelectTo.
+#   "recorded selection".  When the user performs a sequence of pointer
+#   operations on the selection, using selectMode "word" or "line", the
+#   "recorded selection" (the first selection of the sequence) is used to
+#   constrain the end of the selection that is furthest from the pointer.
+# - These marks are set and used only by TextSelectTo and by RepelAnchor (which
+#   is called only from TextSelectTo).
 # - The command also uses the array ::ntext::OldSelectMode to record state.
 #   The Ntext binding to <Destroy> garbage-collects the array.
+# - When changing the selection, rearrange operations so that the selection is
+#   never full, then empty, then full.
 
 proc ::ntext::TextSelectTo {w x y {extend 0}} {
     variable ::tk::Priv
@@ -1719,20 +1779,22 @@ proc ::ntext::TextSelectTo {w x y {extend 0}} {
 # where the point to extend to is really the boundary between two
 # characters rather than a particular character.
 #
-# Changes the selection.  Does not set the anchor mark unless
-# it is undefined. Does not set the insert mark.
-#
 # Arguments:
 # w -		The text window.
 # index -	The point to which the selection is to be extended.
 
-# ::ntext::TextKeyExtend -- identical to v1.46 ::tk::TextKeyExtend, provided
-# here because versions of text.tcl before 1.41.4.1 (8.5.6) have an earlier
-# incompatible version.
-
 # Called only by bindings to <Control-Shift-space> and <Shift-Select>.
 # Extends the selection from the anchor to the index (the actual argument is
 # the insert mark).
+#
+# Changes the selection.  Does not set the anchor mark unless
+# it is undefined. Does not set the insert mark.
+
+# ::ntext::TextKeyExtend --
+# - Call TextAnchor not tk::TextAnchor.
+# - Set the gravity of the anchor.
+# - When changing the selection, rearrange operations so that the selection is
+#   never full, then empty, then full.
 
 proc ::ntext::TextKeyExtend {w index} {
 
@@ -1761,7 +1823,6 @@ proc ::ntext::TextKeyExtend {w index} {
     return
 }
 
-
 # ::tk::TextPasteSelection --
 # This procedure sets the insertion cursor to the mouse position,
 # inserts the selection, and sets the focus to the window.
@@ -1770,7 +1831,7 @@ proc ::ntext::TextKeyExtend {w index} {
 # w -		The text window.
 # x, y - 	Position of the mouse.
 
-# ::ntext::TextPasteSelection is copied from ::tk with modifications:
+# ::ntext::TextPasteSelection --
 # modified to set oldInsert and call AdjustIndentMultipleLines.
 
 proc ::ntext::TextPasteSelection {w x y} {
@@ -1794,7 +1855,6 @@ proc ::ntext::TextPasteSelection {w x y} {
     }
 }
 
-
 # ::tk::TextAutoScan --
 # This procedure is invoked when the mouse leaves a text window
 # with button 1 down.  It scrolls the window up, down, left, or right,
@@ -1806,9 +1866,8 @@ proc ::ntext::TextPasteSelection {w x y} {
 # Arguments:
 # w -		The text window.
 
-# ::ntext::TextAutoScan is copied from ::tk with modifications:
-# chiefly so it calls ::ntext::TextSelectTo not ::tk::TextSelectTo
-# modified so it calls itself and not ::tk::TextAutoScan
+# ::ntext::TextAutoScan --
+# Modified so it calls itself and not ::tk::TextAutoScan.
 
 proc ::ntext::TextAutoScan {w} {
     variable ::tk::Priv
@@ -1830,7 +1889,6 @@ proc ::ntext::TextAutoScan {w} {
     set Priv(afterId) [after 50 [list ntext::TextAutoScan $w]]
 }
 
-
 # ::tk::TextSetCursor
 # Move the insertion cursor to a given position in a text.  Also
 # clears the selection, if there is one in the text, and makes sure
@@ -1840,9 +1898,6 @@ proc ::ntext::TextAutoScan {w} {
 # Arguments:
 # w -		The text window.
 # pos -		The desired new position for the cursor in the window.
-
-# ::ntext::TextSetCursor - identical to v1.46 ::tk::TextSetCursor - defined
-# so that Ntext will not be broken by changes to text.tcl commands.
 
 proc ::ntext::TextSetCursor {w pos} {
     if {[$w compare $pos == end]} {
@@ -1856,8 +1911,7 @@ proc ::ntext::TextSetCursor {w pos} {
     }
 }
 
-
-# ::tk::TextKeySelect
+# ::tk::TextKeySelect --
 # This procedure is invoked when stroking out selections using the
 # keyboard.  It moves the cursor to a new position, then extends
 # the selection to that position.
@@ -1867,9 +1921,11 @@ proc ::ntext::TextSetCursor {w pos} {
 # new -		A new position for the insertion cursor (the cursor hasn't
 #		actually been moved to this position yet).
 
-# ::ntext::TextKeySelect -- identical to v1.46 ::tk::TextKeySelect, provided
-# here because versions of text.tcl before 1.41.4.1 (8.5.6) have an earlier
-# incompatible version.
+# ::ntext::TextKeySelect --
+# - Call TextAnchor not tk::TextAnchor.
+# - Set the gravity of the anchor.
+# - When changing the selection, rearrange operations so that the selection is
+#   never full, then empty, then full.
 
 proc ::ntext::TextKeySelect {w new} {
 
@@ -1905,7 +1961,6 @@ proc ::ntext::TextKeySelect {w new} {
     update idletasks
 }
 
-
 # ::tk::TextResetAnchor --
 # Set the selection anchor to whichever end is farthest from the
 # index argument.  One special trick: if the selection has two or
@@ -1920,11 +1975,11 @@ proc ::ntext::TextKeySelect {w new} {
 # index -	Position at which mouse button was pressed, which determines
 #		which end of selection should be used as anchor point.
 
-# ::ntext::TextResetAnchor -- identical to v1.46 ::tk::TextResetAnchor, provided
-# here because versions of text.tcl before 1.41.4.1 (8.5.6) have an earlier
-# incompatible version.
-
 # Called by <Shift-1>, <Double-Shift-1> iff ($::ntext::classicAnchor).
+
+# ::ntext::TextResetAnchor --
+# - Call TextAnchor not tk::TextAnchor.
+# - Set the gravity of the anchor.
 
 proc ::ntext::TextResetAnchor {w index} {
     if {[$w tag ranges sel] eq ""} {
@@ -1981,10 +2036,6 @@ proc ::ntext::TextResetAnchor {w index} {
 # Arguments:
 # w -		The text widget whose selection is to be checked
 
-# ::ntext::TextCursorInSelection - identical to
-# v1.46 ::tk::TextCursorInSelection - defined
-# so that Ntext will not be broken by changes to text.tcl commands.
-
 proc ::ntext::TextCursorInSelection {w} {
     expr {
 	[llength [$w tag ranges sel]]
@@ -2002,16 +2053,15 @@ proc ::ntext::TextCursorInSelection {w} {
 # w -		The text window in which to insert the string
 # s -		The string to insert (usually just a single character)
 
-# ::ntext::TextInsert is copied from ::tk with modifications:
-# modified to implement Insert/Overwrite and to call AdjustIndentOneLine
-# combine nested 'if' statements to avoid repetition of 'else' code
+# ::ntext::TextInsert --
+# - implement Insert/Overwrite
+# - call AdjustIndentOneLine
 
 proc ::ntext::TextInsert {w s} {
     if {$s eq "" || [$w cget -state] eq "disabled"} {
 	return
     }
     set compound 0
-
     if {[TextCursorInSelection $w]} {
 	set compound [$w cget -autoseparators]
 	if {$compound} {
@@ -2055,9 +2105,6 @@ proc ::ntext::TextInsert {w s} {
 # n -		The number of display lines to move: -1 for up one line,
 #		+1 for down one line.
 
-# ::ntext::TextUpDownLine - identical to v1.46 ::tk::TextUpDownLine - defined
-# so that Ntext will not be broken by changes to text.tcl commands.
-
 proc ::ntext::TextUpDownLine {w n} {
     variable ::tk::Priv
 
@@ -2085,10 +2132,6 @@ proc ::ntext::TextUpDownLine {w n} {
 # w -		The text window in which the cursor is to move.
 # pos -		Position at which to start search.
 
-
-# ::ntext::TextPrevPara - identical to v1.46 ::tk::TextPrevPara - defined
-# so that Ntext will not be broken by changes to text.tcl commands.
-
 proc ::ntext::TextPrevPara {w pos} {
     set pos [$w index "$pos linestart"]
     while {1} {
@@ -2115,9 +2158,6 @@ proc ::ntext::TextPrevPara {w pos} {
 # w -		The text window in which the cursor is to move.
 # start -	Position at which to start search.
 
-# ::ntext::TextNextPara - identical to v1.46 ::tk::TextNextPara - defined
-# so that Ntext will not be broken by changes to text.tcl commands.
-
 proc ::ntext::TextNextPara {w start} {
     set pos [$w index "$start linestart + 1 line"]
     while {[$w get $pos] ne "\n"} {
@@ -2139,7 +2179,6 @@ proc ::ntext::TextNextPara {w start} {
     return $pos
 }
 
-
 # ::tk::TextScrollPages --
 # This is a utility procedure used in bindings for moving up and down
 # pages and possibly extending the selection along the way.  It scrolls
@@ -2152,8 +2191,10 @@ proc ::ntext::TextNextPara {w start} {
 # count -	Number of pages forward to scroll;  may be negative
 #		to scroll backwards.
 
-# ::ntext::TextScrollPages is called like ::tk::TextScrollPages, but is
-# completely rewritten, and behaves differently.
+# ::ntext::TextScrollPages --
+# - This command is called like ::tk::TextScrollPages, but it is completely
+#   rewritten, and behaves differently.
+# - It has an additional optional argument, "help".
 #
 # ::tk::TextScrollPages scrolls the widget, and returns an index (a new value
 # for the insert mark); if the mark was on-screen before the scroll,
@@ -2228,9 +2269,9 @@ proc ::ntext::TextScrollPages {w count {help ""}} {
 # Arguments:
 # w -		Text window in which to transpose.
 
-# ::ntext::TextTranspose is copied from ::tk::TextTranspose with modifications:
-# modified to call AdjustIndentOneLine.
-# rename local variable autosep to oldSeparator for uniformity with other procs
+# ::ntext::TextTranspose --
+# - calls AdjustIndentOneLine.
+# - renames local variable autosep to oldSeparator, as in other procs
 
 proc ::ntext::TextTranspose w {
     set pos insert
@@ -2269,16 +2310,12 @@ proc ::ntext::TextTranspose w {
 # Arguments:
 # w -		Name of a text widget.
 
-# ::ntext::new_textCopy - identical to v1.46 ::tk_textCopy - defined
-# so that Ntext will not be broken by changes to text.tcl commands.
-
 proc ::ntext::new_textCopy w {
     if {![catch {set data [$w get sel.first sel.last]}]} {
 	clipboard clear -displayof $w
 	clipboard append -displayof $w $data
     }
 }
-
 
 # ::tk_textCut --
 # This procedure copies the selection from a text widget into the
@@ -2288,12 +2325,11 @@ proc ::ntext::new_textCopy w {
 # Arguments:
 # w -		Name of a text widget.
 
-# ::ntext::new_textCut is copied from ::tk_textCut with modifications:
-# modified to set LocalOldFirst, call AdjustIndentOneLine, and
-# add autoseparators
-
-# LocalOldFirst is never off by one: the final newline of the widget cannot
-# be deleted.
+# ::ntext::new_textCut --
+# - set LocalOldFirst and call AdjustIndentOneLine.
+# - configure autoseparators 0|1 (might not be necessary)
+# - LocalOldFirst is never off by one: the final newline of the widget cannot
+#   be deleted.
 
 proc ::ntext::new_textCut w {
     if {![catch {set data [$w get sel.first sel.last]}]} {
@@ -2324,12 +2360,11 @@ proc ::ntext::new_textCut w {
 # Arguments:
 # w -		Name of a text widget.
 
-# ::ntext::new_textPaste is copied from ::tk_textPaste with modifications:
-# - modified to set oldInsert, LocalOldFirst and ntextIndentMark, and call
-#   AdjustIndentMultipleLines.
-# - modified to behave the same way for X11 as for other windowing systems
-# - modified to overwrite the selection (if it exists), even if the insert mark
-#   is elsewhere
+# ::ntext::new_textPaste --
+# - set oldInsert, LocalOldFirst and ntextIndentMark, and call
+#   AdjustIndentMultipleLines
+# - behave the same way for X11 as for other windowing systems
+# - overwrite the selection (if it exists), even if the insert mark is elsewhere
 
 proc ::ntext::new_textPaste w {
     set oldInsert [$w index insert]
@@ -2370,14 +2405,13 @@ proc ::ntext::new_textPaste w {
 # w -		The text window in which the cursor is to move.
 # start -	Position at which to start search.
 
-# ::ntext::TextNextWord is copied from ::tk::TextNextWord with modifications:
-# modified to use a platform-independent definition: always goes to the start
-# of the next word.
+# ::ntext::TextNextWord --
+# - use a platform-independent definition: always goes to the start of the next
+#   word.
 
 proc ::ntext::TextNextWord {w start} {
     TextNextPos $w $start ntext::new_startOfNextWord
 }
-
 
 # ::tk::TextNextPos --
 # Returns the index of the next position after the given starting
@@ -2387,9 +2421,6 @@ proc ::ntext::TextNextWord {w start} {
 # w -		The text window in which the cursor is to move.
 # start -	Position at which to start search.
 # op -		Function to use to find next position.
-
-# ::ntext::TextNextPos - identical to v1.46 ::tk::TextNextPos - defined
-# so that Ntext will not be broken by changes to text.tcl commands.
 
 proc ::ntext::TextNextPos {w start op} {
     set text ""
@@ -2414,9 +2445,6 @@ proc ::ntext::TextNextPos {w start op} {
 # start -	Position at which to start search.
 # op -		Function to use to find next position.
 
-# ::ntext::TextPrevPos - identical to v1.46 ::tk::TextPrevPos - defined
-# so that Ntext will not be broken by changes to text.tcl commands.
-
 proc ::ntext::TextPrevPos {w start op} {
     set text ""
     set cur $start
@@ -2440,9 +2468,6 @@ proc ::ntext::TextPrevPos {w start op} {
 # x -	x location on screen
 # y -	y location on screen
 
-# ::ntext::TextScanMark - identical to v1.46 ::tk::TextScanMark - defined
-# so that Ntext will not be broken by changes to text.tcl commands.
-
 proc ::ntext::TextScanMark {w x y} {
     variable ::tk::Priv
     $w scan mark $x $y
@@ -2459,9 +2484,6 @@ proc ::ntext::TextScanMark {w x y} {
 # w -	The text window from which the text to get
 # x -	x location on screen
 # y -	y location on screen
-
-# ::ntext::TextScanDrag - identical to v1.46 ::tk::TextScanDrag - defined
-# so that Ntext will not be broken by changes to text.tcl commands.
 
 proc ::ntext::TextScanDrag {w x y} {
     variable ::tk::Priv
@@ -2481,7 +2503,10 @@ proc ::ntext::TextScanDrag {w x y} {
     }
 }
 
-# ==== end of file text.tcl
+##### END OF CODE THAT IS MODIFIED from the file text.tcl.
+##### THE CODE ABOVE ALSO USES THE PROCS DEFINED BELOW.
+
+##### Further procs for bindings:
 
 # Two new functions, HomeIndex and EndIndex, that can be used for "smart" Home
 # and End operations
@@ -2542,7 +2567,6 @@ proc ::ntext::HomeIndex {w index} {
     return $home
 }
 
-
 # ::ntext::EndIndex --
 #
 # Return the index to jump to (from $index) as "Smart End"
@@ -2600,7 +2624,7 @@ proc ::ntext::EndIndex {w index} {
 }
 
 
-# Extra procs for the Mac:
+# Extra procs for macOS/Aqua:
 
 # ::ntext::MacHomeIndex --
 #
@@ -2625,7 +2649,6 @@ proc ::ntext::MacHomeIndex {w index} {
     }
 }
 
-
 # ::ntext::MacEndIndex --
 #
 # Return the index to which the insert mark should be moved by an
@@ -2648,7 +2671,6 @@ proc ::ntext::MacEndIndex {w index} {
 	return $lle
     }
 }
-
 
 # ::ntext::AdjustInsert --
 #
@@ -2677,8 +2699,6 @@ proc ::ntext::AdjustInsert {w dir} {
     return
 }
 
-##### END OF CODE THAT IS MODIFIED text.tcl
-##### THE CODE ABOVE DEPENDS ON THE PROCS DEFINED BELOW
 
 ##### START OF CODE FOR WORD BOUNDARY DETECTION
 
