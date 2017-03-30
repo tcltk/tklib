@@ -96,9 +96,9 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
 [var ::ntext::classicSelection]
 [list_begin itemized]
 [item]
-   [const 0] - (default value on Aqua) selects Mac-like behaviour, i.e. when a navigation keystroke cancels a selection, the insert mark first moves to the end of the selection determined by the navigation direction of the keystroke, and then the keystroke is applied.
+   [const 0] - (default value on macOS Aqua) selects Mac-like behaviour, i.e. when a navigation keystroke cancels a selection, the insert mark first moves to the end of the selection determined by the navigation direction of the keystroke, and then the keystroke is applied.
 [item]
-   [const 1] - (default value except on Aqua) selects PC-like behaviour (the same as classic [emph Text]), i.e. when a navigation keystroke cancels a selection, the insert mark is not moved before the keystroke is applied.
+   [const 1] - (default value except on macOS Aqua) selects PC-like behaviour (the same as classic [emph Text]), i.e. when a navigation keystroke cancels a selection, the insert mark is not moved before the keystroke is applied.
 [item]
    For more information see [term ntextBindings]
 [list_end]
@@ -130,7 +130,7 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
 [item]
    [const 1] - text typed at the keyboard overwrites text already in the widget
 [item]
-   The value is toggled by the [emph Insert] key (except on Aqua where there is no such key).
+   The value is toggled by the [emph Insert] key (except on macOS Aqua where there is no such key).
 [item]
    For more information see [term ntextBindings]
 [list_end]
@@ -138,9 +138,9 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
 [var ::ntext::classicParagraphs]
 [list_begin itemized]
 [item]
-   [const 0] - (default value) on Aqua, certain keyboard bindings are made to behave in the same way as the Mac application TextEdit.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>.
+   [const 0] - (default value) on macOS Aqua, certain keyboard bindings are made to behave in the same way as the Mac application TextEdit.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>.
 [item]
-   [const 1] - on Aqua, certain keyboard bindings are made to behave in the same way as classic [emph Text], ignoring the conventions of Mac OS Aqua.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>.
+   [const 1] - on macOS Aqua, certain keyboard bindings are made to behave in the same way as classic [emph Text], ignoring the conventions of Aqua.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>.
 [item]
    For more information see [term ntextBindings]
 [list_end]
