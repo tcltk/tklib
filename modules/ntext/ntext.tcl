@@ -212,17 +212,21 @@ switch -exact -- [tk windowingsystem] {
 	event add <<NtextSelectNextLine>>	<Shift-Down>
 
 	# (4) Omit these bindings which tk.tcl describes as "Not official, but
-	#     logical extensions of above. Also derived from bindings present in
-	#     MS Word on [macOS]."
-	#     However, other macOS/Aqua applications do not behave this way.
+	#     logical extensions of above. Also derived from bindings present
+	#     in MS Word on [macOS]."
 	#
-	# Ntext does not define these virtual events on macOS/Aqua.
-	# Keyboard navigation works differently on macOS/Aqua from other
-	# platforms (notably, whether or not an event moves the insert mark),
-	# and it is unhelpful use the same virtual-event name to implement
-	# different behavior on different platforms.
-	# We implement the macOS/Aqua-specific behavior using raw events, and
-	# leave these virtual events undefined.
+	# - Ntext does not define these virtual events on macOS/Aqua.
+	# - Keyboard navigation works differently on macOS/Aqua from other
+	#   platforms ("Option-Down" operations on macOS/Aqua move the insert
+	#   mark to the next paragraph end, but on other platforms
+	#   <<NtextNextPara>> moves the mark to the next paragraph start).
+	# - It is unhelpful use the same virtual-event name to implement
+	#   different behavior on different platforms.
+	# - On the macOS/Aqua platform, we implement bindings to raw events, and
+	#   leave these virtual events undefined.
+	# - The boolean ::ntext::classicParagraphs allows the developer to
+	#   choose either standard macOS/Aqua behavior (value 0, the default),
+	#   or the same behavior as other platforms (value 1).
 	#
 	# event add <<NtextPrevPara>>		<Option-Up>
 	# event add <<NtextNextPara>>		<Option-Down>
@@ -230,15 +234,15 @@ switch -exact -- [tk windowingsystem] {
 	# event add <<NtextSelectNextPara>>	<Shift-Option-Down>
 
 	#     Unwanted bindings on Aqua:
-	# (5) In tk.tcl these are listed as "Official bindings"
-	# As above, we implement the macOS/Aqua-specific behavior using raw
-	# events, not virtual events.
+	# (5) In tk.tcl these are listed as "Official bindings"; however,
+	#     macOS/Aqua applications typically do not behave this way.
+	#
+	# We implement the macOS/Aqua-specific behavior using raw events, not
+	# virtual events.
 	# event add <<NtextLineStart>>		<Home>
 	# event add <<NtextSelectLineStart>>	<Shift-Home>
 	# event add <<NtextLineEnd>>		<End>
 	# event add <<NtextSelectLineEnd>>	<Shift-End>
-# FIXME/check - cf. <<NtextLineStart>> and <Home>, etc.
-# Compare all with other macOS/Aqua applications.
     }
 }
 
@@ -891,8 +895,9 @@ catch {bind Ntext <Mod4-KeyPress> {# nothing}}
 #
 # In Tk, if <Control-Shift-Prior> is undefined it does same as <Control-Prior>,
 # not the same as <Shift-Prior>.
-# (FIXME/clarify) This behavior agrees with other macOS/Aqua applications, but it leaves
-# macOS/Aqua with no keyboard bindings for scrolling +/-x.
+# This behavior agrees with other macOS/Aqua applications, and it leaves
+# macOS/Aqua (unlike other windowing systems) with no keyboard bindings for
+# horizontal scrolling.
 
 bind Ntext <Control-Prior> {
     ntext::AdjustInsert %W left
