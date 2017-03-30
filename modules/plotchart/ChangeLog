@@ -1,3 +1,6 @@
+2017-03-30  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotannot.tcl:  Correct handling of the -textcolour option for plaintext (reported by Nick Matthews)
+
 2017-03-21  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl:  Correct omission - dot plotting command for polar plots
 	* plotpriv.tcl:   Remove obsolete procedures (DrawLog*Dot and DrawPolarDot) - they have been replaced by DrawDot
