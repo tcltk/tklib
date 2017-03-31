@@ -1,8 +1,22 @@
-2013-03-25  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+2017-03-31  Keith Nash  <kjnash@users.sourceforge.net>
 
-	*
-	* Released and tagged Tklib 0.6 ========================
-	* 
+	* Update to correspond to current tk8.x/text.tcl --
+	  core-8-6-branch 2015-10-09 artifact [e9c33ef1] check-in [553899e9]
+	  core-8-5-branch 2015-10-04 artifact [6af61544] check-in [55133bde]
+	  trunk           2016-09-27 artifact [530d3c1b] check-in [6b21cc27]
+	* Don't call private commands from tk8.x/text.tcl (for compatibility
+	  with all versions of Tk 8.5.x, 8.6.x).
+	* Adapt bindings to have Mac-like behaviour on the Mac.
+	* Show correct cursor for insert/overwrite when there are multiple
+	  widgets.
+	* Fix "Smart End" to handle trailing whitespace.
+	* Different behaviour for "Smart Home" in corner case with wrapped
+	  leading whitespace.
+	* Bugfixes for separator boundaries in Undo/Redo.
+	* Bugfixes for extending the selection.
+	* Add a new example for Mac scrolling.
+	* Update docs and examples.
+	* Increase version to 1.0b1
 
 2009-01-21  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
 
