@@ -1,19 +1,10 @@
 [comment {-*- tcl -*- ntextIndent manpage}]
-[manpage_begin ntextIndent n 0.81]
-[see_also bindtags]
-[see_also ntext]
-[see_also re_syntax]
-[see_also regexp]
-[see_also text]
-[keywords bindtags]
-[keywords re_syntax]
-[keywords regexp]
-[keywords text]
+[manpage_begin ntextIndent n 1.0]
 [moddesc   {ntext Indentation for the Text Widget}]
 [titledesc {ntext Indentation for the Text Widget}]
 [require Tcl 8.5]
 [require Tk 8.5]
-[require ntext [opt 0.81]]
+[require ntext [opt 1.0]]
 [description]
 
 The [package ntext] package provides a binding tag named [emph Ntext] for use by text widgets in place of the default [emph Text] binding tag.
@@ -25,6 +16,24 @@ Tk's text widget may be configured to wrap lines of text that are longer than th
 If a logical line begins with whitespace, then wrapped display lines begin further to the left than the first display line, which can make the text layout untidy and difficult to read.  The [emph Ntext] binding tag provides facilities so that a text widget in [arg -wrap] [arg word] mode will automatically indent display lines (other than the first) to match the initial whitespace of the first display line.
 [para]
 This indentation is available to text widgets only in [arg -wrap] [arg word] mode.
+
+[section COMMANDS]
+
+[list_begin definitions]
+
+[call [cmd ::ntext::new_textCopy] [arg pathName]]
+
+Replacement for ::tk_textCopy.
+
+[call [cmd ::ntext::new_textCut] [arg pathName]]
+
+Replacement for ::tk_textCut that also maintains [emph Ntext] indentation (see [term ntextIndent]).
+
+[call [cmd ::ntext::new_textPaste] [arg pathName]]
+
+Replacement for ::tk_textPaste that also maintains [emph Ntext] indentation (see [term ntextIndent]).
+
+[list_end]
 
 [section {CONFIGURATION OPTIONS}]
 
@@ -105,6 +114,10 @@ If the widget is in [arg -word] [arg wrap] mode, and if [var ::ntext::classicWra
 In other cases, i.e. if the widget is in [arg -word] [arg char] or [arg -word] [arg none] mode, or if [var ::ntext::classicWrap] is set to [const 1],  [fun ::ntext::wrapIndent] will remove the indentation of the logical lines within the range specified by the function's arguments.
 [list_end]
 
+[section BUGS]
+
+This version of [package ntext] is intended to be compatible with all releases of [package Tk] 8.5 and 8.6, and with the branches [emph core-8-5-branch], [emph core-8-6-branch], and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug. Please report such in the category [emph ntext] of the [uri http://core.tcl.tk/tklib/reportlist {Tklib Trackers}].
+
 [section EXAMPLES]
 
 To switch on [emph Ntext] 's indentation and use it in widget .t:
@@ -144,6 +157,11 @@ To switch to [arg -wrap] [arg char] mode:
 .t configure -wrap char
 ::ntext::wrapIndent .t
 }]
-[vset CATEGORY ntext]
-[include ../../support/devel/doc/feedback.inc]
+
+
+
+
+[see_also ntext]
+[see_also text bindtags regexp re_syntax]
+[keywords text bindtags regexp re_syntax]
 [manpage_end]
