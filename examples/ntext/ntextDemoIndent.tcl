@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 
 package require Tk
 
-# Copyright (c) 2005-2011 Keith Nash.
+# Copyright (c) 2005-2017 Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -15,9 +15,13 @@ package require Tk
 ### To explore the ntext options, try ntextDemoBindings.tcl
 ### To explore vertical scrolling on the Mac, try ntextDemoMacScrolling.tcl
 
-### Points to note when using ntext's indent facilities are commented and numbered (1) to (6).
-
-### If the text in your widget is manipulated only by the keyboard and mouse, then (1), (2) and (3) are all you need to do.  If the text or its layout are manipulated by the script, then you also need to call the function ::ntext::wrapIndent - see comments (4) to (6), and the man page for ntextIndent.
+### - Points to note when using ntext's indent facilities are commented and
+###   numbered (1) to (6).
+### - If the text in your widget is manipulated only by the keyboard and mouse,
+###   then (1), (2) and (3) are all you need to do.
+### - If the text or its layout are manipulated by the script, then you also
+###   need to call the function ::ntext::wrapIndent - see comments (4) to (6),
+###   and the man page for ntextIndent.
 
 # This string defines the text that will be displayed in each widget:
 set message {    This demo shows ntext's indentation facilities.  These are switched off by default, but in this demo they have been switched on.
@@ -30,7 +34,7 @@ set message {    This demo shows ntext's indentation facilities.  These are swit
 }
 # End of string for widget text.
 
-package require ntext
+package require ntext 1.0
 
 ### (1) Indentation is disabled by default.  Set this variable to 0 to enable it:
 set ::ntext::classicWrap        0
@@ -53,7 +57,11 @@ bindtags .rhf.new {.rhf.new Ntext . all}
 .rhf.new insert end "  I use the Ntext bindings.\n\n$message"
 .rhf.new edit separator
 
-### (4) The script (not the keyboard or mouse) has inserted text.  Because the widget has not yet been drawn, ::ntext::wrapIndent will be called by the <Configure> binding, so it is not really necessary to call it here.  It is necessary in most other cases when the 'insert' command is called by the script.
+### (4) The script (not the keyboard or mouse) has inserted text.  Because the
+###     widget has not yet been drawn, ::ntext::wrapIndent will be called by the
+###     <Configure> binding, so it is not really necessary to call it here.  It
+###     is necessary in most other cases when the 'insert' command is called by
+###     the script.
 ::ntext::wrapIndent .rhf.new
 
 pack [frame .lhf -bg $col] -side left -anchor ne
@@ -64,7 +72,8 @@ pack [text .lhf.classic ] -padx 2
 pack [label  .lhf.m -bg $col -text "(The radiobuttons and tab settings do not\napply to the left-hand text widget)"]
 
 pack [frame .rhf.h -bg $col] -fill x
-### (5) When indentation is switched on or off, call ::ntext::wrapIndent to calculate or clear indentation for the entire widget:
+### (5) When indentation is switched on or off, call ::ntext::wrapIndent to
+### calculate or clear indentation for the entire widget:
 pack [radiobutton .rhf.h.off -bg $col -text "Indent Off" -variable ::ntext::classicWrap -value 1 -command {::ntext::wrapIndent .rhf.new}] -side right
 pack [radiobutton .rhf.h.on  -bg $col -text "Indent On"  -variable ::ntext::classicWrap -value 0 -command {::ntext::wrapIndent .rhf.new}] -side right
 pack [label  .rhf.h.l -bg $col -text "Switch indentation on/off: "] -side right
@@ -79,7 +88,9 @@ proc changeTabs {} {
     if {[string is integer -strict $nTabs] && $nTabs > 0} {
         set font [lindex [.rhf.new configure -font] 4]
         .rhf.new configure -tabs "[expr {$nTabs * [font measure $font 0]}] left"
-        ### (6) Changing the tabs may change the indentation of the first display line of a logical line; if so, the indentation of the other display lines must be recalculated:
+        ### (6) Changing the tabs may change the indentation of the first
+        ###     display line of a logical line; if so, the indentation of the
+        ###     other display lines must be recalculated:
         ::ntext::wrapIndent .rhf.new
     }
 }

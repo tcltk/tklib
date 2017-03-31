@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 
 package require Tk
 
-# Copyright (c) 2005-2013 Keith Nash.
+# Copyright (c) 2005-2017 Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -18,7 +18,7 @@ package require Tk
 
 . configure -bg #d0cfce
 
-package require ntext
+package require ntext 1.0
 
 # This string defines the text that will be displayed in each widget:
 set message {The source code for this example shows how simple it is to deploy ntext.  It is necessary to "package require" the ntext package, and then call the "bindtags" command for any text widget in which you wish to use the Ntext bindings...}
@@ -42,11 +42,6 @@ set ::ntext::classicWordBreak   0
 # Set to 0 to follow Mac Aqua conventions on placement of the insert mark
 # when a selection is cancelled by keyboard navigation:
 set ::ntext::classicSelection   1
-
-# Set to 1 to follow Mac Aqua conventions on vertical scrolling with the
-# Up/Down cursor keys and the Control or Option ("Alt") modifier keys.
-# Has effect only on Aqua.
-set ::ntext::strictAqua         1
 
 
 # Create two identical text widgets:

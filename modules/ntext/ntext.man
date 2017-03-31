@@ -1,10 +1,10 @@
 [comment {-*- tcl -*- ntext manpage}]
-[manpage_begin ntext n 1.0b1]
+[manpage_begin ntext n 1.0]
 [moddesc   {Alternative Bindings for the Text Widget}]
 [titledesc {Alternative Bindings for the Text Widget}]
 [require Tcl 8.5]
 [require Tk 8.5]
-[require ntext [opt 1.0b1]]
+[require ntext [opt 1.0]]
 [description]
 
 The purpose of the [package ntext] package is to make the text widget behave more like other text-editing applications. It makes the text widget more useful for implementing a text editor, and makes it behave in a way that will be more familiar to most users.

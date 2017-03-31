@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 
 package require Tk
 
-# Copyright (c) 2005-2011 Keith Nash.
+# Copyright (c) 2005-2017 Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -32,7 +32,7 @@ Try word-by-word navigation (Control key with left cursor or right cursor key); 
 The classicMouseSelect and classicAnchor options are discussed in the man page for ntextBindings.}
 # End of string for widget text.
 
-package require ntext
+package require ntext 1.0
 
 # Whether Shift-Button-1 ignores changes made by the kbd to the insert mark:
 set ::ntext::classicMouseSelect 0
@@ -53,11 +53,6 @@ set ::ntext::classicWrap        1
 # when a selection is cancelled by keyboard navigation:
 # Has effect on all platforms.  Default value is 0 on Aqua, 1 on other platforms.
 # set ::ntext::classicSelection   1
-
-# Set to 1 to follow Mac Aqua conventions on vertical scrolling with the
-# Up/Down cursor keys and the Control or Option ("Alt") modifier keys.
-# Has effect only on Aqua.
-# set ::ntext::strictAqua         0
 
 
 set col #e0dfde
@@ -105,13 +100,6 @@ pack [frame .rhf.m -bg $col] -anchor ne
 pack [radiobutton .rhf.m.on  -bg $col -text "On " -variable ::ntext::classicSelection -value 1] -side right
 pack [radiobutton .rhf.m.off -bg $col -text "Off" -variable ::ntext::classicSelection -value 0] -side right
 pack [label  .rhf.m.l -bg $col -text "classicSelection: "] -side right
-
-if {[tk windowingsystem] eq "aqua"} {
-pack [frame .rhf.n -bg $col -bg $col] -anchor ne -pady {0 10}
-pack [radiobutton .rhf.n.on  -bg $col -text "On " -variable ::ntext::strictAqua -value 1] -side right
-pack [radiobutton .rhf.n.off -bg $col -text "Off" -variable ::ntext::strictAqua -value 0] -side right
-pack [label  .rhf.n.l -bg $col -text "strictAqua: "] -side right
-}
 
 proc setPattern {} {
     global wordBreakChoice

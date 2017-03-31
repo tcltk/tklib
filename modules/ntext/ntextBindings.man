@@ -1,10 +1,10 @@
 [comment {-*- tcl -*- ntextBindings manpage}]
-[manpage_begin ntextBindings n 1.0b1]
+[manpage_begin ntextBindings n 1.0]
 [moddesc   {Alternative Bindings for the Text Widget}]
 [titledesc {Alternative Bindings for the Text Widget}]
 [require Tcl 8.5]
 [require Tk 8.5]
-[require ntext [opt 1.0b1]]
+[require ntext [opt 1.0]]
 [description]
 
 The [package ntext] package provides a binding tag named [emph Ntext] for use by text widgets in place of the default [emph Text] binding tag.
