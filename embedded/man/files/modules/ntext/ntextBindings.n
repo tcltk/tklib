@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'ntextBindings\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "ntextBindings" n 0\&.81 tklib "Alternative Bindings for the Text Widget"
+.TH "ntextBindings" n 1\&.0 tklib "Alternative Bindings for the Text Widget"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -277,7 +277,7 @@ package require \fBTcl  8\&.5\fR
 .sp
 package require \fBTk  8\&.5\fR
 .sp
-package require \fBntext  ?0\&.81?\fR
+package require \fBntext  ?1\&.0?\fR
 .sp
 .BE
 .SH DESCRIPTION
@@ -291,13 +291,17 @@ Clicking near the end of a (logical) line moves the cursor to the end of that li
 .IP \(bu
 Double-clicking or dragging near the end of a (logical) line will highlight/select characters from the end of that line \fI(not the next line, or the region at the end of the line where there are no characters)\fR\&.  If the widget is in \fI-wrap\fR \fIword\fR mode, the same rule applies to display lines\&.
 .IP \(bu
-The \fIEnd\fR key implements "Smart End" (successive keypresses move the cursor to the end of the display line, then to the end of the logical line); the \fIHome\fR key implements "Smart Home" (which is similar to "Smart End", but also toggles between the beginning and end of leading whitespace)\&.
+On windowing systems other than macOS Aqua, the \fIHome\fR key implements "Smart Home" (successive keypresses move the cursor to the start of the display line, then to the first non-whitespace character at the start of the logical line, then toggles between the beginning and end of leading whitespace); the \fIEnd\fR key implements "Smart End" (which is similar to "Smart Home")\&.  On macOS Aqua, this functionality is provided by the operations <Command-Left> and <Command-Right>\&.
 .IP \(bu
-When a selection exists, a <<Paste>> operation (e\&.g\&. <Control-v>) overwrites the selection (as most editors do), and does so on all platforms\&.
+When a selection exists, a "Paste" operation (e\&.g\&. <Control-v>) overwrites the selection (as most editors do), and does so on all platforms\&.
 .IP \(bu
-The <Insert> key toggles between "Insert" and "Overwrite" modes for keyboard input\&.  \fI(In contrast, the Text binding tag uses <Insert> as a method to paste the "primary selection", a task that can be accomplished instead by mouse middle-click\&.)\fR
+On windowing systems other than macOS Aqua, the \fIInsert\fR key toggles between "Insert" and "Overwrite" modes for keyboard input\&.  \fI(In contrast, the Text binding tag uses\fR Insert \fIas a method to paste the "primary selection", a task that can be accomplished instead by mouse middle-click\&.)\fR
 .IP \(bu
-The <Escape> key clears the selection\&.
+The \fIEscape\fR key clears the selection\&.
+.IP \(bu
+On the macOS Aqua windowing system, \fINtext\fR follows Aqua conventions for keyboard navigation\&.  Certain bindings related to vertical scrolling can be forced to behave in the same way as for the Windows and X11 windowing systems, by setting \fB::ntext::classicParagraphs\fR to \fB1\fR (see Section \fBCONFIGURATION OPTIONS\fR)\&.
+.IP \(bu
+On the macOS Aqua windowing system, \fINtext\fR follows Aqua conventions for placement of the insert mark when keyboard navigation cancels a selection\&.  This behavior can be switched off by setting \fB::ntext::classicSelection\fR to \fB1\fR (see Section \fBCONFIGURATION OPTIONS\fR)\&.
 .IP \(bu
 Selecting with <Shift-Button1> selects from the previous position of the insertion cursor\&. \fI(In the Text binding tag, the selection anchor may be the position of the previous mouse click\&.)\fR
 .IP \(bu
@@ -305,7 +309,7 @@ Selecting with <Shift-Button1> selects from the previous position of the inserti
 .IP \(bu
 By default, the \fINtext\fR binding tag does not provide several of the Control-key bindings supplied by the \fIText\fR binding tag\&.  Modern keyboards offer alternatives, such as cursor keys for navigation; modern applications often use the Control-key bindings for other purposes (e\&.g\&. <Control-p> for "print")\&.
 .PP
-The last three cases, the behavior of \fIText\fR is often useful, so \fINtext\fR gives you the option of retaining it, by setting variables defined in the ::ntext namespace to 1 (instead of their default 0)\&.  Explaining these features in more detail:
+In the last three cases, the behavior of \fIText\fR is often useful, so \fINtext\fR gives you the option of retaining it, by setting variables defined in the ::ntext namespace to 1 (instead of their default 0)\&.  Explaining these features in more detail:
 .IP \(bu
 If the mouse is clicked at position A, then the keyboard is used to move the cursor to B, then shift is held down, and the mouse is clicked at C: the \fIText\fR binding tag gives a selection from A to C; the \fINtext\fR gives a selection from B to C\&.  If you want \fINtext\fR to behave like \fIText\fR in this respect, set \fB::ntext::classicMouseSelect\fR to 1\&.
 .IP \(bu
@@ -339,6 +343,13 @@ The behaviour of \fINtext\fR may be configured application-wide by setting the v
 \fB1\fR - selects classic \fIText\fR behaviour
 .PP
 .PP
+\fB::ntext::classicSelection\fR
+.IP \(bu
+\fB0\fR - (default value on macOS Aqua) selects Mac-like behaviour, i\&.e\&. when a navigation keystroke cancels a selection, the insert mark first moves to the end of the selection determined by the navigation direction of the keystroke, and then the keystroke is applied\&.
+.IP \(bu
+\fB1\fR - (default value except on macOS Aqua) selects PC-like behaviour (the same as classic \fIText\fR), i\&.e\&. when a navigation keystroke cancels a selection, the insert mark is not moved before the keystroke is applied\&.
+.PP
+.PP
 \fB::ntext::overwrite\fR
 .IP \(bu
 \fB0\fR - (initial value) text typed at the keyboard is inserted into the widget
@@ -347,6 +358,21 @@ The behaviour of \fINtext\fR may be configured application-wide by setting the v
 .IP \(bu
 The value is toggled by the \fIInsert\fR key\&.
 .PP
+.PP
+\fB::ntext::classicParagraphs\fR
+.IP \(bu
+\fB0\fR - (default value) on macOS Aqua, certain keyboard bindings are made to behave in the same way as the Mac application TextEdit\&.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>\&.
+.IP \(bu
+\fB1\fR - on macOS Aqua, certain keyboard bindings are made to behave in the same way as for the Windows and X11 windowing systems and the classic \fIText\fR, ignoring the conventions of Aqua\&.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>\&.
+.PP
+.SH INTERNALS
+In order to remain independent of the version of \fBTk\fR (8\&.5 or 8\&.6), \fBntext\fR defines its own virtual events\&.  These new virtual events are used only in the \fINtext\fR binding tag, and therefore do not interfere with the real or virtual events used in other code\&.
+.PP
+These events include <<NtextCut>>, <<NtextCopy>>, <<NtextPaste>> which are used in place of <<Cut>>, <<Copy>>, <<Paste>> respectively\&.
+.PP
+The definition of the virtual event <<NtextCut>> (etc) is similar to that of <<Cut>> (etc) in \fBTk\fR 8\&.6\&.
+.SH BUGS
+This version of \fBntext\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5 and 8\&.6, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIntext\fR of the \fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
 .SH EXAMPLE
 To use \fINtext\fR but keep classic \fIText\fR 's variable-anchor feature:
 .CS
@@ -358,13 +384,6 @@ set ::ntext::classicAnchor 1
 bindtags \&.t {\&.t Ntext \&. all}
 
 .CE
-.SH "BUGS, IDEAS, FEEDBACK"
-This document, and the package it describes, will undoubtedly contain
-bugs and other problems\&.
-Please report such in the category \fIntext\fR of the
-\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
-Please also report any ideas for enhancements you may have for either
-package and/or documentation\&.
 .SH "SEE ALSO"
 bindtags, ntext, ntextIndent, text
 .SH KEYWORDS

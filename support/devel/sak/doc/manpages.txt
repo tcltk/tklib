@@ -26,6 +26,7 @@ modules/ico/ico.man
 modules/ipentry/ipentry.man
 modules/khim/khim.man
 modules/menubar/menubar.man
+modules/notifywindow/notifywindow.man
 modules/ntext/ntext.man
 modules/ntext/ntextBindings.man
 modules/ntext/ntextIndent.man

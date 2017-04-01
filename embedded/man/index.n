@@ -278,6 +278,12 @@ tklib
 \fBfiles/modules/diagrams/diagram\&.n\fR
 diagram
 .RE
+alert
+.RS
+.TP
+\fBfiles/modules/notifywindow/notifywindow\&.n\fR
+notifywindow
+.RE
 append tag
 .RS
 .TP
@@ -920,6 +926,12 @@ non-convex
 \fBfiles/modules/canvas/canvas_equad\&.n\fR
 canvas::edit::quadrilateral
 .RE
+notification
+.RS
+.TP
+\fBfiles/modules/notifywindow/notifywindow\&.n\fR
+notifywindow
+.RE
 numerical values
 .RS
 .TP
@@ -1219,6 +1231,12 @@ tile
 .TP
 \fBfiles/modules/canvas/canvas_sqmap\&.n\fR
 canvas::sqmap
+.RE
+tk
+.RS
+.TP
+\fBfiles/modules/notifywindow/notifywindow\&.n\fR
+notifywindow
 .RE
 toolbar
 .RS

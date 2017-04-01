@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'ntextWordBreak\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "ntextWordBreak" n 0\&.81 tklib "ntext Word Boundary Detection for the Text Widget"
+.TH "ntextWordBreak" n 1\&.0 tklib "ntext Word Boundary Detection for the Text Widget"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -277,7 +277,7 @@ package require \fBTcl  8\&.5\fR
 .sp
 package require \fBTk  8\&.5\fR
 .sp
-package require \fBntext  ?0\&.81?\fR
+package require \fBntext  ?1\&.0?\fR
 .sp
 .BE
 .SH DESCRIPTION
@@ -356,6 +356,8 @@ Traditionally Tcl has defined only one word class and one non-word class: on Win
 The use of three classes of characters might make selection too fine-grained; but in this case, holding down the \fIShift\fR key and double-clicking another word is an excellent way to select a longer range of text (a useful binding that Tcl/Tk has long provided but which is missing in other systems)\&.
 .PP
 As well as its defaults, \fINtext\fR permits the developer to define their own classes of characters, or to revert to the classic \fIText\fR definitions, or to specify their own regexp matching patterns\&.
+.SH BUGS
+This version of \fBntext\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5 and 8\&.6, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIntext\fR of the \fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
 .SH EXAMPLE
 To use \fINtext\fR with Tcl/Tk's usual word-boundary detection rules:
 .CS
@@ -377,17 +379,11 @@ To define a different set of word-boundary detection rules:
 package require ntext
 text \&.t
 bindtags \&.t {\&.t Ntext \&. all}
-::ntext::createMatchPatterns  {[[:space:][:cntrl:]]} {[[:punct:]]} {[^[:punct:][:space:][:cntrl:]]}
+::ntext::createMatchPatterns \\
+  {[[:space:][:cntrl:]]} {[[:punct:]]} {[^[:punct:][:space:][:cntrl:]]}
 
 .CE
 See regexp, re_syntax for more information\&.
-.SH "BUGS, IDEAS, FEEDBACK"
-This document, and the package it describes, will undoubtedly contain
-bugs and other problems\&.
-Please report such in the category \fIntext\fR of the
-\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
-Please also report any ideas for enhancements you may have for either
-package and/or documentation\&.
 .SH "SEE ALSO"
 bindtags, ntext, re_syntax, regexp, text
 .SH KEYWORDS

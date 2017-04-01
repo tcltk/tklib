@@ -2,7 +2,7 @@
 '\" Generated from file 'plotchart\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 2013 Arjen Markus <arjenmarkus@users\&.sourceforge\&.net>
 '\"
-.TH "Plotchart" n 2\&.3\&.4 tklib "Plotchart"
+.TH "Plotchart" n 2\&.3\&.5 tklib "Plotchart"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -278,7 +278,7 @@ package require \fBTcl  ?8\&.5?\fR
 .sp
 package require \fBTk  ?8\&.5?\fR
 .sp
-package require \fBPlotchart  ?2\&.3\&.4?\fR
+package require \fBPlotchart  ?2\&.4\&.0?\fR
 .sp
 \fB::Plotchart::createXYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 .sp
@@ -383,6 +383,10 @@ package require \fBPlotchart  ?2\&.3\&.4?\fR
 \fB$xyplot\fR plot \fIseries\fR \fIxcrd\fR \fIycrd\fR
 .sp
 \fB$xyplot\fR plotlist \fIseries\fR \fIxlist\fR \fIylist\fR \fIevery\fR
+.sp
+\fB$xyplot\fR region \fIseries\fR \fIxlist\fR \fIylist\fR
+.sp
+\fB$xyplot\fR minmax \fIseries\fR \fIxcrd\fR \fIymin\fR \fIymax\fR
 .sp
 \fB$histogram\fR plotcumulative \fIseries\fR \fIxcrd\fR \fIycrd\fR
 .sp
@@ -1550,13 +1554,17 @@ to position the legend outside the actual plot\&.
 \fBfont\fR font
 Set the font used to draw the text next to the symbol\&.
 .TP
-\fBlegendtype\fR
+\fBlegendtype\fR type
 Override the type of the legend, that is pre-defined for the current type of
 plot\&. May be one of: rectangle or line\&.
 .TP
 \fBposition\fR corner
 Set the position of the legend\&. May be one of: top-left, top-right,
 bottom-left or bottom-right\&. (Default value is top-right\&.)
+.TP
+\fBspacing\fR pixels
+Set the vertical spacing between entries in the legend (in pixels)\&.
+bottom-left or bottom-right\&. (Default value is 10 pixels\&.)
 .RE
 .sp
 .TP
@@ -1710,7 +1718,7 @@ Y-coordinate of the new point\&.
 .RE
 .PP
 .PP
-For \fIxy plots\fR there is the additional command \fIplotlist\fR,
+For \fIxy, x-log y, log-x-y, log-x-log-y plots\fR there is the additional command \fIplotlist\fR,
 which is useful for plotting a large amount of data:
 .TP
 \fB$xyplot\fR plotlist \fIseries\fR \fIxlist\fR \fIylist\fR \fIevery\fR
@@ -1719,7 +1727,7 @@ for every Nth data point\&.
 .RS
 .TP
 string \fIseries\fR (in)
-Name of the data series the new point belongs to\&.
+Name of the data series the new line belongs to\&.
 .TP
 float \fIxlist\fR (in)
 List of X-coordinates for the data series\&.
@@ -1730,6 +1738,47 @@ List of Y-coordinates for the data series\&.
 int \fIevery\fR (in)
 Optional argument stating how often a symbol (if any) should be drawn\&.
 If left out, use a simple heuristic: N = sqrt(number of data points)\&.
+.RE
+.PP
+Other commands for \fIxy, x-log y, log-x-y, log-x-log-y plots\fR are \fIregion\fR and \fIminmax\fR to draw filled polygons:
+.TP
+\fB$xyplot\fR region \fIseries\fR \fIxlist\fR \fIylist\fR
+Draw a filled polygon (region)\&. The configuration of the series influences the polygon as follows:
+\fI-fillcolour\fR is used to fill the polygon, \fI-colour\fR is used for the boundary (set it to {} if
+no boundary is required and \fI-width\fR determines the width of the boundary\&.
+.RS
+.TP
+string \fIseries\fR (in)
+Name of the data series the new region belongs to\&.
+.TP
+float \fIxlist\fR (in)
+List of X-coordinates for the region\&.
+.TP
+float \fIycrd\fR (in)
+List of Y-coordinates for the region\&.
+.RE
+.TP
+\fB$xyplot\fR minmax \fIseries\fR \fIxcrd\fR \fIymin\fR \fIymax\fR
+Draw a filled strip representing a minimum and a maximum\&. The configuration of the series influences the polygon as follows:
+\fI-fillcolour\fR is used to fill the polygon, \fI-colour\fR is used for the boundary (set it to {} if
+no boundary is required and \fI-width\fR determines the width of the boundary\&.
+.sp
+The arguments \fIymin\fR and \fIymax\fR may be empty to get an extra vertex in the strip\&. If both
+are empty, a new strip is started\&. For best results, the x-coordinate should be specified in ascending
+order\&.
+.RS
+.TP
+string \fIseries\fR (in)
+Name of the data series the new min/max strip belongs to\&.
+.TP
+float \fIxcrd\fR (in)
+X-coordinate for the strip\&.
+.TP
+float \fIymin\fR (in)
+The minimum y-coordinate for the strip\&.
+.TP
+float \fIymax\fR (in)
+The maximum y-coordinate for the strip\&.
 .RE
 .PP
 .PP
@@ -3235,12 +3284,9 @@ Maximum radius\&.
 .sp
 .TP
 \fB::Plotchart::polarToPixel\fR \fIw\fR \fIrad\fR \fIphi\fR
-Wrapper for a call to \fB::Plotchart::coordsToPixel\fR, which assumes
-the world coordinates and viewport are set appropriately\&. Converts
-polar coordinates to pixel coordinates\&.
-\fINote:\fR To be useful it should be accompanied by a matching
-\fB::Plotchart::worldCoordinates\fR procedure\&. This is automatically
-taken care of in the creation routine for polar plots\&.
+Wrapper for a call to \fB::Plotchart::coordsToPixel\fR\&.
+\fINote:\fR This procedure has been deprecated - you should
+use the procedure \fB::Plotchart::coordsToPixel\fR instead\&.
 .RS
 .TP
 widget \fIw\fR (in)
@@ -3623,7 +3669,8 @@ string \fIstyle\fR (in)
 The name of the plot style to manipulate
 .TP
 list \fIargs\fR (in)
-The new options for the style - see the \fBplotconfig\fR command for details
+The new options for the style\&. Each option is described by: chart type, component of the chart,
+property of the component and the new value for the property - see the \fBplotconfig\fR command for details\&.
 .RE
 .PP
 Below is a detailed list of the components and properties:
