@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'ntext\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "ntext" n 0\&.81 tklib "Alternative Bindings for the Text Widget"
+.TH "ntext" n 1\&.0 tklib "Alternative Bindings for the Text Widget"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -277,7 +277,13 @@ package require \fBTcl  8\&.5\fR
 .sp
 package require \fBTk  8\&.5\fR
 .sp
-package require \fBntext  ?0\&.81?\fR
+package require \fBntext  ?1\&.0?\fR
+.sp
+\fB::ntext::new_textCopy\fR \fIpathName\fR
+.sp
+\fB::ntext::new_textCut\fR \fIpathName\fR
+.sp
+\fB::ntext::new_textPaste\fR \fIpathName\fR
 .sp
 .BE
 .SH DESCRIPTION
@@ -298,6 +304,17 @@ When the user navigates or selects text, Tcl/Tk sometimes needs to detect word b
 The remainder of this page describes the basic use and configuration of all three aspects of \fINtext\fR\&.  For more detailed information on the different facilities of \fINtext\fR, see the pages \fIntextBindings\fR, \fIntextIndent\fR, and \fIntextWordBreak\fR\&.
 .PP
 See Section \fBEXAMPLE\fR for how to apply the \fINtext\fR binding tag in place of the \fIText\fR binding tag\&.
+.SH COMMANDS
+.TP
+\fB::ntext::new_textCopy\fR \fIpathName\fR
+Replacement for ::tk_textCopy\&.
+.TP
+\fB::ntext::new_textCut\fR \fIpathName\fR
+Replacement for ::tk_textCut that also maintains \fINtext\fR indentation (see \fIntextIndent\fR)\&.
+.TP
+\fB::ntext::new_textPaste\fR \fIpathName\fR
+Replacement for ::tk_textPaste that also maintains \fINtext\fR indentation (see \fIntextIndent\fR)\&.
+.PP
 .SH "CONFIGURATION OPTIONS"
 \fINtext\fR provides alternatives to a number of behaviours of the classic \fIText\fR binding tag\&.  Where there is an option, the \fINtext\fR behaviour (except for display-line indentation) is switched on by default\&.
 .PP
@@ -308,6 +325,8 @@ The behaviour of \fINtext\fR may be configured application-wide by setting the v
 \fB0\fR - (default value) selects \fINtext\fR behaviour, i\&.e\&. the anchor point is fixed
 .IP \(bu
 \fB1\fR - selects classic \fIText\fR behaviour, i\&.e\&. the anchor point is variable
+.IP \(bu
+For more information see \fIntextBindings\fR
 .PP
 .PP
 \fB::ntext::classicExtras\fR
@@ -315,6 +334,8 @@ The behaviour of \fINtext\fR may be configured application-wide by setting the v
 \fB0\fR - (default value) selects \fINtext\fR behaviour, i\&.e\&. several traditional \fIText\fR bindings are de-activated
 .IP \(bu
 \fB1\fR - selects classic \fIText\fR behaviour, i\&.e\&. all \fIText\fR bindings are activated
+.IP \(bu
+For more information see \fIntextBindings\fR
 .PP
 .PP
 \fB::ntext::classicMouseSelect\fR
@@ -322,6 +343,17 @@ The behaviour of \fINtext\fR may be configured application-wide by setting the v
 \fB0\fR - (default value) selects \fINtext\fR behaviour, i\&.e\&. the anchor point for mouse selection operations is moved by keyboard navigation
 .IP \(bu
 \fB1\fR - selects classic \fIText\fR behaviour
+.IP \(bu
+For more information see \fIntextBindings\fR
+.PP
+.PP
+\fB::ntext::classicSelection\fR
+.IP \(bu
+\fB0\fR - (default value on macOS Aqua) selects Mac-like behaviour, i\&.e\&. when a navigation keystroke cancels a selection, the insert mark first moves to the end of the selection determined by the navigation direction of the keystroke, and then the keystroke is applied\&.
+.IP \(bu
+\fB1\fR - (default value except on macOS Aqua) selects PC-like behaviour (the same as classic \fIText\fR), i\&.e\&. when a navigation keystroke cancels a selection, the insert mark is not moved before the keystroke is applied\&.
+.IP \(bu
+For more information see \fIntextBindings\fR
 .PP
 .PP
 \fB::ntext::classicWordBreak\fR
@@ -338,6 +370,8 @@ After changing this value, the matching patterns should be recalculated\&.  See 
 \fB0\fR - selects \fINtext\fR behaviour, i\&.e\&. display lines of text widgets in \fI-wrap\fR \fIword\fR mode are indented to match the initial whitespace of the first display line of a logical line\&.  If the widget already holds text when this value is set, a function call may be necessary\&.  See \fIntextIndent\fR for detailed instructions on the use of \fINtext\fR 's indentation\&.
 .IP \(bu
 \fB1\fR - (default value) selects classic \fIText\fR behaviour, i\&.e\&. no indentation
+.IP \(bu
+For more information see \fIntextIndent\fR
 .PP
 .PP
 \fB::ntext::overwrite\fR
@@ -346,8 +380,21 @@ After changing this value, the matching patterns should be recalculated\&.  See 
 .IP \(bu
 \fB1\fR - text typed at the keyboard overwrites text already in the widget
 .IP \(bu
-The value is toggled by the \fIInsert\fR key\&.
+The value is toggled by the \fIInsert\fR key (except on macOS Aqua where there is no such key)\&.
+.IP \(bu
+For more information see \fIntextBindings\fR
 .PP
+.PP
+\fB::ntext::classicParagraphs\fR
+.IP \(bu
+\fB0\fR - (default value) on macOS Aqua, certain keyboard bindings are made to behave in the same way as the Mac application TextEdit\&.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>\&.
+.IP \(bu
+\fB1\fR - on macOS Aqua, certain keyboard bindings are made to behave in the same way as classic \fIText\fR, ignoring the conventions of Aqua\&.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>\&.
+.IP \(bu
+For more information see \fIntextBindings\fR
+.PP
+.SH BUGS
+This version of \fBntext\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5 and 8\&.6, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIntext\fR of the \fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
 .SH EXAMPLE
 To create a text widget \&.t and use the \fINtext\fR bindings:
 .CS
@@ -359,13 +406,6 @@ bindtags \&.t {\&.t Ntext \&. all}
 
 .CE
 See bindtags for more information\&.
-.SH "BUGS, IDEAS, FEEDBACK"
-This document, and the package it describes, will undoubtedly contain
-bugs and other problems\&.
-Please report such in the category \fIntext\fR of the
-\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
-Please also report any ideas for enhancements you may have for either
-package and/or documentation\&.
 .SH "SEE ALSO"
 bindtags, ntextBindings, ntextIndent, ntextWordBreak, re_syntax, regexp, text
 .SH KEYWORDS
