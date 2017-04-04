@@ -1,1 +1,1 @@
-package ifneeded datefield 0.2 [list source [file join $dir datefield.tcl]]
+package ifneeded datefield 0.3 [list source [file join $dir datefield.tcl]]
