@@ -6,7 +6,7 @@
 # Copyright (c) 2004-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.17
+package require tablelist 5.18
 
 wm title . "Tk Library Scripts"
 
@@ -190,7 +190,7 @@ set btn [button .btn -text "Close" -command exit]
 # Manage the widgets
 #
 grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
-if {[string compare $winSys "aqua"] == 0} {
+if {[string compare $winSys "aqua"] == 0} {		;# see option.tcl
     grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
     grid $vsb		   -row 1 -column 1 -sticky ns
 } else {

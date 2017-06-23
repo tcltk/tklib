@@ -8,7 +8,7 @@
 #==============================================================================
 
 package require Tk 8.3
-package require tablelist 5.17
+package require tablelist 5.18
 
 #
 # Add some entries to the Tk option database
@@ -84,7 +84,7 @@ proc displayContents dir {
     # Manage the widgets
     #
     grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
-    global winSys
+    global winSys					;# see option.tcl
     if {[string compare $winSys "aqua"] == 0} {
 	grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
 	grid $vsb	       -row 1 -column 1 -sticky ns
