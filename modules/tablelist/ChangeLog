@@ -1,3 +1,36 @@
+2017-06-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 5.18.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/*.tcl: Improved the performance of the vertical scrolling;
+	  added the "-displayondemand" configuration option; added the
+	  "tablelist::delaySashPosUpdates" command; added support for the
+	  themes "Arc" and "clearlooks"; updated the support for a few other
+	  themes; fixed a bug related to retrieving the current cell selection;
+	  numerous further improvements.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/*.html: Updated to reflect the changes; more on the
+	  "-formatcommand" column configuration option in connection with
+	  "-sortmode integer|real"; minor improvements.
+
+	* doc/browse.png:               Updated screenshots.
+	* doc/browseTree.png:
+	* doc/bwidget.png:
+	* doc/config.png:
+	* doc/dirViewer.png:
+	* doc/embeddedWindows.png:
+	* doc/embeddedWindows_tile.png:
+	* doc/tileWidgets.png:
+
+	* ../../examples/*.tcl: Bumped the version number to 5.18; minor
+	  improvements.
+
 2017-03-22  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:                Bumped the version number to 5.17.
