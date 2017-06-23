@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 5.17</h2>
+    <h2>For Tablelist Version 5.18</h2>
 
     <h3>by</h3>
 
@@ -120,6 +120,9 @@
     <i>title</i> ...}</code></dd>
 
     <dd><code><b><a href="#customdragsource">-customdragsource</a></b>
+    <i>boolean</i></code></dd>
+
+    <dd><code><b><a href="#displayondemand">-displayondemand</a></b>
     <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#editendcommand">-editendcommand</a></b>
@@ -1761,11 +1764,11 @@ proc myColorizeCmd {tbl body key row col tabIdx1 tabIdx2 inStripe selected} { ..
         called <b>dynamic-width</b> columns.&nbsp; In general, they are more
         user-friendly than their <b>static-width</b> counterparts, being that
         their widths are automatically adapted to their contents.&nbsp; On the
-        other hand, the static-width columns perform significantly better on
-        item insertion and sorting than the dynamic-width ones, due to some
-        optimizations introduced in Tablelist version 5.6.&nbsp; (Prior to that
-        release, the above-mentioned operations were faster with dynamic-width
-        columns than with static-width ones.)</p>
+        other hand, if the <code><b><a href=
+        "#displayondemand">-displayondemand</a></b></code> option is true
+        (which is the default) then the static-width columns perform
+        significantly better on item insertion and sorting than the
+        dynamic-width ones.</p>
       </blockquote>
     </dd>
 
@@ -1857,6 +1860,48 @@ proc myColorizeCmd {tbl body key row col tabIdx1 tabIdx2 inStripe selected} { ..
         will suppress the automatic scrolling when the mouse leaves the
         tablelist window with button 1 down.&nbsp; The default is
         <code>0</code>.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="displayondemand">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+
+          <td><code><b>-displayondemand</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+
+          <td><code><b>&nbsp;displayOnDemand</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+
+          <td><code><b>&nbsp;DisplayOnDemand</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a boolean value that controls the way the texts of newly
+        inserted rows will be displayed in the underlying text widget.&nbsp;
+        If true then the texts of the new rows won't be inserted into the body
+        text widget until the corresponding cells become visible (e.g., as a
+        result of horizontal or vertical scrolling).&nbsp; Otherwise the texts
+        of the new rows will be displayed in the underlying text widget
+        immediately after inserting the rows.&nbsp; The default is
+        <code>1</code>.</p>
+
+        <p><b>REMARK:</b>&nbsp; The default value true of this option makes the
+        item insertion and sorting significantly faster, especially in the
+        presence of static-width columns, because the snipping of elements that
+        don't fit into their cells will be postponed to the time when they get
+        displayed in the body text widget.&nbsp; On the other hand, this
+        display on demand imposes some performance penalty on the scrolling,
+        especially if the tablelist widget has many columns.&nbsp; To speed up
+        the scrolling, you might consider setting this option to false.</p>
       </blockquote>
     </dd>
 
@@ -4680,7 +4725,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             "51"></td>
 
             <td>Inspired by a couple of GTK 3 themes bundled with versions
-            earlier than 15.4 of the Ubuntu Linux distribution.</td>
+            earlier than 15.04 of the Ubuntu Linux distribution.</td>
           </tr>
 
           <tr>
@@ -4699,8 +4744,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><img src="ubuntu3.png" alt="ubuntu3" width="120" height=
             "51"></td>
 
-            <td>Inspired by a couple of GTK 3 themes bundled with version
-            16.10 of the Ubuntu Linux distribution.</td>
+            <td>Inspired by a couple of GTK 3 themes bundled with versions
+            16.10 and later of the Ubuntu Linux distribution.</td>
           </tr>
 
           <tr>
@@ -4710,7 +4755,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             "51"></td>
 
             <td>Inspired by the themes Ambiant-MATE and Radiant-MATE bundled
-            with version 16.10 of the Ubuntu MATE distribution.</td>
+            with versions 16.10 and later of the Ubuntu MATE distribution.</td>
           </tr>
 
           <tr>
@@ -5156,7 +5201,54 @@ proc formatDate clockVal {
         strings because they are needed for other purposes (like sorting or
         editing).&nbsp; In such cases, a procedure returning an empty string
         can be used as the option's value, thus making sure that the textual
-        information contained in that column remains hidden.</dd>
+        information contained in that column remains hidden:</dd>
+
+        <dd>
+          <blockquote>
+            <pre>
+proc emptyStr val { return "" }
+</pre>
+          </blockquote>
+        </dd>
+
+        <dd class="tm">Another important use case is related to tablelist
+        columns whose <code><b><a href="#col_sortmode">-sortmode</a></b></code>
+        option was set to <code><b>integer</b></code> or
+        <code><b>real</b></code>.&nbsp; If some of the cells of such a column
+        are empty then an attempt to sort the items by that column via
+        <code><b><a href="#sortbycolumn">sortbycolumn</a></b></code> or
+        <code><b><a href="#sortbycolumnlist">sortbycolumnlist</a></b></code>
+        would generate an error, because the&nbsp;
+        <code><b>lsort -integer</b></code>&nbsp; or&nbsp;
+        <code><b>lsort -real</b></code>&nbsp; invocation made by Tablelist
+        would complain about getting an unexpected empty string instead of an
+        integer or floating-point number.&nbsp; To avoid this, make sure that
+        the cells intended to display an empty string have as internal value a
+        number that is either strictly less or strictly greater than all the
+        other integer or real numbers contained in the column in question, and
+        use the <code><b>-formatcommand</b></code> option to control what will
+        be displayed in the column's cells.&nbsp; For example, if all the
+        elements of the column are non-negative values then you can use the
+        number <code>-1</code> as internal value for the cells that should
+        display an empty string, and set the value of the
+        <code><b>-formatcommand</b></code> option to <code>formatNumber</code>,
+        where <code>formatNumber</code> is the procedure implemented as
+        follows:</d>
+
+        <dd>
+          <blockquote>
+            <pre>
+proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
+</pre>
+          </blockquote>
+        </dd>
+
+        <dd class="tm">This will make the cells displaying an empty string
+        appear before all the others when sorting the column in increasing
+        order.&nbsp; To achieve the opposite effect, you will have to replace
+        the <code>-1</code> with an application-specific value that is strictly
+        greater than all the other numbers contained in the column in
+        question.</d>
 
         <dd class="tm">The demo scripts included in the Tablelist distribution
         contain further examples demonstrating the use of this option.&nbsp;
@@ -5431,14 +5523,24 @@ proc formatDate clockVal {
               <td><code><b>integer</b></code></td>
 
               <td>Convert the elements to integers and use integer
-              comparison.</td>
+              comparison.&nbsp; If any of the elements cannot be converted to
+              an integer (e.g., because it is an empty string) then a sort
+              attempt will generate an error.&nbsp; See the description of the
+              <code><b><a href=
+              "#col_formatcommand">-formatcommand</a></b></code> option for the
+              recommended way to avoid this problem.</td>
             </tr>
 
             <tr valign="top">
               <td><code><b>real</b></code></td>
 
               <td>Convert the elements to floating-point values and use
-              floating-point comparison.</td>
+              floating-point comparison.&nbsp; If any of the elements cannot be
+              converted to a floating-point value (e.g., because it is an empty
+              string) then a sort attempt will generate an error.&nbsp; See the
+              description of the <code><b><a href=
+              "#col_formatcommand">-formatcommand</a></b></code> option for the
+              recommended way to avoid this problem.</td>
             </tr>
           </table>
         </dd>
@@ -7577,13 +7679,10 @@ eval [list <i>pathName</i> <a href=
           <blockquote>
             <pre>
 <i># Add some entries to the Tk option database</i>
-set winSys [tk windowingsystem]
-if {[string compare $winSys "x11"] != 0} {
-    option add *ScrollArea.borderWidth                  1
-    option add *ScrollArea.relief                       sunken
-    option add *ScrollArea.Tablelist.borderWidth        0
-    option add *ScrollArea.Tablelist.highlightThickness 0
-}
+option add *ScrollArea.borderWidth                      1
+option add *ScrollArea.relief                           sunken
+option add *ScrollArea.Tablelist.borderWidth            0
+option add *ScrollArea.Tablelist.highlightThickness     0
 
 . . .
 
@@ -7602,7 +7701,7 @@ scrollbar $hsb -orient horizontal -command [list $tbl xview]
 
 <i># Manage the widgets within the frame</i>
 grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
-if {[string compare $winSys "aqua"] == 0} {
+if {[string compare [tk windowingsystem] "aqua"] == 0} {
     grid [$tbl <span>cornerpath</span>] -row 0 -column 1 -sticky ew
     grid $vsb              -row 1 -column 1 -sticky ns
 } else {
@@ -9814,8 +9913,8 @@ proc printClickedCell {w x y} {
           Tk fails to recognize the <code>Control-backslash</code> key sequence
           (for which one has to press <code>Control</code>, <code>AltGr</code>,
           and a third key: <code>_</code> on a French and <code>&szlig;</code>
-	  on a German keyboard).&nbsp; Moreover, on many keyboards it is quite
-	  difficult (if not even impossible) to generate the
+          on a German keyboard).&nbsp; Moreover, on many keyboards it is quite
+          difficult (if not even impossible) to generate the
           <code>Control-backslash</code> key sequence, fact which makes the
           support for this alternative shortcut even more useful on both X11
           and Windows.</p>
