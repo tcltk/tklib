@@ -4040,7 +4040,7 @@ proc tablelist::showtargetmarkSubCmd {win argList} {
 
 	inside {
 	    set row [rowIndex $win $index 0 1]
-	    set dlineinfo [$w dlineinfo [expr {$row + 1}]].0
+	    set dlineinfo [$w dlineinfo [expr {$row + 1}].0]
 	    if {[llength $dlineinfo] == 0} {
 		return ""
 	    }
