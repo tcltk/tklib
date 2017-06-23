@@ -105,10 +105,10 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 
     set w $data(body)
     if {$data(anchorRow) != $source} {
-	$w mark set anchorRowMark [expr {double($data(anchorRow) + 1)}]
+	$w mark set anchorRowMark [expr {$data(anchorRow) + 1}].0
     }
     if {$data(activeRow) != $source} {
-	$w mark set activeRowMark [expr {double($data(activeRow) + 1)}]
+	$w mark set activeRowMark [expr {$data(activeRow) + 1}].0
     }
 
     #
@@ -126,7 +126,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
     #
     set selectedCols {}
     set line [expr {$source + 1}]
-    set textIdx [expr {double($line)}]
+    set textIdx $line.0
     variable canElide
     variable elide
     for {set col 0} {$col < $data(colCount)} {incr col} {
@@ -144,7 +144,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 
 	set textIdx $textIdx+1c
     }
-    $w delete [expr {double($source + 1)}] [expr {double($source + 2)}]
+    $w delete [expr {$source + 1}].0 [expr {$source + 2}].0
 
     #
     # Insert the source item before the target one
@@ -417,7 +417,6 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	redisplayVisibleItems $win
 	makeStripes $win
 	showLineNumbersWhenIdle $win
-	updateColorsWhenIdle $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
     }

@@ -53,6 +53,158 @@ proc tablelist::convEventFields {w x y} {
     return [mwutil::convEventFields $w $x $y Tablelist]
 }
 
+#------------------------------------------------------------------------------
+# tablelist::delaySashPosUpdates
+#
+# Overrides the Tk or Ttk library procedure ::tk::panedwindow::DragSash or
+# ::ttk::panedwindow::Drag with a version in which the "sash place ..." or
+# "sashpos ..." invocations for the (ttk::)panedwindow widget w are delayed by
+# ms milliseconds.
+#------------------------------------------------------------------------------
+proc tablelist::delaySashPosUpdates {w ms} {
+    #
+    # Check the first argument
+    #
+    if {![winfo exists $w]} {
+	return -code error "bad window path name \"$w\""
+    }
+    set class [winfo class $w]
+    switch $class {
+	Panedwindow {
+	    if {[llength [info commands ::tk::panedwindow::DragSash]] == 0} {
+		return -code error "window \"$w\" is not a panedwindow widget"
+	    }
+	}
+
+	TPanedwindow {
+	    if {[llength [info commands ::ttk::panedwindow::Drag]] != 0} {
+		set namesp ::ttk::panedwindow
+	    } else {
+		return -code error \
+		       "window \"$w\" is not a ttk::panedwindow widget"
+	    }
+	}
+
+	TPaned {
+	    if {[llength [info commands ::ttk::paned::Drag]] != 0} {
+		set namesp ::ttk::paned
+	    } elseif {[llength [info commands ::tile::paned::Drag]] != 0} {
+		set namesp ::tile::paned
+	    } else {
+		return -code error "window \"$w\" is not a ttk::paned widget"
+	    }
+	}
+
+	default {
+	    return -code error \
+		   "window \"$w\" is not a (ttk::)panewindow widget"
+	}
+    }
+
+    #
+    # Check the second argument
+    #
+    if {[catch {format "%d" $ms} result] != 0} { ;# integer check with error msg
+	return -code error $result
+    }
+    set ms $result
+    if {$ms < 0} {
+	#
+	# Forget the sash position update delay for the given widget
+	#
+	if {[info exists ::tablelist::sashPosUpdateDelays($w)]} {
+	    unset ::tablelist::sashPosUpdateDelays($w)
+	}
+	return ""
+    }
+
+    #
+    # Remember the sash position update delay for the given widget
+    #
+    set ::tablelist::sashPosUpdateDelays($w) $ms
+
+    bind $w <Destroy> {+
+	#
+	# Forget the sash position update delay for the given widget
+	#
+	if {[info exists ::tablelist::sashPosUpdateDelays(%W)]} {
+	    unset ::tablelist::sashPosUpdateDelays(%W)
+	}
+    }
+
+    #
+    # Override the Tk or Ttk library procedure
+    # ::tk::panedwindow::DragSash or ${namesp}::Drag
+    #
+    if {[string compare [winfo class $w] "Panedwindow"] == 0} {
+	proc ::tk::panedwindow::DragSash {w x y proxy} {
+	    variable ::tk::Priv
+	    if {![info exists Priv(sash)]} { return }
+
+	    if {[$w cget -opaqueresize]} {
+		set proxy 0
+	    }
+
+	    if {$proxy} {
+		$w proxy place [expr {$x + $Priv(dx)}] [expr {$y + $Priv(dy)}]
+	    } elseif {[info exists ::tablelist::sashPosUpdateDelays($w)]} {
+		set Priv(newSashX) [expr {$x + $Priv(dx)}]
+		set Priv(newSashY) [expr {$y + $Priv(dy)}]
+
+		if {![info exists Priv(sashPosId)]} {
+		    set Priv(sashPosId) \
+			[after $::tablelist::sashPosUpdateDelays($w) \
+			 [list ::tk::panedwindow::UpdateSashPos $w $Priv(sash)]]
+		}
+	    } else {
+		$w sash place $Priv(sash) \
+			[expr {$x + $Priv(dx)}] [expr {$y + $Priv(dy)}]
+	    }
+	}
+
+	proc ::tk::panedwindow::UpdateSashPos {w index} {
+	    variable ::tk::Priv
+	    unset Priv(sashPosId)
+
+	    if {[winfo exists $w]} {
+		$w sash place $index $Priv(newSashX) $Priv(newSashY)
+	    }
+	}
+
+    } else {
+	proc ${namesp}::Drag {w x y} [format {
+	    variable State
+	    if {!$State(pressed)} { return }
+
+	    switch -- [$w cget -orient] {
+		horizontal	{ set delta [expr {$x - $State(pressX)}] }
+		vertical	{ set delta [expr {$y - $State(pressY)}] }
+	    }
+
+	    if {[info exists ::tablelist::sashPosUpdateDelays($w)]} {
+		set State(newSashPos) [expr {$State(sashPos) + $delta}]
+
+		if {![info exists State(sashPosId)]} {
+		    set State(sashPosId) \
+			[after $::tablelist::sashPosUpdateDelays($w) \
+			 [list %s::UpdateSashPos $w $State(sash)]]
+		}
+	    } else {
+		$w sashpos $State(sash) [expr {$State(sashPos) + $delta}]
+	    }
+	} $namesp]
+
+	proc ${namesp}::UpdateSashPos {w index} {
+	    variable State
+	    unset State(sashPosId)
+
+	    if {[winfo exists $w]} {
+		$w sashpos $index $State(newSashPos)
+	    }
+	}
+    }
+}
+
 #
 # Binding tag Tablelist
 # =====================
@@ -103,8 +255,9 @@ proc tablelist::cleanup win {
     # Cancel the execution of all delayed handleMotion, updateKeyToRowMap,
     # adjustSeps, makeStripes, showLineNumbers, stretchColumns, updateColors,
     # updateScrlColOffset, updateHScrlbar, updateVScrlbar, updateView,
-    # synchronize, displayItems, moveTo, autoScan, horizAutoScan, forceRedraw,
-    # doCellConfig, redisplay, redisplayCol, and destroyWidgets commands
+    # synchronize, displayItems, horizMoveTo, vertMoveTo, autoScan,
+    # horizAutoScan, forceRedraw, doCellConfig, redisplay, redisplayCol, and
+    # destroyWidgets commands
     #
     upvar ::tablelist::ns${win}::data data
     foreach id {motionId mapId sepsId stripesId lineNumsId stretchId colorsId
@@ -153,7 +306,7 @@ proc tablelist::cleanup win {
     }
     set imgNames [image names]
     for {set col 0} {$col < $data(colCount)} {incr col} {
-	set w $data(hdrTxtFrCanv)$col
+	set w $data(hdrTxtFrmCanv)$col
 	foreach shape {triangleUp darkLineUp lightLineUp
 		       triangleDn darkLineDn lightLineDn} {
 	    if {[lsearch -exact $imgNames $shape$w] >= 0} {
@@ -253,7 +406,7 @@ proc tablelist::updateConfigSpecs win {
     if {[set editCol $data(editCol)] >= 0} {
 	set editRow $data(editRow)
 	saveEditData $win
-	destroy $data(bodyFr)
+	destroy $data(bodyFrm)
 	doEditCell $win $editRow $editCol 1
     }
 
@@ -943,7 +1096,7 @@ proc tablelist::updateCursor {win row col} {
 	# ComboBox. Oakley combobox, or Tk menubutton widgets
 	#
 	if {$data(editRow) >= 0 && $data(editCol) >= 0} {
-	    foreach c [winfo children $data(bodyFrEd)] {
+	    foreach c [winfo children $data(bodyFrmEd)] {
 		set class [winfo class $c]
 		if {([string compare $class "Toplevel"] == 0 ||
 		     [string compare $class "Menu"] == 0) &&
@@ -1049,11 +1202,6 @@ proc tablelist::wasExpCollCtrlClicked {w x y} {
     }
 
     #
-    # Save the current vertical position
-    #
-    set topRow [expr {int([$data(body) index @0,0]) - 1}]
-
-    #
     # Toggle the state of the expand/collapse control
     #
     if {[string compare $mode "collapsed"] == 0} {
@@ -1062,12 +1210,7 @@ proc tablelist::wasExpCollCtrlClicked {w x y} {
 	::$win collapse $row -partly
     }
 
-    #
-    # Restore the saved vertical position
-    #
-    $data(body) yview $topRow
     updateViewWhenIdle $win
-
     return 1
 }
 
@@ -1572,7 +1715,7 @@ proc tablelist::condShowTarget {win y} {
 	    place $data(rowGap) -anchor w -y $gapY -height $lineHeight -width 6
 	} else {
 	    place $data(rowGap) -anchor w -y $gapY -height 4 \
-				-width [winfo width $data(hdrTxtFr)]
+				-width [winfo width $data(hdrTxtFrm)]
 	}
 	raise $data(rowGap)
     }
@@ -1735,7 +1878,7 @@ proc tablelist::condEvalInvokeCmd win {
     # and return if it is an editable combobox widget
     #
     set isCheckbtn 0
-    set w $data(bodyFrEd)
+    set w $data(bodyFrmEd)
     switch [winfo class $w] {
 	Checkbutton -
 	TCheckbutton {
@@ -1937,19 +2080,10 @@ proc tablelist::plusMinus {win keysym} {
 
     if {[string length $op] != 0} {
 	#
-	# Save the current vertical position
-	#
-	set topRow [expr {int([$data(body) index @0,0]) - 1}]
-
-	#
 	# Toggle the state of the expand/collapse control
 	#
 	::$win $op $row -partly
 
-	#
-	# Restore the saved vertical position
-	#
-	$data(body) yview $topRow
 	updateViewWhenIdle $win
     }
 }
@@ -2094,19 +2228,10 @@ proc tablelist::leftRight {win amount} {
 	}
     } else {
 	#
-	# Save the current vertical position
-	#
-	set topRow [expr {int([$data(body) index @0,0]) - 1}]
-
-	#
 	# Toggle the state of the expand/collapse control
 	#
 	::$win $op $row -partly
 
-	#
-	# Restore the saved vertical position
-	#
-	$data(body) yview $topRow
 	updateViewWhenIdle $win
     }
 }
@@ -2817,7 +2942,7 @@ proc tablelist::labelB1Down {w x shiftPressed} {
 	set data(topRow) [expr {int($topTextIdx) - 1}]
 	set data(btmRow) [expr {int($btmTextIdx) - 1}]
 
-	set w $data(hdrTxtFrLbl)$col
+	set w $data(hdrTxtFrmLbl)$col
 	set labelWidth [winfo width $w]
 	set data(oldStretchedColWidth) [expr {$labelWidth - 2*$data(charWidth)}]
 	set data(oldColDelta) $data($col-delta)
@@ -2911,7 +3036,7 @@ proc tablelist::labelB1Motion {w X x y} {
 		set btmRow $data(lastRow)
 	    }
 	    while {$btmRow > $data(btmRow)} {
-		$b tag add visibleLines [expr {double($data(btmRow) + 2)}] \
+		$b tag add visibleLines [expr {$data(btmRow) + 2}].0 \
 					"$btmTextIdx lineend"
 		incr data(btmRow)
 		redisplayCol $win $col $data(btmRow) $btmRow
@@ -2932,7 +3057,7 @@ proc tablelist::labelB1Motion {w X x y} {
 	    set topRow [expr {int($topTextIdx) - 1}]
 	    while {$topRow < $data(topRow)} {
 		$b tag add visibleLines "$topTextIdx linestart" \
-					"[expr {double($data(topRow))}] lineend"
+					$data(topRow).end
 		incr data(topRow) -1
 		redisplayCol $win $col $topRow $data(topRow)
 		set data(topRow) $topRow
@@ -2952,10 +3077,10 @@ proc tablelist::labelB1Motion {w X x y} {
 	# Scroll the window horizontally if needed
 	#
 	set hdrX [winfo rootx $data(hdr)]
-	if {$data(-titlecolumns) == 0 || ![winfo viewable $data(sep)]} {
+	if {$data(-titlecolumns) == 0 || ![winfo viewable $data(vsep)]} {
 	    set leftX $hdrX
 	} else {
-	    set leftX [expr {[winfo rootx $data(sep)] + 1}]
+	    set leftX [expr {[winfo rootx $data(vsep)] + 1}]
 	}
 	set rightX [expr {$hdrX + [winfo width $data(hdr)]}]
 	set scroll 0
@@ -2980,7 +3105,7 @@ proc tablelist::labelB1Motion {w X x y} {
 	    #
 	    set data(inClickedLabel) 1
 	    configLabel $w -cursor $data(-cursor)
-	    $data(hdrTxtFrCanv)$col configure -cursor $data(-cursor)
+	    $data(hdrTxtFrmCanv)$col configure -cursor $data(-cursor)
 	    if {$data(changeRelief)} {
 		configLabel $w -relief sunken -pressed 1
 	    }
@@ -3019,7 +3144,7 @@ proc tablelist::labelB1Motion {w X x y} {
 			}
 		    }
 		    incr targetCol
-		    set master $data(hdrTxtFr)
+		    set master $data(hdrTxtFrm)
 		    set relx 1.0
 		} else {
 		    for {set targetCol 0} {$targetCol < $data(colCount)} \
@@ -3028,7 +3153,7 @@ proc tablelist::labelB1Motion {w X x y} {
 			    break
 			}
 		    }
-		    set master $data(hdrTxtFr)
+		    set master $data(hdrTxtFrm)
 		    set relx 0.0
 		}
 
@@ -3046,14 +3171,14 @@ proc tablelist::labelB1Motion {w X x y} {
 			unset data(targetCol)
 		    }
 		    configLabel $w -cursor $data(-cursor)
-		    $data(hdrTxtFrCanv)$col configure -cursor $data(-cursor)
+		    $data(hdrTxtFrmCanv)$col configure -cursor $data(-cursor)
 		    place forget $data(colGap)
 		} else {
 		    set data(targetCol) $targetCol
 		    set data(master) $master
 		    set data(relx) $relx
 		    configLabel $w -cursor $data(-movecolumncursor)
-		    $data(hdrTxtFrCanv)$col configure -cursor \
+		    $data(hdrTxtFrmCanv)$col configure -cursor \
 					    $data(-movecolumncursor)
 		    place $data(colGap) -in $master -anchor n \
 					-bordermode outside \
@@ -3243,7 +3368,7 @@ proc tablelist::labelB1Up {w X} {
 		}
 	    }
 	} elseif {$data(-movablecolumns)} {
-	    $data(hdrTxtFrCanv)$col configure -cursor $data(-cursor)
+	    $data(hdrTxtFrmCanv)$col configure -cursor $data(-cursor)
 	    if {[info exists data(targetCol)]} {
 		set sourceColName [doColCget $col $win -name]
 		set targetColName [doColCget $data(targetCol) $win -name]
@@ -3324,7 +3449,7 @@ proc tablelist::labelDblB1 {w x shiftPressed} {
 #------------------------------------------------------------------------------
 proc tablelist::escape {win col} {
     upvar ::tablelist::ns${win}::data data
-    set w $data(hdrTxtFrLbl)$col
+    set w $data(hdrTxtFrmLbl)$col
     if {[info exists data(colBeingResized)]} {	;# resize operation in progress
 	configLabel $w -cursor $data(-cursor)
 	update idletasks
@@ -3348,7 +3473,7 @@ proc tablelist::escape {win col} {
 	updateColors $win
     } elseif {!$data(inClickedLabel)} {
 	configLabel $w -cursor $data(-cursor)
-	$data(hdrTxtFrCanv)$col configure -cursor $data(-cursor)
+	$data(hdrTxtFrmCanv)$col configure -cursor $data(-cursor)
 	if {[winfo exists $data(focus)]} {
 	    focus $data(focus)
 	}
@@ -3387,10 +3512,10 @@ proc tablelist::horizAutoScan win {
 
     set X $data(X)
     set hdrX [winfo rootx $data(hdr)]
-    if {$data(-titlecolumns) == 0 || ![winfo viewable $data(sep)]} {
+    if {$data(-titlecolumns) == 0 || ![winfo viewable $data(vsep)]} {
 	set leftX $hdrX
     } else {
-	set leftX [expr {[winfo rootx $data(sep)] + 1}]
+	set leftX [expr {[winfo rootx $data(vsep)] + 1}]
     }
     set rightX [expr {$hdrX + [winfo width $data(hdr)]}]
     if {$data(-titlecolumns) == 0} {

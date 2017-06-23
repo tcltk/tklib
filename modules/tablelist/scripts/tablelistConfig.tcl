@@ -28,6 +28,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-columns)		{}
     lappend configSpecs(-columntitles)		{}
     lappend configSpecs(-customdragsource)	0
+    lappend configSpecs(-displayondemand)	1
     lappend configSpecs(-editendcommand)	{}
     lappend configSpecs(-editselectedonly)	0
     lappend configSpecs(-editstartcommand)	{}
@@ -424,17 +425,17 @@ proc tablelist::doConfig {win opt val} {
 	    # properly formatted value of val in data($opt)
 	    #
 	    foreach w [winfo children $win] {
-		if {[regexp {^(body|hdr|h?sep[0-9]*)$} [winfo name $w]]} {
+		if {[regexp {^(body|hdr|.sep[0-9]*)$} [winfo name $w]]} {
 		    $w configure $opt $val
 		}
 	    }
 	    $data(hdrTxt) configure $opt $val
-	    $data(hdrFrLbl) configure $opt $val
+	    $data(hdrFrmLbl) configure $opt $val
 	    $data(cornerLbl) configure $opt $val
-	    foreach w [winfo children $data(hdrTxtFr)] {
+	    foreach w [winfo children $data(hdrTxtFrm)] {
 		$w configure $opt $val
 	    }
-	    set data($opt) [$data(hdrFrLbl) cget $opt]
+	    set data($opt) [$data(hdrFrmLbl) cget $opt]
 	}
 
 	b {
@@ -459,7 +460,8 @@ proc tablelist::doConfig {win opt val} {
 		    } else {
 			$win configure $opt $val
 			foreach c [winfo children $win] {
-			    if {[regexp {^(sep[0-9]+|hsep)$} [winfo name $c]]} {
+			    if {[regexp {^(vsep[0-9]+|hsep)$} \
+					[winfo name $c]]} {
 				$c configure $opt $val
 			    }
 			}
@@ -501,8 +503,8 @@ proc tablelist::doConfig {win opt val} {
 		    if {$usingTile} {
 			styleConfig Sep$win.TSeparator -background $val
 		    } else {
-			if {[winfo exists $data(sep)]} {
-			    $data(sep) configure -background $val
+			if {[winfo exists $data(vsep)]} {
+			    $data(vsep) configure -background $val
 			}
 		    }
 		    if {[string length $data(-disabledforeground)] == 0} {
@@ -519,10 +521,10 @@ proc tablelist::doConfig {win opt val} {
 	    # and save the properly formatted value of val in data($opt)
 	    #
 	    set optTail [string range $opt 6 end]	;# remove the -label
-	    configLabel $data(hdrFrLbl) -$optTail $val
+	    configLabel $data(hdrFrmLbl) -$optTail $val
 	    configLabel $data(cornerLbl) -$optTail $val
 	    for {set col 0} {$col < $data(colCount)} {incr col} {
-		set w $data(hdrTxtFrLbl)$col
+		set w $data(hdrTxtFrmLbl)$col
 		if {![info exists data($col$opt)]} {
 		    configLabel $w -$optTail $val
 		}
@@ -530,7 +532,7 @@ proc tablelist::doConfig {win opt val} {
 	    if {$usingTile && [string compare $opt "-labelpady"] == 0} {
 		set data($opt) $val
 	    } else {
-		set data($opt) [$data(hdrFrLbl) cget -$optTail]
+		set data($opt) [$data(hdrFrmLbl) cget -$optTail]
 	    }
 
 	    switch -- $opt {
@@ -660,7 +662,7 @@ proc tablelist::doConfig {win opt val} {
 			 !$data(isDisabled)) ||
 			([string compare $opt "-arrowdisabledcolor"] == 0 &&
 			 $data(isDisabled))} {
-			foreach w [info commands $data(hdrTxtFrCanv)*] {
+			foreach w [info commands $data(hdrTxtFrmCanv)*] {
 			    fillArrows $w $val $data(-arrowstyle)
 			}
 		    }
@@ -677,7 +679,7 @@ proc tablelist::doConfig {win opt val} {
 			   $data($opt) dummy relief width height
 		    set data(arrowWidth) $width
 		    set data(arrowHeight) $height
-		    foreach w [info commands $data(hdrTxtFrCanv)*] {
+		    foreach w [info commands $data(hdrTxtFrmCanv)*] {
 			createArrows $w $width $height $relief
 			if {$data(isDisabled)} {
 			    fillArrows $w $data(-arrowdisabledcolor) $data($opt)
@@ -696,6 +698,7 @@ proc tablelist::doConfig {win opt val} {
 		-autofinishediting -
 		-autoscan -
 		-customdragsource -
+		-displayondemand -
 		-forceeditendcommand -
 		-instanttoggle -
 		-movablecolumns -
@@ -982,7 +985,8 @@ proc tablelist::doConfig {win opt val} {
 			createSeps $win
 		    } elseif {$oldVal && !$data($opt)} {
 			foreach w [winfo children $win] {
-			    if {[regexp {^(sep[0-9]+|hsep)$} [winfo name $w]]} {
+			    if {[regexp {^(vsep[0-9]+|hsep)$} \
+					[winfo name $w]]} {
 				destroy $w
 			    }
 			}
@@ -1030,14 +1034,14 @@ proc tablelist::doConfig {win opt val} {
 		    variable states
 		    set val [mwutil::fullOpt "state" $val $states]
 		    catch {
-			configLabel $data(hdrFrLbl) $opt $val
+			configLabel $data(hdrFrmLbl) $opt $val
 			configLabel $data(cornerLbl) $opt $val
 			for {set col 0} {$col < $data(colCount)} {incr col} {
-			    configLabel $data(hdrTxtFrLbl)$col $opt $val
+			    configLabel $data(hdrTxtFrmLbl)$col $opt $val
 			}
 		    }
 		    if {$data(editRow) >= 0} {
-			catch {$data(bodyFrEd) configure $opt $val}
+			catch {$data(bodyFrmEd) configure $opt $val}
 		    }
 		    set w $data(body)
 		    switch $val {
@@ -1129,7 +1133,7 @@ proc tablelist::doConfig {win opt val} {
 			set val 0
 		    }
 		    xviewSubCmd $win 0
-		    set w $data(sep)
+		    set w $data(vsep)
 		    if {$val == 0} {
 			$data(hdrTxt) configure -xscrollcommand \
 				      $data(-xscrollcommand)
@@ -1141,8 +1145,8 @@ proc tablelist::doConfig {win opt val} {
 			if {$oldVal == 0} {
 			    if {$usingTile} {
 				ttk::separator $w -style Sep$win.TSeparator \
-						   -cursor $data(-cursor) \
-						   -orient vertical -takefocus 0
+						  -cursor $data(-cursor) \
+						  -orient vertical -takefocus 0
 			    } else {
 				tk::frame $w -background $data(-foreground) \
 					     -borderwidth 1 -container 0 \
@@ -1157,7 +1161,6 @@ proc tablelist::doConfig {win opt val} {
 			adjustSepsWhenIdle $win
 		    }
 		    set data($opt) $val
-		    xviewSubCmd $win 0
 		    updateHScrlbarWhenIdle $win
 		}
 		-treecolumn {
@@ -1567,7 +1570,7 @@ proc tablelist::doColConfig {col win opt val} {
 
 	-labelbackground -
 	-labelforeground {
-	    set w $data(hdrTxtFrLbl)$col
+	    set w $data(hdrTxtFrmLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
 	    if {[string length $val] == 0} {
 		#
@@ -1597,7 +1600,7 @@ proc tablelist::doColConfig {col win opt val} {
 	}
 
 	-labelborderwidth {
-	    set w $data(hdrTxtFrLbl)$col
+	    set w $data(hdrTxtFrmLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
 	    if {[string length $val] == 0} {
 		#
@@ -1637,7 +1640,7 @@ proc tablelist::doColConfig {col win opt val} {
 	}
 
 	-labelfont {
-	    set w $data(hdrTxtFrLbl)$col
+	    set w $data(hdrTxtFrmLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
 	    if {[string length $val] == 0} {
 		#
@@ -1667,7 +1670,7 @@ proc tablelist::doColConfig {col win opt val} {
 
 	-labelheight -
 	-labelpady {
-	    set w $data(hdrTxtFrLbl)$col
+	    set w $data(hdrTxtFrmLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
 	    if {[string length $val] == 0} {
 		#
@@ -1699,7 +1702,7 @@ proc tablelist::doColConfig {col win opt val} {
 	}
 
 	-labelimage {
-	    set w $data(hdrTxtFrLbl)$col
+	    set w $data(hdrTxtFrmLbl)$col
 	    if {[string length $val] == 0} {
 		foreach l [getSublabels $w] {
 		    destroy $l
@@ -1767,7 +1770,7 @@ proc tablelist::doColConfig {col win opt val} {
 	}
 
 	-labelrelief {
-	    set w $data(hdrTxtFrLbl)$col
+	    set w $data(hdrTxtFrmLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
 	    if {[string length $val] == 0} {
 		#
