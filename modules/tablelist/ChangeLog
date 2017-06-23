@@ -1,5 +1,9 @@
 2017-06-23  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* scripts/tablelistWidget.tcl: Corrected a typo.
+
+2017-06-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* *.tcl:         Bumped the version number to 5.18.
 	* COPYRIGHT.txt:
 	* README.txt:
