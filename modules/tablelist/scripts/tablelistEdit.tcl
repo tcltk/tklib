@@ -1400,7 +1400,8 @@ proc tablelist::createTileCheckbutton {w args} {
 	    place $w -x -3 -y -3
 	}
 
-	Aquativo {
+	Aquativo -
+	Arc {
 	    [winfo parent $w] configure -width 14 -height 14
 	    place $w -x -1 -y -1
 	}
@@ -1415,6 +1416,11 @@ proc tablelist::createTileCheckbutton {w args} {
 	clam {
 	    [winfo parent $w] configure -width 11 -height 11
 	    place $w -x 0
+	}
+
+	clearlooks {
+	    [winfo parent $w] configure -width 13 -height 13
+	    place $w -x -2 -y -2
 	}
 
 	keramik -
@@ -1649,7 +1655,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     seeCell $win $row $col
     set netRowHeight [lindex [bboxSubCmd $win $row] 3]
     set frameHeight [expr {$netRowHeight + 6}]	;# because of the -pady -3 below
-    set f $data(bodyFr)
+    set f $data(bodyFrm)
     tk::frame $f -borderwidth 0 -container 0 -height $frameHeight \
 		 -highlightthickness 0 -relief flat -takefocus 0
     catch {$f configure -padx 0 -pady 0}
@@ -1659,7 +1665,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     set creationCmd [strMap {"%W" "$w"} $editWin($name-creationCmd)]
     append creationCmd { $editWin($name-fontOpt) [getCellFont $win $key $col]} \
 		       { -state normal}
-    set w $data(bodyFrEd)
+    set w $data(bodyFrmEd)
     if {[catch {eval $creationCmd} result] != 0} {
 	destroy $f
 	return -code error $result
@@ -2023,8 +2029,8 @@ proc tablelist::doCancelEditing win {
 		[list $win $row $col $data(origEditText)]
     }
 
-    if {[winfo exists $data(bodyFr)]} {
-	destroy $data(bodyFr)
+    if {[winfo exists $data(bodyFrm)]} {
+	destroy $data(bodyFrm)
 	set item [lindex $data(itemList) $row]
 	set key [lindex $item end]
 	foreach opt {-window -image} {
@@ -2064,7 +2070,7 @@ proc tablelist::doFinishEditing win {
     # Get the edit window's text, and invoke the command
     # specified by the -editendcommand option if needed
     #
-    set w $data(bodyFrEd)
+    set w $data(bodyFrmEd)
     set name [getEditWindow $win $row $col]
     variable editWin
     set text [eval [strMap {"%W" "$w"} $editWin($name-getTextCmd)]]
@@ -2089,7 +2095,7 @@ proc tablelist::doFinishEditing win {
     # statement or within the command specified by the -editendcommand option)
     #
     if {$data(rejected)} {
-	if {[winfo exists $data(bodyFr)]} {
+	if {[winfo exists $data(bodyFrm)]} {
 	    seeCell $win $row $col
 	    if {[string compare [winfo class $w] "Mentry"] != 0} {
 		focus $data(editFocus)
@@ -2101,8 +2107,8 @@ proc tablelist::doFinishEditing win {
 	set data(rejected) 0
 	set result 0
     } else {
-	if {[winfo exists $data(bodyFr)]} {
-	    destroy $data(bodyFr)
+	if {[winfo exists $data(bodyFrm)]} {
+	    destroy $data(bodyFrm)
 	    set key [lindex $item end]
 	    foreach opt {-window -image} {
 		if {[info exists data($key,$col$opt)]} {
@@ -2281,7 +2287,7 @@ proc tablelist::adjustEditWindow {win pixels} {
     set name [getEditWindow $win $data(editRow) $data(editCol)]
     variable editWin
     if {$editWin($name-useReqWidth) &&
-	[set reqWidth [winfo reqwidth $data(bodyFrEd)]] <=
+	[set reqWidth [winfo reqwidth $data(bodyFrmEd)]] <=
 	$pixels + 2*$data(charWidth)} {
 	set width $reqWidth
 	set padX [expr {$reqWidth <= $pixels ? -3 : ($pixels - $reqWidth) / 2}]
@@ -2305,7 +2311,7 @@ proc tablelist::adjustEditWindow {win pixels} {
 	set padX -$amount
     }
 
-    $data(bodyFr) configure -width $width
+    $data(bodyFrm) configure -width $width
     $data(body) window configure editMark -padx $padX
 }
 
@@ -2325,9 +2331,9 @@ proc tablelist::setEditWinFont win {
 
     set key [lindex $data(keyList) $data(editRow)]
     set cellFont [getCellFont $win $key $data(editCol)]
-    $data(bodyFrEd) configure $editWin($name-fontOpt) $cellFont
+    $data(bodyFrmEd) configure $editWin($name-fontOpt) $cellFont
 
-    $data(bodyFr) configure -height [winfo reqheight $data(bodyFrEd)]
+    $data(bodyFrm) configure -height [winfo reqheight $data(bodyFrmEd)]
 }
 
 #------------------------------------------------------------------------------
@@ -2337,7 +2343,7 @@ proc tablelist::setEditWinFont win {
 #------------------------------------------------------------------------------
 proc tablelist::saveEditData win {
     upvar ::tablelist::ns${win}::data data
-    set w $data(bodyFrEd)
+    set w $data(bodyFrmEd)
     set entry $data(editFocus)
     set class [winfo class $w]
     set isText [expr {[string compare $class "Text"] == 0 ||
@@ -2445,7 +2451,7 @@ proc tablelist::saveEditConfigOpts w {
 #------------------------------------------------------------------------------
 proc tablelist::restoreEditData win {
     upvar ::tablelist::ns${win}::data data
-    set w $data(bodyFrEd)
+    set w $data(bodyFrmEd)
     set entry $data(editFocus)
     set class [winfo class $w]
     set isText [expr {[string compare $class "Text"] == 0 ||

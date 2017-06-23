@@ -254,7 +254,7 @@ proc tablelist::AquativoTheme {} {
 	-background		white \
 	-foreground		black \
 	-disabledforeground	black \
-	-stripebackground	"" \
+	-stripebackground	#edf3fe \
 	-selectbackground	#000000 \
 	-selectforeground	#ffffff \
 	-selectborderwidth	0 \
@@ -272,8 +272,40 @@ proc tablelist::AquativoTheme {} {
 	-labelborderwidth	2 \
 	-labelpady		1 \
 	-arrowcolor		#717171 \
-	-arrowstyle		flat8x5 \
+	-arrowstyle		flat7x7 \
 	-treestyle		aqua \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::ArcTheme
+#------------------------------------------------------------------------------
+proc tablelist::ArcTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		white \
+	-foreground		#5c616c \
+	-disabledforeground	#a9acb2 \
+	-stripebackground	"" \
+	-selectbackground	#5294e2 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-font			TkTextFont \
+	-labelbackground	#f5f6f7 \
+	-labeldeactivatedBg	#f5f6f7 \
+	-labeldisabledBg	#fbfcfc \
+	-labelactiveBg		#f5f6f7 \
+	-labelpressedBg		#f5f6f7 \
+	-labelforeground	#5c616c \
+	-labeldisabledFg	#a9acb2 \
+	-labelactiveFg		#5c616c \
+	-labelpressedFg		#5c616c \
+	-labelfont		TkDefaultFont \
+	-labelborderwidth	0 \
+	-labelpady		0 \
+	-arrowcolor		#5c616c \
+	-arrowstyle		flatAngle10x6 \
+	-treestyle		arc \
     ]
 }
 
@@ -301,7 +333,7 @@ proc tablelist::blueTheme {} {
 	-labelactiveFg		black \
 	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
-	-labelborderwidth	2 \
+	-labelborderwidth	1 \
 	-labelpady		1 \
 	-arrowcolor		#2d2d66 \
 	-arrowstyle		flat9x5 \
@@ -334,7 +366,7 @@ proc tablelist::clamTheme {} {
 	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
-	-labelpady		1 \
+	-labelpady		3 \
 	-arrowcolor		black \
 	-arrowstyle		flat7x5 \
 	-treestyle		gtk \
@@ -377,6 +409,38 @@ proc tablelist::classicTheme {} {
 	set themeDefaults(-font)	TkClassicDefaultFont
 	set themeDefaults(-labelfont)	TkClassicDefaultFont
     }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::clearlooksTheme
+#------------------------------------------------------------------------------
+proc tablelist::clearlooksTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		white \
+	-foreground		black \
+	-disabledforeground	#b5b3ac \
+	-stripebackground	"" \
+	-selectbackground	#71869e \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-font			TkTextFont \
+	-labelbackground	#efeae6 \
+	-labeldeactivatedBg	#efeae6 \
+	-labeldisabledBg	#eee9e4 \
+	-labelactiveBg		#f4f2ee \
+	-labelpressedBg		#d4cfca \
+	-labelforeground	black \
+	-labeldisabledFg	#b5b3ac \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
+	-labelfont		TkDefaultFont \
+	-labelborderwidth	0 \
+	-labelpady		1 \
+	-arrowcolor		black \
+	-arrowstyle		flatAngle9x6 \
+	-treestyle		gtk \
+    ]
 }
 
 #------------------------------------------------------------------------------
@@ -435,7 +499,7 @@ proc tablelist::keramikTheme {} {
 	-labelactiveFg		black \
 	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
-	-labelborderwidth	2 \
+	-labelborderwidth	0 \
 	-labelpady		1 \
 	-arrowcolor		black \
 	-arrowstyle		flat8x5 \
@@ -467,7 +531,7 @@ proc tablelist::keramik_altTheme {} {
 	-labelactiveFg		black \
 	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
-	-labelborderwidth	2 \
+	-labelborderwidth	0 \
 	-labelpady		1 \
 	-arrowcolor		black \
 	-arrowstyle		flat8x5 \
@@ -531,7 +595,7 @@ proc tablelist::plastikTheme {} {
 	-labelactiveFg		black \
 	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
-	-labelborderwidth	2 \
+	-labelborderwidth	0 \
 	-labelpady		1 \
 	-arrowcolor		black \
 	-arrowstyle		flat7x4 \
@@ -1818,9 +1882,9 @@ proc tablelist::rgb2hsv {r g b} {
     #
     # Compute the value component
     #
-    set sortedLst [lsort -real [list $r $g $b]]
-    set v [lindex $sortedLst end]
-    set dist [expr {$v - [lindex $sortedLst 0]}]
+    set sortedList [lsort -real [list $r $g $b]]
+    set v [lindex $sortedList end]
+    set dist [expr {$v - [lindex $sortedList 0]}]
 
     #
     # Compute the saturation component

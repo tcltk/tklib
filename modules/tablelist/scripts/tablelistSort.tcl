@@ -367,8 +367,8 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     # to empty each line individually than to invoke a global delete command.
     #
     set w $data(body)
-    $w tag remove hiddenRow $firstDescLine.0 $lastDescLine.end+1c
     $w tag remove elidedRow $firstDescLine.0 $lastDescLine.end+1c
+    $w tag remove hiddenRow $firstDescLine.0 $lastDescLine.end+1c
     for {set line $firstDescLine} {$line <= $lastDescLine} {incr line} {
 	$w delete $line.0 $line.end
     }
@@ -452,22 +452,29 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 			}
 		    }
 
+		    set snipSide \
+			$snipSides($alignment,$data($col-changesnipside))
 		    if {$multiline} {
 			set list [split $text "\n"]
-			set snipSide \
-			    $snipSides($alignment,$data($col-changesnipside))
 			if {$data($col-wrap)} {
 			    set snipSide ""
 			}
 			set text [joinList $win $list $cellFont \
 				  $pixels $snipSide $snipStr]
+		    } elseif {$data(-displayondemand)} {
+			set text ""
+		    } else {
+			set text [strRange $win $text $cellFont \
+				  $pixels $snipSide $snipStr]
 		    }
 		}
 
-		lappend insertArgs "\t\t" $cellTags
 		if {$multiline} {
+		    lappend insertArgs "\t\t" $cellTags
 		    lappend multilineData $col $text $cellFont $pixels \
 					  $alignment
+		} else {
+		    lappend insertArgs "\t$text\t" $cellTags
 		}
 
 		incr col
@@ -621,7 +628,6 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     adjustElidedText $win
     redisplayVisibleItems $win
     makeStripes $win
-    updateColorsWhenIdle $win
     adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
 
@@ -631,7 +637,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     variable winSys
     if {[string compare $winSys "aqua"] == 0} {
 	foreach col $data(arrowColList) {
-	    set canvas [list $data(hdrTxtFrCanv)$col]
+	    set canvas [list $data(hdrTxtFrmCanv)$col]
 	    after idle [list lower $canvas]
 	    after idle [list raise $canvas]
 	}
