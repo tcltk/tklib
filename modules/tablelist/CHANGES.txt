@@ -1,5 +1,36 @@
-What is new in Tablelist 5.17?
+What is new in Tablelist 5.18?
 ------------------------------
+
+1. Improved the performance of the vertical scrolling (thanks to
+   Alexandru Dadalau and Olivier Jolet for discussions on this subject).
+
+2. Added the "-displayondemand" configuration option, which can be used
+   to speed up the scrolling even further.
+
+3. Added the "tablelist::delaySashPosUpdates" command (described in the
+   manual page "Commands Related to Binding Scripts"), designed to
+   control the frequency of the sash position updates for a given
+   panedwindow widget, which might be necessary to eliminate some
+   artifacts if some of the panes contain tablelist widgets with
+   embedded images (thanks to Nicolas Robert for his input).
+
+4. Added support for the themes "Arc" and "clearlooks"; updated the
+   support for the themes "Aquativo", "blue", "clam","keramik",
+   "keramik_alt", and "plastik".
+
+5. Extended the reference manual by the description of an important use
+   case for the "-formatcommand" column configuration option, related to
+   tablelist columns whose "-sortmode" option was set to "integer" or
+   "real" (thanks to Alexandru Dadalau for discussions on this subject).
+
+6. Fixed a bug related to retrieving the current cell selection (thanks
+   to Alexandru Dadalau for his bug report).
+
+7. Numerous further improvements in the code, demo scripts, and
+   documentation.
+
+What was new in Tablelist 5.17?
+-------------------------------
 
 1. Added the tree styles "arc", "blueMenta", "menta", "ubuntuMate", and
    "ubuntu3", inspired by the Arc icon theme (of the GTK 2/3 theme Arc)
