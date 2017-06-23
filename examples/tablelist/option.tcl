@@ -27,13 +27,6 @@ if {[string compare $winSys "x11"] == 0} {
     option add *Font			TkDefaultFont
     option add *selectBackground	#5294e2
     option add *selectForeground	white
-} else {
-    option add *ScrollArea.borderWidth			1
-    option add *ScrollArea.relief			sunken
-    option add *ScrollArea.Tablelist.borderWidth	0
-    option add *ScrollArea.Tablelist.highlightThickness	0
-    option add *ScrollArea.Text.borderWidth		0
-    option add *ScrollArea.Text.highlightThickness	0
 }
 option add *Tablelist.background	white
 option add *Tablelist.stripeBackground	#f0f0f0
@@ -41,3 +34,9 @@ option add *Tablelist.setGrid		yes
 option add *Tablelist.movableColumns	yes
 option add *Tablelist.labelCommand	tablelist::sortByColumn
 option add *Tablelist.labelCommand2	tablelist::addToSortColumns
+option add *ScrollArea.borderWidth			1
+option add *ScrollArea.relief				sunken
+option add *ScrollArea.Tablelist.borderWidth		0
+option add *ScrollArea.Tablelist.highlightThickness	0
+option add *ScrollArea.Text.borderWidth			0
+option add *ScrollArea.Text.highlightThickness		0

@@ -5,7 +5,7 @@
 # Copyright (c) 2000-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.17
+package require tablelist 5.18
 
 namespace eval demo {
     #
@@ -38,12 +38,11 @@ namespace eval demo {
 	option add *DemoTop*Font			TkDefaultFont
 	option add *DemoTop*selectBackground		#5294e2
 	option add *DemoTop*selectForeground		white
-    } else {
-	option add *DemoTop.tf.borderWidth		1
-	option add *DemoTop.tf.relief			sunken
-	option add *DemoTop.tf.tbl.borderWidth		0
-	option add *DemoTop.tf.tbl.highlightThickness	0
     }
+    option add *DemoTop.tf.borderWidth			1
+    option add *DemoTop.tf.relief			sunken
+    option add *DemoTop.tf.tbl.borderWidth		0
+    option add *DemoTop.tf.tbl.highlightThickness	0
     option add *DemoTop.tf.tbl.background		white
     option add *DemoTop.tf.tbl.stripeBackground		#f0f0f0
     option add *DemoTop.tf.tbl.setGrid			yes
