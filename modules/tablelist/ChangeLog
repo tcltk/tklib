@@ -1,3 +1,10 @@
+2017-06-24  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistWdget.tcl: Fixed a bug related to excluding the
+	  "dicttoitem" and "itemtodict" subcommands for Tk 8.4 and earlier.
+
+	* CHANGES.txt: Updated to reflect the changes.
+
 2017-06-23  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistWidget.tcl: Minor cleanup.
