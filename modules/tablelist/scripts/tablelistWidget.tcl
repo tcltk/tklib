@@ -393,8 +393,8 @@ namespace eval tablelist {
 
     proc restrictCmdOpts {} {
 	variable canElide
+	variable cmdOpts
 	if {!$canElide} {
-	    variable cmdOpts
 	    foreach opt [list collapse collapseall expand expandall \
 			 insertchild insertchildlist insertchildren \
 			 togglerowhide] {
@@ -404,8 +404,10 @@ namespace eval tablelist {
 	}
 
 	if {$::tk_version < 8.5} {
-	    set idx [lsearch -exact $cmdOpts "dicttoitem"]
-	    set cmdOpts [lreplace $cmdOpts $idx $idx]
+	    foreach opt [list dicttoitem itemtodict] {
+		set idx [lsearch -exact $cmdOpts $opt]
+		set cmdOpts [lreplace $cmdOpts $idx $idx]
+	    }
 	}
     }
     restrictCmdOpts 
