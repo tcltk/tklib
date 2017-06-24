@@ -26,7 +26,11 @@ What is new in Tablelist 5.18?
 6. Fixed a bug related to retrieving the current cell selection (thanks
    to Alexandru Dadalau for his bug report).
 
-7. Numerous further improvements in the code, demo scripts, and
+7. Fixed a bug related to excluding the "dicttoitem" and "itemtodict"
+   subcommands for Tk 8.4 and earlier (thanks to Andy Goth for his bug
+   report).
+
+8. Numerous further improvements in the code, demo scripts, and
    documentation.
 
 What was new in Tablelist 5.17?
