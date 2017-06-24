@@ -3855,7 +3855,7 @@ proc tablelist::seeSubCmd {win argList} {
     displayItems $win
     set index [rowIndex $win [lindex $argList 0] 0]
     if {[winfo viewable $win] ||
-	[llength [$win.body tag nextrange elidedWin 1.0 end]] == 0} {
+	[llength [$win.body tag nextrange elidedWin 1.0]] == 0} {
 	return [seeRow $win $index]
     } else {
 	after 0 [list tablelist::seeRow $win $index]
@@ -3875,7 +3875,7 @@ proc tablelist::seecellSubCmd {win argList} {
     displayItems $win
     foreach {row col} [cellIndex $win [lindex $argList 0] 0] {}
     if {[winfo viewable $win] &&
-	[llength [$win.body tag nextrange elidedWin 1.0 end]] == 0} {
+	[llength [$win.body tag nextrange elidedWin 1.0]] == 0} {
 	return [seeCell $win $row $col]
     } else {
 	after 0 [list tablelist::seeCell $win $row $col]
@@ -3895,7 +3895,7 @@ proc tablelist::seecolumnSubCmd {win argList} {
     displayItems $win
     set col [colIndex $win [lindex $argList 0] 0]
     if {[winfo viewable $win] &&
-	[llength [$win.body tag nextrange elidedWin 1.0 end]] == 0} {
+	[llength [$win.body tag nextrange elidedWin 1.0]] == 0} {
 	return [seeCell $win [rowIndex $win @0,0 0] $col]
     } else {
 	after 0 [list tablelist::seeCell $win [rowIndex $win @0,0 0] $col]
@@ -6687,7 +6687,7 @@ proc tablelist::seeTextIdx {win textIdx} {
     set w $data(body)
     $w see $textIdx
 
-    if {[llength [$w tag nextrange elidedWin 1.0 end]] == 0} {
+    if {[llength [$w tag nextrange elidedWin 1.0]] == 0} {
 	return 1
     }
 
