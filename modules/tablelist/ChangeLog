@@ -1,5 +1,9 @@
 2017-06-23  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* scripts/tablelistWidget.tcl: Minor cleanup.
+
+2017-06-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* scripts/tablelistWidget.tcl: Corrected a typo.
 
 2017-06-23  Csaba Nemethi <csaba.nemethi@t-online.de>
