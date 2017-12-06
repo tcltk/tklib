@@ -129,6 +129,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
     set textIdx $line.0
     variable canElide
     variable elide
+    variable pu
     for {set col 0} {$col < $data(colCount)} {incr col} {
 	if {$data($col-hide) && !$canElide} {
 	    continue
@@ -137,12 +138,12 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	#
 	# Check whether the 2nd tab character of the cell is selected
 	#
-	set textIdx [$w search $elide "\t" $textIdx+1c $line.end]
+	set textIdx [$w search $elide "\t" $textIdx+1$pu $line.end]
 	if {[lsearch -exact [$w tag names $textIdx] select] >= 0} {
 	    lappend selectedCols $col
 	}
 
-	set textIdx $textIdx+1c
+	set textIdx $textIdx+1$pu
     }
     $w delete [expr {$source + 1}].0 [expr {$source + 2}].0
 
@@ -193,10 +194,10 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	$w tag add row-font-$data($sourceKey-font) $targetLine.0 $targetLine.end
     }
     if {[info exists data($sourceKey-elide)]} {
-	$w tag add elidedRow $targetLine.0 $targetLine.end+1c
+	$w tag add elidedRow $targetLine.0 $targetLine.end+1$pu
     }
     if {[info exists data($sourceKey-hide)]} {
-	$w tag add hiddenRow $targetLine.0 $targetLine.end+1c
+	$w tag add hiddenRow $targetLine.0 $targetLine.end+1$pu
     }
 
     set treeCol $data(treeCol)
@@ -427,9 +428,9 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
     #
     foreach tag {elidedRow hiddenRow} {
 	if {[lsearch -exact [$w tag names end-1l] $tag] >= 0} {
-	    $w tag add $tag end-1c
+	    $w tag add $tag end-1$pu
 	} else {
-	    $w tag remove $tag end-1c
+	    $w tag remove $tag end-1$pu
 	}
     }
 
@@ -458,7 +459,7 @@ proc tablelist::moveCol {win source target} {
     if {[winfo viewable $win]} {
 	purgeWidgets $win
 	update idletasks
-	if {![array exists ::tablelist::ns${win}::data]} {
+	if {[destroyed $win]} {
 	    return ""
 	}
     }
@@ -481,6 +482,7 @@ proc tablelist::moveCol {win source target} {
     # Save some elements of data and attribs corresponding to source
     #
     array set tmpData [array get data $source-*]
+    array set tmpData [array get data hk*,$source-*]
     array set tmpData [array get data k*,$source-*]
     foreach specialCol {activeCol anchorCol editCol -treecolumn treeCol} {
 	set tmpData($specialCol) $data($specialCol)
@@ -561,7 +563,19 @@ proc tablelist::moveCol {win source target} {
     }
 
     #
-    # Update the item list
+    # Update the item list in the header text widget
+    #
+    set hdr_newItemList {}
+    foreach item $data(hdr_itemList) {
+	set sourceText [lindex $item $source]
+	set item [lreplace $item $source $source]
+	set item [linsert $item $target1 $sourceText]
+	lappend hdr_newItemList $item
+    }
+    set data(hdr_itemList) $hdr_newItemList
+
+    #
+    # Update the item list in the body text widget
     #
     set newItemList {}
     foreach item $data(itemList) {
@@ -590,6 +604,7 @@ proc tablelist::moveCol {win source target} {
     # Redisplay the items
     #
     redisplay $win 0 $selCells
+    hdr_updateColorsWhenIdle $win
     updateColorsWhenIdle $win
 
     #

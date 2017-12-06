@@ -18,7 +18,7 @@
 #------------------------------------------------------------------------------
 # tablelist::sortByColumn
 #
-# Sorts the contents of the tablelist widget win by its col'th column.  Returns
+# Sorts the content of the tablelist widget win by its col'th column.  Returns
 # the sort order (increasing or decreasing).
 #------------------------------------------------------------------------------
 proc tablelist::sortByColumn {win col} {
@@ -54,7 +54,7 @@ proc tablelist::sortByColumn {win col} {
     }
 
     #
-    # Sort the widget's contents based on the given column
+    # Sort the widget's content based on the given column
     #
     if {[catch {::$win sortbycolumn $col -$sortOrder} result] == 0} {
 	set userData [list $col $sortOrder]
@@ -70,7 +70,7 @@ proc tablelist::sortByColumn {win col} {
 # tablelist::addToSortColumns
 #
 # Adds the col'th column of the tablelist widget win to the latter's list of
-# sort columns and sorts the contents of the widget by the modified column
+# sort columns and sorts the content of the widget by the modified column
 # list.  Returns the specified column's sort order (increasing or decreasing).
 #------------------------------------------------------------------------------
 proc tablelist::addToSortColumns {win col} {
@@ -113,7 +113,7 @@ proc tablelist::addToSortColumns {win col} {
     }
 
     #
-    # Sort the widget's contents according to the
+    # Sort the widget's content according to the
     # modified lists of sort columns and orders
     #
     if {[catch {::$win sortbycolumnlist $sortColList $sortOrderList} result]
@@ -146,7 +146,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     if {[winfo viewable $win] && $sortAllItems} {
 	purgeWidgets $win
 	update idletasks
-	if {![array exists ::tablelist::ns${win}::data]} {
+	if {[destroyed $win]} {
 	    return ""
 	}
     }
@@ -357,7 +357,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 	$firstDescRow $lastDescRow] $descItemList]
 
     #
-    # Replace the contents of the list variable if present
+    # Replace the content of the list variable if present
     #
     condUpdateListVar $win
 
@@ -366,9 +366,10 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     # Interestingly, for a large number of items it is much more efficient
     # to empty each line individually than to invoke a global delete command.
     #
+    variable pu
     set w $data(body)
-    $w tag remove elidedRow $firstDescLine.0 $lastDescLine.end+1c
-    $w tag remove hiddenRow $firstDescLine.0 $lastDescLine.end+1c
+    $w tag remove elidedRow $firstDescLine.0 $lastDescLine.end+1$pu
+    $w tag remove hiddenRow $firstDescLine.0 $lastDescLine.end+1$pu
     for {set line $firstDescLine} {$line <= $lastDescLine} {incr line} {
 	$w delete $line.0 $line.end
     }
@@ -491,7 +492,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 	    # Embed the message widgets displaying multiline elements
 	    #
 	    foreach {col text font pixels alignment} $multilineData {
-		findTabs $win $line $col $col tabIdx1 tabIdx2
+		findTabs $win $w $line $col $col tabIdx1 tabIdx2
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col $text $font $pixels $alignment]
 		$w window create $tabIdx2 \
@@ -543,10 +544,10 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 	}
 
 	if {[info exists data($key-elide)]} {
-	    $w tag add elidedRow $line.0 $line.end+1c
+	    $w tag add elidedRow $line.0 $line.end+1$pu
 	}
 	if {[info exists data($key-hide)]} {
-	    $w tag add hiddenRow $line.0 $line.end+1c
+	    $w tag add hiddenRow $line.0 $line.end+1$pu
 	}
     }
 

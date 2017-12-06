@@ -6,6 +6,7 @@
 #   - Binding tag Tablelist
 #   - Binding tag TablelistWindow
 #   - Binding tag TablelistBody
+#   - Binding tag TablelistHeader
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
 # Copyright (c) 2000-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
@@ -252,17 +253,17 @@ proc tablelist::removeActiveTag win {
 #------------------------------------------------------------------------------
 proc tablelist::cleanup win {
     #
-    # Cancel the execution of all delayed handleMotion, updateKeyToRowMap,
-    # adjustSeps, makeStripes, showLineNumbers, stretchColumns, updateColors,
-    # updateScrlColOffset, updateHScrlbar, updateVScrlbar, updateView,
-    # synchronize, displayItems, horizMoveTo, vertMoveTo, autoScan,
-    # horizAutoScan, forceRedraw, doCellConfig, redisplay, redisplayCol, and
+    # Cancel the execution of all delayed (hdr_)handleMotion, updateKeyToRowMap,
+    # adjustSeps, makeStripes, showLineNumbers, stretchColumns,
+    # (hdr_)updateColors, updateScrlColOffset, updateHScrlbar, updateVScrlbar,
+    # updateView, synchronize, displayItems, horizMoveTo, vertMoveTo, autoScan,
+    # horizAutoScan, forceRedraw, reconfigWindows, redisplay, redisplayCol, and
     # destroyWidgets commands
     #
     upvar ::tablelist::ns${win}::data data
-    foreach id {motionId mapId sepsId stripesId lineNumsId stretchId colorsId
-		offsetId hScrlbarId vScrlbarId viewId syncId dispId moveToId
-		afterId redrawId reconfigId} {
+    foreach id {motionId hdr_motionId mapId sepsId stripesId lineNumsId
+		stretchId colorsId hdr_colorsId offsetId hScrlbarId vScrlbarId
+		viewId syncId dispId moveToId afterId redrawId reconfigId} {
 	if {[info exists data($id)]} {
 	    after cancel $data($id)
 	}
@@ -284,17 +285,14 @@ proc tablelist::cleanup win {
     }
 
     #
-    # Destroy any existing bindings for data(bodyTag),
-    # data(labelTag), and data(editwinTag)
+    # Destroy any existing bindings for the tags data(bodyTag),
+    # data(headerTag), data(labelTag), and data(editwinTag)
     #
-    foreach event [bind $data(bodyTag)] {
-	bind $data(bodyTag) $event ""
-    }
-    foreach event [bind $data(labelTag)] {
-	bind $data(labelTag) $event ""
-    }
-    foreach event [bind $data(editwinTag)] {
-	bind $data(editwinTag) $event ""
+    foreach tag [list $data(bodyTag) $data(headerTag) \
+		      $data(labelTag) $data(editwinTag)] {
+	foreach event [bind $tag] {
+	    bind $tag $event ""
+	}
     }
 
     #
@@ -345,7 +343,7 @@ proc tablelist::updateConfigSpecs win {
     #
     # This might be an "after idle" callback; check whether the window exists
     #
-    if {![array exists ::tablelist::ns${win}::data]} {
+    if {[destroyed $win]} {
 	return ""
     }
 
@@ -369,36 +367,39 @@ proc tablelist::updateConfigSpecs win {
 	}
     }
 
-    #
-    # Populate the array tmp with values corresponding to the old theme
-    # and the array themeDefaults with values corresponding to the new one
-    #
-    array set tmp $data(themeDefaults)
-    setThemeDefaults
+    variable usingTile
+    if {$usingTile} {
+	#
+	# Populate the array tmp with values corresponding to the old theme
+	# and the array themeDefaults with values corresponding to the new one
+	#
+	array set tmp $data(themeDefaults)
+	setThemeDefaults 
 
-    #
-    # Set those configuration options whose values equal the old
-    # theme-specific defaults to the new theme-specific ones
-    #
-    variable themeDefaults
-    foreach opt {-background -foreground -disabledforeground -stripebackground
-		 -selectbackground -selectforeground -selectborderwidth -font
-		 -labelforeground -labelfont -labelborderwidth -labelpady
-		 -treestyle} {
-	if {[string compare $data($opt) $tmp($opt)] == 0} {
-	    doConfig $win $opt $themeDefaults($opt)
+	#
+	# Set those configuration options whose values equal the old
+	# theme-specific defaults to the new theme-specific ones
+	#
+	variable themeDefaults
+	foreach opt {-background -foreground -disabledforeground
+		     -stripebackground -selectbackground -selectforeground
+		     -selectborderwidth -font -labelforeground -labelfont
+		     -labelborderwidth -labelpady -treestyle} {
+	    if {[string compare $data($opt) $tmp($opt)] == 0} {
+		doConfig $win $opt $themeDefaults($opt)
+	    }
 	}
-    }
-    if {[string compare $data(-arrowcolor) $tmp(-arrowcolor)] == 0 &&
-	[string compare $data(-arrowstyle) $tmp(-arrowstyle)] == 0} {
-	foreach opt {-arrowcolor -arrowdisabledcolor -arrowstyle} {
-	    doConfig $win $opt $themeDefaults($opt)
+	if {[string compare $data(-arrowcolor) $tmp(-arrowcolor)] == 0 &&
+	    [string compare $data(-arrowstyle) $tmp(-arrowstyle)] == 0} {
+	    foreach opt {-arrowcolor -arrowdisabledcolor -arrowstyle} {
+		doConfig $win $opt $themeDefaults($opt)
+	    }
 	}
+	foreach opt {-background -foreground} {
+	    doConfig $win $opt $data($opt)     ;# sets the bg color of the seps
+	}
+	updateCanvases $win
     }
-    foreach opt {-background -foreground} {
-	doConfig $win $opt $data($opt)	;# sets the bg color of the separators
-    }
-    updateCanvases $win
 
     #
     # Destroy and recreate the edit window if present
@@ -413,6 +414,16 @@ proc tablelist::updateConfigSpecs win {
     #
     # Destroy and recreate the embedded windows
     #
+    for {set row 0} {$row < $data(hdr_itemCount)} {incr row} {
+	for {set col 0} {$col < $data(colCount)} {incr col} {
+	    set key [lindex $data(hdr_keyList) $row]
+	    if {[info exists data($key,$col-window)]} {
+		set val $data($key,$col-window)
+		doCellConfig h$row $col $win -window ""
+		doCellConfig h$row $col $win -window $val
+	    }
+	}
+    }
     if {$data(winCount) != 0} {
 	for {set row 0} {$row < $data(itemCount)} {incr row} {
 	    for {set col 0} {$col < $data(colCount)} {incr col} {
@@ -427,7 +438,6 @@ proc tablelist::updateConfigSpecs win {
     }
 
     set data(currentTheme) $currentTheme
-    set data(themeDefaults) [array get themeDefaults]
     if {[string compare $currentTheme "tileqt"] == 0} {
 	set data(widgetStyle) [tileqt_currentThemeName]
 	if {[info exists ::env(KDE_SESSION_VERSION)] &&
@@ -440,6 +450,9 @@ proc tablelist::updateConfigSpecs win {
 	set data(widgetStyle) ""
 	set data(colorScheme) ""
     }
+    if {$usingTile} {
+	set data(themeDefaults) [array get themeDefaults]
+    }
 }
 
 #
@@ -450,16 +463,23 @@ proc tablelist::updateConfigSpecs win {
 #------------------------------------------------------------------------------
 # tablelist::cleanupWindow
 #
-# This procedure is invoked when a window aux embedded into a tablelist widget
-# is destroyed.  It invokes the cleanup script associated with the cell
-# containing the window, if any.
+# This procedure is invoked when a window embedded into a tablelist widget is
+# destroyed.  It invokes the cleanup script associated with the cell containing
+# the window, if any.
 #------------------------------------------------------------------------------
 proc tablelist::cleanupWindow aux {
-    regexp {^(.+)\.body\.frm_(k[0-9]+),([0-9]+)$} $aux dummy win key col
-    upvar ::tablelist::ns${win}::data data
+    regexp {^(.+)\.(hdr\.t|body)\.frm_(h?k[0-9]+),([0-9]+)$} $aux \
+	   dummy win textWidget key col
+    upvar ::tablelist::ns${win}::data data \
+	  ::tablelist::ns${win}::checkStates checkStates
+
     if {[info exists data($key,$col-windowdestroy)]} {
 	set row [keyToRow $win $key]
 	uplevel #0 $data($key,$col-windowdestroy) [list $win $row $col $aux.w]
+    }
+
+    if {[info exists checkStates($key,$col)]} {
+	unset checkStates($key,$col)
     }
 }
 
@@ -500,6 +520,9 @@ proc tablelist::defineTablelistBody {} {
 	if {[winfo exists %W]} {
 	    foreach {tablelist::W tablelist::x tablelist::y} \
 		[tablelist::convEventFields %W %x %y] {}
+	    if {$tablelist::y < [winfo y [$tablelist::W bodypath]]} {
+		continue
+	    }
 
 	    set tablelist::priv(x) $tablelist::x
 	    set tablelist::priv(y) $tablelist::y
@@ -534,6 +557,9 @@ proc tablelist::defineTablelistBody {} {
 	if {[winfo exists %W]} {
 	    foreach {tablelist::W tablelist::x tablelist::y} \
 		[tablelist::convEventFields %W %x %y] {}
+	    if {$tablelist::y < [winfo y [$tablelist::W bodypath]]} {
+		continue
+	    }
 
 	    if {[$tablelist::W cget -editselectedonly]} {
 		tablelist::condEditContainingCell $tablelist::W \
@@ -570,6 +596,10 @@ proc tablelist::defineTablelistBody {} {
 	if {[winfo exists %W]} {
 	    foreach {tablelist::W tablelist::x tablelist::y} \
 		[tablelist::convEventFields %W %x %y] {}
+	    if {$tablelist::y < [winfo y [$tablelist::W bodypath]] &&
+		[string length $tablelist::priv(afterId)] == 0} { ;# no autoscan
+		continue
+	    }
 
 	    set tablelist::priv(x) ""
 	    set tablelist::priv(y) ""
@@ -599,6 +629,9 @@ proc tablelist::defineTablelistBody {} {
     bind TablelistBody <Shift-Button-1> {
 	foreach {tablelist::W tablelist::x tablelist::y} \
 	    [tablelist::convEventFields %W %x %y] {}
+	if {$tablelist::y < [winfo y [$tablelist::W bodypath]]} {
+	    continue
+	}
 
 	tablelist::beginExtend $tablelist::W \
 	    [$tablelist::W nearest       $tablelist::y] \
@@ -607,6 +640,9 @@ proc tablelist::defineTablelistBody {} {
     bind TablelistBody <Control-Button-1> {
 	foreach {tablelist::W tablelist::x tablelist::y} \
 	    [tablelist::convEventFields %W %x %y] {}
+	if {$tablelist::y < [winfo y [$tablelist::W bodypath]]} {
+	    continue
+	}
 
 	tablelist::beginToggle $tablelist::W \
 	    [$tablelist::W nearest       $tablelist::y] \
@@ -888,12 +924,16 @@ proc tablelist::invokeMotionHandler win {
 # tablelist::handleMotionDelayed
 #
 # This procedure is invoked when the mouse pointer enters or leaves the body of
-# a tablelist widget or one of its separators, or is moving within it.  It
-# schedules the execution of the handleMotion procedure 100 ms later.
+# a tablelist widget or is moving within it.  It schedules the execution of the
+# handleMotion procedure 100 ms later.
 #------------------------------------------------------------------------------
 proc tablelist::handleMotionDelayed {w x y X Y mode event} {
     set win [getTablelistPath $w]
     upvar ::tablelist::ns${win}::data data
+    if {[regexp {^vsep([0-9]+)?$} [winfo name $w]]} {
+	return ""
+    }
+
     set data(motionData) [list $w $x $y $X $Y $event]
     if {![info exists data(motionId)]} {
 	set data(motionId) [after 100 [list tablelist::handleMotion $win]]
@@ -933,6 +973,9 @@ proc tablelist::handleMotion win {
     set col [containingCol $win $_x]
 
     showOrHideTooltip $win $row $col $X $Y
+    if {[destroyed $win]} {
+	return ""
+    }
     updateExpCollCtrl $win $w $row $col $x
 
     #
@@ -968,6 +1011,9 @@ proc tablelist::showOrHideTooltip {win row col X Y} {
     #
     event generate $win <Leave>
     catch {uplevel #0 $data(-tooltipdelcommand) [list $win]}
+    if {[destroyed $win]} {
+	return ""
+    }
     set data(prevCell) $row,$col
     if {$row >= 0 && $col >= 0} {
 	set focus [focus -displayof $win]
@@ -975,6 +1021,9 @@ proc tablelist::showOrHideTooltip {win row col X Y} {
 	    [string compare [winfo toplevel $focus] \
 	     [winfo toplevel $win]] == 0} {
 	    uplevel #0 $data(-tooltipaddcommand) [list $win $row $col]
+	    if {[destroyed $win]} {
+		return ""
+	    }
 	    event generate $win <Enter> -rootx $X -rooty $Y
 	}
     }
@@ -1210,7 +1259,6 @@ proc tablelist::wasExpCollCtrlClicked {w x y} {
 	::$win collapse $row -partly
     }
 
-    updateViewWhenIdle $win
     return 1
 }
 
@@ -1417,7 +1465,7 @@ proc tablelist::condAutoScan win {
 # the window or the mouse button is released.
 #------------------------------------------------------------------------------
 proc tablelist::autoScan win {
-    if {![array exists ::tablelist::ns${win}::data] || [isDragSrc $win] ||
+    if {[destroyed $win] || [isDragSrc $win] ||
 	[string length [::$win editwinpath]] != 0} {
 	return ""
     }
@@ -1849,7 +1897,7 @@ proc tablelist::condEvalInvokeCmd win {
     #
     # This is an "after 100" callback; check whether the window exists
     #
-    if {![array exists ::tablelist::ns${win}::data]} {
+    if {[destroyed $win]} {
 	return ""
     }
 
@@ -2083,8 +2131,6 @@ proc tablelist::plusMinus {win keysym} {
 	# Toggle the state of the expand/collapse control
 	#
 	::$win $op $row -partly
-
-	updateViewWhenIdle $win
     }
 }
 
@@ -2231,8 +2277,6 @@ proc tablelist::leftRight {win amount} {
 	# Toggle the state of the expand/collapse control
 	#
 	::$win $op $row -partly
-
-	updateViewWhenIdle $win
     }
 }
 
@@ -2761,9 +2805,157 @@ proc tablelist::changeSelection {win row col} {
 }
 
 #
+# Binding tag TablelistHeader
+# ===========================
+#
+
+#------------------------------------------------------------------------------
+# tablelist::defineTablelistHeader
+#
+# Defines the bindings for the binding tag TablelistHeader.
+#------------------------------------------------------------------------------
+proc tablelist::defineTablelistHeader {} {
+    foreach event {<Enter> <Motion> <Leave>} {
+	bind TablelistHeader $event {
+	    tablelist::hdr_handleMotionDelayed %W %x %y %X %Y
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::hdr_handleMotionDelayed
+#
+# This procedure is invoked when the mouse pointer enters or leaves the header
+# text widget of a tablelist widget or is moving within it.  It schedules the
+# execution of the hdr_handleMotion procedure 100 ms later.
+#------------------------------------------------------------------------------
+proc tablelist::hdr_handleMotionDelayed {w x y X Y} {
+    set win [getTablelistPath $w]
+    upvar ::tablelist::ns${win}::data data
+    if {[regexp {^vsep([0-9]+)?$} [winfo name $w]]} {
+	return ""
+    }
+
+    set data(hdr_motionData) [list $w $x $y $X $Y]
+    if {![info exists data(hdr_motionId)]} {
+	set data(hdr_motionId) \
+	    [after 100 [list tablelist::hdr_handleMotion $win]]
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::hdr_handleMotion
+#
+# Invokes the procedure hdr_showOrHideTooltip.
+#------------------------------------------------------------------------------
+proc tablelist::hdr_handleMotion win {
+    upvar ::tablelist::ns${win}::data data
+    if {[info exists data(hdr_motionId)]} {
+	after cancel $data(hdr_motionId)
+	unset data(hdr_motionId)
+    }
+
+    #
+    # Get the containing header cell from the
+    # coordinates relative to the tablelist
+    #
+    foreach {w x y X Y} $data(hdr_motionData) {}
+    foreach {win _x _y} [convEventFields $w $x $y] {}
+    set row [hdr_containingRow $win $_y]
+    set col [containingCol $win $_x]
+
+    hdr_showOrHideTooltip $win $row $col $X $Y
+}
+
+#------------------------------------------------------------------------------
+# tablelist::hdr_showOrHideTooltip
+#
+# If the pointer has crossed a header cell boundary then the procedure removes
+# the old tooltip and displays the one corresponding to the new cell.
+#------------------------------------------------------------------------------
+proc tablelist::hdr_showOrHideTooltip {win row col X Y} {
+    upvar ::tablelist::ns${win}::data data
+    if {[string length $data(-tooltipaddcommand)] == 0 ||
+	[string length $data(-tooltipdelcommand)] == 0 ||
+	[string compare $row,$col $data(hdr_prevCell)] == 0} {
+	return ""
+    }
+
+    #
+    # Remove the old tooltip, if any.  Then, if we are within a
+    # cell, display the new tooltip corresponding to that cell.
+    #
+    event generate $win <Leave>
+    catch {uplevel #0 $data(-tooltipdelcommand) [list $win]}
+    if {[destroyed $win]} {
+	return ""
+    }
+    set data(hdr_prevCell) $row,$col
+    if {$row >= 0 && $col >= 0} {
+	set focus [focus -displayof $win]
+	if {[string length $focus] == 0 || [string first $win $focus] != 0 ||
+	    [string compare [winfo toplevel $focus] \
+	     [winfo toplevel $win]] == 0} {
+	    uplevel #0 $data(-tooltipaddcommand) [list $win h$row $col]
+	    if {[destroyed $win]} {
+		return ""
+	    }
+	    event generate $win <Enter> -rootx $X -rooty $Y
+	}
+    }
+}
+
+#
 # Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 # ==================================================================
 #
+
+#------------------------------------------------------------------------------
+# tablelist::defineTablelistLabel
+#
+# Defines the bindings for the binding tag TablelistLabel.
+#------------------------------------------------------------------------------
+proc tablelist::defineTablelistLabel {} {
+    bind TablelistLabel <Enter> {
+	tablelist::labelEnter %W %X %Y %x
+    }
+    bind TablelistLabel <Motion> {
+	tablelist::labelEnter %W %X %Y %x
+    }
+    bind TablelistLabel <Leave> {
+	tablelist::labelLeave %W %X %x %y
+    }
+    bind TablelistLabel <Button-1> {
+	tablelist::labelB1Down %W %x 0
+    }
+    bind TablelistLabel <Shift-Button-1> {
+	tablelist::labelB1Down %W %x 1
+    }
+    bind TablelistLabel <B1-Motion> {
+	tablelist::labelB1Motion %W %X %x %y
+    }
+    bind TablelistLabel <B1-Enter> {
+	tablelist::labelB1Enter %W
+    }
+    bind TablelistLabel <B1-Leave> {
+	tablelist::labelB1Leave %W %x %y
+    }
+    bind TablelistLabel <ButtonRelease-1> {
+	tablelist::labelB1Up %W %X
+    }
+    bind TablelistLabel <<Button3>> {
+	tablelist::labelB3Down %W 0
+    }
+    bind TablelistLabel <<ShiftButton3>> {
+	tablelist::labelB3Down %W 1
+    }
+    bind TablelistLabel <Double-Button-1> {
+	tablelist::labelDblB1 %W %x 0
+    }
+    bind TablelistLabel <Shift-Double-Button-1> {
+	tablelist::labelDblB1 %W %x 1
+    }
+}
 
 #------------------------------------------------------------------------------
 # tablelist::defineTablelistSubLabel
@@ -2841,6 +3033,11 @@ proc tablelist::labelEnter {w X Y x} {
 	#
 	# Display the tooltip corresponding to this label
 	#
+	event generate $win <Leave>
+	catch {uplevel #0 $data(-tooltipdelcommand) [list $win]}
+	if {[destroyed $win]} {
+	    return ""
+	}
 	set data(prevCol) $col
 	set focus [focus -displayof $win]
 	if {[string length $focus] == 0 ||
@@ -2848,7 +3045,9 @@ proc tablelist::labelEnter {w X Y x} {
 	    [string compare [winfo toplevel $focus] \
 	     [winfo toplevel $win]] == 0} {
 	    uplevel #0 $data(-tooltipaddcommand) [list $win -1 $col]
-	    event generate $win <Leave>
+	    if {[destroyed $win]} {
+		return ""
+	    }
 	    event generate $win <Enter> -rootx $X -rooty $Y
 	}
     }
@@ -2882,6 +3081,7 @@ proc tablelist::labelLeave {w X x y} {
     # can also occur in a widget placed into the label
     #
     upvar ::tablelist::ns${win}::data data
+    set data(hdr_prevCell) -1,-1
     set hdrX [winfo rootx $data(hdr)]
     if {$X >= $hdrX && $X < $hdrX + [winfo width $data(hdr)] &&
 	$x >= 1 && $x < [winfo width $w] - 1 &&
@@ -2896,6 +3096,9 @@ proc tablelist::labelLeave {w X x y} {
 	#
 	event generate $win <Leave>
 	catch {uplevel #0 $data(-tooltipdelcommand) [list $win]}
+	if {[destroyed $win]} {
+	    return ""
+	}
 	set data(prevCol) -1
     }
 
@@ -3032,7 +3235,7 @@ proc tablelist::labelB1Motion {w X x y} {
 	    set b $data(body)
 	    set btmTextIdx [$b index @0,$data(btmY)]
 	    set btmRow [expr {int($btmTextIdx) - 1}]
-	    if {$btmRow > $data(lastRow)} {		;# text widget bug
+	    if {$btmRow > $data(lastRow)} {
 		set btmRow $data(lastRow)
 	    }
 	    while {$btmRow > $data(btmRow)} {
@@ -3044,7 +3247,7 @@ proc tablelist::labelB1Motion {w X x y} {
 
 		set btmTextIdx [$b index @0,$data(btmY)]
 		set btmRow [expr {int($btmTextIdx) - 1}]
-		if {$btmRow > $data(lastRow)} {		;# text widget bug
+		if {$btmRow > $data(lastRow)} {
 		    set btmRow $data(lastRow)
 		}
 	    }
@@ -3286,9 +3489,9 @@ proc tablelist::labelB1Up {w X} {
 	set col $data(colBeingResized)
 	if {$data(colResized)} {
 	    if {$data(-width) <= 0} {
-		$data(hdr) configure -width $data(hdrPixels)
+		$data(hdr) configure -width $data(hdrWidth)
 		$data(lb) configure -width \
-			  [expr {$data(hdrPixels) / $data(charWidth)}]
+			  [expr {$data(hdrWidth) / $data(charWidth)}]
 	    } elseif {[info exists data(stretchableCols)] &&
 		      [lsearch -exact $data(stretchableCols) $col] >= 0} {
 		set oldColWidth \
@@ -3366,6 +3569,9 @@ proc tablelist::labelB1Up {w X} {
 		} elseif {[string length $data(-labelcommand)] != 0} {
 		    uplevel #0 $data(-labelcommand) [list $win $col]
 		}
+	    }
+	    if {[destroyed $win]} {
+		return ""
 	    }
 	} elseif {$data(-movablecolumns)} {
 	    $data(hdrTxtFrmCanv)$col configure -cursor $data(-cursor)
@@ -3453,7 +3659,7 @@ proc tablelist::escape {win col} {
     if {[info exists data(colBeingResized)]} {	;# resize operation in progress
 	configLabel $w -cursor $data(-cursor)
 	update idletasks
-	if {![array exists ::tablelist::ns${win}::data]} {
+	if {[destroyed $win]} {
 	    return ""
 	}
 	if {[winfo exists $data(focus)]} {
@@ -3501,7 +3707,7 @@ proc tablelist::escape {win col} {
 # button is released.
 #------------------------------------------------------------------------------
 proc tablelist::horizAutoScan win {
-    if {![array exists ::tablelist::ns${win}::data]} {
+    if {[destroyed $win]} {
 	return ""
     }
 
