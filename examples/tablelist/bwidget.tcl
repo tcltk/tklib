@@ -9,7 +9,7 @@
 #==============================================================================
 
 package require Tk 8.4				;# because of "-compound"
-package require tablelist 5.18
+package require tablelist 6.0
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -19,9 +19,7 @@ wm title . "Serial Line Configuration"
 #
 set dir [file dirname [info script]]
 source [file join $dir option.tcl]
-option add *Tablelist*Checkbutton.background		white
-option add *Tablelist*Checkbutton.activeBackground	white
-option add *Tablelist*Entry.background			white
+option add *Tablelist*Entry.background white
 
 #
 # Register some widgets from the BWidget package for interactive cell editing
@@ -198,7 +196,7 @@ proc editStartCmd {tbl row col text} {
 # editEndCmd
 #
 # Performs a final validation of the text contained in the edit window and gets
-# the cell's internal contents.
+# the cell's internal content.
 #------------------------------------------------------------------------------
 proc editEndCmd {tbl row col text} {
     switch [$tbl columncget $col -name] {

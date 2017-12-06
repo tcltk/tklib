@@ -7,7 +7,7 @@
 # Copyright (c) 2005-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.18
+package require tablelist_tile 6.0
 
 wm title . "Serial Line Configuration"
 
@@ -205,7 +205,7 @@ proc editStartCmd {tbl row col text} {
 # editEndCmd
 #
 # Performs a final validation of the text contained in the edit window and gets
-# the cell's internal contents.
+# the cell's internal content.
 #------------------------------------------------------------------------------
 proc editEndCmd {tbl row col text} {
     switch [$tbl columncget $col -name] {

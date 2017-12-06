@@ -6,7 +6,7 @@
 # Copyright (c) 2004-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.18
+package require tablelist 6.0
 
 wm title . "Tk Library Scripts"
 
@@ -66,15 +66,19 @@ eval font create BoldFont [font actual $tblFont] -size $size -weight bold
 # Populate the tablelist widget
 #
 cd $tk_library
-set maxFileSize 0
+set totalSize 0
+set maxSize 0
 foreach fileName [lsort [glob *.tcl]] {
     set fileSize [file size $fileName]
     $tbl insert end [list $fileName $fileSize $fileSize "" no]
 
-    if {$fileSize > $maxFileSize} {
-	set maxFileSize $fileSize
+    incr totalSize $fileSize
+    if {$fileSize > $maxSize} {
+	set maxSize $fileSize
     }
 }
+$tbl header insert 0 [list "[$tbl size] *.tcl files" "" $totalSize "" ""]
+$tbl header rowconfigure 0 -foreground blue
 
 #------------------------------------------------------------------------------
 # createFrame
@@ -103,7 +107,7 @@ proc createFrame {tbl row col w} {
     # Manage the child frame
     #
     set fileSize [$tbl cellcget $row,fileSize -text]
-    place $w.f -relwidth [expr {double($fileSize) / $::maxFileSize}]
+    place $w.f -relwidth [expr {double($fileSize) / $::maxSize}]
 }
 
 #------------------------------------------------------------------------------
@@ -121,7 +125,7 @@ proc createButton {tbl row col w} {
 #------------------------------------------------------------------------------
 # viewFile
 #
-# Displays the contents of the file whose name is contained in the row with the
+# Displays the content of the file whose name is contained in the row with the
 # given key of the tablelist widget tbl.
 #------------------------------------------------------------------------------
 proc viewFile {tbl key} {
@@ -148,7 +152,7 @@ proc viewFile {tbl key} {
     scrollbar $vsb -orient vertical -command [list $txt yview]
 
     #
-    # Insert the file's contents into the text widget
+    # Insert the file's content into the text widget
     #
     set chan [open $fileName]
     $txt insert end [read $chan]

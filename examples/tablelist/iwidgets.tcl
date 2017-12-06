@@ -9,8 +9,11 @@
 #==============================================================================
 
 package require Tk 8.4				;# because of "-compound"
-package require tablelist 5.18
-package require Iwidgets
+package require tablelist 6.0
+if {[catch {package require iwidgets} result1] != 0 &&
+    [catch {package require Iwidgets} result2] != 0} {
+    error "$result1; $result2"
+}
 
 wm title . "Serial Line Configuration"
 
@@ -19,8 +22,6 @@ wm title . "Serial Line Configuration"
 #
 set dir [file dirname [info script]]
 source [file join $dir option.tcl]
-option add *Tablelist*Checkbutton.background		white
-option add *Tablelist*Checkbutton.activeBackground	white
 option add *Tablelist*textBackground			white
 option add *Tablelist*Entry.disabledBackground		white
 option add *Tablelist*Entry.disabledForeground		black
@@ -202,7 +203,7 @@ proc editStartCmd {tbl row col text} {
 # editEndCmd
 #
 # Performs a final validation of the text contained in the edit window and gets
-# the cell's internal contents.
+# the cell's internal content.
 #------------------------------------------------------------------------------
 proc editEndCmd {tbl row col text} {
     switch [$tbl columncget $col -name] {

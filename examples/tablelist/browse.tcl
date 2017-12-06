@@ -5,7 +5,7 @@
 # Copyright (c) 2000-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.18
+package require tablelist 6.0
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -226,7 +226,7 @@ proc demo::formatBoolean val {
 #------------------------------------------------------------------------------
 # demo::labelCmd
 #
-# Sorts the contents of the tablelist widget tbl by its col'th column and makes
+# Sorts the content of the tablelist widget tbl by its col'th column and makes
 # sure the items will be updated 500 ms later (because one of the items might
 # refer to a canvas containing the arrow that displays the sort order).
 #------------------------------------------------------------------------------
