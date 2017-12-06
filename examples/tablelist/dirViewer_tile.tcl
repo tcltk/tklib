@@ -1,13 +1,13 @@
 #!/usr/bin/env wish
 
 #==============================================================================
-# Demonstrates how to use a tablelist widget for displaying the contents of a
+# Demonstrates how to use a tablelist widget for displaying the content of a
 # directory.
 #
 # Copyright (c) 2010-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.18
+package require tablelist_tile 6.0
 
 #
 # Add some entries to the Tk option database
@@ -32,7 +32,7 @@ if {[tablelist::getCurrentTheme] eq "aqua"} {
 #------------------------------------------------------------------------------
 # displayContents
 #
-# Displays the contents of the directory dir in a tablelist widget.
+# Displays the content of the directory dir in a tablelist widget.
 #------------------------------------------------------------------------------
 proc displayContents dir {
     #
@@ -104,7 +104,7 @@ proc displayContents dir {
     pack $tf -side top -expand yes -fill both
 
     #
-    # Populate the tablelist with the contents of the given directory
+    # Populate the tablelist with the content of the given directory
     #
     $tbl sortbycolumn 0
     putContents $dir $tbl root
@@ -113,7 +113,7 @@ proc displayContents dir {
 #------------------------------------------------------------------------------
 # putContents
 #
-# Outputs the contents of the directory dir into the tablelist widget tbl, as
+# Outputs the content of the directory dir into the tablelist widget tbl, as
 # child items of the one identified by nodeIdx.
 #------------------------------------------------------------------------------
 proc putContents {dir tbl nodeIdx} {
@@ -268,7 +268,7 @@ proc formatSize val {
 #------------------------------------------------------------------------------
 # expandCmd
 #
-# Outputs the contents of the directory whose leaf name is displayed in the
+# Outputs the content of the directory whose leaf name is displayed in the
 # first cell of the specified row of the tablelist widget tbl, as child items
 # of the one identified by row, and updates the image displayed in that cell.
 #------------------------------------------------------------------------------
@@ -296,7 +296,7 @@ proc collapseCmd {tbl row} {
 #------------------------------------------------------------------------------
 # putContentsOfSelFolder
 #
-# Outputs the contents of the selected folder into the tablelist widget tbl.
+# Outputs the content of the selected folder into the tablelist widget tbl.
 #------------------------------------------------------------------------------
 proc putContentsOfSelFolder tbl {
     set row [$tbl curselection]
@@ -356,7 +356,7 @@ proc postPopupMenu {rootX rootY} {
 #------------------------------------------------------------------------------
 # refreshView
 #
-# Redisplays the contents of the directory dir in the tablelist widget tbl and
+# Redisplays the content of the directory dir in the tablelist widget tbl and
 # restores the expanded states of the folders as well as the vertical view.
 #------------------------------------------------------------------------------
 proc refreshView {dir tbl} {
@@ -371,7 +371,7 @@ proc refreshView {dir tbl} {
     }
 
     #
-    # Redisplay the directory's (possibly changed) contents and restore
+    # Redisplay the directory's (possibly changed) content and restore
     # the expanded states of the folders, along with the vertical view
     #
     putContents $dir $tbl root

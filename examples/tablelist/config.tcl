@@ -5,7 +5,7 @@
 # Copyright (c) 2000-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.18
+package require tablelist 6.0
 
 namespace eval demo {
     #
