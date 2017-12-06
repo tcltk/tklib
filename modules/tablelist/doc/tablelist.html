@@ -13,7 +13,7 @@
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 5.18</h2>
+    <h2>For Tablelist Version 6.0</h2>
 
     <h3>by</h3>
 
@@ -119,11 +119,11 @@
   <code>center</code>.</p>
 
   <p>The columns, rows, and cells can be configured individually.&nbsp; Several
-  of the global and column-specific options refer to the headers, implemented
-  as label widgets.&nbsp; For instance, the <code>-labelcommand</code> option
-  specifies a Tcl command to be invoked when mouse button 1 is released over a
-  label.&nbsp; The most common value of this option sorts the items based on
-  the respective column.</p>
+  of the global and column-specific options refer to the header titles,
+  implemented as label widgets.&nbsp; For instance, the
+  <code>-labelcommand</code> option specifies a Tcl command to be invoked when
+  mouse button 1 is released over a header label.&nbsp; The most common value
+  of this option sorts the items based on the respective column.</p>
 
   <p>The Tablelist package provides a great variety of tree styles controlling
   the look &amp; feel of the column that displays the tree hierarchy with the
@@ -170,11 +170,10 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist5.18.tar.gz</code> for UNIX and
-  <code>tablelist5_18.zip</code> for Windows.&nbsp; These files contain the
-  same information, except for the additional carriage return character
-  preceding the linefeed at the end of each line in the text files for
-  Windows.</p>
+  The distribution file is <code>tablelist6.0.tar.gz</code> for UNIX and
+  <code>tablelist6_0.zip</code> for Windows.&nbsp; These files contain the same
+  information, except for the additional carriage return character preceding
+  the linefeed at the end of each line in the text files for Windows.</p>
 
   <p>Tablelist is also included in tklib, which has the address</p>
 
@@ -195,21 +194,21 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist5.18.tar.gz</code>:</p>
+  <code>tablelist6.0.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist5.18.tar.gz | tar -xf -
+gunzip -c tablelist6.0.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>tablelist5.18</code>,
-  with the subdirectories <code>demos</code>, <code>doc</code>, and
+  <p>This command will create a directory named <code>tablelist6.0</code>, with
+  the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist5_18.zip</code> into the directory
-  <code>tablelist5.18</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist6_0ip</code> into the directory
+  <code>tablelist6.0</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -306,14 +305,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 5.18, then it is highly
-  recommended to specify the version number <code>5.18</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 6.0, then it is highly
+  recommended to specify the version number <code>6.0</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 5.18</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 6.0</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 5.18</code>.</p>
+  tablelist_tile 6.0</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -342,7 +341,7 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
 
     <li>The variable <code>tablelist::scalingpct</code> holds the scaling
     percentage used by Tablelist when adapting the sizes of the tree styles
-    <code>vistaAero</code>, <code> vistaClassic</code>, <code>win7Aero</code>,
+    <code>vistaAero</code>, <code>vistaClassic</code>, <code>win7Aero</code>,
     <code>win7Classic</code>, and <code>win10</code> to the display's DPI
     scaling level.&nbsp; The currently supported values are <code>100</code>,
     <code>125</code>, <code>150</code>, and <code>200</code>.&nbsp; You can use
@@ -354,7 +353,7 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
 
     <li>The boolean variable <code>tablelist::strictTk</code> (having the
     default value <code>0</code>) controls the strict listbox-compatibility of
-    the default bindings.
+    the default bindings.</li>
 
     <li>The read-only boolean variable <code>tablelist::usingTile</code> has
     the value <code>0</code> in the package Tablelist and the value
@@ -368,14 +367,14 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   <h3 id="ov_tile">More on Tablelist_tile</h3>
 
   <p>A tablelist widget consists of a body (containing the items) and a header
-  (displaying the column titles).&nbsp; Both components are contained in a
-  hull, implemented as a frame.&nbsp; The header has a rather complex
-  structure, consisting mainly of frame and label widgets.&nbsp; While in the
-  Tablelist package all of these components are Tk widgets, the Tablelist_tile
-  package uses both Tk and tile frame and label widgets.&nbsp; Due to several
-  incompatibilities between Tk and tile, it is currently not possible to
-  replace all Tk widgets making up a tablelist with their tile
-  counterparts.</p>
+  (displaying the column titles and optional header items).&nbsp; Both
+  components are contained in a hull, implemented as a frame.&nbsp; The header
+  has a rather complex structure, consisting, among others, of frame and label
+  widgets.&nbsp; While in the Tablelist package all of these components are Tk
+  widgets, the Tablelist_tile package uses both Tk and tile frame and label
+  widgets.&nbsp; Due to several incompatibilities between Tk and tile, it is
+  currently not possible to replace all Tk widgets making up a tablelist with
+  their tile counterparts.</p>
 
   <p>From the above it follows that <b>the package Tablelist_tile will only
   work as expected if the Tk <code>frame</code> and <code>label</code> commands
@@ -480,8 +479,9 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
   by using the <code>source</code> command as follows:</p>
 
   <ul>
-    <li>If <code>wish</code> was started in the <code>demos</code> directory
-    then it is sufficient to enter
+    <li>
+      If <code>wish</code> was started in the <code>demos</code> directory then
+      it is sufficient to enter
 
       <blockquote>
         <pre>
@@ -490,15 +490,16 @@ source config.tcl
       </blockquote>
     </li>
 
-    <li>If <code>wish</code> was started in some other directory then you can
-    use the <code>tablelist::library</code> variable to find the location of
-    the file.&nbsp; For example, assuming that your Tablelist installation has
-    the directory structure described in the <a href="#ov_install">How to
-    install it?</a> section, the required commands are:
+    <li>
+      If <code>wish</code> was started in some other directory then you can use
+      the <code>tablelist::library</code> variable to find the location of the
+      file.&nbsp; For example, assuming that your Tablelist installation has
+      the directory structure described in the <a href="#ov_install">How to
+      install it?</a> section, the required commands are:
 
       <blockquote>
         <pre>
-package require tablelist 5.18
+package require tablelist 6.0
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -540,8 +541,7 @@ demo::displayConfig .configTop.tf.tbl
   the following figure:</p>
 
   <blockquote>
-    <img src="config.png" alt="Configuration Options" width="835" height=
-    "381">
+    <img src="config.png" alt="Configuration Options" width="835" height="381">
   </blockquote>
 
   <p>It is assumed that the Tcl command associated with the widget specified by
@@ -555,7 +555,7 @@ demo::displayConfig .configTop.tf.tbl
 
   <blockquote>
     <pre>
-package require tablelist 5.18
+package require tablelist 6.0
 
 namespace eval demo {
     #
@@ -741,7 +741,7 @@ proc demo::displayConfig w {
   <p>The <code><a href=
   "tablelistWidget.html#editendcommand">-editendcommand</a></code> option
   specifies the command to be invoked automatically whenever the interactive
-  editing of a cell's contents is finished and the final contents of the
+  editing of a cell's content is finished and the final content of the
   temporary embedded entry widget used for the editing are different from its
   original one.&nbsp; Per default, the elements of a tablelist widget can only
   be edited programmatically, but we enable the interactive editing for the
@@ -963,7 +963,7 @@ proc demo::applyValue {tbl row col text} {
   with <code>1</code> or <code>0</code>, even if the entry contains the string
   <code>yes</code> or <code>no</code>.&nbsp; The procedure returns this
   canonical option value, thus making sure that the latter will become the new
-  contents of the cell that was just edited.</p>
+  content of the cell that was just edited.</p>
 
   <h3 id="ex_browse">Two Widget Browsers Based on a tablelist</h3>
 
@@ -1033,7 +1033,7 @@ demo::displayChildren .
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 5.18
+package require tablelist 6.0
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1334,7 +1334,7 @@ proc demo::putChildren {w tbl nodeIdx} {
   <p>We mark every newly created row corresponding to a child widget that has
   children itself as collapsed by invoking the <code><a href=
   "tablelistWidget.html#collapse">collapse</a></code> subcommand.&nbsp; This
-  will prepend an expand/collapse control to the contents of the first column,
+  will prepend an expand/collapse control to the content of the first column,
   whose column index <code>0</code> is the default value of the <code><a href=
   "tablelistWidget.html#treecolumn">-treecolumn</a></code> configuration
   option.</p>
@@ -1399,7 +1399,7 @@ proc demo::formatBoolean val {
 #------------------------------------------------------------------------------
 # demo::labelCmd
 #
-# Sorts the contents of the tablelist widget tbl by its col'th column and makes
+# Sorts the content of the tablelist widget tbl by its col'th column and makes
 # sure the items will be updated 500 ms later (because one of the items might
 # refer to a canvas containing the arrow that displays the sorting order).
 #------------------------------------------------------------------------------
@@ -1565,7 +1565,7 @@ proc demo::refreshView {w tbl} {
 </pre>
   </blockquote>
 
-  <p>Before redisplaying the tablelist's contents via
+  <p>Before redisplaying the tablelist's content via
   <code>demo::putChildren</code>, we get the full keys of the currently
   expanded items with the aid of the <code><a href=
   "tablelistWidget.html#expandedkeys">expandedkeys</a></code> tablelist
@@ -1619,7 +1619,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   </blockquote>
 
   <p>By double-clicking an item or invoking the single entry of a pop-up menu
-  within the body of the tablelist, you can display the contents of the folder
+  within the body of the tablelist, you can display the content of the folder
   corresponding to the selected item.&nbsp; To go one level up, click on the
   <b>Parent</b> button.</p>
 
@@ -1631,7 +1631,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 5.18
+package require tablelist 6.0
 
 #
 # Add some entries to the Tk option database
@@ -1649,7 +1649,7 @@ image create photo fileImg       -file [file join $dir file.gif]
 #------------------------------------------------------------------------------
 # displayContents
 #
-# Displays the contents of the directory dir in a tablelist widget.
+# Displays the content of the directory dir in a tablelist widget.
 #------------------------------------------------------------------------------
 proc displayContents dir {
     #
@@ -1680,7 +1680,7 @@ proc displayContents dir {
     . . .
 
     #
-    # Populate the tablelist with the contents of the given directory
+    # Populate the tablelist with the content of the given directory
     #
     $tbl sortbycolumn 0
     putContents $dir $tbl root
@@ -1716,7 +1716,7 @@ option add *ScrollArea.Tablelist.highlightThickness     0
 #------------------------------------------------------------------------------
 # putContents
 #
-# Outputs the contents of the directory dir into the tablelist widget tbl, as
+# Outputs the content of the directory dir into the tablelist widget tbl, as
 # child items of the one identified by nodeIdx.
 #------------------------------------------------------------------------------
 proc putContents {dir tbl nodeIdx} {
@@ -1877,7 +1877,7 @@ proc formatSize val {
 #------------------------------------------------------------------------------
 # expandCmd
 #
-# Outputs the contents of the directory whose leaf name is displayed in the
+# Outputs the content of the directory whose leaf name is displayed in the
 # first cell of the specified row of the tablelist widget tbl, as child items
 # of the one identified by row, and updates the image displayed in that cell.
 #------------------------------------------------------------------------------
@@ -2003,7 +2003,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   from the Tk core and from the packages tile, BWidget, Iwidgets, combobox (by
   Bryan Oakley), ctext, and Mentry (or Mentry_tile) for interactive cell
   editing.&nbsp; The following figure shows the tablelist widget, together with
-  a BWidget ComboBox used to edit the contents of one of its cells:</p>
+  a BWidget ComboBox used to edit the content of one of its cells:</p>
 
   <blockquote>
     <img src="bwidget.png" alt="Serial Line Configuration" width="841" height=
@@ -2012,12 +2012,14 @@ for {set n 0} { $n &lt; 8} {incr n} {
 
   <p>Here is the relevant code segment from the script <code>bwidget.tcl</code>
   (the scripts <code>tileWidgets.tcl</code>, <code>iwidgets.tcl</code>, and
-  <code>miscWidgets.tcl</code> are similar):</p>
+  <code>miscWidgets.tcl</code> are similar).&nbsp; A few parts of the code are
+  shown in <span>red</span> color &ndash; we will return to this towards the
+  end of the section.</p>
 
   <blockquote>
     <pre>
 package require Tk 8.4                          ;# because of "-compound"
-package require tablelist 5.18
+package require tablelist 6.0
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2027,9 +2029,7 @@ wm title . "Serial Line Configuration"
 #
 set dir [file dirname [info script]]
 source [file join $dir option.tcl]
-option add *Tablelist*Checkbutton.background            white
-option add *Tablelist*Checkbutton.activeBackground      white
-option add *Tablelist*Entry.background                  white
+option add *Tablelist*Entry.background white
 
 #
 # Register some widgets from the BWidget package for interactive cell editing
@@ -2066,7 +2066,7 @@ if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
 $tbl columnconfigure 0 -sortmode integer
-$tbl columnconfigure 1 -name available -editable yes -editwindow checkbutton \
+$tbl columnconfigure 1 <span>-name available -editable yes -editwindow checkbutton</span> \
     -formatcommand emptyStr
 $tbl columnconfigure 2 -name lineName  -editable yes -editwindow Entry \
     -sortmode dictionary
@@ -2096,8 +2096,8 @@ for {set i 0; set n 1} {$i &lt; 16} {set i $n; incr n} {
     $tbl insert end [list $n [expr {$i &lt; 8}] "Line $n" 9600 8 None 1 XON/XOFF \
         $clock $clock [lindex $colorNames $i]]
 
-    set availImg [expr {($i &lt; 8) ? "checkedImg" : "uncheckedImg"}]
-    $tbl cellconfigure end,available -image $availImg
+    <span>set availImg [expr {($i &lt; 8) ? "checkedImg" : "uncheckedImg"}]
+    $tbl cellconfigure end,available -image $availImg</span>
     $tbl cellconfigure end,color -image img[lindex $colorValues $i]
 }
 
@@ -2244,9 +2244,9 @@ proc editStartCmd {tbl row col text} {
   "tablelistWidget.html#editendcommand">-editendcommand</a></code>
   configuration option, is responsible for a final validation of the edit
   window's text.&nbsp; Another purpose of this command is to convert the text
-  contained in the edit window to the cell's new <i>internal</i> contents,
-  which is necessary because the internal value of the activation date and time
-  is a clock value in seconds:</p>
+  contained in the edit window to the cell's new <i>internal</i> content, which
+  is necessary because the internal value of the activation date and time is a
+  clock value in seconds:</p>
 
   <blockquote>
     <pre>
@@ -2254,17 +2254,17 @@ proc editStartCmd {tbl row col text} {
 # editEndCmd
 #
 # Performs a final validation of the text contained in the edit window and gets
-# the cell's internal contents.
+# the cell's internal content.
 #------------------------------------------------------------------------------
 proc editEndCmd {tbl row col text} {
     switch [$tbl columncget $col -name] {
-        available {
+        <span>available {
             #
             # Update the image contained in the cell
             #
             set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
             $tbl cellconfigure $row,$col -image $img
-        }
+        }</span>
 
         baudRate {
             #
@@ -2322,6 +2322,31 @@ proc editEndCmd {tbl row col text} {
 </pre>
   </blockquote>
 
+  <p>Instead of making the <code>"Available"</code> column editable via a
+  <i>temporary</i> checkbutton and displaying the images
+  <code>"checkedImg"</code> and <code>"uncheckedImg"</code> in its cells, we
+  can use the <code><a href=
+  "tablelistWidget.html#embedcheckbuttons">embedcheckbuttons</a></code>
+  subcommand to populate the column with <i>persistently</i> embedded
+  checkbuttons.&nbsp; The necessary changes are as follows:</p>
+
+  <ul>
+    <li class="tm">Remove those parts of the code above that are shown in
+    <span>red</span> color.</li>
+
+    <li class="tm">
+      Invoke
+
+      <blockquote>
+        <pre>
+$tbl embedcheckbuttons 1
+</pre>
+      </blockquote>
+
+      after populating the tablelist widget.
+    </li>
+  </ul>
+
   <p>As mentioned above, the scripts <code>tileWidgets.tcl</code>,
   <code>iwidgets.tcl</code>, and <code>miscWidgets.tcl</code> are similar to
   <code>bwidget.tcl</code>.&nbsp; The first one makes use of the tile entry,
@@ -2351,14 +2376,14 @@ proc editEndCmd {tbl row col text} {
 
   <blockquote>
     <img src="embeddedWindows.png" alt="Embedded Windows" width="432" height=
-    "284">
+    "303">
   </blockquote>
 
   <p>First, we create and populate the tablelist widget:</p>
 
   <blockquote>
     <pre>
-package require tablelist 5.18
+package require tablelist 6.0
 
 wm title . "Tk Library Scripts"
 
@@ -2418,24 +2443,35 @@ eval font create BoldFont [font actual $tblFont] -size $size -weight bold
 # Populate the tablelist widget
 #
 cd $tk_library
-set maxFileSize 0
+set totalSize 0
+set maxSize 0
 foreach fileName [lsort [glob *.tcl]] {
     set fileSize [file size $fileName]
     $tbl insert end [list $fileName $fileSize $fileSize "" no]
 
-    if {$fileSize &gt; $maxFileSize} {
-        set maxFileSize $fileSize
+    incr totalSize $fileSize
+    if {$fileSize &gt; $maxSize} {
+        set maxSize $fileSize
     }
 }
+$tbl header insert 0 [list "[$tbl size] *.tcl files" "" $totalSize "" ""]
+$tbl header rowconfigure 0 -foreground blue
 </pre>
   </blockquote>
 
   <p>We insert the size of each file not only into the column with the
-  title&nbsp; <code>"File Size"</code>&nbsp;, but also into the column&nbsp;
+  title&nbsp; <code>"File Size"</code>,&nbsp; but also into the column&nbsp;
   <code>"Bar Chart"</code>.&nbsp; Since we configured this column with&nbsp;
   <code>-formatcommand emptyStr</code>,&nbsp; the text will remain hidden in
   it.&nbsp; It will, however, be needed when sorting the items by that
   column.</p>
+
+  <p>After populating the tablelist's body, we create a header item displaying
+  the total number and size of the library files, by invoking the&nbsp;
+  <code><a href="tablelistWidget.html#hdr_insert">header
+  insert</a></code>&nbsp; subcommand, and change its foreground color with the
+  aid of the&nbsp; <code><a href="tablelistWidget.html#hdr_rowconfigure">header
+  rowconfigure</a></code>&nbsp; subcommand.</p>
 
   <p>To be able to create the embedded windows, we have first to implement the
   creation scripts for them, as specified in the description of the
@@ -2472,7 +2508,7 @@ proc createFrame {tbl row col w} {
     # Manage the child frame
     #
     set fileSize [$tbl cellcget $row,fileSize -text]
-    place $w.f -relwidth [expr {double($fileSize) / $::maxFileSize}]
+    place $w.f -relwidth [expr {double($fileSize) / $::maxSize}]
 }
 </pre>
   </blockquote>
@@ -2510,7 +2546,7 @@ proc createButton {tbl row col w} {
 #------------------------------------------------------------------------------
 # viewFile
 #
-# Displays the contents of the file whose name is contained in the row with the
+# Displays the content of the file whose name is contained in the row with the
 # given key of the tablelist widget tbl.
 #------------------------------------------------------------------------------
 proc viewFile {tbl key} {
@@ -2537,7 +2573,7 @@ proc viewFile {tbl key} {
     scrollbar $vsb -orient vertical -command [list $txt yview]
 
     #
-    # Insert the file's contents into the text widget
+    # Insert the file's content into the text widget
     #
     set chan [open $fileName]
     $txt insert end [read $chan]
@@ -2602,7 +2638,7 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
   <blockquote>
     <pre>
 package require Tk 8.3                          ;# because of entry validation
-package require tablelist 5.18
+package require tablelist 6.0
 </pre>
   </blockquote>
 
@@ -2610,7 +2646,7 @@ package require tablelist 5.18
 
   <blockquote>
     <pre>
-package require tablelist<span>_tile</span> 5.18
+package require tablelist<span>_tile</span> 6.0
 </pre>
   </blockquote>
 
@@ -2727,7 +2763,7 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
 
   <blockquote>
     <img src="embeddedWindows_tile.png" alt="Embedded Windows" width="432"
-    height="280">
+    height="299">
   </blockquote>
 
   <div align="center">
