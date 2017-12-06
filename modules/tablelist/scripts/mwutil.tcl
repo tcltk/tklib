@@ -20,7 +20,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.8
+    variable version	2.9
     variable library	[file dirname [info script]]
 
     #
@@ -491,7 +491,8 @@ proc mwutil::getScrollInfo argList {
 	    wrongNumArgs "moveto fraction"
 	}
 
-	set fraction [format "%f" [lindex $argList 1]]
+	set fraction [lindex $argList 1]
+	format "%f" $fraction ;# floating-point number check with error message
 	return [list moveto $fraction]
     } elseif {[string first $opt "scroll"] == 0} {
 	if {$argCount != 3} {

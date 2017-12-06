@@ -22,6 +22,7 @@ namespace eval tablelist {
     #
     proc addTkCoreWidgets {} {
 	variable editWin
+	variable pu
 
 	set name entry
 	array set editWin [list \
@@ -47,9 +48,9 @@ namespace eval tablelist {
 	array set editWin [list \
 	    $name-creationCmd	"$name %W -padx 2 -pady 2 -wrap none" \
 	    $name-putValueCmd	"%W delete 1.0 end; %W insert 1.0 %T" \
-	    $name-getValueCmd	"%W get 1.0 end-1c" \
+	    $name-getValueCmd	"%W get 1.0 end-1$pu" \
 	    $name-putTextCmd	"%W delete 1.0 end; %W insert 1.0 %T" \
-	    $name-getTextCmd	"%W get 1.0 end-1c" \
+	    $name-getTextCmd	"%W get 1.0 end-1$pu" \
 	    $name-putListCmd	"" \
 	    $name-getListCmd	"" \
 	    $name-selectCmd	"" \
@@ -564,12 +565,13 @@ proc tablelist::addCtext {{name ctext}} {
     checkEditWinName $name
 
     variable editWin
+    variable pu
     array set editWin [list \
 	$name-creationCmd	"ctext %W -padx 2 -pady 2 -wrap none" \
 	$name-putValueCmd	"%W delete 1.0 end; %W insert 1.0 %T" \
-	$name-getValueCmd	"%W get 1.0 end-1c" \
+	$name-getValueCmd	"%W get 1.0 end-1$pu" \
 	$name-putTextCmd	"%W delete 1.0 end; %W insert 1.0 %T" \
-	$name-getTextCmd	"%W get 1.0 end-1c" \
+	$name-getTextCmd	"%W get 1.0 end-1$pu" \
 	$name-putListCmd	"" \
 	$name-getListCmd	"" \
 	$name-selectCmd		"" \
@@ -1075,54 +1077,11 @@ proc tablelist::checkEditWinName name {
 #------------------------------------------------------------------------------
 # tablelist::createCheckbutton
 #
-# Creates a checkbutton widget with the given path name for interactive cell
+# Creates a checkbutton widget of the given path name for interactive cell
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createCheckbutton {w args} {
-    variable winSys
-    switch $winSys {
-	x11 {
-	    variable checkedImg
-	    variable uncheckedImg
-	    if {![info exists checkedImg]} {
-		createCheckbuttonImgs 
-	    }
-
-	    checkbutton $w -borderwidth 2 -indicatoron 0 -image $uncheckedImg \
-			   -selectimage $checkedImg
-	    if {$::tk_version >= 8.4} {
-		$w configure -offrelief sunken
-	    }
-	    pack $w
-	}
-
-	win32 {
-	    checkbutton $w -borderwidth 0 -font {"MS Sans Serif" 8} \
-			   -padx 0 -pady 0
-	    [winfo parent $w] configure -width 13 -height 13
-	    switch [winfo reqheight $w] {
-		17	{ set y -1 }
-		20	{ set y -3 }
-		25	{ set y -5 }
-		30 -
-		31	{ set y -8 }
-		default	{ set y -1 }
-	    }
-	    place $w -x -1 -y $y
-	}
-
-	classic {
-	    checkbutton $w -borderwidth 0 -font "system" -padx 0 -pady 0
-	    [winfo parent $w] configure -width 16 -height 14
-	    place $w -x 0 -y -1
-	}
-
-	aqua {
-	    checkbutton $w -borderwidth 0 -font "system" -padx 0 -pady 0
-	    [winfo parent $w] configure -width 16 -height 16
-	    place $w -x -4 -y -3
-	}
-    }
+    makeCheckbutton $w
 
     foreach {opt val} $args {
 	switch -- $opt {
@@ -1138,7 +1097,7 @@ proc tablelist::createCheckbutton {w args} {
 #------------------------------------------------------------------------------
 # tablelist::createMenubutton
 #
-# Creates a menubutton widget with the given path name for interactive cell
+# Creates a menubutton widget of the given path name for interactive cell
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createMenubutton {w args} {
@@ -1223,7 +1182,7 @@ proc tablelist::postMenuCmd w {
 #------------------------------------------------------------------------------
 # tablelist::createTileEntry
 #
-# Creates a tile entry widget with the given path name for interactive cell
+# Creates a tile entry widget of the given path name for interactive cell
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileEntry {w args} {
@@ -1274,7 +1233,7 @@ proc tablelist::createTileEntry {w args} {
 #------------------------------------------------------------------------------
 # tablelist::createTileSpinbox
 #
-# Creates a tile spinbox widget with the given path name for interactive cell
+# Creates a tile spinbox widget of the given path name for interactive cell
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileSpinbox {w args} {
@@ -1332,7 +1291,7 @@ proc tablelist::createTileSpinbox {w args} {
 #------------------------------------------------------------------------------
 # tablelist::createTileCombobox
 #
-# Creates a tile combobox widget with the given path name for interactive cell
+# Creates a tile combobox widget of the given path name for interactive cell
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileCombobox {w args} {
@@ -1358,30 +1317,11 @@ proc tablelist::createTileCombobox {w args} {
 #------------------------------------------------------------------------------
 # tablelist::createTileCheckbutton
 #
-# Creates a tile checkbutton widget with the given path name for interactive
-# cell editing in a tablelist widget.
+# Creates a tile checkbutton widget of the given path name for interactive cell
+# editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileCheckbutton {w args} {
-    if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
-	package require tile 0.6
-    }
-    createTileAliases 
-
-    #
-    # Define the checkbutton layout; use catch to suppress
-    # the error message in case the layout already exists
-    #
-    set currentTheme [getCurrentTheme]
-    if {[string compare $currentTheme "aqua"] == 0} {
-	catch {style layout Tablelist.TCheckbutton { Checkbutton.button }}
-    } else {
-	catch {style layout Tablelist.TCheckbutton { Checkbutton.indicator }}
-	styleConfig Tablelist.TCheckbutton -indicatormargin 0
-    }
-
-    set win [getTablelistPath $w]
-    ttk::checkbutton $w -style Tablelist.TCheckbutton \
-			-variable ::tablelist::ns${win}::data(editText)
+    makeTileCheckbutton $w
 
     foreach {opt val} $args {
 	switch -- $opt {
@@ -1390,127 +1330,15 @@ proc tablelist::createTileCheckbutton {w args} {
 	}
     }
 
-    #
-    # Adjust the dimensions of the tile checkbutton's parent
-    # and manage the checkbutton, depending on the current theme
-    #
-    switch -- $currentTheme {
-	aqua {
-	    [winfo parent $w] configure -width 16 -height 16
-	    place $w -x -3 -y -3
-	}
-
-	Aquativo -
-	Arc {
-	    [winfo parent $w] configure -width 14 -height 14
-	    place $w -x -1 -y -1
-	}
-
-	blue -
-	winxpblue {
-	    set height [winfo reqheight $w]
-	    [winfo parent $w] configure -width $height -height $height
-	    place $w -x 0
-	}
-
-	clam {
-	    [winfo parent $w] configure -width 11 -height 11
-	    place $w -x 0
-	}
-
-	clearlooks {
-	    [winfo parent $w] configure -width 13 -height 13
-	    place $w -x -2 -y -2
-	}
-
-	keramik -
-	keramik_alt {
-	    [winfo parent $w] configure -width 16 -height 16
-	    place $w -x -1 -y -1
-	}
-
-	plastik {
-	    [winfo parent $w] configure -width 15 -height 15
-	    place $w -x -2 -y 1
-	}
-
-	sriv -
-	srivlg {
-	    [winfo parent $w] configure -width 15 -height 16
-	    place $w -x -1
-	}
-
-	tileqt {
-	    switch -- [string tolower [tileqt_currentThemeName]] {
-		acqua {
-		    [winfo parent $w] configure -width 17 -height 18
-		    place $w -x -1 -y -2
-		}
-		cde -
-		cleanlooks -
-		motif {
-		    [winfo parent $w] configure -width 13 -height 13
-		    if {[info exists ::env(KDE_SESSION_VERSION)] &&
-			[string length $::env(KDE_SESSION_VERSION)] != 0} {
-			place $w -x -2
-		    } else {
-			place $w -x 0
-		    }
-		}
-		gtk+ {
-		    [winfo parent $w] configure -width 15 -height 15
-		    place $w -x -1 -y -1
-		}
-		kde_xp {
-		    [winfo parent $w] configure -width 13 -height 13
-		    place $w -x 0
-		}
-		keramik -
-		thinkeramik {
-		    [winfo parent $w] configure -width 16 -height 16
-		    place $w -x 0
-		}
-		oxygen {
-		    [winfo parent $w] configure -width 17 -height 17
-		    place $w -x -2 -y -1
-		}
-		default {
-		    set height [winfo reqheight $w]
-		    [winfo parent $w] configure -width $height -height $height
-		    place $w -x 0
-		}
-	    }
-	}
-
-	vista {
-	    set height [winfo reqheight $w]
-	    [winfo parent $w] configure -width $height -height $height
-	    place $w -x 0
-	}
-
-	winnative -
-	xpnative {
-	    set height [winfo reqheight $w]
-	    [winfo parent $w] configure -width $height -height $height
-	    if {[info exists tile::patchlevel] &&
-		[string compare $tile::patchlevel "0.8.0"] < 0} {
-		place $w -x -2
-	    } else {
-		place $w -x 0
-	    }
-	}
-
-	default {
-	    pack $w
-	}
-    }
+    set win [getTablelistPath $w]
+    $w configure -variable ::tablelist::ns${win}::data(editText)
 }
 
 #------------------------------------------------------------------------------
 # tablelist::createTileMenubutton
 #
-# Creates a tile menubutton widget with the given path name for interactive
-# cell editing in a tablelist widget.
+# Creates a tile menubutton widget of the given path name for interactive cell
+# editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileMenubutton {w args} {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
@@ -1557,8 +1385,8 @@ proc tablelist::createTileMenubutton {w args} {
 #------------------------------------------------------------------------------
 # tablelist::createBWidgetComboBox
 #
-# Creates a BWidget ComboBox widget with the given path name for interactive
-# cell editing in a tablelist widget.
+# Creates a BWidget ComboBox widget of the given path name for interactive cell
+# editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createBWidgetComboBox {w args} {
     eval [list ComboBox $w -editable 1 -width 0] $args
@@ -1574,7 +1402,7 @@ proc tablelist::createBWidgetComboBox {w args} {
 #------------------------------------------------------------------------------
 # tablelist::createIncrCombobox
 #
-# Creates an [incr Widgets] combobox with the given path name for interactive
+# Creates an [incr Widgets] combobox of the given path name for interactive
 # cell editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createIncrCombobox {w args} {
@@ -1596,8 +1424,8 @@ proc tablelist::createIncrCombobox {w args} {
 #------------------------------------------------------------------------------
 # tablelist::createOakleyCombobox
 #
-# Creates an Oakley combobox widget with the given path name for interactive
-# cell editing in a tablelist widget.
+# Creates an Oakley combobox widget of the given path name for interactive cell
+# editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createOakleyCombobox {w args} {
     eval [list combobox::combobox $w -editable 1 -width 0] $args
@@ -1718,17 +1546,18 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     }
 
     #
-    # Replace the cell's contents between the two tabs with the above frame
+    # Replace the cell's content between the two tabs with the above frame
     #
     array set data [list editKey $key editRow $row editCol $col]
-    findTabs $win [expr {$row + 1}] $col $col tabIdx1 tabIdx2
     set b $data(body)
+    findTabs $win $b [expr {$row + 1}] $col $col tabIdx1 tabIdx2
     getIndentData $win $data(editKey) $data(editCol) indentWidth
+    variable pu
     if {$indentWidth == 0} {
-	set textIdx [$b index $tabIdx1+1c]
+	set textIdx [$b index $tabIdx1+1$pu]
     } else {
-	$b mark set editIndentMark [$b index $tabIdx1+1c]
-	set textIdx [$b index $tabIdx1+2c]
+	$b mark set editIndentMark [$b index $tabIdx1+1$pu]
+	set textIdx [$b index $tabIdx1+2$pu]
     }
     if {$isCheckbtn} {
 	set editIdx $textIdx
@@ -1739,12 +1568,12 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	    set editIdx $textIdx
 	    $b delete $editIdx $tabIdx2
 	} elseif {[string compare $alignment "right"] == 0} {
-	    $b mark set editAuxMark $tabIdx2-1c
+	    $b mark set editAuxMark $tabIdx2-1$pu
 	    set editIdx $textIdx
-	    $b delete $editIdx $tabIdx2-1c
+	    $b delete $editIdx $tabIdx2-1$pu
 	} else {
 	    $b mark set editAuxMark $textIdx
-	    set editIdx [$b index $textIdx+1c]
+	    set editIdx [$b index $textIdx+1$pu]
 	    $b delete $editIdx $tabIdx2
 	}
     }
@@ -1776,7 +1605,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	restoreEditData $win
     } else {
 	#
-	# Put the cell's contents to the edit window
+	# Put the cell's content to the edit window
 	#
 	set data(canceled) 0
 	set data(invoked) 0
@@ -1797,6 +1626,9 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	if {[string length $data(-editstartcommand)] != 0} {
 	    set text [uplevel #0 $data(-editstartcommand) \
 		      [list $win $row $col $text]]
+	    if {[destroyed $win]} {
+		return ""
+	    }
 
 	    variable winSys
 	    if {[string compare $winSys "aqua"] == 0} {
@@ -1964,10 +1796,10 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     if {$isText} {
 	if {[string compare [$w cget -wrap] "none"] == 0 ||
 	    $::tk_version < 8.5} {
-	    set numLines [expr {int([$w index end-1c])}]
+	    set numLines [expr {int([$w index end-1$pu])}]
 	    $w configure -height $numLines
 	    update idletasks				;# needed for ctext
-	    if {![array exists ::tablelist::ns${win}::data]} {
+	    if {[destroyed $win]} {
 		return ""
 	    }
 	    $f configure -height [winfo reqheight $w]
@@ -1983,7 +1815,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	}
     } elseif {!$isCheckbtn} {
 	update idletasks
-	if {![array exists ::tablelist::ns${win}::data]} {
+	if {[destroyed $win]} {
 	    return ""
 	}
 	$f configure -height [winfo reqheight $w]
@@ -1996,7 +1828,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	place $w -relwidth 1.0 -relheight 1.0
 	adjustEditWindow $win $pixels
 	update idletasks
-	if {![array exists ::tablelist::ns${win}::data]} {
+	if {[destroyed $win]} {
 	    return ""
 	}
     }
@@ -2009,7 +1841,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 # tablelist::doCancelEditing
 #
 # Processes the tablelist cancelediting subcommand.  Aborts the interactive
-# cell editing and restores the cell's contents after destroying the edit
+# cell editing and restores the cell's content after destroying the edit
 # window.
 #------------------------------------------------------------------------------
 proc tablelist::doCancelEditing win {
@@ -2027,6 +1859,9 @@ proc tablelist::doCancelEditing win {
 	[string length $data(-editendcommand)] != 0} {
 	uplevel #0 $data(-editendcommand) \
 		[list $win $row $col $data(origEditText)]
+	if {[destroyed $win]} {
+	    return ""
+	}
     }
 
     if {[winfo exists $data(bodyFrm)]} {
@@ -2087,6 +1922,9 @@ proc tablelist::doFinishEditing win {
 	if {[string length $data(-editendcommand)] != 0} {
 	    set text \
 		[uplevel #0 $data(-editendcommand) [list $win $row $col $text]]
+	    if {[destroyed $win]} {
+		return 0
+	    }
 	}
     }
 
@@ -2162,7 +2000,8 @@ proc tablelist::adjustTextHeight {w args} {
 	#
 	# We can only count the logical lines (irrespective of wrapping)
 	#
-	set numLines [expr {int([$w index end-1c])}]
+	variable pu
+	set numLines [expr {int([$w index end-1$pu])}]
     }
     $w configure -height $numLines
 
