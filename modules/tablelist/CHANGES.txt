@@ -1,5 +1,47 @@
-What is new in Tablelist 5.18?
-------------------------------
+What is new in Tablelist 6.0?
+-----------------------------
+
+1. Added support for header items (aka title rows) with the aid of the
+   new "header", "headerpath", and "headertag" subcommands.  The first
+   one supports a great number of subcommands itself, like
+   "insert(list)", "delete", "size", "rowconfigure", "cellconfigure",
+   "get(formatted)", "get(formatted)cells", etc. (thanks to Hemang
+   Lavana, Kenneth Green, and Ralf Fassel for their proposals).  The
+   demo scripts "embeddedWindows.tcl" and "embeddedWindows_tile.tcl" now
+   contain invocations of "header insert" and "header rowconfigure".
+
+2. Added the "embed(ttk)checkbutton" and "embed(ttk)checkbuttons"
+   subcommands, which provide interactive cell editing with the aid of
+   persistently embedded checkbuttons (thanks to Mark Garvey and Holger
+   Jakobs for their proposal).  The Tablelist Programmer's Guide now
+   contains an example of usage of the "embedcheckbuttons" subcommand.
+
+3. Compatibility with the revised implementation of the text widget,
+   which will be contained in Tk 8.7 (thanks to Brad Lanam, Gregor
+   Cramer, and Francois Vogel for their valuable assistance).
+
+4. The "dicttoitem" and "itemtodict" subcommands are now supported in
+   the presence of alternative, Tcl-only "dict" implementations, too
+   (thanks to Andy Goth for his proposal).
+
+5. Deleting all items has become by orders of magnitude faster (thanks
+   to Martin Lemburg for requesting this performance improvement).
+
+6. Guarded against invocations of the "update" command from within the
+   command specified as the value of the "-tooltipaddcommand" option
+   (thanks to Alexandru Dadalau for his bug report and discussions on
+   this subject).
+
+7. Made sure that the "xview" and "yview" subcommands work as expected
+   even if the script was started from wthin a C application in which
+   the decimal point is different from "." (thanks to Paul Obermeier for
+   his bug report).
+
+8. Numerous further improvements in the code, demo scripts, and
+   documentation.
+
+What was new in Tablelist 5.18?
+-------------------------------
 
 1. Improved the performance of the vertical scrolling (thanks to
    Alexandru Dadalau and Olivier Jolet for discussions on this subject).
