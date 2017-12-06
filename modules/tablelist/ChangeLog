@@ -1,3 +1,31 @@
+2017-12-R06 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 6.0.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/*.tcl: Added support for header items (aka title rows), added
+	  the "embed(ttk)checkbutton" and "embed(ttk)checkbuttons" subcommands;
+	  compatibility with the revised implementation of the text widget;
+	  support for Tcl-only "dict" implementations; deleting all items has
+	  become by orders of magnitude faster; guarded against invocations of
+	  the "update" command when displaying the tooltip; "xview" and "yview"
+	  now work as expected even if the decimal point is different from ".";
+	  numerous further improvements.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/*.html: Updated to reflect the changes.
+
+	* doc/dirViewer.png:            Updated screenshots
+	* doc/embeddedWindows.png:
+	* doc/embeddedWindows_tile.png:
+
+	* ../../examples/*.tcl: Bumped the version number to 6.0; updates and
+	  minor improvements.
+
 2017-06-24  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistWdget.tcl: Fixed a bug related to excluding the
