@@ -1,5 +1,15 @@
-What is new in Tablelist 6.0?
------------------------------
+What is new in Tablelist 6.0.1?
+-------------------------------
+
+This is a bugfix-only release.  The only corrected file in the
+"scripts" directory is "tablelistUtil.tcl": inserted the missing closed
+bracket in line #6448.  This fix eliminates a regression related to both
+temporarily and persistently embedded Tk checkbuttons on Windows,
+introduced in the previous Tablelist version (thanks to Johann
+Oberdorfer for his bug report).
+
+What was new in Tablelist 6.0?
+------------------------------
 
 1. Added support for header items (aka title rows) with the aid of the
    new "header", "headerpath", and "headertag" subcommands.  The first
