@@ -1,4 +1,16 @@
-2017-12-R06 Csaba Nemethi <csaba.nemethi@t-online.de>
+2018-01-08  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:              Bumped the version number to 6.0.1.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* doc/index.html:
+	* doc/tablelist.html:
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/tablelistUtil.tcl: Inserted the missing "]""in line #6448.
+
+2017-12-06 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 6.0.
 	* COPYRIGHT.txt:
