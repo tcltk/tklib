@@ -8,7 +8,7 @@
 
 	* CHANGES.txt: Updated to reflect the changes.
 
-	* scripts/tablelistUtil.tcl: Inserted the missing "]""in line #6448.
+	* scripts/tablelistUtil.tcl: Inserted the missing "]" in line #6448.
 
 2017-12-06 Csaba Nemethi <csaba.nemethi@t-online.de>
 
