@@ -6,7 +6,7 @@
 #   - Public utility procedure
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -6445,7 +6445,7 @@ proc tablelist::makeCheckbutton w {
 	win32 {
 	    $frm configure -width 13 -height 13
 	    $w configure -borderwidth 0 -font {"MS Sans Serif" 8}
-	    switch [winfo reqheight $w {
+	    switch [winfo reqheight $w] {
 		17	{ set y -1 }
 		20	{ set y -3 }
 		25	{ set y -5 }
