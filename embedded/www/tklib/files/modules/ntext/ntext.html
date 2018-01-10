@@ -106,7 +106,7 @@
 | <a href="../../../../toc1.html">Modules</a>
 | <a href="../../../../toc2.html">Applications</a>
  ] <hr>
-<h1 class="title">ntext(n) 0.81 tklib &quot;Alternative Bindings for the Text Widget&quot;</h1>
+<h1 class="title">ntext(n) 1.0 tklib &quot;Alternative Bindings for the Text Widget&quot;</h1>
 <div id="name" class="section"><h2><a name="name">Name</a></h2>
 <p>ntext - Alternative Bindings for the Text Widget</p>
 </div>
@@ -115,9 +115,10 @@
 <li class="section"><a href="#toc">Table Of Contents</a></li>
 <li class="section"><a href="#synopsis">Synopsis</a></li>
 <li class="section"><a href="#section1">Description</a></li>
-<li class="section"><a href="#section2">CONFIGURATION OPTIONS</a></li>
-<li class="section"><a href="#section3">EXAMPLE</a></li>
-<li class="section"><a href="#section4">Bugs, Ideas, Feedback</a></li>
+<li class="section"><a href="#section2">COMMANDS</a></li>
+<li class="section"><a href="#section3">CONFIGURATION OPTIONS</a></li>
+<li class="section"><a href="#section4">BUGS</a></li>
+<li class="section"><a href="#section5">EXAMPLE</a></li>
 <li class="section"><a href="#see-also">See Also</a></li>
 <li class="section"><a href="#keywords">Keywords</a></li>
 </ul>
@@ -127,7 +128,12 @@
 <ul class="requirements">
 <li>package require <b class="pkgname">Tcl 8.5</b></li>
 <li>package require <b class="pkgname">Tk 8.5</b></li>
-<li>package require <b class="pkgname">ntext <span class="opt">?0.81?</span></b></li>
+<li>package require <b class="pkgname">ntext <span class="opt">?1.0?</span></b></li>
+</ul>
+<ul class="syntax">
+<li><a href="#1"><b class="cmd">::ntext::new_textCopy</b> <i class="arg">pathName</i></a></li>
+<li><a href="#2"><b class="cmd">::ntext::new_textCut</b> <i class="arg">pathName</i></a></li>
+<li><a href="#3"><b class="cmd">::ntext::new_textPaste</b> <i class="arg">pathName</i></a></li>
 </ul>
 </div>
 </div>
@@ -142,25 +148,44 @@
 <li><p>When the user navigates or selects text, Tcl/Tk sometimes needs to detect word boundaries.  <em>Ntext</em> provides improved rules for word boundary detection.  For details see <i class="term"><a href="ntextWordBreak.html">ntextWordBreak</a></i>.</p></li>
 </ul>
 <p>The remainder of this page describes the basic use and configuration of all three aspects of <em>Ntext</em>.  For more detailed information on the different facilities of <em>Ntext</em>, see the pages <i class="term"><a href="ntextBindings.html">ntextBindings</a></i>, <i class="term"><a href="ntextIndent.html">ntextIndent</a></i>, and <i class="term"><a href="ntextWordBreak.html">ntextWordBreak</a></i>.</p>
-<p>See Section <span class="sectref"><a href="#section3">EXAMPLE</a></span> for how to apply the <em>Ntext</em> binding tag in place of the <em>Text</em> binding tag.</p>
+<p>See Section <span class="sectref"><a href="#section5">EXAMPLE</a></span> for how to apply the <em>Ntext</em> binding tag in place of the <em>Text</em> binding tag.</p>
 </div>
-<div id="section2" class="section"><h2><a name="section2">CONFIGURATION OPTIONS</a></h2>
+<div id="section2" class="section"><h2><a name="section2">COMMANDS</a></h2>
+<dl class="definitions">
+<dt><a name="1"><b class="cmd">::ntext::new_textCopy</b> <i class="arg">pathName</i></a></dt>
+<dd><p>Replacement for ::tk_textCopy.</p></dd>
+<dt><a name="2"><b class="cmd">::ntext::new_textCut</b> <i class="arg">pathName</i></a></dt>
+<dd><p>Replacement for ::tk_textCut that also maintains <em>Ntext</em> indentation (see <i class="term"><a href="ntextIndent.html">ntextIndent</a></i>).</p></dd>
+<dt><a name="3"><b class="cmd">::ntext::new_textPaste</b> <i class="arg">pathName</i></a></dt>
+<dd><p>Replacement for ::tk_textPaste that also maintains <em>Ntext</em> indentation (see <i class="term"><a href="ntextIndent.html">ntextIndent</a></i>).</p></dd>
+</dl>
+</div>
+<div id="section3" class="section"><h2><a name="section3">CONFIGURATION OPTIONS</a></h2>
 <p><em>Ntext</em> provides alternatives to a number of behaviours of the classic <em>Text</em> binding tag.  Where there is an option, the <em>Ntext</em> behaviour (except for display-line indentation) is switched on by default.</p>
 <p>The behaviour of <em>Ntext</em> may be configured application-wide by setting the values of a number of namespace variables:</p>
 <p><b class="variable">::ntext::classicAnchor</b></p>
 <ul class="itemized">
 <li><p><b class="const">0</b> - (default value) selects <em>Ntext</em> behaviour, i.e. the anchor point is fixed</p></li>
 <li><p><b class="const">1</b> - selects classic <em>Text</em> behaviour, i.e. the anchor point is variable</p></li>
+<li><p>For more information see <i class="term"><a href="ntextBindings.html">ntextBindings</a></i></p></li>
 </ul>
 <p><b class="variable">::ntext::classicExtras</b></p>
 <ul class="itemized">
 <li><p><b class="const">0</b> - (default value) selects <em>Ntext</em> behaviour, i.e. several traditional <em>Text</em> bindings are de-activated</p></li>
 <li><p><b class="const">1</b> - selects classic <em>Text</em> behaviour, i.e. all <em>Text</em> bindings are activated</p></li>
+<li><p>For more information see <i class="term"><a href="ntextBindings.html">ntextBindings</a></i></p></li>
 </ul>
 <p><b class="variable">::ntext::classicMouseSelect</b></p>
 <ul class="itemized">
 <li><p><b class="const">0</b> - (default value) selects <em>Ntext</em> behaviour, i.e. the anchor point for mouse selection operations is moved by keyboard navigation</p></li>
 <li><p><b class="const">1</b> - selects classic <em>Text</em> behaviour</p></li>
+<li><p>For more information see <i class="term"><a href="ntextBindings.html">ntextBindings</a></i></p></li>
+</ul>
+<p><b class="variable">::ntext::classicSelection</b></p>
+<ul class="itemized">
+<li><p><b class="const">0</b> - (default value on macOS Aqua) selects Mac-like behaviour, i.e. when a navigation keystroke cancels a selection, the insert mark first moves to the end of the selection determined by the navigation direction of the keystroke, and then the keystroke is applied.</p></li>
+<li><p><b class="const">1</b> - (default value except on macOS Aqua) selects PC-like behaviour (the same as classic <em>Text</em>), i.e. when a navigation keystroke cancels a selection, the insert mark is not moved before the keystroke is applied.</p></li>
+<li><p>For more information see <i class="term"><a href="ntextBindings.html">ntextBindings</a></i></p></li>
 </ul>
 <p><b class="variable">::ntext::classicWordBreak</b></p>
 <ul class="itemized">
@@ -172,15 +197,26 @@
 <ul class="itemized">
 <li><p><b class="const">0</b> - selects <em>Ntext</em> behaviour, i.e. display lines of text widgets in <i class="arg">-wrap</i> <i class="arg">word</i> mode are indented to match the initial whitespace of the first display line of a logical line.  If the widget already holds text when this value is set, a function call may be necessary.  See <i class="term"><a href="ntextIndent.html">ntextIndent</a></i> for detailed instructions on the use of <em>Ntext</em> 's indentation.</p></li>
 <li><p><b class="const">1</b> - (default value) selects classic <em>Text</em> behaviour, i.e. no indentation</p></li>
+<li><p>For more information see <i class="term"><a href="ntextIndent.html">ntextIndent</a></i></p></li>
 </ul>
 <p><b class="variable">::ntext::overwrite</b></p>
 <ul class="itemized">
 <li><p><b class="const">0</b> - (initial value) text typed at the keyboard is inserted into the widget</p></li>
 <li><p><b class="const">1</b> - text typed at the keyboard overwrites text already in the widget</p></li>
-<li><p>The value is toggled by the <em>Insert</em> key.</p></li>
+<li><p>The value is toggled by the <em>Insert</em> key (except on macOS Aqua where there is no such key).</p></li>
+<li><p>For more information see <i class="term"><a href="ntextBindings.html">ntextBindings</a></i></p></li>
+</ul>
+<p><b class="variable">::ntext::classicParagraphs</b></p>
+<ul class="itemized">
+<li><p><b class="const">0</b> - (default value) on macOS Aqua, certain keyboard bindings are made to behave in the same way as the Mac application TextEdit.  The bindings involve vertical scrolling of the screen and are &lt;?Shift-?Option-(Up|Down)&gt;.</p></li>
+<li><p><b class="const">1</b> - on macOS Aqua, certain keyboard bindings are made to behave in the same way as classic <em>Text</em>, ignoring the conventions of Aqua.  The bindings involve vertical scrolling of the screen and are &lt;?Shift-?Option-(Up|Down)&gt;.</p></li>
+<li><p>For more information see <i class="term"><a href="ntextBindings.html">ntextBindings</a></i></p></li>
 </ul>
 </div>
-<div id="section3" class="section"><h2><a name="section3">EXAMPLE</a></h2>
+<div id="section4" class="section"><h2><a name="section4">BUGS</a></h2>
+<p>This version of <b class="package">ntext</b> is intended to be compatible with all releases of <b class="package"><a href="../../../../index.html#key43">Tk</a></b> 8.5 and 8.6, and with the branches <em>core-8-5-branch</em>, <em>core-8-6-branch</em>, and <em>trunk</em> in the source code repository for <b class="package"><a href="../../../../index.html#key43">Tk</a></b>.  Any incompatibility with any of these versions, for any <b class="package"><a href="../../../../index.html#key43">Tk</a></b> windowing system, should be reported as a bug. Please report such in the category <em>ntext</em> of the <a href="http://core.tcl.tk/tklib/reportlist">Tklib Trackers</a>.</p>
+</div>
+<div id="section5" class="section"><h2><a name="section5">EXAMPLE</a></h2>
 <p>To create a text widget .t and use the <em>Ntext</em> bindings:</p>
 <pre class="example">
 package require ntext
@@ -189,18 +225,10 @@ bindtags .t {.t Ntext . all}
 </pre>
 <p>See bindtags for more information.</p>
 </div>
-<div id="section4" class="section"><h2><a name="section4">Bugs, Ideas, Feedback</a></h2>
-<p>This document, and the package it describes, will undoubtedly contain
-bugs and other problems.
-Please report such in the category <em>ntext</em> of the
-<a href="http://core.tcl.tk/tklib/reportlist">Tklib Trackers</a>.
-Please also report any ideas for enhancements you may have for either
-package and/or documentation.</p>
-</div>
 <div id="see-also" class="section"><h2><a name="see-also">See Also</a></h2>
-<p><a href="../../../../index.html#key5">bindtags</a>, <a href="ntextBindings.html">ntextBindings</a>, <a href="ntextIndent.html">ntextIndent</a>, <a href="ntextWordBreak.html">ntextWordBreak</a>, <a href="../../../../index.html#key7">re_syntax</a>, <a href="../../../../index.html#key8">regexp</a>, <a href="../../../../index.html#key6">text</a></p>
+<p><a href="../../../../index.html#key5">bindtags</a>, <a href="ntextBindings.html">ntextBindings</a>, <a href="ntextIndent.html">ntextIndent</a>, <a href="ntextWordBreak.html">ntextWordBreak</a>, <a href="../../../../index.html#key6">re_syntax</a>, <a href="../../../../index.html#key8">regexp</a>, <a href="../../../../index.html#key7">text</a></p>
 </div>
 <div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
-<p><a href="../../../../index.html#key5">bindtags</a>, <a href="../../../../index.html#key7">re_syntax</a>, <a href="../../../../index.html#key8">regexp</a>, <a href="../../../../index.html#key6">text</a></p>
+<p><a href="../../../../index.html#key5">bindtags</a>, <a href="../../../../index.html#key6">re_syntax</a>, <a href="../../../../index.html#key8">regexp</a>, <a href="../../../../index.html#key7">text</a></p>
 </div>
 </div></body></html>

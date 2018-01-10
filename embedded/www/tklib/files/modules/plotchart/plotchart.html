@@ -108,7 +108,7 @@
 | <a href="../../../../toc1.html">Modules</a>
 | <a href="../../../../toc2.html">Applications</a>
  ] <hr>
-<h1 class="title">Plotchart(n) 2.3.4 tklib &quot;Plotchart&quot;</h1>
+<h1 class="title">Plotchart(n) 2.3.5 tklib &quot;Plotchart&quot;</h1>
 <div id="name" class="section"><h2><a name="name">Name</a></h2>
 <p>Plotchart - Simple plotting and charting package</p>
 </div>
@@ -145,7 +145,7 @@
 <ul class="requirements">
 <li>package require <b class="pkgname">Tcl <span class="opt">?8.5?</span></b></li>
 <li>package require <b class="pkgname">Tk <span class="opt">?8.5?</span></b></li>
-<li>package require <b class="pkgname">Plotchart <span class="opt">?2.3.4?</span></b></li>
+<li>package require <b class="pkgname">Plotchart <span class="opt">?2.3.5?</span></b></li>
 </ul>
 <ul class="syntax">
 <li><a href="#1"><b class="cmd">::Plotchart::createXYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i> <i class="arg">args</i></a></li>
@@ -1012,12 +1012,15 @@ empty string if you do not want a border.</p></dd>
 to position the legend outside the actual plot.</p></dd>
 <dt><b class="option">font</b> font</dt>
 <dd><p>Set the font used to draw the text next to the symbol.</p></dd>
-<dt><b class="option">legendtype</b></dt>
+<dt><b class="option">legendtype</b> type</dt>
 <dd><p>Override the type of the legend, that is pre-defined for the current type of
 plot. May be one of: rectangle or line.</p></dd>
 <dt><b class="option">position</b> corner</dt>
 <dd><p>Set the position of the legend. May be one of: top-left, top-right,
 bottom-left or bottom-right. (Default value is top-right.)</p></dd>
+<dt><b class="option">spacing</b> pixels</dt>
+<dd><p>Set the vertical spacing between entries in the legend (in pixels).
+bottom-left or bottom-right. (Default value is 10 pixels.)</p></dd>
 </dl></dd>
 <dt><a name="45"><b class="cmd">$anyplot</b> balloon <i class="arg">x</i> <i class="arg">y</i> <i class="arg">text</i> <i class="arg">dir</i></a></dt>
 <dd><p>Add balloon text to the plot (except for 3D plots). The arrow will point
@@ -2570,7 +2573,8 @@ It takes the same options as the <b class="cmd">plotconfig</b> command.</p></li>
 <dt>string <i class="arg">style</i> (in)</dt>
 <dd><p>The name of the plot style to manipulate</p></dd>
 <dt>list <i class="arg">args</i> (in)</dt>
-<dd><p>The new options for the style - see the <b class="cmd">plotconfig</b> command for details</p></dd>
+<dd><p>The new options for the style. Each option is described by: chart type, component of the chart,
+property of the component and the new value for the property - see the <b class="cmd">plotconfig</b> command for details.</p></dd>
 </dl></dd>
 </dl>
 <p>Below is a detailed list of the components and properties:</p>

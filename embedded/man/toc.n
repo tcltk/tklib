@@ -360,6 +360,9 @@ tklib
 \fBmenubar\fR
 \fIfiles/modules/menubar/menubar\&.n\fR: Creates an instance of the  Class\&.
 .TP
+\fBnotifywindow\fR
+\fIfiles/modules/notifywindow/notifywindow\&.n\fR: Provides unobtrusive window for alerts/notifications from Tk applications
+.TP
 \fBntext\fR
 \fIfiles/modules/ntext/ntext\&.n\fR: Alternative Bindings for the Text Widget
 .TP

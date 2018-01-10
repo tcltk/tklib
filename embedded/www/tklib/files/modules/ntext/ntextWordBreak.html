@@ -106,7 +106,7 @@
 | <a href="../../../../toc1.html">Modules</a>
 | <a href="../../../../toc2.html">Applications</a>
  ] <hr>
-<h1 class="title">ntextWordBreak(n) 0.81 tklib &quot;ntext Word Boundary Detection for the Text Widget&quot;</h1>
+<h1 class="title">ntextWordBreak(n) 1.0 tklib &quot;ntext Word Boundary Detection for the Text Widget&quot;</h1>
 <div id="name" class="section"><h2><a name="name">Name</a></h2>
 <p>ntextWordBreak - ntext Word Boundary Detection for the Text Widget</p>
 </div>
@@ -121,8 +121,8 @@
 <li class="section"><a href="#section5">Functions (Advanced Use)</a></li>
 <li class="section"><a href="#section6">FUNCTIONS</a></li>
 <li class="section"><a href="#section7">WORD BOUNDARY MATCHING</a></li>
-<li class="section"><a href="#section8">EXAMPLE</a></li>
-<li class="section"><a href="#section9">Bugs, Ideas, Feedback</a></li>
+<li class="section"><a href="#section8">BUGS</a></li>
+<li class="section"><a href="#section9">EXAMPLE</a></li>
 <li class="section"><a href="#see-also">See Also</a></li>
 <li class="section"><a href="#keywords">Keywords</a></li>
 </ul>
@@ -132,7 +132,7 @@
 <ul class="requirements">
 <li>package require <b class="pkgname">Tcl 8.5</b></li>
 <li>package require <b class="pkgname">Tk 8.5</b></li>
-<li>package require <b class="pkgname">ntext <span class="opt">?0.81?</span></b></li>
+<li>package require <b class="pkgname">ntext <span class="opt">?1.0?</span></b></li>
 </ul>
 </div>
 </div>
@@ -191,7 +191,10 @@
 <p>The use of three classes of characters might make selection too fine-grained; but in this case, holding down the <em>Shift</em> key and double-clicking another word is an excellent way to select a longer range of text (a useful binding that Tcl/Tk has long provided but which is missing in other systems).</p>
 <p>As well as its defaults, <em>Ntext</em> permits the developer to define their own classes of characters, or to revert to the classic <em>Text</em> definitions, or to specify their own regexp matching patterns.</p>
 </div>
-<div id="section8" class="section"><h2><a name="section8">EXAMPLE</a></h2>
+<div id="section8" class="section"><h2><a name="section8">BUGS</a></h2>
+<p>This version of <b class="package"><a href="ntext.html">ntext</a></b> is intended to be compatible with all releases of <b class="package"><a href="../../../../index.html#key43">Tk</a></b> 8.5 and 8.6, and with the branches <em>core-8-5-branch</em>, <em>core-8-6-branch</em>, and <em>trunk</em> in the source code repository for <b class="package"><a href="../../../../index.html#key43">Tk</a></b>.  Any incompatibility with any of these versions, for any <b class="package"><a href="../../../../index.html#key43">Tk</a></b> windowing system, should be reported as a bug. Please report such in the category <em>ntext</em> of the <a href="http://core.tcl.tk/tklib/reportlist">Tklib Trackers</a>.</p>
+</div>
+<div id="section9" class="section"><h2><a name="section9">EXAMPLE</a></h2>
 <p>To use <em>Ntext</em> with Tcl/Tk's usual word-boundary detection rules:</p>
 <pre class="example">
 package require ntext
@@ -206,22 +209,15 @@ set ::ntext::classicWordBreak 1
 package require ntext
 text .t
 bindtags .t {.t Ntext . all}
-::ntext::createMatchPatterns  {[[:space:][:cntrl:]]} {[[:punct:]]} {[^[:punct:][:space:][:cntrl:]]}
+::ntext::createMatchPatterns \ 
+  {[[:space:][:cntrl:]]} {[[:punct:]]} {[^[:punct:][:space:][:cntrl:]]}
 </pre>
 <p>See regexp, re_syntax for more information.</p>
 </div>
-<div id="section9" class="section"><h2><a name="section9">Bugs, Ideas, Feedback</a></h2>
-<p>This document, and the package it describes, will undoubtedly contain
-bugs and other problems.
-Please report such in the category <em>ntext</em> of the
-<a href="http://core.tcl.tk/tklib/reportlist">Tklib Trackers</a>.
-Please also report any ideas for enhancements you may have for either
-package and/or documentation.</p>
-</div>
 <div id="see-also" class="section"><h2><a name="see-also">See Also</a></h2>
-<p><a href="../../../../index.html#key5">bindtags</a>, <a href="ntext.html">ntext</a>, <a href="../../../../index.html#key7">re_syntax</a>, <a href="../../../../index.html#key8">regexp</a>, <a href="../../../../index.html#key6">text</a></p>
+<p><a href="../../../../index.html#key5">bindtags</a>, <a href="ntext.html">ntext</a>, <a href="../../../../index.html#key6">re_syntax</a>, <a href="../../../../index.html#key8">regexp</a>, <a href="../../../../index.html#key7">text</a></p>
 </div>
 <div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
-<p><a href="../../../../index.html#key5">bindtags</a>, <a href="../../../../index.html#key7">re_syntax</a>, <a href="../../../../index.html#key8">regexp</a>, <a href="../../../../index.html#key6">text</a></p>
+<p><a href="../../../../index.html#key5">bindtags</a>, <a href="../../../../index.html#key6">re_syntax</a>, <a href="../../../../index.html#key8">regexp</a>, <a href="../../../../index.html#key7">text</a></p>
 </div>
 </div></body></html>
