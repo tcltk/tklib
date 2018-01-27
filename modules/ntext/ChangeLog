@@ -1,3 +1,29 @@
+2018-01-26  Keith Nash  <kjnash@users.sourceforge.net>
+
+	* Update to correspond to current tk8.x/text.tcl --
+	  core-8-5-branch 2015-10-04 artifact [6af61544] check-in [55133bde]
+	  core-8-6-branch 2017-09-22 artifact [24e611b8] check-in [ba5ef805]
+	  trunk           2017-10-07 artifact [642cbaf3] check-in [429e2357]
+	  revised_text    2018-01-15 artifact [a76837e9] check-in [74f86687]
+	* Adapt to work with revised_text.
+	* Add revisions made to Tk library/text.tcl since the last release
+	  of ntext.
+	* When indenting word-wrapped lines, use the text widget tag option
+	  -lmargincolor if available (i.e. for Tk 8.6.6 and above). Add command
+	  ::ntext::syncIndentColor and variable ::ntext::indentColor for this
+	  purpose.
+	* Add the option to use the block cursor when in "overwrite" mode.  Make
+	  this the default for Tk 8.5.12 or newer (earlier versions have a bug
+	  in their block cursor).
+	* Generate a <<Selection>> event when the PRIMARY selection changes
+	  as a result of an "insert" or "delete" operation, in older versions of
+	  Tk. (This missing feature is added to the text widget itself in
+	  Tk 8.6.9.)
+	* Add a new example for unusual scrolling cases identified in
+	  revised_text.
+	* Update docs and examples.
+	* Increase version to 1.0b2
+
 2017-03-31  Keith Nash  <kjnash@users.sourceforge.net>
 
 	* Update to correspond to current tk8.x/text.tcl --
