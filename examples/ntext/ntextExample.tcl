@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 
 package require Tk
 
-# Copyright (c) 2005-2017 Keith Nash.
+# Copyright (c) 2005-2018 Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -15,6 +15,7 @@ package require Tk
 ### To explore the ntext options, try ntextDemoBindings.tcl
 ### To explore ntext indentation, try ntextDemoIndent.tcl
 ### To explore vertical scrolling on the Mac, try ntextDemoMacScrolling.tcl
+### For corner cases in scrolling, try ntextDemoScroll.tcl
 
 . configure -bg #d0cfce
 
