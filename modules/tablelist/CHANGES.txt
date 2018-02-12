@@ -2,11 +2,11 @@ What is new in Tablelist 6.0.1?
 -------------------------------
 
 This is a bugfix-only release.  The only corrected file in the
-"scripts" directory is "tablelistUtil.tcl": inserted the missing closed
+"scripts" directory is "tablelistUtil.tcl": inserted the missing close
 bracket in line #6448.  This fix eliminates a regression related to both
 temporarily and persistently embedded Tk checkbuttons on Windows,
 introduced in the previous Tablelist version (thanks to Johann
-Oberdorfer for his bug report).
+Oberdorfer and Jyrki Majamaeki for their bug reports).
 
 What was new in Tablelist 6.0?
 ------------------------------
