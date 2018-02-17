@@ -2726,6 +2726,13 @@ proc ::ntext::TextInsertSelection {w selection} {
 	$w configure -autoseparators 0
 	$w edit separator
     }
+
+    if {([$w tag nextrange sel 1.0 end] ne "")} {
+        set oldSel [list [$w index sel.first] [$w index sel.last]]
+    } else {
+        set oldSel {}
+    }
+
     if {    ($selection eq "CLIPBOARD")
 	 && ([tk windowingsystem] ne "x11TheOldFashionedWay")
 	 && ([$w tag nextrange sel 1.0 end] ne "")
@@ -2754,6 +2761,22 @@ proc ::ntext::TextInsertSelection {w selection} {
     } {
 	event generate $w <<Selection>>
     }
+
+    # The PRIMARY selection has changed but the widget does
+    # not generate this event.
+    # The operation doesn't change the value without changing the range,
+    # so it is enough to consider the range.
+    # The operation does not mark a selection if none existed before.
+    if {    ($selection eq "CLIPBOARD")
+	 && ($oldSel ne {})
+	 && $::ntext::GenerateSelect
+	 && (    ([$w tag nextrange sel 1.0 end] eq "")
+              || ([list [$w index sel.first] [$w index sel.last]] ne $oldSel)
+            )
+    } {
+	event generate $w <<Selection>>
+    }
+
     return
 }
 
@@ -3577,4 +3600,4 @@ proc ::ntext::syncIndentColor {w} {
 
 ::ntext::initializeMatchPatterns
 
-package provide ntext 1.0b2
+package provide ntext 1.0b3
