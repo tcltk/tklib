@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file 'ntextWordBreak\&.man' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'ntextWordBreak\&.man~' by tcllib/doctools with format 'nroff'
 '\"
 .TH "ntextWordBreak" n 1\&.0 tklib "ntext Word Boundary Detection for the Text Widget"
 .\" The -*- nroff -*- definitions below are for supplemental macros used

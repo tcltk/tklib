@@ -386,7 +386,10 @@ to the ones given for the voltmeter widget:</p>
 </dl></dd>
 <dt><a name="7"><b class="cmd">::controlwidget::rdial</b> <i class="arg">w</i> <i class="arg">args</i></a></dt>
 <dd><p>Create a rotating dial. You can drag the dial to change the value. With the shift button
-depressed the value changes slowly, with the control button depressed it changes fast.</p>
+depressed the value changes slowly, with the control button depressed it changes fast.
+Similarly, you can control the dial via the mouse wheel, with the shift and control button
+working in the same way as with the mouse pointer.
+<em>Note:</em> The shift and control buttons currently have no effect on Windows.</p>
 <dl class="arguments">
 <dt>widget <i class="arg">w</i> (in)</dt>
 <dd><p>Name of the widget to be created.</p></dd>
@@ -401,6 +404,8 @@ depressed the value changes slowly, with the control button depressed it changes
 <dd><p>Whether a horizontal disk/dial is required (&quot;horizontal&quot;) or a vertical one (&quot;vertical&quot;)</p></dd>
 <dt><b class="option">step</b> value</dt>
 <dd><p>Initial step for incrementing or decrementing the value</p></dd>
+<dt><b class="option">bindwheel</b> value</dt>
+<dd><p>Step size for controlling the dial's value via the mouse wheel</p></dd>
 <dt><b class="option">slow</b> value</dt>
 <dd><p>Factor on the step size for incrementing or decrementing the value slowly</p></dd>
 <dt><b class="option">fast</b> value</dt>
@@ -519,7 +524,7 @@ Please also report any ideas for enhancements you may have for either
 package and/or documentation.</p>
 </div>
 <div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
-<p><a href="../../../../index.html#key124">controlling</a>, <a href="../../../../index.html#key123">displaying</a>, <a href="../../../../index.html#key122">numerical values</a>, <a href="../../../../index.html#key121">scale widget</a></p>
+<p><a href="../../../../index.html#key95">controlling</a>, <a href="../../../../index.html#key94">displaying</a>, <a href="../../../../index.html#key93">numerical values</a>, <a href="../../../../index.html#key92">scale widget</a></p>
 </div>
 <div id="copyright" class="section"><h2><a name="copyright">Copyright</a></h2>
 <p>Copyright &copy; 2010 Ron Fox &lt;rfox@...&gt;<br>
