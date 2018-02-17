@@ -92,7 +92,7 @@
     }
 --></style>
 </head>
-<! -- Generated from file 'ntextIndent.man' by tcllib/doctools with format 'html'
+<! -- Generated from file 'ntextIndent.man~' by tcllib/doctools with format 'html'
    -->
 <! -- CVS: $Id$ ntextIndent.n
    -->
@@ -136,6 +136,7 @@
 <li><a href="#1"><b class="cmd">::ntext::new_textCopy</b> <i class="arg">pathName</i></a></li>
 <li><a href="#2"><b class="cmd">::ntext::new_textCut</b> <i class="arg">pathName</i></a></li>
 <li><a href="#3"><b class="cmd">::ntext::new_textPaste</b> <i class="arg">pathName</i></a></li>
+<li><a href="#4"><b class="cmd">::ntext::syncIndentColor</b> <i class="arg">pathName</i></a></li>
 </ul>
 </div>
 </div>
@@ -150,18 +151,27 @@
 <dt><a name="1"><b class="cmd">::ntext::new_textCopy</b> <i class="arg">pathName</i></a></dt>
 <dd><p>Replacement for ::tk_textCopy.</p></dd>
 <dt><a name="2"><b class="cmd">::ntext::new_textCut</b> <i class="arg">pathName</i></a></dt>
-<dd><p>Replacement for ::tk_textCut that also maintains <em>Ntext</em> indentation (see <i class="term">ntextIndent</i>).</p></dd>
+<dd><p>Replacement for ::tk_textCut that also maintains <em>Ntext</em> indentation.</p></dd>
 <dt><a name="3"><b class="cmd">::ntext::new_textPaste</b> <i class="arg">pathName</i></a></dt>
-<dd><p>Replacement for ::tk_textPaste that also maintains <em>Ntext</em> indentation (see <i class="term">ntextIndent</i>).</p></dd>
+<dd><p>Replacement for ::tk_textPaste that also maintains <em>Ntext</em> indentation.</p></dd>
+<dt><a name="4"><b class="cmd">::ntext::syncIndentColor</b> <i class="arg">pathName</i></a></dt>
+<dd><p>Command to apply the current value of <b class="variable">::ntext::indentColor</b> to existing lines in a text widget.  This command is useful if a text widget has been created, text has been inserted in the widget, <em>and then</em> the value of <b class="variable">::ntext::indentColor</b> is changed.</p></dd>
 </dl>
 </div>
 <div id="section3" class="section"><h2><a name="section3">CONFIGURATION OPTIONS</a></h2>
 <p>The behavior of <em>Ntext</em> may be configured application-wide by setting the values of a number of namespace variables:</p>
 <p><b class="variable">::ntext::classicWrap</b></p>
 <ul class="itemized">
-<li><p>0 - selects <em>Ntext</em> behaviour, i.e. display lines are indented to match the initial whitespace of the first display line of a logical line.</p>
+<li><p><b class="const">0</b> - selects <em>Ntext</em> behaviour, i.e. display lines are indented to match the initial whitespace of the first display line of a logical line.</p>
 <p>No other action is required if this option, and the text widget's <i class="arg">-wrap</i> option, are set before any text is entered in the widget, and if text is entered and edited only by the mouse and keyboard.  If, instead, text is manipulated by the script, or if the text widget's <i class="arg">-wrap</i> option or the value of <b class="variable">::ntext::classicWrap</b> are changed while the widget holds text, then calls to <em>ntext</em> functions are needed to alter the indentation.  See the section <span class="sectref"><a href="#section4">INDENTING DISPLAY LINES</a></span> for detailed instructions.</p></li>
-<li><p>1 - (default value) selects classic <em>Text</em> behaviour, i.e. no indentation.</p></li>
+<li><p><b class="const">1</b> - (default value) selects classic <em>Text</em> behaviour, i.e. no indentation.</p></li>
+</ul>
+<p><b class="variable">::ntext::indentColor</b></p>
+<ul class="itemized">
+<li><p><b class="const">{}</b> - if the value is the empty string, then the indent of wrapped display lines has the same color as the widget background.</p></li>
+<li><p><em>color</em> - a valid Tk color to use for the indent of wrapped display lines (default value <em>#d9d9d9</em>).</p>
+<p>Coloring is implemented with the text widget tag option <i class="arg">-lmargincolor</i>, which is available from <b class="package"><a href="../../../../index.html#key30">Tk</a></b> 8.6.6 onwards.  <em>Ntext</em> indent coloring has no effect in earlier versions of <b class="package"><a href="../../../../index.html#key30">Tk</a></b>.</p>
+<p>The value of <b class="variable">::ntext::indentColor</b> will often be set at startup.  If the value is changed when text widgets already exist and contain text, those widgets can be updated by calling command <b class="cmd">::ntext::syncIndentColor</b>.</p></li>
 </ul>
 <p><em>Advanced Use</em></p>
 <p><b class="variable">::ntext::newWrapRegexp</b></p>
@@ -206,13 +216,29 @@
 </ul>
 </div>
 <div id="section6" class="section"><h2><a name="section6">BUGS</a></h2>
-<p>This version of <b class="package"><a href="ntext.html">ntext</a></b> is intended to be compatible with all releases of <b class="package"><a href="../../../../index.html#key43">Tk</a></b> 8.5 and 8.6, and with the branches <em>core-8-5-branch</em>, <em>core-8-6-branch</em>, and <em>trunk</em> in the source code repository for <b class="package"><a href="../../../../index.html#key43">Tk</a></b>.  Any incompatibility with any of these versions, for any <b class="package"><a href="../../../../index.html#key43">Tk</a></b> windowing system, should be reported as a bug. Please report such in the category <em>ntext</em> of the <a href="http://core.tcl.tk/tklib/reportlist">Tklib Trackers</a>.</p>
+<p>This version of <b class="package"><a href="ntext.html">ntext</a></b> is intended to be compatible with all releases of <b class="package"><a href="../../../../index.html#key30">Tk</a></b> 8.5 and 8.6, and with the branches <em>core-8-5-branch</em>, <em>core-8-6-branch</em>, and <em>trunk</em> in the source code repository for <b class="package"><a href="../../../../index.html#key30">Tk</a></b>.  Any incompatibility with any of these versions, for any <b class="package"><a href="../../../../index.html#key30">Tk</a></b> windowing system, should be reported as a bug. Please report such in the category <em>ntext</em> of the <a href="http://core.tcl.tk/tklib/reportlist">Tklib Trackers</a>.</p>
 </div>
 <div id="section7" class="section"><h2><a name="section7">EXAMPLES</a></h2>
-<p>To switch on <em>Ntext</em> 's indentation and use it in widget .t:</p>
+<p>To switch on <em>Ntext</em> 's indentation and use it in widget .t, using the default indent color <em>#d9d9d9</em>:</p>
 <pre class="example">
 package require ntext
 set ::ntext::classicWrap 0
+text .t -wrap word
+bindtags .t {.t Ntext . all}
+</pre>
+<p>To switch on <em>Ntext</em> 's indentation and use it in widget .t, without colored indents:</p>
+<pre class="example">
+package require ntext
+set ::ntext::classicWrap 0
+set ::ntext::indentColor {}
+text .t -wrap word
+bindtags .t {.t Ntext . all}
+</pre>
+<p>To switch on <em>Ntext</em> 's indentation and use it in widget .t, coloring the indents black:</p>
+<pre class="example">
+package require ntext
+set ::ntext::classicWrap 0
+set ::ntext::indentColor black
 text .t -wrap word
 bindtags .t {.t Ntext . all}
 </pre>
@@ -232,6 +258,11 @@ set foo [.t index end]
 .t insert end {This line was added by the script, not the keyboard!}
 ::ntext::wrapIndent .t $foo end
 </pre>
+<p>To change the indentation color when a widget .t already holds text:</p>
+<pre class="example">
+set ::ntext::indentColor black
+::ntext::syncIndentColor .t
+</pre>
 <p>To switch to <i class="arg">-wrap</i> <i class="arg">char</i> mode:</p>
 <pre class="example">
 .t configure -wrap char
@@ -239,9 +270,9 @@ set foo [.t index end]
 </pre>
 </div>
 <div id="see-also" class="section"><h2><a name="see-also">See Also</a></h2>
-<p><a href="../../../../index.html#key5">bindtags</a>, <a href="ntext.html">ntext</a>, <a href="../../../../index.html#key6">re_syntax</a>, <a href="../../../../index.html#key8">regexp</a>, <a href="../../../../index.html#key7">text</a></p>
+<p><a href="../../../../index.html#key58">bindtags</a>, <a href="ntext.html">ntext</a>, <a href="../../../../index.html#key59">re_syntax</a>, <a href="../../../../index.html#key60">regexp</a>, <a href="../../../../index.html#key21">text</a></p>
 </div>
 <div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
-<p><a href="../../../../index.html#key5">bindtags</a>, <a href="../../../../index.html#key6">re_syntax</a>, <a href="../../../../index.html#key8">regexp</a>, <a href="../../../../index.html#key7">text</a></p>
+<p><a href="../../../../index.html#key58">bindtags</a>, <a href="../../../../index.html#key59">re_syntax</a>, <a href="../../../../index.html#key60">regexp</a>, <a href="../../../../index.html#key21">text</a></p>
 </div>
 </div></body></html>

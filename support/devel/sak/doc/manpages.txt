@@ -31,6 +31,7 @@ modules/ntext/ntext.man
 modules/ntext/ntextBindings.man
 modules/ntext/ntextIndent.man
 modules/ntext/ntextWordBreak.man
+modules/persistentSelection/persistentSelection.man
 modules/plotchart/plotchart.man
 modules/swaplist/swaplist.man
 modules/tkpiechart/canvaslabel.man
@@ -44,4 +45,5 @@ modules/widget/widget_dateentry.man
 modules/widget/widget_toolbar.man
 modules/widgetl/widget_listentry.man
 modules/widgetl/widget_listsimple.man
+modules/widgetPlus/widgetPlus.man
 modules/widgetv/widget_validator.man
