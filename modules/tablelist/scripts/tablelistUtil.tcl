@@ -3856,11 +3856,15 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	# Set the widget's background and foreground
 	# colors to those of the containing cell
 	#
+	set isImgLabel [expr {[string compare $path $w.img_$key,$col] == 0}]
 	if {$data(isDisabled)} {
 	    set bg $data(-background)
 	    set fg $data(-disabledforeground)
 	} elseif {$selected} {
-	    if {[info exists data($key,$col-selectbackground)]} {
+	    if {$isImgLabel &&
+		[info exists data($key,$col-imagebackground)]} {
+		set bg $data($key,$col-imagebackground)
+	    } elseif {[info exists data($key,$col-selectbackground)]} {
 		set bg $data($key,$col-selectbackground)
 	    } elseif {[info exists data($key-selectbackground)]} {
 		set bg $data($key-selectbackground)
@@ -3882,7 +3886,10 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		}
 	    }
 	} else {
-	    if {[info exists data($key,$col-background)]} {
+	    if {$isImgLabel &&
+		[info exists data($key,$col-imagebackground)]} {
+		set bg $data($key,$col-imagebackground)
+	    } elseif {[info exists data($key,$col-background)]} {
 		set bg $data($key,$col-background)
 	    } elseif {[info exists data($key-background)]} {
 		set bg $data($key-background)
@@ -4052,7 +4059,10 @@ proc tablelist::hdr_updateColors win {
 	    set bg $data(-background)
 	    set fg $data(-disabledforeground)
 	} else {
-	    if {[info exists data($key,$col-background)]} {
+	    if {[string compare $path $w.img_$key,$col] == 0 &&
+		[info exists data($key,$col-imagebackground)]} {
+		set bg $data($key,$col-imagebackground)
+	    } elseif {[info exists data($key,$col-background)]} {
 		set bg $data($key,$col-background)
 	    } elseif {[info exists data($key-background)]} {
 		set bg $data($key-background)
