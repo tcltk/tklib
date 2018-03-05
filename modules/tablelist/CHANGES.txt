@@ -1,12 +1,19 @@
-What is new in Tablelist 6.0.1?
--------------------------------
+What is new in Tablelist 6.1?
+-----------------------------
 
-This is a bugfix-only release.  The only corrected file in the
-"scripts" directory is "tablelistUtil.tcl": inserted the missing close
-bracket in line #6448.  This fix eliminates a regression related to both
-temporarily and persistently embedded Tk checkbuttons on Windows,
-introduced in the previous Tablelist version (thanks to Johann
-Oberdorfer and Jyrki Majamaeki for their bug reports).
+1. Added the "-imagebackground" cell configuration option, useful for
+   embedded images having (partially) transparent regions (thanks to
+   Jose Luis Lijo for his proposal).
+
+2. Extended the description of the "bodytag" subcommand in the
+   reference manual by examples showing how to register the body of a
+   tablelist widget as a drag source in such a way that the drag works
+   also for the separators, multi-line cells, and embedded images.
+
+3. Eliminated a regression related to both temporarily and persistently
+   embedded Tk checkbuttons on Windows, introduced in the previous
+   Tablelist version (thanks to Johann Oberdorfer, Jyrki Majamaeki, and
+   Ralf Fassel for their bug reports).
 
 What was new in Tablelist 6.0?
 ------------------------------
