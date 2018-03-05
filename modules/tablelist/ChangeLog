@@ -1,3 +1,18 @@
+2018-03-05 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                          Bumped the version number to 6.1;
+	* COPYRIGHT.txt:                  updated the copyright information.
+	* README.txt:
+	* ../../examples/tablelist/*.tcl:
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/*.tcl: Added the "-imagebackground" cell configuration option;
+	  updated the copyright information.
+
+	* doc/*.html: Updated to reflect the changes; more on the "bodytag"
+	  subcommand in connection with embedded images etc. as drag sources.
+
 2018-02-12  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Updated.
