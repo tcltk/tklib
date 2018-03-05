@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -3228,6 +3228,27 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    updateViewWhenIdle $win
 	}
 
+	-imagebackground -
+	-windowupdate {
+	    set key [lindex $data(${p}keyList) $row]
+	    set name $key,$col$opt
+
+	    #
+	    # Delete data($name) or save the specified value in it
+	    #
+	    if {[string length $val] == 0} {
+		if {[info exists data($name)]} {
+		    unset data($name)
+		}
+	    } else {
+		set data($name) $val
+	    }
+
+	    if {!$data(isDisabled)} {
+		${p}updateColorsWhenIdle $win
+	    }
+	}
+
 	-indent {
 	    if {$data(isDisabled)} {
 		return ""
@@ -3842,8 +3863,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    updateViewWhenIdle $win
 	}
 
-	-windowdestroy -
-	-windowupdate {
+	-windowdestroy {
 	    set key [lindex $data(${p}keyList) $row]
 	    set name $key,$col$opt
 

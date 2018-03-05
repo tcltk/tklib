@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -363,6 +363,7 @@ namespace eval tablelist {
 	-foreground		{foreground		Foreground	}
 	-fg			-foreground
 	-image			{image			Image		}
+	-imagebackground	{imageBackground	Background	}
 	-selectbackground	{selectBackground	Foreground	}
 	-selectforeground	{selectForeground	Background	}
 	-stretchwindow		{stretchWindow		StretchWindow	}
@@ -398,6 +399,7 @@ namespace eval tablelist {
 	-foreground		{foreground		Foreground	}
 	-fg			-foreground
 	-image			{image			Image		}
+	-imagebackground	{imageBackground	Background	}
 	-stretchwindow		{stretchWindow		StretchWindow	}
 	-text			{text			Text		}
 	-valign			{valign			Valign		}
@@ -6853,8 +6855,9 @@ proc tablelist::deleteRows {win first last updateListVar} {
 
 	    for {set col 0} {$col < $data(colCount)} {incr col} {
 		foreach opt {-background -foreground -editable -editwindow
-			     -selectbackground -selectforeground -valign
-			     -windowdestroy -windowupdate} {
+			     -imagebackground -selectbackground
+			     -selectforeground -valign -windowdestroy
+			     -windowupdate} {
 		    if {[info exists data($key,$col$opt)]} {
 			unset data($key,$col$opt)
 		    }
@@ -7081,7 +7084,7 @@ proc tablelist::hdr_deleteRows {win first last} {
 	}
 
 	for {set col 0} {$col < $data(colCount)} {incr col} {
-	    foreach opt {-background -foreground -font -image
+	    foreach opt {-background -foreground -font -image -imagebackground
 			 -valign -windowdestroy -windowupdate} {
 		if {[info exists data($key,$col$opt)]} {
 		    unset data($key,$col$opt)
