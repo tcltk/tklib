@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.0</h2>
+    <h2>For Tablelist Version 6.1</h2>
 
     <h3>by</h3>
 
@@ -482,6 +482,9 @@
 
     <dd><code><b><a href="#cell_image">-image</a></b> <i>image</i></code></dd>
 
+    <dd><code><b><a href="#cell_imagebackground">-imagebackground</a></b>
+    <i>color</i></code></dd>
+
     <dd><code><b><a href="#cell_selectbackground">-selectbackground</a></b>
     <i>color</i></code></dd>
 
@@ -520,6 +523,9 @@
 
     <dd><code><b><a href="#hdr_cell_image">-image</a></b>
     <i>image</i></code></dd>
+
+    <dd><code><b><a href="#hdr_cell_imagebackground">-imagebackground</a></b>
+    <i>color</i></code></dd>
 
     <dd><code><b><a href="#hdr_cell_stretchwindow">-stretchwindow</a></b>
     <i>boolean</i></code></dd>
@@ -2274,7 +2280,7 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
         rows.&nbsp; The default is <code>1</code>.</p>
 
         <p><b>REMARK 1:</b>&nbsp; The default value true of this option makes
-        he item insertion and sorting significantly faster, especially in the
+        the item insertion and sorting significantly faster, especially in the
         presence of static-width columns, because the snipping of elements that
         don't fit into their cells will be postponed to the time when they get
         displayed in the body text widget.&nbsp; On the other hand, this
@@ -6340,15 +6346,41 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         option will be ignored.</dd>
 
         <dd class="tm">To display an image in a cell, Tablelist makes use of an
-        embedded label widget (which is created on demand).&nbsp; This requires
-        more memory than inserting the image directly into the tablelist's
-        body, but has the main advantage of making it possible to adjust the
-        width of the label containing the widget to fit into its column.&nbsp;
-        This has the visual effect of cutting off part of the image from its
-        right side.&nbsp; To make sure that images with transparent background
-        will be displayed correctly, the background color of the label widgets
-        containing the embedded images is automatically updated whenever
+        embedded label widget (which is created on demand).&nbsp; This has the
+        main advantage of making it possible to adjust the width of the label
+        containing the image to fit into its column.&nbsp; This has the visual
+        effect of cutting off part of the image from its right side.&nbsp; The
+        above-mentioned gap to the left or right of the image is also part of
+        this label.&nbsp; To make sure that an image with fully or partially
+        transparent background will be displayed correctly, the background
+        color of the label widget containing the embedded image is
+        automatically synchronized with the cell's background color whenever
+        necessary (e.g., when selecting or deselecting the cell's content, or
+        changing its background color), provided that the <code><b><a href=
+        "#cell_imagebackground">-imagebackground</a></b></code> option was not
+        set or its value is an empty string.&nbsp; This automatic color
+        synchronization makes also sure that the gap between the text and the
+        image is displayed in the right color.</dd>
+
+        <dt class="tm" id="cell_imagebackground"> <code><b>-imagebackground</b>
+        <i>color</i></code></dt>
+
+        <dd>Specifies the background color of the label widget containing the
+        embedded image (if any).&nbsp; If the value of this option is a valid
+        nonempty color specification then the fully transparent pixels of the
+        embedded image will appear in the specified color, and the partially
+        transparent ones will be shown modified according to their alpha
+        value and the image background color.&nbsp; The default value is an
+        empty string, meaning that the background color of the label widget
+        containing the embedded image will be automatically updated whenever
         necessary.</dd>
+
+        <dd class="tm"><b>REMARK:</b>&nbsp; This option works fine if the
+        cell's text (or at least the latter's <a href=
+        "#col_formatted">formatted</a> version) is an empty string.&nbsp;
+        Otherwise there will be a gap between the text and the image, and this
+        gap will appear in the specified image background color if the latter
+        is a nonempty string.</dd>
 
         <dt class="tm" id="cell_selectbackground">
         <code><b>-selectbackground</b> <i>color</i></code></dt>
@@ -6554,6 +6586,13 @@ proc updateWindow {tbl row col w args} {
         <dd>Specifies the name of the Tk image to be displayed in the header
         cell.&nbsp; The details are the same as <a href="#cell_image">for a
         cell in the tablelist body</a>.</dd>
+
+        <dt class="tm" id="hdr_cell_imagebackground">
+        <code><b>-imagebackground</b> <i>color</i></code></dt>
+
+        <dd>Specifies the background color of the label widget containing the
+        embedded image (if any).&nbsp; The details are the same as <a href=
+        "#cell_imagebackground">for a cell in the tablelist body</a>.</dd>
 
         <dt class="tm" id="hdr_cell_stretchwindow"><code><b>-stretchwindow</b>
         <i>boolean</i></code></dt>
@@ -7795,6 +7834,80 @@ proc handleTblDrop {tbl data} {
         name of the tablelist's body is that it enables you to write event
         handling scripts that are valid not only for the tablelist's body but
         also for the separators, multi-line cells, and embedded images.</dd>
+
+        <dd class="tm">For example, to register the body of a tablelist widget
+        <code>$tbl</code> as a drag source for mouse button 1 in such a way
+        that the drag works also for the separators, multi-line cells, and
+        embedded images, you can proceed like in the following code samples:
+
+        <dd class="tm">
+          <b>TkDND EXAMPLE:</b>
+
+          <blockquote>
+            <pre>
+package require tkdnd 2.7
+
+bind [$tbl <span>bodytag</span>] &lt;Button-1&gt; { registerDragSrc %W }
+
+proc registerDragSrc w {
+    <i># $w can be the tablelist's body, a separator, a message widget
+    # displaying a multi-line element, or a label widget displaying an
+    # image.  Register this widget as a drag source for mouse button 1</i>
+    tkdnd::drag_source register $w DND_Text 1
+    bind $w &lt;&lt;DragInitCmd&gt;&gt; { onTblDragInit %W }
+    bind $w &lt;&lt;DragEndCmd&gt;&gt;  { onTblDragEnd %W %A }
+}
+
+proc onTblDragInit w {
+    set tbl [<a href=
+"tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a> $w]
+    . . .
+}
+
+proc onTblDragEnd {w action} {
+    if {![string equal $action "refuse_drop"]} {        ;# drop accepted
+        set tbl [<a href=
+"tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a> $w]
+        . . .
+    }
+}
+</pre>
+          </blockquote>
+        </dd>
+
+        <dd>
+          <b>BWidget EXAMPLE:</b>
+
+          <blockquote>
+            <pre>
+package require BWidget
+
+bind [$tbl <span>bodytag</span>] &lt;Button-1&gt; { registerDragSrc %W }
+
+proc registerDragSrc w {
+    <i># $w can be the tablelist's body, a separator, a message widget
+    # displaying a multi-line element, or a label widget displaying an
+    # image.  Register this widget as a drag source for mouse button 1</i>
+    DragSite::register $w -dragevent 1 \
+        -draginitcmd tblDragInitCmd -dragendcmd tblDragEndCmd
+}
+
+proc tblDragInitCmd {dragSrc rootX rootY top} {
+    set tbl [<a href=
+"tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a> $dragSrc]
+    . . .
+}
+
+proc tblDragEndCmd {dragSrc dropTarget op dataType data result} {
+    if {$result != 0} {                                 ;# drop accepted
+        set tbl [<a href=
+"tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a> $dragSrc]
+        . . .
+    }
+}
+</pre>
+          </blockquote>
+        </dd>
 
         <dt class="tm" id="canceledediting"><code><i>pathName</i>
         <b>canceledediting</b></code></dt>
