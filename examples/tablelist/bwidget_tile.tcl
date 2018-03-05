@@ -5,10 +5,10 @@
 # widgets from the BWidget package and of the Tk core checkbutton and
 # menubutton widgets.
 #
-# Copyright (c) 2004-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.0
+package require tablelist_tile 6.1
 package require BWidget
 
 wm title . "Serial Line Configuration"
