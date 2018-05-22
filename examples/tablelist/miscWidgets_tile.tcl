@@ -8,7 +8,7 @@
 # Copyright (c) 2004-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.1
+package require tablelist_tile 6.2
 package require combobox
 package require mentry
 
