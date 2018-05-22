@@ -232,7 +232,7 @@ proc tablelist::extendConfigSpecs {} {
 	    x11 {
 		set arrowColor		black
 		set arrowDisabledColor	#a3a3a3
-		set arrowStyle		flat7x5
+		set arrowStyle		flat8x4
 		set treeStyle		gtk
 	    }
 
@@ -1726,6 +1726,25 @@ proc tablelist::doColConfig {col win opt val} {
 		}
 	    }
 
+	    if {[string compare $opt "-labelpady"] == 0} {
+		#
+		# Adjust the col'th label
+		#
+		set pixels [lindex $data(colList) [expr {2*$col}]]
+		if {$pixels == 0} {		;# convention: dynamic width
+		    if {$data($col-maxPixels) > 0} {
+			if {$data($col-reqPixels) > $data($col-maxPixels)} {
+			    set pixels $data($col-maxPixels)
+			}
+		    }
+		}
+		if {$pixels != 0} {	
+		    incr pixels $data($col-delta)
+		}
+		set alignment [lindex $data(colList) [expr {2*$col + 1}]]
+		adjustLabel $win $col $pixels $alignment
+	    }
+
 	    #
 	    # Adjust the height of the header frame
 	    #
@@ -1820,6 +1839,32 @@ proc tablelist::doColConfig {col win opt val} {
 		#
 		configLabel $w -$optTail $val
 		set data($col$opt) [$w cget -$optTail]
+	    }
+	}
+
+	-labelvalign {
+	    #
+	    # Save the properly formatted value of val in
+	    # data($col$opt) and adjust the col'th label
+	    #
+	    variable valignments
+	    set val [mwutil::fullOpt "vertical alignment" $val $valignments]
+	    if {[string compare $val $data($col$opt)] != 0} {
+		set data($col$opt) $val
+
+		set pixels [lindex $data(colList) [expr {2*$col}]]
+		if {$pixels == 0} {		;# convention: dynamic width
+		    if {$data($col-maxPixels) > 0} {
+			if {$data($col-reqPixels) > $data($col-maxPixels)} {
+			    set pixels $data($col-maxPixels)
+			}
+		    }
+		}
+		if {$pixels != 0} {	
+		    incr pixels $data($col-delta)
+		}
+		set alignment [lindex $data(colList) [expr {2*$col + 1}]]
+		adjustLabel $win $col $pixels $alignment
 	    }
 	}
 
@@ -2178,6 +2223,14 @@ proc tablelist::doRowConfig {row win opt val} {
 	    } else {					;# uneliding the row
 		if {[info exists data($name)]} {
 		    unset data($name)
+
+		    #
+		    # Prevent any not yet created embeddded windows in this
+		    # text widget line scheduled for creation via $w window
+		    # create ... -create ... from being effectively created
+		    #
+		    $w tag add elidedWin $line.0 $line.end
+
 		    $w tag remove elidedRow $line.0 $line.end+1$pu
 
 		    if {![info exists data($key-hide)]} {
@@ -2480,6 +2533,14 @@ proc tablelist::doRowConfig {row win opt val} {
 	    } else {					;# unhiding the row
 		if {[info exists data($name)]} {
 		    unset data($name)
+
+		    #
+		    # Prevent any not yet created embeddded windows in this
+		    # text widget line scheduled for creation via $w window
+		    # create ... -create ... from being effectively created
+		    #
+		    $w tag add elidedWin $line.0 $line.end
+
 		    $w tag remove hiddenRow $line.0 $line.end+1$pu
 
 		    if {![info exists data($key-elide)]} {
@@ -2919,6 +2980,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    # Save the current cell font
 	    #
+	    set line [expr {$row + $diff}]
 	    set item [lindex $data(${p}itemList) $row]
 	    set key [lindex $item end]
 	    set name $key,$col$opt
@@ -2929,7 +2991,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 		#
 		# Remove the tag cell$opt-$data($name) from the given cell
 		#
-		findTabs $win $w [expr {$row + $diff}] $col $col tabIdx1 tabIdx2
+		findTabs $win $w $line $col $col tabIdx1 tabIdx2
 		$w tag remove cell$opt-$data($name) $tabIdx1 $tabIdx2+1$pu
 	    }
 
@@ -2952,8 +3014,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 		    #
 		    # Apply the tag to the given cell
 		    #
-		    findTabs $win $w [expr {$row + $diff}] $col $col \
-			     tabIdx1 tabIdx2
+		    findTabs $win $w $line $col $col tabIdx1 tabIdx2
 		    $w tag add $tag $tabIdx1 $tabIdx2+1$pu
 		}
 
@@ -3034,8 +3095,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 		    #
 		    # Update the text widget's content between the two tabs
 		    #
-		    findTabs $win $w [expr {$row + $diff}] $col $col \
-			     tabIdx1 tabIdx2
+		    findTabs $win $w $line $col $col tabIdx1 tabIdx2
 		    if {$multiline} {
 			updateMlCell $w $tabIdx1+1$pu $tabIdx2 $msgScript $aux \
 				     $auxType $auxWidth $indent $indentWidth \
@@ -3182,7 +3242,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 		# Delete the old cell content between the two tabs,
 		# and insert the text and the auxiliary object
 		#
-		findTabs $win $w [expr {$row + 1}] $col $col tabIdx1 tabIdx2
+		findTabs $win $w [expr {$row + $diff}] $col $col tabIdx1 tabIdx2
 		if {$multiline} {
 		    updateMlCell $w $tabIdx1+1$pu $tabIdx2 $msgScript $aux \
 				 $auxType $auxWidth $indent $indentWidth \

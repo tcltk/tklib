@@ -143,13 +143,6 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     upvar ::tablelist::ns${win}::data data
 
     set sortAllItems [expr {[string compare $parentKey "root"] == 0}]
-    if {[winfo viewable $win] && $sortAllItems} {
-	purgeWidgets $win
-	update idletasks
-	if {[destroyed $win]} {
-	    return ""
-	}
-    }
 
     #
     # Make sure sortOrderList has the same length as sortColList
@@ -462,9 +455,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 			}
 			set text [joinList $win $list $cellFont \
 				  $pixels $snipSide $snipStr]
-		    } elseif {$data(-displayondemand)} {
-			set text ""
-		    } else {
+		    } elseif {!$data(-displayondemand)} {
 			set text [strRange $win $text $cellFont \
 				  $pixels $snipSide $snipStr]
 		    }
@@ -474,6 +465,8 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 		    lappend insertArgs "\t\t" $cellTags
 		    lappend multilineData $col $text $cellFont $pixels \
 					  $alignment
+		} elseif {$data(-displayondemand)} {
+		    lappend insertArgs "\t\t" $cellTags
 		} else {
 		    lappend insertArgs "\t$text\t" $cellTags
 		}

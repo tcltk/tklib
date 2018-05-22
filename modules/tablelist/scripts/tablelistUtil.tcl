@@ -2417,8 +2417,8 @@ proc tablelist::setupColumns {win columns createLabels} {
 				sortOrder ""  sortRank 0  isSnipped 0
 				changesnipside 0  changetitlesnipside 0
 				editable 0  editwindow entry  hide 0
-				maxwidth 0  resizable 1  showarrow 1
-				showlinenumbers 0  sortmode ascii
+				labelvalign center  maxwidth 0  resizable 1
+				showarrow 1  showlinenumbers 0  sortmode ascii
 				valign center  wrap 0} {
 		if {![info exists data($col-$name)]} {
 		    set data($col-$name) $val
@@ -2872,7 +2872,7 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 	    #
 	    if {$centerArrows} {
 		place $canvas -in $w -anchor n -bordermode outside \
-			      -relx 0.5 -y 1
+			      -relx 0.4999 -y 1
 	    } else {
 		set y 0
 		if {([winfo reqheight $w] - [winfo reqheight $canvas]) % 2 == 0
@@ -2882,11 +2882,11 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 		if {[string compare $labelAlignment "right"] == 0} {
 		    place $canvas -in $w -anchor w -bordermode outside \
 				  -relx 0.0 -x $data(charWidth) \
-				  -rely 0.49 -y $y
+				  -rely 0.4999 -y $y
 		} else {
 		    place $canvas -in $w -anchor e -bordermode outside \
 				  -relx 1.0 -x -$data(charWidth) \
-				  -rely 0.49 -y $y
+				  -rely 0.4999 -y $y
 		}
 	    }
 	    raise $canvas
@@ -3198,60 +3198,126 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 	    place forget $w-tl
 	}
 
-	variable usingTile
+	if {$usingTile} {
+	    set padding [$w cget -padding]
+	    set padT [lindex $padding 1]
+	    set padB [lindex $padding 3]
+	} else {
+	    set padT [$w cget -pady]
+	    set padB $padT
+	}
+	set marginT [expr {$borderWidth + $padT}]
+	set marginB [expr {$borderWidth + $padB}]
+	set ilReqWidth [winfo reqwidth $w-il]
+
 	switch $alignment {
 	    left {
-		place $w-il -in $w -anchor w -bordermode outside \
-			    -relx 0.0 -x $marginL -rely 0.49
-		raise $w-il
+		incr marginL
+
+		switch $data($col-labelvalign) {
+		    center {
+			place $w-il -in $w -anchor w -bordermode outside \
+			    -relx 0.0 -x $marginL -rely 0.4999 -y 0
+		    }
+		    top {
+			place $w-il -in $w -anchor nw -bordermode outside \
+			    -relx 0.0 -x $marginL -rely 0.0 -y $marginT
+		    }
+		    bottom {
+			place $w-il -in $w -anchor sw -bordermode outside \
+			    -relx 0.0 -x $marginL -rely 1.0 -y -$marginB
+		    }
+		}
+
 		if {$usingTile} {
 		    set padding [$w cget -padding]
-		    lset padding 0 [incr padL [winfo reqwidth $w-il]]
+		    lset padding 0 [expr {$padL + $ilReqWidth + 1}]
 		    $w configure -padding $padding -text $text
 		} elseif {[string length $text] != 0} {
-		    set textX [expr {$marginL + [winfo reqwidth $w-il]}]
+		    set textX [expr {$marginL + $ilReqWidth}]
 		    place $w-tl -in $w -anchor w -bordermode outside \
-				-relx 0.0 -x $textX -rely 0.49
+				-relx 0.0 -x $textX -rely 0.4999
 		}
 	    }
 
 	    right {
-		place $w-il -in $w -anchor e -bordermode outside \
-			    -relx 1.0 -x -$marginR -rely 0.49
-		raise $w-il
+		incr marginR
+
+		switch $data($col-labelvalign) {
+		    center {
+			place $w-il -in $w -anchor e -bordermode outside \
+			    -relx 1.0 -x -$marginR -rely 0.4999 -y 0
+		    }
+		    top {
+			place $w-il -in $w -anchor ne -bordermode outside \
+			    -relx 1.0 -x -$marginR -rely 0.0 -y $marginT
+		    }
+		    bottom {
+			place $w-il -in $w -anchor se -bordermode outside \
+			    -relx 1.0 -x -$marginR -rely 1.0 -y -$marginB
+		    }
+		}
+
 		if {$usingTile} {
 		    set padding [$w cget -padding]
-		    lset padding 2 [incr padR [winfo reqwidth $w-il]]
+		    lset padding 2 [expr {$padR + $ilReqWidth + 1}]
 		    $w configure -padding $padding -text $text
 		} elseif {[string length $text] != 0} {
-		    set textX [expr {-$marginR - [winfo reqwidth $w-il]}]
+		    set textX [expr {-$marginR - $ilReqWidth}]
 		    place $w-tl -in $w -anchor e -bordermode outside \
-				-relx 1.0 -x $textX -rely 0.49
+				-relx 1.0 -x $textX -rely 0.4999
 		}
 	    }
 
 	    center {
-		if {$usingTile} {
-		    set padding [$w cget -padding]
-		    lset padding 0 [incr padL [winfo reqwidth $w-il]]
-		    $w configure -padding $padding -text $text
-		}
-
 		if {[string length $text] == 0} {
-		    place $w-il -in $w -anchor center -relx 0.5 -x 0 -rely 0.49
+		    switch $data($col-labelvalign) {
+			center {
+			    place $w-il -in $w -anchor center -bordermode \
+				inside -relx 0.4999 -x 0 -rely 0.4999 -y 0
+			}
+			top {
+			    place $w-il -in $w -anchor n -bordermode \
+				inside -relx 0.4999 -x 0 -rely 0.0 -y $marginT
+			}
+			bottom {
+			    place $w-il -in $w -anchor s -bordermode \
+				inside -relx 0.4999 -x 0 -rely 1.0 -y -$marginB
+			}
+		    }
 		} else {
-		    set reqWidth [expr {[winfo reqwidth $w-il] +
-					[winfo reqwidth $w-tl]}]
-		    set iX [expr {-$reqWidth/2}]
-		    place $w-il -in $w -anchor w -relx 0.5 -x $iX -rely 0.49
-		    if {!$usingTile} {
-			set tX [expr {$reqWidth + $iX}]
-			place $w-tl -in $w -anchor e -relx 0.5 -x $tX -rely 0.49
+		    set reqWidth [expr {$ilReqWidth + [winfo reqwidth $w-tl]}]
+		    set ilX [expr {-$reqWidth/2}]
+
+		    switch $data($col-labelvalign) {
+			center {
+			    place $w-il -in $w -anchor w -bordermode inside \
+				-relx 0.4999 -x $ilX -rely 0.4999 -y 0
+			}
+			top {
+			    place $w-il -in $w -anchor nw -bordermode inside \
+				-relx 0.4999 -x $ilX -rely 0.0 -y $marginT
+			}
+			bottom {
+			    place $w-il -in $w -anchor sw -bordermode inside \
+				-relx 0.4999 -x $ilX -rely 1.0 -y -$marginB
+			}
+		    }
+
+		    if {$usingTile} {
+			set padding [$w cget -padding]
+			lset padding 0 [expr {$padL + $ilReqWidth}]
+			$w configure -padding $padding -text $text
+		    } else {
+			set tlX [expr {$reqWidth + $ilX}]
+			place $w-tl -in $w -anchor e -bordermode inside \
+			    -relx 0.4999 -x $tlX -rely 0.4999 -y 0
 		    }
 		}
-		raise $w-il
 	    }
 	}
+
+	raise $w-il
     }
 }
 
@@ -3344,8 +3410,8 @@ proc tablelist::computeColWidth {win col} {
 #------------------------------------------------------------------------------
 # tablelist::computeLabelWidth
 #
-# Computes the width of the col'th label of the tablelist widget win and
-# adjusts the column's width accordingly.
+# Computes the requested width of the col'th label of the tablelist widget win
+# and adjusts the column's width accordingly.
 #------------------------------------------------------------------------------
 proc tablelist::computeLabelWidth {win col} {
     upvar ::tablelist::ns${win}::data data
@@ -3355,8 +3421,16 @@ proc tablelist::computeLabelWidth {win col} {
 	if {$usingTile} {
 	    set netLabelWidth [expr {[winfo reqwidth $w] - 2*$data(charWidth)}]
 	} else {
-	    set netLabelWidth \
-		[expr {[winfo reqwidth $w-il] + [winfo reqwidth $w-tl]}]
+	    set netLabelWidth [winfo reqwidth $w-il]
+	    set alignment [lindex $data(colList) [expr {2*$col + 1}]]
+	    if {[string compare $alignment "center"] != 0} {
+		incr netLabelWidth
+	    }
+
+	    set text [$w-tl cget -text]
+	    if {[string length $text] != 0} {
+		incr netLabelWidth [winfo reqwidth $w-tl]
+	    }
 	}
     } else {
 	set netLabelWidth [expr {[winfo reqwidth $w] - 2*$data(charWidth)}]
@@ -4210,12 +4284,6 @@ proc tablelist::updateVScrlbar win {
 	set data(redrawId) [after 50 [list tablelist::forceRedraw $win]]
     }
 
-    if {$data(gotResizeEvent)} {
-	set data(gotResizeEvent) 0
-    } else {
-	purgeWidgets $win
-    }
-
     event generate $win <<TablelistViewUpdated>>
 }
 
@@ -4247,35 +4315,6 @@ proc tablelist::forceRedraw win {
 	if {[winfo exists $data(bodyFrm)]} {
 	    lower $data(bodyFrm)
 	    raise $data(bodyFrm)
-	}
-    }
-}
-
-#------------------------------------------------------------------------------
-# tablelist::purgeWidgets
-#
-# Destroys those label widgets containing embedded images and those message
-# widgets containing multiline elements that are outside the currently visible
-# range of lines of the body of the tablelist widget win.
-#------------------------------------------------------------------------------
-proc tablelist::purgeWidgets win {
-    upvar ::tablelist::ns${win}::data data
-    set w $data(body)
-    set fromTextIdx "[$w index @0,0] linestart"
-    set toTextIdx "[$w index @0,$data(btmY)] lineend"
-
-    foreach {dummy path textIdx} [$w dump -window 1.0 end] {
-	if {[string length $path] == 0} {
-	    continue
-	}
-
-	set class [winfo class $path]
-	if {([string compare $class "Label"] == 0 ||
-	     [string compare $class "Message"] == 0) &&
-	    ([$w compare $textIdx < $fromTextIdx] ||
-	     [$w compare $textIdx > $toTextIdx])} {
-	    $w tag add elidedWin $textIdx
-	    destroy $path
 	}
     }
 }
@@ -4803,9 +4842,7 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 			}
 			set text [joinList $win $list $cellFont \
 				  $pixels $snipSide $snipStr]
-		    } elseif {$data(-displayondemand)} {
-			set text ""
-		    } else {
+		    } elseif {!$data(-displayondemand)} {
 			set text [strRange $win $text $cellFont \
 				  $pixels $snipSide $snipStr]
 		    }
@@ -4815,6 +4852,8 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 		    lappend insertArgs "\t\t" $cellTags
 		    lappend multilineData $col $text $cellFont $pixels \
 					  $alignment
+		} elseif {$data(-displayondemand)} {
+		    lappend insertArgs "\t\t" $cellTags
 		} else {
 		    lappend insertArgs "\t$text\t" $cellTags
 		}
@@ -5499,18 +5538,55 @@ proc tablelist::updateView win {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::destroyWidgets
+# tablelist::purgeWidgets
 #
-# Destroys a list of widgets embedded into the tablelist widget win.
+# Destroys those label widgets containing embedded images and those message
+# widgets containing multiline elements that are outside the currently visible
+# range of lines of the body of the tablelist widget win or are contained in
+# hidden rows or columns, or in descendants of collapsed nodes.
 #------------------------------------------------------------------------------
-proc tablelist::destroyWidgets win {
+proc tablelist::purgeWidgets win {
+    if {[destroyed $win]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
-    set destroyId [lindex $data(destroyIdList) 0]
+    if {$data(winSizeChanged)} {
+	set data(winSizeChanged) 0
+	after 5000 [list tablelist::purgeWidgets $win]
+    } else {
+	set w $data(body)
+	set fromTextIdx "[$w index @0,0] linestart"
+	set toTextIdx "[$w index @0,$data(btmY)] lineend"
 
-    eval destroy $data(widgets-$destroyId)
+	set winList {}
+	foreach {dummy path textIdx} [$w dump -window 1.0 end] {
+	    if {[string length $path] == 0} {
+		continue
+	    }
 
-    set data(destroyIdList) [lrange $data(destroyIdList) 1 end]
-    unset data(widgets-$destroyId)
+	    set class [winfo class $path]
+	    if {([string compare $class "Label"] != 0 &&
+		 [string compare $class "Message"] != 0)} {
+		continue
+	    }
+
+	    if {[$w compare $textIdx < $fromTextIdx] ||
+		[$w compare $textIdx > $toTextIdx]} {
+		$w tag add elidedWin $textIdx
+		lappend winList $path
+	    } else {
+		set tagNames [$w tag names $textIdx]
+		if {[lsearch -glob $tagNames hidden*] >= 0 ||
+		    [lsearch -glob $tagNames elided*] >= 0} {
+		    lappend winList $path
+		}
+	    }
+	}
+	eval destroy $winList
+
+	after 1000 [list tablelist::purgeWidgets $win]
+    }
 }
 
 #------------------------------------------------------------------------------

@@ -1688,7 +1688,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	#
 	if {$charPos >= 0} {
 	    if {$isText || !$editWin($name-isEntryLike)} {
-		focus $w
+		focus $comp
 	    } else {
 		set hasAuxObject [expr {
 		    [info exists data($key,$col-image)] ||
@@ -1719,8 +1719,10 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 		}
 	    }
 	} else {
-	    if {$isText || $isMentry || !$editWin($name-isEntryLike)} {
+	    if {$isMentry || !$editWin($name-isEntryLike)} {
 		focus $w
+	    } elseif {$isText} {
+		focus $comp
 	    } else {
 		focus $comp
 		$comp icursor end
@@ -2004,9 +2006,12 @@ proc tablelist::adjustTextHeight {w args} {
 	set numLines [expr {int([$w index end-1$pu])}]
     }
     $w configure -height $numLines
+    update idletasks					;# needed for ctext
 
     set path [wcb::pathname $w]
-    [winfo parent $path] configure -height [winfo reqheight $path]
+    if {[winfo exists $path]} {
+	[winfo parent $path] configure -height [winfo reqheight $path]
+    }
 }
 
 #------------------------------------------------------------------------------

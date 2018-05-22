@@ -233,6 +233,7 @@ namespace eval tablelist {
 	-labelimage		{labelImage		Image		    }
 	-labelpady		{labelPadY		Pad		    }
 	-labelrelief		{labelRelief		Relief		    }
+	-labelvalign		{labelValign		Valign		    }
 	-maxwidth		{maxWidth		MaxWidth	    }
 	-name			{name			Name		    }
 	-resizable		{resizable		Resizable	    }
@@ -261,6 +262,7 @@ namespace eval tablelist {
     lappend colConfigSpecs(-editable)			- 0
     lappend colConfigSpecs(-editwindow)			- entry
     lappend colConfigSpecs(-hide)			- 0
+    lappend colConfigSpecs(-labelvalign)		- center
     lappend colConfigSpecs(-maxwidth)			- 0
     lappend colConfigSpecs(-resizable)			- 1
     lappend colConfigSpecs(-showarrow)			- 1
@@ -768,7 +770,7 @@ proc tablelist::tablelist args {
 	    colCount		 0
 	    lastCol		-1
 	    treeCol		 0
-	    gotResizeEvent	 0
+	    winSizeChanged	 0
 	    rightX		 0
 	    btmY		 0
 	    rowTagRefCount	 0
@@ -806,7 +808,6 @@ proc tablelist::tablelist args {
 	    keyToRowMapValid	 1
 	    searchStartIdx	 0
 	    keyBeingExpanded	 ""
-	    destroyIdList	 {}
 	    justEntered		 0
 	    inEditWin		 0
 	}
@@ -1080,6 +1081,8 @@ proc tablelist::tablelist args {
 
     trace variable ::tablelist::ns${win}::checkStates w \
 	  [list tablelist::checkStatesTrace $win]
+
+    after 1000 [list tablelist::purgeWidgets $win]
 
     return $win
 }
@@ -1452,12 +1455,16 @@ proc tablelist::childkeysSubCmd {win argList} {
 proc tablelist::collapseSubCmd {win argList} {
     set argCount [llength $argList]
     if {$argCount < 1 || $argCount > 2} {
-	mwutil::wrongNumArgs "$win collapse index ?-fully|-partly?"
+	mwutil::wrongNumArgs "$win collapse indexLList ?-fully|-partly?"
     }
 
     synchronize $win
     displayItems $win
-    set index [rowIndex $win [lindex $argList 0] 0 1]
+    set indexList {}
+    foreach elem [lindex $argList 0] {
+	set index [rowIndex $win $elem 0 1]
+	lappend indexList $index
+    }
 
     if {$argCount == 1} {
 	set fullCollapsion 1
@@ -1467,83 +1474,70 @@ proc tablelist::collapseSubCmd {win argList} {
 	set fullCollapsion [expr {[string compare $opt "-fully"] == 0}]
     }
 
-    upvar ::tablelist::ns${win}::data data
-    set key [lindex $data(keyList) $index]
-    set col $data(treeCol)
-    if {![info exists data($key,$col-indent)]} {
-	return ""
-    }
-
-    if {[string length $data(-collapsecommand)] != 0} {
-	uplevel #0 $data(-collapsecommand) [list $win $index]
-    }
-
-    #
-    # Set the indentation image to the collapsed one
-    #
-    set data($key,$col-indent) [strMap \
-	{"indented" "collapsed" "expanded" "collapsed"} $data($key,$col-indent)]
-    if {[winfo exists $data(body).ind_$key,$col]} {
-	$data(body).ind_$key,$col configure -image $data($key,$col-indent)
-    }
-
-    if {[llength $data($key-children)] == 0} {
-	return ""
-    }
-
-    #
-    # Elide the descendants of this item
-    #
-    set fromRow [expr {$index + 1}]
-    set toRow [nodeRow $win $key end]
-    for {set row $fromRow} {$row < $toRow} {incr row} {
-	doRowConfig $row $win -elide 1
-
-	if {$fullCollapsion} {
-	    set descKey [lindex $data(keyList) $row]
-	    if {[llength $data($descKey-children)] != 0} {
-		if {[string length $data(-collapsecommand)] != 0} {
-		    uplevel #0 $data(-collapsecommand) \
-			[list $win [keyToRow $win $descKey]]
-		}
-
-		#
-		# Change the descendant's indentation image
-		# from the expanded to the collapsed one
-		#
-		set data($descKey,$col-indent) [strMap \
-		    {"expanded" "collapsed"} $data($descKey,$col-indent)]
-		if {[winfo exists $data(body).ind_$descKey,$col]} {
-		    $data(body).ind_$descKey,$col configure -image \
-			$data($descKey,$col-indent)
-		}
-	    }
-	}
-    }
-
     set callerProc [lindex [info level -1] 0]
-    if {![string match "collapse*SubCmd" $callerProc]} {
+    upvar ::tablelist::ns${win}::data data
+    set callCollapseCmd [expr {[string length $data(-collapsecommand)] != 0}]
+    set col $data(treeCol)
+    set w $data(body)
+    set processed 0
+
+    foreach index $indexList {
+	set key [lindex $data(keyList) $index]
+	if {![info exists data($key,$col-indent)]} {
+	    continue
+	}
+
+	if {$callCollapseCmd} {
+	    uplevel #0 $data(-collapsecommand) [list $win $index]
+	}
+
 	#
-	# Destroy the label and messsage widgets
-	# embedded into the descendants just elided
+	# Set the indentation image to the collapsed one
 	#
-	set widgets {}
-	set fromTextIdx [expr {$fromRow + 1}].0
-	set toTextIdx [expr {$toRow + 1}].0
-	foreach {dummy path textIdx} \
-		[$data(body) dump -window $fromTextIdx $toTextIdx] {
-	    if {[string length $path] != 0} {
-		set class [winfo class $path]
-		if {[string compare $class "Label"] == 0 ||
-		    [string compare $class "Message"] == 0} {
-		    lappend widgets $path
+	set data($key,$col-indent) [strMap \
+	    {"indented" "collapsed" "expanded" "collapsed"} \
+	    $data($key,$col-indent)]
+	if {[winfo exists $w.ind_$key,$col]} {
+	    $w.ind_$key,$col configure -image $data($key,$col-indent)
+	}
+
+	if {[llength $data($key-children)] == 0} {
+	    continue
+	}
+
+	#
+	# Elide the descendants of this item
+	#
+	set fromRow [expr {$index + 1}]
+	set toRow [nodeRow $win $key end]
+	for {set row $fromRow} {$row < $toRow} {incr row} {
+	    doRowConfig $row $win -elide 1
+
+	    if {$fullCollapsion} {
+		set descKey [lindex $data(keyList) $row]
+		if {[llength $data($descKey-children)] != 0} {
+		    if {$callCollapseCmd} {
+			uplevel #0 $data(-collapsecommand) [list $win $row]
+		    }
+
+		    #
+		    # Change the descendant's indentation image
+		    # from the expanded to the collapsed one
+		    #
+		    set data($descKey,$col-indent) [strMap \
+			{"expanded" "collapsed"} $data($descKey,$col-indent)]
+		    if {[winfo exists $w.ind_$descKey,$col]} {
+			$w.ind_$descKey,$col configure -image \
+			    $data($descKey,$col-indent)
+		    }
 		}
 	    }
 	}
-	set destroyId [after 300 [list tablelist::destroyWidgets $win]]
-	lappend data(destroyIdList) $destroyId
-	set data(widgets-$destroyId) $widgets
 
+	set processed 1
+    }
+
+    if {$processed} {
 	adjustRowIndex $win data(anchorRow) 1
 
 	set activeRow $data(activeRow)
@@ -1554,7 +1548,6 @@ proc tablelist::collapseSubCmd {win argList} {
 	hdr_updateColors $win
 	adjustElidedText $win
 	redisplayVisibleItems $win
-	updateColors $win
 	makeStripes $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
@@ -1584,95 +1577,61 @@ proc tablelist::collapseallSubCmd {win argList} {
     displayItems $win
 
     upvar ::tablelist::ns${win}::data data
+    set callCollapseCmd [expr {[string length $data(-collapsecommand)] != 0}]
     set col $data(treeCol)
+    set w $data(body)
 
-    if {[winfo viewable $win]} {
-	purgeWidgets $win
-	update idletasks
-	if {[destroyed $win]} {
-	    return ""
-	}
-    }
-
-    set childIdx 0
-    set childCount [llength $data(root-children)]
     foreach key $data(root-children) {
-	if {[llength $data($key-children)] == 0} {
-	    incr childIdx
+	if {![info exists data($key,$col-indent)]} {
 	    continue
 	}
 
-	if {[string length $data(-collapsecommand)] != 0} {
-	    uplevel #0 $data(-collapsecommand) [list $win [keyToRow $win $key]]
+	set index [keyToRow $win $key]
+	if {$callCollapseCmd} {
+	    uplevel #0 $data(-collapsecommand) [list $win $index]
 	}
 
 	#
-	# Change the indentation image from the expanded to the collapsed one
+	# Set the indentation image to the collapsed one
 	#
-	set data($key,$col-indent) \
-	    [strMap {"expanded" "collapsed"} $data($key,$col-indent)]
-	if {[winfo exists $data(body).ind_$key,$col]} {
-	    $data(body).ind_$key,$col configure -image $data($key,$col-indent)
+	set data($key,$col-indent) [strMap \
+	    {"indented" "collapsed" "expanded" "collapsed"} \
+	    $data($key,$col-indent)]
+	if {[winfo exists $w.ind_$key,$col]} {
+	    $w.ind_$key,$col configure -image $data($key,$col-indent)
+	}
+
+	if {[llength $data($key-children)] == 0} {
+	    continue
 	}
 
 	#
 	# Elide the descendants of this item
 	#
-	incr childIdx
-	if {[llength $data($key-children)] != 0} {
-	    set fromRow [expr {[keyToRow $win $key] + 1}]
-	    if {$childIdx < $childCount} {
-		set nextChildKey [lindex $data(root-children) $childIdx]
-		set toRow [keyToRow $win $nextChildKey]
-	    } else {
-		set toRow $data(itemCount)
-	    }
-	    for {set row $fromRow} {$row < $toRow} {incr row} {
-		doRowConfig $row $win -elide 1
+	set fromRow [expr {$index + 1}]
+	set toRow [nodeRow $win $key end]
+	for {set row $fromRow} {$row < $toRow} {incr row} {
+	    doRowConfig $row $win -elide 1
 
-		if {$fullCollapsion} {
-		    set descKey [lindex $data(keyList) $row]
-		    if {[llength $data($descKey-children)] != 0} {
-			if {[string length $data(-collapsecommand)] != 0} {
-			    uplevel #0 $data(-collapsecommand) \
-				[list $win [keyToRow $win $descKey]]
-			}
+	    if {$fullCollapsion} {
+		set descKey [lindex $data(keyList) $row]
+		if {[llength $data($descKey-children)] != 0} {
+		    if {$callCollapseCmd} {
+			uplevel #0 $data(-collapsecommand) [list $win $row]
+		    }
 
-			#
-			# Change the descendant's indentation image
-			# from the expanded to the collapsed one
-			#
-			set data($descKey,$col-indent) \
-			    [strMap {"expanded" "collapsed"} \
-				    $data($descKey,$col-indent)]
-			if {[winfo exists $data(body).ind_$descKey,$col]} {
-			    $data(body).ind_$descKey,$col configure -image \
-				$data($descKey,$col-indent)
-			}
+		    #
+		    # Change the descendant's indentation image
+		    # from the expanded to the collapsed one
+		    #
+		    set data($descKey,$col-indent) [strMap \
+			{"expanded" "collapsed"} $data($descKey,$col-indent)]
+		    if {[winfo exists $w.ind_$descKey,$col]} {
+			$w.ind_$descKey,$col configure -image \
+			    $data($descKey,$col-indent)
 		    }
 		}
 	    }
-
-	    #
-	    # Destroy the label and messsage widgets
-	    # embedded into the descendants just elided
-	    #
-	    set widgets {}
-	    set fromTextIdx [expr {$fromRow + 1}].0
-	    set toTextIdx [expr {$toRow + 1}].0
-	    foreach {dummy path textIdx} \
-		    [$data(body) dump -window $fromTextIdx $toTextIdx] {
-		if {[string length $path] != 0} {
-		    set class [winfo class $path]
-		    if {[string compare $class "Label"] == 0 ||
-			[string compare $class "Message"] == 0} {
-			lappend widgets $path
-		    }
-		}
-	    }
-	    set destroyId [after 300 [list tablelist::destroyWidgets $win]]
-	    lappend data(destroyIdList) $destroyId
-	    set data(widgets-$destroyId) $widgets
 	}
     }
 
@@ -1686,7 +1645,6 @@ proc tablelist::collapseallSubCmd {win argList} {
     hdr_updateColors $win
     adjustElidedText $win
     redisplayVisibleItems $win
-    updateColors $win
     makeStripes $win
     adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
@@ -2384,12 +2342,16 @@ proc tablelist::entrypathSubCmd {win argList} {
 proc tablelist::expandSubCmd {win argList} {
     set argCount [llength $argList]
     if {$argCount < 1 || $argCount > 2} {
-	mwutil::wrongNumArgs "$win expand index ?-fully|-partly?"
+	mwutil::wrongNumArgs "$win expand indexList ?-fully|-partly?"
     }
 
     synchronize $win
     displayItems $win
-    set index [rowIndex $win [lindex $argList 0] 0 1]
+    set indexList {}
+    foreach elem [lindex $argList 0] {
+	set index [rowIndex $win $elem 0 1]
+	lappend indexList $index
+    }
 
     if {$argCount == 1} {
 	set fullExpansion 1
@@ -2399,61 +2361,69 @@ proc tablelist::expandSubCmd {win argList} {
 	set fullExpansion [expr {[string compare $opt "-fully"] == 0}]
     }
 
-    upvar ::tablelist::ns${win}::data data
-    set key [lindex $data(keyList) $index]
-    set col $data(treeCol)
-    if {![info exists data($key,$col-indent)] ||
-	[string match "*indented*" $data($key,$col-indent)]} {
-	return ""
-    }
-
     set callerProc [lindex [info level -1] 0]
-    if {[string compare $callerProc "doRowConfig"] != 0 &&
-	[string length $data(-expandcommand)] != 0} {
-	set data(keyBeingExpanded) $key
-	uplevel #0 $data(-expandcommand) [list $win $index]
-	set data(keyBeingExpanded) ""
-    }
+    upvar ::tablelist::ns${win}::data data
+    set callExpandCmd [expr {[string compare $callerProc "doRowConfig"] != 0 &&
+			     [string length $data(-expandcommand)] != 0}]
+    set col $data(treeCol)
+    set w $data(body)
+    set processed 0
 
-    #
-    # Set the indentation image to the indented or expanded one
-    #
-    set childCount [llength $data($key-children)]
-    set state [expr {($childCount == 0) ? "indented" : "expanded"}]
-    set data($key,$col-indent) [strMap \
-	[list "collapsed" $state "expanded" $state] $data($key,$col-indent)]
-    if {[string compare $state "indented"] == 0} {
+    foreach index $indexList {
+	set key [lindex $data(keyList) $index]
+	if {![info exists data($key,$col-indent)] ||
+	    [string match "*indented*" $data($key,$col-indent)]} {
+	    continue
+	}
+
+	if {$callExpandCmd} {
+	    set data(keyBeingExpanded) $key
+	    uplevel #0 $data(-expandcommand) [list $win $index]
+	    set data(keyBeingExpanded) ""
+	}
+
+	#
+	# Set the indentation image to the indented or expanded one
+	#
+	set childCount [llength $data($key-children)]
+	set state [expr {($childCount == 0) ? "indented" : "expanded"}]
 	set data($key,$col-indent) [strMap \
-	    {"Act" "" "Sel" ""} $data($key,$col-indent)]
-    }
-    if {[winfo exists $data(body).ind_$key,$col]} {
-	$data(body).ind_$key,$col configure -image $data($key,$col-indent)
+	    [list "collapsed" $state "expanded" $state] $data($key,$col-indent)]
+	if {[string compare $state "indented"] == 0} {
+	    set data($key,$col-indent) [strMap \
+		{"Act" "" "Sel" ""} $data($key,$col-indent)]
+	}
+	if {[winfo exists $w.ind_$key,$col]} {
+	    $w.ind_$key,$col configure -image $data($key,$col-indent)
+	}
+
+	#
+	# Unelide the children if appropriate and
+	# invoke this procedure recursively on them
+	#
+	set isViewable [expr {![info exists data($key-elide)] &&
+			      ![info exists data($key-hide)]}]
+	foreach childKey $data($key-children) {
+	    set childRow [keyToRow $win $childKey]
+	    if {$isViewable} {
+		doRowConfig $childRow $win -elide 0
+	    }
+	    if {$fullExpansion} {
+		expandSubCmd $win [list $childRow -fully]
+	    } elseif {[string match "*expanded*" \
+		       $data($childKey,$col-indent)]} {
+		expandSubCmd $win [list $childRow -partly]
+	    }
+	}
+
+	set processed 1
     }
 
-    #
-    # Unelide the children if appropriate and
-    # invoke this procedure recursively on them
-    #
-    set isViewable [expr {![info exists data($key-elide)] &&
-			  ![info exists data($key-hide)]}]
-    foreach childKey $data($key-children) {
-	set childRow [keyToRow $win $childKey]
-	if {$isViewable} {
-	    doRowConfig $childRow $win -elide 0
-	}
-	if {$fullExpansion} {
-	    expandSubCmd $win [list $childRow -fully]
-	} elseif {[string match "*expanded*" $data($childKey,$col-indent)]} {
-	    expandSubCmd $win [list $childRow -partly]
-	}
-    }
-
-    if {![string match "expand*SubCmd" $callerProc]} {
+    if {$processed && ![string match "expand*SubCmd" $callerProc]} {
 	hdr_adjustElidedText $win
 	hdr_updateColors $win
 	adjustElidedText $win
 	redisplayVisibleItems $win
-	updateColors $win
 	makeStripes $win
 	adjustSepsWhenIdle $win
 	updateVScrlbarWhenIdle $win
@@ -2483,7 +2453,9 @@ proc tablelist::expandallSubCmd {win argList} {
     displayItems $win
 
     upvar ::tablelist::ns${win}::data data
+    set callExpandCmd [expr {[string length $data(-expandcommand)] != 0}]
     set col $data(treeCol)
+    set w $data(body)
 
     foreach key $data(root-children) {
 	if {![info exists data($key,$col-indent)] ||
@@ -2491,7 +2463,7 @@ proc tablelist::expandallSubCmd {win argList} {
 	    continue
 	}
 
-	if {[string length $data(-expandcommand)] != 0} {
+	if {$callExpandCmd} {
 	    set data(keyBeingExpanded) $key
 	    uplevel #0 $data(-expandcommand) [list $win [keyToRow $win $key]]
 	    set data(keyBeingExpanded) ""
@@ -2508,16 +2480,19 @@ proc tablelist::expandallSubCmd {win argList} {
 	    set data($key,$col-indent) [strMap \
 		{"Act" "" "Sel" ""} $data($key,$col-indent)]
 	}
-	if {[winfo exists $data(body).ind_$key,$col]} {
-	    $data(body).ind_$key,$col configure -image $data($key,$col-indent)
+	if {[winfo exists $w.ind_$key,$col]} {
+	    $w.ind_$key,$col configure -image $data($key,$col-indent)
 	}
 
 	#
-	# Unelide the children and invoke expandSubCmd on them
+	# Unelide the children if appropriate and invoke expandSubCmd on them
 	#
+	set isViewable [expr {![info exists data($key-hide)]}]
 	foreach childKey $data($key-children) {
 	    set childRow [keyToRow $win $childKey]
-	    doRowConfig $childRow $win -elide 0
+	    if {$isViewable} {
+		doRowConfig $childRow $win -elide 0
+	    }
 	    if {$fullExpansion} {
 		expandSubCmd $win [list $childRow -fully]
 	    } elseif {[string match "*expanded*" \
@@ -2531,7 +2506,6 @@ proc tablelist::expandallSubCmd {win argList} {
     hdr_updateColors $win
     adjustElidedText $win
     redisplayVisibleItems $win
-    updateColors $win
     makeStripes $win
     adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
@@ -6785,8 +6759,8 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	    cellTagRefCount 0  imgCount 0  winCount 0  indentCount 0
 	    root-children {}}
 
-	foreach name [array names attrib {k[0-9]*}] {
-	    unset attrib($name)
+	foreach name [array names attribs {k[0-9]*}] {
+	    unset attribs($name)
 	}
     } else {
 	for {set row $first} {$row <= $last} {incr row} {
@@ -7209,7 +7183,8 @@ proc tablelist::deleteCols {win first last selCellsName} {
 #------------------------------------------------------------------------------
 # tablelist::insertRows
 #
-# Processes the tablelist insert and insertlist subcommands.
+# Processes the tablelist insert, insertlist, insertchildren, and
+# insertchildlist subcommands.
 #------------------------------------------------------------------------------
 proc tablelist::insertRows {win index argList updateListVar parentKey \
 			    childIdx} {
@@ -7236,6 +7211,11 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
 	set childIdx $childCount
     }
 
+    if {$updateListVar} {
+	upvar #0 $data(-listvariable) var
+	trace vdelete var wu $data(listVarTraceCmd)
+    }
+
     #
     # Insert the items into the internal list
     #
@@ -7253,14 +7233,11 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
 	# Insert the item into the list variable if needed
 	#
 	if {$updateListVar} {
-	    upvar #0 $data(-listvariable) var
-	    trace vdelete var wu $data(listVarTraceCmd)
 	    if {$appendingItems} {
 		lappend var $item    		;# this works much faster
 	    } else {
 		set var [linsert $var $row $item]
 	    }
-	    trace variable var wu $data(listVarTraceCmd)
 	}
 
 	#
@@ -7298,14 +7275,18 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
 		[linsert $data($parentKey-children) $childIdx $key]
 	}
 
-	lappend data(rowsToDisplay) $row
 	lappend result $key
 
 	incr row
 	incr childIdx
     }
+    lappend data(segmentsToDisplay) $index $argCount
     incr data(itemCount) $argCount
     set data(lastRow) [expr {$data(itemCount) - 1}]
+
+    if {$updateListVar} {
+	trace variable var wu $data(listVarTraceCmd)
+    }
 
     #
     # Update the key -> row mapping at idle time if needed
@@ -7481,7 +7462,7 @@ proc tablelist::hdr_insertRows {win index argList} {
 	# Embed the message widgets displaying multiline elements
 	#
 	foreach {col text font pixels alignment} $multilineData {
-	    findTabs $w $win $win $line $col $col tabIdx1 tabIdx2
+	    findTabs $win $w $line $col $col tabIdx1 tabIdx2
 	    set msgScript [list ::tablelist::displayText $win $key \
 			   $col $text $font $pixels $alignment]
 	    $w window create $tabIdx2 -align top -pady $padY -create $msgScript
@@ -7534,7 +7515,8 @@ proc tablelist::displayItems win {
     # Nothing to do if there are no items to display
     #
     upvar ::tablelist::ns${win}::data data
-    if {![info exists data(dispId)]} {
+    if {![info exists data(dispId)] ||
+	![info exists data(segmentsToDisplay)]} {
 	return ""
     }
 
@@ -7556,200 +7538,207 @@ proc tablelist::displayItems win {
     set widgetFont $data(-font)
     set snipStr $data(-snipstring)
     set padY [expr {[$w cget -spacing1] == 0}]
-    set wasEmpty [expr {[llength $data(rowsToDisplay)] == $data(itemCount)}]
+    variable pu
+    set wasEmpty [$w compare end-1$pu == 1.0]
     set isEmpty $wasEmpty
-    foreach row $data(rowsToDisplay) {
-	set line [expr {$row + 1}]
-	set item [lindex $data(itemList) $row]
-	set key [lindex $item end]
+    foreach {startRow rowCount} $data(segmentsToDisplay) {
+	for {set row $startRow; set line [expr {$row + 1}]} {$rowCount != 0} \
+	    {set row $line; incr line; incr rowCount -1} {
+	    set item [lindex $data(itemList) $row]
+	    set key [lindex $item end]
 
-	#
-	# Format the item
-	#
-	set dispItem [lrange $item 0 $data(lastCol)]
-	if {$data(hasFmtCmds)} {
-	    set dispItem [formatItem $win $key $row $dispItem]
-	}
-	if {[string match "*\t*" $dispItem]} {
-	    set dispItem [mapTabs $dispItem]
-	}
+	    #
+	    # Format the item
+	    #
+	    set dispItem [lrange $item 0 $data(lastCol)]
+	    if {$data(hasFmtCmds)} {
+		set dispItem [formatItem $win $key $row $dispItem]
+	    }
+	    if {[string match "*\t*" $dispItem]} {
+		set dispItem [mapTabs $dispItem]
+	    }
 
-	if {$isEmpty} {
-	    set isEmpty 0
-	} else {
-	    $w insert $line.0 "\n"
-	}
-	if {$data(nonViewableRowCount) != 0} {
-	    $w tag remove elidedRow $line.0
-	    $w tag remove hiddenRow $line.0
-	}
-	set multilineData {}
-	set col 0
-	if {$data(hasColTags)} {
-	    set insertArgs {}
-	    foreach text $dispItem \
-		    colFont $data(colFontList) \
-		    colTags $data(colTagsList) \
-		    {pixels alignment} $data(colList) {
-		if {$data($col-hide) && !$canElide} {
-		    incr col
-		    continue
-		}
+	    if {$isEmpty} {
+		set isEmpty 0
+	    } else {
+		$w insert $line.0 "\n"
+	    }
+	    if {$data(nonViewableRowCount) != 0} {
+		$w tag remove elidedRow $line.0
+		$w tag remove hiddenRow $line.0
+	    }
+	    set multilineData {}
+	    set col 0
+	    if {$data(hasColTags)} {
+		set insertArgs {}
+		foreach text $dispItem \
+			colFont $data(colFontList) \
+			colTags $data(colTagsList) \
+			{pixels alignment} $data(colList) {
+		    if {$data($col-hide) && !$canElide} {
+			incr col
+			continue
+		    }
 
-		#
-		# Update the column width or clip the element if necessary
-		#
-		set multiline [string match "*\n*" $text]
-		if {$pixels == 0} {		;# convention: dynamic width
+		    #
+		    # Update the column width or clip the element if necessary
+		    #
+		    set multiline [string match "*\n*" $text]
+		    if {$pixels == 0} {		;# convention: dynamic width
+			if {$multiline} {
+			    set list [split $text "\n"]
+			    set textWidth [getListWidth $win $list $colFont]
+			} else {
+			    set textWidth \
+				[font measure $colFont -displayof $win $text]
+			}
+			if {$data($col-maxPixels) > 0} {
+			    if {$textWidth > $data($col-maxPixels)} {
+				set pixels $data($col-maxPixels)
+			    }
+			}
+			if {$textWidth == $data($col-elemWidth)} {
+			    incr data($col-widestCount)
+			} elseif {$textWidth > $data($col-elemWidth)} {
+			    set data($col-elemWidth) $textWidth
+			    set data($col-widestCount) 1
+			}
+		    }
+		    if {$pixels != 0} {
+			incr pixels $data($col-delta)
+
+			if {$data($col-wrap) && !$multiline} {
+			    if {[font measure $colFont -displayof $win $text] >
+				$pixels} {
+				set multiline 1
+			    }
+			}
+
+			set snipSide \
+			    $snipSides($alignment,$data($col-changesnipside))
+			if {$multiline} {
+			    set list [split $text "\n"]
+			    if {$data($col-wrap)} {
+				set snipSide ""
+			    }
+			    set text [joinList $win $list $colFont \
+				      $pixels $snipSide $snipStr]
+			} elseif {!$data(-displayondemand)} {
+			    set text [strRange $win $text $colFont \
+				      $pixels $snipSide $snipStr]
+			}
+		    }
+
 		    if {$multiline} {
-			set list [split $text "\n"]
-			set textWidth [getListWidth $win $list $colFont]
-		    } else {
-			set textWidth \
-			    [font measure $colFont -displayof $win $text]
-		    }
-		    if {$data($col-maxPixels) > 0} {
-			if {$textWidth > $data($col-maxPixels)} {
-			    set pixels $data($col-maxPixels)
-			}
-		    }
-		    if {$textWidth == $data($col-elemWidth)} {
-			incr data($col-widestCount)
-		    } elseif {$textWidth > $data($col-elemWidth)} {
-			set data($col-elemWidth) $textWidth
-			set data($col-widestCount) 1
-		    }
-		}
-		if {$pixels != 0} {
-		    incr pixels $data($col-delta)
-
-		    if {$data($col-wrap) && !$multiline} {
-			if {[font measure $colFont -displayof $win $text] >
-			    $pixels} {
-			    set multiline 1
-			}
-		    }
-
-		    set snipSide \
-			$snipSides($alignment,$data($col-changesnipside))
-		    if {$multiline} {
-			set list [split $text "\n"]
-			if {$data($col-wrap)} {
-			    set snipSide ""
-			}
-			set text [joinList $win $list $colFont \
-				  $pixels $snipSide $snipStr]
+			lappend insertArgs "\t\t" $colTags
+			lappend multilineData \
+				$col $text $colFont $pixels $alignment
 		    } elseif {$data(-displayondemand)} {
-			set text ""
+			lappend insertArgs "\t\t" $colTags
 		    } else {
-			set text [strRange $win $text $colFont \
-				  $pixels $snipSide $snipStr]
+			lappend insertArgs "\t$text\t" $colTags
 		    }
-		}
 
-		if {$multiline} {
-		    lappend insertArgs "\t\t" $colTags
-		    lappend multilineData $col $text $colFont $pixels $alignment
-		} else {
-		    lappend insertArgs "\t$text\t" $colTags
-		}
-		incr col
-	    }
-
-	    #
-	    # Insert the item into the body text widget
-	    #
-	    if {[llength $insertArgs] != 0} {
-		eval [list $w insert $line.0] $insertArgs
-	    }
-
-	} else {
-	    set insertStr ""
-	    foreach text $dispItem {pixels alignment} $data(colList) {
-		if {$data($col-hide) && !$canElide} {
 		    incr col
-		    continue
 		}
 
 		#
-		# Update the column width or clip the element if necessary
+		# Insert the item into the body text widget
 		#
-		set multiline [string match "*\n*" $text]
-		if {$pixels == 0} {		;# convention: dynamic width
-		    if {$multiline} {
-			set list [split $text "\n"]
-			set textWidth [getListWidth $win $list $widgetFont]
-		    } else {
-			set textWidth \
-			    [font measure $widgetFont -displayof $win $text]
-		    }
-		    if {$data($col-maxPixels) > 0} {
-			if {$textWidth > $data($col-maxPixels)} {
-			    set pixels $data($col-maxPixels)
-			}
-		    }
-		    if {$textWidth == $data($col-elemWidth)} {
-			incr data($col-widestCount)
-		    } elseif {$textWidth > $data($col-elemWidth)} {
-			set data($col-elemWidth) $textWidth
-			set data($col-widestCount) 1
-		    }
+		if {[llength $insertArgs] != 0} {
+		    eval [list $w insert $line.0] $insertArgs
 		}
-		if {$pixels != 0} {
-		    incr pixels $data($col-delta)
 
-		    if {$data($col-wrap) && !$multiline} {
-			if {[font measure $widgetFont -displayof $win $text] >
-			    $pixels} {
-			    set multiline 1
+	    } else {
+		set insertStr ""
+		foreach text $dispItem {pixels alignment} $data(colList) {
+		    if {$data($col-hide) && !$canElide} {
+			incr col
+			continue
+		    }
+
+		    #
+		    # Update the column width or clip the element if necessary
+		    #
+		    set multiline [string match "*\n*" $text]
+		    if {$pixels == 0} {		;# convention: dynamic width
+			if {$multiline} {
+			    set list [split $text "\n"]
+			    set textWidth [getListWidth $win $list $widgetFont]
+			} else {
+			    set textWidth \
+				[font measure $widgetFont -displayof $win $text]
+			}
+			if {$data($col-maxPixels) > 0} {
+			    if {$textWidth > $data($col-maxPixels)} {
+				set pixels $data($col-maxPixels)
+			    }
+			}
+			if {$textWidth == $data($col-elemWidth)} {
+			    incr data($col-widestCount)
+			} elseif {$textWidth > $data($col-elemWidth)} {
+			    set data($col-elemWidth) $textWidth
+			    set data($col-widestCount) 1
+			}
+		    }
+		    if {$pixels != 0} {
+			incr pixels $data($col-delta)
+
+			if {$data($col-wrap) && !$multiline} {
+			    if {[font measure $widgetFont -displayof $win $text]
+				> $pixels} {
+				set multiline 1
+			    }
+			}
+
+			set snipSide \
+			    $snipSides($alignment,$data($col-changesnipside))
+			if {$multiline} {
+			    set list [split $text "\n"]
+			    if {$data($col-wrap)} {
+				set snipSide ""
+			    }
+			    set text [joinList $win $list $widgetFont \
+				      $pixels $snipSide $snipStr]
+			} elseif {!$data(-displayondemand)} {
+			    set text [strRange $win $text $widgetFont \
+				      $pixels $snipSide $snipStr]
 			}
 		    }
 
-		    set snipSide \
-			$snipSides($alignment,$data($col-changesnipside))
 		    if {$multiline} {
-			set list [split $text "\n"]
-			if {$data($col-wrap)} {
-			    set snipSide ""
-			}
-			set text [joinList $win $list $widgetFont \
-				  $pixels $snipSide $snipStr]
+			append insertStr "\t\t"
+			lappend multilineData $col $text $widgetFont \
+					      $pixels $alignment
 		    } elseif {$data(-displayondemand)} {
-			set text ""
+			append insertStr "\t\t"
 		    } else {
-			set text [strRange $win $text $widgetFont \
-				  $pixels $snipSide $snipStr]
+			append insertStr "\t$text\t"
 		    }
+
+		    incr col
 		}
 
-		if {$multiline} {
-		    append insertStr "\t\t"
-		    lappend multilineData $col $text $widgetFont \
-					  $pixels $alignment
-		} else {
-		    append insertStr "\t$text\t"
-		}
-		incr col
+		#
+		# Insert the item into the body text widget
+		#
+		$w insert $line.0 $insertStr
 	    }
 
 	    #
-	    # Insert the item into the body text widget
+	    # Embed the message widgets displaying multiline elements
 	    #
-	    $w insert $line.0 $insertStr
-	}
-
-	#
-	# Embed the message widgets displaying multiline elements
-	#
-	foreach {col text font pixels alignment} $multilineData {
-	    findTabs $win $w $line $col $col tabIdx1 tabIdx2
-	    set msgScript [list ::tablelist::displayText $win $key \
-			   $col $text $font $pixels $alignment]
-	    $w window create $tabIdx2 -align top -pady $padY -create $msgScript
-	    $w tag add elidedWin $tabIdx2
+	    foreach {col text font pixels alignment} $multilineData {
+		findTabs $win $w $line $col $col tabIdx1 tabIdx2
+		set msgScript [list ::tablelist::displayText $win $key \
+			       $col $text $font $pixels $alignment]
+		$w window create $tabIdx2 -align top -pady $padY \
+		    -create $msgScript
+		$w tag add elidedWin $tabIdx2
+	    }
 	}
     }
-    unset data(rowsToDisplay)
+    unset data(segmentsToDisplay)
 
     #
     # Adjust the heights of the body text widget
@@ -7927,64 +7916,36 @@ proc tablelist::doScan {win opt x y} {
     incr x -[winfo x $w]
     incr y -[winfo y $w]
 
-    if {$data(-titlecolumns) == 0} {
-	set textIdx [$data(body) index @0,$y]
-	set row [expr {int($textIdx) - 1}]
-	$w scan $opt $x $y
-	$data(hdrTxt) scan $opt $x 0
-
-	if {[string compare $opt "dragto"] == 0} {
-	    hdr_adjustElidedText $win
-	    hdr_updateColors $win
-	    adjustElidedText $win
-	    redisplayVisibleItems $win
-	    updateColors $win
-	    adjustSepsWhenIdle $win
-	    updateVScrlbarWhenIdle $win
-	    updateIdletasksDelayed 
+    if {[string compare $opt "mark"] == 0} {
+	if {$data(-titlecolumns) != 0} {
+	    set data(scanMarkX) $x
+	    set data(scanMarkXOffset) \
+		[scrlColOffsetToXOffset $win $data(scrlColOffset)]
 	}
-    } elseif {[string compare $opt "mark"] == 0} {
-	$w scan mark 0 $y
 
-	set data(scanMarkX) $x
-	set data(scanMarkXOffset) \
-	    [scrlColOffsetToXOffset $win $data(scrlColOffset)]
+	set data(scanMarkY) $y
+	set data(scanMarkTopRowOffset) \
+	    [getViewableRowCount $win 0 [expr {[getVertComplTopRow $win] - 1}]]
+	set data(winViewableCount) [getViewableRowCount $win \
+	    [getVertComplTopRow $win] [getVertComplBtmRow $win]]
+	set data(bodyHeight) [winfo height $w]
     } else {
-	set textIdx [$data(body) index @0,$y]
-	set row [expr {int($textIdx) - 1}]
-	$w scan dragto 0 $y
-
-	#
-	# Compute the new scrolled x offset by amplifying the
-	# difference between the current horizontal position and
-	# the place where the scan started (the "mark" position)
-	#
-	set scrlXOffset \
-	    [expr {$data(scanMarkXOffset) - 10*($x - $data(scanMarkX))}]
-	set maxScrlXOffset [scrlColOffsetToXOffset $win \
-			    [getMaxScrlColOffset $win]]
-	if {$scrlXOffset > $maxScrlXOffset} {
-	    set scrlXOffset $maxScrlXOffset
-	    set data(scanMarkX) $x
-	    set data(scanMarkXOffset) $maxScrlXOffset
-	} elseif {$scrlXOffset < 0} {
-	    set scrlXOffset 0
-	    set data(scanMarkX) $x
-	    set data(scanMarkXOffset) 0
+	if {![info exists data(scanMarkY)]} {
+	    return ""
 	}
 
-	#
-	# Change the scrolled column offset and adjust the elided text
-	#
-	changeScrlColOffset $win [scrlXOffsetToColOffset $win $scrlXOffset]
-	hdr_adjustElidedText $win
-	hdr_updateColors $win
-	adjustElidedText $win
-	redisplayVisibleItems $win
-	updateColors $win
-	adjustSepsWhenIdle $win
-	updateVScrlbarWhenIdle $win
-	updateIdletasksDelayed 
+	set data(scanDragToX) $x
+	set data(scanDragToY) $y
+	if {![info exists data(dragToId)]} {
+	    variable winSys
+	    if {[string compare $winSys "x11"] == 0} {
+		set delay [expr {($data(colCount) + 3) / 4}]
+	    } else {
+		set delay [expr {$data(colCount) * 2}]
+	    }
+	    set data(dragToId) \
+		[after $delay [list tablelist::dragTo $win]]
+	}
     }
 
     return ""
@@ -8429,8 +8390,8 @@ proc tablelist::horizMoveTo win {
 #------------------------------------------------------------------------------
 # tablelist::vertMoveTo
 #
-# Adjusts the view in the tablelist window win so that the non-hidden item
-# given by data(fraction) appears at the top of the window.
+# Adjusts the view in the tablelist window win so that the viewable item given
+# by data(fraction) appears at the top of the window.
 #------------------------------------------------------------------------------
 proc tablelist::vertMoveTo win {
     upvar ::tablelist::ns${win}::data data
@@ -8451,6 +8412,82 @@ proc tablelist::vertMoveTo win {
 	updateView $win
 	updateIdletasksDelayed 
     }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::dragTo
+#
+# Adjusts the view in the tablelist window win by 10 times the difference
+# between data(scanDragToX) and data(scanDragToY) and the x and y arguments to
+# the last scan mark command.
+#------------------------------------------------------------------------------
+proc tablelist::dragTo win {
+    upvar ::tablelist::ns${win}::data data
+    if {[info exists data(dragToId)]} {
+	after cancel $data(dragToId)
+	unset data(dragToId)
+    }
+
+    set w $data(body)
+    if {$data(-titlecolumns) == 0} {
+	$w scan dragto $data(scanDragToX) 0
+	$data(hdrTxt) scan dragto $data(scanDragToX) 0
+    } else {
+	#
+	# Compute the new scrolled x offset by amplifying the
+	# difference between the current horizontal position and
+	# the place where the scan started (the "mark" position)
+	#
+	set scrlXOffset [expr {$data(scanMarkXOffset) -
+	    10*($data(scanDragToX) - $data(scanMarkX))}]
+	if {$scrlXOffset < 0} {
+	    set data(scanMarkX) $data(scanDragToX)
+	    set data(scanMarkXOffset) 0
+	    set scrlXOffset 0
+	} else {
+	    set maxScrlXOffset \
+		[scrlColOffsetToXOffset $win [getMaxScrlColOffset $win]]
+	    if {$scrlXOffset > $maxScrlXOffset} {
+		set data(scanMarkX) $data(scanDragToX)
+		set data(scanMarkXOffset) $maxScrlXOffset
+		set scrlXOffset $maxScrlXOffset
+	    }
+	}
+
+	changeScrlColOffset $win [scrlXOffsetToColOffset $win $scrlXOffset]
+    }
+
+    #
+    # Compute the new top row offset by amplifying the
+    # difference between the current vertical position and
+    # the place where the scan started (the "mark" position)
+    #
+    set numUnits [expr {10*($data(scanDragToY) - $data(scanMarkY)) *
+	$data(winViewableCount) / $data(bodyHeight)}]
+    set newTopRowOffset [expr {$data(scanMarkTopRowOffset) - $numUnits}]
+    if {$newTopRowOffset < 0} {
+	set data(scanMarkY) $data(scanDragToY)
+	set data(scanMarkTopRowOffset) 0
+	set newTopRowOffset 0
+    } else {
+	set maxRowOffset [getViewableRowCount $win 0 $data(lastRow)]
+	if {$newTopRowOffset > $maxRowOffset} {
+	    set data(scanMarkY) $data(scanDragToY)
+	    set data(scanMarkTopRowOffset) $maxRowOffset
+	    set newTopRowOffset $maxRowOffset
+	}
+    }
+
+    $w yview [viewableRowOffsetToRowIndex $win $newTopRowOffset]
+
+    hdr_adjustElidedText $win
+    hdr_updateColors $win
+    adjustElidedText $win
+    redisplayVisibleItems $win
+    updateColors $win
+    adjustSepsWhenIdle $win
+    updateVScrlbarWhenIdle $win
+    updateIdletasksDelayed 
 }
 
 #------------------------------------------------------------------------------
@@ -8539,7 +8576,7 @@ proc tablelist::bodyConfigure {w width height} {
     set rightX [expr {$width - 1}]
     set btmY [expr {$height - 1}]
     if {$rightX != $data(rightX) || $btmY != $data(btmY)} {
-	set data(gotResizeEvent) 1
+	set data(winSizeChanged) 1
 	set data(rightX) $rightX
 	set data(btmY) $btmY
 

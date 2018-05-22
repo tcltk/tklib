@@ -84,7 +84,7 @@ proc tablelist::altTheme {} {
 	-labelborderwidth	2 \
 	-labelpady		1 \
 	-arrowcolor		black \
-	-arrowstyle		flat7x5 \
+	-arrowstyle		flat8x4 \
 	-treestyle		winnative \
     ]
 }
@@ -387,7 +387,7 @@ proc tablelist::clamTheme {} {
 	-labelborderwidth	2 \
 	-labelpady		3 \
 	-arrowcolor		black \
-	-arrowstyle		flat7x5 \
+	-arrowstyle		flat8x4 \
 	-treestyle		gtk \
     ]
 }
@@ -489,7 +489,7 @@ proc tablelist::defaultTheme {} {
 	-labelborderwidth	1 \
 	-labelpady		1 \
 	-arrowcolor		black \
-	-arrowstyle		flat7x5 \
+	-arrowstyle		flat8x4 \
 	-treestyle		gtk \
     ]
 }
@@ -585,7 +585,7 @@ proc tablelist::krocTheme {} {
 	-labelborderwidth	2 \
 	-labelpady		1 \
 	-arrowcolor		black \
-	-arrowstyle		flat7x5 \
+	-arrowstyle		flat8x4 \
 	-treestyle		gtk \
     ]
 }
@@ -649,7 +649,7 @@ proc tablelist::srivTheme {} {
 	-labelborderwidth	2 \
 	-labelpady		1 \
 	-arrowcolor		black \
-	-arrowstyle		flat7x5 \
+	-arrowstyle		flat8x4 \
 	-treestyle		gtk \
     ]
 }
@@ -681,7 +681,7 @@ proc tablelist::srivlgTheme {} {
 	-labelborderwidth	2 \
 	-labelpady		1 \
 	-arrowcolor		black \
-	-arrowstyle		flat7x5 \
+	-arrowstyle		flat8x4 \
 	-treestyle		gtk \
     ]
 }
@@ -713,7 +713,7 @@ proc tablelist::stepTheme {} {
 	-labelborderwidth	2 \
 	-labelpady		1 \
 	-arrowcolor		black \
-	-arrowstyle		flat7x5 \
+	-arrowstyle		flat8x4 \
 	-treestyle		gtk \
     ]
 }
