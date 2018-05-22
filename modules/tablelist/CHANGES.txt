@@ -1,5 +1,40 @@
-What is new in Tablelist 6.1?
+What is new in Tablelist 6.2?
 -----------------------------
+
+1. Added the "-labelvalign" column configuration option, for controlling
+   the vertical alignment of header label images (thanks to Johann
+   Oberdorfer for his proposal).
+
+2. The "collapse" and "expand" subcommands now accept a list of indices
+   as first argument (thanks to Ulrich Seidl for his proposal).  This is
+   much more efficient than a series of invocations for individual rows.
+
+3. Significantly improved the overall performance of tablelist widgets
+   containing a tree structure, embedded images, or multi-line cells
+   (thanks to Ulrich Seidl for reporting some performance-related
+   issues in tree widgets).
+
+4. Important improvements related to the scanning performance and
+   behavior (thanks to Johann Oberdorfer for discussions on this
+   subject).
+
+5. Changed the default arrow style "flat7x5" to "flat8x4" on the
+   windowing system "x11" and for the tile themes "alt", "clam",
+   "default", "kroc", "sriv", "srivlg", and "step" (POTENTIAL
+   INCOMPATIBILITY!).
+
+6. Fixed two minor bugs related to the interactive cell editing with the
+   aid of the ctext widget (thanks to Sait Dogru for his bug report).
+
+7. Fixed a long-standing bug related to the handling of the
+   "-listvariable" option in connection with snit widgetadaptors (thanks
+   to Rolf Ade for his bug report).
+
+8. Several further code improvements and minor bug fixes (thanks to
+   Alexandru Dadalau and Bernhard Wallner for their bug reports).
+
+What was new in Tablelist 6.1?
+------------------------------
 
 1. Added the "-imagebackground" cell configuration option, useful for
    embedded images having (partially) transparent regions (thanks to
@@ -160,7 +195,7 @@ What was new in Tablelist 5.16?
 
 8   Drastically increased the speed of the "collapse" and "collapseall"
     subcommands with the "-fully" option (thanks to Ulrich Seidl for
-    reporting the pure performance of "collapseall -fully").
+    reporting the poor performance of "collapseall -fully").
 
 9.  Adapted the implementation of the "delete" subcommand to the changed
     text widget behavior in Tk 8.6.5 (thanks to Ulrich Seidl for his bug

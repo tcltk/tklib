@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.1</h2>
+    <h2>For Tablelist Version 6.2</h2>
 
     <h3>by</h3>
 
@@ -370,6 +370,9 @@
     <dd><code><b><a href="#col_labelopts">-labelrelief</a></b>
     <b>raised</b>|<b>sunken</b>|<b>flat</b>|<b>ridge</b>|<b>solid</b>|<b>groove</b></code></dd>
 
+    <dd><code><b><a href="#col_labelvalign">-labelvalign</a></b>
+    <b>center</b>|<b>top</b>|<b>bottom</b></code></dd>
+
     <dd><code><b><a href="#col_maxwidth">-maxwidth</a></b>
     <i>width</i></code></dd>
 
@@ -693,7 +696,7 @@
     <i>nodeIndex</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#collapse">collapse</a></b>
-    <i>index</i> ?<b>-fully</b>|<b>-partly</b>?</code></dd>
+    <i>indexList</i> ?<b>-fully</b>|<b>-partly</b>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#collapseall">collapseall</a></b>
     ?<b>-fully</b>|<b>-partly</b>?</code></dd>
@@ -821,8 +824,8 @@
     <dd><code><i>pathName</i> <b><a href=
     "#entrypath">entrypath</a></b></code></dd>
 
-    <dd><code><i>pathName</i> <b><a href="#expand">expand</a></b> <i>index</i>
-    ?<b>-fully</b>|<b>-partly</b>?</code></dd>
+    <dd><code><i>pathName</i> <b><a href="#expand">expand</a></b>
+    <i>indexList</i> ?<b>-fully</b>|<b>-partly</b>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#expandall">expandall</a></b>
     ?<b>-fully</b>|<b>-partly</b>?</code></dd>
@@ -1715,9 +1718,9 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         windowing system is <code><b>x11</b></code> then the default arrow
         color is <code>black</code> and the <code><b><a href=
         "#arrowstyle">-arrowstyle</a></b></code> option has the default value
-        <code><b>flat7x5</b></code>.&nbsp; The same holds true for some tile
-        themes, like <code><b>alt</b></code>, <code><b>default</b></code>, and
-        <code><b>clam</b></code>.&nbsp; On the windowing system
+        <code><b>flat8x4</b></code>.&nbsp; The same holds true for some tile
+        themes, like <code><b>alt</b></code>, <code><b>clam</b></code>, and
+        <code><b>default</b></code>.&nbsp; On the windowing system
         <code><b>win32</b></code>, the default arrow color is
         <code>#595959</code> for Windows 10, <code>#569bc0</code> for Windows
         Vista, 7, and 8, <code>#aca899</code> for Windows XP, and an empty
@@ -1862,7 +1865,7 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         edges:</p>
 
         <p><img src="arrowStyles_vista.png" alt="Arrow Styles Vista" width=
-        "638" height="123"></p>
+        "638" height="124"></p>
 
         <p>The arrow style <code><b>photo7x7</b></code> uses PNG images that
         look and behave very close to the native sort arrows on Mac OS X Aqua
@@ -5794,6 +5797,17 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         image are separated from each other by a gap corresponding to the width
         of a space character in the given label's font.</dd>
 
+        <dt class="tm" id="col_labelvalign"><code><b>-labelvalign</b>
+        <i>verticalAlignment</i></code></dt>
+
+        <dd>Specifies the vertical alignment of the Tk image (if any) displayed
+        in the header label.&nbsp; The <code><i>verticalAlignment</i></code>
+        must be one of <code><b>center</b></code> (which is the default),
+        <code><b>top</b></code>, or <code><b>bottom</b></code>.&nbsp;
+        Especially if the label contains a multi-line text, the image is often
+        not as tall as the text; in such cases, this option enables you to
+        control the column-dependent vertical alignment of the image.</dd>
+
         <dt class="tm" id="col_maxwidth"><code><b>-maxwidth</b>
         <i>width</i></code></dt>
 
@@ -8122,22 +8136,22 @@ proc tblDragEndCmd {dragSrc dropTarget op dataType data result} {
         widget.</dd>
 
         <dt class="tm" id="collapse"><code><i>pathName</i> <b>collapse</b>
-        <i>index</i> ?<b>-fully</b>|<b>-partly</b>?</code></dt>
+        <i>indexList</i> ?<b>-fully</b>|<b>-partly</b>?</code></dt>
 
-        <dd>This subcommand collapses the specified row of a tablelist used as
-        a tree widget, i.e., elides all its descendants.&nbsp; The optional
+        <dd>This subcommand collapses the specified rows of a tablelist used as
+        a tree widget, i.e., elides all their descendants.&nbsp; The optional
         argument <code><b>-fully</b></code> (which is the default) indicates
         that the command will be performed recursively, i.e., all of the
-        descendants of the node specified by <code><i>index</i></code> will be
-        collapsed, so that a subsequent invocation of the non-recursive version
-        of the <code><b><a href="#expand">expand(all)</a></b></code> subcommand
-        will only display the row's children but no further descendants of
-        it.&nbsp; The <code><b>-partly</b></code> option (which is used by the
-        default bindings) restricts the operation to just one hierarchy level,
-        implying that by a subsequent invocation of the non-recursive version
-        of the <code><b>expand(all)</b></code> subcommand exactly the same
-        descendants will be displayed again that were visible prior to
-        collapsing the row.</dd>
+        descendants of the nodes specified by <code><i>indexList</i></code>
+        will be collapsed, so that a subsequent invocation of the non-recursive
+        version of the <code><b><a href="#expand">expand(all)</a></b></code>
+        subcommand will only display their children but no further descendants
+        of them.&nbsp; The <code><b>-partly</b></code> option (which is used by
+        the default bindings) restricts the operation to just one hierarchy
+        level, implying that by a subsequent invocation of the non-recursive
+        version of the <code><b>expand(all)</b></code> subcommand exactly the
+        same descendants will be displayed again that were visible prior to
+        collapsing the rows.</dd>
 
         <dd class="tm">Before hiding the descendants of a row, the command
         specified as the value of the <code><b><a href=
@@ -8151,6 +8165,11 @@ proc tblDragEndCmd {dragSrc dropTarget op dataType data result} {
         row), this subcommand is not supported for Tk versions earlier than
         8.3.</dd>
 
+        <dd class="tm"><b>REMARK:</b>&nbsp; If you want to collapse several
+        rows, it is much more efficient to do it by invoking this subcommand
+        for the list of their indices than by invoking it in a loop, for the
+        individual rows.</dd>
+
         <dt class="tm" id="collapseall"><code><i>pathName</i>
         <b>collapseall</b> ?<b>-fully</b>|<b>-partly</b>?</code></dt>
 
@@ -8161,7 +8180,7 @@ proc tblDragEndCmd {dragSrc dropTarget op dataType data result} {
         descendants of the top-level nodes will be collapsed, so that a
         subsequent invocation of the non-recursive version of the
         <code><b><a href="#expandall">expandall</a></b></code> subcommand will
-        only display ther children but no further descendants of them.&nbsp;
+        only display their children but no further descendants of them.&nbsp;
         The <code><b>-partly</b></code> option restricts the operation to just
         one hierarchy level, implying that by a subsequent invocation of the
         non-recursive version of the <code><b>expandall</b></code> subcommand
@@ -8789,18 +8808,18 @@ bind [.tbl <span>editwintag</span>] &lt;Return&gt; "[bind <a href=
         configuration options.</dd>
 
         <dt class="tm" id="expand"><code><i>pathName</i> <b>expand</b>
-        <i>index</i> ?<b>-fully</b>|<b>-partly</b>?</code></dt>
+        <i>indexList</i> ?<b>-fully</b>|<b>-partly</b>?</code></dt>
 
-        <dd>This subcommand expands the specified row of a tablelist used as a
-        tree widget, i.e., makes all its children visible.&nbsp; The optional
+        <dd>This subcommand expands the specified rows of a tablelist used as a
+        tree widget, i.e., makes all their children visible.&nbsp; The optional
         argument <code><b>-fully</b></code> (which is the default) indicates
         that the command will be performed recursively, i.e., all of the
-        descendants of the node specified by <code><i>index</i></code> will be
-        displayed.&nbsp; The <code><b>-partly</b></code> option (which is used
-        by the default bindings) restricts the operation to just one hierarchy
-        level, indicating that only the children of the specified node will be
-        displayed, without changing the expanded/collapsed state of the child
-        nodes.</dd>
+        descendants of the nodes specified by <code><i>indexList</i></code>
+        will be displayed.&nbsp; The <code><b>-partly</b></code> option (which
+        is used by the default bindings) restricts the operation to just one
+        hierarchy level, indicating that only the children of the specified
+        nodes will be displayed, without changing the expanded/collapsed state
+        of the child nodes.</dd>
 
         <dd class="tm">Before displaying the children of a row, the command
         specified as the value of the <code><b><a href=
@@ -8814,6 +8833,11 @@ bind [.tbl <span>editwintag</span>] &lt;Return&gt; "[bind <a href=
         <code><b>-elide</b></code> text widget tag option for collapsing a
         row), this subcommand is not supported for Tk versions earlier than
         8.3.</dd>
+
+        <dd class="tm"><b>REMARK:</b>&nbsp; If you want to expand several rows,
+        it is much more efficient to do it by invoking this subcommand for the
+        list of their indices than by invoking it in a loop, for the individual
+        rows.</dd>
 
         <dt class="tm" id="expandall"><code><i>pathName</i> <b>expandall</b>
         ?<b>-fully</b>|<b>-partly</b>?</code></dt>
