@@ -256,14 +256,15 @@ proc tablelist::cleanup win {
     # Cancel the execution of all delayed (hdr_)handleMotion, updateKeyToRowMap,
     # adjustSeps, makeStripes, showLineNumbers, stretchColumns,
     # (hdr_)updateColors, updateScrlColOffset, updateHScrlbar, updateVScrlbar,
-    # updateView, synchronize, displayItems, horizMoveTo, vertMoveTo, autoScan,
-    # horizAutoScan, forceRedraw, reconfigWindows, redisplay, redisplayCol, and
-    # destroyWidgets commands
+    # updateView, synchronize, displayItems, horizMoveTo, vertMoveTo, dragTo,
+    # autoScan, horizAutoScan, forceRedraw, reconfigWindows, redisplay, and
+    # redisplayCol commands
     #
     upvar ::tablelist::ns${win}::data data
     foreach id {motionId hdr_motionId mapId sepsId stripesId lineNumsId
 		stretchId colorsId hdr_colorsId offsetId hScrlbarId vScrlbarId
-		viewId syncId dispId moveToId afterId redrawId reconfigId} {
+		viewId syncId dispId moveToId dragToId afterId redrawId
+		reconfigId} {
 	if {[info exists data($id)]} {
 	    after cancel $data($id)
 	}
@@ -271,16 +272,13 @@ proc tablelist::cleanup win {
     foreach name [array names data *redispId] {
 	after cancel $data($name)
     }
-    foreach destroyId $data(destroyIdList) {
-	after cancel $destroyId
-    }
 
     #
     # If there is a list variable associated with the
     # widget then remove the trace set on this variable
     #
-    upvar #0 $data(-listvariable) var
-    if {$data(hasListVar) && [info exists var]} {
+    if {$data(hasListVar) && [info exists $data(-listvariable)]} {
+	upvar #0 $data(-listvariable) var
 	trace vdelete var wu $data(listVarTraceCmd)
     }
 
@@ -399,6 +397,17 @@ proc tablelist::updateConfigSpecs win {
 	    doConfig $win $opt $data($opt)     ;# sets the bg color of the seps
 	}
 	updateCanvases $win
+    }
+
+    #
+    # Destroy and recreate the label images
+    #
+    for {set col 0} {$col < $data(colCount)} {incr col} {
+	if {[info exists data($col-labelimage)]} {
+	    set val $data($col-labelimage)
+	    doColConfig $col $win -labelimage ""
+	    doColConfig $col $win -labelimage $val
+	}
     }
 
     #
@@ -1142,7 +1151,7 @@ proc tablelist::updateCursor {win row col} {
 
 	#
 	# Special handling for cell editing with the aid of BWidget
-	# ComboBox. Oakley combobox, or Tk menubutton widgets
+	# ComboBox, Oakley combobox, or Tk menubutton widgets
 	#
 	if {$data(editRow) >= 0 && $data(editCol) >= 0} {
 	    foreach c [winfo children $data(bodyFrmEd)] {
@@ -1160,7 +1169,10 @@ proc tablelist::updateCursor {win row col} {
     }
 
     if {[string compare [$data(body) cget -cursor] $cursor] != 0} {
-	$data(body) configure -cursor $cursor
+	if {[catch {$data(body) configure -cursor $cursor}] != 0} {
+	    makeEditCursor 
+	    $data(body) configure -cursor $editCursor
+	}
     }
 }
 

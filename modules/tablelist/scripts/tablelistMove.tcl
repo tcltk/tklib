@@ -456,14 +456,6 @@ proc tablelist::moveCol {win source target} {
 	return ""
     }
 
-    if {[winfo viewable $win]} {
-	purgeWidgets $win
-	update idletasks
-	if {[destroyed $win]} {
-	    return ""
-	}
-    }
-
     #
     # Update the column list
     #
