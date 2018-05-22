@@ -13,7 +13,7 @@
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 6.1</h2>
+    <h2>For Tablelist Version 6.2</h2>
 
     <h3>by</h3>
 
@@ -170,8 +170,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist6.1.tar.gz</code> for UNIX and
-  <code>tablelist6_1.zip</code> for Windows.&nbsp; These files contain the same
+  The distribution file is <code>tablelist6.2.tar.gz</code> for UNIX and
+  <code>tablelist6_2.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -194,21 +194,21 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist6.1.tar.gz</code>:</p>
+  <code>tablelist6.2.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist6.1.tar.gz | tar -xf -
+gunzip -c tablelist6.2.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>tablelist6.1</code>, with
+  <p>This command will create a directory named <code>tablelist6.2</code>, with
   the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist6_1.zip</code> into the directory
-  <code>tablelist6.1</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist6_2.zip</code> into the directory
+  <code>tablelist6.2</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -305,14 +305,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 6.1, then it is highly
-  recommended to specify the version number <code>6.1</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 6.2, then it is highly
+  recommended to specify the version number <code>6.2</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 6.1</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 6.2</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 6.1</code>.</p>
+  tablelist_tile 6.2</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -499,7 +499,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 6.1
+package require tablelist 6.2
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -541,7 +541,7 @@ demo::displayConfig .configTop.tf.tbl
   the following figure:</p>
 
   <blockquote>
-    <img src="config.png" alt="Configuration Options" width="835" height="381">
+    <img src="config.png" alt="Configuration Options" width="835" height="384">
   </blockquote>
 
   <p>It is assumed that the Tcl command associated with the widget specified by
@@ -555,7 +555,7 @@ demo::displayConfig .configTop.tf.tbl
 
   <blockquote>
     <pre>
-package require tablelist 6.1
+package require tablelist 6.2
 
 namespace eval demo {
     #
@@ -1002,14 +1002,14 @@ demo::displayChildren .
   in the file <code>browse.tcl</code> is a multi-column listbox:</p>
 
   <blockquote>
-    <img src="browse.png" alt="Widget Browser" width="605" height="283">
+    <img src="browse.png" alt="Widget Browser" width="605" height="286">
   </blockquote>
 
   <p>The tablelist created by the procedure of the same name in the file
   <code>browseTree.tcl</code> is a multi-column tree widget:</p>
 
   <blockquote>
-    <img src="browseTree.png" alt="Widget Browser" width="623" height="283">
+    <img src="browseTree.png" alt="Widget Browser" width="623" height="286">
   </blockquote>
 
   <p>The <code>demo::displayChildren</code> command inserts some data of the
@@ -1033,7 +1033,7 @@ demo::displayChildren .
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.1
+package require tablelist 6.2
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1615,7 +1615,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   as multi-column tree widget:</p>
 
   <blockquote>
-    <img src="dirViewer.png" alt="Directory Viewer" width="675" height="432">
+    <img src="dirViewer.png" alt="Directory Viewer" width="675" height="435">
   </blockquote>
 
   <p>By double-clicking an item or invoking the single entry of a pop-up menu
@@ -1631,7 +1631,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.1
+package require tablelist 6.2
 
 #
 # Add some entries to the Tk option database
@@ -1920,7 +1920,7 @@ displayContents ""
   the following figure:</p>
 
   <blockquote>
-    <img src="styles.png" alt="Styles" width="698" height="493">
+    <img src="styles.png" alt="Styles" width="698" height="496">
   </blockquote>
 
   <p>Here is the relevant code segment:</p>
@@ -2007,7 +2007,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
 
   <blockquote>
     <img src="bwidget.png" alt="Serial Line Configuration" width="841" height=
-    "387">
+    "390">
   </blockquote>
 
   <p>Here is the relevant code segment from the script <code>bwidget.tcl</code>
@@ -2019,7 +2019,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;# because of "-compound"
-package require tablelist 6.1
+package require tablelist 6.2
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2376,14 +2376,14 @@ $tbl embedcheckbuttons 1
 
   <blockquote>
     <img src="embeddedWindows.png" alt="Embedded Windows" width="432" height=
-    "303">
+    "306">
   </blockquote>
 
   <p>First, we create and populate the tablelist widget:</p>
 
   <blockquote>
     <pre>
-package require tablelist 6.1
+package require tablelist 6.2
 
 wm title . "Tk Library Scripts"
 
@@ -2638,7 +2638,7 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
   <blockquote>
     <pre>
 package require Tk 8.3                          ;# because of entry validation
-package require tablelist 6.1
+package require tablelist 6.2
 </pre>
   </blockquote>
 
@@ -2646,7 +2646,7 @@ package require tablelist 6.1
 
   <blockquote>
     <pre>
-package require tablelist<span>_tile</span> 6.1
+package require tablelist<span>_tile</span> 6.2
 </pre>
   </blockquote>
 
@@ -2752,7 +2752,7 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
 
   <blockquote>
     <img src="tileWidgets.png" alt="Serial Line Configuration" width="839"
-    height="382">
+    height="385">
   </blockquote>
 
   <p>The tile-based version of the demo script <code><a href=
@@ -2763,7 +2763,7 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
 
   <blockquote>
     <img src="embeddedWindows_tile.png" alt="Embedded Windows" width="432"
-    height="299">
+    height="302">
   </blockquote>
 
   <div align="center">
