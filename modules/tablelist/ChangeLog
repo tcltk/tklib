@@ -1,3 +1,37 @@
+2018-05-22 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                          Bumped the version number to 6.2.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* ../../examples/tablelist/*.tcl:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added the "-labelvalign" column configuration option;
+	  the "collapse" and "expand" subcommands now accept a list of indices
+	  as first argument; significantly improved the overall performance of
+	  tablelist widgets containing a tree structure, embedded images, or
+	  multi-line cells; important improvements related to the scanning
+	  performance and behavior; changed the default arrow style "flat7x5"
+	  to "flat8x4" on the windowing system "x11" and for some tile themes;
+	  fixed some bugs related to the interactive cell editing and the
+	  handling of the "-listvariable" option in connection with snit
+	  widgetadaptors; further code improvements and minor bug fixes.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/arrowStyles_vista.png:    Updated screenshots.
+	* doc/browse.png:
+	* doc/browseTree.png:
+	* doc/bwidget.png:
+	* doc/config.png:
+	* doc/dirViewer.png:
+	* doc/embeddedWindows.png:
+	* doc/embeddedWindows_tile.png:
+	* doc/styles.png:
+	* doc/tileWidgets.png:
+
 2018-03-05 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:                          Bumped the version number to 6.1;
