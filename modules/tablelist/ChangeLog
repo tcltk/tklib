@@ -1,3 +1,21 @@
+2018-06-05 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/tablelist.html:             Using the "cornerpath" subcommand not
+	* doc/tablelistWidget.html:       only on Mac OS X Aqua but also on
+	* ../../examples/tablelist/*.tcl: X11.
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* doc/browse.png:               Updated screenshots.
+	* doc/browseTree.png:
+	* doc/bwidget.png:
+	* doc/config.png:
+	* doc/dirViewer.png:
+	* doc/embeddedWindows.png:
+	* doc/embeddedWindows_tile.png:
+	* doc/styles.png:
+	* doc/tileWidgets.png:
+
 2018-05-25 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/browseTree.png: Updated.
