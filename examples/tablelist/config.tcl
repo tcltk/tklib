@@ -118,11 +118,11 @@ proc demo::displayConfig w {
     #
     grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
     variable winSys
-    if {[string compare $winSys "aqua"] == 0} {
+    if {[string compare $winSys "win32"] == 0} {
+	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+    } else {
 	grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
 	grid $vsb	       -row 1 -column 1 -sticky ns
-    } else {
-	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
     }
     grid $hsb -row 2 -column 0 -sticky ew
     grid rowconfigure    $tf 1 -weight 1

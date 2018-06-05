@@ -541,7 +541,7 @@ demo::displayConfig .configTop.tf.tbl
   the following figure:</p>
 
   <blockquote>
-    <img src="config.png" alt="Configuration Options" width="835" height="384">
+    <img src="config.png" alt="Configuration Options" width="835" height="402">
   </blockquote>
 
   <p>It is assumed that the Tcl command associated with the widget specified by
@@ -668,11 +668,11 @@ proc demo::displayConfig w {
     #
     grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
     variable winSys
-    if {[string compare $winSys "aqua"] == 0} {
+    if {[string compare $winSys "win32"] == 0} {
+        grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+    } else {
         grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
         grid $vsb              -row 1 -column 1 -sticky ns
-    } else {
-        grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
     }
     grid $hsb -row 2 -column 0 -sticky ew
     grid rowconfigure    $tf 1 -weight 1
@@ -776,12 +776,15 @@ proc demo::displayConfig w {
   <code>#f0f0f0</code>, which improves the readability of the items and gives
   the widget a nice appearance.</p>
 
-  <p>The option database entries given for the windowing systems other than
-  <code>x11</code> are implicitly used when managing the tablelist widget and
-  the two scrollbars with the aid of <code>grid</code>.&nbsp; Notice how the
-  <code><a href="tablelistWidget.html#cornerpath">cornerpath</a></code>
-  subcommand enables us to achieve a native look &amp; feel with respect to the
-  vertical scrollbar on the windowing system <code>aqua</code>.</p>
+  <p>The option database entries for <code>*DemoTop.tf.borderWidth</code>,
+  <code>*DemoTop.tf.relief</code>, <code>*DemoTop.tf.tbl.borderWidth</code>,
+  and <code>*DemoTop.tf.tbl.highlightThickness</code> are implicitly used when
+  managing the tablelist widget and the two scrollbars with the aid of
+  <code>grid</code>.&nbsp; Notice how the <code><a href=
+  "tablelistWidget.html#cornerpath">cornerpath</a></code> subcommand enables us
+  to achieve a native look &amp; feel with respect to the vertical scrollbar on
+  the windowing systems other than <code>win32</code> (i.e., <code>aqua</code>
+  and <code>x11</code>).</p>
 
   <p>We populate the tablelist by invoking the <code>demo::putConfig</code>
   procedure discussed below.&nbsp; The same script is associated with the
@@ -1002,14 +1005,14 @@ demo::displayChildren .
   in the file <code>browse.tcl</code> is a multi-column listbox:</p>
 
   <blockquote>
-    <img src="browse.png" alt="Widget Browser" width="605" height="286">
+    <img src="browse.png" alt="Widget Browser" width="605" height="299">
   </blockquote>
 
   <p>The tablelist created by the procedure of the same name in the file
   <code>browseTree.tcl</code> is a multi-column tree widget:</p>
 
   <blockquote>
-    <img src="browseTree.png" alt="Widget Browser" width="623" height="286">
+    <img src="browseTree.png" alt="Widget Browser" width="623" height="299">
   </blockquote>
 
   <p>The <code>demo::displayChildren</code> command inserts some data of the
@@ -1615,7 +1618,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   as multi-column tree widget:</p>
 
   <blockquote>
-    <img src="dirViewer.png" alt="Directory Viewer" width="675" height="435">
+    <img src="dirViewer.png" alt="Directory Viewer" width="675" height="456">
   </blockquote>
 
   <p>By double-clicking an item or invoking the single entry of a pop-up menu
@@ -1920,7 +1923,7 @@ displayContents ""
   the following figure:</p>
 
   <blockquote>
-    <img src="styles.png" alt="Styles" width="698" height="496">
+    <img src="styles.png" alt="Styles" width="698" height="518">
   </blockquote>
 
   <p>Here is the relevant code segment:</p>
@@ -2007,7 +2010,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
 
   <blockquote>
     <img src="bwidget.png" alt="Serial Line Configuration" width="841" height=
-    "390">
+    "409">
   </blockquote>
 
   <p>Here is the relevant code segment from the script <code>bwidget.tcl</code>
@@ -2376,7 +2379,7 @@ $tbl embedcheckbuttons 1
 
   <blockquote>
     <img src="embeddedWindows.png" alt="Embedded Windows" width="432" height=
-    "306">
+    "310">
   </blockquote>
 
   <p>First, we create and populate the tablelist widget:</p>
@@ -2752,7 +2755,7 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
 
   <blockquote>
     <img src="tileWidgets.png" alt="Serial Line Configuration" width="839"
-    height="385">
+    height="404">
   </blockquote>
 
   <p>The tile-based version of the demo script <code><a href=
@@ -2763,7 +2766,7 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
 
   <blockquote>
     <img src="embeddedWindows_tile.png" alt="Embedded Windows" width="432"
-    height="302">
+    height="316">
   </blockquote>
 
   <div align="center">
