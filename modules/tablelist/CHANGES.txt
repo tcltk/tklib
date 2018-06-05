@@ -23,14 +23,19 @@ What is new in Tablelist 6.2?
    "default", "kroc", "sriv", "srivlg", and "step" (POTENTIAL
    INCOMPATIBILITY!).
 
-6. Fixed two minor bugs related to the interactive cell editing with the
+6. The manual now recommends managing the vertical scrollbar (if any) to
+   appear below the header labels with the aid of the "cornerpath"
+   subcommand not only for Mac OS X Aqua but also for X11.  The demo
+   scripts have been adapted accordingly.
+
+7. Fixed two minor bugs related to the interactive cell editing with the
    aid of the ctext widget (thanks to Sait Dogru for his bug report).
 
-7. Fixed a long-standing bug related to the handling of the
+8. Fixed a long-standing bug related to the handling of the
    "-listvariable" option in connection with snit widgetadaptors (thanks
    to Rolf Ade for his bug report).
 
-8. Several further code improvements and minor bug fixes (thanks to
+9. Several further code improvements and minor bug fixes (thanks to
    Alexandru Dadalau and Bernhard Wallner for their bug reports).
 
 What was new in Tablelist 6.1?
