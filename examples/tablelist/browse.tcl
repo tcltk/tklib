@@ -120,11 +120,11 @@ proc demo::displayChildren w {
     #
     grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
     variable winSys					;# see config.tcl
-    if {[string compare $winSys "aqua"] == 0} {
+    if {[string compare $winSys "win32"] == 0} {
+	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+    } else {
 	grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
 	grid $vsb	       -row 1 -column 1 -sticky ns
-    } else {
-	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
     }
     grid rowconfigure    $tf 1 -weight 1
     grid columnconfigure $tf 0 -weight 1

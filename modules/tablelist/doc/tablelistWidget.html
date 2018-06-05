@@ -8492,21 +8492,22 @@ eval [list <i>pathName</i> <a href=
         latter's header.&nbsp; This frame is called the <b>corner frame</b>,
         because it is designed to be shown to the right of the tablelist
         widget's top-right corner when managing the vertical scrollbar on Mac
-        OS X Aqua (see below).&nbsp; The corner frame contains a label or
-        ttk::label widget, depending on whether the package Tablelist or
+        OS X Aqua and X11 (see below).&nbsp; The corner frame contains a label
+        or ttk::label widget, depending on whether the package Tablelist or
         Tablelist_tile is being used (see the <code><b><a href=
         "#cornerlabelpath">cornerlabelpath</a></b></code> subcommand).&nbsp;
-        Whenever the height of the tablelist's header changes, the height of
-        the corner frame as well as that of the above-mentioned (ttk::)label
-        widget is updated accordingly.</dd>
+        Whenever the height of the tablelist's header labels changes, the
+        height of the corner frame as well as that of the above-mentioned
+        (ttk::)label widget is updated accordingly.</dd>
 
         <dd class="tm">
           <b>REMARK:</b>&nbsp; This subcommand enables you to manage the
           vertical scrollbar (if any) to appear below the tablelist widget's
-          header, thus respecting the native look &amp; feel on Mac OS X
-          Aqua.&nbsp; As shown in the following example, it is recommended to
-          always create a scrolled tablelist along with the scrollbar(s) as
-          children of a (ttk::)frame widget:
+          header labels, thus respecting the native look &amp; feel on Mac OS X
+          Aqua and on many modern Linux systems.&nbsp; As shown in the
+          following example, it is recommended to always create a scrolled
+          tablelist along with the scrollbar(s) as children of a (ttk::)frame
+          widget:
 
           <blockquote>
             <pre>
@@ -8533,11 +8534,11 @@ scrollbar $hsb -orient horizontal -command [list $tbl xview]
 
 <i># Manage the widgets within the frame</i>
 grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
-if {[string compare [tk windowingsystem] "aqua"] == 0} {
+if {[string compare [tk windowingsystem] "win32"] == 0} {
+    grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+} else {
     grid [$tbl <span>cornerpath</span>] -row 0 -column 1 -sticky ew
     grid $vsb              -row 1 -column 1 -sticky ns
-} else {
-    grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
 }
 grid $hsb -row 2 -column 0 -sticky ew
 grid rowconfigure    $frm 1 -weight 1
