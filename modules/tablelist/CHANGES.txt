@@ -1,5 +1,51 @@
-What is new in Tablelist 6.2?
+What is new in Tablelist 6.3?
 -----------------------------
+
+1.  Added the "-showbusycursor" configuration option, used to control
+    whether the default bindings should display a busy cursor during the
+    actions that can take a long time to complete, using the new
+    "setbusycursor" and "restorecursor" subcommands.
+
+2.  The "-stretch" configuration option is no longer ignored if the
+    width of the tablelist widget was specified as zero or less (thanks
+    to Adrian Medrano Calvo for his proposal).  For technical reasons
+    there is just a minor restriction, which is only relevant on X11: If
+    the value of the "-width" option is zero or less and the tablelist
+    has stretchable columns, then the "-setgrid" option will be ignored.
+
+3.  The vertical scrollbar, when managed with the aid of the
+    "cornerpath" subcommand, will now appear below the entire header,
+    including both the header labels and the header items (if any).
+
+4.  Besides the north-east corner frame there is now a south-west corner
+    frame, designed to be used when managing the horizontal scrollbar
+    in the presence of title columns.  The "cornerpath" subcommand now
+    accepts the corner specification as optional argument.
+
+5.  Significant optimizations in the item insertion as well as in the
+    selection-related code.
+
+6.  Further improvements related to the interactive cell editing with
+    the aid of the ctext widget (thanks to Sait Dogru for discussions on
+    this subject).
+
+7.  Made the overall handling of the "-listvariable" option much more
+    robust (thanks to Ulrich Seidl for his bug report).
+
+8.  Fixed a long-standing bug related to the "-maxwidth" column
+    configuration option (again, thanks to Ulrich Seidl for his bug
+    report).
+
+9.  Fixed a bug related to the "-displayondemand" configuration option
+    (thanks to "tombert" for his bug report).
+
+10. Fixed a bug related to the tooltip support (thanks to Bo Berggren
+    for his bug report).
+
+11. Numerous further improvements and minor bug fixes.
+
+What was new in Tablelist 6.2?
+------------------------------
 
 1. Added the "-labelvalign" column configuration option, for controlling
    the vertical alignment of header label images (thanks to Johann
@@ -1578,7 +1624,7 @@ What was new in Tablelist 3.6?
     internal list (thanks to Patrick Fradin for his valuable input).
 
 7.  Fixed a bug related to the "-listvariable" option, introduced in
-    the previous Tablelist release (thanks to Torsten Reincke for his
+    the previous Tablelist release (thanks to Torsten Reincke for her
     bug report).
 
 8.  Fixed two bugs related to the "cellselection" subcommand (thanks to
