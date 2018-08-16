@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.2</h2>
+    <h2>For Tablelist Version 6.3</h2>
 
     <h3>by</h3>
 
@@ -232,6 +232,9 @@
     <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#showarrow">-showarrow</a></b>
+    <i>boolean</i></code></dd>
+
+    <dd><code><b><a href="#showbusycursor">-showbusycursor</a></b>
     <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#showeditcursor">-showeditcursor</a></b>
@@ -763,7 +766,7 @@
     "#cornerlabelpath">cornerlabelpath</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
-    "#cornerpath">cornerpath</a></b></code></dd>
+    "#cornerpath">cornerpath</a></b> ?<b>-ne</b>|<b>-sw</b>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#curcellselection">curcellselection</a></b>
@@ -914,7 +917,7 @@
     <i>index</i> <i>name</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#header">header</a></b> <i>option</i>
-    <i>args</i></code></dd>
+    ?<i>arg</i> <i>arg</i> ...?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#headerpath">headerpath</a></b></code></dd>
@@ -1018,6 +1021,9 @@
     <dd><code><i>pathName</i> <b><a href=
     "#resetsortinfo">resetsortinfo</a></b></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#restorecursor">restorecursor</a></b></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#rowattrib">rowattrib</a></b>
     <i>index</i> ?<i>name</i>? ?<i>value</i> <i>name</i> <i>value</i>
     ...?</code></dd>
@@ -1074,6 +1080,9 @@
 
     <dd><code><i>pathName</i> <b><a href=
     "#separators">separators</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#setbusycursor">setbusycursor</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#showtargetmark">showtargetmark</a></b> <b>before</b>|<b>inside</b>
@@ -1520,6 +1529,12 @@
     <code><b>-selectborderwidth</b></code>, and
     <code><b>-selectforeground</b></code> have theme-specific default
     values.</dd>
+
+    <dd class="tm"><b>REMARK:</b>&nbsp; If the value of the <code><b><a href=
+    "#width">-width</a></b></code> configuration option is zero or less and the
+    tablelist has <a href="#stretch">stretchable</a> columns, then the
+    <code><b>-setgrid</b></code> option will be ignored.&nbsp; This minor
+    restriction has technical reasons and is only relevant on X11.</dd>
 
     <dt class="tm" id="body_options"><b>OPTIONS FOR THE BODY AND HEADER
     COMPONENTS OF THE WIDGET</b></dt>
@@ -3082,17 +3097,18 @@ proc expandCmd {tbl row} {
       </table>
 
       <blockquote>
-        <p>Specifies the name of a variable.&nbsp; The value of the variable is
-        a list to be displayed inside the widget's body; if the variable value
-        changes then the widget will automatically update itself to reflect the
-        new value.&nbsp; The value of the variable must be a valid list.&nbsp;
-        Each list element corresponds to a row within the widget's body, and
-        must be a valid list itself; its elements correspond to the cells
-        within the respective row.&nbsp; Attempts to assign a variable whose
-        value does not fulfill these conditions to
-        <code><b>-listvariable</b></code> will cause an error.&nbsp; Attempts
-        to unset a variable in use as a <code><b>-listvariable</b></code> will
-        fail but will not generate an error.</p>
+        <p>Specifies the name of a global varable or a qualified name of a
+        namespace variable.&nbsp; The value of the variable is a list to be
+        displayed inside the widget's body; if the variable value changes then
+        the widget will automatically update itself to reflect the new
+        value.&nbsp; The value of the variable must be a valid list.&nbsp; Each
+        list element corresponds to a row within the widget's body, and must be
+        a valid list itself; its elements correspond to the cells within the
+        respective row.&nbsp; Attempts to assign a variable whose value does
+        not fulfill these conditions to <code><b>-listvariable</b></code> will
+        cause an error.&nbsp; Attempts to unset a variable in use as a
+        <code><b>-listvariable</b></code> will fail but will not generate an
+        error.</p>
 
         <p><b>REMARK 1:</b>&nbsp; For increased efficiency, updating the widget
         to reflect a changed value of the variable specified with this option
@@ -3599,6 +3615,69 @@ proc expandCmd {tbl row} {
       </blockquote>
     </dd>
 
+    <dd id="showbusycursor">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+
+          <td><code><b>-showbusycursor</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+
+          <td><code><b>&nbsp;showBusyCursor</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+
+          <td><code><b>&nbsp;ShowBusyCursor</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a boolean value indicating whether the default bindings
+        should display a windowing system-specific busy cursor during the
+        actions that can take a long time to complete, using the
+        <code><b><a href="#setbusycursor">setbusycursor</a></b></code> and
+        <code><b><a href="#restorecursor">restorecursor</a></b></code>
+        subcommands.&nbsp; The default value is <code>1</code>.</p>
+
+        <p>The potentially long-running actions that will temporarily change
+        the mouse cursor when this option is on are as follows:</p>
+
+        <ul>
+          <li>resizing or moving a column;</li>
+
+          <li>invoking the command specified by the <code><b><a href=
+          "#labelcommand">-labelcommand</a></b></code> or <code><b><a href=
+          "#labelcommand2">-labelcommand2</a></b></code> option at widget or
+          column level (e.g., sorting the items by one or more columns);</li>
+
+          <li>expanding or collapsing a row;</li>
+
+          <li>extending, toggling, or canceling the (cell) selection if the
+          <code><b><a href="#selectmode">-selectmode</a></b></code> option was
+          set to <code><b>extended</b></code>.</li>
+        </ul>
+
+        <p><b>REMARK:</b>&nbsp; If showing the busy cursor per default during
+        potentially long-running actions is not what you prefer, you can
+        override the default for all tablelist instances by inserting the
+        line</p>
+
+        <blockquote>
+          <pre>
+option add *Tablelist.showBusyCursor 0
+</pre>
+        </blockquote>
+
+        <p>somewhere at the beginning of your script (before creating any
+        tablelist widgets).</p>
+      </blockquote>
+    </dd>
+
     <dd id="showeditcursor">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
@@ -3626,28 +3705,39 @@ proc expandCmd {tbl row} {
         click with mouse button 1 would start an editing session.&nbsp; The
         default value is <code>1</code>.</p>
 
-        <p><b>REMARK:</b>&nbsp; On X11 and Mac OS X Aqua, the cursor set by
-        Tablelist when a mouse click would start the interactive cell editing,
-        is Tk's built-in cursor <code><b>pencil</b></code>.&nbsp; Since on
-        Windows this cursor is ugly and not really usable, the edit cursor
-        shown by Tablelist on this platform will be the one loaded from the
-        file <code>pencil.cur</code>, located in the <code>scripts</code>
-        subdirectory of the Tablelist installation directory.&nbsp; If the
-        application was started as a starpack containing the Tablelist package,
-        then the edit cursor will be loaded from a copy of this file, created
-        automatically by Tablelist in the user's <code>Temp</code>
-        directory.</p>
-
-        <p>The file <code>pencil.cur</code> is a copy of the file&nbsp;
-        <code>Ubuntu Handwriting.cur</code>,&nbsp; downloaded from the
-        address</p>
+        <p>On X11 and Mac OS X Aqua, the cursor set by Tablelist when a mouse
+        click would start the interactive cell editing, is Tk's built-in cursor
+        <code><b>pencil</b></code>.&nbsp; Since on Windows this cursor is ugly
+        and not really usable, the edit cursor shown by Tablelist on this
+        platform will be the one loaded from the file <code>pencil.cur</code>,
+        located in the <code>scripts</code> subdirectory of the Tablelist
+        installation directory.&nbsp; If the application was started as a
+        starpack containing the Tablelist package, then the edit cursor will be
+        loaded from a copy of this file, created automatically by Tablelist in
+        the user's <code>Temp</code> directory.&nbsp; The file
+        <code>pencil.cur</code> is a copy of the file&nbsp; <code>Ubuntu
+        Handwriting.cur</code>,&nbsp; downloaded from the address</p>
 
         <blockquote>
           <address>
             <a href=
-            "http://www.rw-designer.com/cursor-detail/46745">http://www.rw-designer.com/cursor-detail/46745</a>
+            "http://www.rw-designer.com/cursor-detail/46922">http://www.rw-designer.com/cursor-detail/46922</a>
           </address>
         </blockquote>
+
+        <p><b>REMARK:</b>&nbsp; If showing the edit cursor per default
+        whenever a click with mouse button 1 would start the editing is not
+        what you prefer, you can override the default for all tablelist
+        instances by inserting the line</p>
+
+        <blockquote>
+          <pre>
+option add *Tablelist.showEditCursor 0
+</pre>
+        </blockquote>
+
+        <p>somewhere at the beginning of your script (before creating any
+        tablelist widgets).</p>
       </blockquote>
     </dd>
 
@@ -3680,6 +3770,20 @@ proc expandCmd {tbl row} {
         "#fullseparators">-fullseparators</a></b></code> option is false, and
         there is free space left between the last row and the bottom of the
         tablelist window.&nbsp; The default value is <code>1</code>.</p>
+
+        <p><b>REMARK:</b>&nbsp; If showing the horizontal separator per default
+        under the above-mentioned circumstancies is not what you prefer, you
+        can override the default for all tablelist instances by inserting the
+        line</p>
+
+        <blockquote>
+          <pre>
+option add *Tablelist.showHorizSeparator 0
+</pre>
+        </blockquote>
+
+        <p>somewhere at the beginning of your script (before creating any
+        tablelist widgets).</p>
       </blockquote>
     </dd>
 
@@ -3909,27 +4013,31 @@ proc expandCmd {tbl row} {
       </table>
 
       <blockquote>
-        <p>Specifies the columns to be stretched in order to fill the tablelist
-        window if necessary.&nbsp; The option's value may be
-        <code><b>all</b></code> or a list of column indices in any of the forms
-        described in the <a href="#col_indices">COLUMN INDICES</a> section
-        below.&nbsp; In the second case, the specified column indices are
-        replaced with their numerical equivalents, except for
-        <code><b>end</b></code> and <code><b>last</b></code>, which are viewed
-        as dynamic column indices whose numerical equivalent (i.e., the index
-        of the tablelist's last column) might change during program execution
-        and therefore will be recomputed every time the columns are
-        stretched.&nbsp; The list will be updated automatically whenever
-        columns are inserted, deleted, or moved.&nbsp; The number of pixels by
-        which a column is stretched is proportional to its width in
-        pixels.&nbsp; The default value of this option is an empty list,
-        meaning that no column will be stretched to eliminate the blank space
-        that might appear at the right of the table.&nbsp; (Note that the blank
-        space following the header labels is filled with a dummy, insensitive
-        label having the same background, borderwidth, and relief as the
-        "normal" header labels.)&nbsp; This option is ignored if the value of
-        the <code><b><a href="#width">-width</a></b></code> configuration
-        option is zero or less.</p>
+        <p>Specifies the <b>stretchable</b> columns, i.e., the columns to be
+        stretched in order to fill the tablelist window if necessary.&nbsp; The
+        option's value may be <code><b>all</b></code> or a list of column
+        indices in any of the forms described in the <a href=
+        "#col_indices">COLUMN INDICES</a> section below.&nbsp; In the second
+        case, the specified column indices are replaced with their numerical
+        equivalents, except for <code><b>end</b></code> and
+        <code><b>last</b></code>, which are viewed as dynamic column indices
+        whose numerical equivalent (i.e., the index of the tablelist's last
+        column) might change during program execution and therefore will be
+        recomputed every time the columns are stretched.&nbsp; The list will be
+        updated automatically whenever columns are inserted, deleted, or
+        moved.&nbsp; The number of pixels by which a column is stretched is
+        proportional to its width in pixels.&nbsp; The default value of this
+        option is an empty list, meaning that no column will be stretched to
+        eliminate the blank space that might appear at the right of the
+        table.&nbsp; (Note that the blank space following the header labels is
+        filled with a dummy, insensitive label having the same background,
+        borderwidth, and relief as the "normal" header labels.)</p>
+
+        <p><b>REMARK:</b>&nbsp; If the value of the <code><b><a href=
+        "#width">-width</a></b></code> configuration option is zero or less and
+        the tablelist has stretchable columns, then the
+        <code><b>-setgrid</b></code> option will be ignored.&nbsp; This minor
+        restriction has technical reasons and is only relevant on X11.</p>
       </blockquote>
     </dd>
 
@@ -5487,6 +5595,12 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
         characters of the widget's font.&nbsp; If zero or less then the desired
         width for the window is made just large enough to hold all the columns
         in the tablelist widget.</p>
+
+        <p><b>REMARK:</b>&nbsp; If the value of this configuration option is
+        zero or less and the tablelist has <a href="#stretch">stretchable</a>
+        columns, then the <code><b>-setgrid</b></code> option will be
+        ignored.&nbsp; This minor restriction has technical reasons and is only
+        relevant on X11.</p>
       </blockquote>
     </dd>
 
@@ -8477,37 +8591,55 @@ eval [list <i>pathName</i> <a href=
         <dt class="tm" id="cornerlabelpath"><code><i>pathName</i>
         <b>cornerlabelpath</b></code></dt>
 
-        <dd>Returns the path name of the label widget contained in the corner
-        frame (see the <code><b><a href="#cornerpath">cornerpath</a></b></code>
-        subcommand.&nbsp; When using Tablelist_tile, the return value will be a
-        ttk::label widget of the same style as the header labels.&nbsp; The
-        global visual options set for the header labels are automatically
-        applied to this (ttk::)label widget, too.</dd>
+        <dd>Returns the path name of the label widget contained in the
+        north-east corner frame (see the <code><b><a href=
+        "#cornerpath">cornerpath</a></b></code> subcommand.&nbsp; When using
+        Tablelist_tile, the return value will be a ttk::label widget of the
+        same style as the header labels.&nbsp; The global visual options set
+        for the header labels are automatically applied to this (ttk::)label
+        widget, too.</dd>
 
         <dt class="tm" id="cornerpath"><code><i>pathName</i>
-        <b>cornerpath</b></code></dt>
+        <b>cornerpath</b> ?<b>-ne</b>|<b>-sw</b>?</code></dt>
 
-        <dd>Returns the path name of a frame widget that is a sibling of the
-        tablelist and is automatically created and destroyed together with the
-        latter's header.&nbsp; This frame is called the <b>corner frame</b>,
-        because it is designed to be shown to the right of the tablelist
-        widget's top-right corner when managing the vertical scrollbar on Mac
-        OS X Aqua and X11 (see below).&nbsp; The corner frame contains a label
-        or ttk::label widget, depending on whether the package Tablelist or
-        Tablelist_tile is being used (see the <code><b><a href=
-        "#cornerlabelpath">cornerlabelpath</a></b></code> subcommand).&nbsp;
-        Whenever the height of the tablelist's header labels changes, the
-        height of the corner frame as well as that of the above-mentioned
-        (ttk::)label widget is updated accordingly.</dd>
+        <dd>Returns the path name of one out of two frame widgets that are
+        siblings of the tablelist and are automatically created and destroyed
+        together with the latter.&nbsp; One of the two frames corresponds to
+        the tablelist's north-east corner and the other one to its south-west
+        corner.&nbsp; The corner is specified by means of the optional
+        argument: <code><b>-ne</b></code> (which is the default) stands for
+        north-east and <code><b>-sw</b></code> stands for south-west.</dd>
+        
+        <dd class="tm">If the corner specification has the value
+        <code><b>-ne</b></code> then the command returns the path name of the
+        <b>north-east corner frame</b>, which is designed to be shown to the
+        right of the tablelist widget's top-right corner when managing the
+        vertical scrollbar on Mac OS X Aqua or X11 (see Remark 1 below).&nbsp;
+        This corner frame contains a label or ttk::label widget, depending on
+        whether the package Tablelist or Tablelist_tile is being used (see the
+        <code><b><a href="#cornerlabelpath">cornerlabelpath</a></b></code>
+        subcommand).&nbsp; The height of this corner frame is automatically
+        kept in sync with that of the tablelist's header component, and the
+        height of the above-mentioned (ttk::)label widget is automatically kept
+        in sync with that of the header labels.</dd>
+        
+        <dd class="tm">If the corner was specified as <code><b>-sw</b></code>
+        then the return value is the path name of the <b>south-west corner
+        frame</b>, which is designed to be shown just below the tablelist's
+        lower-left corner when managing the horizontal scrollbar if the value
+        of the <code><b><a href="#titlecolumns">-titlecolumns</a></b></code>
+        option is positive (see Remark 2 below).&nbsp; The width of this corner
+        frame is automatically kept in sync with the total width of the
+        non-hidden title columns.&nbsp; When using Tablelist_tile, the
+        south-west corner frame will be a ttk::frame widget.</dd>
 
         <dd class="tm">
-          <b>REMARK:</b>&nbsp; This subcommand enables you to manage the
+          <b>REMARK 1:</b>&nbsp; This subcommand enables you to manage the
           vertical scrollbar (if any) to appear below the tablelist widget's
-          header labels, thus respecting the native look &amp; feel on Mac OS X
-          Aqua and on many modern Linux systems.&nbsp; As shown in the
-          following example, it is recommended to always create a scrolled
-          tablelist along with the scrollbar(s) as children of a (ttk::)frame
-          widget:
+          header, thus respecting the native look &amp; feel on Mac OS X Aqua
+          and on many modern Linux systems.&nbsp; As shown in the following
+          example, it is recommended to always create a scrolled tablelist
+          along with the scrollbar(s) as children of a (ttk::)frame widget:
 
           <blockquote>
             <pre>
@@ -8527,8 +8659,8 @@ set vsb $frm.vsb
 set hsb $frm.hsb
 tablelist::tablelist $tbl ... \
     -xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set]
-scrollbar $vsb -orient vertical   -command [list $tbl yview]
-scrollbar $hsb -orient horizontal -command [list $tbl xview]
+(ttk::)scrollbar $vsb -orient vertical   -command [list $tbl yview]
+(ttk::)scrollbar $hsb -orient horizontal -command [list $tbl xview]
 
 . . .
 
@@ -8547,6 +8679,45 @@ grid columnconfigure $frm 0 -weight 1
 <i># Manage the frame</i>
 pack $frm -expand yes -fill both
 </pre>
+          </blockquote>
+        </dd>
+
+        <dd>
+          <b>REMARK 2:</b>&nbsp; This subcommand also enables you to manage the
+          horizontal scrollbar (if any) to start to the right of the tablelist
+          widget's non-scrollable title column area if the value of the
+          <code><b><a href="#titlecolumns">-titlecolumns</a></b></code> option
+          is positive.&nbsp; In the above example, this can be achieved by
+          modifying its second half as follows:
+
+          <blockquote>
+            <pre>
+. . .
+
+<i># Manage the widgets within the frame</i>
+grid $tbl -row 0 -rowspan 2 -column 0 -columnspan 2 -sticky news
+if {[string compare [tk windowingsystem] "win32"] == 0} {
+    grid $vsb -row 0 -rowspan 2 -column 2 -sticky ns
+} else {
+    grid [$tbl <span>cornerpath</span>] -row 0 -column 2 -sticky ew
+    grid $vsb              -row 1 -column 2 -sticky ns
+}
+grid [$tbl <span>cornerpath</span> -sw] -row 2 -column 0 -sticky ns
+grid $hsb                  -row 2 -column 1 -sticky ew
+grid rowconfigure    $frm 1 -weight 1
+grid columnconfigure $frm 1 -weight 1
+
+<i># Manage the frame</i>
+pack $frm -expand yes -fill both
+</pre>
+
+            <p>For a tablelist widget having two header rows and two title
+            columns, the scrollbars of the modified example will appear like in
+            the screenshot below (on Windows this is only valid for the
+            horizontal scrollbar):</p>
+
+            <p><img src="scrollbars.png" alt="Scrollbars" width="565" height=
+            "274"></p>
           </blockquote>
         </dd>
 
@@ -9176,7 +9347,7 @@ proc formatValue {tbl val} {
         <code>0</code> otherwise.</dd>
 
         <dt class="tm" id="header"><code><i>pathName</i> <b>header</b>
-        <i>option</i> <i>args</i></code></dt>
+        <i>option</i> ?<i>arg</i> <i>arg</i> ...?</code></dt>
 
         <dd>This command is only supported for Tk versions 8.5 and later.&nbsp;
         It is used to invoke various operations on the items in the widget's
@@ -9761,6 +9932,18 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
         "#sortbycolumnlist">sortbycolumnlist</a></b></code>.&nbsp; The return
         value is an empty string.</dd>
 
+        <dt class="tm" id="restorecursor"><code><i>pathName</i>
+        <b>restorecursor</b></code></dt>
+
+        <dd>Sets the <code><b>-cursor</b></code> configuration option to the
+        value that it had before invoking the <code><b><a href=
+        "#setbusycursor">setbusycursor</a></b></code> subcommand and returns
+        the boolean value <code>1</code>.&nbsp; If there was no previous
+        <code><b>setbusycursor</b></code> invocation or this is not the first
+        <code><b>restorecursor</b></code> invocation since the most recent call
+        to <code><b>setbusycursor</b></code>, then the command returns the
+        value <code>0</code>, without attempting to restore the cursor.</dd>
+
         <dt class="tm" id="rowattrib"><code><i>pathName</i> <b>rowattrib</b>
         <i>index</i> ?<i>name</i>? ?<i>value</i> <i>name</i> <i>value</i>
         ...?</code></dt>
@@ -10130,6 +10313,22 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
         depends on the value of the <code><b><a href=
         "#showseparators">-showseparators</a></b></code> configuration
         option.</dd>
+
+        <dt class="tm" id="setbusycursor"><code><i>pathName</i>
+        <b>setbusycursor</b></code></dt>
+
+        <dd>Saves the current value of the <code><b>-cursor</b></code>
+        configuration option and then sets this option to the name of a
+        windowing system-specific busy cursor (<code><b>watch</b></code> or
+        <code><b>wait</b></code>).&nbsp; Since this subcommand is designed to
+        be invoked just before starting an operation that can take a long time
+        to complete, it also makes sure that the new cursor will immediately
+        get visible, by calling&nbsp; <code><b>update
+        idletasks</b></code>.&nbsp; In the rare but possible case that, as a
+        side effect of this invocation, the tablelist widget gets destroyed by
+        some application-specific action scheduled for execution at idle time,
+        the command returns the boolean value <code>0</code>, otherwise the
+        value <code>1</code>.</dd>
 
         <dt class="tm" id="showtargetmark"><code><i>pathName</i>
         <b>showtargetmark</b> <b>before</b>|<b>inside</b>
