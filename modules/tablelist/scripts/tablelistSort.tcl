@@ -158,13 +158,11 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     }
 
     #
-    # Save the keys corresponding to anchorRow and activeRow,
-    # as well as the indices of the selected cells
+    # Save the keys corresponding to anchorRow and activeRow
     #
     foreach type {anchor active} {
 	set ${type}Key [lindex $data(keyList) $data(${type}Row)]
     }
-    set selCells [curCellSelection $win 1]
 
     #
     # Save some data of the edit window if present
@@ -463,8 +461,8 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 
 		if {$multiline} {
 		    lappend insertArgs "\t\t" $cellTags
-		    lappend multilineData $col $text $cellFont $pixels \
-					  $alignment
+		    lappend multilineData \
+			    $col $text $cellFont $pixels $alignment
 		} elseif {$data(-displayondemand)} {
 		    lappend insertArgs "\t\t" $cellTags
 		} else {
@@ -562,14 +560,6 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     # Invalidate the list of row indices indicating the viewable rows
     #
     set data(viewableRowList) {-1}
-
-    #
-    # Select the cells that were selected before
-    #
-    foreach {key col} $selCells {
-	set row [keyToRow $win $key]
-	cellSelection $win set $row $col $row $col
-    }
 
     #
     # Disable the body text widget if it was disabled before

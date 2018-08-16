@@ -1804,11 +1804,15 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	    if {[destroyed $win]} {
 		return ""
 	    }
-	    $f configure -height [winfo reqheight $w]
+	    after 0 [list $f configure -height [winfo reqheight $w]]
 	} else {
 	    bind $w <Configure> {
 		%W configure -height [%W count -displaylines 1.0 end]
-		[winfo parent %W] configure -height [winfo reqheight %W]
+		update idletasks			;# needed for ctext
+		if {[winfo exists %W]} {
+		    after 0 [list [winfo parent %W] configure -height \
+				   [winfo reqheight %W]]
+		}
 	    }
 	}
 	if {[info exists ::wcb::version]} {

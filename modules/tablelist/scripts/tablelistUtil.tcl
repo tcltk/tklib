@@ -113,10 +113,12 @@ proc tablelist::rowIndex {win idx endIsSize {checkRange 0}} {
     } elseif {[string first $idx "last"] == 0} {
 	set index $data(lastRow)
     } elseif {[string first $idx "top"] == 0} {
+	synchronize $win
 	displayItems $win
 	set textIdx [$data(body) index @0,0]
 	set index [expr {int($textIdx) - 1}]
     } elseif {[string first $idx "bottom"] == 0} {
+	synchronize $win
 	displayItems $win
 	set textIdx [$data(body) index @0,$data(btmY)]
 	set index [expr {int($textIdx) - 1}]
@@ -129,6 +131,7 @@ proc tablelist::rowIndex {win idx endIsSize {checkRange 0}} {
 	set index $data(anchorRow)
     } elseif {[scan $idx "@%d,%d%n" x y count] == 3 &&
 	      $count == [string length $idx]} {
+	synchronize $win
 	displayItems $win
 	incr x -[winfo x $data(body)]
 	incr y -[winfo y $data(body)]
@@ -719,9 +722,9 @@ proc tablelist::findTabs {win w line firstCol lastCol idx1Name idx2Name} {
 #------------------------------------------------------------------------------
 # tablelist::sortStretchableColList
 #
-# Replaces the column indices different from end in the list of the stretchable
-# columns of the tablelist widget win with their numerical equivalents and
-# sorts the resulting list.
+# Replaces the column indices different from end and last in the list of the
+# stretchable columns of the tablelist widget win with their numerical
+# equivalents and sorts the resulting list.
 #------------------------------------------------------------------------------
 proc tablelist::sortStretchableColList win {
     upvar ::tablelist::ns${win}::data data
@@ -760,24 +763,20 @@ proc tablelist::deleteColData {win col} {
     }
 
     #
-    # Remove the elements with names of the form $col-*
+    # Remove the elements having names of the form $col-*
     #
     if {[info exists data($col-redispId)]} {
 	after cancel $data($col-redispId)
     }
-    foreach name [array names data $col-*] {
-	unset data($name)
-    }
+    arrayUnset data $col-*
 
     #
-    # Remove the elements with names of the form hk*,$col-*
+    # Remove the elements having names of the form hk*,$col-*
     #
-    foreach name [array names data hk*,$col-*] {
-	unset data($name)
-    }
+    arrayUnset data hk*,$col-*
 
     #
-    # Remove the elements with names of the form k*,$col-*
+    # Remove the elements having names of the form k*,$col-*
     #
     foreach name [array names data k*,$col-*] {
 	unset data($name)
@@ -816,25 +815,27 @@ proc tablelist::deleteColAttribs {win col} {
     upvar ::tablelist::ns${win}::attribs attribs
 
     #
-    # Remove the elements with names of the form $col-*
+    # Remove the elements having names of the
+    # form $col-*, hk*,$col-*, and k*,$col-*
     #
-    foreach name [array names attribs $col-*] {
-	unset attribs($name)
-    }
+    arrayUnset attribs $col-*
+    arrayUnset attribs hk*,$col-*
+    arrayUnset attribs k*,$col-*
+}
+
+#------------------------------------------------------------------------------
+# tablelist::deleteColSelStates
+#
+# Cleans up the selection states associated with the col'th column of the
+# tablelist widget win.
+#------------------------------------------------------------------------------
+proc tablelist::deleteColSelStates {win col} {
+    upvar ::tablelist::ns${win}::selStates selStates
 
     #
-    # Remove the elements with names of the form hk*,$col-*
+    # Remove the elements having names of the form k*,$col
     #
-    foreach name [array names attribs hk*,$col-*] {
-	unset attribs($name)
-    }
-
-    #
-    # Remove the elements with names of the form k*,$col-*
-    #
-    foreach name [array names attribs k*,$col-*] {
-	unset attribs($name)
-    }
+    arrayUnset selStates k*,$col
 }
 
 #------------------------------------------------------------------------------
@@ -870,12 +871,10 @@ proc tablelist::moveColData {oldArrName newArrName imgArrName oldCol newCol} {
     }
 
     #
-    # Move the elements of oldArr with names of the form $oldCol-*
-    # to those of newArr with names of the form $newCol-*
+    # Move the elements of oldArr having names of the form $oldCol-*
+    # to those of newArr having names of the form $newCol-*
     #
-    foreach newName [array names newArr $newCol-*] {
-	unset newArr($newName)
-    }
+    arrayUnset newArr $newCol-*
     foreach oldName [array names oldArr $oldCol-*] {
 	regsub "$oldCol-" $oldName "$newCol-" newName
 	set newArr($newName) $oldArr($oldName)
@@ -897,12 +896,10 @@ proc tablelist::moveColData {oldArrName newArrName imgArrName oldCol newCol} {
     }
 
     #
-    # Move the elements of oldArr with names of the form hk*,$oldCol-*
-    # to those of newArr with names of the form hk*,$newCol-*
+    # Move the elements of oldArr having names of the form hk*,$oldCol-*
+    # to those of newArr having names of the form hk*,$newCol-*
     #
-    foreach newName [array names newArr hk*,$newCol-*] {
-	unset newArr($newName)
-    }
+    arrayUnset newArr hk*,$newCol-*
     foreach oldName [array names oldArr hk*,$oldCol-*] {
 	regsub -- ",$oldCol-" $oldName ",$newCol-" newName
 	set newArr($newName) $oldArr($oldName)
@@ -910,12 +907,10 @@ proc tablelist::moveColData {oldArrName newArrName imgArrName oldCol newCol} {
     }
 
     #
-    # Move the elements of oldArr with names of the form k*,$oldCol-*
-    # to those of newArr with names of the form k*,$newCol-*
+    # Move the elements of oldArr having names of the form k*,$oldCol-*
+    # to those of newArr having names of the form k*,$newCol-*
     #
-    foreach newName [array names newArr k*,$newCol-*] {
-	unset newArr($newName)
-    }
+    arrayUnset newArr k*,$newCol-*
     foreach oldName [array names oldArr k*,$oldCol-*] {
 	regsub -- ",$oldCol-" $oldName ",$newCol-" newName
 	set newArr($newName) $oldArr($oldName)
@@ -950,12 +945,10 @@ proc tablelist::moveColAttribs {oldArrName newArrName oldCol newCol} {
     upvar $oldArrName oldArr $newArrName newArr
 
     #
-    # Move the elements of oldArr with names of the form $oldCol-*
-    # to those of newArr with names of the form $newCol-*
+    # Move the elements of oldArr having names of the form $oldCol-*
+    # to those of newArr having names of the form $newCol-*
     #
-    foreach newName [array names newArr $newCol-*] {
-	unset newArr($newName)
-    }
+    arrayUnset newArr $newCol-*
     foreach oldName [array names oldArr $oldCol-*] {
 	regsub "$oldCol-" $oldName "$newCol-" newName
 	set newArr($newName) $oldArr($oldName)
@@ -963,12 +956,10 @@ proc tablelist::moveColAttribs {oldArrName newArrName oldCol newCol} {
     }
 
     #
-    # Move the elements of oldArr with names of the form hk*,$oldCol-*
-    # to those of newArr with names of the form hk*,$newCol-*
+    # Move the elements of oldArr having names of the form hk*,$oldCol-*
+    # to those of newArr having names of the form hk*,$newCol-*
     #
-    foreach newName [array names newArr hk*,$newCol-*] {
-	unset newArr($newName)
-    }
+    arrayUnset newArr hk*,$newCol-*
     foreach oldName [array names oldArr hk*,$oldCol-*] {
 	regsub -- ",$oldCol-" $oldName ",$newCol-" newName
 	set newArr($newName) $oldArr($oldName)
@@ -976,12 +967,10 @@ proc tablelist::moveColAttribs {oldArrName newArrName oldCol newCol} {
     }
 
     #
-    # Move the elements of oldArr with names of the form k*,$oldCol-*
-    # to those of newArr with names of the form k*,$newCol-*
+    # Move the elements of oldArr having names of the form k*,$oldCol-*
+    # to those of newArr having names of the form k*,$newCol-*
     #
-    foreach newName [array names newArr k*,$newCol-*] {
-	unset newArr($newName)
-    }
+    arrayUnset newArr k*,$newCol-*
     foreach oldName [array names oldArr k*,$oldCol-*] {
 	regsub -- ",$oldCol-" $oldName ",$newCol-" newName
 	set newArr($newName) $oldArr($oldName)
@@ -990,60 +979,24 @@ proc tablelist::moveColAttribs {oldArrName newArrName oldCol newCol} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::deleteColFromCellList
+# tablelist::moveColSelStates
 #
-# Returns the list obtained from a given list of cell indices by removing the
-# elements whose column component equals a given column number.
+# Moves the elements of oldArrName corresponding to oldCol to those of
+# newArrName corresponding to newCol.
 #------------------------------------------------------------------------------
-proc tablelist::deleteColFromCellList {cellList col} {
-    set newCellList {}
-    foreach cellIdx $cellList {
-	scan $cellIdx "%d,%d" cellRow cellCol
-	if {$cellCol != $col} {
-	    lappend newCellList $cellIdx
-	}
+proc tablelist::moveColSelStates {oldArrName newArrName oldCol newCol} {
+    upvar $oldArrName oldArr $newArrName newArr
+
+    #
+    # Move the elements of oldArr having names of the form k*,$oldCol
+    # to those of newArr having names of the form k*,$newCol
+    #
+    arrayUnset newArr k*,$newCol
+    foreach oldName [array names oldArr k*,$oldCol] {
+	regsub -- ",$oldCol" $oldName ",$newCol" newName
+	set newArr($newName) $oldArr($oldName)
+	unset oldArr($oldName)
     }
-
-    return $newCellList
-}
-
-#------------------------------------------------------------------------------
-# tablelist::extractColFromCellList
-#
-# Returns the list of row indices obtained from those elements of a given list
-# of cell indices whose column component equals a given column number.
-#------------------------------------------------------------------------------
-proc tablelist::extractColFromCellList {cellList col} {
-    set rowList {}
-    foreach cellIdx $cellList {
-	scan $cellIdx "%d,%d" cellRow cellCol
-	if {$cellCol == $col} {
-	    lappend rowList $cellRow
-	}
-    }
-
-    return $rowList
-}
-
-#------------------------------------------------------------------------------
-# tablelist::replaceColInCellList
-#
-# Returns the list obtained from a given list of cell indices by replacing the
-# occurrences of oldCol in the column components with newCol.
-#------------------------------------------------------------------------------
-proc tablelist::replaceColInCellList {cellList oldCol newCol} {
-    set cellList [deleteColFromCellList $cellList $newCol]
-    set newCellList {}
-    foreach cellIdx $cellList {
-	scan $cellIdx "%d,%d" cellRow cellCol
-	if {$cellCol == $oldCol} {
-	    lappend newCellList $cellRow,$newCol
-	} else {
-	    lappend newCellList $cellIdx
-	}
-    }
-
-    return $newCellList
 }
 
 #------------------------------------------------------------------------------
@@ -1053,7 +1006,7 @@ proc tablelist::replaceColInCellList {cellList oldCol newCol} {
 #------------------------------------------------------------------------------
 proc tablelist::condUpdateListVar win {
     upvar ::tablelist::ns${win}::data data
-    if {$data(hasListVar)} {
+    if {$data(hasListVar) && [info exists ::$data(-listvariable)]} {
 	upvar #0 $data(-listvariable) var
 	trace vdelete var wu $data(listVarTraceCmd)
 	set var {}
@@ -1314,7 +1267,8 @@ proc tablelist::displayIndent {win key col width} {
 	# Create a label widget and replace the binding tag Label with
 	# $data(bodyTag) and TablelistBody in the list of its binding tags
 	#
-	tk::label $w -anchor w -borderwidth 0 -height 0 -highlightthickness 0 \
+	tk::label $w -anchor w -background $data(-background) -borderwidth 0 \
+		     -height 0 -highlightthickness 0 \
 		     -image $data($key,$col-indent) -padx 0 -pady 0 \
 		     -relief flat -takefocus 0 -width $width
 	bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) TablelistBody]
@@ -1341,13 +1295,14 @@ proc tablelist::displayImage {win key col anchor width} {
 
     if {![winfo exists $w]} {
 	#
-	# Create a label widget and replace the binding tag
-	# Label with either $data(bodyTag) and TablelistBody
-	# or data(headerTag) in the list of its binding tags
+	# Create a label widget and replace the binding tag Label
+	# with either $data(bodyTag) and TablelistBody or data(headerTag)
+	# and TablelistHeader in the list of its binding tags
 	#
-	tk::label $w -anchor $anchor -borderwidth 0 -height 0 \
-		     -highlightthickness 0 -image $data($key,$col-image) \
-		     -padx 0 -pady 0 -relief flat -takefocus 0 -width $width
+	tk::label $w -anchor $anchor -background $data(-background) \
+		     -borderwidth 0 -height 0 -highlightthickness 0 \
+		     -image $data($key,$col-image) -padx 0 -pady 0 \
+		     -relief flat -takefocus 0 -width $width
 	if {$inBody} {
 	    bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) \
 			 TablelistBody]
@@ -1382,12 +1337,13 @@ proc tablelist::displayText {win key col text font pixels alignment} {
 
     if {![winfo exists $w]} {
 	#
-	# Create a message widget and replace the binding tag
-	# Message with either $data(bodyTag) and TablelistBody
-	# or data(headerTag) in the list of its binding tags
+	# Create a message widget and replace the binding tag Message
+	# with either $data(bodyTag) and TablelistBody or data(headerTag)
+	# and TablelistHeader in the list of its binding tags
 	#
-	message $w -borderwidth 0 -highlightthickness 0 -padx 0 -pady 0 \
-		   -relief flat -takefocus 0
+	message $w -background $data(-background) -borderwidth 0 \
+		   -highlightthickness 0 -padx 0 -pady 0 -relief flat \
+		   -takefocus 0
 	if {$inBody} {
 	    bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) \
 			 TablelistBody]
@@ -1759,11 +1715,6 @@ proc tablelist::insertMlElem {w index msgScript aux auxType alignment
 #------------------------------------------------------------------------------
 proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
 			    indent indentWidth alignment valignment} {
-    set tagNames [$w tag names $index2]
-    if {[lsearch -exact $tagNames select] >= 0} {		;# selected
-	$w tag add select $index1 $index2
-    }
-
     variable pu
     if {$indentWidth != 0} {
 	if {[insertOrUpdateIndent $w $index1 $indent $indentWidth]} {
@@ -1901,11 +1852,6 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
 #------------------------------------------------------------------------------
 proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 			      indent indentWidth alignment valignment} {
-    set tagNames [$w tag names $index2]
-    if {[lsearch -exact $tagNames select] >= 0} {		;# selected
-	$w tag add select $index1 $index2
-    }
-
     variable pu
     if {$indentWidth != 0} {
 	if {[insertOrUpdateIndent $w $index1 $indent $indentWidth]} {
@@ -2508,8 +2454,8 @@ proc tablelist::setupColumns {win columns createLabels} {
     set data(hasFmtCmds) [expr {[lsearch -exact $data(fmtCmdFlagList) 1] >= 0}]
 
     #
-    # Clean up the images, data, and attributes
-    # associated with the deleted columns
+    # Clean up the images, data, attributes, and selection
+    # states associated with the deleted columns
     #
     set imgNames [image names]
     for {set col $data(colCount)} {$col < $oldColCount} {incr col} {
@@ -2523,6 +2469,7 @@ proc tablelist::setupColumns {win columns createLabels} {
 
 	deleteColData $win $col
 	deleteColAttribs $win $col
+	deleteColSelStates $win $col
     }
 
     #
@@ -2980,6 +2927,14 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 	updateScrlColOffsetWhenIdle $win
     }
     updateHScrlbarWhenIdle $win
+
+    set cornerFrmWidth [getTitleColsWidth $win]
+    if {$cornerFrmWidth == 0} {
+	set cornerFrmWidth 1
+    } else {
+	incr cornerFrmWidth -1
+    }
+    $data(cornerFrm-sw) configure -width $cornerFrmWidth
 }
 
 #------------------------------------------------------------------------------
@@ -3501,9 +3456,7 @@ proc tablelist::adjustHeaderHeight win {
 
 	place configure $data(hdrTxt) -y 0
 	place configure $data(hdrFrm) -y 0
-
-	$data(corner) configure -height $maxLabelHeight
-	place configure $data(cornerLbl) -y 0
+	place configure $data(cornerLbl) -height $maxLabelHeight -y 0
     } else {
 	$data(hdrTxtFrm) configure -height 1
 	if {$data(hdr_itemCount) == 0} {
@@ -3517,10 +3470,19 @@ proc tablelist::adjustHeaderHeight win {
 
 	place configure $data(hdrTxt) -y -1
 	place configure $data(hdrFrm) -y -1
-
-	$data(corner) configure -height 1
-	place configure $data(cornerLbl) -y -1
+	place configure $data(cornerLbl) -height 1 -y -1
     }
+
+    set cornerFrmHeight $hdrHeight
+    if {$data(hdr_itemCount) != 0} {
+	variable usingTile
+	if {$usingTile && [string compare [getCurrentTheme] "aqua"] == 0} {
+	    incr cornerFrmHeight -1
+	} else {
+	    incr cornerFrmHeight -2
+	}
+    }
+    $data(cornerFrm-ne) configure -height $cornerFrmHeight
 
     adjustSepsWhenIdle $win
 }
@@ -3557,7 +3519,7 @@ proc tablelist::stretchColumns {win colOfFixedDelta} {
     set forceAdjust $data(forceAdjust)
     set data(forceAdjust) 0
 
-    if {$data(hdrWidth) == 0 || $data(-width) <= 0} {
+    if {$data(hdrWidth) == 0} {
 	return ""
     }
 
@@ -3752,6 +3714,8 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	set fromTextIdx "$topTextIdx linestart"
 	set toTextIdx   "$btmTextIdx lineend"
 
+	$w tag remove select $fromTextIdx $toTextIdx
+
 	if {$data(isDisabled)} {
 	    $w tag add disabled $fromTextIdx $toTextIdx
 	}
@@ -3811,7 +3775,10 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		    }
 		}
 
-		set selected [expr {[lsearch -exact $cellTagNames select] >= 0}]
+		set selected [cellSelection $win includes $row $col $row $col]
+		if {$selected} {
+		    $w tag add select $tabIdx1 $textIdx2
+		}
 		foreach optTail {background foreground} {
 		    set normalOpt -$optTail
 		    set selectOpt -select$optTail
@@ -4643,7 +4610,7 @@ proc tablelist::redisplayWhenIdle win {
 #
 # Redisplays the items of the tablelist widget win.
 #------------------------------------------------------------------------------
-proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
+proc tablelist::redisplay win {
     upvar ::tablelist::ns${win}::data data
     if {[info exists data(redispId)]} {
 	after cancel $data(redispId)
@@ -4731,13 +4698,6 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
     set data(hdr_itemList) $hdr_newItemList
 
     #
-    # Save the indices of the selected cells
-    #
-    if {$getSelCells} {
-	set selCells [curCellSelection $win]
-    }
-
-    #
     # Save some data of the edit window if present
     #
     if {[set editCol $data(editCol)] >= 0} {
@@ -4751,6 +4711,7 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
     set isSimple [expr {$data(imgCount) == 0 && $data(winCount) == 0 &&
 			$data(indentCount) == 0}]
     set w $data(body)
+    displayItems $win
     set padY [expr {[$w cget -spacing1] == 0}]
     set newItemList {}
     set row 0
@@ -4850,8 +4811,8 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 
 		if {$multiline} {
 		    lappend insertArgs "\t\t" $cellTags
-		    lappend multilineData $col $text $cellFont $pixels \
-					  $alignment
+		    lappend multilineData \
+			    $col $text $cellFont $pixels $alignment
 		} elseif {$data(-displayondemand)} {
 		    lappend insertArgs "\t\t" $cellTags
 		} else {
@@ -4955,16 +4916,6 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
     set data(itemList) $newItemList
 
     #
-    # Select the cells that were selected before
-    #
-    foreach cellIdx $selCells {
-	scan $cellIdx "%d,%d" row col
-	if {$col < $data(colCount)} {
-	    cellSelection $win set $row $col $row $col
-	}
-    }
-
-    #
     # Conditionally move the "active" tag to the active line or cell
     #
     if {$data(ownsFocus)} {
@@ -4994,7 +4945,7 @@ proc tablelist::redisplay {win {getSelCells 1} {selCells {}}} {
 #------------------------------------------------------------------------------
 proc tablelist::redisplayVisibleItems win {
     upvar ::tablelist::ns${win}::data data
-    if {!$data(-displayondemand) || $data(itemCount) == 0} {
+    if {$data(itemCount) == 0} {
 	return ""
     }
 
@@ -5003,19 +4954,23 @@ proc tablelist::redisplayVisibleItems win {
 	return ""
     }
 
-    variable canElide
-    variable elide
-    variable snipSides
-    variable pu
-
-    displayItems $win
     set w $data(body)
+    displayItems $win
 
     set topTextIdx [$w index @0,0]
     set btmTextIdx [$w index @0,$data(btmY)]
     set fromTextIdx "$topTextIdx linestart"
     set toTextIdx   "$btmTextIdx lineend"
     $w tag remove elidedWin $fromTextIdx $toTextIdx
+
+    if {!$data(-displayondemand)} {
+	return ""
+    }
+
+    variable canElide
+    variable elide
+    variable snipSides
+    variable pu
 
     set rightCol [colIndex $win @$data(rightX),0 0 0]
     set topLine [expr {int($topTextIdx)}]
@@ -5157,7 +5112,7 @@ proc tablelist::redisplayColWhenIdle {win col} {
 # the range specified by first and last.  Prior to that, it redisplays the
 # elements of the specified column in the header text widget.
 #------------------------------------------------------------------------------
-proc tablelist::redisplayCol {win col first last} {
+proc tablelist::redisplayCol {win col first last {inBody 1}} {
     upvar ::tablelist::ns${win}::data data
     set allRows [expr {$first == 0 && [string compare $last "last"] == 0}]
     if {$allRows && [info exists data($col-redispId)]} {
@@ -5165,11 +5120,10 @@ proc tablelist::redisplayCol {win col first last} {
 	unset data($col-redispId)
     }
 
-    if {$col > $data(lastCol) || $data($col-hide)} {
+    if {$col > $data(lastCol) || $data($col-hide) || $first < 0} {
 	return ""
     }
 
-    displayItems $win
     set fmtCmdFlag [lindex $data(fmtCmdFlagList) $col]
     set colFont [lindex $data(colFontList) $col]
     set snipStr $data(-snipstring)
@@ -5190,9 +5144,17 @@ proc tablelist::redisplayCol {win col first last} {
     set snipSide $snipSides($alignment,$data($col-changesnipside))
     variable pu
 
+    if {$inBody} {
+	set hdr_first 0
+	set hdr_last $data(hdr_lastRow)
+    } else {
+	set hdr_first $first
+	set hdr_last $last
+    }
+
     set w $data(hdrTxt)
-    for {set row 0; set line 2} {$row < $data(hdr_itemCount)} \
-	{incr row; incr line} {
+    for {set row $hdr_first; set line [expr {$hdr_first + 2}]} \
+	{$row <= $hdr_last} {incr row; incr line} {
 	set item [lindex $data(hdr_itemList) $row]
 	set key [lindex $item end]
 
@@ -5273,14 +5235,16 @@ proc tablelist::redisplayCol {win col first last} {
 	}
     }
 
-    if {$first < 0} {
+    if {!$inBody} {
 	return ""
     }
+
     if {[string compare $last "last"] == 0} {
 	set last $data(lastRow)
     }
 
     set w $data(body)
+    displayItems $win
     for {set row $first; set line [expr {$first + 1}]} {$row <= $last} \
 	{set row $line; incr line} {
 	if {$row == $data(editRow) && $col == $data(editCol)} {
@@ -5616,6 +5580,12 @@ proc tablelist::synchronize win {
     unset data(syncId)
 
     upvar #0 $data(-listvariable) var
+    if {[catch {foreach item $var {llength $item}}] != 0} {
+	condUpdateListVar $win
+	return -code error "value of variable \"$data(-listvariable)\" is not\
+			    a list of lists"
+    }
+
     set newCount [llength $var]
     if {$newCount < $data(itemCount)} {
 	#
@@ -6185,21 +6155,35 @@ proc tablelist::getScrlContentWidth {win scrlColOffset lastCol} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::getTitleColsWidth
+#
+# Returns the total width of the non-hidden title columns of the tablelist
+# widget win.
+#------------------------------------------------------------------------------
+proc tablelist::getTitleColsWidth win {
+    upvar ::tablelist::ns${win}::data data
+    set titleColsWidth 0
+    for {set col 0} {$col < $data(-titlecolumns) && $col < $data(colCount)} \
+	{incr col} {
+	if {!$data($col-hide)} {
+	    incr titleColsWidth [colWidth $win $col -total]
+	}
+    }
+
+    return $titleColsWidth
+}
+
+#------------------------------------------------------------------------------
 # tablelist::getScrlWindowWidth
 #
-# Returns the number of pixels obtained by subtracting the widths of the non-
-# hidden title columns from the width of the header frame of the tablelist
+# Returns the number of pixels obtained by subtracting the total width of the
+# non-hidden title columns from the width of the header frame of the tablelist
 # widget win.
 #------------------------------------------------------------------------------
 proc tablelist::getScrlWindowWidth win {
     upvar ::tablelist::ns${win}::data data
     set scrlWindowWidth [winfo width $data(hdr)]
-    for {set col 0} {$col < $data(-titlecolumns) && $col < $data(colCount)} \
-	{incr col} {
-	if {!$data($col-hide)} {
-	    incr scrlWindowWidth -[colWidth $win $col -total]
-	}
-    }
+    incr scrlWindowWidth -[getTitleColsWidth $win]
 
     return $scrlWindowWidth
 }
