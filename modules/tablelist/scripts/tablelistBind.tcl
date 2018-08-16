@@ -277,7 +277,7 @@ proc tablelist::cleanup win {
     # If there is a list variable associated with the
     # widget then remove the trace set on this variable
     #
-    if {$data(hasListVar) && [info exists $data(-listvariable)]} {
+    if {$data(hasListVar) && [info exists ::$data(-listvariable)]} {
 	upvar #0 $data(-listvariable) var
 	trace vdelete var wu $data(listVarTraceCmd)
     }
@@ -311,7 +311,7 @@ proc tablelist::cleanup win {
 	}
     }
 
-    destroy $data(corner)
+    destroy $data(cornerFrm-ne) $data(cornerFrm-sw)
 
     namespace delete ::tablelist::ns$win
     catch {rename ::$win ""}
@@ -944,7 +944,9 @@ proc tablelist::handleMotionDelayed {w x y X Y mode event} {
     }
 
     set data(motionData) [list $w $x $y $X $Y $event]
-    if {![info exists data(motionId)]} {
+    if {[string compare $event "<Leave>"] == 0} {
+	handleMotion $win
+    } elseif {![info exists data(motionId)]} {
 	set data(motionId) [after 100 [list tablelist::handleMotion $win]]
     }
 
@@ -981,9 +983,11 @@ proc tablelist::handleMotion win {
     set row [containingRow $win $_y]
     set col [containingCol $win $_x]
 
-    showOrHideTooltip $win $row $col $X $Y
-    if {[destroyed $win]} {
-	return ""
+    if {[string compare $event "<Enter>"] != 0 || ($row >= 0 && $col >= 0)} {
+	showOrHideTooltip $win $row $col $X $Y
+	if {[destroyed $win]} {
+	    return ""
+	}
     }
     updateExpCollCtrl $win $w $row $col $x
 
@@ -1265,11 +1269,13 @@ proc tablelist::wasExpCollCtrlClicked {w x y} {
     #
     # Toggle the state of the expand/collapse control
     #
+    if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
     if {[string compare $mode "collapsed"] == 0} {
-	::$win expand $row -partly
+	::$win expand $row -partly			;# can take long
     } else {
-	::$win collapse $row -partly
+	::$win collapse $row -partly			;# can take long
     }
+    ::$win restorecursor
 
     return 1
 }
@@ -1589,12 +1595,15 @@ proc tablelist::motion {win row col {checkIfDragSrc 0}} {
 		    }
 
 		    set ancRow $data(anchorRow)
-		    foreach r $priv(selection) {
+
+		    if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
+		    foreach r $priv(selection) {	;# can take long
 			if {($r >= $prRow && $r < $row && $r < $ancRow) ||
 			    ($r <= $prRow && $r > $row && $r > $ancRow)} {
 			    ::$win selection set $r
 			}
 		    }
+		    ::$win restorecursor
 
 		    set priv(prevRow) $row
 		    event generate $win <<TablelistSelect>>
@@ -1643,7 +1652,9 @@ proc tablelist::motion {win row col {checkIfDragSrc 0}} {
 			[normalizedRect $prRow $prCol $ancRow $col] {}
 		    foreach {rMin3 cMin3 rMax3 cMax3} \
 			[normalizedRect $ancRow $ancCol $row $col] {}
-		    foreach cellIdx $priv(selection) {
+
+		    if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
+		    foreach cellIdx $priv(selection) {	;# can take long
 			scan $cellIdx "%d,%d" r c
 			if {([cellInRect $r $c $rMin1 $cMin1 $rMax1 $cMax1] ||
 			     [cellInRect $r $c $rMin2 $cMin2 $rMax2 $cMax2]) &&
@@ -1651,6 +1662,7 @@ proc tablelist::motion {win row col {checkIfDragSrc 0}} {
 			    ::$win cellselection set $r,$c
 			}
 		    }
+		    ::$win restorecursor
 
 		    set priv(prevRow) $row
 		    set priv(prevCol) $col
@@ -1869,7 +1881,11 @@ proc tablelist::moveOrActivate {win row col inside} {
 
 		if {$targetChildIdx == 0} {
 		    set targetParentNodeIdx [lindex $data(keyList) $targetRow]
-		    ::$win expand $targetParentNodeIdx -partly
+
+		    if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
+		    ::$win expand $targetParentNodeIdx -partly	;# can take long
+		    ::$win restorecursor
+
 		    ::$win move $sourceKey $targetParentNodeIdx $targetChildIdx
 		} else {
 		    set targetParentNodeIdx [::$win parentkey $targetRow]
@@ -1991,12 +2007,8 @@ proc tablelist::cancelMove win {
     unset data(sourceParentKey)
     unset data(sourceParentRow)
     unset data(sourceParentEndRow)
-    if {[info exists data(targetRow)]} {
-	unset data(targetRow)
-    }
-    if {[info exists data(targetChildIdx)]} {
-	unset data(targetChildIdx)
-    }
+    arrayUnset data targetRow
+    arrayUnset data targetChildIdx
     bind [winfo toplevel $win] <Escape> $data(topEscBinding)
     $data(body) configure -cursor $data(-cursor)
     place forget $data(rowGap)
@@ -2036,7 +2048,11 @@ proc tablelist::beginToggle {win row col} {
 	row {
 	    if {[string compare $data(-selectmode) "extended"] == 0} {
 		variable priv
-		set priv(selection) [::$win curselection]
+
+		if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
+		set priv(selection) [::$win curselection]      ;# can take long
+		::$win restorecursor
+
 		set priv(prevRow) $row
 		::$win selection anchor $row
 		if {[::$win selection includes $row]} {
@@ -2062,7 +2078,11 @@ proc tablelist::beginToggle {win row col} {
 	cell {
 	    if {[string compare $data(-selectmode) "extended"] == 0} {
 		variable priv
-		set priv(selection) [::$win curcellselection]
+
+		if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
+		set priv(selection) [::$win curcellselection]  ;# can take long
+		::$win restorecursor
+
 		set priv(prevRow) $row
 		set priv(prevCol) $col
 		::$win cellselection anchor $row,$col
@@ -2142,7 +2162,9 @@ proc tablelist::plusMinus {win keysym} {
 	#
 	# Toggle the state of the expand/collapse control
 	#
-	::$win $op $row -partly
+	if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
+	::$win $op $row -partly				;# can take long
+	::$win restorecursor
     }
 }
 
@@ -2288,7 +2310,9 @@ proc tablelist::leftRight {win amount} {
 	#
 	# Toggle the state of the expand/collapse control
 	#
-	::$win $op $row -partly
+	if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
+	::$win $op $row -partly				;# can take long
+	::$win restorecursor
     }
 }
 
@@ -2560,9 +2584,11 @@ proc tablelist::cancelSelection win {
 	    }
 
 	    ::$win selection clear 0 end
-	    foreach row $priv(selection) {
-		::$win selection set $row
-	    }
+
+	    if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
+	    ::$win selection set $priv(selection)	;# can take long
+	    ::$win restorecursor
+
 	    event generate $win <<TablelistSelect>>
 	}
 
@@ -2573,9 +2599,11 @@ proc tablelist::cancelSelection win {
 	    }
 
 	    ::$win selection clear 0 end
-	    foreach cellIdx $priv(selection) {
-		::$win cellselection set $cellIdx
-	    }
+
+	    if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
+	    ::$win cellselection set $priv(selection)	;# can take long
+	    ::$win restorecursor
+
 	    event generate $win <<TablelistSelect>>
 	}
     }
@@ -2828,9 +2856,9 @@ proc tablelist::changeSelection {win row col} {
 #------------------------------------------------------------------------------
 proc tablelist::defineTablelistHeader {} {
     foreach event {<Enter> <Motion> <Leave>} {
-	bind TablelistHeader $event {
-	    tablelist::hdr_handleMotionDelayed %W %x %y %X %Y
-	}
+	bind TablelistHeader $event [format {
+	    tablelist::hdr_handleMotionDelayed %%W %%x %%y %%X %%Y %s
+	} $event]
     }
 }
 
@@ -2841,15 +2869,17 @@ proc tablelist::defineTablelistHeader {} {
 # text widget of a tablelist widget or is moving within it.  It schedules the
 # execution of the hdr_handleMotion procedure 100 ms later.
 #------------------------------------------------------------------------------
-proc tablelist::hdr_handleMotionDelayed {w x y X Y} {
+proc tablelist::hdr_handleMotionDelayed {w x y X Y event} {
     set win [getTablelistPath $w]
     upvar ::tablelist::ns${win}::data data
     if {[regexp {^vsep([0-9]+)?$} [winfo name $w]]} {
 	return ""
     }
 
-    set data(hdr_motionData) [list $w $x $y $X $Y]
-    if {![info exists data(hdr_motionId)]} {
+    set data(hdr_motionData) [list $w $x $y $X $Y $event]
+    if {[string compare $event "<Leave>"] == 0} {
+	hdr_handleMotion $win
+    } elseif {![info exists data(hdr_motionId)]} {
 	set data(hdr_motionId) \
 	    [after 100 [list tablelist::hdr_handleMotion $win]]
     }
@@ -2871,12 +2901,14 @@ proc tablelist::hdr_handleMotion win {
     # Get the containing header cell from the
     # coordinates relative to the tablelist
     #
-    foreach {w x y X Y} $data(hdr_motionData) {}
+    foreach {w x y X Y event} $data(hdr_motionData) {}
     foreach {win _x _y} [convEventFields $w $x $y] {}
     set row [hdr_containingRow $win $_y]
     set col [containingCol $win $_x]
 
-    hdr_showOrHideTooltip $win $row $col $X $Y
+    if {[string compare $event "<Enter>"] != 0 || ($row >= 0 && $col >= 0)} {
+	hdr_showOrHideTooltip $win $row $col $X $Y
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -3382,9 +3414,7 @@ proc tablelist::labelB1Motion {w X x y} {
 		       $targetCol < $data(-titlecolumns)) ||
 		      ($col < $data(-titlecolumns) &&
 		       $targetCol > $data(-titlecolumns))))} {
-		    if {[info exists data(targetCol)]} {
-			unset data(targetCol)
-		    }
+		    arrayUnset data targetCol
 		    configLabel $w -cursor $data(-cursor)
 		    $data(hdrTxtFrmCanv)$col configure -cursor $data(-cursor)
 		    place forget $data(colGap)
@@ -3541,18 +3571,22 @@ proc tablelist::labelB1Up {w X} {
 		}
 	    }
 	}
+
 	unset data(colBeingResized)
-	$data(body) tag remove visibleLines 1.0 end
-	$data(body) tag configure visibleLines -tabs {}
 
 	if {$data(colResized)} {
-	    redisplayCol $win $col 0 last
+	    if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
+	    redisplayCol $win $col 0 last		;# can take long
 	    adjustColumns $win {} 0
 	    stretchColumns $win $col
 	    updateColors $win
+	    ::$win restorecursor
 
 	    genVirtualEvent $win <<TablelistColumnResized>> $col
 	}
+
+	$data(body) tag remove visibleLines 1.0 end
+	$data(body) tag configure visibleLines -tabs {}
     } else {
 	if {[info exists data(X)]} {
 	    unset data(X)
@@ -3569,21 +3603,27 @@ proc tablelist::labelB1Up {w X} {
 
 	if {$data(inClickedLabel)} {
 	    configLabel $w -relief $data(relief) -pressed 0
+	    set cmd ""
 	    if {$data(shiftPressed)} {
 		if {[info exists data($col-labelcommand2)]} {
-		    uplevel #0 $data($col-labelcommand2) [list $win $col]
+		    set cmd $data($col-labelcommand2)
 		} elseif {[string length $data(-labelcommand2)] != 0} {
-		    uplevel #0 $data(-labelcommand2) [list $win $col]
+		    set cmd $data(-labelcommand2)
 		}
 	    } else {
 		if {[info exists data($col-labelcommand)]} {
-		    uplevel #0 $data($col-labelcommand) [list $win $col]
+		    set cmd $data($col-labelcommand)
 		} elseif {[string length $data(-labelcommand)] != 0} {
-		    uplevel #0 $data(-labelcommand) [list $win $col]
+		    set cmd $data(-labelcommand)
 		}
 	    }
-	    if {[destroyed $win]} {
-		return ""
+	    if {[string length $cmd] != 0} {
+		if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
+		uplevel #0 $cmd [list $win $col]	;# can take long
+		if {[destroyed $win]} {
+		    return ""
+		}
+		::$win restorecursor
 	    }
 	} elseif {$data(-movablecolumns)} {
 	    $data(hdrTxtFrmCanv)$col configure -cursor $data(-cursor)
@@ -3591,7 +3631,9 @@ proc tablelist::labelB1Up {w X} {
 		set sourceColName [doColCget $col $win -name]
 		set targetColName [doColCget $data(targetCol) $win -name]
 
-		moveCol $win $col $data(targetCol)
+		if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
+		moveCol $win $col $data(targetCol)	;# can take long
+		::$win restorecursor
 
 		set userData \
 		    [list $col $data(targetCol) $sourceColName $targetColName]
@@ -3622,11 +3664,16 @@ proc tablelist::labelB3Down {w shiftPressed} {
     upvar ::tablelist::ns${win}::data data
     if {!$data(isDisabled) &&
 	$data(-resizablecolumns) && $data($col-resizable)} {
+	#
+	# doColConfig $col $win -width ... can take long
+	#
+	if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
 	if {$shiftPressed} {
 	    doColConfig $col $win -width -$data($col-lastStaticWidth)
 	} else {
 	    doColConfig $col $win -width 0
 	}
+	::$win restorecursor
 
 	genVirtualEvent $win <<TablelistColumnResized>> $col
     }
@@ -3647,11 +3694,16 @@ proc tablelist::labelDblB1 {w x shiftPressed} {
     upvar ::tablelist::ns${win}::data data
     if {!$data(isDisabled) && [inResizeArea $w $x col] &&
 	$data(-resizablecolumns) && $data($col-resizable)} {
+	#
+	# doColConfig $col $win -width ... can take long
+	#
+	if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
 	if {$shiftPressed} {
 	    doColConfig $col $win -width -$data($col-lastStaticWidth)
 	} else {
 	    doColConfig $col $win -width 0
 	}
+	::$win restorecursor
 
 	genVirtualEvent $win <<TablelistColumnResized>> $col
     }
@@ -3671,9 +3723,6 @@ proc tablelist::escape {win col} {
     if {[info exists data(colBeingResized)]} {	;# resize operation in progress
 	configLabel $w -cursor $data(-cursor)
 	update idletasks
-	if {[destroyed $win]} {
-	    return ""
-	}
 	if {[winfo exists $data(focus)]} {
 	    focus $data(focus)
 	}
@@ -3697,9 +3746,7 @@ proc tablelist::escape {win col} {
 	}
 	bind [winfo toplevel $win] <Escape> $data(topEscBinding)
 	place forget $data(colGap)
-	if {[info exists data(targetCol)]} {
-	    unset data(targetCol)
-	}
+	arrayUnset data targetCol
 	if {[info exists data(X)]} {
 	    unset data(X)
 	    after cancel $data(afterId)
