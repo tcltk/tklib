@@ -8,7 +8,7 @@
 # Copyright (c) 2004-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.2
+package require tablelist_tile 6.3
 package require BWidget
 
 wm title . "Serial Line Configuration"
