@@ -1,3 +1,34 @@
+2018-08-16 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                          Bumped the version number to 6.3.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* ../../examples/tablelist/*.tcl:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added the "-showbusycursor" configuration option and
+	  the "setbusycursor" and "restorecursor" subcommands; the "-stretch"
+	  option is no longer ignored if the width was specified as zero or
+	  less; enhancements related to managing both scrollbars with the aid
+	  of the "cornerpath" subcommand; optimizations in the item insertion
+	  and the selection-related code; improved the interactive cell editing
+	  with the aid of the ctext widget; made the overall handling of the
+	  "-listvariable" option much more robust; fixed some bugs related to
+	  the "-maxwidth" column configuration option, the "-displayondemand"
+	  option, and the tooltip support; further improvements and minor bug
+	  fixes.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/browseTree.png:           Updated screenshots.
+	* doc/dirViewer.png:
+	* doc/embeddedWindows.png:
+	* doc/embeddedWindows_tile.png:
+
+	* doc/scrollbars.png: Added screenshot.
+
 2018-06-05 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/tablelist.html:             Using the "cornerpath" subcommand not
