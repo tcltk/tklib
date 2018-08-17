@@ -4,8 +4,7 @@
 # Copyright (c) 2000-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tcl 8
-package require Tk  8
+package require Tk 8
 package require -exact tablelist::common 6.3
 
 package provide tablelist $::tablelist::version
