@@ -1,3 +1,10 @@
+2018-08-17 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* tablelistPublic.tcl: Adapted to some changes in future Tcl and Tk
+	* tablelist.tcl        releases (TIP 278, independent Tcl and Tk
+	* tablelist_tile.tcl   versions).
+	* scripts/mwutil.tcl
+
 2018-08-16 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:                          Bumped the version number to 6.3.
