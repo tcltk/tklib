@@ -8,8 +8,7 @@
 # Copyright (c) 2000-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tcl 8
-package require Tk  8
+package require Tk 8
 
 #
 # Namespace initialization
@@ -20,7 +19,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.9
+    variable version	2.10
     variable library	[file dirname [info script]]
 
     #
