@@ -25,24 +25,27 @@ What is new in Tablelist 6.3?
 5.  Significant optimizations in the item insertion as well as in the
     selection-related code.
 
-6.  Further improvements related to the interactive cell editing with
+6.  Adapted to some changes in future Tcl and Tk releases (for example,
+    made sure that it works with Tcl 9.0 and Tk 8.7).
+
+7.  Further improvements related to the interactive cell editing with
     the aid of the ctext widget (thanks to Sait Dogru for discussions on
     this subject).
 
-7.  Made the overall handling of the "-listvariable" option much more
+8.  Made the overall handling of the "-listvariable" option much more
     robust (thanks to Ulrich Seidl for his bug report).
 
-8.  Fixed a long-standing bug related to the "-maxwidth" column
+9.  Fixed a long-standing bug related to the "-maxwidth" column
     configuration option (again, thanks to Ulrich Seidl for his bug
     report).
 
-9.  Fixed a bug related to the "-displayondemand" configuration option
+10. Fixed a bug related to the "-displayondemand" configuration option
     (thanks to "tombert" for his bug report).
 
-10. Fixed a bug related to the tooltip support (thanks to Bo Berggren
+11. Fixed a bug related to the tooltip support (thanks to Bo Berggren
     for his bug report).
 
-11. Numerous further improvements and minor bug fixes.
+12. Numerous further improvements and minor bug fixes.
 
 What was new in Tablelist 6.2?
 ------------------------------
