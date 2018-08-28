@@ -23,7 +23,8 @@ What is new in Tablelist 6.3?
     accepts the corner specification as optional argument.
 
 5.  Significant optimizations in the item insertion as well as in the
-    selection-related code.
+    selection-related code (thanks to Johann Oberdorfer for testing and
+    discussions on this subject).
 
 6.  Adapted to some changes in future Tcl and Tk releases (for example,
     made sure that it works with Tcl 9.0 and Tk 8.7).
