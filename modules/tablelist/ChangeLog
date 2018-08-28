@@ -1,3 +1,13 @@
+2018-08-28 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt: Slightly extended.
+
+	* scripts/tablelistWidget.tcl: Bugfixes and further optimizations.
+
+2018-08-18 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt: Updated to reflect the changes committed yesterday.
+
 2018-08-17 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* tablelistPublic.tcl: Adapted to some changes in future Tcl and Tk
