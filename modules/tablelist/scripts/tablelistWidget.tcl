@@ -7203,10 +7203,6 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
     }
 
     upvar ::tablelist::ns${win}::data data
-    if {$index < $data(itemCount)} {
-	displayItems $win
-    }
-
     if {$index < 0} {
 	set index 0
     } elseif {$index > $data(itemCount)} {
@@ -7289,7 +7285,24 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
 	incr row
 	incr childIdx
     }
-    lappend data(segmentsToDisplay) $index $argCount
+
+    #
+    # Update or extend the list data(segmentList)
+    #
+    if {[info exists data(segmentList)]} {
+	set lastSegment [lindex $data(segmentList) end]
+	foreach {startRow rowCount} $lastSegment {}
+	if {$index == $startRow + $rowCount} {
+	    incr rowCount $argCount
+	    set data(segmentList) \
+		[lreplace $data(segmentList) end end [list $startRow $rowCount]]
+	} else {
+	    lappend data(segmentList) [list $index $argCount]
+	}
+    } else {
+	lappend data(segmentList) [list $index $argCount]
+    }
+
     incr data(itemCount) $argCount
     set data(lastRow) [expr {$data(itemCount) - 1}]
 
@@ -7455,7 +7468,7 @@ proc tablelist::hdr_insertRows {win index argList} {
 	    if {$multiline} {
 		lappend insertArgs "\t\t" $colTags
 		lappend multilineData \
-			$line $col $text $colFont $pixels $alignment
+			$line $key $col $text $colFont $pixels $alignment
 	    } else {
 		lappend insertArgs "\t$text\t" $colTags
 	    }
@@ -7479,7 +7492,7 @@ proc tablelist::hdr_insertRows {win index argList} {
     #
     # Embed the message widgets displaying multiline elements
     #
-    foreach {line col text font pixels alignment} $multilineData {
+    foreach {line key col text font pixels alignment} $multilineData {
 	findTabs $win $w $line $col $col tabIdx1 tabIdx2
 	set msgScript [list ::tablelist::displayText $win $key $col $text \
 		       $font $pixels $alignment]
@@ -7525,8 +7538,7 @@ proc tablelist::displayItems win {
     # Nothing to do if there are no items to display
     #
     upvar ::tablelist::ns${win}::data data
-    if {![info exists data(dispId)] ||
-	![info exists data(segmentsToDisplay)]} {
+    if {![info exists data(dispId)]} {
 	return ""
     }
 
@@ -7538,6 +7550,29 @@ proc tablelist::displayItems win {
     #
     after cancel $data(dispId)	;# no harm if data(dispId) is no longer valid
     unset data(dispId)
+
+    if {![info exists data(segmentList)]} {
+	return ""
+    }
+
+    #
+    # Keep the memory consumption within reasonable
+    # limits by splitting the segments into chunks
+    #
+    set chunkSize 5000
+    set segmentList {}
+    foreach segment $data(segmentList) {
+	foreach {startRow rowCount} $segment {}
+	while {$rowCount >= $chunkSize} {
+	    lappend segmentList [list $startRow $chunkSize]
+	    incr startRow  $chunkSize
+	    incr rowCount -$chunkSize
+	}
+	if {$rowCount != 0} {
+	    lappend segmentList [list $startRow $rowCount]
+	}
+    }
+    unset data(segmentList)
 
     #
     # Insert the items into the body text widget
@@ -7551,7 +7586,8 @@ proc tablelist::displayItems win {
     variable pu
     set wasEmpty [$w compare end-1$pu == 1.0]
     set isEmpty $wasEmpty
-    foreach {startRow rowCount} $data(segmentsToDisplay) {
+    foreach segment $segmentList {
+	foreach {startRow rowCount} $segment {}
 	set startLine [expr {$startRow + 1}]
 	if {$isEmpty} {
 	    set isEmpty 0
@@ -7649,8 +7685,8 @@ proc tablelist::displayItems win {
 
 		    if {$multiline} {
 			lappend insertArgs "\t\t" $colTags
-			lappend multilineData \
-				$line $col $text $colFont $pixels $alignment
+			lappend multilineData $line $key $col $text \
+					      $colFont $pixels $alignment
 		    } elseif {$data(-displayondemand)} {
 			lappend insertArgs "\t\t" $colTags
 		    } else {
@@ -7718,8 +7754,8 @@ proc tablelist::displayItems win {
 
 		    if {$multiline} {
 			append insertStr "\t\t"
-			lappend multilineData \
-				$line $col $text $widgetFont $pixels $alignment
+			lappend multilineData $line $key $col $text \
+					      $widgetFont $pixels $alignment
 		    } elseif {$data(-displayondemand)} {
 			append insertStr "\t\t"
 		    } else {
@@ -7743,7 +7779,7 @@ proc tablelist::displayItems win {
 	#
 	# Embed the message widgets displaying multiline elements
 	#
-	foreach {line col text font pixels alignment} $multilineData {
+	foreach {line key col text font pixels alignment} $multilineData {
 	    findTabs $win $w $line $col $col tabIdx1 tabIdx2
 	    set msgScript [list ::tablelist::displayText $win $key $col $text \
 			   $font $pixels $alignment]
@@ -7751,7 +7787,6 @@ proc tablelist::displayItems win {
 	    $w tag add elidedWin $tabIdx2
 	}
     }
-    unset data(segmentsToDisplay)
 
     #
     # Adjust the heights of the body text widget
