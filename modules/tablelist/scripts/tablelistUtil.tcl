@@ -61,10 +61,10 @@ namespace eval tablelist {
 # Returns the current tile theme.
 #------------------------------------------------------------------------------
 proc tablelist::getCurrentTheme {} {
-    if {[info exists ttk::currentTheme]} {
-	return $ttk::currentTheme
-    } elseif {[info exists tile::currentTheme]} {
-	return $tile::currentTheme
+    if {[info exists ::ttk::currentTheme]} {
+	return $::ttk::currentTheme
+    } elseif {[info exists ::tile::currentTheme]} {
+	return $::tile::currentTheme
     } else {
 	return ""
     }
@@ -6729,7 +6729,7 @@ proc tablelist::makeTileCheckbutton w {
 	xpnative {
 	    set height [winfo reqheight $w]
 	    $frm configure -width $height -height $height
-	    if {[info exists tile::version]} {
+	    if {[info exists ::tile::version]} {
 		place $w -x -2
 	    } else {
 		place $w -x 0
