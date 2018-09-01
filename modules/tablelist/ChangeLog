@@ -1,3 +1,9 @@
+2018-09-01 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistConfig.tcl: Minor changes for TIP 278 conformance.
+	* scripts/tablelistThemes.tcl:
+	* scripts/tablelistUtil.tcl:
+
 2018-08-28 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Slightly extended.
