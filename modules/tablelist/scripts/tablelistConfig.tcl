@@ -133,8 +133,8 @@ proc tablelist::extendConfigSpecs {} {
 	if {[string length [package provide ttk::theme::aqua]] != 0 ||
 	    [string length [package provide tile::theme::aqua]] != 0} {
 	    style theme settings "aqua" {
-		if {[info exists tile::patchlevel] &&
-		    [string compare $tile::patchlevel "0.6.4"] < 0} {
+		if {[info exists ::tile::patchlevel] &&
+		    [string compare $::tile::patchlevel "0.6.4"] < 0} {
 		    style layout TablelistHeader.TLabel {
 			Treeheading.cell
 			Label.padding -children {

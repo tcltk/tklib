@@ -423,8 +423,8 @@ proc tablelist::classicTheme {} {
 	-treestyle		gtk \
     ]
 
-    if {[info exists tile::version] &&
-	[string compare $tile::version 0.8] < 0} {
+    if {[info exists ::tile::version] &&
+	[string compare $::tile::version 0.8] < 0} {
 	set themeDefaults(-font)	TkClassicDefaultFont
 	set themeDefaults(-labelfont)	TkClassicDefaultFont
     }
@@ -1734,8 +1734,8 @@ proc tablelist::xpnativeTheme {} {
 	    set arrowStyle	flat9x5
 	    set treeStyle	winxpBlue
 
-	    if {[info exists tile::version] &&
-		[string compare $tile::version 0.7] < 0} {
+	    if {[info exists ::tile::version] &&
+		[string compare $::tile::version 0.7] < 0} {
 		set labelBd 0
 	    }
 	}
@@ -1753,8 +1753,8 @@ proc tablelist::xpnativeTheme {} {
 	    set arrowStyle	flat9x5
 	    set treeStyle	winxpOlive
 
-	    if {[info exists tile::version] &&
-		[string compare $tile::version 0.7] < 0} {
+	    if {[info exists ::tile::version] &&
+		[string compare $::tile::version 0.7] < 0} {
 		set labelBd 0
 	    }
 	}
@@ -1772,8 +1772,8 @@ proc tablelist::xpnativeTheme {} {
 	    set arrowStyle	flat9x5
 	    set treeStyle	winxpSilver
 
-	    if {[info exists tile::version] &&
-		[string compare $tile::version 0.7] < 0} {
+	    if {[info exists ::tile::version] &&
+		[string compare $::tile::version 0.7] < 0} {
 		set labelBd 0
 	    }
 	}
