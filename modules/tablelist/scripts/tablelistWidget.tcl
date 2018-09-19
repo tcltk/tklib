@@ -939,6 +939,7 @@ proc tablelist::tablelist args {
     $w tag add noSpacings 1.0
     $w tag configure tinyFont -font "Courier -1"
     $w tag add tinyFont 1.0 end
+    $w tag configure active -borderwidth ""	;# used for the priority order
     $w tag configure disabled -foreground ""	;# will be changed
     $w tag configure hiddenCol -elide 1		;# used for hiding a column
     $w tag configure elidedCol -elide 1		;# used for horizontal scrolling

@@ -2165,7 +2165,7 @@ proc tablelist::doRowConfig {row win opt val} {
 		#
 		set tag row$opt-$val
 		$w tag configure $tag $opt $val
-		$w tag lower $tag disabled
+		$w tag lower $tag active
 
 		#
 		# Save val in data($name)
@@ -2328,7 +2328,7 @@ proc tablelist::doRowConfig {row win opt val} {
 		#
 		set tag row$opt-$val
 		$w tag configure $tag $opt $val
-		$w tag lower $tag disabled
+		$w tag lower $tag active
 		set line [expr {$row + $diff}]
 		$w tag add $tag $line.0 $line.end
 
@@ -2662,7 +2662,7 @@ proc tablelist::doRowConfig {row win opt val} {
 		set tag row$opt-$val
 		set optTail [string range $opt 7 end]	;# remove the -select
 		$w tag configure $tag -$optTail $val
-		$w tag lower $tag disabled
+		$w tag lower $tag active
 
 		#
 		# Save val in data($name)
