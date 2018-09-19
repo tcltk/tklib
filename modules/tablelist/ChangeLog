@@ -1,3 +1,10 @@
+2018-09-19 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt: Slightly extended.
+
+	* scripts/tablelistConfig.tcl: Fixed a bug related to the "rowconfigure"
+	* scripts/tablelistWidget.tcl: subcommand, introduced in Tablelist 6.0.
+
 2018-09-01 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistConfig.tcl: Minor changes for TIP 278 conformance.
