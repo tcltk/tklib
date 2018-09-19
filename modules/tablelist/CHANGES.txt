@@ -46,7 +46,10 @@ What is new in Tablelist 6.3?
 11. Fixed a bug related to the tooltip support (thanks to Bo Berggren
     for his bug report).
 
-12. Numerous further improvements and minor bug fixes.
+12. Fixed a bug related to the "rowconfigure" subcommand, introduced in
+    Tablelist version 6.0 (thanks to Ulrich Seidl for his bug report).
+
+13. Numerous further improvements and minor bug fixes.
 
 What was new in Tablelist 6.2?
 ------------------------------
