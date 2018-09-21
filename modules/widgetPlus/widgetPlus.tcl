@@ -1503,7 +1503,10 @@ method {edit reset} {} {
 
 method Push {new} {
     incr My(,pointer)
-    set My(,list) [lreplace $My(,list) $My(,pointer) end $new]
+    if {$My(,pointer) < [llength $My(,list)]} {
+        set My(,list) [lreplace $My(,list) $My(,pointer) end]
+    }
+    lappend My(,list) $new
 
     $self ResizeStack
     return
@@ -1670,4 +1673,4 @@ method selection {args} {
 #indent+4
 }
 
-package provide widgetPlus 1.0b1
+package provide widgetPlus 1.0b2
