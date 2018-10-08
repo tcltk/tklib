@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -126,6 +126,19 @@ namespace eval mentry {
     }
 
     #
+    # Public utility procedure.  Returns the current tile theme.
+    #
+    proc getCurrentTheme {} {
+	if {[info exists ::ttk::currentTheme]} {
+	    return $::ttk::currentTheme
+	} elseif {[info exists ::tile::currentTheme]} {
+	    return $::tile::currentTheme
+	} else {
+	    return ""
+	}
+    }
+
+    #
     # Extend the elements of the array configSpecs
     #
     proc extendConfigSpecs {} {
@@ -167,19 +180,6 @@ namespace eval mentry {
 	    # other elements of the array configSpecs
 	    #
 	    lappend configSpecs(-takefocus)	{}
-
-	    #
-	    # Define a special tile entry layout
-	    #
-	    style theme settings "default" {
-		style layout MentryHull.TEntry {
-		    Entry.highlight -children {
-			Entry.field -border 1 -children {
-			    Entry.padding
-			}
-		    }
-		}
-	    }
 
 	    catch {lappend configSpecs(-cursor) [ttk::cursor text]}
 
@@ -238,7 +238,7 @@ namespace eval mentry {
 # MentryEntry, and MentryLabel.
 #------------------------------------------------------------------------------
 proc mentry::createBindings {} {
-
+    #
     # Define some Mentry class bindings
     #
     bind Mentry <KeyPress> continue
@@ -248,16 +248,16 @@ proc mentry::createBindings {} {
 	}
     }
     bind Mentry <Destroy> {
-	namespace delete mentry::ns%W
+	namespace delete ::mentry::ns%W
 	catch {rename ::%W ""}
+    }
+    bind Mentry <<ThemeChanged>> {
+	after idle [list mentry::updateConfigSpecs %W]
     }
     variable usingTile
     if {$usingTile} {
 	bind Mentry <Activate>	 { mentry::updateAppearance %W <Activate> }
 	bind Mentry <Deactivate> { mentry::updateAppearance %W <Deactivate> }
-	bind Mentry <<ThemeChanged>> {
-	    after idle [list mentry::updateConfigSpecs %W]
-	}
     }
 
     #
@@ -366,12 +366,12 @@ proc mentry::mentry args {
     }
 
     #
-    # Create a hull (a frame or special tile entry widget) of the class Mentry
+    # Create a hull (a frame or tile entry) of the class Mentry
     #
     set win [lindex $args 0]
     if {[catch {
 	if {$usingTile} {
-	    ttk::entry $win -style MentryHull.TEntry -class Mentry
+	    ttk::entry $win -style Hull$win.TEntry -class Mentry
 	} else {
 	    tk::frame $win -class Mentry -container 0 -height 0 -width 0
 	    catch {$win configure -padx 0 -pady 0}
@@ -410,27 +410,25 @@ proc mentry::mentry args {
     foreach opt $configOpts {
 	set data($opt) [lindex $configSpecs($opt) 3]
     }
+    set data(currentTheme) [getCurrentTheme]
+    if {[string compare $data(currentTheme) "tileqt"] == 0} {
+	set data(widgetStyle) [tileqt_currentThemeName]
+	if {[info exists ::env(KDE_SESSION_VERSION)] &&
+	    [string length $::env(KDE_SESSION_VERSION)] != 0} {
+	    set data(colorScheme) [getKdeConfigVal "General" "ColorScheme"]
+	} else {
+	    set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
+	}
+    } else {
+	set data(widgetStyle) ""
+	set data(colorScheme) ""
+    }
     if {$usingTile} {
 	setThemeDefaults
 	variable themeDefaults
-	foreach opt {-disabledbackground -disabledforeground \
-		     -readonlybackground} {
-	    set data($opt) $themeDefaults($opt)
-	}
-
-	set data(currentTheme) [getCurrentTheme]
 	set data(themeDefaults) [array get themeDefaults]
-	if {[string compare $data(currentTheme) "tileqt"] == 0} {
-	    set data(widgetStyle) [tileqt_currentThemeName]
-	    if {[info exists ::env(KDE_SESSION_VERSION)] &&
-		[string length $::env(KDE_SESSION_VERSION)] != 0} {
-		set data(colorScheme) [getKdeConfigVal "General" "ColorScheme"]
-	    } else {
-		set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
-	    }
-	} else {
-	    set data(widgetStyle) ""
-	    set data(colorScheme) ""
+	foreach opt {-disabledbackground -readonlybackground} {
+	    set data($opt) $themeDefaults($opt)
 	}
     }
 
@@ -509,10 +507,12 @@ proc mentry::doConfig {win opt val} {
 	    # Some options need special handling
 	    #
 	    if {[string compare $opt "-font"] == 0 && $usingTile} {
-		mentry::adjustChildren $win
+		adjustChildren $win
 	    } elseif {[string compare $opt "-foreground"] == 0 && $usingTile &&
 		      !$data(inActiveWin)} {
-		updateAppearance $win <Deactivate>
+		foreach w [labels $win] {
+		    $w configure $opt $themeDefaults(-foreground,background)
+		}
 	    }
 	}
 
@@ -551,10 +551,11 @@ proc mentry::doConfig {win opt val} {
 		set data($opt) $val
 		if {[string compare $opt "-background"] == 0 && $usingTile} {
 		    #
-		    # Most themes support the -fieldbackground option for the
-		    # style element Entry.field.  The aqua theme supports the
-		    # -background option instead.  Some themes (like plastik,
-		    # tileqt, vista, and xpnative) don't support either of them.
+		    # Most themes support the -fieldbackground option
+		    # for the style element Entry.field.  The aqua
+		    # theme supports the -background option instead.
+		    # Some themes (like Arc, plastik, tileqt, vista,
+		    # and xpnative) don't support either of them.
 		    #
 		    styleConfig $win.TEntry -fieldbackground $val \
 					    -background      $val
@@ -594,7 +595,12 @@ proc mentry::doConfig {win opt val} {
 		    # Set also the hull's background, because
 		    # of the shadow colors of its 3-D border
 		    #
-		    $win configure $opt $labelBg
+		    if {$usingTile} {
+			styleConfig Hull$win.TEntry -fieldbackground $labelBg \
+						    -background      $labelBg
+		    } else {
+			$win configure $opt $labelBg
+		    }
 		} elseif {[regexp \
 			   {^-(disabledbackground|readonlybackground|state)$} \
 			   $opt] && $::tk_version >= 8.4} {
@@ -828,6 +834,9 @@ proc mentry::createChildren {win body} {
 		set labelBg $data(-background)
 	    }
 	    $w configure -background $labelBg -state $labelState
+	}
+	if {$usingTile} {
+	    $w configure -disabledforeground $themeDefaults(-disabledforeground)
 	}
 
 	#
@@ -1425,27 +1434,17 @@ proc mentry::updateAppearance {win event} {
     switch $event {
 	<Activate> {
 	    set data(inActiveWin) 1
-	    if {[string compare $data(-state) "disabled"] == 0} {
-		set labelFg $themeDefaults(-disabledforeground)
-	    } else {
-		set labelFg $data(-foreground)
-	    }
-	    foreach w [labels $win] {
-		$w configure -foreground $labelFg
-	    }
+	    set labelFg $data(-foreground)
 	}
 
 	<Deactivate> {
 	    set data(inActiveWin) 0
-	    if {[string compare $data(-state) "disabled"] == 0} {
-		set labelFg $themeDefaults(-disabledforeground)
-	    } else {
-		set labelFg $themeDefaults(-foreground,background)
-	    }
-	    foreach w [labels $win] {
-		$w configure -foreground $labelFg
-	    }
+	    set labelFg $themeDefaults(-foreground,background)
 	}
+    }
+
+    foreach w [labels $win] {
+	$w configure -foreground $labelFg
     }
 }
 
@@ -1463,9 +1462,8 @@ proc mentry::updateConfigSpecs win {
 	return ""
     }
 
-    upvar ::mentry::ns${win}::data data
-
     set currentTheme [getCurrentTheme]
+    upvar ::mentry::ns${win}::data data
     if {[string compare $currentTheme $data(currentTheme)] == 0} {
 	if {[string compare $currentTheme "tileqt"] == 0} {
 	    set widgetStyle [tileqt_currentThemeName]
@@ -1484,53 +1482,56 @@ proc mentry::updateConfigSpecs win {
 	}
     }
 
-    #
-    # Populate the array tmp with values corresponding to the old theme
-    # and the array themeDefaults with values corresponding to the new one
-    #
-    array set tmp $data(themeDefaults)
-    setThemeDefaults
+    variable usingTile
+    if {$usingTile} {
+	#
+	# Populate the array tmp with values corresponding to the old theme
+	# and the array themeDefaults with values corresponding to the new one
+	#
+	array set tmp $data(themeDefaults)
+	setThemeDefaults
 
-    #
-    # Set those configuration options whose values equal the old
-    # theme-specific defaults to the new theme-specific ones
-    #
-    variable themeDefaults
-    foreach opt {-disabledbackground -disabledforeground -readonlybackground} {
-	set data($opt) $themeDefaults($opt)
-    }
-    foreach opt {-background -foreground -font} {
-	if {[string compare $data($opt) $tmp($opt)] == 0} {
-	    doConfig $win $opt $themeDefaults($opt)
+	#
+	# Set those configuration options whose values equal the old
+	# theme-specific defaults to the new theme-specific ones
+	#
+	variable themeDefaults
+	foreach opt {-disabledbackground -readonlybackground} {
+	    set data($opt) $themeDefaults($opt)
 	}
-    }
-    mentry::adjustChildren $win
+	foreach opt {-background -foreground -font} {
+	    if {[string compare $data($opt) $tmp($opt)] == 0} {
+		doConfig $win $opt $themeDefaults($opt)
+	    }
+	}
+	adjustChildren $win
 
-    #
-    # Most themes support the -fieldbackground option for the
-    # style element Entry.field.  The aqua theme supports the
-    # -background option instead.  Some themes (like plastik,
-    # tileqt, vista, and xpnative) don't support either of them.
-    #
-    styleConfig $win.TEntry -fieldbackground $data(-background) \
-			    -background      $data(-background)
+	#
+	# Most themes support the -fieldbackground option for the
+	# style element Entry.field.  The aqua theme supports the
+	# -background option instead.  Some themes (like Arc, plastik,
+	# tileqt, vista, and xpnative) don't support either of them.
+	#
+	foreach style [list $win.TEntry Hull$win.TEntry] {
+	    styleConfig $style -fieldbackground $data(-background) \
+			       -background      $data(-background)
+	}
 
-    #
-    # Set the foreground color of the label children
-    #
-    if {[string compare $data(-state) "disabled"] == 0} {
-	set labelFg $themeDefaults(-disabledforeground)
-    } elseif {$data(inActiveWin)} {
-	set labelFg $data(-foreground)
-    } else {
-	set labelFg $themeDefaults(-foreground,background)
-    }
-    foreach w [labels $win] {
-	$w configure -foreground $labelFg
+	#
+	# Set the foreground color of the label children
+	#
+	if {$data(inActiveWin)} {
+	    set labelFg $data(-foreground)
+	} else {
+	    set labelFg $themeDefaults(-foreground,background)
+	}
+	foreach w [labels $win] {
+	    $w configure -foreground $labelFg \
+			 -disabledforeground $themeDefaults(-disabledforeground)
+	}
     }
 
     set data(currentTheme) $currentTheme
-    set data(themeDefaults) [array get themeDefaults]
     if {[string compare $currentTheme "tileqt"] == 0} {
 	set data(widgetStyle) [tileqt_currentThemeName]
 	if {[info exists ::env(KDE_SESSION_VERSION)] &&
@@ -1542,6 +1543,9 @@ proc mentry::updateConfigSpecs win {
     } else {
 	set data(widgetStyle) ""
 	set data(colorScheme) ""
+    }
+    if {$usingTile} {
+	set data(themeDefaults) [array get themeDefaults]
     }
 }
 
