@@ -12,7 +12,7 @@
   <div align="center">
     <h1>Mentry Programmer's Guide</h1>
 
-    <h2>For Mentry Version 3.7</h2>
+    <h2>For Mentry Version 3.8</h2>
 
     <h3>by</h3>
 
@@ -29,7 +29,7 @@
   <h4><a href="#overview">Overview</a></h4>
 
   <ul>
-    <li><a href="#ov_what">What is Mentry?</a></li>
+    <li><a href="#ov_what">What Is Mentry?</a></li>
 
     <li><a href="#ov_get">How to Get It?</a></li>
 
@@ -60,7 +60,7 @@
 
   <h2 id="overview">Overview</h2>
 
-  <h3 id="ov_what">What is Mentry?</h3>
+  <h3 id="ov_what">What Is Mentry?</h3>
 
   <p>Mentry is a library package for Tcl/Tk versions 8.0 or higher, written in
   pure Tcl/Tk code.&nbsp; It contains:</p>
@@ -145,8 +145,8 @@ foreach w [.me entries] {
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Mentry is available for free download from the same URL as Wcb.&nbsp; The
-  distribution file is <code>mentry3.7.tar.gz</code> for UNIX and
-  <code>mentry3_7.zip</code> for Windows.&nbsp; These files contain the same
+  distribution file is <code>mentry3.8.tar.gz</code> for UNIX and
+  <code>mentry3_8.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -168,21 +168,21 @@ foreach w [.me entries] {
   respectively.</p>
 
   <p>To install Mentry <i>on UNIX</i>, <code>cd</code> to the desired directory
-  and unpack the distribution file <code>mentry3.7.tar.gz</code>:</p>
+  and unpack the distribution file <code>mentry3.8.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c mentry3.7.tar.gz | tar -xf -
+gunzip -c mentry3.8.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>mentry3.7</code>, with
+  <p>This command will create a directory named <code>mentry3.8</code>, with
   the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>mentry3_7.zip</code> into the directory
-  <code>mentry3.7</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>mentry3_8.zip</code> into the directory
+  <code>mentry3.8</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>mentryThemes.tcl</code> in the <code>scripts</code>
@@ -608,7 +608,7 @@ proc checkIfPhoneNumberMentry win {
   application displaying the following figure:</p>
 
   <blockquote>
-    <img src="phonenumber.png" alt="Phone Number" width="228" height="201">
+    <img src="phonenumber.png" alt="Phone Number" width="269" height="228">
   </blockquote>
 
   <p>Here is the relevant code fragment:</p>
@@ -661,7 +661,7 @@ button .get -text "Get from mentry" -command {
 #
 # Label .num displaying the result of getPhoneNumber
 #
-label .num -textvariable num
+label .num -textvariable num -background white
 
 . . .
 
@@ -818,8 +818,8 @@ proc getEthernetAddr win {
   Ethernet addresses looks like in the following figure:</p>
 
   <blockquote>
-    <img src="ethernetaddr.png" alt="Ethernet Address" width="248"
-    height="215">
+    <img src="ethernetaddr.png" alt="Ethernet Address" width="290"
+    height="243">
   </blockquote>
 
   <h3 id="ex_dateTime">Using mentry Widgets for Date and Time</h3>
@@ -941,7 +941,7 @@ pack .f.lDate .f.date .f.gap .f.lTime .f.time -side left
   2</code>&nbsp; and&nbsp; <code>timeIdx = 1</code>:</p>
 
   <blockquote>
-    <img src="datetime1.png" alt="Date &amp; Time" width="243" height="183">
+    <img src="datetime1.png" alt="Date &amp; Time" width="279" height="209">
   </blockquote>
 
   <p>The demo script <code>datetime2.tcl</code> displays both the date and time
@@ -963,7 +963,7 @@ pack .f.l .f.me
   </blockquote>
 
   <blockquote>
-    <img src="datetime2.png" alt="Date &amp; Time" width="232" height="183">
+    <img src="datetime2.png" alt="Date &amp; Time" width="272" height="209">
   </blockquote>
 
   <p>The Mentry package exports two further commands for date, time, and date
@@ -1043,7 +1043,7 @@ button .get -text "Get from mentries" -command {
 #
 # Label .dateTime displaying the result of mentry::getClockVal
 #
-label .dateTime -textvariable dateTime
+label .dateTime -textvariable dateTime -background white
 
 . . .
 
@@ -1060,7 +1060,7 @@ focus [.f.date entrypath 0]
   of the <code>-base</code> option when passing the name of the time mentry to
   the same procedure.</p>
 
-  <p>The demo script <code>datetime2.tcl</code> is more simple:</p>
+  <p>The demo script <code>datetime2.tcl</code> is simpler:</p>
 
   <blockquote>
     <pre>
@@ -1082,7 +1082,7 @@ button .get -text "Get from mentry" -command {
 #
 # Label .dateTime displaying the result of mentry::getClockVal
 #
-label .dateTime -textvariable dateTime
+label .dateTime -textvariable dateTime -background white
 
 . . .
 
@@ -1157,7 +1157,7 @@ array set msgs {
 #
 # Label <span>.base</span>.num displaying the result of getPhoneNumber
 #
-<span>ttk::</span>label <span>.base</span>.num -textvariable num
+<span>ttk::</span>label <span>.base</span>.num -textvariable num -background white
 
 . . .
 
@@ -1170,8 +1170,8 @@ focus [<span>.base</span>.f.me entrypath 0]
   appearance:</p>
 
   <blockquote>
-    <img src="phonenumber_tile.png" alt="Phone Number" width="226"
-    height="189">
+    <img src="phonenumber_tile.png" alt="Phone Number" width="267"
+    height="216">
   </blockquote>
 
   <p>The only Mentry-specific change in the code above consists of the use of
