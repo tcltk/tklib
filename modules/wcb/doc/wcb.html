@@ -13,7 +13,7 @@
   <div align="center">
     <h1>Wcb Programmer's Guide</h1>
 
-    <h2>For Wcb Version 3.5</h2>
+    <h2>For Wcb Version 3.6</h2>
 
     <h3>by</h3>
 
@@ -161,8 +161,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>wcb3.5.tar.gz</code> for UNIX and
-  <code>wcb3_5.zip</code> for Windows.&nbsp; These files contain the same
+  <p>The distribution file is <code>wcb3.6.tar.gz</code> for UNIX and
+  <code>wcb3_6.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -184,21 +184,21 @@
   respectively.</p>
 
   <p>To install Wcb <i>on UNIX</i>, <code>cd</code> to the desired directory
-  and unpack the distribution file <code>wcb3.5.tar.gz</code>:</p>
+  and unpack the distribution file <code>wcb3.6.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c wcb3.5.tar.gz | tar -xf -
+gunzip -c wcb3.6.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>wcb3.5</code>, with the
+  <p>This command will create a directory named <code>wcb3.6</code>, with the
   subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>wcb3_5.zip</code> into the directory
-  <code>wcb3.5</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>wcb3_6.zip</code> into the directory
+  <code>wcb3.6</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Wcb <code>demos</code> directory is replaced with
@@ -280,7 +280,7 @@ namespace import wcb::<i>pattern</i> ?wcb::<i>pattern ...</i>?
   figure:</p>
 
   <blockquote>
-    <img src="entrytest.png" alt="entrytest" width="309" height="262">
+    <img src="entrytest.png" alt="entrytest" width="367" height="287">
   </blockquote>
 
   <p>For the topmost entry <code>.e1</code> we define two
@@ -381,7 +381,7 @@ wcb::callback .e3 before insert {wcb::checkEntryLen 10} \
   the corresponding bitmap in the label <code>.picture</code>.</p>
 
   <blockquote>
-    <img src="listboxtest1.png" alt="listboxtest1" width="179" height="145">
+    <img src="listboxtest1.png" alt="listboxtest1" width="201" height="169">
   </blockquote>
 
   <p>Here is the relevant code fragment from the script
@@ -452,7 +452,7 @@ proc showBitmap {w first args} {
   within the listbox.</p>
 
   <blockquote>
-    <img src="listboxtest2.png" alt="listboxtest2" width="189" height="216">
+    <img src="listboxtest2.png" alt="listboxtest2" width="212" height="249">
   </blockquote>
 
   <p>To solve this problem, we can either change the selection mode to have the
@@ -521,7 +521,7 @@ proc showPicture {w idx} {
   creates the text widget shown in the following figure:</p>
 
   <blockquote>
-    <img src="texttest1.png" alt="texttest1" width="364" height="279">
+    <img src="texttest1.png" alt="texttest1" width="376" height="291">
   </blockquote>
 
   <p>Here is the relevant code fragment:</p>
@@ -708,7 +708,7 @@ set index [$w index insert]
   shown in the following figure:</p>
 
   <blockquote>
-    <img src="texttest2.png" alt="texttest2" width= "364" height="279">
+    <img src="texttest2.png" alt="texttest2" width= "376" height="291">
   </blockquote>
 
   <p>Most of the code contained in the script <code>texttest2.tcl</code> is
