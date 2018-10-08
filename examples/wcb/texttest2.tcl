@@ -1,5 +1,5 @@
 #!/usr/bin/env wish
-## -*- tcl -*-
+
 #==============================================================================
 # Demo:	wcb::callback <text> before insert <callback> ...
 #	wcb::callback <text> before delete <callback>
@@ -10,7 +10,7 @@
 #	wcb::cancel
 #	wcb::extend <arg>
 #
-# Copyright (c) 2004-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.4	;# because of the undo mechanism for text widgets
