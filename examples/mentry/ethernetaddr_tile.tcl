@@ -1,9 +1,9 @@
 #!/usr/bin/env wish
-## -*- tcl -*-
+
 #==============================================================================
 # Demonstrates how to implement a multi-entry widget for Ethernet addresses.
 #
-# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require mentry_tile
@@ -168,7 +168,7 @@ ttk::button .base.get -text "Get from mentry" -command {
 #
 # Label .base.addr displaying the result of getEthernetAddr
 #
-ttk::label .base.addr -textvariable addr
+ttk::label .base.addr -textvariable addr -background white
 
 #
 # Separator .sep and button .close
