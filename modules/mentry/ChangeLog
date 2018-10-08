@@ -1,3 +1,27 @@
+2018-10-08  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl: Bumped the version number to 3.8; adapted to some changes in
+	  future Tcl and Tk releases (TIP 278, independent Tcl and Tk versions);
+	  updated the copyright information.
+
+	* COPYRIGHT.txt: Bumped the version number to 3.8.
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* doc/*.png: Updated the screenshots.
+
+	* scripts/*.tcl: Added support for the themes "aquativo", "Arc", and
+	  "clearlooks"; updated the support for several other themes; included
+	  the same version of "mwutil.tcl" as in Tablelist release 6.3; several
+	  code improvements and minor bug fixes; updated the copyright
+	  information.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/mentry/*.tcl: Various updates.
+
 2014-02-16  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 3.7; updated the
