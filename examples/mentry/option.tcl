@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains some Tk option database settings.
 #
-# Copyright (c) 2004-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -25,6 +25,6 @@ if {[string compare $winSys "x11"] == 0} {
     catch {font create TkDefaultFont -family Helvetica -size -12}
 
     option add *Font			TkDefaultFont
-    option add *selectBackground	#678db2
+    option add *selectBackground	#5294e2
     option add *selectForeground	white
 }

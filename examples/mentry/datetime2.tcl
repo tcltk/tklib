@@ -1,5 +1,5 @@
 #!/usr/bin/env wish
-## -*- tcl -*-
+
 #==============================================================================
 # Demo:	mentry::dateTimeMentry, mentry::putClockVal, mentry::getClockVal.
 #
@@ -85,7 +85,7 @@ button .get -text "Get from mentry" -command {
 #
 # Label .dateTime displaying the result of mentry::getClockVal
 #
-label .dateTime -textvariable dateTime
+label .dateTime -textvariable dateTime -background white
 
 #
 # Frame .sep and button .close
