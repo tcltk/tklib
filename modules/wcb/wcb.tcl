@@ -1,19 +1,18 @@
 #==============================================================================
 # Main Wcb package module.
 #
-# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tcl 8
-package require Tk  8
+package require Tk 8
 
 namespace eval wcb {
     #
     # Public variables:
     #
-    variable version	3.5
+    variable version	3.6
     variable library
-    if {$tcl_version >= 8.4} {
+    if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
     } else {
 	set library	[file dirname [info script]] ;# no "file normalize" yet
@@ -26,29 +25,29 @@ namespace eval wcb {
 			extend replace pathname
 
     #
-    # Utility procedures for Tk entry, tile entry,
-    # BWidget Entry, spinbox, and tile combobox widgets:
+    # Utility procedures for Tk entry, tile entry, BWidget Entry,
+    # Tk spinbox, tile spinbox, and tile combobox widgets:
     #
     namespace export	changeEntryText postInsertEntryLen \
 			postInsertEntryText postDeleteEntryText
 
     #
-    # Simple before-insert callback routines for Tk entry, tile
-    # entry, BWidget Entry, spinbox, and tile combobox widgets:
+    # Simple before-insert callback routines for Tk entry, tile entry,
+    # BWidget Entry, Tk spinbox, tile spinbox, and tile combobox widgets:
     #
     namespace export	checkStrForRegExp checkStrForAlpha checkStrForNum \
 			checkStrForAlnum convStrToUpper convStrToLower
 
     #
-    # Further before-insert callback routines for Tk entry, tile
-    # entry, BWidget Entry, spinbox, and tile combobox widgets:
+    # Further before-insert callback routines for Tk entry, tile entry,
+    # BWidget Entry, Tk spinbox, tile spinbox, and tile combobox widgets:
     #
     namespace export	checkEntryForInt  checkEntryForUInt \
 			checkEntryForReal checkEntryForFixed \
 			checkEntryLen
 
     #
-    # Simple before-insert callback routines for text widgets:
+    # Simple before-insert callback routines for text and ctext widgets:
     #
     namespace export	checkStrsForRegExp checkStrsForAlpha checkStrsForNum \
 			checkStrsForAlnum convStrsToUpper convStrsToLower
