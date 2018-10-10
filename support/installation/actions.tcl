@@ -50,6 +50,11 @@ proc _tab {module libdir} {
 	[file join $distribution modules $module scripts tclIndex] \
 	[file join $libdir $module scripts]
 
+    set cursorFile [file join $distribution modules $module scripts pencil.cur]
+    if {[file exists $cursorFile]} {
+	xcopyfile $cursorFile [file join $libdir $module scripts]
+    }
+
     return
 }
 
