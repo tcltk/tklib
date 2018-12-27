@@ -131,6 +131,8 @@ namespace eval ::Plotchart {
    set methodProc(xlogyplot,plaintextconfig) ConfigPlainText
    set methodProc(xlogyplot,canvas)         GetCanvas
    set methodProc(xlogyplot,deletedata)     DeleteData
+   set methodProc(xlogyplot,bindplot)       BindPlot
+   set methodProc(xlogyplot,bindlast)       BindLast
    set methodProc(logxyplot,title)          DrawTitle
    set methodProc(logxyplot,subtitle)       DrawSubtitle
    set methodProc(logxyplot,xtext)          DrawXtext
@@ -164,6 +166,8 @@ namespace eval ::Plotchart {
    set methodProc(logxyplot,plaintextconfig)   ConfigPlainText
    set methodProc(logxyplot,canvas)         GetCanvas
    set methodProc(logxyplot,deletedata)     DeleteData
+   set methodProc(logxyplot,bindplot)       BindPlot
+   set methodProc(logxyplot,bindlast)       BindLast
    set methodProc(logxlogyplot,title)          DrawTitle
    set methodProc(logxlogyplot,subtitle)       DrawSubtitle
    set methodProc(logxlogyplot,xtext)          DrawXtext
@@ -197,6 +201,8 @@ namespace eval ::Plotchart {
    set methodProc(logxlogyplot,plaintextconfig) ConfigPlainText
    set methodProc(logxlogyplot,canvas)         GetCanvas
    set methodProc(logxlogyplot,deletedata)     DeleteData
+   set methodProc(logxlogyplot,bindplot)       BindPlot
+   set methodProc(logxlogyplot,bindlast)       BindLast
    set methodProc(piechart,title)              DrawTitle
    set methodProc(piechart,subtitle)           DrawSubtitle
    set methodProc(piechart,plot)               DrawPie

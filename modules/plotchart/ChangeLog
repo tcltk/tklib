@@ -1,3 +1,8 @@
+2018-12-27  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl:  Add missing method definitions for binding events to log(x)-y, x-log(y) and log(x)-log(y) plots,
+                   as reported by Alexandru
+	* plotbind.tcl:   Apply the patch provided by Alexandru
+
 2017-09-16  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.man:  Added description of the normal plot and associated commands. The implementation was
 	                  already available, so no change in version number.
