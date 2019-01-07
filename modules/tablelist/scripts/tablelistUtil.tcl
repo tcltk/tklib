@@ -6,7 +6,7 @@
 #   - Public utility procedure
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -562,8 +562,8 @@ proc tablelist::descCount {win key} {
     if {[string compare $key "root"] == 0} {
 	return $data(itemCount)
     } else {
-	set count [llength $data($key-children)]
-	foreach child $data($key-children) {
+	set count [llength $data($key-childList)]
+	foreach child $data($key-childList) {
 	    incr count [descCount $win $child]
 	}
 	return $count
@@ -580,8 +580,8 @@ proc tablelist::nodeRow {win parentKey childIdx} {
     upvar ::tablelist::ns${win}::data data
 
     if {[isInteger $childIdx]} {
-	if {$childIdx < [llength $data($parentKey-children)]} {
-	    set childKey [lindex $data($parentKey-children) $childIdx]
+	if {$childIdx < [llength $data($parentKey-childList)]} {
+	    set childKey [lindex $data($parentKey-childList) $childIdx]
 	    return [keyToRow $win $childKey]
 	} else {
 	    return [expr {[keyToRow $win $parentKey] +
@@ -591,7 +591,7 @@ proc tablelist::nodeRow {win parentKey childIdx} {
 	return [expr {[keyToRow $win $parentKey] +
 		      [descCount $win $parentKey] + 1}]
     } elseif {[string first $childIdx "last"] == 0} {
-	set childKey [lindex $data($parentKey-children) end]
+	set childKey [lindex $data($parentKey-childList) end]
 	return [keyToRow $win $childKey]
     } else {
 	return -code error \
@@ -1006,7 +1006,8 @@ proc tablelist::moveColSelStates {oldArrName newArrName oldCol newCol} {
 #------------------------------------------------------------------------------
 proc tablelist::condUpdateListVar win {
     upvar ::tablelist::ns${win}::data data
-    if {$data(hasListVar) && [info exists ::$data(-listvariable)]} {
+    if {$data(hasListVar) &&
+	[uplevel #0 [list info exists $data(-listvariable)]]} {
 	upvar #0 $data(-listvariable) var
 	trace vdelete var wu $data(listVarTraceCmd)
 	set var {}
@@ -2642,7 +2643,12 @@ proc tablelist::adjustSeps win {
 	}
     } else {
 	if {!$data(-showlabels)} {
-	    incr mainSepHeight
+	    if {$data(hdr_itemCount) == 0} {
+		incr mainSepHeight
+	    } else {
+		incr mainSepHeight \
+		     [$data(hdrTxt) count -update -ypixels 1.0 2.0]
+	    }
 	}
 	place $w -in $data(hdrTxtFrmLbl)$col -anchor ne -bordermode outside \
 		 -height $mainSepHeight -relx 1.0 -x $sepX -y 1
@@ -2696,6 +2702,9 @@ proc tablelist::adjustSeps win {
 			  [winfo reqheight $data(hdrTxtFrm)]}]
     if {!$data(-showlabels)} {
 	incr sepHeight -1
+	if {$data(hdr_itemCount) != 0} {
+	    incr sepHeight [$data(hdrTxt) count -update -ypixels 1.0 2.0]
+	}
     }
     foreach w [winfo children $win] {
 	if {[regexp {^vsep[0-9]+$} [winfo name $w]]} {
@@ -2712,20 +2721,17 @@ proc tablelist::adjustSeps win {
 #------------------------------------------------------------------------------
 proc tablelist::getSepX {} {
     set x 1
-    variable usingTile
-    if {$usingTile} {
-	set currentTheme [getCurrentTheme]
-	variable xpStyle
-	if {([string compare $currentTheme "aqua"] == 0) ||
-	    ([string compare $currentTheme "xpnative"] == 0 && $xpStyle)} {
-	    set x 0
-	} elseif {[string compare $currentTheme "tileqt"] == 0} {
-	    switch -- [string tolower [tileqt_currentThemeName]] {
-		cleanlooks -
-		gtk+ -
-		oxygen	{ set x 0 }
-		qtcurve	{ set x 2 }
-	    }
+    set currentTheme [getCurrentTheme]
+    variable xpStyle
+    if {([string compare $currentTheme "aqua"] == 0) ||
+	([string compare $currentTheme "xpnative"] == 0 && $xpStyle)} {
+	set x 0
+    } elseif {[string compare $currentTheme "tileqt"] == 0} {
+	switch -- [string tolower [tileqt_currentThemeName]] {
+	    cleanlooks -
+	    gtk+ -
+	    oxygen	{ set x 0 }
+	    qtcurve	{ set x 2 }
 	}
     }
 
@@ -2746,10 +2752,7 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
     set compAllColWidths [expr {[string compare $whichWidths "allCols"] == 0}]
     set compAllLabelWidths \
 	[expr {[string compare $whichWidths "allLabels"] == 0}]
-
-    variable usingTile
-    set usingAquaTheme \
-	[expr {$usingTile && [string compare [getCurrentTheme] "aqua"] == 0}]
+    set usingAquaTheme [expr {[string compare [getCurrentTheme] "aqua"] == 0}]
 
     #
     # Configure the labels and compute the positions
@@ -2945,10 +2948,6 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 # sublabels.
 #------------------------------------------------------------------------------
 proc tablelist::adjustLabel {win col pixels alignment} {
-    variable usingTile
-    set usingAquaTheme \
-	[expr {$usingTile && [string compare [getCurrentTheme] "aqua"] == 0}]
-
     #
     # Apply some configuration options to the label and its sublabels (if any)
     #
@@ -2968,7 +2967,7 @@ proc tablelist::adjustLabel {win col pixels alignment} {
     set padR $padX
     set marginL $data(charWidth)
     set marginR $data(charWidth)
-    if {$usingAquaTheme} {
+    if {[string compare [getCurrentTheme] "aqua"] == 0} {
 	incr padL
 	incr marginL
 	if {$col == 0} {
@@ -3153,6 +3152,7 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 	    place forget $w-tl
 	}
 
+	variable usingTile
 	if {$usingTile} {
 	    set padding [$w cget -padding]
 	    set padT [lindex $padding 1]
@@ -3461,22 +3461,24 @@ proc tablelist::adjustHeaderHeight win {
 	$data(hdrTxtFrm) configure -height 1
 	if {$data(hdr_itemCount) == 0} {
 	    set hdrHeight 1
+	    set y -1
 	} else {
-	    set hdrHeight [$data(hdrTxt) count -update -ypixels 1.0 end]
+	    set hdrHeight [$data(hdrTxt) count -update -ypixels 2.0 end]
 	    incr hdrHeight 2
+	    set y -2
+	    $data(hdrTxt) yview 1
 	}
 	$data(hdr) configure -height $hdrHeight
 	$data(hdrFrm) configure -height 1
 
-	place configure $data(hdrTxt) -y -1
+	place configure $data(hdrTxt) -y $y
 	place configure $data(hdrFrm) -y -1
 	place configure $data(cornerLbl) -height 1 -y -1
     }
 
     set cornerFrmHeight $hdrHeight
     if {$data(hdr_itemCount) != 0} {
-	variable usingTile
-	if {$usingTile && [string compare [getCurrentTheme] "aqua"] == 0} {
+	if {[string compare [getCurrentTheme] "aqua"] == 0} {
 	    incr cornerFrmHeight -1
 	} else {
 	    incr cornerFrmHeight -2
@@ -3716,6 +3718,12 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 
 	$w tag remove select $fromTextIdx $toTextIdx
 
+	foreach tag [$w tag names] {
+	    if {[string match "*-*ground-*" $tag]} {
+		$w tag remove $tag $fromTextIdx $toTextIdx
+	    }
+	}
+
 	if {$data(isDisabled)} {
 	    $w tag add disabled $fromTextIdx $toTextIdx
 	}
@@ -3749,22 +3757,15 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	    # -(select)background and -(select)foreground column,
 	    # row, and cell configuration options in this row
 	    #
-	    findTabs $win $w $line $leftCol $leftCol tabIdx1 tabIdx2
-	    set lineTagNames [$w tag names $tabIdx1]
+	    set lineTagNames [$w tag names $line.0]
 	    set inStripe [expr {[lsearch -exact $lineTagNames stripe] >= 0}]
+	    findTabs $win $w $line $leftCol $leftCol tabIdx1 tabIdx2
 	    for {set col $leftCol} {$col <= $rightCol} {incr col} {
 		if {$data($col-hide) && !$canElide} {
 		    continue
 		}
 
 		set textIdx2 [$w index $tabIdx2+1$pu]
-
-		set cellTagNames [$w tag names $tabIdx2]
-		foreach tag $cellTagNames {
-		    if {[string match "*-*ground-*" $tag]} {
-			$w tag remove $tag $tabIdx1 $textIdx2
-		    }
-		}
 
 		if {$inStripe} {
 		    foreach opt {-stripebackground -stripeforeground} {
@@ -4023,6 +4024,13 @@ proc tablelist::hdr_updateColors win {
     }
 
     set w $data(hdrTxt)
+
+    foreach tag [$w tag names] {
+	if {[string match "*-*ground-*" $tag]} {
+	    $w tag remove $tag 2.0 end
+	}
+    }
+
     if {$data(isDisabled)} {
 	$w tag add disabled 2.0 end
     }
@@ -4049,13 +4057,6 @@ proc tablelist::hdr_updateColors win {
 	    }
 
 	    set textIdx2 [$w index $tabIdx2+1$pu]
-
-	    set cellTagNames [$w tag names $tabIdx2]
-	    foreach tag $cellTagNames {
-		if {[string match "*-*ground-*" $tag]} {
-		    $w tag remove $tag $tabIdx1 $textIdx2
-		}
-	    }
 
 	    foreach opt {-background -foreground} {
 		foreach level [list col row cell] \
@@ -5580,10 +5581,10 @@ proc tablelist::synchronize win {
     unset data(syncId)
 
     upvar #0 $data(-listvariable) var
-    if {[catch {foreach item $var {llength $item}}] != 0} {
+    if {[catch {foreach item $var {llength $item}} err] != 0} {
 	condUpdateListVar $win
 	return -code error "value of variable \"$data(-listvariable)\" is not\
-			    a list of lists"
+			    a list of lists ($err)"
     }
 
     set newCount [llength $var]

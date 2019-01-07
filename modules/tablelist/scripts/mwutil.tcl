@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Public utility procedures
 #
-# Copyright (c) 2000-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8
@@ -19,8 +19,13 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.10
-    variable library	[file dirname [info script]]
+    variable version	2.11
+    variable library
+    if {$::tcl_version >= 8.4} {
+	set library	[file dirname [file normalize [info script]]]
+    } else {
+	set library	[file dirname [info script]] ;# no "file normalize" yet
+    }
 
     #
     # Public procedures:
@@ -29,7 +34,8 @@ namespace eval mwutil {
 			defineKeyNav processTraversal focusNext focusPrev \
 			configureWidget fullConfigOpt fullOpt enumOpts \
 			configureSubCmd attribSubCmd hasattribSubCmd \
-			unsetattribSubCmd getScrollInfo
+			unsetattribSubCmd getScrollInfo hasFocus \
+			genMouseWheelEvent
 
     #
     # Make modified versions of the procedures tk_focusNext and
@@ -44,10 +50,10 @@ namespace eval mwutil {
 	#
 	# Build the procedures focusNext and focusPrev
 	#
-	foreach direction {Next Prev} {
-	    set procBody [info body tk_focus$direction]
+	foreach dir {Next Prev} {
+	    set procBody [info body tk_focus$dir]
 	    regsub -all {winfo children} $procBody {getChildren $class} procBody
-	    proc focus$direction {w class} $procBody
+	    proc focus$dir {w class} $procBody
 	}
     }
     makeFocusProcs 
@@ -140,7 +146,7 @@ proc mwutil::defineKeyNav class {
 #
 # Processes the given traversal event for the mega-widget of the specified
 # class containing the widget w if that mega-widget is not the only widget
-# receiving the focus during keyboard traversal within its top-level widget.
+# receiving the focus during keyboard traversal within its toplevel widget.
 #------------------------------------------------------------------------------
 proc mwutil::processTraversal {w class event} {
     set win [getAncestorByClass $w $class]
@@ -152,9 +158,9 @@ proc mwutil::processTraversal {w class event} {
     }
 
     if {[string compare $target $win] != 0} {
-	set focus [focus]
-	if {[string length $focus] != 0} {
-	    event generate $focus <<TraverseOut>>
+	set focusWin [focus -displayof $win]
+	if {[string length $focusWin] != 0} {
+	    event generate $focusWin <<TraverseOut>>
 	}
 
 	focus $target
@@ -509,5 +515,37 @@ proc mwutil::getScrollInfo argList {
 	}
     } else {
 	return -code error "unknown option \"$opt\": must be moveto or scroll"
+    }
+}
+
+#------------------------------------------------------------------------------
+# mwutil::hasFocus
+#
+# Returns a boolean value indicating whether the focus window is (a descendant
+# of) the widget w.
+#------------------------------------------------------------------------------
+proc mwutil::hasFocus w {
+    return [expr {[string first $w. [focus -displayof $w].] == 0}]
+}
+
+#------------------------------------------------------------------------------
+# mwutil::genMouseWheelEvent
+#
+# Generates a mouse wheel event with the given root coordinates and delta on
+# the widget w.
+#------------------------------------------------------------------------------
+proc mwutil::genMouseWheelEvent {w event rootX rootY delta} {
+    set needsFocus [expr {[package vcompare $::tk_patchLevel "8.6b2"] < 0 &&
+	[string compare $::tcl_platform(platform) "windows"] == 0}]
+
+    if {$needsFocus} {
+	set focusWin [focus -displayof $w]
+	focus $w
+    }
+
+    event generate $w $event -rootx $rootX -rooty $rootY -delta $delta
+
+    if {$needsFocus} {
+	focus $focusWin
     }
 }

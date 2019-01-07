@@ -7,7 +7,7 @@
 #   - Public procedures related to sorting
 #   - Private procedures implementing the sorting
 #
-# Copyright (c) 2000-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -639,7 +639,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 proc tablelist::sortChildren {win parentKey sortCmd itemListName} {
     upvar $itemListName itemList ::tablelist::ns${win}::data data
 
-    set childKeyList $data($parentKey-children)
+    set childKeyList $data($parentKey-childList)
     if {[llength $childKeyList] == 0} {
 	return ""
     }
@@ -656,11 +656,11 @@ proc tablelist::sortChildren {win parentKey sortCmd itemListName} {
     #
     # Update the lists and invoke the procedure recursively for the children
     #
-    set data($parentKey-children) {}
+    set data($parentKey-childList) {}
     foreach item $childItemList {
 	lappend itemList $item
 	set childKey [lindex $item end]
-	lappend data($parentKey-children) $childKey
+	lappend data($parentKey-childList) $childKey
 
 	sortChildren $win $childKey $sortCmd itemList
     }
