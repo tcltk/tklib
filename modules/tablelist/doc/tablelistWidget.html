@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.3</h2>
+    <h2>For Tablelist Version 6.4</h2>
 
     <h3>by</h3>
 
@@ -303,6 +303,12 @@
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win7Aero</b>|<b>win7Classic</b>|<b>win10</b>|<b>winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b>|<b>yuyo</b></code></dd>
 
     <dd><code><b><a href="#width">-width</a></b> <i>characters</i></code></dd>
+
+    <dd><code><b><a href="#xmousewheelwindow">-xmousewheelwindow</a></b>
+    <i>window</i></code></dd>
+
+    <dd><code><b><a href="#ymousewheelwindow">-ymousewheelwindow</a></b>
+    <i>window</i></code></dd>
 
     <dt class="tm"><a href="#col_options">COLUMN CONFIGURATION OPTIONS</a></dt>
 
@@ -3334,11 +3340,12 @@ for {set row 0} {$row &lt; 1000} {incr row} {
         differences between them are as follows:</p>
 
         <ol>
-          <li>The command specified by the <code><b>-populatecommand</b></code>
-          option is only invoked for rows whose children have not been inserted
-          yet, while the one specified by <code><b>-expandcommand</b></code> is
-          always invoked before expanding a row, regardless of whether the
-          children of that row are already present in the widget or not.</li>
+          <li class="tm">The command specified by the
+          <code><b>-populatecommand</b></code> option is only invoked for rows
+          whose children have not been inserted yet, while the one specified by
+          <code><b>-expandcommand</b></code> is always invoked before expanding
+          a row, regardless of whether the children of that row are already
+          present in the widget or not.</li>
 
           <li class="tm">The command specified by the
           <code><b>-expandcommand</b></code> option may perform visual changes
@@ -5604,6 +5611,158 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
       </blockquote>
     </dd>
 
+    <dd id="xmousewheelwindow">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+
+          <td><code><b>-xmousewheelwindow</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+
+          <td><code><b>&nbsp;xMouseWheelWindow</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+
+          <td><code><b>&nbsp;MouseWheelWindow</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>This option is only relevant if the mouse wheel events are reported
+        to the widget under the pointer rather than to the one having the
+        focus.&nbsp; This condition is fulfilled on X11 and Mac OS X, and for
+        Tk 8.6b2 and later on Windows, too (in earlier Tk versions the mouse
+        wheel events on Windows were sent to the widget having the focus).</p>
+
+        <p>The <code><b>-xmousewheelwindow</b></code> option specifies the path
+        name of the window to which the default bindings for the binding tags
+        <code><b><a href="#body_bindings">TablelistBody</a></b></code> and
+        <code><b><a href="#edit_bindings">TablelistEdit</a></b></code> should
+        redirect the mouse wheel events along the x axis via&nbsp;
+        <code><b>event generate</b></code>&nbsp; if the focus window on the
+        display containing the tablelist widget is outside the tablelist.&nbsp;
+        The default is an empty string, meaning that the mouse wheel events
+        along the x axis received by a widget having one of the two
+        above-mentioned binding tags will give rise to horizontal scrolling of
+        the tablelist or its edit window, regardless of whether the focus is
+        inside or outside the tablelist widget.</p>
+
+        <p><b>REMARK 1:</b>&nbsp; The mouse wheel events along the horizontal
+        axis are <code><b>&lt;Shift-MouseWheel&gt;</b></code> on Windows,
+        <code><b>&lt;Shift-MouseWheel&gt;</b></code> and
+        <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code> on Mac OS X, and
+        <code><b>&lt;Shift-MouseWheel&gt;</b></code>,
+        <code><b>&lt;Shift-Button-4&gt;</b></code> and
+        <code><b>&lt;Shift-Button-5&gt;</b></code> on X11 (where
+        <code><b>&lt;Shift-MouseWheel&gt;</b></code> is not triggered by the X
+        server, but can be produced using&nbsp;
+        <code><b>event generate</b></code>).</p>
+
+        <p><b>REMARK 2:</b>&nbsp; If the tablelist is contained in a scrollable
+        widget container like a BWidget ScrollableFrame or
+        iwidgets::scrolledframe, and you set this option to the path name of
+        that container window or that of the containing toplevel widget, then a
+        horizontal mouse wheel event over the tablelist's body will be handled
+        as follows:</p>
+
+        <ul>
+          <li class="tm">If the focus is inside the tablelist widget then the
+          event will scroll the tablelist or its edit window horizontally and
+          no further processing of the event will take place.</li>
+
+          <li class="tm">If the focus is outside the tablelist widget then no
+          scrolling of the tablelist's body or edit window will happen.&nbsp;
+          Instead, the event will be redirected to the widget container with
+          the aid of the&nbsp; <code><b>event generate</b></code>&nbsp;
+          command.&nbsp; This in turn will give rise to horizontal scrolling of
+          the widget container, provided that the containing toplevel widget or
+          the binding tag <code><b>all</b></code> has the necessary mouse wheel
+          event bindings.</li>
+        </ul>
+      </blockquote>
+    </dd>
+
+    <dd id="ymousewheelwindow">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+
+          <td><code><b>-ymousewheelwindow</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+
+          <td><code><b>&nbsp;yMouseWheelWindow</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+
+          <td><code><b>&nbsp;MouseWheelWindow</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>This option is only relevant if the mouse wheel events are reported
+        to the widget under the pointer rather than to the one having the
+        focus.&nbsp; This condition is fulfilled on X11 and Mac OS X, and for
+        Tk 8.6b2 and later on Windows, too (in earlier Tk versions the mouse
+        wheel events on Windows were sent to the widget having the focus).</p>
+
+        <p>The <code><b>-ymousewheelwindow</b></code> option specifies the path
+        name of the window to which the default bindings for the binding tags
+        <code><b><a href="#body_bindings">TablelistBody</a></b></code> and
+        <code><b><a href="#edit_bindings">TablelistEdit</a></b></code> should
+        redirect the mouse wheel events along the y axis via&nbsp;
+        <code><b>event generate</b></code>&nbsp; if the focus window on the
+        display containing the tablelist widget is outside the tablelist.&nbsp;
+        The default is an empty string, meaning that the mouse wheel events
+        along the y axis received by a widget having one of the two
+        above-mentioned binding tags will give rise to vertical scrolling of
+        the tablelist or its edit window, regardless of whether the focus is
+        inside or outside the tablelist widget.</p>
+
+        <p><b>REMARK 1:</b>&nbsp; The mouse wheel events along the vertical
+        axis are <code><b>&lt;MouseWheel&gt;</b></code> on Windows,
+        <code><b>&lt;MouseWheel&gt;</b></code> and
+        <code><b>&lt;Option-MouseWheel&gt;</b></code> on Mac OS X, and
+        <code><b>&lt;MouseWheel&gt;</b></code>,
+        <code><b>&lt;Button-4&gt;</b></code> and
+        <code><b>&lt;Button-5&gt;</b></code> on X11 (where 
+        <code><b>&lt;MouseWheel&gt;</b></code> is not triggered by the X
+        server, but can be produced using&nbsp;
+        <code><b>event generate</b></code>).</p>
+
+        <p><b>REMARK 2:</b>&nbsp; If the tablelist is contained in a scrollable
+        widget container like a BWidget ScrollableFrame or
+        iwidgets::scrolledframe, and you set this option to the path name of
+        that container window or that of the containing toplevel widget, then a
+        vertical mouse wheel event over the tablelist's body will be handled as
+        follows:</p>
+
+        <ul>
+          <li class="tm">If the focus is inside the tablelist widget then the
+          event will scroll the tablelist or its edit window vertically and no
+          further processing of the event will take place.</li>
+
+          <li class="tm">If the focus is outside the tablelist widget then no
+          scrolling of the tablelist's body or edit window will happen.&nbsp;
+          Instead, the event will be redirected to the widget container with
+          the aid of the&nbsp; <code><b>event generate</b></code>&nbsp;
+          command.&nbsp; This in turn will give rise to vertical scrolling of
+          the widget container, provided that the containing toplevel widget or
+          the binding tag <code><b>all</b></code> has the necessary mouse wheel
+          event bindings.</li>
+        </ul>
+      </blockquote>
+    </dd>
+
     <dt id="col_options"><b>COLUMN CONFIGURATION OPTIONS</b></dt>
 
     <dd>The following options are currently supported by the <code><b><a href=
@@ -7366,9 +7525,8 @@ proc handleTblDrop {tbl data} {
           <td><code><b>&lt;&lt;TablelistViewUpdated&gt;&gt;</b></code></td>
 
           <td>Generated whenever the tablelist widget has finished updating its
-          view.&nbsp; Updating the view of a tablelist widget is a complex
-          operation, which, for performance reasons, is performed at idle
-          time.</td>
+          view (which, for performance reasons, is performed at idle
+          time).</td>
 
           <td>Not used.</td>
         </tr>
@@ -7999,6 +8157,9 @@ proc onTblDragEnd {w action} {
         . . .
     }
 }
+
+<i># Make sure to register the tablelist's body explicitly as a drag source:</i>
+registerDragSrc [$tbl bodypath]
 </pre>
           </blockquote>
         </dd>
@@ -8033,9 +8194,19 @@ proc tblDragEndCmd {dragSrc dropTarget op dataType data result} {
         . . .
     }
 }
+
+<i># Make sure to register the tablelist's body explicitly as a drag source:</i>
+registerDragSrc [$tbl bodypath]
 </pre>
           </blockquote>
         </dd>
+
+        <dd>In both examples above we also invoke the procedure
+        <code>registerDragSrc</code> explicitly for the tablelist's body,
+        because the widget registered as a drag source by its invocation on a
+        <code>&lt;Button-1&gt;</code> event can be different from the body
+        component, and the default bindings need the information whether
+        <i>the tablelist's body</i> was registered as a drag source.</dd>
 
         <dt class="tm" id="canceledediting"><code><i>pathName</i>
         <b>canceledediting</b></code></dt>
@@ -10372,7 +10543,7 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
         cell being edited is brought into view; (b) else, if exactly one item
         is selected then the view is shifted to bring that item into view; (c)
         else, if the tablelist's body is the most recent window to have the
-        input focus among all the windows in the same top-level as the widget
+        input focus among all the windows in the same toplevel as the widget
         itself then the currently active item is brought into view.</dd>
 
         <dt class="tm" id="sortbycolumn"><code><i>pathName</i>
@@ -10798,8 +10969,9 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
     <dt class="tm" id="hdr_subcommands"><b>HEADER-RELATED SUBCOMMANDS</b></dt>
 
     <dd>
-      The <code><b>header</b></code> tablelist command, used to invoke various
-      operations on the header items, has the following general form:
+      The <code><b><a href="#header">header</a></b></code> tablelist command,
+      used to invoke various operations on the header items, has the following
+      general form:
 
       <blockquote>
         <pre>
