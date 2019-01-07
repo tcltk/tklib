@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of the tablelist move and movecolumn subcommands.
 #
-# Copyright (c) 2003-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ proc tablelist::moveRow {win source target} {
 	}
 
 	set targetChildIdx \
-	    [lsearch -exact $data($parentKey-children) $targetKey]
+	    [lsearch -exact $data($parentKey-childList) $targetKey]
     }
 
     return [moveNode $win $source $parentKey $targetChildIdx]
@@ -223,24 +223,24 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	#
 	# Update the tree information
 	#
-	set targetBuddyCount [llength $data($targetParentKey-children)]
+	set targetBuddyCount [llength $data($targetParentKey-childList)]
 	set sourceChildIdx \
-	    [lsearch -exact $data($sourceParentKey-children) $sourceKey]
-	set data($sourceParentKey-children) \
-	    [lreplace $data($sourceParentKey-children) \
+	    [lsearch -exact $data($sourceParentKey-childList) $sourceKey]
+	set data($sourceParentKey-childList) \
+	    [lreplace $data($sourceParentKey-childList) \
 	     $sourceChildIdx $sourceChildIdx]
 	if {[string first $targetChildIdx "end"] == 0} {
 	    set targetChildIdx $targetBuddyCount
 	}
 	if {$targetChildIdx >= $targetBuddyCount} {
-	    lappend data($targetParentKey-children) $sourceKey
+	    lappend data($targetParentKey-childList) $sourceKey
 	} else {
 	    if {[string compare $sourceParentKey $targetParentKey] == 0 &&
 		$sourceChildIdx < $targetChildIdx} {
 		incr targetChildIdx -1
 	    }
-	    set data($targetParentKey-children) \
-		[linsert $data($targetParentKey-children) \
+	    set data($targetParentKey-childList) \
+		[linsert $data($targetParentKey-childList) \
 		 $targetChildIdx $sourceKey]
 	}
 	set data($sourceKey-parent) $targetParentKey
@@ -249,7 +249,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	# If the list of children of the source's parent has become empty
 	# then set the parent's indentation image to the indented one
 	#
-	if {[llength $data($sourceParentKey-children)] == 0 &&
+	if {[llength $data($sourceParentKey-childList)] == 0 &&
 	    [info exists data($sourceParentKey,$treeCol-indent)]} {
 	    collapseSubCmd $win [list $sourceParentKey -partly]
 	    set data($sourceParentKey,$treeCol-indent) [strMap \
@@ -292,7 +292,8 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
     #
     # Update the list variable if present
     #
-    if {$data(hasListVar) && [info exists ::$data(-listvariable)]} {
+    if {$data(hasListVar) &&
+	[uplevel #0 [list info exists $data(-listvariable)]]} {
 	upvar #0 $data(-listvariable) var
 	trace vdelete var wu $data(listVarTraceCmd)
 	set var [lreplace $var $source $source]
@@ -344,8 +345,8 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	#
 	# Save the source node's list of children and temporarily empty it
 	#
-	set sourceChildList $data($sourceKey-children)
-	set data($sourceKey-children) {}
+	set sourceChildList $data($sourceKey-childList)
+	set data($sourceKey-childList) {}
 
 	#
 	# Move the source item's descendants
@@ -379,7 +380,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	#
 	# Restore the source node's list of children
 	#
-	set data($sourceKey-children) $sourceChildList
+	set data($sourceKey-childList) $sourceChildList
 
 	#
 	# Adjust the columns, restore the stripes in the body text widget,

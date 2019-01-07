@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -67,6 +67,8 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-tooltipaddcommand)	{}
     lappend configSpecs(-tooltipdelcommand)	{}
     lappend configSpecs(-treecolumn)		0
+    lappend configSpecs(-xmousewheelwindow)	{}
+    lappend configSpecs(-ymousewheelwindow)	{}
 
     #
     # Append the default values of the configuration options
@@ -1284,6 +1286,14 @@ proc tablelist::doConfig {win opt val} {
 		    }
 		    set data($opt) $val
 		    updateListboxSetgridOpt $win
+		}
+		-xmousewheelwindow -
+		-ymousewheelwindow {
+		    if {[string length $val] == 0 || [winfo exists $val]} {
+			set data($opt) $val
+		    } else {
+			return -code error "bad window path name \"$val\""
+		    }
 		}
 		-xscrollcommand {
 		    #
@@ -2817,7 +2827,7 @@ proc tablelist::doRowConfig {row win opt val} {
 	    # Replace the row's content in the list variable if present
 	    #
 	    if {$inBody && $data(hasListVar) &&
-		[info exists ::$data(-listvariable)]} {
+		[uplevel #0 [list info exists $data(-listvariable)]]} {
 		upvar #0 $data(-listvariable) var
 		trace vdelete var wu $data(listVarTraceCmd)
 		set var [lreplace $var $row $row $newItem]
@@ -3651,7 +3661,7 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    # Replace the cell's content in the list variable if present
 	    #
 	    if {$inBody && $data(hasListVar) &&
-		[info exists ::$data(-listvariable)]} {
+		[uplevel #0 [list info exists $data(-listvariable)]]} {
 		upvar #0 $data(-listvariable) var
 		trace vdelete var wu $data(listVarTraceCmd)
 		set var [lreplace $var $row $row \
@@ -3988,7 +3998,8 @@ proc tablelist::makeListVar {win varName} {
 	# If there is an old list variable associated with the
 	# widget then remove the trace set on this variable
 	#
-	if {$data(hasListVar) && [info exists ::$data(-listvariable)]} {
+	if {$data(hasListVar) &&
+	    [uplevel #0 [list info exists $data(-listvariable)]]} {
 	    synchronize $win
 	    upvar #0 $data(-listvariable) oldVar
 	    trace vdelete oldVar wu $data(listVarTraceCmd)
@@ -3999,8 +4010,9 @@ proc tablelist::makeListVar {win varName} {
     #
     # The list variable may be an array element but must not be an array
     #
+    upvar #0 $varName var
     if {![regexp {^(.*)\((.*)\)$} $varName dummy name1 name2]} {
-	if {[array exists ::$varName]} {
+	if {[array exists var]} {
 	    return -code error "variable \"$varName\" is array"
 	}
 
@@ -4011,11 +4023,10 @@ proc tablelist::makeListVar {win varName} {
     #
     # The value of the list variable (if any) must be a list of lists
     #
-    upvar #0 $varName var
     if {[info exists var]} {
-	if {[catch {foreach item $var {llength $item}}] != 0} {
+	if {[catch {foreach item $var {llength $item}} err] != 0} {
 	    return -code error "value of variable \"$varName\" is not a list\
-				of lists"
+				of lists ($err)"
 	}
     }
 
@@ -4023,7 +4034,8 @@ proc tablelist::makeListVar {win varName} {
     # If there is an old list variable associated with the
     # widget then remove the trace set on this variable
     #
-    if {$data(hasListVar) && [info exists ::$data(-listvariable)]} {
+    if {$data(hasListVar) &&
+	[uplevel #0 [list info exists $data(-listvariable)]]} {
 	synchronize $win
 	upvar #0 $data(-listvariable) oldVar
 	trace vdelete oldVar wu $data(listVarTraceCmd)

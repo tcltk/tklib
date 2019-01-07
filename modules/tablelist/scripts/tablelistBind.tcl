@@ -9,7 +9,7 @@
 #   - Binding tag TablelistHeader
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -277,7 +277,8 @@ proc tablelist::cleanup win {
     # If there is a list variable associated with the
     # widget then remove the trace set on this variable
     #
-    if {$data(hasListVar) && [info exists ::$data(-listvariable)]} {
+    if {$data(hasListVar) &&
+	[uplevel #0 [list info exists $data(-listvariable)]]} {
 	upvar #0 $data(-listvariable) var
 	trace vdelete var wu $data(listVarTraceCmd)
     }
@@ -760,7 +761,6 @@ proc tablelist::defineTablelistBody {} {
     foreach event {<space> <Select>} {
 	bind TablelistBody $event {
 	    set tablelist::W [tablelist::getTablelistPath %W]
-
 	    tablelist::beginSelect $tablelist::W \
 		[$tablelist::W index active] [$tablelist::W columnindex active]
 	}
@@ -768,7 +768,6 @@ proc tablelist::defineTablelistBody {} {
     foreach event {<Shift-Control-space> <Shift-Select>} {
 	bind TablelistBody $event {
 	    set tablelist::W [tablelist::getTablelistPath %W]
-
 	    tablelist::beginExtend $tablelist::W \
 		[$tablelist::W index active] [$tablelist::W columnindex active]
 	}
@@ -777,7 +776,6 @@ proc tablelist::defineTablelistBody {} {
 	bind TablelistBody $event {
 	    if {!$tablelist::strictTk} {
 		set tablelist::W [tablelist::getTablelistPath %W]
-
 		tablelist::beginToggle $tablelist::W \
 		    [$tablelist::W index active] \
 		    [$tablelist::W columnindex active]
@@ -792,7 +790,6 @@ proc tablelist::defineTablelistBody {} {
     }
     bind TablelistBody $eventArr(SelectNone) {
 	set tablelist::W [tablelist::getTablelistPath %W]
-
 	if {[string compare [$tablelist::W cget -selectmode] "browse"] != 0} {
 	    $tablelist::W selection clear 0 end
 	    event generate $tablelist::W <<TablelistSelect>>
@@ -813,33 +810,95 @@ proc tablelist::defineTablelistBody {} {
 	if {[string compare $winSys "classic"] == 0 ||
 	    [string compare $winSys "aqua"] == 0} {
 	    bind TablelistBody <MouseWheel> {
-		[tablelist::getTablelistPath %W] yview scroll [expr {-%D}] units
-		break
-	    }
-	    bind TablelistBody <Shift-MouseWheel> {
-		[tablelist::getTablelistPath %W] xview scroll [expr {-%D}] units
-		break
+		set tablelist::W [tablelist::getTablelistPath %W]
+		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
+		if {[winfo exists $tablelist::w]} {
+		    if {[mwutil::hasFocus $tablelist::W]} {
+			$tablelist::W yview scroll [expr {-%D}] units
+		    } else {
+			mwutil::genMouseWheelEvent $tablelist::w \
+			    <MouseWheel> %X %Y %D
+		    }
+		    break
+		} else {
+		    $tablelist::W yview scroll [expr {-%D}] units
+		}
 	    }
 	    bind TablelistBody <Option-MouseWheel> {
-		[tablelist::getTablelistPath %W] yview scroll \
-		    [expr {-10 * %D}] units
-		break
+		set tablelist::W [tablelist::getTablelistPath %W]
+		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
+		if {[winfo exists $tablelist::w]} {
+		    if {[mwutil::hasFocus $tablelist::W]} {
+			$tablelist::W yview scroll [expr {-10 * %D}] units
+		    } else {
+			mwutil::genMouseWheelEvent $tablelist::w \
+			    <Option-MouseWheel> %X %Y %D
+		    }
+		    break
+		} else {
+		    $tablelist::W yview scroll [expr {-10 * %D}] units
+		}
+	    }
+	    bind TablelistBody <Shift-MouseWheel> {
+		set tablelist::W [tablelist::getTablelistPath %W]
+		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
+		if {[winfo exists $tablelist::w]} {
+		    if {[mwutil::hasFocus $tablelist::W]} {
+			$tablelist::W xview scroll [expr {-%D}] units
+		    } else {
+			mwutil::genMouseWheelEvent $tablelist::w \
+			    <Shift-MouseWheel> %X %Y %D
+		    }
+		    break
+		} else {
+		    $tablelist::W xview scroll [expr {-%D}] units
+		}
 	    }
 	    bind TablelistBody <Shift-Option-MouseWheel> {
-		[tablelist::getTablelistPath %W] xview scroll \
-		    [expr {-10 * %D}] units
-		break
+		set tablelist::W [tablelist::getTablelistPath %W]
+		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
+		if {[winfo exists $tablelist::w]} {
+		    if {[mwutil::hasFocus $tablelist::W]} {
+			$tablelist::W xview scroll [expr {-10 * %D}] units
+		    } else {
+			mwutil::genMouseWheelEvent $tablelist::w \
+			    <Shift-Option-MouseWheel> %X %Y %D
+		    }
+		    break
+		} else {
+		    $tablelist::W xview scroll [expr {-10 * %D}] units
+		}
 	    }
 	} else {
 	    bind TablelistBody <MouseWheel> {
-		[tablelist::getTablelistPath %W] yview scroll \
-		    [expr {-(%D / 120) * 4}] units
-		break
+		set tablelist::W [tablelist::getTablelistPath %W]
+		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
+		if {[winfo exists $tablelist::w]} {
+		    if {[mwutil::hasFocus $tablelist::W]} {
+			$tablelist::W yview scroll [expr {-(%D/120) * 4}] units
+		    } else {
+			mwutil::genMouseWheelEvent $tablelist::w \
+			    <MouseWheel> %X %Y %D
+		    }
+		    break
+		} else {
+		    $tablelist::W yview scroll [expr {-(%D/120) * 4}] units
+		}
 	    }
 	    bind TablelistBody <Shift-MouseWheel> {
-		[tablelist::getTablelistPath %W] xview scroll \
-		    [expr {-(%D / 120) * 4}] units
-		break
+		set tablelist::W [tablelist::getTablelistPath %W]
+		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
+		if {[winfo exists $tablelist::w]} {
+		    if {[mwutil::hasFocus $tablelist::W]} {
+			$tablelist::W xview scroll [expr {-(%D/120) * 4}] units
+		    } else {
+			mwutil::genMouseWheelEvent $tablelist::w \
+			    <Shift-MouseWheel> %X %Y %D
+		    }
+		    break
+		} else {
+		    $tablelist::W xview scroll [expr {-(%D/120) * 4}] units
+		}
 	    }
 
 	    foreach event {<Control-Key-a> <Control-Lock-Key-A>} {
@@ -850,7 +909,6 @@ proc tablelist::defineTablelistBody {} {
 	    foreach event {<Shift-Control-Key-A> <Shift-Control-Lock-Key-a>} {
 		bind TablelistBody $event {
 		    set tablelist::W [tablelist::getTablelistPath %W]
-
 		    if {[string compare [$tablelist::W cget -selectmode] \
 			 "browse"] != 0} {
 			$tablelist::W selection clear 0 end
@@ -864,26 +922,70 @@ proc tablelist::defineTablelistBody {} {
     if {[string compare $winSys "x11"] == 0} {
 	bind TablelistBody <Button-4> {
 	    if {!$tk_strictMotif} {
-		[tablelist::getTablelistPath %W] yview scroll -5 units
-		break
+		set tablelist::W [tablelist::getTablelistPath %W]
+		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
+		if {[winfo exists $tablelist::w]} {
+		    if {[mwutil::hasFocus $tablelist::W]} {
+			$tablelist::W yview scroll -5 units
+		    } else {
+			event generate $tablelist::w \
+			    <Button-4> -rootx %X -rooty %Y
+		    }
+		    break
+		} else {
+		    $tablelist::W yview scroll -5 units
+		}
 	    }
 	}
 	bind TablelistBody <Button-5> {
 	    if {!$tk_strictMotif} {
-		[tablelist::getTablelistPath %W] yview scroll 5 units
-		break
+		set tablelist::W [tablelist::getTablelistPath %W]
+		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
+		if {[winfo exists $tablelist::w]} {
+		    if {[mwutil::hasFocus $tablelist::W]} {
+			$tablelist::W yview scroll 5 units
+		    } else {
+			event generate $tablelist::w \
+			    <Button-5> -rootx %X -rooty %Y
+		    }
+		    break
+		} else {
+		    $tablelist::W yview scroll 5 units
+		}
 	    }
 	}
 	bind TablelistBody <Shift-Button-4> {
 	    if {!$tk_strictMotif} {
-		[tablelist::getTablelistPath %W] xview scroll -5 units
-		break
+		set tablelist::W [tablelist::getTablelistPath %W]
+		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
+		if {[winfo exists $tablelist::w]} {
+		    if {[mwutil::hasFocus $tablelist::W]} {
+			$tablelist::W xview scroll -5 units
+		    } else {
+			event generate $tablelist::w <Shift-Button-4> \
+			    -rootx %X -rooty %Y
+		    }
+		    break
+		} else {
+		    $tablelist::W xview scroll -5 units
+		}
 	    }
 	}
 	bind TablelistBody <Shift-Button-5> {
 	    if {!$tk_strictMotif} {
-		[tablelist::getTablelistPath %W] xview scroll 5 units
-		break
+		set tablelist::W [tablelist::getTablelistPath %W]
+		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
+		if {[winfo exists $tablelist::w]} {
+		    if {[mwutil::hasFocus $tablelist::W]} {
+			$tablelist::W xview scroll 5 units
+		    } else {
+			event generate $tablelist::w <Shift-Button-5> \
+			    -rootx %X -rooty %Y
+		    }
+		    break
+		} else {
+		    $tablelist::W xview scroll 5 units
+		}
 	    }
 	}
     }
@@ -1029,9 +1131,10 @@ proc tablelist::showOrHideTooltip {win row col X Y} {
     }
     set data(prevCell) $row,$col
     if {$row >= 0 && $col >= 0} {
-	set focus [focus -displayof $win]
-	if {[string length $focus] == 0 || [string first $win $focus] != 0 ||
-	    [string compare [winfo toplevel $focus] \
+	set focusWin [focus -displayof $win]
+	if {[string length $focusWin] == 0 ||
+	    [string first $win. $focusWin] != 0 ||
+	    [string compare [winfo toplevel $focusWin] \
 	     [winfo toplevel $win]] == 0} {
 	    uplevel #0 $data(-tooltipaddcommand) [list $win $row $col]
 	    if {[destroyed $win]} {
@@ -1991,7 +2094,7 @@ proc tablelist::condEvalInvokeCmd win {
 #------------------------------------------------------------------------------
 # tablelist::cancelMove
 #
-# This procedure is invoked to process <Escape> events in the top-level window
+# This procedure is invoked to process <Escape> events in the toplevel window
 # containing the tablelist widget win during a row move operation.  It cancels
 # the action in progress.
 #------------------------------------------------------------------------------
@@ -2646,8 +2749,8 @@ proc tablelist::selectAll win {
 #------------------------------------------------------------------------------
 # tablelist::isDragSrc
 #
-# Checks whether the body component of the tablelist widget win is a BWidget or
-# TkDND drag source for mouse button 1.
+# Checks whether the body component of the tablelist widget win is a drag
+# source for mouse button 1.
 #------------------------------------------------------------------------------
 proc tablelist::isDragSrc win {
     upvar ::tablelist::ns${win}::data data
@@ -2936,9 +3039,10 @@ proc tablelist::hdr_showOrHideTooltip {win row col X Y} {
     }
     set data(hdr_prevCell) $row,$col
     if {$row >= 0 && $col >= 0} {
-	set focus [focus -displayof $win]
-	if {[string length $focus] == 0 || [string first $win $focus] != 0 ||
-	    [string compare [winfo toplevel $focus] \
+	set focusWin [focus -displayof $win]
+	if {[string length $focusWin] == 0 ||
+	    [string first $win. $focusWin] != 0 ||
+	    [string compare [winfo toplevel $focusWin] \
 	     [winfo toplevel $win]] == 0} {
 	    uplevel #0 $data(-tooltipaddcommand) [list $win h$row $col]
 	    if {[destroyed $win]} {
@@ -3083,10 +3187,10 @@ proc tablelist::labelEnter {w X Y x} {
 	    return ""
 	}
 	set data(prevCol) $col
-	set focus [focus -displayof $win]
-	if {[string length $focus] == 0 ||
-	    [string first $win $focus] != 0 ||
-	    [string compare [winfo toplevel $focus] \
+	set focusWin [focus -displayof $win]
+	if {[string length $focusWin] == 0 ||
+	    [string first $win. $focusWin] != 0 ||
+	    [string compare [winfo toplevel $focusWin] \
 	     [winfo toplevel $win]] == 0} {
 	    uplevel #0 $data(-tooltipaddcommand) [list $win -1 $col]
 	    if {[destroyed $win]} {
@@ -3712,7 +3816,7 @@ proc tablelist::labelDblB1 {w x shiftPressed} {
 #------------------------------------------------------------------------------
 # tablelist::escape
 #
-# This procedure is invoked to process <Escape> events in the top-level window
+# This procedure is invoked to process <Escape> events in the toplevel window
 # containing the tablelist widget win during a column resize or move operation.
 # The procedure cancels the action in progress and, in case of column resizing,
 # it restores the initial width of the respective column.
@@ -3813,7 +3917,6 @@ proc tablelist::inResizeArea {w x colName} {
     if {![parseLabelPath $w dummy _col]} {
 	return 0
     }
-
 
     upvar $colName col
     if {$x >= [winfo width $w] - 5} {

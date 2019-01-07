@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -186,7 +186,9 @@ namespace eval tablelist {
 	-treecolumn		 {treeColumn		  TreeColumn	      w}
 	-treestyle		 {treeStyle		  TreeStyle	      w}
 	-width			 {width			  Width		      w}
+	-xmousewheelwindow	 {xMouseWheelWindow	  MouseWheelWindow    w}
 	-xscrollcommand		 {xScrollCommand	  ScrollCommand	      w}
+	-ymousewheelwindow	 {yMouseWheelWindow	  MouseWheelWindow    w}
 	-yscrollcommand		 {yScrollCommand	  ScrollCommand	      w}
     }
 
@@ -818,7 +820,7 @@ proc tablelist::tablelist args {
 	    hiddenColCount	 0
 	    root-row		-1
 	    root-parent		 ""
-	    root-children	 {}
+	    root-childList	 {}
 	    keyToRowMapValid	 1
 	    searchStartIdx	 0
 	    keyBeingExpanded	 ""
@@ -1447,7 +1449,7 @@ proc tablelist::childcountSubCmd {win argList} {
     synchronize $win
     set key [nodeIndexToKey $win [lindex $argList 0]]
     upvar ::tablelist::ns${win}::data data
-    return [llength $data($key-children)]
+    return [llength $data($key-childList)]
 }
 
 #------------------------------------------------------------------------------
@@ -1463,7 +1465,7 @@ proc tablelist::childindexSubCmd {win argList} {
     upvar ::tablelist::ns${win}::data data
     set key [lindex $data(keyList) $row]
     set parentKey $data($key-parent)
-    return [lsearch -exact $data($parentKey-children) $key]
+    return [lsearch -exact $data($parentKey-childList) $key]
 }
 
 #------------------------------------------------------------------------------
@@ -1477,7 +1479,7 @@ proc tablelist::childkeysSubCmd {win argList} {
     synchronize $win
     set key [nodeIndexToKey $win [lindex $argList 0]]
     upvar ::tablelist::ns${win}::data data
-    return $data($key-children)
+    return $data($key-childList)
 }
 
 #------------------------------------------------------------------------------
@@ -1532,7 +1534,7 @@ proc tablelist::collapseSubCmd {win argList} {
 	    $w.ind_$key,$col configure -image $data($key,$col-indent)
 	}
 
-	if {[llength $data($key-children)] == 0} {
+	if {[llength $data($key-childList)] == 0} {
 	    continue
 	}
 
@@ -1546,7 +1548,7 @@ proc tablelist::collapseSubCmd {win argList} {
 
 	    if {$fullCollapsion} {
 		set descKey [lindex $data(keyList) $row]
-		if {[llength $data($descKey-children)] != 0} {
+		if {[llength $data($descKey-childList)] != 0} {
 		    if {$callCollapseCmd} {
 			uplevel #0 $data(-collapsecommand) [list $win $row]
 		    }
@@ -1612,7 +1614,7 @@ proc tablelist::collapseallSubCmd {win argList} {
     set col $data(treeCol)
     set w $data(body)
 
-    foreach key $data(root-children) {
+    foreach key $data(root-childList) {
 	if {![info exists data($key,$col-indent)]} {
 	    continue
 	}
@@ -1632,7 +1634,7 @@ proc tablelist::collapseallSubCmd {win argList} {
 	    $w.ind_$key,$col configure -image $data($key,$col-indent)
 	}
 
-	if {[llength $data($key-children)] == 0} {
+	if {[llength $data($key-childList)] == 0} {
 	    continue
 	}
 
@@ -1646,7 +1648,7 @@ proc tablelist::collapseallSubCmd {win argList} {
 
 	    if {$fullCollapsion} {
 		set descKey [lindex $data(keyList) $row]
-		if {[llength $data($descKey-children)] != 0} {
+		if {[llength $data($descKey-childList)] != 0} {
 		    if {$callCollapseCmd} {
 			uplevel #0 $data(-collapsecommand) [list $win $row]
 		    }
@@ -2047,17 +2049,26 @@ proc tablelist::deleteSubCmd {win argList} {
 		lappend indexList $index
 	    }
 	    set indexList [lsort -integer -decreasing $indexList]
+	    set indexCount [llength $indexList]
+	    if {$indexCount == 0} {
+		return ""
+	    }
 
 	    #
 	    # Traverse the sorted index list and ignore any duplicates
 	    #
-	    set prevIndex -1
+	    set maxIndex [lindex $indexList 0]
+	    set prevIndex [expr {$maxIndex + 1}]
 	    foreach index $indexList {
 		if {$index != $prevIndex} {
-		    deleteRows $win $index $index $data(hasListVar)
+		    if {$index != $prevIndex - 1} {
+			deleteRows $win $prevIndex $maxIndex $data(hasListVar)
+			set maxIndex $index
+		    }
 		    set prevIndex $index
 		}
 	    }
+	    deleteRows $win $index $maxIndex $data(hasListVar)
 	    return ""
 	}
     } else {
@@ -2412,7 +2423,7 @@ proc tablelist::expandSubCmd {win argList} {
 	#
 	# Set the indentation image to the indented or expanded one
 	#
-	set childCount [llength $data($key-children)]
+	set childCount [llength $data($key-childList)]
 	set state [expr {($childCount == 0) ? "indented" : "expanded"}]
 	set data($key,$col-indent) [strMap \
 	    [list "collapsed" $state "expanded" $state] $data($key,$col-indent)]
@@ -2430,7 +2441,7 @@ proc tablelist::expandSubCmd {win argList} {
 	#
 	set isViewable [expr {![info exists data($key-elide)] &&
 			      ![info exists data($key-hide)]}]
-	foreach childKey $data($key-children) {
+	foreach childKey $data($key-childList) {
 	    set childRow [keyToRow $win $childKey]
 	    if {$isViewable} {
 		doRowConfig $childRow $win -elide 0
@@ -2484,7 +2495,7 @@ proc tablelist::expandallSubCmd {win argList} {
     set col $data(treeCol)
     set w $data(body)
 
-    foreach key $data(root-children) {
+    foreach key $data(root-childList) {
 	if {![info exists data($key,$col-indent)] ||
 	    [string match "*indented*" $data($key,$col-indent)]} {
 	    continue
@@ -2499,7 +2510,7 @@ proc tablelist::expandallSubCmd {win argList} {
 	#
 	# Set the indentation image to the indented or expanded one
 	#
-	set childCount [llength $data($key-children)]
+	set childCount [llength $data($key-childList)]
 	set state [expr {($childCount == 0) ? "indented" : "expanded"}]
 	set data($key,$col-indent) [strMap \
 	    [list "collapsed" $state "expanded" $state] $data($key,$col-indent)]
@@ -2515,7 +2526,7 @@ proc tablelist::expandallSubCmd {win argList} {
 	# Unelide the children if appropriate and invoke expandSubCmd on them
 	#
 	set isViewable [expr {![info exists data($key-hide)]}]
-	foreach childKey $data($key-children) {
+	foreach childKey $data($key-childList) {
 	    set childRow [keyToRow $win $childKey]
 	    if {$isViewable} {
 		doRowConfig $childRow $win -elide 0
@@ -2663,13 +2674,13 @@ proc tablelist::findrownameSubCmd {win argList} {
     }
 
     upvar ::tablelist::ns${win}::data data
-    set childCount [llength $data($parentKey-children)]
+    set childCount [llength $data($parentKey-childList)]
     if {$childCount == 0} {
 	return -1
     }
 
     if {$descend} {
-	set fromChildKey [lindex $data($parentKey-children) 0]
+	set fromChildKey [lindex $data($parentKey-childList) 0]
 	set fromRow [keyToRow $win $fromChildKey]
 	set toRow [nodeRow $win $parentKey end]
 	for {set row $fromRow} {$row < $toRow} {incr row} {
@@ -2682,7 +2693,7 @@ proc tablelist::findrownameSubCmd {win argList} {
 	}
     } else {
 	for {set childIdx 0} {$childIdx < $childCount} {incr childIdx} {
-	    set key [lindex $data($parentKey-children) $childIdx]
+	    set key [lindex $data($parentKey-childList) $childIdx]
 	    set hasName [info exists data($key-name)]
 	    if {($hasName && [string compare $name $data($key-name)] == 0) ||
 		(!$hasName && $nameIsEmpty)} {
@@ -3469,17 +3480,26 @@ proc tablelist::header_deleteSubCmd {win argList} {
 		lappend indexList $index
 	    }
 	    set indexList [lsort -integer -decreasing $indexList]
+	    set indexCount [llength $indexList]
+	    if {$indexCount == 0} {
+		return ""
+	    }
 
 	    #
 	    # Traverse the sorted index list and ignore any duplicates
 	    #
-	    set prevIndex -1
+	    set maxIndex [lindex $indexList 0]
+	    set prevIndex [expr {$maxIndex + 1}]
 	    foreach index $indexList {
 		if {$index != $prevIndex} {
-		    hdr_deleteRows $win $index $index
+		    if {$index != $prevIndex - 1} {
+			hdr_deleteRows $win $prevIndex $maxIndex
+			set maxIndex $index
+		    }
 		    set prevIndex $index
 		}
 	    }
+	    hdr_deleteRows $win $index $maxIndex
 	    return ""
 	}
     } else {
@@ -5165,12 +5185,12 @@ proc tablelist::searchcolumnSubCmd {win argList} {
     #
     set rowList {}
     set useFormatCmd [expr {$formatted && [lindex $data(fmtCmdFlagList) $col]}]
-    set childCount [llength $data($parentKey-children)]
+    set childCount [llength $data($parentKey-childList)]
     if {$childCount != 0} {
 	if {$backwards} {
 	    set childIdx [expr {$childCount - 1}]
 	    if {$descend} {
-		set childKey [lindex $data($parentKey-children) $childIdx]
+		set childKey [lindex $data($parentKey-childList) $childIdx]
 		set maxRow [expr {[nodeRow $win $childKey end] - 1}]
 		if {$gotStartRow && $maxRow > $startRow} {
 		    set maxRow $startRow
@@ -5193,7 +5213,7 @@ proc tablelist::searchcolumnSubCmd {win argList} {
 		}
 	    } else {
 		for {} {$childIdx >= 0} {incr childIdx -1} {
-		    set key [lindex $data($parentKey-children) $childIdx]
+		    set key [lindex $data($parentKey-childList) $childIdx]
 		    set row [keyToRow $win $key]
 		    if {$gotStartRow && $row > $startRow} {
 			continue
@@ -5214,7 +5234,7 @@ proc tablelist::searchcolumnSubCmd {win argList} {
 	} else {
 	    set childIdx 0
 	    if {$descend} {
-		set childKey [lindex $data($parentKey-children) $childIdx]
+		set childKey [lindex $data($parentKey-childList) $childIdx]
 		set fromRow [keyToRow $win $childKey]
 		if {$gotStartRow && $fromRow < $startRow} {
 		    set fromRow $startRow
@@ -5237,7 +5257,7 @@ proc tablelist::searchcolumnSubCmd {win argList} {
 		}
 	    } else {
 		for {} {$childIdx < $childCount} {incr childIdx} {
-		    set key [lindex $data($parentKey-children) $childIdx]
+		    set key [lindex $data($parentKey-childList) $childIdx]
 		    set row [keyToRow $win $key]
 		    if {$gotStartRow && $row < $startRow} {
 			continue
@@ -6785,7 +6805,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	arrayUnset data {k[0-9]*}
 	array set data {rowTagRefCount 0  nonViewableRowCount 0
 	    cellTagRefCount 0  imgCount 0  winCount 0  indentCount 0
-	    root-children {}}
+	    root-childList {}}
 
 	arrayUnset attribs {k[0-9]*}
 	arrayUnset selStates *
@@ -6821,17 +6841,17 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	    # Remove the key from the list of children of its parent
 	    #
 	    set parentKey $data($key-parent)
-	    if {[info exists data($parentKey-children)]} {
-		set childIdx [lsearch -exact $data($parentKey-children) $key]
-		set data($parentKey-children) \
-		    [lreplace $data($parentKey-children) $childIdx $childIdx]
+	    if {[info exists data($parentKey-childList)]} {
+		set childIdx [lsearch -exact $data($parentKey-childList) $key]
+		set data($parentKey-childList) \
+		    [lreplace $data($parentKey-childList) $childIdx $childIdx]
 
 		#
 		# If the parent's list of children has become empty
 		# then set its indentation image to the indented one
 		#
 		set col $data(treeCol)
-		if {[llength $data($parentKey-children)] == 0 &&
+		if {[llength $data($parentKey-childList)] == 0 &&
 		    [info exists data($parentKey,$col-indent)]} {
 		    collapseSubCmd $win [list $parentKey -partly]
 		    set data($parentKey,$col-indent) [strMap \
@@ -6844,7 +6864,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 		}
 	    }
 
-	    foreach prop {-row -parent -children} {
+	    foreach prop {-row -parent -childList} {
 		unset data($key$prop)
 	    }
 
@@ -6879,8 +6899,11 @@ proc tablelist::deleteRows {win first last updateListVar} {
 		}
 	    }
 
-	    arrayUnset attribs $key*
-	    arrayUnset selStates $key*
+	    arrayUnset attribs $key-*
+	    arrayUnset attribs $key,*-*
+
+	    arrayUnset selStates $key
+	    arrayUnset selStates $key,*
 	}
     }
 
@@ -6894,7 +6917,8 @@ proc tablelist::deleteRows {win first last updateListVar} {
     #
     # Delete the given items from the list variable if needed
     #
-    if {$updateListVar && [info exists ::$data(-listvariable)]} {
+    if {$updateListVar &&
+	[uplevel #0 [list info exists $data(-listvariable)]]} {
 	upvar #0 $data(-listvariable) var
 	trace vdelete var wu $data(listVarTraceCmd)
 	set var [lreplace $var $first $last]
@@ -7082,7 +7106,8 @@ proc tablelist::hdr_deleteRows {win first last} {
 	    }
 	}
 
-	arrayUnset attribs $key*
+	arrayUnset attribs $key-*
+	arrayUnset attribs $key,*-*
     }
 
     #
@@ -7210,14 +7235,16 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
 	set index $data(itemCount)
     }
 
-    set childCount [llength $data($parentKey-children)]
+    set childCount [llength $data($parentKey-childList)]
     if {$childIdx < 0} {
 	set childIdx 0
     } elseif {$childIdx > $childCount} {	;# e.g., if $childIdx is "end"
 	set childIdx $childCount
     }
 
-    if {$updateListVar && [info exists ::$data(-listvariable)]} {
+    set updateListVar [expr {$updateListVar &&
+	[uplevel #0 [list info exists $data(-listvariable)]]}]
+    if {$updateListVar} {
 	upvar #0 $data(-listvariable) var
 	trace vdelete var wu $data(listVarTraceCmd)
     }
@@ -7269,16 +7296,16 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
 	}
 
 	array set data \
-	    [list $key-row $row  $key-parent $parentKey  $key-children {}]
+	    [list $key-row $row  $key-parent $parentKey  $key-childList {}]
 
 	#
 	# Insert the key into the parent's list of children
 	#
 	if {$appendingChildren} {
-	    lappend data($parentKey-children) $key    ;# this works much faster
+	    lappend data($parentKey-childList) $key   ;# this works much faster
 	} else {
-	    set data($parentKey-children) \
-		[linsert $data($parentKey-children) $childIdx $key]
+	    set data($parentKey-childList) \
+		[linsert $data($parentKey-childList) $childIdx $key]
 	}
 
 	lappend result $key
@@ -8013,7 +8040,7 @@ proc tablelist::populate {win index fully} {
 	return ""
     }
 
-    if {[llength $data($key-children)] == 0} {
+    if {[llength $data($key-childList)] == 0} {
 	uplevel #0 $data(-populatecommand) [list $win $index]
     }
 
@@ -8021,7 +8048,7 @@ proc tablelist::populate {win index fully} {
 	#
 	# Invoke this procedure recursively on the children
 	#
-	foreach childKey $data($key-children) {
+	foreach childKey $data($key-childList) {
 	    populate $win [keyToRow $win $childKey] 1
 	}
     }
@@ -8181,6 +8208,12 @@ proc tablelist::seeCell {win row col} {
 	set alignment [lindex $data(colList) [expr {2*$col + 1}]]
 	set lX [winfo x $data(hdrTxtFrmLbl)$col]
 	set rX [expr {$lX + [winfo width $data(hdrTxtFrmLbl)$col] - 1}]
+	if {[string compare [getCurrentTheme] "aqua"] == 0} {
+	    incr lX
+	    if {$col == 0} {
+		incr lX
+	    }
+	}
 
 	switch $alignment {
 	    left {
@@ -8356,7 +8389,8 @@ proc tablelist::rowSelection {win opt first last} {
 	    } else {
 		for {set row $first} {$row <= $last} {incr row} {
 		    set key [lindex $data(keyList) $row]
-		    arrayUnset selStates $key*
+		    arrayUnset selStates $key
+		    arrayUnset selStates $key,*
 		}
 	    }
 
@@ -8366,7 +8400,8 @@ proc tablelist::rowSelection {win opt first last} {
 
 	includes {
 	    set key [lindex $data(keyList) $first]
-	    return [expr {[llength [array names selStates $key*]] != 0 &&
+	    return [expr {([info exists selStates($key)] ||
+			   [llength [array names selStates $key,*]] != 0) &&
 			  $data(colCount) != 0}]
 	}
 
@@ -8403,8 +8438,8 @@ proc tablelist::rowSelection {win opt first last} {
 	    # PRIMARY selection and register a callback to be invoked
 	    # when it loses ownership of the PRIMARY selection
 	    #
-	    if {$data(-exportselection) && $data(colCount) != 0 &&
-		[array size selStates] != 0} {
+	    if {$data(-exportselection) && [array size selStates] != 0 &&
+		$data(colCount) != 0} {
 		selection own -command \
 		    [list ::tablelist::lostSelection $win] $win
 	    }
@@ -8738,17 +8773,18 @@ proc tablelist::listVarTrace {win varName arrIndex op} {
 
 	u {
 	    #
-	    # Recreate the variable ::$varName by setting it according to
+	    # Recreate the variable $varName by setting it according to
 	    # the value of data(itemList), and set the trace on it again
 	    #
 	    if {[string length $arrIndex] != 0} {
 		set varName ${varName}($arrIndex)
 	    }
-	    set ::$varName {}
+	    upvar #0 $varName var
+	    set var {}
 	    foreach item $data(itemList) {
-		lappend ::$varName [lrange $item 0 $data(lastCol)]
+		lappend var [lrange $item 0 $data(lastCol)]
 	    }
-	    trace variable ::$varName wu $data(listVarTraceCmd)
+	    trace variable var wu $data(listVarTraceCmd)
 	}
     }
 }

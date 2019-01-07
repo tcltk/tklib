@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1243,7 +1243,7 @@ proc tablelist::createTileSpinbox {w args} {
     createTileAliases 
 
     #
-    # The style of the tile entry widget should have -borderwidth
+    # The style of the tile spinbox widget should have -borderwidth
     # 2 and -padding 1.  For those themes that don't honor the
     # -borderwidth 2 setting, set the padding to another value.
     #
@@ -1406,7 +1406,8 @@ proc tablelist::createBWidgetComboBox {w args} {
 # cell editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createIncrCombobox {w args} {
-    eval [list iwidgets::combobox $w -dropdown 1 -editable 1 -width 0] $args
+    eval [list iwidgets::combobox $w -dropdown 1 -editable 1 -grab global \
+	  -width 0] $args
 
     foreach event {<Map> <Unmap>} {
 	bind [$w component list] $event {+
@@ -1581,9 +1582,10 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     $b mark set editMark $editIdx
 
     #
-    # Insert the binding tags $data(editwinTag) and TablelistEdit
-    # into the list of binding tags of some components
-    # of w, just before the respective path names
+    # Insert the binding tags $data(editwinTag) and TablelistEdit into the list
+    # of binding tags of some components of w, just before the respective path
+    # names.  In addition, insert the binding tag TablelistEditBreak into the
+    # same lists of binding tags, just after the respective widget class names
     #
     if {$isMentry} {
 	set compList [$w entries]
@@ -1596,6 +1598,10 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	set bindTags [bindtags $comp]
 	set idx [lsearch -exact $bindTags $comp]
 	bindtags $comp [linsert $bindTags $idx $data(editwinTag) TablelistEdit]
+
+	set bindTags [bindtags $comp]
+	set idx [lsearch -exact $bindTags [winfo class $comp]]
+	bindtags $comp [linsert $bindTags [incr idx] TablelistEditBreak]
     }
 
     #
@@ -2526,15 +2532,15 @@ proc tablelist::defineTablelistEdit {} {
 	    tablelist::goToNextPrevCell %W -1 0 0
 	}
     }
-    foreach direction {Left Right} amount {-1 1} {
-	bind TablelistEdit <$direction> [format {
+    foreach dir {Left Right} amount {-1 1} {
+	bind TablelistEdit <$dir> [format {
 	    if {![tablelist::isKeyReserved %%W %%K]} {
 		tablelist::goLeftRight %%W %d
 	    }
 	} $amount]
     }
-    foreach direction {Up Down} amount {-1 1} {
-	bind TablelistEdit <$direction> [format {
+    foreach dir {Up Down} amount {-1 1} {
+	bind TablelistEdit <$dir> [format {
 	    if {![tablelist::isKeyReserved %%W %%K]} {
 		tablelist::goUpDown %%W %d
 	    }
@@ -2603,32 +2609,121 @@ proc tablelist::defineTablelistEdit {} {
 
     #
     # Define some bindings for the binding tag TablelistEdit that
-    # propagate the mousewheel events to the tablelist's body
+    # redirect the mouse wheel events to the containing scrollable
+    # frame (if any) or propagate them to the tablelist's body
     #
     catch {
 	bind TablelistEdit <MouseWheel> {
-	    if {![tablelist::hasMouseWheelBindings %W] &&
-		![tablelist::isComboTopMapped %W]} {
-		tablelist::genMouseWheelEvent \
-		    [[tablelist::getTablelistPath %W] bodypath] %D
+	    if {[tablelist::hasMouseWheelBindings %W y]} {
+		set tablelist::W [tablelist::getTablelistPath %W]
+		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
+		if {[winfo exists $tablelist::w] &&
+		    ![mwutil::hasFocus $tablelist::W]} {
+		    mwutil::genMouseWheelEvent $tablelist::w \
+			<MouseWheel> %X %Y %D
+		    break
+		}
+	    } elseif {![tablelist::isComboTopMapped %%W]} {
+		set tablelist::W [tablelist::getTablelistPath %W]
+		mwutil::genMouseWheelEvent [$tablelist::W bodypath] \
+		    <MouseWheel> %X %Y %D
 	    }
 	}
+	bind TablelistEditBreak <MouseWheel> { break }
+
 	bind TablelistEdit <Option-MouseWheel> {
-	    if {![tablelist::hasMouseWheelBindings %W] &&
-		![tablelist::isComboTopMapped %W]} {
-		tablelist::genOptionMouseWheelEvent \
-		    [[tablelist::getTablelistPath %W] bodypath] %D
+	    if {[tablelist::hasMouseWheelBindings %W y]} {
+		set tablelist::W [tablelist::getTablelistPath %W]
+		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
+		if {[winfo exists $tablelist::w] &&
+		    ![mwutil::hasFocus $tablelist::W]} {
+		    mwutil::genMouseWheelEvent $tablelist::w \
+			<Option-MouseWheel> %X %Y %D
+		    break
+		}
+	    } elseif {![tablelist::isComboTopMapped %%W]} {
+		set tablelist::W [tablelist::getTablelistPath %W]
+		mwutil::genMouseWheelEvent [$tablelist::W bodypath] \
+		    <Option-MouseWheel> %X %Y %D
 	    }
 	}
+	bind TablelistEditBreak <Option-MouseWheel> { break }
     }
-    foreach detail {4 5} {
-	bind TablelistEdit <Button-$detail> [format {
-	    if {![tablelist::hasMouseWheelBindings %%W] &&
-		![tablelist::isComboTopMapped %%W]} {
-		event generate \
-		    [[tablelist::getTablelistPath %%W] bodypath] <Button-%s>
+    catch {
+	bind TablelistEdit <Shift-MouseWheel> {
+	    if {[tablelist::hasMouseWheelBindings %W x]} {
+		set tablelist::W [tablelist::getTablelistPath %W]
+		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
+		if {[winfo exists $tablelist::w] &&
+		    ![mwutil::hasFocus $tablelist::W]} {
+		    mwutil::genMouseWheelEvent $tablelist::w \
+			<Shift-MouseWheel> %X %Y %D
+		    break
+		}
+	    } elseif {![tablelist::isComboTopMapped %%W]} {
+		set tablelist::W [tablelist::getTablelistPath %W]
+		mwutil::genMouseWheelEvent [$tablelist::W bodypath] \
+		    <Shift-MouseWheel> %X %Y %D
 	    }
-	} $detail]
+	}
+	bind TablelistEditBreak <Shift-MouseWheel> { break }
+
+	bind TablelistEdit <Shift-Option-MouseWheel> {
+	    if {[tablelist::hasMouseWheelBindings %W x]} {
+		set tablelist::W [tablelist::getTablelistPath %W]
+		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
+		if {[winfo exists $tablelist::w] &&
+		    ![mwutil::hasFocus $tablelist::W]} {
+		    mwutil::genMouseWheelEvent $tablelist::w \
+			<Shift-Option-MouseWheel> %X %Y %D
+		    break
+		}
+	    } elseif {![tablelist::isComboTopMapped %%W]} {
+		set tablelist::W [tablelist::getTablelistPath %W]
+		mwutil::genMouseWheelEvent [$tablelist::W bodypath] \
+		    <Shift-Option-MouseWheel> %X %Y %D
+	    }
+	}
+	bind TablelistEditBreak <Shift-Option-MouseWheel> { break }
+    }
+    if {[string compare $winSys "x11"] == 0} {
+	foreach detail {4 5} {
+	    bind TablelistEdit <Button-$detail> [format {
+		if {[tablelist::hasMouseWheelBindings %%W y]} {
+		    set tablelist::W [tablelist::getTablelistPath %%W]
+		    set tablelist::w [$tablelist::W cget -ymousewheelwindow]
+		    if {[winfo exists $tablelist::w] &&
+			![mwutil::hasFocus $tablelist::W]} {
+			event generate $tablelist::w <Button-%s> \
+			    -rootx %%X -rooty %%Y
+			break
+		    }
+		} elseif {![tablelist::isComboTopMapped %%W]} {
+		    set tablelist::W [tablelist::getTablelistPath %%W]
+		    event generate [$tablelist::W bodypath] <Button-%s> \
+			-rootx %%X -rooty %%Y
+		}
+	    } $detail $detail]
+	    bind TablelistEditBreak <Button-$detail> { break }
+
+	    bind TablelistEdit <Shift-Button-$detail> [format {
+		if {[tablelist::hasMouseWheelBindings %%W x]} {
+		    set tablelist::W [tablelist::getTablelistPath %%W]
+		    set tablelist::w [$tablelist::W cget -xmousewheelwindow]
+		    if {[winfo exists $tablelist::w] &&
+			![mwutil::hasFocus $tablelist::W]} {
+			event generate $tablelist::w <Shift-Button-%s> \
+			    -rootx %%X -rooty %%Y
+			break
+		    }
+		} elseif {![tablelist::isComboTopMapped %%W]} {
+		    set tablelist::W [tablelist::getTablelistPath %%W]
+		    event generate [$tablelist::W bodypath] <Shift-Button-%s> \
+			-rootx %%X -rooty %%Y
+		}
+	    } $detail $detail]
+	    bind TablelistEditBreak <Shift-Button-$detail> { break }
+	}
     }
 }
 
@@ -2902,30 +2997,6 @@ proc tablelist::goToPriorNextPage {w amount} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::genMouseWheelEvent
-#
-# Generates a <MouseWheel> event with the given delta on the widget w.
-#------------------------------------------------------------------------------
-proc tablelist::genMouseWheelEvent {w delta} {
-    set focus [focus -displayof $w]
-    focus $w
-    event generate $w <MouseWheel> -delta $delta
-    focus $focus
-}
-
-#------------------------------------------------------------------------------
-# tablelist::genOptionMouseWheelEvent
-#
-# Generates an <Option-MouseWheel> event with the given delta on the widget w.
-#------------------------------------------------------------------------------
-proc tablelist::genOptionMouseWheelEvent {w delta} {
-    set focus [focus -displayof $w]
-    focus $w
-    event generate $w <Option-MouseWheel> -delta $delta
-    focus $focus
-}
-
-#------------------------------------------------------------------------------
 # tablelist::isKeyReserved
 #
 # Checks whether the given keysym is used in the standard binding scripts
@@ -2945,18 +3016,22 @@ proc tablelist::isKeyReserved {w keySym} {
 # tablelist::hasMouseWheelBindings
 #
 # Checks whether the given widget, which is assumed to be the edit window or
-# one of its descendants, has mouse wheel bindings.
+# one of its descendants, has mouse wheel bindings for the given axis (x or y).
 #------------------------------------------------------------------------------
-proc tablelist::hasMouseWheelBindings w {
-    if {[regexp {^(Text|Ctext|TCombobox|TSpinbox)$} [winfo class $w]]} {
-	return 1
+proc tablelist::hasMouseWheelBindings {w axis} {
+    if {[string compare $axis "x"] == 0} {
+	return [regexp {^(Text|Ctext)$} [winfo class $w]]
     } else {
-	set bindTags [bindtags $w]
-	return [expr {([lsearch -exact $bindTags "MentryDateTime"] >= 0 ||
-		       [lsearch -exact $bindTags "MentryMeridian"] >= 0 ||
-		       [lsearch -exact $bindTags "MentryIPAddr"] >= 0 ||
-		       [lsearch -exact $bindTags "MentryIPv6Addr"] >= 0) &&
-		      ($mentry::version >= 3.2)}]
+	if {[regexp {^(Text|Ctext|TCombobox|TSpinbox)$} [winfo class $w]]} {
+	    return 1
+	} else {
+	    set bindTags [bindtags $w]
+	    return [expr {([lsearch -exact $bindTags "MentryDateTime"] >= 0 ||
+			   [lsearch -exact $bindTags "MentryMeridian"] >= 0 ||
+			   [lsearch -exact $bindTags "MentryIPAddr"] >= 0 ||
+			   [lsearch -exact $bindTags "MentryIPv6Addr"] >= 0) &&
+			  ($mentry::version >= 3.2)}]
+	}
     }
 }
 
