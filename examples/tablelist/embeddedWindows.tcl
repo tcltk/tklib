@@ -3,10 +3,10 @@
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
 #
-# Copyright (c) 2004-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 6.3
+package require tablelist 6.4
 
 wm title . "Tk Library Scripts"
 
@@ -77,8 +77,10 @@ foreach fileName [lsort [glob *.tcl]] {
 	set maxSize $fileSize
     }
 }
-$tbl header insert 0 [list "[$tbl size] *.tcl files" "" $totalSize "" ""]
-$tbl header rowconfigure 0 -foreground blue
+if {$tk_version >= 8.5} {
+    $tbl header insert 0 [list "[$tbl size] *.tcl files" "" $totalSize "" ""]
+    $tbl header rowconfigure 0 -foreground blue
+}
 
 #------------------------------------------------------------------------------
 # createFrame
@@ -132,6 +134,7 @@ proc viewFile {tbl key} {
     set top .top$key
     if {[winfo exists $top]} {
 	raise $top
+	focus $top
 	return ""
     }
 
@@ -155,7 +158,7 @@ proc viewFile {tbl key} {
     # Insert the file's content into the text widget
     #
     set chan [open $fileName]
-    $txt insert end [read $chan]
+    $txt insert end [read -nonewline $chan]
     close $chan
 
     set btn [button $top.btn -text "Close" -command [list destroy $top]]

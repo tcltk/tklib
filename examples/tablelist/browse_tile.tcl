@@ -2,10 +2,10 @@
 # Demonstrates how to use a tablelist widget for displaying information about
 # children of an arbitrary widget.
 #
-# Copyright (c) 2000-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.3
+package require tablelist_tile 6.4
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -32,7 +32,7 @@ if {[tablelist::getCurrentTheme] eq "aqua"} {
 # demo::displayChildren
 #
 # Displays information on the children of the widget w in a tablelist widget
-# contained in a newly created top-level widget.  Returns the name of the
+# contained in a newly created toplevel widget.  Returns the name of the
 # tablelist widget.
 #------------------------------------------------------------------------------
 proc demo::displayChildren w {
@@ -44,7 +44,7 @@ proc demo::displayChildren w {
     }
 
     #
-    # Create a top-level widget of the class DemoTop
+    # Create a toplevel widget of the class DemoTop
     #
     set top .browseTop
     for {set n 2} {[winfo exists $top]} {incr n} {
@@ -54,7 +54,7 @@ proc demo::displayChildren w {
 
     #
     # Create a vertically scrolled tablelist widget with 9 dynamic-width
-    # columns and interactive sort capability within the top-level
+    # columns and interactive sort capability within the toplevel
     #
     set tf $top.tf
     ttk::frame $tf
@@ -111,7 +111,7 @@ proc demo::displayChildren w {
     bind $bodyTag <<Button3>> +[list demo::postPopupMenu $top %X %Y]
 
     #
-    # Create three buttons within a tile frame child of the top-level widget
+    # Create three buttons within a tile frame child of the toplevel widget
     #
     set bf $top.bf
     ttk::frame $bf
@@ -316,7 +316,7 @@ proc demo::putChildrenOfSelWidget tbl {
 # demo::dispConfigOfSelWidget
 #
 # Displays the configuration options of the selected widget within the
-# tablelist tbl in a tablelist widget contained in a newly created top-level
+# tablelist tbl in a tablelist widget contained in a newly created toplevel
 # widget.
 #------------------------------------------------------------------------------
 proc demo::dispConfigOfSelWidget tbl {

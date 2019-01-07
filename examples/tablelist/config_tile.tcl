@@ -2,16 +2,16 @@
 # Demonstrates how to use a tablelist widget for displaying and editing the
 # configuration options of an arbitrary widget.
 #
-# Copyright (c) 2000-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.3
+package require tablelist_tile 6.4
 
 namespace eval demo {
     #
     # Get the current windowing system ("x11", "win32", or "aqua")
     # and add some entries to the Tk option database for the following
-    # widget hierarchy within a top-level widget of the class DemoTop:
+    # widget hierarchy within a toplevel widget of the class DemoTop:
     #
     # Name		Class
     # -----------------------------
@@ -58,7 +58,7 @@ if {$demo::currentTheme eq "aqua"} {
 # demo::displayConfig
 #
 # Displays the configuration options of the widget w in a tablelist widget
-# contained in a newly created top-level widget.  Returns the name of the
+# contained in a newly created toplevel widget.  Returns the name of the
 # tablelist widget.
 #------------------------------------------------------------------------------
 proc demo::displayConfig w {
@@ -70,7 +70,7 @@ proc demo::displayConfig w {
     }
 
     #
-    # Create a top-level widget of the class DemoTop
+    # Create a toplevel widget of the class DemoTop
     #
     set top .configTop
     for {set n 2} {[winfo exists $top]} {incr n} {
@@ -81,7 +81,7 @@ proc demo::displayConfig w {
 
     #
     # Create a scrolled tablelist widget with 5 dynamic-width
-    # columns and interactive sort capability within the top-level
+    # columns and interactive sort capability within the toplevel
     #
     set tf $top.tf
     ttk::frame $tf
@@ -106,7 +106,7 @@ proc demo::displayConfig w {
     ttk::scrollbar $hsb -orient horizontal -command [list $tbl xview]
 
     #
-    # Create three buttons within a tile frame child of the top-level widget
+    # Create three buttons within a tile frame child of the toplevel widget
     #
     set bf $top.bf
     ttk::frame $bf

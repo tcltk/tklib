@@ -5,11 +5,11 @@
 # widgets from the BWidget package and of the Tk core checkbutton and
 # menubutton widgets.
 #
-# Copyright (c) 2004-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.4				;# because of "-compound"
-package require tablelist 6.3
+package require tablelist 6.4
 package require BWidget
 
 wm title . "Serial Line Configuration"
