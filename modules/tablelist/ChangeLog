@@ -1,3 +1,27 @@
+2018-08-16 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 6.4; updated the
+	* COPYRIGHT.txt: copyright information.
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added the "-xmousewheelwindow" and
+	  "-ymousewheelwindow" configuration options; optimized the deletion of
+	  a list of items; improved the performance of the vertical scrolling;
+	  eliminated a potential endless loop triggered by key navigation with
+	  the "aqua" theme and selection type "cell"; fixed two regressions
+	  introduced in Tablelist 6.3, related to (1) the handling of the
+	  "-listvariable" option when using Itcl 3.x and (2) clearing the
+	  multiple or extended selection; further improvements and minor bug
+	  fixes; updated the copyright information.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/tablelist/*.tcl: Bumped the version number to 6.4;
+	  minor bug fixes; updated the copyright information.
+
 2018-09-19 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Slightly extended.
