@@ -24,7 +24,7 @@ namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	6.4
+    variable version	6.5
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file normalize [DIR]]
@@ -91,8 +91,9 @@ proc ::tablelist::restoreUsingTile {origVal varName index op} {
     }
 }
 
-interp alias {} ::tk::frame {} ::frame
-interp alias {} ::tk::label {} ::label
+interp alias {} ::tk::frame     {} ::frame
+interp alias {} ::tk::label     {} ::label
+interp alias {} ::tk::scrollbar {} ::scrollbar
 
 #
 # Everything else needed is lazily loaded on demand, via the dispatcher
