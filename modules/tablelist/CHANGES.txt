@@ -1,5 +1,35 @@
-What is new in Tablelist 6.4?
+What is new in Tablelist 6.5?
 -----------------------------
+
+1. Support for the new virtual events <<TablelistHeaderHeightChanged>>
+   and <<TablelistTitleColsWidthChanged>>, generated when the header's
+   height or the total width of the viewable title columns,
+   respectively, has changed.
+
+2. Optimized the vertical scrolling by units (thanks to Nicolas Robert
+   for his input).
+
+3. Minor improvement related to the appearance of embedded checkbuttons
+   on X11.
+
+4. Fixed a bug introduced in Tablelist 6.4, related to the "-showlabels"
+   option (thanks to Jakob Gager for his bug report).
+
+5. Fixed a few bugs specific to Mac OS X Aqua, introduced in Tablelist
+   6.4 (thanks to Paul Obermeier and Nicolas Robert for their bug
+   reports).
+
+6. Fixed a bug related to the handling of mouse wheel events during
+   interactive cell editing, introduced in Tablelist 6.4 (thanks to
+   Alexandru Dadalau for his bug report).
+
+7. Fixed a bug related to the "move" subcommand, introduced in Tablelist
+   6.3 (thanks to Jose Luis Lijo for his bug report).
+
+8. Several further improvements in the code and documentation.
+
+What was new in Tablelist 6.4?
+------------------------------
 
 1. Added the "-xmousewheelwindow" and "-ymousewheelwindow" configuration
    options, which make it possible to redirect the mouse wheel events of

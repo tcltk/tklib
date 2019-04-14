@@ -13,7 +13,7 @@
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 6.4</h2>
+    <h2>For Tablelist Version 6.5</h2>
 
     <h3>by</h3>
 
@@ -170,8 +170,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist6.4.tar.gz</code> for UNIX and
-  <code>tablelist6_4.zip</code> for Windows.&nbsp; These files contain the same
+  The distribution file is <code>tablelist6.5.tar.gz</code> for UNIX and
+  <code>tablelist6_5.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -194,11 +194,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist6.4.tar.gz</code>:</p>
+  <code>tablelist6.5.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist6.4.tar.gz | tar -xf -
+gunzip -c tablelist6.5.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -206,17 +206,17 @@ gunzip -c tablelist6.4.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist6.4.tar.gz
+tar -zxf tablelist6.5.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist6.4</code>,
+  <p>Both commands will create a directory named <code>tablelist6.5</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist6_4.zip</code> into the directory
-  <code>tablelist6.4</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist6_5.zip</code> into the directory
+  <code>tablelist6.5</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -313,14 +313,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 6.4, then it is highly
-  recommended to specify the version number <code>6.4</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 6.5, then it is highly
+  recommended to specify the version number <code>6.5</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 6.4</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 6.5</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 6.4</code>.</p>
+  tablelist_tile 6.5</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -418,20 +418,19 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   describes the differences between the packages Tablelist and
   Tablelist_tile.</p>
 
-  <p>The Tablelist_tile package checks whether the required Tcl, Tk, and tile
+  <p>The Tablelist_tile package checks whether the required Tk and tile
   versions are present, by executing the commands</p>
 
   <blockquote>
     <pre>
-package require Tcl 8.4
-package require Tk  8.4
+package require Tk 8.4
 if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     package require tile 0.6
 }
 </pre>
   </blockquote>
 
-  <p>The last command above reflects the fact that, beginning with Tk 8.5a6,
+  <p>The second command above reflects the fact that, beginning with Tk 8.5a6,
   tile is integrated into the Tk core and therefore it should only be loaded
   explicitly when using an earlier Tk version.</p>
 
@@ -507,7 +506,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 6.4
+package require tablelist 6.5
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -563,7 +562,7 @@ demo::displayConfig .configTop.tf.tbl
 
   <blockquote>
     <pre>
-package require tablelist 6.4
+package require tablelist 6.5
 
 namespace eval demo {
     #
@@ -1044,7 +1043,7 @@ demo::displayChildren .
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.4
+package require tablelist 6.5
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1642,7 +1641,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.4
+package require tablelist 6.5
 
 #
 # Add some entries to the Tk option database
@@ -2030,7 +2029,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;# because of "-compound"
-package require tablelist 6.4
+package require tablelist 6.5
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2394,7 +2393,7 @@ $tbl embedcheckbuttons 1
 
   <blockquote>
     <pre>
-package require tablelist 6.4
+package require tablelist 6.5
 
 wm title . "Tk Library Scripts"
 
@@ -2652,7 +2651,7 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
   <blockquote>
     <pre>
 package require Tk 8.3                          ;# because of entry validation
-package require tablelist 6.4
+package require tablelist 6.5
 </pre>
   </blockquote>
 
@@ -2660,7 +2659,7 @@ package require tablelist 6.4
 
   <blockquote>
     <pre>
-package require tablelist<span>_tile</span> 6.4
+package require tablelist<span>_tile</span> 6.5
 </pre>
   </blockquote>
 

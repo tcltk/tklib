@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.4</h2>
+    <h2>For Tablelist Version 6.5</h2>
 
     <h3>by</h3>
 
@@ -5677,12 +5677,12 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <li class="tm">If the focus is outside the tablelist widget then no
           scrolling of the tablelist's body or edit window will happen.&nbsp;
-          Instead, the event will be redirected to the widget container with
-          the aid of the&nbsp; <code><b>event generate</b></code>&nbsp;
-          command.&nbsp; This in turn will give rise to horizontal scrolling of
-          the widget container, provided that the containing toplevel widget or
-          the binding tag <code><b>all</b></code> has the necessary mouse wheel
-          event bindings.</li>
+          Instead, the event will be redirected to the widget container or the
+          toplevel widget with the aid of the&nbsp; <code><b>event
+          generate</b></code>&nbsp; command.&nbsp; This in turn will give rise
+          to horizontal scrolling of the widget container, provided that the
+          containing toplevel widget or the binding tag <code><b>all</b></code>
+          has the necessary mouse wheel event bindings.</li>
         </ul>
       </blockquote>
     </dd>
@@ -5753,12 +5753,12 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <li class="tm">If the focus is outside the tablelist widget then no
           scrolling of the tablelist's body or edit window will happen.&nbsp;
-          Instead, the event will be redirected to the widget container with
-          the aid of the&nbsp; <code><b>event generate</b></code>&nbsp;
-          command.&nbsp; This in turn will give rise to vertical scrolling of
-          the widget container, provided that the containing toplevel widget or
-          the binding tag <code><b>all</b></code> has the necessary mouse wheel
-          event bindings.</li>
+          Instead, the event will be redirected to the widget container or the
+          toplevel widget with the aid of the&nbsp; <code><b>event
+          generate</b></code>&nbsp; command.&nbsp; This in turn will give rise
+          to vertical scrolling of the widget container, provided that the
+          containing toplevel widget or the binding tag <code><b>all</b></code>
+          has the necessary mouse wheel event bindings.</li>
         </ul>
       </blockquote>
     </dd>
@@ -7473,6 +7473,16 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td>
+          <code><b>&lt;&lt;TablelistHeaderHeightChanged&gt;&gt;</b></code></td>
+
+          <td>Generated whenever the (requested) height of the tablelist's
+          header changes.</td>
+
+          <td>The (requested) height of the tablelist's header.</td>
+        </tr>
+
+        <tr valign="top">
+          <td>
           <code><b>&lt;&lt;TablelistRowHiddenStateChanged&gt;&gt;</b></code></td>
 
           <td>Generated whenever the hidden state of one or more rows is
@@ -7519,6 +7529,15 @@ proc handleTblDrop {tbl data} {
           PRIMARY selection.</td>
 
           <td>Not used.</td>
+        </tr>
+
+        <tr valign="top">
+          <td><code><b>&lt;&lt;TablelistTitleColsWidthChanged&gt;&gt;</b></code></td>
+
+          <td>Generated whenever the total width of the non-hidden title
+          columns changes.</td>
+
+          <td>The total width of the non-hidden title columns.</td>
         </tr>
 
         <tr valign="top">
@@ -8792,7 +8811,13 @@ eval [list <i>pathName</i> <a href=
         subcommand).&nbsp; The height of this corner frame is automatically
         kept in sync with that of the tablelist's header component, and the
         height of the above-mentioned (ttk::)label widget is automatically kept
-        in sync with that of the header labels.</dd>
+        in sync with that of the header labels.&nbsp; Whenever the (requested)
+        height of the tablelist's header (and thus that of the north-east
+        corner frame) changes, the
+        <code><b>&lt;&lt;TablelistHeaderHeightChanged&gt;&gt;</b></code>
+        virtual event is generated, with its <code><b>-data</b></code> option
+        set to the (requested) height of the header for Tk versions 8.5 and
+        higher.</dd>
         
         <dd class="tm">If the corner was specified as <code><b>-sw</b></code>
         then the return value is the path name of the <b>south-west corner
@@ -8802,7 +8827,13 @@ eval [list <i>pathName</i> <a href=
         option is positive (see Remark 2 below).&nbsp; The width of this corner
         frame is automatically kept in sync with the total width of the
         non-hidden title columns.&nbsp; When using Tablelist_tile, the
-        south-west corner frame will be a ttk::frame widget.</dd>
+        south-west corner frame will be a ttk::frame widget.labels.&nbsp;
+        Whenever the total width of the non-hidden title columns (and thus the
+        requested width of the south-west corner frame) changes, the
+        <code><b>&lt;&lt;TablelistTitleColsWidthChanged&gt;&gt;</b></code>
+        virtual event is generated, with its <code><b>-data</b></code> option
+        set to the total width of the non-hidden title columns for Tk versions
+        8.5 and higher.</dd>
 
         <dd class="tm">
           <b>REMARK 1:</b>&nbsp; This subcommand enables you to manage the
@@ -8823,7 +8854,7 @@ option add *ScrollArea.Tablelist.highlightThickness     0
 . . .
 
 <i># Create the tablelist and the scrollbars as
-# children of a frame of class ScrollArea</i>
+# children of a frame of the class ScrollArea</i>
 set frm [(ttk::)frame ... -class ScrollArea]
 set tbl $frm.tbl
 set vsb $frm.vsb
@@ -8848,7 +8879,7 @@ grid rowconfigure    $frm 1 -weight 1
 grid columnconfigure $frm 0 -weight 1
 
 <i># Manage the frame</i>
-pack $frm -expand yes -fill both
+pack $frm -expand yes -fill both -padx 10 -pady 10
 </pre>
           </blockquote>
         </dd>
@@ -8879,15 +8910,15 @@ grid rowconfigure    $frm 1 -weight 1
 grid columnconfigure $frm 1 -weight 1
 
 <i># Manage the frame</i>
-pack $frm -expand yes -fill both
+pack $frm -expand yes -fill both -padx 10 -pady 10
 </pre>
 
-            <p>For a tablelist widget having two header rows and two title
-            columns, the scrollbars of the modified example will appear like in
+            <p>For a tablelist widget having two header rows and one title
+            column, the scrollbars of the modified example will appear like in
             the screenshot below (on Windows this is only valid for the
             horizontal scrollbar):</p>
 
-            <p><img src="scrollbars.png" alt="Scrollbars" width="565" height=
+            <p><img src="scrollbars.png" alt="Scrollbars" width="461" height=
             "274"></p>
           </blockquote>
         </dd>
