@@ -1,4 +1,30 @@
-2018-08-16 Csaba Nemethi <csaba.nemethi@t-online.de>
+2019-04-14 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 6.5.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added support for the virtual events
+	  <<TablelistHeaderHeightChanged>> and
+	  <<TablelistTitleColsWidthChanged>>; optimized the vertical scrolling
+	  by units; minor improvement related to the appearance of embedded
+	  checkbuttons on X11; fixed a bug related to the "-showlabels" option;
+	  fixed a few bugs specific to Mac OS X Aqua; fixed a bug related to
+	  the handling of mouse wheel events during interactive cell editing;
+	  fixed a bug related to the "move" subcommand; several further
+	  improvements.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/tablelist/*.tcl: Bumped the version number to 6.5;
+	  minor improvements.
+
+	* doc/scrollbars.png: Updated screenshot.
+
+2019-01-07 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 6.4; updated the
 	* COPYRIGHT.txt: copyright information.
