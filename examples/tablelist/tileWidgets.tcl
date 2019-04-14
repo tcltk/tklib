@@ -7,7 +7,7 @@
 # Copyright (c) 2005-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.4
+package require tablelist_tile 6.5
 
 wm title . "Serial Line Configuration"
 
@@ -30,13 +30,6 @@ source [file join $dir images.tcl]
 # frame as a container for the other widgets
 #
 set f [ttk::frame .f]
-
-#
-# Work around the improper appearance of the tile scrollbars in the aqua theme
-#
-if {[tablelist::getCurrentTheme] eq "aqua"} {
-    interp alias {} ttk::scrollbar {} ::scrollbar
-}
 
 #
 # Create a tablelist widget with editable columns (except the first one)
