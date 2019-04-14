@@ -142,6 +142,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
     if {[string match "*\t*" $dispItem]} {
 	set dispItem [mapTabs $dispItem]
     }
+    variable canElide
     set col 0
     foreach text $dispItem colTags $data(colTagsList) \
 	    {pixels alignment} $data(colList) {

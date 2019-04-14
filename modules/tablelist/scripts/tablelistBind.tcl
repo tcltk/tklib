@@ -256,15 +256,15 @@ proc tablelist::cleanup win {
     # Cancel the execution of all delayed (hdr_)handleMotion, updateKeyToRowMap,
     # adjustSeps, makeStripes, showLineNumbers, stretchColumns,
     # (hdr_)updateColors, updateScrlColOffset, updateHScrlbar, updateVScrlbar,
-    # updateView, synchronize, displayItems, horizMoveTo, vertMoveTo, dragTo,
-    # autoScan, horizAutoScan, forceRedraw, reconfigWindows, redisplay, and
-    # redisplayCol commands
+    # updateView, synchronize, displayItems, horizMoveTo, vertMoveTo,
+    # vertScroll, dragTo, autoScan, horizAutoScan, forceRedraw,
+    # reconfigWindows, redisplay, and redisplayCol commands
     #
     upvar ::tablelist::ns${win}::data data
     foreach id {motionId hdr_motionId mapId sepsId stripesId lineNumsId
 		stretchId colorsId hdr_colorsId offsetId hScrlbarId vScrlbarId
-		viewId syncId dispId moveToId dragToId afterId redrawId
-		reconfigId} {
+		viewId syncId dispId horizMoveToId vertMoveToId scrollId
+		dragToId afterId redrawId reconfigId} {
 	if {[info exists data($id)]} {
 	    after cancel $data($id)
 	}
@@ -346,7 +346,7 @@ proc tablelist::updateConfigSpecs win {
 	return ""
     }
 
-    set currentTheme [getCurrentTheme]
+    set currentTheme [mwutil::currentTheme]
     upvar ::tablelist::ns${win}::data data
     if {[string compare $currentTheme $data(currentTheme)] == 0} {
 	if {[string compare $currentTheme "tileqt"] == 0} {

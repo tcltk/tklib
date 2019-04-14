@@ -107,7 +107,7 @@ proc tablelist::extendConfigSpecs {} {
 	# Append theme-specific values to some elements of the
 	# array configSpecs and initialize some tree resources
 	#
-	if {[string compare [getCurrentTheme] "tileqt"] == 0} {
+	if {[string compare [mwutil::currentTheme] "tileqt"] == 0} {
 	    tileqt_kdeStyleChangeNotification 
 	}
 	setThemeDefaults
@@ -417,6 +417,22 @@ proc tablelist::doConfig {win opt val} {
     variable helpLabel
     variable configSpecs
     upvar ::tablelist::ns${win}::data data
+
+    switch -- $opt {
+	-borderwidth -
+	-highlightthickness -
+	-xscrollcommand -
+	-yscrollcommand {
+	    if {$data(inScrollarea)} {
+		if {[string compare $val $data($opt)] == 0} {
+		    return ""
+		} else {
+		    return -code error "can't modify the $opt option after\
+					embedding the widget into a scrollarea"
+		}
+	    }
+	}
+    }
 
     #
     # Apply the value to the widget(s) corresponding to the given option
@@ -1188,13 +1204,19 @@ proc tablelist::doConfig {win opt val} {
 		    set data($opt) $val
 		    updateHScrlbarWhenIdle $win
 
-		    set cornerFrmWidth [getTitleColsWidth $win]
+		    set titleColsWidth [getTitleColsWidth $win]
+		    set cornerFrmWidth $titleColsWidth
 		    if {$cornerFrmWidth == 0} {
 			set cornerFrmWidth 1
 		    } else {
 			incr cornerFrmWidth -1
 		    }
-		    $data(cornerFrm-sw) configure -width $cornerFrmWidth
+		    if {$cornerFrmWidth !=
+			[winfo reqwidth $data(cornerFrm-sw)]} {
+			$data(cornerFrm-sw) configure -width $cornerFrmWidth
+			genVirtualEvent $win \
+			    <<TablelistTitleColsWidthChanged>> $titleColsWidth
+		    }
 		}
 		-treecolumn {
 		    #

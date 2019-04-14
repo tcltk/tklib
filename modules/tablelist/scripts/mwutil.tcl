@@ -19,7 +19,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.11
+    variable version	2.12
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -35,7 +35,7 @@ namespace eval mwutil {
 			configureWidget fullConfigOpt fullOpt enumOpts \
 			configureSubCmd attribSubCmd hasattribSubCmd \
 			unsetattribSubCmd getScrollInfo hasFocus \
-			genMouseWheelEvent
+			genMouseWheelEvent windowingSystem currentTheme
 
     #
     # Make modified versions of the procedures tk_focusNext and
@@ -547,5 +547,37 @@ proc mwutil::genMouseWheelEvent {w event rootX rootY delta} {
 
     if {$needsFocus} {
 	focus $focusWin
+    }
+}
+
+#------------------------------------------------------------------------------
+# mwutil::windowingSystem
+#
+# Returns the current windowing system ("x11", "win32", "classic", or "aqua").
+#------------------------------------------------------------------------------
+proc mwutil::windowingSystem {} {
+    if {[catch {tk windowingsystem} winSys] != 0} {
+	switch $::tcl_platform(platform) {
+	    unix	{ set winSys x11 }
+	    windows	{ set winSys win32 }
+	    macintosh	{ set winSys classic }
+	}
+    }
+
+    return $winSys
+}
+
+#------------------------------------------------------------------------------
+# mwutil::currentTheme
+#
+# Returns the current tile theme.
+#------------------------------------------------------------------------------
+proc mwutil::currentTheme {} {
+    if {[info exists ::ttk::currentTheme]} {
+	return $::ttk::currentTheme
+    } elseif {[info exists ::tile::currentTheme]} {
+	return $::tile::currentTheme
+    } else {
+	return ""
     }
 }
