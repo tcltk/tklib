@@ -3,7 +3,6 @@
 #
 # Structure of the module:
 #   - Namespace initialization
-#   - Public utility procedure
 #   - Private utility procedures
 #
 # Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
@@ -47,26 +46,6 @@ namespace eval tablelist {
 	up,decreasing	Dn
 	down,increasing	Dn
 	down,decreasing	Up
-    }
-}
-
-#
-# Public utility procedure
-# ========================
-#
-
-#------------------------------------------------------------------------------
-# tablelist::getCurrentTheme
-#
-# Returns the current tile theme.
-#------------------------------------------------------------------------------
-proc tablelist::getCurrentTheme {} {
-    if {[info exists ::ttk::currentTheme]} {
-	return $::ttk::currentTheme
-    } elseif {[info exists ::tile::currentTheme]} {
-	return $::tile::currentTheme
-    } else {
-	return ""
     }
 }
 
@@ -277,7 +256,9 @@ proc tablelist::colIndex {win idx checkRange {decrX 1}} {
 	# Get the (scheduled) root X coordinate of $data(hdrTxtFrm)
 	#
 	set  baseX [winfo rootx $data(hdrTxt)]
+	$data(hdrTxt) yview 0
 	incr baseX [lindex [$data(hdrTxt) bbox 1.0] 0]
+	$data(hdrTxt) yview 1
 
 	set lastVisibleCol -1
 	for {set col 0} {$col < $data(colCount)} {incr col} {
@@ -2238,7 +2219,7 @@ proc tablelist::makeSortAndArrowColLists win {
     #
     variable specialAquaHandling
     if {$specialAquaHandling &&
-	[string compare [getCurrentTheme] "aqua"] == 0} {
+	[string compare [mwutil::currentTheme] "aqua"] == 0} {
 	for {set col 0} {$col < $data(colCount)} {incr col} {
 	    configLabel $data(hdrTxtFrmLbl)$col -selected 0
 	}
@@ -2721,17 +2702,20 @@ proc tablelist::adjustSeps win {
 #------------------------------------------------------------------------------
 proc tablelist::getSepX {} {
     set x 1
-    set currentTheme [getCurrentTheme]
-    variable xpStyle
-    if {([string compare $currentTheme "aqua"] == 0) ||
-	([string compare $currentTheme "xpnative"] == 0 && $xpStyle)} {
-	set x 0
-    } elseif {[string compare $currentTheme "tileqt"] == 0} {
-	switch -- [string tolower [tileqt_currentThemeName]] {
-	    cleanlooks -
-	    gtk+ -
-	    oxygen	{ set x 0 }
-	    qtcurve	{ set x 2 }
+    variable usingTile
+    if {$usingTile} {
+	set currentTheme [mwutil::currentTheme]
+	variable xpStyle
+	if {([string compare $currentTheme "aqua"] == 0) ||
+	    ([string compare $currentTheme "xpnative"] == 0 && $xpStyle)} {
+	    set x 0
+	} elseif {[string compare $currentTheme "tileqt"] == 0} {
+	    switch -- [string tolower [tileqt_currentThemeName]] {
+		cleanlooks -
+		gtk+ -
+		oxygen	{ set x 0 }
+		qtcurve	{ set x 2 }
+	    }
 	}
     }
 
@@ -2752,7 +2736,10 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
     set compAllColWidths [expr {[string compare $whichWidths "allCols"] == 0}]
     set compAllLabelWidths \
 	[expr {[string compare $whichWidths "allLabels"] == 0}]
-    set usingAquaTheme [expr {[string compare [getCurrentTheme] "aqua"] == 0}]
+
+    variable usingTile
+    set usingAquaTheme [expr {$usingTile &&
+			[string compare [mwutil::currentTheme] "aqua"] == 0}]
 
     #
     # Configure the labels and compute the positions
@@ -2931,13 +2918,17 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
     }
     updateHScrlbarWhenIdle $win
 
-    set cornerFrmWidth [getTitleColsWidth $win]
+    set titleColsWidth [getTitleColsWidth $win]
+    set cornerFrmWidth $titleColsWidth
     if {$cornerFrmWidth == 0} {
 	set cornerFrmWidth 1
     } else {
 	incr cornerFrmWidth -1
     }
-    $data(cornerFrm-sw) configure -width $cornerFrmWidth
+    if {$cornerFrmWidth != [winfo reqwidth $data(cornerFrm-sw)]} {
+	$data(cornerFrm-sw) configure -width $cornerFrmWidth
+	genVirtualEvent $win <<TablelistTitleColsWidthChanged>> $titleColsWidth
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -2967,7 +2958,8 @@ proc tablelist::adjustLabel {win col pixels alignment} {
     set padR $padX
     set marginL $data(charWidth)
     set marginR $data(charWidth)
-    if {[string compare [getCurrentTheme] "aqua"] == 0} {
+    variable usingTile
+    if {$usingTile && [string compare [mwutil::currentTheme] "aqua"] == 0} {
 	incr padL
 	incr marginL
 	if {$col == 0} {
@@ -3478,13 +3470,17 @@ proc tablelist::adjustHeaderHeight win {
 
     set cornerFrmHeight $hdrHeight
     if {$data(hdr_itemCount) != 0} {
-	if {[string compare [getCurrentTheme] "aqua"] == 0} {
+	variable usingTile
+	if {$usingTile && [string compare [mwutil::currentTheme] "aqua"] == 0} {
 	    incr cornerFrmHeight -1
 	} else {
 	    incr cornerFrmHeight -2
 	}
     }
-    $data(cornerFrm-ne) configure -height $cornerFrmHeight
+    if {$cornerFrmHeight != [winfo reqheight $data(cornerFrm-ne)]} {
+	$data(cornerFrm-ne) configure -height $cornerFrmHeight
+	genVirtualEvent $win <<TablelistHeaderHeightChanged>> $hdrHeight
+    }
 
     adjustSepsWhenIdle $win
 }
@@ -4618,12 +4614,11 @@ proc tablelist::redisplay win {
 	unset data(redispId)
     }
 
-    set snipStr $data(-snipstring)
     variable canElide
     variable snipSides
+    set snipStr $data(-snipstring)
 
     set w $data(hdrTxt)
-    set padY [expr {[$w cget -spacing1] == 0}]
     set hdr_newItemList {}
     set row 0
     set line 2
@@ -5749,6 +5744,7 @@ proc tablelist::configLabel {w args} {
 
 	    -padx {
 		if {[string compare [winfo class $w] "TLabel"] == 0} {
+		    set val [winfo pixels $w $val]
 		    set padding [$w cget -padding]
 		    lset padding 0 $val
 		    lset padding 2 $val
@@ -6495,8 +6491,8 @@ proc tablelist::makeCheckbutton w {
 	x11 {
 	    if {$::tk_version > 8.4} {
 		$frm configure -width 11 -height 11
-		$w configure -borderwidth 0 -font "Helvetica -12"
-		place $w -x -5 -y -3
+		$w configure -borderwidth 0 -font "Courier -11"
+		place $w -x -4 -y -2
 	    } else {
 		variable checkedImg
 		variable uncheckedImg
@@ -6610,7 +6606,7 @@ proc tablelist::makeTileCheckbutton w {
     # Define the checkbutton layout; use catch to suppress
     # the error message in case the layout already exists
     #
-    set currentTheme [getCurrentTheme]
+    set currentTheme [mwutil::currentTheme]
     if {[string compare $currentTheme "aqua"] == 0} {
 	catch {style layout Tablelist.TCheckbutton { Checkbutton.button }}
     } else {

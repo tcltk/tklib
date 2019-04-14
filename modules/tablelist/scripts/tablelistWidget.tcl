@@ -20,14 +20,7 @@ namespace eval tablelist {
     #
     # Get the current windowing system ("x11", "win32", "classic", or "aqua")
     #
-    variable winSys
-    if {[catch {tk windowingsystem} winSys] != 0} {
-	switch $::tcl_platform(platform) {
-	    unix	{ set winSys x11 }
-	    windows	{ set winSys win32 }
-	    macintosh	{ set winSys classic }
-	}
-    }
+    variable winSys [mwutil::windowingSystem]
 
     #
     # Create aliases for a few tile commands if not yet present
@@ -826,6 +819,7 @@ proc tablelist::tablelist args {
 	    keyBeingExpanded	 ""
 	    justEntered		 0
 	    inEditWin		 0
+	    inScrollarea	 0
 	}
 
 	#
@@ -855,7 +849,7 @@ proc tablelist::tablelist args {
     foreach opt $configOpts {
 	set data($opt) [lindex $configSpecs($opt) 3]
     }
-    set data(currentTheme) [getCurrentTheme]
+    set data(currentTheme) [mwutil::currentTheme]
     if {[string compare $data(currentTheme) "tileqt"] == 0} {
 	set data(widgetStyle) [tileqt_currentThemeName]
 	if {[info exists ::env(KDE_SESSION_VERSION)] &&
@@ -958,7 +952,7 @@ proc tablelist::tablelist args {
 	ttk::label $w -style TablelistHeader.TLabel -image "" \
 		      -padding {1 1 1 1} -takefocus 0 -text "" \
 		      -textvariable "" -underline -1 -wraplength 0
-	if {[string compare [getCurrentTheme] "aqua"] == 0} {
+	if {[string compare [mwutil::currentTheme] "aqua"] == 0} {
 	    set x -1
 	}
     } else {
@@ -6036,7 +6030,7 @@ proc tablelist::xviewSubCmd {win argList} {
 	    } else {
 		set scrlWindowWidth [getScrlWindowWidth $win]
 		if {$scrlWindowWidth <= 0} {
-		    return [list 0 0]
+		    return [list 0 1]
 		}
 
 		set scrlContentWidth [getScrlContentWidth $win 0 $data(lastCol)]
@@ -6081,20 +6075,19 @@ proc tablelist::xviewSubCmd {win argList} {
 	    #	       $win xview scroll <number> units|pages
 	    #
 	    set argList [mwutil::getScrollInfo $argList]
+	    variable winSys
 	    if {$data(-titlecolumns) == 0} {
 		if {[string compare [lindex $argList 0] "moveto"] == 0} {
 		    set data(fraction) [lindex $argList 1]
-		    if {![info exists data(moveToId)]} {
-			variable winSys
+		    if {![info exists data(horizMoveToId)]} {
 			if {[string compare $winSys "x11"] == 0} {
 			    set delay [expr {($data(colCount) + 7) / 8}]
 			} else {
 			    set delay [expr {($data(colCount) + 1) / 2}]
 			}
-			set data(moveToId) \
+			set data(horizMoveToId) \
 			    [after $delay [list tablelist::horizMoveTo $win]]
 		    }
-		    return ""
 		} else {
 		    foreach w [list $data(hdrTxt) $data(body)] {
 			eval [list $w xview] $argList
@@ -6163,7 +6156,6 @@ proc tablelist::xviewSubCmd {win argList} {
 		hdr_updateColors $win
 		updateColors $win
 	    }
-	    variable winSys
 	    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
 		#
 		# Work around a Tk bug on Mac OS X Aqua
@@ -6188,7 +6180,6 @@ proc tablelist::yviewSubCmd {win argList} {
 	displayItems $win
     }
     upvar ::tablelist::ns${win}::data data
-    set w $data(body)
 
     switch $argCount {
 	0 {
@@ -6208,6 +6199,9 @@ proc tablelist::yviewSubCmd {win argList} {
 				 double($totalViewableCount)}]
 	    set fraction2 [expr {($upperViewableCount + $winViewableCount)/
 				 double($totalViewableCount)}]
+	    if {$fraction2 == 0.0} {
+		set fraction2 1.0
+	    }
 	    return [list $fraction1 $fraction2]
 	}
 
@@ -6216,8 +6210,7 @@ proc tablelist::yviewSubCmd {win argList} {
 	    # Command: $win yview <units>
 	    #
 	    set units [format "%d" [lindex $argList 0]]
-	    set row [viewableRowOffsetToRowIndex $win $units]
-	    $w yview $row
+	    $data(body) yview [viewableRowOffsetToRowIndex $win $units]
 	    adjustElidedText $win
 	    redisplayVisibleItems $win
 	    updateColors $win
@@ -6235,26 +6228,32 @@ proc tablelist::yviewSubCmd {win argList} {
 	    set argList [mwutil::getScrollInfo $argList]
 	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
 		set data(fraction) [lindex $argList 1]
-		if {![info exists data(moveToId)]} {
+		if {![info exists data(vertMoveToId)]} {
 		    variable winSys
 		    if {[string compare $winSys "x11"] == 0} {
 			set delay [expr {($data(colCount) + 3) / 4}]
 		    } else {
 			set delay [expr {$data(colCount) * 2}]
 		    }
-		    set data(moveToId) \
+		    set data(vertMoveToId) \
 			[after $delay [list tablelist::vertMoveTo $win]]
 		}
-		return ""
 	    } else {
 		set number [lindex $argList 1]
 		if {[string compare [lindex $argList 2] "units"] == 0} {
-		    set topRow [getVertComplTopRow $win]
-		    set upperViewableCount \
-			[getViewableRowCount $win 0 [expr {$topRow - 1}]]
-		    set offset [expr {$upperViewableCount + $number}]
-		    set row [viewableRowOffsetToRowIndex $win $offset]
-		    $w yview $row
+		    if {[info exists data(scrollId)]} {
+			incr data(units) $number
+		    } else {
+			set data(units) $number
+			variable winSys
+			if {[string compare $winSys "x11"] == 0} {
+			    set delay [expr {($data(colCount) + 3) / 4}]
+			} else {
+			    set delay [expr {$data(colCount) * 2}]
+			}
+			set data(scrollId) \
+			    [after $delay [list tablelist::vertScroll $win]]
+		    }
 		} else {
 		    set absNumber [expr {abs($number)}]
 		    for {set n 0} {$n < $absNumber} {incr n} {
@@ -6272,19 +6271,19 @@ proc tablelist::yviewSubCmd {win argList} {
 			    set delta [expr {(-1)*$delta}]
 			}
 			set offset [expr {$upperViewableCount + $delta}]
-			set row [viewableRowOffsetToRowIndex $win $offset]
-			$w yview $row
+			$data(body) yview \
+			    [viewableRowOffsetToRowIndex $win $offset]
 		    }
-		}
 
-		adjustElidedText $win
-		redisplayVisibleItems $win
-		updateColors $win
-		adjustSepsWhenIdle $win
-		updateVScrlbarWhenIdle $win
-		updateIdletasksDelayed 
-		return ""
+		    adjustElidedText $win
+		    redisplayVisibleItems $win
+		    updateColors $win
+		    adjustSepsWhenIdle $win
+		    updateVScrlbarWhenIdle $win
+		    updateIdletasksDelayed 
+		}
 	    }
+	    return ""
 	}
     }
 }
@@ -6712,7 +6711,6 @@ proc tablelist::deleteRows {win first last updateListVar} {
     # Check whether the width of any dynamic-width
     # column might be affected by the deletion
     #
-    set w $data(body)
     if {$count == $data(itemCount)} {
 	set colWidthsChanged 1				;# just to save time
 	set data(seqNum) -1
@@ -6770,6 +6768,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
     # for a large number of items it is much more efficient to delete
     # the lines in chunks than to invoke a global delete command.
     #
+    set w $data(body)
     for {set toLine [expr {$last + 2}]; set fromLine [expr {$toLine - 50}]} \
 	{$fromLine > $first} {set toLine $fromLine; incr fromLine -50} {
 	$w delete $fromLine.0 $toLine.0
@@ -7611,8 +7610,7 @@ proc tablelist::displayItems win {
     set widgetFont $data(-font)
     set snipStr $data(-snipstring)
     set padY [expr {[$w cget -spacing1] == 0}]
-    variable pu
-    set wasEmpty [$w compare end-1$pu == 1.0]
+    set wasEmpty [$w compare end-1c == 1.0]
     set isEmpty $wasEmpty
     foreach segment $segmentList {
 	foreach {startRow rowCount} $segment {}
@@ -8208,7 +8206,8 @@ proc tablelist::seeCell {win row col} {
 	set alignment [lindex $data(colList) [expr {2*$col + 1}]]
 	set lX [winfo x $data(hdrTxtFrmLbl)$col]
 	set rX [expr {$lX + [winfo width $data(hdrTxtFrmLbl)$col] - 1}]
-	if {[string compare [getCurrentTheme] "aqua"] == 0} {
+	variable usingTile
+	if {$usingTile && [string compare [mwutil::currentTheme] "aqua"] == 0} {
 	    incr lX
 	    if {$col == 0} {
 		incr lX
@@ -8458,9 +8457,9 @@ proc tablelist::rowSelection {win opt first last} {
 #------------------------------------------------------------------------------
 proc tablelist::horizMoveTo win {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(moveToId)]} {
-	after cancel $data(moveToId)
-	unset data(moveToId)
+    if {[info exists data(horizMoveToId)]} {
+	after cancel $data(horizMoveToId)
+	unset data(horizMoveToId)
     }
 
     foreach w [list $data(hdrTxt) $data(body)] {
@@ -8479,23 +8478,44 @@ proc tablelist::horizMoveTo win {
 #------------------------------------------------------------------------------
 proc tablelist::vertMoveTo win {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(moveToId)]} {
-	after cancel $data(moveToId)
-	unset data(moveToId)
+    if {[info exists data(vertMoveToId)]} {
+	after cancel $data(vertMoveToId)
+	unset data(vertMoveToId)
     }
 
     set totalViewableCount [getViewableRowCount $win 0 $data(lastRow)]
     set offset [expr {int($data(fraction)*$totalViewableCount + 0.5)}]
     set row [viewableRowOffsetToRowIndex $win $offset]
 
-    set w $data(body)
     set topRow [getVertComplTopRow $win]
 
     if {$row != $topRow} {
-	$w yview $row
+	$data(body) yview $row
 	updateView $win
 	updateIdletasksDelayed 
     }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::vertScroll
+#
+# Adjusts the view in the tablelist window win up or down by data(units)
+# viewable rows.
+#------------------------------------------------------------------------------
+proc tablelist::vertScroll win {
+    upvar ::tablelist::ns${win}::data data
+    if {[info exists data(scrollId)]} {
+	after cancel $data(scrollId)
+	unset data(scrollId)
+    }
+
+    set topRow [getVertComplTopRow $win]
+    set upperViewableCount [getViewableRowCount $win 0 [expr {$topRow - 1}]]
+    set offset [expr {$upperViewableCount + $data(units)}]
+    $data(body) yview [viewableRowOffsetToRowIndex $win $offset]
+
+    updateView $win
+    updateIdletasksDelayed 
 }
 
 #------------------------------------------------------------------------------

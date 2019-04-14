@@ -17,6 +17,15 @@
 #
 
 #------------------------------------------------------------------------------
+# tablelist::getCurrentTheme
+#
+# Returns the current tile theme.
+#------------------------------------------------------------------------------
+proc tablelist::getCurrentTheme {} {
+    return [mwutil::currentTheme]
+}
+
+#------------------------------------------------------------------------------
 # tablelist::setThemeDefaults
 #
 # Populates the array themeDefaults with theme-specific default values of some
@@ -24,7 +33,7 @@
 #------------------------------------------------------------------------------
 proc tablelist::setThemeDefaults {} {
     variable themeDefaults
-    if {[catch {[getCurrentTheme]Theme}] != 0} {
+    if {[catch {[mwutil::currentTheme]Theme}] != 0} {
 	#
 	# Fall back to the "default" theme (which is the root of all
 	# themes) and then override the options set by the current one

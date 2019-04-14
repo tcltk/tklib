@@ -1197,7 +1197,7 @@ proc tablelist::createTileEntry {w args} {
     # -borderwidth 2 setting, set the padding to another value.
     #
     set win [getTablelistPath $w]
-    switch -- [getCurrentTheme] {
+    switch -- [mwutil::currentTheme] {
 	aqua {
 	    set padding {0 0 0 -1}
 	}
@@ -1248,7 +1248,7 @@ proc tablelist::createTileSpinbox {w args} {
     # -borderwidth 2 setting, set the padding to another value.
     #
     set win [getTablelistPath $w]
-    switch -- [getCurrentTheme] {
+    switch -- [mwutil::currentTheme] {
 	aqua {
 	    set padding {0 0 0 -1}
 	}
@@ -1301,7 +1301,7 @@ proc tablelist::createTileCombobox {w args} {
     createTileAliases 
 
     set win [getTablelistPath $w]
-    if {[string compare [getCurrentTheme] "aqua"] == 0} {
+    if {[string compare [mwutil::currentTheme] "aqua"] == 0} {
 	styleConfig Tablelist.TCombobox -borderwidth 2 -padding {0 0 0 -1}
     } else {
 	styleConfig Tablelist.TCombobox -borderwidth 2 -padding 1
@@ -2152,7 +2152,7 @@ proc tablelist::adjustEditWindow {win pixels} {
 	    switch -- $name {
 		text { set amount 4 }
 		ttk::entry {
-		    if {[string compare [getCurrentTheme] "aqua"] == 0} {
+		    if {[string compare [mwutil::currentTheme] "aqua"] == 0} {
 			set amount 5
 		    } else {
 			set amount 3
@@ -2623,7 +2623,7 @@ proc tablelist::defineTablelistEdit {} {
 			<MouseWheel> %X %Y %D
 		    break
 		}
-	    } elseif {![tablelist::isComboTopMapped %%W]} {
+	    } elseif {![tablelist::isComboTopMapped %W]} {
 		set tablelist::W [tablelist::getTablelistPath %W]
 		mwutil::genMouseWheelEvent [$tablelist::W bodypath] \
 		    <MouseWheel> %X %Y %D
@@ -2641,7 +2641,7 @@ proc tablelist::defineTablelistEdit {} {
 			<Option-MouseWheel> %X %Y %D
 		    break
 		}
-	    } elseif {![tablelist::isComboTopMapped %%W]} {
+	    } elseif {![tablelist::isComboTopMapped %W]} {
 		set tablelist::W [tablelist::getTablelistPath %W]
 		mwutil::genMouseWheelEvent [$tablelist::W bodypath] \
 		    <Option-MouseWheel> %X %Y %D
@@ -2660,7 +2660,7 @@ proc tablelist::defineTablelistEdit {} {
 			<Shift-MouseWheel> %X %Y %D
 		    break
 		}
-	    } elseif {![tablelist::isComboTopMapped %%W]} {
+	    } elseif {![tablelist::isComboTopMapped %W]} {
 		set tablelist::W [tablelist::getTablelistPath %W]
 		mwutil::genMouseWheelEvent [$tablelist::W bodypath] \
 		    <Shift-MouseWheel> %X %Y %D
@@ -2678,7 +2678,7 @@ proc tablelist::defineTablelistEdit {} {
 			<Shift-Option-MouseWheel> %X %Y %D
 		    break
 		}
-	    } elseif {![tablelist::isComboTopMapped %%W]} {
+	    } elseif {![tablelist::isComboTopMapped %W]} {
 		set tablelist::W [tablelist::getTablelistPath %W]
 		mwutil::genMouseWheelEvent [$tablelist::W bodypath] \
 		    <Shift-Option-MouseWheel> %X %Y %D
