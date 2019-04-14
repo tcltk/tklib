@@ -6,7 +6,7 @@
 # Copyright (c) 2004-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 6.4
+package require tablelist 6.5
 
 wm title . "Tk Library Scripts"
 
@@ -31,7 +31,7 @@ image create photo openImg -file [file join $dir open.gif]
 # dynamic-width columns and interactive sort capability
 #
 set tf .tf
-frame $tf -class ScrollArea 
+frame $tf -class ScrollArea
 set tbl $tf.tbl
 set vsb $tf.vsb
 tablelist::tablelist $tbl \
