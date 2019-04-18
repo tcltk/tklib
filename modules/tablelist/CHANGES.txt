@@ -24,7 +24,7 @@ What is new in Tablelist 6.5?
    Alexandru Dadalau for his bug report).
 
 7. Fixed a bug related to the "move" subcommand, introduced in Tablelist
-   6.3 (thanks to Jose Luis Lijo for his bug report).
+   6.3 (thanks to Jose Luis Lijo and Bo Berggren for their bug reports).
 
 8. Several further improvements in the code and documentation.
 
