@@ -1,5 +1,14 @@
-What is new in Mentry 3.8?
+What is new in Mentry 3.9?
 --------------------------
+
+1. Included the same version of the general mega-widget utility module
+   "mwutil.tcl" as in the most recent Tablelist release 6.5.
+
+2. Corrected two typos related to the "hasattrib" and "unsetattrib"
+   subcommands.
+
+What was new in Mentry 3.8?
+---------------------------
 
 1. Added support for the themes "aquativo", "Arc", and "clearlooks";
    updated the support for several other themes.
