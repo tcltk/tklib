@@ -7,13 +7,22 @@
 #   - Private procedures related to tile themes
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2006-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2006-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
 # Public procedures related to tile themes
 # ========================================
 #
+
+#------------------------------------------------------------------------------
+# mentry::getCurrentTheme
+#
+# Returns the current tile theme.
+#------------------------------------------------------------------------------
+proc mentry::getCurrentTheme {} {
+    return [mwutil::currentTheme]
+}
 
 #------------------------------------------------------------------------------
 # mentry::setThemeDefaults
