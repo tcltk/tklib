@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 1999-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -23,14 +23,7 @@ namespace eval mentry {
     #
     # Get the current windowing system ("x11", "win32", "classic", or "aqua")
     #
-    variable winSys
-    if {[catch {tk windowingsystem} winSys] != 0} {
-	switch $::tcl_platform(platform) {
-	    unix	{ set winSys x11 }
-	    windows	{ set winSys win32 }
-	    macintosh	{ set winSys classic }
-	}
-    }
+    variable winSys [mwutil::windowingSystem]
 
     #
     # Create aliases for a few tile commands if not yet present
@@ -126,19 +119,6 @@ namespace eval mentry {
     }
 
     #
-    # Public utility procedure.  Returns the current tile theme.
-    #
-    proc getCurrentTheme {} {
-	if {[info exists ::ttk::currentTheme]} {
-	    return $::ttk::currentTheme
-	} elseif {[info exists ::tile::currentTheme]} {
-	    return $::tile::currentTheme
-	} else {
-	    return ""
-	}
-    }
-
-    #
     # Extend the elements of the array configSpecs
     #
     proc extendConfigSpecs {} {
@@ -170,7 +150,7 @@ namespace eval mentry {
 	    # Append theme-specific values to some
 	    # elements of the array configSpecs
 	    #
-	    if {[string compare [getCurrentTheme] "tileqt"] == 0} {
+	    if {[string compare [mwutil::currentTheme] "tileqt"] == 0} {
 		tileqt_kdeStyleChangeNotification 
 	    }
 	    setThemeDefaults
@@ -410,7 +390,7 @@ proc mentry::mentry args {
     foreach opt $configOpts {
 	set data($opt) [lindex $configSpecs($opt) 3]
     }
-    set data(currentTheme) [getCurrentTheme]
+    set data(currentTheme) [mwutil::currentTheme]
     if {[string compare $data(currentTheme) "tileqt"] == 0} {
 	set data(widgetStyle) [tileqt_currentThemeName]
 	if {[info exists ::env(KDE_SESSION_VERSION)] &&
@@ -877,14 +857,14 @@ proc mentry::createChildren {win body} {
 # multi-entry widget.
 #------------------------------------------------------------------------------
 proc mentry::mentryWidgetCmd {win args} {
-    variable cmdOpts
-    upvar ::mentry::ns${win}::data data
-
     set argCount [llength $args]
     if {$argCount == 0} {
 	mwutil::wrongNumArgs "$win option ?arg arg ...?"
     }
 
+    upvar ::mentry::ns${win}::data data
+
+    variable cmdOpts
     set cmd [mwutil::fullOpt "option" [lindex $args 0] $cmdOpts]
     switch $cmd {
 	adjustentry {
@@ -1026,7 +1006,7 @@ proc mentry::mentryWidgetCmd {win args} {
 		mwutil::wrongNumArgs "$win $cmd name"
 	    }
 
-	    return [mwutil::hasattribSubCmd $win "widget" [lindex $argList 1]]
+	    return [mwutil::hasattribSubCmd $win "widget" [lindex $args 1]]
 	}
 
 	isempty {
@@ -1141,7 +1121,7 @@ proc mentry::mentryWidgetCmd {win args} {
 		mwutil::wrongNumArgs "$win $cmd name"
 	    }
 
-	    return [mwutil::unsetattribSubCmd $win "widget" [lindex $argList 1]]
+	    return [mwutil::unsetattribSubCmd $win "widget" [lindex $args 1]]
 	}
     }
 }
@@ -1462,7 +1442,7 @@ proc mentry::updateConfigSpecs win {
 	return ""
     }
 
-    set currentTheme [getCurrentTheme]
+    set currentTheme [mwutil::currentTheme]
     upvar ::mentry::ns${win}::data data
     if {[string compare $currentTheme $data(currentTheme)] == 0} {
 	if {[string compare $currentTheme "tileqt"] == 0} {
@@ -2077,7 +2057,7 @@ proc mentry::configEntry {w args} {
 # Returns the requested width in pixels of the tile entry widget w.
 #------------------------------------------------------------------------------
 proc mentry::reqEntryWidth w {
-    if {[string compare [getCurrentTheme] "vista"] == 0} {
+    if {[string compare [mwutil::currentTheme] "vista"] == 0} {
 	#
 	# If the tile entry was created with -width 1 or -width 2 then
 	# in the "vista" theme its width will silently be changed to 3.
