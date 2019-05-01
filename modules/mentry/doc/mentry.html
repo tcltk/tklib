@@ -863,7 +863,7 @@ proc getEthernetAddr win {
 
     <li class="tm">Finally, the procedure <code><a href=
     "mentryDateTime.html#dateTimeMentry">mentry::dateTimeentry</a></code>
-    creates a new mentry widget for displaying and editing a date &amp; time
+    creates a new mentry widget for displaying and editing a date & time
     according to the format passed to the command as a 5- or 6-character
     string, with the first three characters consisting of the letters
     <code>"d"</code>, <code>"m"</code>, and <code>"y"</code> or
@@ -884,7 +884,7 @@ proc getEthernetAddr win {
     <pre>
 package require mentry
 
-set title "Date &amp; Time"
+set title "Date & Time"
 wm title . $title 
 
 #
@@ -902,7 +902,7 @@ array set timeFmts {0 IMS  1 HMS}
 array set timeSeps {0 :    1 :  }
 
 #
-# Choose the date &amp; time formats; don't use the %p field descriptor
+# Choose the date & time formats; don't use the %p field descriptor
 # for displaying the AM/PM indicator, because it doesn't work on
 # UNIX if Tcl/Tk 8.4 or higher is used in a non-default locale
 #
@@ -923,7 +923,7 @@ set timeIdx [tk_dialog .choice $title "Please choose a time format" {} -1 \
 wm deiconify .
 
 #   
-# Frame .f with mentries displaying the date &amp; time
+# Frame .f with mentries displaying the date & time
 #   
 frame .f
 label .f.lDate -text "Date: "
@@ -948,7 +948,7 @@ pack .f.lDate .f.date .f.gap .f.lTime .f.time -side left
   2</code>&nbsp; and&nbsp; <code>timeIdx = 1</code>:</p>
 
   <blockquote>
-    <img src="datetime1.png" alt="Date &amp; Time" width="279" height="209">
+    <img src="datetime1.png" alt="Date & Time" width="279" height="209">
   </blockquote>
 
   <p>The demo script <code>datetime2.tcl</code> displays both the date and time
@@ -958,10 +958,10 @@ pack .f.lDate .f.date .f.gap .f.lTime .f.time -side left
   <blockquote>
     <pre>
 #
-# Frame .f with a mentry displaying the date &amp; time
+# Frame .f with a mentry displaying the date & time
 #
 frame .f
-label .f.l -text "Date &amp; time: "
+label .f.l -text "Date & time: "
 mentry::dateTimeMentry .f.me $dateFmts($dateIdx)$timeFmts($timeIdx) \
                        $dateSeps($dateIdx) $timeSeps($timeIdx) \
                        -justify center -background white
@@ -970,27 +970,27 @@ pack .f.l .f.me
   </blockquote>
 
   <blockquote>
-    <img src="datetime2.png" alt="Date &amp; Time" width="272" height="209">
+    <img src="datetime2.png" alt="Date & Time" width="272" height="209">
   </blockquote>
 
-  <p>The Mentry package exports two further commands for date, time, and date
-  &amp; time mentries:</p>
+  <p>The Mentry package exports two further commands for date, time, and date &
+  time mentries:</p>
 
   <ul>
     <li>The procedure <code><a href=
     "mentryDateTime.html#putClockVal">mentry::putClockVal</a></code> outputs
-    the date, time, or date &amp; time corresponding to an integer clock value
-    specified as its first argument to a date, time, or date &amp; time mentry
+    the date, time, or date & time corresponding to an integer clock value
+    specified as its first argument to a date, time, or date & time mentry
     widget, passed to it as the second parameter.&nbsp; Like the
     &nbsp;<code>clock format</code>&nbsp; command, the procedure accepts the
     optional argument pair&nbsp; <code>-gmt <i>boolean</i></code>.</li>
 
     <li class="tm">The procedure <code><a href=
     "mentryDateTime.html#getClockVal">mentry::getClockVal</a></code> returns
-    the clock value corresponding to the date, time, or date &amp; time
-    contained in the date, time, or date &amp; time mentry specified as its
-    first argument.&nbsp; Like the &nbsp;<code>clock scan</code>&nbsp; command,
-    the procedure accepts the optional argument pairs&nbsp; <code>-base
+    the clock value corresponding to the date, time, or date & time contained
+    in the date, time, or date & time mentry specified as its first
+    argument.&nbsp; Like the &nbsp;<code>clock scan</code>&nbsp; command, the
+    procedure accepts the optional argument pairs&nbsp; <code>-base
     <i>clockValue</i></code>&nbsp; and&nbsp; <code>-gmt
     <i>boolean</i></code>.&nbsp; On failure, the procedure sets the focus to
     the first erronous entry child, generates an error, and returns one of the
