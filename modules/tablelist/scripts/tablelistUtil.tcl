@@ -255,10 +255,18 @@ proc tablelist::colIndex {win idx checkRange {decrX 1}} {
 	#
 	# Get the (scheduled) root X coordinate of $data(hdrTxtFrm)
 	#
-	set  baseX [winfo rootx $data(hdrTxt)]
-	$data(hdrTxt) yview 0
-	incr baseX [lindex [$data(hdrTxt) bbox 1.0] 0]
-	$data(hdrTxt) yview 1
+	set baseX [winfo rootx $data(hdrTxt)]
+	set bbox [$data(hdrTxt) bbox 1.0]
+	set viewChanged 0
+	if {[llength $bbox] == 0} {
+	    $data(hdrTxt) yview 0
+	    set bbox [$data(hdrTxt) bbox 1.0]
+	    set viewChanged 1
+	}
+	incr baseX [lindex $bbox 0]
+	if {$viewChanged} {
+	    $data(hdrTxt) yview 1
+	}
 
 	set lastVisibleCol -1
 	for {set col 0} {$col < $data(colCount)} {incr col} {
@@ -3648,8 +3656,8 @@ proc tablelist::moveActiveTag win {
     if {[string compare $data(-selecttype) "row"] == 0} {
 	$w tag add active $activeLine.0 $activeLine.end
 	updateColors $win $activeLine.0 $activeLine.end
-    } elseif {$activeLine > 0 && $activeCol < $data(colCount) &&
-	      !$data($activeCol-hide)} {
+    } elseif {$activeLine > 0 && $activeCol >= 0 &&
+	      $activeCol < $data(colCount) && !$data($activeCol-hide)} {
 	$w tag add curRow $activeLine.0 $activeLine.end
 	findTabs $win $w $activeLine $activeCol $activeCol tabIdx1 tabIdx2
 	variable pu
@@ -5978,8 +5986,8 @@ proc tablelist::configCanvas {win col} {
 		set labelFg [$w cget -disabledforeground]
 	    } elseif {[string compare $state "active"] == 0} {
 		variable winSys
-		if {!([string compare $winSys "classic"] == 0 ||
-		      [string compare $winSys "aqua"] == 0) ||
+		if {[string compare $winSys "classic"] != 0 &&
+		    [string compare $winSys "aqua"] != 0 &&
 		    $::tk_version > 8.4} {
 		    set labelBg [$w cget -activebackground]
 		    set labelFg [$w cget -activeforeground]

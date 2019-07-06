@@ -46,6 +46,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-populatecommand)	{}
     lappend configSpecs(-protecttitlecolumns)	0
     lappend configSpecs(-resizablecolumns)	1
+    lappend configSpecs(-selectfiltercommand)	{}
     lappend configSpecs(-selecttype)		row
     lappend configSpecs(-setfocus)		1
     lappend configSpecs(-showarrow)		1
@@ -637,6 +638,7 @@ proc tablelist::doConfig {win opt val} {
 		-labelcommand -
 		-labelcommand2 -
 		-populatecommand -
+		-selectfiltercommand -
 		-selectmode -
 		-sortcommand -
 		-tooltipaddcommand -
@@ -1681,6 +1683,7 @@ proc tablelist::doColConfig {col win opt val} {
 	-labelcommand -
 	-labelcommand2 -
 	-name -
+	-selectfiltercommand -
 	-sortcommand {
 	    if {[string length $val] == 0} {
 		arrayUnset data $col$opt
@@ -2676,7 +2679,7 @@ proc tablelist::doRowConfig {row win opt val} {
 		# Set data($key$opt) to 0 and deselect the row
 		#
 		set data($key$opt) 0
-		rowSelection $win clear $row $row
+		selectionSubCmd $win [list clear $row $row]
 	    }
 	}
 

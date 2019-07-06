@@ -149,6 +149,7 @@ namespace eval tablelist {
 	-resizecursor		 {resizeCursor		  ResizeCursor	      w}
 	-selectbackground	 {selectBackground	  Foreground	      w}
 	-selectborderwidth	 {selectBorderWidth	  BorderWidth	      w}
+	-selectfiltercommand	 {selectFilterCommand	  SelectFilterCommand w}
 	-selectforeground	 {selectForeground	  Background	      w}
 	-selectmode		 {selectMode		  SelectMode	      w}
 	-selecttype		 {selectType		  SelectType	      w}
@@ -234,6 +235,7 @@ namespace eval tablelist {
 	-name			{name			Name		    }
 	-resizable		{resizable		Resizable	    }
 	-selectbackground	{selectBackground	Foreground	    }
+	-selectfiltercommand	{selectFilterCommand	SelectFilterCommand }
 	-selectforeground	{selectForeground	Background	    }
 	-showarrow		{showArrow		ShowArrow	    }
 	-showlinenumbers	{showLineNumbers	ShowLineNumbers	    }
@@ -789,6 +791,7 @@ proc tablelist::tablelist args {
 	    indentCount		 0
 	    afterId		 ""
 	    labelClicked	 0
+	    labelModifClicked	 0
 	    arrowColList	 {}
 	    sortColList		 {}
 	    sortOrder		 ""
@@ -1409,7 +1412,7 @@ proc tablelist::cellselectionSubCmd {win argList} {
 		cellSelection $win $opt $firstRow $firstCol $lastRow $lastCol
 	    }
 
-	    updateColors $win
+	    updateColorsWhenIdle $win
 	    invokeMotionHandler $win
 	    return ""
 	}
@@ -5380,7 +5383,7 @@ proc tablelist::selectionSubCmd {win argList} {
 		rowSelection $win $opt $first $last
 	    }
 
-	    updateColors $win
+	    updateColorsWhenIdle $win
 	    invokeMotionHandler $win
 	    return ""
 	}
@@ -6366,7 +6369,6 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 		}
 	    }
 
-	    updateColorsWhenIdle $win
 	    return ""
 	}
 
@@ -6436,7 +6438,6 @@ proc tablelist::cellSelection {win opt firstRow firstCol lastRow lastCol} {
 		    [list ::tablelist::lostSelection $win] $win
 	    }
 
-	    updateColorsWhenIdle $win
 	    return ""
 	}
     }
@@ -8393,7 +8394,6 @@ proc tablelist::rowSelection {win opt first last} {
 		}
 	    }
 
-	    updateColorsWhenIdle $win
 	    return ""
 	}
 
@@ -8443,7 +8443,6 @@ proc tablelist::rowSelection {win opt first last} {
 		    [list ::tablelist::lostSelection $win] $win
 	    }
 
-	    updateColorsWhenIdle $win
 	    return ""
 	}
     }
@@ -8485,15 +8484,10 @@ proc tablelist::vertMoveTo win {
 
     set totalViewableCount [getViewableRowCount $win 0 $data(lastRow)]
     set offset [expr {int($data(fraction)*$totalViewableCount + 0.5)}]
-    set row [viewableRowOffsetToRowIndex $win $offset]
+    $data(body) yview [viewableRowOffsetToRowIndex $win $offset]
 
-    set topRow [getVertComplTopRow $win]
-
-    if {$row != $topRow} {
-	$data(body) yview $row
-	updateView $win
-	updateIdletasksDelayed 
-    }
+    updateView $win
+    updateIdletasksDelayed 
 }
 
 #------------------------------------------------------------------------------
@@ -8741,12 +8735,12 @@ proc tablelist::fetchSelection {win offset maxChars} {
 #
 # This procedure is invoked when the tablelist widget win loses ownership of
 # the PRIMARY selection.  It deselects all items of the widget with the aid of
-# the rowSelection procedure if the selection is exported.
+# the selectionSubCmd procedure if the selection is exported.
 #------------------------------------------------------------------------------
 proc tablelist::lostSelection win {
     upvar ::tablelist::ns${win}::data data
     if {$data(-exportselection)} {
-	rowSelection $win clear 0 $data(lastRow)
+	selectionSubCmd $win [list clear 0 $data(lastRow)]
 	event generate $win <<TablelistSelectionLost>>
     }
 }
