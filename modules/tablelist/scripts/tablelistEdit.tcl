@@ -1894,6 +1894,7 @@ proc tablelist::doCancelEditing win {
     set userData [list $row $col]
     genVirtualEvent $win <<TablelistCellRestored>> $userData
 
+    seeRow $win $row
     updateViewWhenIdle $win
     return ""
 }
@@ -1946,7 +1947,6 @@ proc tablelist::doFinishEditing win {
     #
     if {$data(rejected)} {
 	if {[winfo exists $data(bodyFrm)]} {
-	    seeCell $win $row $col
 	    if {[string compare [winfo class $w] "Mentry"] != 0} {
 		focus $data(editFocus)
 	    }
@@ -1978,6 +1978,7 @@ proc tablelist::doFinishEditing win {
 	genVirtualEvent $win <<TablelistCellUpdated>> $userData
     }
 
+    seeRow $win $row
     updateViewWhenIdle $win
     return $result
 }
@@ -2022,6 +2023,10 @@ proc tablelist::adjustTextHeight {w args} {
     if {[winfo exists $path]} {
 	[winfo parent $path] configure -height [winfo reqheight $path]
     }
+
+    set win [getTablelistPath $path]
+    upvar ::tablelist::ns${win}::data data
+    seeRow $win $data(editRow)
 }
 
 #------------------------------------------------------------------------------
@@ -2623,7 +2628,8 @@ proc tablelist::defineTablelistEdit {} {
 			<MouseWheel> %X %Y %D
 		    break
 		}
-	    } elseif {![tablelist::isComboTopMapped %W]} {
+	    } elseif {![tablelist::isComboTopMapped %W] &&
+		      ![tablelist::isMenuPosted %W]} {
 		set tablelist::W [tablelist::getTablelistPath %W]
 		mwutil::genMouseWheelEvent [$tablelist::W bodypath] \
 		    <MouseWheel> %X %Y %D
@@ -2641,7 +2647,8 @@ proc tablelist::defineTablelistEdit {} {
 			<Option-MouseWheel> %X %Y %D
 		    break
 		}
-	    } elseif {![tablelist::isComboTopMapped %W]} {
+	    } elseif {![tablelist::isComboTopMapped %W] &&
+		      ![tablelist::isMenuPosted %W]} {
 		set tablelist::W [tablelist::getTablelistPath %W]
 		mwutil::genMouseWheelEvent [$tablelist::W bodypath] \
 		    <Option-MouseWheel> %X %Y %D
@@ -2660,7 +2667,8 @@ proc tablelist::defineTablelistEdit {} {
 			<Shift-MouseWheel> %X %Y %D
 		    break
 		}
-	    } elseif {![tablelist::isComboTopMapped %W]} {
+	    } elseif {![tablelist::isComboTopMapped %W] &&
+		      ![tablelist::isMenuPosted %W]} {
 		set tablelist::W [tablelist::getTablelistPath %W]
 		mwutil::genMouseWheelEvent [$tablelist::W bodypath] \
 		    <Shift-MouseWheel> %X %Y %D
@@ -2678,7 +2686,8 @@ proc tablelist::defineTablelistEdit {} {
 			<Shift-Option-MouseWheel> %X %Y %D
 		    break
 		}
-	    } elseif {![tablelist::isComboTopMapped %W]} {
+	    } elseif {![tablelist::isComboTopMapped %W] &&
+		      ![tablelist::isMenuPosted %W]} {
 		set tablelist::W [tablelist::getTablelistPath %W]
 		mwutil::genMouseWheelEvent [$tablelist::W bodypath] \
 		    <Shift-Option-MouseWheel> %X %Y %D
@@ -2698,7 +2707,8 @@ proc tablelist::defineTablelistEdit {} {
 			    -rootx %%X -rooty %%Y
 			break
 		    }
-		} elseif {![tablelist::isComboTopMapped %%W]} {
+		} elseif {![tablelist::isComboTopMapped %%W] &&
+			  ![tablelist::isMenuPosted %%W]} {
 		    set tablelist::W [tablelist::getTablelistPath %%W]
 		    event generate [$tablelist::W bodypath] <Button-%s> \
 			-rootx %%X -rooty %%Y
@@ -2716,7 +2726,8 @@ proc tablelist::defineTablelistEdit {} {
 			    -rootx %%X -rooty %%Y
 			break
 		    }
-		} elseif {![tablelist::isComboTopMapped %%W]} {
+		} elseif {![tablelist::isComboTopMapped %%W &&
+			  ![tablelist::isMenuPosted %%W]]} {
 		    set tablelist::W [tablelist::getTablelistPath %%W]
 		    event generate [$tablelist::W bodypath] <Shift-Button-%s> \
 			-rootx %%X -rooty %%Y
@@ -3048,6 +3059,23 @@ proc tablelist::isComboTopMapped w {
     set par [winfo parent $w]
     if {[string compare [winfo class $par] "Combobox"] == 0 &&
 	[winfo exists $par.top] && [winfo ismapped $par.top]} {
+	return 1
+    } else {
+	return 0
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::isMenuPosted
+#
+# Checks whether the given widget is a menubutton having its menu posted.  This
+# is needed in our binding scripts for mouse wheel events to make sure that
+# they won't generate an endless loop, because of the global grab set on the
+# menu when the latter is posted.
+#------------------------------------------------------------------------------
+proc tablelist::isMenuPosted w {
+    if {[string compare [winfo class $w] "Menubutton"] == 0 &&
+	[winfo ismapped [$w cget -menu]]} {
 	return 1
     } else {
 	return 0

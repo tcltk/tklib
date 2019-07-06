@@ -19,7 +19,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.12
+    variable version	2.13
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -185,7 +185,7 @@ proc mwutil::configureWidget {win configSpecsName configCmd cgetCmd \
     # Process the command-line arguments
     #
     set cmdLineOpts {}
-    set savedVals {}
+    set savedOptValPairs {}
     set failed 0
     set count [llength $optValPairs]
     foreach {opt val} $optValPairs {
@@ -200,7 +200,7 @@ proc mwutil::configureWidget {win configSpecsName configCmd cgetCmd \
 	}
 	set opt $result
 	lappend cmdLineOpts $opt
-	lappend savedVals [eval $cgetCmd [list $win $opt]]
+	lappend savedOptValPairs $opt [eval $cgetCmd [list $win $opt]]
 	if {[catch {eval $configCmd [list $win $opt $val]} result] != 0} {
 	    set failed 1
 	    break
@@ -212,7 +212,7 @@ proc mwutil::configureWidget {win configSpecsName configCmd cgetCmd \
 	#
 	# Restore the saved values
 	#
-	foreach opt $cmdLineOpts val $savedVals {
+	foreach {opt val} $savedOptValPairs {
 	    eval $configCmd [list $win $opt $val]
 	}
 
