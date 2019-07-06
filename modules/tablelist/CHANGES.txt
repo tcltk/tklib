@@ -1,13 +1,51 @@
-What is new in Tablelist 6.5?
+What is new in Tablelist 6.6?
 -----------------------------
+
+1. Added mouse bindings for setting, extending, and toggling the column-
+   wise cell selection with the aid of the header labels if the
+   selection type is "cell" (thanks to Nicolas Bats for his proposal,
+   testing, and discussions on this subject).
+
+2. New "-selectfiltercommand" widget and column configuration option,
+   which can be used for filtering the cells that are to be selected by
+   the column-wise cell selection operation (again, thanks to Nicolas
+   Bats for his proposal, testing, and discussions on this subject).
+
+3. Improvements related to the interactive editing of multi-line cells
+   (thanks to Johann Oberdorfer for his proposal).
+
+4. Adapted the look & feel of the tree style "adwaita" to current
+   versions of the GTK+ 3 theme Adwaita.
+
+5. Improved the description of the "-height" option in the reference
+   manual and extended it by a hint concerning the desired height in
+   rows (thanks to Jakob Gager for discussions on this subject).
+
+6. The reference manual now contains several links to the new Scrollutil
+   package, along with an example showing how the scrollutil::scrollarea
+   widget can be used to make the creation of a scrolled tablelist quite
+   simple.
+
+7. Eliminated the flickering in the presence of header items, introduced
+   in Tablelist 6.5 (thanks to Johann Oberdorfer for reporting this
+   regression).
+
+8. Fixed a long-standing bug related to the error handling while
+   processing the tablelist configuration at widget creation time in the
+   presence of the "-columntitles" option.
+
+9. Several further improvements and minor bug fixes.
+
+What was new in Tablelist 6.5?
+------------------------------
 
 1. Support for the new virtual events <<TablelistHeaderHeightChanged>>
    and <<TablelistTitleColsWidthChanged>>, generated when the header's
    height or the total width of the viewable title columns,
    respectively, has changed.
 
-2. Optimized the vertical scrolling by units (thanks to Nicolas Robert
-   for his input).
+2. Optimized the vertical scrolling by units (thanks to Nicolas Bats for
+   his input).
 
 3. Minor improvement related to the appearance of embedded checkbuttons
    on X11.
@@ -16,7 +54,7 @@ What is new in Tablelist 6.5?
    option (thanks to Jakob Gager for his bug report).
 
 5. Fixed a few bugs specific to Mac OS X Aqua, introduced in Tablelist
-   6.4 (thanks to Paul Obermeier and Nicolas Robert for their bug
+   6.4 (thanks to Paul Obermeier and Nicolas Bats for their bug
    reports).
 
 6. Fixed a bug related to the handling of mouse wheel events during
