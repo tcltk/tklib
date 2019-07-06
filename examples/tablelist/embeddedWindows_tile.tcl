@@ -6,7 +6,7 @@
 # Copyright (c) 2004-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.5
+package require tablelist_tile 6.6
 
 wm title . "Tile Library Scripts"
 
