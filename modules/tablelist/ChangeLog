@@ -1,3 +1,32 @@
+2019-07-06 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                          Bumped the version number to 6.6.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* ../../examples/tablelist/*.tcl:
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/*.tcl: Added mouse bindings for column-wise cell selection;
+	  new "-selectfiltercommand" widget and column configuration option;
+	  improved the interactive editing of multi-line cells; updated the
+	  tree style "adwaita"; eliminated the flickering in the presence of
+	  header items; fixed a bug related to the error handling in the
+	  tablelist configuration at widget creation time in the presence of
+	  the "-columntitles" option; several further improvements and minor
+	  bug fixes.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/*.html: Updated to reflect the changes; improved and extended the
+	  description of the "-height" option in the reference manual; added
+	  references to the new Scrollutil package and an example showing how
+	  the scrollutil::scrollarea widget can be used to make the creation of
+	  a scrolled tablelist quite simple.
+
+	* doc/adwaita.png:           Updated screenshots.
+	* doc/arrowStyles_vista.png:
+
 2019-04-18 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Slightly extended.
