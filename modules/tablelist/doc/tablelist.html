@@ -13,7 +13,7 @@
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 6.5</h2>
+    <h2>For Tablelist Version 6.6</h2>
 
     <h3>by</h3>
 
@@ -52,7 +52,7 @@
     <li><a href="#ex_dirViewer">A Directory Viewer Based on a
     tablelist</a></li>
 
-    <li><a href="#ex_styles">Improving the Look &amp; Feel of a tablelist
+    <li><a href="#ex_styles">Improving the Look & Feel of a tablelist
     Widget</a></li>
 
     <li><a href="#ex_editing">Advanced Interactive tablelist Cell
@@ -126,8 +126,8 @@
   of this option sorts the items based on the respective column.</p>
 
   <p>The Tablelist package provides a great variety of tree styles controlling
-  the look &amp; feel of the column that displays the tree hierarchy with the
-  aid of indentations and expand/collapse controls.</p>
+  the look & feel of the column that displays the tree hierarchy with the aid
+  of indentations and expand/collapse controls.</p>
 
   <p>Interactive editing of the elements of a tablelist widget can be enabled
   for individual cells and for entire columns.&nbsp; A great variety of widgets
@@ -170,8 +170,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist6.5.tar.gz</code> for UNIX and
-  <code>tablelist6_5.zip</code> for Windows.&nbsp; These files contain the same
+  The distribution file is <code>tablelist6.6.tar.gz</code> for UNIX and
+  <code>tablelist6_6.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -194,11 +194,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist6.5.tar.gz</code>:</p>
+  <code>tablelist6.6.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist6.5.tar.gz | tar -xf -
+gunzip -c tablelist6.6.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -206,17 +206,17 @@ gunzip -c tablelist6.5.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist6.5.tar.gz
+tar -zxf tablelist6.6.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist6.5</code>,
+  <p>Both commands will create a directory named <code>tablelist6.6</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist6_5.zip</code> into the directory
-  <code>tablelist6.5</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist6_6.zip</code> into the directory
+  <code>tablelist6.6</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -313,14 +313,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 6.5, then it is highly
-  recommended to specify the version number <code>6.5</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 6.6, then it is highly
+  recommended to specify the version number <code>6.6</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 6.5</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 6.6</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 6.5</code>.</p>
+  tablelist_tile 6.6</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -506,7 +506,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 6.5
+package require tablelist 6.6
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -562,7 +562,7 @@ demo::displayConfig .configTop.tf.tbl
 
   <blockquote>
     <pre>
-package require tablelist 6.5
+package require tablelist 6.6
 
 namespace eval demo {
     #
@@ -789,9 +789,9 @@ proc demo::displayConfig w {
   managing the tablelist widget and the two scrollbars with the aid of
   <code>grid</code>.&nbsp; Notice how the <code><a href=
   "tablelistWidget.html#cornerpath">cornerpath</a></code> subcommand enables us
-  to achieve a native look &amp; feel with respect to the vertical scrollbar on
-  the windowing systems other than <code>win32</code> (i.e., <code>aqua</code>
-  and <code>x11</code>).</p>
+  to achieve a native look & feel with respect to the vertical scrollbar on the
+  windowing systems other than <code>win32</code> (i.e., <code>aqua</code> and
+  <code>x11</code>).</p>
 
   <p>We populate the tablelist by invoking the <code>demo::putConfig</code>
   procedure discussed below.&nbsp; The same script is associated with the
@@ -1043,7 +1043,7 @@ demo::displayChildren .
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.5
+package require tablelist 6.6
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1641,7 +1641,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.5
+package require tablelist 6.6
 
 #
 # Add some entries to the Tk option database
@@ -1702,7 +1702,7 @@ proc displayContents dir {
   and the two scrollbars as children of a frame of class
   <code>ScrollArea</code>.&nbsp; For this class, the file
   <code>option.tcl</code>, <code>source</code>d into the main script, contains
-  some look &amp; feel related settings similar to the ones encountered in our
+  some look & feel related settings similar to the ones encountered in our
   <a href="#ex_config">first example</a>:</p>
 
   <blockquote>
@@ -1752,7 +1752,7 @@ proc putContents {dir tbl nodeIdx} {
     #
     # Build a list from the data of the subdirectories and
     # files of the directory dir.  Prepend a "D" or "F" to
-    # each entry's name and modification date &amp; time, for
+    # each entry's name and modification date & time, for
     # sorting purposes (it will be removed by formatString).
     #
     set itemList {}
@@ -1797,7 +1797,7 @@ proc putContents {dir tbl nodeIdx} {
             #
             # Mark the row as collapsed if the directory is non-empty
             #
-            if {[file readable $name] &amp;&amp; [llength \
+            if {[file readable $name] && [llength \
                 [glob -nocomplain -types {d f} -directory $name *]] != 0} {
                 $tbl collapse $row
             }
@@ -1922,7 +1922,7 @@ displayContents ""
   <code>displayContents</code> with an empty string as argument, i.e., displays
   the volumes mounted on the system.</p>
 
-  <h3 id="ex_styles">Improving the Look &amp; Feel of a tablelist Widget</h3>
+  <h3 id="ex_styles">Improving the Look & Feel of a tablelist Widget</h3>
 
   <p>The script <code>styles.tcl</code> in the <code>demos</code> directory
   demonstrates some ways of making tablelist widgets smarter and improving the
@@ -2029,7 +2029,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;# because of "-compound"
-package require tablelist 6.5
+package require tablelist 6.6
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2099,7 +2099,7 @@ proc formatTime val { return [clock format $val -format "%H:%M:%S"] }
 
 #
 # Populate the tablelist widget; set the activation
-# date &amp; time to 10 minutes past the current clock value
+# date & time to 10 minutes past the current clock value
 #
 set clock [expr {[clock seconds] + 600}]
 for {set i 0; set n 1} {$i &lt; 16} {set i $n; incr n} {
@@ -2210,7 +2210,7 @@ proc editStartCmd {tbl row col text} {
             $w configure -values {50 75 110 300 1200 2400 4800 9600 19200 38400
                                   57600 115200 230400 460800 921600}
             $w configure -invalidcommand bell -validate key -validatecommand \
-                {expr {[string length %P] &lt;= 6 &amp;&amp; [regexp {^[0-9]*$} %S]}}
+                {expr {[string length %P] &lt;= 6 && [regexp {^[0-9]*$} %S]}}
         }
 
         dataBits {
@@ -2309,7 +2309,7 @@ proc editEndCmd {tbl row col text} {
             if {$actClock &lt;= [clock seconds]} {
                 bell
                 tk_messageBox -title "Error" -icon error -message \
-                    "The activation date &amp; time must be in the future"
+                    "The activation date & time must be in the future"
                 $tbl rejectinput
             } else {
                 $tbl cellconfigure $row,actTime -text $actClock
@@ -2393,7 +2393,7 @@ $tbl embedcheckbuttons 1
 
   <blockquote>
     <pre>
-package require tablelist 6.5
+package require tablelist 6.6
 
 wm title . "Tk Library Scripts"
 
@@ -2651,7 +2651,7 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
   <blockquote>
     <pre>
 package require Tk 8.3                          ;# because of entry validation
-package require tablelist 6.5
+package require tablelist 6.6
 </pre>
   </blockquote>
 
@@ -2659,7 +2659,7 @@ package require tablelist 6.5
 
   <blockquote>
     <pre>
-package require tablelist<span>_tile</span> 6.5
+package require tablelist<span>_tile</span> 6.6
 </pre>
   </blockquote>
 
@@ -2759,7 +2759,7 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
 
   <p>The demo script <code>tileWidgets.tcl</code> uses not only the
   Tablelist_tile package for creating a tablelist widget with a modern
-  theme-specific look &amp; feel, but also the tile entry, spinbox, combobox,
+  theme-specific look & feel, but also the tile entry, spinbox, combobox,
   checkbutton, and menubutoon widgets for interactive cell editing.&nbsp; The
   resulting window has a nice theme-specific appearance:</p>
 
