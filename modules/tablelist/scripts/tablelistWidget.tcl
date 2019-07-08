@@ -8484,10 +8484,15 @@ proc tablelist::vertMoveTo win {
 
     set totalViewableCount [getViewableRowCount $win 0 $data(lastRow)]
     set offset [expr {int($data(fraction)*$totalViewableCount + 0.5)}]
-    $data(body) yview [viewableRowOffsetToRowIndex $win $offset]
+    set row [viewableRowOffsetToRowIndex $win $offset]
 
-    updateView $win
-    updateIdletasksDelayed 
+    set topRow [getVertComplTopRow $win]
+
+    if {$row != $topRow} {
+	$data(body) yview $row
+	updateView $win
+	updateIdletasksDelayed 
+    }
 }
 
 #------------------------------------------------------------------------------
