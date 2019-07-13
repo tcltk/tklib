@@ -85,10 +85,6 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 
     set sourceItem [lindex $data(itemList) $source]
     set sourceKey [lindex $sourceItem end]
-    if {$target == [nodeRow $win $sourceKey end] && $withDescendants} {
-	return ""
-    }
-
     set sourceParentKey $data($sourceKey-parent)
     if {[string compare $targetParentKey $sourceParentKey] == 0 &&
 	$target == $source && $withDescendants} {
