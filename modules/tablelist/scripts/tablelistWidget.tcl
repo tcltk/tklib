@@ -822,7 +822,6 @@ proc tablelist::tablelist args {
 	    keyBeingExpanded	 ""
 	    justEntered		 0
 	    inEditWin		 0
-	    inScrollarea	 0
 	}
 
 	#

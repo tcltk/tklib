@@ -419,22 +419,6 @@ proc tablelist::doConfig {win opt val} {
     variable configSpecs
     upvar ::tablelist::ns${win}::data data
 
-    switch -- $opt {
-	-borderwidth -
-	-highlightthickness -
-	-xscrollcommand -
-	-yscrollcommand {
-	    if {$data(inScrollarea)} {
-		if {[string compare $val $data($opt)] == 0} {
-		    return ""
-		} else {
-		    return -code error "can't modify the $opt option after\
-					embedding the widget into a scrollarea"
-		}
-	    }
-	}
-    }
-
     #
     # Apply the value to the widget(s) corresponding to the given option
     #
