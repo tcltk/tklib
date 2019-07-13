@@ -30,9 +30,8 @@ What is new in Tablelist 6.6?
    in Tablelist 6.5 (thanks to Johann Oberdorfer for reporting this
    regression).
 
-8. Fixed a long-standing bug related to the error handling while
-   processing the tablelist configuration at widget creation time in the
-   presence of the "-columntitles" option.
+8. Fixed a long-standing bug related to the "move" subcommand (thanks to
+   John J. Seal for his bug report).
 
 9. Several further improvements and minor bug fixes.
 
