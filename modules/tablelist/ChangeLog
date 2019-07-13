@@ -1,5 +1,12 @@
 2019-07-13 Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* scripts/tablelistMove.tcl: Fixed a bug related to the "move"
+	  subcommand.
+
+	* CHANGES.txt: Updated.
+
+2019-07-13 Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* scripts/tablelistConfig.tcl: Removed the restrictions related to the
 	* scripts/tablelistWidget.tcl: scrollutil::scrollarea widget.
 
