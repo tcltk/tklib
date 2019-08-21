@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file 'ntextIndent\&.man~' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'ntextIndent\&.man' by tcllib/doctools with format 'nroff'
 '\"
 .TH "ntextIndent" n 1\&.0 tklib "ntext Indentation for the Text Widget"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
@@ -308,7 +308,7 @@ Replacement for ::tk_textCut that also maintains \fINtext\fR indentation\&.
 Replacement for ::tk_textPaste that also maintains \fINtext\fR indentation\&.
 .TP
 \fB::ntext::syncIndentColor\fR \fIpathName\fR
-Command to apply the current value of \fB::ntext::indentColor\fR to existing lines in a text widget\&.  This command is useful if a text widget has been created, text has been inserted in the widget, \fIand then\fR the value of \fB::ntext::indentColor\fR is changed\&.
+Command to apply the current value of the variable \fB::ntext::indentColor\fR to existing lines in a text widget\&.  This command is useful if a text widget has been created, text has been inserted in the widget, \fIand then\fR the value of \fB::ntext::indentColor\fR is changed\&.
 .PP
 .SH "CONFIGURATION OPTIONS"
 The behavior of \fINtext\fR may be configured application-wide by setting the values of a number of namespace variables:

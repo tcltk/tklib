@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file 'ntextBindings\&.man~' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'ntextBindings\&.man' by tcllib/doctools with format 'nroff'
 '\"
 .TH "ntextBindings" n 1\&.0 tklib "Alternative Bindings for the Text Widget"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
@@ -373,8 +373,6 @@ The value is toggled by the \fIInsert\fR key\&.
 \fB1\fR - the block cursor will be used when the widget is in \fIoverwrite\fR mode (see \fB::ntext::overwrite\fR)\&.
 .IP \(bu
 The default value depends on the version of \fBTk\fR\&.  In versions of \fBTk\fR earlier than \fB8\&.5\&.12\fR, the sizing of the block cursor had a bug, and \fB::ntext::useBlockCursor\fR defaults to \fB0\fR\&.  From \fB8\&.5\&.12\fR onwards the bug is fixed, and \fB::ntext::useBlockCursor\fR defaults to \fB1\fR\&.
-.IP \(bu
-For more information see \fIntextBindings\fR
 .PP
 .SH INTERNALS
 In order to remain independent of the version of \fBTk\fR (8\&.5 or 8\&.6), \fBntext\fR defines its own virtual events\&.  These new virtual events are used only in the \fINtext\fR binding tag, and therefore do not interfere with the real or virtual events used in other code\&.

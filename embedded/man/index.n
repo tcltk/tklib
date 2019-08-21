@@ -1355,3 +1355,4 @@ zoom
 \fBfiles/modules/canvas/canvas_zoom\&.n\fR
 canvas::zoom
 .RE
+.RE
