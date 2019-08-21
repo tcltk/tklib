@@ -1,7 +1,6 @@
 ## -*- tcl -*-
 # # ## ### ##### ######## ############# #####################
 ##
-
 #	Panel for managing an unordered list of values.
 #	A simpler form of 'widget::listentry'. Removed features
 #	- state normal/disabled --> always normal
@@ -13,8 +12,6 @@
 #	- browse                --> no browsing
 #
 # Copyright (c) 2012 ActiveState Software Inc. Rewrite of original.
-#
-# RCS: @(#) $Id: listsimple.tcl,v 1.3 2012/10/22 18:03:52 andreas_kupries Exp $
 
 # XXX TODO: Define a style for the whole megawidget (WidgetListEntry)
 # XXX TODO: Ensure automatic definition of the style in all themes, on
@@ -675,5 +672,5 @@ if 0 {
 
 # # ## ### ##### ######## ############# #####################
 ## Ready
-package provide widget::listsimple 0.1.1
+package provide widget::listsimple 0.1.2
 return
