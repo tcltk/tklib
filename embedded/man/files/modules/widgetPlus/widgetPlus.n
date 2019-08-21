@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file 'widgetPlus\&.man~' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'widgetPlus\&.man' by tcllib/doctools with format 'nroff'
 '\"
 .TH "widgetPlus" n 1\&.0 tklib "Enhanced Entry, Spinbox, and Combobox Widgets with Undo/Redo and other useful features"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
@@ -526,7 +526,7 @@ The \fB<<Modified>>\fR event is not generated\&.
 .IP \(bu
 Undo/Redo separators, and the \fB-autoseparators\fR option, as found in the \fB\fBtext\fR\fR widget, are not implemented\&. An implicit separator is added for each call to a widget command (e\&.g\&. \fBinsert\fR or \fBdelete\fR) that changes the widget contents\&.  The \fBedit separator\fR command has no effect\&.  Separator functionality would be less useful for widgets such as \fB\fBentryPlus\fR\fR than it is for a \fB\fBtext\fR\fR widget\&.
 .IP \(bu
-Add an \fIoverwrite\fR mode, toggled by \fB<Insert>\fR on non-\fImacOS\fR® systems\&.
+Add an \fIoverwrite\fR mode, toggled by \fB<Insert>\fR on non-macOS® systems\&.
 .PP
 .SH BUGS
 This version of \fBwidgetPlus\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5 and 8\&.6, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIwidgetPlus\fR of the \fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.

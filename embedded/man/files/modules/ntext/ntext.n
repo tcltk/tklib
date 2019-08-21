@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file 'ntext\&.man~' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'ntext\&.man' by tcllib/doctools with format 'nroff'
 '\"
 .TH "ntext" n 1\&.0 tklib "Alternative Bindings for the Text Widget"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
