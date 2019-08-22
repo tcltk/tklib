@@ -105,7 +105,7 @@
 | <a href="../../../../toc2.html">Applications</a>
  ] <hr>
 <div class="doctools">
-<h1 class="doctools_title">widgetPlus(n) 1.0 dev &quot;Enhanced Entry, Spinbox, and Combobox Widgets with Undo/Redo and other useful features&quot;</h1>
+<h1 class="doctools_title">widgetPlus(n) 1.0 tklib &quot;Enhanced Entry, Spinbox, and Combobox Widgets with Undo/Redo and other useful features&quot;</h1>
 <div id="name" class="doctools_section"><h2><a name="name">Name</a></h2>
 <p>widgetPlus - Enhanced Entry, Spinbox, and Combobox Widgets with Undo/Redo and other useful features</p>
 </div>
@@ -171,7 +171,7 @@
 <p>The <b class="package">widgetPlus</b> package adds new features to the widgets <b class="syscmd"><b class="widget">entry</b></b>, <b class="syscmd"><b class="widget">spinbox</b></b>, <b class="syscmd"><b class="widget">ttk::entry</b></b>, <b class="syscmd"><b class="widget">ttk::spinbox</b></b>, and <b class="syscmd"><b class="widget">ttk::combobox</b></b>.</p>
 <p>The new features are Undo and Redo operations, a <b class="const">&lt;&lt;Selection&gt;&gt;</b> event, and for the <b class="const">Tk</b> (unthemed) widgets an <b class="option">-inactiveselectbackground</b> option, and some minor fixes to bindings.  The new facilities closely follow those of the <b class="syscmd"><b class="widget">text</b></b> widget.</p>
 <p>The revised <b class="syscmd"><b class="widget">entry</b></b>, <b class="syscmd"><b class="widget">spinbox</b></b>, <b class="syscmd"><b class="widget">ttk::entry</b></b>, <b class="syscmd"><b class="widget">ttk::spinbox</b></b>, and <b class="syscmd"><b class="widget">ttk::combobox</b></b> widgets are created by the commands <b class="cmd">widgetPlus::entryPlus</b>, <b class="cmd">widgetPlus::spinboxPlus</b>, <b class="cmd">widgetPlus::ttkEntryPlus</b>, <b class="cmd">widgetPlus::ttkSpinboxPlus</b>, and <b class="cmd">widgetPlus::ttkComboboxPlus</b> respectively.</p>
-<p>For example, the <b class="cmd">widgetPlus::entryPlus</b> widget is implemented as a <i class="term"><a href="../../../../index.html#key30">Snit</a></i> <b class="syscmd">snit::widgetadaptor</b> that wraps a <b class="package"><a href="../../../../index.html#key92">Tk</a></b> <b class="syscmd"><b class="widget">entry</b></b> widget.  Its <b class="syscmd">winfo class</b> is <b class="const">Entry</b>, and it uses a binding tag <b class="const">EntryPlus</b> that replaces the <b class="const">Entry</b> binding tag.  The other widgets are implemented in a similar way.</p>
+<p>For example, the <b class="cmd">widgetPlus::entryPlus</b> widget is implemented as a <i class="term"><a href="../../../../index.html#key20">Snit</a></i> <b class="syscmd">snit::widgetadaptor</b> that wraps a <b class="package"><a href="../../../../index.html#key30">Tk</a></b> <b class="syscmd"><b class="widget">entry</b></b> widget.  Its <b class="syscmd">winfo class</b> is <b class="const">Entry</b>, and it uses a binding tag <b class="const">EntryPlus</b> that replaces the <b class="const">Entry</b> binding tag.  The other widgets are implemented in a similar way.</p>
 <p>The package uses the namespace <b class="namespace">::widgetPlus</b>, which exports (only) the five commands defined below that begin with a lower-case letter (<b class="cmd">EnableBWidget</b> is not exported).  These commands can be imported into the global namespace, and for simplicity, descriptive text in this manual will henceforth omit the namespace qualifier.</p>
 <pre class="doctools_example">
 namespace import ::widgetPlus::*
@@ -341,7 +341,7 @@ entryPlus $w.e -undo 1 -maxundo 0
 </ul>
 </div>
 <div id="section9" class="doctools_section"><h2><a name="section9">BUGS</a></h2>
-<p>This version of <b class="package">widgetPlus</b> is intended to be compatible with all releases of <b class="package"><a href="../../../../index.html#key92">Tk</a></b> 8.5 and 8.6, and with the branches <em>core-8-5-branch</em>, <em>core-8-6-branch</em>, and <em>trunk</em> in the source code repository for <b class="package"><a href="../../../../index.html#key92">Tk</a></b>.  Any incompatibility with any of these versions, for any <b class="package"><a href="../../../../index.html#key92">Tk</a></b> windowing system, should be reported as a bug. Please report such in the category <em>widgetPlus</em> of the <a href="http://core.tcl.tk/tklib/reportlist">Tklib Trackers</a>.</p>
+<p>This version of <b class="package">widgetPlus</b> is intended to be compatible with all releases of <b class="package"><a href="../../../../index.html#key30">Tk</a></b> 8.5 and 8.6, and with the branches <em>core-8-5-branch</em>, <em>core-8-6-branch</em>, and <em>trunk</em> in the source code repository for <b class="package"><a href="../../../../index.html#key30">Tk</a></b>.  Any incompatibility with any of these versions, for any <b class="package"><a href="../../../../index.html#key30">Tk</a></b> windowing system, should be reported as a bug. Please report such in the category <em>widgetPlus</em> of the <a href="http://core.tcl.tk/tklib/reportlist">Tklib Trackers</a>.</p>
 </div>
 <div id="section10" class="doctools_section"><h2><a name="section10">EXAMPLES</a></h2>
 <p>To create and map an <b class="cmd"><b class="widget">entryPlus</b></b> widget .ep with an unlimited Undo/Redo stack:</p>
@@ -401,6 +401,6 @@ entryPlus .cb.e -undo 1 -maxundo 0
 </pre>
 </div>
 <div id="see-also" class="doctools_section"><h2><a name="see-also">See Also</a></h2>
-<p>BWidget, ComboBox, <a href="../../../../index.html#key53">Entry</a>, <a href="../../../../index.html#key53">entry</a>, <a href="../persistentSelection/persistentSelection.html">persistentSelection</a>, spinbox, <a href="../../../../index.html#key45">text</a>, <a href="../../../../index.html#key7">ttk::combobox</a>, <a href="../../../../index.html#key8">ttk::entry</a>, ttk::spinbox</p>
+<p>BWidget, ComboBox, <a href="../../../../index.html#key32">Entry</a>, <a href="../../../../index.html#key32">entry</a>, <a href="../persistentSelection/persistentSelection.html">persistentSelection</a>, spinbox, <a href="../../../../index.html#key21">text</a>, <a href="../../../../index.html#key102">ttk::combobox</a>, <a href="../../../../index.html#key103">ttk::entry</a>, ttk::spinbox</p>
 </div>
 </div></body></html>

@@ -270,7 +270,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH INDEX
-dev
+tklib
 .RS
 2D geometry
 .RS

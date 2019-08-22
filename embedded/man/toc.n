@@ -270,7 +270,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH CONTENTS
-dev
+tklib
 .RS
 .TP
 \fBautoscroll\fR
