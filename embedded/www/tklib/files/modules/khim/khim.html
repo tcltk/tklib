@@ -1,5 +1,4 @@
-
-<html><head>
+<!DOCTYPE html><html><head>
 <title>khim - Kevin's Hacky Input Method</title>
 <style type="text/css"><!--
     HTML {
@@ -25,7 +24,7 @@
 	background: 	transparent;
 	text-align:		left;
     }
-    H1.title {
+    H1.doctools_title {
 	text-align: center;
     }
     UL,OL {
@@ -42,11 +41,11 @@
     DT {
 	padding-top: 	1ex;
     }
-    UL.toc,UL.toc UL, UL.toc UL UL {
+    UL.doctools_toc,UL.doctools_toc UL, UL.doctools_toc UL UL {
 	font:		normal 12pt/14pt sans-serif;
 	list-style:	none;
     }
-    LI.section, LI.subsection {
+    LI.doctools_section, LI.doctools_subsection {
 	list-style: 	none;
 	margin-left: 	0em;
 	text-indent:	0em;
@@ -63,18 +62,18 @@
 	padding-right:	1ex;
 	width:		100%;
     }
-    PRE.example {
+    PRE.doctools_example {
 	color: 		black;
 	background: 	#f5dcb3;
 	border:		1px solid black;
     }
-    UL.requirements LI, UL.syntax LI {
+    UL.doctools_requirements LI, UL.doctools_syntax LI {
 	list-style: 	none;
 	margin-left: 	0em;
 	text-indent:	0em;
 	padding:	0em;
     }
-    DIV.synopsis {
+    DIV.doctools_synopsis {
 	color: 		black;
 	background: 	#80ffff;
 	border:		1px solid black;
@@ -82,22 +81,21 @@
 	margin-top: 	1em;
 	margin-bottom: 	1em;
     }
-    UL.syntax {
+    UL.doctools_syntax {
 	margin-top: 	1em;
 	border-top:	1px solid black;
     }
-    UL.requirements {
+    UL.doctools_requirements {
 	margin-bottom: 	1em;
 	border-bottom:	1px solid black;
     }
 --></style>
 </head>
-<! -- Generated from file 'khim.man' by tcllib/doctools with format 'html'
+<!-- Generated from file 'khim.man' by tcllib/doctools with format 'html'
    -->
-<! -- CVS: $Id$ khim.n
+<!-- khim.n
    -->
-<body><div class="doctools">
-<hr> [
+<body><hr> [
    <a href="../../../../../../../../home">Tklib Home</a>
 | <a href="../../../../toc.html">Main Table Of Contents</a>
 | <a href="../../../toc.html">Table Of Contents</a>
@@ -106,29 +104,30 @@
 | <a href="../../../../toc1.html">Modules</a>
 | <a href="../../../../toc2.html">Applications</a>
  ] <hr>
-<h1 class="title">khim(n) 1.0 tklib &quot;Kevin's Hacky Input Method&quot;</h1>
-<div id="name" class="section"><h2><a name="name">Name</a></h2>
+<div class="doctools">
+<h1 class="doctools_title">khim(n) 1.0 dev &quot;Kevin's Hacky Input Method&quot;</h1>
+<div id="name" class="doctools_section"><h2><a name="name">Name</a></h2>
 <p>khim - Provides key bindings for entering international characters on a keyboard that does not support them</p>
 </div>
-<div id="toc" class="section"><h2><a name="toc">Table Of Contents</a></h2>
-<ul class="toc">
-<li class="section"><a href="#toc">Table Of Contents</a></li>
-<li class="section"><a href="#synopsis">Synopsis</a></li>
-<li class="section"><a href="#section1">Description</a></li>
-<li class="section"><a href="#section2">PROCEDURES</a></li>
-<li class="section"><a href="#section3">LOCALISATION</a></li>
-<li class="section"><a href="#section4">ACKNOWLEDGMENTS</a></li>
-<li class="section"><a href="#section5">Bugs, Ideas, Feedback</a></li>
-<li class="section"><a href="#keywords">Keywords</a></li>
+<div id="toc" class="doctools_section"><h2><a name="toc">Table Of Contents</a></h2>
+<ul class="doctools_toc">
+<li class="doctools_section"><a href="#toc">Table Of Contents</a></li>
+<li class="doctools_section"><a href="#synopsis">Synopsis</a></li>
+<li class="doctools_section"><a href="#section1">Description</a></li>
+<li class="doctools_section"><a href="#section2">PROCEDURES</a></li>
+<li class="doctools_section"><a href="#section3">LOCALISATION</a></li>
+<li class="doctools_section"><a href="#section4">ACKNOWLEDGMENTS</a></li>
+<li class="doctools_section"><a href="#section5">Bugs, Ideas, Feedback</a></li>
+<li class="doctools_section"><a href="#keywords">Keywords</a></li>
 </ul>
 </div>
-<div id="synopsis" class="section"><h2><a name="synopsis">Synopsis</a></h2>
-<div class="synopsis">
-<ul class="requirements">
+<div id="synopsis" class="doctools_section"><h2><a name="synopsis">Synopsis</a></h2>
+<div class="doctools_synopsis">
+<ul class="doctools_requirements">
 <li>package require <b class="pkgname">Tcl</b></li>
 <li>package require <b class="pkgname">khim <span class="opt">?1.0?</span></b></li>
 </ul>
-<ul class="syntax">
+<ul class="doctools_syntax">
 <li><a href="#1"><b class="cmd">::khim::getOptions</b> <i class="arg">path</i></a></li>
 <li><a href="#2"><b class="cmd">::khim::getConfig</b></a></li>
 <li><a href="#3"><b class="cmd">::khim::setConfig</b> <i class="arg">version</i> <i class="arg">enabled</i> <i class="arg">compose</i> <i class="arg">map</i></a></li>
@@ -136,7 +135,7 @@
 </ul>
 </div>
 </div>
-<div id="section1" class="section"><h2><a name="section1">Description</a></h2>
+<div id="section1" class="doctools_section"><h2><a name="section1">Description</a></h2>
 <p>This package provides a set of key bindings to allow
 a user to enter arbitrary characters on a keyboard that
 does not support them.  It works by designating some seldom-used key
@@ -152,7 +151,7 @@ single bindtag, <b class="const">KHIM</b>.  An application can request that any
 text or entry widget use the package to allow for entry of arbitrary
 characters by placing this binding tag ahead of the <b class="const">Text</b> or
 <b class="const">Entry</b> binding tag for the widget:</p>
-<pre class="example">
+<pre class="doctools_example">
 text .t -width 80 -height 24
 bindtags .t {.t KHIM Text . all}
 </pre>
@@ -160,10 +159,10 @@ bindtags .t {.t KHIM Text . all}
 <b class="const">Entry</b> class binding, or the package will not function
 correctly.</p>
 </div>
-<div id="section2" class="section"><h2><a name="section2">PROCEDURES</a></h2>
+<div id="section2" class="doctools_section"><h2><a name="section2">PROCEDURES</a></h2>
 <p>In addition to commands supporting the KHIM binding tag, the following
 commands are exported from the package:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><a name="1"><b class="cmd">::khim::getOptions</b> <i class="arg">path</i></a></dt>
 <dd><p>Posts a top-level modal dialog with the path name <i class="arg">path</i> that
 prompts the user for KHIM options.  The user is allowed to reconfigure
@@ -176,7 +175,7 @@ the enabled/disabled state, the choice of &quot;Compose&quot; key, and the key
 sequences that may be composed.  This script is designed to be
 saved to a configuration file for use in a subsequent invocation of
 the same application:</p>
-<pre class="example">
+<pre class="doctools_example">
 # Save KHIM configuration
 set f [open ~/.khimrc w]
 puts $f [::khim::getConfig]
@@ -194,11 +193,11 @@ returned from <b class="cmd">::khim::getConfig</b>.</p></dd>
 dialog will have the path name <i class="arg">path</i>.</p></dd>
 </dl>
 </div>
-<div id="section3" class="section"><h2><a name="section3">LOCALISATION</a></h2>
+<div id="section3" class="doctools_section"><h2><a name="section3">LOCALISATION</a></h2>
 <p>Programmers who wish to make KHIM available in a non-English-speaking
 locale may do so by providing a <b class="const">.msg</b> file with the appropriate
 localised text.  The catalog requires the following messages:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="const">Apply</b></dt>
 <dd><p>Text that will appear on the &quot;Apply&quot; button in the dialog that sets
 KHIM options.</p></dd>
@@ -255,12 +254,12 @@ character to which a composed sequence binds.</p></dd>
 to manage composed key sequences.</p></dd>
 </dl>
 </div>
-<div id="section4" class="section"><h2><a name="section4">ACKNOWLEDGMENTS</a></h2>
+<div id="section4" class="doctools_section"><h2><a name="section4">ACKNOWLEDGMENTS</a></h2>
 <p>KHIM was originally inspired by the key bindings that Brent Welch
 developed for the 'sedit' editor used in the 'exmh' mail user agent.
 The code for KHIM is entirely separate from that for 'sedit'.</p>
 </div>
-<div id="section5" class="section"><h2><a name="section5">Bugs, Ideas, Feedback</a></h2>
+<div id="section5" class="doctools_section"><h2><a name="section5">Bugs, Ideas, Feedback</a></h2>
 <p>This document, and the package it describes, will undoubtedly contain
 bugs and other problems.
 Please report such in the category <em>khim</em> of the
@@ -268,7 +267,7 @@ Please report such in the category <em>khim</em> of the
 Please also report any ideas for enhancements you may have for either
 package and/or documentation.</p>
 </div>
-<div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
-<p><a href="../../../../index.html#key65">character</a>, <a href="../../../../index.html#key63">i18n</a>, <a href="../../../../index.html#key62">input</a>, <a href="../../../../index.html#key61">international</a>, <a href="../../../../index.html#key64">method</a></p>
+<div id="keywords" class="doctools_section"><h2><a name="keywords">Keywords</a></h2>
+<p><a href="../../../../index.html#key134">character</a>, <a href="../../../../index.html#key132">i18n</a>, <a href="../../../../index.html#key131">input</a>, <a href="../../../../index.html#key130">international</a>, <a href="../../../../index.html#key133">method</a></p>
 </div>
 </div></body></html>

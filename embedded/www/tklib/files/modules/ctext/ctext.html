@@ -1,5 +1,4 @@
-
-<html><head>
+<!DOCTYPE html><html><head>
 <title>ctext - Ctext a text widget with highlighting support</title>
 <style type="text/css"><!--
     HTML {
@@ -25,7 +24,7 @@
 	background: 	transparent;
 	text-align:		left;
     }
-    H1.title {
+    H1.doctools_title {
 	text-align: center;
     }
     UL,OL {
@@ -42,11 +41,11 @@
     DT {
 	padding-top: 	1ex;
     }
-    UL.toc,UL.toc UL, UL.toc UL UL {
+    UL.doctools_toc,UL.doctools_toc UL, UL.doctools_toc UL UL {
 	font:		normal 12pt/14pt sans-serif;
 	list-style:	none;
     }
-    LI.section, LI.subsection {
+    LI.doctools_section, LI.doctools_subsection {
 	list-style: 	none;
 	margin-left: 	0em;
 	text-indent:	0em;
@@ -63,18 +62,18 @@
 	padding-right:	1ex;
 	width:		100%;
     }
-    PRE.example {
+    PRE.doctools_example {
 	color: 		black;
 	background: 	#f5dcb3;
 	border:		1px solid black;
     }
-    UL.requirements LI, UL.syntax LI {
+    UL.doctools_requirements LI, UL.doctools_syntax LI {
 	list-style: 	none;
 	margin-left: 	0em;
 	text-indent:	0em;
 	padding:	0em;
     }
-    DIV.synopsis {
+    DIV.doctools_synopsis {
 	color: 		black;
 	background: 	#80ffff;
 	border:		1px solid black;
@@ -82,24 +81,23 @@
 	margin-top: 	1em;
 	margin-bottom: 	1em;
     }
-    UL.syntax {
+    UL.doctools_syntax {
 	margin-top: 	1em;
 	border-top:	1px solid black;
     }
-    UL.requirements {
+    UL.doctools_requirements {
 	margin-bottom: 	1em;
 	border-bottom:	1px solid black;
     }
 --></style>
 </head>
-<! -- Generated from file 'ctext.man' by tcllib/doctools with format 'html'
+<!-- Generated from file 'ctext.man' by tcllib/doctools with format 'html'
    -->
-<! -- Copyright &copy; George Peter Staplin &lt;GeorgePS@XMission.com&gt;
+<!-- Copyright &amp;copy; George Peter Staplin &amp;lt;GeorgePS@XMission.com&amp;gt;
    -->
-<! -- CVS: $Id$ ctext.n
+<!-- ctext.n
    -->
-<body><div class="doctools">
-<hr> [
+<body><hr> [
    <a href="../../../../../../../../home">Tklib Home</a>
 | <a href="../../../../toc.html">Main Table Of Contents</a>
 | <a href="../../../toc.html">Table Of Contents</a>
@@ -108,34 +106,35 @@
 | <a href="../../../../toc1.html">Modules</a>
 | <a href="../../../../toc2.html">Applications</a>
  ] <hr>
-<h1 class="title">ctext(n) 3.3 tklib &quot;Ctext a text widget with highlighting support&quot;</h1>
-<div id="name" class="section"><h2><a name="name">Name</a></h2>
+<div class="doctools">
+<h1 class="doctools_title">ctext(n) 3.3 dev &quot;Ctext a text widget with highlighting support&quot;</h1>
+<div id="name" class="doctools_section"><h2><a name="name">Name</a></h2>
 <p>ctext - Ctext a text widget with highlighting support</p>
 </div>
-<div id="toc" class="section"><h2><a name="toc">Table Of Contents</a></h2>
-<ul class="toc">
-<li class="section"><a href="#toc">Table Of Contents</a></li>
-<li class="section"><a href="#synopsis">Synopsis</a></li>
-<li class="section"><a href="#section1">Description</a></li>
-<li class="section"><a href="#section2">COMMANDS</a></li>
-<li class="section"><a href="#section3">HIGHLIGHTING</a></li>
-<li class="section"><a href="#section4">WIDGET COMMANDS</a></li>
-<li class="section"><a href="#section5">WIDGET OPTIONS</a></li>
-<li class="section"><a href="#section6">EXAMPLE</a></li>
-<li class="section"><a href="#section7">THANKS</a></li>
-<li class="section"><a href="#section8">Bugs, Ideas, Feedback</a></li>
-<li class="section"><a href="#see-also">See Also</a></li>
-<li class="section"><a href="#keywords">Keywords</a></li>
-<li class="section"><a href="#copyright">Copyright</a></li>
+<div id="toc" class="doctools_section"><h2><a name="toc">Table Of Contents</a></h2>
+<ul class="doctools_toc">
+<li class="doctools_section"><a href="#toc">Table Of Contents</a></li>
+<li class="doctools_section"><a href="#synopsis">Synopsis</a></li>
+<li class="doctools_section"><a href="#section1">Description</a></li>
+<li class="doctools_section"><a href="#section2">COMMANDS</a></li>
+<li class="doctools_section"><a href="#section3">HIGHLIGHTING</a></li>
+<li class="doctools_section"><a href="#section4">WIDGET COMMANDS</a></li>
+<li class="doctools_section"><a href="#section5">WIDGET OPTIONS</a></li>
+<li class="doctools_section"><a href="#section6">EXAMPLE</a></li>
+<li class="doctools_section"><a href="#section7">THANKS</a></li>
+<li class="doctools_section"><a href="#section8">Bugs, Ideas, Feedback</a></li>
+<li class="doctools_section"><a href="#see-also">See Also</a></li>
+<li class="doctools_section"><a href="#keywords">Keywords</a></li>
+<li class="doctools_section"><a href="#copyright">Copyright</a></li>
 </ul>
 </div>
-<div id="synopsis" class="section"><h2><a name="synopsis">Synopsis</a></h2>
-<div class="synopsis">
-<ul class="requirements">
+<div id="synopsis" class="doctools_section"><h2><a name="synopsis">Synopsis</a></h2>
+<div class="doctools_synopsis">
+<ul class="doctools_requirements">
 <li>package require <b class="pkgname">Tk</b></li>
 <li>package require <b class="pkgname">ctext <span class="opt">?3.3?</span></b></li>
 </ul>
-<ul class="syntax">
+<ul class="doctools_syntax">
 <li><a href="#1"><b class="cmd">ctext</b> <i class="arg">pathName</i> <span class="opt">?<i class="arg">options</i>?</span></a></li>
 <li><a href="#2"><b class="cmd">::ctext::addHighlightClass</b> <i class="arg">pathName</i> <i class="arg">class</i> <i class="arg">color</i> <i class="arg">keywordlist</i></a></li>
 <li><a href="#3"><b class="cmd">::ctext::addHighlightClassWithOnlyCharStart</b> <i class="arg">pathName</i> <i class="arg">class</i> <i class="arg">color</i> <i class="arg">char</i></a></li>
@@ -157,7 +156,7 @@
 </ul>
 </div>
 </div>
-<div id="section1" class="section"><h2><a name="section1">Description</a></h2>
+<div id="section1" class="doctools_section"><h2><a name="section1">Description</a></h2>
 <p>The <b class="package">ctext</b> package provides the ctext widget which
 is an enhanced text widget with support for configurable syntax
 highlighting and some extra commands.</p>
@@ -167,23 +166,23 @@ new commands, named <b class="method">highlight</b>, <b class="method">copy</b>,
 commands that allow you to define classes.
 Each class corresponds to a tag in the widget.</p>
 </div>
-<div id="section2" class="section"><h2><a name="section2">COMMANDS</a></h2>
-<dl class="definitions">
+<div id="section2" class="doctools_section"><h2><a name="section2">COMMANDS</a></h2>
+<dl class="doctools_definitions">
 <dt><a name="1"><b class="cmd">ctext</b> <i class="arg">pathName</i> <span class="opt">?<i class="arg">options</i>?</span></a></dt>
 <dd><p>Creates and configures a ctext widget.</p></dd>
 </dl>
 </div>
-<div id="section3" class="section"><h2><a name="section3">HIGHLIGHTING</a></h2>
+<div id="section3" class="doctools_section"><h2><a name="section3">HIGHLIGHTING</a></h2>
 <p>Highlighting is controlled with text widget tags, that are called highlight classes.
 The <i class="arg">class</i> is a tag name and can be configured like any text widget tag.
 Four types of highlight classes are supported. All highlight classes are automatically used
 by the <b class="method">highlight</b> method of the widget.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><a name="2"><b class="cmd">::ctext::addHighlightClass</b> <i class="arg">pathName</i> <i class="arg">class</i> <i class="arg">color</i> <i class="arg">keywordlist</i></a></dt>
 <dd><p>Add a highlighting class <i class="arg">class</i> to the ctext widget <i class="arg">pathName</i>.
 The highlighting will be done with the color <i class="arg">color</i>. All words in the <i class="arg">keywordlist</i> will be
 highlighted.</p>
-<pre class="example">
+<pre class="doctools_example">
 	# highlight some tcl keywords
 	::ctext::addHighlightClass .t tclkeywords red [list set info interp uplevel upvar]
  </pre>
@@ -192,7 +191,7 @@ highlighted.</p>
 <dd><p>Add a highlighting class <i class="arg">class</i> to the ctext widget <i class="arg">pathName</i>.
 The highlighting will be done with the color <i class="arg">color</i>. All words starting with <i class="arg">char</i> will be
 highlighted.</p>
-<pre class="example">
+<pre class="doctools_example">
 	::ctext::addHighlightClassWithOnlyCharStart .t vars blue \$
  </pre>
 </dd>
@@ -217,11 +216,11 @@ The C comment highlighting is disabled by default.</p></dd>
 <dd><p>Disable C comment highlighting.</p></dd>
 </dl>
 </div>
-<div id="section4" class="section"><h2><a name="section4">WIDGET COMMANDS</a></h2>
+<div id="section4" class="doctools_section"><h2><a name="section4">WIDGET COMMANDS</a></h2>
 <p>Each ctext widget created with the above command supports the following
 commands and options in addition to the standard text widget commands and
 options.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><a name="11"><i class="arg">pathName</i> <b class="method">highlight</b> <i class="arg">startIndex</i> <i class="arg">endIndex</i></a></dt>
 <dd><p>Highlight the text between <i class="arg">startIndex</i> and <i class="arg">endIndex</i>.</p></dd>
 <dt><a name="12"><i class="arg">pathName</i> <b class="method">fastdelete</b> <i class="arg">index1</i> <span class="opt">?<i class="arg">index2</i>?</span></a></dt>
@@ -245,8 +244,8 @@ the standard text widget.</p></dd>
 the new value.</p></dd>
 </dl>
 </div>
-<div id="section5" class="section"><h2><a name="section5">WIDGET OPTIONS</a></h2>
-<dl class="tkoptions">
+<div id="section5" class="doctools_section"><h2><a name="section5">WIDGET OPTIONS</a></h2>
+<dl class="doctools_tkoptions">
 <dt>Command-Line Switch:	<b class="option">-linemap</b><br>
 Database Name:	<b class="optdbname"></b><br>
 Database Class:	<b class="optdbclass"></b><br>
@@ -288,7 +287,7 @@ with the <i class="arg">pathName</i> of the ctext window, the <i class="arg">typ
 either <b class="const">marked</b> or <b class="const">unmarked</b>, and finally the line
 number selected.
 The proc prototype is:</p>
-<pre class="example">
+<pre class="doctools_example">
 proc linemark_cmd {win type line}.
 </pre>
 <p>See also
@@ -309,8 +308,8 @@ specifies whether or not lines in the linemap
 are markable with the mouse.  The default is 1.</p></dd>
 </dl>
 </div>
-<div id="section6" class="section"><h2><a name="section6">EXAMPLE</a></h2>
-<pre class="example">
+<div id="section6" class="doctools_section"><h2><a name="section6">EXAMPLE</a></h2>
+<pre class="doctools_example">
 	package require Tk
 	package require ctext
 	proc main {} {
@@ -337,11 +336,11 @@ are markable with the mouse.  The default is 1.</p></dd>
 </pre>
 <p>Further examples are in the source package for ctext.</p>
 </div>
-<div id="section7" class="section"><h2><a name="section7">THANKS</a></h2>
+<div id="section7" class="doctools_section"><h2><a name="section7">THANKS</a></h2>
 <p>Kevin Kenny, Neil Madden, Jeffrey Hobbs, Richard Suchenwirth,
 Johan Bengtsson, Mac Cody, G&uuml;nther, Andreas Sievers, and Michael Schlenker.</p>
 </div>
-<div id="section8" class="section"><h2><a name="section8">Bugs, Ideas, Feedback</a></h2>
+<div id="section8" class="doctools_section"><h2><a name="section8">Bugs, Ideas, Feedback</a></h2>
 <p>This document, and the package it describes, will undoubtedly contain
 bugs and other problems.
 Please report such in the category <em>ctext</em> of the
@@ -349,13 +348,13 @@ Please report such in the category <em>ctext</em> of the
 Please also report any ideas for enhancements you may have for either
 package and/or documentation.</p>
 </div>
-<div id="see-also" class="section"><h2><a name="see-also">See Also</a></h2>
-<p><a href="../../../../index.html#key59">re_syntax</a>, <a href="../../../../index.html#key21">text</a></p>
+<div id="see-also" class="doctools_section"><h2><a name="see-also">See Also</a></h2>
+<p><a href="../../../../index.html#key44">re_syntax</a>, <a href="../../../../index.html#key45">text</a></p>
 </div>
-<div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
-<p><a href="../../../../index.html#key22">syntax highlighting</a>, <a href="../../../../index.html#key21">text</a>, <a href="../../../../index.html#key11">widget</a></p>
+<div id="keywords" class="doctools_section"><h2><a name="keywords">Keywords</a></h2>
+<p><a href="../../../../index.html#key128">syntax highlighting</a>, <a href="../../../../index.html#key45">text</a>, <a href="../../../../index.html#key21">widget</a></p>
 </div>
-<div id="copyright" class="section"><h2><a name="copyright">Copyright</a></h2>
+<div id="copyright" class="doctools_section"><h2><a name="copyright">Copyright</a></h2>
 <p>Copyright &copy; George Peter Staplin &lt;GeorgePS@XMission.com&gt;</p>
 </div>
 </div></body></html>

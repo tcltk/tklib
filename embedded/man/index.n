@@ -270,7 +270,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH INDEX
-tklib
+dev
 .RS
 2D geometry
 .RS
@@ -1354,4 +1354,5 @@ zoom
 .TP
 \fBfiles/modules/canvas/canvas_zoom\&.n\fR
 canvas::zoom
+.RE
 .RE

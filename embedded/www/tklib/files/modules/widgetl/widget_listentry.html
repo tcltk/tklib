@@ -1,5 +1,4 @@
-
-<html><head>
+<!DOCTYPE html><html><head>
 <title>widget_listentry - widget::listentry widget</title>
 <style type="text/css"><!--
     HTML {
@@ -25,7 +24,7 @@
 	background: 	transparent;
 	text-align:		left;
     }
-    H1.title {
+    H1.doctools_title {
 	text-align: center;
     }
     UL,OL {
@@ -42,11 +41,11 @@
     DT {
 	padding-top: 	1ex;
     }
-    UL.toc,UL.toc UL, UL.toc UL UL {
+    UL.doctools_toc,UL.doctools_toc UL, UL.doctools_toc UL UL {
 	font:		normal 12pt/14pt sans-serif;
 	list-style:	none;
     }
-    LI.section, LI.subsection {
+    LI.doctools_section, LI.doctools_subsection {
 	list-style: 	none;
 	margin-left: 	0em;
 	text-indent:	0em;
@@ -63,18 +62,18 @@
 	padding-right:	1ex;
 	width:		100%;
     }
-    PRE.example {
+    PRE.doctools_example {
 	color: 		black;
 	background: 	#f5dcb3;
 	border:		1px solid black;
     }
-    UL.requirements LI, UL.syntax LI {
+    UL.doctools_requirements LI, UL.doctools_syntax LI {
 	list-style: 	none;
 	margin-left: 	0em;
 	text-indent:	0em;
 	padding:	0em;
     }
-    DIV.synopsis {
+    DIV.doctools_synopsis {
 	color: 		black;
 	background: 	#80ffff;
 	border:		1px solid black;
@@ -82,22 +81,21 @@
 	margin-top: 	1em;
 	margin-bottom: 	1em;
     }
-    UL.syntax {
+    UL.doctools_syntax {
 	margin-top: 	1em;
 	border-top:	1px solid black;
     }
-    UL.requirements {
+    UL.doctools_requirements {
 	margin-bottom: 	1em;
 	border-bottom:	1px solid black;
     }
 --></style>
 </head>
-<! -- Generated from file 'widget_listentry.man' by tcllib/doctools with format 'html'
+<!-- Generated from file 'widget_listentry.man' by tcllib/doctools with format 'html'
    -->
-<! -- CVS: $Id$ widget_listentry.n
+<!-- widget_listentry.n
    -->
-<body><div class="doctools">
-<hr> [
+<body><hr> [
    <a href="../../../../../../../../home">Tklib Home</a>
 | <a href="../../../../toc.html">Main Table Of Contents</a>
 | <a href="../../../toc.html">Table Of Contents</a>
@@ -106,34 +104,35 @@
 | <a href="../../../../toc1.html">Modules</a>
 | <a href="../../../../toc2.html">Applications</a>
  ] <hr>
-<h1 class="title">widget_listentry(n) 0.1 tklib &quot;widget::listentry widget&quot;</h1>
-<div id="name" class="section"><h2><a name="name">Name</a></h2>
+<div class="doctools">
+<h1 class="doctools_title">widget_listentry(n) 0.1.2 dev &quot;widget::listentry widget&quot;</h1>
+<div id="name" class="doctools_section"><h2><a name="name">Name</a></h2>
 <p>widget_listentry - widget::listentry widget</p>
 </div>
-<div id="toc" class="section"><h2><a name="toc">Table Of Contents</a></h2>
-<ul class="toc">
-<li class="section"><a href="#toc">Table Of Contents</a></li>
-<li class="section"><a href="#synopsis">Synopsis</a></li>
-<li class="section"><a href="#section1">Description</a></li>
-<li class="section"><a href="#section2">Class API</a></li>
-<li class="section"><a href="#section3">Instance API</a></li>
-<li class="section"><a href="#section4">Widget Options</a>
+<div id="toc" class="doctools_section"><h2><a name="toc">Table Of Contents</a></h2>
+<ul class="doctools_toc">
+<li class="doctools_section"><a href="#toc">Table Of Contents</a></li>
+<li class="doctools_section"><a href="#synopsis">Synopsis</a></li>
+<li class="doctools_section"><a href="#section1">Description</a></li>
+<li class="doctools_section"><a href="#section2">Class API</a></li>
+<li class="doctools_section"><a href="#section3">Instance API</a></li>
+<li class="doctools_section"><a href="#section4">Widget Options</a>
 <ul>
-<li class="subsection"><a href="#subsection1">Widget Construction-Time Only Options</a></li>
-<li class="subsection"><a href="#subsection2">Widget General Options</a></li>
+<li class="doctools_subsection"><a href="#subsection1">Widget Construction-Time Only Options</a></li>
+<li class="doctools_subsection"><a href="#subsection2">Widget General Options</a></li>
 </ul>
 </li>
-<li class="section"><a href="#section5">Example</a></li>
-<li class="section"><a href="#section6">Bugs, Ideas, Feedback</a></li>
-<li class="section"><a href="#keywords">Keywords</a></li>
+<li class="doctools_section"><a href="#section5">Example</a></li>
+<li class="doctools_section"><a href="#section6">Bugs, Ideas, Feedback</a></li>
+<li class="doctools_section"><a href="#keywords">Keywords</a></li>
 </ul>
 </div>
-<div id="synopsis" class="section"><h2><a name="synopsis">Synopsis</a></h2>
-<div class="synopsis">
-<ul class="requirements">
+<div id="synopsis" class="doctools_section"><h2><a name="synopsis">Synopsis</a></h2>
+<div class="doctools_synopsis">
+<ul class="doctools_requirements">
 <li>package require <b class="pkgname">Tcl 8.5</b></li>
 <li>package require <b class="pkgname">Tk 8.5</b></li>
-<li>package require <b class="pkgname">widget::listentry <span class="opt">?0.1?</span></b></li>
+<li>package require <b class="pkgname">widget::listentry <span class="opt">?0.1.2?</span></b></li>
 <li>package require <b class="pkgname">widget::validator <span class="opt">?0.1?</span></b></li>
 <li>package require <b class="pkgname">widget::scrolledwindow</b></li>
 <li>package require <b class="pkgname">snit</b></li>
@@ -141,7 +140,7 @@
 <li>package require <b class="pkgname">img::png</b></li>
 <li>package require <b class="pkgname">msgcat</b></li>
 </ul>
-<ul class="syntax">
+<ul class="doctools_syntax">
 <li><a href="#1"><b class="cmd">widget::listentry</b> <i class="arg">pathname</i> <span class="opt">?options?</span></a></li>
 <li><a href="#2"><b class="cmd">widgetCmd</b> <b class="method">destroy</b></a></li>
 <li><a href="#3"><b class="cmd">widgetCmd</b> <b class="method">configure</b></a></li>
@@ -156,15 +155,15 @@
 </ul>
 </div>
 </div>
-<div id="section1" class="section"><h2><a name="section1">Description</a></h2>
+<div id="section1" class="doctools_section"><h2><a name="section1">Description</a></h2>
 <p>This package provides a megawidget for the interactive entry of
 ordered and unordered lists.
 For a simpler and more restricted megawidget please see the
 package <b class="package">widget::listsimple</b>.</p>
 </div>
-<div id="section2" class="section"><h2><a name="section2">Class API</a></h2>
+<div id="section2" class="doctools_section"><h2><a name="section2">Class API</a></h2>
 <p>The widget class supports a single command, for the creation of widgets.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><a name="1"><b class="cmd">widget::listentry</b> <i class="arg">pathname</i> <span class="opt">?options?</span></a></dt>
 <dd><p>This command creates and configures new instances of the widget.</p>
 <p>For details on the available options please see section
@@ -172,9 +171,9 @@ package <b class="package">widget::listsimple</b>.</p>
 <p>The result of the command is the pathname of the new widget.</p></dd>
 </dl>
 </div>
-<div id="section3" class="section"><h2><a name="section3">Instance API</a></h2>
+<div id="section3" class="doctools_section"><h2><a name="section3">Instance API</a></h2>
 <p>All widget instances supported the following methods.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><a name="2"><b class="cmd">widgetCmd</b> <b class="method">destroy</b></a></dt>
 <dd><p>This method destroys the widget.
 Any further access to the widget will generate errors.</p>
@@ -202,13 +201,13 @@ for the method <b class="method">cget</b> below and identical to it.</p></dd>
 <span class="sectref"><a href="#section4">Widget Options</a></span>.</p></dd>
 </dl>
 </div>
-<div id="section4" class="section"><h2><a name="section4">Widget Options</a></h2>
+<div id="section4" class="doctools_section"><h2><a name="section4">Widget Options</a></h2>
 <p>This section explains all the options available to instances of
 <b class="class">widget::listentry</b>. Please note that a few of the options
 can be set only at instance construction time. The majority of the
 options can however be set both during construction- and runtime.</p>
-<div id="subsection1" class="subsection"><h3><a name="subsection1">Widget Construction-Time Only Options</a></h3>
-<dl class="options">
+<div id="subsection1" class="doctools_subsection"><h3><a name="subsection1">Widget Construction-Time Only Options</a></h3>
+<dl class="doctools_options">
 <dt><b class="option">-ordered</b> boolean</dt>
 <dd><p>This options tells the new widget instance whether the list it manages
 is ordered or not. If it is ordered the widget will show buttons with
@@ -228,7 +227,7 @@ delivered by this callback.
 The callback will be further invoked whenever a new value is entered
 into the main list, to save the extended list of predefined values.</p>
 <p>The signature of this callback is</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><a name="7"><i class="arg">{*}cmdprefix</i> <b class="method">get</b></a></dt>
 <dd><p>In this form the callback is expected to return a list of strings.
 The strings are loaded into the list of the internal combobox for
@@ -246,7 +245,7 @@ the order used to show them in the combobox's list.</p></dd>
 <dt><b class="option">-validate</b> cmdprefix</dt>
 <dd><p>This option specifies a callback which is invoked after every change of
 the contents of the internal entry field. The signature of this callback is</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><a name="9"><i class="arg">{*}cmdprefix</i> <i class="arg">text</i> <i class="arg">errvar</i></a></dt>
 <dd><p>where <i class="arg">text</i> is the string to validate, and <i class="arg">errvar</i> the name of
 a variable the callback can store an error message into when it detects
@@ -269,12 +268,12 @@ to return the text which is actually added to, or checked against the list.</p>
 <p>The use case for this callback is essentially
 <i class="term">input normalization</i>. The most simple case of such would be, for
 example the use of</p>
-<pre class="example">string tolower</pre>
+<pre class="doctools_example">string tolower</pre>
 <p>to impose a standard letter
 case on the data. More complex example can be thought of, like rewriting
 of multiple syntaxes of input to a canonical form.
 The signature of this callback is</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><a name="10"><i class="arg">{*}cmdprefix</i> <i class="arg">text</i></a></dt>
 <dd><p>where <i class="arg">text</i> is the string to transform.</p>
 <p>The widget expects that the callback returns the transformed string.</p></dd>
@@ -285,7 +284,7 @@ The signature of this callback is</p>
 and invoke the callback provided by the option whenever the user clicks
 on that button.
 The signature of the callback is</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><a name="11"><i class="arg">{*}cmdprefix</i> <i class="arg">cookievar</i></a></dt>
 <dd><p>where the cookie variable provides access to context information the
 callback may wish to preserve between invokations. The initial value
@@ -297,8 +296,8 @@ which are then added to the list, modulo validity and duplicate checks.</p></dd>
 <p>By default there is no browse callback and no button shown.</p></dd>
 </dl>
 </div>
-<div id="subsection2" class="subsection"><h3><a name="subsection2">Widget General Options</a></h3>
-<dl class="options">
+<div id="subsection2" class="doctools_subsection"><h3><a name="subsection2">Widget General Options</a></h3>
+<dl class="doctools_options">
 <dt><b class="option">-listvariable</b> varname</dt>
 <dd><p>This option specifies the variable holding the list to be manipulated by
 the widget. Any changes to the list outside of the widget are automatically
@@ -372,10 +371,10 @@ widget. This option defaults to <b class="const">yellow</b>.</p></dd>
 </dl>
 </div>
 </div>
-<div id="section5" class="section"><h2><a name="section5">Example</a></h2>
-<pre class="example"></pre>
+<div id="section5" class="doctools_section"><h2><a name="section5">Example</a></h2>
+<pre class="doctools_example"></pre>
 </div>
-<div id="section6" class="section"><h2><a name="section6">Bugs, Ideas, Feedback</a></h2>
+<div id="section6" class="doctools_section"><h2><a name="section6">Bugs, Ideas, Feedback</a></h2>
 <p>This document, and the package it describes, will undoubtedly contain
 bugs and other problems.
 Please report such in the category <em>widget::listentry</em> of the
@@ -383,7 +382,7 @@ Please report such in the category <em>widget::listentry</em> of the
 Please also report any ideas for enhancements you may have for either
 package and/or documentation.</p>
 </div>
-<div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
-<p><a href="../../../../index.html#key49">data entry lists</a>, <a href="../../../../index.html#key91">data entry ordered list</a>, <a href="../../../../index.html#key48">data entry set of strings</a>, <a href="../../../../index.html#key45">data entry unordered list</a>, <a href="../../../../index.html#key47">list entry panel</a>, <a href="../../../../index.html#key46">set entry panel</a>, <a href="../../../../index.html#key11">widget</a></p>
+<div id="keywords" class="doctools_section"><h2><a name="keywords">Keywords</a></h2>
+<p><a href="../../../../index.html#key101">data entry lists</a>, <a href="../../../../index.html#key129">data entry ordered list</a>, <a href="../../../../index.html#key100">data entry set of strings</a>, <a href="../../../../index.html#key97">data entry unordered list</a>, <a href="../../../../index.html#key99">list entry panel</a>, <a href="../../../../index.html#key98">set entry panel</a>, <a href="../../../../index.html#key21">widget</a></p>
 </div>
 </div></body></html>

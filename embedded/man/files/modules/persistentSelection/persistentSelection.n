@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file 'persistentSelection\&.man~' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'persistentSelection\&.man' by tcllib/doctools with format 'nroff'
 '\"
 .TH "persistentSelection" n 1\&.0 tklib "Enhanced PRIMARY selection"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
@@ -354,7 +354,7 @@ In versions of \fBTk\fR older than \fB8\&.6\&.9\fR, the \fB\fBtext\fR\fR widget 
 .PP
 In addition, versions of \fBTk\fR older than \fB8\&.6\&.6\fR process selection events slightly differently from newer versions, and in combination with the \fBText\fR bindings this confuses \fBpersistentStore\fR\&.  If an upgrade to the current version of \fBTcl/Tk\fR is not feasible, this problem can be resolved by making a slight modification to the widget bindings, in order to satisfy the third condition of \fBWidget requirements\fR\&.
 .PP
-Either the script should call the command \fBpersistentSelection::fixText\fR to adjust the \fBText\fR bindings and the commands that they call; or the widget can use the \fBNtext\fR binding tag (for \fBntext\fR 1\&.0) instead of the default \fBText\fR bindtag\&.
+Either the script should call the command \fBpersistentSelection::fixText\fR to adjust the \fBText\fR bindings and the commands that they call; or the widget can use the \fBNtext\fR binding tag (for \fBntext\fR version 1\&.0 or above) instead of the default \fBText\fR bindtag\&.
 .PP
 In either case, the argument \fItype\fR supplied to command \fBpersistentSelection::report\fR should have the value \fBtext\fR\&.
 .SS "ENTRY, SPINBOX, TTK::ENTRY, TTK::SPINBOX, AND TTK::COMBOBOX WIDGETS"

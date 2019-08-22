@@ -270,11 +270,8 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH CONTENTS
-tklib
+dev
 .RS
-.TP
-\fBaddUndo\fR
-\fIfiles/modules/widgetPlus/\&.old/addUndo\&.n\fR: Adding Undo/Redo to Entry, Spinbox, and Combobox Widgets
 .TP
 \fBautoscroll\fR
 \fIfiles/modules/autoscroll/autoscroll\&.n\fR: Provides for a scrollbar to automatically mapped and unmapped as needed
@@ -419,9 +416,6 @@ tklib
 .TP
 \fBwidget_validator\fR
 \fIfiles/modules/widgetv/widget_validator\&.n\fR: widget::validator behaviour
-.TP
-\fBwidgetPlus\fR
-\fIfiles/modules/widgetPlus/\&.old/addUndo\&.man--old\&.n\fR: Enhanced Entry, Spinbox, and Combobox Widgets with Undo/Redo and other useful features
 .TP
 \fBwidgetPlus\fR
 \fIfiles/modules/widgetPlus/widgetPlus\&.n\fR: Enhanced Entry, Spinbox, and Combobox Widgets with Undo/Redo and other useful features
