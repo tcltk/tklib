@@ -32,7 +32,8 @@
 # TComboboxPlus, and BwEntryPlus.
 # Docs are in "man n widgetPlus".
 
-package require Tk
+package require Tcl 8.5
+package require Tk 8.5
 package require snit
 
 namespace eval ::widgetPlus {

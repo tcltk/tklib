@@ -1,11 +1,12 @@
+[vset VERSION 1.0]
 [comment {-*- tcl -*- widgetPlus manpage}]
-[manpage_begin widgetPlus n 1.0]
+[manpage_begin widgetPlus n [vset VERSION]]
 [moddesc   {Enhanced Entry, Spinbox, and Combobox Widgets with Undo/Redo and other useful features}]
 [titledesc {Enhanced Entry, Spinbox, and Combobox Widgets with Undo/Redo and other useful features}]
 [require Tcl 8.5]
 [require Tk 8.5]
 [require snit]
-[require widgetPlus [opt 1.0]]
+[require widgetPlus [opt [vset VERSION]]]
 [description]
 
 The [package widgetPlus] package adds new features to the widgets [syscmd [widget entry]], [syscmd [widget spinbox]], [syscmd [widget ttk::entry]], [syscmd [widget ttk::spinbox]], and [syscmd [widget ttk::combobox]].
@@ -335,5 +336,9 @@ namespace import widgetPlus::*
 entryPlus .cb.e -undo 1 -maxundo 0
 }]
 
-[see_also entry spinbox ttk::entry ttk::spinbox ttk::combobox text persistentSelection BWidget ComboBox Entry]
+[see_also entry spinbox ttk::entry ttk::spinbox ttk::combobox]
+[see_also text persistentSelection BWidget ComboBox Entry]
+
+[vset CATEGORY widgetPlus]
+[include ../../support/devel/doc/feedback.inc]
 [manpage_end]
