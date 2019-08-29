@@ -51,6 +51,7 @@ Module ntext         _tcl  _man  _exa
 Module notifywindow  _tcl  _man  _null
 Module persistentSelection _tcl _man _exa
 Module plotchart     _tcl  _man  _exa
+Module scrollutil    _tab  _null _exa
 Module style         _tcl  _man  _null
 Module swaplist      _tcl  _man  _null
 Module tablelist     _tab  _null _exa
