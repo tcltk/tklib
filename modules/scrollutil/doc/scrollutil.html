@@ -488,7 +488,7 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
   <a href="scrollarea.html">scrollarea</a>.</p>
 
   <blockquote>
-    <img src="SyncListboxes.png" alt="SyncListboxes" width="300" height="303">
+    <img src="SyncListboxes.png" alt="SyncListboxes" width="321" height="303">
   </blockquote>
 
   <p>Here is the relevant code, in which the lines related to the scrollarea
@@ -519,8 +519,8 @@ $sa setwidget $ss</span>
 
 . . .
 
-set lb1 [listbox $ss.lb1 -width 15 -highlightthickness 0]
-set lb2 [listbox $ss.lb2 -width 15 -highlightthickness 0]
+set lb1 [listbox $ss.lb1 -activestyle none -highlightthickness 0 -width 16]
+set lb2 [listbox $ss.lb2 -activestyle none -highlightthickness 0 -width 16]
 <span>$ss setwidgets [list $lb1 $lb2]</span>
 
 . . .
