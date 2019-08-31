@@ -49,8 +49,8 @@ set capitalList {
     Madrid Stockholm Bern Kiev London "Vatican City"
 }
 
-set lb1 [listbox $ss.lb1 -width 15 -highlightthickness 0]
-set lb2 [listbox $ss.lb2 -width 15 -highlightthickness 0]
+set lb1 [listbox $ss.lb1 -activestyle none -highlightthickness 0 -width 16]
+set lb2 [listbox $ss.lb2 -activestyle none -highlightthickness 0 -width 16]
 $ss setwidgets [list $lb1 $lb2]
 
 foreach country $countryList {
