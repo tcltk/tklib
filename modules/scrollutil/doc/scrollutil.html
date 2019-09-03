@@ -93,10 +93,10 @@
     <li>reference pages in HTML format.</li>
   </ul>
 
-  <p>The scrollutil::scrollarea mega-widget greatly simplifies the creation of
-  arbitrary scrolled widgets.&nbsp; It consists of a scrollable widget and two
-  scrollbars connected with that widget.&nbsp; The display mode of each
-  scrollbar can be <code>static</code>, <code>dynamic</code>, or
+  <p><b>The scrollutil::scrollarea mega-widget</b> greatly simplifies the
+  creation of arbitrary scrolled widgets.&nbsp; It consists of a scrollable
+  widget and two scrollbars connected with that widget.&nbsp; The display mode
+  of each scrollbar can be <code>static</code>, <code>dynamic</code>, or
   <code>none</code>.&nbsp; This scrolled window implementation also supports
   the widgets that are scrollable in one direction only (e.g., entry and
   ttk::entry) and respects the header component and title columns of <a href=
@@ -115,25 +115,26 @@
   Tcl 8.5) TclOO.&nbsp; It is also free from the <a href=
   "https://wiki.tcl-lang.org/page/Scroll+bars+that+appear+only+when+needed">shimmering
   problem in connection with text widgets</a>, which the above-mentioned
-  scrolled window implementations either share with the autoscroll package or
-  circumvent in a suboptimal way.</p>
+  scrolled window implementations either share with the autoscroll package
+  (contained in tklib) or circumvent in a suboptimal way.</p>
 
-  <p>The scrollutil::scrollsync mega-widget is designed for scrolling several
-  widgets simultaneously.&nbsp; Whenever the horizontal/vertical position of
-  the view in the window of one of its widgets changes, the view in the windows
-  of all the other widgets is automatically adjusted accordingly, thus making
-  sure that the view's position in these windows is kept in sync.&nbsp; This
-  mega-widget is horizontally and vertically scrollable, hence it can be
-  embedded into a scrollutil::scrollarea widget.</p>
+  <p><b>The scrollutil::scrollsync mega-widget</b> is designed for scrolling
+  several widgets simultaneously.&nbsp; Whenever the horizontal/vertical
+  position of the view in the window of one of its widgets changes, the view in
+  the windows of all the other widgets is automatically adjusted accordingly,
+  thus making sure that the view's position in these windows is kept in
+  sync.&nbsp; This mega-widget is horizontally and vertically scrollable, hence
+  it can be embedded into a scrollutil::scrollarea widget.</p>
 
-  <p>From the point of view of the commands for mouse wheel event handling
-  provided by the Scrollutil package, the scrollability of a widget container
-  window means that the associated Tcl command supports the&nbsp; <code>xview
-  scroll <i>number</i> units</code>&nbsp; and&nbsp; <code>yview scroll
-  <i>number</i> units</code>&nbsp; subcommands.&nbsp; The reason for requiring
-  at least Tk version 8.6b2 on Windows for these commands is that in earlier Tk
-  versions on this platform the mouse wheel events were sent to the widget
-  having the focus rather than to the one under the pointer.</p>
+  <p>From the point of view of <b>the commands for mouse wheel event
+  handling</b> provided by the Scrollutil package, the scrollability of a
+  widget container window means that the associated Tcl command supports
+  the&nbsp; <code>xview scroll <i>number</i> units</code>&nbsp; and&nbsp;
+  <code>yview scroll <i>number</i> units</code>&nbsp; subcommands.&nbsp; The
+  reason for requiring at least Tk version 8.6b2 on Windows for these commands
+  is that in earlier Tk versions on this platform the mouse wheel events were
+  sent to the widget having the focus rather than to the one under the
+  pointer.</p>
 
   <p>To make use of the user-friendly mouse wheel event handling via the
   Scrollutil package, follow the steps below:</p>
