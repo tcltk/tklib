@@ -1,7 +1,7 @@
 #==============================================================================
 # Creates some images.
 #
-# Copyright (c) 2011-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2011-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -15,13 +15,13 @@ image create photo uncheckedImg -file [file join $dir unchecked.gif]
 #
 set colorNames {
     "red" "green" "blue" "magenta"
-    "yellow" "cyan" "white" "light gray"
+    "yellow" "cyan" "light gray" "white"
     "dark red" "dark green" "dark blue" "dark magenta"
     "dark yellow" "dark cyan" "dark gray" "black"
 }
 set colorValues {
     #FF0000 #00FF00 #0000FF #FF00FF
-    #FFFF00 #00FFFF #FFFFFF #C0C0C0
+    #FFFF00 #00FFFF #C0C0C0 #FFFFFF
     #800000 #008000 #000080 #800080
     #808000 #008080 #808080 #000000
 }

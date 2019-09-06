@@ -1,9 +1,9 @@
 #!/usr/bin/env wish
-## -*- tcl -*-
+
 #==============================================================================
 # Demo:	mentry::dateMentry, mentry::putClockVal, mentry::getClockVal.
 #
-# Copyright (c) 2008-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2008-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require mentry_tile
@@ -56,10 +56,10 @@ wm deiconify .
 # Frame .base.f with a mentry displaying the date & time
 #
 ttk::frame .base.f
-ttk::label .base.f.l -text "A mentry widget for date & time:"
+ttk::label .base.f.l -text "Date & time: "
 mentry::dateTimeMentry .base.f.me $dateFmts($dateIdx)$timeFmts($timeIdx) \
 		       $dateSeps($dateIdx) $timeSeps($timeIdx) -justify center
-pack .base.f.l .base.f.me
+pack .base.f.l .base.f.me -side left
 
 #
 # Message strings corresponding to the values
@@ -75,7 +75,7 @@ array set msgs {
 #
 # Button .base.get invoking the procedure mentry::getClockVal
 #
-ttk::button .base.get -text "Get from mentries" -command {
+ttk::button .base.get -text "Get from mentry" -command {
     if {[catch {
 	set dateTime ""
 	set clockVal [mentry::getClockVal .base.f.me]
@@ -90,7 +90,7 @@ ttk::button .base.get -text "Get from mentries" -command {
 #
 # Label .base.dateTime displaying the result of mentry::getClockVal
 #
-ttk::label .base.dateTime -textvariable dateTime
+ttk::label .base.dateTime -textvariable dateTime -background white
 
 #
 # Separator .base.sep and button .base.close

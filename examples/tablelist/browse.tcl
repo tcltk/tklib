@@ -2,10 +2,10 @@
 # Demonstrates how to use a tablelist widget for displaying information about
 # the children of an arbitrary widget.
 #
-# Copyright (c) 2000-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.17
+package require tablelist 6.6
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -25,7 +25,7 @@ source [file join $demo::dir config.tcl]
 # demo::displayChildren
 #
 # Displays information on the children of the widget w in a tablelist widget
-# contained in a newly created top-level widget.  Returns the name of the
+# contained in a newly created toplevel widget.  Returns the name of the
 # tablelist widget.
 #------------------------------------------------------------------------------
 proc demo::displayChildren w {
@@ -37,7 +37,7 @@ proc demo::displayChildren w {
     }
 
     #
-    # Create a top-level widget of the class DemoTop
+    # Create a toplevel widget of the class DemoTop
     #
     set top .browseTop
     for {set n 2} {[winfo exists $top]} {incr n} {
@@ -47,7 +47,7 @@ proc demo::displayChildren w {
 
     #
     # Create a vertically scrolled tablelist widget with 9 dynamic-width
-    # columns and interactive sort capability within the top-level
+    # columns and interactive sort capability within the toplevel
     #
     set tf $top.tf
     frame $tf
@@ -104,7 +104,7 @@ proc demo::displayChildren w {
     bind $bodyTag <<Button3>> +[list demo::postPopupMenu $top %X %Y]
 
     #
-    # Create three buttons within a frame child of the top-level widget
+    # Create three buttons within a frame child of the toplevel widget
     #
     set bf $top.bf
     frame $bf
@@ -119,12 +119,12 @@ proc demo::displayChildren w {
     # Manage the widgets
     #
     grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
-    variable winSys
-    if {[string compare $winSys "aqua"] == 0} {
+    variable winSys					;# see config.tcl
+    if {[string compare $winSys "win32"] == 0} {
+	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+    } else {
 	grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
 	grid $vsb	       -row 1 -column 1 -sticky ns
-    } else {
-	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
     }
     grid rowconfigure    $tf 1 -weight 1
     grid columnconfigure $tf 0 -weight 1
@@ -226,7 +226,7 @@ proc demo::formatBoolean val {
 #------------------------------------------------------------------------------
 # demo::labelCmd
 #
-# Sorts the contents of the tablelist widget tbl by its col'th column and makes
+# Sorts the content of the tablelist widget tbl by its col'th column and makes
 # sure the items will be updated 500 ms later (because one of the items might
 # refer to a canvas containing the arrow that displays the sort order).
 #------------------------------------------------------------------------------
@@ -310,7 +310,7 @@ proc demo::putChildrenOfSelWidget tbl {
 # demo::dispConfigOfSelWidget
 #
 # Displays the configuration options of the selected widget within the
-# tablelist tbl in a tablelist widget contained in a newly created top-level
+# tablelist tbl in a tablelist widget contained in a newly created toplevel
 # widget.
 #------------------------------------------------------------------------------
 proc demo::dispConfigOfSelWidget tbl {

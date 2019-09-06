@@ -1,10 +1,10 @@
 #!/usr/bin/env wish
-## -*- tcl -*-
+
 #==============================================================================
 # Demo:	mentry::dateMentry, mentry::timeMentry, mentry::putClockVal,
 #	mentry::getClockVal.
 #
-# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require mentry_tile
@@ -97,7 +97,7 @@ ttk::button .base.get -text "Get from mentries" -command {
 #
 # Label .base.dateTime displaying the result of mentry::getClockVal
 #
-ttk::label .base.dateTime -textvariable dateTime
+ttk::label .base.dateTime -textvariable dateTime -background white
 
 #
 # Separator .base.sep and button .base.close

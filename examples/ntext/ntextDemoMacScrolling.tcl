@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 
 package require Tk
 
-# Copyright (c) 2005-2017 Keith Nash.
+# Copyright (c) 2005-2018 Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -14,6 +14,8 @@ package require Tk
 ### For a short example, see ntextExample.tcl
 ### To explore ntext indentation, try ntextDemoIndent.tcl
 ### To explore the ntext options, try ntextDemoBindings.tcl
+### For corner cases in scrolling, try ntextDemoScroll.tcl
+
 
 # This string defines the text that will be displayed in each widget:
 set message {Ntext tries to offer a user experience that is as close as possible to the native "look and feel" of each platform.

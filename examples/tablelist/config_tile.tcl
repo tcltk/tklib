@@ -2,16 +2,16 @@
 # Demonstrates how to use a tablelist widget for displaying and editing the
 # configuration options of an arbitrary widget.
 #
-# Copyright (c) 2000-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.17
+package require tablelist_tile 6.6
 
 namespace eval demo {
     #
     # Get the current windowing system ("x11", "win32", or "aqua")
     # and add some entries to the Tk option database for the following
-    # widget hierarchy within a top-level widget of the class DemoTop:
+    # widget hierarchy within a toplevel widget of the class DemoTop:
     #
     # Name		Class
     # -----------------------------
@@ -23,10 +23,6 @@ namespace eval demo {
     #
     if {[tk windowingsystem] eq "x11"} {
 	option add *DemoTop*Font			TkDefaultFont
-    } else {
-	option add *DemoTop.tf.borderWidth		1
-	option add *DemoTop.tf.relief			sunken
-	option add *DemoTop.tf.tbl.borderWidth		0
     }
     tablelist::setThemeDefaults
     set foreground [winfo rgb . $tablelist::themeDefaults(-foreground)]
@@ -41,6 +37,9 @@ namespace eval demo {
 	option add *DemoTop*selectBorderWidth \
 		   $tablelist::themeDefaults(-selectborderwidth)
     }
+    option add *DemoTop.tf.borderWidth			1
+    option add *DemoTop.tf.relief			sunken
+    option add *DemoTop.tf.tbl.borderWidth		0
     option add *DemoTop.tf.tbl.background		white
     option add *DemoTop.tf.tbl.stripeBackground		#f0f0f0
     option add *DemoTop.tf.tbl.setGrid			yes
@@ -59,7 +58,7 @@ if {$demo::currentTheme eq "aqua"} {
 # demo::displayConfig
 #
 # Displays the configuration options of the widget w in a tablelist widget
-# contained in a newly created top-level widget.  Returns the name of the
+# contained in a newly created toplevel widget.  Returns the name of the
 # tablelist widget.
 #------------------------------------------------------------------------------
 proc demo::displayConfig w {
@@ -71,7 +70,7 @@ proc demo::displayConfig w {
     }
 
     #
-    # Create a top-level widget of the class DemoTop
+    # Create a toplevel widget of the class DemoTop
     #
     set top .configTop
     for {set n 2} {[winfo exists $top]} {incr n} {
@@ -82,7 +81,7 @@ proc demo::displayConfig w {
 
     #
     # Create a scrolled tablelist widget with 5 dynamic-width
-    # columns and interactive sort capability within the top-level
+    # columns and interactive sort capability within the toplevel
     #
     set tf $top.tf
     ttk::frame $tf
@@ -107,7 +106,7 @@ proc demo::displayConfig w {
     ttk::scrollbar $hsb -orient horizontal -command [list $tbl xview]
 
     #
-    # Create three buttons within a tile frame child of the top-level widget
+    # Create three buttons within a tile frame child of the toplevel widget
     #
     set bf $top.bf
     ttk::frame $bf
@@ -122,11 +121,11 @@ proc demo::displayConfig w {
     # Manage the widgets
     #
     grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
-    if {[tablelist::getCurrentTheme] eq "aqua"} {
+    if {[tk windowingsystem] eq "win32"} {
+	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+    } else {
 	grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
 	grid $vsb	       -row 1 -column 1 -sticky ns
-    } else {
-	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
     }
     grid $hsb -row 2 -column 0 -sticky ew
     grid rowconfigure    $tf 1 -weight 1

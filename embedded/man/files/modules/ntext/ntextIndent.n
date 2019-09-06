@@ -285,6 +285,8 @@ package require \fBntext  ?1\&.0?\fR
 .sp
 \fB::ntext::new_textPaste\fR \fIpathName\fR
 .sp
+\fB::ntext::syncIndentColor\fR \fIpathName\fR
+.sp
 .BE
 .SH DESCRIPTION
 The \fBntext\fR package provides a binding tag named \fINtext\fR for use by text widgets in place of the default \fIText\fR binding tag\&.
@@ -300,21 +302,34 @@ This indentation is available to text widgets only in \fI-wrap\fR \fIword\fR mod
 Replacement for ::tk_textCopy\&.
 .TP
 \fB::ntext::new_textCut\fR \fIpathName\fR
-Replacement for ::tk_textCut that also maintains \fINtext\fR indentation (see \fIntextIndent\fR)\&.
+Replacement for ::tk_textCut that also maintains \fINtext\fR indentation\&.
 .TP
 \fB::ntext::new_textPaste\fR \fIpathName\fR
-Replacement for ::tk_textPaste that also maintains \fINtext\fR indentation (see \fIntextIndent\fR)\&.
+Replacement for ::tk_textPaste that also maintains \fINtext\fR indentation\&.
+.TP
+\fB::ntext::syncIndentColor\fR \fIpathName\fR
+Command to apply the current value of the variable \fB::ntext::indentColor\fR to existing lines in a text widget\&.  This command is useful if a text widget has been created, text has been inserted in the widget, \fIand then\fR the value of \fB::ntext::indentColor\fR is changed\&.
 .PP
 .SH "CONFIGURATION OPTIONS"
 The behavior of \fINtext\fR may be configured application-wide by setting the values of a number of namespace variables:
 .PP
 \fB::ntext::classicWrap\fR
 .IP \(bu
-0 - selects \fINtext\fR behaviour, i\&.e\&. display lines are indented to match the initial whitespace of the first display line of a logical line\&.
+\fB0\fR - selects \fINtext\fR behaviour, i\&.e\&. display lines are indented to match the initial whitespace of the first display line of a logical line\&.
 .sp
 No other action is required if this option, and the text widget's \fI-wrap\fR option, are set before any text is entered in the widget, and if text is entered and edited only by the mouse and keyboard\&.  If, instead, text is manipulated by the script, or if the text widget's \fI-wrap\fR option or the value of \fB::ntext::classicWrap\fR are changed while the widget holds text, then calls to \fIntext\fR functions are needed to alter the indentation\&.  See the section \fBINDENTING DISPLAY LINES\fR for detailed instructions\&.
 .IP \(bu
-1 - (default value) selects classic \fIText\fR behaviour, i\&.e\&. no indentation\&.
+\fB1\fR - (default value) selects classic \fIText\fR behaviour, i\&.e\&. no indentation\&.
+.PP
+\fB::ntext::indentColor\fR
+.IP \(bu
+\fB{}\fR - if the value is the empty string, then the indent of wrapped display lines has the same color as the widget background\&.
+.IP \(bu
+\fIcolor\fR - a valid Tk color to use for the indent of wrapped display lines (default value \fI#d9d9d9\fR)\&.
+.sp
+Coloring is implemented with the text widget tag option \fI-lmargincolor\fR, which is available from \fBTk\fR 8\&.6\&.6 onwards\&.  \fINtext\fR indent coloring has no effect in earlier versions of \fBTk\fR\&.
+.sp
+The value of \fB::ntext::indentColor\fR will often be set at startup\&.  If the value is changed when text widgets already exist and contain text, those widgets can be updated by calling command \fB::ntext::syncIndentColor\fR\&.
 .PP
 \fIAdvanced Use\fR
 .PP
@@ -367,12 +382,34 @@ In other cases, i\&.e\&. if the widget is in \fI-word\fR \fIchar\fR or \fI-word\
 .SH BUGS
 This version of \fBntext\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5 and 8\&.6, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIntext\fR of the \fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
 .SH EXAMPLES
-To switch on \fINtext\fR 's indentation and use it in widget \&.t:
+To switch on \fINtext\fR 's indentation and use it in widget \&.t, using the default indent color \fI#d9d9d9\fR:
 .CS
 
 
 package require ntext
 set ::ntext::classicWrap 0
+text \&.t -wrap word
+bindtags \&.t {\&.t Ntext \&. all}
+
+.CE
+To switch on \fINtext\fR 's indentation and use it in widget \&.t, without colored indents:
+.CS
+
+
+package require ntext
+set ::ntext::classicWrap 0
+set ::ntext::indentColor {}
+text \&.t -wrap word
+bindtags \&.t {\&.t Ntext \&. all}
+
+.CE
+To switch on \fINtext\fR 's indentation and use it in widget \&.t, coloring the indents black:
+.CS
+
+
+package require ntext
+set ::ntext::classicWrap 0
+set ::ntext::indentColor black
 text \&.t -wrap word
 bindtags \&.t {\&.t Ntext \&. all}
 
@@ -400,6 +437,14 @@ To inject some text into the widget:
 set foo [\&.t index end]
 \&.t insert end {This line was added by the script, not the keyboard!}
 ::ntext::wrapIndent \&.t $foo end
+
+.CE
+To change the indentation color when a widget \&.t already holds text:
+.CS
+
+
+set ::ntext::indentColor black
+::ntext::syncIndentColor \&.t
 
 .CE
 To switch to \fI-wrap\fR \fIchar\fR mode:

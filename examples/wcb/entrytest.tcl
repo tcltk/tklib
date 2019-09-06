@@ -1,11 +1,11 @@
 #!/usr/bin/env wish
-## -*- tcl -*-
+
 #==============================================================================
 # Demo:	wcb::callback <entry> before insert <callback> ...
 #	wcb::postInsertEntryText <entry> <index> <string>
 #	wcb::cancel
 #
-# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require wcb

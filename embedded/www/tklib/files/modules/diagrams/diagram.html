@@ -1,5 +1,4 @@
-
-<html><head>
+<!DOCTYPE html><html><head>
 <title>diagram - Documentation toolbox</title>
 <style type="text/css"><!--
     HTML {
@@ -25,7 +24,7 @@
 	background: 	transparent;
 	text-align:		left;
     }
-    H1.title {
+    H1.doctools_title {
 	text-align: center;
     }
     UL,OL {
@@ -42,11 +41,11 @@
     DT {
 	padding-top: 	1ex;
     }
-    UL.toc,UL.toc UL, UL.toc UL UL {
+    UL.doctools_toc,UL.doctools_toc UL, UL.doctools_toc UL UL {
 	font:		normal 12pt/14pt sans-serif;
 	list-style:	none;
     }
-    LI.section, LI.subsection {
+    LI.doctools_section, LI.doctools_subsection {
 	list-style: 	none;
 	margin-left: 	0em;
 	text-indent:	0em;
@@ -63,18 +62,18 @@
 	padding-right:	1ex;
 	width:		100%;
     }
-    PRE.example {
+    PRE.doctools_example {
 	color: 		black;
 	background: 	#f5dcb3;
 	border:		1px solid black;
     }
-    UL.requirements LI, UL.syntax LI {
+    UL.doctools_requirements LI, UL.doctools_syntax LI {
 	list-style: 	none;
 	margin-left: 	0em;
 	text-indent:	0em;
 	padding:	0em;
     }
-    DIV.synopsis {
+    DIV.doctools_synopsis {
 	color: 		black;
 	background: 	#80ffff;
 	border:		1px solid black;
@@ -82,22 +81,21 @@
 	margin-top: 	1em;
 	margin-bottom: 	1em;
     }
-    UL.syntax {
+    UL.doctools_syntax {
 	margin-top: 	1em;
 	border-top:	1px solid black;
     }
-    UL.requirements {
+    UL.doctools_requirements {
 	margin-bottom: 	1em;
 	border-bottom:	1px solid black;
     }
 --></style>
 </head>
-<! -- Generated from file 'diagram.man' by tcllib/doctools with format 'html'
+<!-- Generated from file 'diagram.man' by tcllib/doctools with format 'html'
    -->
-<! -- CVS: $Id$ diagram.n
+<!-- diagram.n
    -->
-<body><div class="doctools">
-<hr> [
+<body><hr> [
    <a href="../../../../../../../../home">Tklib Home</a>
 | <a href="../../../../toc.html">Main Table Of Contents</a>
 | <a href="../../../toc.html">Table Of Contents</a>
@@ -106,46 +104,47 @@
 | <a href="../../../../toc1.html">Modules</a>
 | <a href="../../../../toc2.html">Applications</a>
  ] <hr>
-<h1 class="title">diagram(n) 0.3 tklib &quot;Documentation toolbox&quot;</h1>
-<div id="name" class="section"><h2><a name="name">Name</a></h2>
+<div class="doctools">
+<h1 class="doctools_title">diagram(n) 0.3 tklib &quot;Documentation toolbox&quot;</h1>
+<div id="name" class="doctools_section"><h2><a name="name">Name</a></h2>
 <p>diagram - Diagram drawing</p>
 </div>
-<div id="toc" class="section"><h2><a name="toc">Table Of Contents</a></h2>
-<ul class="toc">
-<li class="section"><a href="#toc">Table Of Contents</a></li>
-<li class="section"><a href="#synopsis">Synopsis</a></li>
-<li class="section"><a href="#section1">Description</a></li>
-<li class="section"><a href="#section2">API</a>
+<div id="toc" class="doctools_section"><h2><a name="toc">Table Of Contents</a></h2>
+<ul class="doctools_toc">
+<li class="doctools_section"><a href="#toc">Table Of Contents</a></li>
+<li class="doctools_section"><a href="#synopsis">Synopsis</a></li>
+<li class="doctools_section"><a href="#section1">Description</a></li>
+<li class="doctools_section"><a href="#section2">API</a>
 <ul>
-<li class="subsection"><a href="#subsection1">Class API</a></li>
-<li class="subsection"><a href="#subsection2">Object API</a></li>
+<li class="doctools_subsection"><a href="#subsection1">Class API</a></li>
+<li class="doctools_subsection"><a href="#subsection2">Object API</a></li>
 </ul>
 </li>
-<li class="section"><a href="#section3">Language Reference</a>
+<li class="doctools_section"><a href="#section3">Language Reference</a>
 <ul>
-<li class="subsection"><a href="#subsection3">Elements</a></li>
-<li class="subsection"><a href="#subsection4">Attributes</a></li>
-<li class="subsection"><a href="#subsection5">Corners</a></li>
-<li class="subsection"><a href="#subsection6">Named directions</a></li>
-<li class="subsection"><a href="#subsection7">Miscellaneous Commands</a></li>
-<li class="subsection"><a href="#subsection8">Variables</a></li>
+<li class="doctools_subsection"><a href="#subsection3">Elements</a></li>
+<li class="doctools_subsection"><a href="#subsection4">Attributes</a></li>
+<li class="doctools_subsection"><a href="#subsection5">Corners</a></li>
+<li class="doctools_subsection"><a href="#subsection6">Named directions</a></li>
+<li class="doctools_subsection"><a href="#subsection7">Miscellaneous Commands</a></li>
+<li class="doctools_subsection"><a href="#subsection8">Variables</a></li>
 </ul>
 </li>
-<li class="section"><a href="#section4">Diagram Classes</a></li>
-<li class="section"><a href="#section5">References</a></li>
-<li class="section"><a href="#section6">Bugs, Ideas, Feedback</a></li>
-<li class="section"><a href="#keywords">Keywords</a></li>
-<li class="section"><a href="#category">Category</a></li>
+<li class="doctools_section"><a href="#section4">Diagram Classes</a></li>
+<li class="doctools_section"><a href="#section5">References</a></li>
+<li class="doctools_section"><a href="#section6">Bugs, Ideas, Feedback</a></li>
+<li class="doctools_section"><a href="#keywords">Keywords</a></li>
+<li class="doctools_section"><a href="#category">Category</a></li>
 </ul>
 </div>
-<div id="synopsis" class="section"><h2><a name="synopsis">Synopsis</a></h2>
-<div class="synopsis">
-<ul class="requirements">
+<div id="synopsis" class="doctools_section"><h2><a name="synopsis">Synopsis</a></h2>
+<div class="doctools_synopsis">
+<ul class="doctools_requirements">
 <li>package require <b class="pkgname">Tcl 8.5</b></li>
 <li>package require <b class="pkgname">Tk 8.5</b></li>
 <li>package require <b class="pkgname">diagram 1</b></li>
 </ul>
-<ul class="syntax">
+<ul class="doctools_syntax">
 <li><a href="#1"><b class="cmd">::diagram</b> <i class="arg">objectName</i> <i class="arg">canvas</i> <span class="opt">?<i class="arg">script</i>?</span></a></li>
 <li><a href="#2"><i class="arg">diagramObject</i> <b class="method">new direction</b> <i class="arg">name</i> <span class="opt">?<i class="arg">key</i> <i class="arg">value</i>...?</span></a></li>
 <li><a href="#3"><i class="arg">diagramObject</i> <b class="method">new element</b> <i class="arg">name</i> <i class="arg">attributes</i> <i class="arg">cmdprefix</i></a></li>
@@ -154,24 +153,24 @@
 <li><a href="#6"><i class="arg">diagramObject</i> <b class="method">new attribute</b> <i class="arg">name</i> <span class="opt">?<i class="arg">key</i> <i class="arg">value</i>...?</span></a></li>
 <li><a href="#7"><i class="arg">diagramObject</i> <b class="method">unknown attribute</b> <i class="arg">cmdprefix</i></a></li>
 <li><a href="#8"><i class="arg">diagramObject</i> <b class="method">draw</b> <i class="arg">script</i></a></li>
-<li><a href="#9"><b class="cmd"><a href="../../../../index.html#key70">arc</a></b> <i class="arg">attr</i>...</a></li>
-<li><a href="#10"><b class="cmd"><a href="../../../../index.html#key65">arrow</a></b> <i class="arg">attr</i>...</a></li>
+<li><a href="#9"><b class="cmd"><a href="../../../../index.html#key76">arc</a></b> <i class="arg">attr</i>...</a></li>
+<li><a href="#10"><b class="cmd"><a href="../../../../index.html#key71">arrow</a></b> <i class="arg">attr</i>...</a></li>
 <li><a href="#11"><b class="cmd">--&gt;</b> <i class="arg">attr</i>...</a></li>
 <li><a href="#12"><b class="cmd">&lt;--&gt;</b> <i class="arg">attr</i>...</a></li>
 <li><a href="#13"><b class="cmd">&lt;--&gt;</b> <i class="arg">attr</i>...</a></li>
 <li><a href="#14"><b class="cmd">block</b> <i class="arg">script</i> <i class="arg">attr</i>...</a></li>
-<li><a href="#15"><b class="cmd"><a href="../../../../index.html#key62">box</a></b> <i class="arg">attr</i>...</a></li>
-<li><a href="#16"><b class="cmd"><a href="../../../../index.html#key75">circle</a></b> <i class="arg">attr</i>...</a></li>
+<li><a href="#15"><b class="cmd"><a href="../../../../index.html#key67">box</a></b> <i class="arg">attr</i>...</a></li>
+<li><a href="#16"><b class="cmd"><a href="../../../../index.html#key81">circle</a></b> <i class="arg">attr</i>...</a></li>
 <li><a href="#17"><b class="cmd">O</b> <i class="arg">attr</i>...</a></li>
-<li><a href="#18"><b class="cmd"><a href="../../../../index.html#key76">diamond</a></b> <i class="arg">attr</i>...</a></li>
+<li><a href="#18"><b class="cmd"><a href="../../../../index.html#key82">diamond</a></b> <i class="arg">attr</i>...</a></li>
 <li><a href="#19"><b class="cmd">&lt;&gt;</b> <i class="arg">attr</i>...</a></li>
-<li><a href="#20"><b class="cmd"><a href="../../../../index.html#key61">drum</a></b> <i class="arg">attr</i>...</a></li>
-<li><a href="#21"><b class="cmd"><a href="../../../../index.html#key77">ellipse</a></b> <i class="arg">attr</i>...</a></li>
-<li><a href="#22"><b class="cmd"><a href="../../../../index.html#key71">line</a></b> <i class="arg">attr</i>...</a></li>
+<li><a href="#20"><b class="cmd"><a href="../../../../index.html#key66">drum</a></b> <i class="arg">attr</i>...</a></li>
+<li><a href="#21"><b class="cmd"><a href="../../../../index.html#key84">ellipse</a></b> <i class="arg">attr</i>...</a></li>
+<li><a href="#22"><b class="cmd"><a href="../../../../index.html#key77">line</a></b> <i class="arg">attr</i>...</a></li>
 <li><a href="#23"><b class="cmd">--</b> <i class="arg">attr</i>...</a></li>
-<li><a href="#24"><b class="cmd"><a href="../../../../index.html#key78">move</a></b> <i class="arg">attr</i></a></li>
-<li><a href="#25"><b class="cmd"><a href="../../../../index.html#key64">spline</a></b> <i class="arg">attr</i>...</a></li>
-<li><a href="#26"><b class="cmd"><a href="../../../../index.html#key7">text</a></b> <i class="arg">attr</i>...</a></li>
+<li><a href="#24"><b class="cmd"><a href="../../../../index.html#key85">move</a></b> <i class="arg">attr</i></a></li>
+<li><a href="#25"><b class="cmd"><a href="../../../../index.html#key70">spline</a></b> <i class="arg">attr</i>...</a></li>
+<li><a href="#26"><b class="cmd"><a href="../../../../index.html#key21">text</a></b> <i class="arg">attr</i>...</a></li>
 <li><a href="#27"><b class="cmd">west</b></a></li>
 <li><a href="#28"><b class="cmd">w</b></a></li>
 <li><a href="#29"><b class="cmd">left</b></a></li>
@@ -239,10 +238,10 @@
 </ul>
 </div>
 </div>
-<div id="section1" class="section"><h2><a name="section1">Description</a></h2>
+<div id="section1" class="doctools_section"><h2><a name="section1">Description</a></h2>
 <p>Welcome to <b class="package">diagram</b>, a package for the easy construction of
 diagrams (sic), i.e. 2D vector graphics, sometimes also called <i class="term">pictures</i>.
-Note that this package is not a replacement for <b class="package"><a href="../../../../index.html#key43">Tk</a></b>'s canvas,
+Note that this package is not a replacement for <b class="package"><a href="../../../../index.html#key30">Tk</a></b>'s canvas,
 but rather a layer sitting on top of it, to make it easier to use.
 In other words, using the canvas as the core graphics engine <b class="package">diagram</b> abstracts away from the minutiae of handling coordinates to
 position and size the drawn elements, allowing the user to concentrate
@@ -261,10 +260,10 @@ first, and then the comments in the sources of the packages itself.</p>
 diagram class and its instances, followed by the language reference
 for the drawing language itself.</p>
 </div>
-<div id="section2" class="section"><h2><a name="section2">API</a></h2>
-<div id="subsection1" class="subsection"><h3><a name="subsection1">Class API</a></h3>
+<div id="section2" class="doctools_section"><h2><a name="section2">API</a></h2>
+<div id="subsection1" class="doctools_subsection"><h3><a name="subsection1">Class API</a></h3>
 <p>The package exports the API described here.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 	
 <dt><a name="1"><b class="cmd">::diagram</b> <i class="arg">objectName</i> <i class="arg">canvas</i> <span class="opt">?<i class="arg">script</i>?</span></a></dt>
 <dd><p>The command creates a new instance of a diagram
@@ -282,10 +281,10 @@ for the drawing language itself.</p>
 		<b class="method">draw</b> will be invoked on it.</p></dd>
 </dl>
 </div>
-<div id="subsection2" class="subsection"><h3><a name="subsection2">Object API</a></h3>
+<div id="subsection2" class="doctools_subsection"><h3><a name="subsection2">Object API</a></h3>
 <p>Instances of the diagram class support the following
 	    methods:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 	
 <dt><a name="2"><i class="arg">diagramObject</i> <b class="method">new direction</b> <i class="arg">name</i> <span class="opt">?<i class="arg">key</i> <i class="arg">value</i>...?</span></a></dt>
 <dd><p>This method defines a new named direction and its
@@ -295,7 +294,7 @@ for the drawing language itself.</p>
 		with whatever meaning they desire. The exception are
 		the names <em>angle</em> and <em>opposite</em>. They are
 		special to the diagram package and have a fixed meaning.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 	
 <dt>angle</dt>
 <dd><p>This attribute specifies the angle of the direction in
@@ -319,7 +318,7 @@ for the drawing language itself.</p>
 		on attribute definitions.</p>
 <p>The command prefix is expected to conform to the
 		following signature:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 	
 <dt><b class="cmd">cmdprefix</b> <i class="arg">canvas</i> <i class="arg">attributes</i></dt>
 <dd><p>Where <i class="arg">canvas</i> is the handle of the canvas widget
@@ -328,7 +327,7 @@ for the drawing language itself.</p>
 		user-specified, or defaults.</p>
 <p>The results of the command has to be a list containing
 		at least two and at most four items. These are, in order:</p>
-<ol class="enumerated">
+<ol class="doctools_enumerated">
 		
 <li><p>The list of canvas items the drawn element consists of.</p></li>
 <li><p>The dictionary of named locations in the element, its
@@ -363,7 +362,7 @@ for the drawing language itself.</p>
 		attribute by the processor is declared through the
 		<i class="arg">key</i>/<i class="arg">value</i> pairs coming after the <i class="arg">name</i>.</p>
 <p>The accepted keys and their meanings are:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 		
 <dt><b class="const">key</b></dt>
 <dd><p>The value of this key is the name of the key
@@ -383,7 +382,7 @@ for the drawing language itself.</p>
 			after the attribute name as the attribute's
 			value.</p>
 <p>The signature of the command prefix is</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 			
 <dt><b class="cmd">cmdprefix</b> <i class="arg">wordqueue</i></dt>
 <dd><p>Where <i class="arg">wordqueue</i> is the handle of
@@ -409,7 +408,7 @@ for the drawing language itself.</p>
 <p>This key is optional. If it is not specified
 			no transformation is done.
 			The signature of the command prefix is</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 			
 <dt><b class="cmd">cmdprefix</b> <i class="arg">value</i></dt>
 <dd><p>Where <i class="arg">value</i> is the value to transform.</p>
@@ -424,7 +423,7 @@ for the drawing language itself.</p>
 			no validation is done.</p>
 <p>The signature of the command prefix is that of
 			snit validation types. See the documentation
-			of the <b class="package"><a href="../../../../index.html#key2">snit</a></b> package.</p></dd>
+			of the <b class="package"><a href="../../../../index.html#key20">snit</a></b> package.</p></dd>
 <dt><b class="const">merge</b></dt>
 <dd><p>The value of this key is a command prefix
 			which will be invoked to insert the
@@ -434,7 +433,7 @@ for the drawing language itself.</p>
 			a default merge is chosen, based on the data
 			for key <b class="const">aggregate</b>, see below.
 			The signature of the command prefix is</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 			
 <dt><b class="cmd">cmdprefix</b> <i class="arg">value</i> <i class="arg">dict</i></dt>
 <dd><p>Where <i class="arg">value</i> is the value to
@@ -481,7 +480,7 @@ for the drawing language itself.</p>
 			this attribute, but <i class="arg">default</i> is not
 			specified then nothing will be done.</p>
 <p>The signature of the command prefix is</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 			
 <dt><b class="cmd">cmdprefix</b> <b class="method">init</b></dt>
 <dd><p>This method is run when the attribute
@@ -523,7 +522,7 @@ for the drawing language itself.</p>
 		input.
 		The command prefix is expected to conform to the
 		following signature:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 		
 <dt><b class="cmd">cmdprefix</b> <i class="arg">wordqueue</i></dt>
 <dd><p>Where <i class="arg">wordqueue</i> is the handle of a queue
@@ -541,7 +540,7 @@ for the drawing language itself.</p>
 <p>Given the signature the command has basically
 			two ways of handling (rewriting) the attributes
 			it recognizes:</p>
-<ol class="enumerated">
+<ol class="doctools_enumerated">
 			
 <li><p>Replace the attribute (and arguments)
 				with a different attribute and arguments.</p></li>
@@ -562,8 +561,8 @@ for the drawing language itself.</p>
 </dl>
 </div>
 </div>
-<div id="section3" class="section"><h2><a name="section3">Language Reference</a></h2>
-<div id="subsection3" class="subsection"><h3><a name="subsection3">Elements</a></h3>
+<div id="section3" class="doctools_section"><h2><a name="section3">Language Reference</a></h2>
+<div id="subsection3" class="doctools_subsection"><h3><a name="subsection3">Elements</a></h3>
 <p>This section lists the commands for the predefined drawing elements,
 aka shapes. These commands are all defined in the language's context.
 All commands of this section return the handle of the newly created
@@ -571,8 +570,8 @@ element as their result. This handle also exists as a command which
 can be used to query the element for its corners (names, values).
 See section <span class="sectref"><a href="#subsection7">Miscellaneous Commands</a></span>.
 <img alt="figure-02-basic-shapes" src="../../../../image/figure-02-basic-shapes.png"></p>
-<dl class="definitions">
-<dt><a name="9"><b class="cmd"><a href="../../../../index.html#key70">arc</a></b> <i class="arg">attr</i>...</a></dt>
+<dl class="doctools_definitions">
+<dt><a name="9"><b class="cmd"><a href="../../../../index.html#key76">arc</a></b> <i class="arg">attr</i>...</a></dt>
 <dd><p><img alt="figure-02-arc" src="../../../../image/figure-02-arc.png">
 An open element with the corresponding corners, i.e. &quot;start&quot;, &quot;end&quot;,
 and &quot;center&quot;.
@@ -580,7 +579,7 @@ Note however that it also has the compass rose of closed elements as
 its corners, with the center of the arc's circle as the center of the
 compass and the other points on the circle the arc is part of.
 It handles the attributes</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">anchor</b> <i class="arg">name</i></dt>
 <dd></dd>
 <dt><b class="cmd">ljust</b></dt>
@@ -604,7 +603,7 @@ The commands without arguments are all shorthands with the anchor
 implied. Note that they do not combine, only the last is used. For
 comined directions the main attribute command, <b class="cmd">anchor</b> has to be
 used.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">ljust</b></dt>
 <dd><p>&quot;anchor west&quot;</p></dd>
 <dt><b class="cmd">rjust</b></dt>
@@ -617,7 +616,7 @@ used.</p>
 <dt><b class="cmd">clockwise</b></dt>
 <dd></dd>
 <dt><b class="cmd">cw</b></dt>
-<dd><p>Specifies the direction of the <b class="cmd"><a href="../../../../index.html#key70">arc</a></b> element, here going
+<dd><p>Specifies the direction of the <b class="cmd"><a href="../../../../index.html#key76">arc</a></b> element, here going
 clockwise.
 The complementary attribute is <b class="cmd">counterclockwise</b>.
 If not specified the system falls back to the value taken from the
@@ -631,7 +630,7 @@ language variable <b class="variable">linecolor</b>, which itself defaults to <b
 <dt><b class="cmd">counterclockwise</b></dt>
 <dd></dd>
 <dt><b class="cmd">ccw</b></dt>
-<dd><p>Specifies the direction of the <b class="cmd"><a href="../../../../index.html#key70">arc</a></b> element, here
+<dd><p>Specifies the direction of the <b class="cmd"><a href="../../../../index.html#key76">arc</a></b> element, here
 counter-clockwise.
 The complementary attribute is <b class="cmd">clockwise</b>.
 If not specified the system falls back to the value taken from the
@@ -644,7 +643,7 @@ If not specified the system falls back to the value taken from the
 language variable <b class="variable">fillcolor</b>, which itself defaults to the empty
 string, signaling &quot;no filling&quot;.</p></dd>
 <dt><b class="cmd">from</b> <i class="arg">location</i></dt>
-<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key70">arc</a></b> element begins.
+<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key76">arc</a></b> element begins.
 Defaults to the current location as maintained by the layouting
 system.</p></dd>
 <dt><b class="cmd">justify</b> <b class="const">left</b>|<b class="const">center</b>|<b class="const">right</b></dt>
@@ -656,7 +655,7 @@ language variable <b class="variable">justify</b>, which itself defaults to
 <b class="const">left</b>.
 The legal values are <b class="const">left</b>, <b class="const">right</b>, and <b class="const">center</b>.</p></dd>
 <dt><b class="cmd">radius</b> <i class="arg">length</i></dt>
-<dd><p>Specifies the radius of the <b class="cmd"><a href="../../../../index.html#key70">arc</a></b> element, or rather, the radius
+<dd><p>Specifies the radius of the <b class="cmd"><a href="../../../../index.html#key76">arc</a></b> element, or rather, the radius
 of the circle the shown arc is a part of.
 If not specified the system falls back to the value taken from the
 language variable <b class="variable">arcradius</b>, which itself defaults to the pixel
@@ -675,7 +674,7 @@ language variable <b class="variable">linestyle</b>, which itself defaults to
 The legal values are all those accepted by
 <a href="http://www.tcl.tk/man/tcl8.5/TkLib/GetDash.htm">Tk_GetDash</a>,
 and additionally all which are listed below:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="const">solid</b>, empty string</dt>
 <dd><p>Draw solid line.</p></dd>
 <dt><b class="const">dash</b>, <b class="const">dashed</b>, <b class="const">-</b></dt>
@@ -690,7 +689,7 @@ and additionally all which are listed below:</p>
 <p>Note that the values &quot;solid&quot;, &quot;dot(ted)&quot;, &quot;dash(ed)&quot;, &quot;dash-dot&quot;, and
 &quot;dash-dot-dot&quot; are all accepted as shorthands for the <b class="cmd">style</b>
 command using them as argument.</p></dd>
-<dt><b class="cmd"><a href="../../../../index.html#key7">text</a></b> <i class="arg">string</i></dt>
+<dt><b class="cmd"><a href="../../../../index.html#key21">text</a></b> <i class="arg">string</i></dt>
 <dd><p>Specifies the text to associate with the element.
 Defaults to nothing.
 When specified multiple times the actually shown text is the
@@ -709,11 +708,11 @@ If not specified the system falls back to the value taken from the
 language variable <b class="variable">textfont</b>, which itself defaults to
 <b class="const">Helvetica 12pt</b>.</p></dd>
 <dt><b class="cmd">to</b> <i class="arg">location</i></dt>
-<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key70">arc</a></b> element ends.
+<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key76">arc</a></b> element ends.
 Defaults to a location such that a 90-degree arc is drawn in the
 chosen direction, starting at <b class="cmd">from</b>.</p></dd>
 </dl></dd>
-<dt><a name="10"><b class="cmd"><a href="../../../../index.html#key65">arrow</a></b> <i class="arg">attr</i>...</a></dt>
+<dt><a name="10"><b class="cmd"><a href="../../../../index.html#key71">arrow</a></b> <i class="arg">attr</i>...</a></dt>
 <dd></dd>
 <dt><a name="11"><b class="cmd">--&gt;</b> <i class="arg">attr</i>...</a></dt>
 <dd></dd>
@@ -721,9 +720,9 @@ chosen direction, starting at <b class="cmd">from</b>.</p></dd>
 <dd></dd>
 <dt><a name="13"><b class="cmd">&lt;--&gt;</b> <i class="arg">attr</i>...</a></dt>
 <dd><p><img alt="figure-02-arrow" src="../../../../image/figure-02-arrow.png">
-An alias for the <b class="cmd"><a href="../../../../index.html#key71">line</a></b> element (see below), with the attribute
+An alias for the <b class="cmd"><a href="../../../../index.html#key77">line</a></b> element (see below), with the attribute
 <b class="cmd">arrowhead</b> preset to <b class="const">-&gt;</b>, <b class="const">&lt;-&gt;</b>, or <b class="const">&lt;-</b>.  The
-<b class="cmd"><a href="../../../../index.html#key65">arrow</a></b> is equivalent to <b class="cmd">--&gt;</b>.</p></dd>
+<b class="cmd"><a href="../../../../index.html#key71">arrow</a></b> is equivalent to <b class="cmd">--&gt;</b>.</p></dd>
 <dt><a name="14"><b class="cmd">block</b> <i class="arg">script</i> <i class="arg">attr</i>...</a></dt>
 <dd><p>A closed element with the corresponding corners, i.e. the eight
 directions of the compass rose, and &quot;center&quot;.
@@ -745,12 +744,12 @@ reverted after the element is done.
 In other words, a block is an implicit <b class="cmd">group</b>.</p>
 <p>Blocks handle all attributes, propgating their settings into the
 script as the default values active during script execution.</p></dd>
-<dt><a name="15"><b class="cmd"><a href="../../../../index.html#key62">box</a></b> <i class="arg">attr</i>...</a></dt>
+<dt><a name="15"><b class="cmd"><a href="../../../../index.html#key67">box</a></b> <i class="arg">attr</i>...</a></dt>
 <dd><p><img alt="figure-02-box" src="../../../../image/figure-02-box.png">
 A closed element with the corresponding corners, i.e. the eight
 directions of the compass rose, and &quot;center&quot;.
 It handles the attributes</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">anchor</b> <i class="arg">name</i></dt>
 <dd></dd>
 <dt><b class="cmd">ljust</b></dt>
@@ -774,7 +773,7 @@ The commands without arguments are all shorthands with the anchor
 implied. Note that they do not combine, only the last is used. For
 comined directions the main attribute command, <b class="cmd">anchor</b> has to be
 used.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">ljust</b></dt>
 <dd><p>&quot;anchor west&quot;</p></dd>
 <dt><b class="cmd">rjust</b></dt>
@@ -816,7 +815,7 @@ language variable <b class="variable">justify</b>, which itself defaults to
 <b class="const">left</b>.
 The legal values are <b class="const">left</b>, <b class="const">right</b>, and <b class="const">center</b>.</p></dd>
 <dt><b class="cmd">slant</b> <i class="arg">angle</i></dt>
-<dd><p>Specifies the angle by which the <b class="cmd"><a href="../../../../index.html#key62">box</a></b> element is slanted, in
+<dd><p>Specifies the angle by which the <b class="cmd"><a href="../../../../index.html#key67">box</a></b> element is slanted, in
 degrees.
 If not specified the system falls back to the value taken from the
 language variable <b class="variable">slant</b>, which itself defaults to <b class="const">90</b>,
@@ -837,7 +836,7 @@ language variable <b class="variable">linestyle</b>, which itself defaults to
 The legal values are all those accepted by
 <a href="http://www.tcl.tk/man/tcl8.5/TkLib/GetDash.htm">Tk_GetDash</a>,
 and additionally all which are listed below:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="const">solid</b>, empty string</dt>
 <dd><p>Draw solid line.</p></dd>
 <dt><b class="const">dash</b>, <b class="const">dashed</b>, <b class="const">-</b></dt>
@@ -852,7 +851,7 @@ and additionally all which are listed below:</p>
 <p>Note that the values &quot;solid&quot;, &quot;dot(ted)&quot;, &quot;dash(ed)&quot;, &quot;dash-dot&quot;, and
 &quot;dash-dot-dot&quot; are all accepted as shorthands for the <b class="cmd">style</b>
 command using them as argument.</p></dd>
-<dt><b class="cmd"><a href="../../../../index.html#key7">text</a></b> <i class="arg">string</i></dt>
+<dt><b class="cmd"><a href="../../../../index.html#key21">text</a></b> <i class="arg">string</i></dt>
 <dd><p>Specifies the text to associate with the element.
 Defaults to nothing.
 When specified multiple times the actually shown text is the
@@ -884,14 +883,14 @@ Defaults to the current corner as maintained by the layouting system,
 except if the value for <b class="cmd">at</b> was specified by the user. In that
 case it defaults to <b class="const">center</b>.</p></dd>
 </dl></dd>
-<dt><a name="16"><b class="cmd"><a href="../../../../index.html#key75">circle</a></b> <i class="arg">attr</i>...</a></dt>
+<dt><a name="16"><b class="cmd"><a href="../../../../index.html#key81">circle</a></b> <i class="arg">attr</i>...</a></dt>
 <dd></dd>
 <dt><a name="17"><b class="cmd">O</b> <i class="arg">attr</i>...</a></dt>
 <dd><p><img alt="figure-02-circle" src="../../../../image/figure-02-circle.png">
 A closed element with the corresponding corners, i.e. the eight
 directions of the compass rose, and &quot;center&quot;.
 It handles the attributes</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">anchor</b> <i class="arg">name</i></dt>
 <dd></dd>
 <dt><b class="cmd">ljust</b></dt>
@@ -915,7 +914,7 @@ The commands without arguments are all shorthands with the anchor
 implied. Note that they do not combine, only the last is used. For
 comined directions the main attribute command, <b class="cmd">anchor</b> has to be
 used.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">ljust</b></dt>
 <dd><p>&quot;anchor west&quot;</p></dd>
 <dt><b class="cmd">rjust</b></dt>
@@ -938,7 +937,7 @@ language variable <b class="variable">linecolor</b>, which itself defaults to <b
 <dt><b class="cmd">diameter</b> <i class="arg">length</i></dt>
 <dd></dd>
 <dt><b class="cmd">diam</b> <i class="arg">length</i></dt>
-<dd><p>Specifies the diameter of the <b class="cmd"><a href="../../../../index.html#key75">circle</a></b> element, as an alternative
+<dd><p>Specifies the diameter of the <b class="cmd"><a href="../../../../index.html#key81">circle</a></b> element, as an alternative
 way to specify its <b class="cmd">radius</b>.
 Effective if and only if the radius was not specified. I.e. if both
 diameter and radius are specified then the radius infomration has
@@ -962,7 +961,7 @@ The legal values are <b class="const">left</b>, <b class="const">right</b>, and 
 <dt><b class="cmd">radius</b> <i class="arg">length</i></dt>
 <dd></dd>
 <dt><b class="cmd">rad</b> <i class="arg">length</i></dt>
-<dd><p>Specifies the radius of the <b class="cmd"><a href="../../../../index.html#key75">circle</a></b> element.
+<dd><p>Specifies the radius of the <b class="cmd"><a href="../../../../index.html#key81">circle</a></b> element.
 If not specified the system falls back to the value taken from the
 language variable <b class="variable">circleradius</b>, which itself defaults to the
 pixel equivalent of <b class="const">1 cm</b>.</p></dd>
@@ -980,7 +979,7 @@ language variable <b class="variable">linestyle</b>, which itself defaults to
 The legal values are all those accepted by
 <a href="http://www.tcl.tk/man/tcl8.5/TkLib/GetDash.htm">Tk_GetDash</a>,
 and additionally all which are listed below:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="const">solid</b>, empty string</dt>
 <dd><p>Draw solid line.</p></dd>
 <dt><b class="const">dash</b>, <b class="const">dashed</b>, <b class="const">-</b></dt>
@@ -995,7 +994,7 @@ and additionally all which are listed below:</p>
 <p>Note that the values &quot;solid&quot;, &quot;dot(ted)&quot;, &quot;dash(ed)&quot;, &quot;dash-dot&quot;, and
 &quot;dash-dot-dot&quot; are all accepted as shorthands for the <b class="cmd">style</b>
 command using them as argument.</p></dd>
-<dt><b class="cmd"><a href="../../../../index.html#key7">text</a></b> <i class="arg">string</i></dt>
+<dt><b class="cmd"><a href="../../../../index.html#key21">text</a></b> <i class="arg">string</i></dt>
 <dd><p>Specifies the text to associate with the element.
 Defaults to nothing.
 When specified multiple times the actually shown text is the
@@ -1020,14 +1019,14 @@ Defaults to the current corner as maintained by the layouting system,
 except if the value for <b class="cmd">at</b> was specified by the user. In that
 case it defaults to <b class="const">center</b>.</p></dd>
 </dl></dd>
-<dt><a name="18"><b class="cmd"><a href="../../../../index.html#key76">diamond</a></b> <i class="arg">attr</i>...</a></dt>
+<dt><a name="18"><b class="cmd"><a href="../../../../index.html#key82">diamond</a></b> <i class="arg">attr</i>...</a></dt>
 <dd></dd>
 <dt><a name="19"><b class="cmd">&lt;&gt;</b> <i class="arg">attr</i>...</a></dt>
 <dd><p><img alt="figure-02-diamond" src="../../../../image/figure-02-diamond.png">
 A closed element with the corresponding corners, i.e. the eight
 directions of the compass rose, and &quot;center&quot;.
 It handles the attributes</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">anchor</b> <i class="arg">name</i></dt>
 <dd></dd>
 <dt><b class="cmd">ljust</b></dt>
@@ -1051,7 +1050,7 @@ The commands without arguments are all shorthands with the anchor
 implied. Note that they do not combine, only the last is used. For
 comined directions the main attribute command, <b class="cmd">anchor</b> has to be
 used.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">ljust</b></dt>
 <dd><p>&quot;anchor west&quot;</p></dd>
 <dt><b class="cmd">rjust</b></dt>
@@ -1063,7 +1062,7 @@ used.</p>
 </dl></dd>
 <dt><b class="cmd">aspect</b> <i class="arg">number</i></dt>
 <dd><p>Specifies the aspect ratio, i.e ratio of width to height, of the
-<b class="cmd"><a href="../../../../index.html#key76">diamond</a></b> element.
+<b class="cmd"><a href="../../../../index.html#key82">diamond</a></b> element.
 The manner in which a default is calculated when not specified also
 depends on the specifications of the attributes <b class="cmd">width</b> and
 <b class="cmd">height</b>, if any.</p>
@@ -1103,7 +1102,7 @@ If not specified the system falls back to the value taken from the
 language variable <b class="variable">fillcolor</b>, which itself defaults to the empty
 string, signaling &quot;no filling&quot;.</p></dd>
 <dt><b class="cmd">height</b> <i class="arg">length</i></dt>
-<dd><p>Specifies the height of the <b class="cmd"><a href="../../../../index.html#key76">diamond</a></b> element.
+<dd><p>Specifies the height of the <b class="cmd"><a href="../../../../index.html#key82">diamond</a></b> element.
 The manner in which a default is calculated when not specified also
 depends on the specifications of the attributes <b class="cmd">aspect</b> and
 <b class="cmd">width</b>, if any.</p>
@@ -1148,7 +1147,7 @@ language variable <b class="variable">linestyle</b>, which itself defaults to
 The legal values are all those accepted by
 <a href="http://www.tcl.tk/man/tcl8.5/TkLib/GetDash.htm">Tk_GetDash</a>,
 and additionally all which are listed below:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="const">solid</b>, empty string</dt>
 <dd><p>Draw solid line.</p></dd>
 <dt><b class="const">dash</b>, <b class="const">dashed</b>, <b class="const">-</b></dt>
@@ -1163,7 +1162,7 @@ and additionally all which are listed below:</p>
 <p>Note that the values &quot;solid&quot;, &quot;dot(ted)&quot;, &quot;dash(ed)&quot;, &quot;dash-dot&quot;, and
 &quot;dash-dot-dot&quot; are all accepted as shorthands for the <b class="cmd">style</b>
 command using them as argument.</p></dd>
-<dt><b class="cmd"><a href="../../../../index.html#key7">text</a></b> <i class="arg">string</i></dt>
+<dt><b class="cmd"><a href="../../../../index.html#key21">text</a></b> <i class="arg">string</i></dt>
 <dd><p>Specifies the text to associate with the element.
 Defaults to nothing.
 When specified multiple times the actually shown text is the
@@ -1182,7 +1181,7 @@ If not specified the system falls back to the value taken from the
 language variable <b class="variable">textfont</b>, which itself defaults to
 <b class="const">Helvetica 12pt</b>.</p></dd>
 <dt><b class="cmd">width</b> <i class="arg">length</i></dt>
-<dd><p>Specifies the width of the <b class="cmd"><a href="../../../../index.html#key76">diamond</a></b> element.
+<dd><p>Specifies the width of the <b class="cmd"><a href="../../../../index.html#key82">diamond</a></b> element.
 The manner in which a default is calculated when not specified also
 depends on the specifications of the attributes <b class="cmd">aspect</b> and
 <b class="cmd">height</b>, if any.</p>
@@ -1212,12 +1211,12 @@ Defaults to the current corner as maintained by the layouting system,
 except if the value for <b class="cmd">at</b> was specified by the user. In that
 case it defaults to <b class="const">center</b>.</p></dd>
 </dl></dd>
-<dt><a name="20"><b class="cmd"><a href="../../../../index.html#key61">drum</a></b> <i class="arg">attr</i>...</a></dt>
+<dt><a name="20"><b class="cmd"><a href="../../../../index.html#key66">drum</a></b> <i class="arg">attr</i>...</a></dt>
 <dd><p><img alt="figure-02-drum" src="../../../../image/figure-02-drum.png">
 A closed element with the corresponding corners, i.e. the eight
 directions of the compass rose, and &quot;center&quot;.
 It handles the attributes</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">anchor</b> <i class="arg">name</i></dt>
 <dd></dd>
 <dt><b class="cmd">ljust</b></dt>
@@ -1241,7 +1240,7 @@ The commands without arguments are all shorthands with the anchor
 implied. Note that they do not combine, only the last is used. For
 comined directions the main attribute command, <b class="cmd">anchor</b> has to be
 used.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">ljust</b></dt>
 <dd><p>&quot;anchor west&quot;</p></dd>
 <dt><b class="cmd">rjust</b></dt>
@@ -1253,7 +1252,7 @@ used.</p>
 </dl></dd>
 <dt><b class="cmd">aspect</b> <i class="arg">number</i></dt>
 <dd><p>Specifies the aspect ratio, i.e ratio of width to height, of the
-ellipses which are used to draw the top and bottom of the <b class="cmd"><a href="../../../../index.html#key61">drum</a></b>
+ellipses which are used to draw the top and bottom of the <b class="cmd"><a href="../../../../index.html#key66">drum</a></b>
 element.
 If not specified the system falls back to the value taken from the
 language variable <b class="variable">drumaspect</b>, which itself defaults to
@@ -1303,7 +1302,7 @@ language variable <b class="variable">linestyle</b>, which itself defaults to
 The legal values are all those accepted by
 <a href="http://www.tcl.tk/man/tcl8.5/TkLib/GetDash.htm">Tk_GetDash</a>,
 and additionally all which are listed below:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="const">solid</b>, empty string</dt>
 <dd><p>Draw solid line.</p></dd>
 <dt><b class="const">dash</b>, <b class="const">dashed</b>, <b class="const">-</b></dt>
@@ -1318,7 +1317,7 @@ and additionally all which are listed below:</p>
 <p>Note that the values &quot;solid&quot;, &quot;dot(ted)&quot;, &quot;dash(ed)&quot;, &quot;dash-dot&quot;, and
 &quot;dash-dot-dot&quot; are all accepted as shorthands for the <b class="cmd">style</b>
 command using them as argument.</p></dd>
-<dt><b class="cmd"><a href="../../../../index.html#key7">text</a></b> <i class="arg">string</i></dt>
+<dt><b class="cmd"><a href="../../../../index.html#key21">text</a></b> <i class="arg">string</i></dt>
 <dd><p>Specifies the text to associate with the element.
 Defaults to nothing.
 When specified multiple times the actually shown text is the
@@ -1350,12 +1349,12 @@ Defaults to the current corner as maintained by the layouting system,
 except if the value for <b class="cmd">at</b> was specified by the user. In that
 case it defaults to <b class="const">center</b>.</p></dd>
 </dl></dd>
-<dt><a name="21"><b class="cmd"><a href="../../../../index.html#key77">ellipse</a></b> <i class="arg">attr</i>...</a></dt>
+<dt><a name="21"><b class="cmd"><a href="../../../../index.html#key84">ellipse</a></b> <i class="arg">attr</i>...</a></dt>
 <dd><p><img alt="figure-02-ellipse" src="../../../../image/figure-02-ellipse.png">
 A closed element with the corresponding corners, i.e. the eight
 directions of the compass rose, and &quot;center&quot;.
 It handles the attributes</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">anchor</b> <i class="arg">name</i></dt>
 <dd></dd>
 <dt><b class="cmd">ljust</b></dt>
@@ -1379,7 +1378,7 @@ The commands without arguments are all shorthands with the anchor
 implied. Note that they do not combine, only the last is used. For
 comined directions the main attribute command, <b class="cmd">anchor</b> has to be
 used.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">ljust</b></dt>
 <dd><p>&quot;anchor west&quot;</p></dd>
 <dt><b class="cmd">rjust</b></dt>
@@ -1434,7 +1433,7 @@ language variable <b class="variable">linestyle</b>, which itself defaults to
 The legal values are all those accepted by
 <a href="http://www.tcl.tk/man/tcl8.5/TkLib/GetDash.htm">Tk_GetDash</a>,
 and additionally all which are listed below:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="const">solid</b>, empty string</dt>
 <dd><p>Draw solid line.</p></dd>
 <dt><b class="const">dash</b>, <b class="const">dashed</b>, <b class="const">-</b></dt>
@@ -1449,7 +1448,7 @@ and additionally all which are listed below:</p>
 <p>Note that the values &quot;solid&quot;, &quot;dot(ted)&quot;, &quot;dash(ed)&quot;, &quot;dash-dot&quot;, and
 &quot;dash-dot-dot&quot; are all accepted as shorthands for the <b class="cmd">style</b>
 command using them as argument.</p></dd>
-<dt><b class="cmd"><a href="../../../../index.html#key7">text</a></b> <i class="arg">string</i></dt>
+<dt><b class="cmd"><a href="../../../../index.html#key21">text</a></b> <i class="arg">string</i></dt>
 <dd><p>Specifies the text to associate with the element.
 Defaults to nothing.
 When specified multiple times the actually shown text is the
@@ -1481,14 +1480,14 @@ Defaults to the current corner as maintained by the layouting system,
 except if the value for <b class="cmd">at</b> was specified by the user. In that
 case it defaults to <b class="const">center</b>.</p></dd>
 </dl></dd>
-<dt><a name="22"><b class="cmd"><a href="../../../../index.html#key71">line</a></b> <i class="arg">attr</i>...</a></dt>
+<dt><a name="22"><b class="cmd"><a href="../../../../index.html#key77">line</a></b> <i class="arg">attr</i>...</a></dt>
 <dd></dd>
 <dt><a name="23"><b class="cmd">--</b> <i class="arg">attr</i>...</a></dt>
 <dd><p><img alt="figure-02-line" src="../../../../image/figure-02-line.png">
 An open element with the corresponding corners, i.e. &quot;start&quot;, &quot;end&quot;,
 and &quot;center&quot;.
 It handles the attributes</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">anchor</b> <i class="arg">name</i></dt>
 <dd></dd>
 <dt><b class="cmd">ljust</b></dt>
@@ -1512,7 +1511,7 @@ The commands without arguments are all shorthands with the anchor
 implied. Note that they do not combine, only the last is used. For
 comined directions the main attribute command, <b class="cmd">anchor</b> has to be
 used.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">ljust</b></dt>
 <dd><p>&quot;anchor west&quot;</p></dd>
 <dt><b class="cmd">rjust</b></dt>
@@ -1524,13 +1523,13 @@ used.</p>
 </dl></dd>
 <dt><b class="cmd">arrowhead</b> <i class="arg">spec</i></dt>
 <dd><p><img alt="figure-19-style-arrowheads" src="../../../../image/figure-19-style-arrowheads.png">
-Specifies where to draw arrowheads on the <b class="cmd"><a href="../../../../index.html#key71">line</a></b> element, at the
+Specifies where to draw arrowheads on the <b class="cmd"><a href="../../../../index.html#key77">line</a></b> element, at the
 beginning or end, at both ends, or none.
 If not specified the system falls back to the value taken from the
 language variable <b class="variable">arrowhead</b>, which itself defaults to
 <b class="const">none</b>.
 The legal values are</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="const">none</b>, <b class="const">-</b></dt>
 <dd><p>Draw no arrowheads, at neither end of the line.</p></dd>
 <dt><b class="const">start</b>, <b class="const">first</b>, <b class="const">&lt;-</b></dt>
@@ -1544,14 +1543,14 @@ The legal values are</p>
 all accepted as shorthands for the <b class="cmd">arrowhead</b> command using them
 as argument.</p></dd>
 <dt><b class="cmd">at</b> <i class="arg">location</i></dt>
-<dd><p><b class="cmd"><a href="../../../../index.html#key71">Line</a></b> elements are normally positioned absolutely, using the
+<dd><p><b class="cmd"><a href="../../../../index.html#key77">Line</a></b> elements are normally positioned absolutely, using the
 locations specified through the attributes <b class="cmd">from</b>, <b class="cmd">then</b>, and
 <b class="cmd">to</b>.
 If <b class="cmd">at</b> is specified however then these positions are translated a
 last time, moving the line's corner named by the attribute <b class="cmd">with</b>
 to the location given by this attribute.</p></dd>
 <dt><b class="cmd">chop</b> <span class="opt">?<i class="arg">length</i>?</span></dt>
-<dd><p>Specifies the length of the <b class="cmd"><a href="../../../../index.html#key71">line</a></b> element to remove from the
+<dd><p>Specifies the length of the <b class="cmd"><a href="../../../../index.html#key77">line</a></b> element to remove from the
 beginning and/or end.
 Defaults to nothing.
 If specified once the chopping applies to both beginning and end of
@@ -1574,7 +1573,7 @@ If not specified the system falls back to the value taken from the
 language variable <b class="variable">fillcolor</b>, which itself defaults to the empty
 string, signaling &quot;no filling&quot;.</p></dd>
 <dt><b class="cmd">from</b> <i class="arg">location</i></dt>
-<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key71">line</a></b> element begins.
+<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key77">line</a></b> element begins.
 Defaults to the current location as maintained by the layouting
 system.</p></dd>
 <dt><b class="cmd">justify</b> <b class="const">left</b>|<b class="const">center</b>|<b class="const">right</b></dt>
@@ -1586,12 +1585,12 @@ language variable <b class="variable">justify</b>, which itself defaults to
 <b class="const">left</b>.
 The legal values are <b class="const">left</b>, <b class="const">right</b>, and <b class="const">center</b>.</p></dd>
 <dt><b class="cmd">noturn</b></dt>
-<dd><p>Specifies that the direction of <b class="cmd"><a href="../../../../index.html#key71">line</a></b> element at its end is not
+<dd><p>Specifies that the direction of <b class="cmd"><a href="../../../../index.html#key77">line</a></b> element at its end is not
 propagated to the layout management.
 If not specified the direction of the line becomes the new direction
 the layout.</p></dd>
 <dt><b class="cmd">smooth</b></dt>
-<dd><p>Specifies the use of bezier splines for the <b class="cmd"><a href="../../../../index.html#key71">line</a></b> element.
+<dd><p>Specifies the use of bezier splines for the <b class="cmd"><a href="../../../../index.html#key77">line</a></b> element.
 If not specified lines are drawn exactly through the specified
 waypoints, without any smooth curves.</p></dd>
 <dt><b class="cmd">stroke</b> <i class="arg">width</i></dt>
@@ -1608,7 +1607,7 @@ language variable <b class="variable">linestyle</b>, which itself defaults to
 The legal values are all those accepted by
 <a href="http://www.tcl.tk/man/tcl8.5/TkLib/GetDash.htm">Tk_GetDash</a>,
 and additionally all which are listed below:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="const">solid</b>, empty string</dt>
 <dd><p>Draw solid line.</p></dd>
 <dt><b class="const">dash</b>, <b class="const">dashed</b>, <b class="const">-</b></dt>
@@ -1623,7 +1622,7 @@ and additionally all which are listed below:</p>
 <p>Note that the values &quot;solid&quot;, &quot;dot(ted)&quot;, &quot;dash(ed)&quot;, &quot;dash-dot&quot;, and
 &quot;dash-dot-dot&quot; are all accepted as shorthands for the <b class="cmd">style</b>
 command using them as argument.</p></dd>
-<dt><b class="cmd"><a href="../../../../index.html#key7">text</a></b> <i class="arg">string</i></dt>
+<dt><b class="cmd"><a href="../../../../index.html#key21">text</a></b> <i class="arg">string</i></dt>
 <dd><p>Specifies the text to associate with the element.
 Defaults to nothing.
 When specified multiple times the actually shown text is the
@@ -1646,7 +1645,7 @@ language variable <b class="variable">textfont</b>, which itself defaults to
 <dt><b class="cmd">then</b> (&lt;direction&gt; <span class="opt">?<i class="arg">length</i>?</span>)...</dt>
 <dd></dd>
 <dt>(&lt;direction&gt; <span class="opt">?<i class="arg">length</i>?</span>)...</dt>
-<dd><p>This attribute specifies an intermediate location the <b class="cmd"><a href="../../../../index.html#key71">line</a></b>
+<dd><p>This attribute specifies an intermediate location the <b class="cmd"><a href="../../../../index.html#key77">line</a></b>
 element has to go through.
 It can be specified multiple times, with each use adding one
 additional location to the series which the line will go
@@ -1672,12 +1671,12 @@ system falls back to a point <b class="variable">movelength</b> pixels away from
 starting location, in the current direction as maintained by the
 layouting system</p></dd>
 <dt><b class="cmd">to</b> <i class="arg">location</i></dt>
-<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key71">line</a></b> element ends.
+<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key77">line</a></b> element ends.
 This attribute has no default. The default is handled by the attribute
 <b class="cmd">then</b>, which makes it appear as if <b class="cmd">to</b> has a default when
 not specified.</p></dd>
 <dt><b class="cmd">with</b> <i class="arg">corner</i></dt>
-<dd><p><b class="cmd"><a href="../../../../index.html#key71">Line</a></b> elements are normally positioned absolutely, using the
+<dd><p><b class="cmd"><a href="../../../../index.html#key77">Line</a></b> elements are normally positioned absolutely, using the
 locations specified through the attributes <b class="cmd">from</b>, <b class="cmd">then</b>, and
 <b class="cmd">to</b>.
 If <b class="cmd">at</b> is specified however then these positions are translated a
@@ -1686,25 +1685,25 @@ to the location given by this attribute.
 This means that <i class="arg">with</i> is effective if and only if the attribute
 <b class="cmd">at</b> was specified as well for the line.</p></dd>
 </dl></dd>
-<dt><a name="24"><b class="cmd"><a href="../../../../index.html#key78">move</a></b> <i class="arg">attr</i></a></dt>
+<dt><a name="24"><b class="cmd"><a href="../../../../index.html#key85">move</a></b> <i class="arg">attr</i></a></dt>
 <dd><p>An open element with the corresponding corners, i.e. &quot;start&quot;, &quot;end&quot;,
 and &quot;center&quot;.
-A <b class="cmd"><a href="../../../../index.html#key78">move</a></b> element is in essence an invisible <b class="cmd"><a href="../../../../index.html#key71">line</a></b>.
+A <b class="cmd"><a href="../../../../index.html#key85">move</a></b> element is in essence an invisible <b class="cmd"><a href="../../../../index.html#key77">line</a></b>.
 While the main effect we are interested in is the change it makes to
 the layout system, it is an actual element, i.e. it has the same
 corners as an ordinary line, and shows up in the history as well,
 allowing future references to all the places it touched.
-It handles the same attibutes as <b class="cmd"><a href="../../../../index.html#key71">line</a></b> elements.</p></dd>
-<dt><a name="25"><b class="cmd"><a href="../../../../index.html#key64">spline</a></b> <i class="arg">attr</i>...</a></dt>
+It handles the same attibutes as <b class="cmd"><a href="../../../../index.html#key77">line</a></b> elements.</p></dd>
+<dt><a name="25"><b class="cmd"><a href="../../../../index.html#key70">spline</a></b> <i class="arg">attr</i>...</a></dt>
 <dd><p><img alt="figure-02-spline" src="../../../../image/figure-02-spline.png">
-An alias for the <b class="cmd"><a href="../../../../index.html#key71">line</a></b> element (see above), with the attribute
+An alias for the <b class="cmd"><a href="../../../../index.html#key77">line</a></b> element (see above), with the attribute
 <b class="cmd">smooth</b> preset.</p></dd>
-<dt><a name="26"><b class="cmd"><a href="../../../../index.html#key7">text</a></b> <i class="arg">attr</i>...</a></dt>
+<dt><a name="26"><b class="cmd"><a href="../../../../index.html#key21">text</a></b> <i class="arg">attr</i>...</a></dt>
 <dd><p><img alt="figure-02-text" src="../../../../image/figure-02-text.png">
 A closed element with the corresponding corners, i.e. the eight
 directions of the compass rose, and &quot;center&quot;.
 It handles the attributes</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">anchor</b> <i class="arg">name</i></dt>
 <dd></dd>
 <dt><b class="cmd">ljust</b></dt>
@@ -1728,7 +1727,7 @@ The commands without arguments are all shorthands with the anchor
 implied. Note that they do not combine, only the last is used. For
 comined directions the main attribute command, <b class="cmd">anchor</b> has to be
 used.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">ljust</b></dt>
 <dd><p>&quot;anchor west&quot;</p></dd>
 <dt><b class="cmd">rjust</b></dt>
@@ -1744,7 +1743,7 @@ used.</p>
 Defaults to the current location as maintained by the layouting
 system.</p></dd>
 <dt><b class="cmd">height</b> <i class="arg">length</i></dt>
-<dd><p>Specifies the height of the <b class="cmd"><a href="../../../../index.html#key7">text</a></b> element.
+<dd><p>Specifies the height of the <b class="cmd"><a href="../../../../index.html#key21">text</a></b> element.
 Defaults to the natural height of its text.</p></dd>
 <dt><b class="cmd">justify</b> <b class="const">left</b>|<b class="const">center</b>|<b class="const">right</b></dt>
 <dd><p>Specifies how multi-line text associated with the element is
@@ -1754,7 +1753,7 @@ If not specified the system falls back to the value taken from the
 language variable <b class="variable">justify</b>, which itself defaults to
 <b class="const">left</b>.
 The legal values are <b class="const">left</b>, <b class="const">right</b>, and <b class="const">center</b>.</p></dd>
-<dt><b class="cmd"><a href="../../../../index.html#key7">text</a></b> <i class="arg">string</i></dt>
+<dt><b class="cmd"><a href="../../../../index.html#key21">text</a></b> <i class="arg">string</i></dt>
 <dd><p>Specifies the text to associate with the element.
 Defaults to nothing.
 When specified multiple times the actually shown text is the
@@ -1773,7 +1772,7 @@ If not specified the system falls back to the value taken from the
 language variable <b class="variable">textfont</b>, which itself defaults to
 <b class="const">Helvetica 12pt</b>.</p></dd>
 <dt><b class="cmd">width</b> <i class="arg">length</i></dt>
-<dd><p>Specifies the width of the <b class="cmd"><a href="../../../../index.html#key7">text</a></b> element.
+<dd><p>Specifies the width of the <b class="cmd"><a href="../../../../index.html#key21">text</a></b> element.
 Defaults to the natural width of its text.</p></dd>
 <dt><b class="cmd">with</b> <i class="arg">corner</i></dt>
 <dd><p>Specifies the corner of the element to place at the location given by
@@ -1784,7 +1783,7 @@ case it defaults to <b class="const">center</b>.</p></dd>
 </dl></dd>
 </dl>
 </div>
-<div id="subsection4" class="subsection"><h3><a name="subsection4">Attributes</a></h3>
+<div id="subsection4" class="doctools_subsection"><h3><a name="subsection4">Attributes</a></h3>
 <p>The set of all attributes supported by all the element commands is
 shown below.
 While we speak of them as commands, and provide a syntax, they are not
@@ -1796,8 +1795,8 @@ an element the actual definition used is chosen based on the type of
 the element the processing is for.</p>
 <p>Further, as a catch-all clause, any attribute which could not be
 processed according to the definitions below will be treated as the
-argument of an implicit <b class="cmd"><a href="../../../../index.html#key7">text</a></b> attribute.</p>
-<dl class="definitions">
+argument of an implicit <b class="cmd"><a href="../../../../index.html#key21">text</a></b> attribute.</p>
+<dl class="doctools_definitions">
 <dt><b class="cmd">anchor</b> <i class="arg">name</i></dt>
 <dd></dd>
 <dt><b class="cmd">ljust</b></dt>
@@ -1821,7 +1820,7 @@ The commands without arguments are all shorthands with the anchor
 implied. Note that they do not combine, only the last is used. For
 comined directions the main attribute command, <b class="cmd">anchor</b> has to be
 used.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="cmd">ljust</b></dt>
 <dd><p>&quot;anchor west&quot;</p></dd>
 <dt><b class="cmd">rjust</b></dt>
@@ -1833,13 +1832,13 @@ used.</p>
 </dl></dd>
 <dt><b class="cmd">arrowhead</b> <i class="arg">spec</i></dt>
 <dd><p><img alt="figure-19-style-arrowheads" src="../../../../image/figure-19-style-arrowheads.png">
-Specifies where to draw arrowheads on the <b class="cmd"><a href="../../../../index.html#key71">line</a></b> element, at the
+Specifies where to draw arrowheads on the <b class="cmd"><a href="../../../../index.html#key77">line</a></b> element, at the
 beginning or end, at both ends, or none.
 If not specified the system falls back to the value taken from the
 language variable <b class="variable">arrowhead</b>, which itself defaults to
 <b class="const">none</b>.
 The legal values are</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="const">none</b>, <b class="const">-</b></dt>
 <dd><p>Draw no arrowheads, at neither end of the line.</p></dd>
 <dt><b class="const">start</b>, <b class="const">first</b>, <b class="const">&lt;-</b></dt>
@@ -1854,7 +1853,7 @@ all accepted as shorthands for the <b class="cmd">arrowhead</b> command using th
 as argument.</p></dd>
 <dt><b class="cmd">aspect</b> <i class="arg">number</i></dt>
 <dd><p>Specifies the aspect ratio, i.e ratio of width to height, of the
-<b class="cmd"><a href="../../../../index.html#key76">diamond</a></b> element.
+<b class="cmd"><a href="../../../../index.html#key82">diamond</a></b> element.
 The manner in which a default is calculated when not specified also
 depends on the specifications of the attributes <b class="cmd">width</b> and
 <b class="cmd">height</b>, if any.</p>
@@ -1879,7 +1878,7 @@ the user-specified value or the default taken as described in the
 previous paragraph.</p></dd>
 <dt><b class="cmd">aspect</b> <i class="arg">number</i></dt>
 <dd><p>Specifies the aspect ratio, i.e ratio of width to height, of the
-ellipses which are used to draw the top and bottom of the <b class="cmd"><a href="../../../../index.html#key61">drum</a></b>
+ellipses which are used to draw the top and bottom of the <b class="cmd"><a href="../../../../index.html#key66">drum</a></b>
 element.
 If not specified the system falls back to the value taken from the
 language variable <b class="variable">drumaspect</b>, which itself defaults to
@@ -1890,14 +1889,14 @@ language variable <b class="variable">drumaspect</b>, which itself defaults to
 Defaults to the current location as maintained by the layouting
 system.</p></dd>
 <dt><b class="cmd">at</b> <i class="arg">location</i></dt>
-<dd><p><b class="cmd"><a href="../../../../index.html#key71">Line</a></b> elements are normally positioned absolutely, using the
+<dd><p><b class="cmd"><a href="../../../../index.html#key77">Line</a></b> elements are normally positioned absolutely, using the
 locations specified through the attributes <b class="cmd">from</b>, <b class="cmd">then</b>, and
 <b class="cmd">to</b>.
 If <b class="cmd">at</b> is specified however then these positions are translated a
 last time, moving the line's corner named by the attribute <b class="cmd">with</b>
 to the location given by this attribute.</p></dd>
 <dt><b class="cmd">chop</b> <span class="opt">?<i class="arg">length</i>?</span></dt>
-<dd><p>Specifies the length of the <b class="cmd"><a href="../../../../index.html#key71">line</a></b> element to remove from the
+<dd><p>Specifies the length of the <b class="cmd"><a href="../../../../index.html#key77">line</a></b> element to remove from the
 beginning and/or end.
 Defaults to nothing.
 If specified once the chopping applies to both beginning and end of
@@ -1911,7 +1910,7 @@ system falls back to the value taken from the language variable
 <dt><b class="cmd">clockwise</b></dt>
 <dd></dd>
 <dt><b class="cmd">cw</b></dt>
-<dd><p>Specifies the direction of the <b class="cmd"><a href="../../../../index.html#key70">arc</a></b> element, here going
+<dd><p>Specifies the direction of the <b class="cmd"><a href="../../../../index.html#key76">arc</a></b> element, here going
 clockwise.
 The complementary attribute is <b class="cmd">counterclockwise</b>.
 If not specified the system falls back to the value taken from the
@@ -1925,7 +1924,7 @@ language variable <b class="variable">linecolor</b>, which itself defaults to <b
 <dt><b class="cmd">counterclockwise</b></dt>
 <dd></dd>
 <dt><b class="cmd">ccw</b></dt>
-<dd><p>Specifies the direction of the <b class="cmd"><a href="../../../../index.html#key70">arc</a></b> element, here
+<dd><p>Specifies the direction of the <b class="cmd"><a href="../../../../index.html#key76">arc</a></b> element, here
 counter-clockwise.
 The complementary attribute is <b class="cmd">clockwise</b>.
 If not specified the system falls back to the value taken from the
@@ -1934,7 +1933,7 @@ language variable <b class="variable">clockwise</b>, which itself defaults to
 <dt><b class="cmd">diameter</b> <i class="arg">length</i></dt>
 <dd></dd>
 <dt><b class="cmd">diam</b> <i class="arg">length</i></dt>
-<dd><p>Specifies the diameter of the <b class="cmd"><a href="../../../../index.html#key75">circle</a></b> element, as an alternative
+<dd><p>Specifies the diameter of the <b class="cmd"><a href="../../../../index.html#key81">circle</a></b> element, as an alternative
 way to specify its <b class="cmd">radius</b>.
 Effective if and only if the radius was not specified. I.e. if both
 diameter and radius are specified then the radius infomration has
@@ -1948,11 +1947,11 @@ If not specified the system falls back to the value taken from the
 language variable <b class="variable">fillcolor</b>, which itself defaults to the empty
 string, signaling &quot;no filling&quot;.</p></dd>
 <dt><b class="cmd">from</b> <i class="arg">location</i></dt>
-<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key71">line</a></b> element begins.
+<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key77">line</a></b> element begins.
 Defaults to the current location as maintained by the layouting
 system.</p></dd>
 <dt><b class="cmd">from</b> <i class="arg">location</i></dt>
-<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key70">arc</a></b> element begins.
+<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key76">arc</a></b> element begins.
 Defaults to the current location as maintained by the layouting
 system.</p></dd>
 <dt><b class="cmd">height</b> <i class="arg">length</i></dt>
@@ -1963,7 +1962,7 @@ If not specified the system falls back to the value taken from the
 language variable <b class="variable">boxheight</b>, which itself defaults to the
 pixel equivalent of <b class="const">2 cm</b>.</p></dd>
 <dt><b class="cmd">height</b> <i class="arg">length</i></dt>
-<dd><p>Specifies the height of the <b class="cmd"><a href="../../../../index.html#key76">diamond</a></b> element.
+<dd><p>Specifies the height of the <b class="cmd"><a href="../../../../index.html#key82">diamond</a></b> element.
 The manner in which a default is calculated when not specified also
 depends on the specifications of the attributes <b class="cmd">aspect</b> and
 <b class="cmd">width</b>, if any.</p>
@@ -1987,7 +1986,7 @@ the pixel equivalent of <b class="const">2 cm</b>. For the aspect it uses either
 the user-specified value or the default taken as described in the
 previous paragraph.</p></dd>
 <dt><b class="cmd">height</b> <i class="arg">length</i></dt>
-<dd><p>Specifies the height of the <b class="cmd"><a href="../../../../index.html#key7">text</a></b> element.
+<dd><p>Specifies the height of the <b class="cmd"><a href="../../../../index.html#key21">text</a></b> element.
 Defaults to the natural height of its text.</p></dd>
 <dt><b class="cmd">justify</b> <b class="const">left</b>|<b class="const">center</b>|<b class="const">right</b></dt>
 <dd><p>Specifies how multi-line text associated with the element is
@@ -1998,25 +1997,25 @@ language variable <b class="variable">justify</b>, which itself defaults to
 <b class="const">left</b>.
 The legal values are <b class="const">left</b>, <b class="const">right</b>, and <b class="const">center</b>.</p></dd>
 <dt><b class="cmd">noturn</b></dt>
-<dd><p>Specifies that the direction of <b class="cmd"><a href="../../../../index.html#key71">line</a></b> element at its end is not
+<dd><p>Specifies that the direction of <b class="cmd"><a href="../../../../index.html#key77">line</a></b> element at its end is not
 propagated to the layout management.
 If not specified the direction of the line becomes the new direction
 the layout.</p></dd>
 <dt><b class="cmd">radius</b> <i class="arg">length</i></dt>
 <dd></dd>
 <dt><b class="cmd">rad</b> <i class="arg">length</i></dt>
-<dd><p>Specifies the radius of the <b class="cmd"><a href="../../../../index.html#key75">circle</a></b> element.
+<dd><p>Specifies the radius of the <b class="cmd"><a href="../../../../index.html#key81">circle</a></b> element.
 If not specified the system falls back to the value taken from the
 language variable <b class="variable">circleradius</b>, which itself defaults to the
 pixel equivalent of <b class="const">1 cm</b>.</p></dd>
 <dt><b class="cmd">radius</b> <i class="arg">length</i></dt>
-<dd><p>Specifies the radius of the <b class="cmd"><a href="../../../../index.html#key70">arc</a></b> element, or rather, the radius
+<dd><p>Specifies the radius of the <b class="cmd"><a href="../../../../index.html#key76">arc</a></b> element, or rather, the radius
 of the circle the shown arc is a part of.
 If not specified the system falls back to the value taken from the
 language variable <b class="variable">arcradius</b>, which itself defaults to the pixel
 equivalent of <b class="const">1 cm</b>.</p></dd>
 <dt><b class="cmd">slant</b> <i class="arg">angle</i></dt>
-<dd><p>Specifies the angle by which the <b class="cmd"><a href="../../../../index.html#key62">box</a></b> element is slanted, in
+<dd><p>Specifies the angle by which the <b class="cmd"><a href="../../../../index.html#key67">box</a></b> element is slanted, in
 degrees.
 If not specified the system falls back to the value taken from the
 language variable <b class="variable">slant</b>, which itself defaults to <b class="const">90</b>,
@@ -2024,7 +2023,7 @@ i.e. vertical, no slant.
 0 degrees is slanting straight east, pointing to the right.
 90 degrees is slanting to the north, pointing straight up.</p></dd>
 <dt><b class="cmd">smooth</b></dt>
-<dd><p>Specifies the use of bezier splines for the <b class="cmd"><a href="../../../../index.html#key71">line</a></b> element.
+<dd><p>Specifies the use of bezier splines for the <b class="cmd"><a href="../../../../index.html#key77">line</a></b> element.
 If not specified lines are drawn exactly through the specified
 waypoints, without any smooth curves.</p></dd>
 <dt><b class="cmd">stroke</b> <i class="arg">width</i></dt>
@@ -2041,7 +2040,7 @@ language variable <b class="variable">linestyle</b>, which itself defaults to
 The legal values are all those accepted by
 <a href="http://www.tcl.tk/man/tcl8.5/TkLib/GetDash.htm">Tk_GetDash</a>,
 and additionally all which are listed below:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="const">solid</b>, empty string</dt>
 <dd><p>Draw solid line.</p></dd>
 <dt><b class="const">dash</b>, <b class="const">dashed</b>, <b class="const">-</b></dt>
@@ -2056,7 +2055,7 @@ and additionally all which are listed below:</p>
 <p>Note that the values &quot;solid&quot;, &quot;dot(ted)&quot;, &quot;dash(ed)&quot;, &quot;dash-dot&quot;, and
 &quot;dash-dot-dot&quot; are all accepted as shorthands for the <b class="cmd">style</b>
 command using them as argument.</p></dd>
-<dt><b class="cmd"><a href="../../../../index.html#key7">text</a></b> <i class="arg">string</i></dt>
+<dt><b class="cmd"><a href="../../../../index.html#key21">text</a></b> <i class="arg">string</i></dt>
 <dd><p>Specifies the text to associate with the element.
 Defaults to nothing.
 When specified multiple times the actually shown text is the
@@ -2079,7 +2078,7 @@ language variable <b class="variable">textfont</b>, which itself defaults to
 <dt><b class="cmd">then</b> (&lt;direction&gt; <span class="opt">?<i class="arg">length</i>?</span>)...</dt>
 <dd></dd>
 <dt>(&lt;direction&gt; <span class="opt">?<i class="arg">length</i>?</span>)...</dt>
-<dd><p>This attribute specifies an intermediate location the <b class="cmd"><a href="../../../../index.html#key71">line</a></b>
+<dd><p>This attribute specifies an intermediate location the <b class="cmd"><a href="../../../../index.html#key77">line</a></b>
 element has to go through.
 It can be specified multiple times, with each use adding one
 additional location to the series which the line will go
@@ -2105,12 +2104,12 @@ system falls back to a point <b class="variable">movelength</b> pixels away from
 starting location, in the current direction as maintained by the
 layouting system</p></dd>
 <dt><b class="cmd">to</b> <i class="arg">location</i></dt>
-<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key71">line</a></b> element ends.
+<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key77">line</a></b> element ends.
 This attribute has no default. The default is handled by the attribute
 <b class="cmd">then</b>, which makes it appear as if <b class="cmd">to</b> has a default when
 not specified.</p></dd>
 <dt><b class="cmd">to</b> <i class="arg">location</i></dt>
-<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key70">arc</a></b> element ends.
+<dd><p>Specifies the location where the <b class="cmd"><a href="../../../../index.html#key76">arc</a></b> element ends.
 Defaults to a location such that a 90-degree arc is drawn in the
 chosen direction, starting at <b class="cmd">from</b>.</p></dd>
 <dt><b class="cmd">width</b> <i class="arg">length</i></dt>
@@ -2121,7 +2120,7 @@ If not specified the system falls back to the value taken from the
 language variable <b class="variable">boxwidth</b>, which itself defaults to the pixel
 equivalent of <b class="const">2 cm</b>.</p></dd>
 <dt><b class="cmd">width</b> <i class="arg">length</i></dt>
-<dd><p>Specifies the width of the <b class="cmd"><a href="../../../../index.html#key76">diamond</a></b> element.
+<dd><p>Specifies the width of the <b class="cmd"><a href="../../../../index.html#key82">diamond</a></b> element.
 The manner in which a default is calculated when not specified also
 depends on the specifications of the attributes <b class="cmd">aspect</b> and
 <b class="cmd">height</b>, if any.</p>
@@ -2145,7 +2144,7 @@ the pixel equivalent of <b class="const">2 cm</b>. For the aspect it uses either
 the user-specified value or the default taken as described in the
 previous paragraph.</p></dd>
 <dt><b class="cmd">width</b> <i class="arg">length</i></dt>
-<dd><p>Specifies the width of the <b class="cmd"><a href="../../../../index.html#key7">text</a></b> element.
+<dd><p>Specifies the width of the <b class="cmd"><a href="../../../../index.html#key21">text</a></b> element.
 Defaults to the natural width of its text.</p></dd>
 <dt><b class="cmd">with</b> <i class="arg">corner</i></dt>
 <dd><p>Specifies the corner of the element to place at the location given by
@@ -2154,7 +2153,7 @@ Defaults to the current corner as maintained by the layouting system,
 except if the value for <b class="cmd">at</b> was specified by the user. In that
 case it defaults to <b class="const">center</b>.</p></dd>
 <dt><b class="cmd">with</b> <i class="arg">corner</i></dt>
-<dd><p><b class="cmd"><a href="../../../../index.html#key71">Line</a></b> elements are normally positioned absolutely, using the
+<dd><p><b class="cmd"><a href="../../../../index.html#key77">Line</a></b> elements are normally positioned absolutely, using the
 locations specified through the attributes <b class="cmd">from</b>, <b class="cmd">then</b>, and
 <b class="cmd">to</b>.
 If <b class="cmd">at</b> is specified however then these positions are translated a
@@ -2164,9 +2163,9 @@ This means that <i class="arg">with</i> is effective if and only if the attribut
 <b class="cmd">at</b> was specified as well for the line.</p></dd>
 </dl>
 </div>
-<div id="subsection5" class="subsection"><h3><a name="subsection5">Corners</a></h3>
+<div id="subsection5" class="doctools_subsection"><h3><a name="subsection5">Corners</a></h3>
 <p>Corners are named values for in elements, usually locations.</p>
-<ul class="itemized">
+<ul class="doctools_itemized">
 <li><p>The <i class="term">closed</i> elements define corners for the compass rose,
 including the &quot;center&quot;, and their &quot;width&quot; and &quot;height&quot;.</p>
 <p><img alt="figure-27-corners-closed" src="../../../../image/figure-27-corners-closed.png"></p></li>
@@ -2176,20 +2175,20 @@ during their definition as corners.</p></li>
 &quot;center&quot;. The first two map to the locations originally provided
 through the attributes <b class="cmd">from</b> and <b class="cmd">to</b> of the element.</p>
 <p><img alt="figure-28-corners-open" src="../../../../image/figure-28-corners-open.png"></p></li>
-<li><p>The center of <b class="cmd"><a href="../../../../index.html#key71">line</a></b> and <b class="cmd"><a href="../../../../index.html#key78">move</a></b> elements is the location
+<li><p>The center of <b class="cmd"><a href="../../../../index.html#key77">line</a></b> and <b class="cmd"><a href="../../../../index.html#key85">move</a></b> elements is the location
 halfway between &quot;start&quot; and &quot;end&quot; corners, this is regardless of any
 intermediate locations the element may have.</p></li>
-<li><p>The <b class="cmd"><a href="../../../../index.html#key71">line</a></b> and <b class="cmd"><a href="../../../../index.html#key78">move</a></b> elements additionally name all their
+<li><p>The <b class="cmd"><a href="../../../../index.html#key77">line</a></b> and <b class="cmd"><a href="../../../../index.html#key85">move</a></b> elements additionally name all their
 locations as corners using numbers as names, starting from <b class="const">1</b>
 (equivalent to &quot;start&quot;), in order of traversal.</p>
 <p><img alt="figure-15-spline-1" src="../../../../image/figure-15-spline-1.png"></p></li>
-<li><p>The center of <b class="cmd"><a href="../../../../index.html#key70">arc</a></b> elements is the center of the circle the arc
+<li><p>The center of <b class="cmd"><a href="../../../../index.html#key76">arc</a></b> elements is the center of the circle the arc
 is part off.</p></li>
-<li><p>The <b class="cmd"><a href="../../../../index.html#key70">arc</a></b> elements additionally define the compass rose of
+<li><p>The <b class="cmd"><a href="../../../../index.html#key76">arc</a></b> elements additionally define the compass rose of
 closed elements as well.</p></li>
 </ul>
 </div>
-<div id="subsection6" class="subsection"><h3><a name="subsection6">Named directions</a></h3>
+<div id="subsection6" class="doctools_subsection"><h3><a name="subsection6">Named directions</a></h3>
 <p>The named directions are commands which tell the layout system in
 which direction to go when placing the next element without an
 explicit position specification.
@@ -2204,7 +2203,7 @@ is used by the layout system, when are going in direction X the name
 of the opposite direction is the name of the corner at which the new
 element will be attached to the current position, and if this corner
 does not exist the nearest actual corner by angle is used.</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><a name="27"><b class="cmd">west</b></a></dt>
 <dd></dd>
 <dt><a name="28"><b class="cmd">w</b></a></dt>
@@ -2285,8 +2284,8 @@ does not exist the nearest actual corner by angle is used.</p>
 <dd></dd>
 </dl>
 </div>
-<div id="subsection7" class="subsection"><h3><a name="subsection7">Miscellaneous Commands</a></h3>
-<dl class="definitions">
+<div id="subsection7" class="doctools_subsection"><h3><a name="subsection7">Miscellaneous Commands</a></h3>
+<dl class="doctools_definitions">
 <dt><a name="66"><i class="arg">number</i> <b class="const">cm</b></a></dt>
 <dd></dd>
 <dt><a name="67"><i class="arg">number</i> <b class="const">mm</b></a></dt>
@@ -2312,13 +2311,13 @@ degress, or registered direction name) and returns the <i class="term">relative<
 point for it, i.e. the <i class="term">delta</i> or <i class="term">translation</i> it
 represents.</p>
 <p>Note also the (dis)similarities to the directional specifications for
-the attribute <b class="cmd">then</b> of <b class="cmd"><a href="../../../../index.html#key71">line</a></b> and <b class="cmd"><a href="../../../../index.html#key78">move</a></b> elements.
+the attribute <b class="cmd">then</b> of <b class="cmd"><a href="../../../../index.html#key77">line</a></b> and <b class="cmd"><a href="../../../../index.html#key85">move</a></b> elements.
 Where we say here</p>
-<pre class="example">by 50 east</pre>
+<pre class="doctools_example">by 50 east</pre>
 <p>for the attribute we say</p>
-<pre class="example">... then east 50 ...</pre>
+<pre class="doctools_example">... then east 50 ...</pre>
 <p>or just</p>
-<pre class="example">... then east ...</pre>
+<pre class="doctools_example">... then east ...</pre>
 </dd>
 <dt><a name="72"><i class="arg">point1</i> <b class="cmd">+</b> <i class="arg">point2</i></a></dt>
 <dd><p><img alt="figure-48-point-vectoradd" src="../../../../image/figure-48-point-vectoradd.png"></p>
@@ -2337,7 +2336,7 @@ The result is a <i class="term">relative</i> point if and only if both points ar
 <i class="term">relative</i>.</p></dd>
 <dt><a name="74"><i class="arg">point</i> <b class="cmd">by</b> <i class="arg">distance</i> <i class="arg">direction</i></a></dt>
 <dd><p>This command is a more convenient, or at least shorter, form of</p>
-<pre class="example">
+<pre class="doctools_example">
     [$point + [by $distance $direction]]
 </pre>
 </dd>
@@ -2352,7 +2351,7 @@ y-coordinate of <i class="arg">point2</i>.</p></dd>
 way between <i class="arg">point1</i> and <i class="arg">point2</i>, and returns it as its
 result.
 This means that for</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><i class="arg">n</i> == 0</dt>
 <dd><p>The result is <i class="arg">point1</i>.</p></dd>
 <dt><i class="arg">n</i> == 1</dt>
@@ -2380,20 +2379,20 @@ names are returned (equivalent to a default pattern of <b class="const">*</b>).<
 This can be anything, including points and elements.</p></dd>
 <dt><a name="80"><i class="arg">element</i> <i class="arg">corner1</i> <i class="arg">corner2</i>...</a></dt>
 <dd><p>This is a convenience shorthand for</p>
-<pre class="example">
+<pre class="doctools_example">
 [[[$elem $corner1] $corner2] ...]
 </pre>
 <p>assuming that the value for</p>
-<pre class="example"> [$elem $corner1] </pre>
+<pre class="doctools_example"> [$elem $corner1] </pre>
 <p>, etc. is
 again an element.</p></dd>
 <dt><a name="81"><i class="arg">element</i> <span class="opt">?<i class="arg">corner1</i>... <span class="opt">?<b class="method">names</b> <span class="opt">?<i class="arg">pattern</i>?</span>?</span>]?</span></a></dt>
 <dd><p>This is a convenience shorthand for</p>
-<pre class="example">
+<pre class="doctools_example">
 [[[$elem $corner1] ...] names ?pattern?]
 </pre>
 <p>assuming that the value for</p>
-<pre class="example"> [$elem $corner1] </pre>
+<pre class="doctools_example"> [$elem $corner1] </pre>
 <p>, etc. is
 again an element.</p></dd>
 <dt><a name="82"><b class="cmd"><b class="variable">n</b>th</b> <span class="opt">?<i class="arg">corner</i>?</span></a></dt>
@@ -2434,25 +2433,25 @@ and &quot;<b class="cmd">1st last</b> <i class="arg">shape</i>&quot;.</p></dd>
 usable whereever <b class="cmd"><b class="variable">n</b>th</b> can ocur.</p></dd>
 </dl>
 </div>
-<div id="subsection8" class="subsection"><h3><a name="subsection8">Variables</a></h3>
+<div id="subsection8" class="doctools_subsection"><h3><a name="subsection8">Variables</a></h3>
 <p>The language context contains a number of predefined variables which
 hold the default values for various attributes. These variables, their
 uses, and values are:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="variable">anchor</b></dt>
 <dd><p>The default value for the attribute <b class="cmd">anchor</b>.
 Initialized to <b class="const">center</b>.
 The legal values are all those accepted by
 <a href="http://www.tcl.tk/man/tcl8.5/TkLib/GetAnchor.htm">Tk_GetAnchor</a>.</p></dd>
 <dt><b class="variable">arcradius</b></dt>
-<dd><p>The default value for the attribute <b class="cmd">radius</b> of <b class="cmd"><a href="../../../../index.html#key70">arc</a></b>
+<dd><p>The default value for the attribute <b class="cmd">radius</b> of <b class="cmd"><a href="../../../../index.html#key76">arc</a></b>
 elements.
 Initialized to the pixel equivalent of <b class="const">1 cm</b>.</p></dd>
 <dt><b class="variable">arrowhead</b></dt>
 <dd><p>The default value for the attribute <b class="cmd">arrowhead</b>.
 Initialized to <b class="const">none</b>.
 The legal values are</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="const">none</b>, <b class="const">-</b></dt>
 <dd><p>Draw no arrowheads, at neither end of the line.</p></dd>
 <dt><b class="const">start</b>, <b class="const">first</b>, <b class="const">&lt;-</b></dt>
@@ -2463,24 +2462,24 @@ The legal values are</p>
 <dd><p>Draw arrowheads at both ends of the line.</p></dd>
 </dl></dd>
 <dt><b class="variable">boxheight</b></dt>
-<dd><p>The default value for the attribute <b class="cmd">height</b> of <b class="cmd"><a href="../../../../index.html#key62">box</a></b>,
-<b class="cmd"><a href="../../../../index.html#key76">diamond</a></b> and <b class="cmd"><a href="../../../../index.html#key77">ellipse</a></b> elements.
+<dd><p>The default value for the attribute <b class="cmd">height</b> of <b class="cmd"><a href="../../../../index.html#key67">box</a></b>,
+<b class="cmd"><a href="../../../../index.html#key82">diamond</a></b> and <b class="cmd"><a href="../../../../index.html#key84">ellipse</a></b> elements.
 Initialized to the pixel equivalent of <b class="const">2 cm</b>.</p></dd>
 <dt><b class="variable">boxwidth</b></dt>
-<dd><p>The default value for the attribute <b class="cmd">width</b> of <b class="cmd"><a href="../../../../index.html#key62">box</a></b>,
-<b class="cmd"><a href="../../../../index.html#key76">diamond</a></b> and <b class="cmd"><a href="../../../../index.html#key77">ellipse</a></b> elements.
+<dd><p>The default value for the attribute <b class="cmd">width</b> of <b class="cmd"><a href="../../../../index.html#key67">box</a></b>,
+<b class="cmd"><a href="../../../../index.html#key82">diamond</a></b> and <b class="cmd"><a href="../../../../index.html#key84">ellipse</a></b> elements.
 Initialized to the pixel equivalent of <b class="const">2 cm</b>.</p></dd>
 <dt><b class="variable">clockwise</b></dt>
 <dd><p>The default value for the attributes <b class="cmd">clockwise</b> and
-<b class="cmd">counterclockwise</b> of <b class="cmd"><a href="../../../../index.html#key70">arc</a></b> elements.
+<b class="cmd">counterclockwise</b> of <b class="cmd"><a href="../../../../index.html#key76">arc</a></b> elements.
 Initialized to <b class="const">False</b>, for counter-clockwise direction.</p></dd>
 <dt><b class="variable">circleradius</b></dt>
-<dd><p>The default value for the attribute <b class="cmd">radius</b> of <b class="cmd"><a href="../../../../index.html#key75">circle</a></b>
+<dd><p>The default value for the attribute <b class="cmd">radius</b> of <b class="cmd"><a href="../../../../index.html#key81">circle</a></b>
 elements, and also the default for the attribute <b class="cmd">chop</b>, when
 specified without an explicit length.
 Initialized to the pixel equivalent of <b class="const">1 cm</b>.</p></dd>
 <dt><b class="variable">drumaspect</b></dt>
-<dd><p>The default value for the attribute <b class="cmd">aspect</b> of <b class="cmd"><a href="../../../../index.html#key61">drum</a></b>
+<dd><p>The default value for the attribute <b class="cmd">aspect</b> of <b class="cmd"><a href="../../../../index.html#key66">drum</a></b>
 elements.
 Initialized to <b class="const">0.35</b>.</p></dd>
 <dt><b class="variable">fillcolor</b></dt>
@@ -2494,7 +2493,7 @@ Initialized to <b class="const">left</b>.
 The legal values are <b class="const">left</b>, <b class="const">right</b>, and <b class="const">center</b>.</p></dd>
 <dt><b class="variable">linecolor</b></dt>
 <dd><p>The default value for the attribute <b class="cmd">color</b> of all elements having
-to draw lines (all but <b class="cmd"><a href="../../../../index.html#key7">text</a></b>).
+to draw lines (all but <b class="cmd"><a href="../../../../index.html#key21">text</a></b>).
 Initialized to <b class="const">black</b>.</p></dd>
 <dt><b class="variable">linestyle</b></dt>
 <dd><p>The default value for the attribute <b class="cmd">style</b> of all elements
@@ -2503,7 +2502,7 @@ Initialized to <b class="const">solid</b>.
 The legal values are all those accepted by
 <a href="http://www.tcl.tk/man/tcl8.5/TkLib/GetDash.htm">Tk_GetDash</a>,
 and additionally all which are listed below:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="const">solid</b>, empty string</dt>
 <dd><p>Draw solid line.</p></dd>
 <dt><b class="const">dash</b>, <b class="const">dashed</b>, <b class="const">-</b></dt>
@@ -2521,11 +2520,11 @@ having to draw some line.
 Initialized to <b class="const">1</b> (pixels).</p></dd>
 <dt><b class="variable">movelength</b></dt>
 <dd><p>The default value for the directional specification of intermediate
-locations by the attribute <b class="cmd">then</b> of <b class="cmd"><a href="../../../../index.html#key71">line</a></b> and <b class="cmd"><a href="../../../../index.html#key78">move</a></b>
+locations by the attribute <b class="cmd">then</b> of <b class="cmd"><a href="../../../../index.html#key77">line</a></b> and <b class="cmd"><a href="../../../../index.html#key85">move</a></b>
 elements.
 Initialized to the pixel equivalent of <b class="const">2 cm</b>.</p></dd>
 <dt><b class="variable">slant</b></dt>
-<dd><p>The default value for the attribute <b class="cmd">slant</b> of <b class="cmd"><a href="../../../../index.html#key62">box</a></b> elements.
+<dd><p>The default value for the attribute <b class="cmd">slant</b> of <b class="cmd"><a href="../../../../index.html#key67">box</a></b> elements.
 Initialized to 90 degrees, i.e. slant straight up.</p></dd>
 <dt><b class="variable">textcolor</b></dt>
 <dd><p>The default value for the attribute <b class="cmd">textcolor</b> of all elements
@@ -2538,7 +2537,7 @@ Initialized to <b class="const">Helvetica 12pt</b>.</p></dd>
 </dl>
 </div>
 </div>
-<div id="section4" class="section"><h2><a name="section4">Diagram Classes</a></h2>
+<div id="section4" class="doctools_section"><h2><a name="section4">Diagram Classes</a></h2>
 <p>The intended audience of this section are developers wishing to work
 on the internals of the diagram package.
 Regular users of <b class="package">diagram</b> can skip this section without
@@ -2547,10 +2546,10 @@ missing anything.</p>
 hierarchy of the classes implementing diagram.</p>
 <p><img alt="figure-00-dependencies" src="../../../../image/figure-00-dependencies.png"></p>
 <p>At the bottom, all at the same level are the supporting packages like
-<b class="package"><a href="../../../../index.html#key2">snit</a></b>, etc. These can all be found in Tcllib.</p>
+<b class="package"><a href="../../../../index.html#key20">snit</a></b>, etc. These can all be found in Tcllib.</p>
 <p>Above them is the set of diagram classes implementing the various
 aspects of the system, i.e.:</p>
-<dl class="definitions">
+<dl class="doctools_definitions">
 <dt><b class="class">diagram</b></dt>
 <dd><p>The main class, that which is seen by the user.</p></dd>
 <dt><b class="class">diagram::core</b></dt>
@@ -2573,9 +2572,9 @@ and directin, and operations on it.</p></dd>
 <dd><p>General support class handling various vector operations.</p></dd>
 </dl>
 </div>
-<div id="section5" class="section"><h2><a name="section5">References</a></h2>
+<div id="section5" class="doctools_section"><h2><a name="section5">References</a></h2>
 </div>
-<div id="section6" class="section"><h2><a name="section6">Bugs, Ideas, Feedback</a></h2>
+<div id="section6" class="doctools_section"><h2><a name="section6">Bugs, Ideas, Feedback</a></h2>
 <p>This document, and the package it describes, will undoubtedly contain
 bugs and other problems.
 Please report such in the category <em>diagram</em> of the
@@ -2583,10 +2582,10 @@ Please report such in the category <em>diagram</em> of the
 Please also report any ideas for enhancements you may have for either
 package and/or documentation.</p>
 </div>
-<div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
-<p><a href="../../../../index.html#key74">2D geometry</a>, <a href="../../../../index.html#key70">arc</a>, <a href="../../../../index.html#key65">arrow</a>, <a href="../../../../index.html#key62">box</a>, <a href="../../../../index.html#key10">canvas</a>, <a href="../../../../index.html#key75">circle</a>, <a href="../../../../index.html#key32">diagram</a>, <a href="../../../../index.html#key76">diamond</a>, <a href="../../../../index.html#key69">drawing</a>, <a href="../../../../index.html#key61">drum</a>, <a href="../../../../index.html#key77">ellipse</a>, <a href="../../../../index.html#key40">image</a>, <a href="../../../../index.html#key72">interpolation</a>, <a href="../../../../index.html#key79">intersection</a>, <a href="../../../../index.html#key71">line</a>, <a href="../../../../index.html#key78">move</a>, <a href="../../../../index.html#key68">picture</a>, <a href="../../../../index.html#key67">plane geometry</a>, <a href="../../../../index.html#key73">plotting</a>, <a href="../../../../index.html#key63">point</a>, <a href="../../../../index.html#key66">raster image</a>, <a href="../../../../index.html#key64">spline</a>, <a href="../../../../index.html#key7">text</a>, <a href="../../../../index.html#key34">vector</a></p>
+<div id="keywords" class="doctools_section"><h2><a name="keywords">Keywords</a></h2>
+<p><a href="../../../../index.html#key80">2D geometry</a>, <a href="../../../../index.html#key76">arc</a>, <a href="../../../../index.html#key71">arrow</a>, <a href="../../../../index.html#key67">box</a>, <a href="../../../../index.html#key1">canvas</a>, <a href="../../../../index.html#key81">circle</a>, <a href="../../../../index.html#key83">diagram</a>, <a href="../../../../index.html#key82">diamond</a>, <a href="../../../../index.html#key75">drawing</a>, <a href="../../../../index.html#key66">drum</a>, <a href="../../../../index.html#key84">ellipse</a>, <a href="../../../../index.html#key56">image</a>, <a href="../../../../index.html#key78">interpolation</a>, <a href="../../../../index.html#key86">intersection</a>, <a href="../../../../index.html#key77">line</a>, <a href="../../../../index.html#key85">move</a>, <a href="../../../../index.html#key74">picture</a>, <a href="../../../../index.html#key73">plane geometry</a>, <a href="../../../../index.html#key79">plotting</a>, <a href="../../../../index.html#key68">point</a>, <a href="../../../../index.html#key72">raster image</a>, <a href="../../../../index.html#key70">spline</a>, <a href="../../../../index.html#key21">text</a>, <a href="../../../../index.html#key69">vector</a></p>
 </div>
-<div id="category" class="section"><h2><a name="category">Category</a></h2>
+<div id="category" class="doctools_section"><h2><a name="category">Category</a></h2>
 <p>Documentation tools</p>
 </div>
 </div></body></html>

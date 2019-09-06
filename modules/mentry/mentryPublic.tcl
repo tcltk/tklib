@@ -1,7 +1,7 @@
 #==============================================================================
 # Main Mentry and Mentry_tile package module.
 #
-# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 if {[catch {package require Wcb 3.1} result1] != 0 &&
@@ -13,9 +13,9 @@ namespace eval ::mentry {
     #
     # Public variables:
     #
-    variable version	3.7
+    variable version	3.9
     variable library
-    if {$tcl_version >= 8.4} {
+    if {$::tcl_version >= 8.4} {
 	set library	[file normalize [DIR]]
     } else {
 	set library	[DIR]			;# no "file normalize" yet

@@ -1,7 +1,7 @@
 #==============================================================================
 # Main Tablelist and Tablelist_tile package module.
 #
-# Copyright (c) 2000-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval ::tablelist {
@@ -24,9 +24,9 @@ namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	5.17
+    variable version	6.6
     variable library
-    if {$tcl_version >= 8.4} {
+    if {$::tcl_version >= 8.4} {
 	set library	[file normalize [DIR]]
     } else {
 	set library	[DIR]			;# no "file normalize" yet
@@ -46,7 +46,8 @@ namespace eval ::tablelist {
     #
     # Helper procedures used in binding scripts:
     #
-    namespace export	convEventFields getTablelistPath getTablelistColumn
+    namespace export	convEventFields getTablelistPath getTablelistColumn \
+			delaySashPosUpdates
 
     #
     # Register various widgets for interactive cell editing:
@@ -90,8 +91,9 @@ proc ::tablelist::restoreUsingTile {origVal varName index op} {
     }
 }
 
-interp alias {} ::tk::frame {} ::frame
-interp alias {} ::tk::label {} ::label
+interp alias {} ::tk::frame     {} ::frame
+interp alias {} ::tk::label     {} ::label
+interp alias {} ::tk::scrollbar {} ::scrollbar
 
 #
 # Everything else needed is lazily loaded on demand, via the dispatcher

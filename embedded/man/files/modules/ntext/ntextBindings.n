@@ -343,6 +343,13 @@ The behaviour of \fINtext\fR may be configured application-wide by setting the v
 \fB1\fR - selects classic \fIText\fR behaviour
 .PP
 .PP
+\fB::ntext::classicParagraphs\fR
+.IP \(bu
+\fB0\fR - (default value) on macOS Aqua, certain keyboard bindings are made to behave in the same way as the Mac application TextEdit\&.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>\&.
+.IP \(bu
+\fB1\fR - on macOS Aqua, certain keyboard bindings are made to behave in the same way as for the Windows and X11 windowing systems and the classic \fIText\fR, ignoring the conventions of Aqua\&.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>\&.
+.PP
+.PP
 \fB::ntext::classicSelection\fR
 .IP \(bu
 \fB0\fR - (default value on macOS Aqua) selects Mac-like behaviour, i\&.e\&. when a navigation keystroke cancels a selection, the insert mark first moves to the end of the selection determined by the navigation direction of the keystroke, and then the keystroke is applied\&.
@@ -359,11 +366,13 @@ The behaviour of \fINtext\fR may be configured application-wide by setting the v
 The value is toggled by the \fIInsert\fR key\&.
 .PP
 .PP
-\fB::ntext::classicParagraphs\fR
+\fB::ntext::useBlockCursor\fR
 .IP \(bu
-\fB0\fR - (default value) on macOS Aqua, certain keyboard bindings are made to behave in the same way as the Mac application TextEdit\&.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>\&.
+\fB0\fR - the block cursor will not be used\&.  When the widget is in \fIoverwrite\fR mode (see \fB::ntext::overwrite\fR), the ordinary cursor will change color instead\&.
 .IP \(bu
-\fB1\fR - on macOS Aqua, certain keyboard bindings are made to behave in the same way as for the Windows and X11 windowing systems and the classic \fIText\fR, ignoring the conventions of Aqua\&.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>\&.
+\fB1\fR - the block cursor will be used when the widget is in \fIoverwrite\fR mode (see \fB::ntext::overwrite\fR)\&.
+.IP \(bu
+The default value depends on the version of \fBTk\fR\&.  In versions of \fBTk\fR earlier than \fB8\&.5\&.12\fR, the sizing of the block cursor had a bug, and \fB::ntext::useBlockCursor\fR defaults to \fB0\fR\&.  From \fB8\&.5\&.12\fR onwards the bug is fixed, and \fB::ntext::useBlockCursor\fR defaults to \fB1\fR\&.
 .PP
 .SH INTERNALS
 In order to remain independent of the version of \fBTk\fR (8\&.5 or 8\&.6), \fBntext\fR defines its own virtual events\&.  These new virtual events are used only in the \fINtext\fR binding tag, and therefore do not interfere with the real or virtual events used in other code\&.

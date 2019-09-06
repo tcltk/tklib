@@ -7,7 +7,8 @@
 # Copyright (c) 1992-1994 The Regents of the University of California.
 # Copyright (c) 1994-1997 Sun Microsystems, Inc.
 # Copyright (c) 1998 by Scriptics Corporation.
-# Copyright (c) 2005-2017 additions by Keith Nash.
+# Copyright (c) 2015-2017 Gregor Cramer
+# Copyright (c) 2005-2018 additions by Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -15,14 +16,39 @@
 
 ##### START OF CODE THAT IS MODIFIED from the following versions of text.tcl:
 #
+# tag 8-6-8
+#   2017-09-22 artifact [24e611b8] part of check-in [16815561] & [ba5ef805]
 # branch core-8-6-branch
-#   2015-10-09 artifact [e9c33ef1] part of check-in [553899e9]
+#   2017-09-22 artifact [24e611b8] part of check-in [8cc5e98d] & [ba5ef805]
 # branch core-8-5-branch
-#   2015-10-04 artifact [6af61544] part of check-in [55133bde]
+#   2015-10-04 artifact [6af61544] part of check-in [ffd695c5] & [55133bde]
 # trunk
-#   2016-09-27 artifact [530d3c1b] part of check-in [6b21cc27]
+#   2017-10-07 artifact [642cbaf3] part of check-in [06baa487] & [429e2357]
+# branch revised_text
+#   2018-01-15 artifact [a76837e9] part of check-in [74f86687]
 #
-# Not yet adapted to revised text widget by Gregor Cramer, or to Androwish.
+# Not yet adapted to Androwish.
+
+
+##########################################################################
+# TODO: (from revised_text's text.tcl)
+# Currently we cannot use identifier "begin" for very first index, because
+# it has still lowest precedence, and this may clash if the application is
+# using this identifier for marks. In a later version of this file all
+# occurences of "1.0" should be replaced with "begin", as soon as "begin"
+# has highest precedence.
+##########################################################################
+# TODO: (revised_text with Ntext)
+# - Ntext tries to be compatible with all versions of Tk from 8.5 onwards.
+# - Therefore Ntext sometimes keeps "unrevised text" code when this has
+#   been replaced with a simpler equivalent in revised_text's text.tcl.
+# - In other places Ntext uses [catch] to test for revised_text before
+#   using its facilities.
+# - Ntext does not use some revised_text code - these (and some other)
+#   places can be discovered by searching for "revised_text".
+# - Any Ntext code that breaks revised_text facilities (e.g. "watch") is
+#   considered a bug.  Please report such bugs using the tklib tracker.
+##########################################################################
 
 #-------------------------------------------------------------------------
 # Elements of ::tk::Priv that are used in this file:
@@ -47,7 +73,7 @@
 #-------------------------------------------------------------------------
 
 
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # ntext no longer uses private commands ::tk::* from tk8.x/text.tcl.  Any
 # necessary commands are defined below in the ::ntext namespace, even if the
 # corresponding ::tk::* command from tk8.x/text.tcl is identical.  This makes
@@ -56,7 +82,28 @@
 # ntext still uses the private array ::tk::Priv (shared with text.tcl etc) and
 # the private command ::tk::GetSelection (from tk.tcl).  There is a small risk
 # of breakage if one of these private items is altered in Tk.
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+#   <<Selection>> events
+# ------------------------------------------------------------------------------
+# - The text widget generates a <<Selection>> event when the "selection" method
+#   changes the selected text.
+# - For Tk earlier than 8.6.9, the text widget does not generate this event when
+#   the selection range is changed by an "insert" or "delete" method.
+# - When using "insert" or "delete" methods with these earlier versions of Tk,
+#   it is the responsibility of the programmer to generate <<Selection>> events
+#   if they are needed.  This bug was fixed in Tk 8.6.9.
+# - The Ntext bindings mostly handle these cases appropriately (usually by using
+#   the "tag" method to remove the selection, thereby generating a <<Selection>>
+#   event).
+# - In a few cases, a binding that calls an "insert" or "delete" method changes
+#   the selection without causing the widget to generate a <<Selection>> event.
+#   In these cases an "event generate" command has been added to the script.
+# - The bindings affected are: <Delete>, <<PasteSelection>>, <<NtextCut>>.
+# - The variable $::ntext::GenerateSelect records whether the version of Tk
+#   requires these bindings to generate <<Selection>> events.
+# ------------------------------------------------------------------------------
 
 package require Tcl 8.5
 package require Tk  8.5
@@ -325,7 +372,7 @@ switch -exact -- [tk windowingsystem] {
 bind Ntext <1> {
     set ::ntext::Bcount 1
     ntext::TextButton1 %W %x %y
-    %W tag remove sel 0.0 end
+    %W tag remove sel 1.0 end
 }
 bind Ntext <B1-Motion> {
     set tk::Priv(x) %x
@@ -342,7 +389,7 @@ bind Ntext <Double-1> {
     if {$::ntext::Bcount != 1} {
 	set ::ntext::Bcount 1
 	ntext::TextButton1 %W %x %y
-	%W tag remove sel 0.0 end
+	%W tag remove sel 1.0 end
     }
     set ::ntext::Bcount 2
     set tk::Priv(selectMode) word
@@ -446,7 +493,9 @@ bind Ntext <Control-1> {
 bind Ntext <Double-Control-1> { # nothing }
 # stop an accidental movement triggering <B1-Motion>
 bind Ntext <Control-B1-Motion> { # nothing }
-
+# revised_text uses displaychars not displayindices in <<PrevChar>>,
+# <<NextChar>> <<SelectPrevChar>> <<SelectNextChar>>.  Ntext keeps
+# displayindices so cursor navigation does not ignore embedded windows/images.
 bind Ntext <<NtextPrevChar>> {
     ntext::AdjustInsert %W left
     ntext::TextSetCursor %W insert-1displayindices
@@ -471,10 +520,10 @@ bind Ntext <<NtextSelectNextChar>> {
     ntext::TextKeySelect %W [%W index {insert + 1displayindices}]
 }
 bind Ntext <<NtextSelectPrevLine>> {
-    ntext::TextKeySelect %W [ntext::TextUpDownLine %W -1]
+    ntext::TextKeySelect %W [ntext::TextUpDownLine %W -1 yes]
 }
 bind Ntext <<NtextSelectNextLine>> {
-    ntext::TextKeySelect %W [ntext::TextUpDownLine %W 1]
+    ntext::TextKeySelect %W [ntext::TextUpDownLine %W 1 yes]
 }
 bind Ntext <<NtextPrevWord>> {
     ntext::AdjustInsert %W left
@@ -564,7 +613,7 @@ bind Ntext <Tab> {
     }
 }
 bind Ntext <Shift-Tab> {
-    # Needed only to keep <Tab> binding from triggering;  doesn't
+    # Needed only to keep <Tab> binding from triggering; doesn't
     # have to actually do anything.
     break
 }
@@ -580,46 +629,60 @@ bind Ntext <Control-i> {
     }
 }
 bind Ntext <Return> {
-    ntext::TextInsert %W \n
-    if {[%W cget -autoseparators]} {
-	%W edit separator
+    if {[%W cget -state] eq "normal"} {
+	ntext::TextInsert %W \n
+	if {[%W cget -autoseparators]} {
+	    %W edit separator
+	}
     }
 }
 bind Ntext <Delete> {
-    if {[ntext::TextCursorInSelection %W]} {
-	# When deleting the selection, make this an atomic operation on the Undo
-	# stack, i.e. separate it from other delete operations on either side.
-	if {[%W cget -autoseparators]} {
-	    %W edit separator
-	} else {
+    if {[%W cget -state] eq "normal"} {
+	if {[ntext::TextCursorInSelection %W]} {
+	    # When deleting the selection, make this an atomic operation on the Undo
+	    # stack, i.e. separate it from other delete operations on either side.
+	    if {[%W cget -autoseparators]} {
+		%W edit separator
+	    } else {
+	    }
+	    set ::ntext::OldFirst [%W index sel.first]
+	    ntext::TextDelete %W sel.first sel.last
+	    ntext::AdjustIndentOneLine %W $::ntext::OldFirst
+	    if {[%W cget -autoseparators]} {
+		%W edit separator
+	    } else {
+	    }
+	    if {$::ntext::GenerateSelect} {
+		# The PRIMARY selection has changed but the widget does
+		# not generate this event.
+		event generate %W <<Selection>>
+	    } else {
+	    }
+	} elseif {[%W compare end != insert+1i]} {
+	    %W delete insert
+	    ntext::AdjustIndentOneLine %W insert
 	}
-	set ::ntext::OldFirst [%W index sel.first]
-	%W delete sel.first sel.last
-	ntext::AdjustIndentOneLine %W $::ntext::OldFirst
-	if {[%W cget -autoseparators]} {
-	    %W edit separator
-	} else {
-	}
-    } elseif {[%W compare end != insert+1c]} {
-	%W delete insert
-	ntext::AdjustIndentOneLine %W insert
+	%W see insert
     }
-    %W see insert
 }
 bind Ntext <BackSpace> {
-    if {[ntext::TextCursorInSelection %W]} {
-	set ::ntext::OldFirst [%W index sel.first]
-	%W delete sel.first sel.last
-	ntext::AdjustIndentOneLine %W $::ntext::OldFirst
-    } elseif {[%W compare insert != 1.0]} {
-	%W delete insert-1c
-	ntext::AdjustIndentOneLine %W insert
+    if {[%W cget -state] eq "normal"} {
+	if {[ntext::TextCursorInSelection %W]} {
+	    set ::ntext::OldFirst [%W index sel.first]
+	    ntext::TextDelete %W sel.first sel.last
+	    ntext::AdjustIndentOneLine %W $::ntext::OldFirst
+	} elseif {[%W compare insert != 1.0]} {
+	    # ensure that this operation is triggering "watch"
+	    %W mark set insert insert-1i
+	    %W delete insert
+	    ntext::AdjustIndentOneLine %W insert
+	}
+	%W see insert
     }
-    %W see insert
 }
 
 # This is present in early versions of
-# 8.5 and intercepts the Shift-Backspace event.
+# 8.5 and intercepts the <Shift-Backspace> event.
 catch {bind Ntext <Terminate_Server> {
     if {[ntext::TextCursorInSelection %W]} {
 	set ::ntext::OldFirst [%W index sel.first]
@@ -673,36 +736,31 @@ bind Ntext <<NtextPaste>> {
     ntext::new_textPaste %W
 }
 bind Ntext <<Clear>> {
-    # Make <<Clear>> an atomic operation on the Undo stack,
-    # i.e. separate it from other delete operations on either side
-    if {[%W tag nextrange sel 1.0 end] ne ""} {
-	if {[%W cget -autoseparators]} {
-	    %W edit separator
-	}
-	set ::ntext::OldFirst [%W index sel.first]
-	%W delete sel.first sel.last
-	ntext::AdjustIndentOneLine %W $::ntext::OldFirst
-	if {[%W cget -autoseparators]} {
-	    %W edit separator
+    if {[%W cget -state] eq "normal"} {
+	# Make <<Clear>> an atomic operation on the Undo stack,
+	# i.e. separate it from other delete operations on either side
+	if {[%W tag nextrange sel 1.0 end] ne ""} {
+	    if {[%W cget -autoseparators]} {
+		%W edit separator
+	    }
+	    set ::ntext::OldFirst [%W index sel.first]
+	    ntext::TextDelete %W sel.first sel.last
+	    ntext::AdjustIndentOneLine %W $::ntext::OldFirst
+	    if {[%W cget -autoseparators]} {
+		%W edit separator
+	    }
 	}
     }
 }
 bind Ntext <<PasteSelection>> {
-    if {$tk_strictMotif || ![info exists tk::Priv(mouseMoved)]
-	    || !$tk::Priv(mouseMoved)} {
+    if {$tk_strictMotif || ![info exists tk::Priv(mouseMoved)] || !$tk::Priv(mouseMoved)} {
 	ntext::TextPasteSelection %W %x %y
     }
 }
 # Implement Insert/Overwrite modes
 bind Ntext <Insert> {
     set ntext::overwrite [expr !$ntext::overwrite]
-#    This behaves strangely on a newline or tab:
-#    %W configure -blockcursor $ntext::overwrite
-    if {$ntext::overwrite} {
-	%W configure -insertbackground red
-    } else {
-	%W configure -insertbackground black
-    }
+    ::ntext::DefineCursor %W
 }
 bind Ntext <KeyPress> {
     ntext::TextInsert %W %A
@@ -718,7 +776,7 @@ bind Ntext <Meta-KeyPress> {# nothing}
 bind Ntext <Control-KeyPress> {# nothing}
 # Make Escape clear the selection
 bind Ntext <Escape> {
-    %W tag remove sel 0.0 end
+    %W tag remove sel 1.0 end
     if {[%W cget -autoseparators]} {
 	%W edit separator
     }
@@ -731,15 +789,15 @@ if {[tk windowingsystem] eq "aqua"} {
 # Additional Emacs-like bindings:
 # cf. <Delete>, but not fixed for TextCursorInSelection and no see
 bind Ntext <Control-d> {
-    if {$::ntext::classicExtras && !$tk_strictMotif &&
-	    [%W compare end != insert+1c]} {
+    if {[%W cget -state] eq "normal" && $::ntext::classicExtras && !$tk_strictMotif &&
+	    [%W compare end != insert+1i]} {
 	%W delete insert
 	ntext::AdjustIndentOneLine %W insert
     }
 }
 bind Ntext <Control-k> {
-    if {$::ntext::classicExtras && !$tk_strictMotif &&
-	    [%W compare end != insert+1c]} {
+    if {[%W cget -state] eq "normal" && $::ntext::classicExtras && !$tk_strictMotif &&
+	    [%W compare end != insert+1i]} {
 	if {[%W compare insert == {insert lineend}]} {
 	    %W delete insert
 	} else {
@@ -749,9 +807,9 @@ bind Ntext <Control-k> {
     }
 }
 bind Ntext <Control-o> {
-    if {$::ntext::classicExtras && !$tk_strictMotif} {
+    if {[%W cget -state] eq "normal" && $::ntext::classicExtras && !$tk_strictMotif} {
 	%W insert insert \n
-	%W mark set insert insert-1c
+	%W mark set insert insert-1i
 	ntext::AdjustIndentOneLine %W "insert + 1 line"
     }
 }
@@ -761,27 +819,29 @@ bind Ntext <Control-t> {
     }
 }
 bind Ntext <<Undo>> {
-    # An Undo operation may remove the separator at the top of the Undo stack.
-    # Then the item at the top of the stack gets merged with the subsequent
-    # changes.
-    # Place separators before and after Undo to prevent this.
-    if {[%W cget -autoseparators]} {
-	%W edit separator
-    }
-    if {![catch { %W edit undo }]} {
-	# Cancel the selection so that Undo does not mess it up.
-	%W tag remove sel 0.0 end
-	# The undo stack does not record tags - so we need to reapply them.
-	ntext::AdjustIndentMultipleLines %W 1.0 end
-    }
-    if {[%W cget -autoseparators]} {
-	%W edit separator
+    if {[%W cget -state] eq "normal"} {
+	# An Undo operation may remove the separator at the top of the Undo stack.
+	# Then the item at the top of the stack gets merged with the subsequent
+	# changes.
+	# Place separators before and after Undo to prevent this.
+	if {[%W cget -autoseparators]} {
+	    %W edit separator
+	}
+	if {![catch { %W edit undo }]} {
+	    # Cancel the selection so that Undo does not mess it up.
+	    %W tag remove sel 1.0 end
+	    # The undo stack does not record tags - so we need to reapply them.
+	    ntext::AdjustIndentMultipleLines %W 1.0 end
+	}
+	if {[%W cget -autoseparators]} {
+	    %W edit separator
+	}
     }
 }
 bind Ntext <<Redo>> {
-    if {![catch { %W edit redo }]} {
+    if {[%W cget -state] eq "normal" && ![catch { %W edit redo }]} {
 	# Cancel the selection so that Redo does not mess it up.
-	%W tag remove sel 0.0 end
+	%W tag remove sel 1.0 end
 	# The redo stack does not record tags - so we need to reapply them.
 	ntext::AdjustIndentMultipleLines %W 1.0 end
     }
@@ -798,7 +858,7 @@ bind Ntext <Meta-b> {
     }
 }
 bind Ntext <Meta-d> {
-    if {!$tk_strictMotif && [%W compare end != insert+1c]} {
+    if {!$tk_strictMotif && [%W compare end != insert+1i]} {
 	%W delete insert [ntext::TextNextWord %W insert]
 	ntext::AdjustIndentOneLine %W insert
     }
@@ -818,22 +878,18 @@ bind Ntext <Meta-less> {
 bind Ntext <Meta-greater> {
     if {!$tk_strictMotif} {
 	#ntext::AdjustInsert %W right
-	ntext::TextSetCursor %W end-1c
+	ntext::TextSetCursor %W end-1i
     }
 }
 bind Ntext <Meta-BackSpace> {
-    if {!$tk_strictMotif} {
-	%W delete \
-		[ntext::TextPrevPos %W insert ntext::new_startOfPreviousWord] \
-		insert
+    if {[%W cget -state] eq "normal" && !$tk_strictMotif} {
+	ntext::TextDelete %W [ntext::TextPrevPos %W insert ntext::new_startOfPreviousWord] insert
     }
     ntext::AdjustIndentOneLine %W insert
 }
 bind Ntext <Meta-Delete> {
-    if {!$tk_strictMotif} {
-	%W delete \
-		[ntext::TextPrevPos %W insert ntext::new_startOfPreviousWord] \
-		insert
+    if {[%W cget -state] eq "normal" && !$tk_strictMotif} {
+	ntext::TextDelete %W [ntext::TextPrevPos %W insert ntext::new_startOfPreviousWord] insert
     }
     ntext::AdjustIndentOneLine %W insert
 }
@@ -847,13 +903,10 @@ if {[tk windowingsystem] eq "aqua"} {
     # The cursor color indicates the insert/overwrite state.
     # Make sure it is in sync with the all-widgets value of ::ntext::overwrite.
     bind Ntext <FocusIn> {
-	if {$ntext::overwrite} {
-	    %W configure -insertbackground red
-	} else {
-	    %W configure -insertbackground black
-	}
+	::ntext::DefineCursor %W
     }
 }
+
 
 # macOS/Aqua only bindings:
 #
@@ -1103,9 +1156,14 @@ bind Ntext <Shift-Option-Down> {
 # A few additional bindings of my own.
 # cf. <BackSpace>, but not fixed for TextCursorInSelection
 bind Ntext <Control-h> {
-    if {$::ntext::classicExtras && (!$tk_strictMotif)
-	    && [%W compare insert != 1.0]} {
-	%W delete insert-1c
+    if {    ([%W cget -state] eq "normal")
+	 && $::ntext::classicExtras
+	 && (!$tk_strictMotif)
+	 && [%W compare insert != 1.0]
+    } {
+	# ensure that this operation is triggering "watch"
+	%W mark set insert insert-1i
+	%W delete insert
 	%W see insert
 	ntext::AdjustIndentOneLine %W insert
     }
@@ -1136,10 +1194,9 @@ if {[tk windowingsystem] eq "aqua"} {
 }
 set ::tk::Priv(prevPos) {}
 
-# The MouseWheel will typically only fire on Windows and macOS/Aqua.
-# However, someone could use the "event generate" command to produce one
-# on other platforms.  We must be careful not to round -ve values of %D
-# down to zero.
+# The MouseWheel events:
+
+# We must be careful not to round -ve values of %D down to zero.
 
 if {[tk windowingsystem] eq "aqua"} {
     bind Ntext <MouseWheel> {
@@ -1162,18 +1219,10 @@ if {[tk windowingsystem] eq "aqua"} {
     #     (int)-1/3 = -1
     # The following code ensure equal +/- behaviour.
     bind Ntext <MouseWheel> {
-	if {%D >= 0} {
-	    %W yview scroll [expr {-%D/3}] pixels
-	} else {
-	    %W yview scroll [expr {(2-%D)/3}] pixels
-	}
+	%W yview scroll [expr {%D >= 0 ? -%D/3 : (2-%D)/3}] pixels
     }
     bind Ntext <Shift-MouseWheel> {
-	if {%D >= 0} {
-	    %W xview scroll [expr {-%D/3}] pixels
-	} else {
-	    %W xview scroll [expr {(2-%D)/3}] pixels
-	}
+	%W xview scroll [expr {%D >= 0 ? -%D/3 : (2-%D)/3}] pixels
     }
 }
 
@@ -1181,7 +1230,7 @@ if {"x11" eq [tk windowingsystem]} {
     # Support for mousewheels on Linux/Unix commonly comes through mapping
     # the wheel to the extended buttons.  If you have a mousewheel, find
     # Linux configuration info at:
-    #	http://www.inria.fr/koala/colas/mouse-wheel-scroll/
+    #	http://linuxreviews.org/howtos/xfree/mouse/
     bind Ntext <4> {
 	if {!$tk_strictMotif} {
 	    %W yview scroll -50 pixels
@@ -1189,7 +1238,7 @@ if {"x11" eq [tk windowingsystem]} {
     }
     bind Ntext <5> {
 	if {!$tk_strictMotif} {
-	    %W yview scroll 50 pixels
+	    %W yview scroll +50 pixels
 	}
     }
     bind Ntext <Shift-4> {
@@ -1199,7 +1248,7 @@ if {"x11" eq [tk windowingsystem]} {
     }
     bind Ntext <Shift-5> {
 	if {!$tk_strictMotif} {
-	    %W xview scroll 50 pixels
+	    %W xview scroll +50 pixels
 	}
     }
 }
@@ -1210,6 +1259,7 @@ bind Ntext <Configure> {
 
 bind Ntext <Destroy> {
     unset -nocomplain ::ntext::OldSelectMode(%W)
+    unset -nocomplain ::ntext::OldInsertBackground(%W)
 }
 
 
@@ -1255,12 +1305,21 @@ namespace eval ::ntext {
     # line according to the magnitude of its hanging (-lmargin2) indent.
     variable lm2IndentDebug     0
 
+    # Color to use for the hanging (-lmargin2) indent itself.
+    # Set to {} for no color.
+    variable indentColor        #d9d9d9
+
+    # Whether to use the -blockcursor when in "overwrite" mode (the alternative
+    # is a change of color).  Defaults to YES iff 8.5.12 or over.  For earlier
+    # versions a bug made the -blockcursor fill the whole of a newline.
+    variable useBlockCursor     [expr {[package vsatisfies [package require Tk] 8.5.12-]}]
+
     # When a keystroke cancels a selection, is the position of the insert mark
     # preserved, or does it jump to the "appropriate" end of the selection?
     if {[tk windowingsystem] eq "aqua"} {
-        variable classicSelection   0
+	variable classicSelection   0
     } else {
-        variable classicSelection   1
+	variable classicSelection   1
     }
 
     # Whether or not the macOS/Aqua bindings <?Shift-?Option-(Up|Down)> should use
@@ -1278,10 +1337,12 @@ namespace eval ::ntext {
 
     # These variables are for internal use by ntext only. They should not be
     # modified by the user's script.
-    variable Bcount             0
-    variable OldFirst          {}
+    variable GenerateSelect [expr {![package vsatisfies [package require Tk] 8.6.9-]}]
+    variable Bcount         0
+    variable OldFirst       {}
+    # arrays:
     variable OldSelectMode
-    # array
+    variable OldInsertBackground
 
     if {[tk windowingsystem] eq "aqua"} {
 	variable EmacsEvents {
@@ -1332,25 +1393,25 @@ proc ::ntext::EmacsBindings {argVarName var2 action} {
     variable classicExtras
 
     if {$::ntext::classicExtras && !$::tk_strictMotif} {
-        set op add
+	set op add
     } else {
-        set op delete
+	set op delete
     }
 
     foreach {virtual real1 real2} $EmacsEvents {
-        event $op $virtual $real1 $real2
+	event $op $virtual $real1 $real2
     }
 
     if {[tk windowingsystem] eq "x11"} {
-        if {!$::tk_strictMotif} {
-            set op2 add
-        } else {
-            set op2 delete
-        }
+	if {!$::tk_strictMotif} {
+	    set op2 add
+	} else {
+	    set op2 delete
+	}
 
-        event $op2 <<NtextCut>> <Control-Key-w> <Control-Lock-Key-W> <Shift-Key-Delete>
-        event $op2 <<NtextCopy>> <Meta-Key-w> <Meta-Lock-Key-W> <Control-Key-Insert>
-        event $op2 <<NtextPaste>> <Control-Key-y> <Control-Lock-Key-Y> <Shift-Key-Insert>
+	event $op2 <<NtextCut>> <Control-Key-w> <Control-Lock-Key-W> <Shift-Key-Delete>
+	event $op2 <<NtextCopy>> <Meta-Key-w> <Meta-Lock-Key-W> <Control-Key-Insert>
+	event $op2 <<NtextPaste>> <Control-Key-y> <Control-Lock-Key-Y> <Shift-Key-Insert>
     }
 
     return
@@ -1358,6 +1419,26 @@ proc ::ntext::EmacsBindings {argVarName var2 action} {
 
 # Trigger the trace, to call ::ntext::EmacsBindings for the first time.
 set ::tk_strictMotif $::tk_strictMotif
+
+
+
+# ::tk::TextCursorPos --
+# Given x and y coordinates, this procedure computes the "cursor"
+# position, and returns the index of the character at this position.
+#
+# Arguments:
+# w -		The text window.
+# x -		X-coordinate within the window.
+# y -		Y-coordinate within the window.
+
+proc ::ntext::TextCursorPos {w x y} {
+    if {[$w cget -blockcursor]} {
+	# If we have a block cursor, then use the actual x-position
+	# for cursor position.
+	return [$w index @$x,$y]
+    }
+    return [TextClosestGap $w $x $y]
+}
 
 # ::tk::TextClosestGap --
 # Given x and y coordinates, this procedure finds the closest boundary
@@ -1375,12 +1456,13 @@ set ::tk_strictMotif $::tk_strictMotif
 proc ::ntext::TextClosestGap {w x y} {
     set pos [$w index @$x,$y]
     set bbox [$w bbox $pos]
-    if {$bbox eq ""} {
+    if {[llength $bbox] == 0} {
 	return $pos
     }
     if {($x - [lindex $bbox 0]) < ([lindex $bbox 2]/2)} {
 	return $pos
     }
+
     # Never return a position that will place the cursor on the next display
     # line. This used to happen if $x is closer to the end of the display line
     # than to its last character.
@@ -1389,11 +1471,12 @@ proc ::ntext::TextClosestGap {w x y} {
     } else {
 	set lineType lines
     }
-    if {[$w count -$lineType $pos "$pos + 1 char"] != 0} {
+    if {[$w count -$lineType $pos "$pos + 1i"] != 0} {
 	return $pos
     } else {
     }
-    $w index "$pos + 1 char"
+
+    $w index "$pos + 1i"
 }
 
 # ::tk::TextButton1 --
@@ -1412,33 +1495,51 @@ proc ::ntext::TextClosestGap {w x y} {
 proc ::ntext::TextButton1 {w x y} {
     variable ::tk::Priv
 
-    set Priv(selectMode) char
-    set Priv(mouseMoved) 0
-    set Priv(pressX) $x
-    set anchorname [TextAnchor $w]
-    $w mark set insert [TextClosestGap $w $x $y]
-    $w mark set $anchorname insert
-    # Set the anchor mark's gravity depending on the click position
-    # relative to the gap
-    set bbox [$w bbox [$w index $anchorname]]
-    if {$x > [lindex $bbox 0]} {
-	$w mark gravity $anchorname right
-    } else {
-	$w mark gravity $anchorname left
+    # Catch the very special case with dead peers.
+    if {[catch {$w isdead} result] || !$result} {
+	set Priv(selectMode) char
+	set Priv(mouseMoved) 0
+	set Priv(pressX) $x
+
+	# "Wrong line" position adjustment -
+	# revised_text does it here, ntext does it in TextClosestGap.
+	$w mark set insert [TextCursorPos $w $x $y]
+
+	set anchorname [TextAnchor $w]
+	$w mark set $anchorname insert
+#	# revised_text adjusts $anchorname (if -blockcursor) using
+#	# TextClosestGap.  ntext does not do this.
+#	if {[$w cget -blockcursor]} {
+#	    $w mark set $anchorname [TextClosestGap $w $x $y]
+#	} else {
+#	    # this is already the closest gap
+#	    $w mark set $anchorname insert
+#	}
+
+	# Set the anchor mark's gravity depending on the click position
+	# relative to the gap.
+	set bbox [$w bbox $anchorname]
+	set gravity [expr {$x > [lindex $bbox 0] ? "right" : "left"}]
+	$w mark gravity $anchorname $gravity
+
+	if {[$w cget -autoseparators]} {
+	    $w edit separator
+	}
     }
+
     # Allow focus in any case on Windows, because that will let the
     # selection be displayed even for state disabled text widgets.
-    if {[tk windowingsystem] eq "win32" \
-	    || [$w cget -state] eq "normal"} {
+    if {[tk windowingsystem] eq "win32" || [$w cget -state] eq "normal"} {
 	focus $w
     }
-    if {[$w cget -autoseparators]} {
-	$w edit separator
-    }
+    return
 }
 
-# If text.tcl is sufficiently recent to have ::tk::Priv(textanchoruid), this
-# forces it to be initialized.
+
+# If text.tcl is sufficiently recent to have ::tk::Priv(textanchoruid), the
+# code below forces it to be initialized.
+# The revised_text text.tcl is even more recent, and does not use
+# ::tk::Priv(textanchoruid).  In that case, this initialization is harmless.
 catch {::tk::TextAnchor}
 
 if {[info exists ::tk::Priv(textanchoruid)]} {
@@ -1449,13 +1550,28 @@ if {[info exists ::tk::Priv(textanchoruid)]} {
     # text.tcl may increment this variable but will not re-initialize it.
 }
 
+
 # ::ntext::TextAnchor --
 # Modified to use ::tk::Priv despite change of namespace.
 
 proc ::ntext::TextAnchor {w} {
     variable ::tk::Priv
     if {![info exists Priv(textanchor,$w)]} {
-	set Priv(textanchor,$w) tk::anchor[incr Priv(textanchoruid)]
+	if {[catch {$w mark generate} result]} {
+	    # This is the "unrevised" text widget.
+	    set Priv(textanchor,$w) tk::anchor[incr Priv(textanchoruid)]
+	} else {
+	    # This is the revised_text text widget.
+	    # This gives us a private mark, not visible with
+	    # "mark names|next|previous|..".
+	    set Priv(textanchor,$w) $result
+	    # The Tk library still has a big weakness: it's not possible to
+	    # bind variables to a widget, so we use a private command for this
+	    # binding; this means that the variable will be unset automatically
+	    # when the widget will be destroyed. This is the only proper way to
+	    # handle unique identifiers.
+	    $w tk_bindvar ::tk::Priv(textanchor,$w)
+	}
     }
     return $Priv(textanchor,$w)
 }
@@ -1486,8 +1602,8 @@ proc ::ntext::RepelAnchor {w idx} {
 
 proc ::ntext::WordBounds {w lineType first last} {
     # Now find word boundaries
-    set first1 [$w index "$first + 1c"]
-    set last1  [$w index "$last - 1c"]
+    set first1 [$w index "$first + 1i"]
+    set last1  [$w index "$last - 1i"]
     if {[$w count -$lineType $first $first1] != 0} {
 	set first1 [$w index $first]
     } else {
@@ -1526,7 +1642,9 @@ proc ::ntext::WordBounds {w lineType first last} {
 # Note that the 'anchor' is implemented programmatically using
 # a text widget mark, and uses a name that will be unique for each
 # text widget (even when there are multiple peers).  Currently the
-# anchor is considered private to Tk, hence the name 'tk::anchor$i'.
+# anchor is considered private to Tk, hence the name 'tk::anchor$i' in text,
+# while in revised_text the name is [$w mark generate] and the anchor is not
+# listed in [$w mark names].
 #
 # Arguments:
 # w -		The text window in which the button was pressed.
@@ -1572,9 +1690,14 @@ proc ::ntext::WordBounds {w lineType first last} {
 proc ::ntext::TextSelectTo {w x y {extend 0}} {
     variable ::tk::Priv
     variable OldSelectMode
+    if {![catch {$w isdead} result] && $result} {
+	# revised_text
+	# Catch the very special case with dead peers.
+	return
+    }
 
     set anchorname [TextAnchor $w]
-    set cur [TextClosestGap $w $x $y]
+    set cur [TextCursorPos $w $x $y]
     if {[catch {$w index $anchorname}]} {
 	$w mark set $anchorname $cur
 	# Right gravity is set by default.
@@ -1627,100 +1750,116 @@ proc ::ntext::TextSelectTo {w x y {extend 0}} {
 	    }
 	}
 	word {
-	    # Set initial range based only on the anchor (1 char min width -
-	    # MOD - unless this straddles a display line end)
-	    if {[$w cget -wrap] eq "word"} {
-		set lineType displaylines
+	    set start [$w index @$x,$y]
+	    set isEmbedded [expr {[string length [$w get $start]] == 0}]
+	    if {0 && $isEmbedded} {
+		# This is a revised_text feature, disabled here.  It is useful
+		# with <Double-1> on an embedded item; but less helpful when
+		# <Double-Shift-1> is used to extend a selection.
+		# Don't extend the range if we have an embedded item at this
+		# position.
+		set first $start
+		set last "$first+1i"
 	    } else {
-		set lineType lines
-	    }
-	    # The gravity of the "selection anchor" mark.
-	    # - The anchor's gravity is explicitly used only here.
-	    # - In text.tcl the anchor mark's gravity is set by
-	    #   ::tk::TextButton1 depending on the click position relative to
-	    #   the gap.
-	    # - In ntext.tcl, the anchor mark's gravity is also set in other
-	    #   places, to prevent inappropriate growth of the selection when
-	    #   the value is tested here.  When the anchor is at an end of the
-	    #   selection, its gravity always faces the selected text.
-	    # - The gravity of the insert mark, and of the ntext::* "recorded
-	    #   selection" marks, are never explicitly used, and their values
-	    #   are always "right".
-	    if {[$w mark gravity $anchorname] eq "right"} {
-		set first $anchorname
-		set last "$anchorname + 1c"
-		if {[$w count -$lineType $first $last] != 0} {
-			set last $first
+		# Set initial range based only on the anchor (1 char min width -
+		# MOD - unless this straddles a display line end)
+		if {[$w cget -wrap] eq "word"} {
+		    set lineType displaylines
 		} else {
+		    set lineType lines
 		}
-	    } else {
-		set first "$anchorname - 1c"
-		set last $anchorname
-		if {[$w count -$lineType $first $last] != 0} {
+		# The gravity of the "selection anchor" mark.
+		# - The anchor's gravity is explicitly used only here.
+		# - In text.tcl the anchor mark's gravity is set by
+		#   ::tk::TextButton1 depending on the click position relative
+		#   to the gap.
+		# - In ntext.tcl, the anchor mark's gravity is also set in other
+		#   places, to prevent inappropriate growth of the selection
+		#   when the value is tested here.  When the anchor is at an end
+		#   of the selection, its gravity always faces the selected
+		#   text.
+		# - The gravity of the insert mark, and of the ntext::*
+		#   "recorded selection" marks, are never explicitly used, and
+		#   their values are always "right".
+		if {[$w mark gravity $anchorname] eq "right"} {
+		    set first $anchorname
+		    set last "$anchorname + 1i"
+		    if {[$w count -$lineType $first $last] != 0} {
+			    set last $first
+		    } else {
+		    }
+		} else {
+		    set first "$anchorname - 1i"
+		    set last $anchorname
+		    if {[$w count -$lineType $first $last] != 0} {
 			set first $last
-		} else {
+		    } else {
+		    }
 		}
-	    }
-	    if {[$w compare $last == $first] && [$w compare $cur == $first]} {
-		# Use $first and $last as above; further extension will straddle
-		# a display line. Better to have no selection than a bad one.
-		set StoreAnchors 1
-	    } else {
-		set first0 $first
-		set last0  $last
-		if {$selectionExists && $OldSelectMode($w) eq "char"} {
-		    # Do WordBounds calc but without cur.  This computes the
-		    # ntext::* anchor marks.  This code is necessary if the user
-		    # has used character selection to extend the selection, and
-		    # then come here by using word selection.
+		if {    [$w compare $last == $first]
+		     && [$w compare $cur  == $first]
+		} {
+		    # Use $first and $last as above; further extension will
+		    # straddle a display line. Better to have no selection than
+		    # a bad one.
+		    set StoreAnchors 1
+		} else {
+		    set first0 $first
+		    set last0  $last
+		    if {$selectionExists && $OldSelectMode($w) eq "char"} {
+			# Do WordBounds calc but without cur.  This computes the
+			# ntext::* anchor marks.  This code is necessary if the
+			# user has used character selection to extend the
+			# selection, and then come here by using word selection.
+			# Compute ntext::* anchor marks on the transition from
+			# "char" to "word" selection.
+			lassign [WordBounds $w $lineType $first $last] first last
+			# The new selection will be a single word.
+			$w mark set ntext::left::$anchorname $first
+			$w mark set ntext::right::$anchorname $last
+			set OldSelectMode($w) word
+			set StoreAnchors 0
+		    } else {
+			set StoreAnchors 1
+		    }
+
+		    # Now do the conventional/text.tcl WordBounds calc with cur.
+		    set first $first0
+		    set last  $last0
+		    set extend 0
+		    # Extend range (if necessary) to include the current point.
+		    if {[$w compare $cur < $first]} {
+			set first $cur
+			if {    ($OldSelectMode($w) eq "line")
+			     && [$w compare $last == "$last linestart"]
+			} {
+			    # This kludge stops the selection growing by one
+			    # word in the wrong direction.
+			    set last "$last-1c"
+			    set extend 1
+			} else {
+			}
+		    } elseif {[$w compare $cur > $last]} {
+			set last $cur
+		    }
+
+		    lassign [WordBounds $w $lineType $first $last] first last
+		    if {$extend} {
+			set last [$w index $last+1c]
+		    } else {
+		    }
+		}
+		if {    (!$selectionExists)
+		     && ($OldSelectMode($w) eq "char")
+		     && $StoreAnchors
+		} {
 		    # Compute ntext::* anchor marks on the transition from
 		    # "char" to "word" selection.
-		    lassign [WordBounds $w $lineType $first $last] first last
 		    # The new selection will be a single word.
 		    $w mark set ntext::left::$anchorname $first
 		    $w mark set ntext::right::$anchorname $last
 		    set OldSelectMode($w) word
-		    set StoreAnchors 0
-		} else {
-		    set StoreAnchors 1
 		}
-
-		# Now do the conventional/text.tcl WordBounds calc with cur.
-		set first $first0
-		set last  $last0
-		set extend 0
-		# Extend range (if necessary) to include the current point
-		if {[$w compare $cur < $first]} {
-		    set first $cur
-		    if {    ($OldSelectMode($w) eq "line")
-		         && [$w compare $last == "$last linestart"]
-		    } {
-			# This kludge stops the selection growing by one word in
-			# the wrong direction.
-			set last "$last-1c"
-			set extend 1
-		    } else {
-		    }
-		} elseif {[$w compare $cur > $last]} {
-		    set last $cur
-		}
-
-		lassign [WordBounds $w $lineType $first $last] first last
-		if {$extend} {
-		    set last [$w index $last+1c]
-		} else {
-		}
-	    }
-	    if {    (!$selectionExists)
-	         && ($OldSelectMode($w) eq "char")
-	         && $StoreAnchors
-	    } {
-		# Compute ntext::* anchor marks on the transition from "char"
-		# to "word" selection.
-		# The new selection will be a single word.
-		$w mark set ntext::left::$anchorname $first
-		$w mark set ntext::right::$anchorname $last
-		set OldSelectMode($w) word
 	    }
 	}
 	line {
@@ -1744,15 +1883,15 @@ proc ::ntext::TextSelectTo {w x y {extend 0}} {
 	    if {[$w compare $cur < $first]} {
 		set first "$cur linestart"
 	    } elseif {[$w compare $cur > $last]} {
-		set last "$cur lineend+1c"
+		set last "$cur lineend+1i"
 	    }
 	    set first [$w index $first]
 	    set last [$w index $last]
 	}
     }
     if {$Priv(mouseMoved) || ($Priv(selectMode) ne "char")} {
-        # Set the insert mark and anchor to the ends of the selection.
-        # The insert mark is the end that is closest to the mouse position $cur.
+	# Set the insert mark and anchor to the ends of the selection.
+	# The insert mark is the end that is closest to the mouse position $cur.
 	set distFirst [$w count -displaychars $first $cur]
 	set distLast  [$w count -displaychars $last  $cur]
 	if {abs($distFirst) < abs($distLast)} {
@@ -1770,10 +1909,11 @@ proc ::ntext::TextSelectTo {w x y {extend 0}} {
 	$w mark gravity $anchorname $newGrav
 
 	# Rearrange operations so that selection is never full-empty-full.
-#	$w tag remove sel 0.0 end
-	$w tag add sel $first $last
+#	$w tag remove sel 1.0 end
 	$w tag remove sel 1.0 $first
+	$w tag add sel $first $last
 	$w tag remove sel $last end
+
 	update idletasks
     }
     return
@@ -1808,6 +1948,8 @@ proc ::ntext::TextKeyExtend {w index} {
     if {[catch {$w index $anchorname}]} {
 	$w mark set $anchorname $cur
 	# Right gravity is set by default.
+	# revised_text sets left gravity.
+	# ntext sets gravity in the code below.
     }
 
     if {[$w compare $cur < $anchorname]} {
@@ -1820,9 +1962,9 @@ proc ::ntext::TextKeyExtend {w index} {
 	set grav  right
     }
     # Rearrange operations so that selection is never full-empty-full.
-    # $w tag remove sel 0.0 $first
+    # $w tag remove sel 1.0 $first
     $w tag add sel $first $last
-    $w tag remove sel 0.0 $first
+    $w tag remove sel 1.0 $first
     $w tag remove sel $last end
     $w mark gravity $anchorname $grav
     return
@@ -1840,24 +1982,13 @@ proc ::ntext::TextKeyExtend {w index} {
 # modified to set oldInsert and call AdjustIndentMultipleLines.
 
 proc ::ntext::TextPasteSelection {w x y} {
-    $w mark set insert [TextClosestGap $w $x $y]
-    set oldInsert [$w index insert]
-    if {![catch {::tk::GetSelection $w PRIMARY} sel]} {
-	set oldSeparator [$w cget -autoseparators]
-	if {$oldSeparator} {
-	    $w configure -autoseparators 0
-	    $w edit separator
-	}
-	$w insert insert $sel
-	AdjustIndentMultipleLines $w $oldInsert insert
-	if {$oldSeparator} {
-	    $w edit separator
-	    $w configure -autoseparators 1
-	}
-    }
     if {[$w cget -state] eq "normal"} {
+	# revised_text uses TextCursorPos instead of TextClosestGap.
+	$w mark set insert [TextClosestGap $w $x $y]
+	TextInsertSelection $w PRIMARY
 	focus $w
     }
+    return
 }
 
 # ::tk::TextAutoScan --
@@ -1891,7 +2022,7 @@ proc ::ntext::TextAutoScan {w} {
 	return
     }
     TextSelectTo $w $Priv(x) $Priv(y)
-    set Priv(afterId) [after 50 [list ntext::TextAutoScan $w]]
+    set Priv(afterId) [after 50 [list ::ntext::TextAutoScan $w]]
 }
 
 # ::tk::TextSetCursor
@@ -1906,7 +2037,7 @@ proc ::ntext::TextAutoScan {w} {
 
 proc ::ntext::TextSetCursor {w pos} {
     if {[$w compare $pos == end]} {
-	set pos {end - 1 chars}
+	set pos {end - 1i}
     }
     $w mark set insert $pos
     $w tag remove sel 1.0 end
@@ -1933,9 +2064,13 @@ proc ::ntext::TextSetCursor {w pos} {
 #   never full, then empty, then full.
 
 proc ::ntext::TextKeySelect {w new} {
-
+    if {![catch {$w isdead} result] && $result} {
+	# revised_text
+	# Catch the very special case with dead peers.
+	return
+    }
     set anchorname [TextAnchor $w]
-    if {[$w tag nextrange sel 1.0 end] eq ""} {
+    if {[llength [$w tag nextrange sel 1.0 end]] == 0} {
 	if {[$w compare $new < insert]} {
 	    $w tag add sel $new insert
 	    $w mark set $anchorname insert
@@ -1946,6 +2081,9 @@ proc ::ntext::TextKeySelect {w new} {
 	    $w mark gravity $anchorname right
 	}
     } else {
+	if {[catch {$w index $anchorname}]} {
+	    $w mark set $anchorname insert
+	}
 	if {[$w compare $new < $anchorname]} {
 	    set first $new
 	    set last  $anchorname
@@ -1987,7 +2125,7 @@ proc ::ntext::TextKeySelect {w new} {
 # - Set the gravity of the anchor.
 
 proc ::ntext::TextResetAnchor {w index} {
-    if {[$w tag ranges sel] eq ""} {
+    if {[llength [$w tag ranges sel]] == 0} {
 	# Don't move the anchor if there is no selection now; this
 	# makes the widget behave "correctly" when the user clicks
 	# once, then shift-clicks somewhere -- ie, the area between
@@ -2011,7 +2149,7 @@ proc ::ntext::TextResetAnchor {w index} {
     scan $a "%d.%d" lineA chA
     scan $b "%d.%d" lineB chB
     scan $c "%d.%d" lineC chC
-    if {$lineB < $lineC+2} {
+    if {$lineB < $lineC + 2} {
 	set total [string length [$w get $b $c]]
 	if {$total <= 2} {
 	    return
@@ -2025,7 +2163,7 @@ proc ::ntext::TextResetAnchor {w index} {
 	}
 	return
     }
-    if {($lineA-$lineB) < ($lineC-$lineA)} {
+    if {$lineA - $lineB < $lineC - $lineA} {
 	$w mark set $anchorname sel.last
 	$w mark gravity $anchorname left
     } else {
@@ -2042,10 +2180,9 @@ proc ::ntext::TextResetAnchor {w index} {
 # w -		The text widget whose selection is to be checked
 
 proc ::ntext::TextCursorInSelection {w} {
-    expr {
-	[llength [$w tag ranges sel]]
-	&& [$w compare sel.first <= insert]
-	&& [$w compare sel.last >= insert]
+    expr {    [llength [$w tag ranges sel]]
+	   && [$w compare sel.first <= insert]
+	   && [$w compare sel.last >= insert]
     }
 }
 
@@ -2063,7 +2200,7 @@ proc ::ntext::TextCursorInSelection {w} {
 # - call AdjustIndentOneLine
 
 proc ::ntext::TextInsert {w s} {
-    if {$s eq "" || [$w cget -state] eq "disabled"} {
+    if {[string length $s] == 0 || [$w cget -state] ne "normal"} {
 	return
     }
     set compound 0
@@ -2074,6 +2211,8 @@ proc ::ntext::TextInsert {w s} {
 	    $w edit separator
 	} else {
 	}
+	# revised_text - ensure that this operation is triggering "watch"
+	$w mark set insert sel.first
 	$w delete sel.first sel.last
     } elseif {$::ntext::overwrite && ($s ne "\n") && ($s ne "\t") &&
 		([$w get insert] ne "\n")} {
@@ -2103,14 +2242,15 @@ proc ::ntext::TextInsert {w s} {
 # maintain the original x position across repeated operations, even though
 # some lines that will get passed through don't have enough characters to
 # cover the original column.  Second, don't try to scroll past the
-# beginning or end of the text.
+# beginning or end of the text if we don't select.
 #
 # Arguments:
 # w -		The text window in which the cursor is to move.
 # n -		The number of display lines to move: -1 for up one line,
 #		+1 for down one line.
+# sel		Boolean value whether we are selecting text.
 
-proc ::ntext::TextUpDownLine {w n} {
+proc ::ntext::TextUpDownLine {w n {sel no}} {
     variable ::tk::Priv
 
     set i [$w index insert]
@@ -2118,10 +2258,8 @@ proc ::ntext::TextUpDownLine {w n} {
 	set Priv(textPosOrig) $i
     }
     set lines [$w count -displaylines $Priv(textPosOrig) $i]
-    set new [$w index \
-	    "$Priv(textPosOrig) + [expr {$lines + $n}] displaylines"]
-    if {[$w compare $new == end] \
-	    || [$w compare $new == "insert display linestart"]} {
+    set new [$w index "$Priv(textPosOrig) + [expr {$lines + $n}] displaylines"]
+    if {(!$sel) && ([$w compare $new == end] || [$w compare $new == "insert display linestart"])} {
 	set new $i
     }
     set Priv(prevPos) $new
@@ -2140,17 +2278,16 @@ proc ::ntext::TextUpDownLine {w n} {
 proc ::ntext::TextPrevPara {w pos} {
     set pos [$w index "$pos linestart"]
     while {1} {
-	if {([$w get "$pos - 1 line"] eq "\n" && ([$w get $pos] ne "\n")) \
-		|| $pos eq "1.0"} {
-	    if {[regexp -indices -- {^[ \t]+(.)} \
-		    [$w get $pos "$pos lineend"] -> index]} {
+	set newPos [$w index "$pos - 1 line"]
+	if {([$w get $newPos] eq "\n" && ([$w get $pos] ne "\n")) || [$w compare $pos == 1.0]} {
+	    if {[regexp -indices -- {^[ \t]+(.)} [$w get $pos "$pos lineend"] -> index]} {
 		set pos [$w index "$pos + [lindex $index 0] chars"]
 	    }
-	    if {[$w compare $pos != insert] || [lindex [split $pos .] 0]==1} {
+	    if {[$w compare $pos != insert] || [$w compare [$w index "$pos linestart"] == 1.0]} {
 		return $pos
 	    }
 	}
-	set pos [$w index "$pos - 1 line"]
+	set pos $newPos
     }
 }
 
@@ -2167,18 +2304,17 @@ proc ::ntext::TextNextPara {w start} {
     set pos [$w index "$start linestart + 1 line"]
     while {[$w get $pos] ne "\n"} {
 	if {[$w compare $pos == end]} {
-	    return [$w index "end - 1c"]
+	    return [$w index "end - 1i"]
 	}
 	set pos [$w index "$pos + 1 line"]
     }
     while {[$w get $pos] eq "\n"} {
 	set pos [$w index "$pos + 1 line"]
 	if {[$w compare $pos == end]} {
-	    return [$w index "end - 1c"]
+	    return [$w index "end - 1i"]
 	}
     }
-    if {[regexp -indices -- {^[ \t]+(.)} \
-	    [$w get $pos "$pos lineend"] -> index]} {
+    if {[regexp -indices -- {^[ \t]+(.)} [$w get $pos "$pos lineend"] -> index]} {
 	return [$w index "$pos + [lindex $index 0] chars"]
     }
     return $pos
@@ -2189,7 +2325,9 @@ proc ::ntext::TextNextPara {w start} {
 # pages and possibly extending the selection along the way.  It scrolls
 # the view in the widget by the number of pages, and it returns the
 # index of the character that is at the same position in the new view
-# as the insertion cursor used to be in the old view.
+# as the insertion cursor used to be in the old view. (Or, if the insert
+# cursor was not in view, it returns a weird index from somewhere in the
+# first display line).
 #
 # Arguments:
 # w -		The text window in which the cursor is to move.
@@ -2209,12 +2347,12 @@ proc ::ntext::TextNextPara {w start} {
 # ::ntext::TextScrollPages takes a slightly different approach:
 # like ::tk::TextScrollPages, it returns an index (a new value for the insert
 # mark), and lets the calling code decide whether to move the mark.
-# Unlike ::tk::TextScrollPages, when called with two arguments it does no
+# Unlike ::tk::TextScrollPages (which calls "$w yview", but not "$w see"), when
+# called with two arguments ::ntext::TextScrollPages does no
 # scrolling - it relies on the calling code to do the scrolling, which in
 # practice is usually when it tries to 'see' the returned index value.
 #
-# By focussing on the insert mark, ::ntext::TextScrollPages has the
-# following useful features:
+# ::ntext::TextScrollPages has the following useful features:
 #  - When the slack is less than one page, it "moves" the insert mark as far
 #    as possible.
 #  - When there is no slack, it "moves" the insert mark to the start/end of
@@ -2223,7 +2361,8 @@ proc ::ntext::TextNextPara {w start} {
 #
 # When called with three arguments, 3rd argument = "preScroll", then, if the
 # new position of the insert mark is off-screen, ::ntext::TextScrollPages
-# will scroll the widget, to try to make the calling code's "see" move the
+# will scroll the widget (using "see", not "yview"), to try to make the calling
+# code's "see" move the
 # returned index value to the middle, not the edge, of the widget.  This
 # feature is most useful in widgets with only a few visible lines, where it
 # prevents successive calls from moving the insert mark between the middle and
@@ -2232,36 +2371,65 @@ proc ::ntext::TextNextPara {w start} {
 proc ::ntext::TextScrollPages {w count {help ""}} {
     set spareLines 1 ;# adjustable
 
+    # Cf. revised_text - when scrolling is already at its limit or within a
+    # fractional display line of it, behave as if spareLines is 0, i.e. jump
+    # to the limit.
+    if {$count > 0} {
+	if {[llength [$w dlineinfo end-1c]]} {
+	    # Last display line of last line is partially or fully visible.
+            set localSpareLines 0
+        } else {
+            set localSpareLines $spareLines
+	}
+    } else {
+	if {[llength [$w dlineinfo 1.0]]} {
+	    # First display line of first line is partially or fully visible.
+            set localSpareLines 0
+        } else {
+            set localSpareLines $spareLines
+	}
+    }
+
     set oldInsert [$w index insert]
     set count [expr {int($count)}]
     if {$count == 0} {
 	return $oldInsert
     }
     set visibleLines [$w count -displaylines @0,0 @0,20000]
-    if {$visibleLines > $spareLines} {
-	set pageLines [expr {$visibleLines - $spareLines}]
+    if {$visibleLines > $localSpareLines} {
+	set pageLines [expr {$visibleLines - $localSpareLines}]
     } else {
 	set pageLines 1
     }
     set newInsert  [TextUpDownLine $w [expr {$pageLines * $count}]]
     if {[$w compare $oldInsert != $newInsert]} {
-	set finalInsert $newInsert
+	set newPos $newInsert
     } elseif {$count < 0} {
-	set finalInsert 1.0
+	set newPos 1.0
     } else {
-	set finalInsert [$w index "end -1 char"]
+	set newPos [$w index "end -1 char"]
     }
-    if {($help eq "preScroll") && ([$w bbox $finalInsert] eq "")} {
-	# If $finalInsert is offscreen, try to put it in the middle
-	if {    [$w count -displaylines 1.0 $finalInsert] > \
-		[$w count -displaylines $finalInsert end]} {
+    if {($help eq "preScroll") && ([$w bbox $newPos] eq "")} {
+	# If $newPos is offscreen, try to put it in the middle
+	if {   [$w count -displaylines 1.0 $newPos]
+	     > [$w count -displaylines $newPos end]
+	} {
 	    $w see 1.0
 	} else {
 	    $w see end
 	}
-	$w see $finalInsert
+	$w see $newPos
     }
-    return $finalInsert
+
+
+    # From revised_text - to permit scrolling in this corner case.
+    if {[$w compare insert == $newPos]} {
+	# This may happen if a character is spanning the entire view,
+	# ensure that at least one line will change.
+	set newPos [$w index "[expr {$count > 0 ? "insert +1" : "insert -1"}] displayline"]
+    }
+
+    return $newPos
 }
 
 # ::tk::TextTranspose --
@@ -2279,22 +2447,30 @@ proc ::ntext::TextScrollPages {w count {help ""}} {
 # - renames local variable autosep to oldSeparator, as in other procs
 
 proc ::ntext::TextTranspose w {
-    set pos insert
-    if {[$w compare $pos != "$pos lineend"]} {
-	set pos [$w index "$pos + 1 char"]
-    }
-    set new [$w get "$pos - 1 char"][$w get  "$pos - 2 char"]
-    if {[$w compare "$pos - 1 char" == 1.0]} {
+    if {[$w cget -state] ne "normal" || [$w compare insert == 1.0]} {
 	return
     }
+
+    set pos insert
+    if {[$w compare insert != "insert lineend"]} {
+	append pos +1i
+    }
+    set pos [$w index $pos]
+
     # ensure this is seen as an atomic op to undo
     set oldSeparator [$w cget -autoseparators]
     if {$oldSeparator} {
 	$w configure -autoseparators 0
 	$w edit separator
     }
-    $w delete "$pos - 2 char" $pos
+
+    # for revised_text, ensure that this operation is triggering "watch"
+    set insPos [$w index insert]
+    $w mark set insert ${pos}-2c
+    set new [$w get insert+1i][$w get insert]
+    $w delete insert $pos
     $w insert insert $new
+    $w mark set insert $insPos
 
     if {[$w compare insert == "insert linestart"]} {
 	AdjustIndentOneLine $w "insert - 1 line"
@@ -2302,10 +2478,12 @@ proc ::ntext::TextTranspose w {
     AdjustIndentOneLine $w insert
 
     $w see insert
+
     if {$oldSeparator} {
 	$w edit separator
 	$w configure -autoseparators 1
     }
+    return
 }
 
 # ::tk_textCopy --
@@ -2338,21 +2516,33 @@ proc ::ntext::new_textCopy w {
 
 proc ::ntext::new_textCut w {
     if {![catch {set data [$w get sel.first sel.last]}]} {
-        # make <<Cut>> an atomic operation on the Undo stack,
-        # i.e. separate it from other delete operations on either side
-	set oldSeparator [$w cget -autoseparators]
-	if {$oldSeparator} {
-	    $w configure -autoseparators 0
-	    $w edit separator
-	}
-	set LocalOldFirst [$w index sel.first]
 	clipboard clear -displayof $w
 	clipboard append -displayof $w $data
-	$w delete sel.first sel.last
-	AdjustIndentOneLine $w $LocalOldFirst
-	if {$oldSeparator} {
-	    $w edit separator
-	    $w configure -autoseparators 1
+
+	if {([$w cget -state] eq "normal")} {
+	    # make <<Cut>> an atomic operation on the Undo stack,
+	    # i.e. separate it from other delete operations on either side
+	    # (For older Tk? Check.) disable -autoseparators for the operation.
+	    set oldSeparator [$w cget -autoseparators]
+	    if {$oldSeparator} {
+		$w configure -autoseparators 0
+		$w edit separator
+	    }
+
+	    set LocalOldFirst [$w index sel.first]
+	    TextDelete $w sel.first sel.last
+	    AdjustIndentOneLine $w $LocalOldFirst
+	
+	    if {$oldSeparator} {
+		$w edit separator
+		$w configure -autoseparators 1
+	    }
+
+	    if {$::ntext::GenerateSelect} {
+		# The PRIMARY selection has changed but the widget does
+		# not generate this event.
+		event generate $w <<Selection>>
+	    }
 	}
     }
     return
@@ -2372,30 +2562,8 @@ proc ::ntext::new_textCut w {
 # - overwrite the selection (if it exists), even if the insert mark is elsewhere
 
 proc ::ntext::new_textPaste w {
-    set oldInsert [$w index insert]
-    if {![catch {::tk::GetSelection $w CLIPBOARD} sel]} {
-	set oldSeparator [$w cget -autoseparators]
-	if {$oldSeparator} {
-	    $w configure -autoseparators 0
-	    $w edit separator
-	}
-	if {([tk windowingsystem] ne "x11TheOldFashionedWay") && \
-		([$w tag nextrange sel 1.0 end] ne "")} {
-	    set LocalOldFirst [$w index sel.first]
-	    $w mark set ntextIndentMark sel.last
-	    # right gravity mark, survives deletion
-
-	    $w delete sel.first sel.last
-	    $w insert $LocalOldFirst $sel
-	    AdjustIndentMultipleLines $w $LocalOldFirst ntextIndentMark
-	} else {
-	    $w insert insert $sel
-	    AdjustIndentMultipleLines $w $oldInsert insert
-	}
-	if {$oldSeparator} {
-	    $w edit separator
-	    $w configure -autoseparators 1
-	}
+    if {[$w cget -state] eq "normal"} {
+	::ntext::TextInsertSelection $w CLIPBOARD
     }
     return
 }
@@ -2431,12 +2599,13 @@ proc ::ntext::TextNextPos {w start op} {
     set text ""
     set cur $start
     while {[$w compare $cur < end]} {
-	set text $text[$w get -displaychars $cur "$cur lineend + 1c"]
+	set end [$w index "$cur lineend + 1i"]
+	append text [$w get -displaychars $cur $end]
 	set pos [$op $text 0]
 	if {$pos >= 0} {
 	    return [$w index "$start + $pos display chars"]
 	}
-	set cur [$w index "$cur lineend +1c"]
+	set cur $end
     }
     return end
 }
@@ -2451,17 +2620,19 @@ proc ::ntext::TextNextPos {w start op} {
 # op -		Function to use to find next position.
 
 proc ::ntext::TextPrevPos {w start op} {
-    set text ""
+    set succ ""
     set cur $start
-    while {[$w compare $cur > 0.0]} {
-	set text [$w get -displaychars "$cur linestart - 1c" $cur]$text
+    while {[$w compare $cur > 1.0]} {
+	set text ""
+	append text [$w get -displaychars "$cur linestart - 1i" $cur] $succ
 	set pos [$op $text end]
 	if {$pos >= 0} {
-	    return [$w index "$cur linestart - 1c + $pos display chars"]
+	    return [$w index "$cur linestart - 1i + $pos display chars"]
 	}
-	set cur [$w index "$cur linestart - 1c"]
+	set cur [$w index "$cur linestart - 1i"]
+	set succ $text
     }
-    return 0.0
+    return 1.0
 }
 
 # ::tk::TextScanMark --
@@ -2507,6 +2678,118 @@ proc ::ntext::TextScanDrag {w x y} {
 	$w scan dragto $x $y
     }
 }
+
+# ::tk::TextDelete --
+#
+# Delete the characters in given range.
+# Ensure that "watch" will be triggered, and consider
+# that "insert" may be involved in the given range.
+# This implementation avoids unnecessary mappings of indices.
+
+proc ::ntext::TextDelete {w start end} {
+    if {[catch {set testPos [$w mark generate]}]} {
+	# This is the "unrevised" text widget.
+	$w delete $start $end
+    } else {
+	# This is the revised_text text widget.
+	# Remember old positions, use temporary marks ('mark generate'),
+	# take into account that $end may refer "insert" mark.
+	$w mark set [set insPos [$w mark generate]] insert
+	$w mark set [set endPos [$w mark generate]] $end
+	$w mark set insert $start
+	$w delete insert $endPos
+	$w mark set insert $insPos
+	$w mark unset $insPos
+	$w mark unset $endPos
+	$w mark unset $testPos
+    }
+    return
+}
+
+# ::tk::TextInsertSelection --
+# This procedure inserts the selection.
+#
+# Arguments:
+# w -		The text window.
+# selection	atom name of the selection (usually CLIPBOARD or PRIMARY)
+
+# Extracted from ::ntext::new_textPaste and ::ntext::TextPasteSelection, and
+# corresponds to revised_text's tk::TextInsertSelection.
+
+proc ::ntext::TextInsertSelection {w selection} {
+    if {[catch {::tk::GetSelection $w $selection} sel]} {
+	return
+    }
+    set oldInsert [$w index insert]
+    set oldSeparator [$w cget -autoseparators]
+    if {$oldSeparator} {
+	$w configure -autoseparators 0
+	$w edit separator
+    }
+
+    if {([$w tag nextrange sel 1.0 end] ne "")} {
+        set oldSel [list [$w index sel.first] [$w index sel.last]]
+    } else {
+        set oldSel {}
+    }
+
+    if {    ($selection eq "CLIPBOARD")
+	 && ([tk windowingsystem] ne "x11TheOldFashionedWay")
+	 && ([$w tag nextrange sel 1.0 end] ne "")
+    } {
+	set LocalOldFirst [$w index sel.first]
+	$w mark set ntextIndentMark sel.last
+	# right gravity mark, survives deletion
+
+	TextDelete $w sel.first sel.last
+	$w insert $LocalOldFirst $sel
+	AdjustIndentMultipleLines $w $LocalOldFirst ntextIndentMark
+    } else {
+	$w insert insert $sel
+	AdjustIndentMultipleLines $w $oldInsert insert
+    }
+    if {$oldSeparator} {
+	$w edit separator
+	$w configure -autoseparators 1
+    }
+
+    # The PRIMARY selection has changed but the widget does
+    # not generate this event.
+    if {    ($selection eq "PRIMARY")
+	 && [TextCursorInSelection $w]
+	 && $::ntext::GenerateSelect
+    } {
+	event generate $w <<Selection>>
+    }
+
+    # The PRIMARY selection has changed but the widget does
+    # not generate this event.
+    # The operation doesn't change the value without changing the range,
+    # so it is enough to consider the range.
+    # The operation does not mark a selection if none existed before.
+    if {    ($selection eq "CLIPBOARD")
+	 && ($oldSel ne {})
+	 && $::ntext::GenerateSelect
+	 && (    ([$w tag nextrange sel 1.0 end] eq "")
+              || ([list [$w index sel.first] [$w index sel.last]] ne $oldSel)
+            )
+    } {
+	event generate $w <<Selection>>
+    }
+
+    return
+}
+
+
+# revised_text text.tcl has new commands in the global namespace:
+#     ::tk_textInsert
+#     ::tk_textReplace
+#     ::tk_textRebindMouseWheel
+#     ::tk_mergeRange
+# These commands are loaded from text.tcl and are self-contained: they are not
+# used by any bindings or commands in text.tcl, and do not call any other
+# commands in text.tcl.  Therefore ntext does not need to provide replacements.
+
 
 ##### END OF CODE THAT IS MODIFIED from the file text.tcl.
 ##### THE CODE ABOVE ALSO USES THE PROCS DEFINED BELOW.
@@ -2626,6 +2909,31 @@ proc ::ntext::EndIndex {w index} {
     }
 
     return $end
+}
+
+# ::ntext::DefineCursor --
+# Set the cursor depending on insert/overwrite mode and
+# ::ntext::useBlockCursor.
+
+proc ::ntext::DefineCursor {w} {
+    variable overwrite
+    variable useBlockCursor
+    variable OldInsertBackground
+
+    if {$useBlockCursor} {
+	$w configure -blockcursor $overwrite
+    } else {
+	if {$overwrite} {
+	    set OldInsertBackground($w) [$w cget -insertbackground]
+	    $w configure -insertbackground red
+	} elseif {[info exists OldInsertBackground($w)]} {
+	    $w configure -insertbackground $OldInsertBackground($w)
+	} else {
+	    # Somehow the old value was not recorded.  Improvise.
+	    $w configure -insertbackground [$w cget -fg]
+	}
+    }
+    return
 }
 
 
@@ -3102,11 +3410,14 @@ proc ::ntext::AdjustIndentOneLine {textWidget index} {
 proc ::ntext::AddIndent {textWidget index pix} {
     # Add a tag with properties "-lmargin2 $pix" to the entire logical line
     variable lm2IndentDebug
+    variable indentColor
     set lineStart     [$textWidget index "$index linestart"]
     set nextLineStart [$textWidget index "$lineStart + 1 line"]
     set tagName ntextAlignLM2Indent=${pix}
     $textWidget tag add $tagName $lineStart $nextLineStart
     $textWidget tag configure $tagName -lmargin2 ${pix}
+    # Older versions of Tk do not support -lmargincolor.
+    catch {$textWidget tag configure $tagName -lmargincolor $indentColor}
     if {$lm2IndentDebug} {
 	$textWidget tag configure $tagName -background [IntToColor $pix 100]
     }
@@ -3262,6 +3573,25 @@ proc ::ntext::IntToColor {pix range} {
     return $color
 }
 
+# ::ntext::syncIndentColor --
+#
+# Synchronize text widget indent coloring with indentColor.
+# Call only if indentColor is changed after widgets with text have been
+# defined.
+#
+# Arguments:
+# w -   		Tk window path of a text widget
+
+proc ::ntext::syncIndentColor {w} {
+    variable indentColor
+    foreach tag [$w tag names] {
+	if {[string match ntextAlignLM2Indent=* $tag]} {
+	    catch {$w tag configure $tag -lmargincolor $indentColor}
+	}
+    }
+    return
+}
+
 ##### END OF CODE TO HANDLE (OPTIONAL) INDENTATION USING -lmargin2
 
 ##### End of procs.
@@ -3270,4 +3600,4 @@ proc ::ntext::IntToColor {pix range} {
 
 ::ntext::initializeMatchPatterns
 
-package provide ntext 1.0b1
+package provide ntext 1.0b3

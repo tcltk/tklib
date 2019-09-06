@@ -1,0 +1,14 @@
+2019-09-03  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/scrollutil.html Slightly extended.
+
+2019-08-31  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* ../../examples/scrollutil/SyncListboxes.tcl Minor improvements.
+
+	* doc/SyncListboxes.png Updated.
+	* doc/scrollutil.html
+
+2019-08-29  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Added scrollutil to tklib.

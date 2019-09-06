@@ -1,14 +1,14 @@
 #!/usr/bin/env wish
 
 #==============================================================================
-# Demonstrates how to use a tablelist widget for displaying the contents of a
+# Demonstrates how to use a tablelist widget for displaying the content of a
 # directory.
 #
-# Copyright (c) 2010-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2010-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.3
-package require tablelist 5.17
+package require tablelist 6.6
 
 #
 # Add some entries to the Tk option database
@@ -26,7 +26,7 @@ image create photo fileImg       -file [file join $dir file.gif]
 #------------------------------------------------------------------------------
 # displayContents
 #
-# Displays the contents of the directory dir in a tablelist widget.
+# Displays the content of the directory dir in a tablelist widget.
 #------------------------------------------------------------------------------
 proc displayContents dir {
     #
@@ -84,12 +84,12 @@ proc displayContents dir {
     # Manage the widgets
     #
     grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
-    global winSys
-    if {[string compare $winSys "aqua"] == 0} {
+    global winSys					;# see option.tcl
+    if {[string compare $winSys "win32"] == 0} {
+	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+    } else {
 	grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
 	grid $vsb	       -row 1 -column 1 -sticky ns
-    } else {
-	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
     }
     grid $hsb -row 2 -column 0 -sticky ew
     grid rowconfigure    $tf 1 -weight 1
@@ -99,7 +99,7 @@ proc displayContents dir {
     pack $tf -side top -expand yes -fill both
 
     #
-    # Populate the tablelist with the contents of the given directory
+    # Populate the tablelist with the content of the given directory
     #
     $tbl sortbycolumn 0
     putContents $dir $tbl root
@@ -108,7 +108,7 @@ proc displayContents dir {
 #------------------------------------------------------------------------------
 # putContents
 #
-# Outputs the contents of the directory dir into the tablelist widget tbl, as
+# Outputs the content of the directory dir into the tablelist widget tbl, as
 # child items of the one identified by nodeIdx.
 #------------------------------------------------------------------------------
 proc putContents {dir tbl nodeIdx} {
@@ -263,7 +263,7 @@ proc formatSize val {
 #------------------------------------------------------------------------------
 # expandCmd
 #
-# Outputs the contents of the directory whose leaf name is displayed in the
+# Outputs the content of the directory whose leaf name is displayed in the
 # first cell of the specified row of the tablelist widget tbl, as child items
 # of the one identified by row, and updates the image displayed in that cell.
 #------------------------------------------------------------------------------
@@ -291,7 +291,7 @@ proc collapseCmd {tbl row} {
 #------------------------------------------------------------------------------
 # putContentsOfSelFolder
 #
-# Outputs the contents of the selected folder into the tablelist widget tbl.
+# Outputs the content of the selected folder into the tablelist widget tbl.
 #------------------------------------------------------------------------------
 proc putContentsOfSelFolder tbl {
     set row [$tbl curselection]
@@ -351,7 +351,7 @@ proc postPopupMenu {rootX rootY} {
 #------------------------------------------------------------------------------
 # refreshView
 #
-# Redisplays the contents of the directory dir in the tablelist widget tbl and
+# Redisplays the content of the directory dir in the tablelist widget tbl and
 # restores the expanded states of the folders as well as the vertical view.
 #------------------------------------------------------------------------------
 proc refreshView {dir tbl} {
@@ -366,7 +366,7 @@ proc refreshView {dir tbl} {
     }
 
     #
-    # Redisplay the directory's (possibly changed) contents and restore
+    # Redisplay the directory's (possibly changed) content and restore
     # the expanded states of the folders, along with the vertical view
     #
     putContents $dir $tbl root

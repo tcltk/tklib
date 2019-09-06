@@ -2,12 +2,12 @@
 
 #==============================================================================
 # Demonstrates the interactive tablelist cell editing with the aid of some
-# widgets from the tile package and of the Tk core spinbox widget.
+# widgets from the tile package.
 #
-# Copyright (c) 2005-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.17
+package require tablelist_tile 6.6
 
 wm title . "Serial Line Configuration"
 
@@ -30,13 +30,6 @@ source [file join $dir images.tcl]
 # frame as a container for the other widgets
 #
 set f [ttk::frame .f]
-
-#
-# Work around the improper appearance of the tile scrollbars in the aqua theme
-#
-if {[tablelist::getCurrentTheme] eq "aqua"} {
-    interp alias {} ttk::scrollbar {} ::scrollbar
-}
 
 #
 # Create a tablelist widget with editable columns (except the first one)
@@ -205,7 +198,7 @@ proc editStartCmd {tbl row col text} {
 # editEndCmd
 #
 # Performs a final validation of the text contained in the edit window and gets
-# the cell's internal contents.
+# the cell's internal content.
 #------------------------------------------------------------------------------
 proc editEndCmd {tbl row col text} {
     switch [$tbl columncget $col -name] {
