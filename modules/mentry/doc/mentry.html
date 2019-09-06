@@ -12,7 +12,7 @@
   <div align="center">
     <h1>Mentry Programmer's Guide</h1>
 
-    <h2>For Mentry Version 3.7</h2>
+    <h2>For Mentry Version 3.9</h2>
 
     <h3>by</h3>
 
@@ -29,7 +29,7 @@
   <h4><a href="#overview">Overview</a></h4>
 
   <ul>
-    <li><a href="#ov_what">What is Mentry?</a></li>
+    <li><a href="#ov_what">What Is Mentry?</a></li>
 
     <li><a href="#ov_get">How to Get It?</a></li>
 
@@ -60,7 +60,7 @@
 
   <h2 id="overview">Overview</h2>
 
-  <h3 id="ov_what">What is Mentry?</h3>
+  <h3 id="ov_what">What Is Mentry?</h3>
 
   <p>Mentry is a library package for Tcl/Tk versions 8.0 or higher, written in
   pure Tcl/Tk code.&nbsp; It contains:</p>
@@ -145,8 +145,8 @@ foreach w [.me entries] {
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Mentry is available for free download from the same URL as Wcb.&nbsp; The
-  distribution file is <code>mentry3.7.tar.gz</code> for UNIX and
-  <code>mentry3_7.zip</code> for Windows.&nbsp; These files contain the same
+  distribution file is <code>mentry3.9.tar.gz</code> for UNIX and
+  <code>mentry3_9.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -168,21 +168,29 @@ foreach w [.me entries] {
   respectively.</p>
 
   <p>To install Mentry <i>on UNIX</i>, <code>cd</code> to the desired directory
-  and unpack the distribution file <code>mentry3.7.tar.gz</code>:</p>
+  and unpack the distribution file <code>mentry3.9.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c mentry3.7.tar.gz | tar -xf -
+gunzip -c mentry3.9.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>mentry3.7</code>, with
+  <p>On most UNIX systems this can be replaced with</p>
+
+  <blockquote>
+    <pre>
+tar -zxf mentry3.9.tar.gz
+</pre>
+  </blockquote>
+
+  <p>Both commands will create a directory named <code>mentry3.9</code>, with
   the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>mentry3_7.zip</code> into the directory
-  <code>mentry3.7</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>mentry3_9.zip</code> into the directory
+  <code>mentry3.9</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>mentryThemes.tcl</code> in the <code>scripts</code>
@@ -332,20 +340,19 @@ namespace import mentry::<i>pattern</i> ?mentry::<i>pattern ...</i>?
   <p>After these cautions concerning the use of tile, the rest of this section
   describes the differences between the packages Mentry and Mentry_tile.</p>
 
-  <p>The Mentry_tile package checks whether the required Tcl, Tk, and tile
-  versions are present, by executing the commands</p>
+  <p>The Mentry_tile package checks whether the required Tk and tile versions
+  are present, by executing the commands</p>
 
   <blockquote>
     <pre>
-package require Tcl 8.4
-package require Tk  8.4
+package require Tk 8.4
 if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     package require tile 0.6
 }
 </pre>
   </blockquote>
 
-  <p>The last command above reflects the fact that, beginning with Tk 8.5a6,
+  <p>The second command above reflects the fact that, beginning with Tk 8.5a6,
   tile is integrated into the Tk core and therefore it should only be loaded
   explicitly when using an earlier Tk version.</p>
 
@@ -608,7 +615,7 @@ proc checkIfPhoneNumberMentry win {
   application displaying the following figure:</p>
 
   <blockquote>
-    <img src="phonenumber.png" alt="Phone Number" width="228" height="201">
+    <img src="phonenumber.png" alt="Phone Number" width="269" height="228">
   </blockquote>
 
   <p>Here is the relevant code fragment:</p>
@@ -661,7 +668,7 @@ button .get -text "Get from mentry" -command {
 #
 # Label .num displaying the result of getPhoneNumber
 #
-label .num -textvariable num
+label .num -textvariable num -background white
 
 . . .
 
@@ -818,8 +825,8 @@ proc getEthernetAddr win {
   Ethernet addresses looks like in the following figure:</p>
 
   <blockquote>
-    <img src="ethernetaddr.png" alt="Ethernet Address" width="248"
-    height="215">
+    <img src="ethernetaddr.png" alt="Ethernet Address" width="290"
+    height="243">
   </blockquote>
 
   <h3 id="ex_dateTime">Using mentry Widgets for Date and Time</h3>
@@ -856,7 +863,7 @@ proc getEthernetAddr win {
 
     <li class="tm">Finally, the procedure <code><a href=
     "mentryDateTime.html#dateTimeMentry">mentry::dateTimeentry</a></code>
-    creates a new mentry widget for displaying and editing a date &amp; time
+    creates a new mentry widget for displaying and editing a date & time
     according to the format passed to the command as a 5- or 6-character
     string, with the first three characters consisting of the letters
     <code>"d"</code>, <code>"m"</code>, and <code>"y"</code> or
@@ -877,7 +884,7 @@ proc getEthernetAddr win {
     <pre>
 package require mentry
 
-set title "Date &amp; Time"
+set title "Date & Time"
 wm title . $title 
 
 #
@@ -895,7 +902,7 @@ array set timeFmts {0 IMS  1 HMS}
 array set timeSeps {0 :    1 :  }
 
 #
-# Choose the date &amp; time formats; don't use the %p field descriptor
+# Choose the date & time formats; don't use the %p field descriptor
 # for displaying the AM/PM indicator, because it doesn't work on
 # UNIX if Tcl/Tk 8.4 or higher is used in a non-default locale
 #
@@ -916,7 +923,7 @@ set timeIdx [tk_dialog .choice $title "Please choose a time format" {} -1 \
 wm deiconify .
 
 #   
-# Frame .f with mentries displaying the date &amp; time
+# Frame .f with mentries displaying the date & time
 #   
 frame .f
 label .f.lDate -text "Date: "
@@ -941,7 +948,7 @@ pack .f.lDate .f.date .f.gap .f.lTime .f.time -side left
   2</code>&nbsp; and&nbsp; <code>timeIdx = 1</code>:</p>
 
   <blockquote>
-    <img src="datetime1.png" alt="Date &amp; Time" width="243" height="183">
+    <img src="datetime1.png" alt="Date & Time" width="279" height="209">
   </blockquote>
 
   <p>The demo script <code>datetime2.tcl</code> displays both the date and time
@@ -951,10 +958,10 @@ pack .f.lDate .f.date .f.gap .f.lTime .f.time -side left
   <blockquote>
     <pre>
 #
-# Frame .f with a mentry displaying the date &amp; time
+# Frame .f with a mentry displaying the date & time
 #
 frame .f
-label .f.l -text "Date &amp; time: "
+label .f.l -text "Date & time: "
 mentry::dateTimeMentry .f.me $dateFmts($dateIdx)$timeFmts($timeIdx) \
                        $dateSeps($dateIdx) $timeSeps($timeIdx) \
                        -justify center -background white
@@ -963,27 +970,27 @@ pack .f.l .f.me
   </blockquote>
 
   <blockquote>
-    <img src="datetime2.png" alt="Date &amp; Time" width="232" height="183">
+    <img src="datetime2.png" alt="Date & Time" width="272" height="209">
   </blockquote>
 
-  <p>The Mentry package exports two further commands for date, time, and date
-  &amp; time mentries:</p>
+  <p>The Mentry package exports two further commands for date, time, and date &
+  time mentries:</p>
 
   <ul>
     <li>The procedure <code><a href=
     "mentryDateTime.html#putClockVal">mentry::putClockVal</a></code> outputs
-    the date, time, or date &amp; time corresponding to an integer clock value
-    specified as its first argument to a date, time, or date &amp; time mentry
+    the date, time, or date & time corresponding to an integer clock value
+    specified as its first argument to a date, time, or date & time mentry
     widget, passed to it as the second parameter.&nbsp; Like the
     &nbsp;<code>clock format</code>&nbsp; command, the procedure accepts the
     optional argument pair&nbsp; <code>-gmt <i>boolean</i></code>.</li>
 
     <li class="tm">The procedure <code><a href=
     "mentryDateTime.html#getClockVal">mentry::getClockVal</a></code> returns
-    the clock value corresponding to the date, time, or date &amp; time
-    contained in the date, time, or date &amp; time mentry specified as its
-    first argument.&nbsp; Like the &nbsp;<code>clock scan</code>&nbsp; command,
-    the procedure accepts the optional argument pairs&nbsp; <code>-base
+    the clock value corresponding to the date, time, or date & time contained
+    in the date, time, or date & time mentry specified as its first
+    argument.&nbsp; Like the &nbsp;<code>clock scan</code>&nbsp; command, the
+    procedure accepts the optional argument pairs&nbsp; <code>-base
     <i>clockValue</i></code>&nbsp; and&nbsp; <code>-gmt
     <i>boolean</i></code>.&nbsp; On failure, the procedure sets the focus to
     the first erronous entry child, generates an error, and returns one of the
@@ -1043,7 +1050,7 @@ button .get -text "Get from mentries" -command {
 #
 # Label .dateTime displaying the result of mentry::getClockVal
 #
-label .dateTime -textvariable dateTime
+label .dateTime -textvariable dateTime -background white
 
 . . .
 
@@ -1060,7 +1067,7 @@ focus [.f.date entrypath 0]
   of the <code>-base</code> option when passing the name of the time mentry to
   the same procedure.</p>
 
-  <p>The demo script <code>datetime2.tcl</code> is more simple:</p>
+  <p>The demo script <code>datetime2.tcl</code> is simpler:</p>
 
   <blockquote>
     <pre>
@@ -1082,7 +1089,7 @@ button .get -text "Get from mentry" -command {
 #
 # Label .dateTime displaying the result of mentry::getClockVal
 #
-label .dateTime -textvariable dateTime
+label .dateTime -textvariable dateTime -background white
 
 . . .
 
@@ -1157,7 +1164,7 @@ array set msgs {
 #
 # Label <span>.base</span>.num displaying the result of getPhoneNumber
 #
-<span>ttk::</span>label <span>.base</span>.num -textvariable num
+<span>ttk::</span>label <span>.base</span>.num -textvariable num -background white
 
 . . .
 
@@ -1170,8 +1177,8 @@ focus [<span>.base</span>.f.me entrypath 0]
   appearance:</p>
 
   <blockquote>
-    <img src="phonenumber_tile.png" alt="Phone Number" width="226"
-    height="189">
+    <img src="phonenumber_tile.png" alt="Phone Number" width="267"
+    height="216">
   </blockquote>
 
   <p>The only Mentry-specific change in the code above consists of the use of

@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains some Tk option database settings.
 #
-# Copyright (c) 2004-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -10,12 +10,6 @@
 #
 if {[tk windowingsystem] eq "x11"} {
     option add *Font			TkDefaultFont
-} else {
-    option add *ScrollArea.borderWidth			1
-    option add *ScrollArea.relief			sunken
-    option add *ScrollArea.Tablelist.borderWidth	0
-    option add *ScrollArea.Text.borderWidth		0
-    option add *ScrollArea.Text.highlightThickness	0
 }
 tablelist::setThemeDefaults
 if {[tablelist::getCurrentTheme] eq "aqua"} {
@@ -34,3 +28,8 @@ option add *Tablelist.setGrid		yes
 option add *Tablelist.movableColumns	yes
 option add *Tablelist.labelCommand	tablelist::sortByColumn
 option add *Tablelist.labelCommand2	tablelist::addToSortColumns
+option add *ScrollArea.borderWidth		1
+option add *ScrollArea.relief			sunken
+option add *ScrollArea.Tablelist.borderWidth	0
+option add *ScrollArea.Text.borderWidth		0
+option add *ScrollArea.Text.highlightThickness	0

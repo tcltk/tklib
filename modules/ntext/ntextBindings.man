@@ -83,6 +83,16 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
 [item]
    [const 1] - selects classic [emph Text] behaviour
 [list_end]
+
+[para]
+[var ::ntext::classicParagraphs]
+[list_begin itemized]
+[item]
+   [const 0] - (default value) on macOS Aqua, certain keyboard bindings are made to behave in the same way as the Mac application TextEdit.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>.
+[item]
+   [const 1] - on macOS Aqua, certain keyboard bindings are made to behave in the same way as for the Windows and X11 windowing systems and the classic [emph Text], ignoring the conventions of Aqua.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>.
+[list_end]
+
 [para]
 [var ::ntext::classicSelection]
 [list_begin itemized]
@@ -101,15 +111,17 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
 [item]
    The value is toggled by the [emph Insert] key.
 [list_end]
+
 [para]
-[var ::ntext::classicParagraphs]
+[var ::ntext::useBlockCursor]
 [list_begin itemized]
 [item]
-   [const 0] - (default value) on macOS Aqua, certain keyboard bindings are made to behave in the same way as the Mac application TextEdit.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>.
+   [const 0] - the block cursor will not be used.  When the widget is in [emph overwrite] mode (see [const ::ntext::overwrite]), the ordinary cursor will change color instead.
 [item]
-   [const 1] - on macOS Aqua, certain keyboard bindings are made to behave in the same way as for the Windows and X11 windowing systems and the classic [emph Text], ignoring the conventions of Aqua.  The bindings involve vertical scrolling of the screen and are <?Shift-?Option-(Up|Down)>.
+   [const 1] - the block cursor will be used when the widget is in [emph overwrite] mode (see [const ::ntext::overwrite]).
+[item]
+   The default value depends on the version of [const Tk].  In versions of [const Tk] earlier than [const 8.5.12], the sizing of the block cursor had a bug, and [var ::ntext::useBlockCursor] defaults to [const 0].  From [const 8.5.12] onwards the bug is fixed, and [var ::ntext::useBlockCursor] defaults to [const 1].
 [list_end]
-
 
 [section INTERNALS]
 

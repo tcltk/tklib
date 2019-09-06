@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'widget_listsimple\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "widget_listsimple" n 0\&.1 tklib "widget::listsimple widget"
+.TH "widget_listsimple" n 0\&.1\&.2 tklib "widget::listsimple widget"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -277,7 +277,7 @@ package require \fBTcl  8\&.5\fR
 .sp
 package require \fBTk  8\&.5\fR
 .sp
-package require \fBwidget::listsimple  ?0\&.1?\fR
+package require \fBwidget::listsimple  ?0\&.1\&.2?\fR
 .sp
 package require \fBwidget::validator  ?0\&.1?\fR
 .sp

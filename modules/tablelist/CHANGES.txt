@@ -1,5 +1,289 @@
-What is new in Tablelist 5.17?
+What is new in Tablelist 6.6?
+-----------------------------
+
+1. Added mouse bindings for setting, extending, and toggling the column-
+   wise cell selection with the aid of the header labels if the
+   selection type is "cell" (thanks to Nicolas Bats for his proposal,
+   testing, and discussions on this subject).
+
+2. New "-selectfiltercommand" widget and column configuration option,
+   which can be used for filtering the cells that are to be selected by
+   the column-wise cell selection operation (again, thanks to Nicolas
+   Bats for his proposal, testing, and discussions on this subject).
+
+3. Improvements related to the interactive editing of multi-line cells
+   (thanks to Johann Oberdorfer for his proposal).
+
+4. Adapted the look & feel of the tree style "adwaita" to current
+   versions of the GTK+ 3 theme Adwaita.
+
+5. Improved the description of the "-height" option in the reference
+   manual and extended it by a hint concerning the desired height in
+   rows (thanks to Jakob Gager for discussions on this subject).
+
+6. The reference manual now contains several links to the new Scrollutil
+   package, along with an example showing how the scrollutil::scrollarea
+   widget can be used to make the creation of a scrolled tablelist quite
+   simple.
+
+7. Eliminated the flickering in the presence of header items, introduced
+   in Tablelist 6.5 (thanks to Johann Oberdorfer for reporting this
+   regression).
+
+8. Fixed a long-standing bug related to the "move" subcommand (thanks to
+   John J. Seal for his bug report).
+
+9. Several further improvements and minor bug fixes.
+
+What was new in Tablelist 6.5?
 ------------------------------
+
+1. Support for the new virtual events <<TablelistHeaderHeightChanged>>
+   and <<TablelistTitleColsWidthChanged>>, generated when the header's
+   height or the total width of the viewable title columns,
+   respectively, has changed.
+
+2. Optimized the vertical scrolling by units (thanks to Nicolas Bats for
+   his input).
+
+3. Minor improvement related to the appearance of embedded checkbuttons
+   on X11.
+
+4. Fixed a bug introduced in Tablelist 6.4, related to the "-showlabels"
+   option (thanks to Jakob Gager for his bug report).
+
+5. Fixed a few bugs specific to Mac OS X Aqua, introduced in Tablelist
+   6.4 (thanks to Paul Obermeier and Nicolas Bats for their bug
+   reports).
+
+6. Fixed a bug related to the handling of mouse wheel events during
+   interactive cell editing, introduced in Tablelist 6.4 (thanks to
+   Alexandru Dadalau for his bug report).
+
+7. Fixed a bug related to the "move" subcommand, introduced in Tablelist
+   6.3 (thanks to Jose Luis Lijo and Bo Berggren for their bug reports).
+
+8. Several further improvements in the code and documentation.
+
+What was new in Tablelist 6.4?
+------------------------------
+
+1. Added the "-xmousewheelwindow" and "-ymousewheelwindow" configuration
+   options, which make it possible to redirect the mouse wheel events of
+   the tablelist's body to the containing scrollable window or toplevel
+   widget in case the focus is outside the tablelist (thanks to Michael
+   Niehren for discussions on this subject).
+
+2. Optimized the deletion of a list of items (thanks to Martin Lemburg
+   for his proposal).
+   
+3. Improved the performance of the vertical scrolling (thanks to Olivier
+   Jolet for discussions on this subject).
+
+4. Eliminated a potential endless loop triggered by key navigation with
+   the "aqua" theme and selection type "cell" (thanks to Michael
+   Grundler for his bug report).
+
+5. Fixed a regression introduced in Tablelist 6.3, related to the
+   handling of the "-listvariable" option when using Itcl 3.x (thanks to
+   Ralf Fassel for his bug report and valuable contribution).
+
+6. Fixed another regression introduced in Tablelist 6.3, related to
+   clearing the multiple or extended selection (thanks to Martin Lemburg
+   for his bug report).
+
+7. Several further improvements and minor bug fixes in the code and
+   demo scripts.
+
+What was new in Tablelist 6.3?
+------------------------------
+
+1.  Added the "-showbusycursor" configuration option, used to control
+    whether the default bindings should display a busy cursor during the
+    actions that can take a long time to complete, using the new
+    "setbusycursor" and "restorecursor" subcommands.
+
+2.  The "-stretch" configuration option is no longer ignored if the
+    width of the tablelist widget was specified as zero or less (thanks
+    to Adrian Medrano Calvo for his proposal).  For technical reasons
+    there is just a minor restriction, which is only relevant on X11: If
+    the value of the "-width" option is zero or less and the tablelist
+    has stretchable columns, then the "-setgrid" option will be ignored.
+
+3.  The vertical scrollbar, when managed with the aid of the
+    "cornerpath" subcommand, will now appear below the entire header,
+    including both the header labels and the header items (if any).
+
+4.  Besides the north-east corner frame there is now a south-west corner
+    frame, designed to be used when managing the horizontal scrollbar
+    in the presence of title columns.  The "cornerpath" subcommand now
+    accepts the corner specification as optional argument.
+
+5.  Significant optimizations in the item insertion as well as in the
+    selection-related code (thanks to Johann Oberdorfer for testing and
+    discussions on this subject).
+
+6.  Adapted to some changes in future Tcl and Tk releases (for example,
+    made sure that it works with Tcl 9.0 and Tk 8.7).
+
+7.  Further improvements related to the interactive cell editing with
+    the aid of the ctext widget (thanks to Sait Dogru for discussions on
+    this subject).
+
+8.  Made the overall handling of the "-listvariable" option much more
+    robust (thanks to Ulrich Seidl for his bug report).
+
+9.  Fixed a long-standing bug related to the "-maxwidth" column
+    configuration option (again, thanks to Ulrich Seidl for his bug
+    report).
+
+10. Fixed a bug related to the "-displayondemand" configuration option
+    (thanks to "tombert" for his bug report).
+
+11. Fixed a bug related to the tooltip support (thanks to Bo Berggren
+    for his bug report).
+
+12. Fixed a bug related to the "rowconfigure" subcommand, introduced in
+    Tablelist version 6.0 (thanks to Ulrich Seidl for his bug report).
+
+13. Numerous further improvements and minor bug fixes.
+
+What was new in Tablelist 6.2?
+------------------------------
+
+1. Added the "-labelvalign" column configuration option, for controlling
+   the vertical alignment of header label images (thanks to Johann
+   Oberdorfer for his proposal).
+
+2. The "collapse" and "expand" subcommands now accept a list of indices
+   as first argument (thanks to Ulrich Seidl for his proposal).  This is
+   much more efficient than a series of invocations for individual rows.
+
+3. Significantly improved the overall performance of tablelist widgets
+   containing a tree structure, embedded images, or multi-line cells
+   (thanks to Ulrich Seidl for reporting some performance-related
+   issues in tree widgets).
+
+4. Important improvements related to the scanning performance and
+   behavior (thanks to Johann Oberdorfer for discussions on this
+   subject).
+
+5. Changed the default arrow style "flat7x5" to "flat8x4" on the
+   windowing system "x11" and for the tile themes "alt", "clam",
+   "default", "kroc", "sriv", "srivlg", and "step" (POTENTIAL
+   INCOMPATIBILITY!).
+
+6. The manual now recommends managing the vertical scrollbar (if any) to
+   appear below the header labels with the aid of the "cornerpath"
+   subcommand not only for Mac OS X Aqua but also for X11.  The demo
+   scripts have been adapted accordingly.
+
+7. Fixed two minor bugs related to the interactive cell editing with the
+   aid of the ctext widget (thanks to Sait Dogru for his bug report).
+
+8. Fixed a long-standing bug related to the handling of the
+   "-listvariable" option in connection with snit widgetadaptors (thanks
+   to Rolf Ade for his bug report).
+
+9. Several further code improvements and minor bug fixes (thanks to
+   Alexandru Dadalau and Bernhard Wallner for their bug reports).
+
+What was new in Tablelist 6.1?
+------------------------------
+
+1. Added the "-imagebackground" cell configuration option, useful for
+   embedded images having (partially) transparent regions (thanks to
+   Jose Luis Lijo for his proposal).
+
+2. Extended the description of the "bodytag" subcommand in the
+   reference manual by examples showing how to register the body of a
+   tablelist widget as a drag source in such a way that the drag works
+   also for the separators, multi-line cells, and embedded images.
+
+3. Eliminated a regression related to both temporarily and persistently
+   embedded Tk checkbuttons on Windows, introduced in the previous
+   Tablelist version (thanks to Johann Oberdorfer, Jyrki Majamaeki, and
+   Ralf Fassel for their bug reports).
+
+What was new in Tablelist 6.0?
+------------------------------
+
+1. Added support for header items (aka title rows) with the aid of the
+   new "header", "headerpath", and "headertag" subcommands.  The first
+   one supports a great number of subcommands itself, like
+   "insert(list)", "delete", "size", "rowconfigure", "cellconfigure",
+   "get(formatted)", "get(formatted)cells", etc. (thanks to Hemang
+   Lavana, Kenneth Green, and Ralf Fassel for their proposals).  The
+   demo scripts "embeddedWindows.tcl" and "embeddedWindows_tile.tcl" now
+   contain invocations of "header insert" and "header rowconfigure".
+
+2. Added the "embed(ttk)checkbutton" and "embed(ttk)checkbuttons"
+   subcommands, which provide interactive cell editing with the aid of
+   persistently embedded checkbuttons (thanks to Mark Garvey and Holger
+   Jakobs for their proposal).  The Tablelist Programmer's Guide now
+   contains an example of usage of the "embedcheckbuttons" subcommand.
+
+3. Compatibility with the revised implementation of the text widget,
+   which will be contained in Tk 8.7 (thanks to Brad Lanam, Gregor
+   Cramer, and Francois Vogel for their valuable assistance).
+
+4. The "dicttoitem" and "itemtodict" subcommands are now supported in
+   the presence of alternative, Tcl-only "dict" implementations, too
+   (thanks to Andy Goth for his proposal).
+
+5. Deleting all items has become by orders of magnitude faster (thanks
+   to Martin Lemburg for requesting this performance improvement).
+
+6. Guarded against invocations of the "update" command from within the
+   command specified as the value of the "-tooltipaddcommand" option
+   (thanks to Alexandru Dadalau for his bug report and discussions on
+   this subject).
+
+7. Made sure that the "xview" and "yview" subcommands work as expected
+   even if the script was started from wthin a C application in which
+   the decimal point is different from "." (thanks to Paul Obermeier for
+   his bug report).
+
+8. Numerous further improvements in the code, demo scripts, and
+   documentation.
+
+What was new in Tablelist 5.18?
+-------------------------------
+
+1. Improved the performance of the vertical scrolling (thanks to
+   Alexandru Dadalau and Olivier Jolet for discussions on this subject).
+
+2. Added the "-displayondemand" configuration option, which can be used
+   to speed up the scrolling even further.
+
+3. Added the "tablelist::delaySashPosUpdates" command (described in the
+   manual page "Commands Related to Binding Scripts"), designed to
+   control the frequency of the sash position updates for a given
+   panedwindow widget, which might be necessary to eliminate some
+   artifacts if some of the panes contain tablelist widgets with
+   embedded images (thanks to Nicolas Robert for his input).
+
+4. Added support for the themes "Arc" and "clearlooks"; updated the
+   support for the themes "Aquativo", "blue", "clam","keramik",
+   "keramik_alt", and "plastik".
+
+5. Extended the reference manual by the description of an important use
+   case for the "-formatcommand" column configuration option, related to
+   tablelist columns whose "-sortmode" option was set to "integer" or
+   "real" (thanks to Alexandru Dadalau for discussions on this subject).
+
+6. Fixed a bug related to retrieving the current cell selection (thanks
+   to Alexandru Dadalau for his bug report).
+
+7. Fixed a bug related to excluding the "dicttoitem" and "itemtodict"
+   subcommands for Tk 8.4 and earlier (thanks to Andy Goth for his bug
+   report).
+
+8. Numerous further improvements in the code, demo scripts, and
+   documentation.
+
+What was new in Tablelist 5.17?
+-------------------------------
 
 1. Added the tree styles "arc", "blueMenta", "menta", "ubuntuMate", and
    "ubuntu3", inspired by the Arc icon theme (of the GTK 2/3 theme Arc)
@@ -66,7 +350,7 @@ What was new in Tablelist 5.16?
 
 8   Drastically increased the speed of the "collapse" and "collapseall"
     subcommands with the "-fully" option (thanks to Ulrich Seidl for
-    reporting the pure performance of "collapseall -fully").
+    reporting the poor performance of "collapseall -fully").
 
 9.  Adapted the implementation of the "delete" subcommand to the changed
     text widget behavior in Tk 8.6.5 (thanks to Ulrich Seidl for his bug
@@ -1444,7 +1728,7 @@ What was new in Tablelist 3.6?
     internal list (thanks to Patrick Fradin for his valuable input).
 
 7.  Fixed a bug related to the "-listvariable" option, introduced in
-    the previous Tablelist release (thanks to Torsten Reincke for his
+    the previous Tablelist release (thanks to Torsten Reincke for her
     bug report).
 
 8.  Fixed two bugs related to the "cellselection" subcommand (thanks to

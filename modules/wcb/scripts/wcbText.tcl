@@ -4,7 +4,7 @@
 # REMARK: Everything stated below for text widgets is valid for ctext widgets,
 #	  too.
 #
-# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -16,7 +16,7 @@ namespace eval wcb {
     #
     # Some regexp patterns:
     #
-    if {$tk_version >= 8.1} {
+    if {$::tk_version >= 8.1} {
 	variable alphaOrNlPat	{^[[:alpha:]\n]*$}
 	variable digitOrNlPat	{^[[:digit:]\n]*$}
 	variable alnumOrNlPat	{^[[:alnum:]\n]*$}

@@ -330,6 +330,8 @@ package require \fBPlotchart  ?2\&.4\&.0?\fR
 .sp
 \fB::Plotchart::createTernaryDiagram\fR \fIw\fR \fIargs\fR
 .sp
+\fB::Plotchart::createNormalPlot\fR \fIw\fR \fIxscale\fR \fIargs\fR
+.sp
 \fB::Plotchart::createStatusTimeline\fR \fIw\fR \fIxaxis\fR \fIylabel\fR \fIargs\fR
 .sp
 \fB$anyplot\fR title \fItext\fR \fIposition\fR
@@ -381,6 +383,10 @@ package require \fBPlotchart  ?2\&.4\&.0?\fR
 \fB$anyplot\fR deletedata
 .sp
 \fB$xyplot\fR plot \fIseries\fR \fIxcrd\fR \fIycrd\fR
+.sp
+\fB$normalplot\fR plot \fIseries\fR \fImean\fR \fIstdev\fR \fIdata\fR
+.sp
+\fB$normalplot\fR diagonal
 .sp
 \fB$xyplot\fR plotlist \fIseries\fR \fIxlist\fR \fIylist\fR \fIevery\fR
 .sp
@@ -1257,6 +1263,33 @@ to influence the number of labels along the three sides\&.
 .RE
 .sp
 .TP
+\fB::Plotchart::createNormalPlot\fR \fIw\fR \fIxscale\fR \fIargs\fR
+Create a command to draw a normal plot - useful to investigate whether a data set is normally
+distributed or not\&. In that case the data will fall on or near the diagonal\&. As such, it is a
+specialised plotting procedure\&.
+.sp
+The details of the plotting procedure have been adopted from the \fIqqnorm\fR in the "R" \fIstats\fR
+package and described on Wikipedia\&.
+.sp
+As the implementation of this plot type relies on the \fImath::statistics\fR package, it is only
+available if that package can be loaded\&.
+.RS
+.TP
+widget \fIw\fR (in)
+Name of the canvas widget to hold the normal plot\&.
+.TP
+list \fIxscale\fR (in)
+A 3-element list containing minimum, maximum and stepsize for the x-axis
+in this order\&. The scaling of the y-axis is determined from that\&. \fIImportant:\fR the scale
+is to be given in terms of the normalised data, that is: 0 represents the mean of the data,
+1 one standard deviation away from the mean etc\&.
+.TP
+list \fIargs\fR (in)
+Zero or more option-value pairs to influence the position and the appearance of the
+plot - see the XY-plot for more details\&.
+.RE
+.sp
+.TP
 \fB::Plotchart::createStatusTimeline\fR \fIw\fR \fIxaxis\fR \fIylabel\fR \fIargs\fR
 Create a command to draw a so-called status timeline\&. Its layout is similar to a horizontal
 barchart, but the bars are drawn in different colours, each representing the status of
@@ -1716,6 +1749,32 @@ date/time that can be read with the \fIclock scan\fR command)\&.
 float \fIycrd\fR (in)
 Y-coordinate of the new point\&.
 .RE
+.PP
+.PP
+For \fInormal plots\fR:
+.TP
+\fB$normalplot\fR plot \fIseries\fR \fImean\fR \fIstdev\fR \fIdata\fR
+Plot the data set using the given mean and stanard deviation\&.
+.sp
+As you give the mean and standard deviation separately, the plot can be used for several data series
+or for adding to an existing data series\&.
+.RS
+.TP
+string \fIseries\fR (in)
+Name of the data series - used to determine the appearance
+.TP
+float \fImean\fR (in)
+Assumed mean of the data set\&.
+.TP
+float \fIstdev\fR (in)
+Assumed standard deviation of the data set\&.
+.TP
+list \fIdata\fR (in)
+List of the data comprising the data set
+.RE
+.TP
+\fB$normalplot\fR diagonal
+Draw a diagonal line, indicating the ideal normally distributed data set\&.
 .PP
 .PP
 For \fIxy, x-log y, log-x-y, log-x-log-y plots\fR there is the additional command \fIplotlist\fR,

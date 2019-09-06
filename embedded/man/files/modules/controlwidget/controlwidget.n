@@ -637,6 +637,9 @@ Color for the needle and the pin
 \fB::controlwidget::rdial\fR \fIw\fR \fIargs\fR
 Create a rotating dial\&. You can drag the dial to change the value\&. With the shift button
 depressed the value changes slowly, with the control button depressed it changes fast\&.
+Similarly, you can control the dial via the mouse wheel, with the shift and control button
+working in the same way as with the mouse pointer\&.
+\fINote:\fR The shift and control buttons currently have no effect on Windows\&.
 .RS
 .TP
 widget \fIw\fR (in)
@@ -657,6 +660,9 @@ Whether a horizontal disk/dial is required ("horizontal") or a vertical one ("ve
 .TP
 \fBstep\fR value
 Initial step for incrementing or decrementing the value
+.TP
+\fBbindwheel\fR value
+Step size for controlling the dial's value via the mouse wheel
 .TP
 \fBslow\fR value
 Factor on the step size for incrementing or decrementing the value slowly

@@ -1,5 +1,4 @@
-
-<html><head>
+<!DOCTYPE html><html><head>
 <title>ico - Windows ICO handling</title>
 <style type="text/css"><!--
     HTML {
@@ -25,7 +24,7 @@
 	background: 	transparent;
 	text-align:		left;
     }
-    H1.title {
+    H1.doctools_title {
 	text-align: center;
     }
     UL,OL {
@@ -42,11 +41,11 @@
     DT {
 	padding-top: 	1ex;
     }
-    UL.toc,UL.toc UL, UL.toc UL UL {
+    UL.doctools_toc,UL.doctools_toc UL, UL.doctools_toc UL UL {
 	font:		normal 12pt/14pt sans-serif;
 	list-style:	none;
     }
-    LI.section, LI.subsection {
+    LI.doctools_section, LI.doctools_subsection {
 	list-style: 	none;
 	margin-left: 	0em;
 	text-indent:	0em;
@@ -63,18 +62,18 @@
 	padding-right:	1ex;
 	width:		100%;
     }
-    PRE.example {
+    PRE.doctools_example {
 	color: 		black;
 	background: 	#f5dcb3;
 	border:		1px solid black;
     }
-    UL.requirements LI, UL.syntax LI {
+    UL.doctools_requirements LI, UL.doctools_syntax LI {
 	list-style: 	none;
 	margin-left: 	0em;
 	text-indent:	0em;
 	padding:	0em;
     }
-    DIV.synopsis {
+    DIV.doctools_synopsis {
 	color: 		black;
 	background: 	#80ffff;
 	border:		1px solid black;
@@ -82,22 +81,21 @@
 	margin-top: 	1em;
 	margin-bottom: 	1em;
     }
-    UL.syntax {
+    UL.doctools_syntax {
 	margin-top: 	1em;
 	border-top:	1px solid black;
     }
-    UL.requirements {
+    UL.doctools_requirements {
 	margin-bottom: 	1em;
 	border-bottom:	1px solid black;
     }
 --></style>
 </head>
-<! -- Generated from file 'ico.man' by tcllib/doctools with format 'html'
+<!-- Generated from file 'ico.man' by tcllib/doctools with format 'html'
    -->
-<! -- CVS: $Id$ ico.n
+<!-- ico.n
    -->
-<body><div class="doctools">
-<hr> [
+<body><hr> [
    <a href="../../../../../../../../home">Tklib Home</a>
 | <a href="../../../../toc.html">Main Table Of Contents</a>
 | <a href="../../../toc.html">Table Of Contents</a>
@@ -106,29 +104,30 @@
 | <a href="../../../../toc1.html">Modules</a>
 | <a href="../../../../toc2.html">Applications</a>
  ] <hr>
-<h1 class="title">ico(n) 1.0.5 tklib &quot;Windows ICO handling&quot;</h1>
-<div id="name" class="section"><h2><a name="name">Name</a></h2>
+<div class="doctools">
+<h1 class="doctools_title">ico(n) 1.0.5 tklib &quot;Windows ICO handling&quot;</h1>
+<div id="name" class="doctools_section"><h2><a name="name">Name</a></h2>
 <p>ico - Reading and writing windows icons</p>
 </div>
-<div id="toc" class="section"><h2><a name="toc">Table Of Contents</a></h2>
-<ul class="toc">
-<li class="section"><a href="#toc">Table Of Contents</a></li>
-<li class="section"><a href="#synopsis">Synopsis</a></li>
-<li class="section"><a href="#section1">Description</a></li>
-<li class="section"><a href="#section2">API</a></li>
-<li class="section"><a href="#section3">EXAMPLE</a></li>
-<li class="section"><a href="#section4">LIMITATIONS</a></li>
-<li class="section"><a href="#section5">Bugs, Ideas, Feedback</a></li>
-<li class="section"><a href="#keywords">Keywords</a></li>
+<div id="toc" class="doctools_section"><h2><a name="toc">Table Of Contents</a></h2>
+<ul class="doctools_toc">
+<li class="doctools_section"><a href="#toc">Table Of Contents</a></li>
+<li class="doctools_section"><a href="#synopsis">Synopsis</a></li>
+<li class="doctools_section"><a href="#section1">Description</a></li>
+<li class="doctools_section"><a href="#section2">API</a></li>
+<li class="doctools_section"><a href="#section3">EXAMPLE</a></li>
+<li class="doctools_section"><a href="#section4">LIMITATIONS</a></li>
+<li class="doctools_section"><a href="#section5">Bugs, Ideas, Feedback</a></li>
+<li class="doctools_section"><a href="#keywords">Keywords</a></li>
 </ul>
 </div>
-<div id="synopsis" class="section"><h2><a name="synopsis">Synopsis</a></h2>
-<div class="synopsis">
-<ul class="requirements">
+<div id="synopsis" class="doctools_section"><h2><a name="synopsis">Synopsis</a></h2>
+<div class="doctools_synopsis">
+<ul class="doctools_requirements">
 <li>package require <b class="pkgname">Tcl 8.4</b></li>
 <li>package require <b class="pkgname">ico <span class="opt">?1.0.5?</span></b></li>
 </ul>
-<ul class="syntax">
+<ul class="doctools_syntax">
 <li><a href="#1"><b class="cmd">::ico::icons</b> <i class="arg">file</i> <span class="opt">?<i class="arg">option</i> <i class="arg">value</i>...?</span></a></li>
 <li><a href="#2"><b class="cmd">::ico::iconMembers</b> <i class="arg">file</i> <i class="arg">name</i> <span class="opt">?<i class="arg">option</i> <i class="arg">value</i>...?</span></a></li>
 <li><a href="#3"><b class="cmd">::ico::getIcon</b> <i class="arg">file</i> <i class="arg">name</i> <span class="opt">?<i class="arg">option</i> <i class="arg">value</i>...?</span></a></li>
@@ -143,7 +142,7 @@
 </ul>
 </div>
 </div>
-<div id="section1" class="section"><h2><a name="section1">Description</a></h2>
+<div id="section1" class="doctools_section"><h2><a name="section1">Description</a></h2>
 <p>This package provides functions for reading and writing Windows icons
 from ICO, EXE, DLL, ICL, and BMP files.
 As used in this module an icon is a visual representation of an object.
@@ -152,19 +151,19 @@ and color depth. Each icon and image has a resource identifier which
 may be a text string or a positive integer value. Most commands use this
 identifier to specify which icon or image to operate on.</p>
 </div>
-<div id="section2" class="section"><h2><a name="section2">API</a></h2>
-<dl class="definitions">
+<div id="section2" class="doctools_section"><h2><a name="section2">API</a></h2>
+<dl class="doctools_definitions">
 <dt><a name="1"><b class="cmd">::ico::icons</b> <i class="arg">file</i> <span class="opt">?<i class="arg">option</i> <i class="arg">value</i>...?</span></a></dt>
 <dd><p>Returns a list of icons found in <i class="arg">file</i> where each element is the
 name or numeric ID. Recognizes the following options:</p>
-<dl class="options">
+<dl class="doctools_options">
 <dt><b class="option">-type</b> fileFormat</dt>
 <dd></dd>
 </dl></dd>
 <dt><a name="2"><b class="cmd">::ico::iconMembers</b> <i class="arg">file</i> <i class="arg">name</i> <span class="opt">?<i class="arg">option</i> <i class="arg">value</i>...?</span></a></dt>
 <dd><p>Returns a list of images that make up the icon with ID <i class="arg">name</i>. Each element is itself a
 sublist in the format {name width height bpp}. Recognizes the following options:</p>
-<dl class="options">
+<dl class="doctools_options">
 <dt><b class="option">-type</b> fileFormat</dt>
 <dd></dd>
 </dl></dd>
@@ -182,7 +181,7 @@ all the pixels in that row from left to right. If <b class="option">-format</b> 
 <b class="const">name</b> then the resource name of the image chosen is returned.
 This is useful for calling writeIcon or getIconByName.
 Recognizes the following <i class="arg">option</i>s.</p>
-<dl class="options">
+<dl class="doctools_options">
 <dt><b class="option">-type</b> fileFormat</dt>
 <dd></dd>
 <dt><b class="option">-format</b> value</dt>
@@ -201,7 +200,7 @@ Recognizes the following <i class="arg">option</i>s.</p>
 specific image as returned by <b class="cmd">::ico::iconMembers</b>, not an icon name returned from
 <b class="cmd">::ico::icons</b>. If there is no matching resource ID
 in <i class="arg">file</i> an error is thrown. Recognizes the following options:</p>
-<dl class="options">
+<dl class="doctools_options">
 <dt><b class="option">-type</b> fileFormat</dt>
 <dd></dd>
 <dt><b class="option">-format</b> value</dt>
@@ -214,7 +213,7 @@ or similar. <i class="arg">file</i> does not need to exist and may also be speci
 extension with a leading dot. If <i class="arg">file</i> is a directory or you specify the
 special name <b class="const">Folder</b> then the icon representing a folder is returned. This
 command takes the same arguments and usage as <b class="cmd">getIcon</b>:</p>
-<dl class="options">
+<dl class="doctools_options">
 <dt><b class="option">-format</b> value</dt>
 <dd></dd>
 <dt><b class="option">-image</b> value</dt>
@@ -239,7 +238,7 @@ specified does not exist then an image is appended and will be named the next in
 dimensions or color depths.
 Note that you will get strange results when displaying icons if you fail to change every image
 which makes up a given icon.</p>
-<dl class="arguments">
+<dl class="doctools_arguments">
 <dt>integer <i class="arg">depth</i> (in)</dt>
 <dd><p>This argument must have a value of <b class="const">1</b>, <b class="const">4</b>, <b class="const">8</b>,
 <b class="const">24</b>, or <b class="const">32</b>. If <i class="arg">data</i> has more colors than the
@@ -249,13 +248,13 @@ color depth allows an error will be generated.</p></dd>
 <b class="cmd">::ico::getIcon -format colors</b> or the name of a Tk image.</p></dd>
 </dl>
 <p>Recognizes the following <i class="arg">option</i>s.</p>
-<dl class="options">
+<dl class="doctools_options">
 <dt><b class="option">-type</b> fileFormat</dt>
 <dd></dd>
 </dl></dd>
 <dt><a name="7"><b class="cmd">::ico::copyIcon</b> <i class="arg">file</i> <i class="arg">index</i> <i class="arg">file2</i> <i class="arg">index2</i> <span class="opt">?<i class="arg">option</i> <i class="arg">value</i>...?</span></a></dt>
 <dd><p>Copies the icon at <i class="arg">index</i> in <i class="arg">file</i> to <i class="arg">index2</i> in <i class="arg">file2</i>.</p>
-<dl class="options">
+<dl class="doctools_options">
 <dt><b class="option">-fromtype</b> fileFormat</dt>
 <dd></dd>
 <dt><b class="option">-totype</b> fileFormat</dt>
@@ -263,7 +262,7 @@ color depth allows an error will be generated.</p></dd>
 </dl></dd>
 <dt><a name="8"><b class="cmd">::ico::EXEtoICO</b> <i class="arg">file</i> <span class="opt">?dir?</span></a></dt>
 <dd><p>Extracts all icons from the executable <i class="arg">file</i> to ICO files placed in <i class="arg">dir</i>. <span class="opt">?dir?</span> defaults to the directory <i class="arg">file</i> is located in. Icon files will be named in the form <i class="arg">file</i>-ID.ico where ID is the icon resource identifier.</p>
-<dl class="options">
+<dl class="doctools_options">
 <dt><b class="option">-type</b> fileFormat</dt>
 <dd></dd>
 </dl></dd>
@@ -279,7 +278,7 @@ is returned.</p></dd>
 <dt><a name="11"><b class="cmd">::ico::Show</b> <i class="arg">file</i> <span class="opt">?<i class="arg">option</i> <i class="arg">value</i>...?</span></a></dt>
 <dd><p>Application level command which displays a window showing all the
 icons in <i class="arg">file</i> and their name.</p>
-<dl class="options">
+<dl class="doctools_options">
 <dt><b class="option">-type</b> fileFormat</dt>
 <dd></dd>
 <dt><b class="option">-parent</b> pathName</dt>
@@ -287,14 +286,14 @@ icons in <i class="arg">file</i> and their name.</p>
 </dl></dd>
 </dl>
 </div>
-<div id="section3" class="section"><h2><a name="section3">EXAMPLE</a></h2>
-<pre class="example">
+<div id="section3" class="doctools_section"><h2><a name="section3">EXAMPLE</a></h2>
+<pre class="doctools_example">
     button .explore -image [::ico::getIcon explorer.exe 0 -name explore -res 16 -bpp 8]
     set i [lsearch -inline [::ico::iconMembers tclkit.exe 0] {* 32 32 8}]
     set colorlist [::ico::getIconByName tclkit.exe [lindex $i 0] -format colors]
 </pre>
 </div>
-<div id="section4" class="section"><h2><a name="section4">LIMITATIONS</a></h2>
+<div id="section4" class="doctools_section"><h2><a name="section4">LIMITATIONS</a></h2>
 <p>Icons may not be added or removed from file types other than ICO. Icons in these files
 may only be replaced with icons of the same dimensions and color depth.</p>
 <p>Icons of 8bpp or lower must include black in the pallete, this means if your icon does
@@ -304,7 +303,7 @@ writeIcon.</p>
 <p>Tk images do not have an alpha channel so the only way to write a true 32bpp icon is from
 a color list. writing a 32bpp icon from a Tkimage is identical to writing a 24bpp icon.</p>
 </div>
-<div id="section5" class="section"><h2><a name="section5">Bugs, Ideas, Feedback</a></h2>
+<div id="section5" class="doctools_section"><h2><a name="section5">Bugs, Ideas, Feedback</a></h2>
 <p>This document, and the package it describes, will undoubtedly contain
 bugs and other problems.
 Please report such in the category <em>ico</em> of the
@@ -312,7 +311,7 @@ Please report such in the category <em>ico</em> of the
 Please also report any ideas for enhancements you may have for either
 package and/or documentation.</p>
 </div>
-<div id="keywords" class="section"><h2><a name="keywords">Keywords</a></h2>
-<p><a href="../../../../index.html#key86">dll</a>, <a href="../../../../index.html#key59">entry</a>, <a href="../../../../index.html#key88">exe</a>, <a href="../../../../index.html#key89">ico</a>, <a href="../../../../index.html#key87">icon</a></p>
+<div id="keywords" class="doctools_section"><h2><a name="keywords">Keywords</a></h2>
+<p><a href="../../../../index.html#key87">dll</a>, <a href="../../../../index.html#key32">entry</a>, <a href="../../../../index.html#key89">exe</a>, <a href="../../../../index.html#key90">ico</a>, <a href="../../../../index.html#key88">icon</a></p>
 </div>
 </div></body></html>

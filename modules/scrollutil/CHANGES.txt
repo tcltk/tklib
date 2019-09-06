@@ -1,0 +1,30 @@
+What is new in Scrollutil 1.1?
+------------------------------
+
+1. Added the scrollsync widget, designed for scrolling several widgets
+   simultaneously (thanks to Paul Obermeier for his proposal and
+   testing).
+
+2. Added two demo scripts for the new scrollsync widget.
+
+3. The scrollarea widget now supports the "-takefocus" standard option
+   (thanks to Harald Oehlmann for his proposal).
+
+4. The scrollarea "setwidget" subcommand now returns the path name of
+   the previously embedded widget.
+
+5. The mouse wheel event handling now restricts the search for the
+   registered scrollable widget container that is an ascendant of the
+   widget under the pointer to the widget containers within the same
+   toplevel (thanks to Harald Oehlmann for his valuable feedback).
+
+6. Several further improvements in the code, demo scripts, and
+   documentation.
+
+What was new in Scrollutil 1.0?
+-------------------------------
+
+This is the first release.  Thanks to Michael Niehren for discussions on
+mouse wheel event handling in scrollable widget containers, as well as
+to Paul Obermeier and Thomas Grausgruber for testing the scrollarea
+widget.

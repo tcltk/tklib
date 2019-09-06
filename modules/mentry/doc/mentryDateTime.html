@@ -12,7 +12,7 @@
   <div align="center">
     <h1>Multi-Entry Widgets for Date and Time</h1>
 
-    <h2>For Mentry Version 3.7</h2>
+    <h2>For Mentry Version 3.9</h2>
 
     <h3>by</h3>
 
@@ -204,7 +204,7 @@
     <dt><b>NAME</b></dt>
 
     <dd><code>mentry::dateTimeMentry</code> &ndash; Create and manipulate
-    mentry widgets for date &amp; time</dd>
+    mentry widgets for date & time</dd>
 
     <dt class="tm"><b>SYNOPSIS</b></dt>
 
@@ -217,7 +217,7 @@
     <dt><b>DESCRIPTION</b></dt>
 
     <dd>This command creates a new mentry widget <code><i>pathName</i></code>
-    for displaying and editing a date &amp; time according to the
+    for displaying and editing a date & time according to the
     <code><i>format</i></code> argument, which must be a string of length 5 or
     6, with the first 3 characters consisting of the letters
     <code><b>"d"</b></code> for the day (<code>01</code> - <code>31</code>),
@@ -290,7 +290,7 @@
     <dt><b>NAME</b></dt>
 
     <dd><code>mentry::putClockVal</code> &ndash; Output a clock value to a
-    date, time, or date &amp; time mentry</dd>
+    date, time, or date & time mentry</dd>
 
     <dt class="tm"><b>SYNOPSIS</b></dt>
 
@@ -302,8 +302,8 @@
 
     <dt><b>DESCRIPTION</b></dt>
 
-    <dd>This command outputs the date, time, or date &amp; time corresponding
-    to the integer <code><i>clockValue</i></code> to the mentry widget
+    <dd>This command outputs the date, time, or date & time corresponding to
+    the integer <code><i>clockValue</i></code> to the mentry widget
     <code><i>pathName</i></code>, which must have been created with the
     <code><b><a href="#dateMentry">mentry::dateMentry</a></b></code>,
     <code><b><a href="#timeMentry">mentry::timeMentry</a></b></code>, or
@@ -335,7 +335,7 @@
     <dt><b>NAME</b></dt>
 
     <dd><code>mentry::getClockVal</code> &ndash; Get the clock value from a
-    date, time, or date &amp; time mentry</dd>
+    date, time, or date & time mentry</dd>
 
     <dt class="tm"><b>SYNOPSIS</b></dt>
 
@@ -348,14 +348,14 @@
     <dt><b>DESCRIPTION</b></dt>
 
     <dd>This command returns the clock value corresponding to the date, time,
-    or date &amp; time contained in the mentry widget
-    <code><i>pathName</i></code>, which must have been created with the
-    <code><b><a href="#dateMentry">mentry::dateMentry</a></b></code>,
-    <code><b><a href="#timeMentry">mentry::timeMentry</a></b></code>, or
-    <code><b><a href="#dateTimeMentry">mentry::dateTimeMentry</a></b></code>
-    command (this is checked by examining the widget's <code><b>type</b></code>
-    attribute, which must have the value <code>"Date"</code>,
-    <code>"Time"</code>, or <code>"DateTime"</code>).</dd>
+    or date & time contained in the mentry widget <code><i>pathName</i></code>,
+    which must have been created with the <code><b><a href=
+    "#dateMentry">mentry::dateMentry</a></b></code>, <code><b><a href=
+    "#timeMentry">mentry::timeMentry</a></b></code>, or <code><b><a href=
+    "#dateTimeMentry">mentry::dateTimeMentry</a></b></code> command (this is
+    checked by examining the widget's <code><b>type</b></code> attribute, which
+    must have the value <code>"Date"</code>, <code>"Time"</code>, or
+    <code>"DateTime"</code>).</dd>
 
     <dd class="tm">Like in the case of the&nbsp; <code><b>clock
     scan</b></code>&nbsp; command, the optional argument pair&nbsp;

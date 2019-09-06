@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 
 package require Tk
 
-# Copyright (c) 2005-2017 Keith Nash.
+# Copyright (c) 2005-2018 Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -14,6 +14,7 @@ package require Tk
 ### For a short example, see ntextExample.tcl
 ### To explore ntext indentation, try ntextDemoIndent.tcl
 ### To explore vertical scrolling on the Mac, try ntextDemoMacScrolling.tcl
+### For corner cases in scrolling, try ntextDemoScroll.tcl
 
 # This string defines the text that will be displayed in each widget:
 set message {QOTW:  "C/C++, which is used by 16% of users, is the most popular programming language, but Tcl, used by 0%, seems to be the language of choice for the highest scoring users."

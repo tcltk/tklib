@@ -3,10 +3,10 @@
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
 #
-# Copyright (c) 2004-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 5.17
+package require tablelist 6.6
 
 wm title . "Tk Library Scripts"
 
@@ -31,7 +31,7 @@ image create photo openImg -file [file join $dir open.gif]
 # dynamic-width columns and interactive sort capability
 #
 set tf .tf
-frame $tf -class ScrollArea 
+frame $tf -class ScrollArea
 set tbl $tf.tbl
 set vsb $tf.vsb
 tablelist::tablelist $tbl \
@@ -66,14 +66,20 @@ eval font create BoldFont [font actual $tblFont] -size $size -weight bold
 # Populate the tablelist widget
 #
 cd $tk_library
-set maxFileSize 0
+set totalSize 0
+set maxSize 0
 foreach fileName [lsort [glob *.tcl]] {
     set fileSize [file size $fileName]
     $tbl insert end [list $fileName $fileSize $fileSize "" no]
 
-    if {$fileSize > $maxFileSize} {
-	set maxFileSize $fileSize
+    incr totalSize $fileSize
+    if {$fileSize > $maxSize} {
+	set maxSize $fileSize
     }
+}
+if {$tk_version >= 8.5} {
+    $tbl header insert 0 [list "[$tbl size] *.tcl files" "" $totalSize "" ""]
+    $tbl header rowconfigure 0 -foreground blue
 }
 
 #------------------------------------------------------------------------------
@@ -103,7 +109,7 @@ proc createFrame {tbl row col w} {
     # Manage the child frame
     #
     set fileSize [$tbl cellcget $row,fileSize -text]
-    place $w.f -relwidth [expr {double($fileSize) / $::maxFileSize}]
+    place $w.f -relwidth [expr {double($fileSize) / $::maxSize}]
 }
 
 #------------------------------------------------------------------------------
@@ -121,13 +127,14 @@ proc createButton {tbl row col w} {
 #------------------------------------------------------------------------------
 # viewFile
 #
-# Displays the contents of the file whose name is contained in the row with the
+# Displays the content of the file whose name is contained in the row with the
 # given key of the tablelist widget tbl.
 #------------------------------------------------------------------------------
 proc viewFile {tbl key} {
     set top .top$key
     if {[winfo exists $top]} {
 	raise $top
+	focus $top
 	return ""
     }
 
@@ -148,10 +155,10 @@ proc viewFile {tbl key} {
     scrollbar $vsb -orient vertical -command [list $txt yview]
 
     #
-    # Insert the file's contents into the text widget
+    # Insert the file's content into the text widget
     #
     set chan [open $fileName]
-    $txt insert end [read $chan]
+    $txt insert end [read -nonewline $chan]
     close $chan
 
     set btn [button $top.btn -text "Close" -command [list destroy $top]]
@@ -190,11 +197,11 @@ set btn [button .btn -text "Close" -command exit]
 # Manage the widgets
 #
 grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
-if {[string compare $winSys "aqua"] == 0} {
+if {[string compare $winSys "win32"] == 0} {		;# see option.tcl
+    grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+} else {
     grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
     grid $vsb		   -row 1 -column 1 -sticky ns
-} else {
-    grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
 }
 grid rowconfigure    $tf 1 -weight 1
 grid columnconfigure $tf 0 -weight 1

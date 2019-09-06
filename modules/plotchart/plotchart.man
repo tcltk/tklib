@@ -294,6 +294,7 @@ Zero or more options - see the XY-plot for more information.
 [list_end]
 [para]
 
+
 [call [cmd ::Plotchart::createPolarPlot] [arg w] [arg radius_data] [arg args]]
 
 Create a new polar plot (configuration type: polarplot).
@@ -783,6 +784,36 @@ Zero or more option-value pairs to influence the position and the appearance of 
 diagram. In addition to the positioning options (-box and -axesbox) the diagram supports:
 [term "-fractions yes/no"], to display numbers 0 to 1 instead of 0 to 100% and [term "-steps number"]
 to influence the number of labels along the three sides.
+
+[list_end]
+[para]
+
+
+[call [cmd ::Plotchart::createNormalPlot] [arg w] [arg xscale] [arg args]]
+
+Create a command to draw a normal plot - useful to investigate whether a data set is normally
+distributed or not. In that case the data will fall on or near the diagonal. As such, it is a
+specialised plotting procedure.
+[para]
+The details of the plotting procedure have been adopted from the [term qqnorm] in the "R" [term stats]
+package and described on Wikipedia.
+[para]
+As the implementation of this plot type relies on the [term math::statistics] package, it is only
+available if that package can be loaded.
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the canvas widget to hold the normal plot.
+
+[arg_def list xscale in]
+A 3-element list containing minimum, maximum and stepsize for the x-axis
+in this order. The scaling of the y-axis is determined from that. [emph Important:] the scale
+is to be given in terms of the normalised data, that is: 0 represents the mean of the data,
+1 one standard deviation away from the mean etc.
+
+[arg_def list args in]
+Zero or more option-value pairs to influence the position and the appearance of the
+plot - see the XY-plot for more details.
 
 [list_end]
 [para]
@@ -1341,6 +1372,36 @@ date/time that can be read with the [emph "clock scan"] command).
 Y-coordinate of the new point.
 
 [list_end]
+[list_end]
+[para]
+
+For [emph {normal plots}]:
+
+[list_begin definitions]
+[call [cmd \$normalplot] plot [arg series] [arg mean] [arg stdev] [arg data]]
+
+Plot the data set using the given mean and stanard deviation.
+[para]
+As you give the mean and standard deviation separately, the plot can be used for several data series
+or for adding to an existing data series.
+
+[list_begin arguments]
+[arg_def string series in]
+Name of the data series - used to determine the appearance
+
+[arg_def float mean in]
+Assumed mean of the data set.
+
+[arg_def float stdev in]
+Assumed standard deviation of the data set.
+
+[arg_def list data in]
+List of the data comprising the data set
+[list_end]
+
+[call [cmd \$normalplot] diagonal]
+
+Draw a diagonal line, indicating the ideal normally distributed data set.
 [list_end]
 [para]
 

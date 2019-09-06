@@ -12,7 +12,7 @@
   <div align="center">
     <h1>The <code><b>mentry::mentry</b></code> Command</h1>
 
-    <h2>For Mentry Version 3.7</h2>
+    <h2>For Mentry Version 3.9</h2>
 
     <h3>by</h3>
 
@@ -234,7 +234,7 @@
     </dd>
 
     <dd>These options (described in the <b>options</b> manual entry) specify
-    the values of the options with the same names for all entry and label
+    the values of the options of the same names for all entry and label
     children of the given multi-entry widget.&nbsp; These values may be changed
     for an individual child by using the <code><b>configure</b></code>
     subcommand of the Tcl command corresponding to that child.&nbsp; However,
@@ -251,6 +251,12 @@
     <code><b>-fg</b></code> (for <code><b>-foreground</b></code>) are supported
     for both classical and tile-based mentry widgets.</dd>
 
+    <dd class="tm"><b>REMARK:</b>&nbsp; Please take into account that for some
+    themes (like <code><b>Arc</b></code>, <code><b>plastik</b></code>,
+    <code><b>tileqt</b></code>, <code><b>vista</b></code>, and
+    <code><b>xpnative</b></code>), the <code><b>-background</b></code> option
+    will be ignored for the entry children of a tile-based mentry widget.</dd>
+
     <dt class="tm" id="entry_options"><b>OPTIONS FOR ALL ENTRY
     CHILDREN</b></dt>
 
@@ -264,14 +270,14 @@
 </pre>
     </dd>
 
-    <dd>These options specify the values of the options with the same names for
+    <dd>These options specify the values of the options of the same names for
     all entry children of the given multi-entry widget.&nbsp; These values may
     be changed for an individual entry child by using the
     <code><b>configure</b></code> subcommand of the Tcl command corresponding
     to that entry.&nbsp; The <code><b>-invalidcommand</b></code>,
     <code><b>-validate</b></code>, and <code><b>-validatecommand</b></code>
     options are only supported if Tk version 8.3 or higher is used, because the
-    options with the same names for entry widgets were introduced in Tk
+    options of the same names for entry widgets were introduced in Tk
     8.3.&nbsp; The options <code><b>-insertbackground</b></code>,
     <code><b>-insertborderwidth</b></code>, <code><b>-insertofftime</b></code>,
     <code><b>-insertontime</b></code>, <code><b>-insertwidth</b></code>,
@@ -453,7 +459,7 @@
       <blockquote>
         <p>This option determines whether the widget accepts the focus during
         keyboard traversal.&nbsp; It is almost identical to the standard option
-        with the same name (see the <b>options</b> manual entry for
+        of the same name (see the <b>options</b> manual entry for
         details).&nbsp; The only difference is that not the widget itself but
         its first enabled entry child will receive the focus during keyboard
         traversal with the standard keys (<code>Tab</code> and

@@ -5,10 +5,10 @@
 # Oakley's combobox, the mentry widgets of type "Date" and "Time", and of the
 # Tk core entry, spinbox, checkbutton, and menubutton widgets.
 #
-# Copyright (c) 2004-2017  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.17
+package require tablelist_tile 6.6
 package require combobox
 package require mentry
 
@@ -19,8 +19,6 @@ wm title . "Serial Line Configuration"
 #
 set dir [file dirname [info script]]
 source [file join $dir option_tile.tcl]
-option add *Tablelist*Checkbutton.background		white
-option add *Tablelist*Checkbutton.activeBackground	white
 option add *Tablelist*Entry.background			white
 option add *Tablelist*Spinbox.background		white
 option add *Tablelist*Spinbox.readonlyBackground	white
@@ -214,7 +212,7 @@ array set msgs {
 # editEndCmd
 #
 # Performs a final validation of the text contained in the edit window and gets
-# the cell's internal contents.
+# the cell's internal content.
 #------------------------------------------------------------------------------
 proc editEndCmd {tbl row col text} {
     switch [$tbl columncget $col -name] {
