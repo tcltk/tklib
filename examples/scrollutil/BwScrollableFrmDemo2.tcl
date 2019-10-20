@@ -37,7 +37,18 @@ if {$ttk::currentTheme eq "aqua"} {
 # Get the content frame and populate it
 #
 set cf [$sf getframe]
-source ScrollableFrmContent.tcl
+source BwScrollableFrmContent.tcl
+
+#
+# Make the keyboard navigation more user-friendly
+#
+foreach w [list $cb $sb $e $me] {
+    bind $w <<TraverseIn>> [list $sf see %W]
+}
+foreach w [list $txt $lb $tbl $tv] {
+    bind $w <<TraverseIn>> [list seeParent $sf %W]
+}
+proc seeParent {sf w} { $sf see [winfo parent $w] }
 
 #
 # Additional stuff related to the mouse wheel events:

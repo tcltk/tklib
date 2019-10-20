@@ -54,7 +54,8 @@ grid $_sa -row $row -rowspan 6 -column 0 -sticky w -padx {10 0} -pady {5 0}
 #
 set l [ttk::label $cf.l$row -text "Release:"]
 grid $l -row $row -column 1 -sticky w -padx {10 0} -pady {5 0}
-ttk::style map TCombobox -fieldbackground {readonly white}
+ttk::style map TCombobox -fieldbackground \
+    [list {readonly focus} lightYellow readonly white]
 set cb [ttk::combobox $cf.cb -state readonly -width 14]
 grid $cb -row $row -column 2 -sticky w -padx {5 10} -pady {5 0}
 
@@ -441,6 +442,11 @@ proc configTablelist {} {
 		grid $w -row $row -column 1 -sticky we -padx 5 -pady {5 0}
 	    }
 	}
+
+	#
+	# Make the keyboard navigation more user-friendly
+	#
+	bind $w <<TraverseIn>> [list $sf see %W]
 
 	incr row
     }

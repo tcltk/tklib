@@ -66,8 +66,9 @@ foreach country $countryList capital $capitalList {
 
 set capitalList [lsort $capitalList]
 
-ttk::style map TCombobox -fieldbackground {readonly white}
-set btnStyle [expr {$::ttk::currentTheme eq "aqua" ? "TButton" : "Toolbutton"}]
+ttk::style map TCombobox -fieldbackground \
+    [list {readonly focus} lightYellow readonly white]
+set btnStyle [expr {$ttk::currentTheme eq "aqua" ? "TButton" : "Toolbutton"}]
 
 set row 0
 foreach country $countryList {
@@ -80,6 +81,11 @@ foreach country $countryList {
     grid $w -row $row -column 1 -sticky w -padx {5 0} -pady {4 0}
 
     #
+    # Make the keyboard navigation more user-friendly
+    #
+    bind $w <<TraverseIn>> [list $sf see %W]
+
+    #
     # Adapt the handling of the mouse wheel events for the ttk::combobox widget
     #
     scrollutil::adaptWheelEventHandling $w
@@ -87,6 +93,11 @@ foreach country $countryList {
     set b [ttk::button $cf.b$row -style $btnStyle -text "Resolve" \
 	   -command [list setCapital $w $country]]
     grid $b -row $row -column 2 -sticky w -padx 5 -pady {4 0}
+
+    #
+    # Make the keyboard navigation more user-friendly
+    #
+    bind $b <<TraverseIn>> [list $sf see %W]
 
     incr row
 }
