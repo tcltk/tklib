@@ -13,12 +13,14 @@ What Is Scrollutil?
 Scrollutil is a library package for Tcl/Tk versions 8.0 or higher,
 written in pure Tcl/Tk code.  It contains:
 
-  - the implementation of the "scrollarea" and "scrollsync" mega-
-    widgets, including a general utility module for mega-widgets;
+  - the implementation of the "scrollarea", "scrollsync", and
+    "scrollableframe" mega-widgets, including a general utility module
+    for mega-widgets;
   - commands for user-friendly mouse wheel event handling in scrollable
-    widget containers like BWidget ScrollableFrame and
-    iwidgets::scrolledframe.  These commands require Tcl/Tk versions 8.4
-    or higher on X11 and Mac OS X and Tk 8.6b2 or later on Windows;
+    widget containers like scrollutil::scrollableframe, BWidget
+    ScrollableFrame, and iwidgets::scrolledframe.  These commands
+    require Tcl/Tk versions 8.4 or higher on X11 and Mac OS X and Tk
+    8.6b2 or later on Windows;
   - demo scripts illustrating the use of the Scrollutil package in
     connection with various scrollable widgets and the above-mentioned
     scrollable widget containers;
@@ -37,8 +39,8 @@ Scrollutil is available for free download from the Web page
 
     http://www.nemethi.de
 
-The distribution file is "scrollutil1.1.tar.gz" for UNIX and
-"scrollutil1_1.zip" for Windows.  These files contain the same
+The distribution file is "scrollutil1.2.tar.gz" for UNIX and
+"scrollutil1_2.zip" for Windows.  These files contain the same
 information, except for the additional carriage return character
 preceding the linefeed at the end of each line in the text files for
 Windows.
@@ -57,20 +59,20 @@ locations of these library directories are given by the "tcl_library"
 and "tk_library" variables, respectively.
 
 To install Scrollutil on UNIX, "cd" to the desired directory and unpack
-the distribution file "scrollutil1.1.tar.gz":
+the distribution file "scrollutil1.2.tar.gz":
 
-    gunzip -c scrollutil1.1.tar.gz | tar -xf -
+    gunzip -c scrollutil1.2.tar.gz | tar -xf -
 
 On most UNIX systems this can be replaced with
 
-    tar -zxf scrollutil1.1.tar.gz
+    tar -zxf scrollutil1.2.tar.gz
 
-Both commands will create a directory named "scrollutil1.1", with the
+Both commands will create a directory named "scrollutil1.2", with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "scrollutil1_1.zip" into the directory
-"scrollutil1.1", with the subdirectories "demos", "doc", and "scripts".
+distribution file "scrollutil1_2.zip" into the directory
+"scrollutil1.2", with the subdirectories "demos", "doc", and "scripts".
 
 How to Use It?
 --------------
