@@ -33,8 +33,8 @@ namespace eval scrollutil::sa {
     # the widget to which the option applies: f stands for the frame and w for
     # the scrollarea widget itself.
     #
-    #	Command-Line Name	 {Database Name		  Database Class      W}
-    #	------------------------------------------------------------------------
+    #	Command-Line Name	 {Database Name		  Database Class     W}
+    #	-----------------------------------------------------------------------
     #
     variable configSpecs
     array set configSpecs {
@@ -98,14 +98,10 @@ namespace eval scrollutil::sa {
     variable configOpts [lsort [array names configSpecs]]
 
     #
-    # Use a list to facilitate the handling of the command options
+    # Use lists to facilitate the handling of
+    # the command options and scrollbar modes
     #
-    variable cmdOpts [list cget configure setwidget widget]
-
-    #
-    # Use a list to facilitate the handling of the
-    # -xscrollbarmode and -yscrollbarmode options
-    #
+    variable cmdOpts        [list cget configure setwidget widget]
     variable scrollbarModes [list static dynamic none]
 }
 
@@ -117,8 +113,8 @@ namespace eval scrollutil::sa {
 #------------------------------------------------------------------------------
 # scrollutil::sa::createBindings
 #
-# Creates the default bindings for the binding tags Scrollarea and
-# WidgetOfScrollarea.
+# Creates the default bindings for the binding tags Scrollarea,
+# DynamicHScrollbar, and WidgetOfScrollarea.
 #------------------------------------------------------------------------------
 proc scrollutil::sa::createBindings {} {
     bind Scrollarea <KeyPress> continue
@@ -128,7 +124,11 @@ proc scrollutil::sa::createBindings {} {
         }
     }
     bind Scrollarea <Configure>  { scrollutil::sa::onScrollareaConfigure %W }
-    bind Scrollarea <Destroy>    { scrollutil::sa::onScrollareaDestroy %W }
+    bind Scrollarea <Destroy> {
+	namespace delete scrollutil::ns%W
+	catch {rename %W ""}
+    }
+
     bind DynamicHScrollbar <Map> { scrollutil::sa::onDynamicHScrollbarMap %W }
 
     bind WidgetOfScrollarea <Destroy> {
@@ -611,13 +611,12 @@ proc scrollutil::sa::setVScrollbar {win first last} {
 # scrollutil::sa::onScrollareaConfigure
 #------------------------------------------------------------------------------
 proc scrollutil::sa::onScrollareaConfigure win {
-    upvar ::scrollutil::ns${win}::data data
-    set delay $data(-lockinterval)
-    if {$delay > 1} {
-	incr delay 50
+    if {![array exists ::scrollutil::ns${win}::data]} {
+	return ""
     }
 
-    after $delay [list scrollutil::sa::updateScrollbars $win]
+    upvar ::scrollutil::ns${win}::data data
+    after $data(-lockinterval) [list scrollutil::sa::updateScrollbars $win]
 }
 
 #------------------------------------------------------------------------------
@@ -629,14 +628,6 @@ proc scrollutil::sa::updateScrollbars win {
 	updateHScrollbar $win
 	updateVScrollbar $win
     }
-}
-
-#------------------------------------------------------------------------------
-# scrollutil::sa::onScrollareaDestroy
-#------------------------------------------------------------------------------
-proc scrollutil::sa::onScrollareaDestroy win {
-    namespace delete ::scrollutil::ns$win
-    catch {rename ::$win ""}
 }
 
 #------------------------------------------------------------------------------

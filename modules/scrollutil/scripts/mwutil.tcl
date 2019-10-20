@@ -19,7 +19,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.14
+    variable version	2.15
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -34,8 +34,9 @@ namespace eval mwutil {
 			defineKeyNav processTraversal focusNext focusPrev \
 			configureWidget fullConfigOpt fullOpt enumOpts \
 			configureSubCmd attribSubCmd hasattribSubCmd \
-			unsetattribSubCmd getScrollInfo isScrollable hasFocus \
-			genMouseWheelEvent windowingSystem currentTheme
+			unsetattribSubCmd getScrollInfo getScrollInfo2 \
+			isScrollable hasFocus genMouseWheelEvent \
+			windowingSystem currentTheme
 
     #
     # Make modified versions of the procedures tk_focusNext and
@@ -502,6 +503,44 @@ proc mwutil::getScrollInfo argList {
     } elseif {[string first $opt "scroll"] == 0} {
 	if {$argCount != 3} {
 	    wrongNumArgs "scroll number units|pages"
+	}
+
+	set number [format "%d" [lindex $argList 1]]
+	set what [lindex $argList 2]
+	if {[string first $what "units"] == 0} {
+	    return [list scroll $number units]
+	} elseif {[string first $what "pages"] == 0} {
+	    return [list scroll $number pages]
+	} else {
+	    return -code error "bad argument \"$what\": must be units or pages"
+	}
+    } else {
+	return -code error "unknown option \"$opt\": must be moveto or scroll"
+    }
+}
+
+#------------------------------------------------------------------------------
+# mwutil::getScrollInfo2
+#
+# Parses a list of arguments of the form "moveto <fraction>" or "scroll
+# <number> units|pages" and returns the corresponding list consisting of two or
+# three properly formatted elements.
+#------------------------------------------------------------------------------
+proc mwutil::getScrollInfo2 {cmd argList} {
+    set argCount [llength $argList]
+    set opt [lindex $argList 0]
+
+    if {[string first $opt "moveto"] == 0} {
+	if {$argCount != 2} {
+	    wrongNumArgs "$cmd moveto fraction"
+	}
+
+	set fraction [lindex $argList 1]
+	format "%f" $fraction ;# floating-point number check with error message
+	return [list moveto $fraction]
+    } elseif {[string first $opt "scroll"] == 0} {
+	if {$argCount != 3} {
+	    wrongNumArgs "$cmd scroll number units|pages"
 	}
 
 	set number [format "%d" [lindex $argList 1]]

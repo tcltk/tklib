@@ -28,8 +28,8 @@ namespace eval scrollutil::ss {
     # the widget to which the option applies: f stands for the frame and w for
     # the scrollsync widget itself.
     #
-    #	Command-Line Name	 {Database Name		  Database Class      W}
-    #	------------------------------------------------------------------------
+    #	Command-Line Name	 {Database Name		  Database Class     W}
+    #	-----------------------------------------------------------------------
     #
     variable configSpecs
     array set configSpecs {
@@ -108,8 +108,13 @@ proc scrollutil::ss::createBindings {} {
             focus [lindex [%W widgets] 0]
         }
     }
-    bind Scrollsync <Configure> { scrollutil::ss::onScrollsyncConfigure %W }
-    bind Scrollsync <Destroy>   { scrollutil::ss::onScrollsyncDestroy %W }
+    bind Scrollsync <Configure> {
+	after 50 [list scrollutil::ss::updateMasterWidgets %W]
+    }
+    bind Scrollsync <Destroy> {
+	namespace delete scrollutil::ns%W
+	catch {rename %W ""}
+    }
 
     bind WidgetOfScrollsync <Destroy> {
 	scrollutil::ss::onWidgetOfScrollsyncDestroy %W
@@ -162,8 +167,10 @@ proc scrollutil::scrollsync args {
 	#
 	variable data
 	array set data {
-	    xviewLocked		0
-	    yviewLocked		0
+	    xView		{-1 -1}
+	    yView		{-1 -1}
+	    xViewLocked		0
+	    yViewLocked		0
 	    widgetList		{}
 	    xScrollableList	{}
 	    yScrollableList	{}
@@ -230,9 +237,13 @@ proc scrollutil::ss::doConfig {win opt val} {
 
 	w {
 	    switch -- $opt {
-		-xscrollcommand -
+		-xscrollcommand {
+		    set data($opt) $val
+		    set data(xView) {-1 -1}
+		}
 		-yscrollcommand {
 		    set data($opt) $val
+		    set data(yView) {-1 -1}
 		}
 	    }
 	}
@@ -307,13 +318,9 @@ proc scrollutil::ss::scrollsyncWidgetCmd {win args} {
 	    return $data(widgetList)
 	}
 
-	xview {
-	    return [viewSubCmd $win x [lrange $args 1 end]]
-	}
+	xview { return [viewSubCmd $win x [lrange $args 1 end]] }
 
-	yview {
-	    return [viewSubCmd $win y [lrange $args 1 end]]
-	}
+	yview { return [viewSubCmd $win y [lrange $args 1 end]] }
     }
 }
 
@@ -323,8 +330,6 @@ proc scrollutil::ss::scrollsyncWidgetCmd {win args} {
 # Processes the scrollsync setwidgets subcommmand.
 #------------------------------------------------------------------------------
 proc scrollutil::ss::setwidgetsSubCmd {win widgetList} {
-    upvar ::scrollutil::ns${win}::data data
-
     foreach w $widgetList {
 	if {![winfo exists $w]} {
 	    return -code error "bad window path name \"$w\""
@@ -332,6 +337,9 @@ proc scrollutil::ss::setwidgetsSubCmd {win widgetList} {
     }
 
     variable scrollsyncArr
+    variable xViewArr
+    variable yViewArr
+    upvar ::scrollutil::ns${win}::data data
 
     set oldWidgetList $data(widgetList)
     foreach w $oldWidgetList {
@@ -343,6 +351,12 @@ proc scrollutil::ss::setwidgetsSubCmd {win widgetList} {
 
 	if {[info exists scrollsyncArr($w)]} {
 	    unset scrollsyncArr($w)
+	}
+	if {[info exists xViewArr($w)]} {
+	    unset xViewArr($w)
+	}
+	if {[info exists yViewArr($w)]} {
+	    unset yViewArr($w)
 	}
     }
 
@@ -360,6 +374,7 @@ proc scrollutil::ss::setwidgetsSubCmd {win widgetList} {
 	foreach axis {x y} {
 	    if {[mwutil::isScrollable $w $axis]} {
 		lappend data(${axis}ScrollableList) $w
+		set ${axis}ViewArr($w) {-1 -1}
 		::$w ${axis}view moveto 0
 		::$w configure -${axis}scrollcommand \
 		    [list scrollutil::ss::scrollCmd $win $w $axis]
@@ -394,20 +409,12 @@ proc scrollutil::ss::viewSubCmd {win axis argList} {
 	    }
 	}
 
-	1 {
-	    #
-	    # Command: $win (x|y)view <units>
-	    #
-	    return -code error \
-		"the command \"$win $viewCmd <units>\" is not supported"
-	}
-
 	default {
 	    #
 	    # Command: $win (x|y)view moveto <fraction>
 	    #	       $win (x|y)view scroll <number> units|pages
 	    #
-	    set argList [mwutil::getScrollInfo $argList]
+	    set argList [mwutil::getScrollInfo2 "$win $viewCmd" $argList]
 	    if {[string length $masterWidget] != 0} {
 		eval [list ::$masterWidget] $viewCmd $argList
 	    }
@@ -424,14 +431,30 @@ proc scrollutil::ss::viewSubCmd {win axis argList} {
 #------------------------------------------------------------------------------
 # scrollutil::ss::scrollCmd
 #
-# Propagates the position of the horizontal/vertical view of the widget widget
-# within the scrollsync win to the other horizontally/vertically scrollable
-# widgets and passes the data of the master widget's view to the value of the
-# -xscrollcommand/-yscrollcommand option.
+# Propagates the horizontal/vertical position of the view of a given widget
+# within the scrollsync widget win to the other horizontally/vertically
+# scrollable widgets and passes the data of the master widget's view to the
+# value of the -xscrollcommand/-yscrollcommand option.
 #------------------------------------------------------------------------------
 proc scrollutil::ss::scrollCmd {win widget axis first last} {
+    #
+    # Avoid a potential endless loop by making sure that
+    # the view's horizontal/vertical position will only be
+    # propagated to the other widgets if it has changed
+    #
+    variable ${axis}ViewArr
+    set view [set ${axis}ViewArr($widget)]
+    foreach {firstOld lastOld} $view {}
+    if {$first == $firstOld && $last == $lastOld} {
+	return ""
+    } else {
+	set ${axis}ViewArr($widget) [list $first $last]
+    }
+
+    set masterWidget [sortScrollableList $win $axis]
+    set isMasterWidget [expr {[string compare $widget $masterWidget] == 0}]
     upvar ::scrollutil::ns${win}::data data
-    if {$data(${axis}viewLocked)} {
+    if {$data(${axis}ViewLocked) && !$isMasterWidget} {
 	return ""
     }
 
@@ -447,12 +470,15 @@ proc scrollutil::ss::scrollCmd {win widget axis first last} {
 	}
     }
 
-    set masterWidget [sortScrollableList $win $axis]
-    if {[string length $data(-${axis}scrollcommand)] != 0} {
-	eval $data(-${axis}scrollcommand) [::$masterWidget ${axis}view]
+    if {$isMasterWidget && [string length $data(-${axis}scrollcommand)] != 0} {
+	foreach {firstOld lastOld} $data(${axis}View) {}
+	if {$first != $firstOld || $last != $lastOld} {
+	    set data(${axis}View) [list $first $last]
+	    eval $data(-${axis}scrollcommand) $first $last
+	}
     }
 
-    set data(${axis}viewLocked) 1
+    set data(${axis}ViewLocked) 1
     after 1 [list scrollutil::ss::unlockView $win $axis]
 }
 
@@ -460,14 +486,6 @@ proc scrollutil::ss::scrollCmd {win widget axis first last} {
 # Private procedures used in bindings
 # ===================================
 #
-
-#------------------------------------------------------------------------------
-# scrollutil::ss::onScrollsyncConfigure
-#------------------------------------------------------------------------------
-proc scrollutil::ss::onScrollsyncConfigure win {
-    upvar ::scrollutil::ns${win}::data data
-    after 50 [list scrollutil::ss::updateMasterWidgets $win]
-}
 
 #------------------------------------------------------------------------------
 # scrollutil::ss::updateMasterWidgets
@@ -489,20 +507,21 @@ proc scrollutil::ss::updateMasterWidgets win {
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::ss::onScrollsyncDestroy
-#------------------------------------------------------------------------------
-proc scrollutil::ss::onScrollsyncDestroy win {
-    namespace delete ::scrollutil::ns$win
-    catch {rename ::$win ""}
-}
-
-#------------------------------------------------------------------------------
 # scrollutil::ss::onWidgetOfScrollsyncDestroy
 #------------------------------------------------------------------------------
 proc scrollutil::ss::onWidgetOfScrollsyncDestroy widget {
     variable scrollsyncArr
+    variable xViewArr
+    variable yViewArr
+
     set win $scrollsyncArr($widget)
     unset scrollsyncArr($widget)
+    if {[info exists xViewArr($widget)]} {
+	unset xViewArr($widget)
+    }
+    if {[info exists yViewArr($widget)]} {
+	unset yViewArr($widget)
+    }
 
     if {[winfo exists $win] &&
 	[string compare [winfo class $win] "Scrollsync"] == 0} {
@@ -552,6 +571,6 @@ proc scrollutil::ss::unlockView {win axis} {
     if {[winfo exists $win] &&
 	[string compare [winfo class $win] "Scrollsync"] == 0} {
 	upvar ::scrollutil::ns${win}::data data
-	set data(${axis}viewLocked) 0
+	set data(${axis}ViewLocked) 0
     }
 }
