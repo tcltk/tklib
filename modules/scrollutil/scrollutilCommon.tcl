@@ -10,7 +10,7 @@ namespace eval ::scrollutil {
     #
     # Public variables:
     #
-    variable version	1.1
+    variable version	1.2
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -19,9 +19,9 @@ namespace eval ::scrollutil {
     }
 
     #
-    # Creates a new scrollarea/scrollsync widget:
+    # Creates a new scrollarea/scrollsync/scrollableframe widget:
     #
-    namespace export	scrollarea scrollsync
+    namespace export	scrollarea scrollsync scrollableframe
 
     #
     # Public procedures for mouse wheel event
@@ -53,7 +53,7 @@ proc ::scrollutil::restoreUsingTile {origVal varName index op} {
     variable usingTile $origVal
     switch $op {
 	w {
-	    return -code error "it is not allowed to use both Scrollutil and\
+	    return -code error "it is not supported to use both Scrollutil and\
 				Scrollutil_tile in the same application"
 	}
 	u {
@@ -63,8 +63,14 @@ proc ::scrollutil::restoreUsingTile {origVal varName index op} {
     }
 }
 
-interp alias {} ::tk::frame {}     ::frame
-interp alias {} ::tk::scrollbar {} ::scrollbar
+proc ::scrollutil::createTkAliases {} {
+    foreach cmd {frame scrollbar} {
+	if {[llength [info commands ::tk::$cmd]] == 0} {
+	    interp alias {} ::tk::$cmd {} ::$cmd
+	}
+    }
+}
+::scrollutil::createTkAliases
 
 #
 # Everything else needed is lazily loaded on demand, via the dispatcher
