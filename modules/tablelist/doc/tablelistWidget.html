@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
   <title>The tablelist::tablelist Command</title>
@@ -9,11 +10,11 @@
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
-<body bgcolor="#FFFFFF">
+<body>
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.6</h2>
+    <h2>For Tablelist Version 6.7</h2>
 
     <h3>by</h3>
 
@@ -23,6 +24,7 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
+
   <hr>
 
   <h2 id="contents">Contents</h2>
@@ -36,6 +38,7 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
+
   <hr>
 
   <h2 id="quick_ref">Quick Reference</h2>
@@ -1171,7 +1174,7 @@
 
     <dd>
       <code><i>pathName</i> <b><a href="#xview">xview</a></b>
-      <i>args</i></code>
+      ?<i>args</i>?</code>
 
       <dl>
         <dd><code><i>pathName</i> <b>xview</b></code></dd>
@@ -1188,7 +1191,7 @@
 
     <dd>
       <code><i>pathName</i> <b><a href="#yview">yview</a></b>
-      <i>args</i></code>
+      ?<i>args</i>?</code>
 
       <dl>
         <dd><code><i>pathName</i> <b>yview</b></code></dd>
@@ -1402,6 +1405,7 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
+
   <hr>
 
   <h2 id="detailed_ref">Detailed Reference</h2>
@@ -1549,7 +1553,7 @@
     restriction has technical reasons and is only relevant on X11.</dd>
 
     <dd class="tm"><b>REMARK 2:</b>&nbsp; Instead of creating the scrollbar(s)
-    manually and settings the <code><b>-xscrollcommand</b></code> and/or
+    manually and setting the <code><b>-xscrollcommand</b></code> and/or
     <code><b>-yscrollcommand</b></code> options accordingly, you might consider
     to use the <a href=
     "http://www.nemethi.de/scrollutil/scrollarea.html">scrollarea</a> widget of
@@ -1580,19 +1584,16 @@
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-acceptchildcommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;acceptChildCommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;AcceptChildCommand</b></code></td>
         </tr>
       </table>
@@ -1617,10 +1618,10 @@
           <pre>
 proc acceptChildCmd {tbl targetParentNodeIdx sourceRow} {
     if {[string compare $targetParentNodeIdx "root"] == 0} {
-        <i># Allow only volumes as top-level items</i>
+        <span class="cmt"># Allow only volumes as top-level items</span>
         return [expr {[$tbl <a href="#depth">depth</a> $sourceRow] == 1}]
     } else {
-        <i># Allow only directories as parent items</i>
+        <span class="cmt"># Allow only directories as parent items</span>
         return [<i>$targetParentNodeIdx represents a directory</i>]
     }
 }
@@ -1637,19 +1638,16 @@ proc acceptChildCmd {tbl targetParentNodeIdx sourceRow} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-acceptdropcommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;acceptDropCommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;AcceptDropCommand</b></code></td>
         </tr>
       </table>
@@ -1685,19 +1683,16 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-activestyle</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;activeStyle</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ActiveStyle</b></code></td>
         </tr>
       </table>
@@ -1725,19 +1720,16 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-arrowcolor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;arrowColor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ArrowColor</b></code></td>
         </tr>
       </table>
@@ -1772,7 +1764,7 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         <code><b>aqua</b></code> is <code>#404040</code> and the default arrow
         style is <code><b>flatAngle7x4</b></code>.&nbsp; For earlier operating
         system versions on the Mac, the default values are the arrow color
-        <code>#717171</code> and the arrow style <code><b>flat7x7</b></code>
+        <code>#777777</code> and the arrow style <code><b>flat7x7</b></code>
         (or <code><b>photo7x7</b></code>, in the presence of PNG support).</p>
 
         <p><b>REMARK:</b>&nbsp; If the arrow color is as empty string then the
@@ -1789,19 +1781,16 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-arrowdisabledcolor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;arrowDisabledColor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ArrowDisabledColor</b></code></td>
         </tr>
       </table>
@@ -1828,19 +1817,16 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-arrowstyle</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;arrowStyle</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ArrowStyle</b></code></td>
         </tr>
       </table>
@@ -1928,19 +1914,16 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-autofinishediting</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;autoFinishEditing</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;AutoFinishEditing</b></code></td>
         </tr>
       </table>
@@ -1959,19 +1942,16 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-autoscan</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;autoScan</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;AutoScan</b></code></td>
         </tr>
       </table>
@@ -2002,19 +1982,16 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-collapsecommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;collapseCommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;CollapseCommand</b></code></td>
         </tr>
       </table>
@@ -2039,19 +2016,16 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-colorizecommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;colorizeCommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ColorizeCommand</b></code></td>
         </tr>
       </table>
@@ -2111,8 +2085,8 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
 </pre>
         </blockquote>
 
-        <p><b>REMARK:</b>&nbsp; To change the colors of some parts of a cell's
-        displayed content, the command specified as the value of this
+        <p><b>REMARK 1:</b>&nbsp; To change the colors of some parts of a
+        cell's displayed content, the command specified as the value of this
         configuration option will have to make use of text widget tags having
         the desired background and/or foreground colors.&nbsp; Besides
         <code><b>-background</b></code> and <code><b>-foreground</b></code>,
@@ -2122,8 +2096,12 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
         the use of some other tag configuration options (particularly
         <code><b>-elide</b></code> and <code><b>-font</b></code>) can cause
         conflicts with the way Tablelist renders the elements, thus giving rise
-        to various layout problems within the body of your tablelist
+        to various layout problems within the body or header of your tablelist
         widget!</p>
+
+        <p><b>REMARK 2:</b>&nbsp; Since the multi-line elements are displayed
+        with the aid of embedded message widgets, there is currently no way to
+        change the colors of text areas within multi-line cells.</p>
       </blockquote>
     </dd>
 
@@ -2131,19 +2109,16 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-columns</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;columns</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Columns</b></code></td>
         </tr>
       </table>
@@ -2201,19 +2176,16 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-columntitles</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;columnTitles</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ColumnTitles</b></code></td>
         </tr>
       </table>
@@ -2259,19 +2231,16 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-customdragsource</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;customDragSource</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;CustomDragSource</b></code></td>
         </tr>
       </table>
@@ -2292,19 +2261,16 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-displayondemand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;displayOnDemand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;DisplayOnDemand</b></code></td>
         </tr>
       </table>
@@ -2338,19 +2304,16 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-editendcommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;editEndCommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;EditEndCommand</b></code></td>
         </tr>
       </table>
@@ -2378,19 +2341,16 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-editselectedonly</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;editSelectedOnly</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;EditSelectedOnly</b></code></td>
         </tr>
       </table>
@@ -2413,19 +2373,16 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-editstartcommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;editStartCommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;EditStartCommand</b></code></td>
         </tr>
       </table>
@@ -2448,19 +2405,16 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-expandcommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;expandCommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ExpandCommand</b></code></td>
         </tr>
       </table>
@@ -2489,18 +2443,18 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
           <pre>
 proc expandCmd {tbl row} {
     if {[$tbl <a href="#childcount">childcount</a> $row] == 0} {
-        <i># Get the name of the directory whose leaf name is
-        # displayed in the first cell of the specified row</i>
+        <span class="cmt"># Get the name of the directory whose leaf name is
+        # displayed in the first cell of the specified row</span>
         set dir [$tbl <a href="#rowattrib">rowattrib</a> $row pathName]
 
-        <i># Display the content of the directory $dir
-        # as child items of the one identified by $row</i>
+        <span class="cmt"># Display the content of the directory $dir
+        # as child items of the one identified by $row</span>
         putContents $dir $tbl $row
     }
 
-    <i># The rest is just eye candy:</i>
+    <span class="cmt"># The rest is just eye candy:</span>
     if {[$tbl <a href="#childcount">childcount</a> $row] != 0} {
-        <i># Update the image displayed in the row's first cell</i>
+        <span class="cmt"># Update the image displayed in the row's first cell</span>
         $tbl <a href=
 "#cellconfigure">cellconfigure</a> $row,0 -image openFolderImg
     }
@@ -2514,19 +2468,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-forceeditendcommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;forceEditEndCommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ForceEditEndCommand</b></code></td>
         </tr>
       </table>
@@ -2574,19 +2525,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-fullseparators</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;fullSeparators</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;FullSeparators</b></code></td>
         </tr>
       </table>
@@ -2605,19 +2553,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-height</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;height</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Height</b></code></td>
         </tr>
       </table>
@@ -2640,11 +2585,11 @@ proc expandCmd {tbl row} {
         <p><b>REMARK:</b>&nbsp; Embedded images and windows often make the rows
         of the tablelist higher, resulting in a discrepancy between the value
         of this option and the number of rows visible in the body window.&nbsp;
-        In many cases you can work around this problem by saving the value of
+        In most cases you can work around this problem by saving the value of
         the widget's <code><b>-font</b></code> option, setting the latter to a
         sufficiently large font, and then setting the <code><b>-font</b></code>
-        row configuration option of each body item to the saved widget font
-        value.</p>
+        row configuration option of each body and header item to the saved
+        widget font value.</p>
       </blockquote>
     </dd>
 
@@ -2652,19 +2597,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-incrarrowtype</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;incrArrowType</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;IncrArrowType</b></code></td>
         </tr>
       </table>
@@ -2687,19 +2629,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-instanttoggle</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;instantToggle</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;InstantToggle</b></code></td>
         </tr>
       </table>
@@ -2720,19 +2659,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-labelactivebackground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;labelActiveBackground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Foreground</b></code></td>
         </tr>
       </table>
@@ -2755,19 +2691,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-labelactiveforeground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;labelActiveForeground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Background</b></code></td>
         </tr>
       </table>
@@ -2790,20 +2723,17 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-labelbackground</b></code> or
           <code><b>-labelbg</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;labelBackground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Background</b></code></td>
         </tr>
       </table>
@@ -2819,20 +2749,17 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-labelborderwidth</b></code> or
           <code><b>-labelbd</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;labelBorderWidth</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;BorderWidth</b></code></td>
         </tr>
       </table>
@@ -2856,19 +2783,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-labelcommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;labelCommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;LabelCommand</b></code></td>
         </tr>
       </table>
@@ -2897,19 +2821,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-labelcommand2</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;labelCommand2</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;LabelCommand2</b></code></td>
         </tr>
       </table>
@@ -2940,19 +2861,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-labeldisabledforeground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;labelDisabledForeground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;DisabledForeground</b></code></td>
         </tr>
       </table>
@@ -2975,19 +2893,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-labelfont</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;labelFont</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Font</b></code></td>
         </tr>
       </table>
@@ -3003,20 +2918,17 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-labelforeground</b></code> or
           <code><b>-labelfg</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;labelForeground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Foreground</b></code></td>
         </tr>
       </table>
@@ -3032,19 +2944,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-labelheight</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;labelHeight</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Height</b></code></td>
         </tr>
       </table>
@@ -3060,19 +2969,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-labelpady</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;labelPadY</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Pad</b></code></td>
         </tr>
       </table>
@@ -3093,19 +2999,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-labelrelief</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;labelRelief</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Relief</b></code></td>
         </tr>
       </table>
@@ -3122,19 +3025,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-listvariable</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;listVariable</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Variable</b></code></td>
         </tr>
       </table>
@@ -3211,19 +3111,16 @@ for {set row 0} {$row &lt; 1000} {incr row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-movablecolumns</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;movableColumns</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;MovableColumns</b></code></td>
         </tr>
       </table>
@@ -3241,19 +3138,16 @@ for {set row 0} {$row &lt; 1000} {incr row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-movablerows</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;movableRows</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;MovableRows</b></code></td>
         </tr>
       </table>
@@ -3276,19 +3170,16 @@ for {set row 0} {$row &lt; 1000} {incr row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-movecolumncursor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;moveColumnCursor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;MoveColumnCursor</b></code></td>
         </tr>
       </table>
@@ -3307,19 +3198,16 @@ for {set row 0} {$row &lt; 1000} {incr row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-movecursor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;moveCursor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;MoveCursor</b></code></td>
         </tr>
       </table>
@@ -3338,19 +3226,16 @@ for {set row 0} {$row &lt; 1000} {incr row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-populatecommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;populateCommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;PopulateCommand</b></code></td>
         </tr>
       </table>
@@ -3402,12 +3287,12 @@ for {set row 0} {$row &lt; 1000} {incr row} {
         <blockquote>
           <pre>
 proc populateCmd {tbl row} {
-    <i># Get the name of the directory whose leaf name is
-    # displayed in the first cell of the specified row</i>
+    <span class="cmt"># Get the name of the directory whose leaf name is
+    # displayed in the first cell of the specified row</span>
     set dir [$tbl <a href="#rowattrib">rowattrib</a> $row pathName]
 
-    <i># Display the content of the directory $dir
-    # as child items of the one identified by $row</i>
+    <span class="cmt"># Display the content of the directory $dir
+    # as child items of the one identified by $row</span>
     putContents $dir $tbl $row
 }
 </pre>
@@ -3424,9 +3309,9 @@ proc expandCmd {tbl row} {
         populateCmd $tbl $row
     }
 
-    <i># The rest is just eye candy:</i>
+    <span class="cmt"># The rest is just eye candy:</span>
     if {[$tbl <a href="#childcount">childcount</a> $row] != 0} {
-        <i># Update the image displayed in the row's first cell</i>
+        <span class="cmt"># Update the image displayed in the row's first cell</span>
         $tbl <a href=
 "#cellconfigure">cellconfigure</a> $row,0 -image openFolderImg
     }
@@ -3440,19 +3325,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-protecttitlecolumns</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;protectTitleColumns</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ProtectTitleColumns</b></code></td>
         </tr>
       </table>
@@ -3472,19 +3354,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-resizablecolumns</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;resizableColumns</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ResizableColumns</b></code></td>
         </tr>
       </table>
@@ -3502,19 +3381,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-resizecursor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;resizeCursor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ResizeCursor</b></code></td>
         </tr>
       </table>
@@ -3533,19 +3409,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-selectfiltercommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;selectFilterCommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;SelectFilterCommand</b></code></td>
         </tr>
       </table>
@@ -3571,19 +3444,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-selectmode</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;selectMode</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;SelectMode</b></code></td>
         </tr>
       </table>
@@ -3602,19 +3472,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-selecttype</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;selectType</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;SelectType</b></code></td>
         </tr>
       </table>
@@ -3637,19 +3504,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-setfocus</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;setFocus</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;SetFocus</b></code></td>
         </tr>
       </table>
@@ -3670,19 +3534,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-showarrow</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;showArrow</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ShowArrow</b></code></td>
         </tr>
       </table>
@@ -3702,19 +3563,16 @@ proc expandCmd {tbl row} {
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-showbusycursor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;showBusyCursor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ShowBusyCursor</b></code></td>
         </tr>
       </table>
@@ -3765,19 +3623,16 @@ option add *Tablelist.showBusyCursor 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-showeditcursor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;showEditCursor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ShowEditCursor</b></code></td>
         </tr>
       </table>
@@ -3828,19 +3683,16 @@ option add *Tablelist.showEditCursor 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-showhorizseparator</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;showHorizSeparator</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ShowHorizSeparator</b></code></td>
         </tr>
       </table>
@@ -3874,19 +3726,16 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-showlabels</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;showLabels</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ShowLabels</b></code></td>
         </tr>
       </table>
@@ -3901,19 +3750,16 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-showseparators</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;showSeparators</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ShowSeparators</b></code></td>
         </tr>
       </table>
@@ -3947,19 +3793,16 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-snipstring</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;snipString</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;SnipString</b></code></td>
         </tr>
       </table>
@@ -3975,19 +3818,16 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-sortcommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;sortCommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;SortCommand</b></code></td>
         </tr>
       </table>
@@ -4009,19 +3849,16 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-spacing</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;spacing</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Spacing</b></code></td>
         </tr>
       </table>
@@ -4039,19 +3876,16 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-state</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;state</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;State</b></code></td>
         </tr>
       </table>
@@ -4078,19 +3912,16 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-stretch</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;stretch</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Stretch</b></code></td>
         </tr>
       </table>
@@ -4128,20 +3959,17 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-stripebackground</b></code> or
           <code><b>-stripebg</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;stripeBackground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Background</b></code></td>
         </tr>
       </table>
@@ -4178,20 +4006,17 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-stripeforeground</b></code> or
           <code><b>-stripefg</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;stripeForeground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Foreground</b></code></td>
         </tr>
       </table>
@@ -4221,19 +4046,16 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-stripeheight</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;stripeHeight</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;StripeHeight</b></code></td>
         </tr>
       </table>
@@ -4248,19 +4070,16 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-takefocus</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;takeFocus</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;TakeFocus</b></code></td>
         </tr>
       </table>
@@ -4279,19 +4098,16 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-targetcolor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;targetColor</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;TargetColor</b></code></td>
         </tr>
       </table>
@@ -4312,19 +4128,16 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-tight</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;tight</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Tight</b></code></td>
         </tr>
       </table>
@@ -4348,19 +4161,16 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-titlecolumns</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;titleColumns</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;TitleColumns</b></code></td>
         </tr>
       </table>
@@ -4399,19 +4209,16 @@ option add *Tablelist.showHorizSeparator 0
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-tooltipaddcommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;tooltipAddCommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;TooltipAddCommand</b></code></td>
         </tr>
       </table>
@@ -4562,19 +4369,16 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-tooltipdelcommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;tooltipDelCommand</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;TooltipDelCommand</b></code></td>
         </tr>
       </table>
@@ -4599,19 +4403,16 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-treecolumn</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;treeColumn</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;TreeColumn</b></code></td>
         </tr>
       </table>
@@ -4646,13 +4447,11 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;treeStyle</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;TreeStyle</b></code></td>
         </tr>
       </table>
@@ -4670,48 +4469,33 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
         <table border="2" cellspacing="0" cellpadding="3" rules="groups">
           <colgroup></colgroup>
-
           <colgroup></colgroup>
-
           <colgroup></colgroup>
-
           <colgroup></colgroup>
-
           <colgroup></colgroup>
-
           <colgroup></colgroup>
 
           <tbody align="center">
             <tr>
               <td><img src="gtk.png" alt="gtk" width="120" height="51"></td>
-
               <td><img src="adwaita.png" alt="adwaita" width="120" height=
               "51"></td>
-
               <td><img src="blueMenta.png" alt="blueMenta" width="120" height=
               "51"></td>
-
               <td><img src="ubuntu.png" alt="ubuntu" width="120" height=
               "51"></td>
-
               <td><img src="ubuntu2.png" alt="ubuntu2" width="120" height=
               "51"></td>
-
               <td><img src="ubuntu3.png" alt="ubuntu3" width="120" height=
               "51"></td>
             </tr>
 
             <tr>
               <th><code>gtk</code></th>
-
               <th><code>adwaita</code></th>
-
               <th><code>blueMenta</code></th>
-
               <th><code>ubuntu</code></th>
-
               <th><code>ubuntu2</code></th>
-
               <th><code>ubuntu3</code></th>
             </tr>
           </tbody>
@@ -4719,32 +4503,22 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           <tbody align="center">
             <tr>
               <td><img src="mint.png" alt="mint" width="120" height="51"></td>
-
               <td><img src="mint2.png" alt="mint2" width="120" height=
               "51"></td>
-
               <td><img src="mate.png" alt="mate" width="120" height="51"></td>
-
               <td><img src="menta.png" alt="menta" width="120" height=
               "51"></td>
-
               <td><img src="ubuntuMate.png" alt="ubuntuMate" width="120"
               height="51"></td>
-
               <td><img src="yuyo.png" alt="yuyo" width="120" height="51"></td>
             </tr>
 
             <tr>
               <th><code>mint</code></th>
-
               <th><code>mint2</code></th>
-
               <th><code>mate</code></th>
-
               <th><code>menta</code></th>
-
               <th><code>ubuntuMate</code></th>
-
               <th><code>yuyo</code></th>
             </tr>
           </tbody>
@@ -4752,34 +4526,24 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           <tbody align="center">
             <tr>
               <td><img src="arc.png" alt="arc" width="120" height="51"></td>
-
               <td><img src="oxygen1.png" alt="oxygen1" width="120" height=
               "51"></td>
-
               <td><img src="oxygen2.png" alt="oxygen2" width="120" height=
               "51"></td>
-
               <td><img src="klearlooks.png" alt="klearlooks" width="120"
               height="51"></td>
-
               <td><img src="baghira.png" alt="baghira" width="120" height=
               "51"></td>
-
               <td><img src="phase.png" alt="phase" width="120" height=
               "51"></td>
             </tr>
 
             <tr>
               <th><code>arc</code></th>
-
               <th><code>oxygen1</code></th>
-
               <th><code>oxygen2</code></th>
-
               <th><code>klearlooks</code></th>
-
               <th><code>baghira</code></th>
-
               <th><code>phase</code></th>
             </tr>
           </tbody>
@@ -4788,34 +4552,24 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <tr>
               <td><img src="plastique.png" alt="plastique" width="120" height=
               "51"></td>
-
               <td><img src="plastik.png" alt="plastik" width="120" height=
               "51"></td>
-
               <td><img src="winnative.png" alt="winnative" width="120" height=
               "51"></td>
-
               <td><img src="winxpBlue.png" alt="winxpBlue" width="120" height=
               "51"></td>
-
               <td><img src="winxpOlive.png" alt="winxpOlive" width="120"
               height="51"></td>
-
               <td><img src="winxpSilver.png" alt="winxpSilver" width="120"
               height="51"></td>
             </tr>
 
             <tr>
               <th><code>plastique</code></th>
-
               <th><code>plastik</code></th>
-
               <th><code>winnative</code></th>
-
               <th><code>winxpBlue</code></th>
-
               <th><code>winxpOlive</code></th>
-
               <th><code>winxpSilver</code></th>
             </tr>
           </tbody>
@@ -4823,34 +4577,24 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           <tbody align="center">
             <tr>
               <td><img src="aqua.png" alt="aqua" width="120" height="54"></td>
-
               <td><img src="vistaAero.png" alt="vistaAero" width="120" height=
               "54"></td>
-
               <td><img src="vistaClassic.png" alt="vistaClassic" width="120"
               height="51"></td>
-
               <td><img src="win7Aero.png" alt="win7Aero" width="120" height=
               "54"></td>
-
               <td><img src="win7Classic.png" alt="win7Classic" width="120"
               height="51"></td>
-
               <td><img src="win10.png" alt="win110" width="120" height=
               "54"></td>
             </tr>
 
             <tr>
               <th><code>aqua</code></th>
-
               <th><code>vistaAero</code></th>
-
               <th><code>vistaClassic</code></th>
-
               <th><code>win7Aero</code></th>
-
               <th><code>win7Classic</code></th>
-
               <th><code>win10</code></th>
             </tr>
           </tbody>
@@ -4859,32 +4603,22 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <tr>
               <td><img src="ambiance.png" alt="ambiance" width="120" height=
               "63"></td>
-
               <td><img src="dust.png" alt="dust" width="120" height="63"></td>
-
               <td><img src="dustSand.png" alt="dustSand" width="120" height=
               "63"></td>
-
               <td><img src="radiance.png" alt="radiance" width="120" height=
               "63"></td>
-
               <td><img src="newWave.png" alt="newWave.png" width="120" height=
               "63"></td>
-
               <td></td>
             </tr>
 
             <tr>
               <th><code>ambiance</code></th>
-
               <th><code>dust</code></th>
-
               <th><code>dustSand</code></th>
-
               <th><code>radiance</code></th>
-
               <th><code>newWave</code></th>
-
               <th></th>
             </tr>
           </tbody>
@@ -4899,21 +4633,15 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
         <table border="2" cellspacing="0" cellpadding="3" rules="groups">
           <colgroup></colgroup>
-
           <colgroup></colgroup>
-
           <colgroup></colgroup>
-
           <colgroup></colgroup>
 
           <tbody align="center">
             <tr bgcolor="#FFFFE0">
               <th>100 %</th>
-
               <th>125 %</th>
-
               <th>150 %</th>
-
               <th>200 %</th>
             </tr>
           </tbody>
@@ -4922,24 +4650,18 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <tr>
               <td><img src="plain1.png" alt="plain1" width="120" height=
               "51"></td>
-
               <td><img src="plain2.png" alt="plain2" width="140" height=
               "63"></td>
-
               <td><img src="plain3.png" alt="plain3" width="160" height=
               "72"></td>
-
               <td><img src="plain4.png" alt="plain4" width="210" height=
               "93"></td>
             </tr>
 
             <tr>
               <th><code>plain1</code></th>
-
               <th><code>plain2</code></th>
-
               <th><code>plain3</code></th>
-
               <th><code>plain4</code></th>
             </tr>
           </tbody>
@@ -4948,24 +4670,18 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <tr>
               <td><img src="bicolor1.png" alt="bicolor1" width="120" height=
               "51"></td>
-
               <td><img src="bicolor2.png" alt="bicolor2" width="140" height=
               "63"></td>
-
               <td><img src="bicolor3.png" alt="bicolor3" width="160" height=
               "72"></td>
-
               <td><img src="bicolor4.png" alt="bicolor4" width="210" height=
               "93"></td>
             </tr>
 
             <tr>
               <th><code>bicolor1</code></th>
-
               <th><code>bicolor2</code></th>
-
               <th><code>bicolor3</code></th>
-
               <th><code>bicolor4</code></th>
             </tr>
           </tbody>
@@ -4974,24 +4690,18 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <tr>
               <td><img src="classic1.png" alt="classic1" width="120" height=
               "51"></td>
-
               <td><img src="classic2.png" alt="classic2" width="140" height=
               "63"></td>
-
               <td><img src="classic3.png" alt="classic3" width="160" height=
               "72"></td>
-
               <td><img src="classic4.png" alt="classic4" width="210" height=
               "93"></td>
             </tr>
 
             <tr>
               <th><code>classic1</code></th>
-
               <th><code>classic2</code></th>
-
               <th><code>classic3</code></th>
-
               <th><code>classic4</code></th>
             </tr>
           </tbody>
@@ -5021,41 +4731,32 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
         <table border="2" cellspacing="0" cellpadding="3">
           <tr bgcolor="#FFFFE0">
             <th align="left">Value</th>
-
             <th align="center">Screenshot</th>
-
             <th align="left">Comments</th>
           </tr>
 
           <tr>
             <td><code><b>adwaita</b></code></td>
-
             <td><img src="adwaita.png" alt="adwaita" width="120" height=
             "51"></td>
-
             <td>Inspired by the GTK 3 theme Adwaita.</td>
           </tr>
 
           <tr>
             <td><code><b>ambiance</b></code></td>
-
             <td><img src="ambiance.png" alt="ambiance" width="120" height=
             "63"></td>
-
             <td>Inspired by the GTK 2 theme Ambiance.&nbsp; Recommended to be
             used with large fonts and images.</td>
           </tr>
 
           <tr>
             <td><code><b>aqua</b></code></td>
-
             <td><img src="aqua.png" alt="aqua" width="120" height="54"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
-
                   <td>Default for the windowing systems
                   <code><b>aqua</b></code> and
                   <code><b>classic</b></code>.</td>
@@ -5063,7 +4764,6 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the themes <code><b>aqua</b></code> and
                   <code><b>Aquativo</b></code>.</td>
                 </tr>
@@ -5073,23 +4773,18 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>arc</b></code></td>
-
             <td><img src="arc.png" alt="arc" width="120" height="51"></td>
-
             <td>Inspired by the Arc icon theme (of the GTK 2/3 theme Arc).</td>
           </tr>
 
           <tr>
             <td><code><b>baghira</b></code></td>
-
             <td><img src="baghira.png" alt="baghira" width="120" height=
             "51"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the Qt styles <code><b>baghira</b></code>,
                   <code><b>cde</b></code>, and <code><b>motif</b></code> within
                   the <code><b>tileqt</b></code> theme.&nbsp; Also used by some
@@ -5103,10 +4798,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><code><b>bicolor1</b></code>,<br>
             . . .<br>
             <code><b>bicolor4</b></code></td>
-
             <td><img src="bicolor1.png" alt="bicolor1" width="120" height=
             "51"></td>
-
             <td>While the tree style <code><b>bicolor1</b></code> uses "normal"
             sizes, the three other styles are suitable for use with large fonts
             and images (needed on high-resolution displays).</td>
@@ -5116,10 +4809,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><code><b>classic1</b></code>,<br>
             . . .<br>
             <code><b>classic4</b></code></td>
-
             <td><img src="classic1.png" alt="classic1" width="120" height=
             "51"></td>
-
             <td>While the tree style <code><b>classic1</b></code> uses "normal"
             sizes, the three other styles are suitable for use with large fonts
             and images (needed on high-resolution displays).</td>
@@ -5127,59 +4818,47 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>blueMenta</b></code></td>
-
             <td><img src="blueMenta.png" alt="blueMenta" width="120" height=
             "51"></td>
-
             <td>Inspired by the GTK 3 theme BlueMenta of versions 1.14 and
             later of the MATE desktop.</td>
           </tr>
 
           <tr>
             <td><code><b>dust</b></code></td>
-
             <td><img src="dust.png" alt="dust" width="120" height="63"></td>
-
             <td>Inspired by the GTK 2 theme Dust.&nbsp; Recommended to be used
             with large fonts and images.</td>
           </tr>
 
           <tr>
             <td><code><b>dust</b></code></td>
-
             <td><img src="dust.png" alt="dust" width="120" height="63"></td>
-
             <td>Inspired by the GTK 2 theme Dust.&nbsp; Recommended to be used
             with large fonts and images.</td>
           </tr>
 
           <tr>
             <td><code><b>dustSand</b></code></td>
-
             <td><img src="dustSand.png" alt="dustSand" width="120" height=
             "63"></td>
-
             <td>Inspired by the GTK 2 theme Dust Sand.&nbsp; Recommended to be
             used with large fonts and images.</td>
           </tr>
 
           <tr>
             <td><code><b>gtk</b></code></td>
-
             <td><img src="gtk.png" alt="gtk" width="120" height="51"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
-
                   <td>Default for the windowing system
                   <code><b>x11</b></code>.</td>
                 </tr>
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the themes <code><b>blue</b></code>,
                   <code><b>clam</b></code>, <code><b>classic</b></code>,
                   <code><b>default</b></code>, <code><b>kroc</b></code>,
@@ -5194,17 +4873,14 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>klearlooks</b></code></td>
-
             <td><img src="klearlooks.png" alt="klearlooks" width="120" height=
             "51"></td>
-
             <td>
               Inspired by the KDE 4 style Klearlooks.<br>
 
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the Qt style <code><b>qtcurve</b></code>
                   within the <code><b>tileqt</b></code> theme.</td>
                 </tr>
@@ -5214,70 +4890,55 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>mate</b></code></td>
-
             <td><img src="mate.png" alt="mate" width="120" height="51"></td>
-
             <td>Inspired by a few GTK 2 themes of versions earlier than 1.14 of
             the MATE desktop.</td>
           </tr>
 
           <tr>
             <td><code><b>menta</b></code></td>
-
             <td><img src="menta.png" alt="menta" width="120" height="51"></td>
-
             <td>Inspired by the GTK 3 theme Menta of versions 1.14 and later of
             the MATE desktop.</td>
           </tr>
 
           <tr>
             <td><code><b>mint</b></code></td>
-
             <td><img src="mint.png" alt="mint" width="120" height="51"></td>
-
             <td>Inspired by a few GTK 3 themes bundled with versions earlier
             than 18 of the Linux Mint distribution.</td>
           </tr>
 
           <tr>
             <td><code><b>mint2</b></code></td>
-
             <td><img src="mint2.png" alt="mint" width="120" height="51"></td>
-
             <td>Inspired by a few GTK 3 themes bundled with versions 18 and
             later of the Linux Mint distribution.</td>
           </tr>
 
           <tr>
             <td><code><b>newWave</b></code></td>
-
             <td><img src="newWave.png" alt="newWave" width="120" height=
             "63"></td>
-
             <td>Inspired by the GTK 2 theme New Wave.&nbsp; Recommended to be
             used with large fonts and images.</td>
           </tr>
 
           <tr>
             <td><code><b>oxygen1</b></code></td>
-
             <td><img src="oxygen1.png" alt="oxygen1" width="120" height=
             "51"></td>
-
             <td>Inspired by the KDE 4 style Oxygen.</td>
           </tr>
 
           <tr>
             <td><code><b>oxygen2</b></code></td>
-
             <td><img src="oxygen2.png" alt="oxygen2" width="120" height=
             "51"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the Qt style <code><b>oxygen</b></code>
                   within the <code><b>tileqt</b></code> theme.</td>
                 </tr>
@@ -5287,14 +4948,11 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>phase</b></code></td>
-
             <td><img src="phase.png" alt="phase" width="120" height="51"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the Qt style <code><b>phase</b></code> within
                   the <code><b>tileqt</b></code> theme.</td>
                 </tr>
@@ -5306,10 +4964,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td><code><b>plain1</b></code>,<br>
             . . .<br>
             <code><b>plain4</b></code></td>
-
             <td><img src="plain1.png" alt="plain1" width="120" height=
             "51"></td>
-
             <td>While the tree style <code><b>plain1</b></code> uses "normal"
             sizes, the three other styles are suitable for use with large fonts
             and images (needed on high-resolution displays).</td>
@@ -5317,15 +4973,12 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>plastik</b></code></td>
-
             <td><img src="plastik.png" alt="plastik" width="120" height=
             "51"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the <code><b>plastik</b></code> theme and the
                   Qt style <code><b>plastik</b></code> within the
                   <code><b>tileqt</b></code> theme.</td>
@@ -5336,15 +4989,12 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>plastique</b></code></td>
-
             <td><img src="plastique.png" alt="plastique" width="120" height=
             "51"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the Qt style <code><b>plastique</b></code>
                   within the <code><b>tileqt</b></code> theme.</td>
                 </tr>
@@ -5354,72 +5004,58 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>radiance</b></code></td>
-
             <td><img src="radiance.png" alt="radiance" width="120" height=
             "63"></td>
-
             <td>Inspired by the GTK 2 theme Radiance.&nbsp; Recommended to be
             used with large fonts and images.</td>
           </tr>
 
           <tr>
             <td><code><b>ubuntu</b></code></td>
-
             <td><img src="ubuntu.png" alt="ubuntu" width="120" height=
             "51"></td>
-
             <td>Inspired by a couple of GTK 3 themes bundled with versions
             earlier than 15.04 of the Ubuntu Linux distribution.</td>
           </tr>
 
           <tr>
             <td><code><b>ubuntu2</b></code></td>
-
             <td><img src="ubuntu2.png" alt="ubuntu2" width="120" height=
             "51"></td>
-
             <td>Inspired by a couple of GTK 3 themes bundled with versions
             15.04 &ndash; 16.04 of the Ubuntu Linux distribution.</td>
           </tr>
 
           <tr>
             <td><code><b>ubuntu3</b></code></td>
-
             <td><img src="ubuntu3.png" alt="ubuntu3" width="120" height=
             "51"></td>
-
             <td>Inspired by a couple of GTK 3 themes bundled with versions
             16.10 and later of the Ubuntu Linux distribution.</td>
           </tr>
 
           <tr>
             <td><code><b>ubuntuMate</b></code></td>
-
             <td><img src="ubuntuMate.png" alt="ubuntuMate" width="120" height=
             "51"></td>
-
             <td>Inspired by the themes Ambiant-MATE and Radiant-MATE bundled
             with versions 16.10 and later of the Ubuntu MATE distribution.</td>
           </tr>
 
           <tr>
             <td><code><b>vistaAero</b></code></td>
-
             <td><img src="vistaAero.png" alt="vistaAero" width="120" height=
             "54"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
-
                   <td>Default for the windowing system
                   <code><b>win32</b></code> on Windows Vista.</td>
                 </tr>
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the <code><b>vista</b></code> theme on
                   Windows Vista with the Aero style.</td>
                 </tr>
@@ -5429,15 +5065,12 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>vistaClassic</b></code></td>
-
             <td><img src="vistaClassic.png" alt="vistaClassic" width="120"
             height="51"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
-
                   <td>Default for the windowing system
                   <code><b>win32</b></code> on Windows Vista with the Windows
                   Classic style.</td>
@@ -5445,7 +5078,6 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the <code><b>vista</b></code> theme on
                   Windows Vista with the Windows Classic style.</td>
                 </tr>
@@ -5455,22 +5087,18 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>win7Aero</b></code></td>
-
             <td><img src="win7Aero.png" alt="win7Aero" width="120" height=
             "54"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
-
                   <td>Default for the windowing system
                   <code><b>win32</b></code> on Windows 7 and 8.</td>
                 </tr>
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the <code><b>vista</b></code> theme on
                   Windows 7 and 8, with the Aero style.</td>
                 </tr>
@@ -5480,15 +5108,12 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>win7Classic</b></code></td>
-
             <td><img src="win7Classic.png" alt="win7Classic" width="120"
             height="51"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
-
                   <td>Default for the windowing system
                   <code><b>win32</b></code> on Windows 7 and 8 with the Windows
                   Classic style.</td>
@@ -5496,7 +5121,6 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the <code><b>vista</b></code> theme on
                   Windows 7 and 8 with the Windows Classic style.</td>
                 </tr>
@@ -5506,21 +5130,17 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>win10</b></code></td>
-
             <td><img src="win10.png" alt="win10" width="120" height="54"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
-
                   <td>Default for the windowing system
                   <code><b>win32</b></code> on Windows 10.</td>
                 </tr>
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the <code><b>vista</b></code> theme on
                   Windows 10.</td>
                 </tr>
@@ -5530,15 +5150,12 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>winnative</b></code></td>
-
             <td><img src="winnative.png" alt="winnative" width="120" height=
             "51"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
-
                   <td>Default for the windowing system
                   <code><b>win32</b></code> on Windows 2000 and Windows XP with
                   the Windows Classic style.</td>
@@ -5546,7 +5163,6 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the themes <code><b>alt</b></code>,
                   <code><b>keramik</b></code>, <code><b>keramik_alt</b></code>,
                   <code><b>winnative</b></code>, and
@@ -5560,15 +5176,12 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>winxpBlue</b></code></td>
-
             <td><img src="winxpBlue.png" alt="winxpBlue" width="120" height=
             "51"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
-
                   <td>Default for the windowing system
                   <code><b>win32</b></code> on Windows XP with the Blue color
                   scheme.</td>
@@ -5576,7 +5189,6 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the <code><b>winxpblue</b></code> theme and
                   the <code><b>xpnative</b></code> theme on Windows XP with the
                   Blue color scheme.</td>
@@ -5587,15 +5199,12 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>winxpOlive</b></code></td>
-
             <td><img src="winxpOlive.png" alt="winxpOlive" width="120" height=
             "51"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
-
                   <td>Default for the windowing system
                   <code><b>win32</b></code> on Windows XP with the Olive Green
                   color scheme.</td>
@@ -5603,7 +5212,6 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the <code><b>xpnative</b></code> theme on
                   Windows XP with the Olive Green color scheme.</td>
                 </tr>
@@ -5613,15 +5221,12 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>winxpSilver</b></code></td>
-
             <td><img src="winxpSilver.png" alt="winxpSilver" width="120"
             height="51"></td>
-
             <td>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
-
                   <td>Default for the windowing system
                   <code><b>win32</b></code> on Windows XP with the Silver color
                   scheme.</td>
@@ -5629,7 +5234,6 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-
                   <td>Default for the <code><b>xpnative</b></code> theme on
                   Windows XP with the Silver color scheme.</td>
                 </tr>
@@ -5639,9 +5243,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tr>
             <td><code><b>yuyo</b></code></td>
-
             <td><img src="yuyo.png" alt="yuyo" width="120" height="51"></td>
-
             <td>Inspired by the GTK 2 theme Yuyo on Ubuntu MATE.</td>
           </tr>
         </table>
@@ -5656,19 +5258,16 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-width</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;width</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Width</b></code></td>
         </tr>
       </table>
@@ -5691,19 +5290,16 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-xmousewheelwindow</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;xMouseWheelWindow</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;MouseWheelWindow</b></code></td>
         </tr>
       </table>
@@ -5773,19 +5369,16 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-ymousewheelwindow</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;yMouseWheelWindow</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;MouseWheelWindow</b></code></td>
         </tr>
       </table>
@@ -6124,8 +5717,8 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         <code><b>-labelfg</b> <i>color</i></code><br>
         <code><b>-labelheight</b> <i>lines</i></code><br>
         <code><b>-labelpady</b> <i>screenDistance</i></code><br>
-        <code><b>-labelrelief</b> <i>relief</i></code></dt>
-        <code><b>-selectfiltercommand</b> <i>command</i></code><br>
+        <code><b>-labelrelief</b> <i>relief</i></code><br>
+        <code><b>-selectfiltercommand</b> <i>command</i></code></dt>
 
         <dd>The value of each of these options may also be an empty
         string.&nbsp; These options are the column-specific equivalents of the
@@ -6318,7 +5911,6 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
           <table border="0" cellpadding="6" cellspacing="0">
             <tr valign="top">
               <td><code><b>ascii</b></code></td>
-
               <td>Use string comparison with Unicode code-point collation order
               (the name is for backward-compatibility reasons).&nbsp; This is
               the default.</td>
@@ -6326,14 +5918,12 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
 
             <tr valign="top">
               <td><code><b>asciinocase&nbsp;&nbsp;</b></code></td>
-
               <td>This is the same as <code><b>ascii</b></code>, except that
               comparisons are handled in a case-insensitive manner.</td>
             </tr>
 
             <tr valign="top">
               <td><code><b>command</b></code></td>
-
               <td>Use the command specified by the <code><b><a href=
               "#col_sortcommand">-sortcommand</a></b></code> column
               configuration option to compare the column's elements.</td>
@@ -6341,7 +5931,6 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
 
             <tr valign="top">
               <td><code><b>dictionary</b></code></td>
-
               <td>Use dictionary-style comparison.&nbsp; This is the same as
               <code><b>ascii</b></code>, except: (a) case is ignored except as
               a tie-breaker; (b) if two strings contain embedded numbers, the
@@ -6353,7 +5942,6 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
 
             <tr valign="top">
               <td><code><b>integer</b></code></td>
-
               <td>Convert the elements to integers and use integer
               comparison.&nbsp; If any of the elements cannot be converted to
               an integer (e.g., because it is an empty string) then a sort
@@ -6365,7 +5953,6 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
 
             <tr valign="top">
               <td><code><b>real</b></code></td>
-
               <td>Convert the elements to floating-point values and use
               floating-point comparison.&nbsp; If any of the elements cannot be
               converted to a floating-point value (e.g., because it is an empty
@@ -7317,12 +6904,12 @@ proc onTblDropEnterOrPos {tbl rootX rootY actions buttons} {
         return refuse_drop
     } else {
         $tbl <a href="#showtargetmark">showtargetmark</a> $place $row
-        return copy ;<i># for example</i>
+        return copy ;<span class="cmt"># for example</span>
     }
 }
 
 proc onTblDrop {tbl action data} {
-    <span>handleTblDrop</span> $tbl $data
+    <span class="red">handleTblDrop</span> $tbl $data
     return $action
 }
 </pre>
@@ -7352,7 +6939,7 @@ foreach w [list [$tbl <a href="#bodypath">bodypath</a>] [$tbl <a href=
 }
 
 proc tblDropOverCmd {dropTarget dragSrc event rootX rootY op dataType data} {
-    <i># $event may be "enter", "motion", or "leave"</i>
+    <span class="cmt"># $event may be "enter", "motion", or "leave"</span>
     set tbl [<a href=
 "tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a> $dropTarget]
     if {[string equal $event "leave"]} {
@@ -7362,7 +6949,7 @@ proc tblDropOverCmd {dropTarget dragSrc event rootX rootY op dataType data} {
             ![string equal $newWidget [$tbl <a href=
 "#bodypath">bodypath</a>]]} {
             $tbl <a href="#hidetargetmark">hidetargetmark</a>
-            return 2 ;<i># refuse the drop and re-invoke the callback on motion events</i>
+            return 2 ;<span class="cmt"># refuse the drop and re-invoke the callback on motion events</span>
         }
     }
 
@@ -7373,19 +6960,19 @@ proc tblDropOverCmd {dropTarget dragSrc event rootX rootY op dataType data} {
     if {<i>some_optional_excluding_condition</i>} {
         $tbl <a href="#hidetargetmark">hidetargetmark</a>
         DropSite::setcursor dot
-        return 2 ;<i># refuse the drop and re-invoke the callback on motion events</i>
+        return 2 ;<span class="cmt"># refuse the drop and re-invoke the callback on motion events</span>
     } else {
         $tbl <a href="#showtargetmark">showtargetmark</a> $place $row
         DropSite::setcursor based_arrow_down
-        return 3 ;<i># accept the drop and re-invoke the callback on motion events</i>
+        return 3 ;<span class="cmt"># accept the drop and re-invoke the callback on motion events</span>
     }
 }
 
 proc tblDropCmd {dropTarget dragSrc rootX rootY op dataType data} {
     set tbl [<a href=
 "tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a> $dropTarget]
-    <span>handleTblDrop</span> $tbl $data
-    return 1 ;<i># accept the drop</i>
+    <span class="red">handleTblDrop</span> $tbl $data
+    return 1 ;<span class="cmt"># accept the drop</span>
 }
 </pre>
       </blockquote>
@@ -7419,23 +7006,23 @@ proc handleTblDrop {tbl data} {
 
     if {[string equal $place "before"]}
         if {$row &lt; [$tbl <a href="#size">size</a>]} {
-            <i># Insert a sibling of the item indicated by $row, built from $data
+            <span class="cmt"># Insert a sibling of the item indicated by $row, built from $data
             # (For a flat tablelist replace the following 2 lines with
-            # "set key [$tbl <a href="#insert">insert</a> $row ...]")</i>
+            # "set key [$tbl <a href="#insert">insert</a> $row ...]")</span>
             set key [$tbl <a href=
 "#insertchildren">insertchild</a> [$tbl <a href=
 "#parentkey">parentkey</a> $row] \
                      [$tbl <a href="#childindex">childindex</a> $row] ...]
         } else {
-            <i># Append a top-level item built from $data
+            <span class="cmt"># Append a top-level item built from $data
             # (For a flat tablelist replace the following line with
-            # "set key [$tbl <a href="#insert">insert</a> end ...]")</i>
+            # "set key [$tbl <a href="#insert">insert</a> end ...]")</span>
             set key [$tbl <a href=
 "#insertchildren">insertchild</a> root end ...]
         }
-    } else { ;<i># "inside"</i>
-        <i># Insert a child of the item indicated by $row, built from $data
-        # Alternatively, update the item indicated by $row, using $data</i>
+    } else { ;<span class="cmt"># "inside"</span>
+        <span class="cmt"># Insert a child of the item indicated by $row, built from $data
+        # Alternatively, update the item indicated by $row, using $data</span>
         set key [$tbl <a href="#insertchildren">insertchild</a> $row end ...]
         $tbl <a href="#expand">expand</a> $row -partly
     }
@@ -7477,20 +7064,16 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>&lt;&lt;TablelistCellRestored&gt;&gt;</b></code></td>
-
           <td>Generated by the <code><b><a href=
           "#cancelediting">cancelediting</a></b></code> subcommand.</td>
-
           <td>A list consisting of the numerical row and column indices of the
           cell whose content is being edited.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>&lt;&lt;TablelistCellUpdated&gt;&gt;</b></code></td>
-
           <td>Generated by the <code><b><a href=
           "#finishediting">finishediting</a></b></code> subcommand.</td>
-
           <td>A list consisting of the numerical row and column indices of the
           cell whose content is being edited.</td>
         </tr>
@@ -7498,7 +7081,6 @@ proc handleTblDrop {tbl data} {
         <tr valign="top">
           <td>
           <code><b>&lt;&lt;TablelistColHiddenStateChanged&gt;&gt;</b></code></td>
-
           <td>Generated whenever the hidden state of one or more columns is
           toggled by using the <code><b><a href=
           "#columnconfigure">columnconfigure</a></b></code>, <code><b><a href=
@@ -7506,17 +7088,14 @@ proc handleTblDrop {tbl data} {
           <code><b><a href="#configcolumns">configcolumns</a></b></code>, or
           <code><b><a href="#togglecolumnhide">togglecolumnhide</a></b></code>
           subcommand.</td>
-
           <td>A list consisting of the numerical indices of the columns whose
           hidden state changed.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>&lt;&lt;TablelistColumnMoved&gt;&gt;</b></code></td>
-
           <td>Generated by the default bindings whenever a column is moved
           interactively to a new position.</td>
-
           <td>A list of length 4, whose first two elements are identical to the
           two arguments passed to the <code><b><a href=
           "#movecolumn">movecolumn</a></b></code> subcommand invoked for moving
@@ -7528,20 +7107,16 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code></td>
-
           <td>Generated by the default bindings whenever a column is resized
           interactively.</td>
-
           <td>The numerical index of the column that was resized.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>&lt;&lt;TablelistColumnSorted&gt;&gt;</b></code></td>
-
           <td>Generated by the <code><b><a href=
           "tablelistColSort.html#sortByColumn">tablelist::sortByColumn</a></b></code>
           command.</td>
-
           <td>A list consisting of the numerical column index and the sort
           order (<code><b>decreasing</b></code> or
           <code><b>increasing</b></code>).</td>
@@ -7549,11 +7124,9 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>&lt;&lt;TablelistColumnsSorted&gt;&gt;</b></code></td>
-
           <td>Generated by the <code><b><a href=
           "tablelistColSort.html#addToSortColumns">tablelist::addToSortColumns</a></b></code>
           command.</td>
-
           <td>A list consisting of the two lists passed to the
           <code><b><a href="tablelistWidget.html#sortbycolumnlist">sortbycolumnlist</a></b></code>
           subcommand, invoked to perform the multi-column sorting.</td>
@@ -7562,37 +7135,31 @@ proc handleTblDrop {tbl data} {
         <tr valign="top">
           <td>
           <code><b>&lt;&lt;TablelistHeaderHeightChanged&gt;&gt;</b></code></td>
-
           <td>Generated whenever the (requested) height of the tablelist's
           header changes.&nbsp; Used by the <a href=
           "http://www.nemethi.de/scrollutil/scrollarea.html">scrollarea</a>
           widget of the <a href=
           "http://www.nemethi.de/scrollutil/">Scrollutil</a> package.</td>
-
           <td>The (requested) height of the tablelist's header.</td>
         </tr>
 
         <tr valign="top">
           <td>
           <code><b>&lt;&lt;TablelistRowHiddenStateChanged&gt;&gt;</b></code></td>
-
           <td>Generated whenever the hidden state of one or more rows is
           toggled by using the <code><b><a href=
           "#rowconfigure">rowconfigure</a></b></code>, <code><b><a href=
           "#configrowlist">configrowlist</a></b></code>, <code><b><a href=
           "#configrows">configrows</a></b></code>, or <code><b><a href=
           "#togglerowhide">togglerowhide</a></b></code> subcommand.</td>
-
           <td>A list consisting of the numerical indices of the rows whose
           hidden state changed.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>&lt;&lt;TablelistRowMoved&gt;&gt;</b></code></td>
-
           <td>Generated by the default bindings whenever a row is moved
           interactively to a new position.</td>
-
           <td>A list of length 3, whose elements are derived from the arguments
           passed to the second form of the <code><b><a href=
           "#move">move</a></b></code> subcommand invoked for moving the source
@@ -7606,41 +7173,33 @@ proc handleTblDrop {tbl data} {
         <tr valign="top">
           <td><code><b>&lt;&lt;TablelistSelect&gt;&gt;</b></code>,
           <code><b>&lt;&lt;ListboxSelect&gt;&gt;</b></code></td>
-
           <td>Generated by the default bindings whenever the selection changes
           in the tablelist widget due to user interaction.</td>
-
           <td>Not used.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>&lt;&lt;TablelistSelectionLost&gt;&gt;</b></code></td>
-
           <td>Sent to the tablelist widget whenever it loses ownership of the
           PRIMARY selection.</td>
-
           <td>Not used.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>&lt;&lt;TablelistTitleColsWidthChanged&gt;&gt;</b></code></td>
-
           <td>Generated whenever the total width of the non-hidden title
           columns changes.&nbsp; Used by the <a href=
           "http://www.nemethi.de/scrollutil/scrollarea.html">scrollarea</a>
           widget of the <a href=
           "http://www.nemethi.de/scrollutil/">Scrollutil</a> package.</td>
-
           <td>The total width of the non-hidden title columns.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>&lt;&lt;TablelistViewUpdated&gt;&gt;</b></code></td>
-
           <td>Generated whenever the tablelist widget has finished updating its
           view (which, for performance reasons, is performed at idle
           time).</td>
-
           <td>Not used.</td>
         </tr>
       </table>
@@ -7656,14 +7215,12 @@ proc handleTblDrop {tbl data} {
       <table border="0" cellpadding="6" cellspacing="0">
         <tr valign="top">
           <td><code><i>number</i></code></td>
-
           <td>Specifies the item as a numerical index, where <code>0</code>
           corresponds to the first item in the tablelist's body.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>k</b><i>number</i></code></td>
-
           <td>Specifies the item by its full key, composed of the prefix
           <code><b>k</b></code> and the sequence number associated with the
           item.&nbsp; You can use the <code><b><a href=
@@ -7681,7 +7238,6 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>active</b>&nbsp;&nbsp;&nbsp;</code></td>
-
           <td>Indicates the item containing the element that has the location
           cursor.&nbsp; Depending on the selection type, this item as a whole
           or just its element having the location cursor will be displayed
@@ -7696,7 +7252,6 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>anchor</b></code></td>
-
           <td>Indicates the anchor point for the row selection, which is set
           with the&nbsp; <code><b><a href="#selection">selection
           anchor</a></b></code>&nbsp; widget command, or the row containing the
@@ -7707,7 +7262,6 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>end</b></code></td>
-
           <td>Indicates the end of the tablelist.&nbsp; For most commands this
           refers to the last item in the tablelist, but for a few commands such
           as <code><b><a href="#index">index</a></b></code>, <code><b><a href=
@@ -7720,27 +7274,23 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>last</b></code></td>
-
           <td>Indicates the last item of the tablelist.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>top</b></code></td>
-
           <td>Indicates the topmost body item visible in the tablelist
           window.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>bottom</b></code></td>
-
           <td>Indicates the bottommost body item visible in the tablelist
           window.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>@</b><i>x</i><b>,</b><i>y</i></code></td>
-
           <td>Indicates the body item that covers the point in the tablelist
           window specified by <code><i>x</i></code> and <code><i>y</i></code>
           (in pixel coordinates).&nbsp; If no item covers that point, then the
@@ -7752,7 +7302,6 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><i>name</i></code></td>
-
           <td>Specifies the row by the value of its <code><b><a href=
           "#row_name">-name</a></b></code> configuration option.&nbsp;
           <code><i>name</i></code> must be different from all the above row
@@ -7791,14 +7340,12 @@ proc handleTblDrop {tbl data} {
       <table border="0" cellpadding="6" cellspacing="0">
         <tr valign="top">
           <td><code><i>number</i></code></td>
-
           <td>Specifies the column as a numerical index, where <code>0</code>
           corresponds to the first column in the tablelist.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>active</b>&nbsp;&nbsp;&nbsp;</code></td>
-
           <td>Indicates the column containing the element that has the location
           cursor.&nbsp; If the selection type is <code><b>cell</b></code> then
           this element will be displayed according to the value of the
@@ -7810,7 +7357,6 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>anchor</b></code></td>
-
           <td>Indicates the column containing the anchor point for the cell
           selection, which is set with the&nbsp; <code><b><a href=
           "#cellselection">cellselection anchor</a></b></code>&nbsp; widget
@@ -7819,7 +7365,6 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>end</b></code></td>
-
           <td>Indicates the last column of the tablelist, except for the
           commands <code><b><a href=
           "#insertcolumns">insertcolumns</a></b></code> and <code><b><a href=
@@ -7831,27 +7376,23 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>last</b></code></td>
-
           <td>Indicates the last column of the tablelist.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>left</b></code></td>
-
           <td>Indicates the leftmost column visible in the tablelist
           window.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>right</b></code></td>
-
           <td>Indicates the rightmost column visible in the tablelist
           window.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>@</b><i>x</i><b>,</b><i>y</i></code></td>
-
           <td>Indicates the column that covers the point in the tablelist
           window specified by <code><i>x</i></code> and <code><i>y</i></code>
           (in pixel coordinates).&nbsp; If no column covers that point, then
@@ -7863,7 +7404,6 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><i>name</i></code></td>
-
           <td>Specifies the column by the value of its <code><b><a href=
           "#col_name">-name</a></b></code> configuration option.&nbsp;
           <code><i>name</i></code> must be different from all the above column
@@ -7890,7 +7430,6 @@ proc handleTblDrop {tbl data} {
       <table border="0" cellpadding="6" cellspacing="0">
         <tr valign="top">
           <td><code><i>row</i><b>,</b><i>col</i></code></td>
-
           <td>Indicates the cell having the row index <code><i>row</i></code>
           and column index <code><i>col</i></code>.&nbsp;
           <code><i>row</i></code> may be a number, a full key (of the form
@@ -7907,7 +7446,6 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>active</b>&nbsp;&nbsp;&nbsp;</code></td>
-
           <td>Indicates the element that has the location cursor.&nbsp; If the
           selection type is <code><b>cell</b></code> then this element will be
           displayed according to the value of the <code><b><a href=
@@ -7919,7 +7457,6 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>anchor</b></code></td>
-
           <td>Indicates the anchor point for the cell selection, which is set
           with the&nbsp; <code><b><a href="#cellselection">cellselection
           anchor</a></b></code>&nbsp; widget command.</td>
@@ -7927,20 +7464,17 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>end</b></code></td>
-
           <td>Indicates the last cell in the last row of the tablelist.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>last</b></code></td>
-
           <td>Indicates the last cell in the last row of the tablelist (same as
           <code><b>end</b></code>).</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>@</b><i>x</i><b>,</b><i>y</i></code></td>
-
           <td>Indicates the body cell that covers the point in the tablelist
           window specified by <code><i>x</i></code> and <code><i>y</i></code>
           (in pixel coordinates).&nbsp; If no body cell covers that point, then
@@ -7969,7 +7503,6 @@ proc handleTblDrop {tbl data} {
       <table border="0" cellpadding="6" cellspacing="0">
         <tr valign="top">
           <td><code><i>number</i></code></td>
-
           <td>Specifies the header item as a numerical index, where
           <code>0</code> corresponds to the first item in the tablelist's
           header.</td>
@@ -7977,7 +7510,6 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>hk</b><i>number</i></code></td>
-
           <td>Specifies the header item by its full key, composed of the prefix
           <code><b>hk</b></code> and the sequence number associated with the
           item.&nbsp; You can use the&nbsp; <code><b><a href=
@@ -7993,7 +7525,6 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>end</b></code></td>
-
           <td>Indicates the end of the tablelist's header.&nbsp; For most
           commands this refers to the last item in the header component, but
           for a few commands such as&nbsp; <code><b><a href="#hdr_index">header
@@ -8005,13 +7536,11 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>last</b></code></td>
-
           <td>Indicates the last header item of the tablelist.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>@</b><i>x</i><b>,</b><i>y</i></code></td>
-
           <td>Indicates the header item that covers the point in the tablelist
           window specified by <code><i>x</i></code> and <code><i>y</i></code>
           (in pixel coordinates).&nbsp; If no header item covers that point,
@@ -8023,7 +7552,6 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><i>name</i></code></td>
-
           <td>Specifies the header row by the value of its <code><b><a href=
           "#hdr_row_name">-name</a></b></code> configuration option.&nbsp;
           <code><i>name</i></code> must be different from all the above header
@@ -8051,7 +7579,6 @@ proc handleTblDrop {tbl data} {
       <table border="0" cellpadding="6" cellspacing="0">
         <tr valign="top">
           <td><code><i>headerRow</i><b>,</b><i>col</i></code></td>
-
           <td>Indicates the cell having the header row index
           <code><i>headerRow</i></code> and column index
           <code><i>col</i></code>.&nbsp; <code><i>headerRow</i></code> may be a
@@ -8067,21 +7594,18 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>end</b></code></td>
-
           <td>Indicates the last cell in the last row of the tablelist's
           header.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>last</b></code></td>
-
           <td>Indicates the last cell in the last row of the tablelist's header
           (same as <code><b>end</b></code>).</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>@</b><i>x</i><b>,</b><i>y</i></code></td>
-
           <td>Indicates the header cell that covers the point in the tablelist
           window specified by <code><i>x</i></code> and <code><i>y</i></code>
           (in pixel coordinates).&nbsp; If no header cell covers that point,
@@ -8237,7 +7761,8 @@ proc handleTblDrop {tbl data} {
         <dd class="tm">For example, to register the body of a tablelist widget
         <code>$tbl</code> as a drag source for mouse button 1 in such a way
         that the drag works also for the separators, multi-line cells, and
-        embedded images, you can proceed like in the following code samples:
+        embedded images, you can proceed like in the following code
+        samples:</dd>
 
         <dd class="tm">
           <b>TkDND EXAMPLE:</b>
@@ -8246,12 +7771,12 @@ proc handleTblDrop {tbl data} {
             <pre>
 package require tkdnd 2.7
 
-bind [$tbl <span>bodytag</span>] &lt;Button-1&gt; { registerDragSrc %W }
+bind [$tbl <span class="red">bodytag</span>] &lt;Button-1&gt; { registerDragSrc %W }
 
 proc registerDragSrc w {
-    <i># $w can be the tablelist's body, a separator, a message widget
+    <span class="cmt"># $w can be the tablelist's body, a separator, a message widget
     # displaying a multi-line element, or a label widget displaying an
-    # image.  Register this widget as a drag source for mouse button 1</i>
+    # image.  Register this widget as a drag source for mouse button 1</span>
     tkdnd::drag_source register $w DND_Text 1
     bind $w &lt;&lt;DragInitCmd&gt;&gt; { onTblDragInit %W }
     bind $w &lt;&lt;DragEndCmd&gt;&gt;  { onTblDragEnd %W %A }
@@ -8271,7 +7796,7 @@ proc onTblDragEnd {w action} {
     }
 }
 
-<i># Make sure to register the tablelist's body explicitly as a drag source:</i>
+<span class="cmt"># Make sure to register the tablelist's body explicitly as a drag source:</span>
 registerDragSrc [$tbl bodypath]
 </pre>
           </blockquote>
@@ -8284,12 +7809,12 @@ registerDragSrc [$tbl bodypath]
             <pre>
 package require BWidget
 
-bind [$tbl <span>bodytag</span>] &lt;Button-1&gt; { registerDragSrc %W }
+bind [$tbl <span class="red">bodytag</span>] &lt;Button-1&gt; { registerDragSrc %W }
 
 proc registerDragSrc w {
-    <i># $w can be the tablelist's body, a separator, a message widget
+    <span class="cmt"># $w can be the tablelist's body, a separator, a message widget
     # displaying a multi-line element, or a label widget displaying an
-    # image.  Register this widget as a drag source for mouse button 1</i>
+    # image.  Register this widget as a drag source for mouse button 1</span>
     DragSite::register $w -dragevent 1 \
         -draginitcmd tblDragInitCmd -dragendcmd tblDragEndCmd
 }
@@ -8308,7 +7833,7 @@ proc tblDragEndCmd {dragSrc dropTarget op dataType data result} {
     }
 }
 
-<i># Make sure to register the tablelist's body explicitly as a drag source:</i>
+<span class="cmt"># Make sure to register the tablelist's body explicitly as a drag source:</span>
 registerDragSrc [$tbl bodypath]
 </pre>
           </blockquote>
@@ -8939,7 +8464,7 @@ eval [list <i>pathName</i> <a href=
 
           <blockquote>
             <pre>
-<i># Add some entries to the Tk option database</i>
+<span class="cmt"># Add some entries to the Tk option database</span>
 option add *ScrollArea.borderWidth                      1
 option add *ScrollArea.relief                           sunken
 option add *ScrollArea.Tablelist.borderWidth            0
@@ -8947,8 +8472,8 @@ option add *ScrollArea.Tablelist.highlightThickness     0
 
 . . .
 
-<i># Create the tablelist and the scrollbars as
-# children of a frame of the class ScrollArea</i>
+<span class="cmt"># Create the tablelist and the scrollbars as
+# children of a frame of the class ScrollArea</span>
 set frm [(ttk::)frame ... -class ScrollArea]
 set tbl $frm.tbl
 set vsb $frm.vsb
@@ -8960,19 +8485,19 @@ tablelist::tablelist $tbl ... \
 
 . . .
 
-<i># Manage the widgets within the frame</i>
+<span class="cmt"># Manage the widgets within the frame</span>
 grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
 if {[string compare [tk windowingsystem] "win32"] == 0} {
     grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
 } else {
-    grid [$tbl <span>cornerpath</span>] -row 0 -column 1 -sticky ew
+    grid [$tbl <span class="red">cornerpath</span>] -row 0 -column 1 -sticky ew
     grid $vsb              -row 1 -column 1 -sticky ns
 }
 grid $hsb -row 2 -column 0 -sticky ew
 grid rowconfigure    $frm 1 -weight 1
 grid columnconfigure $frm 0 -weight 1
 
-<i># Manage the frame</i>
+<span class="cmt"># Manage the frame</span>
 pack $frm -expand yes -fill both -padx 10 -pady 10
 </pre>
           </blockquote>
@@ -8990,20 +8515,20 @@ pack $frm -expand yes -fill both -padx 10 -pady 10
             <pre>
 . . .
 
-<i># Manage the widgets within the frame</i>
+<span class="cmt"># Manage the widgets within the frame</span>
 grid $tbl -row 0 -rowspan 2 -column 0 -columnspan 2 -sticky news
 if {[string compare [tk windowingsystem] "win32"] == 0} {
     grid $vsb -row 0 -rowspan 2 -column 2 -sticky ns
 } else {
-    grid [$tbl <span>cornerpath</span>] -row 0 -column 2 -sticky ew
+    grid [$tbl <span class="red">cornerpath</span>] -row 0 -column 2 -sticky ew
     grid $vsb              -row 1 -column 2 -sticky ns
 }
-grid [$tbl <span>cornerpath</span> -sw] -row 2 -column 0 -sticky ns
+grid [$tbl <span class="red">cornerpath</span> -sw] -row 2 -column 0 -sticky ns
 grid $hsb                  -row 2 -column 1 -sticky ew
 grid rowconfigure    $frm 1 -weight 1
 grid columnconfigure $frm 1 -weight 1
 
-<i># Manage the frame</i>
+<span class="cmt"># Manage the frame</span>
 pack $frm -expand yes -fill both -padx 10 -pady 10
 </pre>
 
@@ -9034,7 +8559,7 @@ package require scrollutil(_tile)
 
 . . .
 
-<i># Create the tablelist within a scrollarea</i>
+<span class="cmt"># Create the tablelist within a scrollarea</span>
 set sa [scrollutil::scrollarea ...]
 set tbl $sa.tbl
 tablelist::tablelist $tbl ...
@@ -9042,7 +8567,7 @@ $sa setwidget $tbl
 
 . . .
 
-<i># Manage the scrollarea</i>
+<span class="cmt"># Manage the scrollarea</span>
 pack $sa -expand yes -fill both -padx 10 -pady 10
 </pre>
           </blockquote>
@@ -9220,7 +8745,7 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
 
           <blockquote>
             <pre>
-bind [.tbl <span>editwintag</span>] &lt;Return&gt; "[bind <a href=
+bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
 "#edit_bindings">TablelistEdit</a> &lt;Tab&gt;]; break"
 </pre>
           </blockquote>
@@ -9489,10 +9014,10 @@ bind [.tbl <span>editwintag</span>] &lt;Return&gt; "[bind <a href=
 "#col_formatcommand">-formatcommand</a> [list formatValue .tbl]
 
 proc formatValue {tbl val} {
-    <i># Get information about the cell whose content is being formatted</i>
-    foreach {key row col} [$tbl <span>formatinfo</span>] {}
+    <span class="cmt"># Get information about the cell whose content is being formatted</span>
+    foreach {key row col} [$tbl <span class="red">formatinfo</span>] {}
 
-    <i># Return a string depending on $val and $row (or $key)</i>
+    <span class="cmt"># Return a string depending on $val and $row (or $key)</span>
     . . .
 }
 </pre>
@@ -9751,7 +9276,7 @@ proc printClickedImage {w x y} {
     set cellIdx [$tbl <a href="#containingcell">containingcell</a> $x $y]
     scan $cellIdx "%d,%d" row col
     if {$row &gt;= 0 && $col &gt;= 0 &&
-        [string compare $w [$tbl <span>imagelabelpath</span> $cellIdx]] == 0} {
+        [string compare $w [$tbl <span class="red">imagelabelpath</span> $cellIdx]] == 0} {
         puts "clicked the image of cell $cellIdx"
     }
 }
@@ -10021,7 +9546,7 @@ eval [list <i>pathName</i> <a href=
 
           <blockquote>
             <pre>
-upvar #0 [.tbl <span>itemlistvar</span>] itemList
+upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
 </pre>
           </blockquote>
         </dd>
@@ -10376,7 +9901,6 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
           <table border="0" cellpadding="6" cellspacing="0">
             <tr valign="top">
               <td><code><b>-all</b></code></td>
-
               <td>Changes the result to be the list of all matching row
               indices, which will be in numeric order (or in reverse numeric
               order when used with the <code><b>-backwards</b></code>
@@ -10385,14 +9909,12 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
 
             <tr valign="top">
               <td><code><b>-backwards</b></code></td>
-
               <td>The search will proceed backward through the given column's
               elements in the tablelist's body.</td>
             </tr>
 
             <tr valign="top">
               <td><code><b>-check</b> <i>command</i></code></td>
-
               <td>Specifies an additional condition to be fulfilled by the
               matching elements.&nbsp; If an element of the specified column
               matches the given pattern and <i>command</i> is a nonempty
@@ -10412,7 +9934,6 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
 
             <tr valign="top">
               <td><code><b>-descend</b></code></td>
-
               <td>Search the elements of the specified column in all
               descendants of the tree node given by the
               <code><b>-parent</b></code> option.&nbsp; The elements will be
@@ -10424,21 +9945,18 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
 
             <tr valign="top">
               <td><code><b>-exact</b></code></td>
-
               <td>The matching element(s) must be identical to the literal
               string <code><i>pattern</i></code>.</td>
             </tr>
 
             <tr valign="top">
               <td><code><b>-formatted</b></code></td>
-
               <td>Examine the <a href="#col_formatted">formatted</a> versions
               of the elements rather than the internal cell values.</td>
             </tr>
 
             <tr valign="top">
               <td><code><b>-glob</b></code></td>
-
               <td>Treat <code><i>pattern</i></code> as a glob-style pattern and
               match it against the elements using the same rules as the&nbsp;
               <code><b>string match</b></code>&nbsp; command.</td>
@@ -10446,7 +9964,6 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
 
             <tr valign="top">
               <td><code><b>-nocase</b></code></td>
-
               <td>Causes comparisons to be handled in a case-insensitive
               manner.&nbsp; Has no effect if combined with the
               <code><b>-numeric</b></code> option.</td>
@@ -10454,7 +9971,6 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
 
             <tr valign="top">
               <td><code><b>-not</b></code></td>
-
               <td>This option negates the sense of the match, returning the row
               index of the first non-matching element (or, in the presence of
               the <code><b>-all</b></code> option, the list of row indices of
@@ -10463,7 +9979,6 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
 
             <tr valign="top">
               <td><code><b>-numeric</b></code></td>
-
               <td>The elements are to be compared to
               <code><i>pattern</i></code> as integer or floating-point values,
               using the <code><b>==</b></code> comparison operator.&nbsp; This
@@ -10474,7 +9989,6 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
             <tr valign="top">
               <td nowrap><code><b>-parent</b>
               <i>nodeIndex</i>&nbsp;&nbsp;</code></td>
-
               <td>This option restricts the search to the children (or
               descendants, when used with <code><b>-descend</b></code>) of the
               tree node given by <code><i>nodeIndex</i></code>.&nbsp; The
@@ -10483,7 +9997,6 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
 
             <tr valign="top">
               <td><code><b>-regexp</b></code></td>
-
               <td>Treat <code><i>pattern</i></code> as a regular expression and
               match it against the elements using the rules described in the
               <code><b>re_syntax</b></code> reference page.</td>
@@ -10491,7 +10004,6 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
 
             <tr valign="top">
               <td><code><b>-start</b> <i>index</i></code></td>
-
               <td>The elements of the specified column are to be searched
               (forwards or backwards) starting at the row given by
               <code><i>index</i></code>.&nbsp; This option makes it easy to
@@ -10996,7 +10508,7 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
         empty string.</dd>
 
         <dt class="tm" id="xview"><code><i>pathName</i> <b>xview</b>
-        <i>args</i></code></dt>
+        ?<i>args</i>?</code></dt>
 
         <dd>This command is used to query and change the horizontal position of
         the information in the widget's window.&nbsp; It can take any of the
@@ -11009,8 +10521,8 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
             <dd>Returns a list containing two elements.&nbsp; Each element is a
             real fraction between <code>0</code> and <code>1</code>; together
             they describe the horizontal span that is visible in the
-            window.&nbsp; For example, if the first element is <code>.2</code>
-            and the second element is <code>.6</code>, 20% of the tablelist's
+            window.&nbsp; For example, if the first element is <code>0.2</code>
+            and the second element is <code>0.6</code>, 20% of the tablelist's
             scrollable text is off-screen to the left, the middle 40% is
             visible in the window, and 40% of the scrollable text is off-screen
             to the right.&nbsp; These are the same values passed to scrollbars
@@ -11062,7 +10574,7 @@ upvar #0 [.tbl <span>itemlistvar</span>] itemList
         </dd>
 
         <dt class="tm" id="yview"><code><i>pathName</i> <b>yview</b>
-        <i>args</i></code></dt>
+        ?<i>args</i>?</code></dt>
 
         <dd>This command is used to query and change the vertical position of
         the text in the window of the widget's body component.&nbsp; It can
