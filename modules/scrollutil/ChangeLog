@@ -1,3 +1,38 @@
+2019-10-20  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* pkgIndex.tcl:        Bumped the version number to 1.2.
+	* scrollutil.tcl:
+	* scrollutil_tile.tcl:
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* scrollutilCommon.tcl: Bumped the version number to 1.2; no longer
+	  creating aliases in the "::tk" namespace for Tk commands for which
+	  that namespace already contains a command of the same name.
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/*.tcl: Added the scrollableframe widget; significant
+	  improvements and bug fixes related to the scrollarea and scrollsync
+	  widgets.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/stylesheet.css: Updated.
+
+	* doc/*.html: Updated to reflect the changes; various improvements.
+
+	* doc/scrollableframe.html: Added.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
+	* ../../examples/scrollutil/SuScrollableFrm*.tcl: Added.
+
+	* ../../examples/scrollutil/ScrollableFrm*.tcl: Updated and renamed to
+	  BwScrollableFrm*.tcl.
+
+	* ../../examples/scrollutil/ScrolledFrm*.tcl: Updated.
+
 2019-09-03  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/scrollutil.html Slightly extended.
