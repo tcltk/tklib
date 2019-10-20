@@ -68,8 +68,9 @@ foreach country $countryList capital $capitalList {
 
 set capitalList [lsort $capitalList]
 
-ttk::style map TCombobox -fieldbackground {readonly white}
-set btnStyle [expr {$::ttk::currentTheme eq "aqua" ? "TButton" : "Toolbutton"}]
+ttk::style map TCombobox -fieldbackground \
+    [list {readonly focus} lightYellow readonly white]
+set btnStyle [expr {$ttk::currentTheme eq "aqua" ? "TButton" : "Toolbutton"}]
 
 set row 0
 foreach country $countryList {

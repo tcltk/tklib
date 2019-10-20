@@ -54,7 +54,8 @@ grid $sa -row $row -rowspan 6 -column 0 -sticky w -padx {10 0} -pady {5 0}
 #
 set l [ttk::label $cf.l$row -text "Release:"]
 grid $l -row $row -column 1 -sticky w -padx {10 0} -pady {5 0}
-ttk::style map TCombobox -fieldbackground {readonly white}
+ttk::style map TCombobox -fieldbackground \
+    [list {readonly focus} lightYellow readonly white]
 set cb [ttk::combobox $cf.cb -state readonly -width 14]
 grid $cb -row $row -column 2 -sticky w -padx {5 10} -pady {5 0}
 
@@ -284,13 +285,12 @@ proc configTablelist {} {
 	    -scrollmargin 0 -hscrollmode none]
 
     #
-    # Unfortunately, the iwidgets::scrolledframe widget has
-    # no built-in equivalents of the BWidget ScrollableFrame
-    # widget options -constrainedwidth and -yscrollincrement
+    # Unfortunately, the iwidgets::scrolledframe widget has no built-in
+    # equivalent of the BWidget ScrollableFrame option -constrainedwidth:
     #
     set canvas [$sf component canvas]
     bind $canvas <Configure> {
-	%W itemconfigure frameTag -width [winfo width %W]
+	%W itemconfigure frameTag -width %w
     }
     $canvas configure -background $::bg
 
