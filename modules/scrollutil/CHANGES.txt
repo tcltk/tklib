@@ -1,5 +1,26 @@
-What is new in Scrollutil 1.1?
+What is new in Scrollutil 1.2?
 ------------------------------
+
+1. Added the scrollableframe widget, designed as a lightweight,
+   theme-able, and full-featured replacement for BWidget ScrollableFrame
+   and iwidgets::scrolledframe (thanks to Harald Oehlmann for his
+   proposal).
+
+2. Added two demo scripts for the new scrollableframe widget.
+
+3. Significant improvements related to the scrollarea and scrollsync
+   widgets (thanks to Paul Obermeier for his valuable feedback and
+   testing).
+
+4. Scrollutil no longer creates aliases in the "::tk" namespace for Tk
+   commands for which that namespace already contains a command of the
+   same name.
+
+5. Numerous further improvements in the code, demo scripts, and
+   documentation.
+
+What was new in Scrollutil 1.1?
+-------------------------------
 
 1. Added the scrollsync widget, designed for scrolling several widgets
    simultaneously (thanks to Paul Obermeier for his proposal and
