@@ -348,7 +348,7 @@ proc tablelist::extendConfigSpecs {} {
 		    set arrowColor	#404040
 		    set arrowStyle	flatAngle7x4
 		} else {
-		    set arrowColor	#717171
+		    set arrowColor	#777777
 		    variable pngSupported
 		    if {$pngSupported} {
 			set arrowStyle	photo7x7
@@ -626,8 +626,7 @@ proc tablelist::doConfig {win opt val} {
 		-selectmode -
 		-sortcommand -
 		-tooltipaddcommand -
-		-tooltipdelcommand -
-		-yscrollcommand {
+		-tooltipdelcommand {
 		    set data($opt) $val
 		}
 		-activestyle {
@@ -1188,6 +1187,7 @@ proc tablelist::doConfig {win opt val} {
 			adjustSepsWhenIdle $win
 		    }
 		    set data($opt) $val
+		    set data(xView) {-1 -1}
 		    updateHScrlbarWhenIdle $win
 
 		    set titleColsWidth [getTitleColsWidth $win]
@@ -1309,11 +1309,16 @@ proc tablelist::doConfig {win opt val} {
 		    # widget if (and only if) no title columns are being used
 		    #
 		    set data($opt) $val
+		    set data(xView) {-1 -1}
 		    if {$data(-titlecolumns) == 0} {
 			$data(hdrTxt) configure $opt $val
 		    } else {
 			$data(hdrTxt) configure $opt ""
 		    }
+		}
+		-yscrollcommand {
+		    set data($opt) $val
+		    set data(yView) {-1 -1}
 		}
 	    }
 	}

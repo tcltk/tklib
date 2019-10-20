@@ -104,57 +104,57 @@ proc tablelist::altTheme {} {
 proc tablelist::aquaTheme {} {
     scan $::tcl_platform(osVersion) "%d" majorOSVersion
     if {$majorOSVersion >= 14} {			;# OS X 10.10 or higher
-	set labelBg		#f4f4f4
+	set labelBg		#f6f6f6
 	set labeldeactivatedBg	#ffffff
 	set labeldisabledBg	#ffffff
-	set labelpressedBg	#e4e4e4
+	set labelpressedBg	#e9e9e9
 	set arrowColor		#404040
     } elseif {$majorOSVersion >= 11} {			;# OS X 10.7 or higher
+	set labelBg		#f3f3f3
+	set labeldeactivatedBg	#f3f3f3
+	set labeldisabledBg	#f3f3f3
+	set labelpressedBg	#d5d5d5
+	set arrowColor		#777777
+    } else {
 	set labelBg		#efefef
 	set labeldeactivatedBg	#efefef
 	set labeldisabledBg	#efefef
-	set labelpressedBg	#cbcbcb
+	set labelpressedBg	#dddddd
 	set arrowColor		#777777
-    } else {
-	set labelBg		#e9e8e8
-	set labeldeactivatedBg	#e9e8e8
-	set labeldisabledBg	#e9e8e8
-	set labelpressedBg	#d2d2d2
-	set arrowColor		#717171
     }
 
     switch [winfo rgb . systemMenuActive] {
 	"13621 29041 52685" -
 	"32256 44288 55552" {				;# Blue Cocoa/Carbon
 	    if {$majorOSVersion >= 14} {		;# OS X 10.10 or higher
-		set stripeBg			#f2f2f2
-		set labelselectedBg		#f4f4f4
-		set labelselectedpressedBg	#e4e4e4
+		set stripeBg			#f5f5f5
+		set labelselectedBg		#f6f6f6
+		set labelselectedpressedBg	#e9e9e9
 	    } elseif {$majorOSVersion >= 11} {		;# OS X 10.7 or higher
-		set stripeBg			#f0f4f9
-		set labelselectedBg		#80b8f0
-		set labelselectedpressedBg	#417ddc
+		set stripeBg			#f3f6fa
+		set labelselectedBg		#91c5f3
+		set labelselectedpressedBg	#5092e3
 	    } else {
 		set stripeBg			#edf3fe
-		set labelselectedBg		#7ab2e9
-		set labelselectedpressedBg	#679ed5
+		set labelselectedBg		#80b8ef
+		set labelselectedpressedBg	#69aaeb
 	    }
 	}
 
 	"24415 27499 31354" -
 	"39680 43776 48384" {				;# Graphite Cocoa/Carbon
 	    if {$majorOSVersion >= 14} {		;# OS X 10.10 or higher
-		set stripeBg			#f2f2f2
-		set labelselectedBg		#f4f4f4
-		set labelselectedpressedBg	#e4e4e4
+		set stripeBg			#f5f5f5
+		set labelselectedBg		#f6f6f6
+		set labelselectedpressedBg	#e9e9e9
 	    } elseif {$majorOSVersion >= 11} {		;# OS X 10.7 or higher
-		set stripeBg			#f4f5f7
-		set labelselectedBg		#9ba7b5
-		set labelselectedpressedBg	#636e88
+		set stripeBg			#f6f7f9
+		set labelselectedBg		#abb6c2
+		set labelselectedpressedBg	#76829a
 	    } else {
 		set stripeBg			#f0f0f0
-		set labelselectedBg		#b6c2cd
-		set labelselectedpressedBg	#a7b3be
+		set labelselectedBg		#c0c7ce
+		set labelselectedpressedBg	#afb7c0
 	    }
 	}
     }
@@ -163,15 +163,15 @@ proc tablelist::aquaTheme {} {
     # Get an approximation of alternateSelectedControlColor
     #
     switch [winfo rgb . systemHighlight] {
-	"65535 48058 47288"	{ set selectBg #fc2125 }
-	"65535 57311 46003"	{ set selectBg #fd8208 }
-	"65535 61423 45231"	{ set selectBg #fec309 }
-	"49343 63222 44460"	{ set selectBg #56d72b }
-	"45746 55246 65535"	{ set selectBg #0950d0 }
-	"63478 54484 65535"	{ set selectBg #bf57da }
-	"65535 49087 53969"	{ set selectBg #7b0055 }
-	"60909 57053 51914"	{ set selectBg #90714c }
-	"55512 55512 56539"	{ set selectBg #5c5c60 }
+	"65535 48058 47288"	{ set selectBg #ff3b30 }
+	"65535 57311 46003"	{ set selectBg #ff9500 }
+	"65535 61423 45231"	{ set selectBg #ffcc00 }
+	"49343 63222 44460"	{ set selectBg #63da38 }
+	"45746 55246 65535"	{ set selectBg #0069d9 }
+	"63478 54484 65535"	{ set selectBg #cc73e1 }
+	"65535 49087 53969"	{ set selectBg #ff2a68 }
+	"60909 57053 51914"	{ set selectBg #a2845e }
+	"55512 55512 56539"	{ set selectBg #6f6f73 }
 
 	"51143 53456 56281"	{ set selectBg #738499 }
 	"50887 50887 50887"	{ set selectBg #7f7f7f }
@@ -267,7 +267,7 @@ proc tablelist::AquativoTheme {} {
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
 	-labelpady		1 \
-	-arrowcolor		#717171 \
+	-arrowcolor		#777777 \
 	-arrowstyle		flat7x7 \
 	-treestyle		aqua \
     ]

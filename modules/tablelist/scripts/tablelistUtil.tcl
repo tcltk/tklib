@@ -4215,7 +4215,13 @@ proc tablelist::updateHScrlbar win {
 
     if {$data(-titlecolumns) > 0 &&
 	[string length $data(-xscrollcommand)] != 0} {
-	eval $data(-xscrollcommand) [xviewSubCmd $win {}]
+	set xView [xviewSubCmd $win {}]
+	foreach {frac1 frac2} $xView {}
+	foreach {frac1Old frac2Old} $data(xView) {}
+	if {$frac1 != $frac1Old || $frac2 != $frac2Old} {
+	    set data(xView) $xView
+	    eval $data(-xscrollcommand) $frac1 $frac2
+	}
     }
 }
 
@@ -4248,7 +4254,13 @@ proc tablelist::updateVScrlbar win {
     }
 
     if {[string length $data(-yscrollcommand)] != 0} {
-	eval $data(-yscrollcommand) [yviewSubCmd $win {}]
+	set yView [yviewSubCmd $win {}]
+	foreach {frac1 frac2} $yView {}
+	foreach {frac1Old frac2Old} $data(yView) {}
+	if {$frac1 != $frac1Old || $frac2 != $frac2Old} {
+	    set data(yView) $yView
+	    eval $data(-yscrollcommand) $frac1 $frac2
+	}
     }
 
     if {[winfo viewable $win] && ![info exists data(colBeingResized)] &&
@@ -4277,13 +4289,22 @@ proc tablelist::forceRedraw win {
     $w tag add redraw $fromTextIdx $toTextIdx
     $w tag remove redraw $fromTextIdx $toTextIdx
 
+    workAroundAquaTkBugs $win
+}
+
+#------------------------------------------------------------------------------
+# tablelist::workAroundAquaTkBugs
+#
+# Works around some Tk bugs on Mac OS X Aqua (no longer present in current Tk
+# versions).
+#------------------------------------------------------------------------------
+proc tablelist::workAroundAquaTkBugs win {
     variable winSys
-    if {[string compare $winSys "aqua"] == 0} {
-	#
-	# Work around some Tk bugs on Mac OS X Aqua
-	#
-	raise $w
-	lower $w
+    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
+	upvar ::tablelist::ns${win}::data data
+	raise $data(body)
+	lower $data(body)
+
 	if {[winfo exists $data(bodyFrm)]} {
 	    lower $data(bodyFrm)
 	    raise $data(bodyFrm)
@@ -6355,7 +6376,9 @@ proc tablelist::getVertComplBtmRow win {
 
     foreach {x y width height baselinePos} [$w dlineinfo $btmTextIdx] {}
     set y2 [expr {$y + $height}]
-    if {[$w compare [$w index @0,$y] == [$w index @0,$y2]]} {
+    set text [$w get @0,$y @[expr {$data(rightX) + 1}],$y]
+    if {[$w compare [$w index @0,$y] == [$w index @0,$y2]] &&
+	[string length $text] != 0} {
 	incr btmRow -1		;# btm row incomplete in vertical direction
     }
 

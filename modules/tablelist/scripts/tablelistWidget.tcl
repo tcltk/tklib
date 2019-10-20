@@ -768,7 +768,6 @@ proc tablelist::tablelist args {
 	    anchorCol		 0
 	    seqNum		-1
 	    hdr_seqNum		-1
-	    freeKeyList		 {}
 	    keyList		 {}
 	    hdr_keyList		 {}
 	    itemList		 {}
@@ -822,6 +821,8 @@ proc tablelist::tablelist args {
 	    keyBeingExpanded	 ""
 	    justEntered		 0
 	    inEditWin		 0
+	    xView		 {-1 -1}
+	    yView		 {-1 -1}
 	}
 
 	#
@@ -6042,13 +6043,13 @@ proc tablelist::xviewSubCmd {win argList} {
 
 		set scrlXOffset \
 		    [scrlColOffsetToXOffset $win $data(scrlColOffset)]
-		set fraction1 [expr {$scrlXOffset/double($scrlContentWidth)}]
-		set fraction2 [expr {($scrlXOffset + $scrlWindowWidth)/
-				     double($scrlContentWidth)}]
-		if {$fraction2 > 1.0} {
-		    set fraction2 1.0
+		set frac1 [expr {double($scrlXOffset) / $scrlContentWidth}]
+		set frac2 [expr {double($scrlXOffset + $scrlWindowWidth) /
+				 $scrlContentWidth}]
+		if {$frac2 > 1.0} {
+		    set frac2 1.0
 		}
-		return [list $fraction1 $fraction2]
+		return [list $frac1 $frac2]
 	    }
 	}
 
@@ -6076,11 +6077,11 @@ proc tablelist::xviewSubCmd {win argList} {
 	    # Command: $win xview moveto <fraction>
 	    #	       $win xview scroll <number> units|pages
 	    #
-	    set argList [mwutil::getScrollInfo $argList]
+	    set argList [mwutil::getScrollInfo2 "$win xview" $argList]
 	    variable winSys
 	    if {$data(-titlecolumns) == 0} {
 		if {[string compare [lindex $argList 0] "moveto"] == 0} {
-		    set data(fraction) [lindex $argList 1]
+		    set data(horizFraction) [lindex $argList 1]
 		    if {![info exists data(horizMoveToId)]} {
 			if {[string compare $winSys "x11"] == 0} {
 			    set delay [expr {($data(colCount) + 7) / 8}]
@@ -6090,13 +6091,31 @@ proc tablelist::xviewSubCmd {win argList} {
 			set data(horizMoveToId) \
 			    [after $delay [list tablelist::horizMoveTo $win]]
 		    }
+		    return ""
 		} else {
-		    foreach w [list $data(hdrTxt) $data(body)] {
-			eval [list $w xview] $argList
+		    set number [lindex $argList 1]
+		    if {[string compare [lindex $argList 2] "units"] == 0} {
+			if {[info exists data(horizScrollId)]} {
+			    incr data(horizUnits) $number
+			} else {
+			    set data(horizUnits) $number
+			    if {[string compare $winSys "x11"] == 0} {
+				set delay [expr {($data(colCount) + 7) / 8}]
+			    } else {
+				set delay [expr {($data(colCount) + 1) / 2}]
+			    }
+			    set data(horizScrollId) [after $delay \
+				[list tablelist::horizScrollByUnits $win]]
+			}
+			return ""
+		    } else {
+			foreach w [list $data(hdrTxt) $data(body)] {
+			    $w xview scroll $number pages
+			}
+			redisplayVisibleItems $win
+			hdr_updateColors $win
+			updateColors $win
 		    }
-		    redisplayVisibleItems $win
-		    hdr_updateColors $win
-		    updateColors $win
 		}
 	    } else {
 		if {[string compare [lindex $argList 0] "moveto"] == 0} {
@@ -6158,15 +6177,7 @@ proc tablelist::xviewSubCmd {win argList} {
 		hdr_updateColors $win
 		updateColors $win
 	    }
-	    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
-		#
-		# Work around a Tk bug on Mac OS X Aqua
-		#
-		if {[winfo exists $data(bodyFrm)]} {
-		    lower $data(bodyFrm)
-		    raise $data(bodyFrm)
-		}
-	    }
+	    workAroundAquaTkBugs $win
 	    return ""
 	}
     }
@@ -6197,14 +6208,13 @@ proc tablelist::yviewSubCmd {win argList} {
 	    set upperViewableCount \
 		[getViewableRowCount $win 0 [expr {$topRow - 1}]]
 	    set winViewableCount [getViewableRowCount $win $topRow $btmRow]
-	    set fraction1 [expr {$upperViewableCount/
-				 double($totalViewableCount)}]
-	    set fraction2 [expr {($upperViewableCount + $winViewableCount)/
-				 double($totalViewableCount)}]
-	    if {$fraction2 == 0.0} {
-		set fraction2 1.0
+	    set frac1 [expr {double($upperViewableCount) / $totalViewableCount}]
+	    set frac2 [expr {double($upperViewableCount + $winViewableCount) /
+			     $totalViewableCount}]
+	    if {$frac2 == 0.0} {
+		set frac2 1.0
 	    }
-	    return [list $fraction1 $fraction2]
+	    return [list $frac1 $frac2]
 	}
 
 	1 {
@@ -6227,9 +6237,9 @@ proc tablelist::yviewSubCmd {win argList} {
 	    # Command: $win yview moveto <fraction>
 	    #	       $win yview scroll <number> units|pages
 	    #
-	    set argList [mwutil::getScrollInfo $argList]
+	    set argList [mwutil::getScrollInfo2 "$win yview" $argList]
 	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
-		set data(fraction) [lindex $argList 1]
+		set data(vertFraction) [lindex $argList 1]
 		if {![info exists data(vertMoveToId)]} {
 		    variable winSys
 		    if {[string compare $winSys "x11"] == 0} {
@@ -6243,18 +6253,18 @@ proc tablelist::yviewSubCmd {win argList} {
 	    } else {
 		set number [lindex $argList 1]
 		if {[string compare [lindex $argList 2] "units"] == 0} {
-		    if {[info exists data(scrollId)]} {
-			incr data(units) $number
+		    if {[info exists data(vertScrollId)]} {
+			incr data(vertUnits) $number
 		    } else {
-			set data(units) $number
+			set data(vertUnits) $number
 			variable winSys
 			if {[string compare $winSys "x11"] == 0} {
 			    set delay [expr {($data(colCount) + 3) / 4}]
 			} else {
 			    set delay [expr {$data(colCount) * 2}]
 			}
-			set data(scrollId) \
-			    [after $delay [list tablelist::vertScroll $win]]
+			set data(vertScrollId) [after $delay \
+			    [list tablelist::vertScrollByUnits $win]]
 		    }
 		} else {
 		    set absNumber [expr {abs($number)}]
@@ -6714,7 +6724,6 @@ proc tablelist::deleteRows {win first last updateListVar} {
     if {$count == $data(itemCount)} {
 	set colWidthsChanged 1				;# just to save time
 	set data(seqNum) -1
-	set data(freeKeyList) {}
     } else {
 	variable canElide
 	set colWidthsChanged 0
@@ -6812,7 +6821,6 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	for {set row $first} {$row <= $last} {incr row} {
 	    set item [lindex $data(itemList) $row]
 	    set key [lindex $item end]
-	    lappend data(freeKeyList) $key
 
 	    foreach opt {-background -foreground -name -selectable
 			 -selectbackground -selectforeground} {
@@ -7257,13 +7265,9 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
     set row $index
     foreach item $argList {
 	#
-	# Adjust the item
+	# Adjust the item, and insert it into the list variable if needed
 	#
 	set item [adjustItem $item $data(colCount)]
-
-	#
-	# Insert the item into the list variable if needed
-	#
 	if {$updateListVar} {
 	    if {$appendingItems} {
 		lappend var $item    		;# this works much faster
@@ -7273,18 +7277,9 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
 	}
 
 	#
-	# Get a free key for the new item
+	# Extend the item and insert it into the internal list
 	#
-	if {[llength $data(freeKeyList)] == 0} {
-	    set key k[incr data(seqNum)]
-	} else {
-	    set key [lindex $data(freeKeyList) 0]
-	    set data(freeKeyList) [lrange $data(freeKeyList) 1 end]
-	}
-
-	#
-	# Insert the extended item into the internal list
-	#
+	set key k[incr data(seqNum)]
 	lappend item $key
 	if {$appendingItems} {
 	    lappend data(itemList) $item	;# this works much faster
@@ -7990,7 +7985,10 @@ proc tablelist::doScan {win opt x y} {
     incr y -[winfo y $w]
 
     if {[string compare $opt "mark"] == 0} {
-	if {$data(-titlecolumns) != 0} {
+	if {$data(-titlecolumns) == 0} {
+	    $w scan mark $x 0
+	    $data(hdrTxt) scan mark $x 0
+	} else {
 	    set data(scanMarkX) $x
 	    set data(scanMarkXOffset) \
 		[scrlColOffsetToXOffset $win $data(scrlColOffset)]
@@ -8450,8 +8448,8 @@ proc tablelist::rowSelection {win opt first last} {
 #------------------------------------------------------------------------------
 # tablelist::horizMoveTo
 #
-# Adjusts the view in the tablelist window win so that data(fraction) of the
-# horizontal span of the text is off-screen to the left.
+# Adjusts the view in the tablelist window win so that data(horizFraction) of
+# the horizontal span of the text is off-screen to the left.
 #------------------------------------------------------------------------------
 proc tablelist::horizMoveTo win {
     upvar ::tablelist::ns${win}::data data
@@ -8461,18 +8459,43 @@ proc tablelist::horizMoveTo win {
     }
 
     foreach w [list $data(hdrTxt) $data(body)] {
-	$w xview moveto $data(fraction)
+	$w xview moveto $data(horizFraction)
     }
 
     redisplayVisibleItems $win
+    hdr_updateColors $win
     updateColors $win
+    workAroundAquaTkBugs $win
+}
+
+#------------------------------------------------------------------------------
+# tablelist::horizScrollByUnits
+#
+# Adjusts the view in the tablelist window win left or right by
+# data(horizUnits) character units.
+#------------------------------------------------------------------------------
+proc tablelist::horizScrollByUnits win {
+    upvar ::tablelist::ns${win}::data data
+    if {[info exists data(horizScrollId)]} {
+	after cancel $data(horizScrollId)
+	unset data(horizScrollId)
+    }
+
+    foreach w [list $data(hdrTxt) $data(body)] {
+	$w xview scroll $data(horizUnits) units
+    }
+
+    redisplayVisibleItems $win
+    hdr_updateColors $win
+    updateColors $win
+    workAroundAquaTkBugs $win
 }
 
 #------------------------------------------------------------------------------
 # tablelist::vertMoveTo
 #
 # Adjusts the view in the tablelist window win so that the viewable item given
-# by data(fraction) appears at the top of the window.
+# by data(vertFraction) appears at the top of the window.
 #------------------------------------------------------------------------------
 proc tablelist::vertMoveTo win {
     upvar ::tablelist::ns${win}::data data
@@ -8482,7 +8505,7 @@ proc tablelist::vertMoveTo win {
     }
 
     set totalViewableCount [getViewableRowCount $win 0 $data(lastRow)]
-    set offset [expr {int($data(fraction)*$totalViewableCount + 0.5)}]
+    set offset [expr {int($data(vertFraction)*$totalViewableCount + 0.5)}]
     set row [viewableRowOffsetToRowIndex $win $offset]
 
     set topRow [getVertComplTopRow $win]
@@ -8495,21 +8518,21 @@ proc tablelist::vertMoveTo win {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::vertScroll
+# tablelist::vertScrollByUnits
 #
-# Adjusts the view in the tablelist window win up or down by data(units)
+# Adjusts the view in the tablelist window win up or down by data(vertUnits)
 # viewable rows.
 #------------------------------------------------------------------------------
-proc tablelist::vertScroll win {
+proc tablelist::vertScrollByUnits win {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(scrollId)]} {
-	after cancel $data(scrollId)
-	unset data(scrollId)
+    if {[info exists data(vertScrollId)]} {
+	after cancel $data(vertScrollId)
+	unset data(vertScrollId)
     }
 
     set topRow [getVertComplTopRow $win]
     set upperViewableCount [getViewableRowCount $win 0 [expr {$topRow - 1}]]
-    set offset [expr {$upperViewableCount + $data(units)}]
+    set offset [expr {$upperViewableCount + $data(vertUnits)}]
     $data(body) yview [viewableRowOffsetToRowIndex $win $offset]
 
     updateView $win
