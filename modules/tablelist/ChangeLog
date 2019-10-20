@@ -1,3 +1,31 @@
+2019-10-20 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* pkgIndex.tcl:                   Bumped the version number to 6.7.
+	* tablelist.tcl:
+	* tablelist_tile.tcl:
+	* COPYRIGHT.txt:
+	* README.txt:
+	* ../../examples/tablelist/*.tcl:
+
+	* tablelistPublic.tcl: Bumped the version number to 6.7; no longer
+	  creating aliases in the "::tk" namespace for Tk commands for which
+	  that namespace already contains a command of the same name.
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/*.tcl: Optimized the horizontal scrolling by units; many
+	  improvements related to the "aqua" theme; made sure that the commands
+	  specified as the values of the "-xscrollcommand" and
+	  "-yscrollcommand" options will only be invoked if the view's data
+	  have changed; fixed a bug related to the "scan" subcommand; several
+	  further improvements and minor bug fixes.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/stylesheet.css: Updated.
+
+	* doc/*.html: Updated to reflect the changes; various improvements.
+
 2019-07-13 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistMove.tcl: Fixed a bug related to the "move"
