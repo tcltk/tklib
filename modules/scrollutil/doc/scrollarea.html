@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
   <title>The scrollutil::scrollarea Command</title>
@@ -8,11 +9,11 @@
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
-<body bgcolor="#FFFFFF">
+<body>
   <div align="center">
     <h1>The <code><b>scrollutil::scrollarea</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.1</h2>
+    <h2>For Scrollutil Version 1.2</h2>
 
     <h3>by</h3>
 
@@ -22,6 +23,7 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
+
   <hr>
 
   <h2 id="contents">Contents</h2>
@@ -35,6 +37,7 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
+
   <hr>
 
   <h2 id="quick_ref">Quick Reference</h2>
@@ -53,7 +56,9 @@
 </pre>
     </dd>
 
-    <dt><a href="#std_options">STANDARD OPTIONS</a></dt>
+    <dt><a href="#description">DESCRIPTION</a></dt>
+
+    <dt class="tm"><a href="#std_options">STANDARD OPTIONS</a></dt>
 
     <dd>
       <pre>
@@ -83,8 +88,6 @@
     <dd><code><b><a href="#yscrollbarmode">-yscrollbarmode</a></b>
     <b>static</b>|<b>dynamic</b>|<b>none</b></code></dd>
 
-    <dt class="tm"><a href="#description">DESCRIPTION</a></dt>
-
     <dt class="tm"><a href="#widget_command">WIDGET COMMAND</a></dt>
 
     <dd><code><i>pathName</i> <b><a href="#cget">cget</a></b>
@@ -109,6 +112,7 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
+
   <hr>
 
   <h2 id="detailed_ref">Detailed Reference</h2>
@@ -127,261 +131,12 @@
 </pre>
     </dd>
 
-    <dt id="std_options"><b>STANDARD OPTIONS</b></dt>
-
-    <dd>
-      <pre>
-<b>-background   -highlightbackground  -relief
--borderwidth  -highlightcolor
--cursor       -highlightthickness</b>
-</pre>
-    </dd>
-
-    <dd>See the <b>options</b> manual entry for details on the standard Tk
-    widget options.&nbsp; The <code><b>-background</b></code>,
-    <code><b>-highlightbackground</b></code>,
-    <code><b>-highlightcolor</b></code>, and
-    <code><b>-highlightthickness</b></code> options are only supported by the
-    Scrollutil package, but not by Scrollutil_tile.&nbsp; They have the same
-    default values as the options of the same names for Tk frame
-    widgets.&nbsp; The default values of the remaining standard options
-    are:</dd>
-
-    <dd>
-      <pre>
-<b>-borderwidth</b> 1 <b>-cursor</b> "" <b>-relief sunken</b>
-</pre>
-    </dd>
-
-    <dd><b>REMARK:</b>&nbsp; When configuring the
-    <code><b>-borderwidth</b></code> or <code><b>-relief</b></code> option, if
-    as a result of this action the scrollarea has a positive
-    <code><b>-borderwidth</b></code> value (e.g., the default <code>1</code>)
-    and a <code><b>-relief</b></code> value other than <code><b>flat</b></code>
-    (e.g., the default <code><b>sunken</b></code>), then the
-    <code><b>-borderwidth</b></code> option of the widget embedded into the
-    scrollarea via the <code><b><a href="#setwidget">setwidget</a></b></code>
-    subcommand of the associated Tcl command will automatically be set to
-    <code>0</code>, provided that the embedded widget supports this
-    option.</dd>
-
-    <dt class="tm" id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
-
-    <dd class="tm" id="lockinterval">
-      <table border="0" cellpadding="0" cellspacing="0">
-        <tr>
-          <td>Command-Line Name:&nbsp;</td>
-
-          <td><code><b>-lockinterval</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Name:</td>
-
-          <td><code><b>&nbsp;lockInterval</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Class:</td>
-
-          <td><code><b>&nbsp;LockInterval</b></code></td>
-        </tr>
-      </table>
-
-      <blockquote>
-        <p>Specifies the time interval in milliseconds for which the scrollbars
-        having the display mode <code><b>dynamic</b></code> (see the
-        <code><b><a href="#xscrollbarmode">-xscrollbarmode</a></b></code> and
-        <code><b><a href="#yscrollbarmode">-yscrollbarmode</a></b></code>
-        options) will be protected from being unmapped after being mapped, in
-        order to avoid any shimmering effects.&nbsp; Without this locking
-        mechanism, under some rare circumstances a dynamic scrollbar could get
-        mapped and unmapped in an endless loop, thus giving rise to an annoying
-        and often dangerous flickering effect.&nbsp; The same problem can arise
-        due to a too small <code><b>-lockinterval</b></code> value.&nbsp; The
-        default is <code>1</code>, which works as expected in the vast majority
-        of cases.&nbsp; Should you experience any shimmering in one of your
-        scrollarea widgets, just set this option for that scrollarea to a
-        sufficiently large value (e.g., <code>100</code>).</p>
-      </blockquote>
-    </dd>
-
-    <dd class="tm" id="respectheader">
-      <table border="0" cellpadding="0" cellspacing="0">
-        <tr>
-          <td>Command-Line Name:&nbsp;</td>
-
-          <td><code><b>-respectheader</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Name:</td>
-
-          <td><code><b>&nbsp;respectHeader</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Class:</td>
-
-          <td><code><b>&nbsp;RespectHeader</b></code></td>
-        </tr>
-      </table>
-
-      <blockquote>
-        <p>This option is only relevant if the widget embedded into the
-        scrollarea with the aid of the <code><b><a href=
-        "#setwidget">setwidget</a></b></code> subcommand of the associated Tcl
-        command is a <a href="http://www.nemethi.de/tablelist/">tablelist</a>
-        and the Tablelist version being used is 6.5 or later.&nbsp; Its value
-        must be a boolean specifying whether the vertical scrollbar should
-        appear below the tablelist widget's header, thus respecting the native
-        look & feel on Mac OS X Aqua and on many modern Linux systems.&nbsp;
-        The default is <code>1</code> on the windowing systems
-        <code><b>aqua</b></code> and <code><b>x11</b></code>, and
-        <code>0</code> on <code><b>win32</b></code>.</p>
-      </blockquote>
-    </dd>
-
-    <dd id="respecttitlecolumns">
-      <table border="0" cellpadding="0" cellspacing="0">
-        <tr>
-          <td>Command-Line Name:&nbsp;</td>
-
-          <td><code><b>-respecttitlecolumns</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Name:</td>
-
-          <td><code><b>&nbsp;respectTitleColumns</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Class:</td>
-
-          <td><code><b>&nbsp;RespectTitleColumns</b></code></td>
-        </tr>
-      </table>
-
-      <blockquote>
-        <p>This option is only relevant if the widget embedded into the
-        scrollarea with the aid of the <code><b><a href=
-        "#setwidget">setwidget</a></b></code> subcommand of the associated Tcl
-        command is a <a href="http://www.nemethi.de/tablelist/">tablelist</a>
-        and the Tablelist version being used is 6.5 or later.&nbsp; Its value
-        must be a boolean specifying whether the horizontal scrollbar should
-        start to the right of the tablelist widget's non-scrollable title
-        column area if the value of the <code><b><a href=
-        "http://www.nemethi.de/tablelist/tablelistWidget.html#titlecolumns">-titlecolumns</a></b></code>
-        tablelist option is positive.&nbsp; The default is <code>1</code>.</p>
-      </blockquote>
-    </dd>
-
-    <dd id="takefocus">
-      <table border="0" cellpadding="0" cellspacing="0">
-        <tr>
-          <td>Command-Line Name:&nbsp;</td>
-
-          <td><code><b>-takefocus</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Name:</td>
-
-          <td><code><b>&nbsp;takeFocus</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Class:</td>
-
-          <td><code><b>&nbsp;TakeFocus</b></code></td>
-        </tr>
-      </table>
-
-      <blockquote>
-        <p>This option determines whether the scrollarea accepts the focus
-        during keyboard traversal.&nbsp; It is almost identical to the standard
-        option of the same name (see the <b>options</b> manual entry for
-        details).&nbsp; The only difference is that not the scrollarea itself
-        but the widget embedded into it via the <code><b><a href=
-        "#setwidget">setwidget</a></b></code> subcommand of the associated Tcl
-        command will receive the focus during keyboard traversal with the
-        standard keys (<code>Tab</code> and <code>Shift-Tab</code>).&nbsp; The
-        default is <code>0</code>, being that a scrollarea is esentially a
-        frame containing the above-mentioned widget and two scrollbars.</p>
-      </blockquote>
-    </dd>
-
-    <dd id="xscrollbarmode">
-      <table border="0" cellpadding="0" cellspacing="0">
-        <tr>
-          <td>Command-Line Name:&nbsp;</td>
-
-          <td><code><b>-xscrollbarmode</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Name:</td>
-
-          <td><code><b>&nbsp;xScrollbarMode</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Class:</td>
-
-          <td><code><b>&nbsp;ScrollbarMode</b></code></td>
-        </tr>
-      </table>
-
-      <blockquote>
-        <p>Specifies the display mode to be used for the horizontal
-        scrollbar.&nbsp; The allowed values are <code><b>static</b></code>,
-        <code><b>dynamic</b></code>, and <code><b>none</b></code>.&nbsp; In
-        <code><b>static</b></code> mode the scrollbar is displayed at all
-        times.&nbsp; In <code><b>dynamic</b></code> mode (which is the default)
-        the scrollbar is mapped and unmapped as needed.&nbsp; The display mode
-        <code><b>none</b></code> disables the scrollbar display.</p>
-      </blockquote>
-    </dd>
-
-    <dd id="yscrollbarmode">
-      <table border="0" cellpadding="0" cellspacing="0">
-        <tr>
-          <td>Command-Line Name:&nbsp;</td>
-
-          <td><code><b>-yscrollbarmode</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Name:</td>
-
-          <td><code><b>&nbsp;yScrollbarMode</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Class:</td>
-
-          <td><code><b>&nbsp;ScrollbarMode</b></code></td>
-        </tr>
-      </table>
-
-      <blockquote>
-        <p>Specifies the display mode to be used for the vertical
-        scrollbar.&nbsp; The allowed values are <code><b>static</b></code>,
-        <code><b>dynamic</b></code>, and <code><b>none</b></code>.&nbsp; In
-        <code><b>static</b></code> mode the scrollbar is displayed at all
-        times.&nbsp; In <code><b>dynamic</b></code> mode (which is the default)
-        the scrollbar is mapped and unmapped as needed.&nbsp; The display mode
-        <code><b>none</b></code> disables the scrollbar display.</p>
-      </blockquote>
-    </dd>
-
     <dt id="description"><b>DESCRIPTION</b></dt>
 
     <dd>The <code><b>scrollutil::scrollarea</b></code> command creates a new
     window named <code><i>pathName</i></code> and of the class
     <code><b>Scrollarea</b></code>, and makes it into a <b>scrollarea</b>
-    widget.&nbsp; Additional options, described above, may be specified on the
+    widget.&nbsp; Additional options, described below, may be specified on the
     command line or in the option database to configure aspects of the
     scrollarea such as its borderwidth, relief, and display mode to be used for
     the scrollbars.&nbsp; The <code><b>scrollutil::scrollarea</b></code>
@@ -422,6 +177,236 @@
     "#respectheader">-respectheader</a></b></code> and <code><b><a href=
     "#respecttitlecolumns">-respecttitlecolumns</a></b></code> configuration
     options.</dd>
+
+    <dt class="tm" id="std_options"><b>STANDARD OPTIONS</b></dt>
+
+    <dd>
+      <pre>
+<b>-background   -highlightbackground  -relief
+-borderwidth  -highlightcolor
+-cursor       -highlightthickness</b>
+</pre>
+    </dd>
+
+    <dd>See the <b>options</b> manual entry for details on the standard Tk
+    widget options.&nbsp; The <code><b>-background</b></code>,
+    <code><b>-highlightbackground</b></code>,
+    <code><b>-highlightcolor</b></code>, and
+    <code><b>-highlightthickness</b></code> options are only supported by the
+    Scrollutil package, but not by Scrollutil_tile.&nbsp; They have the same
+    default values as the options of the same names for Tk frame widgets.&nbsp;
+    The default values of the remaining standard options are:</dd>
+
+    <dd>
+      <pre>
+<b>-borderwidth</b> 1 <b>-cursor</b> "" <b>-relief sunken</b>
+</pre>
+    </dd>
+
+    <dd><b>REMARK:</b>&nbsp; When configuring the
+    <code><b>-borderwidth</b></code> or <code><b>-relief</b></code> option, if
+    as a result of this action the scrollarea has a positive
+    <code><b>-borderwidth</b></code> value (e.g., the default <code>1</code>)
+    and a <code><b>-relief</b></code> value other than <code><b>flat</b></code>
+    (e.g., the default <code><b>sunken</b></code>), then the
+    <code><b>-borderwidth</b></code> option of the widget embedded into the
+    scrollarea via the <code><b><a href="#setwidget">setwidget</a></b></code>
+    subcommand of the associated Tcl command will automatically be set to
+    <code>0</code>, provided that the embedded widget supports this
+    option.</dd>
+
+    <dt class="tm" id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
+
+    <dd class="tm" id="lockinterval">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-lockinterval</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;lockInterval</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;LockInterval</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the time interval in milliseconds for which the scrollbars
+        having the display mode <code><b>dynamic</b></code> (see the
+        <code><b><a href="#xscrollbarmode">-xscrollbarmode</a></b></code> and
+        <code><b><a href="#yscrollbarmode">-yscrollbarmode</a></b></code>
+        options) will be protected from being unmapped after being mapped, in
+        order to avoid any shimmering effects.&nbsp; Without this locking
+        mechanism, under some rare circumstances a dynamic scrollbar could get
+        mapped and unmapped in an endless loop, thus giving rise to an annoying
+        and often dangerous flickering effect.&nbsp; The same problem can arise
+        due to a too small <code><b>-lockinterval</b></code> value.&nbsp; The
+        default is <code>1</code>, which works as expected in the vast majority
+        of cases.&nbsp; Should you experience any shimmering in one of your
+        scrollarea widgets, just set this option for that scrollarea to a
+        sufficiently large value (e.g., <code>100</code>).</p>
+      </blockquote>
+    </dd>
+
+    <dd class="tm" id="respectheader">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-respectheader</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;respectHeader</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;RespectHeader</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>This option is only relevant if the widget embedded into the
+        scrollarea with the aid of the <code><b><a href=
+        "#setwidget">setwidget</a></b></code> subcommand of the associated Tcl
+        command is a <a href="http://www.nemethi.de/tablelist/">tablelist</a>
+        and the Tablelist version being used is 6.5 or later.&nbsp; Its value
+        must be a boolean specifying whether the vertical scrollbar should
+        appear below the tablelist widget's header, thus respecting the native
+        look & feel on Mac OS X Aqua and on many modern Linux systems.&nbsp;
+        The default is <code>1</code> on the windowing systems
+        <code><b>aqua</b></code> and <code><b>x11</b></code>, and
+        <code>0</code> on <code><b>win32</b></code>.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="respecttitlecolumns">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-respecttitlecolumns</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;respectTitleColumns</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;RespectTitleColumns</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>This option is only relevant if the widget embedded into the
+        scrollarea with the aid of the <code><b><a href=
+        "#setwidget">setwidget</a></b></code> subcommand of the associated Tcl
+        command is a <a href="http://www.nemethi.de/tablelist/">tablelist</a>
+        and the Tablelist version being used is 6.5 or later.&nbsp; Its value
+        must be a boolean specifying whether the horizontal scrollbar should
+        start to the right of the tablelist widget's non-scrollable title
+        column area if the value of the <code><b><a href=
+        "http://www.nemethi.de/tablelist/tablelistWidget.html#titlecolumns">-titlecolumns</a></b></code>
+        tablelist option is positive.&nbsp; The default is <code>1</code>.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="takefocus">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-takefocus</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;takeFocus</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;TakeFocus</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>This option determines whether the scrollarea accepts the focus
+        during keyboard traversal.&nbsp; It is almost identical to the standard
+        option of the same name (see the <b>options</b> manual entry for
+        details).&nbsp; The only difference is that not the scrollarea itself
+        but the widget embedded into it via the <code><b><a href=
+        "#setwidget">setwidget</a></b></code> subcommand of the associated Tcl
+        command will receive the focus during keyboard traversal with the
+        standard keys (<code>Tab</code> and <code>Shift-Tab</code>).&nbsp; The
+        default is <code>0</code>, being that a scrollarea is esentially a
+        frame containing the above-mentioned widget and two scrollbars.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="xscrollbarmode">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-xscrollbarmode</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;xScrollbarMode</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;ScrollbarMode</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the display mode to be used for the horizontal
+        scrollbar.&nbsp; The allowed values are <code><b>static</b></code>,
+        <code><b>dynamic</b></code>, and <code><b>none</b></code>.&nbsp; In
+        <code><b>static</b></code> mode the scrollbar is displayed at all
+        times.&nbsp; In <code><b>dynamic</b></code> mode (which is the default)
+        the scrollbar is mapped and unmapped as needed.&nbsp; The display mode
+        <code><b>none</b></code> disables the scrollbar display.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="yscrollbarmode">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-yscrollbarmode</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;yScrollbarMode</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;ScrollbarMode</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the display mode to be used for the vertical
+        scrollbar.&nbsp; The allowed values are <code><b>static</b></code>,
+        <code><b>dynamic</b></code>, and <code><b>none</b></code>.&nbsp; In
+        <code><b>static</b></code> mode the scrollbar is displayed at all
+        times.&nbsp; In <code><b>dynamic</b></code> mode (which is the default)
+        the scrollbar is mapped and unmapped as needed.&nbsp; The display mode
+        <code><b>none</b></code> disables the scrollbar display.</p>
+      </blockquote>
+    </dd>
 
     <dt class="tm" id="widget_command"><b>WIDGET COMMAND</b></dt>
 

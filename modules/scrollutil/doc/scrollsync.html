@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
   <title>The scrollutil::scrollsync Command</title>
@@ -8,11 +9,11 @@
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
-<body bgcolor="#FFFFFF">
+<body>
   <div align="center">
     <h1>The <code><b>scrollutil::scrollsync</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.1</h2>
+    <h2>For Scrollutil Version 1.2</h2>
 
     <h3>by</h3>
 
@@ -22,6 +23,7 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
+
   <hr>
 
   <h2 id="contents">Contents</h2>
@@ -35,6 +37,7 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
+
   <hr>
 
   <h2 id="quick_ref">Quick Reference</h2>
@@ -53,7 +56,9 @@
 </pre>
     </dd>
 
-    <dt><a href="#std_options">STANDARD OPTIONS</a></dt>
+    <dt><a href="#description">DESCRIPTION</a></dt>
+
+    <dt class="tm"><a href="#std_options">STANDARD OPTIONS</a></dt>
 
     <dd>
       <pre>
@@ -67,8 +72,6 @@
 
     <dd><code><b><a href="#takefocus">-takefocus</a></b>
     <b>0</b>|<b>1</b>|<b>""</b>|<i>command</i></code></dd>
-
-    <dt class="tm"><a href="#description">DESCRIPTION</a></dt>
 
     <dt class="tm"><a href="#widget_command">WIDGET COMMAND</a></dt>
 
@@ -124,6 +127,7 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
+
   <hr>
 
   <h2 id="detailed_ref">Detailed Reference</h2>
@@ -142,76 +146,12 @@
 </pre>
     </dd>
 
-    <dt id="std_options"><b>STANDARD OPTIONS</b></dt>
-
-    <dd>
-      <pre>
-<b>-background   -highlightbackground  -relief
--borderwidth  -highlightcolor       -xscrollcommand
--cursor       -highlightthickness   -yscrollcommand</b>
-</pre>
-    </dd>
-
-    <dd>See the <b>options</b> manual entry for details on the standard Tk
-    widget options.&nbsp; The <code><b>-background</b></code>,
-    <code><b>-highlightbackground</b></code>,
-    <code><b>-highlightcolor</b></code>, and
-    <code><b>-highlightthickness</b></code> options are only supported by the
-    Scrollutil package, but not by Scrollutil_tile.&nbsp; They have the same
-    default values as the options of the same names for Tk frame
-    widgets.&nbsp; The default values of the remaining standard options
-    are:</dd>
-
-    <dd>
-      <pre>
-<b>-borderwidth</b> 0 <b>-cursor</b> "" <b>-relief flat</b> <b>-xscrollcommand</b> "" <b>-yscrollcommand</b> ""
-</pre>
-    </dd>
-
-    <dt id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
-
-    <dd id="takefocus">
-      <table border="0" cellpadding="0" cellspacing="0">
-        <tr>
-          <td>Command-Line Name:&nbsp;</td>
-
-          <td><code><b>-takefocus</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Name:</td>
-
-          <td><code><b>&nbsp;takeFocus</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Class:</td>
-
-          <td><code><b>&nbsp;TakeFocus</b></code></td>
-        </tr>
-      </table>
-
-      <blockquote>
-        <p>This option determines whether the scrollsync widget accepts the
-        focus during keyboard traversal.&nbsp; It is almost identical to the
-        standard option of the same name (see the <b>options</b> manual entry
-        for details).&nbsp; The only difference is that not the scrollsync
-        widget itself but the first element of the widget list passed to the
-        <code><b><a href="#setwidgets">setwidgets</a></b></code> subcommand of
-        the associated Tcl command will receive the focus during keyboard
-        traversal with the standard keys (<code>Tab</code> and
-        <code>Shift-Tab</code>).&nbsp; The default is <code>0</code>, being
-        that a scrollsync widget is esentially a frame containing the
-        above-mentioned widgets.</p>
-      </blockquote>
-    </dd>
-
     <dt id="description"><b>DESCRIPTION</b></dt>
 
     <dd>The <code><b>scrollutil::scrollsync</b></code> command creates a new
     window named <code><i>pathName</i></code> and of the class
     <code><b>Scrollsync</b></code>, and makes it into a <b>scrollsync</b>
-    widget.&nbsp; Additional options, described above, may be specified on the
+    widget.&nbsp; Additional options, described below, may be specified on the
     command line or in the option database to configure aspects of the
     scrollsync widget such as its borderwidth and relief.&nbsp; The
     <code><b>scrollutil::scrollsync</b></code> command returns its
@@ -254,6 +194,66 @@ grid columnconfigure $ss all -weight 1
 
 pack $sa -expand yes -fill both
 </pre>
+      </blockquote>
+    </dd>
+
+    <dt id="std_options"><b>STANDARD OPTIONS</b></dt>
+
+    <dd>
+      <pre>
+<b>-background   -highlightbackground  -relief
+-borderwidth  -highlightcolor       -xscrollcommand
+-cursor       -highlightthickness   -yscrollcommand</b>
+</pre>
+    </dd>
+
+    <dd>See the <b>options</b> manual entry for details on the standard Tk
+    widget options.&nbsp; The <code><b>-background</b></code>,
+    <code><b>-highlightbackground</b></code>,
+    <code><b>-highlightcolor</b></code>, and
+    <code><b>-highlightthickness</b></code> options are only supported by the
+    Scrollutil package, but not by Scrollutil_tile.&nbsp; They have the same
+    default values as the options of the same names for Tk frame widgets.&nbsp;
+    The default values of the remaining standard options are:</dd>
+
+    <dd>
+      <pre>
+<b>-borderwidth</b> 0 <b>-cursor</b> "" <b>-relief flat</b> <b>-xscrollcommand</b> "" <b>-yscrollcommand</b> ""
+</pre>
+    </dd>
+
+    <dt id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
+
+    <dd id="takefocus">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-takefocus</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;takeFocus</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;TakeFocus</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>This option determines whether the scrollsync widget accepts the
+        focus during keyboard traversal.&nbsp; It is almost identical to the
+        standard option of the same name (see the <b>options</b> manual entry
+        for details).&nbsp; The only difference is that not the scrollsync
+        widget itself but the first element of the widget list passed to the
+        <code><b><a href="#setwidgets">setwidgets</a></b></code> subcommand of
+        the associated Tcl command will receive the focus during keyboard
+        traversal with the standard keys (<code>Tab</code> and
+        <code>Shift-Tab</code>).&nbsp; The default is <code>0</code>, being
+        that a scrollsync widget is esentially a frame containing the
+        above-mentioned widgets.</p>
       </blockquote>
     </dd>
 
