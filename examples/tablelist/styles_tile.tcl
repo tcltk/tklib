@@ -6,7 +6,7 @@
 # Copyright (c) 2002-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.6
+package require tablelist_tile 6.7
 
 wm title . "Tablelist Styles"
 
