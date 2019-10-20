@@ -1,5 +1,29 @@
-What is new in Tablelist 6.6?
+What is new in Tablelist 6.7?
 -----------------------------
+
+1. Optimized the horizontal scrolling by units (thanks to Nicolas Bats
+   for his input).
+
+2. Many improvements related to the "aqua" theme.
+
+3. Tablelist no longer creates aliases in the "::tk" namespace for Tk
+   commands for which that namespace already contains a command of the
+   same name (thanks to Juge for his input).
+
+4. Made sure that the commands specified as the values of the
+   "-xscrollcommand" and "-yscrollcommand" options will only be invoked
+   if the view's data have changed.  This prevents a potential endless
+   loop when scrolling several tablelists simultaneously with the aid of
+   the scrollutil::scrollsync widget (thanks to Paul Obermeier for his
+   bug report).
+
+5. Fixed a bug introduced in Tablelist 6.2, related to the "scan"
+   subcommand.
+
+6. Several further improvements in the code and documentation.
+
+What was new in Tablelist 6.6?
+------------------------------
 
 1. Added mouse bindings for setting, extending, and toggling the column-
    wise cell selection with the aid of the header labels if the
