@@ -13,7 +13,7 @@ namespace eval ::mentry {
     #
     # Public variables:
     #
-    variable version	3.9
+    variable version	3.10
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file normalize [DIR]]
@@ -69,7 +69,7 @@ proc ::mentry::restoreUsingTile {origVal varName index op} {
     variable usingTile $origVal
     switch $op {
 	w {
-	    return -code error "it is not allowed to use both Mentry and\
+	    return -code error "it is not supported to use both Mentry and\
 				Mentry_tile in the same application"
 	}
 	u {
@@ -79,9 +79,14 @@ proc ::mentry::restoreUsingTile {origVal varName index op} {
     }
 }
 
-interp alias {} ::tk::frame {} ::frame
-interp alias {} ::tk::entry {} ::entry
-interp alias {} ::tk::label {} ::label
+proc ::mentry::createTkAliases {} {
+    foreach cmd {frame entry label} {
+	if {[llength [info commands ::tk::$cmd]] == 0} {
+	    interp alias {} ::tk::$cmd {} ::$cmd
+	}
+    }
+}
+::mentry::createTkAliases
 
 #
 # Everything else needed is lazily loaded on demand, via the dispatcher
