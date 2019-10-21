@@ -1,5 +1,17 @@
-What is new in Mentry 3.9?
---------------------------
+What is new in Mentry 3.10?
+---------------------------
+
+1. Included the same version 2.15 of the general mega-widget utility
+   module "mwutil.tcl" as in the most recent Tablelist release 6.7.
+
+2. Mentry no longer creates aliases in the "::tk" namespace for Tk
+   commands for which that namespace already contains a command of the
+   same name.
+
+3. Improved the documentation.
+
+What was new in Mentry 3.9?
+---------------------------
 
 1. Included the same version of the general mega-widget utility module
    "mwutil.tcl" as in the most recent Tablelist release 6.5.
