@@ -19,7 +19,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.12
+    variable version	2.15
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -34,8 +34,9 @@ namespace eval mwutil {
 			defineKeyNav processTraversal focusNext focusPrev \
 			configureWidget fullConfigOpt fullOpt enumOpts \
 			configureSubCmd attribSubCmd hasattribSubCmd \
-			unsetattribSubCmd getScrollInfo hasFocus \
-			genMouseWheelEvent windowingSystem currentTheme
+			unsetattribSubCmd getScrollInfo getScrollInfo2 \
+			isScrollable hasFocus genMouseWheelEvent \
+			windowingSystem currentTheme
 
     #
     # Make modified versions of the procedures tk_focusNext and
@@ -185,7 +186,7 @@ proc mwutil::configureWidget {win configSpecsName configCmd cgetCmd \
     # Process the command-line arguments
     #
     set cmdLineOpts {}
-    set savedVals {}
+    set savedOptValPairs {}
     set failed 0
     set count [llength $optValPairs]
     foreach {opt val} $optValPairs {
@@ -200,7 +201,7 @@ proc mwutil::configureWidget {win configSpecsName configCmd cgetCmd \
 	}
 	set opt $result
 	lappend cmdLineOpts $opt
-	lappend savedVals [eval $cgetCmd [list $win $opt]]
+	lappend savedOptValPairs $opt [eval $cgetCmd [list $win $opt]]
 	if {[catch {eval $configCmd [list $win $opt $val]} result] != 0} {
 	    set failed 1
 	    break
@@ -212,7 +213,7 @@ proc mwutil::configureWidget {win configSpecsName configCmd cgetCmd \
 	#
 	# Restore the saved values
 	#
-	foreach opt $cmdLineOpts val $savedVals {
+	foreach {opt val} $savedOptValPairs {
 	    eval $configCmd [list $win $opt $val]
 	}
 
@@ -519,13 +520,72 @@ proc mwutil::getScrollInfo argList {
 }
 
 #------------------------------------------------------------------------------
+# mwutil::getScrollInfo2
+#
+# Parses a list of arguments of the form "moveto <fraction>" or "scroll
+# <number> units|pages" and returns the corresponding list consisting of two or
+# three properly formatted elements.
+#------------------------------------------------------------------------------
+proc mwutil::getScrollInfo2 {cmd argList} {
+    set argCount [llength $argList]
+    set opt [lindex $argList 0]
+
+    if {[string first $opt "moveto"] == 0} {
+	if {$argCount != 2} {
+	    wrongNumArgs "$cmd moveto fraction"
+	}
+
+	set fraction [lindex $argList 1]
+	format "%f" $fraction ;# floating-point number check with error message
+	return [list moveto $fraction]
+    } elseif {[string first $opt "scroll"] == 0} {
+	if {$argCount != 3} {
+	    wrongNumArgs "$cmd scroll number units|pages"
+	}
+
+	set number [format "%d" [lindex $argList 1]]
+	set what [lindex $argList 2]
+	if {[string first $what "units"] == 0} {
+	    return [list scroll $number units]
+	} elseif {[string first $what "pages"] == 0} {
+	    return [list scroll $number pages]
+	} else {
+	    return -code error "bad argument \"$what\": must be units or pages"
+	}
+    } else {
+	return -code error "unknown option \"$opt\": must be moveto or scroll"
+    }
+}
+
+#------------------------------------------------------------------------------
+# mwutil::isScrollable
+#
+# Returns a boolean value indicating whether the widget w is scrollable along a
+# given axis (x or y).
+#------------------------------------------------------------------------------
+proc mwutil::isScrollable {w axis} {
+    set viewCmd ${axis}view
+    return [expr {
+	[catch {$w cget -${axis}scrollcommand}] == 0 &&
+	[catch {$w $viewCmd} view] == 0 &&
+	[catch {$w $viewCmd moveto [lindex $view 0]}] == 0 &&
+	[catch {$w $viewCmd scroll 0 units}] == 0 &&
+	[catch {$w $viewCmd scroll 0 pages}] == 0
+    }]
+}
+
+#------------------------------------------------------------------------------
 # mwutil::hasFocus
 #
 # Returns a boolean value indicating whether the focus window is (a descendant
-# of) the widget w.
+# of) the widget w and has the same toplevel.
 #------------------------------------------------------------------------------
 proc mwutil::hasFocus w {
-    return [expr {[string first $w. [focus -displayof $w].] == 0}]
+    set focusWin [focus -displayof $w]
+    return [expr {
+	[string first $w. $focusWin.] == 0 &&
+	[string compare [winfo toplevel $w] [winfo toplevel $focusWin]] == 0
+    }]
 }
 
 #------------------------------------------------------------------------------
