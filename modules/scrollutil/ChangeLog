@@ -1,3 +1,9 @@
+2019-10-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/scrollableframe.tcl: Minor improvement.
+
+	* doc/scrollableframe.html: Minor correction.
+
 2019-10-20  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* pkgIndex.tcl:        Bumped the version number to 1.2.
