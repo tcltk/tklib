@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
   <title>Mentry Programmer's Guide</title>
@@ -8,11 +9,11 @@
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
-<body bgcolor="#FFFFFF">
+<body>
   <div align="center">
     <h1>Mentry Programmer's Guide</h1>
 
-    <h2>For Mentry Version 3.9</h2>
+    <h2>For Mentry Version 3.10</h2>
 
     <h3>by</h3>
 
@@ -22,6 +23,7 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
+
   <hr>
 
   <h2 id="contents">Contents</h2>
@@ -56,6 +58,7 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
+
   <hr>
 
   <h2 id="overview">Overview</h2>
@@ -145,8 +148,8 @@ foreach w [.me entries] {
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Mentry is available for free download from the same URL as Wcb.&nbsp; The
-  distribution file is <code>mentry3.9.tar.gz</code> for UNIX and
-  <code>mentry3_9.zip</code> for Windows.&nbsp; These files contain the same
+  distribution file is <code>mentry3.10.tar.gz</code> for UNIX and
+  <code>mentry3_10.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -168,11 +171,11 @@ foreach w [.me entries] {
   respectively.</p>
 
   <p>To install Mentry <i>on UNIX</i>, <code>cd</code> to the desired directory
-  and unpack the distribution file <code>mentry3.9.tar.gz</code>:</p>
+  and unpack the distribution file <code>mentry3.10.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c mentry3.9.tar.gz | tar -xf -
+gunzip -c mentry3.10.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -180,17 +183,17 @@ gunzip -c mentry3.9.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf mentry3.9.tar.gz
+tar -zxf mentry3.10.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>mentry3.9</code>, with
+  <p>Both commands will create a directory named <code>mentry3.10</code>, with
   the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>mentry3_9.zip</code> into the directory
-  <code>mentry3.9</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>mentry3_10.zip</code> into the directory
+  <code>mentry3.10</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>mentryThemes.tcl</code> in the <code>scripts</code>
@@ -385,6 +388,7 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
+
   <hr>
 
   <h2 id="examples">Examples</h2>
@@ -399,28 +403,28 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # phoneNumberMentry
 #
 # Creates a new mentry widget win that allows to display and edit 10-digit
 # phone numbers.  Sets the type attribute of the widget to PhoneNumber and
 # returns the name of the newly created widget.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc phoneNumberMentry {win args} {
-    #
+    <span class="cmt">#
     # Create a mentry widget consisting of two entries of width 3 and one of
     # width 4, separated by "-" characters, and set its type to PhoneNumber
-    #
+    #</span>
     eval [list mentry::mentry $win] $args
     $win configure -body {3 - 3 - 4}
     $win attrib type PhoneNumber
 
-    #
+    <span class="cmt">#
     # Allow only decimal digits in all entry children; use
     # wcb::cbappend (or wcb::cbprepend) instead of wcb::callback
     # in order to keep the wcb::checkEntryLen callback,
     # registered by mentry::mentry for all entry children
-    #
+    #</span>
     for {set n 0} {$n &lt; 3} {incr n} {
         wcb::cbappend [$win entrypath $n] before insert wcb::checkStrForNum
         $win adjustentry $n "0123456789"
@@ -482,23 +486,23 @@ proc phoneNumberMentry {win args} {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # putPhoneNumber
 #
 # Outputs the phone number num to the mentry widget win of type PhoneNumber.
 # The phone number must be a string of length 10, consisting of decimal digits.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc putPhoneNumber {num win} {
-    #
+    <span class="cmt">#
     # Check the syntax of num
-    #
+    #</span>
     if {[string length $num] != 10 || ![regexp {^[0-9]*$} $num]} {
         return -code error "expected 10 decimal digits but got \"$num\""
     } 
 
-    #
+    <span class="cmt">#
     # Check the widget and display the properly formatted phone number
-    #
+    #</span>
     checkIfPhoneNumberMentry $win
     $win put 0 [string range $num 0 2] [string range $num 3 5] \
                [string range $num 6 9]
@@ -518,21 +522,21 @@ proc putPhoneNumber {num win} {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # getPhoneNumber
 #
 # Returns the phone number contained in the mentry widget win of type
 # PhoneNumber.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc getPhoneNumber win {
-    #
+    <span class="cmt">#
     # Check the widget
-    #
+    #</span>
     checkIfPhoneNumberMentry $win
 
-    #
+    <span class="cmt">#
     # Generate an error if any entry child is empty or incomplete
-    #
+    #</span>
     for {set n 0} {$n &lt; 3} {incr n} {
         if {[$win isempty $n]} {
             focus [$win entrypath $n]
@@ -544,10 +548,10 @@ proc getPhoneNumber win {
         }
     }
 
-    #
+    <span class="cmt">#
     # Return the phone number built from the
     # values contained in the entry children
-    #
+    #</span>
     $win getarray strs
     return $strs(0)$strs(1)$strs(2)
 }
@@ -584,11 +588,11 @@ proc getPhoneNumber win {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # checkIfPhoneNumberMentry
 #
 # Generates an error if win is not a mentry widget of type PhoneNumber.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc checkIfPhoneNumberMentry win {
     if {![winfo exists $win]} {
         return -code error "bad window path name \"$win\""
@@ -627,33 +631,33 @@ package require mentry
 set title "Phone Number"
 wm title . $title
 
-#
+<span class="cmt">#
 # Add some entries to the Tk option database
-#
+#</span>
 source [file join [file dirname [info script]] option.tcl]
 
 . . .
 
-#
+<span class="cmt">#
 # Frame .f with a mentry displaying a phone number
-#
+#</span>
 frame .f
 label .f.l -text "A mentry widget for phone numbers:"
 phoneNumberMentry .f.me -background white
 pack .f.l .f.me
 
-#
+<span class="cmt">#
 # Message strings corresponding to the values
 # returned by getPhoneNumber on failure
-#
+#</span>
 array set msgs {
     EMPTY       "Field value missing"
     INCOMPL     "Incomplete field value"
 }
 
-#
+<span class="cmt">#
 # Button .get invoking the procedure getPhoneNumber
-#
+#</span>
 button .get -text "Get from mentry" -command {
     if {[catch {
         set num ""
@@ -665,9 +669,9 @@ button .get -text "Get from mentry" -command {
     }
 }
 
-#
+<span class="cmt">#
 # Label .num displaying the result of getPhoneNumber
-#
+#</span>
 label .num -textvariable num -background white
 
 . . .
@@ -691,28 +695,28 @@ focus [.f.me entrypath 0]
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # ethernetAddrMentry
 #   
 # Creates a new mentry widget win that allows to display and edit Ethernet
 # addresses.  Sets the type attribute of the widget to EthernetAddr and returns
 # the name of the newly created widget.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc ethernetAddrMentry {win args} {
-    #
+    <span class="cmt">#
     # Create a mentry widget consisting of 6 entry children of
     # width 2, separated by colons, and set its type to EthernetAddr
-    #
+    #</span>
     eval [list mentry::mentry $win] $args
     $win configure -body {2 : 2 : 2 : 2 : 2 : 2}
     $win attrib type EthernetAddr
 
-    #
+    <span class="cmt">#
     # Install automatic uppercase conversion and allow only hexadecimal
     # digits in all entry children; use wcb::cbappend (or wcb::cbprepend)
     # instead of wcb::callback in order to keep the wcb::checkEntryLen
     # callback, registered by mentry::mentry for all entry children
-    #
+    #</span>
     for {set n 0} {$n &lt; 6} {incr n} {
         wcb::cbappend [$win entrypath $n] before insert wcb::convStrToUpper \
                       {wcb::checkStrForRegExp {^[0-9A-F]*$}}
@@ -739,7 +743,7 @@ proc ethernetAddrMentry {win args} {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # putEthernetAddr
 #
 # Outputs the Ethernet address addr to the mentry widget win of type
@@ -748,22 +752,22 @@ proc ethernetAddrMentry {win args} {
 # zeros are allowed (but not required), hence the components may have more (but
 # also less) than two characters; the procedure displays them with exactly two
 # digits.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc putEthernetAddr {addr win} {
     set errorMsg "expected an Ethernet address but got \"$addr\""
 
-    #
+    <span class="cmt">#
     # Check the syntax of addr
-    #
+    #</span>
     set lst [split $addr :]
     if {[llength $lst] != 6} {
         return -code error $errorMsg
     }
 
-    #
+    <span class="cmt">#
     # Try to convert the 6 components of addr to hexadecimal
     # strings and check whether they are in the range 0 - 255
-    #
+    #</span>
     for {set n 0} {$n &lt; 6} {incr n} {
         set val 0x[lindex $lst $n]
         if {[catch {format "%02X" $val} str$n] != 0 || $val &lt; 0 || $val &gt; 255} {
@@ -771,9 +775,9 @@ proc putEthernetAddr {addr win} {
         }
     }
 
-    #
+    <span class="cmt">#
     # Check the widget and display the properly formatted Ethernet address
-    #
+    #</span>
     checkIfEthernetAddrMentry $win
     $win put 0 $str0 $str1 $str2 $str3 $str4 $str5
 }
@@ -787,21 +791,21 @@ proc putEthernetAddr {addr win} {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # getEthernetAddr
 #
 # Returns the Ethernet address contained in the mentry widget win of type
 # EthernetAddr.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc getEthernetAddr win {
-    #
+    <span class="cmt">#
     # Check the widget
-    #
+    #</span>
     checkIfEthernetAddrMentry $win
 
-    #
+    <span class="cmt">#
     # Generate an error if any entry child is empty
-    #
+    #</span>
     for {set n 0} {$n &lt; 6} {incr n} {
         if {[$win isempty $n]} {
             focus [$win entrypath $n]
@@ -809,10 +813,10 @@ proc getEthernetAddr win {
         }
     }
 
-    #
+    <span class="cmt">#
     # Return the properly formatted Ethernet address built
     # from the values contained in the entry children
-    #
+    #</span>
     $win getarray strs
     return [format "%02X:%02X:%02X:%02X:%02X:%02X" \
             0x$strs(0) 0x$strs(1) 0x$strs(2) 0x$strs(3) 0x$strs(4) 0x$strs(5)]
@@ -887,25 +891,25 @@ package require mentry
 set title "Date & Time"
 wm title . $title 
 
-#
+<span class="cmt">#
 # Add some entries to the Tk option database
-#
+#</span>
 source [file join [file dirname [info script]] option.tcl]
     
-#   
+<span class="cmt">#   
 # Date and time formats supported by this demo
 # script and the corresponding field separators
-#
+#</span>
 array set dateFmts {0 mdy  1 dmy  2 Ymd}
 array set dateSeps {0 /    1 .    2 -  }
 array set timeFmts {0 IMS  1 HMS}
 array set timeSeps {0 :    1 :  }
 
-#
+<span class="cmt">#
 # Choose the date & time formats; don't use the %p field descriptor
 # for displaying the AM/PM indicator, because it doesn't work on
 # UNIX if Tcl/Tk 8.4 or higher is used in a non-default locale
-#
+#</span>
 wm withdraw .
 set clockVal [clock seconds]
 if {[clock format $clockVal -format "%H"] &lt; 12} {
@@ -922,9 +926,9 @@ set timeIdx [tk_dialog .choice $title "Please choose a time format" {} -1 \
                        [clock format $clockVal -format "%H:%M:%S"]]
 wm deiconify .
 
-#   
+<span class="cmt">#   
 # Frame .f with mentries displaying the date & time
-#   
+#</span>   
 frame .f
 label .f.lDate -text "Date: "
 mentry::dateMentry .f.date $dateFmts($dateIdx) $dateSeps($dateIdx) \ 
@@ -957,9 +961,9 @@ pack .f.lDate .f.date .f.gap .f.lTime .f.time -side left
 
   <blockquote>
     <pre>
-#
+<span class="cmt">#
 # Frame .f with a mentry displaying the date & time
-#
+#</span>
 frame .f
 label .f.l -text "Date & time: "
 mentry::dateTimeMentry .f.me $dateFmts($dateIdx)$timeFmts($timeIdx) \
@@ -999,10 +1003,10 @@ pack .f.l .f.me
 
       <blockquote>
         <pre>
-#
+<span class="cmt">#
 # Message strings corresponding to the values
 # returned by mentry::getClockVal on failure
-#
+#</span>
 array set msgs {
     EMPTY       "Field value missing"
     BAD         "Invalid field value"
@@ -1031,9 +1035,9 @@ array set msgs {
 
   <blockquote>
     <pre>
-#
+<span class="cmt">#
 # Button .get invoking the procedure mentry::getClockVal
-#
+#</span>
 button .get -text "Get from mentries" -command {
     if {[catch {
         set dateTime ""
@@ -1047,9 +1051,9 @@ button .get -text "Get from mentries" -command {
     }
 }
 
-#
+<span class="cmt">#
 # Label .dateTime displaying the result of mentry::getClockVal
-#
+#</span>
 label .dateTime -textvariable dateTime -background white
 
 . . .
@@ -1071,9 +1075,9 @@ focus [.f.date entrypath 0]
 
   <blockquote>
     <pre>
-#
+<span class="cmt">#
 # Button .get invoking the procedure mentry::getClockVal
-#
+#</span>
 button .get -text "Get from mentry" -command {
     if {[catch {
         set dateTime ""
@@ -1086,9 +1090,9 @@ button .get -text "Get from mentry" -command {
     }
 }
 
-#
+<span class="cmt">#
 # Label .dateTime displaying the result of mentry::getClockVal
-#
+#</span>
 label .dateTime -textvariable dateTime -background white
 
 . . .
@@ -1108,52 +1112,52 @@ focus [.f.me entrypath 0]
   example, let's see how to transform the demo script
   <code>phonenumber.tcl</code> into a tile-based one, called
   <code>phonenumber_tile.tcl</code>.&nbsp; The changes are shown below in
-  <span>red</span> color:</p>
+  <span class="red">red</span> color:</p>
 
   <blockquote>
     <pre>
-package require mentry<span>_tile</span>
+package require mentry<span class="red">_tile</span>
 
 set title "Phone Number"
 wm title . $title
 
-#
+<span class="cmt">#
 # Add some entries to the Tk option database
-#
-source [file join [file dirname [info script]] option<span>_tile</span>.tcl]
+#</span>
+source [file join [file dirname [info script]] option<span class="red">_tile</span>.tcl]
 
 . . .
 
-<span>#
+<span class="red">#
 # Improve the window's appearance by using a tile
 # frame as a container for the other widgets
 #
 ttk::frame .base</span>
 
-#
-# Frame <span>.base</span>.f with a mentry displaying a phone number
-#
-<span>ttk::</span>frame .base.f
-<span>ttk::</span>label .base.f.l -text "A mentry widget for phone numbers:"
-phoneNumberMentry <span>.base</span>.f.me
-pack <span>.base</span>.f.l <span>.base</span>.f.me
+<span class="cmt">#
+# Frame <span class="red">.base</span>.f with a mentry displaying a phone number
+#</span>
+<span class="red">ttk::</span>frame .base.f
+<span class="red">ttk::</span>label .base.f.l -text "A mentry widget for phone numbers:"
+phoneNumberMentry <span class="red">.base</span>.f.me
+pack <span class="red">.base</span>.f.l <span class="red">.base</span>.f.me
 
-#
+<span class="cmt">#
 # Message strings corresponding to the values
 # returned by getPhoneNumber on failure
-#
+#</span>
 array set msgs {
     EMPTY       "Field value missing"
     INCOMPL     "Incomplete field value"
 }
 
-#
-# Button <span>.base</span>.get invoking the procedure getPhoneNumber
-#
-<span>ttk</span>::button <span>.base</span>.get -text "Get from mentry" -command {
+<span class="cmt">#
+# Button <span class="red">.base</span>.get invoking the procedure getPhoneNumber
+#</span>
+<span class="red">ttk</span>::button <span class="red">.base</span>.get -text "Get from mentry" -command {
     if {[catch {
         set num ""
-        set num [getPhoneNumber <span>.base</span>.f.me]
+        set num [getPhoneNumber <span class="red">.base</span>.f.me]
     } result] != 0} {
         bell
         tk_messageBox -icon error -message $msgs($result) \
@@ -1161,15 +1165,15 @@ array set msgs {
     }
 }
 
-#
-# Label <span>.base</span>.num displaying the result of getPhoneNumber
-#
-<span>ttk::</span>label <span>.base</span>.num -textvariable num -background white
+<span class="cmt">#
+# Label <span class="red">.base</span>.num displaying the result of getPhoneNumber
+#</span>
+<span class="red">ttk::</span>label <span class="red">.base</span>.num -textvariable num -background white
 
 . . .
 
-putPhoneNumber 1234567890 <span>.base</span>.f.me
-focus [<span>.base</span>.f.me entrypath 0]
+putPhoneNumber 1234567890 <span class="red">.base</span>.f.me
+focus [<span class="red">.base</span>.f.me entrypath 0]
 </pre>
   </blockquote>
 
