@@ -727,9 +727,8 @@ proc scrollutil::sf::applyOffset {win axis offset force} {
     if {$maxOffset < 0} {
 	set offset 0
     } elseif {$offset > $maxOffset} {
-	set delta [expr {$offset - $maxOffset}]
-	roundDn delta $scrlIncr
-	incr offset -$delta
+	set offset $maxOffset
+	roundUp offset $scrlIncr
     }
 
     if {$offset != $data(${axis}Offset) || $force} {
