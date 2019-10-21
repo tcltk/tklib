@@ -1,5 +1,9 @@
 2019-10-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* doc/scrollableframe.html: Minor improvement.
+
+2019-10-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* scripts/scrollableframe.tcl: Minor improvement.
 
 	* doc/scrollableframe.html: Minor correction.
