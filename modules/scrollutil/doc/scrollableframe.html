@@ -589,13 +589,17 @@ pack $sa -expand yes -fill both
         <dd>This command adjusts the view in the scrollableframe's window so
         that <code><i>widget</i></code> becomes visible in it.&nbsp; The
         specified widget must be a descendant of the content frame and must
-        have the same toplevel.&nbsp; The optional <code><i>corner</i></code>
-        argument specifies which corner of <code><i>widget</i></code> should
-        become visible if it is too large to fit into the window.&nbsp; The
-        possible values are <code><b>nw</b></code> (north-west, top-left),
-        <code><b>ne</b></code> (north-east, top-right), <code><b>sw</b></code>
-        (south-west, bottom-left), and <code><b>se</b></code> (south-east,
-        bottom-right).&nbsp; The default corner is <code><b>nw</b></code>.</dd>
+        have the same toplevel.&nbsp; In addition, it must be managed by some
+        geometry manager (such as <code><b>grid</b></code>,
+        <code><b>pack</b></code>, <code><b>place</b></code>,
+        <code><b>text</b></code>, or <code><b>canvas</b></code>).&nbsp; The
+        optional <code><i>corner</i></code> argument specifies which corner of
+        <code><i>widget</i></code> should become visible if it is too large to
+        fit into the window.&nbsp; The possible values are
+        <code><b>nw</b></code> (north-west), <code><b>ne</b></code>
+        (north-east), <code><b>sw</b></code> (south-west), and
+        <code><b>se</b></code> (south-east).&nbsp; The default corner is
+        <code><b>nw</b></code>.</dd>
 
         <dd class="tm"><b>REMARK:</b>&nbsp; By using this subcommand you can
         make the keyboard navigation in the content frame more user-friendly,
