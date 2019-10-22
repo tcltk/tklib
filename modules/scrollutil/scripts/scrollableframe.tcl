@@ -450,6 +450,10 @@ proc scrollutil::sf::seeSubCmd {win argList} {
 	return -code error \
 	    "widgets \"$w\" and \"$win\" have different toplevels"
     }
+    if {[string length [winfo manager $w]] == 0} {
+	return -code error \
+	    "widget \"$w\" is not managed by any geometry manager"
+    }
 
     #
     # Parse the optional argument
