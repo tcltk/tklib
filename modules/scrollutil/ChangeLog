@@ -1,5 +1,9 @@
 2019-10-22  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* doc/wheelEvent.html: Slightly extended.
+
+2019-10-22  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* scripts/scrollableframe.tcl: Improvement related to the "see"
 	  subcommand.
 
