@@ -80,10 +80,11 @@ How to Use It?
 The Scrollutil distribution provides two packages, called Scrollutil and
 Scrollutil_tile.  The main difference between the two is that
 Scrollutil_tile enables the tile-based, theme-specific appearance of
-scrollarea widgets; this package requires Tcl/Tk 8.4 or higher and tile
-0.6 or higher.  It is not possible to use both packages in one and the
-same application, because both are implemented in the same "scrollutil"
-namespace and provide identical commands.
+scrollarea, scrollsync, and scrollableframe widgets; this package
+requires Tcl/Tk 8.4 or higher and tile 0.6 or higher.  It is not
+possible to use both packages in one and the same application, because
+both are implemented in the same "scrollutil" namespace and provide
+identical commands.
 
 To be able to use the commands and variables implemented in the package
 Scrollutil, your scripts must contain one of the lines
