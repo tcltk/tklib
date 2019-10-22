@@ -1,3 +1,11 @@
+2019-10-22  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/scrollableframe.tcl: Improvement related to the "see"
+	  subcommand.
+
+	* doc/scrollableframe.html: Extended the description of the "see"
+	  subcommand.
+
 2019-10-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/scrollableframe.html: Minor improvement.
