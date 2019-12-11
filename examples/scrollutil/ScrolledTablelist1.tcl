@@ -8,6 +8,7 @@
 #==============================================================================
 
 package require tablelist_tile 6.3
+source styleUtil.tcl
 
 wm title . "Scrolled Tablelist"
 
@@ -20,15 +21,15 @@ set frm [ttk::frame $f.frm -borderwidth 1 -relief sunken]
 set tbl $frm.tbl
 set vsb $frm.vsb
 set hsb $frm.hsb
-tablelist::tablelist $tbl -columntitles \
-	{"Column 0" "Column 1" "Column 2" "Column 3"
-	 "Column 4" "Column 5" "Column 6" "Column 7"} \
+tablelist::tablelist $tbl \
+    -columntitles {"Column 0" "Column 1" "Column 2" "Column 3" "Column 4"
+		   "Column 5" "Column 6" "Column 7" "Column 8" "Column 9"} \
     -titlecolumns 1 -borderwidth 0 \
     -xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set]
 switch [tk windowingsystem] {
     x11   { set width 53 }
     win32 { set width 58 }
-    aqua  { set width 52 }
+    aqua  { set width 51 }
 }
 $tbl configure -width $width
 ttk::scrollbar $vsb -orient vertical   -command [list $tbl yview]
@@ -40,16 +41,16 @@ ttk::scrollbar $hsb -orient horizontal -command [list $tbl xview]
 set itemList {}
 for {set row 0} {$row < 2} {incr row} {
     set item {}
-    for {set col 0} {$col < 8} {incr col} {
+    for {set col 0} {$col < 10} {incr col} {
 	lappend item "header cell $row,$col"
     }
     lappend itemList $item
 }
 $tbl header insertlist end $itemList
 set itemList {}
-for {set row 0} {$row < 40} {incr row} {
+for {set row 0} {$row < 100} {incr row} {
     set item {}
-    for {set col 0} {$col < 8} {incr col} {
+    for {set col 0} {$col < 10} {incr col} {
 	lappend item "body cell $row,$col"
     }
     lappend itemList $item

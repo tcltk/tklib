@@ -14,6 +14,7 @@ package require mentry_tile 3.2			;# for mouse wheel support
 package require tablelist_tile 6.5		;# for -(x|y)mousewheelwindow
 						;# and scrollutil::scrollarea
 package require scrollutil_tile
+source styleUtil.tcl
 
 wm title . "Scrollutil Demo"
 
@@ -29,7 +30,8 @@ $sa setwidget $sf
 # Work around a tile bug which is not handled in
 # the BWidget procedure ScrollableFrame::create
 #
-if {$ttk::currentTheme eq "aqua"} {
+if {$ttk::currentTheme eq "aqua" &&
+    [package vcompare $tk_patchLevel "8.6.10"] < 0} {
     $sf:cmd configure -background #ececec
 }
 

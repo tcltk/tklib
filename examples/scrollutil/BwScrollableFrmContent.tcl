@@ -14,11 +14,8 @@ if {$ttk::currentTheme eq "aqua"} {
 	       $tablelist::themeDefaults(-selectbackground)
     option add *Listbox.selectForeground \
 	       $tablelist::themeDefaults(-selectforeground)
-} else {
-    option add *selectBackground  $tablelist::themeDefaults(-selectbackground)
-    option add *selectForeground  $tablelist::themeDefaults(-selectforeground)
 }
-option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)
+option add *selectBorderWidth  $tablelist::themeDefaults(-selectborderwidth)
 
 #
 # Create some widgets in the content frame
@@ -54,8 +51,6 @@ grid $_sa -row $row -rowspan 6 -column 0 -sticky w -padx {10 0} -pady {5 0}
 #
 set l [ttk::label $cf.l$row -text "Release:"]
 grid $l -row $row -column 1 -sticky w -padx {10 0} -pady {5 0}
-ttk::style map TCombobox -fieldbackground \
-    [list {readonly focus} lightYellow readonly white]
 set cb [ttk::combobox $cf.cb -state readonly -width 14]
 grid $cb -row $row -column 2 -sticky w -padx {5 10} -pady {5 0}
 
@@ -65,7 +60,6 @@ grid $cb -row $row -column 2 -sticky w -padx {5 10} -pady {5 0}
 incr row
 set l [ttk::label $cf.l$row -text "Changes:"]
 grid $l -row $row -column 1 -sticky w -padx {10 0} -pady {10 0}
-ttk::style map TSpinbox -fieldbackground {readonly white}
 set sb [ttk::spinbox $cf.sb -from 0 -to 20 -state readonly -width 4]
 grid $sb -row $row -column 2 -sticky w -padx {5 10} -pady {10 0}
 
@@ -130,6 +124,10 @@ incr row
 set _sa [scrollutil::scrollarea $cf.sa$row -borderwidth 0]
 set tv [ttk::treeview $_sa.tv -columns {release changes comment} \
 	-show headings -height 16 -selectmode browse]
+if {$ttk::currentTheme eq "aqua" &&
+    [package vcompare $::tk_patchLevel "8.6.10"] >= 0} {
+    $_sa configure -borderwidth 1 ;# because in this case $tv has a flat relief
+}
 $tv heading release -text " Release" -anchor w
 $tv heading changes -text "Changes " -anchor e
 $tv heading comment -text " Comment" -anchor w
@@ -286,7 +284,8 @@ proc configTablelist {} {
     # Work around a tile bug which is not handled in
     # the BWidget procedure ScrollableFrame::create
     #
-    if {$ttk::currentTheme eq "aqua"} {
+    if {$ttk::currentTheme eq "aqua" &&
+	[package vcompare $::tk_patchLevel "8.6.10"] < 0} {
 	$sf:cmd configure -background #ececec
     }
 

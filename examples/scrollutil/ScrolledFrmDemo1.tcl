@@ -14,11 +14,13 @@ if {[catch {package require iwidgets} result1] != 0 &&
 }
 source scrolledwidgetPatch.itk			;# adds ttk::scrollbar widgets
 package require scrollutil
+source styleUtil.tcl
 
 wm title . "European Capitals Quiz"
 
 set bg [ttk::style lookup TFrame -background]
-if {$ttk::currentTheme eq "aqua"} {
+if {$ttk::currentTheme eq "aqua" &&
+    [package vcompare $tk_patchLevel "8.6.10"] < 0} {
     set bg #ececec				;# workaround for a tile bug
 }
 
@@ -68,28 +70,31 @@ foreach country $countryList capital $capitalList {
 
 set capitalList [lsort $capitalList]
 
-ttk::style map TCombobox -fieldbackground \
-    [list {readonly focus} lightYellow readonly white]
-set btnStyle [expr {$ttk::currentTheme eq "aqua" ? "TButton" : "Toolbutton"}]
+if {$ttk::currentTheme in {aqua vista xpnative}} {
+    set topPadY 2
+} else {
+    set topPadY 5
+}
+set padY [list $topPadY 0]
 
 set row 0
 foreach country $countryList {
     set w [ttk::label $cf.l$row -text $country]
-    grid $w -row $row -column 0 -sticky w -padx {5 0} -pady {4 0}
+    grid $w -row $row -column 0 -sticky w -padx {5 0} -pady $padY
 
     set w [ttk::combobox $cf.cb$row -state readonly -width 14 \
 	   -values $capitalList]
     bind $w <<ComboboxSelected>> [list checkCapital %W $country]
-    grid $w -row $row -column 1 -sticky w -padx {5 0} -pady {4 0}
+    grid $w -row $row -column 1 -sticky w -padx {5 0} -pady $padY
 
     #
     # Adapt the handling of the mouse wheel events for the ttk::combobox widget
     #
     scrollutil::adaptWheelEventHandling $w
 
-    set b [ttk::button $cf.b$row -style $btnStyle -text "Resolve" \
+    set b [createToolbutton $cf.b$row -text "Resolve" \
 	   -command [list setCapital $w $country]]
-    grid $b -row $row -column 2 -sticky w -padx 5 -pady {4 0}
+    grid $b -row $row -column 2 -sticky w -padx 5 -pady $padY
 
     incr row
 }
@@ -101,7 +106,7 @@ update idletasks
 set vsb [$sf component vertsb]
 set width [expr {[winfo reqwidth $cf] + [winfo reqwidth $vsb] + 2}]
 set rowHeight [expr {[winfo reqheight $cf] / $row}]
-$sf configure -width $width -height [expr {10*$rowHeight + 7}]
+$sf configure -width $width -height [expr {10*$rowHeight + $topPadY + 2}]
 $canvas configure -yscrollincrement $rowHeight
 after 100 [list $sf configure -hscrollmode dynamic]
 

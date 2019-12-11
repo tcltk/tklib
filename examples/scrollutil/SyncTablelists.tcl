@@ -9,6 +9,7 @@
 
 package require tablelist_tile
 package require scrollutil_tile
+source styleUtil.tcl
 
 wm title . "Synchronized Tablelists"
 
@@ -41,7 +42,7 @@ for {set n 1; set colWidth 40} {$n <= 3} {incr n; incr colWidth 20} {
 	     -columns [list 0 "Column 0" left  $colWidth "Column 1" left]]
     set tbl$n $tbl
 
-    for {set i 0} {$i < 40} {incr i} {
+    for {set i 0} {$i < 100} {incr i} {
 	$tbl insert end [list "cell $i,0" "cell $i,1"]
     }
 }

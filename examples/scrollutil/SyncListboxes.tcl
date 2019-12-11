@@ -8,6 +8,7 @@
 #==============================================================================
 
 package require scrollutil_tile
+source styleUtil.tcl
 
 wm title . "European Countries"
 

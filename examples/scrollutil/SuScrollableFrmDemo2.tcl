@@ -12,6 +12,7 @@ package require mentry_tile 3.2			;# for mouse wheel support
 package require tablelist_tile 6.5		;# for -(x|y)mousewheelwindow
 						;# and scrollutil::scrollarea
 package require scrollutil_tile
+source styleUtil.tcl
 
 wm title . "Scrollutil Demo"
 

@@ -11,6 +11,7 @@ package require Tk 8.5
 package require BWidget
 Widget::theme yes
 package require scrollutil_tile
+source styleUtil.tcl
 
 wm title . "European Capitals Quiz"
 
@@ -26,7 +27,8 @@ $sa setwidget $sf
 # Work around a tile bug which is not handled in
 # the BWidget procedure ScrollableFrame::create
 #
-if {$ttk::currentTheme eq "aqua"} {
+if {$ttk::currentTheme eq "aqua" &&
+    [package vcompare $tk_patchLevel "8.6.10"] < 0} {
     $sf:cmd configure -background #ececec
 }
 
@@ -66,19 +68,22 @@ foreach country $countryList capital $capitalList {
 
 set capitalList [lsort $capitalList]
 
-ttk::style map TCombobox -fieldbackground \
-    [list {readonly focus} lightYellow readonly white]
-set btnStyle [expr {$ttk::currentTheme eq "aqua" ? "TButton" : "Toolbutton"}]
+if {$ttk::currentTheme in {aqua vista xpnative}} {
+    set topPadY 2
+} else {
+    set topPadY 5
+}
+set padY [list $topPadY 0]
 
 set row 0
 foreach country $countryList {
     set w [ttk::label $cf.l$row -text $country]
-    grid $w -row $row -column 0 -sticky w -padx {5 0} -pady {4 0}
+    grid $w -row $row -column 0 -sticky w -padx {5 0} -pady $padY
 
     set w [ttk::combobox $cf.cb$row -state readonly -width 14 \
 	   -values $capitalList]
     bind $w <<ComboboxSelected>> [list checkCapital %W $country]
-    grid $w -row $row -column 1 -sticky w -padx {5 0} -pady {4 0}
+    grid $w -row $row -column 1 -sticky w -padx {5 0} -pady $padY
 
     #
     # Make the keyboard navigation more user-friendly
@@ -90,9 +95,9 @@ foreach country $countryList {
     #
     scrollutil::adaptWheelEventHandling $w
 
-    set b [ttk::button $cf.b$row -style $btnStyle -text "Resolve" \
+    set b [createToolbutton $cf.b$row -text "Resolve" \
 	   -command [list setCapital $w $country]]
-    grid $b -row $row -column 2 -sticky w -padx 5 -pady {4 0}
+    grid $b -row $row -column 2 -sticky w -padx 5 -pady $padY
 
     #
     # Make the keyboard navigation more user-friendly
@@ -108,7 +113,7 @@ foreach country $countryList {
 update idletasks
 set rowHeight [expr {[winfo reqheight $cf] / $row}]
 $sf configure -width [winfo reqwidth $cf] \
-    -height [expr {10*$rowHeight + 5}] -yscrollincrement $rowHeight
+    -height [expr {10*$rowHeight + $topPadY}] -yscrollincrement $rowHeight
 
 #
 # Create a ttk::button widget outside the scrollarea
