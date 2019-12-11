@@ -5,7 +5,7 @@
 #==============================================================================
 
 package require Tk 8
-package require -exact tablelist::common 6.7
+package require -exact tablelist::common 6.8
 
 package provide tablelist $::tablelist::version
 package provide Tablelist $::tablelist::version
