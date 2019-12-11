@@ -1,5 +1,9 @@
 2019-12-11  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* doc/*.png: Updated.
+
+2019-12-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* *.tcl:         Bumped the version number to 1.3.
 	* COPYRIGHT.txt:
 	* README.txt:
