@@ -72,6 +72,9 @@ namespace eval tablelist {
 	[regexp {^8\.5\.(9|[1-9][0-9])$} $::tk_patchLevel]) &&
 	[lsearch -exact [winfo server .] "AppKit"] >= 0}]
 
+    variable newAquaSupport \
+	[expr {[package vcompare $::tk_patchLevel "8.6.10"] >= 0}]
+
     #
     # The array configSpecs is used to handle configuration options.  The
     # names of its elements are the configuration options for the Tablelist
@@ -663,8 +666,8 @@ proc tablelist::createBindings {} {
     }
     variable usingTile
     if {$usingTile} {
-	bind Tablelist <Activate>	{ tablelist::updateCanvases %W }
-	bind Tablelist <Deactivate>	{ tablelist::updateCanvases %W }
+	bind Tablelist <Activate>	{ tablelist::updateBackgrounds %W 1 1 }
+	bind Tablelist <Deactivate>	{ tablelist::updateBackgrounds %W 1 0 }
     }
 
     #
@@ -886,9 +889,11 @@ proc tablelist::tablelist args {
     set data(hdr)		$win.hdr
     set data(hdrTxt)		$data(hdr).t
     set data(hdrTxtFrm)		$data(hdrTxt).f
+    set data(hdrTxtFrmFrm)	$data(hdrTxtFrm).f	;# for the aqua theme
     set data(hdrTxtFrmCanv)	$data(hdrTxtFrm).c
     set data(hdrTxtFrmLbl)	$data(hdrTxtFrm).l
     set data(hdrFrm)		$data(hdr).f
+    set data(hdrFrmFrm)		$data(hdrFrm).f		;# for the aqua theme
     set data(hdrFrmLbl)		$data(hdrFrm).l
     set data(colGap)		$data(hdr).g
     set data(lb)		$win.lb
@@ -905,7 +910,9 @@ proc tablelist::tablelist args {
 	    set data(cornerFrm$opt) ${win}_cf$opt$n
 	}
     }
-    set data(cornerLbl) $data(cornerFrm-ne).l
+    set data(cornerFrmFrm)	$data(cornerFrm-ne).f	;# for the aqua theme
+    set data(cornerFrmFrmFrm)	$data(cornerFrmFrm).f	;# for the aqua theme
+    set data(cornerLbl)		$data(cornerFrmFrm).l
 
     #
     # Create a child hierarchy used to hold the column labels.  The
@@ -929,58 +936,99 @@ proc tablelist::tablelist args {
     place $w -relheight 1.0 -relwidth 1.0
     bindtags $w [list $w $data(headerTag) TablelistHeader [winfo toplevel $w] \
 		 all]
-    tk::frame $data(hdrTxtFrm) -borderwidth 0 -container 0 -height 0 \
-			       -highlightthickness 0 -relief flat \
-			       -takefocus 0 -width 0
+
+    tk::frame $data(hdrTxtFrm) -background #eeeeee -borderwidth 0 \
+			       -container 0 -height 0 -highlightthickness 0 \
+			       -relief flat -takefocus 0 -width 0
     catch {$data(hdrTxtFrm) configure -padx 0 -pady 0}
     $w window create 1.0 -window $data(hdrTxtFrm) -align top
+
+    tk::frame $data(hdrTxtFrmFrm) -background #c8c8c8 -borderwidth 0 \
+				  -container 0 -height 1 -highlightthickness 0 \
+				  -relief flat -takefocus 0 -width 0
+    catch {$data(hdrTxtFrmFrm) configure -padx 0 -pady 0}
+    place $data(hdrTxtFrmFrm) -relwidth 1.0
+
     $w tag configure noSpacings -spacing1 0 -spacing3 0
     $w tag add noSpacings 1.0
     $w tag configure tinyFont -font "Courier -1"
     $w tag add tinyFont 1.0 end
     $w tag configure active -borderwidth ""	;# used for the priority order
-    $w tag configure disabled -foreground ""	;# will be changed
+    $w tag configure disabled -foreground ""	;# initial setting
     $w tag configure hiddenCol -elide 1		;# used for hiding a column
     $w tag configure elidedCol -elide 1		;# used for horizontal scrolling
 
     set w $data(hdrFrm)		;# filler frame within the header frame
-    tk::frame $w -borderwidth 0 -container 0 -height 0 -highlightthickness 0 \
-		 -relief flat -takefocus 0 -width 0
+    tk::frame $w -background #eeeeee -borderwidth 0 -container 0 -height 0 \
+		 -highlightthickness 0 -relief flat -takefocus 0 -width 0
     catch {$w configure -padx 0 -pady 0}
     place $w -relwidth 1.0
 
+    set w $data(hdrFrmFrm)	;# child of filler frame within the header frame
+    tk::frame $w -background #c8c8c8 -borderwidth 0 -container 0 -height 1 \
+		 -highlightthickness 0 -relief flat -takefocus 0 -width 0
+    catch {$w configure -padx 0 -pady 0}
+    place $w -relwidth 1.0
+
+    set aquaTheme [expr {$usingTile &&
+	[string compare [mwutil::currentTheme] "aqua"] == 0}]
+
     set w $data(hdrFrmLbl)	;# label within the filler frame
     set x 0
+    set y 0
     if {$usingTile} {
 	ttk::label $w -style TablelistHeader.TLabel -image "" \
 		      -padding {1 1 1 1} -takefocus 0 -text "" \
 		      -textvariable "" -underline -1 -wraplength 0
-	if {[string compare [mwutil::currentTheme] "aqua"] == 0} {
-	    set x -1
+
+	if {$aquaTheme} {
+	    variable newAquaSupport
+	    if {$newAquaSupport} {
+		set y 4
+	    } else {
+		set x -1
+	    }
 	}
     } else {
 	tk::label $w -bitmap "" -highlightthickness 0 -image "" \
 		     -takefocus 0 -text "" -textvariable "" -underline -1 \
 		     -wraplength 0
     }
-    place $w -x $x -relheight 1.0 -relwidth 1.0
+    place $w -x $x -y $y -relheight 1.0 -relwidth 1.0
 
     set w $data(cornerFrm-ne)	;# north-east corner frame
     tk::frame $w -borderwidth 0 -container 0 -height 0 -highlightthickness 0 \
 		 -relief flat -takefocus 0 -width 0
     catch {$w configure -padx 0 -pady 0}
 
+    set w $data(cornerFrmFrm)	;# child frame of the north-east corner frame
+    tk::frame $w -background #eeeeee -borderwidth 0 -container 0 -height 0 \
+		 -highlightthickness 0 -relief flat -takefocus 0 -width 0
+    catch {$w configure -padx 0 -pady 0}
+    place $w -relwidth 1.0
+
+    set w $data(cornerFrmFrmFrm)  ;# grandchild frm of the north-east corner frm
+    tk::frame $w -background #c8c8c8 -borderwidth 0 -container 0 -height 1 \
+		 -highlightthickness 0 -relief flat -takefocus 0 -width 0
+    catch {$w configure -padx 0 -pady 0}
+    place $w -relwidth 1.0
+
     set w $data(cornerLbl)	;# label within the north-east corner frame
+    set y 0
     if {$usingTile} {
 	ttk::label $w -style TablelistHeader.TLabel -image "" \
 		      -padding {1 1 1 1} -takefocus 0 -text "" \
 		      -textvariable "" -underline -1 -wraplength 0
+
+	if {$aquaTheme && $newAquaSupport} {
+	    set y 4
+	}
     } else {
 	tk::label $w -bitmap "" -highlightthickness 0 -image "" \
 		     -takefocus 0 -text "" -textvariable "" -underline -1 \
 		     -wraplength 0
     }
-    place $w -relwidth 1.0
+    place $w -y $y -relheight 1.0 -relwidth 1.0
 
     set w $data(cornerFrm-sw)	;# south-west corner frame
     if {$usingTile} {
@@ -5073,10 +5121,10 @@ proc tablelist::scanSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win scan mark|dragto x y"
     }
 
-    set x [format "%d" [lindex $argList 1]]
-    set y [format "%d" [lindex $argList 2]]
     variable scanOpts
     set opt [mwutil::fullOpt "option" [lindex $argList 0] $scanOpts]
+    set x [format "%d" [lindex $argList 1]]
+    set y [format "%d" [lindex $argList 2]]
     synchronize $win
     displayItems $win
     return [doScan $win $opt $x $y]
@@ -8204,8 +8252,11 @@ proc tablelist::seeCell {win row col} {
 	set alignment [lindex $data(colList) [expr {2*$col + 1}]]
 	set lX [winfo x $data(hdrTxtFrmLbl)$col]
 	set rX [expr {$lX + [winfo width $data(hdrTxtFrmLbl)$col] - 1}]
+
 	variable usingTile
-	if {$usingTile && [string compare [mwutil::currentTheme] "aqua"] == 0} {
+	variable newAquaSupport
+	if {$usingTile && [string compare [mwutil::currentTheme] "aqua"] == 0
+	    && !$newAquaSupport} {
 	    incr lX
 	    if {$col == 0} {
 		incr lX

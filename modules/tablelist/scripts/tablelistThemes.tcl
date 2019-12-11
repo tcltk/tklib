@@ -102,12 +102,20 @@ proc tablelist::altTheme {} {
 # tablelist::aquaTheme
 #------------------------------------------------------------------------------
 proc tablelist::aquaTheme {} {
+    variable newAquaSupport
     scan $::tcl_platform(osVersion) "%d" majorOSVersion
     if {$majorOSVersion >= 14} {			;# OS X 10.10 or higher
-	set labelBg		#f6f6f6
-	set labeldeactivatedBg	#ffffff
-	set labeldisabledBg	#ffffff
-	set labelpressedBg	#e9e9e9
+	if {$newAquaSupport} {
+	    set labelBg			#eeeeee
+	    set labeldeactivatedBg	#f6f6f6
+	    set labeldisabledBg		#f6f6f6
+	    set labelpressedBg		#eeeeee
+	} else {
+	    set labelBg			#f6f6f6
+	    set labeldeactivatedBg	#ffffff
+	    set labeldisabledBg		#ffffff
+	    set labelpressedBg		#e9e9e9
+	}
 	set arrowColor		#404040
     } elseif {$majorOSVersion >= 11} {			;# OS X 10.7 or higher
 	set labelBg		#f3f3f3
@@ -128,8 +136,13 @@ proc tablelist::aquaTheme {} {
 	"32256 44288 55552" {				;# Blue Cocoa/Carbon
 	    if {$majorOSVersion >= 14} {		;# OS X 10.10 or higher
 		set stripeBg			#f5f5f5
-		set labelselectedBg		#f6f6f6
-		set labelselectedpressedBg	#e9e9e9
+		if {$newAquaSupport} {
+		    set labelselectedBg		#eeeeee
+		    set labelselectedpressedBg	#eeeeee
+		} else {
+		    set labelselectedBg		#f6f6f6
+		    set labelselectedpressedBg	#e9e9e9
+		}
 	    } elseif {$majorOSVersion >= 11} {		;# OS X 10.7 or higher
 		set stripeBg			#f3f6fa
 		set labelselectedBg		#91c5f3
@@ -145,8 +158,13 @@ proc tablelist::aquaTheme {} {
 	"39680 43776 48384" {				;# Graphite Cocoa/Carbon
 	    if {$majorOSVersion >= 14} {		;# OS X 10.10 or higher
 		set stripeBg			#f5f5f5
-		set labelselectedBg		#f6f6f6
-		set labelselectedpressedBg	#e9e9e9
+		if {$newAquaSupport} {
+		    set labelselectedBg		#eeeeee
+		    set labelselectedpressedBg	#eeeeee
+		} else {
+		    set labelselectedBg		#f6f6f6
+		    set labelselectedpressedBg	#e9e9e9
+		}
 	    } elseif {$majorOSVersion >= 11} {		;# OS X 10.7 or higher
 		set stripeBg			#f6f7f9
 		set labelselectedBg		#abb6c2
@@ -210,7 +228,7 @@ proc tablelist::aquaTheme {} {
 	-selectbackground	$selectBg \
 	-selectforeground	white \
 	-selectborderwidth	0 \
-	-font			{"Lucida Grande" 12} \
+	-font			TkTextFont \
 	-labelbackground	$labelBg \
 	-labeldeactivatedBg	$labeldeactivatedBg \
 	-labeldisabledBg	$labeldisabledBg \
@@ -224,7 +242,7 @@ proc tablelist::aquaTheme {} {
 	-labelpressedFg		black \
 	-labelselectedFg	black \
 	-labelselectedpressedFg	black \
-	-labelfont		{"Lucida Grande" 11} \
+	-labelfont		TkHeadingFont \
 	-labelborderwidth	1 \
 	-labelpady		1 \
 	-arrowcolor		$arrowColor \
@@ -1543,89 +1561,92 @@ proc tablelist::vistaTheme {} {
 	-labelfont		TkDefaultFont \
     ]
 
-    switch [winfo rgb . SystemHighlight] {
-	"13107 39321 65535" {					;# Aero
-	    set selectFg	SystemWindowText
-	    set labelBd		4
-	    set labelPadY	4
+    if {$::tcl_platform(osVersion) >= 10.0} {			;# Win 10
+	set selectBg	#cce8ff
+	set selectFg	SystemWindowText
+	set labelBg	#ffffff
+	set activeBg	#d9ebf9
+	set pressedBg	#bcdcf4
+	set labelBd	4
+	set labelPadY	4
+	set arrowColor	#595959
 
-	    variable scalingpct
-	    if {$::tcl_platform(osVersion) < 6.2} {		;# Win Vista/7
-		set labelBg	#ffffff
-		set activeBg	#e3f7ff
-		set pressedBg	#Bce4f9
-		set arrowColor	#569bc0
+	variable scalingpct
+	switch $scalingpct {
+	    100 { set arrowStyle	flatAngle7x4 }
+	    125 { set arrowStyle	flatAngle9x5 }
+	    150 { set arrowStyle	flatAngle11x6 }
+	    200 { set arrowStyle	flatAngle15x8 }
+	}
 
-		switch $scalingpct {
-		    100 { set arrowStyle	photo7x4 }
-		    125 { set arrowStyle	photo9x5 }
-		    150 { set arrowStyle	photo11x6 }
-		    200 { set arrowStyle	photo15x8 }
-		}
-	    } elseif {$::tcl_platform(osVersion) < 10.0} {	;# Win 8
-		set labelBg	#fcfcfc
-		set activeBg	#f4f9ff
-		set pressedBg	#f9fafb
-		set arrowColor	#569bc0
+	set treeStyle	win10
 
-		switch $scalingpct {
-		    100 { set arrowStyle	photo7x4 }
-		    125 { set arrowStyle	photo9x5 }
-		    150 { set arrowStyle	photo11x6 }
-		    200 { set arrowStyle	photo15x8 }
-		}
-	    } else {						;# Win 10
-		set labelBg	#ffffff
-		set activeBg	#d9ebf9
-		set pressedBg	#bcdcf4
-		set arrowColor	#595959
+    } elseif {[string compare [winfo rgb . SystemHighlight] \
+			      "13107 39321 65535"] == 0} {	;# Aero
+	set selectFg	SystemWindowText
+	set labelBd	4
+	set labelPadY	4
 
-		switch $scalingpct {
-		    100 { set arrowStyle	flatAngle7x4 }
-		    125 { set arrowStyle	flatAngle9x5 }
-		    150 { set arrowStyle	flatAngle11x6 }
-		    200 { set arrowStyle	flatAngle15x8 }
-		}
+	variable scalingpct
+	if {$::tcl_platform(osVersion) < 6.2} {			;# Win Vista/7
+	    set labelBg	#ffffff
+	    set activeBg	#e3f7ff
+	    set pressedBg	#Bce4f9
+	    set arrowColor	#569bc0
+
+	    switch $scalingpct {
+		100 { set arrowStyle	photo7x4 }
+		125 { set arrowStyle	photo9x5 }
+		150 { set arrowStyle	photo11x6 }
+		200 { set arrowStyle	photo15x8 }
 	    }
+	} else {						;# Win 8
+	    set labelBg		#fcfcfc
+	    set activeBg	#f4f9ff
+	    set pressedBg	#f9fafb
+	    set arrowColor	#569bc0
 
-	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
-		set selectBg	#d8effb
-		set treeStyle	vistaAero
-	    } elseif {$::tcl_platform(osVersion) == 6.1} {	;# Win 7
-		set selectBg	#cee2fc
-		set treeStyle	win7Aero
-	    } elseif {$::tcl_platform(osVersion) < 10.0} {	;# Win 8
-		set selectBg	#cbe8f6
-		set treeStyle	win7Aero
-	    } else {						;# Win 10
-		set selectBg	#cce8ff
-		set treeStyle	win10
+	    switch $scalingpct {
+		100 { set arrowStyle	photo7x4 }
+		125 { set arrowStyle	photo9x5 }
+		150 { set arrowStyle	photo11x6 }
+		200 { set arrowStyle	photo15x8 }
 	    }
 	}
 
-	default {						;# Win Classic
-	    set selectBg	SystemHighlight
-	    set selectFg	SystemHighlightText
-	    set labelBg		SystemButtonFace
-	    set activeBg	SystemButtonFace
-	    set pressedBg	SystemButtonFace
-	    set labelBd		2
-	    set labelPadY	0
-	    set arrowColor	SystemButtonShadow
+	if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
+	    set selectBg	#d8effb
+	    set treeStyle	vistaAero
+	} elseif {$::tcl_platform(osVersion) == 6.1} {		;# Win 7
+	    set selectBg	#cee2fc
+	    set treeStyle	win7Aero
+	} else {						;# Win 8
+	    set selectBg	#cbe8f6
+	    set treeStyle	win7Aero
+	}
 
-	    variable scalingpct
-	    switch $scalingpct {
-		100 { set arrowStyle	flat7x4 }
-		125 { set arrowStyle	flat9x5 }
-		150 { set arrowStyle	flat11x6 }
-		200 { set arrowStyle	flat15x8 }
-	    }
+    } else {							;# Win Classic
+	set selectBg	SystemHighlight
+	set selectFg	SystemHighlightText
+	set labelBg	SystemButtonFace
+	set activeBg	SystemButtonFace
+	set pressedBg	SystemButtonFace
+	set labelBd	2
+	set labelPadY	0
+	set arrowColor	SystemButtonShadow
 
-	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
-		set treeStyle	vistaClassic
-	    } else {						;# Win 7/8
-		set treeStyle	win7Classic
-	    }
+	variable scalingpct
+	switch $scalingpct {
+	    100 { set arrowStyle	flat7x4 }
+	    125 { set arrowStyle	flat9x5 }
+	    150 { set arrowStyle	flat11x6 }
+	    200 { set arrowStyle	flat15x8 }
+	}
+
+	if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
+	    set treeStyle	vistaClassic
+	} else {						;# Win 7/8
+	    set treeStyle	win7Classic
 	}
     }
 
@@ -1729,147 +1750,155 @@ proc tablelist::xpnativeTheme {} {
 	-labelfont		TkDefaultFont \
     ]
 
-    switch [winfo rgb . SystemHighlight] {
-	"12593 27242 50629" {					;# Win XP Blue
-	    set xpStyle		1
-	    set selectBg	SystemHighlight
-	    set selectFg	SystemHighlightText
-	    set labelBg		#ebeadb
-	    set activeBg	#faf8f3
-	    set pressedBg	#dedfd8
-	    set labelBd		4
-	    set labelPadY	4
-	    set arrowColor	#aca899
-	    set arrowStyle	flat9x5
-	    set treeStyle	winxpBlue
+    if {$::tcl_platform(osVersion) >= 10.0} {			;# Win 10
+	set xpStyle	0
+	set selectBg	#cce8ff
+	set selectFg	SystemWindowText
+	set labelBg	#ffffff
+	set activeBg	#d9ebf9
+	set pressedBg	#bcdcf4
+	set labelBd	4
+	set labelPadY	4
+	set arrowColor	#595959
 
-	    if {[info exists ::tile::version] &&
-		[string compare $::tile::version 0.7] < 0} {
-		set labelBd 0
-	    }
+	variable scalingpct
+	switch $scalingpct {
+	    100 { set arrowStyle	flatAngle7x4 }
+	    125 { set arrowStyle	flatAngle9x5 }
+	    150 { set arrowStyle	flatAngle11x6 }
+	    200 { set arrowStyle	flatAngle15x8 }
 	}
 
-	"37779 41120 28784" {					;# Win XP Olive
-	    set xpStyle		1
-	    set selectBg	SystemHighlight
-	    set selectFg	SystemHighlightText
-	    set labelBg		#ebeadb
-	    set activeBg	#faf8f3
-	    set pressedBg	#dedfd8
-	    set labelBd		4
-	    set labelPadY	4
-	    set arrowColor	#aca899
-	    set arrowStyle	flat9x5
-	    set treeStyle	winxpOlive
+	set treeStyle	win10
 
-	    if {[info exists ::tile::version] &&
-		[string compare $::tile::version 0.7] < 0} {
-		set labelBd 0
-	    }
-	}
+    } else {
+	switch [winfo rgb . SystemHighlight] {
+	    "12593 27242 50629" {				;# Win XP Blue
+		set xpStyle	1
+		set selectBg	SystemHighlight
+		set selectFg	SystemHighlightText
+		set labelBg	#ebeadb
+		set activeBg	#faf8f3
+		set pressedBg	#dedfd8
+		set labelBd	4
+		set labelPadY	4
+		set arrowColor	#aca899
+		set arrowStyle	flat9x5
+		set treeStyle	winxpBlue
 
-	"45746 46260 49087" {					;# Win XP Silver
-	    set xpStyle		1
-	    set selectBg	SystemHighlight
-	    set selectFg	SystemHighlightText
-	    set labelBg		#f9fafd
-	    set activeBg	#fefefe
-	    set pressedBg	#ececf3
-	    set labelBd		4
-	    set labelPadY	4
-	    set arrowColor	#aca899
-	    set arrowStyle	flat9x5
-	    set treeStyle	winxpSilver
-
-	    if {[info exists ::tile::version] &&
-		[string compare $::tile::version 0.7] < 0} {
-		set labelBd 0
-	    }
-	}
-
-	"13107 39321 65535" {					;# Aero
-	    set selectFg	SystemWindowText
-	    set xpStyle		0
-	    set labelBd		4
-	    set labelPadY	4
-
-	    variable scalingpct
-	    if {$::tcl_platform(osVersion) < 6.2} {		;# Win Vista/7
-		set labelBg	#ffffff
-		set activeBg	#e3f7ff
-		set pressedBg	#Bce4f9
-		set arrowColor	#569bc0
-
-		switch $scalingpct {
-		    100 { set arrowStyle	photo7x4 }
-		    125 { set arrowStyle	photo9x5 }
-		    150 { set arrowStyle	photo11x6 }
-		    200 { set arrowStyle	photo15x8 }
-		}
-	    } elseif {$::tcl_platform(osVersion) < 10.0} {	;# Win 8
-		set labelBg	#fcfcfc
-		set activeBg	#f4f9ff
-		set pressedBg	#f9fafb
-		set arrowColor	#569bc0
-
-		switch $scalingpct {
-		    100 { set arrowStyle	photo7x4 }
-		    125 { set arrowStyle	photo9x5 }
-		    150 { set arrowStyle	photo11x6 }
-		    200 { set arrowStyle	photo15x8 }
-		}
-	    } else {						;# Win 10
-		set labelBg	#ffffff
-		set activeBg	#d9ebf9
-		set pressedBg	#bcdcf4
-		set arrowColor	#595959
-
-		switch $scalingpct {
-		    100 { set arrowStyle	flatAngle7x4 }
-		    125 { set arrowStyle	flatAngle9x5 }
-		    150 { set arrowStyle	flatAngle11x6 }
-		    200 { set arrowStyle	flatAngle15x8 }
+		if {[info exists ::tile::version] &&
+		    [string compare $::tile::version 0.7] < 0} {
+		    set labelBd 0
 		}
 	    }
 
-	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
-		set selectBg	#d8effb
-		set treeStyle	vistaAero
-	    } elseif {$::tcl_platform(osVersion) == 6.1} {	;# Win 7
-		set selectBg	#cee2fc
-		set treeStyle	win7Aero
-	    } elseif {$::tcl_platform(osVersion) < 10.0} {	;# Win 8
-		set selectBg	#cbe8f6
-		set treeStyle	win7Aero
-	    } else {						;# Win 10
-		set selectBg	#cce8ff
-		set treeStyle	win10
-	    }
-	}
+	    "37779 41120 28784" {				;# Win XP Olive
+		set xpStyle	1
+		set selectBg	SystemHighlight
+		set selectFg	SystemHighlightText
+		set labelBg	#ebeadb
+		set activeBg	#faf8f3
+		set pressedBg	#dedfd8
+		set labelBd	4
+		set labelPadY	4
+		set arrowColor	#aca899
+		set arrowStyle	flat9x5
+		set treeStyle	winxpOlive
 
-	default {						;# Win Classic
-	    set selectBg	SystemHighlight
-	    set selectFg	SystemHighlightText
-	    set xpStyle		0
-	    set labelBg		SystemButtonFace
-	    set activeBg	SystemButtonFace
-	    set pressedBg	SystemButtonFace
-	    set labelBd		2
-	    set labelPadY	0
-	    set arrowColor	SystemButtonShadow
-
-	    variable scalingpct
-	    switch $scalingpct {
-		100 { set arrowStyle	flat7x4 }
-		125 { set arrowStyle	flat9x5 }
-		150 { set arrowStyle	flat11x6 }
-		200 { set arrowStyle	flat15x8 }
+		if {[info exists ::tile::version] &&
+		    [string compare $::tile::version 0.7] < 0} {
+		    set labelBd 0
+		}
 	    }
 
-	    if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
-		set treeStyle	vistaClassic
-	    } else {						;# Win 7/8
-		set treeStyle	win7Classic
+	    "45746 46260 49087" {				;# Win XP Silver
+		set xpStyle	1
+		set selectBg	SystemHighlight
+		set selectFg	SystemHighlightText
+		set labelBg	#f9fafd
+		set activeBg	#fefefe
+		set pressedBg	#ececf3
+		set labelBd	4
+		set labelPadY	4
+		set arrowColor	#aca899
+		set arrowStyle	flat9x5
+		set treeStyle	winxpSilver
+
+		if {[info exists ::tile::version] &&
+		    [string compare $::tile::version 0.7] < 0} {
+		    set labelBd 0
+		}
+	    }
+
+	    "13107 39321 65535" {				;# Aero
+		set xpStyle	0
+		set selectFg	SystemWindowText
+		set labelBd	4
+		set labelPadY	4
+
+		variable scalingpct
+		if {$::tcl_platform(osVersion) < 6.2} {		;# Win Vista/7
+		    set labelBg	#ffffff
+		    set activeBg	#e3f7ff
+		    set pressedBg	#Bce4f9
+		    set arrowColor	#569bc0
+
+		    switch $scalingpct {
+			100 { set arrowStyle	photo7x4 }
+			125 { set arrowStyle	photo9x5 }
+			150 { set arrowStyle	photo11x6 }
+			200 { set arrowStyle	photo15x8 }
+		    }
+		} else {					;# Win 8
+		    set labelBg	#fcfcfc
+		    set activeBg	#f4f9ff
+		    set pressedBg	#f9fafb
+		    set arrowColor	#569bc0
+
+		    switch $scalingpct {
+			100 { set arrowStyle	photo7x4 }
+			125 { set arrowStyle	photo9x5 }
+			150 { set arrowStyle	photo11x6 }
+			200 { set arrowStyle	photo15x8 }
+		    }
+		}
+
+		if {$::tcl_platform(osVersion) == 6.0} {	;# Win Vista
+		    set selectBg	#d8effb
+		    set treeStyle	vistaAero
+		} elseif {$::tcl_platform(osVersion) == 6.1} {	;# Win 7
+		    set selectBg	#cee2fc
+		    set treeStyle	win7Aero
+		} else {					;# Win 8
+		    set selectBg	#cbe8f6
+		    set treeStyle	win7Aero
+		}
+	    }
+
+	    default {						;# Win Classic
+		set xpStyle	0
+		set selectBg	SystemHighlight
+		set selectFg	SystemHighlightText
+		set labelBg	SystemButtonFace
+		set activeBg	SystemButtonFace
+		set pressedBg	SystemButtonFace
+		set labelBd	2
+		set labelPadY	0
+		set arrowColor	SystemButtonShadow
+
+		variable scalingpct
+		switch $scalingpct {
+		    100 { set arrowStyle	flat7x4 }
+		    125 { set arrowStyle	flat9x5 }
+		    150 { set arrowStyle	flat11x6 }
+		    200 { set arrowStyle	flat15x8 }
+		}
+
+		if {$::tcl_platform(osVersion) == 6.0} {	;# Win Vista
+		    set treeStyle	vistaClassic
+		} else {					;# Win 7/8
+		    set treeStyle	win7Classic
+		}
 	    }
 	}
     }
