@@ -40,13 +40,13 @@ namespace eval scrollutil::sf {
 	-contentwidth		{contentWidth		ContentWidth	     w}
 	-fitcontentheight	{fitContentHeight	FitContentHeight     w}
 	-fitcontentwidth	{fitContentWidth	FitContentWidth      w}
-	-height			{height			Height		     f}
+	-height			{height			Height		     w}
 	-highlightbackground	{highlightBackground	HighlightBackground  f}
 	-highlightcolor		{highlightColor		HighlightColor	     f}
 	-highlightthickness	{highlightThickness	HighlightThickness   f}
 	-relief			{relief			Relief		     f}
 	-takefocus		{takeFocus		TakeFocus	     f}
-	-width			{width			Width		     f}
+	-width			{width			Width		     w}
 	-xscrollcommand		{xScrollCommand		ScrollCommand	     w}
 	-xscrollincrement	{xScrollIncrement	ScrollIncrement	     w}
 	-yscrollcommand		{yScrollCommand		ScrollCommand	     w}
@@ -99,11 +99,22 @@ namespace eval scrollutil::sf {
     variable configOpts [lsort [array names configSpecs]]
 
     #
-    # Use lists to facilitate the handling of
-    # the command options and corner values
+    # Use lists to facilitate the handling
+    # of various options and corner values
     #
-    variable cmdOpts [list cget configure contentframe see xview yview]
-    variable corners [list nw ne sw se]
+    variable cmdOpts  [list cget configure contentframe scan see xview yview]
+    variable scanOpts [list mark dragto]
+    variable corners  [list nw ne sw se]
+
+    #
+    # Variables used in scan-related binding scripts:
+    #
+    variable btn1Pressed 0
+    variable scanCursor
+    switch [mwutil::windowingSystem] {
+	aqua	{ set scanCursor pointinghand }
+	default	{ set scanCursor hand2 }
+    }
 }
 
 #
@@ -114,8 +125,8 @@ namespace eval scrollutil::sf {
 #------------------------------------------------------------------------------
 # scrollutil::sf::createBindings
 #
-# Creates the default bindings for the binding tags Scrollableframe and
-# ScrollableContent.
+# Creates the default bindings for the binding tags Scrollableframe,
+# ScrollableframeMf, and ScrollableframeCf.
 #------------------------------------------------------------------------------
 proc scrollutil::sf::createBindings {} {
     bind Scrollableframe <KeyPress> continue
@@ -123,9 +134,6 @@ proc scrollutil::sf::createBindings {} {
         if {[string compare [focus -lastfor %W] %W] == 0} {
             focus [%W contentframe]
         }
-    }
-    bind Scrollableframe <Configure> {
-	scrollutil::sf::onScrollableframeConfigure %W %w %h
     }
     bind Scrollableframe <Map> {
 	scrollutil::sf::updateHorizPlaceOpts %W
@@ -136,8 +144,15 @@ proc scrollutil::sf::createBindings {} {
 	catch {rename %W ""}
     }
 
-    bind ScrollableContent <Configure> {
-	scrollutil::sf::onScrollableContentConfigure %W %w %h
+    foreach class {ScrollableframeMf ScrollableframeCf} isCf {0 1} {
+	bind $class <Configure> \
+	    [list scrollutil::sf::on${class}Configure %W %w %h]
+	bind $class <Button-1> \
+	    [list scrollutil::sf::onButton1  %W %x %y $isCf]
+	bind $class <B1-Motion> \
+	    [list scrollutil::sf::onB1Motion %W %x %y $isCf]
+	bind $class <ButtonRelease-1> \
+	    [list scrollutil::sf::onButtonRelease1 %W $isCf]
     }
 }
 
@@ -169,9 +184,11 @@ proc scrollutil::scrollableframe args {
     set win [lindex $args 0]
     if {[catch {
 	if {$usingTile} {
-	    ttk::frame $win -class Scrollableframe -padding 0
+	    ttk::frame $win -class Scrollableframe -height 0 -width 0 \
+			    -padding 0
 	} else {
-	    tk::frame $win -class Scrollableframe -container 0
+	    tk::frame $win -class Scrollableframe -container 0 -height 0 \
+			   -width 0
 	    catch {$win configure -padx 0 -pady 0}
 	}
     } result] != 0} {
@@ -188,11 +205,15 @@ proc scrollutil::scrollableframe args {
 	variable data
 	array set data {
 	    xOffset	0
-	    contWidth	0
-	    winWidth	0
+	    cfWidth	0
+	    mfWidth	0
 	    yOffset	0
-	    contHeight	0
-	    winHeight	0
+	    cfHeight	0
+	    mfHeight	0
+	    scanX	0
+	    scanY	0
+	    scanXOffset	0
+	    scanYOffset	0
 	}
     }
 
@@ -203,22 +224,26 @@ proc scrollutil::scrollableframe args {
     foreach opt $configOpts {
 	set data($opt) [lindex $configSpecs($opt) 3]
     }
-    set data(content) $win.content
+    set data(mf) $win.mf				;# the middle frame
+    set data(cf) $data(mf).cf				;# the content frame
 
     #
-    # Create the content frame of the class ScrollableContent
+    # Create the middle frame of the class ScrollableframeMf
+    # and the content frame of the class ScrollableframeCf
     #
-    set cf $data(content)
-    if {$usingTile} {
-	ttk::frame $cf -class ScrollableContent -borderwidth 0 -height 0 \
-		       -padding 0 -relief flat -takefocus 0 -width 0
-    } else {
-	tk::frame $cf -class ScrollableContent -borderwidth 0 -container 0 \
-		      -height 0 -highlightthickness 0 -relief flat \
-		      -takefocus 0 -width 0
-	catch {$w configure -padx 0 -pady 0}
+    foreach f [list $data(mf) $data(cf)] sfx [list Mf Cf] {
+	if {$usingTile} {
+	    ttk::frame $f -class Scrollableframe$sfx -borderwidth 0 -height 0 \
+			  -padding 0 -relief flat -takefocus 0 -width 0
+	} else {
+	    tk::frame $f -class Scrollableframe$sfx -borderwidth 0 \
+			 -container 0 -height 0 -highlightthickness 0 \
+			 -relief flat -takefocus 0 -width 0
+	    catch {$f configure -padx 0 -pady 0}
+	}
     }
-    place $cf -x 0 -y 0
+    pack $data(mf) -expand 1 -fill both
+    place $data(cf) -x 0 -y 0
 
     #
     # Configure the widget according to the command-line
@@ -272,7 +297,8 @@ proc scrollutil::sf::doConfig {win opt val} {
 	    switch -- $opt {
 		-background -
 		-cursor {
-		    $data(content) configure $opt $val
+		    $data(mf) configure $opt $val
+		    $data(cf) configure $opt $val
 		}
 	    }
 	}
@@ -294,6 +320,11 @@ proc scrollutil::sf::doConfig {win opt val} {
 		-fitcontentwidth {
 		    set data($opt) [expr {$val ? 1 : 0}]
 		    updateHorizPlaceOpts $win
+		}
+		-height -
+		-width {
+		    set data($opt) [winfo pixels $win $val]
+		    $data(mf) configure $opt $val
 		}
 		-xscrollcommand -
 		-yscrollcommand {
@@ -324,7 +355,7 @@ proc scrollutil::sf::doCget {win opt} {
 #------------------------------------------------------------------------------
 proc scrollutil::sf::updateHorizPlaceOpts win {
     upvar ::scrollutil::ns${win}::data data
-    set cf $data(content)
+    set cf $data(cf)
 
     if {$data(-fitcontentwidth)} {
 	#
@@ -348,7 +379,7 @@ proc scrollutil::sf::updateHorizPlaceOpts win {
 #------------------------------------------------------------------------------
 proc scrollutil::sf::updateVertPlaceOpts win {
     upvar ::scrollutil::ns${win}::data data
-    set cf $data(content)
+    set cf $data(cf)
 
     if {$data(-fitcontentheight)} {
 	#
@@ -359,7 +390,7 @@ proc scrollutil::sf::updateVertPlaceOpts win {
 	    place configure $cf -relheight 1  -height ""
 	} else {
 	    place configure $cf -relheight "" -height ""
-	} 
+	}
     } elseif {$data(-contentheight) > 0} {
 	place configure $cf -relheight "" -height $data(-contentheight)
     } else {
@@ -413,14 +444,60 @@ proc scrollutil::sf::scrollableframeWidgetCmd {win args} {
 	    }
 
 	    upvar ::scrollutil::ns${win}::data data
-	    return $data(content)
+	    return $data(cf)
 	}
 
-	see   { return [seeSubCmd $win [lrange $args 1 end]] }
+	scan  { return [scanSubCmd  $win [lrange $args 1 end]] }
+
+	see   { return [seeSubCmd   $win [lrange $args 1 end]] }
 
 	xview { return [xviewSubCmd $win [lrange $args 1 end]] }
 
 	yview { return [yviewSubCmd $win [lrange $args 1 end]] }
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sf::scanSubCmd
+#
+# Processes the scrollableframe scan subcommmand.
+#------------------------------------------------------------------------------
+proc scrollutil::sf::scanSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 3} {
+	mwutil::wrongNumArgs "$win scan mark|dragto x y ?dragGain?"
+    }
+
+    variable scanOpts
+    set opt [mwutil::fullOpt "option" [lindex $argList 0] $scanOpts]
+    set x [format "%d" [lindex $argList 1]]
+    set y [format "%d" [lindex $argList 2]]
+
+    upvar ::scrollutil::ns${win}::data data
+    if {[string compare $opt "mark"] == 0} {
+	if {$argCount != 3} {
+	    mwutil::wrongNumArgs "$win scan mark x y"
+	}
+
+	set data(scanX) $x
+	set data(scanY) $y
+	set data(scanXOffset) $data(xOffset)
+	set data(scanYOffset) $data(yOffset)
+	return ""
+    } else {
+	if {$argCount == 3} {
+	    set gain 10
+	} elseif {$argCount == 4} {
+	    set gain [format "%d" [lindex $argList 3]]
+	} else {
+	    mwutil::wrongNumArgs "$win scan dragto x y ?gain?"
+	}
+
+	set xOffset [expr {$data(scanXOffset) - $gain * ($x - $data(scanX))}]
+	applyOffset $win x $xOffset 0
+
+	set yOffset [expr {$data(scanYOffset) - $gain * ($y - $data(scanY))}]
+	applyOffset $win y $yOffset 0
     }
 }
 
@@ -441,7 +518,7 @@ proc scrollutil::sf::seeSubCmd {win argList} {
     }
 
     upvar ::scrollutil::ns${win}::data data
-    set cf $data(content)
+    set cf $data(cf)
     if {[string first $cf. $w] != 0} {
 	return -code error \
 	    "widget \"$w\" is not a descendant of the content frame of \"$win\""
@@ -472,82 +549,82 @@ proc scrollutil::sf::seeSubCmd {win argList} {
     # Get the coordinates of the top-left and
     # bottom-right corners of w relative to cf
     #
-    set wx1 [expr {[winfo rootx $w] - [winfo rootx $cf]}]
-    set wy1 [expr {[winfo rooty $w] - [winfo rooty $cf]}]
-    set wx2 [expr {$wx1 + [winfo width  $w]}]
-    set wy2 [expr {$wy1 + [winfo height $w]}]
+    set wX1 [expr {[winfo rootx $w] - [winfo rootx $cf]}]
+    set wY1 [expr {[winfo rooty $w] - [winfo rooty $cf]}]
+    set wX2 [expr {$wX1 + [winfo width  $w]}]
+    set wY2 [expr {$wY1 + [winfo height $w]}]
 
     set xOffset   $data(xOffset)
-    set winWidth  $data(winWidth)
+    set mfWidth   $data(mfWidth)
     set xScrlIncr $data(-xscrollincrement)
     set yOffset   $data(yOffset)
-    set winHeight $data(winHeight)
+    set mfHeight  $data(mfHeight)
     set yScrlIncr $data(-yscrollincrement)
 
     #
     # Get the coordinates of the top-left and
-    # bottom-right corners of win relative to cf
+    # bottom-right corners of mf relative to cf
     #
-    set winx1 $xOffset
-    set winy1 $yOffset
-    set winx2 [expr {$winx1 + $winWidth}]
-    set winy2 [expr {$winy1 + $winHeight}]
+    set mfX1 $xOffset
+    set mfY1 $yOffset
+    set mfX2 [expr {$mfX1 + $mfWidth}]
+    set mfY2 [expr {$mfY1 + $mfHeight}]
 
     #
     # Make the left or right part of w visible in the window
     #
     switch $xSide {
 	w {
-	    if {$wx2 > $winx2} {
-		incr winx1 [expr {$wx2 - $winx2}]
-		roundUp winx1 $xScrlIncr
+	    if {$wX2 > $mfX2} {
+		incr mfX1 [expr {$wX2 - $mfX2}]
+		roundUp mfX1 $xScrlIncr
 	    }
-	    if {$wx1 < $winx1} {
-		incr winx1 [expr {$wx1 - $winx1}]
-		roundDn winx1 $xScrlIncr
+	    if {$wX1 < $mfX1} {
+		incr mfX1 [expr {$wX1 - $mfX1}]
+		roundDn mfX1 $xScrlIncr
 	    }
 	}
 	e {
-	    if {$wx1 < $winx1} {
-		incr winx1 [expr {$wx1 - $winx1}]
-		roundDn winx1 $xScrlIncr
-		set winx2 [expr {$winx1 + $winWidth}]
+	    if {$wX1 < $mfX1} {
+		incr mfX1 [expr {$wX1 - $mfX1}]
+		roundDn mfX1 $xScrlIncr
+		set mfX2 [expr {$mfX1 + $mfWidth}]
 	    }
-	    if {$wx2 > $winx2} {
-		incr winx1 [expr {$wx2 - $winx2}]
-		roundUp winx1 $xScrlIncr
+	    if {$wX2 > $mfX2} {
+		incr mfX1 [expr {$wX2 - $mfX2}]
+		roundUp mfX1 $xScrlIncr
 	    }
 	}
     }
-    applyOffset $win x $winx1 0
+    applyOffset $win x $mfX1 0
 
     #
     # Make the top or bottom part of w visible in the window
     #
     switch $ySide {
 	n {
-	    if {$wy2 > $winy2} {
-		incr winy1 [expr {$wy2 - $winy2}]
-		roundUp winy1 $yScrlIncr
+	    if {$wY2 > $mfY2} {
+		incr mfY1 [expr {$wY2 - $mfY2}]
+		roundUp mfY1 $yScrlIncr
 	    }
-	    if {$wy1 < $winy1} {
-		incr winy1 [expr {$wy1 - $winy1}]
-		roundDn winy1 $yScrlIncr
+	    if {$wY1 < $mfY1} {
+		incr mfY1 [expr {$wY1 - $mfY1}]
+		roundDn mfY1 $yScrlIncr
 	    }
 	}
 	s {
-	    if {$wy1 < $winy1} {
-		incr winy1 [expr {$wy1 - $winy1}]
-		roundDn winy1 $yScrlIncr
-		set winy2 [expr {$winy1 + $winHeight}]
+	    if {$wY1 < $mfY1} {
+		incr mfY1 [expr {$wY1 - $mfY1}]
+		roundDn mfY1 $yScrlIncr
+		set mfY2 [expr {$mfY1 + $mfHeight}]
 	    }
-	    if {$wy2 > $winy2} {
-		incr winy1 [expr {$wy2 - $winy2}]
-		roundUp winy1 $yScrlIncr
+	    if {$wY2 > $mfY2} {
+		incr mfY1 [expr {$wY2 - $mfY2}]
+		roundUp mfY1 $yScrlIncr
 	    }
 	}
     }
-    applyOffset $win y $winy1 0
+    applyOffset $win y $mfY1 0
 
     return ""
 }
@@ -559,20 +636,20 @@ proc scrollutil::sf::seeSubCmd {win argList} {
 #------------------------------------------------------------------------------
 proc scrollutil::sf::xviewSubCmd {win argList} {
     upvar ::scrollutil::ns${win}::data data
-    set xOffset   $data(xOffset)
-    set contWidth $data(contWidth)
-    set winWidth  $data(winWidth)
+    set xOffset $data(xOffset)
+    set cfWidth $data(cfWidth)
+    set mfWidth $data(mfWidth)
 
     switch [llength $argList] {
 	0 {
 	    #
 	    # Command: $win xview
 	    #
-	    if {$contWidth == 0} {
+	    if {$cfWidth == 0} {
 		return [list 0 1]
 	    }
-	    set first [expr {double($xOffset) / $contWidth}]
-	    set last  [expr {double($xOffset + $winWidth) / $contWidth}]
+	    set first [expr {double($xOffset) / $cfWidth}]
+	    set last  [expr {double($xOffset + $mfWidth) / $cfWidth}]
 	    if {$last > 1.0} {
 		set last 1.0
 	    }
@@ -588,7 +665,7 @@ proc scrollutil::sf::xviewSubCmd {win argList} {
 	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
 		set number ""
 		set fraction [lindex $argList 1]
-		set xOffset [expr {int($fraction * $contWidth + 0.5)}]
+		set xOffset [expr {int($fraction * $cfWidth + 0.5)}]
 	    } else {
 		set number [lindex $argList 1]
 		if {[string compare [lindex $argList 2] "units"] == 0} {
@@ -597,11 +674,11 @@ proc scrollutil::sf::xviewSubCmd {win argList} {
 			set xOffset [expr {$xOffset + $number * $xScrlIncr}]
 		    } else {
 			set xOffset \
-			    [expr {int($xOffset + $number * 0.1 * $winWidth)}]
+			    [expr {int($xOffset + $number * 0.1 * $mfWidth)}]
 		    }
 		} else {
 		    set xOffset \
-			[expr {int($xOffset + $number * 0.9 * $winWidth)}]
+			[expr {int($xOffset + $number * 0.9 * $mfWidth)}]
 		}
 	    }
 	    applyOffset $win x $xOffset [expr {$number == 0}]
@@ -617,20 +694,20 @@ proc scrollutil::sf::xviewSubCmd {win argList} {
 #------------------------------------------------------------------------------
 proc scrollutil::sf::yviewSubCmd {win argList} {
     upvar ::scrollutil::ns${win}::data data
-    set yOffset    $data(yOffset)
-    set contHeight $data(contHeight)
-    set winHeight  $data(winHeight)
+    set yOffset  $data(yOffset)
+    set cfHeight $data(cfHeight)
+    set mfHeight $data(mfHeight)
 
     switch [llength $argList] {
 	0 {
 	    #
 	    # Command: $win yview
 	    #
-	    if {$contHeight == 0} {
+	    if {$cfHeight == 0} {
 		return [list 0 1]
 	    }
-	    set first [expr {double($yOffset) / $contHeight}]
-	    set last  [expr {double($yOffset + $winHeight) / $contHeight}]
+	    set first [expr {double($yOffset) / $cfHeight}]
+	    set last  [expr {double($yOffset + $mfHeight) / $cfHeight}]
 	    if {$last > 1.0} {
 		set last 1.0
 	    }
@@ -646,7 +723,7 @@ proc scrollutil::sf::yviewSubCmd {win argList} {
 	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
 		set number ""
 		set fraction [lindex $argList 1]
-		set yOffset [expr {int($fraction * $contHeight + 0.5)}]
+		set yOffset [expr {int($fraction * $cfHeight + 0.5)}]
 	    } else {
 		set number [lindex $argList 1]
 		if {[string compare [lindex $argList 2] "units"] == 0} {
@@ -655,11 +732,11 @@ proc scrollutil::sf::yviewSubCmd {win argList} {
 			set yOffset [expr {$yOffset + $number * $yScrlIncr}]
 		    } else {
 			set yOffset \
-			    [expr {int($yOffset + $number * 0.1 * $winHeight)}]
+			    [expr {int($yOffset + $number * 0.1 * $mfHeight)}]
 		    }
 		} else {
 		    set yOffset \
-			[expr {int($yOffset + $number * 0.9 * $winHeight)}]
+			[expr {int($yOffset + $number * 0.9 * $mfHeight)}]
 		}
 	    }
 	    applyOffset $win y $yOffset [expr {$number == 0}]
@@ -725,8 +802,8 @@ proc scrollutil::sf::applyOffset {win axis offset force} {
     # Adjust the offset if necessary
     #
     switch $axis {
-	x { set maxOffset [expr {$data(contWidth)  - $data(winWidth)}] }
-	y { set maxOffset [expr {$data(contHeight) - $data(winHeight)}] }
+	x { set maxOffset [expr {$data(cfWidth)  - $data(mfWidth)}] }
+	y { set maxOffset [expr {$data(cfHeight) - $data(mfHeight)}] }
     }
     if {$maxOffset < 0} {
 	set offset 0
@@ -741,7 +818,7 @@ proc scrollutil::sf::applyOffset {win axis offset force} {
 	# command specified as the value of the -(x|y)scrollcommand opton
 	#
 	set data(${axis}Offset) $offset
-	place configure $data(content) -$axis -$offset
+	place configure $data(cf) -$axis -$offset
 	if {[string length $data(-${axis}scrollcommand)] != 0} {
 	    eval $data(-${axis}scrollcommand) [${axis}viewSubCmd $win {}]
 	}
@@ -754,46 +831,109 @@ proc scrollutil::sf::applyOffset {win axis offset force} {
 #
 
 #------------------------------------------------------------------------------
-# scrollutil::sf::onScrollableframeConfigure
+# scrollutil::sf::onScrollableframeMfConfigure
 #------------------------------------------------------------------------------
-proc scrollutil::sf::onScrollableframeConfigure {win width height} {
+proc scrollutil::sf::onScrollableframeMfConfigure {mf width height} {
+    set win [winfo parent $mf]
     if {![array exists ::scrollutil::ns${win}::data]} {
 	return ""
     }
 
     upvar ::scrollutil::ns${win}::data data
-    if {$width != $data(winWidth)} {
-	set data(winWidth) $width
+    if {$width != $data(mfWidth)} {
+	set data(mfWidth) $width
 	if {$data(-fitcontentwidth)} {
-	    set data(contWidth) $width
+	    set data(cfWidth) $width
 	}
 	xviewSubCmd $win {scroll 0 units}
     }
-    if {$height != $data(winHeight)} {
-	set data(winHeight) $height
+    if {$height != $data(mfHeight)} {
+	set data(mfHeight) $height
 	if {$data(-fitcontentheight)} {
-	    set data(contHeight) $height
+	    set data(cfHeight) $height
 	}
 	yviewSubCmd $win {scroll 0 units}
     }
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::sf::onScrollableContentConfigure
+# scrollutil::sf::onScrollableframeCfConfigure
 #------------------------------------------------------------------------------
-proc scrollutil::sf::onScrollableContentConfigure {cont width height} {
-    set win [winfo parent $cont]
+proc scrollutil::sf::onScrollableframeCfConfigure {cf width height} {
+    set win [winfo parent [winfo parent $cf]]
     if {![array exists ::scrollutil::ns${win}::data]} {
 	return ""
     }
 
     upvar ::scrollutil::ns${win}::data data
-    if {$width != $data(contWidth)} {
-	set data(contWidth) $width
+    if {$width != $data(cfWidth)} {
+	set data(cfWidth) $width
 	xviewSubCmd $win {scroll 0 units}
     }
-    if {$height != $data(contHeight)} {
-	set data(contHeight) $height
+    if {$height != $data(cfHeight)} {
+	set data(cfHeight) $height
 	yviewSubCmd $win {scroll 0 units}
     }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sf::onButton1
+#------------------------------------------------------------------------------
+proc scrollutil::sf::onButton1 {w x y isCf} {
+    if {$isCf} {
+	set win [winfo parent [winfo parent $w]]
+	upvar ::scrollutil::ns${win}::data data
+	incr x -$data(xOffset)
+	incr y -$data(yOffset)
+    } else {
+	set win [winfo parent $w]
+    }
+
+    ::$win scan mark $x $y
+
+    variable btn1Pressed 1
+    variable origCursor [::$win cget -cursor]
+    variable scanCursor
+    ::$win configure -cursor $scanCursor
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sf::onB1Motion
+#------------------------------------------------------------------------------
+proc scrollutil::sf::onB1Motion {w x y isCf} {
+    variable btn1Pressed
+    if {!$btn1Pressed} {
+	return ""
+    }
+
+    if {$isCf} {
+	set win [winfo parent [winfo parent $w]]
+	upvar ::scrollutil::ns${win}::data data
+	incr x -$data(xOffset)
+	incr y -$data(yOffset)
+    } else {
+	set win [winfo parent $w]
+    }
+
+    ::$win scan dragto $x $y
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sf::onButtonRelease1
+#------------------------------------------------------------------------------
+proc scrollutil::sf::onButtonRelease1 {w isCf} {
+    variable btn1Pressed
+    if {!$btn1Pressed} {
+	return ""
+    }
+
+    set btn1Pressed 0
+
+    if {$isCf} {
+	set win [winfo parent [winfo parent $w]]
+    } else {
+	set win [winfo parent $w]
+    }
+    variable origCursor
+    ::$win configure -cursor $origCursor
 }
