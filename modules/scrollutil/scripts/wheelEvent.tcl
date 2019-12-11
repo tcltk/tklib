@@ -63,6 +63,7 @@ namespace eval scrollutil {
 
 	bind WheeleventBreak $event { break }
     }
+    unset eventList event
 
     #
     # The list of scrollable widget containers that are
@@ -99,8 +100,10 @@ namespace eval scrollutil {
 # Creates mouse wheel event bindings for the specified binding tags such that
 # if the widget under the pointer is (a descendant of) one of the registered
 # scrollable widget containers then these events will trigger a scrolling of
-# that widget container.  Each tag argument must be "all" or the path name of
-# an existing toplevel widget.
+# that widget container.  In case of several nested registered scrollable
+# widget containers fulfilling this condition the innermost one will be
+# scrolled.  Each tag argument must be "all" or the path name of an existing
+# toplevel widget.
 #------------------------------------------------------------------------------
 proc scrollutil::createWheelEventBindings args {
     set winSys [tk windowingsystem]
@@ -120,24 +123,33 @@ proc scrollutil::createWheelEventBindings args {
 
 	if {$winSys eq "aqua"} {
 	    bind $tag <MouseWheel> {
-		scrollutil::scrollByUnits %W %X %Y y [expr {-%D}]
+		scrollutil::scrollByUnits %W %X %Y y [expr {-(%D)}]
 	    }
 	    bind $tag <Option-MouseWheel> {
-		scrollutil::scrollByUnits %W %X %Y y [expr {-10 * %D}]
+		scrollutil::scrollByUnits %W %X %Y y [expr {-10 * (%D)}]
 	    }
 
 	    bind $tag <Shift-MouseWheel> {
-		scrollutil::scrollByUnits %W %X %Y x [expr {-%D}]
+		scrollutil::scrollByUnits %W %X %Y x [expr {-(%D)}]
 	    }
 	    bind $tag <Shift-Option-MouseWheel> {
-		scrollutil::scrollByUnits %W %X %Y x [expr {-10 * %D}]
+		scrollutil::scrollByUnits %W %X %Y x [expr {-10 * (%D)}]
 	    }
 	} else {
+	    #
+	    # Earlier versions used [expr {-(%D/120) * 4}] for the units
+	    # computation.  For %D = 110 the result was 0, while for %D = -110
+	    # it was 4 -- NOK!  In the improved computation below the
+	    # rounding works the same for both positive and negative %D values:
+	    # for %D = 110 the result is -4 and for %D = -110 it is 4 -- OK.
+	    #
 	    bind $tag <MouseWheel> {
-		scrollutil::scrollByUnits %W %X %Y y [expr {-(%D/120) * 4}]
+		scrollutil::scrollByUnits %W %X %Y y \
+		    [expr {%D >= 0 ? (-%D) / 30 : (-(%D) + 29) / 30}]
 	    }
 	    bind $tag <Shift-MouseWheel> {
-		scrollutil::scrollByUnits %W %X %Y x [expr {-(%D/120) * 4}]
+		scrollutil::scrollByUnits %W %X %Y x \
+		    [expr {%D >= 0 ? (-%D) / 30 : (-(%D) + 29) / 30}]
 	    }
 
 	    if {$winSys eq "x11"} {
@@ -152,6 +164,15 @@ proc scrollutil::createWheelEventBindings args {
 		}
 		bind $tag <Shift-Button-5> {
 		    scrollutil::scrollByUnits %W %X %Y x  5
+		}
+
+		if {[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+		    bind $tag <Button-6> {
+			scrollutil::scrollByUnits %W %X %Y x -5
+		    }
+		    bind $tag <Button-7> {
+			scrollutil::scrollByUnits %W %X %Y x  5
+		    }
 		}
 	    }
 	}
@@ -195,6 +216,8 @@ proc scrollutil::enableScrollingByWheel args {
 	    bindtags $swc [linsert $tagList 1 ScrlWidgetCont]
 	}
     }
+
+    set scrlWidgetContList [lsort -command comparePaths $scrlWidgetContList]
 }
 
 #------------------------------------------------------------------------------
@@ -379,6 +402,19 @@ proc scrollutil::isCompatible {event w} {
 }
 
 #------------------------------------------------------------------------------
+# scrollutil::comparePaths
+#------------------------------------------------------------------------------
+proc scrollutil::comparePaths {w1 w2} {
+    if {[string first $w2. $w1] == 0} {		;# $w1 is a descendant of $w2
+	return -1
+    } elseif {[string first $w1. $w2] == 0} {	;# $w2 is a descendant of $w1
+	return 1
+    } else {
+	return 0
+    }
+}
+
+#------------------------------------------------------------------------------
 # scrollutil::scrollByUnits
 #------------------------------------------------------------------------------
 proc scrollutil::scrollByUnits {w rootX rootY axis units} {
@@ -416,7 +452,6 @@ proc scrollutil::mayScroll {swc w} {
     # Don't scroll the window $swc if the toplevel window of any
     # combobox widget contained in it is currently popped down
     #
-    set swcTop [winfo toplevel $swc]
     set toplevelList [wm stackorder $swcTop]
     if {[llength $toplevelList] == 1} {
 	return 1
