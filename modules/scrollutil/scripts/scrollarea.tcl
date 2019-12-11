@@ -208,7 +208,8 @@ proc scrollutil::scrollarea args {
     #
     set hsb $win.hsb
     set vsb $win.vsb
-    if {$usingTile && [string compare $winSys "aqua"] != 0} {
+    if {$usingTile && ([string compare $winSys "aqua"] != 0 ||
+	[package vcompare $::tk_patchLevel "8.6.10"] >= 0)} {
 	ttk::scrollbar $hsb -orient horizontal
 	ttk::scrollbar $vsb -orient vertical
     } else {
