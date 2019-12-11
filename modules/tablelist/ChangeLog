@@ -1,3 +1,25 @@
+2019-12-11 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 6.8.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Updated and significantly improved the support for
+	  Windows 10; adapted the "aqua" theme support to Tk release 8.6.10;
+	  improved the units computation for "(x|y)view scroll" within the
+	  bindings for mouse wheel events; for Tk 8.7.a3 and above on X11,
+	  added bindings for horizontal scrolling with the aid of the (virtual)
+	  mouse buttons 6 and 7.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/tablelist/*.tcl: Bumped the version number to 6.8;
+	  using ttk::scrollbar widgets for the "aqua" theme, too, provided that
+	  the Tk release is 8.6.10 or later.
+
 2019-10-20 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* pkgIndex.tcl:                   Bumped the version number to 6.7.
