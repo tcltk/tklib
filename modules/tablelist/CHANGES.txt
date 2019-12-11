@@ -1,5 +1,31 @@
-What is new in Tablelist 6.7?
+What is new in Tablelist 6.8?
 -----------------------------
+
+1. Updated and significantly improved the support for Windows 10.
+
+2. Adapted the "aqua" theme support to Tk release 8.6.10.  Note that
+   this was tested on Mac OS X 10.13.6 (High Sierra) and currently
+   doesn't support the "Dark Mode" appearance, introduced in Mac OS X
+   version 10.14 (Mojave).
+
+3. When computing the number of units for "(x|y)view scroll" within the
+   bindings for mouse wheel events, the rounding now works the same for
+   both positive and negative delta values, just like in Tk 8.6.10 and
+   later.
+
+4. For Tk 8.7.a3 and above on X11, the mouse wheel event handling now 
+   includes bindings for horizontal scrolling with the aid of the
+   (virtual) mouse buttons 6 and 7, which correspond to left/right
+   tilting the scroll wheel of a mouse having one or two additional
+   (thumb) buttons.
+
+5. The tile-based demo scripts now use ttk::scrollbar widgets for the
+   "aqua" theme, too, provided that the Tk release is 8.6.10 or later.
+
+6. Several further improvements in the code and documentation.
+
+What was new in Tablelist 6.7?
+------------------------------
 
 1. Optimized the horizontal scrolling by units (thanks to Nicolas Bats
    for his input).

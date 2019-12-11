@@ -14,7 +14,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.7</h2>
+    <h2>For Tablelist Version 6.8</h2>
 
     <h3>by</h3>
 
@@ -1556,8 +1556,8 @@
     manually and setting the <code><b>-xscrollcommand</b></code> and/or
     <code><b>-yscrollcommand</b></code> options accordingly, you might consider
     to use the <a href=
-    "http://www.nemethi.de/scrollutil/scrollarea.html">scrollarea</a> widget of
-    the <a href="http://www.nemethi.de/scrollutil/">Scrollutil</a> package,
+    "https://www.nemethi.de/scrollutil/scrollarea.html">scrollarea</a> widget
+    of the <a href="https://www.nemethi.de/scrollutil/">Scrollutil</a> package,
     which greatly simplifies the creation of arbitrary scrolled widgets,
     supports both static and dynamic scrollbars, and respects the header
     component and title columns of tablelist widgets.</dd>
@@ -5332,15 +5332,28 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
         <code><b>&lt;Shift-Button-4&gt;</b></code> and
         <code><b>&lt;Shift-Button-5&gt;</b></code> on X11 (where
         <code><b>&lt;Shift-MouseWheel&gt;</b></code> is not triggered by the X
-        server, but can be produced using&nbsp;
-        <code><b>event generate</b></code>).</p>
+        server, but can be produced using&nbsp; <code><b>event
+        generate</b></code>).&nbsp; On X11, when using Tk 8.7a3 or later, there
+        are two more mouse wheel events along the horizontal axis:
+        <code><b>&lt;Button-6&gt;</b></code> and
+        <code><b>&lt;Button-7&gt;</b></code>, which are handled just like
+        <code><b>&lt;Shift-Button-4&gt;</b></code> and
+        <code><b>&lt;Shift-Button-5&gt;</b></code>, respectively.&nbsp; These
+        events are commonly triggered by left/right tilting the scroll wheel of
+        a mouse having one or two additional (thumb) buttons.&nbsp; (In Tk
+        versions 8.6.x, with x >= 10, left/right tilting the scroll wheel of
+        such a mouse gives rise to <code><b>&lt;Shift-MouseWheel&gt;</b></code>
+        events on Windows and Mac OS X Aqua, and to
+        <code><b>&lt;Shift-Button-4&gt;</b></code> and
+        <code><b>&lt;Shift-Button-5&gt;</b></code> events on X11.)</p>
 
         <p><b>REMARK 2:</b>&nbsp; If the tablelist is contained in a scrollable
-        widget container like a BWidget ScrollableFrame or
-        iwidgets::scrolledframe, and you set this option to the path name of
-        that container window or that of the containing toplevel widget, then a
-        horizontal mouse wheel event over the tablelist's body will be handled
-        as follows:</p>
+        widget container like a <a href=
+        "https://www.nemethi.de/scrollutil/scrollableframe.html">scrollutil::scrollableframe</a>,
+        BWidget ScrollableFrame, or iwidgets::scrolledframe, and you set this
+        option to the path name of that container window or that of the
+        containing toplevel widget, then a horizontal mouse wheel event over
+        the tablelist's body will be handled as follows:</p>
 
         <ul>
           <li class="tm">If the focus is inside the tablelist widget then the
@@ -5359,7 +5372,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
         <p><b>REMARK 3:</b>&nbsp; If you pass the tablelist widget to the
         <code><b><a href=
-        "http://www.nemethi.de/scrollutil/wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></b></code>
+        "https://www.nemethi.de/scrollutil/wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></b></code>
         command then the latter sets this option to the path name of the
         containing toplevel window.</p>
       </blockquote>
@@ -5411,15 +5424,16 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
         <code><b>&lt;Button-4&gt;</b></code> and
         <code><b>&lt;Button-5&gt;</b></code> on X11 (where 
         <code><b>&lt;MouseWheel&gt;</b></code> is not triggered by the X
-        server, but can be produced using&nbsp;
-        <code><b>event generate</b></code>).</p>
+        server, but can be produced using&nbsp; <code><b>event
+        generate</b></code>).</p>
 
         <p><b>REMARK 2:</b>&nbsp; If the tablelist is contained in a scrollable
-        widget container like a BWidget ScrollableFrame or
-        iwidgets::scrolledframe, and you set this option to the path name of
-        that container window or that of the containing toplevel widget, then a
-        vertical mouse wheel event over the tablelist's body will be handled as
-        follows:</p>
+        widget container like a <a href=
+        "https://www.nemethi.de/scrollutil/scrollableframe.html">scrollutil::scrollableframe</a>,
+        BWidget ScrollableFrame, or iwidgets::scrolledframe, and you set this
+        option to the path name of that container window or that of the
+        containing toplevel widget, then a vertical mouse wheel event over the
+        tablelist's body will be handled as follows:</p>
 
         <ul>
           <li class="tm">If the focus is inside the tablelist widget then the
@@ -5438,7 +5452,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
         <p><b>REMARK 3:</b>&nbsp; If you pass the tablelist widget to the
         <code><b><a href=
-        "http://www.nemethi.de/scrollutil/wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></b></code>
+        "https://www.nemethi.de/scrollutil/wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></b></code>
         command then the latter sets this option to the path name of the
         containing toplevel window.</p>
       </blockquote>
@@ -6747,7 +6761,7 @@ proc updateWindow {tbl row col w args} {
     validations for the editing process.&nbsp; This can be done either with the
     aid of the options for entry validation, supported by Tk versions 8.3 and
     higher (see the <b>entry</b> reference page), or by using the widget
-    callback package <a href="http://www.nemethi.de">Wcb</a>, available for Tk
+    callback package <a href="https://www.nemethi.de">Wcb</a>, available for Tk
     versions 8.0 and higher.&nbsp; The Iwidgets package (available for Tk
     versions 8.0 or higher) provides its own validation facilities, which can
     equally be used if the edit window is a widget belonging to that
@@ -6871,14 +6885,14 @@ proc updateWindow {tbl row col w args} {
 
     <dd class="tm">
       <b>TkDND EXAMPLE:</b>&nbsp; For an introduction to TkDND see the online
-      <a href="http://wiki.tcl.tk/36708">TkDND Tutorial</a> by Georgios
+      <a href="https://wiki.tcl.tk/36708">TkDND Tutorial</a> by Georgios
       Petasis.&nbsp; For the following example it is strongly recommended to
       use TkDND version 2.7 or later, which can be downloaded from the location
 
       <blockquote>
         <address>
           <a href=
-          "http://sourceforge.net/projects/tkdnd/files/">http://sourceforge.net/projects/tkdnd/files/</a>
+          "https://sourceforge.net/projects/tkdnd/files/">https://sourceforge.net/projects/tkdnd/files/</a>
         </address>
       </blockquote>
 
@@ -6919,7 +6933,7 @@ proc onTblDrop {tbl action data} {
     <dd>
       <b>BWidget EXAMPLE:</b>&nbsp; For an introduction to drag & drop with
       BWidget see the online tutorial <a href=
-      "http://wiki.tcl.tk/16126">BWidget example: Drag and Drop Demo</a> by
+      "https://wiki.tcl.tk/16126">BWidget example: Drag and Drop Demo</a> by
       Kevin Walzer.&nbsp; The <code><b>DropSite::*</b></code> commands used in
       the following example are described in the "DropSite" reference page
       included in the BWidget distribution.&nbsp; When using this drag & drop
@@ -7137,9 +7151,9 @@ proc handleTblDrop {tbl data} {
           <code><b>&lt;&lt;TablelistHeaderHeightChanged&gt;&gt;</b></code></td>
           <td>Generated whenever the (requested) height of the tablelist's
           header changes.&nbsp; Used by the <a href=
-          "http://www.nemethi.de/scrollutil/scrollarea.html">scrollarea</a>
+          "https://www.nemethi.de/scrollutil/scrollarea.html">scrollarea</a>
           widget of the <a href=
-          "http://www.nemethi.de/scrollutil/">Scrollutil</a> package.</td>
+          "https://www.nemethi.de/scrollutil/">Scrollutil</a> package.</td>
           <td>The (requested) height of the tablelist's header.</td>
         </tr>
 
@@ -7189,9 +7203,9 @@ proc handleTblDrop {tbl data} {
           <td><code><b>&lt;&lt;TablelistTitleColsWidthChanged&gt;&gt;</b></code></td>
           <td>Generated whenever the total width of the non-hidden title
           columns changes.&nbsp; Used by the <a href=
-          "http://www.nemethi.de/scrollutil/scrollarea.html">scrollarea</a>
+          "https://www.nemethi.de/scrollutil/scrollarea.html">scrollarea</a>
           widget of the <a href=
-          "http://www.nemethi.de/scrollutil/">Scrollutil</a> package.</td>
+          "https://www.nemethi.de/scrollutil/">Scrollutil</a> package.</td>
           <td>The total width of the non-hidden title columns.</td>
         </tr>
 
@@ -8545,9 +8559,9 @@ pack $frm -expand yes -fill both -padx 10 -pady 10
         <dd>
           <b>REMARK 3:</b>&nbsp; You can greatly simplify the creation of
           scrolled tablelists (and other scrolled widgets) by using a <a href=
-          "http://www.nemethi.de/scrollutil/scrollarea.html">scrollarea</a>
+          "https://www.nemethi.de/scrollutil/scrollarea.html">scrollarea</a>
           widget, which is part of the <a href=
-          "http://www.nemethi.de/scrollutil/">Scrollutil</a> package.&nbsp; It
+          "https://www.nemethi.de/scrollutil/">Scrollutil</a> package.&nbsp; It
           supports both static and dynamic scrollbars and respects the header
           component and title columns of tablelist widgets.&nbsp; With the aid
           of the scrollarea widget, the rather technical code in the above
@@ -8682,7 +8696,7 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
         <dd class="tm">This subcommand is only available in the presence of the
         <code><b>dict</b></code> command, which is the case when using Tcl
         version 8.5 or later, or one of the alternative, <a href=
-        "http://wiki.tcl.tk/10609">Tcl-only <code><b>dict</b></code>
+        "https://wiki.tcl.tk/10609">Tcl-only <code><b>dict</b></code>
         implementations</a>.</dd>
 
         <dt class="tm" id="editcell"><code><i>pathName</i> <b>editcell</b>
@@ -9610,7 +9624,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         <dd>This subcommand is only available in the presence of the
         <code><b>dict</b></code> command, which is the case when using Tcl
         version 8.5 or later, or one of the alternative, <a href=
-        "http://wiki.tcl.tk/10609">Tcl-only <code><b>dict</b></code>
+        "https://wiki.tcl.tk/10609">Tcl-only <code><b>dict</b></code>
         implementations</a>.</dd>
 
         <dt class="tm" id="labelpath"><code><i>pathName</i> <b>labelpath</b>
@@ -9855,8 +9869,8 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
 
         <dd>
           <dl>
-            <dt class="tm"><code><i>pathName</i> <b>scan</b> <b>mark</b>
-            <i>x</i> <i>y</i></code></dt>
+            <dt class="tm"><code><i>pathName</i> <b>scan mark</b> <i>x
+            y</i></code></dt>
 
             <dd>Records <code><i>x</i></code> and <code><i>y</i></code> and the
             current view in the tablelist window; used in conjunction with
@@ -9867,8 +9881,8 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
             <code><i>y</i></code> are expected to be relative to the tablelist
             window itself (not its body component).</dd>
 
-            <dt class="tm"><code><i>pathName</i> <b>scan</b> <b>dragto</b>
-            <i>x</i> <i>y</i></code></dt>
+            <dt class="tm"><code><i>pathName</i> <b>scan dragto</b> <i>x
+            y</i></code></dt>
 
             <dd>This command computes the difference between its
             <code><i>x</i></code> and <code><i>y</i></code> arguments to the
@@ -10551,8 +10565,8 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
             <code><i>fraction</i></code> must be a fraction between
             <code>0</code> and <code>1</code>.</dd>
 
-            <dt class="tm"><code><i>pathName</i> <b>xview scroll</b>
-            <i>number</i> <i>what</i></code></dt>
+            <dt class="tm"><code><i>pathName</i> <b>xview scroll</b> <i>number
+            what</i></code></dt>
 
             <dd>This command shifts the view in the window left or right
             according to <code><i>number</i></code> and
@@ -10614,8 +10628,8 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
             the viewable item one-third the way through the tablelist, and so
             on.</dd>
 
-            <dt class="tm"><code><i>pathName</i> <b>yview scroll</b>
-            <i>number</i> <i>what</i></code></dt>
+            <dt class="tm"><code><i>pathName</i> <b>yview scroll</b> <i>number
+            what</i></code></dt>
 
             <dd>This command shifts the view in the window up or down according
             to <code><i>number</i></code> and <code><i>what</i></code>.&nbsp;
