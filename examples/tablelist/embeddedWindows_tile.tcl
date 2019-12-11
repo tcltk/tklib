@@ -6,7 +6,7 @@
 # Copyright (c) 2004-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.7
+package require tablelist_tile 6.8
 
 wm title . "Tile Library Scripts"
 
@@ -30,7 +30,9 @@ if {[tablelist::getCurrentTheme] eq "aqua"} {
     #
     # Work around the improper appearance of the tile scrollbars
     #
-    interp alias {} ttk::scrollbar {} ::scrollbar
+    if {[package vcompare $::tk_patchLevel "8.6.10"] < 0} {
+	interp alias {} ttk::scrollbar {} ::scrollbar
+    }
 } else {
     #
     # Make the embedded buttons as small as possible.  Recall that in most

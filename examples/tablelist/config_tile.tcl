@@ -5,7 +5,7 @@
 # Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.7
+package require tablelist_tile 6.8
 
 namespace eval demo {
     #
@@ -50,7 +50,8 @@ namespace eval demo {
 #
 # Work around the improper appearance of the tile scrollbars in the aqua theme
 #
-if {$demo::currentTheme eq "aqua"} {
+if {$demo::currentTheme eq "aqua" &&
+    [package vcompare $::tk_patchLevel "8.6.10"] < 0} {
     interp alias {} ttk::scrollbar {} ::scrollbar
 }
 
