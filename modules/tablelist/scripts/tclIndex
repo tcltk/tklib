@@ -35,7 +35,7 @@ set auto_index(::tablelist::delaySashPosUpdates) [list source [file join $dir ta
 set auto_index(::tablelist::addActiveTag) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::removeActiveTag) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::cleanup) [list source [file join $dir tablelistBind.tcl]]
-set auto_index(::tablelist::updateCanvases) [list source [file join $dir tablelistBind.tcl]]
+set auto_index(::tablelist::updateBackgrounds) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::updateConfigSpecs) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::cleanupWindow) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::defineTablelistBody) [list source [file join $dir tablelistBind.tcl]]
