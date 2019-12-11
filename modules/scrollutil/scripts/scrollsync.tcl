@@ -552,13 +552,14 @@ proc scrollutil::ss::sortScrollableList {win axis} {
 proc scrollutil::ss::compareViews {axis w1 w2} {
     foreach {first1 last1} [::$w1 ${axis}view] {}
     foreach {first2 last2} [::$w2 ${axis}view] {}
-    set fraction1 [expr {$last1 - $first1}]
-    set fraction2 [expr {$last2 - $first2}]
+    set frac1 [expr {$last1 - $first1}]
+    set frac2 [expr {$last2 - $first2}]
+    set diff  [expr {$frac1 - $frac2}]
 
-    if {$fraction1 < $fraction2} {
-	return -1
-    } elseif {$fraction1 == $fraction2} {
+    if {abs($diff) < 1.0e-15} {
 	return 0
+    } elseif {$diff < 0} {
+	return -1
     } else {
 	return 1
     }
