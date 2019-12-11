@@ -1,3 +1,36 @@
+2019-12-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.3.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/scrollarea.tcl: Using ttk::scrollbar widgets on Mac OS X,
+	  too, provided that the Tk release is 8.6.10 or later.
+
+	* scripts/scrollsync.tcl: Important improvement related to the master
+	  widget.
+
+	* scripts/scrollableframe.tcl: Added the "scan" subcommand, along with
+	  mouse event bindings invoking the latter; significantly improved the
+	  handling of the "-width", "-height", "-borderwidth", and
+	  "-highlightthickness" options.
+
+	* scripts/wheelEvent.tcl: Added support for nested scrollable widget
+	  containers; improved the units computation for "(x|y)view scroll"
+	  within the bindings for mouse wheel events; for Tk 8.7.a3 and above
+	  on X11, added bindings for horizontal scrolling with the aid of the
+	  (virtual) mouse buttons 6 and 7.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/scrollutil/styleUtil.tcl: Added.
+
+	* ../../examples/scrollutil/*.tcl: Bumped the version number to 1.3;
+	  numerous improvements.
+
 2019-10-22  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* README.txt:          Slightly extended.
