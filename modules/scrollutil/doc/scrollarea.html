@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>scrollutil::scrollarea</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.2</h2>
+    <h2>For Scrollutil Version 1.3</h2>
 
     <h3>by</h3>
 
@@ -161,13 +161,14 @@
     "#yscrollbarmode">-yscrollbarmode</a></b></code> configuration
     options).&nbsp; The <code><b>-takefocus</b></code> option of both
     scrollbars is set to <code>0</code>.&nbsp; In the Scrollutil_tile package
-    the scrollbars are created as tk::scrollbar widgets, except on Mac OS X,
-    where the native ttk::scrollbar widget of the <code><b>aqua</b></code>
-    theme doesn't look as expected.</dd>
+    the scrollbars are created as ttk::scrollbar widgets, except on Mac OS X
+    when using a Tk release earlier than 8.6.10, where the native
+    ttk::scrollbar widget of the <code><b>aqua</b></code> theme didn't yet look
+    as expected.</dd>
 
     <dd class="tm">If the widget embedded into the scrollarea via
     <code><b>setwidget</b></code> is a <a href=
-    "http://www.nemethi.de/tablelist/">tablelist</a> and Tablelist version 6.5
+    "https://www.nemethi.de/tablelist/">tablelist</a> and Tablelist version 6.5
     or later is being used then the scrollarea can also contain siblings of the
     tablelist widget above the vertical scrollbar and/or to the left of the
     horizontal one, causing the vertical scrollbar to be displayed below the
@@ -178,7 +179,22 @@
     "#respecttitlecolumns">-respecttitlecolumns</a></b></code> configuration
     options.</dd>
 
-    <dt class="tm" id="std_options"><b>STANDARD OPTIONS</b></dt>
+    <dd class="tm">
+      The following example shows the typical steps involved in creating a
+      widget within a scrollarea:
+
+      <blockquote>
+        <pre>
+set sa [<a href="scrollarea.html#synopsis">scrollutil::scrollarea</a> ...]
+set lb [listbox $sa.lb ...]
+$sa <a href="scrollarea.html#setwidget">setwidget</a> $lb
+
+pack $sa -expand yes -fill both
+</pre>
+      </blockquote>
+    </dd>
+
+    <dt id="std_options"><b>STANDARD OPTIONS</b></dt>
 
     <dd>
       <pre>
@@ -275,7 +291,7 @@
         <p>This option is only relevant if the widget embedded into the
         scrollarea with the aid of the <code><b><a href=
         "#setwidget">setwidget</a></b></code> subcommand of the associated Tcl
-        command is a <a href="http://www.nemethi.de/tablelist/">tablelist</a>
+        command is a <a href="https://www.nemethi.de/tablelist/">tablelist</a>
         and the Tablelist version being used is 6.5 or later.&nbsp; Its value
         must be a boolean specifying whether the vertical scrollbar should
         appear below the tablelist widget's header, thus respecting the native
@@ -308,12 +324,12 @@
         <p>This option is only relevant if the widget embedded into the
         scrollarea with the aid of the <code><b><a href=
         "#setwidget">setwidget</a></b></code> subcommand of the associated Tcl
-        command is a <a href="http://www.nemethi.de/tablelist/">tablelist</a>
+        command is a <a href="https://www.nemethi.de/tablelist/">tablelist</a>
         and the Tablelist version being used is 6.5 or later.&nbsp; Its value
         must be a boolean specifying whether the horizontal scrollbar should
         start to the right of the tablelist widget's non-scrollable title
         column area if the value of the <code><b><a href=
-        "http://www.nemethi.de/tablelist/tablelistWidget.html#titlecolumns">-titlecolumns</a></b></code>
+        "https://www.nemethi.de/tablelist/tablelistWidget.html#titlecolumns">-titlecolumns</a></b></code>
         tablelist option is positive.&nbsp; The default is <code>1</code>.</p>
       </blockquote>
     </dd>

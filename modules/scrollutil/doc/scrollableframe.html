@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>scrollutil::scrollableframe</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.2</h2>
+    <h2>For Scrollutil Version 1.3</h2>
 
     <h3>by</h3>
 
@@ -110,6 +110,18 @@
     <dd><code><i>pathName</i> <b><a href=
     "#contentframe">contentframe</a></b></code></dd>
 
+    <dd>
+      <code><i>pathName</i> <b><a href="#scan">scan</a></b> <i>option
+      args</i></code>
+
+      <dl>
+        <dd><code><i>pathName</i> <b>scan mark</b> <i>x y</i></code></dd>
+
+        <dd><code><i>pathName</i> <b>scan dragto</b> <i>x y</i>
+        ?<i>gain</i>?</code> </dd>
+      </dl>
+    </dd>
+
     <dd><code><i>pathName</i> <b><a href="#see">see</a></b> <i>widget</i>
     ?<b>nw</b>|<b>ne</b>|<b>sw</b>|<b>se</b>?</code></dd>
 
@@ -200,13 +212,15 @@
     <b>scrollable widget container</b>.</dd>
 
     <dd class="tm">In the Scrollutil package both the scrollableframe widget
-    and its content frame child are implemented as Tk core frames, while in
+    and its content frame are implemented as Tk core frames, while in
     Scrollutil_tile they are ttk::frame widgets.&nbsp; The content frame can be
     accessed by means of the <code><b><a href=
     "#contentframe">contentframe</a></b></code> subcommand.&nbsp; Individual
     widgets contained in it can be made visible in the scrollableframe window
     with the aid of the <code><b><a href="#see">see</a></b></code>
-    subcommand.</dd>
+    subcommand.&nbsp; In addition to scrolling, scrollableframe widgets also
+    support scanning, with the aid of appropriate mouse event bindings that
+    invoke the <code><b><a href="#scan">scan</a></b></code> subcommand.</dd>
 
     <dd class="tm">
       A scrollableframe widget is typically created within a <a href=
@@ -215,7 +229,7 @@
       <blockquote>
         <pre>
 set sa [<a href="scrollarea.html#synopsis">scrollutil::scrollarea</a> ...]
-set sf [<a href="#synopsis">scrollutil::scrollableframe</a> $sa.sf]
+set sf [<a href="#synopsis">scrollutil::scrollableframe</a> $sa.sf ...]
 $sa <a href="scrollarea.html#setwidget">setwidget</a> $sf
 
 set cf [$sf <a href="#contentframe">contentframe</a>]
@@ -400,9 +414,11 @@ pack $sa -expand yes -fill both
 
       <blockquote>
         <p>Specifies the desired height for the scrollableframe widget in any
-        of the forms acceptable to <code><b>Tk_GetPixels</b></code>.&nbsp; The
-        default is <code>100</code>, which should be overridden with a suitable
-        application-specific value.</p>
+        of the forms acceptable to <code><b>Tk_GetPixels</b></code>.&nbsp;
+        Note that this sets the <i>inner</i> height, excluding the border and
+        highlight rectangle (if any) drawn around the outside of the
+        widget.&nbsp; The default is <code>100</code>, which should be
+        overridden with a suitable application-specific value.</p>
       </blockquote>
     </dd>
 
@@ -457,9 +473,11 @@ pack $sa -expand yes -fill both
 
       <blockquote>
         <p>Specifies the desired width for the scrollableframe widget in any
-        of the forms acceptable to <code><b>Tk_GetPixels</b></code>.&nbsp; The
-        default is <code>100</code>, which should be overridden with a suitable
-        application-specific value.</p>
+        of the forms acceptable to <code><b>Tk_GetPixels</b></code>.&nbsp;
+        Note that this sets the <i>inner</i> width, excluding the border and
+        highlight rectangle (if any) drawn around the outside of the
+        widget.&nbsp; The default is <code>100</code>, which should be
+        overridden with a suitable application-specific value.</p>
       </blockquote>
     </dd>
 
@@ -581,7 +599,44 @@ pack $sa -expand yes -fill both
         <dt class="tm" id="contentframe"><code><i>pathName</i>
         <b>contentframe</b></code></dt>
 
-        <dd>Returns the path name of the widget's content frame child.</dd>
+        <dd>Returns the path name of the widget's content frame.</dd>
+
+        <dt class="tm" id="scan"><code><i>pathName</i> <b>scan</b> <i>option
+        args</i></code></dt>
+
+        <dd>This command is used to implement scanning on scrollableframe
+        widgets.&nbsp; It has two forms, depending on
+        <code><i>option</i></code>:</dd>
+
+        <dd>
+          <dl>
+            <dt class="tm"><code><i>pathName</i> <b>scan mark</b> <i>x
+            y</i></code></dt>
+
+            <dd>Records <code><i>x</i></code> and <code><i>y</i></code> and the
+            current view in the scrollableframe window; used in conjunction
+            with later&nbsp; <code><b>scan</b> <b>dragto</b></code>&nbsp;
+            commands.&nbsp; Typically this command is associated with a mouse
+            button press in the widget and <code><i>x</i></code> and
+            <code><i>y</i></code> are the coordinates of the mouse.&nbsp; It
+            returns an empty string.</dd>
+
+            <dt class="tm"><code><i>pathName</i> <b>scan dragto</b> <i>x y</i>
+            ?<i>gain</i>?</code></dt>
+
+            <dd>This command computes the difference between its
+            <code><i>x</i></code> and <code><i>y</i></code> arguments (which
+            are typically mouse coordinates) and the <code><i>x</i></code> and
+            <code><i>y</i></code> arguments to the last&nbsp; <code><b>scan</b>
+            <b>mark</b></code>&nbsp; command for the widget.&nbsp; It then
+            adjusts the view by <code><i>gain</i></code> times the difference
+            in coordinates, where <code><i>gain</i></code> defaults to
+            <code>10</code>.&nbsp; This command is typically associated with
+            mouse motion events in the widget, to produce the effect of
+            dragging the content frame at high speed through the window.&nbsp;
+            The return value is an empty string.</dd>
+          </dl>
+        </dd>
 
         <dt class="tm" id="see"><code><i>pathName</i> <b>see</b> <i>widget</i>
         ?<i>corner</i>?</code></dt>
@@ -660,8 +715,8 @@ proc seeParent {sf w} { $sf <span class="red">see</span> [winfo parent $w] }
             frame is off-screen to the left.&nbsp; <code><i>fraction</i></code>
             must be a fraction between <code>0</code> and <code>1</code>.</dd>
 
-            <dt class="tm"><code><i>pathName</i> <b>xview scroll</b>
-            <i>number</i> <i>what</i></code></dt>
+            <dt class="tm"><code><i>pathName</i> <b>xview scroll</b> <i>number
+            what</i></code></dt>
 
             <dd>This command shifts the view in the window left or right
             according to <code><i>number</i></code> and
@@ -711,8 +766,8 @@ proc seeParent {sf w} { $sf <span class="red">see</span> [winfo parent $w] }
             frame is off-screen to the top.&nbsp; <code><i>fraction</i></code>
             must be a fraction between <code>0</code> and <code>1</code>.</dd>
 
-            <dt class="tm"><code><i>pathName</i> <b>yview scroll</b>
-            <i>number</i> <i>what</i></code></dt>
+            <dt class="tm"><code><i>pathName</i> <b>yview scroll</b> <i>number
+            what</i></code></dt>
 
             <dd>This command shifts the view in the window up or down according
             to <code><i>number</i></code> and <code><i>what</i></code>.&nbsp;
@@ -737,8 +792,10 @@ proc seeParent {sf w} { $sf <span class="red">see</span> [winfo parent $w] }
 
     <dt class="tm" id="bindings"><b>BINDINGS</b></dt>
 
-    <dd>When a new scrollableframe widget is created, it has no default event
-    bindings: scrollableframe widgets are not intended to be interactive.</dd>
+    <dd>Mouse button 1 may be used for scanning.&nbsp; If it is pressed and
+    dragged over the scrollableframe window, the content frame drags at high
+    speed in the direction the mouse moves.&nbsp; For the duration of the scan
+    the cursor is set to one having the shape of a pointing hand.</dd>
 
     <dt class="tm" id="keywords"><b>KEYWORDS</b></dt>
 
@@ -775,13 +832,13 @@ proc seeParent {sf w} { $sf <span class="red">see</span> [winfo parent $w] }
 
     <tr>
       <td><code><b>-borderwidth</b></code></td>
-      <td></td>
+      <td bgcolor="#e0e0e0"></td>
       <td><code><b>-borderwidth</b></code></td>
     </tr>
 
     <tr>
       <td><code><b>-cursor</b></code></td>
-      <td></td>
+      <td bgcolor="#e0e0e0"></td>
       <td><code><b>-cursor</b></code></td>
     </tr>
 
@@ -816,51 +873,59 @@ proc seeParent {sf w} { $sf <span class="red">see</span> [winfo parent $w] }
     </tr>
 
     <tr>
-      <td><code><b>-height</b></code></td>
-      <td><code><b>-height</b></code></td>
-      <td><code><b>-height</b></code></td>
+      <td><code><b>-height</b></code>&nbsp; (sets the <i>inner</i> height,
+      excluding<br>
+      the border and highlight rectangle, if any)</td>
+      <td><code><b>-height</b></code>&nbsp; (inner height = total height)</td>
+      <td><code><b>-height</b></code>&nbsp; (sets the <i>total</i> height,
+      including<br>
+      the border and horizontal scrollbar, if any)</td>
     </tr>
 
     <tr>
       <td><code><b>-highlightbackground</b></code></td>
-      <td></td>
-      <td></td>
+      <td bgcolor="#e0e0e0"></td>
+      <td bgcolor="#e0e0e0"></td>
     </tr>
 
     <tr>
       <td><code><b>-highlightcolor</b></code></td>
-      <td></td>
-      <td></td>
+      <td bgcolor="#e0e0e0"></td>
+      <td bgcolor="#e0e0e0"></td>
     </tr>
 
     <tr>
       <td><code><b>-highlightthickness</b></code></td>
-      <td></td>
-      <td></td>
+      <td bgcolor="#e0e0e0"></td>
+      <td bgcolor="#e0e0e0"></td>
     </tr>
 
     <tr>
       <td><code><b>-relief</b></code></td>
-      <td></td>
+      <td bgcolor="#e0e0e0"></td>
       <td><code><b>-relief</b></code></td>
     </tr>
 
     <tr>
       <td><code><b>-takefocus</b></code></td>
-      <td></td>
-      <td></td>
+      <td bgcolor="#e0e0e0"></td>
+      <td bgcolor="#e0e0e0"></td>
     </tr>
 
     <tr>
-      <td><code><b>-width</b></code></td>
-      <td><code><b>-width</b></code></td>
-      <td><code><b>-width</b></code></td>
+      <td><code><b>-width</b></code>&nbsp; (sets the <i>inner</i> width,
+      excluding<br>
+      the border and highlight rectangle, if any)</td>
+      <td><code><b>-width</b></code>&nbsp; (inner width = total width)</td>
+      <td><code><b>-width</b></code>&nbsp; (sets the <i>total</i> width,
+      including<br>
+      the border and vertical scrollbar, if any)</td>
     </tr>
 
     <tr>
       <td><code><b>-xscrollcommand</b></code></td>
       <td><code><b>-xscrollcommand</b></code></td>
-      <td></td>
+      <td bgcolor="#e0e0e0"></td>
     </tr>
 
     <tr>
@@ -873,7 +938,7 @@ proc seeParent {sf w} { $sf <span class="red">see</span> [winfo parent $w] }
     <tr>
       <td><code><b>-yscrollcommand</b></code></td>
       <td><code><b>-yscrollcommand</b></code></td>
-      <td></td>
+      <td bgcolor="#e0e0e0"></td>
     </tr>
 
     <tr>
@@ -908,11 +973,17 @@ proc seeParent {sf w} { $sf <span class="red">see</span> [winfo parent $w] }
     </tr>
 
     <tr>
+      <td><code><b>scan</b></code>&nbsp; (with mouse event bindings)</td>
+      <td bgcolor="#e0e0e0"></td>
+      <td bgcolor="#e0e0e0"></td>
+    </tr>
+
+    <tr>
       <td><code><b>see</b> <i>widget</i>
       ?<b>nw</b>|<b>ne</b>|<b>sw</b>|<b>se</b>?</code></td>
       <td><code><b>see</b> <i>widget</i>
       ?<b>top</b>|<b>bottom</b> ?<b>left</b>|<b>right</b>??</code></td>
-      <td></td>
+      <td bgcolor="#e0e0e0"></td>
     </tr>
 
     <tr>

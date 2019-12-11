@@ -16,7 +16,7 @@
     <h1>Commands for Mouse Wheel Event Handling<br>
     in Scrollable Widget Containers</h1>
 
-    <h2>For Scrollutil Version 1.2</h2>
+    <h2>For Scrollutil Version 1.3</h2>
 
     <h3>by</h3>
 
@@ -78,7 +78,9 @@
     scrollable widget containers having the same toplevel as the widget and
     registered via <code><b><a href=
     "#enable">scrollutil::enableScrollingByWheel</a></b></code> then these
-    events will trigger a scrolling of that widget container.&nbsp; Each
+    events will trigger a scrolling of that widget container.&nbsp; In case of
+    several nested registered scrollable widget containers fulfilling these
+    conditions the innermost one will be scrolled.&nbsp; Each
     <code><i>tag</i></code> argument must be <code><b>all</b></code> or the
     path name of an existing toplevel widget (including <code>"."</code>).</dd>
 
@@ -113,7 +115,19 @@
     <code><b>&lt;Shift-Button-5&gt;</b></code> on X11 (where
     <code><b>&lt;Shift-MouseWheel&gt;</b></code> is not triggered by the X
     server, but can be produced using&nbsp; <code><b>event
-    generate</b></code>).</dd>
+    generate</b></code>).&nbsp; On X11, when using Tk 8.7a3 or later, there are
+    two more mouse wheel events along the horizontal axis:
+    <code><b>&lt;Button-6&gt;</b></code> and
+    <code><b>&lt;Button-7&gt;</b></code>, which are handled just like
+    <code><b>&lt;Shift-Button-4&gt;</b></code> and
+    <code><b>&lt;Shift-Button-5&gt;</b></code>, respectively.&nbsp; These
+    events are commonly triggered by left/right tilting the scroll wheel of a
+    mouse having one or two additional (thumb) buttons.&nbsp; (In Tk versions
+    8.6.x, with x >= 10, left/right tilting the scroll wheel of such a mouse
+    gives rise to <code><b>&lt;Shift-MouseWheel&gt;</b></code> events on
+    Windows and Mac OS X Aqua, and to
+    <code><b>&lt;Shift-Button-4&gt;</b></code> and
+    <code><b>&lt;Shift-Button-5&gt;</b></code> events on X11.)</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
@@ -194,7 +208,7 @@
       <ul>
         <li>
           If <code><i>widget</i></code> is the path name of a <a href=
-          "http://www.nemethi.de/tablelist/">tablelist</a> widget then it sets
+          "https://www.nemethi.de/tablelist/">tablelist</a> widget then it sets
           the latter's <code><b>-xmousewheelwindow</b></code> and
           <code><b>-ymousewheelwindow</b></code> options to the path name of
           the containing toplevel window, provided that the Tablelist version
@@ -214,10 +228,11 @@
             scrolling of the tablelist's body or edit window will happen.&nbsp;
             Instead, the event will be redirected to the containing toplevel
             window via&nbsp; <code><b>event generate</b></code>.&nbsp; This in
-            turn will trigger a scrolling of the widget container that is an
-            ancestor of <code><i>widget</i></code> (if any), provided that the
-            path name of the containing toplevel widget or the binding tag
-            <code><b>all</b></code> was passed to the <code><b><a href=
+            turn will trigger a scrolling of the (innermost) widget container
+            that is an ancestor of <code><i>widget</i></code> and has the same
+            toplevel (if there is such a scrollable widget container), provided
+            that the path name of the containing toplevel widget or the binding
+            tag <code><b>all</b></code> was passed to the <code><b><a href=
             "#create">scrollutil::createWheelEventBindings</a></b></code>
             command and this widget container was registered for scrolling via
             <code><b><a href=
@@ -249,8 +264,9 @@
             via&nbsp; <code><b>event generate</b></code>&nbsp; rather than
             being handled by the binding script associated with the
             above-mentioned tag.&nbsp; This in turn will trigger a scrolling of
-            the widget container that is an ancestor of
-            <code><i>widget</i></code> (if any), provided that the path name of
+            the (innermost) widget container that is an ancestor of
+            <code><i>widget</i></code> and has the same toplevel (if there is
+            such a scrollable widget container), provided that the path name of
             the containing toplevel widget or the binding tag
             <code><b>all</b></code> was passed to the <code><b><a href=
             "#create">scrollutil::createWheelEventBindings</a></b></code>
@@ -271,7 +287,7 @@
     ttk::treeview.&nbsp; Examples of widgets with binding tags other than their
     class names that have mouse wheel event bindings are tablelist widgets as
     well as the entry components of <a href=
-    "http://www.nemethi.de/mentry/">mentry</a> widgets of type
+    "https://www.nemethi.de/mentry/">mentry</a> widgets of type
     <code>"Date"</code>, <code>"Time"</code>, <code>"DateTime"</code>,
     <code>"IPAddr"</code>, and <code>"IPv6Addr"</code> (for Mentry versions 3.2
     and above).</dd>
@@ -344,7 +360,7 @@
     some widgets you want to make the focus check within the binding scripts
     for the tag <code><b>WheeleventRedir</b></code> less restrictive.&nbsp; For
     example, if the widget under the pointer is an entry component of a
-    <a href="http://www.nemethi.de/mentry/">mentry</a> <code><i>me</i></code>
+    <a href="https://www.nemethi.de/mentry/">mentry</a> <code><i>me</i></code>
     of type <code>"Date"</code>, <code>"Time"</code>, <code>"DateTime"</code>,
     <code>"IPAddr"</code>, or <code>"IPv6Addr"</code> and the focus is on any
     of its siblings, then the mouse wheel events sent to this entry should be
