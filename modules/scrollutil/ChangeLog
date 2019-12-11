@@ -28,8 +28,7 @@
 
 	* ../../examples/scrollutil/styleUtil.tcl: Added.
 
-	* ../../examples/scrollutil/*.tcl: Bumped the version number to 1.3;
-	  numerous improvements.
+	* ../../examples/scrollutil/*.tcl: Numerous improvements.
 
 2019-10-22  Csaba Nemethi <csaba.nemethi@t-online.de>
 
