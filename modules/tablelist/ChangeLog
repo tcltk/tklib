@@ -1,3 +1,10 @@
+2019-12-12 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl:   Improvements related to the "aqua" theme.
+	* scripts/tablelistThemes.tcl:
+	* scripts/tablelistUtil.tcl:
+	* scripts/tablelistWidget.tcl:
+
 2019-12-11 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 6.8.
