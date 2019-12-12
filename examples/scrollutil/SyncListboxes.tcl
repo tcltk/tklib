@@ -62,11 +62,9 @@ foreach capital $capitalList {
 }
 
 set itemCount [$lb1 size]
-for {set idx 0} {$idx < $itemCount} {incr idx} {
-    if {$idx % 2 == 1} {
-	$lb1 itemconfigure $idx -background #f0f0f0
-	$lb2 itemconfigure $idx -background #f0f0f0
-    }
+for {set idx 1} {$idx < $itemCount} {incr idx 2} {
+    $lb1 itemconfigure $idx -background #f0f0f0
+    $lb2 itemconfigure $idx -background #f0f0f0
 }
 
 grid $lb1 $lb2 -sticky news -padx {0 2}
