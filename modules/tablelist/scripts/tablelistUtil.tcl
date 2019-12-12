@@ -5897,6 +5897,11 @@ proc tablelist::configLabel {w args} {
 			$w configure -foreground ""
 
 			set bg $themeDefaults(-labeldisabledBg)
+			if {[string length $bg] == 0} {
+			    set bg [expr {[$w instate background] ?
+				    $themeDefaults(-labeldeactivatedBg) :
+				    $themeDefaults(-labelbackground)}]
+			}
 		    } else {
 			#
 			# Restore the label's foreground color
@@ -5912,7 +5917,9 @@ proc tablelist::configLabel {w args} {
 			    configLabel $w -foreground $fg
 			}
 
-			set bg $themeDefaults(-labelbackground)
+			set bg [expr {[$w instate background] ?
+				$themeDefaults(-labeldeactivatedBg) :
+				$themeDefaults(-labelbackground)}]
 		    }
 		    foreach l [getSublabels $w] {
 			$l configure -background $bg
@@ -6006,6 +6013,11 @@ proc tablelist::configCanvas {win col} {
 
 	if {[$w instate disabled]} {
 	    set labelBg $themeDefaults(-labeldisabledBg)
+	    if {[string length $labelBg] == 0} {
+		set labelBg [expr {[$w instate background] ?
+			     $themeDefaults(-labeldeactivatedBg) :
+			     $themeDefaults(-labelbackground)}]
+	    }
 	    set labelFg $themeDefaults(-labeldisabledFg)
 	} elseif {[$win instate background]} {
 	    set labelBg $themeDefaults(-labeldeactivatedBg)

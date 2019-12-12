@@ -666,8 +666,12 @@ proc tablelist::createBindings {} {
     }
     variable usingTile
     if {$usingTile} {
-	bind Tablelist <Activate>	{ tablelist::updateBackgrounds %W 1 1 }
-	bind Tablelist <Deactivate>	{ tablelist::updateBackgrounds %W 1 0 }
+	bind Tablelist <Activate> {
+	    after idle [list tablelist::updateBackgrounds %W 1 1]
+	}
+	bind Tablelist <Deactivate> {
+	    after idle [list tablelist::updateBackgrounds %W 1 0]
+	}
     }
 
     #

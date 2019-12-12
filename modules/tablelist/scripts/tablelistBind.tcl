@@ -326,6 +326,13 @@ proc tablelist::cleanup win {
 # color of some frames.
 #------------------------------------------------------------------------------
 proc tablelist::updateBackgrounds {win updateFrames isActiveWin} {
+    #
+    # This is an "after idle" callback; check whether the window exists
+    #
+    if {[destroyed $win]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
     foreach col $data(arrowColList) {
 	configCanvas $win $col
@@ -352,7 +359,7 @@ proc tablelist::updateBackgrounds {win updateFrames isActiveWin} {
 #------------------------------------------------------------------------------
 proc tablelist::updateConfigSpecs win {
     #
-    # This might be an "after idle" callback; check whether the window exists
+    # This is an "after idle" callback; check whether the window exists
     #
     if {[destroyed $win]} {
 	return ""

@@ -108,7 +108,7 @@ proc tablelist::aquaTheme {} {
 	if {$newAquaSupport} {
 	    set labelBg			#eeeeee
 	    set labeldeactivatedBg	#f6f6f6
-	    set labeldisabledBg		#f6f6f6
+	    set labeldisabledBg		""
 	    set labelpressedBg		#eeeeee
 	} else {
 	    set labelBg			#f6f6f6
