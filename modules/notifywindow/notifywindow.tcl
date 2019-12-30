@@ -1,6 +1,6 @@
 #notifywindow.tcl: provides routines for posting a Growl-style "notification window" in the upper right corner of the screen, fading in and out in an unobtrusive fashion 
 
-#(c) 2015 Kevin Walzer/WordTech Communications LLC. License: standard Tcl license, http://www.tcl.tk/software/tcltk/license.html
+#(c) 2015-2019 Kevin Walzer/WordTech Communications LLC. License: standard Tcl license, http://www.tcl.tk/software/tcltk/license.html
 
 package provide notifywindow 1.0
 
@@ -10,14 +10,24 @@ namespace eval notifywindow {
 
     proc notifywindow {msg img} {
 	set w [toplevel ._notify]
+	if {[tk windowingsystem] eq "aqua"} {
+	    ::tk::unsupported::MacWindowStyle style $w utility {hud 
+		closeBox resizable}
+	    wm title $w "Alert"
+	}
+	if {[tk windowingsystem] eq "win32"} {
+	    wm attributes $w -toolwindow true
+	    wm title $w "Alert"
+	}
 	if {[lsearch [image names] $img] > -1} {
 	    label $w.l -bg gray30 -fg white -image $img
 	    pack $w.l -fill both -expand yes -side left
 	}
 	message $w.message -aspect 150 -bg gray30 -fg white -aspect 150 -text $msg -width 280
 	pack $w.message -side right -fill both -expand yes
-#	$w configure -width 300
-	wm overrideredirect $w true
+	if {[tk windowingsystem] eq "x11"} {
+	    wm overrideredirect $w true
+	}
 	wm attributes $w -alpha 0.0
 	puts [winfo reqwidth $w]
 	set xpos [expr [winfo screenwidth $w] - 325]
@@ -28,29 +38,33 @@ namespace eval notifywindow {
 
     #Fade and destroy window
     proc fade_out {w} {
+	catch {
+	    set prev_degree [wm attributes $w -alpha]
+	    set new_degree [expr $prev_degree - 0.05]
+	    set current_degree [wm attributes $w -alpha $new_degree]
+	    if {$new_degree > 0.0 && $new_degree != $prev_degree} {
+		after 10 [list notifywindow::fade_out $w]
+	    } else {
+		destroy $w
+	    }
 
-	set prev_degree [wm attributes $w -alpha]
-	set new_degree [expr $prev_degree - 0.05]
-	set current_degree [wm attributes $w -alpha $new_degree]
-	if {$new_degree > 0.0 && $new_degree != $prev_degree} {
-	    after 10 [list notifywindow::fade_out $w]
-	} else {
-	    destroy $w
 	}
-
     }
 
     #Fade the window into view
     proc fade_in {w} {
-	raise $w
-	wm attributes $w -topmost 1
-	set prev_degree [wm attributes $w -alpha]
-	set new_degree [expr $prev_degree + 0.05]
-	set current_degree [wm attributes $w -alpha $new_degree]
-	if {$new_degree < 0.9 && $new_degree != $prev_degree} {
-	    after 10 [list notifywindow::fade_in $w]
-	} else {
-	    return
+	catch {
+	    raise $w
+	    wm attributes $w -topmost 1
+	    set prev_degree [wm attributes $w -alpha]
+	    set new_degree [expr $prev_degree + 0.05]
+	    set current_degree [wm attributes $w -alpha $new_degree]
+	    focus -force $w
+	    if {$new_degree < 0.9 && $new_degree != $prev_degree} {
+		after 10 [list notifywindow::fade_in $w]
+	    } else {
+		return
+	    }
 	}
     }
 
@@ -78,7 +92,6 @@ namespace eval notifywindow {
 	    ExUSJZs2qtOUbQ2ujTsQ4luvbdXNpRtA712+UeEC7ou3YEAAADt=
 	}
 
-	#	notifywindow::notifywindow "This is what a notification window looks like" flag
 	notifywindow::notifywindow "Man page for Message\n\nSpecifies a non-negative integer value indicating desired aspect ratio for the text. The aspect ratio is specified as 100*width/height. 100 means the text should be as wide as it is tall, 200 means the text should be twice as wide as it is tall, 50 means the text should be twice as tall as it is wide, and so on. Used to choose line length for text if -width option is not specified. Defaults to 150." flag
 
     }
