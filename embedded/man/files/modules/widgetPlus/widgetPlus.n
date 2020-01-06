@@ -613,5 +613,12 @@ namespace import widgetPlus::*
 entryPlus \&.cb\&.e -undo 1 -maxundo 0
 
 .CE
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain
+bugs and other problems\&.
+Please report such in the category \fIwidgetPlus\fR of the
+\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+Please also report any ideas for enhancements you may have for either
+package and/or documentation\&.
 .SH "SEE ALSO"
 BWidget, ComboBox, Entry, entry, persistentSelection, spinbox, text, ttk::combobox, ttk::entry, ttk::spinbox

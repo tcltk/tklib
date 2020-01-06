@@ -1455,7 +1455,7 @@ List of Y-coordinates for the region.
 Draw a filled strip representing a minimum and a maximum. The configuration of the series influences the polygon as follows:
 [term -fillcolour] is used to fill the polygon, [term -colour] is used for the boundary (set it to {} if
 no boundary is required and [term -width] determines the width of the boundary.
-[nl]
+[para]
 The arguments [term ymin] and [term ymax] may be empty to get an extra vertex in the strip. If both
 are empty, a new strip is started. For best results, the x-coordinate should be specified in ascending
 order.
