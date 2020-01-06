@@ -2735,6 +2735,29 @@ proc tablelist::defineTablelistEdit {} {
 	    } $detail $detail]
 	    bind TablelistEditBreak <Shift-Button-$detail> { break }
 	}
+
+	if {[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+	    foreach detail {6 7} {
+		bind TablelistEdit <Button-$detail> [format {
+		    if {[tablelist::hasMouseWheelBindings %%W x]} {
+			set tablelist::W [tablelist::getTablelistPath %%W]
+			set tablelist::w [$tablelist::W cget -xmousewheelwindow]
+			if {[winfo exists $tablelist::w] &&
+			    ![mwutil::hasFocus $tablelist::W]} {
+			    event generate $tablelist::w <Button-%s> \
+				-rootx %%X -rooty %%Y
+			    break
+			}
+		    } elseif {![tablelist::isComboTopMapped %%W &&
+			      ![tablelist::isMenuPosted %%W]]} {
+			set tablelist::W [tablelist::getTablelistPath %%W]
+			event generate [$tablelist::W bodypath] <Button-%s> \
+			    -rootx %%X -rooty %%Y
+		    }
+		} $detail $detail]
+		bind TablelistEditBreak <Button-$detail> { break }
+	    }
+	}
     }
 }
 

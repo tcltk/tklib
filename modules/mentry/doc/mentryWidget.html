@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
   <title>The mentry::mentry Command</title>
@@ -8,11 +9,11 @@
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
-<body bgcolor="#FFFFFF">
+<body>
   <div align="center">
     <h1>The <code><b>mentry::mentry</b></code> Command</h1>
 
-    <h2>For Mentry Version 3.9</h2>
+    <h2>For Mentry Version 3.10</h2>
 
     <h3>by</h3>
 
@@ -22,6 +23,7 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
+
   <hr>
 
   <h2 id="contents">Contents</h2>
@@ -35,6 +37,7 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
+
   <hr>
 
   <h2 id="quick_ref">Quick Reference</h2>
@@ -53,7 +56,9 @@
 </pre>
     </dd>
 
-    <dt><a href="#std_options">STANDARD OPTIONS</a></dt>
+    <dt><a href="#description">DESCRIPTION</a></dt>
+
+    <dt class="tm"><a href="#std_options">STANDARD OPTIONS</a></dt>
 
     <dd>
       <pre>
@@ -110,8 +115,6 @@
 <i>number</i>  <b>end</b>
 </pre>
     </dd>
-
-    <dt><a href="#description">DESCRIPTION</a></dt>
 
     <dt class="tm"><a href="#widget_command">WIDGET COMMAND</a></dt>
 
@@ -193,6 +196,7 @@
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
+
   <hr>
 
   <h2 id="detailed_ref">Detailed Reference</h2>
@@ -211,7 +215,65 @@
 </pre>
     </dd>
 
-    <dt id="std_options"><b>STANDARD OPTIONS</b></dt>
+    <dt id="description"><b>DESCRIPTION</b></dt>
+
+    <dd>The <code><b>mentry::mentry</b></code> command creates a new window
+    named <code><i>pathName</i></code> and of the class
+    <code><b>Mentry</b></code>, and makes it into a <b>mentry</b> widget.&nbsp;
+    Additional options, described below, may be specified on the command line
+    or in the option database to configure aspects of the mentry such as its
+    colors, font, and children.&nbsp; The <code><b>mentry::mentry</b></code>
+    command returns its <code><i>pathName</i></code> argument.&nbsp; At the
+    time this command is invoked, there must not exist a window named
+    <code><i>pathName</i></code>, but <code><i>pathName</i></code>'s parent
+    must exist.</dd>
+
+    <dd class="tm">The word <i>mentry</i> is an abbreviation of
+    <i>multi-entry</i>.&nbsp; A mentry is a mega-widget consisting of any
+    number of entries separated by labels, all embedded in a frame.&nbsp; Due
+    to appropriately chosen configuration options for the entries and labels, a
+    mentry widget looks like one single entry containing preinserted text
+    pieces that cannot be moved, changed, or deleted by the user.</dd>
+
+    <dd class="tm">The initial width of each entry child (specified by the
+    <code><b><a href="#body">-body</a></b></code> configuration option) also
+    determines the maximal number of characters that can be inserted into
+    it.&nbsp; This is achieved with the aid of the <code><b><a href=
+    "wcbRef.html#callback">wcb::callback</a></b></code> command, by registering
+    the <code><b><a href=
+    "wcbRef.html#entrycb">wcb::checkEntryLen</a></b></code>
+    before-<code><b>insert</b></code> callback with the entry child.&nbsp; In
+    order to keep this callback, additional before-<code><b>insert</b></code>
+    callbacks (if needed) should only be registered with the <code><b><a href=
+    "wcbRef.html#cbappend">wcb::cbappend</a></b></code> and <code><b><a href=
+    "wcbRef.html#cbprepend">wcb::cbprepend</a></b></code> commands.&nbsp; When
+    reaching this limit in an entry having the input focus, the latter is set
+    automatically to the next enabled entry child, the contents of that widget
+    is selected, and the insertion cursor is set to its end.&nbsp; This is made
+    sure by defining an appropriate after-<code><b>insert</b></code> callback,
+    which must be kept to be the last such callback for the entry.&nbsp; For
+    this reason, additional after-<code><b>insert</b></code> callbacks (if
+    needed) should only be registered with the
+    <code><b>wcb::cbprepend</b></code> command.&nbsp; The same command should
+    be used exclusively to define after-<code><b>motion</b></code> callbacks
+    (if needed), because <code><b>mentry::mentry</b></code> registers one that
+    must be the last after-<code><b>motion</b></code> callback for each entry
+    child.</dd>
+
+    <dd class="tm">Each mentry widget may have any number of <b>attributes</b>,
+    which can be used in commands that create or manipulate mentry widgets for
+    particular purposes.&nbsp; For example, each date mentry created by the
+    <code><b><a href=
+    "mentryDateTime.html#dateMentry">mentry::dateMentry</a></b></code> command
+    has a <code><b>type</b></code> attribute having the value
+    <code>"Date"</code> and a <code><b>format</b></code> attribute specifying
+    the meanings of its components.&nbsp; The values of these attributes are
+    queried and used in the bodies of the procedures <code><b><a href=
+    "mentryDateTime.html#putClockVal">mentry::putClockVal</a></b></code> and
+    <code><b><a href=
+    "mentryDateTime.html#getClockVal">mentry::getClockVal</a></b></code>.</dd>
+
+    <dt class="tm" id="std_options"><b>STANDARD OPTIONS</b></dt>
 
     <dd>
       <pre>
@@ -295,19 +357,16 @@
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-body</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;body</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Body</b></code></td>
         </tr>
       </table>
@@ -346,19 +405,16 @@
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-disabledbackground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;disabledBackground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;DisabledBackground</b></code></td>
         </tr>
       </table>
@@ -377,19 +433,16 @@
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-disabledforeground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;disabledForeground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;DisabledForeground</b></code></td>
         </tr>
       </table>
@@ -408,19 +461,16 @@
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-readonlybackground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;readonlyBackground</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;ReadonlyBackground</b></code></td>
         </tr>
       </table>
@@ -439,19 +489,16 @@
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-takefocus</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;takeFocus</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;TakeFocus</b></code></td>
         </tr>
       </table>
@@ -473,19 +520,16 @@
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>Command-Line Name:&nbsp;</td>
-
           <td><code><b>-textvariable</b></code></td>
         </tr>
 
         <tr>
           <td>Database Name:</td>
-
           <td><code><b>&nbsp;textvariable</b></code></td>
         </tr>
 
         <tr>
           <td>Database Class:</td>
-
           <td><code><b>&nbsp;Variable</b></code></td>
         </tr>
       </table>
@@ -505,65 +549,7 @@
       </blockquote>
     </dd>
 
-    <dt id="description"><b>DESCRIPTION</b></dt>
-
-    <dd>The <code><b>mentry::mentry</b></code> command creates a new window
-    named <code><i>pathName</i></code> and of the class
-    <code><b>Mentry</b></code>, and makes it into a <b>mentry</b> widget.&nbsp;
-    Additional options, described above, may be specified on the command line
-    or in the option database to configure aspects of the mentry such as its
-    colors, font, and children.&nbsp; The <code><b>mentry::mentry</b></code>
-    command returns its <code><i>pathName</i></code> argument.&nbsp; At the
-    time this command is invoked, there must not exist a window named
-    <code><i>pathName</i></code>, but <code><i>pathName</i></code>'s parent
-    must exist.</dd>
-
-    <dd class="tm">The word <i>mentry</i> is an abbreviation of
-    <i>multi-entry</i>.&nbsp; A mentry is a mega-widget consisting of any
-    number of entries separated by labels, all embedded in a frame.&nbsp; Due
-    to appropriately chosen configuration options for the entries and labels, a
-    mentry widget looks like one single entry containing preinserted text
-    pieces that cannot be moved, changed, or deleted by the user.</dd>
-
-    <dd class="tm">As described above, the initial width of each entry child
-    (specified by the <code><b><a href="#body">-body</a></b></code>
-    configuration option) also determines the maximal number of characters that
-    can be inserted into it.&nbsp; This is achieved with the aid of the
-    <code><b><a href="wcbRef.html#callback">wcb::callback</a></b></code>
-    command, by registering the <code><b><a href=
-    "wcbRef.html#entrycb">wcb::checkEntryLen</a></b></code>
-    before-<code><b>insert</b></code> callback with the entry child.&nbsp; In
-    order to keep this callback, additional before-<code><b>insert</b></code>
-    callbacks (if needed) should only be registered with the <code><b><a href=
-    "wcbRef.html#cbappend">wcb::cbappend</a></b></code> and <code><b><a href=
-    "wcbRef.html#cbprepend">wcb::cbprepend</a></b></code> commands.&nbsp; When
-    reaching this limit in an entry having the input focus, the latter is set
-    automatically to the next enabled entry child, the contents of that widget
-    is selected, and the insertion cursor is set to its end.&nbsp; This is made
-    sure by defining an appropriate after-<code><b>insert</b></code> callback,
-    which must be kept to be the last such callback for the entry.&nbsp; For
-    this reason, additional after-<code><b>insert</b></code> callbacks (if
-    needed) should only be registered with the
-    <code><b>wcb::cbprepend</b></code> command.&nbsp; The same command should
-    be used exclusively to define after-<code><b>motion</b></code> callbacks
-    (if needed), because <code><b>mentry::mentry</b></code> registers one that
-    must be the last after-<code><b>motion</b></code> callback for each entry
-    child.</dd>
-
-    <dd class="tm">Each mentry widget may have any number of <b>attributes</b>,
-    which can be used in commands that create or manipulate mentry widgets for
-    particular purposes.&nbsp; For example, each date mentry created by the
-    <code><b><a href=
-    "mentryDateTime.html#dateMentry">mentry::dateMentry</a></b></code> command
-    has a <code><b>type</b></code> attribute having the value
-    <code>"Date"</code> and a <code><b>format</b></code> attribute specifying
-    the meanings of its components.&nbsp; The values of these attributes are
-    queried and used in the bodies of the procedures <code><b><a href=
-    "mentryDateTime.html#putClockVal">mentry::putClockVal</a></b></code> and
-    <code><b><a href=
-    "mentryDateTime.html#getClockVal">mentry::getClockVal</a></b></code>.</dd>
-
-    <dt class="tm" id="indices"><b>INDICES</b></dt>
+    <dt id="indices"><b>INDICES</b></dt>
 
     <dd>Some of the widget commands for mentries take an index as
     argument.&nbsp; An index specifies a particular entry or label child of the
@@ -573,14 +559,12 @@
       <table border="0" cellpadding="6" cellspacing="0">
         <tr valign="top">
           <td><code><i>number&nbsp;&nbsp;</i></code></td>
-
           <td>Specifies the child as a numerical index, where <code>0</code>
           corresponds to the first entry or label child.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>end</b></code></td>
-
           <td>Indicates the last entry or label child of the mentry.</td>
         </tr>
       </table>

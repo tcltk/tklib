@@ -1,3 +1,60 @@
+2019-12-12 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl:   Improvements related to the "aqua" theme.
+	* scripts/tablelistThemes.tcl:
+	* scripts/tablelistUtil.tcl:
+	* scripts/tablelistWidget.tcl:
+
+2019-12-11 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 6.8.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Updated and significantly improved the support for
+	  Windows 10; adapted the "aqua" theme support to Tk release 8.6.10;
+	  improved the units computation for "(x|y)view scroll" within the
+	  bindings for mouse wheel events; for Tk 8.7.a3 and above on X11,
+	  added bindings for horizontal scrolling with the aid of the (virtual)
+	  mouse buttons 6 and 7.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/tablelist/*.tcl: Bumped the version number to 6.8;
+	  using ttk::scrollbar widgets for the "aqua" theme, too, provided that
+	  the Tk release is 8.6.10 or later.
+
+2019-10-20 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* pkgIndex.tcl:                   Bumped the version number to 6.7.
+	* tablelist.tcl:
+	* tablelist_tile.tcl:
+	* COPYRIGHT.txt:
+	* README.txt:
+	* ../../examples/tablelist/*.tcl:
+
+	* tablelistPublic.tcl: Bumped the version number to 6.7; no longer
+	  creating aliases in the "::tk" namespace for Tk commands for which
+	  that namespace already contains a command of the same name.
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/*.tcl: Optimized the horizontal scrolling by units; many
+	  improvements related to the "aqua" theme; made sure that the commands
+	  specified as the values of the "-xscrollcommand" and
+	  "-yscrollcommand" options will only be invoked if the view's data
+	  have changed; fixed a bug related to the "scan" subcommand; several
+	  further improvements and minor bug fixes.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/stylesheet.css: Updated.
+
+	* doc/*.html: Updated to reflect the changes; various improvements.
+
 2019-07-13 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistMove.tcl: Fixed a bug related to the "move"

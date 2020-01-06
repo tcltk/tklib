@@ -1,3 +1,26 @@
+2019-10-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* pkgIndex.tcl:    Bumped the version number to 3.10.
+	* mentry.tcl:
+	* mentry_tile.tcl:
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* mentryPublic.tcl: Bumped the version number to 3.10; no longer
+	  creating aliases in the "::tk" namespace for Tk commands for which
+	  that namespace already contains a command of the same name.
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/mwutil.tcl: Updated to the same version 2.15 as in Tablelist
+	  release 6.7.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/stylesheet.css: Updated.
+
+	* doc/*.html: Bumped the version number to 3.10; various improvements.
+
 2019-05-01  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Slightly extended.

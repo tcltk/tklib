@@ -82,21 +82,21 @@ and Wcb version 3.0 or higher also supports callbacks for the
 "activatecell", "cellselection set", and "cellselection clear"
 commands.  The download location of Wcb is
 
-    http://www.nemethi.de
+    https://www.nemethi.de
 
 How to Get It?
 --------------
 
 Tablelist is available for free download from the same URL as Wcb.  The
-distribution file is "tablelist6.6.tar.gz" for UNIX and
-"tablelist6_6.zip" for Windows.  These files contain the same
+distribution file is "tablelist6.8.tar.gz" for UNIX and
+"tablelist6_8.zip" for Windows.  These files contain the same
 information, except for the additional carriage return character
 preceding the linefeed at the end of each line in the text files for
 Windows.
 
 Tablelist is also included in tklib, which has the address
 
-    http://core.tcl.tk/tklib
+    https://core.tcl.tk/tklib
 
 How to Install It?
 ------------------
@@ -108,19 +108,19 @@ locations of these library directories are given by the "tcl_library"
 and "tk_library" variables, respectively.
 
 To install Tablelist on UNIX, "cd" to the desired directory and unpack
-the distribution file "tablelist6.6.tar.gz":
+the distribution file "tablelist6.8.tar.gz":
 
-    gunzip -c tablelist6.6.tar.gz | tar -xf -
+    gunzip -c tablelist6.8.tar.gz | tar -xf -
 
 On most UNIX systems this can be replaced with
 
-    tar -zxf tablelist6.6.tar.gz
+    tar -zxf tablelist6.8.tar.gz
 
-Both commands will create a directory named "tablelist6.6 with the
+Both commands will create a directory named "tablelist6.8 with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "tablelist6_6.zip" into the directory "tablelist6.6",
+distribution file "tablelist6_8.zip" into the directory "tablelist6.8",
 with the subdirectories "demos", "doc", and "scripts".
 
 The file "tablelistEdit.tcl" in the "scripts" directory is only needed

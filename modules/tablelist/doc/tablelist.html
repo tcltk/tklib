@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
   <title>Tablelist Programmer's Guide</title>
@@ -9,11 +10,11 @@
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
-<body bgcolor="#FFFFFF">
+<body>
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 6.6</h2>
+    <h2>For Tablelist Version 6.8</h2>
 
     <h3>by</h3>
 
@@ -23,6 +24,7 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
+
   <hr>
 
   <h2 id="contents">Contents</h2>
@@ -67,6 +69,7 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
+
   <hr>
 
   <h2 id="overview">Overview</h2>
@@ -163,15 +166,15 @@
 
   <blockquote>
     <address>
-      <a href="http://www.nemethi.de">http://www.nemethi.de</a>
+      <a href="https://www.nemethi.de">https://www.nemethi.de</a>
     </address>
   </blockquote>
 
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist6.6.tar.gz</code> for UNIX and
-  <code>tablelist6_6.zip</code> for Windows.&nbsp; These files contain the same
+  The distribution file is <code>tablelist6.8.tar.gz</code> for UNIX and
+  <code>tablelist6_8.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -179,7 +182,7 @@
 
   <blockquote>
     <address>
-      <a href="http://core.tcl.tk/tklib">http://core.tcl.tk/tklib</a>
+      <a href="https://core.tcl.tk/tklib">https://core.tcl.tk/tklib</a>
     </address>
   </blockquote>
 
@@ -194,11 +197,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist6.6.tar.gz</code>:</p>
+  <code>tablelist6.8.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist6.6.tar.gz | tar -xf -
+gunzip -c tablelist6.8.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -206,17 +209,17 @@ gunzip -c tablelist6.6.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist6.6.tar.gz
+tar -zxf tablelist6.8.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist6.6</code>,
+  <p>Both commands will create a directory named <code>tablelist6.8</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist6_6.zip</code> into the directory
-  <code>tablelist6.6</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist6_8.zip</code> into the directory
+  <code>tablelist6.8</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -313,14 +316,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 6.6, then it is highly
-  recommended to specify the version number <code>6.6</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 6.8, then it is highly
+  recommended to specify the version number <code>6.8</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 6.6</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 6.8</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 6.6</code>.</p>
+  tablelist_tile 6.8</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -470,6 +473,7 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
+
   <hr>
 
   <h2 id="examples">Examples</h2>
@@ -506,7 +510,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 6.6
+package require tablelist 6.8
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -562,10 +566,10 @@ demo::displayConfig .configTop.tf.tbl
 
   <blockquote>
     <pre>
-package require tablelist 6.6
+package require tablelist 6.8
 
 namespace eval demo {
-    #
+    <span class="cmt">#
     # Get the current windowing system ("x11", "win32", "classic", or "aqua")
     # and add some entries to the Tk option database for the following
     # widget hierarchy within a toplevel widget of the class DemoTop:
@@ -577,7 +581,7 @@ namespace eval demo {
     #   vsb, hsb          Scrollbar
     # bf                Frame
     #   b1, b2, b3        Button
-    #
+    #</span>
     variable winSys
     if {[catch {tk windowingsystem} winSys] != 0} {
         switch $::tcl_platform(platform) {
@@ -587,9 +591,9 @@ namespace eval demo {
         }
     }
     if {[string compare $winSys "x11"] == 0} {
-        #
+        <span class="cmt">#
         # Create the font TkDefaultFont if not yet present
-        #
+        #</span>
         catch {font create TkDefaultFont -family Helvetica -size -12}
 
         option add *DemoTop*Font                        TkDefaultFont
@@ -607,13 +611,13 @@ namespace eval demo {
     option add *DemoTop.bf.Button.width                 10
 }
 
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # demo::displayConfig
 #
 # Displays the configuration options of the widget w in a tablelist widget
 # contained in a newly created toplevel widget.  Returns the name of the
 # tablelist widget.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc demo::displayConfig w {
     if {![winfo exists $w]} {
         bell
@@ -622,9 +626,9 @@ proc demo::displayConfig w {
         return ""
     }
 
-    #
+    <span class="cmt">#
     # Create a toplevel widget of the class DemoTop
-    #
+    #</span>
     set top .configTop
     for {set n 2} {[winfo exists $top]} {incr n} {
         set top .configTop$n
@@ -632,10 +636,10 @@ proc demo::displayConfig w {
     toplevel $top -class DemoTop
     wm title $top "Configuration Options of the [winfo class $w] Widget \"$w\""
 
-    #
+    <span class="cmt">#
     # Create a scrolled tablelist widget with 5 dynamic-width
     # columns and interactive sort capability within the toplevel
-    #
+    #</span>
     set tf $top.tf
     frame $tf
     set tbl $tf.tbl
@@ -658,9 +662,9 @@ proc demo::displayConfig w {
     scrollbar $vsb -orient vertical   -command [list $tbl yview]
     scrollbar $hsb -orient horizontal -command [list $tbl xview]
 
-    #
+    <span class="cmt">#
     # Create three buttons within a frame child of the toplevel widget
-    #
+    #</span>
     set bf $top.bf
     frame $bf
     set b1 $bf.b1
@@ -670,9 +674,9 @@ proc demo::displayConfig w {
     button $b2 -text "Sort as Set" -command [list $tbl sort]
     button $b3 -text "Close"       -command [list destroy $top]
 
-    #
+    <span class="cmt">#
     # Manage the widgets
-    #
+    #</span>
     grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
     variable winSys
     if {[string compare $winSys "win32"] == 0} {
@@ -688,9 +692,9 @@ proc demo::displayConfig w {
     pack $bf -side bottom -fill x
     pack $tf -side top -expand yes -fill both
 
-    #
+    <span class="cmt">#
     # Populate the tablelist with the configuration options of the given widget
-    #
+    #</span>
     putConfig $w $tbl
     return $tbl
 }
@@ -800,12 +804,12 @@ proc demo::displayConfig w {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # demo::putConfig
 #
 # Outputs the configuration options of the widget w into the tablelist widget
 # tbl.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc demo::putConfig {w tbl} {
     if {![winfo exists $w]} {
         bell
@@ -814,24 +818,24 @@ proc demo::putConfig {w tbl} {
         return ""
     }
 
-    #
+    <span class="cmt">#
     # Display the configuration options of w in the tablelist widget tbl
-    #
+    #</span>
     $tbl delete 0 end
     foreach configSet [$w configure] {
-        #
+        <span class="cmt">#
         # Insert the list configSet into the tablelist widget
-        #
+        #</span>
         $tbl insert end $configSet
 
         if {[llength $configSet] == 2} {
             $tbl rowconfigure end -foreground gray50 -selectforeground gray75
             $tbl cellconfigure end -editable no
         } else {
-            #
+            <span class="cmt">#
             # Change the colors of the first and last cell of the row
             # if the current value is different from the default one
-            #
+            #</span>
             set default [lindex $configSet 3]
             set current [lindex $configSet 4]
             if {[string compare $default $current] != 0} {
@@ -880,7 +884,7 @@ proc demo::putConfig {w tbl} {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # demo::compareAsSet
 #
 # Compares two items of a tablelist widget used to display the configuration
@@ -888,7 +892,7 @@ proc demo::putConfig {w tbl} {
 # different from the default one is considered to be less than the other; if
 # both items fulfil this condition or its negation then string comparison is
 # applied to the two option names.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc demo::compareAsSet {item1 item2} {
     foreach {opt1 dbName1 dbClass1 default1 current1} $item1 \
             {opt2 dbName2 dbClass2 default2 current2} $item2 {
@@ -912,19 +916,19 @@ proc demo::compareAsSet {item1 item2} {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # demo::applyValue
 #
 # Applies the new value of the configuraton option contained in the given row
 # of the tablelist widget tbl to the widget whose options are displayed in it,
 # and updates the colors of the first and last cell of the row.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc demo::applyValue {tbl row col text} {
-    #
+    <span class="cmt">#
     # Try to apply the new value of the option contained in
     # the given row to the widget whose options are displayed
     # in the tablelist; reject the value if the attempt fails
-    #
+    #</span>
     set w [$tbl attrib widget]
     set opt [$tbl cellcget $row,0 -text]
     if {[catch {$w configure $opt $text} result] != 0} {
@@ -935,10 +939,10 @@ proc demo::applyValue {tbl row col text} {
         return ""
     }
 
-    #
+    <span class="cmt">#
     # Replace the new option value with its canonical form and
     # update the colors of the first and last cell of the row
-    #
+    #</span>
     set text [$w cget $opt]
     set default [$tbl cellcget $row,3 -text]
     if {[string compare $default $text] == 0} {
@@ -1043,14 +1047,14 @@ demo::displayChildren .
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.6
+package require tablelist 6.8
 
 namespace eval demo {
     variable dir [file dirname [info script]]
 
-    #
+    <span class="cmt">#
     # Create two images, needed in the procedure putChildren
-    #
+    #</span>
     variable leafImg [image create bitmap -file [file join $dir leaf.xbm] \
                       -background coral -foreground gray50]
     variable compImg [image create bitmap -file [file join $dir comp.xbm] \
@@ -1059,13 +1063,13 @@ namespace eval demo {
 
 source [file join $demo::dir config.tcl]
 
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # demo::displayChildren
 #
 # Displays information on the children of the widget w in a tablelist widget
 # contained in a newly created toplevel widget.  Returns the name of the
 # tablelist widget.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc demo::displayChildren w {
     if {![winfo exists $w]} {
         bell
@@ -1074,19 +1078,19 @@ proc demo::displayChildren w {
         return ""
     }
 
-    #
+    <span class="cmt">#
     # Create a toplevel widget of the class DemoTop
-    #
+    #</span>
     set top .browseTop
     for {set n 2} {[winfo exists $top]} {incr n} {
         set top .browseTop$n
     }
     toplevel $top -class DemoTop
 
-    #
+    <span class="cmt">#
     # Create a vertically scrolled tablelist widget with 9 dynamic-width
     # columns and interactive sort capability within the toplevel
-    #
+    #</span>
     set tf $top.tf
     frame $tf
     set tbl $tf.tbl
@@ -1114,22 +1118,22 @@ proc demo::displayChildren w {
     }
     scrollbar $vsb -orient vertical -command [list $tbl yview]
 
-    #
+    <span class="cmt">#
     # When displaying the information about the children of any
     # ancestor of the label widgets, the widths of some of the
     # labels and thus also the widths and x coordinates of some
     # children may change.  For this reason, make sure the items
     # will be updated after any change in the sizes of the labels
-    #
+    #</span>
     foreach l [$tbl labels] {
         bind $l &lt;Configure&gt; [list demo::updateItemsDelayed $tbl]
     }
     bind $tbl &lt;Configure&gt; [list demo::updateItemsDelayed $tbl]
 
-    #
+    <span class="cmt">#
     # Create a pop-up menu with two command entries; bind the script
     # associated with its first entry to the &lt;Double-1&gt; event, too
-    #
+    #</span>
     set menu $top.menu
     menu $menu -tearoff no
     $menu add command -label "Display Children" \
@@ -1142,9 +1146,9 @@ proc demo::displayChildren w {
     bind $bodyTag &lt;&lt;Button3&gt;&gt; +[bind TablelistBody &lt;ButtonRelease-1&gt;]
     bind $bodyTag &lt;&lt;Button3&gt;&gt; +[list demo::postPopupMenu $top %X %Y]
 
-    #
+    <span class="cmt">#
     # Create three buttons within a frame child of the toplevel widget
-    #
+    #</span>
     set bf $top.bf
     frame $bf
     set b1 $bf.b1
@@ -1154,14 +1158,14 @@ proc demo::displayChildren w {
     button $b2 -text "Parent"
     button $b3 -text "Close" -command [list destroy $top]
 
-    #
+    <span class="cmt">#
     # Manage the widgets
-    #
+    #</span>
     . . .
 
-    #
+    <span class="cmt">#
     # Populate the tablelist with the data of the given widget's children
-    #
+    #</span>
     putChildren $w $tbl root
     return $tbl
 }
@@ -1248,12 +1252,12 @@ proc demo::displayChildren w {
 
   <blockquote id="putChildren">
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # demo::putChildren
 #
 # Outputs the data of the children of the widget w into the tablelist widget
 # tbl, as child items of the one identified by nodeIdx.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc demo::putChildren {w tbl nodeIdx} {
     . . .
 
@@ -1268,16 +1272,16 @@ proc demo::putChildren {w tbl nodeIdx} {
         set row [expr {$nodeIdx + 1}]
     }
 
-    #
+    <span class="cmt">#
     # Display the data of the children of the
     # widget w in the tablelist widget tbl
-    #
+    #</span>
     variable leafImg
     variable compImg
     foreach c [winfo children $w] {
-        #
+        <span class="cmt">#
         # Insert the data of the current child into the tablelist widget
-        #
+        #</span>
         set item {}
         lappend item \
                 [winfo name $c] [winfo class $c] [winfo x $c] [winfo y $c] \
@@ -1285,10 +1289,10 @@ proc demo::putChildren {w tbl nodeIdx} {
                 [winfo viewable $c] [winfo manager $c]
         $tbl insertchild $nodeIdx end $item
 
-        #
+        <span class="cmt">#
         # Insert an image into the first cell of the row; mark the
         # row as collapsed if the child widget has children itself
-        #
+        #</span>
         if {[llength [winfo children $c]] == 0} {
             $tbl cellconfigure end,0 -image $leafImg
         } else {
@@ -1301,9 +1305,9 @@ proc demo::putChildren {w tbl nodeIdx} {
     }
 
     if {[string compare $nodeIdx "root"] == 0} {
-        #
+        <span class="cmt">#
         # Configure the "Refresh" and "Parent" buttons
-        #
+        #</span>
         $top.bf.b1 configure -command [list demo::refreshView $w $tbl]
         set b2 $top.bf.b2
         set p [winfo parent $w]
@@ -1361,21 +1365,21 @@ proc demo::putChildren {w tbl nodeIdx} {
 
   <blockquote>
     <pre>
-------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # demo::expandCmd
 #
 # Outputs the data of the children of the widget whose leaf name is displayed
 # in the first cell of the specified row of the tablelist widget tbl, as child
 # items of the one identified by row.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc demo::expandCmd {tbl row} {
     if {[$tbl childcount $row] == 0} {
         set w [$tbl rowattrib $row pathName]
         putChildren $w $tbl $row
 
-        #
+        <span class="cmt">#
         # Apply the last sorting (if any) to the new items
-        #
+        #</span>
         $tbl refreshsorting $row
     }
 }
@@ -1397,22 +1401,22 @@ proc demo::expandCmd {tbl row} {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # demo::formatBoolean
 #
 # Returns "yes" or "no", according to the specified boolean value.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc demo::formatBoolean val {
     return [expr {$val ? "yes" : "no"}]
 }
 
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # demo::labelCmd
 #
 # Sorts the content of the tablelist widget tbl by its col'th column and makes
 # sure the items will be updated 500 ms later (because one of the items might
 # refer to a canvas containing the arrow that displays the sorting order).
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc demo::labelCmd {tbl col} {
     tablelist::sortByColumn $tbl $col
     updateItemsDelayed $tbl
@@ -1433,35 +1437,35 @@ proc demo::labelCmd {tbl col} {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # demo::updateItemsDelayed
 #
 # Arranges for the items of the tablelist widget tbl to be updated 500 ms later.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc demo::updateItemsDelayed tbl {
-    #
+    <span class="cmt">#
     # Schedule the demo::updateItems command for execution
     # 500 ms later, but only if it is not yet pending
-    #
+    #</span>
     if {[string compare [$tbl attrib afterId] ""] == 0} {
         $tbl attrib afterId [after 500 [list demo::updateItems $tbl]]
     }
 }
 
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # demo::updateItems
 #
 # Updates the items of the tablelist widget tbl.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc demo::updateItems tbl {
-    #
+    <span class="cmt">#
     # Reset the tablelist's "afterId" attribute
-    #
+    #</span>
     $tbl attrib afterId ""
 
-    #
+    <span class="cmt">#
     # Update the items
-    #
+    #</span>
     set rowCount [$tbl size]
     for {set row 0} {$row &lt; $rowCount} {incr row} {
         set c [$tbl cellcget $row,0 -text]
@@ -1477,9 +1481,9 @@ proc demo::updateItems tbl {
         $tbl rowconfigure $row -text $item
     }
 
-    #
+    <span class="cmt">#
     # Repeat the last sort operation (if any)
-    #
+    #</span>
     $tbl refreshsorting
 }
 </pre>
@@ -1517,12 +1521,12 @@ proc demo::updateItems tbl {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # demo::putChildrenOfSelWidget
 #
 # Outputs the data of the children of the selected widget into the tablelist
 # widget tbl.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc demo::putChildrenOfSelWidget tbl {
     set w [$tbl cellcget [$tbl curselection],0 -text]
     if {![winfo exists $w]} {
@@ -1546,28 +1550,28 @@ proc demo::putChildrenOfSelWidget tbl {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # demo::refreshView
 #
 # Redisplays the data of the children of the widget w in the tablelist widget
 # tbl and restores the expanded states of the items as well as the vertical
 # view.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc demo::refreshView {w tbl} {
-    #
+    <span class="cmt">#
     # Save the vertical view and get the path names of
     # the child widgets displayed in the expanded rows
-    #
+    #</span>
     set yView [$tbl yview]
     foreach key [$tbl expandedkeys] {
         set pathName [$tbl rowattrib $key pathName]
         set expandedWidgets($pathName) 1
     }
 
-    #
+    <span class="cmt">#
     # Redisplay the data of the widget's (possibly changed) children and
     # restore the expanded states of the children, along with the vertical view
-    #
+    #</span>
     putChildren $w $tbl root
     restoreExpandedStates $tbl root expandedWidgets
     $tbl yview moveto [lindex $yView 0]
@@ -1587,13 +1591,13 @@ proc demo::refreshView {w tbl} {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # restoreExpandedStates
 #
 # Expands those children of the parent identified by nodeIdx that display the
 # data of child widgets whose path names are the names of the elements of the
 # array specified by the last argument.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
     upvar $expandedWidgetsName expandedWidgets
 
@@ -1641,31 +1645,31 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.6
+package require tablelist 6.8
 
-#
+<span class="cmt">#
 # Add some entries to the Tk option database
-#
+#</span>
 set dir [file dirname [info script]]
 source [file join $dir option.tcl]
 
-#
+<span class="cmt">#
 # Create three images
-#
+#</span>
 image create photo clsdFolderImg -file [file join $dir clsdFolder.gif]
 image create photo openFolderImg -file [file join $dir openFolder.gif]
 image create photo fileImg       -file [file join $dir file.gif]
 
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # displayContents
 #
 # Displays the content of the directory dir in a tablelist widget.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc displayContents dir {
-    #
+    <span class="cmt">#
     # Create a scrolled tablelist widget with 3 dynamic-
     # width columns and interactive sort capability
-    #
+    #</span>
     set tf .tf
     frame $tf -class ScrollArea
     set tbl $tf.tbl
@@ -1689,9 +1693,9 @@ proc displayContents dir {
 
     . . .
 
-    #
+    <span class="cmt">#
     # Populate the tablelist with the content of the given directory
-    #
+    #</span>
     $tbl sortbycolumn 0
     putContents $dir $tbl root
 }
@@ -1723,12 +1727,12 @@ option add *ScrollArea.Tablelist.highlightThickness     0
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # putContents
 #
 # Outputs the content of the directory dir into the tablelist widget tbl, as
 # child items of the one identified by nodeIdx.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc putContents {dir tbl nodeIdx} {
     . . .
 
@@ -1749,12 +1753,12 @@ proc putContents {dir tbl nodeIdx} {
         set row [expr {$nodeIdx + 1}]
     }
 
-    #
+    <span class="cmt">#
     # Build a list from the data of the subdirectories and
     # files of the directory dir.  Prepend a "D" or "F" to
     # each entry's name and modification date & time, for
     # sorting purposes (it will be removed by formatString).
-    #
+    #</span>
     set itemList {}
     if {[string compare $dir ""] == 0} {
         foreach volume [file volumes] {
@@ -1776,27 +1780,27 @@ proc putContents {dir tbl nodeIdx} {
         }
     }
 
-    #
+    <span class="cmt">#
     # Sort the above list and insert it into the tablelist widget
     # tbl as list of children of the row identified by nodeIdx
-    #
+    #</span>
     set itemList [$tbl applysorting $itemList]
     $tbl insertchildlist $nodeIdx end $itemList
 
-    #
+    <span class="cmt">#
     # Insert an image into the first cell of each newly inserted row
-    #
+    #</span>
     foreach item $itemList {
         set name [lindex $item end]
-        if {[string compare $name ""] == 0} {                   ;# file
+        if {[string compare $name ""] == 0} {                   ;<span class="cmt"># file</span>
             $tbl cellconfigure $row,0 -image fileImg
-        } else {                                                ;# directory
+        } else {                                                ;<span class="cmt"># directory</span>
             $tbl cellconfigure $row,0 -image clsdFolderImg
             $tbl rowattrib $row pathName $name
 
-            #
+            <span class="cmt">#
             # Mark the row as collapsed if the directory is non-empty
-            #
+            #</span>
             if {[file readable $name] && [llength \
                 [glob -nocomplain -types {d f} -directory $name *]] != 0} {
                 $tbl collapse $row
@@ -1844,22 +1848,22 @@ proc putContents {dir tbl nodeIdx} {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # formatString
 #
 # Returns the substring obtained from the specified value by removing its first
 # character.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc formatString val {
     return [string range $val 1 end]
 }
 
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # formatSize
 #
 # Returns an empty string if the specified value is negative and the value
 # itself in user-friendly format otherwise.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc formatSize val {
     if {$val &lt; 0} {
         return ""
@@ -1884,13 +1888,13 @@ proc formatSize val {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # expandCmd
 #
 # Outputs the content of the directory whose leaf name is displayed in the
 # first cell of the specified row of the tablelist widget tbl, as child items
 # of the one identified by row, and updates the image displayed in that cell.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc expandCmd {tbl row} {
     if {[$tbl childcount $row] == 0} {
         set dir [$tbl rowattrib $row pathName]
@@ -1902,12 +1906,12 @@ proc expandCmd {tbl row} {
     }
 }
 
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # collapseCmd
 #
 # Updates the image displayed in the first cell of the specified row of the
 # tablelist widget tbl.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc collapseCmd {tbl row} {
     $tbl cellconfigure $row,0 -image clsdFolderImg
 }
@@ -1937,9 +1941,9 @@ displayContents ""
 
   <blockquote>
     <pre>
-#
+<span class="cmt">#
 # Create, configure, and populate 8 tablelist widgets
-#
+#</span>
 frame .f
 for {set n 0} { $n &lt; 8} {incr n} {
     set tbl .f.tbl$n
@@ -2023,40 +2027,40 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <p>Here is the relevant code segment from the script <code>bwidget.tcl</code>
   (the scripts <code>tileWidgets.tcl</code>, <code>iwidgets.tcl</code>, and
   <code>miscWidgets.tcl</code> are similar).&nbsp; A few parts of the code are
-  shown in <span>red</span> color &ndash; we will return to this towards the
-  end of the section.</p>
+  shown in <span class="red">red</span> color &ndash; we will return to this
+  towards the end of the section.</p>
 
   <blockquote>
     <pre>
-package require Tk 8.4                          ;# because of "-compound"
-package require tablelist 6.6
+package require Tk 8.4                          ;<span class="cmt"># because of "-compound"</span>
+package require tablelist 6.8
 package require BWidget
 
 wm title . "Serial Line Configuration"
 
-#
+<span class="cmt">#
 # Add some entries to the Tk option database
-#
+#</span>
 set dir [file dirname [info script]]
 source [file join $dir option.tcl]
 option add *Tablelist*Entry.background white
 
-#
+<span class="cmt">#
 # Register some widgets from the BWidget package for interactive cell editing
-#
+#</span>
 tablelist::addBWidgetEntry
 tablelist::addBWidgetSpinBox
 tablelist::addBWidgetComboBox
 
-#
+<span class="cmt">#
 # Create the images "checkedImg" and "uncheckedImg", as well as 16 images of
 # names like "img#FF0000", displaying colors identified by names like "red"
-#
+#</span>
 source [file join $dir images.tcl]
 
-#
+<span class="cmt">#
 # Create a tablelist widget with editable columns (except the first one)
-#
+#</span>
 set tbl .tbl
 tablelist::tablelist $tbl \
     -columns {0 "No."             right
@@ -2076,7 +2080,7 @@ if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
 $tbl columnconfigure 0 -sortmode integer
-$tbl columnconfigure 1 <span>-name available -editable yes -editwindow checkbutton</span> \
+$tbl columnconfigure 1 <span class="red">-name available -editable yes -editwindow checkbutton</span> \
     -formatcommand emptyStr
 $tbl columnconfigure 2 -name lineName  -editable yes -editwindow Entry \
     -sortmode dictionary
@@ -2097,25 +2101,25 @@ proc emptyStr   val { return "" }
 proc formatDate val { return [clock format $val -format "%Y-%m-%d"] }
 proc formatTime val { return [clock format $val -format "%H:%M:%S"] }
 
-#
+<span class="cmt">#
 # Populate the tablelist widget; set the activation
 # date & time to 10 minutes past the current clock value
-#
+#</span>
 set clock [expr {[clock seconds] + 600}]
 for {set i 0; set n 1} {$i &lt; 16} {set i $n; incr n} {
     $tbl insert end [list $n [expr {$i &lt; 8}] "Line $n" 9600 8 None 1 XON/XOFF \
         $clock $clock [lindex $colorNames $i]]
 
-    <span>set availImg [expr {($i &lt; 8) ? "checkedImg" : "uncheckedImg"}]
+    <span class="red">set availImg [expr {($i &lt; 8) ? "checkedImg" : "uncheckedImg"}]
     $tbl cellconfigure end,available -image $availImg</span>
     $tbl cellconfigure end,color -image img[lindex $colorValues $i]
 }
 
 set btn [button .btn -text "Close" -command exit]
 
-#
+<span class="cmt">#
 # Manage the widgets
-#
+#</span>
 pack $btn -side bottom -pady 10
 pack $tbl -side top -expand yes -fill both
 </pre>
@@ -2184,29 +2188,29 @@ option add *Tablelist.labelCommand2     tablelist::addToSortColumns
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # editStartCmd
 #
 # Applies some configuration options to the edit window; if the latter is a
 # ComboBox, the procedure populates it.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc editStartCmd {tbl row col text} {
     set w [$tbl editwinpath]
 
     switch [$tbl columncget $col -name] {
         lineName {
-            #
+            <span class="cmt">#
             # Set an upper limit of 20 for the number of characters
-            #
+            #</span>
             $w configure -invalidcommand bell -validate key \
                          -validatecommand {expr {[string length %P] &lt;= 20}}
         }
 
         baudRate {
-            #
+            <span class="cmt">#
             # Populate the ComboBox and allow no more
             # than 6 digits in its Entry component
-            #
+            #</span>
             $w configure -values {50 75 110 300 1200 2400 4800 9600 19200 38400
                                   57600 115200 230400 460800 921600}
             $w configure -invalidcommand bell -validate key -validatecommand \
@@ -2214,26 +2218,26 @@ proc editStartCmd {tbl row col text} {
         }
 
         dataBits {
-            #
+            <span class="cmt">#
             # Configure the SpinBox
-            #
+            #</span>
             $w configure -range {5 8 1} -editable no
         }
 
         parity {
-            #
+            <span class="cmt">#
             # Populate the ComboBox and make it non-editable
-            #
+            #</span>
             $w configure -values {None Even Odd Mark Space} -editable no
         }
 
         . . .
 
         color {
-            #
+            <span class="cmt">#
             # Populate the menu and make sure the menubutton will display the
             # color name rather than $text, which is "", due to -formatcommand
-            #
+            #</span>
             set menu [$w cget -menu]
             foreach name $::colorNames {
                 $menu add radiobutton -compound left \
@@ -2260,26 +2264,26 @@ proc editStartCmd {tbl row col text} {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # editEndCmd
 #
 # Performs a final validation of the text contained in the edit window and gets
 # the cell's internal content.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc editEndCmd {tbl row col text} {
     switch [$tbl columncget $col -name] {
-        <span>available {
-            #
+        <span class="red">available {
+            <span class="cmt">#
             # Update the image contained in the cell
-            #
+            #</span>
             set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
             $tbl cellconfigure $row,$col -image $img
         }</span>
 
         baudRate {
-            #
+            <span class="cmt">#
             # Check whether the baud rate is an integer in the range 50..921600
-            #
+            #</span>
             if {![regexp {^[0-9]+$} $text] || $text &lt; 50 || $text &gt; 921600} {
                 bell
                 tk_messageBox -title "Error" -icon error -message \
@@ -2289,9 +2293,9 @@ proc editEndCmd {tbl row col text} {
         }
 
         actDate {
-            #
+            <span class="cmt">#
             # Get the activation date in seconds from the last argument
-            #
+            #</span>
             if {[catch {clock scan $text} actDate] != 0} {
                 bell
                 tk_messageBox -title "Error" -icon error -message "Invalid date"
@@ -2299,11 +2303,11 @@ proc editEndCmd {tbl row col text} {
                 return ""
             }
 
-            #
+            <span class="cmt">#
             # Check whether the activation clock value is later than the
             # current one; if this is the case then make sure the cells
             # "actDate" and "actTime" will have the same internal value
-            #
+            #</span>
             set actTime [$tbl cellcget $row,actTime -text]
             set actClock [clock scan [formatTime $actTime] -base $actDate]
             if {$actClock &lt;= [clock seconds]} {
@@ -2320,9 +2324,9 @@ proc editEndCmd {tbl row col text} {
         . . .
 
         color {
-            #
+            <span class="cmt">#
             # Update the image contained in the cell
-            #
+            #</span>
             $tbl cellconfigure $row,$col -image img$::colors($text)
         }
     }
@@ -2342,7 +2346,7 @@ proc editEndCmd {tbl row col text} {
 
   <ul>
     <li class="tm">Remove those parts of the code above that are shown in
-    <span>red</span> color.</li>
+    <span class="red">red</span> color.</li>
 
     <li class="tm">
       Invoke
@@ -2393,30 +2397,30 @@ $tbl embedcheckbuttons 1
 
   <blockquote>
     <pre>
-package require tablelist 6.6
+package require tablelist 6.8
 
 wm title . "Tk Library Scripts"
 
-#
+<span class="cmt">#
 # Add some entries to the Tk option database
-#
+#</span>
 set dir [file dirname [info script]]
 source [file join $dir option.tcl]
 
-#
+<span class="cmt">#
 # Create the font TkFixedFont if not yet present
-#
+#</span>
 catch {font create TkFixedFont -family Courier -size -12}
 
-#
+<span class="cmt">#
 # Create an image to be displayed in buttons embedded in a tablelist widget
-#
+#</span>
 image create photo openImg -file [file join $dir open.gif]
 
-#
+<span class="cmt">#
 # Create a vertically scrolled tablelist widget with 5
 # dynamic-width columns and interactive sort capability
-#
+#</span>
 set tf .tf
 frame $tf -class ScrollArea
 set tbl $tf.tbl
@@ -2439,19 +2443,19 @@ scrollbar $vsb -orient vertical -command [list $tbl yview]
 
 proc emptyStr val { return "" }
 
-#
+<span class="cmt">#
 # Create a bold font
-#
+#</span>
 set tblFont [$tbl cget -font]
 set size [font actual $tblFont -size]
-if {$size == 0} {                                       ;# e.g., on Ubuntu
+if {$size == 0} {                                       ;<span class="cmt"># e.g., on Ubuntu</span>
     set size -12
 }
 eval font create BoldFont [font actual $tblFont] -size $size -weight bold
 
-#
+<span class="cmt">#
 # Populate the tablelist widget
-#
+#</span>
 cd $tk_library
 set totalSize 0
 set maxSize 0
@@ -2493,32 +2497,32 @@ if {$tk_version &gt;= 8.5} {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # createFrame
 #
 # Creates a frame widget w to be embedded into the specified cell of the
 # tablelist widget tbl, as well as a child frame representing the size of the
 # file whose name is diplayed in the first column of the cell's row.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc createFrame {tbl row col w} {
-    #
+    <span class="cmt">#
     # Create the frame and replace the binding tag "Frame"
     # with "TablelistBody" in the list of its binding tags
-    #
+    #</span>
     frame $w -width 102 -height 14 -background ivory -borderwidth 1 \
              -relief solid
     bindtags $w [lreplace [bindtags $w] 1 1 TablelistBody]
 
-    #
+    <span class="cmt">#
     # Create the child frame and replace the binding tag "Frame"
     # with "TablelistBody" in the list of its binding tags
-    #
+    #</span>
     frame $w.f -height 12 -background red -borderwidth 1 -relief raised
     bindtags $w.f [lreplace [bindtags $w] 1 1 TablelistBody]
 
-    #
+    <span class="cmt">#
     # Manage the child frame
-    #
+    #</span>
     set fileSize [$tbl cellcget $row,fileSize -text]
     place $w.f -relwidth [expr {double($fileSize) / $::maxSize}]
 }
@@ -2543,24 +2547,24 @@ proc createFrame {tbl row col w} {
 
   <blockquote>
     <pre>
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # createButton
 #
 # Creates a button widget w to be embedded into the specified cell of the
 # tablelist widget tbl.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc createButton {tbl row col w} {
     set key [$tbl getkeys $row]
     button $w -image openImg -highlightthickness 0 -takefocus 0 \
               -command [list viewFile $tbl $key]
 }
 
-#------------------------------------------------------------------------------
+<span class="cmt">#------------------------------------------------------------------------------
 # viewFile
 #
 # Displays the content of the file whose name is contained in the row with the
 # given key of the tablelist widget tbl.
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------</span>
 proc viewFile {tbl key} {
     set top .top$key
     if {[winfo exists $top]} {
@@ -2573,30 +2577,30 @@ proc viewFile {tbl key} {
     set fileName [$tbl cellcget k$key,fileName -text]
     wm title $top "File \"$fileName\""
 
-    #
+    <span class="cmt">#
     # Create a vertically scrolled text widget as a grandchild of the toplevel
-    #
+    #</span>
     set tf $top.tf
     frame $tf -class ScrollArea
     set txt $tf.txt
     set vsb $tf.vsb
     text $txt -background white -font TkFixedFont -setgrid yes \
               -yscrollcommand [list $vsb set]
-    catch {$txt configure -tabstyle wordprocessor}      ;# for Tk 8.5 and above
+    catch {$txt configure -tabstyle wordprocessor}      ;<span class="cmt"># for Tk 8.5 and above</span>
     scrollbar $vsb -orient vertical -command [list $txt yview]
 
-    #
+    <span class="cmt">#
     # Insert the file's content into the text widget
-    #
+    #</span>
     set chan [open $fileName]
     $txt insert end [read -nonewline $chan]
     close $chan
 
     . . .
 
-    #
+    <span class="cmt">#
     # Mark the file as seen
-    #
+    #</span>
     $tbl rowconfigure k$key -font BoldFont
     $tbl cellconfigure k$key,seen -text yes
 }
@@ -2624,9 +2628,9 @@ proc viewFile {tbl key} {
 
   <blockquote>
     <pre>
-#
+<span class="cmt">#
 # Create embedded windows in the columns no. 1 and 3
-#
+#</span>
 set rowCount [$tbl size]
 for {set row 0} {$row &lt; $rowCount} {incr row} {
     $tbl cellconfigure $row,1 -window createFrame -stretchwindow yes
@@ -2644,14 +2648,14 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
   Tablelist_tile.&nbsp; For example, let's see how to transform the demo script
   <code><a href="#ex_editing">bwidget.tcl</a></code> into a tile-based one,
   called <code>bwidget_tile.tcl</code>.&nbsp; The changes are shown below in
-  <span>red</span> color:</p>
+  <span class="red">red</span> color:</p>
 
   <p>First, we replace the starting lines</p>
 
   <blockquote>
     <pre>
-package require Tk 8.3                          ;# because of entry validation
-package require tablelist 6.6
+package require Tk 8.3                          ;<span class="cmt"># because of entry validation</span>
+package require tablelist 6.8
 </pre>
   </blockquote>
 
@@ -2659,7 +2663,7 @@ package require tablelist 6.6
 
   <blockquote>
     <pre>
-package require tablelist<span>_tile</span> 6.6
+package require tablelist<span class="red">_tile</span> 6.8
 </pre>
   </blockquote>
 
@@ -2675,7 +2679,7 @@ source [file join $dir option.tcl]
 
   <blockquote>
     <pre>
-source [file join $dir option<span>_tile</span>.tcl]
+source [file join $dir option<span class="red">_tile</span>.tcl]
 </pre>
   </blockquote>
 
@@ -2685,7 +2689,7 @@ source [file join $dir option<span>_tile</span>.tcl]
 
   <blockquote>
     <pre>
-<span>#
+<span class="red">#
 # Improve the window's appearance by using a tile
 # frame as a container for the other widgets
 #
@@ -2705,7 +2709,7 @@ set tbl .tbl
 
   <blockquote>
     <pre>
-set tbl <span>$f</span>.tbl
+set tbl <span class="red">$f</span>.tbl
 </pre>
   </blockquote>
 
@@ -2721,7 +2725,7 @@ set btn [button .btn -text "Close" -command exit]
 
   <blockquote>
     <pre>
-set btn [<span>ttk::</span>button <span>$f</span>.btn -text "Close" -command exit]
+set btn [<span class="red">ttk::</span>button <span class="red">$f</span>.btn -text "Close" -command exit]
 </pre>
   </blockquote>
 
@@ -2729,7 +2733,7 @@ set btn [<span>ttk::</span>button <span>$f</span>.btn -text "Close" -command exi
 
   <blockquote>
     <pre>
-<span>pack $f -expand yes -fill both</span>
+<span class="red">pack $f -expand yes -fill both</span>
 </pre>
   </blockquote>
 
@@ -2743,7 +2747,7 @@ set btn [<span>ttk::</span>button <span>$f</span>.btn -text "Close" -command exi
 
   <blockquote>
     <pre>
-<span>tablelist::setThemeDefaults
+<span class="red">tablelist::setThemeDefaults
 if {[tablelist::getCurrentTheme] eq "aqua"} {
     option add *Listbox.selectBackground \
                $tablelist::themeDefaults(-selectbackground)

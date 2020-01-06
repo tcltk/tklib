@@ -156,6 +156,18 @@ proc tablelist::extendConfigSpecs {} {
 		style map TablelistHeader.TLabel -foreground [list \
 		    {disabled background} #a3a3a3 disabled #a3a3a3 \
 		    background black]
+
+		#
+		# Determine the value of the variable newAquaSupport
+		#
+		set helpHdrLabel .__helpHdrLabel
+		for {set n 2} {[winfo exists $helpHdrLabel]} {incr n} {
+		    set helpHdrLabel .__helpHdrLabel$n
+		}
+		ttk::label $helpHdrLabel -style TablelistHeader.TLabel
+		variable newAquaSupport \
+		    [expr {[winfo reqheight $helpHdrLabel] == 24}]
+		destroy $helpHdrLabel
 	    }
 	}
     } else {
@@ -348,7 +360,7 @@ proc tablelist::extendConfigSpecs {} {
 		    set arrowColor	#404040
 		    set arrowStyle	flatAngle7x4
 		} else {
-		    set arrowColor	#717171
+		    set arrowColor	#777777
 		    variable pngSupported
 		    if {$pngSupported} {
 			set arrowStyle	photo7x7
@@ -376,14 +388,6 @@ proc tablelist::extendConfigSpecs {} {
     # -movecursor, and -resizecursor options
     #
     switch $winSys {
-	x11 -
-	win32 {
-	    set movecolumnCursor	icon
-	    set moveCursor		hand2
-	    set resizeCursor		sb_h_double_arrow
-	}
-
-	classic -
 	aqua {
 	    set movecolumnCursor	closedhand
 	    set moveCursor		pointinghand
@@ -393,6 +397,12 @@ proc tablelist::extendConfigSpecs {} {
 		set resizeCursor	sb_h_double_arrow
 	    }
 	}
+
+	default {
+	    set movecolumnCursor	icon
+	    set moveCursor		hand2
+	    set resizeCursor		sb_h_double_arrow
+	}
     }
     lappend configSpecs(-movecolumncursor)	$movecolumnCursor
     lappend configSpecs(-movecursor)		$moveCursor
@@ -400,9 +410,10 @@ proc tablelist::extendConfigSpecs {} {
 
     variable centerArrows 0
     if {[string compare $winSys "win32"] == 0 &&
-	$::tcl_platform(osVersion) >= 6.0 &&
-	[string compare [winfo rgb . SystemHighlight] \
-			"13107 39321 65535"] == 0} {
+	($::tcl_platform(osVersion) >= 10.0 ||
+	 ($::tcl_platform(osVersion) >= 6.0 &&
+	  [string compare [winfo rgb . SystemHighlight] \
+			  "13107 39321 65535"] == 0))} {	;# Win 7/8 Aero
 	set centerArrows 1
     }
 }
@@ -626,8 +637,7 @@ proc tablelist::doConfig {win opt val} {
 		-selectmode -
 		-sortcommand -
 		-tooltipaddcommand -
-		-tooltipdelcommand -
-		-yscrollcommand {
+		-tooltipdelcommand {
 		    set data($opt) $val
 		}
 		-activestyle {
@@ -1188,6 +1198,7 @@ proc tablelist::doConfig {win opt val} {
 			adjustSepsWhenIdle $win
 		    }
 		    set data($opt) $val
+		    set data(xView) {-1 -1}
 		    updateHScrlbarWhenIdle $win
 
 		    set titleColsWidth [getTitleColsWidth $win]
@@ -1309,11 +1320,16 @@ proc tablelist::doConfig {win opt val} {
 		    # widget if (and only if) no title columns are being used
 		    #
 		    set data($opt) $val
+		    set data(xView) {-1 -1}
 		    if {$data(-titlecolumns) == 0} {
 			$data(hdrTxt) configure $opt $val
 		    } else {
 			$data(hdrTxt) configure $opt ""
 		    }
+		}
+		-yscrollcommand {
+		    set data($opt) $val
+		    set data(yView) {-1 -1}
 		}
 	    }
 	}

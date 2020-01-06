@@ -2306,7 +2306,9 @@ proc tablelist::setupColumns {win columns createLabels} {
     #
     if {$createLabels} {
 	foreach w [winfo children $data(hdrTxtFrm)] {
-	    destroy $w
+	    if {[string compare $w $data(hdrTxtFrmFrm)] != 0} {
+		destroy $w
+	    }
 	}
 	foreach w [winfo children $win] {
 	    if {[regexp {^(vsep[0-9]+|hsep2)$} [winfo name $w]]} {
@@ -2687,6 +2689,11 @@ proc tablelist::adjustSeps win {
 	    incr sepHeight 3
 	}
     }
+    variable newAquaSupport
+    if {$usingTile && [string compare [mwutil::currentTheme] "aqua"] == 0 &&
+	$newAquaSupport} {
+	incr y -4
+    }
     incr sepHeight [expr {[winfo reqheight $data(hdr)] -
 			  [winfo reqheight $data(hdrTxtFrm)]}]
     if {!$data(-showlabels)} {
@@ -2746,8 +2753,9 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 	[expr {[string compare $whichWidths "allLabels"] == 0}]
 
     variable usingTile
-    set usingAquaTheme [expr {$usingTile &&
-			[string compare [mwutil::currentTheme] "aqua"] == 0}]
+    variable newAquaSupport
+    set aquaTheme [expr {$usingTile &&
+	[string compare [mwutil::currentTheme] "aqua"] == 0}]
 
     #
     # Configure the labels and compute the positions
@@ -2824,6 +2832,9 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 		    && $data(arrowHeight) == 5} {
 		    set y -1
 		}
+		if {$aquaTheme && $newAquaSupport} {
+		   incr y -4
+		}
 		if {[string compare $labelAlignment "right"] == 0} {
 		    place $canvas -in $w -anchor w -bordermode outside \
 				  -relx 0.0 -x $data(charWidth) \
@@ -2851,7 +2862,7 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 	} else {
 	    set x2 $x
 	    set labelPixels [expr {$pixels + 2*$data(charWidth)}]
-	    if {$usingAquaTheme} {
+	    if {$aquaTheme && !$newAquaSupport} {
 		incr x2 -1
 		incr labelPixels
 		if {$col == 0} {
@@ -2859,7 +2870,12 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 		    incr labelPixels
 		}
 	    }
-	    place $w -x $x2 -relheight 1.0 -width $labelPixels
+
+	    set y 0
+	    if {$aquaTheme && $newAquaSupport} {
+		set y 4
+	    }
+	    place $w -x $x2 -y $y -relheight 1.0 -width $labelPixels
 	}
 
 	#
@@ -2967,7 +2983,10 @@ proc tablelist::adjustLabel {win col pixels alignment} {
     set marginL $data(charWidth)
     set marginR $data(charWidth)
     variable usingTile
-    if {$usingTile && [string compare [mwutil::currentTheme] "aqua"] == 0} {
+    variable newAquaSupport
+    set aquaTheme [expr {$usingTile &&
+	[string compare [mwutil::currentTheme] "aqua"] == 0}]
+    if {$aquaTheme && !$newAquaSupport} {
 	incr padL
 	incr marginL
 	if {$col == 0} {
@@ -3161,9 +3180,16 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 	    set padT [$w cget -pady]
 	    set padB $padT
 	}
+	set y 0
 	set marginT [expr {$borderWidth + $padT}]
 	set marginB [expr {$borderWidth + $padB}]
 	set ilReqWidth [winfo reqwidth $w-il]
+
+	if {$aquaTheme && $newAquaSupport} {
+	    set y -5
+	    incr marginT -4
+	    incr marginB  4
+	}
 
 	switch $alignment {
 	    left {
@@ -3172,7 +3198,7 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 		switch $data($col-labelvalign) {
 		    center {
 			place $w-il -in $w -anchor w -bordermode outside \
-			    -relx 0.0 -x $marginL -rely 0.4999 -y 0
+			    -relx 0.0 -x $marginL -rely 0.4999 -y $y
 		    }
 		    top {
 			place $w-il -in $w -anchor nw -bordermode outside \
@@ -3201,7 +3227,7 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 		switch $data($col-labelvalign) {
 		    center {
 			place $w-il -in $w -anchor e -bordermode outside \
-			    -relx 1.0 -x -$marginR -rely 0.4999 -y 0
+			    -relx 1.0 -x -$marginR -rely 0.4999 -y $y
 		    }
 		    top {
 			place $w-il -in $w -anchor ne -bordermode outside \
@@ -3229,7 +3255,7 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 		    switch $data($col-labelvalign) {
 			center {
 			    place $w-il -in $w -anchor center -bordermode \
-				inside -relx 0.4999 -x 0 -rely 0.4999 -y 0
+				inside -relx 0.4999 -x 0 -rely 0.4999 -y $y
 			}
 			top {
 			    place $w-il -in $w -anchor n -bordermode \
@@ -3247,7 +3273,7 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 		    switch $data($col-labelvalign) {
 			center {
 			    place $w-il -in $w -anchor w -bordermode inside \
-				-relx 0.4999 -x $ilX -rely 0.4999 -y 0
+				-relx 0.4999 -x $ilX -rely 0.4999 -y $y
 			}
 			top {
 			    place $w-il -in $w -anchor nw -bordermode inside \
@@ -3453,10 +3479,11 @@ proc tablelist::adjustHeaderHeight win {
 	}
 	$data(hdr) configure -height $hdrHeight
 	$data(hdrFrm) configure -height $maxLabelHeight
+	$data(cornerFrmFrm) configure -height $maxLabelHeight
 
 	place configure $data(hdrTxt) -y 0
 	place configure $data(hdrFrm) -y 0
-	place configure $data(cornerLbl) -height $maxLabelHeight -y 0
+	place configure $data(cornerFrmFrm) -y 0
     } else {
 	$data(hdrTxtFrm) configure -height 1
 	if {$data(hdr_itemCount) == 0} {
@@ -3470,10 +3497,11 @@ proc tablelist::adjustHeaderHeight win {
 	}
 	$data(hdr) configure -height $hdrHeight
 	$data(hdrFrm) configure -height 1
+	$data(cornerFrmFrm) configure -height 1
 
 	place configure $data(hdrTxt) -y $y
 	place configure $data(hdrFrm) -y -1
-	place configure $data(cornerLbl) -height 1 -y -1
+	place configure $data(cornerFrmFrm) -y -1
     }
 
     set cornerFrmHeight $hdrHeight
@@ -4215,7 +4243,13 @@ proc tablelist::updateHScrlbar win {
 
     if {$data(-titlecolumns) > 0 &&
 	[string length $data(-xscrollcommand)] != 0} {
-	eval $data(-xscrollcommand) [xviewSubCmd $win {}]
+	set xView [xviewSubCmd $win {}]
+	foreach {frac1 frac2} $xView {}
+	foreach {frac1Old frac2Old} $data(xView) {}
+	if {$frac1 != $frac1Old || $frac2 != $frac2Old} {
+	    set data(xView) $xView
+	    eval $data(-xscrollcommand) $frac1 $frac2
+	}
     }
 }
 
@@ -4248,7 +4282,13 @@ proc tablelist::updateVScrlbar win {
     }
 
     if {[string length $data(-yscrollcommand)] != 0} {
-	eval $data(-yscrollcommand) [yviewSubCmd $win {}]
+	set yView [yviewSubCmd $win {}]
+	foreach {frac1 frac2} $yView {}
+	foreach {frac1Old frac2Old} $data(yView) {}
+	if {$frac1 != $frac1Old || $frac2 != $frac2Old} {
+	    set data(yView) $yView
+	    eval $data(-yscrollcommand) $frac1 $frac2
+	}
     }
 
     if {[winfo viewable $win] && ![info exists data(colBeingResized)] &&
@@ -4277,13 +4317,22 @@ proc tablelist::forceRedraw win {
     $w tag add redraw $fromTextIdx $toTextIdx
     $w tag remove redraw $fromTextIdx $toTextIdx
 
+    workAroundAquaTkBugs $win
+}
+
+#------------------------------------------------------------------------------
+# tablelist::workAroundAquaTkBugs
+#
+# Works around some Tk bugs on Mac OS X Aqua (no longer present in current Tk
+# versions).
+#------------------------------------------------------------------------------
+proc tablelist::workAroundAquaTkBugs win {
     variable winSys
-    if {[string compare $winSys "aqua"] == 0} {
-	#
-	# Work around some Tk bugs on Mac OS X Aqua
-	#
-	raise $w
-	lower $w
+    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
+	upvar ::tablelist::ns${win}::data data
+	raise $data(body)
+	lower $data(body)
+
 	if {[winfo exists $data(bodyFrm)]} {
 	    lower $data(bodyFrm)
 	    raise $data(bodyFrm)
@@ -5848,6 +5897,11 @@ proc tablelist::configLabel {w args} {
 			$w configure -foreground ""
 
 			set bg $themeDefaults(-labeldisabledBg)
+			if {[string length $bg] == 0} {
+			    set bg [expr {[$w instate background] ?
+				    $themeDefaults(-labeldeactivatedBg) :
+				    $themeDefaults(-labelbackground)}]
+			}
 		    } else {
 			#
 			# Restore the label's foreground color
@@ -5863,7 +5917,9 @@ proc tablelist::configLabel {w args} {
 			    configLabel $w -foreground $fg
 			}
 
-			set bg $themeDefaults(-labelbackground)
+			set bg [expr {[$w instate background] ?
+				$themeDefaults(-labeldeactivatedBg) :
+				$themeDefaults(-labelbackground)}]
 		    }
 		    foreach l [getSublabels $w] {
 			$l configure -background $bg
@@ -5957,6 +6013,11 @@ proc tablelist::configCanvas {win col} {
 
 	if {[$w instate disabled]} {
 	    set labelBg $themeDefaults(-labeldisabledBg)
+	    if {[string length $labelBg] == 0} {
+		set labelBg [expr {[$w instate background] ?
+			     $themeDefaults(-labeldeactivatedBg) :
+			     $themeDefaults(-labelbackground)}]
+	    }
 	    set labelFg $themeDefaults(-labeldisabledFg)
 	} elseif {[$win instate background]} {
 	    set labelBg $themeDefaults(-labeldeactivatedBg)
@@ -6355,7 +6416,9 @@ proc tablelist::getVertComplBtmRow win {
 
     foreach {x y width height baselinePos} [$w dlineinfo $btmTextIdx] {}
     set y2 [expr {$y + $height}]
-    if {[$w compare [$w index @0,$y] == [$w index @0,$y2]]} {
+    set text [$w get @0,$y @[expr {$data(rightX) + 1}],$y]
+    if {[$w compare [$w index @0,$y] == [$w index @0,$y2]] &&
+	[string length $text] != 0} {
 	incr btmRow -1		;# btm row incomplete in vertical direction
     }
 
@@ -6541,7 +6604,12 @@ proc tablelist::makeCheckbutton w {
 	    $w configure -borderwidth 0 -font "system"
 	    if {$::tk_version > 8.4} {
 		$frm configure -width 12 -height 12
-		place $w -x -1 -y -3
+		variable newAquaSupport
+		if {$newAquaSupport} {
+		    place $w -x -1 -y -2
+		} else {
+		    place $w -x -1 -y -3
+		}
 	    } else {
 		$frm configure -width 14 -height 14
 		place $w -x -4 -y -3
@@ -6631,8 +6699,14 @@ proc tablelist::makeTileCheckbutton w {
     set frm [winfo parent $w]
     switch -- $currentTheme {
 	aqua {
-	    $frm configure -width 16 -height 16
-	    place $w -x -3 -y -3
+	    variable newAquaSupport
+	    if {$newAquaSupport} {
+		$frm configure -width 18 -height 18
+		place $w -x 0 -y -1
+	    } else {
+		$frm configure -width 16 -height 16
+		place $w -x -3 -y -3
+	    }
 	}
 
 	Aquativo -

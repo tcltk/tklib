@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Commands for Mouse Wheel Event Handling in Scrollable Widget
+  Containers</title>
+
+  <meta name="Author" content="Csaba Nemethi">
+  <meta name="Keywords" content=
+  "mouse wheel event, binding, event handling, scrolling, scrollable widget container, focus">
+
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+
+<body>
+  <div align="center">
+    <h1>Commands for Mouse Wheel Event Handling<br>
+    in Scrollable Widget Containers</h1>
+
+    <h2>For Scrollutil Version 1.3</h2>
+
+    <h3>by</h3>
+
+    <h2>Csaba Nemethi</h2>
+
+    <address>
+      <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
+    </address>
+  </div>
+
+  <hr>
+
+  <h2 id="contents">Contents</h2>
+
+  <ul>
+    <li><a href="#create">The
+    <code><b>scrollutil::createWheelEventBindings</b></code> Command</a></li>
+
+    <li><a href="#enable">The
+    <code><b>scrollutil::enableScrollingByWheel</b></code> Command</a></li>
+
+    <li><a href="#adapt">The
+    <code><b>scrollutil::adaptWheelEventHandling</b></code> Command</a></li>
+
+    <li><a href="#setFocusCkWin">The
+    <code><b>scrollutil::setFocusCheckWindow</b></code> Command</a></li>
+
+    <li><a href="#focusCkWin">The
+    <code><b>scrollutil::focusCheckWindow</b></code> Command</a></li>
+  </ul>
+
+  <div align="center">
+    <p><a href="index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="create">The <code><b>scrollutil::createWheelEventBindings</b></code>
+  Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>scrollutil::createWheelEventBindings</code> &ndash; Create mouse
+    wheel event bindings</dd>
+
+    <dt class="tm"><b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>scrollutil::createWheelEventBindings</b> ?<i>tag</i> <i>tag</i> ...?
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>Creates mouse wheel event bindings for the specified binding tags such
+    that if the widget under the pointer is (a descendant of) one of the
+    scrollable widget containers having the same toplevel as the widget and
+    registered via <code><b><a href=
+    "#enable">scrollutil::enableScrollingByWheel</a></b></code> then these
+    events will trigger a scrolling of that widget container.&nbsp; In case of
+    several nested registered scrollable widget containers fulfilling these
+    conditions the innermost one will be scrolled.&nbsp; Each
+    <code><i>tag</i></code> argument must be <code><b>all</b></code> or the
+    path name of an existing toplevel widget (including <code>"."</code>).</dd>
+
+    <dd class="tm"><b>REMARK 1:</b>&nbsp; The reason for restricting the
+    <code><i>tag</i></code> arguments to <code><b>all</b></code> and path names
+    of existing toplevel widgets rather than supporting also tags like
+    <code>"Scrollableframe"</code> (for scrollutil::scrollableframe),
+    <code>"BwScrollableFrame"</code> (for BWidget ScrollableFrame) or
+    <code>"Scrolledframe"</code> (for iwidgets::scrolledframe) is that the
+    mouse wheel events should trigger a scrolling of the widget container under
+    the pointer not only if the widget under the pointer is the widget
+    container itself but also if it is a descendant of the latter (remember
+    that for each window, the path name of its nearest toplevel ancestor and
+    the tag <code><b>all</b></code> are contained in the window's default list
+    of binding tags).</dd>
+
+    <dd class="tm"><b>REMARK 2:</b>&nbsp; The mouse wheel events along the
+    vertical axis are <code><b>&lt;MouseWheel&gt;</b></code> on Windows,
+    <code><b>&lt;MouseWheel&gt;</b></code> and
+    <code><b>&lt;Option-MouseWheel&gt;</b></code> on Mac OS X, and
+    <code><b>&lt;MouseWheel&gt;</b></code>,
+    <code><b>&lt;Button-4&gt;</b></code> and
+    <code><b>&lt;Button-5&gt;</b></code> on X11 (where
+    <code><b>&lt;MouseWheel&gt;</b></code> is not triggered by the X server,
+    but can be produced using&nbsp; <code><b>event generate</b></code>).&nbsp;
+    The mouse wheel events along the horizontal axis are
+    <code><b>&lt;Shift-MouseWheel&gt;</b></code> on Windows,
+    <code><b>&lt;Shift-MouseWheel&gt;</b></code> and
+    <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code> on Mac OS X, and
+    <code><b>&lt;Shift-MouseWheel&gt;</b></code>,
+    <code><b>&lt;Shift-Button-4&gt;</b></code> and
+    <code><b>&lt;Shift-Button-5&gt;</b></code> on X11 (where
+    <code><b>&lt;Shift-MouseWheel&gt;</b></code> is not triggered by the X
+    server, but can be produced using&nbsp; <code><b>event
+    generate</b></code>).&nbsp; On X11, when using Tk 8.7a3 or later, there are
+    two more mouse wheel events along the horizontal axis:
+    <code><b>&lt;Button-6&gt;</b></code> and
+    <code><b>&lt;Button-7&gt;</b></code>, which are handled just like
+    <code><b>&lt;Shift-Button-4&gt;</b></code> and
+    <code><b>&lt;Shift-Button-5&gt;</b></code>, respectively.&nbsp; These
+    events are commonly triggered by left/right tilting the scroll wheel of a
+    mouse having one or two additional (thumb) buttons.&nbsp; (In Tk versions
+    8.6.x, with x >= 10, left/right tilting the scroll wheel of such a mouse
+    gives rise to <code><b>&lt;Shift-MouseWheel&gt;</b></code> events on
+    Windows and Mac OS X Aqua, and to
+    <code><b>&lt;Shift-Button-4&gt;</b></code> and
+    <code><b>&lt;Shift-Button-5&gt;</b></code> events on X11.)</dd>
+
+    <dt class="tm"><b>KEYWORDS</b></dt>
+
+    <dd>mouse wheel event, binding, scrolling, scrollable widget container</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="enable">The <code><b>scrollutil::enableScrollingByWheel</b></code>
+  Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>scrollutil::enableScrollingByWheel</code> &ndash; Register
+    scrollable widget containers for scrolling by the mouse wheel</dd>
+
+    <dt class="tm"><b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>scrollutil::enableScrollingByWheel</b> ?<i>scrollableWidgetContainer</i> <i>scrollableWidgetContainer</i> ...?
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>Adds the specified scrollable widget containers to the internal list of
+    widget containers that are registered for scrolling by the mouse wheel
+    event bindings created by the <code><b><a href=
+    "#create">scrollutil::createWheelEventBindings</a></b></code> command.</dd>
+
+    <dd class="tm"><b>REMARK:</b>&nbsp; When a scrollable widget container
+    whose path name was passed to this command gets destroyed, it is
+    automatically removed from the above-mentioned internal list of registered
+    widget containers.</dd>
+
+    <dt class="tm"><b>KEYWORDS</b></dt>
+
+    <dd>mouse wheel event, binding, scrolling, scrollable widget container</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="adapt">The <code><b>scrollutil::adaptWheelEventHandling</b></code>
+  Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>scrollutil::adaptWheelEventHandling</code> &ndash; Adapt mouse
+    wheel event handling</dd>
+
+    <dt class="tm"><b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>scrollutil::adaptWheelEventHandling</b> ?<i>widget</i> <i>widget</i> ...?
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>For each <code><i>widget</i></code> argument, the command performs the
+    following actions:</dd>
+
+    <dd class="tm">
+      <ul>
+        <li>
+          If <code><i>widget</i></code> is the path name of a <a href=
+          "https://www.nemethi.de/tablelist/">tablelist</a> widget then it sets
+          the latter's <code><b>-xmousewheelwindow</b></code> and
+          <code><b>-ymousewheelwindow</b></code> options to the path name of
+          the containing toplevel window, provided that the Tablelist version
+          is 6.4 or later (for earlier Tablelist versions the command silently
+          ignores any tablelist widget passed to it as argument).&nbsp; As a
+          result, a mouse wheel event over the tablelist's body or edit window
+          (more precisely, a mouse wheel event sent to any component of the
+          tablelist having the binding tag <code><b>TablelistBody</b></code> or
+          <code><b>TablelistEdit</b></code>) will be handled as follows:
+
+          <ul class="tm">
+            <li>If the focus is inside the tablelist widget then the event will
+            scroll the tablelist or its edit window and no further processing
+            of the event will take place.</li>
+
+            <li class="tm">If the focus is outside the tablelist widget then no
+            scrolling of the tablelist's body or edit window will happen.&nbsp;
+            Instead, the event will be redirected to the containing toplevel
+            window via&nbsp; <code><b>event generate</b></code>.&nbsp; This in
+            turn will trigger a scrolling of the (innermost) widget container
+            that is an ancestor of <code><i>widget</i></code> and has the same
+            toplevel (if there is such a scrollable widget container), provided
+            that the path name of the containing toplevel widget or the binding
+            tag <code><b>all</b></code> was passed to the <code><b><a href=
+            "#create">scrollutil::createWheelEventBindings</a></b></code>
+            command and this widget container was registered for scrolling via
+            <code><b><a href=
+            "#enable">scrollutil::enableScrollingByWheel</a></b></code>.</li>
+          </ul>
+        </li>
+
+        <li class="tm">
+          Otherwise it locates the (first) binding tag that has mouse wheel
+          event bindings and is different from both the path name of the
+          containing toplevel window and <code><b>all</b></code>.&nbsp; If the
+          search for this tag was successful then the command modifies the
+          widget's list of binding tags by prepending the tag
+          <code><b>WheeleventRedir</b></code> and appending the tag
+          <code><b>WheeleventBreak</b></code> to this binding tag.&nbsp; As a
+          result, a mouse wheel event sent to this widget will be handled as
+          follows:
+
+          <ul class="tm">
+            <li>If the focus is on or inside the window&nbsp;
+            <code>[<b><a href="#focusCkWin">focusCheckWindow</a></b>
+            <i>widget</i>]</code>&nbsp; then the event will be handled by the
+            binding script associated with this tag and no further processing
+            of the event will take place.</li>
+
+            <li class="tm">If the focus is outside the window&nbsp;
+            <code>[<b>focusCheckWindow</b> <i>widget</i>]</code>&nbsp; then the
+            event will be redirected to the containing toplevel window
+            via&nbsp; <code><b>event generate</b></code>&nbsp; rather than
+            being handled by the binding script associated with the
+            above-mentioned tag.&nbsp; This in turn will trigger a scrolling of
+            the (innermost) widget container that is an ancestor of
+            <code><i>widget</i></code> and has the same toplevel (if there is
+            such a scrollable widget container), provided that the path name of
+            the containing toplevel widget or the binding tag
+            <code><b>all</b></code> was passed to the <code><b><a href=
+            "#create">scrollutil::createWheelEventBindings</a></b></code>
+            command and this widget container was registered for scrolling via
+            <code><b><a href=
+            "#enable">scrollutil::enableScrollingByWheel</a></b></code>.</li>
+          </ul>
+        </li>
+      </ul>
+    </dd>
+
+    <dd class="tm"><b>REMARK 1:</b>&nbsp; This command is designed to be
+    invoked for widgets that have mouse wheel event bindings and are
+    descendants of a scrollable widget container (although it does no harm if
+    it is called for other widgets, too).&nbsp; The Tk and tile widgets having
+    class bindings for mouse wheel events are: listbox, scrollbar (but not
+    ttk::scrollbar), text, ttk::combobox, ttk::spinbox, and
+    ttk::treeview.&nbsp; Examples of widgets with binding tags other than their
+    class names that have mouse wheel event bindings are tablelist widgets as
+    well as the entry components of <a href=
+    "https://www.nemethi.de/mentry/">mentry</a> widgets of type
+    <code>"Date"</code>, <code>"Time"</code>, <code>"DateTime"</code>,
+    <code>"IPAddr"</code>, and <code>"IPv6Addr"</code> (for Mentry versions 3.2
+    and above).</dd>
+
+    <dd class="tm"><b>REMARK 2:</b>&nbsp; Invoking this command for widgets
+    that have mouse wheel event bindings and are descendants of a scrollable
+    widget container is essential for a user-friendly mouse wheel event
+    handling in scrollable widget containers.&nbsp; Without this step the mouse
+    wheel events would scroll both the listbox, text, ttk::treeview, or 
+    tablelist widget under the pointer <i>and</i> the widget container to whose
+    descendants the latter belongs, or they would select the next/previous
+    value in the ttk::combobox or ttk::spinbox under the pointer <i>in addition
+    to</i> scrolling the widget container.&nbsp; After invoking this command,
+    e.g, for a listbox within a scrollable widget container, the mouse wheel
+    events over this widget will only scroll the listbox if it has the
+    focus.&nbsp; Likewise, after invoking the command for a ttk::combobox or
+    ttk::spinbox within a scrollable widget container, the mouse wheel events
+    over this widget will only select its next/previous value if it has the
+    focus.&nbsp; In both examples, if the focus is outside the widget in
+    question then the mouse wheel events will scroll the widget container
+    instead.</dd>
+
+    <dt class="tm"><b>KEYWORDS</b></dt>
+
+    <dd>mouse wheel event, binding, event handling, scrolling, scrollable
+    widget container, focus</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="setFocusCkWin">The
+  <code><b>scrollutil::setFocusCheckWindow</b></code> Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>scrollutil::setFocusCheckWindow</code> &ndash; Set the "focus
+    check window"</dd>
+
+    <dt class="tm"><b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>scrollutil::setFocusCheckWindow</b> <i>widget</i> ?<i>widget</i> ...? <i>otherWidget</i>
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>For each <code><i>widget</i></code> argument, the command sets the
+    associated "focus check window" to <code><i>otherWidget</i></code>.&nbsp;
+    This is the window to be used in the binding scripts for the tag
+    <code><b><a href="#adapt">WheeleventRedir</a></b></code> instead of the
+    widget when checking whether the focus is on/inside or outside that
+    window.&nbsp; For each <code><i>widget</i></code> argument,
+    <code><i>otherWidget</i></code> must be an ancestor of or identical to 
+    <code><i>widget</i></code>.</dd>
+
+    <dd class="tm"><b>REMARK 1:</b>&nbsp; When a widget whose path name was
+    passed to this command as one of its <code><i>widget</i></code> arguments
+    gets destroyed, the association between the widget and its "focus check
+    window" is automatically removed.</dd>
+
+    <dd class="tm"><b>REMARK 2:</b>&nbsp; This command comes in handy if for
+    some widgets you want to make the focus check within the binding scripts
+    for the tag <code><b>WheeleventRedir</b></code> less restrictive.&nbsp; For
+    example, if the widget under the pointer is an entry component of a
+    <a href="https://www.nemethi.de/mentry/">mentry</a> <code><i>me</i></code>
+    of type <code>"Date"</code>, <code>"Time"</code>, <code>"DateTime"</code>,
+    <code>"IPAddr"</code>, or <code>"IPv6Addr"</code> and the focus is on any
+    of its siblings, then the mouse wheel events sent to this entry should be
+    handled by the mentry widget rather than scrolling the widget container
+    that is an ascendant of the mentry.&nbsp; You can achieve this by
+    invoking</dd>
+
+    <dd>
+      <blockquote>
+        <pre>
+set entryList [$me entries]
+eval <a href="#adapt">scrollutil::adaptWheelEventHandling</a>  $entryList
+eval <span class="red">scrollutil::setFocusCheckWindow</span>      $entryList [list $me]
+</pre>
+      </blockquote>
+    </dd>
+
+    <dd>With Tcl/Tk 8.5 or above, you can use the more compact form</dd>
+
+    <dd>
+      <blockquote>
+        <pre>
+set entryList [$me entries]
+<a href="#adapt">scrollutil::adaptWheelEventHandling</a>  {*}$entryList
+<span class="red">scrollutil::setFocusCheckWindow</span>      {*}$entryList $me
+</pre>
+      </blockquote>
+    </dd>
+
+    <dt class="tm"><b>KEYWORDS</b></dt>
+
+    <dd>binding, focus, "focus check window"</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="focusCkWin">The <code><b>scrollutil::focusCheckWindow</b></code>
+  Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>scrollutil::focusCheckWindow</code> &ndash; Query the "focus
+    check window"</dd>
+
+    <dt class="tm"><b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>scrollutil::focusCheckWindow</b> <i>widget</i>
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>Returns the path name of the "focus check window" associated with the
+    <code><i>widget</i></code> argument.&nbsp; This is the window that is used
+    in the binding scripts for the tag <code><b><a href=
+    "#adapt">WheeleventRedir</a></b></code> instead of the widget when checking
+    whether the focus is on/inside or outside that window.&nbsp; If the command
+    <code><b><a href=
+    "#setFocusCkWin">scrollutil::setFocusCheckWindow</a></b></code> was not
+    invoked for <code><i>widget</i></code> then the return value is
+    <code><i>widget</i></code> itself.</dd>
+
+    <dt class="tm"><b>KEYWORDS</b></dt>
+
+    <dd>binding, focus, "focus check window"</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+</body>
+</html>

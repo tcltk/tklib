@@ -24,7 +24,7 @@ namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	6.6
+    variable version	6.8
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file normalize [DIR]]
@@ -81,7 +81,7 @@ proc ::tablelist::restoreUsingTile {origVal varName index op} {
     variable usingTile $origVal
     switch $op {
 	w {
-	    return -code error "it is not allowed to use both Tablelist and\
+	    return -code error "it is not supported to use both Tablelist and\
 				Tablelist_tile in the same application"
 	}
 	u {
@@ -91,9 +91,14 @@ proc ::tablelist::restoreUsingTile {origVal varName index op} {
     }
 }
 
-interp alias {} ::tk::frame     {} ::frame
-interp alias {} ::tk::label     {} ::label
-interp alias {} ::tk::scrollbar {} ::scrollbar
+proc ::tablelist::createTkAliases {} {
+    foreach cmd {frame label} {
+	if {[llength [info commands ::tk::$cmd]] == 0} {
+	    interp alias {} ::tk::$cmd {} ::$cmd
+	}
+    }
+}
+::tablelist::createTkAliases
 
 #
 # Everything else needed is lazily loaded on demand, via the dispatcher

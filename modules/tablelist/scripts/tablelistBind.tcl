@@ -256,15 +256,15 @@ proc tablelist::cleanup win {
     # Cancel the execution of all delayed (hdr_)handleMotion, updateKeyToRowMap,
     # adjustSeps, makeStripes, showLineNumbers, stretchColumns,
     # (hdr_)updateColors, updateScrlColOffset, updateHScrlbar, updateVScrlbar,
-    # updateView, synchronize, displayItems, horizMoveTo, vertMoveTo,
-    # vertScroll, dragTo, autoScan, horizAutoScan, forceRedraw,
-    # reconfigWindows, redisplay, and redisplayCol commands
+    # updateView, synchronize, displayItems, horizMoveTo, horizScrollByUnits,
+    # vertMoveTo, vertScrollByUnits, dragTo, autoScan, horizAutoScan,
+    # forceRedraw, reconfigWindows, redisplay, and redisplayCol commands
     #
     upvar ::tablelist::ns${win}::data data
     foreach id {motionId hdr_motionId mapId sepsId stripesId lineNumsId
 		stretchId colorsId hdr_colorsId offsetId hScrlbarId vScrlbarId
-		viewId syncId dispId horizMoveToId vertMoveToId scrollId
-		dragToId afterId redrawId reconfigId} {
+		viewId syncId dispId horizMoveToId horizScrollId vertMoveToId
+		vertScrollId dragToId afterId redrawId reconfigId} {
 	if {[info exists data($id)]} {
 	    after cancel $data($id)
 	}
@@ -319,16 +319,35 @@ proc tablelist::cleanup win {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::updateCanvases
+# tablelist::updateBackgrounds
 #
-# This procedure handles the events <Activate> and <Deactivate> by configuring
-# the canvases displaying sort arrows.
+# This procedure handles the <Activate> and <Deactivate> events by configuring
+# the canvases displaying sort arrows and conditionally updating the background
+# color of some frames.
 #------------------------------------------------------------------------------
-proc tablelist::updateCanvases win {
+proc tablelist::updateBackgrounds {win updateFrames isActiveWin} {
+    #
+    # This is an "after idle" callback; check whether the window exists
+    #
+    if {[destroyed $win]} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
     foreach col $data(arrowColList) {
 	configCanvas $win $col
 	raiseArrow $win $col
+    }
+
+    #
+    # Needed for the "aqua" theme if newAquaSupport is true
+    # (which is the case when using Tk 8.6.10 or later):
+    #
+    if {$updateFrames} {
+	set bgColor [expr {$isActiveWin ? "#eeeeee" : "#f6f6f6"}]
+	foreach frm [list $data(hdrTxtFrm) $data(hdrFrm) $data(cornerFrmFrm)] {
+	    $frm configure -background $bgColor
+	}
     }
 }
 
@@ -340,7 +359,7 @@ proc tablelist::updateCanvases win {
 #------------------------------------------------------------------------------
 proc tablelist::updateConfigSpecs win {
     #
-    # This might be an "after idle" callback; check whether the window exists
+    # This is an "after idle" callback; check whether the window exists
     #
     if {[destroyed $win]} {
 	return ""
@@ -397,7 +416,7 @@ proc tablelist::updateConfigSpecs win {
 	foreach opt {-background -foreground} {
 	    doConfig $win $opt $data($opt)     ;# sets the bg color of the seps
 	}
-	updateCanvases $win
+	updateBackgrounds $win 0 0
     }
 
     #
@@ -462,6 +481,31 @@ proc tablelist::updateConfigSpecs win {
     }
     if {$usingTile} {
 	set data(themeDefaults) [array get themeDefaults]
+
+	variable newAquaSupport
+	set x 0
+	set y 0
+	set aquaTheme [expr {[string compare $currentTheme "aqua"] == 0}]
+	if {$aquaTheme} {
+	    if {$newAquaSupport} {
+		set y 4
+	    } else {
+		set x -1
+	    }
+	}
+	place configure $data(hdrFrmLbl) -x $x -y $y
+
+	set y 0
+	if {$aquaTheme && $newAquaSupport} {
+	    set y 4
+	}
+	place configure $data(cornerLbl) -y $y
+
+	adjustColumns $win allCols 1
+
+	set showSeps $data(-showseparators)
+	doConfig $win -showseparators 0
+	doConfig $win -showseparators $showSeps
     }
 }
 
@@ -810,14 +854,14 @@ proc tablelist::defineTablelistBody {} {
 		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
 		if {[winfo exists $tablelist::w]} {
 		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W yview scroll [expr {-%D}] units
+			$tablelist::W yview scroll [expr {-(%D)}] units
 		    } else {
 			mwutil::genMouseWheelEvent $tablelist::w \
 			    <MouseWheel> %X %Y %D
 		    }
 		    break
 		} else {
-		    $tablelist::W yview scroll [expr {-%D}] units
+		    $tablelist::W yview scroll [expr {-(%D)}] units
 		}
 	    }
 	    bind TablelistBody <Option-MouseWheel> {
@@ -825,14 +869,14 @@ proc tablelist::defineTablelistBody {} {
 		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
 		if {[winfo exists $tablelist::w]} {
 		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W yview scroll [expr {-10 * %D}] units
+			$tablelist::W yview scroll [expr {-10 * (%D)}] units
 		    } else {
 			mwutil::genMouseWheelEvent $tablelist::w \
 			    <Option-MouseWheel> %X %Y %D
 		    }
 		    break
 		} else {
-		    $tablelist::W yview scroll [expr {-10 * %D}] units
+		    $tablelist::W yview scroll [expr {-10 * (%D)}] units
 		}
 	    }
 	    bind TablelistBody <Shift-MouseWheel> {
@@ -840,14 +884,14 @@ proc tablelist::defineTablelistBody {} {
 		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
 		if {[winfo exists $tablelist::w]} {
 		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W xview scroll [expr {-%D}] units
+			$tablelist::W xview scroll [expr {-(%D)}] units
 		    } else {
 			mwutil::genMouseWheelEvent $tablelist::w \
 			    <Shift-MouseWheel> %X %Y %D
 		    }
 		    break
 		} else {
-		    $tablelist::W xview scroll [expr {-%D}] units
+		    $tablelist::W xview scroll [expr {-(%D)}] units
 		}
 	    }
 	    bind TablelistBody <Shift-Option-MouseWheel> {
@@ -855,14 +899,14 @@ proc tablelist::defineTablelistBody {} {
 		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
 		if {[winfo exists $tablelist::w]} {
 		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W xview scroll [expr {-10 * %D}] units
+			$tablelist::W xview scroll [expr {-10 * (%D)}] units
 		    } else {
 			mwutil::genMouseWheelEvent $tablelist::w \
 			    <Shift-Option-MouseWheel> %X %Y %D
 		    }
 		    break
 		} else {
-		    $tablelist::W xview scroll [expr {-10 * %D}] units
+		    $tablelist::W xview scroll [expr {-10 * (%D)}] units
 		}
 	    }
 	} else {
@@ -871,14 +915,16 @@ proc tablelist::defineTablelistBody {} {
 		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
 		if {[winfo exists $tablelist::w]} {
 		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W yview scroll [expr {-(%D/120) * 4}] units
+			$tablelist::W yview scroll [expr {%D >= 0 ?
+			    (-%D) / 30 : (-(%D) + 29) / 30}] units
 		    } else {
 			mwutil::genMouseWheelEvent $tablelist::w \
 			    <MouseWheel> %X %Y %D
 		    }
 		    break
 		} else {
-		    $tablelist::W yview scroll [expr {-(%D/120) * 4}] units
+		    $tablelist::W yview scroll [expr {%D >= 0 ?
+			(-%D) / 30 : (-(%D) + 29) / 30}] units
 		}
 	    }
 	    bind TablelistBody <Shift-MouseWheel> {
@@ -886,14 +932,16 @@ proc tablelist::defineTablelistBody {} {
 		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
 		if {[winfo exists $tablelist::w]} {
 		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W xview scroll [expr {-(%D/120) * 4}] units
+			$tablelist::W xview scroll [expr {%D >= 0 ?
+			    (-%D) / 30 : (-(%D) + 29) / 30}] units
 		    } else {
 			mwutil::genMouseWheelEvent $tablelist::w \
 			    <Shift-MouseWheel> %X %Y %D
 		    }
 		    break
 		} else {
-		    $tablelist::W xview scroll [expr {-(%D/120) * 4}] units
+		    $tablelist::W xview scroll [expr {%D >= 0 ?
+			(-%D) / 30 : (-(%D) + 29) / 30}] units
 		}
 	    }
 
@@ -981,6 +1029,43 @@ proc tablelist::defineTablelistBody {} {
 		    break
 		} else {
 		    $tablelist::W xview scroll 5 units
+		}
+	    }
+	}
+
+	if {[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+	    bind TablelistBody <Button-6> {
+		if {!$tk_strictMotif} {
+		    set tablelist::W [tablelist::getTablelistPath %W]
+		    set tablelist::w [$tablelist::W cget -xmousewheelwindow]
+		    if {[winfo exists $tablelist::w]} {
+			if {[mwutil::hasFocus $tablelist::W]} {
+			    $tablelist::W xview scroll -5 units
+			} else {
+			    event generate $tablelist::w <Button-6> \
+				-rootx %X -rooty %Y
+			}
+			break
+		    } else {
+			$tablelist::W xview scroll -5 units
+		    }
+		}
+	    }
+	    bind TablelistBody <Button-7> {
+		if {!$tk_strictMotif} {
+		    set tablelist::W [tablelist::getTablelistPath %W]
+		    set tablelist::w [$tablelist::W cget -xmousewheelwindow]
+		    if {[winfo exists $tablelist::w]} {
+			if {[mwutil::hasFocus $tablelist::W]} {
+			    $tablelist::W xview scroll 5 units
+			} else {
+			    event generate $tablelist::w <Button-7> \
+				-rootx %X -rooty %Y
+			}
+			break
+		    } else {
+			$tablelist::W xview scroll 5 units
+		    }
 		}
 	    }
 	}
@@ -4235,7 +4320,7 @@ proc tablelist::wasColSelected {win col} {
     variable priv
     set itemCount [::$win size]
     for {set row 0} {$row < $itemCount} {incr row} {
-	if {[lsearch $priv(selection) $row,$col] >= 0} {
+	if {[lsearch -exact $priv(selection) $row,$col] >= 0} {
 	    return 1
 	}
     }

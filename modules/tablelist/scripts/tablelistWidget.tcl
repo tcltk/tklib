@@ -72,6 +72,9 @@ namespace eval tablelist {
 	[regexp {^8\.5\.(9|[1-9][0-9])$} $::tk_patchLevel]) &&
 	[lsearch -exact [winfo server .] "AppKit"] >= 0}]
 
+    variable newAquaSupport \
+	[expr {[package vcompare $::tk_patchLevel "8.6.10"] >= 0}]
+
     #
     # The array configSpecs is used to handle configuration options.  The
     # names of its elements are the configuration options for the Tablelist
@@ -663,8 +666,12 @@ proc tablelist::createBindings {} {
     }
     variable usingTile
     if {$usingTile} {
-	bind Tablelist <Activate>	{ tablelist::updateCanvases %W }
-	bind Tablelist <Deactivate>	{ tablelist::updateCanvases %W }
+	bind Tablelist <Activate> {
+	    after idle [list tablelist::updateBackgrounds %W 1 1]
+	}
+	bind Tablelist <Deactivate> {
+	    after idle [list tablelist::updateBackgrounds %W 1 0]
+	}
     }
 
     #
@@ -768,7 +775,6 @@ proc tablelist::tablelist args {
 	    anchorCol		 0
 	    seqNum		-1
 	    hdr_seqNum		-1
-	    freeKeyList		 {}
 	    keyList		 {}
 	    hdr_keyList		 {}
 	    itemList		 {}
@@ -822,6 +828,8 @@ proc tablelist::tablelist args {
 	    keyBeingExpanded	 ""
 	    justEntered		 0
 	    inEditWin		 0
+	    xView		 {-1 -1}
+	    yView		 {-1 -1}
 	}
 
 	#
@@ -885,9 +893,11 @@ proc tablelist::tablelist args {
     set data(hdr)		$win.hdr
     set data(hdrTxt)		$data(hdr).t
     set data(hdrTxtFrm)		$data(hdrTxt).f
+    set data(hdrTxtFrmFrm)	$data(hdrTxtFrm).f	;# for the aqua theme
     set data(hdrTxtFrmCanv)	$data(hdrTxtFrm).c
     set data(hdrTxtFrmLbl)	$data(hdrTxtFrm).l
     set data(hdrFrm)		$data(hdr).f
+    set data(hdrFrmFrm)		$data(hdrFrm).f		;# for the aqua theme
     set data(hdrFrmLbl)		$data(hdrFrm).l
     set data(colGap)		$data(hdr).g
     set data(lb)		$win.lb
@@ -904,7 +914,9 @@ proc tablelist::tablelist args {
 	    set data(cornerFrm$opt) ${win}_cf$opt$n
 	}
     }
-    set data(cornerLbl) $data(cornerFrm-ne).l
+    set data(cornerFrmFrm)	$data(cornerFrm-ne).f	;# for the aqua theme
+    set data(cornerFrmFrmFrm)	$data(cornerFrmFrm).f	;# for the aqua theme
+    set data(cornerLbl)		$data(cornerFrmFrm).l
 
     #
     # Create a child hierarchy used to hold the column labels.  The
@@ -928,58 +940,99 @@ proc tablelist::tablelist args {
     place $w -relheight 1.0 -relwidth 1.0
     bindtags $w [list $w $data(headerTag) TablelistHeader [winfo toplevel $w] \
 		 all]
-    tk::frame $data(hdrTxtFrm) -borderwidth 0 -container 0 -height 0 \
-			       -highlightthickness 0 -relief flat \
-			       -takefocus 0 -width 0
+
+    tk::frame $data(hdrTxtFrm) -background #eeeeee -borderwidth 0 \
+			       -container 0 -height 0 -highlightthickness 0 \
+			       -relief flat -takefocus 0 -width 0
     catch {$data(hdrTxtFrm) configure -padx 0 -pady 0}
     $w window create 1.0 -window $data(hdrTxtFrm) -align top
+
+    tk::frame $data(hdrTxtFrmFrm) -background #c8c8c8 -borderwidth 0 \
+				  -container 0 -height 1 -highlightthickness 0 \
+				  -relief flat -takefocus 0 -width 0
+    catch {$data(hdrTxtFrmFrm) configure -padx 0 -pady 0}
+    place $data(hdrTxtFrmFrm) -relwidth 1.0
+
     $w tag configure noSpacings -spacing1 0 -spacing3 0
     $w tag add noSpacings 1.0
     $w tag configure tinyFont -font "Courier -1"
     $w tag add tinyFont 1.0 end
     $w tag configure active -borderwidth ""	;# used for the priority order
-    $w tag configure disabled -foreground ""	;# will be changed
+    $w tag configure disabled -foreground ""	;# initial setting
     $w tag configure hiddenCol -elide 1		;# used for hiding a column
     $w tag configure elidedCol -elide 1		;# used for horizontal scrolling
 
     set w $data(hdrFrm)		;# filler frame within the header frame
-    tk::frame $w -borderwidth 0 -container 0 -height 0 -highlightthickness 0 \
-		 -relief flat -takefocus 0 -width 0
+    tk::frame $w -background #eeeeee -borderwidth 0 -container 0 -height 0 \
+		 -highlightthickness 0 -relief flat -takefocus 0 -width 0
     catch {$w configure -padx 0 -pady 0}
     place $w -relwidth 1.0
 
+    set w $data(hdrFrmFrm)	;# child of filler frame within the header frame
+    tk::frame $w -background #c8c8c8 -borderwidth 0 -container 0 -height 1 \
+		 -highlightthickness 0 -relief flat -takefocus 0 -width 0
+    catch {$w configure -padx 0 -pady 0}
+    place $w -relwidth 1.0
+
+    set aquaTheme [expr {$usingTile &&
+	[string compare [mwutil::currentTheme] "aqua"] == 0}]
+
     set w $data(hdrFrmLbl)	;# label within the filler frame
     set x 0
+    set y 0
     if {$usingTile} {
 	ttk::label $w -style TablelistHeader.TLabel -image "" \
 		      -padding {1 1 1 1} -takefocus 0 -text "" \
 		      -textvariable "" -underline -1 -wraplength 0
-	if {[string compare [mwutil::currentTheme] "aqua"] == 0} {
-	    set x -1
+
+	if {$aquaTheme} {
+	    variable newAquaSupport
+	    if {$newAquaSupport} {
+		set y 4
+	    } else {
+		set x -1
+	    }
 	}
     } else {
 	tk::label $w -bitmap "" -highlightthickness 0 -image "" \
 		     -takefocus 0 -text "" -textvariable "" -underline -1 \
 		     -wraplength 0
     }
-    place $w -x $x -relheight 1.0 -relwidth 1.0
+    place $w -x $x -y $y -relheight 1.0 -relwidth 1.0
 
     set w $data(cornerFrm-ne)	;# north-east corner frame
     tk::frame $w -borderwidth 0 -container 0 -height 0 -highlightthickness 0 \
 		 -relief flat -takefocus 0 -width 0
     catch {$w configure -padx 0 -pady 0}
 
+    set w $data(cornerFrmFrm)	;# child frame of the north-east corner frame
+    tk::frame $w -background #eeeeee -borderwidth 0 -container 0 -height 0 \
+		 -highlightthickness 0 -relief flat -takefocus 0 -width 0
+    catch {$w configure -padx 0 -pady 0}
+    place $w -relwidth 1.0
+
+    set w $data(cornerFrmFrmFrm)  ;# grandchild frm of the north-east corner frm
+    tk::frame $w -background #c8c8c8 -borderwidth 0 -container 0 -height 1 \
+		 -highlightthickness 0 -relief flat -takefocus 0 -width 0
+    catch {$w configure -padx 0 -pady 0}
+    place $w -relwidth 1.0
+
     set w $data(cornerLbl)	;# label within the north-east corner frame
+    set y 0
     if {$usingTile} {
 	ttk::label $w -style TablelistHeader.TLabel -image "" \
 		      -padding {1 1 1 1} -takefocus 0 -text "" \
 		      -textvariable "" -underline -1 -wraplength 0
+
+	if {$aquaTheme && $newAquaSupport} {
+	    set y 4
+	}
     } else {
 	tk::label $w -bitmap "" -highlightthickness 0 -image "" \
 		     -takefocus 0 -text "" -textvariable "" -underline -1 \
 		     -wraplength 0
     }
-    place $w -relwidth 1.0
+    place $w -y $y -relheight 1.0 -relwidth 1.0
 
     set w $data(cornerFrm-sw)	;# south-west corner frame
     if {$usingTile} {
@@ -5072,10 +5125,10 @@ proc tablelist::scanSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win scan mark|dragto x y"
     }
 
-    set x [format "%d" [lindex $argList 1]]
-    set y [format "%d" [lindex $argList 2]]
     variable scanOpts
     set opt [mwutil::fullOpt "option" [lindex $argList 0] $scanOpts]
+    set x [format "%d" [lindex $argList 1]]
+    set y [format "%d" [lindex $argList 2]]
     synchronize $win
     displayItems $win
     return [doScan $win $opt $x $y]
@@ -6042,13 +6095,13 @@ proc tablelist::xviewSubCmd {win argList} {
 
 		set scrlXOffset \
 		    [scrlColOffsetToXOffset $win $data(scrlColOffset)]
-		set fraction1 [expr {$scrlXOffset/double($scrlContentWidth)}]
-		set fraction2 [expr {($scrlXOffset + $scrlWindowWidth)/
-				     double($scrlContentWidth)}]
-		if {$fraction2 > 1.0} {
-		    set fraction2 1.0
+		set frac1 [expr {double($scrlXOffset) / $scrlContentWidth}]
+		set frac2 [expr {double($scrlXOffset + $scrlWindowWidth) /
+				 $scrlContentWidth}]
+		if {$frac2 > 1.0} {
+		    set frac2 1.0
 		}
-		return [list $fraction1 $fraction2]
+		return [list $frac1 $frac2]
 	    }
 	}
 
@@ -6076,11 +6129,11 @@ proc tablelist::xviewSubCmd {win argList} {
 	    # Command: $win xview moveto <fraction>
 	    #	       $win xview scroll <number> units|pages
 	    #
-	    set argList [mwutil::getScrollInfo $argList]
+	    set argList [mwutil::getScrollInfo2 "$win xview" $argList]
 	    variable winSys
 	    if {$data(-titlecolumns) == 0} {
 		if {[string compare [lindex $argList 0] "moveto"] == 0} {
-		    set data(fraction) [lindex $argList 1]
+		    set data(horizFraction) [lindex $argList 1]
 		    if {![info exists data(horizMoveToId)]} {
 			if {[string compare $winSys "x11"] == 0} {
 			    set delay [expr {($data(colCount) + 7) / 8}]
@@ -6090,13 +6143,31 @@ proc tablelist::xviewSubCmd {win argList} {
 			set data(horizMoveToId) \
 			    [after $delay [list tablelist::horizMoveTo $win]]
 		    }
+		    return ""
 		} else {
-		    foreach w [list $data(hdrTxt) $data(body)] {
-			eval [list $w xview] $argList
+		    set number [lindex $argList 1]
+		    if {[string compare [lindex $argList 2] "units"] == 0} {
+			if {[info exists data(horizScrollId)]} {
+			    incr data(horizUnits) $number
+			} else {
+			    set data(horizUnits) $number
+			    if {[string compare $winSys "x11"] == 0} {
+				set delay [expr {($data(colCount) + 7) / 8}]
+			    } else {
+				set delay [expr {($data(colCount) + 1) / 2}]
+			    }
+			    set data(horizScrollId) [after $delay \
+				[list tablelist::horizScrollByUnits $win]]
+			}
+			return ""
+		    } else {
+			foreach w [list $data(hdrTxt) $data(body)] {
+			    $w xview scroll $number pages
+			}
+			redisplayVisibleItems $win
+			hdr_updateColors $win
+			updateColors $win
 		    }
-		    redisplayVisibleItems $win
-		    hdr_updateColors $win
-		    updateColors $win
 		}
 	    } else {
 		if {[string compare [lindex $argList 0] "moveto"] == 0} {
@@ -6158,15 +6229,7 @@ proc tablelist::xviewSubCmd {win argList} {
 		hdr_updateColors $win
 		updateColors $win
 	    }
-	    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
-		#
-		# Work around a Tk bug on Mac OS X Aqua
-		#
-		if {[winfo exists $data(bodyFrm)]} {
-		    lower $data(bodyFrm)
-		    raise $data(bodyFrm)
-		}
-	    }
+	    workAroundAquaTkBugs $win
 	    return ""
 	}
     }
@@ -6197,14 +6260,13 @@ proc tablelist::yviewSubCmd {win argList} {
 	    set upperViewableCount \
 		[getViewableRowCount $win 0 [expr {$topRow - 1}]]
 	    set winViewableCount [getViewableRowCount $win $topRow $btmRow]
-	    set fraction1 [expr {$upperViewableCount/
-				 double($totalViewableCount)}]
-	    set fraction2 [expr {($upperViewableCount + $winViewableCount)/
-				 double($totalViewableCount)}]
-	    if {$fraction2 == 0.0} {
-		set fraction2 1.0
+	    set frac1 [expr {double($upperViewableCount) / $totalViewableCount}]
+	    set frac2 [expr {double($upperViewableCount + $winViewableCount) /
+			     $totalViewableCount}]
+	    if {$frac2 == 0.0} {
+		set frac2 1.0
 	    }
-	    return [list $fraction1 $fraction2]
+	    return [list $frac1 $frac2]
 	}
 
 	1 {
@@ -6227,9 +6289,9 @@ proc tablelist::yviewSubCmd {win argList} {
 	    # Command: $win yview moveto <fraction>
 	    #	       $win yview scroll <number> units|pages
 	    #
-	    set argList [mwutil::getScrollInfo $argList]
+	    set argList [mwutil::getScrollInfo2 "$win yview" $argList]
 	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
-		set data(fraction) [lindex $argList 1]
+		set data(vertFraction) [lindex $argList 1]
 		if {![info exists data(vertMoveToId)]} {
 		    variable winSys
 		    if {[string compare $winSys "x11"] == 0} {
@@ -6243,18 +6305,18 @@ proc tablelist::yviewSubCmd {win argList} {
 	    } else {
 		set number [lindex $argList 1]
 		if {[string compare [lindex $argList 2] "units"] == 0} {
-		    if {[info exists data(scrollId)]} {
-			incr data(units) $number
+		    if {[info exists data(vertScrollId)]} {
+			incr data(vertUnits) $number
 		    } else {
-			set data(units) $number
+			set data(vertUnits) $number
 			variable winSys
 			if {[string compare $winSys "x11"] == 0} {
 			    set delay [expr {($data(colCount) + 3) / 4}]
 			} else {
 			    set delay [expr {$data(colCount) * 2}]
 			}
-			set data(scrollId) \
-			    [after $delay [list tablelist::vertScroll $win]]
+			set data(vertScrollId) [after $delay \
+			    [list tablelist::vertScrollByUnits $win]]
 		    }
 		} else {
 		    set absNumber [expr {abs($number)}]
@@ -6714,7 +6776,6 @@ proc tablelist::deleteRows {win first last updateListVar} {
     if {$count == $data(itemCount)} {
 	set colWidthsChanged 1				;# just to save time
 	set data(seqNum) -1
-	set data(freeKeyList) {}
     } else {
 	variable canElide
 	set colWidthsChanged 0
@@ -6812,7 +6873,6 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	for {set row $first} {$row <= $last} {incr row} {
 	    set item [lindex $data(itemList) $row]
 	    set key [lindex $item end]
-	    lappend data(freeKeyList) $key
 
 	    foreach opt {-background -foreground -name -selectable
 			 -selectbackground -selectforeground} {
@@ -7257,13 +7317,9 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
     set row $index
     foreach item $argList {
 	#
-	# Adjust the item
+	# Adjust the item, and insert it into the list variable if needed
 	#
 	set item [adjustItem $item $data(colCount)]
-
-	#
-	# Insert the item into the list variable if needed
-	#
 	if {$updateListVar} {
 	    if {$appendingItems} {
 		lappend var $item    		;# this works much faster
@@ -7273,18 +7329,9 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
 	}
 
 	#
-	# Get a free key for the new item
+	# Extend the item and insert it into the internal list
 	#
-	if {[llength $data(freeKeyList)] == 0} {
-	    set key k[incr data(seqNum)]
-	} else {
-	    set key [lindex $data(freeKeyList) 0]
-	    set data(freeKeyList) [lrange $data(freeKeyList) 1 end]
-	}
-
-	#
-	# Insert the extended item into the internal list
-	#
+	set key k[incr data(seqNum)]
 	lappend item $key
 	if {$appendingItems} {
 	    lappend data(itemList) $item	;# this works much faster
@@ -7990,7 +8037,10 @@ proc tablelist::doScan {win opt x y} {
     incr y -[winfo y $w]
 
     if {[string compare $opt "mark"] == 0} {
-	if {$data(-titlecolumns) != 0} {
+	if {$data(-titlecolumns) == 0} {
+	    $w scan mark $x 0
+	    $data(hdrTxt) scan mark $x 0
+	} else {
 	    set data(scanMarkX) $x
 	    set data(scanMarkXOffset) \
 		[scrlColOffsetToXOffset $win $data(scrlColOffset)]
@@ -8206,8 +8256,11 @@ proc tablelist::seeCell {win row col} {
 	set alignment [lindex $data(colList) [expr {2*$col + 1}]]
 	set lX [winfo x $data(hdrTxtFrmLbl)$col]
 	set rX [expr {$lX + [winfo width $data(hdrTxtFrmLbl)$col] - 1}]
+
 	variable usingTile
-	if {$usingTile && [string compare [mwutil::currentTheme] "aqua"] == 0} {
+	variable newAquaSupport
+	if {$usingTile && [string compare [mwutil::currentTheme] "aqua"] == 0
+	    && !$newAquaSupport} {
 	    incr lX
 	    if {$col == 0} {
 		incr lX
@@ -8450,8 +8503,8 @@ proc tablelist::rowSelection {win opt first last} {
 #------------------------------------------------------------------------------
 # tablelist::horizMoveTo
 #
-# Adjusts the view in the tablelist window win so that data(fraction) of the
-# horizontal span of the text is off-screen to the left.
+# Adjusts the view in the tablelist window win so that data(horizFraction) of
+# the horizontal span of the text is off-screen to the left.
 #------------------------------------------------------------------------------
 proc tablelist::horizMoveTo win {
     upvar ::tablelist::ns${win}::data data
@@ -8461,18 +8514,43 @@ proc tablelist::horizMoveTo win {
     }
 
     foreach w [list $data(hdrTxt) $data(body)] {
-	$w xview moveto $data(fraction)
+	$w xview moveto $data(horizFraction)
     }
 
     redisplayVisibleItems $win
+    hdr_updateColors $win
     updateColors $win
+    workAroundAquaTkBugs $win
+}
+
+#------------------------------------------------------------------------------
+# tablelist::horizScrollByUnits
+#
+# Adjusts the view in the tablelist window win left or right by
+# data(horizUnits) character units.
+#------------------------------------------------------------------------------
+proc tablelist::horizScrollByUnits win {
+    upvar ::tablelist::ns${win}::data data
+    if {[info exists data(horizScrollId)]} {
+	after cancel $data(horizScrollId)
+	unset data(horizScrollId)
+    }
+
+    foreach w [list $data(hdrTxt) $data(body)] {
+	$w xview scroll $data(horizUnits) units
+    }
+
+    redisplayVisibleItems $win
+    hdr_updateColors $win
+    updateColors $win
+    workAroundAquaTkBugs $win
 }
 
 #------------------------------------------------------------------------------
 # tablelist::vertMoveTo
 #
 # Adjusts the view in the tablelist window win so that the viewable item given
-# by data(fraction) appears at the top of the window.
+# by data(vertFraction) appears at the top of the window.
 #------------------------------------------------------------------------------
 proc tablelist::vertMoveTo win {
     upvar ::tablelist::ns${win}::data data
@@ -8482,7 +8560,7 @@ proc tablelist::vertMoveTo win {
     }
 
     set totalViewableCount [getViewableRowCount $win 0 $data(lastRow)]
-    set offset [expr {int($data(fraction)*$totalViewableCount + 0.5)}]
+    set offset [expr {int($data(vertFraction)*$totalViewableCount + 0.5)}]
     set row [viewableRowOffsetToRowIndex $win $offset]
 
     set topRow [getVertComplTopRow $win]
@@ -8495,21 +8573,21 @@ proc tablelist::vertMoveTo win {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::vertScroll
+# tablelist::vertScrollByUnits
 #
-# Adjusts the view in the tablelist window win up or down by data(units)
+# Adjusts the view in the tablelist window win up or down by data(vertUnits)
 # viewable rows.
 #------------------------------------------------------------------------------
-proc tablelist::vertScroll win {
+proc tablelist::vertScrollByUnits win {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(scrollId)]} {
-	after cancel $data(scrollId)
-	unset data(scrollId)
+    if {[info exists data(vertScrollId)]} {
+	after cancel $data(vertScrollId)
+	unset data(vertScrollId)
     }
 
     set topRow [getVertComplTopRow $win]
     set upperViewableCount [getViewableRowCount $win 0 [expr {$topRow - 1}]]
-    set offset [expr {$upperViewableCount + $data(units)}]
+    set offset [expr {$upperViewableCount + $data(vertUnits)}]
     $data(body) yview [viewableRowOffsetToRowIndex $win $offset]
 
     updateView $win

@@ -6,7 +6,7 @@
 # Copyright (c) 2004-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 6.6
+package require tablelist 6.8
 
 wm title . "Tk Library Scripts"
 
