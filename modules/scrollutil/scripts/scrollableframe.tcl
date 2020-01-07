@@ -9,7 +9,7 @@
 #   - Private procedures implementing the scrollableframe widget command
 #   - Private procedures used in bindings
 #
-# Copyright (c) 2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -521,15 +521,13 @@ proc scrollutil::sf::seeSubCmd {win argList} {
     set cf $data(cf)
     if {[string first $cf. $w] != 0} {
 	return -code error \
-	    "widget \"$w\" is not a descendant of the content frame of \"$win\""
+	    "widget $w is not a descendant of the content frame of $win"
     }
     if {[string compare [winfo toplevel $w] [winfo toplevel $win]] != 0} {
-	return -code error \
-	    "widgets \"$w\" and \"$win\" have different toplevels"
+	return -code error "widgets $w and $win have different toplevels"
     }
     if {[string length [winfo manager $w]] == 0} {
-	return -code error \
-	    "widget \"$w\" is not managed by any geometry manager"
+	return -code error "widget $w is not managed by any geometry manager"
     }
 
     #
