@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>scrollutil::scrollableframe</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.3</h2>
+    <h2>For Scrollutil Version 1.4</h2>
 
     <h3>by</h3>
 
@@ -671,17 +671,20 @@ bind $w &lt;&lt;TraverseIn&gt;&gt; [list $sf <span class="red">see</span> %W]
           </blockquote>
         </dd>
 
-        <dd>If the widget <code>$w</code> is a child of a <a href=
-        "scrollarea.html">scrollarea</a>, which in turn is a descendant of the
-        content frame, then it is more user-friendly to bring the scrollarea
-        into view rather than just the widget:</dd>
+        <dd>If the widget <code>$w</code> was embedded into a <a href=
+        "scrollarea.html">scrollarea</a> via the latter's <code><b><a href=
+        "scrollarea.html#setwidget">setwidget</a></b></code> subcommand, and
+        the scrollarea in turn is a descendant of the content frame, then it is
+        more user-friendly to bring the scrollarea into view rather than just
+        the widget:</dd>
 
         <dd>
           <blockquote>
             <pre>
-bind $w &lt;&lt;TraverseIn&gt;&gt; [list seeParent $sf %W]
+bind $w &lt;&lt;TraverseIn&gt;&gt; [list seeScrollarea $sf %W]
 
-proc seeParent {sf w} { $sf <span class="red">see</span> [winfo parent $w] }
+proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
+"scrollarea.html#getscrollarea">scrollutil::getscrollarea</a></b> $w] }
 </pre>
           </blockquote>
         </dd>
