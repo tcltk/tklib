@@ -1,7 +1,7 @@
 #==============================================================================
 # Patches a few ttk widget styles and defines the style Small.Toolbutton.
 #
-# Copyright (c) 2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #

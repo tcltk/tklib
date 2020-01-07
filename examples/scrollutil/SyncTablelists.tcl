@@ -4,7 +4,7 @@
 # Demonstrates the use of the scrollutil::scrollsync widget in connection with
 # three tablelist widgets.
 #
-# Copyright (c) 2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require tablelist_tile
