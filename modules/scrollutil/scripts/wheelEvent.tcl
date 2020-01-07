@@ -1,24 +1,22 @@
 #==============================================================================
-# Contains procedures for mouse wheel event handling in scrollable widget
-# containers like BWidget ScrollableFrame and iwidgets::scrolledframe.  Tested
-# also with the scrolledframe::scrolledframe command of the Scrolledframe
-# package by Maurice Bredelet (ulis) and its optimized and enhanced version
-# contributed by Keith Nash, as well as with the sframe command implemented by
-# Paul Walton (see https://wiki.tcl-lang.org/page/A+scrolled+frame).
+# Contains procedures related to mouse wheel event handling in scrollable
+# widgets and scrollable widget containers like scrollutil::scrollableframe,
+# BWidget ScrollableFrame, and iwidgets::scrolledframe.  Tested also with the
+# scrolledframe::scrolledframe command of the Scrolledframe package by Maurice
+# Bredelet (ulis) and its optimized and enhanced version contributed by Keith
+# Nash, as well as with the sframe command implemented by Paul Walton (see
+# https://wiki.tcl-lang.org/ page/A+scrolled+frame).
 #
 # Structure of the module:
 #   - Namespace initialization
+#   - Private procedure creating mouse wheel event and <Destroy> bindings
 #   - Public procedures
 #   - Private procedures
 #
-# Copyright (c) 2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-if {[string compare $tcl_platform(platform) "windows"] == 0} {
-    package require Tk 8.6b2
-} else {
-    package require Tk 8.4
-}
+package require Tk 8.4
 
 #
 # Namespace initialization
@@ -26,20 +24,53 @@ if {[string compare $tcl_platform(platform) "windows"] == 0} {
 #
 
 namespace eval scrollutil {
+    variable winSys [tk windowingsystem]
+
     #
-    # Mouse wheel event bindings for the binding
-    # tags "WheeleventRedir" and "WheeleventBreak":
+    # The list of scrollable widget containers that are
+    # registered for scrolling by the mouse wheel event
+    # bindings created by the createWheelEventBindings command:
     #
+    variable scrlWidgetContList {}
+}
+
+#
+# Private procedure creating mouse wheel event and <Destroy> bindings
+# ===================================================================
+#
+
+#------------------------------------------------------------------------------
+# scrollutil::createBindings
+#
+# Creates mouse wheel event bindings for the binding tags TScrollbar,
+# WheeleventRedir, and WheeleventBreak, as well as <Destroy> bindings for the
+# binding tags ScrlWidgetCont and WheeleventWidget.
+#------------------------------------------------------------------------------
+proc scrollutil::createBindings {} {
+    variable winSys
+
     set eventList [list <MouseWheel> <Shift-MouseWheel>]
-    switch [tk windowingsystem] {
+    switch $winSys {
 	aqua {
 	    lappend eventList <Option-MouseWheel> <Shift-Option-MouseWheel>
 	}
 	x11 {
 	    lappend eventList <Button-4> <Button-5> \
 			      <Shift-Button-4> <Shift-Button-5>
+	    if {[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+		lappend eventList <Button-6> <Button-7>
+	    }
 	}
     }
+
+    foreach event $eventList {
+	bind TScrollbar $event [bind Scrollbar $event]
+    }
+
+    if {$winSys eq "win32" && [package vcompare $::tk_patchLevel "8.6b2"] < 0} {
+	return ""
+    }
+
     foreach event $eventList {
 	if {[string match <*Button-?> $event]} {
 	    bind WheeleventRedir $event [format {
@@ -63,25 +94,9 @@ namespace eval scrollutil {
 
 	bind WheeleventBreak $event { break }
     }
-    unset eventList event
 
-    #
-    # The list of scrollable widget containers that are
-    # registered for scrolling by the mouse wheel event
-    # bindings created by the createWheelEventBindings command:
-    #
-    variable scrlWidgetContList {}
+    bind ScrlWidgetCont <Destroy> { scrollutil::onScrlWidgetContDestroy %W }
 
-    #
-    # <Destroy> event binding for the binding tag "ScrlWidgetCont":
-    #
-    bind ScrlWidgetCont <Destroy> {
-	scrollutil::onScrlWidgetContDestroy %W
-    }
-
-    #
-    # <Destroy> event binding for the binding tag "WheeleventWidget":
-    #
     bind WheeleventWidget <Destroy> {
 	unset -nocomplain scrollutil::focusCheckWinArr(%W)
     }
@@ -91,6 +106,94 @@ namespace eval scrollutil {
 # Public procedures
 # =================
 #
+
+#------------------------------------------------------------------------------
+# scrollutil::addMouseWheelSupport
+#
+# Usage: scrollutil::addMouseWheelSupport tag ?(xy|x|y)?
+#
+# Creates mouse wheel event bindings for the specified binding tag and optional
+# axes, which must be "xy" (the default), "x", or "y".
+#------------------------------------------------------------------------------
+proc scrollutil::addMouseWheelSupport {tag {axes "xy"}} {
+    set isWindow [string match .* $tag]
+    if {$isWindow} {
+	if {![winfo exists $tag]} {
+	    return -code error "bad window path name \"$tag\""
+	}
+    }
+
+    if {$axes ne "xy" && $axes ne "x" && $axes ne "y"} {
+	return -code error "bad axes \"$axes\": must be xy, x, or y"
+    }
+
+    if {$isWindow} {
+	if {[string first "x" $axes] >= 0 &&
+	    [catch {$tag xview scroll 0 units}] != 0} {
+	    return -code error \
+		"widget $tag fails to support horizontal scrolling by units"
+	}
+
+	if {[string first "y" $axes] >= 0 &&
+	    [catch {$tag yview scroll 0 units}] != 0} {
+	    return -code error \
+		"widget $tag fails to support vertical scrolling by units"
+	}
+
+	set tail "; break"
+    } else {
+	set tail ""
+    }
+
+    variable winSys
+
+    if {[string first "y" $axes] >= 0} {
+	if {$winSys eq "aqua"} {
+	    bind $tag <MouseWheel> \
+		[format {%%W yview scroll [expr {-(%%D)}] units%s} $tail]
+	    bind $tag <Option-MouseWheel> \
+		[format {%%W yview scroll [expr {-10 * (%%D)}] units%s} $tail]
+	} else {
+	    bind $tag <MouseWheel> \
+		[format {%%W yview scroll [expr {%%D >= 0 ?\
+			 (-%%D) / 30 : (-(%%D) + 29) / 30}] units%s} $tail]
+
+	    if {$winSys eq "x11"} {
+		bind $tag <Button-4> \
+		    [format {%%W yview scroll -5 units%s} $tail]
+		bind $tag <Button-5> \
+		    [format {%%W yview scroll  5 units%s} $tail]
+	    }
+	}
+    }
+
+    if {[string first "x" $axes] >= 0} {
+	if {$winSys eq "aqua"} {
+	    bind $tag <Shift-MouseWheel> \
+		[format {%%W xview scroll [expr {-(%%D)}] units%s} $tail]
+	    bind $tag <Shift-Option-MouseWheel> \
+		[format {%%W xview scroll [expr {-10 * (%%D)}] units%s} $tail]
+	} else {
+	    bind $tag <Shift-MouseWheel> \
+		[format {%%W xview scroll [expr {%%D >= 0 ?\
+			 (-%%D) / 30 : (-(%%D) + 29) / 30}] units%s} $tail]
+
+	    if {$winSys eq "x11"} {
+		bind $tag <Shift-Button-4> \
+		    [format {%%W xview scroll -5 units%s} $tail]
+		bind $tag <Shift-Button-5> \
+		    [format {%%W xview scroll  5 units%s} $tail]
+
+		if {[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+		    bind $tag <Button-6> \
+			[format {%%W xview scroll -5 units%s} $tail]
+		    bind $tag <Button-7> \
+			[format {%%W xview scroll  5 units%s} $tail]
+		}
+	    }
+	}
+    }
+}
 
 #------------------------------------------------------------------------------
 # scrollutil::createWheelEventBindings
@@ -106,7 +209,11 @@ namespace eval scrollutil {
 # toplevel widget.
 #------------------------------------------------------------------------------
 proc scrollutil::createWheelEventBindings args {
-    set winSys [tk windowingsystem]
+    variable winSys
+    if {$winSys eq "win32"} {
+	package require Tk 8.6b2
+    }
+
     foreach tag $args {
 	if {[string match .* $tag]} {
 	    if {![winfo exists $tag]} {
@@ -114,11 +221,11 @@ proc scrollutil::createWheelEventBindings args {
 	    }
 
 	    if {[winfo toplevel $tag] ne $tag} {
-		return -code error "\"$tag\" is not a toplevel widget"
+		return -code error "$tag is not a toplevel widget"
 	    }
 	} elseif {$tag ne "all"} {
-	    return -code error "unsupported tag \"$tag\": must be \"all\" or\
-		the path name of an existing toplevel widget"
+	    return -code error "unsupported tag \"$tag\": must be all or the\
+		path name of an existing toplevel widget"
 	}
 
 	if {$winSys eq "aqua"} {
@@ -136,13 +243,6 @@ proc scrollutil::createWheelEventBindings args {
 		scrollutil::scrollByUnits %W %X %Y x [expr {-10 * (%D)}]
 	    }
 	} else {
-	    #
-	    # Earlier versions used [expr {-(%D/120) * 4}] for the units
-	    # computation.  For %D = 110 the result was 0, while for %D = -110
-	    # it was 4 -- NOK!  In the improved computation below the
-	    # rounding works the same for both positive and negative %D values:
-	    # for %D = 110 the result is -4 and for %D = -110 it is 4 -- OK.
-	    #
 	    bind $tag <MouseWheel> {
 		scrollutil::scrollByUnits %W %X %Y y \
 		    [expr {%D >= 0 ? (-%D) / 30 : (-(%D) + 29) / 30}]
@@ -189,6 +289,11 @@ proc scrollutil::createWheelEventBindings args {
 # bindings created by the createWheelEventBindings command.
 #------------------------------------------------------------------------------
 proc scrollutil::enableScrollingByWheel args {
+    variable winSys
+    if {$winSys eq "win32"} {
+	package require Tk 8.6b2
+    }
+
     variable scrlWidgetContList
     foreach swc $args {
 	if {![winfo exists $swc]} {
@@ -196,13 +301,13 @@ proc scrollutil::enableScrollingByWheel args {
 	}
 
 	if {[catch {$swc xview scroll 0 units}] != 0} {
-	    return -code error "\"$swc\" fails to support horizontal scrolling\
-		by units"
+	    return -code error \
+		"widget $swc fails to support horizontal scrolling by units"
 	}
 
 	if {[catch {$swc yview scroll 0 units}] != 0} {
-	    return -code error "\"$swc\" fails to support vertical scrolling\
-		by units"
+	    return -code error \
+		"widget $swc fails to support vertical scrolling by units"
 	}
 
 	if {[lsearch -exact $scrlWidgetContList $swc] >= 0} {
@@ -249,7 +354,11 @@ proc scrollutil::enableScrollingByWheel args {
 #         associated with the above-mentioned tag.
 #------------------------------------------------------------------------------
 proc scrollutil::adaptWheelEventHandling args {
-    set winSys [tk windowingsystem]
+    variable winSys
+    if {$winSys eq "win32"} {
+	package require Tk 8.6b2
+    }
+
     foreach w $args {
 	if {![winfo exists $w]} {
 	    return -code error "bad window path name \"$w\""
@@ -279,6 +388,15 @@ proc scrollutil::adaptWheelEventHandling args {
 		break
 	    }
 	}
+
+	#
+	# If $w is embedded into a scrollarea then invoke this
+	# procedure for the scrollbars of that scrollarea, too
+	#
+	set sa [getscrollarea $w]
+	if {$sa ne ""} {
+	    adaptWheelEventHandling $sa.hsb $sa.vsb
+	}
     }
 }
 
@@ -293,6 +411,11 @@ proc scrollutil::adaptWheelEventHandling args {
 # be an ancestor of or identical to widget.
 #------------------------------------------------------------------------------
 proc scrollutil::setFocusCheckWindow args {
+    variable winSys
+    if {$winSys eq "win32"} {
+	package require Tk 8.6b2
+    }
+
     set argCount [llength $args]
     if {$argCount < 2} {
 	return -code error "wrong # args: should be\
@@ -316,7 +439,7 @@ proc scrollutil::setFocusCheckWindow args {
 
 	if {[string first $w2. $w.] != 0} {
 	    return -code error \
-		"\"$w2\" is neither an ancestor of nor is identical to \"$w\""
+		"widget $w2 is neither an ancestor of nor is identical to $w"
 	}
 
 	set focusCheckWinArr($w) $w2
@@ -341,6 +464,11 @@ proc scrollutil::setFocusCheckWindow args {
 # invoked for widget then the return value is widget itself.
 #------------------------------------------------------------------------------
 proc scrollutil::focusCheckWindow w {
+    variable winSys
+    if {$winSys eq "win32"} {
+	package require Tk 8.6b2
+    }
+
     if {![winfo exists $w]} {
 	return -code error "bad window path name \"$w\""
     }
@@ -393,8 +521,10 @@ proc scrollutil::isCompatible {event w} {
     } elseif {[string match "*Scrollbar" [winfo class $w]]} {
 	set orient [$w cget -orient]
 	return [expr {
-	    ($orient eq "horizontal" &&  [string match "<Shift-*>" $event]) ||
-	    ($orient eq "vertical"   && ![string match "<Shift-*>" $event])
+	    ($orient eq "horizontal" &&  ([string match {<Shift-*>} $event] \
+	     || [string match {<Button-[67]>} $event])) ||
+	    ($orient eq "vertical"   && !([string match {<Shift-*>} $event] \
+	     || [string match {<Button-[67]>} $event]))
 	}]
     } else {
 	return 1
