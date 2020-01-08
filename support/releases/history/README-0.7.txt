@@ -7,7 +7,7 @@ Overview
     47 unchanged packages          in 19 modules
     79 packages, total             in 31 modules, total
 
-New in tklib 0.6
+New in tklib 0.7
 ================
 
     Module                Package               New Version   Comments
@@ -19,10 +19,10 @@ New in tklib 0.6
     widgetPlus            widgetPlus            1.0b2
     --------------------- --------------------- ------------- ----------
 
-Changes from tklib 0.6 to 0.6
+Changes from tklib 0.6 to 0.7
 =============================
 
-                                         tklib 0.6     tklib 0.6
+                                         tklib 0.6     tklib 0.7
     Module          Package              Old Version   New Version   Comments
     --------------- -------------------- ------------- ------------- ----------------
     controlwidget   rdial                0.3           0.7           D EF EX
@@ -46,7 +46,7 @@ Changes from tklib 0.6 to 0.6
 Invisible changes (documentation, testsuites)
 =============================================
 
-                                    tklib 0.6     tklib 0.6
+                                    tklib 0.6     tklib 0.7
     Module          Package         Old Version   New Version   Comments
     --------------- --------------- ------------- ------------- ----------
     controlwidget   controlwidget   0.1           0.1           D
