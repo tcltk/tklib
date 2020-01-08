@@ -4,14 +4,14 @@
 # Structure of the module:
 #   - Namespace initialization
 #   - Private procedure creating the default bindings
-#   - Public procedure creating a new scrollsync widget
+#   - Public procedures creating or quering a scrollsync widget
 #   - Private configuration procedures
 #   - Private procedures implementing the scrollsync widget command
 #   - Private callback procedure
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -122,8 +122,8 @@ proc scrollutil::ss::createBindings {} {
 }
 
 #
-# Public procedure creating a new scrollsync widget
-# =================================================
+# Public procedures creating or quering a scrollsync widget
+# =========================================================
 #
 
 #------------------------------------------------------------------------------
@@ -205,6 +205,25 @@ proc scrollutil::scrollsync args {
     interp alias {} ::$win {} scrollutil::ss::scrollsyncWidgetCmd $win
 
     return $win
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::getscrollsync
+#
+# Queries the scrollsync into which a given widget is embedded via the
+# scrollsync's setwidgets subcommand.
+#------------------------------------------------------------------------------
+proc scrollutil::getscrollsync widget {
+    variable ss::scrollsyncArr
+    if {[info exists scrollsyncArr($widget)]} {
+	set win $scrollsyncArr($widget)
+	if {[winfo exists $win] &&
+	    [string compare [winfo class $win] "Scrollsync"] == 0} {
+	    return $win
+	}
+    }
+
+    return ""
 }
 
 #
@@ -333,6 +352,11 @@ proc scrollutil::ss::setwidgetsSubCmd {win widgetList} {
     foreach w $widgetList {
 	if {![winfo exists $w]} {
 	    return -code error "bad window path name \"$w\""
+	}
+
+	set ss [::scrollutil::getscrollsync $w]
+	if {[string length $ss] != 0 && [string compare $ss $win] != 0} {
+	    return -code error "widget $w already in another scrollsync $ss"
 	}
     }
 
@@ -511,20 +535,22 @@ proc scrollutil::ss::updateMasterWidgets win {
 #------------------------------------------------------------------------------
 proc scrollutil::ss::onWidgetOfScrollsyncDestroy widget {
     variable scrollsyncArr
-    variable xViewArr
-    variable yViewArr
+    if {[info exists scrollsyncArr($widget)]} {
+	unset scrollsyncArr($widget)
+    }
 
-    set win $scrollsyncArr($widget)
-    unset scrollsyncArr($widget)
+    variable xViewArr
     if {[info exists xViewArr($widget)]} {
 	unset xViewArr($widget)
     }
+
+    variable yViewArr
     if {[info exists yViewArr($widget)]} {
 	unset yViewArr($widget)
     }
 
-    if {[winfo exists $win] &&
-	[string compare [winfo class $win] "Scrollsync"] == 0} {
+    set win [::scrollutil::getscrollsync $widget]
+    if {[string length $win] != 0} {
 	set widgetList [::$win widgets]
 	set idx [lsearch -exact $widgetList $widget]
 	::$win setwidgets [lreplace $widgetList $idx $idx]

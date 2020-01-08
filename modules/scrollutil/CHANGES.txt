@@ -1,5 +1,32 @@
-What is new in Scrollutil 1.3?
+What is new in Scrollutil 1.4?
 ------------------------------
+
+1. Added the commands "scrollutil::getscrollarea" and
+   "scrollutil::getscrollsync", designed to query the scrollarea and
+   scrollsync, respectively containing a given widget.
+
+2. Added the command "scrollutil::addMouseWheelSupport", which can be
+   used, e.g., to add mouse wheel support to canvas widgets (thanks to
+   Julian H J Loaring for his proposal) and to restore the "old-school"
+   mouse wheel event handling for text widgets, which performs scrolling
+   by lines and characters rather than pixels.
+
+3. Scrollutil now automatically creates mouse wheel event class bindings
+   for the ttk::scrollbar widget (thanks to Harald Oehlmann for his
+   proposal and discussions on this subject).
+
+4. If a widget that is embedded into a scrollarea is passed to
+   "scrollutil::adaptWheelEventHandling", then this command gets
+   automatically invoked for the scrollbars of that scrollarea, too.
+
+5. Added the missing pieces of code related to the bindings for
+   horizontal scrolling with the aid of mouse buttons 6 and 7 in Tk
+   8.7.a3 or later on X11.
+
+6. Several improvements in the demo scripts and documentation.
+
+What was new in Scrollutil 1.3?
+-------------------------------
 
 1. The scrollarea widget of the Scrollutil_tile package now uses
    ttk::scrollbar widgets on Mac OS X, too, provided that the Tk release

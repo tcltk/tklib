@@ -4,7 +4,7 @@
 # Demonstrates the use of the scrollutil::scrollarea widget in connection with
 # a tablelist.
 #
-# Copyright (c) 2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require tablelist_tile 6.5

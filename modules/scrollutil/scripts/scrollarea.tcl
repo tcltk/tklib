@@ -4,14 +4,14 @@
 # Structure of the module:
 #   - Namespace initialization
 #   - Private procedure creating the default bindings
-#   - Public procedure creating a new scrollarea widget
+#   - Public procedures creating or quering a scrollarea widget
 #   - Private configuration procedures
 #   - Private procedures implementing the scrollarea widget command
 #   - Private callback procedures
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -137,8 +137,8 @@ proc scrollutil::sa::createBindings {} {
 }
 
 #
-# Public procedure creating a new scrollarea widget
-# =================================================
+# Public procedures creating or quering a scrollarea widget
+# =========================================================
 #
 
 #------------------------------------------------------------------------------
@@ -250,6 +250,25 @@ proc scrollutil::scrollarea args {
     return $win
 }
 
+#------------------------------------------------------------------------------
+# scrollutil::getscrollarea
+#
+# Queries the scrollarea into which a given widget is embedded via the
+# scrollarea's setwidget subcommand.
+#------------------------------------------------------------------------------
+proc scrollutil::getscrollarea widget {
+    variable sa::scrollareaArr
+    if {[info exists scrollareaArr($widget)]} {
+	set win $scrollareaArr($widget)
+	if {[winfo exists $win] &&
+	    [string compare [winfo class $win] "Scrollarea"] == 0} {
+	    return $win
+	}
+    }
+
+    return ""
+}
+
 #
 # Private configuration procedures
 # ================================
@@ -319,7 +338,7 @@ proc scrollutil::sa::doConfig {win opt val} {
 		    if {[string compare $val "none"] != 0 &&
 			[winfo exists $data(widget)]} {
 			if {![mwutil::isScrollable $data(widget) x]} {
-			    return -code error "\"$data(widget)\" fails to\
+			    return -code error "widget $data(widget) fails to\
 				support horizontal scrolling"
 			}
 		    }
@@ -351,7 +370,7 @@ proc scrollutil::sa::doConfig {win opt val} {
 		    if {[string compare $val "none"] != 0 &&
 			[winfo exists $data(widget)]} {
 			if {![mwutil::isScrollable $data(widget) y]} {
-			    return -code error "\"$data(widget)\" fails to\
+			    return -code error "widget $data(widget) fails to\
 				support vertical scrolling"
 			}
 		    }
@@ -450,17 +469,23 @@ proc scrollutil::sa::setwidgetSubCmd {win widget} {
     upvar ::scrollutil::ns${win}::data data
 
     if {[winfo exists $widget]} {
+	set sa [::scrollutil::getscrollarea $widget]
+	if {[string length $sa] != 0 && [string compare $sa $win] != 0} {
+	    return -code error \
+		"widget $widget already in another scrollarea $sa"
+	}
+
 	if {[string compare $data(-xscrollbarmode) "none"] != 0} {
 	    if {![mwutil::isScrollable $widget x]} {
-		return -code error "\"$widget\" fails to support horizontal\
-		    scrolling"
+		return -code error \
+		    "widget $widget fails to support horizontal scrolling"
 	    }
 	}
 
 	if {[string compare $data(-yscrollbarmode) "none"] != 0} {
 	    if {![mwutil::isScrollable $widget y]} {
-		return -code error "\"$widget\" fails to support vertical\
-		    scrolling"
+		return -code error \
+		    "widget $widget fails to support vertical scrolling"
 	    }
 	}
     } elseif {[string length $widget] != 0} {
@@ -683,11 +708,12 @@ proc scrollutil::sa::onDynamicHScrollbarMap hsb {
 #------------------------------------------------------------------------------
 proc scrollutil::sa::onWidgetOfScrollareaDestroy widget {
     variable scrollareaArr
-    set win $scrollareaArr($widget)
-    unset scrollareaArr($widget)
+    if {[info exists scrollareaArr($widget)]} {
+	unset scrollareaArr($widget)
+    }
 
-    if {[winfo exists $win] &&
-	[string compare [winfo class $win] "Scrollarea"] == 0} {
+    set win [::scrollutil::getscrollarea $widget]
+    if {[string length $win] != 0} {
 	::$win setwidget ""
     }
 }

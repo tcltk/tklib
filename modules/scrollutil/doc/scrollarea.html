@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>The scrollutil::scrollarea Command</title>
+  <title>The scrollutil::scrollarea and scrollutil::getscrollarea
+  Commands</title>
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content="scrollarea, widget, scrollbar">
@@ -11,9 +12,10 @@
 
 <body>
   <div align="center">
-    <h1>The <code><b>scrollutil::scrollarea</b></code> Command</h1>
+    <h1>The <code><b>scrollutil::scrollarea</b></code> and<br>
+    <code><b>scrollutil::getscrollarea</b></code> Commands</h1>
 
-    <h2>For Scrollutil Version 1.3</h2>
+    <h2>For Scrollutil Version 1.4</h2>
 
     <h3>by</h3>
 
@@ -29,9 +31,14 @@
   <h2 id="contents">Contents</h2>
 
   <ul>
-    <li><a href="#quick_ref">Quick Reference</a></li>
+    <li><a href="#quick_ref">The <code><b>scrollutil::scrollarea</b></code>
+    Command &ndash; Quick Reference</a></li>
 
-    <li><a href="#detailed_ref">Detailed Reference</a></li>
+    <li><a href="#detailed_ref">The <code><b>scrollutil::scrollarea</b></code>
+    Command &ndash; Detailed Reference</a></li>
+
+    <li><a href="#getscrollarea">The
+    <code><b>scrollutil::getscrollarea</b></code> Command</a></li>
   </ul>
 
   <div align="center">
@@ -40,7 +47,8 @@
 
   <hr>
 
-  <h2 id="quick_ref">Quick Reference</h2>
+  <h2 id="quick_ref">The <code><b>scrollutil::scrollarea</b></code> Command
+  &ndash; Quick Reference</h2>
 
   <dl>
     <dt><a href="#name">NAME</a></dt>
@@ -115,7 +123,8 @@
 
   <hr>
 
-  <h2 id="detailed_ref">Detailed Reference</h2>
+  <h2 id="detailed_ref">The <code><b>scrollutil::scrollarea</b></code>
+  Command &ndash; Detailed Reference</h2>
 
   <dl>
     <dt id="name"><b>NAME</b></dt>
@@ -553,6 +562,42 @@ pack $sa -expand yes -fill both
     <dt class="tm" id="keywords"><b>KEYWORDS</b></dt>
 
     <dd>scrollarea, widget, scrollbar</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="getscrollarea">The <code><b>scrollutil::getscrollarea</b></code>
+  Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>scrollutil::getscrollarea</code> &ndash; Query the scrollarea
+    containing a given widget</dd>
+
+    <dt class="tm"><b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>scrollutil::gescrollarea</b> <i>widget</i>
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>Returns the path name of the scrollarea into which the widget given by
+    the <code><i>widget</i></code> argument is embedded via the scrollarea's
+    <code><b><a href="#setwidget">setwidget</a></b></code> subcommand, or an
+    empty string if there is no such scrollarea widget.</dd>
+
+    <dt class="tm"><b>KEYWORDS</b></dt>
+
+    <dd>scrollarea, widget</dd>
   </dl>
 
   <div align="center">

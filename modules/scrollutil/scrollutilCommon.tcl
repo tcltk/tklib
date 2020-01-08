@@ -1,7 +1,7 @@
 #==============================================================================
 # Main Scrollutil and Scrollutil_tile package module.
 #
-# Copyright (c) 2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8
@@ -10,7 +10,7 @@ namespace eval ::scrollutil {
     #
     # Public variables:
     #
-    variable version	1.3
+    variable version	1.4
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -24,12 +24,17 @@ namespace eval ::scrollutil {
     namespace export	scrollarea scrollsync scrollableframe
 
     #
-    # Public procedures for mouse wheel event
-    # handling in scrollable widget containers:
+    # Queries the scrollarea/scrollsync to which a given widget belongs:
     #
-    namespace export	createWheelEventBindings enableScrollingByWheel \
-			adaptWheelEventHandling setFocusCheckWindow \
-			focusCheckWindow
+    namespace export	getscrollarea getscrollsync
+
+    #
+    # Public procedures for mouse wheel event handling in
+    # scrollable widgets and scrollable widget containers:
+    #
+    namespace export	addMouseWheelSupport createWheelEventBindings \
+			enableScrollingByWheel adaptWheelEventHandling \
+			setFocusCheckWindow focusCheckWindow
 }
 
 package provide scrollutil::common $::scrollutil::version

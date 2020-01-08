@@ -4,7 +4,7 @@
 # Demonstrates the traditional scrollbar management in connection with a
 # tablelist widget.
 #
-# Copyright (c) 2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require tablelist_tile 6.3

@@ -1,8 +1,8 @@
 #==============================================================================
 # Populates the content frame of the scrollutil::scrollableframe widget created
-# in the demo script SU_ScrollableFrm.tcl.
+# in the demo script SuScrollableFrmDemo2.tcl.
 #
-# Copyright (c) 2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -22,7 +22,7 @@ option add *selectBorderWidth  $tablelist::themeDefaults(-selectborderwidth)
 #
 
 #
-# A scrolled text widget
+# A scrolled text widget with old-school mouse wheel support
 #
 set row 0
 set l [ttk::label $cf.l$row -text \
@@ -31,6 +31,7 @@ grid $l -row $row -column 0 -columnspan 3 -sticky w -padx 10 -pady {10 0}
 incr row
 set _sa [scrollutil::scrollarea $cf.sa$row]
 set txt [text $_sa.txt -font TkFixedFont -width 73]
+scrollutil::addMouseWheelSupport $txt
 $_sa setwidget $txt
 grid $_sa -row $row -column 0 -columnspan 3 -sticky w -padx 10 -pady {5 0}
 

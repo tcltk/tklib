@@ -15,7 +15,7 @@ New in tklib 0.6
     canvas                canvas::gradient      0.2
     notifywindow          notifywindow          1.0
     persistentSelection   persistentSelection   1.0b1
-    scrollutil            scrollutil::common    1.3
+    scrollutil            scrollutil::common    1.4
     widgetPlus            widgetPlus            1.0b2
     --------------------- --------------------- ------------- ----------
 

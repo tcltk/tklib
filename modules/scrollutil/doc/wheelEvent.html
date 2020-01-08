@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Commands for Mouse Wheel Event Handling in Scrollable Widget
-  Containers</title>
+  <title>Commands Related to Mouse Wheel Event Handling</title>
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content=
@@ -13,10 +12,9 @@
 
 <body>
   <div align="center">
-    <h1>Commands for Mouse Wheel Event Handling<br>
-    in Scrollable Widget Containers</h1>
+    <h1>Commands Related to Mouse Wheel Event Handling</h1>
 
-    <h2>For Scrollutil Version 1.3</h2>
+    <h2>For Scrollutil Version 1.4</h2>
 
     <h3>by</h3>
 
@@ -32,6 +30,9 @@
   <h2 id="contents">Contents</h2>
 
   <ul>
+    <li><a href="#add">The
+    <code><b>scrollutil::addMouseWheelSupport</b></code> Command</a></li>
+
     <li><a href="#create">The
     <code><b>scrollutil::createWheelEventBindings</b></code> Command</a></li>
 
@@ -50,6 +51,96 @@
 
   <div align="center">
     <p><a href="index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="add">The <code><b>scrollutil::addMouseWheelSupport</b></code>
+  Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>scrollutil::addMouseWheelSupport</code> &ndash; Add mouse wheel
+    support</dd>
+
+    <dt class="tm"><b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>scrollutil::addMouseWheelSupport</b> <i>tag</i> ?<i>axes</i>?
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>Adds mouse wheel support to the widgets having the specified binding
+    tag by creating bindings for the mouse wheel events along the axes given by
+    the optional <code><i>axes</i></code> argument, which must be
+    <code>xy</code> (the default, meaning both the x and y axis),
+    <code>x</code> (meaning the x axis only), or <code>y</code> (meaning the y
+    axis only).&nbsp; The binding scripts created by this command will scroll
+    the window given by the <code><b>%W</b></code> event field with the aid of
+    the&nbsp; <code><b>xview scroll</b> <i>number</i> <b>units</b></code>&nbsp;
+    and&nbsp; <code><b>yview scroll</b> <i>number</i> <b>units</b></code>&nbsp;
+    subcommands of the associated Tcl command.</dd>
+
+    <dd class="tm"><b>REMARK 1:</b>&nbsp; If <code><i>tag</i></code> is the
+    path name of a window then the binding scripts created by this command are
+    terminated by an invocation of the <code><b>break</b></code> command, in
+    order to prevent the processing of the mouse wheel events by further
+    binding scripts.&nbsp; For example, if <code><i>tag</i></code> is the path
+    name of a text widget then the terminating <code><b>break</b></code>
+    command makes sure that the mouse wheel events will not <i>additionally</i>
+    be processed by the class bindings (associated with the binding tag
+    <code><b>Text</b></code>), which in Tk 8.5 and later trigger a scrolling by
+    <i>pixels</i>, unlike the bindings created by this command, which scroll
+    the widget by <i>units</i> (i.e., lines and characters).</dd>
+
+    <dd class="tm"><b>REMARK 2:</b>&nbsp; The canvas widget has no built-in
+    bindings, but you can use this command to add mouse wheel support to the
+    widget class <code><b>Canvas</b></code> or individual canvas widgets.</dd>
+
+    <dd class="tm"><b>REMARK 3:</b>&nbsp; The mouse wheel events along the
+    vertical axis are <code><b>&lt;MouseWheel&gt;</b></code> on Windows,
+    <code><b>&lt;MouseWheel&gt;</b></code> and
+    <code><b>&lt;Option-MouseWheel&gt;</b></code> on Mac OS X, and
+    <code><b>&lt;MouseWheel&gt;</b></code>,
+    <code><b>&lt;Button-4&gt;</b></code> and
+    <code><b>&lt;Button-5&gt;</b></code> on X11 (where
+    <code><b>&lt;MouseWheel&gt;</b></code> is not triggered by the X server,
+    but can be produced using&nbsp; <code><b>event generate</b></code>).&nbsp;
+    The mouse wheel events along the horizontal axis are
+    <code><b>&lt;Shift-MouseWheel&gt;</b></code> on Windows,
+    <code><b>&lt;Shift-MouseWheel&gt;</b></code> and
+    <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code> on Mac OS X, and
+    <code><b>&lt;Shift-MouseWheel&gt;</b></code>,
+    <code><b>&lt;Shift-Button-4&gt;</b></code> and
+    <code><b>&lt;Shift-Button-5&gt;</b></code> on X11 (where
+    <code><b>&lt;Shift-MouseWheel&gt;</b></code> is not triggered by the X
+    server, but can be produced using&nbsp; <code><b>event
+    generate</b></code>).&nbsp; On X11, when using Tk 8.7a3 or later, there are
+    two more mouse wheel events along the horizontal axis:
+    <code><b>&lt;Button-6&gt;</b></code> and
+    <code><b>&lt;Button-7&gt;</b></code>, which are handled just like
+    <code><b>&lt;Shift-Button-4&gt;</b></code> and
+    <code><b>&lt;Shift-Button-5&gt;</b></code>, respectively.&nbsp; These
+    events are commonly triggered by left/right tilting the scroll wheel of a
+    mouse having one or two additional (thumb) buttons.&nbsp; (In Tk versions
+    8.6.x, with x >= 10, left/right tilting the scroll wheel of such a mouse
+    gives rise to <code><b>&lt;Shift-MouseWheel&gt;</b></code> events on
+    Windows and Mac OS X Aqua, and to
+    <code><b>&lt;Shift-Button-4&gt;</b></code> and
+    <code><b>&lt;Shift-Button-5&gt;</b></code> events on X11.)</dd>
+
+    <dt class="tm"><b>KEYWORDS</b></dt>
+
+    <dd>mouse wheel event, binding, scrolling</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
   </div>
 
   <hr>
@@ -82,9 +173,10 @@
     several nested registered scrollable widget containers fulfilling these
     conditions the innermost one will be scrolled.&nbsp; Each
     <code><i>tag</i></code> argument must be <code><b>all</b></code> or the
-    path name of an existing toplevel widget (including <code>"."</code>).</dd>
+    path name of an existing toplevel widget (including
+    <code><b>.</b></code>).</dd>
 
-    <dd class="tm"><b>REMARK 1:</b>&nbsp; The reason for restricting the
+    <dd class="tm"><b>REMARK:</b>&nbsp; The reason for restricting the
     <code><i>tag</i></code> arguments to <code><b>all</b></code> and path names
     of existing toplevel widgets rather than supporting also tags like
     <code>"Scrollableframe"</code> (for scrollutil::scrollableframe),
@@ -92,42 +184,10 @@
     <code>"Scrolledframe"</code> (for iwidgets::scrolledframe) is that the
     mouse wheel events should trigger a scrolling of the widget container under
     the pointer not only if the widget under the pointer is the widget
-    container itself but also if it is a descendant of the latter (remember
-    that for each window, the path name of its nearest toplevel ancestor and
-    the tag <code><b>all</b></code> are contained in the window's default list
-    of binding tags).</dd>
-
-    <dd class="tm"><b>REMARK 2:</b>&nbsp; The mouse wheel events along the
-    vertical axis are <code><b>&lt;MouseWheel&gt;</b></code> on Windows,
-    <code><b>&lt;MouseWheel&gt;</b></code> and
-    <code><b>&lt;Option-MouseWheel&gt;</b></code> on Mac OS X, and
-    <code><b>&lt;MouseWheel&gt;</b></code>,
-    <code><b>&lt;Button-4&gt;</b></code> and
-    <code><b>&lt;Button-5&gt;</b></code> on X11 (where
-    <code><b>&lt;MouseWheel&gt;</b></code> is not triggered by the X server,
-    but can be produced using&nbsp; <code><b>event generate</b></code>).&nbsp;
-    The mouse wheel events along the horizontal axis are
-    <code><b>&lt;Shift-MouseWheel&gt;</b></code> on Windows,
-    <code><b>&lt;Shift-MouseWheel&gt;</b></code> and
-    <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code> on Mac OS X, and
-    <code><b>&lt;Shift-MouseWheel&gt;</b></code>,
-    <code><b>&lt;Shift-Button-4&gt;</b></code> and
-    <code><b>&lt;Shift-Button-5&gt;</b></code> on X11 (where
-    <code><b>&lt;Shift-MouseWheel&gt;</b></code> is not triggered by the X
-    server, but can be produced using&nbsp; <code><b>event
-    generate</b></code>).&nbsp; On X11, when using Tk 8.7a3 or later, there are
-    two more mouse wheel events along the horizontal axis:
-    <code><b>&lt;Button-6&gt;</b></code> and
-    <code><b>&lt;Button-7&gt;</b></code>, which are handled just like
-    <code><b>&lt;Shift-Button-4&gt;</b></code> and
-    <code><b>&lt;Shift-Button-5&gt;</b></code>, respectively.&nbsp; These
-    events are commonly triggered by left/right tilting the scroll wheel of a
-    mouse having one or two additional (thumb) buttons.&nbsp; (In Tk versions
-    8.6.x, with x >= 10, left/right tilting the scroll wheel of such a mouse
-    gives rise to <code><b>&lt;Shift-MouseWheel&gt;</b></code> events on
-    Windows and Mac OS X Aqua, and to
-    <code><b>&lt;Shift-Button-4&gt;</b></code> and
-    <code><b>&lt;Shift-Button-5&gt;</b></code> events on X11.)</dd>
+    container itself but also if it is a descendant of the latter (recall that
+    for each window, the path name of its nearest toplevel ancestor and the tag
+    <code><b>all</b></code> are contained in the window's default list of
+    binding tags).</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
@@ -282,17 +342,39 @@
     invoked for widgets that have mouse wheel event bindings and are
     descendants of a scrollable widget container (although it does no harm if
     it is called for other widgets, too).&nbsp; The Tk and tile widgets having
-    class bindings for mouse wheel events are: listbox, scrollbar (but not
-    ttk::scrollbar), text, ttk::combobox, ttk::spinbox, and
-    ttk::treeview.&nbsp; Examples of widgets with binding tags other than their
-    class names that have mouse wheel event bindings are tablelist widgets as
-    well as the entry components of <a href=
+    class bindings for mouse wheel events are: listbox, text, Tk core
+    scrollbar, ttk::scrollbar, ttk::combobox, ttk::spinbox, and
+    ttk::treeview.&nbsp; Note that the ttk::scrollbar widget has no
+    <i>built-in</i> class bindings for the mouse wheel events, but Scrollutil
+    automatically creates the missing bindings by copying the mouse wheel event
+    bindings of the widget class <code><b>Scrollbar</b></code> to the binding
+    tag <code><b>TScrollbar</b></code>.&nbsp; Examples of widgets with binding
+    tags other than their class names that have mouse wheel event bindings are
+    tablelist widgets as well as the entry components of <a href=
     "https://www.nemethi.de/mentry/">mentry</a> widgets of type
     <code>"Date"</code>, <code>"Time"</code>, <code>"DateTime"</code>,
     <code>"IPAddr"</code>, and <code>"IPv6Addr"</code> (for Mentry versions 3.2
     and above).</dd>
 
-    <dd class="tm"><b>REMARK 2:</b>&nbsp; Invoking this command for widgets
+    <dd class="tm"><b>REMARK 2:</b>&nbsp; As mentioned above, Tk core scrollbar
+    and ttk::scrollbar widgets have class bindings for mouse wheel events,
+    hence this command should be invoked for them in case they are descendants
+    of a scrollable widget container.&nbsp; Since this task can become tedious,
+    Scrollutil makes sure that if you pass a widget to this command and that
+    widget is embedded into a <a href="scrollarea.html">scrollarea</a> via the
+    latter's <code><b><a href=
+    "scrollarea.html#setwidget">setwidget</a></b></code> subcommand, then this
+    command will automatically be invoked for the scrollbars of that
+    scrollarea, too.</dd>
+
+    <dd class="tm"><b>REMARK 3:</b>&nbsp; When handling a mouse wheel event
+    sent to a Tk core or tile scrollbar whose path name was passed to this
+    command, if the focus is on or inside the associated widget then the event
+    will be processed by the scrollbar rather than being redirected to the
+    containing toplevel, just as if the focus were on the scrollbar
+    itself.</dd>
+
+    <dd class="tm"><b>REMARK 4:</b>&nbsp; Invoking this command for widgets
     that have mouse wheel event bindings and are descendants of a scrollable
     widget container is essential for a user-friendly mouse wheel event
     handling in scrollable widget containers.&nbsp; Without this step the mouse
@@ -302,10 +384,10 @@
     value in the ttk::combobox or ttk::spinbox under the pointer <i>in addition
     to</i> scrolling the widget container.&nbsp; After invoking this command,
     e.g, for a listbox within a scrollable widget container, the mouse wheel
-    events over this widget will only scroll the listbox if it has the
-    focus.&nbsp; Likewise, after invoking the command for a ttk::combobox or
+    events over that widget will only scroll the listbox if it has the
+    focus.&nbsp; Likewise, after invoking this command for a ttk::combobox or
     ttk::spinbox within a scrollable widget container, the mouse wheel events
-    over this widget will only select its next/previous value if it has the
+    over that widget will only select its next/previous value if it has the
     focus.&nbsp; In both examples, if the focus is outside the widget in
     question then the mouse wheel events will scroll the widget container
     instead.</dd>
@@ -364,16 +446,17 @@
     of type <code>"Date"</code>, <code>"Time"</code>, <code>"DateTime"</code>,
     <code>"IPAddr"</code>, or <code>"IPv6Addr"</code> and the focus is on any
     of its siblings, then the mouse wheel events sent to this entry should be
-    handled by the mentry widget rather than scrolling the widget container
-    that is an ascendant of the mentry.&nbsp; You can achieve this by
+    handled by the entry widget itself rather than scrolling the widget
+    container that is an ascendant of the mentry.&nbsp; You can achieve this by
     invoking</dd>
 
     <dd>
       <blockquote>
         <pre>
-set entryList [$me entries]
-eval <a href="#adapt">scrollutil::adaptWheelEventHandling</a>  $entryList
-eval <span class="red">scrollutil::setFocusCheckWindow</span>      $entryList [list $me]
+set entryList [$me <a href=
+"https://www.nemethi.de/mentry/mentryWidget.html#entries">entries</a>]
+eval <a href="#adapt">scrollutil::adaptWheelEventHandling</a> $entryList
+eval <span class="red">scrollutil::setFocusCheckWindow</span>     $entryList [list $me]
 </pre>
       </blockquote>
     </dd>
@@ -383,9 +466,43 @@ eval <span class="red">scrollutil::setFocusCheckWindow</span>      $entryList [l
     <dd>
       <blockquote>
         <pre>
-set entryList [$me entries]
-<a href="#adapt">scrollutil::adaptWheelEventHandling</a>  {*}$entryList
-<span class="red">scrollutil::setFocusCheckWindow</span>      {*}$entryList $me
+set entryList [$me <a href=
+"https://www.nemethi.de/mentry/mentryWidget.html#entries">entries</a>]
+<a href="#adapt">scrollutil::adaptWheelEventHandling</a> {*}$entryList
+<span class="red">scrollutil::setFocusCheckWindow</span>     {*}$entryList $me
+</pre>
+      </blockquote>
+    </dd>
+
+    <dd class="tm"><b>REMARK 3:</b>&nbsp; As a similar example, suppose that
+    <code><i>ss</i></code> is a <a href="scrollsync.html">scrollsync</a>
+    widget that was populated via its <code><b><a href=
+    "scrollsync.html#setwidgets">setwidgets</a></b></code> subcommand with
+    child widgets.&nbsp; Then, if the widget under the pointer is one of these
+    children and the focus is on any of the other children passed to that
+    subcommand, then the mouse wheel events sent to the child under the pointer
+    should be handled by that child widget itself rather than scrolling the
+    widget container that is an ascendant of the scrollsync.&nbsp; You can
+    achieve this with the following code:</dd>
+
+    <dd>
+      <blockquote>
+        <pre>
+set widgetList [$ss <a href="scrollsync.html#widgets">widgets</a>]
+eval <a href="#adapt">scrollutil::adaptWheelEventHandling</a> $widgetList
+eval <span class="red">scrollutil::setFocusCheckWindow</span>     $widgetList [list $ss]
+</pre>
+      </blockquote>
+    </dd>
+
+    <dd>Again, with Tcl/Tk 8.5 or above, you can use the more compact form</dd>
+
+    <dd>
+      <blockquote>
+        <pre>
+set widgetList [$ss <a href="scrollsync.html#widgets">widgets</a>]
+<a href="#adapt">scrollutil::adaptWheelEventHandling</a> {*}$widgetList
+<span class="red">scrollutil::setFocusCheckWindow</span>     {*}$widgetList $ss
 </pre>
       </blockquote>
     </dd>

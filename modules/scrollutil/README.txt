@@ -16,6 +16,9 @@ written in pure Tcl/Tk code.  It contains:
   - the implementation of the "scrollarea", "scrollsync", and
     "scrollableframe" mega-widgets, including a general utility module
     for mega-widgets;
+  - the command "scrollutil::addMouseWheelSupport", which creates mouse
+    wheel event bindings for a given binding tag.  This command requires
+    Tcl/Tk 8.4 or later;
   - commands for user-friendly mouse wheel event handling in scrollable
     widget containers like scrollutil::scrollableframe, BWidget
     ScrollableFrame, and iwidgets::scrolledframe.  These commands

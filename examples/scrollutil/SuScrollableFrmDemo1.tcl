@@ -4,7 +4,7 @@
 # Demonstrates the use of the Scrollutil package in connection with the
 # scrollutil::scrollableframe widget.
 #
-# Copyright (c) 2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.5

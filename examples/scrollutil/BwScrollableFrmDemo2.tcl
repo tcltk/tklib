@@ -4,7 +4,7 @@
 # Demonstrates the use of the Scrollutil package in connection with the BWidget
 # ScrollableFrame widget.
 #
-# Copyright (c) 2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.5.9			;# for ttk::spinbox
@@ -48,9 +48,9 @@ foreach w [list $cb $sb $e $me] {
     bind $w <<TraverseIn>> [list $sf see %W]
 }
 foreach w [list $txt $lb $tbl $tv] {
-    bind $w <<TraverseIn>> [list seeParent $sf %W]
+    bind $w <<TraverseIn>> [list seeScrollarea $sf %W]
 }
-proc seeParent {sf w} { $sf see [winfo parent $w] }
+proc seeScrollarea {sf w} { $sf see [scrollutil::getscrollarea $w] }
 
 #
 # Additional stuff related to the mouse wheel events:

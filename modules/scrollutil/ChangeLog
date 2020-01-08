@@ -1,3 +1,35 @@
+2020-01-07  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.4; updated the copyright
+	* COPYRIGHT.txt: information.
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* README.txt:
+
+	* scripts/scrollarea.tcl: Added the command "scrollutil::getscrollarea";
+	  updated the copyright information.
+
+	* scripts/scrollsync.tcl: Added the command "scrollutil::getscrollsync";
+	  updated the copyright information.
+
+	* scripts/wheelEvent.tcl: Added the command
+	  "scrollutil::addMouseWheelSupport; created mouse wheel event class
+	  bindings for the ttk::scrollbar widget; automatically invoking
+	  "scrollutil::adaptWheelEventHandling" for the scrollbars of the
+	  scrollarea whose widget was passed to this command; added the missing
+	  pieces of code related to the bindings for mouse buttons 6 and 7 in
+	  Tk 8.7.a3 or later on X11; updated the copyright information.
+
+	* scripts/mwutil.tcl:          Minor improvemets; updated the copyright
+	* scripts/scrollableframe.tcl: information.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/*.html: Updated to reflect the changes; several improvements.
+
+	* ../../examples/scrollutil/*: Minor improvements; updated the copyright
+	  information.
+
 2019-12-12  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* ../../examples/scrollutil/SyncListboxes.tcl: Minor improvement.
