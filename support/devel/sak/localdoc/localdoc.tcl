@@ -124,7 +124,6 @@ proc sak::localdoc::basetoc {toc mod mdesc} {
     regexp {^(.*>Widget</dt><dd>\n<table class="#doctools_toc">)(.*)(</table></dl>\n</dl>\n<dl><dt><a name='by_type'>.*)$} $toc -> h t f
     set tn [xtable $t $mod $mdesc tklib/]
     return $h\n$tn$f
-    return $toc
 }
 
 proc sak::localdoc::basetoc0 {toc mod mdesc} {
