@@ -1,3 +1,7 @@
+2020-01-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* README.txt: Updated the version number.
+
 2020-01-07  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 1.4; updated the copyright
