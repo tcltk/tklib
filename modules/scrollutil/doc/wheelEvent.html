@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Commands Related to Mouse Wheel Event Handling</h1>
 
-    <h2>For Scrollutil Version 1.4</h2>
+    <h2>For Scrollutil Version 1.5</h2>
 
     <h3>by</h3>
 
@@ -72,7 +72,11 @@
 </pre>
     </dd>
 
-    <dt><b>DESCRIPTION</b></dt>
+    <dt><b>REQUIRED TK VERSION</b></dt>
+
+    <dd>8.4 or higher.
+
+    <dt class="tm"><b>DESCRIPTION</b></dt>
 
     <dd>Adds mouse wheel support to the widgets having the specified binding
     tag by creating bindings for the mouse wheel events along the axes given by
@@ -162,7 +166,11 @@
 </pre>
     </dd>
 
-    <dt><b>DESCRIPTION</b></dt>
+    <dt><b>REQUIRED TK VERSION</b></dt>
+
+    <dd>8.4 or higher on X11 and Mac OS X; 8.6b2 or later on Windows.
+
+    <dt class="tm"><b>DESCRIPTION</b></dt>
 
     <dd>Creates mouse wheel event bindings for the specified binding tags such
     that if the widget under the pointer is (a descendant of) one of the
@@ -218,7 +226,11 @@
 </pre>
     </dd>
 
-    <dt><b>DESCRIPTION</b></dt>
+    <dt><b>REQUIRED TK VERSION</b></dt>
+
+    <dd>8.4 or higher on X11 and Mac OS X; 8.6b2 or later on Windows.
+
+    <dt class="tm"><b>DESCRIPTION</b></dt>
 
     <dd>Adds the specified scrollable widget containers to the internal list of
     widget containers that are registered for scrolling by the mouse wheel
@@ -259,7 +271,11 @@
 </pre>
     </dd>
 
-    <dt><b>DESCRIPTION</b></dt>
+    <dt><b>REQUIRED TK VERSION</b></dt>
+
+    <dd>8.4 or higher on X11 and Mac OS X; 8.6b2 or later on Windows.
+
+    <dt class="tm"><b>DESCRIPTION</b></dt>
 
     <dd>For each <code><i>widget</i></code> argument, the command performs the
     following actions:</dd>
@@ -344,19 +360,27 @@
     it is called for other widgets, too).&nbsp; The Tk and tile widgets having
     class bindings for mouse wheel events are: listbox, text, Tk core
     scrollbar, ttk::scrollbar, ttk::combobox, ttk::spinbox, and
-    ttk::treeview.&nbsp; Note that the ttk::scrollbar widget has no
-    <i>built-in</i> class bindings for the mouse wheel events, but Scrollutil
-    automatically creates the missing bindings by copying the mouse wheel event
-    bindings of the widget class <code><b>Scrollbar</b></code> to the binding
-    tag <code><b>TScrollbar</b></code>.&nbsp; Examples of widgets with binding
-    tags other than their class names that have mouse wheel event bindings are
-    tablelist widgets as well as the entry components of <a href=
+    ttk::treeview.&nbsp; Examples of widgets with binding tags other than their
+    class names that have mouse wheel event bindings are tablelist widgets as
+    well as the entry components of <a href=
     "https://www.nemethi.de/mentry/">mentry</a> widgets of type
     <code>"Date"</code>, <code>"Time"</code>, <code>"DateTime"</code>,
     <code>"IPAddr"</code>, and <code>"IPv6Addr"</code> (for Mentry versions 3.2
     and above).</dd>
 
-    <dd class="tm"><b>REMARK 2:</b>&nbsp; As mentioned above, Tk core scrollbar
+    <dd class="tm"><b>REMARK 2:</b>&nbsp; The mouse wheel event class bindings
+    for the Tk core scrollbar on Windows and X11 were added in Tk 8.6.&nbsp;
+    Prior to this Tk version there were such bindings only for the windowing
+    systems <code><b>classic</b></code> and <code><b>aqua</b></code> on the
+    Macintosh.&nbsp; Scrollutil eliminates this discrepancy by automatically
+    creating the <code><b>Scrollbar</b></code> class bindings for mouse wheel
+    events on Windows and X11.&nbsp; Note also that the ttk::scrollbar widget
+    has no <i>built-in</i> class bindings for mouse wheel events, but
+    Scrollutil automatically creates the missing bindings by copying the mouse
+    wheel event bindings of the widget class <code><b>Scrollbar</b></code> to
+    the binding tag <code><b>TScrollbar</b></code>.</dd>
+
+    <dd class="tm"><b>REMARK 3:</b>&nbsp; As mentioned above, Tk core scrollbar
     and ttk::scrollbar widgets have class bindings for mouse wheel events,
     hence this command should be invoked for them in case they are descendants
     of a scrollable widget container.&nbsp; Since this task can become tedious,
@@ -367,14 +391,14 @@
     command will automatically be invoked for the scrollbars of that
     scrollarea, too.</dd>
 
-    <dd class="tm"><b>REMARK 3:</b>&nbsp; When handling a mouse wheel event
+    <dd class="tm"><b>REMARK 4:</b>&nbsp; When handling a mouse wheel event
     sent to a Tk core or tile scrollbar whose path name was passed to this
     command, if the focus is on or inside the associated widget then the event
     will be processed by the scrollbar rather than being redirected to the
     containing toplevel, just as if the focus were on the scrollbar
     itself.</dd>
 
-    <dd class="tm"><b>REMARK 4:</b>&nbsp; Invoking this command for widgets
+    <dd class="tm"><b>REMARK 5:</b>&nbsp; Invoking this command for widgets
     that have mouse wheel event bindings and are descendants of a scrollable
     widget container is essential for a user-friendly mouse wheel event
     handling in scrollable widget containers.&nbsp; Without this step the mouse
@@ -422,7 +446,11 @@
 </pre>
     </dd>
 
-    <dt><b>DESCRIPTION</b></dt>
+    <dt><b>REQUIRED TK VERSION</b></dt>
+
+    <dd>8.4 or higher on X11 and Mac OS X; 8.6b2 or later on Windows.
+
+    <dt class="tm"><b>DESCRIPTION</b></dt>
 
     <dd>For each <code><i>widget</i></code> argument, the command sets the
     associated "focus check window" to <code><i>otherWidget</i></code>.&nbsp;
@@ -536,7 +564,11 @@ set widgetList [$ss <a href="scrollsync.html#widgets">widgets</a>]
 </pre>
     </dd>
 
-    <dt><b>DESCRIPTION</b></dt>
+    <dt><b>REQUIRED TK VERSION</b></dt>
+
+    <dd>8.4 or higher on X11 and Mac OS X; 8.6b2 or later on Windows.
+
+    <dt class="tm"><b>DESCRIPTION</b></dt>
 
     <dd>Returns the path name of the "focus check window" associated with the
     <code><i>widget</i></code> argument.&nbsp; This is the window that is used
