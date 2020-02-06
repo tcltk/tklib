@@ -616,22 +616,22 @@ after 100 [list $txt yview 14.0]
   characters, hence it doesn't fit completely into the window, whose width is
   49 characters.&nbsp; Consequently, the command&nbsp; <code>$txt
   xview</code>&nbsp; will return the list&nbsp; <code>{0.0 0.98}</code>,&nbsp;
-  hence the scrollarea's horizontal scrollbar will be mapped and will cover
+  hence the scrollarea's horizontal scrollbar will be mapped and will obscure
   most part of the bottom line.&nbsp; Since this line has <code>red</code>
   background, it is easy to see how much of it sticks out above the upper edge
   of the scrollbar.</p>
 
   <p>Let's analyze what happens if the text widget's height is decreased by
   dragging the main window's upper or lower edge, just until the red pixels get
-  covered by the horizontal scrollbar.&nbsp; After performing this action, line
-  #25 is completely out of view and the new bottom line is line #24, which has
-  48 characters, hence the command&nbsp; <code>$txt xview</code>&nbsp; will
+  obscured by the horizontal scrollbar.&nbsp; After performing this action,
+  line #25 is completely out of view and the new bottom line is line #24, which
+  has 48 characters, hence the command&nbsp; <code>$txt xview</code>&nbsp; will
   return&nbsp; <code>{0.0 1.0}</code>.&nbsp; Normally, this would cause the
   horizontal scrollbar to be unmapped.&nbsp; However, that would make line #25
   to the bottom line, thus causing the horizontal scrollbar to be mapped
-  again.&nbsp; This time the scrollbar would completely cover this line, which
-  would result in line #24 to become the bottom line, which would cause the
-  scrollbar to be unmapped again, and so on.&nbsp; In other words, the
+  again.&nbsp; This time the scrollbar would completely obscure this line,
+  which would result in line #24 to become the bottom line, which would cause
+  the scrollbar to be unmapped again, and so on.&nbsp; In other words, the
   horizontal scrollbar would get mapped and unmapped in an endless loop, giving
   rise to an annoying flickering effect.&nbsp; The built-in locking mechanism
   of the scrollarea widget guards against such potential endless loops.&nbsp;
