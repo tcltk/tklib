@@ -1,3 +1,7 @@
+2020-02-06  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/scrollutil.html: Minor improvements.
+
 2020-02-05  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 1.5.
