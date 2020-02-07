@@ -7,6 +7,7 @@
 # Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
+package require Tk 8.5
 package require tablelist_tile 6.5
 package require scrollutil_tile
 source styleUtil.tcl
@@ -63,5 +64,4 @@ pack $b -side bottom -pady {0 10}
 # Manage the scrollarea
 #
 pack $sa -expand yes -fill both -padx 10 -pady 10
-
-pack $f -expand yes -fill both
+pack $f  -expand yes -fill both

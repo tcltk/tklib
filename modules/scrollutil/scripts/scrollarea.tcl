@@ -666,28 +666,8 @@ proc scrollutil::sa::onDynamicHScrollbarMap hsb {
     }
 
     foreach {first last} [$hsb get] {}
-    if {$first == 0 && $last == 1} {
-	return ""
-    }
-
-    set textWidgetFound 0
-    set sa [winfo parent $hsb]
-    set widget [::$sa widget]
-    set class [winfo class $widget]
-    if {[string compare $class "Text"]  == 0 ||
-	[string compare $class "Ctext"] == 0} {
-	set textWidgetFound 1
-    } elseif {[string compare $class "Scrollsync"] == 0} {
-	foreach w [::$widget widgets] {
-	    set class [winfo class $w]
-	    if {[string compare $class "Text"]  == 0 ||
-		[string compare $class "Ctext"] == 0} {
-		set textWidgetFound 1
-		break
-	    }
-	}
-    }
-    if {!$textWidgetFound} {
+    if {($first == 0 && $last == 1) ||
+	![containsTextWidget [winfo parent $hsb]]} {
 	return ""
     }
 
@@ -779,8 +759,7 @@ proc scrollutil::sa::showHScrollbar {win {redisplay 0}} {
 
     if {[winfo ismapped $win]} {
 	set data(hsbLocked) 1
-	after $data(-lockinterval) \
-	    [list scrollutil::sa::unlockScrollbar $win hsb]
+	after $data(-lockinterval) [list scrollutil::sa::unlockHScrollbar $win]
     }
 }
 
@@ -818,6 +797,21 @@ proc scrollutil::sa::updateHScrollbar win {
 }
 
 #------------------------------------------------------------------------------
+# scrollutil::sa::unlockHScrollbar
+#------------------------------------------------------------------------------
+proc scrollutil::sa::unlockHScrollbar win {
+    if {[winfo exists $win] &&
+	[string compare [winfo class $win] "Scrollarea"] == 0} {
+	upvar ::scrollutil::ns${win}::data data
+	set data(hsbLocked) 0
+
+	if {$data(-lockinterval) <= 1 && ![containsTextWidget $win]} {
+	    updateHScrollbar $win
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
 # scrollutil::sa::showVScrollbar
 #------------------------------------------------------------------------------
 proc scrollutil::sa::showVScrollbar {win {redisplay 0}} {
@@ -839,8 +833,7 @@ proc scrollutil::sa::showVScrollbar {win {redisplay 0}} {
 
     if {[winfo ismapped $win]} {
 	set data(vsbLocked) 1
-	after $data(-lockinterval) \
-	    [list scrollutil::sa::unlockScrollbar $win vsb]
+	after $data(-lockinterval) [list scrollutil::sa::unlockVScrollbar $win]
     }
 }
 
@@ -878,12 +871,38 @@ proc scrollutil::sa::updateVScrollbar win {
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::sa::unlockScrollbar
+# scrollutil::sa::unlockVScrollbar
 #------------------------------------------------------------------------------
-proc scrollutil::sa::unlockScrollbar {win sb} {
+proc scrollutil::sa::unlockVScrollbar win {
     if {[winfo exists $win] &&
 	[string compare [winfo class $win] "Scrollarea"] == 0} {
 	upvar ::scrollutil::ns${win}::data data
-	set data(${sb}Locked) 0
+	set data(vsbLocked) 0
+
+	if {$data(-lockinterval) <= 1} {
+	    updateVScrollbar $win
+	}
     }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sa::containsTextWidget
+#------------------------------------------------------------------------------
+proc scrollutil::sa::containsTextWidget win {
+    set widget [::$win widget]
+    set class [winfo class $widget]
+    if {[string compare $class "Text"]  == 0 ||
+	[string compare $class "Ctext"] == 0} {
+	return 1
+    } elseif {[string compare $class "Scrollsync"] == 0} {
+	foreach w [::$widget widgets] {
+	    set class [winfo class $w]
+	    if {[string compare $class "Text"]  == 0 ||
+		[string compare $class "Ctext"] == 0} {
+		return 1
+	    }
+	}
+    }
+
+    return 0
 }

@@ -7,7 +7,6 @@
 # Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.5
 package require scrollutil_tile
 source styleUtil.tcl
 
@@ -57,7 +56,7 @@ foreach country $countryList capital $capitalList {
 
 set capitalList [lsort $capitalList]
 
-if {$ttk::currentTheme in {aqua vista xpnative}} {
+if {[lsearch -exact {aqua vista xpnative} $ttk::currentTheme] >= 0} {
     set topPadY 2
 } else {
     set topPadY 5

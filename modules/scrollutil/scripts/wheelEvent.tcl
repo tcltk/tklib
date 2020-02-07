@@ -42,12 +42,42 @@ namespace eval scrollutil {
 #------------------------------------------------------------------------------
 # scrollutil::createBindings
 #
-# Creates mouse wheel event bindings for the binding tags TScrollbar,
-# WheeleventRedir, and WheeleventBreak, as well as <Destroy> bindings for the
-# binding tags ScrlWidgetCont and WheeleventWidget.
+# Creates mouse wheel event bindings for the binding tags Scrollbar,
+# TScrollbar, WheeleventRedir, and WheeleventBreak, as well as <Destroy>
+# bindings for the binding tags ScrlWidgetCont and WheeleventWidget.
 #------------------------------------------------------------------------------
 proc scrollutil::createBindings {} {
     variable winSys
+
+    #
+    # On the windowing systems win32 and x11 there are no built-in
+    # mouse wheel event bindings for the binding tag Scrollbar
+    # if the Tk version is earlier than 8.6 -- create them here
+    #
+    if {$winSys eq "win32" || $winSys eq "x11"} {
+	set scrollByUnits [expr {
+	    [llength [info commands ::tk::ScrollByUnits]] == 0 ?
+	    "tkScrollByUnits" : "tk::ScrollByUnits"}]
+
+	bind Scrollbar <MouseWheel> [format {
+	    %s %%W v [expr {%%D >= 0 ? (-%%D) / 30 : (-(%%D) + 29) / 30}]
+	} $scrollByUnits]
+	bind Scrollbar <Shift-MouseWheel> [format {
+	    %s %%W h [expr {%%D >= 0 ? (-%%D) / 30 : (-(%%D) + 29) / 30}]
+	} $scrollByUnits]
+
+	if {$winSys eq "x11"} {
+	    bind Scrollbar <Button-4>	    [list $scrollByUnits %W v -5]
+	    bind Scrollbar <Button-5>	    [list $scrollByUnits %W v  5]
+	    bind Scrollbar <Shift-Button-4> [list $scrollByUnits %W h -5]
+	    bind Scrollbar <Shift-Button-5> [list $scrollByUnits %W h  5]
+
+	    if {[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+		bind Scrollbar <Button-6>   [list $scrollByUnits %W h -5]
+		bind Scrollbar <Button-7>   [list $scrollByUnits %W h  5]
+	    }
+	}
+    }
 
     set eventList [list <MouseWheel> <Shift-MouseWheel>]
     switch $winSys {
@@ -63,6 +93,10 @@ proc scrollutil::createBindings {} {
 	}
     }
 
+    #
+    # Copy the mouse wheel event bindings of the widget
+    # class Scrollbar to the binding tag TScrollbar
+    #
     foreach event $eventList {
 	bind TScrollbar $event [bind Scrollbar $event]
     }

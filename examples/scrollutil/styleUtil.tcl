@@ -32,7 +32,7 @@ if {[tk windowingsystem] eq "x11"} {
 #
 # Make sure the combobox will show whether it has the focus
 #
-if {$ttk::currentTheme in {alt clam default}} {
+if {[lsearch -exact {alt clam default} $ttk::currentTheme] >= 0} {
     ttk::style map TCombobox \
 	-fieldbackground [list {readonly focus} #4a6984] \
 	-foreground      [list {readonly focus} #ffffff]
@@ -68,9 +68,9 @@ switch $ttk::currentTheme {
 # Creates a toolbutton widget which appears raised when it has the focus.
 #
 proc createToolbutton {w args} {
-    ttk::button $w -style Small.Toolbutton {*}$args
+    eval ttk::button $w -style Small.Toolbutton $args
 
-    if {$ttk::currentTheme in {vista xpnative}} {
+    if {[lsearch -exact {vista xpnative} $ttk::currentTheme] >= 0} {
 	bindtags $w [linsert [bindtags $w] 1 Toolbtn]
     }
 

@@ -20,7 +20,8 @@ set tf [ttk::frame $f.tf]
 set l1 [ttk::label $tf.l1 -text "Countries"]
 set l2 [ttk::label $tf.l2 -text "Capitals"]
 grid $l1 $l2
-grid columnconfigure $tf all -weight 1 -uniform AllCols
+grid columnconfigure $tf 0 -weight 1 -uniform AllCols
+grid columnconfigure $tf 1 -weight 1 -uniform AllCols
 
 #
 # Create a scrollsync widget within a scrollarea
@@ -68,8 +69,9 @@ for {set idx 1} {$idx < $itemCount} {incr idx 2} {
 }
 
 grid $lb1 $lb2 -sticky news -padx {0 2}
-grid rowconfigure    $ss 0   -weight 1
-grid columnconfigure $ss all -weight 1
+grid rowconfigure    $ss 0 -weight 1
+grid columnconfigure $ss 0 -weight 1
+grid columnconfigure $ss 1 -weight 1
 
 #
 # Create a ttk::button widget

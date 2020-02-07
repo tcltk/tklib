@@ -1,5 +1,21 @@
-What is new in Scrollutil 1.4?
+What is new in Scrollutil 1.5?
 ------------------------------
+
+1. On Windows and X11, Scrollutil now automatically creates mouse wheel
+   event class bindings for the Tk core scrollbar widget, which are
+   missing on these platforms when using a Tk version earlier than 8.6.
+
+2. Added a demo script showing how the scrollarea widget circumvents the
+   potential shimmering effect in connection with text widgets.
+
+3. Improved the handling of the case that the scrollbar lock prevented a
+   scrollbar of a scrollarea widget from being unmapped (thanks to Paul
+   Obermeier for his bug report).
+
+4. Several improvements in the demo scripts and documentation.
+
+What was new in Scrollutil 1.4?
+-------------------------------
 
 1. Added the commands "scrollutil::getscrollarea" and
    "scrollutil::getscrollsync", designed to query the scrollarea and

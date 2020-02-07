@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 1.4</h2>
+    <h2>For Scrollutil Version 1.5</h2>
 
     <h3>by</h3>
 
@@ -48,6 +48,8 @@
     <code>styleUtil.tcl</code></a></li>
 
     <li><a href="#ex_ScrolledTablelist">A Scrolled tablelist Widget</a></li>
+
+    <li><a href="#ex_ScrolledText">A Scrolled text Widget</a></li>
 
     <li><a href="#ex_SyncListboxes">Synchronizing Two listbox Widgets</a></li>
 
@@ -246,8 +248,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil1.4.tar.gz</code> for UNIX and
-  <code>scrollutil1_4.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil1.5.tar.gz</code> for UNIX and
+  <code>scrollutil1_5.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -271,11 +273,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil1.4.tar.gz</code>:</p>
+  <code>scrollutil1.5.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil1.4.tar.gz | tar -xf -
+gunzip -c scrollutil1.5.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -283,17 +285,17 @@ gunzip -c scrollutil1.4.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil1.4.tar.gz
+tar -zxf scrollutil1.5.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil1.4</code>,
+  <p>Both commands will create a directory named <code>scrollutil1.5</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil1_4.zip</code> into the directory
-  <code>scrollutil1.4</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil1_5.zip</code> into the directory
+  <code>scrollutil1.5</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -464,6 +466,7 @@ source styleUtil.tcl
 
   <blockquote>
     <pre>
+package require Tk 8.5
 package require tablelist_tile 6.3
 source styleUtil.tcl
 
@@ -505,8 +508,7 @@ grid columnconfigure $frm 1 -weight 1</span>
 # Manage the frame
 #</span>
 pack $frm -expand yes -fill both -padx 10 -pady 10
-
-. . .
+pack $f   -expand yes -fill both
 </pre>
   </blockquote>
 
@@ -524,6 +526,7 @@ pack $frm -expand yes -fill both -padx 10 -pady 10
 
   <blockquote>
     <pre>
+package require Tk 8.5
 package require tablelist_tile 6.5
 <span class="red">package require scrollutil_tile</span>
 source styleUtil.tcl
@@ -546,10 +549,96 @@ tablelist::tablelist $tbl ...
 # Manage the scrollarea
 #</span>
 pack $sa -expand yes -fill both -padx 10 -pady 10
-
-. . .
+pack $f  -expand yes -fill both
 </pre>
   </blockquote>
+
+  <h3 id="ex_ScrolledText">A Scrolled text Widget</h3>
+
+  <p>The file <code>ScrolledText.tcl</code> in the <code>demos</code> directory
+  shows how the <a href="scrollarea.html">scrollarea</a> widget circumvents the
+  potential shimmering effect in connection with text widgets.</p>
+
+  <blockquote>
+    <img src="ScrolledText.png" alt="ScrolledText" width="401" height="338">
+  </blockquote>
+
+  <p>Here is the relevant code, in which the lines related to the scrollarea
+  widget are shown in <span class="red">red</span> color:</p>
+
+  <blockquote>
+    <pre>
+<span class="red">package require scrollutil_tile</span>
+source styleUtil.tcl
+
+wm title . "Scrolled Text"
+
+<span class="cmt">#
+# Create a text widget within a scrollarea
+#</span>
+set f  [ttk::frame .f]
+<span class="red">set sa [scrollutil::scrollarea $f.sa -lockinterval 10]</span>
+set txt [text $sa.txt -font TkFixedFont -width 49 -height 12 \
+         -spacing1 2 -spacing3 2 -wrap none]
+<span class="red">$sa setwidget $txt</span>
+
+<span class="cmt">#
+# Populate the text widget and set the background color of line #25 to red
+#</span>
+for {set i 1} {$i <= 30} {incr i} {
+    set j [expr {2*$i}]
+    $txt insert end [string repeat x $j]\n
+}
+$txt delete 30.end
+$txt tag configure bgRed -background red
+$txt tag add bgRed 25.0 25.end
+
+. . .
+
+<span class="cmt">#
+# Manage the scrollarea
+#</span>
+pack $sa -expand yes -fill both -padx 10 -pady 10
+pack $f  -expand yes -fill both
+
+<span class="cmt">#
+# Adjust the vertical view in the text window
+# so that line #25 becomes the bottom line
+#</span>
+tkwait visibility $txt
+after 100 [list $txt yview 14.0]
+</pre>
+  </blockquote>
+
+  <p>The script creates a text widget <code>$txt</code> embedded into a
+  scrollarea, populates it with 30 lines, and adjusts the vertical view in the
+  text window so that line #25 becomes the bottom line.&nbsp; This line has 50
+  characters, hence it doesn't fit completely into the window, whose width is
+  49 characters.&nbsp; Consequently, the command&nbsp; <code>$txt
+  xview</code>&nbsp; will return the list&nbsp; <code>{0.0 0.98}</code>,&nbsp;
+  hence the scrollarea's horizontal scrollbar will be mapped and will obscure
+  most part of the bottom line.&nbsp; Since this line has <code>red</code>
+  background, it is easy to see how much of it sticks out above the upper edge
+  of the scrollbar.</p>
+
+  <p>Let's analyze what happens if the text widget's height is decreased by
+  dragging the main window's upper or lower edge, just until the red pixels get
+  obscured by the horizontal scrollbar.&nbsp; After performing this action,
+  line #25 is completely out of view and the new bottom line is line #24, which
+  has 48 characters, hence the command&nbsp; <code>$txt xview</code>&nbsp; will
+  return&nbsp; <code>{0.0 1.0}</code>.&nbsp; Normally, this would cause the
+  horizontal scrollbar to be unmapped.&nbsp; However, that would make line #25
+  to the bottom line, thus causing the horizontal scrollbar to be mapped
+  again.&nbsp; This time the scrollbar would completely obscure this line,
+  which would result in line #24 to become the bottom line, which would cause
+  the scrollbar to be unmapped again, and so on.&nbsp; In other words, the
+  horizontal scrollbar would get mapped and unmapped in an endless loop, giving
+  rise to an annoying flickering effect.&nbsp; The built-in locking mechanism
+  of the scrollarea widget guards against such potential endless loops.&nbsp;
+  To make sure that the locking will work as expected, we have set the
+  <code><a href="scrollarea.html#lockinterval">-lockinterval</a></code>
+  scrollarea option to <code>10</code> (recall that the default value is
+  <code>1</code>).</p>
 
   <h3 id="ex_SyncListboxes">Synchronizing Two listbox Widgets</h3>
 
@@ -598,12 +687,14 @@ set lb2 [listbox $ss.lb2 -activestyle none -highlightthickness 0 -width 16]
 . . .
 
 grid $lb1 $lb2 -sticky news -padx {0 2}
-grid rowconfigure    $ss 0   -weight 1
-grid columnconfigure $ss all -weight 1
+grid rowconfigure    $ss 0 -weight 1
+grid columnconfigure $ss 0 -weight 1
+grid columnconfigure $ss 1 -weight 1
 
 . . .
 
 pack $sa -side top -expand yes -fill both -padx 10 -pady {2 10}
+pack $f  -expand yes -fill both
 
 . . .
 </pre>
@@ -663,12 +754,15 @@ for {set n 1; set colWidth 40} {$n <= 3} {incr n; incr colWidth 20} {
 <span class="red">$ss setwidgets [list $tbl1 $tbl2 $tbl3]</span>
 
 grid $tbl1 $tbl2 $tbl3 -sticky news -padx {0 2}
-grid rowconfigure    $ss 0   -weight 1
-grid columnconfigure $ss all -weight 1
+grid rowconfigure    $ss 0 -weight 1
+grid columnconfigure $ss 0 -weight 1
+grid columnconfigure $ss 1 -weight 1
+grid columnconfigure $ss 2 -weight 1
 
 . . .
 
 pack $sa -side top -expand yes -fill both -padx 10 -pady {2 10}
+pack $f  -expand yes -fill both
 
 . . .
 </pre>
@@ -709,7 +803,6 @@ pack $sa -side top -expand yes -fill both -padx 10 -pady {2 10}
 
   <blockquote>
     <pre>
-package require Tk 8.5
 <span class="red">package require scrollutil_tile</span>
 source styleUtil.tcl
 
@@ -817,7 +910,6 @@ foreach country $countryList {
 
   <blockquote>
     <pre>
-package require Tk 8.5
 package require BWidget
 Widget::theme yes
 <span class="red">package require scrollutil_tile</span>
@@ -909,13 +1001,12 @@ foreach country $countryList {
 
   <blockquote>
     <pre>
-package require Tk 8.5
 if {[catch {package require iwidgets} result1] != 0 &&
     [catch {package require Iwidgets} result2] != 0} {
     error "$result1; $result2"
 }
 source scrolledwidgetPatch.itk                  ;<span class="cmt"># adds ttk::scrollbar widgets</span>
-<span class="red">package require scrollutil</span>
+<span class="red">package require scrollutil_tile</span>
 source styleUtil.tcl
 
 wm title . "European Capitals Quiz"
