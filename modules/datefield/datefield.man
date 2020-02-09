@@ -7,8 +7,8 @@
 [keywords dateentry]
 [keywords entry]
 [keywords widget]
-[copyright {Keith Vetter <keith@ebook.gemstar.com>} and
-{Thomas Wunderlich <tcl.tk@blindenfreizeiten.de>}]
+[copyright {Keith Vetter <keith@ebook.gemstar.com>}]
+[copyright {Thomas Wunderlich <tcl.tk@blindenfreizeiten.de>}]
 [moddesc {Tk datefield widget}]
 [titledesc {Tk datefield widget}]
 [category Widget]
@@ -19,7 +19,7 @@
 The [package datefield] package provides the datefield widget which
 is an enhanced text entry widget for the purpose of date entry. There
 are three valid formats for the dates which can be entered:
-[list_begin [enum]]
+[list_begin enumerated]
 [enum] English form MM/DD/YYYY using [arg {-format "%m/%d/%Y"}] (default)
 [enum] German form DD.MM.YYYY using [arg {-format "%d.%m.%Y"}]
 [enum] ISO form YYYY-MM-DD using [arg {-format "%Y-%m-%d"}]

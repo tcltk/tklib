@@ -1,3 +1,20 @@
+# -*- tcl -*-
+
+if {![package vsatisfies [package provide Tcl] 8.5]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+# Future: put all tests under constraint tk and set constraint properly
+if {[catch { package require Tk 8.5 } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+::tcltest::testConstraint tk 1
+
 #
 # Tile package: entry widget tests
 #
@@ -20,7 +37,10 @@ namespace import ::widgetPlus::ttkEntryPlus
 # All tests pass.
 # ------------------------------------------------------------------------------
 
-variable scrollInfo
+# Initialize
+set scrollInfo {Inf Inf}
+set bgerror    {}
+
 proc scroll args {
     global scrollInfo
     set scrollInfo $args
@@ -29,7 +49,6 @@ proc scroll args {
 # Some of the tests raise background errors;
 # override default bgerror to catch them.
 #
-variable bgerror ""
 proc bgerror {error} {
     variable bgerror $error
     variable bgerrorInfo $::errorInfo

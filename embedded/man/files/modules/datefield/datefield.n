@@ -1,8 +1,9 @@
 '\"
 '\" Generated from file 'datefield\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) Keith Vetter <keith@ebook\&.gemstar\&.com>
+'\" Copyright (c) Thomas Wunderlich <tcl\&.tk@blindenfreizeiten\&.de>
 '\"
-.TH "datefield" n 0\&.2 tklib "Tk datefield widget"
+.TH "datefield" n 0\&.3 tklib "Tk datefield widget"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -276,15 +277,24 @@ datefield \- Tk datefield widget
 .SH SYNOPSIS
 package require \fBTk \fR
 .sp
-package require \fBdatefield  ?0\&.2?\fR
+package require \fBdatefield  ?0\&.3?\fR
 .sp
 \fB::datefield::datefield\fR \fIwidgetpath\fR ?\fIoptions\fR?
+.sp
+\fI-format\fR
 .sp
 .BE
 .SH DESCRIPTION
 The \fBdatefield\fR package provides the datefield widget which
-is an enhanced text entry widget for the purpose of date entry\&. Only
-valid dates of the form MM/DD/YYYY can be entered\&.
+is an enhanced text entry widget for the purpose of date entry\&. There
+are three valid formats for the dates which can be entered:
+.IP [1]
+English form MM/DD/YYYY using \fI-format "%m/%d/%Y"\fR (default)
+.IP [2]
+German form DD\&.MM\&.YYYY using \fI-format "%d\&.%m\&.%Y"\fR
+.IP [3]
+ISO form YYYY-MM-DD using \fI-format "%Y-%m-%d"\fR
+.PP
 .PP
 The datefield widget is, in fact, just an entry widget with
 specialized bindings\&. This means all the command and options for an
@@ -295,7 +305,14 @@ entry widget apply equally here\&.
 Creates and configures a date field widget\&.
 .PP
 .SH OPTIONS
-See the \fBentry\fR manual entry for details on all available options\&.
+.TP
+\fI-format\fR
+One of "%m/%d/%Y" (English, default if option left), "%d\&.%m\&.%Y" (German),
+or "%Y-%m-%d" (ISO)\&.
+.PP
+.PP
+See the \fBentry\fR manual entry for details on all remaining/available
+options\&.
 .SH EXAMPLE
 .CS
 
@@ -309,7 +326,7 @@ See the \fBentry\fR manual entry for details on all available options\&.
  }
  trace variable myDate w DayOfWeek
 
- ::datefield::datefield \&.df -textvariable myDate
+ ::datefield::datefield \&.df -textvariable myDate -format "%m/%d/%Y"
  label \&.l1 -text "Enter a date:"   -anchor e
  label \&.l2 -text "That date is a:" -anchor e
  label \&.l3 -textvariable myDate2 -relief sunken -width 12
@@ -335,5 +352,6 @@ Widget
 .SH COPYRIGHT
 .nf
 Copyright (c) Keith Vetter <keith@ebook\&.gemstar\&.com>
+Copyright (c) Thomas Wunderlich <tcl\&.tk@blindenfreizeiten\&.de>
 
 .fi
