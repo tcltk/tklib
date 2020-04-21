@@ -2,10 +2,10 @@
 # Demonstrates how to use a tablelist widget for displaying information about
 # children of an arbitrary widget.
 #
-# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.8
+package require tablelist_tile 6.9
 
 namespace eval demo {
     variable dir [file dirname [info script]]

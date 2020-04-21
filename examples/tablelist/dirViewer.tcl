@@ -4,11 +4,11 @@
 # Demonstrates how to use a tablelist widget for displaying the content of a
 # directory.
 #
-# Copyright (c) 2010-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2010-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.3
-package require tablelist 6.8
+package require tablelist 6.9
 
 #
 # Add some entries to the Tk option database
@@ -17,11 +17,12 @@ set dir [file dirname [info script]]
 source [file join $dir option.tcl]
 
 #
-# Create three images
+# Create three images corresponding to the display's DPI scaling level
 #
-image create photo clsdFolderImg -file [file join $dir clsdFolder.gif]
-image create photo openFolderImg -file [file join $dir openFolder.gif]
-image create photo fileImg       -file [file join $dir file.gif]
+set pct $tablelist::scalingpct
+image create photo clsdFolderImg -file [file join $dir clsdFolder$pct.gif]
+image create photo openFolderImg -file [file join $dir openFolder$pct.gif]
+image create photo fileImg       -file [file join $dir       file$pct.gif]
 
 #------------------------------------------------------------------------------
 # displayContents
@@ -55,6 +56,24 @@ proc displayContents dir {
     scrollbar $hsb -orient horizontal -command [list $tbl xview]
 
     #
+    # On X11 configure the tablelist and the scrollbars
+    # according to the display's DPI scaling level
+    #
+    global winSys					;# see option.tcl
+    if {[string compare $winSys "x11"] == 0} {
+	set pct $tablelist::scalingpct
+	set arrowSizeList {7x4 9x5 11x6 13x7 15x8}
+	set idx [expr {($pct - 100) / 25}]
+	set arrowSize [lindex $arrowSizeList $idx]
+	$tbl configure -arrowstyle flat$arrowSize -treestyle bicolor$pct
+
+	set defaultSbWidth [lindex [$vsb configure -width] 3]
+	set sbWidth [expr {$defaultSbWidth * $pct / 100}]
+	$vsb configure -width $sbWidth
+	$hsb configure -width $sbWidth
+    }
+
+    #
     # Create a pop-up menu with one command entry; bind the script
     # associated with its entry to the <Double-1> event, too
     #
@@ -84,7 +103,6 @@ proc displayContents dir {
     # Manage the widgets
     #
     grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
-    global winSys					;# see option.tcl
     if {[string compare $winSys "win32"] == 0} {
 	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
     } else {
@@ -94,7 +112,8 @@ proc displayContents dir {
     grid $hsb -row 2 -column 0 -sticky ew
     grid rowconfigure    $tf 1 -weight 1
     grid columnconfigure $tf 0 -weight 1
-    pack $b1 $b2 $b3 -side left -expand yes -pady 10
+    set padY [expr {10 * $tablelist::scalingpct / 100}]
+    pack $b1 $b2 $b3 -side left -expand yes -pady $padY
     pack $bf -side bottom -fill x
     pack $tf -side top -expand yes -fill both
 
