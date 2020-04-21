@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -18,9 +18,14 @@
 
 namespace eval tablelist {
     #
-    # Get the current windowing system ("x11", "win32", "classic", or "aqua")
+    # Get the windowing system ("x11", "win32", "classic", or "aqua")
     #
     variable winSys [mwutil::windowingSystem]
+
+    #
+    # Get the display's current scaling percentage (100, 125, 150, 175, or 200)
+    #
+    variable scalingpct [mwutil::scalingPercentage]
 
     #
     # Create aliases for a few tile commands if not yet present
@@ -492,14 +497,14 @@ namespace eval tablelist {
     #
     variable activeStyles  [list frame none underline]
     variable alignments    [list left right center]
-    variable arrowStyles   [list flat5x3 flat5x4 flat6x4 flat7x4 flat7x5 \
-				 flat7x7 flat8x4 flat8x5 flat9x5 flat9x6 \
-				 flat11x6 flat15x8 flatAngle7x4 flatAngle7x5 \
+    variable arrowStyles   [list flat6x4 flat7x4 flat7x5 flat7x7 flat8x4 \
+				 flat8x5 flat9x5 flat9x6 flat11x6 flat13x7 \
+				 flat15x8 flatAngle7x4 flatAngle7x5 \
 				 flatAngle9x5 flatAngle9x6 flatAngle9x7 \
 				 flatAngle10x6 flatAngle10x7 flatAngle11x6 \
-				 flatAngle15x8 photo7x4 photo7x7 photo9x5 \
-				 photo11x6 photo15x8 sunken8x7 sunken10x9 \
-				 sunken12x11]
+				 flatAngle13x7 flatAngle15x8 photo7x4 \
+				 photo7x7 photo9x5 photo11x6 photo13x7 \
+				 photo15x8 sunken8x7 sunken10x9 sunken12x11]
     variable arrowTypes    [list up down]
     variable colWidthOpts  [list -requested -stretched -total]
     variable cornerOpts	   [list -ne -sw]
@@ -533,12 +538,13 @@ namespace eval tablelist {
     variable sortOpts      [list -increasing -decreasing]
     variable sortOrders    [list increasing decreasing]
     variable states	   [list disabled normal]
-    variable treeStyles    [list adwaita ambiance aqua arc baghira bicolor1 \
-				 bicolor2 bicolor3 bicolor4 blueMenta \
-				 classic1 classic2 classic3 classic4 dust \
-				 dustSand gtk klearlooks mate menta mint \
-				 mint2 newWave oxygen1 oxygen2 phase plain1 \
-				 plain2 plain3 plain4 plastik plastique \
+    variable treeStyles    [list adwaita ambiance aqua arc baghira bicolor100 \
+				 bicolor125 bicolor150 bicolor175 bicolor200 \
+				 blueMenta classic100 classic125 classic150 \
+				 classic175 classic200 dust dustSand gtk \
+				 klearlooks mate menta mint mint2 newWave \
+				 oxygen1 oxygen2 phase plain100 plain125 \
+				 plain150 plain175 plain200 plastik plastique \
 				 radiance ubuntu ubuntu2 ubuntu3 ubuntuMate \
 				 vistaAero vistaClassic win7Aero win7Classic \
 				 win10 winnative winxpBlue winxpOlive \
@@ -556,15 +562,15 @@ namespace eval tablelist {
     restrictArrowStyles 
 
     #
+    # Whether to support strictly Tk core listbox compatible bindings only
+    #
+    variable strictTk 0
+
+    #
     # The array maxIndentDepths holds the current max.
     # indentation depth for every tree style in use
     #
     variable maxIndentDepths
-
-    #
-    # Whether to support strictly Tk core listbox compatible bindings only
-    #
-    variable strictTk 0
 
     #
     # Define the command mapTabs, which returns the string obtained by
@@ -1537,7 +1543,7 @@ proc tablelist::childkeysSubCmd {win argList} {
 proc tablelist::collapseSubCmd {win argList} {
     set argCount [llength $argList]
     if {$argCount < 1 || $argCount > 2} {
-	mwutil::wrongNumArgs "$win collapse indexLList ?-fully|-partly?"
+	mwutil::wrongNumArgs "$win collapse indexList ?-fully|-partly?"
     }
 
     synchronize $win
@@ -1547,6 +1553,7 @@ proc tablelist::collapseSubCmd {win argList} {
 	set index [rowIndex $win $elem 0 1]
 	lappend indexList $index
     }
+    set indexList [lsort -integer -decreasing $indexList]
 
     if {$argCount == 1} {
 	set fullCollapsion 1
@@ -2439,6 +2446,7 @@ proc tablelist::expandSubCmd {win argList} {
 	set index [rowIndex $win $elem 0 1]
 	lappend indexList $index
     }
+    set indexList [lsort -integer -decreasing $indexList]
 
     if {$argCount == 1} {
 	set fullExpansion 1

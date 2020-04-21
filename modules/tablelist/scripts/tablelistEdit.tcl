@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -2472,8 +2472,6 @@ proc tablelist::defineTablelistEdit {} {
 	    set tablelist::priv(y) ""
 	    after cancel $tablelist::priv(afterId)
 	    set tablelist::priv(afterId) ""
-	    set tablelist::priv(justReleased) 1
-	    after 100 [list set tablelist::priv(justReleased) 0]
 	    set tablelist::priv(releasedInEditWin) 1
 	    if {!$tablelist::priv(clickedInEditWin)} {
 		if {$tablelist::priv(justClicked)} {
@@ -2779,12 +2777,12 @@ proc tablelist::insertChar {w str} {
 	return -code break ""
     } elseif {[regexp {^(T?Entry|TCombobox|T?Spinbox)$} $class]} {
 	if {[string match "T*" $class]} {
-	    if {[string length [info procs "::ttk::entry::Insert"]] != 0} {
+	    if {[llength [info procs "::ttk::entry::Insert"]] != 0} {
 		ttk::entry::Insert $w $str
 	    } else {
 		tile::entry::Insert $w $str
 	    }
-	} elseif {[string length [info procs "::tk::EntryInsert"]] != 0} {
+	} elseif {[llength [info procs "::tk::EntryInsert"]] != 0} {
 	    tk::EntryInsert $w $str
 	} else {
 	    tkEntryInsert $w $str

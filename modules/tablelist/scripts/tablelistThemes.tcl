@@ -8,7 +8,7 @@
 #   - Private procedures performing RGB <-> HSV conversions
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2005-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1570,15 +1570,7 @@ proc tablelist::vistaTheme {} {
 	set labelBd	4
 	set labelPadY	4
 	set arrowColor	#595959
-
-	variable scalingpct
-	switch $scalingpct {
-	    100 { set arrowStyle	flatAngle7x4 }
-	    125 { set arrowStyle	flatAngle9x5 }
-	    150 { set arrowStyle	flatAngle11x6 }
-	    200 { set arrowStyle	flatAngle15x8 }
-	}
-
+	set arrowStyle	flatAngle[defaultWinArrowSize]
 	set treeStyle	win10
 
     } elseif {[string compare [winfo rgb . SystemHighlight] \
@@ -1587,31 +1579,18 @@ proc tablelist::vistaTheme {} {
 	set labelBd	4
 	set labelPadY	4
 
-	variable scalingpct
 	if {$::tcl_platform(osVersion) < 6.2} {			;# Win Vista/7
-	    set labelBg	#ffffff
+	    set labelBg		#ffffff
 	    set activeBg	#e3f7ff
 	    set pressedBg	#Bce4f9
 	    set arrowColor	#569bc0
-
-	    switch $scalingpct {
-		100 { set arrowStyle	photo7x4 }
-		125 { set arrowStyle	photo9x5 }
-		150 { set arrowStyle	photo11x6 }
-		200 { set arrowStyle	photo15x8 }
-	    }
+	    set arrowStyle	photo[defaultWinArrowSize]
 	} else {						;# Win 8
 	    set labelBg		#fcfcfc
 	    set activeBg	#f4f9ff
 	    set pressedBg	#f9fafb
 	    set arrowColor	#569bc0
-
-	    switch $scalingpct {
-		100 { set arrowStyle	photo7x4 }
-		125 { set arrowStyle	photo9x5 }
-		150 { set arrowStyle	photo11x6 }
-		200 { set arrowStyle	photo15x8 }
-	    }
+	    set arrowStyle	photo[defaultWinArrowSize]
 	}
 
 	if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
@@ -1634,14 +1613,7 @@ proc tablelist::vistaTheme {} {
 	set labelBd	2
 	set labelPadY	0
 	set arrowColor	SystemButtonShadow
-
-	variable scalingpct
-	switch $scalingpct {
-	    100 { set arrowStyle	flat7x4 }
-	    125 { set arrowStyle	flat9x5 }
-	    150 { set arrowStyle	flat11x6 }
-	    200 { set arrowStyle	flat15x8 }
-	}
+	set arrowStyle	flat[defaultWinArrowSize]
 
 	if {$::tcl_platform(osVersion) == 6.0} {		;# Win Vista
 	    set treeStyle	vistaClassic
@@ -1760,15 +1732,7 @@ proc tablelist::xpnativeTheme {} {
 	set labelBd	4
 	set labelPadY	4
 	set arrowColor	#595959
-
-	variable scalingpct
-	switch $scalingpct {
-	    100 { set arrowStyle	flatAngle7x4 }
-	    125 { set arrowStyle	flatAngle9x5 }
-	    150 { set arrowStyle	flatAngle11x6 }
-	    200 { set arrowStyle	flatAngle15x8 }
-	}
-
+	set arrowStyle	flatAngle[defaultWinArrowSize]
 	set treeStyle	win10
 
     } else {
@@ -1836,31 +1800,18 @@ proc tablelist::xpnativeTheme {} {
 		set labelBd	4
 		set labelPadY	4
 
-		variable scalingpct
 		if {$::tcl_platform(osVersion) < 6.2} {		;# Win Vista/7
 		    set labelBg	#ffffff
 		    set activeBg	#e3f7ff
 		    set pressedBg	#Bce4f9
 		    set arrowColor	#569bc0
-
-		    switch $scalingpct {
-			100 { set arrowStyle	photo7x4 }
-			125 { set arrowStyle	photo9x5 }
-			150 { set arrowStyle	photo11x6 }
-			200 { set arrowStyle	photo15x8 }
-		    }
+		    set arrowStyle	photo[defaultWinArrowSize]
 		} else {					;# Win 8
 		    set labelBg	#fcfcfc
 		    set activeBg	#f4f9ff
 		    set pressedBg	#f9fafb
 		    set arrowColor	#569bc0
-
-		    switch $scalingpct {
-			100 { set arrowStyle	photo7x4 }
-			125 { set arrowStyle	photo9x5 }
-			150 { set arrowStyle	photo11x6 }
-			200 { set arrowStyle	photo15x8 }
-		    }
+		    set arrowStyle	photo[defaultWinArrowSize]
 		}
 
 		if {$::tcl_platform(osVersion) == 6.0} {	;# Win Vista
@@ -1885,14 +1836,7 @@ proc tablelist::xpnativeTheme {} {
 		set labelBd	2
 		set labelPadY	0
 		set arrowColor	SystemButtonShadow
-
-		variable scalingpct
-		switch $scalingpct {
-		    100 { set arrowStyle	flat7x4 }
-		    125 { set arrowStyle	flat9x5 }
-		    150 { set arrowStyle	flat11x6 }
-		    200 { set arrowStyle	flat15x8 }
-		}
+		set arrowStyle	flat[defaultWinArrowSize]
 
 		if {$::tcl_platform(osVersion) == 6.0} {	;# Win Vista
 		    set treeStyle	vistaClassic

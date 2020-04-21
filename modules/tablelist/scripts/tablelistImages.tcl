@@ -3,44 +3,8 @@
 # argument w specifies a canvas displaying a sort arrow, while the argument win
 # stands for a tablelist widget.
 #
-# Copyright (c) 2006-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2006-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
-
-#------------------------------------------------------------------------------
-# tablelist::flat5x3Arrows
-#------------------------------------------------------------------------------
-proc tablelist::flat5x3Arrows w {
-    image create bitmap triangleUp$w -data "
-#define triangleUp5x3_width 5
-#define triangleUp5x3_height 3
-static unsigned char triangleUp5x3_bits[] = {
-   0x04, 0x0e, 0x1f};
-"
-    image create bitmap triangleDn$w -data "
-#define triangleDn5x3_width 5
-#define triangleDn5x3_height 3
-static unsigned char triangleDn5x3_bits[] = {
-   0x1f, 0x0e, 0x04};
-"
-}
-
-#------------------------------------------------------------------------------
-# tablelist::flat5x4Arrows
-#------------------------------------------------------------------------------
-proc tablelist::flat5x4Arrows w {
-    image create bitmap triangleUp$w -data "
-#define triangleUp5x4_width 5
-#define triangleUp5x4_height 4
-static unsigned char triangleUp5x4_bits[] = {
-   0x04, 0x0e, 0x1f, 0x1f};
-"
-    image create bitmap triangleDn$w -data "
-#define triangleDn5x4_width 5
-#define triangleDn5x4_height 4
-static unsigned char triangleDn5x4_bits[] = {
-   0x1f, 0x1f, 0x0e, 0x04};
-"
-}
 
 #------------------------------------------------------------------------------
 # tablelist::flat6x4Arrows
@@ -201,6 +165,26 @@ static unsigned char triangleUp11x6_bits[] = {
 #define triangleDn11x6_height 6
 static unsigned char triangleDn11x6_bits[] = {
    0xff, 0x07, 0xfe, 0x03, 0xfc, 0x01, 0xf8, 0x00, 0x70, 0x00, 0x20, 0x00};
+"
+}
+
+#------------------------------------------------------------------------------
+# tablelist::flat13x7Arrows
+#------------------------------------------------------------------------------
+proc tablelist::flat13x7Arrows w {
+    image create bitmap triangleUp$w -data "
+#define triangleUp13x7_width 13
+#define triangleUp13x7_height 7
+static unsigned char triangleUp13x7_bits[] = {
+   0x40, 0x00, 0xe0, 0x00, 0xf0, 0x01, 0xf8, 0x03, 0xfc, 0x07, 0xfe, 0x0f,
+   0xff, 0x1f};
+"
+    image create bitmap triangleDn$w -data "
+#define triangleDn13x7_width 13
+#define triangleDn13x7_height 7
+static unsigned char triangleDn13x7_bits[] = {
+   0xff, 0x1f, 0xfe, 0x0f, 0xfc, 0x07, 0xf8, 0x03, 0xf0, 0x01, 0xe0, 0x00,
+   0x40, 0x00};
 "
 }
 
@@ -373,6 +357,26 @@ static unsigned char triangleDn11x6_bits[] = {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::flatAngle13x7Arrows
+#------------------------------------------------------------------------------
+proc tablelist::flatAngle13x7Arrows w {
+    image create bitmap triangleUp$w -data "
+#define triangleUp13x7_width 13
+#define triangleUp13x7_height 7
+static unsigned char triangleUp13x7_bits[] = {
+   0x40, 0x00, 0xe0, 0x00, 0xb0, 0x01, 0x18, 0x03, 0x0c, 0x06, 0x06, 0x0c,
+   0x03, 0x18};
+"
+    image create bitmap triangleDn$w -data "
+#define triangleDn13x7_width 13
+#define triangleDn13x7_height 7
+static unsigned char triangleDn13x7_bits[] = {
+   0x03, 0x18, 0x06, 0x0c, 0x0c, 0x06, 0x18, 0x03, 0xb0, 0x01, 0xe0, 0x00,
+   0x40, 0x00};
+"
+}
+
+#------------------------------------------------------------------------------
 # tablelist::flatAngle15x8Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flatAngle15x8Arrows w {
@@ -476,6 +480,30 @@ yo21zIa+3JC2zZ26y5DB3ZjG34fE5ZHJ55/J4ZrN6KTC1KjN4qLb+azf+rrV5rDi/rrn/7/m+8Ps
 /8vu/9Pw////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////yH5BAEKAD8ALAAAAAALAAYAAAYqQEFg
 QCgcEApGQ/IzJBaQCeWi6fyujsrG8wmNruCHhfMRgc8RDOjMzrCDADs=
+"
+}
+
+#------------------------------------------------------------------------------
+# tablelist::photo13x7Arrows
+#------------------------------------------------------------------------------
+proc tablelist::photo13x7Arrows w {
+    foreach dir {Up Dn} {
+	image create photo triangle$dir$w
+    }
+
+    triangleUp$w put "
+R0lGODlhDQAHAKUwAAAAAC1pjjVmhjJrjzppiD1qiTVtkTpwkTxwkUFsikRuilKPs16Rr1aStFyU
+tWeHnGKKo2CWtXGhvXOy1Hu01YKovo2xxIC314S31JGyx5W1x5i2yJG915nE2p/F247K65bF4JbN
+7Z3Q7Z7X9abJ3azX76fa9qzb9and+bLb8Lne8rHg+rLi+7fi+bnk+73l+v//////////////////
+/////////////////////////////////////////////yH5BAEKAD8ALAAAAAANAAcAAAY4wJ9w
++BgajQoB5IhEMCQV5i9xiGBAHMuxYHBcRKdSJzMsDBqUkGnVSnk0P0JgMfmMUCzXS0XaBAEAOw==
+"
+    triangleDn$w put "
+R0lGODlhDQAHAKUwAAAAAEaGqlWFpVyav2SVtGCew26tz3OkwXamwnuow36pw3Gv0nSz13iz0361
+1IK00oa41Yy815m5zJO+2JjC2Z/D2J7E2obC4o/I5o3J6pTM65jM6J/P6ZzP657X9avH2anP5afS
+6q7U6azV66fa9qnZ9Knd+bjV5rrc8bHg+rLi+7fi+b/g8rnk+7zl+sXh8v//////////////////
+/////////////////////////////////////////////yH5BAEKAD8ALAAAAAANAAcAAAY4QEGg
+YGg4IJEJxVL5/AgDxgWz4YRGotNve1hkPCZVy/XamhENDSm1YpnfCUenhHrbFQ+QfS/ZBwEAOw==
 "
 }
 
@@ -737,52 +765,41 @@ proc tablelist::adwaitaTreeImgs {} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_adwaita_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAUklE
-QVQ4T52LsQ3AMAzD9Gan/NgHXRgZYqJGImTgQAlURFzRjg4UaVTfQZFeN6bM0IopKzzGFIbbmPIP
-n/pXKGaUUMwooZhRQjGjpB0d2vFM6AMkZwGtV+hP7wAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAPUlEQVQoz2NgGGgQT67GTcRqZsIi
+FkyMZiYc4gQ1M+GRw6uZiYCLfpGjcTkUk6QRryZc0RFJTjxGMgxaAADyZAiN7tZZlQAAAABJRU5E
+rkJggg==
 "
 	tablelist_adwaita_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAUUlE
-QVQ4T53LUQrAMAgEUe+Yr14zF7RaQiA4rUsDD+LCmLv/gqMCRwWOChwV+UaYjauEq/6KS/Q0+8Mx
-Ruk8zvg1SnWIoIsSjgocFTgqcOy53bmYAXcYbKcDAAAAAElFTkSuQmCC
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAARUlEQVQoz+3LsQ2AIABE0UdciF0Y
+wPFcyIRdqGjEGANorz+57h5/wwIS1offduxsQUZBfIsaNMFddIU9PER32DDsM/SVKvNODk3dEE6A
+AAAAAElFTkSuQmCC
 "
 	tablelist_adwaita_collapsedSelImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAU0lE
-QVQ4T52LQQrAMAzD8s39oO/bB7N4UCgiW00POlhYkZlHtNKBYmB/QnEXVkyh0IopZriNKdbwN6Zg
-eBX8vFBYkaCwIkFhRYLCikQrHVq5J+MBfENbgN9EUrEAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAASUlEQVQoz2NgGFDw////DGLVMqHx
+vYjVzIRFjCjNTDjECWpmwiOHVzMTARd9JEfjckZGxuWkasSrCVs8bvr//38kOQkgkmHQAgDrkiAe
+os9KvQAAAABJRU5ErkJggg==
 "
 	tablelist_adwaita_expandedSelImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAATUlE
-QVQ4T53LsQ0AIAwDQXakYk0WDLhD8BCL4iLlJZeI+ILRgdGB0YHRoVOnnmjTMczGx0jWh8Y4kj2s
-4+tIKGrwHAlGB0YHRgfGXJQByYxbHYdyNm0AAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAARUlEQVQoz+3PMQrAIBAF0dkzWlnl
+ePZecGxCIJgotuLA7/YVC6ffQk3ANbkrEVFeEGCCO/TAAf5EXWpS67289LSal9GmNWXQI7TzaAnf
+AAAAAElFTkSuQmCC
 "
 	tablelist_adwaita_collapsedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwQAADsEBuJFr7QAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAU0lE
-QVQ4T52LQQ6AMAzD8tM9BX5eqDisFmWLOPjgRFZE/KIdHSjSqL6CcqsbU57Qiikz3MYUhslnTHmH
-R/0rFDNKKGaUUMwooUhn9RXt6NCOe0IXeqwIcNEv1OkAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAM0lEQVQoz2NgGGgQT67G/+Rq/k+u
+5v/kav5PrGYmAgYpkGNjPTlOrScncOrJiY4GhkELANUCE+t6oO0cAAAAAElFTkSuQmCC
 "
 	tablelist_adwaita_expandedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwQAADsEBuJFr7QAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAUklE
-QVQ4T53LUQqAMAwE0dzaT715dKUU2kzrYuFBOrCRmb9gdGB0YHRgdOgdD107Zxm29W5cRu+mHzzG
-kYyfcbwcSQ0Rl8x9htGB0YHRgfFbxg0RwQjxGF3ifAAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAANElEQVQoz2NgGAV4QTkDA8N/Arie
+HM315NhcT46z8WpiRuMfZWBgYGRgYDjIwMDQONIjHwD6aBnQtK1ZdwAAAABJRU5ErkJggg==
 "
 	tablelist_adwaita_collapsedSelActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwQAADsEBuJFr7QAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAUElE
-QVQ4T52LQQoAIAgEe3rHfm1tEMSgKS3MwcFpZvaFKytQDNwhFFoppjhLY4p7z5iCC2MKri/4s6G4
-F0aC4uwZCQotjQRFKRKurODKHGsTLGRi5/Yt6JoAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAOklEQVQoz2NgGFDw////DnI1/idL
+838E6CBXI2ma/2MCnJqZCJj1gxwbG8hxagM5gdNATnQ0MAxaAAC4z2BIDOZwwgAAAABJRU5ErkJg
+gg==
 "
 	tablelist_adwaita_expandedSelActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwQAADsEBuJFr7QAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAS0lE
-QVQ4T53LQQoAIAwDQX/t1Z9XcxO72qAwQhfSIuILRgdGB0YHRoe+vlRvLGlYjdNI9oPGOJIz7OPr
-SChq8BwJRgdGB0YHxlq0CSfbYptH4iuzAAAAAElFTkSuQmCC
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAKElEQVQoz2NgGAW4wf///8v/EwYN
+5GhuIMfmBnKc3UCqnxtI1jRMAQD9zHJvoaewSgAAAABJRU5ErkJggg==
 "
     } else {
 	tablelist_adwaita_collapsedImg put "
@@ -951,60 +968,48 @@ proc tablelist::arcTreeImgs {} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_arc_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAGxJREFUKFONj0EKgDAMBPcVIl69iV7FF3hR/P9v4kYqSWlKGxhINh1IISIfrIms
-/9zCGmAmD9n9gxr5AGxJPnweUQadchyaXD07DBXWRW4yhPswBM4kjdFeKYMOSckHk8LzPNYAC9F/
-NSURwQtLqlH7qKJBUAAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAdUlEQVQoz43PMQrCQBAF0LcJBlJJ
+GgsxjaVYewQPH+y8goLYeIKAzYILZsl8GBgGHjPDL3ucBdMUfY8jLhHYFv0HHUYMeEQhvDM+rOF2
+YVbiLZ5rP5a5Y8YuVxhekXDLF/wlVVCX0av2Y6qgqbZp6dQTNhEEX90gEJ+LSk5oAAAAAElFTkSu
+QmCC
 "
 	tablelist_arc_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAHRJREFUKFOdjUsKgDAMBbNwqzs/ZxHXFVG8/21i0iaaaECxMLSZl/IAEX8Ryi/w
-aYkpChU6I+/dHDTESiQbmIUkee28hNzK4ezC8mkjButzdj4AOlnKzXzL3OuOxQ9X806ETcpTlOaF
-CJuUWAJUkbeE8h2EA9B0S9ShJNYAAAAAAElFTkSuQmCC
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAdklEQVQoz8XRPQrCYBCE4ccf0oqF
+phPxEBbBOuDZ1SOk10ZME2IjNqvIRyQiiFMu8y67M/xDM2x6PEX4nhriignKN1CJKdrX4SjACxZY
+oUqgDAecUxAa1AEvA35AO5zSMwYd/65j4Q17HD8Na44t8m+SHv+swzvwkBDQCQf9GAAAAABJRU5E
+rkJggg==
 "
 	tablelist_arc_collapsedSelImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAGdJREFUKFON0cEJgDAQRNH0YgfixSIsQgTLsBQbEC82OJmFRMa4xhzeYT/MaQOA
-bKRZ7io9Jrpok/apDAs1jb3YNHYjrVQduzE56KRO2u0Vkp1sNEh78OLvyJQhj3ppLj3s+U0jACEC
-E06wdZnzTFcAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAWklEQVQoz8XNsQ1AUBRG4fPMYAMD
+SERjDCO8SIxhEIUNNLZTHY1CIeE2nOrPTb5cOFM7NfOy4rJLoFcnoqmDuv2Cxydc3B1TSjOwA7Va
+RT4u6qq2n6EmgnIEHTdXWJbfx3TnAAAAAElFTkSuQmCC
 "
 	tablelist_arc_expandedSelImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAHBJREFUKFOdzsEJgDAQRNHc7ELsQAQ7FCxD8OJFvNjgOiNu2IQBxcML5Ou6JjP7
-RcYvePQwxyhMwPdy49HBAavHygJ83oaWf5Vf26Ee9qExtFu8cDhu9qHhuRfq4JtPkJucihzeQG5y
-MkIjWkHGd5YueOiwF1W1TAUAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAYklEQVQoz73RsQmAQAxG4YeNowg2
+h+CGgmMc2NiIjYuJEzwr4RCPs9GUIR9/QuD3UoM6FmYGNaS9CjiARp0yKAItsOdSlztWo7qqfWnl
+9cIJ6t7eu6hbMSmD51dJD7j+7I0n6qZe9ie8GDoAAAAASUVORK5CYII=
 "
 	tablelist_arc_collapsedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAHNJREFUKFONz10KgCAQBOA5SheInnvvCkEdIuggPRdBd91m+2EVV1T4wB0dUIjI
-g6un6Z9LbAMMdNESXsiJB2D+ymuYe9KgsuyHVs4+2w0V104HNe65GwIbndR55yoNKkoqHt6SPq8N
-c49tgJH0X8WSiOAGGZpYKjZmcSEAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAc0lEQVQoz5XQMQrCQBAF0IcpPUTE
+Ugi2Se8VBC+Rm2xt9AS5SrC2Fs9hZbPgFkJmf/UZeDAz/DLgIphN0bc4YYzApuivjAfssUQhPDPu
+13DzZ1biFo+1G8vM+OCAXQ1MeZsb3tFPJ9xxVJGECV0NOuMaRV+KwQ8YfvQOIwAAAABJRU5ErkJg
+gg==
 "
 	tablelist_arc_expandedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAHRJREFUKFOdjUsKgDAMRLP0DHoDRTycCy+hLtxIwbvG6Sc21YBi4EH7JkOImX9h
-yi/4acFkhQJm9Hs3Rw3YwaIDtTCnvC58CrsUrkUYSw4M2ofseuRyuIyRS73saMpPLh/AvCQ8RSxv
-wLwk2JKosrzGlO8wnchaUd6BhPzVAAAAAElFTkSuQmCC
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAfklEQVQoz8XRsQnCYBiE4UdFEII7
+WFgZnMAurmNn4RLaBDSzxC2SOoV9GsVasAkSfpBIIHjdd9wLx338QyscOjL7JvfRGA8scPoCHbHE
+vW1O8MQNG2yRB9AcGaoQhLoFJ7g2UIQzyrDGKLhj7DDFCxcUv44VI8W6z9KzwX74Bj4AEo6rawBK
+AAAAAElFTkSuQmCC
 "
 	tablelist_arc_collapsedSelActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAG5JREFUKFONz8EJgDAQRNF0ZQtevNiIhYggVuLFjmxB8LbOQiKTOBoX3mG/LJhg
-ZkkPE+2feBnAZwXuUhlm8Nmg/JZR8dexjLCAz+tvyxgdcEJD7fYI0Q5+1FHLqFg9cmVIRy01iZcR
-/F3VIzMLF8edtpTOwib0AAAAAElFTkSuQmCC
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAASElEQVQoz2NggIL///8H/f//v5eB
+VPD////8/xCwgRzNE6Cat9Jd8yRKnP31////P/7//29OiqYnUE2+dNPkQYqmbqi/iNIEAFLCatI7
+yC/KAAAAAElFTkSuQmCC
 "
 	tablelist_arc_expandedSelActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAHJJREFUKFOdzsEJgDAQRNEUYCWCVYjgxY692It49CYIHtYZcWUTBhSFF8iXZZPM
-7BcZv+DRwRSjMEIbG48Gdlg8Fmbg/zq056ncukE5zKEDhtAu8cLhuNk39fc9UwbfzE9ucipyeAW5
-yckIlWgZGd9ZOgFo1rYdzDp3awAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAAWElEQVQoz2NgoDv4//+/6////w8S
+ULPn////zuiCuv/////x////Zzg0PYHKa+Gy9Su6Zqim3/////cl5GS4zUg2eRDr36//IQC/TTg0
+vyPKJiyaeWgWjQCS2nBV7y8ibwAAAABJRU5ErkJggg==
 "
     } else {
 	tablelist_arc_collapsedImg put "
@@ -1060,172 +1065,106 @@ R0lGODlhDQAIAIABAAAAAP///yH5BAEKAAEALAAAAAANAAgAAAIOjI+pywcPwYqSwWYqxgUAOw==
 }
 
 #------------------------------------------------------------------------------
-# tablelist::bicolor1TreeImgs
+# tablelist::bicolor100TreeImgs
 #------------------------------------------------------------------------------
-proc tablelist::bicolor1TreeImgs {} {
-    foreach mode {collapsed expanded collapsedSel expandedSel} {
-	variable bicolor1_${mode}Img \
-		 [image create photo tablelist_bicolor1_${mode}Img]
+proc tablelist::bicolor100TreeImgs {} {
+    plain100TreeImgs "bicolor100"
+
+    foreach mode {collapsedSel expandedSel} {
+	variable bicolor100_${mode}Img \
+		 [image create photo tablelist_bicolor100_${mode}Img]
     }
 
-    variable pngSupported
-    if {$pngSupported} {
-	tablelist_bicolor1_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKEwYtcCg47AAAACpJREFUGNNjYKAA1BOjiIlUTUyk
-2sREqvOYSPUTPg2NpGhoJMVJjVSNBwD8+gSMwdvvHwAAAABJRU5ErkJggg==
-"
-	tablelist_bicolor1_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKEwkTNtE5iAAAAC9JREFUGNNjYBh0gJGBgaGeCHWN
-yBoYCGhqRLeBAY+mRmxOYsChqZFYf9UPbLACACL9BIS+a6kZAAAAAElFTkSuQmCC
-"
-    } else {
-	tablelist_bicolor1_collapsedImg put "
-R0lGODlhDAAKAIABAH9/f////yH5BAEKAAEALAAAAAAMAAoAAAIUjI8IybB83INypmqjhGFzxxkZ
-UgAAOw==
-"
-	tablelist_bicolor1_expandedImg put "
-R0lGODlhDAAKAIABAH9/f////yH5BAEKAAEALAAAAAAMAAoAAAIQjI+py+D/EIxpNscMyLyHAgA7
-"
-    }
-
-    tablelist_bicolor1_collapsedSelImg put "
+    tablelist_bicolor100_collapsedSelImg put "
 R0lGODlhDAAKAIAAAP///////yH5BAEKAAEALAAAAAAMAAoAAAIUjI8IybB83INypmqjhGFzxxkZ
 UgAAOw==
 "
-    tablelist_bicolor1_expandedSelImg put "
+    tablelist_bicolor100_expandedSelImg put "
 R0lGODlhDAAKAIAAAP///////yH5BAEKAAEALAAAAAAMAAoAAAIQjI+py+D/EIxpNscMyLyHAgA7
 "
 }
 
 #------------------------------------------------------------------------------
-# tablelist::bicolor2TreeImgs
+# tablelist::bicolor125TreeImgs
 #------------------------------------------------------------------------------
-proc tablelist::bicolor2TreeImgs {} {
-    foreach mode {collapsed expanded collapsedSel expandedSel} {
-	variable bicolor2_${mode}Img \
-		 [image create photo tablelist_bicolor2_${mode}Img]
+proc tablelist::bicolor125TreeImgs {} {
+    plain125TreeImgs "bicolor125"
+
+    foreach mode {collapsedSel expandedSel} {
+	variable bicolor125_${mode}Img \
+		 [image create photo tablelist_bicolor125_${mode}Img]
     }
 
-    variable pngSupported
-    if {$pngSupported} {
-	tablelist_bicolor2_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMCAYAAABSgIzaAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKEwwFv3J4nAAAADJJREFUKM9jYKASaCJWIRO5mpnI
-tZmJXGczketnJnIDjBiNdeRorCPHqXXkBE4dzVIOAPKWBZkKDbb3AAAAAElFTkSuQmCC
+    tablelist_bicolor125_collapsedSelImg put "
+R0lGODlhDwAMAIAAAP///////yH5BAEKAAEALAAAAAAPAAwAAAIXjI95oB3AHIJRPmovlnS3Xn2e
+M5IhlxUAOw==
 "
-	tablelist_bicolor2_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMCAYAAABSgIzaAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKEw4I8/VmowAAADZJREFUKM9jYBgygJGBgaGeBPWN
-yBoZiNTciG4jAxGaG7E5lYGA5kZcfmTAo7mR1ECrZxg+AAC4iAWFJSdDXQAAAABJRU5ErkJggg==
-"
-    } else {
-	tablelist_bicolor2_collapsedImg put "
-R0lGODlhDgAMAIABAH9/f////yH5BAEKAAEALAAAAAAOAAwAAAIXjI9poA3c0IMxTOpuvS/yPVVW
-J5KlWAAAOw==
-"
-	tablelist_bicolor2_expandedImg put "
-R0lGODlhDgAMAIABAH9/f////yH5BAEKAAEALAAAAAAOAAwAAAIUjI+pywoPI0AyuspkC3Cb6YWi
-WAAAOw==
-"
-    }
-
-    tablelist_bicolor2_collapsedSelImg put "
-R0lGODlhDgAMAIAAAP///////yH5BAEKAAEALAAAAAAOAAwAAAIXjI9poA3c0IMxTOpuvS/yPVVW
-J5KlWAAAOw==
-"
-    tablelist_bicolor2_expandedSelImg put "
-R0lGODlhDgAMAIAAAP///////yH5BAEKAAEALAAAAAAOAAwAAAIUjI+pywoPI0AyuspkC3Cb6YWi
-WAAAOw==
+    tablelist_bicolor125_expandedSelImg put "
+R0lGODlhDwAMAIAAAP///////yH5BAEKAAEALAAAAAAPAAwAAAIVjI+pyw0PI0gyrjqZbAbyk33i
+SBoFADs=
 "
 }
 
 #------------------------------------------------------------------------------
-# tablelist::bicolor3TreeImgs
+# tablelist::bicolor150TreeImgs
 #------------------------------------------------------------------------------
-proc tablelist::bicolor3TreeImgs {} {
-    foreach mode {collapsed expanded collapsedSel expandedSel} {
-	variable bicolor3_${mode}Img \
-		 [image create photo tablelist_bicolor3_${mode}Img]
+proc tablelist::bicolor150TreeImgs {} {
+    plain150TreeImgs "bicolor150"
+
+    foreach mode {collapsedSel expandedSel} {
+	variable bicolor150_${mode}Img \
+		 [image create photo tablelist_bicolor150_${mode}Img]
     }
 
-    variable pngSupported
-    if {$pngSupported} {
-	tablelist_bicolor3_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABEAAAAOCAYAAADJ7fe0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKExAQNNjBKgAAADtJREFUKM9jYKABqCdHExM1DGKi
-houYqOE1JmqEERM1ApuJGrFGrCGNlBrSSKl3GikN2EZKo7iR7nkHAKniBpTspddsAAAAAElFTkSu
-QmCC
+    tablelist_bicolor150_collapsedSelImg put "
+R0lGODlhEgAOAIAAAP///////yH5BAEKAAEALAAAAAASAA4AAAIejI+poI3AXINRPmovzoFu631O
+WEkh14kghBps27UFADs=
 "
-	tablelist_bicolor3_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABEAAAAOCAYAAADJ7fe0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKExIRcemTPgAAAD5JREFUKM/t0jsOACAIRMHnycne
-3J6IgJa6PRN+8OMzADuok0doQlp1QgNSNA5FSLudUICULZYE0s3l7NGPnffUBoaD5FpzAAAAAElF
-TkSuQmCC
-"
-    } else {
-	tablelist_bicolor3_collapsedImg put "
-R0lGODlhEQAOAIABAH9/f////yH5BAEKAAEALAAAAAARAA4AAAIdjI+ZoH3AnIJRPmovznTL7jVg
-5YBZ0J0opK4tqhYAOw==
-"
-	tablelist_bicolor3_expandedImg put "
-R0lGODlhEQAOAIABAH9/f////yH5BAEKAAEALAAAAAARAA4AAAIYjI+py+1vgJx0pooXtmy/CgVc
-CITmiR4FADs=
-"
-    }
-
-    tablelist_bicolor3_collapsedSelImg put "
-R0lGODlhEQAOAIAAAP///////yH5BAEKAAEALAAAAAARAA4AAAIdjI+ZoH3AnIJRPmovznTL7jVg
-5YBZ0J0opK4tqhYAOw==
-"
-    tablelist_bicolor3_expandedSelImg put "
-R0lGODlhEQAOAIAAAP///////yH5BAEKAAEALAAAAAARAA4AAAIYjI+py+1vgJx0pooXtmy/CgVc
-CITmiR4FADs=
+    tablelist_bicolor150_expandedSelImg put "
+R0lGODlhEgAOAIAAAP///////yH5BAEKAAEALAAAAAASAA4AAAIYjI+py+2vgJx0xloZtm3DDAVc
+KJLmiR4FADs=
 "
 }
 
 #------------------------------------------------------------------------------
-# tablelist::bicolor4TreeImgs
+# tablelist::bicolor175TreeImgs
 #------------------------------------------------------------------------------
-proc tablelist::bicolor4TreeImgs {} {
-    foreach mode {collapsed expanded collapsedSel expandedSel} {
-	variable bicolor4_${mode}Img \
-		 [image create photo tablelist_bicolor4_${mode}Img]
+proc tablelist::bicolor175TreeImgs {} {
+    plain175TreeImgs "bicolor175"
+
+    foreach mode {collapsedSel expandedSel} {
+	variable bicolor175_${mode}Img \
+		 [image create photo tablelist_bicolor175_${mode}Img]
     }
 
-    variable pngSupported
-    if {$pngSupported} {
-	tablelist_bicolor4_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABcAAAASCAYAAACw50UTAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKExUCuhZEJwAAAEdJREFUOMu91IsNACAIQ0HSxU03
-dwf1ZIBH6IeZz7NegSIXRF4QKVGkB5EmR6YoMqaRPTiBV8GrZKkytCqKVSWqqv8VmP/zDd6/CJzv
-kRcqAAAAAElFTkSuQmCC
+    tablelist_bicolor175_collapsedSelImg put "
+R0lGODlhFQAQAKEBAAAAAP///////////yH5BAEKAAAALAAAAAAVABAAAAIjhI+pGOsZ2ntRTlXt
+PVnv7k1g6IwkBm5GqgJdu1ZwfIq1OBcAOw==
 "
-	tablelist_bicolor4_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABcAAAASCAYAAACw50UTAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKExY6uTmvegAAAExJREFUOMvtlNsNACAIA8/JSTd3
-ApWHfmjsAD1SCvD1lBpgG3w0MqcI0GxyCgCtYiEJkCdzEgB5F0oQoEhbCAAUrSJOgE7cgv13cI86
-Y04IiOwcRtoAAAAASUVORK5CYII=
+    tablelist_bicolor175_expandedSelImg put "
+R0lGODlhFQAQAKEBAAAAAP///////////yH5BAEKAAAALAAAAAAVABAAAAIehI+py+0PVZi02mXz
+bLq+HkRaZFxkuZ1HqLbuCysFADs=
 "
-    } else {
-	tablelist_bicolor4_collapsedImg put "
-R0lGODlhFwASAIABAH9/f////yH5BAEKAAEALAAAAAAXABIAAAIojI+pCusL2pshSgotznoj23kV
-GIkjeWFoSK1pi5qxDJpGbZ/5/cp5AQA7
-"
-	tablelist_bicolor4_expandedImg put "
-R0lGODlhFwASAIABAH9/f////yH5BAEKAAEALAAAAAAXABIAAAIijI+py+0Po3Sg2ovrylyzjj2g
-J3YTNxlhqpJsALzyTNdKAQA7
-"
+}
+
+#------------------------------------------------------------------------------
+# tablelist::bicolor200TreeImgs
+#------------------------------------------------------------------------------
+proc tablelist::bicolor200TreeImgs {} {
+    plain200TreeImgs "bicolor200"
+
+    foreach mode {collapsedSel expandedSel} {
+	variable bicolor200_${mode}Img \
+		 [image create photo tablelist_bicolor200_${mode}Img]
     }
 
-    tablelist_bicolor4_collapsedSelImg put "
-R0lGODlhFwASAIAAAP///////yH5BAEKAAEALAAAAAAXABIAAAIojI+pCusL2pshSgotznoj23kV
-GIkjeWFoSK1pi5qxDJpGbZ/5/cp5AQA7
+    tablelist_bicolor200_collapsedSelImg put "
+R0lGODlhGAASAIAAAP///////yH5BAEKAAEALAAAAAAYABIAAAIpjI+pC+sO2psmSgotznon23kV
+GIkjeW1oiK1pi5pBLJPy+YpsnZs9VgAAOw==
 "
-    tablelist_bicolor4_expandedSelImg put "
-R0lGODlhFwASAIAAAP///////yH5BAEKAAEALAAAAAAXABIAAAIijI+py+0Po3Sg2ovrylyzjj2g
-J3YTNxlhqpJsALzyTNdKAQA7
+    tablelist_bicolor200_expandedSelImg put "
+R0lGODlhGAASAIAAAP///////yH5BAEKAAEALAAAAAAYABIAAAIijI+py+0Po5yg2osry1y3jkGg
+J3ZTwJ1GqK5ki8LyTNdKAQA7
 "
 }
 
@@ -1242,52 +1181,44 @@ proc tablelist::blueMentaTreeImgs {} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_blueMenta_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAEJJREFUKFNj+P//P1EYwWBgEEeWQMcIBgNDMhBnIksiYwQDovASLsUIBkIhVsW4
-FIKwGTEKiTKRKDcS5Ws84fifAQDpge0RK469/gAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAPklEQVQY02NgIAOI45NkQmL7MDAw
+ZBKjkAGqMJMYhTgVM+GwKZOBgcGMGIXTGRgYThFSOB2KcYJkfL4mOhwBfAkGjtSLavwAAAAASUVO
+RK5CYII=
 "
 	tablelist_blueMenta_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAEtJREFUKFONjNEJACAIBZ3EKRqqvtq1hcwkDPMRBQd5HpKIfAElAkrEeqz0B2zh
-rqsyAM0v+ifHHoXQhhOHyHZJEJXbmUcSAWVGaALoU+1uRfEIrwAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAATklEQVQY08XQQQ2AMABD0UdAx1SA
+EFzADE0GRjghYS52gstOBAgn6LH9SZvymxoEjA/MgtwhoyBeQKnm2mqs2DGcoHRXM2HD/GZ3/809
+B7GOCszzE05qAAAAAElFTkSuQmCC
 "
 	tablelist_blueMenta_collapsedSelImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAENJREFUKFNj+P//P1EYmSODxMbAyJwKIG5A4qNgZA5IIQhgVYzMgSkEAQzFyBxk
-hSDgCMQEFRJlIlFuJMrXeMLxPwMAd106nOlvcTEAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQUlEQVQY02NgIBX8//9fBp88ExI7
+5v///w3EmFjxHwIaCJkIA/XYFDPhsKD+////jsQobGRkZNxPlhvRFTZQHI4AbXUv3nezwkkAAAAA
+SUVORK5CYII=
 "
 	tablelist_blueMenta_expandedSelImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAElJREFUKFNj+P//P1EYqyA2jFUQGwYRykDcjgeD5OEm1gIxNtAAxHATcSmGKwJh
-ZIUgDFOMogiEUThQbI9FDKtCrBirICb+zwAAb6M7CAs6hmIAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAP0lEQVQY02NgGDDA+P//f2UGBoYU
+PGrmMDIy3mVgYGBg+P//f+1/7KABQxsWxQ047UBS3EDQ0f///7enT/AAAJt8QP+zI+bcAAAAAElF
+TkSuQmCC
 "
 	tablelist_blueMenta_collapsedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAEJJREFUKFNj+P//P1EYwWBgEEeWQMcIBgNDMhBnIksiYwQDovASLsUIBkIhVsW4
-FIKwGTEKiTKRKDcS5Ws84fifAQDpge0RK469/gAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAPklEQVQY02NgIAOI45NkQmL7MDAw
+ZBKjkAGqMJMYhTgVM+GwKZOBgcGMGIXTGRgYThFSOB2KcYJkfL4mOhwBfAkGjtSLavwAAAAASUVO
+RK5CYII=
 "
 	tablelist_blueMenta_expandedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAEtJREFUKFONjNEJACAIBZ3EKRqqvtq1hcwkDPMRBQd5HpKIfAElAkrEeqz0B2zh
-rqsyAM0v+ifHHoXQhhOHyHZJEJXbmUcSAWVGaALoU+1uRfEIrwAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAATklEQVQY08XQQQ2AMABD0UdAx1SA
+EFzADE0GRjghYS52gstOBAgn6LH9SZvymxoEjA/MgtwhoyBeQKnm2mqs2DGcoHRXM2HD/GZ3/809
+B7GOCszzE05qAAAAAElFTkSuQmCC
 "
 	tablelist_blueMenta_collapsedSelActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAEJJREFUKFNj+P//P1EYwWBgEEeWQMcIBgNDMhBnIksiYwQDovASLsUIBkIhVsW4
-FIKwGTEKiTKRKDcS5Ws84fifAQDpge0RK469/gAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAPklEQVQY02NgIAOI45NkQmL7MDAw
+ZBKjkAGqMJMYhTgVM+GwKZOBgcGMGIXTGRgYThFSOB2KcYJkfL4mOhwBfAkGjtSLavwAAAAASUVO
+RK5CYII=
 "
 	tablelist_blueMenta_expandedSelActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAEtJREFUKFONjNEJACAIBZ3EKRqqvtq1hcwkDPMRBQd5HpKIfAElAkrEeqz0B2zh
-rqsyAM0v+ifHHoXQhhOHyHZJEJXbmUcSAWVGaALoU+1uRfEIrwAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAATklEQVQY08XQQQ2AMABD0UdAx1SA
+EFzADE0GRjghYS52gstOBAgn6LH9SZvymxoEjA/MgtwhoyBeQKnm2mqs2DGcoHRXM2HD/GZ3/809
+B7GOCszzE05qAAAAAElFTkSuQmCC
 "
     } else {
 	tablelist_blueMenta_collapsedImg put "
@@ -1326,79 +1257,98 @@ R0lGODlhCgAKAKEDAAAAAC0tLZCQkP///yH5BAEKAAMALAAAAAAKAAoAAAIPnI+pe+IvUJhTURaY
 }
 
 #------------------------------------------------------------------------------
-# tablelist::classic1TreeImgs
+# tablelist::classic100TreeImgs
 #------------------------------------------------------------------------------
-proc tablelist::classic1TreeImgs {} {
+proc tablelist::classic100TreeImgs {} {
     foreach mode {collapsed expanded} {
-	variable classic1_${mode}Img \
-		 [image create photo tablelist_classic1_${mode}Img]
+	variable classic100_${mode}Img \
+		 [image create photo tablelist_classic100_${mode}Img]
     }
 
-    tablelist_classic1_collapsedImg put "
+    tablelist_classic100_collapsedImg put "
 R0lGODlhDAAKAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAAMAAoAAAIgnI8Xy4EhohTOwAhk
 HVfkuEHAOFKK9JkWqp0T+DQLUgAAOw==
 "
-    tablelist_classic1_expandedImg put "
+    tablelist_classic100_expandedImg put "
 R0lGODlhDAAKAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAAMAAoAAAIcnI8Xy4EhohTOwBnr
 uFhDAIKUgmVk6ZWj0ixIAQA7
 "
 }
 
 #------------------------------------------------------------------------------
-# tablelist::classic2TreeImgs
+# tablelist::classic125TreeImgs
 #------------------------------------------------------------------------------
-proc tablelist::classic2TreeImgs {} {
+proc tablelist::classic125TreeImgs {} {
     foreach mode {collapsed expanded} {
-	variable classic2_${mode}Img \
-		 [image create photo tablelist_classic2_${mode}Img]
+	variable classic125_${mode}Img \
+		 [image create photo tablelist_classic125_${mode}Img]
     }
 
-    tablelist_classic2_collapsedImg put "
-R0lGODlhDgAMAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAAOAAwAAAInnI8Zy4whopThQAlm
-NTdmak1ftA0QgKZZ2QmjwIpaiM3chJdm0yAFADs=
+    tablelist_classic125_collapsedImg put "
+R0lGODlhDwAMAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAAPAAwAAAImnI85wd0ZhJwzoDgB
+tQdLXV0UKHFGBKSqZi7jJmZw94Y0NXeOkxQAOw==
 "
-    tablelist_classic2_expandedImg put "
-R0lGODlhDgAMAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAAOAAwAAAIinI8Zy4whopThwDmr
-uTjqwXUfBJQmIIwdZa1e66rx0zRIAQA7
+    tablelist_classic125_expandedImg put "
+R0lGODlhDwAMAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAAPAAwAAAIlnI85wd0ZhJwzoEip
+PTjLbXQeuAjAiQICKWasV13wJ8/k4jhJAQA7
 "
 }
 
 #------------------------------------------------------------------------------
-# tablelist::classic3TreeImgs
+# tablelist::classic150TreeImgs
 #------------------------------------------------------------------------------
-proc tablelist::classic3TreeImgs {} {
+proc tablelist::classic150TreeImgs {} {
     foreach mode {collapsed expanded} {
-	variable classic3_${mode}Img \
-		 [image create photo tablelist_classic3_${mode}Img]
+	variable classic150_${mode}Img \
+		 [image create photo tablelist_classic150_${mode}Img]
     }
 
-    tablelist_classic3_collapsedImg put "
-R0lGODlhEQAOAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAARAA4AAAIwnI95we2Rgpi0Cris
-xkZWYHGDR4GVSE4mharAC0/tFyKpsMq2lV+7dvoBdbbHI1EAADs=
+    tablelist_classic150_collapsedImg put "
+R0lGODlhEgAOAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAASAA4AAAIxnI+Jwe2hgpi0Cris
+xkdWYHGGR4GVOJCTSaEeAMema7ET/YWJKtjXrtFlgq3I46EoAAA7
 "
-    tablelist_classic3_expandedImg put "
-R0lGODlhEQAOAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAARAA4AAAIrnI95we2Rgpi0Cris
-xkbqyg3eN4UjaU7AygIlcn4p+Wb0Bd+4TYfi80gUAAA7
+    tablelist_classic150_expandedImg put "
+R0lGODlhEgAOAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAASAA4AAAIrnI+Jwe2hgpi0Cris
+xkfqyhneN4XDSJoewLZAmaCfSlJ0fcV4nuHm+XgoCgA7
 "
 }
 
 #------------------------------------------------------------------------------
-# tablelist::classic4TreeImgs
+# tablelist::classic175TreeImgs
 #------------------------------------------------------------------------------
-proc tablelist::classic4TreeImgs {} {
+proc tablelist::classic175TreeImgs {} {
     foreach mode {collapsed expanded} {
-	variable classic4_${mode}Img \
-		 [image create photo tablelist_classic4_${mode}Img]
+	variable classic175_${mode}Img \
+		 [image create photo tablelist_classic175_${mode}Img]
     }
 
-    tablelist_classic4_collapsedImg put "
-R0lGODlhFwASAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAAXABIAAAJGXI6pMe0hopxUMGeq
-lvdpAGhdA1WgiGVmWI0qdbZpCbOUW4L6rkd4xAuyfisUhjaJ3WYf24RYM3qKsuNmA70+U4aF98At
-AAA7
+    tablelist_classic175_collapsedImg put "
+R0lGODlhFQAQAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAAVABAAAAI9nI+pE+3vVhC02hrU
+vFzktFkA9yFhNV7lcVKptRqt8GKaC+R6TsUMV+vdLkHPUEQ6opKgDtPkVEkgVN+gAAA7
 "
-    tablelist_classic4_expandedImg put "
-R0lGODlhFwASAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAAXABIAAAI9XI6pMe0hopxUMGeq
-lvft3TXQV4UZSZkjymEnG6kRQNc2HbvjzQM5toLJYD8P0aI7IoHKIdEpdBkW1IO0AAA7
+    tablelist_classic175_expandedImg put "
+R0lGODlhFQAQAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAAVABAAAAI1nI+pE+3vVhC02hrU
+vFzktHXWh4QiRR7mmRqr2DIUQNc1qp1jruNg7ysBPbxe7NWJMSBMZQEAOw==
+"
+}
+
+#------------------------------------------------------------------------------
+# tablelist::classic200TreeImgs
+#------------------------------------------------------------------------------
+proc tablelist::classic200TreeImgs {} {
+    foreach mode {collapsed expanded} {
+	variable classic200_${mode}Img \
+		 [image create photo tablelist_classic200_${mode}Img]
+    }
+
+    tablelist_classic200_collapsedImg put "
+R0lGODlhGAASAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAAYABIAAAJKXI6pMe0mopxUsAer
+jvcFDQBa53xVOGIZhVZkY7Kiq8ZTS71ZyPc8V4v4hjOdTYKbGEGzXPDUVD5lKcxRGJUsN1UPt+tZ
+iA+qQQEAOw==
+"
+    tablelist_classic200_expandedImg put "
+R0lGODlhGAASAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAAYABIAAAJAXI6pMe0mopxUsAer
+jveFvXXOB1ZiQ5bTmakSm7oWlgH2jdscTeY+sMPEXDDZi2cMepIzIbOYhBpZhoX1QBsUAAA7
 "
 }
 
@@ -1596,16 +1546,14 @@ proc tablelist::mentaTreeImgs {} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_menta_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAEJJREFUKFNj+P//P1EYwWBgEEeWQMcIBgNDMhBnIksiYwQDovASLsUIBkIhVsW4
-FIKwGTEKiTKRKDcS5Ws84fifAQDpge0RK469/gAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAPklEQVQY02NgIAOI45NkQmL7MDAw
+ZBKjkAGqMJMYhTgVM+GwKZOBgcGMGIXTGRgYThFSOB2KcYJkfL4mOhwBfAkGjtSLavwAAAAASUVO
+RK5CYII=
 "
 	tablelist_menta_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAEtJREFUKFONjNEJACAIBZ3EKRqqvtq1hcwkDPMRBQd5HpKIfAElAkrEeqz0B2zh
-rqsyAM0v+ifHHoXQhhOHyHZJEJXbmUcSAWVGaALoU+1uRfEIrwAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAATklEQVQY08XQQQ2AMABD0UdAx1SA
+EFzADE0GRjghYS52gstOBAgn6LH9SZvymxoEjA/MgtwhoyBeQKnm2mqs2DGcoHRXM2HD/GZ3/809
+B7GOCszzE05qAAAAAElFTkSuQmCC
 "
     } else {
 	tablelist_menta_collapsedImg put "
@@ -1682,31 +1630,24 @@ proc tablelist::mint2TreeImgs {} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_mint2_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADr4AAA6+AepCscAAAAAHdElNRQfgBQkTHSnMxpiBAAAAGnRFWHRTb2Z0
-d2FyZQBQYWludC5ORVQgdjMuNS4xMDD0cqEAAABRSURBVChTpZGxCQAgDAR/fkdwMitXiYqFPsRE
-Y3HFPRwEhYg8o44eLEDa/QQLUDt53zRYZlS8kGVGbsiyIjNk+Yyezws9hBkMWCKfe4s62gga8dTd
-YGVViS0AAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAAQ0lEQVQoz2NgGCjQRY6mewwMDLMI
+KWLCImZHSCM2TWyENDLhEMerkYkcj+PS9IuBgeEQAwNDGrGa8GogO8ipErm0AwAGOwrpO0JShAAA
+AABJRU5ErkJggg==
 "
 	tablelist_mint2_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOvgAADr4B6kKxwAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAYklE
-QVQoU5XLQQqAMAxE0ZzBW/T+lxDciK49S5rUGiidZrDwFh3yRVV/gyMDRwaODBwZf8Wc5klcpkTU
-Sw8Pg4LbRBBREk5Bux0+YwiDdjcNb7ivAodHkQ3tHzgycGTgmFOpl2jLGnIdx90AAAAASUVORK5C
-YII=
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAAVElEQVQoz+3RIQqAQBBA0afd4i08
+kXhCryIYDSavYNNsWWEQXDQKfhhYhnlp+QMFGvSoMncbWsxQpkeH9QbsEVxrMGIJM6V9tggfgQiH
+N+Cs/vDnHlP2D8ZcM1duAAAAAElFTkSuQmCC
 "
 	tablelist_mint2_collapsedSelImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOvAAADrwBlbxySQAAAAd0SU1FB+AFCRMdKczGmIEAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5F
-VCB2My41LjEwMPRyoQAAAFVJREFUKFOlkDEKwDAMA/N7736If+dZjYcOAlPF6XCEEzkIWQDGtKOC
-xN33wRc6SMwMJyFJRREhQ5KKMlOGJG+kQpJf0fh5Vx+hgoLkJCjaUdGO32A9XVwfc0mdLjYAAAAA
-SUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAAUUlEQVQoz2NgGBAwadKk/8SoY0Lm
+fP36lSiNTOgCMjIyBDViaHJ3dyeokQmbICGNTOQEGFZNO3fuZHjy5AlDXl4eI1GaCGnAqomQBrIj
+l34AADlaJg96+zhqAAAAAElFTkSuQmCC
 "
 	tablelist_mint2_expandedSelImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOvQAADr0BR/uQrQAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAW0lE
-QVQoU5XLwQ3AIAxDUbbPjckyRJbIOcg9VG1xsHp4SHzwqKrfaFRoVGhUaFSuY85ZZtbC+zYCPERE
-ZeYN9+8AXpfnsBvAFvDR3dsB0HgaAI0KjQqNCo1nNRZ9ViCcGRAOXQAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAAT0lEQVQoz+3RsQ3AQAgDQH/Fvgzi
+yRjCS1BQkS5CivL6PkGiMicXAP8AABYAkOyqej0yM7j7egQkW1Jn5r2SmmRvayc8AhNGxDmY8GvP
+vQB58zr4kXiRVAAAAABJRU5ErkJggg==
 "
     } else {
 	tablelist_mint2_collapsedImg put "
@@ -1831,30 +1772,25 @@ proc tablelist::oxygen2TreeImgs {} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_oxygen2_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA8AAAAICAYAAAAm06XyAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AsDFBwlCamtawAAAFVJREFUGNOtzbENQFAYReEv0UgM
-YgEVlUQjEttYRfEqu1hBDKCxhuYt8L84za3OPfzAhDUqVXlb7GhwltQ7XDjySZgBL7ao2ONGQh0R
-FzwlRRgxR6UPRPkJSYt8DiIAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA8AAAAICAYAAAAm06XyAAAAVUlEQVQY063NsQ1AUBhF4S/RSAxi
+ARWVRCMS21hF8Sq7WEEMoLGG5i3wvzjNrc49/MCENSpVeVvsaHCW1DtcOPJJmAEvtqjY40ZCHREX
+PCVFGDFHpQ9E+QlJi3wOIgAAAABJRU5ErkJggg==
 "
 	tablelist_oxygen2_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA8AAAAICAYAAAAm06XyAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AsDFB8qsjvjOQAAAFJJREFUGNPF0CsKgEAABNAXF7yO
-aU2CZRG8jcmbmDyU2LV4Dcsm02rQaTMwzIc/0aK/aQldiTnhQMy8xo6hNH3EhgYrpqf1Z5xY3mwP
-uUH1ydMXx2UJYO9Vo0sAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA8AAAAICAYAAAAm06XyAAAAUklEQVQY08XQKwqAQAAE0BcXvI5p
+TYJlEbyNyZuYPJTYtXgNyybTatBpMzDMhz/Ror9pCV2JOeFAzLzGjqE0fcSGBiump/VnnFjebA+5
+QfXJ0xfHZQlg71WjSwAAAABJRU5ErkJggg==
 "
 	tablelist_oxygen2_collapsedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA8AAAAICAYAAAAm06XyAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AsDFB4pMimDwgAAAHZJREFUGNOlkC0Og2AQRN82cJ9P
-VKFJECScYR1J0SiOgcTsHRBcArFn6B1auzWIym46ZtTL/MC/Uo9WPYYsd7u8Blb1WDKwfKXfAQNO
-YLIir1+TsSInMAId8MjURj0aYAN2YM0c1qvHUz3mzObq8jcwWpEjA38Arr8gUfq42wkAAAAASUVO
-RK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA8AAAAICAYAAAAm06XyAAAAdklEQVQY06WQLQ6DYBBE3zZwn09U
+oUkQJJxhHUnRKI6BxOwdEFwCsWfoHVq7NYjKbjpm1Mv8wL9Sj1Y9hix3u7wGVvVYMrB8pd8BA05g
+siKvX5OxIicwAh3wyNRGPRpgA3ZgzRzWq8dTPebM5uryNzBakSMDfwCuvyBR+rjbCQAAAABJRU5E
+rkJggg==
 "
 	tablelist_oxygen2_expandedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA8AAAAICAYAAAAm06XyAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AsDFCA0EOr0ZgAAAHJJREFUGNPF0C0OwkAQBtC3BEE4
-TQUKR4IhpHeYCiyOI3AF/lQdZ+gt1nOYxawgmFbBqMmXvEm+4W8TuWwil/1XtotctmN2hgWukcu6
-whVuWI7hVMEJHQ6449k36TwJ1wMPtBj6JsWUyvOP/YgXLj959hvQPxzKCnzYTQAAAABJRU5ErkJg
-gg==
+iVBORw0KGgoAAAANSUhEUgAAAA8AAAAICAYAAAAm06XyAAAAcklEQVQY08XQLQ7CQBAG0LcEQThN
+BQpHgiGkd5gKLI4jcAX+VB1n6C3Wc5jFrCCYVsGoyZe8Sb7hbxO5bCKX/Ve2i1y2Y3aGBa6Ry7rC
+FW5YjuFUwQkdDrjj2TfpPAnXAw+0GPomxZTK84/9iBcuP3n2G9A/HMoKfNhNAAAAAElFTkSuQmCC
 "
     } else {
 	tablelist_oxygen2_collapsedImg put "
@@ -1895,136 +1831,161 @@ BmH7jxQAOw==
 }
 
 #------------------------------------------------------------------------------
-# tablelist::plain1TreeImgs
+# tablelist::plain100TreeImgs
 #------------------------------------------------------------------------------
-proc tablelist::plain1TreeImgs {} {
+proc tablelist::plain100TreeImgs {{treeStyle "plain100"}} {
     foreach mode {collapsed expanded} {
-	variable plain1_${mode}Img \
-		 [image create photo tablelist_plain1_${mode}Img]
+	variable ${treeStyle}_${mode}Img \
+		 [image create photo tablelist_${treeStyle}_${mode}Img]
     }
 
     variable pngSupported
     if {$pngSupported} {
-	tablelist_plain1_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKEwYtcCg47AAAACpJREFUGNNjYKAA1BOjiIlUTUyk
-2sREqvOYSPUTPg2NpGhoJMVJjVSNBwD8+gSMwdvvHwAAAABJRU5ErkJggg==
+	tablelist_${treeStyle}_collapsedImg put "
+iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAKklEQVQY02NgoADUE6OIiVRNTKTa
+xESq85hI9RM+DY2kaGgkxUmNVI0HAPz6BIzB2+8fAAAAAElFTkSuQmCC
 "
-	tablelist_plain1_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKEwkTNtE5iAAAAC9JREFUGNNjYBh0gJGBgaGeCHWN
-yBoYCGhqRLeBAY+mRmxOYsChqZFYf9UPbLACACL9BIS+a6kZAAAAAElFTkSuQmCC
+	tablelist_${treeStyle}_expandedImg put "
+iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAL0lEQVQY02NgGHSAkYGBoZ4IdY3I
+GhgIaGpEt4EBj6ZGbE5iwKGpkVh/1Q9ssAIAIv0EhL5rqRkAAAAASUVORK5CYII=
 "
     } else {
-	tablelist_plain1_collapsedImg put "
+	tablelist_${treeStyle}_collapsedImg put "
 R0lGODlhDAAKAIABAH9/f////yH5BAEKAAEALAAAAAAMAAoAAAIUjI8IybB83INypmqjhGFzxxkZ
 UgAAOw==
 "
-	tablelist_plain1_expandedImg put "
+	tablelist_${treeStyle}_expandedImg put "
 R0lGODlhDAAKAIABAH9/f////yH5BAEKAAEALAAAAAAMAAoAAAIQjI+py+D/EIxpNscMyLyHAgA7
 "
     }
 }
 
 #------------------------------------------------------------------------------
-# tablelist::plain2TreeImgs
+# tablelist::plain125TreeImgs
 #------------------------------------------------------------------------------
-proc tablelist::plain2TreeImgs {} {
+proc tablelist::plain125TreeImgs {{treeStyle "plain125"}} {
     foreach mode {collapsed expanded} {
-	variable plain2_${mode}Img \
-		 [image create photo tablelist_plain2_${mode}Img]
+	variable ${treeStyle}_${mode}Img \
+		 [image create photo tablelist_${treeStyle}_${mode}Img]
     }
 
     variable pngSupported
     if {$pngSupported} {
-	tablelist_plain2_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMCAYAAABSgIzaAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKEwwFv3J4nAAAADJJREFUKM9jYKASaCJWIRO5mpnI
-tZmJXGczketnJnIDjBiNdeRorCPHqXXkBE4dzVIOAPKWBZkKDbb3AAAAAElFTkSuQmCC
+	tablelist_${treeStyle}_collapsedImg put "
+iVBORw0KGgoAAAANSUhEUgAAAA8AAAAMCAYAAAC9QufkAAAAMklEQVQoz2NgoCJoIkUxEyUGMFHi
+AiZKvMBESRgwURKIxGiuI1dzHbnOriM3wOponsIAebUFmXDw+D8AAAAASUVORK5CYII=
 "
-	tablelist_plain2_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMCAYAAABSgIzaAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKEw4I8/VmowAAADZJREFUKM9jYBgygJGBgaGeBPWN
-yBoZiNTciG4jAxGaG7E5lYGA5kZcfmTAo7mR1ECrZxg+AAC4iAWFJSdDXQAAAABJRU5ErkJggg==
+	tablelist_${treeStyle}_expandedImg put "
+iVBORw0KGgoAAAANSUhEUgAAAA8AAAAMCAYAAAC9QufkAAAAN0lEQVQoz2NgGJKAkYGBoZ4E9Y3o
+mhmINKARm80MRBjQiMvZDAQMaMTnZwY8BjSSE5D1DMMXAABNQwWFHKBjWAAAAABJRU5ErkJggg==
 "
     } else {
-	tablelist_plain2_collapsedImg put "
-R0lGODlhDgAMAIABAH9/f////yH5BAEKAAEALAAAAAAOAAwAAAIXjI9poA3c0IMxTOpuvS/yPVVW
-J5KlWAAAOw==
+	tablelist_${treeStyle}_collapsedImg put "
+R0lGODlhDwAMAIABAH9/f////yH5BAEKAAEALAAAAAAPAAwAAAIXjI95oB3AHIJRPmovlnS3Xn2e
+M5IhlxUAOw==
 "
-	tablelist_plain2_expandedImg put "
-R0lGODlhDgAMAIABAH9/f////yH5BAEKAAEALAAAAAAOAAwAAAIUjI+pywoPI0AyuspkC3Cb6YWi
-WAAAOw==
+	tablelist_${treeStyle}_expandedImg put "
+R0lGODlhDwAMAIABAH9/f////yH5BAEKAAEALAAAAAAPAAwAAAIVjI+pyw0PI0gyrjqZbAbyk33i
+SBoFADs=
 "
     }
 }
 
 #------------------------------------------------------------------------------
-# tablelist::plain3TreeImgs
+# tablelist::plain150TreeImgs
 #------------------------------------------------------------------------------
-proc tablelist::plain3TreeImgs {} {
+proc tablelist::plain150TreeImgs {{treeStyle "plain150"}} {
     foreach mode {collapsed expanded} {
-	variable plain3_${mode}Img \
-		 [image create photo tablelist_plain3_${mode}Img]
+	variable ${treeStyle}_${mode}Img \
+		 [image create photo tablelist_${treeStyle}_${mode}Img]
     }
 
     variable pngSupported
     if {$pngSupported} {
-	tablelist_plain3_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABEAAAAOCAYAAADJ7fe0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKExAQNNjBKgAAADtJREFUKM9jYKABqCdHExM1DGKi
-houYqOE1JmqEERM1ApuJGrFGrCGNlBrSSKl3GikN2EZKo7iR7nkHAKniBpTspddsAAAAAElFTkSu
-QmCC
+	tablelist_${treeStyle}_collapsedImg put "
+iVBORw0KGgoAAAANSUhEUgAAABIAAAAOCAYAAAAi2ky3AAAAO0lEQVQoz8WTwQkAIAzEShaXbO4K
+IhH7b+hd6MyjWbeLVDCqy6hiUnVGJYDK5inIAmQRzaJsC/1++7UNYcUGlAU+IlcAAAAASUVORK5C
+YII=
 "
-	tablelist_plain3_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABEAAAAOCAYAAADJ7fe0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKExIRcemTPgAAAD5JREFUKM/t0jsOACAIRMHnycne
-3J6IgJa6PRN+8OMzADuok0doQlp1QgNSNA5FSLudUICULZYE0s3l7NGPnffUBoaD5FpzAAAAAElF
+	tablelist_${treeStyle}_expandedImg put "
+iVBORw0KGgoAAAANSUhEUgAAABIAAAAOCAYAAAAi2ky3AAAAP0lEQVQoz+3SuRHAIAwEwHXlzHXu
+BgAJO+Vy7ejjpsqD8aEuM8ghllVHDrDsRtPEUu1IA0tn2Qosfy867lODF7S/BobiEIg7AAAAAElF
 TkSuQmCC
 "
     } else {
-	tablelist_plain3_collapsedImg put "
-R0lGODlhEQAOAIABAH9/f////yH5BAEKAAEALAAAAAARAA4AAAIdjI+ZoH3AnIJRPmovznTL7jVg
-5YBZ0J0opK4tqhYAOw==
+	tablelist_${treeStyle}_collapsedImg put "
+R0lGODlhEgAOAIABAH9/f////yH5BAEKAAEALAAAAAASAA4AAAIejI+poI3AXINRPmovzoFu631O
+WEkh14kghBps27UFADs=
 "
-	tablelist_plain3_expandedImg put "
-R0lGODlhEQAOAIABAH9/f////yH5BAEKAAEALAAAAAARAA4AAAIYjI+py+1vgJx0pooXtmy/CgVc
-CITmiR4FADs=
+	tablelist_${treeStyle}_expandedImg put "
+R0lGODlhEgAOAIABAH9/f////yH5BAEKAAEALAAAAAASAA4AAAIYjI+py+2vgJx0xloZtm3DDAVc
+KJLmiR4FADs=
 "
     }
 }
 
 #------------------------------------------------------------------------------
-# tablelist::plain4TreeImgs
+# tablelist::plain175TreeImgs
 #------------------------------------------------------------------------------
-proc tablelist::plain4TreeImgs {} {
+proc tablelist::plain175TreeImgs {{treeStyle "plain175"}} {
     foreach mode {collapsed expanded} {
-	variable plain4_${mode}Img \
-		 [image create photo tablelist_plain4_${mode}Img]
+	variable ${treeStyle}_${mode}Img \
+		 [image create photo tablelist_${treeStyle}_${mode}Img]
     }
 
     variable pngSupported
     if {$pngSupported} {
-	tablelist_plain4_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABcAAAASCAYAAACw50UTAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKExUCuhZEJwAAAEdJREFUOMu91IsNACAIQ0HSxU03
-dwf1ZIBH6IeZz7NegSIXRF4QKVGkB5EmR6YoMqaRPTiBV8GrZKkytCqKVSWqqv8VmP/zDd6/CJzv
-kRcqAAAAAElFTkSuQmCC
+	tablelist_${treeStyle}_collapsedImg put "
+iVBORw0KGgoAAAANSUhEUgAAABUAAAAQCAYAAAD52jQlAAAAQ0lEQVQ4y72UgQkAMAjDJI+Pfr4b
+hs08IGgbnPk0ZwvAAGNsjBEFRsYY5WFYgaHbKzRtaNrnp11U2kqlLX+mOOsvdQEd0weYc7j+XgAA
+AABJRU5ErkJggg==
 "
-	tablelist_plain4_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABcAAAASCAYAAACw50UTAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AUKExY6uTmvegAAAExJREFUOMvtlNsNACAIA8/JSTd3
-ApWHfmjsAD1SCvD1lBpgG3w0MqcI0GxyCgCtYiEJkCdzEgB5F0oQoEhbCAAUrSJOgE7cgv13cI86
-Y04IiOwcRtoAAAAASUVORK5CYII=
+	tablelist_${treeStyle}_expandedImg put "
+iVBORw0KGgoAAAANSUhEUgAAABUAAAAQCAYAAAD52jQlAAAARUlEQVQ4y+2TMRIAIAjD4su9/twX
+qAUZHMhODihAU80A5kO9dlKSYp06JSHWbXyCYjk7JSCWGxSmWJH0McSqPLnZX/cHC9piB4dGz7zF
+AAAAAElFTkSuQmCC
 "
     } else {
-	tablelist_plain4_collapsedImg put "
-R0lGODlhFwASAIABAH9/f////yH5BAEKAAEALAAAAAAXABIAAAIojI+pCusL2pshSgotznoj23kV
-GIkjeWFoSK1pi5qxDJpGbZ/5/cp5AQA7
+	tablelist_${treeStyle}_collapsedImg put "
+R0lGODlhFQAQAKECAAAAAICAgP///////yH5BAEKAAAALAAAAAAVABAAAAIjhI+pGOsZ2ntRTlXt
+PVnv7k1g6IwkBm5GqgJdu1ZwfIq1OBcAOw==
 "
-	tablelist_plain4_expandedImg put "
-R0lGODlhFwASAIABAH9/f////yH5BAEKAAEALAAAAAAXABIAAAIijI+py+0Po3Sg2ovrylyzjj2g
-J3YTNxlhqpJsALzyTNdKAQA7
+	tablelist_${treeStyle}_expandedImg put "
+R0lGODlhFQAQAKECAAAAAICAgP///////yH5BAEKAAAALAAAAAAVABAAAAIehI+py+0PVZi02mXz
+bLq+HkRaZFxkuZ1HqLbuCysFADs=
+"
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::plain200TreeImgs
+#------------------------------------------------------------------------------
+proc tablelist::plain200TreeImgs {{treeStyle "plain200"}} {
+    foreach mode {collapsed expanded} {
+	variable ${treeStyle}_${mode}Img \
+		 [image create photo tablelist_${treeStyle}_${mode}Img]
+    }
+
+    variable pngSupported
+    if {$pngSupported} {
+	tablelist_${treeStyle}_collapsedImg put "
+iVBORw0KGgoAAAANSUhEUgAAABgAAAASCAYAAABB7B6eAAAASElEQVQ4y8WVhw0AIAzDkB9H/pwf
+AEMPSNSMdowPM2+CUZNQb0ItF7Un1MZTp4s6wtQ92SGwJLCUyNJky5haFs3yVByDP/kHCxQRCJzE
+wLOAAAAAAElFTkSuQmCC
+"
+	tablelist_${treeStyle}_expandedImg put "
+iVBORw0KGgoAAAANSUhEUgAAABgAAAASCAYAAABB7B6eAAAATElEQVQ4y+3UyQ0AIAhE0W/lZDq3
+A2XRg4YpgBdlgc73GYAdqKMVQBHR7gUUEHm+iCQibw9IIIo0mSCi6BQRQJQZU5yIbu2K9bl4OxOe
+wQiIsZLIJgAAAABJRU5ErkJggg==
+"
+    } else {
+	tablelist_${treeStyle}_collapsedImg put "
+R0lGODlhGAASAIABAH9/f////yH5BAEKAAEALAAAAAAYABIAAAIpjI+pC+sO2psmSgotznon23kV
+GIkjeW1oiK1pi5pBLJPy+YpsnZs9VgAAOw==
+"
+	tablelist_${treeStyle}_expandedImg put "
+R0lGODlhGAASAIABAH9/f////yH5BAEKAAEALAAAAAAYABIAAAIijI+py+0Po5yg2osry1y3jkGg
+J3ZTwJ1GqK5ki8LyTNdKAQA7
 "
     }
 }
@@ -2165,28 +2126,24 @@ proc tablelist::ubuntu2TreeImgs {} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_ubuntu2_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAgAAAAKCAYAAACJxx+AAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAA7DAAAOwwHHb6hkAAAAB3RJTUUH4AsDFAkb/31W1AAAAFhJREFUGNONj7sNgDAMBc/uwhwZ
-j5IxKLMLy7BHykdDRGLxO8mF9U7PsnEiiYiZ4d2S+WADsiTaAFcDMAElNnloSVHym1MJWN+ECixP
-QgVmSfvvL3qGsAkHUqArtr/xO8MAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAAgAAAAKCAYAAACJxx+AAAAAQ0lEQVQY02NgIAGoEFKwHZsiJiQ2
+FwMDwxR0RUxoGjjRFTFhsYqTgYGhB5+C7wwMDCW4FHxnYGDIYWBguEO0LwiGAwABBAfLngO55AAA
+AABJRU5ErkJggg==
 "
 	tablelist_ubuntu2_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAgAAAAKCAYAAACJxx+AAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAA7DAAAOwwHHb6hkAAAAB3RJTUUH4AsDFBAHcHyjgwAAAEhJREFUGNO9zLERQEAYBeGPC1Qg
-FGlGQwKBAoyCnPTmupJI/pCQDd/uPD6nwYLpxeeEigE9uhAXDmwphoIxohYn9qfLFbN/uQEwZAfr
-O7QC9wAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAAgAAAAKCAYAAACJxx+AAAAASElEQVQY073MsRFAQBgF4Y8LVCAU
+aUZDAoECjIKc9Oa6kkj+kJAN3+48PqfBgunF54SKAT26EBcObCmGgjGiFif2p8sVs3+5ATBkB+s7
+tAL3AAAAAElFTkSuQmCC
 "
 	tablelist_ubuntu2_collapsedSelImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAgAAAAKCAYAAACJxx+AAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAA7DAAAOwwHHb6hkAAAAB3RJTUUH4AsDFAw3sNLOcgAAAF9JREFUGNN9kLENgDAQA89IEKWh
-gQkYmH2YgJmoTEGCwgvF1cu+4vSyTS9DPSRNXQBYJI09IAM5Qi2A7aNAqS0popuf7MD69gE4gRlI
-v0AcbX8cDFy2r9ZL9VGSUhwBbiXCRsSA6M6gAAAAAElFTkSuQmCC
+iVBORw0KGgoAAAANSUhEUgAAAAgAAAAKCAYAAACJxx+AAAAAS0lEQVQY02NgIAGwYRNkQmILMzAw
+sOJTwAnFrLgUMPz//38nVBE7NuuU/kNAHwMDgwguBccZGBj4cJqATRLZDf8ZGBh+QjFWgNVYAOY5
+EusI1YWXAAAAAElFTkSuQmCC
 "
 	tablelist_ubuntu2_expandedSelImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAgAAAAKCAYAAACJxx+AAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAA7DAAAOwwHHb6hkAAAAB3RJTUUH4AsDFBELYNHe6QAAAE1JREFUGNO9zCEKgFAABNFZEAwi
-iOAFPIPd63sai+FjGosfk1FfnWXhcwEmoH/pByrAoC4+VqBVyT0gyajOQJdkU0+Apn6pexKAUuNP
-LsjVKWqydBSbAAAAAElFTkSuQmCC
+iVBORw0KGgoAAAANSUhEUgAAAAgAAAAKCAYAAACJxx+AAAAARElEQVQY073MsQmAUBBEwblIRAT5
+YAPWYG779mNkdEaHiYY60cLC43OBGePLf9SYMnPN24auCqVl5oIhInacT8mG3r8uDt8Ur7bv+awA
+AAAASUVORK5CYII=
 "
     } else {
 	tablelist_ubuntu2_collapsedImg put "
@@ -2220,28 +2177,24 @@ proc tablelist::ubuntu3TreeImgs {} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_ubuntu3_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAWUlE
-QVQoU2P4//8/yRiVw8DgDMQSyGLYMCqHgSEGiFcT0ojKgWg6TEgjKgehCa9GVA6qJpwaUTmYmrBq
-pIkmkp1HckDg1ADCqByIJrwaQBiVQ04yIg7/ZwAAgQKZuDdqxHAAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAAXElEQVQoz53SwQnAMAiF4R+7RDtP
+5uk0WbIDBHLtJaegz9Z3EYUPRIRCjq1vwASGQrb1F9CB8w9iAQktmEtoYosQWnIoF1rl5Bl6gHvV
+T8gFCoUgQhJ4adk3lPMCv1MPZaZLyU8AAAAASUVORK5CYII=
 "
 	tablelist_ubuntu3_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAXUlE
-QVQoU5XLwQ3AIAxDUcZgLMbobkzCVGmSFhCKhQHpH7DykohcB0cWHFlwZNkr2nNY6ShrVWsku8mO
-fsngAAMRuIAF+SfCAPwuDBNC4Ddw/CAEFhxZcGTBcZ+kF8WCmsIy4DnwAAAAAElFTkSuQmCC
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAAXUlEQVQoz93QMQ2AMBBA0dcggLUT
+RjCBEdQggwUPOGFCAAJYOkBIKWyEn9xyubcc/yugQ3x4v2IKCQxoCmBBj7XChhkt6hKAKi3v4Akc
+UQ5eQK6IMU1889X4FnyoHanvE2re8YhQAAAAAElFTkSuQmCC
 "
 	tablelist_ubuntu3_collapsedSelImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAXUlE
-QVQoU62SywnAIBAFLSVdWYcVp5TNziGweX5wgw/m4MCAiMXM0qioch6iojm3cwXXoYKILUMVb8Sm
-oYoYsWH4OTgasS6MARyJ0tdLP8Q0ABVEywBU/PpGG1h5AHZuQvcmAx5DAAAAAElFTkSuQmCC
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAAYElEQVQoz7XQwQ2AMAiF4R/iFJ50
+FKdwXEexJ9d43ptCq8Z3g/AlAHyNpH1kzqt6lnRKWp4ggAU4MuhBP4WebBFC79zchP7myz1UgM3M
+yihqggyFIEIpAJiq+jKzlT9yA0MWI4rFHgIbAAAAAElFTkSuQmCC
 "
 	tablelist_ubuntu3_expandedSelImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAXUlE
-QVQoU5XOgQmAMBAEwZRidfZilZby/koSjDlyKozg8QuWiPhNjo4cHTk6vPZ0fMTtHW3pTO7hhtv+
-ey7sAVq0CocAzwjvcAowfFQtlAGmoeJYBpCjI0dHjmtRLiHfREV2rBj7AAAAAElFTkSuQmCC
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAARUlEQVQoz93SsQkAIBAEwftOHuzN
+ouxNLGXNBEX0U934JjvpvwzIklJwX82sCHCgca8BPngAziAA9+AAz2ADY2CB/ugjOncZoKZnp+Bb
+AAAAAElFTkSuQmCC
 "
     } else {
 	tablelist_ubuntu3_collapsedImg put "
@@ -2267,8 +2220,7 @@ skw67YTi6BQAOw==
 # tablelist::ubuntuMateTreeImgs
 #------------------------------------------------------------------------------
 proc tablelist::ubuntuMateTreeImgs {} {
-    foreach mode {collapsed expanded collapsedSel expandedSel
-		  collapsedAct expandedAct collapsedSelAct expandedSelAct} {
+    foreach mode {collapsed expanded collapsedSel expandedSel} {
 	variable ubuntuMate_${mode}Img \
 		 [image create photo tablelist_ubuntuMate_${mode}Img]
     }
@@ -2276,84 +2228,41 @@ proc tablelist::ubuntuMateTreeImgs {} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_ubuntuMate_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAcAAAAICAYAAAA1BOUGAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAADNJREFUGFdj+P//P04MIRgYRNElwOJggoEhBoiT8EkeRleALgnCRrgkcerEaScW
-1/5nAAAEbX5FmgjJygAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAXklEQVQoz2NgoCawsbGRJlUPExo/
+1sbGpoESAxgYGBjqSTGECYc40YYw4ZEjyhAmAvIEDWEiwpX1NjY2jpQY0HjkyJH95BrQeOTIEbK9
+QFAzPgOI0ozLAKI1UyUvAADOUhxG1dpsVwAAAABJRU5ErkJggg==
 "
 	tablelist_ubuntuMate_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAcAAAAICAYAAAA1BOUGAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAADxJREFUGFdj+P//P06MVRCGsQrCMAgEAHEGGg6ASUoA8WogPgzFILYEWBKqAqYA
-LgGXRFIAl0CRxMT/GQDUC3iRKcgrYgAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAYUlEQVQoz+3SsQ2AMAxE0Y/Ywx1b
+nAS7MAgwCMMgeYt0mYQuUkSIkhqu9n+V4d8gaQLWjuZ095AAAEkbsDfEh7tndyNAjPEyM4ClJ05A
+A1KMM6CCvMYPoIBU4+okzR/5xBvrpyg6R2b3OgAAAABJRU5ErkJggg==
 "
 	tablelist_ubuntuMate_collapsedSelImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAcAAAAICAYAAAA1BOUGAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAADRJREFUGFdj+P//P04MY8ggC8IwjFEGxHUwQRhGlgQBFAXokiDgAMRYJXHqxGkn
-Ftf+ZwAAuNGwE9a6YwIAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAWklEQVQoz2NgoCb4//+/DKl6mND4
+Mf///2+gxAUV/yGggVwXwEA9sYYw4ZEjyhAmAvIEDWEiwpX1////d6TEgEZGRsb95BrQyMjISLYX
+CGqmSjrAZkADXfMCAHPpOeamW0O+AAAAAElFTkSuQmCC
 "
 	tablelist_ubuntuMate_expandedSelImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAcAAAAICAYAAAA1BOUGAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAD5JREFUGFdj+P//P06MVRCGsQrCMIgoA+LJaBgkBpY0AeKHQAwDIDZIDG4sTAFc
-AoRhkjAFcAkQRpZEw/8ZACqWsUulTWk4AAAAAElFTkSuQmCC
-"
-	tablelist_ubuntuMate_collapsedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAcAAAAICAYAAAA1BOUGAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAADNJREFUGFdj+P//P04MIRgYRNElwOJggoEhBoiT8EkeRleALgnCRrgkcerEaScW
-1/5nAAAEbX5FmgjJygAAAABJRU5ErkJggg==
-"
-	tablelist_ubuntuMate_expandedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAcAAAAICAYAAAA1BOUGAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAADxJREFUGFdj+P//P06MVRCGsQrCMAgEAHEGGg6ASUoA8WogPgzFILYEWBKqAqYA
-LgGXRFIAl0CRxMT/GQDUC3iRKcgrYgAAAABJRU5ErkJggg==
-"
-	tablelist_ubuntuMate_collapsedSelActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAcAAAAICAYAAAA1BOUGAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAADNJREFUGFdj+P//P04MIRgYRNElwOJggoEhBoiT8EkeRleALgnCRrgkcerEaScW
-1/5nAAAEbX5FmgjJygAAAABJRU5ErkJggg==
-"
-	tablelist_ubuntuMate_expandedSelActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAcAAAAICAYAAAA1BOUGAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAADxJREFUGFdj+P//P06MVRCGsQrCMAgEAHEGGg6ASUoA8WogPgzFILYEWBKqAqYA
-LgGXRFIAl0CRxMT/GQDUC3iRKcgrYgAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAASUlEQVQoz2NgGAWM////V2FgYEgh
+Qc9cRkbG2ygi////r/9PHGjAaSwRhjQQdBseQxqI9iAWQxpIDlkkQxrIjp7////bj5CUCAC6C463
+hFszLQAAAABJRU5ErkJggg==
 "
     } else {
 	tablelist_ubuntuMate_collapsedImg put "
-R0lGODlhBwAIAMIFAAAAADw8PJ2dnaOjo83Nzf///////////yH5BAEKAAcALAAAAAAHAAgAAAMO
-eLrcIy7ANUIgVLLXegIAOw==
+R0lGODlhEAAOAMIFAAAAADw8PJ2dnaOjo83Nzf///////////yH5BAEKAAcALAAAAAAQAA4AAAMg
+eLrc/m8I6EaYdNmb1ebZB0JiQFAiRgasuo4ojLpdnQAAOw==
 "
 	tablelist_ubuntuMate_expandedImg put "
-R0lGODlhBwAIAMIFAAAAADw8PFRUVJeXl6+vr////////////yH5BAEKAAcALAAAAAAHAAgAAAMO
-eLrcTiMOokQIgons+koAOw==
+R0lGODlhEAAOAMIFAAAAADw8PJeXl52dnc7Ozv///////////yH5BAEKAAcALAAAAAAQAA4AAAMf
+eLrc/jBKKaq9oo3Aex/O5nHgI37SWabBOhFTLM9PAgA7
 "
 	tablelist_ubuntuMate_collapsedSelImg put "
-R0lGODlhBwAIAKEBAAAAAP///////////yH5BAEKAAAALAAAAAAHAAgAAAIMhG+BqRjvXgMyrmkK
-ADs=
+R0lGODlhEAAOAKEBAAAAAP///////////yH5BAEKAAAALAAAAAAQAA4AAAIbhI+puxGs3INHTmov
+yzpy+IEWBYykRBpOyhoFADs=
 "
 	tablelist_ubuntuMate_expandedSelImg put "
-R0lGODlhBwAIAKEBAAAAAP///////////yH5BAEKAAAALAAAAAAHAAgAAAIKhI+pwW0dEFMUFQA7
-"
-	tablelist_ubuntuMate_collapsedActImg put "
-R0lGODlhBwAIAMIFAAAAADw8PJ2dnaOjo83Nzf///////////yH5BAEKAAcALAAAAAAHAAgAAAMO
-eLrcIy7ANUIgVLLXegIAOw==
-"
-	tablelist_ubuntuMate_expandedActImg put "
-R0lGODlhBwAIAMIFAAAAADw8PFRUVJeXl6+vr////////////yH5BAEKAAcALAAAAAAHAAgAAAMO
-eLrcTiMOokQIgons+koAOw==
-"
-	tablelist_ubuntuMate_collapsedSelActImg put "
-R0lGODlhBwAIAMIFAAAAADw8PJ2dnaOjo83Nzf///////////yH5BAEKAAcALAAAAAAHAAgAAAMO
-eLrcIy7ANUIgVLLXegIAOw==
-"
-	tablelist_ubuntuMate_expandedSelActImg put "
-R0lGODlhBwAIAMIFAAAAADw8PFRUVJeXl6+vr////////////yH5BAEKAAcALAAAAAAHAAgAAAMO
-eLrcTiMOokQIgons+koAOw==
+R0lGODlhEAAOAKEBAAAAAP///////////yH5BAEKAAAALAAAAAAQAA4AAAIXhI+py+0eopwh0auu
+ZBrOB2xgOJamWQAAOw==
 "
     }
 }
@@ -2378,30 +2287,25 @@ proc tablelist::vistaAeroTreeImgs_100 {{treeStyle "vistaAero"}} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_${treeStyle}_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAOCAYAAAAWo42rAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAZElE
-QVQoU2P4//8/A1GApgotgZgbwsQCkBRGAHE4EAuDeegATaEoEKcAsTRIAAUgK4SyQSbmA7EqiAMH
-6AqhfAkgrgViQRAHDLCYKATE+E0EYhEgJuxGICbK10SHI35AnEIGBgDfPzypQe1LowAAAABJRU5E
-rkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAOCAYAAAAWo42rAAAAbUlEQVQoz83QsQqCUBQG4I9oayrd
+Gpp6COfWBgVBH1Eh6A16myYRX6FF4XJBBXHonw7n/4bD4S+S4TRXHoL5hieSNQgfFLiuwQ5vlLgv
+QejRosZ5CV5QocEwLY8RSpHjhW9YxPAx3thv/uP++QGucwwpQjDsiQAAAABJRU5ErkJggg==
 "
 	tablelist_${treeStyle}_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAOCAYAAAAWo42rAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAASklE
-QVQoU2P4//8/A1Fg8Cl0BOJyCBMKsCgEKboCxDfBPBhAUwhWFBERARLEqRCuCJ9CFEX4FIIcDpJA
-xpVAjABYPIMdDJRCBgYA0sVCxaUivcEAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAOCAYAAAAWo42rAAAAOklEQVQoz2NgGLrAkYGBoZwYRVcY
+GBhuElQUERHxH10hE5qiyREREdrYTGAiRhEyKIdahYwrh1oMAACO1g8CUDLawwAAAABJRU5ErkJg
+gg==
 "
 	tablelist_${treeStyle}_collapsedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAOCAYAAAAWo42rAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAY0lE
-QVQoU2P4//8/A1GAdgpljnyfAsSGYA42gKTwExBfB2JnsAA6QFNYAMQvgTgSLIgMkBWC2EA6CYi/
-gWiwBAygK4QqTgfi/0CsAZYEAbJMBGLi3AjERPmauHAkCIhTyMAAAJhFf793qI06AAAAAElFTkSu
-QmCC
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAOCAYAAAAWo42rAAAAiklEQVQoz2NgGHggc+T7FJkj3w1x
+yTMhseMYGBiWyRz57kxIIQMDA8NMqOJIfFZ/gtJJMke+f5M58j0Jn4kMT2w45zEwMBQyMDDMlTny
+XQOnQqhJ/QwMDMlPbDhvwMRZ0BQVMDAwVEIVLUeWY0EzMJ2BgSHqiQ3nXnSbkBUuYmBgmPvEhvM8
+fWIOAAwvKe6unLtFAAAAAElFTkSuQmCC
 "
 	tablelist_${treeStyle}_expandedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAOCAYAAAAWo42rAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAARklE
-QVQoU2P4//8/A1FgkCmUOfK9Eog3QrkQgK4Qqug3EKNKICuEKWq6//s/ToXIinAqRFeET+FGkAQa
-xu8ZnGCgFDIwAAAYyHMZpMy2ogAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAOCAYAAAAWo42rAAAAQUlEQVQoz2NgGKJA5sj3Spkj3zci
+i7FgU8TAwNCELseETVGaNAuGAUzEKIIrJKQI2Y0WDAwMLLOe/kGW2zTUIgEAh5gVN7Wc7FMAAAAA
+SUVORK5CYII=
 "
     } else {
 	tablelist_${treeStyle}_collapsedImg put "
@@ -2435,31 +2339,27 @@ proc tablelist::vistaAeroTreeImgs_125 {{treeStyle "vistaAero"}} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_${treeStyle}_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA0AAAAQCAYAAADNo/U5AAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwQAADsEBuJFr7QAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAfElE
-QVQ4T6XSSwqAMAwE0NygYBUP4M4jeBK37l269upx0AgZKdag8NCZNogfUdWwYllTLGs4iEyQfFfC
-QWQ2ne+fOFwDGRbo/ZrHAUN2bmCFwa/fONiQXSfYYPR7zjUKbshyCztk6in8uROO2DNB/O2Z0HeK
-/xFfFct3Kgd7BgT8X0rnFQAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAQCAYAAADNo/U5AAAAhElEQVQoz9XSMQrCUAwG4A9xL1jE
+zcWtR3B3KIgg6OLk0YSOCqXg1rN4ABGF3qCLOJQnvoII/ltIvpAh/FXmSD4NDTr1FDnGfRDUWGLS
+B91RYYtZLIIHCqyRxSJocMAGaSxKsMfpefIrwzdghB1KXLrNEEqxwhHX0MYQWuCM21c/4ndpAXQy
+EDjRgV+jAAAAAElFTkSuQmCC
 "
 	tablelist_${treeStyle}_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA0AAAAQCAYAAADNo/U5AAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAX0lE
-QVQ4T5WLwQ3AIAzEWIWF+GcUBuwQnSaECqQqOTiI5Ed8clLVa6BkQMmAkgHlxC4bJXgvJiN4jDds
-XnxyBCLSHx79g6PIBzRCwTZaBSwqfVxQYXQLlAwoGVDu0dQApYwcjGzIaS0AAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAQCAYAAADNo/U5AAAAT0lEQVQoz2NgGHlAkYGBwY9UDUcZ
+GBhukqQhMjLyPzZNTDg0LImMjLTCZSITqRrQNRGlAVkT0RoYGBgYGKG0HwMDQzcONQsYGBjah3va
+AgAg2BApacIJTgAAAABJRU5ErkJggg==
 "
 	tablelist_${treeStyle}_collapsedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA0AAAAQCAYAAADNo/U5AAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwQAADsEBuJFr7QAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAjElE
-QVQ4T5XSzQ1AQBAFYIVI1KAGFTi67tVFFSpQkj5cXDTAcbxJduWNbNg5fNl9wyN+KhFxyw7/ZId/
-TKjXa4GWZzkmoLDDBh3P30yIpREOGPgYM0FLcQ1wwsTHExNSKe6HZr0E68znKBO4FHMPWgw8fzaK
-S9j77qRXhvJnAv/bA/d38v8RpbLDb1LdInxaO2Da/xgAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAQCAYAAADNo/U5AAAArUlEQVQoz9XSIQ7CQBCF4T+0Zu8w
+l8Cv4wIEV2QrMZBgapBgSEAUWSR1DRfAjecSe4dRTTANomlDcTBusvPNG7HwPyVqhahNP81NOv0c
+qEVt9g0COAI3UUtGo+DdBciBUtTWY5MI3l2BLIKTqO1HoRZWDSyAXNTSUUjUkghq4NAmvyseAClQ
+NLAJ3p2773EPWAE7IAveVX1L+5K2wDJ49xg6vYvuQBm8e/7GH30BhiMxHhSDo2EAAAAASUVORK5C
+YII=
 "
 	tablelist_${treeStyle}_expandedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAAA0AAAAQCAYAAADNo/U5AAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAZUlE
-QVQ4T5WQsQ2AMAwEMwhTMVI2yg7swQa0FCmMkbAURx+/Ka74s65xEZHfQMmAkgElA0pjO+5dabN3
-Y+QLLkWnv7lhWFDPLqloDFLRHNAIBWG0CljU3uOC/MsjoGRAyYAyRsoDbx1o4rZ56f0AAAAASUVO
-RK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAAA0AAAAQCAYAAADNo/U5AAAAUElEQVQoz2NgGGFA5sj3IJkj3zei
+i7Pg08DAwDCHgYFBEF2OCZ+GNGkWQWzyTKRqwNBEjAYUTcRqgGsiRQNy6MUzMDAIznr6B5uaTSMh
+eQEAgzAb/lYeOL4AAAAASUVORK5CYII=
 "
     } else {
 	tablelist_${treeStyle}_collapsedImg put "
@@ -2493,32 +2393,26 @@ proc tablelist::vistaAeroTreeImgs_150 {{treeStyle "vistaAero"}} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_${treeStyle}_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAkklE
-QVQ4T63Tqw6AMAwF0GocjwSBIdlv8B84LBKD4evHHVS0S3ltLDmB20JDYJD3PotZ/MIsfqED0QCl
-rD3RgWhkjazf0eG8uYIJWtm7ogMG8LGGGTrZt+jAA/g8DFmgl9fEdBADOIchKzhZl3SIBnDNwQZF
-3Dv6Kvz5BFjp7wAr/StA3j5gyTsx719IYRbf87QDkkXd7AZZ8UwAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAAk0lEQVQ4y93TrwoCQRAH4A+5ZPMP
+GCyCr2HVoEXhMPl4JhG0aPFlLAZBjWbLXpH1jtug4LSB+X0Msyx/VyO06gQab30fE3RTAThhil4q
+8MAB87BRbQDu2CLHIAUokHVAhilAgeywRDMF6GCBDZ6xgawivAq3OH8aykrCeQhfylaMAW3MsMe1
+6hljwBhH3L7yF35fL0eRFD0vdToiAAAAAElFTkSuQmCC
 "
 	tablelist_${treeStyle}_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAaklE
-QVQ4T6WM0QnAIAwF3a4zOIl0z/50mjSBBkSukkeF+/D0XjOzX6BUQKmAUgGlAsoZP4cz6C1Ambzx
-5dz0HqAMMu69x0UbmGN5YI2lAYrLA19xaWAXB5WBEZ82nGuYoFRAqYBSAWUdaw84XP55BTs9TwAA
-AABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAAVklEQVQ4y2NgGAV0Ae4MDAzllGi+
+wsDAcJNszZGRkf/xGcCER3NvZGSkNiFbmCjRjM0AkjSjG0CyZmQDyNLMwMDAwAilyxkYGJLwqFvA
+wMDQPpolsAMA67sS7mmtYFoAAAAASUVORK5CYII=
 "
 	tablelist_${treeStyle}_collapsedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAkklE
-QVQ4T6WTuw2AMAxEMwjLsAItJQ0l27AQ81BQQGlsyZF8kSG/4sncmTtFIgQi6sI1a3DNGkAMx7Mz
-k/VygODwxZzMbP0/QGjBqnOxuy9ASFCnlNwy7d4DRCzQ51iy2XdSQNgC1dkSEGmBelJCzJjuBBBp
-gYbbTlASFkDEAhOu/woabr8HTNdN7PsXWnDNcii8/8FGqvnrvTkAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAAkklEQVQ4y2NgGF5A5sj36TJHvgeR
+oocJjR/NwMAwR+bI92hyDWBgYGCoYmBgmC5z5HsyOV74BKUzZI58/yZz5HsGWQagGVJAlgFkGYJu
+AJIh/2WOfHckNhBRNDMwMPQxMDAUPrHh3E+/MKAoFqCaPxGbDhixuOAPAwND7hMbzqXEGMCCxl/K
+wMCw+4kN57qhk4MBqw9f8e/1ZzoAAAAASUVORK5CYII=
 "
 	tablelist_${treeStyle}_expandedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAcElE
-QVQ4T6WSsQ2AIBQFGcQh7e3ciB1cwziGBcX3k0hCzEn+0+IKDu5VJDP7BUoFlAooFVAqoOyZtnN2
-Mt1VUDbuuDh+5DcoKy1e9mLyQB+vhzjwjKUBisMDb3FoYBRHB3J9NODbP4iAUgGlAso4li4fLlnw
-8CctEgAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAAVklEQVQ4y2NgGAW0BzJHvhfIHPm+
+EZc8CyHNDAwM3fjUMRHSHC/JgtcSJkKa2Znwe5GJEs0YBpCqGcUAcjTDDSBXM3I0OjIwMLAsfP4H
+l7pNozkCNwAAt+IfTnBR4NgAAAAASUVORK5CYII=
 "
     } else {
 	tablelist_${treeStyle}_collapsedImg put "
@@ -2542,6 +2436,60 @@ eLrc/jDKSaeoJ4Qaxp4d8UWhKJUmhKbOyjKCJmsXZt/4kwAAOw==
 }
 
 #------------------------------------------------------------------------------
+# tablelist::vistaAeroTreeImgs_175
+#------------------------------------------------------------------------------
+proc tablelist::vistaAeroTreeImgs_175 {{treeStyle "vistaAero"}} {
+    foreach mode {collapsed expanded collapsedAct expandedAct} {
+	variable ${treeStyle}_${mode}Img \
+		 [image create photo tablelist_${treeStyle}_${mode}Img]
+    }
+
+    variable pngSupported
+    if {$pngSupported} {
+	tablelist_${treeStyle}_collapsedImg put "
+iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAlElEQVQ4y+XTrQoCQRAA4A+5ZPMH
+DBbB17Bq0KJwmHw8kwhatPgylguCGs2WvSLH3XEbFJw2sPMxO8PwNzFBp0lh6yMfYoZ+LAQXzDGI
+hZ44YRk6bAzBA3ukGMVAObYN2DgGyrED1mjHQD2ssMOr7GFSgWzCrK5VX0tKkDQgWZ1hF0FdLHDE
+re76i6Apzrh/5dZ+L96mrBQ93arVCgAAAABJRU5ErkJggg==
+"
+	tablelist_${treeStyle}_expandedImg put "
+iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAWElEQVQ4y2NgGAWDCrgzMDCUU8OQ
+KwwMDDcpNiQyMvI/MQYx4TGkNzIyUptYW5moYQg2g8gyBN0gsg1BNogiQxgYGBgYoXQ5AwNDEh51
+CxgYGNpHsxRlAAAzzRLucI72KAAAAABJRU5ErkJggg==
+"
+	tablelist_${treeStyle}_collapsedActImg put "
+iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAk0lEQVQ4y2NgGBlA5sj36TJHvgeR
+o5cJjR/NwMAwR+bI92hKDWJgYGCoYmBgmC5z5HsyJV77BKUzZI58/yZz5HsGRQahGVZAkUEUGYZu
+EJJh/2WOfHckNbBRDGFgYOhjYGAofGLDuX/gwogqsQY15BOp6YgRi4v+MDAw5D6x4VxKikEsaPyl
+DAwMu5/YcK4b+iUHAMhVX/GmlHueAAAAAElFTkSuQmCC
+"
+	tablelist_${treeStyle}_expandedActImg put "
+iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAXUlEQVQ4y2NgGAWDB8gc+V4gc+T7
+RkLqWAgZwsDA0E1IHQMDAwMTIUPiJVlYiHE5EyFD2JmICwImahiCYRC5hqAYRIkhcIMoNQQ5+h0Z
+GBhYFj7/g0vdptEcRTkAAKPJH058YP1QAAAAAElFTkSuQmCC
+"
+    } else {
+	tablelist_${treeStyle}_collapsedImg put "
+R0lGODlhEgASAOMIAAAAAIaGhouLi5CQkJiYmKGhoaioqMPDw///////////////////////////
+/////yH5BAEKAAAALAAAAAASABIAAAQsEMhJq704a3m2NYZHhYUohQBhosAgsoDgwUCwwfI9ubOk
+voDSirbpmI5ISgQAOw==
+"
+	tablelist_${treeStyle}_expandedImg put "
+R0lGODlhEgASAMIGAAAAACYmJisrK1lZWYaGhoiIiP///////yH5BAEKAAcALAAAAAASABIAAAMk
+eLrc/jDKSSssVomQxeCV94VDCUqiOaVqxLZPEcx0QGR4rlsJADs=
+"
+	tablelist_${treeStyle}_collapsedActImg put "
+R0lGODlhEgASAMIFAAAAABzE9ybG9yvH93jc+v///////////yH5BAEKAAcALAAAAAASABIAAAMl
+eLrc/jBKRaYTwzJxuO6KZ4miVJYQGkznuKBp+HFwhH0Uru9KAgA7
+"
+	tablelist_${treeStyle}_expandedActImg put "
+R0lGODlhEgASAMIFAAAAAB3E92HW+Xvd+4Lf+////////////yH5BAEKAAcALAAAAAASABIAAAMj
+eLrc/jDKSSsUVoWQw+CVR4CTOFLmKaUqxLaOsM0blt14XiUAOw==
+"
+    }
+}
+
+#------------------------------------------------------------------------------
 # tablelist::vistaAeroTreeImgs_200
 #------------------------------------------------------------------------------
 proc tablelist::vistaAeroTreeImgs_200 {{treeStyle "vistaAero"}} {
@@ -2553,34 +2501,26 @@ proc tablelist::vistaAeroTreeImgs_200 {{treeStyle "vistaAero"}} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_${treeStyle}_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABUAAAASCAYAAAC0EpUuAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwAAADsABataJCQAAAAd0SU1FB98IEBUWORalREAAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5F
-VCB2My41LjEwMPRyoQAAAJNJREFUOE+10zsKgDAQBNCt7fyAhY2Qa3gPO1tLGxtPHye4RdgNJpI1
-8DBOwiBqyHtvLhnWSoa1dEC0QCvzL3RAtLJBrpXSwVPYwQajXC+hA5TytYcdJrknRwdcyvNQfMAc
-78nRQVTK96H4BBfnb3QgSjlzcEEj11J08PeTYti+Uwzbrw/2/ykzPVH2Z99CMqzj6QYGRertj0pe
-+AAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAABUAAAASCAYAAAC0EpUuAAAAlUlEQVQ4y+3TrwoCQRAH4A+5ZPMP
+GCyCr2HVoEXhMPl4JhG0aPFlLAZBjWbLXhEP93CDgr844WNmdpZ/njJA4xOg9qLWxQjtlCgcMEYn
+JXrDDtPQeRIUrlgjRy8VWsDLAPdToQW8wRz1VGgLM6xwj0GzCHARdnuMHT97A+YBPFV5qDK0iQm2
+OFc9qTJ0iD0uX/P3fycPZOQUPUGGEDQAAAAASUVORK5CYII=
 "
 	tablelist_${treeStyle}_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABUAAAASCAYAAAC0EpUuAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwAAADsABataJCQAAAAd0SU1FB98IEBUeBx8d0+MAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5F
-VCB2My41LjEwMPRyoQAAAGtJREFUOE+tzMEJwCAQRFG7Sw1biaTPXFLNxoUIi3w9OArv4Ii/uPtx
-OKpwVOGowlGF46idq6n0RnDM/uDTvPROcOx60Mziokdz8Eh0DMpRCkrRWXA7ugqG3WiNjwt3/riC
-owpHFY4qHDVePsGgC4kbm9dDAAAAAElFTkSuQmCC
+iVBORw0KGgoAAAANSUhEUgAAABUAAAASCAYAAAC0EpUuAAAAWUlEQVQ4y2NgGAXDCrgzMDCUU9vA
+KwwMDDepamBkZOR/UgxlImBgb2RkpDapLmGitoG4DKXIQGyGUmwguqFUMZCBgYGBEYldzsDAkIRH
+7QIGBob20Sw7MAAA1EIS7m4d8XoAAAAASUVORK5CYII=
 "
 	tablelist_${treeStyle}_collapsedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAABUAAAASCAYAAAC0EpUuAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwAAADsABataJCQAAAAd0SU1FB98IEBUVIS7kj9UAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5F
-VCB2My41LjEwMPRyoQAAAJNJREFUOE+tkzEKgDAMRT2Il/EKro4ujt7GC3keBwcdYwIplPxAW5vh
-UX0pj4J2IKJwXNmLK3sBMZ7vwczWtwCCgzdzMYud1QJCo5uuq53XAEJiukr4kdXuKQEiRfU5hfd8
-TwkQeVTfm8MgbFSdhImZ7MwDhI1qMO6kf4ICiBTNgjFfX4Ox/ykTfqPi734EruyDhg9wSVOrXMoi
-bgAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAABUAAAASCAYAAAC0EpUuAAAAlUlEQVQ4y2NgGAXIQObI9+kyR74H
+UWIGExaxaAYGhjkyR75HU9NQBgYGhioGBobpMke+J1PL+5+gdIbMke/fZI58z6CaoWgGF1DNUKoZ
+jG4oksH/ZY58d6QkolAMZGBg6GNgYCh8YsO5f/CFKdVjH2rgJ3LTKSMOl/5hYGDIfWLDuZQcQ1mw
+iC1lYGDY/cSGc93wL+kAdJtf8bMQS5gAAAAASUVORK5CYII=
 "
 	tablelist_${treeStyle}_expandedActImg put "
-iVBORw0KGgoAAAANSUhEUgAAABUAAAASCAYAAAC0EpUuAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
-AAAOwAAADsABataJCQAAAAd0SU1FB98IEBUbEg+3w00AAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5F
-VCB2My41LjEwMPRyoQAAAHJJREFUOE+t0rENgCAURVEGcUh7OzdiB9cwjmFB8cVEEvJzpeD94hQ+
-5FYkMwuHowpHFY4qHFU4estxr1WmM4Jj7wuWqn7yPx6OTQtuZ7GQaB/cr4CoD8pRCkrRv+B0dBRU
-ovm9OBD3TmfgqMJRhaPG0gNGBmbxSYGdJwAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAABUAAAASCAYAAAC0EpUuAAAAXElEQVQ4y2NgGAXDB8gc+V4gc+T7
+RmLVsxBjIAMDQzcxamGAiRgD4yVZWEjxGRMxBrIzkRZcTNQ2EKuhlBqIYSg1DEQxlFoGoicpRwYG
+BpaFz//gUrtpNMcOHAAAiLgfTviWUiAAAAAASUVORK5CYII=
 "
     } else {
 	tablelist_${treeStyle}_collapsedImg put "
@@ -2669,6 +2609,25 @@ CFV7flheBhrieJXDiaoWAMfx1qFpbbv2He50v3NNhiqH8TgoAAA7
 }
 
 #------------------------------------------------------------------------------
+# tablelist::vistaClassicTreeImgs_175
+#------------------------------------------------------------------------------
+proc tablelist::vistaClassicTreeImgs_175 {{treeStyle "vistaClassic"}} {
+    foreach mode {collapsed expanded} {
+	variable ${treeStyle}_${mode}Img \
+		 [image create photo tablelist_${treeStyle}_${mode}Img]
+    }
+
+    tablelist_${treeStyle}_collapsedImg put "
+R0lGODlhFAASAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAAUABIAAAI8nI+pyxgPo0xB2Itv
+oLnb7XRABx5VNmalcWIptg7t9WqcAOS6/t0u6aMBQ6ihSWRkeZKypYoiiUIaVEUBADs=
+"
+    tablelist_${treeStyle}_expandedImg put "
+R0lGODlhFAASAKECAAAAAICAgP///////yH5BAEKAAMALAAAAAAUABIAAAI2nI+pyxgPo0xB2Itv
+oLnb7XgdeFQiRhrm+XFsGwrATNNw+d5qLqTDyvIBT0JeMSeUKCGNpqIAADs=
+"
+}
+
+#------------------------------------------------------------------------------
 # tablelist::vistaClassicTreeImgs_200
 #------------------------------------------------------------------------------
 proc tablelist::vistaClassicTreeImgs_200 {{treeStyle "vistaClassic"}} {
@@ -2722,36 +2681,33 @@ proc tablelist::win10TreeImgs_100 {} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_win10_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAExJREFUKFNj+P//P0UYwWBg0AFiB2RJYjCCAdQMxJGkGoLKIcMQTAESDcEuyMAQ
-DDVEB5s8MsYUoMQFpGoGYQSDDM0gjGCQlQ7+MwAAiH+aQTbAbFoAAAAASUVORK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAABEAAAAKCAYAAABSfLWiAAAAZklEQVQoz63QsQmAQAwF0KeClYWF
+jRPYOISjO4QD2AkOITYnHGLhnaZKAnmEz881Yso5LKO+Q58DVVG/RlAX5mQkG6oedisGtGHeUzK5
+akKNDcubT4oHoA/A/DaT4itwz6TBkQrACcudDrpWA7yXAAAAAElFTkSuQmCC
 "
 	tablelist_win10_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAFRJREFUKFNj+P//P0UYqyApGATigbgDh2QHSB6bHAzDFO0H0WgSWMXRMYRAU4zO
-x4cRDKgmHx8fEIcozSCMyiHBZhjGFCAQaOgYqyApGKsg8fg/AwClVaMkbFpt/wAAAABJRU5ErkJg
-gg==
+iVBORw0KGgoAAAANSUhEUgAAABEAAAAKCAYAAABSfLWiAAAARUlEQVQoz2NgGEwgnoGBoQOHXAdU
+Hi9gYmBg0GRgYDDHYlAHVFyTWNd0MDAw7EcyCJ3PQJJBPj4+/8k1gIFSF2AL6CEKAFm6Dd7JH9yK
+AAAAAElFTkSuQmCC
 "
     } else {
 	tablelist_win10_collapsedImg put "
-R0lGODlhEAAKAMIGAAAAAKampqysrL+/v9LS0tTU1P///////yH5BAEKAAcALAAAAAAQAAoAAAMZ
-eLrcS8PJM0KcrV68NGdCUHyURXof+kFkAgA7
+R0lGODlhEQAKAMIFAAAAAKampqysrL+/v9PT0////////////yH5BAEKAAcALAAAAAARAAoAAAMa
+eLrcTMNJNUKcrl7MNG9CQHyURR4emZLQmQAAOw==
 "
 	tablelist_win10_expandedImg put "
-R0lGODlhEAAKAMIHAAAAAEBAQExMTHd3d5+fn6CgoKGhof///yH5BAEKAAcALAAAAAAQAAoAAAMb
-eLrc/oyMNsobYSqsHT8fBAZCJi7hqRhq6z4JADs=
+R0lGODlhEQAKAMIFAAAAAEBAQExMTHd3d6CgoP///////////yH5BAEKAAcALAAAAAARAAoAAAMb
+eLrc/o6MNggcYSqsHz8ftAVCJjLhuVhq64oJADs=
 "
     }
 
     tablelist_win10_collapsedActImg put "
-R0lGODlhEAAKAMIGAAAAAE7Q+VjS+Xra+5vh/Jri/P///////yH5BAEKAAcALAAAAAAQAAoAAAMZ
-eLrcW8PJM0KcrV68NGdCQHyURXof+kFkAgA7
+R0lGODlhEQAKAMIGAAAAAE7Q+VjS+Xra+5vh/Jri/P///////yH5BAEKAAcALAAAAAARAAoAAAMa
+eLrcXMNJNUKcrl7MNG9CQHyURR4emZLQmQAAOw==
 "
     tablelist_win10_expandedActImg put "
-R0lGODlhEAAKAMIGAAAAABzE9yjH+FbS+YDb+4Lc+////////yH5BAEKAAcALAAAAAAQAAoAAAMb
-eLrc/oyMNsobYSqsHT8fBAZCJi7hqVhq6zoJADs=
+R0lGODlhEQAKAMIGAAAAABzE9yjH+FbS+YDb+4Lc+////////yH5BAEKAAcALAAAAAARAAoAAAMb
+eLrc/o6MNgocYSqsHz8ftAVCJjLhuVhq64oJADs=
 "
 }
 
@@ -2767,37 +2723,33 @@ proc tablelist::win10TreeImgs_125 {} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_win10_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABoAAAAMCAYAAAB8xa1IAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAF1JREFUOE+9lMEJwDAMA71QJ+gG3aD7D+JK0EKN9QlYCdxDl8eRTyIzt1BHxAGu
-v5uiDkTA7Yh1YYppaYhJSaZjUn68IXKq+xWkJDj+F01HSBeGCKnDFCF12H6GjAdLF1EmW/vAagAA
-AABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAABUAAAAMCAYAAACNzvbFAAAAbklEQVQoz73RwQ2AIAyF4R97kBsT
+yAYu4sBu4BQcnYANvNTEECTBEnt7JflC+uCHWYHNikxFXoBghaXICYgKR81mdAgsL3sTLI23pMV5
+xc+vRT3nLisDR89PXQMMCu69N3WjwRpqBmtFeWC2gAAX6rARzlVu5CMAAAAASUVORK5CYII=
 "
 	tablelist_win10_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAABoAAAAMCAYAAAB8xa1IAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAGNJREFUOE+9j4EJwCAMBDNqN3GUjuJosY8Eqf0UqUmFU3MfIoqq/gKVGVCZAdZx
-cbLQQI4+lq1iQypOp+E1X6VvzjDPf2FcpqFzvcu9GMONkEfAUwT/xOBSpDC/A5UZUBmPSgPj7VvG
-j4QeDgAAAABJRU5ErkJggg==
+iVBORw0KGgoAAAANSUhEUgAAABUAAAAMCAYAAACNzvbFAAAAU0lEQVQoz2NgGPEggYGBYT4BNfOh
+6ogCTAwMDPYMDAwKeAyeD5W3J9ZQRjSNDxgYGBKxGIguTpSh2Awgy0B0Q5ENhgGSDcRmKAMlLiQE
+6kdGwgcAYsgQgI4qe4AAAAAASUVORK5CYII=
 "
     } else {
 	tablelist_win10_collapsedImg put "
-R0lGODlhGgAMAMIFAAAAAKamprW1tcTExNLS0v///////////yH5BAEKAAcALAAAAAAaAAwAAAMi
-eLrc/ocISJ8Is2p1867dp4UiFQRDaWGqQ7bLCx/yLM1KAgA7
+R0lGODlhFQAMAMIFAAAAAKamprW1tcTExNLS0v///////////yH5BAEKAAcALAAAAAAVAAwAAAMf
+eLrcvkS8yUSQlFqc3+7TBzpBMIzVhS7i2qIvGq1HAgA7
 "
 	tablelist_win10_expandedImg put "
-R0lGODlhGgAMAMIHAAAAAEBAQEFBQWBgYICAgJ+fn6CgoP///yH5BAEKAAcALAAAAAAaAAwAAAMi
-eLrc/jDKSct4w9A1wmXdtx0h543gWaKpcLLNCjfEbN9oAgA7
+R0lGODlhFQAMAMIFAAAAAEBAQGBgYICAgJ+fn////////////yH5BAEKAAcALAAAAAAVAAwAAAMg
+eLrc/jBKSMQTRIpg2e7Rt4jTIZKlGaxgqrbuMcR0HSUAOw==
 "
     }
 
     tablelist_win10_collapsedActImg put "
-R0lGODlhGgAMAMIGAAAAAE7Q+WfV+mjV+oHc+5ri/P///////yH5BAEKAAcALAAAAAAaAAwAAAMj
-eLrc/qcISJ8Is2p1867X8GnhWAUBYVrY6nRuA8fLTCvSfSQAOw==
+R0lGODlhFQAMAMIGAAAAAE7Q+WfV+mjV+oHc+5ri/P///////yH5BAEKAAcALAAAAAAVAAwAAAMg
+eLrcvkW8yUSQlFqcnx3d9IVPEBBkdaXLxiruG7/RmwAAOw==
 "
     tablelist_win10_expandedActImg put "
-R0lGODlhGgAMAMIGAAAAABzE9z7M+F/U+oDb+4Hc+////////yH5BAEKAAcALAAAAAAaAAwAAAMi
-eLrc/jDKSYl4otAlwmXdtx0h543gWaJpcLLNCjfDbN9oAgA7
+R0lGODlhFQAMAMIGAAAAABzE9z7M+F/U+oDb+4Hc+////////yH5BAEKAAcALAAAAAAVAAwAAAMg
+eLrc/jBKSMQTRYpg2e7Rt4jTIZKlGaxgqrbuMcR0HSUAOw==
 "
 }
 
@@ -2813,41 +2765,81 @@ proc tablelist::win10TreeImgs_150 {} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_win10_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAB8AAAAQCAYAAADu+KTsAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAIZJREFUSEvNlbENgDAMBD0IDQNQswQLsP8gxi8R5OCvkOMQ6YocSOc0iajqNLgU
-WZjPJgqRzTiN/f0tm35jJ77DjaEDRGFBFx86AJdFA1AJEHTxIQNQ2UDQxdMHoNJj63BxsLL/vkBl
-w9ackyPkoulhwGVBGERRFAb95gc33Jy7/ZElr5rKBVezH+eTfDdNAAAAAElFTkSuQmCC
+iVBORw0KGgoAAAANSUhEUgAAABsAAAAQCAYAAADnEwSWAAAAi0lEQVQ4y83UIQuAMBCG4XcuGMRg
+MS2I3Sj+/+if0LQugt1iENkczN1wbffBHnYHBz84RuJR7agNwAhUgJXEzAUBNKnBJ7ZfQCMButpo
+pUDtqYuA+iVLDupAboEOKG/gAWwxWBHIJ6C+3Rdgjf2ZCkD9A5q/zEzlgnyYCOSamZGCfBtEAW1q
+KPvWPwGNvhqpmBAh5QAAAABJRU5ErkJggg==
 "
 	tablelist_win10_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAAB8AAAAQCAYAAADu+KTsAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAJVJREFUSEvFkNkNgCAQRLcvCrAIfqzC9iwNmXiwukPiASvJ43i7YVBJKf0GlV5Q
-6UXZiARdqHG37w7rJDJm5sx0bdCgvvWNrP4UjLBduEMfAK96wOc/sE724tMDcFY1U39L2VQCsCp3
-+BacD5egGCNkl2Bghf3SLsGAS/uA5sGASoDAnsGAyp08BuZbQaUXVHpBpQ9JFsLONZHqquN4AAAA
-AElFTkSuQmCC
+iVBORw0KGgoAAAANSUhEUgAAABsAAAAQCAYAAADnEwSWAAAAk0lEQVQ4y+2Uuw2AMAxEHzAEE9DT
+MwBihjTMQJEhmIQNKKnYgo5BoDFShAifyEIUXOVIJ7/48oFfyiqUfV7VwADYC58VXx0CSWSnjawz
+IAVGD6iSOgcmYH4KmwWQnQBdEEAPdCGTIY19wCNQGxJj7NStNNpUGWMWLRBAdHE2aIHcGF3tI1UB
+cfOa27ceevn/dZ/TCmPKG6Qk5tPpAAAAAElFTkSuQmCC
 "
     } else {
 	tablelist_win10_collapsedImg put "
-R0lGODlhHwAQAOMIAAAAAKamprOzs8jIyNLS0t7e3uPj4+Tk5P//////////////////////////
-/////yH5BAEKAAAALAAAAAAfABAAAAQ3EMhJq7344M0lCUMnUkZghuM4mGCqsqjLrafc0a29CWyh
-X7jYbxIcVopGIiw5KdWYk48QCtBAIwA7
+R0lGODlhGwAQAMIHAAAAAKamprOzs8jIyNLS0t7e3uPj4////yH5BAEKAAcALAAAAAAbABAAAAMx
+eLrc/szACUkYNCsTOtbU0F1gOH7lI3optJKtI4xFzLyojdvLzh8+Hof1U1hyRckvAQA7
 "
 	tablelist_win10_expandedImg put "
-R0lGODlhHwAQAOMJAAAAAEBAQFtbW4mJiZ+fn6CgoLi4uMTExMXFxf//////////////////////
-/////yH5BAEKAA8ALAAAAAAfABAAAAQ58MlJq7046807RRnoUUQwXENQjNIRvCeVvgf7zOaEx/Z+
-vzmbDigA8oQSHAxp8TGbwafFIK1ar9IIADs=
+R0lGODlhGwAQAMIHAAAAAEBAQFtbW4mJiZ+fn7i4uMTExP///yH5BAEKAAcALAAAAAAbABAAAAMz
+eLrc/jDKSZuJtx4SxhsBURlB6TFgmU1pt7RnBR+zprRC6dqvbvKNGhC1GzYKxqRyOUwAADs=
 "
     }
 
     tablelist_win10_collapsedActImg put "
-R0lGODlhHwAQAMIHAAAAAE7Q+WTV+oje+5ri/K3m/bbo/f///yH5BAEKAAcALAAAAAAfABAAAAM0
-eLrc/tDASRUJo2pmgs/bNnhYKJKgSY2fWrGlOwlkIT9wei/53vQ+Hiq46LSIi4sOeZAgEwA7
+R0lGODlhGwAQAMIHAAAAAE7Q+WTV+oje+5ri/K3m/bbo/f///yH5BAEKAAcALAAAAAAbABAAAAMx
+eLrc/szACUkYNCsTOtbU0F1gOH7lI3optJKtI4xFzLyojdvLzh8+Hof1U1hyRckvAQA7
 "
     tablelist_win10_expandedActImg put "
-R0lGODlhHwAQAOMJAAAAABzE9zjK+GnW+oDb+4Hc+5rh/Kfl/ajl/f//////////////////////
-/////yH5BAEKAA8ALAAAAAAfABAAAAQ58MlJq7046807RRnoUUQwXENQjNIRvCeVvgf7zOaEx/Z+
-vzmbDigA8oQSHAxp8TGbwafFIK1ar9IIADs=
+R0lGODlhGwAQAOMJAAAAABzE9zjK+GnW+oDb+4Hc+5rh/Kfl/ajl/f//////////////////////
+/////yH5BAEKAA8ALAAAAAAbABAAAAQ28MlJq704680ryl/3EMFwDUHRHUFrUmh7dHE51S/d2rh4
+74JdzveouYiVHjJpW1oMzqh0uowAADs=
+"
+}
+
+#------------------------------------------------------------------------------
+# tablelist::win10TreeImgs_175
+#------------------------------------------------------------------------------
+proc tablelist::win10TreeImgs_175 {} {
+    foreach mode {collapsed expanded collapsedAct expandedAct} {
+	variable win10_${mode}Img \
+		 [image create photo tablelist_win10_${mode}Img]
+    }
+
+    variable pngSupported
+    if {$pngSupported} {
+	tablelist_win10_collapsedImg put "
+iVBORw0KGgoAAAANSUhEUgAAAB4AAAAQCAYAAAABOs/SAAAAiklEQVQ4y83VIQ+AIBCG4RcJBmew
+mAjObnT+/+if0ER3bnaLwTGQoAfS7r7w7LgN4GfHSAPa0xuAEagAmwo2FwrQSOIuvF9YI437rtqm
+wHWgL47rh0wU15HcAh1Q3vAD2N7CRSSfgPpWL8D6xcQqgvYOOn+1Y5UDDcHiqG/HJgUaerkU0Eqi
+WX+nEw2kGqlLMldzAAAAAElFTkSuQmCC
+"
+	tablelist_win10_expandedImg put "
+iVBORw0KGgoAAAANSUhEUgAAAB4AAAAQCAYAAAABOs/SAAAAkklEQVQ4y+2UsQmAMBBFnzqEE6S3
+dwBxhjTOYJEhnMQNLK3cws5BtDkhiBohhiD4qgscedwPOfiJQPly3yMaYASMo89IX+MrzGSCVs4K
+yIHpQlpLXQAzsPiIF5GpG7ktBRiA3ndiRHIlP5N2vlGnVt3JpTu11noNIQVIHG9JCKkdtc0x9tel
+PPw6JsZSqf69+nk2EbYbpI72C58AAAAASUVORK5CYII=
+"
+    } else {
+	tablelist_win10_collapsedImg put "
+R0lGODlhHgAQAMIHAAAAAKamprOzs8jIyNLS0t7e3uPj4////yH5BAEKAAcALAAAAAAeABAAAAM0
+eLrc/s/ASQ8Jo+plgs+bNnhYKJKgOY2fSrGlCwlkITtweiv5zvQ+Hiqo6LSIiosOKSEmAAA7
+"
+	tablelist_win10_expandedImg put "
+R0lGODlhHgAQAMIHAAAAAEBAQFtbW4mJiZ+fn7i4uMTExP///yH5BAEKAAcALAAAAAAeABAAAAM1
+eLrc/jDKSesxEdtFwnhDQGxXYH5MaGqW6i0uSsYHTcJmIOTyrbgnn8MmbIR6RUYhyWw6mQkAOw==
+"
+    }
+
+    tablelist_win10_collapsedActImg put "
+R0lGODlhHgAQAMIHAAAAAE7Q+WTV+oje+5ri/K3m/bbo/f///yH5BAEKAAcALAAAAAAeABAAAAM0
+eLrc/s/ASQ8Jo+plgs+bNnhYKJKgOY2fSrGlCwlkITtweiv5zvQ+Hiqo6LSIiosOKSEmAAA7
+"
+    tablelist_win10_expandedActImg put "
+R0lGODlhHgAQAOMJAAAAABzE9zjK+GnW+oDb+4Hc+5rh/Kfl/ajl/f//////////////////////
+/////yH5BAEKAA8ALAAAAAAeABAAAAQ38MlJq7046837QxnoTUQwXENQjM8RvCeVvgc7m9Md2y+u
+s7KeoLcDSm4wo+WnXOKaFwN0Sq1OIwA7
 "
 }
 
@@ -2863,43 +2855,35 @@ proc tablelist::win10TreeImgs_200 {} {
     variable pngSupported
     if {$pngSupported} {
 	tablelist_win10_collapsedImg put "
-iVBORw0KGgoAAAANSUhEUgAAACgAAAASCAYAAAApH5ymAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAJJJREFUSEvV1rENwCAMRFEGykDZfxGHKyyh45fYIpFe8+PiSkZEoPk91LtxnOOm
-V+h/pz0s45LfdOJoA4XuOmAUHyh0Vw1j8oFCd5Uwrnyg0F0VjM4HCt1VwEh8oNDdaRiJjxO6Ow2j
-82FCdxUwrnyY0F0VjMmHCd1Vwig+TOiuGsdLxskefvJYuPe5lTSSeq8YH+NamKxWvX/LAAAAAElF
-TkSuQmCC
+iVBORw0KGgoAAAANSUhEUgAAACMAAAASCAYAAADR/2dRAAAAc0lEQVRIx2NgwA10GOgMGPE4BOaY
+FQPpGB0soUIXBzFhEbuCRSxiIKMJlwNWDJRj6O4gRiLU0M1BjESqo4uDGElQS3MHMTEMIjDkomnQ
+JOBBk7UHTaFHd4fgyk06A+EQBgYGBmYsYq+gtBi9mxAMg6lxBQBTKRAWhaNStgAAAABJRU5ErkJg
+gg==
 "
 	tablelist_win10_expandedImg put "
-iVBORw0KGgoAAAANSUhEUgAAACgAAAASCAYAAAApH5ymAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-LjEwMPRyoQAAAJFJREFUSEvNzgEKgCAMhWFv2k272nKItdZvWDRa8Ik9J74iIqlhmAmGmRybUhZ7
-MOPNnafaUh+qVuUHRvp8FVpSv71cR4OWn6/CSrbl+uCwpJ9TNPeVYzPxsD9XfuZr55+bAj5X9m6U
-awBFiL8XhUMoZNGdKBgqX6qj2UgYdn+XUxhaf5ZTGGaCYSYYZoJhHlI2JrC2jqb+LJ4AAAAASUVO
-RK5CYII=
+iVBORw0KGgoAAAANSUhEUgAAACMAAAASCAYAAADR/2dRAAAAb0lEQVRIx2NgGAVDDMTTSQ9Rhu6D
+YmIBTD3VHMQINQzdQCciHIIMFkIxxY5hwBEiTkQ6hBjHk+QYYi2hmUPQHUPIMpo6BJtjGEhIxE7U
+zkWMJKQLmjoEn2PwOYgmDiHkGGwOoplDSC3cRsEoGHQAAKAaEvmT/Wu2AAAAAElFTkSuQmCC
 "
     } else {
 	tablelist_win10_collapsedImg put "
-R0lGODlhKAASAMIHAAAAAKampqenp6ioqNLS0tPT09TU1P///yH5BAEKAAcALAAAAAAoABIAAANB
-eLq1/jDKV4KYOEMT+tUgJnRWaEajd67LQH7s6ZLxOne1TAZ5ePO9zC8o3BExN9gRklxKUiUnpKKS
-RghR61W7SAAAOw==
+R0lGODlhIwASAKEDAAAAAKenp9PT0////yH5BAEKAAMALAAAAAAjABIAAAIynC+ny+0SgptUwSir
+bjjur3QZ+IkkaJ5bqlZs67zwIs9HbQ+4vc89fPHkGpfhJGE0FAAAOw==
 "
 	tablelist_win10_expandedImg put "
-R0lGODlhKAASAMIGAAAAAEBAQEJCQp+fn6CgoKGhof///////yH5BAEKAAcALAAAAAAoABIAAAM/
-eLrc/jDKSau9qlCN4QiCJARE5xBBGj5jyplLCzryCjM1ns43va+5HusXFA53KqMIaVNCWk3nMyqt
-Wq/YrCUBADs=
+R0lGODlhIwASAKEDAAAAAEFBQaCgoP///yH5BAEKAAMALAAAAAAjABIAAAI1nI+py+0PozQC1olE
+CG5frG3cIgbfVI5Iiq2lK7YJO9AynG43mav7bPspXsKGrohMKpfMRwEAOw==
 "
     }
 
     tablelist_win10_collapsedActImg put "
-R0lGODlhKAASAMIFAAAAAE7Q+VHQ+Zrh/Jri/P///////////yH5BAEKAAcALAAAAAAoABIAAAM9
-eLqz/jDKN4KYOMMarP6Z0HlgCYndZa4K2rGsG8CrTJv2/eU6xveSH/A0mg2DI9WRmFpGOCQnhBCV
-Tq2LBAA7
+R0lGODlhIwASAMIFAAAAAE7Q+VHQ+Zrh/Jri/P///////////yH5BAEKAAcALAAAAAAjABIAAAM7
+eLqz/jDKEYS82NFQs5cC133kEnJWWZ6cuoqBS7Kx7NF2hucgzPeiX2QndLBSRZMImTxsRs0FARqV
+VhMAOw==
 "
     tablelist_win10_expandedActImg put "
-R0lGODlhKAASAMIEAAAAAB3E94Db+4Hc+////////////////yH5BAEKAAAALAAAAAAoABIAAAM6
-CLrc/jDKSau9alCNoQiBBHIdM4AghAZkqaxhA7vOvNi0vL57/sA4Xw0YE6qCxh8qSUkxn9CodFpK
-AAA7
+R0lGODlhIwASAMIEAAAAAB3E94Db+4Hc+////////////////yH5BAEKAAAALAAAAAAjABIAAAM3
+CLrc/jDKSatVg+bLRAjSt3HD90FmMF4p2LQcAy9zTKdKbd+tuT+90w+oG758xogwyWw6n1BJAgA7
 "
 }
 
@@ -3020,62 +3004,68 @@ F4jcQ3YjCYnFI2v2ooSWJhSow0lhro8IADs=
 # tablelist::createTreeImgs
 #------------------------------------------------------------------------------
 proc tablelist::createTreeImgs {treeStyle depth} {
-    set baseWidth  [image width  tablelist_${treeStyle}_collapsedImg]
-    set baseHeight [image height tablelist_${treeStyle}_collapsedImg]
-
     #
     # Get the width of the images to create for the specified depth and
     # the destination x coordinate for copying the base images into them
     #
-    set width [expr {$depth * $baseWidth}]
-    set x [expr {($depth - 1) * $baseWidth}]
+    set baseWidth  [image width  tablelist_${treeStyle}_collapsedImg]
+    set baseHeight [image height tablelist_${treeStyle}_collapsedImg]
+    set step $baseWidth
     switch -regexp -- $treeStyle {
 	^win10$ {
 	    variable scalingpct
 	    switch $scalingpct {
-		100 { set factor -8 }
-		125 { set factor -16 }
-		150 { set factor -19 }
-		200 { set factor -24 }
+		100 { incr step -9 }
+		125 { incr step -11 }
+		150 { incr step -15 }
+		175 { incr step -16 }
+		200 { incr step -19 }
 	    }
 	}
 	^(vistaAero|win7Aero)$ {
 	    variable scalingpct
 	    switch $scalingpct {
-		100 { set factor  0 }
-		125 { set factor -3 }
-		150 { set factor -6 }
-		200 { set factor -11 }
+		100 { incr step  0 }
+		125 { incr step -3 }
+		150 { incr step -6 }
+		175 { incr step -8 }
+		200 { incr step -11 }
 	    }
 	}
 	^(vistaClassic|win7Classic)$ {
 	    variable scalingpct
 	    switch $scalingpct {
-		100 { set factor -1 }
-		125 { set factor -4 }
-		150 { set factor -7 }
-		200 { set factor -13 }
+		100 { incr step -1 }
+		125 { incr step -4 }
+		150 { incr step -7 }
+		175 { incr step -10 }
+		200 { incr step -13 }
 	    }
 	}
-	^ubuntu$					{ set factor -2 }
-	^(mate|mint2)$					{ set factor -1 }
-	^(blueMenta|menta|mint|newWave|ubuntu2)$	{ set factor  1 }
-	^(ubuntu3|ubuntuMate)$				{ set factor  2 }
-	^plasti.+$					{ set factor  3 }
-	^(adwaita|aqua|arc)$				{ set factor  4 }
-	^(oxygen.|phase|winnative|winxp.+)$		{ set factor  5 }
-	^(baghira|klearlooks)$				{ set factor  7 }
-	default						{ set factor  0 }
+	^ubuntu$					      { incr step -2 }
+	^(mate|mint2)$					      { incr step -1 }
+	^(blueMenta|menta|mint|newWave|ubuntu2|ubuntuMate)$   { incr step  1 }
+	^ubuntu3$					      { incr step  2 }
+	^plasti.+$					      { incr step  3 }
+	^(adwaita|aqua|arc)$				      { incr step  4 }
+	^(oxygen.|phase|winnative|winxp.+)$		      { incr step  5 }
+	^(baghira|klearlooks)$				      { incr step  7 }
+	^.+100$						      { incr step  6 }
+	^.+125$						      { incr step  8 }
+	^.+150$						      { incr step  9 }
+	^.+175$						      { incr step  11 }
+	^.+200$						      { incr step  12 }
     }
-    set delta [expr {($depth - 1) * $factor}]
-    incr width $delta
-    incr x $delta
+    set x [expr {($depth - 1) * $step}]
+    set width [expr {$x + $baseWidth}]
 
+    #
+    # Create the images for the given depth and copy the base images into them
+    #
     foreach mode {indented collapsed expanded} {
 	image create photo tablelist_${treeStyle}_${mode}Img$depth \
 	    -width $width -height $baseHeight
     }
-
     foreach mode {collapsed expanded} {
 	tablelist_${treeStyle}_${mode}Img$depth copy \
 	    tablelist_${treeStyle}_${mode}Img -to $x 0

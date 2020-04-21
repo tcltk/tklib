@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -285,70 +285,39 @@ proc tablelist::extendConfigSpecs {} {
 		    set arrowDisabledColor	SystemDisabledText
 
 		} elseif {$::tcl_platform(osVersion) == 6.0} {	;# Win Vista
-		    variable scalingpct
-
 		    switch [winfo rgb . SystemHighlight] {
 			"13107 39321 65535" {			;# Vista Aero
 			    set arrowColor	#569bc0
-			    switch $scalingpct {
-				100 { set arrowStyle	photo7x4 }
-				125 { set arrowStyle	photo9x5 }
-				150 { set arrowStyle	photo11x6 }
-				200 { set arrowStyle	photo15x8 }
-			    }
+			    set arrowStyle	photo[defaultWinArrowSize]
 			    set treeStyle	vistaAero
 			}
 			default {				;# Win Classic
 			    set arrowColor	SystemButtonShadow
-			    switch $scalingpct {
-				100 { set arrowStyle	flat7x4 }
-				125 { set arrowStyle	flat9x5 }
-				150 { set arrowStyle	flat11x6 }
-				200 { set arrowStyle	flat15x8 }
-			    }
+			    set arrowStyle	flat[defaultWinArrowSize]
 			    set treeStyle	vistaClassic
 			}
 		    }
 		    set arrowDisabledColor	SystemDisabledText
 
 		} elseif {$::tcl_platform(osVersion) < 10.0} {	;# Win 7/8
-		    variable scalingpct
-
 		    switch [winfo rgb . SystemHighlight] {
 			"13107 39321 65535" {			;# Win 7/8 Aero
 			    set arrowColor	#569bc0
-			    switch $scalingpct {
-				100 { set arrowStyle	photo7x4 }
-				125 { set arrowStyle	photo9x5 }
-				150 { set arrowStyle	photo11x6 }
-				200 { set arrowStyle	photo15x8 }
-			    }
+			    set arrowStyle	photo[defaultWinArrowSize]
 			    set treeStyle	win7Aero
 			}
 			default {				;# Win Classic
 			    set arrowColor	SystemButtonShadow
-			    switch $scalingpct {
-				100 { set arrowStyle	flat7x4 }
-				125 { set arrowStyle	flat9x5 }
-				150 { set arrowStyle	flat11x6 }
-				200 { set arrowStyle	flat15x8 }
-			    }
+			    set arrowStyle	flat[defaultWinArrowSize]
 			    set treeStyle	win7Classic
 			}
 		    }
 		    set arrowDisabledColor	SystemDisabledText
 
 		} else {					;# Win 10
-		    variable scalingpct
-		    switch $scalingpct {
-			100 { set arrowStyle	flatAngle7x4 }
-			125 { set arrowStyle	flatAngle9x5 }
-			150 { set arrowStyle	flatAngle11x6 }
-			200 { set arrowStyle	flatAngle15x8 }
-		    }
-
 		    set arrowColor		#595959
 		    set arrowDisabledColor	SystemDisabledText
+		    set arrowStyle		flatAngle[defaultWinArrowSize]
 		    set treeStyle		win10
 		}
 	    }
@@ -602,8 +571,16 @@ proc tablelist::doConfig {win opt val} {
 			}
 		    }
 		}
-		-labelheight -
+		-labelfont -
 		-labelpady {
+		    #
+		    # Adjust the columns (including
+		    # the height of the header frame)
+		    #
+		    adjustColumns $win allLabels 1
+		    updateViewWhenIdle $win
+		}
+		-labelheight {
 		    #
 		    # Adjust the height of the header frame
 		    #
@@ -3188,6 +3165,10 @@ proc tablelist::doCellConfig {row col win opt val} {
 		    destroy $imgLabel
 		}
 	    } else {
+		if {[catch {image type $val} result] != 0} {
+		    return -code error $result
+		}
+
 		if {$inBody && ![info exists data($name)]} {
 		    incr data(imgCount)
 		}
@@ -4007,6 +3988,23 @@ proc tablelist::doCellCget {row col win opt} {
 		return ""
 	    }
 	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::defaultWinArrowSize
+#
+# Returns the size (of the form "<width>x<height>") of the default sort arrow
+# on Windows, corresponding to the display's scaling level.
+#------------------------------------------------------------------------------
+proc tablelist::defaultWinArrowSize {} {
+    variable scalingpct
+    switch $scalingpct {
+	100 { return "7x4" }
+	125 { return "9x5" }
+	150 { return "11x6" }
+	175 { return "13x7" }
+	200 { return "15x8" }
     }
 }
 

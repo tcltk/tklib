@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Public utility procedures
 #
-# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8
@@ -19,7 +19,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.15
+    variable version	2.16
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -36,7 +36,7 @@ namespace eval mwutil {
 			configureSubCmd attribSubCmd hasattribSubCmd \
 			unsetattribSubCmd getScrollInfo getScrollInfo2 \
 			isScrollable hasFocus genMouseWheelEvent \
-			windowingSystem currentTheme
+			windowingSystem currentTheme scalingPercentage
 
     #
     # Make modified versions of the procedures tk_focusNext and
@@ -613,7 +613,7 @@ proc mwutil::genMouseWheelEvent {w event rootX rootY delta} {
 #------------------------------------------------------------------------------
 # mwutil::windowingSystem
 #
-# Returns the current windowing system ("x11", "win32", "classic", or "aqua").
+# Returns the windowing system ("x11", "win32", "classic", or "aqua").
 #------------------------------------------------------------------------------
 proc mwutil::windowingSystem {} {
     if {[catch {tk windowingsystem} winSys] != 0} {
@@ -639,5 +639,171 @@ proc mwutil::currentTheme {} {
 	return $::tile::currentTheme
     } else {
 	return ""
+    }
+}
+
+#------------------------------------------------------------------------------
+# mwutil::scalingPercentage
+#
+# Returns the display's current scaling percentage (100, 125, 150, 175, or 200).
+#------------------------------------------------------------------------------
+proc mwutil::scalingPercentage {} {
+    set pct [expr {[tk scaling] * 75}]
+
+    if {[string compare [windowingSystem] "x11"] == 0} {
+	set factor 1
+	if {[catch {exec ps -e | grep xfce}] == 0} {			;# Xfce
+	    if {[catch {exec xfconf-query -c xsettings \
+		 -p /Gdk/WindowScalingFactor} result] == 0} {
+		set factor $result
+		set pct [expr {100 * $factor}]
+	    }
+	} elseif {[catch {exec ps -e | grep mate}] == 0} {		;# MATE
+	    if {[catch {exec gsettings get org.mate.interface \
+		 window-scaling-factor} result] == 0} {
+		if {$result == 0} {			;# means: "Auto-detect"
+		    #
+		    # Try to get the scaling factor from the cursor size
+		    #
+		    if {[catch {exec xrdb -query | grep Xcursor.size} \
+			 result] == 0 &&
+			[catch {exec gsettings get org.mate.peripherals-mouse \
+			 cursor-size} defCursorSize] == 0} {
+			scan $result "%*s %d" cursorSize
+			set factor [expr {($cursorSize + $defCursorSize - 1) /
+					  $defCursorSize}]
+			set pct [expr {100 * $factor}]
+		    }
+		} else {
+		    set factor $result
+		    set pct [expr {100 * $factor}]
+		}
+	    }
+	} elseif {[catch {exec gsettings get \
+		   org.gnome.settings-daemon.plugins.xsettings overrides} \
+		   result] == 0 &&
+		  [set idx \
+		   [string first "'Gdk/WindowScalingFactor'" $result]] >= 0} {
+	    scan [string range $result $idx end] "%*s <%d>" factor
+	    set pct [expr {100 * $factor}]
+	} elseif {[catch {exec xrdb -query | grep Xft.dpi} result] == 0} {
+	    scan $result "%*s %f" dpi
+	    set pct [expr {100 * $dpi / 96}]
+	} elseif {$::tk_version >= 8.3 &&
+		  [catch {exec ps -e | grep gnome}] == 0 &&
+		  ![info exists ::env(WAYLAND_DISPLAY)] &&
+		  [catch {exec xrandr | grep " connected"} result] == 0 &&
+		  [catch {open $::env(HOME)/.config/monitors.xml} chan] == 0} {
+	    #
+	    # Get the list of connected outputs reported by xrandr
+	    #
+	    set outputList {}
+	    foreach line [split $result "\n"] {
+		set idx [string first " " $line]
+		set output [string range $line 0 [incr idx -1]]
+		lappend outputList $output
+	    }
+	    set outputList [lsort $outputList]
+
+	    #
+	    # Get the content of the file ~/.config/monitors.xml
+	    #
+	    set str [read $chan]
+	    close $chan
+
+	    #
+	    # Run over the file's "configuration" sections
+	    #
+	    set idx 0
+	    while {[set idx2 [string first "<configuration>" $str $idx]] >= 0} {
+		set idx2 [string first ">" $str $idx2]
+		set idx [string first "</configuration>" $str $idx2]
+		set config [string range $str [incr idx2] [incr idx -1]]
+
+		#
+		# Get the list of connectors within this configuration
+		#
+		set connectorList {}
+		foreach {dummy connector} [regexp -all -inline \
+			{<connector>([^<]+)</connector>} $config] {
+		    lappend connectorList $connector
+		}
+		set connectorList [lsort $connectorList]
+
+		#
+		# If $outputList and $connectorList are identical then set the
+		# variable pct to 100 or 200, depending on the max. scaling
+		# within this configuration, and exit the loop.  (Due to the
+		# way fractional scaling is implemented in GNOME, we have to
+		# set the variable pct to 200 rather than 125, 150, or 175.)
+		#
+		if {[string compare $outputList $connectorList] == 0} {
+		    set maxScaling 0.0
+		    foreach {dummy scaling} [regexp -all -inline \
+			    {<scale>([^<]+)</scale>} $config] {
+			if {$scaling > $maxScaling} {
+			    set maxScaling $scaling
+			}
+		    }
+		    set pct [expr {$maxScaling > 1.0 ? 200 : 100}]
+		    break
+		}
+	    }
+	}
+
+	#
+	# Correct the sizes of the standard fonts by replacing the sizes
+	# in pixels contained in the file $::tk_library/ttk/fonts.tcl
+	# with sizes in points, and then multiply them with $factor
+	#
+	if {$::tk_version >= 8.5} {
+	    if {$factor > 2} {
+		set factor 2
+	    }
+
+	    set chan [open $::tk_library/ttk/fonts.tcl]
+	    set str [read $chan]
+	    close $chan
+
+	    set idx [string first "courier" $str]
+	    set str [string range $str $idx end]
+
+	    set idx [string first "F(size)" $str]
+	    scan [string range $str $idx end] "%*s %d" size
+	    if {$size < 0} { set size 9 }	;# -12 -> 9, for compatibility
+	    foreach font {TkDefaultFont TkTextFont TkHeadingFont
+			  TkIconFont TkMenuFont} {
+		font configure $font -size [expr {$factor * $size}]
+	    }
+
+	    set idx [string first "F(ttsize)" $str]
+	    scan [string range $str $idx end] "%*s %d" size
+	    if {$size < 0} { set size 8 }	;# -10 > 8, for compatibility
+	    foreach font {TkTooltipFont TkSmallCaptionFont} {
+		font configure $font -size [expr {$factor * $size}]
+	    }
+
+	    set idx [string first "F(capsize)" $str]
+	    scan [string range $str $idx end] "%*s %d" size
+	    if {$size < 0} { set size 11 }	;# -14 -> 11, for compatibility
+	    font configure TkCaptionFont -size [expr {$factor * $size}]
+
+	    set idx [string first "F(fixedsize)" $str]
+	    scan [string range $str $idx end] "%*s %d" size
+	    if {$size < 0} { set size 9 }	;# -12 -> 9, for compatibility
+	    font configure TkFixedFont -size [expr {$factor * $size}]
+	}
+    }
+
+    if {$pct < 100 + 12.5} {
+	return 100
+    } elseif {$pct < 125 + 12.5} {
+	return 125 
+    } elseif {$pct < 150 + 12.5} {
+	return 150 
+    } elseif {$pct < 175 + 12.5} {
+	return 175 
+    } else {
+	return 200
     }
 }

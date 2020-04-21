@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -6560,35 +6560,29 @@ proc tablelist::makeCheckbutton w {
     variable winSys
     switch $winSys {
 	x11 {
-	    if {$::tk_version > 8.4} {
-		$frm configure -width 11 -height 11
-		$w configure -borderwidth 0 -font "Courier -11"
-		place $w -x -4 -y -2
-	    } else {
-		variable checkedImg
-		variable uncheckedImg
-		if {![info exists checkedImg]} {
-		    createCheckbuttonImgs
-		}
-
-		$w configure -borderwidth 2 -indicatoron 0 \
-		    -image $uncheckedImg -selectimage $checkedImg
-		if {$::tk_version == 8.4} {
-		    $w configure -offrelief sunken ;# -offrelief added in Tk8.4
-		}
-		pack $w
+	    variable checkedImg
+	    variable uncheckedImg
+	    if {![info exists checkedImg]} {
+		createCheckbuttonImgs
 	    }
+
+	    $w configure -borderwidth 2 -indicatoron 0 \
+		-image $uncheckedImg -selectimage $checkedImg
+	    if {$::tk_version >= 8.4} {
+		$w configure -offrelief sunken	;# -offrelief was added in Tk8.4
+	    }
+	    pack $w
 	}
 
 	win32 {
 	    $frm configure -width 13 -height 13
 	    $w configure -borderwidth 0 -font {"MS Sans Serif" 8}
 	    switch [winfo reqheight $w] {
-		17	{ set y -1 }
-		20	{ set y -3 }
-		25	{ set y -5 }
-		30 -
-		31	{ set y -8 }
+		15	{ set y -1 }
+		18	{ set y -3 }
+		23	{ set y -5 }
+		28 -
+		29	{ set y -8 }
 		default	{ set y -1 }
 	    }
 	    place $w -x -1 -y $y
