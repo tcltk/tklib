@@ -1,5 +1,47 @@
-What is new in Tablelist 6.8?
+What is new in Tablelist 6.9?
 -----------------------------
+
+1. Significantly extended and improved the code for initializing the
+   variable "tablelist::scalingpct", especially on X11, including GNOME
+   and KDE on both Xorg and Wayland, Solus and Ubuntu Budgie, Cinnamon,
+   MATE, and Xfce.  This variable now has the additional value 175.  See
+   the new section "More on tablelist::scalingpct" in Tablelist
+   Programmer's Guide for details.
+
+2. Corresponding to the new scaling percentage 175, added the arrow
+   styles "flat13x7", "flatAngle13x7", and "photo13x7".  Removed the not
+   really useful arrow styles "flat5x3" and "flat5x4" (POTENTIAL
+   INCOMPATIBILITY!).
+
+3. Changed the tree style names "plain1", ..., "plain4" to the more
+   suggestive ones "plain100", "plain125", "plain150", and "plain200",
+   and added the tree style "plain175".  Similar changes for the tree
+   styles "bicolor*" and "classic*".  POTENTIAL INCOMPATIBILITY!
+
+4. The demo scripts "dirViewer.tcl" and "dirViewer_tile.tcl" now also
+   demonstrate how to use the variable "tablelist::scalingpct" for
+   developing scaling-aware applications.
+
+5. Adapted the look & feel of the tree style "ubuntuMate" to version
+   20.04 of the Ubuntu MATE distribution.
+
+6. Made the "refreshsorting" subcommand by orders of magnitude faster
+   (thanks to Ulrich Seidl for reporting the poor performance of this
+   subcommand).
+
+7. Fixed an issue related to the bindings for the edit window, which
+   prevented the triple-clicks from being handled by the class bindings
+   of the edit widget (thanks to Ulrich Seidl for his bug report and
+   discussions on this subject).
+
+8. Fixed a bug related to the "expand" subcommand for a list of indices
+   (again, thanks to Ulrich Seidl for his bug report).
+
+9. Several further improvements in the code and documentation, as well
+   as minor bug fixes.
+
+What was new in Tablelist 6.8?
+------------------------------
 
 1. Updated and significantly improved the support for Windows 10.
 

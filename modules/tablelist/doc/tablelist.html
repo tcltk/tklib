@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 6.8</h2>
+    <h2>For Tablelist Version 6.9</h2>
 
     <h3>by</h3>
 
@@ -40,6 +40,9 @@
 
     <li><a href="#ov_use">How to Use It?</a></li>
 
+    <li><a href="#ov_scaling">More on
+    <code>tablelist::scalingpct</code></a></li>
+
     <li><a href="#ov_tile">More on Tablelist_tile</a></li>
   </ul>
 
@@ -51,7 +54,7 @@
 
     <li><a href="#ex_browse">Two Widget Browsers Based on a tablelist</a></li>
 
-    <li><a href="#ex_dirViewer">A Directory Viewer Based on a
+    <li><a href="#ex_dirViewer">A Scalable Directory Viewer Based on a
     tablelist</a></li>
 
     <li><a href="#ex_styles">Improving the Look & Feel of a tablelist
@@ -173,8 +176,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist6.8.tar.gz</code> for UNIX and
-  <code>tablelist6_8.zip</code> for Windows.&nbsp; These files contain the same
+  The distribution file is <code>tablelist6.9.tar.gz</code> for UNIX and
+  <code>tablelist6_9.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -197,11 +200,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist6.8.tar.gz</code>:</p>
+  <code>tablelist6.9.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist6.8.tar.gz | tar -xf -
+gunzip -c tablelist6.9.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -209,17 +212,17 @@ gunzip -c tablelist6.8.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist6.8.tar.gz
+tar -zxf tablelist6.9.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist6.8</code>,
+  <p>Both commands will create a directory named <code>tablelist6.9</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist6_8.zip</code> into the directory
-  <code>tablelist6.8</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist6_9.zip</code> into the directory
+  <code>tablelist6.9</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -316,14 +319,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 6.8, then it is highly
-  recommended to specify the version number <code>6.8</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 6.9, then it is highly
+  recommended to specify the version number <code>6.9</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 6.8</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 6.9</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 6.8</code>.</p>
+  tablelist_tile 6.9</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -351,14 +354,16 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     Tablelist installation directory.</li>
 
     <li>The variable <code>tablelist::scalingpct</code> holds the scaling
-    percentage used by Tablelist when adapting the sizes of the tree styles
-    <code>vistaAero</code>, <code>vistaClassic</code>, <code>win7Aero</code>,
-    <code>win7Classic</code>, and <code>win10</code> to the display's DPI
-    scaling level.&nbsp; The currently supported values are <code>100</code>,
-    <code>125</code>, <code>150</code>, and <code>200</code>.&nbsp; You can use
-    the value of this variable, e.g., if you want to create images of different
-    sizes, depending on the DPI scaling factor.&nbsp; For example, if your
-    application uses images of size 16 x 16 on an unscaled display and
+    percentage corresponding to the display's DPI scaling level.&nbsp;
+    Tablelist adapts the default sort arrow style on Windows Vista, 7, 8, and
+    10, as well as the sizes of the tree styles <code>vistaAero</code>,
+    <code>vistaClassic</code>, <code>win7Aero</code>, <code>win7Classic</code>,
+    and <code>win10</code> to the value of this variable.&nbsp; The currently
+    supported values are <code>100</code>, <code>125</code>, <code>150</code>,
+    <code>175</code>, and <code>200</code>.&nbsp; You can use this variable on
+    all platforms, e.g., if you want to create images of different sizes,
+    depending on the DPI scaling level.&nbsp; For example, if your application
+    uses images of size 16 x 16 on an unscaled display and
     <code>tablelist::scalingpct</code> has the value <code>150</code>, then the
     image size for this display should be 24 x 24.</li>
 
@@ -374,6 +379,90 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     the theme-specific default values of a series of Tablelist configuration
     options.</li>
   </ul>
+
+  <h3 id="ov_scaling">More on <code>tablelist::scalingpct</code></h3>
+
+  <p>The way Tablelist initializes the variable
+  <code>tablelist::scalingpct</code> depends on the windowing system:</p>
+
+  <p><i>On Windows and Mac OS X Aqua</i> the scaling percentage is computed
+  from&nbsp; <code>[tk scaling]</code>.&nbsp; Note that on Mac OS X the result
+  is always <code>100</code>, regardless of the display's scaling level, hence
+  there is no need for scaling-dependent sizes for the sort arrow, tree style,
+  or images.&nbsp; On Mac OS X Aqua the desktop engine automatically scales
+  everything as needed.</p>
+
+  <p><i>On X11</i>, computing the scaling percentage from&nbsp; <code>[tk
+  scaling]</code>&nbsp; is done as fallback method only, because the
+  implementation of display scaling is highly dependent on the desktop
+  environment and it mostly manipulates system resources that are resident
+  outside of Xlib, which Tk is based on.&nbsp; (Traditional X applications like
+  <code>bitmap</code> and <code>xmag</code> are also affected by this.)&nbsp;
+  With the exception of Xfce and MATE, Tablelist computes the scaling
+  percentage from the value of the X resource <code>Xft.dpi</code>, by
+  executing the <code>xrdb</code> application.&nbsp; On GNOME-based systems
+  where <code>xrdb</code> is not installed per default (e.g., Solus GNOME and
+  Solus Budgie), it uses the <code>xrandr</code> application and the file
+  <code>~/.config/monitors.xml</code> instead.</p>
+
+  <ul>
+    <li class="tm">On <i>Xfce and MATE</i> the display scaling mode can be
+    either unscaled (1x, normal) or scaled (2x, HiDPI), and the variable
+    <code>tablelist::scalingpct</code> will be set accordingly to
+    <code>100</code> or <code>200</code>.</li>
+
+    <li class="tm">In case of <i>GNOME on Xorg, Budgie, and Cinnamon</i>, the
+    display scaling can be either 100 % or 200 %, and Tablelist sets the
+    variable <code>tablelist::scalingpct</code> accordingly to <code>100</code>
+    or <code>200</code>.&nbsp; In newer GNOME and Budgie versions on Ubuntu one
+    can enable the <code>x11-randr-fractional-scaling</code> as experimental
+    feature, which adds 125 %, 150 %, and 175 % to the list of supported
+    scaling percentages.&nbsp; Note that, due to the way this fractional
+    scaling is implemented, if the display scaling was set to one of these
+    intermediate levels, the value of <code>tablelist::scalingpct</code> will
+    be <code>200</code>.&nbsp; Support for fractional scaling was also
+    announced for the next Cinnamon version 4.6.</li>
+
+    <li class="tm"><i>GNOME on Wayland</i> traditionally supports the display
+    scaling values 100 % and 200 %, and the variable
+    <code>tablelist::scalingpct</code> will be set accordingly to
+    <code>100</code> or <code>200</code>.&nbsp; In newer GNOME versions one can
+    enable the experimental feature <code>scale-monitor-framebuffer</code>,
+    which adds 125 %, 150 %, and 175 % to the list of supported scaling
+    percentages.&nbsp; With this feature enabled, the value of
+    <code>tablelist::scalingpct</code> will be <code>100</code> for all scaling
+    levels 100 %, 125 %, ..., 200 %.&nbsp; This is due to the fact that in this
+    case, instead of window contents, monitor framebuffers will be scaled in a
+    logical pixel coordinate space.</li>
+
+    <li class="tm"><i>KDE Plasma on Xorg</i> provides fractional scaling
+    support.&nbsp; On this desktop, Tablelist will set the variable
+    <code>tablelist::scalingpct</code> to <code>100</code>, <code>125</code>,
+    <code>150</code>, <code>175</code>, or <code>200</code>, depending on the
+    display's scaling level.</li>
+
+    <li class="tm"><i>KDE Plasma on Wayland</i> supports fractional scaling,
+    too.&nbsp; In this case, the value of the variable
+    <code>tablelist::scalingpct</code> will always be <code>100</code>,
+    regardless of the display's scaling level.</li>
+  </ul>
+
+  <p>When initializing the variable <code>tablelist::scalingpct</code> on X11,
+  Tablelist also corrects the sizes of the standard fonts if needed.&nbsp;
+  These fonts (<code>TkDefaultFont</code>, <code>TkTextFont</code>, etc.) are
+  defined in the file <code>$tk_library/ttk/fonts.tcl</code>.&nbsp; For quite a
+  long time, the font sizes for X11 given in this file were sizes in pixels,
+  which was not suitable for use on HiDPI displays.&nbsp; This caused several
+  Linux distributions to bundle patched versions of this file, in which the
+  sizes in pixels are replaced with sizes in points.&nbsp; The same fix was
+  committed in February 2020 into the Tk core repository.&nbsp; To make sure
+  that, regardless of the Tk version, the font sizes will suit the display's
+  scaling level, Tablelist examines this library file and, if the latter
+  contains sizes in pixels, then it sets the <code>-size</code> option of the
+  standard fonts to corresponding sizes in points (without altering the
+  file).&nbsp; In addition, for the HiDPI mode on Xfce and MATE, Tablelist
+  doubles the sizes (in points) of the standard fonts (the way display scaling
+  works on these desktops makes this necessary).</p>
 
   <h3 id="ov_tile">More on Tablelist_tile</h3>
 
@@ -510,7 +599,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 6.8
+package require tablelist 6.9
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -566,7 +655,7 @@ demo::displayConfig .configTop.tf.tbl
 
   <blockquote>
     <pre>
-package require tablelist 6.8
+package require tablelist 6.9
 
 namespace eval demo {
     <span class="cmt">#
@@ -1047,7 +1136,7 @@ demo::displayChildren .
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.8
+package require tablelist 6.9
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1621,7 +1710,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   calls itself recursively to restore the expanded states of that row's
   children.</p>
 
-  <h3 id="ex_dirViewer">A Directory Viewer Based on a tablelist</h3>
+  <h3 id="ex_dirViewer">A Scalable Directory Viewer Based on a tablelist</h3>
 
   <p>The script <code>dirViewer.tcl</code> in the <code>demos</code> directory
   displays the contents of the volumes mounted on the system (e.g., the root
@@ -1645,7 +1734,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.8
+package require tablelist 6.9
 
 <span class="cmt">#
 # Add some entries to the Tk option database
@@ -1654,12 +1743,26 @@ set dir [file dirname [info script]]
 source [file join $dir option.tcl]
 
 <span class="cmt">#
-# Create three images
+# Create three images corresponding to the display's DPI scaling level
 #</span>
-image create photo clsdFolderImg -file [file join $dir clsdFolder.gif]
-image create photo openFolderImg -file [file join $dir openFolder.gif]
-image create photo fileImg       -file [file join $dir file.gif]
+set pct $tablelist::scalingpct
+image create photo clsdFolderImg -file [file join $dir clsdFolder$pct.gif]
+image create photo openFolderImg -file [file join $dir openFolder$pct.gif]
+image create photo fileImg       -file [file join $dir       file$pct.gif]
+</pre>
+  </blockquote>
 
+  <p>The three images representing a closed folder, an open folder, and a file,
+  respectively, are created from files whose names contain the display's DPI
+  scaling level, given by the public variable
+  <code>tablelist::scalingpct</code>.&nbsp; The files
+  <code>clsdFolder100.gif</code>, <code>openFolder100.gif</code>, and
+  <code>file100.gif</code> contain images of size 16 x 16, the files
+  <code>*125.gif</code> contain images of size 20 x 20, the files
+  <code>*150.gif</code> contain images of size 24 x 24, and so on.</p>
+
+  <blockquote>
+    <pre>
 <span class="cmt">#------------------------------------------------------------------------------
 # displayContents
 #
@@ -1690,6 +1793,24 @@ proc displayContents dir {
     $tbl columnconfigure 2 -formatcommand formatString
     scrollbar $vsb -orient vertical   -command [list $tbl yview]
     scrollbar $hsb -orient horizontal -command [list $tbl xview]
+
+    <span class="cmt">#
+    # On X11 configure the tablelist and the scrollbars
+    # according to the display's DPI scaling level
+    #</span>
+    global winSys                                       ;<span class="cmt"># see option.tcl</span>
+    if {[string compare $winSys "x11"] == 0} {
+        set pct $tablelist::scalingpct
+        set arrowSizeList {7x4 9x5 11x6 13x7 15x8}
+        set idx [expr {($pct - 100) / 25}]
+        set arrowSize [lindex $arrowSizeList $idx]
+        $tbl configure -arrowstyle flat$arrowSize -treestyle bicolor$pct
+
+        set defaultSbWidth [lindex [$vsb configure -width] 3]
+        set sbWidth [expr {$defaultSbWidth * $pct / 100}]
+        $vsb configure -width $sbWidth
+        $hsb configure -width $sbWidth
+    }
 
     . . .
 
@@ -1724,6 +1845,39 @@ option add *ScrollArea.Tablelist.highlightThickness     0
   "tablelistWidget.html#collapsecommand">-collapsecommand</a></code>
   option.&nbsp; The latter will merely restore the image shown in the first
   column to the one displaying a closed folder (see below).</p>
+
+  <p>In a scaling-aware application the values of the <code><a href=
+  "tablelistWidget.html#arrowstyle">-arrowstyle</a></code> and <code><a href=
+  "tablelistWidget.html#treestyle">-treestyle</a></code> tablelist options
+  should reflect the display's DPI scaling level.&nbsp; On Windows Vista, 7, 8,
+  and 10 the default values of these options already fulfill this requirement,
+  and on Mac OS X Aqua the desktop engine automatically scales everything as
+  needed.&nbsp; On X11 we set the <code>-arrowstyle</code> option to one of
+  <code>flat7x4</code>, ..., <code>flat15x8</code>, and the
+  <code>-treestyle</code> option to one of <code>bicolor100</code>, ...,
+  <code>bicolor200</code>, depending on the value of the public variable
+  <code>tablelist::scalingpct</code>.&nbsp; On X11 (only) we also set the
+  <code>-width</code> option of both scrollbars to a value that depends on the
+  DPI scaling percentage.</p>
+
+  <p>In the tile-based version <code>dirViewer_tile.tcl</code> of this demo
+  script we create both scrollbars using the <code>ttk::scrollbar</code>
+  command.&nbsp; Since ttk::scrollbar widgets have no <code>-width</code>
+  option, the code for scaling them makes use of the <code>ttk::style</code>
+  command:</p>
+
+  <blockquote>
+    <pre>
+        ttk::style theme settings default {
+            set defaultSbWidth [ttk::style lookup TScrollbar -width]
+        }
+        set sbWidth [expr {$defaultSbWidth * $pct / 100}]
+        ttk::style configure TScrollbar -arrowsize $sbWidth -width $sbWidth
+</pre>
+  </blockquote>
+
+  <p>Returning to the demo script <code>dirViewer.tcl</code>, let's see how it
+  populates the tablelist with the content of the given directory:</p>
 
   <blockquote>
     <pre>
@@ -2033,7 +2187,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;<span class="cmt"># because of "-compound"</span>
-package require tablelist 6.8
+package require tablelist 6.9
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2397,7 +2551,7 @@ $tbl embedcheckbuttons 1
 
   <blockquote>
     <pre>
-package require tablelist 6.8
+package require tablelist 6.9
 
 wm title . "Tk Library Scripts"
 
@@ -2655,7 +2809,7 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
   <blockquote>
     <pre>
 package require Tk 8.3                          ;<span class="cmt"># because of entry validation</span>
-package require tablelist 6.8
+package require tablelist 6.9
 </pre>
   </blockquote>
 
@@ -2663,7 +2817,7 @@ package require tablelist 6.8
 
   <blockquote>
     <pre>
-package require tablelist<span class="red">_tile</span> 6.8
+package require tablelist<span class="red">_tile</span> 6.9
 </pre>
   </blockquote>
 
