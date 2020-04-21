@@ -1,37 +1,20 @@
 #==============================================================================
 # Main Tablelist and Tablelist_tile package module.
 #
-# Copyright (c) 2000-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval ::tablelist {
     #
-    # Gets the scaling percentage (100, 125, 150, or 200).
-    #
-    proc scalingPercentage {} {
-	set factor [tk scaling]
-	if {$factor < 1.50} {
-	    return 100 
-	} elseif {$factor < 1.83} {
-	    return 125 
-	} elseif {$factor < 2.33} {
-	    return 150 
-	} else {
-	    return 200
-	}
-    }
-
-    #
     # Public variables:
     #
-    variable version	6.8
+    variable version	6.9
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file normalize [DIR]]
     } else {
 	set library	[DIR]			;# no "file normalize" yet
     }
-    variable scalingpct	[scalingPercentage]
 
     #
     # Creates a new tablelist widget:
