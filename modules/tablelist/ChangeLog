@@ -1,3 +1,53 @@
+2020-04-20 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 6.9; updated the
+	* COPYRIGHT.txt: copyright information.
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Significantly extended and improved the code for
+	  initializing the variable "tablelist::scalingpct", especially on X11;
+	  added the percentage value 175 and the corresponding arrow styles
+	  "flat13x7", "flatAngle13x7", and "photo13x7"; removed the arrow
+	  styles "flat5x3" and "flat5x4"; changed the tree style names
+	  "(bicolor|classic|plain)1", ..., "(bicolor|classic|plain)4" to
+	  "(bicolor|classic|plain)100", "(bicolor|classic|plain)125",
+	  "(bicolor|classic|plain)150", and "(bicolor|classic|plain)200"; added
+	  the tree styles "(bicolor|classic|plain)175"; updated the tree styles
+	  "adwaita", "ubuntuMate", and "win10"; made the "refreshsorting"
+	  subcommand by orders of magnitude faster; fixed an issue related to
+	  the bindings for the edit window; fixed a bug related to the "expand"
+	  subcommand for a list of indices; updated the copyright information.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/bicolor*png:  Renamed (bicolor|classic|plain)1.png, ...,
+	* doc/classic*.png: (bicolor|classic|plain)4.png to
+	* doc/plain*.png:   (bicolor|classic|plain)100.png,
+	  (bicolor|classic|plain)125.png, (bicolor|classic|plain)150.png, and
+	  (bicolor|classic|plain)200.png; updated screenshots; added
+	  (bicolor|classic|plain)175.png.
+
+	* doc/adwaita.png:           Updated screenshots.
+	* doc/arrowStyles.png:
+	* doc/arrowStyles_vista.png:
+	* doc/dirViewer.png:
+	* doc/scrollbars.png:
+	* doc/ubuntuMate.png:
+	* doc/win10.png:
+
+	* ../../examples/tablelist/*.tcl: Bumped the version number to 6.9;
+	  updated the copyright information; the scripts "dirViewer.tcl" and
+	  "dirViewer_tile.tcl" now also demonstrate how to use the variable
+	  "tablelist::scalingpct" for developing scaling-aware applications.
+
+	* ../../examples/tablelist/*.gif: Removed clsdFolder.gif,
+	  openFolder.gif, and file.gif; added (clsd|open)Folder100.gif,
+	  (clsd|open)Folder125.gif, ..., (clsd|open)Folder200.gif; added
+	  file100.gif, file125.gif, .., file200.gif.
+
 2020-02-09  0.7  <andreas_kupries@users.sourceforge.net>
 
 	*
