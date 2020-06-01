@@ -1455,7 +1455,7 @@ List of Y-coordinates for the region.
 Draw a filled strip representing a minimum and a maximum. The configuration of the series influences the polygon as follows:
 [term -fillcolour] is used to fill the polygon, [term -colour] is used for the boundary (set it to {} if
 no boundary is required and [term -width] determines the width of the boundary.
-[para]
+[nl]
 The arguments [term ymin] and [term ymax] may be empty to get an extra vertex in the strip. If both
 are empty, a new strip is started. For best results, the x-coordinate should be specified in ascending
 order.
@@ -3778,6 +3778,15 @@ Finally the [emph frame] component uses [emph color], [emph outerwidth]
 [emph innerwidth] (for the width of lines separating columns and rows).
 [list_end]
 
+[item]
+The target diagram and the Taylor diagram use the [emph limits] components
+in addition to the various general components. The limits component has
+one property: the color of the circles and circle segments.
+[nl]
+For the Taylor diagram you can specify the color of the reference circles
+via the [emph reference] component.
+[list_end]
+
 
 [list_begin definitions]
 [call [cmd ::Plotchart::eraseplot] [arg anyplot]]
@@ -3790,7 +3799,6 @@ The plot/chart command. All canvas items associated with this command and all
 internal resources will be removed, including the plot/chart command itself.
 [list_end]
 
-[list_end]
 [list_end]
 
 See the examples in plotdemos7.tcl for its use.
@@ -3890,6 +3898,10 @@ Desmond Higham and Nicholas Higham
     SIAM, 2005, Philadephia
 }]
 
+[item]
+Taylor diagrams are another graphical representation of how numerical models reproduce
+measurement data. A detailed description appears in [uri https://en.wikipedia.org/wiki/Taylor_diagram]
+
 [list_end]
 
 Most of the general methods for XY-plots work for these plots as well, but their
@@ -3962,6 +3974,47 @@ appearance is controlled via prior dataconfig subcommand.
 [list_begin arguments]
 [arg_def list series_and_data_pairs in]
 List of series names and data. All data must be given at once.
+[list_end]
+
+[call [cmd ::Plotchart::createTaylorDiagram] [arg w] [arg radius_data] [arg args]]
+
+Create a new Taylor diagram (one quadrant) with circles indicating the distance to the reference point.
+[para]
+The data points are given as the standard deviation and the correlation to the reference.
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the plot.
+
+[arg_def list radius_data in]
+A list of the maximum radius for the standard deviation and the step size. Quarter circles are
+drawn with the axis labels.
+[list_end]
+[para]
+
+Currently one option is supported:
+[list_begin options]
+[opt_def reference value]
+Reference value for the data points to be compared with. It appears as a dot at the x-axis.
+Along with this dot circle segments are drawn at the same spacing as the axis labels to indicate
+the distance of the data points from the reference.
+[list_end]
+
+[call [cmd \$taylor] plot [arg series] [arg stdev] [arg corr]]
+The plot method takes the standard deviation and the correlation to the reference as input
+and draws a symbol as a representation. The standard deviation serves as the distance from the
+origin and the correlation determines the angle.
+
+[list_begin arguments]
+[arg_def string series in]
+Name of the series (it will be plotted as a symbol that is configured via the
+[emph {$target dataconfig}] command (see the XY-plot equivalent for an explanation)
+
+[arg_def float stdev in]
+Standard deviation of the data point
+
+[arg_def list corr in]
+Correlation coefficient with the reference dataset
 [list_end]
 
 [list_end]
@@ -4437,6 +4490,11 @@ The text associated with the bars has no tags. The ribbon lines and areas have n
 [emph "Tables:"]
 [para]
 Tags used are: frame, cellbg and celltext
+
+[para]
+[emph "Special plot types (target diagrams, Taylor diagrams:"]
+[para]
+Tags used are: limits, limit_labels, reference
 
 
 [emph "In addition:"]

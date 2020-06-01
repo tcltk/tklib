@@ -77,6 +77,30 @@ proc ::Plotchart::DrawTargetData { w series xvalues yvalues } {
     DrawData $w $series $rmsd $bstar
 }
 
+# DrawTaylorData --
+#    Compute the coordinates for the symbol in a Taylor diagram and draw it
+#
+# Arguments:
+#    w           Name of the canvas
+#    series      Name of the series of symbols
+#    stdev       Standard deviation
+#    corr        Correlation
+# Result:
+#    None
+#
+# Side effects:
+#    Symbol drawn
+#
+proc ::Plotchart::DrawTaylorData { w series stdev corr } {
+
+    set angle [expr {acos($corr)}]
+    set xdata [expr {$stdev * cos($angle)}]
+    set ydata [expr {$stdev * sin($angle)}]
+
+    DataConfig $w $series -type symbol
+    DrawData $w $series $xdata $ydata
+}
+
 # DrawPerformanceData --
 #    Compute the coordinates for the performance profiles and draw the lines
 #

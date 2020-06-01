@@ -137,6 +137,7 @@ namespace eval ::Plotchart {
         timechart stripchart isometric 3dplot 3dbars
         radialchart txplot 3dribbon boxplot windrose
         targetdiagram performance table ternary distnormal
+        taylordiagram
     }
 
     # define implemented components for each chart type:
@@ -167,6 +168,7 @@ namespace eval ::Plotchart {
         table         {title subtitle margin background header oddrow evenrow cell frame leftaxis rightaxis bottomaxis}
         ternary       {title subtitle margin text legend axis leftaxis rightaxis bottomaxis background mask}
         distnormal    {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
+        taylordiagram {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask limits reference}
     } {
         set config($type,components) $components
     }
@@ -192,6 +194,7 @@ namespace eval ::Plotchart {
         background {outercolor innercolor}
         legend     {background border position}
         limits     {color}
+        reference  {color}
         bar        {barwidth innermargin outline}
         mask       {draw}
         header     {background font color height anchor}
@@ -290,6 +293,8 @@ namespace eval ::Plotchart {
     # Specific defaults
     #
     plotstyle configure "default" targetdiagram limits color "gray"
+    plotstyle configure "default" taylordiagram limits color "gray"
+    plotstyle configure "default" taylordiagram reference color "black"
     plotstyle configure "default" table margin left 30 right 30
     plotstyle configure "default" piechart  labels shownumbers 0
     plotstyle configure "default" piechart  labels format      "%s (%g)"
