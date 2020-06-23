@@ -19,7 +19,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.15
+    variable version	2.16
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -613,7 +613,7 @@ proc mwutil::genMouseWheelEvent {w event rootX rootY delta} {
 #------------------------------------------------------------------------------
 # mwutil::windowingSystem
 #
-# Returns the current windowing system ("x11", "win32", "classic", or "aqua").
+# Returns the windowing system ("x11", "win32", "classic", or "aqua").
 #------------------------------------------------------------------------------
 proc mwutil::windowingSystem {} {
     if {[catch {tk windowingsystem} winSys] != 0} {
