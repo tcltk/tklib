@@ -1,5 +1,11 @@
 2020-06-23  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* ../../examples/scrollutil/*FrmDemo1.tcl:   Worked around an accuracy
+	* ../../examples/scrollutil/*FrmContent.tcl: problem related to the
+	  scaling on Cinnamon.
+
+2020-06-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* *.tcl:         Bumped the version number to 1.6.
 	* COPYRIGHT.txt:
 	* README.txt:
