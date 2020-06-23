@@ -8,7 +8,8 @@
 #==============================================================================
 
 package require scrollutil_tile
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 
 wm title . "European Countries"
 
@@ -68,7 +69,7 @@ for {set idx 1} {$idx < $itemCount} {incr idx 2} {
     $lb2 itemconfigure $idx -background #f0f0f0
 }
 
-grid $lb1 $lb2 -sticky news -padx {0 2}
+grid $lb1 $lb2 -sticky news -padx {0 1.5p}
 grid rowconfigure    $ss 0 -weight 1
 grid columnconfigure $ss 0 -weight 1
 grid columnconfigure $ss 1 -weight 1
@@ -78,9 +79,9 @@ grid columnconfigure $ss 1 -weight 1
 #
 set b [ttk::button $f.b -text "Close" -command exit]
 
-pack $b  -side bottom -pady {0 10}
-pack $tf -side top -fill x -pady {10 0}    ;# for -padx see the proc updatePadx
-pack $sa -side top -expand yes -fill both -padx 10 -pady {2 10}
+pack $b  -side bottom -pady {0 7p}
+pack $tf -side top -fill x -pady {7p 0}    ;# for -padx see the proc updatePadx
+pack $sa -side top -expand yes -fill both -padx 7p -pady {1.5p 7p}
 pack $f  -expand yes -fill both
 
 #
@@ -89,7 +90,7 @@ pack $f  -expand yes -fill both
 #
 proc updatePadx {w vsb vsbMapped} {
     set sa [winfo parent $vsb]
-    set l [expr {10 + [$sa cget -borderwidth]}]
+    set l [expr {[winfo pixels . 7p] + [$sa cget -borderwidth]}]
     set r $l
     if {$vsbMapped} {
 	incr r [winfo width $vsb]

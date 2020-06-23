@@ -14,7 +14,8 @@ package require mentry_tile 3.2			;# for mouse wheel support
 package require tablelist_tile 6.5		;# for -(x|y)mousewheelwindow
 						;# and scrollutil::scrollarea
 package require scrollutil_tile
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 
 wm title . "Scrollutil Demo"
 
@@ -39,7 +40,7 @@ if {$ttk::currentTheme eq "aqua" &&
 # Get the content frame and populate it
 #
 set cf [$sf getframe]
-source BwScrollableFrmContent.tcl
+source [file join $dir BwScrollableFrmContent.tcl]
 
 #
 # Make the keyboard navigation more user-friendly

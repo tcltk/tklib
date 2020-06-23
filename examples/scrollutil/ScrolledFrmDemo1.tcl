@@ -11,9 +11,10 @@ if {[catch {package require iwidgets} result1] != 0 &&
     [catch {package require Iwidgets} result2] != 0} {
     error "$result1; $result2"
 }
-source scrolledwidgetPatch.itk			;# adds ttk::scrollbar widgets
+set dir [file dirname [info script]]
+source [file join $dir scrolledwidgetPatch.itk]	;# adds ttk::scrollbar widgets
 package require scrollutil_tile
-source styleUtil.tcl
+source [file join $dir styleUtil.tcl]
 
 wm title . "European Capitals Quiz"
 
@@ -70,21 +71,21 @@ foreach country $countryList capital $capitalList {
 set capitalList [lsort $capitalList]
 
 if {[lsearch -exact {aqua vista xpnative} $ttk::currentTheme] >= 0} {
-    set topPadY 2
+    set topPadY 1.5p
 } else {
-    set topPadY 5
+    set topPadY 4p
 }
 set padY [list $topPadY 0]
 
 set row 0
 foreach country $countryList {
     set w [ttk::label $cf.l$row -text $country]
-    grid $w -row $row -column 0 -sticky w -padx {5 0} -pady $padY
+    grid $w -row $row -column 0 -sticky w -padx {4p 0} -pady $padY
 
     set w [ttk::combobox $cf.cb$row -state readonly -width 14 \
 	   -values $capitalList]
     bind $w <<ComboboxSelected>> [list checkCapital %W $country]
-    grid $w -row $row -column 1 -sticky w -padx {5 0} -pady $padY
+    grid $w -row $row -column 1 -sticky w -padx {4p 0} -pady $padY
 
     #
     # Adapt the handling of the mouse wheel events for the ttk::combobox widget
@@ -93,7 +94,7 @@ foreach country $countryList {
 
     set b [createToolbutton $cf.b$row -text "Resolve" \
 	   -command [list setCapital $w $country]]
-    grid $b -row $row -column 2 -sticky w -padx 5 -pady $padY
+    grid $b -row $row -column 2 -sticky w -padx 4p -pady $padY
 
     incr row
 }
@@ -105,7 +106,8 @@ update idletasks
 set vsb [$sf component vertsb]
 set width [expr {[winfo reqwidth $cf] + [winfo reqwidth $vsb] + 2}]
 set rowHeight [expr {[winfo reqheight $cf] / $row}]
-$sf configure -width $width -height [expr {10*$rowHeight + $topPadY + 2}]
+set height [expr {10*$rowHeight + [winfo pixels . $topPadY] + 2}]
+$sf configure -width $width -height $height
 $canvas configure -yscrollincrement $rowHeight
 after 100 [list $sf configure -hscrollmode dynamic]
 
@@ -114,8 +116,8 @@ after 100 [list $sf configure -hscrollmode dynamic]
 #
 set b [ttk::button $f.b -text "Close" -command exit]
 
-pack $b  -side bottom -pady {0 10}
-pack $sf -side top -expand yes -fill both -padx 10 -pady 10
+pack $b  -side bottom -pady {0 7p}
+pack $sf -side top -expand yes -fill both -padx 7p -pady 7p
 pack $f  -expand yes -fill both
 
 #------------------------------------------------------------------------------

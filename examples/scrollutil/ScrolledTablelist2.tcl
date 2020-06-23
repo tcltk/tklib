@@ -10,7 +10,8 @@
 package require Tk 8.5
 package require tablelist_tile 6.5
 package require scrollutil_tile
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 
 wm title . "Scrolled Tablelist"
 

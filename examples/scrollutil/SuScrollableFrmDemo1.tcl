@@ -8,7 +8,8 @@
 #==============================================================================
 
 package require scrollutil_tile
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 
 wm title . "European Capitals Quiz"
 
@@ -57,21 +58,21 @@ foreach country $countryList capital $capitalList {
 set capitalList [lsort $capitalList]
 
 if {[lsearch -exact {aqua vista xpnative} $ttk::currentTheme] >= 0} {
-    set topPadY 2
+    set topPadY 1.5p
 } else {
-    set topPadY 5
+    set topPadY 4p
 }
 set padY [list $topPadY 0]
 
 set row 0
 foreach country $countryList {
     set w [ttk::label $cf.l$row -text $country]
-    grid $w -row $row -column 0 -sticky w -padx {5 0} -pady $padY
+    grid $w -row $row -column 0 -sticky w -padx {4p 0} -pady $padY
 
     set w [ttk::combobox $cf.cb$row -state readonly -width 14 \
 	   -values $capitalList]
     bind $w <<ComboboxSelected>> [list checkCapital %W $country]
-    grid $w -row $row -column 1 -sticky w -padx {5 0} -pady $padY
+    grid $w -row $row -column 1 -sticky w -padx {4p 0} -pady $padY
 
     #
     # Make the keyboard navigation more user-friendly
@@ -85,7 +86,7 @@ foreach country $countryList {
 
     set b [createToolbutton $cf.b$row -text "Resolve" \
 	   -command [list setCapital $w $country]]
-    grid $b -row $row -column 2 -sticky w -padx 5 -pady $padY
+    grid $b -row $row -column 2 -sticky w -padx 4p -pady $padY
 
     #
     # Make the keyboard navigation more user-friendly
@@ -100,16 +101,17 @@ foreach country $countryList {
 #
 update idletasks
 set rowHeight [expr {[winfo reqheight $cf] / $row}]
-$sf configure -width [winfo reqwidth $cf] \
-    -height [expr {10*$rowHeight + $topPadY}] -yscrollincrement $rowHeight
+set height [expr {10*$rowHeight + [winfo pixels . $topPadY]}]
+$sf configure -width [winfo reqwidth $cf] -height $height \
+    -yscrollincrement $rowHeight
 
 #
 # Create a ttk::button widget outside the scrollarea
 #
 set b [ttk::button $f.b -text "Close" -command exit]
 
-pack $b  -side bottom -pady {0 10}
-pack $sa -side top -expand yes -fill both -padx 10 -pady 10
+pack $b  -side bottom -pady {0 7p}
+pack $sa -side top -expand yes -fill both -padx 7p -pady 7p
 pack $f  -expand yes -fill both
 
 #------------------------------------------------------------------------------

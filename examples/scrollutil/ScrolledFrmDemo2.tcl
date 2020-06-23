@@ -12,12 +12,13 @@ if {[catch {package require iwidgets} result1] != 0 &&
     [catch {package require Iwidgets} result2] != 0} {
     error "$result1; $result2"
 }
-source scrolledwidgetPatch.itk			;# adds ttk::scrollbar widgets
+set dir [file dirname [info script]]
+source [file join $dir scrolledwidgetPatch.itk]	;# adds ttk::scrollbar widgets
 package require mentry_tile 3.2			;# for mouse wheel support
 package require tablelist_tile 6.5		;# for -(x|y)mousewheelwindow
 						;# and scrollutil::scrollarea
 package require scrollutil_tile
-source styleUtil.tcl
+source [file join $dir styleUtil.tcl]
 
 wm title . "Scrollutil Demo"
 
@@ -41,7 +42,7 @@ $canvas configure -background $bg
 #
 set cf [$sf childsite]
 $cf configure -background $bg
-source ScrolledFrmContent.tcl
+source [file join $dir ScrolledFrmContent.tcl]
 
 #
 # Additional stuff related to the mouse wheel events:

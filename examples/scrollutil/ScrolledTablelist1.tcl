@@ -9,7 +9,8 @@
 
 package require Tk 8.5
 package require tablelist_tile 6.3
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 
 wm title . "Scrolled Tablelist"
 
@@ -82,5 +83,5 @@ pack $b -side bottom -pady {0 10}
 #
 # Manage the frame
 #
-pack $frm -expand yes -fill both -padx 10 -pady 10
+pack $frm -expand yes -fill both -padx 7p -pady 7p
 pack $f   -expand yes -fill both
