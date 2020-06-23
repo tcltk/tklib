@@ -19,12 +19,44 @@
 # ========================
 #
 
-namespace eval scrollutil::sa {
+namespace eval scrollutil {
     #
-    # Get the current windowing system ("x11", "win32", "classic", or "aqua")
+    # Get the windowing system ("x11", "win32", "classic", or "aqua")
     #
     variable winSys [mwutil::windowingSystem]
 
+    #
+    # Get the display's current scaling percentage (100, 125, 150, 175, or 200)
+    #
+    variable scalingpct [scaleutil::scalingPercentage $winSys]
+
+    #
+    # Make the variable scalingpct read-only
+    #
+    trace variable scalingpct wu \
+	  [list scrollutil::restoreScalingpct $scalingpct]
+
+    #
+    # The following trace procedure is executed whenever the
+    # variable scalingpct is written or unset.  It restores the
+    # variable to its original value, given by the first argument.
+    #
+    proc restoreScalingpct {origVal varName index op} {
+	variable scalingpct $origVal
+	switch $op {
+	    w {
+		return -code error "the variable ::scrollutil::scalingpct is\
+				    read-only"
+	    }
+	    u {
+		trace variable scalingpct wu \
+		      [list scrollutil::restoreScalingpct $origVal]
+	    }
+	}
+    }
+}
+
+namespace eval scrollutil::sa {
     #
     # The array configSpecs is used to handle configuration options.  The names
     # of its elements are the configuration options for the Scrollarea class.
@@ -60,8 +92,8 @@ namespace eval scrollutil::sa {
     #
     proc extendConfigSpecs {} {
 	variable ::scrollutil::usingTile
+	variable ::scrollutil::winSys
 	variable configSpecs
-	variable winSys
 
 	if {$usingTile} {
 	    foreach opt {-background -bg -highlightbackground -highlightcolor
@@ -150,9 +182,9 @@ proc scrollutil::sa::createBindings {} {
 #------------------------------------------------------------------------------
 proc scrollutil::scrollarea args {
     variable usingTile
+    variable winSys
     variable sa::configSpecs
     variable sa::configOpts
-    variable sa::winSys
 
     if {[llength $args] == 0} {
 	mwutil::wrongNumArgs "scrollarea pathName ?options?"
