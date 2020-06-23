@@ -120,6 +120,14 @@ pack $b  -side bottom -pady {0 7p}
 pack $sf -side top -expand yes -fill both -padx 7p -pady 7p
 pack $f  -expand yes -fill both
 
+#
+# Work around an accuracy problem related to the scaling on Cinnamon
+#
+tkwait visibility $sf
+if {[lindex [$sf xview] 1] != 1.0} {
+    $sf configure -width [incr width]
+}
+
 #------------------------------------------------------------------------------
 
 proc checkCapital {w country} {

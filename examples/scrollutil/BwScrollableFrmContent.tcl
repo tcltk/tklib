@@ -247,9 +247,10 @@ foreach colId [$tv cget -columns] {
 # Set the ScrollableFrame's width, height, and yscrollincrement
 #
 update idletasks
+set width [winfo reqwidth $cf]
 set height [expr {[winfo reqheight $cf.l0] + [winfo pixels . 4p] + \
 		  [winfo reqheight $cf.sa1] + 2*[winfo pixels . 7p]}]
-$sf configure -width [winfo reqwidth $cf] -height $height \
+$sf configure -width $width -height $height \
     -yscrollincrement [expr {[winfo reqheight $lb] / 10}]
 
 pack $sa -expand yes -fill both -padx 7p -pady 7p
@@ -266,6 +267,14 @@ pack $b1 -side left -padx 7p -pady {0 7p}
 
 pack $bf -side bottom -fill x
 pack $tf -side top -expand yes -fill both
+
+#
+# Work around an accuracy problem related to the scaling on Cinnamon
+#
+tkwait visibility $sf
+if {[lindex [$sf xview] 1] != 1.0} {
+    $sf configure -width [incr width]
+}
 
 #------------------------------------------------------------------------------
 

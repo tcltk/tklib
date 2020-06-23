@@ -111,10 +111,10 @@ foreach country $countryList {
 # Set the ScrollableFrame's width, height, and yscrollincrement
 #
 update idletasks
+set width [winfo reqwidth $cf]
 set rowHeight [expr {[winfo reqheight $cf] / $row}]
 set height [expr {10*$rowHeight + [winfo pixels . $topPadY]}]
-$sf configure -width [winfo reqwidth $cf] -height $height \
-    -yscrollincrement $rowHeight
+$sf configure -width $width -height $height -yscrollincrement $rowHeight
 
 #
 # Create a ttk::button widget outside the scrollarea
@@ -124,6 +124,14 @@ set b [ttk::button $f.b -text "Close" -command exit]
 pack $b  -side bottom -pady {0 7pt}
 pack $sa -side top -expand yes -fill both -padx 7pt -pady 7pt
 pack $f  -expand yes -fill both
+
+#
+# Work around an accuracy problem related to the scaling on Cinnamon
+#
+tkwait visibility $sf
+if {[lindex [$sf xview] 1] != 1.0} {
+    $sf configure -width [incr width]
+}
 
 #------------------------------------------------------------------------------
 

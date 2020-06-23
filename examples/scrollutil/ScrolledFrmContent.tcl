@@ -270,6 +270,14 @@ pack $b1 -side left -padx 7p -pady {0 7p}
 pack $bf -side bottom -fill x
 pack $tf -side top -expand yes -fill both
 
+#
+# Work around an accuracy problem related to the scaling on Cinnamon
+#
+tkwait visibility $sf
+if {[lindex [$sf xview] 1] != 1.0} {
+    $sf configure -width [incr width]
+}
+
 #------------------------------------------------------------------------------
 
 proc cancelEdit {w args} {
