@@ -13,7 +13,7 @@
   <div align="center">
     <h1>Interactive Tablelist Cell Editing Using the Iwidgets Package</h1>
 
-    <h2>For Tablelist Version 6.9</h2>
+    <h2>For Tablelist Version 6.10</h2>
 
     <h3>by</h3>
 
@@ -89,6 +89,11 @@
     "tablelistWidget.html#cellconfigure">cellconfigure</a></b></code>
     subcommand.)</li>
   </ol>
+
+  <p><b>REMARK:</b>&nbsp; The temporary embedded Iwidgets widget used for
+  interactive cell editing will appear properly scaled, according to the
+  display's DPI scaling level, given by the variable
+  <code><b>tablelist::scalingpct</b></code>.</p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
@@ -194,7 +199,10 @@
     ("international" date format, supported by datefield and dateentry
     widgets), or <code><b>-format</b></code> (for timefield and timeentry
     widgets, with the values <code><b>civilian</b></code> and
-    <code><b>military</b></code>).</dd>
+    <code><b>military</b></code>).&nbsp; For the dateentry widget you might
+    also set the <code><b>-startday</b></code> option to
+    <code><b>monday</b></code> and the <code><b>-days</b></code> option, e.g.,
+    to <code>{Mo Tu We Th Fr Sa Su}</code>.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
@@ -347,7 +355,7 @@
     tablelist configuration option to make the combobox non-editable or define
     validations for it, as well as for populating its listbox component (by
     using the combobox widget's&nbsp; <code><b>insert list</b></code>&nbsp;
-    subcommand).</dd>
+    subcommand and <code><b>-listheight</b></code> option).</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 

@@ -14,7 +14,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.9</h2>
+    <h2>For Tablelist Version 6.10</h2>
 
     <h3>by</h3>
 
@@ -1861,14 +1861,17 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         The default value depends on the windowing system in the Tablelist
         package and on the current theme in Tablelist_tile; see the description
         of the <code><b><a href="#arrowcolor">-arrowcolor</a></b></code> option
-        for details.&nbsp; As mentioned there, the default arrow style on
-        Windows 10 is <code><b>flatAngle7x4</b></code>.&nbsp; While this is in
-        most cases true, notice that the default chosen by Tablelist can also
-        be <code><b>flatAngle9x5</b></code>, <code><b>flatAngle11x6</b></code>,
+        for details.&nbsp; As mentioned there, the default arrow style on X11
+        and in some tile themes is <code><b>flat8x4</b></code>.&nbsp; While
+        this is in most cases true, notice that the default chosen by Tablelist
+        can also be <code><b>flat9x5</b></code>, <code><b>flat11x6</b></code>,
+        <code><b>flat13x7</b></code>, or <code><b>flat15x8</b></code>,
+        depending on the display's scaling level.&nbsp; Similarly, on Windows
+        10 the default arrow style is <code><b>flatAngle7x4</b></code>,
+        <code><b>flatAngle9x5</b></code>, <code><b>flatAngle11x6</b></code>,
         <code><b>flatAngle13x7</b></code>, or
-        <code><b>flatAngle15x8</b></code>, depending on the display's scaling
-        level.&nbsp; Similarly, on Windows Vista, 7, and 8, the default chosen
-        by Tablelist will be <code><b>photo7x4</b></code>,
+        <code><b>flatAngle15x8</b></code>, and on Windows Vista, 7, and 8, the
+        default chosen by Tablelist is <code><b>photo7x4</b></code>,
         <code><b>photo9x5</b></code>, <code><b>photo11x6</b></code>,
         <code><b>photo13x7</b></code>, or <code><b>photo15x8</b></code>,
         depending on the display's scaling level.</p>

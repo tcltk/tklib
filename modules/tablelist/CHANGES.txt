@@ -1,5 +1,44 @@
-What is new in Tablelist 6.9?
------------------------------
+What is new in Tablelist 6.10?
+------------------------------
+
+1. Made the variable "tablelist::scalingpct" read-only.
+
+2. Extended the initialization of the variable "tablelist::scalingpct"
+   by scaling: (a) the default width of the Tk core scrollbars on X11;
+   (b) for the built-in themes "alt", "clam", "classic", and "default",
+   the default width of the ttk::scrollbar widget, as well as the arrows
+   of the ttk::combobox and ttk::spinbox widgets; (c) for the "alt" and
+   "clam" themes, the arrow of the ttk::menubutton widget; (d) for the
+   "clam", "classic", and "default" themes, the indicators of the
+   ttk::checkbutton and ttk::radiobutton widgets.
+
+3. Made sure that in the "vista" and "xpnative" themes the indicators of
+   the ttk::checkbutton and ttk::radiobutton widgets will be properly
+   scaled, regardless of the Tk release being used (a long-standing bug
+   in the implementation of these widgets was fixed in May 2020).
+
+4. Automatic scaling of the default arrow style on the windowing system
+   "x11" and for a few tile themes, like "alt", "clam", and "default":
+   Now the default value of the "-arrowstyle" option can be, besides
+   "flat8x4", one of "flat9x5", "flat11x6", "flat13x7", and "flat15x8",
+   depending on the value of the variable "tablelist::scalingpct".
+
+5. The temporarily embedded widgets used for interactive cell editing
+   now will appear properly scaled, thanks to additional improvements
+   related to the editing with the aid of Tk core checkbutton, BWidget
+   SpinBox, BWidget ComboBox, iwidgets::dateentry, iwidgets::timeentry,
+   iwidgets::combobox, and Oakley combobox widgets.  A tile widget used
+   for cell editing will be properly scaled in all built-in themes; the
+   only exception is ttk::checkbutton, which cannot be scaled if the
+   theme is "alt" or "winnative".
+
+6. Made all demo-scripts fully scaling-aware.
+
+7. Several further improvements in the code and documentation, as well
+   as minor bug fixes.
+
+What was new in Tablelist 6.9?
+------------------------------
 
 1. Significantly extended and improved the code for initializing the
    variable "tablelist::scalingpct", especially on X11, including GNOME
