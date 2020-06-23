@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 1.5</h2>
+    <h2>For Scrollutil Version 1.6</h2>
 
     <h3>by</h3>
 
@@ -39,6 +39,9 @@
     <li><a href="#ov_install">How to Install It?</a></li>
 
     <li><a href="#ov_use">How to Use It?</a></li>
+
+    <li><a href="#ov_scaling">More on
+    <code>scrollutil::scalingpct</code></a></li>
   </ul>
 
   <h4><a href="#examples">Examples</a></h4>
@@ -248,8 +251,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil1.5.tar.gz</code> for UNIX and
-  <code>scrollutil1_5.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil1.6.tar.gz</code> for UNIX and
+  <code>scrollutil1_6.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -273,11 +276,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil1.5.tar.gz</code>:</p>
+  <code>scrollutil1.6.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil1.5.tar.gz | tar -xf -
+gunzip -c scrollutil1.6.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -285,17 +288,17 @@ gunzip -c scrollutil1.5.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil1.5.tar.gz
+tar -zxf scrollutil1.6.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil1.5</code>,
+  <p>Both commands will create a directory named <code>scrollutil1.6</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil1_5.zip</code> into the directory
-  <code>scrollutil1.5</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil1_6.zip</code> into the directory
+  <code>scrollutil1.6</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -375,7 +378,7 @@ namespace import scrollutil::<i>pattern</i> ?scrollutil::<i>pattern ...</i>?
   "#examples">examples</a> below we have chosen the latter approach.</p>
 
   <p>To access Scrollutil <i>variables</i>, you <i>must</i> use qualified
-  names.&nbsp; There are only three Scrollutil variables that are designed to
+  names.&nbsp; There are only four Scrollutil variables that are designed to
   be accessed outside the namespace <code>scrollutil</code>:</p>
 
   <ul>
@@ -384,6 +387,20 @@ namespace import scrollutil::<i>pattern</i> ?scrollutil::<i>pattern ...</i>?
 
     <li>The variable <code>scrollutil::library</code> holds the location of the
     Scrollutil installation directory.</li>
+
+    <li>The read-only variable <code>scrollutil::scalingpct</code> holds the
+    scaling percentage corresponding to the display's DPI scaling level.&nbsp;
+    Scrollutil adapts the default width of the Tk core scrollbars on X11 and
+    that of the ttk::scrollbar widget for the built-in themes <code>alt</code>,
+    <code>clam</code>, <code>classic</code>, and <code>default</code> to the
+    value of this variable.&nbsp; The currently supported values are
+    <code>100</code>, <code>125</code>, <code>150</code>, <code>175</code>, and
+    <code>200</code>.&nbsp; You can use this variable, e.g., if you want to
+    create images of different sizes, depending on the DPI scaling level.&nbsp;
+    For example, if your application uses images of size 16 x 16 on an unscaled
+    display and <code>scrollutil::scalingpct</code> has the value
+    <code>150</code>, then the image size for this display should be 24 x
+    24.</li>
 
     <li>The read-only variable <code>scrollutil::usingTile</code> has the value
     <code>0</code> in the package Scrollutil and the value <code>1</code> in
@@ -406,6 +423,123 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
   tile is integrated into the Tk core and therefore it should only be loaded
   explicitly when using an earlier Tk version.</p>
 
+  <h3 id="ov_scaling">More on <code>scrollutil::scalingpct</code></h3>
+
+  <p>The way Scrollutil initializes the variable
+  <code>scrollutil::scalingpct</code> depends on the windowing system:</p>
+
+  <p><i>On Windows and Mac OS X Aqua</i> the scaling percentage is computed
+  from&nbsp; <code>[tk scaling]</code>.&nbsp; Note that on Mac OS X the result
+  is always <code>100</code>, regardless of the display's scaling level.&nbsp;
+  On this system the desktop engine automatically scales everything as
+  needed.</p>
+
+  <p><i>On X11</i>, computing the scaling percentage from&nbsp; <code>[tk
+  scaling]</code>&nbsp; is done as fallback method only, because the
+  implementation of display scaling is highly dependent on the desktop
+  environment and it mostly manipulates system resources that are resident
+  outside of Xlib, which Tk is based on.&nbsp; (Traditional X applications like
+  <code>bitmap</code> and <code>xmag</code> are also affected by this.)&nbsp;
+  With the exception of Xfce and MATE, Scrollutil computes the scaling
+  percentage from the value of the X resource <code>Xft.dpi</code>, by
+  executing the <code>xrdb</code> application.&nbsp; On GNOME-based systems
+  where <code>xrdb</code> is not installed per default (e.g., Solus GNOME and
+  Solus Budgie), it uses the <code>xrandr</code> application and the file
+  <code>~/.config/monitors.xml</code> instead.</p>
+
+  <ul>
+    <li class="tm">On <i>Xfce and MATE</i> the display scaling mode can be
+    either unscaled (1x, normal) or scaled (2x, HiDPI), and the variable
+    <code>scrollutil::scalingpct</code> will be set accordingly to
+    <code>100</code> or <code>200</code>.</li>
+
+    <li class="tm">In case of <i>GNOME on Xorg, Budgie, and Cinnamon versions
+    earlier than 4.6</i>, the display scaling can be either 100 % or 200 %, and
+    Scrollutil sets the variable <code>scrollutil::scalingpct</code>
+    accordingly to <code>100</code> or <code>200</code>.&nbsp; In newer GNOME
+    and Budgie versions on Ubuntu one can enable the
+    <code>x11-randr-fractional-scaling</code> as experimental feature, which
+    adds 125 %, 150 %, and 175 % to the list of supported scaling
+    percentages.&nbsp; Note that, due to the way this fractional scaling is
+    implemented, if the display scaling was set to one of these intermediate
+    levels, the value of <code>scrollutil::scalingpct</code> will be
+    <code>200</code>.&nbsp; The same is valid for the fractional scaling
+    support on Cinnamon, introduced in version 4.6.</li>
+
+    <li class="tm"><i>GNOME on Wayland</i> traditionally supports the display
+    scaling values 100 % and 200 %, and the variable
+    <code>scrollutil::scalingpct</code> will be set accordingly to
+    <code>100</code> or <code>200</code>.&nbsp; In newer GNOME versions one can
+    enable the experimental feature <code>scale-monitor-framebuffer</code>,
+    which adds 125 %, 150 %, and 175 % to the list of supported scaling
+    percentages.&nbsp; With this feature enabled, the value of
+    <code>scrollutil::scalingpct</code> will be <code>100</code> for all
+    scaling levels 100 %, 125 %, ..., 200 %.&nbsp; This is due to the fact that
+    in this case, instead of window contents, monitor framebuffers will be
+    scaled in a logical pixel coordinate space.</li>
+
+    <li class="tm"><i>KDE Plasma on Xorg</i> provides fractional scaling
+    support.&nbsp; On this desktop, Scrollutil will set the variable
+    <code>scrollutil::scalingpct</code> to <code>100</code>, <code>125</code>,
+    <code>150</code>, <code>175</code>, or <code>200</code>, depending on the
+    display's scaling level.</li>
+
+    <li class="tm"><i>KDE Plasma on Wayland</i> supports fractional scaling,
+    too.&nbsp; In this case, the value of the variable
+    <code>scrollutil::scalingpct</code> will always be <code>100</code>,
+    regardless of the display's scaling level.</li>
+  </ul>
+
+  <p>After getting the scaling percentage on X11, Scrollutil sets the scaling
+  factor to be used by Tk to convert between physical units and pixels, by
+  passing the scaling factor corresponding to the scaling percentage to
+  the&nbsp; <code>[tk scaling]</code>&nbsp; command.</p>
+
+  <p>When initializing the variable <code>scrollutil::scalingpct</code> on X11,
+  Scrollutil also corrects the sizes of the standard fonts if needed.&nbsp;
+  These fonts (<code>TkDefaultFont</code>, <code>TkTextFont</code>, etc.) are
+  defined in the file <code>$tk_library/ttk/fonts.tcl</code>.&nbsp; For quite a
+  long time, the font sizes for X11 given in this file were sizes in pixels,
+  which was not suitable for use on HiDPI displays.&nbsp; This caused several
+  Linux distributions to bundle patched versions of this file, in which the
+  sizes in pixels are replaced with sizes in points.&nbsp; The same fix was
+  committed in February 2020 into the Tk core repository.&nbsp; To make sure
+  that, regardless of the Tk version, the font sizes will suit the display's
+  scaling level, Scrollutil examines this library file and, if the latter
+  contains sizes in pixels, then it sets the <code>-size</code> option of the
+  standard fonts to corresponding sizes in points (without altering the
+  file).&nbsp; In addition, for the HiDPI mode on Xfce and MATE, Scrollutil
+  doubles the sizes (in points) of the standard fonts (the way display scaling
+  works on these desktops makes this necessary).</p>
+
+  <p>Independently of the windowing system, the code responsible for the
+  initialization of the variable <code>scrollutil::scalingpct</code> also
+  scales:</p>
+
+  <ul>
+    <li>the default width of the Tk core scrollbars on X11;</li>
+
+    <li>for the built-in themes <code>alt</code>, <code>clam</code>,
+    <code>classic</code>, and <code>default</code>, the default width of the
+    ttk::scrollbar widget, as well as the arrows of the ttk::combobox and
+    ttk::spinbox widgets;</li>
+
+    <li>for the <code>alt</code> and <code>clam</code> themes, the arrow of
+    the ttk::menubutton widget;</li>
+
+    <li>for the <code>clam</code>, <code>classic</code>, and
+    <code>default</code> themes, the indicators of the ttk::checkbutton and
+    ttk::radiobutton widgets.</li>
+  </ul>
+
+  <p>In addition, the above-mentioned variable initialization code makes sure
+  that in the <code>vista</code> and <code>xpnative</code> themes the
+  indicators of the ttk::checkbutton and ttk::radiobutton widgets will appear
+  properly scaled, regardless of the Tk release being used.&nbsp; (A
+  long-standing bug in the implementation of these widgets was fixed in May
+  2020, but Scrollutil provides a workaround for the Tk versions that are still
+  affected by this bug.)</p>
+
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
@@ -418,11 +552,12 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
   <h3 id="ex_styleUtil">The Helper Script <code>styleUtil.tcl</code></h3>
 
   <p>All the examples in the <code>demos</code> directory use tile (ttk)
-  widgets and contain the line</p>
+  widgets and contain the lines</p>
 
   <blockquote>
     <pre>
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 </pre>
   </blockquote>
 
@@ -457,8 +592,8 @@ source styleUtil.tcl
   column area:</p>
 
   <blockquote>
-    <img src="ScrolledTablelist.png" alt="ScrolledTablelist" width="480"
-    height="337">
+    <img src="ScrolledTablelist.png" alt="ScrolledTablelist" width="478"
+    height="335">
   </blockquote>
 
   <p>The script achieves these requirements using traditional scrollbar
@@ -468,7 +603,8 @@ source styleUtil.tcl
     <pre>
 package require Tk 8.5
 package require tablelist_tile 6.3
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 
 wm title . "Scrolled Tablelist"
 
@@ -507,7 +643,7 @@ grid columnconfigure $frm 1 -weight 1</span>
 <span class="cmt">#
 # Manage the frame
 #</span>
-pack $frm -expand yes -fill both -padx 10 -pady 10
+pack $frm -expand yes -fill both -padx 7p -pady 7p
 pack $f   -expand yes -fill both
 </pre>
   </blockquote>
@@ -529,7 +665,8 @@ pack $f   -expand yes -fill both
 package require Tk 8.5
 package require tablelist_tile 6.5
 <span class="red">package require scrollutil_tile</span>
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 
 wm title . "Scrolled Tablelist"
 
@@ -548,7 +685,7 @@ tablelist::tablelist $tbl ...
 <span class="cmt">#
 # Manage the scrollarea
 #</span>
-pack $sa -expand yes -fill both -padx 10 -pady 10
+pack $sa -expand yes -fill both -padx 7p -pady 7p
 pack $f  -expand yes -fill both
 </pre>
   </blockquote>
@@ -560,7 +697,7 @@ pack $f  -expand yes -fill both
   potential shimmering effect in connection with text widgets.</p>
 
   <blockquote>
-    <img src="ScrolledText.png" alt="ScrolledText" width="401" height="338">
+    <img src="ScrolledText.png" alt="ScrolledText" width="399" height="335">
   </blockquote>
 
   <p>Here is the relevant code, in which the lines related to the scrollarea
@@ -569,7 +706,8 @@ pack $f  -expand yes -fill both
   <blockquote>
     <pre>
 <span class="red">package require scrollutil_tile</span>
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 
 wm title . "Scrolled Text"
 
@@ -579,7 +717,7 @@ wm title . "Scrolled Text"
 set f  [ttk::frame .f]
 <span class="red">set sa [scrollutil::scrollarea $f.sa -lockinterval 10]</span>
 set txt [text $sa.txt -font TkFixedFont -width 49 -height 12 \
-         -spacing1 2 -spacing3 2 -wrap none]
+         -spacing1 1.5p -spacing3 1.5p -wrap none]
 <span class="red">$sa setwidget $txt</span>
 
 <span class="cmt">#
@@ -598,7 +736,7 @@ $txt tag add bgRed 25.0 25.end
 <span class="cmt">#
 # Manage the scrollarea
 #</span>
-pack $sa -expand yes -fill both -padx 10 -pady 10
+pack $sa -expand yes -fill both -padx 7p -pady 7p
 pack $f  -expand yes -fill both
 
 <span class="cmt">#
@@ -648,7 +786,7 @@ after 100 [list $txt yview 14.0]
   <a href="scrollarea.html">scrollarea</a>.</p>
 
   <blockquote>
-    <img src="SyncListboxes.png" alt="SyncListboxes" width="320" height="305">
+    <img src="SyncListboxes.png" alt="SyncListboxes" width="318" height="302">
   </blockquote>
 
   <p>Here is the relevant code, in which the lines related to the scrollarea
@@ -657,7 +795,8 @@ after 100 [list $txt yview 14.0]
   <blockquote>
     <pre>
 <span class="red">package require scrollutil_tile</span>
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 
 wm title . "European Countries"
 
@@ -686,14 +825,14 @@ set lb2 [listbox $ss.lb2 -activestyle none -highlightthickness 0 -width 16]
 
 . . .
 
-grid $lb1 $lb2 -sticky news -padx {0 2}
+grid $lb1 $lb2 -sticky news -padx {0 1.5p}
 grid rowconfigure    $ss 0 -weight 1
 grid columnconfigure $ss 0 -weight 1
 grid columnconfigure $ss 1 -weight 1
 
 . . .
 
-pack $sa -side top -expand yes -fill both -padx 10 -pady {2 10}
+pack $sa -side top -expand yes -fill both -padx 7p -pady {1.5p 7p}
 pack $f  -expand yes -fill both
 
 . . .
@@ -708,8 +847,8 @@ pack $f  -expand yes -fill both
   <a href="scrollarea.html">scrollarea</a>.</p>
 
   <blockquote>
-    <img src="SyncTablelists.png" alt="SyncTablelists" width="548" height=
-    "326">
+    <img src="SyncTablelists.png" alt="SyncTablelists" width="546" height=
+    "323">
   </blockquote>
 
   <p>The relevant code is similar to the one shown in the <a href=
@@ -719,7 +858,8 @@ pack $f  -expand yes -fill both
     <pre>
 package require tablelist_tile
 <span class="red">package require scrollutil_tile</span>
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 
 wm title . "Synchronized Tablelists"
 
@@ -753,7 +893,7 @@ for {set n 1; set colWidth 40} {$n <= 3} {incr n; incr colWidth 20} {
 }
 <span class="red">$ss setwidgets [list $tbl1 $tbl2 $tbl3]</span>
 
-grid $tbl1 $tbl2 $tbl3 -sticky news -padx {0 2}
+grid $tbl1 $tbl2 $tbl3 -sticky news -padx {0 1.5p}
 grid rowconfigure    $ss 0 -weight 1
 grid columnconfigure $ss 0 -weight 1
 grid columnconfigure $ss 1 -weight 1
@@ -761,7 +901,7 @@ grid columnconfigure $ss 2 -weight 1
 
 . . .
 
-pack $sa -side top -expand yes -fill both -padx 10 -pady {2 10}
+pack $sa -side top -expand yes -fill both -padx 7p -pady {1.5p 7p}
 pack $f  -expand yes -fill both
 
 . . .
@@ -795,8 +935,8 @@ pack $f  -expand yes -fill both
   patient users, displaying the text "Resolve".</p>
 
   <blockquote>
-    <img src="ScrollableFrmDemo1.png" alt="ScrollableFrmDemo1" width="407"
-    height="373">
+    <img src="ScrollableFrmDemo1.png" alt="ScrollableFrmDemo1" width="403"
+    height="370">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -804,7 +944,8 @@ pack $f  -expand yes -fill both
   <blockquote>
     <pre>
 <span class="red">package require scrollutil_tile</span>
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 
 wm title . "European Capitals Quiz"
 
@@ -913,7 +1054,8 @@ foreach country $countryList {
 package require BWidget
 Widget::theme yes
 <span class="red">package require scrollutil_tile</span>
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 
 wm title . "European Capitals Quiz"
 
@@ -1005,9 +1147,11 @@ if {[catch {package require iwidgets} result1] != 0 &&
     [catch {package require Iwidgets} result2] != 0} {
     error "$result1; $result2"
 }
-source scrolledwidgetPatch.itk                  ;<span class="cmt"># adds ttk::scrollbar widgets</span>
+set dir [file dirname [info script]]
+source [file join $dir scrolledwidgetPatch.itk] ;<span class=
+"cmt"># adds ttk::scrollbar widgets</span>
 <span class="red">package require scrollutil_tile</span>
-source styleUtil.tcl
+source [file join $dir styleUtil.tcl]
 
 wm title . "European Capitals Quiz"
 
@@ -1082,8 +1226,8 @@ set cf [$sf childsite]
   these widgets have bult-in mouse wheel event bindings.</p>
 
   <blockquote>
-    <img src="ScrollableFrmDemo2.png" alt="ScrollableFrmDemo2" width="605"
-    height="516">
+    <img src="ScrollableFrmDemo2.png" alt="ScrollableFrmDemo2" width="601"
+    height="511">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -1099,7 +1243,8 @@ package require tablelist_tile 6.5              ;<span class=
                                                 ;<span class=
  "cmt"># and scrollutil::scrollarea</span>
 <span class="red">package require scrollutil_tile</span>
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 
 wm title . "Scrollutil Demo"
 
@@ -1115,7 +1260,7 @@ $sa setwidget $sf</span>
 # Get the content frame and populate it
 #</span>
 <span class="red">set cf [$sf contentframe]</span>
-source SuScrollableFrmContent.tcl
+source [file join $dir SuScrollableFrmContent.tcl]
 
 <span class="cmt">#
 # Make the keyboard navigation more user-friendly
@@ -1268,8 +1413,8 @@ grid $_sa ...
   scrollableframe changes as a result of resizing the toplevel window.</p>
 
   <blockquote>
-    <img src="TablelistConfig.png" alt="TablelistConfig" width="382"
-    height="403">
+    <img src="TablelistConfig.png" alt="TablelistConfig" width="380"
+    height="400">
   </blockquote>
 
   <h3 id="ex_BwScrollableFrameDemo2">A Script Using Two BWidget ScrollableFrame
@@ -1298,7 +1443,8 @@ package require tablelist_tile 6.5              ;<span class=
                                                 ;<span class=
  "cmt"># and scrollutil::scrollarea</span>
 <span class="red">package require scrollutil_tile</span>
-source styleUtil.tcl
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
 
 wm title . "Scrollutil Demo"
 
@@ -1316,7 +1462,7 @@ set sf [ScrollableFrame $sa.sf]
 # Get the content frame and populate it
 #</span>
 set cf [$sf getframe]
-source BwScrollableFrmContent.tcl
+source [file join $dir BwScrollableFrmContent.tcl]
 
 <span class="cmt">#
 # Make the keyboard navigation more user-friendly
@@ -1380,7 +1526,8 @@ if {[catch {package require iwidgets} result1] != 0 &&
     [catch {package require Iwidgets} result2] != 0} {
     error "$result1; $result2"
 }
-source scrolledwidgetPatch.itk                  ;<span class=
+set dir [file dirname [info script]]
+source [file join $dir scrolledwidgetPatch.itk] ;<span class=
 "cmt"># adds ttk::scrollbar widgets</span>
 package require mentry_tile 3.2                 ;<span class=
 "cmt"># for mouse wheel support</span>
@@ -1389,7 +1536,7 @@ package require tablelist_tile 6.5              ;<span class=
                                                 ;<span class=
 "cmt"># and scrollutil::scrollarea</span>
 <span class="red">package require scrollutil_tile</span>
-source styleUtil.tcl
+source [file join $dir styleUtil.tcl]
 
 wm title . "Scrollutil Demo"
 
@@ -1408,7 +1555,7 @@ set sf [iwidgets::scrolledframe $tf.sf -borderwidth 1 -relief sunken \
 #</span>
 set cf [$sf childsite]
 . . .
-source ScrolledFrmContent.tcl
+source [file join $dir ScrolledFrmContent.tcl]
 </pre>
   </blockquote>
 

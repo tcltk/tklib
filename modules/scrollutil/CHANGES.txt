@@ -1,5 +1,38 @@
-What is new in Scrollutil 1.5?
+What is new in Scrollutil 1.6?
 ------------------------------
+
+1. Included the implementation of TIP 563, meaning that the mouse wheel
+   now will scroll a horizontal or vertical Tk core or tile scrollbar
+   widget regardless of whether the "Shift" key is down or not (thanks
+   to Harald Oehlmann for his proposal and TIP implementation).
+
+2. Added the read-only public variable "scrollutil::scalingpct", which
+   is set at application start time to 100, 125, 150, 175, or 200,
+   correspondig to the display's DPI scaling level.  See the new section
+   "More on scrollutil::scalingpct" in Scrollutil Programmer's Guide for
+   details.
+
+3. The procedure responsible for the initialization of the variable
+   "scrollutil::scalingpct" also scales: (a) the default width of the Tk
+   core scrollbars on X11; (b) for the built-in themes "alt", "clam",
+   "classic", and "default", the default width of the ttk::scrollbar
+   widget, as well as the arrows of the ttk::combobox and ttk::spinbox
+   widgets; (c) for the "alt" and "clam" themes, the arrow of the
+   ttk::menubutton widget; (d) for the "clam", "classic", and "default"
+   themes, the indicators of the ttk::checkbutton and ttk::radiobutton
+   widgets.
+
+4. Made sure that in the "vista" and "xpnative" themes the indicators of
+   the ttk::checkbutton and ttk::radiobutton widgets will be properly
+   scaled, regardless of the Tk release being used (a long-standing bug
+   in the implementation of these widgets was fixed in May 2020).
+
+5. Made the demo-scripts fully scaling-aware.
+
+6. Several further improvements in the demo scripts and documentation.
+
+What was new in Scrollutil 1.5?
+-------------------------------
 
 1. On Windows and X11, Scrollutil now automatically creates mouse wheel
    event class bindings for the Tk core scrollbar widget, which are
