@@ -1,3 +1,54 @@
+2020-06-23 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 6.10.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Made the variable "tablelist::scalingpct" read-only;
+	   automatic scaling of the default arrow style on the windowing system
+	   "x11" and for a few tile themes; made sure that the widgets used for
+	   interactive cell editing will appear properly scaled.
+
+	* scripts/scaleutil.tcl: New file containing scaling-related stuff:
+	  getting the display's DPI scaling percentage; scaling the default
+	  width of the Tk core scrollbars on X11, the default width of the
+	  ttk::scrollbar widget in a few built-in themes, the arrows of the
+	  ttk::combobox, ttk::spinbox, and ttk::menubutton widgets, and the
+	  indicators of the ttk::checkbutton and ttk::radiobutton widgets;
+	  a workaround for a long-standing scaling-related bug in the
+	  implementation of the ttk::checkbutton and ttk::radiobutton widgets
+	  in the "vista" and "xpnative" themes; procedures for scaling several
+	  widgets used for interactive cell editing.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/stylesheet.css: Updated.
+
+	* doc/browse.png:		Updated screenshots.
+	* doc/browseTree.png:
+	* doc/bwidget.png:
+	* doc/config.png:
+	* doc/dirViewer.png:
+	* doc/embeddedWindows.png:
+	* doc/embeddedWindows_tile.png:
+	* doc/plain200.png:
+	* doc/styles.png:
+	* doc/tileWidgets.png:
+
+	* ../../examples/tablelist/*.tcl: Bumped the version number to 6.10;
+	  made all demo-scripts fully scaling-aware.
+
+	* ../../examples/tablelist/*.gif: Removed checked.gif, unchecked.gif,
+	  and open.gif; added (checked|unchecked|openAction)100.gif,
+	  (checked|unchecked|openAction)125.gif, ...,
+	  (checked|unchecked|openAction)200.gif.
+
+	* ../../examples/tablelist/*.xbm: Removed comp.xbm and leaf.xbm; added
+	  (comp|leaf)100.xbm, (comp|leaf)125.xbm, ..., (comp|leaf)200.xbm.
+
 2020-04-20 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 6.9; updated the
