@@ -25,7 +25,32 @@ namespace eval tablelist {
     #
     # Get the display's current scaling percentage (100, 125, 150, 175, or 200)
     #
-    variable scalingpct [mwutil::scalingPercentage]
+    variable scalingpct [scaleutil::scalingPercentage $winSys]
+
+    #
+    # Make the variable scalingpct read-only
+    #
+    trace variable scalingpct wu \
+	  [list tablelist::restoreScalingpct $scalingpct]
+
+    #
+    # The following trace procedure is executed whenever the
+    # variable scalingpct is written or unset.  It restores the
+    # variable to its original value, given by the first argument.
+    #
+    proc restoreScalingpct {origVal varName index op} {
+	variable scalingpct $origVal
+	switch $op {
+	    w {
+		return -code error "the variable ::tablelist::scalingpct is\
+				    read-only"
+	    }
+	    u {
+		trace variable scalingpct wu \
+		      [list tablelist::restoreScalingpct $origVal]
+	    }
+	}
+    }
 
     #
     # Create aliases for a few tile commands if not yet present

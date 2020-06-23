@@ -93,7 +93,7 @@ proc tablelist::altTheme {} {
 	-labelborderwidth	2 \
 	-labelpady		1 \
 	-arrowcolor		black \
-	-arrowstyle		flat8x4 \
+	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		winnative \
     ]
 }
@@ -414,7 +414,7 @@ proc tablelist::clamTheme {} {
 	-labelborderwidth	2 \
 	-labelpady		3 \
 	-arrowcolor		black \
-	-arrowstyle		flat8x4 \
+	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		gtk \
     ]
 }
@@ -516,7 +516,7 @@ proc tablelist::defaultTheme {} {
 	-labelborderwidth	1 \
 	-labelpady		1 \
 	-arrowcolor		black \
-	-arrowstyle		flat8x4 \
+	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		gtk \
     ]
 }
@@ -612,7 +612,7 @@ proc tablelist::krocTheme {} {
 	-labelborderwidth	2 \
 	-labelpady		1 \
 	-arrowcolor		black \
-	-arrowstyle		flat8x4 \
+	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		gtk \
     ]
 }
@@ -676,7 +676,7 @@ proc tablelist::srivTheme {} {
 	-labelborderwidth	2 \
 	-labelpady		1 \
 	-arrowcolor		black \
-	-arrowstyle		flat8x4 \
+	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		gtk \
     ]
 }
@@ -708,7 +708,7 @@ proc tablelist::srivlgTheme {} {
 	-labelborderwidth	2 \
 	-labelpady		1 \
 	-arrowcolor		black \
-	-arrowstyle		flat8x4 \
+	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		gtk \
     ]
 }
@@ -740,7 +740,7 @@ proc tablelist::stepTheme {} {
 	-labelborderwidth	2 \
 	-labelpady		1 \
 	-arrowcolor		black \
-	-arrowstyle		flat8x4 \
+	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		gtk \
     ]
 }

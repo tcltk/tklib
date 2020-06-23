@@ -296,7 +296,7 @@ proc tablelist::addBWidgetSpinBox {{name SpinBox}} {
 
     variable editWin
     array set editWin [list \
-	$name-creationCmd	"SpinBox %W -editable 1 -width 0" \
+	$name-creationCmd	"createBWidgetSpinBox %W" \
 	$name-putValueCmd	"%W configure -text %T" \
 	$name-getValueCmd	"%W cget -text" \
 	$name-putTextCmd	"%W configure -text %T" \
@@ -447,6 +447,14 @@ proc tablelist::addIncrDateTimeWidget {widgetType args} {
 	$name-isEntryLike	1 \
 	$name-reservedKeys	{Left Right Up Down} \
     ]
+    switch $widgetType {
+	dateentry {
+	    set editWin($name-creationCmd) "createIncrDateentry %W"
+	}
+	timeentry {
+	    set editWin($name-creationCmd) "createIncrTimeentry %W"
+	}
+    }
     if {$useClicks} {
 	lappend editWin($name-getValueCmd) -clicks
 	set editWin($name-useFormat) 0
@@ -1312,6 +1320,12 @@ proc tablelist::createTileCombobox {w args} {
     foreach {opt val} $args {
 	$w configure $opt $val
     }
+
+    foreach event {<Map> <Unmap>} {
+	bind [ttk::combobox::PopdownWindow $w] $event {
+	    tablelist::invokeMotionHandler [tablelist::getTablelistPath %W]
+	}
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -1371,6 +1385,11 @@ proc tablelist::createTileMenubutton {w args} {
 
     set menu $w.menu
     menu $menu -tearoff 0 -postcommand [list tablelist::postMenuCmd $w]
+    foreach event {<Map> <Unmap>} {
+	bind $menu $event {
+	    tablelist::invokeMotionHandler [tablelist::getTablelistPath %W]
+	}
+    }
     if {[string compare $winSys "x11"] == 0} {
 	$menu configure -background $data(-background) \
 			-foreground $data(-foreground) \
@@ -1383,6 +1402,19 @@ proc tablelist::createTileMenubutton {w args} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::createBWidgetSpinBox
+#
+# Creates a BWidget SpinBox widget of the given path name for interactive cell
+# editing in a tablelist widget.
+#------------------------------------------------------------------------------
+proc tablelist::createBWidgetSpinBox {w args} {
+    eval [list SpinBox $w -editable 1 -width 0] $args
+
+    variable scalingpct
+    scaleutil::scaleBWidgetSpinBox $w $scalingpct
+}
+
+#------------------------------------------------------------------------------
 # tablelist::createBWidgetComboBox
 #
 # Creates a BWidget ComboBox widget of the given path name for interactive cell
@@ -1390,13 +1422,41 @@ proc tablelist::createTileMenubutton {w args} {
 #------------------------------------------------------------------------------
 proc tablelist::createBWidgetComboBox {w args} {
     eval [list ComboBox $w -editable 1 -width 0] $args
-    ComboBox::_create_popup $w
+
+    variable scalingpct
+    scaleutil::scaleBWidgetComboBox $w $scalingpct
 
     foreach event {<Map> <Unmap>} {
 	bind $w.shell.listb $event {
 	    tablelist::invokeMotionHandler [tablelist::getTablelistPath %W]
 	}
     }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::createIncrDateentry
+#
+# Creates an [incr Widgets] dateentry of the given path name for interactive
+# cell editing in a tablelist widget.
+#------------------------------------------------------------------------------
+proc tablelist::createIncrDateentry {w args} {
+    eval [list iwidgets::dateentry $w] $args
+
+    variable scalingpct
+    scaleutil::scaleIncrDateentry $w $scalingpct
+}
+
+#------------------------------------------------------------------------------
+# tablelist::createIncrTimeentry
+#
+# Creates an [incr Widgets] timeentry of the given path name for interactive
+# cell editing in a tablelist widget.
+#------------------------------------------------------------------------------
+proc tablelist::createIncrTimeentry {w args} {
+    eval [list iwidgets::timeentry $w] $args
+
+    variable scalingpct
+    scaleutil::scaleIncrTimeentry $w $scalingpct
 }
 
 #------------------------------------------------------------------------------
@@ -1408,6 +1468,9 @@ proc tablelist::createBWidgetComboBox {w args} {
 proc tablelist::createIncrCombobox {w args} {
     eval [list iwidgets::combobox $w -dropdown 1 -editable 1 -grab global \
 	  -width 0] $args
+
+    variable scalingpct
+    scaleutil::scaleIncrCombobox $w $scalingpct
 
     foreach event {<Map> <Unmap>} {
 	bind [$w component list] $event {+
@@ -1429,7 +1492,11 @@ proc tablelist::createIncrCombobox {w args} {
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createOakleyCombobox {w args} {
-    eval [list combobox::combobox $w -editable 1 -width 0] $args
+    eval [list combobox::combobox $w -editable 1 -elementborderwidth 1 \
+	  -width 0] $args
+
+    variable scalingpct
+    scaleutil::scaleOakleyComboboxArrow $scalingpct
 
     foreach event {<Map> <Unmap>} {
 	bind $w.top.list $event {
@@ -2263,6 +2330,7 @@ proc tablelist::saveEditData win {
 proc tablelist::saveEditConfigOpts w {
     regexp {^(.+)\.body\.f\.(e.*)$} $w dummy win tail
     upvar ::tablelist::ns${win}::data data
+    set isMentry [expr {[string compare [winfo class $w] "Mentry"] == 0}]
 
     foreach configSet [$w configure] {
 	if {[llength $configSet] != 2} {
@@ -2270,7 +2338,10 @@ proc tablelist::saveEditConfigOpts w {
 	    set current [lindex $configSet 4]
 	    if {[string compare $default $current] != 0} {
 		set opt [lindex $configSet 0]
-		set data($tail$opt) $current
+		if {[string compare $opt "-class"] != 0 &&
+		    !(!$isMentry && [string compare $opt "-body"] == 0)} {
+		    set data($tail$opt) $current
+		}
 	    }
 	}
     }
@@ -2395,13 +2466,10 @@ proc tablelist::restoreEditData win {
 proc tablelist::restoreEditConfigOpts w {
     regexp {^(.+)\.body\.f\.(e.*)$} $w dummy win tail
     upvar ::tablelist::ns${win}::data data
-    set isMentry [expr {[string compare [winfo class $w] "Mentry"] == 0}]
 
     foreach name [array names data $tail-*] {
 	set opt [string range $name [string last "-" $name] end]
-	if {!$isMentry || [string compare $opt "-body"] != 0} {
-	    $w configure $opt $data($name)
-	}
+	$w configure $opt $data($name)
 	unset data($name)
     }
 
@@ -2724,8 +2792,8 @@ proc tablelist::defineTablelistEdit {} {
 			    -rootx %%X -rooty %%Y
 			break
 		    }
-		} elseif {![tablelist::isComboTopMapped %%W &&
-			  ![tablelist::isMenuPosted %%W]]} {
+		} elseif {![tablelist::isComboTopMapped %%W] &&
+			  ![tablelist::isMenuPosted %%W]} {
 		    set tablelist::W [tablelist::getTablelistPath %%W]
 		    event generate [$tablelist::W bodypath] <Shift-Button-%s> \
 			-rootx %%X -rooty %%Y
@@ -2746,8 +2814,8 @@ proc tablelist::defineTablelistEdit {} {
 				-rootx %%X -rooty %%Y
 			    break
 			}
-		    } elseif {![tablelist::isComboTopMapped %%W &&
-			      ![tablelist::isMenuPosted %%W]]} {
+		    } elseif {![tablelist::isComboTopMapped %%W] &&
+			      ![tablelist::isMenuPosted %%W]} {
 			set tablelist::W [tablelist::getTablelistPath %%W]
 			event generate [$tablelist::W bodypath] <Button-%s> \
 			    -rootx %%X -rooty %%Y

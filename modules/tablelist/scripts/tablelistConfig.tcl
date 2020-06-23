@@ -248,7 +248,7 @@ proc tablelist::extendConfigSpecs {} {
 	    x11 {
 		set arrowColor		black
 		set arrowDisabledColor	#a3a3a3
-		set arrowStyle		flat8x4
+		set arrowStyle		[defaultX11ArrowStyle]
 		set treeStyle		gtk
 	    }
 
@@ -3992,6 +3992,18 @@ proc tablelist::doCellCget {row col win opt} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::defaultX11ArrowStyle
+#
+# Returns the default sort arrow style on X11, corresponding to the display's
+# scaling level.
+#------------------------------------------------------------------------------
+proc tablelist::defaultX11ArrowStyle {} {
+    variable scalingpct
+    array set arr {100 8x4  125 9x5  150 11x6  175 13x7  200 15x8}
+    return flat$arr($scalingpct)
+}
+
+#------------------------------------------------------------------------------
 # tablelist::defaultWinArrowSize
 #
 # Returns the size (of the form "<width>x<height>") of the default sort arrow
@@ -3999,13 +4011,8 @@ proc tablelist::doCellCget {row col win opt} {
 #------------------------------------------------------------------------------
 proc tablelist::defaultWinArrowSize {} {
     variable scalingpct
-    switch $scalingpct {
-	100 { return "7x4" }
-	125 { return "9x5" }
-	150 { return "11x6" }
-	175 { return "13x7" }
-	200 { return "15x8" }
-    }
+    array set arr {100 7x4  125 9x5  150 11x6  175 13x7  200 15x8}
+    return $arr($scalingpct)
 }
 
 #------------------------------------------------------------------------------

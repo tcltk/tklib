@@ -6569,23 +6569,31 @@ proc tablelist::makeCheckbutton w {
 	    $w configure -borderwidth 2 -indicatoron 0 \
 		-image $uncheckedImg -selectimage $checkedImg
 	    if {$::tk_version >= 8.4} {
-		$w configure -offrelief sunken	;# -offrelief was added in Tk8.4
+		$w configure -offrelief sunken	;# -offrelief added in Tk8.4
 	    }
 	    pack $w
 	}
 
 	win32 {
-	    $frm configure -width 13 -height 13
-	    $w configure -borderwidth 0 -font {"MS Sans Serif" 8}
-	    switch [winfo reqheight $w] {
-		15	{ set y -1 }
-		18	{ set y -3 }
-		23	{ set y -5 }
-		28 -
-		29	{ set y -8 }
-		default	{ set y -1 }
+	    variable scalingpct
+	    if {$scalingpct == 100} {
+		$frm configure -width 13 -height 13
+		$w configure -borderwidth 0 -font {"MS Sans Serif" 8}
+		place $w -x -1 -y -1
+	    } else {
+		variable checkedImg
+		variable uncheckedImg
+		if {![info exists checkedImg]} {
+		    createCheckbuttonImgs
+		}
+
+		$w configure -borderwidth 2 -indicatoron 0 \
+		    -image $uncheckedImg -selectimage $checkedImg
+		if {$::tk_version >= 8.4} {
+		    $w configure -offrelief sunken ;# -offrelief added in Tk8.4
+		}
+		pack $w
 	    }
-	    place $w -x -1 -y $y
 	}
 
 	classic {
@@ -6677,11 +6685,33 @@ proc tablelist::makeTileCheckbutton w {
     # the error message in case the layout already exists
     #
     set currentTheme [mwutil::currentTheme]
-    if {[string compare $currentTheme "aqua"] == 0} {
-	catch {style layout Tablelist.TCheckbutton { Checkbutton.button }}
-    } else {
-	catch {style layout Tablelist.TCheckbutton { Checkbutton.indicator }}
-	styleConfig Tablelist.TCheckbutton -indicatormargin 0
+    switch -- $currentTheme {
+	aqua {
+	    catch {style layout Tablelist.TCheckbutton { Checkbutton.button }}
+	}
+
+	vista -
+	xpnative {
+	    if {[llength [style lookup TCheckbutton -padding]] == 1} {
+		catch {
+		    style layout Tablelist.TCheckbutton \
+			  { Checkbutton.indicator }
+		}
+	    } else {
+		catch {
+		    style layout Tablelist.TCheckbutton \
+			  { Checkbutton.vsapi_indicator }
+		}
+	    }
+	}
+
+	default {
+	    catch {
+		style layout Tablelist.TCheckbutton \
+		      { Checkbutton.indicator }
+	    }
+	    styleConfig Tablelist.TCheckbutton -indicatormargin 0
+	}
     }
 
     ttk::checkbutton $w -style Tablelist.TCheckbutton -takefocus 0
@@ -6693,12 +6723,11 @@ proc tablelist::makeTileCheckbutton w {
     set frm [winfo parent $w]
     switch -- $currentTheme {
 	aqua {
+	    $frm configure -width 16 -height 16
 	    variable newAquaSupport
 	    if {$newAquaSupport} {
-		$frm configure -width 18 -height 18
-		place $w -x 0 -y -1
+		place $w -x -1 -y -2
 	    } else {
-		$frm configure -width 16 -height 16
 		place $w -x -3 -y -3
 	    }
 	}
@@ -6718,13 +6747,18 @@ proc tablelist::makeTileCheckbutton w {
 	}
 
 	clam {
-	    $frm configure -width 11 -height 11
-	    place $w -x 0
+	    variable scalingpct
+	    array set arr {100 11  125 14  150 18  175 21  200 24}
+	    styleConfig Tablelist.TCheckbutton -indicatorsize $arr($scalingpct)
+	    pack $w
 	}
 
 	classic -
 	default {
-	    styleConfig Tablelist.TCheckbutton -background white
+	    variable scalingpct
+	    array set arr {100 11  125 14  150 18  175 21  200 24}
+	    styleConfig Tablelist.TCheckbutton -background white \
+		-indicatordiameter $arr($scalingpct)
 	    pack $w
 	}
 
@@ -6792,14 +6826,18 @@ proc tablelist::makeTileCheckbutton w {
 	    }
 	}
 
-	vista {
+	vista -
+	xpnative {
 	    set height [winfo reqheight $w]
 	    $frm configure -width $height -height $height
-	    place $w -x 0
+	    if {[llength [style lookup TCheckbutton -padding]] == 1} {
+		place $w -x 0
+	    } else {
+		place $w -x -4
+	    }
 	}
 
-	winnative -
-	xpnative {
+	winnative {
 	    set height [winfo reqheight $w]
 	    $frm configure -width $height -height $height
 	    if {[info exists ::tile::version]} {
