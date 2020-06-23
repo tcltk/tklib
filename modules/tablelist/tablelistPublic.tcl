@@ -8,7 +8,7 @@ namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	6.9
+    variable version	6.10
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file normalize [DIR]]
