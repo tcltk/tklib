@@ -1,3 +1,41 @@
+2020-06-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.6.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/mwutil.tcl: Updated.
+
+	* scripts/scaleutil.tcl: New file containing scaling-related stuff:
+	  getting the display's DPI scaling percentage; scaling the default
+	  width of the Tk core scrollbars on X11, the default width of the
+	  ttk::scrollbar widget in a few built-in themes, the arrows of the
+	  ttk::combobox, ttk::spinbox, and ttk::menubutton widgets, and the
+	  indicators of the ttk::checkbutton and ttk::radiobutton widgets;
+	  a workaround for a long-standing scaling-related bug in the
+	  implementation of the ttk::checkbutton and ttk::radiobutton widgets
+	  in the "vista" and "xpnative" themes.
+
+	* scripts/scrollarea.tcl: Added the read-only public variable
+	  "scrollutil::scalingpct" and set it to 100, 125, 150, 175, or 200,
+	  correspondig to the display's DPI scaling level.
+
+	* scripts/wheelEvent.tcl: Adapted the bindings to TIP 563, meaning that
+	  the mouse wheel now will scroll a horizontal or vertical scrollbar
+	  regardless of whether the "Shift" key is down or not.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/stylesheet.css: Updated.
+
+	* doc/*.png Updated screenshots.
+
+	* ../../examples/scrollutil/*.tcl: Made the demo-scripts fully
+	  scaling-aware.
+
 2020-02-09  0.7  <andreas_kupries@users.sourceforge.net>
 
 	*
