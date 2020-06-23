@@ -9,7 +9,7 @@
 #==============================================================================
 
 package require Tk 8.4				;# because of "-compound"
-package require tablelist 6.9
+package require tablelist 6.10
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -22,17 +22,17 @@ source [file join $dir option.tcl]
 option add *Tablelist*Entry.background white
 
 #
+# Create the images "checkedImg" and "uncheckedImg", as well as 16 images of
+# names like "img#FF0000", displaying colors identified by names like "red"
+#
+source [file join $dir images.tcl]
+
+#
 # Register some widgets from the BWidget package for interactive cell editing
 #
 tablelist::addBWidgetEntry
 tablelist::addBWidgetSpinBox
 tablelist::addBWidgetComboBox
-
-#
-# Create the images "checkedImg" and "uncheckedImg", as well as 16 images of
-# names like "img#FF0000", displaying colors identified by names like "red"
-#
-source [file join $dir images.tcl]
 
 #
 # Create a tablelist widget with editable columns (except the first one)
@@ -96,7 +96,7 @@ set btn [button .btn -text "Close" -command exit]
 #
 # Manage the widgets
 #
-pack $btn -side bottom -pady 10
+pack $btn -side bottom -pady 7p
 pack $tbl -side top -expand yes -fill both
 
 #------------------------------------------------------------------------------

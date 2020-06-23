@@ -8,7 +8,7 @@
 # Copyright (c) 2004-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.9
+package require tablelist_tile 6.10
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -21,17 +21,17 @@ source [file join $dir option_tile.tcl]
 option add *Tablelist*Entry.background white
 
 #
+# Create the images "checkedImg" and "uncheckedImg", as well as 16 images of
+# names like "img#FF0000", displaying colors identified by names like "red"
+#
+source [file join $dir images.tcl]
+
+#
 # Register some widgets from the BWidget package for interactive cell editing
 #
 tablelist::addBWidgetEntry
 tablelist::addBWidgetSpinBox
 tablelist::addBWidgetComboBox
-
-#
-# Create the images "checkedImg" and "uncheckedImg", as well as 16 images of
-# names like "img#FF0000", displaying colors identified by names like "red"
-#
-source [file join $dir images.tcl]
 
 #
 # Improve the window's appearance by using a tile
@@ -101,7 +101,7 @@ set btn [ttk::button $f.btn -text "Close" -command exit]
 #
 # Manage the widgets
 #
-pack $btn -side bottom -pady 10
+pack $btn -side bottom -pady 7p
 pack $tbl -side top -expand yes -fill both
 pack $f -expand yes -fill both
 

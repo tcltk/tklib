@@ -7,7 +7,7 @@
 # Copyright (c) 2005-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.9
+package require tablelist_tile 6.10
 
 wm title . "Serial Line Configuration"
 
@@ -97,7 +97,7 @@ set btn [ttk::button $f.btn -text "Close" -command exit]
 #
 # Manage the widgets
 #
-pack $btn -side bottom -pady 10
+pack $btn -side bottom -pady 7p
 pack $tbl -side top -expand yes -fill both
 pack $f -expand yes -fill both
 

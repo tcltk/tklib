@@ -6,7 +6,7 @@
 # Copyright (c) 2002-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.9
+package require tablelist_tile 6.10
 
 wm title . "Tablelist Styles"
 
@@ -71,17 +71,17 @@ for {set n 0} { $n < 8} {incr n} {
 }
 
 ttk::button $f.close -text "Close" -command exit
-ttk::frame $f.bottom -height 10
 
 #
 # Manage the widgets
 #
-grid $f.f.tbl0 $f.f.tbl1 -sticky news -padx 5 -pady 5
-grid $f.f.tbl2 $f.f.tbl3 -sticky news -padx 5 -pady 5
-grid $f.f.tbl4 $f.f.tbl5 -sticky news -padx 5 -pady 5
-grid $f.f.tbl6 $f.f.tbl7 -sticky news -padx 5 -pady 5
+set pad {7p 0}
+grid $f.f.tbl0 $f.f.tbl1 -sticky news -padx $pad -pady $pad
+grid $f.f.tbl2 $f.f.tbl3 -sticky news -padx $pad -pady $pad
+grid $f.f.tbl4 $f.f.tbl5 -sticky news -padx $pad -pady $pad
+grid $f.f.tbl6 $f.f.tbl7 -sticky news -padx $pad -pady $pad
 grid rowconfigure    $f.f {0 1 2 3} -weight 1
 grid columnconfigure $f.f {0 1}     -weight 1
-pack $f.bottom $f.close -side bottom
-pack $f.f -side top -expand yes -fill both -padx 5 -pady 5
+pack $f.close -side bottom -pady 7p
+pack $f.f -side top -expand yes -fill both -padx {0 7p}
 pack $f -expand yes -fill both

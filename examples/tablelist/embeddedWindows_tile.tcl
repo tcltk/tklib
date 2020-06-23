@@ -6,7 +6,7 @@
 # Copyright (c) 2004-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.9
+package require tablelist_tile 6.10
 
 wm title . "Tile Library Scripts"
 
@@ -22,9 +22,11 @@ source [file join $dir option_tile.tcl]
 catch {font create TkFixedFont -family Courier -size -12}
 
 #
-# Create an image to be displayed in buttons embedded in a tablelist widget
+# Create an image corresponding to the display's DPI scaling
+# level, to be displayed in buttons embedded in a tablelist widget
 #
-image create photo openImg -file [file join $dir open.gif]
+set pct $tablelist::scalingpct
+image create photo openImg -file [file join $dir openAction$pct.gif]
 
 if {[tablelist::getCurrentTheme] eq "aqua"} {
     #
@@ -125,7 +127,8 @@ proc createFrame {tbl row col w} {
     # Create the frame and replace the binding tag "Frame"
     # with "TablelistBody" in the list of its binding tags
     #
-    frame $w -width 102 -height 14 -background ivory -borderwidth 1 \
+    set height [expr {[font metrics $::tblFont -linespace] * 4 / 5}]
+    frame $w -width 72p -height $height -background ivory -borderwidth 1 \
 	     -relief solid
     bindtags $w [lreplace [bindtags $w] 1 1 TablelistBody]
 
@@ -133,14 +136,14 @@ proc createFrame {tbl row col w} {
     # Create the child frame and replace the binding tag "Frame"
     # with "TablelistBody" in the list of its binding tags
     #
-    frame $w.f -height 12 -background red -borderwidth 1 -relief raised
+    frame $w.f -background red -borderwidth 1 -relief raised
     bindtags $w.f [lreplace [bindtags $w] 1 1 TablelistBody]
 
     #
     # Manage the child frame
     #
     set fileSize [$tbl cellcget $row,fileSize -text]
-    place $w.f -relwidth [expr {double($fileSize) / $::maxSize}]
+    place $w.f -relheight 1.0 -relwidth [expr {double($fileSize) / $::maxSize}]
 }
 
 #------------------------------------------------------------------------------
@@ -203,7 +206,7 @@ proc viewFile {tbl key} {
     grid $vsb -row 0 -column 1 -sticky ns
     grid rowconfigure    $tf 0 -weight 1
     grid columnconfigure $tf 0 -weight 1
-    pack $btn -pady 10
+    pack $btn -pady 7p
     pack $bf -side bottom -fill x
     pack $tf -side top -expand yes -fill both
 
@@ -241,6 +244,6 @@ if {[tk windowingsystem] eq "win32"} {
 }
 grid rowconfigure    $tf 1 -weight 1
 grid columnconfigure $tf 0 -weight 1
-pack $btn -pady 10
+pack $btn -pady 7p
 pack $bf -side bottom -fill x
 pack $tf -side top -expand yes -fill both

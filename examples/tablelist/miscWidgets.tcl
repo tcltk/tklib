@@ -9,7 +9,7 @@
 #==============================================================================
 
 package require Tk 8.4		;# because of "-compound" and the spinbox widget
-package require tablelist 6.9
+package require tablelist 6.10
 package require combobox
 package require mentry
 
@@ -28,18 +28,18 @@ option add *Tablelist*Combobox.elementBorderWidth	2
 option add *Tablelist*Mentry.background			white
 
 #
+# Create the images "checkedImg" and "uncheckedImg", as well as 16 images of
+# names like "img#FF0000", displaying colors identified by names like "red"
+#
+source [file join $dir images.tcl]
+
+#
 # Register Bryan Oakley's combobox widget as well as the mentry
 # widgets of type "Date" and "Time" for interactive cell editing
 #
 tablelist::addOakleyCombobox
 tablelist::addDateMentry Ymd -
 tablelist::addTimeMentry HMS :
-
-#
-# Create the images "checkedImg" and "uncheckedImg", as well as 16 images of
-# names like "img#FF0000", displaying colors identified by names like "red"
-#
-source [file join $dir images.tcl]
 
 #
 # Create a tablelist widget with editable columns (except the first one)
@@ -103,7 +103,7 @@ set btn [button .btn -text "Close" -command exit]
 #
 # Manage the widgets
 #
-pack $btn -side bottom -pady 10
+pack $btn -side bottom -pady 7p
 pack $tbl -side top -expand yes -fill both
 
 #------------------------------------------------------------------------------

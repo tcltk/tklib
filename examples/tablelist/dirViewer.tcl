@@ -8,7 +8,7 @@
 #==============================================================================
 
 package require Tk 8.3
-package require tablelist 6.9
+package require tablelist 6.10
 
 #
 # Add some entries to the Tk option database
@@ -56,21 +56,12 @@ proc displayContents dir {
     scrollbar $hsb -orient horizontal -command [list $tbl xview]
 
     #
-    # On X11 configure the tablelist and the scrollbars
-    # according to the display's DPI scaling level
+    # On X11 configure the tablelist according
+    # to the display's DPI scaling level
     #
     global winSys					;# see option.tcl
     if {[string compare $winSys "x11"] == 0} {
-	set pct $tablelist::scalingpct
-	set arrowSizeList {7x4 9x5 11x6 13x7 15x8}
-	set idx [expr {($pct - 100) / 25}]
-	set arrowSize [lindex $arrowSizeList $idx]
-	$tbl configure -arrowstyle flat$arrowSize -treestyle bicolor$pct
-
-	set defaultSbWidth [lindex [$vsb configure -width] 3]
-	set sbWidth [expr {$defaultSbWidth * $pct / 100}]
-	$vsb configure -width $sbWidth
-	$hsb configure -width $sbWidth
+	$tbl configure -treestyle bicolor$tablelist::scalingpct
     }
 
     #
@@ -112,8 +103,7 @@ proc displayContents dir {
     grid $hsb -row 2 -column 0 -sticky ew
     grid rowconfigure    $tf 1 -weight 1
     grid columnconfigure $tf 0 -weight 1
-    set padY [expr {10 * $tablelist::scalingpct / 100}]
-    pack $b1 $b2 $b3 -side left -expand yes -pady $padY
+    pack $b1 $b2 $b3 -side left -expand yes -pady 7p
     pack $bf -side bottom -fill x
     pack $tf -side top -expand yes -fill both
 

@@ -6,7 +6,7 @@
 # Copyright (c) 2002-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 6.9
+package require tablelist 6.10
 
 wm title . "Tablelist Styles"
 
@@ -87,16 +87,16 @@ for {set n 0} { $n < 8} {incr n} {
 }
 
 button .close -text "Close" -command exit
-frame .bottom -height 10
 
 #
 # Manage the widgets
 #
-grid .f.tbl0 .f.tbl1 -sticky news -padx 5 -pady 5
-grid .f.tbl2 .f.tbl3 -sticky news -padx 5 -pady 5
-grid .f.tbl4 .f.tbl5 -sticky news -padx 5 -pady 5
-grid .f.tbl6 .f.tbl7 -sticky news -padx 5 -pady 5
+set pad {7p 0}
+grid .f.tbl0 .f.tbl1 -sticky news -padx $pad -pady $pad
+grid .f.tbl2 .f.tbl3 -sticky news -padx $pad -pady $pad
+grid .f.tbl4 .f.tbl5 -sticky news -padx $pad -pady $pad
+grid .f.tbl6 .f.tbl7 -sticky news -padx $pad -pady $pad
 grid rowconfigure    .f {0 1 2 3} -weight 1
 grid columnconfigure .f {0 1}     -weight 1
-pack .bottom .close -side bottom
-pack .f -side top -expand yes -fill both -padx 5 -pady 5
+pack .close -side bottom -pady 7p
+pack .f -side top -expand yes -fill both -padx {0 7p}

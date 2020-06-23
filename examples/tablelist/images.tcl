@@ -7,8 +7,9 @@
 #
 # Create two images, to be displayed in tablelist cells with boolean values
 #
-image create photo checkedImg   -file [file join $dir checked.gif]
-image create photo uncheckedImg -file [file join $dir unchecked.gif]
+set pct $tablelist::scalingpct
+image create photo checkedImg   -file [file join $dir checked$pct.gif]
+image create photo uncheckedImg -file [file join $dir unchecked$pct.gif]
 
 #
 # Create 16 images representing different colors
@@ -28,11 +29,14 @@ set colorValues {
 foreach name $colorNames value $colorValues {
     set colors($name) $value
 }
+array set arr {100 13  125 16  150 20  175 23  200 26}
+set len $arr($pct)
+set len1 [expr {$len - 1}]
 foreach value $colorValues {
-    image create photo img$value -height 13 -width 13
-    img$value put gray50 -to 0 0 13 1				;# top edge
-    img$value put gray50 -to 0 1 1 12				;# left edge
-    img$value put gray75 -to 0 12 13 13				;# bottom edge
-    img$value put gray75 -to 12 1 13 12				;# right edge
-    img$value put $value -to 1 1 12 12
+    image create photo img$value -height $len -width $len
+    img$value put gray50 -to 0 0 $len 1				;# top edge
+    img$value put gray50 -to 0 1 1 $len1			;# left edge
+    img$value put gray75 -to 0 $len1 $len $len			;# bottom edge
+    img$value put gray75 -to $len1 1 $len $len1			;# right edge
+    img$value put $value -to 1 1 $len1 $len1			;# interior
 }

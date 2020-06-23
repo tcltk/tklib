@@ -8,7 +8,7 @@
 # Copyright (c) 2004-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.9
+package require tablelist_tile 6.10
 if {[catch {package require iwidgets} result1] != 0 &&
     [catch {package require Iwidgets} result2] != 0} {
     error "$result1; $result2"
@@ -28,6 +28,12 @@ option add *Tablelist*Dateentry*Label.background	white
 option add *Tablelist*Timeentry*Label.background	white
 
 #
+# Create the images "checkedImg" and "uncheckedImg", as well as 16 images of
+# names like "img#FF0000", displaying colors identified by names like "red"
+#
+source [file join $dir images.tcl]
+
+#
 # Register some widgets from the Iwidgets package for interactive cell editing
 #
 tablelist::addIncrEntryfield
@@ -35,12 +41,6 @@ tablelist::addIncrSpinint
 tablelist::addIncrCombobox
 tablelist::addIncrDateTimeWidget dateentry -seconds
 tablelist::addIncrDateTimeWidget timeentry -seconds
-
-#
-# Create the images "checkedImg" and "uncheckedImg", as well as 16 images of
-# names like "img#FF0000", displaying colors identified by names like "red"
-#
-source [file join $dir images.tcl]
 
 #
 # Improve the window's appearance by using a tile
@@ -110,7 +110,7 @@ set btn [ttk::button $f.btn -text "Close" -command exit]
 #
 # Manage the widgets
 #
-pack $btn -side bottom -pady 10
+pack $btn -side bottom -pady 7p
 pack $tbl -side top -expand yes -fill both
 pack $f -expand yes -fill both
 
@@ -122,6 +122,7 @@ pack $f -expand yes -fill both
 #------------------------------------------------------------------------------
 proc editStartCmd {tbl row col text} {
     set w [$tbl editwinpath]
+    set pct $tablelist::scalingpct
 
     switch [$tbl columncget $col -name] {
 	lineName {
@@ -154,7 +155,7 @@ proc editStartCmd {tbl row col text} {
 	    # Populate the combobox and make it non-editable
 	    #
 	    $w insert list end None Even Odd Mark Space
-	    $w configure -editable no -listheight 120
+	    $w configure -editable no -listheight [expr {120 * $pct / 100}]
 	}
 
 	stopBits {
@@ -162,7 +163,7 @@ proc editStartCmd {tbl row col text} {
 	    # Populate the combobox and make it non-editable
 	    #
 	    $w insert list end 1 1.5 2
-	    $w configure -editable no -listheight 90
+	    $w configure -editable no -listheight [expr {60 * $pct / 100}]
 	}
 
 	handshake {
@@ -170,7 +171,7 @@ proc editStartCmd {tbl row col text} {
 	    # Populate the combobox and make it non-editable
 	    #
 	    $w insert list end XON/XOFF RTS/CTS None
-	    $w configure -editable no -listheight 90
+	    $w configure -editable no -listheight [expr {80 * $pct / 100}]
 	}
 
 	actDate {
