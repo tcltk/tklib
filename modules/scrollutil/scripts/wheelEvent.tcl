@@ -24,8 +24,6 @@ package require Tk 8.4
 #
 
 namespace eval scrollutil {
-    variable winSys [tk windowingsystem]
-
     #
     # The list of scrollable widget containers that are
     # registered for scrolling by the mouse wheel event
@@ -50,43 +48,43 @@ proc scrollutil::createBindings {} {
     variable winSys
 
     #
-    # On the windowing systems win32 and x11 there are no built-in
-    # mouse wheel event bindings for the binding tag Scrollbar
-    # if the Tk version is earlier than 8.6 -- create them here
+    # On the windowing systems win32 and x11 there are no built-in mouse wheel
+    # event bindings for the binding tag Scrollbar if the Tk version is earlier
+    # than 8.6 -- create them here.  In addition, implement the behavior
+    # specified by TIP 563 (i.e., the mouse wheel should scroll a horizontal or
+    # vertical scrollbar regardless of whether the "Shift" key is down or not)
     #
-    if {$winSys eq "win32" || $winSys eq "x11"} {
-	set scrollByUnits [expr {
-	    [llength [info commands ::tk::ScrollByUnits]] == 0 ?
-	    "tkScrollByUnits" : "tk::ScrollByUnits"}]
-
+    set scrollByUnits [expr {
+	[llength [info commands ::tk::ScrollByUnits]] == 0 ?
+	"tkScrollByUnits" : "tk::ScrollByUnits"}]
+    if {$winSys eq "aqua"} {
+	bind Scrollbar <MouseWheel> \
+	    [format {%s %%W hv [expr {-(%%D)}]} $scrollByUnits]
+	bind Scrollbar <Option-MouseWheel> \
+	    [format {%s %%W hv [expr {-10 * (%%D)}]} $scrollByUnits]
+    } else {
 	bind Scrollbar <MouseWheel> [format {
-	    %s %%W v [expr {%%D >= 0 ? (-%%D) / 30 : (-(%%D) + 29) / 30}]
-	} $scrollByUnits]
-	bind Scrollbar <Shift-MouseWheel> [format {
-	    %s %%W h [expr {%%D >= 0 ? (-%%D) / 30 : (-(%%D) + 29) / 30}]
+	    %s %%W hv [expr {%%D >= 0 ? (-%%D) / 30 : (-(%%D) + 29) / 30}]
 	} $scrollByUnits]
 
 	if {$winSys eq "x11"} {
-	    bind Scrollbar <Button-4>	    [list $scrollByUnits %W v -5]
-	    bind Scrollbar <Button-5>	    [list $scrollByUnits %W v  5]
-	    bind Scrollbar <Shift-Button-4> [list $scrollByUnits %W h -5]
-	    bind Scrollbar <Shift-Button-5> [list $scrollByUnits %W h  5]
+	    bind Scrollbar <Button-4>	    [list $scrollByUnits %W hv -5]
+	    bind Scrollbar <Button-5>	    [list $scrollByUnits %W hv  5]
 
 	    if {[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
-		bind Scrollbar <Button-6>   [list $scrollByUnits %W h -5]
-		bind Scrollbar <Button-7>   [list $scrollByUnits %W h  5]
+		bind Scrollbar <Button-6>   [list $scrollByUnits %W hv -5]
+		bind Scrollbar <Button-7>   [list $scrollByUnits %W hv  5]
 	    }
 	}
     }
 
-    set eventList [list <MouseWheel> <Shift-MouseWheel>]
+    set eventList [list <MouseWheel>]
     switch $winSys {
 	aqua {
-	    lappend eventList <Option-MouseWheel> <Shift-Option-MouseWheel>
+	    lappend eventList <Option-MouseWheel>
 	}
 	x11 {
-	    lappend eventList <Button-4> <Button-5> \
-			      <Shift-Button-4> <Shift-Button-5>
+	    lappend eventList <Button-4> <Button-5>
 	    if {[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
 		lappend eventList <Button-6> <Button-7>
 	    }
@@ -103,6 +101,20 @@ proc scrollutil::createBindings {} {
 
     if {$winSys eq "win32" && [package vcompare $::tk_patchLevel "8.6b2"] < 0} {
 	return ""
+    }
+
+    #
+    # The rest is for scrollable widget containers.
+    #
+
+    lappend eventList [list <Shift-MouseWheel>]
+    switch $winSys {
+	aqua {
+	    lappend eventList <Shift-Option-MouseWheel>
+	}
+	x11 {
+	    lappend eventList <Shift-Button-4> <Shift-Button-5>
+	}
     }
 
     foreach event $eventList {
@@ -547,21 +559,14 @@ proc scrollutil::hasFocus w {
 # scrollutil::isCompatible
 #------------------------------------------------------------------------------
 proc scrollutil::isCompatible {event w} {
-    set tagList [bindtags $w]
-    set idx [lsearch -exact $tagList "WheeleventRedir"]
-    set tag [lindex $tagList [incr idx]]
-    if {[bind $tag $event] eq ""} {
-	return 0
-    } elseif {[string match "*Scrollbar" [winfo class $w]]} {
-	set orient [$w cget -orient]
-	return [expr {
-	    ($orient eq "horizontal" &&  ([string match {<Shift-*>} $event] \
-	     || [string match {<Button-[67]>} $event])) ||
-	    ($orient eq "vertical"   && !([string match {<Shift-*>} $event] \
-	     || [string match {<Button-[67]>} $event]))
-	}]
-    } else {
+    if {[string match "*Scrollbar" [winfo class $w]] &&
+	[string match {<Shift-*>} $event]} {
 	return 1
+    } else {
+	set tagList [bindtags $w]
+	set idx [lsearch -exact $tagList "WheeleventRedir"]
+	set tag [lindex $tagList [incr idx]]
+	return [expr {[bind $tag $event] ne ""}]
     }
 }
 
