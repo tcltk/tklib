@@ -1,3 +1,12 @@
+2020-06-25 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/scaleutil.tcl: Made sure that the scaled default width of the
+	  Tk core scrollbar on X11 won't get overridden by an unscaled resource
+	  database value.
+
+	* ../../examples/scrollutil/*FrmContent.tcl: Minor improvements.
+	* ../../examples/scrollutil/Sync*tcl:
+
 2020-06-23  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* ../../examples/scrollutil/*FrmDemo1.tcl:   Worked around an accuracy
