@@ -121,18 +121,20 @@ proc scaleutil::scalingPercentage winSys {
     if {$onX11} {
 	tk scaling [expr {$pct / 75.0}]
 
-	#
-	# Scale the default scrollbar width
-	#
-	set helpScrlbar .__helpScrlbar
-	for {set n 2} {[winfo exists $helpScrlbar]} {incr n} {
-	    set helpScrlbar .__helpScrlbar$n
+	if {$pct > 100} {
+	    #
+	    # Scale the default scrollbar width
+	    #
+	    set helpScrlbar .__helpScrlbar
+	    for {set n 2} {[winfo exists $helpScrlbar]} {incr n} {
+		set helpScrlbar .__helpScrlbar$n
+	    }
+	    scrollbar $helpScrlbar
+	    set defScrlbarWidth [lindex [$helpScrlbar configure -width] 3]
+	    destroy $helpScrlbar
+	    set scrlbarWidth [expr {$defScrlbarWidth * $pct / 100}]
+	    option add *Scrollbar.width $scrlbarWidth userDefault
 	}
-	scrollbar $helpScrlbar
-	set defScrlbarWidth [lindex [$helpScrlbar configure -width] 3]
-	destroy $helpScrlbar
-	set scrlbarWidth [expr {$defScrlbarWidth * $pct / 100}]
-	option add *Scrollbar.width $scrlbarWidth widgetDefault
     }
 
     if {$::tk_version >= 8.5} {
