@@ -103,8 +103,9 @@ incr row
 set _sa [scrollutil::scrollarea $cf.sa$row]
 set tbl [tablelist::tablelist $_sa.tbl \
 	 -columns {0 "Release" left  0 "Changes" right  0 "Comment" left} \
-	 -height 16 -width 0 -showseparators yes -stripebackground #f0f0f0 \
-	 -incrarrowtype down -labelcommand tablelist::sortByColumn]
+	 -height 16 -width 0 -showseparators yes -incrarrowtype down \
+	 -background white -stripebackground #f0f0f0 \
+	 -labelcommand tablelist::sortByColumn]
 if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }

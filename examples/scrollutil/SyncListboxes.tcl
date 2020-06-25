@@ -63,6 +63,8 @@ foreach capital $capitalList {
     $lb2 insert end "  $capital  "
 }
 
+$lb1 configure -background white
+$lb2 configure -background white
 set itemCount [$lb1 size]
 for {set idx 1} {$idx < $itemCount} {incr idx 2} {
     $lb1 itemconfigure $idx -background #f0f0f0
