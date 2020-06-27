@@ -1,3 +1,9 @@
+2020-06-27 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:           Minor improvements.
+	* scripts/scaleutil.tcl:
+	* doc/tablelist.html:
+
 2020-06-25 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/scaleutil.tcl: Made sure that the scaled default width of the
