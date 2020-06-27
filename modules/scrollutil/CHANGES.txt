@@ -27,7 +27,7 @@ What is new in Scrollutil 1.6?
    scaled, regardless of the Tk release being used (a long-standing bug
    in the implementation of these widgets was fixed in May 2020).
 
-5. Made the demo-scripts fully scaling-aware.
+5. Made the demo-scripts scaling-aware.
 
 6. Several further improvements in the demo scripts and documentation.
 
