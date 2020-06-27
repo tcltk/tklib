@@ -355,19 +355,20 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     <li>The variable <code>tablelist::library</code> holds the location of the
     Tablelist installation directory.</li>
 
-    <li>The read-only variable <code>tablelist::scalingpct</code> holds the
-    scaling percentage corresponding to the display's DPI scaling level.&nbsp;
-    Tablelist adapts the default sort arrow style on Windows Vista, 7, 8, and
-    10, as well as the sizes of the tree styles <code>vistaAero</code>,
+    <li>The read-only variable <code>tablelist::scalingpct</code> is set at
+    application start time to the scaling percentage corresponding to the
+    display's DPI scaling level.&nbsp; Tablelist adapts, among others, the
+    default sort arrow style on X11 and Windows Vista, 7, 8, and 10, as well as
+    the sizes of the tree styles <code>vistaAero</code>,
     <code>vistaClassic</code>, <code>win7Aero</code>, <code>win7Classic</code>,
     and <code>win10</code> to the value of this variable.&nbsp; The currently
     supported values are <code>100</code>, <code>125</code>, <code>150</code>,
-    <code>175</code>, and <code>200</code>.&nbsp; You can use this variable on
-    all platforms, e.g., if you want to create images of different sizes,
-    depending on the DPI scaling level.&nbsp; For example, if your application
-    uses images of size 16 x 16 on an unscaled display and
-    <code>tablelist::scalingpct</code> has the value <code>150</code>, then the
-    image size for this display should be 24 x 24.</li>
+    <code>175</code>, and <code>200</code>.&nbsp; You can use this variable,
+    e.g., if you want to create images of different sizes, depending on the DPI
+    scaling level.&nbsp; For example, if your application uses images of size
+    16 x 16 on an unscaled display and <code>tablelist::scalingpct</code> has
+    the value <code>150</code>, then the image size for this display should be
+    24 x 24.</li>
 
     <li>The boolean variable <code>tablelist::strictTk</code> (having the
     default value <code>0</code>) controls the strict listbox-compatibility of

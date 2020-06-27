@@ -32,7 +32,7 @@ What is new in Tablelist 6.10?
    only exception is ttk::checkbutton, which cannot be scaled if the
    theme is "alt" or "winnative".
 
-6. Made all demo-scripts fully scaling-aware.
+6. Made all demo-scripts scaling-aware.
 
 7. Several further improvements in the code and documentation, as well
    as minor bug fixes.
