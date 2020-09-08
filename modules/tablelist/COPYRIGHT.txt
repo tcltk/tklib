@@ -1,4 +1,4 @@
-Multi-column listbox and tree widget package Tablelist, version 6.10
+Multi-column listbox and tree widget package Tablelist, version 6.11
 Copyright (c) 2000-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 
 This library is free software; you can use, modify, and redistribute it

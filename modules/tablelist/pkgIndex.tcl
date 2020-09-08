@@ -7,22 +7,21 @@
 #
 # Regular packages:
 #
-package ifneeded tablelist         6.10 \
+package ifneeded tablelist         6.11 \
 	[list source [file join $dir tablelist.tcl]]
-package ifneeded tablelist_tile    6.10 \
+package ifneeded tablelist_tile    6.11 \
 	[list source [file join $dir tablelist_tile.tcl]]
 
 #
 # Aliases:
 #
-package ifneeded Tablelist         6.10 \
-	[list package require -exact tablelist	    6.10]
-package ifneeded Tablelist_tile    6.10 \
-	[list package require -exact tablelist_tile 6.10]
+package ifneeded Tablelist         6.11 \
+	[list package require -exact tablelist	    6.11]
+package ifneeded Tablelist_tile    6.11 \
+	[list package require -exact tablelist_tile 6.11]
 
 #
 # Code common to all packages:
 #
-package ifneeded tablelist::common 6.10 \
-        "namespace eval ::tablelist { proc DIR {} {return [list $dir]} } ;\
-	 source [list [file join $dir tablelistPublic.tcl]]"
+package ifneeded tablelist::common 6.11 \
+	[list source [file join $dir tablelistCommon.tcl]]
