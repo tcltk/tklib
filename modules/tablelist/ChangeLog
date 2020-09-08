@@ -1,3 +1,39 @@
+2020-09-08 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 6.11.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* tablelistCommon.tcl: Replaces the former tablelistPublic.tcl; bumped
+	  the version number to 6.11.
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Updated the "aqua" theme support and extended it by
+	  support for the Dark Mode appearance; handling the virtual events
+	  <<LightAqua>> and <<DarkAqua>> by updating the overall appearance of
+	  the tablelist widgets; added the virtual event
+	  <<TablelistThemeDefaultsChanged>> and sent to the main window when
+	  handling the virtual events <<ThemeChanged>>, <<LightAqua>>, and
+	  <<DarkAqua>>; improvements related to laying out the widget used for
+	  interactive cell editing; reworked the invocations of "package
+	  vcompare", taking into account that Tcl versions earlier than 8.5 did
+	  not support the letters "a" and "b" in version numbers.
+
+	* scripts/utils:               Moved mwutil.tcl and scaleutil.tcl to
+	* scripts/utils/mwutil.tcl:    the new subdirectory utils and made them
+	* scripts/utils/scaleutil.tcl: to packages.
+	* scripts/utils/pkgIndex.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/tablelist/*.tcl: Bumped the version number to 6.11;
+	  with Tk 8.6.10 or later, the demo-scripts browse(Tree)_tile.tcl,
+	  config_tile.tcl, dirViewer_tile.tcl, embeddedWindows_tile.tcl, and
+	  tileWidgets.tcl now fully support the Dark Mode appearance on Mac OS
+	  10.14 and later.
+
 2020-06-27 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:           Minor improvements.
