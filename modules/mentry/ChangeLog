@@ -1,3 +1,41 @@
+2020-09-08 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 3.11; updated the
+	* COPYRIGHT.txt: copyright information.
+	* README.txt:
+
+	* mentryCommon.tcl: Replaces the former mentryPublic.tcl; bumped the
+	  version number to 3.11; updated the copyright information.
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Adapted the "aqua" theme support to Tk releases 8.6.10
+	  and 8.6.11, including the support for the Dark Mode appearance;
+	  handling the virtual events <<LightAqua>> and <<DarkAqua>> by
+	  updating the overall appearance of the mentry widgets; added the
+	  virtual event <<MentryThemeDefaultsChanged>> and sent to the main
+	  window when handling the virtual events <<ThemeChanged>>,
+	  <<LightAqua>>, and <<DarkAqua>>; reworked the invocations of "package
+	  vcompare", taking into account that Tcl versions earlier than 8.5 did
+	  not support the letters "a" and "b" in version numbers; updated the
+	  copyright information.
+
+	* scripts/mwutil:              Moved mwutil.tcl to the new subdirectory
+	* scripts/mwutil/mwutil.tcl:   mwutil and made it to a package; updated
+	* scripts/mwutil/pkgIndex.tcl: to version 2.17, like in Tablelist 6.11.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/stylesheet.css: Updated.
+
+	* doc/*.png: Updated the screenshots.
+
+	* ../../examples/mentry/*.tcl: Made the demo-scripts scaling-aware;
+	  with Tk 8.6.10 or later, they now fully support the Dark Mode
+	  appearance on Mac OS 10.14 and later; updated the copyright
+	  information.
+
 2020-02-09  0.7  <andreas_kupries@users.sourceforge.net>
 
 	*
