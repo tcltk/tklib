@@ -6,7 +6,7 @@
 # Copyright (c) 2004-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.10
+package require tablelist_tile 6.11
 
 wm title . "Tile Library Scripts"
 
@@ -113,6 +113,15 @@ foreach fileName [lsort [glob *.tcl]] {
 if {$tk_version >= 8.5} {
     $tbl header insert 0 [list "[$tbl size] *.tcl files" "" $totalSize "" ""]
     $tbl header rowconfigure 0 -foreground blue
+
+    if {[tablelist::getCurrentTheme] eq "aqua" &&
+	[package vcompare $tk_patchLevel "8.6.10"] >= 0} {
+	if {[tk::unsupported::MacWindowStyle isdark .]} {
+	    $tbl header rowconfigure 0 -foreground SkyBlue
+	}
+	bind . <<LightAqua>> { $tbl header rowconfigure 0 -foreground blue }
+	bind . <<DarkAqua>>  { $tbl header rowconfigure 0 -foreground SkyBlue }
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -183,8 +192,7 @@ proc viewFile {tbl key} {
     ttk::frame $tf -class ScrollArea
     set txt $tf.txt
     set vsb $tf.vsb
-    text $txt -background white -font TkFixedFont -setgrid yes \
-	      -yscrollcommand [list $vsb set]
+    text $txt -font TkFixedFont -setgrid yes -yscrollcommand [list $vsb set]
     catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5 and above
     ttk::scrollbar $vsb -orient vertical -command [list $txt yview]
 

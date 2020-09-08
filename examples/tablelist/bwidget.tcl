@@ -9,7 +9,7 @@
 #==============================================================================
 
 package require Tk 8.4				;# because of "-compound"
-package require tablelist 6.10
+package require tablelist 6.11
 package require BWidget
 
 wm title . "Serial Line Configuration"

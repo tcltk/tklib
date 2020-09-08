@@ -9,7 +9,7 @@
 #==============================================================================
 
 package require Tk 8.4		;# because of "-compound" and the spinbox widget
-package require tablelist 6.10
+package require tablelist 6.11
 package require combobox
 package require mentry
 
@@ -234,7 +234,7 @@ proc editEndCmd {tbl row col text} {
 	    #
 	    # Check whether the last argument is a clock value in seconds
 	    #
-	    if {![string is digit $text]} {
+	    if {[info exists ::msgs($text)]} {
 		bell
 		tk_messageBox -title "Error" -icon error -message $::msgs($text)
 		$tbl rejectinput
@@ -263,7 +263,7 @@ proc editEndCmd {tbl row col text} {
 	    #
 	    # Check whether the last argument is a clock value in seconds
 	    #
-	    if {![string is digit $text]} {
+	    if {[info exists ::msgs($text)]} {
 		bell
 		tk_messageBox -title "Error" -icon error -message $::msgs($text)
 		$tbl rejectinput

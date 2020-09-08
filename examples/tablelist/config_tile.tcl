@@ -5,7 +5,7 @@
 # Copyright (c) 2000-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.10
+package require tablelist_tile 6.11
 
 namespace eval demo {
     #
@@ -21,29 +21,28 @@ namespace eval demo {
     # bf		TFrame
     #   b1, b2, b3	  TButton
     #
-    if {[tk windowingsystem] eq "x11"} {
-	option add *DemoTop*Font			TkDefaultFont
-    }
-    tablelist::setThemeDefaults
-    set foreground [winfo rgb . $tablelist::themeDefaults(-foreground)]
-    set selectFg   [winfo rgb . $tablelist::themeDefaults(-selectforeground)]
-    set selectFgEqForeground [expr {$selectFg eq $foreground}]
     variable currentTheme [tablelist::getCurrentTheme]
     if {$currentTheme ne "aqua"} {
+	option add *DemoTop.tf.tbl.background		white
+	option add *DemoTop.tf.tbl.stripeBackground	#f0f0f0
+    }
+    tablelist::setThemeDefaults
+    if {[tk windowingsystem] eq "x11"} {
+	option add *DemoTop*Font			TkDefaultFont
 	option add *DemoTop*selectBackground \
 		   $tablelist::themeDefaults(-selectbackground)
 	option add *DemoTop*selectForeground \
 		   $tablelist::themeDefaults(-selectforeground)
-	option add *DemoTop*selectBorderWidth \
-		   $tablelist::themeDefaults(-selectborderwidth)
     }
+    option add *DemoTop*selectBorderWidth \
+	       $tablelist::themeDefaults(-selectborderwidth)
+    set foreground [winfo rgb . $tablelist::themeDefaults(-foreground)]
+    set selectFg   [winfo rgb . $tablelist::themeDefaults(-selectforeground)]
+    set selectFgEqForeground [expr {$selectFg eq $foreground}]
     option add *DemoTop.tf.borderWidth			1
     option add *DemoTop.tf.relief			sunken
     option add *DemoTop.tf.tbl.borderWidth		0
-    option add *DemoTop.tf.tbl.background		white
-    option add *DemoTop.tf.tbl.stripeBackground		#f0f0f0
     option add *DemoTop.tf.tbl.setGrid			yes
-    option add *DemoTop.tf.tbl*Entry.background		white
     option add *DemoTop.bf.TButton.width		10
 }
 
@@ -102,7 +101,7 @@ proc demo::displayConfig w {
 	$tbl configure -spacing 1
     }
     $tbl columnconfigure 3 -maxwidth 30
-    $tbl columnconfigure 4 -maxwidth 30 -editable yes
+    $tbl columnconfigure 4 -maxwidth 30 -editable yes -editwindow ttk::entry
     ttk::scrollbar $vsb -orient vertical   -command [list $tbl yview]
     ttk::scrollbar $hsb -orient horizontal -command [list $tbl xview]
 

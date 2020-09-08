@@ -5,29 +5,23 @@
 #==============================================================================
 
 #
-# Get the current windowing system ("x11", "win32", or
-# "aqua") and add some entries to the Tk option database
+# Add some entries to the Tk option database
 #
-if {[tk windowingsystem] eq "x11"} {
-    option add *Font			TkDefaultFont
+if {[tablelist::getCurrentTheme] ne "aqua"} {
+    option add *Tablelist.background		white
+    option add *Tablelist.stripeBackground	#f0f0f0
 }
 tablelist::setThemeDefaults
-if {[tablelist::getCurrentTheme] eq "aqua"} {
-    option add *Listbox.selectBackground \
-	       $tablelist::themeDefaults(-selectbackground)
-    option add *Listbox.selectForeground \
-	       $tablelist::themeDefaults(-selectforeground)
-} else {
+if {[tk windowingsystem] eq "x11"} {
+    option add *Font		  TkDefaultFont
     option add *selectBackground  $tablelist::themeDefaults(-selectbackground)
     option add *selectForeground  $tablelist::themeDefaults(-selectforeground)
 }
-option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)
-option add *Tablelist.background	white
-option add *Tablelist.stripeBackground	#f0f0f0
-option add *Tablelist.setGrid		yes
-option add *Tablelist.movableColumns	yes
-option add *Tablelist.labelCommand	tablelist::sortByColumn
-option add *Tablelist.labelCommand2	tablelist::addToSortColumns
+option add *selectBorderWidth	  $tablelist::themeDefaults(-selectborderwidth)
+option add *Tablelist.setGrid			yes
+option add *Tablelist.movableColumns		yes
+option add *Tablelist.labelCommand		tablelist::sortByColumn
+option add *Tablelist.labelCommand2		tablelist::addToSortColumns
 option add *ScrollArea.borderWidth		1
 option add *ScrollArea.relief			sunken
 option add *ScrollArea.Tablelist.borderWidth	0

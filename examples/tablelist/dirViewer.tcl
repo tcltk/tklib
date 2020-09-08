@@ -8,7 +8,7 @@
 #==============================================================================
 
 package require Tk 8.3
-package require tablelist 6.10
+package require tablelist 6.11
 
 #
 # Add some entries to the Tk option database

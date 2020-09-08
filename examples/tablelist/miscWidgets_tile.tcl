@@ -8,7 +8,7 @@
 # Copyright (c) 2004-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.10
+package require tablelist_tile 6.11
 package require combobox
 package require mentry
 
@@ -240,7 +240,7 @@ proc editEndCmd {tbl row col text} {
 	    #
 	    # Check whether the last argument is a clock value in seconds
 	    #
-	    if {![string is digit $text]} {
+	    if {[info exists ::msgs($text)]} {
 		bell
 		tk_messageBox -title "Error" -icon error -message $::msgs($text)
 		$tbl rejectinput
@@ -269,7 +269,7 @@ proc editEndCmd {tbl row col text} {
 	    #
 	    # Check whether the last argument is a clock value in seconds
 	    #
-	    if {![string is digit $text]} {
+	    if {[info exists ::msgs($text)]} {
 		bell
 		tk_messageBox -title "Error" -icon error -message $::msgs($text)
 		$tbl rejectinput
