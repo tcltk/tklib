@@ -10,7 +10,7 @@ namespace eval ::scrollutil {
     #
     # Public variables:
     #
-    variable version	1.6
+    variable version	1.7
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -82,3 +82,15 @@ proc ::scrollutil::createTkAliases {} {
 # set up in the subdirectory "scripts" (see the file "tclIndex").
 #
 lappend auto_path [file join $::scrollutil::library scripts]
+
+#
+# Load the packages mwutil and scaleutil from the directory "scripts/utils"
+#
+if {[catch {package present mwutil} version] == 0 && $version < 2.17} {
+    package forget mwutil
+}
+package require mwutil 2.17
+if {[catch {package present scaleutil} version] == 0 && $version < 1.1} {
+    package forget scaleutil
+}
+package require scaleutil 1.1

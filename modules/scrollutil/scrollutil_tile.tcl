@@ -8,7 +8,7 @@ package require Tk 8.4
 if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     package require tile 0.6
 }
-package require -exact scrollutil::common 1.6
+package require -exact scrollutil::common 1.7
 
 package provide scrollutil_tile $::scrollutil::version
 package provide Scrollutil_tile $::scrollutil::version
