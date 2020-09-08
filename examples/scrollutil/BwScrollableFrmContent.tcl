@@ -6,16 +6,10 @@
 #==============================================================================
 
 #
-# Add some entries to the Tk option database
+# Add an entry to the Tk option database
 #
 tablelist::setThemeDefaults
-if {$ttk::currentTheme eq "aqua"} {
-    option add *Listbox.selectBackground \
-	       $tablelist::themeDefaults(-selectbackground)
-    option add *Listbox.selectForeground \
-	       $tablelist::themeDefaults(-selectforeground)
-}
-option add *selectBorderWidth  $tablelist::themeDefaults(-selectborderwidth)
+option add *selectBorderWidth	$tablelist::themeDefaults(-selectborderwidth)
 
 #
 # Create some widgets in the content frame
@@ -53,6 +47,7 @@ grid $_sa -row $row -rowspan 6 -column 0 -sticky w -padx {7p 0} -pady {4p 0}
 set l [ttk::label $cf.l$row -text "Release:"]
 grid $l -row $row -column 1 -sticky w -padx {7p 0} -pady {4p 0}
 set cb [ttk::combobox $cf.cb -state readonly -width 14]
+bind $cb <<ComboboxSelected>> updateWidgets
 grid $cb -row $row -column 2 -sticky w -padx {4p 7p} -pady {4p 0}
 
 #
@@ -104,8 +99,10 @@ set _sa [scrollutil::scrollarea $cf.sa$row]
 set tbl [tablelist::tablelist $_sa.tbl \
 	 -columns {0 "Release" left  0 "Changes" right  0 "Comment" left} \
 	 -height 16 -width 0 -showseparators yes -incrarrowtype down \
-	 -background white -stripebackground #f0f0f0 \
 	 -labelcommand tablelist::sortByColumn]
+if {$ttk::currentTheme ne "aqua"} {
+    $tbl configure -background white -stripebackground #f0f0f0
+}
 if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
@@ -227,8 +224,17 @@ $tbl insert end $item
 $tv insert {} end -values $item
 
 $tbl header insert 0 \
-	    [list "All [$tbl size] releases" $totalChanges "Total number"]
+     [list "All [$tbl size] releases" $totalChanges "Total number"]
 $tbl header rowconfigure 0 -foreground blue
+
+if {$ttk::currentTheme eq "aqua" &&
+    [package vcompare $tk_patchLevel "8.6.10"] >= 0} {
+    if {[tk::unsupported::MacWindowStyle isdark .]} {
+	$tbl header rowconfigure 0 -foreground SkyBlue
+    }
+    bind . <<LightAqua>> { $tbl header rowconfigure 0 -foreground blue }
+    bind . <<DarkAqua>>  { $tbl header rowconfigure 0 -foreground SkyBlue }
+}
 
 $cb configure -values [$lb get 0 end]
 $cb current 0
@@ -247,6 +253,7 @@ foreach colId [$tv cget -columns] {
 #
 # Set the ScrollableFrame's width, height, and yscrollincrement
 #
+wm withdraw .
 update idletasks
 set width [winfo reqwidth $cf]
 set height [expr {[winfo reqheight $cf.l0] + [winfo pixels . 4p] + \
@@ -269,12 +276,27 @@ pack $b1 -side left -padx 7p -pady {0 7p}
 pack $bf -side bottom -fill x
 pack $tf -side top -expand yes -fill both
 
+wm deiconify .
+
 #
-# Work around an accuracy problem related to the scaling on Cinnamon
+# Work around a potential accuracy problem related to scaling
 #
 tkwait visibility $sf
-if {[lindex [$sf xview] 1] != 1.0} {
+while {[lindex [$sf xview] 1] != 1.0} {
     $sf configure -width [incr width]
+    update idletasks
+}
+
+#------------------------------------------------------------------------------
+
+proc updateWidgets {} {
+    global cb tbl sb e
+    set release [$cb get]
+    set idx [$tbl searchcolumn 0 $release]
+    set item [$tbl get $idx]
+    $sb set [lindex $item 1]
+    $e delete 0 end; $e insert 0 [lindex $item 2]
+    $tbl selection clear 0 end; $tbl selection set $idx; $tbl see $idx
 }
 
 #------------------------------------------------------------------------------

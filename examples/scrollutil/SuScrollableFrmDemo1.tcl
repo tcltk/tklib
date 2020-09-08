@@ -22,11 +22,9 @@ set sf [scrollutil::scrollableframe $sa.sf]
 $sa setwidget $sf
 
 #
-# Create mouse wheel event bindings for the binding tag "all" and
-# register the scrollableframe for scrolling by these bindings
+# Create mouse wheel event bindings for the binding tag "all"
 #
 scrollutil::createWheelEventBindings all
-scrollutil::enableScrollingByWheel $sf
 
 #
 # Get the content frame and populate it
@@ -99,6 +97,7 @@ foreach country $countryList {
 #
 # Set the scrollableframe's width, height, and yscrollincrement
 #
+wm withdraw .
 update idletasks
 set width [winfo reqwidth $cf]
 set rowHeight [expr {[winfo reqheight $cf] / $row}]
@@ -114,12 +113,15 @@ pack $b  -side bottom -pady {0 7p}
 pack $sa -side top -expand yes -fill both -padx 7p -pady 7p
 pack $f  -expand yes -fill both
 
+wm deiconify .
+
 #
-# Work around an accuracy problem related to the scaling on Cinnamon
+# Work around a potential accuracy problem related to scaling
 #
 tkwait visibility $sf
-if {[lindex [$sf xview] 1] != 1.0} {
+while {[lindex [$sf xview] 1] != 1.0} {
     $sf configure -width [incr width]
+    update idletasks
 }
 
 #------------------------------------------------------------------------------

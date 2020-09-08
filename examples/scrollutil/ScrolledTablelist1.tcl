@@ -78,7 +78,7 @@ grid columnconfigure $frm 1 -weight 1
 # Create a ttk::button widget outside the frame
 #
 set b [ttk::button $f.b -text "Close" -command exit]
-pack $b -side bottom -pady {0 10}
+pack $b -side bottom -pady {0 7p}
 
 #
 # Manage the frame

@@ -5,14 +5,22 @@
 #==============================================================================
 
 #
+# To set the "-autohidescrollbars" option of all scrollarea
+# widgets in all demo scripts to true, uncomment the line below:
+#
+# option add *Scrollarea.autoHideScrollbars 1
+
+#
 # On X11 use a slightly patched variant of the "clam" theme
 #
 if {[tk windowingsystem] eq "x11"} {
-    ttk::setTheme clam
+    font configure TkHeadingFont -weight normal		;# default: bold
 
     option add *selectBackground	  #4a6984	;# default: #c3c3c3
     option add *selectForeground	  #ffffff	;# default: #000000
     option add *inactiveSelectBackground  #9e9a91	;# default: #c3c3c3
+
+    ttk::setTheme clam
 
     ttk::style configure TButton -padding 3 -width -9	;# default: 5, -11
     ttk::style configure Heading -padding 1		;# default: 3

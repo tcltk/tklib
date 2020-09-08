@@ -110,6 +110,7 @@ foreach country $countryList {
 #
 # Set the ScrollableFrame's width, height, and yscrollincrement
 #
+wm withdraw .
 update idletasks
 set width [winfo reqwidth $cf]
 set rowHeight [expr {[winfo reqheight $cf] / $row}]
@@ -125,12 +126,15 @@ pack $b  -side bottom -pady {0 7pt}
 pack $sa -side top -expand yes -fill both -padx 7pt -pady 7pt
 pack $f  -expand yes -fill both
 
+wm deiconify .
+
 #
-# Work around an accuracy problem related to the scaling on Cinnamon
+# Work around a potential accuracy problem related to scaling
 #
 tkwait visibility $sf
-if {[lindex [$sf xview] 1] != 1.0} {
+while {[lindex [$sf xview] 1] != 1.0} {
     $sf configure -width [incr width]
+    update idletasks
 }
 
 #------------------------------------------------------------------------------

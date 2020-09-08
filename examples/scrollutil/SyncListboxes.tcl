@@ -63,12 +63,14 @@ foreach capital $capitalList {
     $lb2 insert end "  $capital  "
 }
 
-$lb1 configure -background white
-$lb2 configure -background white
-set itemCount [$lb1 size]
-for {set idx 1} {$idx < $itemCount} {incr idx 2} {
-    $lb1 itemconfigure $idx -background #f0f0f0
-    $lb2 itemconfigure $idx -background #f0f0f0
+if {$ttk::currentTheme ne "aqua"} {
+    set itemCount [$lb1 size]
+    foreach lb [list $lb1 $lb2] {
+	$lb configure -background white
+	for {set idx 1} {$idx < $itemCount} {incr idx 2} {
+	    $lb itemconfigure $idx -background #f0f0f0
+	}
+    }
 }
 
 grid $lb1 $lb2 -sticky news -padx {0 1.5p}

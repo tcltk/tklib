@@ -38,8 +38,10 @@ $sa setwidget $ss
 # Populate the scrollsync widget with three tablelists
 #
 
-option add *Tablelist.background	white
-option add *Tablelist.stripeBackground	#f0f0f0
+if {$ttk::currentTheme ne "aqua"} {
+    option add *Tablelist.background		white
+    option add *Tablelist.stripeBackground	#f0f0f0
+}
 
 for {set n 1; set colWidth 40} {$n <= 3} {incr n; incr colWidth 20} {
     set tbl [tablelist::tablelist $ss.tbl$n \

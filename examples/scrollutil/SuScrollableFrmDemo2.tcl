@@ -47,11 +47,9 @@ proc seeScrollarea {sf w} { $sf see [scrollutil::getscrollarea $w] }
 #
 
 #
-# Create mouse wheel event bindings for the binding tag "all" and
-# register the scrollableframe for scrolling by these bindings
+# Create mouse wheel event bindings for the binding tag "all"
 #
 scrollutil::createWheelEventBindings all
-scrollutil::enableScrollingByWheel $sf
 
 #
 # Adapt the handling of the mouse wheel events for the text, listbox,

@@ -59,10 +59,10 @@ $tbl insertlist end $itemList
 # Create a ttk::button widget outside the scrollarea
 #
 set b [ttk::button $f.b -text "Close" -command exit]
-pack $b -side bottom -pady {0 10}
+pack $b -side bottom -pady {0 7p}
 
 #
 # Manage the scrollarea
 #
-pack $sa -expand yes -fill both -padx 10 -pady 10
+pack $sa -expand yes -fill both -padx 7p -pady 7p
 pack $f  -expand yes -fill both
