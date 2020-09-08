@@ -13,7 +13,7 @@
   <div align="center">
     <h1>Commands Related to Tile Themes</h1>
 
-    <h2>For Mentry Version 3.10</h2>
+    <h2>For Mentry Version 3.11</h2>
 
     <h3>by</h3>
 
@@ -225,11 +225,28 @@
     might prove useful for other purposes, as described below.</dd>
 
     <dd class="tm">The <code><b>mentry::setThemeDefaults</b></code> command is
-    invoked by Mentry_tile automatically whenever a mentry widget is createad
-    or the <code><b>&lt;&lt;ThemeChanged&gt;&gt;</b></code> virtual event is
-    received by a mentry widget.&nbsp; In the latter case, the widget is
-    reconfigured, using the new default values of those options that were not
-    set explicitly to values different from the corresponding defaults.</dd>
+    invoked by Mentry_tile automatically at application start time and when the
+    <code><b>&lt;&lt;ThemeChanged&gt;&gt;</b></code> virtual event is sent to
+    the main window.&nbsp; It is also invoked on Mac OS 10.14 (Mojave) and
+    later whenever the main window receives a
+    <code><b>&lt;&lt;LightAqua&gt;&gt;</b></code> or
+    <code><b>&lt;&lt;DarkAqua&gt;&gt;</b></code> virtual event, if the current
+    theme is <code>aqua</code>.&nbsp; In these cases, after invoking the
+    <code><b>mentry::setThemeDefaults</b></code> command, Mentry_tile sends the
+    virtual event
+    <code><b>&lt;&lt;MentryThemeDefaultsChanged&gt;&gt;</b></code> to the main
+    window and reconfigures all mentry widgets of the application, using the
+    new default values of those options that were not set explicitly to values
+    different from the corresponding defaults.</dd>
+
+    <dd class="tm">On Mac OS 10.14 (Mojave) and later, the virtual events
+    <code><b>&lt;&lt;LightAqua&gt;&gt;</b></code> and
+    <code><b>&lt;&lt;DarkAqua&gt;&gt;</b></code> are sent by Tk 8.6.10 and
+    later to all toplevel widgets whenever the system appearance toggles
+    between Light Mode and Dark Mode or the Accent Color in the General
+    Preferences changes.&nbsp; Tk versions 8.6.11 and later send these events
+    on Mac OS 10.15 (Catalina) and later also when changing the Highlight Color
+    in the General Preferences.</dd>
 
     <dd class="tm">Besides being used by the Mentry_tile code, this command can
     also be invoked in Tcl scripts, still before creating any tile-based mentry
@@ -242,18 +259,43 @@
     <dd>
       <blockquote>
         <pre>
-mentry::setThemeDefaults
-option add *Text.background   $mentry::themeDefaults(-background)
-option add *Text.foreground   $mentry::themeDefaults(-foreground)
-option add *Font              $mentry::themeDefaults(-font)
-option add *selectBackground  $mentry::themeDefaults(-selectbackground)
-option add *selectForeground  $mentry::themeDefaults(-selectforeground)
-option add *selectBorderWidth $mentry::themeDefaults(-selectborderwidth)
+<span class="red">mentry::setThemeDefaults</span>
+if {[tk windowingsystem] eq "x11"} {
+    option add *Text.background   $mentry::themeDefaults(-background)
+    option add *Text.foreground   $mentry::themeDefaults(-foreground)
+    option add *selectBackground  $mentry::themeDefaults(-selectbackground)
+    option add *selectForeground  $mentry::themeDefaults(-selectforeground)
+}
+option add *selectBorderWidth     $mentry::themeDefaults(-selectborderwidth)
+option add *Font                  $mentry::themeDefaults(-font)
 </pre>
       </blockquote>
     </dd>
 
-    <dt><b>KEYWORDS</b></dt>
+    <dd>You can also make use of the virtual event
+    <code><b>&lt;&lt;MentryThemeDefaultsChanged&gt;&gt;</b></code> to update
+    the appearance of your Tk widgets according to the new values contained in
+    the array <code><b>mentry::themeDefaults</b></code>, by binding to the
+    dedicated binding tag <code><b>MentryMain</b></code> associated with the
+    main window:</dd>
+
+    <dd>
+      <blockquote>
+        <pre>
+bind MentryMain &lt;&lt;MentryThemeDefaultsChanged&gt;&gt; ...
+</pre>
+      </blockquote>
+    </dd>
+
+    <dd>The binding tag <code><b>MentryMain</b></code> is assigned by
+    Mentry_tile to the main window and used internally for handling the virtual
+    events <code><b>&lt;&lt;ThemeChanged&gt;&gt;</b></code>,
+    <code><b>&lt;&lt;LightAqua&gt;&gt;</b></code>, and
+    <code><b>&lt;&lt;DarkAqua&gt;&gt;</b></code>.&nbsp; As shown above,
+    applications can make use of it, e.g., to handle the virtual event
+    <code><b>&lt;&lt;MentryThemeDefaultsChanged&gt;&gt;</b></code>.</dd>
+
+    <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>mentry, theme, tile</dd>
   </dl>
