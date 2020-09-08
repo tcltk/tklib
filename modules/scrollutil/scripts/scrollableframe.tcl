@@ -264,6 +264,18 @@ proc scrollutil::scrollableframe args {
     rename ::$win sf::$win
     interp alias {} ::$win {} scrollutil::sf::scrollableframeWidgetCmd $win
 
+    #
+    # Register the scrollableframe widget for scrolling by the mouse wheel
+    #
+    if {[string compare $::tcl_platform(platform) "windows"] == 0} {
+	if {$::tk_version >= 8.6 &&
+	    [package vcompare $::tk_patchLevel "8.6b2"] >= 0} {
+	    enableScrollingByWheel $win
+	}
+    } elseif {[package vcompare $::tk_version "8.4"] >= 0} {
+	enableScrollingByWheel $win
+    }
+
     return $win
 }
 
@@ -659,7 +671,7 @@ proc scrollutil::sf::xviewSubCmd {win argList} {
 	    # Command: $win xview moveto <fraction>
 	    #	       $win xview scroll <number> units|pages
 	    #
-	    set argList [mwutil::getScrollInfo2 "$win xview" $argList]
+	    set argList [mwutil::getScrollInfo "$win xview" $argList]
 	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
 		set number ""
 		set fraction [lindex $argList 1]
@@ -717,7 +729,7 @@ proc scrollutil::sf::yviewSubCmd {win argList} {
 	    # Command: $win yview moveto <fraction>
 	    #	       $win yview scroll <number> units|pages
 	    #
-	    set argList [mwutil::getScrollInfo2 "$win yview" $argList]
+	    set argList [mwutil::getScrollInfo "$win yview" $argList]
 	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
 		set number ""
 		set fraction [lindex $argList 1]
@@ -833,11 +845,8 @@ proc scrollutil::sf::applyOffset {win axis offset force} {
 #------------------------------------------------------------------------------
 proc scrollutil::sf::onScrollableframeMfConfigure {mf width height} {
     set win [winfo parent $mf]
-    if {![array exists ::scrollutil::ns${win}::data]} {
-	return ""
-    }
-
     upvar ::scrollutil::ns${win}::data data
+
     if {$width != $data(mfWidth)} {
 	set data(mfWidth) $width
 	if {$data(-fitcontentwidth)} {
@@ -859,11 +868,8 @@ proc scrollutil::sf::onScrollableframeMfConfigure {mf width height} {
 #------------------------------------------------------------------------------
 proc scrollutil::sf::onScrollableframeCfConfigure {cf width height} {
     set win [winfo parent [winfo parent $cf]]
-    if {![array exists ::scrollutil::ns${win}::data]} {
-	return ""
-    }
-
     upvar ::scrollutil::ns${win}::data data
+
     if {$width != $data(cfWidth)} {
 	set data(cfWidth) $width
 	xviewSubCmd $win {scroll 0 units}

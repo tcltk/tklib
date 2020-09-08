@@ -71,7 +71,8 @@ proc scrollutil::createBindings {} {
 	    bind Scrollbar <Button-4>	    [list $scrollByUnits %W hv -5]
 	    bind Scrollbar <Button-5>	    [list $scrollByUnits %W hv  5]
 
-	    if {[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+	    if {$::tk_version >= 8.7 &&
+		[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
 		bind Scrollbar <Button-6>   [list $scrollByUnits %W hv -5]
 		bind Scrollbar <Button-7>   [list $scrollByUnits %W hv  5]
 	    }
@@ -85,7 +86,8 @@ proc scrollutil::createBindings {} {
 	}
 	x11 {
 	    lappend eventList <Button-4> <Button-5>
-	    if {[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+	    if {$::tk_version >= 8.7 &&
+		[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
 		lappend eventList <Button-6> <Button-7>
 	    }
 	}
@@ -99,7 +101,8 @@ proc scrollutil::createBindings {} {
 	bind TScrollbar $event [bind Scrollbar $event]
     }
 
-    if {$winSys eq "win32" && [package vcompare $::tk_patchLevel "8.6b2"] < 0} {
+    if {$winSys eq "win32" && ($::tk_version < 8.6 ||
+	[package vcompare $::tk_patchLevel "8.6b2"] < 0)} {
 	return ""
     }
 
@@ -230,7 +233,8 @@ proc scrollutil::addMouseWheelSupport {tag {axes "xy"}} {
 		bind $tag <Shift-Button-5> \
 		    [format {%%W xview scroll  5 units%s} $tail]
 
-		if {[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+		if {$::tk_version >= 8.7 &&
+		    [package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
 		    bind $tag <Button-6> \
 			[format {%%W xview scroll -5 units%s} $tail]
 		    bind $tag <Button-7> \
@@ -312,7 +316,8 @@ proc scrollutil::createWheelEventBindings args {
 		    scrollutil::scrollByUnits %W %X %Y x  5
 		}
 
-		if {[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+		if {$::tk_version >= 8.7 &&
+		    [package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
 		    bind $tag <Button-6> {
 			scrollutil::scrollByUnits %W %X %Y x -5
 		    }

@@ -4,7 +4,7 @@
 # Structure of the module:
 #   - Namespace initialization
 #   - Private procedure creating the default bindings
-#   - Public procedures creating or quering a scrollsync widget
+#   - Public procedures creating or querying a scrollsync widget
 #   - Private configuration procedures
 #   - Private procedures implementing the scrollsync widget command
 #   - Private callback procedure
@@ -122,8 +122,8 @@ proc scrollutil::ss::createBindings {} {
 }
 
 #
-# Public procedures creating or quering a scrollsync widget
-# =========================================================
+# Public procedures creating or querying a scrollsync widget
+# ==========================================================
 #
 
 #------------------------------------------------------------------------------
@@ -438,7 +438,7 @@ proc scrollutil::ss::viewSubCmd {win axis argList} {
 	    # Command: $win (x|y)view moveto <fraction>
 	    #	       $win (x|y)view scroll <number> units|pages
 	    #
-	    set argList [mwutil::getScrollInfo2 "$win $viewCmd" $argList]
+	    set argList [mwutil::getScrollInfo "$win $viewCmd" $argList]
 	    if {[string length $masterWidget] != 0} {
 		eval [list ::$masterWidget] $viewCmd $argList
 	    }
