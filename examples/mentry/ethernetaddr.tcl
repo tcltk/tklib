@@ -3,7 +3,7 @@
 #==============================================================================
 # Demonstrates how to implement a multi-entry widget for Ethernet addresses.
 #
-# Copyright (c) 1999-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require mentry
@@ -142,7 +142,7 @@ proc checkIfEthernetAddrMentry win {
 frame .f
 label .f.l -text "A mentry widget for Ethernet addresses,\nwith automatic\
 		  uppercase conversion:"
-ethernetAddrMentry .f.me -justify center -background white
+ethernetAddrMentry .f.me -justify center
 pack .f.l .f.me
 
 #
@@ -162,7 +162,7 @@ button .get -text "Get from mentry" -command {
 #
 # Label .addr displaying the result of getEthernetAddr
 #
-label .addr -textvariable addr -background white
+label .addr -textvariable addr
 
 #
 # Frame .sep and button .close
@@ -173,11 +173,11 @@ button .close -text Close -command exit
 #
 # Manage the widgets
 #
-pack .close -side bottom -pady 10
+pack .close -side bottom -pady 7p
 pack .sep -side bottom -fill x
-pack .f -padx 10 -pady 10
-pack .get -padx 10
-pack .addr -padx 10 -pady 10
+pack .f -padx 7p -pady 7p
+pack .get -padx 7p
+pack .addr -padx 7p -pady 7p
 
 putEthernetAddr 0:40:5:E4:99:26 .f.me
 focus [.f.me entrypath 0]

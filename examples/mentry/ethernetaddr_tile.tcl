@@ -3,7 +3,7 @@
 #==============================================================================
 # Demonstrates how to implement a multi-entry widget for Ethernet addresses.
 #
-# Copyright (c) 1999-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require mentry_tile
@@ -168,7 +168,7 @@ ttk::button .base.get -text "Get from mentry" -command {
 #
 # Label .base.addr displaying the result of getEthernetAddr
 #
-ttk::label .base.addr -textvariable addr -background white
+ttk::label .base.addr -textvariable addr
 
 #
 # Separator .sep and button .close
@@ -179,11 +179,11 @@ ttk::button .base.close -text Close -command exit
 #
 # Manage the widgets
 #
-pack .base.close -side bottom -pady 10
+pack .base.close -side bottom -pady 7p
 pack .base.sep -side bottom -fill x
-pack .base.f -padx 10 -pady 10
-pack .base.get -padx 10
-pack .base.addr -padx 10 -pady 10
+pack .base.f -padx 7p -pady 7p
+pack .base.get -padx 7p
+pack .base.addr -padx 7p -pady 7p
 pack .base -expand yes -fill both
 
 putEthernetAddr 0:40:5:E4:99:26 .base.f.me

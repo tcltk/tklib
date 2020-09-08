@@ -3,7 +3,7 @@
 #==============================================================================
 # Demonstrates how to implement a multi-entry widget for 10-digit phone numbers.
 #
-# Copyright (c) 1999-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require mentry
@@ -126,7 +126,7 @@ proc checkIfPhoneNumberMentry win {
 #
 frame .f
 label .f.l -text "A mentry widget for phone numbers:"
-phoneNumberMentry .f.me -background white
+phoneNumberMentry .f.me
 pack .f.l .f.me
 
 #
@@ -155,7 +155,7 @@ button .get -text "Get from mentry" -command {
 #
 # Label .num displaying the result of getPhoneNumber
 #
-label .num -textvariable num -background white
+label .num -textvariable num
 
 #
 # Frame .sep and button .close
@@ -166,11 +166,11 @@ button .close -text Close -command exit
 #
 # Manage the widgets
 #
-pack .close -side bottom -pady 10
+pack .close -side bottom -pady 7p
 pack .sep -side bottom -fill x
-pack .f -padx 10 -pady 10
-pack .get -padx 10
-pack .num -padx 10 -pady 10
+pack .f -padx 7p -pady 7p
+pack .get -padx 7p
+pack .num -padx 7p -pady 7p
 
 putPhoneNumber 1234567890 .f.me
 focus [.f.me entrypath 0]

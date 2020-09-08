@@ -3,7 +3,7 @@
 #==============================================================================
 # Demonstrates how to implement a multi-entry widget for 10-digit phone numbers.
 #
-# Copyright (c) 1999-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require mentry_tile
@@ -161,7 +161,7 @@ ttk::button .base.get -text "Get from mentry" -command {
 #
 # Label .base.num displaying the result of getPhoneNumber
 #
-ttk::label .base.num -textvariable num -background white
+ttk::label .base.num -textvariable num
 
 #
 # Separator .base.sep and button .base.close
@@ -172,11 +172,11 @@ ttk::button .base.close -text Close -command exit
 #
 # Manage the widgets
 #
-pack .base.close -side bottom -pady 10
+pack .base.close -side bottom -pady 7p
 pack .base.sep -side bottom -fill x
-pack .base.f -padx 10 -pady 10
-pack .base.get -padx 10
-pack .base.num -padx 10 -pady 10
+pack .base.f -padx 7p -pady 7p
+pack .base.get -padx 7p
+pack .base.num -padx 7p -pady 7p
 pack .base -expand yes -fill both
 
 putPhoneNumber 1234567890 .base.f.me

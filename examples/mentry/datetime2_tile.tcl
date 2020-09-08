@@ -1,9 +1,9 @@
 #!/usr/bin/env wish
 
 #==============================================================================
-# Demo:	mentry::dateMentry, mentry::putClockVal, mentry::getClockVal.
+# Demo:	mentry::dateTimeMentry, mentry::putClockVal, mentry::getClockVal.
 #
-# Copyright (c) 2008-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2008-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require mentry_tile
@@ -90,7 +90,7 @@ ttk::button .base.get -text "Get from mentry" -command {
 #
 # Label .base.dateTime displaying the result of mentry::getClockVal
 #
-ttk::label .base.dateTime -textvariable dateTime -background white
+ttk::label .base.dateTime -textvariable dateTime
 
 #
 # Separator .base.sep and button .base.close
@@ -101,11 +101,11 @@ ttk::button .base.close -text Close -command exit
 #
 # Manage the widgets
 #
-pack .base.close -side bottom -pady 10
+pack .base.close -side bottom -pady 7p
 pack .base.sep -side bottom -fill x
-pack .base.f -padx 10 -pady 10
-pack .base.get -padx 10
-pack .base.dateTime -padx 10 -pady 10
+pack .base.f -padx 7p -pady 7p
+pack .base.get -padx 7p
+pack .base.dateTime -padx 7p -pady 7p
 pack .base -expand yes -fill both
 
 set clockVal [clock seconds]

@@ -4,7 +4,7 @@
 # Demo:	mentry::dateMentry, mentry::timeMentry, mentry::putClockVal,
 #	mentry::getClockVal.
 #
-# Copyright (c) 1999-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require mentry
@@ -53,11 +53,11 @@ wm deiconify .
 frame .f
 label .f.lDate -text "Date: "
 mentry::dateMentry .f.date $dateFmts($dateIdx) $dateSeps($dateIdx) \
-		   -justify center -background white
-frame .f.gap -width 10
+		   -justify center
+frame .f.gap -width 7p
 label .f.lTime -text "Time: "
 mentry::timeMentry .f.time $timeFmts($timeIdx) $timeSeps($timeIdx) \
-		   -justify center -background white
+		   -justify center
 pack .f.lDate .f.date .f.gap .f.lTime .f.time -side left
 
 #
@@ -90,7 +90,7 @@ button .get -text "Get from mentries" -command {
 #
 # Label .dateTime displaying the result of mentry::getClockVal
 #
-label .dateTime -textvariable dateTime -background white
+label .dateTime -textvariable dateTime
 
 #
 # Frame .sep and button .close
@@ -101,11 +101,11 @@ button .close -text Close -command exit
 #
 # Manage the widgets
 #
-pack .close -side bottom -pady 10
+pack .close -side bottom -pady 7p
 pack .sep -side bottom -fill x
-pack .f -padx 10 -pady 10
-pack .get -padx 10
-pack .dateTime -padx 10 -pady 10
+pack .f -padx 7p -pady 7p
+pack .get -padx 7p
+pack .dateTime -padx 7p -pady 7p
 
 set clockVal [clock seconds]
 mentry::putClockVal $clockVal .f.date

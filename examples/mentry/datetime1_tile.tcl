@@ -4,7 +4,7 @@
 # Demo:	mentry::dateMentry, mentry::timeMentry, mentry::putClockVal,
 #	mentry::getClockVal.
 #
-# Copyright (c) 1999-2019  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require mentry_tile
@@ -60,7 +60,7 @@ ttk::frame .base.f
 ttk::label .base.f.lDate -text "Date: "
 mentry::dateMentry .base.f.date $dateFmts($dateIdx) $dateSeps($dateIdx) \
 		   -justify center
-ttk::frame .base.f.gap -width 10
+ttk::frame .base.f.gap -width 7p
 ttk::label .base.f.lTime -text "Time: "
 mentry::timeMentry .base.f.time $timeFmts($timeIdx) $timeSeps($timeIdx) \
 		   -justify center
@@ -97,7 +97,7 @@ ttk::button .base.get -text "Get from mentries" -command {
 #
 # Label .base.dateTime displaying the result of mentry::getClockVal
 #
-ttk::label .base.dateTime -textvariable dateTime -background white
+ttk::label .base.dateTime -textvariable dateTime
 
 #
 # Separator .base.sep and button .base.close
@@ -108,11 +108,11 @@ ttk::button .base.close -text Close -command exit
 #
 # Manage the widgets
 #
-pack .base.close -side bottom -pady 10
+pack .base.close -side bottom -pady 7p
 pack .base.sep -side bottom -fill x
-pack .base.f -padx 10 -pady 10
-pack .base.get -padx 10
-pack .base.dateTime -padx 10 -pady 10
+pack .base.f -padx 7p -pady 7p
+pack .base.get -padx 7p
+pack .base.dateTime -padx 7p -pady 7p
 pack .base -expand yes -fill both
 
 set clockVal [clock seconds]
