@@ -2226,8 +2226,8 @@ proc tablelist::makeSortAndArrowColLists win {
     # Deselect all header labels and select that of the main sort column
     #
     variable specialAquaHandling
-    if {$specialAquaHandling &&
-	[string compare [mwutil::currentTheme] "aqua"] == 0} {
+    variable currentTheme
+    if {$specialAquaHandling && [string compare $currentTheme "aqua"] == 0} {
 	for {set col 0} {$col < $data(colCount)} {incr col} {
 	    configLabel $data(hdrTxtFrmLbl)$col -selected 0
 	}
@@ -2689,8 +2689,9 @@ proc tablelist::adjustSeps win {
 	    incr sepHeight 3
 	}
     }
+    variable currentTheme
     variable newAquaSupport
-    if {$usingTile && [string compare [mwutil::currentTheme] "aqua"] == 0 &&
+    if {$usingTile && [string compare $currentTheme "aqua"] == 0 &&
 	$newAquaSupport} {
 	incr y -4
     }
@@ -2719,7 +2720,7 @@ proc tablelist::getSepX {} {
     set x 1
     variable usingTile
     if {$usingTile} {
-	set currentTheme [mwutil::currentTheme]
+	variable currentTheme
 	variable xpStyle
 	if {([string compare $currentTheme "aqua"] == 0) ||
 	    ([string compare $currentTheme "xpnative"] == 0 && $xpStyle)} {
@@ -2753,9 +2754,10 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 	[expr {[string compare $whichWidths "allLabels"] == 0}]
 
     variable usingTile
+    variable currentTheme
     variable newAquaSupport
     set aquaTheme [expr {$usingTile &&
-	[string compare [mwutil::currentTheme] "aqua"] == 0}]
+	[string compare $currentTheme "aqua"] == 0}]
 
     #
     # Configure the labels and compute the positions
@@ -2983,9 +2985,10 @@ proc tablelist::adjustLabel {win col pixels alignment} {
     set marginL $data(charWidth)
     set marginR $data(charWidth)
     variable usingTile
+    variable currentTheme
     variable newAquaSupport
     set aquaTheme [expr {$usingTile &&
-	[string compare [mwutil::currentTheme] "aqua"] == 0}]
+	[string compare $currentTheme "aqua"] == 0}]
     if {$aquaTheme && !$newAquaSupport} {
 	incr padL
 	incr marginL
@@ -3507,7 +3510,8 @@ proc tablelist::adjustHeaderHeight win {
     set cornerFrmHeight $hdrHeight
     if {$data(hdr_itemCount) != 0} {
 	variable usingTile
-	if {$usingTile && [string compare [mwutil::currentTheme] "aqua"] == 0} {
+	variable currentTheme
+	if {$usingTile && [string compare $currentTheme "aqua"] == 0} {
 	    incr cornerFrmHeight -1
 	} else {
 	    incr cornerFrmHeight -2
@@ -6112,7 +6116,7 @@ proc tablelist::getShadows {w color darkColorName lightColorName} {
     #
     # Compute the dark shadow color
     #
-    if {[string compare $::tk_patchLevel "8.3.1"] >= 0 &&
+    if {[package vcompare $::tk_patchLevel "8.3.1"] >= 0 &&
 	$r*0.5*$r + $g*1.0*$g + $b*0.28*$b < $maxIntens*0.05*$maxIntens} {
 	#
 	# The background is already very dark: make the dark
@@ -6136,7 +6140,7 @@ proc tablelist::getShadows {w color darkColorName lightColorName} {
     #
     # Compute the light shadow color
     #
-    if {[string compare $::tk_patchLevel "8.3.1"] >= 0 &&
+    if {[package vcompare $::tk_patchLevel "8.3.1"] >= 0 &&
 	$g > $maxIntens*0.95} {
 	#
 	# The background is already very bright: make the
@@ -6684,7 +6688,7 @@ proc tablelist::makeTileCheckbutton w {
     # Define the checkbutton layout; use catch to suppress
     # the error message in case the layout already exists
     #
-    set currentTheme [mwutil::currentTheme]
+    variable currentTheme
     switch -- $currentTheme {
 	aqua {
 	    catch {style layout Tablelist.TCheckbutton { Checkbutton.button }}
@@ -6723,12 +6727,22 @@ proc tablelist::makeTileCheckbutton w {
     set frm [winfo parent $w]
     switch -- $currentTheme {
 	aqua {
-	    $frm configure -width 16 -height 16
-	    variable newAquaSupport
-	    if {$newAquaSupport} {
-		place $w -x -1 -y -2
+	    variable extendedAquaSupport
+	    if {$extendedAquaSupport} {
+		$frm configure -width 14 -height 14
+		place $w -x -2 -y -3
 	    } else {
-		place $w -x -3 -y -3
+		$frm configure -width 16 -height 16
+		variable newAquaSupport
+		if {$newAquaSupport} {
+		    if {[tk::unsupported::MacWindowStyle isdark .]} {
+			place $w -x 0 -y -2
+		    } else {
+			place $w -x -1 -y -2
+		    }
+		} else {
+		    place $w -x -3 -y -3
+		}
 	    }
 	}
 

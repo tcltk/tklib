@@ -1205,9 +1205,10 @@ proc tablelist::createTileEntry {w args} {
     # -borderwidth 2 setting, set the padding to another value.
     #
     set win [getTablelistPath $w]
-    switch -- [mwutil::currentTheme] {
+    variable currentTheme
+    switch -- $currentTheme {
 	aqua {
-	    set padding {0 0 0 -1}
+	    set padding 0
 	}
 
 	tileqt {
@@ -1256,9 +1257,10 @@ proc tablelist::createTileSpinbox {w args} {
     # -borderwidth 2 setting, set the padding to another value.
     #
     set win [getTablelistPath $w]
-    switch -- [mwutil::currentTheme] {
+    variable currentTheme
+    switch -- $currentTheme {
 	aqua {
-	    set padding {0 0 0 -1}
+	    set padding 0
 	}
 
 	tileqt {
@@ -1309,8 +1311,9 @@ proc tablelist::createTileCombobox {w args} {
     createTileAliases 
 
     set win [getTablelistPath $w]
-    if {[string compare [mwutil::currentTheme] "aqua"] == 0} {
-	styleConfig Tablelist.TCombobox -borderwidth 2 -padding {0 0 0 -1}
+    variable currentTheme
+    if {[string compare $currentTheme "aqua"] == 0} {
+	styleConfig Tablelist.TCombobox -borderwidth 2 -padding 0
     } else {
 	styleConfig Tablelist.TCombobox -borderwidth 2 -padding 1
     }
@@ -2206,6 +2209,30 @@ proc tablelist::adjustEditWindow {win pixels} {
 	setImgLabelWidth $data(body) editAuxMark $auxWidth
     }
 
+    switch [winfo class $data(bodyFrmEd)] {
+	Text -
+	Ctext { set amount 4 }
+	TEntry {
+	    variable currentTheme
+	    if {[string compare $currentTheme "aqua"] == 0} {
+		variable newAquaSupport
+		set amount [expr {$newAquaSupport ? 7 : 5}]
+	    } else {
+		set amount 3
+	    }
+	}
+	Mentry {
+	    variable currentTheme
+	    if {$::mentry::usingTile &&
+		[string compare $currentTheme "aqua"] == 0} {
+		set amount 5
+	    } else {
+		set amount 3
+	    }
+	}
+	default { set amount 3 }
+    }
+
     #
     # Compute an appropriate width and horizontal
     # padding for the frame containing the edit window
@@ -2216,23 +2243,13 @@ proc tablelist::adjustEditWindow {win pixels} {
 	[set reqWidth [winfo reqwidth $data(bodyFrmEd)]] <=
 	$pixels + 2*$data(charWidth)} {
 	set width $reqWidth
-	set padX [expr {$reqWidth <= $pixels ? -3 : ($pixels - $reqWidth) / 2}]
+	set padX [expr {$reqWidth <= $pixels ?
+			-$amount : ($pixels - $reqWidth) / 2}]
     } else {
 	if {$editWin($name-usePadX)} {
 	    set amount $data(charWidth)
-	} else {
-	    switch -- $name {
-		text { set amount 4 }
-		ttk::entry {
-		    if {[string compare [mwutil::currentTheme] "aqua"] == 0} {
-			set amount 5
-		    } else {
-			set amount 3
-		    }
-		}
-		default { set amount 3 }
-	    }
 	}
+
 	set width [expr {$pixels + 2*$amount}]
 	set padX -$amount
     }
@@ -2802,7 +2819,8 @@ proc tablelist::defineTablelistEdit {} {
 	    bind TablelistEditBreak <Shift-Button-$detail> { break }
 	}
 
-	if {[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+	if {$::tk_version >= 8.7 &&
+	    [package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
 	    foreach detail {6 7} {
 		bind TablelistEdit <Button-$detail> [format {
 		    if {[tablelist::hasMouseWheelBindings %%W x]} {

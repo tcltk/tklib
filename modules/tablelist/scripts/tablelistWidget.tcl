@@ -87,11 +87,23 @@ namespace eval tablelist {
 	    interp alias {} ::tablelist::tileqt_currentThemeName \
 			 {} ::ttk::theme::tileqt::currentThemeName
 	    interp alias {} ::tablelist::tileqt_currentThemeColour \
-			 {} ::ttk::theme::tileqt::currentThemeColour
-	}
+			 {} ::ttk::theme::tileqt::currentThemeColour }
     }
     if {$usingTile} {
 	createTileAliases 
+    }
+
+    variable currentTheme [mwutil::currentTheme]
+    variable widgetStyle ""
+    variable colorScheme ""
+    if {[string compare $currentTheme "tileqt"] == 0} {
+	set widgetStyle [tileqt_currentThemeName]
+	if {[info exists ::env(KDE_SESSION_VERSION)] &&
+	    [string length $::env(KDE_SESSION_VERSION)] != 0} {
+	    set colorScheme [getKdeConfigVal "General" "ColorScheme"]
+	} else {
+	    set colorScheme [getKdeConfigVal "KDE" "colorScheme"]
+	}
     }
 
     variable pngSupported [expr {($::tk_version >= 8.6 &&
@@ -102,8 +114,14 @@ namespace eval tablelist {
 	[regexp {^8\.5\.(9|[1-9][0-9])$} $::tk_patchLevel]) &&
 	[lsearch -exact [winfo server .] "AppKit"] >= 0}]
 
-    variable newAquaSupport \
-	[expr {[package vcompare $::tk_patchLevel "8.6.10"] >= 0}]
+    variable newAquaSupport [expr {
+	($::tk_version == 8.6 &&
+	 [package vcompare $::tk_patchLevel "8.6.10"] >= 0) ||
+	($::tk_version >= 8.7 &&
+	 [package vcompare $::tk_patchLevel "8.7a3"] >= 0)}]
+
+    variable extendedAquaSupport \
+	[expr {[lsearch -exact [image types] "nsimage"] >= 0}]
 
     #
     # The array configSpecs is used to handle configuration options.  The
@@ -670,9 +688,9 @@ namespace eval tablelist {
 #------------------------------------------------------------------------------
 # tablelist::createBindings
 #
-# Creates the default bindings for the binding tags Tablelist, TablelistWindow,
-# TablelistKeyNav, TablelistBody, TablelistLabel, TablelistSubLabel,
-# TablelistArrow, and TablelistEdit.
+# Creates the default bindings for the binding tags Tablelist, TablelistMain,
+# TablelistWindow, TablelistKeyNav, TablelistBody, TablelistLabel,
+# TablelistSubLabel, TablelistArrow, and TablelistEdit.
 #------------------------------------------------------------------------------
 proc tablelist::createBindings {} {
     #
@@ -692,9 +710,6 @@ proc tablelist::createBindings {} {
     bind Tablelist <FocusOut>		{ tablelist::removeActiveTag %W }
     bind Tablelist <<TablelistSelect>>	{ event generate %W <<ListboxSelect>> }
     bind Tablelist <Destroy>		{ tablelist::cleanup %W }
-    bind Tablelist <<ThemeChanged>> {
-	after idle [list tablelist::updateConfigSpecs %W]
-    }
     variable usingTile
     if {$usingTile} {
 	bind Tablelist <Activate> {
@@ -702,6 +717,26 @@ proc tablelist::createBindings {} {
 	}
 	bind Tablelist <Deactivate> {
 	    after idle [list tablelist::updateBackgrounds %W 1 0]
+	}
+    }
+
+    #
+    # Define some bindings for the binding tag TablelistMain
+    #
+    bindtags . [linsert [bindtags .] 1 TablelistMain]
+    bind TablelistMain <<ThemeChanged>> {
+	after idle tablelist::handleThemeChangedEvent
+    }
+    variable winSys
+    variable newAquaSupport
+    if {$usingTile && [string compare $winSys "aqua"] == 0 && $newAquaSupport} {
+	foreach event {<<LightAqua>> <<DarkAqua>>} {
+	    bind TablelistMain $event {
+		if {![info exists tablelist::appearanceId]} {
+		    set tablelist::appearanceId \
+			[after 0 tablelist::handleAppearanceEvent]
+		}
+	    }
 	}
     }
 
@@ -723,7 +758,6 @@ proc tablelist::createBindings {} {
     #
     event add <<Button3>> <Button-3>
     event add <<ShiftButton3>> <Shift-Button-3>
-    variable winSys
     if {[string compare $winSys "classic"] == 0 ||
 	[string compare $winSys "aqua"] == 0} {
 	event add <<Button3>> <Control-Button-1>
@@ -859,6 +893,7 @@ proc tablelist::tablelist args {
 	    keyBeingExpanded	 ""
 	    justEntered		 0
 	    inEditWin		 0
+	    inActiveWin		 1
 	    xView		 {-1 -1}
 	    yView		 {-1 -1}
 	}
@@ -890,21 +925,7 @@ proc tablelist::tablelist args {
     foreach opt $configOpts {
 	set data($opt) [lindex $configSpecs($opt) 3]
     }
-    set data(currentTheme) [mwutil::currentTheme]
-    if {[string compare $data(currentTheme) "tileqt"] == 0} {
-	set data(widgetStyle) [tileqt_currentThemeName]
-	if {[info exists ::env(KDE_SESSION_VERSION)] &&
-	    [string length $::env(KDE_SESSION_VERSION)] != 0} {
-	    set data(colorScheme) [getKdeConfigVal "General" "ColorScheme"]
-	} else {
-	    set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
-	}
-    } else {
-	set data(widgetStyle) ""
-	set data(colorScheme) ""
-    }
     if {$usingTile} {
-	setThemeDefaults 
 	variable themeDefaults
 	set data(themeDefaults) [array get themeDefaults]
     }
@@ -972,15 +993,15 @@ proc tablelist::tablelist args {
     bindtags $w [list $w $data(headerTag) TablelistHeader [winfo toplevel $w] \
 		 all]
 
-    tk::frame $data(hdrTxtFrm) -background #eeeeee -borderwidth 0 \
-			       -container 0 -height 0 -highlightthickness 0 \
-			       -relief flat -takefocus 0 -width 0
+    tk::frame $data(hdrTxtFrm) -borderwidth 0 -container 0 -height 0 \
+			       -highlightthickness 0 -relief flat \
+			       -takefocus 0 -width 0
     catch {$data(hdrTxtFrm) configure -padx 0 -pady 0}
     $w window create 1.0 -window $data(hdrTxtFrm) -align top
 
-    tk::frame $data(hdrTxtFrmFrm) -background #c8c8c8 -borderwidth 0 \
-				  -container 0 -height 1 -highlightthickness 0 \
-				  -relief flat -takefocus 0 -width 0
+    tk::frame $data(hdrTxtFrmFrm) -borderwidth 0 -container 0 -height 1 \
+				  -highlightthickness 0 -relief flat \
+				  -takefocus 0 -width 0
     catch {$data(hdrTxtFrmFrm) configure -padx 0 -pady 0}
     place $data(hdrTxtFrmFrm) -relwidth 1.0
 
@@ -994,19 +1015,20 @@ proc tablelist::tablelist args {
     $w tag configure elidedCol -elide 1		;# used for horizontal scrolling
 
     set w $data(hdrFrm)		;# filler frame within the header frame
-    tk::frame $w -background #eeeeee -borderwidth 0 -container 0 -height 0 \
-		 -highlightthickness 0 -relief flat -takefocus 0 -width 0
+    tk::frame $w -borderwidth 0 -container 0 -height 0 -highlightthickness 0 \
+		 -relief flat -takefocus 0 -width 0
     catch {$w configure -padx 0 -pady 0}
     place $w -relwidth 1.0
 
     set w $data(hdrFrmFrm)	;# child of filler frame within the header frame
-    tk::frame $w -background #c8c8c8 -borderwidth 0 -container 0 -height 1 \
-		 -highlightthickness 0 -relief flat -takefocus 0 -width 0
+    tk::frame $w -borderwidth 0 -container 0 -height 1 -highlightthickness 0 \
+		 -relief flat -takefocus 0 -width 0
     catch {$w configure -padx 0 -pady 0}
     place $w -relwidth 1.0
 
+    variable currentTheme
     set aquaTheme [expr {$usingTile &&
-	[string compare [mwutil::currentTheme] "aqua"] == 0}]
+	[string compare $currentTheme "aqua"] == 0}]
 
     set w $data(hdrFrmLbl)	;# label within the filler frame
     set x 0
@@ -1037,16 +1059,33 @@ proc tablelist::tablelist args {
     catch {$w configure -padx 0 -pady 0}
 
     set w $data(cornerFrmFrm)	;# child frame of the north-east corner frame
-    tk::frame $w -background #eeeeee -borderwidth 0 -container 0 -height 0 \
-		 -highlightthickness 0 -relief flat -takefocus 0 -width 0
+    tk::frame $w -borderwidth 0 -container 0 -height 0 -highlightthickness 0 \
+		 -relief flat -takefocus 0 -width 0
     catch {$w configure -padx 0 -pady 0}
     place $w -relwidth 1.0
 
     set w $data(cornerFrmFrmFrm)  ;# grandchild frm of the north-east corner frm
-    tk::frame $w -background #c8c8c8 -borderwidth 0 -container 0 -height 1 \
-		 -highlightthickness 0 -relief flat -takefocus 0 -width 0
+    tk::frame $w -borderwidth 0 -container 0 -height 1 -highlightthickness 0 \
+		 -relief flat -takefocus 0 -width 0
     catch {$w configure -padx 0 -pady 0}
     place $w -relwidth 1.0
+
+    if {$aquaTheme && $newAquaSupport} {
+	set labelBg $themeDefaults(-labelbackground)
+	foreach w [list $data(hdrTxtFrm) $data(hdrFrm) $data(cornerFrmFrm)] {
+	    $w configure -background $labelBg
+	}
+
+	if {[tk::unsupported::MacWindowStyle isdark .]} {
+	    set labelBorderBg #4b4b4b
+	} else {
+	    set labelBorderBg #c8c8c8
+	}
+	foreach w [list $data(hdrTxtFrmFrm) $data(hdrFrmFrm) \
+		   $data(cornerFrmFrmFrm)] {
+	    $w configure -background $labelBorderBg
+	}
+    }
 
     set w $data(cornerLbl)	;# label within the north-east corner frame
     set y 0
@@ -6162,7 +6201,7 @@ proc tablelist::xviewSubCmd {win argList} {
 	    # Command: $win xview moveto <fraction>
 	    #	       $win xview scroll <number> units|pages
 	    #
-	    set argList [mwutil::getScrollInfo2 "$win xview" $argList]
+	    set argList [mwutil::getScrollInfo "$win xview" $argList]
 	    variable winSys
 	    if {$data(-titlecolumns) == 0} {
 		if {[string compare [lindex $argList 0] "moveto"] == 0} {
@@ -6322,7 +6361,7 @@ proc tablelist::yviewSubCmd {win argList} {
 	    # Command: $win yview moveto <fraction>
 	    #	       $win yview scroll <number> units|pages
 	    #
-	    set argList [mwutil::getScrollInfo2 "$win yview" $argList]
+	    set argList [mwutil::getScrollInfo "$win yview" $argList]
 	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
 		set data(vertFraction) [lindex $argList 1]
 		if {![info exists data(vertMoveToId)]} {
@@ -8291,9 +8330,10 @@ proc tablelist::seeCell {win row col} {
 	set rX [expr {$lX + [winfo width $data(hdrTxtFrmLbl)$col] - 1}]
 
 	variable usingTile
+	variable currentTheme
 	variable newAquaSupport
-	if {$usingTile && [string compare [mwutil::currentTheme] "aqua"] == 0
-	    && !$newAquaSupport} {
+	if {$usingTile && [string compare $currentTheme "aqua"] == 0 &&
+	    !$newAquaSupport} {
 	    incr lX
 	    if {$col == 0} {
 		incr lX

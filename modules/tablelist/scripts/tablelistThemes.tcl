@@ -5,7 +5,6 @@
 # Structure of the module:
 #   - Public procedures related to tile themes
 #   - Private procedures related to tile themes
-#   - Private procedures performing RGB <-> HSV conversions
 #   - Private procedures related to global KDE configuration options
 #
 # Copyright (c) 2005-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
@@ -33,7 +32,7 @@ proc tablelist::getCurrentTheme {} {
 #------------------------------------------------------------------------------
 proc tablelist::setThemeDefaults {} {
     variable themeDefaults
-    if {[catch {[mwutil::currentTheme]Theme}] != 0} {
+    if {[catch {[mwutil::currentTheme]Theme} result] != 0} {
 	#
 	# Fall back to the "default" theme (which is the root of all
 	# themes) and then override the options set by the current one
@@ -103,21 +102,37 @@ proc tablelist::altTheme {} {
 #------------------------------------------------------------------------------
 proc tablelist::aquaTheme {} {
     variable newAquaSupport
+    if {$newAquaSupport} {
+	set darkMode   [tk::unsupported::MacWindowStyle isdark .]
+	set disabledFg [expr {$darkMode ? "#646464" : "#b1b1b1"}]
+    } else {
+	set disabledFg #b1b1b1
+    }
+
     scan $::tcl_platform(osVersion) "%d" majorOSVersion
-    if {$majorOSVersion >= 14} {			;# OS X 10.10 or higher
+    if {$majorOSVersion >= 14} {			;# OS X 10.10 or later
 	if {$newAquaSupport} {
-	    set labelBg			#eeeeee
-	    set labeldeactivatedBg	#f6f6f6
-	    set labeldisabledBg		""
-	    set labelpressedBg		#eeeeee
+	    if {$darkMode} {
+		set labelBg		#323232
+		set labeldeactivatedBg	#323232
+		set labeldisabledBg	""
+		set labelpressedBg	#323232
+		set arrowColor		#808080
+	    } else {
+		set labelBg		#eeeeee
+		set labeldeactivatedBg	#f6f6f6
+		set labeldisabledBg	""
+		set labelpressedBg	#eeeeee
+		set arrowColor		#404040
+	    }
 	} else {
 	    set labelBg			#f6f6f6
 	    set labeldeactivatedBg	#ffffff
 	    set labeldisabledBg		#ffffff
 	    set labelpressedBg		#e9e9e9
+	    set arrowColor		#404040
 	}
-	set arrowColor		#404040
-    } elseif {$majorOSVersion >= 11} {			;# OS X 10.7 or higher
+    } elseif {$majorOSVersion >= 11} {			;# OS X 10.7 or later
 	set labelBg		#f3f3f3
 	set labeldeactivatedBg	#f3f3f3
 	set labeldisabledBg	#f3f3f3
@@ -134,16 +149,23 @@ proc tablelist::aquaTheme {} {
     switch [winfo rgb . systemMenuActive] {
 	"13621 29041 52685" -
 	"32256 44288 55552" {				;# Blue Cocoa/Carbon
-	    if {$majorOSVersion >= 14} {		;# OS X 10.10 or higher
-		set stripeBg			#f5f5f5
+	    if {$majorOSVersion >= 14} {		;# OS X 10.10 or later
 		if {$newAquaSupport} {
-		    set labelselectedBg		#eeeeee
-		    set labelselectedpressedBg	#eeeeee
+		    if {$darkMode} {
+			set stripeBg			#292929
+			set labelselectedBg		#323232
+			set labelselectedpressedBg	#323232
+		    } else {
+			set stripeBg			#f5f5f5
+			set labelselectedBg		#eeeeee
+			set labelselectedpressedBg	#eeeeee
+		    }
 		} else {
+		    set stripeBg		#f5f5f5
 		    set labelselectedBg		#f6f6f6
 		    set labelselectedpressedBg	#e9e9e9
 		}
-	    } elseif {$majorOSVersion >= 11} {		;# OS X 10.7 or higher
+	    } elseif {$majorOSVersion >= 11} {		;# OS X 10.7 or later
 		set stripeBg			#f3f6fa
 		set labelselectedBg		#91c5f3
 		set labelselectedpressedBg	#5092e3
@@ -156,16 +178,23 @@ proc tablelist::aquaTheme {} {
 
 	"24415 27499 31354" -
 	"39680 43776 48384" {				;# Graphite Cocoa/Carbon
-	    if {$majorOSVersion >= 14} {		;# OS X 10.10 or higher
-		set stripeBg			#f5f5f5
+	    if {$majorOSVersion >= 14} {		;# OS X 10.10 or later
 		if {$newAquaSupport} {
-		    set labelselectedBg		#eeeeee
-		    set labelselectedpressedBg	#eeeeee
+		    if {$darkMode} {
+			set stripeBg			#292929
+			set labelselectedBg		#323232
+			set labelselectedpressedBg	#323232
+		    } else {
+			set stripeBg			#f5f5f5
+			set labelselectedBg		#eeeeee
+			set labelselectedpressedBg	#eeeeee
+		    }
 		} else {
+		    set stripeBg		#f5f5f5
 		    set labelselectedBg		#f6f6f6
 		    set labelselectedpressedBg	#e9e9e9
 		}
-	    } elseif {$majorOSVersion >= 11} {		;# OS X 10.7 or higher
+	    } elseif {$majorOSVersion >= 11} {		;# OS X 10.7 or later
 		set stripeBg			#f6f7f9
 		set labelselectedBg		#abb6c2
 		set labelselectedpressedBg	#76829a
@@ -178,52 +207,88 @@ proc tablelist::aquaTheme {} {
     }
 
     #
-    # Get an approximation of alternateSelectedControlColor
+    # Get the default value of the -selectbackground option
     #
-    switch [winfo rgb . systemHighlight] {
-	"65535 48058 47288"	{ set selectBg #ff3b30 }
-	"65535 57311 46003"	{ set selectBg #ff9500 }
-	"65535 61423 45231"	{ set selectBg #ffcc00 }
-	"49343 63222 44460"	{ set selectBg #63da38 }
-	"45746 55246 65535"	{ set selectBg #0069d9 }
-	"63478 54484 65535"	{ set selectBg #cc73e1 }
-	"65535 49087 53969"	{ set selectBg #ff2a68 }
-	"60909 57053 51914"	{ set selectBg #a2845e }
-	"55512 55512 56539"	{ set selectBg #6f6f73 }
+    if {$majorOSVersion >= 18} {			;# OS X 10.14 or later
+	if {$newAquaSupport} {
+	    variable channel
+	    if {[info exists channel]} {	;# see proc condOpenPipeline
+		set rgb [gets $channel]
 
-	"51143 53456 56281"	{ set selectBg #738499 }
-	"50887 50887 50887"	{ set selectBg #7f7f7f }
-	"46516 54741 65535"	{ set selectBg #3875d7 }
-	"64506 60908 29556"	{ set selectBg #ffc11f }
-	"65535 45487 35978"	{ set selectBg #f34648 }
-	"65535 53968 33154"	{ set selectBg #ff8a22 }
-	"50114 63994 37263"	{ set selectBg #66c547 }
-	"59879 47290 65535"	{ set selectBg #8c4eb8 }
-
-	default {
-	    set rgb [winfo rgb . systemHighlight]
-	    foreach {h s v} [eval rgb2hsv $rgb] {}
-
-	    set s [expr {$s*4.0/3.0}]
-	    if {$s > 1.0} {
-		set s 1.0
+		puts $channel "exit"
+		flush $channel
+		close $channel
+		unset channel
+	    } else {
+		set rgb [winfo rgb . systemSelectedTextBackgroundColor]
 	    }
 
-	    set v [expr {$v*3.0/4.0}]
-	    if {$v > 1.0} {
-		set v 1.0
+	    if {$darkMode} {
+		switch $rgb {
+		    "16191 25443 35723"	{ set selectBg #0258d0 }
+		    "28784 22102 28784"	{ set selectBg #7f3280 }
+		    "34952 22102 28270"	{ set selectBg #c83179 }
+		    "35723 22359 22616"	{ set selectBg #d03439 }
+		    "34952 25957 18247"	{ set selectBg #c86003 }
+		    "35466 30069 19018"	{ set selectBg #cd8f0e }
+		    "23644 30326 21331"	{ set selectBg #42912a }
+		    "65535 65535 65535"	{ set selectBg #686868 }
+		    default	{ set selectBg systemHighlightAlternate }
+		}
+	    } else {
+		switch $rgb {
+		    "46003 55255 65535"	{ set selectBg #0363e1 }
+		    "57311 50629 57311"	{ set selectBg #7d2a7e }
+		    "64764 51914 58082"	{ set selectBg #d93b85 }
+		    "62965 50115 50629"	{ set selectBg #c3252b }
+		    "64764 55769 48059"	{ set selectBg #d96b0a }
+		    "65278 59881 48830"	{ set selectBg #de9e15 }
+		    "53456 60138 51143"	{ set selectBg #4da032 }
+		    "57568 57568 57568"	{ set selectBg #808080 }
+		    default	{ set selectBg systemHighlightAlternate }
+		}
 	    }
-
-	    set rgb [hsv2rgb $h $s $v]
-	    set selectBg [eval format "#%04x%04x%04x" $rgb]
+	} else {
+	    switch [winfo rgb . systemHighlight] {
+		"45746 55246 65535"	{ set selectBg #0363e1 }
+		"63478 54484 65535"	{ set selectBg #7d2a7e }
+		"65535 49087 53969"	{ set selectBg #d93b85 }
+		"65535 48058 47288"	{ set selectBg #c3252b }
+		"65535 57311 46003"	{ set selectBg #d96b0a }
+		"65535 61423 45231"	{ set selectBg #de9e15 }
+		"49343 63222 44460"	{ set selectBg #4da032 }
+		"55512 55512 56539"	{ set selectBg #808080 }
+		default		{ set selectBg systemHighlightAlternate }
+	    }
 	}
+    } else {
+	set selectBg systemHighlightAlternate
     }
 
     variable themeDefaults
+    if {$newAquaSupport} {
+	array set themeDefaults [list \
+	    -background			systemTextBackgroundColor \
+	    -foreground			systemTextColor \
+	    -labelforeground		systemLabelColor \
+	    -labelactiveFg		systemLabelColor \
+	    -labelpressedFg		systemLabelColor \
+	    -labelselectedFg		systemLabelColor \
+	    -labelselectedpressedFg	systemLabelColor \
+	]
+    } else {
+	array set themeDefaults [list \
+	    -background			systemWindowBody \
+	    -foreground			systemModelessDialogActiveText \
+	    -labelforeground		systemModelessDialogActiveText \
+	    -labelactiveFg		systemModelessDialogActiveText \
+	    -labelpressedFg		systemModelessDialogActiveText \
+	    -labelselectedFg		systemModelessDialogActiveText \
+	    -labelselectedpressedFg	systemModelessDialogActiveText \
+	]
+    }
     array set themeDefaults [list \
-	-background		white \
-	-foreground		black \
-	-disabledforeground	#a3a3a3 \
+	-disabledforeground	$disabledFg \
 	-stripebackground	$stripeBg \
 	-selectbackground	$selectBg \
 	-selectforeground	white \
@@ -236,12 +301,7 @@ proc tablelist::aquaTheme {} {
 	-labelpressedBg		$labelpressedBg \
 	-labelselectedBg	$labelselectedBg \
 	-labelselectedpressedBg	$labelselectedpressedBg \
-	-labelforeground	black \
-	-labeldisabledFg	#a3a3a3 \
-	-labelactiveFg		black \
-	-labelpressedFg		black \
-	-labelselectedFg	black \
-	-labelselectedpressedFg	black \
+	-labeldisabledFg	$disabledFg \
 	-labelfont		TkHeadingFont \
 	-labelborderwidth	1 \
 	-labelpady		1 \
@@ -250,7 +310,7 @@ proc tablelist::aquaTheme {} {
     ]
 
     variable pngSupported
-    if {$majorOSVersion >= 14} {			;# OS X 10.10 or higher
+    if {$majorOSVersion >= 14} {			;# OS X 10.10 or later
 	set themeDefaults(-arrowstyle) flatAngle7x4
     } elseif {$pngSupported} {
 	set themeDefaults(-arrowstyle) photo7x7
@@ -1861,95 +1921,6 @@ proc tablelist::xpnativeTheme {} {
 	-arrowstyle		$arrowStyle \
 	-treestyle		$treeStyle \
     ]
-}
-
-#
-# Private procedures performing RGB <-> HSV conversions
-# =====================================================
-#
-
-#------------------------------------------------------------------------------
-# tablelist::rgb2hsv
-#
-# Converts the specified RGB value to HSV.  The arguments are assumed to be
-# integers in the interval [0, 65535].  The return value is a list of the form
-# {h s v}, where h in [0.0, 360.0) and s, v in [0.0, 1.0].
-#------------------------------------------------------------------------------
-proc tablelist::rgb2hsv {r g b} {
-    set r [expr {$r/65535.0}]
-    set g [expr {$g/65535.0}]
-    set b [expr {$b/65535.0}]
-
-    #
-    # Compute the value component
-    #
-    set sortedList [lsort -real [list $r $g $b]]
-    set v [lindex $sortedList end]
-    set dist [expr {$v - [lindex $sortedList 0]}]
-
-    #
-    # Compute the saturation component
-    #
-    if {$v == 0.0} {
-	set s 0.0
-    } else {
-	set s [expr {$dist/$v}]
-    }
-
-    #
-    # Compute the hue component
-    #
-    if {$s == 0.0} {
-	set h 0.0
-    } else {
-	set rc [expr {($v - $r)/$dist}]
-	set gc [expr {($v - $g)/$dist}]
-	set bc [expr {($v - $b)/$dist}]
-
-	if {$v == $r} {
-	    set h [expr {$bc - $gc}]
-	} elseif {$v == $g} {
-	    set h [expr {2 + $rc - $bc}]
-	} else {
-	    set h [expr {4 + $gc - $rc}]
-	}
-	set h [expr {$h*60}]
-	if {$h < 0.0} {
-	    set h [expr {$h + 360.0}]
-	} elseif {$h >= 360.0} {
-	    set h 0.0
-	}
-    }
-
-    return [list $h $s $v]
-}
-
-#------------------------------------------------------------------------------
-# tablelist::hsv2rgb
-#
-# Converts the specified HSV value to RGB.  The arguments are assumed to fulfil
-# the conditions: h in [0.0, 360.0) and s, v in [0.0, 1.0].  The return value
-# is a list of the form {r g b}, where r, g, and b are integers in the interval
-# [0, 65535].
-#------------------------------------------------------------------------------
-proc tablelist::hsv2rgb {h s v} {
-    set h [expr {$h/60.0}]
-    set f [expr {$h - floor($h)}]
-
-    set p1 [expr {round(65535.0*$v*(1 - $s))}]
-    set p2 [expr {round(65535.0*$v*(1 - $s*$f))}]
-    set p3 [expr {round(65535.0*$v*(1 - $s*(1 - $f)))}]
-
-    set v  [expr {round(65535.0*$v)}]
-
-    switch [expr {int($h)}] {
-	0 { return [list $v  $p3 $p1] }
-	1 { return [list $p2 $v  $p1] }
-	2 { return [list $p1 $v  $p3] }
-	3 { return [list $p1 $p2 $v ] }
-	4 { return [list $p3 $p1 $v ] }
-	5 { return [list $v  $p1 $p2] }
-    }
 }
 
 #

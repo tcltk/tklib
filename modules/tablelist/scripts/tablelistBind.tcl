@@ -4,6 +4,7 @@
 # Structure of the module:
 #   - Public helper procedures
 #   - Binding tag Tablelist
+#   - Binding tag TablelistMain
 #   - Binding tag TablelistWindow
 #   - Binding tag TablelistBody
 #   - Binding tag TablelistHeader
@@ -325,7 +326,7 @@ proc tablelist::cleanup win {
 # the canvases displaying sort arrows and conditionally updating the background
 # color of some frames.
 #------------------------------------------------------------------------------
-proc tablelist::updateBackgrounds {win updateFrames isActiveWin} {
+proc tablelist::updateBackgrounds {win updateFrames inActiveWin} {
     #
     # This is an "after idle" callback; check whether the window exists
     #
@@ -341,43 +342,45 @@ proc tablelist::updateBackgrounds {win updateFrames isActiveWin} {
 
     #
     # Needed for the "aqua" theme if newAquaSupport is true
-    # (which is the case when using Tk 8.6.10 or later):
     #
     if {$updateFrames} {
-	set bgColor [expr {$isActiveWin ? "#eeeeee" : "#f6f6f6"}]
+	set data(inActiveWin) $inActiveWin   ;# intentionally in this case only
+
+	variable themeDefaults
+	set name [expr {$inActiveWin ?
+			"-labelbackground" : "-labeldeactivatedBg"}]
 	foreach frm [list $data(hdrTxtFrm) $data(hdrFrm) $data(cornerFrmFrm)] {
-	    $frm configure -background $bgColor
+	    $frm configure -background $themeDefaults($name)
 	}
     }
 }
 
-#------------------------------------------------------------------------------
-# tablelist::updateConfigSpecs
 #
-# This procedure handles the virtual event <<ThemeChanged>> by updating the
-# theme-specific default values of some tablelist configuration options.
-#------------------------------------------------------------------------------
-proc tablelist::updateConfigSpecs win {
-    #
-    # This is an "after idle" callback; check whether the window exists
-    #
-    if {[destroyed $win]} {
-	return ""
-    }
+# Binding tag TablelistMain
+# =========================
+#
 
-    set currentTheme [mwutil::currentTheme]
-    upvar ::tablelist::ns${win}::data data
-    if {[string compare $currentTheme $data(currentTheme)] == 0} {
-	if {[string compare $currentTheme "tileqt"] == 0} {
-	    set widgetStyle [tileqt_currentThemeName]
+#------------------------------------------------------------------------------
+# tablelist::handleThemeChangedEvent
+#
+# This procedure handles the virtual event <<ThemeChanged>>.
+#------------------------------------------------------------------------------
+proc tablelist::handleThemeChangedEvent {} {
+    variable currentTheme
+    variable widgetStyle
+    variable colorScheme
+    set newTheme [mwutil::currentTheme]
+    if {[string compare $newTheme $currentTheme] == 0} {
+	if {[string compare $newTheme "tileqt"] == 0} {
+	    set newWidgetStyle [tileqt_currentThemeName]
 	    if {[info exists ::env(KDE_SESSION_VERSION)] &&
 		[string length $::env(KDE_SESSION_VERSION)] != 0} {
-		set colorScheme [getKdeConfigVal "General" "ColorScheme"]
+		set newColorScheme [getKdeConfigVal "General" "ColorScheme"]
 	    } else {
-		set colorScheme [getKdeConfigVal "KDE" "colorScheme"]
+		set newColorScheme [getKdeConfigVal "KDE" "colorScheme"]
 	    }
-	    if {[string compare $widgetStyle $data(widgetStyle)] == 0 &&
-		[string compare $colorScheme $data(colorScheme)] == 0} {
+	    if {[string compare $newWidgetStyle $widgetStyle] == 0 &&
+		[string compare $newColorScheme $colorScheme] == 0} {
 		return ""
 	    }
 	} else {
@@ -385,14 +388,62 @@ proc tablelist::updateConfigSpecs win {
 	}
     }
 
+    set currentTheme $newTheme
+    if {[string compare $newTheme "tileqt"] == 0} {
+	set widgetStyle $newWidgetStyle
+	set colorScheme $newColorScheme
+    } else {
+	set widgetStyle ""
+	set colorScheme ""
+    }
+
+    if {[string compare $newTheme "aqua"] == 0} {
+	#
+	# Work around some issues with the appearance
+	# change support in Tk 8.6.10 and 8.7a3
+	#
+	condOpenPipeline 
+    }
+
+    #
+    # Populate the array themeDefaults with
+    # values corresponding to the new theme
+    #
+    setThemeDefaults 
+    event generate . <<TablelistThemeDefaultsChanged>>
+
+    #
+    # Level-order traversal like in the Tk library procedue ::ttk::ThemeChanged
+    #
+    set lst1 {.}
+    while {[llength $lst1] != 0} {
+	set lst2 {}
+	foreach w $lst1 {
+	    if {[string compare [winfo class $w] "Tablelist"] == 0} {
+		updateConfigSpecs $w
+	    }
+	    foreach child [winfo children $w] {
+		lappend lst2 $child
+	    }
+	}
+	set lst1 $lst2
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::updateConfigSpecs
+#
+# Updates the theme-specific default values of some tablelist configuration
+# options.
+#------------------------------------------------------------------------------
+proc tablelist::updateConfigSpecs win {
+    upvar ::tablelist::ns${win}::data data
     variable usingTile
     if {$usingTile} {
 	#
 	# Populate the array tmp with values corresponding to the old theme
-	# and the array themeDefaults with values corresponding to the new one
 	#
 	array set tmp $data(themeDefaults)
-	setThemeDefaults 
 
 	#
 	# Set those configuration options whose values equal the old
@@ -466,27 +517,15 @@ proc tablelist::updateConfigSpecs win {
 	}
     }
 
-    set data(currentTheme) $currentTheme
-    if {[string compare $currentTheme "tileqt"] == 0} {
-	set data(widgetStyle) [tileqt_currentThemeName]
-	if {[info exists ::env(KDE_SESSION_VERSION)] &&
-	    [string length $::env(KDE_SESSION_VERSION)] != 0} {
-	    set data(colorScheme) [getKdeConfigVal "General" "ColorScheme"]
-	} else {
-	    set data(colorScheme) [getKdeConfigVal "KDE" "colorScheme"]
-	}
-    } else {
-	set data(widgetStyle) ""
-	set data(colorScheme) ""
-    }
     if {$usingTile} {
 	set data(themeDefaults) [array get themeDefaults]
 
-	variable newAquaSupport
 	set x 0
 	set y 0
+	variable currentTheme
 	set aquaTheme [expr {[string compare $currentTheme "aqua"] == 0}]
 	if {$aquaTheme} {
+	    variable newAquaSupport
 	    if {$newAquaSupport} {
 		set y 4
 	    } else {
@@ -501,11 +540,171 @@ proc tablelist::updateConfigSpecs win {
 	}
 	place configure $data(cornerLbl) -y $y
 
+	if {$aquaTheme && $newAquaSupport} {
+	    set name [expr {$data(inActiveWin) ?
+			    "-labelbackground" : "-labeldeactivatedBg"}]
+	    foreach w [list $data(hdrTxtFrm) $data(hdrFrm) \
+		       $data(cornerFrmFrm)] {
+		$w configure -background $themeDefaults($name)
+	    }
+
+	    if {[tk::unsupported::MacWindowStyle isdark .]} {
+		set labelBorderBg #4b4b4b
+	    } else {
+		set labelBorderBg #c8c8c8
+	    }
+	    foreach w [list $data(hdrTxtFrmFrm) $data(hdrFrmFrm) \
+		       $data(cornerFrmFrmFrm)] {
+		$w configure -background $labelBorderBg
+	    }
+	}
+
 	adjustColumns $win allCols 1
 
 	set showSeps $data(-showseparators)
 	doConfig $win -showseparators 0
 	doConfig $win -showseparators $showSeps
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::handleAppearanceEvent
+#
+# This procedure handles the virtual events <<LightAqua>> and <<DarkAqua>>.
+#------------------------------------------------------------------------------
+proc tablelist::handleAppearanceEvent {} {
+    variable appearanceId
+    if {[info exists appearanceId] } {
+	after cancel $appearanceId
+	unset appearanceId
+    }
+
+    variable currentTheme
+    if {[string compare $currentTheme "aqua"] != 0} {
+	return ""
+    }
+
+    #
+    # Work around some issues with the appearance
+    # change support in Tk 8.6.10 and 8.7a3
+    #
+    condOpenPipeline 
+
+    #
+    # Populate the array themeDefaults with
+    # values corresponding to the new appearance
+    #
+    setThemeDefaults 
+    event generate . <<TablelistThemeDefaultsChanged>>
+
+    #
+    # Level-order traversal like in the Tk library procedue ::ttk::ThemeChanged
+    #
+    set lst1 {.}
+    while {[llength $lst1] != 0} {
+	set lst2 {}
+	foreach w $lst1 {
+	    if {[string compare [winfo class $w] "Tablelist"] == 0} {
+		updateAppearance $w
+	    }
+	    foreach child [winfo children $w] {
+		lappend lst2 $child
+	    }
+	}
+	set lst1 $lst2
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::updateAppearance
+#
+# Updates the appearance of the tablelist widget win according to the virtual
+# events <<LightAqua>> and <<DarkAqua>>.
+#------------------------------------------------------------------------------
+proc tablelist::updateAppearance win {
+    upvar ::tablelist::ns${win}::data data
+
+    #
+    # Populate the array tmp with values
+    # corresponding to the old appearance
+    #
+    array set tmp $data(themeDefaults)
+
+    #
+    # Set those configuration options whose values equal the old
+    # theme-specific defaults to the new theme-specific ones
+    #
+    variable themeDefaults
+    foreach opt {-background -foreground -disabledforeground -stripebackground
+		 -selectbackground -selectforeground -labelforeground} {
+	if {[string compare $data($opt) $tmp($opt)] == 0} {
+	    doConfig $win $opt $themeDefaults($opt)
+	}
+    }
+    if {[string compare $data(-arrowcolor) $tmp(-arrowcolor)] == 0} {
+	foreach opt {-arrowcolor -arrowdisabledcolor} {
+	    doConfig $win $opt $themeDefaults($opt)
+	}
+    }
+    foreach opt {-background -foreground} {
+	doConfig $win $opt $data($opt)     ;# sets the bg color of the seps
+    }
+    updateBackgrounds $win 0 0
+
+    #
+    # Destroy and recreate the edit window if present
+    #
+    if {[set editCol $data(editCol)] >= 0} {
+	set editRow $data(editRow)
+	saveEditData $win
+	destroy $data(bodyFrm)
+	doEditCell $win $editRow $editCol 1
+    }
+
+    set name [expr {$data(inActiveWin) ?
+		    "-labelbackground" : "-labeldeactivatedBg"}]
+    foreach w [list $data(hdrTxtFrm) $data(hdrFrm) $data(cornerFrmFrm)] {
+	$w configure -background $themeDefaults($name)
+    }
+
+    if {[tk::unsupported::MacWindowStyle isdark .]} {
+	set labelBorderBg #4b4b4b
+    } else {
+	set labelBorderBg #c8c8c8
+    }
+    foreach w [list $data(hdrTxtFrmFrm) $data(hdrFrmFrm) \
+	       $data(cornerFrmFrmFrm)] {
+	$w configure -background $labelBorderBg
+    }
+
+    set data(themeDefaults) [array get themeDefaults]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::condOpenPipeline
+#
+# Conditionally opens a command pipeline for getting the RGB values
+# corresponding to systemSelectedTextBackgroundColor on the Mac.
+#------------------------------------------------------------------------------
+proc tablelist::condOpenPipeline {} {
+    scan $::tcl_platform(osVersion) "%d" majorOSVersion
+    if {$majorOSVersion < 18 ||
+	([string compare $::tk_patchLevel "8.6.10"] != 0 &&
+	 [string compare $::tk_patchLevel "8.7a3"] != 0)} {
+	return ""
+    }
+
+    variable channel
+    if {[catch {open "| [info nameofexecutable]" w+} channel] == 0} {
+	puts $channel [format {
+	    package require Tk %s
+	    wm withdraw .
+	    puts [winfo rgb . systemSelectedTextBackgroundColor]
+	    flush stdout
+	} $::tk_patchLevel]
+	flush $channel
+    } else {
+	unset channel
     }
 }
 
@@ -1033,7 +1232,8 @@ proc tablelist::defineTablelistBody {} {
 	    }
 	}
 
-	if {[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+	if {$::tk_version >= 8.7 &&
+	    [package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
 	    bind TablelistBody <Button-6> {
 		if {!$tk_strictMotif} {
 		    set tablelist::W [tablelist::getTablelistPath %W]

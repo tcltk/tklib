@@ -108,7 +108,14 @@ proc tablelist::extendConfigSpecs {} {
 	# Append theme-specific values to some elements of the
 	# array configSpecs and initialize some tree resources
 	#
-	if {[string compare [mwutil::currentTheme] "tileqt"] == 0} {
+	variable currentTheme
+	if {[string compare $currentTheme "aqua"] == 0} {
+	    variable newAquaSupport
+	    scan $::tcl_platform(osVersion) "%d" majorOSVersion
+	    if {$newAquaSupport && $majorOSVersion >= 18} {	;# OS X 10.14+
+		update idletasks		;# needed for the isdark query
+	    }
+	} elseif {[string compare $currentTheme "tileqt"] == 0} {
 	    tileqt_kdeStyleChangeNotification 
 	}
 	setThemeDefaults
@@ -153,21 +160,12 @@ proc tablelist::extendConfigSpecs {} {
 			}
 		    }
 		}
-		style map TablelistHeader.TLabel -foreground [list \
-		    {disabled background} #a3a3a3 disabled #a3a3a3 \
-		    background black]
 
-		#
-		# Determine the value of the variable newAquaSupport
-		#
-		set helpHdrLabel .__helpHdrLabel
-		for {set n 2} {[winfo exists $helpHdrLabel]} {incr n} {
-		    set helpHdrLabel .__helpHdrLabel$n
+		variable newAquaSupport
+		if {!$newAquaSupport} {
+		    style map TablelistHeader.TLabel -foreground \
+			      {disabled #b1b1b1}
 		}
-		ttk::label $helpHdrLabel -style TablelistHeader.TLabel
-		variable newAquaSupport \
-		    [expr {[winfo reqheight $helpHdrLabel] == 24}]
-		destroy $helpHdrLabel
 	    }
 	}
     } else {
