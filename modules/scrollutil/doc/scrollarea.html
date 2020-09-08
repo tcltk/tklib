@@ -15,7 +15,7 @@
     <h1>The <code><b>scrollutil::scrollarea</b></code> and<br>
     <code><b>scrollutil::getscrollarea</b></code> Commands</h1>
 
-    <h2>For Scrollutil Version 1.6</h2>
+    <h2>For Scrollutil Version 1.7</h2>
 
     <h3>by</h3>
 
@@ -77,6 +77,9 @@
     </dd>
 
     <dt><a href="#widget_options">WIDGET-SPECIFIC OPTIONS</a></dt>
+
+    <dd><code><b><a href="#autohidescrollbars">-autohidescrollbars</a></b>
+    <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#lockinterval">-lockinterval</a></b>
     <i>milliseconds</i></code></dd>
@@ -241,6 +244,58 @@ pack $sa -expand yes -fill both
     option.</dd>
 
     <dt class="tm" id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
+
+    <dd class="tm" id="autohidescrollbars">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-autohidescrollbars</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;autoHideScrollbars</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;AutoHideScrollbars</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a boolean value indicating whether the scrollbars should
+        be obscured if the focus is outside the toplevel window containing the
+        scrollarea or the mouse pointer is outside the scrollarea widget.&nbsp;
+        The default is <code>0</code>.</p>
+
+        <p><b>REMARK 1:</b>&nbsp; The easiest way to override the default value
+        for all scrollarea instances of your application is to insert the
+        line</p>
+
+        <blockquote>
+          <pre>
+option add *Scrollarea.autoHideScrollbars 1
+</pre>
+        </blockquote>
+
+        <p>somewhere at the top of your script (before creating any scrollarea
+        widgets).</p>
+
+        <p><b>REMARK 2:</b>&nbsp; To obscure a scrollbar, Scrollutil just lays
+        a frame over it, thus keeping the area occupied by it reserved (if it
+        was previously mapped).&nbsp; This is different from unmapping a
+        dynamic scrollbar when there is nothing to scroll in the widget
+        embedded into the scrollarea.&nbsp; Obscuring or unobscuring a
+        scrollbar doesn't change its mapped/unmapped state.</p>
+
+        <p><b>REMARK 3:</b>&nbsp; Regardless of the focus and the value of this
+        option, if the mouse pointer is inside the scrollarea and the widget
+        embedded into it via <code><b><a href=
+        "#setwidget">setwidget</a></b></code> gets scrolled (e.g., with the aid
+        of the mouse wheel), then the scrollbars will be unobscured.</p>
+      </blockquote>
+    </dd>
 
     <dd class="tm" id="lockinterval">
       <table border="0" cellpadding="0" cellspacing="0">
@@ -543,6 +598,11 @@ pack $sa -expand yes -fill both
         then this subcommand sets the <code><b>-borderwidth</b></code> option
         of <code><i>widget</i></code> to <code>0</code>, provided that
         <code><i>widget</i></code> supports this option.</dd>
+
+        <dd class="tm"><b>REMARK 5:</b>&nbsp; This subcommand is the only
+        supported way to embed a widget into a scrollarea.&nbsp; Any attempt to
+        embed further widgets, using any geometry manager, will lead to
+        unpredictable results!</dd>
 
         <dt class="tm" id="widget"><code><i>pathName</i>
         <b>widget</b></code></dt>

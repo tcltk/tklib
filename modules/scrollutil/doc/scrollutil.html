@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 1.6</h2>
+    <h2>For Scrollutil Version 1.7</h2>
 
     <h3>by</h3>
 
@@ -199,10 +199,12 @@
     command.&nbsp; In addition, register your scrollable widget containers for
     scrolling via these bindings with the aid of the <code><a href=
     "wheelEvent.html#enable">scrollutil::enableScrollingByWheel</a></code>
-    command.&nbsp; The above-mentioned bindings handle the mouse wheel events
-    by scrolling the (innermost) registered scrollable widget container that is
-    an ascendant of the widget under the pointer and is contained in the
-    latter's toplevel.</li>
+    command.&nbsp; Note that for the scrollutil::scrollableframe widget this
+    command is automatically invoked at creation time.&nbsp; The
+    above-mentioned bindings handle the mouse wheel events by scrolling the
+    (innermost) registered scrollable widget container that is an ascendant of
+    the widget under the pointer and is contained in the latter's
+    toplevel.</li>
 
     <li class="tm">Invoke the <code><a href=
     "wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></code>
@@ -251,8 +253,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil1.6.tar.gz</code> for UNIX and
-  <code>scrollutil1_6.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil1.7.tar.gz</code> for UNIX and
+  <code>scrollutil1_7.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -276,11 +278,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil1.6.tar.gz</code>:</p>
+  <code>scrollutil1.7.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil1.6.tar.gz | tar -xf -
+gunzip -c scrollutil1.7.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -288,17 +290,17 @@ gunzip -c scrollutil1.6.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil1.6.tar.gz
+tar -zxf scrollutil1.7.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil1.6</code>,
+  <p>Both commands will create a directory named <code>scrollutil1.7</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil1_6.zip</code> into the directory
-  <code>scrollutil1.6</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil1_7.zip</code> into the directory
+  <code>scrollutil1.7</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -562,12 +564,30 @@ source [file join $dir styleUtil.tcl]
 </pre>
   </blockquote>
 
-  <p>The script <code>styleUtil.tcl</code> patches a few ttk widget styles and
-  defines the style <code>Small.Toolbutton</code>.&nbsp; In addition, on X11 it
-  sets the theme to a slightly patched variant of the <code>clam</code>
-  theme (having smaller ttk::button widgets as well as ttk::treeview and
-  tablelist headers).</p>
-  
+  <p>The script <code>styleUtil.tcl</code> starts with a comment related to the
+  <code><a href=
+  "scrollarea.html#autohidescrollbars">-autohidescrollbars</a></code>
+  scrollarea configuration option:</p>
+
+  <blockquote>
+    <pre>
+<span class="cmt">#
+# To set the "-autohidescrollbars" option of all scrollarea
+# widgets in all demo scripts to true, uncomment the line below:
+#
+# option add *Scrollarea.autoHideScrollbars 1</span>
+</pre>
+  </blockquote>
+
+  <p>You are free to follow this hint or to run the demo scripts with the
+  default&nbsp; <code>-autohidescrollbars 0</code>&nbsp; scrollarea
+  setting.</p>
+
+  <p>On X11, the script sets the theme to a slightly patched variant of the
+  <code>clam</code> theme (having smaller ttk::button widgets as well as
+  ttk::treeview and tablelist headers).&nbsp; Next, it patches a few ttk widget
+  styles and defines the style <code>Small.Toolbutton</code>.</p>
+
   <p>The patch for the style <code>TCombobox</code> makes sure that the
   (readonly) ttk::combobox widgets of the themes <code>alt</code>,
   <code>clam</code>, and <code>default</code> will show whether they have the
@@ -594,7 +614,7 @@ source [file join $dir styleUtil.tcl]
 
   <blockquote>
     <img src="ScrolledTablelist.png" alt="ScrolledTablelist" width="478"
-    height="335">
+    height="334">
   </blockquote>
 
   <p>The script achieves these requirements using traditional scrollbar
@@ -640,6 +660,8 @@ grid [$tbl cornerpath -sw] -row 2 -column 0 -sticky ns
 grid $hsb                  -row 2 -column 1 -sticky ew
 grid rowconfigure    $frm 1 -weight 1
 grid columnconfigure $frm 1 -weight 1</span>
+
+. . .
 
 <span class="cmt">#
 # Manage the frame
@@ -881,7 +903,10 @@ $sa setwidget $ss</span>
 # Populate the scrollsync widget with three tablelists
 #</span>
 
-option add *Tablelist.stripeBackground  #f0f0f0
+if {$ttk::currentTheme ne "aqua"} {
+    option add *Tablelist.background            white
+    option add *Tablelist.stripeBackground      #f0f0f0
+}
 
 for {set n 1; set colWidth 40} {$n <= 3} {incr n; incr colWidth 20} {
     set tbl [tablelist::tablelist $ss.tbl$n \
@@ -909,6 +934,13 @@ pack $f  -expand yes -fill both
 </pre>
   </blockquote>
 
+  <p>The option database settings above for the <code>-background</code> and
+  <code>-stripebackground</code> tablelist configuration options are not
+  present in case of the <code>aqua</code> theme, because for this theme the
+  default values of these options are not only <code>aqua</code>-specific, but
+  in addition on Mac OS 10.14 (Mojave) and later they also depend on the
+  current system appearance (Light Mode or Dark Mode).</p>
+
   <p>Notice that column #1 of the three tablelist widgets is 40, 60, and 80
   characters wide, respectively.&nbsp; For this reason, when scrolling
   horizontally to the right, the left table's view will reach its horizontal
@@ -921,19 +953,22 @@ pack $f  -expand yes -fill both
   <p>The file <code>SuScrollableFrmDemo1.tcl</code> in the <code>demos</code>
   directory creates a <a href=
   "scrollableframe.html">scrollutil::scrollableframe</a> widget embedded into a
-  <a href="scrollarea.html">scrollarea</a>, creates mouse wheel event bindings
-  for the binding tag <code>"all"</code> with the aid of the <code><a href=
+  <a href="scrollarea.html">scrollarea</a> and creates mouse wheel event
+  bindings for the binding tag <code>"all"</code> with the aid of the
+  <code><a href=
   "wheelEvent.html#create">scrollutil::createWheelEventBindings</a></code>
-  command, and invokes the <code><a href=
+  command.&nbsp; Recall that the scrollableframe was automatically registered
+  for scrolling by these bindings at creation time, hence there is no need to
+  invoke the <code><a href=
   "wheelEvent.html#enable">scrollutil::enableScrollingByWheel</a></code>
-  command for this scrollableframe, thus registering the latter for scrolling
-  by these bindings.&nbsp; After that it populates the content frame of the
-  scrollableframe with ttk::label widgets displaying the names of the European
-  countries, ttk::combobox widgets for selecting the corresponding capital
-  cities, and ttk::button widgets of the style <code>Small.Toolbutton</code>
-  (created by using the procedure <code>createToolbutton</code>, implemented in
-  the file <code><a href="#ex_styleUtil">styleUtil.tcl</a></code>) for the less
-  patient users, displaying the text "Resolve".</p>
+  command for it again.&nbsp; After that, the script populates the content
+  frame of the scrollableframe with ttk::label widgets displaying the names of
+  the European countries, ttk::combobox widgets for selecting the corresponding
+  capital cities, and ttk::button widgets of the style
+  <code>Small.Toolbutton</code> (created by using the procedure
+  <code>createToolbutton</code>, implemented in the file
+  <code><a href="#ex_styleUtil">styleUtil.tcl</a></code>) for the less patient
+  users, displaying the text "Resolve".</p>
 
   <blockquote>
     <img src="ScrollableFrmDemo1.png" alt="ScrollableFrmDemo1" width="403"
@@ -959,11 +994,9 @@ set sf [scrollutil::scrollableframe $sa.sf]
 $sa setwidget $sf</span>
 
 <span class="cmt">#
-# Create mouse wheel event bindings for the binding tag "all" and
-# register the scrollableframe for scrolling by these bindings
+# Create mouse wheel event bindings for the binding tag "all"
 #</span>
-<span class="red">scrollutil::createWheelEventBindings all
-scrollutil::enableScrollingByWheel $sf</span>
+<span class="red">scrollutil::createWheelEventBindings all</span>
 
 <span class="cmt">#
 # Get the content frame and populate it
@@ -1294,11 +1327,9 @@ proc seeScrollarea {sf w} { <span class="red">$sf see [scrollutil::getscrollarea
   <blockquote>
     <pre>
 <span class="cmt">#
-# Create mouse wheel event bindings for the binding tag "all" and
-# register the scrollableframe for scrolling by these bindings
+# Create mouse wheel event bindings for the binding tag "all"
 #</span>
-<span class="red">scrollutil::createWheelEventBindings all
-scrollutil::enableScrollingByWheel $sf</span>
+<span class="red">scrollutil::createWheelEventBindings all</span>
 
 <span class="cmt">#
 # Adapt the handling of the mouse wheel events for the text, listbox,
@@ -1381,6 +1412,15 @@ grid $_sa ...
   <code>$txt</code> to the <code><a href=
   "wheelEvent.html#add">scrollutil::addMouseWeelSupport</a></code> command.</p>
 
+  <p>The file <code>SuScrollableFrmContent.tcl</code> implements just a minimal
+  interaction between four of the already mentioned widgets within the content
+  frame:&nbsp; By selecting a Tablelist release from the ttk::combobox
+  <code>$cb</code>, the ttk::spinbox <code>$sb</code> is set to the
+  corresponding number of changes, the comment associated with that release is
+  inserted into the ttk::entry <code>$e</code>, and the corresponding item of
+  the tablelist <code>$tbl</code> is selected and brought into view within the
+  tablelist widget.</p>
+
   <p>The file <code>SuScrollableFrmContent.tcl</code> contains also the
   implementation of the procedure <code>configTablelist</code>, associated with
   the "Configure Tablelist Widget" button as the value of its
@@ -1389,19 +1429,14 @@ grid $_sa ...
   "scrollableframe.html">scrollutil::scrollableframe</a> widget created
   with the&nbsp; <code><a href=
   "scrollableframe.html#fitcontentwidth">-fitcontentwidth</a> yes</code>&nbsp;
-  setting within a <a href="scrollarea.html">scrollarea</a> and invokes the
-  <code><a href=
-  "wheelEvent.html#enable">scrollutil::enableScrollingByWheel</a></code>
-  command for this scrollableframe, thus registering the latter for scrolling
-  by the already created mouse wheel event bindings for the binding tag
-  <code>"all"</code>.&nbsp; After that it populates the content frame of the
-  scrollableframe with ttk::label, ttk::combobox, ttk::spinbox, ttk::entry, and
-  ttk::checkbutton widgets used to display and edit the configuration options
-  of the tablelist widget.&nbsp; The procedure handles the
-  <code>&lt;&lt;TraverseIn&gt;&gt;</code> virtual event sent to one of these
-  widgets with the aid of the scrollableframe's <code><a href=
-  "scrollableframe.html#see">see</a></code> subcommand.&nbsp; Whenever a
-  ttk::combobox or ttk::spinbox is created, the <code><a href=
+  setting within a <a href="scrollarea.html">scrollarea</a>.&nbsp; After that
+  it populates the content frame of the scrollableframe with ttk::label,
+  ttk::combobox, ttk::spinbox, ttk::entry, and ttk::checkbutton widgets used to
+  display and edit the configuration options of the tablelist widget.&nbsp; The
+  procedure handles the <code>&lt;&lt;TraverseIn&gt;&gt;</code> virtual event
+  sent to one of these widgets with the aid of the scrollableframe's
+  <code><a href="scrollableframe.html#see">see</a></code> subcommand.&nbsp;
+  Whenever a ttk::combobox or ttk::spinbox is created, the <code><a href=
   "wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></code>
   command is invoked for it, being that these widgets have built-in bindings
   for the mouse wheel events.</p>
@@ -1478,9 +1513,23 @@ proc seeScrollarea {sf w} { $sf see [<span class="red">scrollutil::getscrollarea
 </pre>
   </blockquote>
 
-  <p>The additional stuff related to the mouse wheel events contains exactly
-  the same Scrollutil command invocations as the one in the previous
-  example.</p>
+  <p>The additional stuff related to the mouse wheel events contains the same
+  Scrollutil command invocations as the one in the previous example, except
+  that in addition it registers the ScrollableFrame for scrolling with the
+  mouse wheel:</p>
+
+  <blockquote>
+    <pre>
+<span class="cmt">#
+# Create mouse wheel event bindings for the binding tag "all" and
+# register the ScrollableFrame for scrolling by these bindings
+#</span>
+<span class="red">scrollutil::createWheelEventBindings all
+scrollutil::enableScrollingByWheel $sf</span>
+
+. . .
+</pre>
+  </blockquote>
 
   <p>The file <code>BwScrollableFrmContent.tcl</code> contains also the
   implementation of the procedure <code>configTablelist</code>, associated with
@@ -1560,9 +1609,8 @@ source [file join $dir ScrolledFrmContent.tcl]
 </pre>
   </blockquote>
 
-  <p>The additional stuff related to the mouse wheel events contains exactly
-  the same Scrollutil command invocations as the one in the two previous
-  examples.</p>
+  <p>The additional stuff related to the mouse wheel events contains the same
+  Scrollutil command invocations as the one in the previous example.</p>
 
   <p>The file <code>ScrolledFrmContent.tcl</code> contains also the
   implementation of the procedure <code>configTablelist</code>, associated with

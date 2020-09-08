@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>scrollutil::scrollableframe</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.6</h2>
+    <h2>For Scrollutil Version 1.7</h2>
 
     <h3>by</h3>
 
@@ -245,7 +245,14 @@ pack $sa -expand yes -fill both
       </blockquote>
     </dd>
 
-    <dt id="std_options"><b>STANDARD OPTIONS</b></dt>
+    <dd><b>REMARK:</b>&nbsp; After creating the scrollableframe widget, the
+    <code><b>scrollutil::scrollableframe</b></code> command automatically
+    registers it for scrolling with the mouse wheel, by passing its path name
+    to the <code><b><a href=
+    "wheelEvent.html#enable">scrollutil::enableScrollingByWheel</a></b></code>
+    command.</dd>
+
+    <dt class="tm" id="std_options"><b>STANDARD OPTIONS</b></dt>
 
     <dd>
       <pre>
