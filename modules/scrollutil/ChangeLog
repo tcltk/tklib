@@ -1,3 +1,33 @@
+2020-09-08  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.7.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added the "-autohidescrollbars" scrollarea
+	  configuration option; the scrollableframe widget is now automatically
+	  registered for scrolling with the mouse wheel at creation time;
+	  reworked the invocations of "package vcompare", taking into account
+	  that Tcl versions earlier than 8.5 did not support the letters "a"
+	  and "b" in version numbers.
+
+	* scripts/utils:               Moved mwutil.tcl and scaleutil.tcl to
+	* scripts/utils/mwutil.tcl:    the new subdirectory utils and made them
+	* scripts/utils/scaleutil.tcl: to packages; updated mwutil.tcl to
+	* scripts/utils/pkgIndex.tcl:  version 2.17, like in Tablelist 6.11.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshots.
+	* doc/ScrolledTablelist.png:
+
+	* ../../examples/scrollutil/*.tcl: With Tk 8.6.10 or later, the demo-
+	  scripts now fully support the Dark Mode appearance on Mac OS 10.14
+	  and later.
+
 2020-06-27 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:         Minor improvements.
