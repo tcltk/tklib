@@ -1,5 +1,39 @@
-What is new in Tablelist 6.10?
+What is new in Tablelist 6.11?
 ------------------------------
+
+1. Updated the "aqua" theme support and extended it by support for the
+   Dark Mode appearance, introduced in Mac OS version 10.14 (Mojave).
+   When using Tk 8.6.10 or later, the package Tablelist_tile now renders
+   the tablelist widgets according to the current system appearance and
+   updates them whenever the latter toggles between Light Mode and Dark
+   Mode or the Accent Color in the General Preferences changes.  If the
+   Tk version is 8.6.11 or later then on Mac OS 10.15 (Catalina) and
+   later the tile-based tablelist widgets are also updated when changing
+   the Highlight Color in the General Preferences.
+
+2. With Tk 8.6.10 or later, the demo-scripts "browse(Tree)_tile.tcl",
+   "config_tile.tcl", "dirViewer_tile.tcl", "embeddedWindows_tile.tcl",
+   and "tileWidgets.tcl" now fully support the Dark Mode appearance on
+   Mac OS 10.14 and later (see also the section "Tile-Based Demo
+   Scripts" in Tablelist Programmer's Guide).
+
+3. Added the virtual event <<TablelistThemeDefaultsChanged>>, sent to
+   the main window when handling the virtual events <<ThemeChanged>>,
+   <<LightAqua>>, and <<DarkAqua>>.  See the section "The tablelist::
+   setThemeDefaults Command" of the manual page "Commands Related to
+   Tile Themes" for details.
+
+4. Improvements related to laying out the widget used for interactive
+   cell editing.
+
+5. Reworked the invocations of "package vcompare", taking into account
+   that Tcl versions earlier than 8.5 did not support the letters "a"
+   and "b" in version numbers (thanks to Mike Walsh for his bug report).
+
+6. Several further improvements in the code and documentation.
+
+What was new in Tablelist 6.10?
+-------------------------------
 
 1. Made the variable "tablelist::scalingpct" read-only.
 

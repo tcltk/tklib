@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 6.10</h2>
+    <h2>For Tablelist Version 6.11</h2>
 
     <h3>by</h3>
 
@@ -177,8 +177,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist6.10.tar.gz</code> for UNIX and
-  <code>tablelist6_10.zip</code> for Windows.&nbsp; These files contain the
+  The distribution file is <code>tablelist6.11.tar.gz</code> for UNIX and
+  <code>tablelist6_11.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -202,11 +202,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist6.10.tar.gz</code>:</p>
+  <code>tablelist6.11.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist6.10.tar.gz | tar -xf -
+gunzip -c tablelist6.11.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -214,17 +214,17 @@ gunzip -c tablelist6.10.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist6.10.tar.gz
+tar -zxf tablelist6.11.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist6.10</code>,
+  <p>Both commands will create a directory named <code>tablelist6.11</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist6_10.zip</code> into the directory
-  <code>tablelist6.10</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist6_11.zip</code> into the directory
+  <code>tablelist6.11</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -321,14 +321,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 6.10, then it is highly
-  recommended to specify the version number <code>6.10</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 6.11, then it is highly
+  recommended to specify the version number <code>6.11</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 6.10</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 6.11</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 6.10</code>.</p>
+  tablelist_tile 6.11</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -635,7 +635,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 6.10
+package require tablelist 6.11
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -691,7 +691,7 @@ demo::displayConfig .configTop.tf.tbl
 
   <blockquote>
     <pre>
-package require tablelist 6.10
+package require tablelist 6.11
 
 namespace eval demo {
     <span class="cmt">#
@@ -1172,7 +1172,7 @@ demo::displayChildren .
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.10
+package require tablelist 6.11
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1802,7 +1802,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.10
+package require tablelist 6.11
 
 <span class="cmt">#
 # Add some entries to the Tk option database
@@ -2225,7 +2225,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;<span class="cmt"># because of "-compound"</span>
-package require tablelist 6.10
+package require tablelist 6.11
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2597,7 +2597,7 @@ $tbl embedcheckbuttons 1
 
   <blockquote>
     <pre>
-package require tablelist 6.10
+package require tablelist 6.11
 
 wm title . "Tk Library Scripts"
 
@@ -2866,7 +2866,7 @@ for {set row 0} {$row &lt; $rowCount} {incr row} {
   <blockquote>
     <pre>
 package require Tk 8.3                          ;<span class="cmt"># because of entry validation</span>
-package require tablelist 6.10
+package require tablelist 6.11
 </pre>
   </blockquote>
 
@@ -2874,7 +2874,7 @@ package require tablelist 6.10
 
   <blockquote>
     <pre>
-package require tablelist<span class="red">_tile</span> 6.10
+package require tablelist<span class="red">_tile</span> 6.11
 </pre>
   </blockquote>
 
@@ -2952,23 +2952,19 @@ set btn [<span class="red">ttk::</span>button <span class="red">$f</span>.btn -t
   <code>option.tcl</code>.&nbsp; Its tile-specific part uses the values written
   by the command <code><a href=
   "tablelistThemes.html#setThemeDefaults">tablelist::setThemeDefaults</a></code>
-  into the array <code>tablelist::themeDefaults</code>, to make sure that the
-  selection will have the same theme-specific look in all the widgets created
-  by the application:</p>
+  into the array <code>tablelist::themeDefaults</code>, to make sure that on
+  <code>x11</code> the selection will have the same theme-specific look in all
+  the widgets created by the application:</p>
 
   <blockquote>
     <pre>
-<span class="red">tablelist::setThemeDefaults
-if {[tablelist::getCurrentTheme] eq "aqua"} {
-    option add *Listbox.selectBackground \
-               $tablelist::themeDefaults(-selectbackground)
-    option add *Listbox.selectForeground \
-               $tablelist::themeDefaults(-selectforeground)
-} else {
+tablelist::setThemeDefaults
+if {[tk windowingsystem] eq "x11"} {
+    option add *Font              TkDefaultFont
     option add *selectBackground  $tablelist::themeDefaults(-selectbackground)
     option add *selectForeground  $tablelist::themeDefaults(-selectforeground)
 }
-option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)</span>
+option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)
 </pre>
   </blockquote>
 
@@ -2993,6 +2989,16 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)<
     <img src="embeddedWindows_tile.png" alt="Embedded Windows" width="426"
     height="314">
   </blockquote>
+
+  <p>Finally, notice that with Tk 8.6.10 or later, the following tile-based
+  demo-scripts provide <i>full</i> support for the Dark Mode appearance on Mac
+  OS 10.14 (Mojave) and later: <code>browse_tile.tcl</code>,
+  <code>browseTree_tile.tcl</code>, <code>config_tile.tcl</code>,
+  <code>dirViewer_tile.tcl</code>, <code>embeddedWindows_tile.tcl</code>, and
+  <code>tileWidgets.tcl</code>.&nbsp; While the Dark Mode support has been
+  present in Tk since its version 8.6.10, for an optimal user experience on the
+  Mac it is recommended to run these scripts with Tk 8.6.11 or later, due to a
+  few appearance-related improvements made in Tk 8.6.11.</p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
