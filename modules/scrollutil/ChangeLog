@@ -1,5 +1,9 @@
 2020-09-15  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* CHANGES.txt: Corrected a typo.
+
+2020-09-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* CHANGES.txt:              Updated to reflect the changes.
 	* doc/scrollableframe.html:
 	* doc/wheelEvent.html:
