@@ -1,3 +1,17 @@
+2020-09-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:              Updated to reflect the changes.
+	* doc/scrollableframe.html:
+	* doc/wheelEvent.html:
+
+	* scripts/scrollableframe.tcl: Added the "seerect" scrollableframe
+	  subcommand.
+
+	* scrollutilCommon.tcl:   Added the command
+	* scripts/wheelEvent.tcl: "scrollutil::disableScrollingByWheel".
+
+	* scripts/tclIndex: Newly generated.
+
 2020-09-08  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 1.7.
