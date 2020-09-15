@@ -39,6 +39,9 @@
     <li><a href="#enable">The
     <code><b>scrollutil::enableScrollingByWheel</b></code> Command</a></li>
 
+    <li><a href="#disable">The
+    <code><b>scrollutil::disableScrollingByWheel</b></code> Command</a></li>
+
     <li><a href="#adapt">The
     <code><b>scrollutil::adaptWheelEventHandling</b></code> Command</a></li>
 
@@ -241,6 +244,46 @@
     whose path name was passed to this command gets destroyed, it is
     automatically removed from the above-mentioned internal list of registered
     widget containers.</dd>
+
+    <dt class="tm"><b>KEYWORDS</b></dt>
+
+    <dd>mouse wheel event, binding, scrolling, scrollable widget container</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="disable">The <code><b>scrollutil::disableScrollingByWheel</b></code>
+  Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>scrollutil::disableScrollingByWheel</code> &ndash; Deregister
+    scrollable widget containers for scrolling by the mouse wheel</dd>
+
+    <dt class="tm"><b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>scrollutil::disableScrollingByWheel</b> ?<i>scrollableWidgetContainer</i> <i>scrollableWidgetContainer</i> ...?
+</pre>
+    </dd>
+
+    <dt><b>REQUIRED TK VERSION</b></dt>
+
+    <dd>8.4 or higher on X11 and Mac OS X; 8.6b2 or later on Windows.</dd>
+
+    <dt class="tm"><b>DESCRIPTION</b></dt>
+
+    <dd>Removes the specified scrollable widget containers from the internal
+    list of widget containers that are registered for scrolling by the mouse
+    wheel event bindings created by the <code><b><a href=
+    "#create">scrollutil::createWheelEventBindings</a></b></code> command.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 

@@ -125,6 +125,10 @@
     <dd><code><i>pathName</i> <b><a href="#see">see</a></b> <i>widget</i>
     ?<b>nw</b>|<b>ne</b>|<b>sw</b>|<b>se</b>?</code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#seerect">seerect</a></b> <i>x1</i>
+    <i>y1</i> <i>x2</i> <i>y2</i>
+    ?<b>nw</b>|<b>ne</b>|<b>sw</b>|<b>se</b>?</code></dd>
+
     <dd>
       <code><i>pathName</i> <b><a href="#xview">xview</a></b>
       ?<i>args</i>?</code>
@@ -696,7 +700,24 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
           </blockquote>
         </dd>
 
-        <dt id="xview"><code><i>pathName</i> <b>xview</b>
+        <dt class="tm" id="seerect"><code><i>pathName</i> <b>seerect</b>
+        <i>x1</i> <i>y1</i> <i>x2</i> <i>y2</i> ?<i>corner</i>?</code></dt>
+
+        <dd>This command adjusts the view in the scrollableframe's window so
+        that the rectangle given by <code><i>x1</i></code>,
+        <code><i>y1</i></code>, <code><i>x2</i></code>, and
+        <code><i>y2</i></code> becomes visible in it.&nbsp; These coordinates
+        are relative to the content frame and specify the upper-left and
+        lower-right corners of the rectangle (which will include its upper and
+        left edges but not its lower or right edges).&nbsp; The optional
+        <code><i>corner</i></code> argument specifies which corner of the
+        rectangle should become visible if it is too large to fit into the
+        window.&nbsp; The possible values are <code><b>nw</b></code>
+        (north-west), <code><b>ne</b></code> (north-east),
+        <code><b>sw</b></code> (south-west), and <code><b>se</b></code>
+        (south-east).&nbsp; The default corner is <code><b>nw</b></code>.</dd>
+
+        <dt class="tm" id="xview"><code><i>pathName</i> <b>xview</b>
         ?<i>args</i>?</code></dt>
 
         <dd>This command is used to query and change the horizontal position of 
@@ -993,6 +1014,13 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
       ?<b>nw</b>|<b>ne</b>|<b>sw</b>|<b>se</b>?</code></td>
       <td><code><b>see</b> <i>widget</i>
       ?<b>top</b>|<b>bottom</b> ?<b>left</b>|<b>right</b>??</code></td>
+      <td bgcolor="#e0e0e0"></td>
+    </tr>
+
+    <tr>
+      <td><code><b>seerect</b> <i>x1</i> <i>y1</i> <i>x2</i> <i>y2</i>
+      ?<b>nw</b>|<b>ne</b>|<b>sw</b>|<b>se</b>?</code></td>
+      <td bgcolor="#e0e0e0"></td>
       <td bgcolor="#e0e0e0"></td>
     </tr>
 
