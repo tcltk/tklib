@@ -377,6 +377,42 @@ proc scrollutil::enableScrollingByWheel args {
 }
 
 #------------------------------------------------------------------------------
+# scrollutil::disableScrollingByWheel
+#
+# Usage: scrollutil::disableScrollingByWheel ?scrlWidgetCont scrlWidgetCont ...?
+#
+# Removes the specified scrollable widget containers from the internal list of
+# widget containers that are registered for scrolling by the mouse wheel event
+# bindings created by the createWheelEventBindings command.
+#------------------------------------------------------------------------------
+proc scrollutil::disableScrollingByWheel args {
+    variable winSys
+    if {$winSys eq "win32"} {
+	package require Tk 8.6b2
+    }
+
+    variable scrlWidgetContList
+    foreach swc $args {
+	if {![winfo exists $swc]} {
+	    return -code error "bad window path name \"$swc\""
+	}
+
+	set idx [lsearch -exact $scrlWidgetContList $swc]
+	if {$idx < 0} {
+	    continue
+	}
+
+	set scrlWidgetContList [lreplace $scrlWidgetContList $idx $idx]
+
+	set tagList [bindtags $swc]
+	set idx [lsearch -exact $tagList ScrlWidgetCont]
+	bindtags $swc [lreplace $tagList $idx $idx]
+    }
+
+    set scrlWidgetContList [lsort -command comparePaths $scrlWidgetContList]
+}
+
+#------------------------------------------------------------------------------
 # scrollutil::adaptWheelEventHandling
 #
 # Usage: scrollutil::adaptWheelEventHandling ?widget widget ...?
@@ -433,8 +469,8 @@ proc scrollutil::adaptWheelEventHandling args {
 		    continue
 		}
 
-		set tagIdx [lsearch -exact $tagList $tag]
-		bindtags $w [lreplace $tagList $tagIdx $tagIdx \
+		set idx [lsearch -exact $tagList $tag]
+		bindtags $w [lreplace $tagList $idx $idx \
 			     WheeleventRedir $tag WheeleventBreak]
 		break
 	    }

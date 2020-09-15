@@ -33,8 +33,9 @@ namespace eval ::scrollutil {
     # scrollable widgets and scrollable widget containers:
     #
     namespace export	addMouseWheelSupport createWheelEventBindings \
-			enableScrollingByWheel adaptWheelEventHandling \
-			setFocusCheckWindow focusCheckWindow
+			enableScrollingByWheel disableScrollingByWheel \
+			adaptWheelEventHandling setFocusCheckWindow \
+			focusCheckWindow
 }
 
 package provide scrollutil::common $::scrollutil::version
