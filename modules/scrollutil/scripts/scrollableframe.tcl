@@ -102,7 +102,8 @@ namespace eval scrollutil::sf {
     # Use lists to facilitate the handling
     # of various options and corner values
     #
-    variable cmdOpts  [list cget configure contentframe scan see xview yview]
+    variable cmdOpts  [list cget configure contentframe scan see seerect \
+		       xview yview]
     variable scanOpts [list mark dragto]
     variable corners  [list nw ne sw se]
 
@@ -459,13 +460,15 @@ proc scrollutil::sf::scrollableframeWidgetCmd {win args} {
 	    return $data(cf)
 	}
 
-	scan  { return [scanSubCmd  $win [lrange $args 1 end]] }
+	scan	{ return [scanSubCmd    $win [lrange $args 1 end]] }
 
-	see   { return [seeSubCmd   $win [lrange $args 1 end]] }
+	see	{ return [seeSubCmd     $win [lrange $args 1 end]] }
 
-	xview { return [xviewSubCmd $win [lrange $args 1 end]] }
+	seerect	{ return [seerectSubCmd $win [lrange $args 1 end]] }
 
-	yview { return [yviewSubCmd $win [lrange $args 1 end]] }
+	xview	{ return [xviewSubCmd   $win [lrange $args 1 end]] }
+
+	yview	{ return [yviewSubCmd   $win [lrange $args 1 end]] }
     }
 }
 
@@ -495,7 +498,6 @@ proc scrollutil::sf::scanSubCmd {win argList} {
 	set data(scanY) $y
 	set data(scanXOffset) $data(xOffset)
 	set data(scanYOffset) $data(yOffset)
-	return ""
     } else {
 	if {$argCount == 3} {
 	    set gain 10
@@ -543,26 +545,63 @@ proc scrollutil::sf::seeSubCmd {win argList} {
     }
 
     #
-    # Parse the optional argument
+    # Get the coordinates of the top-left and
+    # bottom-right corners of w relative to cf
+    #
+    set x1 [expr {[winfo rootx $w] - [winfo rootx $cf]}]
+    set y1 [expr {[winfo rooty $w] - [winfo rooty $cf]}]
+    set x2 [expr {$x1 + [winfo width  $w]}]
+    set y2 [expr {$y1 + [winfo height $w]}]
+
+    #
+    # Parse the optional argument and invoke seerectSubCmd
     #
     if {$argCount == 1} {
+	return [seerectSubCmd [list $x1 $y1 $x2 $y2]]
+    } else {
+	set corner [lindex $argList 1]
+	return [seerectSubCmd [list $x1 $y1 $x2 $y2 $corner]]
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sf::seerectSubCmd
+#
+# Processes the scrollableframe seerect subcommmand.
+#------------------------------------------------------------------------------
+proc scrollutil::sf::seerectSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 4 || $argCount > 5} {
+	mwutil::wrongNumArgs "$win seerect x1 y1 x2 y2 ?nw|ne|sw|se?
+    }
+
+    set x1 [format "%d" [lindex $argList 0]]
+    set y1 [format "%d" [lindex $argList 1]]
+    set x2 [format "%d" [lindex $argList 2]]
+    set y2 [format "%d" [lindex $argList 3]]
+    if {!($x1 < $x2)} {
+	return -code error \
+	    "the left x coordinate must be less than the right one"
+    }
+    if {!($y1 < $y2)} {
+	return -code error \
+	    "the upper y coordinate must be less than the lower one"
+    }
+
+    #
+    # Parse the optional argument
+    #
+    if {$argCount == 4} {
 	set xSide w
 	set ySide n
     } else {
 	variable corners
-	set corner [mwutil::fullOpt "corner" [lindex $argList 1] $corners]
+	set corner [mwutil::fullOpt "corner" [lindex $argList 4] $corners]
 	set xSide [string range $corner 1 1]
 	set ySide [string range $corner 0 0]
     }
 
-    #
-    # Get the coordinates of the top-left and
-    # bottom-right corners of w relative to cf
-    #
-    set wX1 [expr {[winfo rootx $w] - [winfo rootx $cf]}]
-    set wY1 [expr {[winfo rooty $w] - [winfo rooty $cf]}]
-    set wX2 [expr {$wX1 + [winfo width  $w]}]
-    set wY2 [expr {$wY1 + [winfo height $w]}]
+    upvar ::scrollutil::ns${win}::data data
 
     set xOffset   $data(xOffset)
     set mfWidth   $data(mfWidth)
@@ -585,23 +624,23 @@ proc scrollutil::sf::seeSubCmd {win argList} {
     #
     switch $xSide {
 	w {
-	    if {$wX2 > $mfX2} {
-		incr mfX1 [expr {$wX2 - $mfX2}]
+	    if {$x2 > $mfX2} {
+		incr mfX1 [expr {$x2 - $mfX2}]
 		roundUp mfX1 $xScrlIncr
 	    }
-	    if {$wX1 < $mfX1} {
-		incr mfX1 [expr {$wX1 - $mfX1}]
+	    if {$x1 < $mfX1} {
+		incr mfX1 [expr {$x1 - $mfX1}]
 		roundDn mfX1 $xScrlIncr
 	    }
 	}
 	e {
-	    if {$wX1 < $mfX1} {
-		incr mfX1 [expr {$wX1 - $mfX1}]
+	    if {$x1 < $mfX1} {
+		incr mfX1 [expr {$x1 - $mfX1}]
 		roundDn mfX1 $xScrlIncr
 		set mfX2 [expr {$mfX1 + $mfWidth}]
 	    }
-	    if {$wX2 > $mfX2} {
-		incr mfX1 [expr {$wX2 - $mfX2}]
+	    if {$x2 > $mfX2} {
+		incr mfX1 [expr {$x2 - $mfX2}]
 		roundUp mfX1 $xScrlIncr
 	    }
 	}
@@ -613,23 +652,23 @@ proc scrollutil::sf::seeSubCmd {win argList} {
     #
     switch $ySide {
 	n {
-	    if {$wY2 > $mfY2} {
-		incr mfY1 [expr {$wY2 - $mfY2}]
+	    if {$y2 > $mfY2} {
+		incr mfY1 [expr {$y2 - $mfY2}]
 		roundUp mfY1 $yScrlIncr
 	    }
-	    if {$wY1 < $mfY1} {
-		incr mfY1 [expr {$wY1 - $mfY1}]
+	    if {$y1 < $mfY1} {
+		incr mfY1 [expr {$y1 - $mfY1}]
 		roundDn mfY1 $yScrlIncr
 	    }
 	}
 	s {
-	    if {$wY1 < $mfY1} {
-		incr mfY1 [expr {$wY1 - $mfY1}]
+	    if {$y1 < $mfY1} {
+		incr mfY1 [expr {$y1 - $mfY1}]
 		roundDn mfY1 $yScrlIncr
 		set mfY2 [expr {$mfY1 + $mfHeight}]
 	    }
-	    if {$wY2 > $mfY2} {
-		incr mfY1 [expr {$wY2 - $mfY2}]
+	    if {$y2 > $mfY2} {
+		incr mfY1 [expr {$y2 - $mfY2}]
 		roundUp mfY1 $yScrlIncr
 	    }
 	}
