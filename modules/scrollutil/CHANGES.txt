@@ -6,7 +6,7 @@ What is new in Scrollutil 1.7?
 
 2. The scrollableframe widget is now automatically registered for
    scrolling with the mouse wheel at creation time.  The demo scripts
-   "SuScrollableFrmDemo*.tcl" habe been adapted accordingly.
+   "SuScrollableFrmDemo*.tcl" have been adapted accordingly.
 
 3. Added the "seerect" scrollableframe subcommand.
 
