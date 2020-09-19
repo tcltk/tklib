@@ -1,5 +1,10 @@
 2020-09-19  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* CHANGES.txt: Set the recommended maximum for the value of the
+	  "-lockinterval" scrollarea option to 300.
+
+2020-09-19  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* scripts/scrollableframe.tcl: Minor improvements related to the
 	* doc/scrollableframe.html:    "seerect" subcommand.
 
