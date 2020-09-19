@@ -329,7 +329,12 @@ option add *Scrollarea.autoHideScrollbars 1
         default is <code>1</code>, which works as expected in the vast majority
         of cases.&nbsp; Should you experience any shimmering in one of your
         scrollarea widgets, just set this option for that scrollarea to a
-        sufficiently large value (e.g., <code>100</code>).</p>
+        sufficiently large value (e.g., <code>100</code>).&nbsp; Note, however,
+        that this value should not be greater than <code>300</code>, because,
+        for implementation-specific reasons, a
+        <code><b>-lockinterval</b></code> value greater than <code>300</code>
+        can prevent a dynamic scrollbar that should be hidden from being
+        unmapped.</p>
       </blockquote>
     </dd>
 
