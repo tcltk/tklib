@@ -579,13 +579,11 @@ proc scrollutil::sf::seerectSubCmd {win argList} {
     set y1 [format "%d" [lindex $argList 1]]
     set x2 [format "%d" [lindex $argList 2]]
     set y2 [format "%d" [lindex $argList 3]]
-    if {!($x1 < $x2)} {
-	return -code error \
-	    "the left x coordinate must be less than the right one"
+    if {$x1 > $x2} {
+	set tmp $x1; set x1 $x2; set x2 $temp
     }
-    if {!($y1 < $y2)} {
-	return -code error \
-	    "the upper y coordinate must be less than the lower one"
+    if {$y1 > $y2} {
+	set tmp $y1; set y1 $y2; set y2 $temp
     }
 
     #
