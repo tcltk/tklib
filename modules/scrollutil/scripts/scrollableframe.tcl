@@ -557,10 +557,10 @@ proc scrollutil::sf::seeSubCmd {win argList} {
     # Parse the optional argument and invoke seerectSubCmd
     #
     if {$argCount == 1} {
-	return [seerectSubCmd [list $x1 $y1 $x2 $y2]]
+	return [seerectSubCmd $win [list $x1 $y1 $x2 $y2]]
     } else {
 	set corner [lindex $argList 1]
-	return [seerectSubCmd [list $x1 $y1 $x2 $y2 $corner]]
+	return [seerectSubCmd $win [list $x1 $y1 $x2 $y2 $corner]]
     }
 }
 
