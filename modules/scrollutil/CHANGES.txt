@@ -4,26 +4,29 @@ What is new in Scrollutil 1.7?
 1. Added the "-autohidescrollbars" scrollarea configuration option
    (thanks to Alexandru Dadalau for his proposal and testing).
 
-2. The scrollableframe widget is now automatically registered for
+2. Set the recommended maximum for the value of the "-lockinterval"
+   scrollarea option to 300 (see the manual fore details).
+
+3. The scrollableframe widget is now automatically registered for
    scrolling with the mouse wheel at creation time.  The demo scripts
    "SuScrollableFrmDemo*.tcl" have been adapted accordingly.
 
-3. Added the "seerect" scrollableframe subcommand.
+4. Added the "seerect" scrollableframe subcommand.
 
-4. Added the command "scrollutil::disableScrollingByWheel".
+5. Added the command "scrollutil::disableScrollingByWheel".
 
-5. With Tk 8.6.10 or later, the demo-scripts now fully support the Dark
+6. With Tk 8.6.10 or later, the demo-scripts now fully support the Dark
    Mode appearance on Mac OS 10.14 (Mojave) and later.  For the demo
    scripts using tablelist widgets this is true if the Tablelist version
    is 6.11 or later (for an optimal user experience it is recommended to
    use Tk 8.6.11 or later).  Similarly, the full Dark Mode support for
    mentry widgets requires Mentry version 3.11 or later.
 
-6. Reworked the invocations of "package vcompare", taking into account
+7. Reworked the invocations of "package vcompare", taking into account
    that Tcl versions earlier than 8.5 did not support the letters "a"
    and "b" in version numbers (thanks to Mike Walsh for his bug report).
 
-7. Several further improvements in the code,  demo scripts, and
+8. Several further improvements in the code,  demo scripts, and
    documentation (thanks to Harald Oehlmann for his feedback regarding
    the manual).
 
