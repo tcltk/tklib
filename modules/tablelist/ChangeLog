@@ -1,3 +1,11 @@
+2020-09-20 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:        Updated.
+	* doc/tablelist.html:
+
+	* ../../examples/tablelist/*.tcl: Improvements related to font
+	  scalabilty.
+
 2020-09-08 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 6.11.
