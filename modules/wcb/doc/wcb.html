@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
   <title>Wcb Programmer's Guide</title>
@@ -9,11 +10,11 @@
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
-<body bgcolor="#FFFFFF">
+<body>
   <div align="center">
     <h1>Wcb Programmer's Guide</h1>
 
-    <h2>For Wcb Version 3.6</h2>
+    <h2>For Wcb Version 3.7</h2>
 
     <h3>by</h3>
 
@@ -23,6 +24,7 @@
       <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
     </address>
   </div>
+
   <hr>
 
   <h2 id="contents">Contents</h2>
@@ -59,6 +61,7 @@
   <div align="center">
     <p><a href="index.html">Start page</a></p>
   </div>
+
   <hr>
 
   <h2 id="overview">Overview</h2>
@@ -161,8 +164,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>wcb3.6.tar.gz</code> for UNIX and
-  <code>wcb3_6.zip</code> for Windows.&nbsp; These files contain the same
+  <p>The distribution file is <code>wcb3.7.tar.gz</code> for UNIX and
+  <code>wcb3_7.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -184,21 +187,29 @@
   respectively.</p>
 
   <p>To install Wcb <i>on UNIX</i>, <code>cd</code> to the desired directory
-  and unpack the distribution file <code>wcb3.6.tar.gz</code>:</p>
+  and unpack the distribution file <code>wcb3.7.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c wcb3.6.tar.gz | tar -xf -
+gunzip -c wcb3.7.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
-  <p>This command will create a directory named <code>wcb3.6</code>, with the
+  <p>On most UNIX systems this can be replaced with</p>
+
+  <blockquote>
+    <pre>
+tar -zxf wcb3.7.tar.gz
+</pre>
+  </blockquote>
+
+  <p>Both commands will create a directory named <code>wcb3.7</code>, with the
   subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>wcb3_6.zip</code> into the directory
-  <code>wcb3.6</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>wcb3_7.zip</code> into the directory
+  <code>wcb3.7</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Wcb <code>demos</code> directory is replaced with
@@ -268,6 +279,7 @@ namespace import wcb::<i>pattern</i> ?wcb::<i>pattern ...</i>?
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
+
   <hr>
 
   <h2 id="examples">Examples</h2>
@@ -280,7 +292,7 @@ namespace import wcb::<i>pattern</i> ?wcb::<i>pattern ...</i>?
   figure:</p>
 
   <blockquote>
-    <img src="entrytest.png" alt="entrytest" width="367" height="287">
+    <img src="entrytest.png" alt="entrytest" width="365" height="284">
   </blockquote>
 
   <p>For the topmost entry <code>.e1</code> we define two
@@ -312,9 +324,9 @@ wcb::callback .e2 before insert {wcb::checkEntryLen 10} \
 wcb::callback .e3 before insert {wcb::checkEntryLen 10} \
                                  checkNumber
 
-#
+<span class="cmt">#
 # Callback procedure checkNumber
-#
+#</span>
 proc checkNumber {w idx str} {
     set newText [wcb::postInsertEntryText $w $idx $str]
     if {![regexp {^[0-9]*\.?[0-9]?[0-9]?$} $newText]} {
@@ -381,7 +393,7 @@ wcb::callback .e3 before insert {wcb::checkEntryLen 10} \
   the corresponding bitmap in the label <code>.picture</code>.</p>
 
   <blockquote>
-    <img src="listboxtest1.png" alt="listboxtest1" width="201" height="169">
+    <img src="listboxtest1.png" alt="listboxtest1" width="199" height="163">
   </blockquote>
 
   <p>Here is the relevant code fragment from the script
@@ -392,9 +404,9 @@ wcb::callback .e3 before insert {wcb::checkEntryLen 10} \
     <pre>
 set dirName [file join $tk_library demos images]
 
-#
+<span class="cmt">#
 # Frame .spacer and listbox .lb
-#
+#</span>
 frame .spacer -width 10
 listbox .lb -height 0 -width 0 -background gray98
 if {$tk_version &lt; 8.5} {
@@ -406,19 +418,19 @@ foreach pathName [lsort [glob $pattern]] {
     .lb insert end [file tail $pathName]
 }
 
-#
+<span class="cmt">#
 # Label .picture
-#
+#</span>
 label .picture -relief sunken
 
-#
+<span class="cmt">#
 # Define a before-selset callback for .lb
-#
+#</span>
 wcb::callback .lb before selset showBitmap
 
-#
+<span class="cmt">#
 # Callback procedure showBitmap
-#
+#</span>
 proc showBitmap {w first args} {
     global dirName
     set pathName [file join $dirName [$w get $first]]
@@ -452,7 +464,7 @@ proc showBitmap {w first args} {
   within the listbox.</p>
 
   <blockquote>
-    <img src="listboxtest2.png" alt="listboxtest2" width="212" height="249">
+    <img src="listboxtest2.png" alt="listboxtest2" width="218" height="259">
   </blockquote>
 
   <p>To solve this problem, we can either change the selection mode to have the
@@ -468,9 +480,9 @@ proc showBitmap {w first args} {
 set dirName [file join $tk_library demos images]
 image create photo photoImage
 
-#
+<span class="cmt">#
 # Frame .spacer and listbox .lb
-#
+#</span>
 frame .spacer -width 10
 listbox .lb -height 0 -width 0 -background gray98
 set pattern [file join $dirName *]
@@ -478,27 +490,27 @@ foreach pathName [lsort [glob $pattern]] {
     .lb insert end [file tail $pathName]
 }
 
-#
+<span class="cmt">#
 # Label .picture
-#
+#</span>
 label .picture -relief sunken
 
-#
+<span class="cmt">#
 # Define a before-activate callback for .lb
-#
+#</span>
 wcb::callback .lb before activate showPicture
 
-#
+<span class="cmt">#
 # Callback procedure showPicture
-#
+#</span>
 proc showPicture {w idx} {
     set leafName [$w get $idx]
 
-    #
+    <span class="cmt">#
     # When traversing the listbox with the arrow keys, the value
     # of idx can become -1 or the number of listbox elements,
     # hence the value of leafName can be an empty string:
-    #
+    #</span>
     if {[string compare $leafName ""] == 0} {
         return ""
     }
@@ -521,19 +533,19 @@ proc showPicture {w idx} {
   creates the text widget shown in the following figure:</p>
 
   <blockquote>
-    <img src="texttest1.png" alt="texttest1" width="376" height="291">
+    <img src="texttest1.png" alt="texttest1" width="376" height="297">
   </blockquote>
 
   <p>Here is the relevant code fragment:</p>
 
   <blockquote>
     <pre>
-#
+<span class="cmt">#
 # Text .txt
-#
+#</span>
 set width 50
 text .txt -width $width -height 12 -setgrid true -wrap none -background white \
-          -font "Courier -12"
+          -font TkFixedFont
 .txt tag configure prog -foreground red
 .txt tag configure user -foreground DarkGreen
 .txt insert end "Everything you type or paste into this window will\n"  prog
@@ -544,19 +556,19 @@ text .txt -width $width -height 12 -setgrid true -wrap none -background white \
 .txt insert end "--------------------------------------------------\n"  prog
 set limit [.txt index insert]
 
-#
+<span class="cmt">#
 # Label .pos displaying the current cursor position
-#
+#</span>
 label .pos -textvariable pos
 
-#
+<span class="cmt">#
 # Button .send (actually, it does not send anything)
-#
+#</span>
 button .send -text Send -command exit
 
-#
+<span class="cmt">#
 # Define 5 before- and 2 after-callbacks for .txt
-#
+#</span>
 wcb::callback .txt before insert protectRedArea changeColor
 wcb::callback .txt before delete protectRedArea
 wcb::callback .txt before selset protectRedArea
@@ -564,14 +576,14 @@ wcb::callback .txt before motion displayPos
 wcb::callback .txt  after insert "checkLines $width"
 wcb::callback .txt  after delete "checkLines $width"
 
-#
+<span class="cmt">#
 # Callback procedure protectRedArea
 #
 # The parameters following w can be interpreted either as
 # "index string ?tagList string tagList ...?" (for an insert
 # callback), or as "from ?to?" (for a delete callback),
 # or as "from ?to from to ...?" (for a selset callback).
-#
+#</span>
 proc protectRedArea {w idx args} {
     global limit
     if {[$w compare $idx &lt; $limit]} {
@@ -579,16 +591,16 @@ proc protectRedArea {w idx args} {
     }
 }
 
-#
+<span class="cmt">#
 # Callback procedure changeColor
-#
+#</span>
 proc changeColor {w args} {
     wcb::extend user
 }
 
-#
+<span class="cmt">#
 # Callback procedure displayPos
-#
+#</span>
 proc displayPos {w idx} {
     set index [$w index $idx]
     scan $index "%d.%d" line column
@@ -598,22 +610,22 @@ proc displayPos {w idx} {
     set pos [format "Line: %d   Column: %d" $line $column]
 }
 
-#
+<span class="cmt">#
 # Callback procedure checkLines
 #
 # The parameter args can be interpreted both as "index
 # string ?tagList string tagList ...?" (for an insert
 # callback) and as "from ?to?" (for a delete callback).
-#
+#</span>
 proc checkLines {maxCharsPerLine w args} {
-    #
+    <span class="cmt">#
     # Display the new cursor position
-    #
+    #</span>
     displayPos $w insert
 
-    #
+    <span class="cmt">#
     # Disable or enable the .send button
-    #
+    #</span>
     scan [$w index end] "%d" lastLine
     for {set line 1} {$line &lt; $lastLine} {incr line} {
         scan [$w index $line.end] "%d.%d" dummy charsInLine
@@ -708,7 +720,7 @@ set index [$w index insert]
   shown in the following figure:</p>
 
   <blockquote>
-    <img src="texttest2.png" alt="texttest2" width= "376" height="291">
+    <img src="texttest2.png" alt="texttest2" width="376" height="297">
   </blockquote>
 
   <p>Most of the code contained in the script <code>texttest2.tcl</code> is
@@ -725,9 +737,9 @@ set index [$w index insert]
 . . .
 
 proc checkLines {maxCharsPerLine w args} {
-    #
+    <span class="cmt">#
     # Undo the last insert or delete action if necessary
-    #
+    #</span>
     scan [$w index end] "%d" lastLine
     for {set line 1} {$line &lt; $lastLine} {incr line} {
         scan [$w index $line.end] "%d.%d" dummy charsInLine
@@ -738,9 +750,9 @@ proc checkLines {maxCharsPerLine w args} {
         }
     }
 
-    #
+    <span class="cmt">#
     # Clear the undo and redo stacks, and display the new cursor position
-    #
+    #</span>
     $w edit reset
     displayPos $w insert
 }
