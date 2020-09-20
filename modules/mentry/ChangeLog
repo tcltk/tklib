@@ -1,3 +1,10 @@
+2020-09-20 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/wcbRef.html: Updated to the version included in Wcb 3.7.
+
+	* ../../examples/mentry/option.tcl: Improvement related to font
+	  scalabilty.
+
 2020-09-08 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 3.11; updated the
