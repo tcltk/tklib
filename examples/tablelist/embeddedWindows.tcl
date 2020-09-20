@@ -19,7 +19,7 @@ source [file join $dir option.tcl]
 #
 # Create the font TkFixedFont if not yet present
 #
-catch {font create TkFixedFont -family Courier -size -12}
+catch {font create TkFixedFont -family Courier -size 9}
 
 #
 # Create an image corresponding to the display's DPI scaling
@@ -60,7 +60,7 @@ proc emptyStr val { return "" }
 set tblFont [$tbl cget -font]
 set size [font actual $tblFont -size]
 if {$size == 0} {					;# e.g., on Ubuntu
-    set size -12
+    set size 9
 }
 eval font create BoldFont [font actual $tblFont] -size $size -weight bold
 

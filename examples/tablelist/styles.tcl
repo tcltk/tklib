@@ -25,7 +25,7 @@ if {[string compare $winSys "x11"] == 0} {
     #
     # Create the font TkDefaultFont if not yet present
     #
-    catch {font create TkDefaultFont -family Helvetica -size -12}
+    catch {font create TkDefaultFont -family Helvetica -size 9}
 
     option add *Font			TkDefaultFont
     option add *selectBackground	#5294e2

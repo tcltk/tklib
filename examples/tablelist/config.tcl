@@ -33,7 +33,7 @@ namespace eval demo {
 	#
 	# Create the font TkDefaultFont if not yet present
 	#
-	catch {font create TkDefaultFont -family Helvetica -size -12}
+	catch {font create TkDefaultFont -family Helvetica -size 9}
 
 	option add *DemoTop*Font			TkDefaultFont
 	option add *DemoTop*selectBackground		#5294e2
