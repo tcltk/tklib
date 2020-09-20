@@ -11,6 +11,8 @@
 
 	* doc/stylesheet.css: Updated.
 
+	* doc/*.png: Updated the screenshots.
+
 	* ../../examples/wcb/*.tcl: Made the demo-scripts scaling-aware;
 	  updated the copyright information.
 
