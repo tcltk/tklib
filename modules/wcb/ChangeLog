@@ -1,3 +1,19 @@
+2020-09-20  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 3.7; updated the
+	* COPYRIGHT.txt: copyright information.
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Updated the copyright information.
+
+	* doc/stylesheet.css: Updated.
+
+	* ../../examples/wcb/*.tcl: Made the demo-scripts scaling-aware;
+	  updated the copyright information.
+
 2020-02-09  0.7  <andreas_kupries@users.sourceforge.net>
 
 	*
