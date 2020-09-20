@@ -30,7 +30,8 @@ What is new in Tablelist 6.11?
    that Tcl versions earlier than 8.5 did not support the letters "a"
    and "b" in version numbers (thanks to Mike Walsh for his bug report).
 
-6. Several further improvements in the code and documentation.
+6. Several further improvements in the code, demo scripts, and
+   documentation.
 
 What was new in Tablelist 6.10?
 -------------------------------

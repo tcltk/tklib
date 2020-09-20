@@ -719,7 +719,7 @@ namespace eval demo {
         <span class="cmt">#
         # Create the font TkDefaultFont if not yet present
         #</span>
-        catch {font create TkDefaultFont -family Helvetica -size -12}
+        catch {font create TkDefaultFont -family Helvetica -size 9}
 
         option add *DemoTop*Font                        TkDefaultFont
         option add *DemoTop*selectBackground            #5294e2
@@ -2610,7 +2610,7 @@ source [file join $dir option.tcl]
 <span class="cmt">#
 # Create the font TkFixedFont if not yet present
 #</span>
-catch {font create TkFixedFont -family Courier -size -12}
+catch {font create TkFixedFont -family Courier -size 9}
 
 <span class="cmt">#
 # Create an image corresponding to the display's DPI scaling
@@ -2650,7 +2650,7 @@ proc emptyStr val { return "" }
 set tblFont [$tbl cget -font]
 set size [font actual $tblFont -size]
 if {$size == 0} {                                       ;<span class="cmt"># e.g., on Ubuntu</span>
-    set size -12
+    set size 9
 }
 eval font create BoldFont [font actual $tblFont] -size $size -weight bold
 
