@@ -10,7 +10,7 @@
 #	wcb::cancel
 #	wcb::extend <arg>
 #
-# Copyright (c) 1999-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require wcb
@@ -27,7 +27,7 @@ source [file join [file dirname [info script]] option.tcl]
 #
 set width 50
 text .txt -width $width -height 12 -setgrid true -wrap none -background white \
-	  -font "Courier -12"
+	  -font TkFixedFont
 .txt tag configure prog -foreground red
 .txt tag configure user -foreground DarkGreen
 .txt insert end "Everything you type or paste into this window will\n"	prog
@@ -122,7 +122,7 @@ proc checkLines {maxCharsPerLine w args} {
 #
 # Manage the widgets
 #
-pack .send -side bottom -pady 10
+pack .send -side bottom -pady 7p
 pack .pos -side bottom
 pack .txt -expand yes -fill both
 

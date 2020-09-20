@@ -3,7 +3,7 @@
 #==============================================================================
 # Demo:	wcb::callback <listbox> before selset <callback>
 #
-# Copyright (c) 1999-2018  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require wcb
@@ -58,6 +58,6 @@ button .close -text Close -command exit
 #
 # Manage the widgets
 #
-pack .spacer .lb -side left -fill y -pady 10
-pack .close -side bottom -padx 10 -pady 10
-pack .picture -padx 10 -pady 10
+pack .spacer .lb -side left -fill y -pady 7p
+pack .close -side bottom -padx 7p -pady 7p
+pack .picture -padx 7p -pady 7p
