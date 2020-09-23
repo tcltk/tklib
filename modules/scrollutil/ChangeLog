@@ -1,3 +1,11 @@
+2020-09-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/scrollarea.tcl: Activated the scrollbar locking in unmapped
+	  state, too.
+
+	* doc/scrollarea.html: Description of the "-lockinterval" option
+	  slightly extended.
+
 2020-09-19  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/scrollableframe.tcl: Corrected the invocations of
