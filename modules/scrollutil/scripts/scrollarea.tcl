@@ -166,6 +166,8 @@ proc scrollutil::sa::createBindings {} {
     bind Scrollarea <Configure> {
 	after 300 [list scrollutil::sa::updateScrollbars %W]
     }
+    bind Scrollarea <Map>        { set scrollutil::ns%W::data(isMapped) 1 }
+    bind Scrollarea <Unmap>      { set scrollutil::ns%W::data(isMapped) 0 }
     bind Scrollarea <Enter>	 { scrollutil::sa::onScrollareaEnter %W }
     bind Scrollarea <Leave>	 { scrollutil::sa::onScrollareaLeave %W }
     bind Scrollarea <Destroy> {
@@ -234,10 +236,12 @@ proc scrollutil::scrollarea args {
 	#
 	variable data
 	array set data {
+	    isMapped	 0
 	    hsbManaged	 0
 	    vsbManaged	 0
 	    hsbLocked	 0
 	    vsbLocked	 0
+	    sbObscured	 0
 	    widget	 ""
 	    cf-ne	 ""
 	    cf-sw	 ""
@@ -282,8 +286,6 @@ proc scrollutil::scrollarea args {
 	$sb.f configure -borderwidth 0 -height 0 -relief flat -takefocus 0 \
 			-width 0
     }
-    place $hsb.f -bordermode outside -relheight 1.0  ;# see -autohidescrollbars
-    place $vsb.f -bordermode outside -relwidth  1.0  ;# see -autohidescrollbars
 
     #
     # Make sure that the scrollbars won't use the old command syntax
@@ -391,7 +393,7 @@ proc scrollutil::sa::doConfig {win opt val} {
 
 		    if {$data($opt)} {
 			if {[mwutil::hasFocus [winfo toplevel $win]] &&
-			    [containsPointer $win]} {
+			    $data(isMapped) && [containsPointer $win]} {
 			    unobscureScrollbars $win
 			} else {
 			    obscureScrollbars $win
@@ -686,7 +688,7 @@ proc scrollutil::sa::setHScrollbar {win first last} {
     upvar ::scrollutil::ns${win}::data data
     $win.hsb set $first $last
 
-    if {[containsPointer $win]} {
+    if {$data(sbObscured) && $data(isMapped) && [containsPointer $win]} {
 	unobscureScrollbars $win
     }
 
@@ -711,7 +713,7 @@ proc scrollutil::sa::setVScrollbar {win first last} {
     upvar ::scrollutil::ns${win}::data data
     $win.vsb set $first $last
 
-    if {[containsPointer $win]} {
+    if {$data(sbObscured) && $data(isMapped) && [containsPointer $win]} {
 	unobscureScrollbars $win
     }
 
@@ -777,7 +779,7 @@ proc scrollutil::sa::onToplevelFocusIn top {
 	set lst2 {}
 	foreach w $lst1 {
 	    if {[string compare [winfo class $w] "Scrollarea"] == 0 &&
-		[containsPointer $w]} {
+		[winfo ismapped $w] && [containsPointer $w]} {
 		unobscureScrollbars $w
 	    }
 	    foreach child [winfo children $w] {
@@ -819,14 +821,14 @@ proc scrollutil::sa::onToplevelFocusOut top {
 # scrollutil::sa::onDynamicHScrollbarMap
 #------------------------------------------------------------------------------
 proc scrollutil::sa::onDynamicHScrollbarMap hsb {
-    set top [winfo toplevel $hsb]
-    if {![winfo ismapped $top]} {
-	return ""
-    }
-
     foreach {first last} [$hsb get] {}
     if {($first == 0 && $last == 1) ||
 	![containsTextWidget [winfo parent $hsb]]} {
+	return ""
+    }
+
+    set top [winfo toplevel $hsb]
+    if {![winfo ismapped $top]} {
 	return ""
     }
 
@@ -916,10 +918,8 @@ proc scrollutil::sa::showHScrollbar {win {redisplay 0}} {
     }
     set data(hsbManaged) 1
 
-    if {[winfo ismapped $win]} {
-	set data(hsbLocked) 1
-	after $data(-lockinterval) [list scrollutil::sa::unlockHScrollbar $win]
-    }
+    set data(hsbLocked) 1
+    after $data(-lockinterval) [list scrollutil::sa::unlockHScrollbar $win]
 }
 
 #------------------------------------------------------------------------------
@@ -992,10 +992,8 @@ proc scrollutil::sa::showVScrollbar {win {redisplay 0}} {
     }
     set data(vsbManaged) 1
 
-    if {[winfo ismapped $win]} {
-	set data(vsbLocked) 1
-	after $data(-lockinterval) [list scrollutil::sa::unlockVScrollbar $win]
-    }
+    set data(vsbLocked) 1
+    after $data(-lockinterval) [list scrollutil::sa::unlockVScrollbar $win]
 }
 
 #------------------------------------------------------------------------------
@@ -1052,16 +1050,29 @@ proc scrollutil::sa::unlockVScrollbar win {
 # scrollutil::sa::obscureScrollbars
 #------------------------------------------------------------------------------
 proc scrollutil::sa::obscureScrollbars win {
-    place configure $win.hsb.f -relwidth  1.0 -x 0
-    place configure $win.vsb.f -relheight 1.0 -y 0
+    upvar ::scrollutil::ns${win}::data data
+    if {$data(sbObscured)} {
+	return ""
+    }
+
+    set data(sbObscured) 1
+    place $win.hsb.f -bordermode outside -relheight 1.0 -relwidth 1.0
+    place $win.vsb.f -bordermode outside -relheight 1.0 -relwidth 1.0
+    
 }
 
 #------------------------------------------------------------------------------
 # scrollutil::sa::unobscureScrollbars
 #------------------------------------------------------------------------------
 proc scrollutil::sa::unobscureScrollbars win {
-    place configure $win.hsb.f -relwidth  0.0 -x -1
-    place configure $win.vsb.f -relheight 0.0 -y -1
+    upvar ::scrollutil::ns${win}::data data
+    if {!$data(sbObscured)} {
+	return ""
+    }
+
+    set data(sbObscured) 0
+    place forget $win.hsb.f
+    place forget $win.vsb.f
 }
 
 #------------------------------------------------------------------------------
