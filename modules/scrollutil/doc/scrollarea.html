@@ -321,20 +321,23 @@ option add *Scrollarea.autoHideScrollbars 1
         <code><b><a href="#xscrollbarmode">-xscrollbarmode</a></b></code> and
         <code><b><a href="#yscrollbarmode">-yscrollbarmode</a></b></code>
         options) will be protected from being unmapped after being mapped, in
-        order to avoid any shimmering effects.&nbsp; Without this locking
-        mechanism, under some rare circumstances a dynamic scrollbar could get
-        mapped and unmapped in an endless loop, thus giving rise to an annoying
-        and often dangerous flickering effect.&nbsp; The same problem can arise
-        due to a too small <code><b>-lockinterval</b></code> value.&nbsp; The
-        default is <code>1</code>, which works as expected in the vast majority
-        of cases.&nbsp; Should you experience any shimmering in one of your
+        order to avoid any shimmering effects.&nbsp; This is also the time
+        interval for which the dynamic scrollbars will mutually protect each
+        other from being mapped after one of them got mapped.&nbsp; Without
+        this locking mechanism, under some rare circumstances a dynamic
+        scrollbar could get mapped and unmapped in an endless loop, thus giving
+        rise to an annoying and often dangerous flickering effect.&nbsp; The
+        same problem can arise due to a too small
+        <code><b>-lockinterval</b></code> value.&nbsp; The default is
+        <code>1</code>, which works as expected in the vast majority of
+        cases.&nbsp; Should you experience any shimmering in one of your
         scrollarea widgets, just set this option for that scrollarea to a
         sufficiently large value (e.g., <code>100</code>).&nbsp; Note, however,
         that this value should not be greater than <code>300</code>, because,
         for implementation-specific reasons, a
         <code><b>-lockinterval</b></code> value greater than <code>300</code>
         can prevent a dynamic scrollbar that should be hidden from being
-        unmapped.</p>
+        unmapped, or one that should be shown from being mapped.</p>
       </blockquote>
     </dd>
 
