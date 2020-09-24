@@ -6201,7 +6201,7 @@ proc tablelist::xviewSubCmd {win argList} {
 	    # Command: $win xview moveto <fraction>
 	    #	       $win xview scroll <number> units|pages
 	    #
-	    set argList [mwutil::getScrollInfo "$win xview" $argList]
+	    set argList [mwutil::getScrollInfo2 "$win xview" $argList]
 	    variable winSys
 	    if {$data(-titlecolumns) == 0} {
 		if {[string compare [lindex $argList 0] "moveto"] == 0} {
@@ -6361,7 +6361,7 @@ proc tablelist::yviewSubCmd {win argList} {
 	    # Command: $win yview moveto <fraction>
 	    #	       $win yview scroll <number> units|pages
 	    #
-	    set argList [mwutil::getScrollInfo "$win yview" $argList]
+	    set argList [mwutil::getScrollInfo2 "$win yview" $argList]
 	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
 		set data(vertFraction) [lindex $argList 1]
 		if {![info exists data(vertMoveToId)]} {
