@@ -708,7 +708,7 @@ proc scrollutil::sf::xviewSubCmd {win argList} {
 	    # Command: $win xview moveto <fraction>
 	    #	       $win xview scroll <number> units|pages
 	    #
-	    set argList [mwutil::getScrollInfo "$win xview" $argList]
+	    set argList [mwutil::getScrollInfo2 "$win xview" $argList]
 	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
 		set number ""
 		set fraction [lindex $argList 1]
@@ -766,7 +766,7 @@ proc scrollutil::sf::yviewSubCmd {win argList} {
 	    # Command: $win yview moveto <fraction>
 	    #	       $win yview scroll <number> units|pages
 	    #
-	    set argList [mwutil::getScrollInfo "$win yview" $argList]
+	    set argList [mwutil::getScrollInfo2 "$win yview" $argList]
 	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
 		set number ""
 		set fraction [lindex $argList 1]
