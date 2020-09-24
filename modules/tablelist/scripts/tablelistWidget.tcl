@@ -87,7 +87,8 @@ namespace eval tablelist {
 	    interp alias {} ::tablelist::tileqt_currentThemeName \
 			 {} ::ttk::theme::tileqt::currentThemeName
 	    interp alias {} ::tablelist::tileqt_currentThemeColour \
-			 {} ::ttk::theme::tileqt::currentThemeColour }
+			 {} ::ttk::theme::tileqt::currentThemeColour
+	}
     }
     if {$usingTile} {
 	createTileAliases 
