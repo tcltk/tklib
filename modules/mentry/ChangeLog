@@ -1,3 +1,7 @@
+2020-09-24 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/mwutil/mwutil.tcl: Restored the getScrollInfo2 command.
+
 2020-09-20 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/wcbRef.html: Updated to the version included in Wcb 3.7.
