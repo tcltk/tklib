@@ -1,3 +1,8 @@
+2020-09-24 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistWidget.tcl: Restored the mwutil::getScrollInfo2
+	* scripts/utils/mwutil.tcl:    command.
+
 2020-09-20 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:        Updated.
