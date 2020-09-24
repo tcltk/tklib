@@ -1,3 +1,9 @@
+2020-09-24  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/scrollableframe.html: Restored the mwutil::getScrollInfo2
+	* scripts/scrollsync.tcl:   command.
+	* scripts/utils/mwutil.tcl:
+
 2020-09-23  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/scrollarea.tcl: Activated the scrollbar locking in unmapped
