@@ -329,15 +329,18 @@ namespace import mentry::<i>pattern</i> ?mentry::<i>pattern ...</i>?
   <p>Another restriction to be taken into account is due to the fact that in
   earlier tile versions the&nbsp; <code>(ttk::)style theme use</code>&nbsp;
   command could only be used to set the current theme, but not to retrieve
-  it.&nbsp; For this reason, the package Mentry_tile makes use of the variable
-  <code>ttk::currentTheme</code> or <code>tile::currentTheme</code> (depending
-  on the tile version), which is set by the <code>ttk::setTheme</code> or
-  <code>tile::setTheme</code> procedure.&nbsp; From this it follows that <b>the
-  tile-based mentry widgets will only have the expected appearance if the
-  platform-specific default theme is either left unchanged or replaced with
-  another theme by invoking the procedure <code>ttk::setTheme</code> or
-  <code>tile::setTheme</code>, depending on the current tile version</b>.&nbsp;
-  (See also the <code><a href=
+  it.&nbsp; For this reason, if the package Mentry_tile cannot get the current
+  theme with the aid of&nbsp; <code>ttk::style theme use</code>&nbsp; then it
+  makes use of the variable <code>ttk::currentTheme</code> or
+  <code>tile::currentTheme</code> (depending on the tile version), which is set
+  by the <code>ttk::setTheme</code> or <code>tile::setTheme</code>
+  command.&nbsp; From this it follows that <b>if the tile version being used
+  doesn't support the&nbsp; <code>ttk::style theme use</code>&nbsp; command
+  without an argument then the tile-based mentry widgets will only have the
+  expected appearance if the platform-specific default theme is either left
+  unchanged or replaced with another theme by invoking the library procedure
+  <code>ttk::setTheme</code> or <code>tile::setTheme</code>, depending on the
+  tile version</b>.&nbsp; (See also the <code><a href=
   "mentryThemes.html#setTheme">mentry::setTheme</a></code> command.)</p>
 
   <p>After these cautions concerning the use of tile, the rest of this section

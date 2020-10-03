@@ -640,7 +640,9 @@ proc mwutil::windowingSystem {} {
 # Returns the current tile theme.
 #------------------------------------------------------------------------------
 proc mwutil::currentTheme {} {
-    if {[info exists ::ttk::currentTheme]} {
+    if {[catch {ttk::style theme use} result] == 0} {
+	return $result
+    } elseif {[info exists ::ttk::currentTheme]} {
 	return $::ttk::currentTheme
     } elseif {[info exists ::tile::currentTheme]} {
 	return $::tile::currentTheme

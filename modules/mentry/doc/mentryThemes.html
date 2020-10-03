@@ -126,10 +126,13 @@
 
     <dt><b>DESCRIPTION</b></dt>
 
-    <dd>This command returns the value of the variable
+    <dd>This command returns the name of the current theme by invoking
+    the&nbsp; <code><b>ttk::style theme use</b></code>&nbsp; command.&nbsp; If
+    an old tile version is being used which doesn't yet support this method
+    then the command returns the value of the variable
     <code><b>ttk::currentTheme</b></code> or
-    <code><b>tile::currentTheme</b></code>, depending on the tile version
-    loaded into the interpreter.&nbsp; (The namespace containing the variable
+    <code><b>tile::currentTheme</b></code>, depending on the tile
+    version.&nbsp; (The namespace containing the variable
     <code><b>currentTheme</b></code> was changed in tile version 0.8 from
     <code><b>tile</b></code> to <code><b>ttk</b></code>.)</dd>
 

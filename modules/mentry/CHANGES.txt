@@ -18,15 +18,19 @@ What is new in Mentry 3.11?
 3. Included the same version 2.17 of the general mega-widget utility
    module "mwutil.tcl" as in the most recent Tablelist release 6.11.
 
-4. Made the demo-scripts scaling-aware.  In addition, with Tk 8.6.10 or
+4. For current Tk versions Mentry no longer requires that changing the
+   theme is done using the "ttk::setTheme" command instead of
+   "ttk::style theme use", which was necessary for older tile versions.
+
+5. Made the demo-scripts scaling-aware.  In addition, with Tk 8.6.10 or
    later, they now fully support the Dark Mode appearance on Mac OS
    10.14 and later.
 
-5. Reworked the invocations of "package vcompare", taking into account
+6. Reworked the invocations of "package vcompare", taking into account
    that Tcl versions earlier than 8.5 did not support the letters "a"
    and "b" in version numbers (thanks to Mike Walsh for his bug report).
 
-6. Several further improvements in the code and documentation.
+7. Several further improvements in the code and documentation.
 
 What was new in Mentry 3.10?
 ----------------------------
