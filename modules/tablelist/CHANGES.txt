@@ -23,14 +23,18 @@ What is new in Tablelist 6.11?
    setThemeDefaults Command" of the manual page "Commands Related to
    Tile Themes" for details.
 
-4. Improvements related to laying out the widget used for interactive
+4. For current Tk versions Tablelist no longer requires that changing
+   the theme is done using the "ttk::setTheme" command instead of
+   "ttk::style theme use", which was necessary for older tile versions.
+
+5. Improvements related to laying out the widget used for interactive
    cell editing.
 
-5. Reworked the invocations of "package vcompare", taking into account
+6. Reworked the invocations of "package vcompare", taking into account
    that Tcl versions earlier than 8.5 did not support the letters "a"
    and "b" in version numbers (thanks to Mike Walsh for his bug report).
 
-6. Several further improvements in the code, demo scripts, and
+7. Several further improvements in the code, demo scripts, and
    documentation.
 
 What was new in Tablelist 6.10?
