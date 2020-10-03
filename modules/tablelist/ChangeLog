@@ -1,3 +1,10 @@
+2020-10-03 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:              Dropped the requirement that changing the
+	* scripts/utils/mwutil.tcl: theme is done using the "ttk::setTheme"
+	* doc/tablelist.html:       command, which was necessary for older tile
+	* doc/tablelistThemes.html: versions.
+
 2020-09-24 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistWidget.tcl: Restored the mwutil::getScrollInfo2
