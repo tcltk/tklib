@@ -1,3 +1,10 @@
+2020-10-03 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:               Dropped the requirement that changing the
+	* scripts/mwutil/mwutil.tcl: theme is done using the "ttk::setTheme"
+	* doc/mentry.html:           command, which was necessary for older
+	* doc/mentryThemes.html:     tile versions.
+
 2020-09-24 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/mwutil/mwutil.tcl: Restored the getScrollInfo2 command.
