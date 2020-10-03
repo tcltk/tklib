@@ -1,3 +1,9 @@
+2020-10-03  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/utils/mwutil.tcl: Updated.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
 2020-09-24  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/scrollableframe.html: Restored the mwutil::getScrollInfo2
