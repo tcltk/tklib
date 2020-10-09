@@ -1,3 +1,21 @@
+2020-10-09 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt: Updated.
+
+	* scripts/tablelistEdit.tcl:      Added support for the "awdark" theme.
+	* scripts/tablelistThemes.tcl:
+	* doc/tablelist.html:
+	* ../../examples/tablelist/*.tcl:
+
+	* scripts/tablelistImages.tcl: Added the tree styles "white100",
+	* scripts/tablelistWidget.tcl: "white125", ..., "white200".
+	* doc/tablelistWidget.html:
+	* doc/white*.png:
+
+	* scripts/utils/scaleutil.tcl: Improvements related to the X11 fonts.
+
+	* scripts/tclIndex: Newly generated.
+
 2020-10-03 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:              Dropped the requirement that changing the
