@@ -81,7 +81,7 @@ proc mentry::altTheme {} {
 	-selectforeground	#ffffff \
 	-selectborderwidth	0 \
 	-borderwidth		2 \
-	-labelpady		{3 2} \
+	-labelpady		{2 2} \
     ]
 }
 
@@ -101,9 +101,9 @@ proc mentry::aquaTheme {} {
 
 	if {$extendedAquaSupport} {
 	    scan $::tcl_platform(osVersion) "%d" majorOSVersion
-	    set labelPadY [expr {$majorOSVersion >= 18 ? {4 4} : {5 4}}]
+	    set labelPadY [expr {$majorOSVersion >= 18 ? {4 7} : {4 5}}]
 	} else {
-	    set labelPadY {4 4}
+	    set labelPadY {4 7}
 	}
 
 	array set themeDefaults [list \
@@ -129,7 +129,7 @@ proc mentry::aquaTheme {} {
 	    -selectforeground		systemModelessDialogActiveText \
 	    -selectborderwidth		0 \
 	    -borderwidth		4 \
-	    -labelpady			{5 4} \
+	    -labelpady			{4 4} \
 	]
     }
 }
@@ -187,7 +187,26 @@ proc mentry::ArcTheme {} {
 	-selectforeground	#ffffff \
 	-selectborderwidth	0 \
 	-borderwidth		3 \
-	-labelpady		{4 3} \
+	-labelpady		{3 3} \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# mentry::awdarkTheme
+#------------------------------------------------------------------------------
+proc mentry::awdarkTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		#191c1d \
+	-disabledbackground	#232729 \
+	-foreground		white \
+	-foreground,background	white \
+	-disabledforeground	#b3b3b3 \
+	-selectbackground	#215d9c \
+	-selectforeground	white \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
     ]
 }
 
@@ -206,7 +225,7 @@ proc mentry::blueTheme {} {
 	-selectforeground	#000000 \
 	-selectborderwidth	1 \
 	-borderwidth		1 \
-	-labelpady		{3 1} \
+	-labelpady		{1 1} \
     ]
 }
 
@@ -225,7 +244,7 @@ proc mentry::clamTheme {} {
 	-selectforeground	#ffffff \
 	-selectborderwidth	0 \
 	-borderwidth		2 \
-	-labelpady		{3 2} \
+	-labelpady		{2 2} \
     ]
 }
 
@@ -244,7 +263,7 @@ proc mentry::classicTheme {} {
 	-selectforeground	#000000 \
 	-selectborderwidth	1 \
 	-borderwidth		3 \
-	-labelpady		{4 3} \
+	-labelpady		{3 3} \
     ]
 }
 
@@ -264,7 +283,7 @@ proc mentry::clearlooksTheme {} {
 	-selectforeground	#ffffff \
 	-selectborderwidth	0 \
 	-borderwidth		2 \
-	-labelpady		{3 2} \
+	-labelpady		{2 2} \
     ]
 }
 
@@ -283,7 +302,7 @@ proc mentry::defaultTheme {} {
 	-selectforeground	#ffffff \
 	-selectborderwidth	1 \
 	-borderwidth		1 \
-	-labelpady		{2 1} \
+	-labelpady		{1 1} \
     ]
 }
 
@@ -359,7 +378,7 @@ proc mentry::plastikTheme {} {
 	-selectforeground	#ffffff \
 	-selectborderwidth	0 \
 	-borderwidth		2 \
-	-labelpady		{4 2} \
+	-labelpady		{2 2} \
     ]
 }
 
@@ -397,7 +416,7 @@ proc mentry::srivlgTheme {} {
 	-selectforeground	#000000 \
 	-selectborderwidth	1 \
 	-borderwidth		3 \
-	-labelpady		{5 3} \
+	-labelpady		{3 3} \
     ]
 }
 
@@ -461,7 +480,7 @@ proc mentry::vistaTheme {} {
 	-selectforeground	SystemHighlightText \
 	-selectborderwidth	0 \
 	-borderwidth		2 \
-	-labelpady		{3 2} \
+	-labelpady		{2 2} \
     ]
 }
 
@@ -480,7 +499,7 @@ proc mentry::winnativeTheme {} {
 	-selectforeground	SystemHighlightText \
 	-selectborderwidth	0 \
 	-borderwidth		2 \
-	-labelpady		{4 2} \
+	-labelpady		{2 2} \
     ]
 }
 
@@ -507,13 +526,6 @@ proc mentry::winxpblueTheme {} {
 # mentry::xpnativeTheme
 #------------------------------------------------------------------------------
 proc mentry::xpnativeTheme {} {
-    switch [winfo rgb . SystemButtonFace] {
-	"60652 59881 55512" -
-	"57568 57311 58339" -
-	"61680 61680 61680"	{ set labelPadY {3 2} }
-	default			{ set labelPadY {4 2} }
-    }
-
     variable themeDefaults
     array set themeDefaults [list \
 	-background		SystemWindow \
@@ -525,7 +537,7 @@ proc mentry::xpnativeTheme {} {
 	-selectforeground	SystemHighlightText \
 	-selectborderwidth	0 \
 	-borderwidth		2 \
-	-labelpady		$labelPadY \
+	-labelpady		{2 4} \
     ]
 }
 

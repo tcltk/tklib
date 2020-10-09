@@ -9,28 +9,31 @@ What is new in Mentry 3.11?
    Mode and Dark Mode or the Accent Color or Highlight Color in the
    General Preferences changes.
 
-2. Added the virtual event <<MentryThemeDefaultsChanged>>, sent to the
+2. Added support for the "awdark" theme of the package awthemes 9.3.2 or
+   later by Brad Lanam.
+
+3. Added the virtual event <<MentryThemeDefaultsChanged>>, sent to the
    main window when handling the virtual events <<ThemeChanged>>,
    <<LightAqua>>, and <<DarkAqua>>.  See the section "The mentry::
    setThemeDefaults Command" of the manual page "Commands Related to
    Tile Themes" for details.
 
-3. Included the same version 2.17 of the general mega-widget utility
+4. Included the same version 2.17 of the general mega-widget utility
    module "mwutil.tcl" as in the most recent Tablelist release 6.11.
 
-4. For current Tk versions Mentry no longer requires that changing the
+5. For current Tk versions Mentry no longer requires that changing the
    theme is done using the "ttk::setTheme" command instead of
    "ttk::style theme use", which was necessary for older tile versions.
 
-5. Made the demo-scripts scaling-aware.  In addition, with Tk 8.6.10 or
+6. Made the demo-scripts scaling-aware.  In addition, with Tk 8.6.10 or
    later, they now fully support the Dark Mode appearance on Mac OS
    10.14 and later.
 
-6. Reworked the invocations of "package vcompare", taking into account
+7. Reworked the invocations of "package vcompare", taking into account
    that Tcl versions earlier than 8.5 did not support the letters "a"
    and "b" in version numbers (thanks to Mike Walsh for his bug report).
 
-7. Several further improvements in the code and documentation.
+8. Several further improvements in the code and documentation.
 
 What was new in Mentry 3.10?
 ----------------------------

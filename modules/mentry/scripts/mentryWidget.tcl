@@ -821,7 +821,7 @@ proc mentry::createChildren {win body} {
 	# Create a label displaying the given text within the hull win
 	#
 	set w [labelPath $win $n]
-	tk::label $w -anchor n -bitmap "" -borderwidth 0 -height 0 \
+	tk::label $w -anchor center -bitmap "" -borderwidth 0 -height 0 \
 		     -highlightthickness 0 -image "" -padx 0 -pady 0 \
 		     -takefocus 0 -text $text -textvariable "" -underline -1 \
 		     -width 0 -wraplength 0
@@ -2240,11 +2240,23 @@ proc mentry::geomParams {} {
     set deltaWidth $bd2
 
     variable currentTheme
-    if {[string compare $currentTheme "aqua"] == 0} {
-	variable newAquaSupport
-	if {$newAquaSupport} {
-	    incr x 2
-	    incr deltaWidth 4
+    switch -- $currentTheme {
+	aqua {
+	    variable newAquaSupport
+	    if {$newAquaSupport} {
+		incr x 2
+		incr deltaWidth 4
+	    }
+	}
+	Arc {
+	    incr x 3
+	    incr deltaWidth 6
+	}
+	awdark {
+	    incr bd
+	    incr bd2 2
+	    incr x 5
+	    incr deltaWidth 10
 	}
     }
 
