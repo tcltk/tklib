@@ -25,7 +25,7 @@ source [file join $demo::dir config_tile.tcl]
 #
 # Work around the improper appearance of the tile scrollbars in the aqua theme
 #
-if {[tablelist::getCurrentTheme] eq "aqua" &&
+if {$demo::currentTheme eq "aqua" &&
     [package vcompare $::tk_patchLevel "8.6.10"] < 0} {
     interp alias {} ttk::scrollbar {} ::scrollbar
 }
@@ -106,6 +106,10 @@ proc demo::displayChildren w {
 		      -command [list demo::putChildrenOfSelWidget $tbl]
     $menu add command -label "Display Config" \
 		      -command [list demo::dispConfigOfSelWidget $tbl]
+    variable currentTheme
+    if {$currentTheme eq "awdark"} {
+	ttk::theme::awdark::setMenuColors $menu
+    }
     set bodyTag [$tbl bodytag]
     bind $bodyTag <Double-1>   [list demo::putChildrenOfSelWidget $tbl]
     bind $bodyTag <<Button3>>  [bind TablelistBody <Button-1>]

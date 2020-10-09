@@ -22,7 +22,7 @@ namespace eval demo {
     #   b1, b2, b3	  TButton
     #
     variable currentTheme [tablelist::getCurrentTheme]
-    if {$currentTheme ne "aqua"} {
+    if {$currentTheme ne "aqua" && $currentTheme ne "awdark"} {
 	option add *DemoTop.tf.tbl.background		white
 	option add *DemoTop.tf.tbl.stripeBackground	#f0f0f0
     }
@@ -39,7 +39,11 @@ namespace eval demo {
     set foreground [winfo rgb . $tablelist::themeDefaults(-foreground)]
     set selectFg   [winfo rgb . $tablelist::themeDefaults(-selectforeground)]
     set selectFgEqForeground [expr {$selectFg eq $foreground}]
-    option add *DemoTop.tf.borderWidth			1
+    if {$currentTheme eq "awdark"} {
+	option add *DemoTop.tf.borderWidth		2
+    } else {
+	option add *DemoTop.tf.borderWidth		1
+    }
     option add *DemoTop.tf.relief			sunken
     option add *DemoTop.tf.tbl.borderWidth		0
     option add *DemoTop.tf.tbl.setGrid			yes

@@ -28,7 +28,7 @@ catch {font create TkFixedFont -family Courier -size 9}
 set pct $tablelist::scalingpct
 image create photo openImg -file [file join $dir openAction$pct.gif]
 
-if {[tablelist::getCurrentTheme] eq "aqua"} {
+if {$currentTheme eq "aqua"} {
     #
     # Work around the improper appearance of the tile scrollbars
     #
@@ -114,7 +114,9 @@ if {$tk_version >= 8.5} {
     $tbl header insert 0 [list "[$tbl size] *.tcl files" "" $totalSize "" ""]
     $tbl header rowconfigure 0 -foreground blue
 
-    if {[tablelist::getCurrentTheme] eq "aqua" &&
+    if {$currentTheme eq "awdark"} {
+	$tbl header rowconfigure 0 -foreground SkyBlue
+    } elseif {$currentTheme eq "aqua" &&
 	[package vcompare $tk_patchLevel "8.6.10"] >= 0} {
 	if {[tk::unsupported::MacWindowStyle isdark .]} {
 	    $tbl header rowconfigure 0 -foreground SkyBlue
@@ -193,6 +195,9 @@ proc viewFile {tbl key} {
     set txt $tf.txt
     set vsb $tf.vsb
     text $txt -font TkFixedFont -setgrid yes -yscrollcommand [list $vsb set]
+    if {$::currentTheme eq "awdark"} {
+	ttk::theme::awdark::setTextColors $txt
+    }
     catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5 and above
     ttk::scrollbar $vsb -orient vertical -command [list $txt yview]
 

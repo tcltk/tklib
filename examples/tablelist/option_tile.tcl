@@ -7,7 +7,8 @@
 #
 # Add some entries to the Tk option database
 #
-if {[tablelist::getCurrentTheme] ne "aqua"} {
+set currentTheme [tablelist::getCurrentTheme]
+if {$currentTheme ne "aqua" && $currentTheme ne "awdark"} {
     option add *Tablelist.background		white
     option add *Tablelist.stripeBackground	#f0f0f0
 }
@@ -22,7 +23,11 @@ option add *Tablelist.setGrid			yes
 option add *Tablelist.movableColumns		yes
 option add *Tablelist.labelCommand		tablelist::sortByColumn
 option add *Tablelist.labelCommand2		tablelist::addToSortColumns
-option add *ScrollArea.borderWidth		1
+if {$currentTheme eq "awdark"} {
+    option add *ScrollArea.borderWidth		2
+} else {
+    option add *ScrollArea.borderWidth		1
+}
 option add *ScrollArea.relief			sunken
 option add *ScrollArea.Tablelist.borderWidth	0
 option add *ScrollArea.Text.borderWidth		0

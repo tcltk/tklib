@@ -14,6 +14,10 @@ image create photo uncheckedImg -file [file join $dir unchecked$pct.gif]
 #
 # Create 16 images representing different colors
 #
+# Declare the variables as global because this
+# file might be sourced from within a procedure
+#
+global colorNames colorValues colors
 set colorNames {
     "red" "green" "blue" "magenta"
     "yellow" "cyan" "light gray" "white"

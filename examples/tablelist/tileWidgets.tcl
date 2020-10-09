@@ -29,7 +29,11 @@ source [file join $dir images.tcl]
 # Improve the window's appearance by using a tile
 # frame as a container for the other widgets
 #
-set f [ttk::frame .f]
+if {$::argc == 0} {
+    set f [ttk::frame .f]
+} else {
+    set f [lindex $::argv 0]	;# provided by the awthemes script "demottk.tcl"
+}
 
 #
 # Create a tablelist widget with editable columns (except the first one)
@@ -49,6 +53,9 @@ tablelist::tablelist $tbl \
 	      0 "Cable Color"	  center} \
     -editstartcommand editStartCmd -editendcommand editEndCmd \
     -height 0 -width 0
+if {$currentTheme eq "awdark"} {
+    $tbl configure -borderwidth 2
+}
 if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
@@ -92,14 +99,22 @@ for {set i 0; set n 1} {$i < 16} {set i $n; incr n} {
     $tbl cellconfigure end,color -image img[lindex $colorValues $i]
 }
 
-set btn [ttk::button $f.btn -text "Close" -command exit]
+if {$::argc == 0} {
+    set btn [ttk::button $f.btn -text "Close" -command exit]
+}
 
 #
 # Manage the widgets
 #
-pack $btn -side bottom -pady 7p
-pack $tbl -side top -expand yes -fill both
-pack $f -expand yes -fill both
+if {$::argc == 0} {
+    pack $btn -side bottom -pady 7p
+    pack $tbl -side top -expand yes -fill both
+    pack $f -expand yes -fill both
+} else {
+    $tbl configure -stretch all
+    foreach col {8 9} { $tbl columnconfigure $col -hide yes }
+    pack $tbl -side top -expand yes -fill both -padx 3p -pady {0 3p}
+}
 
 #------------------------------------------------------------------------------
 # editStartCmd

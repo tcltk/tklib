@@ -416,6 +416,39 @@ proc tablelist::ArcTheme {} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::awdarkTheme
+#------------------------------------------------------------------------------
+proc tablelist::awdarkTheme {} {
+    variable themeDefaults
+    variable scalingpct
+    array set themeDefaults [list \
+	-background		#33393b \
+	-foreground		white \
+	-disabledforeground	#b3b3b3 \
+	-stripebackground	#242a2c \
+	-selectbackground	#215d9c \
+	-selectforeground	white \
+	-selectborderwidth	0 \
+	-font			TkTextFont \
+	-labelbackground	#33393b \
+	-labeldeactivatedBg	#33393b \
+	-labeldisabledBg	#33393b \
+	-labelactiveBg		#33393b \
+	-labelpressedBg		#33393b \
+	-labelforeground	white \
+	-labeldisabledFg	#b3b3b3 \
+	-labelactiveFg		white \
+	-labelpressedFg		white \
+	-labelfont		TkDefaultFont \
+	-labelborderwidth	2 \
+	-labelpady		2 \
+	-arrowcolor		white \
+	-arrowstyle		[defaultX11ArrowStyle] \
+	-treestyle		white$scalingpct \
+    ]
+}
+
+#------------------------------------------------------------------------------
 # tablelist::blueTheme
 #------------------------------------------------------------------------------
 proc tablelist::blueTheme {} {

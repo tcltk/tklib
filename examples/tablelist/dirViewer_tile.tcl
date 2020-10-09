@@ -26,7 +26,7 @@ image create photo fileImg       -file [file join $dir       file$pct.gif]
 #
 # Work around the improper appearance of the tile scrollbars in the aqua theme
 #
-if {[tablelist::getCurrentTheme] eq "aqua" &&
+if {$currentTheme eq "aqua" &&
     [package vcompare $::tk_patchLevel "8.6.10"] < 0} {
     interp alias {} ttk::scrollbar {} ::scrollbar
 }
@@ -66,7 +66,7 @@ proc displayContents dir {
     # On X11 configure the tablelist according
     # to the display's DPI scaling level
     #
-    if {[tk windowingsystem] eq "x11"} {
+    if {[tk windowingsystem] eq "x11" && $::currentTheme ne "awdark"} {
 	$tbl configure -treestyle bicolor$tablelist::scalingpct
     }
 

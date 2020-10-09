@@ -1136,6 +1136,7 @@ proc tablelist::createMenubutton {w args} {
     if {[string compare $winSys "x11"] == 0} {
 	$menu configure -background $data(-background) \
 			-foreground $data(-foreground) \
+			-selectcolor $data(-foreground) \
 			-activebackground $data(-selectbackground) \
 			-activeforeground $data(-selectforeground) \
 			-activeborderwidth $data(-selectborderwidth)
@@ -1396,6 +1397,7 @@ proc tablelist::createTileMenubutton {w args} {
     if {[string compare $winSys "x11"] == 0} {
 	$menu configure -background $data(-background) \
 			-foreground $data(-foreground) \
+			-selectcolor $data(-foreground) \
 			-activebackground $data(-selectbackground) \
 			-activeforeground $data(-selectforeground) \
 			-activeborderwidth $data(-selectborderwidth)
