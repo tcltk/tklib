@@ -590,9 +590,10 @@ namespace eval tablelist {
 				 oxygen1 oxygen2 phase plain100 plain125 \
 				 plain150 plain175 plain200 plastik plastique \
 				 radiance ubuntu ubuntu2 ubuntu3 ubuntuMate \
-				 vistaAero vistaClassic win7Aero win7Classic \
-				 win10 winnative winxpBlue winxpOlive \
-				 winxpSilver yuyo]
+				 vistaAero vistaClassic white100 white125 \
+				 white150 white175 white200 win7Aero \
+				 win7Classic win10 winnative winxpBlue \
+				 winxpOlive winxpSilver yuyo]
     variable valignments   [list center top bottom]
 
     proc restrictArrowStyles {} {

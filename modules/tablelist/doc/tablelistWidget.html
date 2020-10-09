@@ -302,14 +302,14 @@
     <i>columnIndex</i></code></dd>
 
     <dd><code><b><a href="#treestyle">-treestyle</a></b>
-    <b>adwaita</b>|<b>ambiance</b>|<b>aqua</b>|<b>arc</b>|<b>baghira</b>|<b>bicolor100</b>|<b>bicolor125</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bicolor150</b>|<b>bicolor175</b>|<b>bicolor200</b>|<b>blueMenta</b>|<b>classic100</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classic125</b>|<b>classic150</b>|<b>classic175</b>|<b>classic200</b>|<b>dust</b>|<b>dustSand</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk</b>|<b>klearlooks</b>|<b>mate</b>|<b>menta</b>|<b>mint</b>|<b>mint2</b>|<b>newWave</b>|<b>oxygen1</b>|<b>oxygen2</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;phase</b>|<b>plain100</b>|<b>plain125</b>|<b>plain150</b>|<b>plain175</b>|<b>plain200</b>|<b>plastik</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plastique</b>|<b>radiance</b>|<b>ubuntu</b>|<b>ubuntu2</b>|<b>ubuntu3</b>|<b>ubuntuMate</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vistaAero</b>|<b>vistaClassic</b>|<b>win7Aero</b>|<b>win7Classic</b>|<b>win10</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b>|<b>yuyo</b></code></dd>
+    <b>adwaita</b>|<b>ambiance</b>|<b>aqua</b>|<b>arc</b>|<b>baghira</b>|<b>bicolor100</b>|<b>bicolor125</b>|<b>bicolor150</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bicolor175</b>|<b>bicolor200</b>|<b>blueMenta</b>|<b>classic100</b>|<b>classic125</b>|<b>classic150</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classic175</b>|<b>classic200</b>|<b>dust</b>|<b>dustSand</b>|<b>gtk</b>|<b>klearlooks</b>|<b>mate</b>|<b>menta</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mint</b>|<b>mint2</b>|<b>newWave</b>|<b>oxygen1</b>|<b>oxygen2</b>|<b>phase</b>|<b>plain100</b>|<b>plain125</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plain150</b>|<b>plain175</b>|<b>plain200</b>|<b>plastik</b>|<b>plastique</b>|<b>radiance</b>|<b>ubuntu</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ubuntu2</b>|<b>ubuntu3</b>|<b>ubuntuMate</b>|<b>vistaAero</b>|<b>vistaClassic</b>|<b>white100</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;white125</b>|<b>white150</b>|<b>white175</b>|<b>white200</b>|<b>win7Aero</b>|<b>win7Classic</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win10</b>|<b>winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b>|<b>yuyo</b></code></dd>
 
     <dd><code><b><a href="#width">-width</a></b> <i>characters</i></code></dd>
 
@@ -4723,6 +4723,29 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               <th><code>classic200</code></th>
             </tr>
           </tbody>
+
+          <tbody align="center">
+            <tr>
+              <td><img src="white100.png" alt="white100" width="120"
+              height="57"></td>
+              <td><img src="white125.png" alt="white125" width="140"
+              height="69"></td>
+              <td><img src="white150.png" alt="white150" width="160"
+              height="81"></td>
+              <td><img src="white175.png" alt="white175" width="185"
+              height="93"></td>
+              <td><img src="white200.png" alt="white200" width="210"
+              height="105"></td>
+            </tr>
+
+            <tr>
+              <th><code>white100</code></th>
+              <th><code>white125</code></th>
+              <th><code>white150</code></th>
+              <th><code>white175</code></th>
+              <th><code>white200</code></th>
+            </tr>
+          </tbody>
         </table>
 
         <p>If the tree style is <code><b>gtk</b></code>,
@@ -5102,6 +5125,19 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
                 </tr>
               </table>
             </td>
+          </tr>
+
+          <tr>
+            <td><code><b>white100</b></code>,<br>
+            . . .<br>
+            <code><b>white200</b></code></td>
+            <td><img src="white100.png" alt="white100" width="120" height=
+            "57"></td>
+            <td>While the tree style <code><b>white100</b></code> uses "normal"
+            sizes, the four other styles are suitable for use with large fonts
+            and images (needed on high-resolution displays).<br>
+            Tablelist_tile: Default for the <code><b>awdark</b></code>
+            theme.</td>
           </tr>
 
           <tr>
