@@ -1,3 +1,11 @@
+2020-10-09 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:              Added support for the "awdark" theme; many
+	* scripts/mentryThemes.tcl: improvements for Mentry_tile.
+	* scripts/mentryWidget.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
 2020-10-03 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:               Dropped the requirement that changing the
