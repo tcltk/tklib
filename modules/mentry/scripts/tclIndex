@@ -38,6 +38,7 @@ set auto_index(::mentry::aquaTheme) [list source [file join $dir mentryThemes.tc
 set auto_index(::mentry::AquativoTheme) [list source [file join $dir mentryThemes.tcl]]
 set auto_index(::mentry::aquativoTheme) [list source [file join $dir mentryThemes.tcl]]
 set auto_index(::mentry::ArcTheme) [list source [file join $dir mentryThemes.tcl]]
+set auto_index(::mentry::awdarkheme) [list source [file join $dir mentryThemes.tcl]]
 set auto_index(::mentry::blueTheme) [list source [file join $dir mentryThemes.tcl]]
 set auto_index(::mentry::clamTheme) [list source [file join $dir mentryThemes.tcl]]
 set auto_index(::mentry::classicTheme) [list source [file join $dir mentryThemes.tcl]]
