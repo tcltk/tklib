@@ -414,28 +414,36 @@ proc scaleX11Fonts factor {
 
     set idx [string first "F(size)" $str]
     scan [string range $str $idx end] "%*s %d" size
-    if {$size < 0} { set size 9 }	;# -12 -> 9, for backward compatibility
+    set points [expr {$size < 0 ? 9 : $size}]		;# -12 -> 9, else 10
     foreach font {TkDefaultFont TkTextFont TkHeadingFont
 		  TkIconFont TkMenuFont} {
-	font configure $font -size [expr {$factor * $size}]
+	if {[font actual $font -size] == $points} {
+	    font configure $font -size [expr {$factor * $points}]
+	}
     }
 
     set idx [string first "F(ttsize)" $str]
     scan [string range $str $idx end] "%*s %d" size
-    if {$size < 0} { set size 8 }	;# -10 -> 8, for backward compatibility
+    set points [expr {$size < 0 ? 8 : $size}]		;# -10 -> 8, else 9
     foreach font {TkTooltipFont TkSmallCaptionFont} {
-	font configure $font -size [expr {$factor * $size}]
+	if {[font actual $font -size] == $points} {
+	    font configure $font -size [expr {$factor * $points}]
+	}
     }
 
     set idx [string first "F(capsize)" $str]
     scan [string range $str $idx end] "%*s %d" size
-    if {$size < 0} { set size 11 }	;# -14 -> 11, for backward compatibility
-    font configure TkCaptionFont -size [expr {$factor * $size}]
+    set points [expr {$size < 0 ? 11 : $size}]		;# -14 -> 11, else 12
+    if {[font actual TkCaptionFont -size] == $points} {
+	font configure TkCaptionFont -size [expr {$factor * $points}]
+    }
 
     set idx [string first "F(fixedsize)" $str]
     scan [string range $str $idx end] "%*s %d" size
-    if {$size < 0} { set size 9 }	;# -12 -> 9, for backward compatibility
-    font configure TkFixedFont -size [expr {$factor * $size}]
+    set points [expr {$size < 0 ? 9 : $size}]		;# -12 -> 9, else 10
+    if {[font actual TkFixedFont -size] == $points} {
+	font configure TkFixedFont -size [expr {$factor * $points}]
+    }
 }
 
 #------------------------------------------------------------------------------
