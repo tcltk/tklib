@@ -11,30 +11,37 @@ What is new in Tablelist 6.11?
    later the tile-based tablelist widgets are also updated when changing
    the Highlight Color in the General Preferences.
 
-2. With Tk 8.6.10 or later, the demo-scripts "browse(Tree)_tile.tcl",
-   "config_tile.tcl", "dirViewer_tile.tcl", "embeddedWindows_tile.tcl",
-   and "tileWidgets.tcl" now fully support the Dark Mode appearance on
-   Mac OS 10.14 and later (see also the section "Tile-Based Demo
-   Scripts" in Tablelist Programmer's Guide).
+2. Added support for the "awdark" theme of the package awthemes 9.3.2 or
+   later by Brad Lanam.
 
-3. Added the virtual event <<TablelistThemeDefaultsChanged>>, sent to
+3. Added the tree styles "white100", "white125", "white150",
+   "white175", and "white200", designed for use with dark themes.
+
+4. Added the virtual event <<TablelistThemeDefaultsChanged>>, sent to
    the main window when handling the virtual events <<ThemeChanged>>,
    <<LightAqua>>, and <<DarkAqua>>.  See the section "The tablelist::
    setThemeDefaults Command" of the manual page "Commands Related to
    Tile Themes" for details.
 
-4. For current Tk versions Tablelist no longer requires that changing
+5. For current Tk versions Tablelist no longer requires that changing
    the theme is done using the "ttk::setTheme" command instead of
    "ttk::style theme use", which was necessary for older tile versions.
 
-5. Improvements related to laying out the widget used for interactive
+6. Improvements related to laying out the widget used for interactive
    cell editing.
 
-6. Reworked the invocations of "package vcompare", taking into account
+7. With Tk 8.6.10 or later, the demo-scripts "browse(Tree)_tile.tcl",
+   "config_tile.tcl", "dirViewer_tile.tcl", "embeddedWindows_tile.tcl",
+   and "tileWidgets.tcl" now fully support the Dark Mode appearance on
+   Mac OS 10.14 and later (see also the section "Tile-Based Demo
+   Scripts" in Tablelist Programmer's Guide).  The same demo-scripts
+   also support the "awdark" theme.
+
+8. Reworked the invocations of "package vcompare", taking into account
    that Tcl versions earlier than 8.5 did not support the letters "a"
    and "b" in version numbers (thanks to Mike Walsh for his bug report).
 
-7. Several further improvements in the code, demo scripts, and
+9. Several further improvements in the code, demo scripts, and
    documentation.
 
 What was new in Tablelist 6.10?
