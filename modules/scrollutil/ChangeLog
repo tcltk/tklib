@@ -1,3 +1,9 @@
+2020-10-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/utils/scaleutil.tcl: Improvements related to the X11 fonts.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
 2020-10-03  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/utils/mwutil.tcl: Updated.
