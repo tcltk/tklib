@@ -22,7 +22,7 @@ What is new in Mentry 3.11?
    module "mwutil.tcl" as in the most recent Tablelist release 6.11.
 
 5. For current Tk versions Mentry no longer requires that changing the
-   theme is done using the "ttk::setTheme" command instead of
+   theme be done using the "ttk::setTheme" command instead of
    "ttk::style theme use", which was necessary for older tile versions.
 
 6. Made the demo-scripts scaling-aware.  In addition, with Tk 8.6.10 or
