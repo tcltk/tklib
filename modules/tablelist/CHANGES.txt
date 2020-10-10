@@ -24,7 +24,7 @@ What is new in Tablelist 6.11?
    Tile Themes" for details.
 
 5. For current Tk versions Tablelist no longer requires that changing
-   the theme is done using the "ttk::setTheme" command instead of
+   the theme be done using the "ttk::setTheme" command instead of
    "ttk::style theme use", which was necessary for older tile versions.
 
 6. Improvements related to laying out the widget used for interactive
