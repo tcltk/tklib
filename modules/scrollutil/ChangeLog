@@ -1,3 +1,7 @@
+2020-10-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/scrollutil.html: Minor correction.
+
 2020-10-10  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/utils/scaleutil.tcl: Improvements related to the X11 fonts.
