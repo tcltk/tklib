@@ -11,7 +11,7 @@ What is new in Tablelist 6.11?
    later the tile-based tablelist widgets are also updated when changing
    the Highlight Color in the General Preferences.
 
-2. Added support for the "awdark", "awlight", and other four themes
+2. Added support for the "awdark", "awlight", and the other four themes
    provided by the package awthemes 9.3.2 or later by Brad Lanam.
 
 3. Added the tree styles "white100", "white125", "white150",
