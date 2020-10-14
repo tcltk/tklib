@@ -1,3 +1,13 @@
+2020-10-14 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                    Added support for all the themes
+	* scripts/tablelistThemes.tcl:    provided by the awthemes package.
+	* doc/tablelist.html:
+	* doc/tablelistWidget.html:
+	* ../../examples/tablelist/*.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
 2020-10-09 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt: Updated.
@@ -19,7 +29,7 @@
 2020-10-03 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:              Dropped the requirement that changing the
-	* scripts/utils/mwutil.tcl: theme is done using the "ttk::setTheme"
+	* scripts/utils/mwutil.tcl: theme be done using the "ttk::setTheme"
 	* doc/tablelist.html:       command, which was necessary for older tile
 	* doc/tablelistThemes.html: versions.
 
