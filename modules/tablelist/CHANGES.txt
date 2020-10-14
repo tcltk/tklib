@@ -11,8 +11,8 @@ What is new in Tablelist 6.11?
    later the tile-based tablelist widgets are also updated when changing
    the Highlight Color in the General Preferences.
 
-2. Added support for the "awdark" theme of the package awthemes 9.3.2 or
-   later by Brad Lanam.
+2. Added support for the "awdark", "awlight", and other four themes
+   provided by the package awthemes 9.3.2 or later by Brad Lanam.
 
 3. Added the tree styles "white100", "white125", "white150",
    "white175", and "white200", designed for use with dark themes.
@@ -35,7 +35,7 @@ What is new in Tablelist 6.11?
    and "tileWidgets.tcl" now fully support the Dark Mode appearance on
    Mac OS 10.14 and later (see also the section "Tile-Based Demo
    Scripts" in Tablelist Programmer's Guide).  The same demo-scripts
-   also support the "awdark" theme.
+   also support the themes provided by the awthemes package.
 
 8. Reworked the invocations of "package vcompare", taking into account
    that Tcl versions earlier than 8.5 did not support the letters "a"

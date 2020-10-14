@@ -53,7 +53,7 @@ tablelist::tablelist $tbl \
 	      0 "Cable Color"	  center} \
     -editstartcommand editStartCmd -editendcommand editEndCmd \
     -height 0 -width 0
-if {$currentTheme eq "awdark"} {
+if {[string match "aw*" $currentTheme] || $currentTheme eq "winxpblue"}  {
     $tbl configure -borderwidth 2
 }
 if {[$tbl cget -selectborderwidth] == 0} {

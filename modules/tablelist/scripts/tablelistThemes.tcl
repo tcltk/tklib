@@ -38,7 +38,35 @@ proc tablelist::setThemeDefaults {} {
 	# themes) and then override the options set by the current one
 	#
 	defaultTheme 
-	array set themeDefaults [style configure .]
+	array set themeDefaults [styleConfig .]
+
+	if {[set bg [styleConfig . -background]] ne ""} {
+	    array set themeDefaults [list \
+		-labelbackground	$bg \
+		-labeldeactivatedBg	$bg \
+		-labeldisabledBg	$bg \
+		-labelactiveBg		$bg \
+		-labelpressedBg		$bg \
+	    ]
+	}
+
+	if {[set fg [styleConfig . -foreground]] ne ""} {
+	    array set themeDefaults [list \
+		-labelforeground	$fg \
+		-labelactiveFg		$fg \
+		-labelpressedFg		$fg \
+		-arrowcolor		$fg \
+	    ]
+	}
+
+	array set arr [style map . -foreground]
+	if {[info exists arr(disabled)]} {
+	    set disabledFg $arr(disabled)
+	    array set themeDefaults [list \
+		-disabledforeground	$disabledFg \
+		-labeldisabledFg	$disabledFg \
+	    ]
+	}
     }
 
     if {[string length $themeDefaults(-arrowcolor)] == 0} {
@@ -93,7 +121,7 @@ proc tablelist::altTheme {} {
 	-labelpady		1 \
 	-arrowcolor		black \
 	-arrowstyle		[defaultX11ArrowStyle] \
-	-treestyle		winnative \
+	-treestyle		gtk \
     ]
 }
 
@@ -388,6 +416,7 @@ proc tablelist::aquativoTheme {} {
 #------------------------------------------------------------------------------
 proc tablelist::ArcTheme {} {
     variable themeDefaults
+    variable scalingpct
     array set themeDefaults [list \
 	-background		white \
 	-foreground		#5c616c \
@@ -411,7 +440,24 @@ proc tablelist::ArcTheme {} {
 	-labelpady		0 \
 	-arrowcolor		#5c616c \
 	-arrowstyle		flatAngle10x6 \
-	-treestyle		arc \
+	-treestyle		classic$scalingpct \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::arcTheme
+#------------------------------------------------------------------------------
+proc tablelist::arcTheme {} {
+    if {[catch {package present awthemes}] != 0} {
+	return -code error
+    }
+
+    awthemes 
+    variable themeDefaults
+    variable scalingpct
+    array set themeDefaults [list \
+	-stripebackground	#e6e7e8 \
+	-treestyle		classic$scalingpct \
     ]
 }
 
@@ -419,32 +465,42 @@ proc tablelist::ArcTheme {} {
 # tablelist::awdarkTheme
 #------------------------------------------------------------------------------
 proc tablelist::awdarkTheme {} {
+    awthemes 
     variable themeDefaults
     variable scalingpct
     array set themeDefaults [list \
-	-background		#33393b \
-	-foreground		white \
-	-disabledforeground	#b3b3b3 \
 	-stripebackground	#242a2c \
-	-selectbackground	#215d9c \
-	-selectforeground	white \
-	-selectborderwidth	0 \
-	-font			TkTextFont \
-	-labelbackground	#33393b \
-	-labeldeactivatedBg	#33393b \
-	-labeldisabledBg	#33393b \
-	-labelactiveBg		#33393b \
-	-labelpressedBg		#33393b \
-	-labelforeground	white \
-	-labeldisabledFg	#b3b3b3 \
-	-labelactiveFg		white \
-	-labelpressedFg		white \
-	-labelfont		TkDefaultFont \
-	-labelborderwidth	2 \
-	-labelpady		2 \
-	-arrowcolor		white \
-	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		white$scalingpct \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::awlightTheme
+#------------------------------------------------------------------------------
+proc tablelist::awlightTheme {} {
+    awthemes 
+    variable themeDefaults
+    variable scalingpct
+    array set themeDefaults [list \
+	-stripebackground	#d9d9d8 \
+	-treestyle		bicolor$scalingpct \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::blackTheme
+#------------------------------------------------------------------------------
+proc tablelist::blackTheme {} {
+    if {[catch {package present awthemes}] != 0} {
+	return -code error
+    }
+
+    awthemes 
+    variable themeDefaults
+    variable scalingpct
+    array set themeDefaults [list \
+	-stripebackground	#333333 \
+	-treestyle		bicolor$scalingpct \
     ]
 }
 
@@ -477,6 +533,23 @@ proc tablelist::blueTheme {} {
 	-arrowcolor		#2d2d66 \
 	-arrowstyle		flat9x5 \
 	-treestyle		gtk \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::breezeTheme
+#------------------------------------------------------------------------------
+proc tablelist::breezeTheme {} {
+    if {[catch {package present awthemes}] != 0} {
+	return -code error
+    }
+
+    awthemes 
+    variable themeDefaults
+    variable scalingpct
+    array set themeDefaults [list \
+	-stripebackground	#e0e1e2 \
+	-treestyle		bicolor$scalingpct \
     ]
 }
 
@@ -1768,31 +1841,40 @@ proc tablelist::winnativeTheme {} {
 #------------------------------------------------------------------------------
 proc tablelist::winxpblueTheme {} {
     variable themeDefaults
-    array set themeDefaults [list \
-	-background		white \
-	-foreground		black \
-	-disabledforeground	#565248 \
-	-stripebackground	"" \
-	-selectbackground	#4a6984 \
-	-selectforeground	#ffffff \
-	-selectborderwidth	0 \
-	-font			TkTextFont \
-	-labelbackground	#ece9d8 \
-	-labeldeactivatedBg	#ece9d8 \
-	-labeldisabledBg	#e3e1dd \
-	-labelactiveBg		#c1d2ee \
-	-labelpressedBg		#bab5ab \
-	-labelforeground	black \
-	-labeldisabledFg	#565248 \
-	-labelactiveFg		black \
-	-labelpressedFg		black \
-	-labelfont		TkDefaultFont \
-	-labelborderwidth	2 \
-	-labelpady		1 \
-	-arrowcolor		#4d6185 \
-	-arrowstyle		flat7x4 \
-	-treestyle		winxpBlue \
-    ]
+    if {[catch {package present awthemes}] == 0} {
+	awthemes 
+	variable scalingpct
+	array set themeDefaults [list \
+	    -stripebackground	#dddac9 \
+	    -treestyle		bicolor$scalingpct \
+	]
+    } else {
+	array set themeDefaults [list \
+	    -background		white \
+	    -foreground		black \
+	    -disabledforeground	#565248 \
+	    -stripebackground	"" \
+	    -selectbackground	#4a6984 \
+	    -selectforeground	#ffffff \
+	    -selectborderwidth	0 \
+	    -font		TkTextFont \
+	    -labelbackground	#ece9d8 \
+	    -labeldeactivatedBg	#ece9d8 \
+	    -labeldisabledBg	#e3e1dd \
+	    -labelactiveBg	#c1d2ee \
+	    -labelpressedBg	#bab5ab \
+	    -labelforeground	black \
+	    -labeldisabledFg	#565248 \
+	    -labelactiveFg	black \
+	    -labelpressedFg	black \
+	    -labelfont		TkDefaultFont \
+	    -labelborderwidth	2 \
+	    -labelpady		1 \
+	    -arrowcolor		#4d6185 \
+	    -arrowstyle		flat7x4 \
+	    -treestyle		winxpBlue \
+	]
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -1953,6 +2035,39 @@ proc tablelist::xpnativeTheme {} {
 	-arrowcolor		$arrowColor \
 	-arrowstyle		$arrowStyle \
 	-treestyle		$treeStyle \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::awthemes
+#------------------------------------------------------------------------------
+proc tablelist::awthemes {} {
+    set bg [styleConfig . -background]
+    set fg [styleConfig . -foreground]
+    set disabledFg [lindex [style map . -foreground] 1]
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		$bg \
+	-foreground		$fg \
+	-disabledforeground	$disabledFg \
+	-selectbackground	[styleConfig . -selectbackground] \
+	-selectforeground	[styleConfig . -selectforeground] \
+	-selectborderwidth	[styleConfig . -selectborderwidth] \
+	-font			TkTextFont \
+	-labelbackground	$bg \
+	-labeldeactivatedBg	$bg \
+	-labeldisabledBg	$bg \
+	-labelactiveBg		$bg \
+	-labelpressedBg		$bg \
+	-labelforeground	$fg \
+	-labeldisabledFg	$disabledFg \
+	-labelactiveFg		$fg \
+	-labelpressedFg		$fg \
+	-labelfont		TkDefaultFont \
+	-labelborderwidth	2 \
+	-labelpady		2 \
+	-arrowcolor		$fg \
+	-arrowstyle		[defaultX11ArrowStyle] \
     ]
 }
 

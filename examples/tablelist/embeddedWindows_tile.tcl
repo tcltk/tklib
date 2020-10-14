@@ -114,7 +114,7 @@ if {$tk_version >= 8.5} {
     $tbl header insert 0 [list "[$tbl size] *.tcl files" "" $totalSize "" ""]
     $tbl header rowconfigure 0 -foreground blue
 
-    if {$currentTheme eq "awdark"} {
+    if {$currentTheme eq "awdark" || $currentTheme eq "black"} {
 	$tbl header rowconfigure 0 -foreground SkyBlue
     } elseif {$currentTheme eq "aqua" &&
 	[package vcompare $tk_patchLevel "8.6.10"] >= 0} {
@@ -195,8 +195,9 @@ proc viewFile {tbl key} {
     set txt $tf.txt
     set vsb $tf.vsb
     text $txt -font TkFixedFont -setgrid yes -yscrollcommand [list $vsb set]
-    if {$::currentTheme eq "awdark"} {
-	ttk::theme::awdark::setTextColors $txt
+    global currentTheme
+    if {[catch {package present awthemes}] == 0} {
+	ttk::theme::${currentTheme}::setTextColors $txt
     }
     catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5 and above
     ttk::scrollbar $vsb -orient vertical -command [list $txt yview]
