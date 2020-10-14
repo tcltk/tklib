@@ -575,13 +575,19 @@ proc mentry::doConfig {win opt val} {
 		    # option instead.  Some themes (like Arc, plastik, tileqt,
 		    # vista, and xpnative) don't support either of them.
 		    #
-		    styleConfig $win.TEntry -fieldbackground $val \
-					    -background      $val
+		    variable currentTheme
+		    variable newAquaSupport
+		    if {[string compare $currentTheme "aqua"] == 0 &&
+			!$newAquaSupport} {
+			styleConfig $win.TEntry -background $val
+		    } else {
+			styleConfig $win.TEntry -fieldbackground $val
+		    }
 		    if {[winfo viewable $win]} {
 			update idletasks     ;# to avoid some artifacts on aqua
 		    }
 		} else {
-		    foreach w [entries $win] {
+		    foreach w [entries $win] { 
 			configEntry $w $opt $val
 		    }
 		}
@@ -617,8 +623,15 @@ proc mentry::doConfig {win opt val} {
 		    # of the shadow colors of its 3-D border
 		    #
 		    if {$usingTile} {
-			styleConfig Hull$win.TEntry -fieldbackground $labelBg \
-						    -background      $labelBg
+			variable currentTheme
+			variable newAquaSupport
+			if {[string compare $currentTheme "aqua"] == 0 &&
+			    !$newAquaSupport} {
+			    styleConfig Hull$win.TEntry -background $labelBg
+			} else {
+			    styleConfig Hull$win.TEntry \
+				-fieldbackground $labelBg
+			}
 			if {[winfo viewable $win]} {
 			    update idletasks ;# to avoid some artifacts on aqua
 			}
@@ -1572,9 +1585,15 @@ proc mentry::updateConfigSpecs win {
 	# supported the -background option instead.  Some themes (like Arc,
 	# plastik, tileqt, vista, and xpnative) don't support either of them.
 	#
+	variable currentTheme
+	variable newAquaSupport
 	foreach style [list $win.TEntry Hull$win.TEntry] {
-	    styleConfig $style -fieldbackground $data(-background) \
-			       -background      $data(-background)
+	    if {[string compare $currentTheme "aqua"] == 0 &&
+		!$newAquaSupport} {
+		styleConfig $style -background $data(-background)
+	    } else {
+		styleConfig $style -fieldbackground $data(-background)
+	    }
 	    if {[winfo viewable $win]} {
 		update idletasks	;# to avoid some artifacts on aqua
 	    }
@@ -2248,15 +2267,19 @@ proc mentry::geomParams {} {
 		incr deltaWidth 4
 	    }
 	}
-	Arc {
+	Arc - arc - breeze {
 	    incr x 3
 	    incr deltaWidth 6
 	}
-	awdark {
+	awdark - awlight {
 	    incr bd
 	    incr bd2 2
 	    incr x 5
 	    incr deltaWidth 10
+	}
+	black {
+	    incr x 2
+	    incr deltaWidth 4
 	}
     }
 
