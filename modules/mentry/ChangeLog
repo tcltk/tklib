@@ -1,3 +1,11 @@
+2020-10-14 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:              Added support for all the themes provided
+	* scripts/mentryThemes.tcl: by the awthemes package.
+	* scripts/mentryWidget.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
 2020-10-09 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:              Added support for the "awdark" theme; many
@@ -9,7 +17,7 @@
 2020-10-03 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:               Dropped the requirement that changing the
-	* scripts/mwutil/mwutil.tcl: theme is done using the "ttk::setTheme"
+	* scripts/mwutil/mwutil.tcl: theme be done using the "ttk::setTheme"
 	* doc/mentry.html:           command, which was necessary for older
 	* doc/mentryThemes.html:     tile versions.
 
