@@ -89,9 +89,8 @@ proc demo::displayChildren w {
     # On X11 configure the tablelist according
     # to the display's DPI scaling level
     #
-    variable currentTheme
-    if {[tk windowingsystem] eq "x11" &&
-	[catch {package present awthemes}] != 0} {
+    variable isAwTheme
+    if {[tk windowingsystem] eq "x11" && !$isAwTheme} {
 	$tbl configure -treestyle bicolor$::tablelist::scalingpct
     }
 
@@ -117,7 +116,8 @@ proc demo::displayChildren w {
 		      -command [list demo::putChildrenOfSelWidget $tbl]
     $menu add command -label "Display Config" \
 		      -command [list demo::dispConfigOfSelWidget $tbl]
-    if {[catch {package present awthemes}] == 0} {
+    if {$isAwTheme} {
+	variable currentTheme
 	ttk::theme::${currentTheme}::setMenuColors $menu
     }
     set bodyTag [$tbl bodytag]

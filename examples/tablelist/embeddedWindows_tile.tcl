@@ -195,8 +195,9 @@ proc viewFile {tbl key} {
     set txt $tf.txt
     set vsb $tf.vsb
     text $txt -font TkFixedFont -setgrid yes -yscrollcommand [list $vsb set]
-    global currentTheme
-    if {[catch {package present awthemes}] == 0} {
+    global isAwTheme
+    if {$isAwTheme} {
+	global currentTheme
 	ttk::theme::${currentTheme}::setTextColors $txt
     }
     catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5 and above

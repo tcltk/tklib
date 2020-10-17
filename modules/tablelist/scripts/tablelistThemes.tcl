@@ -31,8 +31,12 @@ proc tablelist::getCurrentTheme {} {
 # tablelist configuration options and updates the array configSpecs.
 #------------------------------------------------------------------------------
 proc tablelist::setThemeDefaults {} {
+    set currentTheme [mwutil::currentTheme]
+    variable isAwTheme \
+	[llength [info commands ::ttk::theme::${currentTheme}::setTextColors]]
+
     variable themeDefaults
-    if {[catch {[mwutil::currentTheme]Theme} result] != 0} {
+    if {[catch {${currentTheme}Theme}] != 0} {
 	#
 	# Fall back to the "default" theme (which is the root of all
 	# themes) and then override the options set by the current one
@@ -59,6 +63,24 @@ proc tablelist::setThemeDefaults {} {
 	    ]
 	}
 
+	array set arr [style map . -background]
+	if {[info exists arr(active)]} {
+	    set activeBg $arr(active)
+	    array set themeDefaults [list \
+		-labelactiveBg		$activeBg \
+		-labelpressedBg		$activeBg \
+	    ]
+	} elseif {[set highlightBg [styleConfig . -highlightcolor]] ne ""} {
+	    array set themeDefaults [list \
+		-labelactiveBg		$highlightBg \
+		-labelpressedBg		$highlightBg \
+	    ]
+	}
+	if {[info exists arr(pressed)]} {
+	    set themeDefaults(-labelpressedBg) $arr(pressed)
+	}
+
+	unset arr
 	array set arr [style map . -foreground]
 	if {[info exists arr(disabled)]} {
 	    set disabledFg $arr(disabled)
@@ -448,11 +470,12 @@ proc tablelist::ArcTheme {} {
 # tablelist::arcTheme
 #------------------------------------------------------------------------------
 proc tablelist::arcTheme {} {
-    if {[catch {package present awthemes}] != 0} {
-	return -code error
+    variable isAwTheme
+    if {!$isAwTheme} {
+	return -code error			;# handled by setThemeDefaults
     }
 
-    awthemes 
+    awTheme 
     variable themeDefaults
     variable scalingpct
     array set themeDefaults [list \
@@ -465,7 +488,7 @@ proc tablelist::arcTheme {} {
 # tablelist::awdarkTheme
 #------------------------------------------------------------------------------
 proc tablelist::awdarkTheme {} {
-    awthemes 
+    awTheme 
     variable themeDefaults
     variable scalingpct
     array set themeDefaults [list \
@@ -478,7 +501,7 @@ proc tablelist::awdarkTheme {} {
 # tablelist::awlightTheme
 #------------------------------------------------------------------------------
 proc tablelist::awlightTheme {} {
-    awthemes 
+    awTheme 
     variable themeDefaults
     variable scalingpct
     array set themeDefaults [list \
@@ -491,11 +514,12 @@ proc tablelist::awlightTheme {} {
 # tablelist::blackTheme
 #------------------------------------------------------------------------------
 proc tablelist::blackTheme {} {
-    if {[catch {package present awthemes}] != 0} {
-	return -code error
+    variable isAwTheme
+    if {!$isAwTheme} {
+	return -code error			;# handled by setThemeDefaults
     }
 
-    awthemes 
+    awTheme 
     variable themeDefaults
     variable scalingpct
     array set themeDefaults [list \
@@ -540,11 +564,12 @@ proc tablelist::blueTheme {} {
 # tablelist::breezeTheme
 #------------------------------------------------------------------------------
 proc tablelist::breezeTheme {} {
-    if {[catch {package present awthemes}] != 0} {
-	return -code error
+    variable isAwTheme
+    if {!$isAwTheme} {
+	return -code error			;# handled by setThemeDefaults
     }
 
-    awthemes 
+    awTheme 
     variable themeDefaults
     variable scalingpct
     array set themeDefaults [list \
@@ -627,32 +652,42 @@ proc tablelist::classicTheme {} {
 # tablelist::clearlooksTheme
 #------------------------------------------------------------------------------
 proc tablelist::clearlooksTheme {} {
+    variable isAwTheme
     variable themeDefaults
-    array set themeDefaults [list \
-	-background		white \
-	-foreground		black \
-	-disabledforeground	#b5b3ac \
-	-stripebackground	"" \
-	-selectbackground	#71869e \
-	-selectforeground	#ffffff \
-	-selectborderwidth	0 \
-	-font			TkTextFont \
-	-labelbackground	#efeae6 \
-	-labeldeactivatedBg	#efeae6 \
-	-labeldisabledBg	#eee9e4 \
-	-labelactiveBg		#f4f2ee \
-	-labelpressedBg		#d4cfca \
-	-labelforeground	black \
-	-labeldisabledFg	#b5b3ac \
-	-labelactiveFg		black \
-	-labelpressedFg		black \
-	-labelfont		TkDefaultFont \
-	-labelborderwidth	0 \
-	-labelpady		1 \
-	-arrowcolor		black \
-	-arrowstyle		flatAngle9x6 \
-	-treestyle		gtk \
-    ]
+    if {$isAwTheme} {
+	awTheme 
+	variable scalingpct
+	array set themeDefaults [list \
+	    -stripebackground	#e0dcd8 \
+	    -treestyle		plain$scalingpct \
+	]
+    } else {
+	array set themeDefaults [list \
+	    -background		white \
+	    -foreground		black \
+	    -disabledforeground	#b5b3ac \
+	    -stripebackground	"" \
+	    -selectbackground	#71869e \
+	    -selectforeground	#ffffff \
+	    -selectborderwidth	0 \
+	    -font		TkTextFont \
+	    -labelbackground	#efeae6 \
+	    -labeldeactivatedBg	#efeae6 \
+	    -labeldisabledBg	#eee9e4 \
+	    -labelactiveBg	#f4f2ee \
+	    -labelpressedBg	#d4cfca \
+	    -labelforeground	black \
+	    -labeldisabledFg	#b5b3ac \
+	    -labelactiveFg	black \
+	    -labelpressedFg	black \
+	    -labelfont		TkDefaultFont \
+	    -labelborderwidth	0 \
+	    -labelpady		1 \
+	    -arrowcolor		black \
+	    -arrowstyle		flatAngle9x6 \
+	    -treestyle		gtk \
+	]
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -1840,9 +1875,10 @@ proc tablelist::winnativeTheme {} {
 # tablelist::winxpblueTheme
 #------------------------------------------------------------------------------
 proc tablelist::winxpblueTheme {} {
+    variable isAwTheme
     variable themeDefaults
-    if {[catch {package present awthemes}] == 0} {
-	awthemes 
+    if {$isAwTheme} {
+	awTheme 
 	variable scalingpct
 	array set themeDefaults [list \
 	    -stripebackground	#dddac9 \
@@ -2039,9 +2075,9 @@ proc tablelist::xpnativeTheme {} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::awthemes
+# tablelist::awTheme
 #------------------------------------------------------------------------------
-proc tablelist::awthemes {} {
+proc tablelist::awTheme {} {
     set bg [styleConfig . -background]
     set fg [styleConfig . -foreground]
     set disabledFg [lindex [style map . -foreground] 1]

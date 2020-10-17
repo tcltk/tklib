@@ -66,9 +66,8 @@ proc displayContents dir {
     # On X11 configure the tablelist according
     # to the display's DPI scaling level
     #
-    global currentTheme
-    if {[tk windowingsystem] eq "x11" &&
-	[catch {package present awthemes}] != 0} {
+    global isAwTheme
+    if {[tk windowingsystem] eq "x11" && !$isAwTheme} {
 	$tbl configure -treestyle bicolor$tablelist::scalingpct
     }
 
@@ -80,7 +79,8 @@ proc displayContents dir {
     menu $menu -tearoff no
     $menu add command -label "Display Contents" \
 		      -command [list putContentsOfSelFolder $tbl]
-    if {[catch {package present awthemes}] == 0} {
+    if {$isAwTheme} {
+	global currentTheme
 	ttk::theme::${currentTheme}::setMenuColors $menu
     }
     set bodyTag [$tbl bodytag]

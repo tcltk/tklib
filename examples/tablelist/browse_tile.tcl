@@ -106,8 +106,9 @@ proc demo::displayChildren w {
 		      -command [list demo::putChildrenOfSelWidget $tbl]
     $menu add command -label "Display Config" \
 		      -command [list demo::dispConfigOfSelWidget $tbl]
-    variable currentTheme
-    if {[catch {package present awthemes}] == 0} {
+    variable isAwTheme
+    if {$isAwTheme} {
+	variable currentTheme
 	ttk::theme::${currentTheme}::setMenuColors $menu
     }
     set bodyTag [$tbl bodytag]

@@ -6746,14 +6746,14 @@ proc tablelist::makeTileCheckbutton w {
 	    }
 	}
 
-	Aquativo -
-	aquativo -
-	Arc {
+	Aquativo - aquativo -
+	Arc - arc {
 	    $frm configure -width 14 -height 14
 	    place $w -x -1 -y -1
 	}
 
 	blue -
+	Breeze - breeze -
 	winxpblue {
 	    set height [winfo reqheight $w]
 	    $frm configure -width $height -height $height
@@ -6777,8 +6777,13 @@ proc tablelist::makeTileCheckbutton w {
 	}
 
 	clearlooks {
-	    $frm configure -width 13 -height 13
-	    place $w -x -2 -y -2
+	    variable isAwTheme
+	    if {$isAwTheme} {
+		pack $w
+	    } else {
+		$frm configure -width 13 -height 13
+		place $w -x -2 -y -2
+	    }
 	}
 
 	keramik -
