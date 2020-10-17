@@ -1,3 +1,10 @@
+2020-10-17 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:              Improvements and updates related to
+	* scripts/mentryThemes.tcl: awthemes 9.4.
+
+	* scripts/tclIndex: Newly generated.
+
 2020-10-14 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:              Added support for all the themes provided
