@@ -60,7 +60,7 @@ set auto_index(::mentry::vistaTheme) [list source [file join $dir mentryThemes.t
 set auto_index(::mentry::winnativeTheme) [list source [file join $dir mentryThemes.tcl]]
 set auto_index(::mentry::winxpblueTheme) [list source [file join $dir mentryThemes.tcl]]
 set auto_index(::mentry::xpnativeTheme) [list source [file join $dir mentryThemes.tcl]]
-set auto_index(::mentry::awthemes) [list source [file join $dir mentryThemes.tcl]]
+set auto_index(::mentry::awTheme) [list source [file join $dir mentryThemes.tcl]]
 set auto_index(::mentry::getKdeConfigVal) [list source [file join $dir mentryThemes.tcl]]
 set auto_index(::mentry::makeKdeDirList) [list source [file join $dir mentryThemes.tcl]]
 set auto_index(::mentry::readKdeConfigVal) [list source [file join $dir mentryThemes.tcl]]
