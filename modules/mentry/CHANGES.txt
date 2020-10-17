@@ -9,8 +9,8 @@ What is new in Mentry 3.11?
    Mode and Dark Mode or the Accent Color or Highlight Color in the
    General Preferences changes.
 
-2. Added support for the "awdark", "awlight", and the other four themes
-   provided by the package awthemes 9.3.2 or later by Brad Lanam.
+2. Added support for the "awdark", "awlight", and the five other themes
+   provided by the package awthemes 9.4 or later by Brad Lanam.
 
 3. Added the virtual event <<MentryThemeDefaultsChanged>>, sent to the
    main window when handling the virtual events <<ThemeChanged>>,
