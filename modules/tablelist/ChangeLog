@@ -1,3 +1,14 @@
+2020-10-17 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                    Improvements and updates related to
+	* scripts/tablelistThemes.tcl:    awthemes 9.4.
+	* scripts/tablelistUtil.tcl:
+	* doc/tablelist.html:
+	* doc/tablelistWidget.html:
+	* ../../examples/tablelist/*.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
 2020-10-14 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:                    Added support for all the themes
