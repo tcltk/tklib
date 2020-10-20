@@ -1,3 +1,8 @@
+2020-10-20 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/mentryThemes.tcl: Layout improvements for several themes.
+	* scripts/mentryWidget.tcl:
+
 2020-10-17 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:              Improvements and updates related to
