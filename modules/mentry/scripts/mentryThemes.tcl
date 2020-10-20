@@ -312,8 +312,8 @@ proc mentry::blueTheme {} {
 	-selectbackground	#ffff33 \
 	-selectforeground	#000000 \
 	-selectborderwidth	1 \
-	-borderwidth		1 \
-	-labelpady		{1 1} \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
     ]
 }
 
@@ -471,7 +471,7 @@ proc mentry::krocTheme {} {
 	-disabledforeground	#b2b2b2 \
 	-selectbackground	#000000 \
 	-selectforeground	#ffffff \
-	-selectborderwidth	0 \
+	-selectborderwidth	1 \
 	-borderwidth		2 \
 	-labelpady		{2 2} \
     ]
