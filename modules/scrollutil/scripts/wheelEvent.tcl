@@ -110,7 +110,7 @@ proc scrollutil::createBindings {} {
     # The rest is for scrollable widget containers.
     #
 
-    lappend eventList [list <Shift-MouseWheel>]
+    lappend eventList <Shift-MouseWheel>
     switch $winSys {
 	aqua {
 	    lappend eventList <Shift-Option-MouseWheel>
