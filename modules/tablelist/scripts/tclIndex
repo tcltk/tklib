@@ -66,6 +66,7 @@ set auto_index(::tablelist::lastViewableCol) [list source [file join $dir tablel
 set auto_index(::tablelist::condChangeSelection) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::changeSelection) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::genTablelistSelectEvent) [list source [file join $dir tablelistBind.tcl]]
+set auto_index(::tablelist::handleWheelEvent) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::defineTablelistHeader) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::hdr_handleMotionDelayed) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::hdr_handleMotion) [list source [file join $dir tablelistBind.tcl]]
