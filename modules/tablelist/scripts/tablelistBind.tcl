@@ -1045,227 +1045,93 @@ proc tablelist::defineTablelistBody {} {
     }
 
     variable winSys
-    catch {
-	if {[string compare $winSys "classic"] == 0 ||
-	    [string compare $winSys "aqua"] == 0} {
+    if {[string compare $winSys "classic"] == 0 ||
+	[string compare $winSys "aqua"] == 0} {
+	catch {
 	    bind TablelistBody <MouseWheel> {
-		set tablelist::W [tablelist::getTablelistPath %W]
-		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
-		if {[winfo exists $tablelist::w]} {
-		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W yview scroll [expr {-(%D)}] units
-		    } else {
-			mwutil::genMouseWheelEvent $tablelist::w \
-			    <MouseWheel> %X %Y %D
-		    }
-		    break
-		} else {
-		    $tablelist::W yview scroll [expr {-(%D)}] units
-		}
+		tablelist::handleWheelEvent <MouseWheel> y %W \
+		    %X %Y %D [expr {-(%D)}]
 	    }
 	    bind TablelistBody <Option-MouseWheel> {
-		set tablelist::W [tablelist::getTablelistPath %W]
-		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
-		if {[winfo exists $tablelist::w]} {
-		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W yview scroll [expr {-10 * (%D)}] units
-		    } else {
-			mwutil::genMouseWheelEvent $tablelist::w \
-			    <Option-MouseWheel> %X %Y %D
-		    }
-		    break
-		} else {
-		    $tablelist::W yview scroll [expr {-10 * (%D)}] units
-		}
+		tablelist::handleWheelEvent <Option-MouseWheel> y %W \
+		    %X %Y %D [expr {-10 * (%D)}]
 	    }
 	    bind TablelistBody <Shift-MouseWheel> {
-		set tablelist::W [tablelist::getTablelistPath %W]
-		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
-		if {[winfo exists $tablelist::w]} {
-		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W xview scroll [expr {-(%D)}] units
-		    } else {
-			mwutil::genMouseWheelEvent $tablelist::w \
-			    <Shift-MouseWheel> %X %Y %D
-		    }
-		    break
-		} else {
-		    $tablelist::W xview scroll [expr {-(%D)}] units
-		}
+		tablelist::handleWheelEvent <Shift-MouseWheel> x %W \
+		    %X %Y %D [expr {-(%D)}]
 	    }
 	    bind TablelistBody <Shift-Option-MouseWheel> {
-		set tablelist::W [tablelist::getTablelistPath %W]
-		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
-		if {[winfo exists $tablelist::w]} {
-		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W xview scroll [expr {-10 * (%D)}] units
-		    } else {
-			mwutil::genMouseWheelEvent $tablelist::w \
-			    <Shift-Option-MouseWheel> %X %Y %D
-		    }
-		    break
-		} else {
-		    $tablelist::W xview scroll [expr {-10 * (%D)}] units
-		}
+		tablelist::handleWheelEvent <Shift-Option-MouseWheel> x %W \
+		    %X %Y %D [expr {-10 * (%D)}]
 	    }
-	} else {
+	}
+    } else {
+	catch {
 	    bind TablelistBody <MouseWheel> {
-		set tablelist::W [tablelist::getTablelistPath %W]
-		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
-		if {[winfo exists $tablelist::w]} {
-		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W yview scroll [expr {%D >= 0 ?
-			    (-%D) / 30 : (-(%D) + 29) / 30}] units
-		    } else {
-			mwutil::genMouseWheelEvent $tablelist::w \
-			    <MouseWheel> %X %Y %D
-		    }
-		    break
-		} else {
-		    $tablelist::W yview scroll [expr {%D >= 0 ?
-			(-%D) / 30 : (-(%D) + 29) / 30}] units
-		}
+		tablelist::handleWheelEvent <MouseWheel> y %W \
+		    %X %Y %D [expr {%D >= 0 ? (-%D) / 30 : (-(%D) + 29) / 30}]
 	    }
 	    bind TablelistBody <Shift-MouseWheel> {
-		set tablelist::W [tablelist::getTablelistPath %W]
-		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
-		if {[winfo exists $tablelist::w]} {
-		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W xview scroll [expr {%D >= 0 ?
-			    (-%D) / 30 : (-(%D) + 29) / 30}] units
-		    } else {
-			mwutil::genMouseWheelEvent $tablelist::w \
-			    <Shift-MouseWheel> %X %Y %D
-		    }
-		    break
-		} else {
-		    $tablelist::W xview scroll [expr {%D >= 0 ?
-			(-%D) / 30 : (-(%D) + 29) / 30}] units
-		}
-	    }
-
-	    foreach event {<Control-Key-a> <Control-Lock-Key-A>} {
-		bind TablelistBody $event {
-		    tablelist::selectAll [tablelist::getTablelistPath %W]
-		}
-	    }
-	    foreach event {<Shift-Control-Key-A> <Shift-Control-Lock-Key-a>} {
-		bind TablelistBody $event {
-		    set tablelist::W [tablelist::getTablelistPath %W]
-		    if {[string compare [$tablelist::W cget -selectmode] \
-			 "browse"] != 0} {
-			$tablelist::W selection clear 0 end
-			tablelist::genTablelistSelectEvent $tablelist::W
-		    }
-		}
-	    }
-	}
-    }
-
-    if {[string compare $winSys "x11"] == 0} {
-	bind TablelistBody <Button-4> {
-	    if {!$tk_strictMotif} {
-		set tablelist::W [tablelist::getTablelistPath %W]
-		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
-		if {[winfo exists $tablelist::w]} {
-		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W yview scroll -5 units
-		    } else {
-			event generate $tablelist::w \
-			    <Button-4> -rootx %X -rooty %Y
-		    }
-		    break
-		} else {
-		    $tablelist::W yview scroll -5 units
-		}
-	    }
-	}
-	bind TablelistBody <Button-5> {
-	    if {!$tk_strictMotif} {
-		set tablelist::W [tablelist::getTablelistPath %W]
-		set tablelist::w [$tablelist::W cget -ymousewheelwindow]
-		if {[winfo exists $tablelist::w]} {
-		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W yview scroll 5 units
-		    } else {
-			event generate $tablelist::w \
-			    <Button-5> -rootx %X -rooty %Y
-		    }
-		    break
-		} else {
-		    $tablelist::W yview scroll 5 units
-		}
-	    }
-	}
-	bind TablelistBody <Shift-Button-4> {
-	    if {!$tk_strictMotif} {
-		set tablelist::W [tablelist::getTablelistPath %W]
-		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
-		if {[winfo exists $tablelist::w]} {
-		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W xview scroll -5 units
-		    } else {
-			event generate $tablelist::w <Shift-Button-4> \
-			    -rootx %X -rooty %Y
-		    }
-		    break
-		} else {
-		    $tablelist::W xview scroll -5 units
-		}
-	    }
-	}
-	bind TablelistBody <Shift-Button-5> {
-	    if {!$tk_strictMotif} {
-		set tablelist::W [tablelist::getTablelistPath %W]
-		set tablelist::w [$tablelist::W cget -xmousewheelwindow]
-		if {[winfo exists $tablelist::w]} {
-		    if {[mwutil::hasFocus $tablelist::W]} {
-			$tablelist::W xview scroll 5 units
-		    } else {
-			event generate $tablelist::w <Shift-Button-5> \
-			    -rootx %X -rooty %Y
-		    }
-		    break
-		} else {
-		    $tablelist::W xview scroll 5 units
-		}
+		tablelist::handleWheelEvent <Shift-MouseWheel> x %W \
+		    %X %Y %D [expr {%D >= 0 ? (-%D) / 30 : (-(%D) + 29) / 30}]
 	    }
 	}
 
-	if {$::tk_version >= 8.7 &&
-	    [package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
-	    bind TablelistBody <Button-6> {
+	if {[string compare $winSys "x11"] == 0} {
+	    bind TablelistBody <Button-4> {
 		if {!$tk_strictMotif} {
-		    set tablelist::W [tablelist::getTablelistPath %W]
-		    set tablelist::w [$tablelist::W cget -xmousewheelwindow]
-		    if {[winfo exists $tablelist::w]} {
-			if {[mwutil::hasFocus $tablelist::W]} {
-			    $tablelist::W xview scroll -5 units
-			} else {
-			    event generate $tablelist::w <Button-6> \
-				-rootx %X -rooty %Y
-			}
-			break
-		    } else {
-			$tablelist::W xview scroll -5 units
+		    tablelist::handleWheelEvent <Button-4> y %W \
+			%X %Y -5 -5
+		}
+	    }
+	    bind TablelistBody <Button-5> {
+		if {!$tk_strictMotif} {
+		    tablelist::handleWheelEvent <Button-5> y %W \
+			%X %Y  5  5
+		}
+	    }
+	    bind TablelistBody <Shift-Button-4> {
+		if {!$tk_strictMotif} {
+		    tablelist::handleWheelEvent <Shift-Button-4> x %W \
+			%X %Y -5 -5
+		}
+	    }
+	    bind TablelistBody <Shift-Button-5> {
+		if {!$tk_strictMotif} {
+		    tablelist::handleWheelEvent <Shift-Button-5> x %W \
+			%X %Y  5  5
+		}
+	    }
+
+	    if {$::tk_version >= 8.7 &&
+		[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+		bind TablelistBody <Button-6> {
+		    if {!$tk_strictMotif} {
+			tablelist::handleWheelEvent <Button-6> x %W \
+			    %X %Y -5 -5
+		    }
+		}
+		bind TablelistBody <Button-7> {
+		    if {!$tk_strictMotif} {
+			tablelist::handleWheelEvent <Button-7> x %W \
+			    %X %Y  5  5
 		    }
 		}
 	    }
-	    bind TablelistBody <Button-7> {
-		if {!$tk_strictMotif} {
-		    set tablelist::W [tablelist::getTablelistPath %W]
-		    set tablelist::w [$tablelist::W cget -xmousewheelwindow]
-		    if {[winfo exists $tablelist::w]} {
-			if {[mwutil::hasFocus $tablelist::W]} {
-			    $tablelist::W xview scroll 5 units
-			} else {
-			    event generate $tablelist::w <Button-7> \
-				-rootx %X -rooty %Y
-			}
-			break
-		    } else {
-			$tablelist::W xview scroll 5 units
-		    }
+	}
+
+	foreach event {<Control-Key-a> <Control-Lock-Key-A>} {
+	    bind TablelistBody $event {
+		tablelist::selectAll [tablelist::getTablelistPath %W]
+	    }
+	}
+	foreach event {<Shift-Control-Key-A> <Shift-Control-Lock-Key-a>} {
+	    bind TablelistBody $event {
+		set tablelist::W [tablelist::getTablelistPath %W]
+		if {[string compare [$tablelist::W cget -selectmode] \
+		     "browse"] != 0} {
+		    $tablelist::W selection clear 0 end
+		    tablelist::genTablelistSelectEvent $tablelist::W
 		}
 	    }
 	}
@@ -3237,6 +3103,29 @@ proc tablelist::changeSelection {win row col} {
 proc tablelist::genTablelistSelectEvent win {
     if {[string compare [::$win cget -state] "normal"] == 0} {
 	event generate $win <<TablelistSelect>>
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::handleWheelEvent
+#
+# Handles a mouse wheel event with the given root coordinates and delta on the
+# widget W.
+#------------------------------------------------------------------------------
+proc tablelist::handleWheelEvent {event axis W X Y delta number} {
+    set win [getTablelistPath $W]
+    set w [::$win cget -${axis}mousewheelwindow]
+    if {[winfo exists $w]} {
+	if {[mwutil::hasFocus $win]} {
+	    ::$win ${axis}view scroll $number units
+	} elseif {[string match "<*MouseWheel>" $event]} {
+	    mwutil::genMouseWheelEvent $w $event $X $Y $delta
+	} else {
+	    event generate $w $event -rootx $X -rooty $Y
+	}
+	return -code break
+    } else {
+	::$win ${axis}view scroll $number units
     }
 }
 
