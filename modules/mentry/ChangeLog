@@ -1,3 +1,9 @@
+2020-11-29 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/mentryDateTime.tcl: Improved the mouse wheel event handling.
+	* scripts/mentryIPAddr.tcl:
+	* scripts/mentryIPv6Addr.tcl:
+
 2020-10-20 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/mentryThemes.tcl: Layout improvements for several themes.
