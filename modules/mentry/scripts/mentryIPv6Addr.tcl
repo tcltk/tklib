@@ -18,30 +18,34 @@ namespace eval mentry {
     bind MentryIPv6Addr <Prior>	{ mentry::incrIPv6AddrComp %W  10 }
     bind MentryIPv6Addr <Next>	{ mentry::incrIPv6AddrComp %W -10 }
     variable winSys
-    catch {
-	if {[string compare $winSys "classic"] == 0 ||
-	    [string compare $winSys "aqua"] == 0} {
+    if {[string compare $winSys "classic"] == 0 ||
+	[string compare $winSys "aqua"] == 0} {
+	catch {
 	    bind MentryIPv6Addr <MouseWheel> {
 		mentry::incrIPv6AddrComp %W %D
 	    }
 	    bind MentryIPv6Addr <Option-MouseWheel> {
 		mentry::incrIPv6AddrComp %W [expr {10 * %D}]
 	    }
-	} else {
+	}
+    } else {
+	catch {
 	    bind MentryIPv6Addr <MouseWheel> {
-		mentry::incrIPv6AddrComp %W [expr {%D / 120}]
+		mentry::incrIPv6AddrComp %W \
+		    [expr {%D > 0 ? (%D + 11) / 12 : %D / 12}]
 	    }
 	}
-    }
-    if {[string compare $winSys "x11"] == 0} {
-	bind MentryIPv6Addr <Button-4> {
-	    if {!$tk_strictMotif} {
-		mentry::incrIPv6AddrComp %W 1
+
+	if {[string compare $winSys "x11"] == 0} {
+	    bind MentryIPv6Addr <Button-4> {
+		if {!$tk_strictMotif} {
+		    mentry::incrIPv6AddrComp %W 1
+		}
 	    }
-	}
-	bind MentryIPv6Addr <Button-5> {
-	    if {!$tk_strictMotif} {
-		mentry::incrIPv6AddrComp %W -1
+	    bind MentryIPv6Addr <Button-5> {
+		if {!$tk_strictMotif} {
+		    mentry::incrIPv6AddrComp %W -1
+		}
 	    }
 	}
     }

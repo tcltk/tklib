@@ -18,30 +18,34 @@ namespace eval mentry {
     bind MentryIPAddr <Prior>	{ mentry::incrIPAddrComp %W  10 }
     bind MentryIPAddr <Next>	{ mentry::incrIPAddrComp %W -10 }
     variable winSys
-    catch {
-	if {[string compare $winSys "classic"] == 0 ||
-	    [string compare $winSys "aqua"] == 0} {
+    if {[string compare $winSys "classic"] == 0 ||
+	[string compare $winSys "aqua"] == 0} {
+	catch {
 	    bind MentryIPAddr <MouseWheel> {
 		mentry::incrIPAddrComp %W %D
 	    }
 	    bind MentryIPAddr <Option-MouseWheel> {
 		mentry::incrIPAddrComp %W [expr {10 * %D}]
 	    }
-	} else {
+	}
+    } else {
+	catch {
 	    bind MentryIPAddr <MouseWheel> {
-		mentry::incrIPAddrComp %W [expr {%D / 120}]
+		mentry::incrIPAddrComp %W \
+		    [expr {%D > 0 ? (%D + 119) / 120 : %D / 120}]
 	    }
 	}
-    }
-    if {[string compare $winSys "x11"] == 0} {
-	bind MentryIPAddr <Button-4> {
-	    if {!$tk_strictMotif} {
-		mentry::incrIPAddrComp %W 1
+
+	if {[string compare $winSys "x11"] == 0} {
+	    bind MentryIPAddr <Button-4> {
+		if {!$tk_strictMotif} {
+		    mentry::incrIPAddrComp %W 1
+		}
 	    }
-	}
-	bind MentryIPAddr <Button-5> {
-	    if {!$tk_strictMotif} {
-		mentry::incrIPAddrComp %W -1
+	    bind MentryIPAddr <Button-5> {
+		if {!$tk_strictMotif} {
+		    mentry::incrIPAddrComp %W -1
+		}
 	    }
 	}
     }

@@ -31,44 +31,50 @@ namespace eval mentry {
     bind MentryMeridian <Prior>	{ mentry::setMeridian %W "P" }
     bind MentryMeridian <Next>	{ mentry::setMeridian %W "A" }
     variable winSys
-    catch {
-	if {[string compare $winSys "classic"] == 0 ||
-	    [string compare $winSys "aqua"] == 0} {
+    if {[string compare $winSys "classic"] == 0 ||
+	[string compare $winSys "aqua"] == 0} {
+	catch {
 	    bind MentryDateTime <MouseWheel> {
 		mentry::incrDateTimeComp %W %D
 	    }
 	    bind MentryDateTime <Option-MouseWheel> {
 		mentry::incrDateTimeComp %W [expr {10 * %D}]
 	    }
-	} else {
+	}
+    } else {
+	catch {
 	    bind MentryDateTime <MouseWheel> {
-		mentry::incrDateTimeComp %W [expr {%D / 120}]
+		mentry::incrDateTimeComp %W \
+		    [expr {%D > 0 ? (%D + 119) / 120 : %D / 120}]
 	    }
 	}
-	bind MentryMeridian <MouseWheel> {
-	    mentry::setMeridian %W [expr {(%D < 0) ? "A" : "P"}]
+
+	if {[string compare $winSys "x11"] == 0} {
+	    bind MentryDateTime <Button-4> {
+		if {!$tk_strictMotif} {
+		    mentry::incrDateTimeComp %W 1
+		}
+	    }
+	    bind MentryDateTime <Button-5> {
+		if {!$tk_strictMotif} {
+		    mentry::incrDateTimeComp %W -1
+		}
+	    }
+	    bind MentryMeridian <Button-4> {
+		if {!$tk_strictMotif} {
+		    mentry::setMeridian %W "P"
+		}
+	    }
+	    bind MentryMeridian <Button-5> {
+		if {!$tk_strictMotif} {
+		    mentry::setMeridian %W "A"
+		}
+	    }
 	}
     }
-    if {[string compare $winSys "x11"] == 0} {
-	bind MentryDateTime <Button-4> {
-	    if {!$tk_strictMotif} {
-		mentry::incrDateTimeComp %W 1
-	    }
-	}
-	bind MentryDateTime <Button-5> {
-	    if {!$tk_strictMotif} {
-		mentry::incrDateTimeComp %W -1
-	    }
-	}
-	bind MentryMeridian <Button-4> {
-	    if {!$tk_strictMotif} {
-		mentry::setMeridian %W "P"
-	    }
-	}
-	bind MentryMeridian <Button-5> {
-	    if {!$tk_strictMotif} {
-		mentry::setMeridian %W "A"
-	    }
+    catch {
+	bind MentryMeridian <MouseWheel> {
+	    mentry::setMeridian %W [expr {(%D < 0) ? "A" : "P"}]
 	}
     }
 }
