@@ -1,5 +1,5 @@
 #==============================================================================
-# Contains scaling-related utility procedures.
+# Contains the main scaling-related utility procedure.
 #
 # Structure of the module:
 #   - Namespace initialization
