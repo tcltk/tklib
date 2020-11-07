@@ -96,7 +96,7 @@ if {[catch {package present mwutil} version] == 0 && $version < 2.17} {
     package forget mwutil
 }
 package require mwutil 2.17
-if {[catch {package present scaleutil} version] == 0 && $version < 1.2} {
+if {[catch {package present scaleutil} version] == 0 && $version < 1.1} {
     package forget scaleutil
 }
-package require scaleutil 1.2
+package require scaleutil 1.1
