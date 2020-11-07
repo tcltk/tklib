@@ -1,3 +1,11 @@
+2020-11-07 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* tablelistCommon.tcl: Updated the scaleutil version.
+
+	* scripts/utils/pkgIndex.tcl:      Moved part of scaleutil.tcl into the new file
+	* scripts/utils/scaleutil.tcl:     scaleutilMisc.tcl.
+	* scripts/utils/scaleutilMisc.tcl:
+
 2020-11-05 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl: Cleanup for mouse wheel handling.
