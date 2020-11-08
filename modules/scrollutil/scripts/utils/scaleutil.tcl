@@ -29,7 +29,7 @@ namespace eval scaleutil {
     }
 
     #
-    # Public procedures:
+    # Public procedure:
     #
     namespace export	scalingPercentage
 }
