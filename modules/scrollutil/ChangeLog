@@ -1,3 +1,7 @@
+2020-11-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/scrollableframe.html: Slightly improved.
+
 2020-11-08  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/utils/scaleutil.tcl: Corrected a typo.
