@@ -6371,7 +6371,7 @@ proc tablelist::yviewSubCmd {win argList} {
 		    if {[string compare $winSys "x11"] == 0} {
 			set delay [expr {($data(colCount) + 3) / 4}]
 		    } else {
-			set delay [expr {$data(colCount) * 2}]
+			set delay $data(colCount)
 		    }
 		    set data(vertMoveToId) \
 			[after $delay [list tablelist::vertMoveTo $win]]
@@ -6387,7 +6387,7 @@ proc tablelist::yviewSubCmd {win argList} {
 			if {[string compare $winSys "x11"] == 0} {
 			    set delay [expr {($data(colCount) + 3) / 4}]
 			} else {
-			    set delay [expr {$data(colCount) * 2}]
+			    set delay $data(colCount)
 			}
 			set data(vertScrollId) [after $delay \
 			    [list tablelist::vertScrollByUnits $win]]
@@ -8138,7 +8138,7 @@ proc tablelist::doScan {win opt x y} {
 	    if {[string compare $winSys "x11"] == 0} {
 		set delay [expr {($data(colCount) + 3) / 4}]
 	    } else {
-		set delay [expr {$data(colCount) * 2}]
+		set delay $data(colCount)
 	    }
 	    set data(dragToId) \
 		[after $delay [list tablelist::dragTo $win]]

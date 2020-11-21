@@ -200,7 +200,6 @@ proc viewFile {tbl key} {
 	global currentTheme
 	ttk::theme::${currentTheme}::setTextColors $txt
     }
-    catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5 and above
     ttk::scrollbar $vsb -orient vertical -command [list $txt yview]
 
     #

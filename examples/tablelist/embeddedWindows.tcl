@@ -154,7 +154,6 @@ proc viewFile {tbl key} {
     set vsb $tf.vsb
     text $txt -background white -font TkFixedFont -setgrid yes \
 	      -yscrollcommand [list $vsb set]
-    catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5 and above
     scrollbar $vsb -orient vertical -command [list $txt yview]
 
     #

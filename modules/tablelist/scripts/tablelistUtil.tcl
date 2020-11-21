@@ -6442,11 +6442,7 @@ proc tablelist::getViewableRowCount {win first last} {
 	# Speed optimization
 	#
 	set count [expr {$last - $first + 1}]
-	if {$count < 0} {
-	    return 0
-	} else {
-	    return $count
-	}
+	return [expr {$count >= 0 ? $count : 0}]
     } elseif {$first == 0 && $last == $data(lastRow)} {
 	#
 	# Speed optimization

@@ -1776,8 +1776,7 @@ proc tablelist::autoScan win {
     }
 
     motion $win [::$win nearest $priv(y)] [::$win nearestcolumn $priv(x)] 1
-    if {[string length $tablelist::priv(x)] != 0 &&
-	[string length $tablelist::priv(y)] != 0} {
+    if {[string length $priv(x)] != 0 && [string length $priv(y)] != 0} {
 	set priv(afterId) [after $ms [list tablelist::autoScan $win]]
     }
 }
