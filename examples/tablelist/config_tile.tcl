@@ -32,14 +32,14 @@ namespace eval demo {
     if {[tk windowingsystem] eq "x11"} {
 	option add *DemoTop*Font			TkDefaultFont
 	option add *DemoTop*selectBackground \
-		   $tablelist::themeDefaults(-selectbackground)
+		   $::tablelist::themeDefaults(-selectbackground)
 	option add *DemoTop*selectForeground \
-		   $tablelist::themeDefaults(-selectforeground)
+		   $::tablelist::themeDefaults(-selectforeground)
     }
     option add *DemoTop*selectBorderWidth \
-	       $tablelist::themeDefaults(-selectborderwidth)
-    set foreground [winfo rgb . $tablelist::themeDefaults(-foreground)]
-    set selectFg   [winfo rgb . $tablelist::themeDefaults(-selectforeground)]
+	       $::tablelist::themeDefaults(-selectborderwidth)
+    set foreground [winfo rgb . $::tablelist::themeDefaults(-foreground)]
+    set selectFg   [winfo rgb . $::tablelist::themeDefaults(-selectforeground)]
     set selectFgEqForeground [expr {$selectFg eq $foreground}]
     if {$isAwTheme && $currentTheme ne "arc" && $currentTheme ne "breeze"} {
 	option add *DemoTop.tf.borderWidth		2
