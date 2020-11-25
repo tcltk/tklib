@@ -1,3 +1,7 @@
+2020-11-25 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistWidget.tcl: Slightly improved.
+
 2020-11-22 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* ../../examples/tablelist/config_tile.tcl: Made TIP 278 conformant.
