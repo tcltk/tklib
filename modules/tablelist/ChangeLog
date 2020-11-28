@@ -1,3 +1,8 @@
+2020-11-28 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl: Minor improvements.
+	* scripts/tablelistUtil.tcl:
+
 2020-11-25 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistWidget.tcl: Slightly improved.
