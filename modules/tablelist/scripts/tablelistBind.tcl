@@ -790,9 +790,7 @@ proc tablelist::defineTablelistBody {} {
 	    }
 	    if {[tablelist::wasExpCollCtrlClicked %W %x %y]} {
 		set tablelist::priv(clickedExpCollCtrl) 1
-		if {[string length [$tablelist::W editwinpath]] != 0} {
-		    tablelist::doFinishEditing $tablelist::W
-		}
+		tablelist::doFinishEditing $tablelist::W
 	    } else {
 		tablelist::condEditContainingCell $tablelist::W \
 		    $tablelist::x $tablelist::y
@@ -885,6 +883,7 @@ proc tablelist::defineTablelistBody {} {
 	tablelist::beginExtend $tablelist::W \
 	    [$tablelist::W nearest       $tablelist::y] \
 	    [$tablelist::W nearestcolumn $tablelist::x]
+	tablelist::doFinishEditing $tablelist::W
     }
     bind TablelistBody <Control-Button-1> {
 	foreach {tablelist::W tablelist::x tablelist::y} \
@@ -896,6 +895,7 @@ proc tablelist::defineTablelistBody {} {
 	tablelist::beginToggle $tablelist::W \
 	    [$tablelist::W nearest       $tablelist::y] \
 	    [$tablelist::W nearestcolumn $tablelist::x]
+	tablelist::doFinishEditing $tablelist::W
     }
 
     bind TablelistBody <Return> {
@@ -1576,9 +1576,9 @@ proc tablelist::condEditContainingCell {win x y} {
 	incr y -[winfo y $w]
 	scan [$w index @$x,$y] "%d.%d" line charPos
 	doEditCell $win $row $col 0 "" $charPos
-    } elseif {$data(editRow) >= 0} {
+    } else {
 	#
-	# Finish the current editing
+	# Finish the current editing (if any)
 	#
 	doFinishEditing $win
     }

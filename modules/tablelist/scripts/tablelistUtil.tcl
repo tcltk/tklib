@@ -4054,6 +4054,10 @@ proc tablelist::hdr_updateColors win {
 	unset data(hdr_colorsId)
     }
 
+    if {$data(hdr_itemCount) == 0} {
+	return ""
+    }
+
     set leftCol [colIndex $win @0,0 0 0]
     if {$leftCol < 0} {
 	return ""
