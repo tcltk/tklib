@@ -48,7 +48,7 @@ callback package Wcb, written in pure Tcl/Tk code as well.  The Mentry
 package requires version 3.1 or higher of Wcb, whose download location
 is
 
-    http://www.nemethi.de
+    https://www.nemethi.de
 
 How to Get It?
 --------------
@@ -61,7 +61,7 @@ of each line in the text files for Windows.
 
 Mentry is also included in tklib, which has the address
 
-    http://core.tcl.tk/tklib
+    https://core.tcl.tk/tklib
 
 How to Install It?
 ------------------
