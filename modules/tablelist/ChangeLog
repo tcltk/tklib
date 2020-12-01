@@ -1,3 +1,10 @@
+2020-12-01 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistBind.tcl: Improvements in the bindings for
+	  <Shift-Button-1> and <Control-Button-1>.
+
+	* scripts/tclIndex: Newly generated.
+
 2020-11-28 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl: Minor improvements.
