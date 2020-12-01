@@ -70,7 +70,7 @@ How to Get It?
 
 Wcb is available for free download from the Web page
 
-    http://www.nemethi.de
+    https://www.nemethi.de
 
 The distribution file is "wcb3.7.tar.gz" for UNIX and "wcb3_7.zip" for
 Windows.  These files contain the same information, except for the
@@ -79,7 +79,7 @@ of each line in the text files for Windows.
 
 Wcb is also included in tklib, which has the address
 
-    http://core.tcl.tk/tklib
+    https://core.tcl.tk/tklib
 
 How to Install It?
 ------------------
