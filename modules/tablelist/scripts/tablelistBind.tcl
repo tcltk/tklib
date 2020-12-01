@@ -883,7 +883,7 @@ proc tablelist::defineTablelistBody {} {
 	tablelist::beginExtend $tablelist::W \
 	    [$tablelist::W nearest       $tablelist::y] \
 	    [$tablelist::W nearestcolumn $tablelist::x]
-	tablelist::doFinishEditing $tablelist::W
+	tablelist::condFinishEditing $tablelist::W $tablelist::x $tablelist::y
     }
     bind TablelistBody <Control-Button-1> {
 	foreach {tablelist::W tablelist::x tablelist::y} \
@@ -895,7 +895,7 @@ proc tablelist::defineTablelistBody {} {
 	tablelist::beginToggle $tablelist::W \
 	    [$tablelist::W nearest       $tablelist::y] \
 	    [$tablelist::W nearestcolumn $tablelist::x]
-	tablelist::doFinishEditing $tablelist::W
+	tablelist::condFinishEditing $tablelist::W $tablelist::x $tablelist::y
     }
 
     bind TablelistBody <Return> {
@@ -1580,6 +1580,22 @@ proc tablelist::condEditContainingCell {win x y} {
 	#
 	# Finish the current editing (if any)
 	#
+	doFinishEditing $win
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::condFinishEditing
+#
+# This procedure is typically invoked on shift-button-1 and control-button-1
+# presses in the body of a tablelist widget or in one of its separators.  It
+# finishes a possibly active cell editing if the mouse click occurred outside
+# the cell being edited.
+#------------------------------------------------------------------------------
+proc tablelist::condFinishEditing {win x y} {
+    upvar ::tablelist::ns${win}::data data
+    if {[containingRow $win $y] != $data(editRow) ||
+	[containingCol $win $x] != $data(editCol)} {
 	doFinishEditing $win
     }
 }
