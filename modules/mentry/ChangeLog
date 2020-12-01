@@ -1,3 +1,8 @@
+2020-12-01 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* README.txt:      Corrected: "http" -> "https".
+	* doc/mentry.html:
+
 2020-11-06 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/mentryDateTime.tcl: Improved the mouse wheel event handling.
