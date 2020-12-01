@@ -30,6 +30,7 @@ set auto_index(::tablelist::updateCursor) [list source [file join $dir tablelist
 set auto_index(::tablelist::makeEditCursor) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::wasExpCollCtrlClicked) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::condEditContainingCell) [list source [file join $dir tablelistBind.tcl]]
+set auto_index(::tablelist::condFinishEditing) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::condBeginMove) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::beginSelect) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::condAutoScan) [list source [file join $dir tablelistBind.tcl]]
