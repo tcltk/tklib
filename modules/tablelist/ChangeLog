@@ -1,3 +1,13 @@
+2020-12-03 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistThemes.tcl:              Added support for awthemes
+	* scripts/tablelistUtil.tcl:                10.0.
+	* ../../examples/tablelist/config_tile.tcl:
+	* ../../examples/tablelist/option_tile.tcl:
+	* ../../examples/tablelist/tileWidgets.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
 2020-12-01 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistBind.tcl: Improvements in the bindings for
