@@ -1,3 +1,10 @@
+2020-12-03 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/mentryThemes.tcl: Added support for awthemes 10.0.
+	* scripts/mentryWidget.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
 2020-12-01 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* README.txt:      Corrected: "http" -> "https".
