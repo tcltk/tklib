@@ -471,16 +471,62 @@ proc tablelist::ArcTheme {} {
 #------------------------------------------------------------------------------
 proc tablelist::arcTheme {} {
     variable isAwTheme
-    if {!$isAwTheme} {
+    if {$isAwTheme} {
+	awarcTheme 
+    } else {
 	return -code error			;# handled by setThemeDefaults
     }
+}
 
+#------------------------------------------------------------------------------
+# tablelist::awarcTheme
+#------------------------------------------------------------------------------
+proc tablelist::awarcTheme {} {
     awTheme 
     variable themeDefaults
     variable scalingpct
     array set themeDefaults [list \
 	-stripebackground	#e6e7e8 \
 	-treestyle		classic$scalingpct \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::awblackTheme
+#------------------------------------------------------------------------------
+proc tablelist::awblackTheme {} {
+    awTheme 
+    variable themeDefaults
+    variable scalingpct
+    array set themeDefaults [list \
+	-stripebackground	#333333 \
+	-treestyle		bicolor$scalingpct \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::awbreezeTheme
+#------------------------------------------------------------------------------
+proc tablelist::awbreezeTheme {} {
+    awTheme 
+    variable themeDefaults
+    variable scalingpct
+    array set themeDefaults [list \
+	-stripebackground	#e0e1e2 \
+	-treestyle		bicolor$scalingpct \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::awclearlooksTheme
+#------------------------------------------------------------------------------
+proc tablelist::awclearlooksTheme {} {
+    awTheme 
+    variable themeDefaults
+    variable scalingpct
+    array set themeDefaults [list \
+	-stripebackground	#e0dcd8 \
+	-treestyle		plain$scalingpct \
     ]
 }
 
@@ -511,21 +557,28 @@ proc tablelist::awlightTheme {} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::blackTheme
+# tablelist::awwinxpblueTheme
 #------------------------------------------------------------------------------
-proc tablelist::blackTheme {} {
-    variable isAwTheme
-    if {!$isAwTheme} {
-	return -code error			;# handled by setThemeDefaults
-    }
-
+proc tablelist::awwinxpblueTheme {} {
     awTheme 
     variable themeDefaults
     variable scalingpct
     array set themeDefaults [list \
-	-stripebackground	#333333 \
+	-stripebackground	#dddac9 \
 	-treestyle		bicolor$scalingpct \
     ]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::blackTheme
+#------------------------------------------------------------------------------
+proc tablelist::blackTheme {} {
+    variable isAwTheme
+    if {$isAwTheme} {
+	awblackTheme 
+    } else {
+	return -code error			;# handled by setThemeDefaults
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -565,17 +618,11 @@ proc tablelist::blueTheme {} {
 #------------------------------------------------------------------------------
 proc tablelist::breezeTheme {} {
     variable isAwTheme
-    if {!$isAwTheme} {
+    if {$isAwTheme} {
+	awbreezeTheme 
+    } else {
 	return -code error			;# handled by setThemeDefaults
     }
-
-    awTheme 
-    variable themeDefaults
-    variable scalingpct
-    array set themeDefaults [list \
-	-stripebackground	#e0e1e2 \
-	-treestyle		bicolor$scalingpct \
-    ]
 }
 
 #------------------------------------------------------------------------------
@@ -653,15 +700,10 @@ proc tablelist::classicTheme {} {
 #------------------------------------------------------------------------------
 proc tablelist::clearlooksTheme {} {
     variable isAwTheme
-    variable themeDefaults
     if {$isAwTheme} {
-	awTheme 
-	variable scalingpct
-	array set themeDefaults [list \
-	    -stripebackground	#e0dcd8 \
-	    -treestyle		plain$scalingpct \
-	]
+	awclearlooksTheme 
     } else {
+	variable themeDefaults
 	array set themeDefaults [list \
 	    -background		white \
 	    -foreground		black \
@@ -1876,15 +1918,10 @@ proc tablelist::winnativeTheme {} {
 #------------------------------------------------------------------------------
 proc tablelist::winxpblueTheme {} {
     variable isAwTheme
-    variable themeDefaults
     if {$isAwTheme} {
-	awTheme 
-	variable scalingpct
-	array set themeDefaults [list \
-	    -stripebackground	#dddac9 \
-	    -treestyle		bicolor$scalingpct \
-	]
+	awwinxpblueTheme 
     } else {
+	variable themeDefaults
 	array set themeDefaults [list \
 	    -background		white \
 	    -foreground		black \
