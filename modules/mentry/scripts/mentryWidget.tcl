@@ -2233,12 +2233,12 @@ proc mentry::configEntry {w args} {
 proc mentry::reqEntryWidth w {
     variable currentTheme
     variable isAwTheme
-    if {[string compare $currentTheme "clearlooks"] == 0 && $isAwTheme} {
+    if {[string match "*clearlooks" $currentTheme] && $isAwTheme} {
 	#
 	# If the tile entry was created with -width 1 then in the awthemes
-	# "clearlooks" theme its width will silently be changed to 2.
-	# For this reason, compute the widget's requested width based
-	# on its font rather than returning [winfo reqwidth $w].
+	# "clearlooks" and "awclearlooks" themes its width will silently be
+	# changed to 2.  For this reason, compute the widget's requested
+	# width based on its font rather than returning [winfo reqwidth $w].
 	#
 	set zeroWidth [font measure [$w cget -font] -displayof $w "0"]
 	return [expr {[$w cget -width] * $zeroWidth + 8}]
@@ -2277,7 +2277,7 @@ proc mentry::geomParams {} {
 		incr deltaWidth 4
 	    }
 	}
-	Arc - arc {
+	Arc - arc - awarc {
 	    incr x 2
 	    incr deltaWidth 4
 	}
@@ -2285,15 +2285,16 @@ proc mentry::geomParams {} {
 	    incr x 4
 	    incr deltaWidth 8
 	}
-	black {
+	black - awblack {
 	    incr x 2
 	    incr deltaWidth 4
 	}
-	breeze {
+	Breeze - breeze - awbreeze {
 	    incr x 3
 	    incr deltaWidth 6
 	}
-	clearlooks - winxpblue {
+	clearlooks - awclearlooks -
+	winxpblue - awwinxpblue {
 	    variable isAwTheme
 	    if {$isAwTheme} {
 		incr x

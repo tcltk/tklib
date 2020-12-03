@@ -245,15 +245,58 @@ proc mentry::ArcTheme {} {
 #------------------------------------------------------------------------------
 proc mentry::arcTheme {} {
     variable isAwTheme
-    if {!$isAwTheme} {
+    if {$isAwTheme} {
+	awarcTheme 
+    } else {
 	return -code error			;# handled by setThemeDefaults
     }
+}
 
+#------------------------------------------------------------------------------
+# mentry::awarcTheme
+#------------------------------------------------------------------------------
+proc mentry::awarcTheme {} {
     awTheme 
     variable themeDefaults
     array set themeDefaults [list \
 	-borderwidth	3 \
 	-labelpady	{3 3} \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# mentry::awblackTheme
+#------------------------------------------------------------------------------
+proc mentry::awblackTheme {} {
+    awTheme 
+    variable themeDefaults
+    array set themeDefaults [list \
+	-borderwidth	2 \
+	-labelpady	{2 2} \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# mentry::awbreezeTheme
+#------------------------------------------------------------------------------
+proc mentry::awbreezeTheme {} {
+    awTheme 
+    variable themeDefaults
+    array set themeDefaults [list \
+	-borderwidth	3 \
+	-labelpady	{3 3} \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# mentry::awclearlooksTheme
+#------------------------------------------------------------------------------
+proc mentry::awclearlooksTheme {} {
+    awTheme 
+    variable themeDefaults
+    array set themeDefaults [list \
+	-borderwidth	2 \
+	-labelpady	{2 2} \
     ]
 }
 
@@ -282,20 +325,27 @@ proc mentry::awlightTheme {} {
 }
 
 #------------------------------------------------------------------------------
-# mentry::blackTheme
+# mentry::awwinxpblueTheme
 #------------------------------------------------------------------------------
-proc mentry::blackTheme {} {
-    variable isAwTheme
-    if {!$isAwTheme} {
-	return -code error			;# handled by setThemeDefaults
-    }
-
+proc mentry::awwinxpblueTheme {} {
     awTheme 
     variable themeDefaults
     array set themeDefaults [list \
 	-borderwidth	2 \
 	-labelpady	{2 2} \
     ]
+}
+
+#------------------------------------------------------------------------------
+# mentry::blackTheme
+#------------------------------------------------------------------------------
+proc mentry::blackTheme {} {
+    variable isAwTheme
+    if {$isAwTheme} {
+	awblackTheme 
+    } else {
+	return -code error			;# handled by setThemeDefaults
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -322,16 +372,11 @@ proc mentry::blueTheme {} {
 #------------------------------------------------------------------------------
 proc mentry::breezeTheme {} {
     variable isAwTheme
-    if {!$isAwTheme} {
+    if {$isAwTheme} {
+	awbreezeTheme 
+    } else {
 	return -code error			;# handled by setThemeDefaults
     }
-
-    awTheme 
-    variable themeDefaults
-    array set themeDefaults [list \
-	-borderwidth	3 \
-	-labelpady	{3 3} \
-    ]
 }
 
 #------------------------------------------------------------------------------
@@ -377,14 +422,10 @@ proc mentry::classicTheme {} {
 #------------------------------------------------------------------------------
 proc mentry::clearlooksTheme {} {
     variable isAwTheme
-    variable themeDefaults
     if {$isAwTheme} {
-	awTheme 
-	array set themeDefaults [list \
-	    -borderwidth		2 \
-	    -labelpady			{2 2} \
-	]
+	awclearlooksTheme 
     } else {
+	variable themeDefaults
 	array set themeDefaults [list \
 	    -background			white \
 	    -disabledbackground		"" \
@@ -622,14 +663,10 @@ proc mentry::winnativeTheme {} {
 #------------------------------------------------------------------------------
 proc mentry::winxpblueTheme {} {
     variable isAwTheme
-    variable themeDefaults
     if {$isAwTheme} {
-	awTheme 
-	array set themeDefaults [list \
-	    -borderwidth		2 \
-	    -labelpady			{2 2} \
-	]
+	awwinxpblueTheme 
     } else {
+	variable themeDefaults
 	array set themeDefaults [list \
 	    -background			white \
 	    -disabledbackground		"" \
