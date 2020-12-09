@@ -1,3 +1,7 @@
+2020-12-09 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistWidget.tcl: Trace procedure slightly improved.
+
 2020-12-03 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistThemes.tcl:              Added support for awthemes
