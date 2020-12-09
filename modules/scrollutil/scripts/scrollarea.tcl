@@ -45,8 +45,7 @@ namespace eval scrollutil {
 	variable scalingpct $origVal
 	switch $op {
 	    w {
-		return -code error "the variable ::scrollutil::scalingpct is\
-				    read-only"
+		return -code error "the variable is read-only"
 	    }
 	    u {
 		trace variable scalingpct wu \
