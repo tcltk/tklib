@@ -42,8 +42,7 @@ namespace eval tablelist {
 	variable scalingpct $origVal
 	switch $op {
 	    w {
-		return -code error "the variable ::tablelist::scalingpct is\
-				    read-only"
+		return -code error "the variable is read-only"
 	    }
 	    u {
 		trace variable scalingpct wu \
