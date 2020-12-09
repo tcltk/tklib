@@ -1,3 +1,7 @@
+2020-12-09  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/scrollarea.tcl: Trace procedure slightly improved.
+
 2020-11-14  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/scrollableframe.html: Slightly improved.
