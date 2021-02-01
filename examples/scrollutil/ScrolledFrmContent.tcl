@@ -281,7 +281,7 @@ pack $tf -side top -expand yes -fill both
 wm deiconify .
 
 #
-# Work around a potential accuracy problem related to scaling
+# Work around a potential accuracy problem related to [winfo reqwidth $cf]
 #
 tkwait visibility $sf
 while {[lindex [$sf xview] 1] != 1.0} {
