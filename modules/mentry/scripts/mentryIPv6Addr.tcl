@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of a multi-entry widget for IPv6 addresses.
 #
-# Copyright (c) 2009-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2009-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -18,8 +18,18 @@ namespace eval mentry {
     bind MentryIPv6Addr <Prior>	{ mentry::incrIPv6AddrComp %W  10 }
     bind MentryIPv6Addr <Next>	{ mentry::incrIPv6AddrComp %W -10 }
     variable winSys
-    if {[string compare $winSys "classic"] == 0 ||
-	[string compare $winSys "aqua"] == 0} {
+    variable uniformWheelSupport
+    if {$uniformWheelSupport} {
+	bind MentryIPv6Addr <MouseWheel> {
+	    mentry::incrIPv6AddrComp %W \
+		[expr {%D > 0 ? (%D + 119) / 120 : %D / 120}]
+	}
+	bind MentryIPv6Addr <Option-MouseWheel> {
+	    mentry::incrIPv6AddrComp %W \
+		[expr {%D > 0 ? (%D + 11) / 12 : %D / 12}]
+	}
+    } elseif {[string compare $winSys "classic"] == 0 ||
+	      [string compare $winSys "aqua"] == 0} {
 	catch {
 	    bind MentryIPv6Addr <MouseWheel> {
 		mentry::incrIPv6AddrComp %W %D

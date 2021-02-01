@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of multi-entry widgets for date and time.
 #
-# Copyright (c) 1999-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -31,8 +31,18 @@ namespace eval mentry {
     bind MentryMeridian <Prior>	{ mentry::setMeridian %W "P" }
     bind MentryMeridian <Next>	{ mentry::setMeridian %W "A" }
     variable winSys
-    if {[string compare $winSys "classic"] == 0 ||
-	[string compare $winSys "aqua"] == 0} {
+    variable uniformWheelSupport
+    if {$uniformWheelSupport} {
+	bind MentryDateTime <MouseWheel> {
+	    mentry::incrDateTimeComp %W \
+		[expr {%D > 0 ? (%D + 119) / 120 : %D / 120}]
+	}
+	bind MentryDateTime <Option-MouseWheel> {
+	    mentry::incrDateTimeComp %W \
+		[expr {%D > 0 ? (%D + 11) / 12 : %D / 12}]
+	}
+    } elseif {[string compare $winSys "classic"] == 0 ||
+	      [string compare $winSys "aqua"] == 0} {
 	catch {
 	    bind MentryDateTime <MouseWheel> {
 		mentry::incrDateTimeComp %W %D

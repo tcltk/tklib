@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 1999-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -88,6 +88,9 @@ namespace eval mentry {
 
     variable extendedAquaSupport \
 	[expr {[lsearch -exact [image types] "nsimage"] >= 0}]
+
+    variable uniformWheelSupport [expr {$::tk_version >= 8.7 &&
+	[package vcompare $::tk_patchLevel "8.7a4"] >= 0}]
 
     #
     # The array configSpecs is used to handle configuration options.  The
@@ -1624,10 +1627,7 @@ proc mentry::updateConfigSpecs win {
 #------------------------------------------------------------------------------
 proc mentry::handleAppearanceEvent {} {
     variable appearanceId
-    if {[info exists appearanceId] } {
-	after cancel $appearanceId
-	unset appearanceId
-    }
+    unset appearanceId
 
     variable currentTheme
     if {[string compare $currentTheme "aqua"] != 0} {

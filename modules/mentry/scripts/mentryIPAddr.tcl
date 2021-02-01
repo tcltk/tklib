@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of a multi-entry widget for IP addresses.
 #
-# Copyright (c) 1999-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -18,8 +18,18 @@ namespace eval mentry {
     bind MentryIPAddr <Prior>	{ mentry::incrIPAddrComp %W  10 }
     bind MentryIPAddr <Next>	{ mentry::incrIPAddrComp %W -10 }
     variable winSys
-    if {[string compare $winSys "classic"] == 0 ||
-	[string compare $winSys "aqua"] == 0} {
+    variable uniformWheelSupport
+    if {$uniformWheelSupport} {
+	bind MentryIPAddr <MouseWheel> {
+	    mentry::incrIPAddrComp %W \
+		[expr {%D > 0 ? (%D + 119) / 120 : %D / 120}]
+	}
+	bind MentryIPAddr <Option-MouseWheel> {
+	    mentry::incrIPAddrComp %W \
+		[expr {%D > 0 ? (%D + 11) / 12 : %D / 12}]
+	}
+    } elseif {[string compare $winSys "classic"] == 0 ||
+	      [string compare $winSys "aqua"] == 0} {
 	catch {
 	    bind MentryIPAddr <MouseWheel> {
 		mentry::incrIPAddrComp %W %D
