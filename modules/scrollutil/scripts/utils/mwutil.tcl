@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Public utility procedures
 #
-# Copyright (c) 2000-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8
@@ -19,7 +19,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.17
+    variable version	2.18
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -35,8 +35,8 @@ namespace eval mwutil {
 			configureWidget fullConfigOpt fullOpt enumOpts \
 			configureSubCmd attribSubCmd hasattribSubCmd \
 			unsetattribSubCmd getScrollInfo getScrollInfo2 \
-			isScrollable hasFocus genMouseWheelEvent \
-			windowingSystem currentTheme
+			isScrollable scrollByUnits genMouseWheelEvent \
+			hasFocus windowingSystem currentTheme
 
     #
     # Make modified versions of the procedures tk_focusNext and
@@ -507,7 +507,9 @@ proc mwutil::getScrollInfo argList {
 	    wrongNumArgs "scroll number units|pages"
 	}
 
-	set number [format "%d" [lindex $argList 1]]
+	set number [lindex $argList 1]
+	format "%f" $number   ;# floating-point number check with error message
+	set number [expr {int($number > 0 ? ceil($number) : floor($number))}]
 	set what [lindex $argList 2]
 	if {[string first $what "units"] == 0} {
 	    return [list scroll $number units]
@@ -545,7 +547,9 @@ proc mwutil::getScrollInfo2 {cmd argList} {
 	    wrongNumArgs "$cmd scroll number units|pages"
 	}
 
-	set number [format "%d" [lindex $argList 1]]
+	set number [lindex $argList 1]
+	format "%f" $number   ;# floating-point number check with error message
+	set number [expr {int($number > 0 ? ceil($number) : floor($number))}]
 	set what [lindex $argList 2]
 	if {[string first $what "units"] == 0} {
 	    return [list scroll $number units]
@@ -577,21 +581,16 @@ proc mwutil::isScrollable {w axis} {
 }
 
 #------------------------------------------------------------------------------
-# mwutil::hasFocus
+# mwutil::scrollByUnits
 #
-# Returns a boolean value indicating whether the focus window is (a descendant
-# of) the widget w and has the same toplevel.
+# Scrolls the widget w along a given axis (x or y) by units.  The number of
+# units is obtained by converting the fraction built from the last two
+# arguments to an integer, rounded away from 0.
 #------------------------------------------------------------------------------
-proc mwutil::hasFocus w {
-    set focusWin [focus -displayof $w]
-    if {[string length $focusWin] == 0} {
-	return 0
-    }
-
-    return [expr {
-	([string compare $w "."] == 0 || [string first $w. $focusWin.] == 0) &&
-	[string compare [winfo toplevel $w] [winfo toplevel $focusWin]] == 0
-    }]
+proc mwutil::scrollByUnits {w axis delta divisor} {
+    set number [expr {$delta/$divisor}]
+    set number [expr {int($number > 0 ? ceil($number) : floor($number))}]
+    $w ${axis}view scroll $number units
 }
 
 #------------------------------------------------------------------------------
@@ -615,6 +614,24 @@ proc mwutil::genMouseWheelEvent {w event rootX rootY delta} {
     if {$needsFocus} {
 	focus $focusWin
     }
+}
+
+#------------------------------------------------------------------------------
+# mwutil::hasFocus
+#
+# Returns a boolean value indicating whether the focus window is (a descendant
+# of) the widget w and has the same toplevel.
+#------------------------------------------------------------------------------
+proc mwutil::hasFocus w {
+    set focusWin [focus -displayof $w]
+    if {[string length $focusWin] == 0} {
+	return 0
+    }
+
+    return [expr {
+	([string compare $w "."] == 0 || [string first $w. $focusWin.] == 0) &&
+	[string compare [winfo toplevel $w] [winfo toplevel $focusWin]] == 0
+    }]
 }
 
 #------------------------------------------------------------------------------

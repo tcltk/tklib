@@ -9,7 +9,7 @@
 #   - Private procedures implementing the scrollableframe widget command
 #   - Private procedures used in bindings
 #
-# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -85,10 +85,10 @@ namespace eval scrollutil::sf {
 	lappend configSpecs(-contentwidth) 0
 	lappend configSpecs(-fitcontentheight) 0
 	lappend configSpecs(-fitcontentwidth) 0
-	lappend configSpecs(-height) 100
+	lappend configSpecs(-height) 7c
 	lappend configSpecs(-relief) flat
 	lappend configSpecs(-takefocus) 0
-	lappend configSpecs(-width) 100
+	lappend configSpecs(-width) 10c
 	lappend configSpecs(-xscrollcommand) ""
 	lappend configSpecs(-xscrollincrement) 0
 	lappend configSpecs(-yscrollcommand) ""
@@ -102,10 +102,11 @@ namespace eval scrollutil::sf {
     # Use lists to facilitate the handling
     # of various options and corner values
     #
-    variable cmdOpts  [list cget configure contentframe scan see seerect \
-		       xview yview]
-    variable scanOpts [list mark dragto]
-    variable corners  [list nw ne sw se]
+    variable cmdOpts	[list autosize cget configure contentframe scan see \
+			 seerect xview yview]
+    variable scanOpts	[list mark dragto]
+    variable dimensions	[list w h wh]
+    variable corners	[list nw ne sw se]
 
     #
     # Variables used in scan-related binding scripts:
@@ -430,6 +431,8 @@ proc scrollutil::sf::scrollableframeWidgetCmd {win args} {
     variable cmdOpts
     set cmd [mwutil::fullOpt "option" [lindex $args 0] $cmdOpts]
     switch $cmd {
+	autosize { return [autosizeSubCmd $win [lrange $args 1 end]] }
+
 	cget {
 	    if {$argCount != 2} {
 		mwutil::wrongNumArgs "$win $cmd option"
@@ -470,6 +473,55 @@ proc scrollutil::sf::scrollableframeWidgetCmd {win args} {
 
 	yview	{ return [yviewSubCmd   $win [lrange $args 1 end]] }
     }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sf::autosizeSubCmd
+#
+# Processes the scrollableframe autosize subcommmand.
+#------------------------------------------------------------------------------
+proc scrollutil::sf::autosizeSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount > 1} {
+	mwutil::wrongNumArgs "$win autosize ?w|h|wh?"
+    }
+
+    #
+    # Parse the optional argument
+    #
+    set dimBits(width)  0
+    set dimBits(height) 0
+    if {$argCount == 1} {
+	variable dimensions
+	switch [mwutil::fullOpt "dimensions" [lindex $argList 0] $dimensions] {
+	    w  { set dimBits(width)  1 }
+	    h  { set dimBits(height) 1 }
+	    wh {
+		set dimBits(width)  1
+		set dimBits(height) 1
+	    }
+	}
+    }
+
+    upvar ::scrollutil::ns${win}::data data
+    if {$data(-fitcontentwidth)} {
+	set dimBits(width)  1
+    }
+    if {$data(-fitcontentheight)} {
+	set dimBits(height) 1
+    }
+
+    if {$dimBits(width) || $dimBits(height)} {
+	update idletasks
+    }
+    if {$dimBits(width)} {
+	doConfig $win -width  [winfo reqwidth  $data(cf)]
+    }
+    if {$dimBits(height)} {
+	doConfig $win -height [winfo reqheight $data(cf)]
+    }
+
+    return ""
 }
 
 #------------------------------------------------------------------------------
