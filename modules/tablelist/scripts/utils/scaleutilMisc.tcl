@@ -6,7 +6,7 @@
 #   - Public utility procedures
 #   - Private helper procedures
 #
-# Copyright (c) 2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2020-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8
@@ -16,14 +16,35 @@ package require Tk 8
 # ========================
 #
 
-namespace eval scaleutil {
+namespace eval scaleutilmisc {
+    #
+    # Public variables:
+    #
+    variable version	1.1
+    variable library
+    if {$::tcl_version >= 8.4} {
+	set library	[file dirname [file normalize [info script]]]
+    } else {
+	set library	[file dirname [info script]] ;# no "file normalize" yet
+    }
+
     #
     # Public procedures:
     #
     namespace export	scaleBWidgetSpinBox scaleBWidgetComboBox \
 			scaleIncrDateentry scaleIncrTimeentry \
 			scaleIncrCombobox scaleOakleyComboboxArrow
+
+    variable onX11
+    if {[catch {tk windowingsystem} winSys] == 0} {
+	set onX11 [expr {[string compare $winSys "x11"] == 0}]
+    } else {
+	set onX11 \
+	    [expr {[string compare $::tcl_platform(platform) "unix"] == 0}]
+    }
 }
+
+package provide scaleutilmisc $scaleutilmisc::version
 
 #
 # Public utility procedures
@@ -31,11 +52,11 @@ namespace eval scaleutil {
 #
 
 #------------------------------------------------------------------------------
-# scaleutil::scaleBWidgetSpinBox
+# scaleutilmisc::scaleBWidgetSpinBox
 #
 # Scales a BWidget SpinBox widget of the given path name.
 #------------------------------------------------------------------------------
-proc scaleutil::scaleBWidgetSpinBox {w pct} {
+proc scaleutilmisc::scaleBWidgetSpinBox {w pct} {
     #
     # Scale the width of the two arrows, which is set to 11
     #
@@ -45,11 +66,11 @@ proc scaleutil::scaleBWidgetSpinBox {w pct} {
 }
 
 #------------------------------------------------------------------------------
-# scaleutil::scaleBWidgetComboBox
+# scaleutilmisc::scaleBWidgetComboBox
 #
 # Scales a BWidget ComboBox widget of the given path name.
 #------------------------------------------------------------------------------
-proc scaleutil::scaleBWidgetComboBox {w pct} {
+proc scaleutilmisc::scaleBWidgetComboBox {w pct} {
     #
     # Scale the width of the arrow, which is set to 11 or 15
     #
@@ -73,21 +94,30 @@ proc scaleutil::scaleBWidgetComboBox {w pct} {
 }
 
 #------------------------------------------------------------------------------
-# scaleutil::scaleIncrDateentry
+# scaleutilmisc::scaleIncrDateentry
 #
 # Scales an [incr Widgets] dateentry of the given path name.
 #------------------------------------------------------------------------------
-proc scaleutil::scaleIncrDateentry {w pct} {
+proc scaleutilmisc::scaleIncrDateentry {w pct} {
     #
     # Scale the values of a few options
     #
     set btnFg [$w cget -buttonforeground]
-    $w configure -icon [calendarImg $pct] \
+    $w configure -icon [calendarImg $pct] -selectthickness 2p \
 	-backwardimage [backwardImg $pct $btnFg] \
-	-forwardimage  [forwardImg  $pct $btnFg] \
-	-titlefont {Helvetica 11 bold} -dayfont {Helvetica 9} \
-	-datefont {Helvetica 9} -currentdatefont {Helvetica 9 bold} \
-	-selectthickness 2p
+	-forwardimage  [forwardImg  $pct $btnFg]
+    variable onX11
+    if {$onX11 && $::tk_version >= 8.5} {
+	set captionFontSize [font actual TkCaptionFont -size]
+	set defaultFontSize [font actual TkDefaultFont -size]
+	$w configure -titlefont [list Helvetica $captionFontSize bold] \
+	    -dayfont [list Helvetica $defaultFontSize] \
+	    -datefont [list Helvetica $defaultFontSize]\
+	    -currentdatefont [list Helvetica $defaultFontSize bold]
+    } else {
+	$w configure -titlefont {Helvetica 11 bold} -dayfont {Helvetica 9} \
+	    -datefont {Helvetica 9} -currentdatefont {Helvetica 9 bold}
+    }
     set default [lindex [$w configure -height] 3]
     $w configure -height [expr {$default * $pct / 100}]
     set default [lindex [$w configure -width] 3]
@@ -95,11 +125,11 @@ proc scaleutil::scaleIncrDateentry {w pct} {
 }
 
 #------------------------------------------------------------------------------
-# scaleutil::scaleIncrTimeentry
+# scaleutilmisc::scaleIncrTimeentry
 #
 # Scales an [incr Widgets] timeentry of the given path name.
 #------------------------------------------------------------------------------
-proc scaleutil::scaleIncrTimeentry {w pct} {
+proc scaleutilmisc::scaleIncrTimeentry {w pct} {
     #
     # Scale the values of a few options
     #
@@ -111,11 +141,11 @@ proc scaleutil::scaleIncrTimeentry {w pct} {
 }
 
 #------------------------------------------------------------------------------
-# scaleutil::scaleIncrCombobox
+# scaleutilmisc::scaleIncrCombobox
 #
 # Scales an [incr Widgets] combobox of the given path name.
 #------------------------------------------------------------------------------
-proc scaleutil::scaleIncrCombobox {w pct} {
+proc scaleutilmisc::scaleIncrCombobox {w pct} {
     #
     # Scale the two arrows, as well as the value of the -listheight
     # option and that of the -sbwidth option of the list component
@@ -129,11 +159,11 @@ proc scaleutil::scaleIncrCombobox {w pct} {
 }
 
 #------------------------------------------------------------------------------
-# scaleutil::scaleOakleyComboboxArrow
+# scaleutilmisc::scaleOakleyComboboxArrow
 #
 # Scales the default arrow of the Oakley combobox widget.
 #------------------------------------------------------------------------------
-proc scaleutil::scaleOakleyComboboxArrow pct {
+proc scaleutilmisc::scaleOakleyComboboxArrow pct {
     switch $pct {
 	100 {
 	    set data "
@@ -190,12 +220,12 @@ static unsigned char down_bits[] = {
 #
 
 #------------------------------------------------------------------------------
-# scaleutil::calendarImg
+# scaleutilmisc::calendarImg
 #------------------------------------------------------------------------------
-proc scaleutil::calendarImg pct {
+proc scaleutilmisc::calendarImg pct {
     variable calendarImg
     if {![info exists calendarImg]} {
-	set calendarImg [image create photo scaleutil_calendarImg]
+	set calendarImg [image create photo scaleutilmisc_calendarImg]
 
 	switch $pct {
 	    100 {
@@ -266,19 +296,19 @@ gHRIbpSHDDAzeFixIWYGEis0QChQ4cNgipcxZ4b8ka7ohw4Fiw5r+dPmzJoxSZCwuaFpUIwANZKk
 "
 	    }
 	}
-	scaleutil_calendarImg put $data
+	scaleutilmisc_calendarImg put $data
     }
 
     return $calendarImg
 }
 
 #------------------------------------------------------------------------------
-# scaleutil::backwardImg
+# scaleutilmisc::backwardImg
 #------------------------------------------------------------------------------
-proc scaleutil::backwardImg {pct fg} {
+proc scaleutilmisc::backwardImg {pct fg} {
     variable backwardImg
     if {![info exists backwardImg]} {
-	set backwardImg [image create bitmap scaleutil_backwardImg]
+	set backwardImg [image create bitmap scaleutilmisc_backwardImg]
 
 	switch $pct {
 	    100 {
@@ -352,19 +382,19 @@ static unsigned char backward_bits[] = {
 "
 	    }
 	}
-	scaleutil_backwardImg configure -data $data -foreground $fg
+	scaleutilmisc_backwardImg configure -data $data -foreground $fg
     }
 
     return $backwardImg
 }
 
 #------------------------------------------------------------------------------
-# scaleutil::forwardImg
+# scaleutilmisc::forwardImg
 #------------------------------------------------------------------------------
-proc scaleutil::forwardImg {pct fg} {
+proc scaleutilmisc::forwardImg {pct fg} {
     variable forwardImg
     if {![info exists forwardImg]} {
-	set forwardImg [image create bitmap scaleutil_forwardImg]
+	set forwardImg [image create bitmap scaleutilmisc_forwardImg]
 
 	switch $pct {
 	    100 {
@@ -438,19 +468,19 @@ static unsigned char forward_bits[] = {
 "
 	    }
 	}
-	scaleutil_forwardImg configure -data $data -foreground $fg
+	scaleutilmisc_forwardImg configure -data $data -foreground $fg
     }
 
     return $forwardImg
 }
 
 #------------------------------------------------------------------------------
-# scaleutil::watchImg
+# scaleutilmisc::watchImg
 #------------------------------------------------------------------------------
-proc scaleutil::watchImg pct {
+proc scaleutilmisc::watchImg pct {
     variable watchImg
     if {![info exists watchImg]} {
-	set watchImg [image create photo scaleutil_watchImg]
+	set watchImg [image create photo scaleutilmisc_watchImg]
 
 	switch $pct {
 	    100 {
@@ -558,16 +588,16 @@ vQb5AAIDtOtuIQEEIIABCCSQAAIF5KvvvooAAADCDDfscCGBAAA7
 "
 	    }
 	}
-	scaleutil_watchImg put $data
+	scaleutilmisc_watchImg put $data
     }
 
     return $watchImg
 }
 
 #------------------------------------------------------------------------------
-# scaleutil::scaleIncrComboboxArrows
+# scaleutilmisc::scaleIncrComboboxArrows
 #------------------------------------------------------------------------------
-proc scaleutil::scaleIncrComboboxArrows pct {
+proc scaleutilmisc::scaleIncrComboboxArrows pct {
     switch $pct {
 	100 {
 	    downarrow configure -data "

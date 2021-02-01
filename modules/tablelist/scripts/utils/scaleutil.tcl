@@ -6,7 +6,7 @@
 #   - Public utility procedure
 #   - Private helper procedures
 #
-# Copyright (c) 2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2020-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8
@@ -20,7 +20,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.1
+    variable version	1.2
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -47,7 +47,7 @@ package provide scaleutil $scaleutil::version
 # Returns the display's current scaling percentage (100, 125, 150, 175, or 200).
 #------------------------------------------------------------------------------
 proc scaleutil::scalingPercentage winSys {
-    variable onX11 [expr {[string compare $winSys "x11"] == 0}]
+    set onX11 [expr {[string compare $winSys "x11"] == 0}]
     set pct [expr {[tk scaling] * 75}]
 
     if {$onX11} {
@@ -99,13 +99,6 @@ proc scaleutil::scalingPercentage winSys {
 	    #
 	    scanMonitorsFile $chan pct
 	}
-
-	#
-	# Conditionally correct and then scale the sizes of the standard fonts
-	#
-	if {$::tk_version >= 8.5} {
-	    scaleX11Fonts $factor
-	}
     }
 
     if {$pct < 100 + 12.5} {
@@ -121,6 +114,13 @@ proc scaleutil::scalingPercentage winSys {
     }
 
     if {$onX11} {
+	#
+	# Conditionally correct and then scale the sizes of the standard fonts
+	#
+	if {$::tk_version >= 8.5} {
+	    scaleX11Fonts $pct $factor
+	}
+
 	tk scaling [expr {$pct / 75.0}]
 
 	if {$pct > 100} {
@@ -243,7 +243,7 @@ proc scaleutil::scanMonitorsFile {chan pctName} {
 # sizes in pixels contained in the library file ttk/fonts.tcl with sizes in
 # points, and then multiplies them with $factor.
 #------------------------------------------------------------------------------
-proc scaleX11Fonts factor {
+proc scaleX11Fonts {pct factor} {
     if {$factor > 2} {
 	set factor 2
     }
@@ -260,7 +260,7 @@ proc scaleX11Fonts factor {
     set points [expr {$size < 0 ? 9 : $size}]		;# -12 -> 9, else 10
     foreach font {TkDefaultFont TkTextFont TkHeadingFont
 		  TkIconFont TkMenuFont} {
-	if {[font actual $font -size] == $points} {
+	if {$pct != 100 || [font actual $font -size] == $points} {
 	    font configure $font -size [expr {$factor * $points}]
 	}
     }
@@ -269,7 +269,7 @@ proc scaleX11Fonts factor {
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 8 : $size}]		;# -10 -> 8, else 9
     foreach font {TkTooltipFont TkSmallCaptionFont} {
-	if {[font actual $font -size] == $points} {
+	if {$pct != 100 || [font actual $font -size] == $points} {
 	    font configure $font -size [expr {$factor * $points}]
 	}
     }
@@ -277,14 +277,14 @@ proc scaleX11Fonts factor {
     set idx [string first "F(capsize)" $str]
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 11 : $size}]		;# -14 -> 11, else 12
-    if {[font actual TkCaptionFont -size] == $points} {
+    if {$pct != 100 || [font actual TkCaptionFont -size] == $points} {
 	font configure TkCaptionFont -size [expr {$factor * $points}]
     }
 
     set idx [string first "F(fixedsize)" $str]
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 9 : $size}]		;# -12 -> 9, else 10
-    if {[font actual TkFixedFont -size] == $points} {
+    if {$pct != 100 || [font actual TkFixedFont -size] == $points} {
 	font configure TkFixedFont -size [expr {$factor * $points}]
     }
 }

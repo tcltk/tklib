@@ -1,11 +1,10 @@
 #==============================================================================
-# mwutil and scaleutil package index file.
+# mwutil, scaleutil, and scaleutilmisc package index file.
 #
-# Copyright (c) 2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2020-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package ifneeded mwutil    2.17 [list source [file join $dir mwutil.tcl]]
-package ifneeded scaleutil 1.1 "
-    source [list [file join $dir scaleutil.tcl]]
-    source [list [file join $dir scaleutilMisc.tcl]]
-"
+package ifneeded mwutil    2.18 [list source [file join $dir mwutil.tcl]]
+package ifneeded scaleutil 1.2  [list source [file join $dir scaleutil.tcl]]
+package ifneeded scaleutilmisc 1.1 \
+	[list source [file join $dir scaleutilMisc.tcl]]
