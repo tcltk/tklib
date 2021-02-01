@@ -4,7 +4,7 @@
 # Demonstrates the use of the Scrollutil package in connection with the
 # iwidgets::scrolledframe widget.
 #
-# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 if {[catch {package require iwidgets} result1] != 0 &&

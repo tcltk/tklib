@@ -2,7 +2,7 @@
 # Populates the content frame of the iwidgets::scrolledframe widget created in
 # the demo script ScrolledFrmDemo2.tcl.
 #
-# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -380,33 +380,18 @@ proc configTablelist {} {
 		switch -- $opt {
 		    -activestyle { set values {frame none underline} }
 		    -arrowstyle {
-			set values {flat5x3 flat5x4 flat6x4 flat7x4 flat7x5
-			    flat7x7 flat8x4 flat8x5 flat9x5 flat9x6 flat11x6
-			    flat15x8 flatAngle7x4 flatAngle7x5 flatAngle9x5
-			    flatAngle9x6 flatAngle9x7 flatAngle10x6
-			    flatAngle10x7 flatAngle11x6 flatAngle15x8 photo7x4
-			    photo7x7 photo9x5 photo11x6 photo15x8 sunken8x7
-			    sunken10x9 sunken12x11}
+			set values $tablelist::arrowStyles   ;# dirty, but safe
 		    }
 		    -incrarrowtype { set values {up down} }
 		    -labelrelief -
 		    -relief {
 			set values {flat groove raised ridge solid sunken}
 		    }
-		    -selectmode {
-			set values {single browse multiple extended}
-		    }
+		    -selectmode { set values {single browse multiple extended} }
 		    -selecttype { set values {row cell} }
 		    -state { set values {disabled normal} }
 		    -treestyle {
-			set values {adwaita ambiance aqua arc baghira bicolor1
-			bicolor2 bicolor3 bicolor4 blueMenta classic1 classic2
-			classic3 classic4 dust dustSand gtk klearlooks mate
-			menta mint mint2 newWave oxygen1 oxygen2 phase plain1
-			plain2 plain3 plain4 plastik plastique radiance ubuntu
-			ubuntu2 ubuntu3 ubuntuMate vistaAero vistaClassic
-			win7Aero win7Classic win10 winnative winxpBlue
-			winxpOlive winxpSilver yuyo}
+			set values $tablelist::treeStyles    ;# dirty, but safe
 		    }
 		}
 
@@ -426,6 +411,7 @@ proc configTablelist {} {
 	    -autoscan -
 	    -customdragsource -
 	    -displayondemand -
+	    -editendonfocusout -
 	    -editselectedonly -
 	    -exportselection -
 	    -forceeditendcommand -

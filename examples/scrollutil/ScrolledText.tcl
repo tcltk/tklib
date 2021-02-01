@@ -4,7 +4,7 @@
 # Demonstrates the use of the scrollutil::scrollarea widget in connection with
 # a text widget.
 #
-# Copyright (c) 2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2020-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require scrollutil_tile

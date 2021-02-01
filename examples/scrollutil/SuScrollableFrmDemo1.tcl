@@ -4,7 +4,7 @@
 # Demonstrates the use of the Scrollutil package in connection with the
 # scrollutil::scrollableframe widget.
 #
-# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require scrollutil_tile
@@ -98,11 +98,10 @@ foreach country $countryList {
 # Set the scrollableframe's width, height, and yscrollincrement
 #
 wm withdraw .
-update idletasks
-set width [winfo reqwidth $cf]
+$sf autosize w
 set rowHeight [expr {[winfo reqheight $cf] / $row}]
 set height [expr {10*$rowHeight + [winfo pixels . $topPadY]}]
-$sf configure -width $width -height $height -yscrollincrement $rowHeight
+$sf configure -height $height -yscrollincrement $rowHeight
 
 #
 # Create a ttk::button widget outside the scrollarea
