@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>scrollutil::scrollableframe</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.7</h2>
+    <h2>For Scrollutil Version 1.8</h2>
 
     <h3>by</h3>
 
@@ -100,6 +100,9 @@
     <i>screenDistance</i></code></dd>
 
     <dt class="tm"><a href="#widget_command">WIDGET COMMAND</a></dt>
+
+    <dd><code><i>pathName</i> <b><a href="#autosize">autosize</a></b>
+    ?<b>w</b>|<b>h</b>|<b>wh</b>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#cget">cget</a></b>
     <i>option</i></code></dd>
@@ -239,10 +242,8 @@ $sa <a href="scrollarea.html#setwidget">setwidget</a> $sf
 set cf [$sf <a href="#contentframe">contentframe</a>]
 <i>&lt;populate the content frame&gt;</i>
 
-update idletasks
-$sf <a href="#configure">configure</a> <a href=
-"#width">-width</a> [winfo reqwidth $cf] <a href=
-"#height">-height</a> ... <a href="#yscrollincrement">-yscrollincrement</a> ...
+$sf <a href="#autosize">autosize</a> w
+$sf <a href="#configure">configure</a> <a href="#height">-height</a> ... <a href="#yscrollincrement">-yscrollincrement</a> ...
 
 pack $sa -expand yes -fill both
 </pre>
@@ -428,7 +429,7 @@ pack $sa -expand yes -fill both
         of the forms acceptable to <code><b>Tk_GetPixels</b></code>.&nbsp;
         Note that this sets the <i>inner</i> height, excluding the border and
         highlight rectangle (if any) drawn around the outside of the
-        widget.&nbsp; The default is <code>100</code>, which should be
+        widget.&nbsp; The default is <code>7c</code>, which should be
         overridden with a suitable application-specific value.</p>
       </blockquote>
     </dd>
@@ -487,7 +488,7 @@ pack $sa -expand yes -fill both
         of the forms acceptable to <code><b>Tk_GetPixels</b></code>.&nbsp;
         Note that this sets the <i>inner</i> width, excluding the border and
         highlight rectangle (if any) drawn around the outside of the
-        widget.&nbsp; The default is <code>100</code>, which should be
+        widget.&nbsp; The default is <code>10c</code>, which should be
         overridden with a suitable application-specific value.</p>
       </blockquote>
     </dd>
@@ -579,6 +580,31 @@ pack $sa -expand yes -fill both
 
     <dd>
       <dl>
+        <dt class="tm" id="autosize"><code><i>pathName</i> <b>autosize</b>
+        ?<i>dimensions</i>?</code></dt>
+
+        <dd>This command sets the width and/or height of the scrollableframe's
+        window to the requested width and/or height of its content frame,
+        according to the optional <code><i>dimensions</i></code> argument,
+        whose possible values are <code><b>w</b></code> (width),
+        <code><b>h</b></code> (height), and <code><b>wh</b></code> (width and
+        height).&nbsp; The default is an empty string, meaning that neither the
+        width nor the height is <i>explicitly</i> requested to be set.&nbsp;
+        Note that if the value of the <code><b><a href=
+        "#fitcontentwidth">-fitcontentwidth</a></b></code> option is true then
+        the command sets the widget's width to the requested width of its
+        content frame, regardless of whether this was <i>explicitly</i>
+        specified or not.&nbsp; Similarly, if the value of the
+        <code><b><a href="#fitcontentheight">-fitcontentheight</a></b></code>
+        option is true then the command sets the widget's height to the
+        requested height of its content frame, even if this was not
+        <i>explicitly</i> specified.</dd>
+
+        <dd class="tm"><b>REMARK:</b>&nbsp; Before setting the width and/or
+        height, the command invokes&nbsp; <code><b>update
+        idletasks</b></code>,&nbsp; to make sure that the geometry management
+        calculations in its content frame are finished.</dd>
+
         <dt class="tm" id="cget"><code><i>pathName</i> <b>cget</b>
         <i>option</i></code></dt>
 
@@ -752,9 +778,11 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
             <dd>This command shifts the view in the window left or right
             according to <code><i>number</i></code> and
             <code><i>what</i></code>.&nbsp; <code><i>number</i></code> must be
-            an integer.&nbsp; <code><i>what</i></code> must be either
-            <code><b>units</b></code> or <code><b>pages</b></code> or an
-            abbreviation of one of these.&nbsp; If <code><i>what</i></code> is
+            an integer or a float; if it is a float then it is converted to an
+            integer, rounded away from <code>0</code>.&nbsp;
+            <code><i>what</i></code> must be either <code><b>units</b></code>
+            or <code><b>pages</b></code> or an abbreviation of one of
+            these.&nbsp; If <code><i>what</i></code> is
             <code><b>units</b></code>, the view adjusts left or right in units
             of the <code><b><a href=
             "#xscrollincrement">xScrollIncrement</a></b></code> option if it is
@@ -802,10 +830,11 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
 
             <dd>This command shifts the view in the window up or down according
             to <code><i>number</i></code> and <code><i>what</i></code>.&nbsp;
-            <code><i>number</i></code> must be an integer.&nbsp;
-            <code><i>what</i></code> must be either <code><b>units</b></code>
-            or <code><b>pages</b></code> or an abbreviation of one of
-            these.&nbsp; If <code><i>what</i></code> is
+            <code><i>number</i></code> must be an integer or a float; if it is
+            a float then it is converted to an integer, rounded away from
+            <code>0</code>.&nbsp; <code><i>what</i></code> must be either
+            <code><b>units</b></code> or <code><b>pages</b></code> or an
+            abbreviation of one of these.&nbsp; If <code><i>what</i></code> is
             <code><b>units</b></code>, the view adjusts up or down in units of
             the <code><b><a href=
             "#yscrollincrement">yScrollIncrement</a></b></code> option if it is
@@ -983,6 +1012,12 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
       <td></td>
       <td></td>
       <td></td>
+    </tr>
+
+    <tr>
+      <td><code><b>autosize</b> ?<b>w</b>|<b>h</b>|<b>wh</b>?</code></td>
+      <td bgcolor="#e0e0e0"></td>
+      <td bgcolor="#e0e0e0"></td>
     </tr>
 
     <tr>

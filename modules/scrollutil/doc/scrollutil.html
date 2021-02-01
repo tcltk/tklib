@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 1.7</h2>
+    <h2>For Scrollutil Version 1.8</h2>
 
     <h3>by</h3>
 
@@ -253,8 +253,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil1.7.tar.gz</code> for UNIX and
-  <code>scrollutil1_7.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil1.8.tar.gz</code> for UNIX and
+  <code>scrollutil1_8.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -278,11 +278,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil1.7.tar.gz</code>:</p>
+  <code>scrollutil1.8.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil1.7.tar.gz | tar -xf -
+gunzip -c scrollutil1.8.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -290,17 +290,17 @@ gunzip -c scrollutil1.7.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil1.7.tar.gz
+tar -zxf scrollutil1.8.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil1.7</code>,
+  <p>Both commands will create a directory named <code>scrollutil1.8</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil1_7.zip</code> into the directory
-  <code>scrollutil1.7</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil1_8.zip</code> into the directory
+  <code>scrollutil1.8</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -452,22 +452,34 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 
   <ul>
     <li class="tm">On <i>Xfce and MATE</i> the display scaling mode can be
-    either unscaled (1x, normal) or scaled (2x, HiDPI), and the variable
+    either unscaled (1x, regular) or scaled (2x, HiDPI), and the variable
     <code>scrollutil::scalingpct</code> will be set accordingly to
-    <code>100</code> or <code>200</code>.</li>
+    <code>100</code> or <code>200</code>.&nbsp; On Xfce, the display scaling
+    mode is called <i>window scaling</i> and can be selected in the
+    <i>Appearance</i> dialog.&nbsp; Xfce versions 4.16 and later also support
+    fractional scaling (whose parameters can be configured in the
+    <i>Display</i> dialog), but, due to the way the fractional scaling is
+    implemented on Xfce, the value of <code>scrollutil::scalingpct</code>
+    remains set to <code>100</code> or <code>200</code>, depending on the value
+    of the window scaling.&nbsp; On MATE, the display scaling mode is called
+    <i>window scaling factor</i> and can be selected in the <i>MATE Tweak</i>
+    dialog.</li>
 
     <li class="tm">In case of <i>GNOME on Xorg, Budgie, and Cinnamon versions
     earlier than 4.6</i>, the display scaling can be either 100 % or 200 %, and
-    Scrollutil sets the variable <code>scrollutil::scalingpct</code>
-    accordingly to <code>100</code> or <code>200</code>.&nbsp; In newer GNOME
-    and Budgie versions on Ubuntu one can enable the
+    Tablelist sets the variable <code>scrollutil::scalingpct</code> accordingly
+    to <code>100</code> or <code>200</code>.&nbsp; In newer GNOME and Budgie
+    versions on Ubuntu one can enable the
     <code>x11-randr-fractional-scaling</code> as experimental feature, which
     adds 125 %, 150 %, and 175 % to the list of supported scaling
     percentages.&nbsp; Note that, due to the way this fractional scaling is
     implemented, if the display scaling was set to one of these intermediate
     levels, the value of <code>scrollutil::scalingpct</code> will be
-    <code>200</code>.&nbsp; The same is valid for the fractional scaling
-    support on Cinnamon, introduced in version 4.6.</li>
+    <code>200</code>.&nbsp; Cinnamon versions 4.6 and later also support
+    fractional scaling; regardless of the value of the <i>fractional
+    scaling</i>, <code>scrollutil::scalingpct</code> will be set to
+    <code>100</code> or <code>200</code>, depending on whether the <i>user
+    interface scale</i> is set to "Normal" or "Double (Hi-DPI)".</li>
 
     <li class="tm"><i>GNOME on Wayland</i> traditionally supports the display
     scaling values 100 % and 200 %, and the variable

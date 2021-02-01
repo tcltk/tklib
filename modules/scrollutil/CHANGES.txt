@@ -1,5 +1,32 @@
-What is new in Scrollutil 1.7?
+What is new in Scrollutil 1.8?
 ------------------------------
+
+1. Added support for the platform-independent handling of mouse wheel
+   events (TIP 474), introduced in Tk 8.7a4 (as of January 9, 2021).
+
+2. Added the "autosize" scrollableframe subcommand and used in the demo
+   scripts "SuScrollableFrmDemo*.tcl" (thanks to Harald Oehlmann for his
+   proposal).
+
+3. Changed the default width and height of the scrollableframe widget
+   to 10c and 7c, respectively (thanks to Alexandru Dadalau and Harald
+   Oehlmann for discussions on this subject).
+
+4. Included the same version 2.18 of the mega-widget utility package
+   mwutil and the same version 1.2 of the scaling utility package
+   scaleutil as in the most recent Tablelist release 6.12.
+
+5. Extended the description of the scaling support on Xfce (including
+   version 4.16, which adds fractional scaling), MATE, and Cinnamon.
+
+6. Fixed a regression related to font scaling on X11 if the display's
+   DPI scaling level is greater than 100 %, introduced in the previous
+   release.
+
+7. Several improvements in the demo scripts and documentation.
+
+What was new in Scrollutil 1.7?
+-------------------------------
 
 1. Added the "-autohidescrollbars" scrollarea configuration option
    (thanks to Alexandru Dadalau for his proposal and testing).

@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Commands Related to Mouse Wheel Event Handling</h1>
 
-    <h2>For Scrollutil Version 1.7</h2>
+    <h2>For Scrollutil Version 1.8</h2>
 
     <h3>by</h3>
 
@@ -108,37 +108,69 @@
     bindings, but you can use this command to add mouse wheel support to the
     widget class <code><b>Canvas</b></code> or individual canvas widgets.</dd>
 
-    <dd class="tm"><b>REMARK 3:</b>&nbsp; The mouse wheel events along the
-    vertical axis are <code><b>&lt;MouseWheel&gt;</b></code> on Windows,
-    <code><b>&lt;MouseWheel&gt;</b></code> and
-    <code><b>&lt;Option-MouseWheel&gt;</b></code> on Mac OS X, and
-    <code><b>&lt;MouseWheel&gt;</b></code>,
-    <code><b>&lt;Button-4&gt;</b></code> and
-    <code><b>&lt;Button-5&gt;</b></code> on X11 (where
-    <code><b>&lt;MouseWheel&gt;</b></code> is not triggered by the X server,
-    but can be produced using&nbsp; <code><b>event generate</b></code>).&nbsp;
-    The mouse wheel events along the horizontal axis are
-    <code><b>&lt;Shift-MouseWheel&gt;</b></code> on Windows,
-    <code><b>&lt;Shift-MouseWheel&gt;</b></code> and
-    <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code> on Mac OS X, and
-    <code><b>&lt;Shift-MouseWheel&gt;</b></code>,
-    <code><b>&lt;Shift-Button-4&gt;</b></code> and
-    <code><b>&lt;Shift-Button-5&gt;</b></code> on X11 (where
-    <code><b>&lt;Shift-MouseWheel&gt;</b></code> is not triggered by the X
-    server, but can be produced using&nbsp; <code><b>event
-    generate</b></code>).&nbsp; On X11, when using Tk 8.7a3 or later, there are
-    two more mouse wheel events along the horizontal axis:
-    <code><b>&lt;Button-6&gt;</b></code> and
-    <code><b>&lt;Button-7&gt;</b></code>, which are handled just like
-    <code><b>&lt;Shift-Button-4&gt;</b></code> and
-    <code><b>&lt;Shift-Button-5&gt;</b></code>, respectively.&nbsp; These
-    events are commonly triggered by left/right tilting the scroll wheel of a
-    mouse having one or two additional (thumb) buttons.&nbsp; (In Tk versions
-    8.6.x, with x >= 10, left/right tilting the scroll wheel of such a mouse
-    gives rise to <code><b>&lt;Shift-MouseWheel&gt;</b></code> events on
-    Windows and Mac OS X Aqua, and to
-    <code><b>&lt;Shift-Button-4&gt;</b></code> and
-    <code><b>&lt;Shift-Button-5&gt;</b></code> events on X11.)</dd>
+    <dd class="tm">
+      <b>REMARK 3:</b>&nbsp; <i>In Tk versions prior to 8.7a4</i>, the set of
+      mouse wheel events depends on the windowing system:
+
+      <ul>
+        <li class="tm">The mouse wheel events along the vertical axis are
+        <code><b>&lt;MouseWheel&gt;</b></code> on
+        Windows, <code><b>&lt;MouseWheel&gt;</b></code> and
+        <code><b>&lt;Option-MouseWheel&gt;</b></code> on Mac OS X, and
+        <code><b>&lt;MouseWheel&gt;</b></code>,
+        <code><b>&lt;Button-4&gt;</b></code> and
+        <code><b>&lt;Button-5&gt;</b></code> on X11 (where
+        <code><b>&lt;MouseWheel&gt;</b></code> is not triggered by the X
+        server, but can be produced using&nbsp; <code><b>event
+        generate</b></code>).</li>
+
+        <li class="tm">The mouse wheel events along the horizontal axis are
+        <code><b>&lt;Shift-MouseWheel&gt;</b></code> on
+        Windows, <code><b>&lt;Shift-MouseWheel&gt;</b></code> and
+        <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code> on Mac OS X, and
+        <code><b>&lt;Shift-MouseWheel&gt;</b></code>,
+        <code><b>&lt;Shift-Button-4&gt;</b></code> and
+        <code><b>&lt;Shift-Button-5&gt;</b></code> on X11 (where
+        <code><b>&lt;Shift-MouseWheel&gt;</b></code> is not triggered by the X
+        server, but can be produced using&nbsp; <code><b>event
+        generate</b></code>).&nbsp; On X11, when using Tk 8.7a3, there are two
+        more mouse wheel events along the horizontal axis:
+        <code><b>&lt;Button-6&gt;</b></code> and
+        <code><b>&lt;Button-7&gt;</b></code>, which are handled just like
+        <code><b>&lt;Shift-Button-4&gt;</b></code> and
+        <code><b>&lt;Shift-Button-5&gt;</b></code>, respectively.&nbsp; These
+        events are commonly triggered by left/right tilting the scroll wheel of
+        a mouse having one or two additional (thumb) buttons.&nbsp; (In Tk
+        versions 8.6.x, with x >= 10, left/right tilting the scroll wheel of
+        such a mouse gives rise to <code><b>&lt;Shift-MouseWheel&gt;</b></code>
+        events on Windows and Mac OS X Aqua, and to
+        <code><b>&lt;Shift-Button-4&gt;</b></code> and
+        <code><b>&lt;Shift-Button-5&gt;</b></code> events on X11.)</li>
+      </ul>
+
+      <p><b>REMARK 4:</b>&nbsp; <i>In Tk versions 8.7a4 and later</i>, the set
+      of mouse wheel events is the same on all windowing systems:</p>
+
+      <ul>
+        <li class="tm">The mouse wheel events along the vertical axis are
+        <code><b>&lt;MouseWheel&gt;</b></code> and
+        <code><b>&lt;Option-MouseWheel&gt;</b></code>, where the
+        <code><b>Option</b></code> modifier is bound to the <code>Option</code>
+        key on Mac OS X and to the <code>Alt</code> key on Windows and
+        X11.</li>
+
+        <li class="tm">The mouse wheel events along the horizontal axis are
+        <code><b>&lt;Shift-MouseWheel&gt;</b></code> and
+        <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code>, where the
+        <code><b>Option</b></code> modifier is bound to the <code>Option</code>
+        key on Mac OS X and to the <code>Alt</code> key on Windows and
+        X11.&nbsp; In these Tk versions, left/right tilting the scroll wheel of
+        a mouse having one or two additional (thumb) buttons gives rise to
+        <code><b>&lt;Shift-MouseWheel&gt;</b></code> (and
+        <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code>) events on all
+        windowing systems.</li>
+      </ul>
+    </dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
@@ -416,11 +448,12 @@
     systems <code><b>classic</b></code> and <code><b>aqua</b></code> on the
     Macintosh.&nbsp; Scrollutil eliminates this discrepancy by automatically
     creating the <code><b>Scrollbar</b></code> class bindings for mouse wheel
-    events on Windows and X11.&nbsp; Note also that the ttk::scrollbar widget
-    has no <i>built-in</i> class bindings for mouse wheel events, but
-    Scrollutil automatically creates the missing bindings by copying the mouse
-    wheel event bindings of the widget class <code><b>Scrollbar</b></code> to
-    the binding tag <code><b>TScrollbar</b></code>.</dd>
+    events on Windows and X11.&nbsp; Note also that in Tk versions prior to
+    8.7.a5 the ttk::scrollbar widget had no <i>built-in</i> class bindings for
+    mouse wheel events, but Scrollutil automatically creates the missing
+    bindings by copying the mouse wheel event bindings of the widget class
+    <code><b>Scrollbar</b></code> to the binding tag
+    <code><b>TScrollbar</b></code>.</dd>
 
     <dd class="tm"><b>REMARK 3:</b>&nbsp; As mentioned above, Tk core scrollbar
     and ttk::scrollbar widgets have class bindings for mouse wheel events,
