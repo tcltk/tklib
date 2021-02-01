@@ -1,3 +1,19 @@
+2021-02-01  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 3.12; updated the
+	* COPYRIGHT.txt: copyright information.
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl:        Added support for the platform-independent
+	* scripts/mwutil/*.tcl: handling of mouse wheel events (TIP 474);
+	  updated the mwutil package to version 2.18, like in Tablelist6.12;
+	  updated the copyright information.
+
+	* ../../examples/mentry/*.tcl: Updated the copyright information.
+
 2020-12-03 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/mentryThemes.tcl: Added support for awthemes 10.0.
