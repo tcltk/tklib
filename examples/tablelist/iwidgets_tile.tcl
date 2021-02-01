@@ -5,10 +5,10 @@
 # widgets from the Iwidgets package and of the Tk core checkbutton and
 # menubutton widgets.
 #
-# Copyright (c) 2004-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.11
+package require tablelist_tile 6.12
 if {[catch {package require iwidgets} result1] != 0 &&
     [catch {package require Iwidgets} result2] != 0} {
     error "$result1; $result2"

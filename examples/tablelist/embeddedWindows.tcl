@@ -3,10 +3,10 @@
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
 #
-# Copyright (c) 2004-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 6.11
+package require tablelist 6.12
 
 wm title . "Tk Library Scripts"
 

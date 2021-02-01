@@ -4,10 +4,10 @@
 # Demonstrates the interactive tablelist cell editing with the aid of some
 # widgets from the tile package.
 #
-# Copyright (c) 2005-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.11
+package require tablelist_tile 6.12
 
 wm title . "Serial Line Configuration"
 
