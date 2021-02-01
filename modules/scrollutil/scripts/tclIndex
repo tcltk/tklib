@@ -14,6 +14,7 @@ set auto_index(::scrollutil::sf::doCget) [list source [file join $dir scrollable
 set auto_index(::scrollutil::sf::updateHorizPlaceOpts) [list source [file join $dir scrollableframe.tcl]]
 set auto_index(::scrollutil::sf::updateVertPlaceOpts) [list source [file join $dir scrollableframe.tcl]]
 set auto_index(::scrollutil::sf::scrollableframeWidgetCmd) [list source [file join $dir scrollableframe.tcl]]
+set auto_index(::scrollutil::sf::autosizeSubCmd) [list source [file join $dir scrollableframe.tcl]]
 set auto_index(::scrollutil::sf::scanSubCmd) [list source [file join $dir scrollableframe.tcl]]
 set auto_index(::scrollutil::sf::seeSubCmd) [list source [file join $dir scrollableframe.tcl]]
 set auto_index(::scrollutil::sf::seerectSubCmd) [list source [file join $dir scrollableframe.tcl]]
