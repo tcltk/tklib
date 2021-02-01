@@ -14,7 +14,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.11</h2>
+    <h2>For Tablelist Version 6.12</h2>
 
     <h3>by</h3>
 
@@ -133,6 +133,9 @@
     <dd><code><b><a href="#editendcommand">-editendcommand</a></b>
     <i>command</i></code></dd>
 
+    <dd><code><b><a href="#editendonfocusout">-editendonfocusout</a></b>
+    <i>boolean</i></code></dd>
+
     <dd><code><b><a href="#editselectedonly">-editselectedonly</a></b>
     <i>boolean</i></code></dd>
 
@@ -155,6 +158,10 @@
 
     <dd><code><b><a href="#instanttoggle">-instanttoggle</a></b>
     <i>boolean</i></code></dd>
+
+    <dd><code><b><a href="#itembackground">-itembackground</a></b>
+    <i>color</i></code>&nbsp; or&nbsp; <code><b>-itembg</b>
+    <i>color</i></code></dd>
 
     <dd><code><b><a href=
     "#labelactivebackground">-labelactivebackground</a></b>
@@ -648,6 +655,10 @@
     <dd><code><i>pathName</i> <b><a href="#attrib">attrib</a></b> ?<i>name</i>?
     ?<i>value</i> <i>name</i> <i>value</i> ...?</code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#autoscrolltarget">autoscrolltarget</a></b> <i>event</i>
+    <i>x</i></code> <i>y</i></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#bbox">bbox</a></b>
     <i>index</i></code></dd>
 
@@ -1129,6 +1140,9 @@
 
     <dd><code><i>pathName</i> <b><a href=
     "#sortorderlist">sortorderlist</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#stopautoscroll">stopautoscroll</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#targetmarkpath">targetmarkpath</a></b></code></dd>
@@ -2344,6 +2358,35 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
       </blockquote>
     </dd>
 
+    <dd id="editendonfocusout">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-editendonfocusout</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;editEndOnFocusOut</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;EditEndOnFocusOut</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a boolean value that controls whether the interactive cell
+        editing will be finished automatically when the tablelist widget loses
+        the focus.&nbsp; If this option was set to true then losing the focus
+        while interactive cell editing is in progress will automatically
+        trigger an invocation of the <code><b><a href=
+        "#finishediting">finishediting</a></b></code> subcommand.&nbsp; The
+        default is <code>0</code>.</p>
+      </blockquote>
+    </dd>
+
     <dd id="editselectedonly">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
@@ -2659,6 +2702,40 @@ proc expandCmd {tbl row} {
         mouse click into the cell will only start the editing session (and
         automatically toggle the checkbutton's checked state), but not also
         finish it.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="itembackground">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-itembackground</b></code> or
+          <code><b>-itembg</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;itemBackground</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Background</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the background color to use when displaying the body and
+        header items, i.e., the background color of the body area filled with
+        the body items and that of the header area filled with the header
+        items (if any).&nbsp; The default value is an empty string, indicating
+        that these areas will inherit the background color specified by the
+        <code><b><a href="#body_options">-background</a></b></code>
+        configuration option.&nbsp; Notice that regardless of the value of this
+        option, the blank space that might appear to the right of the body and
+        header items as well as below the last body item will always have the
+        background color given by the <code><b>-background</b></code>
+        option.</p>
       </blockquote>
     </dd>
 
@@ -5387,28 +5464,48 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
         the tablelist or its edit window, regardless of whether the focus is
         inside or outside the tablelist widget.</p>
 
-        <p><b>REMARK 1:</b>&nbsp; The mouse wheel events along the horizontal
-        axis are <code><b>&lt;Shift-MouseWheel&gt;</b></code> on Windows,
-        <code><b>&lt;Shift-MouseWheel&gt;</b></code> and
-        <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code> on Mac OS X, and
-        <code><b>&lt;Shift-MouseWheel&gt;</b></code>,
-        <code><b>&lt;Shift-Button-4&gt;</b></code> and
-        <code><b>&lt;Shift-Button-5&gt;</b></code> on X11 (where
-        <code><b>&lt;Shift-MouseWheel&gt;</b></code> is not triggered by the X
-        server, but can be produced using&nbsp; <code><b>event
-        generate</b></code>).&nbsp; On X11, when using Tk 8.7a3 or later, there
-        are two more mouse wheel events along the horizontal axis:
-        <code><b>&lt;Button-6&gt;</b></code> and
-        <code><b>&lt;Button-7&gt;</b></code>, which are handled just like
-        <code><b>&lt;Shift-Button-4&gt;</b></code> and
-        <code><b>&lt;Shift-Button-5&gt;</b></code>, respectively.&nbsp; These
-        events are commonly triggered by left/right tilting the scroll wheel of
-        a mouse having one or two additional (thumb) buttons.&nbsp; (In Tk
-        versions 8.6.x, with x >= 10, left/right tilting the scroll wheel of
-        such a mouse gives rise to <code><b>&lt;Shift-MouseWheel&gt;</b></code>
-        events on Windows and Mac OS X Aqua, and to
-        <code><b>&lt;Shift-Button-4&gt;</b></code> and
-        <code><b>&lt;Shift-Button-5&gt;</b></code> events on X11.)</p>
+        <p><b>REMARK 1:</b>&nbsp; The set of mouse wheel events along the
+        horizontal axis depends on the Tk version and partly on the windowing
+        system:</p>
+
+        <ul>
+          <li class="tm"><i>In Tk versions prior to 8.7a4</i>, the mouse wheel
+          events along the horizontal axis are
+          <code><b>&lt;Shift-MouseWheel&gt;</b></code> on Windows,
+          <code><b>&lt;Shift-MouseWheel&gt;</b></code> and
+          <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code> on Mac OS X, and
+          <code><b>&lt;Shift-MouseWheel&gt;</b></code>,
+          <code><b>&lt;Shift-Button-4&gt;</b></code> and
+          <code><b>&lt;Shift-Button-5&gt;</b></code> on X11 (where
+          <code><b>&lt;Shift-MouseWheel&gt;</b></code> is not triggered by the
+          X server, but can be produced using&nbsp; <code><b>event
+          generate</b></code>).&nbsp; On X11, when using Tk 8.7a3, there are
+          two more mouse wheel events along the horizontal axis:
+          <code><b>&lt;Button-6&gt;</b></code> and
+          <code><b>&lt;Button-7&gt;</b></code>, which are handled just like
+          <code><b>&lt;Shift-Button-4&gt;</b></code> and
+          <code><b>&lt;Shift-Button-5&gt;</b></code>, respectively.&nbsp; These
+          events are commonly triggered by left/right tilting the scroll wheel
+          of a mouse having one or two additional (thumb) buttons.&nbsp; (In Tk
+          versions 8.6.x, with x >= 10, left/right tilting the scroll wheel of
+          such a mouse gives rise to
+          <code><b>&lt;Shift-MouseWheel&gt;</b></code> events on Windows and
+          Mac OS X Aqua, and to <code><b>&lt;Shift-Button-4&gt;</b></code> and
+          <code><b>&lt;Shift-Button-5&gt;</b></code> events on X11.)</li>
+
+          <li class="tm"><i>In Tk versions 8.7a4 and later</i>, the mouse wheel
+          events along the horizontal axis are
+          <code><b>&lt;Shift-MouseWheel&gt;</b></code> and
+          <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code> on all windowing
+          systems, where the <code><b>Option</b></code> modifier is bound to
+          the <code>Option</code> key on Mac OS X and to the <code>Alt</code>
+          key on Windows and X11.&nbsp; In these Tk versions, left/right
+          tilting the scroll wheel of a mouse having one or two additional
+          (thumb) buttons gives rise to
+          <code><b>&lt;Shift-MouseWheel&gt;</b></code> (and
+          <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code>) events on all
+          windowing systems.</li>
+        </ul>
 
         <p><b>REMARK 2:</b>&nbsp; If the tablelist is contained in a scrollable
         widget container like a <a href=
@@ -5479,16 +5576,31 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
         the tablelist or its edit window, regardless of whether the focus is
         inside or outside the tablelist widget.</p>
 
-        <p><b>REMARK 1:</b>&nbsp; The mouse wheel events along the vertical
-        axis are <code><b>&lt;MouseWheel&gt;</b></code> on Windows,
-        <code><b>&lt;MouseWheel&gt;</b></code> and
-        <code><b>&lt;Option-MouseWheel&gt;</b></code> on Mac OS X, and
-        <code><b>&lt;MouseWheel&gt;</b></code>,
-        <code><b>&lt;Button-4&gt;</b></code> and
-        <code><b>&lt;Button-5&gt;</b></code> on X11 (where 
-        <code><b>&lt;MouseWheel&gt;</b></code> is not triggered by the X
-        server, but can be produced using&nbsp; <code><b>event
-        generate</b></code>).</p>
+        <p><b>REMARK 1:</b>&nbsp; The set of mouse wheel events along the
+        vertical axis depends on the Tk version and partly on the windowing
+        system:</p>
+
+        <ul>
+          <li class="tm"><i>In Tk versions prior to 8.7a4</i>, the mouse wheel
+          events along the vertical axis are
+          <code><b>&lt;MouseWheel&gt;</b></code> on Windows,
+          <code><b>&lt;MouseWheel&gt;</b></code> and
+          <code><b>&lt;Option-MouseWheel&gt;</b></code> on Mac OS X, and
+          <code><b>&lt;MouseWheel&gt;</b></code>,
+          <code><b>&lt;Button-4&gt;</b></code> and
+          <code><b>&lt;Button-5&gt;</b></code> on X11 (where
+          <code><b>&lt;MouseWheel&gt;</b></code> is not triggered by the X
+          server, but can be produced using&nbsp; <code><b>event
+          generate</b></code>).</li>
+
+          <li class="tm"><i>In Tk versions 8.7a4 and later</i>, the mouse wheel
+          events along the vertical axis are
+          <code><b>&lt;MouseWheel&gt;</b></code> and
+          <code><b>&lt;Option-MouseWheel&gt;</b></code> on all windowing
+          systems, where the <code><b>Option</b></code> modifier is bound to
+          the <code>Option</code> key on Mac OS X and to the <code>Alt</code>
+          key on Windows and X11.</li>
+        </ul>
 
         <p><b>REMARK 2:</b>&nbsp; If the tablelist is contained in a scrollable
         widget container like a <a href=
@@ -6877,8 +6989,11 @@ proc updateWindow {tbl row col w args} {
     window is one of the four combobox widgets supported by Tablelist or a
     menubutton widget, and the value of the <code><b><a href=
     "#autofinishediting">-autofinishediting</a></b></code> option is true, then
-    selecting a combobox or menu entry will auomatically terminate the editing
-    session.</dd>
+    selecting a combobox or menu entry will automatically terminate the editing
+    session.&nbsp; Finally, if the value of the <code><b><a href=
+    "#editendonfocusout">-editendonfocusout</a></b></code> option is true then
+    normal termination is also triggered when the tablelist widget loses the
+    focus.</dd>
 
     <dd class="tm">When normal termination of the editing process occurs, the
     Tcl command associated with the tablelist widget compares the edit window's
@@ -6927,6 +7042,18 @@ proc updateWindow {tbl row col w args} {
     BWidget it is necessary to register the tablelist's <i>body</i> rather than
     the widget itself.)</dd>
 
+    <dd class="tm">Before dropping the dragged object into the tablelist
+    widget's body, the user might need a way to bring the desired place for the
+    drop operation into view.&nbsp; By invoking the <code><b><a href=
+    "#autoscrolltarget">autoscrolltarget</a></b></code> subcommand, you can
+    make sure that when the mouse pointer leaves the area obtained by removing
+    a few pixels from the scrollable part of the tablelist's body on each side,
+    an automatic scrolling away from the mouse is started, which continues
+    until it gets canceled by the <code><b><a href=
+    "#stopautoscroll">stopautoscroll</a></b></code> subcommand, or the mouse
+    pointer re-enters that area, or no more scrolling in that direction is
+    possible.</dd>
+
     <dd class="tm">The action to be triggered by a drop event over a tablelist
     widget might depend on the row under the mouse and the vertical position of
     the mouse pointer within the containing row (if any).&nbsp; For example,
@@ -6965,15 +7092,19 @@ package require tkdnd 2.7
 
 tkdnd::drop_target register $tbl DND_Text
 
-bind $tbl &lt;&lt;DropEnter&gt;&gt;    { onTblDropEnterOrPos %W %X %Y %a %b }
-bind $tbl &lt;&lt;DropPosition&gt;&gt; { onTblDropEnterOrPos %W %X %Y %a %b }
+bind $tbl &lt;&lt;DropEnter&gt;&gt;    { onTblDropEnterOrPos %W %e %X %Y %a %b }
+bind $tbl &lt;&lt;DropPosition&gt;&gt; { onTblDropEnterOrPos %W %e %X %Y %a %b }
 bind $tbl &lt;&lt;DropLeave&gt;&gt;    { %W <a href=
 "#hidetargetmark">hidetargetmark</a> }
 bind $tbl &lt;&lt;Drop&gt;&gt;         { onTblDrop %W %A %D }
 
-proc onTblDropEnterOrPos {tbl rootX rootY actions buttons} {
-    global place row
+proc onTblDropEnterOrPos {tbl event rootX rootY actions buttons} {
+    <span class="cmt"># Scroll the target if the mouse is about to leave its scrollable part</span>
+    set x [expr {$rootX - [winfo rootx $tbl]}]
     set y [expr {$rootY - [winfo rooty $tbl]}]
+    $tbl <a href="#autoscrolltarget">autoscrolltarget</a> $event $x $y
+
+    global place row
     foreach {place row} [$tbl <a href="#targetmarkpos">targetmarkpos</a> $y] {}
 
     if {<i>some_optional_excluding_condition</i>} {
@@ -6986,6 +7117,9 @@ proc onTblDropEnterOrPos {tbl rootX rootY actions buttons} {
 }
 
 proc onTblDrop {tbl action data} {
+    <span class="cmt"># Cancel the automatic scrolling of the target</span>
+    $tbl <a href="#stopautoscroll">stopautoscroll</a>
+
     <span class="red">handleTblDrop</span> $tbl $data
     return $action
 }
@@ -7016,9 +7150,14 @@ foreach w [list [$tbl <a href="#bodypath">bodypath</a>] [$tbl <a href=
 }
 
 proc tblDropOverCmd {dropTarget dragSrc event rootX rootY op dataType data} {
-    <span class="cmt"># $event may be "enter", "motion", or "leave"</span>
+    <span class="cmt"># Scroll the target if the mouse is about to leave its scrollable part</span>
     set tbl [<a href=
 "tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a> $dropTarget]
+    set x [expr {$rootX - [winfo rooty $tbl]}]
+    set y [expr {$rootY - [winfo rooty $tbl]}]
+    $tbl <a href="#autoscrolltarget">autoscrolltarget</a> $event $x $y
+
+    <span class="cmt"># $event may be "enter", "motion", or "leave"</span>
     if {[string equal $event "leave"]} {
         set newWidget [winfo containing -displayof $dropTarget $rootX $rootY]
         if {![string equal $newWidget [$tbl <a href=
@@ -7031,7 +7170,6 @@ proc tblDropOverCmd {dropTarget dragSrc event rootX rootY op dataType data} {
     }
 
     global place row
-    set y [expr {$rootY - [winfo rooty $tbl]}]
     foreach {place row} [$tbl <a href="#targetmarkpos">targetmarkpos</a> $y] {}
 
     if {<i>some_optional_excluding_condition</i>} {
@@ -7046,8 +7184,11 @@ proc tblDropOverCmd {dropTarget dragSrc event rootX rootY op dataType data} {
 }
 
 proc tblDropCmd {dropTarget dragSrc rootX rootY op dataType data} {
+    <span class="cmt"># Cancel the automatic scrolling of the target</span>
     set tbl [<a href=
 "tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a> $dropTarget]
+    $tbl <a href="#stopautoscroll">stopautoscroll</a>
+
     <span class="red">handleTblDrop</span> $tbl $data
     return 1 ;<span class="cmt"># accept the drop</span>
 }
@@ -7810,6 +7951,45 @@ proc handleTblDrop {tbl data} {
         then the command sets the given widget attribute(s) to the given
         value(s); in this case the return value is an empty string.&nbsp;
         <code><i>name</i></code> may be an arbitrary string.</dd>
+
+        <dt class="tm" id="autoscrolltarget"><code><i>pathName</i>
+        <b>autoscrolltarget</b> <i>event</i> <i>x</i> <i>y</i></code></dt>
+
+        <dd>This command is designed to be used during a drag & drop operation
+        for which the tablelist widget (or its body component) was registered
+        as a drop target for TkDND or the drag & drop framework included in
+        BWidget.&nbsp; In the first (TkDND) case it is assumed that the command
+        was invoked from within the binding scripts associated with the virtual
+        events <code><b>&lt;&lt;DropEnter&gt;&gt;</b></code> and
+        <code><b>&lt;&lt;DropPosition&gt;&gt;</b></code> and its arguments are
+        as follows: <i>event</i> is the value of the <code><b>%e</b></code>
+        field, while <i>x</i> and <i>y</i> were obtained by transforming the
+        root coordinates given by the <code><b>%X</b></code> and
+        <code><b>%Y</b></code> fields to coordinates relative to the tablelist
+        window.&nbsp; In the second (BWidget) case it is assumed that the
+        command was invoked from within the command specified as the value of
+        the <code><b>-dropovercmd</b></code> option of
+        <code><b>DropSite::register</b></code> and its arguments are as
+        follows: <i>event</i> is the value of the 3rd argument passed to that
+        command, while <i>x</i> and <i>y</i> were obtained by transforming the
+        root coordinates passed to that commad as its 4th and 5th
+        arguments.</dd>
+
+        <dd class="tm">An invocation of this sucommand as described above has
+        the effect that when the mouse pointer leaves the area obtained by
+        removing a few pixels from the scrollable part of the tablelist's body
+        on each side, an automatic scrolling away from the mouse is started,
+        which continues until it gets canceled by the <code><b><a href=
+        "#stopautoscroll">stopautoscroll</a></b></code> subcommand, or the
+        mouse pointer re-enters that area, or no more scrolling in that
+        direction is possible.&nbsp; The scrollable part of the tablelist's
+        body is the body itself or the area to the right of the title columns
+        if the value of the <code><b><a href=
+        "#titlecolumns">-titlecolumns</a></b></code> option is positive.</dd>
+
+        <dd class="tm">See the <a href="#drag_and_drop_support">DRAG & DROP
+        SUPPORT</a> section for examples of how to use this subcommand during a
+        drag & drop operation.</dd>
 
         <dt class="tm" id="bbox"><code><i>pathName</i> <b>bbox</b>
         <i>index</i></code></dt>
@@ -9063,8 +9243,12 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         combobox widgets supported by Tablelist or a menubutton widget, and the
         value of the <code><b><a href=
         "#autofinishediting">-autofinishediting</a></b></code> option is true,
-        then selecting a combobox or menu entry will auomatically invoke this
-        subcommand and thus termate the editing session.</dd>
+        then selecting a combobox or menu entry will automatically invoke this
+        subcommand and thus terminate the editing session.&nbsp; Finally, if
+        the value of the <code><b><a href=
+        "#editendonfocusout">-editendonfocusout</a></b></code> option is true
+        then this subcommand will also be invoked automatically when the
+        tablelist widget loses the focus.</dd>
 
         <dd class="tm"><b>REMARK:</b>&nbsp; There are also situations where an
         <i>explicit</i> invocation of this subcommand is needed, in order to
@@ -9074,7 +9258,11 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         with the button designed to accept the data should call this
         subcommand, because otherwise, if the button is pressed during
         interactive cell editing then the text entered into the edit window
-        will get lost.</dd>
+        will get lost (except that if that button is a ttk::button widget then
+        by pressing it, the tablelist will lose the focus, which in turn will
+        invoke this subcommand if the <code><b><a href=
+        "#editendonfocusout">-editendonfocusout</a></b></code> option was set
+        to true).</dd>
 
         <dt class="tm" id="formatinfo"><code><i>pathName</i>
         <b>formatinfo</b></code></dt>
@@ -9333,8 +9521,8 @@ proc formatValue {tbl val} {
         <dd class="tm">This command is designed to be used during a drag & drop
         operation for which the tablelist widget (or its body component) was
         registered as a drop target.&nbsp; See the <a href=
-        "#drag_and_drop_support">DRAG & DROP SUPPORT</a> section for details
-        and examples.</dd>
+        "#drag_and_drop_support">DRAG & DROP SUPPORT</a> section for
+        examples.</dd>
 
         <dt class="tm" id="imagelabelpath"><code><i>pathName</i>
         <b>imagelabelpath</b> <i>cellIndex</i></code></dt>
@@ -10278,8 +10466,8 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         <dd class="tm">This command is designed to be used during a drag & drop
         operation for which the tablelist widget (or its body component) was
         registered as a drop target.&nbsp; See the <a href=
-        "#drag_and_drop_support">DRAG & DROP SUPPORT</a> section for details
-        and examples.</dd>
+        "#drag_and_drop_support">DRAG & DROP SUPPORT</a> section for
+        examples.</dd>
 
         <dt class="tm" id="size"><code><i>pathName</i> <b>size</b></code></dt>
 
@@ -10453,6 +10641,26 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         return value of this subcommand refers to the sorting in progress
         rather than the most recent one.</dd>
 
+        <dt class="tm" id="stopautoscroll"><code><i>pathName</i>
+        <b>stopautoscroll</b></code></dt>
+
+        <dd>Cancels the automatic scrolling started by the <code><b><a href=
+        "#autoscrolltarget">autoscrolltarget</a></b></code> subcommand.</dd>
+
+        <dd class="tm">This command is designed to be used during a drag & drop
+        operation for which the tablelist widget (or its body component) was
+        registered as a drop target for TkDND or the drag & drop framework
+        included in BWidget.&nbsp; In the first (TkDND) case it should
+        be invoked from within the binding script associated with the
+        <code><b>&lt;&lt;Drop&gt;&gt;</b></code> virtual event.&nbsp; In the
+        second (BWidget) case it is should be invoked from within the command
+        specified as the value of the <code><b>-dropcmd</b></code> option of
+        <code><b>DropSite::register</b></code>.</dd>
+
+        <dd class="tm">See the <a href="#drag_and_drop_support">DRAG & DROP
+        SUPPORT</a> section for examples of how to use this subcommand during a
+        drag & drop operation.</dd>
+
         <dt class="tm" id="targetmarkpath"><code><i>pathName</i>
         <b>targetmarkpath</b></code></dt>
 
@@ -10488,8 +10696,8 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         <dd class="tm">This command is designed to be used during a drag & drop
         operation for which the tablelist widget (or its body component) was
         registered as a drop target.&nbsp; See the <a href=
-        "#drag_and_drop_support">DRAG & DROP SUPPORT</a> section for details
-        and examples.</dd>
+        "#drag_and_drop_support">DRAG & DROP SUPPORT</a> section for
+        examples.</dd>
 
         <dt class="tm" id="togglecolumnhide"><code><i>pathName</i>
         <b>togglecolumnhide</b> <i>firstColumn</i> <i>lastColumn</i></code><br>
@@ -10648,9 +10856,11 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
             <dd>This command shifts the view in the window left or right
             according to <code><i>number</i></code> and
             <code><i>what</i></code>.&nbsp; <code><i>number</i></code> must be
-            an integer.&nbsp; <code><i>what</i></code> must be either
-            <code><b>units</b></code> or <code><b>pages</b></code> or an
-            abbreviation of one of these.&nbsp; If <code><i>what</i></code> is
+            an integer or a float; if it is a float then it is converted to an
+            integer, rounded away from <code>0</code>.&nbsp;
+            <code><i>what</i></code> must be either <code><b>units</b></code>
+            or <code><b>pages</b></code> or an abbreviation of one of
+            these.&nbsp; If <code><i>what</i></code> is
             <code><b>units</b></code>, the view adjusts left or right by
             <code><i>number</i></code> non-hidden columns or character units
             (the width of the <code><b>0</b></code> character) on the display,
@@ -10710,10 +10920,11 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
 
             <dd>This command shifts the view in the window up or down according
             to <code><i>number</i></code> and <code><i>what</i></code>.&nbsp;
-            <code><i>number</i></code> must be an integer.&nbsp;
-            <code><i>what</i></code> must be either <code><b>units</b></code>
-            or <code><b>pages</b></code> or an abbreviation of one of
-            these.&nbsp; If <code><i>what</i></code> is
+            <code><i>number</i></code> must be an integer or a float; if it is
+            a float then it is converted to an integer, rounded away from
+            <code>0</code>.&nbsp; <code><i>what</i></code> must be either
+            <code><b>units</b></code> or <code><b>pages</b></code> or an
+            abbreviation of one of these.&nbsp; If <code><i>what</i></code> is
             <code><b>units</b></code>, the view adjusts up or down by
             <code><i>number</i></code> <a href="#isviewable">viewable</a> rows;
             if it is <code><b>pages</b></code> then the view adjusts by
