@@ -1,3 +1,29 @@
+2021-02-01 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                          Bumped the version number to 6.12;
+	* COPYRIGHT.txt:                  updated the copyright information.
+	* README.txt:
+	* ../../examples/tablelist/*.tcl:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl:            Added support for the platform-independent
+	* scripts/utils/mwutil.tcl: handling of mouse wheel events (TIP 474);
+	  added the "-editendonfocusout" and "-itembackground" configuration
+	  options; added the "autoscrolltarget" and "stopautoscroll"
+	  subcommands; fixed a few long-standing issues related to the "yview"
+	  subcommand; updated the copyright information.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/*.tcl: Improved the font scaling on X11 in the calendar
+	  component of an iwidgets::dateentry widget used for interactive cell
+	  editing; fixed a regression related to font scaling on X11 if the
+	  display's DPI scaling level is > 100 %, introduced in the previous
+	  release; the file scaleutilMisc.tcl now implements the new
+	  scaleutilmisc package; updated the copyright information.
+
 2020-12-09 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/tablelistWidget.tcl: Trace procedure slightly improved.
