@@ -1,10 +1,10 @@
 #==============================================================================
 # Main Scrollutil package module.
 #
-# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require -exact scrollutil::common 1.7
+package require -exact scrollutil::common 1.8
 
 package provide scrollutil $::scrollutil::version
 package provide Scrollutil $::scrollutil::version

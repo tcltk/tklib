@@ -1,7 +1,7 @@
 #==============================================================================
 # Main Scrollutil and Scrollutil_tile package module.
 #
-# Copyright (c) 2019-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8
@@ -10,7 +10,7 @@ namespace eval ::scrollutil {
     #
     # Public variables:
     #
-    variable version	1.7
+    variable version	1.8
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -85,13 +85,15 @@ proc ::scrollutil::createTkAliases {} {
 lappend auto_path [file join $::scrollutil::library scripts]
 
 #
-# Load the packages mwutil and scaleutil from the directory "scripts/utils"
+# Load the packages mwutil and scaleutil from the directory
+# "scripts/utils".  Take into account that mwutil is also included
+# in Mentry and Tablelist, and scaleutil is also included in Tablelist.
 #
-if {[catch {package present mwutil} version] == 0 && $version < 2.17} {
+if {[catch {package present mwutil} version] == 0 && $version < 2.18} {
     package forget mwutil
 }
-package require mwutil 2.17
-if {[catch {package present scaleutil} version] == 0 && $version < 1.1} {
+package require mwutil 2.18
+if {[catch {package present scaleutil} version] == 0 && $version < 1.2} {
     package forget scaleutil
 }
-package require scaleutil 1.1
+package require scaleutil 1.2
