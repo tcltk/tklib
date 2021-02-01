@@ -1,5 +1,14 @@
-What is new in Mentry 3.11?
+What is new in Mentry 3.12?
 ---------------------------
+
+1. Added support for the platform-independent handling of mouse wheel
+   events (TIP 474), introduced in Tk 8.7a4 (as of January 9, 2021).
+
+2. Included the same version 2.18 of the mega-widget utility package
+   mwutil as in the most recent Tablelist release 6.12.
+
+What was new in Mentry 3.11?
+----------------------------
 
 1. Adapted the "aqua" theme support to Tk releases 8.6.10 and 8.6.11,
    including the support for the Dark Mode appearance, introduced in
