@@ -1,5 +1,10 @@
 2021-02-01  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* ../../examples/scrollutil/*.tcl: Demo scripts using scrollabe widget
+	  containers slightly improved.
+
+2021-02-01  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* *.tcl:         Bumped the version number to 1.8; updated the
 	* COPYRIGHT.txt: copyright information.
 	* README.txt:
