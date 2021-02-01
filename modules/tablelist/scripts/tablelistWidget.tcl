@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -123,6 +123,9 @@ namespace eval tablelist {
     variable extendedAquaSupport \
 	[expr {[lsearch -exact [image types] "nsimage"] >= 0}]
 
+    variable uniformWheelSupport [expr {$::tk_version >= 8.7 &&
+	[package vcompare $::tk_patchLevel "8.7a4"] >= 0}]
+
     #
     # The array configSpecs is used to handle configuration options.  The
     # names of its elements are the configuration options for the Tablelist
@@ -158,6 +161,7 @@ namespace eval tablelist {
 	-disabledforeground	 {disabledForeground	  DisabledForeground  w}
 	-displayondemand	 {displayOnDemand	  DisplayOnDemand     w}
 	-editendcommand		 {editEndCommand	  EditEndCommand      w}
+	-editendonfocusout	 {editEndOnFocusOut	  EditEndOnFocusOut   w}
 	-editselectedonly	 {editSelectedOnly	  EditSelectedOnly    w}
 	-editstartcommand	 {editStartCommand	  EditStartCommand    w}
 	-expandcommand		 {expandCommand		  ExpandCommand       w}
@@ -173,6 +177,8 @@ namespace eval tablelist {
 	-highlightthickness	 {highlightThickness	  HighlightThickness  f}
 	-incrarrowtype		 {incrArrowType		  IncrArrowType	      w}
 	-instanttoggle		 {instantToggle		  InstantToggle	      w}
+	-itembackground		 {itemBackground	  Background	      w}
+	-itembg			 -itembackground
 	-labelactivebackground	 {labelActiveBackground	  Foreground	      l}
 	-labelactiveforeground	 {labelActiveForeground	  Background	      l}
 	-labelbackground	 {labelBackground	  Background	      l}
@@ -478,10 +484,10 @@ namespace eval tablelist {
     # Use a list to facilitate the handling of the command options
     #
     variable cmdOpts [list \
-	activate activatecell applysorting attrib bbox bodypath bodytag \
-	canceledediting cancelediting cellattrib cellbbox cellcget \
-	cellconfigure cellindex cellselection cget childcount childindex \
-	childkeys collapse collapseall columnattrib columncget \
+	activate activatecell applysorting attrib autoscrolltarget bbox \
+	bodypath bodytag canceledediting cancelediting cellattrib cellbbox \
+	cellcget cellconfigure cellindex cellselection cget childcount \
+	childindex childkeys collapse collapseall columnattrib columncget \
 	columnconfigure columncount columnindex columnwidth config \
 	configcelllist configcells configcolumnlist configcolumns \
 	configrowlist configrows configure containing containingcell \
@@ -502,10 +508,10 @@ namespace eval tablelist {
 	rowconfigure scan searchcolumn see seecell seecolumn selection \
 	separatorpath separators setbusycursor showtargetmark size sort \
 	sortbycolumn sortbycolumnlist sortcolumn sortcolumnlist sortorder \
-	sortorderlist targetmarkpath targetmarkpos togglecolumnhide \
-	togglerowhide toplevelkey unsetattrib unsetcellattrib \
-	unsetcolumnattrib unsetrowattrib viewablerowcount windowpath xview \
-	yview]
+	sortorderlist stopautoscroll targetmarkpath targetmarkpos \
+	togglecolumnhide togglerowhide toplevelkey unsetattrib \
+	unsetcellattrib unsetcolumnattrib unsetrowattrib viewablerowcount \
+	windowpath xview yview]
 
     proc restrictCmdOpts {} {
 	variable canElide
@@ -708,7 +714,12 @@ proc tablelist::createBindings {} {
 	    }
 	}
     }
-    bind Tablelist <FocusOut>		{ tablelist::removeActiveTag %W }
+    bind Tablelist <FocusOut> {
+	tablelist::removeActiveTag %W
+	if {[%W cget -editendonfocusout]} {
+	    tablelist::finishEditingOnFocusOut %W
+	}
+    }
     bind Tablelist <<TablelistSelect>>	{ event generate %W <<ListboxSelect>> }
     bind Tablelist <Destroy>		{ tablelist::cleanup %W }
     variable usingTile
@@ -861,7 +872,6 @@ proc tablelist::tablelist args {
 	    imgCount		 0
 	    winCount		 0
 	    indentCount		 0
-	    afterId		 ""
 	    labelClicked	 0
 	    labelModifClicked	 0
 	    arrowColList	 {}
@@ -895,6 +905,10 @@ proc tablelist::tablelist args {
 	    justEntered		 0
 	    inEditWin		 0
 	    inActiveWin		 1
+	    afterId		 ""
+	    afterId2		 ""
+	    x			 ""
+	    y			 ""
 	    xView		 {-1 -1}
 	    yView		 {-1 -1}
 	}
@@ -1010,7 +1024,9 @@ proc tablelist::tablelist args {
     $w tag add noSpacings 1.0
     $w tag configure tinyFont -font "Courier -1"
     $w tag add tinyFont 1.0 end
-    $w tag configure active -borderwidth ""	;# used for the priority order
+    $w tag configure itembg -background ""	;# initial setting
+    $w tag configure stripe -background ""	;# for the priority order only
+    $w tag configure active -borderwidth ""	;# for the priority order only
     $w tag configure disabled -foreground ""	;# initial setting
     $w tag configure hiddenCol -elide 1		;# used for hiding a column
     $w tag configure elidedCol -elide 1		;# used for horizontal scrolling
@@ -1150,11 +1166,12 @@ proc tablelist::tablelist args {
     # selection in a text widget only becomes visible when the window gets
     # the input focus.  DO NOT CHANGE the order of creation of these tags!
     #
-    $w tag configure stripe -background "" -foreground ""    ;# will be changed
+    $w tag configure itembg -background ""		     ;# initial setting
+    $w tag configure stripe -background "" -foreground ""    ;# initial setting
     $w tag configure select -relief raised
     $w tag configure curRow -borderwidth 1 -relief raised
-    $w tag configure active -borderwidth ""		     ;# will be changed
-    $w tag configure disabled -foreground ""		     ;# will be changed
+    $w tag configure active -borderwidth ""		     ;# initial setting
+    $w tag configure disabled -foreground ""		     ;# initial setting
     $w tag configure redraw -relief sunken
     if {$canElide} {
 	$w tag configure hiddenRow -elide 1	;# used for hiding a row
@@ -1333,6 +1350,67 @@ proc tablelist::applysortingSubCmd {win argList} {
 #------------------------------------------------------------------------------
 proc tablelist::attribSubCmd {win argList} {
     return [mwutil::attribSubCmd $win "widget" $argList]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::autoscrolltargetSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::autoscrolltargetSubCmd {win argList} {
+    if {[llength $argList] != 3} {
+	mwutil::wrongNumArgs "$win autoscrolltarget event x y"
+    }
+
+    set event [lindex $argList 0]
+    set x [format "%d" [lindex $argList 1]]
+    set y [format "%d" [lindex $argList 2]]
+
+    synchronize $win
+    displayItems $win
+
+    upvar ::tablelist::ns${win}::data data
+    if {[string compare $event "<<DropEnter>>"] == 0 ||
+	[string compare $event "enter"] == 0} {
+	set data(x) ""
+	set data(y) ""
+	after cancel $data(afterId2)
+	return ""
+    }
+
+    if {[string length $data(x)] == 0 || [string length $data(y)] == 0} {
+	set data(x) $x
+	set data(y) $y
+    }
+    set prevX $data(x)
+    set prevY $data(y)
+    set data(x) $x
+    set data(y) $y
+
+    set w [::$win bodypath]
+    set wX [winfo x $w]
+    set wY [winfo y $w]
+    incr x -$wX						;# relative to the body
+    incr y -$wY						;# relative to the body
+    incr prevX -$wX					;# relative to the body
+    incr prevY -$wY					;# relative to the body
+
+    set minX [expr {[minScrollableX $win] + 5}]		;# relative to the body
+    set minY 5						;# relative to the body
+    set maxX [expr {[winfo width  $w] - 1 - 5}]		;# relative to the body
+    set maxY [expr {[winfo height $w] - 1 - 5}]		;# relative to the body
+
+    if {($y > $maxY && $prevY <= $maxY) ||
+	($y < $minY && $prevY >= $minY) ||
+	($x > $maxX && $prevX <= $maxX) ||
+	($x < $minX && $prevX >= $minX)} {
+	autoScan2 $win 0
+    } elseif {($y <= $maxY && $prevY > $maxY) ||
+	      ($y >= $minY && $prevY < $minY) ||
+	      ($x <= $maxX && $prevX > $maxX) ||
+	      ($x >= $minX && $prevX < $minX)} {
+	after cancel $data(afterId2)
+    }
+
+    return ""
 }
 
 #------------------------------------------------------------------------------
@@ -5420,7 +5498,7 @@ proc tablelist::seeSubCmd {win argList} {
     synchronize $win
     displayItems $win
     set index [rowIndex $win [lindex $argList 0] 0]
-    if {[winfo viewable $win] ||
+    if {[winfo viewable $win] &&
 	[llength [$win.body tag nextrange elidedWin 1.0]] == 0} {
 	return [seeRow $win $index]
     } else {
@@ -5802,6 +5880,19 @@ proc tablelist::sortorderlistSubCmd {win argList} {
 	lappend sortOrderList $data($col-sortOrder)
     }
     return $sortOrderList
+}
+
+#------------------------------------------------------------------------------
+# tablelist::stopautoscrollSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::stopautoscrollSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win stopautoscroll"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    after cancel $data(afterId2)
+    return ""
 }
 
 #------------------------------------------------------------------------------
@@ -6346,10 +6437,15 @@ proc tablelist::yviewSubCmd {win argList} {
 	    #
 	    # Command: $win yview <units>
 	    #
+	    set w $data(body)
 	    set units [format "%d" [lindex $argList 0]]
-	    $data(body) yview [viewableRowOffsetToRowIndex $win $units]
+	    set row [viewableRowOffsetToRowIndex $win $units]
+	    $w yview $row
 	    adjustElidedText $win
 	    redisplayVisibleItems $win
+	    if {$::tk_version >= 8.5} {
+		$w yview $row
+	    }
 	    updateColors $win
 	    adjustSepsWhenIdle $win
 	    updateVScrlbarWhenIdle $win
@@ -6392,6 +6488,7 @@ proc tablelist::yviewSubCmd {win argList} {
 			    [list tablelist::vertScrollByUnits $win]]
 		    }
 		} else {
+		    set w $data(body)
 		    set absNumber [expr {abs($number)}]
 		    for {set n 0} {$n < $absNumber} {incr n} {
 			set topRow [getVertComplTopRow $win]
@@ -6408,12 +6505,15 @@ proc tablelist::yviewSubCmd {win argList} {
 			    set delta [expr {(-1)*$delta}]
 			}
 			set offset [expr {$upperViewableCount + $delta}]
-			$data(body) yview \
-			    [viewableRowOffsetToRowIndex $win $offset]
+			set row [viewableRowOffsetToRowIndex $win $offset]
+			$w yview $row
 		    }
 
 		    adjustElidedText $win
 		    redisplayVisibleItems $win
+		    if {$::tk_version >= 8.5 && $absNumber != 0} {
+			$w yview $row
+		    }
 		    updateColors $win
 		    adjustSepsWhenIdle $win
 		    updateVScrlbarWhenIdle $win
@@ -8251,9 +8351,7 @@ proc tablelist::seeRow {win index} {
     # Bring the given row into the window and restore
     # the horizontal view in the body text widget
     #
-    if {![seeTextIdx $win [expr {$index + 1}].0]} {
-	return ""
-    }
+    if {![seeTextIdx $win [expr {$index + 1}].0]} { return "" }
     $data(body) xview moveto [lindex [$data(hdrTxt) xview] 0]
 
     updateView $win
@@ -8346,9 +8444,7 @@ proc tablelist::seeCell {win row col} {
 		#
 		# Bring the cell's left edge into view
 		#
-		if {![seeTextIdx $win $tabIdx1]} {
-		    return ""
-		}
+		if {![seeTextIdx $win $tabIdx1]} { return "" }
 		$h xview moveto [lindex [$b xview] 0]
 
 		#
@@ -8369,9 +8465,7 @@ proc tablelist::seeCell {win row col} {
 		#
 		# Bring the cell's left edge into view
 		#
-		if {![seeTextIdx $win $tabIdx1]} {
-		    return ""
-		}
+		if {![seeTextIdx $win $tabIdx1]} { return "" }
 		set winWidth [winfo width $h]
 		if {[winfo width $data(hdrTxtFrmLbl)$col] > $winWidth} {
 		    #
@@ -8396,9 +8490,7 @@ proc tablelist::seeCell {win row col} {
 		#
 		# Bring the cell's right edge into view
 		#
-		if {![seeTextIdx $win $nextIdx]} {
-		    return ""
-		}
+		if {![seeTextIdx $win $nextIdx]} { return "" }
 		$h xview moveto [lindex [$b xview] 0]
 
 		#
@@ -8422,9 +8514,7 @@ proc tablelist::seeCell {win row col} {
 	#
 	# Bring the cell's row into view
 	#
-	if {![seeTextIdx $win [expr {$row + 1}].0]} {
-	    return ""
-	}
+	if {![seeTextIdx $win [expr {$row + 1}].0]} { return "" }
 
 	set scrlWindowWidth [getScrlWindowWidth $win]
 
@@ -8582,10 +8672,7 @@ proc tablelist::rowSelection {win opt first last} {
 #------------------------------------------------------------------------------
 proc tablelist::horizMoveTo win {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(horizMoveToId)]} {
-	after cancel $data(horizMoveToId)
-	unset data(horizMoveToId)
-    }
+    unset data(horizMoveToId)
 
     foreach w [list $data(hdrTxt) $data(body)] {
 	$w xview moveto $data(horizFraction)
@@ -8605,10 +8692,7 @@ proc tablelist::horizMoveTo win {
 #------------------------------------------------------------------------------
 proc tablelist::horizScrollByUnits win {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(horizScrollId)]} {
-	after cancel $data(horizScrollId)
-	unset data(horizScrollId)
-    }
+    unset data(horizScrollId)
 
     foreach w [list $data(hdrTxt) $data(body)] {
 	$w xview scroll $data(horizUnits) units
@@ -8628,16 +8712,14 @@ proc tablelist::horizScrollByUnits win {
 #------------------------------------------------------------------------------
 proc tablelist::vertMoveTo win {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(vertMoveToId)]} {
-	after cancel $data(vertMoveToId)
-	unset data(vertMoveToId)
-    }
+    unset data(vertMoveToId)
 
     set totalViewableCount [getViewableRowCount $win 0 $data(lastRow)]
     set offset [expr {int($data(vertFraction)*$totalViewableCount + 0.5)}]
-    $data(body) yview [viewableRowOffsetToRowIndex $win $offset]
+    set row [viewableRowOffsetToRowIndex $win $offset]
+    $data(body) yview $row
 
-    updateView $win
+    updateView $win $row
     updateIdletasksDelayed 
 }
 
@@ -8649,17 +8731,15 @@ proc tablelist::vertMoveTo win {
 #------------------------------------------------------------------------------
 proc tablelist::vertScrollByUnits win {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(vertScrollId)]} {
-	after cancel $data(vertScrollId)
-	unset data(vertScrollId)
-    }
+    unset data(vertScrollId)
 
     set topRow [getVertComplTopRow $win]
     set upperViewableCount [getViewableRowCount $win 0 [expr {$topRow - 1}]]
     set offset [expr {$upperViewableCount + $data(vertUnits)}]
-    $data(body) yview [viewableRowOffsetToRowIndex $win $offset]
+    set row [viewableRowOffsetToRowIndex $win $offset]
+    $data(body) yview $row
 
-    updateView $win
+    updateView $win $row
     updateIdletasksDelayed 
 }
 
@@ -8672,10 +8752,7 @@ proc tablelist::vertScrollByUnits win {
 #------------------------------------------------------------------------------
 proc tablelist::dragTo win {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(dragToId)]} {
-	after cancel $data(dragToId)
-	unset data(dragToId)
-    }
+    unset data(dragToId)
 
     set w $data(body)
     if {$data(-titlecolumns) == 0} {
@@ -8727,12 +8804,16 @@ proc tablelist::dragTo win {
 	}
     }
 
-    $w yview [viewableRowOffsetToRowIndex $win $newTopRowOffset]
+    set row [viewableRowOffsetToRowIndex $win $newTopRowOffset]
+    $w yview $row
 
     hdr_adjustElidedText $win
     hdr_updateColors $win
     adjustElidedText $win
     redisplayVisibleItems $win
+    if {$::tk_version >= 8.5} {
+	$w yview $row
+    }
     updateColors $win
     adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
@@ -8749,16 +8830,18 @@ proc tablelist::seeTextIdx {win textIdx} {
     set w $data(body)
     $w see $textIdx
 
-    if {[llength [$w tag nextrange elidedWin 1.0]] != 0} {
-	set fromTextIdx "[$w index @0,0] linestart"
-	set toTextIdx "[$w index @0,$data(btmY)] lineend"
+    set fromTextIdx "[$w index @0,0] linestart"
+    set toTextIdx "[$w index @0,$data(btmY)] lineend"
+    if {[llength [$w tag nextrange elidedWin $fromTextIdx $toTextIdx]] != 0} {
 	$w tag remove elidedWin $fromTextIdx $toTextIdx
-	update idletasks
-	if {[destroyed $win]} {
-	    return 0
-	}
 
-	$w see $textIdx
+	if {$::tk_version >= 8.5} {
+	    update idletasks
+	    if {[destroyed $win]} {
+		return 0
+	    }
+	    $w see $textIdx
+	}
     }
 
     $w yview [getVertComplTopRow $win]
@@ -8784,10 +8867,7 @@ proc tablelist::updateIdletasksDelayed {} {
 #------------------------------------------------------------------------------
 proc tablelist::updateIdletasks {} {
     variable idletasksId
-    if {[info exists idletasksId]} {
-	after cancel $idletasksId
-	unset idletasksId
-    }
+    unset idletasksId
 
     update idletasks
 }

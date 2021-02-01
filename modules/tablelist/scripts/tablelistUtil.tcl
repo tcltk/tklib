@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -639,10 +639,7 @@ proc tablelist::hdr_keyToRow {win key} {
 #------------------------------------------------------------------------------
 proc tablelist::updateKeyToRowMap win {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(mapId)]} {
-	after cancel $data(mapId)
-	unset data(mapId)
-    }
+    unset data(mapId)
 
     set row 0
     foreach key $data(keyList) {
@@ -3549,8 +3546,7 @@ proc tablelist::stretchColumnsWhenIdle win {
 #------------------------------------------------------------------------------
 proc tablelist::stretchColumns {win colOfFixedDelta} {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(stretchId)]} {
-	after cancel $data(stretchId)
+    if {$colOfFixedDelta < 0} {
 	unset data(stretchId)
     }
 
@@ -3753,6 +3749,10 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	set toTextIdx   "$btmTextIdx lineend"
 
 	$w tag remove select $fromTextIdx $toTextIdx
+	$w tag remove itembg $fromTextIdx $toTextIdx
+	set hasItemBg   [expr {[string length $data(-itembackground)] != 0}]
+	set hasStripeBg [expr {[string length $data(-stripebackground)] != 0}]
+	set hasStripeFg [expr {[string length $data(-stripeforeground)] != 0}]
 
 	foreach tag [$w tag names] {
 	    if {[string match "*-*ground-*" $tag]} {
@@ -3785,6 +3785,10 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	    if {[info exists data($key-elide)] ||
 		[info exists data($key-hide)]} {
 		continue
+	    }
+
+	    if {$hasItemBg} {
+		$w tag add itembg $line.0 $line.end
 	    }
 
 	    #
@@ -3873,6 +3877,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 
 	set tagNames [$w tag names $textIdx]
 	set selected [expr {[lsearch -exact $tagNames select] >= 0}]
+	set inStripe [expr {[lsearch -exact $tagNames stripe] >= 0}]
 
 	#
 	# If the widget is an indentation label then conditionally remove the
@@ -3971,10 +3976,10 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		set bg $data($key,$col-background)
 	    } elseif {[info exists data($key-background)]} {
 		set bg $data($key-background)
-	    } elseif {[lsearch -exact $tagNames stripe] >= 0} {
+	    } elseif {$inStripe} {
 		if {[info exists data($col-stripebackground)]} {
 		    set bg $data($col-stripebackground)
-		} elseif {[string length $data(-stripebackground)] != 0} {
+		} elseif {$hasStripeBg} {
 		    set bg $data(-stripebackground)
 		} else {
 		    set bg $data(-background)
@@ -3982,6 +3987,8 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	    } else {
 		if {[info exists data($col-background)]} {
 		    set bg $data($col-background)
+		} elseif {$hasItemBg} {
+		    set bg $data(-itembackground)
 		} else {
 		    set bg $data(-background)
 		}
@@ -3992,10 +3999,10 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		    set fg $data($key,$col-foreground)
 		} elseif {[info exists data($key-foreground)]} {
 		    set fg $data($key-foreground)
-		} elseif {[lsearch -exact $tagNames stripe] >= 0} {
+		} elseif {$inStripe} {
 		    if {[info exists data($col-stripeforeground)]} {
 			set fg $data($col-stripeforeground)
-		    } elseif {[string length $data(-stripeforeground)] != 0} {
+		    } elseif {$hasStripeFg} {
 			set fg $data(-stripeforeground)
 		    } else {
 			set fg $data(-foreground)
@@ -4064,6 +4071,8 @@ proc tablelist::hdr_updateColors win {
     }
 
     set w $data(hdrTxt)
+    $w tag remove itembg 2.0 end
+    set hasItemBg [expr {[string length $data(-itembackground)] != 0}]
 
     foreach tag [$w tag names] {
 	if {[string match "*-*ground-*" $tag]} {
@@ -4089,6 +4098,10 @@ proc tablelist::hdr_updateColors win {
     for {set row 0; set line 2} {$row < $data(hdr_itemCount)} \
 	{incr row; incr line} {
 	set key [lindex $data(hdr_keyList) $row]
+
+	if {$hasItemBg} {
+	    $w tag add itembg $line.0 $line.end
+	}
 
 	findTabs $win $w $line $leftCol $leftCol tabIdx1 tabIdx2
 	for {set col $leftCol} {$col <= $rightCol} {incr col} {
@@ -4151,6 +4164,8 @@ proc tablelist::hdr_updateColors win {
 	    } else {
 		if {[info exists data($col-background)]} {
 		    set bg $data($col-background)
+		} elseif {$hasItemBg} {
+		    set bg $data(-itembackground)
 		} else {
 		    set bg $data(-background)
 		}
@@ -4207,10 +4222,7 @@ proc tablelist::updateScrlColOffsetWhenIdle win {
 #------------------------------------------------------------------------------
 proc tablelist::updateScrlColOffset win {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(offsetId)]} {
-	after cancel $data(offsetId)
-	unset data(offsetId)
-    }
+    unset data(offsetId)
 
     set maxScrlColOffset [getMaxScrlColOffset $win]
     if {$data(scrlColOffset) > $maxScrlColOffset} {
@@ -4314,10 +4326,7 @@ proc tablelist::updateVScrlbar win {
 #------------------------------------------------------------------------------
 proc tablelist::forceRedraw win {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(redrawId)]} {
-	after cancel $data(redrawId)
-	unset data(redrawId)
-    }
+    unset data(redrawId)
 
     set w $data(body)
     set fromTextIdx "[$w index @0,0] linestart"
@@ -5477,10 +5486,7 @@ proc tablelist::showLineNumbersWhenIdle win {
 #------------------------------------------------------------------------------
 proc tablelist::showLineNumbers win {
     upvar ::tablelist::ns${win}::data data
-    if {[info exists data(lineNumsId)]} {
-	after cancel $data(lineNumsId)
-	unset data(lineNumsId)
-    }
+    unset data(lineNumsId)
 
     #
     # Update the item list
@@ -5544,7 +5550,7 @@ proc tablelist::updateViewWhenIdle {win {reschedule 0}} {
 #
 # Updates the visible part of the body text widget of the tablelist widget win.
 #------------------------------------------------------------------------------
-proc tablelist::updateView win {
+proc tablelist::updateView {win {row -1}} {
     upvar ::tablelist::ns${win}::data data
     if {[info exists data(viewId)]} {
 	after cancel $data(viewId)
@@ -5557,6 +5563,9 @@ proc tablelist::updateView win {
 
     adjustElidedText $win
     redisplayVisibleItems $win
+    if {$::tk_version >= 8.5 && $row >= 0} {
+	$data(body) yview $row
+    }
     updateColors $win
     adjustSeps $win
     updateVScrlbar $win

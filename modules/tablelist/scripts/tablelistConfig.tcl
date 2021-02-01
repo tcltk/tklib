@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -30,6 +30,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-customdragsource)	0
     lappend configSpecs(-displayondemand)	1
     lappend configSpecs(-editendcommand)	{}
+    lappend configSpecs(-editendonfocusout)	0
     lappend configSpecs(-editselectedonly)	0
     lappend configSpecs(-editstartcommand)	{}
     lappend configSpecs(-expandcommand)		{}
@@ -37,6 +38,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-fullseparators)	0
     lappend configSpecs(-incrarrowtype)		up
     lappend configSpecs(-instanttoggle)		0
+    lappend configSpecs(-itembackground)	{}
     lappend configSpecs(-labelcommand)		{}
     lappend configSpecs(-labelcommand2)		{}
     lappend configSpecs(-labelrelief)		raised
@@ -693,6 +695,7 @@ proc tablelist::doConfig {win opt val} {
 		-autoscan -
 		-customdragsource -
 		-displayondemand -
+		-editendonfocusout -
 		-forceeditendcommand -
 		-instanttoggle -
 		-movablecolumns -
@@ -1120,6 +1123,18 @@ proc tablelist::doConfig {win opt val} {
 		    $data(colGap) configure -background $val
 		    set data($opt) [$data(rowGap) cget -background]
 		}
+		-itembackground {
+		    #
+		    # Configure the "itembg" tag in both text widgets and
+		    # save the properly formatted value of val in data($opt)
+		    #
+		    foreach w [list $data(hdrTxt) $data(body)] {
+			$w tag configure itembg -background $val
+		    }
+		    set data($opt) [$w tag cget itembg -background]
+		    hdr_updateColorsWhenIdle $win
+		    updateColorsWhenIdle $win
+		}
 		-tight {
 		    #
 		    # Save the boolean value specified by val
@@ -1366,7 +1381,7 @@ proc tablelist::doColConfig {col win opt val} {
 		foreach w [list $data(hdrTxt) $data(body)] {
 		    set tag col$opt-$val
 		    $w tag configure $tag $opt $val
-		    $w tag lower $tag
+		    $w tag lower $tag stripe
 		}
 
 		#

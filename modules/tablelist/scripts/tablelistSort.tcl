@@ -7,7 +7,7 @@
 #   - Public procedures related to sorting
 #   - Private procedures implementing the sorting
 #
-# Copyright (c) 2000-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #

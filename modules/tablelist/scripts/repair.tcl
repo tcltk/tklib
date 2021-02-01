@@ -10,7 +10,7 @@
 # 8.4a2), which causes excessive memory use when calling "info exists" on
 # non-existent array elements.
 #
-# Copyright (c) 2001-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2001-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 set procDef {

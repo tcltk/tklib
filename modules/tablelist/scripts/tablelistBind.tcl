@@ -10,7 +10,7 @@
 #   - Binding tag TablelistHeader
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -247,6 +247,62 @@ proc tablelist::removeActiveTag win {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::finishEditingOnFocusOut
+#
+# This procedure is invoked when the tablelist widget win loses the keyboard
+# focus and the -editendonfocusout option is true.  It finishes a possibly
+# active cell editing.
+#------------------------------------------------------------------------------
+proc tablelist::finishEditingOnFocusOut win {
+    upvar ::tablelist::ns${win}::data data
+    if {![winfo exists $data(bodyFrmEd)]} {
+	return ""
+    }
+
+    #
+    # Do nothing if the focus was set to the
+    # tablelist's body by keyboard navigation
+    #
+    set focusWin [focus -displayof $win]
+    if {[string compare $focusWin $data(body)] == 0} {
+	return ""
+    }
+
+    set w $data(bodyFrmEd)
+    set class [winfo class $w]
+    switch $class {
+	TCombobox    { set w2 $w.popdown.f.l }
+	ComboBox     { set w2 $w.shell.listb }
+	Combobox     { set w2 $w.lwchildsite.efchildsite.popup }
+	Dateentry    { set w2 $w.lwchildsite.dfchildsite.popup.calendar }
+	Timeentry    { set w2 $w.lwchildsite.dfchildsite.popup.watch }
+	Menubutton -
+	TMenubutton  { set w2 $w.menu }
+	default      { set w2 "xxx" }
+    }
+    if {[string compare $focusWin $w2] == 0} {
+	return ""
+    }
+
+    if {[string compare $class "ComboBox"] == 0} {
+	#
+	# Update the element just edited but don't destroy the combobox
+	# yet, because it might have pending event handling scripts
+	#
+	if {![doFinishEditing $win 0]} {
+	    return ""
+	}
+
+	#
+	# Destroy the combobox 500 ms later
+	#
+	after 500 [list tablelist::doFinishEditing $win 1]
+    } else {
+	doFinishEditing $win 1
+    }
+}
+
+#------------------------------------------------------------------------------
 # tablelist::cleanup
 #
 # This procedure is invoked when the tablelist widget win is destroyed.  It
@@ -258,14 +314,14 @@ proc tablelist::cleanup win {
     # adjustSeps, makeStripes, showLineNumbers, stretchColumns,
     # (hdr_)updateColors, updateScrlColOffset, updateHScrlbar, updateVScrlbar,
     # updateView, synchronize, displayItems, horizMoveTo, horizScrollByUnits,
-    # vertMoveTo, vertScrollByUnits, dragTo, autoScan, horizAutoScan,
+    # vertMoveTo, vertScrollByUnits, dragTo, horizAutoScan, autoScan2,
     # forceRedraw, reconfigWindows, redisplay, and redisplayCol commands
     #
     upvar ::tablelist::ns${win}::data data
     foreach id {motionId hdr_motionId mapId sepsId stripesId lineNumsId
 		stretchId colorsId hdr_colorsId offsetId hScrlbarId vScrlbarId
 		viewId syncId dispId horizMoveToId horizScrollId vertMoveToId
-		vertScrollId dragToId afterId redrawId reconfigId} {
+		vertScrollId dragToId afterId afterId2 redrawId reconfigId} {
 	if {[info exists data($id)]} {
 	    after cancel $data($id)
 	}
@@ -574,10 +630,7 @@ proc tablelist::updateConfigSpecs win {
 #------------------------------------------------------------------------------
 proc tablelist::handleAppearanceEvent {} {
     variable appearanceId
-    if {[info exists appearanceId] } {
-	after cancel $appearanceId
-	unset appearanceId
-    }
+    unset appearanceId
 
     variable currentTheme
     if {[string compare $currentTheme "aqua"] != 0} {
@@ -1045,35 +1098,53 @@ proc tablelist::defineTablelistBody {} {
     }
 
     variable winSys
-    if {[string compare $winSys "classic"] == 0 ||
-	[string compare $winSys "aqua"] == 0} {
+    variable uniformWheelSupport
+    if {$uniformWheelSupport} {
+	bind TablelistBody <MouseWheel> {
+	    tablelist::handleWheelEvent <MouseWheel> y %W \
+		%X %Y %D -40.0
+	}
+	bind TablelistBody <Option-MouseWheel> {
+	    tablelist::handleWheelEvent <Option-MouseWheel> y %W \
+		%X %Y %D -12.0
+	}
+	bind TablelistBody <Shift-MouseWheel> {
+	    tablelist::handleWheelEvent <Shift-MouseWheel> x %W \
+		%X %Y %D -40.0
+	}
+	bind TablelistBody <Shift-Option-MouseWheel> {
+	    tablelist::handleWheelEvent <Shift-Option-MouseWheel> x %W \
+		%X %Y %D -12.0
+	}
+    } elseif {[string compare $winSys "classic"] == 0 ||
+	      [string compare $winSys "aqua"] == 0} {
 	catch {
 	    bind TablelistBody <MouseWheel> {
 		tablelist::handleWheelEvent <MouseWheel> y %W \
-		    %X %Y %D [expr {-(%D)}]
+		    %X %Y %D -1.0
 	    }
 	    bind TablelistBody <Option-MouseWheel> {
 		tablelist::handleWheelEvent <Option-MouseWheel> y %W \
-		    %X %Y %D [expr {-10 * (%D)}]
+		    %X %Y %D -0.1
 	    }
 	    bind TablelistBody <Shift-MouseWheel> {
 		tablelist::handleWheelEvent <Shift-MouseWheel> x %W \
-		    %X %Y %D [expr {-(%D)}]
+		    %X %Y %D -1.0
 	    }
 	    bind TablelistBody <Shift-Option-MouseWheel> {
 		tablelist::handleWheelEvent <Shift-Option-MouseWheel> x %W \
-		    %X %Y %D [expr {-10 * (%D)}]
+		    %X %Y %D -0.1
 	    }
 	}
     } else {
 	catch {
 	    bind TablelistBody <MouseWheel> {
 		tablelist::handleWheelEvent <MouseWheel> y %W \
-		    %X %Y %D [expr {%D >= 0 ? (-%D) / 30 : (-(%D) + 29) / 30}]
+		    %X %Y %D -30.0
 	    }
 	    bind TablelistBody <Shift-MouseWheel> {
 		tablelist::handleWheelEvent <Shift-MouseWheel> x %W \
-		    %X %Y %D [expr {%D >= 0 ? (-%D) / 30 : (-(%D) + 29) / 30}]
+		    %X %Y %D -30.0
 	    }
 	}
 
@@ -1081,25 +1152,25 @@ proc tablelist::defineTablelistBody {} {
 	    bind TablelistBody <Button-4> {
 		if {!$tk_strictMotif} {
 		    tablelist::handleWheelEvent <Button-4> y %W \
-			%X %Y -5 -5
+			%X %Y -5 1.0
 		}
 	    }
 	    bind TablelistBody <Button-5> {
 		if {!$tk_strictMotif} {
 		    tablelist::handleWheelEvent <Button-5> y %W \
-			%X %Y  5  5
+			%X %Y  5 1.0
 		}
 	    }
 	    bind TablelistBody <Shift-Button-4> {
 		if {!$tk_strictMotif} {
 		    tablelist::handleWheelEvent <Shift-Button-4> x %W \
-			%X %Y -5 -5
+			%X %Y -5 1.0
 		}
 	    }
 	    bind TablelistBody <Shift-Button-5> {
 		if {!$tk_strictMotif} {
 		    tablelist::handleWheelEvent <Shift-Button-5> x %W \
-			%X %Y  5  5
+			%X %Y  5 1.0
 		}
 	    }
 
@@ -1108,18 +1179,21 @@ proc tablelist::defineTablelistBody {} {
 		bind TablelistBody <Button-6> {
 		    if {!$tk_strictMotif} {
 			tablelist::handleWheelEvent <Button-6> x %W \
-			    %X %Y -5 -5
+			    %X %Y -5 1.0
 		    }
 		}
 		bind TablelistBody <Button-7> {
 		    if {!$tk_strictMotif} {
 			tablelist::handleWheelEvent <Button-7> x %W \
-			    %X %Y  5  5
+			    %X %Y  5 1.0
 		    }
 		}
 	    }
 	}
+    }
 
+    if {[string compare $winSys "classic"] != 0 &&
+	[string compare $winSys "aqua"] != 0} {
 	foreach event {<Control-Key-a> <Control-Lock-Key-A>} {
 	    bind TablelistBody $event {
 		tablelist::selectAll [tablelist::getTablelistPath %W]
@@ -1716,11 +1790,11 @@ proc tablelist::condAutoScan win {
     set wY [winfo y $w]
     set wWidth  [winfo width  $w]
     set wHeight [winfo height $w]
-    set x [expr {$priv(x) - $wX}]
-    set y [expr {$priv(y) - $wY}]
-    set prevX [expr {$priv(prevX) - $wX}]
-    set prevY [expr {$priv(prevY) - $wY}]
-    set minX [minScrollableX $win]
+    set x [expr {$priv(x) - $wX}]			;# relative to the body
+    set y [expr {$priv(y) - $wY}]			;# relative to the body
+    set prevX [expr {$priv(prevX) - $wX}]		;# relative to the body
+    set prevY [expr {$priv(prevY) - $wY}]		;# relative to the body
+    set minX [minScrollableX $win]			;# relative to the body
 
     if {($y >= $wHeight && $prevY < $wHeight) ||
 	($y < 0 && $prevY >= 0) ||
@@ -1743,27 +1817,22 @@ proc tablelist::condAutoScan win {
 #
 # This procedure is invoked when the mouse leaves the scrollable part of a
 # tablelist widget's body text child while button 1 is down.  It scrolls the
-# child up, down, left, or right, depending on where the mouse left the
-# scrollable part of the tablelist's body, and reschedules itself as an "after"
-# command so that the child continues to scroll until the mouse moves back into
-# the window or the mouse button is released.
+# child up, down, left, or right, depending on where the mouse left its
+# scrollable part, and reschedules itself as an "after" command so that the
+# child continues to scroll until the mouse moves back into the scrollable area
+# or the mouse button is released.
 #------------------------------------------------------------------------------
 proc tablelist::autoScan win {
-    if {[destroyed $win] || [isDragSrc $win] ||
+    if {[destroyed $win] || [isDragSrc $win] || ![::$win cget -autoscan] ||
 	[string length [::$win editwinpath]] != 0} {
-	return ""
-    }
-
-    upvar ::tablelist::ns${win}::data data
-    if {!$data(-autoscan)} {
 	return ""
     }
 
     variable priv
     set w [::$win bodypath]
-    set x [expr {$priv(x) - [winfo x $w]}]
-    set y [expr {$priv(y) - [winfo y $w]}]
-    set minX [minScrollableX $win]
+    set x [expr {$priv(x) - [winfo x $w]}]		;# relative to the body
+    set y [expr {$priv(y) - [winfo y $w]}]		;# relative to the body
+    set minX [minScrollableX $win]			;# relative to the body
 
     if {$y >= [winfo height $w]} {
 	::$win yview scroll 1 units
@@ -1772,7 +1841,7 @@ proc tablelist::autoScan win {
 	::$win yview scroll -1 units
 	set ms 50
     } elseif {$x >= [winfo width $w]} {
-	if {$data(-titlecolumns) == 0} {
+	if {[::$win cget -titlecolumns] == 0} {
 	    ::$win xview scroll 2 units
 	    set ms 50
 	} else {
@@ -1780,7 +1849,7 @@ proc tablelist::autoScan win {
 	    set ms 250
 	}
     } elseif {$x < $minX} {
-	if {$data(-titlecolumns) == 0} {
+	if {[::$win cget -titlecolumns] == 0} {
 	    ::$win xview scroll -2 units
 	    set ms 50
 	} else {
@@ -1792,9 +1861,7 @@ proc tablelist::autoScan win {
     }
 
     motion $win [::$win nearest $priv(y)] [::$win nearestcolumn $priv(x)] 1
-    if {[string length $priv(x)] != 0 && [string length $priv(y)] != 0} {
-	set priv(afterId) [after $ms [list tablelist::autoScan $win]]
-    }
+    set priv(afterId) [after $ms [list tablelist::autoScan $win]]
 }
 
 #------------------------------------------------------------------------------
@@ -1804,8 +1871,7 @@ proc tablelist::autoScan win {
 # tablelist widget win.
 #------------------------------------------------------------------------------
 proc tablelist::minScrollableX win {
-    upvar ::tablelist::ns${win}::data data
-    if {$data(-titlecolumns) == 0} {
+    if {[::$win cget -titlecolumns] == 0} {
 	return 0
     } else {
 	set sep [::$win separatorpath]
@@ -1815,6 +1881,90 @@ proc tablelist::minScrollableX win {
 	    return 0
 	}
     }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::autoScan2
+#
+# This procedure is invoked from within the autoscrolltarget subcommand when
+# the mouse leaves the area obtained by trimming the scrollable part of a
+# tablelist widget's body text child on each side by 5 px.  It scrolls the
+# child up, down, left, or right, depending on where the mouse left that area,
+# and reschedules itself as an "after" command so that the child continues to
+# scroll until the mouse moves back into that area or no more scrolling in that
+# direction is possible.
+#------------------------------------------------------------------------------
+proc tablelist::autoScan2 {win seqNum} {
+    if {[destroyed $win]} {
+	return ""
+    }
+
+    if {$seqNum < 10} {
+	set units 1
+    } elseif {$seqNum < 20} {
+	set units 2
+    } elseif {$seqNum < 30} {
+	set units 3
+    } elseif {$seqNum < 40} {
+	set units 4
+    } else {
+	set units 5
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    set w [::$win bodypath]
+    set x [expr {$data(x) - [winfo x $w]}]		;# relative to the body
+    set y [expr {$data(y) - [winfo y $w]}]		;# relative to the body
+
+    set minX [expr {[minScrollableX $win] + 5}]		;# relative to the body
+    set minY 5						;# relative to the body
+    set maxX [expr {[winfo width  $w] - 1 - 5}]		;# relative to the body
+    set maxY [expr {[winfo height $w] - 1 - 5}]		;# relative to the body
+
+    if {$y > $maxY} {
+	foreach {first last} [::$win yview] {}
+	if {$last == 1} {
+	    return ""
+	} else {
+	    ::$win yview scroll $units units
+	    set ms 100
+	}
+    } elseif {$y < $minY} {
+	foreach {first last} [::$win yview] {}
+	if {$first == 0} {
+	    return ""
+	} else {
+	    ::$win yview scroll -$units units
+	    set ms 100
+	}
+    } elseif {$x > $maxX} {
+	foreach {first last} [::$win xview] {}
+	if {$last == 1} {
+	    return ""
+	} elseif {[::$win cget -titlecolumns] == 0} {
+	    ::$win xview scroll [expr {2 * $units}] units
+	    set ms 100
+	} else {
+	    ::$win xview scroll $units units
+	    set ms 500
+	}
+    } elseif {$x < $minX} {
+	foreach {first last} [::$win xview] {}
+	if {$first == 0} {
+	    return ""
+	} elseif {[::$win cget -titlecolumns] == 0} {
+	    ::$win xview scroll -[expr {2 * $units}] units
+	    set ms 100
+	} else {
+	    ::$win xview scroll -$units units
+	    set ms 500
+	}
+    } else {
+	return ""
+    }
+
+    incr seqNum
+    set data(afterId2) [after $ms [list tablelist::autoScan2 $win $seqNum]]
 }
 
 #------------------------------------------------------------------------------
@@ -3127,12 +3277,12 @@ proc tablelist::genTablelistSelectEvent win {
 # Handles a mouse wheel event with the given root coordinates and delta on the
 # widget W.
 #------------------------------------------------------------------------------
-proc tablelist::handleWheelEvent {event axis W X Y delta number} {
+proc tablelist::handleWheelEvent {event axis W X Y delta divisor} {
     set win [getTablelistPath $W]
     set w [::$win cget -${axis}mousewheelwindow]
     if {[winfo exists $w]} {
 	if {[mwutil::hasFocus $win]} {
-	    ::$win ${axis}view scroll $number units
+	    mwutil::scrollByUnits $win $axis $delta $divisor
 	} elseif {[string match "<*MouseWheel>" $event]} {
 	    mwutil::genMouseWheelEvent $w $event $X $Y $delta
 	} else {
@@ -3140,7 +3290,7 @@ proc tablelist::handleWheelEvent {event axis W X Y delta number} {
 	}
 	return -code break
     } else {
-	::$win ${axis}view scroll $number units
+	mwutil::scrollByUnits $win $axis $delta $divisor
     }
 }
 

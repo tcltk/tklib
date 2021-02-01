@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -450,9 +450,33 @@ proc tablelist::addIncrDateTimeWidget {widgetType args} {
     switch $widgetType {
 	dateentry {
 	    set editWin($name-creationCmd) "createIncrDateentry %W"
+
+	    #
+	    # Patch the iwidgets::Dateentry::_releaseGrab method
+	    #
+	    itcl::body iwidgets::Dateentry::_releaseGrab {} {
+		focus $itk_component(date)	;# added; the rest is unchanged
+		grab release $itk_component(popup)
+		$itk_component(iconbutton) configure -relief raised
+		destroy $itk_component(popup)
+		bind $itk_component(iconbutton) <Button-1> \
+		     [itcl::code $this _popup]
+	    }
 	}
 	timeentry {
 	    set editWin($name-creationCmd) "createIncrTimeentry %W"
+
+	    #
+	    # Patch the iwidgets::Timeentry::_releaseGrab method
+	    #
+	    itcl::body iwidgets::Timeentry::_releaseGrab {} {
+		focus $itk_component(time)	;# added; the rest is unchanged
+		grab release $itk_component(popup)
+		$itk_component(iconbutton) configure -relief raised
+		destroy $itk_component(popup) 
+		bind $itk_component(iconbutton) <Button-1> \
+		     [itcl::code $this _popup]
+	    }
 	}
     }
     if {$useClicks} {
@@ -1394,6 +1418,7 @@ proc tablelist::createTileMenubutton {w args} {
 	    tablelist::invokeMotionHandler [tablelist::getTablelistPath %W]
 	}
     }
+    bind $menu <Unmap> {+ focus [tablelist::getTablelistPath %W].body }
     if {[string compare $winSys "x11"] == 0} {
 	$menu configure -background $data(-background) \
 			-foreground $data(-foreground) \
@@ -1416,7 +1441,7 @@ proc tablelist::createBWidgetSpinBox {w args} {
     eval [list SpinBox $w -editable 1 -width 0] $args
 
     variable scalingpct
-    scaleutil::scaleBWidgetSpinBox $w $scalingpct
+    scaleutilmisc::scaleBWidgetSpinBox $w $scalingpct
 }
 
 #------------------------------------------------------------------------------
@@ -1429,7 +1454,7 @@ proc tablelist::createBWidgetComboBox {w args} {
     eval [list ComboBox $w -editable 1 -width 0] $args
 
     variable scalingpct
-    scaleutil::scaleBWidgetComboBox $w $scalingpct
+    scaleutilmisc::scaleBWidgetComboBox $w $scalingpct
 
     foreach event {<Map> <Unmap>} {
 	bind $w.shell.listb $event {
@@ -1448,7 +1473,7 @@ proc tablelist::createIncrDateentry {w args} {
     eval [list iwidgets::dateentry $w] $args
 
     variable scalingpct
-    scaleutil::scaleIncrDateentry $w $scalingpct
+    scaleutilmisc::scaleIncrDateentry $w $scalingpct
 }
 
 #------------------------------------------------------------------------------
@@ -1461,7 +1486,7 @@ proc tablelist::createIncrTimeentry {w args} {
     eval [list iwidgets::timeentry $w] $args
 
     variable scalingpct
-    scaleutil::scaleIncrTimeentry $w $scalingpct
+    scaleutilmisc::scaleIncrTimeentry $w $scalingpct
 }
 
 #------------------------------------------------------------------------------
@@ -1475,7 +1500,7 @@ proc tablelist::createIncrCombobox {w args} {
 	  -width 0] $args
 
     variable scalingpct
-    scaleutil::scaleIncrCombobox $w $scalingpct
+    scaleutilmisc::scaleIncrCombobox $w $scalingpct
 
     foreach event {<Map> <Unmap>} {
 	bind [$w component list] $event {+
@@ -1501,7 +1526,7 @@ proc tablelist::createOakleyCombobox {w args} {
 	  -width 0] $args
 
     variable scalingpct
-    scaleutil::scaleOakleyComboboxArrow $scalingpct
+    scaleutilmisc::scaleOakleyComboboxArrow $scalingpct
 
     foreach event {<Map> <Unmap>} {
 	bind $w.top.list $event {
@@ -1979,7 +2004,14 @@ proc tablelist::doCancelEditing win {
 # just edited after destroying the edit window if the latter's content was not
 # rejected.  Returns 1 on normal termination and 0 otherwise.
 #------------------------------------------------------------------------------
-proc tablelist::doFinishEditing win {
+proc tablelist::doFinishEditing {win {destroy 1}} {
+    #
+    # This might be an "after 500" callback; check whether the window exists
+    #
+    if {[destroyed $win]} {
+	return 0
+    }
+
     upvar ::tablelist::ns${win}::data data
     if {[set row $data(editRow)] < 0} {
 	return 1
@@ -2030,28 +2062,36 @@ proc tablelist::doFinishEditing win {
 	set result 0
     } else {
 	if {[winfo exists $data(bodyFrm)]} {
-	    destroy $data(bodyFrm)
-	    set key [lindex $item end]
-	    foreach opt {-window -image} {
-		if {[info exists data($key,$col$opt)]} {
-		    doCellConfig $row $col $win $opt $data($key,$col$opt)
-		    break
+	    if {$destroy} {
+		destroy $data(bodyFrm)
+		set key [lindex $item end]
+		foreach opt {-window -image} {
+		    if {[info exists data($key,$col$opt)]} {
+			doCellConfig $row $col $win $opt $data($key,$col$opt)
+			break
+		    }
 		}
 	    }
+
 	    doCellConfig $row $col $win -text $text
 	    set result 1
 	} else {
 	    set result 0
 	}
 
-	focus $data(body)
+	if {$destroy} {
+	    focus $data(body)
+	}
 
 	set userData [list $row $col]
 	genVirtualEvent $win <<TablelistCellUpdated>> $userData
     }
 
-    seeRow $win $row
-    updateViewWhenIdle $win
+    if {$destroy} {
+	seeRow $win $row
+	updateViewWhenIdle $win
+    }
+
     return $result
 }
 
