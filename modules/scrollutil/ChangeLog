@@ -1,3 +1,30 @@
+2021-02-01  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.8; updated the
+	* COPYRIGHT.txt: copyright information.
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl:            Added support for the platform-independent
+	* scripts/utils/mwutil.tcl: handling of mouse wheel events (TIP 474);
+	  added the "autosize" scrollableframe subcommand; changed the default
+	  width and height of the scrollableframe widget to 10c and 7c,
+	  respectively; updated the mwutil package to version 2.18, like in
+	  Tablelist6.12; updated the copyright information.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/*.tcl: Fixed a regression related to font scaling on
+	  X11 if the display's DPI scaling level is > 100 %, introduced in the
+	  previous release; updated the copyright information.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
+	* ../../examples/scrollutil/*.tcl: Using the "autosize" scrollableframe
+	  subcommand; several improvements; updated the copyright information.
+
 2020-12-09  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/scrollarea.tcl: Trace procedure slightly improved.
