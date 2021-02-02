@@ -1,7 +1,15 @@
 2021-02-02 Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* CHANGES.txt:                 Renamed "-editendonmodifclick" to
+	* scripts/tablelistBind.tcl:   "-editendonmodclick".
+	* scripts/tablelistConfig.tcl:
+	* scripts/tablelistWidget.tcl:
+	* doc/tablelistWidget.html:
+
+2021-02-02 Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* CHANGES.txt:                 Added the "-editendonmodifclick"
-	* scripts/tablelistBind.tcl:   configuration options; improvements
+	* scripts/tablelistBind.tcl:   configuration option; improvements
 	* scripts/tablelistConfig.tcl: related to the termination of
 	* scripts/tablelistEdit.tcl:   interactive cell editing.
 	* scripts/tablelistWidget.tcl:
