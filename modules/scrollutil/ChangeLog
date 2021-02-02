@@ -1,3 +1,8 @@
+2021-02-02  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/ScrollableFrmDemo2.png:             Updated for latest Tablelist
+	* ../../examples/scrollutil/*Content.tcl: changes.
+
 2021-02-01  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* ../../examples/scrollutil/*.tcl: Demo scripts using scrollabe widget
