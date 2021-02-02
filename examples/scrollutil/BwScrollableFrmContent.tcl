@@ -409,6 +409,7 @@ proc configTablelist {} {
 	    -customdragsource -
 	    -displayondemand -
 	    -editendonfocusout -
+	    -editendonmodclick -
 	    -editselectedonly -
 	    -exportselection -
 	    -forceeditendcommand -
