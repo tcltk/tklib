@@ -7,7 +7,7 @@ What is new in Tablelist 6.12?
 2.  Added the "-editendonfocusout" configuration option (thanks to
     Alexandru Dadalau and Jakob Gager for their proposals).
 
-3.  Added the "-editendonmodifclick" configuration option (thanks to
+3.  Added the "-editendonmodclick" configuration option (thanks to
     Ulrich Seidl for his proposal and discussions on this subject).
 
 4.  Added the "-itembackground" configuration option (thanks to Harald

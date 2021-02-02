@@ -1664,13 +1664,13 @@ proc tablelist::condEditContainingCell {win x y} {
 # This procedure is typically invoked on shift-button-1 and control-button-1
 # presses in the body of a tablelist widget or in one of its separators.  It
 # finishes a possibly active cell editing if the mouse click occurred outside
-# the cell being edited.
+# the cell being edited and the value of the -editendonmodclick option is true.
 #------------------------------------------------------------------------------
 proc tablelist::condFinishEditing {win x y} {
     upvar ::tablelist::ns${win}::data data
     if {([containingRow $win $y] != $data(editRow) ||
 	 [containingCol $win $x] != $data(editCol)) &&
-	$data(-editendonmodifclick)} {
+	$data(-editendonmodclick)} {
 	doFinishEditing $win
     }
 }
