@@ -1,35 +1,39 @@
 What is new in Tablelist 6.12?
 ------------------------------
 
-1. Added support for the platform-independent handling of mouse wheel
-   events (TIP 474), introduced in Tk 8.7a4 (as of January 9, 2021).
+1.  Added support for the platform-independent handling of mouse wheel
+    events (TIP 474), introduced in Tk 8.7a4 (as of January 9, 2021).
 
-2. Added the "-editendonfocusout" configuration option (thanks to
-   Alexandru Dadalau and Jakob Gager for their proposals).
+2.  Added the "-editendonfocusout" configuration option (thanks to
+    Alexandru Dadalau and Jakob Gager for their proposals).
 
-3. Added the "-itembackground" configuration option (thanks to Harald
-   Oehlmann for his proposal).
+3.  Added the "-editendonmodifclick" configuration option (thanks to
+    Ulrich Seidl for his proposal and discussions on this subject).
 
-4. Added the "autoscrolltarget" and "stopautoscroll" subcommands, which
-   enable the user to scroll the target tablelist before dropping a
-   dragged object into it (thanks to Nicolas Bats for his proposal and
-   discussions on this subject).
+4.  Added the "-itembackground" configuration option (thanks to Harald
+    Oehlmann for his proposal).
 
-5. Improved the font scaling on X11 (especially for Xfce and MATE) in
-   the calendar component of an iwidgets::dateentry widget used for
-   interactive cell editing.
+5.  Added the "autoscrolltarget" and "stopautoscroll" subcommands, which
+    enable the user to scroll the target tablelist before dropping a
+    dragged object into it (thanks to Nicolas Bats for his proposal and
+    discussions on this subject).
 
-6. Extended the description of the scaling support on Xfce (including
-   version 4.16, which adds fractional scaling), MATE, and Cinnamon.
+6.  Further improvements related to the termination of interactive cell
+    editing (thanks to Ulrich Seidl for discussions on this subject).
 
-7. Fixed a regression related to font scaling on X11 if the display's
-   DPI scaling level is greater than 100 %, introduced in the previous
-   release.
+7.  Improved the font scaling on X11 (especially for Xfce and MATE) in
+    the calendar component of an iwidgets::dateentry widget used for
+    interactive cell editing.
 
-8. Fixed a few long-standing issues related to the "yview" subcommand
-   (thanks to Ulrich Seidl for his bug report).
+8.  Extended the description of the scaling support on Xfce (including
+    version 4.16, which adds fractional scaling), MATE, and Cinnamon.
 
-9. Several further improvements in the code and documentation.
+9.  Fixed a regression related to font scaling on X11 if the display's
+    DPI scaling level is greater than 100 %, introduced in the previous
+    release.
+
+10. Fixed a few long-standing issues related to the "yview" subcommand
+    (thanks to Ulrich Seidl for his bug report).
 
 What was new in Tablelist 6.11?
 -------------------------------

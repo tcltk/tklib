@@ -1991,7 +1991,6 @@ proc tablelist::doCancelEditing win {
     set userData [list $row $col]
     genVirtualEvent $win <<TablelistCellRestored>> $userData
 
-    seeRow $win $row
     updateViewWhenIdle $win
     return ""
 }
@@ -2081,15 +2080,11 @@ proc tablelist::doFinishEditing {win {destroy 1}} {
 
 	if {$destroy} {
 	    focus $data(body)
+	    updateViewWhenIdle $win
 	}
 
 	set userData [list $row $col]
 	genVirtualEvent $win <<TablelistCellUpdated>> $userData
-    }
-
-    if {$destroy} {
-	seeRow $win $row
-	updateViewWhenIdle $win
     }
 
     return $result

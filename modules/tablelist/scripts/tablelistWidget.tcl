@@ -162,6 +162,7 @@ namespace eval tablelist {
 	-displayondemand	 {displayOnDemand	  DisplayOnDemand     w}
 	-editendcommand		 {editEndCommand	  EditEndCommand      w}
 	-editendonfocusout	 {editEndOnFocusOut	  EditEndOnFocusOut   w}
+	-editendonmodifclick	 {editEndOnModifClick	  EditEndOnModifClick w}
 	-editselectedonly	 {editSelectedOnly	  EditSelectedOnly    w}
 	-editstartcommand	 {editStartCommand	  EditStartCommand    w}
 	-expandcommand		 {expandCommand		  ExpandCommand       w}

@@ -31,6 +31,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-displayondemand)	1
     lappend configSpecs(-editendcommand)	{}
     lappend configSpecs(-editendonfocusout)	0
+    lappend configSpecs(-editendonmodifclick)	1
     lappend configSpecs(-editselectedonly)	0
     lappend configSpecs(-editstartcommand)	{}
     lappend configSpecs(-expandcommand)		{}
@@ -696,6 +697,7 @@ proc tablelist::doConfig {win opt val} {
 		-customdragsource -
 		-displayondemand -
 		-editendonfocusout -
+		-editendonmodifclick -
 		-forceeditendcommand -
 		-instanttoggle -
 		-movablecolumns -

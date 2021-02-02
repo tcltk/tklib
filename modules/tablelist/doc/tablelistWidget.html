@@ -136,6 +136,9 @@
     <dd><code><b><a href="#editendonfocusout">-editendonfocusout</a></b>
     <i>boolean</i></code></dd>
 
+    <dd><code><b><a href="#editendonmodifclick">-editendonmodifclick</a></b>
+    <i>boolean</i></code></dd>
+
     <dd><code><b><a href="#editselectedonly">-editselectedonly</a></b>
     <i>boolean</i></code></dd>
 
@@ -2384,6 +2387,39 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
         trigger an invocation of the <code><b><a href=
         "#finishediting">finishediting</a></b></code> subcommand.&nbsp; The
         default is <code>0</code>.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="editendonmodifclick">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-editendonmodifclick</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;editEndOnModifClick</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;EditEndOnModifClick</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a boolean value that controls whether with respect to the
+        termination of the interactive cell editing the
+        <code>&lt;Shift-Button-1&gt;</code> and
+        <code>&lt;Control-Button-1&gt;</code> events (which are commonly used
+        for extending and toggling the selection, respectively) are handled
+        just like <code>&lt;Button-1&gt;</code>.&nbsp; The default is
+        <code>1</code>, meaning that the interactive cell editing will be
+        finished automatically by clicking with the left mouse button anywhere
+        in the tablelist's body, outside the cell just being edited, regardless
+        of whether the <code>Shift</code> or <code>Control</code> key is down
+        or not.</p>
       </blockquote>
     </dd>
 

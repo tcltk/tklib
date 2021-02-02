@@ -1668,8 +1668,9 @@ proc tablelist::condEditContainingCell {win x y} {
 #------------------------------------------------------------------------------
 proc tablelist::condFinishEditing {win x y} {
     upvar ::tablelist::ns${win}::data data
-    if {[containingRow $win $y] != $data(editRow) ||
-	[containingCol $win $x] != $data(editCol)} {
+    if {([containingRow $win $y] != $data(editRow) ||
+	 [containingCol $win $x] != $data(editCol)) &&
+	$data(-editendonmodifclick)} {
 	doFinishEditing $win
     }
 }
