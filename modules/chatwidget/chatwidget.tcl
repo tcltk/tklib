@@ -17,7 +17,7 @@ package require Tcl 8.5
 package require Tk 8.5
 
 namespace eval chatwidget {
-    variable version 1.1.1
+    variable version 1.1.2
 
     namespace export chatwidget
 
@@ -162,10 +162,16 @@ proc chatwidget::Names {self args} {
         return $state(names_widget)
     }
     if {[llength $args] == 1 && [lindex $args 0] eq "hide"} {
-        return [$pane forget $frame]
+        if {$frame in [$pane panes]} {
+            $pane forget $frame
+        }
+        return
     }
     if {[llength $args] == 1 && [lindex $args 0] eq "show"} {
-        return [$pane add $frame]
+        if {$frame ni [$pane panes]} {
+            $pane add $frame
+        }
+        return
     }
     return [uplevel 1 [list $state(names_widget)] $args] 
 }
