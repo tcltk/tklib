@@ -17,7 +17,7 @@ package require Tcl 8.5
 package require Tk 8.5
 
 namespace eval chatwidget {
-    variable version 1.1.0
+    variable version 1.1.1
 
     namespace export chatwidget
 
@@ -266,6 +266,7 @@ proc chatwidget::Name {self cmd args} {
                     return $state(names)
                 }
                 default {
+                    set r {}
                     foreach item $state(names) { lappend r [lindex $item 0] }
                     return $r
                 }
