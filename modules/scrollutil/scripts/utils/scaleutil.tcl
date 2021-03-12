@@ -20,7 +20,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.2
+    variable version	1.3
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -97,7 +97,7 @@ proc scaleutil::scalingPercentage winSys {
 	    #
 	    # Update pct by scanning the file ~/.config/monitors.xml
 	    #
-	    scanMonitorsFile $chan pct
+	    scanMonitorsFile $result $chan pct
 	}
     }
 
@@ -176,14 +176,14 @@ proc scaleutil::scalingPercentage winSys {
 #
 # Updates the scaling percentage by scanning the file ~/.config/monitors.xml.
 #------------------------------------------------------------------------------
-proc scaleutil::scanMonitorsFile {chan pctName} {
+proc scaleutil::scanMonitorsFile {xrandrResult chan pctName} {
     upvar $pctName pct
 
     #
     # Get the list of connected outputs reported by xrandr
     #
     set outputList {}
-    foreach line [split $result "\n"] {
+    foreach line [split $xrandrResult "\n"] {
 	set idx [string first " " $line]
 	set output [string range $line 0 [incr idx -1]]
 	lappend outputList $output
