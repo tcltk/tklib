@@ -70,7 +70,7 @@ namespace eval scrollutil::sa {
     # the widget to which the option applies: f stands for the frame and w for
     # the scrollarea widget itself.
     #
-    #	Command-Line Name	 {Database Name		  Database Class     W}
+    #	Command-Line Name	{Database Name		Database Class       W}
     #	-----------------------------------------------------------------------
     #
     variable configSpecs
@@ -120,17 +120,17 @@ namespace eval scrollutil::sa {
 	    destroy $helpFrm
 	}
 
-	lappend configSpecs(-autohidescrollbars) 0
-	lappend configSpecs(-borderwidth) 1
-	lappend configSpecs(-cursor) ""
-	lappend configSpecs(-lockinterval) 1
-	lappend configSpecs(-relief) sunken
+	lappend configSpecs(-autohidescrollbars)	0
+	lappend configSpecs(-borderwidth)		1
+	lappend configSpecs(-cursor)			""
+	lappend configSpecs(-lockinterval)		1
+	lappend configSpecs(-relief)			sunken
 	lappend configSpecs(-respectheader) \
 		[expr {[string compare $winSys "win32"] != 0}]
-	lappend configSpecs(-respecttitlecolumns) 1
-	lappend configSpecs(-takefocus) 0
-	lappend configSpecs(-xscrollbarmode) dynamic
-	lappend configSpecs(-yscrollbarmode) dynamic
+	lappend configSpecs(-respecttitlecolumns)	1
+	lappend configSpecs(-takefocus)			0
+	lappend configSpecs(-xscrollbarmode)		dynamic
+	lappend configSpecs(-yscrollbarmode)		dynamic
     }
     extendConfigSpecs 
 
@@ -902,7 +902,9 @@ proc scrollutil::sa::onTitleColsWidthChanged tbl {
 #------------------------------------------------------------------------------
 proc scrollutil::sa::showHScrollbar {win {redisplay 0}} {
     upvar ::scrollutil::ns${win}::data data
-    if {$data(vsbLocked) || ($data(hsbManaged) && !$redisplay)} {
+    if {($data(vsbLocked) &&
+	 [string compare $data(-xscrollbarmode) "dynamic"] == 0) ||
+	($data(hsbManaged) && !$redisplay)} {
 	return ""
     }
 
@@ -976,7 +978,9 @@ proc scrollutil::sa::unlockHScrollbar win {
 #------------------------------------------------------------------------------
 proc scrollutil::sa::showVScrollbar {win {redisplay 0}} {
     upvar ::scrollutil::ns${win}::data data
-    if {$data(hsbLocked) || ($data(vsbManaged) && !$redisplay)} {
+    if {($data(hsbLocked) &&
+	 [string compare $data(-yscrollbarmode) "dynamic"] == 0) ||
+	($data(vsbManaged) && !$redisplay)} {
 	return ""
     }
 

@@ -28,7 +28,7 @@ namespace eval scrollutil::ss {
     # the widget to which the option applies: f stands for the frame and w for
     # the scrollsync widget itself.
     #
-    #	Command-Line Name	 {Database Name		  Database Class     W}
+    #	Command-Line Name	{Database Name		Database Class       W}
     #	-----------------------------------------------------------------------
     #
     variable configSpecs
@@ -73,12 +73,12 @@ namespace eval scrollutil::ss {
 	    destroy $helpFrm
 	}
 
-	lappend configSpecs(-borderwidth) 0
-	lappend configSpecs(-cursor) ""
-	lappend configSpecs(-relief) flat
-	lappend configSpecs(-takefocus) 0
-	lappend configSpecs(-xscrollcommand) ""
-	lappend configSpecs(-yscrollcommand) ""
+	lappend configSpecs(-borderwidth)	0
+	lappend configSpecs(-cursor)		""
+	lappend configSpecs(-relief)		flat
+	lappend configSpecs(-takefocus)		0
+	lappend configSpecs(-xscrollcommand)	""
+	lappend configSpecs(-yscrollcommand)	""
     }
     extendConfigSpecs 
 

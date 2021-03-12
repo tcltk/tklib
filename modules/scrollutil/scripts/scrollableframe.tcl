@@ -26,7 +26,7 @@ namespace eval scrollutil::sf {
     # the widget to which the option applies: f stands for the outer frame and
     # w for the scrollableframe widget itself.
     #
-    #	Command-Line Name	 {Database Name		  Database Class     W}
+    #	Command-Line Name	{Database Name		Database Class       W}
     #	-----------------------------------------------------------------------
     #
     variable configSpecs
@@ -79,20 +79,20 @@ namespace eval scrollutil::sf {
 	    destroy $helpFrm
 	}
 
-	lappend configSpecs(-borderwidth) 0
-	lappend configSpecs(-cursor) ""
-	lappend configSpecs(-contentheight) 0
-	lappend configSpecs(-contentwidth) 0
-	lappend configSpecs(-fitcontentheight) 0
-	lappend configSpecs(-fitcontentwidth) 0
-	lappend configSpecs(-height) 7c
-	lappend configSpecs(-relief) flat
-	lappend configSpecs(-takefocus) 0
-	lappend configSpecs(-width) 10c
-	lappend configSpecs(-xscrollcommand) ""
-	lappend configSpecs(-xscrollincrement) 0
-	lappend configSpecs(-yscrollcommand) ""
-	lappend configSpecs(-yscrollincrement) 0
+	lappend configSpecs(-borderwidth)	0
+	lappend configSpecs(-cursor)		""
+	lappend configSpecs(-contentheight)	0
+	lappend configSpecs(-contentwidth)	0
+	lappend configSpecs(-fitcontentheight)	0
+	lappend configSpecs(-fitcontentwidth)	0
+	lappend configSpecs(-height)		7c
+	lappend configSpecs(-relief)		flat
+	lappend configSpecs(-takefocus)		0
+	lappend configSpecs(-width)		10c
+	lappend configSpecs(-xscrollcommand)	""
+	lappend configSpecs(-xscrollincrement)	0
+	lappend configSpecs(-yscrollcommand)	""
+	lappend configSpecs(-yscrollincrement)	0
     }
     extendConfigSpecs 
 
@@ -233,12 +233,13 @@ proc scrollutil::scrollableframe args {
     # Create the middle frame of the class ScrollableframeMf
     # and the content frame of the class ScrollableframeCf
     #
-    foreach f [list $data(mf) $data(cf)] sfx [list Mf Cf] {
+    foreach f [list $data(mf) $data(cf)] suffix [list Mf Cf] {
 	if {$usingTile} {
-	    ttk::frame $f -class Scrollableframe$sfx -borderwidth 0 -height 0 \
-			  -padding 0 -relief flat -takefocus 0 -width 0
+	    ttk::frame $f -class Scrollableframe$suffix -borderwidth 0 \
+			  -height 0 -padding 0 -relief flat -takefocus 0 \
+			  -width 0
 	} else {
-	    tk::frame $f -class Scrollableframe$sfx -borderwidth 0 \
+	    tk::frame $f -class Scrollableframe$suffix -borderwidth 0 \
 			 -container 0 -height 0 -highlightthickness 0 \
 			 -relief flat -takefocus 0 -width 0
 	    catch {$f configure -padx 0 -pady 0}
@@ -512,13 +513,15 @@ proc scrollutil::sf::autosizeSubCmd {win argList} {
     }
 
     if {$dimBits(width) || $dimBits(height)} {
-	update idletasks
-    }
-    if {$dimBits(width)} {
-	doConfig $win -width  [winfo reqwidth  $data(cf)]
-    }
-    if {$dimBits(height)} {
-	doConfig $win -height [winfo reqheight $data(cf)]
+	set dimList {}
+	if {$dimBits(width)} {
+	    lappend dimList width
+	}
+	if {$dimBits(height)} {
+	    lappend dimList height
+	}
+
+	after 100 [list scrollutil::sf::doAutosize $win $dimList]
     }
 
     return ""
@@ -575,7 +578,7 @@ proc scrollutil::sf::scanSubCmd {win argList} {
 proc scrollutil::sf::seeSubCmd {win argList} {
     set argCount [llength $argList]
     if {$argCount < 1 || $argCount > 2} {
-	mwutil::wrongNumArgs "$win see widget ?nw|ne|sw|se?
+	mwutil::wrongNumArgs "$win see widget ?nw|ne|sw|se?"
     }
 
     set w [lindex $argList 0]
@@ -624,7 +627,7 @@ proc scrollutil::sf::seeSubCmd {win argList} {
 proc scrollutil::sf::seerectSubCmd {win argList} {
     set argCount [llength $argList]
     if {$argCount < 4 || $argCount > 5} {
-	mwutil::wrongNumArgs "$win seerect x1 y1 x2 y2 ?nw|ne|sw|se?
+	mwutil::wrongNumArgs "$win seerect x1 y1 x2 y2 ?nw|ne|sw|se?"
     }
 
     set x1 [format "%d" [lindex $argList 0]]
@@ -749,10 +752,25 @@ proc scrollutil::sf::xviewSubCmd {win argList} {
 	    }
 	    set first [expr {double($xOffset) / $cfWidth}]
 	    set last  [expr {double($xOffset + $mfWidth) / $cfWidth}]
-	    if {$last > 1.0} {
+	    if {$last == 0.0 || $last > 1.0} {
 		set last 1.0
 	    }
 	    return [list $first $last]
+	}
+
+	1 {
+	    #
+	    # Command: $win xview <units>
+	    #
+	    set units [format "%d" [lindex $argList 0]]
+	    set xScrlIncr $data(-xscrollincrement)
+	    if {$xScrlIncr > 0} {
+		set xOffset [expr {$units * $xScrlIncr}]
+	    } else {
+		set xOffset [expr {int($units * 0.1 * $mfWidth)}]
+	    }
+	    applyOffset $win x $xOffset 0
+	    return ""
 	}
 
 	default {
@@ -807,10 +825,25 @@ proc scrollutil::sf::yviewSubCmd {win argList} {
 	    }
 	    set first [expr {double($yOffset) / $cfHeight}]
 	    set last  [expr {double($yOffset + $mfHeight) / $cfHeight}]
-	    if {$last > 1.0} {
+	    if {$last == 0.0 || $last > 1.0} {
 		set last 1.0
 	    }
 	    return [list $first $last]
+	}
+
+	1 {
+	    #
+	    # Command: $win yview <units>
+	    #
+	    set units [format "%d" [lindex $argList 0]]
+	    set yScrlIncr $data(-yscrollincrement)
+	    if {$yScrlIncr > 0} {
+		set yOffset [expr {$units * $yScrlIncr}]
+	    } else {
+		set yOffset [expr {int($units * 0.1 * $mfWidth)}]
+	    }
+	    applyOffset $win y $yOffset 0
+	    return ""
 	}
 
 	default {
@@ -841,6 +874,24 @@ proc scrollutil::sf::yviewSubCmd {win argList} {
 	    applyOffset $win y $yOffset [expr {$number == 0}]
 	    return ""
 	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sf::doAutosize
+#------------------------------------------------------------------------------
+proc scrollutil::sf::doAutosize {win dimList} {
+    #
+    # This is an "after 100" callback; check whether the window exists
+    #
+    if {![array exists ::scrollutil::ns${win}::data] ||
+	[winfo class $win] ne "Scrollableframe"} {
+	return ""
+    }
+
+    upvar ::scrollutil::ns${win}::data data
+    foreach dim $dimList {
+	doConfig $win -$dim [winfo req$dim $data(cf)]
     }
 }
 
