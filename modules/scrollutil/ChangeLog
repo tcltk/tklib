@@ -1,3 +1,34 @@
+2021-03-12  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.9.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: The "autosize" scrollableframe subcommand now sets the
+	  widget's width and/or height with a delay of 100 ms, rather than
+	  invoking "update idletasks"; added the "xview <units>" and "yview
+	  <units>" scrollableframe subcommands; added the scrollednotebook
+	  widget; implemented the navigation between the tabs of a
+	  ttk::notebook or scrollednotebook widget via the mouse wheel (TIP
+	  591) and the support for moving the tabs with the mouse; fixed a bug
+	  related to the scrollbar mode "static" of the scrollarea widget.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl:  Fixed a bug related to font scaling on
+	* scripts/utils/scaleutil.tcl: X11.
+
+	* doc/ScrolledNotebookDemo.png: Added screenshot.
+
+	* ../../examples/scrollutil/ScrolledNotebookDemo.tcl: Added 2 new demo
+	* ../../examples/scrollutil/TtkNotebookDemo.tcl:      scripts.
+
+	* ../../examples/scrollutil/SuScrollableFrmContent.tcl: Minor
+	* ../../examples/scrollutil/SuScrollableFrmDemo1.tcl:   improvements.
+
 2021-02-03  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 1.8.
