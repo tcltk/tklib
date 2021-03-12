@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 1.8</h2>
+    <h2>For Scrollutil Version 1.9</h2>
 
     <h3>by</h3>
 
@@ -76,6 +76,9 @@
 
     <li><a href="#ex_ScrolledFrameDemo2">A Script Using Two
     iwidgets::scrolledframe Widgets</a></li>
+
+    <li><a href="#ex_ScrolledNotebookDemo">A scrollutil::scrollednotebook
+    Demo</a></li>
   </ul>
 
   <div align="center">
@@ -92,11 +95,13 @@
   in pure Tcl/Tk code.&nbsp; It contains:</p>
   
   <ul>
-    <li>the implementation of the <a href=
-    "scrollarea.html"><b>scrollarea</b></a>, <a href=
-    "scrollsync.html"><b>scrollsync</b></a>, and <a href=
-    "scrollableframe.html"><b>scrollableframe</b></a> mega-widgets, including a
-    general utility module for mega-widgets;</li>
+    <li>the implementation of the <b><a href=
+    "scrollarea.html">scrollarea</a></b>, <b><a href=
+    "scrollsync.html">scrollsync</a></b>, <b><a href=
+    "scrollableframe.html">scrollableframe</a></b>, and <b><a href=
+    "scrollednotebook.html">scrollednotebook</a></b> mega-widgets, including a
+    general utility module for mega-widgets.&nbsp; The scrollednotebook widget
+    requires Tcl/Tk 8.4 or later and tile 0.6 or higher;</li>
 
     <li>the command <code><b><a href=
     "wheelEvent.html#add">scrollutil::addMouseWheelSupport</a></b></code>,
@@ -162,11 +167,11 @@
   <p>The scrollutil::scrollableframe widget is similar to BWidget
   ScrollableFrame and iwidgets::scrolledframe.&nbsp; However, unlike these
   widgets, which use a canvas for scrolling the content frame, it adjusts the
-  view with the aid of the <code><b>place</b></code> geometry manager, just
-  like the <code>scrolledframe::scrolledframe</code> command of the
-  Scrolledframe package by Maurice Bredelet (ulis) and its optimized and
-  enhanced version contributed by Keith Nash.&nbsp; For details on these
-  commands see the wiki page</p>
+  view with the aid of the <code>place</code> geometry manager, just like the
+  <code>scrolledframe::scrolledframe</code> command of the Scrolledframe
+  package by Maurice Bredelet (ulis) and its optimized and enhanced version
+  contributed by Keith Nash.&nbsp; For details on these commands see the wiki
+  page</p>
 
   <blockquote>
     <address>
@@ -175,8 +180,19 @@
     </address>
   </blockquote>
 
-  <p>Scrollutil's canvas-free approach is more lightweight and integrates
-  better in applications that use tile widgets.</p>
+  <p>The canvas-free approach is more lightweight and integrates better in
+  applications that use tile widgets.</p>
+
+  <p><b>The scrollutil::scrollednotebook mega-widget</b> contains a
+  ttk::notebook within a scrollableframe and supports an arbitrary number of
+  unsqueezed tabs.&nbsp; Currently not visible tabs can be brought into view by
+  navigating and scrolling with the mouse wheel or keyboard, and the widget
+  also provides a command for making individual tabs visible in the
+  scrollednotebook window.&nbsp; It is made sure that the currently selected
+  tab is always visible.&nbsp; Unlike the ttk::notebook widget, whose
+  <code>-width</code> option is quite often overriden by the total width of the
+  tabs, the scrollednotebook widget respects the value of its
+  <code>-width</code> option, regardless of the space required by the tabs.</p>
 
   <p>From the point of view of <b>the commands related to mouse wheel event
   handling</b> provided by the Scrollutil package, the scrollability of a
@@ -253,8 +269,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil1.8.tar.gz</code> for UNIX and
-  <code>scrollutil1_8.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil1.9.tar.gz</code> for UNIX and
+  <code>scrollutil1_9.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -278,11 +294,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil1.8.tar.gz</code>:</p>
+  <code>scrollutil1.9.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil1.8.tar.gz | tar -xf -
+gunzip -c scrollutil1.9.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -290,17 +306,17 @@ gunzip -c scrollutil1.8.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil1.8.tar.gz
+tar -zxf scrollutil1.9.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil1.8</code>,
+  <p>Both commands will create a directory named <code>scrollutil1.9</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil1_8.zip</code> into the directory
-  <code>scrollutil1.8</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil1_9.zip</code> into the directory
+  <code>scrollutil1.9</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -314,10 +330,12 @@ tar -zxf scrollutil1.8.tar.gz
   <b>Scrollutil</b> and <b>Scrollutil_tile</b>.&nbsp; The main difference
   between the two is that Scrollutil_tile enables the tile-based,
   theme-specific appearance of scrollarea, scrollsync, and scrollableframe
-  widgets; this package requires Tcl/Tk 8.4 or higher and tile 0.6 or
-  higher.&nbsp; It is not possible to use both packages in one and the same
-  application, because both are implemented in the same <code>scrollutil</code>
-  namespace and provide identical commands.</p>
+  widgets, and provides the themed scrollednotebook widget; this package
+  requires Tcl/Tk 8.4 or higher and tile 0.6 or higher.&nbsp; It is not
+  possible to use both packages in one and the same application, because both
+  are implemented in the same <code>scrollutil</code> namespace and provide
+  identical commands (except for the <code>scrollutil::scrollednotebook</code>
+  command, which is provided by the Scrollutil_tile package only).</p>
 
   <p>To be able to access the commands and variables defined in the package
   Scrollutil, your scripts must contain one of the lines</p>
@@ -617,7 +635,7 @@ source [file join $dir styleUtil.tcl]
   <p>This example shows how you can greatly simplify the creation of a scrolled
   tablelist by using a <a href="scrollarea.html">scrollarea</a> widget.</p>
 
-  <p>The file <code>ScrolledTablelist1.tcl</code> in the <code>demos</code>
+  <p>The script <code>ScrolledTablelist1.tcl</code> in the <code>demos</code>
   directory creates a horizontally and vertically scrolled tablelist widget
   having two header rows and one title column, and manages the two scrollbars
   in such a way that the vertical scrollbar appears below the tablelist's
@@ -683,7 +701,7 @@ pack $f   -expand yes -fill both
 </pre>
   </blockquote>
 
-  <p>The file <code>ScrolledTablelist2.tcl</code> in the <code>demos</code>
+  <p>The script <code>ScrolledTablelist2.tcl</code> in the <code>demos</code>
   directory replaces the rather technical code above with just a few lines
   (shown below in <span class="red">red</span> color), by embedding the
   tablelist into a scrollarea widget.&nbsp; It requires Tablelist version 6.5,
@@ -727,9 +745,10 @@ pack $f  -expand yes -fill both
 
   <h3 id="ex_ScrolledText">A Scrolled text Widget</h3>
 
-  <p>The file <code>ScrolledText.tcl</code> in the <code>demos</code> directory
-  shows how the <a href="scrollarea.html">scrollarea</a> widget circumvents the
-  potential shimmering effect in connection with text widgets.</p>
+  <p>The script <code>ScrolledText.tcl</code> in the <code>demos</code>
+  directory shows how the <a href="scrollarea.html">scrollarea</a> widget
+  circumvents the potential shimmering effect in connection with text
+  widgets.</p>
 
   <blockquote>
     <img src="ScrolledText.png" alt="ScrolledText" width="399" height="335">
@@ -815,7 +834,7 @@ after 100 [list $txt yview 14.0]
 
   <h3 id="ex_SyncListboxes">Synchronizing Two listbox Widgets</h3>
 
-  <p>The file <code>SyncListboxes.tcl</code> in the <code>demos</code>
+  <p>The script <code>SyncListboxes.tcl</code> in the <code>demos</code>
   directory creates two listboxes within a <a href=
   "scrollsync.html">scrollsync</a> widget, which in turn is embedded into a
   <a href="scrollarea.html">scrollarea</a>.</p>
@@ -876,7 +895,7 @@ pack $f  -expand yes -fill both
 
   <h3 id="ex_SyncTablelists">Synchronizing Three tablelist Widgets</h3>
 
-  <p>The file <code>SyncTablelists.tcl</code> in the <code>demos</code>
+  <p>The script <code>SyncTablelists.tcl</code> in the <code>demos</code>
   directory creates three tablelists within a <a href=
   "scrollsync.html">scrollsync</a> widget, which in turn is embedded into a
   <a href="scrollarea.html">scrollarea</a>.</p>
@@ -962,7 +981,7 @@ pack $f  -expand yes -fill both
   <h3 id="ex_SuScrollableFrameDemo1">A Script Using a
   scrollutil::scrollableframe Widget</h3>
 
-  <p>The file <code>SuScrollableFrmDemo1.tcl</code> in the <code>demos</code>
+  <p>The script <code>SuScrollableFrmDemo1.tcl</code> in the <code>demos</code>
   directory creates a <a href=
   "scrollableframe.html">scrollutil::scrollableframe</a> widget embedded into a
   <a href="scrollarea.html">scrollarea</a> and creates mouse wheel event
@@ -1080,7 +1099,7 @@ foreach country $countryList {
   <h3 id="ex_BwScrollableFrameDemo1">A Script Using a BWidget ScrollableFrame
   Widget</h3>
 
-  <p>The file <code>BwScrollableFrmDemo1.tcl</code> in the <code>demos</code>
+  <p>The script <code>BwScrollableFrmDemo1.tcl</code> in the <code>demos</code>
   directory creates a BWidget ScrollableFrame embedded into a <a href=
   "scrollarea.html">scrollarea</a> widget, creates mouse wheel event bindings
   for the binding tag <code>"all"</code> with the aid of the <code><a href=
@@ -1173,7 +1192,7 @@ foreach country $countryList {
   <h3 id="ex_ScrolledFrameDemo1">A Script Using an iwidgets::scrolledframe
   Widget</h3>
 
-  <p>The file <code>ScrolledFrmDemo1.tcl</code> in the <code>demos</code>
+  <p>The script <code>ScrolledFrmDemo1.tcl</code> in the <code>demos</code>
   directory creates an iwidgets::scrolledframe widget, creates mouse wheel
   event bindings for the binding tag <code>"all"</code> with the aid of the
   <code><a href=
@@ -1648,6 +1667,105 @@ source [file join $dir ScrolledFrmContent.tcl]
 
   <p>Again, all this is nearly identical to what we did in the two previous
   examples.</p>
+
+  <h3 id="ex_ScrolledNotebookDemo">A scrollutil::scrollednotebook Demo</h3>
+
+  <p>The script <code>ScrolledNotebookDemo.tcl</code> in the <code>demos</code>
+  directory creates a <a href=
+  "scrollednotebook.html">scrollutil::scrollednotebook</a> widget and populates
+  it with panes containing <a href="scrollarea.html">scrollarea</a>s that wrap
+  text widgets displaying the contents of the Ttk library files.&nbsp; After
+  that it sets the width of the scrollednotebook to a value computed from the
+  requested width of the scrollarea widgets and the padding applied to the
+  panes, and provides pop-up menu items for left/right moving and closing the
+  tabs.</p>
+
+  <blockquote>
+    <img src="ScrolledNotebookDemo.png" alt="ScrolledNotebookDemo" width="638"
+    height="514">
+  </blockquote>
+
+  <p>Here is the relevant code:</p>
+
+  <blockquote>
+    <pre>
+<span class="red">package require scrollutil_tile</span>
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
+
+wm title . "Ttk Library Scripts"
+
+<span class="cmt">#
+# Create a scrollednotebook widget and populate it with panes that contain
+# scrolled text widgets displaying the contents of the Ttk library files
+#</span>
+set f  [ttk::frame .f]
+<span class="red">set nb [scrollutil::scrollednotebook $f.nb]</span>
+cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
+foreach fileName [lsort [glob *.tcl]] {
+    set baseName [string range $fileName 0 end-4]
+    <span class="red">set sa [scrollutil::scrollarea $nb.sa_$baseName -lockinterval 10]</span>
+    set txt [text $sa.txt -font TkFixedFont -wrap none]
+    catch {$txt configure -tabstyle wordprocessor}      <span class="cmt">;# for Tk 8.5 and later</span>
+    <span class="red">scrollutil::addMouseWheelSupport $txt</span>      <span class="cmt">;# adds old-school wheel support</span>
+    <span class="red">$sa setwidget $txt</span>
+
+    set chan [open $fileName]
+    $txt insert end [read -nonewline $chan]
+    close $chan
+    $txt configure -state disabled
+
+    set padding [expr {$ttk::currentTheme eq "aqua" ? 0 : "7p"}]
+    <span class="red">$nb add $sa -text $fileName -padding $padding</span>
+}
+
+<span class="cmt">#
+# Set the scrollednotebook's width.  Take into account that in the aqua
+# theme the -padding option of the TNotebook style is set to {18 8 18 17}
+# and the panes are drawn with a hard-coded internal padding of {9 5 9 9}.
+#</span>
+update idletasks
+set width [expr {[winfo reqwidth $sa] + [winfo reqwidth $sa.vsb]}]
+incr width [expr {$ttk::currentTheme eq "aqua" ?
+                  2*27 : 2*[winfo pixels . 7p] + 4}]
+<span class="red">$nb configure -width $width</span>
+
+<span class="cmt">#
+# Create a binding for moving and closing the tabs interactively
+#</span>
+<span class="red">bind $nb &lt;&lt;MenuItemsRequested&gt;&gt; { populateMenu %W %d }</span>
+
+proc populateMenu {nb data} {
+    <span class="red">foreach {menu tabIdx} $data {}
+    set tabCount [$nb index end]</span>
+    set prevIdx [expr {($tabIdx - 1) % $tabCount}]
+    set nextIdx [expr {($tabIdx + 1) % $tabCount}]
+    <span class="red">set widget [lindex [$nb tabs] $tabIdx]</span>
+
+    $menu add command -label "Move Tab Left"  -command \
+        <span class="red">[list $nb insert $prevIdx $widget]</span>
+    $menu add command -label "Move Tab Right" -command \
+        <span class="red">[list $nb insert $nextIdx $widget]</span>
+    $menu add separator
+    $menu add command -label "Close Tab" -command \
+        <span class="red">[list $nb forget $tabIdx]</span>
+}
+
+. . .
+</pre>
+  </blockquote>
+
+  <p>When running the script, the scrollednotebook widget appears with the
+  configured width and tabs displaying the unstripped file names.&nbsp; For
+  comparison:&nbsp; The very similar script <code>TtkNotebookDemo.tcl</code> in
+  the <code>demos</code> directory creates a ttk::notebook widget and populates
+  it in the same way as the script <code>ScrolledNotebookDemo.tcl</code>
+  discussed above.&nbsp; Although the script also sets the notebook's
+  <code>-width</code> option to a value corresponding to the requested width of
+  the scrollarea widgets and the padding applied to the panes, the
+  ttk::notebook appears with an exorbitantly large width and (on most displays)
+  with squeezed tabs.&nbsp; If you resize it to a reasonable width, its tabs
+  become so small that their texts are no longer readable.</p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=

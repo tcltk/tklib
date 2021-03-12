@@ -1,5 +1,33 @@
-What is new in Scrollutil 1.8?
+What is new in Scrollutil 1.9?
 ------------------------------
+
+1. The "autosize" scrollableframe subcommand now sets the widget's
+   width and/or height with a delay of 100 ms, rather than invoking
+   "update idletasks" (thanks to Harald Oehlmann for his proposal).
+
+2. Added the "xview <units>" and "yview <units>" scrollableframe
+   subcommands.
+
+3. Added the scrollednotebook widget, which is based on a ttk::notebook
+   within a scrollableframe and supports an arbitrary number of
+   unsqueezed tabs.  It also implements the navigation between the tabs
+   of a ttk::notebook or scrollednotebook widget via the mouse wheel
+   (thanks to Harald Oehlmann for his TIP 591), as well as the support
+   for moving the tabs with the mouse.
+
+4. Added two demo scripts for the comparison of the new scrollednotebook
+   widget with a ttk::notebook.
+
+5. Fixed a bug related to font scaling on X11 (thanks to Ulrich Seidl
+   for his bug report).
+
+6. Fixed a bug related to the scrollbar mode "static" of the scrollarea
+   widget (thanks to Nicolas Bats for his bug report).
+
+7. Further improvements in the code, demo scripts, and documentation.
+
+What was new in Scrollutil 1.8?
+-------------------------------
 
 1. Added support for the platform-independent handling of mouse wheel
    events (TIP 474), introduced in Tk 8.7a4 (as of January 9, 2021).

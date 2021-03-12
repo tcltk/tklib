@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>scrollutil::scrollableframe</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.8</h2>
+    <h2>For Scrollutil Version 1.9</h2>
 
     <h3>by</h3>
 
@@ -85,7 +85,8 @@
     <dd><code><b><a href="#fitcontentwidth">-fitcontentwidth</a></b>
     <i>boolean</i></code></dd>
 
-    <dd><code><b><a href="#height">-height</a></b> <i>screenDistance</i></code></dd>
+    <dd><code><b><a href="#height">-height</a></b>
+    <i>screenDistance</i></code></dd>
 
     <dd><code><b><a href="#takefocus">-takefocus</a></b>
     <b>0</b>|<b>1</b>|<b>""</b>|<i>command</i></code></dd>
@@ -139,6 +140,8 @@
       <dl>
         <dd><code><i>pathName</i> <b>xview</b></code></dd>
 
+        <dd><code><i>pathName</i> <b>xview</b> <i>units</i></code></dd>
+
         <dd><code><i>pathName</i> <b>xview moveto</b>
         <i>fraction</i></code></dd>
 
@@ -153,6 +156,8 @@
 
       <dl>
         <dd><code><i>pathName</i> <b>yview</b></code></dd>
+
+        <dd><code><i>pathName</i> <b>yview</b> <i>units</i></code></dd>
 
         <dd><code><i>pathName</i> <b>yview moveto</b>
         <i>fraction</i></code></dd>
@@ -243,6 +248,7 @@ set cf [$sf <a href="#contentframe">contentframe</a>]
 <i>&lt;populate the content frame&gt;</i>
 
 $sf <a href="#autosize">autosize</a> w
+update idletasks
 $sf <a href="#configure">configure</a> <a href="#height">-height</a> ... <a href="#yscrollincrement">-yscrollincrement</a> ...
 
 pack $sa -expand yes -fill both
@@ -600,10 +606,11 @@ pack $sa -expand yes -fill both
         requested height of its content frame, even if this was not
         <i>explicitly</i> specified.</dd>
 
-        <dd class="tm"><b>REMARK:</b>&nbsp; Before setting the width and/or
-        height, the command invokes&nbsp; <code><b>update
-        idletasks</b></code>,&nbsp; to make sure that the geometry management
-        calculations in its content frame are finished.</dd>
+        <dd class="tm"><b>REMARK:</b>&nbsp; Setting the widget's width and/or
+        height on behalf of this subcommand is executed as an&nbsp;
+        <code>"<b>after</b> 100"</code>&nbsp; callback, to make sure that by
+        the time the widget's width and/or height are set, the geometry
+        management calculations in its content frame are finished.</dd>
 
         <dt class="tm" id="cget"><code><i>pathName</i> <b>cget</b>
         <i>option</i></code></dt>
@@ -726,8 +733,8 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
           </blockquote>
         </dd>
 
-        <dt class="tm" id="seerect"><code><i>pathName</i> <b>seerect</b>
-        <i>x1</i> <i>y1</i> <i>x2</i> <i>y2</i> ?<i>corner</i>?</code></dt>
+        <dt id="seerect"><code><i>pathName</i> <b>seerect</b> <i>x1</i>
+        <i>y1</i> <i>x2</i> <i>y2</i> ?<i>corner</i>?</code></dt>
 
         <dd>This command adjusts the view in the scrollableframe's window so
         that the rectangle given by <code><i>x1</i></code>,
@@ -763,6 +770,17 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
             window, and 40% of the content frame is off-screen to the
             right.&nbsp; These are the same values passed to scrollbars via the
             <code><b>-xscrollcommand</b></code> option.</dd>
+
+            <dt class="tm"><code><i>pathName</i> <b>xview</b>
+            <i>units</i></code></dt>
+
+            <dd>Adjusts the view in the window so that the content frame
+            position given by <code><i>units</i></code> is displayed at the
+            left edge of the window.&nbsp; This argument specifies a number of
+            units of the <code><b><a href=
+            "#xscrollincrement">xScrollIncrement</a></b></code> option if it is
+            greater than zero, or of one-tenth the window's width
+            otherwise.</dd>
 
             <dt class="tm"><code><i>pathName</i> <b>xview moveto</b>
             <i>fraction</i></code></dt>
@@ -816,6 +834,17 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
             window, and 40% of the content frame is off-screen to the
             bottom.&nbsp; These are the same values passed to scrollbars via
             the <code><b>-yscrollcommand</b></code> option.</dd>
+
+            <dt class="tm"><code><i>pathName</i> <b>yview</b>
+            <i>units</i></code></dt>
+
+            <dd>Adjusts the view in the window so that the content frame
+            position given by <code><i>units</i></code> is displayed at the
+            top edge of the window.&nbsp; This argument specifies a number of
+            units of the <code><b><a href=
+            "#yscrollincrement">yScrollIncrement</a></b></code> option if it is
+            greater than zero, or of one-tenth the window's height
+            otherwise.</dd>
 
             <dt class="tm"><code><i>pathName</i> <b>yview moveto</b>
             <i>fraction</i></code></dt>
@@ -1069,6 +1098,12 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
       <td><code><b>yview</b></code></td>
       <td><code><b>yview</b></code></td>
       <td><code><b>yview</b></code></td>
+    </tr>
+
+    <tr>
+      <td><code><b>xview</b>|<b>yview</b> <i>units</i></code></td>
+      <td bgcolor="#e0e0e0"></td>
+      <td bgcolor="#e0e0e0"></td>
     </tr>
 
     <tr>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>The scrollutil::scrollednotebook Command</title>
+
+  <meta name="Author" content="Csaba Nemethi">
+  <meta name="Keywords" content="scrollednotebook, widget, notebook, scrolled">
+
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+
+<body>
+  <div align="center">
+    <h1>The <code><b>scrollutil::scrollednotebook</b></code> Command</h1>
+
+    <h2>For Scrollutil Version 1.9</h2>
+
+    <h3>by</h3>
+
+    <h2>Csaba Nemethi</h2>
+
+    <address>
+      <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
+    </address>
+  </div>
+
+  <hr>
+
+  <h2 id="contents">Contents</h2>
+
+  <ul>
+    <li><a href="#quick_ref">Quick Reference</a></li>
+
+    <li><a href="#detailed_ref">Detailed Reference</a></li>
+  </ul>
+
+  <div align="center">
+    <p><a href="index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="quick_ref">Quick Reference</h2>
+
+  <dl>
+    <dt><a href="#name">NAME</a></dt>
+
+    <dd><code>scrollutil::scrollednotebook</code> &ndash; Create and manipulate
+    scrollednotebook widgets</dd>
+
+    <dt class="tm"><a href="#synopsis">SYNOPSIS</a></dt>
+
+    <dd>
+      <pre>
+package require scrollutil_tile
+<b>scrollutil::scrollednotebook</b> <i>pathName</i> ?<i>options</i>?
+</pre>
+    </dd>
+
+    <dt><a href="#description">DESCRIPTION</a></dt>
+
+    <dt class="tm"><a href="#std_options">STANDARD OPTIONS</a></dt>
+
+    <dd>
+      <pre>
+<b>-cursor  -style</b>
+</pre>
+    </dd>
+
+    <dt><a href="#widget_options">WIDGET-SPECIFIC OPTIONS</a></dt>
+
+    <dd><code><b><a href="#height">-height</a></b>
+    <i>screenDistance</i></code></dd>
+
+    <dd><code><b><a href="#padding">-padding</a></b>
+    <i>paddingSpec</i></code></dd>
+
+    <dd><code><b><a href="#takefocus">-takefocus</a></b>
+    <b>0</b>|<b>1</b>|<b>""</b>|<i>command</i></code></dd>
+
+    <dd><code><b><a href="#width">-width</a></b>
+    <i>screenDistance</i></code></dd>
+
+    <dt class="tm"><a href="#tab_options">TAB OPTIONS</a></dt>
+
+    <dt class="tm"><a href="#tab_ids">TAB IDENTIFIERS</a></dt>
+
+    <dt class="tm"><a href="#widget_command">WIDGET COMMAND</a></dt>
+
+    <dd><code><i>pathName</i> <b><a href="#see">see</a></b>
+    <i>tabId</i></code></dd>
+
+    <dt class="tm"><a href="#keyboard_traversal">KEYBOARD TRAVERSAL</a></dt>
+
+    <dt class="tm"><a href="#virtual_events">VIRTUAL EVENTS</a></dt>
+
+    <dt class="tm"><a href="#bindings">FURTHER BINDINGS</a></dt>
+
+    <dt class="tm"><a href="#keywords">KEYWORDS</a></dt>
+
+    <dd>scrollednotebook, widget, notebook, scrolled</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="detailed_ref">Detailed Reference</h2>
+
+  <dl>
+    <dt id="name"><b>NAME</b></dt>
+
+    <dd><code>scrollutil::scrollednotebook</code> &ndash; Create and manipulate
+    scrollednotebook widgets</dd>
+
+    <dt class="tm" id="synopsis"><b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+package require scrollutil_tile
+<b>scrollutil::scrollednotebook</b> <i>pathName</i> ?<i>options</i>?
+</pre>
+    </dd>
+
+    <dd>Note that the <code><b>scrollutil::scrollednotebook</b></code> command
+    is provided by the Scrollutil_tile package, but not by Scrollutil.</dd>
+
+    <dt class="tm" id="description"><b>DESCRIPTION</b></dt>
+
+    <dd>The <code><b>scrollutil::scrollednotebook</b></code> command creates a
+    new window named <code><i>pathName</i></code> and of the class
+    <code><b>Scrollednotebook</b></code>, and makes it into a
+    <b>scrollednotebook</b> widget.&nbsp; Additional options, described below,
+    may be specified on the command line or in the option database to configure
+    aspects of the scrollednotebook widget such as its width, height, and
+    style.&nbsp; The <code><b>scrollutil::scrollednotebook</b></code> command
+    returns its <code><i>pathName</i></code> argument.&nbsp; At the time this
+    command is invoked, there must not exist a window named
+    <code><i>pathName</i></code>, but <code><i>pathName</i></code>'s parent
+    must exist.</dd>
+
+    <dd class="tm">A scrollednotebook is a mega-widget that contains a
+    ttk::notebook within a <a href=
+    "scrollableframe.html">scrollableframe</a> and supports an arbitrary number
+    of unsqueezed tabs.&nbsp; Currently not visible tabs can be brought into
+    view by navigating and scrolling with the mouse wheel or keyboard.&nbsp;
+    An individual tab can be made visible programmatically with the aid of the
+    <code><b><a href="#see">see</a></b></code> subcommand.&nbsp; It is made
+    sure that the currently selected tab is always visible.</dd>
+
+    <dd class="tm">The API of the scrollednotebook widget is nearly identical
+    to that of ttk::notebook.&nbsp; Apart from the scrollednotebook-specific
+    <code><b>see</b></code> subcommand, the Tcl command associated with a
+    scrollednotebook widget provides the same subcommands as the one associated
+    with a ttk::notebook.&nbsp; Note that the API doesn't provide any command
+    for retrieving the path name of the ttk::notebook widget contained in a
+    scrollednotebook, because there is no need to access that widget
+    directly.&nbsp; Moreover, using its subcommands instead of those of the
+    scrollednotebook widget would result in an unpredictable behavior.</dd>
+
+    <dt class="tm" id="std_options"><b>STANDARD OPTIONS</b></dt>
+
+    <dd>
+      <pre>
+<b>-cursor  -style</b>
+</pre>
+    </dd>
+
+    <dd>See the <b>ttk_widget</b> manual entry for details on the standard
+    options.&nbsp; The <code><b>-style</b></code> option refers to the style of
+    the ttk::notebook widget contained in the scrollednotebook.&nbsp; The value
+    of the <code><b>-tabposition</b></code> option of the style specified by
+    this Ttk widget option must be one of <code><b>nw</b></code> (the default),
+    <code><b>n</b></code> (the default for the <code><b>aqua</b></code> theme),
+    <code><b>ne</b></code>, <code><b>sw</b></code>, <code><b>s</b></code>, or
+    <code><b>se</b></code>.&nbsp; These values will result in a horizontal tab
+    layout (the scrollednotebook widget doesn't support vertical tab
+    layouts).</dd>
+
+    <dd class="tm">The default values of the standard options are:</dd>
+
+    <dd>
+      <pre>
+<b>-cursor</b> "" <b>-style TNotebook</b>
+</pre>
+    </dd>
+
+    <dt id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
+
+    <dd id="height">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-height</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;height</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Height</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>If present and greater than zero, specifies the desired height for
+        the widget in any of the forms acceptable to
+        <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the widget's height
+        is set to the requested height of the ttk::notebook contained in it
+        (which in turn depends on the maximum height of all panes and tabs),
+        immediately after the scrollednotebook gets mapped.&nbsp; The default
+        is <code>0</code>.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="padding">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-padding</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;padding</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Padding</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the amount of extra space to add around the outside of the
+        ttk::notebook widget contained in the scrollednotebook.&nbsp; See the
+        <b>ttk_notebook</b> manual entry for details.&nbsp; The default is an
+        empty string.&nbsp; Note that if this default value is used then the
+        ttk::notebook widget will be drawn with the external padding specified
+        by the <code><b>-padding</b></code> option of the widget's style.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="takefocus">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-takefocus</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;takeFocus</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;TakeFocus</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>This option determines whether the scrollednotebook widget accepts
+        the focus during keyboard traversal.&nbsp; It is almost identical to
+        the standard option of the same name (see the <b>options</b> manual
+        entry for details).&nbsp; The only difference is that not the
+        scrollednotebook widget itself but the ttk::notebook contained in it
+        will receive the focus during keyboard traversal with the standard keys
+        (<code>Tab</code> and <code>Shift-Tab</code>).&nbsp; The default is
+        <code>"ttk::takefocus"</code>.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="width">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-width</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;width</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Width</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>If present and greater than zero, specifies the desired width for
+        the widget in any of the forms acceptable to
+        <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the widget's width
+        is set to the requested width of the ttk::notebook contained in it
+        (which in turn depends, among others, on the maximum width of all panes
+        and the total width of the tabs), immediately after the
+        scrollednotebook gets mapped.&nbsp; The default is <code>10c</code>,
+        which should be overridden with a suitable application-specific
+        value.</p>
+      </blockquote>
+    </dd>
+
+    <dt id="tab_options"><b>TAB OPTIONS</b></dt>
+
+    <dd>See the <b>ttk_notebook</b> manual entry.</dd>
+
+    <dt class="tm" id="tab_ids"><b>TAB IDENTIFIERS</b></dt>
+
+    <dd>See the <b>ttk_notebook</b> manual entry.</dd>
+
+    <dt class="tm" id="widget_command"><b>WIDGET COMMAND</b></dt>
+
+    <dd>
+      The <code><b>scrollutil::scrollednotebook</b></code> command creates a
+      new Tcl command whose name is <code><i>pathName</i></code>.&nbsp; This
+      command may be used to invoke various operations on the widget.&nbsp; It
+      has the following general form:
+
+      <blockquote>
+        <pre>
+<i>pathName</i> <i>option</i> ?<i>arg</i> <i>arg</i> ...?
+</pre>
+      </blockquote>
+    </dd>
+
+    <dd><code><i>option</i></code> and the <code><i>arg</i></code>s determine
+    the exact behavior of the command.&nbsp; The commands possible for
+    scrollednotebook widgets are the same as those for ttk::notebook widgets
+    (see the <b>ttk_notebook</b> manual entry for details), except that
+    scrollednotebook widgets provide the following additional command:</dd>
+
+    <dd>
+      <dl>
+        <dt class="tm" id="see"><code><i>pathName</i> <b>see</b>
+        <i>tabId</i></code></dt>
+
+        <dd>This command adjusts the view in the scrollednotebook's window so
+        that the tab given by <code><i>tabId</i></code> becomes visible in
+        it.&nbsp; Note that when a tab gets selected, this command is
+        automatically invoked for it, in order to make that tab visible.&nbsp;
+        In addition, the currently selected tab is always kept visible, by
+        invoking this command whenever necessary.</dd>
+      </dl>
+    </dd>
+
+    <dt class="tm" id="keyboard_traversal"><b>KEYBOARD TRAVERSAL</b></dt>
+
+    <dd>See the <b>ttk_notebook</b> manual entry.</dd>
+
+    <dt class="tm" id="virtual_events"><b>VIRTUAL EVENTS</b></dt>
+
+    <dd>As described in the <b>ttk_notebook</b> manual entry, after a new tab
+    of a ttk::notebook is selected, the widget generates a
+    <code><b>&lt;&lt;NotebookTabChanged&gt;&gt;</b></code> virtual event.&nbsp;
+    This holds true for scrollednotebook widgets, too.</dd>
+
+    <dd class="tm">
+      The Scrollutil_tile package defines the virtual event
+      <code><b>&lt;&lt;Button3&gt;&gt;</b></code> as
+      <code><b>&lt;Button-3&gt;</b></code> for all windowing systems and
+      additionally as <code><b>&lt;Control-Button-1&gt;</b></code> for Mac OS X
+      Aqua.&nbsp; If this event occurs over a tab of a ttk::notebook or
+      scrollednotebook whose <code><b>disabled</b></code> widget state flag is
+      not set, and the Tk version is 8.5a2 or later, then the widget generates
+      a <code><b>&lt;&lt;MenuItemsRequested&gt;&gt;</b></code> virtual event,
+      by invoking &nbsp; <code><b> event generate</b></code>&nbsp; with the
+      <code><b>-data</b></code> option set to a list consisting of the path
+      name of an empty pop-up menu and the numerical index of the tab in
+      question.&nbsp; (The support for this option was introduced in Tk
+      8.5a2.)&nbsp; If the application creates a binding for this virtual
+      event, the binding script can access the user data as the value of the
+      <code><b>%d</b></code> field, with the goal to populate the menu with
+      application-specific entries.&nbsp; Note that the pop-up menu is posted
+      with a delay of 100 ms, to make sure that it will appear readily
+      populated by the application.
+
+      <p>The following example provides a pop-up menu item for closing the tabs
+      of a ttk::notebook or scrollednotebook widget <code>$nb</code>:</p>
+
+      <blockquote>
+        <pre>
+bind $nb <span class="red">&lt;&lt;MenuItemsRequested&gt;&gt;</span> { populateMenu %W %d }
+
+proc populateMenu {nb data} {
+    <span class="red">foreach {menu tabIdx} $data {}</span>
+    $menu add command -label "Close Tab" -command [list $nb forget $tabIdx]
+}
+</pre>
+      </blockquote>
+
+      <p>See the next section for the description of the virtual event
+      <code><b>&lt;&lt;NotebookTabMoved&gt;&gt;</b></code>, which is generated
+      when a ttk::notebook or scrollednotebook tab is moved interactively to a
+      new position.</p>
+    </dd>
+
+    <dt id="bindings"><b>FURTHER BINDINGS</b></dt>
+
+    <dd>The Scrollutil_tile package implements the <b>navigation between the
+    tabs of a ttk::notebook or scrollednotebook widget via the mouse wheel</b>
+    as follows:&nbsp; A mouse wheel tick selects the tab cyclically
+    following/preceding the currently selected one.&nbsp; On the windowing
+    system <code><b>aqua</b></code>, if the <code>Option</code> key is down
+    while the mouse wheel is being rotated then a wheel tick selects the tab
+    whose numerical index is 10 greater/less than that of the currently
+    selected one (modulo the number of tabs).&nbsp; The same holds true on the
+    windowing systems <code><b>x11</b></code> and <code><b>win32</b></code> if
+    the Tk version is 8.7a4 or later and the mouse wheel is rotated with the
+    <code>Alt</code> key down.</dd>
+
+    <dd class="tm">The navigation between the tabs of a ttk::notebook or
+    scrollednotebook widget can also be performed with the keys
+    <code>Right</code>, <code>Left</code>, <code>Control-Tab</code>, and
+    <code>Control-Shift-Tab</code>.</dd>
+
+    <dd class="tm">In addition, the Scrollutil_tile package adds support for
+    <b>moving the tabs of a ttk::notebook or scrollednotebook widget with the
+    mouse</b>:&nbsp; If mouse button 1 is pressed over a tab and then dragged
+    outside that tab, then the mouse cursor takes on the shape of a left/right
+    arrow, indicating that the tab in question is being moved to another
+    position.&nbsp; This operation ends when mouse button 1 is released, and
+    can be canceled by pressing the <code>Escape</code> key.&nbsp; In both
+    cases, the mouse cursor is reset to its original value, specified by the
+    <code><b>-cursor</b></code> configuration option.&nbsp; After releasing
+    mouse button 1, the source tab is moved to the position previously pointed
+    to by the arrow (provided that the action was not canceled via
+    <code>Escape</code>).&nbsp; If the Tk version is 8.5a2 or later then after
+    moving the tab to its new position, the widget generates a
+    <code><b>&lt;&lt;NotebookTabMoved&gt;&gt;</b></code> virtual event, by
+    invoking &nbsp; <code><b> event generate</b></code>&nbsp; with the
+    <code><b>-data</b></code> option set to a list consisting of the path name
+    of the widget contained in the source pane and the numerical index of the
+    target tab position.&nbsp; (The support for this option was introduced in
+    Tk 8.5a2.)&nbsp; All the above works also for a ttk::notebook with vertical
+    tab layout, with the only difference that for the duration of the drag, the
+    cursor is set to one having the shape of an up/down arrow.</dd>
+
+    <dd class="tm">If the widget's <code><b>disabled</b></code> state flag is
+    set then none of the above actions occur: the tabs are completely
+    insensitive.</dd>
+
+    <dt class="tm" id="keywords"><b>KEYWORDS</b></dt>
+
+    <dd>scrollednotebook, widget, notebook, scrolled</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+</body>
+</html>

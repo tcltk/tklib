@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Commands Related to Mouse Wheel Event Handling</h1>
 
-    <h2>For Scrollutil Version 1.8</h2>
+    <h2>For Scrollutil Version 1.9</h2>
 
     <h3>by</h3>
 
@@ -433,7 +433,7 @@
     invoked for widgets that have mouse wheel event bindings and are
     descendants of a scrollable widget container.&nbsp; The Tk and tile widgets
     having class bindings for mouse wheel events are: listbox, text, Tk core
-    scrollbar, ttk::scrollbar, ttk::combobox, ttk::spinbox, and
+    scrollbar, ttk::scrollbar, ttk::combobox, ttk::spinbox, ttk::notebook, and
     ttk::treeview.&nbsp; Examples of widgets with binding tags other than their
     class names that have mouse wheel event bindings are tablelist widgets as
     well as the entry components of <a href=
@@ -449,7 +449,7 @@
     Macintosh.&nbsp; Scrollutil eliminates this discrepancy by automatically
     creating the <code><b>Scrollbar</b></code> class bindings for mouse wheel
     events on Windows and X11.&nbsp; Note also that in Tk versions prior to
-    8.7.a5 the ttk::scrollbar widget had no <i>built-in</i> class bindings for
+    8.7a4 the ttk::scrollbar widget had no <i>built-in</i> class bindings for
     mouse wheel events, but Scrollutil automatically creates the missing
     bindings by copying the mouse wheel event bindings of the widget class
     <code><b>Scrollbar</b></code> to the binding tag
@@ -473,7 +473,14 @@
     containing toplevel, just as if the focus were on the scrollbar
     itself.</dd>
 
-    <dd class="tm"><b>REMARK 5:</b>&nbsp; Invoking this command for widgets
+    <dd class="tm"><b>REMARK 5:</b>&nbsp; The mouse wheel event class bindings
+    for the ttk::notebook widget were added in Tk 8.7a4, but Scrollutil
+    automatically creates them for all Tk versions starting with 8.4.&nbsp;
+    These bindings implement the navigation between the tabs of a ttk::notebook
+    or <a href="scrollednotebook.html">scrollutil::scrollednotebook</a> widget
+    via the mouse wheel.</dd>
+
+    <dd class="tm"><b>REMARK 6:</b>&nbsp; Invoking this command for widgets
     that have mouse wheel event bindings and are descendants of a scrollable
     widget container is essential for a user-friendly mouse wheel event
     handling in scrollable widget containers.&nbsp; Without this step the mouse
