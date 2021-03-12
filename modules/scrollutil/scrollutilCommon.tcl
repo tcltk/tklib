@@ -10,7 +10,7 @@ namespace eval ::scrollutil {
     #
     # Public variables:
     #
-    variable version	1.8
+    variable version	1.9
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -21,7 +21,7 @@ namespace eval ::scrollutil {
     #
     # Creates a new scrollarea/scrollsync/scrollableframe widget:
     #
-    namespace export	scrollarea scrollsync scrollableframe
+    namespace export	scrollarea scrollsync scrollableframe scrollednotebook
 
     #
     # Queries the scrollarea/scrollsync to which a given widget belongs:
@@ -93,7 +93,7 @@ if {[catch {package present mwutil} version] == 0 && $version < 2.18} {
     package forget mwutil
 }
 package require mwutil 2.18
-if {[catch {package present scaleutil} version] == 0 && $version < 1.2} {
+if {[catch {package present scaleutil} version] == 0 && $version < 1.3} {
     package forget scaleutil
 }
-package require scaleutil 1.2
+package require scaleutil 1.3
