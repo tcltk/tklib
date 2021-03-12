@@ -99,6 +99,7 @@ foreach country $countryList {
 #
 wm withdraw .
 $sf autosize w
+update idletasks
 set rowHeight [expr {[winfo reqheight $cf] / $row}]
 set height [expr {10*$rowHeight + [winfo pixels . $topPadY]}]
 $sf configure -height $height -yscrollincrement $rowHeight

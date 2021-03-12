@@ -255,6 +255,7 @@ foreach colId [$tv cget -columns] {
 #
 wm withdraw .
 $sf autosize w
+update idletasks
 set height [expr {[winfo reqheight $cf.l0] + [winfo pixels . 4p] + \
 		  [winfo reqheight $cf.sa1] + 2*[winfo pixels . 7p]}]
 $sf configure -height $height \
@@ -475,6 +476,7 @@ proc configTablelist {} {
     # Set the scrollableframe's width, height, and yscrollincrement
     #
     $sf autosize
+    update idletasks
     set rowHeight [expr {[winfo reqheight $cf] / $row}]
     set height [expr {10*$rowHeight + [winfo pixels .top 4p]}]
     $sf configure -height $height -yscrollincrement $rowHeight
