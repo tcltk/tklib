@@ -36,6 +36,18 @@ if {[tk windowingsystem] eq "x11"} {
 }
 
 #
+# Work around some appearance issues related to the "aqua" theme
+#
+if {$ttk::currentTheme eq "aqua" &&
+    [catch {winfo rgb . systemTextBackgroundColor}] == 0 &&
+    [catch {winfo rgb . systemTextColor}] == 0} {
+    foreach style {TEntry TSpinbox} {
+	ttk::style configure $style -background systemTextBackgroundColor \
+	    -foreground systemTextColor
+    }
+}
+
+#
 # TCombobox
 #
 # Make sure the combobox will show whether it has the focus
