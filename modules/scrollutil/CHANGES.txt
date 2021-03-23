@@ -18,13 +18,16 @@ What is new in Scrollutil 1.9?
 4. Added two demo scripts for the comparison of the new scrollednotebook
    widget with a ttk::notebook.
 
-5. Fixed a bug related to font scaling on X11 (thanks to Ulrich Seidl
+5. Fixed two typos in the implementation of the horizontal scrolling
+   with the mouse wheel on X11 via "scrollutil::addMouseWheelSupport".
+
+6. Fixed a bug related to font scaling on X11 (thanks to Ulrich Seidl
    for his bug report).
 
-6. Fixed a bug related to the scrollbar mode "static" of the scrollarea
+7. Fixed a bug related to the scrollbar mode "static" of the scrollarea
    widget (thanks to Nicolas Bats for his bug report).
 
-7. Further improvements in the code, demo scripts, and documentation.
+8. Further improvements in the code, demo scripts, and documentation.
 
 What was new in Scrollutil 1.8?
 -------------------------------

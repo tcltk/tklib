@@ -246,9 +246,9 @@ proc scrollutil::addMouseWheelSupport {tag {axes "xy"}} {
 
 	    if {$winSys eq "x11"} {
 		bind $tag <Shift-Button-4> \
-		    [format {%%W yview scroll -5 units%s} $tail]
+		    [format {%%W xview scroll -5 units%s} $tail]
 		bind $tag <Shift-Button-5> \
-		    [format {%%W yview scroll  5 units%s} $tail]
+		    [format {%%W xview scroll  5 units%s} $tail]
 
 		if {$::tk_patchLevel eq "8.7a3"} {
 		    bind $tag <Button-6> \
