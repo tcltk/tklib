@@ -1,3 +1,9 @@
+2021-03-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:            Fixed two typos in the implementation of the
+	* scripts/wheelEvent.tcl: horizontal scrolling with the mouse wheel on
+	  X11 via "scrollutil::addMouseWheelSupport".
+
 2021-03-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* ../../examples/scrollutil/styleUtil.tcl: Improvements for the "aqua"
