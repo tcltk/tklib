@@ -588,16 +588,16 @@ namespace eval tablelist {
     variable sortOpts      [list -increasing -decreasing]
     variable sortOrders    [list increasing decreasing]
     variable states	   [list disabled normal]
-    variable treeStyles    [list adwaita ambiance aqua arc baghira bicolor100 \
-				 bicolor125 bicolor150 bicolor175 bicolor200 \
-				 blueMenta classic100 classic125 classic150 \
-				 classic175 classic200 dust dustSand gtk \
-				 klearlooks mate menta mint mint2 newWave \
-				 oxygen1 oxygen2 phase plain100 plain125 \
-				 plain150 plain175 plain200 plastik plastique \
-				 radiance ubuntu ubuntu2 ubuntu3 ubuntuMate \
-				 vistaAero vistaClassic white100 white125 \
-				 white150 white175 white200 win7Aero \
+    variable treeStyles    [list adwaita ambiance aqua aqua11 arc baghira \
+				 bicolor100 bicolor125 bicolor150 bicolor175 \
+				 bicolor200 blueMenta classic100 classic125 \
+				 classic150 classic175 classic200 dust \
+				 dustSand gtk klearlooks mate menta mint \
+				 mint2 newWave oxygen1 oxygen2 phase plain100 \
+				 plain125 plain150 plain175 plain200 plastik \
+				 plastique radiance ubuntu ubuntu2 ubuntu3 \
+				 ubuntuMate vistaAero vistaClassic white100 \
+				 white125 white150 white175 white200 win7Aero \
 				 win7Classic win10 winnative winxpBlue \
 				 winxpOlive winxpSilver yuyo]
     variable valignments   [list center top bottom]
@@ -622,6 +622,12 @@ namespace eval tablelist {
     # indentation depth for every tree style in use
     #
     variable maxIndentDepths
+
+    #
+    # The array treeLabelWidths holds the widths of the indentation
+    # labels for every tree style in use and every depth > 0
+    #
+    variable treeLabelWidths
 
     #
     # Define the command mapTabs, which returns the string obtained by
@@ -1708,6 +1714,8 @@ proc tablelist::collapseSubCmd {win argList} {
     }
 
     set callerProc [lindex [info level -1] 0]
+    set collapsingAll \
+	[expr {[string compare $callerProc "collapseallSubCmd"] == 0}]
     upvar ::tablelist::ns${win}::data data
     set callCollapseCmd [expr {[string length $data(-collapsecommand)] != 0}]
     set col $data(treeCol)
@@ -1724,14 +1732,25 @@ proc tablelist::collapseSubCmd {win argList} {
 	    uplevel #0 $data(-collapsecommand) [list $win $index]
 	}
 
-	#
-	# Set the indentation image to the collapsed one
-	#
-	set data($key,$col-indent) [strMap \
-	    {"indented" "collapsed" "expanded" "collapsed"} \
-	    $data($key,$col-indent)]
+	if {$collapsingAll} {
+	    #
+	    # Change the indentation image from
+	    # the expanded to the collapsed one
+	    #
+	    set data($key,$col-indent) [strMap \
+		{"expanded" "collapsed"} $data($key,$col-indent)]
+	} else {
+	    #
+	    # Set the indentation image to the collapsed one
+	    #
+	    set data($key,$col-indent) [strMap \
+		{"indented" "collapsed" "expanded" "collapsed"} \
+		$data($key,$col-indent)]
+	}
 	if {[winfo exists $w.ind_$key,$col]} {
-	    $w.ind_$key,$col configure -image $data($key,$col-indent)
+	    set idx [string last "g" $data($key,$col-indent)]
+	    set img [string range $data($key,$col-indent) 0 $idx]
+	    $w.ind_$key,$col configure -image $img
 	}
 
 	if {[llength $data($key-childList)] == 0} {
@@ -1760,8 +1779,10 @@ proc tablelist::collapseSubCmd {win argList} {
 		    set data($descKey,$col-indent) [strMap \
 			{"expanded" "collapsed"} $data($descKey,$col-indent)]
 		    if {[winfo exists $w.ind_$descKey,$col]} {
-			$w.ind_$descKey,$col configure -image \
-			    $data($descKey,$col-indent)
+			set idx [string last "g" $data($descKey,$col-indent)]
+			set img [string range $data($descKey,$col-indent) \
+				 0 $idx]
+			$w.ind_$descKey,$col configure -image $img
 		    }
 		}
 	    }
@@ -1799,89 +1820,15 @@ proc tablelist::collapseallSubCmd {win argList} {
     }
 
     if {$argCount == 0} {
-	set fullCollapsion 1
+	set opt "-fully"
     } else {
 	variable expCollOpts
 	set opt [mwutil::fullOpt "option" [lindex $argList 0] $expCollOpts]
-	set fullCollapsion [expr {[string compare $opt "-fully"] == 0}]
     }
 
     synchronize $win
-    displayItems $win
-
     upvar ::tablelist::ns${win}::data data
-    set callCollapseCmd [expr {[string length $data(-collapsecommand)] != 0}]
-    set col $data(treeCol)
-    set w $data(body)
-
-    foreach key $data(root-childList) {
-	if {![info exists data($key,$col-indent)]} {
-	    continue
-	}
-
-	set index [keyToRow $win $key]
-	if {$callCollapseCmd} {
-	    uplevel #0 $data(-collapsecommand) [list $win $index]
-	}
-
-	#
-	# Set the indentation image to the collapsed one
-	#
-	set data($key,$col-indent) [strMap \
-	    {"indented" "collapsed" "expanded" "collapsed"} \
-	    $data($key,$col-indent)]
-	if {[winfo exists $w.ind_$key,$col]} {
-	    $w.ind_$key,$col configure -image $data($key,$col-indent)
-	}
-
-	if {[llength $data($key-childList)] == 0} {
-	    continue
-	}
-
-	#
-	# Elide the descendants of this item
-	#
-	set fromRow [expr {$index + 1}]
-	set toRow [nodeRow $win $key end]
-	for {set row $fromRow} {$row < $toRow} {incr row} {
-	    doRowConfig $row $win -elide 1
-
-	    if {$fullCollapsion} {
-		set descKey [lindex $data(keyList) $row]
-		if {[llength $data($descKey-childList)] != 0} {
-		    if {$callCollapseCmd} {
-			uplevel #0 $data(-collapsecommand) [list $win $row]
-		    }
-
-		    #
-		    # Change the descendant's indentation image
-		    # from the expanded to the collapsed one
-		    #
-		    set data($descKey,$col-indent) [strMap \
-			{"expanded" "collapsed"} $data($descKey,$col-indent)]
-		    if {[winfo exists $w.ind_$descKey,$col]} {
-			$w.ind_$descKey,$col configure -image \
-			    $data($descKey,$col-indent)
-		    }
-		}
-	    }
-	}
-    }
-
-    adjustRowIndex $win data(anchorRow) 1
-
-    set activeRow $data(activeRow)
-    adjustRowIndex $win activeRow 1
-    set data(activeRow) $activeRow
-
-    hdr_adjustElidedText $win
-    hdr_updateColors $win
-    adjustElidedText $win
-    redisplayVisibleItems $win
-    makeStripes $win
-    adjustSepsWhenIdle $win
-    updateVScrlbarWhenIdle $win
-    return ""
+    return [collapseSubCmd $win [list $data(root-childList) $opt]]
 }
 
 #------------------------------------------------------------------------------
@@ -2590,7 +2537,6 @@ proc tablelist::expandSubCmd {win argList} {
 	set index [rowIndex $win $elem 0 1]
 	lappend indexList $index
     }
-    set indexList [lsort -integer -decreasing $indexList]
 
     if {$argCount == 1} {
 	set fullExpansion 1
@@ -2608,57 +2554,72 @@ proc tablelist::expandSubCmd {win argList} {
     set w $data(body)
     set processed 0
 
-    foreach index $indexList {
-	set key [lindex $data(keyList) $index]
-	if {![info exists data($key,$col-indent)] ||
-	    [string match "*indented*" $data($key,$col-indent)]} {
-	    continue
-	}
+    #
+    # Level-order traversal
+    #
+    while {[llength $indexList] != 0} {
+	set indexList [lsort -integer -decreasing $indexList]
+	set keyList {}
 
-	if {$callExpandCmd} {
-	    set data(keyBeingExpanded) $key
-	    uplevel #0 $data(-expandcommand) [list $win $index]
-	    set data(keyBeingExpanded) ""
-	}
+	foreach index $indexList {
+	    set key [lindex $data(keyList) $index]
+	    if {![info exists data($key,$col-indent)] ||
+		[string match "*indented*" $data($key,$col-indent)]} {
+		continue
+	    }
 
-	#
-	# Set the indentation image to the indented or expanded one
-	#
-	set childCount [llength $data($key-childList)]
-	set state [expr {($childCount == 0) ? "indented" : "expanded"}]
-	set data($key,$col-indent) [strMap \
-	    [list "collapsed" $state "expanded" $state] $data($key,$col-indent)]
-	if {[string compare $state "indented"] == 0} {
+	    if {$callExpandCmd} {
+		set data(keyBeingExpanded) $key
+		uplevel #0 $data(-expandcommand) [list $win $index]
+		set data(keyBeingExpanded) ""
+	    }
+
+	    #
+	    # Set the indentation image to the indented or expanded one
+	    #
+	    set childCount [llength $data($key-childList)]
+	    set state [expr {($childCount == 0) ? "indented" : "expanded"}]
 	    set data($key,$col-indent) [strMap \
-		{"Act" "" "Sel" ""} $data($key,$col-indent)]
-	}
-	if {[winfo exists $w.ind_$key,$col]} {
-	    $w.ind_$key,$col configure -image $data($key,$col-indent)
+		[list "collapsed" $state "expanded" $state] \
+		$data($key,$col-indent)]
+	    if {[string compare $state "indented"] == 0} {
+		set data($key,$col-indent) [strMap \
+		    {"Act" "" "Sel" ""} $data($key,$col-indent)]
+	    }
+	    if {[winfo exists $w.ind_$key,$col]} {
+		set idx [string last "g" $data($key,$col-indent)]
+		set img [string range $data($key,$col-indent) 0 $idx]
+		$w.ind_$key,$col configure -image $img
+	    }
+
+	    #
+	    # Conditionally unelide the children and
+	    # add their full keys to the list keyList
+	    #
+	    set isViewable [expr {![info exists data($key-elide)] &&
+				  ![info exists data($key-hide)]}]
+	    foreach childKey $data($key-childList) {
+		set childRow [keyToRow $win $childKey]
+		if {$isViewable} {
+		    doRowConfig $childRow $win -elide 0
+		}
+
+		if {$fullExpansion ||
+		    [string match "*expanded*" $data($childKey,$col-indent)]} {
+		    lappend keyList $childKey
+		}
+	    }
+
+	    set processed 1
 	}
 
-	#
-	# Unelide the children if appropriate and
-	# invoke this procedure recursively on them
-	#
-	set isViewable [expr {![info exists data($key-elide)] &&
-			      ![info exists data($key-hide)]}]
-	foreach childKey $data($key-childList) {
-	    set childRow [keyToRow $win $childKey]
-	    if {$isViewable} {
-		doRowConfig $childRow $win -elide 0
-	    }
-	    if {$fullExpansion} {
-		expandSubCmd $win [list $childRow -fully]
-	    } elseif {[string match "*expanded*" \
-		       $data($childKey,$col-indent)]} {
-		expandSubCmd $win [list $childRow -partly]
-	    }
+	set indexList {}
+	foreach key $keyList {
+	    lappend indexList [keyToRow $win $key]
 	}
-
-	set processed 1
     }
 
-    if {$processed && ![string match "expand*SubCmd" $callerProc]} {
+    if {$processed} {
 	hdr_adjustElidedText $win
 	hdr_updateColors $win
 	adjustElidedText $win
@@ -2681,74 +2642,15 @@ proc tablelist::expandallSubCmd {win argList} {
     }
 
     if {$argCount == 0} {
-	set fullExpansion 1
+	set opt "-fully"
     } else {
 	variable expCollOpts
 	set opt [mwutil::fullOpt "option" [lindex $argList 0] $expCollOpts]
-	set fullExpansion [expr {[string compare $opt "-fully"] == 0}]
     }
 
     synchronize $win
-    displayItems $win
-
     upvar ::tablelist::ns${win}::data data
-    set callExpandCmd [expr {[string length $data(-expandcommand)] != 0}]
-    set col $data(treeCol)
-    set w $data(body)
-
-    foreach key $data(root-childList) {
-	if {![info exists data($key,$col-indent)] ||
-	    [string match "*indented*" $data($key,$col-indent)]} {
-	    continue
-	}
-
-	if {$callExpandCmd} {
-	    set data(keyBeingExpanded) $key
-	    uplevel #0 $data(-expandcommand) [list $win [keyToRow $win $key]]
-	    set data(keyBeingExpanded) ""
-	}
-
-	#
-	# Set the indentation image to the indented or expanded one
-	#
-	set childCount [llength $data($key-childList)]
-	set state [expr {($childCount == 0) ? "indented" : "expanded"}]
-	set data($key,$col-indent) [strMap \
-	    [list "collapsed" $state "expanded" $state] $data($key,$col-indent)]
-	if {[string compare $state "indented"] == 0} {
-	    set data($key,$col-indent) [strMap \
-		{"Act" "" "Sel" ""} $data($key,$col-indent)]
-	}
-	if {[winfo exists $w.ind_$key,$col]} {
-	    $w.ind_$key,$col configure -image $data($key,$col-indent)
-	}
-
-	#
-	# Unelide the children if appropriate and invoke expandSubCmd on them
-	#
-	set isViewable [expr {![info exists data($key-hide)]}]
-	foreach childKey $data($key-childList) {
-	    set childRow [keyToRow $win $childKey]
-	    if {$isViewable} {
-		doRowConfig $childRow $win -elide 0
-	    }
-	    if {$fullExpansion} {
-		expandSubCmd $win [list $childRow -fully]
-	    } elseif {[string match "*expanded*" \
-		       $data($childKey,$col-indent)]} {
-		expandSubCmd $win [list $childRow -partly]
-	    }
-	}
-    }
-
-    hdr_adjustElidedText $win
-    hdr_updateColors $win
-    adjustElidedText $win
-    redisplayVisibleItems $win
-    makeStripes $win
-    adjustSepsWhenIdle $win
-    updateVScrlbarWhenIdle $win
-    return ""
+    return [expandSubCmd $win [list $data(root-childList) $opt]]
 }
 
 #------------------------------------------------------------------------------
@@ -2762,7 +2664,7 @@ proc tablelist::expandedkeysSubCmd {win argList} {
     upvar ::tablelist::ns${win}::data data
     set result {}
     foreach name [array names data "*,$data(treeCol)-indent"] {
-	if {[string match "tablelist_*_expanded*Img*" $data($name)]} {
+	if {[string match "*expanded*" $data($name)]} {
 	    set commaPos [string first "," $name]
 	    lappend result [string range $name 0 [expr {$commaPos - 1}]]
 	}
@@ -4722,8 +4624,9 @@ proc tablelist::insertchildlistSubCmd {win argList} {
 	set data($parentKey,$treeCol-indent) \
 	    tablelist_${treeStyle}_expandedImg$depth
 	if {[winfo exists $data(body).ind_$parentKey,$treeCol]} {
-	    $data(body).ind_$parentKey,$treeCol configure -image \
-		$data($parentKey,$treeCol-indent)
+	    set idx [string last "g" $data($parentKey,$treeCol-indent)]
+	    set img [string range $data($parentKey,$treeCol-indent) 0 $idx]
+	    $data(body).ind_$parentKey,$treeCol configure -image $img
 	}
     }
 
@@ -4748,7 +4651,7 @@ proc tablelist::insertchildlistSubCmd {win argList} {
     incr depth
     variable maxIndentDepths
     if {$depth > $maxIndentDepths($treeStyle)} {
-	createTreeImgs $treeStyle $depth
+	setTreeLabelWidths $treeStyle $depth
 	set maxIndentDepths($treeStyle) $depth
     }
     for {set n 0; set row $listIdx} {$n < $itemCount} {incr n; incr row} {
@@ -7091,8 +6994,10 @@ proc tablelist::deleteRows {win first last updateListVar} {
 			{"collapsed" "indented" "expanded" "indented"
 			 "Act" "" "Sel" ""} $data($parentKey,$col-indent)]
 		    if {[winfo exists $data(body).ind_$parentKey,$col]} {
-			$data(body).ind_$parentKey,$col configure -image \
-			    $data($parentKey,$col-indent)
+			set idx [string last "g" $data($parentKey,$col-indent)]
+			set img [string range $data($parentKey,$col-indent) \
+				 0 $idx]
+			$data(body).ind_$parentKey,$col configure -image $img
 		    }
 		}
 	    }

@@ -124,9 +124,7 @@ proc tablelist::extendConfigSpecs {} {
 	setThemeDefaults
 	variable themeDefaults
 	set treeStyle $themeDefaults(-treestyle)
-	${treeStyle}TreeImgs 
-	variable maxIndentDepths
-	set maxIndentDepths($treeStyle) 0
+	createTreeImgs $treeStyle
 
 	ttk::label $helpLabel -takefocus 0
 
@@ -339,7 +337,11 @@ proc tablelist::extendConfigSpecs {} {
 		    }
 		}
 		set arrowDisabledColor	#a3a3a3
-		set treeStyle		aqua
+		if {$majorOSVersion >= 20} {		;# macOS 11.0 or higher
+		    set treeStyle	aqua11
+		} else {
+		    set treeStyle	aqua
+		}
 	    }
 	}
 	lappend configSpecs(-arrowcolor)		$arrowColor
@@ -347,9 +349,7 @@ proc tablelist::extendConfigSpecs {} {
 	lappend configSpecs(-arrowstyle)		$arrowStyle
 	if {$::tk_version >= 8.3} {
 	    lappend configSpecs(-treestyle)		$treeStyle
-	    ${treeStyle}TreeImgs 
-	    variable maxIndentDepths
-	    set maxIndentDepths($treeStyle) 0
+	    createTreeImgs $treeStyle
 	}
     }
 
@@ -1238,32 +1238,30 @@ proc tablelist::doConfig {win opt val} {
 		    set newStyle [mwutil::fullOpt "tree style" $val $treeStyles]
 		    set oldStyle $data($opt)
 		    set treeCol $data(treeCol)
+		    set data($opt) $newStyle
 		    if {[string compare $newStyle $oldStyle] != 0} {
-			${newStyle}TreeImgs 
+			createTreeImgs $newStyle
 			variable maxIndentDepths
-			if {![info exists maxIndentDepths($newStyle)]} {
-			    set maxIndentDepths($newStyle) 0
-			}
 			if {$data(colCount) != 0} {
 			    for {set row 0} {$row < $data(itemCount)} \
 				{incr row} {
-				set oldImg \
+				set oldIndent \
 				    [doCellCget $row $treeCol $win -indent]
-				set newImg [strMap \
-				    [list $oldStyle $newStyle "Sel" ""] $oldImg]
-				if {[regexp {^.+Img([0-9]+)$} $newImg \
+				set newIndent [strMap \
+				    [list $oldStyle $newStyle "Sel" ""] \
+				    $oldIndent]
+				if {[regexp {^.+Img([0-9]+)$} $newIndent \
 				     dummy depth]} {
 				    if {$depth > $maxIndentDepths($newStyle)} {
-					createTreeImgs $newStyle $depth
+					setTreeLabelWidths $newStyle $depth
 					set maxIndentDepths($newStyle) $depth
 				    }
 				    doCellConfig $row $treeCol $win \
-						 -indent $newImg
+						 -indent $newIndent
 				}
 			    }
 			}
 		    }
-		    set data($opt) $newStyle
 		    switch -glob $newStyle {
 			baghira -
 			klearlooks -

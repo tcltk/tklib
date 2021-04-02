@@ -1140,6 +1140,33 @@ eBcCDIGhR5ZmUgAAOw==
 }
 
 #------------------------------------------------------------------------------
+# tablelist::aqua11TreeImgs
+#------------------------------------------------------------------------------
+proc tablelist::aqua11TreeImgs {} {
+    foreach mode {collapsed expanded collapsedSel expandedSel} {
+	variable aqua11_${mode}Img \
+		 [image create photo tablelist_aqua11_${mode}Img]
+    }
+
+    tablelist_aqua11_collapsedImg put "
+R0lGODlhCQAIAKECAAAAAICAgP///////yH5BAEKAAAALAAAAAAJAAgAAAINhI8RmMumHnTtRXZR
+AQA7
+"
+    tablelist_aqua11_expandedImg put "
+R0lGODlhCQAIAKECAAAAAICAgP///////yH5BAEKAAAALAAAAAAJAAgAAAINhI95kQzhXoSyURVV
+KgA7
+"
+    tablelist_aqua11_collapsedSelImg put "
+R0lGODlhCQAIAKEBAAAAAP///////////yH5BAEKAAAALAAAAAAJAAgAAAINhI8RmMumHnTtRXZR
+AQA7
+"
+    tablelist_aqua11_expandedSelImg put "
+R0lGODlhCQAIAKEBAAAAAP///////////yH5BAEKAAAALAAAAAAJAAgAAAINhI95kQzhXoSyURVV
+KgA7
+"
+}
+
+#------------------------------------------------------------------------------
 # tablelist::arcTreeImgs
 #------------------------------------------------------------------------------
 proc tablelist::arcTreeImgs {} {
@@ -3281,13 +3308,31 @@ F4jcQ3YjCYnFI2v2ooSWJhSow0lhro8IADs=
 #------------------------------------------------------------------------------
 # tablelist::createTreeImgs
 #------------------------------------------------------------------------------
-proc tablelist::createTreeImgs {treeStyle depth} {
-    #
-    # Get the width of the images to create for the specified depth and
-    # the destination x coordinate for copying the base images into them
-    #
+proc tablelist::createTreeImgs treeStyle {
+    variable ${treeStyle}_collapsedImg
+    if {[info exists ${treeStyle}_collapsedImg]} {
+	return ""
+    }
+
+    ${treeStyle}TreeImgs
     set baseWidth  [image width  tablelist_${treeStyle}_collapsedImg]
     set baseHeight [image height tablelist_${treeStyle}_collapsedImg]
+    image create photo tablelist_${treeStyle}_indentedImg \
+	-width $baseWidth -height $baseHeight
+
+    variable maxIndentDepths
+    set maxIndentDepths($treeStyle) 0
+}
+
+#------------------------------------------------------------------------------
+# tablelist::setTreeLabelWidths
+#------------------------------------------------------------------------------
+proc tablelist::setTreeLabelWidths {treeStyle depth} {
+    #
+    # Get the width of the embedded indentation labels to create for
+    # the specified depth and save it in the array treeLabelWidths
+    #
+    set baseWidth [image width  tablelist_${treeStyle}_collapsedImg]
     set step $baseWidth
     switch -regexp -- $treeStyle {
 	^win10$ {
@@ -3328,35 +3373,13 @@ proc tablelist::createTreeImgs {treeStyle depth} {
 	^(adwaita|aqua|arc)$				      { incr step  4 }
 	^(oxygen.|phase|winnative|winxp.+)$		      { incr step  5 }
 	^(baghira|klearlooks)$				      { incr step  7 }
-	^.+100$						      { incr step  6 }
+	^(aqua11|.+100)$				      { incr step  6 }
 	^.+125$						      { incr step  8 }
 	^.+150$						      { incr step  9 }
 	^.+175$						      { incr step  11 }
 	^.+200$						      { incr step  12 }
     }
-    set x [expr {($depth - 1) * $step}]
-    set width [expr {$x + $baseWidth}]
-
-    #
-    # Create the images for the given depth and copy the base images into them
-    #
-    foreach mode {indented collapsed expanded} {
-	image create photo tablelist_${treeStyle}_${mode}Img$depth \
-	    -width $width -height $baseHeight
-    }
-    foreach mode {collapsed expanded} {
-	tablelist_${treeStyle}_${mode}Img$depth copy \
-	    tablelist_${treeStyle}_${mode}Img -to $x 0
-
-	foreach modif {Sel Act SelAct} {
-	    variable ${treeStyle}_${mode}${modif}Img
-	    if {[info exists ${treeStyle}_${mode}${modif}Img]} {
-		image create photo \
-		    tablelist_${treeStyle}_${mode}${modif}Img$depth \
-		    -width $width -height $baseHeight
-		tablelist_${treeStyle}_${mode}${modif}Img$depth copy \
-		    tablelist_${treeStyle}_${mode}${modif}Img -to $x 0
-	    }
-	}
-    }
+    set width [expr {($depth - 1) * $step + $baseWidth}]
+    variable treeLabelWidths
+    set treeLabelWidths($treeStyle,$depth) $width
 }

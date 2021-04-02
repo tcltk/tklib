@@ -551,10 +551,22 @@ proc tablelist::descCount {win key} {
     if {[string compare $key "root"] == 0} {
 	return $data(itemCount)
     } else {
-	set count [llength $data($key-childList)]
-	foreach child $data($key-childList) {
-	    incr count [descCount $win $child]
+	#
+	# Level-order traversal
+	#
+	set count 0
+	set lst1 [list $key]
+	while {[llength $lst1] != 0} {
+	    set lst2 {}
+	    foreach key $lst1 {
+		incr count [llength $data($key-childList)]
+		foreach childKey $data($key-childList) {
+		    lappend lst2 $childKey
+		}
+	    }
+	    set lst1 $lst2
 	}
+
 	return $count
     }
 }
@@ -1254,10 +1266,11 @@ proc tablelist::displayIndent {win key col width} {
 	# Create a label widget and replace the binding tag Label with
 	# $data(bodyTag) and TablelistBody in the list of its binding tags
 	#
-	tk::label $w -anchor w -background $data(-background) -borderwidth 0 \
-		     -height 0 -highlightthickness 0 \
-		     -image $data($key,$col-indent) -padx 0 -pady 0 \
-		     -relief flat -takefocus 0 -width $width
+	set idx [string last "g" $data($key,$col-indent)]
+	set img [string range $data($key,$col-indent) 0 $idx]
+	tk::label $w -anchor e -background $data(-background) -borderwidth 0 \
+		     -height 0 -highlightthickness 0 -image $img \
+		     -padx 0 -pady 0 -relief flat -takefocus 0 -width $width
 	bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) TablelistBody]
     }
 
@@ -1401,7 +1414,15 @@ proc tablelist::getIndentData {win key col indentWidthName} {
     upvar ::tablelist::ns${win}::data data $indentWidthName indentWidth
 
     if {[info exists data($key,$col-indent)]} {
-	set indentWidth [image width $data($key,$col-indent)]
+	#
+	# Speed optimization: Replaced the regexp below with string operations
+	#
+	### regexp {^.+Img([0-9]+)$} $data($key,$col-indent) dummy depth
+	set idx [string last "g" $data($key,$col-indent)]
+	set depth [string range $data($key,$col-indent) [incr idx] end]
+
+	variable treeLabelWidths
+	set indentWidth $treeLabelWidths($data(-treestyle),$depth)
 	return [list ::tablelist::displayIndent $win $key $col 0]
     } else {
 	set indentWidth 0
@@ -3854,7 +3875,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
     }
 
     set hasExpCollCtrlSelImgs [expr {$::tk_version >= 8.3 &&
-	[info exists tablelist::$data(-treestyle)_collapsedSelImg]}]
+	[info exists ::tablelist::$data(-treestyle)_collapsedSelImg]}]
 
     foreach {dummy path textIdx} [$w dump -window $fromTextIdx $toTextIdx] {
 	if {[string length $path] == 0} {
@@ -3913,20 +3934,22 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		    }
 		}
 	    } elseif {$hasExpCollCtrlSelImgs} {
-		set curImgName [$path cget -image]
+		set curIndent $data($key,$col-indent)
 		if {$selected} {
-		    set newImgName [strMap {
+		    set newIndent [strMap {
 			"SelActImg" "SelActImg" "ActImg" "SelActImg"
 			"SelImg" "SelImg" "collapsedImg" "collapsedSelImg"
 			"expandedImg" "expandedSelImg"
-		    } $curImgName]
+		    } $curIndent]
 		} else {
-		    set newImgName [strMap {"Sel" ""} $curImgName]
+		    set newIndent [strMap {"Sel" ""} $curIndent]
 		}
 
-		if {[string compare $curImgName $newImgName] != 0} {
-		    set data($key,$col-indent) $newImgName
-		    $path configure -image $data($key,$col-indent)
+		if {[string compare $curIndent $newIndent] != 0} {
+		    set data($key,$col-indent) $newIndent
+		    set idx [string last "g" $newIndent]
+		    set img [string range $newIndent 0 $idx]
+		    $path configure -image $img
 		}
 	    }
 	}

@@ -2856,8 +2856,7 @@ proc tablelist::defineTablelistEdit {} {
 	    bind TablelistEditBreak <Shift-Button-$detail> { break }
 	}
 
-	if {$::tk_version >= 8.7 &&
-	    [package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+	if {[string compare $::tk_patchLevel "8.7a3"] == 0} {
 	    foreach detail {6 7} {
 		bind TablelistEdit <Button-$detail> [format {
 		    if {[tablelist::hasMouseWheelBindings %%W x]} {

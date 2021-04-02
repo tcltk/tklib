@@ -827,7 +827,7 @@ proc tablelist::defineTablelistBody {} {
 	    foreach {tablelist::W tablelist::x tablelist::y} \
 		[tablelist::convEventFields %W %x %y] {}
 	    if {$tablelist::y < [winfo y [$tablelist::W bodypath]]} {
-		continue
+		continue	;# on a vertical separator, outside the body
 	    }
 
 	    set tablelist::priv(x) $tablelist::x
@@ -858,7 +858,7 @@ proc tablelist::defineTablelistBody {} {
 	    foreach {tablelist::W tablelist::x tablelist::y} \
 		[tablelist::convEventFields %W %x %y] {}
 	    if {$tablelist::y < [winfo y [$tablelist::W bodypath]]} {
-		continue
+		continue	;# on a vertical separator, outside the body
 	    }
 
 	    if {[$tablelist::W cget -editselectedonly]} {
@@ -896,10 +896,6 @@ proc tablelist::defineTablelistBody {} {
 	if {[winfo exists %W]} {
 	    foreach {tablelist::W tablelist::x tablelist::y} \
 		[tablelist::convEventFields %W %x %y] {}
-	    if {$tablelist::y < [winfo y [$tablelist::W bodypath]] &&
-		[string length $tablelist::priv(afterId)] == 0} { ;# no autoscan
-		continue
-	    }
 
 	    set tablelist::priv(x) ""
 	    set tablelist::priv(y) ""
@@ -930,7 +926,7 @@ proc tablelist::defineTablelistBody {} {
 	foreach {tablelist::W tablelist::x tablelist::y} \
 	    [tablelist::convEventFields %W %x %y] {}
 	if {$tablelist::y < [winfo y [$tablelist::W bodypath]]} {
-	    continue
+	    continue		;# on a vertical separator, outside the body
 	}
 
 	tablelist::beginExtend $tablelist::W \
@@ -942,7 +938,7 @@ proc tablelist::defineTablelistBody {} {
 	foreach {tablelist::W tablelist::x tablelist::y} \
 	    [tablelist::convEventFields %W %x %y] {}
 	if {$tablelist::y < [winfo y [$tablelist::W bodypath]]} {
-	    continue
+	    continue		;# on a vertical separator, outside the body
 	}
 
 	tablelist::beginToggle $tablelist::W \
@@ -1174,8 +1170,7 @@ proc tablelist::defineTablelistBody {} {
 		}
 	    }
 
-	    if {$::tk_version >= 8.7 &&
-		[package vcompare $::tk_patchLevel "8.7a3"] >= 0} {
+	    if {[string compare $::tk_patchLevel "8.7a3"] == 0} {
 		bind TablelistBody <Button-6> {
 		    if {!$tk_strictMotif} {
 			tablelist::handleWheelEvent <Button-6> x %W \
@@ -1385,8 +1380,8 @@ proc tablelist::updateExpCollCtrl {win w row col x} {
 	    $x < [winfo x $indentLabel] &&
 	    [string compare $data($key-parent) "root"] == 0} {
 	    set imgName [$indentLabel cget -image]
-	    if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img([0-9]+)$} \
-			 $imgName dummy treeStyle mode depth]} {
+	    if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img$} \
+			 $imgName dummy treeStyle mode]} {
 		#
 		# The mouse position is in the tablelist body, to the left
 		# of an expand/collapse control of a top-level item:  Handle
@@ -1396,8 +1391,8 @@ proc tablelist::updateExpCollCtrl {win w row col x} {
 	    }
 	} elseif {[string compare $w $indentLabel] == 0} {
 	    set imgName [$w cget -image]
-	    if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img([0-9]+)$} \
-			 $imgName dummy treeStyle mode depth]} {
+	    if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img$} \
+			 $imgName dummy treeStyle mode]} {
 		#
 		# The mouse position is in an expand/collapse
 		# image (which ends with the expand/collapse
@@ -1422,7 +1417,9 @@ proc tablelist::updateExpCollCtrl {win w row col x} {
 	[winfo exists $data(body).ind_$prevCellIdx]} {
 	set data($prevCellIdx-indent) \
 	    [strMap {"Act" ""} $data($prevCellIdx-indent)]
-	$data(body).ind_$prevCellIdx configure -image $data($prevCellIdx-indent)
+	set idx [string last "g" $data($prevCellIdx-indent)]
+	set img [string range $data($prevCellIdx-indent) 0 $idx]
+	$data(body).ind_$prevCellIdx configure -image $img
 	set priv(prevActExpCollCtrlCell) ""
     }
 
@@ -1439,7 +1436,9 @@ proc tablelist::updateExpCollCtrl {win w row col x} {
 	    "SelActImg" "SelActImg" "SelImg" "SelActImg"
 	    "ActImg" "ActImg" "Img" "ActImg"
 	} $data($key,$col-indent)]
-	$indentLabel configure -image $data($key,$col-indent)
+	set idx [string last "g" $data($key,$col-indent)]
+	set img [string range $data($key,$col-indent) 0 $idx]
+	$indentLabel configure -image $img
 	set priv(prevActExpCollCtrlCell) $key,$col
     }
 }
@@ -1561,8 +1560,8 @@ proc tablelist::wasExpCollCtrlClicked {w x y} {
     if {[string compare $w $data(body)] == 0 && $x < [winfo x $indentLabel] &&
 	[string compare $data($key-parent) "root"] == 0} {
 	set imgName [$indentLabel cget -image]
-	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img([0-9]+)$} \
-		     $imgName dummy treeStyle mode depth]} {
+	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img$} \
+		     $imgName dummy treeStyle mode]} {
 	    #
 	    # The mouse position is in the tablelist body, to the left
 	    # of an expand/collapse control of a top-level item:  Handle
@@ -1572,8 +1571,8 @@ proc tablelist::wasExpCollCtrlClicked {w x y} {
 	}
     } elseif {[string compare $w $indentLabel] == 0} {
 	set imgName [$w cget -image]
-	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img([0-9]+)$} \
-		     $imgName dummy treeStyle mode depth]} {
+	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img$} \
+		     $imgName dummy treeStyle mode]} {
 	    #
 	    # The mouse position is in an expand/collapse
 	    # image (which ends with the expand/collapse
@@ -2562,8 +2561,8 @@ proc tablelist::plusMinus {win keysym} {
     if {[info exists data($key,$col-indent)]} {
 	set indentLabel $data(body).ind_$key,$col
 	set imgName [$indentLabel cget -image]
-	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img([0-9]+)$} \
-		     $imgName dummy treeStyle mode depth]} {
+	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img$} \
+		     $imgName dummy treeStyle mode]} {
 	    if {[string compare $keysym "plus"] == 0 &&
 		[string compare $mode "collapsed"] == 0} {
 		set op "expand"
@@ -2689,8 +2688,8 @@ proc tablelist::leftRight {win amount} {
     if {[info exists data($key,$col-indent)]} {
 	set indentLabel $data(body).ind_$key,$col
 	set imgName [$indentLabel cget -image]
-	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img([0-9]+)$} \
-		     $imgName dummy treeStyle mode depth]} {
+	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img$} \
+		     $imgName dummy treeStyle mode]} {
 	    if {$amount > 0 && [string compare $mode "collapsed"] == 0} {
 		set op "expand"
 	    } elseif {$amount < 0 && [string compare $mode "expanded"] == 0} {

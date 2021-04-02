@@ -209,8 +209,8 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
     #
     set depth [depth $win $targetParentKey]
     if {([info exists data($targetParentKey,$treeCol-indent)] && \
-	 [string compare $data($targetParentKey,$treeCol-indent) \
-	  tablelist_${treeStyle}_collapsedImg$depth] == 0) ||
+	 [string match "*collapsed*" \
+	  $data($targetParentKey,$treeCol-indent)]) ||
 	[info exists data($targetParentKey-elide)] ||
 	[info exists data($targetParentKey-hide)]} {
 	doRowConfig $target1 $win -elide 1
@@ -253,8 +253,11 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 		{"collapsed" "indented" "expanded" "indented"
 		 "Act" "" "Sel" ""} $data($sourceParentKey,$treeCol-indent)]
 	    if {[winfo exists $w.ind_$sourceParentKey,$treeCol]} {
-		$w.ind_$sourceParentKey,$treeCol configure -image \
-		    $data($sourceParentKey,$treeCol-indent)
+		set idx [string last "g" \
+			 $data($sourceParentKey,$treeCol-indent)]
+		set img [string range $data($sourceParentKey,$treeCol-indent) \
+			 0 $idx]
+		$w.ind_$sourceParentKey,$treeCol configure -image $img
 	    }
 	}
 
@@ -267,8 +270,11 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	    set data($targetParentKey,$treeCol-indent) \
 		tablelist_${treeStyle}_expandedImg$depth
 	    if {[winfo exists $data(body).ind_$targetParentKey,$treeCol]} {
-		$data(body).ind_$targetParentKey,$treeCol configure -image \
-		    $data($targetParentKey,$treeCol-indent)
+		set idx [string last "g" \
+			 $data($targetParentKey,$treeCol-indent)]
+		set img [string range $data($targetParentKey,$treeCol-indent) \
+			 0 $idx]
+		$data(body).ind_$targetParentKey,$treeCol configure -image $img
 	    }
 	}
 
@@ -279,7 +285,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	    incr depth
 	    variable maxIndentDepths
 	    if {$depth > $maxIndentDepths($treeStyle)} {
-		createTreeImgs $treeStyle $depth
+		setTreeLabelWidths $treeStyle $depth
 		set maxIndentDepths($treeStyle) $depth
 	    }
 	    doCellConfig $target1 $treeCol $win -indent $base$depth
@@ -363,7 +369,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 		if {$descDepth > $maxIndentDepths($treeStyle)} {
 		    for {set d $descDepth} {$d > $maxIndentDepths($treeStyle)} \
 			{incr d -1} {
-			createTreeImgs $treeStyle $d
+			setTreeLabelWidths $treeStyle $d
 		    }
 		    set maxIndentDepths($treeStyle) $descDepth
 		}

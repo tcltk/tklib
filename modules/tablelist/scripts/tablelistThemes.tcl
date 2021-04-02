@@ -356,7 +356,6 @@ proc tablelist::aquaTheme {} {
 	-labelborderwidth	1 \
 	-labelpady		1 \
 	-arrowcolor		$arrowColor \
-	-treestyle		aqua \
     ]
 
     variable pngSupported
@@ -366,6 +365,12 @@ proc tablelist::aquaTheme {} {
 	set themeDefaults(-arrowstyle) photo7x7
     } else {
 	set themeDefaults(-arrowstyle) flat7x7
+    }
+
+     if {$majorOSVersion >= 20} {			;# macOS 11.0 or higher
+	set themeDefaults(-treestyle) aqua11
+    } else {
+	set themeDefaults(-treestyle) aqua
     }
 }
 
