@@ -7,7 +7,7 @@
 # Copyright (c) 2010-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.12
+package require tablelist_tile 6.13
 
 #
 # Add some entries to the Tk option database
@@ -22,14 +22,6 @@ set pct $tablelist::scalingpct
 image create photo clsdFolderImg -file [file join $dir clsdFolder$pct.gif]
 image create photo openFolderImg -file [file join $dir openFolder$pct.gif]
 image create photo fileImg       -file [file join $dir       file$pct.gif]
-
-#
-# Work around the improper appearance of the tile scrollbars in the aqua theme
-#
-if {$currentTheme eq "aqua" &&
-    [package vcompare $::tk_patchLevel "8.6.10"] < 0} {
-    interp alias {} ttk::scrollbar {} ::scrollbar
-}
 
 #------------------------------------------------------------------------------
 # displayContents
@@ -305,7 +297,9 @@ proc expandCmd {tbl row} {
 # tablelist widget tbl.
 #------------------------------------------------------------------------------
 proc collapseCmd {tbl row} {
-    $tbl cellconfigure $row,0 -image clsdFolderImg
+    if {[$tbl hasrowattrib $row pathName]} {		;# directory item
+	$tbl cellconfigure $row,0 -image clsdFolderImg
+    }
 }
 
 #------------------------------------------------------------------------------

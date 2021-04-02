@@ -34,3 +34,20 @@ option add *ScrollArea.relief			sunken
 option add *ScrollArea.Tablelist.borderWidth	0
 option add *ScrollArea.Text.borderWidth		0
 option add *ScrollArea.Text.highlightThickness	0
+
+#
+# Work around some appearance issues related to the "aqua" theme
+#
+if {$currentTheme eq "aqua"} {
+    if {[catch {winfo rgb . systemTextBackgroundColor}] == 0 &&
+	[catch {winfo rgb . systemTextColor}] == 0} {
+	foreach style {TEntry TSpinbox} {
+	    ttk::style configure $style -background systemTextBackgroundColor \
+		-foreground systemTextColor
+	}
+    }
+
+    if {[package vcompare $::tk_patchLevel "8.6.10"] < 0} {
+	interp alias {} ttk::scrollbar {} ::scrollbar
+    }
+}

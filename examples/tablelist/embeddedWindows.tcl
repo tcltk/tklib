@@ -6,7 +6,7 @@
 # Copyright (c) 2004-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 6.12
+package require tablelist 6.13
 
 wm title . "Tk Library Scripts"
 
@@ -154,6 +154,7 @@ proc viewFile {tbl key} {
     set vsb $tf.vsb
     text $txt -background white -font TkFixedFont -setgrid yes \
 	      -yscrollcommand [list $vsb set]
+    catch {$txt configure -tabstyle wordprocessor}
     scrollbar $vsb -orient vertical -command [list $txt yview]
 
     #

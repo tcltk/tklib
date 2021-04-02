@@ -8,7 +8,7 @@
 #==============================================================================
 
 package require Tk 8.3
-package require tablelist 6.12
+package require tablelist 6.13
 
 #
 # Add some entries to the Tk option database
@@ -294,7 +294,9 @@ proc expandCmd {tbl row} {
 # tablelist widget tbl.
 #------------------------------------------------------------------------------
 proc collapseCmd {tbl row} {
-    $tbl cellconfigure $row,0 -image clsdFolderImg
+    if {[$tbl hasrowattrib $row pathName]} {		;# directory item
+	$tbl cellconfigure $row,0 -image clsdFolderImg
+    }
 }
 
 #------------------------------------------------------------------------------

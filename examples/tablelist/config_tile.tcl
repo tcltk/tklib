@@ -53,11 +53,18 @@ namespace eval demo {
 }
 
 #
-# Work around the improper appearance of the tile scrollbars in the aqua theme
+# Work around some appearance issues related to the "aqua" theme
 #
-if {$demo::currentTheme eq "aqua" &&
-    [package vcompare $::tk_patchLevel "8.6.10"] < 0} {
-    interp alias {} ttk::scrollbar {} ::scrollbar
+if {$demo::currentTheme eq "aqua"} {
+    if {[catch {winfo rgb . systemTextBackgroundColor}] == 0 &&
+	[catch {winfo rgb . systemTextColor}] == 0} {
+	ttk::style configure TEntry -background systemTextBackgroundColor \
+	    -foreground systemTextColor
+    }
+
+    if {[package vcompare $::tk_patchLevel "8.6.10"] < 0} {
+	interp alias {} ttk::scrollbar {} ::scrollbar
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -184,7 +191,8 @@ proc demo::putConfig {w tbl} {
 	    if {[string compare $default $current] != 0} {
 		foreach col {0 4} {
 		    $tbl cellconfigure end,$col -foreground red
-		    if {$demo::selectFgEqForeground} {
+		    variable selectFgEqForeground
+		    if {$selectFgEqForeground} {
 			$tbl cellconfigure end,$col -selectforeground red
 		    } else {
 			$tbl cellconfigure end,$col -selectforeground yellow
@@ -260,7 +268,8 @@ proc demo::applyValue {tbl row col text} {
     } else {
 	foreach col {0 4} {
 	    $tbl cellconfigure $row,$col -foreground red
-	    if {$demo::selectFgEqForeground} {
+	    variable selectFgEqForeground
+	    if {$selectFgEqForeground} {
 		$tbl cellconfigure $row,$col -selectforeground red
 	    } else {
 		$tbl cellconfigure $row,$col -selectforeground yellow

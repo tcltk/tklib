@@ -6,7 +6,7 @@
 # Copyright (c) 2004-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.12
+package require tablelist_tile 6.13
 
 wm title . "Tile Library Scripts"
 
@@ -28,14 +28,7 @@ catch {font create TkFixedFont -family Courier -size 9}
 set pct $tablelist::scalingpct
 image create photo openImg -file [file join $dir openAction$pct.gif]
 
-if {$currentTheme eq "aqua"} {
-    #
-    # Work around the improper appearance of the tile scrollbars
-    #
-    if {[package vcompare $::tk_patchLevel "8.6.10"] < 0} {
-	interp alias {} ttk::scrollbar {} ::scrollbar
-    }
-} else {
+if {$currentTheme ne "aqua"} {
     #
     # Make the embedded buttons as small as possible.  Recall that in most
     # themes, the tile buttons consist of the following element hierarchy:
@@ -195,6 +188,7 @@ proc viewFile {tbl key} {
     set txt $tf.txt
     set vsb $tf.vsb
     text $txt -font TkFixedFont -setgrid yes -yscrollcommand [list $vsb set]
+    catch {$txt configure -tabstyle wordprocessor}
     global isAwTheme
     if {$isAwTheme} {
 	global currentTheme
