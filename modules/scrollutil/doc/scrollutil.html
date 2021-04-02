@@ -111,8 +111,8 @@
     <li>commands for <i>user-friendly</i> mouse wheel event handling in
     <b>scrollable widget containers</b> like scrollutil::scrollableframe,
     BWidget ScrollableFrame, and iwidgets::scrolledframe.&nbsp; These commands
-    require Tcl/Tk versions 8.4 or higher on X11 and Mac OS X and Tk 8.6b2 or
-    later on Windows;</li>
+    require Tcl/Tk versions 8.4 or higher on X11 and Mac OS X/11 and Tk 8.6b2
+    or later on Windows;</li>
 
     <li>demo scripts illustrating the use of the Scrollutil package in
     connection with various scrollable widgets and the above-mentioned
@@ -449,11 +449,11 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
   <p>The way Scrollutil initializes the variable
   <code>scrollutil::scalingpct</code> depends on the windowing system:</p>
 
-  <p><i>On Windows and Mac OS X Aqua</i> the scaling percentage is computed
-  from&nbsp; <code>[tk scaling]</code>.&nbsp; Note that on Mac OS X the result
-  is always <code>100</code>, regardless of the display's scaling level.&nbsp;
-  On this system the desktop engine automatically scales everything as
-  needed.</p>
+  <p><i>On Windows and Mac OS X/11</i> the scaling percentage is computed
+  from&nbsp; <code>[tk scaling]</code>.&nbsp; Note that on Mac OS X/11 the
+  result is always <code>100</code>, regardless of the display's scaling
+  level.&nbsp; On this system the desktop engine automatically scales
+  everything as needed.</p>
 
   <p><i>On X11</i>, computing the scaling percentage from&nbsp; <code>[tk
   scaling]</code>&nbsp; is done as fallback method only, because the

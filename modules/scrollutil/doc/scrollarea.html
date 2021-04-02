@@ -173,7 +173,7 @@
     "#yscrollbarmode">-yscrollbarmode</a></b></code> configuration
     options).&nbsp; The <code><b>-takefocus</b></code> option of both
     scrollbars is set to <code>0</code>.&nbsp; In the Scrollutil_tile package
-    the scrollbars are created as ttk::scrollbar widgets, except on Mac OS X
+    the scrollbars are created as ttk::scrollbar widgets, except on Mac OS X/11
     when using a Tk release earlier than 8.6.10, where the native
     ttk::scrollbar widget of the <code><b>aqua</b></code> theme didn't yet look
     as expected.</dd>
@@ -367,8 +367,8 @@ option add *Scrollarea.autoHideScrollbars 1
         and the Tablelist version being used is 6.5 or later.&nbsp; Its value
         must be a boolean specifying whether the vertical scrollbar should
         appear below the tablelist widget's header, thus respecting the native
-        look & feel on Mac OS X Aqua and on many modern Linux systems.&nbsp;
-        The default is <code>1</code> on the windowing systems
+        look & feel on Mac OS X/11 and on many modern Linux systems.&nbsp; The
+        default is <code>1</code> on the windowing systems
         <code><b>aqua</b></code> and <code><b>x11</b></code>, and
         <code>0</code> on <code><b>win32</b></code>.</p>
       </blockquote>
