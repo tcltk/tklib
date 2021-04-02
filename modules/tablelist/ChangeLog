@@ -20,9 +20,9 @@
 	* scripts/utils/pkgIndex.tcl:  Fixed a bug related to font scaling on
 	* scripts/utils/scaleutil.tcl: X11.
 
-	* doc/aqua11.tcl: Added screenshot.
+	* doc/aqua11.png: Added screenshot.
 
-	* doc/aqua.tcl: Updated screenshot.
+	* doc/aqua.png: Updated screenshot.
 
 	* ../../examples/tablelist/*.tcl: Improvements in the demo scripts.
 
