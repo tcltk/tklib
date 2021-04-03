@@ -324,7 +324,10 @@ proc tablelist::extendConfigSpecs {} {
 	    classic -
 	    aqua {
 		scan $::tcl_platform(osVersion) "%d" majorOSVersion
-		if {$majorOSVersion >= 14} {		;# OS X 10.10 or higher
+		if {$majorOSVersion >= 20} {		;# macOS 11.0 or higher
+		    set arrowColor	#878787
+		    set arrowStyle	flatAngle7x4
+		} elseif {$majorOSVersion >= 14} {	;# OS X 10.10 or higher
 		    set arrowColor	#404040
 		    set arrowStyle	flatAngle7x4
 		} else {

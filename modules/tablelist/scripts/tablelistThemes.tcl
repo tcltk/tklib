@@ -167,13 +167,21 @@ proc tablelist::aquaTheme {} {
 		set labeldeactivatedBg	#323232
 		set labeldisabledBg	""
 		set labelpressedBg	#323232
-		set arrowColor		#808080
+		if {$majorOSVersion >= 20} {		;# macOS 11.0 or higher
+		    set arrowColor	#a4a0a1
+		} else {
+		    set arrowColor	#808080
+		}
 	    } else {
 		set labelBg		#eeeeee
 		set labeldeactivatedBg	#f6f6f6
 		set labeldisabledBg	""
 		set labelpressedBg	#eeeeee
-		set arrowColor		#404040
+		if {$majorOSVersion >= 20} {		;# macOS 11.0 or higher
+		    set arrowColor	#878787
+		} else {
+		    set arrowColor	#404040
+		}
 	    }
 	} else {
 	    set labelBg			#f6f6f6

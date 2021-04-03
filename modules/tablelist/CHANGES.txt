@@ -9,8 +9,8 @@ What is new in Tablelist 6.13?
    displaying a deeply nested tree structure and significantly improved
    their performance.
 
-3. Added the tree style "aqua11", which is now the default on macOS 11
-   (Big Sur).
+3. Added support for macOS 11 (Big Sur), including the new tree style
+   "aqua11", which is the default on macOS 11.
 
 4. Improvements in the demo scripts "browse(Tree)_tile.tcl",
    "config_tile.tcl", "dirViewer(_tile).tcl", and
