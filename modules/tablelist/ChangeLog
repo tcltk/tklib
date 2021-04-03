@@ -1,3 +1,9 @@
+2021-04-03 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                 Big Sur support slightly improved.
+	* scripts/tablelistConfig.tcl:
+	* scripts/tablelistThemes.tcl:
+
 2021-04-02 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 6.13.
