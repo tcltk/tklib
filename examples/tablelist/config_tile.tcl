@@ -41,7 +41,7 @@ namespace eval demo {
     set foreground [winfo rgb . $::tablelist::themeDefaults(-foreground)]
     set selectFg   [winfo rgb . $::tablelist::themeDefaults(-selectforeground)]
     set selectFgEqForeground [expr {$selectFg eq $foreground}]
-    if {$isAwTheme && ![regexp {^(aw)?(arc|breeze)$} $currentTheme]} {
+    if {$isAwTheme && ![regexp {^(aw)?(arc|breeze.*)$} $currentTheme]} {
 	option add *DemoTop.tf.borderWidth		2
     } else {
 	option add *DemoTop.tf.borderWidth		1

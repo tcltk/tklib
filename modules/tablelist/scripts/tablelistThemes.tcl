@@ -531,6 +531,19 @@ proc tablelist::awbreezeTheme {} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::awbreezedarkTheme
+#------------------------------------------------------------------------------
+proc tablelist::awbreezedarkTheme {} {
+    awTheme 
+    variable themeDefaults
+    variable scalingpct
+    array set themeDefaults [list \
+	-stripebackground	#202427 \
+	-treestyle		white$scalingpct \
+    ]
+}
+
+#------------------------------------------------------------------------------
 # tablelist::awclearlooksTheme
 #------------------------------------------------------------------------------
 proc tablelist::awclearlooksTheme {} {
@@ -2150,8 +2163,8 @@ proc tablelist::awTheme {} {
 	-labelactiveFg		$fg \
 	-labelpressedFg		$fg \
 	-labelfont		TkDefaultFont \
-	-labelborderwidth	2 \
-	-labelpady		2 \
+	-labelborderwidth	1 \
+	-labelpady		1 \
 	-arrowcolor		$fg \
 	-arrowstyle		[defaultX11ArrowStyle] \
     ]

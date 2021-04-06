@@ -1781,9 +1781,10 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         Macintosh, the default arrow color and style depend on the version of
         the operating system:&nbsp; Starting with version 10.10 (Yosemite) of
         Mac OS X, the default arrow color for the windowing system
-        <code><b>aqua</b></code> is <code>#404040</code> and the default arrow
-        style is <code><b>flatAngle7x4</b></code>.&nbsp; For earlier operating
-        system versions on the Mac, the default values are the arrow color
+        <code><b>aqua</b></code> is <code>#404040</code> on Mac OS X and
+        <code>#878787</code> on macOS 11, and the default arrow style is
+        <code><b>flatAngle7x4</b></code>.&nbsp; For earlier operating system
+        versions on the Mac, the default values are the arrow color
         <code>#777777</code> and the arrow style <code><b>flat7x7</b></code>
         (or <code><b>photo7x7</b></code>, in the presence of PNG support).</p>
 
@@ -4817,6 +4818,28 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
 
           <tbody align="center">
             <tr>
+              <td><img src="white100.png" alt="white100" width="120"
+              height="57"></td>
+              <td><img src="white125.png" alt="white125" width="140"
+              height="69"></td>
+              <td><img src="white150.png" alt="white150" width="160"
+              height="81"></td>
+              <td><img src="white175.png" alt="white175" width="185"
+              height="93"></td>
+              <td><img src="white200.png" alt="white200" width="210"
+              height="105"></td>
+            </tr>
+
+            <tr>
+              <th><code>white100</code></th>
+              <th><code>white125</code></th>
+              <th><code>white150</code></th>
+              <th><code>white175</code></th>
+              <th><code>white200</code></th>
+            </tr>
+
+          <tbody align="center">
+            <tr>
               <td><img src="classic100.png" alt="classic100" width="120"
               height="57"></td>
               <td><img src="classic125.png" alt="classic125" width="140"
@@ -4837,28 +4860,6 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
               <th><code>classic200</code></th>
             </tr>
           </tbody>
-
-          <tbody align="center">
-            <tr>
-              <td><img src="white100.png" alt="white100" width="120"
-              height="57"></td>
-              <td><img src="white125.png" alt="white125" width="140"
-              height="69"></td>
-              <td><img src="white150.png" alt="white150" width="160"
-              height="81"></td>
-              <td><img src="white175.png" alt="white175" width="185"
-              height="93"></td>
-              <td><img src="white200.png" alt="white200" width="210"
-              height="105"></td>
-            </tr>
-
-            <tr>
-              <th><code>white100</code></th>
-              <th><code>white125</code></th>
-              <th><code>white150</code></th>
-              <th><code>white175</code></th>
-              <th><code>white200</code></th>
-            </tr>
           </tbody>
         </table>
 
@@ -4935,12 +4936,12 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
                   <td>Default for the windowing system <code><b>aqua</b></code>
-                  on Mac OS 11.</td>
+                  on macOS 11.</td>
                 </tr>
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the <code><b>aqua</b></code> theme on Mac OS
+                  <td>Default for the <code><b>aqua</b></code> theme on macOS
                   11.</td>
                 </tr>
               </table>
@@ -4979,9 +4980,9 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td>While the tree style <code><b>bicolor100</b></code> uses
             "normal" sizes, the four other styles are suitable for use with
             large fonts and images (needed on high-resolution displays).<br>
-            Tablelist_tile: Default for the themes <code><b>awlight</b></code>,
-            <code><b>black</b></code>, <code><b>breeze</b></code>, and
-            <code><b>winxpblue</b></code> of the awthemes package.</td>
+            Tablelist_tile: Default for the themes <code><b>awblack</b></code>,
+            <code><b>awbreeze</b></code>, <code><b>awlight</b></code>, and
+            <code><b>awwinxpblue</b></code> of the awthemes package.</td>
           </tr>
 
           <tr>
@@ -4993,7 +4994,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td>While the tree style <code><b>classic100</b></code> uses
             "normal" sizes, the four other styles are suitable for use with
             large fonts and images (needed on high-resolution displays).<br>
-            Tablelist_tile: Default for the <code><b>arc</b></code> theme of
+            Tablelist_tile: Default for the <code><b>awarc</b></code> theme of
             the awthemes package.</td>
           </tr>
 
@@ -5151,7 +5152,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td>While the tree style <code><b>plain100</b></code> uses "normal"
             sizes, the four other styles are suitable for use with large fonts
             and images (needed on high-resolution displays).<br>
-            Tablelist_tile: Default for the <code><b>clearlooks</b></code>
+            Tablelist_tile: Default for the <code><b>awclearlooks</b></code>
             theme of the awthemes package.</td>
           </tr>
 
@@ -5279,8 +5280,8 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
             <td>While the tree style <code><b>white100</b></code> uses "normal"
             sizes, the four other styles are suitable for use with large fonts
             and images (needed on high-resolution displays).<br>
-            Tablelist_tile: Default for the <code><b>awdark</b></code>
-            theme.</td>
+            Tablelist_tile: Default for the themes <code><b>awdark</b></code>
+            and <code><b>awbreezedark</b></code> of the awthemes package.</td>
           </tr>
 
           <tr>

@@ -25,7 +25,7 @@ option add *Tablelist.setGrid			yes
 option add *Tablelist.movableColumns		yes
 option add *Tablelist.labelCommand		tablelist::sortByColumn
 option add *Tablelist.labelCommand2		tablelist::addToSortColumns
-if {$isAwTheme && ![regexp {^(aw)?(arc|breeze)$} $currentTheme]} {
+if {$isAwTheme && ![regexp {^(aw)?(arc|breeze.*)$} $currentTheme]} {
     option add *ScrollArea.borderWidth		2
 } else {
     option add *ScrollArea.borderWidth		1

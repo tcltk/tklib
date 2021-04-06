@@ -12,15 +12,20 @@ What is new in Tablelist 6.13?
 3. Added support for macOS 11 (Big Sur), including the new tree style
    "aqua11", which is the default on macOS 11.
 
-4. Improvements in the demo scripts "browse(Tree)_tile.tcl",
+4. Added support for the "awbreezedark" theme, introduced in version
+   10.3 of the awthemes package.
+
+5. Improvements in the demo scripts "browse(Tree)_tile.tcl",
    "config_tile.tcl", "dirViewer(_tile).tcl", and
    "embeddedWindows(_tile).tcl".
 
-5. Fixed a bug related to font scaling on X11 (thanks to Ulrich Seidl
+6. Fixed a bug related to font scaling on X11 (thanks to Ulrich Seidl
    for his bug report).
 
-6. Fixed a bug related to the interactive row move operation (again,
+7. Fixed a bug related to the interactive row move operation (again,
    thanks to Ulrich Seidl for his bug report).
+
+8. Several further improvements and minor bug fixes.
 
 What was new in Tablelist 6.12?
 -------------------------------
