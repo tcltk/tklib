@@ -96,7 +96,7 @@ namespace eval tablelist {
 	    $name-putListCmd	"" \
 	    $name-getListCmd	"" \
 	    $name-selectCmd	"" \
-	    $name-invokeCmd	"event generate %W <Button-1>" \
+	    $name-invokeCmd	"event generate %W <<Invoke>>" \
 	    $name-fontOpt	-font \
 	    $name-useFormat	1 \
 	    $name-useReqWidth	0 \
@@ -229,7 +229,7 @@ namespace eval tablelist {
 	    $name-putListCmd	"" \
 	    $name-getListCmd	"" \
 	    $name-selectCmd	"" \
-	    $name-invokeCmd	"event generate %W <Button-1>" \
+	    $name-invokeCmd	"event generate %W <<Invoke>>" \
 	    $name-fontOpt	"" \
 	    $name-useFormat	1 \
 	    $name-useReqWidth	0 \
@@ -1418,7 +1418,7 @@ proc tablelist::createTileMenubutton {w args} {
 	    tablelist::invokeMotionHandler [tablelist::getTablelistPath %W]
 	}
     }
-    bind $menu <Unmap> {+ focus [tablelist::getTablelistPath %W].body }
+    bind $menu <Map> {+ focus %W }
     if {[string compare $winSys "x11"] == 0} {
 	$menu configure -background $data(-background) \
 			-foreground $data(-foreground) \
