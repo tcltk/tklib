@@ -1,3 +1,17 @@
+2021-04-06 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                              Added support for the
+	* scripts/tablelistThemes.tcl:              "awbreezedark" theme.
+	* doc/tablelist.html:
+	* doc/tablelistWidget.html:
+	* ../../examples/tablelist/config_tile.tcl:
+	* ../../examples/tablelist/option_tile.tcl:
+
+	* scripts/tablelistEdit.tcl: Improved the editing with the aid of a
+	  ttk::menubutton widget.
+
+	* scripts/tclIndex: Newly generated.
+
 2021-04-03 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:                 Big Sur support slightly improved.
