@@ -1058,7 +1058,7 @@ proc tablelist::tablelist args {
     set x 0
     set y 0
     if {$usingTile} {
-	ttk::label $w -style TablelistHeader.TLabel -image "" \
+	ttk::label $w -style Tablelist.Heading -image "" \
 		      -padding {1 1 1 1} -takefocus 0 -text "" \
 		      -textvariable "" -underline -1 -wraplength 0
 
@@ -1951,6 +1951,11 @@ proc tablelist::configcellsSubCmd {win argList} {
 		"tablelist::doCellConfig $row $col" \
 		"tablelist::doCellCget $row $col" [list $opt $val] 0
 	incr argCount -3
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    if {$data(-showeditcursor)} {
+	invokeMotionHandler $win
     }
 
     return ""

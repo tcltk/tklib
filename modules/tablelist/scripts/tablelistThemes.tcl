@@ -2141,23 +2141,24 @@ proc tablelist::xpnativeTheme {} {
 # tablelist::awTheme
 #------------------------------------------------------------------------------
 proc tablelist::awTheme {} {
-    set bg [styleConfig . -background]
-    set fg [styleConfig . -foreground]
-    set disabledFg [lindex [style map . -foreground] 1]
+    set fg		[styleConfig . -foreground]
+    set disabledFg	[lindex [style map . -foreground] 1]
+    set labelBg		[styleConfig Heading -background]
+    set labelactiveBg	[styleConfig Heading -lightcolor]
     variable themeDefaults
     array set themeDefaults [list \
-	-background		$bg \
+	-background		[styleConfig . -background] \
 	-foreground		$fg \
 	-disabledforeground	$disabledFg \
 	-selectbackground	[styleConfig . -selectbackground] \
 	-selectforeground	[styleConfig . -selectforeground] \
 	-selectborderwidth	[styleConfig . -selectborderwidth] \
 	-font			TkTextFont \
-	-labelbackground	$bg \
-	-labeldeactivatedBg	$bg \
-	-labeldisabledBg	$bg \
-	-labelactiveBg		$bg \
-	-labelpressedBg		$bg \
+	-labelbackground	$labelBg \
+	-labeldeactivatedBg	$labelBg \
+	-labeldisabledBg	$labelBg \
+	-labelactiveBg		$labelactiveBg \
+	-labelpressedBg		$labelactiveBg \
 	-labelforeground	$fg \
 	-labeldisabledFg	$disabledFg \
 	-labelactiveFg		$fg \

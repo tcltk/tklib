@@ -1585,7 +1585,7 @@ proc tablelist::wasExpCollCtrlClicked {w x y} {
 	}
     }
 
-    if {!$inExpCollCtrl} {
+    if {!$inExpCollCtrl || $data(isDisabled)} {
 	return 0
     }
 
@@ -2553,6 +2553,10 @@ proc tablelist::condEditActiveCell win {
 #------------------------------------------------------------------------------
 proc tablelist::plusMinus {win keysym} {
     upvar ::tablelist::ns${win}::data data
+    if {$data(isDisabled)} {
+	return ""
+    }
+
     set row $data(activeRow)
     set col $data(treeCol)
     set key [lindex $data(keyList) $row]
@@ -2685,7 +2689,7 @@ proc tablelist::leftRight {win amount} {
     set key [lindex $data(keyList) $row]
     set op ""
 
-    if {[info exists data($key,$col-indent)]} {
+    if {[info exists data($key,$col-indent)] && !$data(isDisabled)} {
 	set indentLabel $data(body).ind_$key,$col
 	set imgName [$indentLabel cget -image]
 	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img$} \

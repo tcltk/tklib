@@ -128,25 +128,15 @@ proc tablelist::extendConfigSpecs {} {
 
 	ttk::label $helpLabel -takefocus 0
 
-	#
-	# Define the header label layout
-	#
-	style theme settings "default" {
-	    style layout TablelistHeader.TLabel {
-		Treeheading.cell
-		Treeheading.border -children {
-		    Label.padding -children {
-			Label.label
-		    }
-		}
-	    }
-	}
 	if {[string length [package provide ttk::theme::aqua]] != 0 ||
 	    [string length [package provide tile::theme::aqua]] != 0} {
 	    style theme settings "aqua" {
+		#
+		# Define the header label layout
+		#
 		if {[info exists ::tile::patchlevel] &&
 		    [string compare $::tile::patchlevel "0.6.4"] < 0} {
-		    style layout TablelistHeader.TLabel {
+		    style layout Tablelist.Heading {
 			Treeheading.cell
 			Label.padding -children {
 			    Label.label -side top
@@ -154,7 +144,7 @@ proc tablelist::extendConfigSpecs {} {
 			}
 		    }
 		} else {
-		    style layout TablelistHeader.TLabel {
+		    style layout Tablelist.Heading {
 			Treeheading.cell
 			Label.padding -children {
 			    Label.label -side top
@@ -164,8 +154,7 @@ proc tablelist::extendConfigSpecs {} {
 
 		variable newAquaSupport
 		if {!$newAquaSupport} {
-		    style map TablelistHeader.TLabel -foreground \
-			      {disabled #b1b1b1}
+		    style map Tablelist.Heading -foreground {disabled #b1b1b1}
 		}
 	    }
 	}
@@ -2967,7 +2956,9 @@ proc tablelist::doCellConfig {row col win opt val} {
 	    #
 	    set key [lindex $data(keyList) $row]
 	    set data($key,$col$opt) [expr {$val ? 1 : 0}]
-	    if {$data(-showeditcursor)} {
+	    set callerCallerProc [lindex [info level -2] 0]
+	    if {$data(-showeditcursor) &&
+		[string compare $callerCallerProc "configcellsSubCmd"] != 0} {
 		invokeMotionHandler $win
 	    }
 	}

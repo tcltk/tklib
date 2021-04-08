@@ -2388,7 +2388,7 @@ proc tablelist::setupColumns {win columns createLabels} {
 	    #
 	    set w $data(hdrTxtFrmLbl)$col
 	    if {$usingTile} {
-		ttk::label $w -style TablelistHeader.TLabel -image "" \
+		ttk::label $w -style Tablelist.Heading -image "" \
 			      -padding {1 1 1 1} -takefocus 0 -text "" \
 			      -textvariable "" -underline -1 -wraplength 0
 	    } else {
@@ -4363,12 +4363,20 @@ proc tablelist::forceRedraw win {
 #------------------------------------------------------------------------------
 # tablelist::workAroundAquaTkBugs
 #
-# Works around some Tk bugs on Mac OS X Aqua (no longer present in current Tk
-# versions).
+# Works around some Tk bugs on Mac OS X/11.
 #------------------------------------------------------------------------------
 proc tablelist::workAroundAquaTkBugs win {
     variable winSys
     if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
+	set par [winfo parent $win]
+	if {[mwutil::containsPointer $par]} {
+	    event generate $par <Leave>
+	    event generate $par <Enter>
+	} else {
+	    event generate $par <Enter>
+	    event generate $par <Leave>
+	}
+
 	upvar ::tablelist::ns${win}::data data
 	raise $data(body)
 	lower $data(body)
