@@ -1,3 +1,12 @@
+2021-04-08  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scrollutilCommon.tcl:       Moved the containsPointer proc from
+	* scripts/scrollarea.tcl:     scrollarea.tcl to mwutil.tcl.
+	* scripts/utils/mwutil.tcl:
+	* scripts/utils/pkgIndex.tcl:
+
+	* scripts/tclIndex: Newly generated.
+
 2021-04-06  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* doc/ScrollableFrmDemo2.png: Updated screenshot.
