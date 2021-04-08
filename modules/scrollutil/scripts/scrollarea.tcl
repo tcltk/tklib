@@ -165,8 +165,6 @@ proc scrollutil::sa::createBindings {} {
     bind Scrollarea <Configure> {
 	after 300 [list scrollutil::sa::updateScrollbars %W]
     }
-    bind Scrollarea <Map>        { set scrollutil::ns%W::data(isMapped) 1 }
-    bind Scrollarea <Unmap>      { set scrollutil::ns%W::data(isMapped) 0 }
     bind Scrollarea <Enter>	 { scrollutil::sa::onScrollareaEnter %W }
     bind Scrollarea <Leave>	 { scrollutil::sa::onScrollareaLeave %W }
     bind Scrollarea <Destroy> {
@@ -235,7 +233,6 @@ proc scrollutil::scrollarea args {
 	#
 	variable data
 	array set data {
-	    isMapped	 0
 	    hsbManaged	 0
 	    vsbManaged	 0
 	    hsbLocked	 0
@@ -392,7 +389,7 @@ proc scrollutil::sa::doConfig {win opt val} {
 
 		    if {$data($opt)} {
 			if {[mwutil::hasFocus [winfo toplevel $win]] &&
-			    $data(isMapped) && [containsPointer $win]} {
+			    [mwutil::containsPointer $win]} {
 			    unobscureScrollbars $win
 			} else {
 			    obscureScrollbars $win
@@ -687,7 +684,7 @@ proc scrollutil::sa::setHScrollbar {win first last} {
     upvar ::scrollutil::ns${win}::data data
     $win.hsb set $first $last
 
-    if {$data(sbObscured) && $data(isMapped) && [containsPointer $win]} {
+    if {$data(sbObscured) && [mwutil::containsPointer $win]} {
 	unobscureScrollbars $win
     }
 
@@ -712,7 +709,7 @@ proc scrollutil::sa::setVScrollbar {win first last} {
     upvar ::scrollutil::ns${win}::data data
     $win.vsb set $first $last
 
-    if {$data(sbObscured) && $data(isMapped) && [containsPointer $win]} {
+    if {$data(sbObscured) && [mwutil::containsPointer $win]} {
 	unobscureScrollbars $win
     }
 
@@ -778,7 +775,7 @@ proc scrollutil::sa::onToplevelFocusIn top {
 	set lst2 {}
 	foreach w $lst1 {
 	    if {[string compare [winfo class $w] "Scrollarea"] == 0 &&
-		[winfo ismapped $w] && [containsPointer $w]} {
+		[mwutil::containsPointer $w]} {
 		unobscureScrollbars $w
 	    }
 	    foreach child [winfo children $w] {
@@ -1076,19 +1073,6 @@ proc scrollutil::sa::unobscureScrollbars win {
     set data(sbObscured) 0
     place forget $win.hsb.f
     place forget $win.vsb.f
-}
-
-#------------------------------------------------------------------------------
-# scrollutil::sa::containsPointer
-#------------------------------------------------------------------------------
-proc scrollutil::sa::containsPointer win {
-    foreach {ptrX ptrY} [winfo pointerxy $win] {}
-    set winX [winfo rootx $win]
-    set winY [winfo rooty $win]
-    return [expr {
-	$ptrX >= $winX && $ptrX < $winX + [winfo width  $win] &&
-	$ptrY >= $winY && $ptrY < $winY + [winfo height $win]
-    }]
 }
 
 #------------------------------------------------------------------------------

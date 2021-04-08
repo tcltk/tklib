@@ -19,7 +19,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.18
+    variable version	2.19
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -36,7 +36,7 @@ namespace eval mwutil {
 			configureSubCmd attribSubCmd hasattribSubCmd \
 			unsetattribSubCmd getScrollInfo getScrollInfo2 \
 			isScrollable scrollByUnits genMouseWheelEvent \
-			hasFocus windowingSystem currentTheme
+			containsPointer hasFocus windowingSystem currentTheme
 
     #
     # Make modified versions of the procedures tk_focusNext and
@@ -614,6 +614,26 @@ proc mwutil::genMouseWheelEvent {w event rootX rootY delta} {
     if {$needsFocus} {
 	focus $focusWin
     }
+}
+
+#------------------------------------------------------------------------------
+# mwutil::containsPointer
+#
+# Returns a boolean value indicating whether the widget w contains the mouse
+# pointer.
+#------------------------------------------------------------------------------
+proc mwutil::containsPointer w {
+    if {![winfo viewable $w]} {
+	return 0
+    }
+
+    foreach {ptrX ptrY} [winfo pointerxy $w] {}
+    set wX [winfo rootx $w]
+    set wY [winfo rooty $w]
+    return [expr {
+	$ptrX >= $wX && $ptrX < $wX + [winfo width  $w] &&
+	$ptrY >= $wY && $ptrY < $wY + [winfo height $w]
+    }]
 }
 
 #------------------------------------------------------------------------------

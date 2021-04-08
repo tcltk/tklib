@@ -89,10 +89,10 @@ lappend auto_path [file join $::scrollutil::library scripts]
 # "scripts/utils".  Take into account that mwutil is also included
 # in Mentry and Tablelist, and scaleutil is also included in Tablelist.
 #
-if {[catch {package present mwutil} version] == 0 && $version < 2.18} {
+if {[catch {package present mwutil} version] == 0 && $version < 2.19} {
     package forget mwutil
 }
-package require mwutil 2.18
+package require mwutil 2.19
 if {[catch {package present scaleutil} version] == 0 && $version < 1.3} {
     package forget scaleutil
 }
