@@ -1,3 +1,14 @@
+2021-04-08 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* tablelistCommon.tcl:         Various improvements, related mainly to
+	* scripts/tablelistBind.tcl:   the awthemes support and macOS 11.
+	* scripts/tablelistConfig.tcl:
+	* scripts/tablelistThemes.tcl:
+	* scripts/tablelistUtil.tcl:
+	* scripts/tablelistWidget.tcl:
+	* scripts/utils/mwutil.tcl:
+	* scripts/utils/pkgIndex.tcl:
+
 2021-04-06 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:                              Added support for the
