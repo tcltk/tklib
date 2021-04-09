@@ -12,8 +12,8 @@ What is new in Tablelist 6.13?
 3. Added support for macOS 11 (Big Sur), including the new tree style
    "aqua11", which is the default on macOS 11.
 
-4. Added support for the "awbreezedark" theme, introduced in version
-   10.3 of the awthemes package.
+4. Reworked the support for the awthemes package and extended it by
+   support for the "awbreezedark" theme, introduced in awthemes 10.3.
 
 5. Improvements in the demo scripts "browse(Tree)_tile.tcl",
    "config_tile.tcl", "dirViewer(_tile).tcl", and

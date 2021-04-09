@@ -6793,7 +6793,7 @@ proc tablelist::makeTileCheckbutton w {
 	}
 
 	blue -
-	Breeze - breeze - awbreeze -
+	Breeze - breeze - awbreeze - awbreezedark -
 	winxpblue - awwinxpblue {
 	    set height [winfo reqheight $w]
 	    $frm configure -width $height -height $height

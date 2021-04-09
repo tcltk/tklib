@@ -31,12 +31,14 @@ proc tablelist::getCurrentTheme {} {
 # tablelist configuration options and updates the array configSpecs.
 #------------------------------------------------------------------------------
 proc tablelist::setThemeDefaults {} {
+    variable themeDefaults
+
     set currentTheme [mwutil::currentTheme]
     variable isAwTheme \
 	[llength [info commands ::ttk::theme::${currentTheme}::setTextColors]]
-
-    variable themeDefaults
-    if {[catch {${currentTheme}Theme}] != 0} {
+    if {$isAwTheme} {
+	awTheme $currentTheme
+    } elseif {[catch {${currentTheme}Theme}] != 0} {
 	#
 	# Fall back to the "default" theme (which is the root of all
 	# themes) and then override the options set by the current one
@@ -114,6 +116,62 @@ proc tablelist::setThemeDefaults {} {
 # Private procedures related to tile themes
 # =========================================
 #
+
+#------------------------------------------------------------------------------
+# tablelist::awTheme
+#------------------------------------------------------------------------------
+proc tablelist::awTheme theme {
+    set bg		[styleConfig . -background]
+    set fg		[styleConfig . -foreground]
+    set disabledFg	[lindex [style map . -foreground] 1]
+    set labelBg		[styleConfig Heading -background]
+    set labelactiveBg	[styleConfig Heading -lightcolor]
+
+    scan $bg "#%2x%2x%2x" r g b
+    incr r -15; incr g -15; incr b -15
+    set stripeBg [format "#%2x%2x%2x" $r $g $b]
+
+    variable scalingpct
+    switch $theme {
+	awarc - arc			{ set treeStyle classic$scalingpct }
+	awblack - black			{ set treeStyle bicolor$scalingpct }
+	awbreeze - breeze		{ set treeStyle bicolor$scalingpct }
+	awbreezedark			{ set treeStyle white$scalingpct }
+	awclearlooks - clearlooks	{ set treeStyle plain$scalingpct }
+	awdark				{ set treeStyle white$scalingpct }
+	awlight				{ set treeStyle bicolor$scalingpct }
+	awtemplate			{ set treeStyle white$scalingpct }
+	awwinxpblue - winxpblue		{ set treeStyle bicolor$scalingpct }
+	default				{ set treeStyle bicolor$scalingpct }
+    }
+
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		$bg \
+	-foreground		$fg \
+	-disabledforeground	$disabledFg \
+	-stripebackground	$stripeBg \
+	-selectbackground	[styleConfig . -selectbackground] \
+	-selectforeground	[styleConfig . -selectforeground] \
+	-selectborderwidth	[styleConfig . -selectborderwidth] \
+	-font			TkTextFont \
+	-labelbackground	$labelBg \
+	-labeldeactivatedBg	$labelBg \
+	-labeldisabledBg	$labelBg \
+	-labelactiveBg		$labelactiveBg \
+	-labelpressedBg		$labelactiveBg \
+	-labelforeground	$fg \
+	-labeldisabledFg	$disabledFg \
+	-labelactiveFg		$fg \
+	-labelpressedFg		$fg \
+	-labelfont		TkDefaultFont \
+	-labelborderwidth	1 \
+	-labelpady		1 \
+	-arrowcolor		$fg \
+	-arrowstyle		[defaultX11ArrowStyle] \
+	-treestyle		$treeStyle \
+    ]
+}
 
 #------------------------------------------------------------------------------
 # tablelist::altTheme
@@ -480,134 +538,6 @@ proc tablelist::ArcTheme {} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::arcTheme
-#------------------------------------------------------------------------------
-proc tablelist::arcTheme {} {
-    variable isAwTheme
-    if {$isAwTheme} {
-	awarcTheme 
-    } else {
-	return -code error			;# handled by setThemeDefaults
-    }
-}
-
-#------------------------------------------------------------------------------
-# tablelist::awarcTheme
-#------------------------------------------------------------------------------
-proc tablelist::awarcTheme {} {
-    awTheme 
-    variable themeDefaults
-    variable scalingpct
-    array set themeDefaults [list \
-	-stripebackground	#e6e7e8 \
-	-treestyle		classic$scalingpct \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# tablelist::awblackTheme
-#------------------------------------------------------------------------------
-proc tablelist::awblackTheme {} {
-    awTheme 
-    variable themeDefaults
-    variable scalingpct
-    array set themeDefaults [list \
-	-stripebackground	#333333 \
-	-treestyle		bicolor$scalingpct \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# tablelist::awbreezeTheme
-#------------------------------------------------------------------------------
-proc tablelist::awbreezeTheme {} {
-    awTheme 
-    variable themeDefaults
-    variable scalingpct
-    array set themeDefaults [list \
-	-stripebackground	#e0e1e2 \
-	-treestyle		bicolor$scalingpct \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# tablelist::awbreezedarkTheme
-#------------------------------------------------------------------------------
-proc tablelist::awbreezedarkTheme {} {
-    awTheme 
-    variable themeDefaults
-    variable scalingpct
-    array set themeDefaults [list \
-	-stripebackground	#202427 \
-	-treestyle		white$scalingpct \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# tablelist::awclearlooksTheme
-#------------------------------------------------------------------------------
-proc tablelist::awclearlooksTheme {} {
-    awTheme 
-    variable themeDefaults
-    variable scalingpct
-    array set themeDefaults [list \
-	-stripebackground	#e0dcd8 \
-	-treestyle		plain$scalingpct \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# tablelist::awdarkTheme
-#------------------------------------------------------------------------------
-proc tablelist::awdarkTheme {} {
-    awTheme 
-    variable themeDefaults
-    variable scalingpct
-    array set themeDefaults [list \
-	-stripebackground	#242a2c \
-	-treestyle		white$scalingpct \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# tablelist::awlightTheme
-#------------------------------------------------------------------------------
-proc tablelist::awlightTheme {} {
-    awTheme 
-    variable themeDefaults
-    variable scalingpct
-    array set themeDefaults [list \
-	-stripebackground	#d9d9d8 \
-	-treestyle		bicolor$scalingpct \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# tablelist::awwinxpblueTheme
-#------------------------------------------------------------------------------
-proc tablelist::awwinxpblueTheme {} {
-    awTheme 
-    variable themeDefaults
-    variable scalingpct
-    array set themeDefaults [list \
-	-stripebackground	#dddac9 \
-	-treestyle		bicolor$scalingpct \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# tablelist::blackTheme
-#------------------------------------------------------------------------------
-proc tablelist::blackTheme {} {
-    variable isAwTheme
-    if {$isAwTheme} {
-	awblackTheme 
-    } else {
-	return -code error			;# handled by setThemeDefaults
-    }
-}
-
-#------------------------------------------------------------------------------
 # tablelist::blueTheme
 #------------------------------------------------------------------------------
 proc tablelist::blueTheme {} {
@@ -637,18 +567,6 @@ proc tablelist::blueTheme {} {
 	-arrowstyle		flat9x5 \
 	-treestyle		gtk \
     ]
-}
-
-#------------------------------------------------------------------------------
-# tablelist::breezeTheme
-#------------------------------------------------------------------------------
-proc tablelist::breezeTheme {} {
-    variable isAwTheme
-    if {$isAwTheme} {
-	awbreezeTheme 
-    } else {
-	return -code error			;# handled by setThemeDefaults
-    }
 }
 
 #------------------------------------------------------------------------------
@@ -725,37 +643,32 @@ proc tablelist::classicTheme {} {
 # tablelist::clearlooksTheme
 #------------------------------------------------------------------------------
 proc tablelist::clearlooksTheme {} {
-    variable isAwTheme
-    if {$isAwTheme} {
-	awclearlooksTheme 
-    } else {
-	variable themeDefaults
-	array set themeDefaults [list \
-	    -background		white \
-	    -foreground		black \
-	    -disabledforeground	#b5b3ac \
-	    -stripebackground	"" \
-	    -selectbackground	#71869e \
-	    -selectforeground	#ffffff \
-	    -selectborderwidth	0 \
-	    -font		TkTextFont \
-	    -labelbackground	#efeae6 \
-	    -labeldeactivatedBg	#efeae6 \
-	    -labeldisabledBg	#eee9e4 \
-	    -labelactiveBg	#f4f2ee \
-	    -labelpressedBg	#d4cfca \
-	    -labelforeground	black \
-	    -labeldisabledFg	#b5b3ac \
-	    -labelactiveFg	black \
-	    -labelpressedFg	black \
-	    -labelfont		TkDefaultFont \
-	    -labelborderwidth	0 \
-	    -labelpady		1 \
-	    -arrowcolor		black \
-	    -arrowstyle		flatAngle9x6 \
-	    -treestyle		gtk \
-	]
-    }
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		white \
+	-foreground		black \
+	-disabledforeground	#b5b3ac \
+	-stripebackground	"" \
+	-selectbackground	#71869e \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-font			TkTextFont \
+	-labelbackground	#efeae6 \
+	-labeldeactivatedBg	#efeae6 \
+	-labeldisabledBg	#eee9e4 \
+	-labelactiveBg		#f4f2ee \
+	-labelpressedBg		#d4cfca \
+	-labelforeground	black \
+	-labeldisabledFg	#b5b3ac \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
+	-labelfont		TkDefaultFont \
+	-labelborderwidth	0 \
+	-labelpady		1 \
+	-arrowcolor		black \
+	-arrowstyle		flatAngle9x6 \
+	-treestyle		gtk \
+    ]
 }
 
 #------------------------------------------------------------------------------
@@ -1943,37 +1856,32 @@ proc tablelist::winnativeTheme {} {
 # tablelist::winxpblueTheme
 #------------------------------------------------------------------------------
 proc tablelist::winxpblueTheme {} {
-    variable isAwTheme
-    if {$isAwTheme} {
-	awwinxpblueTheme 
-    } else {
-	variable themeDefaults
-	array set themeDefaults [list \
-	    -background		white \
-	    -foreground		black \
-	    -disabledforeground	#565248 \
-	    -stripebackground	"" \
-	    -selectbackground	#4a6984 \
-	    -selectforeground	#ffffff \
-	    -selectborderwidth	0 \
-	    -font		TkTextFont \
-	    -labelbackground	#ece9d8 \
-	    -labeldeactivatedBg	#ece9d8 \
-	    -labeldisabledBg	#e3e1dd \
-	    -labelactiveBg	#c1d2ee \
-	    -labelpressedBg	#bab5ab \
-	    -labelforeground	black \
-	    -labeldisabledFg	#565248 \
-	    -labelactiveFg	black \
-	    -labelpressedFg	black \
-	    -labelfont		TkDefaultFont \
-	    -labelborderwidth	2 \
-	    -labelpady		1 \
-	    -arrowcolor		#4d6185 \
-	    -arrowstyle		flat7x4 \
-	    -treestyle		winxpBlue \
-	]
-    }
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		white \
+	-foreground		black \
+	-disabledforeground	#565248 \
+	-stripebackground	"" \
+	-selectbackground	#4a6984 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-font			TkTextFont \
+	-labelbackground	#ece9d8 \
+	-labeldeactivatedBg	#ece9d8 \
+	-labeldisabledBg	#e3e1dd \
+	-labelactiveBg		#c1d2ee \
+	-labelpressedBg		#bab5ab \
+	-labelforeground	black \
+	-labeldisabledFg	#565248 \
+	-labelactiveFg		black \
+	-labelpressedFg		black \
+	-labelfont		TkDefaultFont \
+	-labelborderwidth	2 \
+	-labelpady		1 \
+	-arrowcolor		#4d6185 \
+	-arrowstyle		flat7x4 \
+	-treestyle		winxpBlue \
+    ]
 }
 
 #------------------------------------------------------------------------------
@@ -2134,40 +2042,6 @@ proc tablelist::xpnativeTheme {} {
 	-arrowcolor		$arrowColor \
 	-arrowstyle		$arrowStyle \
 	-treestyle		$treeStyle \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# tablelist::awTheme
-#------------------------------------------------------------------------------
-proc tablelist::awTheme {} {
-    set fg		[styleConfig . -foreground]
-    set disabledFg	[lindex [style map . -foreground] 1]
-    set labelBg		[styleConfig Heading -background]
-    set labelactiveBg	[styleConfig Heading -lightcolor]
-    variable themeDefaults
-    array set themeDefaults [list \
-	-background		[styleConfig . -background] \
-	-foreground		$fg \
-	-disabledforeground	$disabledFg \
-	-selectbackground	[styleConfig . -selectbackground] \
-	-selectforeground	[styleConfig . -selectforeground] \
-	-selectborderwidth	[styleConfig . -selectborderwidth] \
-	-font			TkTextFont \
-	-labelbackground	$labelBg \
-	-labeldeactivatedBg	$labelBg \
-	-labeldisabledBg	$labelBg \
-	-labelactiveBg		$labelactiveBg \
-	-labelpressedBg		$labelactiveBg \
-	-labelforeground	$fg \
-	-labeldisabledFg	$disabledFg \
-	-labelactiveFg		$fg \
-	-labelpressedFg		$fg \
-	-labelfont		TkDefaultFont \
-	-labelborderwidth	1 \
-	-labelpady		1 \
-	-arrowcolor		$fg \
-	-arrowstyle		[defaultX11ArrowStyle] \
     ]
 }
 
