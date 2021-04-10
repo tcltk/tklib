@@ -2285,11 +2285,11 @@ proc mentry::geomParams {} {
 	    incr x 4
 	    incr deltaWidth 8
 	}
-	black - awblack {
+	black - awblack - awtemplate {
 	    incr x 2
 	    incr deltaWidth 4
 	}
-	Breeze - breeze - awbreeze {
+	Breeze - breeze - awbreeze - awbreezedark {
 	    incr x 3
 	    incr deltaWidth 6
 	}

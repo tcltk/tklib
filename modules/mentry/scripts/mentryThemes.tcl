@@ -31,16 +31,18 @@ proc mentry::getCurrentTheme {} {
 # mentry configuration options and updates the array configSpecs.
 #------------------------------------------------------------------------------
 proc mentry::setThemeDefaults {} {
-    set currentTheme [mwutil::currentTheme]
-    variable isAwTheme \
-	[llength [info commands ::ttk::theme::${currentTheme}::setTextColors]]
-
     variable themeDefaults
+
     if {[info exists themeDefaults(-readonlybackground)]} {
 	unset themeDefaults(-readonlybackground)
     }
 
-    if {[catch {${currentTheme}Theme}] != 0} {
+    set currentTheme [mwutil::currentTheme]
+    variable isAwTheme \
+	[llength [info commands ::ttk::theme::${currentTheme}::setTextColors]]
+    if {$isAwTheme} {
+	awTheme $currentTheme
+    } elseif {[catch {${currentTheme}Theme}] != 0} {
 	#
 	# Fall back to the "default" theme (which is the root of all
 	# themes) and then override the options set by the current one
@@ -114,6 +116,38 @@ proc mentry::setThemeDefaults {} {
 # Private procedures related to tile themes
 # =========================================
 #
+
+#------------------------------------------------------------------------------
+# mentry::awTheme
+#------------------------------------------------------------------------------
+proc mentry::awTheme theme {
+    switch $theme {
+	awarc - arc -
+	awbreeze - breeze -
+	awbreezedark			{ set bdWidth 3; set labelPadY {3 3} }
+	awblack - black -
+	awclearlooks - clearlooks -
+	awdark -
+	awlight -
+	awtemplate -
+	awwinxpblue - winxpblue -
+	default				{ set bdWidth 2; set labelPadY {2 2} }
+    }
+
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		[styleConfig . -fieldbackground] \
+	-disabledbackground	[lindex [style map TEntry -fieldbackground] 1] \
+	-foreground		[styleConfig TEntry -foreground] \
+	-foreground,background	[styleConfig TEntry -foreground] \
+	-disabledforeground	[lindex [style map TEntry -foreground] 1] \
+	-selectbackground	[styleConfig . -selectbackground] \
+	-selectforeground	[styleConfig . -selectforeground] \
+	-selectborderwidth	[styleConfig . -selectborderwidth] \
+	-borderwidth		$bdWidth \
+	-labelpady		$labelPadY \
+    ]
+}
 
 #------------------------------------------------------------------------------
 # mentry::altTheme
@@ -241,114 +275,6 @@ proc mentry::ArcTheme {} {
 }
 
 #------------------------------------------------------------------------------
-# mentry::arcTheme
-#------------------------------------------------------------------------------
-proc mentry::arcTheme {} {
-    variable isAwTheme
-    if {$isAwTheme} {
-	awarcTheme 
-    } else {
-	return -code error			;# handled by setThemeDefaults
-    }
-}
-
-#------------------------------------------------------------------------------
-# mentry::awarcTheme
-#------------------------------------------------------------------------------
-proc mentry::awarcTheme {} {
-    awTheme 
-    variable themeDefaults
-    array set themeDefaults [list \
-	-borderwidth	3 \
-	-labelpady	{3 3} \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# mentry::awblackTheme
-#------------------------------------------------------------------------------
-proc mentry::awblackTheme {} {
-    awTheme 
-    variable themeDefaults
-    array set themeDefaults [list \
-	-borderwidth	2 \
-	-labelpady	{2 2} \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# mentry::awbreezeTheme
-#------------------------------------------------------------------------------
-proc mentry::awbreezeTheme {} {
-    awTheme 
-    variable themeDefaults
-    array set themeDefaults [list \
-	-borderwidth	3 \
-	-labelpady	{3 3} \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# mentry::awclearlooksTheme
-#------------------------------------------------------------------------------
-proc mentry::awclearlooksTheme {} {
-    awTheme 
-    variable themeDefaults
-    array set themeDefaults [list \
-	-borderwidth	2 \
-	-labelpady	{2 2} \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# mentry::awdarkTheme
-#------------------------------------------------------------------------------
-proc mentry::awdarkTheme {} {
-    awTheme 
-    variable themeDefaults
-    array set themeDefaults [list \
-	-borderwidth	2 \
-	-labelpady	{2 2} \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# mentry::awlightTheme
-#------------------------------------------------------------------------------
-proc mentry::awlightTheme {} {
-    awTheme 
-    variable themeDefaults
-    array set themeDefaults [list \
-	-borderwidth	2 \
-	-labelpady	{2 2} \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# mentry::awwinxpblueTheme
-#------------------------------------------------------------------------------
-proc mentry::awwinxpblueTheme {} {
-    awTheme 
-    variable themeDefaults
-    array set themeDefaults [list \
-	-borderwidth	2 \
-	-labelpady	{2 2} \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# mentry::blackTheme
-#------------------------------------------------------------------------------
-proc mentry::blackTheme {} {
-    variable isAwTheme
-    if {$isAwTheme} {
-	awblackTheme 
-    } else {
-	return -code error			;# handled by setThemeDefaults
-    }
-}
-
-#------------------------------------------------------------------------------
 # mentry::blueTheme
 #------------------------------------------------------------------------------
 proc mentry::blueTheme {} {
@@ -365,18 +291,6 @@ proc mentry::blueTheme {} {
 	-borderwidth		2 \
 	-labelpady		{2 2} \
     ]
-}
-
-#------------------------------------------------------------------------------
-# mentry::breezeTheme
-#------------------------------------------------------------------------------
-proc mentry::breezeTheme {} {
-    variable isAwTheme
-    if {$isAwTheme} {
-	awbreezeTheme 
-    } else {
-	return -code error			;# handled by setThemeDefaults
-    }
 }
 
 #------------------------------------------------------------------------------
@@ -421,25 +335,20 @@ proc mentry::classicTheme {} {
 # mentry::clearlooksTheme
 #------------------------------------------------------------------------------
 proc mentry::clearlooksTheme {} {
-    variable isAwTheme
-    if {$isAwTheme} {
-	awclearlooksTheme 
-    } else {
-	variable themeDefaults
-	array set themeDefaults [list \
-	    -background			white \
-	    -disabledbackground		"" \
-	    -readonlybackground		#efebe7 \
-	    -foreground			black \
-	    -foreground,background	black \
-	    -disabledforeground		#b5b3ac \
-	    -selectbackground		#7c99ad \
-	    -selectforeground		#ffffff \
-	    -selectborderwidth		0 \
-	    -borderwidth		2 \
-	    -labelpady			{2 2} \
-	]
-    }
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		white \
+	-disabledbackground	"" \
+	-readonlybackground	#efebe7 \
+	-foreground		black \
+	-foreground,background	black \
+	-disabledforeground	#b5b3ac \
+	-selectbackground	#7c99ad \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
+    ]
 }
 
 #------------------------------------------------------------------------------
@@ -662,24 +571,19 @@ proc mentry::winnativeTheme {} {
 # mentry::winxpblueTheme
 #------------------------------------------------------------------------------
 proc mentry::winxpblueTheme {} {
-    variable isAwTheme
-    if {$isAwTheme} {
-	awwinxpblueTheme 
-    } else {
-	variable themeDefaults
-	array set themeDefaults [list \
-	    -background			white \
-	    -disabledbackground		"" \
-	    -foreground			black \
-	    -foreground,background	black \
-	    -disabledforeground		#565248 \
-	    -selectbackground		#4a6984 \
-	    -selectforeground		#ffffff \
-	    -selectborderwidth		0 \
-	    -borderwidth		2 \
-	    -labelpady			{2 2} \
-	]
-    }
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		white \
+	-disabledbackground	"" \
+	-foreground		black \
+	-foreground,background	black \
+	-disabledforeground	#565248 \
+	-selectbackground	#4a6984 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
+    ]
 }
 
 #------------------------------------------------------------------------------
@@ -698,23 +602,6 @@ proc mentry::xpnativeTheme {} {
 	-selectborderwidth	0 \
 	-borderwidth		2 \
 	-labelpady		{2 4} \
-    ]
-}
-
-#------------------------------------------------------------------------------
-# mentry::awTheme
-#------------------------------------------------------------------------------
-proc mentry::awTheme {} {
-    variable themeDefaults
-    array set themeDefaults [list \
-	-background		[styleConfig . -fieldbackground] \
-	-disabledbackground	[lindex [style map TEntry -fieldbackground] 1] \
-	-foreground		[styleConfig TEntry -foreground] \
-	-foreground,background	[styleConfig TEntry -foreground] \
-	-disabledforeground	[lindex [style map TEntry -foreground] 1] \
-	-selectbackground	[styleConfig . -selectbackground] \
-	-selectforeground	[styleConfig . -selectforeground] \
-	-selectborderwidth	[styleConfig . -selectborderwidth] \
     ]
 }
 
