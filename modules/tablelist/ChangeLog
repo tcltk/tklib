@@ -1,3 +1,7 @@
+2021-04-10 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/tablelistWidget.tcl: Fixed a holdover from earlier versions.
+
 2021-04-09 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:                              Reworked and extended the
