@@ -1058,9 +1058,9 @@ proc tablelist::tablelist args {
     set x 0
     set y 0
     if {$usingTile} {
-	ttk::label $w -style Tablelist.Heading -image "" \
-		      -padding {1 1 1 1} -takefocus 0 -text "" \
-		      -textvariable "" -underline -1 -wraplength 0
+	ttk::label $w -style Tablelist.Heading -image "" -padding {1 1 1 1} \
+		      -takefocus 0 -text "" -textvariable "" -underline -1 \
+		      -wraplength 0
 
 	if {$aquaTheme} {
 	    variable newAquaSupport
@@ -1114,9 +1114,9 @@ proc tablelist::tablelist args {
     set w $data(cornerLbl)	;# label within the north-east corner frame
     set y 0
     if {$usingTile} {
-	ttk::label $w -style TablelistHeader.TLabel -image "" \
-		      -padding {1 1 1 1} -takefocus 0 -text "" \
-		      -textvariable "" -underline -1 -wraplength 0
+	ttk::label $w -style Tablelist.Heading -image "" -padding {1 1 1 1} \
+		      -takefocus 0 -text "" -textvariable "" -underline -1 \
+		      -wraplength 0
 
 	if {$aquaTheme && $newAquaSupport} {
 	    set y 4
