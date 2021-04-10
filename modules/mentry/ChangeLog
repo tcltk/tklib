@@ -1,3 +1,20 @@
+2021-04-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 3.13.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/mentryThemes.tcl: Reworked the awthemes support and extended
+	* scripts/mentryWidget.tcl: it by support for the "awbreezedark" theme.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/mwutil/*.tcl: Updated the mwutil package to version 2.19,
+	  like in Tablelist6.13.
+
 2021-02-03  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Mentry 3.12.
