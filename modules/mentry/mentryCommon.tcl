@@ -13,7 +13,7 @@ namespace eval ::mentry {
     #
     # Public variables:
     #
-    variable version	3.12
+    variable version	3.13
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -98,7 +98,7 @@ lappend auto_path [file join $::mentry::library scripts]
 # Load the package mwutil from the directory "scripts/mwutil".  Take
 # into account that it is also included in Scrollutil and Tablelist.
 #
-if {[catch {package present mwutil} version] == 0 && $version < 2.18} {
+if {[catch {package present mwutil} version] == 0 && $version < 2.19} {
     package forget mwutil
 }
-package require mwutil 2.18
+package require mwutil 2.19
