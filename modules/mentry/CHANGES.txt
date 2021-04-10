@@ -1,5 +1,14 @@
-What is new in Mentry 3.12?
+What is new in Mentry 3.13?
 ---------------------------
+
+1. Reworked the support for the awthemes package and extended it by
+   support for the "awbreezedark" theme, introduced in awthemes 10.3.
+
+2. Included the same version 2.19 of the mega-widget utility package
+   mwutil as in the most recent Tablelist release 6.13.
+
+What was new in Mentry 3.12?
+----------------------------
 
 1. Added support for the platform-independent handling of mouse wheel
    events (TIP 474), introduced in Tk 8.7a4 (as of January 9, 2021).
