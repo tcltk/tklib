@@ -1,3 +1,7 @@
+2021-04-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Scrollutil 1.9.
+
 2021-04-08  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scrollutilCommon.tcl:       Moved the containsPointer proc from
