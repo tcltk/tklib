@@ -6,7 +6,7 @@
 # Copyright (c) 2004-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 6.13
+package require tablelist 6.14
 
 wm title . "Tk Library Scripts"
 
@@ -47,7 +47,8 @@ if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
 $tbl columnconfigure 0 -name fileName
-$tbl columnconfigure 1 -formatcommand emptyStr -sortmode integer
+$tbl columnconfigure 1 -formatcommand emptyStr -sortmode integer \
+    -stretchwindow yes
 $tbl columnconfigure 2 -name fileSize -sortmode integer
 $tbl columnconfigure 4 -name seen
 scrollbar $vsb -orient vertical -command [list $tbl yview]
@@ -188,11 +189,8 @@ proc viewFile {tbl key} {
 #
 # Create embedded windows in the columns no. 1 and 3
 #
-set rowCount [$tbl size]
-for {set row 0} {$row < $rowCount} {incr row} {
-    $tbl cellconfigure $row,1 -window createFrame -stretchwindow yes
-    $tbl cellconfigure $row,3 -window createButton
-}
+$tbl fillcolumn 1 -window createFrame
+$tbl fillcolumn 3 -window createButton
 
 set btn [button .btn -text "Close" -command exit]
 

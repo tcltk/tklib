@@ -6,7 +6,7 @@
 # Copyright (c) 2004-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.13
+package require tablelist_tile 6.14
 
 wm title . "Tile Library Scripts"
 
@@ -67,7 +67,8 @@ if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
 $tbl columnconfigure 0 -name fileName
-$tbl columnconfigure 1 -formatcommand emptyStr -sortmode integer
+$tbl columnconfigure 1 -formatcommand emptyStr -sortmode integer \
+    -stretchwindow yes
 $tbl columnconfigure 2 -name fileSize -sortmode integer
 $tbl columnconfigure 4 -name seen
 ttk::scrollbar $vsb -orient vertical -command [list $tbl yview]
@@ -107,7 +108,8 @@ if {$tk_version >= 8.5} {
     $tbl header insert 0 [list "[$tbl size] *.tcl files" "" $totalSize "" ""]
     $tbl header rowconfigure 0 -foreground blue
 
-    if {$currentTheme eq "awdark" || $currentTheme eq "black"} {
+    if {$currentTheme eq "awdark" || $currentTheme eq "awbreezedark" ||
+	$currentTheme eq "black"} {
 	$tbl header rowconfigure 0 -foreground SkyBlue
     } elseif {$currentTheme eq "aqua" &&
 	[package vcompare $tk_patchLevel "8.6.10"] >= 0} {
@@ -230,11 +232,8 @@ proc viewFile {tbl key} {
 #
 # Create embedded windows in the columns no. 1 and 3
 #
-set rowCount [$tbl size]
-for {set row 0} {$row < $rowCount} {incr row} {
-    $tbl cellconfigure $row,1 -window createFrame -stretchwindow yes
-    $tbl cellconfigure $row,3 -window createButton
-}
+$tbl fillcolumn 1 -window createFrame
+$tbl fillcolumn 3 -window createButton
 
 set bf .bf
 ttk::frame $bf

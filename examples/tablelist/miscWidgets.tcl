@@ -9,7 +9,7 @@
 #==============================================================================
 
 package require Tk 8.4		;# because of "-compound" and the spinbox widget
-package require tablelist 6.13
+package require tablelist 6.14
 package require combobox
 package require mentry
 
@@ -64,7 +64,7 @@ if {[$tbl cget -selectborderwidth] == 0} {
 }
 $tbl columnconfigure 0 -sortmode integer
 $tbl columnconfigure 1 -name available -editable yes -editwindow checkbutton \
-    -formatcommand emptyStr
+    -formatcommand emptyStr -labelwindow checkbutton
 $tbl columnconfigure 2 -name lineName  -editable yes -editwindow entry \
     -sortmode dictionary
 $tbl columnconfigure 3 -name baudRate  -editable yes -editwindow combobox \
@@ -85,18 +85,10 @@ proc formatDate val { return [clock format $val -format "%Y-%m-%d"] }
 proc formatTime val { return [clock format $val -format "%H:%M:%S"] }
 
 #
-# Populate the tablelist widget; set the activation
-# date & time to 10 minutes past the current clock value
+# Populate the tablelist widget and configure the checkbutton
+# embedded into the header label of the column "available"
 #
-set clock [expr {[clock seconds] + 600}]
-for {set i 0; set n 1} {$i < 16} {set i $n; incr n} {
-    $tbl insert end [list $n [expr {$i < 8}] "Line $n" 9600 8 None 1 XON/XOFF \
-	$clock $clock [lindex $colorNames $i]]
-
-    set availImg [expr {($i < 8) ? "checkedImg" : "uncheckedImg"}]
-    $tbl cellconfigure end,available -image $availImg
-    $tbl cellconfigure end,color -image img[lindex $colorValues $i]
-}
+source [file join $dir serialParams.tcl]
 
 set btn [button .btn -text "Close" -command exit]
 
