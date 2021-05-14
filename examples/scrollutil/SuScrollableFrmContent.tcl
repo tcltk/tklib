@@ -254,11 +254,11 @@ foreach colId [$tv cget -columns] {
 # Set the scrollableframe's width, height, and yscrollincrement
 #
 wm withdraw .
-$sf autosize w
 update idletasks
+set width [winfo reqwidth $cf]
 set height [expr {[winfo reqheight $cf.l0] + [winfo pixels . 4p] + \
 		  [winfo reqheight $cf.sa1] + 2*[winfo pixels . 7p]}]
-$sf configure -height $height \
+$sf configure -width $width -height $height \
     -yscrollincrement [expr {[winfo reqheight $lb] / 10}]
 
 pack $sa -expand yes -fill both -padx 7p -pady 7p
@@ -282,7 +282,6 @@ wm deiconify .
 # Work around a potential accuracy problem related to [$sf xview]
 #
 tkwait visibility $sf
-set width [$sf cget -width]
 while {[lindex [$sf xview] 1] != 1.0} {
     $sf configure -width [incr width]
     update idletasks
@@ -508,8 +507,8 @@ proc applyValue {w opt} {
 #------------------------------------------------------------------------------
 
 proc applyBoolean {w opt} {
-    global tbl $w
-    set val [set $w]
-    $tbl configure $opt $val
-    $w configure -text [expr {$val ? "true" : "false"}]
+    global tbl
+    upvar #0 $w var
+    $tbl configure $opt $var
+    $w configure -text [expr {$var ? "true" : "false"}]
 }

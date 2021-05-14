@@ -522,8 +522,8 @@ proc applyValue {w opt} {
 #------------------------------------------------------------------------------
 
 proc applyBoolean {w opt} {
-    global tbl $w
-    set val [set $w]
-    $tbl configure $opt $val
-    $w configure -text [expr {$val ? "true" : "false"}]
+    global tbl
+    upvar #0 $w var
+    $tbl configure $opt $var
+    $w configure -text [expr {$var ? "true" : "false"}]
 }
