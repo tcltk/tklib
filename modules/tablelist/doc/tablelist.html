@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 6.13</h2>
+    <h2>For Tablelist Version 6.14</h2>
 
     <h3>by</h3>
 
@@ -148,12 +148,12 @@
   cell-specific counterparts of the <code>configure</code> and
   <code>cget</code> subcommands (<code>columnconfigure</code>,
   <code>rowconfigure</code>, <code>cellconfigure</code>, ...).&nbsp; They can
-  be used, among others, to insert images into the cells and the header labels,
-  or to insert embedded windows into the cells.&nbsp; The <code>index</code>,
-  <code>nearest</code>, and <code>see</code> command options refer to the rows,
-  but similar subcommands are provided for the columns and cells
-  (<code>columnindex</code>, <code>cellindex</code>, ...).&nbsp; The items can
-  be sorted with the <code>sort</code>, <code>sortbycolumn</code>, and
+  be used, among others, to insert images and embedded windows into the cells
+  and the header labels.&nbsp; The <code>index</code>, <code>nearest</code>,
+  and <code>see</code> command options refer to the rows, but similar
+  subcommands are provided for the columns and cells (<code>columnindex</code>,
+  <code>cellindex</code>, ...).&nbsp; The items can be sorted with the
+  <code>sort</code>, <code>sortbycolumn</code>, and
   <code>sortbycolumnlist</code> command options.</p>
 
   <p>The bindings defined for the body of a tablelist widget make it behave
@@ -177,8 +177,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist6.13.tar.gz</code> for UNIX and
-  <code>tablelist6_13.zip</code> for Windows.&nbsp; These files contain the
+  The distribution file is <code>tablelist6.14.tar.gz</code> for UNIX and
+  <code>tablelist6_14.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -202,11 +202,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist6.13.tar.gz</code>:</p>
+  <code>tablelist6.14.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist6.13.tar.gz | tar -xf -
+gunzip -c tablelist6.14.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -214,17 +214,17 @@ gunzip -c tablelist6.13.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist6.13.tar.gz
+tar -zxf tablelist6.14.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist6.13</code>,
+  <p>Both commands will create a directory named <code>tablelist6.14</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist6_13.zip</code> into the directory
-  <code>tablelist6.13</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist6_14.zip</code> into the directory
+  <code>tablelist6.14</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -321,14 +321,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 6.13, then it is highly
-  recommended to specify the version number <code>6.13</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 6.14, then it is highly
+  recommended to specify the version number <code>6.14</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 6.13</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 6.14</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 6.13</code>.</p>
+  tablelist_tile 6.14</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -2229,7 +2229,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   a BWidget ComboBox used to edit the content of one of its cells:</p>
 
   <blockquote>
-    <img src="bwidget.png" alt="Serial Line Configuration" width="841" height=
+    <img src="bwidget.png" alt="Serial Line Configuration" width="856" height=
     "407">
   </blockquote>
 
@@ -2289,8 +2289,8 @@ if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
 $tbl columnconfigure 0 -sortmode integer
-$tbl columnconfigure 1 <span class="red">-name available -editable yes -editwindow checkbutton</span> \
-    -formatcommand emptyStr
+$tbl columnconfigure 1 -name available <span class="red">-editable yes -editwindow checkbutton</span> \
+    -formatcommand emptyStr -labelwindow checkbutton
 $tbl columnconfigure 2 -name lineName  -editable yes -editwindow Entry \
     -sortmode dictionary
 $tbl columnconfigure 3 -name baudRate  -editable yes -editwindow ComboBox \
@@ -2311,18 +2311,10 @@ proc formatDate val { return [clock format $val -format "%Y-%m-%d"] }
 proc formatTime val { return [clock format $val -format "%H:%M:%S"] }
 
 <span class="cmt">#
-# Populate the tablelist widget; set the activation
-# date & time to 10 minutes past the current clock value
+# Populate the tablelist widget and configure the checkbutton
+# embedded into the header label of the column "available"
 #</span>
-set clock [expr {[clock seconds] + 600}]
-for {set i 0; set n 1} {$i &lt; 16} {set i $n; incr n} {
-    $tbl insert end [list $n [expr {$i &lt; 8}] "Line $n" 9600 8 None 1 XON/XOFF \
-        $clock $clock [lindex $colorNames $i]]
-
-    <span class="red">set availImg [expr {($i &lt; 8) ? "checkedImg" : "uncheckedImg"}]
-    $tbl cellconfigure end,available -image $availImg</span>
-    $tbl cellconfigure end,color -image img[lindex $colorValues $i]
-}
+source [file join $dir serialParams.tcl]
 
 . . .
 </pre>
@@ -2392,6 +2384,52 @@ option add *Tablelist.labelCommand2     tablelist::addToSortColumns
   commands specified in these settings enable the user to sort the items by one
   or more columns, with the aid of the left mouse button and of the
   <code>Shift</code> key.</p>
+
+  <p>The file <code>serialParams.tcl</code>, which is <code>source</code>d into
+  the main script, contains the following code, whose second half is related to
+  the&nbsp; <code><a href=
+  "tablelistWidget.html#col_labelwindow">-labelwindow</a>
+  checkbutton</code>&nbsp; setting for column no. 1:</p>
+
+  <blockquote>
+    <pre>
+<span class="cmt">#
+# Populate the tablelist widget; set the activation
+# date & time to 10 minutes past the current clock value
+#</span>
+set clock [expr {[clock seconds] + 600}]
+for {set row 0; set line 1} {$row < 16} {set row $line; incr line} {
+    $tbl insert end [list $line [expr {$row &lt; 8}] "Line $line" 9600 8 None 1 \
+                     XON/XOFF $clock $clock [lindex $colorNames $row]]
+
+    <span class="red">set availImg [expr {($row &lt; 8) ? "checkedImg" : "uncheckedImg"}]
+    $tbl cellconfigure $row,available -image $availImg</span>
+    $tbl cellconfigure $row,color -image img[lindex $colorValues $row]
+}
+
+<span class="cmt">#
+# Configure the checkbutton embedded into the header label of the
+# column "available", and make sure that it will be reconfigured
+# whenever any column is moved interactively to a new position
+#</span>
+proc configCkbtn {tbl col} {
+    set ckbtn [$tbl labelwindowpath $col]
+    $ckbtn configure -command [list onCkbtnToggle $tbl $col $ckbtn]
+}
+proc onCkbtnToggle {tbl col ckbtn} {
+    upvar #0 [$ckbtn cget -variable] var
+    <span class="red">$tbl fillcolumn $col -text $var
+    $tbl fillcolumn $col -image [expr {$var ? "checkedImg" : "uncheckedImg"}]</span>
+}
+configCkbtn $tbl available
+bind $tbl &lt;&lt;TablelistColumnMoved&gt;&gt; { configCkbtn %W available }
+</pre>
+  </blockquote>
+
+  <p>Concerning the second half of the above code, see REMARK 2 in the
+  description of the <code><a href=
+  "tablelistWidget.html#col_labelwindow">-labelwindow</a></code> column
+  configuration option.</p>
 
   <p>The <code>editStartCmd</code> procedure, specified as the value of the
   <code><a href=
@@ -2565,15 +2603,28 @@ proc editEndCmd {tbl row col text} {
     <span class="red">red</span> color.</li>
 
     <li class="tm">
-      Invoke
+      After populating the tablelist widget, invoke
 
       <blockquote>
         <pre>
 $tbl embedcheckbuttons 1
 </pre>
       </blockquote>
+    </li>
 
-      after populating the tablelist widget.
+    <li class="tm">
+      Instead of the two deleted lines of the <code>configCkbtn</code>
+      procedure, insert the following loop:
+
+      <blockquote>
+        <pre>
+    for {set row 0} {$row < 16} {incr row} {
+        set ckbtn2 [$tbl windowpath $row,available].ckbtn
+        upvar #0 [$ckbtn2 cget -variable] var2
+        set var2 $var
+    }
+</pre>
+      </blockquote>
     </li>
   </ul>
 
@@ -2654,7 +2705,8 @@ if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
 $tbl columnconfigure 0 -name fileName
-$tbl columnconfigure 1 -formatcommand emptyStr -sortmode integer
+$tbl columnconfigure 1 -formatcommand emptyStr -sortmode integer \
+    -stretchwindow yes
 $tbl columnconfigure 2 -name fileSize -sortmode integer
 $tbl columnconfigure 4 -name seen
 scrollbar $vsb -orient vertical -command [list $tbl yview]
@@ -2847,12 +2899,7 @@ proc viewFile {tbl key} {
   <p>Having implemented the creation scripts for the frames and buttons, we can
   now use the <code><a href=
   "tablelistWidget.html#cellconfigure">cellconfigure</a></code> subcommand to
-  effectively create these widgets as embedded windows.&nbsp; Notice the
-  <code><a href=
-  "tablelistWidget.html#cell_stretchwindow">-stretchwindow</a></code> option
-  used for the embedded frames, to make sure that their width will be adapted
-  to that of the containing column when the latter is being resized
-  interactively.</p>
+  effectively create these widgets as embedded windows:</p>
 
   <blockquote>
     <pre>
@@ -2861,11 +2908,30 @@ proc viewFile {tbl key} {
 #</span>
 set rowCount [$tbl size]
 for {set row 0} {$row &lt; $rowCount} {incr row} {
-    $tbl cellconfigure $row,1 -window createFrame -stretchwindow yes
+    $tbl cellconfigure $row,1 -window createFrame
     $tbl cellconfigure $row,3 -window createButton
 }
 </pre>
   </blockquote>
+
+  <p>Actually, the script achieves the same result with less code, by using the
+  slightly more efficient <code><a href=
+  "tablelistWidget.html#fillcolumn">fillcolumn</a></code> subcommand:</p>
+
+  <blockquote>
+    <pre>
+<span class="cmt">#
+# Create embedded windows in the columns no. 1 and 3
+#</span>
+$tbl fillcolumn 1 -window createFrame
+$tbl fillcolumn 3 -window createButton
+</pre>
+  </blockquote>
+
+  <p>Notice that, due to the&nbsp; <code><a href=
+  "tablelistWidget.html#col_stretchwindow">-stretchwindow</a> yes</code>&nbsp;
+  setting for column no. 1, the width of the embedded frames will be adapted to
+  that of the column when the latter is being resized interactively.</p>
 
   <h3 id="ex_tile">Tile-Based Demo Scripts</h3>
 
@@ -2992,7 +3058,7 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)
   resulting window has a nice theme-specific appearance:</p>
 
   <blockquote>
-    <img src="tileWidgets.png" alt="Serial Line Configuration" width="839"
+    <img src="tileWidgets.png" alt="Serial Line Configuration" width="854"
     height="402">
   </blockquote>
 

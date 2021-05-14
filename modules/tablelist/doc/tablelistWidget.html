@@ -14,7 +14,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.13</h2>
+    <h2>For Tablelist Version 6.14</h2>
 
     <h3>by</h3>
 
@@ -401,6 +401,9 @@
     <dd><code><b><a href="#col_labelvalign">-labelvalign</a></b>
     <b>center</b>|<b>top</b>|<b>bottom</b></code></dd>
 
+    <dd><code><b><a href="#col_labelwindow">-labelwindow</a></b>
+    <b>checkbutton</b>|<b>ttk::checkbutton</b></code></dd>
+
     <dd><code><b><a href="#col_maxwidth">-maxwidth</a></b>
     <i>width</i></code></dd>
 
@@ -433,6 +436,9 @@
     <dd><code><b><a href="#col_stretchable">-stretchable</a></b>
     <i>boolean</i></code></dd>
 
+    <dd><code><b><a href="#col_stretchwindow">-stretchwindow</a></b>
+    <i>boolean</i></code></dd>
+
     <dd><code><b><a href="#col_stripebackground">-stripebackground</a></b>
     <i>color</i></code></dd>
 
@@ -447,6 +453,12 @@
     <b>center</b>|<b>top</b>|<b>bottom</b></code></dd>
 
     <dd><code><b><a href="#col_width">-width</a></b> <i>width</i></code></dd>
+
+    <dd><code><b><a href="#col_windowdestroy">-windowdestroy</a></b>
+    <i>command</i></code></dd>
+
+    <dd><code><b><a href="#col_windowupdate">-windowupdate</a></b>
+    <i>command</i></code></dd>
 
     <dd><code><b><a href="#col_wrap">-wrap</a></b> <i>boolean</i></code></dd>
 
@@ -869,7 +881,8 @@
     "#expandedkeys">expandedkeys</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#fillcolumn">fillcolumn</a></b>
-    <i>columnIndex</i> <i>text</i></code></dd>
+    <i>columnIndex</i> ?<b>-text</b>|<b>-image</b>|<b>-window</b>?
+    <i>value</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#findcolumnname">findcolumnname</a></b> <i>name</i></code></dd>
@@ -1017,6 +1030,9 @@
 
     <dd><code><i>pathName</i> <b><a href=
     "#labeltag">labeltag</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#labelwindowpath">labelwindowpath</a></b> <i>columnIndex</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#move">move</a></b>
     <i>sourceIndex</i> <i>targetIndex</i></code></dd>
@@ -1293,7 +1309,8 @@
     ?<i>command</i>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#hdr_fillcolumn">header
-    fillcolumn</a></b> <i>columnIndex</i> <i>text</i></code></dd>
+    fillcolumn</a></b> <i>columnIndex</i>
+    ?<b>-text</b>|<b>-image</b>|<b>-window</b>? <i>value</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#hdr_findrowname">header
     findrowname</a></b> <i>name</i></code></dd>
@@ -1479,11 +1496,10 @@
     which was introduced in Tk 8.5.</dd>
 
     <dd class="tm">Each cell (in both the body and the header) and each header
-    label of a tablelist widget can also contain an image, which is placed to
-    the left or right of the text, depending on the column's alignment.&nbsp;
-    Instead of an image, a tablelist cell (in both the body and the header) can
-    also contain an embedded window, placed to the left or right of the text,
-    just like an embedded image.</dd>
+    label of a tablelist widget can also contain an image or an embedded
+    window, which is placed to the left or right of the text, depending on the
+    column's alignment.&nbsp; The window embedded into a header label can only
+    be a Tk core checkbutton or ttk::checkbutton widget.</dd>
 
     <dd class="tm">When a tablelist is used as a tree widget, one of its
     columns will display the tree hierarchy with the aid of indentations and
@@ -2734,10 +2750,10 @@ proc expandCmd {tbl row} {
         <p>Specifies a boolean value that controls whether the interactive cell
         editing with the aid of a Tk or tile checkbutton widget, if started
         with the left mouse button, will be finished immediately after
-        automatically toggling the checked state of the temporary embedded
+        automatically toggling the check state of the temporary embedded
         checkbutton.&nbsp; The default value is <code>0</code>, meaning that a
         mouse click into the cell will only start the editing session (and
-        automatically toggle the checkbutton's checked state), but not also
+        automatically toggle the checkbutton's check state), but not also
         finish it.</p>
       </blockquote>
     </dd>
@@ -6000,21 +6016,90 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         If the label's text is right-aligned then the image will be displayed
         to the right of the text, otherwise to its left.&nbsp; The text and the
         image are separated from each other by a gap corresponding to the width
-        of a space character in the given label's font.</dd>
+        of a space character in the given label's font.&nbsp; If for the same
+        column the <code><b><a href=
+        "#col_labelwindow">-labelwindow</a></b></code> option was specified
+        with a nonempty value then it overrides the
+        <code><b>-labelimage</b></code> option.</dd>
 
         <dt class="tm" id="col_labelvalign"><code><b>-labelvalign</b>
         <i>verticalAlignment</i></code></dt>
 
-        <dd>Specifies the vertical alignment of the Tk image (if any) displayed
-        in the header label.&nbsp; The <code><i>verticalAlignment</i></code>
-        must be one of <code><b>center</b></code> (which is the default),
+        <dd>Specifies the vertical alignment of the Tk image or window (if any)
+        displayed in the header label.&nbsp;
+        <code><i>verticalAlignment</i></code> must be one of
+        <code><b>center</b></code> (which is the default),
         <code><b>top</b></code>, or <code><b>bottom</b></code>.&nbsp;
-        Especially if the label contains a multi-line text, the image is often
-        not as tall as the text; in such cases, this option enables you to
-        control the column-dependent vertical alignment of the image.</dd>
+        Especially if the label contains multi-line text, the embedded image or
+        (ttk::)checkbutton is often not as tall as the text; in such cases,
+        this option enables you to control the column-dependent vertical
+        alignment of the embedded object.</dd>
 
-        <dt class="tm" id="col_maxwidth"><code><b>-maxwidth</b>
-        <i>width</i></code></dt>
+        <dt class="tm" id="col_labelwindow"><code><b>-labelwindow</b>
+        <i>windowType</i></code></dt>
+
+        <dd>Specifies the type of the window to be embedded into the header
+        label.&nbsp; <code><i>windowType</i></code> must be
+        <code><b>checkbutton</b></code> or
+        <code><b>ttk::checkbutton</b></code>, or an empty string, specifying
+        that no embedded window is to be displayed.&nbsp; If the label's text
+        is right-aligned then the (ttk::)checkbutton widget will be displayed
+        to the right of the text, otherwise to its left.&nbsp; The text and the
+        (ttk::)checkbutton are separated from each other by a gap corresponding
+        to the width of a space character in the given label's font.&nbsp; If
+        this option was specified with a nonempty value then it overrides the
+        <code><b><a href="#col_labelimage">-labelimage</a></b></code> column
+        configuration option.</dd>
+
+        <dd class="tm"><b>REMARK 1:</b>&nbsp; The <code><b>-variable</b></code>
+        option of the (ttk::)checkbutton is set to a global variable whose name
+        is private to Tablelist and whose value is kept when the numerical
+        index of the column changes (due to inserting, deleting, or moving
+        columns).&nbsp; More precisely:&nbsp; When the column's numerical index
+        changes then the (ttk::)checkbutton is destroyed and automatically
+        recreated at the new position, with a different variable as the value
+        of its <code><b>-variable</b></code> option, but the new variable
+        inherits the last value of the old one, thus the (ttk::)checkbutton's
+        check state remains unchanged.</dd>
+
+        <dd class="tm"><b>REMARK 2:</b>&nbsp; An application making use of this
+        column configuration option will commonly retrieve the path name of the
+        (ttk::)checkbutton with the aid of the <code><b><a href=
+        "#labelwindowpath">labelwindowpath</a></b></code> subcommand and set
+        its <code><b>-command</b></code> option to a script that manipulates
+        the elements of the column in question depending on the value of the
+        variable associated with the (ttk::)checkbutton.&nbsp; Since the
+        latter's path and associated variable depend on the column's numerical
+        index, it is strongly recommended to work with column names rather than
+        numerical indices and to repeat this step whenever the
+        <code><b><a href=
+        "#label_bindings">&lt;&lt;TablelistColumnMoved&gt;&gt;</a></b></code>
+        virtual event is sent to the tablelist widget.&nbsp; The following
+        example is taken from the demo scripts for interactive cell
+        editing:</dd>
+
+        <dd>
+          <blockquote>
+            <pre>
+<span class="cmt"># Configure the checkbutton embedded into the header label of the
+# column "available", and make sure that it will be reconfigured
+# whenever any column is moved interactively to a new position</span>
+proc configCkbtn {tbl col} {
+    set ckbtn [$tbl <a href="#labelwindowpath">labelwindowpath</a> $col]
+    $ckbtn configure -command [list onCkbtnToggle $tbl $col $ckbtn]
+}
+proc onCkbtnToggle {tbl col ckbtn} {
+    upvar #0 [$ckbtn cget -variable] var
+    $tbl <a href="#fillcolumn">fillcolumn</a> $col -text $var
+    $tbl <a href="#fillcolumn">fillcolumn</a> $col -image [expr {$var ? "checkedImg" : "uncheckedImg"}]
+}
+configCkbtn $tbl available
+bind $tbl <a href="#label_bindings">&lt;&lt;TablelistColumnMoved&gt;&gt;</a> { configCkbtn %W available }
+</pre>
+          </blockquote>
+        </dd>
+
+        <dt id="col_maxwidth"><code><b>-maxwidth</b> <i>width</i></code></dt>
 
         <dd><code><i>width</i></code> must be a number.&nbsp; A positive value
         specifies the column's maximum width in average-size characters of the
@@ -6223,6 +6308,29 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         option for the tablelist widget; changes in either will automatically
         be reflected in the other.</dd>
 
+        <dt class="tm" id="col_stretchwindow"><code><b>-stretchwindow</b>
+        <i>boolean</i></code></dt>
+
+        <dd>Specifies whether the widths of the windows embedded into the
+        column's body and header cells shall be adapted dynamically to the
+        column's width if the latter is non-zero (i.e., static).&nbsp; The
+        default value is <code>0</code>.&nbsp; If the value of this option is
+        true and the column was specified with a non-zero width or was resized
+        interactively, then the widths of its embedded windows (if any) will be
+        adjusted automatically so the windows fill the whole horizontal space
+        belonging to the column (except the left and right margins).&nbsp;
+        Please note that in this case the texts of the column's cells will
+        remain hidden.&nbsp; On the other hand, if the column is of dynamic
+        width then this option will be ignored and both its texts and its
+        embedded windows (if any) will be displayed as usual.&nbsp; The easiest
+        way to avoid this discrepancy is to set the column's texts to empty
+        strings or make sure that its elements are always displayed as empty
+        strings, by using the <code><b><a href=
+        "#col_formatcommand">-formatcommand</a></b></code> column configuration
+        option.&nbsp; The value of this option can be overridden for individual
+        cells by using the <a href="#cell_stretchwindow">cell configuration
+        option</a> of the same name.</dd>
+
         <dt class="tm" id="col_stripebackground"><code><b>-stripebackground</b>
         <i>color</i></code></dt>
 
@@ -6259,7 +6367,7 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         <i>verticalAlignment</i></code></dt>
 
         <dd>Specifies the vertical alignment of embedded images and windows
-        displayed in the given column.&nbsp; The
+        displayed in the body and header cells of the given column.&nbsp; The
         <code><i>verticalAlignment</i></code> must be one of
         <code><b>center</b></code> (which is the default),
         <code><b>top</b></code>, or <code><b>bottom</b></code>.&nbsp;
@@ -6286,6 +6394,90 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         the list specifying the value of the <code><b><a href=
         "#columns">-columns</a></b></code> option for the tablelist widget;
         changes in either will automatically be reflected in the other.</dd>
+
+        <dt class="tm" id="col_windowdestroy"><code><b>-windowdestroy</b>
+        <i>command</i></code></dt>
+
+        <dd>Specifies a Tcl command to be invoked when a window embedded into a
+        body or header cell of the column is destroyed.&nbsp; Provided that
+        <code><i>command</i></code> is a nonempty string, it is automatically
+        concatenated with the path name of the tablelist widget, the cell's row
+        and column indices, as well as the path name of the embedded window,
+        and the resulting script is evaluated in the global scope.&nbsp; This
+        option provides an easy-to-use alternative to binding a script to the
+        <code><b>&lt;Destroy&gt;</b></code> event of the column's embedded
+        windows from within their creation scripts, specified as the value of
+        the <code><b><a href="#cell_window">-window</a></b></code> cell
+        configuration option.&nbsp; The value of this option can be overridden
+        for individual cells by using the <a href="#cell_windowdestroy">cell
+        configuration option</a> of the same name.</dd>
+
+        <dt class="tm" id="col_windowupdate"><code><b>-windowupdate</b>
+        <i>command</i></code></dt>
+
+        <dd>Specifies a Tcl command responsible for adapting the background and
+        foreground colors of a window embedded into a body or header cell of
+        the column to the current background and foreground colors of the cell
+        itself.&nbsp; The current cell colors depend on whether the tablelist
+        widget's <code><b><a href="#state">state</a></b></code> is
+        <code><b>normal</b></code> or <code><b>disabled</b></code>, whether the
+        cell is selected, and whether its row is displayed with the colors
+        specified by the <code><b><a href=
+        "#stripebackground">-stripebackground</a></b></code> and
+        <code><b><a href="#stripeforeground">-stripeforeground</a></b></code>
+        widget or column configuration options.&nbsp; Provided that
+        <code><i>command</i></code> is a nonempty string, it is automatically
+        concatenated with the path name of the tablelist widget, the cell's row
+        and column indices, the path name of the embedded window, the option
+        name <code><b>-background</b></code> and the cell's current background
+        color, as well as the option name <code><b>-foreground</b></code> and
+        the cell's current foreground color.&nbsp; The resulting script is then
+        evaluated in the global scope.&nbsp; The specified command can use the
+        colors passed to it as arguments to set the corresponding colors of the
+        embedded window to the same values.</dd>
+
+        <dd class="tm">For example, if the embedded window is a text or ctext
+        widget and you want for its background and foreground colors to be
+        automatically adapted to the cell's current background and foreground
+        colors, then you can achieve this by setting the
+        <code><b>-windowupdate</b></code> option to <code>updateWindow</code>,
+        where the latter is the procedure implemented as follows:</dd>
+
+        <dd>
+          <blockquote>
+            <pre>
+proc updateWindow {tbl row col w args} {
+    eval [list $w configure] $args
+}
+</pre>
+          </blockquote>
+        </dd>
+
+        <dd>With Tcl/Tk 8.5 or above, you can use the more compact form</dd>
+
+        <dd>
+          <blockquote>
+            <pre>
+proc updateWindow {tbl row col w args} {
+    $w configure {*}$args
+}
+</pre>
+          </blockquote>
+        </dd>
+
+        <dd>In this example, <code>args</code> is a list of the form</dd>
+
+        <dd>
+          <blockquote>
+            <pre>
+-background <i>backgroundColor</i> -foreground <i>foregroundColor</i>
+</pre>
+          </blockquote>
+        </dd>
+
+        <dd>The value of this option can be overridden for individual cells by
+        using the <a href="#cell_windowupdate">cell configuration option</a>
+        of the same name.</dd>
 
         <dt class="tm" id="col_wrap"><code><b>-wrap</b>
         <i>boolean</i></code></dt>
@@ -6517,7 +6709,8 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         <dd>Specifies whether the content of the cell can be edited
         interactively.&nbsp; The default value is <code>0</code>.&nbsp; This
         option overrides <a href="#col_editable">the one of the same name</a>
-        for the column containing the given cell.</dd>
+        for the column containing the given cell if the specified value is not
+        an empty string (which is explicitly allowed).</dd>
 
         <dt class="tm" id="cell_editwindow"><code><b>-editwindow</b>
         <i>name</i></code></dt>
@@ -6526,8 +6719,8 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         interactive editing of the cell's content.&nbsp; The default value is
         <code><b>entry</b></code>.&nbsp; This option overrides <a href=
         "#col_editwindow">the one of the same name</a> for the column
-        containing the given cell, and may have the same values as its
-        column-related counterpart.</dd>
+        containing the given cell if the specified value is not an empty string
+        (which is explicitly allowed).</dd>
 
         <dt class="tm" id="cell_font"><code><b>-font</b>
         <i>font</i></code></dt>
@@ -6626,7 +6819,10 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         that the column's elements are always displayed as empty strings, by
         using the <code><b><a href=
         "#col_formatcommand">-formatcommand</a></b></code> column configuration
-        option.</dd>
+        option.&nbsp; This option overrides <a href="#col_stretchwindow">the
+        one of the same name</a> for the column containing the given cell if
+        the specified value is not an empty string (which is explicitly
+        allowed).</dd>
 
         <dt class="tm" id="cell_text"><code><b>-text</b>
         <i>text</i></code></dt>
@@ -6643,8 +6839,8 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         displayed in the cell (if any).&nbsp; The default value is
         <code><b>center</b></code>.&nbsp; This option overrides <a href=
         "#col_valign">the one of the same name</a> for the column containing
-        the given cell, and may have the same values as its column-related
-        counterpart.</dd>
+        the given cell if the specified value is not an empty string (which is
+        explicitly allowed).</dd>
 
         <dt class="tm" id="cell_window"><code><b>-window</b>
         <i>command</i></code></dt>
@@ -6680,14 +6876,18 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         <i>command</i></code></dt>
 
         <dd>Specifies a Tcl command to be invoked when a window embedded into
-        the cell is destroyed.&nbsp; The command is automatically concatenated
-        with the path name of the tablelist widget, the cell's row and column
-        indices, as well as the path name of the embedded window, and the
-        resulting script is evaluated in the global scope.&nbsp; This option
-        provides an easy-to-use alternative to binding a script to the embedded
-        window's <code><b>&lt;Destroy&gt;</b></code> event from within its
-        creation script, specified as the value of the <code><b><a href=
-        "#cell_window">-window</a></b></code> cell configuration option.</dd>
+        the cell is destroyed.&nbsp; Provided that <code><i>command</i></code>
+        is a nonempty string, it is automatically concatenated with the path
+        name of the tablelist widget, the cell's row and column indices, as
+        well as the path name of the embedded window, and the resulting script
+        is evaluated in the global scope.&nbsp; This option provides an
+        easy-to-use alternative to binding a script to the embedded window's
+        <code><b>&lt;Destroy&gt;</b></code> event from within its creation
+        script, specified as the value of the <code><b><a href=
+        "#cell_window">-window</a></b></code> cell configuration option.&nbsp;
+        This option overrides <a href="#col_windowdestroy">the one of the same
+        name</a> for the column containing the given cell if the specified
+        value is not an empty string.</dd>
 
         <dt class="tm" id="cell_windowupdate"><code><b>-windowupdate</b>
         <i>command</i></code></dt>
@@ -6701,61 +6901,25 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         its row is displayed with the colors specified by the <code><b><a href=
         "#stripebackground">-stripebackground</a></b></code> and
         <code><b><a href="#stripeforeground">-stripeforeground</a></b></code>
-        widget or column configuration options.&nbsp; The command is
-        automatically concatenated with the path name of the tablelist widget,
-        the cell's row and column indices, the path name of the embedded
-        window, the option name <code><b>-background</b></code> and the cell's
-        current background color, as well as the option name
-        <code><b>-foreground</b></code> and the cell's current foreground
-        color.&nbsp; The resulting script is then evaluated in the global
-        scope.&nbsp; The specified command can use the colors passed to it as
-        arguments to set the corresponding colors of the embedded window to the
-        same values.</dd>
-
-        <dd class="tm">For example, if the embedded window is a text or ctext
-        widget and you want for its background and foreground colors to be
-        automatically adapted to the cell's current background and foreground
-        colors, then you can achieve this by setting the
-        <code><b>-windowupdate</b></code> cell configuration option to
-        <code>updateWindow</code>, where the latter is the procedure
-        implemented as follows:</dd>
-
-        <dd>
-          <blockquote>
-            <pre>
-proc updateWindow {tbl row col w args} {
-    eval [list $w configure] $args
-}
-</pre>
-          </blockquote>
-        </dd>
-
-        <dd>With Tcl/Tk 8.5 or above, you can use the more compact form</dd>
-
-        <dd>
-          <blockquote>
-            <pre>
-proc updateWindow {tbl row col w args} {
-    $w configure {*}$args
-}
-</pre>
-          </blockquote>
-        </dd>
-
-        <dd>In this example, <code>args</code> is a list of the form</dd>
-
-        <dd>
-          <blockquote>
-            <pre>
--background <i>backgroundColor</i> -foreground <i>foregroundColor</i>
-</pre>
-          </blockquote>
-        </dd>
+        widget or column configuration options.&nbsp; Provided that
+        <code><i>command</i></code> is a nonempty string, it is automatically
+        concatenated with the path name of the tablelist widget, the cell's row
+        and column indices, the path name of the embedded window, the option
+        name <code><b>-background</b></code> and the cell's current background
+        color, as well as the option name <code><b>-foreground</b></code> and
+        the cell's current foreground color.&nbsp; The resulting script is then
+        evaluated in the global scope.&nbsp; The specified command can use the
+        colors passed to it as arguments to set the corresponding colors of the
+        embedded window to the same values.&nbsp; This option overrides
+        <a href="#col_windowupdate">the one of the same name</a> for the column
+        containing the given cell if the specified value is not an empty
+        string.</dd>
       </dl>
     </dd>
 
-    <dd>The <code><b>-background</b></code>, <code><b>-font</b></code>,
-    <code><b>-foreground</b></code>, <code><b>-selectbackground</b></code>, and
+    <dd class="tm">The <code><b>-background</b></code>,
+    <code><b>-font</b></code>, <code><b>-foreground</b></code>,
+    <code><b>-selectbackground</b></code>, and
     <code><b>-selectforeground</b></code> cell configuration options override
     the options of the same names set at row, column, or widget level if the
     specified value is not an empty string.&nbsp; See the <a href=
@@ -7339,6 +7503,13 @@ proc handleTblDrop {tbl data} {
           <th align="left">Description</th>
 
           <th align="left">User Data (for Tk 8.5 or Later)</th>
+        </tr>
+
+        <tr valign="top">
+          <td><code><b>&lt;&lt;TablelistActivate&gt;&gt;</b></code></td>
+          <td>Generated by the default bindings whenever the active row or cell
+          changes in the tablelist widget due to user interaction.</td>
+          <td>Not used.</td>
         </tr>
 
         <tr valign="top">
@@ -9227,10 +9398,15 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         <dd>Returns the list of full keys of the expanded items.</dd>
 
         <dt class="tm" id="fillcolumn"><code><i>pathName</i> <b>fillcolumn</b>
-        <i>columnIndex</i> <i>text</i></code></dt>
+        <i>columnIndex</i> ?<b>-text</b>|<b>-image</b>|<b>-window</b>?
+        <i>value</i></code></dt>
 
-        <dd>Sets all the elements of the specified column in the tablelist body
-        to the value <code><i>text</i></code>.</dd>
+        <dd>This subcommand is logically equivalent to invoking the
+        <code><b><a href="#cellconfigure">cellconfigure</a></b></code>
+        subcommand for all body cells of the specified column, with
+        <code><b>-text</b></code> (the default), <code><b>-image</b></code>, or
+        <code><b>-window</b></code>, as well as <code><i>value</i></code> as
+        arguments.</dd>
 
         <dt class="tm" id="findcolumnname"><code><i>pathName</i>
         <b>findcolumnname</b> <i>name</i></code></dt>
@@ -9971,14 +10147,25 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         <dd>Returns the name of a binding tag whose name depends on the path
         name of the tablelist widget and which is associated with the header
         labels as well as with the additional widgets placed by Tablelist into
-        the latters for displaying header images and sort arrows.&nbsp; This
-        binding tag is designed to be used when defining non-default binding
-        scripts for the header labels.&nbsp; From within such event handling
-        scripts you can retrieve the column number and the tablelist widget's
-        path name with the aid of the helper commands <code><b><a href=
+        the latters for displaying header images, (ttk::)checkbuttons, and sort
+        arrows.&nbsp; This binding tag is designed to be used when defining
+        non-default binding scripts for the header labels.&nbsp; From within
+        such event handling scripts you can retrieve the column number and the
+        tablelist widget's path name with the aid of the helper commands
+        <code><b><a href=
         "tablelistBinding.html#getTablelistColumn">tablelist::getTablelistColumn</a></b></code>
         and <code><b><a href=
         "tablelistBinding.html#getTablelistPath">tablelist::getTablelistPath</a></b></code>.</dd>
+
+        <dt class="tm" id="labelwindowpath"><code><i>pathName</i>
+        <b>labelwindowpath</b> <i>columnIndex</i></code></dt>
+
+        <dd>Returns the path name of the Tk core checkbutton or
+        ttk::checkbutton window embedded into the header label of the specified
+        column with the aid of the <code><b><a href=
+        "#col_labelwindow">-labelwindow</a></b></code> column configuration
+        option.&nbsp; If that option was not set or was set to an empty string
+        then the return value will be an empty string.</dd>
 
         <dt class="tm" id="move"><code><i>pathName</i> <b>move</b>
         <i>sourceIndex</i> <i>targetIndex</i></code><br>
@@ -11187,11 +11374,17 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         column specified by <code><i>columnIndex</i></code>.</dd>
 
         <dt class="tm" id="hdr_fillcolumn"><code><i>pathName</i> <b>header
-        fillcolumn</b> <i>columnIndex</i> <i>text</i></code></dt>
+        fillcolumn</b> <i>columnIndex</i>
+        ?<b>-text</b>|<b>-image</b>|<b>-window</b>? <i>value</i></code></dt>
 
         <dd>Similar to the <code><b><a href=
         "#fillcolumn">fillcolumn</a></b></code> command for the tablelist
-        body.</dd>
+        body.&nbsp; Logically equivalent to invoking the&nbsp;
+        <code><b><a href="#hdr_cellconfigure">header
+        cellconfigure</a></b></code>&nbsp; subcommand for all header cells of
+        the specified column, with <code><b>-text</b></code> (the default),
+        <code><b>-image</b></code>, or <code><b>-window</b></code>, as well as
+        <code><i>value</i></code> as arguments.</dd>
 
         <dt class="tm" id="hdr_findrowname"><code><i>pathName</i> <b>header
         findrowname</b> <i>name</i></code></dt>
@@ -11679,7 +11872,22 @@ proc printClickedCell {w x y} {
     event (which is supported for compatibility reasons), the virtual event
     <code><b>&lt;&lt;TablelistSelect&gt;&gt;</b></code> can be used to be made
     aware of any changes to tablelist selection.&nbsp; Both events will be
-    generated independently of the selection type.</dd>
+    generated independently of the selection type.&nbsp; A binding script for
+    one of these events can use the <code><b><a href=
+    "#curselection">curselection</a></b></code> and <code><b><a href=
+    "#curcellselection">curcellselection</a></b></code> subcommands to retrieve
+    the indices of the selected rows and cells, respectively.</dd>
+
+    <dd class="tm">Likewise, any changes to the active row or cell will
+    automatically generate the virtual event
+    <code><b>&lt;&lt;TablelistActivate&gt;&gt;</b></code>.&nbsp; A binding
+    script for this event can access the active item or element by using the
+    word <code><b>active</b></code> (which is a valid <a href=
+    "#row_indices">row</a> and <a href="#cell_indices">cell</a> index) or its
+    canonical equivalent given by&nbsp; <code>[<i>pathName</i> <b><a href=
+    "#index">index</a> active</b>]</code>&nbsp; and&nbsp;
+    <code>[<i>pathName</i> <b><a href="#cellindex">cellindex</a>
+    active</b>]</code>,&nbsp; respectively.</dd>
 
     <dd class="tm" id="local_drag_and_drop">
       <b>LOCAL DRAG & DROP:</b>&nbsp; The following binding associated with the
@@ -11827,7 +12035,7 @@ proc printClickedCell {w x y} {
     <dt class="tm" id="header_bindings"><b>DEFAULT AND INDIVIDUAL BINDINGS FOR
     THE HEADER ITEMS</b></dt>
 
-    <dd>The hedaer items are contained in a text widget whose binding tag
+    <dd>The header items are contained in a text widget whose binding tag
     <code><b>Text</b></code> is replaced with a new binding tag called
     <code><b>TablelistHeader</b></code>.&nbsp; This tag replaces also the
     binding tag <code><b>Message</b></code> of the message widgets used to
