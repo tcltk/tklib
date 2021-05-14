@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Commands Related to Mouse Wheel Event Handling</h1>
 
-    <h2>For Scrollutil Version 1.9</h2>
+    <h2>For Scrollutil Version 1.10</h2>
 
     <h3>by</h3>
 
@@ -272,10 +272,15 @@
     event bindings created by the <code><b><a href=
     "#create">scrollutil::createWheelEventBindings</a></b></code> command.</dd>
 
-    <dd class="tm"><b>REMARK:</b>&nbsp; When a scrollable widget container
+    <dd class="tm"><b>REMARK 1:</b>&nbsp; When a scrollable widget container
     whose path name was passed to this command gets destroyed, it is
     automatically removed from the above-mentioned internal list of registered
     widget containers.</dd>
+
+    <dd class="tm"><b>REMARK 2:</b>&nbsp; The <code><b><a href=
+    "scrollableframe.html">scrollutil::scrollableframe</a></b></code> command
+    automatically invokes this command for the scrollableframe widget it
+    creates.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 

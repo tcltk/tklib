@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 1.9</h2>
+    <h2>For Scrollutil Version 1.10</h2>
 
     <h3>by</h3>
 
@@ -269,8 +269,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil1.9.tar.gz</code> for UNIX and
-  <code>scrollutil1_9.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil1.10.tar.gz</code> for UNIX and
+  <code>scrollutil1_10.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -294,11 +294,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil1.9.tar.gz</code>:</p>
+  <code>scrollutil1.10.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil1.9.tar.gz | tar -xf -
+gunzip -c scrollutil1.10.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -306,17 +306,17 @@ gunzip -c scrollutil1.9.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil1.9.tar.gz
+tar -zxf scrollutil1.10.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil1.9</code>,
+  <p>Both commands will create a directory named <code>scrollutil1.10</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil1_9.zip</code> into the directory
-  <code>scrollutil1.9</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil1_10.zip</code> into the directory
+  <code>scrollutil1.10</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -1682,7 +1682,7 @@ source [file join $dir ScrolledFrmContent.tcl]
 
   <blockquote>
     <img src="ScrolledNotebookDemo.png" alt="ScrolledNotebookDemo" width="638"
-    height="514">
+    height="515">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -1695,12 +1695,18 @@ source [file join $dir styleUtil.tcl]
 
 wm title . "Ttk Library Scripts"
 
+<span class="red">scrollutil::addclosetab My.TNotebook</span>
+
+set pct $scrollutil::scalingpct
+image create photo fileImg -file [file join $dir file$pct.gif]
+
 <span class="cmt">#
-# Create a scrollednotebook widget and populate it with panes that contain
-# scrolled text widgets displaying the contents of the Ttk library files
+# Create a scrollednotebook widget having closable tabs
+# and populate it with panes that contain scrolled text
+# widgets displaying the contents of the Ttk library files
 #</span>
 set f  [ttk::frame .f]
-<span class="red">set nb [scrollutil::scrollednotebook $f.nb]</span>
+<span class="red">set nb [scrollutil::scrollednotebook $f.nb -style My.TNotebook]</span>
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 foreach fileName [lsort [glob *.tcl]] {
     set baseName [string range $fileName 0 end-4]
@@ -1716,7 +1722,7 @@ foreach fileName [lsort [glob *.tcl]] {
     $txt configure -state disabled
 
     set padding [expr {$ttk::currentTheme eq "aqua" ? 0 : "7p"}]
-    <span class="red">$nb add $sa -text $fileName -padding $padding</span>
+    <span class="red">$nb add $sa -text $fileName -image fileImg -compound left -padding $padding</span>
 }
 
 <span class="cmt">#
@@ -1754,6 +1760,22 @@ proc populateMenu {nb data} {
 . . .
 </pre>
   </blockquote>
+
+  <p>We add the <code><a href=
+  "scrollednotebook.html#closetab">closetab</a></code> element to the tabs of
+  the <code>My.TNotebook</code> style with the aid of the <code><a href=
+  "scrollednotebook.html#addclosetab">scrollutil::addclosetab</a></code>
+  command, and create a scrollednotebook widget of this style.&nbsp; Note that,
+  while in this example we could have used the default ttk::notebook style
+  <code>TNotebook</code> instead, working with different ttk::notebook styles
+  is necessary in applications having both notebooks with the
+  <code>closetab</code> element in their tabs and notebooks without this
+  element.</p>
+
+  <p>We also make use of the virtual event <code><a href=
+  "scrollednotebook.html#virtual_events">&lt;&lt;MenuItemsRequested&gt;&gt;</a></code>
+  to populate the pop-up menu shown when the user clicks a tab with mouse
+  button 3.</p>
 
   <p>When running the script, the scrollednotebook widget appears with the
   configured width and tabs displaying the unstripped file names.&nbsp; For

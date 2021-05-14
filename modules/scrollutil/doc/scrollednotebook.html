@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>The scrollutil::scrollednotebook Command</title>
+  <title>The scrollutil::scrollednotebook Command and the closetab Style
+  Element</title>
 
   <meta name="Author" content="Csaba Nemethi">
-  <meta name="Keywords" content="scrollednotebook, widget, notebook, scrolled">
+  <meta name="Keywords" content=
+  "scrollednotebook, widget, notebook, scrolled, ttk::notebook style, closetab">
 
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
 <body>
   <div align="center">
-    <h1>The <code><b>scrollutil::scrollednotebook</b></code> Command</h1>
+    <h1>The <code><b>scrollutil::scrollednotebook</b></code> Command<br>
+    and the <code><b>closetab</b></code> Style Element</h1>
 
-    <h2>For Scrollutil Version 1.9</h2>
+    <h2>For Scrollutil Version 1.10</h2>
 
     <h3>by</h3>
 
@@ -29,9 +32,22 @@
   <h2 id="contents">Contents</h2>
 
   <ul>
-    <li><a href="#quick_ref">Quick Reference</a></li>
+    <li><a href="#quick_ref">The
+    <code><b>scrollutil::scrollednotebook</b></code> Command &ndash; Quick
+    Reference</a></li>
 
-    <li><a href="#detailed_ref">Detailed Reference</a></li>
+    <li><a href="#detailed_ref">The
+    <code><b>scrollutil::scrollednotebook</b></code> Command &ndash; Detailed
+    Reference</a></li>
+
+    <li><a href="#closetab">The <code><b>closetab</b></code> Style
+    Element</a></li>
+
+    <li><a href="#addclosetab">The <code><b>scrollutil::addclosetab</b></code>
+    Command</a></li>
+
+    <li><a href="#removeclosetab">The
+    <code><b>scrollutil::removeclosetab</b></code> Command</a></li>
   </ul>
 
   <div align="center">
@@ -40,7 +56,8 @@
 
   <hr>
 
-  <h2 id="quick_ref">Quick Reference</h2>
+  <h2 id="quick_ref">The <code><b>scrollutil::scrollednotebook</b></code>
+  Command &ndash; Quick Reference</h2>
 
   <dl>
     <dt><a href="#name">NAME</a></dt>
@@ -108,7 +125,8 @@ package require scrollutil_tile
 
   <hr>
 
-  <h2 id="detailed_ref">Detailed Reference</h2>
+  <h2 id="detailed_ref">The <code><b>scrollutil::scrollednotebook</b></code>
+  Command &ndash; Detailed Reference</h2>
 
   <dl>
     <dt id="name"><b>NAME</b></dt>
@@ -273,7 +291,8 @@ package require scrollutil_tile
         scrollednotebook widget itself but the ttk::notebook contained in it
         will receive the focus during keyboard traversal with the standard keys
         (<code>Tab</code> and <code>Shift-Tab</code>).&nbsp; The default is
-        <code>"ttk::takefocus"</code>.</p>
+        <code>"ttk::takefocus"</code> (just like for ttk::notebook and several
+        other Tk themed widgets).</p>
       </blockquote>
     </dd>
 
@@ -332,10 +351,10 @@ package require scrollutil_tile
     </dd>
 
     <dd><code><i>option</i></code> and the <code><i>arg</i></code>s determine
-    the exact behavior of the command.&nbsp; The commands possible for
+    the exact behavior of the command.&nbsp; The subcommands possible for
     scrollednotebook widgets are the same as those for ttk::notebook widgets
     (see the <b>ttk_notebook</b> manual entry for details), except that
-    scrollednotebook widgets provide the following additional command:</dd>
+    scrollednotebook widgets provide the following additional subcommand:</dd>
 
     <dd>
       <dl>
@@ -358,9 +377,10 @@ package require scrollutil_tile
     <dt class="tm" id="virtual_events"><b>VIRTUAL EVENTS</b></dt>
 
     <dd>As described in the <b>ttk_notebook</b> manual entry, after a new tab
-    of a ttk::notebook is selected, the widget generates a
-    <code><b>&lt;&lt;NotebookTabChanged&gt;&gt;</b></code> virtual event.&nbsp;
-    This holds true for scrollednotebook widgets, too.</dd>
+    of a ttk::notebook is selected (programmatically or interactively), the
+    widget generates a <code><b>&lt;&lt;NotebookTabChanged&gt;&gt;</b></code>
+    virtual event.&nbsp; This holds true for scrollednotebook widgets,
+    too.</dd>
 
     <dd class="tm">
       The Scrollutil_tile package defines the virtual event
@@ -395,14 +415,13 @@ proc populateMenu {nb data} {
 }
 </pre>
       </blockquote>
-
-      <p>See the next section for the description of the virtual event
-      <code><b>&lt;&lt;NotebookTabMoved&gt;&gt;</b></code>, which is generated
-      when a ttk::notebook or scrollednotebook tab is moved interactively to a
-      new position.</p>
     </dd>
 
-    <dt id="bindings"><b>FURTHER BINDINGS</b></dt>
+    <dd>See the next section for the description of the virtual events
+    <code><b>&lt;&lt;NotebookTabMoved&gt;&gt;</b></code> and
+    <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code>.</dd>
+
+    <dt class="tm" id="bindings"><b>FURTHER BINDINGS</b></dt>
 
     <dd>The Scrollutil_tile package implements the <b>navigation between the
     tabs of a ttk::notebook or scrollednotebook widget via the mouse wheel</b>
@@ -435,13 +454,26 @@ proc populateMenu {nb data} {
     <code>Escape</code>).&nbsp; If the Tk version is 8.5a2 or later then after
     moving the tab to its new position, the widget generates a
     <code><b>&lt;&lt;NotebookTabMoved&gt;&gt;</b></code> virtual event, by
-    invoking &nbsp; <code><b> event generate</b></code>&nbsp; with the
+    invoking&nbsp; <code><b>event generate</b></code>&nbsp; with the
     <code><b>-data</b></code> option set to a list consisting of the path name
     of the widget contained in the source pane and the numerical index of the
     target tab position.&nbsp; (The support for this option was introduced in
     Tk 8.5a2.)&nbsp; All the above works also for a ttk::notebook with vertical
     tab layout, with the only difference that for the duration of the drag, the
     cursor is set to one having the shape of an up/down arrow.</dd>
+
+    <dd class="tm">Finally, if mouse button 1 is pressed over the
+    <code><b><a href="#closetab">closetab</a></b></code> element (if any) of a
+    tab of a ttk::notebook or scrollednotebook widget and later released over
+    the same element then, provided that the value of the tab's
+    <code><b>-state</b></code> option is <code><b>normal</b></code>, the tab is
+    closed by means of the widget's <code><b>forget</b></code>
+    subcommand.&nbsp; If the Tk version is 8.5a2 or later then after closing
+    the tab, the widget generates a
+    <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code> virtual event, by
+    invoking&nbsp; <code><b>event generate</b></code>&nbsp; with the
+    <code><b>-data</b></code> option set to the path name of the widget
+    contained in that tab's pane.</dd>
 
     <dd class="tm">If the widget's <code><b>disabled</b></code> state flag is
     set then none of the above actions occur: the tabs are completely
@@ -450,6 +482,121 @@ proc populateMenu {nb data} {
     <dt class="tm" id="keywords"><b>KEYWORDS</b></dt>
 
     <dd>scrollednotebook, widget, notebook, scrolled</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="closetab">The <code><b>closetab</b></code> Style Element</h2>
+
+  <p>The Scrollutil_tile package automatically creates a new style element
+  named <code><b>closetab</b></code>, whose shape resembles an x
+  character.&nbsp; The element's size depends on the display's scaling
+  percentage (<code>100</code>, <code>125</code>, <code>150</code>,
+  <code>175</code>, or <code>200</code>).&nbsp; Its foreground color is
+  theme-specific and is updated whenever the theme changes.</p>
+
+  <p>You can add this element to the tabs of a ttk::notebook style (like
+  <code><b>TNotebook</b></code> or <code>My.<b>TNotebook</b></code>) by using
+  the <code><b><a href="#addclosetab">scrollutil::addclosetab</a></b></code>
+  command, thus making the tabs of any ttk::notebook or scrollednotebook widget
+  of that style closable by the user.</p>
+
+  <p>For the opposite operation the Scrollutil_tile package provides the
+  <code><b><a href="#removeclosetab">scrollutil::removeclosetab</a></b></code>
+  command.</p>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="addclosetab">The <code><b>scrollutil::addclosetab</b></code>
+  Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>scrollutil::addclosetab</code> &ndash; Add the
+    <code>closetab</code> element to the tabs of a ttk::notebook style</dd>
+
+    <dt class="tm"><b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+package require scrollutil_tile
+<b>scrollutil::addclosetab</b> <i>notebookStyle</i>
+</pre>
+    </dd>
+
+    <dd>Note that the <code><b>scrollutil::addclosetab</b></code> command is
+    provided by the Scrollutil_tile package, but not by Scrollutil.</dd>
+
+    <dt class="tm"><b>DESCRIPTION</b></dt>
+
+    <dd>Modifies the style <code><i>notebookStyle</i><b>.Tab</b></code>
+    corresponding to a given ttk::notebook style (like
+    <code><b>TNotebook</b></code> or <code>My.<b>TNotebook</b></code>) by
+    adding the <code><b><a href="#closetab">closetab</a></b></code> element to
+    it.&nbsp; This makes the tabs of any ttk::notebook or scrollednotebook
+    widget whose <code><b>-style</b></code> option was set to
+    <code><i>notebookStyle</i></code> closable by the user.&nbsp; If the
+    <code><b>closetab</b></code> element was already present in the style
+    <code><i>notebookStyle</i><b>.Tab</b></code> then the command returns
+    without performing any action.</dd>
+
+    <dt class="tm"><b>KEYWORDS</b></dt>
+
+    <dd>ttk::notebook style, closetab</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="removeclosetab">The <code><b>scrollutil::removeclosetab</b></code>
+  Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>scrollutil::removeclosetab</code> &ndash; Remove the
+    <code>closetab</code> element from the tabs of a ttk::notebook style</dd>
+
+    <dt class="tm"><b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+package require scrollutil_tile
+<b>scrollutil::removeclosetab</b> <i>notebookStyle</i>
+</pre>
+    </dd>
+
+    <dd>Note that the <code><b>scrollutil::removeclosetab</b></code> command is
+    provided by the Scrollutil_tile package, but not by Scrollutil.</dd>
+
+    <dt class="tm"><b>DESCRIPTION</b></dt>
+
+    <dd>Modifies the style <code><i>notebookStyle</i><b>.Tab</b></code>
+    corresponding to a given ttk::notebook style (like
+    <code><b>TNotebook</b></code> or <code>My.<b>TNotebook</b></code>) by
+    removing the <code><b><a href="#closetab">closetab</a></b></code> element
+    from it.&nbsp; If the <code><b>closetab</b></code> element was not present
+    in the style <code><i>notebookStyle</i><b>.Tab</b></code> then the command
+    returns without performing any action.</dd>
+
+    <dt class="tm"><b>KEYWORDS</b></dt>
+
+    <dd>ttk::notebook style, closetab</dd>
   </dl>
 
   <div align="center">
