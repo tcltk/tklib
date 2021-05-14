@@ -1,3 +1,41 @@
+2021-05-14 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 6.14.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added the "-labelwindow" column configuration option,
+	  with the possible values "checkbutton" and "ttk::checkbutton"; added
+	  the "labelwindowpath" subcommand; added the virtual event
+	  <<TablelistActivate>>, generated whenever the active row or cell
+	  changes due to user interaction; if the value of the "-titlecolums"
+	  option is positive then <Shift-MouseWheel> now scrolls the tablelist
+	  widget by one column only; the "-stretchwindow", "-windowdestroy",
+	  and "-windowupdate" options are now supported at column level, too;
+	  the "fillcolumn" and "header fillcolumn" subcommands now can embed an
+	  image or window in all body/header cells of the specified column.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl:  On X11 only correct the sizes of the
+	* scripts/utils/scaleutil.tcl: standard fonts and set the scaling
+	  factor if the display's scaling percentage is > 100; don't change the
+	  scaling factor if the scaling percentage was derived from it.
+
+	* doc/bwidget.png:     Updated screenshots.
+	* doc/tileWidgets.png:
+
+	* ../../examples/tablelist/*.tcl: Bumped the version number to 6.14;
+	  the demo scripts "bwidget*.tcl", "iwidgets*.tcl", "miscWidgets*.tcl",
+	  and "tileWidgets.tcl" now use the new "-labelwindow" column
+	  configuration option and "labelwindowpath" subcommand; the demo
+	  scripts "embeddedWindows*.tcl" now use the "-stretchwindow" option at
+	  column level and embed the windows into the cells by means of the
+	  "fillcolumn" subcommand.
+
 2021-04-14 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 6.13.
