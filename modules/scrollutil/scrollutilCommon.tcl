@@ -10,7 +10,7 @@ namespace eval ::scrollutil {
     #
     # Public variables:
     #
-    variable version	1.9
+    variable version	1.10
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -21,7 +21,7 @@ namespace eval ::scrollutil {
     #
     # Creates a new scrollarea/scrollsync/scrollableframe widget:
     #
-    namespace export	scrollarea scrollsync scrollableframe scrollednotebook
+    namespace export	scrollarea scrollsync scrollableframe
 
     #
     # Queries the scrollarea/scrollsync to which a given widget belongs:
@@ -89,11 +89,15 @@ lappend auto_path [file join $::scrollutil::library scripts]
 # "scripts/utils".  Take into account that mwutil is also included
 # in Mentry and Tablelist, and scaleutil is also included in Tablelist.
 #
-if {[catch {package present mwutil} version] == 0 && $version < 2.19} {
-    package forget mwutil
+proc ::scrollutil::loadUtils {} {
+    if {[catch {package present mwutil} version] == 0 && $version < 2.19} {
+	package forget mwutil
+    }
+    package require mwutil 2.19
+
+    if {[catch {package present scaleutil} version] == 0 && $version < 1.4} {
+	package forget scaleutil
+    }
+    package require scaleutil 1.4
 }
-package require mwutil 2.19
-if {[catch {package present scaleutil} version] == 0 && $version < 1.3} {
-    package forget scaleutil
-}
-package require scaleutil 1.3
+::scrollutil::loadUtils

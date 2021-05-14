@@ -8,7 +8,7 @@ package require Tk 8.4
 if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     package require tile 0.6
 }
-package require -exact scrollutil::common 1.9
+package require -exact scrollutil::common 1.10
 
 package provide scrollutil_tile $::scrollutil::version
 package provide Scrollutil_tile $::scrollutil::version
@@ -21,4 +21,16 @@ package provide Scrollutil_tile $::scrollutil::version
 if {[package vcompare $::tk_version "8.4"] >= 0} {
     ::scrollutil::createBindings
     ::scrollutil::snb::createBindings
+}
+
+namespace eval ::scrollutil {
+    #
+    # Creates a new scrollednotebook widget:
+    #
+    namespace export	scrollednotebook
+
+    #
+    # Commands related to ttk::notebook styles:
+    #
+    namespace export	addCloseTabButtons removeCloseTabButtons
 }
