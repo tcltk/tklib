@@ -289,6 +289,7 @@ namespace eval tablelist {
 	-labelpady		{labelPadY		Pad		    }
 	-labelrelief		{labelRelief		Relief		    }
 	-labelvalign		{labelValign		Valign		    }
+	-labelwindow		{labelWindow		Window		    }
 	-maxwidth		{maxWidth		MaxWidth	    }
 	-name			{name			Name		    }
 	-resizable		{resizable		Resizable	    }
@@ -300,12 +301,15 @@ namespace eval tablelist {
 	-sortcommand		{sortCommand		SortCommand	    }
 	-sortmode		{sortMode		SortMode	    }
 	-stretchable		{stretchable		Stretchable	    }
+	-stretchwindow		{stretchWindow		StretchWindow	    }
 	-stripebackground	{stripeBackground	Background	    }
 	-stripeforeground	{stripeForeground	Foreground	    }
 	-text			{text			Text		    }
 	-title			{title			Title		    }
 	-valign			{valign			Valign		    }
 	-width			{width			Width		    }
+	-windowdestroy		{windowDestroy		WindowDestroy	    }
+	-windowupdate		{windowUpdate		WindowUpdate	    }
 	-wrap			{wrap			Wrap		    }
     }
 
@@ -325,6 +329,7 @@ namespace eval tablelist {
     lappend colConfigSpecs(-showlinenumbers)		- 0
     lappend colConfigSpecs(-sortmode)			- ascii
     lappend colConfigSpecs(-stretchable)		- 0
+    lappend colConfigSpecs(-stretchwindow)		- 0
     lappend colConfigSpecs(-valign)			- center
     lappend colConfigSpecs(-width)			- 0
     lappend colConfigSpecs(-wrap)			- 0
@@ -503,13 +508,13 @@ namespace eval tablelist {
 	headertag hidetargetmark imagelabelpath index insert insertchild \
 	insertchildlist insertchildren insertcolumnlist insertcolumns \
 	insertlist iselemsnipped isexpanded istitlesnipped isviewable \
-	itemlistvar itemtodict labelpath labels labeltag move movecolumn \
-	nearest nearestcell nearestcolumn noderow parentkey refreshsorting \
-	rejectinput resetsortinfo restorecursor rowattrib rowcget \
-	rowconfigure scan searchcolumn see seecell seecolumn selection \
-	separatorpath separators setbusycursor showtargetmark size sort \
-	sortbycolumn sortbycolumnlist sortcolumn sortcolumnlist sortorder \
-	sortorderlist stopautoscroll targetmarkpath targetmarkpos \
+	itemlistvar itemtodict labelpath labels labeltag labelwindowpath move \
+	movecolumn nearest nearestcell nearestcolumn noderow parentkey \
+	refreshsorting rejectinput resetsortinfo restorecursor rowattrib \
+	rowcget rowconfigure scan searchcolumn see seecell seecolumn \
+	selection separatorpath separators setbusycursor showtargetmark size \
+	sort sortbycolumn sortbycolumnlist sortcolumn sortcolumnlist \
+	sortorder sortorderlist stopautoscroll targetmarkpath targetmarkpos \
 	togglecolumnhide togglerowhide toplevelkey unsetattrib \
 	unsetcellattrib unsetcolumnattrib unsetrowattrib viewablerowcount \
 	windowpath xview yview]
@@ -560,6 +565,7 @@ namespace eval tablelist {
     variable cornerOpts	   [list -ne -sw]
     variable curSelOpts    [list -all -nonhidden -viewable]
     variable expCollOpts   [list -fully -partly]
+    variable fillColOpts   [list -text -image -window]
     variable findOpts      [list -descend -parent]
     variable gapTypeOpts   [list -any -horizontal -vertical]
     variable headerOpts    [list bbox cellattrib cellbbox cellcget \
@@ -576,18 +582,19 @@ namespace eval tablelist {
 				 itemlistvar nearest nearestcell rowattrib \
 				 rowcget rowconfigure size unsetcellattrib \
 				 unsetrowattrib windowpath]
+    variable labelWinTypes [list checkbutton ttk::checkbutton]
     variable scanOpts      [list mark dragto]
     variable searchOpts    [list -all -backwards -check -descend -exact \
 				 -formatted -glob -nocase -not -numeric \
 				 -parent -regexp -start]
     variable selectionOpts [list anchor clear includes set]
     variable selectTypes   [list row cell]
-    variable targetOpts    [list before inside]
     variable sortModes     [list ascii asciinocase command dictionary \
 				 integer real]
     variable sortOpts      [list -increasing -decreasing]
     variable sortOrders    [list increasing decreasing]
     variable states	   [list disabled normal]
+    variable targetOpts    [list before inside]
     variable treeStyles    [list adwaita ambiance aqua aqua11 arc baghira \
 				 bicolor100 bicolor125 bicolor150 bicolor175 \
 				 bicolor200 blueMenta classic100 classic125 \
@@ -933,9 +940,8 @@ proc tablelist::tablelist args {
 	variable selStates
 
 	#
-	# The following array is used to hold the selection
-	# state of embedded checkbutton windows created via
-	# createTkCheckbutton and createTtkCheckbutton
+	# The following array is used to hold the selection state of embedded
+	# checkbutton windows created via createCkbtn and createTtkCkbtn
 	#
 	variable checkStates
     }
@@ -2423,8 +2429,7 @@ proc tablelist::embedcheckbuttonSubCmd {win argList} {
 	set cmd [lindex $argList 1]
     }
 
-    doCellConfig $row $col $win -window \
-		 [list ::tablelist::createFrameWithCheckbutton $cmd]
+    doCellConfig $row $col $win -window [list ::tablelist::createCkbtn $cmd]
     return ""
 }
 
@@ -2446,12 +2451,8 @@ proc tablelist::embedcheckbuttonsSubCmd {win argList} {
 	set cmd [lindex $argList 1]
     }
 
-    upvar ::tablelist::ns${win}::data data
-    for {set row 0} {$row < $data(itemCount)} {incr row} {
-	doCellConfig $row $col $win -window \
-		     [list ::tablelist::createFrameWithCheckbutton $cmd]
-    }
-
+    fillcolumnSubCmd $win [list $col -window \
+	[list ::tablelist::createCkbtn $cmd]]
     return ""
 }
 
@@ -2473,8 +2474,7 @@ proc tablelist::embedttkcheckbuttonSubCmd {win argList} {
 	set cmd [lindex $argList 1]
     }
 
-    doCellConfig $row $col $win -window \
-		 [list ::tablelist::createFrameWithTileCheckbutton $cmd]
+    doCellConfig $row $col $win -window [list ::tablelist::createTtkCkbtn $cmd]
     return ""
 }
 
@@ -2496,12 +2496,8 @@ proc tablelist::embedttkcheckbuttonsSubCmd {win argList} {
 	set cmd [lindex $argList 1]
     }
 
-    upvar ::tablelist::ns${win}::data data
-    for {set row 0} {$row < $data(itemCount)} {incr row} {
-	doCellConfig $row $col $win -window \
-		     [list ::tablelist::createFrameWithTileCheckbutton $cmd]
-    }
-
+    fillcolumnSubCmd $win [list $col -window \
+	[list ::tablelist::createTtkCkbtn $cmd]]
     return ""
 }
 
@@ -2681,8 +2677,10 @@ proc tablelist::expandedkeysSubCmd {win argList} {
 # tablelist::fillcolumnSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::fillcolumnSubCmd {win argList} {
-    if {[llength $argList] != 2} {
-	mwutil::wrongNumArgs "$win fillcolumn columnIndex text"
+    set argCount [llength $argList]
+    if {$argCount < 2 || $argCount > 3} {
+	mwutil::wrongNumArgs \
+		"$win fillcolumn columnIndex ?-text|-image|-window? value"
     }
 
     upvar ::tablelist::ns${win}::data data
@@ -2691,30 +2689,62 @@ proc tablelist::fillcolumnSubCmd {win argList} {
     }
 
     synchronize $win
+    displayItems $win
+
     set col [colIndex $win [lindex $argList 0] 1]
-    set text [lindex $argList 1]
+    set pixels [lindex $data(colList) [expr {2*$col}]]
 
-    #
-    # Update the item list
-    #
-    set newItemList {}
-    foreach item $data(itemList) {
-	set item [lreplace $item $col $col $text]
-	lappend newItemList $item
+    if {$argCount == 2} {
+	set opt -text
+	set val [lindex $argList 1]
+    } else {
+	variable fillColOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 1] $fillColOpts]
+	set val [lindex $argList 2]
     }
-    set data(itemList) $newItemList
 
-    #
-    # Update the list variable if present
-    #
-    condUpdateListVar $win
+    switch -- $opt {
+	-text {
+	    #
+	    # Update the item list and the list variable if present
+	    #
+	    set newItemList {}
+	    foreach item $data(itemList) {
+		set item [lreplace $item $col $col $val]
+		lappend newItemList $item
+	    }
+	    set data(itemList) $newItemList
+	    condUpdateListVar $win
 
-    #
-    # Adjust the columns and make sure the specified
-    # column will be redisplayed at idle time
-    #
-    adjustColumns $win $col 1
-    redisplayColWhenIdle $win $col
+	    #
+	    # Adjust the columns if necessary and make sure the
+	    # specified column will be redisplayed at idle time
+	    #
+	    if {$pixels == 0} {
+		adjustColumns $win $col 1
+	    }
+	    redisplayColWhenIdle $win $col
+	    showLineNumbersWhenIdle $win
+	}
+
+	default {
+	    #
+	    # Configure the body cells of the specified column
+	    #
+	    set itemCount $data(itemCount)
+	    for {set row 0} {$row < $itemCount} {incr row} {
+		doCellConfig $row $col $win $opt $val 1
+	    }
+
+	    #
+	    # Adjust the columns if necessary
+	    #
+	    if {$pixels == 0} {
+		adjustColumns $win $col 1
+	    }
+	}
+    }
+
     updateViewWhenIdle $win
     return ""
 }
@@ -3636,7 +3666,7 @@ proc tablelist::header_embedcheckbuttonSubCmd {win argList} {
     }
 
     doCellConfig h$row $col $win -window \
-		 [list ::tablelist::hdr_createFrameWithCheckbutton $cmd]
+		 [list ::tablelist::hdr_createCkbtn $cmd]
     return ""
 }
 
@@ -3659,9 +3689,10 @@ proc tablelist::header_embedcheckbuttonsSubCmd {win argList} {
     }
 
     upvar ::tablelist::ns${win}::data data
-    for {set row 0} {$row < $data(hdr_itemCount)} {incr row} {
+    set hdr_itemCount $data(hdr_itemCount)
+    for {set row 0} {$row < $hdr_itemCount} {incr row} {
 	doCellConfig h$row $col $win -window \
-		     [list ::tablelist::hdr_createFrameWithCheckbutton $cmd]
+		     [list ::tablelist::hdr_createCkbtn $cmd]
     }
 
     return ""
@@ -3686,7 +3717,7 @@ proc tablelist::header_embedttkcheckbuttonSubCmd {win argList} {
     }
 
     doCellConfig h$row $col $win -window \
-		 [list ::tablelist::hdr_createFrameWithTileCheckbutton $cmd]
+		 [list ::tablelist::hdr_createTtkCkbtn $cmd]
     return ""
 }
 
@@ -3709,9 +3740,10 @@ proc tablelist::header_embedttkcheckbuttonsSubCmd {win argList} {
     }
 
     upvar ::tablelist::ns${win}::data data
-    for {set row 0} {$row < $data(hdr_itemCount)} {incr row} {
+    set hdr_itemCount $data(hdr_itemCount)
+    for {set row 0} {$row < $hdr_itemCount} {incr row} {
 	doCellConfig h$row $col $win -window \
-		     [list ::tablelist::hdr_createFrameWithTileCheckbutton $cmd]
+		     [list ::tablelist::hdr_createTtkCkbtn $cmd]
     }
 
     return ""
@@ -3721,8 +3753,11 @@ proc tablelist::header_embedttkcheckbuttonsSubCmd {win argList} {
 # tablelist::header_fillcolumnSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::header_fillcolumnSubCmd {win argList} {
-    if {[llength $argList] != 2} {
-	mwutil::wrongNumArgs "$win header fillcolumn columnIndex text"
+    set argCount [llength $argList]
+    if {$argCount < 2 || $argCount > 3} {
+	mwutil::wrongNumArgs \
+		"$win header fillcolumn columnIndex ?-text|-image|-window?\
+		 value"
     }
 
     upvar ::tablelist::ns${win}::data data
@@ -3731,24 +3766,57 @@ proc tablelist::header_fillcolumnSubCmd {win argList} {
     }
 
     set col [colIndex $win [lindex $argList 0] 1]
-    set text [lindex $argList 1]
+    set pixels [lindex $data(colList) [expr {2*$col}]]
 
-    #
-    # Update the item list
-    #
-    set hdr_newItemList {}
-    foreach item $data(hdr_itemList) {
-	set item [lreplace $item $col $col $text]
-	lappend hdr_newItemList $item
+    if {$argCount == 2} {
+	set opt -text
+	set val [lindex $argList 1]
+    } else {
+	variable fillColOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 1] $fillColOpts]
+	set val [lindex $argList 2]
     }
-    set data(hdr_itemList) $hdr_newItemList
 
-    #
-    # Adjust the columns and make sure the specified
-    # column will be redisplayed at idle time
-    #
-    adjustColumns $win $col 1
-    redisplayColWhenIdle $win $col
+    switch -- $opt {
+	-text {
+	    #
+	    # Update the header item list
+	    #
+	    set hdr_newItemList {}
+	    foreach item $data(hdr_itemList) {
+		set item [lreplace $item $col $col $val]
+		lappend hdr_newItemList $item
+	    }
+	    set data(hdr_itemList) $hdr_newItemList
+
+	    #
+	    # Adjust the columns if necessary and make sure the
+	    # specified column will be redisplayed at idle time
+	    #
+	    if {$pixels == 0} {
+		adjustColumns $win $col 1
+	    }
+	    redisplayColWhenIdle $win $col
+	}
+
+	default {
+	    #
+	    # Configure the header cells of the specified column
+	    #
+	    set hdr_itemCount $data(hdr_itemCount)
+	    for {set row 0} {$row < $hdr_itemCount} {incr row} {
+		doCellConfig h$row $col $win $opt $val 1
+	    }
+
+	    #
+	    # Adjust the columns if necessary
+	    #
+	    if {$pixels == 0} {
+		adjustColumns $win $col 1
+	    }
+	}
+    }
+
     updateViewWhenIdle $win
     return ""
 }
@@ -3765,7 +3833,8 @@ proc tablelist::header_findrownameSubCmd {win argList} {
     set nameIsEmpty [expr {[string length $name] == 0}]
 
     upvar ::tablelist::ns${win}::data data
-    for {set row 0} {$row < $data(hdr_itemCount)} {incr row} {
+    set hdr_itemCount $data(hdr_itemCount)
+    for {set row 0} {$row < $hdr_itemCount} {incr row} {
 	set key [lindex $data(hdr_keyList) $row]
 	set hasName [info exists data($key-name)]
 	if {($hasName && [string compare $name $data($key-name)] == 0) ||
@@ -4928,6 +4997,27 @@ proc tablelist::labeltagSubCmd {win argList} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::labelwindowpathSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::labelwindowpathSubCmd {win argList} {
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win labelwindowpath columnIndex"
+    }
+
+    synchronize $win
+    displayItems $win
+    set col [colIndex $win [lindex $argList 0] 1]
+    upvar ::tablelist::ns${win}::data data
+    set ckbtn $data(hdrTxtFrmLbl)$col-il.f.ckbtn
+
+    if {[winfo exists $ckbtn]} {
+	return $ckbtn
+    } else {
+	return ""
+    }
+}
+
+#------------------------------------------------------------------------------
 # tablelist::moveSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::moveSubCmd {win argList} {
@@ -5280,7 +5370,8 @@ proc tablelist::searchcolumnSubCmd {win argList} {
 	#
 	if {[string compare $parentKey "root"] == 0} {
 	    if {$descend} {
-		for {set row 0} {$row < $data(itemCount)} {incr row} {
+		set itemCount $data(itemCount)
+		for {set row 0} {$row < $itemCount} {incr row} {
 		    populate $win $row 1
 		}
 	    }

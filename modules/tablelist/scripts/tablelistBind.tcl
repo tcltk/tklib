@@ -356,15 +356,15 @@ proc tablelist::cleanup win {
     # and the images used to display the sort arrows
     #
     for {set rank 1} {$rank < 10} {incr rank} {
-	image delete sortRank$rank$win
+	image delete sortRank${rank}Img$win
     }
     set imgNames [image names]
     for {set col 0} {$col < $data(colCount)} {incr col} {
 	set w $data(hdrTxtFrmCanv)$col
 	foreach shape {triangleUp darkLineUp lightLineUp
 		       triangleDn darkLineDn lightLineDn} {
-	    if {[lsearch -exact $imgNames $shape$w] >= 0} {
-		image delete $shape$w
+	    if {[lsearch -exact $imgNames ${shape}Img$w] >= 0} {
+		image delete ${shape}Img$w
 	    }
 	}
     }
@@ -527,13 +527,18 @@ proc tablelist::updateConfigSpecs win {
     }
 
     #
-    # Destroy and recreate the label images
+    # Destroy and recreate the label images and checkbuttons
     #
     for {set col 0} {$col < $data(colCount)} {incr col} {
 	if {[info exists data($col-labelimage)]} {
 	    set val $data($col-labelimage)
 	    doColConfig $col $win -labelimage ""
 	    doColConfig $col $win -labelimage $val
+	}
+	if {[info exists data($col-labelwindow)]} {
+	    set val $data($col-labelwindow)
+	    doColConfig $col $win -labelwindow ""
+	    doColConfig $col $win -labelwindow $val
 	}
     }
 
@@ -550,24 +555,27 @@ proc tablelist::updateConfigSpecs win {
     #
     # Destroy and recreate the embedded windows
     #
-    for {set row 0} {$row < $data(hdr_itemCount)} {incr row} {
-	for {set col 0} {$col < $data(colCount)} {incr col} {
+    set hdr_itemCount $data(hdr_itemCount)
+    set colCount $data(colCount)
+    for {set row 0} {$row < $hdr_itemCount} {incr row} {
+	for {set col 0} {$col < $colCount} {incr col} {
 	    set key [lindex $data(hdr_keyList) $row]
 	    if {[info exists data($key,$col-window)]} {
-		set val $data($key,$col-window)
+		set cmd $data($key,$col-window)
 		doCellConfig h$row $col $win -window ""
-		doCellConfig h$row $col $win -window $val
+		doCellConfig h$row $col $win -window $cmd
 	    }
 	}
     }
     if {$data(winCount) != 0} {
-	for {set row 0} {$row < $data(itemCount)} {incr row} {
-	    for {set col 0} {$col < $data(colCount)} {incr col} {
+	set itemCount $data(itemCount)
+	for {set row 0} {$row < $itemCount} {incr row} {
+	    for {set col 0} {$col < $colCount} {incr col} {
 		set key [lindex $data(keyList) $row]
 		if {[info exists data($key,$col-window)]} {
-		    set val $data($key,$col-window)
+		    set cmd $data($key,$col-window)
 		    doCellConfig $row $col $win -window ""
-		    doCellConfig $row $col $win -window $val
+		    doCellConfig $row $col $win -window $cmd
 		}
 	    }
 	}
@@ -779,9 +787,10 @@ proc tablelist::cleanupWindow aux {
     upvar ::tablelist::ns${win}::data data \
 	  ::tablelist::ns${win}::checkStates checkStates
 
-    if {[info exists data($key,$col-windowdestroy)]} {
+    set cmd [getOpt $win $key $col -windowdestroy]
+    if {[string length $cmd] != 0} {
 	set row [keyToRow $win $key]
-	uplevel #0 $data($key,$col-windowdestroy) [list $win $row $col $aux.w]
+	uplevel #0 $cmd [list $win $row $col $aux.w]
     }
 
     if {[info exists checkStates($key,$col)]} {
@@ -1971,7 +1980,7 @@ proc tablelist::autoScan2 {win seqNum} {
 # tablelist::motion
 #
 # This procedure is called to process mouse motion events in the body of a
-# tablelist widget or in one of its separators. while button 1 is down.  It may
+# tablelist widget or in one of its separators, while button 1 is down.  It may
 # move or extend the selection, depending on the widget's selection mode.
 #------------------------------------------------------------------------------
 proc tablelist::motion {win row col {checkIfDragSrc 0}} {
@@ -2316,6 +2325,7 @@ proc tablelist::moveOrActivate {win row col inside} {
 		row  { ::$win activate $sourceKey }
 		cell { ::$win activatecell $sourceKey,$col }
 	    }
+	    genTablelistActivateEvent $win
 
 	    return ""
 	}
@@ -2325,6 +2335,7 @@ proc tablelist::moveOrActivate {win row col inside} {
 	row  { ::$win activate $row }
 	cell { ::$win activatecell $row,$col }
     }
+    genTablelistActivateEvent $win
 }
 
 #------------------------------------------------------------------------------
@@ -2748,6 +2759,7 @@ proc tablelist::priorNext {win amount} {
 
     ::$win yview scroll $amount pages
     ::$win activate @0,0
+    genTablelistActivateEvent $win
     update idletasks
 }
 
@@ -2827,6 +2839,7 @@ proc tablelist::extendUpDown {win amount} {
 		    ::$win activate $row
 		    ::$win see active
 		    motion $win $data(activeRow) -1
+		    genTablelistActivateEvent $win
 		    return ""
 		}
 	    }
@@ -2843,6 +2856,7 @@ proc tablelist::extendUpDown {win amount} {
 		    ::$win activatecell $row,$col
 		    ::$win seecell active
 		    motion $win $data(activeRow) $data(activeCol)
+		    genTablelistActivateEvent $win
 		    return ""
 		}
 	    }
@@ -2879,6 +2893,7 @@ proc tablelist::extendLeftRight {win amount} {
 		    ::$win activatecell $row,$col
 		    ::$win seecell active
 		    motion $win $data(activeRow) $data(activeCol)
+		    genTablelistActivateEvent $win
 		    return ""
 		}
 	    }
@@ -2912,6 +2927,7 @@ proc tablelist::extendToHomeEnd {win keysym} {
 		multiple {
 		    ::$win activatecell $row,$col
 		    ::$win seecell $row,$col
+		    genTablelistActivateEvent $win
 		}
 		extended {
 		    ::$win activatecell $row,$col
@@ -2919,6 +2935,7 @@ proc tablelist::extendToHomeEnd {win keysym} {
 		    if {[::$win selection includes anchor]} {
 			motion $win $row $col
 		    }
+		    genTablelistActivateEvent $win
 		}
 	    }
 	}
@@ -2953,6 +2970,7 @@ proc tablelist::extendToFirstLast {win target} {
 		multiple {
 		    ::$win activate $row
 		    ::$win see $row
+		    genTablelistActivateEvent $win
 		}
 		extended {
 		    ::$win activate $row
@@ -2960,6 +2978,7 @@ proc tablelist::extendToFirstLast {win target} {
 		    if {[::$win selection includes anchor]} {
 			motion $win $row -1
 		    }
+		    genTablelistActivateEvent $win
 		}
 	    }
 	}
@@ -2969,6 +2988,7 @@ proc tablelist::extendToFirstLast {win target} {
 		multiple {
 		    ::$win activatecell $row,$col
 		    ::$win seecell $row,$col
+		    genTablelistActivateEvent $win
 		}
 		extended {
 		    ::$win activatecell $row,$col
@@ -2976,6 +2996,7 @@ proc tablelist::extendToFirstLast {win target} {
 		    if {[::$win selection includes anchor]} {
 			motion $win $row $col
 		    }
+		    genTablelistActivateEvent $win
 		}
 	    }
 	}
@@ -3120,7 +3141,8 @@ proc tablelist::cellInRect {row col minRow minCol maxRow maxCol} {
 #------------------------------------------------------------------------------
 proc tablelist::firstViewableRow win {
     upvar ::tablelist::ns${win}::data data
-    for {set row 0} {$row < $data(itemCount)} {incr row} {
+    set itemCount $data(itemCount)
+    for {set row 0} {$row < $itemCount} {incr row} {
 	if {[isRowViewable $win $row]} {
 	    return $row
 	}
@@ -3189,6 +3211,7 @@ proc tablelist::condChangeSelection {win row col} {
 	row {
 	    ::$win activate $row
 	    ::$win see active
+	    genTablelistActivateEvent $win
 
 	    switch -- $data(-selectmode) {
 		browse {
@@ -3211,6 +3234,7 @@ proc tablelist::condChangeSelection {win row col} {
 	cell {
 	    ::$win activatecell $row,$col
 	    ::$win seecell active
+	    genTablelistActivateEvent $win
 
 	    switch -- $data(-selectmode) {
 		browse {
@@ -3260,7 +3284,20 @@ proc tablelist::changeSelection {win row col} {
 	}
     }
 
+    genTablelistActivateEvent $win
     genTablelistSelectEvent $win
+}
+
+#------------------------------------------------------------------------------
+# tablelist::genTablelistActivateEvent
+#
+# Generates a <<TablelistActivate>> virtual event on the tablelist widget win
+# if the latter is in normal state.
+#------------------------------------------------------------------------------
+proc tablelist::genTablelistActivateEvent win {
+    if {[string compare [::$win cget -state] "normal"] == 0} {
+	event generate $win <<TablelistActivate>>
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -3284,16 +3321,30 @@ proc tablelist::genTablelistSelectEvent win {
 proc tablelist::handleWheelEvent {event axis W X Y delta divisor} {
     set win [getTablelistPath $W]
     set w [::$win cget -${axis}mousewheelwindow]
+    set titleCols [::$win cget -titlecolumns]
+
     if {[winfo exists $w]} {
 	if {[mwutil::hasFocus $win]} {
+	    if {[string compare $axis "x"] == 0 && $titleCols > 0} {
+		switch -- $divisor {
+		    -40.0 - -30.0 { set divisor -120.0 }
+		    1.0		  { set divisor 5.0 }
+		}
+	    }
 	    mwutil::scrollByUnits $win $axis $delta $divisor
+	    return -code break
 	} elseif {[string match "<*MouseWheel>" $event]} {
 	    mwutil::genMouseWheelEvent $w $event $X $Y $delta
 	} else {
 	    event generate $w $event -rootx $X -rooty $Y
 	}
-	return -code break
     } else {
+	if {[string compare $axis "x"] == 0 && $titleCols > 0} {
+	    switch -- $divisor {
+		-40.0 - -30.0 { set divisor -120.0 }
+		1.0	      { set divisor 5.0 }
+	    }
+	}
 	mwutil::scrollByUnits $win $axis $delta $divisor
     }
 }
@@ -4419,6 +4470,7 @@ proc tablelist::labelModifB1Up {win w X} {
     set x [expr {$X - [winfo rootx $win]}]
     set col [::$win columnindex @$x,0]
     ::$win activatecell last,$col
+    genTablelistActivateEvent $win
 
     set data(labelModifClicked) 0
 }

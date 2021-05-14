@@ -10,13 +10,13 @@
 # tablelist::flat6x4Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flat6x4Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp6x4_width 6
 #define triangleUp6x4_height 4
 static unsigned char triangleUp6x4_bits[] = {
    0x0c, 0x1e, 0x3f, 0x3f};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn6x4_width 6
 #define triangleDn6x4_height 4
 static unsigned char triangleDn7x4_bits[] = {
@@ -28,13 +28,13 @@ static unsigned char triangleDn7x4_bits[] = {
 # tablelist::flat7x4Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flat7x4Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp7x4_width 7
 #define triangleUp7x4_height 4
 static unsigned char triangleUp7x4_bits[] = {
    0x08, 0x1c, 0x3e, 0x7f};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn7x4_width 7
 #define triangleDn7x4_height 4
 static unsigned char triangleDn7x4_bits[] = {
@@ -46,13 +46,13 @@ static unsigned char triangleDn7x4_bits[] = {
 # tablelist::flat7x5Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flat7x5Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp7x5_width 7
 #define triangleUp7x5_height 5
 static unsigned char triangleUp7x5_bits[] = {
    0x08, 0x1c, 0x3e, 0x7f, 0x7f};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn7x5_width 7
 #define triangleDn7x5_height 5
 static unsigned char triangleDn7x5_bits[] = {
@@ -64,13 +64,13 @@ static unsigned char triangleDn7x5_bits[] = {
 # tablelist::flat7x7Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flat7x7Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp7x7_width 7
 #define triangleUp7x7_height 7
 static unsigned char triangleUp7x7_bits[] = {
    0x08, 0x1c, 0x1c, 0x3e, 0x3e, 0x7f, 0x7f};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn7x7_width 7
 #define triangleDn7x7_height 7
 static unsigned char triangleDn7x7_bits[] = {
@@ -82,13 +82,13 @@ static unsigned char triangleDn7x7_bits[] = {
 # tablelist::flat8x4Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flat8x4Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp8x4_width 8
 #define triangleUp8x4_height 4
 static unsigned char triangleUp8x4_bits[] = {
    0x18, 0x3c, 0x7e, 0xff};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn8x4_width 8
 #define triangleDn8x4_height 4
 static unsigned char triangleDn8x4_bits[] = {
@@ -100,13 +100,13 @@ static unsigned char triangleDn8x4_bits[] = {
 # tablelist::flat8x5Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flat8x5Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp8x5_width 8
 #define triangleUp8x5_height 5
 static unsigned char triangleUp8x5_bits[] = {
    0x18, 0x3c, 0x7e, 0xff, 0xff};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn8x5_width 8
 #define triangleDn8x5_height 5
 static unsigned char triangleDn8x5_bits[] = {
@@ -118,13 +118,13 @@ static unsigned char triangleDn8x5_bits[] = {
 # tablelist::flat9x5Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flat9x5Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp9x5_width 9
 #define triangleUp9x5_height 5
 static unsigned char triangleUp9x5_bits[] = {
    0x10, 0x00, 0x38, 0x00, 0x7c, 0x00, 0xfe, 0x00, 0xff, 0x01};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn9x5_width 9
 #define triangleDn9x5_height 5
 static unsigned char triangleDn9x5_bits[] = {
@@ -136,13 +136,13 @@ static unsigned char triangleDn9x5_bits[] = {
 # tablelist::flat9x6Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flat9x6Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp9x6_width 9
 #define triangleUp9x6_height 6
 static unsigned char triangleUp9x6_bits[] = {
    0x10, 0x00, 0x38, 0x00, 0x7c, 0x00, 0xfe, 0x00, 0xff, 0x01, 0xff, 0x01};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn9x6_width 9
 #define triangleDn9x6_height 6
 static unsigned char triangleDn9x6_bits[] = {
@@ -154,13 +154,13 @@ static unsigned char triangleDn9x6_bits[] = {
 # tablelist::flat11x6Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flat11x6Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp11x6_width 11
 #define triangleUp11x6_height 6
 static unsigned char triangleUp11x6_bits[] = {
    0x20, 0x00, 0x70, 0x00, 0xf8, 0x00, 0xfc, 0x01, 0xfe, 0x03, 0xff, 0x07};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn11x6_width 11
 #define triangleDn11x6_height 6
 static unsigned char triangleDn11x6_bits[] = {
@@ -172,14 +172,14 @@ static unsigned char triangleDn11x6_bits[] = {
 # tablelist::flat13x7Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flat13x7Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp13x7_width 13
 #define triangleUp13x7_height 7
 static unsigned char triangleUp13x7_bits[] = {
    0x40, 0x00, 0xe0, 0x00, 0xf0, 0x01, 0xf8, 0x03, 0xfc, 0x07, 0xfe, 0x0f,
    0xff, 0x1f};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn13x7_width 13
 #define triangleDn13x7_height 7
 static unsigned char triangleDn13x7_bits[] = {
@@ -192,14 +192,14 @@ static unsigned char triangleDn13x7_bits[] = {
 # tablelist::flat15x8Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flat15x8Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp15x8_width 15
 #define triangleUp15x8_height 8
 static unsigned char triangleUp15x8_bits[] = {
    0x80, 0x00, 0xc0, 0x01, 0xe0, 0x03, 0xf0, 0x07, 0xf8, 0x0f, 0xfc, 0x1f,
    0xfe, 0x3f, 0xff, 0x7f};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn15x8_width 15
 #define triangleDn15x8_height 8
 static unsigned char triangleDn15x8_bits[] = {
@@ -212,13 +212,13 @@ static unsigned char triangleDn15x8_bits[] = {
 # tablelist::flatAngle7x4Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flatAngle7x4Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp7x4_width 7
 #define triangleUp7x4_height 4
 static unsigned char triangleUp7x4_bits[] = {
    0x08, 0x1c, 0x36, 0x63};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn7x4_width 7
 #define triangleDn7x4_height 4
 static unsigned char triangleDn7x4_bits[] = {
@@ -230,13 +230,13 @@ static unsigned char triangleDn7x4_bits[] = {
 # tablelist::flatAngle7x5Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flatAngle7x5Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp7x5_width 7
 #define triangleUp7x5_height 5
 static unsigned char triangleUp7x5_bits[] = {
    0x08, 0x1c, 0x3e, 0x77, 0x63};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn7x5_width 7
 #define triangleDn7x5_height 5
 static unsigned char triangleDn7x5_bits[] = {
@@ -248,13 +248,13 @@ static unsigned char triangleDn7x5_bits[] = {
 # tablelist::flatAngle9x5Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flatAngle9x5Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp9x5_width 9
 #define triangleUp9x5_height 5
 static unsigned char triangleUp9x5_bits[] = {
    0x10, 0x00, 0x38, 0x00, 0x6c, 0x00, 0xc6, 0x00, 0x83, 0x01};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn9x5_width 9
 #define triangleDn9x5_height 5
 static unsigned char triangleDn9x5_bits[] = {
@@ -266,13 +266,13 @@ static unsigned char triangleDn9x5_bits[] = {
 # tablelist::flatAngle9x6Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flatAngle9x6Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp9x6_width 9
 #define triangleUp9x6_height 6
 static unsigned char triangleUp9x6_bits[] = {
    0x10, 0x00, 0x38, 0x00, 0x7c, 0x00, 0xee, 0x00, 0xc7, 0x01, 0x83, 0x01};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn9x6_width 9
 #define triangleDn9x6_height 6
 static unsigned char triangleDn9x6_bits[] = {
@@ -284,14 +284,14 @@ static unsigned char triangleDn9x6_bits[] = {
 # tablelist::flatAngle9x7Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flatAngle9x7Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp9x7_width 9
 #define triangleUp9x7_height 7
 static unsigned char triangleUp9x7_bits[] = {
    0x10, 0x00, 0x38, 0x00, 0x7c, 0x00, 0xfe, 0x00, 0xef, 0x01, 0xc7, 0x01,
    0x83, 0x01};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn9x7_width 9
 #define triangleDn9x7_height 7
 static unsigned char triangleDn9x7_bits[] = {
@@ -304,13 +304,13 @@ static unsigned char triangleDn9x7_bits[] = {
 # tablelist::flatAngle10x6Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flatAngle10x6Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp10x6_width 10
 #define triangleUp10x6_height 6
 static unsigned char triangleUp10x6_bits[] = {
    0x30, 0x00, 0x78, 0x00, 0xfc, 0x00, 0xce, 0x01, 0x87, 0x03, 0x03, 0x03};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn10x6_width 10
 #define triangleDn10x6_height 6
 static unsigned char triangleDn10x6_bits[] = {
@@ -322,14 +322,14 @@ static unsigned char triangleDn10x6_bits[] = {
 # tablelist::flatAngle10x7Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flatAngle10x7Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp10x7_width 10
 #define triangleUp10x7_height 7
 static unsigned char triangleUp10x7_bits[] = {
    0x30, 0x00, 0x78, 0x00, 0xfc, 0x00, 0xfe, 0x01, 0xcf, 0x03, 0x87, 0x03,
    0x03, 0x03};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn10x7_width 10
 #define triangleDn10x7_height 7
 static unsigned char triangleDn10x6_bits[] = {
@@ -342,13 +342,13 @@ static unsigned char triangleDn10x6_bits[] = {
 # tablelist::flatAngle11x6Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flatAngle11x6Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp11x6_width 11
 #define triangleUp11x6_height 6
 static unsigned char triangleUp11x6_bits[] = {
    0x20, 0x00, 0x70, 0x00, 0xd8, 0x00, 0x8c, 0x01, 0x06, 0x03, 0x03, 0x06};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn11x6_width 11
 #define triangleDn11x6_height 6
 static unsigned char triangleDn11x6_bits[] = {
@@ -360,14 +360,14 @@ static unsigned char triangleDn11x6_bits[] = {
 # tablelist::flatAngle13x7Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flatAngle13x7Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp13x7_width 13
 #define triangleUp13x7_height 7
 static unsigned char triangleUp13x7_bits[] = {
    0x40, 0x00, 0xe0, 0x00, 0xb0, 0x01, 0x18, 0x03, 0x0c, 0x06, 0x06, 0x0c,
    0x03, 0x18};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn13x7_width 13
 #define triangleDn13x7_height 7
 static unsigned char triangleDn13x7_bits[] = {
@@ -380,14 +380,14 @@ static unsigned char triangleDn13x7_bits[] = {
 # tablelist::flatAngle15x8Arrows
 #------------------------------------------------------------------------------
 proc tablelist::flatAngle15x8Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp15x8_width 15
 #define triangleUp15x8_height 8
 static unsigned char triangleUp15x8_bits[] = {
    0x80, 0x00, 0xc0, 0x01, 0x60, 0x03, 0x30, 0x06, 0x18, 0x0c, 0x0c, 0x18,
    0x06, 0x30, 0x03, 0x60};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn15x8_width 15
 #define triangleDn15x8_height 8
 static unsigned char triangleDn15x8_bits[] = {
@@ -401,15 +401,15 @@ static unsigned char triangleDn15x8_bits[] = {
 #------------------------------------------------------------------------------
 proc tablelist::photo7x4Arrows w {
     foreach dir {Up Dn} {
-	image create photo triangle$dir$w
+	image create photo triangle${dir}Img$w
     }
 
-    triangleUp$w put "
+    triangleUpImg$w put "
 R0lGODlhBwAEAIQRAAAAADxZbDxeckNfb0BidF6IoWGWtlabwIexxZq2xYbI65HL7LXd8rri9MPk
 9cTj9Mrm9f///////////////////////////////////////////////////////////yH5BAEK
 AB8ALAAAAAAHAAQAAAUS4CcSYikcRRkYypJ8A9IwD+SEADs=
 "
-    triangleDn$w put "
+    triangleDnImg$w put "
 R0lGODlhBwAEAIQQAAAAADxeclKLq2KauWes03CpxnKrynOy2IO62ZXG4JrH4JrL5pnQ7qbY87Pb
 8cTj9P///////////////////////////////////////////////////////////////yH5BAEK
 AAAALAAAAAAHAAQAAAUSYDAUBpIogHAwzgO8ROO+70KHADs=
@@ -421,17 +421,17 @@ AAAALAAAAAAHAAQAAAUSYDAUBpIogHAwzgO8ROO+70KHADs=
 #------------------------------------------------------------------------------
 proc tablelist::photo7x7Arrows w {
     foreach dir {Up Dn} {
-	image create photo triangle$dir$w
+	image create photo triangle${dir}Img$w
     }
 
-    triangleUp$w put "
+    triangleUpImg$w put "
 iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
 AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA7DAAAOwwHHb6hk
 AAAAGnRFWHRTb2Z0d2FyZQBQYWludC5ORVQgdjMuNS4xMDD0cqEAAABCSURBVBhXXY4BCgAgCAP9
 T//R9/Ryc+ZEHCyb40CB3D1n6OAZuQOKi9klPhUsjNJ6VwUp+tOLopOGNkXncToWw6IPjiowJNyp
 gu8AAAAASUVORK5CYII=
 "
-    triangleDn$w put "
+    triangleDnImg$w put "
 iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
 AAAOwwAADsMBx2+oZAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAP0lE
 QVQYV22LgQ0AIAjD9g//yD1ejoBoFpRkISsUPsMzPwkOIcARmJlvKMGIJq9jt+Uem51Wscfe1hkq
@@ -444,15 +444,15 @@ QVQYV22LgQ0AIAjD9g//yD1ejoBoFpRkISsUPsMzPwkOIcARmJlvKMGIJq9jt+Uem51Wscfe1hkq
 #------------------------------------------------------------------------------
 proc tablelist::photo9x5Arrows w {
     foreach dir {Up Dn} {
-	image create photo triangle$dir$w
+	image create photo triangle${dir}Img$w
     }
 
-    triangleUp$w put "
+    triangleUpImg$w put "
 R0lGODlhCQAFAIQTAAAAADxeckBidGaJmlabwG6mw4exxZy9z4bI647M7JvS76HV8KjX8a3a8rPc
 8rLe87jf9Lzh9MPk9f///////////////////////////////////////////////////yH5BAEK
 AB8ALAAAAAAJAAUAAAUZ4Cd+wWgGhGCSBKIMY1AkSwMdpPEwTiT9IQA7
 "
-    triangleDn$w put "
+    triangleDnImg$w put "
 R0lGODlhCQAFAIQSAAAAADxeck90imuUrGKauW2jwWes036xzXOy2IO83YO83o++2JrH4JrK5rPZ
 7rPZ77TZ7sTj9P///////////////////////////////////////////////////////yH5BAEK
 AB8ALAAAAAAJAAUAAAUaYECMxbEwzCcgSNJA0ScPSuPEsmw8eC43vhAAOw==
@@ -464,17 +464,17 @@ AB8ALAAAAAAJAAUAAAUaYECMxbEwzCcgSNJA0ScPSuPEsmw8eC43vhAAOw==
 #------------------------------------------------------------------------------
 proc tablelist::photo11x6Arrows w {
     foreach dir {Up Dn} {
-	image create photo triangle$dir$w
+	image create photo triangle${dir}Img$w
     }
 
-    triangleUp$w put "
+    triangleUpImg$w put "
 R0lGODlhCwAGAKUjAAAAADJdfDJefDFefjRffDhhfC9njDNrjThtjj5xkUJykWuXs2Ogw2ukxHKp
 yHusyZrD2o7M7JfQ7qDE2qfH2arJ2aPQ6aLU76Td+6/h/bDi/rrj+bjm/rrn/8Pm+sLr/8Ps/8ro
 +szu////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////yH5BAEKAD8ALAAAAAALAAYAAAYqwJ9Q
 WBgahQTF4ohMPCyQYwDhuHA2k6Hg0JBkOh8P5TcwMCIYTQckClWCADs=
 "
-    triangleDn$w put "
+    triangleDnImg$w put "
 R0lGODlhCwAGAKUkAAAAADl1ml+DnlaRtWGZu2ievXaet2+gvXekvmKfw32owXu314Kqwoiswoey
 yo21zIa+3JC2zZ26y5DB3ZjG34fE5ZHJ55/J4ZrN6KTC1KjN4qLb+azf+rrV5rDi/rrn/7/m+8Ps
 /8vu/9Pw////////////////////////////////////////////////////////////////////
@@ -488,17 +488,17 @@ QCgcEApGQ/IzJBaQCeWi6fyujsrG8wmNruCHhfMRgc8RDOjMzrCDADs=
 #------------------------------------------------------------------------------
 proc tablelist::photo13x7Arrows w {
     foreach dir {Up Dn} {
-	image create photo triangle$dir$w
+	image create photo triangle${dir}Img$w
     }
 
-    triangleUp$w put "
+    triangleUpImg$w put "
 R0lGODlhDQAHAKUwAAAAAC1pjjVmhjJrjzppiD1qiTVtkTpwkTxwkUFsikRuilKPs16Rr1aStFyU
 tWeHnGKKo2CWtXGhvXOy1Hu01YKovo2xxIC314S31JGyx5W1x5i2yJG915nE2p/F247K65bF4JbN
 7Z3Q7Z7X9abJ3azX76fa9qzb9and+bLb8Lne8rHg+rLi+7fi+bnk+73l+v//////////////////
 /////////////////////////////////////////////yH5BAEKAD8ALAAAAAANAAcAAAY4wJ9w
 +BgajQoB5IhEMCQV5i9xiGBAHMuxYHBcRKdSJzMsDBqUkGnVSnk0P0JgMfmMUCzXS0XaBAEAOw==
 "
-    triangleDn$w put "
+    triangleDnImg$w put "
 R0lGODlhDQAHAKUwAAAAAEaGqlWFpVyav2SVtGCew26tz3OkwXamwnuow36pw3Gv0nSz13iz0361
 1IK00oa41Yy815m5zJO+2JjC2Z/D2J7E2obC4o/I5o3J6pTM65jM6J/P6ZzP657X9avH2anP5afS
 6q7U6azV66fa9qnZ9Knd+bjV5rrc8bHg+rLi+7fi+b/g8rnk+7zl+sXh8v//////////////////
@@ -512,10 +512,10 @@ YGg4IJEJxVL5/AgDxgWz4YRGotNve1hkPCZVy/XamhENDSm1YpnfCUenhHrbFQ+QfS/ZBwEAOw==
 #------------------------------------------------------------------------------
 proc tablelist::photo15x8Arrows w {
     foreach dir {Up Dn} {
-	image create photo triangle$dir$w
+	image create photo triangle${dir}Img$w
     }
 
-    triangleUp$w put "
+    triangleUpImg$w put "
 R0lGODlhDwAIAKU/AAAAAB1YfjJefy1pjjVmhjJrjzppiD1qiTVtkTpwkTxwkT18oUFsikRuilKP
 s16Rr1aStFyUtWeHnGKKo2CWtXGhvV6dwnOy1Ha02Hu01YKovommuI2xxIC314S31JGyx5W1x5S3
 zJi2yJG915nE2p/F24fD44/I5o7K65bF4JbN7ZjM6J/P6Z3Q7Z7X9abJ3anN4KfS6q/U6azV66zX
@@ -523,7 +523,7 @@ zJi2yJG915nE2p/F24fD44/I5o7K65bF4JbN7ZjM6J/P6Z3Q7Z7X9abJ3anN4KfS6q/U6azV66zX
 +JMQj8QGYYI8NhSPiqYpZCQontSI0zwgIp2WjUb6HA8FSEZV0/FwJdDQMHBcUK7brufLvUQ/AgEL
 FhgmJyssMTMyMCEbQQA7
 "
-    triangleDn$w put "
+    triangleDnImg$w put "
 R0lGODlhDwAIAKU/AAAAACdjiUBtjkKBpkaGqlWFpVaUuFyav2SVtGGdv2Cew2ehwm2jw26tz3Ok
 wXOmw3amwnuow3ioxH6pw3Gv0nSz13iz03611ICsxYOux4mtwomxyI2yyIK00oa41Yy815KvwZm5
 zJO+2JjC2Z/D2J7E2obC4o/I5o3J6pTM65jM6J/P6ZzP657X9avH2anP5afS6q7U6azV66fa9qnZ
@@ -537,37 +537,37 @@ NDeAhxMdL4eMIYxBADs=
 # tablelist::sunken8x7Arrows
 #------------------------------------------------------------------------------
 proc tablelist::sunken8x7Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp8x7_width 8
 #define triangleUp8x7_height 7
 static unsigned char triangleUp8x7_bits[] = {
    0x18, 0x3c, 0x3c, 0x7e, 0x7e, 0xff, 0xff};
 "
-    image create bitmap darkLineUp$w -data "
+    image create bitmap darkLineUpImg$w -data "
 #define darkLineUp8x7_width 8
 #define darkLineUp8x7_height 7
 static unsigned char darkLineUp8x7_bits[] = {
    0x08, 0x0c, 0x04, 0x06, 0x02, 0x03, 0x00};
 "
-    image create bitmap lightLineUp$w -data "
+    image create bitmap lightLineUpImg$w -data "
 #define lightLineUp8x7_width 8
 #define lightLineUp8x7_height 7
 static unsigned char lightLineUp8x7_bits[] = {
    0x10, 0x30, 0x20, 0x60, 0x40, 0xc0, 0xff};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn8x7_width 8
 #define triangleDn8x7_height 7
 static unsigned char triangleDn8x7_bits[] = {
    0xff, 0xff, 0x7e, 0x7e, 0x3c, 0x3c, 0x18};
 "
-    image create bitmap darkLineDn$w -data "
+    image create bitmap darkLineDnImg$w -data "
 #define darkLineDn8x7_width 8
 #define darkLineDn8x7_height 7
 static unsigned char darkLineDn8x7_bits[] = {
    0xff, 0x03, 0x02, 0x06, 0x04, 0x0c, 0x08};
 "
-    image create bitmap lightLineDn$w -data "
+    image create bitmap lightLineDnImg$w -data "
 #define lightLineDn8x7_width 8
 #define lightLineDn8x7_height 7
 static unsigned char lightLineDn8x7_bits[] = {
@@ -579,42 +579,42 @@ static unsigned char lightLineDn8x7_bits[] = {
 # tablelist::sunken10x9Arrows
 #------------------------------------------------------------------------------
 proc tablelist::sunken10x9Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp10x9_width 10
 #define triangleUp10x9_height 9
 static unsigned char triangleUp10x9_bits[] = {
    0x30, 0x00, 0x78, 0x00, 0x78, 0x00, 0xfc, 0x00, 0xfc, 0x00, 0xfe, 0x01,
    0xfe, 0x01, 0xff, 0x03, 0xff, 0x03};
 "
-    image create bitmap darkLineUp$w -data "
+    image create bitmap darkLineUpImg$w -data "
 #define darkLineUp10x9_width 10
 #define darkLineUp10x9_height 9
 static unsigned char darkLineUp10x9_bits[] = {
    0x10, 0x00, 0x18, 0x00, 0x08, 0x00, 0x0c, 0x00, 0x04, 0x00, 0x06, 0x00,
    0x02, 0x00, 0x03, 0x00, 0x00, 0x00};
 "
-    image create bitmap lightLineUp$w -data "
+    image create bitmap lightLineUpImg$w -data "
 #define lightLineUp10x9_width 10
 #define lightLineUp10x9_height 9
 static unsigned char lightLineUp10x9_bits[] = {
    0x20, 0x00, 0x60, 0x00, 0x40, 0x00, 0xc0, 0x00, 0x80, 0x00, 0x80, 0x01,
    0x00, 0x01, 0x00, 0x03, 0xff, 0x03};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn10x9_width 10
 #define triangleDn10x9_height 9
 static unsigned char triangleDn10x9_bits[] = {
    0xff, 0x03, 0xff, 0x03, 0xfe, 0x01, 0xfe, 0x01, 0xfc, 0x00, 0xfc, 0x00,
    0x78, 0x00, 0x78, 0x00, 0x30, 0x00};
 "
-    image create bitmap darkLineDn$w -data "
+    image create bitmap darkLineDnImg$w -data "
 #define darkLineDn10x9_width 10
 #define darkLineDn10x9_height 9
 static unsigned char darkLineDn10x9_bits[] = {
    0xff, 0x03, 0x03, 0x00, 0x02, 0x00, 0x06, 0x00, 0x04, 0x00, 0x0c, 0x00,
    0x08, 0x00, 0x18, 0x00, 0x10, 0x00};
 "
-    image create bitmap lightLineDn$w -data "
+    image create bitmap lightLineDnImg$w -data "
 #define lightLineDn10x9_width 10
 #define lightLineDn10x9_height 9
 static unsigned char lightLineDn10x9_bits[] = {
@@ -627,42 +627,42 @@ static unsigned char lightLineDn10x9_bits[] = {
 # tablelist::sunken12x11Arrows
 #------------------------------------------------------------------------------
 proc tablelist::sunken12x11Arrows w {
-    image create bitmap triangleUp$w -data "
+    image create bitmap triangleUpImg$w -data "
 #define triangleUp12x11_width 12
 #define triangleUp12x11_height 11
 static unsigned char triangleUp12x11_bits[] = {
    0x60, 0x00, 0xf0, 0x00, 0xf0, 0x00, 0xf8, 0x01, 0xf8, 0x01, 0xfc, 0x03,
    0xfc, 0x03, 0xfe, 0x07, 0xfe, 0x07, 0xff, 0x0f, 0xff, 0x0f};
 "
-    image create bitmap darkLineUp$w -data "
+    image create bitmap darkLineUpImg$w -data "
 #define darkLineUp12x11_width 12
 #define darkLineUp12x11_height 11
 static unsigned char darkLineUp12x11_bits[] = {
    0x20, 0x00, 0x30, 0x00, 0x10, 0x00, 0x18, 0x00, 0x08, 0x00, 0x0c, 0x00,
    0x04, 0x00, 0x06, 0x00, 0x02, 0x00, 0x03, 0x00, 0x00, 0x00};
 "
-    image create bitmap lightLineUp$w -data "
+    image create bitmap lightLineUpImg$w -data "
 #define lightLineUp12x11_width 12
 #define lightLineUp12x11_height 11
 static unsigned char lightLineUp12x11_bits[] = {
    0x40, 0x00, 0xc0, 0x00, 0x80, 0x00, 0x80, 0x01, 0x00, 0x01, 0x00, 0x03,
    0x00, 0x02, 0x00, 0x06, 0x00, 0x04, 0x00, 0x0c, 0xff, 0x0f};
 "
-    image create bitmap triangleDn$w -data "
+    image create bitmap triangleDnImg$w -data "
 #define triangleDn12x11_width 12
 #define triangleDn12x11_height 11
 static unsigned char triangleDn12x11_bits[] = {
    0xff, 0x0f, 0xff, 0x0f, 0xfe, 0x07, 0xfe, 0x07, 0xfc, 0x03, 0xfc, 0x03,
    0xf8, 0x01, 0xf8, 0x01, 0xf0, 0x00, 0xf0, 0x00, 0x60, 0x00};
 "
-    image create bitmap darkLineDn$w -data "
+    image create bitmap darkLineDnImg$w -data "
 #define darkLineDn12x11_width 12
 #define darkLineDn12x11_height 11
 static unsigned char darkLineDn12x11_bits[] = {
    0xff, 0x0f, 0x03, 0x00, 0x02, 0x00, 0x06, 0x00, 0x04, 0x00, 0x0c, 0x00,
    0x08, 0x00, 0x18, 0x00, 0x10, 0x00, 0x30, 0x00, 0x20, 0x00};
 "
-    image create bitmap lightLineDn$w -data "
+    image create bitmap lightLineDnImg$w -data "
 #define lightLineDn12x11_width 12
 #define lightLineDn12x11_height 11
 static unsigned char lightLineDn12x11_bits[] = {
@@ -675,55 +675,55 @@ static unsigned char lightLineDn12x11_bits[] = {
 # tablelist::createSortRankImgs
 #------------------------------------------------------------------------------
 proc tablelist::createSortRankImgs win {
-    image create bitmap sortRank1$win -data "
+    image create bitmap sortRank1Img$win -data "
 #define sortRank1_width 4
 #define sortRank1_height 6
 static unsigned char sortRank1_bits[] = {
    0x04, 0x06, 0x04, 0x04, 0x04, 0x04};
 "
-    image create bitmap sortRank2$win -data "
+    image create bitmap sortRank2Img$win -data "
 #define sortRank2_width 4
 #define sortRank2_height 6
 static unsigned char sortRank2_bits[] = {
    0x06, 0x09, 0x08, 0x04, 0x02, 0x0f};
 "
-    image create bitmap sortRank3$win -data "
+    image create bitmap sortRank3Img$win -data "
 #define sortRank3_width 4
 #define sortRank3_height 6
 static unsigned char sortRank3_bits[] = {
    0x0f, 0x08, 0x06, 0x08, 0x09, 0x06};
 "
-    image create bitmap sortRank4$win -data "
+    image create bitmap sortRank4Img$win -data "
 #define sortRank4_width 4
 #define sortRank4_height 6
 static unsigned char sortRank4_bits[] = {
    0x04, 0x06, 0x05, 0x0f, 0x04, 0x04};
 "
-    image create bitmap sortRank5$win -data "
+    image create bitmap sortRank5Img$win -data "
 #define sortRank5_width 4
 #define sortRank5_height 6
 static unsigned char sortRank5_bits[] = {
    0x0f, 0x01, 0x07, 0x08, 0x09, 0x06};
 "
-    image create bitmap sortRank6$win -data "
+    image create bitmap sortRank6Img$win -data "
 #define sortRank6_width 4
 #define sortRank6_height 6
 static unsigned char sortRank6_bits[] = {
    0x06, 0x01, 0x07, 0x09, 0x09, 0x06};
 "
-    image create bitmap sortRank7$win -data "
+    image create bitmap sortRank7Img$win -data "
 #define sortRank7_width 4
 #define sortRank7_height 6
 static unsigned char sortRank7_bits[] = {
    0x0f, 0x08, 0x04, 0x04, 0x02, 0x02};
 "
-    image create bitmap sortRank8$win -data "
+    image create bitmap sortRank8Img$win -data "
 #define sortRank8_width 4
 #define sortRank8_height 6
 static unsigned char sortRank8_bits[] = {
    0x06, 0x09, 0x06, 0x09, 0x09, 0x06};
 "
-    image create bitmap sortRank9$win -data "
+    image create bitmap sortRank9Img$win -data "
 #define sortRank9_width 4
 #define sortRank9_height 6
 static unsigned char sortRank9_bits[] = {

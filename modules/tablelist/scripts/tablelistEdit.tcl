@@ -1113,7 +1113,7 @@ proc tablelist::checkEditWinName name {
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createCheckbutton {w args} {
-    makeCheckbutton $w
+    makeCkbtn $w
 
     foreach {opt val} $args {
 	switch -- $opt {
@@ -1363,7 +1363,7 @@ proc tablelist::createTileCombobox {w args} {
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileCheckbutton {w args} {
-    makeTileCheckbutton $w
+    makeTtkCkbtn $w
 
     foreach {opt val} $args {
 	switch -- $opt {
