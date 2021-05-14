@@ -8,7 +8,7 @@ namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	6.13
+    variable version	6.14
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -94,12 +94,17 @@ lappend auto_path [file join $::tablelist::library scripts]
 # "scripts/utils".  Take into account that mwutil is also included in
 # Mentry and Scrollutil, and scaleutil is also included in Scrollutil.
 #
-if {[catch {package present mwutil} version] == 0 && $version < 2.19} {
-    package forget mwutil
+proc ::tablelist::loadUtils {} {
+    if {[catch {package present mwutil} version] == 0 && $version < 2.19} {
+	package forget mwutil
+    }
+    package require mwutil 2.19
+
+    if {[catch {package present scaleutil} version] == 0 && $version < 1.4} {
+	package forget scaleutil
+    }
+    package require scaleutil 1.4
+
+    package require scaleutilmisc 1.1
 }
-package require mwutil 2.19
-if {[catch {package present scaleutil} version] == 0 && $version < 1.3} {
-    package forget scaleutil
-}
-package require scaleutil 1.3
-package require scaleutilmisc 1.1
+::tablelist::loadUtils
