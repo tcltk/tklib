@@ -20,7 +20,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.3
+    variable version	1.4
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -52,11 +52,13 @@ proc scaleutil::scalingPercentage winSys {
 
     if {$onX11} {
 	set factor 1
+	set changed 0
 	if {[catch {exec ps -e | grep xfce}] == 0} {			;# Xfce
 	    if {[catch {exec xfconf-query -c xsettings \
 		 -p /Gdk/WindowScalingFactor} result] == 0} {
 		set factor $result
 		set pct [expr {100 * $factor}]
+		set changed 1
 	    }
 	} elseif {[catch {exec ps -e | grep mate}] == 0} {		;# MATE
 	    if {[catch {exec gsettings get org.mate.interface \
@@ -73,10 +75,12 @@ proc scaleutil::scalingPercentage winSys {
 			set factor [expr {($cursorSize + $defCursorSize - 1) /
 					  $defCursorSize}]
 			set pct [expr {100 * $factor}]
+			set changed 1
 		    }
 		} else {
 		    set factor $result
 		    set pct [expr {100 * $factor}]
+		    set changed 1
 		}
 	    }
 	} elseif {[catch {exec gsettings get \
@@ -86,9 +90,11 @@ proc scaleutil::scalingPercentage winSys {
 		   [string first "'Gdk/WindowScalingFactor'" $result]] >= 0} {
 	    scan [string range $result $idx end] "%*s <%d>" factor
 	    set pct [expr {100 * $factor}]
+	    set changed 1
 	} elseif {[catch {exec xrdb -query | grep Xft.dpi} result] == 0} {
 	    scan $result "%*s %f" dpi
 	    set pct [expr {100 * $dpi / 96}]
+	    set changed 1
 	} elseif {$::tk_version >= 8.3 &&
 		  [catch {exec ps -e | grep gnome}] == 0 &&
 		  ![info exists ::env(WAYLAND_DISPLAY)] &&
@@ -98,6 +104,7 @@ proc scaleutil::scalingPercentage winSys {
 	    # Update pct by scanning the file ~/.config/monitors.xml
 	    #
 	    scanMonitorsFile $result $chan pct
+	    set changed 1
 	}
     }
 
@@ -109,34 +116,36 @@ proc scaleutil::scalingPercentage winSys {
 	set pct 150 
     } elseif {$pct < 175 + 12.5} {
 	set pct 175 
-    } else {
+    } elseif {$pct < 200 + 12.5} {
 	set pct 200
+    } else {
+	set pct [expr {int($pct + 0.5)}]		;# just temporarily
     }
 
-    if {$onX11} {
+    if {$onX11 && $pct > 100} {
 	#
 	# Conditionally correct and then scale the sizes of the standard fonts
 	#
 	if {$::tk_version >= 8.5} {
-	    scaleX11Fonts $pct $factor
+	    scaleX11Fonts $factor
 	}
 
-	tk scaling [expr {$pct / 75.0}]
-
-	if {$pct > 100} {
-	    #
-	    # Scale the default scrollbar width
-	    #
-	    set helpScrlbar .__helpScrlbar
-	    for {set n 2} {[winfo exists $helpScrlbar]} {incr n} {
-		set helpScrlbar .__helpScrlbar$n
-	    }
-	    scrollbar $helpScrlbar
-	    set defScrlbarWidth [lindex [$helpScrlbar configure -width] 3]
-	    destroy $helpScrlbar
-	    set scrlbarWidth [expr {$defScrlbarWidth * $pct / 100}]
-	    option add *Scrollbar.width $scrlbarWidth userDefault
+	if {$changed} {
+	    tk scaling [expr {$pct / 75.0}]
 	}
+
+	#
+	# Scale the default scrollbar width
+	#
+	set helpScrlbar .__helpScrlbar
+	for {set n 2} {[winfo exists $helpScrlbar]} {incr n} {
+	    set helpScrlbar .__helpScrlbar$n
+	}
+	scrollbar $helpScrlbar
+	set defScrlbarWidth [lindex [$helpScrlbar configure -width] 3]
+	destroy $helpScrlbar
+	set scrlbarWidth [expr {$defScrlbarWidth * $pct / 100}]
+	option add *Scrollbar.width $scrlbarWidth userDefault
     }
 
     if {$::tk_version >= 8.5} {
@@ -163,7 +172,7 @@ proc scaleutil::scalingPercentage winSys {
 	}
     }
 
-    return $pct
+    return [expr {$pct > 200 ? 200 : $pct}]
 }
 
 #
@@ -243,7 +252,7 @@ proc scaleutil::scanMonitorsFile {xrandrResult chan pctName} {
 # sizes in pixels contained in the library file ttk/fonts.tcl with sizes in
 # points, and then multiplies them with $factor.
 #------------------------------------------------------------------------------
-proc scaleX11Fonts {pct factor} {
+proc scaleutil::scaleX11Fonts factor {
     if {$factor > 2} {
 	set factor 2
     }
@@ -260,7 +269,7 @@ proc scaleX11Fonts {pct factor} {
     set points [expr {$size < 0 ? 9 : $size}]		;# -12 -> 9, else 10
     foreach font {TkDefaultFont TkTextFont TkHeadingFont
 		  TkIconFont TkMenuFont} {
-	if {$pct != 100 || [font actual $font -size] == $points} {
+	if {[font actual $font -size] == $points} {
 	    font configure $font -size [expr {$factor * $points}]
 	}
     }
@@ -269,7 +278,7 @@ proc scaleX11Fonts {pct factor} {
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 8 : $size}]		;# -10 -> 8, else 9
     foreach font {TkTooltipFont TkSmallCaptionFont} {
-	if {$pct != 100 || [font actual $font -size] == $points} {
+	if {[font actual $font -size] == $points} {
 	    font configure $font -size [expr {$factor * $points}]
 	}
     }
@@ -277,14 +286,14 @@ proc scaleX11Fonts {pct factor} {
     set idx [string first "F(capsize)" $str]
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 11 : $size}]		;# -14 -> 11, else 12
-    if {$pct != 100 || [font actual TkCaptionFont -size] == $points} {
+    if {[font actual TkCaptionFont -size] == $points} {
 	font configure TkCaptionFont -size [expr {$factor * $points}]
     }
 
     set idx [string first "F(fixedsize)" $str]
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 9 : $size}]		;# -12 -> 9, else 10
-    if {$pct != 100 || [font actual TkFixedFont -size] == $points} {
+    if {[font actual TkFixedFont -size] == $points} {
 	font configure TkFixedFont -size [expr {$factor * $points}]
     }
 }
