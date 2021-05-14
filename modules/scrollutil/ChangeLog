@@ -1,3 +1,33 @@
+2021-05-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.10.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/scrollednotebook.tcl: Added the "closetab" scalable style
+	  element, along with the "scrollutil::addclosetab" and
+	  "scrollutil::removeclosetab" commands.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl:  On X11 only correct the sizes of the
+	* scripts/utils/scaleutil.tcl: standard fonts and set the scaling
+	  factor if the display's scaling percentage is > 100; don't change the
+	  scaling factor if the scaling percentage was derived from it.
+
+	* doc/ScrollableFrmDemo2.png:   Updated screenshots.
+	* doc/ScrolledNotebookDemo.png:
+
+	* ../../examples/scrollutil/*FrmContent.tcl: Several improvements.
+
+	* ../../examples/scrollutil/*NotebookDemo.tcl: The tabs now have images
+	  and are closable.
+
+	* ../../examples/scrollutil/file*.gif: Added image files.
+
 2021-04-14  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 1.9.
