@@ -12,12 +12,18 @@ source [file join $dir styleUtil.tcl]
 
 wm title . "Ttk Library Scripts"
 
+scrollutil::addclosetab My.TNotebook
+
+set pct $scrollutil::scalingpct
+image create photo fileImg -file [file join $dir file$pct.gif]
+
 #
-# Create a scrollednotebook widget and populate it with panes that contain
-# scrolled text widgets displaying the contents of the Ttk library files
+# Create a scrollednotebook widget having closable tabs
+# and populate it with panes that contain scrolled text
+# widgets displaying the contents of the Ttk library files
 #
 set f  [ttk::frame .f]
-set nb [scrollutil::scrollednotebook $f.nb]
+set nb [scrollutil::scrollednotebook $f.nb -style My.TNotebook]
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 foreach fileName [lsort [glob *.tcl]] {
     set baseName [string range $fileName 0 end-4]
@@ -33,7 +39,7 @@ foreach fileName [lsort [glob *.tcl]] {
     $txt configure -state disabled
 
     set padding [expr {$ttk::currentTheme eq "aqua" ? 0 : "7p"}]
-    $nb add $sa -text $fileName -padding $padding
+    $nb add $sa -text $fileName -image fileImg -compound left -padding $padding
 }
 
 #
