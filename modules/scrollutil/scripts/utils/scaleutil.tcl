@@ -269,33 +269,25 @@ proc scaleutil::scaleX11Fonts factor {
     set points [expr {$size < 0 ? 9 : $size}]		;# -12 -> 9, else 10
     foreach font {TkDefaultFont TkTextFont TkHeadingFont
 		  TkIconFont TkMenuFont} {
-	if {[font actual $font -size] == $points} {
-	    font configure $font -size [expr {$factor * $points}]
-	}
+	font configure $font -size [expr {$factor * $points}]
     }
 
     set idx [string first "F(ttsize)" $str]
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 8 : $size}]		;# -10 -> 8, else 9
     foreach font {TkTooltipFont TkSmallCaptionFont} {
-	if {[font actual $font -size] == $points} {
-	    font configure $font -size [expr {$factor * $points}]
-	}
+	font configure $font -size [expr {$factor * $points}]
     }
 
     set idx [string first "F(capsize)" $str]
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 11 : $size}]		;# -14 -> 11, else 12
-    if {[font actual TkCaptionFont -size] == $points} {
-	font configure TkCaptionFont -size [expr {$factor * $points}]
-    }
+    font configure TkCaptionFont -size [expr {$factor * $points}]
 
     set idx [string first "F(fixedsize)" $str]
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 9 : $size}]		;# -12 -> 9, else 10
-    if {[font actual TkFixedFont -size] == $points} {
-	font configure TkFixedFont -size [expr {$factor * $points}]
-    }
+    font configure TkFixedFont -size [expr {$factor * $points}]
 }
 
 #------------------------------------------------------------------------------
