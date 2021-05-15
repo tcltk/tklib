@@ -1,5 +1,10 @@
 2021-05-15  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* scripts/scrollednotebook.tcl: Improved the look of the "closetab"
+	  element.
+
+2021-05-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* scripts/utils/scaleutil.tcl: Removed some holdovers from the previous
 	  version which are not compatible with the new one.
 
