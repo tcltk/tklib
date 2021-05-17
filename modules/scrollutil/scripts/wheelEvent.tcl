@@ -431,7 +431,7 @@ proc scrollutil::disableScrollingByWheel args {
 	set scrlWidgetContList [lreplace $scrlWidgetContList $idx $idx]
 
 	set tagList [bindtags $swc]
-	set idx [lsearch -exact $tagList ScrlWidgetCont]
+	set idx [lsearch -exact $tagList "ScrlWidgetCont"]
 	bindtags $swc [lreplace $tagList $idx $idx]
     }
 
