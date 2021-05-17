@@ -1,3 +1,14 @@
+2021-05-17  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                  Added the "scrollutil::closetabstate"
+	* scrollutil_tile.tcl:          command.
+	* scripts/scrollednotebook.tcl:
+	* doc/scrollednotebook.html:
+
+	* scripts/wheelEvent.tcl: Minor improvement.
+
+	* scripts/tclIndex: Newly generated.
+
 2021-05-15  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/scrollednotebook.tcl: Improved the look of the "closetab"
