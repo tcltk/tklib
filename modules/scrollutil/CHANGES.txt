@@ -5,22 +5,26 @@ What is new in Scrollutil 1.10?
    and removed from the tabs of a ttk::notebook style (like "TNotebook"
    or "My.TNotebook") by using the new "scrollutil::addclosetab" and
    "scrollutil::removeclosetab" commands.  As a result, the tabs of any
-   ttk::notebook or scrollutil::scrollednotebook widget can be made
-   closable by the user by passing the ttk::notebook style given by its
-   "-style" option to the "scrollutil::addclosetab" command (before or
-   after creating the notebook widget).
+   ttk::notebook or scrollednotebook widget can be made closable by the
+   user by passing the ttk::notebook style given by its "-style" option
+   to the "scrollutil::addclosetab" command.
 
-2. Each notebook tab of the demo scripts "ScrolledNotebookDemo.tcl" and
+2. The state of the "closetab" element of a ttk::notebook or
+   scrollednotebook tab can be queried and switched between "disabled"
+   and "normal" with the aid of the new "scrollutil::closetabstate"
+   command.
+
+3. Each notebook tab of the demo scripts "ScrolledNotebookDemo.tcl" and
    "TtkNotebookDemo.tcl" now contains, besides a text, also an image and
    the "closetab" element.
 
-3. On X11, the initialization code now only corrects the sizes of the
+4. On X11, the initialization code now only corrects the sizes of the
    standard fonts and sets the scaling factor if the display's scaling
    percentage is greater than 100.  In addition, the scaling factor is
    no longer changed if the scaling percentage was derived from it
    (thanks to Erik Leunissen and Harald Oehlmann for their bug reports).
 
-4. Several improvements in the demo scripts and documentation.
+5. Several improvements in the demo scripts and documentation.
 
 What was new in Scrollutil 1.9?
 -------------------------------

@@ -30,7 +30,7 @@ namespace eval ::scrollutil {
     namespace export	scrollednotebook
 
     #
-    # Commands related to ttk::notebook styles:
+    # Commands related to the closetab style element:
     #
-    namespace export	addCloseTabButtons removeCloseTabButtons
+    namespace export	addclosetab removeclosetab closetabstate
 }

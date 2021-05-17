@@ -6,7 +6,7 @@
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content=
-  "scrollednotebook, widget, notebook, scrolled, ttk::notebook style, closetab">
+  "scrollednotebook, widget, notebook, scrolled, ttk::notebook style, tab, closetab, state">
 
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
@@ -48,6 +48,9 @@
 
     <li><a href="#removeclosetab">The
     <code><b>scrollutil::removeclosetab</b></code> Command</a></li>
+
+    <li><a href="#closetabstate">The
+    <code><b>scrollutil::closetabstate</b></code> Command</a></li>
   </ul>
 
   <div align="center">
@@ -465,9 +468,10 @@ proc populateMenu {nb data} {
     <dd class="tm">Finally, if mouse button 1 is pressed over the
     <code><b><a href="#closetab">closetab</a></b></code> element (if any) of a
     tab of a ttk::notebook or scrollednotebook widget and later released over
-    the same element then, provided that the value of the tab's
-    <code><b>-state</b></code> option is <code><b>normal</b></code>, the tab is
-    closed by means of the widget's <code><b>forget</b></code>
+    the same element then, provided that both the value of the tab's
+    <code><b>-state</b></code> option and the state of its
+    <code><b>closetab</b></code> element is <code><b>normal</b></code>, the tab
+    is closed by means of the widget's <code><b>forget</b></code>
     subcommand.&nbsp; If the Tk version is 8.5a2 or later then after closing
     the tab, the widget generates a
     <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code> virtual event, by
@@ -494,10 +498,10 @@ proc populateMenu {nb data} {
   <h2 id="closetab">The <code><b>closetab</b></code> Style Element</h2>
 
   <p>The Scrollutil_tile package automatically creates a new style element
-  named <code><b>closetab</b></code>, whose shape resembles an x
+  named <code><b>closetab</b></code>, whose shape resembles that of an x
   character.&nbsp; The element's size depends on the display's scaling
   percentage (<code>100</code>, <code>125</code>, <code>150</code>,
-  <code>175</code>, or <code>200</code>).&nbsp; Its foreground color is
+  <code>175</code>, or <code>200</code>), while its foreground color is
   theme-specific and is updated whenever the theme changes.</p>
 
   <p>You can add this element to the tabs of a ttk::notebook style (like
@@ -509,6 +513,11 @@ proc populateMenu {nb data} {
   <p>For the opposite operation the Scrollutil_tile package provides the
   <code><b><a href="#removeclosetab">scrollutil::removeclosetab</a></b></code>
   command.</p>
+
+  <p>The state (<code><b>normal</b></code> or <code><b>disabled</b></code>) of
+  of the <code>closetab</code> element of a ttk::notebook or scrollednotebook
+  tab can be set and queried with the aid of the  <code><b><a href=
+  "#closetabstate">scrollutil::closetabstate</a></b></code> command.</p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
@@ -597,6 +606,72 @@ package require scrollutil_tile
     <dt class="tm"><b>KEYWORDS</b></dt>
 
     <dd>ttk::notebook style, closetab</dd>
+  </dl>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="closetabstate">The <code><b>scrollutil::closetabstate</b></code>
+  Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>scrollutil::closetabstate</code> &ndash; Set or query the state
+    of the <code>closetab</code> element of a ttk::notebook or scrollednotebook
+    tab</dd>
+
+    <dt class="tm"><b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+package require scrollutil_tile
+<b>scrollutil::closetabstate</b> <i>notebook</i> <i>tabId</i> ?<b>normal</b>|<b>disabled</b>?
+</pre>
+    </dd>
+
+    <dd>Note that the <code><b>scrollutil::closetabstate</b></code> command is
+    provided by the Scrollutil_tile package, but not by Scrollutil.</dd>
+
+    <dt class="tm"><b>DESCRIPTION</b></dt>
+
+    <dd>Sets or queries the state of the <code><b><a href=
+    "#closetab">closetab</a></b></code> element of the tab specified by
+    <code><i>tabId</i></code> of the ttk::notebook or scrollednotebook widget 
+    <code><i>notebook</i></code>.&nbsp; The optional argument specifies the
+    state as <code><b>normal</b></code> or <code><b>disabled</b></code>.&nbsp;
+    Without this argument the command returns the current state of the tab's
+    <code><b>closetab</b></code> element.</dd>
+
+    <dd class="tm">
+      Provided that the widget's <code><b>disabled</b></code> state flag is not
+      set and the value of the tab's <code><b>-state</b></code> option is
+      <code><b>normal</b></code>, the differences between the two
+      <code><b>closetab</b></code> states are as follows:
+
+      <ul>
+        <li class="tm">In the default <code><b>normal</b></code> state, the
+        <code><b>closetab</b></code> element is shown in white color on light
+        red background when hovered, and in white color on dark red background
+        when pressed with mouse button 1.&nbsp; By releasing mouse button 1
+        over the same element, the tab is closed and the notebook widget
+        receives a <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code>
+        virtual event.</li>
+
+        <li class="tm">In the <code><b>disabled</b></code> state, the
+        <code><b>closetab</b></code> element, both when hovered and when
+        pressed, is shown in the same theme-specific foreground color as a
+        disabled text, and releasing mouse button 1 over it has no effect.</li>
+      </ul>
+    </dd>
+
+    <dt class="tm"><b>KEYWORDS</b></dt>
+
+    <dd>tab, closetab, state</dd>
   </dl>
 
   <div align="center">

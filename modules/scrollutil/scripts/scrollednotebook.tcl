@@ -180,15 +180,17 @@ static unsigned char close200_2_bits[] = {
 	    -data $closetabData -foreground #ffffff -background #e60000
 
 	#
-	# Instead of the state "alternate" below it would be
-	# more natural to use "hover", but the latter was not
-	# supported by Tk versions earler than 8.6b1 or 8.5.9.
+	# Instead of the "alternate" state below it would be more natural
+	# to use "hover", but the latter was not supported by Tk versions
+	# earlier than 8.6b1 or 8.5.9.  The "readonly" state is used if the
+	# closetab element's state for the active tab was set to "disabled".
 	#
 	set width  [expr {[image width scrollutil_closetabImg] + 4}]
 	set sticky [expr {[tk windowingsystem] eq "aqua" ? "w" : "e"}]
 	ttk::style element create closetab image [list scrollutil_closetabImg \
 		{active pressed}	     scrollutil_closetabPressedImg \
 		{active alternate !disabled} scrollutil_closetabHoverImg \
+		{active readonly}	     scrollutil_closetabDisabledImg \
 		disabled		     scrollutil_closetabDisabledImg] \
 	    -width $width -sticky $sticky
     }
@@ -204,7 +206,8 @@ static unsigned char close200_2_bits[] = {
 # scrollutil::snb::createBindings
 #
 # Creates the default bindings for the binding tags Scrollednotebook and
-# ScrollutilMain, and extends the default bindings for TNotebook.
+# ScrollutilMain, and extends the default bindings for TNotebook.  In addition,
+# creates a <Destroy> binding for the binding tag DisabledClosetab.
 #------------------------------------------------------------------------------
 proc scrollutil::snb::createBindings {} {
     bind Scrollednotebook <KeyPress> continue
@@ -255,6 +258,10 @@ proc scrollutil::snb::createBindings {} {
     #
     bindMouseWheel TNotebook \
 	{%W instate disabled continue; ttk::notebook::CycleTab %W}
+
+    bind DisabledClosetab <Destroy> {
+	unset -nocomplain scrollutil::closetabStateArr(%W)
+    }
 }
 
 #
@@ -454,6 +461,67 @@ proc scrollutil::removeclosetab nbStyle {
     return 0
 }
 
+#------------------------------------------------------------------------------
+# scrollutil::closetabstate
+#
+# Sets or queries the state of the closetab element of a given ttk::notebook or
+# scrollednotebook tab.
+#------------------------------------------------------------------------------
+proc scrollutil::closetabstate {nb tabId args} {
+    if {![winfo exists $nb]} {
+	return -code error "bad window path name \"$nb\""
+    }
+
+    set class [winfo class $nb]
+    if {$class ne "TNotebook" && $class ne "Scrollednotebook"} {
+	return -code error \
+	    "\"$nb\" is not a ttk::notebook or scrollednotebook widget"
+    }
+
+    if {[catch {$nb index $tabId} tabIdx] != 0} {
+	return -code error $tabIdx
+    }
+
+    if {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
+	return -code error "tab index $tabId out of bounds"
+    }
+
+    set widget [lindex [$nb tabs] $tabIdx]
+    variable closetabStateArr
+
+    switch [llength $args] {
+	0 {
+	    return [expr {[info exists closetabStateArr($widget)] ?
+			  "disabled" : "normal"}]
+	}
+
+	1 {
+	    set state [mwutil::fullOpt "closetab state" [lindex $args 0] \
+		       {normal disabled}]
+	    if {$state eq "disabled"} {
+		set closetabStateArr($widget) 0
+
+		set tagList [bindtags $widget]
+		if {[lsearch -exact $tagList "DisabledClosetab"] < 0} {
+		    bindtags $widget [linsert $tagList 1 DisabledClosetab]
+		}
+	    } elseif {[info exists closetabStateArr($widget)]} {
+		unset closetabStateArr($widget)
+
+		set tagList [bindtags $widget]
+		set idx [lsearch -exact $tagList "DisabledClosetab"]
+		bindtags $widget [lreplace $tagList $idx $idx]
+	    }
+	    return ""
+	}
+
+	default {
+	    mwutil::wrongNumArgs \
+		"scrollutil::closetabstate notebook tabId ?normal|disabled?"
+	}
+    }
+}
+
 #
 # Private configuration procedures
 # ================================
@@ -566,9 +634,10 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
     set cmd [mwutil::fullOpt "option" [lindex $args 0] $cmdOpts]
     switch $cmd {
 	add {
+	    set nb $data(nb)
 	    set widget [lindex $args 1]
-	    set isNew [expr {[lsearch -exact [$data(nb) tabs] $widget] < 0}]
-	    eval [list $data(nb) $cmd] [lrange $args 1 end]
+	    set isNew [expr {[lsearch -exact [$nb tabs] $widget] < 0}]
+	    eval [list $nb $cmd] [lrange $args 1 end]
 	    if {$isNew} {
 		saveXPad $win $widget
 		updateNbWidthDelayed $win
@@ -597,11 +666,12 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	}
 
 	forget {
-	    if {[catch {$data(nb) index [lindex $args 1]} tabIdx] == 0 &&
-		$tabIdx < [$data(nb) index end]} {
-		set widget [lindex [$data(nb) tabs] $tabIdx]
+	    set nb $data(nb)
+	    if {[catch {$nb index [lindex $args 1]} tabIdx] == 0 &&
+		$tabIdx >= 0 && $tabIdx < [$nb index end]} {
+		set widget [lindex [$nb tabs] $tabIdx]
 	    }
-	    eval [list $data(nb) $cmd] [lrange $args 1 end]
+	    eval [list $nb $cmd] [lrange $args 1 end]
 	    forgetXPad $win $widget
 	    updateNbWidthDelayed $win
 	    return ""
@@ -616,9 +686,10 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	tabs { return [eval [list $data(nb) $cmd] [lrange $args 1 end]] }
 
 	insert {
+	    set nb $data(nb)
 	    set widget [lindex $args 2]
-	    set isNew [expr {[lsearch -exact [$data(nb) tabs] $widget] < 0}]
-	    eval [list $data(nb) $cmd] [lrange $args 1 end]
+	    set isNew [expr {[lsearch -exact [$nb tabs] $widget] < 0}]
+	    eval [list $nb $cmd] [lrange $args 1 end]
 	    if {$isNew} {
 		saveXPad $win $widget
 		updateNbWidthDelayed $win
@@ -629,8 +700,18 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	}
 
 	see {
-	    after idle [list scrollutil::snb::seeSubCmd \
-			$win [lrange $args 1 end]]
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win $cmd tab"
+	    }
+	    set nb $data(nb)
+	    set tabId [lindex $args 1]
+	    if {[catch {$nb index $tabId} tabIdx] != 0} {
+		return -code error $tabIdx
+	    }
+	    if {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
+		return -code error "tab index $tabId out of bounds"
+	    }
+	    after idle [list scrollutil::snb::seeSubCmd $win $tabIdx]
 	    return ""
 	}
 
@@ -643,10 +724,11 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	}
 
 	tab {
-	    set result [eval [list $data(nb) $cmd] [lrange $args 1 end]]
+	    set nb $data(nb)
+	    set result [eval [list $nb $cmd] [lrange $args 1 end]]
 	    if {$argCount > 3 && [lsearch -exact $args "-padding"] >= 2} {
-		if {[set tabIdx [$data(nb) index [lindex $args 1]]] >= 0} {
-		    set widget [lindex [$data(nb) tabs] $tabIdx]
+		if {[set tabIdx [$nb index [lindex $args 1]]] >= 0} {
+		    set widget [lindex [$nb tabs] $tabIdx]
 		    saveXPad $win $widget
 		    updateNbWidthDelayed $win
 		}
@@ -661,19 +743,15 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 #
 # Processes the scrollednotebook see subcommmand.
 #------------------------------------------------------------------------------
-proc scrollutil::snb::seeSubCmd {win argList} {
-    if {[llength $argList] != 1} {
-	mwutil::wrongNumArgs "$win see tabId"
-    }
-
+proc scrollutil::snb::seeSubCmd {win tabIdx} {
     if {[destroyed $win]} {
 	return ""
     }
 
     upvar ::scrollutil::ns${win}::data data
     set nb $data(nb)
+
     if {[set height [winfo height $nb]] < 10 ||
-	[set tabIdx [$nb index [lindex $argList 0]]] < 0 ||
 	[$nb tab $tabIdx -state] eq "hidden"} {
 	return ""
     }
@@ -735,8 +813,6 @@ proc scrollutil::snb::seeSubCmd {win argList} {
 	incr x2
     }
     $data(sf) seerect $x1 0 $x2 0
-
-    return ""
 }
 
 #
@@ -858,9 +934,13 @@ proc scrollutil::snb::onSfConfigure sf {
 #------------------------------------------------------------------------------
 proc scrollutil::snb::onMotion {nb x y} {
     if {[$nb identify element $x $y] eq "closetab"} {
-	$nb state alternate
+	if {[::scrollutil::closetabstate $nb @$x,$y] eq "normal"} {
+	    $nb state alternate
+	} else {
+	    $nb state readonly
+	}
     } else {
-	$nb state !alternate
+	$nb state {!alternate !readonly}
     }
 }
 
@@ -874,7 +954,8 @@ proc scrollutil::snb::onButton1 {nb x y} {
 
     variable state
     if {[$nb identify element $x $y] eq "closetab"} {
-	if {[$nb tab $tabIdx -state] ne "disabled"} {
+	if {[$nb tab $tabIdx -state] eq "normal" &&
+	    [::scrollutil::closetabstate $nb $tabIdx] eq "normal"} {
 	    $nb state pressed
 	    set state(closeIdx) $tabIdx
 	}
@@ -932,8 +1013,7 @@ proc scrollutil::snb::onB1Motion {nb x y} {
 	$tabIdx == $state(closeIdx)} {
 	$nb state pressed
     } else {
-	$nb state !pressed
-	$nb state !alternate
+	$nb state {!pressed !alternate}
     }
 
     if {[set sourceIdx $state(sourceIdx)] < 0} {
