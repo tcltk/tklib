@@ -10,8 +10,8 @@ What is new in Scrollutil 1.10?
    to the "scrollutil::addclosetab" command.
 
 2. The state of the "closetab" element of a ttk::notebook or
-   scrollednotebook tab can be queried and switched between "disabled"
-   and "normal" with the aid of the new "scrollutil::closetabstate"
+   scrollednotebook tab can be queried and switched between "normal" and
+   "disabled" with the aid of the new "scrollutil::closetabstate"
    command.
 
 3. Each notebook tab of the demo scripts "ScrolledNotebookDemo.tcl" and
