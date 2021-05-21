@@ -462,17 +462,18 @@ proc populateMenu {nb data} {
 
     <dd class="tm">In addition, the Scrollutil_tile package adds support for
     <b>moving the tabs of a ttk::notebook or scrollednotebook widget with the
-    mouse</b>:&nbsp; If mouse button 1 is pressed over a tab and then dragged
-    outside that tab, then the mouse cursor takes on the shape of a left/right
-    arrow, indicating that the tab in question is being moved to another
-    position.&nbsp; This operation ends when mouse button 1 is released, and
-    can be canceled by pressing the <code>Escape</code> key.&nbsp; In both
-    cases, the mouse cursor is reset to its original value, specified by the
-    <code><b>-cursor</b></code> configuration option.&nbsp; After releasing
-    mouse button 1, the source tab is moved to the position previously pointed
-    to by the arrow (provided that the action was not canceled via
-    <code>Escape</code>).&nbsp; If the Tk version is 8.5a2 or later then after
-    moving the tab to its new position, the widget generates a
+    mouse</b>:&nbsp; If mouse button 1 is pressed over a tab but outside the
+    <code><b><a href="#closetab">closetab</a></b></code> element (if any) and
+    then dragged outside that tab, then the mouse cursor takes on the shape of
+    a left/right arrow, indicating that the tab in question is being moved to
+    another position.&nbsp; This operation ends when mouse button 1 is
+    released, and can be canceled by pressing the <code>Escape</code>
+    key.&nbsp; In both cases, the mouse cursor is reset to its original value,
+    specified by the <code><b>-cursor</b></code> configuration option.&nbsp;
+    After releasing mouse button 1, the source tab is moved to the position
+    previously pointed to by the arrow (provided that the action was not
+    canceled via <code>Escape</code>).&nbsp; If the Tk version is 8.5a2 or
+    later then after moving the tab to its new position, the widget generates a
     <code><b>&lt;&lt;NotebookTabMoved&gt;&gt;</b></code> virtual event, by
     invoking&nbsp; <code><b>event generate</b></code>&nbsp; with the
     <code><b>-data</b></code> option set to a list consisting of the path name
@@ -483,14 +484,13 @@ proc populateMenu {nb data} {
     cursor is set to one having the shape of an up/down arrow.</dd>
 
     <dd class="tm">Finally, if mouse button 1 is pressed over the
-    <code><b><a href="#closetab">closetab</a></b></code> element (if any) of a
-    tab of a ttk::notebook or scrollednotebook widget and later released over
-    the same element then, provided that both the value of the tab's
-    <code><b>-state</b></code> option and the state of its
-    <code><b>closetab</b></code> element is <code><b>normal</b></code>, the tab
-    is closed by means of the widget's <code><b>forget</b></code>
-    subcommand.&nbsp; If the Tk version is 8.5a2 or later then after closing
-    the tab, the widget generates a
+    <code><b>closetab</b></code> element (if any) of a tab of a ttk::notebook
+    or scrollednotebook widget and later released over the same element then,
+    provided that both the value of the tab's <code><b>-state</b></code> option
+    and the state of its <code><b>closetab</b></code> element is
+    <code><b>normal</b></code>, the tab is closed by means of the widget's
+    <code><b>forget</b></code> subcommand.&nbsp; If the Tk version is 8.5a2 or
+    later then after closing the tab, the widget generates a
     <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code> virtual event, by
     invoking&nbsp; <code><b>event generate</b></code>&nbsp; with the
     <code><b>-data</b></code> option set to the path name of the widget
@@ -682,7 +682,8 @@ package require scrollutil_tile
         <li class="tm">In the <code><b>disabled</b></code> state, the
         <code><b>closetab</b></code> element, both when hovered and when
         pressed, is shown in the same theme-specific foreground color as a
-        disabled text, and releasing mouse button 1 over it has no effect.</li>
+        disabled text, and pressing and later releasing mouse button 1 over it
+        has no effect.</li>
       </ul>
     </dd>
 
