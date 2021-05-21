@@ -1,5 +1,9 @@
 2021-05-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* doc/scrollednotebook.html: Slightly improved.
+
+2021-05-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* CHANGES.txt:                  Added the "closetabstate"
 	* scripts/scrollednotebook.tcl: scrollednotebook widget subcommand;
 	* doc/scrollednotebook.html:    made sure that a "-padding" tab option
