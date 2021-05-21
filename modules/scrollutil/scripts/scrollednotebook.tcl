@@ -58,8 +58,9 @@ namespace eval scrollutil::snb {
     #
     # Use a list to facilitate the handling of command options
     #
-    variable cmdOpts [list add cget configure forget hide identify index \
-		      insert instate see select state style tab tabs]
+    variable cmdOpts [list add cget closetabstate configure forget hide \
+		      identify index insert instate see select state style \
+		      tab tabs]
     if {$::tk_version < 8.7 ||
 	[package vcompare $::tk_patchLevel "8.7a4"] < 0} {
 	set idx [lsearch -exact $cmdOpts "style"]
@@ -306,13 +307,15 @@ proc scrollutil::scrollednotebook args {
     #
     namespace eval ns$win {
 	#
-	# The folowing array holds various data for this widget
+	# The following array holds various data for this widget
 	#
 	variable data
 
 	#
-	# The folowing array holds the horizontal paddings of the panes
+	# The following arrays hold the overall
+	# and horizontal paddings of the panes
 	#
+	variable paddingArr
 	variable xPadArr
     }
 
@@ -631,7 +634,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
     upvar ::scrollutil::ns${win}::data data
 
     variable cmdOpts
-    set cmd [mwutil::fullOpt "option" [lindex $args 0] $cmdOpts]
+    set cmd [mwutil::fullOpt "command" [lindex $args 0] $cmdOpts]
     switch $cmd {
 	add {
 	    set nb $data(nb)
@@ -639,7 +642,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    set isNew [expr {[lsearch -exact [$nb tabs] $widget] < 0}]
 	    eval [list $nb $cmd] [lrange $args 1 end]
 	    if {$isNew} {
-		saveXPad $win $widget
+		savePaddings $win $widget
 		updateNbWidthDelayed $win
 	    }
 	    return ""
@@ -658,6 +661,15 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    return $data($opt)
 	}
 
+	closetabstate {
+	    if {$argCount < 2 || $argCount > 3} {
+		mwutil::wrongNumArgs "$win $cmd tab ?normal|disabled?"
+	    }
+
+	    return [eval [list ::scrollutil::closetabstate $win] \
+		    [lrange $args 1 end]]
+	}
+
 	configure {
 	    variable configSpecs
 	    return [mwutil::configureSubCmd $win configSpecs \
@@ -672,7 +684,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 		set widget [lindex [$nb tabs] $tabIdx]
 	    }
 	    eval [list $nb $cmd] [lrange $args 1 end]
-	    forgetXPad $win $widget
+	    forgetPadings $win $widget
 	    updateNbWidthDelayed $win
 	    return ""
 	}
@@ -691,7 +703,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    set isNew [expr {[lsearch -exact [$nb tabs] $widget] < 0}]
 	    eval [list $nb $cmd] [lrange $args 1 end]
 	    if {$isNew} {
-		saveXPad $win $widget
+		savePaddings $win $widget
 		updateNbWidthDelayed $win
 	    } elseif {[::$win index $widget] == [::$win index current]} {
 		::$win see $widget
@@ -703,14 +715,17 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    if {$argCount != 2} {
 		mwutil::wrongNumArgs "$win $cmd tab"
 	    }
+
 	    set nb $data(nb)
 	    set tabId [lindex $args 1]
 	    if {[catch {$nb index $tabId} tabIdx] != 0} {
 		return -code error $tabIdx
 	    }
+
 	    if {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
 		return -code error "tab index $tabId out of bounds"
 	    }
+
 	    after idle [list scrollutil::snb::seeSubCmd $win $tabIdx]
 	    return ""
 	}
@@ -726,12 +741,17 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	tab {
 	    set nb $data(nb)
 	    set result [eval [list $nb $cmd] [lrange $args 1 end]]
-	    if {$argCount > 3 && [lsearch -exact $args "-padding"] >= 2} {
-		if {[set tabIdx [$nb index [lindex $args 1]]] >= 0} {
-		    set widget [lindex [$nb tabs] $tabIdx]
-		    saveXPad $win $widget
-		    updateNbWidthDelayed $win
-		}
+	    set tabIdx [$nb index [lindex $args 1]]
+	    if {$argCount == 2} {
+		set idx [expr {[lsearch -exact $result "-padding"] + 1}]
+		set result \
+		    [lreplace $result $idx $idx [origPadding $win $tabIdx]]
+	    } elseif {$argCount == 3 && [string match "-p*" [lindex $args 2]]} {
+		set result [origPadding $win $tabIdx]
+	    } elseif {$argCount > 3 && [lsearch -glob $args "-p*"] >= 2} {
+		set widget [lindex [$nb tabs] $tabIdx]
+		savePaddings $win $widget
+		updateNbWidthDelayed $win
 	    }
 	    return $result
 	}
@@ -841,7 +861,7 @@ proc scrollutil::snb::adjustXPad {win first last} {
     incr right [expr {$cfWidth - int($cfWidth * $last + 0.5)}]
 
     foreach {l top r bottom} \
-	    [normalizePadding $win [$data(nb) tab $tabIdx -padding]] {}
+	    [normalizePadding $win [origPadding $win $tabIdx]] {}
 
     $data(nb) tab $tabIdx -padding [list $left $top $right $bottom]
 }
@@ -1321,29 +1341,48 @@ proc scrollutil::snb::normalizePadding {w padding} {
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::snb::saveXPad
+# scrollutil::snb::savePaddings
 #
-# Saves the horizontal padding of the pane identified by a given widget of the
-# scrollednotebook widget win.
+# Saves the overall and horizontal paddings of the pane identified by a given
+# widget of the scrollednotebook widget win.
 #------------------------------------------------------------------------------
-proc scrollutil::snb::saveXPad {win widget} {
+proc scrollutil::snb::savePaddings {win widget} {
     upvar ::scrollutil::ns${win}::data data \
+	  ::scrollutil::ns${win}::paddingArr paddingArr \
 	  ::scrollutil::ns${win}::xPadArr xPadArr
 
-    set padding [normalizePadding $win [$data(nb) tab $widget -padding]]
-    foreach {l t r b} $padding {}
+    set padding [$data(nb) tab $widget -padding]
+    set paddingArr($widget) $padding
+
+    foreach {l t r b} [normalizePadding $win $padding] {}
     set xPadArr($widget) [list $l $r]
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::snb::forgetXPad
+# scrollutil::snb::forgetPadings
 #
-# Forgets the horizontal padding of the pane identified by a given widget of
-# the scrollednotebook widget win.
+# Forgets the overall and horizontal paddings of the pane identified by a given
+# widget of the scrollednotebook widget win.
 #------------------------------------------------------------------------------
-proc scrollutil::snb::forgetXPad {win widget} {
-    upvar ::scrollutil::ns${win}::xPadArr xPadArr
-    unset xPadArr($widget)
+proc scrollutil::snb::forgetPadings {win widget} {
+    upvar ::scrollutil::ns${win}::paddingArr paddingArr \
+	  ::scrollutil::ns${win}::xPadArr xPadArr
+
+    unset paddingArr($widget) xPadArr($widget)
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::snb::origPadding
+#
+# Returns the saved overall padding of the pane identified by a given tab index
+# of the scrollednotebook widget win.
+#------------------------------------------------------------------------------
+proc scrollutil::snb::origPadding {win tabIdx} {
+    upvar ::scrollutil::ns${win}::data data \
+	  ::scrollutil::ns${win}::paddingArr paddingArr
+
+    set widget [lindex [$data(nb) tabs] $tabIdx]
+    return $paddingArr($widget)
 }
 
 #------------------------------------------------------------------------------

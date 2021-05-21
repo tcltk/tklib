@@ -107,6 +107,10 @@ package require scrollutil_tile
 
     <dt class="tm"><a href="#widget_command">WIDGET COMMAND</a></dt>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#snb_closetabstate">closetabstate</a></b> <i>tabId</i></code>
+    ?<b>normal</b>|<b>disabled</b>?</code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#see">see</a></b>
     <i>tabId</i></code></dd>
 
@@ -174,13 +178,14 @@ package require scrollutil_tile
 
     <dd class="tm">The API of the scrollednotebook widget is nearly identical
     to that of ttk::notebook.&nbsp; Apart from the scrollednotebook-specific
-    <code><b>see</b></code> subcommand, the Tcl command associated with a
-    scrollednotebook widget provides the same subcommands as the one associated
-    with a ttk::notebook.&nbsp; Note that the API doesn't provide any command
-    for retrieving the path name of the ttk::notebook widget contained in a
-    scrollednotebook, because there is no need to access that widget
-    directly.&nbsp; Moreover, using its subcommands instead of those of the
-    scrollednotebook widget would result in an unpredictable behavior.</dd>
+    <code><b>closetabstate</b></code> and <code><b>see</b></code> subcommands,
+    the Tcl command associated with a scrollednotebook widget provides the same
+    subcommands as the one associated with a ttk::notebook.&nbsp; Note that the
+    API doesn't provide any command for retrieving the path name of the
+    ttk::notebook widget contained in a scrollednotebook, because there is no
+    need to access that widget directly.&nbsp; Moreover, using its subcommands
+    instead of those of the scrollednotebook widget would result in an
+    unpredictable behavior.</dd>
 
     <dt class="tm" id="std_options"><b>STANDARD OPTIONS</b></dt>
 
@@ -357,15 +362,27 @@ package require scrollutil_tile
     the exact behavior of the command.&nbsp; The subcommands possible for
     scrollednotebook widgets are the same as those for ttk::notebook widgets
     (see the <b>ttk_notebook</b> manual entry for details), except that
-    scrollednotebook widgets provide the following additional subcommand:</dd>
+    scrollednotebook widgets provide the following additional subcommands:</dd>
 
     <dd>
       <dl>
+        <dt class="tm" id="snb_closetabstate"><code><i>pathName</i>
+        <b>closetabstate</b> <i>tabId</i>
+        ?<b>normal</b>|<b>disabled</b>?</code></dt>
+
+        <dd>Sets or queries the state of the <code><b><a href=
+        "#closetab">closetab</a></b></code> element of the tab specified by
+        <code><i>tabId</i></code>.&nbsp; Invoking this subcommand is just a
+        shortcut for passing <code><i>pathName</i></code>,
+        <code><i>tabId</i></code>, and the optional argument (if present) to
+        the <code><b><a href=
+        "#closetabstate">scrollutil::closetabstate</a></b></code> command.</dd>
+
         <dt class="tm" id="see"><code><i>pathName</i> <b>see</b>
         <i>tabId</i></code></dt>
 
-        <dd>This command adjusts the view in the scrollednotebook's window so
-        that the tab given by <code><i>tabId</i></code> becomes visible in
+        <dd>This subcommand adjusts the view in the scrollednotebook's window
+        so that the tab given by <code><i>tabId</i></code> becomes visible in
         it.&nbsp; Note that when a tab gets selected, this command is
         automatically invoked for it, in order to make that tab visible.&nbsp;
         In addition, the currently selected tab is always kept visible, by
@@ -516,7 +533,7 @@ proc populateMenu {nb data} {
 
   <p>The state (<code><b>normal</b></code> or <code><b>disabled</b></code>) of
   of the <code>closetab</code> element of a ttk::notebook or scrollednotebook
-  tab can be set and queried with the aid of the  <code><b><a href=
+  tab can be set and queried with the aid of the <code><b><a href=
   "#closetabstate">scrollutil::closetabstate</a></b></code> command.</p>
 
   <div align="center">
@@ -668,6 +685,10 @@ package require scrollutil_tile
         disabled text, and releasing mouse button 1 over it has no effect.</li>
       </ul>
     </dd>
+
+    <dd class="tm">Note that the <code><b><a href=
+    "#snb_closetabstate">closetabstate</a></b></code> scrollednotebook widget
+    subcommand is a convenient shortcut for this command.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
