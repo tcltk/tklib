@@ -12,20 +12,24 @@ What is new in Scrollutil 1.10?
 2. The state of the "closetab" element of a ttk::notebook or
    scrollednotebook tab can be queried and switched between "normal" and
    "disabled" with the aid of the new "scrollutil::closetabstate"
-   command.  The new "closetabstate" scrollednotebook widget subcommand
-   is a convenient shortcut for this command.
+   command.
 
-3. Each notebook tab of the demo scripts "ScrolledNotebookDemo.tcl" and
+3. Added the "closetabstate" scrollednotebook widget subcommand, which
+   is a convenient shortcut for the "scrollutil::closetabstate"
+   command.
+
+4. Each notebook tab of the demo scripts "ScrolledNotebookDemo.tcl" and
    "TtkNotebookDemo.tcl" now contains, besides a text, also an image and
    the "closetab" element.
 
-4. On X11, the initialization code now only corrects the sizes of the
+5. On X11, the initialization code now only corrects the sizes of the
    standard fonts and sets the scaling factor if the display's scaling
    percentage is greater than 100.  In addition, the scaling factor is
    no longer changed if the scaling percentage was derived from it
    (thanks to Erik Leunissen and Harald Oehlmann for their bug reports).
 
-5. Several improvements in the demo scripts and documentation.
+6. Numerous further improvements in the code, demo scripts, and
+   documentation.
 
 What was new in Scrollutil 1.9?
 -------------------------------

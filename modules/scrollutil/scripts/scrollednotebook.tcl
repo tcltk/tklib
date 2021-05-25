@@ -483,9 +483,7 @@ proc scrollutil::closetabstate {nb tabId args} {
 
     if {[catch {$nb index $tabId} tabIdx] != 0} {
 	return -code error $tabIdx
-    }
-
-    if {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
+    } elseif {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
 	return -code error "tab index $tabId out of bounds"
     }
 
@@ -635,15 +633,16 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 
     variable cmdOpts
     set cmd [mwutil::fullOpt "command" [lindex $args 0] $cmdOpts]
+
     switch $cmd {
 	add {
 	    set nb $data(nb)
 	    set widget [lindex $args 1]
 	    set isNew [expr {[lsearch -exact [$nb tabs] $widget] < 0}]
 	    eval [list $nb $cmd] [lrange $args 1 end]
-	    if {$isNew} {
+	    if {$isNew || [lsearch -glob $args "-p*"] >= 2} {
 		savePaddings $win $widget
-		updateNbWidthDelayed $win
+		updateNbWidth $win
 	    }
 	    return ""
 	}
@@ -684,8 +683,8 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 		set widget [lindex [$nb tabs] $tabIdx]
 	    }
 	    eval [list $nb $cmd] [lrange $args 1 end]
-	    forgetPadings $win $widget
-	    updateNbWidthDelayed $win
+	    forgetPaddings $win $widget
+	    updateNbWidth $win
 	    return ""
 	}
 
@@ -702,40 +701,38 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    set widget [lindex $args 2]
 	    set isNew [expr {[lsearch -exact [$nb tabs] $widget] < 0}]
 	    eval [list $nb $cmd] [lrange $args 1 end]
-	    if {$isNew} {
+	    if {$isNew || [lsearch -glob $args "-p*"] >= 3} {
 		savePaddings $win $widget
-		updateNbWidthDelayed $win
-	    } elseif {[::$win index $widget] == [::$win index current]} {
-		::$win see $widget
+		updateNbWidth $win
+	    }
+	    if {[::$win index $widget] == [::$win index current]} {
+		after idle [list scrollutil::snb::seeSubCmd $win $widget]
 	    }
 	    return ""
 	}
 
-	see {
-	    if {$argCount != 2} {
-		mwutil::wrongNumArgs "$win $cmd tab"
-	    }
-
-	    set nb $data(nb)
-	    set tabId [lindex $args 1]
-	    if {[catch {$nb index $tabId} tabIdx] != 0} {
-		return -code error $tabIdx
-	    }
-
-	    if {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
-		return -code error "tab index $tabId out of bounds"
-	    }
-
-	    after idle [list scrollutil::snb::seeSubCmd $win $tabIdx]
-	    return ""
-	}
+	see { return [seeSubCmd $win [lrange $args 1 end]] }
 
 	select {
-	    set result [eval [list $data(nb) $cmd] [lrange $args 1 end]]
-	    if {$argCount > 1} {
-		::$win see [lindex $args 1]
+	    switch $argCount {
+		1 { return [$data(nb) $cmd] }
+		2 {
+		    set nb $data(nb)
+		    set tabId [lindex $args 1]
+		    if {[catch {$nb index $tabId} tabIdx] != 0} {
+			return -code error $tabIdx
+		    } elseif {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
+			return -code error "tab index $tabId out of bounds"
+		    }
+
+		    seeSubCmd $win $tabIdx
+		    foreach {first last} [$win.sf xview] {}
+		    adjustXPad $win $tabIdx $first $last
+		    $nb select $tabIdx
+		    return ""
+		}
+		default { mwutil::wrongNumArgs "$win $cmd ?tab?" }
 	    }
-	    return $result
 	}
 
 	tab {
@@ -751,7 +748,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    } elseif {$argCount > 3 && [lsearch -glob $args "-p*"] >= 2} {
 		set widget [lindex [$nb tabs] $tabIdx]
 		savePaddings $win $widget
-		updateNbWidthDelayed $win
+		updateNbWidth $win
 	    }
 	    return $result
 	}
@@ -763,13 +760,23 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 #
 # Processes the scrollednotebook see subcommmand.
 #------------------------------------------------------------------------------
-proc scrollutil::snb::seeSubCmd {win tabIdx} {
+proc scrollutil::snb::seeSubCmd {win argList} {
     if {[destroyed $win]} {
 	return ""
     }
 
+    if {[llength $argList] != 1} {
+	mwutil::wrongNumArgs "$win see tab"
+    }
+
     upvar ::scrollutil::ns${win}::data data
     set nb $data(nb)
+    set tabId [lindex $argList 0]
+    if {[catch {$nb index $tabId} tabIdx] != 0} {
+	return -code error $tabIdx
+    } elseif {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
+	return -code error "tab index $tabId out of bounds"
+    }
 
     if {[set height [winfo height $nb]] < 10 ||
 	[$nb tab $tabIdx -state] eq "hidden"} {
@@ -833,6 +840,8 @@ proc scrollutil::snb::seeSubCmd {win tabIdx} {
 	incr x2
     }
     $data(sf) seerect $x1 0 $x2 0
+
+    return ""
 }
 
 #
@@ -845,13 +854,14 @@ proc scrollutil::snb::seeSubCmd {win tabIdx} {
 #
 # This procedure is the value of the -xscrollcommand option of the
 # scrollableframe contained in the scrollednotebook widget win.  It adjusts the
-# horizontal padding of the current pane according to the xview values of the
+# horizontal padding of the specified pane according to the xview values of the
 # scrollableframe widget.
 #------------------------------------------------------------------------------
-proc scrollutil::snb::adjustXPad {win first last} {
+proc scrollutil::snb::adjustXPad {win tabIdx first last} {
     upvar ::scrollutil::ns${win}::data data
+    set nb $data(nb)
 
-    if {[set tabIdx [$data(nb) index current]] < 0} {
+    if {$tabIdx < 0 && [set tabIdx [$nb index current]] < 0} {
 	return ""
     }
 
@@ -863,7 +873,7 @@ proc scrollutil::snb::adjustXPad {win first last} {
     foreach {l top r bottom} \
 	    [normalizePadding $win [origPadding $win $tabIdx]] {}
 
-    $data(nb) tab $tabIdx -padding [list $left $top $right $bottom]
+    $nb tab $tabIdx -padding [list $left $top $right $bottom]
 }
 
 #
@@ -880,21 +890,22 @@ proc scrollutil::snb::onScrollednotebookMap win {
     }
 
     upvar ::scrollutil::ns${win}::data data
+    set nb $data(nb)
+    set sf $data(sf)
 
     if {$data(-height) == 0} {
-	$data(sf) configure -height [winfo reqheight $data(nb)]
+	$sf configure -height [winfo reqheight $nb]
     }
     if {$data(-width) == 0} {
-	$data(sf) configure -width [winfo reqwidth $data(nb)]
+	$sf configure -width [winfo reqwidth $nb]
     }
-    $data(sf) configure -xscrollcommand [list scrollutil::snb::adjustXPad $win]
+    $sf configure -xscrollcommand [list scrollutil::snb::adjustXPad $win -1]
 
-    $data(nb) configure -width [maxPaneWidth $win]
-    onNbTabChanged $data(nb)   ;# adjusts the current pane's horizontal padding
+    updateNbWidth $win
 
-    bind $data(nb) <<NotebookTabChanged>> { scrollutil::snb::onNbTabChanged %W }
-    bind $data(nb) <Configure>		  { scrollutil::snb::onNbConfigure %W }
-    bind $data(sf) <Configure>		  { scrollutil::snb::onSfConfigure %W }
+    bind $nb <<NotebookTabChanged>>	{ scrollutil::snb::onNbTabChanged %W }
+    bind $nb <Configure>		{ scrollutil::snb::onNbConfigure %W }
+    bind $sf <Configure>		{ scrollutil::snb::onSfConfigure %W }
 }
 
 #------------------------------------------------------------------------------
@@ -916,21 +927,15 @@ proc scrollutil::snb::onThemeChanged w {
 	scrollutil_closetabImg         configure -foreground $normalFg
 	scrollutil_closetabDisabledImg configure -foreground $disabledFg
     } else {
-	updateNbWidthDelayed $w
+	updateNbWidth $w
     }
 }
 
 #------------------------------------------------------------------------------
 # scrollutil::snb::onNbTabChanged
 #------------------------------------------------------------------------------
-proc scrollutil::snb::onNbTabChanged {nb {genEvent 1}} {
-    set snb [containingSnb $nb]
-    foreach {first last} [$snb.sf xview] {}
-    adjustXPad $snb $first $last
-
-    if {$genEvent} {
-	event generate $snb <<NotebookTabChanged>>
-    }
+proc scrollutil::snb::onNbTabChanged nb {
+    event generate [containingSnb $nb] <<NotebookTabChanged>>
 }
 
 #------------------------------------------------------------------------------
@@ -938,7 +943,7 @@ proc scrollutil::snb::onNbTabChanged {nb {genEvent 1}} {
 #------------------------------------------------------------------------------
 proc scrollutil::snb::onNbConfigure nb {
     set snb [containingSnb $nb]
-    ::$snb see current
+    seeSubCmd $snb current
 }
 
 #------------------------------------------------------------------------------
@@ -946,7 +951,7 @@ proc scrollutil::snb::onNbConfigure nb {
 #------------------------------------------------------------------------------
 proc scrollutil::snb::onSfConfigure sf {
     set snb [winfo parent $sf]
-    ::$snb see current
+    seeSubCmd $snb current
 }
 
 #------------------------------------------------------------------------------
@@ -1085,7 +1090,7 @@ proc scrollutil::snb::onBtnRelease1 {nb x y} {
     if {[$nb identify element $x $y] eq "closetab" &&
 	[set tabIdx [$nb index @$x,$y]] == $state(closeIdx)} {
 	set widget [lindex [$nb tabs] $tabIdx]
-	$nb forget $tabIdx
+	::$w forget $tabIdx
 
 	if {$userDataSupported} {
 	    event generate $w <<NotebookTabClosed>> -data $widget
@@ -1099,18 +1104,14 @@ proc scrollutil::snb::onBtnRelease1 {nb x y} {
 
     if {$state(targetIdx) >= 0} {
 	#
-	# Move the tab $sourceIdx of $nb to the position $targetIdx
+	# Move the tab $sourceIdx of $w to the position $targetIdx
 	#
 	set sourceIdx $state(sourceIdx)
 	set targetIdx $state(targetIdx)
 	set widget [lindex [$nb tabs] $sourceIdx]
-	$nb insert $targetIdx $widget
+	::$w insert $targetIdx $widget
 	$nb configure -cursor $state(cursor)
 	focus $state(focus)
-
-	if {$snb ne ""} {
-	    ::$snb see $targetIdx
-	}
 
 	if {$userDataSupported} {
 	    event generate $w <<NotebookTabMoved>> \
@@ -1291,10 +1292,19 @@ proc scrollutil::snb::activateTab win {
 
     upvar ::scrollutil::ns${win}::data data
     unset data(activateId)
-
     set tabIdx $data(tabIdx)
+
+    #
+    # DO NOT replace the three lines below with "::$win select $tabIdx",
+    # because that would in addition perform "$data(nb) select $tabIdx",
+    # which should not be done before invoking ::scrollutil::ActivateTab
+    # (see the first two lines of that library procedure for the reason)
+    #
+    seeSubCmd $win $tabIdx
+    foreach {first last} [$win.sf xview] {}
+    adjustXPad $win $tabIdx $first $last
+
     ::scrollutil::ActivateTab $data(nb) $tabIdx
-    ::$win see $tabIdx
 }
 
 #------------------------------------------------------------------------------
@@ -1305,12 +1315,9 @@ proc scrollutil::snb::activateTab win {
 #------------------------------------------------------------------------------
 proc scrollutil::snb::normalizePadding {w padding} {
     switch [llength $padding] {
-	0 {
-	    return [list 0 0 0 0]
-	}
+	0 { return [list 0 0 0 0] }
 	1 {
-	    foreach l $padding {}
-	    set l [winfo pixels $w $l]
+	    set l [winfo pixels $w $padding]
 	    return [list $l $l $l $l]
 	}
 	2 {
@@ -1359,12 +1366,12 @@ proc scrollutil::snb::savePaddings {win widget} {
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::snb::forgetPadings
+# scrollutil::snb::forgetPaddings
 #
 # Forgets the overall and horizontal paddings of the pane identified by a given
 # widget of the scrollednotebook widget win.
 #------------------------------------------------------------------------------
-proc scrollutil::snb::forgetPadings {win widget} {
+proc scrollutil::snb::forgetPaddings {win widget} {
     upvar ::scrollutil::ns${win}::paddingArr paddingArr \
 	  ::scrollutil::ns${win}::xPadArr xPadArr
 
@@ -1400,16 +1407,18 @@ proc scrollutil::snb::origXPad {win tabIdx} {
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::snb::maxPaneWidth
+# scrollutil::snb::updateNbWidth
 #
-# Returns the max. pane width (including the saved paddings) of the
-# scrollednotebook widget win.
+# Updates the -width option of the notebook component of the scrollednotebook
+# widget win and adjusts the current pane's horizontal padding.
 #------------------------------------------------------------------------------
-proc scrollutil::snb::maxPaneWidth win {
+proc scrollutil::snb::updateNbWidth win {
     upvar ::scrollutil::ns${win}::data data
+    set nb $data(nb)
+
     set maxWidth 0
     set tabIdx 0
-    foreach widget [$data(nb) tabs] {
+    foreach widget [$nb tabs] {
 	set width [winfo reqwidth $widget]
 	foreach {l r} [origXPad $win $tabIdx] {}
 	incr width [expr {$l + $r}]
@@ -1419,41 +1428,10 @@ proc scrollutil::snb::maxPaneWidth win {
 
 	incr tabIdx
     }
+    $nb configure -width $maxWidth
 
-    return $maxWidth
-}
-
-#------------------------------------------------------------------------------
-# scrollutil::snb::updateNbWidthDelayed
-#
-# Arranges for the -width option of the notebook component of the
-# scrollednotebook widget win to be updated 100 ms later.
-#------------------------------------------------------------------------------
-proc scrollutil::snb::updateNbWidthDelayed win {
-    upvar ::scrollutil::ns${win}::data data
-    if {[info exists data(afterId)]} {
-        return ""
-    }
-
-    set data(afterId) [after 100 [list scrollutil::snb::updateNbWidth $win]]
-}
-
-#------------------------------------------------------------------------------
-# scrollutil::snb::updateNbWidth
-#
-# Updates the -width option of the notebook component of the scrollednotebook
-# widget win.
-#------------------------------------------------------------------------------
-proc scrollutil::snb::updateNbWidth win {
-    if {[destroyed $win]} {
-	return ""
-    }
-
-    upvar ::scrollutil::ns${win}::data data
-    unset data(afterId)
-
-    $data(nb) configure -width [maxPaneWidth $win]
-    onNbTabChanged $data(nb) 0 ;# adjusts the current pane's horizontal padding
+    foreach {first last} [$win.sf xview] {}
+    adjustXPad $win -1 $first $last
 }
 
 #------------------------------------------------------------------------------
