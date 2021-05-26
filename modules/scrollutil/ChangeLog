@@ -1,3 +1,7 @@
+2021-05-26  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/scrollednotebook.tcl: Cosmetic improvements.
+
 2021-05-25  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:                  Numerous improvements and cleanup.
