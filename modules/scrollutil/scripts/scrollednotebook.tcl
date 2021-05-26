@@ -71,10 +71,10 @@ namespace eval scrollutil::snb {
     #
     # Array variable used in binding scripts for the class TNotebook:
     #
-    variable state
-    set state(closeIdx)  ""
-    set state(sourceIdx) ""
-    set state(targetIdx) ""
+    variable stateArr
+    set stateArr(closeIdx)  ""
+    set stateArr(sourceIdx) ""
+    set stateArr(targetIdx) ""
 
     variable userDataSupported [expr {$::tk_version >= 8.5 &&
 	     [package vcompare $::tk_patchLevel "8.5a2"] >= 0}]
@@ -181,18 +181,26 @@ static unsigned char close200_2_bits[] = {
 	    -data $closetabData -foreground #ffffff -background #e60000
 
 	#
-	# Instead of the "alternate" state below it would be more natural
-	# to use "hover", but the latter was not supported by Tk versions
-	# earlier than 8.6b1 or 8.5.9.  The "readonly" state is used if the
-	# closetab element's state for the active tab was set to "disabled".
+	# The "hover" state is not supported by
+	# Tk versions earlier than 8.5.9 or 8.6b1.
+	#
+	variable hover "hover"
+	if {[package vsatisfies $::tk_patchLevel 8-8.5.9] ||
+	    [package vsatisfies $::tk_patchLevel 8.6-8.6b1]} {
+	    set hover "alternate"
+	}
+
+	#
+	# The "readonly" state below is used if the closetab element's state for
+	# the active tab was set to "disabled" via ::scrollutil::closetabstate.
 	#
 	set width  [expr {[image width scrollutil_closetabImg] + 4}]
 	set sticky [expr {[tk windowingsystem] eq "aqua" ? "w" : "e"}]
 	ttk::style element create closetab image [list scrollutil_closetabImg \
-		{active pressed}	     scrollutil_closetabPressedImg \
-		{active alternate !disabled} scrollutil_closetabHoverImg \
-		{active readonly}	     scrollutil_closetabDisabledImg \
-		disabled		     scrollutil_closetabDisabledImg] \
+	    [list active pressed]	    scrollutil_closetabPressedImg \
+	    [list active $hover !disabled]  scrollutil_closetabHoverImg \
+	    [list active readonly]	    scrollutil_closetabDisabledImg \
+	    [list disabled]		    scrollutil_closetabDisabledImg] \
 	    -width $width -sticky $sticky
     }
     createClosetabElement 
@@ -860,7 +868,6 @@ proc scrollutil::snb::seeSubCmd {win argList} {
 proc scrollutil::snb::adjustXPad {win tabIdx first last} {
     upvar ::scrollutil::ns${win}::data data
     set nb $data(nb)
-
     if {$tabIdx < 0 && [set tabIdx [$nb index current]] < 0} {
 	return ""
     }
@@ -904,8 +911,8 @@ proc scrollutil::snb::onScrollednotebookMap win {
     updateNbWidth $win
 
     bind $nb <<NotebookTabChanged>>	{ scrollutil::snb::onNbTabChanged %W }
-    bind $nb <Configure>		{ scrollutil::snb::onNbConfigure %W }
-    bind $sf <Configure>		{ scrollutil::snb::onSfConfigure %W }
+    bind $nb <Configure>		{ scrollutil::snb::onNbConfigure  %W }
+    bind $sf <Configure>		{ scrollutil::snb::onSfConfigure  %W }
 }
 
 #------------------------------------------------------------------------------
@@ -958,14 +965,15 @@ proc scrollutil::snb::onSfConfigure sf {
 # scrollutil::snb::onMotion
 #------------------------------------------------------------------------------
 proc scrollutil::snb::onMotion {nb x y} {
+    variable hover
     if {[$nb identify element $x $y] eq "closetab"} {
 	if {[::scrollutil::closetabstate $nb @$x,$y] eq "normal"} {
-	    $nb state alternate
+	    $nb state $hover
 	} else {
 	    $nb state readonly
 	}
     } else {
-	$nb state {!alternate !readonly}
+	$nb state [list !$hover !readonly]
     }
 }
 
@@ -977,21 +985,21 @@ proc scrollutil::snb::onButton1 {nb x y} {
 	return ""
     }
 
-    variable state
+    variable stateArr
     if {[$nb identify element $x $y] eq "closetab"} {
 	if {[$nb tab $tabIdx -state] eq "normal" &&
 	    [::scrollutil::closetabstate $nb $tabIdx] eq "normal"} {
 	    $nb state pressed
-	    set state(closeIdx) $tabIdx
+	    set stateArr(closeIdx) $tabIdx
 	}
 	return ""
     }
 
     ::ttk::notebook::ActivateTab $nb $tabIdx
 
-    set state(sourceIdx) $tabIdx
-    set state(cursor) [$nb cget -cursor]
-    set state(focus) [focus -displayof $nb]
+    set stateArr(sourceIdx) $tabIdx
+    set stateArr(cursor) [$nb cget -cursor]
+    set stateArr(focus) [focus -displayof $nb]
     focus $nb
 
     if {[set style [$nb cget -style]] eq ""} {
@@ -1000,29 +1008,29 @@ proc scrollutil::snb::onButton1 {nb x y} {
     set tabSide [string index [ttk::style lookup $style -tabposition] 0]
     switch -- $tabSide {
 	n {
-	    set state(orient) h
+	    set stateArr(orient) h
 	    while {[$nb index @$x,$y] >= 0} { incr y }
-	    set state(y) [incr y -10]
+	    set stateArr(y) [incr y -10]
 	}
 	s {
-	    set state(orient) h
+	    set stateArr(orient) h
 	    while {[$nb index @$x,$y] >= 0} { incr y -1 }
-	    set state(y) [incr y 10]
+	    set stateArr(y) [incr y 10]
 	}
 	w {
-	    set state(orient) v
+	    set stateArr(orient) v
 	    while {[$nb index @$x,$y] >= 0} { incr x }
-	    set state(x) [incr x -10]
+	    set stateArr(x) [incr x -10]
 	}
 	e {
-	    set state(orient) v
+	    set stateArr(orient) v
 	    while {[$nb index @$x,$y] >= 0} { incr x -1 }
-	    set state(x) [incr x 10]
+	    set stateArr(x) [incr x 10]
 	}
 	default {
-	    set state(orient) h
+	    set stateArr(orient) h
 	    while {[$nb index @$x,$y] >= 0} { incr y }
-	    set state(y) [incr y -10]
+	    set stateArr(y) [incr y -10]
 	}
     }
 }
@@ -1031,24 +1039,25 @@ proc scrollutil::snb::onButton1 {nb x y} {
 # scrollutil::snb::onB1Motion
 #------------------------------------------------------------------------------
 proc scrollutil::snb::onB1Motion {nb x y} {
-    variable state
+    variable stateArr
     set tabIdx [$nb index @$x,$y]
 
     if {[$nb identify element $x $y] eq "closetab" &&
-	$tabIdx == $state(closeIdx)} {
+	$tabIdx == $stateArr(closeIdx)} {
 	$nb state pressed
     } else {
-	$nb state {!pressed !alternate}
+	variable hover
+	$nb state [list !pressed !$hover]
     }
 
-    if {[set sourceIdx $state(sourceIdx)] < 0} {
+    if {[set sourceIdx $stateArr(sourceIdx)] < 0} {
 	return ""
     }
 
-    if {$state(orient) eq "h"} {
-	set y $state(y)
+    if {$stateArr(orient) eq "h"} {
+	set y $stateArr(y)
     } else {
-	set x $state(x)
+	set x $stateArr(x)
     }
 
     if {[set snb [containingSnb $nb]] ne ""} {
@@ -1056,10 +1065,10 @@ proc scrollutil::snb::onB1Motion {nb x y} {
     }
 
     if {$tabIdx < 0 || $tabIdx == $sourceIdx} {
-	$nb configure -cursor $state(cursor)
-	set state(targetIdx) ""
+	$nb configure -cursor $stateArr(cursor)
+	set stateArr(targetIdx) ""
     } else {
-	if {$state(orient) eq "h"} {
+	if {$stateArr(orient) eq "h"} {
 	    if {$tabIdx < $sourceIdx} {
 		$nb configure -cursor sb_left_arrow
 	    } else {
@@ -1072,7 +1081,7 @@ proc scrollutil::snb::onB1Motion {nb x y} {
 		$nb configure -cursor sb_down_arrow
 	    }
 	}
-	set state(targetIdx) $tabIdx
+	set stateArr(targetIdx) $tabIdx
     }
 }
 
@@ -1080,15 +1089,16 @@ proc scrollutil::snb::onB1Motion {nb x y} {
 # scrollutil::snb::onBtnRelease1
 #------------------------------------------------------------------------------
 proc scrollutil::snb::onBtnRelease1 {nb x y} {
-    variable state
-    $nb state !pressed
+    variable hover
+    $nb state [list !pressed !$hover]
 
-    variable userDataSupported
     set snb [containingSnb $nb]
     set w [expr {$snb eq "" ? $nb : $snb}]
 
+    variable stateArr
+    variable userDataSupported
     if {[$nb identify element $x $y] eq "closetab" &&
-	[set tabIdx [$nb index @$x,$y]] == $state(closeIdx)} {
+	[set tabIdx [$nb index @$x,$y]] == $stateArr(closeIdx)} {
 	set widget [lindex [$nb tabs] $tabIdx]
 	::$w forget $tabIdx
 
@@ -1096,47 +1106,47 @@ proc scrollutil::snb::onBtnRelease1 {nb x y} {
 	    event generate $w <<NotebookTabClosed>> -data $widget
 	}
 
-	set state(closeIdx) ""
+	set stateArr(closeIdx) ""
 	return ""
     }
 
-    set state(closeIdx) ""
+    set stateArr(closeIdx) ""
 
-    if {$state(targetIdx) >= 0} {
+    if {$stateArr(targetIdx) >= 0} {
 	#
 	# Move the tab $sourceIdx of $w to the position $targetIdx
 	#
-	set sourceIdx $state(sourceIdx)
-	set targetIdx $state(targetIdx)
+	set sourceIdx $stateArr(sourceIdx)
+	set targetIdx $stateArr(targetIdx)
 	set widget [lindex [$nb tabs] $sourceIdx]
 	::$w insert $targetIdx $widget
-	$nb configure -cursor $state(cursor)
-	focus $state(focus)
+	$nb configure -cursor $stateArr(cursor)
+	focus $stateArr(focus)
 
 	if {$userDataSupported} {
 	    event generate $w <<NotebookTabMoved>> \
 		  -data [list $widget $targetIdx]
 	}
 
-	set state(targetIdx) ""
+	set stateArr(targetIdx) ""
     }
 
-    set state(sourceIdx) ""
+    set stateArr(sourceIdx) ""
 }
 
 #------------------------------------------------------------------------------
 # scrollutil::snb::onEscape
 #------------------------------------------------------------------------------
 proc scrollutil::snb::onEscape nb {
-    variable state
-    if {$state(targetIdx) >= 0} {
-	$nb configure -cursor $state(cursor)
-	focus $state(focus)
+    variable stateArr
+    if {$stateArr(targetIdx) >= 0} {
+	$nb configure -cursor $stateArr(cursor)
+	focus $stateArr(focus)
 
-	set state(targetIdx) ""
+	set stateArr(targetIdx) ""
     }
 
-    set state(sourceIdx) ""
+    set stateArr(sourceIdx) ""
 }
 
 #------------------------------------------------------------------------------
@@ -1297,8 +1307,8 @@ proc scrollutil::snb::activateTab win {
     #
     # DO NOT replace the three lines below with "::$win select $tabIdx",
     # because that would in addition perform "$data(nb) select $tabIdx",
-    # which should not be done before invoking ::scrollutil::ActivateTab
-    # (see the first two lines of that library procedure for the reason)
+    # which should not be done before invoking ActivateTab (see the first
+    # two lines of the body of that library procedure for the reason)
     #
     seeSubCmd $win $tabIdx
     foreach {first last} [$win.sf xview] {}
