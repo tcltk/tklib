@@ -1,3 +1,7 @@
+2021-05-28 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Tablelist 6.14.
+
 2021-05-15 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/utils/scaleutil.tcl: Removed some holdovers from the previous
