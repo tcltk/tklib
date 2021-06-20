@@ -17,7 +17,7 @@ package require Tcl 8.5
 package require Tk 8.5
 
 namespace eval chatwidget {
-    variable version 1.1.2
+    variable version 1.1.3
 
     namespace export chatwidget
 
@@ -285,7 +285,8 @@ proc chatwidget::Name {self cmd args} {
             }
             set nick [lindex $args 0]
             if {[set ndx [lsearch -exact -index 0 $state(names) $nick]] == -1} {
-                array set opts {-group {} -colour black}
+                set fg [option get $state(chat_widget) foreground Foreground]
+                array set opts [list -group {} -color $fg]
                 array set opts [lrange $args 1 end]
                 lappend state(names) [linsert [array get opts] 0 $nick]
             } else {
@@ -521,6 +522,8 @@ proc chatwidget::Create {self} {
     # Create the entry widget
     set entry [ttk::frame $outer.entry -style ChatwidgetFrame]
     text $entry.text -borderwidth 0 -relief flat -font ChatwidgetFont
+    $entry.text configure -insertbackground [option get $self foreground Foreground]
+
     ttk::scrollbar $entry.vs -command [list $entry.text yview]
     $entry.text configure -height 1 \
         -yscrollcommand [list [namespace origin scroll_set] $entry.vs $outer 0]
@@ -553,8 +556,10 @@ proc chatwidget::Create {self} {
         }
     }
 
-    $names.text tag configure SUBTITLE \
-        -background grey80 -font ChatwidgetBoldFont
+    # Use inverted colors for the subtitles.
+    $names.text tag configure SUBTITLE -font ChatwidgetBoldFont \
+        -foreground [option get $names.text background Background] \
+        -background [option get $names.text foreground Foreground]
     $chat tag configure NICK        -font ChatwidgetBoldFont
     $chat tag configure TYPE-system -font ChatwidgetItalicFont
     $chat tag configure URL         -underline 1
@@ -714,13 +719,14 @@ proc chatwidget::NickcompleteCleanup {self} {
 # Update the widget chatstate (one of active, composing, paused, inactive, gone)
 # These are from XEP-0085 but seem likey useful in many chat-type environments.
 # Note: this state is _per-widget_. This is not the same as [tk inactive]
-# active = got focus and recently active
+#   active = got focus and recently active
 #   composing = typing
 #   paused = 5 secs non typing
-# inactive = no activity for 30 seconds
-# gone = no activity for 2 minutes or closed the window
+#   inactive = no activity for 30 seconds
+#   gone = no activity for 2 minutes or closed the window
 proc chatwidget::Chatstate {self what} {
     upvar #0 [namespace current]::$self state
+    if {![info exists state]} { return }
     after cancel $state(chatstatetimer)
     switch -exact -- $what {
         composing - active {

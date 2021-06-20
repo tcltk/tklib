@@ -1,1 +1,1 @@
-package ifneeded chatwidget 1.1.2 [list source [file join $dir chatwidget.tcl]]
+package ifneeded chatwidget 1.1.3 [list source [file join $dir chatwidget.tcl]]
