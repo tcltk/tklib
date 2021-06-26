@@ -285,7 +285,7 @@ proc chatwidget::Name {self cmd args} {
             }
             set nick [lindex $args 0]
             if {[set ndx [lsearch -exact -index 0 $state(names) $nick]] == -1} {
-                set fg [option get $state(chat_widget) foreground Foreground]
+                set fg [$state(chat_widget) cget -foreground]
                 array set opts [list -group {} -color $fg]
                 array set opts [lrange $args 1 end]
                 lappend state(names) [linsert [array get opts] 0 $nick]
@@ -522,7 +522,7 @@ proc chatwidget::Create {self} {
     # Create the entry widget
     set entry [ttk::frame $outer.entry -style ChatwidgetFrame]
     text $entry.text -borderwidth 0 -relief flat -font ChatwidgetFont
-    $entry.text configure -insertbackground [option get $self foreground Foreground]
+    $entry.text configure -insertbackground [$entry.text cget -foreground]
 
     ttk::scrollbar $entry.vs -command [list $entry.text yview]
     $entry.text configure -height 1 \
@@ -558,8 +558,8 @@ proc chatwidget::Create {self} {
 
     # Use inverted colors for the subtitles.
     $names.text tag configure SUBTITLE -font ChatwidgetBoldFont \
-        -foreground [option get $names.text background Background] \
-        -background [option get $names.text foreground Foreground]
+        -foreground [$names.text cget -background] \
+        -background [$names.text cget -foreground]
     $chat tag configure NICK        -font ChatwidgetBoldFont
     $chat tag configure TYPE-system -font ChatwidgetItalicFont
     $chat tag configure URL         -underline 1
