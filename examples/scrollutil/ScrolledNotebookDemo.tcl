@@ -18,28 +18,34 @@ set pct $scrollutil::scalingpct
 image create photo fileImg -file [file join $dir file$pct.gif]
 
 #
-# Create a scrollednotebook widget having closable tabs
-# and populate it with panes that contain scrolled text
-# widgets displaying the contents of the Ttk library files
+# Create a scrollednotebook widget having closable (and, per default,
+# movable) tabs and populate it with panes that contain scrolled
+# text widgets displaying the contents of the Ttk library files
 #
 set f  [ttk::frame .f]
-set nb [scrollutil::scrollednotebook $f.nb -style My.TNotebook]
+set nb [scrollutil::scrollednotebook $f.nb -style My.TNotebook \
+	-forgetcommand condCopySel -leavecommand condCopySel]
+set panePadding [expr {$ttk::currentTheme eq "aqua" ? 0 : "7p"}]
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 foreach fileName [lsort [glob *.tcl]] {
     set baseName [string range $fileName 0 end-4]
     set sa [scrollutil::scrollarea $nb.sa_$baseName -lockinterval 10]
-    set txt [text $sa.txt -font TkFixedFont -wrap none]
+    if {$ttk::currentTheme eq "vista"} {
+	$sa configure -relief solid
+    }
+    set txt [text $sa.txt -font TkFixedFont -takefocus 1 -wrap none]
     catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5 and later
-    scrollutil::addMouseWheelSupport $txt      ;# adds old-school wheel support
+    scrollutil::addMouseWheelSupport $txt	;# old-school wheel support
     $sa setwidget $txt
 
     set chan [open $fileName]
     $txt insert end [read -nonewline $chan]
     close $chan
     $txt configure -state disabled
+    bind $txt <Button-1> { focus %W }	;# for Tk versions < 8.6.11/8.7a4
 
-    set padding [expr {$ttk::currentTheme eq "aqua" ? 0 : "7p"}]
-    $nb add $sa -text $fileName -image fileImg -compound left -padding $padding
+    $nb add $sa -text $fileName -image fileImg -compound left \
+		-padding $panePadding
 }
 
 #
@@ -52,6 +58,22 @@ set width [expr {[winfo reqwidth $sa] + [winfo reqwidth $sa.vsb]}]
 incr width [expr {$ttk::currentTheme eq "aqua" ?
 	          2*27 : 2*[winfo pixels . 7p] + 4}]
 $nb configure -width $width
+
+proc condCopySel {nb widget} {
+    set txt $widget.txt
+    if {[$txt tag nextrange sel 1.0 end] eq ""} {
+	return 1
+    }
+
+    set btn [tk_messageBox -title "Copy Selection?" -icon question \
+	     -message "Do you want to copy the selection to the clipboard?" \
+	     -type yesnocancel]
+    switch $btn {
+	yes	{ tk_textCopy $txt; return 1 }
+	no	{ return 1 }
+	cancel	{ return 0 }
+    }
+}
 
 #
 # Create a binding for moving and closing the tabs interactively
