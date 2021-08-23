@@ -20,7 +20,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.4
+    variable version	1.5
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -119,7 +119,7 @@ proc scaleutil::scalingPercentage winSys {
     } elseif {$pct < 200 + 12.5} {
 	set pct 200
     } else {
-	set pct [expr {int($pct + 0.5)}]		;# just temporarily
+	set pct [expr {int($pct + 0.5)}]	;# temporarily (see return)
     }
 
     if {$onX11 && $pct > 100} {
@@ -371,6 +371,18 @@ proc scaleutil::patchWinTheme {theme pct} {
 	# of the desired element height and width, respectively.
 	#
 	array set arr {125 8  150 10  175 10  200 13}
+	if {$pct > 200} {
+	    array set arr {225 13  250 16  300 20  350 20}
+	    if {$pct < 225 + 13} {
+		set pct 225
+	    } elseif {$pct < 250 + 25} {
+		set pct 250 
+	    } elseif {$pct < 300 + 25} {
+		set pct 300 
+	    } else {
+		set pct 350 
+	    }
+	}
 	set height $arr($pct)
 	set width [expr {$height + 4}]
 	ttk::style element create Checkbutton.vsapi_indicator vsapi BUTTON 3 {
