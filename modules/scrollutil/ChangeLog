@@ -1,3 +1,41 @@
+2021-08-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.11; corrected the
+	* COPYRIGHT.txt: required tile version from 0.6 to 0.8.
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added the "-setfocus" scrollarea configuration option;
+	  added the "-forgetcommand", "-leavecommand", and "-movabletabs"
+	  scrollednotebook configuration options; added the plainnotebook and
+	  pagesman widgets.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl:  Fixed a bug related to the supported
+	* scripts/utils/scaleutil.tcl: scaling percentages on Windows.
+
+	* doc/PlainNotebookDemo.png:  Added screenshots.
+	* doc/PagesManDemo.png:
+	* doc/PagesManDemoImages.png:
+
+	* doc/ScrolledNotebookDemo.png: Updated screenshot.
+
+	* ../../examples/scrollutil/PlainNotebookDemo.tcl: Added demo scripts.
+	* ../../examples/scrollutil/PagesManDemo.tcl:
+
+	* ../../examples/scrollutil/ScrolledNotebookDemo.tcl: Now makes use of
+	  the "-forgetcommand" and "-leavecommand" scrollednotebook options.
+
+	* ../../examples/scrollutil/styleUtil.tcl:       Many improvements.
+	* ../../examples/scrollutil/TtkNotebookDemo.tcl:
+
+	* ../../examples/scrollutil/file*.gif: Updated image files.
+
+	* ../../examples/scrollutil/folder*.gif: Added image files.
+
 2021-05-28  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 1.10.
