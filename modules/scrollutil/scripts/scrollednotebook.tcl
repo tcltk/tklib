@@ -25,10 +25,10 @@ namespace eval scrollutil::snb {
     #
     # The array configSpecs is used to handle configuration options.  The names
     # of its elements are the configuration options for the Scrollednotebook
-    # class.  The value of an array element is either an alias name or a list
-    # containing the database name and class as well as an indicator specifying
-    # the widget to which the option applies: f stands for the outer frame and
-    # n for the notebook widget.
+    # class.  The value of an array element is a list containing the database
+    # name and class as well as an indicator specifying the widget to which the
+    # option applies: f stands for the frame, n for the notebook child, and w
+    # for the scrollednotebook widget itself.
     #
     #	Command-Line Name	{Database Name	Database Class	W}
     #	----------------------------------------------------------
@@ -36,7 +36,10 @@ namespace eval scrollutil::snb {
     variable configSpecs
     array set configSpecs {
 	-cursor			{cursor		Cursor		f}
+	-forgetcommand		{forgetCommand	ForgetCommand	w}
 	-height			{height		Height		f}
+	-leavecommand		{leaveCommand	LeaveCommand	w}
+	-movabletabs		{movableTabs	MovableTabs	w}
 	-padding		{padding	Padding		n}
 	-style			{style		Style		n}
 	-takefocus		{takeFocus	TakeFocus	f}
@@ -47,7 +50,10 @@ namespace eval scrollutil::snb {
     # Extend the elements of the array configSpecs
     #
     lappend configSpecs(-cursor)	""
+    lappend configSpecs(-forgetcommand)	""
     lappend configSpecs(-height)	0
+    lappend configSpecs(-leavecommand)	""
+    lappend configSpecs(-movabletabs)	1
     lappend configSpecs(-padding)	""
     lappend configSpecs(-style)		"TNotebook"
     lappend configSpecs(-takefocus)	"ttk::takefocus"
@@ -72,113 +78,20 @@ namespace eval scrollutil::snb {
     # Array variable used in binding scripts for the class TNotebook:
     #
     variable stateArr
-    set stateArr(closeIdx)  ""
-    set stateArr(sourceIdx) ""
-    set stateArr(targetIdx) ""
+    array set stateArr {
+	closeIdx  ""
+	sourceIdx ""
+	targetIdx ""
+    }
 
     variable userDataSupported [expr {$::tk_version >= 8.5 &&
-	     [package vcompare $::tk_patchLevel "8.5a2"] >= 0}]
+	[package vcompare $::tk_patchLevel "8.5a2"] >= 0}]
 
     #
     # Create the closetab element
     #
     proc createClosetabElement {} {
-	switch $::scrollutil::scalingpct {
-	    100 {
-		set closetabData "
-#define close100_width 16
-#define close100_height 15
-static unsigned char close100_bits[] = {
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x0c, 0x60, 0x06,
-   0xc0, 0x03, 0x80, 0x01, 0xc0, 0x03, 0x60, 0x06, 0x30, 0x0c, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
-	    }
-
-	    125 {
-		set closetabData "
-#define close125_width 20
-#define close125_height 19
-static unsigned char close125_bits[] = {
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x60, 0x60, 0x00, 0xc0, 0x30, 0x00, 0x80, 0x19, 0x00,
-   0x00, 0x0f, 0x00, 0x00, 0x06, 0x00, 0x00, 0x0f, 0x00, 0x80, 0x19, 0x00,
-   0xc0, 0x30, 0x00, 0x60, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
-	    }
-
-	    150 {
-		set closetabData "
-#define close150_width 24
-#define close150_height 23
-static unsigned char close150_bits[] = {
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x03, 0x80, 0x81, 0x01,
-   0x00, 0xc3, 0x00, 0x00, 0x66, 0x00, 0x00, 0x3c, 0x00, 0x00, 0x18, 0x00,
-   0x00, 0x3c, 0x00, 0x00, 0x66, 0x00, 0x00, 0xc3, 0x00, 0x80, 0x81, 0x01,
-   0xc0, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
-	    }
-
-	    175 {
-		set closetabData "
-#define close175_width 28
-#define close175_height 28
-static unsigned char close175_bits[] = {
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x80, 0x01, 0x18, 0x00, 0x80, 0x03, 0x1c, 0x00,
-   0x00, 0x07, 0x0e, 0x00, 0x00, 0x0e, 0x07, 0x00, 0x00, 0x9c, 0x03, 0x00,
-   0x00, 0xf8, 0x01, 0x00, 0x00, 0xf0, 0x00, 0x00, 0x00, 0xf0, 0x00, 0x00,
-   0x00, 0xf8, 0x01, 0x00, 0x00, 0x9c, 0x03, 0x00, 0x00, 0x0e, 0x07, 0x00,
-   0x00, 0x07, 0x0e, 0x00, 0x80, 0x03, 0x1c, 0x00, 0x80, 0x01, 0x18, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00};
-"
-	    }
-
-	    200 {
-		set closetabData "
-#define close200_2_width 32
-#define close200_2_height 32
-static unsigned char close200_2_bits[] = {
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xc0, 0x00,
-   0x00, 0x07, 0xe0, 0x00, 0x00, 0x0e, 0x70, 0x00, 0x00, 0x1c, 0x38, 0x00,
-   0x00, 0x38, 0x1c, 0x00, 0x00, 0x70, 0x0e, 0x00, 0x00, 0xe0, 0x07, 0x00,
-   0x00, 0xc0, 0x03, 0x00, 0x00, 0xc0, 0x03, 0x00, 0x00, 0xe0, 0x07, 0x00,
-   0x00, 0x70, 0x0e, 0x00, 0x00, 0x38, 0x1c, 0x00, 0x00, 0x1c, 0x38, 0x00,
-   0x00, 0x0e, 0x70, 0x00, 0x00, 0x07, 0xe0, 0x00, 0x00, 0x03, 0xc0, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
-	    }
-	}
-
-	if {[set normalFg [ttk::style lookup . -foreground]] eq ""} {
-	    set normalFg black
-	}
-
-	array set arr [ttk::style map . -foreground]
-	if {[info exists arr(disabled)]} {
-	    set disabledFg $arr(disabled)
-	} else {
-	    set disabledFg $normalFg
-	}
-
-	image create bitmap scrollutil_closetabImg \
-	    -data $closetabData -foreground $normalFg
-	image create bitmap scrollutil_closetabDisabledImg \
-	    -data $closetabData -foreground $disabledFg
-	image create bitmap scrollutil_closetabHoverImg \
-	    -data $closetabData -foreground #ffffff -background #ff6666
-	image create bitmap scrollutil_closetabPressedImg \
-	    -data $closetabData -foreground #ffffff -background #e60000
+	::scrollutil::createCloseImages 
 
 	#
 	# The "hover" state is not supported by
@@ -194,16 +107,24 @@ static unsigned char close200_2_bits[] = {
 	# The "readonly" state below is used if the closetab element's state for
 	# the active tab was set to "disabled" via ::scrollutil::closetabstate.
 	#
-	set width  [expr {[image width scrollutil_closetabImg] + 4}]
+	set width  [expr {[image width scrollutil_closeImg] +
+			  [winfo pixels . 3p]}]
 	set sticky [expr {[tk windowingsystem] eq "aqua" ? "w" : "e"}]
-	ttk::style element create closetab image [list scrollutil_closetabImg \
-	    [list active pressed]	    scrollutil_closetabPressedImg \
-	    [list active $hover !disabled]  scrollutil_closetabHoverImg \
-	    [list active readonly]	    scrollutil_closetabDisabledImg \
-	    [list disabled]		    scrollutil_closetabDisabledImg] \
-	    -width $width -sticky $sticky
+	ttk::style theme settings default {
+	    ttk::style element create closetab image [list \
+		scrollutil_closeImg \
+		[list active pressed]	       scrollutil_closePressedImg \
+		[list active $hover !disabled] scrollutil_closeHoverImg \
+		[list active readonly]	       scrollutil_closeDisabledImg \
+		[list disabled]		       scrollutil_closeDisabledImg] \
+		-width $width -sticky $sticky
+	}
     }
-    createClosetabElement 
+    ttk::style theme settings default {
+	if {[lsearch -exact [ttk::style element names] "closetab"] < 0} {
+	    createClosetabElement 
+	}
+    }
 }
 
 #
@@ -215,8 +136,8 @@ static unsigned char close200_2_bits[] = {
 # scrollutil::snb::createBindings
 #
 # Creates the default bindings for the binding tags Scrollednotebook and
-# ScrollutilMain, and extends the default bindings for TNotebook.  In addition,
-# creates a <Destroy> binding for the binding tag DisabledClosetab.
+# ScrollednotebookMain, and extends the default bindings for TNotebook.  In
+# addition, creates a <Destroy> binding for the binding tag DisabledClosetab.
 #------------------------------------------------------------------------------
 proc scrollutil::snb::createBindings {} {
     bind Scrollednotebook <KeyPress> continue
@@ -236,17 +157,19 @@ proc scrollutil::snb::createBindings {} {
 	scrollutil::snb::onThemeChanged %W
     }
 
-    bindtags . [linsert [bindtags .] 1 ScrollutilMain]
-    bind ScrollutilMain <<ThemeChanged>> { scrollutil::snb::onThemeChanged %W }
+    bindtags . [linsert [bindtags .] 1 ScrollednotebookMain]
+    bind ScrollednotebookMain <<ThemeChanged>> {
+	scrollutil::snb::onThemeChanged %W
+    }
 
     #
     # Add support for moving and closing the ttk::notebook tabs with the mouse
     #
-    bind TNotebook <Motion>	     { scrollutil::snb::onMotion      %W %x %y }
-    bind TNotebook <Button-1>	     { scrollutil::snb::onButton1     %W %x %y }
-    bind TNotebook <B1-Motion>	     { scrollutil::snb::onB1Motion    %W %x %y }
-    bind TNotebook <ButtonRelease-1> { scrollutil::snb::onBtnRelease1 %W %x %y }
-    bind TNotebook <Escape>	     { scrollutil::snb::onEscape %W }
+    bind TNotebook <Motion>	     { scrollutil::snb::onMotion     %W %x %y }
+    bind TNotebook <Button-1>	     { scrollutil::snb::onButton1    %W %x %y }
+    bind TNotebook <B1-Motion>	     { scrollutil::snb::onB1Motion   %W %x %y }
+    bind TNotebook <ButtonRelease-1> { scrollutil::snb::onButtonRel1 %W %x %y }
+    bind TNotebook <Escape>	     { scrollutil::snb::onEscape     %W }
 
     #
     # Define the virtual event <<Button3>> and create a binding for it
@@ -265,7 +188,7 @@ proc scrollutil::snb::createBindings {} {
     # wheel (TIP 591).  Use our own bindMouseWheel procedure rather than
     # ttk::bindMouseWheel, which was not present in tile before Dec. 2008.
     #
-    bindMouseWheel TNotebook \
+    ::scrollutil::bindMouseWheel TNotebook \
 	{%W instate disabled continue; ttk::notebook::CycleTab %W}
 
     bind DisabledClosetab <Destroy> {
@@ -346,8 +269,9 @@ proc scrollutil::scrollednotebook args {
     set nb [ttk::notebook $cf.nb -class TNotebook -height 0 -width 0]
     pack $nb -expand 1 -fill both
 
-    set data(sf) $sf
-    set data(nb) $nb
+    set data(sf)	  $sf
+    set data(nb)	  $nb
+    set data(currentPage) ""
 
     #
     # Configure the widget according to the command-line
@@ -368,7 +292,7 @@ proc scrollutil::scrollednotebook args {
     rename ::$win snb::$win
     interp alias {} ::$win {} scrollutil::snb::scrollednotebookWidgetCmd $win
 
-    menu $win._m_e_n_u_ -tearoff no
+    menu $win._m_e_n_u_ -tearoff 0
 
     #
     # Extend the library procedure ::ttk::notebook::ActivateTab
@@ -405,6 +329,9 @@ proc scrollutil::addclosetab nbStyle {
 	return 1
     }
 
+    set oldStr1 "Notebook.label -side top -sticky {}"		;# most themes
+    set oldStr2 "Notebook.label -sticky nswe"	;# "classic" and "aqua" themes
+
     if {[tk windowingsystem] eq "aqua"} {
 	set newStr "Notebook.closetab -side left -sticky {}\
 		    Notebook.label -side right -sticky {}"
@@ -413,20 +340,13 @@ proc scrollutil::addclosetab nbStyle {
 		    Notebook.closetab -side right -sticky {}"
     }
 
-    set oldStr "Notebook.label -side top -sticky {}"		;# most themes
-    if {[set first [string first $oldStr $tabLayout]] >= 0} {
-	set last [expr {$first + [string length $oldStr] - 1}]
-	ttk::style layout $tabStyle \
-	    [string replace $tabLayout $first $last $newStr]
-	return 1
-    }
-
-    set oldStr "Notebook.label -sticky nswe"	;# "classic" and "aqua" themes
-    if {[set first [string first $oldStr $tabLayout]] >= 0} {
-	set last [expr {$first + [string length $oldStr] - 1}]
-	ttk::style layout $tabStyle \
-	    [string replace $tabLayout $first $last $newStr]
-	return 1
+    foreach oldStr [list $oldStr1 $oldStr2] {
+	if {[set first [string first $oldStr $tabLayout]] >= 0} {
+	    set last [expr {$first + [string length $oldStr] - 1}]
+	    ttk::style layout $tabStyle \
+		[string replace $tabLayout $first $last $newStr]
+	    return 1
+	}
     }
 
     return 0
@@ -444,6 +364,11 @@ proc scrollutil::removeclosetab nbStyle {
 	return 1
     }
 
+    set oldStr1 "Notebook.label -side left -sticky {}\
+		 Notebook.closetab -side right -sticky {}"	;# on x11/win32
+    set oldStr2 "Notebook.closetab -side left -sticky {}\
+		 Notebook.label -side right -sticky {}"		;# on aqua
+
     set curTheme [mwutil::currentTheme]
     if {$curTheme eq "aqua" || $curTheme eq "classic"} {
 	set newStr "Notebook.label -sticky nswe"
@@ -451,22 +376,13 @@ proc scrollutil::removeclosetab nbStyle {
 	set newStr "Notebook.label -side top -sticky {}"
     }
 
-    set oldStr "Notebook.label -side left -sticky {}\
-		Notebook.closetab -side right -sticky {}"	;# on x11/win32
-    if {[set first [string first $oldStr $tabLayout]] >= 0} {
-	set last [expr {$first + [string length $oldStr] - 1}]
-	ttk::style layout $tabStyle \
-	    [string replace $tabLayout $first $last $newStr]
-	return 1
-    }
-
-    set oldStr "Notebook.closetab -side left -sticky {}\
-		Notebook.label -side right -sticky {}"		;# on aqua
-    if {[set first [string first $oldStr $tabLayout]] >= 0} {
-	set last [expr {$first + [string length $oldStr] - 1}]
-	ttk::style layout $tabStyle \
-	    [string replace $tabLayout $first $last $newStr]
-	return 1
+    foreach oldStr [list $oldStr1 $oldStr2] {
+	if {[set first [string first $oldStr $tabLayout]] >= 0} {
+	    set last [expr {$first + [string length $oldStr] - 1}]
+	    ttk::style layout $tabStyle \
+		[string replace $tabLayout $first $last $newStr]
+	    return 1
+	}
     }
 
     return 0
@@ -552,7 +468,7 @@ proc scrollutil::snb::doConfig {win opt val} {
     switch [lindex $configSpecs($opt) 2] {
 	f {
 	    #
-	    # Apply the value to the outer frame and save the
+	    # Apply the value to the frame and save the
 	    # properly formatted value of val in data($opt)
 	    #
 	    $win configure $opt $val
@@ -607,6 +523,18 @@ proc scrollutil::snb::doConfig {win opt val} {
 		}
 	    }
 	}
+
+	w {
+	    switch -- $opt {
+		-forgetcommand -
+		-leavecommand {
+		    set data($opt) $val
+		}
+		-movabletabs {
+		    set data($opt) [expr {$val ? 1 : 0}]
+		}
+	    }
+	}
     }
 }
 
@@ -641,13 +569,17 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 
     variable cmdOpts
     set cmd [mwutil::fullOpt "command" [lindex $args 0] $cmdOpts]
+    set argList [lrange $args 1 end]
 
     switch $cmd {
 	add {
 	    set nb $data(nb)
 	    set widget [lindex $args 1]
 	    set isNew [expr {[lsearch -exact [$nb tabs] $widget] < 0}]
-	    eval [list $nb $cmd] [lrange $args 1 end]
+	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
+		return -code error $result
+	    }
+
 	    if {$isNew || [lsearch -glob $args "-p*"] >= 2} {
 		savePaddings $win $widget
 		updateNbWidth $win
@@ -673,42 +605,60 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 		mwutil::wrongNumArgs "$win $cmd tab ?normal|disabled?"
 	    }
 
-	    return [eval [list ::scrollutil::closetabstate $win] \
-		    [lrange $args 1 end]]
+	    set code [catch {
+		eval [list ::scrollutil::closetabstate $win] $argList
+	    } result]
+	    return -code $code $result
 	}
 
 	configure {
 	    variable configSpecs
 	    return [mwutil::configureSubCmd $win configSpecs \
-		    scrollutil::snb::doConfig scrollutil::snb::doCget \
-		    [lrange $args 1 end]]
+		    scrollutil::snb::doConfig scrollutil::snb::doCget $argList]
 	}
 
 	forget {
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win $cmd tab"
+	    }
+
 	    set nb $data(nb)
 	    if {[catch {$nb index [lindex $args 1]} tabIdx] == 0 &&
 		$tabIdx >= 0 && $tabIdx < [$nb index end]} {
 		set widget [lindex [$nb tabs] $tabIdx]
+		if {[set forgetCmd $data(-forgetcommand)] ne "" &&
+		    ![uplevel #0 $forgetCmd [list $win $widget]]} {
+		    return 0
+		}
 	    }
-	    eval [list $nb $cmd] [lrange $args 1 end]
+
+	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
+		return -code error $result
+	    }
+
 	    forgetPaddings $win $widget
 	    updateNbWidth $win
-	    return ""
+	    return 1
 	}
 
 	hide -
 	identify -
 	index -
-	instate -
 	state -
 	style -
-	tabs { return [eval [list $data(nb) $cmd] [lrange $args 1 end]] }
+	tabs {
+	    set code [catch {eval [list $data(nb) $cmd] $argList} result]
+	    return -code $code $result
+	}
 
 	insert {
 	    set nb $data(nb)
 	    set widget [lindex $args 2]
 	    set isNew [expr {[lsearch -exact [$nb tabs] $widget] < 0}]
-	    eval [list $nb $cmd] [lrange $args 1 end]
+	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
+		return -code error $result
+	    }
+
 	    if {$isNew || [lsearch -glob $args "-p*"] >= 3} {
 		savePaddings $win $widget
 		updateNbWidth $win
@@ -719,7 +669,22 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    return ""
 	}
 
-	see { return [seeSubCmd $win [lrange $args 1 end]] }
+	instate {
+	    if {$argCount < 2 || $argCount > 3} {
+		mwutil::wrongNumArgs "$win $cmd stateSpec ?script?"
+	    }
+
+	    set stateSpec [lindex $args 1]
+	    if {$argCount == 2} {
+		return [$nb instate $stateSpec]
+	    } elseif {[$nb instate $stateSpec]} {
+		return -code [catch {uplevel 1 [lindex $args 2]}] ""
+	    } else {
+		return ""
+	    }
+	}
+
+	see { return [seeSubCmd $win $argList] }
 
 	select {
 	    switch $argCount {
@@ -745,7 +710,10 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 
 	tab {
 	    set nb $data(nb)
-	    set result [eval [list $nb $cmd] [lrange $args 1 end]]
+	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
+		return -code error $result
+	    }
+
 	    set tabIdx [$nb index [lindex $args 1]]
 	    if {$argCount == 2} {
 		set idx [expr {[lsearch -exact $result "-padding"] + 1}]
@@ -910,7 +878,9 @@ proc scrollutil::snb::onScrollednotebookMap win {
 
     updateNbWidth $win
 
+    onNbTabChanged $nb
     bind $nb <<NotebookTabChanged>>	{ scrollutil::snb::onNbTabChanged %W }
+
     bind $nb <Configure>		{ scrollutil::snb::onNbConfigure  %W }
     bind $sf <Configure>		{ scrollutil::snb::onSfConfigure  %W }
 }
@@ -920,19 +890,9 @@ proc scrollutil::snb::onScrollednotebookMap win {
 #------------------------------------------------------------------------------
 proc scrollutil::snb::onThemeChanged w {
     if {$w eq "."} {
-	if {[set normalFg [ttk::style lookup . -foreground]] eq ""} {
-	    set normalFg black
-	}
-
-	array set arr [ttk::style map . -foreground]
-	if {[info exists arr(disabled)]} {
-	    set disabledFg $arr(disabled)
-	} else {
-	    set disabledFg $normalFg
-	}
-
-	scrollutil_closetabImg         configure -foreground $normalFg
-	scrollutil_closetabDisabledImg configure -foreground $disabledFg
+	::scrollutil::getForegroundColors normalFg disabledFg
+	scrollutil_closeImg         configure -foreground $normalFg
+	scrollutil_closeDisabledImg configure -foreground $disabledFg
     } else {
 	updateNbWidth $w
     }
@@ -942,7 +902,51 @@ proc scrollutil::snb::onThemeChanged w {
 # scrollutil::snb::onNbTabChanged
 #------------------------------------------------------------------------------
 proc scrollutil::snb::onNbTabChanged nb {
-    event generate [containingSnb $nb] <<NotebookTabChanged>>
+    set win [containingSnb $nb]
+    upvar ::scrollutil::ns${win}::data data
+
+    #
+    # Invoke the command specified as the value
+    # of the -leavecommand option if appropriate
+    #
+    set widget [$nb select]
+    if {$widget ne "" && $widget ne $data(currentPage) &&
+	[lsearch -exact [$nb tabs] $data(currentPage)] >= 0 &&
+	[$nb tab $data(currentPage) -state] eq "normal" &&
+	[set cmd $data(-leavecommand)] ne ""} {
+	#
+	# Deactivate the mouse wheel bindings for the notebook while
+	# executing the command, which might pop up a message box
+	#
+	::scrollutil::bindMouseWheel $nb break
+	set result [uplevel #0 $cmd [list $win $data(currentPage)]]
+	::scrollutil::bindMouseWheel $nb ""
+
+	if {!$result} {
+	    #
+	    # Restore the selection to $data(currentPage)
+	    #
+	    bind $nb <<NotebookTabChanged>> {}
+	    $nb select $data(currentPage)
+	    seeSubCmd $win $data(currentPage)
+	    after 1 [list scrollutil::snb::restoreTabChangedBinding $nb]
+	    return ""
+	}
+    }
+
+    set data(currentPage) $widget
+    event generate $win <<NotebookTabChanged>>
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::snb::restoreTabChangedBinding
+#------------------------------------------------------------------------------
+proc scrollutil::snb::restoreTabChangedBinding nb {
+    if {![winfo exists $nb] || [winfo class $nb] ne "TNotebook"} {
+	return ""
+    }
+
+    bind $nb <<NotebookTabChanged>> { scrollutil::snb::onNbTabChanged %W }
 }
 
 #------------------------------------------------------------------------------
@@ -966,7 +970,7 @@ proc scrollutil::snb::onSfConfigure sf {
 #------------------------------------------------------------------------------
 proc scrollutil::snb::onMotion {nb x y} {
     variable hover
-    if {[$nb identify element $x $y] eq "closetab"} {
+    if {[$nb identify $x $y] eq "closetab"} {
 	if {[::scrollutil::closetabstate $nb @$x,$y] eq "normal"} {
 	    $nb state $hover
 	} else {
@@ -986,21 +990,31 @@ proc scrollutil::snb::onButton1 {nb x y} {
     }
 
     variable stateArr
-    if {[$nb identify element $x $y] eq "closetab"} {
+    if {[$nb identify $x $y] eq "closetab"} {
 	if {[$nb tab $tabIdx -state] eq "normal" &&
 	    [::scrollutil::closetabstate $nb $tabIdx] eq "normal"} {
 	    $nb state pressed
 	    set stateArr(closeIdx) $tabIdx
+
+	    #
+	    # The following trick activates the closetab element's
+	    # dark red background color corresponding to the
+	    # "pressed" state, which is necessary on some desktops
+	    # if the notebook's toplevel is not the topmost one:
+	    #
+	    event generate $nb <B1-Motion> -x $x -y $y
 	}
 	return ""
     }
 
     ::ttk::notebook::ActivateTab $nb $tabIdx
 
+    if {[set snb [containingSnb $nb]] ne "" && ![::$snb cget -movabletabs]} {
+	return ""
+    }
+
     set stateArr(sourceIdx) $tabIdx
     set stateArr(cursor) [$nb cget -cursor]
-    set stateArr(focus) [focus -displayof $nb]
-    focus $nb
 
     if {[set style [$nb cget -style]] eq ""} {
 	set style TNotebook
@@ -1042,8 +1056,7 @@ proc scrollutil::snb::onB1Motion {nb x y} {
     variable stateArr
     set tabIdx [$nb index @$x,$y]
 
-    if {[$nb identify element $x $y] eq "closetab" &&
-	$tabIdx == $stateArr(closeIdx)} {
+    if {[$nb identify $x $y] eq "closetab" && $tabIdx == $stateArr(closeIdx)} {
 	$nb state pressed
     } else {
 	variable hover
@@ -1086,9 +1099,9 @@ proc scrollutil::snb::onB1Motion {nb x y} {
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::snb::onBtnRelease1
+# scrollutil::snb::onButtonRel1
 #------------------------------------------------------------------------------
-proc scrollutil::snb::onBtnRelease1 {nb x y} {
+proc scrollutil::snb::onButtonRel1 {nb x y} {
     variable hover
     $nb state [list !pressed !$hover]
 
@@ -1097,12 +1110,16 @@ proc scrollutil::snb::onBtnRelease1 {nb x y} {
 
     variable stateArr
     variable userDataSupported
-    if {[$nb identify element $x $y] eq "closetab" &&
+    if {[$nb identify $x $y] eq "closetab" &&
 	[set tabIdx [$nb index @$x,$y]] == $stateArr(closeIdx)} {
 	set widget [lindex [$nb tabs] $tabIdx]
-	::$w forget $tabIdx
-
-	if {$userDataSupported} {
+	if {$snb eq ""} {
+	    $nb forget $tabIdx
+	    set closed 1
+	} else {
+	    set closed [::$snb forget $tabIdx]
+	}
+	if {$closed && $userDataSupported} {
 	    event generate $w <<NotebookTabClosed>> -data $widget
 	}
 
@@ -1121,7 +1138,6 @@ proc scrollutil::snb::onBtnRelease1 {nb x y} {
 	set widget [lindex [$nb tabs] $sourceIdx]
 	::$w insert $targetIdx $widget
 	$nb configure -cursor $stateArr(cursor)
-	focus $stateArr(focus)
 
 	if {$userDataSupported} {
 	    event generate $w <<NotebookTabMoved>> \
@@ -1141,7 +1157,6 @@ proc scrollutil::snb::onEscape nb {
     variable stateArr
     if {$stateArr(targetIdx) >= 0} {
 	$nb configure -cursor $stateArr(cursor)
-	focus $stateArr(focus)
 
 	set stateArr(targetIdx) ""
     }
@@ -1199,37 +1214,6 @@ proc scrollutil::snb::postMenu {menu rootX rootY} {
     catch {ttk::theme::[mwutil::currentTheme]::setMenuColors $menu}
 
     tk_popup $menu $rootX $rootY
-}
-
-#------------------------------------------------------------------------------
-# scrollutil::snb::bindMouseWheel
-#------------------------------------------------------------------------------
-proc scrollutil::snb::bindMouseWheel {bindTag cmd} {
-    set winSys [tk windowingsystem]
-    if {$::tk_version >= 8.7 &&
-	[package vcompare $::tk_patchLevel "8.7a4"] >= 0} {
-	#
-	# Uniform mouse wheel support
-	#
-	bind $bindTag <MouseWheel>	  "$cmd %D -120.0"
-	bind $bindTag <Option-MouseWheel> "$cmd %D -12.0"
-    } elseif {$winSys eq "aqua"} {
-	bind $bindTag <MouseWheel>	  "$cmd \[expr {-%D}\]"
-	bind $bindTag <Option-MouseWheel> "$cmd \[expr {-10 * %D}\]"
-    } else {
-	bind $bindTag <MouseWheel> \
-	    "$cmd \[expr {%D >= 0 ? -%D / 120 : (-%D + 119) / 120}\]"
-
-	if {$winSys eq "x11"} {
-	    bind $bindTag <Button-4>	  "$cmd -1"
-	    bind $bindTag <Button-5>	  "$cmd +1"
-
-	    if {$::tk_patchLevel eq "8.7a3"} {
-		bind $bindTag <Button-6>  "$cmd -1"
-		bind $bindTag <Button-7>  "$cmd +1"
-	    }
-	}
-    }
 }
 
 #

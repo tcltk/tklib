@@ -478,13 +478,15 @@ proc scrollutil::adaptWheelEventHandling args {
 	    return -code error "bad window path name \"$w\""
 	}
 
+	set class [winfo class $w]
 	set wTop [winfo toplevel $w]
-	if {[winfo class $w] eq "Tablelist"} {
+	if {$class eq "Tablelist"} {
 	    if {[package vcompare $::tablelist::version "6.4"] >= 0} {
 		$w configure -xmousewheelwindow $wTop -ymousewheelwindow $wTop
 	    }
 	} else {
-	    set tagList [bindtags $w]
+	    set w2 [expr {$class eq "Ctext" ? "$w.t" : $w}]
+	    set tagList [bindtags $w2]
 	    if {[lsearch -exact $tagList "WheeleventRedir"] >= 0} {
 		continue
 	    }
@@ -500,8 +502,8 @@ proc scrollutil::adaptWheelEventHandling args {
 		}
 
 		set idx [lsearch -exact $tagList $tag]
-		bindtags $w [lreplace $tagList $idx $idx \
-			     WheeleventRedir $tag WheeleventBreak]
+		bindtags $w2 [lreplace $tagList $idx $idx \
+			      WheeleventRedir $tag WheeleventBreak]
 		break
 	    }
 	}
@@ -595,6 +597,63 @@ proc scrollutil::focusCheckWindow w {
 		  $focusCheckWinArr($w) : $w}]
 }
 
+#------------------------------------------------------------------------------
+# scrollutil::bindMouseWheel
+#
+# Usage: scrollutil::bindMouseWheel tag command
+#
+# Our own version of the ttk::bindMouseWheel procedure, which was not present
+# in tile before Dec. 2008.  Adds basic mouse wheel support to the specified
+# binding tag.
+#------------------------------------------------------------------------------
+proc scrollutil::bindMouseWheel {tag cmd} {
+    variable winSys
+    variable uniformWheelSupport
+
+    if {$cmd eq "break" || $cmd eq "continue" || $cmd eq ""} {
+	if {$uniformWheelSupport} {
+	    bind $tag <MouseWheel>		$cmd
+	    bind $tag <Option-MouseWheel>	$cmd
+	} elseif {$winSys eq "aqua"} {
+	    bind $tag <MouseWheel>		$cmd
+	    bind $tag <Option-MouseWheel>	$cmd
+	} else {
+	    bind $tag <MouseWheel>		$cmd
+
+	    if {$winSys eq "x11"} {
+		bind $tag <Button-4>		$cmd
+		bind $tag <Button-5>		$cmd
+
+		if {$::tk_patchLevel eq "8.7a3"} {
+		    bind $tag <Button-6>	$cmd
+		    bind $tag <Button-7>	$cmd
+		}
+	    }
+	}
+    } else {
+	if {$uniformWheelSupport} {
+	    bind $tag <MouseWheel>		"$cmd %D -120.0"
+	    bind $tag <Option-MouseWheel>	"$cmd %D -12.0"
+	} elseif {$winSys eq "aqua"} {
+	    bind $tag <MouseWheel>		"$cmd \[expr {-%D}\]"
+	    bind $tag <Option-MouseWheel>	"$cmd \[expr {-10 * %D}\]"
+	} else {
+	    bind $tag <MouseWheel> \
+		"$cmd \[expr {%D >= 0 ? -%D / 120 : (-%D + 119) / 120}\]"
+
+	    if {$winSys eq "x11"} {
+		bind $tag <Button-4>		"$cmd -1"
+		bind $tag <Button-5>		"$cmd +1"
+
+		if {$::tk_patchLevel eq "8.7a3"} {
+		    bind $tag <Button-6>	"$cmd -1"
+		    bind $tag <Button-7>	"$cmd +1"
+		}
+	    }
+	}
+    }
+}
+
 #
 # Private procedures
 # ==================
@@ -666,7 +725,7 @@ proc scrollutil::scrollByUnits {w rootX rootY axis delta divisor} {
 	    set number \
 		[expr {int($number > 0 ? ceil($number) : floor($number))}]
 	    $swc ${axis}view scroll $number units
-	    return ""
+	    return -code break ""
 	}
     }
 }

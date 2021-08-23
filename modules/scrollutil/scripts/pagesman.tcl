@@ -1,0 +1,600 @@
+#==============================================================================
+# Contains the implementation of the pagesman widget.
+#
+# Structure of the module:
+#   - Namespace initialization
+#   - Private procedure creating the default bindings
+#   - Public procedure creating a new pagesman widget
+#   - Private configuration procedures
+#   - Private procedure implementing the pagesman widget command
+#   - Private procedures used in bindings
+#   - Private utility procedures
+#
+# Copyright (c) 2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+#==============================================================================
+
+#
+# Namespace initialization
+# ========================
+#
+
+namespace eval scrollutil::pm {
+    #
+    # The array configSpecs is used to handle configuration options.  The names
+    # of its elements are the configuration options for the Pagesman class.
+    # The value of an array element is either an alias name or a list
+    # containing the database name and class as well as an indicator specifying
+    # the widget to which the option applies: f stands for the frame and w for
+    # the pagesman widget itself.
+    #
+    #	Command-Line Name	{Database Name		Database Class       W}
+    #	-----------------------------------------------------------------------
+    #
+    variable configSpecs
+    array set configSpecs {
+	-background		{background		Background	     f}
+	-bg			-background
+	-borderwidth		{borderWidth		BorderWidth	     f}
+	-bd			-borderwidth
+	-cursor			{cursor			Cursor		     f}
+	-forgetcommand		{forgetCommand		ForgetCommand	     w}
+	-height			{height			Height		     f}
+	-highlightbackground	{highlightBackground	HighlightBackground  f}
+	-highlightcolor		{highlightColor		HighlightColor	     f}
+	-highlightthickness	{highlightThickness	HighlightThickness   f}
+	-leavecommand		{leaveCommand		LeaveCommand	     w}
+	-relief			{relief			Relief		     f}
+	-takefocus		{takeFocus		TakeFocus	     f}
+	-width			{width			Width		     f}
+    }
+
+    #
+    # Extend the elements of the array configSpecs
+    #
+    proc extendConfigSpecs {} {
+	variable ::scrollutil::usingTile
+	variable configSpecs
+
+	if {$usingTile} {
+	    foreach opt {-background -bg -highlightbackground -highlightcolor
+			 -highlightthickness} {
+		unset configSpecs($opt)
+	    }
+	} else {
+	    set helpFrm .__helpFrm
+	    for {set n 2} {[winfo exists $helpFrm]} {incr n} {
+		set helpFrm .__helpFrm$n
+	    }
+	    tk::frame $helpFrm
+	    foreach opt {-background -highlightbackground -highlightcolor
+			 -highlightthickness} {
+		set configSet [$helpFrm configure $opt]
+		lappend configSpecs($opt) [lindex $configSet 3]
+	    }
+	    destroy $helpFrm
+	}
+
+	lappend configSpecs(-borderwidth)	0
+	lappend configSpecs(-cursor)		""
+	lappend configSpecs(-height)		0
+	lappend configSpecs(-leavecommand)	""
+	lappend configSpecs(-relief)		flat
+	lappend configSpecs(-takefocus)		""
+	lappend configSpecs(-width)		0
+    }
+    extendConfigSpecs 
+
+    variable configOpts [lsort [array names configSpecs]]
+
+    #
+    # Use a list to facilitate the handling of command options
+    #
+    variable cmdOpts [list add cget configure forget index pages select size]
+}
+
+#
+# Private procedure creating the default bindings
+# ===============================================
+#
+
+#------------------------------------------------------------------------------
+# scrollutil::pm::createBindings
+#
+# Creates the default bindings for the binding tag Pagesman.
+#------------------------------------------------------------------------------
+proc scrollutil::pm::createBindings {} {
+    bind Pagesman <KeyPress> continue
+    bind Pagesman <FocusIn> {
+	if {[string compare [focus -lastfor %W] %W] == 0} {
+	    if {[string length [%W select]] != 0} {
+		focus [%W select]
+	    }
+        }
+    }
+    bind Pagesman <Map> { scrollutil::pm::resizeWidgetDelayed %W 100 }
+    bind Pagesman <Destroy> {
+	namespace delete scrollutil::ns%W
+	catch {rename %W ""}
+    }
+}
+
+#
+# Public procedure creating a new pagesman widget
+# ===============================================
+#
+
+#------------------------------------------------------------------------------
+# scrollutil::pagesman
+#
+# Creates a new pagesman widget whose name is specified as the first command-
+# line argument, and configures it according to the options and their values
+# given on the command line.  Returns the name of the newly created widget.
+#------------------------------------------------------------------------------
+proc scrollutil::pagesman args {
+    variable usingTile
+    variable pm::configSpecs
+    variable pm::configOpts
+
+    if {[llength $args] == 0} {
+	mwutil::wrongNumArgs "pagesman pathName ?options?"
+    }
+
+    #
+    # Create a frame of the class Pagesman
+    #
+    set win [lindex $args 0]
+    if {[catch {
+	if {$usingTile} {
+	    ttk::frame $win -class Pagesman -padding 0
+	} else {
+	    tk::frame $win -class Pagesman -container 0
+	    catch {$win configure -padx 0 -pady 0}
+	}
+    } result] != 0} {
+	return -code error $result
+    }
+
+    grid rowconfigure    $win 0 -weight 1
+    grid columnconfigure $win 0 -weight 1
+    grid propagate $win 0
+
+    #
+    # Create a namespace within the current one to hold the data of the widget
+    #
+    namespace eval ns$win {
+	#
+	# The following array holds various data for this widget
+	#
+	variable data
+	array set data {
+	    pageList	{}
+	    paddingList	{}
+	    stickyList	{}
+	    pageCount	0
+	    currentPage	""
+	}
+    }
+
+    #
+    # Initialize some further components of data
+    #
+    upvar ::scrollutil::ns${win}::data data
+    foreach opt $configOpts {
+	set data($opt) [lindex $configSpecs($opt) 3]
+    }
+    regsub -all "%" $win "%%" data(pathName)		;# needed in bindings
+
+    #
+    # Configure the widget according to the command-line
+    # arguments and to the available database options
+    #
+    if {[catch {
+	mwutil::configureWidget $win configSpecs scrollutil::pm::doConfig \
+				scrollutil::pm::doCget [lrange $args 1 end] 1
+    } result] != 0} {
+	destroy $win
+	return -code error $result
+    }
+
+    #
+    # Move the original widget command into the namespace pm within the current
+    # one and create an alias of the original name for a new widget procedure
+    #
+    rename ::$win pm::$win
+    interp alias {} ::$win {} scrollutil::pm::pagesmanWidgetCmd $win
+
+    return $win
+}
+
+#
+# Private configuration procedures
+# ================================
+#
+
+#------------------------------------------------------------------------------
+# scrollutil::pm::doConfig
+#
+# Applies the value val of the configuration option opt to the pagesman widget
+# win.
+#------------------------------------------------------------------------------
+proc scrollutil::pm::doConfig {win opt val} {
+    variable configSpecs
+    upvar ::scrollutil::ns${win}::data data
+
+    #
+    # Apply the value to the widget corresponding to the given option
+    #
+    switch [lindex $configSpecs($opt) 2] {
+	f {
+	    #
+	    # Apply the value to the frame and save the
+	    # properly formatted value of val in data($opt)
+	    #
+	    $win configure $opt $val
+	    set data($opt) [$win cget $opt]
+	}
+
+	w { set data($opt) $val }
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::pm::doCget
+#
+# Returns the value of the configuration option opt for the pagesman widget
+# win.
+#------------------------------------------------------------------------------
+proc scrollutil::pm::doCget {win opt} {
+    upvar ::scrollutil::ns${win}::data data
+    return $data($opt)
+}
+
+#
+# Private procedure implementing the pagesman widget command
+# ==========================================================
+#
+
+#------------------------------------------------------------------------------
+# scrollutil::pm::pagesmanWidgetCmd
+#
+# Processes the Tcl command corresponding to a pagesman widget.
+#------------------------------------------------------------------------------
+proc scrollutil::pm::pagesmanWidgetCmd {win args} {
+    set argCount [llength $args]
+    if {$argCount == 0} {
+	mwutil::wrongNumArgs "$win option ?arg arg ...?"
+    }
+
+    upvar ::scrollutil::ns${win}::data data
+
+    variable cmdOpts
+    set cmd [mwutil::fullOpt "command" [lindex $args 0] $cmdOpts]
+
+    switch $cmd {
+	add {
+	    if {$argCount < 2} {
+		mwutil::wrongNumArgs \
+		    "$win $cmd window ?-padding padding? ?-sticky stickyness?"
+	    }
+
+	    set widget [lindex $args 1]
+	    if {![winfo exists $widget]} {
+		return -code error "bad window path name \"$widget\""
+	    }
+
+	    set padding 0
+	    set sticky  "nsew"
+	    set optValPairs [lrange $args 2 end]
+	    set count [llength $optValPairs]
+	    foreach {opt val} $optValPairs {
+		set opt [mwutil::fullOpt "page option" $opt {-padding -sticky}]
+		if {$count == 1} {
+		    return -code error "value for \"$opt\" missing"
+		}
+
+		switch -- $opt {
+		    -padding {
+			if {[catch {parsePadding $win $val} result] != 0} {
+			    return -code error $result
+			}
+			set padding $val
+		    }
+		    -sticky {
+			if {![regexp {^[nsew]*$} $val]} {
+			    return -code error \
+				"bad -sticky specification \"$val\""
+			}
+			set sticky $val
+		    }
+		}
+		incr count -2
+	    }
+
+	    if {[lsearch -exact $data(pageList) $widget] >= 0} {
+		return ""
+	    }
+
+	    lappend data(pageList)    $widget
+	    lappend data(paddingList) $padding
+	    lappend data(stickyList)  $sticky
+	    incr data(pageCount)
+	    bind $widget <Map> \
+		[list scrollutil::pm::resizeWidgetDelayed $data(pathName) 100]
+	    return ""
+	}
+
+	cget {
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win $cmd option"
+	    }
+
+	    #
+	    # Return the value of the specified configuration option
+	    #
+	    variable configSpecs
+	    set opt [mwutil::fullConfigOpt [lindex $args 1] configSpecs]
+	    return $data($opt)
+	}
+
+	configure {
+	    variable configSpecs
+	    return [mwutil::configureSubCmd $win configSpecs \
+		    scrollutil::pm::doConfig scrollutil::pm::doCget \
+		    [lrange $args 1 end]]
+	}
+
+	forget {
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win $cmd pageIndex"
+	    }
+
+	    set pageIdx [lindex $args 1]
+	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
+	    if {$pageIdx < 0 || $pageIdx >= $data(pageCount)} {
+		return -code error "page index $pageIdx out of bounds"
+	    }
+
+	    set widget [lindex $data(pageList) $pageIdx]
+	    if {[set forgetCmd $data(-forgetcommand)] ne "" &&
+		![uplevel #0 $forgetCmd [list $win $widget]]} {
+		return 0
+	    }
+
+	    set data(pageList) [lreplace $data(pageList) $pageIdx $pageIdx]
+	    set data(paddingList) \
+		[lreplace $data(paddingList) $pageIdx $pageIdx]
+	    set data(stickyList) [lreplace $data(stickyList) $pageIdx $pageIdx]
+	    incr data(pageCount) -1
+	    bind $widget <Configure> {}
+
+	    if {[string compare $widget $data(currentPage)] == 0} {
+		#
+		# Select the next/previous page
+		#
+		if {$pageIdx < $data(pageCount)} {
+		    ::$win select $pageIdx
+		} elseif {[incr pageIdx -1] >= 0} {
+		    ::$win select $pageIdx
+		} else {
+		    grid forget $widget
+		    set data(currentPage) ""
+		    event generate $win <<PagesmanPageChanged>>
+		}
+	    }
+
+	    return 1
+	}
+
+	index {
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win $cmd window"
+	    }
+
+	    set widget [lindex $args 1]
+	    if {![winfo exists $widget]} {
+		return -code error "bad window path name \"$widget\""
+	    }
+
+	    set idx [lsearch -exact $data(pageList) $widget]
+	    if {$idx < 0} {
+		return -code error "widget \"$widget\" is not managed by $win"
+	    }
+
+	    return $idx
+	}
+
+	pages {
+	    if {$argCount != 1} {
+		mwutil::wrongNumArgs "$win $cmd"
+	    }
+
+	    return $data(pageList)
+	}
+
+	select {
+	    if {$argCount > 2} {
+		mwutil::wrongNumArgs "$win $cmd ?pageIndex?"
+	    }
+
+	    if {$argCount == 1} {
+		return $data(currentPage)
+	    }
+
+	    set pageIdx [lindex $args 1]
+	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
+	    if {$pageIdx < 0 || $pageIdx >= $data(pageCount)} {
+		return -code error "page index $pageIdx out of bounds"
+	    }
+
+	    set widget [lindex $data(pageList) $pageIdx]
+	    set cmpResult [string compare $widget $data(currentPage)]
+	    if {[lsearch -exact $data(pageList) $data(currentPage)] >= 0} {
+		if {$cmpResult != 0 &&
+		    [string length [set cmd $data(-leavecommand)]] != 0 &&
+		    ![uplevel #0 $cmd [list $win $data(currentPage)]]} {
+		    return 0
+		} else {
+		    grid forget $data(currentPage)
+		}
+	    }
+
+	    set padding [lindex $data(paddingList) $pageIdx]
+	    set sticky  [lindex $data(stickyList)  $pageIdx]
+	    foreach {l t r b} [parsePadding $win $padding] {}
+	    grid $widget -padx [list $l $r] -pady [list $t $b] -sticky $sticky
+	    set data(currentPage) $widget
+
+	    if {$cmpResult != 0} {
+		event generate $win <<PagesmanPageChanged>>
+	    }
+
+	    return 1
+	}
+
+	size {
+	    if {$argCount != 1} {
+		mwutil::wrongNumArgs "$win $cmd"
+	    }
+
+	    return $data(pageCount)
+	}
+    }
+}
+
+#
+# Private procedures used in bindings
+# ===================================
+#
+
+#------------------------------------------------------------------------------
+# scrollutil::pm::resizeWidgetDelayed
+#------------------------------------------------------------------------------
+proc scrollutil::pm::resizeWidgetDelayed {win ms} {
+    upvar ::scrollutil::ns${win}::data data
+    if {![info exists data(afterId)]} {
+	set data(afterId) [after $ms [list scrollutil::pm::resizeWidget $win]]
+	set data(delay) $ms
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::pm::resizeWidget
+#------------------------------------------------------------------------------
+proc scrollutil::pm::resizeWidget win {
+    if {![winfo exists $win] ||
+	[string compare [winfo class $win] "Pagesman"] != 0} {
+	return ""
+    }
+
+    upvar ::scrollutil::ns${win}::data data
+    unset data(afterId)
+
+    set compWidth  [expr {$data(-width)  <= 0}]
+    set compHeight [expr {$data(-height) <= 0}]
+    if {$compWidth || $compHeight} {
+	set maxWidth 0
+	set maxHeight 0
+	foreach widget $data(pageList) padding $data(paddingList) {
+	    foreach {l t r b} [parsePadding $win $padding] {}
+	    if {$compWidth} {
+		set width [expr {[winfo reqwidth $widget] + $l + $r}]
+		if {$width > $maxWidth} {
+		    set maxWidth $width
+		}
+	    }
+	    if {$compHeight} {
+		set height [expr {[winfo reqheight $widget] + $t + $b}]
+		if {$height > $maxHeight} {
+		    set maxHeight $height
+		}
+	    }
+	}
+
+	set bd [expr {2 * $data(-borderwidth)}]
+	variable ::scrollutil::usingTile
+	if {!$usingTile} {
+	    incr bd [expr {2 * $data(-highlightthickness)}]
+	}
+
+	if {$compWidth} {
+	    incr maxWidth $bd
+	    $win configure -width $maxWidth
+	}
+	if {$compHeight} {
+	    incr maxHeight $bd
+	    $win configure -height $maxHeight
+	}
+
+	if {$data(delay) == 100} {
+	    #
+	    # Resize the widget again 210 ms later because dynamic scrollbars
+	    # within a scrollarea might need up to 300 ms for being mapped
+	    #
+	    resizeWidgetDelayed $win 210
+	}
+    }
+
+    if {$data(pageCount) != 0 && [string length $data(currentPage)] == 0} {
+	::$win select 0
+    }
+}
+
+#
+# Private utility procedures
+# ==========================
+#
+
+#------------------------------------------------------------------------------
+# scrollutil::pm::parsePadding
+#
+# Returns the 4-elements list of pixels corresponding to a given padding
+# specification.
+#------------------------------------------------------------------------------
+proc scrollutil::pm::parsePadding {w padding} {
+    switch [llength $padding] {
+	0 { return [list 0 0 0 0] }
+	1 {
+	    set l [screenDistToPad $w $padding]
+	    return [list $l $l $l $l]
+	}
+	2 {
+	    foreach {l t} $padding {}
+	    set l [screenDistToPad $w $l]
+	    set t [screenDistToPad $w $t]
+	    return [list $l $t $l $t]
+	}
+	3 {
+	    foreach {l t r} $padding {}
+	    set l [screenDistToPad $w $l]
+	    set t [screenDistToPad $w $t]
+	    set r [screenDistToPad $w $r]
+	    return [list $l $t $r $t]
+	}
+	4 {
+	    foreach {l t r b} $padding {}
+	    set l [screenDistToPad $w $l]
+	    set t [screenDistToPad $w $t]
+	    set r [screenDistToPad $w $r]
+	    set b [screenDistToPad $w $b]
+	    return [list $l $t $r $b]
+	}
+	default {
+	    return -code error "wrong # elements in padding spec \"$padding\""
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::pm::screenDistToPad
+#
+# Returns the number of pixels corresponding to a given screen distance, which
+# is not allowed to be negative.
+#------------------------------------------------------------------------------
+proc scrollutil::pm::screenDistToPad {w dist} {
+    set px [winfo pixels $w $dist]
+    if {$px < 0} {
+	return -code error "bad pad value \"$dist\""
+    }
+
+    return $px
+}

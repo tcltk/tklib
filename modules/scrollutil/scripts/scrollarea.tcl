@@ -88,6 +88,7 @@ namespace eval scrollutil::sa {
 	-relief			{relief			Relief		     f}
 	-respectheader		{respectHeader		RespectHeader	     w}
 	-respecttitlecolumns	{respectTitleColumns	RespectTitleColumns  w}
+	-setfocus		{setFocus		SetFocus	     w}
 	-takefocus		{takeFocus		TakeFocus	     f}
 	-xscrollbarmode		{xScrollbarMode		ScrollbarMode	     w}
 	-yscrollbarmode		{yScrollbarMode		ScrollbarMode	     w}
@@ -128,6 +129,7 @@ namespace eval scrollutil::sa {
 	lappend configSpecs(-respectheader) \
 		[expr {[string compare $winSys "win32"] != 0}]
 	lappend configSpecs(-respecttitlecolumns)	1
+	lappend configSpecs(-setfocus)			0
 	lappend configSpecs(-takefocus)			0
 	lappend configSpecs(-xscrollbarmode)		dynamic
 	lappend configSpecs(-yscrollbarmode)		dynamic
@@ -142,6 +144,12 @@ namespace eval scrollutil::sa {
     #
     variable cmdOpts        [list cget configure setwidget widget]
     variable scrollbarModes [list static dynamic none]
+
+    variable newSetFocusPolicy [expr {
+	($::tk_version == 8.6 &&
+	 [package vcompare $::tk_patchLevel "8.6.11"] >= 0) ||
+	($::tk_version >= 8.7 &&
+	 [package vcompare $::tk_patchLevel "8.7a4"] >= 0)}]
 }
 
 #
@@ -153,7 +161,7 @@ namespace eval scrollutil::sa {
 # scrollutil::sa::createBindings
 #
 # Creates the default bindings for the binding tags Scrollarea, ScrollareaTop,
-# DynamicHScrollbar, and WidgetOfScrollarea.
+# ScrollareaScrollbar, DynamicHScrollbar, and WidgetOfScrollarea.
 #------------------------------------------------------------------------------
 proc scrollutil::sa::createBindings {} {
     bind Scrollarea <KeyPress> continue
@@ -177,6 +185,13 @@ proc scrollutil::sa::createBindings {} {
     }
     bind ScrollareaTop <FocusOut> {
 	after 100 [list scrollutil::sa::onToplevelFocusOut %W]
+    }
+
+    bind ScrollareaScrollbar <Button-1> {
+	scrollutil::sa::onScrollbarClicked %W
+    }
+    bind ScrollareaScrollbar <Button-2> {
+	scrollutil::sa::onScrollbarClicked %W
     }
 
     bind DynamicHScrollbar <Map> { scrollutil::sa::onDynamicHScrollbarMap %W }
@@ -281,6 +296,7 @@ proc scrollutil::scrollarea args {
 	$sb configure -takefocus 0
 	$sb.f configure -borderwidth 0 -height 0 -relief flat -takefocus 0 \
 			-width 0
+	bindtags $sb [linsert [bindtags $sb] 1 ScrollareaScrollbar]
     }
 
     #
@@ -418,6 +434,9 @@ proc scrollutil::sa::doConfig {win opt val} {
 		    if {$data(hsbManaged)} {
 			showHScrollbar $win 1
 		    }
+		}
+		-setfocus {
+		    set data($opt) [expr {$val ? 1 : 0}]
 		}
 		-xscrollbarmode {
 		    variable scrollbarModes
@@ -810,6 +829,51 @@ proc scrollutil::sa::onToplevelFocusOut top {
 	    }
 	}
 	set lst1 $lst2
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sa::onScrollbarClicked
+#------------------------------------------------------------------------------
+proc scrollutil::sa::onScrollbarClicked sb {
+    set win [winfo parent $sb]
+    set widget [::$win widget]
+    if {![::$win cget -setfocus] || ![winfo exists $widget]} {
+	return ""
+    }
+
+    switch [winfo class $widget] {
+	Text {
+	    variable ::scrollutil::winSys
+	    variable newSetFocusPolicy
+	    if {$winSys eq "win32" || $newSetFocusPolicy} {
+		focus $widget
+	    }
+	}
+
+	Ctext {
+	    variable ::scrollutil::winSys
+	    variable newSetFocusPolicy
+	    if {$winSys eq "win32" || $newSetFocusPolicy} {
+		focus $widget.t
+	    }
+	}
+
+	Treeview { focus $widget }
+
+	default {
+	    if {[catch {$widget instate disabled} result] == 0} {
+		set isDisabled $result
+	    } elseif {[catch {$widget cget -state} result] == 0} {
+		set isDisabled [expr {[string compare $result "disabled"] == 0}]
+	    } else {
+		set isDisabled 0
+	    }
+
+	    if {!$isDisabled} {
+		focus $widget
+	    }
+	}
     }
 }
 
