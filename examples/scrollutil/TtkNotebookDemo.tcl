@@ -24,22 +24,27 @@ image create photo fileImg -file [file join $dir file$pct.gif]
 #
 set f  [ttk::frame .f]
 set nb [ttk::notebook $f.nb -style My.TNotebook]
+set panePadding [expr {$ttk::currentTheme eq "aqua" ? 0 : "7p"}]
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 foreach fileName [lsort [glob *.tcl]] {
     set baseName [string range $fileName 0 end-4]
     set sa [scrollutil::scrollarea $nb.sa_$baseName -lockinterval 10]
-    set txt [text $sa.txt -font TkFixedFont -wrap none]
+    if {$ttk::currentTheme eq "vista"} {
+	$sa configure -relief solid
+    }
+    set txt [text $sa.txt -font TkFixedFont -takefocus 1 -wrap none]
     catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5 and later
-    scrollutil::addMouseWheelSupport $txt      ;# adds old-school wheel support
+    scrollutil::addMouseWheelSupport $txt	;# old-school wheel support
     $sa setwidget $txt
 
     set chan [open $fileName]
     $txt insert end [read -nonewline $chan]
     close $chan
     $txt configure -state disabled
+    bind $txt <Button-1> { focus %W }	;# for Tk versions < 8.6.11/8.7a4
 
-    set padding [expr {$ttk::currentTheme eq "aqua" ? 0 : "7p"}]
-    $nb add $sa -text $fileName -image fileImg -compound left -padding $padding
+    $nb add $sa -text $fileName -image fileImg -compound left \
+		-padding $panePadding
 }
 
 #
