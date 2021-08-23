@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Commands Related to Mouse Wheel Event Handling</h1>
 
-    <h2>For Scrollutil Version 1.10</h2>
+    <h2>For Scrollutil Version 1.11</h2>
 
     <h3>by</h3>
 
@@ -440,12 +440,15 @@
     having class bindings for mouse wheel events are: listbox, text, Tk core
     scrollbar, ttk::scrollbar, ttk::combobox, ttk::spinbox, ttk::notebook, and
     ttk::treeview.&nbsp; Examples of widgets with binding tags other than their
-    class names that have mouse wheel event bindings are tablelist widgets as
-    well as the entry components of <a href=
+    class names that have mouse wheel event bindings are ctext and tablelist
+    widgets, as well as the entry components of <a href=
     "https://www.nemethi.de/mentry/">mentry</a> widgets of type
     <code>"Date"</code>, <code>"Time"</code>, <code>"DateTime"</code>,
     <code>"IPAddr"</code>, and <code>"IPv6Addr"</code> (for Mentry versions 3.2
-    and above).</dd>
+    and above).&nbsp; (In case of a ctext widget <code><i>w</i></code>, the
+    binding tags mentioned in the description above refer to the widget's main
+    text widget child <code><i>w</i>.t</code> rather than to the widget
+    itself.)</dd>
 
     <dd class="tm"><b>REMARK 2:</b>&nbsp; The mouse wheel event class bindings
     for the Tk core scrollbar on Windows and X11 were added in Tk 8.6.&nbsp;

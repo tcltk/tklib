@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 1.10</h2>
+    <h2>For Scrollutil Version 1.11</h2>
 
     <h3>by</h3>
 
@@ -79,6 +79,11 @@
 
     <li><a href="#ex_ScrolledNotebookDemo">A scrollutil::scrollednotebook
     Demo</a></li>
+
+    <li><a href="#ex_PlainNotebookDemo">A scrollutil::plainnotebook
+    Demo</a></li>
+
+    <li><a href="#ex_PagesManDemo">A scrollutil::pagesman Demo</a></li>
   </ul>
 
   <div align="center">
@@ -98,10 +103,13 @@
     <li>the implementation of the <b><a href=
     "scrollarea.html">scrollarea</a></b>, <b><a href=
     "scrollsync.html">scrollsync</a></b>, <b><a href=
-    "scrollableframe.html">scrollableframe</a></b>, and <b><a href=
-    "scrollednotebook.html">scrollednotebook</a></b> mega-widgets, including a
-    general utility module for mega-widgets.&nbsp; The scrollednotebook widget
-    requires Tcl/Tk 8.4 or later and tile 0.6 or higher;</li>
+    "scrollableframe.html">scrollableframe</a></b>, <b><a href=
+    "scrollednotebook.html">scrollednotebook</a></b>, <b><a href=
+    "plainnotebook.html">plainnotebook</a></b>, and <b><a href=
+    "pagesman.html">pagesman</a></b> mega-widgets, including a
+    general utility module for mega-widgets.&nbsp; The scrollednotebook and
+    plainnotebook widgets require Tcl/Tk 8.4 or later and tile 0.8 or
+    higher;</li>
 
     <li>the command <code><b><a href=
     "wheelEvent.html#add">scrollutil::addMouseWheelSupport</a></b></code>,
@@ -117,6 +125,9 @@
     <li>demo scripts illustrating the use of the Scrollutil package in
     connection with various scrollable widgets and the above-mentioned
     scrollable widget containers;</li>
+
+    <li>demo scripts illustrating the use of the scrollednotebook,
+    plainnotebook, and pagesman widgets;</li>
 
     <li>this tutorial;</li>
 
@@ -194,6 +205,29 @@
   tabs, the scrollednotebook widget respects the value of its
   <code>-width</code> option, regardless of the space required by the tabs.</p>
 
+  <p><b>The scrollutil::plainnotebook mega-widget</b> extends a ttk::notebook
+  having an arbitrary number of pages with invisible tabs by a ttk::frame to
+  its left or right containing, among others, a scrollableframe whose content
+  frame is the parent of a series of widgets that play the role of vertically
+  laid-out notebook tabs.&nbsp; Currently not visible "tabs" can be brought
+  into view by scrolling with the mouse wheel or the vertical scrollbar of the
+  scrollarea containing the scrollableframe, and the widget provides a command
+  for making individual "tabs" visible in the plainnotebook window.&nbsp;
+  Unlike a ttk::notebook widget with vertically aligned tabs, which in most
+  themes has a suboptimal look and whose <code>-height</code> option is quite
+  often overriden by the total height of the tabs, the plainnotebook widget
+  respects the value of its <code>-height</code> option, regardless of the
+  space required by the "tabs".</p>
+
+  <p><b>The scrollutil::pagesman mega-widget</b> provides the basic
+  functionality of a pages manager, meaning that it manages a list of windows,
+  called <b>pages</b>, of which only one is visible at a time.&nbsp; By using
+  it with plainnotebook widgets as pages, it is quite easy to write
+  applications in which the user can descend from a plainnotebook to another
+  one with a single mouse click and switch back in the same way to the original
+  one.&nbsp; Everything needed for this navigation is provided by appropriate
+  options and subcommands of the plainnotebook widget.</p>
+
   <p>From the point of view of <b>the commands related to mouse wheel event
   handling</b> provided by the Scrollutil package, the scrollability of a
   widget or widget container window means that the associated Tcl command
@@ -269,8 +303,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil1.10.tar.gz</code> for UNIX and
-  <code>scrollutil1_10.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil1.11.tar.gz</code> for UNIX and
+  <code>scrollutil1_11.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -294,11 +328,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil1.10.tar.gz</code>:</p>
+  <code>scrollutil1.11.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil1.10.tar.gz | tar -xf -
+gunzip -c scrollutil1.11.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -306,17 +340,17 @@ gunzip -c scrollutil1.10.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil1.10.tar.gz
+tar -zxf scrollutil1.11.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil1.10</code>,
+  <p>Both commands will create a directory named <code>scrollutil1.11</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil1_10.zip</code> into the directory
-  <code>scrollutil1.10</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil1_11.zip</code> into the directory
+  <code>scrollutil1.11</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -331,7 +365,7 @@ tar -zxf scrollutil1.10.tar.gz
   between the two is that Scrollutil_tile enables the tile-based,
   theme-specific appearance of scrollarea, scrollsync, and scrollableframe
   widgets, and provides the themed scrollednotebook widget; this package
-  requires Tcl/Tk 8.4 or higher and tile 0.6 or higher.&nbsp; It is not
+  requires Tcl/Tk 8.4 or higher and tile 0.8 or higher.&nbsp; It is not
   possible to use both packages in one and the same application, because both
   are implemented in the same <code>scrollutil</code> namespace and provide
   identical commands (except for the <code>scrollutil::scrollednotebook</code>
@@ -435,7 +469,7 @@ namespace import scrollutil::<i>pattern</i> ?scrollutil::<i>pattern ...</i>?
     <pre>
 package require Tk 8.4
 if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
-    package require tile 0.6
+    package require tile 0.8
 }
 </pre>
   </blockquote>
@@ -596,22 +630,24 @@ source [file join $dir styleUtil.tcl]
 
   <p>The script <code>styleUtil.tcl</code> starts with a comment related to the
   <code><a href=
-  "scrollarea.html#autohidescrollbars">-autohidescrollbars</a></code>
-  scrollarea configuration option:</p>
+  "scrollarea.html#autohidescrollbars">-autohidescrollbars</a></code> and
+  <code><a href="scrollarea.html#setfocus">-setfocus</a></code> scrollarea
+  configuration options:</p>
 
   <blockquote>
     <pre>
 <span class="cmt">#
-# To set the "-autohidescrollbars" option of all scrollarea
-# widgets in all demo scripts to true, uncomment the line below:
+# To set the "-autohidescrollbars" or "-setfocus" option of all scrollarea
+# widgets in all demo scripts to true, uncomment the corresponding line below:
 #
-# option add *Scrollarea.autoHideScrollbars 1</span>
+# option add *Scrollarea.autoHideScrollbars 1
+# option add *Scrollarea.setFocus           1</span>
 </pre>
   </blockquote>
 
   <p>You are free to follow this hint or to run the demo scripts with the
-  default&nbsp; <code>-autohidescrollbars 0</code>&nbsp; scrollarea
-  setting.</p>
+  default&nbsp; <code>-autohidescrollbars 0</code>&nbsp; and&nbsp;
+  <code>-setfocus 0</code>&nbsp; scrollarea settings.</p>
 
   <p>On X11, the script sets the theme to a slightly patched variant of the
   <code>clam</code> theme (having smaller ttk::button widgets as well as
@@ -620,10 +656,10 @@ source [file join $dir styleUtil.tcl]
 
   <p>The patch for the style <code>TCombobox</code> makes sure that the
   (readonly) ttk::combobox widgets of the themes <code>alt</code>,
-  <code>clam</code>, and <code>default</code> will show whether they have the
-  focus.&nbsp; This basic requirement, which makes the keyboard navigation more
-  user-friendly, is already fulfilled by the themes <code>vista</code>,
-  <code>xpnative</code>, and <code>aqua</code>.</p>
+  <code>clam</code>, <code>classic</code>, and <code>default</code> will show
+  whether they have the focus.&nbsp; This basic requirement, which makes the
+  keyboard navigation more user-friendly, is already fulfilled by the themes
+  <code>vista</code>, <code>xpnative</code>, and <code>aqua</code>.</p>
 
   <p>The ttk::button widgets of the style <code>Small.Toolbutton</code> created
   by the procedure <code>createToolbutton</code>, implemented in this helper
@@ -777,7 +813,7 @@ set txt [text $sa.txt -font TkFixedFont -width 49 -height 12 \
 <span class="cmt">#
 # Populate the text widget and set the background color of line #25 to red
 #</span>
-for {set i 1} {$i <= 30} {incr i} {
+for {set i 1} {$i &lt;= 30} {incr i} {
     set j [expr {2*$i}]
     $txt insert end [string repeat x $j]\n
 }
@@ -939,12 +975,12 @@ if {$ttk::currentTheme ne "aqua"} {
     option add *Tablelist.stripeBackground      #f0f0f0
 }
 
-for {set n 1; set colWidth 40} {$n <= 3} {incr n; incr colWidth 20} {
+for {set n 1; set colWidth 40} {$n &lt;= 3} {incr n; incr colWidth 20} {
     set tbl [tablelist::tablelist $ss.tbl$n \
              -columns [list 0 "Column 0" left  $colWidth "Column 1" left]]
     set tbl$n $tbl
 
-    for {set i 0} {$i < 40} {incr i} {
+    for {set i 0} {$i &lt; 40} {incr i} {
         $tbl insert end [list "cell $i,0" "cell $i,1"]
     }
 }
@@ -1682,7 +1718,7 @@ source [file join $dir ScrolledFrmContent.tcl]
 
   <blockquote>
     <img src="ScrolledNotebookDemo.png" alt="ScrolledNotebookDemo" width="638"
-    height="515">
+    height="514">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -1701,28 +1737,34 @@ set pct $scrollutil::scalingpct
 image create photo fileImg -file [file join $dir file$pct.gif]
 
 <span class="cmt">#
-# Create a scrollednotebook widget having closable tabs
-# and populate it with panes that contain scrolled text
-# widgets displaying the contents of the Ttk library files
+# Create a scrollednotebook widget having closable (and, per default,
+# movable) tabs and populate it with panes that contain scrolled
+# text widgets displaying the contents of the Ttk library files
 #</span>
 set f  [ttk::frame .f]
-<span class="red">set nb [scrollutil::scrollednotebook $f.nb -style My.TNotebook]</span>
+<span class="red">set nb [scrollutil::scrollednotebook $f.nb -style My.TNotebook \
+        -forgetcommand condCopySel -leavecommand condCopySel]</span>
+set panePadding [expr {$ttk::currentTheme eq "aqua" ? 0 : "7p"}]
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 foreach fileName [lsort [glob *.tcl]] {
     set baseName [string range $fileName 0 end-4]
     <span class="red">set sa [scrollutil::scrollarea $nb.sa_$baseName -lockinterval 10]</span>
-    set txt [text $sa.txt -font TkFixedFont -wrap none]
-    catch {$txt configure -tabstyle wordprocessor}      <span class="cmt">;# for Tk 8.5 and later</span>
-    <span class="red">scrollutil::addMouseWheelSupport $txt</span>      <span class="cmt">;# adds old-school wheel support</span>
+    if {$ttk::currentTheme eq "vista"} {
+        <span class="red">$sa configure -relief solid</span>
+    }
+    set txt [text $sa.txt -font TkFixedFont -takefocus 1 -wrap none]
+    catch {$txt configure -tabstyle wordprocessor}      ;<span class="cmt"># for Tk 8.5 and later</span>
+    <span class="red">scrollutil::addMouseWheelSupport $txt</span>       ;<span class="cmt"># old-school wheel support</span>
     <span class="red">$sa setwidget $txt</span>
 
     set chan [open $fileName]
     $txt insert end [read -nonewline $chan]
     close $chan
     $txt configure -state disabled
+    bind $txt &lt;Button-1&gt; { focus %W }   ;<span class="cmt"># for Tk versions &lt; 8.6.11/8.7a4</span>
 
-    set padding [expr {$ttk::currentTheme eq "aqua" ? 0 : "7p"}]
-    <span class="red">$nb add $sa -text $fileName -image fileImg -compound left -padding $padding</span>
+    <span class="red">$nb add $sa -text $fileName -image fileImg -compound left \
+                -padding $panePadding</span>
 }
 
 <span class="cmt">#
@@ -1735,6 +1777,22 @@ set width [expr {[winfo reqwidth $sa] + [winfo reqwidth $sa.vsb]}]
 incr width [expr {$ttk::currentTheme eq "aqua" ?
                   2*27 : 2*[winfo pixels . 7p] + 4}]
 <span class="red">$nb configure -width $width</span>
+
+proc condCopySel {nb widget} {
+    set txt $widget.txt
+    if {[$txt tag nextrange sel 1.0 end] eq ""} {
+        return 1
+    }
+
+    set btn [tk_messageBox -title "Copy Selection?" -icon question \
+             -message "Do you want to copy the selection to the clipboard?" \
+             -type yesnocancel]
+    switch $btn {
+        yes     { tk_textCopy $txt; return 1 }
+        no      { return 1 }
+        cancel  { return 0 }
+    }
+}
 
 <span class="cmt">#
 # Create a binding for moving and closing the tabs interactively
@@ -1772,6 +1830,24 @@ proc populateMenu {nb data} {
   <code>closetab</code> element in their tabs and notebooks without this
   element.</p>
 
+  <p>Note that the state of the text widgets is set to <code>disabled</code>,
+  but the user can select a text range and then copy the selection into the
+  clipboard via <code>Control-c</code> (<code>Command-c</code> on Mac OS
+  X/11).&nbsp; When attempting to close a tab or to leave the currently
+  selected one, the path name of the corresponding scrollarea widget is
+  automatically passed to the <code>condCopySel</code> procedure, which was
+  specified as the value of the <code><a href=
+  "scrollednotebook.html#forgetcommand">-forgetcommand</a></code> and
+  <code><a href="scrollednotebook.html#leavecommand">-leavecommand</a></code>
+  options.&nbsp; This procedure checks the text widget child of the scrollarea
+  for the existence of a selection and enables the user to make sure that the
+  selection will be copied to the clipboard before closing or leaving the tab,
+  or to cancel the attempted operation on it.&nbsp; In a real-world
+  application, the procedure(s) specified as the value(s) of the two
+  above-mentioned options typically ask the user whether to save the changes
+  before closing or leaving the tab, or to cancel the attempted operation on
+  it.</p>
+
   <p>We also make use of the virtual event <code><a href=
   "scrollednotebook.html#virtual_events">&lt;&lt;MenuItemsRequested&gt;&gt;</a></code>
   to populate the pop-up menu shown when the user clicks a tab with mouse
@@ -1788,6 +1864,231 @@ proc populateMenu {nb data} {
   ttk::notebook appears with an exorbitantly large width and (on most displays)
   with squeezed tabs.&nbsp; If you resize it to a reasonable width, its tabs
   become so small that their texts are no longer readable.</p>
+
+  <h3 id="ex_PlainNotebookDemo">A scrollutil::plainnotebook Demo</h3>
+
+  <p>The script <code>PlainNotebookDemo.tcl</code> in the <code>demos</code>
+  directory creates a <a href=
+  "plainnotebook.html">scrollutil::plainnotebook</a> widget and populates
+  it with panes containing <a href="scrollarea.html">scrollarea</a>s that wrap
+  text widgets displaying the contents of the Ttk library files.&nbsp; After
+  that it provides pop-up menu items for moving the tabs upward/downward and
+  closing them.</p>
+
+  <blockquote>
+    <img src="PlainNotebookDemo.png" alt="PlainNotebookDemo" width="811"
+    height="578">
+  </blockquote>
+
+  <p>The relevant code is nearly identical to the one shown in the <a href=
+  "#ex_ScrolledNotebookDemo">previous example</a>, except that here we make the
+  tabs closable by using the <code><a href=
+  "plainnotebook.html#closabletabs">-closabletabs</a></code> plainnotebook
+  option and the widget's width is set automatically to fit that of its
+  panes:</p>
+
+  <blockquote>
+    <pre>
+<span class="red">package require scrollutil_tile</span>
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
+
+wm title . "Ttk Library Scripts"
+
+set pct $scrollutil::scalingpct
+image create photo fileImg -file [file join $dir file$pct.gif]
+
+<span class="cmt">#
+# Create a plainnotebook widget having closable (and, per default,
+# movable) tabs and populate it with panes that contain scrolled
+# text widgets displaying the contents of the Ttk library files
+#</span>
+set f  [ttk::frame .f]
+<span class="red">set nb [scrollutil::plainnotebook $f.nb -closabletabs 1 \
+        -forgetcommand condCopySel -leavecommand condCopySel]</span>
+. . .
+
+proc condCopySel {nb widget} {
+    . . .
+}
+
+<span class="cmt">#
+# Create a binding for moving and closing the tabs interactively
+#</span>
+<span class="red">bind $nb &lt;&lt;MenuItemsRequested&gt;&gt; { populateMenu %W %d }</span>
+
+proc populateMenu {nb data} {
+    . . .
+}
+
+. . .
+</pre>
+  </blockquote>
+
+  <h3 id="ex_PagesManDemo">A scrollutil::pagesman Demo</h3>
+
+  <p>The script <code>PagesManDemo.tcl</code> in the <code>demos</code>
+  directory demonstrates the use of the <a href=
+  "pagesman.html">scrollutil::pagesman</a> widget having <a href=
+  "plainnotebook.html">scrollutil::plainnotebook</a> widgets as pages.&nbsp; It
+  creates a pagesman widget and adds four plainnotebook children as pages to
+  it.&nbsp; The panes of the first page display the contents of the Tk library
+  files, to be found in the directory <code>$tk_library</code>.&nbsp; The panes
+  of the three other pages display the contents of the GIF image files, message
+  catalogs, and Ttk scripts, situated in the subdirectories
+  <code>images</code>, <code>msgs</code>, and (for Tk 8.5a5 and later)
+  <code>ttk</code>, respectively.</p>
+
+  <blockquote>
+    <img src="PagesManDemo.png" alt="PagesManDemo" width="811" height="578">
+  </blockquote>
+
+  <p>The user can switch from the first page to the three other ones with the
+  aid of the three toolbuttons displaying a folder image and the <code><a href=
+  "plainnotebook.html#addbutton">descend</a></code> style element.&nbsp; To
+  switch back, he or she has to use the <code><a href=
+  "plainnotebook.html#description">ascend</a></code> toolbutton, shown in the
+  top-left corner of the respective plainnotebook widget.</p>
+
+  <blockquote>
+    <img src="PagesManDemoImages.png" alt="PagesManDemoImages" width="811"
+    height="578">
+  </blockquote>
+
+  <p>Here is the relevant code:</p>
+
+  <blockquote>
+    <pre>
+<span class="red">package require scrollutil_tile</span>
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
+
+wm title . "Tk Library Files"
+
+set pct $scrollutil::scalingpct
+image create photo fileImg   -file [file join $dir file$pct.gif]
+image create photo folderImg -file [file join $dir folder$pct.gif]
+
+<span class="cmt">#
+# Populates a given plainnotebook widget with panes that display the contents
+# of the files of the specified suffix within the current working directory
+#</span>
+proc populateNotebook {nb sfx} {
+    set panePadding [expr {$ttk::currentTheme eq "aqua" ? 0 : "7p"}]
+    foreach fileName [lsort -dictionary [glob *.$sfx]] {
+        set baseName [string range $fileName 0 end-4]
+        <span class="red">set sa [scrollutil::scrollarea $nb.sa_$baseName]</span>
+        if {$sfx eq "gif"} {
+            set canv [canvas $sa.canv -background silver]
+            set img [image create photo -file $fileName]
+            $canv create image 10 10 -anchor nw -image $img
+            set width  [expr {[image width  $img] + 20}]
+            set height [expr {[image height $img] + 20}]
+            $canv configure -scrollregion [list 0 0 $width $height]
+            <span class="red">scrollutil::addMouseWheelSupport $canv
+            $sa setwidget $canv</span>
+        } else {
+            <span class="red">$sa configure -lockinterval 10</span>
+            . . .
+
+        }
+        <span class="red">$nb add $sa -text $fileName -image fileImg -compound left \
+                    -padding $panePadding</span>
+    }
+}
+
+<span class="cmt">#
+# Create a pagesman widget
+#</span>
+set f [ttk::frame .f]
+<span class="red">set pm [scrollutil::pagesman $f.pm -leavecommand pmLeaveCmd]</span>
+
+<span class="cmt">#
+# Add option database entries for the -closabletabs,
+# -forgetcommand, and -leavecommand plainnotebook options
+#</span>
+<span class="red">option add *Plainnotebook.closableTabs  1
+option add *Plainnotebook.forgetCommand condCopySel
+option add *Plainnotebook.leaveCommand  condCopySel</span>
+
+<span class="cmt">#
+# Create a plainnotebook child displaying the contents of the Tk library files
+#</span>
+<span class="red">set nbTk [scrollutil::plainnotebook $pm.nbTk]
+$pm add $nbTk
+$nbTk addbutton 1 "Image Files"      folderImg
+$nbTk addbutton 2 "Message Catalogs" folderImg
+$nbTk addbutton 3 "Ttk Scripts"      folderImg
+$nbTk addseparator
+$nbTk addlabel "Tk Scripts"</span>
+cd $tk_library
+populateNotebook $nbTk "tcl"
+
+<span class="cmt">#
+# Create a plainnotebook child displaying the images for the Tcl (Powered) Logo
+#</span>
+<span class="red">set nbImgs [scrollutil::plainnotebook $pm.nbImgs -caller 0 -title "Image Files"]
+$pm add $nbImgs</span>
+cd $tk_library/images
+populateNotebook $nbImgs "gif"
+
+<span class="cmt">#
+# Create a plainnotebook child displaying the contents of the message catalogs
+#</span>
+<span class="red">set nbMsgs [scrollutil::plainnotebook $pm.nbMsgs -caller 0 -title \
+            "Message\nCatalogs"]
+$pm add $nbMsgs</span>
+cd $tk_library/msgs
+populateNotebook $nbMsgs "msg"
+
+<span class="cmt">#
+# Create a plainnotebook child displaying the contents of the Ttk library files
+#</span>
+<span class="red">set nbTtk [scrollutil::plainnotebook $pm.nbTtk -caller 0 -title "Ttk Scripts"]
+$pm add $nbTtk</span>
+<span class="cmt">### cd $tk_library/ttk          ;# works for Tk versions 8.5a5 and later only</span>
+cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
+populateNotebook $nbTtk "tcl"
+
+proc pmLeaveCmd {pm nb} {
+    return [condCopySel $nb [$nb select]]
+}
+
+proc condCopySel {nb widget} {
+    global nbImgs
+    if {$nb eq $nbImgs || [winfo class $widget] ne "Scrollarea"} {
+        return 1
+    }
+
+    . . .
+}
+
+
+<span class="cmt">#
+# Create a binding for moving and closing the tabs interactively
+#</span>
+<span class="red">bind $nb &lt;&lt;MenuItemsRequested&gt;&gt; { populateMenu %W %d }</span>
+
+proc populateMenu {nb data} {
+    . . .
+}
+
+. . .
+</pre>
+  </blockquote>
+
+  <p>The four pages of the pagesman widget, created by using the latter's
+  <code><a href="pagesman.html#add">add</a></code> subcommand, will have the
+  numerical indices <code>0</code>, ..., <code>3</code>.&nbsp; We pass the page
+  indices <code>1</code>, <code>2</code>, and <code>3</code> to the first
+  plainnotebook's <code><a href=
+  "plainnotebook.html#addbutton">addbutton</a></code> subcommand, with which we
+  create the three toolbuttons used to descend from this page to the other
+  ones.&nbsp; When we create the three other plainnotebook widgets, we set
+  their <code><a href="plainnotebook.html#caller">-caller</a></code> option to
+  <code>0</code>, which will make their ascend toolbutton visible and will make
+  sure that invoking this button will switch back to the first
+  plainnotebook.</p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=

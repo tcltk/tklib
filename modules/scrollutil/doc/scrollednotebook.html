@@ -16,7 +16,7 @@
     <h1>The <code><b>scrollutil::scrollednotebook</b></code> Command<br>
     and the <code><b>closetab</b></code> Style Element</h1>
 
-    <h2>For Scrollutil Version 1.10</h2>
+    <h2>For Scrollutil Version 1.11</h2>
 
     <h3>by</h3>
 
@@ -89,8 +89,17 @@ package require scrollutil_tile
 
     <dt><a href="#widget_options">WIDGET-SPECIFIC OPTIONS</a></dt>
 
+    <dd><code><b><a href="#forgetcommand">-forgetcommand</a></b>
+    <i>command</i></code></dd>
+
     <dd><code><b><a href="#height">-height</a></b>
     <i>screenDistance</i></code></dd>
+
+    <dd><code><b><a href="#leavecommand">-leavecommand</a></b>
+    <i>command</i></code></dd>
+
+    <dd><code><b><a href="#movabletabs">-movabletabs</a></b>
+    <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#padding">-padding</a></b>
     <i>paddingSpec</i></code></dd>
@@ -114,7 +123,7 @@ package require scrollutil_tile
     <dd><code><i>pathName</i> <b><a href="#see">see</a></b>
     <i>tabId</i></code></dd>
 
-    <dt class="tm"><a href="#keyboard_traversal">KEYBOARD TRAVERSAL</a></dt>
+    <dt class="tm"><a href="#kbd_traversal">KEYBOARD TRAVERSAL</a></dt>
 
     <dt class="tm"><a href="#virtual_events">VIRTUAL EVENTS</a></dt>
 
@@ -171,10 +180,14 @@ package require scrollutil_tile
     ttk::notebook within a <a href=
     "scrollableframe.html">scrollableframe</a> and supports an arbitrary number
     of unsqueezed tabs.&nbsp; Currently not visible tabs can be brought into
-    view by navigating and scrolling with the mouse wheel or keyboard.&nbsp;
-    An individual tab can be made visible programmatically with the aid of the
+    view by navigating and scrolling with the mouse wheel or keyboard.&nbsp; An
+    individual tab can be made visible programmatically with the aid of the
     <code><b><a href="#see">see</a></b></code> subcommand.&nbsp; It is made
-    sure that the currently selected tab is always visible.</dd>
+    sure that the currently selected tab is always visible.&nbsp; Unlike the
+    ttk::notebook widget, whose <code><b>-width</b></code> option is quite
+    often overriden by the total width of the tabs, the scrollednotebook widget
+    respects the value of its <code><b><a href="#width">-width</a></b></code>
+    option, regardless of the space required by the tabs.</dd>
 
     <dd class="tm">The API of the scrollednotebook widget is nearly identical
     to that of ttk::notebook.&nbsp; Apart from the scrollednotebook-specific
@@ -183,9 +196,9 @@ package require scrollutil_tile
     subcommands as the one associated with a ttk::notebook.&nbsp; Note that the
     API doesn't provide any command for retrieving the path name of the
     ttk::notebook widget contained in a scrollednotebook, because there is no
-    need to access that widget directly.&nbsp; Moreover, using its subcommands
-    instead of those of the scrollednotebook widget would result in an
-    unpredictable behavior.</dd>
+    need to access that widget directly.&nbsp; Moreover, using its options or
+    subcommands instead of those of the scrollednotebook widget would result in
+    an unpredictable behavior.</dd>
 
     <dt class="tm" id="std_options"><b>STANDARD OPTIONS</b></dt>
 
@@ -216,6 +229,38 @@ package require scrollutil_tile
 
     <dt id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
 
+    <dd id="forgetcommand">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-forgetcommand</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;forgetCommand</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;ForgetCommand</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a command to be invoked when attempting to remove a tab
+        and unmanage the associated window with the aid of the
+        <code><b>forget</b></code> subcommand.&nbsp; If the option's value is a
+        nonempty string then it is concatenated with the path name of the
+        scrollednotebook widget and that of the window to be unmanaged, and the
+        resulting script, which must return a boolean, is evaluated in the
+        global scope.&nbsp; If the return value of this script is false then
+        the <code><b>forget</b></code> subcommand is aborted, i.e., the tab is
+        not removed and the associated window is not unmanaged.&nbsp; The
+        default is an empty string.</p>
+      </blockquote>
+    </dd>
+
     <dd id="height">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
@@ -242,6 +287,62 @@ package require scrollutil_tile
         (which in turn depends on the maximum height of all panes and tabs),
         immediately after the scrollednotebook gets mapped.&nbsp; The default
         is <code>0</code>.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="leavecommand">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-leavecommand</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;leaveCommand</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;LeaveCommand</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a command to be invoked when attempting to leave the
+        currently selected window by selecting a different one.&nbsp; If the
+        option's value is a nonempty string then it is concatenated with the
+        path name of the scrollednotebook widget and that of the currently
+	selected window, and the resulting script, which must return a boolean,
+	is evaluated in the global scope.&nbsp; If the return value of this
+	script is false then the operation of selecting a different window is
+        aborted.&nbsp; The default is an empty string.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="movabletabs">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-movabletabs</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;movableTabs</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;MovableTabs</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a boolean value that determines whether the tabs can be
+        moved with the mouse.&nbsp; See the <a href="#bindings">FURTHER
+        BINDINGS</a> section below for details.&nbsp; The default is
+        <code>1</code>.</p>
       </blockquote>
     </dd>
 
@@ -390,7 +491,7 @@ package require scrollutil_tile
       </dl>
     </dd>
 
-    <dt class="tm" id="keyboard_traversal"><b>KEYBOARD TRAVERSAL</b></dt>
+    <dt class="tm" id="kbd_traversal"><b>KEYBOARD TRAVERSAL</b></dt>
 
     <dd>See the <b>ttk_notebook</b> manual entry.</dd>
 
@@ -452,11 +553,11 @@ proc populateMenu {nb data} {
         scrollednotebook widget via the mouse wheel:</b>&nbsp; A mouse wheel
         tick selects the tab cyclically following/preceding the currently
         selected one.&nbsp; (Note that the same effect can also be achieved
-	with the keys <code>Right</code>, <code>Left</code>,
-	<code>Control-Tab</code>, and <code>Control-Shift-Tab</code>.)&nbsp; On
-	the windowing system <code><b>aqua</b></code>, if the
-	<code>Option</code> key is down while the mouse wheel is being rotated
-	then a wheel tick selects the tab whose numerical index is 10
+        with the keys <code>Right</code>, <code>Left</code>,
+        <code>Control-Tab</code>, and <code>Control-Shift-Tab</code>.)&nbsp; On
+        the windowing system <code><b>aqua</b></code>, if the
+        <code>Option</code> key is down while the mouse wheel is being rotated
+        then a wheel tick selects the tab whose numerical index is 10
         greater/less than that of the currently selected one (modulo the number
         of tabs).&nbsp; The same holds true on the windowing systems
         <code><b>x11</b></code> and <code><b>win32</b></code> if the Tk version
@@ -467,17 +568,19 @@ proc populateMenu {nb data} {
         scrollednotebook widget with the mouse</b>:&nbsp; If mouse button 1 is
         pressed over a tab but outside the <code><b><a href=
         "#closetab">closetab</a></b></code> element (if any) and then dragged
-        outside that tab, then the mouse cursor takes on the shape of a
-        left/right arrow, indicating that the tab in question is being moved to
-        another position.&nbsp; This operation ends when mouse button 1 is
-        released, and can be canceled by pressing the <code>Escape</code>
-        key.&nbsp; In both cases, the mouse cursor is reset to its original
-        value, specified by the <code><b>-cursor</b></code> configuration
-        option.&nbsp; After releasing mouse button 1, the source tab is moved
-        to the position previously pointed to by the arrow (provided that the
-        action was not canceled via <code>Escape</code>).&nbsp; If the Tk
-        version is 8.5a2 or later then after moving the tab to its new
-        position, the widget generates a
+        outside that tab then, in case of a scrollednotebook provided that the
+        value of the widget's <code><b><a href=
+        "#movabletabs">-movabletabs</a></b></code> option is true, the mouse
+        cursor takes on the shape of a left/right arrow, indicating that the
+        tab in question is being moved to another position.&nbsp; This
+        operation ends when mouse button 1 is released, and can be canceled by
+        pressing the <code>Escape</code> key.&nbsp; In both cases, the mouse
+        cursor is reset to its original value, specified by the
+        <code><b>-cursor</b></code> configuration option.&nbsp; After releasing
+        mouse button 1, the source tab is moved to the position previously
+        pointed to by the arrow (provided that the action was not canceled via
+        <code>Escape</code>).&nbsp; If the Tk version is 8.5a2 or later then
+        after moving the tab to its new position, the widget generates a
         <code><b>&lt;&lt;NotebookTabMoved&gt;&gt;</b></code> virtual event, by
         invoking&nbsp; <code><b>event generate</b></code>&nbsp; with the
         <code><b>-data</b></code> option set to a list consisting of the path
@@ -495,12 +598,14 @@ proc populateMenu {nb data} {
         provided that both the value of the tab's <code><b>-state</b></code>
         option and the state of its <code><b>closetab</b></code> element is
         <code><b>normal</b></code>, the tab is closed by means of the widget's
-        <code><b>forget</b></code> subcommand.&nbsp; If the Tk version is 8.5a2
-        or later then after closing the tab, the widget generates a
-        <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code> virtual event, by
-        invoking&nbsp; <code><b>event generate</b></code>&nbsp; with the
-        <code><b>-data</b></code> option set to the path name of the widget
-        contained in that tab's pane.</li>
+        <code><b>forget</b></code> subcommand.&nbsp; If this operation was not
+        aborted by the command specified as the value of the <code><b><a href=
+        "#forgetcommand">-forgetcommand</a></b></code> option and the Tk
+        version is 8.5a2 or later then, after closing the tab, the widget
+        generates a <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code>
+        virtual event, by invoking&nbsp; <code><b>event
+        generate</b></code>&nbsp; with the <code><b>-data</b></code> option set
+        to the path name of the widget contained in that tab's pane.</li>
       </ol>
     </dd>
 

@@ -15,7 +15,7 @@
     <h1>The <code><b>scrollutil::scrollarea</b></code> and<br>
     <code><b>scrollutil::getscrollarea</b></code> Commands</h1>
 
-    <h2>For Scrollutil Version 1.10</h2>
+    <h2>For Scrollutil Version 1.11</h2>
 
     <h3>by</h3>
 
@@ -88,6 +88,9 @@
     <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#respecttitlecolumns">-respecttitlecolumns</a></b>
+    <i>boolean</i></code></dd>
+
+    <dd><code><b><a href="#setfocus">-setfocus</a></b>
     <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#takefocus">-takefocus</a></b>
@@ -403,6 +406,67 @@ option add *Scrollarea.autoHideScrollbars 1
         column area if the value of the <code><b><a href=
         "https://www.nemethi.de/tablelist/tablelistWidget.html#titlecolumns">-titlecolumns</a></b></code>
         tablelist option is positive.&nbsp; The default is <code>1</code>.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="setfocus">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-setfocus</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;setFocus</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;SetFocus</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a boolean value that determines whether a click with mouse
+        button 1 or 2 on one of the scrollbars should set the focus to the
+        widget embedded into the scrollarea with the aid of the
+        <code><b><a href="#setwidget">setwidget</a></b></code> subcommand if
+        that widget is not in disabled state.&nbsp; The default is
+        <code>0</code>.</p>
+
+        <p><b>REMARK 1:</b>&nbsp; If the option's value is <code>1</code> and
+        the embedded widget is a text or ctext widget then a click with mouse
+        button 1 or 2 on one of the scrollbars will set the focus to that
+        widget regardless of the latter's state, provided that the windowing
+        system is <code><b>win32</b></code> or the Tk version is at least
+        8.6.11 or 8.7a4.&nbsp; This is the same behavior as the one exhibited
+        by the default bindings of these widgets for
+        <code><b>&lt;Button-1&gt;</b></code> events.&nbsp; (In case of a ctext
+        widget <code><i>w</i></code>, the focus is set to the widget's main
+        text widget child <code><i>w</i>.t</code> rather than to the widget
+        itself.)</p>
+
+        <p><b>REMARK 2:</b>&nbsp; If the option's value is <code>1</code> and
+        the embedded widget is a ttk::treeview widget then a click with mouse
+        button 1 or 2 on one of the scrollbars will set the focus to that
+        widget regardless of the latter's state, on all windowing systems and
+        for all Tk versions.&nbsp; Again, this is the same behavior as the one
+        exhibited by the default bindings of this widget for
+        <code><b>&lt;Button-1&gt;</b></code> events.</p>
+
+        <p><b>REMARK 3:</b>&nbsp; The easiest way to override the default value
+        for all scrollarea instances of your application is to insert the
+        line</p>
+
+        <blockquote>
+          <pre>
+option add *Scrollarea.setFocus 1
+</pre>
+        </blockquote>
+
+        <p>somewhere at the top of your script (before creating any scrollarea
+        widgets).</p>
       </blockquote>
     </dd>
 
