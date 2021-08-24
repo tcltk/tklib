@@ -37,6 +37,7 @@ set auto_index(::scrollutil::pnb::onPlainnotebookMap) [list source [file join $d
 set auto_index(::scrollutil::pnb::onNbTabChanged) [list source [file join $dir plainnotebook.tcl]]
 set auto_index(::scrollutil::pnb::restoreTabChangedBinding) [list source [file join $dir plainnotebook.tcl]]
 set auto_index(::scrollutil::pnb::setYScrollIncr) [list source [file join $dir plainnotebook.tcl]]
+set auto_index(::scrollutil::pnb::onFontChanged) [list source [file join $dir plainnotebook.tcl]]
 set auto_index(::scrollutil::pnb::onThemeChanged) [list source [file join $dir plainnotebook.tcl]]
 set auto_index(::scrollutil::pnb::onMotion) [list source [file join $dir plainnotebook.tcl]]
 set auto_index(::scrollutil::pnb::onButton1) [list source [file join $dir plainnotebook.tcl]]
