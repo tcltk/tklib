@@ -566,6 +566,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
     }
 
     upvar ::scrollutil::ns${win}::data data
+    set nb $data(nb)
 
     variable cmdOpts
     set cmd [mwutil::fullOpt "command" [lindex $args 0] $cmdOpts]
@@ -573,7 +574,6 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 
     switch $cmd {
 	add {
-	    set nb $data(nb)
 	    set widget [lindex $args 1]
 	    set isNew [expr {[lsearch -exact [$nb tabs] $widget] < 0}]
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
@@ -622,7 +622,6 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 		mwutil::wrongNumArgs "$win $cmd tab"
 	    }
 
-	    set nb $data(nb)
 	    if {[catch {$nb index [lindex $args 1]} tabIdx] == 0 &&
 		$tabIdx >= 0 && $tabIdx < [$nb index end]} {
 		set widget [lindex [$nb tabs] $tabIdx]
@@ -652,7 +651,6 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	}
 
 	insert {
-	    set nb $data(nb)
 	    set widget [lindex $args 2]
 	    set isNew [expr {[lsearch -exact [$nb tabs] $widget] < 0}]
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
@@ -688,9 +686,8 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 
 	select {
 	    switch $argCount {
-		1 { return [$data(nb) $cmd] }
+		1 { return [$nb $cmd] }
 		2 {
-		    set nb $data(nb)
 		    set tabId [lindex $args 1]
 		    if {[catch {$nb index $tabId} tabIdx] != 0} {
 			return -code error $tabIdx
@@ -709,7 +706,6 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	}
 
 	tab {
-	    set nb $data(nb)
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
 		return -code error $result
 	    }
