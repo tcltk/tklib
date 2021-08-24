@@ -1219,24 +1219,38 @@ proc scrollutil::pnb::setYScrollIncr win {
 # scrollutil::pnb::onFontChanged
 #------------------------------------------------------------------------------
 proc scrollutil::pnb::onFontChanged win {
-    set size [font actual TkDefaultFont -size]
-    if {$size == 0} {
-	set size 9
-    }
-    incr size 2
-
     variable titleFont
-    set size2 [font actual $titleFont -size]
-    if {$size2 == 0} {
-	set size2 9
-    }
-    if {$size2 != $size} {
-	font configure $titleFont -size $size
+    set configList {}
+    foreach opt {-family -size -weight -slant -underline -overstrike} {
+	set val1 [font actual TkDefaultFont $opt]
+	set val2 [font actual $titleFont    $opt]
+	switch -- $opt {
+	    -family -
+	    -weight -
+	    -slant	{ set hasChanged [expr {$val1 ne $val2}] }
+
+	    -underline -
+	    -overstrike	{ set hasChanged [expr {$val1 != $val2}] }
+
+	    -size {
+		if {$val1 == 0} { set val1 9 }
+		if {$val2 == 0} { set val2 9 }
+		set hasChanged [expr {[incr val1 2] != $val2}]
+	    }
+	}
+
+	if {$hasChanged} {
+	    lappend configList $opt $val1
+	}
     }
 
-    upvar ::scrollutil::ns${win}::data data
-    set charWidth [font measure TkDefaultFont -displayof $win "0"]
-    $data(sf) configure -xscrollincrement $charWidth
+    if {[llength $configList] != 0} {
+	eval font configure [list $titleFont] $configList
+
+	upvar ::scrollutil::ns${win}::data data
+	set charWidth [font measure TkDefaultFont -displayof $win "0"]
+	$data(sf) configure -xscrollincrement $charWidth
+    }
 }
 
 #------------------------------------------------------------------------------
