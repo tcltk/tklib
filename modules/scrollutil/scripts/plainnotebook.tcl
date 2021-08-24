@@ -258,6 +258,11 @@ proc scrollutil::pnb::createBindings {} {
 	namespace delete scrollutil::ns%W
 	catch {rename %W ""}
     }
+    bind Plainnotebook <<TkWorldChanged>> {
+	if {"%d" eq "FontChanged"} {
+	    scrollutil::pnb::onFontChanged %W
+	}
+    }
     bind Plainnotebook <<ThemeChanged>> { scrollutil::pnb::onThemeChanged %W }
 
     bindtags . [linsert [bindtags .] 1 PlainnotebookMain]
@@ -1208,6 +1213,30 @@ proc scrollutil::pnb::setYScrollIncr win {
 	    break
 	}
     }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::pnb::onFontChanged
+#------------------------------------------------------------------------------
+proc scrollutil::pnb::onFontChanged win {
+    set size [font actual TkDefaultFont -size]
+    if {$size == 0} {
+	set size 9
+    }
+    incr size 2
+
+    variable titleFont
+    set size2 [font actual $titleFont -size]
+    if {$size2 == 0} {
+	set size2 9
+    }
+    if {$size2 != $size} {
+	font configure $titleFont -size $size
+    }
+
+    upvar ::scrollutil::ns${win}::data data
+    set charWidth [font measure TkDefaultFont -displayof $win "0"]
+    $data(sf) configure -xscrollincrement $charWidth
 }
 
 #------------------------------------------------------------------------------
