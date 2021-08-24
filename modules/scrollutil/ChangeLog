@@ -1,5 +1,10 @@
 2021-08-24  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* scripts/plainnotebook.tcl: Reworked the binding script for
+	  <<TkWorldChanged>> with %d set to "FontChanged".
+
+2021-08-24  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* doc/pagesman.html:            Minor corrections.
 	* doc/scrollednotebook.html:
 	* scripts/scrollednotebook.tcl:
