@@ -1,3 +1,14 @@
+2021-08-24  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/pagesman.html:            Minor corrections.
+	* doc/scrollednotebook.html:
+	* scripts/scrollednotebook.tcl:
+
+	* scripts/plainnotebook.tcl: Added binding for <<TkWorldChanged>> with
+	  %d set to "FontChanged" (see TIP 608).
+
+	* scripts/tclIndex: Newly generated.
+
 2021-08-23  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 1.11; corrected the
