@@ -1,3 +1,24 @@
+2021-08-25  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 3.14.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Extended the "adjustentry" subcommand by an optional
+	  second string argument and used this extended form in the
+	  implementation of the "mentry::fixedPointMentry" command; added
+	  binding for <<TkWorldChanged>> with %d set to "FontChanged" (see TIP
+	  608); added bindings that handle <<Paste>> events in the entry
+	  components of the mentry widgets of types "IPAddr" and "IPv6Addr.
+
+	* ../../examples/mentry/phonenumber(_tile).tcl:  Added bindings that
+	* ../../examples/mentry/ethernetaddr(_tile).tcl: handle <<Paste>>
+	  events in the entry components of the mentry widgets of types
+	  "EthernetAddr" and "PhoneNumber".
+
 2021-04-14  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Mentry 3.13.
