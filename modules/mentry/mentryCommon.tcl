@@ -13,7 +13,7 @@ namespace eval ::mentry {
     #
     # Public variables:
     #
-    variable version	3.13
+    variable version	3.14
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
