@@ -14,7 +14,7 @@
     <h1>Multi-Entry Widgets for Real Numbers<br>
     in Fixed-Point Format</h1>
 
-    <h2>For Mentry Version 3.13</h2>
+    <h2>For Mentry Version 3.14</h2>
 
     <h3>by</h3>
 
@@ -70,7 +70,7 @@
     <code><i>count1</i></code> characters before and <code><i>count2</i></code>
     digits after the decimal point.&nbsp; Both <code><i>count1</i></code> and
     <code><i>count2</i></code> must be positive integers.&nbsp; The mentry will
-    have two entry children, separated by a label displaying a
+    have two entry components, separated by a label displaying a
     <code><b>"."</b></code> character by default; the optional
     <code><b>-comma</b></code> switch changes the label text to
     <code><b>","</b></code>.&nbsp; The supported <code><i>options</i></code>
@@ -159,9 +159,9 @@
     is checked by examining the widget's <code><b>type</b></code> attribute,
     which must have the value <code>"FixedPoint"</code>).</dd>
 
-    <dd class="tm">If both entry children of the widget are empty, the command
-    sets the focus to the first entry child, generates an error, and returns
-    the string <code>"EMPTY"</code>.</dd>
+    <dd class="tm">If both entry components of the widget are empty, the
+    command sets the focus to the first entry component, generates an error,
+    and returns the string <code>"EMPTY"</code>.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 

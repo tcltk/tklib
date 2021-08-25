@@ -13,7 +13,7 @@
   <div align="center">
     <h1>Multi-Entry Widgets for Date and Time</h1>
 
-    <h2>For Mentry Version 3.13</h2>
+    <h2>For Mentry Version 3.14</h2>
 
     <h3>by</h3>
 
@@ -80,8 +80,8 @@
     order.&nbsp; These field descriptor characters have the same meanings as in
     the&nbsp; <code><b>clock format</b></code>&nbsp; command.&nbsp; The
     <code><i>separator</i></code> argument specifies the text to be displayed
-    in the labels separating the three entry children of the mentry widget (the
-    most common values are the <code><b>"/"</b></code>,
+    in the labels separating the three entry components of the mentry widget
+    (the most common values are the <code><b>"/"</b></code>,
     <code><b>"-"</b></code>, and <code><b>"."</b></code> characters).&nbsp; The
     supported <code><i>options</i></code> are the same as in the case of the
     <code><b><a href="mentryWidget.html">mentry::mentry</a></b></code>
@@ -95,27 +95,27 @@
     <dt class="tm"><b>DEFAULT BINDINGS</b></dt>
 
     <dd>The <code><b>mentry::dateMentry</b></code> command defines four new
-    keyboard bindings for the entry children of the mentry widget it
+    keyboard bindings for the entry components of the mentry widget it
     creates:&nbsp; The <code>Up</code> key increments the entry's value by 1 if
-    the latter is less than the allowed maximum for that child.&nbsp;
+    the latter is less than the allowed maximum for that component.&nbsp;
     Similarly, the <code>Down</code> key decrements the entry's value by 1 if
-    the latter is greater than the allowed minimum for that child.&nbsp; The
-    <code>Prior</code> key increments the entry's value by at most 10 if the
-    latter is less than the allowed maximum for that child.&nbsp; Similarly,
-    the <code>Next</code> key decrements the entry's value by at most 10 if the
-    latter is greater than the allowed minimum for that child.&nbsp; If the
-    entry is empty then all of these keys insert the child-specific minimum
-    value into the entry.</dd>
+    the latter is greater than the allowed minimum for that component.&nbsp;
+    The <code>Prior</code> key increments the entry's value by at most 10 if
+    the latter is less than the allowed maximum for that component.&nbsp;
+    Similarly, the <code>Next</code> key decrements the entry's value by at
+    most 10 if the latter is greater than the allowed minimum for that
+    component.&nbsp; If the entry is empty then all of these keys insert the
+    component-specific minimum value into the entry.</dd>
 
     <dd class="tm">The actions performed by the <code>Up</code> and
     <code>Down</code> keys can also be triggered by rolling the mouse
-    wheel.&nbsp; In addition, on Mac OS Classic and Mac OS X Aqua, the actions
-    performed by the <code>Prior</code> and <code>Next</code> keys are also
-    triggered by the <code><b>&lt;Option-MouseWheel&gt;</b></code> event.&nbsp;
-    The same holds true on all windowing systems if the Tk version is 8.7a4 or
-    later, where the <code><b>Option</b></code> modifier is bound to the
-    <code>Option</code> key on Mac OS X and to the <code>Alt</code> key on
-    Windows and X11.</dd>
+    wheel.&nbsp; In addition, on Mac OS Classic and Mac OS X/11 Aqua, the
+    actions performed by the <code>Prior</code> and <code>Next</code> keys are
+    also triggered by the <code><b>&lt;Option-MouseWheel&gt;</b></code>
+    event.&nbsp; The same holds true on all windowing systems if the Tk version
+    is 8.7a4 or later, where the <code><b>Option</b></code> modifier is bound
+    to the <code>Option</code> key on Mac OS X/11 and to the <code>Alt</code>
+    key on Windows and X11.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
@@ -161,7 +161,7 @@
     %p"</b></code>&nbsp; or&nbsp; <code><b>"%I:%M:%S %p"</b></code>&nbsp;
     (i.e., with AM/PM indicator).&nbsp; The <code><i>separator</i></code>
     argument specifies the text to be displayed in the labels separating the
-    entry children of the mentry widget (this is usually the
+    entry components of the mentry widget (this is usually the
     <code><b>":"</b></code> character).&nbsp; The <code><i>options</i></code>
     are the same as in the case of the <code><b><a href=
     "mentryWidget.html">mentry::mentry</a></b></code> command.</dd>
@@ -174,27 +174,27 @@
     <dt class="tm"><b>DEFAULT BINDINGS</b></dt>
 
     <dd>The <code><b>mentry::timeMentry</b></code> command defines four new
-    keyboard bindings for the entry children of the mentry widget it
+    keyboard bindings for the entry components of the mentry widget it
     creates:&nbsp; The <code>Up</code> key increments the entry's value by 1 if
-    the latter is less than the allowed maximum for that child.&nbsp;
+    the latter is less than the allowed maximum for that component.&nbsp;
     Similarly, the <code>Down</code> key decrements the entry's value by 1 if
-    the latter is greater than the allowed minimum for that child.&nbsp; The
-    <code>Prior</code> key increments the entry's value by at most 10 if the
-    latter is less than the allowed maximum for that child.&nbsp; Similarly,
-    the <code>Next</code> key decrements the entry's value by at most 10 if the
-    latter is greater than the allowed minimum for that child.&nbsp; If the
-    entry is empty then all of these keys insert the child-specific minimum
-    value into the entry.</dd>
+    the latter is greater than the allowed minimum for that component.&nbsp;
+    The <code>Prior</code> key increments the entry's value by at most 10 if
+    the latter is less than the allowed maximum for that component.&nbsp;
+    Similarly, the <code>Next</code> key decrements the entry's value by at
+    most 10 if the latter is greater than the allowed minimum for that
+    component.&nbsp; If the entry is empty then all of these keys insert the
+    component-specific minimum value into the entry.</dd>
 
     <dd class="tm">The actions performed by the <code>Up</code> and
     <code>Down</code> keys can also be triggered by rolling the mouse
-    wheel.&nbsp; In addition, on Mac OS Classic and Mac OS X Aqua, the actions
-    performed by the <code>Prior</code> and <code>Next</code> keys are also
-    triggered by the <code><b>&lt;Option-MouseWheel&gt;</b></code> event.&nbsp;
-    The same holds true on all windowing systems if the Tk version is 8.7a4 or
-    later, where the <code><b>Option</b></code> modifier is bound to the
-    <code>Option</code> key on Mac OS X and to the <code>Alt</code> key on
-    Windows and X11.</dd>
+    wheel.&nbsp; In addition, on Mac OS Classic and Mac OS X/11 Aqua, the
+    actions performed by the <code>Prior</code> and <code>Next</code> keys are
+    also triggered by the <code><b>&lt;Option-MouseWheel&gt;</b></code>
+    event.&nbsp; The same holds true on all windowing systems if the Tk version
+    is 8.7a4 or later, where the <code><b>Option</b></code> modifier is bound
+    to the <code>Option</code> key on Mac OS X/11 and to the <code>Alt</code>
+    key on Windows and X11.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
@@ -246,11 +246,11 @@
     %p"</b></code>&nbsp; or&nbsp; <code><b>"%I:%M:%S %p"</b></code>&nbsp;
     (i.e., with AM/PM indicator).&nbsp; The <code><i>dateSeparator</i></code>
     argument specifies the text to be displayed in the labels separating the
-    entry children in the date part of the mentry widget (the most common
+    entry components in the date part of the mentry widget (the most common
     values are the <code><b>"/"</b></code>, <code><b>"-"</b></code>, and
     <code><b>"."</b></code> characters).&nbsp; Similarly, the
     <code><i>timeSeparator</i></code> argument stands for the text to be
-    displayed in the labels separating the entry children in the time part of
+    displayed in the labels separating the entry components in the time part of
     mentry widget (this is usually the <code><b>":"</b></code>
     character).&nbsp; The date and time parts in turn are separated from each
     other by a space character.&nbsp; The supported <code><i>options</i></code>
@@ -265,27 +265,27 @@
     <dt class="tm"><b>DEFAULT BINDINGS</b></dt>
 
     <dd>The <code><b>mentry::dateTimeMentry</b></code> command defines four new
-    keyboard bindings for the entry children of the mentry widget it
+    keyboard bindings for the entry components of the mentry widget it
     creates:&nbsp; The <code>Up</code> key increments the entry's value by 1 if
-    the latter is less than the allowed maximum for that child.&nbsp;
+    the latter is less than the allowed maximum for that component.&nbsp;
     Similarly, the <code>Down</code> key decrements the entry's value by 1 if
-    the latter is greater than the allowed minimum for that child.&nbsp; The
-    <code>Prior</code> key increments the entry's value by at most 10 if the
-    latter is less than the allowed maximum for that child.&nbsp; Similarly,
-    the <code>Next</code> key decrements the entry's value by at most 10 if the
-    latter is greater than the allowed minimum for that child.&nbsp; If the
-    entry is empty then all of these keys insert the child-specific minimum
-    value into the entry.</dd>
+    the latter is greater than the allowed minimum for that component.&nbsp;
+    The <code>Prior</code> key increments the entry's value by at most 10 if
+    the latter is less than the allowed maximum for that component.&nbsp;
+    Similarly, the <code>Next</code> key decrements the entry's value by at
+    most 10 if the latter is greater than the allowed minimum for that
+    component.&nbsp; If the entry is empty then all of these keys insert the
+    component-specific minimum value into the entry.</dd>
 
     <dd class="tm">The actions performed by the <code>Up</code> and
     <code>Down</code> keys can also be triggered by rolling the mouse
-    wheel.&nbsp; In addition, on Mac OS Classic and Mac OS X Aqua, the actions
-    performed by the <code>Prior</code> and <code>Next</code> keys are also
-    triggered by the <code><b>&lt;Option-MouseWheel&gt;</b></code> event.&nbsp;
-    The same holds true on all windowing systems if the Tk version is 8.7a4 or
-    later, where the <code><b>Option</b></code> modifier is bound to the
-    <code>Option</code> key on Mac OS X and to the <code>Alt</code> key on
-    Windows and X11.</dd>
+    wheel.&nbsp; In addition, on Mac OS Classic and Mac OS X/11 Aqua, the
+    actions performed by the <code>Prior</code> and <code>Next</code> keys are
+    also triggered by the <code><b>&lt;Option-MouseWheel&gt;</b></code>
+    event.&nbsp; The same holds true on all windowing systems if the Tk version
+    is 8.7a4 or later, where the <code><b>Option</b></code> modifier is bound
+    to the <code>Option</code> key on Mac OS X/11 and to the <code>Alt</code>
+    key on Windows and X11.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
@@ -384,7 +384,7 @@
     environment.</dd>
 
     <dd class="tm">If an error occurs during the conversion, the command sets
-    the focus to the first erronous entry child, generates an error, and
+    the focus to the first erronous entry component, generates an error, and
     returns one of the values contained in the following table:</dd>
 
     <dd class="tm">
@@ -398,7 +398,7 @@
         <tr>
           <td><code>"EMPTY"</code></td>
 
-          <td>Any entry child (except the one containing the seconds) is
+          <td>Any entry component (except the one containing the seconds) is
           empty.</td>
         </tr>
 

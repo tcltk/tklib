@@ -1,5 +1,25 @@
-What is new in Mentry 3.13?
+What is new in Mentry 3.14?
 ---------------------------
+
+1. Extended the "adjustentry" subcommand by an optional second string
+   argument and used this extended form in the implementation of the
+   "mentry::fixedPointMentry" command.  This significantly improves the
+   layout of the mentry widgets of type "FixedPoint".
+
+2. Added code that handles the virtual event <<TkWorldChanged>> with the
+   "user_data" field (%d) set to "FontChanged", which, with Tk versions
+   later than 8.6.11 and 8.7.a5, will be sent by the Tk engine to all
+   widgets when a font is changed, for example, by invoking "font
+   configure" (see TIP 608).
+
+3. Added bindings that handle <<Paste>> events in the entry components
+   of the mentry widgets of types "IPAddr", "IPv6Addr", "EthernetAddr",
+   and "PhoneNumber" (thanks to Paul Obermeier for his proposal).
+
+4. Improved and updated the documentation.
+
+What was new in Mentry 3.13?
+----------------------------
 
 1. Reworked the support for the awthemes package and extended it by
    support for the "awbreezedark" theme, introduced in awthemes 10.3.
