@@ -33,14 +33,16 @@ proc phoneNumberMentry {win args} {
     $win attrib type PhoneNumber
 
     #
-    # Allow only decimal digits in all entry children; use
+    # Allow only decimal digits in all entry components; use
     # wcb::cbappend (or wcb::cbprepend) instead of wcb::callback
     # in order to keep the wcb::checkEntryLen callback,
-    # registered by mentry::mentry for all entry children
+    # registered by mentry::mentry for all entry components
     #
     for {set n 0} {$n < 3} {incr n} {
-	wcb::cbappend [$win entrypath $n] before insert wcb::checkStrForNum
+	set w [$win entrypath $n]
+	wcb::cbappend $w before insert wcb::checkStrForNum
 	$win adjustentry $n "0123456789"
+	bindtags $w [linsert [bindtags $w] 1 MentryPhoneNumber]
     }
 
     return $win
@@ -81,7 +83,7 @@ proc getPhoneNumber win {
     checkIfPhoneNumberMentry $win
 
     #
-    # Generate an error if any entry child is empty or incomplete
+    # Generate an error if any entry component is empty or incomplete
     #
     for {set n 0} {$n < 3} {incr n} {
 	if {[$win isempty $n]} {
@@ -96,7 +98,7 @@ proc getPhoneNumber win {
 
     #
     # Return the phone number built from the
-    # values contained in the entry children
+    # values contained in the entry components
     #
     $win getarray strs
     return $strs(0)$strs(1)$strs(2)
@@ -117,6 +119,29 @@ proc checkIfPhoneNumberMentry win {
 	return -code error \
 	       "window \"$win\" is not a mentry widget for phone numbers"
     }
+}
+
+bind MentryPhoneNumber <<Paste>> { pastePhoneNumber %W }
+
+#------------------------------------------------------------------------------
+# pastePhoneNumber
+#
+# Handles <<Paste>> events in the entry component w of a mentry widget for
+# 10-digit phone numbers by pasting the current contents of the clipboard into
+# the mentry if it is a valid 10-digit phone number.
+#------------------------------------------------------------------------------
+proc pastePhoneNumber w {
+    if {[llength [info procs ::tk::GetSelection]] == 1} {
+	set res [catch {::tk::GetSelection $w CLIPBOARD} num]
+    } else {					;# for Tk versions prior to 8.3
+	set res [catch {selection get -displayof $w -selection CLIPBOARD} num]
+    }
+    if {$res == 0} {
+	set win [winfo parent $w]
+	catch { putPhoneNumber $num $win }
+    }
+
+    return -code break ""
 }
 
 #------------------------------------------------------------------------------

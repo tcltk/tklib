@@ -25,8 +25,8 @@ source [file join [file dirname [info script]] option.tcl]
 #------------------------------------------------------------------------------
 proc ethernetAddrMentry {win args} {
     #
-    # Create a mentry widget consisting of 6 entry children of
-    # width 2, separated by colons, and set its type to EthernetAddr
+    # Create a mentry widget consisting of 6 entries of width
+    # 2, separated by colons, and set its type to EthernetAddr
     #
     eval [list mentry::mentry $win] $args
     $win configure -body {2 : 2 : 2 : 2 : 2 : 2}
@@ -34,14 +34,16 @@ proc ethernetAddrMentry {win args} {
 
     #
     # Install automatic uppercase conversion and allow only hexadecimal
-    # digits in all entry children; use wcb::cbappend (or wcb::cbprepend)
+    # digits in all entry components; use wcb::cbappend (or wcb::cbprepend)
     # instead of wcb::callback in order to keep the wcb::checkEntryLen
-    # callback, registered by mentry::mentry for all entry children
+    # callback, registered by mentry::mentry for all entry components
     #
     for {set n 0} {$n < 6} {incr n} {
-	wcb::cbappend [$win entrypath $n] before insert wcb::convStrToUpper \
+	set w [$win entrypath $n]
+	wcb::cbappend $w before insert wcb::convStrToUpper \
 		      {wcb::checkStrForRegExp {^[0-9A-F]*$}}
 	$win adjustentry $n "0123456789ABCDEF"
+	bindtags $w [linsert [bindtags $w] 1 MentryEthernetAddr]
     }
 
     return $win
@@ -99,7 +101,7 @@ proc getEthernetAddr win {
     checkIfEthernetAddrMentry $win
 
     #
-    # Generate an error if any entry child is empty
+    # Generate an error if any entry component is empty
     #
     for {set n 0} {$n < 6} {incr n} {
 	if {[$win isempty $n]} {
@@ -110,7 +112,7 @@ proc getEthernetAddr win {
 
     #
     # Return the properly formatted Ethernet address built
-    # from the values contained in the entry children
+    # from the values contained in the entry components
     #
     $win getarray strs
     return [format "%02X:%02X:%02X:%02X:%02X:%02X" \
@@ -132,6 +134,29 @@ proc checkIfEthernetAddrMentry win {
 	return -code error \
 	       "window \"$win\" is not a mentry widget for Ethernet addresses"
     }
+}
+
+bind MentryEthernetAddr <<Paste>> { pasteEthernetAddr %W }
+
+#------------------------------------------------------------------------------
+# pasteEthernetAddr
+#
+# Handles <<Paste>> events in the entry component w of a mentry widget for
+# Ethernet addresses by pasting the current contents of the clipboard into the
+# mentry if it is a valid Ethernet address.
+#------------------------------------------------------------------------------
+proc pasteEthernetAddr w {
+    if {[llength [info procs ::tk::GetSelection]] == 1} {
+	set res [catch {::tk::GetSelection $w CLIPBOARD} addr]
+    } else {					;# for Tk versions prior to 8.3
+	set res [catch {selection get -displayof $w -selection CLIPBOARD} addr]
+    }
+    if {$res == 0} {
+	set win [winfo parent $w]
+	catch { putEthernetAddr $addr $win }
+    }
+
+    return -code break ""
 }
 
 #------------------------------------------------------------------------------
