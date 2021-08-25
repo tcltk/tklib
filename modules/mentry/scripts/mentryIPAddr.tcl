@@ -17,6 +17,7 @@ namespace eval mentry {
     bind MentryIPAddr <Down>	{ mentry::incrIPAddrComp %W -1 }
     bind MentryIPAddr <Prior>	{ mentry::incrIPAddrComp %W  10 }
     bind MentryIPAddr <Next>	{ mentry::incrIPAddrComp %W -10 }
+    bind MentryIPAddr <<Paste>>	{ mentry::pasteIPAddr %W }
     variable winSys
     variable uniformWheelSupport
     if {$uniformWheelSupport} {
@@ -82,14 +83,14 @@ proc mentry::ipAddrMentry {win args} {
     ::$win attrib type IPAddr
 
     #
-    # In each entry child allow only unsigned integers of max.
+    # In each entry component allow only unsigned integers of max.
     # value 255, and insert the binding tag MentryIPAddr in the
     # list of binding tags of the entry, just after its path name
     #
     for {set n 0} {$n < 4} {incr n} {
-	::$win adjustentry $n "0123456789"
 	set w [::$win entrypath $n]
 	wcb::cbappend $w before insert "wcb::checkEntryForUInt 255"
+	::$win adjustentry $n "0123456789"
 	bindtags $w [linsert [bindtags $w] 1 MentryIPAddr]
     }
 
@@ -136,7 +137,7 @@ proc mentry::getIPAddr win {
     checkIfIPAddrMentry $win
 
     #
-    # Scan the contents of the entry children;
+    # Scan the contents of the entry components;
     # generate an error if any of them is empty
     #
     for {set n 0} {$n < 4} {incr n} {
@@ -178,8 +179,8 @@ proc mentry::checkIfIPAddrMentry win {
 # mentry::incrIPAddrComp
 #
 # This procedure handles <Up>, <Down>, <Prior>, and <Next> events in the entry
-# child w of a mentry widget for IP addresses.  It increments the entry's value
-# by the specified amount if allowed.
+# component w of a mentry widget for IP addresses.  It increments the entry's
+# value by the specified amount if allowed.
 #------------------------------------------------------------------------------
 proc mentry::incrIPAddrComp {w amount} {
     set str [$w get]
@@ -219,4 +220,25 @@ proc mentry::incrIPAddrComp {w amount} {
 	_$w insert end $str
 	_$w icursor $oldPos
     }
+}
+
+#------------------------------------------------------------------------------
+# mentry::pasteIPAddr
+#
+# This procedure handles <<Paste>> events in the entry component w of a mentry
+# widget for IP addresses by pasting the current contents of the clipboard into
+# the mentry if it is a valid IP address.
+#------------------------------------------------------------------------------
+proc mentry::pasteIPAddr w {
+    if {[llength [info procs ::tk::GetSelection]] == 1} {
+	set res [catch {::tk::GetSelection $w CLIPBOARD} addr]
+    } else {					;# for Tk versions prior to 8.3
+	set res [catch {selection get -displayof $w -selection CLIPBOARD} addr]
+    }
+    if {$res == 0} {
+	parseChildPath $w win n
+	catch { putIPAddr $addr $win }
+    }
+
+    return -code break ""
 }

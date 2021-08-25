@@ -46,20 +46,20 @@ proc mentry::fixedPointMentry {win cnt1 cnt2 args} {
     ::$win attrib type FixedPoint
 
     #
-    # Allow only integer input in the first entry child
+    # Allow only integer input in the first entry
     #
-    ::$win adjustentry 0 "+-0123456789"
     set w [::$win entrypath 0]
-    $w configure -justify right
     wcb::cbappend $w before insert wcb::checkEntryForInt
+    ::$win adjustentry 0 "0123456789" "+-"
+    $w configure -justify right
 
     #
-    # Allow only decimal digits in the second entry child
+    # Allow only decimal digits in the second entry
     #
-    ::$win adjustentry 1 "0123456789"
     set w [::$win entrypath 1]
-    $w configure -justify left
     wcb::cbappend $w before insert wcb::checkStrForNum
+    ::$win adjustentry 1 "0123456789"
+    $w configure -justify left
 
     return $win
 }

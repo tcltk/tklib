@@ -272,6 +272,11 @@ proc mentry::createBindings {} {
 	    after idle [list mentry::updateLabelForegrounds %W 0]
 	}
     }
+    bind Mentry <<TkWorldChanged>> {
+	if {[string compare %d "FontChanged"] == 0} {
+	    mentry::updateFonts %W
+	}
+    }
 
     #
     # Define some bindings for the binding tag MentryMain
@@ -526,8 +531,21 @@ proc mentry::doConfig {win opt val} {
 	    # Some options need special handling
 	    #
 	    variable themeDefaults
-	    if {[string compare $opt "-font"] == 0 && $usingTile} {
-		adjustChildren $win
+	    if {[string compare $opt "-font"] == 0} {
+		if {$usingTile} {
+		    adjustChildren $win
+		}
+
+		foreach name [array names data ?*-chars] {
+		    set index [lindex [split $name "-"] 0]
+		    foreach {chars1 chars2} $data($name) {}
+		    adjustentrySubCmd $win $index $chars1 $chars2
+		}
+
+		foreach name [array names data ?*-width] {
+		    set index [lindex [split $name "-"] 0]
+		    setentrywidthSubCmd $win $index $data($name)
+		}
 	    } elseif {[string compare $opt "-foreground"] == 0 && $usingTile &&
 		      !$data(inActiveWin) &&
 		      [string compare $val $themeDefaults($opt)] == 0} {
@@ -749,6 +767,16 @@ proc mentry::createChildren {win body} {
 	foreach {bd bd2 x deltaWidth} [geomParams] {}
     }
 
+    foreach name [array names data ?*-chars] {
+	unset data($name)
+    }
+    foreach name [array names data ?*-font] {
+	unset data($name)
+    }
+    foreach name [array names data ?*-width] {
+	unset data($name)
+    }
+
     set data(-body) {}
     set n 0
     foreach {width text} $body {
@@ -934,12 +962,14 @@ proc mentry::mentryWidgetCmd {win args} {
     set cmd [mwutil::fullOpt "option" [lindex $args 0] $cmdOpts]
     switch $cmd {
 	adjustentry {
-	    if {$argCount != 3} {
-		mwutil::wrongNumArgs "$win $cmd index string"
+	    if {$argCount < 3 || $argCount > 4} {
+		mwutil::wrongNumArgs "$win $cmd index string1 ?string2?"
 	    }
 
 	    set n [childIndex [lindex $args 1] $data(maxEntryIdx)]
-	    return [adjustentrySubCmd $win $n [lindex $args 2]]
+	    set chars1 [lindex $args 2]
+	    set chars2 [expr {$argCount == 4 ? [lindex $args 3] : ""}]
+	    return [adjustentrySubCmd $win $n $chars1 $chars2]
 	}
 
 	attrib {
@@ -1197,34 +1227,61 @@ proc mentry::mentryWidgetCmd {win args} {
 #
 # This procedure is invoked to process the mentry adjustentry subcommand.
 #------------------------------------------------------------------------------
-proc mentry::adjustentrySubCmd {win index str} {
+proc mentry::adjustentrySubCmd {win index chars1 chars2} {
+    upvar ::mentry::ns${win}::data data
+    set data($index-chars) [list $chars1 $chars2]
+
     set w [entryPath $win $index]
     set font [$w cget -font]
 
     #
-    # Get the max. width of the characters in str
+    # Get the max. widths maxWidth1 and maxWidth2
+    # of the characters in chars1 and chars2
     #
-    set len [string length $str]
-    set maxWidth 0
+    set len [string length $chars1]
+    set maxWidth1 0
     for {set n 0} {$n < $len} {incr n} {
-	set width [font measure $font -displayof $w [string index $str $n]]
-	if {$width > $maxWidth} {
-	    set maxWidth $width
+	set width [font measure $font -displayof $w [string index $chars1 $n]]
+	if {$width > $maxWidth1} {
+	    set maxWidth1 $width
+	}
+    }
+    set len [string length $chars2]
+    set maxWidth2 0
+    for {set n 0} {$n < $len} {incr n} {
+	set width [font measure $font -displayof $w [string index $chars2 $n]]
+	if {$width > $maxWidth2} {
+	    set maxWidth2 $width
 	}
     }
 
+    set count [lindex $data(-body) [expr {$index * 2}]]
+
+    #
+    # Get the requested width in case all count characters are from chars1
+    #
+    set reqWidth1 [expr {$maxWidth1 * $count}]
+
+    #
+    # Get the requested width in case count - 1 characters
+    # are from chars1 and one character is from chars2
+    #
+    set lessCount [expr {$count - 1}]
+    set reqWidth2 [expr {$maxWidth1*$lessCount + $maxWidth2}]
+
+    #
+    # Set the requested width to the maximum of the two
+    #
+    set reqWidth [expr {$reqWidth1 < $reqWidth2 ? $reqWidth2 : $reqWidth1}]
+
     set zeroWidth [font measure $font -displayof $w "0"]
-    if {$maxWidth <= $zeroWidth} {
+    set availWidth [expr {$zeroWidth * $count}]
+    if {$reqWidth < $availWidth} {
 	return ""
     }
 
-    set maxDelta [expr {$maxWidth - $zeroWidth}]
-    upvar ::mentry::ns${win}::data data
-    set count [lindex $data(-body) [expr {$index * 2}]]
-    set pixels [expr {$maxDelta * $count}]
-    set iPadX [expr {($pixels + 1) / 2}]
-
     variable usingTile
+    set iPadX [expr {($reqWidth - $availWidth + 1) / 2}]
     if {$usingTile} {
 	pack configure [winfo parent $w] -ipadx $iPadX
     } else {
@@ -1346,6 +1403,18 @@ proc mentry::setentryfontSubCmd {win index font} {
     set w [entryPath $win $index]
     $w configure -font $font
 
+    upvar ::mentry::ns${win}::data data
+    set data($index-font) $font
+
+    if {[info exists data($index-chars)]} {
+	foreach {chars1 chars2} $data($index-chars) {}
+	adjustentrySubCmd $win $index $chars1 $chars2
+    }
+
+    if {[info exists data($index-width)]} {
+	setentrywidthSubCmd $win $index $data($index-width)
+    }
+
     variable usingTile
     if {!$usingTile} {
 	return ""
@@ -1368,6 +1437,9 @@ proc mentry::setentryfontSubCmd {win index font} {
 proc mentry::setentrywidthSubCmd {win index width} {
     set w [entryPath $win $index]
     $w configure -width $width
+
+    upvar ::mentry::ns${win}::data data
+    set data($index-width) $width
 
     variable usingTile
     if {!$usingTile} {
@@ -1487,6 +1559,23 @@ proc mentry::updateLabelForegrounds {win inActiveWin} {
 
     foreach w [labels $win] {
 	$w configure -foreground $labelFg
+    }
+}
+
+#------------------------------------------------------------------------------
+# mentry::updateFonts
+#
+# This procedure handles the virtual event <<TkWorldChanged>> if the latter's
+# %d field equals "FontChanged".
+#------------------------------------------------------------------------------
+proc mentry::updateFonts win {
+    upvar ::mentry::ns${win}::data data
+
+    doConfig $win -font $data(-font)
+
+    foreach name [array names data ?*-font] {
+	set index [lindex [split $name "-"] 0]
+	setentryfontSubCmd $win $index $data($name)
     }
 }
 

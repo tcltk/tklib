@@ -13,10 +13,11 @@ namespace eval mentry {
     #
     # Define some bindings for the binding tag MentryIPv6Addr
     #
-    bind MentryIPv6Addr <Up>	{ mentry::incrIPv6AddrComp %W  1 }
-    bind MentryIPv6Addr <Down>	{ mentry::incrIPv6AddrComp %W -1 }
-    bind MentryIPv6Addr <Prior>	{ mentry::incrIPv6AddrComp %W  10 }
-    bind MentryIPv6Addr <Next>	{ mentry::incrIPv6AddrComp %W -10 }
+    bind MentryIPv6Addr <Up>	  { mentry::incrIPv6AddrComp %W  1 }
+    bind MentryIPv6Addr <Down>	  { mentry::incrIPv6AddrComp %W -1 }
+    bind MentryIPv6Addr <Prior>	  { mentry::incrIPv6AddrComp %W  10 }
+    bind MentryIPv6Addr <Next>	  { mentry::incrIPv6AddrComp %W -10 }
+    bind MentryIPv6Addr <<Paste>> { mentry::pasteIPv6Addr %W }
     variable winSys
     variable uniformWheelSupport
     if {$uniformWheelSupport} {
@@ -82,15 +83,15 @@ proc mentry::ipv6AddrMentry {win args} {
     ::$win attrib type IPv6Addr
 
     #
-    # In each entry child allow only hexadecimal digits, and
+    # In each entry component allow only hexadecimal digits, and
     # insert the binding tag MentryIPv6Addr in the list of
     # binding tags of the entry, just after its path name
     #
     for {set n 0} {$n < 8} {incr n} {
-	::$win adjustentry $n "0123456789abcdefABCDEF"
 	set w [::$win entrypath $n]
 	wcb::cbappend $w before insert wcb::convStrToLower \
 		      {wcb::checkStrForRegExp {^[0-9a-fA-F]*$}}
+	::$win adjustentry $n "0123456789abcdefABCDEF"
 	bindtags $w [linsert [bindtags $w] 1 MentryIPv6Addr]
     }
 
@@ -175,7 +176,7 @@ proc mentry::getIPv6Addr win {
     checkIfIPv6AddrMentry $win
 
     #
-    # Generate an error if any entry child is empty
+    # Generate an error if any entry component is empty
     #
     for {set n 0} {$n < 8} {incr n} {
 	if {[::$win isempty $n]} {
@@ -216,7 +217,7 @@ proc mentry::checkIfIPv6AddrMentry win {
 # mentry::incrIPv6AddrComp
 #
 # This procedure handles <Up>, <Down>, <Prior>, and <Next> events in the entry
-# child w of a mentry widget for IPv6 addresses.  It increments the entry's
+# component w of a mentry widget for IPv6 addresses.  It increments the entry's
 # value by the specified amount if allowed.
 #------------------------------------------------------------------------------
 proc mentry::incrIPv6AddrComp {w amount} {
@@ -257,4 +258,25 @@ proc mentry::incrIPv6AddrComp {w amount} {
 	_$w insert end $str
 	_$w icursor $oldPos
     }
+}
+
+#------------------------------------------------------------------------------
+# mentry::pasteIPv6Addr
+#
+# This procedure handles <<Paste>> events in the entry component w of a mentry
+# widget for IPv6 addresses by pasting the current contents of the clipboard
+# into the mentry if it is a valid IPv6 address.
+#------------------------------------------------------------------------------
+proc mentry::pasteIPv6Addr w {
+    if {[llength [info procs ::tk::GetSelection]] == 1} {
+	set res [catch {::tk::GetSelection $w CLIPBOARD} addr]
+    } else {					;# for Tk versions prior to 8.3
+	set res [catch {selection get -displayof $w -selection CLIPBOARD} addr]
+    }
+    if {$res == 0} {
+	parseChildPath $w win n
+	catch { putIPv6Addr $addr $win }
+    }
+
+    return -code break ""
 }

@@ -147,10 +147,10 @@ proc mentry::dateMentry {win fmt sep args} {
     #
     variable dateTimeMaxs
     for {set n 0} {$n < 3} {incr n} {
-	::$win adjustentry $n "0123456789"
 	set w [::$win entrypath $n]
 	wcb::cbappend $w before insert \
 		      "wcb::checkEntryForUInt $dateTimeMaxs($fields($n))"
+	::$win adjustentry $n "0123456789"
 	bindtags $w [linsert [bindtags $w] 1 MentryDateTime]
     }
 
@@ -204,10 +204,10 @@ proc mentry::timeMentry {win fmt sep args} {
     #
     variable dateTimeMaxs
     for {set n 0} {$n < $len} {incr n} {
-	::$win adjustentry $n "0123456789"
 	set w [::$win entrypath $n]
 	wcb::cbappend $w before insert \
 		      "wcb::checkEntryForUInt $dateTimeMaxs($fields($n))"
+	::$win adjustentry $n "0123456789"
 	bindtags $w [linsert [bindtags $w] 1 MentryDateTime]
     }
 
@@ -219,10 +219,10 @@ proc mentry::timeMentry {win fmt sep args} {
     # after its path name, and make the entry right-justified
     #
     if {[string compare $fields(0) "I"] == 0} {
-	::$win adjustentry $len "AP"
 	set w [::$win entrypath $len]
 	wcb::cbappend $w before insert \
 		      wcb::convStrToUpper {wcb::checkStrForRegExp {^[AP]$}}
+	::$win adjustentry $len "AP"
 	bindtags $w [linsert [bindtags $w] 1 MentryMeridian]
 	$w configure -justify right
     }
@@ -299,10 +299,10 @@ proc mentry::dateTimeMentry {win fmt dateSep timeSep args} {
     #
     variable dateTimeMaxs
     for {set n 0} {$n < $len} {incr n} {
-	::$win adjustentry $n "0123456789"
 	set w [::$win entrypath $n]
 	wcb::cbappend $w before insert \
 		      "wcb::checkEntryForUInt $dateTimeMaxs($fields($n))"
+	::$win adjustentry $n "0123456789"
 	bindtags $w [linsert [bindtags $w] 1 MentryDateTime]
     }
 
@@ -314,10 +314,10 @@ proc mentry::dateTimeMentry {win fmt dateSep timeSep args} {
     # after its path name, and make the entry right-justified
     #
     if {[string compare $fields(3) "I"] == 0} {
-	::$win adjustentry $len "AP"
 	set w [::$win entrypath $len]
 	wcb::cbappend $w before insert \
 		      wcb::convStrToUpper {wcb::checkStrForRegExp {^[AP]$}}
+	::$win adjustentry $len "AP"
 	bindtags $w [linsert [bindtags $w] 1 MentryMeridian]
 	$w configure -justify right
     }
