@@ -1,3 +1,7 @@
+2021-09-02  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Mentry 3.14.
+
 2021-08-25  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 3.14.
@@ -13,6 +17,8 @@
 	  binding for <<TkWorldChanged>> with %d set to "FontChanged" (see TIP
 	  608); added bindings that handle <<Paste>> events in the entry
 	  components of the mentry widgets of types "IPAddr" and "IPv6Addr.
+
+	* scripts/tclIndex: Newly generated.
 
 	* ../../examples/mentry/phonenumber(_tile).tcl:  Added bindings that
 	* ../../examples/mentry/ethernetaddr(_tile).tcl: handle <<Paste>>
