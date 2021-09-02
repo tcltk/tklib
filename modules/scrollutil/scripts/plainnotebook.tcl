@@ -226,7 +226,7 @@ namespace eval scrollutil::pnb {
 	if {$size == 0} {
 	    set size 9
 	}
-	incr size 2
+	set size [expr {$size * 5 / 4}]
 
 	variable titleFont \
 	    [eval font create [font actual TkDefaultFont] -size $size]
@@ -1234,8 +1234,8 @@ proc scrollutil::pnb::onFontChanged win {
 
 	    -size {
 		if {$val1 == 0} { set val1 9 }
-		if {$val2 == 0} { set val2 9 }
-		set hasChanged [expr {[incr val1 2] != $val2}]
+		set val1 [expr {$val1 * 5 / 4}]
+		set hasChanged [expr {$val1 != $val2}]
 	    }
 	}
 
@@ -1246,11 +1246,11 @@ proc scrollutil::pnb::onFontChanged win {
 
     if {[llength $configList] != 0} {
 	eval font configure [list $titleFont] $configList
-
-	upvar ::scrollutil::ns${win}::data data
-	set charWidth [font measure TkDefaultFont -displayof $win "0"]
-	$data(sf) configure -xscrollincrement $charWidth
     }
+
+    upvar ::scrollutil::ns${win}::data data
+    set charWidth [font measure TkDefaultFont -displayof $win "0"]
+    $data(sf) configure -xscrollincrement $charWidth
 }
 
 #------------------------------------------------------------------------------
