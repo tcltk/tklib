@@ -14,7 +14,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.14</h2>
+    <h2>For Tablelist Version 6.15</h2>
 
     <h3>by</h3>
 
@@ -840,6 +840,9 @@
     <dd><code><i>pathName</i> <b><a href="#dicttoitem">dicttoitem</a></b>
     <i>dictionary</i></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#dumptofile">dumptofile</a></b>
+    <i>fileName</i></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#editcell">editcell</a></b>
     <i>cellIndex</i></code></dd>
 
@@ -1033,6 +1036,9 @@
 
     <dd><code><i>pathName</i> <b><a href=
     "#labelwindowpath">labelwindowpath</a></b> <i>columnIndex</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#loadfromfile">loadfromfile</a></b>
+    <i>fileName</i> ?<b>-fully</b>|<b>-partly</b>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#move">move</a></b>
     <i>sourceIndex</i> <i>targetIndex</i></code></dd>
@@ -3737,7 +3743,9 @@ proc expandCmd {tbl row} {
 
           <li>extending, toggling, or canceling the (cell) selection if the
           <code><b><a href="#selectmode">-selectmode</a></b></code> option was
-          set to <code><b>extended</b></code>.</li>
+          set to <code><b>extended</b></code>;</li>
+
+          <li>extending the column-wise cell selection.</li>
         </ul>
 
         <p><b>REMARK:</b>&nbsp; If showing the busy cursor per default during
@@ -9160,14 +9168,15 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
         <i>dictionary</i></code></dt>
 
         <dd>Returns a tablelist item corresponding to the dictionary indicated
-        by <code><i>dictionary</i></code>.&nbsp; Each key in the specified
-        dictionary is expected to be a valid column index, in any of the forms
-        described in the <a href="#col_indices">COLUMN INDICES</a> section
-        (e.g., a number or a column name).&nbsp; The values corresponding to
-        the keys will be interpreted as the elements of the resulting tablelist
-        item.&nbsp; If the number of distinct numerical equivalents of the keys
-        (see the <code><b><a href="#columnindex">columnindex</a></b></code>
-        subcommand) is less than the number of columns then the elements
+        by <code><i>dictionary</i></code>.&nbsp; The values corresponding to
+        those keys in the specified dictionary that are valid column indices in
+        any of the forms described in the <a href= "#col_indices">COLUMN
+        INDICES</a> section, will be interpreted as the elements of the
+        resulting tablelist item.&nbsp; The keys that are no valid column
+        indices, are silently ignored.&nbsp; If the number of distinct
+        numerical equivalents of the keys that are valid column indices (see
+        the <code><b><a href="#columnindex">columnindex</a></b></code>
+        subcommand) is less than the number of columns, then the elements
         corresponding to the missing column indices will be set to empty
         strings.</dd>
 
@@ -9178,15 +9187,35 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
         the dictionary&nbsp; <code>{forename Joe&nbsp; surname
         Black}</code>&nbsp; to the <code><b>dicttoitem</b></code> subcommand,
         then the return value will be the list&nbsp; <code>{Joe Black
-        {}}</code>.&nbsp; If the user swaps the first two columns, then, for
-        the same dictionary, the subcommand will return the list&nbsp;
-        <code>{Black Joe {}}</code>.</dd>
+        {}}</code>.&nbsp; If the user swaps the first two columns then, for the
+        same dictionary, the subcommand will return the list&nbsp; <code>{Black
+        Joe {}}</code>.</dd>
 
         <dd class="tm">This subcommand is only available in the presence of the
         <code><b>dict</b></code> command, which is the case when using Tcl
         version 8.5 or later, or one of the alternative, <a href=
         "https://wiki.tcl.tk/10609">Tcl-only <code><b>dict</b></code>
         implementations</a>.</dd>
+
+        <dt class="tm" id="dumptofile"><code><i>pathName</i> <b>dumptofile</b>
+        <i>fileName</i></code></dt>
+
+        <dd>Writes the header and body items contained in the widget's internal
+        list, along with information regarding the columns, sorting, and tree
+        structure, to the file whose path name is given by
+        <code><i>fileName</i></code>.&nbsp; Before writing the data to the
+        file, the subcommand expands all rows of the tablelist by
+        invoking&nbsp; <code><b><a href= "#expandall">expandall</a>
+        -fully</b></code>.&nbsp; You can later load the file's contents with
+        the aid of the <code><b><a href=
+        "#loadfromfile">loadfromfile</a></b></code> subcommand.</dd>
+
+        <dd class="tm"><b>REMARK:</b>&nbsp; Since the
+        <code><b>expandall</b></code> subcommand can take quite a long time
+        (several seconds or even minutes), it is recommended to enclose the
+        invocation of <code><b>dumptofile</b></code> between <code><b><a href=
+        "#setbusycursor">setbusycursor</a></b></code> and <code><b><a href=
+        "#restorecursor">restorecursor</a></b></code>.</dd>
 
         <dt class="tm" id="editcell"><code><i>pathName</i> <b>editcell</b>
         <i>cellIndex</i></code></dt>
@@ -10166,6 +10195,79 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         "#col_labelwindow">-labelwindow</a></b></code> column configuration
         option.&nbsp; If that option was not set or was set to an empty string
         then the return value will be an empty string.</dd>
+
+        <dt class="tm" id="loadfromfile"><code><i>pathName</i>
+        <b>loadfromfile</b> <i>fileName</i>
+        ?<b>-fully</b>|<b>-partly</b>?</code></dt>
+
+        <dd>Populates the tablelist widget using the items and information
+        regarding the columns, sorting, and tree structure read from the file
+        whose path name is given by <code><i>fileName</i></code>.&nbsp; This
+        file must have have been created with the aid of the <code><b><a href=
+        "#dumptofile">dumptofile</a></b></code> subcommand.</dd>
+
+        <dd class="tm">For technical reasons (the use of some
+        <code><b>lsearch</b></code> options), this subcommand is not supported
+        for Tk versions earlier than 8.4.</dd>
+
+        <dd class="tm">After clearing the widget's current contents (if any)
+        and applying to it the sorting-related information retrieved from the
+        file, the subcommand inserts the header items (if any) via&nbsp;
+        <code><b><a href="#hdr_insertlist">header
+        insertlist</a></b></code>&nbsp; and then examines the body items
+        contained in the file.&nbsp; If all of them were direct children of the
+        original (source) tablelist's <code><b>root</b></code> node, then the
+        subcommand inserts them as top-level items via <code><b><a href=
+        "#insertlist">insertlist</a></b></code>.&nbsp; Otherwise:</dd>
+
+        <dd>
+          <ul>
+            <li class="tm">If the optional argument was given as
+            <code><b>-partly</b></code> (which is the default), then the
+            subcommand inserts those body items that in the original tablelist
+            were direct children of the <code><b>root</b></code> node as
+            top-level items, via <code><b><a href=
+            "#insertchildlist">insertchildlist</a></b></code>, and sets the
+            widget's <code><b><a href=
+            "#populatecommand">-populatecommand</a></b></code> and
+            <code><b><a href="#expandcommand">-expandcommand</a></b></code>
+            options to <code>::tablelist::populateCmd</code> and
+            <code>::tablelist::expandCmd</code>, respectively, thus making sure
+            that the items can later be expanded both programmatically and
+            interactively.&nbsp; These procedures, which are implemented in the
+            Tablelist distribution file <code>tablelistWidget.tcl</code>,
+            make use of documented tablelist subcommands only and are richly
+            commented.&nbsp; They work as expected regardless of whether the
+            current sort column(s) and/or sort order(s) are still the same as
+            the ones retrieved from the file.&nbsp; On the other hand, the
+            number and position of the columns must remain unchanged (to this
+            end, the subcommand also sets the widget's <code><b><a href=
+            "#movablecolumns">-movablecolumns</a></b></code> option to
+            <code>0</code>).</li>
+
+            <li class="tm">If the optional argument was given as
+            <code><b>-fully</b></code>, then the subcommand inserts all the
+            body items under the corresponding parent nodes via
+            <code><b><a href="#insertchildren">insertchild</a></b></code>, and
+            after that it collapses all rows of the tablelist by invoking&nbsp;
+            <code><b><a href="#collapseall">collapseall</a>
+            -fully</b></code>.</li>
+          <ul>
+        </dd>
+
+        <dd class="tm"><b>REMARK 1:</b>&nbsp; Invoking this subcommand with the
+        default <code><b>-partly</b></code> option is the recommended way to
+        use it, being that it inserts the top-level items only, which makes the
+        widget much more responsive than one having all its items effectively
+        inserted.</dd>
+
+        <dd class="tm"><b>REMARK 2:</b>&nbsp; Since fully populating the widget
+        can take quite a long time (several seconds or even minutes), it is
+        recommended to enclose an invocation of
+        <code><b>loadfromfile</b></code> with the <code><b>-fully</b></code>
+        option between <code><b><a href=
+        "#setbusycursor">setbusycursor</a></b></code> and <code><b><a href=
+        "#restorecursor">restorecursor</a></b></code>.</dd>
 
         <dt class="tm" id="move"><code><i>pathName</i> <b>move</b>
         <i>sourceIndex</i> <i>targetIndex</i></code><br>

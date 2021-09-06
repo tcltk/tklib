@@ -1,5 +1,47 @@
-What is new in Tablelist 6.14?
+What is new in Tablelist 6.15?
 ------------------------------
+
+1. Added the "dumptofile" and "loadfromfile" subcommands, inspired by
+   some procedures related to a special type of tablelists, posted by
+   Helmut Giese on the Wiki (note that these new subcommands are not
+   restricted to any particular tablelist type).
+
+2. The "dicttoitem" subcommand no longer expects all dictionary keys to
+   be valid column indices; instead, it simply ignores those keys that
+   don't fulfill this condition (thanks to Dieter Lonken for his
+   proposal).
+
+3. Added code that handles the virtual event <<TkWorldChanged>> with the
+   "user_data" field (%d) set to "FontChanged", which, with Tk versions
+   later than 8.6.11 and 8.7.a5, will be sent by the Tk engine to all
+   widgets when a font is changed, for example, by invoking "font
+   configure" (see TIP 608).
+
+4. Adapted the sort rank bitmaps used in multi-column sorting to the
+   display's scaling percentage.
+
+5. Worked around a serious regression in Tk 8.6 regarding the text
+   widget's "see" subcommand, which caused several performance problems
+   in tablelist widgets containing a tree structure (thanks to Helmut
+   Giese for reporting some of them on the Wiki).
+
+6. The scrolling in tablelist widgets displaying a tree structure has
+   become significantly smoother, due to several further code
+   optimizations.
+
+7. Fixed a bug related to the "searchcolumn" subcommand with the
+   "-descend" option, which in addition no longer depends on the
+   interpreter's maximum nesting depth.
+
+8. Adapted the implementation of the "deletecolumns" subcommand to
+   changes made in current Mac OS versions (thanks to Torsten Berg for
+   her bug report).
+
+9. Fixed a bug related to the supported scaling percentages on Windows
+   (thanks to Manfred Schwarz for his bug report).
+
+What was new in Tablelist 6.14?
+-------------------------------
 
 1.  Added support for embedding checkbuttons into the header labels, by
     using the new "-labelwindow" column configuration option, whose
