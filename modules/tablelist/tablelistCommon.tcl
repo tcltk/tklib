@@ -8,7 +8,7 @@ namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	6.14
+    variable version	6.15
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -100,10 +100,10 @@ proc ::tablelist::loadUtils {} {
     }
     package require mwutil 2.19
 
-    if {[catch {package present scaleutil} version] == 0 && $version < 1.4} {
+    if {[catch {package present scaleutil} version] == 0 && $version < 1.5} {
 	package forget scaleutil
     }
-    package require scaleutil 1.4
+    package require scaleutil 1.5
 
     package require scaleutilmisc 1.1
 }
