@@ -283,7 +283,13 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 
 	set canvasWidth $data(arrowWidth)
 	if {[llength $data(arrowColList)] > 1} {
-	    incr canvasWidth 6
+	    variable scalingpct
+	    if {$scalingpct > 150} {
+		variable centerArrows
+		incr canvasWidth [expr {$centerArrows ? 7 : 9}]
+	    } else {
+		incr canvasWidth 6
+	    }
 	}
 	foreach col $data(arrowColList) {
 	    #

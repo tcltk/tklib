@@ -411,6 +411,43 @@ proc tablelist::updateBackgrounds {win updateFrames inActiveWin} {
     }
 }
 
+#------------------------------------------------------------------------------
+# tablelist::updateFonts
+#
+# This procedure handles the virtual event <<TkWorldChanged>> if the latter's
+# %d field equals "FontChanged".
+#------------------------------------------------------------------------------
+proc tablelist::updateFonts win {
+    upvar ::tablelist::ns${win}::data data
+
+    doConfig $win -font $data(-font)
+    doConfig $win -labelfont $data(-labelfont)
+
+    foreach name [array names data ?*-font] {
+	if {[scan $name "%d-%s" col dummy] == 2} {
+	    doColConfig $col $win -font $data($col-font)
+	} elseif {[scan $name "k%d-%s" num dummy] == 2} {
+	    set row [keyToRow $win [set key k$num]]
+	    doRowConfig $row $win -font $data($key-font)
+	} elseif {[scan $name "hk%d-%s" num dummy] == 2} {
+	    set row [hdr_keyToRow $win [set key hk$num]]
+	    doRowConfig h$row $win -font $data($key-font)
+	} elseif {[scan $name "k%d,%d-%s" num col dummy] == 3} {
+	    set row [keyToRow $win [set key k$num]]
+	    doCellConfig $row $col $win -font $data($key,$col-font)
+	} elseif {[scan $name "hk%d,%d-%s" num col dummy] == 3} {
+	    set row [hdr_keyToRow $win [set key hk$num]]
+	    doCellConfig h$row $col $win -font $data($key,$col-font)
+	}
+    }
+
+    foreach name [array names data ?*-labelfont] {
+	if {[scan $name "%d-%s" col dummy] == 2} {
+	    doColConfig $col $win -labelfont $data($col-labelfont)
+	}
+    }
+}
+
 #
 # Binding tag TablelistMain
 # =========================
@@ -2614,7 +2651,7 @@ proc tablelist::nextPrevCell {win amount} {
 
 	cell {
 	    if {$data(editRow) >= 0} {
-		return -code break ""
+		return -code break ""	    ;# because of the binding tag "all"
 	    }
 
 	    set row $data(activeRow)
@@ -2639,10 +2676,10 @@ proc tablelist::nextPrevCell {win amount} {
 		}
 
 		if {$row == $oldRow && $col == $oldCol} {
-		    return -code break ""
+		    return -code break ""   ;# because of the binding tag "all"
 		} elseif {[isRowViewable $win $row] && !$data($col-hide)} {
 		    condChangeSelection $win $row $col
-		    return -code break ""
+		    return -code break ""   ;# because of the binding tag "all"
 		}
 	    }
 	}
@@ -3332,7 +3369,7 @@ proc tablelist::handleWheelEvent {event axis W X Y delta divisor} {
 		}
 	    }
 	    mwutil::scrollByUnits $win $axis $delta $divisor
-	    return -code break
+	    return -code break ""
 	} elseif {[string match "<*MouseWheel>" $event]} {
 	    mwutil::genMouseWheelEvent $w $event $X $Y $delta
 	} else {

@@ -675,60 +675,176 @@ static unsigned char lightLineDn12x11_bits[] = {
 # tablelist::createSortRankImgs
 #------------------------------------------------------------------------------
 proc tablelist::createSortRankImgs win {
-    image create bitmap sortRank1Img$win -data "
+    variable scalingpct
+    if {$scalingpct > 150} {
+	variable centerArrows
+	if {$centerArrows} {
+	    image create bitmap sortRank1Img$win -data "
+#define sortRank1_width 5
+#define sortRank1_height 8
+static unsigned char sortRank1_bits[] = {
+   0x08, 0x0c, 0x0a, 0x08, 0x08, 0x08, 0x08, 0x08};
+"
+	    image create bitmap sortRank2Img$win -data "
+#define sortRank2_width 5
+#define sortRank2_height 8
+static unsigned char sortRank2_bits[] = {
+   0x0e, 0x11, 0x10, 0x10, 0x08, 0x04, 0x02, 0x1f};
+"
+	    image create bitmap sortRank3Img$win -data "
+#define sortRank3_width 5
+#define sortRank3_height 8
+static unsigned char sortRank3_bits[] = {
+   0x0e, 0x11, 0x10, 0x0c, 0x10, 0x10, 0x11, 0x0e};
+"
+	    image create bitmap sortRank4Img$win -data "
+#define sortRank4_width 5
+#define sortRank4_height 8
+static unsigned char sortRank4_bits[] = {
+   0x08, 0x0c, 0x0a, 0x09, 0x1f, 0x08, 0x08, 0x08};
+"
+	    image create bitmap sortRank5Img$win -data "
+#define sortRank5_width 5
+#define sortRank5_height 8
+static unsigned char sortRank5_bits[] = {
+   0x1f, 0x01, 0x01, 0x0f, 0x10, 0x10, 0x11, 0x0e};
+"
+	    image create bitmap sortRank6Img$win -data "
+#define sortRank6_width 5
+#define sortRank6_height 8
+static unsigned char sortRank6_bits[] = {
+   0x0e, 0x11, 0x01, 0x0f, 0x11, 0x11, 0x11, 0x0e};
+"
+	    image create bitmap sortRank7Img$win -data "
+#define sortRank7_width 5
+#define sortRank7_height 8
+static unsigned char sortRank7_bits[] = {
+   0x1f, 0x08, 0x08, 0x04, 0x04, 0x02, 0x02, 0x02};
+"
+	    image create bitmap sortRank8Img$win -data "
+#define sortRank8_width 5
+#define sortRank8_height 8
+static unsigned char sortRank8_bits[] = {
+   0x0e, 0x11, 0x11, 0x0e, 0x11, 0x11, 0x11, 0x0e};
+"
+	    image create bitmap sortRank9Img$win -data "
+#define sortRank9_width 5
+#define sortRank9_height 8
+static unsigned char sortRank9_bits[] = {
+   0x0e, 0x11, 0x11, 0x11, 0x1e, 0x10, 0x11, 0x0e};
+"
+	} else {
+	    image create bitmap sortRank1Img$win -data "
+#define sortRank1_width 5
+#define sortRank1_height 10
+static unsigned char sortRank1_bits[] = {
+   0x18, 0x1c, 0x1e, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18};
+"
+	    image create bitmap sortRank2Img$win -data "
+#define sortRank2_width 7
+#define sortRank2_height 10
+static unsigned char sortRank2_bits[] = {
+   0x3e, 0x7f, 0x63, 0x60, 0x30, 0x18, 0x0c, 0x06, 0x7f, 0x7f};
+"
+	    image create bitmap sortRank3Img$win -data "
+#define sortRank3_width 7
+#define sortRank3_height 10
+static unsigned char sortRank3_bits[] = {
+   0x3e, 0x7f, 0x63, 0x60, 0x38, 0x38, 0x60, 0x63, 0x7f, 0x3e};
+"
+	    image create bitmap sortRank4Img$win -data "
+#define sortRank4_width 7
+#define sortRank4_height 10
+static unsigned char sortRank4_bits[] = {
+   0x30, 0x38, 0x3c, 0x36, 0x33, 0x7f, 0x7f, 0x30, 0x30, 0x30};
+"
+	    image create bitmap sortRank5Img$win -data "
+#define sortRank5_width 7
+#define sortRank5_height 10
+static unsigned char sortRank5_bits[] = {
+   0x7f, 0x7f, 0x03, 0x03, 0x3f, 0x7f, 0x60, 0x63, 0x7f, 0x3e};
+"
+	    image create bitmap sortRank6Img$win -data "
+#define sortRank6_width 7
+#define sortRank6_height 10
+static unsigned char sortRank6_bits[] = {
+   0x3e, 0x7f, 0x63, 0x03, 0x3f, 0x7f, 0x63, 0x63, 0x7f, 0x3e};
+"
+	    image create bitmap sortRank7Img$win -data "
+#define sortRank7_width 7
+#define sortRank7_height 10
+static unsigned char sortRank7_bits[] = {
+   0x7f, 0x7f, 0x30, 0x30, 0x18, 0x18, 0x0c, 0x0c, 0x06, 0x06};
+"
+	    image create bitmap sortRank8Img$win -data "
+#define sortRank8_width 7
+#define sortRank8_height 10
+static unsigned char sortRank8_bits[] = {
+   0x3e, 0x7f, 0x63, 0x63, 0x3e, 0x3e, 0x63, 0x63, 0x7f, 0x3e};
+"
+	    image create bitmap sortRank9Img$win -data "
+#define sortRank9_width 7
+#define sortRank9_height 10
+static unsigned char sortRank9_bits[] = {
+   0x3e, 0x7f, 0x63, 0x63, 0x7f, 0x7e, 0x60, 0x63, 0x7f, 0x3e};
+"
+	}
+    } else {
+	image create bitmap sortRank1Img$win -data "
 #define sortRank1_width 4
 #define sortRank1_height 6
 static unsigned char sortRank1_bits[] = {
    0x04, 0x06, 0x04, 0x04, 0x04, 0x04};
 "
-    image create bitmap sortRank2Img$win -data "
+	image create bitmap sortRank2Img$win -data "
 #define sortRank2_width 4
 #define sortRank2_height 6
 static unsigned char sortRank2_bits[] = {
    0x06, 0x09, 0x08, 0x04, 0x02, 0x0f};
 "
-    image create bitmap sortRank3Img$win -data "
+	image create bitmap sortRank3Img$win -data "
 #define sortRank3_width 4
 #define sortRank3_height 6
 static unsigned char sortRank3_bits[] = {
    0x0f, 0x08, 0x06, 0x08, 0x09, 0x06};
 "
-    image create bitmap sortRank4Img$win -data "
+	image create bitmap sortRank4Img$win -data "
 #define sortRank4_width 4
 #define sortRank4_height 6
 static unsigned char sortRank4_bits[] = {
    0x04, 0x06, 0x05, 0x0f, 0x04, 0x04};
 "
-    image create bitmap sortRank5Img$win -data "
+	image create bitmap sortRank5Img$win -data "
 #define sortRank5_width 4
 #define sortRank5_height 6
 static unsigned char sortRank5_bits[] = {
    0x0f, 0x01, 0x07, 0x08, 0x09, 0x06};
 "
-    image create bitmap sortRank6Img$win -data "
+	image create bitmap sortRank6Img$win -data "
 #define sortRank6_width 4
 #define sortRank6_height 6
 static unsigned char sortRank6_bits[] = {
    0x06, 0x01, 0x07, 0x09, 0x09, 0x06};
 "
-    image create bitmap sortRank7Img$win -data "
+	image create bitmap sortRank7Img$win -data "
 #define sortRank7_width 4
 #define sortRank7_height 6
 static unsigned char sortRank7_bits[] = {
    0x0f, 0x08, 0x04, 0x04, 0x02, 0x02};
 "
-    image create bitmap sortRank8Img$win -data "
+	image create bitmap sortRank8Img$win -data "
 #define sortRank8_width 4
 #define sortRank8_height 6
 static unsigned char sortRank8_bits[] = {
    0x06, 0x09, 0x06, 0x09, 0x09, 0x06};
 "
-    image create bitmap sortRank9Img$win -data "
+	image create bitmap sortRank9Img$win -data "
 #define sortRank9_width 4
 #define sortRank9_height 6
 static unsigned char sortRank9_bits[] = {
    0x06, 0x09, 0x09, 0x0e, 0x08, 0x06};
 "
+    }
 }
 
 #------------------------------------------------------------------------------
