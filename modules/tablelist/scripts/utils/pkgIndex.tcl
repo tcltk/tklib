@@ -5,6 +5,6 @@
 #==============================================================================
 
 package ifneeded mwutil    2.19 [list source [file join $dir mwutil.tcl]]
-package ifneeded scaleutil 1.4  [list source [file join $dir scaleutil.tcl]]
+package ifneeded scaleutil 1.5  [list source [file join $dir scaleutil.tcl]]
 package ifneeded scaleutilmisc 1.1 \
 	[list source [file join $dir scaleutilMisc.tcl]]
