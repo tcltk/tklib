@@ -1,3 +1,32 @@
+2021-09-06 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 6.15.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added the "dumptofile" and "loadfromfile" subcommands;
+	  the "dicttoitem" subcommand now simply ignores those keys that are no
+	  valid column indices; added binding for <<TkWorldChanged>> with %d
+	  set to "FontChanged" (see TIP 608); adapted the sort rank bitmaps
+	  used in multi-column sorting to the display's scaling percentage;
+	  worked around a serious regression in Tk 8.6 regarding the text
+	  widget's "see" subcommand; further code optimizations; fixed a bug
+	  related to the "searchcolumn" subcommand with the "-descend" option,
+	  which in addition no longer depends on the interpreter's recursion
+	  limit; fixed some bugs related to the "deletecolumns" subcommand by
+	  adapting its implementation to changes made in current Mac OS
+	  versions.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl:  Fixed a bug related to the supported
+	* scripts/utils/scaleutil.tcl: scaling percentages on Windows.
+
+	* ../../examples/tablelist/*.tcl: Bumped the version number to 6.15.
+
 2021-05-28 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 6.14.
