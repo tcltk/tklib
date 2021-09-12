@@ -4504,6 +4504,10 @@ proc tablelist::adjustElidedText win {
 		    set textIdx1 $textIdx2
 		}
 
+		if {$line == 1} {
+		    break
+		}
+
 		#
 		# Update topLine because it may
 		# change due to the "hiddenCol" tag
@@ -4583,6 +4587,10 @@ proc tablelist::adjustElidedText win {
 		if {[findTabs $win $w $line $firstCol $lastCol \
 		     tabIdx1 tabIdx2]} {
 		    $w tag add elidedCol $tabIdx1 $tabIdx2+1$pu
+		}
+
+		if {$line == 1} {
+		    break
 		}
 
 		#
