@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 6.15</h2>
+    <h2>For Tablelist Version 6.15.1</h2>
 
     <h3>by</h3>
 
@@ -177,8 +177,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist6.15.tar.gz</code> for UNIX and
-  <code>tablelist6_15.zip</code> for Windows.&nbsp; These files contain the
+  The distribution file is <code>tablelist6.15.1.tar.gz</code> for UNIX and
+  <code>tablelist6_15_1.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -202,11 +202,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist6.15.tar.gz</code>:</p>
+  <code>tablelist6.15.1.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist6.15.tar.gz | tar -xf -
+gunzip -c tablelist6.15.1.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -214,17 +214,17 @@ gunzip -c tablelist6.15.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist6.15.tar.gz
+tar -zxf tablelist6.15.1.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist6.15</code>,
+  <p>Both commands will create a directory named <code>tablelist6.15.1</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist6_15.zip</code> into the directory
-  <code>tablelist6.15</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist6_15_1.zip</code> into the directory
+  <code>tablelist6.15.1</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -650,7 +650,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 6.11
+package require tablelist 6.15
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -706,7 +706,7 @@ demo::displayConfig .configTop.tf.tbl
 
   <blockquote>
     <pre>
-package require tablelist 6.11
+package require tablelist 6.15
 
 namespace eval demo {
     <span class="cmt">#
@@ -1187,7 +1187,7 @@ demo::displayChildren .
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.11
+package require tablelist 6.15
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1817,7 +1817,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.11
+package require tablelist 6.15
 
 <span class="cmt">#
 # Add some entries to the Tk option database
@@ -2242,7 +2242,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;<span class="cmt"># because of "-compound"</span>
-package require tablelist 6.11
+package require tablelist 6.15
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2665,7 +2665,7 @@ $tbl embedcheckbuttons 1
 
   <blockquote>
     <pre>
-package require tablelist 6.11
+package require tablelist 6.15
 
 wm title . "Tk Library Scripts"
 
@@ -2949,7 +2949,7 @@ $tbl fillcolumn 3 -window createButton
   <blockquote>
     <pre>
 package require Tk 8.3                          ;<span class="cmt"># because of entry validation</span>
-package require tablelist 6.11
+package require tablelist 6.15
 </pre>
   </blockquote>
 
@@ -2957,7 +2957,7 @@ package require tablelist 6.11
 
   <blockquote>
     <pre>
-package require tablelist<span class="red">_tile</span> 6.11
+package require tablelist<span class="red">_tile</span> 6.15
 </pre>
   </blockquote>
 
