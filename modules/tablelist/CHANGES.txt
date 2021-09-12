@@ -1,5 +1,16 @@
-What is new in Tablelist 6.15?
-------------------------------
+What is new in Tablelist 6.15.1?
+--------------------------------
+
+This is a bugfix-only release.  The only corrected file in the "scripts"
+directory is "tablelistUtil.tcl".
+
+1. Guarded against potential endless loops, triggered in the previous
+   Tablelist release by the presence of hidden columns and a strictly
+   positive value of the "-titlecolumns" option (thanks to Johann
+   Oberdorfer for his bug report).
+
+What was new in Tablelist 6.15?
+-------------------------------
 
 1. Added the "dumptofile" and "loadfromfile" subcommands, inspired by
    some procedures related to a special type of tablelists, posted by
