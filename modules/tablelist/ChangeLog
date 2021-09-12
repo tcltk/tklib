@@ -1,3 +1,17 @@
+2021-09-12 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:              Bumped the version number to 6.15.1.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* doc/index.html:
+	* doc/tablelist.html:
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/tablelistUtil.tcl: Guarded against potential endless loops,
+	  triggered in the previous Tablelist release by the presence of hidden
+	  columns and a strictly positive value of the "-titlecolumns" option.
+
 2021-09-07 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 6.15.
