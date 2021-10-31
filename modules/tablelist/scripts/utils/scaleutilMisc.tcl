@@ -9,7 +9,7 @@
 # Copyright (c) 2020-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8
+package require scaleutil 1.6
 
 #
 # Namespace initialization
@@ -20,7 +20,7 @@ namespace eval scaleutilmisc {
     #
     # Public variables:
     #
-    variable version	1.1
+    variable version	1.2
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -60,7 +60,7 @@ proc scaleutilmisc::scaleBWidgetSpinBox {w pct} {
     #
     # Scale the width of the two arrows, which is set to 11
     #
-    set arrWidth [expr {11 * $pct / 100}]
+    set arrWidth [scaleutil::scale 11 $pct]
     $w.arrup configure -width $arrWidth
     $w.arrdn configure -width $arrWidth
 }
@@ -76,7 +76,7 @@ proc scaleutilmisc::scaleBWidgetComboBox {w pct} {
     #
     variable onX11
     set defaultWidth [expr {$onX11 ? 11 : 15}]
-    set width [expr {$defaultWidth * $pct / 100}]
+    set width [scaleutil::scale $defaultWidth $pct]
     $w.a configure -width $width
 
     #
@@ -119,9 +119,9 @@ proc scaleutilmisc::scaleIncrDateentry {w pct} {
 	    -datefont {Helvetica 9} -currentdatefont {Helvetica 9 bold}
     }
     set default [lindex [$w configure -height] 3]
-    $w configure -height [expr {$default * $pct / 100}]
+    $w configure -height [scaleutil::scale $default $pct]
     set default [lindex [$w configure -width] 3]
-    $w configure -width [expr {$default * $pct / 100}]
+    $w configure -width [scaleutil::scale $default $pct]
 }
 
 #------------------------------------------------------------------------------
@@ -135,9 +135,9 @@ proc scaleutilmisc::scaleIncrTimeentry {w pct} {
     #
     $w configure -icon [watchImg $pct]
     set default [lindex [$w configure -watchheight] 3]
-    $w configure -watchheight [expr {$default * $pct / 100}]
+    $w configure -watchheight [scaleutil::scale $default $pct]
     set default [lindex [$w configure -watchwidth] 3]
-    $w configure -watchwidth [expr {$default * $pct / 100}]
+    $w configure -watchwidth [scaleutil::scale $default $pct]
 }
 
 #------------------------------------------------------------------------------
@@ -152,10 +152,10 @@ proc scaleutilmisc::scaleIncrCombobox {w pct} {
     #
     scaleIncrComboboxArrows $pct
     set default [lindex [$w configure -listheight] 3]
-    $w configure -listheight [expr {$default * $pct / 100}]
+    $w configure -listheight [scaleutil::scale $default $pct]
     set listComp [$w component list]
     set default [lindex [$listComp configure -sbwidth] 3]
-    $listComp configure -sbwidth [expr {$default * $pct / 100}]
+    $listComp configure -sbwidth [scaleutil::scale $default $pct]
 }
 
 #------------------------------------------------------------------------------
