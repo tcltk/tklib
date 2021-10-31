@@ -326,6 +326,7 @@ set auto_index(::tablelist::destroyed) [list source [file join $dir tablelistUti
 set auto_index(::tablelist::rowIndex) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::hdr_rowIndex) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::colIndex) [list source [file join $dir tablelistUtil.tcl]]
+set auto_index(::tablelist::colIndex2) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::cellIndex) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::hdr_cellIndex) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::adjustRowIndex) [list source [file join $dir tablelistUtil.tcl]]
