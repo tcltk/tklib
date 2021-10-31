@@ -908,14 +908,15 @@ proc scrollutil::sa::onDynamicHScrollbarMap hsb {
 # scrollutil::sa::onWidgetOfScrollareaDestroy
 #------------------------------------------------------------------------------
 proc scrollutil::sa::onWidgetOfScrollareaDestroy widget {
-    variable scrollareaArr
-    if {[info exists scrollareaArr($widget)]} {
-	unset scrollareaArr($widget)
-    }
-
     set win [::scrollutil::getscrollarea $widget]
     if {[string length $win] != 0} {
 	::$win setwidget ""
+	$win configure -width 1 -height 1
+    }
+
+    variable scrollareaArr
+    if {[info exists scrollareaArr($widget)]} {
+	unset scrollareaArr($widget)
     }
 }
 

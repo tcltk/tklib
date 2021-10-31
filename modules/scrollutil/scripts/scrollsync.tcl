@@ -534,11 +534,6 @@ proc scrollutil::ss::updateMasterWidgets win {
 # scrollutil::ss::onWidgetOfScrollsyncDestroy
 #------------------------------------------------------------------------------
 proc scrollutil::ss::onWidgetOfScrollsyncDestroy widget {
-    variable scrollsyncArr
-    if {[info exists scrollsyncArr($widget)]} {
-	unset scrollsyncArr($widget)
-    }
-
     variable xViewArr
     if {[info exists xViewArr($widget)]} {
 	unset xViewArr($widget)
@@ -554,6 +549,11 @@ proc scrollutil::ss::onWidgetOfScrollsyncDestroy widget {
 	set widgetList [::$win widgets]
 	set idx [lsearch -exact $widgetList $widget]
 	::$win setwidgets [lreplace $widgetList $idx $idx]
+    }
+
+    variable scrollsyncArr
+    if {[info exists scrollsyncArr($widget)]} {
+	unset scrollsyncArr($widget)
     }
 }
 

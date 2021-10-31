@@ -6,7 +6,7 @@
 #   - Private procedure creating the default bindings
 #   - Public procedure creating a new pagesman widget
 #   - Private configuration procedures
-#   - Private procedure implementing the pagesman widget command
+#   - Private procedures implementing the pagesman widget command
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
@@ -87,9 +87,31 @@ namespace eval scrollutil::pm {
     variable configOpts [lsort [array names configSpecs]]
 
     #
+    # The array pageConfigSpecs is used to handle page configuration options.
+    # The names of its elements are the page configuration options for the
+    # Pagesman widget class.  The value of an array element is a list
+    # containing the database name and class.
+    #
+    #	Command-Line Name	{Database Name	Database Class	}
+    #	---------------------------------------------------------
+    #
+    variable pageConfigSpecs
+    array set pageConfigSpecs {
+	-padding		{padding	Padding		}
+	-sticky			{sticky		Sticky		}
+    }
+
+    #
+    # Extend the elements of the array pageConfigSpecs
+    #
+    lappend pageConfigSpecs(-padding)	0
+    lappend pageConfigSpecs(-sticky)	"nsew"
+
+    #
     # Use a list to facilitate the handling of command options
     #
-    variable cmdOpts [list add cget configure forget index pages select size]
+    variable cmdOpts [list add cget configure forget index insert \
+		      pagecget pageconfigure pages select size window]
 }
 
 #
@@ -249,9 +271,69 @@ proc scrollutil::pm::doCget {win opt} {
     return $data($opt)
 }
 
+#------------------------------------------------------------------------------
+# scrollutil::pm::doPageConfig
 #
-# Private procedure implementing the pagesman widget command
-# ==========================================================
+# Applies the value val of the page configuration option opt to the page of
+# index pageIdx of the pagesman widget win.
+#------------------------------------------------------------------------------
+proc scrollutil::pm::doPageConfig {pageIdx win opt val} {
+    upvar ::scrollutil::ns${win}::data data
+    set widget [lindex $data(pageList) $pageIdx]
+    set isCurrent [expr {[string compare $widget $data(currentPage)] == 0}]
+
+    switch -- $opt {
+	-padding {
+	    if {[catch {parsePadding $win $val} result] != 0} {
+		return -code error $result
+	    }
+
+	    set data(paddingList) \
+		[lreplace $data(paddingList) $pageIdx $pageIdx $val]
+
+	    if {$isCurrent} {
+		foreach {l t r b} [parsePadding $win $val] {}
+		grid configure $widget -padx [list $l $r] -pady [list $t $b]
+	    }
+
+	    if {[winfo ismapped $win]} {
+		resizeWidgetDelayed $win 100
+	    }
+	}
+
+	-sticky {
+	    if {![regexp {^[nsew]*$} $val]} {
+		return -code error "bad -sticky specification \"$val\""
+	    }
+
+	    set data(stickyList) \
+		[lreplace $data(stickyList) $pageIdx $pageIdx $val]
+
+	    if {$isCurrent} {
+		grid configure $widget -sticky $val
+	    }
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::pm::doPageCget
+#
+# Returns the value of the page configuration option opt for the page of index
+# pageIdx of the pagesman widget win.
+#------------------------------------------------------------------------------
+proc scrollutil::pm::doPageCget {pageIdx win opt} {
+    upvar ::scrollutil::ns${win}::data data
+
+    switch -- $opt {
+	-padding { return [lindex $data(paddingList) $pageIdx] }
+	-sticky  { return [lindex $data(stickyList)  $pageIdx] }
+    }
+}
+
+#
+# Private procedures implementing the pagesman widget command
+# ===========================================================
 #
 
 #------------------------------------------------------------------------------
@@ -274,7 +356,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	add {
 	    if {$argCount < 2} {
 		mwutil::wrongNumArgs \
-		    "$win $cmd window ?-padding padding? ?-sticky stickyness?"
+		    "$win $cmd window ?option value option value ...?"
 	    }
 
 	    set widget [lindex $args 1]
@@ -284,42 +366,33 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 
 	    set padding 0
 	    set sticky  "nsew"
-	    set optValPairs [lrange $args 2 end]
-	    set count [llength $optValPairs]
-	    foreach {opt val} $optValPairs {
-		set opt [mwutil::fullOpt "page option" $opt {-padding -sticky}]
-		if {$count == 1} {
-		    return -code error "value for \"$opt\" missing"
-		}
+	    getPageOpts $win [lrange $args 2 end] padding sticky
 
-		switch -- $opt {
-		    -padding {
-			if {[catch {parsePadding $win $val} result] != 0} {
-			    return -code error $result
-			}
-			set padding $val
-		    }
-		    -sticky {
-			if {![regexp {^[nsew]*$} $val]} {
-			    return -code error \
-				"bad -sticky specification \"$val\""
-			}
-			set sticky $val
-		    }
+	    if {[set idx [lsearch -exact $data(pageList) $widget]] < 0} {
+		lappend data(pageList)    $widget
+		lappend data(paddingList) $padding
+		lappend data(stickyList)  $sticky
+		incr data(pageCount)
+
+		bind $widget <Map> [list scrollutil::pm::resizeWidgetDelayed \
+				    $data(pathName) 100]
+	    } else {
+		set data(paddingList) \
+		    [lreplace $data(paddingList) $idx $idx $padding]
+		set data(stickyList) \
+		    [lreplace $data(stickyList) $idx $idx $sticky]
+
+		if {[string compare $widget $data(currentPage)] == 0} {
+		    foreach {l t r b} [parsePadding $win $padding] {}
+		    grid configure $widget \
+			-padx [list $l $r] -pady [list $t $b] -sticky $sticky
 		}
-		incr count -2
 	    }
 
-	    if {[lsearch -exact $data(pageList) $widget] >= 0} {
-		return ""
+	    if {[winfo ismapped $win]} {
+		resizeWidgetDelayed $win 100
 	    }
 
-	    lappend data(pageList)    $widget
-	    lappend data(paddingList) $padding
-	    lappend data(stickyList)  $sticky
-	    incr data(pageCount)
-	    bind $widget <Map> \
-		[list scrollutil::pm::resizeWidgetDelayed $data(pathName) 100]
 	    return ""
 	}
 
@@ -365,7 +438,6 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 		[lreplace $data(paddingList) $pageIdx $pageIdx]
 	    set data(stickyList) [lreplace $data(stickyList) $pageIdx $pageIdx]
 	    incr data(pageCount) -1
-	    bind $widget <Configure> {}
 
 	    if {[string compare $widget $data(currentPage)] == 0} {
 		#
@@ -380,6 +452,10 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 		    set data(currentPage) ""
 		    event generate $win <<PagesmanPageChanged>>
 		}
+	    }
+
+	    if {[winfo ismapped $win]} {
+		resizeWidgetDelayed $win 100
 	    }
 
 	    return 1
@@ -397,10 +473,98 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 
 	    set idx [lsearch -exact $data(pageList) $widget]
 	    if {$idx < 0} {
-		return -code error "widget \"$widget\" is not managed by $win"
+		return -code error "window \"$widget\" is not managed by $win"
 	    }
 
 	    return $idx
+	}
+
+	insert {
+	    if {$argCount < 3} {
+		mwutil::wrongNumArgs \
+		    "$win $cmd pageIndex window ?option value option value ...?"
+	    }
+
+	    set pageIdx [lindex $args 1]
+	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
+
+	    set widget [lindex $args 2]
+	    if {![winfo exists $widget]} {
+		return -code error "bad window path name \"$widget\""
+	    }
+
+	    if {[set idx [lsearch -exact $data(pageList) $widget]] >= 0} {
+		set padding [lindex $data(paddingList) $idx]
+		set sticky  [lindex $data(stickyList)  $idx]
+	    } else {
+		set padding 0
+		set sticky  "nsew"
+	    }
+	    getPageOpts $win [lrange $args 3 end] padding sticky
+
+	    if {$idx >= 0} {
+		set data(pageList)    [lreplace $data(pageList)    $idx $idx]
+		set data(paddingList) [lreplace $data(paddingList) $idx $idx]
+		set data(stickyList)  [lreplace $data(stickyList)  $idx $idx]
+	    }
+
+	    set data(pageList)    [linsert $data(pageList)    $pageIdx $widget]
+	    set data(paddingList) [linsert $data(paddingList) $pageIdx $padding]
+	    set data(stickyList)  [linsert $data(stickyList)  $pageIdx $sticky]
+
+	    if {$idx < 0} {
+		incr data(pageCount)
+
+		bind $widget <Map> [list scrollutil::pm::resizeWidgetDelayed \
+				    $data(pathName) 100]
+	    } else {
+		if {[string compare $widget $data(currentPage)] == 0} {
+		    foreach {l t r b} [parsePadding $win $padding] {}
+		    grid configure $widget \
+			-padx [list $l $r] -pady [list $t $b] -sticky $sticky
+		}
+	    }
+
+	    if {[winfo ismapped $win]} {
+		resizeWidgetDelayed $win 100
+	    }
+
+	    return ""
+	}
+
+	pagecget {
+	    if {$argCount != 3} {
+		mwutil::wrongNumArgs "$win $cmd pageIndex option"
+	    }
+
+	    set pageIdx [lindex $args 1]
+	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
+	    if {$pageIdx < 0 || $pageIdx >= $data(pageCount)} {
+		return -code error "page index $pageIdx out of bounds"
+	    }
+
+	    variable pageConfigSpecs
+	    set opt [mwutil::fullConfigOpt [lindex $args 2] pageConfigSpecs]
+	    return [doPageCget $pageIdx $win $opt]
+	}
+
+	pageconfigure {
+	    if {$argCount < 2} {
+		mwutil::wrongNumArgs \
+		    "$win $cmd pageIndex ?option? ?value option value ...?"
+	    }
+
+	    set pageIdx [lindex $args 1]
+	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
+	    if {$pageIdx < 0 || $pageIdx >= $data(pageCount)} {
+		return -code error "page index $pageIdx out of bounds"
+	    }
+
+	    variable pageConfigSpecs
+	    return [mwutil::configureSubCmd $win pageConfigSpecs \
+		    "scrollutil::pm::doPageConfig $pageIdx" \
+		    "scrollutil::pm::doPageCget $pageIdx" \
+		    [lrange $args 2 end]]
 	}
 
 	pages {
@@ -458,6 +622,56 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 
 	    return $data(pageCount)
 	}
+
+	window {
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win $cmd pageIndex"
+	    }
+
+	    set pageIdx [lindex $args 1]
+	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
+	    if {$pageIdx < 0 || $pageIdx >= $data(pageCount)} {
+		return -code error "page index $pageIdx out of bounds"
+	    }
+
+	    return [lindex $data(pageList) $pageIdx]
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::pm::getPageOpts
+#
+# Gets the page options from a given list of option-value pairs.
+#------------------------------------------------------------------------------
+proc scrollutil::pm::getPageOpts {win optValPairs paddingName stickyName} {
+    upvar $paddingName padding $stickyName sticky
+
+    set count [llength $optValPairs]
+    variable pageConfigSpecs
+    foreach {opt val} $optValPairs {
+	set opt [mwutil::fullConfigOpt $opt pageConfigSpecs]
+	if {$count == 1} {
+	    return -code error "value for \"$opt\" missing"
+	}
+
+	switch -- $opt {
+	    -padding {
+		if {[catch {parsePadding $win $val} result] != 0} {
+		    return -code error $result
+		}
+		set padding $val
+	    }
+
+	    -sticky {
+		if {![regexp {^[nsew]*$} $val]} {
+		    return -code error "bad -sticky specification \"$val\""
+		}
+		set sticky $val
+	    }
+	}
+
+	incr count -2
     }
 }
 
