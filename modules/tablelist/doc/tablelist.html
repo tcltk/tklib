@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 6.15.1</h2>
+    <h2>For Tablelist Version 6.16</h2>
 
     <h3>by</h3>
 
@@ -177,8 +177,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist6.15.1.tar.gz</code> for UNIX and
-  <code>tablelist6_15_1.zip</code> for Windows.&nbsp; These files contain the
+  The distribution file is <code>tablelist6.16.tar.gz</code> for UNIX and
+  <code>tablelist6_16.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -202,11 +202,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist6.15.1.tar.gz</code>:</p>
+  <code>tablelist6.16.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist6.15.1.tar.gz | tar -xf -
+gunzip -c tablelist6.16.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -214,17 +214,17 @@ gunzip -c tablelist6.15.1.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist6.15.1.tar.gz
+tar -zxf tablelist6.16.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist6.15.1</code>,
+  <p>Both commands will create a directory named <code>tablelist6.16</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist6_15_1.zip</code> into the directory
-  <code>tablelist6.15.1</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist6_16.zip</code> into the directory
+  <code>tablelist6.16</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -321,14 +321,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 6.15, then it is highly
-  recommended to specify the version number <code>6.15</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 6.16, then it is highly
+  recommended to specify the version number <code>6.16</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 6.15</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 6.16</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 6.15</code>.</p>
+  tablelist_tile 6.16</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -462,6 +462,9 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     regardless of the display's scaling level.</li>
   </ul>
 
+  <p>The additional steps described in the rest of this section are only
+  performed if the scaling percentage is greater than <code>100</code>:</p>
+
   <p>After getting the scaling percentage on X11, Tablelist sets the scaling
   factor to be used by Tk to convert between physical units and pixels, by
   passing the scaling factor corresponding to the scaling percentage to
@@ -475,33 +478,56 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   which was not suitable for use on HiDPI displays.&nbsp; This caused several
   Linux distributions to bundle patched versions of this file, in which the
   sizes in pixels are replaced with sizes in points.&nbsp; The same fix was
-  committed in February 2020 into the Tk core repository.&nbsp; To make sure
-  that, regardless of the Tk version, the font sizes will suit the display's
-  scaling level, Tablelist examines this library file and, if the latter
-  contains sizes in pixels, then it sets the <code>-size</code> option of the
-  standard fonts to corresponding sizes in points (without altering the
-  file).&nbsp; In addition, for the HiDPI mode on Xfce and MATE, Tablelist
-  doubles the sizes (in points) of the standard fonts (the way display scaling
-  works on these desktops makes this necessary).</p>
+  committed in February 2020 into the Tk core repository and is now contained
+  in Tk 8.7a5 and later.&nbsp; To make sure that, regardless of the Tk version,
+  the font sizes will suit the display's scaling level, Tablelist examines this
+  library file and, if the latter contains sizes in pixels, then it sets the
+  <code>-size</code> option of the standard fonts to corresponding sizes in
+  points (without altering the file).&nbsp; In addition, for the HiDPI mode on
+  Xfce and MATE, Tablelist doubles the sizes (in points) of the standard fonts
+  (the way display scaling works on these desktops makes this necessary).</p>
 
-  <p>Independently of the windowing system, the code responsible for the
-  initialization of the variable <code>tablelist::scalingpct</code> also
-  scales:</p>
+  <p>The code responsible for the initialization of the variable
+  <code>tablelist::scalingpct</code> also scales:</p>
 
   <ul>
+    <li>the default parameters of the Tk core panedwindow sash;</li>
+
+    <li>the default size of the Tk core scale widget and its slider;</li>
+
     <li>the default width of the Tk core scrollbars on X11;</li>
 
-    <li>for the built-in themes <code>alt</code>, <code>clam</code>,
-    <code>classic</code>, and <code>default</code>, the default width of the
-    ttk::scrollbar widget, as well as the arrows of the ttk::combobox and
-    ttk::spinbox widgets;</li>
+    <li>the default length of the ttk::scale and ttk::progressbar widgets;</li>
 
-    <li>for the <code>alt</code> and <code>clam</code> themes, the arrow of
-    the ttk::menubutton widget;</li>
+    <li>the height of the ttk::treeview rows;</li>
+
+    <li>for the built-in themes <code>alt</code>, <code>clam</code>,
+    <code>classic</code>, <code>default</code>, <code>vista</code>, and
+    <code>xpnative</code>, the paddings of the ttk::button, toolbutton,
+    ttk::menubutton, ttk::checkbutton, and ttk::radiobutton widgets, as well as
+    some styling options of the ttk::notebook widget and its tabs;</li>
+
+    <li>for the <code>alt</code>, <code>clam</code>, <code>classic</code>, and
+    <code>default</code> themes, the width of the ttk::scrollbar widget, the
+    sliders of the ttk::scale and ttk::progressbar widgets, as well as the
+    arrows of the ttk::combobox and ttk::spinbox widgets;</li>
+
+    <li>for the <code>alt</code> and <code>clam</code> themes, the arrow and
+    padding of the ttk::menubutton widget;</li>
+
+    <li>for the <code>classic</code> and <code>default</code> themes, the
+    indicator margin and padding of the ttk::menubutton widget;</li>
 
     <li>for the <code>clam</code>, <code>classic</code>, and
-    <code>default</code> themes, the indicators of the ttk::checkbutton and
-    ttk::radiobutton widgets.</li>
+    <code>default</code> themes, the indicator size of the ttk::checkbutton and
+    ttk::radiobutton widgets (note that in the <code>alt</code> theme, the
+    indicators of these widgets are not scalable);</li>
+
+    <li>for the <code>clam</code> and <code>classic</code> themes, the sash of
+    the ttk::panedwindow widget;</li>
+
+    <li>for the <code>clam</code> theme, the padding of the ttk::treeview
+    column headers and the label margins of the ttk::labelframe widget.</li>
   </ul>
 
   <p>In addition, the above-mentioned variable initialization code makes sure
@@ -509,7 +535,8 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   indicators of the ttk::checkbutton and ttk::radiobutton widgets will appear
   properly scaled, regardless of the Tk release being used.&nbsp; (A
   long-standing bug in the implementation of these widgets was fixed in May
-  2020, but Tablelist provides a workaround for the Tk versions that are still
+  2020 and is now contained in both Tk 8.6.11 and later and 8.7a5 and later,
+  but Tablelist provides a workaround for the Tk versions that are still
   affected by this bug.)</p>
 
   <h3 id="ov_tile">More on Tablelist_tile</h3>
@@ -650,7 +677,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 6.15
+package require tablelist 6.16
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -706,7 +733,7 @@ demo::displayConfig .configTop.tf.tbl
 
   <blockquote>
     <pre>
-package require tablelist 6.15
+package require tablelist 6.16
 
 namespace eval demo {
     <span class="cmt">#
@@ -1187,7 +1214,7 @@ demo::displayChildren .
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.15
+package require tablelist 6.16
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1817,7 +1844,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.15
+package require tablelist 6.16
 
 <span class="cmt">#
 # Add some entries to the Tk option database
@@ -2242,7 +2269,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;<span class="cmt"># because of "-compound"</span>
-package require tablelist 6.15
+package require tablelist 6.16
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2665,7 +2692,7 @@ $tbl embedcheckbuttons 1
 
   <blockquote>
     <pre>
-package require tablelist 6.15
+package require tablelist 6.16
 
 wm title . "Tk Library Scripts"
 
@@ -2949,7 +2976,7 @@ $tbl fillcolumn 3 -window createButton
   <blockquote>
     <pre>
 package require Tk 8.3                          ;<span class="cmt"># because of entry validation</span>
-package require tablelist 6.15
+package require tablelist 6.16
 </pre>
   </blockquote>
 
@@ -2957,7 +2984,7 @@ package require tablelist 6.15
 
   <blockquote>
     <pre>
-package require tablelist<span class="red">_tile</span> 6.15
+package require tablelist<span class="red">_tile</span> 6.16
 </pre>
   </blockquote>
 

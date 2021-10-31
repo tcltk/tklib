@@ -14,7 +14,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.15</h2>
+    <h2>For Tablelist Version 6.16</h2>
 
     <h3>by</h3>
 
@@ -1024,7 +1024,7 @@
     "#itemlistvar">itemlistvar</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#itemtodict">itemtodict</a></b>
-    <i>item</i></code></dd>
+    <i>item</i> ?<i>excludedColumnIndexList</i>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#labelpath">labelpath</a></b>
     <i>columnIndex</i></code></dd>
@@ -9181,15 +9181,15 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
         strings.</dd>
 
         <dd class="tm">For example, if your tablelist widget has 3 columns, of
-        which the first two were configured with&nbsp; <code><a href=
-        "#col_name">-name</a> forename</code>&nbsp; and&nbsp; <code><a href=
-        "#col_name">-name</a> surname</code>,&nbsp; respectively, and you pass
-        the dictionary&nbsp; <code>{forename Joe&nbsp; surname
-        Black}</code>&nbsp; to the <code><b>dicttoitem</b></code> subcommand,
-        then the return value will be the list&nbsp; <code>{Joe Black
-        {}}</code>.&nbsp; If the user swaps the first two columns then, for the
-        same dictionary, the subcommand will return the list&nbsp; <code>{Black
-        Joe {}}</code>.</dd>
+        which the first two were configured with&nbsp; <code><b><a href=
+        "#col_name">-name</a></b> forename</code>&nbsp; and&nbsp;
+        <code><b><a href="#col_name">-name</a></b> surname</code>,&nbsp;
+        respectively, and you pass the dictionary&nbsp; <code>{forename
+        Joe&nbsp; surname Black}</code>&nbsp; to the
+        <code><b>dicttoitem</b></code> subcommand, then the return value will
+        be the list&nbsp; <code>{Joe Black {}}</code>.&nbsp; If the user swaps
+        the first two columns then, for the same dictionary, the subcommand
+        will return the list&nbsp; <code>{Black Joe {}}</code>.</dd>
 
         <dd class="tm">This subcommand is only available in the presence of the
         <code><b>dict</b></code> command, which is the case when using Tcl
@@ -10115,24 +10115,35 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         otherwise the results will be unpredictable!</dd>
 
         <dt class="tm" id="itemtodict"><code><i>pathName</i> <b>itemtodict</b>
-        <i>item</i></code></dt>
+        <i>item</i> ?<i>excludedColumnIndexList</i>?</code></dt>
 
         <dd>Returns a dictionary built from the tablelist item indicated by
-        <code><i>item</i></code>.&nbsp; The dictionary's keys will be column
-        numbers or names, and the values will be the corresponding elements of
-        the given item.&nbsp; For each column number <code><i>col</i></code>,
-        if the corresponding column name (returned by&nbsp;
-        <code><i>pathName</i> <b><a href="#columncget">columncget</a></b>
-        <i>col</i> -name</code>)&nbsp; is a nonempty string then this name will
-        be used as dictionary key, otherwise the numerical column index
-        <code><i>col</i></code>.</dd>
+        <code><i>item</i></code>.&nbsp; The optional argument
+        <code><i>excludedColumnIndexList</i></code> (which must be a valid
+        list) specifies those column indices (in any of the forms described in
+        the <a href="#col_indices">COLUMN INDICES</a> section) that are to be
+        ignored when building the dictionary.&nbsp; The dictionary's keys will
+        be column numbers or names, and the values will be the corresponding
+        elements of the given item.&nbsp; For each column number
+        <code><i>col</i></code>, if the corresponding column name (returned
+        by&nbsp; <code><i>pathName</i> <b><a href=
+        "#columncget">columncget</a></b> <i>col</i> <b>-name</b></code>)&nbsp;
+        is a nonempty string then this name will be used as dictionary key,
+        otherwise the numerical column index <code><i>col</i></code>.&nbsp; In
+        both cases, if the optional argument
+        <code><i>excludedColumnIndexList</i></code> contains a column index
+        whose numerical equivalent (returned by the <code><b><a href=
+        "#columnindex">columnindex</a></b></code> subcommand) equals
+        <code><i>col</i></code>, then this column will be silently ignored,
+        i.e., the mapping from the key to the corresponding tablelist element
+        will not be inserted into the dictionary.</dd>
 
         <dd class="tm">
           For example, if your tablelist widget has 3 columns, of which the
-          first two were configured with&nbsp; <code><a href=
-          "#col_name">-name</a> forename</code>&nbsp; and&nbsp; <code><a href=
-          "#col_name">-name</a> surname</code>,&nbsp; respectively, and you
-          pass the item
+          first two were configured with&nbsp; <code><b><a href=
+          "#col_name">-name</a></b> forename</code>&nbsp; and&nbsp;
+          <code><b><a href="#col_name">-name</a></b> surname</code>,&nbsp;
+          respectively, and you pass the item
 
           <blockquote>
             <pre>
@@ -10148,6 +10159,19 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
           <blockquote>
             <pre>
 {forename Joe  surname Black  2 {Young Man in Coffee Shop}}
+</pre>
+          </blockquote>
+        </dd>
+
+        <dd>
+          If you pass the list <code>{2}</code>, or <code>{<b>end</b>}</code>,
+          or <code>{<b>last</b>}</code> as additional argument to the
+          <code><b>itemtodict</b></code> subcommand, then the return value will
+          be the dictionary
+
+          <blockquote>
+            <pre>
+{forename Joe  surname Black}
 </pre>
           </blockquote>
         </dd>

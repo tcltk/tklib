@@ -1,5 +1,32 @@
-What is new in Tablelist 6.15.1?
---------------------------------
+What is new in Tablelist 6.16?
+------------------------------
+
+1. Significantly extended the code responsible for initializing the
+   variable "tablelist::scalingpct".  See the section "More on
+   tablelist::scalingpct" in Tablelist Programmer's Guide for details.
+
+2. Made sure that the above-mentioned code will work as expected also
+   with future Tk versions containing the changes made recently in the
+   library file "ttk/fonts.tcl".
+
+3. For the themes "clam", "vista", and "xpnative", the default vertical
+   padding of the header labels is now scaled according to the value of
+   the variable "tablelist::scalingpct".
+
+4. Extended the "itemtodict" subcommand by an optional argument that
+   specifies the column indices of the elements that are to be ignored
+   when building the dictionary that will be returned by the subcommand
+   (thanks to Dieter Lonken for his proposal).
+
+5. Improvements related to the appearance of the (temporarily or
+   persistently) embedded ttk::checkbutton widgets, especially for the
+   theme "clam" and the ones provided by the awthemes package.
+
+6. Fixed a bug related to the "cellbbox" subcommand (thanks to Alexandru
+   Dadalau for his bug report).
+
+What was new in Tablelist 6.15.1?
+---------------------------------
 
 This is a bugfix-only release.  The only corrected file in the "scripts"
 directory is "tablelistUtil.tcl".

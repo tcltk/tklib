@@ -13,7 +13,7 @@
   <div align="center">
     <h1>Interactive Tablelist Cell Editing Using Tile Widgets</h1>
 
-    <h2>For Tablelist Version 6.15</h2>
+    <h2>For Tablelist Version 6.16</h2>
 
     <h3>by</h3>
 
@@ -108,14 +108,17 @@
   <p><b>REMARK 2:</b>&nbsp; One known limitation of earlier tile versions was
   that the&nbsp; <code><b>(ttk::)style theme use</b></code>&nbsp; command could
   only be used to set the current theme, but not to retrieve it.&nbsp; For this
-  reason, Tablelist makes use of the variable
-  <code><b>ttk::currentTheme</b></code> or
+  reason, if Tablelist cannot get the current theme with the aid of&nbsp;
+  <code><b>ttk::style theme use</b></code>&nbsp; then it makes use of the
+  variable <code><b>ttk::currentTheme</b></code> or
   <code><b>tile::currentTheme</b></code> (depending on the tile version), which
   is set by the <code><b>ttk::setTheme</b></code> or
-  <code><b>tile::setTheme</b></code> procedure.&nbsp; From this it follows that
-  the tile widgets used for interactive cell editing will only be managed as
-  expected if the platform-specific default theme is either left unchanged or
-  replaced with another theme by invoking the procedure
+  <code><b>tile::setTheme</b></code> command.&nbsp; From this it follows that
+  if the tile version being used doesn't support the&nbsp;
+  <code><b>ttk::style theme use</b></code>&nbsp; command without an argument
+  then the tile widgets used for interactive cell editing will only be managed
+  as expected if the platform-specific default theme is either left unchanged
+  or replaced with another theme by invoking the library procedure
   <code><b>ttk::setTheme</b></code> or <code><b>tile::setTheme</b></code>,
   depending on the current tile version.&nbsp; (See also the <code><b><a href=
   "tablelistThemes.html#setTheme">tablelist::setTheme</a></b></code>
