@@ -1550,7 +1550,12 @@ proc tablelist::cellbboxSubCmd {win argList} {
 	return {}
     }
 
-    foreach {x y width height} [bboxSubCmd $win $row] {}
+    set bbox [bboxSubCmd $win $row]
+    if {[llength $bbox] == 0} {
+	return {}
+    }
+
+    foreach {x y width height} $bbox {}
     set w $data(hdrTxtFrmLbl)$col
     return [list [expr {[winfo rootx $w] - [winfo rootx $win]}] $y \
 		 [winfo width $w] $height]
@@ -2361,38 +2366,7 @@ proc tablelist::dicttoitemSubCmd {win argList} {
     set origDict [lindex $argList 0]
     set newDict {}
     dict for {key val} $origDict {
-	#
-	# Try to get the column number corresponding to $key
-	#
-	if {[isInteger $key]} {
-	    set col [expr {int($key)}]
-	} elseif {[string first $key "end"] == 0 ||
-		  [string first $key "last"] == 0} {
-	    set col $data(lastCol)
-	} elseif {[string first $key "left"] == 0} {
-	    set col [colIndex $win @0,0 0 0]
-	} elseif {[string first $key "right"] == 0} {
-	    set col [colIndex $win @$data(rightX),0 0 0]
-	} elseif {[string first $key "active"] == 0 &&
-		  [string length $key] >= 2} {
-	    set col $data(activeCol)
-	} elseif {[string first $key "anchor"] == 0 &&
-		  [string length $key] >= 2} {
-	    set col $data(anchorCol)
-	} elseif {[scan $key "@%d,%d%n" x y count] == 3 &&
-		  $count == [string length $key]} {
-	    set col [colIndex $win @$x,$y 0 1]
-	} else {
-	    set keyIsEmpty [expr {[string length $key] == 0}]
-	    for {set col 0} {$col < $data(colCount)} {incr col} {
-		set hasName [info exists data($col-name)]
-		if {($hasName && [string compare $key $data($col-name)] == 0) ||
-		    (!$hasName && $keyIsEmpty)} {
-		    break
-		}
-	    }
-	}
-
+	set col [colIndex2 $win $key]
 	if {$col >= 0 && $col < $data(colCount)} {
 	    dict set newDict $col $val
 	}
@@ -3537,7 +3511,12 @@ proc tablelist::header_cellbboxSubCmd {win argList} {
 	return {}
     }
 
-    foreach {x y width height} [header_bboxSubCmd $win $row] {}
+    set bbox [header_bboxSubCmd $win $row]
+    if {[llength $bbox] == 0} {
+	return {}
+    }
+
+    foreach {x y width height} $bbox {}
     set w $data(hdrTxtFrmLbl)$col
     return [list [expr {[winfo rootx $w] - [winfo rootx $win]}] $y \
 		 [winfo width $w] $height]
@@ -5040,14 +5019,29 @@ proc tablelist::itemlistvarSubCmd {win argList} {
 # tablelist::itemtodictSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::itemtodictSubCmd {win argList} {
-    if {[llength $argList] != 1} {
-	mwutil::wrongNumArgs "$win itemtodict item"
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs "$win itemtodict item ?excludedColumnIndexList?"
     }
 
-    set item [lindex $argList 0]
-    set dictionary {}
     upvar ::tablelist::ns${win}::data data
+    set item [lindex $argList 0]
+    set exclColIdxList {}
+    if {$argCount == 2} {
+	foreach idx [lindex $argList 1] {
+	    set col [colIndex2 $win $idx]
+	    if {$col >= 0 && $col < $data(colCount)} {
+		lappend exclColIdxList $col
+	    }
+	}
+    }
+
+    set dictionary {}
     for {set col 0} {$col < $data(colCount)} {incr col} {
+	if {[lsearch -exact $exclColIdxList $col] >= 0} {
+	    continue
+	}
+
 	if {[info exists data($col-name)]} {
 	    set key $data($col-name)
 	} else {

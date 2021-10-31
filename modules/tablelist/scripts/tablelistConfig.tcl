@@ -1041,6 +1041,10 @@ proc tablelist::doConfig {win opt val} {
 			configLabel $data(cornerLbl) $opt $val
 			for {set col 0} {$col < $data(colCount)} {incr col} {
 			    configLabel $data(hdrTxtFrmLbl)$col $opt $val
+			    set w [labelwindowpathSubCmd $win $col]
+			    if {[winfo exists $w]} {
+				$w configure $opt $val
+			    }
 			}
 		    }
 		    if {$data(editRow) >= 0} {

@@ -574,6 +574,7 @@ proc tablelist::blueTheme {} {
 #------------------------------------------------------------------------------
 proc tablelist::clamTheme {} {
     variable themeDefaults
+    variable scalingpct
     array set themeDefaults [list \
 	-background		white \
 	-foreground		black \
@@ -594,7 +595,7 @@ proc tablelist::clamTheme {} {
 	-labelpressedFg		black \
 	-labelfont		TkDefaultFont \
 	-labelborderwidth	2 \
-	-labelpady		3 \
+	-labelpady		[scaleutil::scale 3 $scalingpct] \
 	-arrowcolor		black \
 	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		gtk \
@@ -1804,6 +1805,7 @@ proc tablelist::vistaTheme {} {
 	}
     }
 
+    variable scalingpct
     array set themeDefaults [list \
 	-selectbackground	$selectBg \
 	-selectforeground	$selectFg \
@@ -1813,7 +1815,7 @@ proc tablelist::vistaTheme {} {
 	-labelactiveBg		$activeBg \
 	-labelpressedBg		$pressedBg \
 	-labelborderwidth	$labelBd \
-	-labelpady		$labelPadY \
+	-labelpady		[scaleutil::scale $labelPadY $scalingpct] \
 	-arrowcolor		$arrowColor \
 	-arrowstyle		$arrowStyle \
 	-treestyle		$treeStyle \
@@ -2029,6 +2031,7 @@ proc tablelist::xpnativeTheme {} {
 	}
     }
 
+    variable scalingpct
     array set themeDefaults [list \
 	-selectbackground	$selectBg \
 	-selectforeground	$selectFg \
@@ -2038,7 +2041,7 @@ proc tablelist::xpnativeTheme {} {
 	-labelactiveBg		$activeBg \
 	-labelpressedBg		$pressedBg \
 	-labelborderwidth	$labelBd \
-	-labelpady		$labelPadY \
+	-labelpady		[scaleutil::scale $labelPadY $scalingpct] \
 	-arrowcolor		$arrowColor \
 	-arrowstyle		$arrowStyle \
 	-treestyle		$treeStyle \

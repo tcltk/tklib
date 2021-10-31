@@ -851,13 +851,10 @@ static unsigned char sortRank9_bits[] = {
 # tablelist::createCheckbuttonImgs
 #------------------------------------------------------------------------------
 proc tablelist::createCheckbuttonImgs {} {
-    variable checkedImg   [image create bitmap tablelist_checkedImg]
-    variable uncheckedImg [image create bitmap tablelist_uncheckedImg]
-
-    variable scalingpct
     variable winSys
     set onX11 [expr {[string compare $winSys "x11"] == 0}]
 
+    variable scalingpct
     switch $scalingpct {
 	100 {
 	    if {$onX11} {
@@ -1048,8 +1045,18 @@ static unsigned char unchecked_bits[] = {
 	}
     }
 
-    tablelist_checkedImg   configure -data $checkedData
-    tablelist_uncheckedImg configure -data $uncheckedData
+    variable checkedImg \
+	[image create bitmap tablelist_checkedImg   -data $checkedData]
+    variable uncheckedImg \
+	[image create bitmap tablelist_uncheckedImg -data $uncheckedData]
+
+    variable tristateImg \
+	[image create bitmap tablelist_tristateImg  -data $checkedData]
+    if {$onX11} {
+	$tristateImg configure -background #d9d9d9 -foreground #a3a3a3
+    } else {
+	$tristateImg configure -background #e3e3e3 -foreground #000000
+    }
 }
 
 #------------------------------------------------------------------------------

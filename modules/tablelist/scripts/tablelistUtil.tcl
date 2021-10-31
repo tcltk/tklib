@@ -307,6 +307,45 @@ proc tablelist::colIndex {win idx checkRange {decrX 1}} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::colIndex2
+#
+# Returns the numerical equivalent of the column index idx.  Invoked by the
+# dicttoitem and itemtodict subcommands.
+#------------------------------------------------------------------------------
+proc tablelist::colIndex2 {win idx} {
+    upvar ::tablelist::ns${win}::data data
+
+    if {[isInteger $idx]} {
+	return [expr {int($idx)}]
+    } elseif {[string first $idx "end"] == 0 ||
+	      [string first $idx "last"] == 0} {
+	return $data(lastCol)
+    } elseif {[string first $idx "left"] == 0} {
+	return [colIndex $win @0,0 0 0]
+    } elseif {[string first $idx "right"] == 0} {
+	return [colIndex $win @$data(rightX),0 0 0]
+    } elseif {[string first $idx "active"] == 0 && [string length $idx] >= 2} {
+	return $data(activeCol)
+    } elseif {[string first $idx "anchor"] == 0 && [string length $idx] >= 2} {
+	return $data(anchorCol)
+    } elseif {[scan $idx "@%d,%d%n" x y count] == 3 &&
+	      $count == [string length $idx]} {
+	return [colIndex $win @$x,$y 0 1]
+    } else {
+	set idxIsEmpty [expr {[string length $idx] == 0}]
+	for {set col 0} {$col < $data(colCount)} {incr col} {
+	    set hasName [info exists data($col-name)]
+	    if {($hasName && [string compare $idx $data($col-name)] == 0) ||
+		(!$hasName && $idxIsEmpty)} {
+		return $col
+	    }
+	}
+
+	return -1
+    }
+}
+
+#------------------------------------------------------------------------------
 # tablelist::cellIndex
 #
 # Checks the cell index idx and returns either a list of the form {row col} or
@@ -6695,12 +6734,14 @@ proc tablelist::makeCkbtn w {
 	x11 {
 	    variable checkedImg
 	    variable uncheckedImg
+	    variable tristateImg
 	    if {![info exists checkedImg]} {
 		createCheckbuttonImgs
 	    }
 
 	    $w configure -borderwidth 1 -indicatoron 0 \
-		-image $uncheckedImg -selectimage $checkedImg
+		-image $uncheckedImg -selectimage $checkedImg \
+		-tristateimage $tristateImg
 	    if {$::tk_version >= 8.4} {
 		$w configure -offrelief sunken	;# -offrelief added in Tk8.4
 	    }
@@ -6718,12 +6759,14 @@ proc tablelist::makeCkbtn w {
 	    } else {
 		variable checkedImg
 		variable uncheckedImg
+		variable tristateImg
 		if {![info exists checkedImg]} {
 		    createCheckbuttonImgs
 		}
 
 		$w configure -borderwidth 2 -indicatoron 0 \
-		    -image $uncheckedImg -selectimage $checkedImg
+		    -image $uncheckedImg -selectimage $checkedImg \
+		    -tristateimage $tristateImg
 		if {$::tk_version >= 8.4} {
 		    $w configure -offrelief sunken ;# -offrelief added in Tk8.4
 		}
@@ -6840,7 +6883,7 @@ proc tablelist::makeTtkCkbtn w {
 		    style layout Tablelist.TCheckbutton \
 			  { Checkbutton.indicator }
 		}
-	    } else {
+	    } else {		;# see procedure scaleutil::patchWinTheme
 		catch {
 		    style layout Tablelist.TCheckbutton \
 			  { Checkbutton.vsapi_indicator }
@@ -6853,7 +6896,9 @@ proc tablelist::makeTtkCkbtn w {
 		style layout Tablelist.TCheckbutton \
 		      { Checkbutton.indicator }
 	    }
-	    styleConfig Tablelist.TCheckbutton -indicatormargin 0
+
+	    set indMargin [expr {$currentTheme eq "clam" ? {0 0 1 1} : 0}]
+	    styleConfig Tablelist.TCheckbutton -indicatormargin $indMargin
 	}
     }
 
@@ -6863,7 +6908,17 @@ proc tablelist::makeTtkCkbtn w {
     # Adjust the dimensions of the ttk::checkbutton's parent and
     # manage the checkbutton, depending on the current theme
     #
+
     set frm [winfo parent $w]
+    variable isAwTheme
+    if {$isAwTheme} {
+	set height [winfo reqheight $w]
+	incr height -1
+	$frm configure -width $height -height $height
+	place $w -x 0
+	return [list $height $height]
+    }
+
     switch -- $currentTheme {
 	aqua {
 	    variable extendedAquaSupport
@@ -6888,49 +6943,32 @@ proc tablelist::makeTtkCkbtn w {
 	}
 
 	Aquativo - aquativo -
-	Arc - arc - awarc {
+	Arc - arc {
 	    $frm configure -width 14 -height 14
 	    place $w -x -1 -y -1
 	    return {14 14}
 	}
 
 	blue -
-	Breeze - breeze - awbreeze - awbreezedark -
-	winxpblue - awwinxpblue {
+	Breeze - breeze -
+	winxpblue {
 	    set height [winfo reqheight $w]
 	    $frm configure -width $height -height $height
 	    place $w -x 0
 	    return [list $height $height]
 	}
 
-	clam {
-	    variable scalingpct
-	    array set arr {100 11  125 14  150 18  175 21  200 24}
-	    styleConfig Tablelist.TCheckbutton -indicatorsize $arr($scalingpct)
-	    pack $w
-	    return [list $arr($scalingpct) $arr($scalingpct)]
-	}
-
 	classic -
 	default {
-	    variable scalingpct
-	    array set arr {100 11  125 14  150 18  175 21  200 24}
-	    styleConfig Tablelist.TCheckbutton -background white \
-		-indicatordiameter $arr($scalingpct)
+	    styleConfig Tablelist.TCheckbutton -background white
 	    pack $w
-	    return [list $arr($scalingpct) $arr($scalingpct)]
+	    return [list [winfo reqwidth $w] [winfo reqheight $w]]
 	}
 
-	clearlooks - awclearlooks {
-	    variable isAwTheme
-	    if {$isAwTheme} {
-		pack $w
-		return [list [winfo reqwidth $w] [winfo reqheight $w]]
-	    } else {
-		$frm configure -width 13 -height 13
-		place $w -x -2 -y -2
-		return {13 13}
-	    }
+	clearlooks {
+	    $frm configure -width 13 -height 13
+	    place $w -x -2 -y -2
+	    return {13 13}
 	}
 
 	keramik - keramik_alt {
@@ -7006,8 +7044,9 @@ proc tablelist::makeTtkCkbtn w {
 	    $frm configure -width $height -height $height
 	    if {[llength [style lookup TCheckbutton -padding]] == 1} {
 		place $w -x 0
-	    } else {
-		place $w -x -4
+	    } else {		;# see procedure scaleutil::patchWinTheme
+		variable scalingpct
+		place $w -x -[expr {2 * [scaleutil::scale 2 $scalingpct]}]
 	    }
 	    return [list $height $height]
 	}
