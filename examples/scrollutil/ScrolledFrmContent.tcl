@@ -193,7 +193,7 @@ foreach line $lineList {
 	    }
 	    set item [list "Tablelist $version" $changes $comment]
 	    $tbl insert end $item
-	    $tv insert {} end -values $item
+	    $tv insert {} end -id $version -values $item
 	    incr totalChanges $changes
 	}
 
@@ -215,13 +215,13 @@ if {$changes == 0} {
 set comment ""
 set item [list "Tablelist $version" $changes $comment]
 $tbl insert end $item
-$tv insert {} end -values $item
+$tv insert {} end -id $version -values $item
 incr totalChanges $changes
 
 $lb insert end "Tablelist 0.8"
 set item [list "Tablelist 0.8" 0 "First release, on 2000-10-27"]
 $tbl insert end $item
-$tv insert {} end -values $item
+$tv insert {} end -id 0.8 -values $item
 
 $tbl header insert 0 \
      [list "All [$tbl size] releases" $totalChanges "Total number"]
@@ -292,13 +292,19 @@ while {[lindex [$sf xview] 1] != 1.0} {
 #------------------------------------------------------------------------------
 
 proc updateWidgets {} {
-    global cb tbl sb e
+    global cb tbl sb e tv
     set release [$cb get]
     set idx [$tbl searchcolumn 0 $release]
     set item [$tbl get $idx]
+
     $sb set [lindex $item 1]
     $e delete 0 end; $e insert 0 [lindex $item 2]
-    $tbl selection clear 0 end; $tbl selection set $idx; $tbl see $idx
+
+    $tbl selection clear 0 end; $tbl selection set $idx
+    $tbl activate $idx; $tbl see $idx
+
+    set version [lindex [split $release] 1]
+    $tv selection set [list $version]; $tv focus $version; $tv see $version
 }
 
 #------------------------------------------------------------------------------
@@ -514,8 +520,7 @@ proc applyValue {w opt} {
 	tk_messageBox -title "Error" -icon error -message $result \
 	    -parent [winfo toplevel $w]
 	### $w set [$tbl cget $opt]		;# not supported by ttk::entry
-	$w delete 0 end
-	$w insert 0 [$tbl cget $opt]
+	$w delete 0 end; $w insert 0 [$tbl cget $opt]
     }
 }
 

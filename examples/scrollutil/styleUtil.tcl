@@ -4,6 +4,8 @@
 # Copyright (c) 2019-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
+package require scrollutil_tile
+
 #
 # To set the "-autohidescrollbars" or "-setfocus" option of all scrollarea
 # widgets in all demo scripts to true, uncomment the corresponding line below:
@@ -79,8 +81,9 @@ ttk::style theme settings clam {
     ttk::style map Toolbutton -darkcolor \
 	[linsert [ttk::style map Toolbutton -darkcolor]  0 selected #bab5ab]
 
-    ttk::style configure TButton -padding 3 -width -9	;# default: 5, -11
-    ttk::style configure Heading -padding 1		;# default: 3
+    set pad [scaleutil::scale 3 $scrollutil::scalingpct]
+    ttk::style configure TButton -padding $pad -width -9  ;# default: 5, -11
+    ttk::style configure Heading -padding 1		  ;# default: 3
 
     if {[catch {rename tablelist::clamTheme tablelist::_clamTheme}] == 0} {
 	proc tablelist::clamTheme {} {
