@@ -1,3 +1,31 @@
+2021-10-31  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.12.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added the "insert", "pagecget", "pageconfigure", and
+	  "window" pagesman subcommands; the pagesman "add" subcommand now
+	  updates the options of an existing page; improved the font handling
+	  in a plainnotebook widget; fixed a bug related to the handling of the
+	  <Destroy> event for a window embedded into a scrollarea or scrollsync
+	  widget.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl:  Significantly extended the procedure
+	* scripts/utils/scaleutil.tcl: "scaleutil::scalingPercentage" and
+	  adapted to the changes made recently in the Tk library file
+	  "ttk/fonts.tcl".
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
+	* ../../examples/scrollutil/styleUtil.tcl:   Several improvements.
+	* ../../examples/scrollutil/*FrmContent.tcl:
+
 2021-09-02  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 1.11.
