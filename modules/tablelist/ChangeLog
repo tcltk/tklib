@@ -1,3 +1,28 @@
+2021-10-31 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                          Bumped the version number to 6.16.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* ../../examples/tablelist/*.tcl:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Scaling the default vertical padding of the header
+	  labels for the themes "clam", "vista", and "xpnative; extended the
+	  "itemtodict" subcommand by an optional argument that specifies the
+	  column indices of the elements that are to be ignored when building
+	  the result dictionary; improvements related to the appearance of the
+	  (temporarily or persistently) embedded ttk::checkbutton widgets;
+	  fixed a bug related to the "cellbbox" subcommand.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl:  Significantly extended the procedure
+	* scripts/utils/scaleutil.tcl: "scaleutil::scalingPercentage" and
+	  adapted to the changes made recently in the Tk library file
+	  "ttk/fonts.tcl".
+
 2021-09-13 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 6.15.1.
