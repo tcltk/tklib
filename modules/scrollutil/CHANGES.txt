@@ -1,5 +1,30 @@
-What is new in Scrollutil 1.11?
+What is new in Scrollutil 1.12?
 -------------------------------
+
+1. Significantly extended the code responsible for initializing the
+   variable "scrollutil::scalingpct".  See the section "More on
+   scrollutil::scalingpct" in Scrollutil Programmer's Guide for details.
+
+2. Made sure that the above-mentioned code will work as expected also
+   with future Tk versions containing the changes made recently in the
+   library file "ttk/fonts.tcl".
+
+3. Added the "insert", "pagecget", "pageconfigure", and "window"
+   pagesman subcommands.
+
+4. If the window passed to the pagesman "add" subcommand is already
+   managed by the pagesman widget, then the subcommand now uses its
+   optional arguments to update the options of the corresponding page.
+   The same holds true for the new "insert" subcommand.
+
+5. Fixed a bug related to the handling of the <Destroy> event for the
+   widget embedded into a scrollarea (thanks to Alexandru Dadalau for
+   his bug report).
+
+6. Several improvements in the demo scripts.
+
+What was new in Scrollutil 1.11?
+--------------------------------
 
 1. Added the "-setfocus" scrollarea configuration option, which controls
    whether clicking one of the scrollbars should set the focus to the
@@ -25,7 +50,7 @@ What is new in Scrollutil 1.11?
    for this navigation is provided by appropriate options and
    subcommands of the plainnotebook widget.
 
-5. The demo script ScrolledNotebookDemo.tcl now makes use of the
+5. The demo script "ScrolledNotebookDemo.tcl" now makes use of the
    "-forgetcommand" and "-leavecommand" scrollednotebook options.
 
 6. Added two new demo scripts using the plainnotebook and pagesman

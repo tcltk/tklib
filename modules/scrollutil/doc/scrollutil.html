@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 1.11</h2>
+    <h2>For Scrollutil Version 1.12</h2>
 
     <h3>by</h3>
 
@@ -303,8 +303,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil1.11.tar.gz</code> for UNIX and
-  <code>scrollutil1_11.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil1.12.tar.gz</code> for UNIX and
+  <code>scrollutil1_12.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -328,11 +328,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil1.11.tar.gz</code>:</p>
+  <code>scrollutil1.12.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil1.11.tar.gz | tar -xf -
+gunzip -c scrollutil1.12.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -340,17 +340,17 @@ gunzip -c scrollutil1.11.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil1.11.tar.gz
+tar -zxf scrollutil1.12.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil1.11</code>,
+  <p>Both commands will create a directory named <code>scrollutil1.12</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil1_11.zip</code> into the directory
-  <code>scrollutil1.11</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil1_12.zip</code> into the directory
+  <code>scrollutil1.12</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -557,6 +557,9 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     regardless of the display's scaling level.</li>
   </ul>
 
+  <p>The additional steps described in the rest of this section are only
+  performed if the scaling percentage is greater than <code>100</code>:</p>
+
   <p>After getting the scaling percentage on X11, Scrollutil sets the scaling
   factor to be used by Tk to convert between physical units and pixels, by
   passing the scaling factor corresponding to the scaling percentage to
@@ -570,33 +573,56 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
   which was not suitable for use on HiDPI displays.&nbsp; This caused several
   Linux distributions to bundle patched versions of this file, in which the
   sizes in pixels are replaced with sizes in points.&nbsp; The same fix was
-  committed in February 2020 into the Tk core repository.&nbsp; To make sure
-  that, regardless of the Tk version, the font sizes will suit the display's
-  scaling level, Scrollutil examines this library file and, if the latter
-  contains sizes in pixels, then it sets the <code>-size</code> option of the
-  standard fonts to corresponding sizes in points (without altering the
-  file).&nbsp; In addition, for the HiDPI mode on Xfce and MATE, Scrollutil
-  doubles the sizes (in points) of the standard fonts (the way display scaling
-  works on these desktops makes this necessary).</p>
+  committed in February 2020 into the Tk core repository and is now contained
+  in Tk 8.7a5 and later.&nbsp; To make sure that, regardless of the Tk version,
+  the font sizes will suit the display's scaling level, Scrollutil examines
+  this library file and, if the latter contains sizes in pixels, then it sets
+  the <code>-size</code> option of the standard fonts to corresponding sizes in
+  points (without altering the file).&nbsp; In addition, for the HiDPI mode on
+  Xfce and MATE, Scrollutil doubles the sizes (in points) of the standard fonts
+  (the way display scaling works on these desktops makes this necessary).</p>
 
-  <p>Independently of the windowing system, the code responsible for the
-  initialization of the variable <code>scrollutil::scalingpct</code> also
-  scales:</p>
+  <p>The code responsible for the initialization of the variable
+  <code>scrollutil::scalingpct</code> also scales:</p>
 
   <ul>
+    <li>the default parameters of the Tk core panedwindow sash;</li>
+
+    <li>the default size of the Tk core scale widget and its slider;</li>
+
     <li>the default width of the Tk core scrollbars on X11;</li>
 
-    <li>for the built-in themes <code>alt</code>, <code>clam</code>,
-    <code>classic</code>, and <code>default</code>, the default width of the
-    ttk::scrollbar widget, as well as the arrows of the ttk::combobox and
-    ttk::spinbox widgets;</li>
+    <li>the default length of the ttk::scale and ttk::progressbar widgets;</li>
 
-    <li>for the <code>alt</code> and <code>clam</code> themes, the arrow of
-    the ttk::menubutton widget;</li>
+    <li>the height of the ttk::treeview rows;</li>
+
+    <li>for the built-in themes <code>alt</code>, <code>clam</code>,
+    <code>classic</code>, <code>default</code>, <code>vista</code>, and
+    <code>xpnative</code>, the paddings of the ttk::button, toolbutton,
+    ttk::menubutton, ttk::checkbutton, and ttk::radiobutton widgets, as well as
+    some styling options of the ttk::notebook widget and its tabs;</li>
+
+    <li>for the <code>alt</code>, <code>clam</code>, <code>classic</code>, and
+    <code>default</code> themes, the width of the ttk::scrollbar widget, the
+    sliders of the ttk::scale and ttk::progressbar widgets, as well as the
+    arrows of the ttk::combobox and ttk::spinbox widgets;</li>
+
+    <li>for the <code>alt</code> and <code>clam</code> themes, the arrow and
+    padding of the ttk::menubutton widget;</li>
+
+    <li>for the <code>classic</code> and <code>default</code> themes, the
+    indicator margin and padding of the ttk::menubutton widget;</li>
 
     <li>for the <code>clam</code>, <code>classic</code>, and
-    <code>default</code> themes, the indicators of the ttk::checkbutton and
-    ttk::radiobutton widgets.</li>
+    <code>default</code> themes, the indicator size of the ttk::checkbutton and
+    ttk::radiobutton widgets (note that in the <code>alt</code> theme, the
+    indicators of these widgets are not scalable);</li>
+
+    <li>for the <code>clam</code> and <code>classic</code> themes, the sash of
+    the ttk::panedwindow widget;</li>
+
+    <li>for the <code>clam</code> theme, the padding of the ttk::treeview
+    column headers and the label margins of the ttk::labelframe widget.</li>
   </ul>
 
   <p>In addition, the above-mentioned variable initialization code makes sure
@@ -604,7 +630,8 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
   indicators of the ttk::checkbutton and ttk::radiobutton widgets will appear
   properly scaled, regardless of the Tk release being used.&nbsp; (A
   long-standing bug in the implementation of these widgets was fixed in May
-  2020, but Scrollutil provides a workaround for the Tk versions that are still
+  2020 and is now contained in both Tk 8.6.11 and later and 8.7a5 and later,
+  but Scrollutil provides a workaround for the Tk versions that are still
   affected by this bug.)</p>
 
   <div align="center">
@@ -1328,7 +1355,7 @@ set cf [$sf childsite]
 
   <blockquote>
     <img src="ScrollableFrmDemo2.png" alt="ScrollableFrmDemo2" width="601"
-    height="511">
+    height="510">
   </blockquote>
 
   <p>Here is the relevant code:</p>

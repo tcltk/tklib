@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>scrollutil::pagesman</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.11</h2>
+    <h2>For Scrollutil Version 1.12</h2>
 
     <h3>by</h3>
 
@@ -85,11 +85,18 @@
     <dd><code><b><a href="#width">-width</a></b>
     <i>screenDistance</i></code></dd>
 
+    <dt class="tm"><a href="#page_options">PAGE CONFIGURATION OPTIONS</a></dt>
+
+    <dd><code><b><a href="#page_padding">-padding</a></b>
+    <i>padding</i></code></dd>
+
+    <dd><code><b><a href="#page_sticky">-sticky</a></b>
+    <i> stickyness</i></code></dd>
+
     <dt class="tm"><a href="#widget_command">WIDGET COMMAND</a></dt>
 
     <dd><code><i>pathName</i> <b><a href="#add">add</a></b> <i>window</i>
-    ?<b>-padding</b> <i>padding</i>? ?<b>-sticky</b>
-    <i>stickyness</i>?</code></dd>
+    ?<i>option</i> <i>value</i> <i>option</i> <i>value</i> ...?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#cget">cget</a></b>
     <i>option</i></code></dd>
@@ -103,12 +110,26 @@
     <dd><code><i>pathName</i> <b><a href="#index">index</a></b>
     <i>window</i></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#insert">insert</a></b>
+    <i>pageIndex</i> <i>window</i> ?<i>option</i> <i>value</i> <i>option</i>
+    <i>value</i> ...?</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#pagecget">pagecget</a></b>
+    <i>pageIndex</i> <i>option</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#pageconfigure">pageconfigure</a></b>
+    <i>pageIndex</i> ?<i>option</i>? ?<i>value</i> <i>option</i>
+    <i>value</i> ...?</code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#pages">pages</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#select">select</a></b>
     ?<i>pageIndex</i>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#size">size</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#window">window</a></b>
+    <i>pageIndex</i></code></dd>
 
     <dt class="tm"><a href="#virtual_events">VIRTUAL EVENTS</a></dt>
 
@@ -339,6 +360,43 @@
       </blockquote>
     </dd>
 
+    <dt id="page_options"><b>PAGE CONFIGURATION OPTIONS</b></dt>
+
+    <dd>The following options are currently supported by the <code><b><a href=
+    "#add">add</a></b></code>, <code><b><a href=
+    "#insert">insert</a></b></code>, <code><b><a href=
+    "#pagecget">pagecget</a></b></code>, and <code><b><a href=
+    "#pageconfigure">pageconfigure</a></b></code> commands:</dd>
+
+    <dd>
+      <dl>
+        <dt class="tm" id="page_padding"><code><b>-padding</b>
+        <i>padding</i></code></dt>
+
+        <dd>Specifies the amount of extra space to add between the widget and
+        this page.&nbsp; <code><i>padding</i></code> must be a list of up to
+        four non-negative screen distances&nbsp; <code>{<i>left</i> <i>top</i>
+        <i>right</i> <i>bottom</i>}</code>.&nbsp; If fewer than four elements
+        are specified, <code><i>bottom</i></code> defaults to
+        <code><i>top</i></code>, <code><i>right</i></code> defaults to
+        <code><i>left</i></code>, and <code><i>top</i></code> defaults to
+        <code><i>left</i></code>.&nbsp; A padding value specified as an empty
+        list is equivalent to <code>0</code>, which is the default.</dd>
+
+        <dt class="tm" id="page_sticky"><code><b>-sticky</b>
+        <i>stickyness</i></code></dt>
+
+        <dd>Specifies how the page window will be positioned within the
+        widget.&nbsp; <code><i>stickyness</i></code> must be a string
+        containing zero or more of the characters <code><b>n</b></code>,
+        <code><b>s</b></code>, <code><b>e</b></code>, or
+        <code><b>w</b></code>.&nbsp; Each letter refers to a side (north,
+        south, east, or west) that the page window will “stick” to, as per the
+        <code><b>grid</b></code> geometry manager.&nbsp; The default stickyness
+        is <code><b>nsew</b></code>.</dd>
+      </dl>
+    </dd>
+
     <dt class="tm" id="widget_command"><b>WIDGET COMMAND</b></dt>
 
     <dd>
@@ -355,34 +413,22 @@
     </dd>
 
     <dd><code><i>option</i></code> and the <code><i>arg</i></code>s determine
-    the exact behavior of the command.&nbsp; The following commands are
-    possible for pagesman widgets:</dd>
+    the exact behavior of the command.&nbsp; In the subcommand descriptions
+    below, <code><i>pageIndex</i></code> always denotes a numerical page
+    index.&nbsp; The following subcommands are possible for pagesman
+    widgets:</dd>
 
     <dd>
       <dl>
         <dt class="tm" id="add"><code><i>pathName</i> <b>add</b> <i>window</i>
-        ?<b>-padding</b> <i>padding</i>? ?<b>-sticky</b>
-        <i>stickyness</i>?</code></dt>
+        ?<i>option</i> <i>value</i> <i>option</i> <i>value</i> ...?</code></dt>
 
         <dd>Adds a new page consisting of the specified window to the pagesman
-        widget.&nbsp; The <code><b>-padding</b></code> option specifies the
-        amount of extra space to add between the widget and this page.&nbsp;
-        <code><i>padding</i></code> must be a list of up to four non-negative
-        screen distances&nbsp; <code>{<i>left</i> <i>top</i> <i>right</i>
-        <i>bottom</i>}</code>.&nbsp; If fewer than four elements are specified,
-        <code><i>bottom</i></code> defaults to <code><i>top</i></code>,
-        <code><i>right</i></code> defaults to <code><i>left</i></code>, and
-        <code><i>top</i></code> defaults to <code><i>left</i></code>.&nbsp; A
-        padding value specified as an empty list is equivalent to
-        <code>0</code>, which is the default.&nbsp; The
-        <code><b>-sticky</b></code> option specifies how the page window will
-        be positioned within the widget.&nbsp; <code><i>stickyness</i></code>
-        must be a string containing zero or more of the characters
-        <code><b>n</b></code>, <code><b>s</b></code>, <code><b>e</b></code>, or
-        <code><b>w</b></code>.&nbsp; Each letter refers to a side (north,
-        south, east, or west) that the page window will “stick” to, as per the
-        <code><b>grid</b></code> geometry manager.&nbsp; The default stickyness
-        is <code><b>nsew</b></code>.</dd>
+        widget.&nbsp; See the <a href="#page_options">PAGE CONFIGURATION
+        OPTIONS</a> section for the list of available options.&nbsp; If
+        <code><i>window</i></code> is already managed by the pagesman widget,
+        then the subcommand uses its optional arguments to update the options
+        of the corresponding page.</dd>
 
         <dt class="tm" id="cget"><code><i>pathName</i> <b>cget</b>
         <i>option</i></code></dt>
@@ -425,14 +471,56 @@
 
         <dd>Returns the numerical index of the page identified by the specified
         window, which must have been added to the widget with the aid of the
-        <code><b><a href="#add">add</a></b></code> subcommand.</dd>
+        <code><b><a href="#add">add</a></b></code> or <code><b><a href=
+        "#insert">insert</a></b></code> subcommand.</dd>
+
+        <dt class="tm" id="insert"><code><i>pathName</i> <b>insert</b>
+        <i>pageIndex</i> <i>window</i> ?<i>option</i> <i>value</i>
+        <i>option</i> <i>value</i> ...?</code></dt>
+
+        <dd>Inserts a new page consisting of the specified window at the
+        position given by <code><i>pageIndex</i></code>.&nbsp; See the
+        <a href="#page_options">PAGE CONFIGURATION OPTIONS</a> section for the
+        list of available options.&nbsp; If <code><i>window</i></code> is
+        already managed by the pagesman widget, then the subcommand moves it to
+        the specified position and uses its optional arguments to update the
+        options of the corresponding page.</dd>
+
+        <dt class="tm" id="pagecget"><code><i>pathName</i> <b>pagecget</b>
+        <i>pageIndex</i> <i>option</i></code></dt>
+
+        <dd>Returns the current value of the page configuration option given by
+        <code><i>option</i></code> for the page specified by
+        <code><i>pageIndex</i></code>.&nbsp; <code><i>option</i></code> may
+        have any of the values accepted by the <code><b><a href=
+        "#pageconfigure">pageconfigure</a></b></code> command.</dd>
+
+        <dt class="tm" id="pageconfigure"><code><i>pathName</i>
+        <b>pageconfigure</b> <i>pageIndex</i> ?<i>option</i>? ?<i>value</i>
+        <i>option</i> <i>value</i> ...?</code></dt>
+
+        <dd>Queries or modifies the configuration options of the page given by
+        <code><i>pageIndex</i></code>.&nbsp; If no <code><i>option</i></code>
+        is specified, the command returns a list describing all of the
+        available options for the page (see
+        <code><b>Tk_ConfigureInfo</b></code> for information on the format of
+        this list).&nbsp; If <code><i>option</i></code> is specified with no
+        <code><i>value</i></code>, then the command returns a list describing
+        the one named option (this list will be identical to the corresponding
+        sublist of the value returned if no <code><i>option</i></code> is
+        specified).&nbsp; If one or more
+        <code><i>option</i></code>-<code><i>value</i></code> pairs are
+        specified, then the command modifies the given page option(s) to have
+        the given value(s); in this case the return value is an empty
+        string.&nbsp; <code><i>option</i></code> may have any of the values
+        described in the <a href="#page_options">PAGE CONFIGURATION OPTIONS</a>
+        section.</dd>
 
         <dt class="tm" id="pages"><code><i>pathName</i>
         <b>pages</b></code></dt>
 
-        <dd>Returns the list of all windows managed by the pagesman widget, in
-        the order in which they were added via the <code><b><a href=
-        "#add">add</a></b></code> subcommand.</dd>
+        <dd>Returns the list of all windows managed by the pagesman
+        widget, in the order of their numerical page indices.</dd>
 
         <dt class="tm" id="select"><code><i>pathName</i> <b>select</b>
         ?<i>pageIndex</i>?</code></dt>
@@ -450,6 +538,12 @@
 
         <dd>Returns the number of pages, i.e., the number of windows managed by
         the pagesman widget.</dd>
+
+        <dt class="tm" id="window"><code><i>pathName</i> <b>window</b>
+        <i>pageIndex</i></code></dt>
+
+        <dd>Returns the path name of the page window identified by
+        <code><i>pageIndex</i></code>.</dd>
       </dl>
     </dd>
 
