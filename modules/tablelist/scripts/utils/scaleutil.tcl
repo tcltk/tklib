@@ -3,7 +3,7 @@
 #
 # Structure of the module:
 #   - Namespace initialization
-#   - Public utility procedure
+#   - Public utility procedures
 #   - Private helper procedures
 #
 # Copyright (c) 2020-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
@@ -20,7 +20,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.5
+    variable version	1.6
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -29,16 +29,16 @@ namespace eval scaleutil {
     }
 
     #
-    # Public procedure:
+    # Public procedures:
     #
-    namespace export	scalingPercentage
+    namespace export	scalingPercentage scale
 }
 
 package provide scaleutil $scaleutil::version
 
 #
-# Public utility procedure
-# ========================
+# Public utility procedures
+# =========================
 #
 
 #------------------------------------------------------------------------------
@@ -122,7 +122,35 @@ proc scaleutil::scalingPercentage winSys {
 	set pct [expr {int($pct + 0.5)}]	;# temporarily (see return)
     }
 
-    if {$onX11 && $pct > 100} {
+    if {$pct == 100} {
+	return 100
+    }
+
+    #
+    # Scale the default parameters of the panedwindow sash
+    #
+    option add *Panedwindow.handlePad		[scale 8 $pct] widgetDefault
+    option add *Panedwindow.handleSize		[scale 8 $pct] widgetDefault
+    if {$::tk_version >= 8.5} {
+	option add *Panedwindow.sashPad		0 widgetDefault
+	option add *Panedwindow.sashWidth	[scale 3 $pct] widgetDefault
+    } else {
+	option add *Panedwindow.sashPad		[scale 2 $pct] widgetDefault
+	option add *Panedwindow.sashWidth	[scale 2 $pct] widgetDefault
+    }
+
+    #
+    # Scale the default size of the scale widget and its slider
+    #
+    option add *Scale.length		$pct widgetDefault
+    option add *Scale.sliderLength	[scale 30 $pct] widgetDefault
+    option add *Scale.width		[scale 15 $pct] widgetDefault
+
+    if {$onX11} {
+	if {$changed} {
+	    tk scaling [expr {$pct / 75.0}]
+	}
+
 	#
 	# Conditionally correct and then scale the sizes of the standard fonts
 	#
@@ -130,41 +158,56 @@ proc scaleutil::scalingPercentage winSys {
 	    scaleX11Fonts $factor
 	}
 
-	if {$changed} {
-	    tk scaling [expr {$pct / 75.0}]
-	}
-
 	#
 	# Scale the default scrollbar width
 	#
-	set helpScrlbar .__helpScrlbar
-	for {set n 2} {[winfo exists $helpScrlbar]} {incr n} {
-	    set helpScrlbar .__helpScrlbar$n
+	if {$::tk_version >= 8.5} {
+	    option add *Scrollbar.width	[scale 11 $pct] widgetDefault
+	} else {
+	    option add *Scrollbar.width [scale 15 $pct] widgetDefault
 	}
-	scrollbar $helpScrlbar
-	set defScrlbarWidth [lindex [$helpScrlbar configure -width] 3]
-	destroy $helpScrlbar
-	set scrlbarWidth [expr {$defScrlbarWidth * $pct / 100}]
-	option add *Scrollbar.width $scrlbarWidth userDefault
     }
 
     if {$::tk_version >= 8.5} {
 	#
+	# Scale the default ttk::scale and ttk::progressbar length
+	#
+	option add *TScale.length	$pct widgetDefault
+	option add *TProgressbar.length	$pct widgetDefault
+
+	#
+	# Scale the default height of the ttk::treeview rows
+	#
+	set font [ttk::style lookup Treeview -font]
+	ttk::style configure Treeview \
+	    -rowheight [expr {[font metrics $font -linespace] + 3}]
+
+	#
 	# Scale a few styles for the built-in themes
 	# "alt", "clam", "classic", and "default"
 	#
-	scaleStyles $pct
+	foreach theme {alt clam classic default} {
+	    scaleStyles_$theme $pct
+	}
 
 	#
-	# For the "xpnative" and "vista" themes work around a bug
+	# Scale a few styles for the "vista" and "xpnative" themes
+	#
+	foreach theme {vista xpnative} {
+	    if {[lsearch -exact [ttk::style theme names] $theme] >= 0} {
+		scaleWinStyles $theme $pct
+	    }
+	}
+
+	#
+	# For the "vista" and "xpnative" themes work around a bug
 	# related to the scaling of ttk::checkbutton and ttk::radiobutton
 	# widgets in Tk releases no later than 8.6.10 and 8.7a3
 	#
-	if {$pct > 100 &&
-	    ([package vcompare $::tk_patchLevel "8.6.10"] <= 0 ||
-	     ($::tk_version == 8.7 &&
-	      [package vcompare $::tk_patchLevel "8.7a3"] <= 0))} {
-	    foreach theme {xpnative vista} {
+	if {[package vcompare $::tk_patchLevel "8.6.10"] <= 0 ||
+	    ($::tk_version == 8.7 &&
+	     [package vcompare $::tk_patchLevel "8.7a3"] <= 0)} {
+	    foreach theme {vista xpnative} {
 		if {[lsearch -exact [ttk::style theme names] $theme] >= 0} {
 		    patchWinTheme $theme $pct
 		}
@@ -173,6 +216,21 @@ proc scaleutil::scalingPercentage winSys {
     }
 
     return [expr {$pct > 200 ? 200 : $pct}]
+}
+
+#------------------------------------------------------------------------------
+# scaleutil::scale
+#
+# Scales a positive integer according to a given scaling percentage.
+#------------------------------------------------------------------------------
+proc scaleutil::scale {num pct} {
+    set factor [expr {$num * $pct}]
+    set result [expr {$factor / 100}]
+    if {$factor % 100 >= 50} {
+	incr result
+    }
+
+    return $result
 }
 
 #
@@ -264,7 +322,7 @@ proc scaleutil::scaleX11Fonts factor {
     set idx [string first "courier" $str]
     set str [string range $str $idx end]
 
-    set idx [string first "F(size)" $str]
+    set idx [string first "size" $str]
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 9 : $size}]		;# -12 -> 9, else 10
     foreach font {TkDefaultFont TkTextFont TkHeadingFont
@@ -272,86 +330,218 @@ proc scaleutil::scaleX11Fonts factor {
 	font configure $font -size [expr {$factor * $points}]
     }
 
-    set idx [string first "F(ttsize)" $str]
+    set idx [string first "ttsize" $str]
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 8 : $size}]		;# -10 -> 8, else 9
     foreach font {TkTooltipFont TkSmallCaptionFont} {
 	font configure $font -size [expr {$factor * $points}]
     }
 
-    set idx [string first "F(capsize)" $str]
+    set idx [string first "capsize" $str]
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 11 : $size}]		;# -14 -> 11, else 12
     font configure TkCaptionFont -size [expr {$factor * $points}]
 
-    set idx [string first "F(fixedsize)" $str]
+    set idx [string first "fixedsize" $str]
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 9 : $size}]		;# -12 -> 9, else 10
     font configure TkFixedFont -size [expr {$factor * $points}]
 }
 
 #------------------------------------------------------------------------------
-# scaleutil::scaleStyles
+# scaleutil::scaleStyles_alt
 #
-# Scales a few styles for the "alt", "clam", "classic", and "default" themes.
+# Scales a few styles for the "alt" theme.
 #------------------------------------------------------------------------------
-proc scaleutil::scaleStyles pct {
-    #
-    # For the "alt", "clam", "classic", and "default" themes scale the
-    # values of the -arrowsize and -width TScrollbar options, as well
-    # as the value of the -arrowsize TCombobox and TSpinbox option
-    #
-    set comboboxArrowSize [expr {12 * $pct / 100}]
-    set spinboxArrowSize [expr {10 * $pct / 100}]
-    foreach theme {alt clam classic default} {
-	switch $theme {
-	    alt -
-	    clam    { set scrlbarWidth [expr {14 * $pct / 100}] }
-	    classic { set scrlbarWidth [expr {15 * $pct / 100}] }
-	    default { set scrlbarWidth [expr {13 * $pct / 100}] }
-	}
-
-	ttk::style theme settings $theme {
-	    ttk::style configure TScrollbar \
-		-arrowsize $scrlbarWidth -width $scrlbarWidth
-	    ttk::style configure TCombobox -arrowsize $comboboxArrowSize
-	    ttk::style configure TSpinbox -arrowsize $spinboxArrowSize
-	}
-    }
-
-    #
-    # For the "alt" theme scale the value
-    # of the -arrowsize TMenubutton option
-    #
-    set menubtnArrowSize [expr {5 * $pct / 100}]
+proc scaleutil::scaleStyles_alt pct {
     ttk::style theme settings alt {
-	ttk::style configure TMenubutton -arrowsize $menubtnArrowSize
-    }
+	set scrlbarWidth [scale 14 $pct]
+	ttk::style configure TScrollbar \
+	    -arrowsize $scrlbarWidth -width $scrlbarWidth
 
-    #
-    # For the "clam" theme scale the value of the
-    # -arrowsize TMenubutton option, as well as that of the
-    # -indicatorsize TCheckbutton and TRadiobutton option
-    #
-    set indicatorSize [expr {10  * $pct / 100}]
-    ttk::style theme settings clam {
-	ttk::style configure TMenubutton -arrowsize $menubtnArrowSize
+	ttk::style configure TScale -groovewidth [scale 4 $pct] \
+	    -sliderthickness [scale 15 $pct]
+
+	ttk::style configure TProgressbar -barsize [scale 30 $pct] \
+	    -thickness [scale 15 $pct]
+
+	ttk::style configure TCombobox -arrowsize [scale 14 $pct]
+	ttk::style configure TSpinbox -arrowsize [scale 10 $pct]
+
+	ttk::style configure TButton -padding [scale 1 $pct]
+	ttk::style configure Toolbutton -padding [scale 2 $pct]
+
+	ttk::style configure TMenubutton -arrowsize [scale 5 $pct] \
+	    -padding [scale 3 $pct]
+
+	set t [scale 2 $pct]; set r [scale 4 $pct]; set b $t
+	set indicatorMargin [list 0 $t $r $b]			;# {0 2 4 2}
 	foreach style {TCheckbutton TRadiobutton} {
-	    ttk::style configure $style -indicatorsize $indicatorSize
+	    ttk::style configure $style -indicatormargin $indicatorMargin \
+		-padding [scale 2 $pct]
 	}
-    }
 
-    #
-    # For the "classic" and "default" themes scale the value of
-    # the -indicatordiameter TCheckbutton and TRadiobutton option
-    #
-    set indicatorDiam [expr {10 * $pct / 100}]
-    foreach theme {classic default} {
-	ttk::style theme settings $theme {
-	    foreach style {TCheckbutton TRadiobutton} {
-		ttk::style configure $style -indicatordiameter $indicatorDiam
-	    }
+	set l [scale 2 $pct]; set t $l; set r [scale 1 $pct]
+	set margins [list $l $t $r 0]				;# {2 2 1 0}
+	ttk::style configure TNotebook -tabmargins $margins
+	ttk::style configure TNotebook.Tab \
+	    -padding [list [scale 4 $pct] [scale 2 $pct]]
+	ttk::style map TNotebook.Tab -expand [list selected $margins]
+    }
+}
+
+#------------------------------------------------------------------------------
+# scaleutil::scaleStyles_clam
+#
+# Scales a few styles for the "clam" theme.
+#------------------------------------------------------------------------------
+proc scaleutil::scaleStyles_clam pct {
+    ttk::style theme settings clam {
+	set scrlbarWidth [scale 14 $pct]
+	ttk::style configure TScrollbar -gripcount [scale 5 $pct] \
+	    -arrowsize $scrlbarWidth -width $scrlbarWidth
+
+	ttk::style configure TScale -sliderlength [scale 30 $pct] \
+	    -arrowsize $scrlbarWidth
+
+	ttk::style configure TProgressbar -sliderlength [scale 30 $pct] \
+	    -arrowsize $scrlbarWidth
+
+	ttk::style configure TCombobox -arrowsize [scale 14 $pct]
+	ttk::style configure TSpinbox -arrowsize [scale 10 $pct]
+
+	ttk::style configure TButton -padding [scale 5 $pct]
+	ttk::style configure Toolbutton -padding [scale 2 $pct]
+
+	ttk::style configure TMenubutton -arrowsize [scale 5 $pct] \
+	    -padding [scale 5 $pct]
+
+	set l [scale 1 $pct]; set t $l; set r [scale 4 $pct]; set b $l
+	set indicatorMargin [list $l $t $r $b]			;# {1 1 4 1}
+	foreach style {TCheckbutton TRadiobutton} {
+	    ttk::style configure $style -indicatorsize [scale 10 $pct] \
+		-indicatormargin $indicatorMargin -padding [scale 2 $pct]
 	}
+
+	set l [scale 6 $pct]; set t [scale 2 $pct]; set r $l; set b $t
+	ttk::style configure TNotebook.Tab \
+	    -padding [list $l $t $r $b]				;# {6 2 6 2}
+	set t [scale 4 $pct]
+	ttk::style map TNotebook.Tab \
+	    -padding [list selected [list $l $t $r $b]]		;# {6 4 6 2}
+
+	ttk::style configure Sash -sashthickness [scale 6 $pct] \
+	    -gripcount [scale 10 $pct]
+
+	ttk::style configure Heading -padding [scale 3 $pct]
+
+	ttk::style configure TLabelframe \
+	    -labelmargins [list 0 0 0 [scale 4 $pct]]
+    }
+}
+
+#------------------------------------------------------------------------------
+# scaleutil::scaleStyles_classic
+#
+# Scales a few styles for the "classic" theme.
+#------------------------------------------------------------------------------
+proc scaleutil::scaleStyles_classic pct {
+    ttk::style theme settings classic {
+	set scrlbarWidth [scale 15 $pct]
+	ttk::style configure TScrollbar \
+	    -arrowsize $scrlbarWidth -width $scrlbarWidth
+
+	ttk::style configure TScale -sliderlength [scale 30 $pct] \
+	    -sliderthickness [scale 15 $pct]
+
+	ttk::style configure TProgressbar -barsize [scale 30 $pct] \
+	    -thickness [scale 15 $pct]
+
+	ttk::style configure TCombobox -arrowsize [scale 15 $pct]
+	ttk::style configure TSpinbox -arrowsize [scale 10 $pct]
+
+	ttk::style configure TButton -padding {3m 1m}
+	ttk::style configure Toolbutton -padding [scale 2 $pct]
+
+	ttk::style configure TMenubutton \
+	    -indicatormargin [list [scale 5 $pct] 0] -padding {3m 1m}
+
+	set t [scale 2 $pct]; set r [scale 4 $pct]; set b $t
+	set indicatorMargin [list 0 $t $r $b]			;# {0 2 4 2}
+	foreach style {TCheckbutton TRadiobutton} {
+	    ttk::style configure $style -indicatordiameter [scale 12 $pct] \
+		-indicatormargin $indicatorMargin
+	}
+
+	ttk::style configure TNotebook.Tab -padding {3m 1m}
+
+	ttk::style configure Sash \
+	    -sashthickness [scale 6 $pct] -sashpad [scale 2 $pct] \
+	    -handlesize [scale 8 $pct] -handlepad [scale 8 $pct]
+    }
+}
+
+#------------------------------------------------------------------------------
+# scaleutil::scaleStyles_default
+#
+# Scales a few styles for the "default" theme.
+#------------------------------------------------------------------------------
+proc scaleutil::scaleStyles_default pct {
+    ttk::style theme settings default {
+	set scrlbarWidth [scale 12 $pct]
+	ttk::style configure TScrollbar \
+	    -arrowsize $scrlbarWidth -width $scrlbarWidth
+
+	ttk::style configure TScale -sliderlength [scale 30 $pct] \
+	    -sliderthickness [scale 15 $pct]
+
+	ttk::style configure TProgressbar -barsize [scale 30 $pct] \
+	    -thickness [scale 15 $pct]
+
+	ttk::style configure TCombobox -arrowsize [scale 12 $pct]
+	ttk::style configure TSpinbox -arrowsize [scale 10 $pct]
+
+	ttk::style configure TButton -padding [scale 3 $pct]
+	ttk::style configure Toolbutton -padding [scale 2 $pct]
+
+	ttk::style configure TMenubutton \
+	    -indicatormargin [list [scale 5 $pct] 0] \
+	    -padding [list [scale 10 $pct] [scale 3 $pct]]
+
+	set t [scale 2 $pct]; set r [scale 4 $pct]; set b $t
+	set indicatorMargin [list 0 $t $r $b]			;# {0 2 4 2}
+	foreach style {TCheckbutton TRadiobutton} {
+	    ttk::style configure $style -indicatordiameter [scale 10 $pct] \
+		-indicatormargin $indicatorMargin -padding [scale 1 $pct]
+	}
+
+	ttk::style configure TNotebook.Tab \
+	    -padding [list [scale 4 $pct] [scale 2 $pct]]
+    }
+}
+
+#------------------------------------------------------------------------------
+# scaleutil::scaleWinStyles
+#
+# Scales a few styles for the "vista" and "xpnative" themes.
+#------------------------------------------------------------------------------
+proc scaleutil::scaleWinStyles {theme pct} {
+    ttk::style theme settings $theme {
+	ttk::style configure TButton -padding [scale 1 $pct]
+	ttk::style configure Toolbutton -padding [scale 4 $pct]
+
+	ttk::style configure TMenubutton \
+	    -padding [list [scale 8 $pct] [scale 4 $pct]]
+
+	foreach style {TCheckbutton TRadiobutton} {
+	    ttk::style configure $style -padding [scale 2 $pct]
+	}
+
+	set m [scale 2 $pct]
+	set margins [list $m $m $m 0]
+	ttk::style configure TNotebook -tabmargins $margins
+	set margins [list $m $m $m $m]
+	ttk::style map TNotebook.Tab -expand [list selected $margins]
     }
 }
 
@@ -359,7 +549,7 @@ proc scaleutil::scaleStyles pct {
 # scaleutil::patchWinTheme
 #
 # Works around a bug related to the scaling of ttk::checkbutton and
-# ttk::radiobutton widgets in the "xpnative" and "vista" themes.
+# ttk::radiobutton widgets in the "vista" and "xpnative" themes.
 #------------------------------------------------------------------------------
 proc scaleutil::patchWinTheme {theme pct} {
     ttk::style theme settings $theme {
@@ -384,7 +574,8 @@ proc scaleutil::patchWinTheme {theme pct} {
 	    }
 	}
 	set height $arr($pct)
-	set width [expr {$height + 4}]
+	set pad [scale 2 $pct]
+	set width [expr {$height + 2*$pad}]
 	ttk::style element create Checkbutton.vsapi_indicator vsapi BUTTON 3 {
 	    {alternate disabled} 12  {alternate pressed} 11
 	    {alternate active} 10  alternate 9
@@ -424,7 +615,8 @@ proc scaleutil::patchWinTheme {theme pct} {
 	# these styles will look as if they had a uniform padding of 2, as
 	# set in the library files ttk/xpTheme.tcl and ttk/vistaTheme.tcl
 	#
-	ttk::style configure TCheckbutton -padding {-2 2 2 2}
-	ttk::style configure TRadiobutton -padding {-2 2 2 2}
+	set padding [list -$pad $pad $pad $pad]
+	ttk::style configure TCheckbutton -padding $padding
+	ttk::style configure TRadiobutton -padding $padding
     }
 }
