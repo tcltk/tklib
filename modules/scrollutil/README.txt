@@ -46,8 +46,8 @@ Scrollutil is available for free download from the Web page
 
     https://www.nemethi.de
 
-The distribution file is "scrollutil1.11.tar.gz" for UNIX and
-"scrollutil1_11.zip" for Windows.  These files contain the same
+The distribution file is "scrollutil1.12.tar.gz" for UNIX and
+"scrollutil1_12.zip" for Windows.  These files contain the same
 information, except for the additional carriage return character
 preceding the linefeed at the end of each line in the text files for
 Windows.
@@ -66,20 +66,20 @@ locations of these library directories are given by the "tcl_library"
 and "tk_library" variables, respectively.
 
 To install Scrollutil on UNIX, "cd" to the desired directory and unpack
-the distribution file "scrollutil1.11.tar.gz":
+the distribution file "scrollutil1.12.tar.gz":
 
-    gunzip -c scrollutil1.11.tar.gz | tar -xf -
+    gunzip -c scrollutil1.12.tar.gz | tar -xf -
 
 On most UNIX systems this can be replaced with
 
-    tar -zxf scrollutil1.11.tar.gz
+    tar -zxf scrollutil1.12.tar.gz
 
-Both commands will create a directory named "scrollutil1.11", with the
+Both commands will create a directory named "scrollutil1.12", with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "scrollutil1_11.zip" into the directory
-"scrollutil1.11", with the subdirectories "demos", "doc", and "scripts".
+distribution file "scrollutil1_12.zip" into the directory
+"scrollutil1.12", with the subdirectories "demos", "doc", and "scripts".
 
 How to Use It?
 --------------
