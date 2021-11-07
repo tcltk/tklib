@@ -270,7 +270,10 @@
     <i>and</i> the widget container to whose descendants the latter belongs, or
     they would select the next/previous value in the ttk::combobox or
     ttk::spinbox under the pointer <i>in addition to</i> scrolling the widget
-    container.</li>
+    container.&nbsp; Note that this command accepts as optional argument the
+    <code>-ignorefocus</code> switch, which specifies that the mouse wheel
+    events are to be handled by the widget under the pointer (only),
+    ragardless of whether that widget has the focus or not.</li>
 
     <li class="tm">For some widgets it can be desirable to make the focus check
     within this modified event handling less restrictive.&nbsp; For example, if

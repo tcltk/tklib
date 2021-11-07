@@ -441,9 +441,10 @@ proc scrollutil::disableScrollingByWheel args {
 #------------------------------------------------------------------------------
 # scrollutil::adaptWheelEventHandling
 #
-# Usage: scrollutil::adaptWheelEventHandling ?widget widget ...?
+# Usage: scrollutil::adaptWheelEventHandling ?-ignorefocus? ?widget widget ...?
 #
-# For each widget argument, the command performs the following actions:
+# If the -ignorefocus option is not present then, for each widget argument, the
+# command performs the following actions:
 #
 #   * If $widget is a tablelist then it sets the latter's -xmousewheelwindow
 #     and -ymousewheelwindow options to the path name of the containing
@@ -465,6 +466,21 @@ proc scrollutil::disableScrollingByWheel args {
 #         the event will be redirected to the containing toplevel window via
 #         event generate rather than being handled by the binding script
 #         associated with the above-mentioned tag.
+#
+# If the -ignorefocus option is specified then, for each widget argument, the
+# command performs the following actions:
+#
+#   * If $widget is a tablelist then it resets the latter's -xmousewheelwindow
+#     and -ymousewheelwindow options (for Tablelist versions 6.4 and later).
+#
+#   * Otherwise it locates the (first) binding tag that has mouse wheel event
+#     bindings and is different from both the path name of the containing
+#     toplevel window and "all".  If the search for this tag was successful
+#     then the command modifies the widget's list of binding tags by appending
+#     the tag "WheeleventBreak" to this binding tag.  As a result, a mouse
+#     wheel event sent to this widget will be handled by the binding script
+#     associated with this tag and no further processing of the event will take
+#     place.
 #------------------------------------------------------------------------------
 proc scrollutil::adaptWheelEventHandling args {
     variable winSys
@@ -472,6 +488,13 @@ proc scrollutil::adaptWheelEventHandling args {
 	package require Tk 8.6b2
     }
     variable uniformWheelSupport
+
+    set ignoreFocus 0
+    set arg0 [lindex $args 0]
+    if {[string length $arg0] > 1 && [string first $arg0 "-ignorefocus"] == 0} {
+	set ignoreFocus 1
+	set args [lrange $args 1 end]
+    }
 
     foreach w $args {
 	if {![winfo exists $w]} {
@@ -482,13 +505,21 @@ proc scrollutil::adaptWheelEventHandling args {
 	set wTop [winfo toplevel $w]
 	if {$class eq "Tablelist"} {
 	    if {[package vcompare $::tablelist::version "6.4"] >= 0} {
-		$w configure -xmousewheelwindow $wTop -ymousewheelwindow $wTop
+		if {$ignoreFocus} {
+		    $w configure -xmousewheelwindow "" -ymousewheelwindow ""
+		} else {
+		    $w configure -xmousewheelwindow $wTop \
+				 -ymousewheelwindow $wTop
+		}
 	    }
 	} else {
 	    set w2 [expr {$class eq "Ctext" ? "$w.t" : $w}]
 	    set tagList [bindtags $w2]
-	    if {[lsearch -exact $tagList "WheeleventRedir"] >= 0} {
-		continue
+	    foreach tag {WheeleventRedir WheeleventBreak} {
+		set idx [lsearch -exact $tagList $tag]
+		if {$idx >= 0} {
+		    set tagList [lreplace $tagList $idx $idx]
+		}
 	    }
 
 	    foreach tag $tagList {
@@ -502,8 +533,13 @@ proc scrollutil::adaptWheelEventHandling args {
 		}
 
 		set idx [lsearch -exact $tagList $tag]
-		bindtags $w2 [lreplace $tagList $idx $idx \
-			      WheeleventRedir $tag WheeleventBreak]
+		if {$ignoreFocus} {
+		    bindtags $w2 [lreplace $tagList $idx $idx \
+				  $tag WheeleventBreak]
+		} else {
+		    bindtags $w2 [lreplace $tagList $idx $idx \
+				  WheeleventRedir $tag WheeleventBreak]
+		}
 		break
 	    }
 	}
@@ -514,7 +550,11 @@ proc scrollutil::adaptWheelEventHandling args {
 	#
 	set sa [getscrollarea $w]
 	if {$sa ne ""} {
-	    adaptWheelEventHandling $sa.hsb $sa.vsb
+	    if {$ignoreFocus} {
+		adaptWheelEventHandling -ignorefocus $sa.hsb $sa.vsb
+	    } else {
+		adaptWheelEventHandling $sa.hsb $sa.vsb
+	    }
 	}
     }
 }

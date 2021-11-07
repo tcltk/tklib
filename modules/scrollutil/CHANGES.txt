@@ -1,27 +1,33 @@
 What is new in Scrollutil 1.12?
 -------------------------------
 
-1. Significantly extended the code responsible for initializing the
-   variable "scrollutil::scalingpct".  See the section "More on
-   scrollutil::scalingpct" in Scrollutil Programmer's Guide for details.
+1. The "scrollutil::adaptWheelEventHandling" command now accepts as
+   optional first argument the "-ignorefocus" switch, which specifies
+   that the mouse wheel events are to be handled by the widget under
+   the pointer (only), ragardless of whether that widget has the focus
+   or not (thanks to Alexandru Dadalau for his proposal).
 
-2. Made sure that the above-mentioned code will work as expected also
-   with future Tk versions containing the changes made recently in the
-   library file "ttk/fonts.tcl".
-
-3. Added the "insert", "pagecget", "pageconfigure", and "window"
+2. Added the "insert", "pagecget", "pageconfigure", and "window"
    pagesman subcommands.
 
-4. If the window passed to the pagesman "add" subcommand is already
+3. If the window passed to the pagesman "add" subcommand is already
    managed by the pagesman widget, then the subcommand now uses its
    optional arguments to update the options of the corresponding page.
    The same holds true for the new "insert" subcommand.
 
-5. Fixed a bug related to the handling of the <Destroy> event for the
+4. Significantly extended the code responsible for initializing the
+   variable "scrollutil::scalingpct".  See the section "More on
+   scrollutil::scalingpct" in Scrollutil Programmer's Guide for details.
+
+5. Made sure that the above-mentioned code will work as expected also
+   with future Tk versions containing the changes made recently in the
+   library file "ttk/fonts.tcl".
+
+6. Fixed a bug related to the handling of the <Destroy> event for the
    widget embedded into a scrollarea (thanks to Alexandru Dadalau for
    his bug report).
 
-6. Several improvements in the demo scripts.
+7. Several updates and improvements in the demo scripts.
 
 What was new in Scrollutil 1.11?
 --------------------------------

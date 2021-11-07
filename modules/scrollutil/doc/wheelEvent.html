@@ -347,7 +347,7 @@
 
     <dd>
       <pre>
-<b>scrollutil::adaptWheelEventHandling</b> ?<i>widget</i> <i>widget</i> ...?
+<b>scrollutil::adaptWheelEventHandling</b> ?<b>-ignorefocus</b>? ?<i>widget</i> <i>widget</i> ...?
 </pre>
     </dd>
 
@@ -357,8 +357,9 @@
 
     <dt class="tm"><b>DESCRIPTION</b></dt>
 
-    <dd>For each <code><i>widget</i></code> argument, the command performs the
-    following actions:</dd>
+    <dd>If the optional <code><b>-ignorefocus</b></code> switch is <i>not</i>
+    present then, for each <code><i>widget</i></code> argument, the command
+    performs the following actions:</dd>
 
     <dd class="tm">
       <ul>
@@ -434,6 +435,35 @@
       </ul>
     </dd>
 
+    <dd class="tm">If the <code><b>-ignorefocus</b></code> option is specified
+    then, for each <code><i>widget</i></code> argument, the command performs
+    the following actions:</dd>
+
+    <dd class="tm">
+      <ul>
+        <li>If <code><i>widget</i></code> is the path name of a <a href=
+        "https://www.nemethi.de/tablelist/">tablelist</a> widget then it resets
+        the latter's <code><b>-xmousewheelwindow</b></code> and
+        <code><b>-ymousewheelwindow</b></code> options to <code>""</code>,
+        provided that the Tablelist version is 6.4 or later (for earlier
+        Tablelist versions the command silently ignores any tablelist widget
+        passed to it as argument).&nbsp; As a result, if the Tablelist version
+        is 6.16 or later, a mouse wheel event over the tablelist's body or edit
+        window will scroll the tablelist or its edit window and no further
+        processing of the event will take place.</li>
+
+        <li class="tm">Otherwise it locates the (first) binding tag that has
+        mouse wheel event bindings and is different from both the path name of
+        the containing toplevel window and <code><b>all</b></code>.&nbsp; If
+        the search for this tag was successful then the command modifies the
+        widget's list of binding tags by appending the tag
+        <code><b>WheeleventBreak</b></code> to this binding tag.&nbsp; As a
+        result, a mouse wheel event sent to this widget will be handled by the
+        binding script associated with this tag and no further processing of
+        the event will take place.</li>
+      </ul>
+    </dd>
+
     <dd class="tm"><b>REMARK 1:</b>&nbsp; This command is designed to be
     invoked for widgets that have mouse wheel event bindings and are
     descendants of a scrollable widget container.&nbsp; The Tk and tile widgets
@@ -474,7 +504,8 @@
     command will automatically be invoked for the scrollbars of that
     scrollarea, too.</dd>
 
-    <dd class="tm"><b>REMARK 4:</b>&nbsp; When handling a mouse wheel event
+    <dd class="tm"><b>REMARK 4:</b>&nbsp; Without the
+    <code><b>-ignorefocus</b></code> option, when handling a mouse wheel event
     sent to a Tk core or tile scrollbar whose path name was passed to this
     command, if the focus is on or inside the associated widget then the event
     will be processed by the scrollbar rather than being redirected to the
@@ -496,15 +527,13 @@
     tablelist widget under the pointer <i>and</i> the widget container to whose
     descendants the latter belongs, or they would select the next/previous
     value in the ttk::combobox or ttk::spinbox under the pointer <i>in addition
-    to</i> scrolling the widget container.&nbsp; After invoking this command,
-    e.g, for a listbox within a scrollable widget container, the mouse wheel
-    events over that widget will only scroll the listbox if it has the
-    focus.&nbsp; Likewise, after invoking this command for a ttk::combobox or
-    ttk::spinbox within a scrollable widget container, the mouse wheel events
-    over that widget will only select its next/previous value if it has the
-    focus.&nbsp; In both examples, if the focus is outside the widget in
-    question then the mouse wheel events will scroll the widget container
-    instead.</dd>
+    to</i> scrolling the widget container.</dd>
+
+    <dd class="tm"><b>REMARK 7:</b>&nbsp; The recommended invocation of this
+    command is without the <code><b>-ignorefocus</b></code> option, because it
+    significantly reduces the probability that the user will inadvertently
+    scroll a window within a widget container containing many scrollable
+    widgets.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
