@@ -2440,12 +2440,14 @@ proc tablelist::setupColumns {win columns createLabels} {
 	    if {$usingTile} {
 		ttk::label $w -style Tablelist.Heading -image "" \
 			      -padding {1 1 1 1} -takefocus 0 -text "" \
-			      -textvariable "" -underline -1 -wraplength 0
+			      -textvariable "" -wraplength 0
 	    } else {
 		tk::label $w -bitmap "" -highlightthickness 0 -image "" \
 			     -takefocus 0 -text "" -textvariable "" \
-			     -underline -1 -wraplength 0
+			     -wraplength 0
 	    }
+	    set defVal [lindex [$w configure -underline] 3]
+	    $w configure -underline $defVal	;# -1 or "" (see TIP #577)
 
 	    #
 	    # Apply to it the current configuration options

@@ -3383,6 +3383,7 @@ proc tablelist::handleWheelEvent {event axis W X Y delta divisor} {
 	    }
 	}
 	mwutil::scrollByUnits $win $axis $delta $divisor
+	return -code break ""
     }
 }
 

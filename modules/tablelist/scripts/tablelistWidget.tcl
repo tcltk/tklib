@@ -1079,8 +1079,7 @@ proc tablelist::tablelist args {
     set y 0
     if {$usingTile} {
 	ttk::label $w -style Tablelist.Heading -image "" -padding {1 1 1 1} \
-		      -takefocus 0 -text "" -textvariable "" -underline -1 \
-		      -wraplength 0
+		      -takefocus 0 -text "" -textvariable ""
 
 	if {$aquaTheme} {
 	    variable newAquaSupport
@@ -1092,8 +1091,7 @@ proc tablelist::tablelist args {
 	}
     } else {
 	tk::label $w -bitmap "" -highlightthickness 0 -image "" \
-		     -takefocus 0 -text "" -textvariable "" -underline -1 \
-		     -wraplength 0
+		     -takefocus 0 -text "" -textvariable ""
     }
     place $w -x $x -y $y -relheight 1.0 -relwidth 1.0
 
@@ -1135,16 +1133,14 @@ proc tablelist::tablelist args {
     set y 0
     if {$usingTile} {
 	ttk::label $w -style Tablelist.Heading -image "" -padding {1 1 1 1} \
-		      -takefocus 0 -text "" -textvariable "" -underline -1 \
-		      -wraplength 0
+		      -takefocus 0 -text "" -textvariable ""
 
 	if {$aquaTheme && $newAquaSupport} {
 	    set y 4
 	}
     } else {
 	tk::label $w -bitmap "" -highlightthickness 0 -image "" \
-		     -takefocus 0 -text "" -textvariable "" -underline -1 \
-		     -wraplength 0
+		     -takefocus 0 -text "" -textvariable ""
     }
     place $w -y $y -relheight 1.0 -relwidth 1.0
 
