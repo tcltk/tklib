@@ -1,3 +1,12 @@
+2021-11-07  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:            Added the "-ignorefocus" optional argument to
+	* scripts/wheelEvent.tcl: the "scrollutil::adaptWheelEventHandling"
+	* doc/scrollutil.html:    command.
+	* doc/wheelEvent.html:
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
 2021-10-31  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 1.12.
