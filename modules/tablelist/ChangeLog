@@ -1,8 +1,8 @@
 2021-11-07 Csaba Nemethi <csaba.nemethi@t-online.de>
 
-	* CHANGES.txt:                 Updated the handling of of the mouse
-	* scripts/tablelistBind.tcl:   wheel events; changes related to TIP
-	* scripts/tablelistUtil.tcl:   #577.
+	* CHANGES.txt:                 Updated the handling of the mouse wheel
+	* scripts/tablelistBind.tcl:   events; changes related to TIP #577.
+	* scripts/tablelistUtil.tcl:
 	* scripts/tablelistWidget.tcl:
 	* doc/tablelistWidget.html:
 
