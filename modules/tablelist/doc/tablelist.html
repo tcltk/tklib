@@ -358,8 +358,8 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     <li>The read-only variable <code>tablelist::scalingpct</code> is set at
     application start time to the scaling percentage corresponding to the
     display's DPI scaling level.&nbsp; Tablelist adapts, among others, the
-    default sort arrow style on X11 and Windows Vista, 7, 8, and 10, as well as
-    the sizes of the tree styles <code>vistaAero</code>,
+    default sort arrow style on X11 and Windows Vista, 7, 8, and 10+, as well
+    as the sizes of the tree styles <code>vistaAero</code>,
     <code>vistaClassic</code>, <code>win7Aero</code>, <code>win7Classic</code>,
     and <code>win10</code> to the value of this variable.&nbsp; The currently
     supported values are <code>100</code>, <code>125</code>, <code>150</code>,
@@ -388,8 +388,8 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   <p>The way Tablelist initializes the variable
   <code>tablelist::scalingpct</code> depends on the windowing system:</p>
 
-  <p><i>On Windows and Mac OS X/11</i> the scaling percentage is computed
-  from&nbsp; <code>[tk scaling]</code>.&nbsp; Note that on Mac OS X/11 the
+  <p><i>On Windows and Mac OS X/11+</i> the scaling percentage is computed
+  from&nbsp; <code>[tk scaling]</code>.&nbsp; Note that on Mac OS X/11+ the
   result is always <code>100</code>, regardless of the display's scaling
   level.&nbsp; On this system the desktop engine automatically scales
   everything as needed.</p>
@@ -1409,8 +1409,8 @@ proc demo::displayChildren w {
   <p>In a scaling-aware application the value of the <code><a href=
   "tablelistWidget.html#treestyle">-treestyle</a></code> tablelist option
   should reflect the display's DPI scaling level.&nbsp; On Windows Vista, 7, 8,
-  and 10 the default value of this option already fulfills this requirement,
-  and on Mac OS X/11 the desktop engine automatically scales everything as
+  and 10+ the default value of this option already fulfills this requirement,
+  and on Mac OS X/11+ the desktop engine automatically scales everything as
   needed.&nbsp; On X11 we set the <code>-treestyle</code> option to one of
   <code>bicolor100</code>, ..., <code>bicolor200</code>, depending on the value
   of the public variable <code>::tablelist::scalingpct</code>.</p>
@@ -1950,8 +1950,8 @@ option add *ScrollArea.Tablelist.highlightThickness     0
   <p>In a scaling-aware application the value of the <code><a href=
   "tablelistWidget.html#treestyle">-treestyle</a></code> tablelist option
   should reflect the display's DPI scaling level.&nbsp; On Windows Vista, 7, 8,
-  and 10 the default value of this option already fulfills this requirement,
-  and on Mac OS X/11 the desktop engine automatically scales everything as
+  and 10+ the default value of this option already fulfills this requirement,
+  and on Mac OS X/11+ the desktop engine automatically scales everything as
   needed.&nbsp; On X11 we set the <code>-treestyle</code> option to one of
   <code>bicolor100</code>, ..., <code>bicolor200</code>, depending on the value
   of the public variable <code>tablelist::scalingpct</code>.</p>

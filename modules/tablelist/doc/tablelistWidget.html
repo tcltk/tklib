@@ -1793,7 +1793,7 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         themes, like <code><b>alt</b></code>, <code><b>clam</b></code>, and
         <code><b>default</b></code>.&nbsp; On the windowing system
         <code><b>win32</b></code>, the default arrow color is
-        <code>#595959</code> for Windows 10, <code>#569bc0</code> for Windows
+        <code>#595959</code> for Windows 10+, <code>#569bc0</code> for Windows
         Vista, 7, and 8, <code>#aca899</code> for Windows XP, and an empty
         string for older Windows versions, paired with the default arrow style
         <code><b>flatAngle7x4</b></code>, <code><b>photo7x4</b></code>,
@@ -1907,7 +1907,7 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         can also be <code><b>flat9x5</b></code>, <code><b>flat11x6</b></code>,
         <code><b>flat13x7</b></code>, or <code><b>flat15x8</b></code>,
         depending on the display's scaling level.&nbsp; Similarly, on Windows
-        10 the default arrow style is <code><b>flatAngle7x4</b></code>,
+        10+ the default arrow style is <code><b>flatAngle7x4</b></code>,
         <code><b>flatAngle9x5</b></code>, <code><b>flatAngle11x6</b></code>,
         <code><b>flatAngle13x7</b></code>, or
         <code><b>flatAngle15x8</b></code>, and on Windows Vista, 7, and 8, the
@@ -1930,7 +1930,7 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         "#arrowdisabledcolor">-arrowdisabledcolor</a></b></code> options have
         no effect.</p>
 
-        <p>On Windows Vista, 7, 8, and 10, the sort arrows are shown
+        <p>On Windows Vista, 7, 8, and 10+, the sort arrows are shown
         horizontally centered in the header labels, just below their top
         edges:</p>
 
@@ -3788,7 +3788,7 @@ option add *Tablelist.showBusyCursor 0
         click with mouse button 1 would start an editing session.&nbsp; The
         default value is <code>1</code>.</p>
 
-        <p>On X11 and Mac OS X/11, the cursor set by Tablelist when a mouse
+        <p>On X11 and Mac OS X/11+, the cursor set by Tablelist when a mouse
         click would start the interactive cell editing, is Tk's built-in cursor
         <code><b>pencil</b></code>.&nbsp; Since on Windows this cursor is ugly
         and not really usable, the edit cursor shown by Tablelist on this
@@ -5359,13 +5359,13 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
                   <td>Default for the windowing system
-                  <code><b>win32</b></code> on Windows 10.</td>
+                  <code><b>win32</b></code> on Windows 10+.</td>
                 </tr>
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
                   <td>Default for the <code><b>vista</b></code> theme on
-                  Windows 10.</td>
+                  Windows 10+.</td>
                 </tr>
               </table>
             </td>
@@ -5530,7 +5530,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
       <blockquote>
         <p>This option is only relevant if the mouse wheel events are reported
         to the widget under the pointer rather than to the one having the
-        focus.&nbsp; This condition is fulfilled on X11 and Mac OS X/11, and
+        focus.&nbsp; This condition is fulfilled on X11 and Mac OS X/11+, and
         for Tk 8.6b2 and later on Windows, too (in earlier Tk versions the
         mouse wheel events on Windows were sent to the widget having the
         focus).</p>
@@ -5557,7 +5557,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           events along the horizontal axis are
           <code><b>&lt;Shift-MouseWheel&gt;</b></code> on Windows,
           <code><b>&lt;Shift-MouseWheel&gt;</b></code> and
-          <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code> on Mac OS X/11,
+          <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code> on Mac OS X/11+,
           and <code><b>&lt;Shift-MouseWheel&gt;</b></code>,
           <code><b>&lt;Shift-Button-4&gt;</b></code> and
           <code><b>&lt;Shift-Button-5&gt;</b></code> on X11 (where
@@ -5574,7 +5574,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           versions 8.6.x, with x >= 10, left/right tilting the scroll wheel of
           such a mouse gives rise to
           <code><b>&lt;Shift-MouseWheel&gt;</b></code> events on Windows and
-          Mac OS X/11, and to <code><b>&lt;Shift-Button-4&gt;</b></code> and
+          Mac OS X/11+, and to <code><b>&lt;Shift-Button-4&gt;</b></code> and
           <code><b>&lt;Shift-Button-5&gt;</b></code> events on X11.)</li>
 
           <li class="tm"><i>In Tk versions 8.7a4 and later</i>, the mouse wheel
@@ -5582,7 +5582,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           <code><b>&lt;Shift-MouseWheel&gt;</b></code> and
           <code><b>&lt;Shift-Option-MouseWheel&gt;</b></code> on all windowing
           systems, where the <code><b>Option</b></code> modifier is bound to
-          the <code>Option</code> key on Mac OS X/11 and to the
+          the <code>Option</code> key on Mac OS X/11+ and to the
           <code>Alt</code> key on Windows and X11.&nbsp; In these Tk versions,
           left/right tilting the scroll wheel of a mouse having one or two
           additional (thumb) buttons gives rise to
@@ -5644,7 +5644,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
       <blockquote>
         <p>This option is only relevant if the mouse wheel events are reported
         to the widget under the pointer rather than to the one having the
-        focus.&nbsp; This condition is fulfilled on X11 and Mac OS X/11, and
+        focus.&nbsp; This condition is fulfilled on X11 and Mac OS X/11+, and
         for Tk 8.6b2 and later on Windows, too (in earlier Tk versions the
         mouse wheel events on Windows were sent to the widget having the
         focus).</p>
@@ -5671,7 +5671,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           events along the vertical axis are
           <code><b>&lt;MouseWheel&gt;</b></code> on Windows,
           <code><b>&lt;MouseWheel&gt;</b></code> and
-          <code><b>&lt;Option-MouseWheel&gt;</b></code> on Mac OS X/11, and
+          <code><b>&lt;Option-MouseWheel&gt;</b></code> on Mac OS X/11+, and
           <code><b>&lt;MouseWheel&gt;</b></code>,
           <code><b>&lt;Button-4&gt;</b></code> and
           <code><b>&lt;Button-5&gt;</b></code> on X11 (where
@@ -5684,7 +5684,7 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
           <code><b>&lt;MouseWheel&gt;</b></code> and
           <code><b>&lt;Option-MouseWheel&gt;</b></code> on all windowing
           systems, where the <code><b>Option</b></code> modifier is bound to
-          the <code>Option</code> key on Mac OS X/11 and to the
+          the <code>Option</code> key on Mac OS X/11+ and to the
           <code>Alt</code> key on Windows and X11.</li>
         </ul>
 
@@ -7204,7 +7204,7 @@ proc updateWindow {tbl row col w args} {
     <code>Alt-Prior</code>, <code>Alt-Next</code>, <code>Alt-Home</code>, and
     <code>Alt-End</code> (as well as <code>Control-Home</code> and
     <code>Control-End</code>, except in the case of a text or ctext
-    widget).&nbsp; On Mac OS Classic and Mac OS X/11 Aqua the
+    widget).&nbsp; On Mac OS Classic and Mac OS X/11+ Aqua the
     <code>Command</code> key is used instead of <code>Alt</code>.&nbsp; The
     editing can be aborted with the <code>Escape</code> key (or by invoking the
     <code><b><a href="#cancelediting">cancelediting</a></b></code> subcommand)
@@ -8936,7 +8936,7 @@ eval [list <i>pathName</i> <a href=
         <code><b>-ne</b></code> then the command returns the path name of the
         <b>north-east corner frame</b>, which is designed to be shown to the
         right of the tablelist widget's top-right corner when managing the
-        vertical scrollbar on Mac OS X/11 or X11 (see Remark 1 below).&nbsp;
+        vertical scrollbar on Mac OS X/11+ or X11 (see Remark 1 below).&nbsp;
         This corner frame contains a label or ttk::label widget, depending on
         whether the package Tablelist or Tablelist_tile is being used (see the
         <code><b><a href="#cornerlabelpath">cornerlabelpath</a></b></code>
@@ -8970,7 +8970,7 @@ eval [list <i>pathName</i> <a href=
         <dd class="tm">
           <b>REMARK 1:</b>&nbsp; This subcommand enables you to manage the
           vertical scrollbar (if any) to appear below the tablelist widget's
-          header, thus respecting the native look & feel on Mac OS X/11 and on
+          header, thus respecting the native look & feel on Mac OS X/11+ and on
           many modern Linux systems.&nbsp; As shown in the following example,
           it is recommended to always create a scrolled tablelist along with
           the scrollbar(s) as children of a (ttk::)frame widget:
@@ -10890,7 +10890,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         "#incrarrowtype">-incrarrowtype</a></b></code> configuration
         option.&nbsp; If the label's text is right-aligned then the arrow will
         be displayed on the left side of the label, otherwise on its right
-        side, with the exception of Windows Vista, 7, 8, and 10, where the
+        side, with the exception of Windows Vista, 7, 8, and 10+, where the
         arrow will be shown horizontally centered in the header label and
         attached to its top edge.&nbsp; After sorting the items, the vertical
         view is adjusted in the same way as in the case of the
@@ -10936,7 +10936,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         <code><b><a href="#incrarrowtype">-incrarrowtype</a></b></code>
         configuration option.&nbsp; If the label's text is right-aligned then
         the arrow will be displayed on the left side of the label, otherwise on
-        its right side, with the exception of Windows Vista, 7, 8, and 10,
+        its right side, with the exception of Windows Vista, 7, 8, and 10+,
         where the arrow will be shown horizontally centered in the header label
         and attached to its top edge.&nbsp; If more than one sort arrows are to
         be displayed then the first 9 sort ranks (<code>1</code> for the first
@@ -11964,9 +11964,10 @@ proc printClickedCell {w x y} {
           alternative to <code>Control-slash</code>.&nbsp; In Tablelist this is
           now valid on X11, too.</p>
 
-          <p><b>REMARK 2:</b>&nbsp; On Mac OS X/11, the default widget bindings
-          in current Tk versions use the key sequence <code>Command-a</code>
-          <i>instead of</i> <code>Control-slash</code>.</p>
+          <p><b>REMARK 2:</b>&nbsp; On Mac OS X/11+, the default widget
+          bindings in current Tk versions use the key sequence
+          <code>Command-a</code> <i>instead of</i>
+          <code>Control-slash</code>.</p>
         </li>
 
         <li class="tm">
@@ -11986,8 +11987,8 @@ proc printClickedCell {w x y} {
           support for this alternative shortcut even more useful on both X11
           and Windows.</p>
 
-          <p><b>REMARK 2:</b>&nbsp; On Mac OS X/11, the default widget bindings
-          in current Tk versions use the key sequence
+          <p><b>REMARK 2:</b>&nbsp; On Mac OS X/11+, the default widget
+          bindings in current Tk versions use the key sequence
           <code>Option-Command-a</code> <i>instead of</i>
           <code>Control-backslash</code>.</p>
         </li>
@@ -12272,7 +12273,7 @@ proc printClickedCell {w x y} {
         event <code><b>&lt;&lt;Button3&gt;&gt;</b></code> as
         <code><b>&lt;Button-3&gt;</b></code> for all windowing systems and
         additionally as <code><b>&lt;Control-Button-1&gt;</b></code> for Mac OS
-        Classic and Mac OS X/11 Aqua.&nbsp; If this event occurs over a header
+        Classic and Mac OS X/11+ Aqua.&nbsp; If this event occurs over a header
         label and both the value of the <code><b><a href=
         "#resizablecolumns">-resizablecolumns</a></b></code> configuration
         option and that of the <code><b><a href=
@@ -12293,7 +12294,7 @@ proc printClickedCell {w x y} {
         <code><b>&lt;&lt;ShiftButton3&gt;&gt;</b></code> as
         <code><b>&lt;Shift-Button-3&gt;</b></code> for all windowing systems
         and additionally as <code><b>&lt;Shift-Control-Button-1&gt;</b></code>
-        for Mac OS Classic and Mac OS X/11 Aqua.&nbsp; If this event occurs
+        for Mac OS Classic and Mac OS X/11+ Aqua.&nbsp; If this event occurs
         over a header label and both the value of the <code><b><a href=
         "#resizablecolumns">-resizablecolumns</a></b></code> configuration
         option and that of the <code><b><a href=
@@ -12312,7 +12313,7 @@ proc printClickedCell {w x y} {
     SELECTION:</b>&nbsp; If the selection type is <code><b>cell</b></code> then
     a few further bindings apply to the header labels.&nbsp; In the description
     below the <code>Alt</code> key can be replaced with <code>Meta</code>; on
-    Mac OS Classic and Mac OS X/11 Aqua the <code>Command</code> key is used
+    Mac OS Classic and Mac OS X/11+ Aqua the <code>Command</code> key is used
     instead of <code>Alt</code> and <code>Meta</code>.&nbsp; Notice also that
     you can restrict the set of cells that will be selected when these bindings
     perform a column-wise cell selection:&nbsp; If the command specified by the
@@ -12468,8 +12469,8 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
         <li class="tm">When editing a cell that is not the first/last editable
         cell within its row, <code>Alt-Left</code>/<code>Alt-Right</code>
         (<code>Command-Left</code>/<code>Command-Right</code> on Mac OS Classic
-        and Mac OS X/11 Aqua) terminates the editing in the current cell, moves
-        the edit window into the previous/next editable cell of the row,
+        and Mac OS X/11+ Aqua) terminates the editing in the current cell,
+        moves the edit window into the previous/next editable cell of the row,
         selects the content of the edit window's first entry or entry-like
         component (if any), and sets the insertion cursor to its end.&nbsp; If
         the new edit window is a text or ctext widget then its content is left
@@ -12486,13 +12487,14 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
         <li class="tm">When editing a cell that is not the first/last editable
         cell within its column, <code>Alt-Up</code>/<code>Alt-Down</code>
         (<code>Command-Up</code>/<code>Command-Down</code> on Mac OS Classic
-        and Mac OS X/11 Aqua) terminates the editing in the current cell, moves
-        the edit window one line up/down within the column, selects the content
-        of the edit window's first entry or entry-like component (if any), and
-        sets the insertion cursor to its end.&nbsp; If the new edit window is a
-        text or ctext widget then its content is left unselected.&nbsp; The key
-        sequence <code>Meta-Up</code>/<code>Meta-Down</code> has the same
-        effect as <code>Alt-Up</code>/<code>Alt-Down</code>.&nbsp; If
+        and Mac OS X/11+ Aqua) terminates the editing in the current cell,
+        moves the edit window one line up/down within the column, selects the
+        content of the edit window's first entry or entry-like component (if
+        any), and sets the insertion cursor to its end.&nbsp; If the new edit
+        window is a text or ctext widget then its content is left
+        unselected.&nbsp; The key sequence
+        <code>Meta-Up</code>/<code>Meta-Down</code> has the same effect as
+        <code>Alt-Up</code>/<code>Alt-Down</code>.&nbsp; If
         <code><b>tk_strictMotif</b></code> is false and the edit window is not
         a text or ctext widget or an Iwidgets combobox, then
         <code>Control-p</code> and <code>Control-n</code> behave the same as
@@ -12506,11 +12508,11 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
         <li class="tm">When editing a cell that is not the first/last editable
         cell within its column, <code>Alt-Prior</code>/<code>Alt-Next</code>
         (<code>Command-Prior</code>/<code>Command-Next</code> on Mac OS Classic
-        and Mac OS X/11 Aqua) terminates the editing in the current cell, moves
-        the edit window up/down by one page within the column, selects the
-        content of the edit window's first entry or entry-like component (if
-        any), and sets the insertion cursor to its end.&nbsp; If the new edit
-        window is a text or ctext widget then its content is left
+        and Mac OS X/11+ Aqua) terminates the editing in the current cell,
+        moves the edit window up/down by one page within the column, selects
+        the content of the edit window's first entry or entry-like component
+        (if any), and sets the insertion cursor to its end.&nbsp; If the new
+        edit window is a text or ctext widget then its content is left
         unselected.&nbsp; The key sequence
         <code>Meta-Prior</code>/<code>Meta-Next</code> has the same effect as
         <code>Alt-Prior</code>/<code>Alt-Next</code>.&nbsp; If the edit window
@@ -12523,12 +12525,12 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
         <li class="tm">When editing a cell that is not the only editable cell
         of the tablelist widget, <code>Alt-Home</code>/<code>Alt-End</code>
         (<code>Command-Home</code>/<code>Command-End</code> on Mac OS Classic
-        and Mac OS X/11 Aqua) terminates the editing in the current cell, moves
-        the edit window into the first/last editable cell of the tablelist,
-        selects the content of the edit window's first entry or entry-like
-        component (if any), and sets the insertion cursor to its end.&nbsp; If
-        the new edit window is a text or ctext widget then its content is left
-        unselected.&nbsp; The key sequence
+        and Mac OS X/11+ Aqua) terminates the editing in the current cell,
+        moves the edit window into the first/last editable cell of the
+        tablelist, selects the content of the edit window's first entry or
+        entry-like component (if any), and sets the insertion cursor to its
+        end.&nbsp; If the new edit window is a text or ctext widget then its
+        content is left unselected.&nbsp; The key sequence
         <code>Meta-Home</code>/<code>Meta-End</code> has the same effect as
         <code>Alt-Home</code>/<code>Alt-End</code>.&nbsp; If
         <code><b>tk_strictMotif</b></code> is false and the edit window is not
@@ -12547,15 +12549,16 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
     For example, if <code>Alt-Up</code>/<code>Alt-Down</code> or
     <code>Meta-Up</code>/<code>Meta-Down</code>
     (<code>Command-Up</code>/<code>Command-Down</code> on Mac OS Classic and
-    Mac OS X/11 Aqua) is pressed when editing a cell that is not the first/last
-    editable cell within its column, then the active item or element (depending
-    on the selection type) moves one line up/down.&nbsp; If the selection mode
-    is <code><b>browse</b></code> or <code><b>extended</b></code> then the new
-    active item or element is also selected and all other items or elements are
-    deselected.&nbsp; In <code><b>extended</b></code> mode the new active item
-    or element becomes the (cell)selection anchor.&nbsp; This is exactly the
-    same behavior as the one exhibited by the <code>Up</code> and
-    <code>Down</code> keys in the tablelist's body.</dd>
+    Mac OS X/11+ Aqua) is pressed when editing a cell that is not the
+    first/last editable cell within its column, then the active item or element
+    (depending on the selection type) moves one line up/down.&nbsp; If the
+    selection mode is <code><b>browse</b></code> or
+    <code><b>extended</b></code> then the new active item or element is also
+    selected and all other items or elements are deselected.&nbsp; In
+    <code><b>extended</b></code> mode the new active item or element becomes
+    the (cell)selection anchor.&nbsp; This is exactly the same behavior as the
+    one exhibited by the <code>Up</code> and <code>Down</code> keys in the
+    tablelist's body.</dd>
 
     <dd class="tm">If the tablelist's <code><b><a href=
     "#state">state</a></b></code> is <code><b>disabled</b></code> then none of
