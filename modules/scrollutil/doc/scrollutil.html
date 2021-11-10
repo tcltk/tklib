@@ -119,7 +119,7 @@
     <li>commands for <i>user-friendly</i> mouse wheel event handling in
     <b>scrollable widget containers</b> like scrollutil::scrollableframe,
     BWidget ScrollableFrame, and iwidgets::scrolledframe.&nbsp; These commands
-    require Tcl/Tk versions 8.4 or higher on X11 and Mac OS X/11 and Tk 8.6b2
+    require Tcl/Tk versions 8.4 or higher on X11 and Mac OS X/11+ and Tk 8.6b2
     or later on Windows;</li>
 
     <li>demo scripts illustrating the use of the Scrollutil package in
@@ -486,8 +486,8 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
   <p>The way Scrollutil initializes the variable
   <code>scrollutil::scalingpct</code> depends on the windowing system:</p>
 
-  <p><i>On Windows and Mac OS X/11</i> the scaling percentage is computed
-  from&nbsp; <code>[tk scaling]</code>.&nbsp; Note that on Mac OS X/11 the
+  <p><i>On Windows and Mac OS X/11+</i> the scaling percentage is computed
+  from&nbsp; <code>[tk scaling]</code>.&nbsp; Note that on Mac OS X/11+ the
   result is always <code>100</code>, regardless of the display's scaling
   level.&nbsp; On this system the desktop engine automatically scales
   everything as needed.</p>
@@ -1863,7 +1863,7 @@ proc populateMenu {nb data} {
   <p>Note that the state of the text widgets is set to <code>disabled</code>,
   but the user can select a text range and then copy the selection into the
   clipboard via <code>Control-c</code> (<code>Command-c</code> on Mac OS
-  X/11).&nbsp; When attempting to close a tab or to leave the currently
+  X/11+).&nbsp; When attempting to close a tab or to leave the currently
   selected one, the path name of the corresponding scrollarea widget is
   automatically passed to the <code>condCopySel</code> procedure, which was
   specified as the value of the <code><a href=
