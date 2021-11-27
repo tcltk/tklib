@@ -1,3 +1,14 @@
+2021-11-27  Csaba Nemethi  <csaba.nemethi@t-online.de>
+
+	* pkgIndex.tcl:	Bumped the tooltip version number to 1.4.7.
+	* tooltip.tcl:	Made sure that the "clear" subcommand will work for
+			widgets having spaces in their names, too; several
+			further improvements; bumped the version number to
+			1.4.7.
+	* tooltip.man:	Corrected the description of the "clear" subcommand;
+			several further improvements; bumped the version number
+			to 1.4.7.
+
 2020-02-09  0.7  <andreas_kupries@users.sourceforge.net>
 
 	*
