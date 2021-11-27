@@ -1,5 +1,5 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin tooltip n 1.4.6]
+[manpage_begin tooltip n 1.4.7]
 [keywords balloon]
 [keywords help]
 [keywords hover]
@@ -9,7 +9,7 @@
 [titledesc {Tooltip management}]
 [require Tcl 8.4]
 [require msgcat 1.3]
-[require tooltip [opt 1.4.6]]
+[require tooltip [opt 1.4.7]]
 [description]
 [para]
 
@@ -27,7 +27,7 @@ Manage the tooltip package using the following subcommands.
 
 [list_begin options]
 
-[opt_def clear [arg index]]
+[opt_def clear [opt [arg pattern]]]
 
 Prevents the specified widgets from showing tooltips. [arg pattern]
 is a glob pattern and defaults to matching all widgets.
@@ -36,13 +36,14 @@ is a glob pattern and defaults to matching all widgets.
 
 Query or set the hover delay. This is the interval that the pointer must remain
 over the widget before the tooltip is displayed. The delay is specified in
-milliseconds and must be greater than 50ms.
+milliseconds and must be greater than or equal to 50ms.
 With no argument the current delay is returned.
 
 [opt_def fade [opt [arg boolean]]]
 
-Enable or disable fading of the tooltip.  The is enabled by default on Win32
-and Aqua.  The tooltip will fade away on Leave events instead disappearing.
+Enable or disable fading of the tooltip.  The fading is enabled by default on
+Win32 and Aqua.  The tooltip will fade away on Leave events instead
+disappearing.
 
 [opt_def disable]
 [opt_def off]
@@ -64,9 +65,9 @@ Enables tooltips for defined widgets.
 This command arranges for widget [arg pathName] to display a tooltip with
 message [arg message].  The tooltip uses a late-binding msgcat call on the
 passed in message to allow for on-the-fly language changes in an application.
-If the widget specified is a menu, canvas or text widget then additional options
-are used to tie the tooltip to specific menu entries, canvas items or text
-tags.
+If the widget specified is a menu, canvas, listbox or text widget then
+additional options are used to tie the tooltip to specific menu entries,
+canvas or listbox items, or text widget tags.
 
 [list_begin options]
 
@@ -74,7 +75,7 @@ tags.
 
 This option is used to set a tooltip on a menu item. The index may be
 either the entry index or the entry label. The widget must be a menu
-widget but the entries do not have to exists when the tooltip is set.
+widget but the entries do not have to exist when the tooltip is set.
 
 [opt_def -items [arg name]]
 
