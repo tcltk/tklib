@@ -26,11 +26,14 @@ package require msgcat
 #	tooltip <option> ?arg?
 #
 # clear ?pattern?
-#	Stops the specified widgets (defaults to all) from showing tooltips
+#	Stops the specified widgets (defaults to all) from showing tooltips.
 #
 # delay ?millisecs?
 #	Query or set the delay.  The delay is in milliseconds and must
 #	be at least 50.  Returns the delay.
+#
+# fade ?boolean?
+#	Enables or disables fading of the tooltip.
 #
 # disable OR off
 #	Disables all tooltips.
@@ -117,15 +120,16 @@ proc ::tooltip::tooltip {w args} {
     switch -- $w {
 	clear	{
 	    if {[llength $args]==0} { set args .* }
-	    clear $args
+	    clear [lindex $args 0]
 	}
 	delay	{
 	    if {[llength $args]} {
-		if {![string is integer -strict $args] || $args<50} {
-		    return -code error "tooltip delay must be an\
-			    integer greater than 50 (delay is in millisecs)"
+		set millisecs [lindex $args 0]
+		if {![string is integer -strict $millisecs] || $millisecs<50} {
+		    return -code error "tooltip delay must be an integer\
+			    greater than or equal to 50 (delay is in millisecs)"
 		}
-		return [set G(DELAY) $args]
+		return [set G(DELAY) $millisecs]
 	    } else {
 		return $G(DELAY)
 	    }
@@ -180,7 +184,7 @@ proc ::tooltip::register {w args} {
 		    set args [lreplace $args 0 0]
 		    set key [lindex $args 0]
 		    break
-		}
+	    }
 	    -index {
 		if {[catch {$w entrycget 1 -label}]} {
 		    return -code error "widget \"$w\" does not seem to be a\
@@ -282,7 +286,7 @@ proc ::tooltip::show {w msg {i {}}} {
     if {![winfo exists $w]} { return }
 
     # Use string match to allow that the help will be shown when
-    # the pointer is in any child of the desired widget
+    # the pointer is in any descendant of the desired widget
     if {([winfo class $w] ne "Menu")
 	&& ![string match $w* [eval [list winfo containing] \
 				   [winfo pointerxy $w]]]} {
@@ -488,4 +492,4 @@ proc ::tooltip::enableTag {w tag} {
     $w tag bind $tag <Any-Button> +[namespace code hide]
 }
 
-package provide tooltip 1.4.6
+package provide tooltip 1.4.7
