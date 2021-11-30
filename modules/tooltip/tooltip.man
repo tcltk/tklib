@@ -126,7 +126,7 @@ tooltip::tooltip .menu.test -index 0 "This is a menu tooltip"
 # Demonstrate canvas item tooltip
 package require tooltip
 pack [canvas .c]
-set item [.c create rectangle 10 10 80 80]
+set item [.c create rectangle 10 10 80 80 -fill red]
 tooltip::tooltip .c -item $item "Canvas item tooltip"
 }]
 
