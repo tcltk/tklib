@@ -1,3 +1,7 @@
+2021-11-30  Csaba Nemethi  <csaba.nemethi@t-online.de>
+
+	* tooltip.tcl, tooltip.man: Minor improvements.
+
 2021-11-27  Csaba Nemethi  <csaba.nemethi@t-online.de>
 
 	* pkgIndex.tcl:	Bumped the tooltip version number to 1.4.7.
