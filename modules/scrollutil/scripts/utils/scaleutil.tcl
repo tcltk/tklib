@@ -20,7 +20,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.6
+    variable version	1.7
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -48,17 +48,17 @@ package provide scaleutil $scaleutil::version
 #------------------------------------------------------------------------------
 proc scaleutil::scalingPercentage winSys {
     set onX11 [expr {[string compare $winSys "x11"] == 0}]
+    set usingSDL [expr {[info exists ::tk::sdltk] && $::tk::sdltk}]
     set pct [expr {[tk scaling] * 75}]
+    set origPct $pct
 
-    if {$onX11} {
+    if {$onX11 && !$usingSDL} {
 	set factor 1
-	set changed 0
 	if {[catch {exec ps -e | grep xfce}] == 0} {			;# Xfce
 	    if {[catch {exec xfconf-query -c xsettings \
 		 -p /Gdk/WindowScalingFactor} result] == 0} {
 		set factor $result
 		set pct [expr {100 * $factor}]
-		set changed 1
 	    }
 	} elseif {[catch {exec ps -e | grep mate}] == 0} {		;# MATE
 	    if {[catch {exec gsettings get org.mate.interface \
@@ -75,12 +75,10 @@ proc scaleutil::scalingPercentage winSys {
 			set factor [expr {($cursorSize + $defCursorSize - 1) /
 					  $defCursorSize}]
 			set pct [expr {100 * $factor}]
-			set changed 1
 		    }
 		} else {
 		    set factor $result
 		    set pct [expr {100 * $factor}]
-		    set changed 1
 		}
 	    }
 	} elseif {[catch {exec gsettings get \
@@ -90,11 +88,9 @@ proc scaleutil::scalingPercentage winSys {
 		   [string first "'Gdk/WindowScalingFactor'" $result]] >= 0} {
 	    scan [string range $result $idx end] "%*s <%d>" factor
 	    set pct [expr {100 * $factor}]
-	    set changed 1
 	} elseif {[catch {exec xrdb -query | grep Xft.dpi} result] == 0} {
 	    scan $result "%*s %f" dpi
 	    set pct [expr {100 * $dpi / 96}]
-	    set changed 1
 	} elseif {$::tk_version >= 8.3 &&
 		  [catch {exec ps -e | grep gnome}] == 0 &&
 		  ![info exists ::env(WAYLAND_DISPLAY)] &&
@@ -104,7 +100,6 @@ proc scaleutil::scalingPercentage winSys {
 	    # Update pct by scanning the file ~/.config/monitors.xml
 	    #
 	    scanMonitorsFile $result $chan pct
-	    set changed 1
 	}
     }
 
@@ -147,14 +142,20 @@ proc scaleutil::scalingPercentage winSys {
     option add *Scale.width		[scale 15 $pct] widgetDefault
 
     if {$onX11} {
-	if {$changed} {
-	    tk scaling [expr {$pct / 75.0}]
+	#
+	# Conditionally set Tk's scaling factor according to $pct
+	#
+	if {$pct != $origPct} {
+	    variable keepTkScaling
+	    if {![info exists keepTkScaling] || !$keepTkScaling} {
+		tk scaling [expr {$pct / 75.0}]
+	    }
 	}
 
 	#
 	# Conditionally correct and then scale the sizes of the standard fonts
 	#
-	if {$::tk_version >= 8.5} {
+	if {$::tk_version >= 8.5 && !$usingSDL} {
 	    scaleX11Fonts $factor
 	}
 
@@ -178,7 +179,9 @@ proc scaleutil::scalingPercentage winSys {
 	#
 	# Scale the default height of the ttk::treeview rows
 	#
-	set font [ttk::style lookup Treeview -font]
+	if {[set font [ttk::style lookup Treeview -font]] eq ""} {
+	    set font TkDefaultFont
+	}
 	ttk::style configure Treeview \
 	    -rowheight [expr {[font metrics $font -linespace] + 3}]
 
