@@ -1,3 +1,15 @@
+2021-12-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/utils/scaleutil.tcl: The scaleutil package now works "as is"
+	  with undroidwish and AndroWish, too; added a way to prevent this
+	  package from changing Tk's scaling factor when calculating the
+	  scaling percentage corresponding to the display's DPI scaling level
+	  on X11; fixed a bug related to setting the default height of the
+	  ttk::treeview rows for one of the themes provided by the awthemes
+	  package.
+
+	* scripts/utils/pkgIndex.tcl: Bumped the scaleutil version to 1.7.
+
 2021-11-11  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 1.12.
