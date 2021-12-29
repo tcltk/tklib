@@ -1,3 +1,25 @@
+2021-12-29 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                          Bumped the version number to 6.17.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* ../../examples/tablelist/*.tcl:
+
+	* doc/tablelistWidget.html: Extended the descriptions of the
+	  "-tooltipaddcommand" and "-tooltipdelcommand" options by hints
+	  showing how to use these options with version 1.3+ of the baltip
+	  package by Alex Plotnikov.
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: The virtual event <<TablelistCellUpdated>> is now only
+	  generated if the editing session has effectively changed the cell's
+	  content; worked around the problem that on Mac OS X/11+ the idle
+	  callbacks are often fired at unexpected times; fixed a bug related to
+	  the embedded ttk::checkbutton widgets when the package Tablelist
+	  rather than Tablelist_tile was loaded into the interpreter.
+
 2021-12-21 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/utils/scaleutil.tcl: The scaleutil package now works "as is"
