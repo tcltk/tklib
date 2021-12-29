@@ -34,7 +34,7 @@ proc tablelist::setThemeDefaults {} {
     variable themeDefaults
 
     set currentTheme [mwutil::currentTheme]
-    variable isAwTheme \
+    set isAwTheme \
 	[llength [info commands ::ttk::theme::${currentTheme}::setTextColors]]
     if {$isAwTheme} {
 	awTheme $currentTheme

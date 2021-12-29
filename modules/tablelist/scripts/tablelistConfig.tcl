@@ -121,7 +121,7 @@ proc tablelist::extendConfigSpecs {} {
 	} elseif {[string compare $currentTheme "tileqt"] == 0} {
 	    tileqt_kdeStyleChangeNotification 
 	}
-	setThemeDefaults
+	setThemeDefaults 
 	variable themeDefaults
 	set treeStyle $themeDefaults(-treestyle)
 	createTreeImgs $treeStyle
@@ -714,6 +714,7 @@ proc tablelist::doConfig {win opt val} {
 		    adjustColIndex $win data(anchorCol) 1
 		    adjustColIndex $win data(activeCol) 1
 		    makeColFontAndTagLists $win
+		    makeSortAndArrowColLists $win
 		    redisplay $win
 		    updateViewWhenIdle $win
 		}
@@ -752,6 +753,7 @@ proc tablelist::doConfig {win opt val} {
 			setupColumns $win $columns 1
 			adjustColumns $win allCols 1
 			makeColFontAndTagLists $win
+			makeSortAndArrowColLists $win
 			redisplay $win
 			updateViewWhenIdle $win
 

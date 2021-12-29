@@ -2083,8 +2083,10 @@ proc tablelist::doFinishEditing {win {destroy 1}} {
 	    updateViewWhenIdle $win
 	}
 
-	set userData [list $row $col]
-	genVirtualEvent $win <<TablelistCellUpdated>> $userData
+	if {[string compare $text $data(origEditText)] != 0} {
+	    set userData [list $row $col]
+	    genVirtualEvent $win <<TablelistCellUpdated>> $userData
+	}
     }
 
     return $result

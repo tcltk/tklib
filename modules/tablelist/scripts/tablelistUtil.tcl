@@ -2367,6 +2367,7 @@ proc tablelist::setupColumns {win columns createLabels} {
     # Save the value of colConfigVals in data(-columns)
     #
     set data(-columns) $colConfigVals
+    set data(colListValid) 0
 
     #
     # Delete the labels, canvases, and separators if requested
@@ -2516,6 +2517,7 @@ proc tablelist::setupColumns {win columns createLabels} {
 
 	incr col
     }
+    set data(colListValid) 1
     set data(hasFmtCmds) [expr {[lsearch -exact $data(fmtCmdFlagList) 1] >= 0}]
 
     #
@@ -6911,8 +6913,9 @@ proc tablelist::makeTtkCkbtn w {
     # manage the checkbutton, depending on the current theme
     #
 
+    set isAwTheme \
+	[llength [info commands ::ttk::theme::${currentTheme}::setTextColors]]
     set frm [winfo parent $w]
-    variable isAwTheme
     if {$isAwTheme} {
 	set height [winfo reqheight $w]
 	incr height -1
