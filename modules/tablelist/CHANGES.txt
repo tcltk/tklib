@@ -1,5 +1,39 @@
-What is new in Tablelist 6.16?
+What is new in Tablelist 6.17?
 ------------------------------
+
+1. The virtual event <<TablelistCellUpdated>> is now only generated if
+   the editing session has effectively changed the cell's content
+   (thanks to Manfred Rosenberger for his input that determined me to
+   make this change, which will be useful for applications that perform
+   complex actions whenever this event is triggered).
+
+2. Extended the descriptions of the "-tooltipaddcommand" and
+   "-tooltipdelcommand" options by hints showing how to use these
+   options with version 1.3+ of the baltip package by Alex Plotnikov.
+
+3. The scaleutil package (which is bundled with Tablelist) now works "as
+   is" with undroidwish and AndroWish, too.  In addition, as described
+   in section "More on tablelist::scalingpct" of Tablelist Programmer's
+   Guide, it is now possible to prevent this package from changing Tk's
+   scaling factor when calculating the scaling percentage corresponding
+   to the display's DPI scaling level on X11 (thanks to Christian Werner
+   for his proposal and discussions on these topics).
+
+4. Worked around the problem that on Mac OS X/11+ the idle callbacks are
+   often fired at unexpected times (thanks to Torsten Berg for his bug
+   report and discussions on this topic).
+
+5. Fixed a bug related to the embedded ttk::checkbutton widgets when the
+   package Tablelist rather than Tablelist_tile was loaded into the
+   interpreter (thanks to Nicolas Bats, Ralf Fassel, and Jakob Gager for
+   reporting this bug).
+
+6. Fixed a bug in the scaleutil package, related to setting the default
+   height of the ttk::treeview rows for one of the themes provided by
+   the awthemes package (thanks to Harald Oehlmann for his bug report).
+
+What was new in Tablelist 6.16?
+-------------------------------
 
 1. Extended the "itemtodict" subcommand by an optional argument that
    specifies the column indices of the elements that are to be ignored
@@ -83,7 +117,7 @@ What was new in Tablelist 6.15?
 
 8. Adapted the implementation of the "deletecolumns" subcommand to
    changes made in current Mac OS versions (thanks to Torsten Berg for
-   her bug report).
+   his bug report).
 
 9. Fixed a bug related to the supported scaling percentages on Windows
    (thanks to Manfred Schwarz for his bug report).
@@ -1215,7 +1249,7 @@ What was new in Tablelist 5.4?
    versions.
 
 6. Worked around some peculiarities of Tk on Mac OS X Aqua (thanks to
-   Torsten Berg for her problem report and discussions on this topic).
+   Torsten Berg for his problem report and discussions on this topic).
 
 7. Improved the check for PNG support in Tk (thanks to Ian Gay for his
    posting on the Wiki related to this subject).
@@ -2115,7 +2149,7 @@ What was new in Tablelist 3.6?
     internal list (thanks to Patrick Fradin for his valuable input).
 
 7.  Fixed a bug related to the "-listvariable" option, introduced in
-    the previous Tablelist release (thanks to Torsten Reincke for her
+    the previous Tablelist release (thanks to Torsten Reincke for his
     bug report).
 
 8.  Fixed two bugs related to the "cellselection" subcommand (thanks to
