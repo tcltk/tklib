@@ -250,17 +250,6 @@ foreach colId [$tv cget -columns] {
     $tv column $colId -width [$tbl columnwidth $colId -total]
 }
 
-#
-# Set the scrollableframe's width, height, and yscrollincrement
-#
-wm withdraw .
-update idletasks
-set width [winfo reqwidth $cf]
-set height [expr {[winfo reqheight $cf.l0] + [winfo pixels . 4p] + \
-		  [winfo reqheight $cf.sa1] + 2*[winfo pixels . 7p]}]
-$sf configure -width $width -height $height \
-    -yscrollincrement [expr {[winfo reqheight $lb] / 10}]
-
 pack $sa -expand yes -fill both -padx 7p -pady 7p
 
 #
@@ -276,16 +265,10 @@ pack $b1 -side left -padx 7p -pady {0 7p}
 pack $bf -side bottom -fill x
 pack $tf -side top -expand yes -fill both
 
-wm deiconify .
-
 #
-# Work around a potential accuracy problem related to [$sf xview]
+# Set the scrollableframe's width, height, and yscrollincrement
 #
-tkwait visibility $sf
-while {[lindex [$sf xview] 1] != 1.0} {
-    $sf configure -width [incr width]
-    update idletasks
-}
+after 50 [list configMainSf $sf $cf $lb]
 
 #------------------------------------------------------------------------------
 
@@ -309,6 +292,16 @@ proc updateWidgets {} {
 
 proc cancelEdit {w args} {
     wcb::cancel
+}
+
+#------------------------------------------------------------------------------
+
+proc configMainSf {sf cf lb} {
+    set width [winfo reqwidth $cf]
+    set height [expr {[winfo reqheight $cf.l0] + [winfo pixels . 4p] + \
+		      [winfo reqheight $cf.sa1] + 2*[winfo pixels . 7p]}]
+    $sf configure -width $width -height $height \
+	-yscrollincrement [expr {[winfo reqheight $lb] / 10}]
 }
 
 #------------------------------------------------------------------------------
@@ -478,15 +471,6 @@ proc configTablelist {} {
     grid columnconfigure $cf 1   -weight 1
 
     #
-    # Set the scrollableframe's width, height, and yscrollincrement
-    #
-    $sf autosize
-    update idletasks
-    set rowHeight [expr {[winfo reqheight $cf] / $row}]
-    set height [expr {10*$rowHeight + [winfo pixels .top 4p]}]
-    $sf configure -height $height -yscrollincrement $rowHeight
-
-    #
     # Create a ttk::button widget outside the scrollarea
     #
     set b [ttk::button $f.b -text "Close" -command [list destroy $top]]
@@ -494,6 +478,11 @@ proc configTablelist {} {
     pack $b  -side bottom -pady {0 7p}
     pack $sa -side top -expand yes -fill both -padx 7p -pady 7p
     pack $f  -expand yes -fill both
+
+    #
+    # Set the scrollableframe's width, height, and yscrollincrement
+    #
+    after 50 [list configTopSf $sf $cf $row]
 }
 
 #------------------------------------------------------------------------------
@@ -516,4 +505,13 @@ proc applyBoolean {w opt} {
     upvar #0 $w var
     $tbl configure $opt $var
     $w configure -text [expr {$var ? "true" : "false"}]
+}
+
+#------------------------------------------------------------------------------
+
+proc configTopSf {sf cf row} {
+    set width [winfo reqwidth $cf]
+    set rowHeight [expr {[winfo reqheight $cf] / $row}]
+    set height [expr {10*$rowHeight + [winfo pixels .top 4p]}]
+    $sf configure -width $width -height $height -yscrollincrement $rowHeight
 }

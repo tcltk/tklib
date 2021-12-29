@@ -108,34 +108,18 @@ foreach country $countryList {
 }
 
 #
-# Set the ScrollableFrame's width, height, and yscrollincrement
-#
-wm withdraw .
-update idletasks
-set width [winfo reqwidth $cf]
-set rowHeight [expr {[winfo reqheight $cf] / $row}]
-set height [expr {10*$rowHeight + [winfo pixels . $topPadY]}]
-$sf configure -width $width -height $height -yscrollincrement $rowHeight
-
-#
 # Create a ttk::button widget outside the scrollarea
 #
 set b [ttk::button $f.b -text "Close" -command exit]
 
-pack $b  -side bottom -pady {0 7pt}
-pack $sa -side top -expand yes -fill both -padx 7pt -pady 7pt
+pack $b  -side bottom -pady {0 7p}
+pack $sa -side top -expand yes -fill both -padx 7p -pady 7p
 pack $f  -expand yes -fill both
 
-wm deiconify .
-
 #
-# Work around a potential accuracy problem related to [$sf xview]
+# Set the ScrollableFrame's width, height, and yscrollincrement
 #
-tkwait visibility $sf
-while {[lindex [$sf xview] 1] != 1.0} {
-    $sf configure -width [incr width]
-    update idletasks
-}
+after 50 [list configSf $sf $cf $row $topPadY]
 
 #------------------------------------------------------------------------------
 
@@ -157,4 +141,13 @@ proc setCapital {w country} {
     $w configure -foreground ""
     global capitalArr
     $w set $capitalArr($country)
+}
+
+#------------------------------------------------------------------------------
+
+proc configSf {sf cf row topPadY} {
+    set width [winfo reqwidth $cf]
+    set rowHeight [expr {[winfo reqheight $cf] / $row}]
+    set height [expr {10*$rowHeight + [winfo pixels . $topPadY]}]
+    $sf configure -width $width -height $height -yscrollincrement $rowHeight
 }

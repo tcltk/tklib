@@ -100,19 +100,6 @@ foreach country $countryList {
 }
 
 #
-# Set the scrolledframe's width, height, and yscrollincrement
-#
-wm withdraw .
-update idletasks
-set vsb [$sf component vertsb]
-set width [expr {[winfo reqwidth $cf] + [winfo reqwidth $vsb] + 2}]
-set rowHeight [expr {[winfo reqheight $cf] / $row}]
-set height [expr {10*$rowHeight + [winfo pixels . $topPadY] + 2}]
-$sf configure -width $width -height $height
-$canvas configure -yscrollincrement $rowHeight
-after 100 [list $sf configure -hscrollmode dynamic]
-
-#
 # Create a ttk::button widget outside the scrolledframe
 #
 set b [ttk::button $f.b -text "Close" -command exit]
@@ -121,16 +108,10 @@ pack $b  -side bottom -pady {0 7p}
 pack $sf -side top -expand yes -fill both -padx 7p -pady 7p
 pack $f  -expand yes -fill both
 
-wm deiconify .
-
 #
-# Work around a potential accuracy problem related to [$sf xview]
+# Set the scrolledframe's width, height, and yscrollincrement
 #
-tkwait visibility $sf
-while {[lindex [$sf xview] 1] != 1.0} {
-    $sf configure -width [incr width]
-    update idletasks
-}
+after 50 [list configSf $sf $cf $row $topPadY]
 
 #------------------------------------------------------------------------------
 
@@ -152,4 +133,17 @@ proc setCapital {w country} {
     $w configure -foreground ""
     global capitalArr
     $w set $capitalArr($country)
+}
+
+#------------------------------------------------------------------------------
+
+proc configSf {sf cf row topPadY} {
+    set vsb [$sf component vertsb]
+    set width [expr {[winfo reqwidth $cf] + [winfo reqwidth $vsb] + 2}]
+    set rowHeight [expr {[winfo reqheight $cf] / $row}]
+    set height [expr {10*$rowHeight + [winfo pixels . $topPadY] + 2}]
+    $sf configure -width $width -height $height
+    set canvas [$sf component canvas]
+    $canvas configure -yscrollincrement $rowHeight
+    after 100 [list $sf configure -hscrollmode dynamic]
 }
