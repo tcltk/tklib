@@ -1,5 +1,31 @@
-What is new in Scrollutil 1.12?
+What is new in Scrollutil 1.13?
 -------------------------------
+
+1. Added code that handles the virtual event <<NoManagedChild>>, sent by
+   Tk 8.7a3 and later to the content frame of a scrollableframe when its
+   last widget managed via pack or grid becomes unmanaged (thanks to
+   Harald Oehlmann for his TIP 518).
+
+2. The scaleutil package (which is bundled with Scrollutil) now works
+   "as is" with undroidwish and AndroWish, too.  In addition, as
+   described in section "More on scrollutil::scalingpct" of Scrollutil
+   Programmer's Guide, it is now possible to prevent this package from
+   changing Tk's scaling factor when calculating the scaling percentage
+   corresponding to the display's DPI scaling level on X11 (thanks to
+   Christian Werner for his proposal and discussions on these topics).
+
+3. Fixed a bug in the scaleutil package, related to setting the default
+   height of the ttk::treeview rows for one of the themes provided by
+   the awthemes package (thanks to Harald Oehlmann for his bug report).
+
+4. Improved the demo scripts "*FrmDemo*.tcl" and "*NotebookDemo.tcl" by
+   configuring their scrollable widget container(s) and notebook widget,
+   respectively (e.g., setting the widget's width) from within an
+   "after 50" script rather than preceding this step by an invocation of
+   "update idletasks".
+
+What was new in Scrollutil 1.12?
+--------------------------------
 
 1. The "scrollutil::adaptWheelEventHandling" command now accepts as
    optional first argument the "-ignorefocus" switch, which specifies
