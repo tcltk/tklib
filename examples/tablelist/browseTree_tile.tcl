@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.16
+package require tablelist_tile 6.17
 
 namespace eval demo {
     variable dir [file dirname [info script]]
