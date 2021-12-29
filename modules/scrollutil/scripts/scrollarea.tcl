@@ -171,6 +171,7 @@ proc scrollutil::sa::createBindings {} {
         }
     }
     bind Scrollarea <Configure> {
+	after   1 [list scrollutil::sa::updateScrollbars %W]
 	after 300 [list scrollutil::sa::updateScrollbars %W]
     }
     bind Scrollarea <Enter>	 { scrollutil::sa::onScrollareaEnter %W }
