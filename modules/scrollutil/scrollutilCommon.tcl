@@ -10,7 +10,7 @@ namespace eval ::scrollutil {
     #
     # Public variables:
     #
-    variable version	1.12
+    variable version	1.13
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -95,9 +95,9 @@ proc ::scrollutil::loadUtils {} {
     }
     package require mwutil 2.19
 
-    if {[catch {package present scaleutil} version] == 0 && $version < 1.6} {
+    if {[catch {package present scaleutil} version] == 0 && $version < 1.7} {
 	package forget scaleutil
     }
-    package require scaleutil 1.6
+    package require scaleutil 1.7
 }
 ::scrollutil::loadUtils
