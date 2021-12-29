@@ -14,7 +14,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.16</h2>
+    <h2>For Tablelist Version 6.17</h2>
 
     <h3>by</h3>
 
@@ -4401,7 +4401,7 @@ proc tooltipAddCmd {tbl row col} {
 "#iselemsnipped">iselemsnipped</a> $row,$col fullText]) ||
         ($row &lt;  0 && [$tbl <a href=
 "#istitlesnipped">istitlesnipped</a> $col fullText])} {
-        DynamicHelp::add $tbl -text $fullText
+        <span class="red">DynamicHelp::add $tbl -text $fullText</span>
     }
 }
 </pre>
@@ -4418,13 +4418,13 @@ proc tooltipAddCmd {tbl row col} {
 "#iselemsnipped">iselemsnipped</a> $row,$col fullText]) ||
             ($row &lt;  0 && [$tbl <a href=
 "#istitlesnipped">istitlesnipped</a> $col fullText])} {
-            DynamicHelp::add $tbl -text $fullText
+            <span class="red">DynamicHelp::add $tbl -text $fullText</span>
         }
     } else {
         set row [string range $row 1 end]
         if {[$tbl <a href=
 "#hdr_iselemsnipped">header iselemsnipped</a> $row,$col fullText]} {
-            DynamicHelp::add $tbl -text $fullText
+            <span class="red">DynamicHelp::add $tbl -text $fullText</span>
         }
     }
 }
@@ -4435,72 +4435,77 @@ proc tooltipAddCmd {tbl row col} {
 
         <blockquote>
           <pre>
-... -tooltipaddcommand tooltipAddCmd -tooltipdelcommand DynamicHelp::delete
+... -tooltipaddcommand tooltipAddCmd -tooltipdelcommand <span class="red">DynamicHelp::delete</span>
 </pre>
         </blockquote>
 
         <p>If you prefer to use the <code><b>tooltip::tooltip</b></code>
-        command from the tooltip package contained in tklib then the procedure
-        becomes</p>
+        command from the tooltip package contained in tklib rather than
+        <code><b>DynamicHelp::add</b></code> then you will have to replace the
+        latter's invocation(s) above with
 
         <blockquote>
           <pre>
-proc tooltipAddCmd {tbl row col} {
-    if {($row &gt;= 0 && [$tbl <a href=
-"#iselemsnipped">iselemsnipped</a> $row,$col fullText]) ||
-        ($row &lt;  0 && [$tbl <a href=
-"#istitlesnipped">istitlesnipped</a> $col fullText])} {
-        tooltip::tooltip $tbl $fullText
-    }
-}
+        <span class="red">tooltip::tooltip $tbl $fullText</span>
 </pre>
         </blockquote>
 
-        <p>or, to cover also the case of header items:</p>
+        <p>and to use the resulting procedure by specifying</p>
 
         <blockquote>
           <pre>
-proc tooltipAddCmd {tbl row col} {
-    if {[string is integer $row]} {
-        if {($row &gt;= 0 && [$tbl <a href=
-"#iselemsnipped">iselemsnipped</a> $row,$col fullText]) ||
-            ($row &lt;  0 && [$tbl <a href=
-"#istitlesnipped">istitlesnipped</a> $col fullText])} {
-            tooltip::tooltip $tbl $fullText
-        }
-    } else {
-        set row [string range $row 1 end]
-        if {[$tbl <a href=
-"#hdr_iselemsnipped">header iselemsnipped</a> $row,$col fullText]} {
-            tooltip::tooltip $tbl $fullText
-        }
-    }
-}
-</pre>
-        </blockquote>
-
-        <p>and can be used by specifying</p>
-
-        <blockquote>
-          <pre>
-... -tooltipaddcommand tooltipAddCmd -tooltipdelcommand "tooltip::tooltip clear"
+... -tooltipaddcommand tooltipAddCmd -tooltipdelcommand "<span class="red">tooltip::tooltip clear</span>"
 </pre>
         </blockquote>
 
         <p>Please note that in the less common case that the name of your
         tablelist widget contains spaces, the&nbsp; <code><b>tooltip::tooltip
-        clear</b></code>&nbsp; command won't work as expected.&nbsp; As a
-        workaround you can use the slightly modified approach shown below:</p>
+        clear</b></code>&nbsp; command won't work as expected if the version of
+        the tooltip package is 1.4.6 or earlier.&nbsp; As a workaround for this
+        tooltip issue (fixed in version 1.4.7), you can use the slightly
+        modified approach shown below:</p>
 
         <blockquote>
           <pre>
-proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
+proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
 
 ... -tooltipaddcommand tooltipAddCmd -tooltipdelcommand tooltipDelCmd
 </pre>
         </blockquote>
 
-        <p>Both examples above make use of the <code><b><a href=
+        <p>Yet another alternative to <code><b>DynamicHelp::add</b></code> is
+        the <code><b>baltip::tip</b></code> command from the baltip package by
+        Alex Plotnikov, which can be downloaded from the location</p>
+
+        <blockquote>
+          <address>
+            <a href=
+          "https://chiselapp.com/user/aplsimple/repository/baltip/download/">https://chiselapp.com/user/aplsimple/repository/baltip/download/</a>
+          </address>
+        </blockquote>
+
+        <p>Just replace the invocation(s) of
+        <code><b>DynamicHelp::add</b></code> in the procedure
+        <code>tooltipAddCmd</code> above with
+
+        <blockquote>
+          <pre>
+        <span class="red">baltip::tip $tbl $fullText</span>
+</pre>
+        </blockquote>
+
+        <p>and use the resulting procedure by specifying</p>
+
+        <blockquote>
+          <pre>
+... -tooltipaddcommand tooltipAddCmd -tooltipdelcommand <span class="red">baltip::clear</span>
+</pre>
+        </blockquote>
+
+        <p>Note that the version of the baltip package must be 1.3 or
+        later.</p>
+
+        <p>The examples above make use of the <code><b><a href=
         "#iselemsnipped">iselemsnipped</a></b></code>,&nbsp; <code><b><a href=
         "#hdr_iselemsnipped">header iselemsnipped</a></b></code>,&nbsp; and
         <code><b><a href="#istitlesnipped">istitlesnipped</a></b></code>
@@ -4537,10 +4542,11 @@ proc tooltipDelCmd tbl { tooltip::tooltip $tbl "" }
         action is only triggered if both the value of this option and that of
         <code><b><a href="#tooltipaddcommand">-tooltipaddcommand</a></b></code>
         are nonempty strings.&nbsp; Common values for this option are
-        <code>"DynamicHelp::delete"</code> (which requires the BWidget package)
-        and&nbsp; <code>"tooltip::tooltip clear"</code>&nbsp; (which requires
-        the tooltip package contained in tklib).&nbsp; Their usage is shown in
-        the examples above.</p>
+        <code><b>DynamicHelp::delete</b></code> (which requires the BWidget
+        package), <code>"<b>tooltip::tooltip clear</b>"</code>&nbsp; (which
+        requires the tooltip package contained in tklib), and
+        <code><b>baltip::clear</b></code> (which requires the baltip package by
+        Alex Plotnikov).&nbsp; Their usage is shown in the examples above.</p>
       </blockquote>
     </dd>
 
@@ -7533,7 +7539,8 @@ proc handleTblDrop {tbl data} {
         <tr valign="top">
           <td><code><b>&lt;&lt;TablelistCellUpdated&gt;&gt;</b></code></td>
           <td>Generated by the <code><b><a href=
-          "#finishediting">finishediting</a></b></code> subcommand.</td>
+          "#finishediting">finishediting</a></b></code> subcommand if the
+          editing session has effectively changed the cell's content.</td>
           <td>A list consisting of the numerical row and column indices of the
           cell whose content is being edited.</td>
         </tr>
@@ -9489,7 +9496,8 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         value <code>0</code>.&nbsp; In all the other cases, the return value is
         <code>1</code>.&nbsp; Immediately before returning the value
         <code>1</code>, the command generates the virtual event
-        <code><b>&lt;&lt;TablelistCellUpdated&gt;&gt;</b></code>.&nbsp; For Tk
+        <code><b>&lt;&lt;TablelistCellUpdated&gt;&gt;</b></code> if the editing
+        session has effectively changed the cell's content.&nbsp; For Tk
         versions 8.5 and higher, this virtual event is generated with its
         <code><b>-data</b></code> option set to a list consisting of the
         numerical row and column indices of the cell whose content is being
