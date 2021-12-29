@@ -1,3 +1,30 @@
+2021-12-29  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.13.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/scrollarea.tcl: Slightly improved.
+
+	* scripts/scrollableframe.tcl: Added code that handles the virtual
+	  event <<NoManagedChild>>, sent by Tk 8.7a3 and later to the content
+	  frame of a scrollableframe when its last widget managed via pack or
+	  grid becomes unmanaged (see TIP 518).
+
+	* ../../examples/scrollutil/*.tcl: Improved the demo scripts
+	  "*FrmDemo*.tcl" and "*NotebookDemo.tcl" by configuring their
+	  scrollable widget container(s) and notebook widget, respectively
+	  (e.g., setting the widget's width) from within an "after 50" script
+	  rather than preceding this step by an invocation of "update
+	  idletasks".
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
 2021-12-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/utils/scaleutil.tcl: The scaleutil package now works "as is"
