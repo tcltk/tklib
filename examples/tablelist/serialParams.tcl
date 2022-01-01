@@ -3,7 +3,7 @@
 # configures the checkbutton embedded into the header label of the column
 # "available".
 #
-# Copyright (c) 2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #

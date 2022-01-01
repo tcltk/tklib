@@ -5,7 +5,7 @@
 # widgets from the Iwidgets package and of the Tk core checkbutton and
 # menubutton widgets.
 #
-# Copyright (c) 2004-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.4				;# because of "-compound"
