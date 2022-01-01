@@ -9,7 +9,7 @@
 #   - Private procedures implementing the scrollableframe widget command
 #   - Private procedures used in bindings
 #
-# Copyright (c) 2019-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
