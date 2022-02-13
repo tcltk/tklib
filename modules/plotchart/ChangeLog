@@ -1,3 +1,9 @@
+2022-02-13  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl:   Add heatmap diagram as a new diagram type
+	* plotspecial.tcl: Implementation of the heatmap diagram
+	* plotchart.tcl:   Description of the heatmap diagram
+	* test_heatmap.tcl: Test/demo of the heatmap diagram
+
 2018-12-27  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl:   Add Taylor diagram as a new diagram type
 	* plotchart.man:   Describe Taylor diagrams

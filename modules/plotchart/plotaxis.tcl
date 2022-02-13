@@ -643,7 +643,7 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
         set format $scaling($w,-format,x)
     }
 
-    set scaling($w,xaxis) {}
+    set scaling($w,xaxis)       {}
 
     set x       [expr {pow(10.0,floor(log10($xmin)))}]
     set xlogmax [expr {pow(10.0,ceil(log10($xmax)))+0.1}]
@@ -672,6 +672,7 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
                 if { $format != "" } {
                     set xlabel [FormatNumber $format $xt]
                 }
+
                 $w create line $xcrd $ycrd2 $xcrd $ycrd -tag [list xaxis $w] -fill $linecolor
                 if { $factor == 1.0 && $config($w,bottomaxis,shownumbers) } {
                     $w create text $xcrd $ycrd3 -text $xlabel -tag [list xaxis $w] -anchor n \
@@ -682,7 +683,7 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
         set x [expr {10.0*$x}]
     }
 
-    set scaling($w,xdelt) $xdelt
+    set scaling($w,xdelt)       $xdelt
 }
 
 # DrawTernaryAxes --
@@ -1388,6 +1389,7 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
     variable axis_option_config
 
     set clear_data 0
+    set coordsChanged 0
 
     foreach {option value} $option_values {
         set idx [lsearch $axis_options $option]
@@ -1424,6 +1426,7 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
                 set scaling($w,$max)  [set $max]
                 #checker exclude warnVarRef
                 set scaling($w,$delt) [set $delt]
+                set coordsChanged 1
             }
         }
     }
@@ -1457,7 +1460,8 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
     set originalSystem $scaling($w,coordSystem)
     set scaling($w,coordSystem) 0
 
-    worldCoordinates $w $xmin $ymin $xmax $ymax
+    worldCoordinates $w $scaling($w,xmin) $scaling($w,ymin) $scaling($w,xmax) $scaling($w,ymax)
+    set scaling($w,new) 1
 
     if { $orient == "x" } {
         if { [llength $scaling($w,xdelt)] == 1 } {

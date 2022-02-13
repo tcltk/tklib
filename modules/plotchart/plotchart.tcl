@@ -38,6 +38,7 @@ namespace eval ::Plotchart {
                     createWindrose createTargetDiagram createPerformanceProfile \
                     createTableChart createTitleBar createTaylorDiagram \
                     createSpiralPie createTernaryDiagram createStatusTimeline \
+                    createCirclePlot createHeatmap \
                     plotstyle plotconfig plotpack plotmethod clearcanvas eraseplot
 
    #
@@ -623,7 +624,13 @@ namespace eval ::Plotchart {
    set methodProc(distnormal,plot)             DrawDataNormalPlot
    set methodProc(distnormal,diagonal)         DrawDiagonalNormalPlot
    set methodProc(distnormal,dataconfig)       DataConfig
-
+   set methodProc(circleplot,title)            DrawTitle
+   set methodProc(circleplot,subtitle)         DrawSubtitle
+   set methodProc(circleplot,modify)           DrawCircleModify
+   set methodProc(circleplot,connect)          DrawCircleConnection
+   set methodProc(heatmap,title)               DrawTitle
+   set methodProc(heatmap,plot)                DrawHeatmapCells
+   set methodProc(heatmap,scale)               ConfigHeatmapScale
    #
    # Auxiliary parameters
    #
@@ -876,6 +883,7 @@ proc ::Plotchart::coordsToPixel { w xcrd ycrd {zcrd {}} } {
            }
        }
    }
+
 
    set xpix [expr {$scaling($w,pxmin)+($xcrd-$scaling($w,xmin))*$scaling($w,xfactor)}]
    set ypix [expr {$scaling($w,pymin)+($scaling($w,ymax)-$ycrd)*$scaling($w,yfactor)}]
@@ -2978,7 +2986,6 @@ proc ::Plotchart::createTaylorDiagram { c radius_data args} {
                     set refstart  [expr {180.0/acos(-1.0) * atan2($yright,$xright-$refvalue)}]
                     set refextent [expr {$refextent - $refstart}]
                 }
-                puts "$xright -- $radmax -- $refstart -- $refextent"
             }
 
             $w create arc $pxmin $pymin $pxmax $pymax  -tag reference -start $refstart -extent $refextent -style arc -outline $config($w,reference,color)
@@ -3280,6 +3287,102 @@ proc ::Plotchart::createNormalPlot { w xscale args } {
 
    return $p
 }
+}
+
+# createCirclePlot --
+#    Create a command for drawing a so-called circle plot
+# Arguments:
+#    c             Name of the canvas
+#    labels        Labels defining the items in the circle plot
+#    args          Additional arguments
+# Result:
+#    Name of a new command
+# Note:
+#    By default the entire canvas will be dedicated to the circle plot
+#    Possible additional arguments (optional): -box and coordinates
+#
+proc ::Plotchart::createCirclePlot { c labels args } {
+   variable scaling
+   variable data_series
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
+
+   set newchart "circle_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler circleplot $w
+   CopyConfig circleplot $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsCircle $w {*}$args] {break}
+
+   set scaling($w,coordSystem) 0
+
+   viewPort          $w $pxmin     $pymin     $pxmax   $pymax
+   polarCoordinates  $w 1.0
+   DefaultBalloon    $w
+   DrawCircleOutline $w $labels
+
+   set data_series($w,labels) $labels
+
+   set scaling($w,coordSystem) 4
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
+
+   return $newchart
+}
+
+# createHeatmap --
+#    Create a command for drawing a heatmap
+# Arguments:
+#    c             Name of the canvas
+#    rowlabels     Labels for the rows
+#    columnlabels  Labels for the columns
+#    args          Additional arguments
+# Result:
+#    Name of a new command
+#
+proc ::Plotchart::createHeatmap { c rowlabels columnlabels args } {
+   variable scaling
+   variable data_series
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
+
+   set newchart "heatmap_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler heatmap $w
+   CopyConfig heatmap $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
+
+   set scaling($w,coordSystem) 0
+   set scaling($w,xfactor)     1.0 ;# Dummy
+   set scaling($w,yfactor)     1.0
+
+   viewPort          $w $pxmin     $pymin     $pxmax   $pymax
+   worldCoordinates  $w 0.0        0.0        1.0      1.0
+   DefaultBalloon    $w
+
+   set data_series($w,rowlabels)    $rowlabels
+   set data_series($w,columnlabels) $columnlabels
+   set data_series($w,startcolour)  {65535 65535 0    }  ;# Use the range reported by [winfo rgb]
+   set data_series($w,endcolour)    {0     0     65535}
+   set data_series($w,startvalue)   0.0
+   set data_series($w,endvalue)     1.0
+
+   DrawHeatmapOutline $w $rowlabels $columnlabels
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
+
+   return $newchart
 }
 
 # Load the private procedures

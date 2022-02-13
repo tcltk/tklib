@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 2.3.5]
-[copyright {2013 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
+[manpage_begin Plotchart n 2.5.0]
+[copyright {2022 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.5]]
 [require Tk [opt 8.5]]
-[require Plotchart [opt 2.4.0]]
+[require Plotchart [opt 2.5.0]]
 
 [description]
 [para]
@@ -4017,7 +4017,127 @@ Standard deviation of the data point
 Correlation coefficient with the reference dataset
 [list_end]
 
+
+[call [cmd ::Plotchart::createTaylorDiagram] [arg w] [arg radius_data] [arg args]]
+
+Create a new Taylor diagram (one quadrant) with circles indicating the distance to the reference point.
+[para]
+The data points are given as the standard deviation and the correlation to the reference.
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the plot.
+
+[arg_def list radius_data in]
+A list of the maximum radius for the standard deviation and the step size. Quarter circles are
+drawn with the axis labels.
 [list_end]
+[para]
+
+Currently one option is supported:
+[list_begin options]
+[opt_def reference value]
+Reference value for the data points to be compared with. It appears as a dot at the x-axis.
+Along with this dot circle segments are drawn at the same spacing as the axis labels to indicate
+the distance of the data points from the reference.
+[list_end]
+
+[call [cmd \$taylor] plot [arg series] [arg stdev] [arg corr]]
+The plot method takes the standard deviation and the correlation to the reference as input
+and draws a symbol as a representation. The standard deviation serves as the distance from the
+origin and the correlation determines the angle.
+
+[list_begin arguments]
+[arg_def string series in]
+Name of the series (it will be plotted as a symbol that is configured via the
+[emph {$target dataconfig}] command (see the XY-plot equivalent for an explanation)
+
+[arg_def float stdev in]
+Standard deviation of the data point
+
+[arg_def list corr in]
+Correlation coefficient with the reference dataset
+[list_end]
+
+
+[call [cmd ::Plotchart::createHeatmap] [arg w] [arg rowlabels] [arg columnlabels] [arg args]]
+Create a heatmap, i.e. a tableau of rectangles whose colours depend on some data. The row and
+column labels are used as identifiers when filling in the data. The number of them determines the
+size of the tableau.
+[para]
+The data are passed by row, by column or per individual cell.
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the heatmap.
+
+[arg_def list rowlabels in]
+List of labels to display at each row. The labels also serve as identifiers.
+
+[arg_def list columnlabels in]
+List of labels to display at each column. The labels also serve as identifiers.
+
+[arg_def list args in]
+Zero or more arguments to influence the size of the heatmap. See XY plot for more information.
+[list_end]
+
+[call [cmd \$heatmap] plot row [arg label] [arg data]]
+Use the given data to fill the rectangles belonging to the row "label".
+
+[list_begin arguments]
+[arg_def string label in]
+String indicating which row to use.
+[arg_def list data in]
+List of numerical data to be used for the colouring of the rectangles.
+[list_end]
+
+[call [cmd \$heatmap] plot column [arg label] [arg data]]
+Use the given data to fill the rectangles belonging to the column "label".
+
+[list_begin arguments]
+[arg_def string label in]
+String indicating which column to use.
+[arg_def list data in]
+List of numerical data to be used for the colouring of the rectangles.
+[list_end]
+
+[call [cmd \$heatmap] plot cell [arg rowlabel] [arg columnlabel] [arg value]]
+Use the given value to fill the rectangle belonging to the cell with the given row and column labels.
+
+[list_begin arguments]
+[arg_def string rowlabel in]
+String indicating which row to use.
+[arg_def string columnlabel in]
+String indicating which column to use.
+[arg_def float value in]
+Value to be used for the colouring of the cell.
+[list_end]
+
+[call [cmd \$heatmap] scale values [arg min] [arg max]]
+Set the range for the values - they are mapped to a colour via linear interpolation.
+
+[list_begin arguments]
+[arg_def float min in]
+Minimum value to be used.
+[arg_def float max in]
+Maximum value to be used.
+[list_end]
+
+[call [cmd \$heatmap] scale colours [arg mincolour] [arg maxcolour]]
+Set the colours to be used for the minimum and the maximum values. The actual
+colour is determined via linear interpolation of the RGB values.
+
+[list_begin arguments]
+[arg_def string mincolour in]
+Colour to be used at the minimum value.
+[arg_def string maxcolour in]
+Colour to be used at the maximum value.
+[list_end]
+
+[list_end]
+
+
+[section "ADDING SPECIFIC PLOT METHODS"]
 
 The command [term plotmethod] can be used to add new methods for a particular
 plot or chart type. It is intended to help you develop specialised graphical displays.
