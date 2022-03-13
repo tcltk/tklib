@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 1999-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -23,7 +23,7 @@ namespace eval mentry {
     #
     # Get the windowing system ("x11", "win32", "classic", or "aqua")
     #
-    variable winSys [mwutil::windowingSystem]
+    variable winSys [::mwutil::windowingSystem]
 
     #
     # Create aliases for a few tile commands if not yet present
@@ -62,12 +62,14 @@ namespace eval mentry {
 	    interp alias {} ::mentry::tileqt_currentThemeColour \
 			 {} ::ttk::theme::tileqt::currentThemeColour
 	}
+
+	interp alias {} ::mentry::getCurrentTheme  {} ::mwutil::currentTheme
     }
-    if {$usingTile} {
+    variable currentTheme [::mwutil::currentTheme]
+    if {[string length $currentTheme] != 0} {
 	createTileAliases 
     }
 
-    variable currentTheme [mwutil::currentTheme]
     variable widgetStyle ""
     variable colorScheme ""
     if {[string compare $currentTheme "tileqt"] == 0} {
@@ -867,8 +869,10 @@ proc mentry::createChildren {win body} {
 	set w [labelPath $win $n]
 	tk::label $w -anchor center -bitmap "" -borderwidth 0 -height 0 \
 		     -highlightthickness 0 -image "" -padx 0 -pady 0 \
-		     -takefocus 0 -text $text -textvariable "" -underline -1 \
-		     -width 0 -wraplength 0
+		     -takefocus 0 -text $text -textvariable "" -width 0 \
+		     -wraplength 0
+	set defVal [lindex [$w configure -underline] 3]
+	$w configure -underline $defVal		;# -1 or "" (see TIP #577)
 	if {$usingTile} {
 	    set padY $themeDefaults(-labelpady)
 	} elseif {[string compare $winSys "aqua"] == 0 && $newAquaSupport} {
@@ -1588,7 +1592,7 @@ proc mentry::handleThemeChangedEvent {} {
     variable currentTheme
     variable widgetStyle
     variable colorScheme
-    set newTheme [mwutil::currentTheme]
+    set newTheme [::mwutil::currentTheme]
     if {[string compare $newTheme $currentTheme] == 0} {
 	if {[string compare $newTheme "tileqt"] == 0} {
 	    set newWidgetStyle [tileqt_currentThemeName]

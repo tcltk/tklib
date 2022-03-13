@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of multi-entry widgets for date and time.
 #
-# Copyright (c) 1999-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
