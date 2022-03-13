@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>scrollutil::plainnotebook</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.13</h2>
+    <h2>For Scrollutil Version 1.14</h2>
 
     <h3>by</h3>
 
@@ -169,6 +169,9 @@ package require scrollutil_tile
 
     <dd><code><i>pathName</i> <b><a href="#tabs">tabs</a></b></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#titlepath">titlepath</a></b></code></dd>
+
     <dt class="tm"><a href="#kbd_traversal">KEYBOARD TRAVERSAL</a></dt>
 
     <dt class="tm"><a href="#virtual_events">VIRTUAL EVENTS</a></dt>
@@ -305,7 +308,7 @@ package require scrollutil_tile
 
       <blockquote>
         <p>The value of this option must be an integer.&nbsp; If it is
-        non-negative then the widget's parent must be a <a href=
+        nonnegative then the widget's parent must be a <a href=
         "pagesman.html">pagesman</a> widget.&nbsp; In this case the value is
         viewed as the numerical index of an already existing page of the parent
         pagesman widget, and the plainnotebook's ascend button will select that
@@ -548,8 +551,11 @@ package require scrollutil_tile
       <blockquote>
         <p>Specifies the text to be displayed in the plainnotebook's title
         label.&nbsp; The font used for this ttk::label widget is derived from
-        <code><b>TkDefaultFont</b></code> by increasing the latter's size by
-        two points.</p>
+        <code><b>TkDefaultFont</b></code> by increasing the latter's size by a
+        factor of 1.2.&nbsp; To set a different font, retrieve the path name
+        of this widget with the <code><b><a href=
+        "#titlepath">titlepath</a></b></code> subcommand and then invoke&nbsp;
+        <code>... <b>configure -font</b> ...</code>.</p>
       </blockquote>
     </dd>
 
@@ -628,24 +634,29 @@ package require scrollutil_tile
         "#insertseparator">insertseparator</a></b></code> subcommands.&nbsp; If
         <code><i>window</i></code> is not yet managed by the notebook then the
         corresponding tab will be a ttk::radiobutton widget of a toolbutton
-        style.</dd>
+        style (<code>Page.Toolbutton</code> or
+        <code>ClosablePage.Toolbutton</code>, depending on the value of the
+        <code><b><a href="#closabletabs">-closabletabs</a></b></code>
+        option.</dd>
 
         <dt class="tm" id="addbutton"><code><i>pathName</i> <b>addbutton</b>
         <i>pageIndex</i> <i>text</i> ?<i>image</i>?</code></dt>
 
         <dd>Adds a new tab implemented as a ttk::button widget of a toolbutton
-        style that displays, besides the specified <code><i>text</i></code> and
-        optional <code><i>image</i></code>, the <code><b>descend</b></code>
-        element, whose shape resembles that of a &gt; character.&nbsp; This
-        style element is automatically created by the Scrollutil_tile
-        package.&nbsp; Its size depends on the display's scaling percentage
-        (<code>100</code>, <code>125</code>, <code>150</code>,
-        <code>175</code>, or <code>200</code>), while its foreground color is
-        theme-specific and is updated whenever the theme changes.</dd>
+        style (<code>Desc.Toolbutton</code>) that displays, besides the
+        specified <code><i>text</i></code> and optional
+        <code><i>image</i></code>, the <code><b>descend</b></code> element,
+        whose shape resembles that of a &gt; character.&nbsp; This style
+        element is automatically created by the Scrollutil_tile package.&nbsp;
+        Its size depends on the display's scaling percentage (<code>100</code>,
+        <code>125</code>, <code>150</code>, <code>175</code>, or
+        <code>200</code>), while its foreground color is theme-specific and is
+        updated whenever the theme changes.&nbsp; The return value is the path
+        name of the above-mentioned ttk::button widget.</dd>
 
         <dd class="tm">For this subcommand to work, the widget's parent must be
         a <a href="pagesman.html">pagesman</a> widget.&nbsp;
-        <code><i>pageIndex</i></code>, which must be a non-negative integer,
+        <code><i>pageIndex</i></code>, which must be a nonnegative integer,
         specifies the numerical index of a page within the pagesman widget that
         will be selected when invoking the toolbutton.&nbsp; It is not expected
         that at the time this subcommand is invoked, the page identified by
@@ -671,14 +682,19 @@ package require scrollutil_tile
         specified <code><i>text</i></code> and optional
         <code><i>image</i></code>, and is typically used as a title of a group
         of tabs.&nbsp; The font used for the ttk::label is derived from
-        <code><b>TkDefaultFont</b></code> by increasing the latter's size by
-        two points.</dd>
+        <code><b>TkDefaultFont</b></code> by increasing the latter's size by a
+        factor of 1.2.&nbsp; The return value is the path name of the
+        above-mentioned ttk::label widget; you can use it, e.g., if you want to
+        change the latter's font via&nbsp; <code>... <b>configure -font</b>
+        ...</code>.</dd>
 
         <dt class="tm" id="addseparator"><code><i>pathName</i>
         <b>addseparator</b></code></dt>
 
         <dd>Adds a new tab implemented as a horizontal ttk::separator widget,
-        which is typically used as a delimiter of a group of tabs.</dd>
+        which is typically used as a delimiter of a group of tabs.&nbsp; The
+        return value is the path name of the above-mentioned ttk::separator
+        widget.</dd>
 
         <dt class="tm" id="cget"><code><i>pathName</i> <b>cget</b>
         <i>option</i></code></dt>
@@ -754,11 +770,12 @@ package require scrollutil_tile
         ?<i>image</i>?</code></dt>
 
         <dd>Inserts a new tab implemented as a ttk::button widget of a
-        toolbutton style that displays, besides the specified
-        <code><i>text</i></code> and optional <code><i>image</i></code>, the
-        <code><b>descend</b></code> element, at the specified position.&nbsp;
-        The details are quite similar to the ones regarding the
-        <code><b><a href="#addbutton">addbutton</a></b></code> subcommand.</dd>
+        toolbutton style (<code>Desc.Toolbutton</code>) that displays, besides
+        the specified <code><i>text</i></code> and optional
+        <code><i>image</i></code>, the <code><b>descend</b></code> element, at
+        the specified position.&nbsp; The details are quite similar to the ones
+        regarding the <code><b><a href="#addbutton">addbutton</a></b></code>
+        subcommand.</dd>
 
         <dt class="tm" id="insertlabel"><code><i>pathName</i>
         <b>insertlabel</b> <i>pos</i> <i>text</i> ?<i>image</i>?</code></dt>
@@ -824,6 +841,14 @@ package require scrollutil_tile
         <dt class="tm" id="tabs"><code><i>pathName</i> <b>tabs</b></code></dt>
 
         <dd>See the <b>ttk_notebook</b> manual entry.</dd>
+
+        <dt class="tm" id="titlepath"><code><i>pathName</i>
+        <b>titlepath</b></code></dt>
+
+        <dd>Returns the path name of the plainnotebook's title label, which is
+        a ttk::label widget.&nbsp; You can use this subcommand, e.g., if you
+        want to change the latter's font via&nbsp; <code>... <b>configure
+        -font</b> ...</code>.</dd>
       </dl>
     </dd>
 
