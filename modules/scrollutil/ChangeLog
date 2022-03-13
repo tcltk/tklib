@@ -28,6 +28,9 @@
 	  improves the look and behavior of its ttk::checkbutton and
 	  ttk::radiobutton widgets.
 
+	* doc/ScrollableFrmDemo2.png: Updated screenshots.
+	* doc/TablelistConfig.png:
+
 	* ../../examples/scrollutil/*.tcl: Replaced "$ttk::currentTheme" with
 	  "[ttk::style theme use]"; several further improvements.
 
