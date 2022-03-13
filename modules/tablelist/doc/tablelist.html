@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 6.17</h2>
+    <h2>For Tablelist Version 6.18</h2>
 
     <h3>by</h3>
 
@@ -177,8 +177,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist6.17.tar.gz</code> for UNIX and
-  <code>tablelist6_17.zip</code> for Windows.&nbsp; These files contain the
+  The distribution file is <code>tablelist6.18.tar.gz</code> for UNIX and
+  <code>tablelist6_18.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -202,11 +202,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist6.17.tar.gz</code>:</p>
+  <code>tablelist6.18.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist6.17.tar.gz | tar -xf -
+gunzip -c tablelist6.18.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -214,17 +214,17 @@ gunzip -c tablelist6.17.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist6.17.tar.gz
+tar -zxf tablelist6.18.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist6.17</code>,
+  <p>Both commands will create a directory named <code>tablelist6.18</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist6_17.zip</code> into the directory
-  <code>tablelist6.17</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist6_18.zip</code> into the directory
+  <code>tablelist6.18</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -321,14 +321,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 6.17, then it is highly
-  recommended to specify the version number <code>6.17</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 6.18, then it is highly
+  recommended to specify the version number <code>6.18</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 6.17</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 6.18</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 6.17</code>.</p>
+  tablelist_tile 6.18</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -386,8 +386,11 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
 
   <h3 id="ov_scaling">More on <code>tablelist::scalingpct</code></h3>
 
-  <p>The way Tablelist initializes the variable
-  <code>tablelist::scalingpct</code> depends on the windowing system:</p>
+  <p>The Tablelist code sets the variable <code>tablelist::scalingpct</code> to
+  the value returned by the public procedure
+  <code>scaleutil::scalingPercentage</code> of the scaleutil package, which is
+  bundled with Tablelist.&nbsp; The way this value is computed depends on the
+  windowing system:</p>
 
   <p><i>On Windows and Mac OS X/11+</i> the scaling percentage is computed
   from&nbsp; <code>[tk scaling]</code>.&nbsp; Note that on Mac OS X/11+ the
@@ -401,7 +404,7 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   environment and it mostly manipulates system resources that are resident
   outside of Xlib, which Tk is based on.&nbsp; (Traditional X applications like
   <code>bitmap</code> and <code>xmag</code> are also affected by this.)&nbsp;
-  With the exception of Xfce and MATE, Tablelist computes the scaling
+  With the exception of Xfce and MATE, the procedure computes the scaling
   percentage from the value of the X resource <code>Xft.dpi</code>, by
   executing the <code>xrdb</code> application.&nbsp; On GNOME-based systems
   where <code>xrdb</code> is not installed per default (e.g., Solus GNOME and
@@ -410,71 +413,79 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
 
   <ul>
     <li class="tm">On <i>Xfce and MATE</i> the display scaling mode can be
-    either unscaled (1x, regular) or scaled (2x, HiDPI), and the variable
-    <code>tablelist::scalingpct</code> will be set accordingly to
-    <code>100</code> or <code>200</code>.&nbsp; On Xfce, the display scaling
-    mode is called <i>window scaling</i> and can be selected in the
-    <i>Appearance</i> dialog.&nbsp; Xfce versions 4.16 and later also support
-    fractional scaling (whose parameters can be configured in the
-    <i>Display</i> dialog), but, due to the way the fractional scaling is
-    implemented on Xfce, the value of <code>tablelist::scalingpct</code>
-    remains set to <code>100</code> or <code>200</code>, depending on the value
-    of the window scaling.&nbsp; On MATE, the display scaling mode is called
-    <i>window scaling factor</i> and can be selected in the <i>MATE Tweak</i>
-    dialog.</li>
+    either unscaled (1x, regular) or scaled (2x, HiDPI), and the scaling
+    percentage will be set accordingly to <code>100</code> or
+    <code>200</code>.&nbsp; On Xfce, the display scaling mode is called
+    <i>window scaling</i> and can be selected in the <i>Appearance</i>
+    dialog.&nbsp; Xfce versions 4.16 and later also support fractional scaling
+    (whose parameters can be configured in the <i>Display</i> dialog), but, due
+    to the way the fractional scaling is implemented on Xfce, the scaling
+    percentage remains set to <code>100</code> or <code>200</code>, depending
+    on the value of the window scaling.&nbsp; On MATE, the display scaling mode
+    is called <i>window scaling factor</i> and can be selected in the <i>MATE
+    Tweak</i> dialog.</li>
 
     <li class="tm">In case of <i>GNOME on Xorg, Budgie, and Cinnamon versions
     earlier than 4.6</i>, the display scaling can be either 100 % or 200 %, and
-    Tablelist sets the variable <code>tablelist::scalingpct</code> accordingly
-    to <code>100</code> or <code>200</code>.&nbsp; In newer GNOME and Budgie
-    versions on Ubuntu one can enable the
-    <code>x11-randr-fractional-scaling</code> as experimental feature, which
-    adds 125 %, 150 %, and 175 % to the list of supported scaling
-    percentages.&nbsp; Note that, due to the way this fractional scaling is
-    implemented, if the display scaling was set to one of these intermediate
-    levels, the value of <code>tablelist::scalingpct</code> will be
-    <code>200</code>.&nbsp; Cinnamon versions 4.6 and later also support
-    fractional scaling; regardless of the value of the <i>fractional
-    scaling</i>, <code>tablelist::scalingpct</code> will be set to
-    <code>100</code> or <code>200</code>, depending on whether the <i>user
-    interface scale</i> is set to "Normal" or "Double (Hi-DPI)".</li>
+    the procedure sets the scaling percentage accordingly to <code>100</code>
+    or <code>200</code>.&nbsp; In newer GNOME and Budgie versions on Ubuntu one
+    can enable the <code>x11-randr-fractional-scaling</code> as experimental
+    feature, which adds 125 %, 150 %, and 175 % to the list of supported
+    scaling percentages.&nbsp; Note that, due to the way this fractional
+    scaling is implemented, if the display scaling was set to one of these
+    intermediate levels, the value returned by
+    <code>scaleutil::scalingPercentage</code> will be <code>200</code>.&nbsp;
+    Cinnamon versions 4.6 and later also support fractional scaling; regardless
+    of the value of the <i>fractional scaling</i>, the scaling percentage will
+    be set to <code>100</code> or <code>200</code>, depending on whether the
+    <i>user interface scale</i> is set to "Normal" or "Double (Hi-DPI)".</li>
 
     <li class="tm"><i>GNOME on Wayland</i> traditionally supports the display
-    scaling values 100 % and 200 %, and the variable
-    <code>tablelist::scalingpct</code> will be set accordingly to
-    <code>100</code> or <code>200</code>.&nbsp; In newer GNOME versions one can
-    enable the experimental feature <code>scale-monitor-framebuffer</code>,
-    which adds 125 %, 150 %, and 175 % to the list of supported scaling
-    percentages.&nbsp; With this feature enabled, the value of
-    <code>tablelist::scalingpct</code> will be <code>100</code> for all scaling
-    levels 100 %, 125 %, ..., 200 %.&nbsp; This is due to the fact that in this
-    case, instead of window contents, monitor framebuffers will be scaled in a
-    logical pixel coordinate space.</li>
+    scaling values 100 % and 200 %, and the scaling percentage will be set
+    accordingly to <code>100</code> or <code>200</code>.&nbsp; In newer GNOME
+    versions one can enable the experimental feature
+    <code>scale-monitor-framebuffer</code>, which adds 125 %, 150 %, and 175 %
+    to the list of supported scaling percentages.&nbsp; With this feature
+    enabled, the value returned by <code>scaleutil::scalingPercentage</code>
+    will be <code>100</code> for all scaling levels 100 %, 125 %, ...,
+    200 %.&nbsp; This is due to the fact that in this case, instead of window
+    contents, monitor framebuffers will be scaled in a logical pixel coordinate
+    space.</li>
 
     <li class="tm"><i>KDE Plasma on Xorg</i> provides fractional scaling
-    support.&nbsp; On this desktop, Tablelist will set the variable
-    <code>tablelist::scalingpct</code> to <code>100</code>, <code>125</code>,
-    <code>150</code>, <code>175</code>, or <code>200</code>, depending on the
-    display's scaling level.</li>
+    support.&nbsp; On this desktop, the procedure will return <code>100</code>,
+    <code>125</code>, <code>150</code>, <code>175</code>, or <code>200</code>,
+    depending on the display's scaling level.</li>
 
     <li class="tm"><i>KDE Plasma on Wayland</i> supports fractional scaling,
-    too.&nbsp; In this case, the value of the variable
-    <code>tablelist::scalingpct</code> will always be <code>100</code>,
-    regardless of the display's scaling level.</li>
+    too.&nbsp; In this case, the value returned by the procedure will always be
+    <code>100</code>, regardless of the display's scaling level.</li>
   </ul>
 
-  <p>The additional steps described in the rest of this section are only
-  performed if the scaling percentage is greater than <code>100</code>:</p>
+  <p>Besides computing the scaling percentage, the procedure
+  <code>scaleutil::scalingPercentage</code> performs a series of additional
+  tasks.&nbsp; Among others, it changes the default height of the ttk::treeview
+  rows from the hard-coded value of 20 pixels to a more reasonable one, based
+  on the metrics of the font used by the <code>Treeview</code> style (usually
+  <code>TkDefaultFont</code>), and makes sure that this step will be repeated
+  whenever the theme changes or the virtual event
+  <code>&lt;&lt;TkWorldChanged&gt;&gt;</code> with the <code>user_data</code>
+  field (<code>%d</code>) set to <code>FontChanged</code> is received.&nbsp; If
+  the Tk version is later than 8.6.11 or 8.7.a5, this virtual event is sent by
+  the Tk engine to all widgets when a font is changed, for example, by
+  invoking&nbsp; <code>font configure</code>&nbsp; (see <a href=
+  "https://core.tcl-lang.org/tips/doc/trunk/tip/608.md">TIP 608</a>).</p>
 
-  <p>After getting the scaling percentage on X11, Tablelist (more precisely,
-  the scaleutil package, which is bundled with the latter) sets the scaling
-  factor used by Tk to convert between physical units and pixels, by passing
-  the value corresponding to the scaling percentage to the&nbsp; <code>tk
-  scaling</code>&nbsp; command.&nbsp; While in the vast majority of
-  applications this is the desired and recommended behavior, there might be
-  cases where you want to suppress this step because your application might
-  have its own logic for determining the value of Tk's scaling factor.&nbsp;
-  You can achieve this by inserting the line</p>
+  <p>The additional steps described in the rest of this section are only
+  performed if the scaling percentage is greater than <code>100</code>.</p>
+
+  <p>The procedure sets the scaling factor used by Tk to convert between
+  physical units and pixels, by passing the value derived from the scaling
+  percentage to the&nbsp; <code>tk scaling</code>&nbsp; command.&nbsp; While in
+  the vast majority of applications this is the desired and recommended
+  behavior, there might be cases where you want to suppress this step because
+  your application might have its own logic for determining the value of Tk's
+  scaling factor.&nbsp; You can achieve this by inserting the line</p>
 
   <blockquote>
     <pre>
@@ -485,25 +496,25 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   <p>before loading Tablelist or Tablelist_tile via&nbsp; <code>package
   require</code>.</p>
 
-  <p>When initializing the variable <code>tablelist::scalingpct</code> on X11,
-  Tablelist also corrects the sizes of the standard fonts if needed.&nbsp;
-  These fonts (<code>TkDefaultFont</code>, <code>TkTextFont</code>, etc.) are
-  defined in the file <code>$tk_library/ttk/fonts.tcl</code>.&nbsp; For quite a
-  long time, the font sizes for X11 given in this file were sizes in pixels,
-  which was not suitable for use on HiDPI displays.&nbsp; This caused several
-  Linux distributions to bundle patched versions of this file, in which the
-  sizes in pixels are replaced with sizes in points.&nbsp; The same fix was
-  committed in February 2020 into the Tk core repository and is now contained
-  in Tk 8.7a5 and later.&nbsp; To make sure that, regardless of the Tk version,
-  the font sizes will suit the display's scaling level, Tablelist examines this
+  <p>The procedure <code>scaleutil::scalingPercentage</code> also corrects the
+  sizes of the standard fonts if needed.&nbsp; These fonts
+  (<code>TkDefaultFont</code>, <code>TkTextFont</code>, etc.) are defined in
+  the file <code>$tk_library/ttk/fonts.tcl</code>.&nbsp; For quite a long time,
+  the font sizes for X11 given in this file were sizes in pixels, which was not
+  suitable for use on HiDPI displays.&nbsp; This caused several Linux
+  distributions to bundle patched versions of this file, in which the sizes in
+  pixels are replaced with sizes in points.&nbsp; The same fix was committed in
+  February 2020 into the Tk core repository and is now contained in Tk 8.7a5
+  and later.&nbsp; To make sure that, regardless of the Tk version, the font
+  sizes will suit the display's scaling level, the procedure examines this
   library file and, if the latter contains sizes in pixels, then it sets the
   <code>-size</code> option of the standard fonts to corresponding sizes in
   points (without altering the file).&nbsp; In addition, for the HiDPI mode on
-  Xfce and MATE, Tablelist doubles the sizes (in points) of the standard fonts
-  (the way display scaling works on these desktops makes this necessary).</p>
+  Xfce and MATE, the procedure doubles the sizes (in points) of the standard
+  fonts (the way display scaling works on these desktops makes this
+  necessary).</p>
 
-  <p>The code responsible for the initialization of the variable
-  <code>tablelist::scalingpct</code> also scales:</p>
+  <p>The procedure also scales:</p>
 
   <ul>
     <li>the default parameters of the Tk core panedwindow sash;</li>
@@ -514,13 +525,12 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
 
     <li>the default length of the ttk::scale and ttk::progressbar widgets;</li>
 
-    <li>the height of the ttk::treeview rows;</li>
-
     <li>for the built-in themes <code>alt</code>, <code>clam</code>,
     <code>classic</code>, <code>default</code>, <code>vista</code>, and
-    <code>xpnative</code>, the paddings of the ttk::button, toolbutton,
-    ttk::menubutton, ttk::checkbutton, and ttk::radiobutton widgets, as well as
-    some styling options of the ttk::notebook widget and its tabs;</li>
+    <code>xpnative</code>, the paddings of the ttk::spinbox, ttk::button,
+    toolbutton, ttk::menubutton, ttk::checkbutton, and ttk::radiobutton
+    widgets, as well as some styling options of the ttk::notebook widget and
+    its tabs;</li>
 
     <li>for the <code>alt</code>, <code>clam</code>, <code>classic</code>, and
     <code>default</code> themes, the width of the ttk::scrollbar widget, the
@@ -545,13 +555,13 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
     column headers and the label margins of the ttk::labelframe widget.</li>
   </ul>
 
-  <p>In addition, the above-mentioned variable initialization code makes sure
-  that in the <code>vista</code> and <code>xpnative</code> themes the
+  <p>In addition, the procedure <code>scaleutil::scalingPercentage</code> makes
+  sure that in the <code>vista</code> and <code>xpnative</code> themes the
   indicators of the ttk::checkbutton and ttk::radiobutton widgets will appear
   properly scaled, regardless of the Tk release being used.&nbsp; (A
   long-standing bug in the implementation of these widgets was fixed in May
   2020 and is now contained in both Tk 8.6.11 and later and 8.7a5 and later,
-  but Tablelist provides a workaround for the Tk versions that are still
+  but the procedure provides a workaround for the Tk versions that are still
   affected by this bug.)</p>
 
   <h3 id="ov_tile">More on Tablelist_tile</h3>
@@ -692,7 +702,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 6.17
+package require tablelist 6.18
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -748,7 +758,7 @@ demo::displayConfig .configTop.tf.tbl
 
   <blockquote>
     <pre>
-package require tablelist 6.17
+package require tablelist 6.18
 
 namespace eval demo {
     <span class="cmt">#
@@ -1229,7 +1239,7 @@ demo::displayChildren .
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.17
+package require tablelist 6.18
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1859,7 +1869,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.17
+package require tablelist 6.18
 
 <span class="cmt">#
 # Add some entries to the Tk option database
@@ -2284,7 +2294,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;<span class="cmt"># because of "-compound"</span>
-package require tablelist 6.17
+package require tablelist 6.18
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2707,7 +2717,7 @@ $tbl embedcheckbuttons 1
 
   <blockquote>
     <pre>
-package require tablelist 6.17
+package require tablelist 6.18
 
 wm title . "Tk Library Scripts"
 
@@ -2991,7 +3001,7 @@ $tbl fillcolumn 3 -window createButton
   <blockquote>
     <pre>
 package require Tk 8.3                          ;<span class="cmt"># because of entry validation</span>
-package require tablelist 6.17
+package require tablelist 6.18
 </pre>
   </blockquote>
 
@@ -2999,7 +3009,7 @@ package require tablelist 6.17
 
   <blockquote>
     <pre>
-package require tablelist<span class="red">_tile</span> 6.17
+package require tablelist<span class="red">_tile</span> 6.18
 </pre>
   </blockquote>
 

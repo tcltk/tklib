@@ -14,7 +14,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.17</h2>
+    <h2>For Tablelist Version 6.18</h2>
 
     <h3>by</h3>
 
@@ -5921,7 +5921,7 @@ proc emptyStr val { return "" }
         greater than all the other integer or real numbers contained in the
         column in question, and use the <code><b>-formatcommand</b></code>
         option to control what will be displayed in the column's cells.&nbsp;
-        For example, if all the elements of the column are non-negative values
+        For example, if all the elements of the column are nonnegative values
         then you can use the number <code>-1</code> as internal value for the
         cells that should display an empty string, and set the value of the
         <code><b>-formatcommand</b></code> option to <code>formatNumber</code>,
@@ -8396,8 +8396,9 @@ registerDragSrc [$tbl bodypath]
         text to be inserted into the edit window.&nbsp; The command is also
         invoked implicitly by pressing the <code>Escape</code> key when a cell
         is being edited.&nbsp; The return value is an empty string.&nbsp;
-        Immediately before returning this value, the command generates the
-        virtual event
+        Before returning this value, the command restores the original value of
+        the tablelist widget's <code><b>-exportselection</b></code> option and
+        generates the virtual event
         <code><b>&lt;&lt;TablelistCellRestored&gt;&gt;</b></code>.&nbsp; For Tk
         versions 8.5 and higher, this virtual event is generated with its
         <code><b>-data</b></code> option set to a list consisting of the
@@ -9233,7 +9234,12 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
         tablelist's <code><b><a href="#state">state</a></b></code> is not
         <code><b>disabled</b></code> and the cell is <a href=
         "#isviewable">viewable</a> and editable.&nbsp; Returns an empty
-        string.&nbsp; See the <a href="#cell_editing">INTERACTIVE CELL
+        string.&nbsp; Before returning this value, the command sets the
+        tablelist widget's <code><b>-exportselection</b></code> option to
+        <code>0</code>, thus making sure that the widget won't lose the
+        selection while the cell's content is being edited.&nbsp; (Note that on
+        termination of the editing session, the option's original value will be
+        restored.)&nbsp; See the <a href="#cell_editing">INTERACTIVE CELL
         EDITING</a> section for details on editablity and on the editing
         process.</dd>
 
@@ -9494,11 +9500,12 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         the cell's value is not changed and the embedded widget remains
         displayed in the cell; in this case the command returns the boolean
         value <code>0</code>.&nbsp; In all the other cases, the return value is
-        <code>1</code>.&nbsp; Immediately before returning the value
-        <code>1</code>, the command generates the virtual event
-        <code><b>&lt;&lt;TablelistCellUpdated&gt;&gt;</b></code> if the editing
-        session has effectively changed the cell's content.&nbsp; For Tk
-        versions 8.5 and higher, this virtual event is generated with its
+        <code>1</code>.&nbsp; Before returning the value <code>1</code>, the
+        command restores the original value of the tablelist widget's
+        <code><b>-exportselection</b></code> option, and generates the virtual
+        event <code><b>&lt;&lt;TablelistCellUpdated&gt;&gt;</b></code> if the
+        editing session has effectively changed the cell's content.&nbsp; For
+        Tk versions 8.5 and higher, this virtual event is generated with its
         <code><b>-data</b></code> option set to a list consisting of the
         numerical row and column indices of the cell whose content is being
         edited.&nbsp; If no cell was being edited when the command was invoked

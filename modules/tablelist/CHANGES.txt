@@ -1,5 +1,46 @@
-What is new in Tablelist 6.17?
+What is new in Tablelist 6.18?
 ------------------------------
+
+1. Improvements in the scaleutil package, related to setting the default
+   height of the ttk::treeview rows to a value based on the font's
+   metrics (see the section "More on tablelist::scalingpct" in Tablelist
+   Programmer's Guide for details); several extensions.
+
+2. Added support for the case that the "clam" theme was modified by
+   invoking the "clampatch::patchClamTheme" command of the clampatch
+   package, which is bundled with the Scrollutil distribution (and used
+   by its demo scripts).
+
+3. When starting the editing session, the "-exportselection" option of
+   the tablelist widget is now set to 0 (thus making sure that the
+   widget won't lose the selection while a cell's content is being
+   edited), and when the editing is finished or canceled, the option's
+   original value is restored (thanks to Alexandru Dadalau for his
+   proposal).
+
+4. Made sure that the "-showeditcursor" configuration option will work
+   as expected also in the special case that the application was cross-
+   wrapped on Linux for Windows using freewrap (thanks to Rolf Ade for
+   his valuable contribution and discussions on this topic).
+
+5. Overhauled the workaround for the problem that in Tk 8.6.11 and later
+   on Mac OS X/11+ the idle callbacks are often fired at unexpected
+   times (thanks to Christian Gollwitzer for his bug report and
+   discussions on this topic).
+
+6. Fixed a bug related to the handling of the <<ThemeChanged>> event
+   when the package Tablelist rather than Tablelist_tile was loaded
+   into the interpreter (thanks to "saitology9" for reporting this bug).
+
+7. Fixed a long-standing bug related to the mouse event handling for the
+   header labels in the special case that there is another tablelist
+   closely to the left of the widget in question (thanks to Alexandru
+   Dadalau for his bug report).
+
+8. Improvements in Tablelist Programmer's Guide.
+
+What was new in Tablelist 6.17?
+-------------------------------
 
 1. The virtual event <<TablelistCellUpdated>> is now only generated if
    the editing session has effectively changed the cell's content
