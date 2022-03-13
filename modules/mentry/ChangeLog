@@ -1,3 +1,21 @@
+2022-03-13  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 3.15; updated the
+	* COPYRIGHT.txt: copyright information.
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl:        Fixed a bug related to the handling of the
+	* scripts/mwutil/*.tcl: <<ThemeChanged>> event when the package Mentry
+	  rather than Mentry_tile was loaded into the interpreter; updated the
+	  copyright information.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/mentry/*.tcl: Updated the copyright information.
+
 2021-09-02  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Mentry 3.14.
