@@ -110,15 +110,12 @@ namespace eval scrollutil::snb {
 	set width  [expr {[image width scrollutil_closeImg] +
 			  [winfo pixels . 3p]}]
 	set sticky [expr {[tk windowingsystem] eq "aqua" ? "w" : "e"}]
-	ttk::style theme settings default {
-	    ttk::style element create closetab image [list \
-		scrollutil_closeImg \
-		[list active pressed]	       scrollutil_closePressedImg \
-		[list active $hover !disabled] scrollutil_closeHoverImg \
-		[list active readonly]	       scrollutil_closeDisabledImg \
-		[list disabled]		       scrollutil_closeDisabledImg] \
-		-width $width -sticky $sticky
-	}
+	ttk::style element create closetab image [list scrollutil_closeImg \
+	    [list active pressed]		scrollutil_closePressedImg \
+	    [list active $hover !disabled]	scrollutil_closeHoverImg \
+	    [list active readonly]		scrollutil_closeDisabledImg \
+	    [list disabled]			scrollutil_closeDisabledImg \
+	] -width $width -sticky $sticky
     }
     ttk::style theme settings default {
 	if {[lsearch -exact [ttk::style element names] "closetab"] < 0} {
