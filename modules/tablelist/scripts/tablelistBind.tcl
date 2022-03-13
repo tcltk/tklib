@@ -460,11 +460,20 @@ proc tablelist::updateFonts win {
 #------------------------------------------------------------------------------
 proc tablelist::handleThemeChangedEvent {} {
     variable currentTheme
+    variable checkbtnLayout
     variable widgetStyle
     variable colorScheme
-    set newTheme [mwutil::currentTheme]
-    if {[string compare $newTheme $currentTheme] == 0} {
-	if {[string compare $newTheme "tileqt"] == 0} {
+
+    set newTheme [::mwutil::currentTheme]
+    switch -- $newTheme {
+	clam {
+	    set newCheckbtnLayout [style layout TCheckbutton]
+	    if {[string compare $newTheme $currentTheme] == 0 &&
+		[string compare $newCheckbtnLayout $checkbtnLayout] == 0} {
+		return ""
+	    }
+	}
+	tileqt {
 	    set newWidgetStyle [tileqt_currentThemeName]
 	    if {[info exists ::env(KDE_SESSION_VERSION)] &&
 		[string length $::env(KDE_SESSION_VERSION)] != 0} {
@@ -472,30 +481,38 @@ proc tablelist::handleThemeChangedEvent {} {
 	    } else {
 		set newColorScheme [getKdeConfigVal "KDE" "colorScheme"]
 	    }
-	    if {[string compare $newWidgetStyle $widgetStyle] == 0 &&
+	    if {[string compare $newTheme $currentTheme] == 0 &&
+		[string compare $newWidgetStyle $widgetStyle] == 0 &&
 		[string compare $newColorScheme $colorScheme] == 0} {
 		return ""
 	    }
-	} else {
-	    return ""
+	}
+	default {
+	    if {[string compare $newTheme $currentTheme] == 0} {
+		return ""
+	    }
 	}
     }
 
     set currentTheme $newTheme
-    if {[string compare $newTheme "tileqt"] == 0} {
-	set widgetStyle $newWidgetStyle
-	set colorScheme $newColorScheme
-    } else {
-	set widgetStyle ""
-	set colorScheme ""
-    }
-
-    if {[string compare $newTheme "aqua"] == 0} {
-	#
-	# Work around some issues with the appearance
-	# change support in Tk 8.6.10 and 8.7a3
-	#
-	condOpenPipeline 
+    set checkbtnLayout ""
+    set widgetStyle ""
+    set colorScheme ""
+    switch -- $newTheme {
+	aqua {
+	    #
+	    # Work around some issues with the appearance
+	    # change support in Tk 8.6.10 and 8.7a3
+	    #
+	    condOpenPipeline 
+	}
+	clam {
+	    set checkbtnLayout $newCheckbtnLayout
+	}
+	tileqt {
+	    set widgetStyle $newWidgetStyle
+	    set colorScheme $newColorScheme
+	}
     }
 
     #
@@ -1565,16 +1582,32 @@ proc tablelist::makeEditCursor {} {
 	if {$::tcl_version >= 8.4} {
 	    set cursorFile [file normalize $cursorFile]
 	}
-	set editCursor [list @$cursorFile]
 
 	#
-	# Make sure it will work for starpacks, too
+	# Check whether the file is readable, which won't be the case, e.g., if
+	# the application was cross-wrapped on Linux for Windows using freewrap
 	#
-	variable helpLabel
-	if {[catch {$helpLabel configure -cursor $editCursor}] != 0} {
+	if {[file readable $cursorFile]} {
+	    set editCursor [list @$cursorFile]
+
+	    #
+	    # Make sure it will work for starpacks, too
+	    #
+	    variable helpLabel
+	    if {[catch {$helpLabel configure -cursor $editCursor}] != 0} {
+		set tempDir $::env(TEMP)
+		file copy -force $cursorFile $tempDir
+		set editCursor [list @[file join $tempDir $cursorName]]
+	    }
+	} elseif {$::tk_version >= 8.6} {
 	    set tempDir $::env(TEMP)
-	    file copy -force $cursorFile $tempDir
-	    set editCursor [list @[file join $tempDir $cursorName]]
+	    set cursorFile [file join $tempDir $cursorName]
+	    set chan [open $cursorFile "wb"]
+	    puts -nonewline $chan [binary decode base64 [pencilCursorData]]
+	    close $chan
+	    set editCursor [list @$cursorFile]
+	} else {
+	    set editCursor pencil
 	}
     } else {
 	set editCursor pencil
@@ -1675,7 +1708,7 @@ proc tablelist::condEditContainingCell {win x y} {
     }
 
     #
-    # The following check is sometimes needed on OS X if
+    # The following check is sometimes needed on OS X/11+ if
     # editing with the aid of a menubutton is in progress
     #
     variable editCursor
@@ -4385,7 +4418,7 @@ proc tablelist::horizAutoScan win {
 # left.
 #------------------------------------------------------------------------------
 proc tablelist::inResizeArea {w x colName} {
-    if {![parseLabelPath $w dummy _col]} {
+    if {![parseLabelPath $w win1 _col]} {
 	return 0
     }
 
@@ -4396,7 +4429,13 @@ proc tablelist::inResizeArea {w x colName} {
     } elseif {$x < 5} {
 	set X [expr {[winfo rootx $w] - 3}]
 	set contW [winfo containing -displayof $w $X [winfo rooty $w]]
-	return [parseLabelPath $contW dummy col]
+	if {[parseLabelPath $contW win2 _col] &&
+	    [string compare $win2 $win1] == 0} {
+	    set col $_col
+	    return 1
+	} else {
+	    return 0
+	}
     } else {
 	return 0
     }

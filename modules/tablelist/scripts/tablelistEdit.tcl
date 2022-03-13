@@ -473,7 +473,7 @@ proc tablelist::addIncrDateTimeWidget {widgetType args} {
 		focus $itk_component(time)	;# added; the rest is unchanged
 		grab release $itk_component(popup)
 		$itk_component(iconbutton) configure -relief raised
-		destroy $itk_component(popup) 
+		destroy $itk_component(popup)
 		bind $itk_component(iconbutton) <Button-1> \
 		     [itcl::code $this _popup]
 	    }
@@ -1581,9 +1581,11 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     seeCell $win $row $col
     set netRowHeight [lindex [bboxSubCmd $win $row] 3]
     set frameHeight [expr {$netRowHeight + 6}]	;# because of the -pady -3 below
+    set frameWidth 7				;# because of the -padx -3 below
     set f $data(bodyFrm)
     tk::frame $f -borderwidth 0 -container 0 -height $frameHeight \
-		 -highlightthickness 0 -relief flat -takefocus 0
+		 -highlightthickness 0 -relief flat -takefocus 0 \
+		 -width $frameWidth
     catch {$f configure -padx 0 -pady 0}
     bindtags $f [lreplace [bindtags $f] 1 1 $data(editwinTag) TablelistEdit]
     set name [getEditWindow $win $row $col]
@@ -1700,6 +1702,12 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	set idx [lsearch -exact $bindTags [winfo class $comp]]
 	bindtags $comp [linsert $bindTags [incr idx] TablelistEditBreak]
     }
+
+    #
+    # Set the -exportselection option to 0 after saving its original value
+    #
+    set data(exportselOrig) $data(-exportselection)
+    doConfig $win -exportselection 0
 
     #
     # Restore or initialize some of the edit window's data
@@ -1991,6 +1999,11 @@ proc tablelist::doCancelEditing win {
     set userData [list $row $col]
     genVirtualEvent $win <<TablelistCellRestored>> $userData
 
+    #
+    # Restore the value of the -exportselection option
+    #
+    doConfig $win -exportselection $data(exportselOrig)
+
     updateViewWhenIdle $win
     return ""
 }
@@ -2074,6 +2087,11 @@ proc tablelist::doFinishEditing {win {destroy 1}} {
 
 	    doCellConfig $row $col $win -text $text
 	    set result 1
+
+	    #
+	    # Restore the value of the -exportselection option
+	    #
+	    doConfig $win -exportselection $data(exportselOrig)
 	} else {
 	    set result 0
 	}

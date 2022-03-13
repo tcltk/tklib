@@ -20,7 +20,7 @@ namespace eval tablelist {
     #
     # Get the windowing system ("x11", "win32", "classic", or "aqua")
     #
-    variable winSys [mwutil::windowingSystem]
+    variable winSys [::mwutil::windowingSystem]
 
     #
     # Get the display's current scaling percentage (100, 125, 150, 175, or 200)
@@ -88,21 +88,29 @@ namespace eval tablelist {
 	    interp alias {} ::tablelist::tileqt_currentThemeColour \
 			 {} ::ttk::theme::tileqt::currentThemeColour
 	}
+
+	interp alias {} ::tablelist::getCurrentTheme  {} ::mwutil::currentTheme
     }
-    if {$usingTile} {
+    variable currentTheme [::mwutil::currentTheme]
+    if {[string length $currentTheme] != 0} {
 	createTileAliases 
     }
 
-    variable currentTheme [mwutil::currentTheme]
+    variable checkbtnLayout ""
     variable widgetStyle ""
     variable colorScheme ""
-    if {[string compare $currentTheme "tileqt"] == 0} {
-	set widgetStyle [tileqt_currentThemeName]
-	if {[info exists ::env(KDE_SESSION_VERSION)] &&
-	    [string length $::env(KDE_SESSION_VERSION)] != 0} {
-	    set colorScheme [getKdeConfigVal "General" "ColorScheme"]
-	} else {
-	    set colorScheme [getKdeConfigVal "KDE" "colorScheme"]
+    switch -- $currentTheme {
+	clam {
+	    set checkbtnLayout [style layout TCheckbutton]
+	}
+	tileqt {
+	    set widgetStyle [tileqt_currentThemeName]
+	    if {[info exists ::env(KDE_SESSION_VERSION)] &&
+		[string length $::env(KDE_SESSION_VERSION)] != 0} {
+		set colorScheme [getKdeConfigVal "General" "ColorScheme"]
+	    } else {
+		set colorScheme [getKdeConfigVal "KDE" "colorScheme"]
+	    }
 	}
     }
 
@@ -887,7 +895,6 @@ proc tablelist::tablelist args {
 	    hdr_itemCount	 0
 	    lastRow		-1
 	    hdr_lastRow		-1
-	    colListValid	 1
 	    colList		 {}
 	    colCount		 0
 	    lastCol		-1
@@ -2274,9 +2281,7 @@ proc tablelist::deletecolumnsSubCmd {win argList} {
     if {$argCount == 1} {
 	if {[llength $first] == 1} {			;# just to save time
 	    set col [colIndex $win [lindex $first 0] 1]
-	    set data(colListValid) 0
 	    deleteCols $win $col $col
-	    set data(colListValid) 1
 	    redisplay $win
 	} elseif {$data(colCount) == 0} {		;# no columns present
 	    return ""
@@ -2296,7 +2301,6 @@ proc tablelist::deletecolumnsSubCmd {win argList} {
 	    #
 	    set deleted 0
 	    set prevCol -1
-	    set data(colListValid) 0
 	    foreach col $colList {
 		if {$col != $prevCol} {
 		    deleteCols $win $col $col
@@ -2304,7 +2308,6 @@ proc tablelist::deletecolumnsSubCmd {win argList} {
 		    set prevCol $col
 		}
 	    }
-	    set data(colListValid) 1
 	    if {$deleted} {
 		redisplay $win
 	    }
@@ -2313,9 +2316,7 @@ proc tablelist::deletecolumnsSubCmd {win argList} {
 	set first [colIndex $win $first 1]
 	set last [colIndex $win [lindex $argList 1] 1]
 	if {$first <= $last} {
-	    set data(colListValid) 0
 	    deleteCols $win $first $last
-	    set data(colListValid) 1
 	    redisplay $win
 	}
     }
@@ -4874,9 +4875,7 @@ proc tablelist::insertcolumnsSubCmd {win argList} {
 	set col [colIndex $win $arg0 1]
     }
 
-    set data(colListValid) 0
     insertCols $win $col [lrange $argList 1 end]
-    set data(colListValid) 1
 }
 
 #------------------------------------------------------------------------------
@@ -5263,9 +5262,7 @@ proc tablelist::movecolumnSubCmd {win argList} {
 	set target [colIndex $win $arg1 1]
     }
 
-    set data(colListValid) 0
     moveCol $win $source $target
-    set data(colListValid) 1
     return ""
 }
 

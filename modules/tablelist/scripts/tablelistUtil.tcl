@@ -47,6 +47,8 @@ namespace eval tablelist {
 	down,increasing	Dn
 	down,decreasing	Up
     }
+
+    variable onAqua [expr {[string compare $winSys "aqua"] == 0}]
 }
 
 #
@@ -2367,7 +2369,6 @@ proc tablelist::setupColumns {win columns createLabels} {
     # Save the value of colConfigVals in data(-columns)
     #
     set data(-columns) $colConfigVals
-    set data(colListValid) 0
 
     #
     # Delete the labels, canvases, and separators if requested
@@ -2517,7 +2518,6 @@ proc tablelist::setupColumns {win columns createLabels} {
 
 	incr col
     }
-    set data(colListValid) 1
     set data(hasFmtCmds) [expr {[lsearch -exact $data(fmtCmdFlagList) 1] >= 0}]
 
     #
@@ -2629,7 +2629,10 @@ proc tablelist::adjustSepsWhenIdle win {
 	return ""
     }
 
-    set data(sepsId) [after idle [list tablelist::adjustSeps $win]]
+    set script [list tablelist::adjustSeps $win]
+    variable onAqua
+    if {$onAqua} { set script [list after 0 $script] }
+    set data(sepsId) [after idle $script]
 }
 
 #------------------------------------------------------------------------------
@@ -3518,14 +3521,10 @@ proc tablelist::computeLabelWidth {win col} {
 # height of its children.
 #------------------------------------------------------------------------------
 proc tablelist::adjustHeaderHeight win {
-    upvar ::tablelist::ns${win}::data data
-    if {!$data(colListValid)} {
-	return ""
-    }
-
     #
     # Set the height of the header frame and some of its descendants
     #
+    upvar ::tablelist::ns${win}::data data
     $data(hdrTxt) tag raise tinyFont
     $data(hdrTxt) tag remove tinyFont 2.0 end
     if {$data(-showlabels)} {
@@ -3624,7 +3623,10 @@ proc tablelist::stretchColumnsWhenIdle win {
 	return ""
     }
 
-    set data(stretchId) [after idle [list tablelist::stretchColumns $win -1]]
+    set script [list tablelist::stretchColumns $win -1]
+    variable onAqua
+    if {$onAqua} { set script [list after 0 $script] }
+    set data(stretchId) [after idle $script]
 }
 
 #------------------------------------------------------------------------------
@@ -3643,7 +3645,7 @@ proc tablelist::stretchColumns {win colOfFixedDelta} {
     set forceAdjust $data(forceAdjust)
     set data(forceAdjust) 0
 
-    if {$data(hdrWidth) == 0 || !$data(colListValid)} {
+    if {$data(hdrWidth) == 0} {
 	return ""
     }
 
@@ -3798,7 +3800,10 @@ proc tablelist::updateColorsWhenIdle win {
 	return ""
     }
 
-    set data(colorsId) [after idle [list tablelist::updateColors $win]]
+    set script [list tablelist::updateColors $win]
+    variable onAqua
+    if {$onAqua} { set script [list after 0 $script] }
+    set data(colorsId) [after idle $script]
 }
 
 #------------------------------------------------------------------------------
@@ -4138,7 +4143,10 @@ proc tablelist::hdr_updateColorsWhenIdle win {
 	return ""
     }
 
-    set data(hdr_colorsId) [after idle [list tablelist::hdr_updateColors $win]]
+    set script [list tablelist::hdr_updateColors $win]
+    variable onAqua
+    if {$onAqua} { set script [list after 0 $script] }
+    set data(hdr_colorsId) [after idle $script]
 }
 
 #------------------------------------------------------------------------------
@@ -4310,7 +4318,10 @@ proc tablelist::updateScrlColOffsetWhenIdle win {
 	return ""
     }
 
-    set data(offsetId) [after idle [list tablelist::updateScrlColOffset $win]]
+    set script [list tablelist::updateScrlColOffset $win]
+    variable onAqua
+    if {$onAqua} { set script [list after 0 $script] }
+    set data(offsetId) [after idle $script]
 }
 
 #------------------------------------------------------------------------------
@@ -4322,10 +4333,6 @@ proc tablelist::updateScrlColOffsetWhenIdle win {
 proc tablelist::updateScrlColOffset win {
     upvar ::tablelist::ns${win}::data data
     unset data(offsetId)
-
-    if {!$data(colListValid)} {
-	return ""
-    }
 
     set maxScrlColOffset [getMaxScrlColOffset $win]
     if {$data(scrlColOffset) > $maxScrlColOffset} {
@@ -4348,7 +4355,10 @@ proc tablelist::updateHScrlbarWhenIdle win {
 	return ""
     }
 
-    set data(hScrlbarId) [after idle [list tablelist::updateHScrlbar $win]]
+    set script [list tablelist::updateHScrlbar $win]
+    variable onAqua
+    if {$onAqua} { set script [list after 0 $script] }
+    set data(hScrlbarId) [after idle $script]
 }
 
 #------------------------------------------------------------------------------
@@ -4388,7 +4398,10 @@ proc tablelist::updateVScrlbarWhenIdle win {
 	return ""
     }
 
-    set data(vScrlbarId) [after idle [list tablelist::updateVScrlbar $win]]
+    set script [list tablelist::updateVScrlbar $win]
+    variable onAqua
+    if {$onAqua} { set script [list after 0 $script] }
+    set data(vScrlbarId) [after idle $script]
 }
 
 #------------------------------------------------------------------------------
@@ -4443,11 +4456,11 @@ proc tablelist::forceRedraw win {
 #------------------------------------------------------------------------------
 # tablelist::workAroundAquaTkBugs
 #
-# Works around some Tk bugs on Mac OS X/11.
+# Works around some Tk bugs on Mac OS X/11+.
 #------------------------------------------------------------------------------
 proc tablelist::workAroundAquaTkBugs win {
-    variable winSys
-    if {[string compare $winSys "aqua"] == 0 && [winfo viewable $win]} {
+    variable onAqua
+    if {$onAqua && [winfo viewable $win]} {
 	set par [winfo parent $win]
 	if {[mwutil::containsPointer $par]} {
 	    event generate $par <Leave>
@@ -4766,7 +4779,10 @@ proc tablelist::redisplayWhenIdle win {
 	return ""
     }
 
-    set data(redispId) [after idle [list tablelist::redisplay $win]]
+    set script [list tablelist::redisplay $win]
+    variable onAqua
+    if {$onAqua} { set script [list after 0 $script] }
+    set data(redispId) [after idle $script]
 
     #
     # Cancel the execution of all delayed redisplayCol commands
@@ -5274,8 +5290,10 @@ proc tablelist::redisplayColWhenIdle {win col} {
 	return ""
     }
 
-    set data($col-redispId) \
-	[after idle [list tablelist::redisplayCol $win $col 0 last]]
+    set script [list tablelist::redisplayCol $win $col 0 last]
+    variable onAqua
+    if {$onAqua} { set script [list after 0 $script] }
+    set data($col-redispId) [after idle $script]
 }
 
 #------------------------------------------------------------------------------
@@ -5534,7 +5552,10 @@ proc tablelist::makeStripesWhenIdle win {
 	return ""
     }
 
-    set data(stripesId) [after idle [list tablelist::makeStripes $win]]
+    set script [list tablelist::makeStripes $win]
+    variable onAqua
+    if {$onAqua} { set script [list after 0 $script] }
+    set data(stripesId) [after idle $script]
 }
 
 #------------------------------------------------------------------------------
@@ -5592,7 +5613,10 @@ proc tablelist::showLineNumbersWhenIdle win {
 	return ""
     }
 
-    set data(lineNumsId) [after idle [list tablelist::showLineNumbers $win]]
+    set script [list tablelist::showLineNumbers $win]
+    variable onAqua
+    if {$onAqua} { set script [list after 0 $script] }
+    set data(lineNumsId) [after idle $script]
 }
 
 #------------------------------------------------------------------------------
@@ -5603,10 +5627,6 @@ proc tablelist::showLineNumbersWhenIdle win {
 proc tablelist::showLineNumbers win {
     upvar ::tablelist::ns${win}::data data
     unset data(lineNumsId)
-
-    if {!$data(colListValid)} {
-	return ""
-    }
 
     #
     # Update the item list
@@ -5662,7 +5682,10 @@ proc tablelist::updateViewWhenIdle {win {reschedule 0}} {
 	}
     }
 
-    set data(viewId) [after idle [list tablelist::updateView $win]]
+    set script [list tablelist::updateView $win]
+    variable onAqua
+    if {$onAqua} { set script [list after 0 $script] }
+    set data(viewId) [after idle $script]
 }
 
 #------------------------------------------------------------------------------
@@ -6740,7 +6763,7 @@ proc tablelist::makeCkbtn w {
 	    variable uncheckedImg
 	    variable tristateImg
 	    if {![info exists checkedImg]} {
-		createCheckbuttonImgs
+		createCheckbuttonImgs 
 	    }
 
 	    $w configure -borderwidth 1 -indicatoron 0 \
@@ -6765,7 +6788,7 @@ proc tablelist::makeCkbtn w {
 		variable uncheckedImg
 		variable tristateImg
 		if {![info exists checkedImg]} {
-		    createCheckbuttonImgs
+		    createCheckbuttonImgs 
 		}
 
 		$w configure -borderwidth 2 -indicatoron 0 \
@@ -6871,38 +6894,36 @@ proc tablelist::makeTtkCkbtn w {
     createTileAliases 
 
     #
-    # Define the checkbutton layout; use catch to suppress
-    # the error message in case the layout already exists
+    # Define the layout Tablelist.TCheckbutton
     #
+    set checkbtnLayout [style layout TCheckbutton]
     variable currentTheme
     switch -- $currentTheme {
 	aqua {
 	    catch {style layout Tablelist.TCheckbutton { Checkbutton.button }}
 	}
 
+	clam {
+	    if {[string first "Checkbutton.indicator" $checkbtnLayout] >= 0} {
+		style layout Tablelist.TCheckbutton { Checkbutton.indicator }
+		styleConfig Tablelist.TCheckbutton -indicatormargin {0 0 1 1}
+	    } else {		;# see procedure clampatch::patchClamTheme
+		style layout Tablelist.TCheckbutton { Checkbutton.image_ind }
+	    }
+	}
+
 	vista -
 	xpnative {
-	    if {[llength [style lookup TCheckbutton -padding]] == 1} {
-		catch {
-		    style layout Tablelist.TCheckbutton \
-			  { Checkbutton.indicator }
-		}
+	    if {[string first "Checkbutton.indicator" $checkbtnLayout] >= 0} {
+		style layout Tablelist.TCheckbutton { Checkbutton.indicator }
 	    } else {		;# see procedure scaleutil::patchWinTheme
-		catch {
-		    style layout Tablelist.TCheckbutton \
-			  { Checkbutton.vsapi_indicator }
-		}
+		style layout Tablelist.TCheckbutton { Checkbutton.vsapi_ind }
 	    }
 	}
 
 	default {
-	    catch {
-		style layout Tablelist.TCheckbutton \
-		      { Checkbutton.indicator }
-	    }
-
-	    set indMargin [expr {$currentTheme eq "clam" ? {0 0 1 1} : 0}]
-	    styleConfig Tablelist.TCheckbutton -indicatormargin $indMargin
+	    style layout Tablelist.TCheckbutton { Checkbutton.indicator }
+	    styleConfig Tablelist.TCheckbutton -indicatormargin 0
 	}
     }
 
@@ -6956,6 +6977,7 @@ proc tablelist::makeTtkCkbtn w {
 
 	blue -
 	Breeze - breeze -
+	clam -
 	winxpblue {
 	    set height [winfo reqheight $w]
 	    $frm configure -width $height -height $height
@@ -7047,7 +7069,7 @@ proc tablelist::makeTtkCkbtn w {
 	xpnative {
 	    set height [winfo reqheight $w]
 	    $frm configure -width $height -height $height
-	    if {[llength [style lookup TCheckbutton -padding]] == 1} {
+	    if {[string first "Checkbutton.indicator" $checkbtnLayout] >= 0} {
 		place $w -x 0
 	    } else {		;# see procedure scaleutil::patchWinTheme
 		variable scalingpct
