@@ -36,3 +36,4 @@ proc onCkbtnToggle {tbl col ckbtn} {
 }
 configCkbtn $tbl available
 bind $tbl <<TablelistColumnMoved>> { configCkbtn %W available }
+bind $tbl <<ThemeChanged>> { configCkbtn %W available }
