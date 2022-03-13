@@ -70,7 +70,7 @@ namespace eval scrollutil::pnb {
     variable cmdOpts [list add addbutton addlabel addseparator cget \
 		      closablestate configure forget hide index insert \
 		      insertbutton insertlabel insertseparator instate see \
-		      select state style tab tabpath tabs]
+		      select state style tab tabpath tabs titlepath]
 
     #
     # Array variable used in binding scripts for the tag PlainnotebookTab:
@@ -93,12 +93,9 @@ namespace eval scrollutil::pnb {
 
 	set width [expr {[image width scrollutil_descendImg] +
 			 [winfo pixels . 6p]}]
-	ttk::style theme settings default {
-	    ttk::style element create descend image [list \
-		scrollutil_descendImg \
-		disabled scrollutil_descendDisabledImg] \
-		-width $width -sticky e
-	}
+	ttk::style element create descend image [list scrollutil_descendImg \
+	    disabled scrollutil_descendDisabledImg \
+	] -width $width -sticky e
     }
     ttk::style theme settings default {
 	if {[lsearch -exact [ttk::style element names] "descend"] < 0} {
@@ -151,14 +148,11 @@ namespace eval scrollutil::pnb {
 	set width  [expr {[image width scrollutil_closeImg] +
 			  [winfo pixels . 3p]}]
 	set sticky [expr {[tk windowingsystem] eq "aqua" ? "w" : "e"}]
-	ttk::style theme settings default {
-	    ttk::style element create closebtn image [list \
-		scrollutil_closeImg \
-		$user2		scrollutil_closePressedImg \
-		$user1		scrollutil_closeHoverImg \
-		disabled	scrollutil_closeDisabledImg] \
-		-width $width -sticky $sticky
-	}
+	ttk::style element create closebtn image [list scrollutil_closeImg \
+	    $user2	scrollutil_closePressedImg \
+	    $user1	scrollutil_closeHoverImg \
+	    disabled	scrollutil_closeDisabledImg \
+	] -width $width -sticky $sticky
     }
     ttk::style theme settings default {
 	if {[lsearch -exact [ttk::style element names] "closebtn"] < 0} {
@@ -214,6 +208,33 @@ namespace eval scrollutil::pnb {
 	foreach style {Desc.Toolbutton Page.Toolbutton
 		       ClosablePage.Toolbutton} {
 	    ttk::style configure $style -anchor w -padding 3p
+	}
+	switch [mwutil::currentTheme] {
+	    alt -
+	    classic -
+	    default {
+		set lst [linsert [ttk::style map Toolbutton -background] 0 \
+			 selected #c3c3c3]
+		ttk::style map Page.Toolbutton	       -background $lst
+		ttk::style map ClosablePage.Toolbutton -background $lst
+	    }
+
+	    clam {
+		set lst [linsert [ttk::style map Toolbutton -background] 2 \
+			 selected #bab5ab]
+		ttk::style map Page.Toolbutton	       -background $lst
+		ttk::style map ClosablePage.Toolbutton -background $lst
+
+		set lst [linsert [ttk::style map Toolbutton -lightcolor] 0 \
+			 selected #bab5ab]
+		ttk::style map Page.Toolbutton	       -lightcolor $lst
+		ttk::style map ClosablePage.Toolbutton -lightcolor $lst
+
+		set lst [linsert [ttk::style map Toolbutton -darkcolor] 0 \
+			 selected #bab5ab]
+		ttk::style map Page.Toolbutton	       -darkcolor $lst
+		ttk::style map ClosablePage.Toolbutton -darkcolor $lst
+	    }
 	}
     }
     configStyles 
@@ -948,12 +969,6 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    }
 	}
 
-	select -
-	tabs {
-	    set code [catch {eval [list $nb $cmd] $argList} result]
-	    return -code $code $result
-	}
-
 	see {
 	    if {$argCount != 2} {
 		mwutil::wrongNumArgs "$win $cmd tabId"
@@ -969,6 +984,12 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    set tabPath [widgetToTab $win $widget]
 	    $data(sf) see $tabPath
 	    return ""
+	}
+
+	select -
+	tabs {
+	    set code [catch {eval [list $nb $cmd] $argList} result]
+	    return -code $code $result
 	}
 
 	state {
@@ -1054,6 +1075,14 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 
 	    set widget [lindex [$nb tabs] $tabIdx]
 	    return [widgetToTab $win $widget]
+	}
+
+	titlepath {
+	    if {$argCount != 1} {
+		mwutil::wrongNumArgs "$win $cmd"
+	    }
+
+	    return $win.frm.title
 	}
     }
 }
