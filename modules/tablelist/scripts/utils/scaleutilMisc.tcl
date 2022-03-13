@@ -20,7 +20,7 @@ namespace eval scaleutilmisc {
     #
     # Public variables:
     #
-    variable version	1.2
+    variable version	1.3
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -60,7 +60,7 @@ proc scaleutilmisc::scaleBWidgetSpinBox {w pct} {
     #
     # Scale the width of the two arrows, which is set to 11
     #
-    set arrWidth [scaleutil::scale 11 $pct]
+    set arrWidth [::scaleutil::scale 11 $pct]
     $w.arrup configure -width $arrWidth
     $w.arrdn configure -width $arrWidth
 }
@@ -76,7 +76,7 @@ proc scaleutilmisc::scaleBWidgetComboBox {w pct} {
     #
     variable onX11
     set defaultWidth [expr {$onX11 ? 11 : 15}]
-    set width [scaleutil::scale $defaultWidth $pct]
+    set width [::scaleutil::scale $defaultWidth $pct]
     $w.a configure -width $width
 
     #
@@ -119,9 +119,9 @@ proc scaleutilmisc::scaleIncrDateentry {w pct} {
 	    -datefont {Helvetica 9} -currentdatefont {Helvetica 9 bold}
     }
     set default [lindex [$w configure -height] 3]
-    $w configure -height [scaleutil::scale $default $pct]
+    $w configure -height [::scaleutil::scale $default $pct]
     set default [lindex [$w configure -width] 3]
-    $w configure -width [scaleutil::scale $default $pct]
+    $w configure -width [::scaleutil::scale $default $pct]
 }
 
 #------------------------------------------------------------------------------
@@ -135,9 +135,9 @@ proc scaleutilmisc::scaleIncrTimeentry {w pct} {
     #
     $w configure -icon [watchImg $pct]
     set default [lindex [$w configure -watchheight] 3]
-    $w configure -watchheight [scaleutil::scale $default $pct]
+    $w configure -watchheight [::scaleutil::scale $default $pct]
     set default [lindex [$w configure -watchwidth] 3]
-    $w configure -watchwidth [scaleutil::scale $default $pct]
+    $w configure -watchwidth [::scaleutil::scale $default $pct]
 }
 
 #------------------------------------------------------------------------------
@@ -152,10 +152,10 @@ proc scaleutilmisc::scaleIncrCombobox {w pct} {
     #
     scaleIncrComboboxArrows $pct
     set default [lindex [$w configure -listheight] 3]
-    $w configure -listheight [scaleutil::scale $default $pct]
+    $w configure -listheight [::scaleutil::scale $default $pct]
     set listComp [$w component list]
     set default [lindex [$listComp configure -sbwidth] 3]
-    $listComp configure -sbwidth [scaleutil::scale $default $pct]
+    $listComp configure -sbwidth [::scaleutil::scale $default $pct]
 }
 
 #------------------------------------------------------------------------------
@@ -312,7 +312,7 @@ proc scaleutilmisc::backwardImg {pct fg} {
 
 	switch $pct {
 	    100 {
-		set data " 
+		set data "
 #define backward_width 16
 #define backward_height 16
 static unsigned char backward_bits[] = {
@@ -364,7 +364,7 @@ static unsigned char backward_bits[] = {
 "
 	    }
 	    200 {
-		set data " 
+		set data "
 #define backward_width 32
 #define backward_height 32
 static unsigned char backward_bits[] = {
@@ -398,7 +398,7 @@ proc scaleutilmisc::forwardImg {pct fg} {
 
 	switch $pct {
 	    100 {
-		set data " 
+		set data "
 #define forward_width 16
 #define forward_height 16
 static unsigned char forward_bits[] = {
@@ -450,7 +450,7 @@ static unsigned char forward_bits[] = {
 "
 	    }
 	    200 {
-		set data " 
+		set data "
 #define forward_width 32
 #define forward_height 32
 static unsigned char forward_bits[] = {
