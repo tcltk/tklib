@@ -4,7 +4,7 @@
 # Demo:	mentry::dateMentry, mentry::timeMentry, mentry::putClockVal,
 #	mentry::getClockVal.
 #
-# Copyright (c) 1999-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require mentry
