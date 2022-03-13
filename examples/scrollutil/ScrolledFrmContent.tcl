@@ -100,7 +100,8 @@ set tbl [tablelist::tablelist $sa.tbl \
 	 -columns {0 "Release" left  0 "Changes" right  0 "Comment" left} \
 	 -height 16 -width 0 -showseparators yes -incrarrowtype down \
 	 -labelcommand tablelist::sortByColumn]
-if {$ttk::currentTheme ne "aqua"} {
+set currentTheme [ttk::style theme use]
+if {$currentTheme ne "aqua"} {
     $tbl configure -background white -stripebackground #f0f0f0
 }
 if {[$tbl cget -selectborderwidth] == 0} {
@@ -130,12 +131,9 @@ set l [ttk::label $cf.l$row -text \
 grid $l -row $row -column 0 -columnspan 3 -sticky w -padx 7p -pady {7p 0}
 incr row
 set sa [scrollutil::scrollarea $cf.sa$row -borderwidth 0]
-set font [ttk::style lookup Treeview -font]
-ttk::style configure Treeview -rowheight \
-    [expr {[font metrics $font -linespace] + 3}]
 set tv [ttk::treeview $sa.tv -columns {release changes comment} \
 	-show headings -height 16 -selectmode browse]
-if {$ttk::currentTheme eq "aqua" &&
+if {$currentTheme eq "aqua" &&
     [package vcompare $::tk_patchLevel "8.6.10"] >= 0} {
     $sa configure -borderwidth 1  ;# because in this case $tv has a flat relief
 }
@@ -227,7 +225,7 @@ $tbl header insert 0 \
      [list "All [$tbl size] releases" $totalChanges "Total number"]
 $tbl header rowconfigure 0 -foreground blue
 
-if {$ttk::currentTheme eq "aqua" &&
+if {$currentTheme eq "aqua" &&
     [package vcompare $tk_patchLevel "8.6.10"] >= 0} {
     if {[tk::unsupported::MacWindowStyle isdark .]} {
 	$tbl header rowconfigure 0 -foreground SkyBlue
@@ -268,7 +266,7 @@ pack $tf -side top -expand yes -fill both
 #
 # Set the scrolledframe's width, height, and yscrollincrement
 #
-after 50 [list configMainSf $sf $cf $lb]
+after 100 [list configMainSf $sf $cf $lb]
 
 #------------------------------------------------------------------------------
 

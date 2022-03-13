@@ -23,12 +23,13 @@ image create photo fileImg -file [file join $dir file$pct.gif]
 set f  [ttk::frame .f]
 set nb [scrollutil::plainnotebook $f.nb -closabletabs 1 \
 	-forgetcommand condCopySel -leavecommand condCopySel]
-set panePadding [expr {$ttk::currentTheme eq "aqua" ? 0 : "7p"}]
+set currentTheme [ttk::style theme use]
+set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 foreach fileName [lsort [glob *.tcl]] {
     set baseName [string range $fileName 0 end-4]
     set sa [scrollutil::scrollarea $nb.sa_$baseName -lockinterval 10]
-    if {$ttk::currentTheme eq "vista"} {
+    if {$currentTheme eq "vista"} {
 	$sa configure -relief solid
     }
     set txt [text $sa.txt -font TkFixedFont -height 30 -takefocus 1 -wrap none]

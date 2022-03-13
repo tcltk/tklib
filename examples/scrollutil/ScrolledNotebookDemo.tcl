@@ -25,12 +25,13 @@ image create photo fileImg -file [file join $dir file$pct.gif]
 set f  [ttk::frame .f]
 set nb [scrollutil::scrollednotebook $f.nb -style My.TNotebook \
 	-forgetcommand condCopySel -leavecommand condCopySel]
-set panePadding [expr {$ttk::currentTheme eq "aqua" ? 0 : "7p"}]
+set currentTheme [ttk::style theme use]
+set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 foreach fileName [lsort [glob *.tcl]] {
     set baseName [string range $fileName 0 end-4]
     set sa [scrollutil::scrollarea $nb.sa_$baseName -lockinterval 10]
-    if {$ttk::currentTheme eq "vista"} {
+    if {$currentTheme eq "vista"} {
 	$sa configure -relief solid
     }
     set txt [text $sa.txt -font TkFixedFont -takefocus 1 -wrap none]
@@ -99,11 +100,11 @@ pack $f  -expand yes -fill both
 # theme the -padding option of the TNotebook style is set to {18 8 18 17}
 # and the panes are drawn with a hard-coded internal padding of {9 5 9 9}.
 #
-after 50 [list configNb $nb $sa]
+after 150 [list configNb $nb $sa]
 
 proc configNb {nb sa} {
     set width [expr {[winfo reqwidth $sa] + [winfo reqwidth $sa.vsb]}]
-    incr width [expr {$ttk::currentTheme eq "aqua" ?
+    incr width [expr {$::currentTheme eq "aqua" ?
 		      2*27 : 2*[winfo pixels . 7p] + 4}]
     $nb configure -width $width
 }

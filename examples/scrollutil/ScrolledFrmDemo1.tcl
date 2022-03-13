@@ -19,7 +19,8 @@ source [file join $dir styleUtil.tcl]
 wm title . "European Capitals Quiz"
 
 set bg [ttk::style lookup TFrame -background]
-if {$ttk::currentTheme eq "aqua" &&
+set currentTheme [ttk::style theme use]
+if {$currentTheme eq "aqua" &&
     [package vcompare $tk_patchLevel "8.6.10"] < 0} {
     set bg #ececec				;# workaround for a tile bug
 }
@@ -70,7 +71,7 @@ foreach country $countryList capital $capitalList {
 
 set capitalList [lsort $capitalList]
 
-if {[lsearch -exact {aqua vista xpnative} $ttk::currentTheme] >= 0} {
+if {[lsearch -exact {aqua vista xpnative} $currentTheme] >= 0} {
     set topPadY 1.5p
 } else {
     set topPadY 4p

@@ -22,7 +22,8 @@ image create photo folderImg -file [file join $dir folder$pct.gif]
 # of the files of the specified suffix within the current working directory
 #
 proc populateNotebook {nb sfx} {
-    set panePadding [expr {$ttk::currentTheme eq "aqua" ? 0 : "7p"}]
+    set currentTheme [ttk::style theme use]
+    set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
     foreach fileName [lsort -dictionary [glob *.$sfx]] {
 	set baseName [string range $fileName 0 end-4]
 	set sa [scrollutil::scrollarea $nb.sa_$baseName]
@@ -37,7 +38,7 @@ proc populateNotebook {nb sfx} {
 	    $sa setwidget $canv
 	} else {
 	    $sa configure -lockinterval 10
-	    if {$ttk::currentTheme eq "vista"} {
+	    if {$currentTheme eq "vista"} {
 		$sa configure -relief solid
 	    }
 	    set txt [text $sa.txt -font TkFixedFont -height 30 -takefocus 1 \
