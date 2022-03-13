@@ -1,3 +1,36 @@
+2022-03-13  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.14.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/plainnotebook.tcl: Added the plainnotebook "titlepath"
+	  subcommand; several further improvements.
+
+	* scripts/scrollarea.tcl: Fixed a bug related to changing the value of
+	  "-xscrollbarmode" or "-yscrollbarmode" scrollarea option from "none"
+	  to "static" or "dynamic".
+
+	* scripts/scrollednotebook.tcl: Minor improvements.
+
+	* scripts/utils/scaleutil.tcl: Setting the default height of the
+	  ttk::treeview rows to a value based on the font's metrics; extensions
+	  related to the TSpinbox style; several further extensions and
+	  improvements.
+
+	* scripts/utils/clampatch.tcl: Added the clampatch package, whose
+	* scripts/utils/pkgIndex.tcl:  "clampatch::patchClamTheme" command
+	  makes the ttk::button widgets as well as the ttk::treeview and
+	  tablelist headers of the "clam" theme smaller and significantly
+	  improves the look and behavior of its ttk::checkbutton and
+	  ttk::radiobutton widgets.
+
+	* ../../examples/scrollutil/*.tcl: Replaced "$ttk::currentTheme" with
+	  "[ttk::style theme use]"; several further improvements.
+
 2022-01-10  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 1.13.
