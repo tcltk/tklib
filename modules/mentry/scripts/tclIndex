@@ -33,7 +33,6 @@ set auto_index(::mentry::getIPv6Addr) [list source [file join $dir mentryIPv6Add
 set auto_index(::mentry::checkIfIPv6AddrMentry) [list source [file join $dir mentryIPv6Addr.tcl]]
 set auto_index(::mentry::incrIPv6AddrComp) [list source [file join $dir mentryIPv6Addr.tcl]]
 set auto_index(::mentry::pasteIPv6Addr) [list source [file join $dir mentryIPv6Addr.tcl]]
-set auto_index(::mentry::getCurrentTheme) [list source [file join $dir mentryThemes.tcl]]
 set auto_index(::mentry::setThemeDefaults) [list source [file join $dir mentryThemes.tcl]]
 set auto_index(::mentry::awTheme) [list source [file join $dir mentryThemes.tcl]]
 set auto_index(::mentry::altTheme) [list source [file join $dir mentryThemes.tcl]]
