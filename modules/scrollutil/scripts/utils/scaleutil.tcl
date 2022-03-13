@@ -1,12 +1,12 @@
 #==============================================================================
-# Contains the main scaling-related utility procedure.
+# Contains scaling-related utility procedures.
 #
 # Structure of the module:
 #   - Namespace initialization
 #   - Public utility procedures
 #   - Private helper procedures
 #
-# Copyright (c) 2020-2021  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2020-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8
@@ -20,7 +20,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.7
+    variable version	1.8
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -47,8 +47,15 @@ package provide scaleutil $scaleutil::version
 # Returns the display's current scaling percentage (100, 125, 150, 175, or 200).
 #------------------------------------------------------------------------------
 proc scaleutil::scalingPercentage winSys {
+    variable scalingPct
+    if {[info exists scalingPct]} {
+	return $scalingPct
+    }
+
     set onX11 [expr {[string compare $winSys "x11"] == 0}]
     set usingSDL [expr {[info exists ::tk::sdltk] && $::tk::sdltk}]
+    set ttkSupported [llength [info commands ::ttk::style]]
+
     set pct [expr {[tk scaling] * 75}]
     set origPct $pct
 
@@ -106,18 +113,39 @@ proc scaleutil::scalingPercentage winSys {
     if {$pct < 100 + 12.5} {
 	set pct 100
     } elseif {$pct < 125 + 12.5} {
-	set pct 125 
+	set pct 125
     } elseif {$pct < 150 + 12.5} {
-	set pct 150 
+	set pct 150
     } elseif {$pct < 175 + 12.5} {
-	set pct 175 
+	set pct 175
     } elseif {$pct < 200 + 12.5} {
 	set pct 200
     } else {
 	set pct [expr {int($pct + 0.5)}]	;# temporarily (see return)
     }
 
+    if {$ttkSupported} {
+	set tagList [bindtags .]
+	if {[lsearch -exact $tagList "ScaleutilMain"] < 0} {
+	    bindtags . [linsert $tagList 1 ScaleutilMain]
+	    bind ScaleutilMain <<ThemeChanged>> scaleutil::setTreeviewRowHeight 
+	    bind ScaleutilMain <<TkWorldChanged>> {
+		if {"%d" eq "FontChanged"} {
+		    scaleutil::setTreeviewRowHeight 
+		}
+	    }
+	}
+    }
+
     if {$pct == 100} {
+	if {$ttkSupported} {
+	    #
+	    # Set the default height of the ttk::treeview rows
+	    #
+	    setTreeviewRowHeight 
+	}
+
+	set scalingPct 100
 	return 100
     }
 
@@ -155,7 +183,7 @@ proc scaleutil::scalingPercentage winSys {
 	#
 	# Conditionally correct and then scale the sizes of the standard fonts
 	#
-	if {$::tk_version >= 8.5 && !$usingSDL} {
+	if {$ttkSupported && !$usingSDL} {
 	    scaleX11Fonts $factor
 	}
 
@@ -169,7 +197,7 @@ proc scaleutil::scalingPercentage winSys {
 	}
     }
 
-    if {$::tk_version >= 8.5} {
+    if {$ttkSupported} {
 	#
 	# Scale the default ttk::scale and ttk::progressbar length
 	#
@@ -177,13 +205,9 @@ proc scaleutil::scalingPercentage winSys {
 	option add *TProgressbar.length	$pct widgetDefault
 
 	#
-	# Scale the default height of the ttk::treeview rows
+	# Set the default height of the ttk::treeview rows
 	#
-	if {[set font [ttk::style lookup Treeview -font]] eq ""} {
-	    set font TkDefaultFont
-	}
-	ttk::style configure Treeview \
-	    -rowheight [expr {[font metrics $font -linespace] + 3}]
+	setTreeviewRowHeight 
 
 	#
 	# Scale a few styles for the built-in themes
@@ -218,13 +242,15 @@ proc scaleutil::scalingPercentage winSys {
 	}
     }
 
-    return [expr {$pct > 200 ? 200 : $pct}]
+    set scalingPct [expr {$pct > 200 ? 200 : $pct}]
+    return $scalingPct
 }
 
 #------------------------------------------------------------------------------
 # scaleutil::scale
 #
-# Scales a positive integer according to a given scaling percentage.
+# Scales a nonnegative integer according to a given scaling percentage (which
+# is assumed to be a nonnegative integer itself).
 #------------------------------------------------------------------------------
 proc scaleutil::scale {num pct} {
     set factor [expr {$num * $pct}]
@@ -352,6 +378,21 @@ proc scaleutil::scaleX11Fonts factor {
 }
 
 #------------------------------------------------------------------------------
+# scaleutil::setTreeviewRowHeight
+#
+# Sets the default height of the ttk::treeview rows.
+#------------------------------------------------------------------------------
+proc scaleutil::setTreeviewRowHeight {} {
+    set font [ttk::style lookup Treeview -font]
+    if {[string length $font] == 0} {
+	set font TkDefaultFont
+    }
+
+    ttk::style configure Treeview -rowheight \
+	[expr {[font metrics $font -linespace] + 3}]
+}
+
+#------------------------------------------------------------------------------
 # scaleutil::scaleStyles_alt
 #
 # Scales a few styles for the "alt" theme.
@@ -369,7 +410,10 @@ proc scaleutil::scaleStyles_alt pct {
 	    -thickness [scale 15 $pct]
 
 	ttk::style configure TCombobox -arrowsize [scale 14 $pct]
-	ttk::style configure TSpinbox -arrowsize [scale 10 $pct]
+
+	set l [scale 2 $pct]; set r [scale 10 $pct]
+	ttk::style configure TSpinbox -arrowsize [scale 10 $pct] \
+	    -padding [list $l 0 $r 0]				;# {2 0 10 0}
 
 	ttk::style configure TButton -padding [scale 1 $pct]
 	ttk::style configure Toolbutton -padding [scale 2 $pct]
@@ -411,7 +455,10 @@ proc scaleutil::scaleStyles_clam pct {
 	    -arrowsize $scrlbarWidth
 
 	ttk::style configure TCombobox -arrowsize [scale 14 $pct]
-	ttk::style configure TSpinbox -arrowsize [scale 10 $pct]
+
+	set l [scale 2 $pct]; set r [scale 10 $pct]
+	ttk::style configure TSpinbox -arrowsize [scale 10 $pct] \
+	    -padding [list $l 0 $r 0]				;# {2 0 10 0}
 
 	ttk::style configure TButton -padding [scale 5 $pct]
 	ttk::style configure Toolbutton -padding [scale 2 $pct]
@@ -439,7 +486,7 @@ proc scaleutil::scaleStyles_clam pct {
 	ttk::style configure Heading -padding [scale 3 $pct]
 
 	ttk::style configure TLabelframe \
-	    -labelmargins [list 0 0 0 [scale 4 $pct]]
+	    -labelmargins [list 0 0 0 [scale 4 $pct]]		;# {0 0 0 4}
     }
 }
 
@@ -461,7 +508,10 @@ proc scaleutil::scaleStyles_classic pct {
 	    -thickness [scale 15 $pct]
 
 	ttk::style configure TCombobox -arrowsize [scale 15 $pct]
-	ttk::style configure TSpinbox -arrowsize [scale 10 $pct]
+
+	set l [scale 2 $pct]; set r [scale 10 $pct]
+	ttk::style configure TSpinbox -arrowsize [scale 10 $pct] \
+	    -padding [list $l 0 $r 0]				;# {2 0 10 0}
 
 	ttk::style configure TButton -padding {3m 1m}
 	ttk::style configure Toolbutton -padding [scale 2 $pct]
@@ -502,7 +552,10 @@ proc scaleutil::scaleStyles_default pct {
 	    -thickness [scale 15 $pct]
 
 	ttk::style configure TCombobox -arrowsize [scale 12 $pct]
-	ttk::style configure TSpinbox -arrowsize [scale 10 $pct]
+
+	set l [scale 2 $pct]; set r [scale 10 $pct]
+	ttk::style configure TSpinbox -arrowsize [scale 10 $pct] \
+	    -padding [list $l 0 $r 0]				;# {2 0 10 0}
 
 	ttk::style configure TButton -padding [scale 3 $pct]
 	ttk::style configure Toolbutton -padding [scale 2 $pct]
@@ -530,6 +583,26 @@ proc scaleutil::scaleStyles_default pct {
 #------------------------------------------------------------------------------
 proc scaleutil::scaleWinStyles {theme pct} {
     ttk::style theme settings $theme {
+	switch $theme {
+	    xpnative {
+		set l [scale 2 $pct]; set t $l; set r $l; set b [scale 4 $pct]
+		set padding [list $l $t $r $b]			;# {2 2 2 4}
+	    }
+	    vista { set padding [scale 1 $pct] }
+	}
+	ttk::style configure TEntry -padding $padding
+
+	ttk::style configure TCombobox -padding [scale 2 $pct]
+
+	switch $theme {
+	    xpnative {
+		set l [scale 2 $pct]; set r [scale 14 $pct]
+		set padding [list $l 0 $r 0]			;# {2 0 14 0}
+	    }
+	    vista { set padding 0 }
+	}
+	ttk::style configure TSpinbox -padding $padding
+
 	ttk::style configure TButton -padding [scale 1 $pct]
 	ttk::style configure Toolbutton -padding [scale 4 $pct]
 
@@ -541,9 +614,9 @@ proc scaleutil::scaleWinStyles {theme pct} {
 	}
 
 	set m [scale 2 $pct]
-	set margins [list $m $m $m 0]
+	set margins [list $m $m $m 0]				;# {2 2 2 0}
 	ttk::style configure TNotebook -tabmargins $margins
-	set margins [list $m $m $m $m]
+	set margins [list $m $m $m $m]				;# {2 2 2 2}
 	ttk::style map TNotebook.Tab -expand [list selected $margins]
     }
 }
@@ -557,11 +630,10 @@ proc scaleutil::scaleWinStyles {theme pct} {
 proc scaleutil::patchWinTheme {theme pct} {
     ttk::style theme settings $theme {
 	#
-	# Create the Checkbutton.vsapi_indicator and
-	# Radiobutton.vsapi_indicator elements.  Due to the
-	# way the vsapi element factory is implemented, we
-	# have to set the -height and -width options to half
-	# of the desired element height and width, respectively.
+	# Create the Checkbutton.vsapi_ind and Radiobutton.vsapi_ind
+	# elements.  Due to the way the vsapi element factory is
+	# implemented, we have to set the -height and -width options
+	# to half of the desired element height and width, respectively.
 	#
 	array set arr {125 8  150 10  175 10  200 13}
 	if {$pct > 200} {
@@ -569,36 +641,42 @@ proc scaleutil::patchWinTheme {theme pct} {
 	    if {$pct < 225 + 13} {
 		set pct 225
 	    } elseif {$pct < 250 + 25} {
-		set pct 250 
+		set pct 250
 	    } elseif {$pct < 300 + 25} {
-		set pct 300 
+		set pct 300
 	    } else {
-		set pct 350 
+		set pct 350
 	    }
 	}
 	set height $arr($pct)
 	set pad [scale 2 $pct]
 	set width [expr {$height + 2*$pad}]
-	ttk::style element create Checkbutton.vsapi_indicator vsapi BUTTON 3 {
-	    {alternate disabled} 12  {alternate pressed} 11
-	    {alternate active} 10  alternate 9
-	    {selected disabled} 8  {selected pressed} 7
-	    {selected active} 6  selected 5
-	    disabled 4  pressed 3  active 2  {} 1
-	} -height $height -width $width
-	ttk::style element create Radiobutton.vsapi_indicator vsapi BUTTON 2 {
-	    {alternate disabled} 4  alternate 1
-	    {selected disabled} 8  {selected pressed} 7
-	    {selected active} 6  selected 5
-	    disabled 4  pressed 3  active 2  {} 1
-	} -height $height -width $width
+	if {[lsearch -exact [ttk::style element names] \
+	     "Checkbutton.vsapi_ind"]  < 0} {
+	    ttk::style element create Checkbutton.vsapi_ind vsapi BUTTON 3 {
+		{alternate disabled} 12  {alternate pressed} 11
+		{alternate active} 10  alternate 9
+		{selected disabled} 8  {selected pressed} 7
+		{selected active} 6  selected 5
+		disabled 4  pressed 3  active 2  {} 1
+	    } -height $height -width $width
+	}
+	if {[lsearch -exact [ttk::style element names] \
+	     "Radiobutton.vsapi_ind"]  < 0} {
+	    ttk::style element create Radiobutton.vsapi_ind vsapi BUTTON 2 {
+		{alternate disabled} 4  alternate 1
+		{selected disabled} 8  {selected pressed} 7
+		{selected active} 6  selected 5
+		disabled 4  pressed 3  active 2  {} 1
+	    } -height $height -width $width
+	}
 
 	#
 	# Redefine the TCheckbutton and TRadiobutton layouts
 	#
 	ttk::style layout TCheckbutton {
 	    Checkbutton.padding -sticky nswe -children {
-		Checkbutton.vsapi_indicator -side left -sticky ""
+		Checkbutton.vsapi_ind -side left -sticky ""
 		Checkbutton.focus -side left -sticky w -children {
 		    Checkbutton.label -sticky nswe
 		}
@@ -606,7 +684,7 @@ proc scaleutil::patchWinTheme {theme pct} {
 	}
 	ttk::style layout TRadiobutton {
 	    Radiobutton.padding -sticky nswe -children {
-		Radiobutton.vsapi_indicator -side left -sticky ""
+		Radiobutton.vsapi_ind -side left -sticky ""
 		Radiobutton.focus -side left -sticky w -children {
 		    Radiobutton.label -sticky nswe
 		}
