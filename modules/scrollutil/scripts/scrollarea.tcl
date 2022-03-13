@@ -443,11 +443,22 @@ proc scrollutil::sa::doConfig {win opt val} {
 		    variable scrollbarModes
 		    set val \
 			[mwutil::fullOpt "scrollbar mode" $val $scrollbarModes]
-		    if {[string compare $val "none"] != 0 &&
-			[winfo exists $data(widget)]} {
-			if {![mwutil::isScrollable $data(widget) x]} {
-			    return -code error "widget $data(widget) fails to\
-				support horizontal scrolling"
+		    if {[winfo exists $data(widget)]} {
+			if {[string compare $val "none"] == 0} {
+			    ::$data(widget) configure -xscrollcommand ""
+			    $win.hsb configure -command ""
+			} else {
+			    if {![mwutil::isScrollable $data(widget) x]} {
+				return -code error "widget $data(widget) fails\
+				    to support horizontal scrolling"
+			    }
+
+			    if {[string compare $val $data($opt)] != 0} {
+				::$data(widget) configure -xscrollcommand \
+				    [list scrollutil::sa::setHScrollbar $win]
+				$win.hsb configure -command \
+				    [list $data(widget) xview]
+			    }
 			}
 		    }
 		    set data($opt) $val
@@ -475,11 +486,22 @@ proc scrollutil::sa::doConfig {win opt val} {
 		    variable scrollbarModes
 		    set val \
 			[mwutil::fullOpt "scrollbar mode" $val $scrollbarModes]
-		    if {[string compare $val "none"] != 0 &&
-			[winfo exists $data(widget)]} {
-			if {![mwutil::isScrollable $data(widget) y]} {
-			    return -code error "widget $data(widget) fails to\
-				support vertical scrolling"
+		    if {[winfo exists $data(widget)]} {
+			if {[string compare $val "none"] == 0} {
+			    ::$data(widget) configure -yscrollcommand ""
+			    $win.vsb configure -command ""
+			} else {
+			    if {![mwutil::isScrollable $data(widget) y]} {
+				return -code error "widget $data(widget) fails\
+				    to support vertical scrolling"
+			    }
+
+			    if {[string compare $val $data($opt)] != 0} {
+				::$data(widget) configure -yscrollcommand \
+				    [list scrollutil::sa::setVScrollbar $win]
+				$win.vsb configure -command \
+				    [list $data(widget) yview]
+			    }
 			}
 		    }
 		    set data($opt) $val
