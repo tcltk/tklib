@@ -1,3 +1,9 @@
+2022-03-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                     Using "$ttk::currentTheme" as
+	* doc/scrollutil.html:             fallback if "[ttk::style theme use]"
+	* ../../examples/scrollutil/*.tcl: is not supported (for Tk 8.4).
+
 2022-03-13  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 1.14.
