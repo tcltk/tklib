@@ -24,7 +24,7 @@ image create photo fileImg -file [file join $dir file$pct.gif]
 #
 set f  [ttk::frame .f]
 set nb [ttk::notebook $f.nb -style My.TNotebook]
-set currentTheme [ttk::style theme use]
+set currentTheme [getCurrentTheme]
 set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 foreach fileName [lsort [glob *.tcl]] {

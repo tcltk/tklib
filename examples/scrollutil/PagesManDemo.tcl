@@ -22,13 +22,13 @@ image create photo folderImg -file [file join $dir folder$pct.gif]
 # of the files of the specified suffix within the current working directory
 #
 proc populateNotebook {nb sfx} {
-    set currentTheme [ttk::style theme use]
+    set currentTheme [getCurrentTheme]
     set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
     foreach fileName [lsort -dictionary [glob *.$sfx]] {
 	set baseName [string range $fileName 0 end-4]
 	set sa [scrollutil::scrollarea $nb.sa_$baseName]
 	if {$sfx eq "gif"} {
-	    set canv [canvas $sa.canv -background silver]
+	    set canv [canvas $sa.canv -background #c0c0c0]
 	    set img [image create photo -file $fileName]
 	    $canv create image 10 10 -anchor nw -image $img
 	    set width  [expr {[image width  $img] + 20}]

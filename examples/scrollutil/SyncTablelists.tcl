@@ -38,7 +38,7 @@ $sa setwidget $ss
 # Populate the scrollsync widget with three tablelists
 #
 
-if {[ttk::style theme use] ne "aqua"} {
+if {[getCurrentTheme] ne "aqua"} {
     option add *Tablelist.background		white
     option add *Tablelist.stripeBackground	#f0f0f0
 }

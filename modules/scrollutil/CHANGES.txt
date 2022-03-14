@@ -23,9 +23,9 @@ What is new in Scrollutil 1.14?
    contribution).
 
 5. Several improvements in the demo scripts.  For example, they now
-   retrieve the current theme via "[ttk::style theme use]" rather than
-   relying on the value of the variable "ttk::currentTheme" (which is
-   set by the procedure "ttk::setTheme" only).
+   retrieve the current theme via "[ttk::style theme use]" when possible
+   rather than relying on the value of the variable "ttk::currentTheme"
+   (which is set by the procedure "ttk::setTheme" only).
 
 6. Improvements in the code and documentation, especially in Scrollutil
    Programmer's Guide and the description of the plainnotebook widget

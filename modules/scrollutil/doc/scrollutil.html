@@ -1048,7 +1048,7 @@ $sa setwidget $ss</span>
 # Populate the scrollsync widget with three tablelists
 #</span>
 
-if {[ttk::style theme use] ne "aqua"} {
+if {[getCurrentTheme] ne "aqua"} {
     option add *Tablelist.background            white
     option add *Tablelist.stripeBackground      #f0f0f0
 }
@@ -1822,7 +1822,7 @@ image create photo fileImg -file [file join $dir file$pct.gif]
 set f  [ttk::frame .f]
 <span class="red">set nb [scrollutil::scrollednotebook $f.nb -style My.TNotebook \
         -forgetcommand condCopySel -leavecommand condCopySel]</span>
-set currentTheme [ttk::style theme use]
+set currentTheme [getCurrentTheme]
 set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 foreach fileName [lsort [glob *.tcl]] {
@@ -2056,13 +2056,13 @@ image create photo folderImg -file [file join $dir folder$pct.gif]
 # of the files of the specified suffix within the current working directory
 #</span>
 proc populateNotebook {nb sfx} {
-    set currentTheme [ttk::style theme use]
+    set currentTheme [getCurrentTheme]
     set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
     foreach fileName [lsort -dictionary [glob *.$sfx]] {
         set baseName [string range $fileName 0 end-4]
         <span class="red">set sa [scrollutil::scrollarea $nb.sa_$baseName]</span>
         if {$sfx eq "gif"} {
-            set canv [canvas $sa.canv -background silver]
+            set canv [canvas $sa.canv -background #c0c0c0]
             set img [image create photo -file $fileName]
             $canv create image 10 10 -anchor nw -image $img
             set width  [expr {[image width  $img] + 20}]

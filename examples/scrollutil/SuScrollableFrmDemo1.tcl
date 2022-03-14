@@ -55,7 +55,7 @@ foreach country $countryList capital $capitalList {
 
 set capitalList [lsort $capitalList]
 
-if {[lsearch -exact {aqua vista xpnative} [ttk::style theme use]] >= 0} {
+if {[lsearch -exact {aqua vista xpnative} [getCurrentTheme]] >= 0} {
     set topPadY 1.5p
 } else {
     set topPadY 4p

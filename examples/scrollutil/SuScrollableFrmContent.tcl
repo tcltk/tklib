@@ -100,7 +100,7 @@ set tbl [tablelist::tablelist $_sa.tbl \
 	 -columns {0 "Release" left  0 "Changes" right  0 "Comment" left} \
 	 -height 16 -width 0 -showseparators yes -incrarrowtype down \
 	 -labelcommand tablelist::sortByColumn]
-set currentTheme [ttk::style theme use]
+set currentTheme [getCurrentTheme]
 if {$currentTheme ne "aqua"} {
     $tbl configure -background white -stripebackground #f0f0f0
 }

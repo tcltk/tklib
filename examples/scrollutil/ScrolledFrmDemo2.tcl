@@ -23,7 +23,7 @@ source [file join $dir styleUtil.tcl]
 wm title . "Scrollutil Demo"
 
 set bg [ttk::style lookup TFrame -background]
-if {[ttk::style theme use] eq "aqua" &&
+if {[getCurrentTheme] eq "aqua" &&
     [package vcompare $tk_patchLevel "8.6.10"] < 0} {
     set bg #ececec				;# workaround for a tile bug
 }

@@ -77,12 +77,23 @@ if {[tk windowingsystem] eq "x11"} {
 }
 
 #
+# Returns the current tile theme.
+#
+proc getCurrentTheme {} {
+    if {[catch {ttk::style theme use} result] == 0} {
+	return $result
+    } else {
+	return $::ttk::currentTheme
+    }
+}
+
+#
 # Creates a toolbutton widget which appears raised when it has the focus.
 #
 proc createToolbutton {w args} {
     eval ttk::button $w -style Small.Toolbutton $args
 
-    if {[lsearch -exact {vista xpnative} [ttk::style theme use]] >= 0} {
+    if {[lsearch -exact {vista xpnative} [getCurrentTheme]] >= 0} {
 	bindtags $w [linsert [bindtags $w] 1 Toolbtn]
     }
 
