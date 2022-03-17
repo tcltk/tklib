@@ -313,9 +313,9 @@ package require scrollutil_tile
         currently selected window by selecting a different one.&nbsp; If the
         option's value is a nonempty string then it is concatenated with the
         path name of the scrollednotebook widget and that of the currently
-	selected window, and the resulting script, which must return a boolean,
-	is evaluated in the global scope.&nbsp; If the return value of this
-	script is false then the operation of selecting a different window is
+        selected window, and the resulting script, which must return a boolean,
+        is evaluated in the global scope.&nbsp; If the return value of this
+        script is false then the operation of selecting a different window is
         aborted.&nbsp; The default is an empty string.</p>
       </blockquote>
     </dd>
@@ -539,8 +539,9 @@ proc populateMenu {nb data} {
     </dd>
 
     <dd>See the next section for the description of the virtual events
-    <code><b>&lt;&lt;NotebookTabMoved&gt;&gt;</b></code> and
-    <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code>.</dd>
+    <code><b>&lt;&lt;NotebookTabMoved&gt;&gt;</b></code>,
+    <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code>, and
+    <code><b>&lt;&lt;CloseTabRequested&gt;&gt;</b></code>.</dd>
 
     <dt class="tm" id="bindings"><b>FURTHER BINDINGS</b></dt>
 
@@ -591,21 +592,72 @@ proc populateMenu {nb data} {
         for the duration of the drag, the cursor is set to one having the shape
         of an up/down arrow.</li>
 
-        <li class="tm"><b>Closing a tab of a ttk::notebook or scrollednotebook
-        widget with the aid of the <code>closetab</code> element</b>:&nbsp; If
-        mouse button 1 is pressed over the <code><b>closetab</b></code> element
-        (if any) of a tab and later released over the same element then,
-        provided that both the value of the tab's <code><b>-state</b></code>
-        option and the state of its <code><b>closetab</b></code> element is
+        <li class="tm"><b>Closing a tab of a scrollednotebook widget with the
+        aid of the <code>closetab</code> element</b>:&nbsp; If mouse button 1
+        is pressed over the <code><b>closetab</b></code> element (if any) of a
+        tab and later released over the same element then, provided that both
+        the value of the tab's <code><b>-state</b></code> option and the state
+        of its <code><b>closetab</b></code> element is
         <code><b>normal</b></code>, the tab is closed by means of the widget's
-        <code><b>forget</b></code> subcommand.&nbsp; If this operation was not
-        aborted by the command specified as the value of the <code><b><a href=
-        "#forgetcommand">-forgetcommand</a></b></code> option and the Tk
-        version is 8.5a2 or later then, after closing the tab, the widget
-        generates a <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code>
-        virtual event, by invoking&nbsp; <code><b>event
-        generate</b></code>&nbsp; with the <code><b>-data</b></code> option set
-        to the path name of the widget contained in that tab's pane.</li>
+        <code><b>forget</b></code> subcommand.&nbsp; Recall that this operation
+        can get canceled by the command specified as the value of the
+        <code><b><a href="#forgetcommand">-forgetcommand</a></b></code> option;
+        if this was not the case and the Tk version is 8.5a2 or later then,
+        after closing the tab, the widget generates a
+        <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code> virtual event, by
+        invoking&nbsp; <code><b>event generate</b></code>&nbsp; with the
+        <code><b>-data</b></code> option set to the path name of the widget
+        contained in that tab's pane.</li>
+
+        <li class="tm">
+          <b>Closing a tab of a ttk::notebook widget with the aid of the
+          <code>closetab</code> element</b>:&nbsp; If mouse button 1 is pressed
+          over the <code><b>closetab</b></code> element (if any) of a tab and
+          later released over the same element then, provided that both the
+          value of the tab's <code><b>-state</b></code> option and the state of
+          its <code><b>closetab</b></code> element is
+          <code><b>normal</b></code>, an action depending on the Tk version is
+          taken:
+
+          <ul>
+            <li class="tm">
+              If the Tk version is 8.5a2 or later then the tab is not (yet)
+              closed.&nbsp; Instead, the widget generates a
+              <code><b>&lt;&lt;CloseTabRequested&gt;&gt;</b></code> virtual
+              event, by invoking&nbsp; <code><b>event generate</b></code>&nbsp;
+              with the <code><b>-data</b></code> option set to the numerical
+              index of the tab in question.&nbsp; It is the responsibility of
+              the application to create a binding for this virtual event and to
+              close the tab from within the binding script by invoking the
+              widget's <code><b>forget</b></code> subcommand if appropriate,
+              like in the following example:
+
+              <blockquote>
+                <pre>
+bind $nb <span class="red">&lt;&lt;CloseTabRequested&gt;&gt;</span> { closeTab %W %d }
+
+proc closeTab {nb tabIdx} {
+    set btn [tk_messageBox -title "Close Tab?" -icon question \
+             -message "Do you really want to close the tab?" -type yesno
+    if {$btn eq "yes"} {
+        <span class="red">$nb forget $tabIdx</span>
+
+        <span class="cmt"># Optionally:</span>
+        set widget [lindex [$nb tabs] $tabIdx]
+        event generate $nb <span class="red">&lt;&lt;NotebookTabClosed&gt;&gt;</span> -data $widget
+    }
+}
+</pre>
+              </blockquote>
+            </li>
+
+            <li class="tm">If the Tk version is earlier than 8.5a2 then the tab
+            is closed immediately by means of the widget's
+            <code><b>forget</b></code> subcommand.&nbsp; (Recall that the
+            <code><b>-data</b></code> option for virtual events was introduced
+            in Tk 8.5a2.)</li>
+          </ul>
+        </li>
       </ol>
     </dd>
 

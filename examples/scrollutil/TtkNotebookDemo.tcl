@@ -52,6 +52,7 @@ foreach fileName [lsort [glob *.tcl]] {
 # Create a binding for moving and closing the tabs interactively
 #
 bind $nb <<MenuItemsRequested>> { populateMenu %W %d }
+bind $nb <<CloseTabRequested>>  { closeTab %W %d }
 
 proc populateMenu {nb data} {
     foreach {menu tabIdx} $data {}
@@ -66,7 +67,25 @@ proc populateMenu {nb data} {
 	[list $nb insert $nextIdx $widget]
     $menu add separator
     $menu add command -label "Close Tab" -command \
-	[list $nb forget $tabIdx]
+	[list closeTab $nb $tabIdx]
+}
+
+proc closeTab {nb tabIdx} {
+    set widget [lindex [$nb tabs] $tabIdx]
+    set txt $widget.txt
+    if {[$txt tag nextrange sel 1.0 end] eq ""} {
+	$nb forget $tabIdx
+	return ""
+    }
+
+    set btn [tk_messageBox -title "Copy Selection?" -icon question \
+	     -message "Do you want to copy the selection to the clipboard?" \
+	     -type yesnocancel]
+    switch $btn {
+	yes	{ tk_textCopy $txt; $nb forget $tabIdx }
+	no	{ $nb forget $tabIdx }
+	cancel	{}
+    }
 }
 
 #

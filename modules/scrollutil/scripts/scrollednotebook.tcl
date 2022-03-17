@@ -1107,8 +1107,13 @@ proc scrollutil::snb::onButtonRel1 {nb x y} {
 	[set tabIdx [$nb index @$x,$y]] == $stateArr(closeIdx)} {
 	set widget [lindex [$nb tabs] $tabIdx]
 	if {$snb eq ""} {
-	    $nb forget $tabIdx
-	    set closed 1
+	    if {$userDataSupported} {
+		event generate $w <<CloseTabRequested>> -data $tabIdx
+		set closed 0
+	    } else {
+		$nb forget $tabIdx
+		set closed 1
+	    }
 	} else {
 	    set closed [::$snb forget $tabIdx]
 	}
