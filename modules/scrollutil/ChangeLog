@@ -1,3 +1,16 @@
+2022-03-17  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/scrollednotebook.tcl:                  Changed the handling
+	* doc/scrollednotebook.html:                     of mouse events for
+	* ../../examples/scrollutil/TtkNotebookDemo.tcl: the "closetab" element
+	  of a ttk:notebook tab.
+
+	* scripts/plainnotebook.tcl: Using own styles for the title label as
+	* doc/plainnotebook.html:    as well as the tabs created with the
+	  "addlabel" and "insertlabel" plainnotebook subcommands.
+
 2022-03-14  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:                     Using "$ttk::currentTheme" as
