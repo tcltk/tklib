@@ -191,6 +191,25 @@ namespace eval scrollutil::pnb {
     createClosablePageToolbuttonLayout 
 
     #
+    # Create a font for titles and labels
+    #
+    proc createTitleFont {} {
+	set size [font actual TkDefaultFont -size]
+	if {$size == 0} {
+	    set size 9
+	}
+	set factor [expr {$size * 6}]
+	set size [expr {$factor / 5}]
+	if {$factor % 5 > 2} {
+	    incr size
+	}
+
+	variable titleFont \
+	    [eval font create [font actual TkDefaultFont] -size $size]
+    }
+    createTitleFont 
+
+    #
     # Configure some styles
     #
     proc configStyles {} {
@@ -236,27 +255,17 @@ namespace eval scrollutil::pnb {
 		ttk::style map ClosablePage.Toolbutton -darkcolor $lst
 	    }
 	}
+
+	#
+	# Configure the PnbTitle.TLabel and PnbLabel.TLabel styles
+	#
+	variable titleFont
+	ttk::style configure PnbTitle.TLabel -font $titleFont
+	ttk::style configure PnbLabel.TLabel -font $titleFont
     }
     configStyles 
 
-    #
-    # Create a font for titles
-    #
-    proc createTitleFont {} {
-	set size [font actual TkDefaultFont -size]
-	if {$size == 0} {
-	    set size 9
-	}
-	set factor [expr {$size * 6}]
-	set size [expr {$factor / 5}]
-	if {$factor % 5 > 2} {
-	    incr size
-	}
-
-	variable titleFont \
-	    [eval font create [font actual TkDefaultFont] -size $size]
-    }
-    createTitleFont 
+    variable currentTheme [::mwutil::currentTheme]
 }
 
 #
@@ -395,7 +404,7 @@ proc scrollutil::plainnotebook args {
     }
     set ascend [ttk::button $frm.ascend -style Toolbutton \
 		-image scrollutil_ascendImg]
-    set title [ttk::label $frm.title -font $pnb::titleFont]
+    set title [ttk::label $frm.title -style PnbTitle.TLabel]
     set sep [ttk::separator $frm.sep]
 
     #
@@ -695,8 +704,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    $nb add [ttk::frame $nb.$name] -compound left -text $text \
 		-image $img -state disabled
 
-	    variable titleFont
-	    set aux [ttk::label $data(cf).$name -font $titleFont \
+	    set aux [ttk::label $data(cf).$name -style PnbLabel.TLabel \
 		     -takefocus 0 -compound left -text $text -image $img \
 		     -padding 3p]
 	    grid $aux -sticky we
@@ -921,8 +929,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    $nb insert $pos [ttk::frame $nb.$name] -compound left -text $text \
 		-image $img -state disabled
 
-	    variable titleFont
-	    set aux [ttk::label $data(cf).$name -font $titleFont \
+	    set aux [ttk::label $data(cf).$name -style PnbLabel.TLabel \
 		     -takefocus 0 -compound left -text $text -image $img \
 		     -padding 3p]
 	    incr data(auxCount)
@@ -1304,9 +1311,15 @@ proc scrollutil::pnb::onThemeChanged w {
 	    scrollutil_ascendImg      configure -foreground $normalFg
 	}
 
-	createDescToolbuttonLayout 
-	createClosablePageToolbuttonLayout
-	configStyles 
+	variable currentTheme
+	set newTheme [::mwutil::currentTheme]
+	if {$newTheme ne $currentTheme} {
+	    set currentTheme $newTheme
+
+	    createDescToolbuttonLayout 
+	    createClosablePageToolbuttonLayout
+	    configStyles 
+	}
     } else {
 	configFrame $w.frm
 	after 100 [list scrollutil::pnb::setYScrollIncr $w]

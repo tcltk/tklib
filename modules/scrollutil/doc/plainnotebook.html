@@ -550,9 +550,11 @@ package require scrollutil_tile
 
       <blockquote>
         <p>Specifies the text to be displayed in the plainnotebook's title
-        label.&nbsp; The font used for this ttk::label widget is derived from
-        <code><b>TkDefaultFont</b></code> by increasing the latter's size by a
-        factor of 1.2.&nbsp; To set a different font, retrieve the path name
+        label, which is a ttk::label widget of the style
+        <code>PnbTitle.TLabel</code>.&nbsp; The font used for this tyle is
+        derived from <code><b>TkDefaultFont</b></code> by increasing the
+        latter's size by a factor of 1.2.&nbsp; To set a different font, use
+        the <code><b>ttk::style</b></code> command or retrieve the path name
         of this widget with the <code><b><a href=
         "#titlepath">titlepath</a></b></code> subcommand and then invoke&nbsp;
         <code>... <b>configure -font</b> ...</code>.</p>
@@ -678,15 +680,16 @@ package require scrollutil_tile
         <dt class="tm" id="addlabel"><code><i>pathName</i> <b>addlabel</b>
         <i>text</i> ?<i>image</i>?</code></dt>
 
-        <dd>Adds a new tab implemented as a ttk::label widget that displays the
-        specified <code><i>text</i></code> and optional
-        <code><i>image</i></code>, and is typically used as a title of a group
-        of tabs.&nbsp; The font used for the ttk::label is derived from
-        <code><b>TkDefaultFont</b></code> by increasing the latter's size by a
-        factor of 1.2.&nbsp; The return value is the path name of the
-        above-mentioned ttk::label widget; you can use it, e.g., if you want to
-        change the latter's font via&nbsp; <code>... <b>configure -font</b>
-        ...</code>.</dd>
+        <dd>Adds a new tab implemented as a ttk::label widget of the style
+        <code>PnbLabel.TLabel</code> that displays the specified
+        <code><i>text</i></code> and optional <code><i>image</i></code>, and is
+        typically used as a title of a group of tabs.&nbsp; The font used for
+        this style is derived from <code><b>TkDefaultFont</b></code> by
+        increasing the latter's size by a factor of 1.2 and can be changed with
+        the <code><b>ttk::style</b></code> command.&nbsp; The return value
+        is the path name of the above-mentioned ttk::label widget; you can use
+        it, e.g., to override the style's font for this particular label
+        via&nbsp; <code>... <b>configure -font</b> ...</code>.</dd>
 
         <dt class="tm" id="addseparator"><code><i>pathName</i>
         <b>addseparator</b></code></dt>
@@ -780,11 +783,12 @@ package require scrollutil_tile
         <dt class="tm" id="insertlabel"><code><i>pathName</i>
         <b>insertlabel</b> <i>pos</i> <i>text</i> ?<i>image</i>?</code></dt>
 
-        <dd>Inserts a new tab implemented as a ttk::label widget that displays
-        the specified <code><i>text</i></code> and optional
-        <code><i>image</i></code>, at the specified position.&nbsp; The details
-        are quite similar to the ones regarding the <code><b><a href=
-        "#addlabel">addlabel</a></b></code> subcommand.</dd>
+        <dd>Inserts a new tab implemented as a ttk::label widget of the style
+        <code>PnbLabel.TLabel</code> that displays the specified
+        <code><i>text</i></code> and optional <code><i>image</i></code>, at the
+        specified position.&nbsp; The details are quite similar to the ones
+        regarding the <code><b><a href="#addlabel">addlabel</a></b></code>
+        subcommand.</dd>
 
         <dt class="tm" id="insertseparator"><code><i>pathName</i>
         <b>insertseparator</b> <i>pos</i></code></dt>
@@ -846,9 +850,7 @@ package require scrollutil_tile
         <b>titlepath</b></code></dt>
 
         <dd>Returns the path name of the plainnotebook's title label, which is
-        a ttk::label widget.&nbsp; You can use this subcommand, e.g., if you
-        want to change the latter's font via&nbsp; <code>... <b>configure
-        -font</b> ...</code>.</dd>
+        a ttk::label widget of the style <code>PnbTitle.TLabel</code>.</dd>
       </dl>
     </dd>
 
@@ -938,14 +940,15 @@ proc populateMenu {nb data} {
         and later released over the same element then, provided that the value
         of the tab's <code><b>-state</b></code> option is
         <code><b>normal</b></code>, the tab is closed by means of the widget's
-        <code><b>forget</b></code> subcommand.&nbsp; If this operation was not
-        aborted by the command specified as the value of the <code><b><a href=
-        "#forgetcommand">-forgetcommand</a></b></code> option and the Tk
-        version is 8.5a2 or later then, after closing the tab, the widget
-        generates a <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code>
-        virtual event, by invoking&nbsp; <code><b>event
-        generate</b></code>&nbsp; with the <code><b>-data</b></code> option set
-        to the path name of the widget contained in that tab's pane.</li>
+        <code><b>forget</b></code> subcommand.&nbsp; Recall that this operation
+        can get canceled by the command specified as the value of the
+        <code><b><a href="#forgetcommand">-forgetcommand</a></b></code> option;
+        if this was not the case and the Tk version is 8.5a2 or later then,
+        after closing the tab, the widget generates a
+        <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code> virtual event, by
+        invoking&nbsp; <code><b>event generate</b></code>&nbsp; with the
+        <code><b>-data</b></code> option set to the path name of the widget
+        contained in that tab's pane.</li>
       </ol>
     </dd>
 
