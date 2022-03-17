@@ -6,10 +6,22 @@ What is new in Scrollutil 1.14?
    metrics (see the section "More on scrollutil::scalingpct" in
    Scrollutil Programmer's Guide for details); several extensions.
 
-2. Added the plainnotebook "titlepath" subcommand, which returns the
-   path name of a plainnotebook widget's title label.
+2. Pressing and later releasing the left mouse button over the
+   "closetab" element of a ttk:notebook tab now generates a
+   <<CloseTabRequested>> virtual event, whose handling by closing the
+   tab via the notebook's "forget" subcommand if appropriate lies in
+   the responsibility of the application (thanks to Alexandru Dadalau
+   for his proposal) (POTENTIAL INCOMPATIBILITY!).
 
-3. The Scrollutil distribution now includes the new clampatch package,
+3. The title label as well as the tabs created with the "addlabel" and
+   "insertlabel" plainnotebook subcommands now have their own styles
+   "PnbTitle.TLabel" and "PnbLabel.TLabel" (thanks to Harald Oehlmann
+   for his proposal).
+
+4. Added the plainnotebook "titlepath" subcommand, which returns the
+   path name of the widget's title label.
+
+5. The Scrollutil distribution now includes the new clampatch package,
    whose "clampatch::patchClamTheme" command makes the ttk::button
    widgets as well as the ttk::treeview and tablelist headers of the
    "clam" theme smaller and significantly improves the look and behavior
@@ -17,17 +29,17 @@ What is new in Scrollutil 1.14?
    "styleUtil.tcl", which is source'd in all demo scripts, now invokes
    this procedure.
 
-4. Fixed a bug related to changing the value of the "-xscrollbarmode" or
+6. Fixed a bug related to changing the value of the "-xscrollbarmode" or
    "-yscrollbarmode" scrollarea option from "none" to "static" or
    "dynamic" (thanks to Bo Berggren for his bug report and valuable
    contribution).
 
-5. Several improvements in the demo scripts.  For example, they now
+7. Several improvements in the demo scripts.  For example, they now
    retrieve the current theme via "[ttk::style theme use]" when possible
    rather than relying on the value of the variable "ttk::currentTheme"
    (which is set by the procedure "ttk::setTheme" only).
 
-6. Improvements in the code and documentation, especially in Scrollutil
+8. Improvements in the code and documentation, especially in Scrollutil
    Programmer's Guide and the description of the plainnotebook widget
    (thanks to Harald Oehlmann for his feedback).
 
