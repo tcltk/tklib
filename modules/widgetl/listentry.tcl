@@ -617,7 +617,7 @@ snit::widget ::widget::listentry {
 
 	$win.e configure -values $values
 	$self vsave              $values
-	return	
+	return
     }
 
     # Low-level methods to talk to -values. They assume that their

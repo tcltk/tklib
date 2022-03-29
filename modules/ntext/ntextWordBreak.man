@@ -124,7 +124,7 @@ To define a different set of word-boundary detection rules:
 package require ntext
 text .t
 bindtags .t {.t Ntext . all}
-::ntext::createMatchPatterns \ 
+::ntext::createMatchPatterns \
   {[[:space:][:cntrl:]]} {[[:punct:]]} {[^[:punct:][:space:][:cntrl:]]}
 }]
 

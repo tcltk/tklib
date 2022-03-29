@@ -81,7 +81,7 @@ proc ::ico::iconMembers {file name args} {
     parseOpts type $args
     if {![file exists $file]} {
         return -code error "couldn't open \"$file\": no such file or directory"
-    } 
+    }
     gettype type $file
     if {![llength [info commands getIconMembers$type]]} {
 	return -code error "unsupported file format $type"
@@ -215,7 +215,7 @@ proc ::ico::getIconByName {file name args} {
 #
 # ARGS:
 #	file	File to get icon for.
-#	
+#
 #	optional arguments and return values are the same as getIcon
 #
 proc ::ico::getFileIcon {file args} {
@@ -331,7 +331,7 @@ proc ::ico::copyIcon {file1 name1 file2 name2 args} {
     parseOpts {fromtype totype} $args
     if {![file exists $file1]} {
         return -code error "couldn't open \"$file1\": no such file or directory"
-    } 
+    }
     if {![file exists $file2]} {
         return -code error "couldn't open \"$file2\": no such file or directory"
     }
@@ -426,7 +426,7 @@ proc ::ico::EXEtoICO {exeFile {icoDir {}}} {
 
     if {![file exists $exeFile]} {
         return -code error "couldn't open \"$exeFile\": no such file or directory"
-    } 
+    }
 
     set file [file normalize $exeFile]
     FindResources $file
@@ -1197,7 +1197,7 @@ proc ::ico::writeIconEXE {file name w h bpp palette xor and} {
     if {"$w $h $bpp" != $RES($file,icon,$name,data)} {
 	return -code error "icon format differs from original"
     }
-    
+
     set fh [open $file r+]
     fconfigure $fh -eofchar {} -encoding binary -translation lf
     seek $fh [expr {$RES($file,icon,$name,offset) + 40}] start

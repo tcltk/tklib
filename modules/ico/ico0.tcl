@@ -281,7 +281,7 @@ proc ::ico::EXEtoICO {exeFile icoFile} {
     set cnt  [SearchForIcos $file]
     set dir  {}
     set data {}
-    
+
     set fh [open $file]
     fconfigure $fh -eofchar {} -encoding binary -translation lf
 
@@ -987,7 +987,7 @@ proc ::ico::writeIconEXE {file index w h bpp palette xor and} {
     if {[list $w $h $bpp] != $ICONS($file,$index,data)} {
 	return -code error "icon format differs from original"
     }
-    
+
     set fh [open $file r+]
     fconfigure $fh -eofchar {} -encoding binary -translation lf
     seek $fh [expr {$ICONS($file,$index) + 40}] start
@@ -1028,7 +1028,7 @@ proc ::ico::SearchForIcosNE {fh file index} {
 
     seek $fh 36 current
     seek $fh [expr {[getword $fh] - 38}] current
-    
+
     set base [tell $fh]
     set shift [expr {int(pow(2, [getushort $fh]))}]
     while {[set type [expr {[getushort $fh] & 0x7fff}]] != 0} {

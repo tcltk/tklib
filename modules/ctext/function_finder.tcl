@@ -37,7 +37,7 @@ proc sglob {pattern} {
 
 #main $argc /usr/local/include/tclDecls.h
 #return
-        
+
 main $argc [concat [sglob /usr/include/*.h] [sglob /usr/include/*/*.h] \
 [sglob /usr/local/include/*.h] [sglob /usr/local/include/*/*.h] \
 [sglob /usr/X11R6/include/*.h] [sglob /usr/X11R6/include/*/*.h] \

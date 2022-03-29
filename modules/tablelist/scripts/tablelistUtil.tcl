@@ -3230,7 +3230,7 @@ proc tablelist::adjustLabel {win col pixels alignment} {
 		set text [join $lines "\n"]
 		$w-tl configure -text $text
 		$w-il configure -width $auxWidth
-	    } elseif {$auxWidth + $spacePixels <= $pixels} {	
+	    } elseif {$auxWidth + $spacePixels <= $pixels} {
 		set data($col-isSnipped) 1
 		set text $spaces		;# can't display the orig. text
 		$w-tl configure -text $text
@@ -6763,7 +6763,7 @@ proc tablelist::makeCkbtn w {
 	    variable uncheckedImg
 	    variable tristateImg
 	    if {![info exists checkedImg]} {
-		createCheckbuttonImgs 
+		createCheckbuttonImgs
 	    }
 
 	    $w configure -borderwidth 1 -indicatoron 0 \
@@ -6788,7 +6788,7 @@ proc tablelist::makeCkbtn w {
 		variable uncheckedImg
 		variable tristateImg
 		if {![info exists checkedImg]} {
-		    createCheckbuttonImgs 
+		    createCheckbuttonImgs
 		}
 
 		$w configure -borderwidth 2 -indicatoron 0 \
@@ -6891,7 +6891,7 @@ proc tablelist::makeTtkCkbtn w {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.6
     }
-    createTileAliases 
+    createTileAliases
 
     #
     # Define the layout Tablelist.TCheckbutton

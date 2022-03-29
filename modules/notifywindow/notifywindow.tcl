@@ -1,4 +1,4 @@
-#notifywindow.tcl: provides routines for posting a Growl-style "notification window" in the upper right corner of the screen, fading in and out in an unobtrusive fashion 
+#notifywindow.tcl: provides routines for posting a Growl-style "notification window" in the upper right corner of the screen, fading in and out in an unobtrusive fashion
 
 #(c) 2015-2019 Kevin Walzer/WordTech Communications LLC. License: standard Tcl license, http://www.tcl.tk/software/tcltk/license.html
 
@@ -11,7 +11,7 @@ namespace eval notifywindow {
     proc notifywindow {msg img} {
 	set w [toplevel ._notify]
 	if {[tk windowingsystem] eq "aqua"} {
-	    ::tk::unsupported::MacWindowStyle style $w utility {hud 
+	    ::tk::unsupported::MacWindowStyle style $w utility {hud
 		closeBox resizable}
 	    wm title $w "Alert"
 	}

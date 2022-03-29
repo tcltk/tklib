@@ -128,10 +128,10 @@ proc scaleutil::scalingPercentage winSys {
 	set tagList [bindtags .]
 	if {[lsearch -exact $tagList "ScaleutilMain"] < 0} {
 	    bindtags . [linsert $tagList 1 ScaleutilMain]
-	    bind ScaleutilMain <<ThemeChanged>> scaleutil::setTreeviewRowHeight 
+	    bind ScaleutilMain <<ThemeChanged>> scaleutil::setTreeviewRowHeight
 	    bind ScaleutilMain <<TkWorldChanged>> {
 		if {"%d" eq "FontChanged"} {
-		    scaleutil::setTreeviewRowHeight 
+		    scaleutil::setTreeviewRowHeight
 		}
 	    }
 	}
@@ -142,7 +142,7 @@ proc scaleutil::scalingPercentage winSys {
 	    #
 	    # Set the default height of the ttk::treeview rows
 	    #
-	    setTreeviewRowHeight 
+	    setTreeviewRowHeight
 	}
 
 	set scalingPct 100
@@ -207,7 +207,7 @@ proc scaleutil::scalingPercentage winSys {
 	#
 	# Set the default height of the ttk::treeview rows
 	#
-	setTreeviewRowHeight 
+	setTreeviewRowHeight
 
 	#
 	# Scale a few styles for the built-in themes

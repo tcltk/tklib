@@ -133,7 +133,7 @@ Monitor all [syscmd [widget entryPlus]] widgets.
 package require widgetPlus
 widgetPlus::entryPlus .ep
 pack .ep
- 
+
 package require persistentSelection
 bind EntryPlus <<Selection>> {::persistentSelection::report entry %W}
 }]
@@ -144,7 +144,7 @@ Monitor all [syscmd [widget text]] widgets that use the default [const Text] bin
 [example {
 text .t
 pack .t
- 
+
 package require persistentSelection
 ::persistentSelection::fixText
 bind Text <<Selection>> {::persistentSelection::report text %W}
@@ -156,11 +156,11 @@ Monitor all [syscmd [widget text]] widgets that use the default [const Text] bin
 [example {
 text .t
 pack .t
- 
+
 package require widgetPlus
 widgetPlus::entryPlus .ep
 pack .ep
- 
+
 package require persistentSelection
 ::persistentSelection::fixText
 bind Text <<Selection>> {::persistentSelection::report text %W}
@@ -173,10 +173,10 @@ Monitor all [syscmd [widget text]] widgets that use [const Ntext] bindings.
 [example {
 text .t
 pack .t
- 
+
 package require ntext
 bindtags .t {.t Ntext . all}
- 
+
 package require persistentSelection
 bind Ntext <<Selection>> {::persistentSelection::report text %W}
 }]
@@ -188,7 +188,7 @@ Monitor a single [syscmd [widget entryPlus]] widget [const .ep]
 package require widgetPlus
 widgetPlus::entryPlus .ep
 pack .ep
- 
+
 package require persistentSelection
 bind .ep <<Selection>> {::persistentSelection::report entry %W}
 }]
@@ -199,7 +199,7 @@ Monitor a single [syscmd [widget text]] widget [const .t]
 [example {
 text .t
 pack .t
- 
+
 package require persistentSelection
 bind .t <<Selection>> {::persistentSelection::report text %W}
 }]

@@ -67,7 +67,7 @@ namespace eval mentry {
     }
     variable currentTheme [::mwutil::currentTheme]
     if {[string length $currentTheme] != 0} {
-	createTileAliases 
+	createTileAliases
     }
 
     variable widgetStyle ""
@@ -185,7 +185,7 @@ namespace eval mentry {
 		    update idletasks		;# needed for the isdark query
 		}
 	    } elseif {[string compare $currentTheme "tileqt"] == 0} {
-		tileqt_kdeStyleChangeNotification 
+		tileqt_kdeStyleChangeNotification
 	    }
 	    setThemeDefaults
 
@@ -226,12 +226,12 @@ namespace eval mentry {
 	    }
 	}
     }
-    extendConfigSpecs 
+    extendConfigSpecs
 
     variable configOpts [lsort [array names configSpecs]]
 
     #
-    # Use a list to facilitate the handling of the command options 
+    # Use a list to facilitate the handling of the command options
     #
     variable cmdOpts [list \
 	adjustentry attrib cget clear configure entries entrycount entrylimit \
@@ -610,7 +610,7 @@ proc mentry::doConfig {win opt val} {
 			update idletasks     ;# to avoid some artifacts on aqua
 		    }
 		} else {
-		    foreach w [entries $win] { 
+		    foreach w [entries $win] {
 			configEntry $w $opt $val
 		    }
 		}
@@ -1335,7 +1335,7 @@ proc mentry::putSubCmd {win startIdx strList} {
 	set w [entryPath $win $n]
 	lappend oldStrings [$w get]
 	lappend oldPositions [$w index insert]
-	
+
 	$w delete 0 end
 	if {[wcb::canceled $w delete]} {
 	    set undo 1

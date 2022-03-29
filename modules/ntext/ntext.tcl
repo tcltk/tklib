@@ -2532,7 +2532,7 @@ proc ::ntext::new_textCut w {
 	    set LocalOldFirst [$w index sel.first]
 	    TextDelete $w sel.first sel.last
 	    AdjustIndentOneLine $w $LocalOldFirst
-	
+
 	    if {$oldSeparator} {
 		$w edit separator
 		$w configure -autoseparators 1

@@ -89,7 +89,7 @@ namespace eval scrollutil::pnb {
     # Create the descend element
     #
     proc createDescendElement {} {
-	::scrollutil::createDescendImages 
+	::scrollutil::createDescendImages
 
 	set width [expr {[image width scrollutil_descendImg] +
 			 [winfo pixels . 6p]}]
@@ -99,7 +99,7 @@ namespace eval scrollutil::pnb {
     }
     ttk::style theme settings default {
 	if {[lsearch -exact [ttk::style element names] "descend"] < 0} {
-	    createDescendElement 
+	    createDescendElement
 	}
     }
 
@@ -126,13 +126,13 @@ namespace eval scrollutil::pnb {
 
 	return 0
     }
-    createDescToolbuttonLayout 
+    createDescToolbuttonLayout
 
     #
     # Create the closebtn element
     #
     proc createClosebtnElement {} {
-	::scrollutil::createCloseImages 
+	::scrollutil::createCloseImages
 
 	#
 	# The "user*" states are not supported by
@@ -156,7 +156,7 @@ namespace eval scrollutil::pnb {
     }
     ttk::style theme settings default {
 	if {[lsearch -exact [ttk::style element names] "closebtn"] < 0} {
-	    createClosebtnElement 
+	    createClosebtnElement
 	}
     }
 
@@ -188,7 +188,7 @@ namespace eval scrollutil::pnb {
 
 	return 0
     }
-    createClosablePageToolbuttonLayout 
+    createClosablePageToolbuttonLayout
 
     #
     # Create a font for titles and labels
@@ -207,7 +207,7 @@ namespace eval scrollutil::pnb {
 	variable titleFont \
 	    [eval font create [font actual TkDefaultFont] -size $size]
     }
-    createTitleFont 
+    createTitleFont
 
     #
     # Configure some styles
@@ -263,7 +263,7 @@ namespace eval scrollutil::pnb {
 	ttk::style configure PnbTitle.TLabel -font $titleFont
 	ttk::style configure PnbLabel.TLabel -font $titleFont
     }
-    configStyles 
+    configStyles
 
     variable currentTheme [::mwutil::currentTheme]
 }
@@ -400,7 +400,7 @@ proc scrollutil::plainnotebook args {
     set frm [ttk::frame $win.frm -padding 0]
     pnb::configFrame $win.frm
     if {[lsearch -exact [image names] "scrollutil_ascendImg"] < 0} {
-	createAscendImage 
+	createAscendImage
     }
     set ascend [ttk::button $frm.ascend -style Toolbutton \
 		-image scrollutil_ascendImg]
@@ -1316,9 +1316,9 @@ proc scrollutil::pnb::onThemeChanged w {
 	if {$newTheme ne $currentTheme} {
 	    set currentTheme $newTheme
 
-	    createDescToolbuttonLayout 
+	    createDescToolbuttonLayout
 	    createClosablePageToolbuttonLayout
-	    configStyles 
+	    configStyles
 	}
     } else {
 	configFrame $w.frm

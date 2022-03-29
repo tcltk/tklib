@@ -302,7 +302,7 @@ snit::widgetadaptor widget::calendar {
                     }
                 }
             }
-            
+
             3 {
                 # keyboard navigation
 

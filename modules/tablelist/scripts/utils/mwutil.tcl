@@ -57,7 +57,7 @@ namespace eval mwutil {
 	    proc focus$dir {w class} $procBody
 	}
     }
-    makeFocusProcs 
+    makeFocusProcs
 
     #
     # Invoked in the procedures focusNext and focusPrev defined above:

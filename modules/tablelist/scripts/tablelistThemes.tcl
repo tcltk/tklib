@@ -48,7 +48,7 @@ proc tablelist::setThemeDefaults {} {
 	# Fall back to the "default" theme (which is the root of all
 	# themes) and then override the options set by the current one
 	#
-	defaultTheme 
+	defaultTheme
 	array set themeDefaults [styleConfig .]
 
 	if {[set bg [styleConfig . -background]] ne ""} {
@@ -1942,7 +1942,7 @@ proc tablelist::getKdeConfigVal {group key} {
     variable kdeDirList
 
     if {![info exists kdeDirList]} {
-	makeKdeDirList 
+	makeKdeDirList
     }
 
     #

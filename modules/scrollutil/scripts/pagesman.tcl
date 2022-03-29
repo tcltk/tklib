@@ -82,7 +82,7 @@ namespace eval scrollutil::pm {
 	lappend configSpecs(-takefocus)		""
 	lappend configSpecs(-width)		0
     }
-    extendConfigSpecs 
+    extendConfigSpecs
 
     variable configOpts [lsort [array names configSpecs]]
 

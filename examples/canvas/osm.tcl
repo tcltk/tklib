@@ -675,7 +675,7 @@ proc GotoMark {} {
         foreach {lat0 lat1 lon0 lon1} [dict get $attrs boundingbox] break
         foreach {_ y0 x0} [map::slippy geo 2point [list $zoom $lat0 $lon0]] break
         foreach {_ y1 x1} [map::slippy geo 2point [list $zoom $lat1 $lon1]] break
-        .map create rectangle $x0 $y0 $x1 $y1 -width 2 -outline red 
+        .map create rectangle $x0 $y0 $x1 $y1 -width 2 -outline red
         # End debug
     }
 

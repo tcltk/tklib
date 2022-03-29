@@ -119,9 +119,9 @@ proc tablelist::extendConfigSpecs {} {
 		update idletasks		;# needed for the isdark query
 	    }
 	} elseif {[string compare $currentTheme "tileqt"] == 0} {
-	    tileqt_kdeStyleChangeNotification 
+	    tileqt_kdeStyleChangeNotification
 	}
-	setThemeDefaults 
+	setThemeDefaults
 	variable themeDefaults
 	set treeStyle $themeDefaults(-treestyle)
 	createTreeImgs $treeStyle
@@ -1417,7 +1417,7 @@ proc tablelist::doColConfig {col win opt val} {
 		    }
 		}
 	    }
-	    if {$pixels != 0} {	
+	    if {$pixels != 0} {
 		incr pixels $data($col-delta)
 	    }
 	    set alignment [lindex $data(colList) [expr {2*$col + 1}]]
@@ -1600,7 +1600,7 @@ proc tablelist::doColConfig {col win opt val} {
 		    }
 		}
 	    }
-	    if {$pixels != 0} {	
+	    if {$pixels != 0} {
 		incr pixels $data($col-delta)
 	    }
 	    adjustLabel $win $col $pixels $alignment
@@ -1738,7 +1738,7 @@ proc tablelist::doColConfig {col win opt val} {
 			}
 		    }
 		}
-		if {$pixels != 0} {	
+		if {$pixels != 0} {
 		    incr pixels $data($col-delta)
 		}
 		set alignment [lindex $data(colList) [expr {2*$col + 1}]]
@@ -1821,7 +1821,7 @@ proc tablelist::doColConfig {col win opt val} {
 			}
 		    }
 		}
-		if {$pixels != 0} {	
+		if {$pixels != 0} {
 		    incr pixels $data($col-delta)
 		}
 		set alignment [lindex $data(colList) [expr {2*$col + 1}]]

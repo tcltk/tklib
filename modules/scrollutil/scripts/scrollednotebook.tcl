@@ -91,7 +91,7 @@ namespace eval scrollutil::snb {
     # Create the closetab element
     #
     proc createClosetabElement {} {
-	::scrollutil::createCloseImages 
+	::scrollutil::createCloseImages
 
 	#
 	# The "hover" state is not supported by
@@ -119,7 +119,7 @@ namespace eval scrollutil::snb {
     }
     ttk::style theme settings default {
 	if {[lsearch -exact [ttk::style element names] "closetab"] < 0} {
-	    createClosetabElement 
+	    createClosetabElement
 	}
     }
 }

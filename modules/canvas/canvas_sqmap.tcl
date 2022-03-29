@@ -29,7 +29,7 @@
 
 package require Tcl 8.4          ; # No {*}-expansion! :(
 package require Tk
-package require snit             ; # 
+package require snit             ; #
 package require uevent::onidle   ; # Some defered actions.
 package require cache::async 0.3 ; # Internal tile cache.
 

@@ -4,7 +4,7 @@
 #* ToDo:
 #*     - remove BWidget: break LabelEntry into entry and label ok
 #*     - remove snit widget LabelEntry ok
-#*     - demo with sample.html with tables, images 
+#*     - demo with sample.html with tables, images
 #*     - docutils help page take this as sample2
 #*     - toplevel title ony if widget is 'almost' toplevel ok
 #*     - check back/forward against same entries ok?
@@ -25,7 +25,7 @@
 #*                      - removing toplevel approach of bwidgets
 #*                      - renamed the namespace to shtmlview::shtmlview
 #*                      - adding more bindings to increase/decrease the font size
-#*                      - adding simple browse function  
+#*                      - adding simple browse function
 #*                      - fixing a parsing bug in html code by adding code of Kevin Walzer's module tkwebview
 #*                      - importing tile scrollbar if available
 #*                      - 2018-10-20 removed bwidget dependency
@@ -33,7 +33,7 @@
 #*                      - 2022-03-XX bugfixes for anchor links and copy operation, support for Markdown files and inline base encoded images
 #* ------------------------------------------------------------------
 #* Contents:
-#* 
+#*
 #* Simple HTML display library by Stephen Uhler (stephen.uhler@sun.com)
 #* Copyright (c) 1995 by Sun Microsystems
 #* Version 0.3 Fri Sep  1 10:47:17 PDT 1995
@@ -41,13 +41,13 @@
 #* Modified to support some 8.0 and 8.1 font conventions by Clif Flynt (clif@cflynt.com)
 #* Modifications copyright (c) 1998 by Flynt Consulting Services, Version 0.3.1 Jan 10, 1999
 #* Modifications copyright (c) 1999 by Flynt Consulting Services, Added table support (another new idea).  7/31/99
-#* Version 0.3.2 July, 31, 1999   Modifications copyright (c) 1999 by Flynt Consulting Services, 
+#* Version 0.3.2 July, 31, 1999   Modifications copyright (c) 1999 by Flynt Consulting Services,
 #* Modified table support - support for lists in tables
 #*                          beginning of support for nested tables.
 #*                          fixed italics
 #* Version 0.3.3 Sep, 29, 1999
 #*
-#* Modifications copyright (c) 2000 by Flynt Consulting Services, 
+#* Modifications copyright (c) 2000 by Flynt Consulting Services,
 #* Modified table support - improved support for nested tables.
 #*                          Changed default font to helvetica
 #* Version 0.3.4 April 27, 2000
@@ -58,7 +58,7 @@
 #* Added in *limited* CSS support (sufficient to handle tex4ht's output).
 #*
 #* Released as part of the Model Railroad System Version 2.1.21 Sept 1, 2009
-#* 
+#*
 #* Version 0.9.0 Oktober 19, 2018
 #* Modifications copyright (c) by Dr. Detlef Groth, Germany
 
@@ -67,7 +67,7 @@
 #* Sun Microsystems, Inc.  The following terms apply to all files
 #* a ssociated with the software unless explicitly disclaimed in individual
 #* files.
-#* 
+#*
 #* The authors hereby grant permission to use, copy, modify, distribute,
 #* and license this software and its documentation for any purpose, provided
 #* that existing copyright notices are retained in all copies and that this
@@ -77,20 +77,20 @@
 #* and need not follow the licensing terms described here, provided that
 #* the new terms are clearly indicated on the first page of each file where
 #* they apply.
-#* 
+#*
 #* IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY
 #* FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES
 #* ARISING OUT OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY
 #* DERIVATIVES THEREOF, EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE
 #* POSSIBILITY OF SUCH DAMAGE.
-#* 
+#*
 #* THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
 #* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
 #* FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE
 #* IS PROVIDED ON AN "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE
 #* NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR
 #* MODIFICATIONS.
-#* 
+#*
 #* RESTRICTED RIGHTS: Use, duplication or disclosure by the government
 #* is subject to the restrictions as set forth in subparagraph (c) (1) (ii)
 #* of the Rights in Technical Data and Computer Software Clause as DFARS
@@ -99,7 +99,7 @@
 
 if {[info exists argv0] && [lindex $argv 0] eq [info script]} {
     lappend auto_path [file join [file dirname [info script]] .. libs]
-}   
+}
 package require Tk
 package require snit
 package provide shtmlview::shtmlview 1.0.0
@@ -123,23 +123,23 @@ if {[info command luniq] eq ""} {
 }
 
 namespace eval shtmlview {
-    # Robert Heller: It uses code originally written by Stephen Uhler and 
-    # modified by Clif Flynt  (htmllib 0.3 through 0.3.4).  
+    # Robert Heller: It uses code originally written by Stephen Uhler and
+    # modified by Clif Flynt  (htmllib 0.3 through 0.3.4).
     # I have modified it further and embedded
     # into a snit widget adapter object to create a full featured help
     # dialog object.  I also added limited support for cascading style
     # sheets.
     #
     #
-    # @author Stephen Uhler \<stephen.uhler\@sun.com\>, 
-    #	  Clif Flynt \<clif\@cflynt.com\>, 
+    # @author Stephen Uhler \<stephen.uhler\@sun.com\>,
+    #	  Clif Flynt \<clif\@cflynt.com\>,
     #        Robert Heller \<heller\@deepsoft.com\>,
     #        and Detlef Groth \<detlef\@dgroth.de\>.
     #
     catch {
         bind all <Button-4> \
               {event generate [focus -displayof %W] <MouseWheel> -delta  120}
-        
+
         bind all <Button-5> \
               {event generate [focus -displayof %W] <MouseWheel> -delta -120}
         bind HelpText <MouseWheel> {
@@ -261,7 +261,7 @@ namespace eval shtmlview {
     bind HelpText <Control-Next> {
         %W xview scroll 1 page
     }
-    
+
     bind HelpText <Home> {
         tk::TextSetCursor %W {insert linestart}
     }
@@ -310,7 +310,7 @@ namespace eval shtmlview {
         tk_textCopy %W
     }
     # Additional emacs-like bindings:
-    
+
     bind HelpText <Control-a> {
         if {!$tk_strictMotif} {
             tk::TextSetCursor %W {insert linestart}
@@ -369,7 +369,7 @@ namespace eval shtmlview {
         }
     }
     # Macintosh only bindings:
-    
+
     # if text black & highlight black -> text white, other text the same
     if {$tcl_platform(platform) == "macintosh"} {
 	bind HelpText <FocusIn> {
@@ -410,7 +410,7 @@ namespace eval shtmlview {
     bind HelpText <Enter> {
         focus -force %W
     }
-    
+
     # Tab key bindings...
     bind HelpText <Tab> {
         set master [::shtmlview::shtmlview GetInstance %W]
@@ -476,17 +476,17 @@ namespace eval shtmlview {
         ## a widget that provides a pur tcl/tk solution to display
         ## and browse html pages
         ## useful for help systems
-        # @author Stephen Uhler \<stephen.uhler\@sun.com\>, 
-        #	    Clif Flynt \<clif\@cflynt.com\>, 
+        # @author Stephen Uhler \<stephen.uhler\@sun.com\>,
+        #	    Clif Flynt \<clif\@cflynt.com\>,
         #         Robert Heller \<heller\@deepsoft.com\>,
         #         Detlef Groth \<detlef\@dgroth.com\>.
         #
-        
+
         option -tablesupport -configuremethod configureTableSupport
         option -toolbar -configuremethod configureToolbar
-        option -browsecmd -default "" 
+        option -browsecmd -default ""
         option -home -default "" -configuremethod configureHome
-        option -historycombo false 
+        option -historycombo false
         ## The text area ScrolledWindow component.
         component     helptext;#	Help text
         ## The text area component.
@@ -497,10 +497,10 @@ namespace eval shtmlview {
         component cmdlabel
         component command;#		Help command
         ## The Help command component.
-        
+
         typevariable _WidgetMap -array {}
         ## Widget map.
-        
+
         variable Size 1
         variable Url
         variable topicstack {}
@@ -535,12 +535,12 @@ namespace eval shtmlview {
             }
             pack [${tile}::frame $win.toolbar] -side top -fill x -expand false
             pack [${tile}::button $win.toolbar.open -image ::fileopen22 -command [mymethod open]] \
-                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5 
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
             $self balloon $win.toolbar.open "open a local htmlfile"
             pack [${tile}::button $win.toolbar.home -image ::navhome22 -command [mymethod home]] \
-                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5 
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
             $self balloon $win.toolbar.home "go to first htmlfile"
-            
+
             pack [${tile}::button $win.toolbar.start -image ::start-22 -command [mymethod start] -state disabled] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
             $self balloon $win.toolbar.start "go to first entry in history"
@@ -551,7 +551,7 @@ namespace eval shtmlview {
             pack [${tile}::button $win.toolbar.forward -image ::navforward22 -command [mymethod forward] -state disabled] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
             $self balloon $win.toolbar.forward "go forward in history"
-            
+
             pack [${tile}::button $win.toolbar.finish -image ::finish-22 -command [mymethod finish] -state disabled] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
             $self balloon $win.toolbar.finish "go to last entry in history"
@@ -559,20 +559,20 @@ namespace eval shtmlview {
             pack [${tile}::button $win.toolbar.delete -image ::editdelete-22 -command [mymethod delete] -state disabled] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
             $self balloon $win.toolbar.delete "delete file from history"
-            
+
             pack [${tile}::button $win.toolbar.reload -image ::actreload22 -command [mymethod reload]] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
-            $self balloon $win.toolbar.reload "reload htmlfile"            
+            $self balloon $win.toolbar.reload "reload htmlfile"
             pack [${tile}::button $win.toolbar.plus -image ::viewmag+22 -command [mymethod setSize +1]] \
-                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5 
-            $self balloon $win.toolbar.plus "increase font size"                        
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
+            $self balloon $win.toolbar.plus "increase font size"
             pack [${tile}::button $win.toolbar.minus -image ::viewmag-22 -command [mymethod setSize -1]] \
-                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5 
-            $self balloon $win.toolbar.minus "decrease font size"                        
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
+            $self balloon $win.toolbar.minus "decrease font size"
             pack [${tile}::button $win.toolbar.help -image ::help-22 -command [mymethod help]] \
-                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5 
-            $self balloon $win.toolbar.help "show help text"                        
-            
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
+            $self balloon $win.toolbar.help "show help text"
+
             install status  using label $win.toolbar.status -anchor w -relief flat \
                   -borderwidth 2 -justify left -width 35 -pady 5
             if {$tile ne ""} {
@@ -588,7 +588,7 @@ namespace eval shtmlview {
             pack $cmdlabel -fill x -side right -pady 5 -padx 0
 
             frame $win.mf
-            
+
             install helptext using text $win.mf.helptext -background white \
                   -width 80 -border 10 -relief flat -spacing1 5 -spacing2 5 -spacing3 5 \
                   -wrap word -yscrollcommand [list $win.mf.s set]
@@ -605,10 +605,10 @@ namespace eval shtmlview {
                 set bts [linsert $bts 1 HelpText]
             }
             bindtags $helptext $bts
-            $cmdlabel configure -text "Search Forward:" 
+            $cmdlabel configure -text "Search Forward:"
             bind $command <Return> [mymethod _SForward $helptext]
 
-            #pack [scrollbar $win.yscroll] -side right -expand false -fill y 
+            #pack [scrollbar $win.yscroll] -side right -expand false -fill y
             pack $win.mf -side top -fill both -expand yes
             HMinit_win $selfns $helptext
             #      HMset_state $toc -size 4
@@ -630,9 +630,9 @@ namespace eval shtmlview {
             trace add variable [myvar curtopicindex] write [mymethod CurTopChange]
         }
         typemethod   GetInstance {widget} {
-            ## @publicsection Returns the parent object given the specificed 
+            ## @publicsection Returns the parent object given the specificed
             # child widget.
-            
+
             #      puts stderr "*** $type GetInstance $widget"
             if {[catch {set _WidgetMap($widget)} object]} {
                 #	puts stderr "*** $type GetInstance: catch fails: object = $object"
@@ -696,19 +696,19 @@ namespace eval shtmlview {
             set options($opt) $value
             if {!$value} {
                 if {[info command "HMtag_table"] eq "HMtag_table"} {
-                    rename HMtag_table BakHMtag_table 
-                    rename HMtag_tr BakHMtag_tr             
-                    rename HMtag_td BakHMtag_td                         
-                    rename HMtag_th BakHMtag_th                                     
-                    rename HMtag_/table BakHMtag_/table 
+                    rename HMtag_table BakHMtag_table
+                    rename HMtag_tr BakHMtag_tr
+                    rename HMtag_td BakHMtag_td
+                    rename HMtag_th BakHMtag_th
+                    rename HMtag_/table BakHMtag_/table
                 }
             } else {
                 if {[info command "BakHMtag_table"] eq "BakHMtag_table"} {
-                    rename BakHMtag_table HMtag_table 
-                    rename BakHMtag_tr HMtag_tr             
-                    rename BakHMtag_td HMtag_td                         
-                    rename BakHMtag_th HMtag_th                                     
-                    rename BakHMtag_/table HMtag_/table 
+                    rename BakHMtag_table HMtag_table
+                    rename BakHMtag_tr HMtag_tr
+                    rename BakHMtag_td HMtag_td
+                    rename BakHMtag_th HMtag_th
+                    rename BakHMtag_/table HMtag_/table
                 }
             }
         }
@@ -730,7 +730,7 @@ namespace eval shtmlview {
         method browse {url args} {
             ## Public method to display help on a specific topic.
             # @param topic The topic text to display help for.
-            # we call this before rendering just to allow different 
+            # we call this before rendering just to allow different
             # instances of shtmlview
             set lasturl $url
             $self configureTableSupport -tablesupport $options(-tablesupport)
@@ -757,7 +757,7 @@ namespace eval shtmlview {
             if {$tile ne ""} {
                 set ::xx 0
                 $combo configure -values [lmap a $topicstack { set x "[incr xx] [file tail $a]" }]
-                
+
             }
             #if {"$current" ne "" && "$current" ne "$win"} {BWidget::grab set $win}
         }
@@ -774,7 +774,7 @@ namespace eval shtmlview {
             #HMlink_hit $selfns $helptext $x $y
         }
 
-        #-- A simple balloon, modified from Bag of Tk algorithms:  
+        #-- A simple balloon, modified from Bag of Tk algorithms:
         method balloon {w text {display false}} {
             if {$display} {
                 set top .balloon
@@ -792,8 +792,8 @@ namespace eval shtmlview {
                 bind $w <Leave> { catch destroy .balloon }
             }
         }
-        
-        
+
+
         proc pushcurrenttopic {selfns url} {
             if {[llength $topicstack] == 0 || $curtopicindex < 0} {
                 set topicstack [list [file normalize $url]]
@@ -819,7 +819,7 @@ namespace eval shtmlview {
             set url [lindex $topicstack $curtopicindex]
             return "$url"
         }
-        
+
         proc forwardcurrenttopic {selfns} {
             #      puts stderr "*** forwardcurrenttopic: topicstack = $topicstack, curtopicindex = $curtopicindex"
             if {[llength $topicstack] == [expr {$curtopicindex+1}]} {return {}}
@@ -895,7 +895,7 @@ namespace eval shtmlview {
             render $selfns $helptext $Url
         }
         method getKeyBindings {} {
-            set keys "\nKey bindings:" 
+            set keys "\nKey bindings:"
             append keys "\n b - previous page in history"
             append keys "\n f - next page in history"
             append keys "\n m - previous search entry"
@@ -903,8 +903,8 @@ namespace eval shtmlview {
             append keys "\n q - delete page from history"
             append keys "\n r - search backward"
             append keys "\n s - search forward"
-            append keys "\n Ctrl-r - reload page"            
-            append keys "\n Return - process current hyperlink"            
+            append keys "\n Ctrl-r - reload page"
+            append keys "\n Return - process current hyperlink"
             append keys "\n TAB - next hyperlink"
         }
         method help {} {
@@ -914,13 +914,13 @@ namespace eval shtmlview {
             set url ""
             set types {
                 {{HTML Files}       {.htm .html}}
-                {{Markdown Files}   {.md .Rmd .Tmd}}                
+                {{Markdown Files}   {.md .Rmd .Tmd}}
                 {{All Files}        *          }
             }
             set filename [tk_getOpenFile -filetypes $types -initialdir [file normalize [lindex $topicstack 0]]]
             if {$filename != ""} {
                 set url $filename
-                
+
             }
             if {"$url" eq {}} {return}
             render $selfns $helptext [file normalize $url] yes
@@ -972,7 +972,7 @@ namespace eval shtmlview {
         }
         method searchforward {w} {
             ##
-            $cmdlabel configure -text "Search Forward:" 
+            $cmdlabel configure -text "Search Forward:"
             $command delete 0 end
             $command insert 0 $lastsearch
             bind $command <Return> [mymethod _SForward $w]
@@ -997,7 +997,7 @@ namespace eval shtmlview {
         }
         method searchbackward {w} {
             ##
-            $cmdlabel configure -text "Search Backward:" 
+            $cmdlabel configure -text "Search Backward:"
             $command delete 0 end
             $command insert 0 $lastsearch
             bind $command <Return> [mymethod _SBackward $w]
@@ -1135,33 +1135,33 @@ namespace eval shtmlview {
         #   HMreset_win .text
         # See "sample.tcl" for sample usage
         ##################################################################
-        
+
         ############################################
         # initialize the window and stack state
-        
+
         proc HMinit_win {selfns win} {
             ##
             upvar #0 HM$win var
-            
+
             HMinit_state $win
             $win tag configure underline -underline 1
             $win tag configure sub -offset -5p
-            $win tag configure sup -offset +5p            
+            $win tag configure sup -offset +5p
             $win tag configure center -justify center
             $win tag configure nowrap -wrap none
             $win tag configure rindent -rmargin $var(S_tab)c
             $win tag configure strike -overstrike 1
-            $win tag configure s -overstrike 1            
+            $win tag configure s -overstrike 1
             $win tag configure mark -foreground red		;# list markers
             $win tag configure list -spacing1 3p -spacing3 3p		;# regular lists
             $win tag configure compact -spacing1 0p		;# compact lists
             $win tag configure link -borderwidth 2 -foreground blue	;# hypertext links
             HMset_indent $win $var(S_tab)
             $win configure -wrap word
-            
+
             # configure the text insertion point
             $win mark set $var(S_insert) 1.0
-            
+
             # for horizontal rules
             $win tag configure thin -font [HMx_font times 2 medium r]
             $win tag configure hr -relief sunken -borderwidth 2 -wrap none \
@@ -1170,17 +1170,17 @@ namespace eval shtmlview {
 		%W tag configure hr -tabs %w
 		%W tag configure last -spacing3 %h
             }
-            
+
             # generic link enter callback
-            
+
             $win tag bind link <1> "[myproc HMlink_hit $selfns $win %x %y]"
         }
-        
+
         proc HMset_indent {win cm} {
             ## set the indent spacing (in cm) for lists
             # TK uses a "weird" tabbing model that causes \t to insert a single
             # space if the current line position is past the tab setting
-            
+
             set tabs [expr $cm / 2.0]
             $win configure -tabs ${tabs}c
             foreach i {1 2 3 4 5 6 7 8 9} {
@@ -1193,26 +1193,26 @@ namespace eval shtmlview {
         proc HMreset_win {win} {
             ## reset the state of window - get ready for the next page
             # remove all but the font tags, and remove all form state
-            
+
             upvar #0 HM$win var
             regsub -all { +[^L ][^ ]*} " [$win tag names] " {} tags
             catch "$win tag delete $tags"
             eval $win mark unset [$win mark names]
             $win delete 0.0 end
             $win tag configure hr -tabs [winfo width $win]
-            
+
             # configure the text insertion point
             $win mark set $var(S_insert) 1.0
-            
-            # remove form state.  If any check/radio buttons still exists, 
+
+            # remove form state.  If any check/radio buttons still exists,
             # their variables will be magically re-created, and never get
             # cleaned up.
             catch unset [info globals HM$win.form*]
-            
+
             HMinit_state $win
             return HM$win
         }
-        
+
         proc HMinit_state {win} {
             ## initialize the window's state array
             # Parameters beginning with S_ are NOT reset
@@ -1223,7 +1223,7 @@ namespace eval shtmlview {
             #  update:		how many tags between update calls
             #  tags:		number of tags processed so far
             #  symbols:		Symbols to use on un-ordered lists
-            
+
             upvar #0 HM$win var
             array set tmp [array get var S_*]
             catch {unset var}
@@ -1242,7 +1242,7 @@ namespace eval shtmlview {
             }
             array set var [array get tmp]
         }
-        
+
         proc HMset_state {win args} {
             ##
             upvar #0 HM$win var
@@ -1259,10 +1259,10 @@ namespace eval shtmlview {
             }
             return [expr $bad == 0]
         }
-        
+
         ############################################
         # manage the display of html
-        
+
         proc HMrender {selfns win tag not param text} {
             ## HMrender gets called for every html tag
             #   win:   The name of the text widget to render into
@@ -1270,7 +1270,7 @@ namespace eval shtmlview {
             #   not:   a "/" or the empty string
             #   param: The un-interpreted parameter list
             #   text:  The plain text until the next html tag
-            
+
             upvar #0 HM$win var
             #	puts stderr "*** HMrender: var(stop) = $var(stop)"
             if {$var(stop)} return
@@ -1279,21 +1279,21 @@ namespace eval shtmlview {
                 set var(tablemode) false
             }
             set text [HMmap_esc $text]
-            
+
             # manage compact rendering of lists
             if {[info exists HMlist_elements($tag)]} {
 		set list "list [expr {[HMextract_param $param compact] ? "compact" : "list"}]"
             } else {
 		set list ""
             }
-            
+
             # Allow text to be diverted to a different window (for tables)
             # this is not currently used
             if {[info exists var(divert)]} {
 		set win $var(divert)
 		upvar #0 HM$win var
             }
-            
+
             # adjust (push or pop) tag state
             array set cssArray [array get helptext_css]
             set class {}
@@ -1315,7 +1315,7 @@ namespace eval shtmlview {
                 set var(css_tagclass_stack) [linsert $var(css_tagclass_stack) 0 "$tag.$class"]
             }
             set cssStyles {}
-            
+
             catch {foreach s $HMtag_map($tag) {lappend cssStyles $s}}
             if {![catch {set cssArray($tag.$class)} styleBlock]} {
                 HMappend_css cssStyles $styleBlock
@@ -1324,10 +1324,10 @@ namespace eval shtmlview {
             } elseif {![catch {set cssArray(.$class)} styleBlock]} {
                 HMappend_css cssStyles $styleBlock
             }
-            
+
             foreach s $list {lappend cssStyles $s}
             catch {HMstack $win $not $cssStyles}
-            
+
             # insert white space (with current font)
             # adding white space can get a bit tricky.  This isn't quite right
             set bad [catch {$win insert $var(S_insert) $HMinsert_map($not$tag) "space $var(font)"}]
@@ -1336,25 +1336,25 @@ namespace eval shtmlview {
             if {!$bad && [lindex $var(fill) end]} {
 		set text [string trimleft $text]
             }
-            
+
             # to fill or not to fill
             if {[lindex $var(fill) end]} {
 		set text [HMzap_white $text]
             }
-            
+
             # generic mark hook
             catch {HMmark $not$tag $win $param text} err
-            
+
             # do any special tag processing
             catch {HMtag_$not$tag $selfns $win $param text} msg
 
 
             # add the text with proper tags
-            
+
             set tags [HMcurrent_tags $selfns $win]
             #	puts stderr "*** HMrender: tag = $not$tag, tags = $tags, text = $text"
             $win insert $var(S_insert) $text $tags
-            
+
             # We need to do an update every so often to insure interactive response.
             # This can cause us to re-enter the event loop, and cause recursive
             # invocations of HMrender, so we need to be careful.
@@ -1362,36 +1362,36 @@ namespace eval shtmlview {
 		update
             }
         }
-        
+
         # html tags requiring special processing
         # Procs of the form HMtag_<tag> or HMtag_</tag> get called just before
-        # the text for this tag is displayed.  These procs are called inside a 
+        # the text for this tag is displayed.  These procs are called inside a
         # "catch" so it is OK to fail.
         #   win:   The name of the text widget to render into
         #   param: The un-interpreted parameter list
         #   text:  A pass-by-reference name of the plain text until the next html tag
         #          Tag commands may change this to affect what text will be inserted
         #          next.
-        
+
         proc HMtag_hmstart {selfns win param text} {
             ## A pair of pseudo tags are added automatically as the 1st and last html
             # tags in the document.  The default is <HMstart> and </HMstart>.
             # Append enough blank space at the end of the text widget while
             # rendering so HMgoto can place the target near the top of the page,
             # then remove the extra space when done rendering.
-            
+
             upvar #0 HM$win var
             $win mark gravity $var(S_insert) left
             $win insert end "\n " last
             $win mark gravity $var(S_insert) right
         }
-        
+
         proc HMtag_/hmstart {selfns win param text} {
             ##
             $win delete last.first end
         }
-        
-        
+
+
         proc HMtag_title {selfns win param text} {
             ## put the document title in the window banner, and remove the title text
             # from the document
@@ -1399,46 +1399,46 @@ namespace eval shtmlview {
             set top [winfo parent [winfo parent [winfo parent $win]]]
             if {[winfo toplevel $top] eq $top} {
                 wm title [winfo toplevel $win] $data
-            } 
+            }
             set data ""
         }
-        
+
         proc HMtag_hr {selfns win param text} {
             ##
             upvar #0 HM$win var
             $win insert $var(S_insert) "\n" space "\n" thin "\t" "thin hr" "\n" thin
         }
-        
+
         # list element tags
-        
+
         proc HMtag_ol {selfns win param text} {
             ##
             upvar #0 HM$win var
             set var(count$var(level)) 0
             set var(intag_ol) true
         }
-        
+
         proc HMtag_ul {selfns win param text} {
             ##
             upvar #0 HM$win var
             set var(intag_ol) false
             catch {unset var(count$var(level))}
         }
-        
+
         proc HMtag_menu {selfns win param text} {
             ##
             upvar #0 HM$win var
             set var(menu) ->
             set var(compact) 1
         }
-        
+
         proc HMtag_/menu {selfns win param text} {
             ##
             upvar #0 HM$win var
             catch {unset var(menu)}
             catch {unset var(compact)}
         }
-	
+
         proc HMtag_dt {selfns win param text} {
             ##
             upvar #0 HM$win var
@@ -1460,19 +1460,19 @@ namespace eval shtmlview {
                 set var(divclss) ""
                 set var(dividx)  ""
             }
-            #$win insert $var(S_insert) "<div>" 
+            #$win insert $var(S_insert) "<div>"
             set data {}
         }
         proc HMtag_/div {selfns win param text} {
             upvar #0 HM$win var
             upvar $text data
             if {$var(divclss) ne ""} {
-                #$win insert $var(S_insert) "</div>" 
+                #$win insert $var(S_insert) "</div>"
                 $win tag add div$var(divclss) $var(dividx) [$win index "insert lineend"]
                 set var(divclss) ""
             }
             set data {}
-            
+
         }
 
         proc HMtag_table {selfns win param text} {
@@ -1519,7 +1519,7 @@ namespace eval shtmlview {
                  $win tag configure tableX -tabs {1cm left 5cm left 9cm left 13cm left 17cm left 21cm left 25cm left 29cm left}
                  $win tag add tableX $var(Table_start) $var(Table_end)
                  #foreach line [split $tcontent "\n"] {
-                 #    
+                 #
                  #}
             }
             $win insert $var(S_insert) "\n"
@@ -1560,7 +1560,7 @@ namespace eval shtmlview {
             if {[info exists var(tablemode)] && $var(tablemode)} {
                 append var(tabletext) " \"[string trim $data]\""
                 set data "\t"
-                            
+
             } else {
                 $win insert $var(S_insert) "\t[string trim $data]"
                 set data ""
@@ -1637,7 +1637,7 @@ namespace eval shtmlview {
                     }
                 }
             }
-            
+
             if {$options(-headers) ne ""} {lset widgetData end-1 "[lindex $widgetData end-1]\n"}
             # process all data, row for row, adjusting the column width as it goes:
             foreach row $data {
@@ -1688,7 +1688,7 @@ namespace eval shtmlview {
                        catch {set x $var(menu)}
                        $win insert $var(S_insert) \to\t "mark [lindex $var(list) end] indent$level $var(font)"
             }
-        } 
+        }
         ;#"  ddg: just visual fix, can we remove the quote above??
         proc HMtag_a {selfns win param text} {
             ## Manage hypertext "anchor" links.  A link can be either a source (href)
@@ -1697,11 +1697,11 @@ namespace eval shtmlview {
             # to go there now, as a result of a previous HMgoto request.  If so, schedule
             # it to happen with the closing @</a@> tag, so we can highlight the text up to
             # the @</a@>.
-            
+
             upvar #0 HM$win var
-            
+
             # a source
-            
+
             if {[HMextract_param $param href]} {
                 if {[regexp {^https?:} $href]} {
                     # ignore weblinks
@@ -1711,9 +1711,9 @@ namespace eval shtmlview {
 		HMstack $win "" "Tlink link"
 		HMlink_setup $win $href
             }
-            
+
             # a destination
-            
+
             if {[HMextract_param $param name]} {
 		set var(Tname) [list N:$name]
 		HMstack $win "" "Tanchor anchor"
@@ -1725,7 +1725,7 @@ namespace eval shtmlview {
                 }
             }
         }
-        
+
         proc HMgoto {selfns win where {callback HMwent_to}} {
             ## The application should call here with the fragment name
             # to cause the display to go to this spot.
@@ -1745,12 +1745,12 @@ namespace eval shtmlview {
                 return 0
             }
         }
-        
+
         proc HMwent_to {selfns win where {count 0} {color orange}} {
             ## We actually got to the spot, so highlight it!
             # This should/could be replaced by the application
             # We'll flash it orange a couple of times.
-            
+
             upvar #0 HM$win var
             if {$count > 5} return
             catch {$win tag configure N:$where -foreground $color}
@@ -1758,7 +1758,7 @@ namespace eval shtmlview {
             after 200 [myproc HMwent_to $selfns $win $where [incr count] \
                        [expr {$color=="orange" ? "" : "orange"}]]
         }
-            
+
         proc HMtag_/a {selfns win param text} {
             ##
             upvar #0 HM$win var
@@ -1768,14 +1768,14 @@ namespace eval shtmlview {
             }
 
             # goto this link, then invoke the call-back.
-            
+
             if {[info exists var(going)]} {
 		$win yview N:$var(going)
 		update
 		HMwent_to $selfns $win $var(going)
 		unset var(going)
             }
-            
+
             if {[info exists var(Tname)]} {
 		unset var(Tname)
 		HMstack $win / "Tanchor anchor"
@@ -1799,22 +1799,22 @@ namespace eval shtmlview {
             #    height:  A height hint (in pixels)
             #    border: The size of the window border
             upvar #0 HM$win var
-            
+
             # get alignment
             array set align_map {top top    middle center    bottom bottom}
             set align bottom		;# The spec isn't clear what the default should be
             HMextract_param $param align
             catch {set align $align_map([string tolower $align])}
-            
+
             # get alternate text
             set alt "<image>"
             HMextract_param $param alt
             set alt [HMmap_esc $alt]
-            
+
             # get the border width
             set border 0
             HMextract_param $param border
-            
+
             # see if we have an image size hint
             # If so, make a frame the "hint" size to put the label in
             # otherwise just make the label
@@ -1828,19 +1828,19 @@ namespace eval shtmlview {
 		pack $label -expand 1 -fill both
             } else {
 		set label $item
-		label $label 
+		label $label
             }
 
             $label configure -relief flat -fg orange -text $alt
             catch {$label configure -bd $border}
             $win window create $var(S_insert) -align $align -window $item -pady 2 -padx 2
-            
+
             # add in all the current tags (this is overkill)
             set tags [HMcurrent_tags $selfns $win]
             foreach tag $tags {
 		$win tag add $tag $item
             }
-            
+
             # set imagemap callbacks
             if {[HMextract_param $param ismap]} {
 		# regsub -all {[^L]*L:([^ ]*).*}  $tags {\1} link
@@ -1853,8 +1853,8 @@ namespace eval shtmlview {
 		bind $label <1> "+[myproc HMlink_callback $selfns $win $link2?%x,%y]"
 		bind $label <Enter> {+%W configure -cursor hand2}
 		bind $label <Leave> {+%W configure -cursor xterm}
-            } 
-            
+            }
+
             # now callback to the application
             set src ""
             HMextract_param $param src
@@ -1884,7 +1884,7 @@ namespace eval shtmlview {
                     } else {
                         HMset_image $selfns $win $label $src
                     }
-                    
+
                 } elseif {[regexp -nocase {svg$} $src]} {
                     set file [file join [file dirname $Url] $src]
                     if {[info command ::svgconvert::svgconv] eq ""} {
@@ -1900,15 +1900,15 @@ namespace eval shtmlview {
             #	puts stderr "*** HMtag_img: after HMset_image, label = $label"
             return $label	;# used by the forms package for input_image types
         }
-        
+
 
         proc HMgot_image {win image_error} {
             ## When the image is available, the application should call back here.
             # If we have the image, put it in the label, otherwise display the error
             # message.  If we don't get a callback, the "alt" text remains.
             # if we have a clickable image, arrange for a callback
-            
-            
+
+
             #	puts stderr "*** HMgot_image: image_error = $image_error"
             # if we're in a frame turn on geometry propogation
             if {[winfo name $win] == "label"} {
@@ -1919,14 +1919,14 @@ namespace eval shtmlview {
 		$win configure -text $image_error
             }
         }
-        
+
         # Sample hypertext link callback routine - should be replaced by app
         # This proc is called once for each <A> tag.
         # Applications can overwrite this procedure, as required, or
         # replace the HMevents array
         #   win:   The name of the text widget to render into
         #   href:  The HREF link for this <a> tag.
-        
+
 
         proc HMlink_setup {win href} {
             ## We need to escape any %'s in the href tag name so the bind command
@@ -1939,8 +1939,8 @@ namespace eval shtmlview {
             $win tag bind  L:$href <Enter> {%W configure -cursor hand2}
             $win tag bind  L:$href <Leave> {%W configure -cursor xterm}
         }
-        
-        
+
+
         proc HMlink_hit {selfns win x y} {
             ## generic link-hit callback
             # This gets called upon button hits on hypertext links
@@ -1953,7 +1953,7 @@ namespace eval shtmlview {
             regsub L: $link {} link
             HMlink_callback $selfns $helptext $link
         }
-        
+
         proc HMcheck_tocRelative {link tocfile} {
             ##
             if {[regexp {([^#]*)#(.+)} $link -> file fragment] > 0} {
@@ -1962,7 +1962,7 @@ namespace eval shtmlview {
                 return [expr {"$link" eq "$tocfile"}]
             }
         }
-     
+
 
 
         proc HMextract_param {param key {val ""}} {
@@ -1972,14 +1972,14 @@ namespace eval shtmlview {
             #           remove any entity references
             #   key:    The parameter name
             #   val:    The variable to put the value into (use key as default)
-            
+
             if {$val == ""} {
 		upvar $key result
             } else {
 		upvar $val result
             }
             set ws "    \n\r"
-            
+
             # look for name=value combinations.  Either (') or (") are valid delimeters
             if {
                 [regsub -nocase [format {.*%s[%s]*=[%s]*"([^"]*).*} $key $ws $ws] $param {\1} value] ||
@@ -1992,7 +1992,7 @@ namespace eval shtmlview {
             # now look for valueless names
             # I should strip out name=value pairs, so we don't end up with "name"
             # inside the "value" part of some other key word - some day
-            
+
             set bad \[^a-zA-Z\]+
             if {[regexp -nocase  "$bad$key$bad" -$param-]} {
 		return 1
@@ -2000,10 +2000,10 @@ namespace eval shtmlview {
 		return 0
             }
         }
-        
+
         # These next two routines manage the display state of the page.
-        
-        
+
+
         proc HMstack {win push list} {
             ## Push or pop tags to/from stack.
             # Each orthogonal text property has its own stack, stored as a list.
@@ -2024,8 +2024,8 @@ namespace eval shtmlview {
 		}
             }
         }
-        
-        
+
+
         proc HMcurrent_tags {selfns win} {
             ## extract set of current text tags
             # tags starting with T map directly to text tags, all others are
@@ -2050,23 +2050,23 @@ namespace eval shtmlview {
             set var(level) $indent
             return $tags
         }
-        
+
         proc HMx_font {family size weight style {adjust_size 0}} {
             ## generate an X font name
             catch {incr size $adjust_size}
             return "-*-$family-$weight-$style-normal-*-*-${size}0-*-*-*-*-*-*"
         }
-        
+
         proc HMoptimize {} {
             ## Optimize HMrender (hee hee)
             # This is experimental
-            
+
             regsub -all "\n\[ 	\]*#\[^\n\]*" [info body HMrender] {} body
             regsub -all ";\[ 	\]*#\[^\n]*" $body {} body
             regsub -all "\n\n+" $body \n body
             proc HMrender {win tag not param text} $body
         }
-        
+
         proc HMparse_html {html {cmd HMtest_parse} {start hmstart}} {
             ############################################
             # Turn HTML into TCL commands
@@ -2084,20 +2084,20 @@ namespace eval shtmlview {
             eval "$cmd {$start} {} {} \{ $html \}"
             eval "$cmd {$start} / {} {}"
         }
-        
+
         proc HMtest_parse {command tag slash text_after_tag} {
             ##
             puts "==> $command $tag $slash $text_after_tag"
         }
-        
-        
+
+
         proc HMzap_white {data} {
             ## Convert multiple white space into a single space
             regsub -all "\[ \t\r\n\]+" $data " " data
             return $data
         }
-        
-        
+
+
         proc HMmap_esc {text} {
             ## find HTML escape characters of the form &xxx;
             if {![regexp & $text]} {return $text}
@@ -2107,8 +2107,8 @@ namespace eval shtmlview {
             regsub -all {&([a-zA-Z]+);?} $new {[HMdo_map \1]} new
             return [subst $new]
         }
-        
-        
+
+
         proc HMdo_map {text {unknown ?}} {
             ## convert an HTML escape sequence into character
             set result $unknown
@@ -2130,23 +2130,23 @@ namespace eval shtmlview {
             close $fd
             set res ""
             set flag true
-            # dg addon 
+            # dg addon
             # let's just ignore style tags content
             foreach line [split $result "\n"] {
                 set line [regsub {<li><p>(.+)</p></li>} $line "<li>\\1</li>"]
-                set line [regsub {<dd><p>} $line "<dd>"]                
-                set line [regsub {</p></dd>} $line "</dd>"]                                
+                set line [regsub {<dd><p>} $line "<dd>"]
+                set line [regsub {</p></dd>} $line "</dd>"]
                 if {[regexp -nocase {<style>} $line] || [regexp -nocase {<style\s+type="text/css">} $line]} {
                     set flag false
                 } elseif {[regexp {</style>} $line]} {
                     set flag true
                 } elseif {$flag} {
                     append res "$line\n"
-                } 
+                }
             }
             return $res
         }
-        
+
         proc HMlink_callback {selfns win href} {
             ## Override the library link-callback routine for the sample app.
             # It only handles the simple cases.
@@ -2174,14 +2174,14 @@ namespace eval shtmlview {
             update
             render $selfns $win $Url
         }
-        
-        
+
+
 
         proc HMset_image {selfns win handle src} {
             ## Supply an image callback function
             # Read in an image if we don't already have one
             # callback to library for display
-            
+
             #	puts stderr "*** HMset_image: src = $src, Url = $Url"
             if {[string match /* $src]} {
 		set image $src
@@ -2203,14 +2203,14 @@ namespace eval shtmlview {
 		HMgot_image $handle $image
             }
         }
-        
+
         # Handle base tags.  This breaks if more than 1 base tag is in the document
-        
+
         proc HMtag_base {selfns selfns win param text} {
             upvar #0 HM$win var
             HMextract_param $param href Url
         }
-        
+
 
         variable Fonts
         ##
@@ -2243,14 +2243,14 @@ namespace eval shtmlview {
             $win tag configure $value -foreground $value
             HMstack $win "" "Tcolor $value"
         }
-        
+
         proc HMtag_/color {selfns win param text} {
             ##
             upvar #0 HM$win var
             HMstack $win / "Tcolor {}"
         }
-        
-        
+
+
         proc HMtag_font {selfns win param text} {
             ## Add a font size manipulation primitive, so we can use this sample program
             # for on-line presentations.  sizes prefixed with + or - are relative.
@@ -2265,8 +2265,8 @@ namespace eval shtmlview {
             }
             HMstack $win {} "size $size"
         }
-        
-        
+
+
     proc HMtag_font {selfns win param text} {
         ## This version is closer to what Netscape does
 	upvar #0 HM$win var
@@ -2280,7 +2280,7 @@ namespace eval shtmlview {
             HMstack $win {} "size [expr 10 + 2 * $size]"
 	}
     }
-    
+
     proc HMtag_/font {selfns win param text} {
         ##
 	upvar #0 HM$win var
@@ -2547,11 +2547,11 @@ namespace eval shtmlview {
                 b20AOw==
             }
         }
-	
+
         ############################################
 	# mapping of html tags to text tag properties
 	# properties beginning with "T" map directly to text tags
-	
+
 	# These are Defined in HTML 2.0
 	array set HMtag_map {
 		b      {weight bold}
@@ -2559,13 +2559,13 @@ namespace eval shtmlview {
 		bq		{style i indent 1 Trindent rindent}
 		cite   {style i}
 		code   {family courier}
-		dfn    {style i}	
+		dfn    {style i}
 		dir    {indent 1}
 		dl     {indent 1}
 		em     {style i}
 		h1     {size 20 weight bold}
-		h2     {size 18}		
-		h3     {size 16}	
+		h2     {size 18}
+		h3     {size 16}
 		h4     {size 14}
 		h5     {size 12}
 		h6     {style i}
@@ -2574,12 +2574,12 @@ namespace eval shtmlview {
 		menu     {indent 1}
 		ol     {indent 1}
 		pre    {fill 0 family courier Tnowrap nowrap}
-		samp   {family courier}		
-		strong {weight bold}		
+		samp   {family courier}
+		strong {weight bold}
 		tt     {family courier}
 		u      {Tunderline underline}
 		ul     {indent 1}
-		var    {style i}	
+		var    {style i}
 	}
 
 	# These are in common(?) use, but not defined in html2.0
@@ -2588,23 +2588,23 @@ namespace eval shtmlview {
 		strike {Tstrike strike}
 		u      {Tunderline underline}
         }
-        # some special addons for Sweave reports    
+        # some special addons for Sweave reports
 	array set HMtag_map {
             xmp   {fill 0 family courier Tnowrap nowrap}
 	}
         # HTML 3.2
         array set HMtag_map {
             sub    {size 10 Tsub sub}
-            sup    {size 10 Tsup sup}                
-            big    {size 16 Tbig big}                
-            small  {size 10 Tsmall small}                
+            sup    {size 10 Tsup sup}
+            big    {size 16 Tbig big}
+            small  {size 10 Tsmall small}
             s      {Ts s}
         }
 	# initial values
 
 	set HMtag_map(hmstart) {
 		family times   weight medium   style r   size 14
-		Tcenter ""   Tlink ""   Tnowrap ""   Tunderline "" 
+		Tcenter ""   Tlink ""   Tnowrap ""   Tunderline ""
                 Tsub "" Tsup "" Tsmall "" Tbig ""
 		Toverstrike ""  list list
 		fill 1   indent "" counter 0 adjust 0
@@ -2699,7 +2699,7 @@ namespace eval shtmlview {
 
 	# do x-www-urlencoded character mapping
 	# The spec says: "non-alphanumeric characters are replaced by '%HH'"
- 
+
 	set HMalphanumeric	a-zA-Z0-9	;# definition of alphanumeric character class
 	for {set i 1} {$i <= 256} {incr i} {
 	    set c [format %c $i]
@@ -2741,48 +2741,48 @@ namespace eval ::svgconvert {
             #include <stdio.h>
             #include <cairo.h>
             #include <cairo/cairo-pdf.h>
-            #include <cairo/cairo-svg.h>        
+            #include <cairo/cairo-svg.h>
             #include <librsvg/rsvg.h>
         }
-        
-        
+
+
         critcl::cproc svgconvert {char* svgfile  char* outfile double scalex double scaley} void {
             // new
             char *epdf = ".pdf";
             char *esvg = ".svg";
             char *pdf = strstr(outfile, epdf);
-            char *svg = strstr(outfile, esvg);    
-            
+            char *svg = strstr(outfile, esvg);
+
             RsvgHandle *handle;
             //RsvgDimensionData dimension_data; // deprecated
             gdouble width = 0.0;
             gdouble height = 0.0;
             GError* err = NULL;
             handle = rsvg_handle_new_from_file(svgfile, &err);
-            
+
             if (err != NULL) {
                 fprintf(stderr, "libsvgconv: Failed to load svg: '%s'; %s\n", svgfile, (char*) err->message);
                 g_error_free(err);
                 err = NULL;
             }
-            
+
             cairo_surface_t *surface;
             cairo_t *ctx;
-            
+
             //rsvg_handle_get_dimensions(handle, &dimension_data); // deprecated
             rsvg_handle_get_intrinsic_size_in_pixels(handle,&width, &height);
             double resx = width*scalex ; //((double) dimension_data.width) * scalex;
             double resy = height*scaley; //((double) dimension_data.height) * scaley;
             if (pdf) {
-                surface = cairo_pdf_surface_create(outfile, (int) resx, (int) resy); 
+                surface = cairo_pdf_surface_create(outfile, (int) resx, (int) resy);
             } else if (svg) {
-                surface = cairo_svg_surface_create(outfile, (int) resx, (int) resy); 
+                surface = cairo_svg_surface_create(outfile, (int) resx, (int) resy);
             } else {
                 surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, (int) resx, (int) resy);
                 //surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24, (int) resx, (int) resy);
             }
             ctx = cairo_create(surface);
-            
+
             cairo_set_source_rgba(ctx, 255, 255, 255, 0);
 
             //cairo_scale(ctx, scalex, scaley);
@@ -2808,7 +2808,7 @@ namespace eval ::svgconvert {
             } else {
                 cairo_surface_write_to_png(surface, outfile);
                 cairo_surface_destroy(surface);
-            } 
+            }
         }
         proc svgconv {infile outfile {scalex 1.0} {scaley 1.0}} {
             if {$scalex != $scaley} {
@@ -2820,7 +2820,7 @@ namespace eval ::svgconvert {
             svgconvert::svgconvert $infile $outfile $scalex $scaley
         }
         }
-    } 
+    }
     #puts "critcl: [info command ::svgconvert::svgconv]"
     if {[info command ::svgconvert::svgconv] eq "" && [auto_execok rsvg-convert] ne ""} {
         proc svgconv {infile outfile {scalex 1.0} {scaley 1.0}} {
@@ -2841,12 +2841,12 @@ namespace eval ::svgconvert {
             if {![file exists $infile]} {
                 error "Error: File $infile does not exist!"
             }
-            exec cairosvg -f [string range [string tolower [file extension $outfile]] 1 end] -o $outfile -s $scalex $infile 
+            exec cairosvg -f [string range [string tolower [file extension $outfile]] 1 end] -o $outfile -s $scalex $infile
         }
     } elseif {[info command ::svgconvert::svgconv] eq ""}  {
         puts stderr "Error: no svg conversion available, neither critcl and librsvg2-dev or the terminal applications rsvg-convert or cairosvg are available!\nPlease install one of the tools to support svg display!"
     }
-        
+
     proc svg2svg {svginfile svgoutfile {scalex 1.0} {scaley 1.0}} {
         if {[file extension $svgoutfile] ne ".svg"} {
             error "Error: File extension for $svgoutfile is not .svg!"
@@ -2890,7 +2890,7 @@ namespace eval ::svgconvert {
             file delete $svgfile
             return $img
         }
-        
+
     }
     proc svg2base64 {filename} {
         if [catch {open $filename r} infh] {
@@ -2940,14 +2940,14 @@ if {[info exists argv0] && [info script] eq $argv0} {
         exit 0
     }
     if {[llength $argv] > 0} {
-        if {[llength $argv] >= 1 && [lsearch -regexp $argv --help] > -1} {    
+        if {[llength $argv] >= 1 && [lsearch -regexp $argv --help] > -1} {
             usage
             destroy .
-        } elseif {[llength $argv] == 1 && [lindex $argv 0] eq "--version"} {    
+        } elseif {[llength $argv] == 1 && [lindex $argv 0] eq "--version"} {
             #package require shtmlview::shtmlview
             puts [package present shtmlview::shtmlview]
             destroy .
-        } elseif {[llength $argv] == 1 && [lindex $argv 0] eq "--install"} {    
+        } elseif {[llength $argv] == 1 && [lindex $argv 0] eq "--install"} {
             set outname shtmlview-[package present shtmlview::shtmlview]
             set tmfile ${outname}.tm
             set tm [open $tmfile w]
@@ -2962,7 +2962,7 @@ if {[info exists argv0] && [info script] eq $argv0} {
         } elseif {[lindex $argv 0] eq "--test"} {
             set help [::shtmlview::shtmlview .help -browsecmd found \
                       -tablesupport true -home [file join [file dirname [info script]] shtmlview.html]]
-            ::shtmlview::shtmlview .help2 
+            ::shtmlview::shtmlview .help2
             $help browse [file join [file dirname [info script]] shtmlview.html]
             .help2 browse [file join [file dirname [info script]] shtmlview-test.html]
             pack $help -fill both -expand true -side top
@@ -2984,7 +2984,7 @@ if {[info exists argv0] && [info script] eq $argv0} {
         } elseif {[file exists [lindex $argv 0]]} {
             set help [::shtmlview::shtmlview .help -historycombo true \
                       -tablesupport true -home [file join [file dirname [info script]] shtmlview.html]]
-            pack $help -side top -fill both -expand true 
+            pack $help -side top -fill both -expand true
             if {[file extension [lindex $argv 0]] eq ".tcl" || [file extension [lindex $argv 0]] eq ".tm" } {
                 # guess we have mkdoc format
                 if { [ catch {  package require mkdoc::mkdoc } ] } {
@@ -2999,7 +2999,7 @@ if {[info exists argv0] && [info script] eq $argv0} {
 
             } else {
                 # standard html or Markdown
-                $help configure -home [lindex $argv 0] 
+                $help configure -home [lindex $argv 0]
                 $help browse {*}[lrange $argv 0 end]
                 [$help getTextWidget] tag configure divblue -foreground blue
                 update idletasks
@@ -3012,6 +3012,6 @@ if {[info exists argv0] && [info script] eq $argv0} {
         usage
     }
 }
-    
-    
+
+
 

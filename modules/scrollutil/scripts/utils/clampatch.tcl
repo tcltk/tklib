@@ -133,7 +133,7 @@ proc clampatch::patchClamTheme {} {
 	#
 	# Send a <<ThemeChanged>> virtual event to all widgets
 	#
-	::ttk::ThemeChanged 
+	::ttk::ThemeChanged
     }
 }
 
@@ -188,7 +188,7 @@ proc clampatch::unpatchClamTheme {} {
 	#
 	# Send a <<ThemeChanged>> virtual event to all widgets
 	#
-	::ttk::ThemeChanged 
+	::ttk::ThemeChanged
     }
 }
 

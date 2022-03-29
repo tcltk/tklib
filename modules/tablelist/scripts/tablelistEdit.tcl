@@ -130,7 +130,7 @@ namespace eval tablelist {
 	    $name-reservedKeys	{Left Right Up Down} \
 	]
     }
-    addTkCoreWidgets 
+    addTkCoreWidgets
 
     #
     # Register the tile widgets ttk::entry, ttk::spinbox, ttk::combobox,
@@ -244,7 +244,7 @@ namespace eval tablelist {
 	}
     }
     if {$::tk_version >= 8.4 && [llength [package versions tile]] > 0} {
-	addTileWidgets 
+	addTileWidgets
     }
 }
 
@@ -1222,7 +1222,7 @@ proc tablelist::createTileEntry {w args} {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.6
     }
-    createTileAliases 
+    createTileAliases
 
     #
     # The style of the tile entry widget should have -borderwidth
@@ -1274,7 +1274,7 @@ proc tablelist::createTileSpinbox {w args} {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.8.3
     }
-    createTileAliases 
+    createTileAliases
 
     #
     # The style of the tile spinbox widget should have -borderwidth
@@ -1333,7 +1333,7 @@ proc tablelist::createTileCombobox {w args} {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.6
     }
-    createTileAliases 
+    createTileAliases
 
     set win [getTablelistPath $w]
     variable currentTheme
@@ -1386,7 +1386,7 @@ proc tablelist::createTileMenubutton {w args} {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.6
     }
-    createTileAliases 
+    createTileAliases
 
     styleConfig Tablelist.TMenubutton -anchor w -justify left -padding 1 \
 				      -relief raised
@@ -1637,7 +1637,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	array set tablelist::ns${tablelist::W}::data \
 	      {editKey ""  editRow -1  editCol -1  inEditWin 0  prevCell -1,-1}
 	if {[catch {tk::CancelRepeat}] != 0} {
-	    tkCancelRepeat 
+	    tkCancelRepeat
 	}
 	if {[catch {ttk::CancelRepeat}] != 0} {
 	    catch {tile::CancelRepeat}
