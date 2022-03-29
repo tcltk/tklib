@@ -1,0 +1,356 @@
+[comment {-*- tcl -*- doctools manpage}]
+[manpage_begin shtmlview n 1.0.0]
+[see_also text]
+[keywords text]
+[keywords html]
+[keywords widget]
+[copyright {2018-2022, Detlef Groth <detlef(at)dgroth(dot)de>}]
+[copyright {2009, Robert Heller}]
+[copyright {2000, Clif Flynt}]
+[copyright {1995-1999, Stephen Uhler}]
+
+[moddesc   {Basic HTML and Markdown viewer widget}]
+[titledesc {Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown markup}]
+[require Tk]
+[require snit]
+[require "Markdown ;# optional Markdown support"]
+[require "img::jpeg ;# optional jpeg image support"]
+[require shtmlview::shtmlview [opt 1.0.0]]
+
+[description]
+
+The [package shtmlview::shtmlview] package provides the [widget shtmlview::shtmlview]
+widget which is a standard tk text widget with support for rendering a
+reasonable subset of html tags and, if the tcllib library Markdown is
+available, as well for Markdown files. It is a pure Tcl/Tk widget which does
+not need any compilation.
+
+[para]
+The widget is not(!) to be intended to be used as a web browser. It only supports relative links on a local filesystem, it does not(!) support style sheets, it does not support any http(s) or webserver like links or images. 
+It is tought as a fallback widget in cases where no other possibilities exists to
+display HTML or Markdown markup inside a Tk application. So it can be
+used in cases where the developer has control over the used subset of HTML
+markup or as a fallback mechanism where no other possibilities exists to
+display HTML or Markdown documents. 
+
+[para]
+
+The widget is intended to be used for instance as a help viewer
+or in other cases where the developer has control about the used html tags.
+Comments and feedbacks are welcome. The [cmd shtmlview::shtmlview] widget overloads the text 
+widget and provides new commands, named [method back], [method browse],
+[method dosearch], [method forward], [method home], [method open], [method reload],
+[method url] and new options, named [option -browsecmd], [option -home], [option -tablesupport], 
+[option -toolbar]. 
+
+[para]
+
+Furthermore the file shtmlview.tcl can be used as standalone application to
+render Markdown and HTML files by executing [cmd "shtmlview.tcl filename"] in
+the terminal.
+
+[para]
+
+The [cmd ::shtmlview::shtmlview] command creates creates a new window (given
+by the pathName argument) and makes it into [cmd ::shtmlview::shtmlview]
+widget. The [package ::shtmlview::shtmlview] command returns its pathName
+argument. At the time this command is invoked, there must not exist a window
+named pathName, but pathName's parent must exist. The API described in this document is not the whole
+API offered by the snit object [cmd ::shtmlview::shtmlview].
+Instead, it is the subset of that API that is expected not to change in future versions. 
+
+
+[para]
+
+Background: [cmd ::shtmlview::shtmlview] is a pure Tcl/Tk widget based on the
+library htmllib developed in the 90ties by Stephen Uhler and Clif Flynt. This
+library was wrapped into the excellent mega-widget framework snit by Robert
+Heller in 2009. His widget however was tied directly into a help system. The
+author of this document just isolated the display part and added some
+functions such as changing font size and a few buttons in the toolbar. Also a
+rudimentary display of data tables was added. Later as well support for inline
+images and extended keybindings and Markdown support was added.
+
+[para]
+
+
+[section INSTALLATION]
+
+The widget requires the tcllib [cmd snit] package and optional, if desired to display Markdown files, the tcllib [cmd Markdown] library.
+The [cmd shtmlview::shtmlview] package is delivered as a normal Tcl package
+folder which can be placed anywhere on your file system or in a folder
+belonging to your Tcl library path. In case you installed it into a non-standard folder
+just use append your [cmd auto_path] variable as shown below:
+
+[example {
+lappend auto_path /path/to/parent-folder ;# of shtmlview folder
+package require shtmlview::shtmlview
+}]
+
+Alternatively you can directly source the file shtmlview.tcl into your Tcl application.
+
+[section COMMANDS]
+
+[list_begin definitions]
+
+[call [cmd ::shtmlview::shtmlview] [arg pathName] [opt [arg options]]]
+
+Creates and configures a shtmlview widget.
+
+[list_end]
+
+[section {WIDGET OPTIONS}]
+
+[para]
+
+To configure the internal text widget the helptext command courld be used directly.
+
+[list_begin options]
+
+[opt_def -browsecmd cmd]
+
+Each time a HTML or Markdown page is rendered the given [option -browsecmd] is invoked. The actual URL is appended as first argument to the command.
+
+[opt_def -historycombo boolean]
+
+If true (default is false) displays a ttk::combobox if the tile package is available in the toolbar.
+Can be only set a widget creation.
+
+[opt_def -home string]
+
+Set's the homepage filename of the shtmlview widget. If not set, the first page browsed
+will be automatically set as the home page.
+
+[opt_def -tablesupport boolean]
+
+If true (default) the widget will provide some table support. This will have
+some undesired results if table tags are misused as markup tool. Simple html
+tables with th and td tags should display however well if no internal markup
+inside those tags is implemented.
+
+[opt_def -toolbar boolean]
+
+If true (default) a toolbar will be displayed on top providing standard buttons for
+methods [method back], [method forward] and [method home] as well as search
+facilities for the widget. Default: true
+
+[list_end]
+
+[section {WIDGET COMMANDS}]
+
+Each shtmlview widget created with the above command supports the following
+commands and options:
+
+[list_begin definitions]
+
+[call [arg pathName] [method back]]
+
+Displays the previous HTML and Markdown page in the browsing history if any.
+
+[call [arg pathName] [method browse] [arg filename] [opt args]]
+
+Displays the HTML or Markdown page given by filename(s). 
+The first given filename will be shown in the widget, the other, 
+optional given filenames will be added to the history stack only and can be walked using the history keys, f and b.
+
+[call [arg pathName] [method dosearch] [arg string] [arg direction]]
+
+Search and hilights the given string from the current index either
+in the given direction either forward (default) or backwards.
+
+[call [arg pathName] [method forward]]
+
+Displays the next HTML or Markdown page in the browsing history if any.
+
+[call [arg pathName] [method getFiles]]
+
+This command returns a list of all visited files, cleaned up for multiple entries and without anchor links.
+
+[call [arg pathName] [method getHistory]]
+
+This command returns a list of the current history of visited files and anchors.
+
+[call [arg pathName] [method getTextWidget]]
+
+This commands returns the internal pathname of the text widget. The developer
+can that way thereafter deal directly with the internal text widget if
+required. Alternatively the [method helptext] command can be used. See below.
+
+[call [arg pathName] [method helptext] [arg cmd] [opt [arg options]]]
+
+This command exposes the internal text widget. See the following example:
+
+[example {
+    ::shtmlview::shtmlview .help 
+    .help browse index.html
+    .help helptext configure -background yellow
+}]
+
+
+[call [arg pathName] [method home]]
+
+Displays the first HTML or Markdown page which was called by [arg pathName] [method browse] or set by [option -home].
+
+[call [arg pathName] [method open]]
+
+Displays a standard file dialog to open a HTML or Markdown page to be displayed in the [cmd shtmlview::shtmlview] widget.
+
+[call [arg pathName] [method reload]]
+
+Reloads and redisplays the current HTML or Markdown page visible inside the [cmd shtmlview::shtmlview] widget.
+
+[call [arg pathName] [method url]]
+
+Returns the current URL displayed in the [cmd ::shtmlview::shtmlview] widget.
+
+[list_end]
+
+[section "BINDINGS FOR THE WIDGET"]
+
+The widget contain standard navigation key bindings to browse the content of
+an HTML or Markdown page. Furthermore the keypress s and r are bound to the start of
+forward and reverse searches in the content. The keys 'n' (next) and 'p' (previous) are used to repeat the current search.
+The keys 'f' and 'b' keys are bound to browsing forward and backward in the browse history. The 'q' key deletes the current file from the history and displays the next one.
+The 'TAB' key browses to the next hyperlink, and pressing the Return/Enter key process the current link. The key combination 'Ctrl-r' reloads the current page.
+
+[section EXAMPLE]
+[example {
+    package require Tk
+    package require snit
+    package require shtmlview::shtmlview
+    proc browsed {url} {
+        puts "You browsed $url"
+    }
+    set help [::shtmlview::shtmlview .help -toolbar true \
+        -browsecmd browsed]
+    $help browse index.html
+    pack $help -fill both -expand true -side left
+    package require Markdown
+    $help browser test.md
+}]
+
+Further examples are in the source package for [package shtmlview::shtmlview].
+
+[section CHANGELOG]
+
+
+[para]
+2022-02-25 version 0.9.2
+
+[list_begin itemized]
+[item] fix for tk_textCopy and documentation update
+[list_end]
+
+[para]
+2022-03-06 version 0.9.3
+
+[list_begin itemized]
+
+[item] support for MouseWheel bindings
+[item] fixing hyperlinks to http(s) links
+[item] support for file-anchor links like 'file.html#anchor'
+[item] support for '#' as link to the top
+[item] thanks to aplsimple for suggestions and bug reports
+[list_end]
+
+[para]
+2022-03-26 version 1.0.0
+
+[list_begin itemized]
+
+[item] HTML 3.2 tags div, sub, sup, small, big
+
+[item] initial support for Markdown files
+
+[item] initial support for base64 encoded inline image files
+
+[item] support for jpg images if img::jpeg library is available
+
+[item] support for svg images if critcl and librsvg-dev(el) or terminal application rsvg-convert or cairosvg are available
+
+[item] back and forward as well for anchors
+
+[item] first and last browse entry buttons for history
+
+[item] history with full file path to allow directory changes
+
+[item] improved usage line and install option
+[item] keyboard bindings for next and previous search
+[item] return and tab for links
+[item] historycombo option
+[item] toolbar fix
+[item] browse fix for non-existing files
+[item] removed unused css/stylesheet and web forms code
+[item] thanks to pepdiz for bug-reports and suggestions
+
+[list_end]
+
+[section TODO]
+[para]
+
+[list_begin itemized]
+[item] Markdown rendering using tcllib library Markdown in case URL ends with .md (done)
+[item] Support for SVG images for instance using svgconvert https://wiki.tcl-lang.org/page/svgconvert at least on Linux/Windows
+[item] More tags, see tag history add 3.2 tags: http://www.martinrinehart.com/frontend-engineering/engineers/html/html-tag-history.html (done)
+[list_end]
+
+[section Thanks]
+
+Stephen Uhler, Clif Flynt and Robert Heller, they provided the majority of the code in this widget.
+
+[section "Bugs, Ideas, Feedback"]
+
+This document, and the package it describes, will undoubtedly contain bugs and
+other problems. Please report such to the author of this package. Please also report any ideas for enhancements you may have for
+either package and/or documentation.
+
+[section "Code Copyright"]
+
+BSD License type:
+
+[para]
+
+Sun Microsystems, Inc.  The following terms apply to all files
+a ssociated with the software unless explicitly disclaimed in individual
+files.
+
+[para]
+ 
+The authors hereby grant permission to use, copy, modify, distribute,
+and license this software and its documentation for any purpose, provided
+that existing copyright notices are retained in all copies and that this
+notice is included verbatim in any distributions. No written agreement,
+license, or royalty fee is required for any of the authorized uses.
+Modifications to this software may be copyrighted by their authors
+and need not follow the licensing terms described here, provided that
+the new terms are clearly indicated on the first page of each file where
+they apply.
+
+[para]
+ 
+IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY
+FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES
+ARISING OUT OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY
+DERIVATIVES THEREOF, EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+[para]
+ 
+THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE
+IS PROVIDED ON AN "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE
+NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR
+MODIFICATIONS.
+
+[para]
+ 
+RESTRICTED RIGHTS: Use, duplication or disclosure by the government
+is subject to the restrictions as set forth in subparagraph (c) (1) (ii)
+of the Rights in Technical Data and Computer Software Clause as DFARS
+ 252.227-7013 and FAR 52.227-19.
+
+[vset CATEGORY shtmlview]
+
+[manpage_end]
+
