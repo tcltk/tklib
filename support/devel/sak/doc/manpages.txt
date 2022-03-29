@@ -33,6 +33,7 @@ modules/ntext/ntextIndent.man
 modules/ntext/ntextWordBreak.man
 modules/persistentSelection/persistentSelection.man
 modules/plotchart/plotchart.man
+modules/shtmlview/shtmlview.man
 modules/swaplist/swaplist.man
 modules/tkpiechart/canvaslabel.man
 modules/tkpiechart/pie.man
