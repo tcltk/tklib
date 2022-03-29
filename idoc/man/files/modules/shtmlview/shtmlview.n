@@ -1,0 +1,596 @@
+'\"
+'\" Generated from file 'shtmlview\&.man' by tcllib/doctools with format 'nroff'
+'\" Copyright (c) 2018-2022, Detlef Groth <detlef(at)dgroth(dot)de>
+'\" Copyright (c) 2009, Robert Heller
+'\" Copyright (c) 2000, Clif Flynt
+'\" Copyright (c) 1995-1999, Stephen Uhler
+'\"
+.TH "shtmlview" n 1\&.0\&.0 tklib "Basic HTML and Markdown viewer widget"
+.\" The -*- nroff -*- definitions below are for supplemental macros used
+.\" in Tcl/Tk manual entries.
+.\"
+.\" .AP type name in/out ?indent?
+.\"	Start paragraph describing an argument to a library procedure.
+.\"	type is type of argument (int, etc.), in/out is either "in", "out",
+.\"	or "in/out" to describe whether procedure reads or modifies arg,
+.\"	and indent is equivalent to second arg of .IP (shouldn't ever be
+.\"	needed;  use .AS below instead)
+.\"
+.\" .AS ?type? ?name?
+.\"	Give maximum sizes of arguments for setting tab stops.  Type and
+.\"	name are examples of largest possible arguments that will be passed
+.\"	to .AP later.  If args are omitted, default tab stops are used.
+.\"
+.\" .BS
+.\"	Start box enclosure.  From here until next .BE, everything will be
+.\"	enclosed in one large box.
+.\"
+.\" .BE
+.\"	End of box enclosure.
+.\"
+.\" .CS
+.\"	Begin code excerpt.
+.\"
+.\" .CE
+.\"	End code excerpt.
+.\"
+.\" .VS ?version? ?br?
+.\"	Begin vertical sidebar, for use in marking newly-changed parts
+.\"	of man pages.  The first argument is ignored and used for recording
+.\"	the version when the .VS was added, so that the sidebars can be
+.\"	found and removed when they reach a certain age.  If another argument
+.\"	is present, then a line break is forced before starting the sidebar.
+.\"
+.\" .VE
+.\"	End of vertical sidebar.
+.\"
+.\" .DS
+.\"	Begin an indented unfilled display.
+.\"
+.\" .DE
+.\"	End of indented unfilled display.
+.\"
+.\" .SO ?manpage?
+.\"	Start of list of standard options for a Tk widget. The manpage
+.\"	argument defines where to look up the standard options; if
+.\"	omitted, defaults to "options". The options follow on successive
+.\"	lines, in three columns separated by tabs.
+.\"
+.\" .SE
+.\"	End of list of standard options for a Tk widget.
+.\"
+.\" .OP cmdName dbName dbClass
+.\"	Start of description of a specific option.  cmdName gives the
+.\"	option's name as specified in the class command, dbName gives
+.\"	the option's name in the option database, and dbClass gives
+.\"	the option's class in the option database.
+.\"
+.\" .UL arg1 arg2
+.\"	Print arg1 underlined, then print arg2 normally.
+.\"
+.\" .QW arg1 ?arg2?
+.\"	Print arg1 in quotes, then arg2 normally (for trailing punctuation).
+.\"
+.\" .PQ arg1 ?arg2?
+.\"	Print an open parenthesis, arg1 in quotes, then arg2 normally
+.\"	(for trailing punctuation) and then a closing parenthesis.
+.\"
+.\"	# Set up traps and other miscellaneous stuff for Tcl/Tk man pages.
+.if t .wh -1.3i ^B
+.nr ^l \n(.l
+.ad b
+.\"	# Start an argument description
+.de AP
+.ie !"\\$4"" .TP \\$4
+.el \{\
+.   ie !"\\$2"" .TP \\n()Cu
+.   el          .TP 15
+.\}
+.ta \\n()Au \\n()Bu
+.ie !"\\$3"" \{\
+\&\\$1 \\fI\\$2\\fP (\\$3)
+.\".b
+.\}
+.el \{\
+.br
+.ie !"\\$2"" \{\
+\&\\$1	\\fI\\$2\\fP
+.\}
+.el \{\
+\&\\fI\\$1\\fP
+.\}
+.\}
+..
+.\"	# define tabbing values for .AP
+.de AS
+.nr )A 10n
+.if !"\\$1"" .nr )A \\w'\\$1'u+3n
+.nr )B \\n()Au+15n
+.\"
+.if !"\\$2"" .nr )B \\w'\\$2'u+\\n()Au+3n
+.nr )C \\n()Bu+\\w'(in/out)'u+2n
+..
+.AS Tcl_Interp Tcl_CreateInterp in/out
+.\"	# BS - start boxed text
+.\"	# ^y = starting y location
+.\"	# ^b = 1
+.de BS
+.br
+.mk ^y
+.nr ^b 1u
+.if n .nf
+.if n .ti 0
+.if n \l'\\n(.lu\(ul'
+.if n .fi
+..
+.\"	# BE - end boxed text (draw box now)
+.de BE
+.nf
+.ti 0
+.mk ^t
+.ie n \l'\\n(^lu\(ul'
+.el \{\
+.\"	Draw four-sided box normally, but don't draw top of
+.\"	box if the box started on an earlier page.
+.ie !\\n(^b-1 \{\
+\h'-1.5n'\L'|\\n(^yu-1v'\l'\\n(^lu+3n\(ul'\L'\\n(^tu+1v-\\n(^yu'\l'|0u-1.5n\(ul'
+.\}
+.el \}\
+\h'-1.5n'\L'|\\n(^yu-1v'\h'\\n(^lu+3n'\L'\\n(^tu+1v-\\n(^yu'\l'|0u-1.5n\(ul'
+.\}
+.\}
+.fi
+.br
+.nr ^b 0
+..
+.\"	# VS - start vertical sidebar
+.\"	# ^Y = starting y location
+.\"	# ^v = 1 (for troff;  for nroff this doesn't matter)
+.de VS
+.if !"\\$2"" .br
+.mk ^Y
+.ie n 'mc \s12\(br\s0
+.el .nr ^v 1u
+..
+.\"	# VE - end of vertical sidebar
+.de VE
+.ie n 'mc
+.el \{\
+.ev 2
+.nf
+.ti 0
+.mk ^t
+\h'|\\n(^lu+3n'\L'|\\n(^Yu-1v\(bv'\v'\\n(^tu+1v-\\n(^Yu'\h'-|\\n(^lu+3n'
+.sp -1
+.fi
+.ev
+.\}
+.nr ^v 0
+..
+.\"	# Special macro to handle page bottom:  finish off current
+.\"	# box/sidebar if in box/sidebar mode, then invoked standard
+.\"	# page bottom macro.
+.de ^B
+.ev 2
+'ti 0
+'nf
+.mk ^t
+.if \\n(^b \{\
+.\"	Draw three-sided box if this is the box's first page,
+.\"	draw two sides but no top otherwise.
+.ie !\\n(^b-1 \h'-1.5n'\L'|\\n(^yu-1v'\l'\\n(^lu+3n\(ul'\L'\\n(^tu+1v-\\n(^yu'\h'|0u'\c
+.el \h'-1.5n'\L'|\\n(^yu-1v'\h'\\n(^lu+3n'\L'\\n(^tu+1v-\\n(^yu'\h'|0u'\c
+.\}
+.if \\n(^v \{\
+.nr ^x \\n(^tu+1v-\\n(^Yu
+\kx\h'-\\nxu'\h'|\\n(^lu+3n'\ky\L'-\\n(^xu'\v'\\n(^xu'\h'|0u'\c
+.\}
+.bp
+'fi
+.ev
+.if \\n(^b \{\
+.mk ^y
+.nr ^b 2
+.\}
+.if \\n(^v \{\
+.mk ^Y
+.\}
+..
+.\"	# DS - begin display
+.de DS
+.RS
+.nf
+.sp
+..
+.\"	# DE - end display
+.de DE
+.fi
+.RE
+.sp
+..
+.\"	# SO - start of list of standard options
+.de SO
+'ie '\\$1'' .ds So \\fBoptions\\fR
+'el .ds So \\fB\\$1\\fR
+.SH "STANDARD OPTIONS"
+.LP
+.nf
+.ta 5.5c 11c
+.ft B
+..
+.\"	# SE - end of list of standard options
+.de SE
+.fi
+.ft R
+.LP
+See the \\*(So manual entry for details on the standard options.
+..
+.\"	# OP - start of full description for a single option
+.de OP
+.LP
+.nf
+.ta 4c
+Command-Line Name:	\\fB\\$1\\fR
+Database Name:	\\fB\\$2\\fR
+Database Class:	\\fB\\$3\\fR
+.fi
+.IP
+..
+.\"	# CS - begin code excerpt
+.de CS
+.RS
+.nf
+.ta .25i .5i .75i 1i
+..
+.\"	# CE - end code excerpt
+.de CE
+.fi
+.RE
+..
+.\"	# UL - underline word
+.de UL
+\\$1\l'|0\(ul'\\$2
+..
+.\"	# QW - apply quotation marks to word
+.de QW
+.ie '\\*(lq'"' ``\\$1''\\$2
+.\"" fix emacs highlighting
+.el \\*(lq\\$1\\*(rq\\$2
+..
+.\"	# PQ - apply parens and quotation marks to word
+.de PQ
+.ie '\\*(lq'"' (``\\$1''\\$2)\\$3
+.\"" fix emacs highlighting
+.el (\\*(lq\\$1\\*(rq\\$2)\\$3
+..
+.\"	# QR - quoted range
+.de QR
+.ie '\\*(lq'"' ``\\$1''\\-``\\$2''\\$3
+.\"" fix emacs highlighting
+.el \\*(lq\\$1\\*(rq\\-\\*(lq\\$2\\*(rq\\$3
+..
+.\"	# MT - "empty" string
+.de MT
+.QW ""
+..
+.BS
+.SH NAME
+shtmlview \- Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown markup
+.SH SYNOPSIS
+package require \fBTk \fR
+.sp
+package require \fBsnit \fR
+.sp
+package require \fBMarkdown ;# optional Markdown support \fR
+.sp
+package require \fBimg::jpeg ;# optional jpeg image support \fR
+.sp
+package require \fBshtmlview::shtmlview  ?1\&.0\&.0?\fR
+.sp
+\fB::shtmlview::shtmlview\fR \fIpathName\fR ?\fIoptions\fR?
+.sp
+\fIpathName\fR \fBback\fR
+.sp
+\fIpathName\fR \fBbrowse\fR \fIfilename\fR ?args?
+.sp
+\fIpathName\fR \fBdosearch\fR \fIstring\fR \fIdirection\fR
+.sp
+\fIpathName\fR \fBforward\fR
+.sp
+\fIpathName\fR \fBgetFiles\fR
+.sp
+\fIpathName\fR \fBgetHistory\fR
+.sp
+\fIpathName\fR \fBgetTextWidget\fR
+.sp
+\fIpathName\fR \fBhelptext\fR \fIcmd\fR ?\fIoptions\fR?
+.sp
+\fIpathName\fR \fBhome\fR
+.sp
+\fIpathName\fR \fBopen\fR
+.sp
+\fIpathName\fR \fBreload\fR
+.sp
+\fIpathName\fR \fBurl\fR
+.sp
+.BE
+.SH DESCRIPTION
+The \fBshtmlview::shtmlview\fR package provides the \fBshtmlview::shtmlview\fR
+widget which is a standard tk text widget with support for rendering a
+reasonable subset of html tags and, if the tcllib library Markdown is
+available, as well for Markdown files\&. It is a pure Tcl/Tk widget which does
+not need any compilation\&.
+.PP
+The widget is not(!) to be intended to be used as a web browser\&. It only supports relative links on a local filesystem, it does not(!) support style sheets, it does not support any http(s) or webserver like links or images\&.
+It is tought as a fallback widget in cases where no other possibilities exists to
+display HTML or Markdown markup inside a Tk application\&. So it can be
+used in cases where the developer has control over the used subset of HTML
+markup or as a fallback mechanism where no other possibilities exists to
+display HTML or Markdown documents\&.
+.PP
+The widget is intended to be used for instance as a help viewer
+or in other cases where the developer has control about the used html tags\&.
+Comments and feedbacks are welcome\&. The \fBshtmlview::shtmlview\fR widget overloads the text
+widget and provides new commands, named \fBback\fR, \fBbrowse\fR,
+\fBdosearch\fR, \fBforward\fR, \fBhome\fR, \fBopen\fR, \fBreload\fR,
+\fBurl\fR and new options, named \fB-browsecmd\fR, \fB-home\fR, \fB-tablesupport\fR,
+\fB-toolbar\fR\&.
+.PP
+Furthermore the file shtmlview\&.tcl can be used as standalone application to
+render Markdown and HTML files by executing \fBshtmlview\&.tcl filename\fR in
+the terminal\&.
+.PP
+The \fB::shtmlview::shtmlview\fR command creates creates a new window (given
+by the pathName argument) and makes it into \fB::shtmlview::shtmlview\fR
+widget\&. The \fB::shtmlview::shtmlview\fR command returns its pathName
+argument\&. At the time this command is invoked, there must not exist a window
+named pathName, but pathName's parent must exist\&. The API described in this document is not the whole
+API offered by the snit object \fB::shtmlview::shtmlview\fR\&.
+Instead, it is the subset of that API that is expected not to change in future versions\&.
+.PP
+Background: \fB::shtmlview::shtmlview\fR is a pure Tcl/Tk widget based on the
+library htmllib developed in the 90ties by Stephen Uhler and Clif Flynt\&. This
+library was wrapped into the excellent mega-widget framework snit by Robert
+Heller in 2009\&. His widget however was tied directly into a help system\&. The
+author of this document just isolated the display part and added some
+functions such as changing font size and a few buttons in the toolbar\&. Also a
+rudimentary display of data tables was added\&. Later as well support for inline
+images and extended keybindings and Markdown support was added\&.
+.PP
+.SH INSTALLATION
+The widget requires the tcllib \fBsnit\fR package and optional, if desired to display Markdown files, the tcllib \fBMarkdown\fR library\&.
+The \fBshtmlview::shtmlview\fR package is delivered as a normal Tcl package
+folder which can be placed anywhere on your file system or in a folder
+belonging to your Tcl library path\&. In case you installed it into a non-standard folder
+just use append your \fBauto_path\fR variable as shown below:
+.CS
+
+
+lappend auto_path /path/to/parent-folder ;# of shtmlview folder
+package require shtmlview::shtmlview
+
+.CE
+Alternatively you can directly source the file shtmlview\&.tcl into your Tcl application\&.
+.SH COMMANDS
+.TP
+\fB::shtmlview::shtmlview\fR \fIpathName\fR ?\fIoptions\fR?
+Creates and configures a shtmlview widget\&.
+.PP
+.SH "WIDGET OPTIONS"
+.PP
+To configure the internal text widget the helptext command courld be used directly\&.
+.TP
+\fB-browsecmd\fR cmd
+Each time a HTML or Markdown page is rendered the given \fB-browsecmd\fR is invoked\&. The actual URL is appended as first argument to the command\&.
+.TP
+\fB-historycombo\fR boolean
+If true (default is false) displays a ttk::combobox if the tile package is available in the toolbar\&.
+Can be only set a widget creation\&.
+.TP
+\fB-home\fR string
+Set's the homepage filename of the shtmlview widget\&. If not set, the first page browsed
+will be automatically set as the home page\&.
+.TP
+\fB-tablesupport\fR boolean
+If true (default) the widget will provide some table support\&. This will have
+some undesired results if table tags are misused as markup tool\&. Simple html
+tables with th and td tags should display however well if no internal markup
+inside those tags is implemented\&.
+.TP
+\fB-toolbar\fR boolean
+If true (default) a toolbar will be displayed on top providing standard buttons for
+methods \fBback\fR, \fBforward\fR and \fBhome\fR as well as search
+facilities for the widget\&. Default: true
+.PP
+.SH "WIDGET COMMANDS"
+Each shtmlview widget created with the above command supports the following
+commands and options:
+.TP
+\fIpathName\fR \fBback\fR
+Displays the previous HTML and Markdown page in the browsing history if any\&.
+.TP
+\fIpathName\fR \fBbrowse\fR \fIfilename\fR ?args?
+Displays the HTML or Markdown page given by filename(s)\&.
+The first given filename will be shown in the widget, the other,
+optional given filenames will be added to the history stack only and can be walked using the history keys, f and b\&.
+.TP
+\fIpathName\fR \fBdosearch\fR \fIstring\fR \fIdirection\fR
+Search and hilights the given string from the current index either
+in the given direction either forward (default) or backwards\&.
+.TP
+\fIpathName\fR \fBforward\fR
+Displays the next HTML or Markdown page in the browsing history if any\&.
+.TP
+\fIpathName\fR \fBgetFiles\fR
+This command returns a list of all visited files, cleaned up for multiple entries and without anchor links\&.
+.TP
+\fIpathName\fR \fBgetHistory\fR
+This command returns a list of the current history of visited files and anchors\&.
+.TP
+\fIpathName\fR \fBgetTextWidget\fR
+This commands returns the internal pathname of the text widget\&. The developer
+can that way thereafter deal directly with the internal text widget if
+required\&. Alternatively the \fBhelptext\fR command can be used\&. See below\&.
+.TP
+\fIpathName\fR \fBhelptext\fR \fIcmd\fR ?\fIoptions\fR?
+This command exposes the internal text widget\&. See the following example:
+.CS
+
+
+    ::shtmlview::shtmlview \&.help
+    \&.help browse index\&.html
+    \&.help helptext configure -background yellow
+
+.CE
+.TP
+\fIpathName\fR \fBhome\fR
+Displays the first HTML or Markdown page which was called by \fIpathName\fR \fBbrowse\fR or set by \fB-home\fR\&.
+.TP
+\fIpathName\fR \fBopen\fR
+Displays a standard file dialog to open a HTML or Markdown page to be displayed in the \fBshtmlview::shtmlview\fR widget\&.
+.TP
+\fIpathName\fR \fBreload\fR
+Reloads and redisplays the current HTML or Markdown page visible inside the \fBshtmlview::shtmlview\fR widget\&.
+.TP
+\fIpathName\fR \fBurl\fR
+Returns the current URL displayed in the \fB::shtmlview::shtmlview\fR widget\&.
+.PP
+.SH "BINDINGS FOR THE WIDGET"
+The widget contain standard navigation key bindings to browse the content of
+an HTML or Markdown page\&. Furthermore the keypress s and r are bound to the start of
+forward and reverse searches in the content\&. The keys 'n' (next) and 'p' (previous) are used to repeat the current search\&.
+The keys 'f' and 'b' keys are bound to browsing forward and backward in the browse history\&. The 'q' key deletes the current file from the history and displays the next one\&.
+The 'TAB' key browses to the next hyperlink, and pressing the Return/Enter key process the current link\&. The key combination 'Ctrl-r' reloads the current page\&.
+.SH EXAMPLE
+.CS
+
+
+    package require Tk
+    package require snit
+    package require shtmlview::shtmlview
+    proc browsed {url} {
+        puts "You browsed $url"
+    }
+    set help [::shtmlview::shtmlview \&.help -toolbar true  -browsecmd browsed]
+    $help browse index\&.html
+    pack $help -fill both -expand true -side left
+    package require Markdown
+    $help browser test\&.md
+
+.CE
+Further examples are in the source package for \fBshtmlview::shtmlview\fR\&.
+.SH CHANGELOG
+.PP
+2022-02-25 version 0\&.9\&.2
+.IP \(bu
+fix for tk_textCopy and documentation update
+.PP
+.PP
+2022-03-06 version 0\&.9\&.3
+.IP \(bu
+support for MouseWheel bindings
+.IP \(bu
+fixing hyperlinks to http(s) links
+.IP \(bu
+support for file-anchor links like 'file\&.html#anchor'
+.IP \(bu
+support for '#' as link to the top
+.IP \(bu
+thanks to aplsimple for suggestions and bug reports
+.PP
+.PP
+2022-03-26 version 1\&.0\&.0
+.IP \(bu
+HTML 3\&.2 tags div, sub, sup, small, big
+.IP \(bu
+initial support for Markdown files
+.IP \(bu
+initial support for base64 encoded inline image files
+.IP \(bu
+support for jpg images if img::jpeg library is available
+.IP \(bu
+support for svg images if critcl and librsvg-dev(el) or terminal application rsvg-convert or cairosvg are available
+.IP \(bu
+back and forward as well for anchors
+.IP \(bu
+first and last browse entry buttons for history
+.IP \(bu
+history with full file path to allow directory changes
+.IP \(bu
+improved usage line and install option
+.IP \(bu
+keyboard bindings for next and previous search
+.IP \(bu
+return and tab for links
+.IP \(bu
+historycombo option
+.IP \(bu
+toolbar fix
+.IP \(bu
+browse fix for non-existing files
+.IP \(bu
+removed unused css/stylesheet and web forms code
+.IP \(bu
+thanks to pepdiz for bug-reports and suggestions
+.PP
+.SH TODO
+.PP
+.IP \(bu
+Markdown rendering using tcllib library Markdown in case URL ends with \&.md (done)
+.IP \(bu
+Support for SVG images for instance using svgconvert https://wiki\&.tcl-lang\&.org/page/svgconvert at least on Linux/Windows
+.IP \(bu
+More tags, see tag history add 3\&.2 tags: http://www\&.martinrinehart\&.com/frontend-engineering/engineers/html/html-tag-history\&.html (done)
+.PP
+.SH THANKS
+Stephen Uhler, Clif Flynt and Robert Heller, they provided the majority of the code in this widget\&.
+.SH "BUGS, IDEAS, FEEDBACK"
+This document, and the package it describes, will undoubtedly contain bugs and
+other problems\&. Please report such to the author of this package\&. Please also report any ideas for enhancements you may have for
+either package and/or documentation\&.
+.SH "CODE COPYRIGHT"
+BSD License type:
+.PP
+Sun Microsystems, Inc\&.  The following terms apply to all files
+a ssociated with the software unless explicitly disclaimed in individual
+files\&.
+.PP
+The authors hereby grant permission to use, copy, modify, distribute,
+and license this software and its documentation for any purpose, provided
+that existing copyright notices are retained in all copies and that this
+notice is included verbatim in any distributions\&. No written agreement,
+license, or royalty fee is required for any of the authorized uses\&.
+Modifications to this software may be copyrighted by their authors
+and need not follow the licensing terms described here, provided that
+the new terms are clearly indicated on the first page of each file where
+they apply\&.
+.PP
+IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY
+FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES
+ARISING OUT OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY
+DERIVATIVES THEREOF, EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE\&.
+.PP
+THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT\&.  THIS SOFTWARE
+IS PROVIDED ON AN "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE
+NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR
+MODIFICATIONS\&.
+.PP
+RESTRICTED RIGHTS: Use, duplication or disclosure by the government
+is subject to the restrictions as set forth in subparagraph (c) (1) (ii)
+of the Rights in Technical Data and Computer Software Clause as DFARS
+252\&.227-7013 and FAR 52\&.227-19\&.
+.SH "SEE ALSO"
+text
+.SH KEYWORDS
+html, text, widget
+.SH COPYRIGHT
+.nf
+Copyright (c) 2018-2022, Detlef Groth <detlef(at)dgroth(dot)de>
+Copyright (c) 2009, Robert Heller
+Copyright (c) 2000, Clif Flynt
+Copyright (c) 1995-1999, Stephen Uhler
+
+.fi

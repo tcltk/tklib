@@ -1,0 +1,393 @@
+<!DOCTYPE html><html><head>
+<title>shtmlview - Basic HTML and Markdown viewer widget</title>
+<style type="text/css"><!--
+    HTML {
+	background: 	#FFFFFF;
+	color: 		black;
+    }
+    BODY {
+	background: 	#FFFFFF;
+	color:	 	black;
+    }
+    DIV.doctools {
+	margin-left:	10%;
+	margin-right:	10%;
+    }
+    DIV.doctools H1,DIV.doctools H2 {
+	margin-left:	-5%;
+    }
+    H1, H2, H3, H4 {
+	margin-top: 	1em;
+	font-family:	sans-serif;
+	font-size:	large;
+	color:		#005A9C;
+	background: 	transparent;
+	text-align:		left;
+    }
+    H1.doctools_title {
+	text-align: center;
+    }
+    UL,OL {
+	margin-right: 0em;
+	margin-top: 3pt;
+	margin-bottom: 3pt;
+    }
+    UL LI {
+	list-style: disc;
+    }
+    OL LI {
+	list-style: decimal;
+    }
+    DT {
+	padding-top: 	1ex;
+    }
+    UL.doctools_toc,UL.doctools_toc UL, UL.doctools_toc UL UL {
+	font:		normal 12pt/14pt sans-serif;
+	list-style:	none;
+    }
+    LI.doctools_section, LI.doctools_subsection {
+	list-style: 	none;
+	margin-left: 	0em;
+	text-indent:	0em;
+	padding: 	0em;
+    }
+    PRE {
+	display: 	block;
+	font-family:	monospace;
+	white-space:	pre;
+	margin:		0%;
+	padding-top:	0.5ex;
+	padding-bottom:	0.5ex;
+	padding-left:	1ex;
+	padding-right:	1ex;
+	width:		100%;
+    }
+    PRE.doctools_example {
+	color: 		black;
+	background: 	#f5dcb3;
+	border:		1px solid black;
+    }
+    UL.doctools_requirements LI, UL.doctools_syntax LI {
+	list-style: 	none;
+	margin-left: 	0em;
+	text-indent:	0em;
+	padding:	0em;
+    }
+    DIV.doctools_synopsis {
+	color: 		black;
+	background: 	#80ffff;
+	border:		1px solid black;
+	font-family:	serif;
+	margin-top: 	1em;
+	margin-bottom: 	1em;
+    }
+    UL.doctools_syntax {
+	margin-top: 	1em;
+	border-top:	1px solid black;
+    }
+    UL.doctools_requirements {
+	margin-bottom: 	1em;
+	border-bottom:	1px solid black;
+    }
+--></style>
+</head>
+<!-- Generated from file 'shtmlview.man' by tcllib/doctools with format 'html'
+   -->
+<!-- Copyright &amp;copy; 2018-2022, Detlef Groth &amp;lt;detlef(at)dgroth(dot)de&amp;gt;   -- Copyright &amp;copy; 2009, Robert Heller   -- Copyright &amp;copy; 2000, Clif Flynt   -- Copyright &amp;copy; 1995-1999, Stephen Uhler
+   -->
+<!-- shtmlview.n
+   -->
+<body><hr> [
+   <a href="../../../../../../../../home">Tklib Home</a>
+&#124; <a href="../../../../toc.html">Main Table Of Contents</a>
+&#124; <a href="../../../toc.html">Table Of Contents</a>
+&#124; <a href="../../../../index.html">Keyword Index</a>
+&#124; <a href="../../../../toc0.html">Categories</a>
+&#124; <a href="../../../../toc1.html">Modules</a>
+&#124; <a href="../../../../toc2.html">Applications</a>
+ ] <hr>
+<div class="doctools">
+<h1 class="doctools_title">shtmlview(n) 1.0.0 tklib &quot;Basic HTML and Markdown viewer widget&quot;</h1>
+<div id="name" class="doctools_section"><h2><a name="name">Name</a></h2>
+<p>shtmlview - Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown markup</p>
+</div>
+<div id="toc" class="doctools_section"><h2><a name="toc">Table Of Contents</a></h2>
+<ul class="doctools_toc">
+<li class="doctools_section"><a href="#toc">Table Of Contents</a></li>
+<li class="doctools_section"><a href="#synopsis">Synopsis</a></li>
+<li class="doctools_section"><a href="#section1">Description</a></li>
+<li class="doctools_section"><a href="#section2">INSTALLATION</a></li>
+<li class="doctools_section"><a href="#section3">COMMANDS</a></li>
+<li class="doctools_section"><a href="#section4">WIDGET OPTIONS</a></li>
+<li class="doctools_section"><a href="#section5">WIDGET COMMANDS</a></li>
+<li class="doctools_section"><a href="#section6">BINDINGS FOR THE WIDGET</a></li>
+<li class="doctools_section"><a href="#section7">EXAMPLE</a></li>
+<li class="doctools_section"><a href="#section8">CHANGELOG</a></li>
+<li class="doctools_section"><a href="#section9">TODO</a></li>
+<li class="doctools_section"><a href="#section10">Thanks</a></li>
+<li class="doctools_section"><a href="#section11">Bugs, Ideas, Feedback</a></li>
+<li class="doctools_section"><a href="#section12">Code Copyright</a></li>
+<li class="doctools_section"><a href="#see-also">See Also</a></li>
+<li class="doctools_section"><a href="#keywords">Keywords</a></li>
+<li class="doctools_section"><a href="#copyright">Copyright</a></li>
+</ul>
+</div>
+<div id="synopsis" class="doctools_section"><h2><a name="synopsis">Synopsis</a></h2>
+<div class="doctools_synopsis">
+<ul class="doctools_requirements">
+<li>package require <b class="pkgname">Tk</b></li>
+<li>package require <b class="pkgname">snit</b></li>
+<li>package require <b class="pkgname">Markdown ;# optional Markdown support</b></li>
+<li>package require <b class="pkgname">img::jpeg ;# optional jpeg image support</b></li>
+<li>package require <b class="pkgname">shtmlview::shtmlview <span class="opt">?1.0.0?</span></b></li>
+</ul>
+<ul class="doctools_syntax">
+<li><a href="#1"><b class="cmd">::shtmlview::shtmlview</b> <i class="arg">pathName</i> <span class="opt">?<i class="arg">options</i>?</span></a></li>
+<li><a href="#2"><i class="arg">pathName</i> <b class="method">back</b></a></li>
+<li><a href="#3"><i class="arg">pathName</i> <b class="method">browse</b> <i class="arg">filename</i> <span class="opt">?args?</span></a></li>
+<li><a href="#4"><i class="arg">pathName</i> <b class="method">dosearch</b> <i class="arg">string</i> <i class="arg">direction</i></a></li>
+<li><a href="#5"><i class="arg">pathName</i> <b class="method">forward</b></a></li>
+<li><a href="#6"><i class="arg">pathName</i> <b class="method">getFiles</b></a></li>
+<li><a href="#7"><i class="arg">pathName</i> <b class="method">getHistory</b></a></li>
+<li><a href="#8"><i class="arg">pathName</i> <b class="method">getTextWidget</b></a></li>
+<li><a href="#9"><i class="arg">pathName</i> <b class="method">helptext</b> <i class="arg">cmd</i> <span class="opt">?<i class="arg">options</i>?</span></a></li>
+<li><a href="#10"><i class="arg">pathName</i> <b class="method">home</b></a></li>
+<li><a href="#11"><i class="arg">pathName</i> <b class="method">open</b></a></li>
+<li><a href="#12"><i class="arg">pathName</i> <b class="method">reload</b></a></li>
+<li><a href="#13"><i class="arg">pathName</i> <b class="method">url</b></a></li>
+</ul>
+</div>
+</div>
+<div id="section1" class="doctools_section"><h2><a name="section1">Description</a></h2>
+<p>The <b class="package">shtmlview::shtmlview</b> package provides the <b class="widget">shtmlview::shtmlview</b>
+widget which is a standard tk text widget with support for rendering a
+reasonable subset of html tags and, if the tcllib library Markdown is
+available, as well for Markdown files. It is a pure Tcl/Tk widget which does
+not need any compilation.</p>
+<p>The widget is not(!) to be intended to be used as a web browser. It only supports relative links on a local filesystem, it does not(!) support style sheets, it does not support any http(s) or webserver like links or images. 
+It is tought as a fallback widget in cases where no other possibilities exists to
+display HTML or Markdown markup inside a Tk application. So it can be
+used in cases where the developer has control over the used subset of HTML
+markup or as a fallback mechanism where no other possibilities exists to
+display HTML or Markdown documents.</p>
+<p>The widget is intended to be used for instance as a help viewer
+or in other cases where the developer has control about the used html tags.
+Comments and feedbacks are welcome. The <b class="cmd">shtmlview::shtmlview</b> widget overloads the text 
+widget and provides new commands, named <b class="method">back</b>, <b class="method">browse</b>,
+<b class="method">dosearch</b>, <b class="method">forward</b>, <b class="method">home</b>, <b class="method">open</b>, <b class="method">reload</b>,
+<b class="method">url</b> and new options, named <b class="option">-browsecmd</b>, <b class="option">-home</b>, <b class="option">-tablesupport</b>, 
+<b class="option">-toolbar</b>.</p>
+<p>Furthermore the file shtmlview.tcl can be used as standalone application to
+render Markdown and HTML files by executing <b class="cmd">shtmlview.tcl filename</b> in
+the terminal.</p>
+<p>The <b class="cmd">::shtmlview::shtmlview</b> command creates creates a new window (given
+by the pathName argument) and makes it into <b class="cmd">::shtmlview::shtmlview</b>
+widget. The <b class="package">::shtmlview::shtmlview</b> command returns its pathName
+argument. At the time this command is invoked, there must not exist a window
+named pathName, but pathName's parent must exist. The API described in this document is not the whole
+API offered by the snit object <b class="cmd">::shtmlview::shtmlview</b>.
+Instead, it is the subset of that API that is expected not to change in future versions.</p>
+<p>Background: <b class="cmd">::shtmlview::shtmlview</b> is a pure Tcl/Tk widget based on the
+library htmllib developed in the 90ties by Stephen Uhler and Clif Flynt. This
+library was wrapped into the excellent mega-widget framework snit by Robert
+Heller in 2009. His widget however was tied directly into a help system. The
+author of this document just isolated the display part and added some
+functions such as changing font size and a few buttons in the toolbar. Also a
+rudimentary display of data tables was added. Later as well support for inline
+images and extended keybindings and Markdown support was added.</p>
+</div>
+<div id="section2" class="doctools_section"><h2><a name="section2">INSTALLATION</a></h2>
+<p>The widget requires the tcllib <b class="cmd"><a href="../../../../index.html#snit">snit</a></b> package and optional, if desired to display Markdown files, the tcllib <b class="cmd">Markdown</b> library.
+The <b class="cmd">shtmlview::shtmlview</b> package is delivered as a normal Tcl package
+folder which can be placed anywhere on your file system or in a folder
+belonging to your Tcl library path. In case you installed it into a non-standard folder
+just use append your <b class="cmd">auto_path</b> variable as shown below:</p>
+<pre class="doctools_example">
+lappend auto_path /path/to/parent-folder ;# of shtmlview folder
+package require shtmlview::shtmlview
+</pre>
+<p>Alternatively you can directly source the file shtmlview.tcl into your Tcl application.</p>
+</div>
+<div id="section3" class="doctools_section"><h2><a name="section3">COMMANDS</a></h2>
+<dl class="doctools_definitions">
+<dt><a name="1"><b class="cmd">::shtmlview::shtmlview</b> <i class="arg">pathName</i> <span class="opt">?<i class="arg">options</i>?</span></a></dt>
+<dd><p>Creates and configures a shtmlview widget.</p></dd>
+</dl>
+</div>
+<div id="section4" class="doctools_section"><h2><a name="section4">WIDGET OPTIONS</a></h2>
+<p>To configure the internal text widget the helptext command courld be used directly.</p>
+<dl class="doctools_options">
+<dt><b class="option">-browsecmd</b> cmd</dt>
+<dd><p>Each time a HTML or Markdown page is rendered the given <b class="option">-browsecmd</b> is invoked. The actual URL is appended as first argument to the command.</p></dd>
+<dt><b class="option">-historycombo</b> boolean</dt>
+<dd><p>If true (default is false) displays a ttk::combobox if the tile package is available in the toolbar.
+Can be only set a widget creation.</p></dd>
+<dt><b class="option">-home</b> string</dt>
+<dd><p>Set's the homepage filename of the shtmlview widget. If not set, the first page browsed
+will be automatically set as the home page.</p></dd>
+<dt><b class="option">-tablesupport</b> boolean</dt>
+<dd><p>If true (default) the widget will provide some table support. This will have
+some undesired results if table tags are misused as markup tool. Simple html
+tables with th and td tags should display however well if no internal markup
+inside those tags is implemented.</p></dd>
+<dt><b class="option">-toolbar</b> boolean</dt>
+<dd><p>If true (default) a toolbar will be displayed on top providing standard buttons for
+methods <b class="method">back</b>, <b class="method">forward</b> and <b class="method">home</b> as well as search
+facilities for the widget. Default: true</p></dd>
+</dl>
+</div>
+<div id="section5" class="doctools_section"><h2><a name="section5">WIDGET COMMANDS</a></h2>
+<p>Each shtmlview widget created with the above command supports the following
+commands and options:</p>
+<dl class="doctools_definitions">
+<dt><a name="2"><i class="arg">pathName</i> <b class="method">back</b></a></dt>
+<dd><p>Displays the previous HTML and Markdown page in the browsing history if any.</p></dd>
+<dt><a name="3"><i class="arg">pathName</i> <b class="method">browse</b> <i class="arg">filename</i> <span class="opt">?args?</span></a></dt>
+<dd><p>Displays the HTML or Markdown page given by filename(s). 
+The first given filename will be shown in the widget, the other, 
+optional given filenames will be added to the history stack only and can be walked using the history keys, f and b.</p></dd>
+<dt><a name="4"><i class="arg">pathName</i> <b class="method">dosearch</b> <i class="arg">string</i> <i class="arg">direction</i></a></dt>
+<dd><p>Search and hilights the given string from the current index either
+in the given direction either forward (default) or backwards.</p></dd>
+<dt><a name="5"><i class="arg">pathName</i> <b class="method">forward</b></a></dt>
+<dd><p>Displays the next HTML or Markdown page in the browsing history if any.</p></dd>
+<dt><a name="6"><i class="arg">pathName</i> <b class="method">getFiles</b></a></dt>
+<dd><p>This command returns a list of all visited files, cleaned up for multiple entries and without anchor links.</p></dd>
+<dt><a name="7"><i class="arg">pathName</i> <b class="method">getHistory</b></a></dt>
+<dd><p>This command returns a list of the current history of visited files and anchors.</p></dd>
+<dt><a name="8"><i class="arg">pathName</i> <b class="method">getTextWidget</b></a></dt>
+<dd><p>This commands returns the internal pathname of the text widget. The developer
+can that way thereafter deal directly with the internal text widget if
+required. Alternatively the <b class="method">helptext</b> command can be used. See below.</p></dd>
+<dt><a name="9"><i class="arg">pathName</i> <b class="method">helptext</b> <i class="arg">cmd</i> <span class="opt">?<i class="arg">options</i>?</span></a></dt>
+<dd><p>This command exposes the internal text widget. See the following example:</p>
+<pre class="doctools_example">
+    ::shtmlview::shtmlview .help 
+    .help browse index.html
+    .help helptext configure -background yellow
+</pre>
+</dd>
+<dt><a name="10"><i class="arg">pathName</i> <b class="method">home</b></a></dt>
+<dd><p>Displays the first HTML or Markdown page which was called by <i class="arg">pathName</i> <b class="method">browse</b> or set by <b class="option">-home</b>.</p></dd>
+<dt><a name="11"><i class="arg">pathName</i> <b class="method">open</b></a></dt>
+<dd><p>Displays a standard file dialog to open a HTML or Markdown page to be displayed in the <b class="cmd">shtmlview::shtmlview</b> widget.</p></dd>
+<dt><a name="12"><i class="arg">pathName</i> <b class="method">reload</b></a></dt>
+<dd><p>Reloads and redisplays the current HTML or Markdown page visible inside the <b class="cmd">shtmlview::shtmlview</b> widget.</p></dd>
+<dt><a name="13"><i class="arg">pathName</i> <b class="method">url</b></a></dt>
+<dd><p>Returns the current URL displayed in the <b class="cmd">::shtmlview::shtmlview</b> widget.</p></dd>
+</dl>
+</div>
+<div id="section6" class="doctools_section"><h2><a name="section6">BINDINGS FOR THE WIDGET</a></h2>
+<p>The widget contain standard navigation key bindings to browse the content of
+an HTML or Markdown page. Furthermore the keypress s and r are bound to the start of
+forward and reverse searches in the content. The keys 'n' (next) and 'p' (previous) are used to repeat the current search.
+The keys 'f' and 'b' keys are bound to browsing forward and backward in the browse history. The 'q' key deletes the current file from the history and displays the next one.
+The 'TAB' key browses to the next hyperlink, and pressing the Return/Enter key process the current link. The key combination 'Ctrl-r' reloads the current page.</p>
+</div>
+<div id="section7" class="doctools_section"><h2><a name="section7">EXAMPLE</a></h2>
+<pre class="doctools_example">
+    package require Tk
+    package require snit
+    package require shtmlview::shtmlview
+    proc browsed {url} {
+        puts &quot;You browsed $url&quot;
+    }
+    set help [::shtmlview::shtmlview .help -toolbar true  -browsecmd browsed]
+    $help browse index.html
+    pack $help -fill both -expand true -side left
+    package require Markdown
+    $help browser test.md
+</pre>
+<p>Further examples are in the source package for <b class="package">shtmlview::shtmlview</b>.</p>
+</div>
+<div id="section8" class="doctools_section"><h2><a name="section8">CHANGELOG</a></h2>
+<p>2022-02-25 version 0.9.2</p>
+<ul class="doctools_itemized">
+<li><p>fix for tk_textCopy and documentation update</p></li>
+</ul>
+<p>2022-03-06 version 0.9.3</p>
+<ul class="doctools_itemized">
+<li><p>support for MouseWheel bindings</p></li>
+<li><p>fixing hyperlinks to http(s) links</p></li>
+<li><p>support for file-anchor links like 'file.html#anchor'</p></li>
+<li><p>support for '#' as link to the top</p></li>
+<li><p>thanks to aplsimple for suggestions and bug reports</p></li>
+</ul>
+<p>2022-03-26 version 1.0.0</p>
+<ul class="doctools_itemized">
+<li><p>HTML 3.2 tags div, sub, sup, small, big</p></li>
+<li><p>initial support for Markdown files</p></li>
+<li><p>initial support for base64 encoded inline image files</p></li>
+<li><p>support for jpg images if img::jpeg library is available</p></li>
+<li><p>support for svg images if critcl and librsvg-dev(el) or terminal application rsvg-convert or cairosvg are available</p></li>
+<li><p>back and forward as well for anchors</p></li>
+<li><p>first and last browse entry buttons for history</p></li>
+<li><p>history with full file path to allow directory changes</p></li>
+<li><p>improved usage line and install option</p></li>
+<li><p>keyboard bindings for next and previous search</p></li>
+<li><p>return and tab for links</p></li>
+<li><p>historycombo option</p></li>
+<li><p>toolbar fix</p></li>
+<li><p>browse fix for non-existing files</p></li>
+<li><p>removed unused css/stylesheet and web forms code</p></li>
+<li><p>thanks to pepdiz for bug-reports and suggestions</p></li>
+</ul>
+</div>
+<div id="section9" class="doctools_section"><h2><a name="section9">TODO</a></h2>
+<ul class="doctools_itemized">
+<li><p>Markdown rendering using tcllib library Markdown in case URL ends with .md (done)</p></li>
+<li><p>Support for SVG images for instance using svgconvert https://wiki.tcl-lang.org/page/svgconvert at least on Linux/Windows</p></li>
+<li><p>More tags, see tag history add 3.2 tags: http://www.martinrinehart.com/frontend-engineering/engineers/html/html-tag-history.html (done)</p></li>
+</ul>
+</div>
+<div id="section10" class="doctools_section"><h2><a name="section10">Thanks</a></h2>
+<p>Stephen Uhler, Clif Flynt and Robert Heller, they provided the majority of the code in this widget.</p>
+</div>
+<div id="section11" class="doctools_section"><h2><a name="section11">Bugs, Ideas, Feedback</a></h2>
+<p>This document, and the package it describes, will undoubtedly contain bugs and
+other problems. Please report such to the author of this package. Please also report any ideas for enhancements you may have for
+either package and/or documentation.</p>
+</div>
+<div id="section12" class="doctools_section"><h2><a name="section12">Code Copyright</a></h2>
+<p>BSD License type:</p>
+<p>Sun Microsystems, Inc.  The following terms apply to all files
+a ssociated with the software unless explicitly disclaimed in individual
+files.</p>
+<p>The authors hereby grant permission to use, copy, modify, distribute,
+and license this software and its documentation for any purpose, provided
+that existing copyright notices are retained in all copies and that this
+notice is included verbatim in any distributions. No written agreement,
+license, or royalty fee is required for any of the authorized uses.
+Modifications to this software may be copyrighted by their authors
+and need not follow the licensing terms described here, provided that
+the new terms are clearly indicated on the first page of each file where
+they apply.</p>
+<p>IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY
+FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES
+ARISING OUT OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY
+DERIVATIVES THEREOF, EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.</p>
+<p>THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE
+IS PROVIDED ON AN &quot;AS IS&quot; BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE
+NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR
+MODIFICATIONS.</p>
+<p>RESTRICTED RIGHTS: Use, duplication or disclosure by the government
+is subject to the restrictions as set forth in subparagraph (c) (1) (ii)
+of the Rights in Technical Data and Computer Software Clause as DFARS
+ 252.227-7013 and FAR 52.227-19.</p>
+</div>
+<div id="see-also" class="doctools_section"><h2><a name="see-also">See Also</a></h2>
+<p><a href="../../../../index.html#text">text</a></p>
+</div>
+<div id="keywords" class="doctools_section"><h2><a name="keywords">Keywords</a></h2>
+<p><a href="../../../../index.html#html">html</a>, <a href="../../../../index.html#text">text</a>, <a href="../../../../index.html#widget">widget</a></p>
+</div>
+<div id="copyright" class="doctools_section"><h2><a name="copyright">Copyright</a></h2>
+<p>Copyright &copy; 2018-2022, Detlef Groth &lt;detlef(at)dgroth(dot)de&gt;<br>
+Copyright &copy; 2009, Robert Heller<br>
+Copyright &copy; 2000, Clif Flynt<br>
+Copyright &copy; 1995-1999, Stephen Uhler</p>
+</div>
+</div></body></html>
