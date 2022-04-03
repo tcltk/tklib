@@ -1,7 +1,13 @@
+2022-04-03  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotchart.tcl:   Add circle plot as a new diagram type
+	* plotspecial.tcl: Implementation of the circle plot
+	* plotchart.man:   Description of the circle plot (including change of [n] to [para] -- aku)
+	* test_circleplot.tcl: Test/demo of the circle plot
+
 2022-02-13  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl:   Add heatmap diagram as a new diagram type
 	* plotspecial.tcl: Implementation of the heatmap diagram
-	* plotchart.tcl:   Description of the heatmap diagram
+	* plotchart.man:   Description of the heatmap diagram
 	* test_heatmap.tcl: Test/demo of the heatmap diagram
 
 2018-12-27  Arjen Markus  <arjenmarkus@users,sourceforge.net>
