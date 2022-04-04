@@ -222,8 +222,7 @@ To define a different set of word\-boundary detection rules:
     package require ntext
     text .t
     bindtags .t {.t Ntext . all}
-    ::ntext::createMatchPatterns \
-      {[[:space:][:cntrl:]]} {[[:punct:]]} {[^[:punct:][:space:][:cntrl:]]}
+    ::ntext::createMatchPatterns  {[[:space:][:cntrl:]]} {[[:punct:]]} {[^[:punct:][:space:][:cntrl:]]}
 
 See regexp, re\_syntax for more information\.
 

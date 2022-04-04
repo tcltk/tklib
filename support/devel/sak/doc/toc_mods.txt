@@ -72,7 +72,7 @@
 [item modules/plotchart/plotchart.man Plotchart {Simple plotting and charting package}]
 [division_end]
 [division_start shtmlview]
-[item modules/shtmlview/shtmlview.man shtmlview {Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown markup}]
+[item modules/shtmlview/shtmlview.man shtmlview {Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown}]
 [division_end]
 [division_start swaplist]
 [item modules/swaplist/swaplist.man swaplist {A dialog which allows a user to move options between two lists}]

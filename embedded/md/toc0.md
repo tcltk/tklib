@@ -85,7 +85,7 @@
 
           + [Plotchart](tklib/files/modules/plotchart/plotchart\.md) Simple plotting and charting package
 
-          + [shtmlview](tklib/files/modules/shtmlview/shtmlview\.md) Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown markup
+          + [shtmlview](tklib/files/modules/shtmlview/shtmlview\.md) Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown
 
           + [tooltip](tklib/files/modules/tooltip/tooltip\.md) Tooltip management
 

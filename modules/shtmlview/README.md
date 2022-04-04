@@ -17,7 +17,7 @@ base64 encoded images embedded directly into HTML pages.
 ### Standalone Application
 
 The file `shtmlview.tcl` is not only a Tcl package but also a standalone
-application to for direct viewing of Markdown and HTML files.
+application for the direct viewing of Markdown and HTML files.
 
 To display a HTML file invoke it as
 

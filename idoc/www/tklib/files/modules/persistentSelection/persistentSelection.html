@@ -220,7 +220,6 @@
 package require widgetPlus
 widgetPlus::entryPlus .ep
 pack .ep
- 
 package require persistentSelection
 bind EntryPlus &lt;&lt;Selection&gt;&gt; {::persistentSelection::report entry %W}
 </pre>
@@ -228,7 +227,6 @@ bind EntryPlus &lt;&lt;Selection&gt;&gt; {::persistentSelection::report entry %W
 <pre class="doctools_example">
 text .t
 pack .t
- 
 package require persistentSelection
 ::persistentSelection::fixText
 bind Text &lt;&lt;Selection&gt;&gt; {::persistentSelection::report text %W}
@@ -237,11 +235,9 @@ bind Text &lt;&lt;Selection&gt;&gt; {::persistentSelection::report text %W}
 <pre class="doctools_example">
 text .t
 pack .t
- 
 package require widgetPlus
 widgetPlus::entryPlus .ep
 pack .ep
- 
 package require persistentSelection
 ::persistentSelection::fixText
 bind Text &lt;&lt;Selection&gt;&gt; {::persistentSelection::report text %W}
@@ -251,10 +247,8 @@ bind EntryPlus &lt;&lt;Selection&gt;&gt; {::persistentSelection::report entry %W
 <pre class="doctools_example">
 text .t
 pack .t
- 
 package require ntext
 bindtags .t {.t Ntext . all}
- 
 package require persistentSelection
 bind Ntext &lt;&lt;Selection&gt;&gt; {::persistentSelection::report text %W}
 </pre>
@@ -263,7 +257,6 @@ bind Ntext &lt;&lt;Selection&gt;&gt; {::persistentSelection::report text %W}
 package require widgetPlus
 widgetPlus::entryPlus .ep
 pack .ep
- 
 package require persistentSelection
 bind .ep &lt;&lt;Selection&gt;&gt; {::persistentSelection::report entry %W}
 </pre>
@@ -271,7 +264,6 @@ bind .ep &lt;&lt;Selection&gt;&gt; {::persistentSelection::report entry %W}
 <pre class="doctools_example">
 text .t
 pack .t
- 
 package require persistentSelection
 bind .t &lt;&lt;Selection&gt;&gt; {::persistentSelection::report text %W}
 </pre>

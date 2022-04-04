@@ -391,7 +391,7 @@ tklib
 \fIfiles/modules/plotchart/plotchart\&.n\fR: Simple plotting and charting package
 .TP
 \fBshtmlview\fR
-\fIfiles/modules/shtmlview/shtmlview\&.n\fR: Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown markup
+\fIfiles/modules/shtmlview/shtmlview\&.n\fR: Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown
 .TP
 \fBswaplist\fR
 \fIfiles/modules/swaplist/swaplist\&.n\fR: A dialog which allows a user to move options between two lists

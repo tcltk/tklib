@@ -5,7 +5,7 @@
 '\" Copyright (c) 2000, Clif Flynt
 '\" Copyright (c) 1995-1999, Stephen Uhler
 '\"
-.TH "shtmlview" n 1\&.0\&.0 tklib "Basic HTML and Markdown viewer widget"
+.TH "shtmlview" n 1\&.1\&.0 tklib "Basic HTML and Markdown viewer widget"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -275,7 +275,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-shtmlview \- Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown markup
+shtmlview \- Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown
 .SH SYNOPSIS
 package require \fBTk \fR
 .sp
@@ -285,7 +285,7 @@ package require \fBMarkdown ;# optional Markdown support \fR
 .sp
 package require \fBimg::jpeg ;# optional jpeg image support \fR
 .sp
-package require \fBshtmlview::shtmlview  ?1\&.0\&.0?\fR
+package require \fBshtmlview::shtmlview  ?1\&.1\&.0?\fR
 .sp
 \fB::shtmlview::shtmlview\fR \fIpathName\fR ?\fIoptions\fR?
 .sp
@@ -311,66 +311,62 @@ package require \fBshtmlview::shtmlview  ?1\&.0\&.0?\fR
 .sp
 \fIpathName\fR \fBreload\fR
 .sp
+\fIpathName\fR \fBrender\fR \fItext\fR
+.sp
 \fIpathName\fR \fBurl\fR
 .sp
 .BE
 .SH DESCRIPTION
-The \fBshtmlview::shtmlview\fR package provides the \fBshtmlview::shtmlview\fR
-widget which is a standard tk text widget with support for rendering a
-reasonable subset of html tags and, if the tcllib library Markdown is
-available, as well for Markdown files\&. It is a pure Tcl/Tk widget which does
-not need any compilation\&.
+The \fBshtmlview::shtmlview\fR package provides a pure Tcl/Tk widget of the
+same name to render and display basic HTML and Markdown files and string\&.
 .PP
-The widget is not(!) to be intended to be used as a web browser\&. It only supports relative links on a local filesystem, it does not(!) support style sheets, it does not support any http(s) or webserver like links or images\&.
-It is tought as a fallback widget in cases where no other possibilities exists to
-display HTML or Markdown markup inside a Tk application\&. So it can be
-used in cases where the developer has control over the used subset of HTML
-markup or as a fallback mechanism where no other possibilities exists to
-display HTML or Markdown documents\&.
-.PP
-The widget is intended to be used for instance as a help viewer
-or in other cases where the developer has control about the used html tags\&.
-Comments and feedbacks are welcome\&. The \fBshtmlview::shtmlview\fR widget overloads the text
-widget and provides new commands, named \fBback\fR, \fBbrowse\fR,
-\fBdosearch\fR, \fBforward\fR, \fBhome\fR, \fBopen\fR, \fBreload\fR,
-\fBurl\fR and new options, named \fB-browsecmd\fR, \fB-home\fR, \fB-tablesupport\fR,
-\fB-toolbar\fR\&.
-.PP
-Furthermore the file shtmlview\&.tcl can be used as standalone application to
-render Markdown and HTML files by executing \fBshtmlview\&.tcl filename\fR in
-the terminal\&.
-.PP
-The \fB::shtmlview::shtmlview\fR command creates creates a new window (given
-by the pathName argument) and makes it into \fB::shtmlview::shtmlview\fR
-widget\&. The \fB::shtmlview::shtmlview\fR command returns its pathName
-argument\&. At the time this command is invoked, there must not exist a window
-named pathName, but pathName's parent must exist\&. The API described in this document is not the whole
-API offered by the snit object \fB::shtmlview::shtmlview\fR\&.
-Instead, it is the subset of that API that is expected not to change in future versions\&.
-.PP
-Background: \fB::shtmlview::shtmlview\fR is a pure Tcl/Tk widget based on the
-library htmllib developed in the 90ties by Stephen Uhler and Clif Flynt\&. This
-library was wrapped into the excellent mega-widget framework snit by Robert
-Heller in 2009\&. His widget however was tied directly into a help system\&. The
-author of this document just isolated the display part and added some
-functions such as changing font size and a few buttons in the toolbar\&. Also a
-rudimentary display of data tables was added\&. Later as well support for inline
+Some history: The widget is based on the \fBhtmllib\fR library developed in
+the 90ties by Stephen Uhler and Clif Flynt\&. In 2009 Robert Heller wrapped this
+library into the excellent mega-widget framework \fBsnit\fR\&.
+The resulting widget was however tied directly into a help system\&.
+The author of this document first just isolated the display part and then added
+some functions such as changing font size and a few buttons in the toolbar\&. Then
+a rudimentary display of data tables was added\&. Even later support for inline
 images and extended keybindings and Markdown support was added\&.
 .PP
-.SH INSTALLATION
-The widget requires the tcllib \fBsnit\fR package and optional, if desired to display Markdown files, the tcllib \fBMarkdown\fR library\&.
-The \fBshtmlview::shtmlview\fR package is delivered as a normal Tcl package
-folder which can be placed anywhere on your file system or in a folder
-belonging to your Tcl library path\&. In case you installed it into a non-standard folder
-just use append your \fBauto_path\fR variable as shown below:
+The widget is \fInot\fR a web browser\&. It only supports relative links in the
+local filesystem\&.  It does \fInot\fR support style sheets\&. It does not support
+http(s) links nor images\&.
+It is thought of as the last fallback in cases where no other possibilities
+exists to display HTML or Markdown markup from a Tk application\&.
+.PP
+Use cases are as a help viewer and wherever the developer has control about the
+used html tags\&.
+.PP
+Comments and feedbacks are welcome\&.
+.PP
+The \fBshtmlview::shtmlview\fR widget overloads the text widget and provides new
+commands and options\&.
+These are explained in the sections \fBWIDGET COMMANDS\fR and
+\fBWIDGET OPTIONS\fR\&.
+.PP
+Note that the file "\fIshtmlview\&.tcl\fR" is not only a package but also a
+standalone application for the direct viewing of Markdown and HTML files\&.
+Invoke it as
 .CS
 
-
-lappend auto_path /path/to/parent-folder ;# of shtmlview folder
-package require shtmlview::shtmlview
-
+ tclsh shtmlview\&.tcl filename\&.html
 .CE
-Alternatively you can directly source the file shtmlview\&.tcl into your Tcl application\&.
+in a terminal\&.
+.PP
+The \fB::shtmlview::shtmlview\fR command creates creates a new window (given by
+the pathName argument) and makes it into \fB::shtmlview::shtmlview\fR
+.PP
+The \fB::shtmlview::shtmlview\fR command creates creates a new window (given by
+the pathName argument) and makes it into \fB::shtmlview::shtmlview\fR
+widget\&.
+The \fB::shtmlview::shtmlview\fR command returns its pathName argument\&.
+At the time this command is invoked, there must not exist a window named
+pathName, but pathName's parent must exist\&.
+The API described in this document is not the whole API offered by the snit
+object \fB::shtmlview::shtmlview\fR\&.
+Instead, it is the subset of that API that is expected not to change in future
+versions\&.
 .SH COMMANDS
 .TP
 \fB::shtmlview::shtmlview\fR \fIpathName\fR ?\fIoptions\fR?
@@ -378,29 +374,38 @@ Creates and configures a shtmlview widget\&.
 .PP
 .SH "WIDGET OPTIONS"
 .PP
-To configure the internal text widget the helptext command courld be used directly\&.
+To configure the internal text widget the helptext command could be used directly\&.
 .TP
 \fB-browsecmd\fR cmd
-Each time a HTML or Markdown page is rendered the given \fB-browsecmd\fR is invoked\&. The actual URL is appended as first argument to the command\&.
+Each time a HTML or Markdown page is rendered the specified \fIcmd\fR command is
+invoked\&. The actual URL is appended as first argument to the command\&.
+.TP
+\fB-closebutton\fR boolean
+If \fBtrue\fR (default) a close button is shown in the toolbar\&.
+This is useful if the widget is the sole child of a toplevel widget\&.
 .TP
 \fB-historycombo\fR boolean
-If true (default is false) displays a ttk::combobox if the tile package is available in the toolbar\&.
-Can be only set a widget creation\&.
+If \fBtrue\fR, and the \fBtile\fR package is available, then a
+\fBttk::combobox\fR to show page history is added to the toolbar\&.
+Defaults to \fBfalse\fR\&.
+Can be only set at widget creation\&.
 .TP
 \fB-home\fR string
-Set's the homepage filename of the shtmlview widget\&. If not set, the first page browsed
-will be automatically set as the home page\&.
+Sets the homepage filename of the widget\&.
+If not set, the first page browsed to will be automatically set as the home page\&.
 .TP
 \fB-tablesupport\fR boolean
-If true (default) the widget will provide some table support\&. This will have
-some undesired results if table tags are misused as markup tool\&. Simple html
-tables with th and td tags should display however well if no internal markup
-inside those tags is implemented\&.
+If \fBtrue\fR (default) some table support is provided\&.
+This will have some undesired results if table tags are misused as markup
+tool\&.
+Simple html tables with \fBth\fR and \fBtd\fR tags should however display
+well if no internal markup inside of those tags is used\&.
 .TP
 \fB-toolbar\fR boolean
-If true (default) a toolbar will be displayed on top providing standard buttons for
-methods \fBback\fR, \fBforward\fR and \fBhome\fR as well as search
-facilities for the widget\&. Default: true
+If \fBtrue\fR (default) a toolbar will be displayed at the top\&.
+The toolbar will provide standard buttons for the methods \fBback\fR,
+\fBforward\fR and \fBhome\fR, as well as search facilities\&.
+Defaults to \fBtrue\fR\&.
 .PP
 .SH "WIDGET COMMANDS"
 Each shtmlview widget created with the above command supports the following
@@ -410,27 +415,30 @@ commands and options:
 Displays the previous HTML and Markdown page in the browsing history if any\&.
 .TP
 \fIpathName\fR \fBbrowse\fR \fIfilename\fR ?args?
-Displays the HTML or Markdown page given by filename(s)\&.
-The first given filename will be shown in the widget, the other,
-optional given filenames will be added to the history stack only and can be walked using the history keys, f and b\&.
+Displays the HTML or Markdown text contained in the named file\&.
+Any additional arguments, while also file names, are just added to the history stack\&.
+They can be walked to using the history keys, \fBf\fR and \fBb\fR\&.
 .TP
 \fIpathName\fR \fBdosearch\fR \fIstring\fR \fIdirection\fR
-Search and hilights the given string from the current index either
-in the given direction either forward (default) or backwards\&.
+Search for and highlight the given string starting from the current index in the
+specified direction\&. The direction has to be either \fBforward\fR (default) or
+\fBbackwards\fR\&.
 .TP
 \fIpathName\fR \fBforward\fR
 Displays the next HTML or Markdown page in the browsing history if any\&.
 .TP
 \fIpathName\fR \fBgetFiles\fR
-This command returns a list of all visited files, cleaned up for multiple entries and without anchor links\&.
+This command returns a list of all visited files\&.
+Duplicates and anchor links are removed from the raw data\&.
 .TP
 \fIpathName\fR \fBgetHistory\fR
 This command returns a list of the current history of visited files and anchors\&.
 .TP
 \fIpathName\fR \fBgetTextWidget\fR
-This commands returns the internal pathname of the text widget\&. The developer
-can that way thereafter deal directly with the internal text widget if
-required\&. Alternatively the \fBhelptext\fR command can be used\&. See below\&.
+This commands returns the internal pathname of the text widget\&.
+This enables the developer to directly access it, if required or desired\&.
+Remember, this is dangerous\&.
+See also \fBhelptext\fR, below\&.
 .TP
 \fIpathName\fR \fBhelptext\fR \fIcmd\fR ?\fIoptions\fR?
 This command exposes the internal text widget\&. See the following example:
@@ -444,23 +452,68 @@ This command exposes the internal text widget\&. See the following example:
 .CE
 .TP
 \fIpathName\fR \fBhome\fR
-Displays the first HTML or Markdown page which was called by \fIpathName\fR \fBbrowse\fR or set by \fB-home\fR\&.
+Displays either the page set by option \fB-home\fR, or the first page
+\fBbrowse\fR was called for\&.
 .TP
 \fIpathName\fR \fBopen\fR
-Displays a standard file dialog to open a HTML or Markdown page to be displayed in the \fBshtmlview::shtmlview\fR widget\&.
+Uses a standard file open dialog to select a HTML or Markdown page for display,
+and then rendered the selected file, if any\&.
 .TP
 \fIpathName\fR \fBreload\fR
-Reloads and redisplays the current HTML or Markdown page visible inside the \fBshtmlview::shtmlview\fR widget\&.
+Reloads and redisplays the currently shown page\&.
+.TP
+\fIpathName\fR \fBrender\fR \fItext\fR
+Renders the given HTML or Markdown string\&.
+If the string does not start with a recognized HTML tag then it will be treated as Markdown\&.
 .TP
 \fIpathName\fR \fBurl\fR
-Returns the current URL displayed in the \fB::shtmlview::shtmlview\fR widget\&.
+Returns the currently shown URL\&.
 .PP
 .SH "BINDINGS FOR THE WIDGET"
-The widget contain standard navigation key bindings to browse the content of
-an HTML or Markdown page\&. Furthermore the keypress s and r are bound to the start of
-forward and reverse searches in the content\&. The keys 'n' (next) and 'p' (previous) are used to repeat the current search\&.
-The keys 'f' and 'b' keys are bound to browsing forward and backward in the browse history\&. The 'q' key deletes the current file from the history and displays the next one\&.
-The 'TAB' key browses to the next hyperlink, and pressing the Return/Enter key process the current link\&. The key combination 'Ctrl-r' reloads the current page\&.
+The following keys are bound to the widget for navigation and other actions:
+.TP
+<cursor>
+Standard cursor movement in the view
+.TP
+b
+Back - display previous page in history
+.TP
+f
+Forward - display next page in history
+.TP
+p
+Previous - Move cursor to previous search match
+.TP
+n
+Next - Move cursor to next search match
+.TP
+q
+Remove current page from history\&. Implies \fBf\fR\&.
+.TP
+r
+Start search backward
+.TP
+s
+Start search forward
+.TP
+Ctrl-E
+Toggle edit mode
+.TP
+Ctrl-s
+In edit mode, save page
+.TP
+Ctrl-r
+Reload current page
+.TP
+Ctrl-u
+Toggle source vs rendered views
+.TP
+Return
+Follow link under cursor
+.TP
+TAB
+Move cursor to next link on current page
+.PP
 .SH EXAMPLE
 .CS
 
@@ -478,69 +531,96 @@ The 'TAB' key browses to the next hyperlink, and pressing the Return/Enter key p
     $help browser test\&.md
 
 .CE
-Further examples are in the source package for \fBshtmlview::shtmlview\fR\&.
+More examples can be found in the sources of the package\&.
 .SH CHANGELOG
-.PP
+.TP
 2022-02-25 version 0\&.9\&.2
+.RS
 .IP \(bu
-fix for tk_textCopy and documentation update
-.PP
-.PP
+Fix for \fBtk_textCopy\fR and documentation update
+.RE
+.TP
 2022-03-06 version 0\&.9\&.3
+.RS
 .IP \(bu
-support for MouseWheel bindings
+Support for MouseWheel bindings
 .IP \(bu
-fixing hyperlinks to http(s) links
+Fixing hyperlinks to http(s) links
 .IP \(bu
-support for file-anchor links like 'file\&.html#anchor'
+Support for file-anchor links like \fBfile\&.html#anchor\fR
 .IP \(bu
-support for '#' as link to the top
+Support for \fB#\fR as link to the top
 .IP \(bu
-thanks to aplsimple for suggestions and bug reports
-.PP
-.PP
+Thanks to aplsimple for suggestions and bug reports
+.RE
+.TP
 2022-03-26 version 1\&.0\&.0
+.RS
 .IP \(bu
 HTML 3\&.2 tags div, sub, sup, small, big
 .IP \(bu
-initial support for Markdown files
+Initial support for Markdown files
 .IP \(bu
-initial support for base64 encoded inline image files
+Initial support for base64 encoded inline image files
 .IP \(bu
-support for jpg images if img::jpeg library is available
+Support for JPEG images if the \fBimg::jpeg\fR package is available
 .IP \(bu
-support for svg images if critcl and librsvg-dev(el) or terminal application rsvg-convert or cairosvg are available
+Support for SVG images if either \fBcritcl\fR and \fIlibrsvg-dev(el)\fR or terminal application \fBrsvg-convert\fR or \fBcairosvg\fR are available
 .IP \(bu
-back and forward as well for anchors
+Back and forward as well for anchors
 .IP \(bu
-first and last browse entry buttons for history
+First and last browse entry buttons for history
 .IP \(bu
-history with full file path to allow directory changes
+History with full file path to allow directory changes
 .IP \(bu
-improved usage line and install option
+Improved usage line and install option
 .IP \(bu
-keyboard bindings for next and previous search
+Keyboard bindings for next and previous search
 .IP \(bu
-return and tab for links
+Return and tab for links
 .IP \(bu
-historycombo option
+Historycombo option
 .IP \(bu
-toolbar fix
+Toolbar fix
 .IP \(bu
-browse fix for non-existing files
+Browse fix for non-existing files
 .IP \(bu
-removed unused css/stylesheet and web forms code
+Removed unused css/stylesheet and web forms code
 .IP \(bu
-thanks to pepdiz for bug-reports and suggestions
+Thanks to pepdiz for bug-reports and suggestions
+.RE
+.TP
+2022-04-XX version 1\&.1\&.0
+.RS
+.IP \(bu
+Keybinding Ctrl-u to source view for HTML and Markdown files
+.IP \(bu
+Keybinding Ctrl-Shift-e to use a simple text editor for file editing
+.IP \(bu
+File open dialog now remembers the last directory and the last file extension
+.IP \(bu
+File close button added with option -closebutton, useful for toplevel windows
+.IP \(bu
+Some backslash fixes for Markdown links
+.IP \(bu
+Adding span tag for styling
+.IP \(bu
+Adding render method to read HTML directly without filename
+.RE
 .PP
 .SH TODO
-.PP
 .IP \(bu
-Markdown rendering using tcllib library Markdown in case URL ends with \&.md (done)
+Markdown rendering using tcllib package \fBMarkdown\fR in case an URL ends with "\fI\&.md\fR" (done)
 .IP \(bu
-Support for SVG images for instance using svgconvert https://wiki\&.tcl-lang\&.org/page/svgconvert at least on Linux/Windows
+Support for SVG images for instance using \fIsvgconvert\fR [https://wiki\&.tcl-lang\&.org/page/svgconvert], at least on Linux/Windows
 .IP \(bu
-More tags, see tag history add 3\&.2 tags: http://www\&.martinrinehart\&.com/frontend-engineering/engineers/html/html-tag-history\&.html (done)
+More tags, see tag history add 3\&.2 tags: \fIhttp://www\&.martinrinehart\&.com/frontend-engineering/engineers/html/html-tag-history\&.html\fR (done)
+.IP \(bu
+Source view using Ctrl-u (done)
+.IP \(bu
+Edit view using Ctrl-Shift-e
+.IP \(bu
+Fixing mouse wheel issues
 .PP
 .SH THANKS
 Stephen Uhler, Clif Flynt and Robert Heller, they provided the majority of the code in this widget\&.

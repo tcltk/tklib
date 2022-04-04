@@ -66,6 +66,7 @@ Module widgetv       _tcl  _man  _null
 
 Application  diagram-viewer
 Application  bitmap-editor
+Application  shtmlview
 
 # @@ Registration END
 # --------------------------------------------------------------

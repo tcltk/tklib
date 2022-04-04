@@ -111,7 +111,7 @@
 
       * [shtmlview]()
 
-          + [shtmlview](tklib/files/modules/shtmlview/shtmlview\.md) Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown markup
+          + [shtmlview](tklib/files/modules/shtmlview/shtmlview\.md) Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown
 
       * [swaplist]()
 
