@@ -1,5 +1,6 @@
 apps/bitmap-editor.man
 apps/diagram-viewer.man
+apps/shtmlview.man
 modules/autoscroll/autoscroll.man
 modules/canvas/canvas_drag.man
 modules/canvas/canvas_epoints.man
@@ -33,6 +34,8 @@ modules/ntext/ntextIndent.man
 modules/ntext/ntextWordBreak.man
 modules/persistentSelection/persistentSelection.man
 modules/plotchart/plotchart.man
+modules/shtmlview/shtmlview-doctools.man
+modules/shtmlview/shtmlview-mkdoc.man
 modules/shtmlview/shtmlview.man
 modules/swaplist/swaplist.man
 modules/tkpiechart/canvaslabel.man

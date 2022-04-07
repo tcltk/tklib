@@ -287,6 +287,8 @@ package require \fBimg::jpeg ;# optional jpeg image support \fR
 .sp
 package require \fBshtmlview::shtmlview  ?1\&.1\&.0?\fR
 .sp
+\fB::shtmlview::converter\fR \fIextension\fR \fIdescription\fR \fIcmdprefix\fR
+.sp
 \fB::shtmlview::shtmlview\fR \fIpathName\fR ?\fIoptions\fR?
 .sp
 \fIpathName\fR \fBback\fR
@@ -295,11 +297,17 @@ package require \fBshtmlview::shtmlview  ?1\&.1\&.0?\fR
 .sp
 \fIpathName\fR \fBdosearch\fR \fIstring\fR \fIdirection\fR
 .sp
+\fIpathName\fR \fBedittext\fR \fIcmd\fR ?\fIoptions\fR?
+.sp
+\fIpathName\fR \fBeditView\fR
+.sp
 \fIpathName\fR \fBforward\fR
 .sp
 \fIpathName\fR \fBgetFiles\fR
 .sp
 \fIpathName\fR \fBgetHistory\fR
+.sp
+\fIpathName\fR \fBgetEditWidget\fR
 .sp
 \fIpathName\fR \fBgetTextWidget\fR
 .sp
@@ -311,42 +319,49 @@ package require \fBshtmlview::shtmlview  ?1\&.1\&.0?\fR
 .sp
 \fIpathName\fR \fBreload\fR
 .sp
-\fIpathName\fR \fBrender\fR \fItext\fR
+\fIpathName\fR \fBrender\fR \fItext\fR ?ext?
+.sp
+\fIpathName\fR \fBsourceView\fR
 .sp
 \fIpathName\fR \fBurl\fR
 .sp
 .BE
 .SH DESCRIPTION
-The \fBshtmlview::shtmlview\fR package provides a pure Tcl/Tk widget of the
-same name to render and display basic HTML and Markdown files and string\&.
+The \fBshtmlview::shtmlview\fR package provides a pure Tcl/Tk
+widget of the same name to render and display basic HTML and Markdown
+files and string\&.
 .PP
-Some history: The widget is based on the \fBhtmllib\fR library developed in
-the 90ties by Stephen Uhler and Clif Flynt\&. In 2009 Robert Heller wrapped this
-library into the excellent mega-widget framework \fBsnit\fR\&.
+Some history: The widget is based on the \fBhtmllib\fR library
+developed in the 90ties by Stephen Uhler and Clif Flynt\&.
+In 2009 Robert Heller wrapped this library into the excellent
+mega-widget framework \fBsnit\fR\&.
 The resulting widget was however tied directly into a help system\&.
-The author of this document first just isolated the display part and then added
-some functions such as changing font size and a few buttons in the toolbar\&. Then
-a rudimentary display of data tables was added\&. Even later support for inline
-images and extended keybindings and Markdown support was added\&.
+The author of this document first just isolated the display part and
+then added some functions such as changing font size and a few buttons
+in the toolbar\&. Then a rudimentary display of data tables was
+added\&. Even later support for inline images and extended keybindings
+and Markdown support was added\&.
 .PP
-The widget is \fInot\fR a web browser\&. It only supports relative links in the
-local filesystem\&.  It does \fInot\fR support style sheets\&. It does not support
-http(s) links nor images\&.
-It is thought of as the last fallback in cases where no other possibilities
-exists to display HTML or Markdown markup from a Tk application\&.
+The widget is \fInot\fR a web browser\&. It only supports relative
+links in the local filesystem\&.  It does \fInot\fR support style
+sheets\&. It does not support http(s) links nor images\&.
+It is thought of as a last fallback to use in cases where no other
+possibilities exists to display HTML or Markdown markup from a Tk
+application\&.
 .PP
-Use cases are as a help viewer and wherever the developer has control about the
-used html tags\&.
+Use cases are as a help viewer and wherever the developer has control
+about the used html tags\&.
 .PP
 Comments and feedbacks are welcome\&.
 .PP
-The \fBshtmlview::shtmlview\fR widget overloads the text widget and provides new
-commands and options\&.
+The \fBshtmlview::shtmlview\fR widget overloads the text widget and
+provides new commands and options\&.
 These are explained in the sections \fBWIDGET COMMANDS\fR and
 \fBWIDGET OPTIONS\fR\&.
 .PP
-Note that the file "\fIshtmlview\&.tcl\fR" is not only a package but also a
-standalone application for the direct viewing of Markdown and HTML files\&.
+Note that the file "\fIshtmlview\&.tcl\fR" is not only a package but also
+a standalone application for the direct viewing of Markdown and HTML
+files\&.
 Invoke it as
 .CS
 
@@ -354,31 +369,48 @@ Invoke it as
 .CE
 in a terminal\&.
 .PP
-The \fB::shtmlview::shtmlview\fR command creates creates a new window (given by
-the pathName argument) and makes it into \fB::shtmlview::shtmlview\fR
-.PP
-The \fB::shtmlview::shtmlview\fR command creates creates a new window (given by
-the pathName argument) and makes it into \fB::shtmlview::shtmlview\fR
-widget\&.
-The \fB::shtmlview::shtmlview\fR command returns its pathName argument\&.
-At the time this command is invoked, there must not exist a window named
-pathName, but pathName's parent must exist\&.
 The API described in this document is not the whole API offered by the snit
 object \fB::shtmlview::shtmlview\fR\&.
 Instead, it is the subset of that API that is expected not to change in future
 versions\&.
 .SH COMMANDS
 .TP
+\fB::shtmlview::converter\fR \fIextension\fR \fIdescription\fR \fIcmdprefix\fR
+Registers a conversion command prefix (\fIcmdprefix\fR) for files
+having the \fIextension\fR\&.
+The \fIdescription\fR is a short summary of the kind of files expected
+to have that extension\&.
+.sp
+The result of the command is the empty string\&.
+.sp
+Whenever an shtmlview widget encounters a file with the specified
+\fIextension\fR it will invoke the registered command prefix with one
+argument, the path to the file to convert\&. The result of the
+invokation is expected to be the HTML to render and display\&.
+.sp
+See section \fBEXTENSIONS\fR for an example\&.
+.TP
 \fB::shtmlview::shtmlview\fR \fIpathName\fR ?\fIoptions\fR?
-Creates and configures a shtmlview widget\&.
+Creates and configures the shtmlview widget \fIpathName\fR\&.
+.sp
+The result of the command is the \fIpathName\fR\&.
+.sp
+An error is thrown if a widget for \fIpathName\fR already exists\&.
+.sp
+An error is also thrown if the parent for \fIpathName\fR does not exist\&.
+.sp
+The recognized options are explained in section \fBWIDGET OPTIONS\fR\&.
+.sp
+The methods of the new widget are explained in section \fBWIDGET COMMANDS\fR\&.
 .PP
 .SH "WIDGET OPTIONS"
 .PP
-To configure the internal text widget the helptext command could be used directly\&.
+Use method \fBhelptext\fR to configure the internal text widget\&.
 .TP
 \fB-browsecmd\fR cmd
-Each time a HTML or Markdown page is rendered the specified \fIcmd\fR command is
-invoked\&. The actual URL is appended as first argument to the command\&.
+Each time a HTML or Markdown page is rendered the specified \fIcmd\fR
+command is invoked\&. The actual URL is appended as first argument to
+the command\&.
 .TP
 \fB-closebutton\fR boolean
 If \fBtrue\fR (default) a close button is shown in the toolbar\&.
@@ -392,14 +424,15 @@ Can be only set at widget creation\&.
 .TP
 \fB-home\fR string
 Sets the homepage filename of the widget\&.
-If not set, the first page browsed to will be automatically set as the home page\&.
+If not set, the first page browsed to will be automatically set as the
+home page\&.
 .TP
 \fB-tablesupport\fR boolean
 If \fBtrue\fR (default) some table support is provided\&.
-This will have some undesired results if table tags are misused as markup
-tool\&.
-Simple html tables with \fBth\fR and \fBtd\fR tags should however display
-well if no internal markup inside of those tags is used\&.
+This will have some undesired results if table tags are misused as
+markup tool\&.
+Simple html tables with \fBth\fR and \fBtd\fR tags should however
+display well if no internal markup inside of those tags is used\&.
 .TP
 \fB-toolbar\fR boolean
 If \fBtrue\fR (default) a toolbar will be displayed at the top\&.
@@ -412,36 +445,77 @@ Each shtmlview widget created with the above command supports the following
 commands and options:
 .TP
 \fIpathName\fR \fBback\fR
-Displays the previous HTML and Markdown page in the browsing history if any\&.
+Displays the previous HTML and Markdown page in the browsing history
+if any\&.
 .TP
 \fIpathName\fR \fBbrowse\fR \fIfilename\fR ?args?
 Displays the HTML or Markdown text contained in the named file\&.
-Any additional arguments, while also file names, are just added to the history stack\&.
+Any additional arguments, while also file names, are just added to the
+history stack\&.
 They can be walked to using the history keys, \fBf\fR and \fBb\fR\&.
 .TP
 \fIpathName\fR \fBdosearch\fR \fIstring\fR \fIdirection\fR
-Search for and highlight the given string starting from the current index in the
-specified direction\&. The direction has to be either \fBforward\fR (default) or
-\fBbackwards\fR\&.
+Search for and highlight the given string starting from the current
+index in the specified direction\&. The direction has to be either
+\fBforward\fR (default) or \fBbackwards\fR\&.
+.TP
+\fIpathName\fR \fBedittext\fR \fIcmd\fR ?\fIoptions\fR?
+This command exposes the internal text editor widget for
+configuration\&. See the following example:
+.CS
+
+
+    ::shtmlview::shtmlview \&.help
+    \&.help browse index\&.md
+    \&.help editView
+    \&.help edittext configure -background salmon
+
+.CE
+.TP
+\fIpathName\fR \fBeditView\fR
+This command switches the widget from viewing to editing\&.  In this
+mode the user is able to edit and change the currently loaded file\&.
+To switch to a non-editable source display instead see
+\fBsourceView\fR below\&.
+.CS
+
+
+    ::shtmlview::shtmlview \&.help
+    \&.help browse index\&.md
+    \&.help editView
+
+.CE
 .TP
 \fIpathName\fR \fBforward\fR
-Displays the next HTML or Markdown page in the browsing history if any\&.
+Displays the next HTML or Markdown page in the browsing history if
+any\&.
 .TP
 \fIpathName\fR \fBgetFiles\fR
 This command returns a list of all visited files\&.
 Duplicates and anchor links are removed from the raw data\&.
 .TP
 \fIpathName\fR \fBgetHistory\fR
-This command returns a list of the current history of visited files and anchors\&.
+This command returns a list of the current history of visited files
+and anchors\&.
+.TP
+\fIpathName\fR \fBgetEditWidget\fR
+This commands returns the internal pathname of the text editor widget
+used for editing the current document\&.
+This enables the developer to directly access it, if required or desired\&.
+This is dangerous\&.
+See also \fBedittext\fR, above\&.
 .TP
 \fIpathName\fR \fBgetTextWidget\fR
-This commands returns the internal pathname of the text widget\&.
-This enables the developer to directly access it, if required or desired\&.
-Remember, this is dangerous\&.
+This commands returns the internal pathname of the internal viewer
+text widget\&.
+This enables the developer to directly access it, if required or
+desired\&.
+This is dangerous\&.
 See also \fBhelptext\fR, below\&.
 .TP
 \fIpathName\fR \fBhelptext\fR \fIcmd\fR ?\fIoptions\fR?
-This command exposes the internal text widget\&. See the following example:
+This command exposes the internal viewer text widget for
+configuration\&. See the following example:
 .CS
 
 
@@ -452,25 +526,43 @@ This command exposes the internal text widget\&. See the following example:
 .CE
 .TP
 \fIpathName\fR \fBhome\fR
-Displays either the page set by option \fB-home\fR, or the first page
-\fBbrowse\fR was called for\&.
+Displays either the page set by option \fB-home\fR, or the first
+page \fBbrowse\fR was called for\&.
 .TP
 \fIpathName\fR \fBopen\fR
-Uses a standard file open dialog to select a HTML or Markdown page for display,
-and then rendered the selected file, if any\&.
+Uses a standard file open dialog to select a document in any of the
+supported formats for display, and then renders that file, if any\&.
 .TP
 \fIpathName\fR \fBreload\fR
 Reloads and redisplays the currently shown page\&.
 .TP
-\fIpathName\fR \fBrender\fR \fItext\fR
-Renders the given HTML or Markdown string\&.
-If the string does not start with a recognized HTML tag then it will be treated as Markdown\&.
+\fIpathName\fR \fBrender\fR \fItext\fR ?ext?
+Renders the given \fItext\fR in the viewer\&.
+If an extension \fIext\fR is specified the string is assumed to be in
+the associated format, and the associated converter is used\&.
+Otherwise the string is considered to be either HTML or Markdown\&.  To
+be treated as HTML the \fItext\fR has to start with a recognized HTML
+tag\&. In any other case it is considered to be Markdown\&.
+.TP
+\fIpathName\fR \fBsourceView\fR
+This command switches the widget from viewing the current document
+itself to viewing the source of that document\&. To switch to a editable
+source display see \fBeditView\fR above\&.
+.CS
+
+
+    ::shtmlview::shtmlview \&.help
+    \&.help browse index\&.md
+    \&.help sourceView
+
+.CE
 .TP
 \fIpathName\fR \fBurl\fR
 Returns the currently shown URL\&.
 .PP
 .SH "BINDINGS FOR THE WIDGET"
-The following keys are bound to the widget for navigation and other actions:
+The following keys are bound to the widget for navigation and other
+actions:
 .TP
 <cursor>
 Standard cursor movement in the view
@@ -518,20 +610,80 @@ Move cursor to next link on current page
 .CS
 
 
-    package require Tk
-    package require snit
     package require shtmlview::shtmlview
     proc browsed {url} {
         puts "You browsed $url"
     }
-    set help [::shtmlview::shtmlview \&.help -toolbar true  -browsecmd browsed]
-    $help browse index\&.html
-    pack $help -fill both -expand true -side left
+    ::shtmlview::shtmlview \&.help -toolbar true -browsecmd browsed
+    \&.help browse index\&.html
+    pack \&.help -fill both -expand true -side left
     package require Markdown
-    $help browser test\&.md
+    \&.help browser test\&.md
 
 .CE
 More examples can be found in the sources of the package\&.
+.SH EXTENSIONS
+.PP
+While the package natively only support HTML documents, and Markdown
+documents if the supporting \fBMarkdown\fR package is available,
+it is possible to extend the range of supported formats by means of a
+plugin mechanism\&.
+.PP
+The main entry point to that system is the \fBshtmlview::converter\fR
+command\&. With it is possible to register a document format and an
+associated conversion command\&.
+The format is identified by its file extension, like, for example
+"\fI\&.md\fR", "\fI\&.man\fR", etc\&.
+The conversion command is expected to convert the content of the file
+given to it into HTML for display\&.
+.PP
+The packages \fBshtmlview::doctools\fR and
+\fBshtmlview::mkdoc\fR are examples of such plugins\&.
+The first provides support for the \fIdoctools\fR format used by both
+\fITcllib\fR and \fITklib\fR for their manpages, while the second
+provides support for \fImkdoc\fR-enhanced Tcl source files\&. In other
+words, Tcl files with embedded documentation in \fImkdoc\fR syntax\&.
+.PP
+Enclosed below the bare Tcl code of the \fBshtmlview::mkdoc\fR
+package:
+.CS
+
+
+    package require shtmlview::shtmlview
+    package require mkdoc::mkdoc
+
+    ::shtmlview::converter \&.tcl {Tcl+mkdoc files}   ::shtmlview::mkdoc
+    ::shtmlview::converter \&.tm  {Tcl+mkdoc modules} ::shtmlview::mkdoc
+
+    proc ::shtmlview::mkdoc {url} {
+	close [file tempfile htmltemp \&.html]
+
+	mkdoc::mkdoc $url $htmltemp -html
+
+	if {[catch {
+	    open $htmltemp r
+	} result]} {
+	    return -code error "Cannot open $url: $result"
+	}
+
+	set html [read $result]
+	close $result
+	file delete $htmltemp
+
+	return $html
+    }
+
+    package provide shtmlview::mkdoc 0\&.1
+
+.CE
+.PP
+It is of course possible to write plugins which use an external
+application like \fBpandoc\fR to generate the HTML to render,
+instead of a Tcl package\&.
+.PP
+And it is of course also possible to register conversion commands
+directly from the application using this package, instead of going
+through a separate package\&.
 .SH CHANGELOG
 .TP
 2022-02-25 version 0\&.9\&.2
@@ -606,6 +758,12 @@ Some backslash fixes for Markdown links
 Adding span tag for styling
 .IP \(bu
 Adding render method to read HTML directly without filename
+.IP \(bu
+Adding plugin structure for additional file types like Tcllib doctools, or mkdoc
+.IP \(bu
+Tcl doctools support resides in its own package
+.IP \(bu
+Tcl mkdoc supports resides in its own package
 .RE
 .PP
 .SH TODO
@@ -631,35 +789,36 @@ either package and/or documentation\&.
 .SH "CODE COPYRIGHT"
 BSD License type:
 .PP
-Sun Microsystems, Inc\&.  The following terms apply to all files
-a ssociated with the software unless explicitly disclaimed in individual
+Sun Microsystems, Inc\&.  The following terms apply to all files a
+ssociated with the software unless explicitly disclaimed in individual
 files\&.
 .PP
 The authors hereby grant permission to use, copy, modify, distribute,
-and license this software and its documentation for any purpose, provided
-that existing copyright notices are retained in all copies and that this
-notice is included verbatim in any distributions\&. No written agreement,
-license, or royalty fee is required for any of the authorized uses\&.
-Modifications to this software may be copyrighted by their authors
-and need not follow the licensing terms described here, provided that
-the new terms are clearly indicated on the first page of each file where
-they apply\&.
+and license this software and its documentation for any purpose,
+provided that existing copyright notices are retained in all copies
+and that this notice is included verbatim in any distributions\&. No
+written agreement, license, or royalty fee is required for any of the
+authorized uses\&.  Modifications to this software may be copyrighted by
+their authors and need not follow the licensing terms described here,
+provided that the new terms are clearly indicated on the first page of
+each file where they apply\&.
 .PP
-IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY
-FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES
-ARISING OUT OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY
-DERIVATIVES THEREOF, EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE\&.
+In no event shall the authors or distributors be liable to any party
+for direct, indirect, special, incidental, or consequential damages
+arising out of the use of this software, its documentation, or any
+derivatives thereof, even if the authors have been advised of the
+possibility of such damage\&.
 .PP
-THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
-INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT\&.  THIS SOFTWARE
-IS PROVIDED ON AN "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE
-NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR
-MODIFICATIONS\&.
+The authors and distributors specifically disclaim any warranties,
+including, but not limited to, the implied warranties of
+merchantability, fitness for a particular purpose, and
+non-infringement\&.
+This software is provided on an "as is" basis, and the authors and
+distributors have no obligation to provide maintenance, support,
+updates, enhancements, or modifications\&.
 .PP
-RESTRICTED RIGHTS: Use, duplication or disclosure by the government
-is subject to the restrictions as set forth in subparagraph (c) (1) (ii)
+RESTRICTED RIGHTS: Use, duplication or disclosure by the government is
+subject to the restrictions as set forth in subparagraph (c) (1) (ii)
 of the Rights in Technical Data and Computer Software Clause as DFARS
 252\&.227-7013 and FAR 52\&.227-19\&.
 .SH "SEE ALSO"

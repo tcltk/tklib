@@ -113,6 +113,10 @@
 
           + [shtmlview](tklib/files/modules/shtmlview/shtmlview\.md) Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown
 
+          + [shtmlview\_doctools](tklib/files/modules/shtmlview/shtmlview\-doctools\.md) shtmlview extension adding support for doctools markup
+
+          + [shtmlview\_mkdoc](tklib/files/modules/shtmlview/shtmlview\-mkdoc\.md) shtmlview extension adding support for mkdoc markup
+
       * [swaplist]()
 
           + [swaplist](tklib/files/modules/swaplist/swaplist\.md) A dialog which allows a user to move options between two lists

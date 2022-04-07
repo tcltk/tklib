@@ -9,7 +9,7 @@
 # Meta description  
 # Meta category     HTML/Markdown viewer
 # Meta subject      html markdown
-# Meta require      {Tcl 8.4}
+# Meta require      {Tcl 8.5}
 # Meta require      Tk
 # Meta require      shtmlview
 # Meta author       Stephen Uhler <stephen.uhler@sun.com>
@@ -19,9 +19,13 @@
 # Meta license      BSD
 # @@ Meta End
 
-package require Tcl 8.4
+package require Tcl 8.5
 package require Tk
 package require shtmlview::shtmlview
+
+# Support various non-HTML formats, if possible
+catch { package require shtmlview::doctools }
+catch { package require shtmlview::mkdoc    }
 
 option add *Font		TkDefaultFont
 option add *selectBackground	#678db2
@@ -78,44 +82,25 @@ if {[lindex $argv 0] eq "--render"} {
     pack $help -fill both -expand true -side top
 
 } elseif {[file exists [lindex $argv 0]]} {
+
+    set file [lindex $argv 0]
+
     set help [::shtmlview::shtmlview .help \
 		  -historycombo true \
 		  -tablesupport true ]
 
     pack $help -side top -fill both -expand true
 
-    if {[file extension [lindex $argv 0]] eq ".tcl" ||
-	[file extension [lindex $argv 0]] eq ".tm" } {
+    $help configure -home $file
+    $help browse {*}$argv
 
-	# guess we have mkdoc format
-	if {[catch {
-	    package require mkdoc::mkdoc
-	}]} {
-	    puts stderr "Error:"
-	    puts stderr "Extracting and rendering mkdoc documentation embedded"
-	    puts stderr "in Tcl source code files requires package mkdoc::mkdoc!"
-	    exit 1
-	}
-
-	set tmpfile [file tempfile]
-	mkdoc::mkdoc [lindex $argv 0] ${tmpfile}.html -html
-	$help browse ${tmpfile}.html
-	wm protocol . WM_DELETE_WINDOW atExit
-
-    } else {
-	# Standard html or Markdown
-	$help configure -home [lindex $argv 0]
-	$help browse {*}[lrange $argv 0 end]
-
-	[$help getTextWidget] tag configure divblue -foreground blue
-	update idletasks
-    }
+    [$help getTextWidget] tag configure divblue -foreground blue
+    update idletasks
 } else {
-    puts stderr "Error: File [lindex $argv 0] does not exist"
-    puts stderr " or unknown option [lindex $argv 0]"
+    set file [lindex $argv 0]
+    puts stderr "Error: file $file does not exist, or unknown option $file"
     usage
 }
 
 vwait __forever__
 exit
-

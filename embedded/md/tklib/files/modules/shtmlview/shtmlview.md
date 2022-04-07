@@ -37,15 +37,17 @@ and Markdown
 
   - [EXAMPLE](#section6)
 
-  - [CHANGELOG](#section7)
+  - [EXTENSIONS](#section7)
 
-  - [TODO](#section8)
+  - [CHANGELOG](#section8)
 
-  - [Thanks](#section9)
+  - [TODO](#section9)
 
-  - [Bugs, Ideas, Feedback](#section10)
+  - [Thanks](#section10)
 
-  - [Code Copyright](#section11)
+  - [Bugs, Ideas, Feedback](#section11)
+
+  - [Code Copyright](#section12)
 
   - [See Also](#seealso)
 
@@ -61,20 +63,25 @@ package require Markdown ;\# optional Markdown support
 package require img::jpeg ;\# optional jpeg image support  
 package require shtmlview::shtmlview ?1\.1\.0?  
 
-[__::shtmlview::shtmlview__ *pathName* ?*options*?](#1)  
-[*pathName* __back__](#2)  
-[*pathName* __browse__ *filename* ?args?](#3)  
-[*pathName* __dosearch__ *string* *direction*](#4)  
-[*pathName* __forward__](#5)  
-[*pathName* __getFiles__](#6)  
-[*pathName* __getHistory__](#7)  
-[*pathName* __getTextWidget__](#8)  
-[*pathName* __helptext__ *cmd* ?*options*?](#9)  
-[*pathName* __home__](#10)  
-[*pathName* __open__](#11)  
-[*pathName* __reload__](#12)  
-[*pathName* __render__ *text*](#13)  
-[*pathName* __url__](#14)  
+[__::shtmlview::converter__ *extension* *description* *cmdprefix*](#1)  
+[__::shtmlview::shtmlview__ *pathName* ?*options*?](#2)  
+[*pathName* __back__](#3)  
+[*pathName* __browse__ *filename* ?args?](#4)  
+[*pathName* __dosearch__ *string* *direction*](#5)  
+[*pathName* __edittext__ *cmd* ?*options*?](#6)  
+[*pathName* __editView__](#7)  
+[*pathName* __forward__](#8)  
+[*pathName* __getFiles__](#9)  
+[*pathName* __getHistory__](#10)  
+[*pathName* __getEditWidget__](#11)  
+[*pathName* __getTextWidget__](#12)  
+[*pathName* __helptext__ *cmd* ?*options*?](#13)  
+[*pathName* __home__](#14)  
+[*pathName* __open__](#15)  
+[*pathName* __reload__](#16)  
+[*pathName* __render__ *text* ?ext?](#17)  
+[*pathName* __sourceView__](#18)  
+[*pathName* __url__](#19)  
 
 # <a name='description'></a>DESCRIPTION
 
@@ -93,8 +100,8 @@ Markdown support was added\.
 
 The widget is *not* a web browser\. It only supports relative links in the
 local filesystem\. It does *not* support style sheets\. It does not support
-http\(s\) links nor images\. It is thought of as the last fallback in cases where
-no other possibilities exists to display HTML or Markdown markup from a Tk
+http\(s\) links nor images\. It is thought of as a last fallback to use in cases
+where no other possibilities exists to display HTML or Markdown markup from a Tk
 application\.
 
 Use cases are as a help viewer and wherever the developer has control about the
@@ -113,28 +120,46 @@ application for the direct viewing of Markdown and HTML files\. Invoke it as
 
 in a terminal\.
 
-The __::shtmlview::shtmlview__ command creates creates a new window \(given
-by the pathName argument\) and makes it into __::shtmlview::shtmlview__
-
-The __::shtmlview::shtmlview__ command creates creates a new window \(given
-by the pathName argument\) and makes it into __::shtmlview::shtmlview__
-widget\. The __::shtmlview::shtmlview__ command returns its pathName
-argument\. At the time this command is invoked, there must not exist a window
-named pathName, but pathName's parent must exist\. The API described in this
-document is not the whole API offered by the snit object
-__::shtmlview::shtmlview__\. Instead, it is the subset of that API that is
-expected not to change in future versions\.
+The API described in this document is not the whole API offered by the snit
+object __::shtmlview::shtmlview__\. Instead, it is the subset of that API
+that is expected not to change in future versions\.
 
 # <a name='section2'></a>COMMANDS
 
-  - <a name='1'></a>__::shtmlview::shtmlview__ *pathName* ?*options*?
+  - <a name='1'></a>__::shtmlview::converter__ *extension* *description* *cmdprefix*
 
-    Creates and configures a shtmlview widget\.
+    Registers a conversion command prefix \(*cmdprefix*\) for files having the
+    *extension*\. The *description* is a short summary of the kind of files
+    expected to have that extension\.
+
+    The result of the command is the empty string\.
+
+    Whenever an shtmlview widget encounters a file with the specified
+    *extension* it will invoke the registered command prefix with one
+    argument, the path to the file to convert\. The result of the invokation is
+    expected to be the HTML to render and display\.
+
+    See section [EXTENSIONS](#section7) for an example\.
+
+  - <a name='2'></a>__::shtmlview::shtmlview__ *pathName* ?*options*?
+
+    Creates and configures the shtmlview widget *pathName*\.
+
+    The result of the command is the *pathName*\.
+
+    An error is thrown if a widget for *pathName* already exists\.
+
+    An error is also thrown if the parent for *pathName* does not exist\.
+
+    The recognized options are explained in section [WIDGET
+    OPTIONS](#section3)\.
+
+    The methods of the new widget are explained in section [WIDGET
+    COMMANDS](#section4)\.
 
 # <a name='section3'></a>WIDGET OPTIONS
 
-To configure the internal text widget the helptext command could be used
-directly\.
+Use method __helptext__ to configure the internal text widget\.
 
   - __\-browsecmd__ cmd
 
@@ -177,71 +202,113 @@ directly\.
 Each shtmlview widget created with the above command supports the following
 commands and options:
 
-  - <a name='2'></a>*pathName* __back__
+  - <a name='3'></a>*pathName* __back__
 
     Displays the previous HTML and Markdown page in the browsing history if any\.
 
-  - <a name='3'></a>*pathName* __browse__ *filename* ?args?
+  - <a name='4'></a>*pathName* __browse__ *filename* ?args?
 
     Displays the HTML or Markdown text contained in the named file\. Any
     additional arguments, while also file names, are just added to the history
     stack\. They can be walked to using the history keys, __f__ and
     __b__\.
 
-  - <a name='4'></a>*pathName* __dosearch__ *string* *direction*
+  - <a name='5'></a>*pathName* __dosearch__ *string* *direction*
 
     Search for and highlight the given string starting from the current index in
     the specified direction\. The direction has to be either __forward__
     \(default\) or __backwards__\.
 
-  - <a name='5'></a>*pathName* __forward__
+  - <a name='6'></a>*pathName* __edittext__ *cmd* ?*options*?
+
+    This command exposes the internal text editor widget for configuration\. See
+    the following example:
+
+    ::shtmlview::shtmlview .help
+    .help browse index.md
+    .help editView
+    .help edittext configure -background salmon
+
+  - <a name='7'></a>*pathName* __editView__
+
+    This command switches the widget from viewing to editing\. In this mode the
+    user is able to edit and change the currently loaded file\. To switch to a
+    non\-editable source display instead see __sourceView__ below\.
+
+    ::shtmlview::shtmlview .help
+    .help browse index.md
+    .help editView
+
+  - <a name='8'></a>*pathName* __forward__
 
     Displays the next HTML or Markdown page in the browsing history if any\.
 
-  - <a name='6'></a>*pathName* __getFiles__
+  - <a name='9'></a>*pathName* __getFiles__
 
     This command returns a list of all visited files\. Duplicates and anchor
     links are removed from the raw data\.
 
-  - <a name='7'></a>*pathName* __getHistory__
+  - <a name='10'></a>*pathName* __getHistory__
 
     This command returns a list of the current history of visited files and
     anchors\.
 
-  - <a name='8'></a>*pathName* __getTextWidget__
+  - <a name='11'></a>*pathName* __getEditWidget__
 
-    This commands returns the internal pathname of the text widget\. This enables
-    the developer to directly access it, if required or desired\. Remember, this
-    is dangerous\. See also __helptext__, below\.
+    This commands returns the internal pathname of the text editor widget used
+    for editing the current document\. This enables the developer to directly
+    access it, if required or desired\. This is dangerous\. See also
+    __edittext__, above\.
 
-  - <a name='9'></a>*pathName* __helptext__ *cmd* ?*options*?
+  - <a name='12'></a>*pathName* __getTextWidget__
 
-    This command exposes the internal text widget\. See the following example:
+    This commands returns the internal pathname of the internal viewer text
+    widget\. This enables the developer to directly access it, if required or
+    desired\. This is dangerous\. See also __helptext__, below\.
+
+  - <a name='13'></a>*pathName* __helptext__ *cmd* ?*options*?
+
+    This command exposes the internal viewer text widget for configuration\. See
+    the following example:
 
     ::shtmlview::shtmlview .help
     .help browse index.html
     .help helptext configure -background yellow
 
-  - <a name='10'></a>*pathName* __home__
+  - <a name='14'></a>*pathName* __home__
 
     Displays either the page set by option __\-home__, or the first page
     __browse__ was called for\.
 
-  - <a name='11'></a>*pathName* __open__
+  - <a name='15'></a>*pathName* __open__
 
-    Uses a standard file open dialog to select a HTML or Markdown page for
-    display, and then rendered the selected file, if any\.
+    Uses a standard file open dialog to select a document in any of the
+    supported formats for display, and then renders that file, if any\.
 
-  - <a name='12'></a>*pathName* __reload__
+  - <a name='16'></a>*pathName* __reload__
 
     Reloads and redisplays the currently shown page\.
 
-  - <a name='13'></a>*pathName* __render__ *text*
+  - <a name='17'></a>*pathName* __render__ *text* ?ext?
 
-    Renders the given HTML or Markdown string\. If the string does not start with
-    a recognized HTML tag then it will be treated as Markdown\.
+    Renders the given *text* in the viewer\. If an extension *ext* is
+    specified the string is assumed to be in the associated format, and the
+    associated converter is used\. Otherwise the string is considered to be
+    either HTML or Markdown\. To be treated as HTML the *text* has to start
+    with a recognized HTML tag\. In any other case it is considered to be
+    Markdown\.
 
-  - <a name='14'></a>*pathName* __url__
+  - <a name='18'></a>*pathName* __sourceView__
+
+    This command switches the widget from viewing the current document itself to
+    viewing the source of that document\. To switch to a editable source display
+    see __editView__ above\.
+
+    ::shtmlview::shtmlview .help
+    .help browse index.md
+    .help sourceView
+
+  - <a name='19'></a>*pathName* __url__
 
     Returns the currently shown URL\.
 
@@ -307,21 +374,74 @@ The following keys are bound to the widget for navigation and other actions:
 
 # <a name='section6'></a>EXAMPLE
 
-    package require Tk
-    package require snit
     package require shtmlview::shtmlview
     proc browsed {url} {
         puts "You browsed $url"
     }
-    set help [::shtmlview::shtmlview .help -toolbar true  -browsecmd browsed]
-    $help browse index.html
-    pack $help -fill both -expand true -side left
+    ::shtmlview::shtmlview .help -toolbar true -browsecmd browsed
+    .help browse index.html
+    pack .help -fill both -expand true -side left
     package require Markdown
-    $help browser test.md
+    .help browser test.md
 
 More examples can be found in the sources of the package\.
 
-# <a name='section7'></a>CHANGELOG
+# <a name='section7'></a>EXTENSIONS
+
+While the package natively only support HTML documents, and Markdown documents
+if the supporting __[Markdown](\.\./\.\./\.\./\.\./index\.md\#markdown)__ package
+is available, it is possible to extend the range of supported formats by means
+of a plugin mechanism\.
+
+The main entry point to that system is the __shtmlview::converter__ command\.
+With it is possible to register a document format and an associated conversion
+command\. The format is identified by its file extension, like, for example
+"\.md", "\.man", etc\. The conversion command is expected to convert the content of
+the file given to it into HTML for display\.
+
+The packages __shtmlview::doctools__ and __shtmlview::mkdoc__ are
+examples of such plugins\. The first provides support for the
+*[doctools](\.\./\.\./\.\./\.\./index\.md\#doctools)* format used by both *Tcllib*
+and *Tklib* for their manpages, while the second provides support for
+*[mkdoc](\.\./\.\./\.\./\.\./index\.md\#mkdoc)*\-enhanced Tcl source files\. In other
+words, Tcl files with embedded documentation in
+*[mkdoc](\.\./\.\./\.\./\.\./index\.md\#mkdoc)* syntax\.
+
+Enclosed below the bare Tcl code of the __shtmlview::mkdoc__ package:
+
+        package require shtmlview::shtmlview
+        package require mkdoc::mkdoc
+
+        ::shtmlview::converter .tcl {Tcl+mkdoc files}   ::shtmlview::mkdoc
+        ::shtmlview::converter .tm  {Tcl+mkdoc modules} ::shtmlview::mkdoc
+
+        proc ::shtmlview::mkdoc {url} {
+    	close [file tempfile htmltemp .html]
+
+    	mkdoc::mkdoc $url $htmltemp -html
+
+    	if {[catch {
+    	    open $htmltemp r
+    	} result]} {
+    	    return -code error "Cannot open $url: $result"
+    	}
+
+    	set html [read $result]
+    	close $result
+    	file delete $htmltemp
+
+    	return $html
+        }
+
+        package provide shtmlview::mkdoc 0.1
+
+It is of course possible to write plugins which use an external application like
+__pandoc__ to generate the HTML to render, instead of a Tcl package\.
+
+And it is of course also possible to register conversion commands directly from
+the application using this package, instead of going through a separate package\.
+
+# <a name='section8'></a>CHANGELOG
 
   - 2022\-02\-25 version 0\.9\.2
 
@@ -393,9 +513,17 @@ More examples can be found in the sources of the package\.
 
       * Adding render method to read HTML directly without filename
 
-# <a name='section8'></a>TODO
+      * Adding plugin structure for additional file types like Tcllib doctools,
+        or mkdoc
 
-  - Markdown rendering using tcllib package __Markdown__ in case an URL ends
+      * Tcl doctools support resides in its own package
+
+      * Tcl mkdoc supports resides in its own package
+
+# <a name='section9'></a>TODO
+
+  - Markdown rendering using tcllib package
+    __[Markdown](\.\./\.\./\.\./\.\./index\.md\#markdown)__ in case an URL ends
     with "\.md" \(done\)
 
   - Support for SVG images for instance using
@@ -412,19 +540,19 @@ More examples can be found in the sources of the package\.
 
   - Fixing mouse wheel issues
 
-# <a name='section9'></a>Thanks
+# <a name='section10'></a>Thanks
 
 Stephen Uhler, Clif Flynt and Robert Heller, they provided the majority of the
 code in this widget\.
 
-# <a name='section10'></a>Bugs, Ideas, Feedback
+# <a name='section11'></a>Bugs, Ideas, Feedback
 
 This document, and the package it describes, will undoubtedly contain bugs and
 other problems\. Please report such to the author of this package\. Please also
 report any ideas for enhancements you may have for either package and/or
 documentation\.
 
-# <a name='section11'></a>Code Copyright
+# <a name='section12'></a>Code Copyright
 
 BSD License type:
 
@@ -440,16 +568,16 @@ software may be copyrighted by their authors and need not follow the licensing
 terms described here, provided that the new terms are clearly indicated on the
 first page of each file where they apply\.
 
-IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR DIRECT,
-INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE
-OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF, EVEN IF THE
-AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE\.
+In no event shall the authors or distributors be liable to any party for direct,
+indirect, special, incidental, or consequential damages arising out of the use
+of this software, its documentation, or any derivatives thereof, even if the
+authors have been advised of the possibility of such damage\.
 
-THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES, INCLUDING,
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, AND NON\-INFRINGEMENT\. THIS SOFTWARE IS PROVIDED ON AN "AS
-IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS\.
+The authors and distributors specifically disclaim any warranties, including,
+but not limited to, the implied warranties of merchantability, fitness for a
+particular purpose, and non\-infringement\. This software is provided on an "as
+is" basis, and the authors and distributors have no obligation to provide
+maintenance, support, updates, enhancements, or modifications\.
 
 RESTRICTED RIGHTS: Use, duplication or disclosure by the government is subject
 to the restrictions as set forth in subparagraph \(c\) \(1\) \(ii\) of the Rights in

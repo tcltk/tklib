@@ -77,6 +77,7 @@
 |<a name='disjointlistbox'></a>disjointlistbox|[swaplist](tklib/files/modules/swaplist/swaplist\.md)|
 |<a name='displaying'></a>displaying|[controlwidget](tklib/files/modules/controlwidget/controlwidget\.md)|
 |<a name='dll'></a>dll|[ico](tklib/files/modules/ico/ico\.md)|
+|<a name='doctools'></a>doctools|[shtmlview](tklib/files/apps/shtmlview\.md) &#183; [shtmlview\_doctools](tklib/files/modules/shtmlview/shtmlview\-doctools\.md)|
 |<a name='dragging'></a>dragging|[canvas::drag](tklib/files/modules/canvas/canvas\_drag\.md)|
 |<a name='drawing'></a>drawing|[diagram](tklib/files/modules/diagrams/diagram\.md)|
 |<a name='drum'></a>drum|[diagram](tklib/files/modules/diagrams/diagram\.md)|
@@ -111,7 +112,7 @@
 |<a name='highlighting'></a>highlighting|[canvas::highlight](tklib/files/modules/canvas/canvas\_highlight\.md)|
 |<a name='history'></a>history|[history](tklib/files/modules/history/tklib\_history\.md)|
 |<a name='hover'></a>hover|[tooltip](tklib/files/modules/tooltip/tooltip\.md)|
-|<a name='html'></a>html|[shtmlview](tklib/files/modules/shtmlview/shtmlview\.md)|
+|<a name='html'></a>html|[shtmlview](tklib/files/apps/shtmlview\.md) &#183; [shtmlview](tklib/files/modules/shtmlview/shtmlview\.md) &#183; [shtmlview\_doctools](tklib/files/modules/shtmlview/shtmlview\-doctools\.md) &#183; [shtmlview\_mkdoc](tklib/files/modules/shtmlview/shtmlview\-mkdoc\.md)|
 
 
 #### <a name='cI'></a>Keywords: I
@@ -151,10 +152,12 @@
 |---|---|
 |<a name='magick\_vector\_graphics'></a>magick vector graphics|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md)|
 |<a name='map'></a>map|[canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md)|
+|<a name='markdown'></a>markdown|[shtmlview](tklib/files/apps/shtmlview\.md)|
 |<a name='mega\_widget'></a>mega\-widget|[chatwidget](tklib/files/modules/chatwidget/chatwidget\.md)|
 |<a name='megawidget'></a>megawidget|[widget](tklib/files/modules/widget/widget\.md) &#183; [widget\_calendar](tklib/files/modules/widget/widget\_calendar\.md) &#183; [widget\_dateentry](tklib/files/modules/widget/widget\_dateentry\.md) &#183; [widget\_toolbar](tklib/files/modules/widget/widget\_toolbar\.md)|
 |<a name='menu'></a>menu|[widget](tklib/files/modules/widget/widget\.md)|
 |<a name='method'></a>method|[khim](tklib/files/modules/khim/khim\.md)|
+|<a name='mkdoc'></a>mkdoc|[shtmlview](tklib/files/apps/shtmlview\.md) &#183; [shtmlview\_mkdoc](tklib/files/modules/shtmlview/shtmlview\-mkdoc\.md)|
 |<a name='move'></a>move|[diagram](tklib/files/modules/diagrams/diagram\.md)|
 |<a name='mvg'></a>mvg|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md)|
 
@@ -251,6 +254,7 @@
 |<a name='validation'></a>validation|[widget\_validator](tklib/files/modules/widgetv/widget\_validator\.md)|
 |<a name='vector'></a>vector|[diagram](tklib/files/modules/diagrams/diagram\.md) &#183; [diagram\-viewer](tklib/files/apps/diagram\-viewer\.md)|
 |<a name='vector\_graphics'></a>vector graphics|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md)|
+|<a name='viewer'></a>viewer|[shtmlview](tklib/files/apps/shtmlview\.md)|
 |<a name='viewport'></a>viewport|[crosshair](tklib/files/modules/crosshair/crosshair\.md)|
 
 

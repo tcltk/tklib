@@ -5,6 +5,10 @@
 
   - [By Categories]()
 
+      * [Document display]()
+
+          + [shtmlview](tklib/files/apps/shtmlview\.md) Basic HTML and Markdown viewer application
+
       * [Documentation tools]()
 
           + [diagram](tklib/files/modules/diagrams/diagram\.md) Diagram drawing
@@ -86,6 +90,10 @@
           + [Plotchart](tklib/files/modules/plotchart/plotchart\.md) Simple plotting and charting package
 
           + [shtmlview](tklib/files/modules/shtmlview/shtmlview\.md) Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown
+
+          + [shtmlview\_doctools](tklib/files/modules/shtmlview/shtmlview\-doctools\.md) shtmlview extension adding support for doctools markup
+
+          + [shtmlview\_mkdoc](tklib/files/modules/shtmlview/shtmlview\-mkdoc\.md) shtmlview extension adding support for mkdoc markup
 
           + [tooltip](tklib/files/modules/tooltip/tooltip\.md) Tooltip management
 

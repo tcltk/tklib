@@ -8,3 +8,5 @@
       * [bitmap\-editor](tklib/files/apps/bitmap\-editor\.md) Editor for XBM images
 
       * [diagram\-viewer](tklib/files/apps/diagram\-viewer\.md) Lightweight Diagram Processor
+
+      * [shtmlview](tklib/files/apps/shtmlview\.md) Basic HTML and Markdown viewer application
