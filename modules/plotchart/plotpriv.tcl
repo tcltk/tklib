@@ -434,7 +434,8 @@ proc ::Plotchart::MarginsSquare { w {notext 2.0} {text_width 8}} {
 # Arguments:
 #    w           Name of the canvas
 #    args        additional arguments for placement of plot,
-#                currently: '-box', '-reference', and '-units'
+#                currently: '-box', '-reference', '-units',
+#                '-centre'
 # Result:
 #    List of four values giving the pixel coordinates
 #    of the boundary of the piechart
@@ -463,26 +464,31 @@ proc ::Plotchart::MarginsCircle { w args } {
 
    # width (dx) and height (dy) of plot region in pixels:
    if {[info exists options(-units)]} {
-      # refUnitX, refUnitY - size of one world coordinate unit in the piechart,
-      #      given as canvas coords (can also be m,c,i,p units)
-      # Note: the pie is always 2 world coordinate units in diameter
-      #
-      lassign $options(-units) refUnitX refUnitY
-      set wc [string range $w 2 end]
-      set refUnitX [winfo pixels $wc $refUnitX]
-      set refUnitY [winfo pixels $wc $refUnitY]
-      set dx [expr {$refUnitX * 2}]
-      set dy [expr {$refUnitY * 2}]
+       # refUnitX, refUnitY - size of one world coordinate unit in the piechart,
+       #      given as canvas coords (can also be m,c,i,p units)
+       # Note: the pie is always 2 world coordinate units in diameter
+       #
+       lassign $options(-units) refUnitX refUnitY
+       set wc [string range $w 2 end]
+       set refUnitX [winfo pixels $wc $refUnitX]
+       set refUnitY [winfo pixels $wc $refUnitY]
+       set dx [expr {$refUnitX * 2}]
+       set dy [expr {$refUnitY * 2}]
    } else {
-      set dx [expr {$pxmax-$pxmin+1}]
-      set dy [expr {$pymax-$pymin+1}]
-      # make sure, we get a centred circle:
-      if {$dx < $dy} {
-          set dy $dx
-      } else {
-          set dx $dy
-      }
-      set pxmin [expr {($pxmin+$pxmax-$dx)/2}]
+       set dx [expr {$pxmax-$pxmin+1}]
+       set dy [expr {$pymax-$pymin+1}]
+       # make sure, we get a centred circle:
+       if {$dx < $dy} {
+           set dy $dx
+       } else {
+           set dx $dy
+       }
+       set pxmin [expr {($pxmin+$pxmax-$dx)/2}]
+
+       if {[info exists options(-centre)] && $options(-centre)} {
+           set pymin [expr {($pymin+$pymax-$dy)/2}]
+           set pymax [expr {($pymin+$pymax+$dy)/2}]
+       }
    }
 
    # new default coords of plotting region:

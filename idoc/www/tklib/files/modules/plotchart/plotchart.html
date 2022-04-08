@@ -107,7 +107,7 @@
 &#124; <a href="../../../../toc2.html">Applications</a>
  ] <hr>
 <div class="doctools">
-<h1 class="doctools_title">Plotchart(n) 2.5.0 tklib &quot;Plotchart&quot;</h1>
+<h1 class="doctools_title">Plotchart(n) 2.5.1 tklib &quot;Plotchart&quot;</h1>
 <div id="name" class="doctools_section"><h2><a name="name">Name</a></h2>
 <p>Plotchart - Simple plotting and charting package</p>
 </div>
@@ -145,7 +145,7 @@
 <ul class="doctools_requirements">
 <li>package require <b class="pkgname">Tcl <span class="opt">?8.5?</span></b></li>
 <li>package require <b class="pkgname">Tk <span class="opt">?8.5?</span></b></li>
-<li>package require <b class="pkgname">Plotchart <span class="opt">?2.5.0?</span></b></li>
+<li>package require <b class="pkgname">Plotchart <span class="opt">?2.5.1?</span></b></li>
 </ul>
 <ul class="doctools_syntax">
 <li><a href="#1"><b class="cmd">::Plotchart::createXYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i> <i class="arg">args</i></a></li>
@@ -301,18 +301,19 @@
 <li><a href="#151"><b class="cmd">$performance</b> plot <i class="arg">series_and_data_pairs</i></a></li>
 <li><a href="#152"><b class="cmd">::Plotchart::createTaylorDiagram</b> <i class="arg">w</i> <i class="arg">radius_data</i> <i class="arg">args</i></a></li>
 <li><a href="#153"><b class="cmd">$taylor</b> plot <i class="arg">series</i> <i class="arg">stdev</i> <i class="arg">corr</i></a></li>
-<li><a href="#154"><b class="cmd">::Plotchart::createTaylorDiagram</b> <i class="arg">w</i> <i class="arg">radius_data</i> <i class="arg">args</i></a></li>
-<li><a href="#155"><b class="cmd">$taylor</b> plot <i class="arg">series</i> <i class="arg">stdev</i> <i class="arg">corr</i></a></li>
-<li><a href="#156"><b class="cmd">::Plotchart::createHeatmap</b> <i class="arg">w</i> <i class="arg">rowlabels</i> <i class="arg">columnlabels</i> <i class="arg">args</i></a></li>
-<li><a href="#157"><b class="cmd">$heatmap</b> plot row <i class="arg">label</i> <i class="arg">data</i></a></li>
-<li><a href="#158"><b class="cmd">$heatmap</b> plot column <i class="arg">label</i> <i class="arg">data</i></a></li>
-<li><a href="#159"><b class="cmd">$heatmap</b> plot cell <i class="arg">rowlabel</i> <i class="arg">columnlabel</i> <i class="arg">value</i></a></li>
-<li><a href="#160"><b class="cmd">$heatmap</b> scale values <i class="arg">min</i> <i class="arg">max</i></a></li>
-<li><a href="#161"><b class="cmd">$heatmap</b> scale colours <i class="arg">mincolour</i> <i class="arg">maxcolour</i></a></li>
-<li><a href="#162"><b class="cmd">::Plotchart::plotmethod</b> <i class="arg">charttype</i> <i class="arg">methodname</i> <i class="arg">plotproc</i></a></li>
-<li><a href="#163"><b class="cmd">::Plotchart::plotpack</b> <i class="arg">w</i> <i class="arg">dir</i> <i class="arg">args</i></a></li>
-<li><a href="#164"><b class="cmd">$anyplot</b> bindplot <i class="arg">event</i> <i class="arg">command</i> <i class="arg">args</i></a></li>
-<li><a href="#165"><b class="cmd">$anyplot</b> bindlast <i class="arg">series</i> <i class="arg">event</i> <i class="arg">command</i></a></li>
+<li><a href="#154"><b class="cmd">::Plotchart::createHeatmap</b> <i class="arg">w</i> <i class="arg">rowlabels</i> <i class="arg">columnlabels</i> <i class="arg">args</i></a></li>
+<li><a href="#155"><b class="cmd">$heatmap</b> plot row <i class="arg">label</i> <i class="arg">data</i></a></li>
+<li><a href="#156"><b class="cmd">$heatmap</b> plot column <i class="arg">label</i> <i class="arg">data</i></a></li>
+<li><a href="#157"><b class="cmd">$heatmap</b> plot cell <i class="arg">rowlabel</i> <i class="arg">columnlabel</i> <i class="arg">value</i></a></li>
+<li><a href="#158"><b class="cmd">$heatmap</b> scale values <i class="arg">min</i> <i class="arg">max</i></a></li>
+<li><a href="#159"><b class="cmd">$heatmap</b> scale colours <i class="arg">mincolour</i> <i class="arg">maxcolour</i></a></li>
+<li><a href="#160"><b class="cmd">::Plotchart::createCircleplot</b> <i class="arg">w</i> <i class="arg">labels</i> <i class="arg">args</i></a></li>
+<li><a href="#161"><b class="cmd">$circleplot</b> connect <i class="arg">label1</i> <i class="arg">label2</i> <i class="arg">colour</i> <i class="arg">width</i></a></li>
+<li><a href="#162"><b class="cmd">$circleplot</b> modify <i class="arg">label</i> <i class="arg">args</i></a></li>
+<li><a href="#163"><b class="cmd">::Plotchart::plotmethod</b> <i class="arg">charttype</i> <i class="arg">methodname</i> <i class="arg">plotproc</i></a></li>
+<li><a href="#164"><b class="cmd">::Plotchart::plotpack</b> <i class="arg">w</i> <i class="arg">dir</i> <i class="arg">args</i></a></li>
+<li><a href="#165"><b class="cmd">$anyplot</b> bindplot <i class="arg">event</i> <i class="arg">command</i> <i class="arg">args</i></a></li>
+<li><a href="#166"><b class="cmd">$anyplot</b> bindlast <i class="arg">series</i> <i class="arg">event</i> <i class="arg">command</i></a></li>
 </ul>
 </div>
 </div>
@@ -2924,37 +2925,7 @@ origin and the correlation determines the angle.</p>
 <dt>list <i class="arg">corr</i> (in)</dt>
 <dd><p>Correlation coefficient with the reference dataset</p></dd>
 </dl></dd>
-<dt><a name="154"><b class="cmd">::Plotchart::createTaylorDiagram</b> <i class="arg">w</i> <i class="arg">radius_data</i> <i class="arg">args</i></a></dt>
-<dd><p>Create a new Taylor diagram (one quadrant) with circles indicating the distance to the reference point.</p>
-<p>The data points are given as the standard deviation and the correlation to the reference.</p>
-<dl class="doctools_arguments">
-<dt>widget <i class="arg">w</i> (in)</dt>
-<dd><p>Name of the <em>existing</em> canvas widget to hold the plot.</p></dd>
-<dt>list <i class="arg">radius_data</i> (in)</dt>
-<dd><p>A list of the maximum radius for the standard deviation and the step size. Quarter circles are
-drawn with the axis labels.</p></dd>
-</dl>
-<p>Currently one option is supported:</p>
-<dl class="doctools_options">
-<dt><b class="option">reference</b> value</dt>
-<dd><p>Reference value for the data points to be compared with. It appears as a dot at the x-axis.
-Along with this dot circle segments are drawn at the same spacing as the axis labels to indicate
-the distance of the data points from the reference.</p></dd>
-</dl></dd>
-<dt><a name="155"><b class="cmd">$taylor</b> plot <i class="arg">series</i> <i class="arg">stdev</i> <i class="arg">corr</i></a></dt>
-<dd><p>The plot method takes the standard deviation and the correlation to the reference as input
-and draws a symbol as a representation. The standard deviation serves as the distance from the
-origin and the correlation determines the angle.</p>
-<dl class="doctools_arguments">
-<dt>string <i class="arg">series</i> (in)</dt>
-<dd><p>Name of the series (it will be plotted as a symbol that is configured via the
-<em>$target dataconfig</em> command (see the XY-plot equivalent for an explanation)</p></dd>
-<dt>float <i class="arg">stdev</i> (in)</dt>
-<dd><p>Standard deviation of the data point</p></dd>
-<dt>list <i class="arg">corr</i> (in)</dt>
-<dd><p>Correlation coefficient with the reference dataset</p></dd>
-</dl></dd>
-<dt><a name="156"><b class="cmd">::Plotchart::createHeatmap</b> <i class="arg">w</i> <i class="arg">rowlabels</i> <i class="arg">columnlabels</i> <i class="arg">args</i></a></dt>
+<dt><a name="154"><b class="cmd">::Plotchart::createHeatmap</b> <i class="arg">w</i> <i class="arg">rowlabels</i> <i class="arg">columnlabels</i> <i class="arg">args</i></a></dt>
 <dd><p>Create a heatmap, i.e. a tableau of rectangles whose colours depend on some data. The row and
 column labels are used as identifiers when filling in the data. The number of them determines the
 size of the tableau.</p>
@@ -2969,7 +2940,7 @@ size of the tableau.</p>
 <dt>list <i class="arg">args</i> (in)</dt>
 <dd><p>Zero or more arguments to influence the size of the heatmap. See XY plot for more information.</p></dd>
 </dl></dd>
-<dt><a name="157"><b class="cmd">$heatmap</b> plot row <i class="arg">label</i> <i class="arg">data</i></a></dt>
+<dt><a name="155"><b class="cmd">$heatmap</b> plot row <i class="arg">label</i> <i class="arg">data</i></a></dt>
 <dd><p>Use the given data to fill the rectangles belonging to the row &quot;label&quot;.</p>
 <dl class="doctools_arguments">
 <dt>string <i class="arg">label</i> (in)</dt>
@@ -2977,7 +2948,7 @@ size of the tableau.</p>
 <dt>list <i class="arg">data</i> (in)</dt>
 <dd><p>List of numerical data to be used for the colouring of the rectangles.</p></dd>
 </dl></dd>
-<dt><a name="158"><b class="cmd">$heatmap</b> plot column <i class="arg">label</i> <i class="arg">data</i></a></dt>
+<dt><a name="156"><b class="cmd">$heatmap</b> plot column <i class="arg">label</i> <i class="arg">data</i></a></dt>
 <dd><p>Use the given data to fill the rectangles belonging to the column &quot;label&quot;.</p>
 <dl class="doctools_arguments">
 <dt>string <i class="arg">label</i> (in)</dt>
@@ -2985,7 +2956,7 @@ size of the tableau.</p>
 <dt>list <i class="arg">data</i> (in)</dt>
 <dd><p>List of numerical data to be used for the colouring of the rectangles.</p></dd>
 </dl></dd>
-<dt><a name="159"><b class="cmd">$heatmap</b> plot cell <i class="arg">rowlabel</i> <i class="arg">columnlabel</i> <i class="arg">value</i></a></dt>
+<dt><a name="157"><b class="cmd">$heatmap</b> plot cell <i class="arg">rowlabel</i> <i class="arg">columnlabel</i> <i class="arg">value</i></a></dt>
 <dd><p>Use the given value to fill the rectangle belonging to the cell with the given row and column labels.</p>
 <dl class="doctools_arguments">
 <dt>string <i class="arg">rowlabel</i> (in)</dt>
@@ -2995,7 +2966,7 @@ size of the tableau.</p>
 <dt>float <i class="arg">value</i> (in)</dt>
 <dd><p>Value to be used for the colouring of the cell.</p></dd>
 </dl></dd>
-<dt><a name="160"><b class="cmd">$heatmap</b> scale values <i class="arg">min</i> <i class="arg">max</i></a></dt>
+<dt><a name="158"><b class="cmd">$heatmap</b> scale values <i class="arg">min</i> <i class="arg">max</i></a></dt>
 <dd><p>Set the range for the values - they are mapped to a colour via linear interpolation.</p>
 <dl class="doctools_arguments">
 <dt>float <i class="arg">min</i> (in)</dt>
@@ -3003,7 +2974,7 @@ size of the tableau.</p>
 <dt>float <i class="arg">max</i> (in)</dt>
 <dd><p>Maximum value to be used.</p></dd>
 </dl></dd>
-<dt><a name="161"><b class="cmd">$heatmap</b> scale colours <i class="arg">mincolour</i> <i class="arg">maxcolour</i></a></dt>
+<dt><a name="159"><b class="cmd">$heatmap</b> scale colours <i class="arg">mincolour</i> <i class="arg">maxcolour</i></a></dt>
 <dd><p>Set the colours to be used for the minimum and the maximum values. The actual
 colour is determined via linear interpolation of the RGB values.</p>
 <dl class="doctools_arguments">
@@ -3012,13 +2983,50 @@ colour is determined via linear interpolation of the RGB values.</p>
 <dt>string <i class="arg">maxcolour</i> (in)</dt>
 <dd><p>Colour to be used at the maximum value.</p></dd>
 </dl></dd>
+<dt><a name="160"><b class="cmd">::Plotchart::createCircleplot</b> <i class="arg">w</i> <i class="arg">labels</i> <i class="arg">args</i></a></dt>
+<dd><p>Create a circle plot, i.e. a circle with labels that can be connected by coloured arcs.
+Typical use: present the relationship between the items on the circle in a graphical way.</p>
+<p>The connections can be drawn pair by pair.</p>
+<dl class="doctools_arguments">
+<dt>widget <i class="arg">w</i> (in)</dt>
+<dd><p>Name of the <em>existing</em> canvas widget to hold the circle plot.</p></dd>
+<dt>list <i class="arg">rowlabels</i> (in)</dt>
+<dd><p>List of labels to display along the circle. Each label is accompanied by a filled dot.</p></dd>
+<dt>list <i class="arg">args</i> (in)</dt>
+<dd><p>Zero or more arguments to influence the size of the circle plot. See XY plot for more information.</p></dd>
+</dl></dd>
+<dt><a name="161"><b class="cmd">$circleplot</b> connect <i class="arg">label1</i> <i class="arg">label2</i> <i class="arg">colour</i> <i class="arg">width</i></a></dt>
+<dd><p>Connect the two labels via a coloured arc of given width (the arc is actually a parabola).</p>
+<dl class="doctools_arguments">
+<dt>string <i class="arg">label1</i> (in)</dt>
+<dd><p>String indicating the first label to connect.</p></dd>
+<dt>string <i class="arg">label2</i> (in)</dt>
+<dd><p>String indicating the second label to connect.</p></dd>
+<dt>string <i class="arg">colour</i> (in)</dt>
+<dd><p>Colour to use for the connected arc.</p></dd>
+<dt>string <i class="arg">width</i> (in)</dt>
+<dd><p>Width for the connected arc.</p></dd>
+</dl></dd>
+<dt><a name="162"><b class="cmd">$circleplot</b> modify <i class="arg">label</i> <i class="arg">args</i></a></dt>
+<dd><p>Modify the appearance of the label and the accompanying dot.</p>
+<dl class="doctools_arguments">
+<dt>string <i class="arg">label</i> (in)</dt>
+<dd><p>String indicating which label to modify.</p></dd>
+<dt>list <i class="arg">args</i> (in)</dt>
+<dd><p>List of key-value pairs:</p>
+<ul class="doctools_itemized">
+<li><p><em>-textcolour colour</em> - colour of the text to be used (alternative: &quot;-textcolor&quot;)</p></li>
+<li><p><em>-font font</em> - font for the text</p></li>
+<li><p><em>-dotcolour colour</em> - colour for the dot (alternative: &quot;-dotcolor&quot;)</p></li>
+</ul></dd>
+</dl></dd>
 </dl>
 </div>
 <div id="section14" class="doctools_section"><h2><a name="section14">ADDING SPECIFIC PLOT METHODS</a></h2>
 <p>The command <i class="term">plotmethod</i> can be used to add new methods for a particular
 plot or chart type. It is intended to help you develop specialised graphical displays.</p>
 <dl class="doctools_definitions">
-<dt><a name="162"><b class="cmd">::Plotchart::plotmethod</b> <i class="arg">charttype</i> <i class="arg">methodname</i> <i class="arg">plotproc</i></a></dt>
+<dt><a name="163"><b class="cmd">::Plotchart::plotmethod</b> <i class="arg">charttype</i> <i class="arg">methodname</i> <i class="arg">plotproc</i></a></dt>
 <dd><p>Adds a new method for the given plot or chart type. The method is implemented by the
 command or procedure given in the plotproc argument. The procedure will be called with
 two extra arguments, the name of the created plot and the canvas widget that contains
@@ -3118,7 +3126,7 @@ composite plot, but it can be saved as a PostScript file for instance:
 Note: the command simply takes a snapshot of the plots/charts as they
 are at that moment.</p>
 <dl class="doctools_definitions">
-<dt><a name="163"><b class="cmd">::Plotchart::plotpack</b> <i class="arg">w</i> <i class="arg">dir</i> <i class="arg">args</i></a></dt>
+<dt><a name="164"><b class="cmd">::Plotchart::plotpack</b> <i class="arg">w</i> <i class="arg">dir</i> <i class="arg">args</i></a></dt>
 <dd><p>Copy the contents of the plots/charts into another widget, in a manner
 similar to the <i class="term">pack</i> geometry manager.</p>
 <dl class="doctools_arguments">
@@ -3194,7 +3202,7 @@ define actions that are to be taken when the user clicks on an element of the pl
 you can use the tags on the various canvas elements to define other bindings.</p>
 <p>The <em>bindplot</em> and <em>bindlast</em> are defined as follows:</p>
 <dl class="doctools_definitions">
-<dt><a name="164"><b class="cmd">$anyplot</b> bindplot <i class="arg">event</i> <i class="arg">command</i> <i class="arg">args</i></a></dt>
+<dt><a name="165"><b class="cmd">$anyplot</b> bindplot <i class="arg">event</i> <i class="arg">command</i> <i class="arg">args</i></a></dt>
 <dd><p>Register a command that will be run whenever the given event occurs in the plot.</p>
 <dl class="doctools_arguments">
 <dt>string <i class="arg">event</i></dt>
@@ -3208,7 +3216,7 @@ so that the procedure has the signature:</p>
 </pre>
 <p>assuming the argument &quot;command&quot; is: {cmd A B C}</p></dd>
 </dl></dd>
-<dt><a name="165"><b class="cmd">$anyplot</b> bindlast <i class="arg">series</i> <i class="arg">event</i> <i class="arg">command</i></a></dt>
+<dt><a name="166"><b class="cmd">$anyplot</b> bindlast <i class="arg">series</i> <i class="arg">event</i> <i class="arg">command</i></a></dt>
 <dd><p>Register a command that will be run when the event occurs within the neighbourhood of
 the last point added to the given series. (You can use directly after inserting
 a data point. All such commands will remain active).</p>

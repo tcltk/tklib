@@ -2,7 +2,7 @@
 '\" Generated from file 'plotchart\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 2022 Arjen Markus <arjenmarkus@users\&.sourceforge\&.net>
 '\"
-.TH "Plotchart" n 2\&.5\&.0 tklib "Plotchart"
+.TH "Plotchart" n 2\&.5\&.1 tklib "Plotchart"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -278,7 +278,7 @@ package require \fBTcl  ?8\&.5?\fR
 .sp
 package require \fBTk  ?8\&.5?\fR
 .sp
-package require \fBPlotchart  ?2\&.5\&.0?\fR
+package require \fBPlotchart  ?2\&.5\&.1?\fR
 .sp
 \fB::Plotchart::createXYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 .sp
@@ -586,10 +586,6 @@ package require \fBPlotchart  ?2\&.5\&.0?\fR
 .sp
 \fB$taylor\fR plot \fIseries\fR \fIstdev\fR \fIcorr\fR
 .sp
-\fB::Plotchart::createTaylorDiagram\fR \fIw\fR \fIradius_data\fR \fIargs\fR
-.sp
-\fB$taylor\fR plot \fIseries\fR \fIstdev\fR \fIcorr\fR
-.sp
 \fB::Plotchart::createHeatmap\fR \fIw\fR \fIrowlabels\fR \fIcolumnlabels\fR \fIargs\fR
 .sp
 \fB$heatmap\fR plot row \fIlabel\fR \fIdata\fR
@@ -601,6 +597,12 @@ package require \fBPlotchart  ?2\&.5\&.0?\fR
 \fB$heatmap\fR scale values \fImin\fR \fImax\fR
 .sp
 \fB$heatmap\fR scale colours \fImincolour\fR \fImaxcolour\fR
+.sp
+\fB::Plotchart::createCircleplot\fR \fIw\fR \fIlabels\fR \fIargs\fR
+.sp
+\fB$circleplot\fR connect \fIlabel1\fR \fIlabel2\fR \fIcolour\fR \fIwidth\fR
+.sp
+\fB$circleplot\fR modify \fIlabel\fR \fIargs\fR
 .sp
 \fB::Plotchart::plotmethod\fR \fIcharttype\fR \fImethodname\fR \fIplotproc\fR
 .sp
@@ -4096,46 +4098,6 @@ list \fIcorr\fR (in)
 Correlation coefficient with the reference dataset
 .RE
 .TP
-\fB::Plotchart::createTaylorDiagram\fR \fIw\fR \fIradius_data\fR \fIargs\fR
-Create a new Taylor diagram (one quadrant) with circles indicating the distance to the reference point\&.
-.sp
-The data points are given as the standard deviation and the correlation to the reference\&.
-.RS
-.TP
-widget \fIw\fR (in)
-Name of the \fIexisting\fR canvas widget to hold the plot\&.
-.TP
-list \fIradius_data\fR (in)
-A list of the maximum radius for the standard deviation and the step size\&. Quarter circles are
-drawn with the axis labels\&.
-.RE
-.sp
-Currently one option is supported:
-.RS
-.TP
-\fBreference\fR value
-Reference value for the data points to be compared with\&. It appears as a dot at the x-axis\&.
-Along with this dot circle segments are drawn at the same spacing as the axis labels to indicate
-the distance of the data points from the reference\&.
-.RE
-.TP
-\fB$taylor\fR plot \fIseries\fR \fIstdev\fR \fIcorr\fR
-The plot method takes the standard deviation and the correlation to the reference as input
-and draws a symbol as a representation\&. The standard deviation serves as the distance from the
-origin and the correlation determines the angle\&.
-.RS
-.TP
-string \fIseries\fR (in)
-Name of the series (it will be plotted as a symbol that is configured via the
-\fI$target dataconfig\fR command (see the XY-plot equivalent for an explanation)
-.TP
-float \fIstdev\fR (in)
-Standard deviation of the data point
-.TP
-list \fIcorr\fR (in)
-Correlation coefficient with the reference dataset
-.RE
-.TP
 \fB::Plotchart::createHeatmap\fR \fIw\fR \fIrowlabels\fR \fIcolumnlabels\fR \fIargs\fR
 Create a heatmap, i\&.e\&. a tableau of rectangles whose colours depend on some data\&. The row and
 column labels are used as identifiers when filling in the data\&. The number of them determines the
@@ -4214,6 +4176,59 @@ Colour to be used at the minimum value\&.
 .TP
 string \fImaxcolour\fR (in)
 Colour to be used at the maximum value\&.
+.RE
+.TP
+\fB::Plotchart::createCircleplot\fR \fIw\fR \fIlabels\fR \fIargs\fR
+Create a circle plot, i\&.e\&. a circle with labels that can be connected by coloured arcs\&.
+Typical use: present the relationship between the items on the circle in a graphical way\&.
+.sp
+The connections can be drawn pair by pair\&.
+.RS
+.TP
+widget \fIw\fR (in)
+Name of the \fIexisting\fR canvas widget to hold the circle plot\&.
+.TP
+list \fIrowlabels\fR (in)
+List of labels to display along the circle\&. Each label is accompanied by a filled dot\&.
+.TP
+list \fIargs\fR (in)
+Zero or more arguments to influence the size of the circle plot\&. See XY plot for more information\&.
+.RE
+.TP
+\fB$circleplot\fR connect \fIlabel1\fR \fIlabel2\fR \fIcolour\fR \fIwidth\fR
+Connect the two labels via a coloured arc of given width (the arc is actually a parabola)\&.
+.RS
+.TP
+string \fIlabel1\fR (in)
+String indicating the first label to connect\&.
+.TP
+string \fIlabel2\fR (in)
+String indicating the second label to connect\&.
+.TP
+string \fIcolour\fR (in)
+Colour to use for the connected arc\&.
+.TP
+string \fIwidth\fR (in)
+Width for the connected arc\&.
+.RE
+.TP
+\fB$circleplot\fR modify \fIlabel\fR \fIargs\fR
+Modify the appearance of the label and the accompanying dot\&.
+.RS
+.TP
+string \fIlabel\fR (in)
+String indicating which label to modify\&.
+.TP
+list \fIargs\fR (in)
+List of key-value pairs:
+.RS
+.IP \(bu
+\fI-textcolour colour\fR - colour of the text to be used (alternative: "-textcolor")
+.IP \(bu
+\fI-font font\fR - font for the text
+.IP \(bu
+\fI-dotcolour colour\fR - colour for the dot (alternative: "-dotcolor")
+.RE
 .RE
 .PP
 .SH "ADDING SPECIFIC PLOT METHODS"

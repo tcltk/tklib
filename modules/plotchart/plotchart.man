@@ -1,11 +1,11 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin Plotchart n 2.5.0]
+[manpage_begin Plotchart n 2.5.1]
 [copyright {2022 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.5]]
 [require Tk [opt 8.5]]
-[require Plotchart [opt 2.5.0]]
+[require Plotchart [opt 2.5.1]]
 
 [description]
 [para]
@@ -4020,47 +4020,6 @@ Correlation coefficient with the reference dataset
 [list_end]
 
 
-[call [cmd ::Plotchart::createTaylorDiagram] [arg w] [arg radius_data] [arg args]]
-
-Create a new Taylor diagram (one quadrant) with circles indicating the distance to the reference point.
-[para]
-The data points are given as the standard deviation and the correlation to the reference.
-
-[list_begin arguments]
-[arg_def widget w in]
-Name of the [emph existing] canvas widget to hold the plot.
-
-[arg_def list radius_data in]
-A list of the maximum radius for the standard deviation and the step size. Quarter circles are
-drawn with the axis labels.
-[list_end]
-[para]
-
-Currently one option is supported:
-[list_begin options]
-[opt_def reference value]
-Reference value for the data points to be compared with. It appears as a dot at the x-axis.
-Along with this dot circle segments are drawn at the same spacing as the axis labels to indicate
-the distance of the data points from the reference.
-[list_end]
-
-[call [cmd \$taylor] plot [arg series] [arg stdev] [arg corr]]
-The plot method takes the standard deviation and the correlation to the reference as input
-and draws a symbol as a representation. The standard deviation serves as the distance from the
-origin and the correlation determines the angle.
-
-[list_begin arguments]
-[arg_def string series in]
-Name of the series (it will be plotted as a symbol that is configured via the
-[emph {$target dataconfig}] command (see the XY-plot equivalent for an explanation)
-
-[arg_def float stdev in]
-Standard deviation of the data point
-
-[arg_def list corr in]
-Correlation coefficient with the reference dataset
-[list_end]
-
 
 [call [cmd ::Plotchart::createHeatmap] [arg w] [arg rowlabels] [arg columnlabels] [arg args]]
 Create a heatmap, i.e. a tableau of rectangles whose colours depend on some data. The row and
@@ -4134,6 +4093,56 @@ colour is determined via linear interpolation of the RGB values.
 Colour to be used at the minimum value.
 [arg_def string maxcolour in]
 Colour to be used at the maximum value.
+[list_end]
+
+
+[call [cmd ::Plotchart::createCircleplot] [arg w] [arg labels] [arg args]]
+Create a circle plot, i.e. a circle with labels that can be connected by coloured arcs.
+Typical use: present the relationship between the items on the circle in a graphical way.
+[para]
+The connections can be drawn pair by pair.
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the [emph existing] canvas widget to hold the circle plot.
+
+[arg_def list rowlabels in]
+List of labels to display along the circle. Each label is accompanied by a filled dot.
+
+[arg_def list args in]
+Zero or more arguments to influence the size of the circle plot. See XY plot for more information.
+[list_end]
+
+[call [cmd \$circleplot] connect [arg label1] [arg label2] [arg colour] [arg width]]
+Connect the two labels via a coloured arc of given width (the arc is actually a parabola).
+
+[list_begin arguments]
+[arg_def string label1 in]
+String indicating the first label to connect.
+[arg_def string label2 in]
+String indicating the second label to connect.
+[arg_def string colour in]
+Colour to use for the connected arc.
+[arg_def string width in]
+Width for the connected arc.
+[list_end]
+
+[call [cmd \$circleplot] modify [arg label] [arg args]]
+Modify the appearance of the label and the accompanying dot.
+
+[list_begin arguments]
+[arg_def string label in]
+String indicating which label to modify.
+[arg_def list args in]
+List of key-value pairs:
+[list_begin itemized]
+[item]
+[emph "-textcolour colour"] - colour of the text to be used (alternative: "-textcolor")
+[item]
+[emph "-font font"] - font for the text
+[item]
+[emph "-dotcolour colour"] - colour for the dot (alternative: "-dotcolor")
+[list_end]
 [list_end]
 
 [list_end]

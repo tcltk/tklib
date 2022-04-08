@@ -2,7 +2,7 @@
 [//000000001]: # (Plotchart \- Plotchart)
 [//000000002]: # (Generated from file 'plotchart\.man' by tcllib/doctools with format 'markdown')
 [//000000003]: # (Copyright &copy; 2022 Arjen Markus <arjenmarkus@users\.sourceforge\.net>)
-[//000000004]: # (Plotchart\(n\) 2\.5\.0 tklib "Plotchart")
+[//000000004]: # (Plotchart\(n\) 2\.5\.1 tklib "Plotchart")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -71,7 +71,7 @@ Plotchart \- Simple plotting and charting package
 
 package require Tcl ?8\.5?  
 package require Tk ?8\.5?  
-package require Plotchart ?2\.5\.0?  
+package require Plotchart ?2\.5\.1?  
 
 [__::Plotchart::createXYPlot__ *w* *xaxis* *yaxis* *args*](#1)  
 [__::Plotchart::createStripchart__ *w* *xaxis* *yaxis* *args*](#2)  
@@ -226,18 +226,19 @@ package require Plotchart ?2\.5\.0?
 [__$performance__ plot *series\_and\_data\_pairs*](#151)  
 [__::Plotchart::createTaylorDiagram__ *w* *radius\_data* *args*](#152)  
 [__$taylor__ plot *series* *stdev* *corr*](#153)  
-[__::Plotchart::createTaylorDiagram__ *w* *radius\_data* *args*](#154)  
-[__$taylor__ plot *series* *stdev* *corr*](#155)  
-[__::Plotchart::createHeatmap__ *w* *rowlabels* *columnlabels* *args*](#156)  
-[__$heatmap__ plot row *label* *data*](#157)  
-[__$heatmap__ plot column *label* *data*](#158)  
-[__$heatmap__ plot cell *rowlabel* *columnlabel* *value*](#159)  
-[__$heatmap__ scale values *min* *max*](#160)  
-[__$heatmap__ scale colours *mincolour* *maxcolour*](#161)  
-[__::Plotchart::plotmethod__ *charttype* *methodname* *plotproc*](#162)  
-[__::Plotchart::plotpack__ *w* *dir* *args*](#163)  
-[__$anyplot__ bindplot *event* *command* *args*](#164)  
-[__$anyplot__ bindlast *series* *event* *command*](#165)  
+[__::Plotchart::createHeatmap__ *w* *rowlabels* *columnlabels* *args*](#154)  
+[__$heatmap__ plot row *label* *data*](#155)  
+[__$heatmap__ plot column *label* *data*](#156)  
+[__$heatmap__ plot cell *rowlabel* *columnlabel* *value*](#157)  
+[__$heatmap__ scale values *min* *max*](#158)  
+[__$heatmap__ scale colours *mincolour* *maxcolour*](#159)  
+[__::Plotchart::createCircleplot__ *w* *labels* *args*](#160)  
+[__$circleplot__ connect *label1* *label2* *colour* *width*](#161)  
+[__$circleplot__ modify *label* *args*](#162)  
+[__::Plotchart::plotmethod__ *charttype* *methodname* *plotproc*](#163)  
+[__::Plotchart::plotpack__ *w* *dir* *args*](#164)  
+[__$anyplot__ bindplot *event* *command* *args*](#165)  
+[__$anyplot__ bindlast *series* *event* *command*](#166)  
 
 # <a name='description'></a>DESCRIPTION
 
@@ -3907,54 +3908,7 @@ creation and the methods to plot the data are very specific\.
 
         Correlation coefficient with the reference dataset
 
-  - <a name='154'></a>__::Plotchart::createTaylorDiagram__ *w* *radius\_data* *args*
-
-    Create a new Taylor diagram \(one quadrant\) with circles indicating the
-    distance to the reference point\.
-
-    The data points are given as the standard deviation and the correlation to
-    the reference\.
-
-      * widget *w* \(in\)
-
-        Name of the *existing* canvas widget to hold the plot\.
-
-      * list *radius\_data* \(in\)
-
-        A list of the maximum radius for the standard deviation and the step
-        size\. Quarter circles are drawn with the axis labels\.
-
-    Currently one option is supported:
-
-      * __reference__ value
-
-        Reference value for the data points to be compared with\. It appears as a
-        dot at the x\-axis\. Along with this dot circle segments are drawn at the
-        same spacing as the axis labels to indicate the distance of the data
-        points from the reference\.
-
-  - <a name='155'></a>__$taylor__ plot *series* *stdev* *corr*
-
-    The plot method takes the standard deviation and the correlation to the
-    reference as input and draws a symbol as a representation\. The standard
-    deviation serves as the distance from the origin and the correlation
-    determines the angle\.
-
-      * string *series* \(in\)
-
-        Name of the series \(it will be plotted as a symbol that is configured
-        via the *$target dataconfig* command \(see the XY\-plot equivalent for
-        an explanation\)
-
-      * float *stdev* \(in\)
-
-        Standard deviation of the data point
-
-      * list *corr* \(in\)
-
-        Correlation coefficient with the reference dataset
-
-  - <a name='156'></a>__::Plotchart::createHeatmap__ *w* *rowlabels* *columnlabels* *args*
+  - <a name='154'></a>__::Plotchart::createHeatmap__ *w* *rowlabels* *columnlabels* *args*
 
     Create a heatmap, i\.e\. a tableau of rectangles whose colours depend on some
     data\. The row and column labels are used as identifiers when filling in the
@@ -3981,7 +3935,7 @@ creation and the methods to plot the data are very specific\.
         Zero or more arguments to influence the size of the heatmap\. See XY plot
         for more information\.
 
-  - <a name='157'></a>__$heatmap__ plot row *label* *data*
+  - <a name='155'></a>__$heatmap__ plot row *label* *data*
 
     Use the given data to fill the rectangles belonging to the row "label"\.
 
@@ -3993,7 +3947,7 @@ creation and the methods to plot the data are very specific\.
 
         List of numerical data to be used for the colouring of the rectangles\.
 
-  - <a name='158'></a>__$heatmap__ plot column *label* *data*
+  - <a name='156'></a>__$heatmap__ plot column *label* *data*
 
     Use the given data to fill the rectangles belonging to the column "label"\.
 
@@ -4005,7 +3959,7 @@ creation and the methods to plot the data are very specific\.
 
         List of numerical data to be used for the colouring of the rectangles\.
 
-  - <a name='159'></a>__$heatmap__ plot cell *rowlabel* *columnlabel* *value*
+  - <a name='157'></a>__$heatmap__ plot cell *rowlabel* *columnlabel* *value*
 
     Use the given value to fill the rectangle belonging to the cell with the
     given row and column labels\.
@@ -4022,7 +3976,7 @@ creation and the methods to plot the data are very specific\.
 
         Value to be used for the colouring of the cell\.
 
-  - <a name='160'></a>__$heatmap__ scale values *min* *max*
+  - <a name='158'></a>__$heatmap__ scale values *min* *max*
 
     Set the range for the values \- they are mapped to a colour via linear
     interpolation\.
@@ -4035,7 +3989,7 @@ creation and the methods to plot the data are very specific\.
 
         Maximum value to be used\.
 
-  - <a name='161'></a>__$heatmap__ scale colours *mincolour* *maxcolour*
+  - <a name='159'></a>__$heatmap__ scale colours *mincolour* *maxcolour*
 
     Set the colours to be used for the minimum and the maximum values\. The
     actual colour is determined via linear interpolation of the RGB values\.
@@ -4048,13 +4002,76 @@ creation and the methods to plot the data are very specific\.
 
         Colour to be used at the maximum value\.
 
+  - <a name='160'></a>__::Plotchart::createCircleplot__ *w* *labels* *args*
+
+    Create a circle plot, i\.e\. a circle with labels that can be connected by
+    coloured arcs\. Typical use: present the relationship between the items on
+    the circle in a graphical way\.
+
+    The connections can be drawn pair by pair\.
+
+      * widget *w* \(in\)
+
+        Name of the *existing* canvas widget to hold the circle plot\.
+
+      * list *rowlabels* \(in\)
+
+        List of labels to display along the circle\. Each label is accompanied by
+        a filled dot\.
+
+      * list *args* \(in\)
+
+        Zero or more arguments to influence the size of the circle plot\. See XY
+        plot for more information\.
+
+  - <a name='161'></a>__$circleplot__ connect *label1* *label2* *colour* *width*
+
+    Connect the two labels via a coloured arc of given width \(the arc is
+    actually a parabola\)\.
+
+      * string *label1* \(in\)
+
+        String indicating the first label to connect\.
+
+      * string *label2* \(in\)
+
+        String indicating the second label to connect\.
+
+      * string *colour* \(in\)
+
+        Colour to use for the connected arc\.
+
+      * string *width* \(in\)
+
+        Width for the connected arc\.
+
+  - <a name='162'></a>__$circleplot__ modify *label* *args*
+
+    Modify the appearance of the label and the accompanying dot\.
+
+      * string *label* \(in\)
+
+        String indicating which label to modify\.
+
+      * list *args* \(in\)
+
+        List of key\-value pairs:
+
+          + *\-textcolour colour* \- colour of the text to be used \(alternative:
+            "\-textcolor"\)
+
+          + *\-font font* \- font for the text
+
+          + *\-dotcolour colour* \- colour for the dot \(alternative:
+            "\-dotcolor"\)
+
 # <a name='section14'></a>ADDING SPECIFIC PLOT METHODS
 
 The command *plotmethod* can be used to add new methods for a particular plot
 or chart type\. It is intended to help you develop specialised graphical
 displays\.
 
-  - <a name='162'></a>__::Plotchart::plotmethod__ *charttype* *methodname* *plotproc*
+  - <a name='163'></a>__::Plotchart::plotmethod__ *charttype* *methodname* *plotproc*
 
     Adds a new method for the given plot or chart type\. The method is
     implemented by the command or procedure given in the plotproc argument\. The
@@ -4182,7 +4199,7 @@ canvas widget\. This canvas widget does not act as a composite plot, but it can
 be saved as a PostScript file for instance: Note: the command simply takes a
 snapshot of the plots/charts as they are at that moment\.
 
-  - <a name='163'></a>__::Plotchart::plotpack__ *w* *dir* *args*
+  - <a name='164'></a>__::Plotchart::plotpack__ *w* *dir* *args*
 
     Copy the contents of the plots/charts into another widget, in a manner
     similar to the *pack* geometry manager\.
@@ -4282,7 +4299,7 @@ bindings\.
 
 The *bindplot* and *bindlast* are defined as follows:
 
-  - <a name='164'></a>__$anyplot__ bindplot *event* *command* *args*
+  - <a name='165'></a>__$anyplot__ bindplot *event* *command* *args*
 
     Register a command that will be run whenever the given event occurs in the
     plot\.
@@ -4301,7 +4318,7 @@ The *bindplot* and *bindlast* are defined as follows:
 
         assuming the argument "command" is: \{cmd A B C\}
 
-  - <a name='165'></a>__$anyplot__ bindlast *series* *event* *command*
+  - <a name='166'></a>__$anyplot__ bindlast *series* *event* *command*
 
     Register a command that will be run when the event occurs within the
     neighbourhood of the last point added to the given series\. \(You can use

@@ -3314,7 +3314,7 @@ proc ::Plotchart::createCirclePlot { c labels args } {
    interp alias {} $newchart {} ::Plotchart::PlotHandler circleplot $w
    CopyConfig circleplot $w
 
-   foreach {pxmin pymin pxmax pymax} [MarginsCircle $w {*}$args] {break}
+   foreach {pxmin pymin pxmax pymax} [MarginsCircle $w -centre 1 {*}$args] {break}
 
    set scaling($w,coordSystem) 0
 
@@ -3405,4 +3405,4 @@ source [file join [file dirname [info script]] "plotstatustimeline.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.5.0
+package provide Plotchart 2.5.1
