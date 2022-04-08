@@ -626,7 +626,7 @@ proc ::tk_textCut w {
 	    }
 
 	    $w delete sel.first sel.last
-	
+
 	    if {$oldSeparator} {
 		$w edit separator
 		$w configure -autoseparators 1

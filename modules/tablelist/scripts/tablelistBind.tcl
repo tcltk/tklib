@@ -504,7 +504,7 @@ proc tablelist::handleThemeChangedEvent {} {
 	    # Work around some issues with the appearance
 	    # change support in Tk 8.6.10 and 8.7a3
 	    #
-	    condOpenPipeline 
+	    condOpenPipeline
 	}
 	clam {
 	    set checkbtnLayout $newCheckbtnLayout
@@ -519,7 +519,7 @@ proc tablelist::handleThemeChangedEvent {} {
     # Populate the array themeDefaults with
     # values corresponding to the new theme
     #
-    setThemeDefaults 
+    setThemeDefaults
     event generate . <<TablelistThemeDefaultsChanged>>
 
     #
@@ -703,13 +703,13 @@ proc tablelist::handleAppearanceEvent {} {
     # Work around some issues with the appearance
     # change support in Tk 8.6.10 and 8.7a3
     #
-    condOpenPipeline 
+    condOpenPipeline
 
     #
     # Populate the array themeDefaults with
     # values corresponding to the new appearance
     #
-    setThemeDefaults 
+    setThemeDefaults
     event generate . <<TablelistThemeDefaultsChanged>>
 
     #
@@ -1531,7 +1531,7 @@ proc tablelist::updateCursor {win row col} {
 	    } else {
 		variable editCursor
 		if {![info exists editCursor]} {
-		    makeEditCursor 
+		    makeEditCursor
 		}
 		set cursor $editCursor
 	    }
@@ -1560,7 +1560,7 @@ proc tablelist::updateCursor {win row col} {
 
     if {[string compare [$data(body) cget -cursor] $cursor] != 0} {
 	if {[catch {$data(body) configure -cursor $cursor}] != 0} {
-	    makeEditCursor 
+	    makeEditCursor
 	    $data(body) configure -cursor $editCursor
 	}
     }

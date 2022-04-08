@@ -150,7 +150,7 @@ proc viewFile {tbl key} {
     # Create a vertically scrolled text widget as a grandchild of the toplevel
     #
     set tf $top.tf
-    frame $tf -class ScrollArea 
+    frame $tf -class ScrollArea
     set txt $tf.txt
     set vsb $tf.vsb
     text $txt -background white -font TkFixedFont -setgrid yes \

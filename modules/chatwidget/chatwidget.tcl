@@ -81,7 +81,7 @@ proc chatwidget::WidgetProc {self cmd args} {
         peer {
             return [uplevel 1 [list [namespace origin Peer] $self] $args]
         }
-        chat - 
+        chat -
         default {
             return [uplevel 1 [list [namespace origin Chat] $self] $args]
         }
@@ -198,7 +198,7 @@ proc chatwidget::Names {self args} {
         }
         return
     }
-    return [uplevel 1 [list $state(names_widget)] $args] 
+    return [uplevel 1 [list $state(names_widget)] $args]
 }
 
 proc chatwidget::Entry {self args} {
@@ -370,7 +370,7 @@ proc chatwidget::UpdateNamesExec {self} {
     unset state(updatenames)
     set names $state(names_widget)
     set chat  $state(chat_widget)
-    
+
     foreach tagname [lsearch -all -inline [$names tag names] NICK-*] {
         $names tag delete $tagname
     }
@@ -544,7 +544,7 @@ proc chatwidget::Create {self} {
     bindtags $chat [linsert [bindtags $chat] 1 ChatwidgetText]
     set state(chat_widget) $chat
     set state(chat_peer_widget) $peer
-    
+
     # Create the entry widget
     set entry [ttk::frame $outer.entry -style ChatwidgetFrame]
     text $entry.text -borderwidth 0 -relief flat -font ChatwidgetFont
@@ -594,7 +594,7 @@ proc chatwidget::Create {self} {
     $inner add $names
     $outer add $inner -weight 1
     $outer add $entry
-    
+
     grid $outer -row 1 -column 0 -sticky news -padx 1 -pady 1
     Grid $self 1 0
     return $self
@@ -606,7 +606,7 @@ proc chatwidget::Self {widget} {
         set w [winfo parent $w]
     }
     if {![winfo exists $w]} {
-        return -code error "invalid window $widget" 
+        return -code error "invalid window $widget"
     }
     return $w
 }
@@ -657,7 +657,7 @@ proc chatwidget::scroll_set {scrollbar pw set f1 f2} {
             } else {
                 grid $scrollbar
             }
-        
+
     }
     if {$set} {
         upvar #0 [namespace current]::[Self $scrollbar] state
@@ -773,5 +773,5 @@ proc chatwidget::Chatstate {self what} {
         event generate $self <<ChatwidgetChatstate>>
     }
 }
-    
+
 package provide chatwidget $chatwidget::version

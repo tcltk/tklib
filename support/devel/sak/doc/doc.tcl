@@ -11,12 +11,12 @@ namespace eval ::sak::doc {}
 
 ## ### ### ### ######### ######### #########
 
-proc ::sak::doc::index {modules} {
+proc ::sak::doc::index {modules {excluded {}}} {
     # The argument (= set of modules) is irrelevant to this command.
     global base
 
     # First locate all manpages in the CVS workspace.
-    set manpages [auto::findManpages $base]
+    set manpages [auto::findManpages $base $excluded]
     auto::saveManpages $manpages
 
     # Then scan the found pages and extract the information needed for
@@ -28,7 +28,7 @@ proc ::sak::doc::index {modules} {
     array set title {} ; # map: file     -> description
     array set cat   {} ; # map: category -> list (file...)
     array set name  {} ; # map: file     -> label
-    set       apps  {} ; # list (file...) 
+    set       apps  {} ; # list (file...)
     array set mods  {} ; # map: module   -> list(file...)
 
     foreach page [array names meta] {
@@ -54,7 +54,7 @@ proc ::sak::doc::index {modules} {
 	    set c Unfiled
 	}
 	lappend cat($c) $page
-	
+
 	# Type of documented entity
 	set type [lindex [file split $page] 0]
 	if {$type eq "apps"} {
@@ -80,10 +80,10 @@ proc ::sak::doc::index {modules} {
     return
 }
 
-proc ::sak::doc::imake {modules} {
+proc ::sak::doc::imake {modules {excluded {}}} {
     global base
     # The argument (= set of modules) is irrelevant to this command.
-    auto::saveManpages [auto::findManpages $base]
+    auto::saveManpages [auto::findManpages $base $excluded]
     return
 }
 
@@ -116,7 +116,7 @@ proc ::sak::doc::dvi {modules} {
     foreach f [lsort -dict [glob -nocomplain ../latex/*.tex]] {
 
 	set target [file rootname [file tail $f]].dvi
-	if {[file exists $target] 
+	if {[file exists $target]
 	    && [file mtime $target] > [file mtime $f]} {
 	    continue
 	}
@@ -135,7 +135,7 @@ proc ::sak::doc::ps {modules} {
     foreach f [lsort -dict [glob -nocomplain ../dvi/*.dvi]] {
 
 	set target [file rootname [file tail $f]].ps
-	if {[file exists $target] 
+	if {[file exists $target]
 	    && [file mtime $target] > [file mtime $f]} {
 	    continue
 	}
@@ -154,7 +154,7 @@ proc ::sak::doc::pdf {modules} {
     foreach f [lsort -dict [glob -nocomplain ../ps/*.ps]] {
 
 	set target [file rootname [file tail $f]].pdf
-	if {[file exists $target] 
+	if {[file exists $target]
 	    && [file mtime $target] > [file mtime $f]} {
 	    continue
 	}
@@ -168,7 +168,7 @@ proc ::sak::doc::pdf {modules} {
 
 proc ::sak::doc::list {modules} {
     Gen list l $modules
-    
+
     set FILES [glob -nocomplain doc/list/*.l]
     set LIST  [open [file join doc list manpages.tcl] w]
 
@@ -220,7 +220,7 @@ proc ::sak::doc::Gen {fmt ext modules} {
 	    if {!$null} {
                 set target [file join doc $fmt \
                                 [file rootname [file tail $f]].$ext]
-                if {[file exists $target] 
+                if {[file exists $target]
                     && [file mtime $target] > [file mtime $f]} {
                     continue
                 }

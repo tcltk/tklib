@@ -560,7 +560,7 @@ proc mentry::getKdeConfigVal {group key} {
     variable kdeDirList
 
     if {![info exists kdeDirList]} {
-	makeKdeDirList 
+	makeKdeDirList
     }
 
     #

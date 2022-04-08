@@ -1455,6 +1455,7 @@ List of Y-coordinates for the region.
 Draw a filled strip representing a minimum and a maximum. The configuration of the series influences the polygon as follows:
 [term -fillcolour] is used to fill the polygon, [term -colour] is used for the boundary (set it to {} if
 no boundary is required and [term -width] determines the width of the boundary.
+
 [para]
 The arguments [term ymin] and [term ymax] may be empty to get an extra vertex in the strip. If both
 are empty, a new strip is started. For best results, the x-coordinate should be specified in ascending
@@ -3782,6 +3783,7 @@ Finally the [emph frame] component uses [emph color], [emph outerwidth]
 The target diagram and the Taylor diagram use the [emph limits] components
 in addition to the various general components. The limits component has
 one property: the color of the circles and circle segments.
+
 [para]
 For the Taylor diagram you can specify the color of the reference circles
 via the [emph reference] component.

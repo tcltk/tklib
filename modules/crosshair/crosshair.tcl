@@ -24,7 +24,7 @@ package require Tk  8.4
 namespace eval ::crosshair {}
 
 # ### ### ### ######### ######### #########
-## API 
+## API
 
 #----------------------------------------------------------------------
 #
@@ -43,7 +43,7 @@ namespace eval ::crosshair {}
 #       None.
 #
 # Side effects:
-#       Adds the 'crosshair' bind tag to the widget so that 
+#       Adds the 'crosshair' bind tag to the widget so that
 #       crosshairs will be displayed on pointing device motion.
 #
 #----------------------------------------------------------------------
@@ -103,7 +103,7 @@ proc ::crosshair::off { w } {
 #              ones include -fill and -dash
 #
 # Results:
-#       Returns the crosshairs' current configuration settings. 
+#       Returns the crosshairs' current configuration settings.
 #
 #----------------------------------------------------------------------
 
@@ -170,7 +170,7 @@ proc ::crosshair::bbox_add { w bbox } {
 
     lappend opts(bbox) $token
     set config($w) [array get opts]
- 
+
     foreach {nllx nlly nurx nury} $bbox break
     # Tcl 8.4 foreach-as-lassign hack
     set rect [$w create rect \
@@ -226,10 +226,10 @@ proc ::crosshair::bbox_remove { token } {
     }
 
     set config($w) [array get opts]
-    
+
     #--- Delete Bbox
-    $w delete $token 
-    
+    $w delete $token
+
     return
 }
 
@@ -437,7 +437,7 @@ proc ::crosshair::GetBoundaries { w x y llxv llyv urxv uryv } {
 proc ::crosshair::Outside { box x y } {
     # Unfold box
     foreach {llx lly urx ury} $box break
- 
+
     #puts \tTEST($x,$y):$llx,$lly,$urx,$ury:[expr {($x < $llx) || ($x > $urx) || ($y < $lly) || ($y > $ury)}]
 
     # Test each edge. Note that the border lines are considered as
@@ -575,14 +575,14 @@ proc ::crosshair::Kill {w ov} {
 ## State
 
 namespace eval ::crosshair {
-    
+
     # Array holding information describing crosshairs in canvases
-    
+
     variable  config
     array set config {}
-    
+
     # Controller that positions crosshairs according to user actions
-    
+
     bind Crosshair <Destroy> "[namespace code off] %W"
     bind Crosshair <Enter>   "[namespace code Unhide] %W %x %y"
     bind Crosshair <Leave>   "[namespace code Hide] %W"

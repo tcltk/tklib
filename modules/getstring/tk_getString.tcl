@@ -63,7 +63,7 @@ proc ::getstring::tk_getString {w var text args} {
     bind $w <Destroy> {set ::getstring::result 0}
     if {!$options(-allowempty)} {
         bind $w.entry <KeyPress> [list after idle [list ::getstring::getStringEnable $w]]
-        $w.ok configure -state disabled 
+        $w.ok configure -state disabled
     }
 
     wm withdraw $w

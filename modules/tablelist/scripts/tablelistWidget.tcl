@@ -93,7 +93,7 @@ namespace eval tablelist {
     }
     variable currentTheme [::mwutil::currentTheme]
     if {[string length $currentTheme] != 0} {
-	createTileAliases 
+	createTileAliases
     }
 
     variable checkbtnLayout ""
@@ -255,7 +255,7 @@ namespace eval tablelist {
     #
     # Extend the elements of the array configSpecs
     #
-    extendConfigSpecs 
+    extendConfigSpecs
 
     variable configOpts [lsort [array names configSpecs]]
 
@@ -561,7 +561,7 @@ namespace eval tablelist {
 	    }
 	}
     }
-    restrictCmdOpts 
+    restrictCmdOpts
 
     #
     # Use lists to facilitate the handling of miscellaneous options
@@ -633,7 +633,7 @@ namespace eval tablelist {
 	    set arrowStyles [lreplace $arrowStyles $idx $idx]
 	}
     }
-    restrictArrowStyles 
+    restrictArrowStyles
 
     #
     # Whether to support strictly Tk core listbox compatible bindings only
@@ -797,8 +797,8 @@ proc tablelist::createBindings {} {
     # TablelistBody, and TablelistHeader
     #
     mwutil::defineKeyNav Tablelist
-    defineTablelistBody 
-    defineTablelistHeader 
+    defineTablelistBody
+    defineTablelistHeader
 
     #
     # Define the virtual events <<Button3>> and <<ShiftButton3>>
@@ -815,9 +815,9 @@ proc tablelist::createBindings {} {
     # Define the binding tags TablelistLabel,
     # TablelistSubLabel, and TablelistArrow
     #
-    defineTablelistLabel 
-    defineTablelistSubLabel 
-    defineTablelistArrow 
+    defineTablelistLabel
+    defineTablelistSubLabel
+    defineTablelistArrow
 
     #
     # Define the binding tag TablelistEdit if the file tablelistEdit.tcl exists
@@ -6650,7 +6650,7 @@ proc tablelist::yviewSubCmd {win argList} {
 	    updateColors $win
 	    adjustSepsWhenIdle $win
 	    updateVScrlbarWhenIdle $win
-	    updateIdletasksDelayed 
+	    updateIdletasksDelayed
 	    return ""
 	}
 
@@ -6718,7 +6718,7 @@ proc tablelist::yviewSubCmd {win argList} {
 		    updateColors $win
 		    adjustSepsWhenIdle $win
 		    updateVScrlbarWhenIdle $win
-		    updateIdletasksDelayed 
+		    updateIdletasksDelayed
 		}
 	    }
 	    return ""
@@ -8937,7 +8937,7 @@ proc tablelist::vertMoveTo win {
     $data(body) yview $row
 
     updateView $win $row
-    updateIdletasksDelayed 
+    updateIdletasksDelayed
 }
 
 #------------------------------------------------------------------------------
@@ -8957,7 +8957,7 @@ proc tablelist::vertScrollByUnits win {
     $data(body) yview $row
 
     updateView $win $row
-    updateIdletasksDelayed 
+    updateIdletasksDelayed
 }
 
 #------------------------------------------------------------------------------
@@ -9034,7 +9034,7 @@ proc tablelist::dragTo win {
     updateColors $win
     adjustSepsWhenIdle $win
     updateVScrlbarWhenIdle $win
-    updateIdletasksDelayed 
+    updateIdletasksDelayed
 }
 
 #------------------------------------------------------------------------------

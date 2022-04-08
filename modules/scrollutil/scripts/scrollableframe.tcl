@@ -94,7 +94,7 @@ namespace eval scrollutil::sf {
 	lappend configSpecs(-yscrollcommand)	""
 	lappend configSpecs(-yscrollincrement)	0
     }
-    extendConfigSpecs 
+    extendConfigSpecs
 
     variable configOpts [lsort [array names configSpecs]]
 

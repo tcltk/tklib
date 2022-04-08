@@ -64,7 +64,7 @@ if {[tk windowingsystem] eq "aqua"} {
 #
 # Patch the clam theme styles TButton, Heading, TCheckbutton, and TRadiobutton
 #
-clampatch::patchClamTheme 
+clampatch::patchClamTheme
 
 if {[tk windowingsystem] eq "x11"} {
     font configure TkHeadingFont -weight normal		;# default: bold

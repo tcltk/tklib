@@ -1,5 +1,5 @@
 # -*- tcl -*-
-# # ## ### ##### ######## ############# ##################### 
+# # ## ### ##### ######## ############# #####################
 # (C) 2013 Andreas Kupries <andreas_kupries@users.sourceforge.net>
 ##
 # ###
@@ -29,7 +29,7 @@ proc ::sak::review::run {} {
     return
 }
 
-# # ## ### ##### ######## ############# ##################### 
+# # ## ### ##### ######## ############# #####################
 ## Phase I. Determine which modules require a review.
 ## A derivative of the code in ::sak::readme.
 
@@ -233,7 +233,7 @@ proc ::sak::review::LoadNotes {} {
     return
 }
 
-# # ## ### ##### ######## ############# ##################### 
+# # ## ### ##### ######## ############# #####################
 ## Phase II. Interactively review the changes packages.
 
 # Namespace variables
@@ -252,7 +252,7 @@ proc ::sak::review::LoadNotes {} {
 # map         : array : text -> module/package index
 # commands    : proper commands
 # allcommands : commands + namesof(map)
-# 
+#
 
 proc ::sak::review::Review {} {
     variable review   ;# table of everything to review
@@ -353,7 +353,7 @@ proc ::sak::review::Review {} {
     return
 }
 
-# # ## ### ##### ######## ############# ##################### 
+# # ## ### ##### ######## ############# #####################
 
 proc ::sak::review::RefreshDisplay {} {
     variable m

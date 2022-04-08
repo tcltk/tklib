@@ -119,7 +119,7 @@ proc ::sak::readme::run {} {
 	    if {!$changed($name) && $vequal} {
 		# Versions are unchanged, changelog also indicates no
 		# change. No particular attention here.
-		
+
 		puts stderr .........UNCHANGED/2
 		lappend uchm $m
 		lappend UCH $name

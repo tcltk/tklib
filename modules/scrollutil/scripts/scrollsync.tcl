@@ -80,7 +80,7 @@ namespace eval scrollutil::ss {
 	lappend configSpecs(-xscrollcommand)	""
 	lappend configSpecs(-yscrollcommand)	""
     }
-    extendConfigSpecs 
+    extendConfigSpecs
 
     variable configOpts [lsort [array names configSpecs]]
 
