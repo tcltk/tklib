@@ -1675,6 +1675,13 @@ proc ::Plotchart::LegendConfigure { w args } {
             "-spacing" {
                 set legend($w,spacing) $value
             }
+            "-order" {
+                 if { [lsearch {normal reverse} $value] >= 0 } {
+                    set legend($w,order) $value
+                 } else {
+                     return -code error "Unknown or invalid order: $value"
+                 }
+            }
             default {
                 return -code error "Unknown or invalid option: $option (value: $value)"
             }
@@ -1756,9 +1763,21 @@ proc ::Plotchart::ActuallyDrawLegend { w {spacing {}}} {
     $legendw delete "legend   && $w"
     $legendw delete "legendbg && $w"
 
+    set order "normal"
+    if {[info exists legend($w,order)]} {
+        set order $legend($w,order)
+    }
+
+    set series_list $legend($w,series)
+    set text_list $legend($w,text)
+    if {$order=="reverse"} {
+        set series_list [lreverse $series_list]
+        set text_list [lreverse $text_list]
+    }
+
     set y          0
     set hasEntries 0
-    foreach series $legend($w,series) text $legend($w,text) {
+    foreach series $series_list text $text_list {
 
         set hasEntries 1
 
@@ -1809,7 +1828,10 @@ proc ::Plotchart::ActuallyDrawLegend { w {spacing {}}} {
                 DrawSymbolPixel $legendw $series 7 $y $symbol $colour [list legend legendobj legend_$series $w]
             }
         } else {
-            $legendw create rectangle 0 [expr {$y-3}] 15 [expr {$y+3}] \
+
+            set fontheight [expr {[font metrics $font -ascent]+[font metrics $font -descent]}]
+
+            $legendw create rectangle 0 [expr {$y-$fontheight/2+2}] 15 [expr {$y+$fontheight/2-2}] \
                 -fill $colour -tag [list legend legendobj legend_$series $w]
         }
 

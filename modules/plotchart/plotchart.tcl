@@ -3405,4 +3405,4 @@ source [file join [file dirname [info script]] "plotstatustimeline.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.5.1
+package provide Plotchart 2.5.2

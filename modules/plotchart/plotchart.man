@@ -5,7 +5,7 @@
 [titledesc {Simple plotting and charting package}]
 [require Tcl [opt 8.5]]
 [require Tk [opt 8.5]]
-[require Plotchart [opt 2.5.1]]
+[require Plotchart [opt 2.5.2]]
 
 [description]
 [para]
@@ -1189,6 +1189,10 @@ bottom-left or bottom-right. (Default value is top-right.)
 [opt_def spacing pixels]
 Set the vertical spacing between entries in the legend (in pixels).
 bottom-left or bottom-right. (Default value is 10 pixels.)
+
+[opt_def order string]
+Determine the ordering of the legend entries - "normal" means the order
+in which the entries are defined, "reverse" exactly the opposite. (Default: normal)
 
 [list_end]
 [para]
