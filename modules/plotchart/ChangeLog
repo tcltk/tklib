@@ -1,3 +1,8 @@
+2022-04-12  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotaxis.tcl:    Apply Alexandru's patch for the legend
+	* plotchart.man:   Describe the new option to legendconfig (-order)
+	* pkgIndex.tcl:    Increase the version number to 2.5.2
+
 2022-04-03  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotchart.tcl:   Add circle plot as a new diagram type
 	* plotspecial.tcl: Implementation of the circle plot
