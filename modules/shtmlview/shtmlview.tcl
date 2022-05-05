@@ -3548,7 +3548,7 @@ if {[info exists argv0] && [info script] eq $argv0} {
 
 catch {
     package require Markdown
-    ::shtmlview::converter .md {} ::shtmlview::md2html
+    ::shtmlview::converter .md {} ::shtmlview::shtmlview::md2html
 }
 
 # #############################################################
