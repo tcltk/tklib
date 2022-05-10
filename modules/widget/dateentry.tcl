@@ -118,7 +118,7 @@ snit::widgetadaptor widget::dateentry {
     option -command -default {}
     option -dateformat -default "%m/%d/%Y" -configuremethod C-passtocalendar
     option -font -default {Helvetica 9} -configuremethod C-passtocalendar
-    option -textvariable -default {}
+    option -textvariable -default {} -configuremethod C-textvariable
     option -language -default en -configuremethod C-passtocalendar
 
     delegate option -highlightcolor to calendar
@@ -149,15 +149,49 @@ snit::widgetadaptor widget::dateentry {
 	set rawDate [clock scan "$x 00:00:00" -format "%d/%m%/%Y %H:%M:%S"]
 	set formattedDate [clock format $rawDate -format $options(-dateformat)]
 
-	$hull configure -state normal
-	$hull delete 0 end
-	$hull insert end $formattedDate
-	$hull configure -state readonly
+	$self Sync-hulltext
+    }
+
+    destructor {
+	catch {
+	    trace remove variable $options(-textvariable) write [mymethod Pull-textvariable]
+	}
     }
 
     method C-passtocalendar {option value} {
 	set options($option) $value
 	$calendar configure $option $value
+    }
+
+    method C-textvariable {option value} {
+	trace remove variable $options($option) write [mymethod Pull-textvariable]
+
+	set options($option) $value
+	if {$value ne ""} {
+	    trace add variable $value write [mymethod Pull-textvariable]
+
+	    if {[info exists $value]} {
+		# Trick the trace into firing
+		set $value [set $value]
+	    } else {
+		set $value $formattedDate
+	    }
+	}
+	return
+    }
+
+    method Pull-textvariable {name index op} {
+	set formattedDate [set $options(-textvariable)]
+	$self Sync-hulltext
+	return
+    }
+
+    method Sync-hulltext {} {
+	$hull configure -state normal
+	$hull delete 0 end
+	$hull insert end $formattedDate
+	$hull configure -state readonly
+	return
     }
 
     method MakeCalendar {args} {
@@ -280,10 +314,7 @@ snit::widgetadaptor widget::dateentry {
 	}
         $self unpost
 
-	$hull configure -state normal
-	$hull delete 0 end
-	$hull insert end $formattedDate
-	$hull configure -state readonly
+	$self Sync-hulltext
     }
 }
 
