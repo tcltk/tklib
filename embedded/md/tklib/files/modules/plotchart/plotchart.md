@@ -71,7 +71,7 @@ Plotchart \- Simple plotting and charting package
 
 package require Tcl ?8\.5?  
 package require Tk ?8\.5?  
-package require Plotchart ?2\.5\.1?  
+package require Plotchart ?2\.5\.2?  
 
 [__::Plotchart::createXYPlot__ *w* *xaxis* *yaxis* *args*](#1)  
 [__::Plotchart::createStripchart__ *w* *xaxis* *yaxis* *args*](#2)  
@@ -1319,6 +1319,12 @@ by the creation command:
 
         Set the vertical spacing between entries in the legend \(in pixels\)\.
         bottom\-left or bottom\-right\. \(Default value is 10 pixels\.\)
+
+      * __order__ string
+
+        Determine the ordering of the legend entries \- "normal" means the order
+        in which the entries are defined, "reverse" exactly the opposite\.
+        \(Default: normal\)
 
   - <a name='46'></a>__$anyplot__ balloon *x* *y* *text* *dir*
 
