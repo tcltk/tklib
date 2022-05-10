@@ -16,8 +16,6 @@
 #
 # See the example at the bottom.
 #
-# RCS: @(#) $Id: dateentry.tcl,v 1.7 2011/12/13 21:28:00 haertel Exp $
-#
 
 # Creation and Options - widget::dateentry $path ...
 #  -command        -default {}
@@ -131,7 +129,6 @@ snit::widgetadaptor widget::dateentry {
     component dropbox
     component calendar
 
-    variable waitVar
     variable formattedDate
     variable rawDate
     variable startOnMonday 1
@@ -205,9 +202,13 @@ snit::widgetadaptor widget::dateentry {
     }
 
     method post { args } {
+	# TODO TCL 8.5+: `"disabled" in [$self state]`
+	if {[lsearch -exact [$self state] "disabled"] >= 0} {
+	    return
+	}
+	
 	# XXX should we reset date on each display?
 	if {![winfo exists $dropbox]} { $self MakeCalendar }
-	set waitVar 0
 
 	foreach {x y} [$self PostPosition] { break }
 	wm geometry $dropbox "+$x+$y"
@@ -219,10 +220,6 @@ snit::widgetadaptor widget::dateentry {
 	}
 	focus -force $calendar
 	return
-
-	tkwait variable [myvar waitVar]
-
-	$self unpost
     }
 
     method unpost {args} {
@@ -274,11 +271,12 @@ snit::widgetadaptor widget::dateentry {
     method DateChosen { args } {
 	upvar 0 $options(-textvariable) date
 
-        set waitVar 1
 	set date $formattedDate
 	set rawDate [clock scan $formattedDate -format $options(-dateformat)]
 	if { $options(-command) ne "" } {
-	    uplevel \#0 $options(-command) $formattedDate $rawDate
+	    set     cmd $options(-command)
+	    lappend cmd $formattedDate $rawDate
+	    uplevel \#0 $cmd
 	}
         $self unpost
 
@@ -308,7 +306,7 @@ bind TDateEntry <ButtonRelease-1> { %W state !pressed }
 bind TDateEntryPopdown <Map> { ttk::globalGrab %W }
 bind TDateEntryPopdown <Unmap> { ttk::releaseGrab %W }
 
-package provide widget::dateentry 0.96
+package provide widget::dateentry 0.97
 
 ##############
 # TEST CODE ##

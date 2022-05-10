@@ -1,5 +1,6 @@
+[vset VERSION 0.97]
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin widget_dateentry n 0.96]
+[manpage_begin widget_dateentry n [vset VERSION]]
 [keywords date]
 [keywords dateentry]
 [keywords megawidget]
@@ -11,7 +12,7 @@
 [require Tcl 8.4]
 [require Tk 8.4]
 [require widget [opt 3.0]]
-[require widget::dateentry [opt 0.96]]
+[require widget::dateentry [opt [vset VERSION]]]
 [description]
 
 This package provides a dateentry megawidget (snidget).

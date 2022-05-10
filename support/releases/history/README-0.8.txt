@@ -1,7 +1,7 @@
 Overview
 ========
 
-    2  new packages                in 1  modules
+    16 new packages                in 2  modules
     8  changed packages            in 7  modules
     29 internally changed packages in 18 modules
     28 unchanged packages          in 9  modules
@@ -25,11 +25,26 @@ Legend
 New in Tklib 0.8
 ================
 
-    Module      Package                New Version   Comments
-    ----------- ---------------------- ------------- ----------
-    shtmlview   shtmlview::doctools    0.1
-                shtmlview::shtmlview   1.1.0
-    ----------- ---------------------- ------------- ----------
+    Module      Package                  New Version   Comments
+    ----------- ------------------------ ------------- ----------
+    shtmlview   shtmlview::doctools      0.1
+                shtmlview::shtmlview     1.1.0
+    ----------- ------------------------ ------------- ----------
+    widget      widget                   3.1
+                widget::arrowbutton      1.0
+                widget::calendar         1.0.1
+                widget::dateentry        0.97
+                widget::dialog           1.3.1
+                widget::menuentry        1.0.1
+                widget::panelframe       1.1
+                widget::ruler            1.1
+                widget::screenruler      1.2
+                widget::scrolledtext     1.0
+                widget::scrolledwindow   1.2.1
+                widget::statusbar        1.2.1
+                widget::superframe       1.0.1
+                widget::toolbar          1.2.1
+    ----------- ------------------------ ------------- ----------
 
 Changes from Tklib 0.7 to 0.8
 =============================

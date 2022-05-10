@@ -1,7 +1,7 @@
 
 [//000000001]: # (widget\_dateentry \- Various megawidgets)
 [//000000002]: # (Generated from file 'widget\_dateentry\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (widget\_dateentry\(n\) 0\.96 tklib "Various megawidgets")
+[//000000003]: # (widget\_dateentry\(n\) 0\.97 tklib "Various megawidgets")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -41,7 +41,7 @@ widget\_dateentry \- Date Entry Megawidget
 package require Tcl 8\.4  
 package require Tk 8\.4  
 package require widget ?3\.0?  
-package require widget::dateentry ?0\.96?  
+package require widget::dateentry ?0\.97?  
 
 [__widget::dateentry__ *pathname* ?options?](#1)  
 
