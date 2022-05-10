@@ -8,7 +8,7 @@
 # * sbase - Location of all files supporting the SAK.
 
 if {![llength $argv]} {
-    set format *
+    set format * 
 } else {
     set format [lindex $argv 0]*
     set argv   [lrange $argv 1 end]

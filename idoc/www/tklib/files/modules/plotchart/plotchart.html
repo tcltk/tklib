@@ -145,7 +145,7 @@
 <ul class="doctools_requirements">
 <li>package require <b class="pkgname">Tcl <span class="opt">?8.5?</span></b></li>
 <li>package require <b class="pkgname">Tk <span class="opt">?8.5?</span></b></li>
-<li>package require <b class="pkgname">Plotchart <span class="opt">?2.5.1?</span></b></li>
+<li>package require <b class="pkgname">Plotchart <span class="opt">?2.5.2?</span></b></li>
 </ul>
 <ul class="doctools_syntax">
 <li><a href="#1"><b class="cmd">::Plotchart::createXYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i> <i class="arg">args</i></a></li>
@@ -1057,6 +1057,9 @@ bottom-left or bottom-right. (Default value is top-right.)</p></dd>
 <dt><b class="option">spacing</b> pixels</dt>
 <dd><p>Set the vertical spacing between entries in the legend (in pixels).
 bottom-left or bottom-right. (Default value is 10 pixels.)</p></dd>
+<dt><b class="option">order</b> string</dt>
+<dd><p>Determine the ordering of the legend entries - &quot;normal&quot; means the order
+in which the entries are defined, &quot;reverse&quot; exactly the opposite. (Default: normal)</p></dd>
 </dl></dd>
 <dt><a name="46"><b class="cmd">$anyplot</b> balloon <i class="arg">x</i> <i class="arg">y</i> <i class="arg">text</i> <i class="arg">dir</i></a></dt>
 <dd><p>Add balloon text to the plot (except for 3D plots). The arrow will point
