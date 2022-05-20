@@ -12,7 +12,7 @@
 # Initiated: 28 October 1996
 
 
-package require Tk 8.4
+package require Tk 8.5
 package require msgcat
 
 #------------------------------------------------------------------------
@@ -27,6 +27,9 @@ package require msgcat
 #
 # clear ?pattern?
 #	Stops the specified widgets (defaults to all) from showing tooltips.
+#
+# configure ?opt ?arg? ?opt arg? ...
+#       Configure foreground, background and font.
 #
 # delay ?millisecs?
 #	Query or set the delay.  The delay is in milliseconds and must
@@ -46,8 +49,8 @@ package require msgcat
 #	and the index represents what index into the menu (either the
 #	numerical index or the label) to associate the tooltip message with.
 #	Tooltips do not appear for disabled menu items.
-#	If -item is specified, then <widget> is assumed to be a listbox
-#	or canvas and the itemId specifies one or more items.
+#	If -item is specified, then <widget> is assumed to be a listbox,
+#	treeview or canvas and the itemId specifies one or more items.
 #	If -tag is specified, then <widget> is assumed to be a text
 #	and the tagId specifies a tag.
 #	If message is {}, then the tooltip for that widget is removed.
@@ -68,7 +71,6 @@ package require msgcat
 
 namespace eval ::tooltip {
     namespace export -clear tooltip
-    variable labelOpts
     variable tooltip
     variable G
 
@@ -87,13 +89,17 @@ namespace eval ::tooltip {
             set G(fade) 0 ; # don't fade by default on X11
         }
     }
-    if {![info exists labelOpts]} {
-	# Undocumented variable that allows users to extend / override
-	# label creation options.  Must be set prior to first registry
-	# of a tooltip, or destroy $::tooltip::G(TOPLEVEL) first.
-	set labelOpts [list -highlightthickness 0 -relief solid -bd 1 \
-			   -background lightyellow -fg black]
-    }
+
+    # functional options
+    option add *Tooltip.Label.highlightThickness 0
+    option add *Tooltip.Label.relief             solid
+    option add *Tooltip.Label.borderWidth        1
+    option add *Tooltip.Label.padX               5
+    option add *Tooltip.Label.padY               5
+    # configurable options
+    option add *Tooltip.Label.background         lightyellow
+    option add *Tooltip.Label.foreground         black
+    option add *Tooltip.Label.font               TkTooltipFont
 
     # The extra ::hide call in <Enter> is necessary to catch moving to
     # child widgets where the <Leave> event won't be generated
@@ -147,29 +153,15 @@ proc ::tooltip::tooltip {w args} {
 	on - enable	{
 	    set G(enabled) 1
 	}
+	configure {
+            return [configure {*}$args]
+	}
 	default {
 	    set i $w
 	    if {[llength $args]} {
-		set i [uplevel 1 [namespace code "register [list $w] $args"]]
+		set i [uplevel 1 [namespace code [list register $w {*}$args]]]
 	    }
 	    set b $G(TOPLEVEL)
-	    if {![winfo exists $b]} {
-		variable labelOpts
-
-		toplevel $b -class Tooltip
-		if {[tk windowingsystem] eq "aqua"} {
-		    ::tk::unsupported::MacWindowStyle style $b help none
-		} else {
-		    wm overrideredirect $b 1
-		}
-		catch {wm attributes $b -topmost 1}
-		# avoid the blink issue with 1 to <1 alpha on Windows
-		catch {wm attributes $b -alpha 0.99}
-		wm positionfrom $b program
-		wm withdraw $b
-		eval [linsert $labelOpts 0 label $b.label]
-		pack $b.label -ipadx 1
-	    }
 	    if {[info exists tooltip($i)]} { return $tooltip($i) }
 	}
     }
@@ -194,7 +186,7 @@ proc ::tooltip::register {w args} {
 		set args [lreplace $args 0 1]
 	    }
 	    -item - -items {
-                if {[winfo class $w] eq "Listbox"} {
+                if {[winfo class $w] in {Listbox Treeview}} {
                     set items [lindex $args 1]
                 } else {
                     set namedItem [lindex $args 1]
@@ -237,7 +229,8 @@ proc ::tooltip::register {w args} {
 	} elseif {[info exists items]} {
 	    foreach item $items {
 		set tooltip($w,$item) $key
-		if {[winfo class $w] eq "Listbox"} {
+		set class [winfo class $w]
+		if { $class eq "Listbox" || $class eq "Treeview"} {
 		    enableListbox $w $item
 		} else {
 		    enableCanvas $w $item
@@ -262,10 +255,84 @@ proc ::tooltip::register {w args} {
     }
 }
 
+proc ::tooltip::createToplevel {} {
+    variable G
+    variable labelOpts
+
+    set b $G(TOPLEVEL)
+    if {[winfo exists $b]} { return }
+
+    toplevel $b -class Tooltip -borderwidth 0
+    if {[tk windowingsystem] eq "aqua"} {
+        ::tk::unsupported::MacWindowStyle style $b help none
+    } else {
+        wm overrideredirect $b 1
+    }
+    catch {wm attributes $b -topmost 1}
+    # avoid the blink issue with 1 to <1 alpha on Windows
+    catch {wm attributes $b -alpha 0.99}
+    wm positionfrom $b program
+    wm withdraw $b
+    label $b.label {*}[expr {[info exists labelOpts] ? $labelOpts : ""}]
+    pack $b.label -ipadx 1
+}
+
+proc ::tooltip::configure {args} {
+    set len [llength $args]
+    if {$len >= 2 && ($len % 2) != 0} {
+        return -level 2 -code error "wrong # args. Should be\
+            \"tooltip configure ?opt ?arg?? ?opt arg? ...\""
+    }
+
+    variable G
+    set b $G(TOPLEVEL)
+    if {![winfo exists $b]} {
+        createToplevel
+    }
+    foreach opt {-foreground -background -font} {
+        set val [$b.label configure $opt]
+        set opts($opt) [lindex $val 4]
+        set defs($opt) [lindex $val 1]
+        lappend keys $opt
+    }
+
+    switch -- $len {
+        0 {
+            return [array get opts]
+        }
+        1 {
+            set key [lindex $args 0]
+            if {$key ni $keys} {
+                return -level 2 -code error "unknown option \"$key\""
+            } else {
+                return $opts($key)
+            }
+        }
+        default {
+            # allow -fg and -bg as aliases
+            lappend keys -fg -bg
+            set defs(-fg) $defs(-foreground)
+            set defs(-bg) $defs(-background)
+
+            foreach {key val} $args {
+                if {$key ni $keys} {
+                    return -level 2 -code error "unknown option \"$key\""
+                }
+                if {[catch {
+                    $b.label configure $key $val
+                    option add *Tooltip.Label.$defs($key) $val
+                } err]} {
+                    return -level 2 -code error $err
+                }
+            }
+        }
+    }
+}
+
 proc ::tooltip::clear {{pattern .*}} {
     variable tooltip
     # cache the current widget at pointer
-    set ptrw [winfo containing [winfo pointerx .] [winfo pointery .]]
+    set ptrw [winfo containing {*}[winfo pointerxy .]]
     foreach w [array names tooltip $pattern] {
 	unset tooltip($w)
 	if {[winfo exists $w]} {
@@ -288,8 +355,7 @@ proc ::tooltip::show {w msg {i {}}} {
     # Use string match to allow that the help will be shown when
     # the pointer is in any descendant of the desired widget
     if {([winfo class $w] ne "Menu")
-	&& ![string match $w* [eval [list winfo containing] \
-				   [winfo pointerxy $w]]]} {
+	&& ![string match $w* [winfo containing {*}[winfo pointerxy $w]]]} {
 	return
     }
 
@@ -297,6 +363,9 @@ proc ::tooltip::show {w msg {i {}}} {
 
     after cancel $G(FADEID)
     set b $G(TOPLEVEL)
+    if {![winfo exists $b]} {
+        createToplevel
+    }
     # Use late-binding msgcat (lazy translation) to support programs
     # that allow on-the-fly l10n changes
     $b.label configure -text [::msgcat::mc $msg] -justify left
@@ -308,11 +377,15 @@ proc ::tooltip::show {w msg {i {}}} {
     # When adjusting for being on the screen boundary, check that we are
     # near the "edge" already, as Tk handles multiple monitors oddly
     if {$i eq "cursor"} {
-	set y [expr {[winfo pointery $w]+20}]
-	if {($y < $screenh) && ($y+$reqh) > $screenh} {
-	    set y [expr {[winfo pointery $w]-$reqh-5}]
+        set py [winfo pointery $w]
+	set y [expr {$py + 20}]
+# this is a weong calculation?
+#	if {($y < $screenh) && ($y+$reqh) > $screenh} {}
+	if { ($y + $reqh) > $screenh } {
+	    set y [expr {$py - $reqh - 5}]
 	}
     } elseif {$i ne ""} {
+        # menu entry
 	set y [expr {[winfo rooty $w]+[winfo vrooty $w]+[$w yposition $i]+25}]
 	if {($y < $screenh) && ($y+$reqh) > $screenh} {
 	    # show above if we would be offscreen
@@ -418,19 +491,32 @@ proc ::tooltip::listitemTip {w x y} {
     variable G
 
     set G(LAST) -1
-    set item [$w index @$x,$y]
+    if {[winfo class $w] eq "Listbox"} {
+	set item [$w index @$x,$y]
+    } else {
+	set item [$w identify item $x $y]
+    }
     if {$G(enabled) && [info exists tooltip($w,$item)]} {
 	set G(AFTERID) [after $G(DELAY) \
 		[namespace code [list show $w $tooltip($w,$item) cursor]]]
     }
 }
 
-# Handle the lack of <Enter>/<Leave> between listbox items using <Motion>
+# Handle the lack of <Enter>/<Leave> between listbox/treeview items
+# using <Motion>
 proc ::tooltip::listitemMotion {w x y} {
     variable tooltip
     variable G
     if {$G(enabled)} {
-        set item [$w index @$x,$y]
+	if {[winfo class $w] eq "Listbox"} {
+	    set item [$w index @$x,$y]
+	} else {
+	    set item {}
+	    set region [$w identify region $x $y]
+	    if {$region  eq "tree" || $region eq "cell"} {
+		set item [$w identify item $x $y]
+	    }
+	}
         if {$item ne $G(LAST)} {
             set G(LAST) $item
             after cancel $G(AFTERID)
@@ -492,4 +578,4 @@ proc ::tooltip::enableTag {w tag} {
     $w tag bind $tag <Any-Button> +[namespace code hide]
 }
 
-package provide tooltip 1.4.7
+package provide tooltip 1.5

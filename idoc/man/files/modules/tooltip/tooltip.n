@@ -2,7 +2,7 @@
 '\" Generated from file 'tooltip\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 1996-2008, Jeffrey Hobbs
 '\"
-.TH "tooltip" n 1\&.4\&.7 tklib "Tooltip management"
+.TH "tooltip" n 1\&.5\&.0 tklib "Tooltip management"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -299,6 +299,9 @@ Manage the tooltip package using the following subcommands\&.
 \fBclear\fR ?\fIpattern\fR?
 Prevents the specified widgets from showing tooltips\&. \fIpattern\fR
 is a glob pattern and defaults to matching all widgets\&.
+.TP
+\fBconfigure\fR ?\fIopt arg\fR? ?\fIopt arg\fR? ...
+Configure foreground, background and font.\&.
 .TP
 \fBdelay\fR ?\fImillisecs\fR?
 Query or set the hover delay\&. This is the interval that the pointer must remain
