@@ -242,7 +242,7 @@ proc scrollutil::addMouseWheelSupport {tag {axes "xy"}} {
 		[format {mwutil::scrollByUnits %%W x %%D  -0.1%s} $tail]
 	} else {
 	    bind $tag <Shift-MouseWheel> \
-		[format {mwutil::scrollByUnits %%W y %%D -30.0%s} $tail]
+		[format {mwutil::scrollByUnits %%W x %%D -30.0%s} $tail]
 
 	    if {$winSys eq "x11"} {
 		bind $tag <Shift-Button-4> \
