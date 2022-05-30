@@ -1,3 +1,47 @@
+2022-05-30  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.15.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/notebookImages.tcl: Added scrollutil::createLeftArrowImage
+	  and scrollutil::createRightArrowImage.
+
+	* scripts/plainnotebook.tcl: Implemented the navigation between the
+	  selectable tabs via the mouse wheel, as well as with the keys "Down",
+	  "Up", "Control-Tab", and "Control-Shift-Tab".
+
+	* scripts/scrollednotebook.tcl: The scrollednotebook widget now
+	  provides two arrow buttons placed on demand in the top-left and top-
+	  right or bottom-left and bottom-right corners (depending on the
+	  notebook's style), and correctly interprets the x coordinate within
+	  an index of the form "@x,y" or passed to the "identify" subcommand as
+	  being relative to the scrollednotebook widget (rather than the
+	  ttk::notebook contained in the latter).
+
+	* scripts/scrollableframe.tcl: Minor improvements.
+	* scripts/scrollarea.tcl:
+
+	* scripts/wheelEvent.html: Corrected a typo in the implementation of
+	  the scrollutil::addMouseWheelSupport command.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl:  Made the detection of the desktop
+	* scripts/utils/scaleutil.tcl: environment when calculating the scaling
+	  percentage corresponding to the display's DPI scaling level on X11
+	  more reliable; removed the TEntry scaling for "vista" and "xpnative".
+
+	* doc/ScrollableFrmDemo2.png:   Updated screenshots.
+	* doc/ScrolledNotebookDemo.png:
+
+	* ../../examples/scrollutil/*.tcl: Many improvements, especially in
+	  "PagesManDemo.tcl" and the helper script "styleUtil.tcl", which is
+	  source'd in all demo scripts.
+
 2022-03-22  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 1.14.
