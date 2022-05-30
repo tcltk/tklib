@@ -2956,6 +2956,7 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 		set y 4
 	    }
 	    place $w -x $x2 -y $y -relheight 1.0 -width $labelPixels
+	    raise $w $data(hdrTxtFrmFrm)
 	}
 
 	#
