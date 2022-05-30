@@ -1,5 +1,34 @@
-What is new in Scrollutil 1.14?
+What is new in Scrollutil 1.15?
 -------------------------------
+
+1. The plainnotebook widget now supports the navigation between the
+   selectable tabs via the mouse wheel (thanks to Harald Oehlmann for
+   his TIP 591 and proposal), as well as with the keys "Down", "Up",
+   "Control-Tab", and "Control-Shift-Tab".
+
+2. The scrollednotebook widget now provides two arrow buttons placed on
+   demand in the top-left and top-right or bottom-left and bottom-right
+   corners (depending on the notebook's style), used for scrolling the
+   tab row (thanks to Harald Oehlmann for his proposal).
+
+3. The scrollednotebook widget now correctly interprets the x coordinate
+   within an index of the form "@x,y" or passed to the "identify" 
+   subcommand as being relative to the scrollednotebook widget (rather
+   than the ttk::notebook contained in the latter).
+
+4. Corrected a typo in the implementation of the
+   scrollutil::addMouseWheelSupport command.
+
+5. Made the detection of the desktop environment when calculating the
+   scaling percentage corresponding to the display's DPI scaling level
+   on X11 more reliable (thanks to Florian Pigorsch for his bug report).
+
+6. Numerous further improvements in the code, the demo script
+   "PagesManDemo.tcl", and the helper script "styleUtil.tcl", which is
+   source'd in all demo scripts.
+
+What was new in Scrollutil 1.14?
+--------------------------------
 
 1. Improvements in the scaleutil package, related to setting the default
    height of the ttk::treeview rows to a value based on the font's
