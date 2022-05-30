@@ -7,7 +7,7 @@
 # Copyright (c) 2005-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.18
+package require tablelist_tile 6.19
 
 wm title . "Serial Line Configuration"
 
