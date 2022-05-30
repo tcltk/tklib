@@ -1,3 +1,38 @@
+2022-05-30 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                          Bumped the version number to 6.19.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* ../../examples/tablelist/*.tcl:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/tablelistBind.tcl: Made sure that the workaround for the 
+	  problem that in Tk 8.6.11 and later on Mac OS X/11+ the idle
+	  callbacks are often fired at unexpected times won't lead to
+	  invocations of callbacks for already destroyed tablelist widgets.
+
+	* scripts/tablelistEdit.tcl: Moved part of the body of the doEditCell
+	  proc into the new proc configAutoFinishEditing.
+
+	* scripts/tablelistUtil.tcl: Fixed a bug related to making a hidden
+	  column visible again.
+
+	* scripts/tablelistWidget.tcl: The "get", "getcells", "getformatted",
+	  "getformattedcells", "getfullkeys", and "getkeys" subcommands now
+	  accept an optional argument with the possible values "-all",
+	  "-nonhidden", and "-viewable"; if the tablelist widget has no columns
+	  then the "deletecolumns" subcommand now returns immediately without
+	  any further action, like checking the validity of the column indices.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl:  Made the detection of the desktop
+	* scripts/utils/scaleutil.tcl: environment when calculating the scaling
+	  percentage corresponding to the display's DPI scaling level on X11
+	  more reliable; removed the TEntry scaling for "vista" and "xpnative".
+
 2022-03-22 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 6.18.
