@@ -1146,7 +1146,6 @@ proc scrollutil::sa::obscureScrollbars win {
     set data(sbObscured) 1
     place $win.hsb.f -bordermode outside -relheight 1.0 -relwidth 1.0
     place $win.vsb.f -bordermode outside -relheight 1.0 -relwidth 1.0
-
 }
 
 #------------------------------------------------------------------------------

@@ -677,7 +677,7 @@ proc scrollutil::sf::seerectSubCmd {win argList} {
     set mfY2 [expr {$mfY1 + $mfHeight}]
 
     #
-    # Make the left or right part of w visible in the window
+    # Make the left or right edge of the rectangle visible in the window
     #
     switch $xSide {
 	w {
@@ -705,7 +705,7 @@ proc scrollutil::sf::seerectSubCmd {win argList} {
     applyOffset $win x $mfX1 0
 
     #
-    # Make the top or bottom part of w visible in the window
+    # Make the top or bottom edge of the rectangle visible in the window
     #
     switch $ySide {
 	n {
