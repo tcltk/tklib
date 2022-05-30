@@ -579,7 +579,7 @@ namespace eval tablelist {
     variable arrowTypes    [list up down]
     variable colWidthOpts  [list -requested -stretched -total]
     variable cornerOpts	   [list -ne -sw]
-    variable curSelOpts    [list -all -nonhidden -viewable]
+    variable constrOpts    [list -all -nonhidden -viewable]
     variable expCollOpts   [list -fully -partly]
     variable fillColOpts   [list -text -image -window]
     variable findOpts      [list -descend -parent]
@@ -2156,9 +2156,9 @@ proc tablelist::curcellselectionSubCmd {win argList} {
     if {$argCount == 0} {
 	set constraint 0
     } else {
-	variable curSelOpts
-	set opt [mwutil::fullOpt "option" [lindex $argList 0] $curSelOpts]
-	set constraint [lsearch -exact $curSelOpts $opt]
+	variable constrOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 0] $constrOpts]
+	set constraint [lsearch -exact $constrOpts $opt]
     }
 
 
@@ -2173,15 +2173,15 @@ proc tablelist::curselectionSubCmd {win argList} {
     set argCount [llength $argList]
     if {$argCount > 1} {
 	mwutil::wrongNumArgs \
-		"$win curselection ?-all|-nonhidden||-viewable?"
+		"$win curselection ?-all|-nonhidden|-viewable?"
     }
 
     if {$argCount == 0} {
 	set constraint 0
     } else {
-	variable curSelOpts
-	set opt [mwutil::fullOpt "option" [lindex $argList 0] $curSelOpts]
-	set constraint [lsearch -exact $curSelOpts $opt]
+	variable constrOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 0] $constrOpts]
+	set constraint [lsearch -exact $constrOpts $opt]
     }
 
     synchronize $win
@@ -2252,9 +2252,13 @@ proc tablelist::deleteSubCmd {win argList} {
 	    return ""
 	}
     } else {
-	set first [rowIndex $win $first 0]
-	set last [rowIndex $win [lindex $argList 1] 0]
-	return [deleteRows $win $first $last $data(hasListVar)]
+	if {$data(itemCount) == 0} {			;# no items present
+	    return ""
+	} else {
+	    set first [rowIndex $win $first 0]
+	    set last [rowIndex $win [lindex $argList 1] 0]
+	    return [deleteRows $win $first $last $data(hasListVar)]
+	}
     }
 }
 
@@ -2313,11 +2317,15 @@ proc tablelist::deletecolumnsSubCmd {win argList} {
 	    }
 	}
     } else {
-	set first [colIndex $win $first 1]
-	set last [colIndex $win [lindex $argList 1] 1]
-	if {$first <= $last} {
-	    deleteCols $win $first $last
-	    redisplay $win
+	if {$data(colCount) == 0} {			;# no columns present
+	    return ""
+	} else {
+	    set first [colIndex $win $first 1]
+	    set last [colIndex $win [lindex $argList 1] 1]
+	    if {$first <= $last} {
+		deleteCols $win $first $last
+		redisplay $win
+	    }
 	}
     }
 
@@ -2943,9 +2951,10 @@ proc tablelist::formatinfoSubCmd {win argList} {
 #------------------------------------------------------------------------------
 proc tablelist::getSubCmd {win argList} {
     set argCount [llength $argList]
-    if {$argCount < 1 || $argCount > 2} {
+    if {$argCount < 1 || $argCount > 3} {
 	mwutil::wrongNumArgs \
-		"$win get firstIndex lastIndex" "$win get indexList"
+		"$win get firstIndex lastIndex ?-all|-nonhidden|-viewable?" \
+		"$win get indexList"
     }
 
     synchronize $win
@@ -2973,6 +2982,14 @@ proc tablelist::getSubCmd {win argList} {
     } else {
 	set first [rowIndex $win $first 0]
 	set last [rowIndex $win [lindex $argList 1] 0]
+	if {$argCount == 2} {
+	    set constraint 0
+	} else {
+	    variable constrOpts
+	    set opt [mwutil::fullOpt "option" [lindex $argList 2] $constrOpts]
+	    set constraint [lsearch -exact $constrOpts $opt]
+	}
+
 	if {$last < $first} {
 	    return {}
 	}
@@ -2988,7 +3005,17 @@ proc tablelist::getSubCmd {win argList} {
 	}
 
 	foreach item [lrange $data(itemList) $first $last] {
-	    lappend result [lrange $item 0 $data(lastCol)]
+	    if {$constraint == 0} {
+		lappend result [lrange $item 0 $data(lastCol)]
+	    } else {
+		set key [lindex $item end]
+		if {[info exists data($key-hide)] ||
+		    ($constraint == 2 && [info exists data($key-elide)])} {
+		    continue
+		}
+
+		lappend result [lrange $item 0 $data(lastCol)]
+	    }
 	}
 	return $result
     }
@@ -2999,9 +3026,10 @@ proc tablelist::getSubCmd {win argList} {
 #------------------------------------------------------------------------------
 proc tablelist::getcellsSubCmd {win argList} {
     set argCount [llength $argList]
-    if {$argCount < 1 || $argCount > 2} {
+    if {$argCount < 1 || $argCount > 3} {
 	mwutil::wrongNumArgs \
-		"$win getcells firstCellIndex lastCellIndex" \
+		"$win getcells firstCellIndex lastCellIndex\
+		 ?-all|-nonhidden|-viewable?" \
 		"$win getcells cellIndexList"
     }
 
@@ -3027,10 +3055,31 @@ proc tablelist::getcellsSubCmd {win argList} {
     } else {
 	foreach {firstRow firstCol} [cellIndex $win $first 1] {}
 	foreach {lastRow lastCol} [cellIndex $win [lindex $argList 1] 1] {}
+	if {$argCount == 2} {
+	    set constraint 0
+	} else {
+	    variable constrOpts
+	    set opt [mwutil::fullOpt "option" [lindex $argList 2] $constrOpts]
+	    set constraint [lsearch -exact $constrOpts $opt]
+	}
 
 	foreach item [lrange $data(itemList) $firstRow $lastRow] {
-	    foreach elem [lrange $item $firstCol $lastCol] {
-		lappend result $elem
+	    if {$constraint == 0} {
+		foreach elem [lrange $item $firstCol $lastCol] {
+		    lappend result $elem
+		}
+	    } else {
+		set key [lindex $item end]
+		if {[info exists data($key-hide)] ||
+		    ($constraint == 2 && [info exists data($key-elide)])} {
+		    continue
+		}
+
+		for {set col $firstCol} {$col <= $lastCol} {incr col} {
+		    if {!$data($col-hide)} {
+			lappend result [lindex $item $col]
+		    }
+		}
 	    }
 	}
 	return $result
@@ -3091,9 +3140,10 @@ proc tablelist::getcolumnsSubCmd {win argList} {
 #------------------------------------------------------------------------------
 proc tablelist::getformattedSubCmd {win argList} {
     set argCount [llength $argList]
-    if {$argCount < 1 || $argCount > 2} {
+    if {$argCount < 1 || $argCount > 3} {
 	mwutil::wrongNumArgs \
-		"$win getformatted firstIndex lastIndex" \
+		"$win getformatted firstIndex lastIndex\
+		 ?-all|-nonhidden|-viewable?" \
 		"$win getformatted indexList"
     }
 
@@ -3124,6 +3174,14 @@ proc tablelist::getformattedSubCmd {win argList} {
     } else {
 	set first [rowIndex $win $first 0]
 	set last [rowIndex $win [lindex $argList 1] 0]
+	if {$argCount == 2} {
+	    set constraint 0
+	} else {
+	    variable constrOpts
+	    set opt [mwutil::fullOpt "option" [lindex $argList 2] $constrOpts]
+	    set constraint [lsearch -exact $constrOpts $opt]
+	}
+
 	if {$last < $first} {
 	    return {}
 	}
@@ -3141,8 +3199,19 @@ proc tablelist::getformattedSubCmd {win argList} {
 	set row $first
 	foreach item [lrange $data(itemList) $first $last] {
 	    set key [lindex $item end]
-	    set item [lrange $item 0 $data(lastCol)]
-	    lappend result [formatItem $win $key $row $item]
+	    if {$constraint == 0} {
+		set item [lrange $item 0 $data(lastCol)]
+		lappend result [formatItem $win $key $row $item]
+	    } else {
+		if {[info exists data($key-hide)] ||
+		    ($constraint == 2 && [info exists data($key-elide)])} {
+		    incr row
+		    continue
+		}
+
+		set item [lrange $item 0 $data(lastCol)]
+		lappend result [formatItem $win $key $row $item]
+	    }
 	    incr row
 	}
 	return $result
@@ -3154,9 +3223,10 @@ proc tablelist::getformattedSubCmd {win argList} {
 #------------------------------------------------------------------------------
 proc tablelist::getformattedcellsSubCmd {win argList} {
     set argCount [llength $argList]
-    if {$argCount < 1 || $argCount > 2} {
+    if {$argCount < 1 || $argCount > 3} {
 	mwutil::wrongNumArgs \
-		"$win getformattedcells firstCellIndex lastCellIndex" \
+		"$win getformattedcells firstCellIndex lastCellIndex\
+		 ?-all|-nonhidden|-viewable?" \
 		"$win getformattedcells cellIndexList"
     }
 
@@ -3188,17 +3258,42 @@ proc tablelist::getformattedcellsSubCmd {win argList} {
     } else {
 	foreach {firstRow firstCol} [cellIndex $win $first 1] {}
 	foreach {lastRow lastCol} [cellIndex $win [lindex $argList 1] 1] {}
+	if {$argCount == 2} {
+	    set constraint 0
+	} else {
+	    variable constrOpts
+	    set opt [mwutil::fullOpt "option" [lindex $argList 2] $constrOpts]
+	    set constraint [lsearch -exact $constrOpts $opt]
+	}
 
 	set row $firstRow
 	foreach item [lrange $data(itemList) $firstRow $lastRow] {
 	    set key [lindex $item end]
-	    set col $firstCol
-	    foreach text [lrange $item $firstCol $lastCol] {
-		if {[lindex $data(fmtCmdFlagList) $col]} {
-		    set text [formatElem $win $key $row $col $text]
+	    if {$constraint == 0} {
+		set col $firstCol
+		foreach text [lrange $item $firstCol $lastCol] {
+		    if {[lindex $data(fmtCmdFlagList) $col]} {
+			set text [formatElem $win $key $row $col $text]
+		    }
+		    lappend result $text
+		    incr col
 		}
-		lappend result $text
-		incr col
+	    } else {
+		if {[info exists data($key-hide)] ||
+		    ($constraint == 2 && [info exists data($key-elide)])} {
+		    incr row
+		    continue
+		}
+
+		for {set col $firstCol} {$col <= $lastCol} {incr col} {
+		    if {!$data($col-hide)} {
+			set text [lindex $item $col]
+			if {[lindex $data(fmtCmdFlagList) $col]} {
+			    set text [formatElem $win $key $row $col $text]
+			}
+			lappend result $text
+		    }
+		}
 	    }
 	    incr row
 	}
@@ -3276,9 +3371,10 @@ proc tablelist::getformattedcolumnsSubCmd {win argList} {
 #------------------------------------------------------------------------------
 proc tablelist::getfullkeysSubCmd {win argList} {
     set argCount [llength $argList]
-    if {$argCount < 1 || $argCount > 2} {
+    if {$argCount < 1 || $argCount > 3} {
 	mwutil::wrongNumArgs \
-		"$win getfullkeys firstIndex lastIndex" \
+		"$win getfullkeys firstIndex lastIndex\
+		 ?-all|-nonhidden|-viewable?" \
 		"$win getfullkeys indexList"
     }
 
@@ -3306,6 +3402,14 @@ proc tablelist::getfullkeysSubCmd {win argList} {
     } else {
 	set first [rowIndex $win $first 0]
 	set last [rowIndex $win [lindex $argList 1] 0]
+	if {$argCount == 2} {
+	    set constraint 0
+	} else {
+	    variable constrOpts
+	    set opt [mwutil::fullOpt "option" [lindex $argList 2] $constrOpts]
+	    set constraint [lsearch -exact $constrOpts $opt]
+	}
+
 	if {$last < $first} {
 	    return {}
 	}
@@ -3321,7 +3425,17 @@ proc tablelist::getfullkeysSubCmd {win argList} {
 	}
 
 	foreach item [lrange $data(itemList) $first $last] {
-	    lappend result [lindex $item end]
+	    set key [lindex $item end]
+	    if {$constraint == 0} {
+		lappend result $key
+	    } else {
+		if {[info exists data($key-hide)] ||
+		    ($constraint == 2 && [info exists data($key-elide)])} {
+		    continue
+		}
+
+		lappend result $key
+	    }
 	}
 	return $result
     }
@@ -3332,9 +3446,11 @@ proc tablelist::getfullkeysSubCmd {win argList} {
 #------------------------------------------------------------------------------
 proc tablelist::getkeysSubCmd {win argList} {
     set argCount [llength $argList]
-    if {$argCount < 1 || $argCount > 2} {
+    if {$argCount < 1 || $argCount > 3} {
 	mwutil::wrongNumArgs \
-		"$win getkeys firstIndex lastIndex" "$win getkeys indexList"
+		"$win getkeys firstIndex lastIndex\
+		 ?-all|-nonhidden|-viewable?" \
+		"$win getkeys indexList"
     }
 
     synchronize $win
@@ -3362,6 +3478,14 @@ proc tablelist::getkeysSubCmd {win argList} {
     } else {
 	set first [rowIndex $win $first 0]
 	set last [rowIndex $win [lindex $argList 1] 0]
+	if {$argCount == 2} {
+	    set constraint 0
+	} else {
+	    variable constrOpts
+	    set opt [mwutil::fullOpt "option" [lindex $argList 2] $constrOpts]
+	    set constraint [lsearch -exact $constrOpts $opt]
+	}
+
 	if {$last < $first} {
 	    return {}
 	}
@@ -3377,7 +3501,17 @@ proc tablelist::getkeysSubCmd {win argList} {
 	}
 
 	foreach item [lrange $data(itemList) $first $last] {
-	    lappend result [string range [lindex $item end] 1 end]
+	    set key [lindex $item end]
+	    if {$constraint == 0} {
+		lappend result [string range $key 1 end]
+	    } else {
+		if {[info exists data($key-hide)] ||
+		    ($constraint == 2 && [info exists data($key-elide)])} {
+		    continue
+		}
+
+		lappend result [string range $key 1 end]
+	    }
 	}
 	return $result
     }
@@ -3718,9 +3852,13 @@ proc tablelist::header_deleteSubCmd {win argList} {
 	    return ""
 	}
     } else {
-	set first [hdr_rowIndex $win $first 0]
-	set last [hdr_rowIndex $win [lindex $argList 1] 0]
-	return [hdr_deleteRows $win $first $last]
+	if {$data(hdr_itemCount) == 0} {	;# no header items present
+	    return ""
+	} else {
+	    set first [hdr_rowIndex $win $first 0]
+	    set last [hdr_rowIndex $win [lindex $argList 1] 0]
+	    return [hdr_deleteRows $win $first $last]
+	}
     }
 }
 
