@@ -1843,64 +1843,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     }
 
     if {$data(-autofinishediting)} {
-	#
-	# Make sure that selecting a combobox or menu
-	# entry will automatically finish the editing
-	#
-	switch $class {
-	    TCombobox {
-		bind $w <<ComboboxSelected>> \
-		    {+ [tablelist::getTablelistPath %W] finishediting}
-	    }
-
-	    ComboBox {					;# BWidget
-		set cmd [$w cget -modifycmd]
-		$w configure -modifycmd [format {
-		    eval [list %s]
-		    after 0 [list %s finishediting]
-		} $cmd $win]
-	    }
-
-	    Combobox {					;# IWidgets or Oakley
-		if {[catch {$w cget -selectioncommand} cmd] == 0} {  ;# IWidgets
-		    set cmd [$w cget -selectioncommand]
-		    $w configure -selectioncommand [format {
-			eval [list %s]
-			after 0 [list %s finishediting]
-		    } $cmd $win]
-		} elseif {[catch {$w cget -command} cmd] == 0} {     ;# Oakley
-		    if {[string length $cmd] == 0} {
-			proc ::tablelist::comboboxCmd {w val} [format {
-			    after 0 [list %s finishediting]
-			} $win]
-		    } else {
-			proc ::tablelist::comboboxCmd {w val} [format {
-			    eval [list %s $w $val]
-			    after 0 [list %s finishediting]
-			} $cmd $win]
-		    }
-		    $w configure -command ::tablelist::comboboxCmd
-		}
-	    }
-
-	    Menubutton -
-	    TMenubutton {
-		set menu [$w cget -menu]
-		set last [$menu index last]
-		if {[string compare $last "none"] != 0} {
-		    for {set idx 0} {$idx <= $last} {incr idx} {
-			if {[regexp {^(command|checkbutton|radiobutton)$} \
-			     [$menu type $idx]]} {
-			    set cmd [$menu entrycget $idx -command]
-			    $menu entryconfigure $idx -command [format {
-				eval [list %s]
-				after 0 [list %s finishediting]
-			    } $cmd $win]
-			}
-		    }
-		}
-	    }
-	}
+	configAutoFinishEditing $win $w
     }
 
     #
@@ -2222,6 +2165,69 @@ proc tablelist::setMentryCursor {w number} {
 		focus $entry
 		$entry icursor end
 		return ""
+	    }
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::configAutoFinishEditing
+#
+# Makes sure that selecting an entry of the combobox or menu widget w used for
+# interactive cell editing in the tablelist widget win will automatically
+# finish the editing.
+#------------------------------------------------------------------------------
+proc tablelist::configAutoFinishEditing {win w} {
+    switch [winfo class $w] {
+	TCombobox {
+	    bind $w <<ComboboxSelected>> \
+		{+ [tablelist::getTablelistPath %W] finishediting}
+	}
+
+	ComboBox {					;# BWidget
+	    set cmd [$w cget -modifycmd]
+	    $w configure -modifycmd [format {
+		eval [list %s]
+		after 0 [list %s finishediting]
+	    } $cmd $win]
+	}
+
+	Combobox {					;# IWidgets or Oakley
+	    if {[catch {$w cget -selectioncommand} cmd] == 0} {	;# IWidgets
+		$w configure -selectioncommand [format {
+		    eval [list %s]
+		    after 0 [list %s finishediting]
+		} $cmd $win]
+	    } elseif {[catch {$w cget -command} cmd] == 0} {	;# Oakley
+		if {[string length $cmd] == 0} {
+		    proc ::tablelist::comboboxCmd {w val} [format {
+			after 0 [list %s finishediting]
+		    } $win]
+		} else {
+		    proc ::tablelist::comboboxCmd {w val} [format {
+			eval [list %s $w $val]
+			after 0 [list %s finishediting]
+		    } $cmd $win]
+		}
+		$w configure -command ::tablelist::comboboxCmd
+	    }
+	}
+
+	Menubutton -
+	TMenubutton {
+	    set menu [$w cget -menu]
+	    set last [$menu index last]
+	    if {[string compare $last "none"] != 0} {
+		for {set idx 0} {$idx <= $last} {incr idx} {
+		    if {[regexp {^(command|checkbutton|radiobutton)$} \
+			 [$menu type $idx]]} {
+			set cmd [$menu entrycget $idx -command]
+			$menu entryconfigure $idx -command [format {
+			    eval [list %s]
+			    after 0 [list %s finishediting]
+			} $cmd $win]
+		    }
+		}
 	    }
 	}
     }
