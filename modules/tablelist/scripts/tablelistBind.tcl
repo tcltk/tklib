@@ -331,6 +331,18 @@ proc tablelist::cleanup win {
     }
 
     #
+    # Cancel the execution of all remaining
+    # delayed tablelist::* commands for win
+    #
+    foreach id [after info] {
+	foreach {script kind} [after info $id] {}
+	if {[string match "tablelist::*" $script] &&
+	    [string compare [lindex $script 1] $win] == 0} {
+	    after cancel $id
+	}
+    }
+
+    #
     # If there is a list variable associated with the
     # widget then remove the trace set on this variable
     #
