@@ -1,5 +1,9 @@
 2022-05-30  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* Released Scrollutil 1.15.
+
+2022-05-30  Csaba Nemethi <csaba.nemethi@t-online.de>
+
 	* *.tcl:         Bumped the version number to 1.15.
 	* COPYRIGHT.txt:
 	* README.txt:
@@ -25,7 +29,7 @@
 	* scripts/scrollableframe.tcl: Minor improvements.
 	* scripts/scrollarea.tcl:
 
-	* scripts/wheelEvent.html: Corrected a typo in the implementation of
+	* scripts/wheelEvent.tcl: Corrected a typo in the implementation of
 	  the scrollutil::addMouseWheelSupport command.
 
 	* scripts/tclIndex: Newly generated.
