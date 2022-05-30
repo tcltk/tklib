@@ -20,7 +20,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.8
+    variable version	1.9
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -61,13 +61,13 @@ proc scaleutil::scalingPercentage winSys {
 
     if {$onX11 && !$usingSDL} {
 	set factor 1
-	if {[catch {exec ps -e | grep xfce}] == 0} {			;# Xfce
+	if {[catch {exec ps -e | grep xfce4-session}] == 0} {		;# Xfce
 	    if {[catch {exec xfconf-query -c xsettings \
 		 -p /Gdk/WindowScalingFactor} result] == 0} {
 		set factor $result
 		set pct [expr {100 * $factor}]
 	    }
-	} elseif {[catch {exec ps -e | grep mate}] == 0} {		;# MATE
+	} elseif {[catch {exec ps -e | grep mate-session}] == 0} {	;# MATE
 	    if {[catch {exec gsettings get org.mate.interface \
 		 window-scaling-factor} result] == 0} {
 		if {$result == 0} {			;# means: "Auto-detect"
@@ -99,7 +99,7 @@ proc scaleutil::scalingPercentage winSys {
 	    scan $result "%*s %f" dpi
 	    set pct [expr {100 * $dpi / 96}]
 	} elseif {$::tk_version >= 8.3 &&
-		  [catch {exec ps -e | grep gnome}] == 0 &&
+		  [catch {exec ps -e | grep gnome-session}] == 0 &&
 		  ![info exists ::env(WAYLAND_DISPLAY)] &&
 		  [catch {exec xrandr | grep " connected"} result] == 0 &&
 		  [catch {open $::env(HOME)/.config/monitors.xml} chan] == 0} {
@@ -583,15 +583,6 @@ proc scaleutil::scaleStyles_default pct {
 #------------------------------------------------------------------------------
 proc scaleutil::scaleWinStyles {theme pct} {
     ttk::style theme settings $theme {
-	switch $theme {
-	    xpnative {
-		set l [scale 2 $pct]; set t $l; set r $l; set b [scale 4 $pct]
-		set padding [list $l $t $r $b]			;# {2 2 2 4}
-	    }
-	    vista { set padding [scale 1 $pct] }
-	}
-	ttk::style configure TEntry -padding $padding
-
 	ttk::style configure TCombobox -padding [scale 2 $pct]
 
 	switch $theme {
