@@ -1,5 +1,33 @@
-What is new in Tablelist 6.18?
+What is new in Tablelist 6.19?
 ------------------------------
+
+1. The "get", "getcells", "getformatted", "getformattedcells",
+   "getfullkeys", and "getkeys" subcommands now accept an optional
+   argument with the possible values "-all", "-nonhidden", and
+   "-viewable", just like the "curcellselection" and "curselection"
+   subcommands (thanks to Alexandru Dadalau for his proposal).
+
+2. If the tablelist widget has no columns then the "deletecolumns"
+   subcommand now returns immediately without any further action, like
+   checking the validity of the column indices (thanks to Paul Obermeier
+   for his proposal).
+
+3. Made sure that the workaround for the problem that in Tk 8.6.11 and
+   later on Mac OS X/11+ the idle callbacks are often fired at
+   unexpected times won't lead to invocations of callbacks for already
+   destroyed tablelist widgets (thanks to Paul Obermeier for his bug
+   report).
+
+4. Fixed a bug related to making a hidden column visible again, which
+   caused unexpected behavior when moving a column interactively (thanks
+   to Ulrich Seidl for his bug report).
+
+5. Made the detection of the desktop environment when calculating the
+   scaling percentage corresponding to the display's DPI scaling level
+   on X11 more reliable (thanks to Florian Pigorsch for his bug report).
+
+What was new in Tablelist 6.18?
+-------------------------------
 
 1. Improvements in the scaleutil package, related to setting the default
    height of the ttk::treeview rows to a value based on the font's
@@ -30,7 +58,7 @@ What is new in Tablelist 6.18?
 
 6. Fixed a bug related to the handling of the <<ThemeChanged>> event
    when the package Tablelist rather than Tablelist_tile was loaded
-   into the interpreter (thanks to "saitology9" for reporting this bug).
+   into the interpreter (thanks to Sait Dogru for reporting this bug).
 
 7. Fixed a long-standing bug related to the mouse event handling for the
    header labels in the special case that there is another tablelist
