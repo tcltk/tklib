@@ -39,6 +39,7 @@ foreach theme {alt clam classic default} {
 	    selected sunken pressed sunken active raised focus raised]
     }
 }
+unset theme
 
 if {[tk windowingsystem] eq "aqua"} {
     ttk::style theme settings aqua {
@@ -52,6 +53,7 @@ if {[tk windowingsystem] eq "aqua"} {
 		    -background systemTextBackgroundColor \
 		    -foreground systemTextColor
 	    }
+	    unset style
 	}
 
 	#
@@ -76,28 +78,30 @@ if {[tk windowingsystem] eq "x11"} {
     ttk::setTheme clam
 }
 
-#
-# Returns the current tile theme.
-#
-proc getCurrentTheme {} {
-    if {[catch {ttk::style theme use} result] == 0} {
-	return $result
-    } else {
-	return $::ttk::currentTheme
-    }
-}
-
-#
-# Creates a toolbutton widget which appears raised when it has the focus.
-#
-proc createToolbutton {w args} {
-    eval ttk::button $w -style Small.Toolbutton $args
-
-    if {[lsearch -exact {vista xpnative} [getCurrentTheme]] >= 0} {
-	bindtags $w [linsert [bindtags $w] 1 Toolbtn]
+namespace eval styleutil {
+    #
+    # Returns the current tile theme.
+    #
+    proc getCurrentTheme {} {
+	if {[catch {ttk::style theme use} result] == 0} {
+	    return $result
+	} else {
+	    return $::ttk::currentTheme
+	}
     }
 
-    return $w
+    #
+    # Creates a toolbutton widget which appears raised when it has the focus.
+    #
+    proc createToolbutton {w args} {
+	eval ttk::button $w -style Small.Toolbutton $args
+
+	if {[lsearch -exact {vista xpnative} [getCurrentTheme]] >= 0} {
+	    bindtags $w [linsert [bindtags $w] 1 Toolbtn]
+	}
+
+	return $w
+    }
 }
 
 #

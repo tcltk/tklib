@@ -63,7 +63,7 @@ foreach capital $capitalList {
     $lb2 insert end "  $capital  "
 }
 
-if {[getCurrentTheme] ne "aqua"} {
+if {[styleutil::getCurrentTheme] ne "aqua"} {
     set itemCount [$lb1 size]
     foreach lb [list $lb1 $lb2] {
 	$lb configure -background white

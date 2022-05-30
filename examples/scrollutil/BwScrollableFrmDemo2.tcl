@@ -31,7 +31,7 @@ $sa setwidget $sf
 # Work around a tile bug which is not handled in
 # the BWidget procedure ScrollableFrame::create
 #
-if {[getCurrentTheme] eq "aqua" &&
+if {[styleutil::getCurrentTheme] eq "aqua" &&
     [package vcompare $tk_patchLevel "8.6.10"] < 0} {
     $sf:cmd configure -background #ececec
 }

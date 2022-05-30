@@ -19,7 +19,7 @@ source [file join $dir styleUtil.tcl]
 wm title . "European Capitals Quiz"
 
 set bg [ttk::style lookup TFrame -background]
-set currentTheme [getCurrentTheme]
+set currentTheme [styleutil::getCurrentTheme]
 if {$currentTheme eq "aqua" &&
     [package vcompare $tk_patchLevel "8.6.10"] < 0} {
     set bg #ececec				;# workaround for a tile bug
@@ -93,7 +93,7 @@ foreach country $countryList {
     #
     scrollutil::adaptWheelEventHandling $w
 
-    set b [createToolbutton $cf.b$row -text "Resolve" \
+    set b [styleutil::createToolbutton $cf.b$row -text "Resolve" \
 	   -command [list setCapital $w $country]]
     grid $b -row $row -column 2 -sticky w -padx 4p -pady $padY
 

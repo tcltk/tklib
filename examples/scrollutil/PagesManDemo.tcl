@@ -22,7 +22,7 @@ image create photo folderImg -file [file join $dir folder$pct.gif]
 # of the files of the specified suffix within the current working directory
 #
 proc populateNotebook {nb sfx} {
-    set currentTheme [getCurrentTheme]
+    set currentTheme [styleutil::getCurrentTheme]
     set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
     foreach fileName [lsort -dictionary [glob *.$sfx]] {
 	set baseName [string range $fileName 0 end-4]
@@ -31,9 +31,7 @@ proc populateNotebook {nb sfx} {
 	    set canv [canvas $sa.canv -background #c0c0c0]
 	    set img [image create photo -file $fileName]
 	    $canv create image 10 10 -anchor nw -image $img
-	    set width  [expr {[image width  $img] + 20}]
-	    set height [expr {[image height $img] + 20}]
-	    $canv configure -scrollregion [list 0 0 $width $height]
+	    bind $canv <Configure> [list setScrollRegion %W %w %h $img]
 	    scrollutil::addMouseWheelSupport $canv
 	    $sa setwidget $canv
 	} else {
@@ -111,6 +109,14 @@ $pm add $nbTtk
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 populateNotebook $nbTtk "tcl"
 
+proc setScrollRegion {canv canvWidth canvHeight img} {
+    set width  [expr {[image width  $img] + 20}]
+    set height [expr {[image height $img] + 20}]
+    if {$width  < $canvWidth}  { set width  $canvWidth }
+    if {$height < $canvHeight} { set height $canvHeight }
+    $canv configure -scrollregion [list 0 0 $width $height]
+}
+
 proc pmLeaveCmd {pm nb} {
     return [condCopySel $nb [$nb select]]
 }
@@ -137,9 +143,10 @@ proc condCopySel {nb widget} {
 }
 
 #
-# Create a binding for moving and closing the tabs interactively
+# For each plainnotebook create a binding for
+# moving and closing its tabs interactively
 #
-foreach nb [list $nbTk $nbImgs $nbMsgs $nbTtk] {
+foreach nb [$pm pages] {
     bind $nb <<MenuItemsRequested>> { populateMenu %W %d }
 }
 

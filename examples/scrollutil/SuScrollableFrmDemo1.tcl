@@ -55,7 +55,7 @@ foreach country $countryList capital $capitalList {
 
 set capitalList [lsort $capitalList]
 
-if {[lsearch -exact {aqua vista xpnative} [getCurrentTheme]] >= 0} {
+if {[lsearch -exact {aqua vista xpnative} [styleutil::getCurrentTheme]] >= 0} {
     set topPadY 1.5p
 } else {
     set topPadY 4p
@@ -82,7 +82,7 @@ foreach country $countryList {
     #
     scrollutil::adaptWheelEventHandling $w
 
-    set b [createToolbutton $cf.b$row -text "Resolve" \
+    set b [styleutil::createToolbutton $cf.b$row -text "Resolve" \
 	   -command [list setCapital $w $country]]
     grid $b -row $row -column 2 -sticky w -padx 4p -pady $padY
 
