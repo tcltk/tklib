@@ -102,8 +102,8 @@ namespace eval scrollutil::sf {
     # Use lists to facilitate the handling
     # of various options and corner values
     #
-    variable cmdOpts	[list autosize cget configure contentframe scan see \
-			 seerect xview yview]
+    variable cmdOpts	[list autofillx autofilly autosize cget configure \
+			 contentframe scan see seerect xview yview]
     variable scanOpts	[list mark dragto]
     variable dimensions	[list w h wh]
     variable corners	[list nw ne sw se]
@@ -210,11 +210,15 @@ proc scrollutil::scrollableframe args {
 	#
 	variable data
 	array set data {
+	    autoFillX	0
+	    autoFillY	0
 	    xOffset	0
 	    cfWidth	0
+	    cfReqWidth	0
 	    mfWidth	0
 	    yOffset	0
 	    cfHeight	0
+	    cfReqHeight	0
 	    mfHeight	0
 	    scanX	0
 	    scanY	0
@@ -436,7 +440,11 @@ proc scrollutil::sf::scrollableframeWidgetCmd {win args} {
     variable cmdOpts
     set cmd [mwutil::fullOpt "option" [lindex $args 0] $cmdOpts]
     switch $cmd {
-	autosize { return [autosizeSubCmd $win [lrange $args 1 end]] }
+	autofillx { return [autofillxSubCmd $win [lrange $args 1 end]] }
+
+	autofilly { return [autofillySubCmd $win [lrange $args 1 end]] }
+
+	autosize  { return [autosizeSubCmd  $win [lrange $args 1 end]] }
 
 	cget {
 	    if {$argCount != 2} {
@@ -481,6 +489,65 @@ proc scrollutil::sf::scrollableframeWidgetCmd {win args} {
 }
 
 #------------------------------------------------------------------------------
+# scrollutil::sf::autofillxSubCmd
+#
+# Processes the scrollableframe autofillx subcommmand.
+#------------------------------------------------------------------------------
+proc scrollutil::sf::autofillxSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount > 1} {
+	mwutil::wrongNumArgs "$win autofillx ?boolean?"
+    }
+
+    upvar ::scrollutil::ns${win}::data data
+    if {$argCount == 0} {
+	return $data(autoFillX)
+    } else {
+	set flag [expr {[lindex $argList 0] ? 1 : 0}]
+	set data(autoFillX) $flag
+
+	if {$flag} {
+	    set cfReqWidth [winfo reqwidth $data(cf)]
+	    set mfWidth [winfo width $data(mf)]
+	    set data(cfReqWidth) $cfReqWidth
+	    set data(mfWidth) $mfWidth
+	    doConfig $win -fitcontentwidth [expr {$cfReqWidth < $mfWidth}]
+	}
+
+	return ""
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sf::autofillySubCmd
+#
+# Processes the scrollableframe autofilly subcommmand.
+#------------------------------------------------------------------------------
+proc scrollutil::sf::autofillySubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount > 1} {
+	mwutil::wrongNumArgs "$win autofilly ?boolean?"
+    }
+
+    upvar ::scrollutil::ns${win}::data data
+    if {$argCount == 0} {
+	return $data(autoFillY)
+    } else {
+	set flag [expr {[lindex $argList 0] ? 1 : 0}]
+	set data(autoFillY) $flag
+	if {$flag} {
+	    set cfReqHeight [winfo reqheight $data(cf)]
+	    set mfHeight [winfo height $data(mf)]
+	    set data(cfReqHeight) $cfReqHeight
+	    set data(mfHeight) $mfHeight
+	    doConfig $win -fitcontentheight [expr {$cfReqHeight < $mfHeight}]
+	}
+
+	return ""
+    }
+}
+
+#------------------------------------------------------------------------------
 # scrollutil::sf::autosizeSubCmd
 #
 # Processes the scrollableframe autosize subcommmand.
@@ -501,10 +568,7 @@ proc scrollutil::sf::autosizeSubCmd {win argList} {
 	switch [mwutil::fullOpt "dimensions" [lindex $argList 0] $dimensions] {
 	    w  { set dimBits(width)  1 }
 	    h  { set dimBits(height) 1 }
-	    wh {
-		set dimBits(width)  1
-		set dimBits(height) 1
-	    }
+	    wh { set dimBits(width)  1; set dimBits(height) 1 }
 	}
     }
 
@@ -987,21 +1051,34 @@ proc scrollutil::sf::applyOffset {win axis offset force} {
 #------------------------------------------------------------------------------
 # scrollutil::sf::onScrollableframeMfConfigure
 #------------------------------------------------------------------------------
-proc scrollutil::sf::onScrollableframeMfConfigure {mf width height} {
+proc scrollutil::sf::onScrollableframeMfConfigure {mf mfWidth mfHeight} {
     set win [winfo parent $mf]
     upvar ::scrollutil::ns${win}::data data
 
-    if {$width != $data(mfWidth)} {
-	set data(mfWidth) $width
+    if {$mfWidth != $data(mfWidth)} {
+	set data(mfWidth) $mfWidth
+
+	if {$data(autoFillX)} {
+	    doConfig $win -fitcontentwidth \
+		[expr {[winfo reqwidth $data(cf)] < $mfWidth}]
+	}
+
 	if {$data(-fitcontentwidth)} {
-	    set data(cfWidth) $width
+	    set data(cfWidth) $mfWidth
 	}
 	xviewSubCmd $win {scroll 0 units}
     }
-    if {$height != $data(mfHeight)} {
-	set data(mfHeight) $height
+
+    if {$mfHeight != $data(mfHeight)} {
+	set data(mfHeight) $mfHeight
+
+	if {$data(autoFillY)} {
+	    doConfig $win -fitcontentheight \
+		[expr {[winfo reqheight $data(cf)] < $mfHeight}]
+	}
+
 	if {$data(-fitcontentheight)} {
-	    set data(cfHeight) $height
+	    set data(cfHeight) $mfHeight
 	}
 	yviewSubCmd $win {scroll 0 units}
     }
@@ -1010,16 +1087,29 @@ proc scrollutil::sf::onScrollableframeMfConfigure {mf width height} {
 #------------------------------------------------------------------------------
 # scrollutil::sf::onScrollableframeCfConfigure
 #------------------------------------------------------------------------------
-proc scrollutil::sf::onScrollableframeCfConfigure {cf width height} {
+proc scrollutil::sf::onScrollableframeCfConfigure {cf cfWidth cfHeight} {
     set win [winfo parent [winfo parent $cf]]
     upvar ::scrollutil::ns${win}::data data
 
-    if {$width != $data(cfWidth)} {
-	set data(cfWidth) $width
+    if {$data(autoFillX) &&
+	[set cfReqWidth [winfo reqwidth $data(cf)]] != $data(cfReqWidth)} {
+	set data(cfReqWidth) $cfReqWidth
+	doConfig $win -fitcontentwidth \
+	    [expr {$cfReqWidth < [winfo width $data(mf)]}]
+    }
+    if {$data(autoFillY) &&
+	[set cfReqHeight [winfo reqheight $data(cf)]] != $data(cfReqHeight)} {
+	set data(cfReqHeight) $cfReqHeight
+	doConfig $win -fitcontentheight \
+	    [expr {$cfReqHeight < [winfo height $data(mf)]}]
+    }
+
+    if {$cfWidth != $data(cfWidth)} {
+	set data(cfWidth) $cfWidth
 	xviewSubCmd $win {scroll 0 units}
     }
-    if {$height != $data(cfHeight)} {
-	set data(cfHeight) $height
+    if {$cfHeight != $data(cfHeight)} {
+	set data(cfHeight) $cfHeight
 	yviewSubCmd $win {scroll 0 units}
     }
 }
