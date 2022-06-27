@@ -1,3 +1,29 @@
+2022-06-27  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.16.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/scrollableframe.tcl: Added the "autofillx" and "autofilly"
+	  scrollableframe subcommands.
+
+	* scripts/scrollednotebook.tcl: The ttk::notebook contained in a
+	  scrollednotebook widget now automatically fills the entire width of
+	  the scrollednotebook, regardless of the number of tabs; eliminated
+	  three potential endless loops and fixed a few bugs related to the
+	  arrow buttons.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/clampatch.tcl: Significantly improved the look and
+	* scripts/utils/pkgIndex.tcl:  behavior of the ttk::checkbutton and
+	  ttk::radiobutton widgets of the patched "clam" theme.
+
+	* doc/TablelistConfig.png: Updated screenshot.
+
 2022-05-30  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 1.15.
