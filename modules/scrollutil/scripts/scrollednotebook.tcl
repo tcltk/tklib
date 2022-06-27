@@ -136,7 +136,7 @@ namespace eval scrollutil::snb {
 # scrollutil::snb::createBindings
 #
 # Creates the default bindings for the binding tags Scrollednotebook,
-# ScrollednotebookMain, SnbLeftArrow, and SnbRightArrow, and extends the
+# ScrollednotebookMain, SnbNb, SnbLArrow, and SnbRArrow, and extends the
 # default bindings for TNotebook.  In addition, creates a <Destroy> binding for
 # the binding tag DisabledClosetab.
 #------------------------------------------------------------------------------
@@ -163,18 +163,20 @@ proc scrollutil::snb::createBindings {} {
 	scrollutil::snb::onThemeChanged %W
     }
 
-    bind SnbLeftArrow  <Enter> { %W instate !disabled { %W state active } }
-    bind SnbRightArrow <Enter> { %W instate !disabled { %W state active } }
-    bind SnbLeftArrow  <Leave> { %W state !active }
-    bind SnbRightArrow <Leave> { %W state !active }
-    bind SnbLeftArrow  <Button-1> {
+    bind SnbNb <<NotebookTabChanged>> { scrollutil::snb::onNbTabChanged %W }
+
+    bind SnbLArrow <Enter> { %W instate !disabled { %W state active } }
+    bind SnbRArrow <Enter> { %W instate !disabled { %W state active } }
+    bind SnbLArrow <Leave> { %W state !active }
+    bind SnbRArrow <Leave> { %W state !active }
+    bind SnbLArrow <Button-1> {
 	%W instate !disabled { ttk::Repeatedly scrollutil::snb::seePrevTab %W }
     }
-    bind SnbRightArrow <Button-1> {
+    bind SnbRArrow <Button-1> {
 	%W instate !disabled { ttk::Repeatedly scrollutil::snb::seeNextTab %W }
     }
-    bind SnbLeftArrow  <ButtonRelease-1> { ttk::CancelRepeat }
-    bind SnbRightArrow <ButtonRelease-1> { ttk::CancelRepeat }
+    bind SnbLArrow <ButtonRelease-1> { ttk::CancelRepeat }
+    bind SnbRArrow <ButtonRelease-1> { ttk::CancelRepeat }
 
     #
     # Add support for moving and closing the ttk::notebook tabs with the mouse
@@ -276,18 +278,23 @@ proc scrollutil::scrollednotebook args {
     # Create a scrollableframe and a ttk::notebook in its content frame
     #
     set sf [scrollableframe $win.sf -borderwidth 0 -contentheight 0 \
-	    -contentwidth 0 -fitcontentheight 1 -fitcontentwidth 0 \
-	    -relief flat -takefocus 0 -xscrollincrement 1 \
-	    -yscrollcommand "" -yscrollincrement 1]
+	    -contentwidth 0 -fitcontentheight 1 -relief flat -takefocus 0 \
+	    -xscrollincrement 1 -yscrollcommand "" -yscrollincrement 1]
+    $sf autofillx 1	;# sets/clears the -fitcontentwidth option dynamically
     pack $sf -expand 1 -fill both -padx 3p
     set cf [$sf contentframe]
-    set nb [ttk::notebook $cf.nb -class TNotebook -height 0 -width 0]
+    set nb [ttk::notebook $cf.nb -height 0 -width 0]
     pack $nb -expand 1 -fill both
 
-    set lArrow [ttk::label $win.lArrow -class SnbLeftArrow  -borderwidth 2 \
+    bindtags $nb [linsert [bindtags $nb] 1 SnbNb]
+
+    #
+    # Create the left and right arrow buttons
+    #
+    set lArrow [ttk::label $win.lArrow -class SnbLArrow -borderwidth 2 \
 		-relief groove -padding 1 -takefocus 0 \
 		-image scrollutil_leftArrowImg]
-    set rArrow [ttk::label $win.rArrow -class SnbRightArrow -borderwidth 2 \
+    set rArrow [ttk::label $win.rArrow -class SnbRArrow -borderwidth 2 \
 		-relief groove -padding 1 -takefocus 0 \
 		-image scrollutil_rightArrowImg]
 
@@ -305,7 +312,6 @@ proc scrollutil::scrollednotebook args {
 	nb	    $nb \
 	lArrow	    $lArrow \
 	rArrow	    $rArrow \
-	delay	    1000 \
 	arrowAction 0 \
 	currentPage "" \
     ]
@@ -680,8 +686,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    return 1
 	}
 
-	hide -
-	index {
+	hide {
 	    if {$argCount != 2} {
 		mwutil::wrongNumArgs "$win $cmd tab"
 	    }
@@ -704,6 +709,17 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    incr x [expr {int($first * $cfWidth + 0.5)}]
 	    set argList [lreplace $argList $xIdx $xIdx $x]
 	    return [eval [list $nb $cmd] $argList]
+	}
+
+	index {
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win $cmd tab"
+	    }
+
+	    set tabId [lindex $args 1]
+	    set nbTabId [snbTabIdToNbTabId $win $tabId]
+	    set code [catch {$nb $cmd $nbTabId} result]
+	    return -code $code $result
 	}
 
 	insert {
@@ -739,7 +755,18 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	}
 
 	see {
-	    set code [catch {seeSubCmd $win $argList} result]
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win $cmd tab"
+	    }
+
+	    set tabId [lindex $args 1]
+	    set nbTabId [snbTabIdToNbTabId $win $tabId]
+	    if {[catch {$nb index $nbTabId} tabIdx] != 0} {
+		return -code error $tabIdx
+	    } elseif {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
+		return -code error "tab index $tabId out of bounds"
+	    }
+	    set code [catch {seeSubCmd $win $tabIdx} result]
 	    return -code $code $result
 	}
 
@@ -801,7 +828,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 		mwutil::wrongNumArgs "$win $cmd tab tab ?-option ?value??..."
 	    }
 
-	    set tabId [lindex $args 1]
+	    set tabId [lindex $argList 0]
 	    set nbTabId [snbTabIdToNbTabId $win $tabId]
 	    set argList [lreplace $argList 0 0 $nbTabId]
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
@@ -830,53 +857,61 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 #
 # Processes the scrollednotebook see subcommmand.
 #------------------------------------------------------------------------------
-proc scrollutil::snb::seeSubCmd {win argList} {
+proc scrollutil::snb::seeSubCmd {win nbTabId {dir ""}} {
     if {[destroyed $win]} {
 	return ""
     }
 
-    if {[llength $argList] != 1} {
-	mwutil::wrongNumArgs "$win see tab"
-    }
-
     upvar ::scrollutil::ns${win}::data data
-    set sf $data(sf)
     set nb $data(nb)
-    set tabId [lindex $argList 0]
-    set nbTabId [snbTabIdToNbTabId $win $tabId]
-    if {[catch {$nb index $nbTabId} tabIdx] != 0} {
-	return -code error $tabIdx
-    } elseif {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
-	return -code error "tab index $tabId out of bounds"
+    if {[string index $nbTabId 0] eq "." &&
+	[lsearch -exact [$nb tabs] $nbTabId] < 0} {
+	return ""
     }
 
+    set tabIdx [$nb index $nbTabId]
     if {[winfo height $nb] < 10 || [$nb tab $tabIdx -state] eq "hidden"} {
 	return ""
     }
 
+    set sf $data(sf)
     if {$tabIdx == [firstNonHiddenTab $nb]} {
-	$sf xview moveto 0
+	foreach {leftTabIdx leftCompl rightTabIdx rightCompl} [tabsView $win] {}
+	if {$leftTabIdx == $tabIdx} {
+	    if {!$leftCompl || $dir eq "R"} {
+		$sf xview moveto 0.0
+	    }
+	} else {
+	    $sf xview moveto 0.0
+	}
     } elseif {$tabIdx == [lastNonHiddenTab $nb]} {
-	$sf xview moveto 1
-    } else {
-	#
-	# Bring the tab $tab of $nb into view
-	#
-	set y [yCoordForTabs $nb]
-	set x1 0
-	while {[set idx [$nb index @$x1,$y]] < 0 || $idx < $tabIdx} {
-	    incr x1 100
+	foreach {leftTabIdx leftCompl rightTabIdx rightCompl} [tabsView $win] {}
+	if {$rightTabIdx == $tabIdx} {
+	    if {!$rightCompl || $dir eq "L"} {
+		$sf xview moveto 1.0
+	    }
+	} else {
+	    $sf xview moveto 1.0
 	}
-	incr x1 -100
-	while {[$nb index @$x1,$y] < $tabIdx} {
-	    incr x1
-	}
-	set x2 $x1
-	while {[$nb index @$x2,$y] == $tabIdx} {
-	    incr x2
-	}
-	$sf seerect $x1 0 $x2 0
     }
+
+    #
+    # Bring the tab $tab of $nb into view
+    #
+    set y [yCoordForTabs $nb]
+    set x1 0
+    while {[set idx [$nb index @$x1,$y]] < 0 || $idx < $tabIdx} {
+	incr x1 10
+    }
+    incr x1 -10
+    while {[$nb index @$x1,$y] < $tabIdx} {
+	incr x1
+    }
+    set x2 $x1
+    while {[$nb index @$x2,$y] == $tabIdx} {
+	incr x2
+    }
+    $sf seerect $x1 0 $x2 0
 
     return ""
 }
@@ -947,10 +982,7 @@ proc scrollutil::snb::adjustXPad {win tabIdx first last} {
 	$nb tab $tabIdx -padding [list $left $top $right $bottom]
     }
 
-    if {![info exists data(arrowsId)]} {
-	set data(arrowsId) \
-	    [after $data(delay) [list scrollutil::snb::showHideArrows $win]]
-    }
+    showHideArrowsDelayed $win
 }
 
 #
@@ -967,8 +999,8 @@ proc scrollutil::snb::onScrollednotebookMap win {
     }
 
     upvar ::scrollutil::ns${win}::data data
-    set nb $data(nb)
     set sf $data(sf)
+    set nb $data(nb)
 
     if {$data(-height) == 0} {
 	$sf configure -height [winfo reqheight $nb]
@@ -979,9 +1011,7 @@ proc scrollutil::snb::onScrollednotebookMap win {
     $sf configure -xscrollcommand [list scrollutil::snb::adjustXPad $win -1]
 
     updateNbWidth $win
-
     onNbTabChanged $nb
-    bind $nb <<NotebookTabChanged>> { scrollutil::snb::onNbTabChanged %W }
 }
 
 #------------------------------------------------------------------------------
@@ -999,36 +1029,6 @@ proc scrollutil::snb::onThemeChanged w {
 	doConfig $w -style [doCget $w -style]
 	updateNbWidth $w
     }
-}
-
-#------------------------------------------------------------------------------
-# scrollutil::snb::seePrevTab
-#------------------------------------------------------------------------------
-proc scrollutil::snb::seePrevTab w {
-    set win [winfo parent $w]
-    upvar ::scrollutil::ns${win}::data data
-    set data(arrowAction) 1
-
-    set leftTabIdx $data(leftTabIdx)
-    set leftCompl  $data(leftCompl)
-    set tabIdx [expr {$leftCompl ? [prevNonHiddenTab $data(nb) $leftTabIdx]
-				 : $leftTabIdx}]
-    seeSubCmd $win $tabIdx
-}
-
-#------------------------------------------------------------------------------
-# scrollutil::snb::seeNextTab
-#------------------------------------------------------------------------------
-proc scrollutil::snb::seeNextTab w {
-    set win [winfo parent $w]
-    upvar ::scrollutil::ns${win}::data data
-    set data(arrowAction) 1
-
-    set rightTabIdx $data(rightTabIdx)
-    set rightCompl  $data(rightCompl)
-    set tabIdx [expr {$rightCompl ? [nextNonHiddenTab $data(nb) $rightTabIdx]
-				  : $rightTabIdx}]
-    seeSubCmd $win $tabIdx
 }
 
 #------------------------------------------------------------------------------
@@ -1081,6 +1081,36 @@ proc scrollutil::snb::restoreTabChangedBinding nb {
     }
 
     bind $nb <<NotebookTabChanged>> { scrollutil::snb::onNbTabChanged %W }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::snb::seePrevTab
+#------------------------------------------------------------------------------
+proc scrollutil::snb::seePrevTab w {
+    set win [winfo parent $w]
+    upvar ::scrollutil::ns${win}::data data
+    set data(arrowAction) 1
+
+    set leftTabIdx $data(leftTabIdx)
+    set leftCompl  $data(leftCompl)
+    set tabIdx [expr {$leftCompl ? [prevNonHiddenTab $data(nb) $leftTabIdx]
+				 : $leftTabIdx}]
+    seeSubCmd $win $tabIdx L
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::snb::seeNextTab
+#------------------------------------------------------------------------------
+proc scrollutil::snb::seeNextTab w {
+    set win [winfo parent $w]
+    upvar ::scrollutil::ns${win}::data data
+    set data(arrowAction) 1
+
+    set rightTabIdx $data(rightTabIdx)
+    set rightCompl  $data(rightCompl)
+    set tabIdx [expr {$rightCompl ? [nextNonHiddenTab $data(nb) $rightTabIdx]
+				  : $rightTabIdx}]
+    seeSubCmd $win $tabIdx R
 }
 
 #------------------------------------------------------------------------------
@@ -1462,9 +1492,9 @@ proc scrollutil::snb::yCoordForTabs nb {
     if {[string index $tabPos 0] eq "n"} {
 	set y $height
 	while {$y >= 0 && [$nb index @$x,$y] < 0} {
-	    incr y -20
+	    incr y -10
 	}
-	incr y 20
+	incr y 10
 	while {[$nb index @$x,$y] < 0} {
 	    incr y -1
 	}
@@ -1472,9 +1502,9 @@ proc scrollutil::snb::yCoordForTabs nb {
     } else {
 	set y 0
 	while {$y < $height && [$nb index @$x,$y] < 0} {
-	    incr y 20
+	    incr y 10
 	}
-	incr y -20
+	incr y -10
 	while {[$nb index @$x,$y] < 0} {
 	    incr y
 	}
@@ -1498,6 +1528,13 @@ proc scrollutil::snb::tabsView win {
 
     if {[winfo height $nb] < 10 || [nonHiddenTabCount $nb] == 0} {
 	return {"" 0 "" 0}
+    }
+
+    if {[winfo ismapped $win]} {
+	update idletasks
+	if {[destroyed $win]} {
+	    return {"" 0 "" 0}
+	}
     }
 
     foreach {first last} [$data(sf) xview] {}
@@ -1525,6 +1562,19 @@ proc scrollutil::snb::tabsView win {
 }
 
 #------------------------------------------------------------------------------
+# scrollutil::snb::showHideArrowsDelayed
+#
+# Schedules the showHideArrowsDelayed proc for delayed execution.
+#------------------------------------------------------------------------------
+proc scrollutil::snb::showHideArrowsDelayed win {
+    upvar ::scrollutil::ns${win}::data data
+    if {![info exists data(arrowsId)]} {
+	set data(arrowsId) \
+	    [after 100 [list scrollutil::snb::showHideArrows $win]]
+    }
+}
+
+#------------------------------------------------------------------------------
 # scrollutil::snb::showHideArrows
 #
 # Shows or hides the left and right arrows of the scrollednotebook widget win.
@@ -1536,7 +1586,6 @@ proc scrollutil::snb::showHideArrows win {
 
     upvar ::scrollutil::ns${win}::data data
     unset data(arrowsId)
-    set data(delay) 50		;# for all future showHideArrows invocations
 
     set nb     $data(nb)
     set lArrow $data(lArrow)
