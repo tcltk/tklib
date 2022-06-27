@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 1.15</h2>
+    <h2>For Scrollutil Version 1.16</h2>
 
     <h3>by</h3>
 
@@ -306,8 +306,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil1.15.tar.gz</code> for UNIX and
-  <code>scrollutil1_15.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil1.16.tar.gz</code> for UNIX and
+  <code>scrollutil1_16.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -331,11 +331,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil1.15.tar.gz</code>:</p>
+  <code>scrollutil1.16.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil1.15.tar.gz | tar -xf -
+gunzip -c scrollutil1.16.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -343,17 +343,17 @@ gunzip -c scrollutil1.15.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil1.15.tar.gz
+tar -zxf scrollutil1.16.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil1.15</code>,
+  <p>Both commands will create a directory named <code>scrollutil1.16</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil1_15.zip</code> into the directory
-  <code>scrollutil1.15</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil1_16.zip</code> into the directory
+  <code>scrollutil1.16</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -371,8 +371,12 @@ tar -zxf scrollutil1.15.tar.gz
   requires Tcl/Tk 8.4 or higher and tile 0.8 or higher.&nbsp; It is not
   possible to use both packages in one and the same application, because both
   are implemented in the same <code>scrollutil</code> namespace and provide
-  identical commands (except for the <code>scrollutil::scrollednotebook</code>
-  command, which is provided by the Scrollutil_tile package only).</p>
+  identical commands (except for the commands
+  <code>scrollutil::scrollednotebook</code>,
+  <code>scrollutil::plainnotebook</code>, <code>scrollutil::addclosetab</code>,
+  <code>scrollutil::removeclosetab</code>, and
+  <code>scrollutil::closetabstate</code>, which are provided by the
+  Scrollutil_tile package only).</p>
 
   <p>To be able to access the commands and variables defined in the package
   Scrollutil, your scripts must contain one of the lines</p>

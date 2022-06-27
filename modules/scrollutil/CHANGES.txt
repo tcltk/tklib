@@ -1,5 +1,32 @@
-What is new in Scrollutil 1.15?
+What is new in Scrollutil 1.16?
 -------------------------------
+
+1. Added the "autofillx" and "autofilly" scrollableframe subcommands,
+   which enable you to make sure that the content frame will fill the
+   widget's entire inner width and height respectively, by dynamically
+   setting/clearing the -fitcontentwidth or -fitcontentheight option.
+
+2. The ttk::notebook contained in a scrollednotebook widget now
+   automatically fills the entire width of the scrollednotebook,
+   regardless of the number of tabs (thanks to Harald Oehlmann for his
+   improvement proposal and testing).  This is implemented with the aid
+   of the new "autofillx" subcommand of the scrollableframe contained in
+   the scrollednotebook widget.
+
+3. Significantly improved the look and behavior of the ttk::checkbutton
+   and ttk::radiobutton widgets of the "clam" theme patched with the
+   "clampatch::patchClamTheme" command.
+
+4. Eliminated three potential endless loops in the implementation of the
+   scrollednotebook widget and fixed a few bugs related to the arrow
+   buttons (thanks to Harald Oehlmann for his bug reports and
+   discussions on these subjects).
+
+5. Several improvements in the description of the scrollableframe and
+   scrollednotebook widgets.
+
+What was new in Scrollutil 1.15?
+--------------------------------
 
 1. The plainnotebook widget now supports the navigation between the
    selectable tabs via the mouse wheel (thanks to Harald Oehlmann for

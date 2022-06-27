@@ -16,7 +16,7 @@
     <h1>The <code><b>scrollutil::scrollednotebook</b></code> Command<br>
     and the <code><b>closetab</b></code> Style Element</h1>
 
-    <h2>For Scrollutil Version 1.15</h2>
+    <h2>For Scrollutil Version 1.16</h2>
 
     <h3>by</h3>
 
@@ -554,9 +554,9 @@ proc populateMenu {nb data} {
 
     <dd>
       <ol>
-        <li class="tm"><b>Navigation between the tabs of a ttk::notebook or
-        scrollednotebook widget via the mouse wheel:</b>&nbsp; A mouse wheel
-        tick selects the tab of state <code><b>normal</b></code> cyclically
+        <li class="tm"><b>Navigation between the tabs of a scrollednotebook or
+        ttk::notebook widget via the mouse wheel:</b>&nbsp; A mouse wheel tick
+        selects the tab of state <code><b>normal</b></code> cyclically
         following/preceding the currently selected one.&nbsp; (Note that the
         same effect can also be achieved with the keys <code>Right</code>,
         <code>Left</code>, <code>Control-Tab</code>, and
@@ -582,13 +582,13 @@ proc populateMenu {nb data} {
         least 300 milliseconds, the actions described above will auto-repeat
         every 100 milliseconds.</li>
 
-        <li class="tm"><b>Moving the tabs of a ttk::notebook or
-        scrollednotebook widget with the mouse</b>:&nbsp; If mouse button 1 is
+        <li class="tm"><b>Moving the tabs of a scrollednotebook or
+        ttk::notebook widget with the mouse</b>:&nbsp; If mouse button 1 is
         pressed over a tab but outside the <code><b><a href=
         "#closetab">closetab</a></b></code> element (if any) and then dragged
-        outside that tab then, in case of a scrollednotebook provided that the
+        outside that tab then (in case of a scrollednotebook provided that the
         value of the widget's <code><b><a href=
-        "#movabletabs">-movabletabs</a></b></code> option is true, the mouse
+        "#movabletabs">-movabletabs</a></b></code> option is true) the mouse
         cursor takes on the shape of a left/right arrow, indicating that the
         tab in question is being moved to another position.&nbsp; This
         operation ends when mouse button 1 is released, and can be canceled by
@@ -857,9 +857,9 @@ package require scrollutil_tile
         <code><b>closetab</b></code> element is shown in white color on light
         red background when hovered, and in white color on dark red background
         when pressed with mouse button 1.&nbsp; By releasing mouse button 1
-        over the same element, the tab is closed and the notebook widget
-        receives a <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code>
-        virtual event.</li>
+        over the same element, the action described under points 4 and 5 of the
+        <a href="#bindings">FURTHER BINDINGS</a> section above is
+        triggered.</li>
 
         <li class="tm">In the <code><b>disabled</b></code> state, the
         <code><b>closetab</b></code> element, both when hovered and when
