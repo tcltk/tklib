@@ -1,5 +1,14 @@
-What is new in Mentry 3.15?
+What is new in Mentry 3.16?
 ---------------------------
+
+1. Updated the Wcb command reference "wcbRef.html" to the version
+   included in the most recent Wcb release 3.8.
+
+2. Corrected a typo in the copyright information contained in the file
+   "mentry_tile.tcl" (thanks to Stuart Cassoff for his bug report).
+
+What was new in Mentry 3.15?
+----------------------------
 
 1. Fixed a bug related to the handling of the <<ThemeChanged>> event
    when the package Mentry rather than Mentry_tile was loaded into the
