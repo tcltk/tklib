@@ -1,3 +1,14 @@
+2022-08-04  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 3.16.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* doc/wcbRef.html: Updated to the version included in Wcb 3.8.
+
 2022-03-22  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Mentry 3.15.
