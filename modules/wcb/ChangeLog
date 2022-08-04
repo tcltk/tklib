@@ -1,3 +1,17 @@
+2022-08-04  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 3.8; updated the
+	* COPYRIGHT.txt: copyright information.
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* doc/*.html: The new name of the original widget command is now also
+	  referred to as "proxy command"; bumped the version number to 3.8.
+
+	* scripts/*.tcl:            Updated the copyright information.
+	* ../../examples/wcb/*.tcl:
+
 2020-12-01  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* README.txt:   Corrected: "http" -> "https".
