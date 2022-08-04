@@ -1,5 +1,12 @@
-What is new in Wcb 3.7?
+What is new in Wcb 3.8?
 -----------------------
+
+1. For more clarity, the new name of the original widget command is now
+   also referred to as "proxy command" (thanks to Julian H J Loaring for
+   his proposal).
+
+What was new in Wcb 3.7?
+------------------------
 
 1. Made the demo-scripts scaling-aware.
 
