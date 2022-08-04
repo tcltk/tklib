@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains Wcb procedures for tile treeview widgets.
 #
-# Copyright (c) 2014-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2014-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #

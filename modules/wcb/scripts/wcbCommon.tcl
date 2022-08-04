@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains common Wcb procedures.
 #
-# Copyright (c) 1999-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -64,9 +64,9 @@ namespace eval wcb {
 # then the procedure unregisters all the corresponding callbacks for the given
 # widget and returns an empty string.
 #
-# When a callback is invoked, the name of the original Tcl command for the
-# widget w as well as the command arguments are automatically appended to it as
-# parameters.
+# When a callback is invoked, the new name of the original Tcl command for the
+# widget w (i.e., the name of the proxy command) as well as the command
+# arguments are automatically appended to it as parameters.
 #------------------------------------------------------------------------------
 proc wcb::callback {w when option args} {
     if {![winfo exists $w]} {
@@ -225,11 +225,11 @@ proc wcb::replace {first last args} {
 #------------------------------------------------------------------------------
 # wcb::pathname
 #
-# Returns the path name of the widget corresponding to the Tcl command origCmd
+# Returns the path name of the widget corresponding to the Tcl command proxyCmd
 # (which is supposed to be of the form "::_pathName").
 #------------------------------------------------------------------------------
-proc wcb::pathname origCmd {
-    return [string range $origCmd 3 end]
+proc wcb::pathname proxyCmd {
+    return [string range $proxyCmd 3 end]
 }
 
 #
@@ -383,8 +383,9 @@ proc wcb::areAllEmptyStrings lst {
 #------------------------------------------------------------------------------
 # wcb::redefWidgetCmd
 #
-# Renames the Tcl command w to _w, builds a new widget procedure w that invokes
-# cmd, and appends WcbCleanup to the list of binding tags of the widget w.
+# Renames the Tcl command ::w to ::_w, builds a new widget procedure w that
+# invokes cmd, and appends WcbCleanup to the list of binding tags of the widget
+# w.
 #------------------------------------------------------------------------------
 proc wcb::redefWidgetCmd {w cmd} {
     if {[catch {rename ::$w ::_$w}] != 0} {

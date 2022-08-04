@@ -10,7 +10,7 @@
 #	wcb::cancel
 #	wcb::extend <arg>
 #
-# Copyright (c) 1999-2020  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require wcb
