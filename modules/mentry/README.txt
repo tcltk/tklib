@@ -54,7 +54,7 @@ How to Get It?
 --------------
 
 Mentry is available for free download from the same URL as Wcb.  The
-distribution file is "mentry3.15.tar.gz" for UNIX and "mentry3_15.zip"
+distribution file is "mentry3.16.tar.gz" for UNIX and "mentry3_16.zip"
 for Windows.  These files contain the same information, except for the
 additional carriage return character preceding the linefeed at the end
 of each line in the text files for Windows.
@@ -73,19 +73,19 @@ locations of these library directories are given by the "tcl_library"
 and "tk_library" variables, respectively.
 
 To install Mentry on UNIX, "cd" to the desired directory and unpack the
-distribution file "mentry3.15.tar.gz":
+distribution file "mentry3.16.tar.gz":
 
-    gunzip -c mentry3.15.tar.gz | tar -xf -
+    gunzip -c mentry3.16.tar.gz | tar -xf -
 
 On most UNIX systems this can be replaced with
 
-    tar -zxf mentry3.15.tar.gz
+    tar -zxf mentry3.16.tar.gz
 
-Both commands will create a directory named "mentry3.15", with the
+Both commands will create a directory named "mentry3.16", with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "mentry3_15.zip" into the directory "mentry3.15", with
+distribution file "mentry3_16.zip" into the directory "mentry3.16", with
 the subdirectories "demos", "doc", and "scripts".
 
 The file "mentryThemes.tcl" in the "scripts" directory is only needed
