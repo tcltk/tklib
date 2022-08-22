@@ -1,3 +1,13 @@
+2022-08-22  Csaba Nemethi  <csaba.nemethi@t-online.de>
+
+	* pkgIndex.tcl:	Bumped the tooltip version number to 1.6.
+	* tooltip.tcl:	Added support for ttk::notebook tabs; several further
+			improvements; bumped the version number to 1.6.
+	* tooltip.man:  Documented the "-tab" option and added an example for
+			it; extended the description of the "configure"
+			subcommand; several further improvements; bumped the
+			version number to 1.6.
+
 2022-05-20 Emiliano Gavilan <emilianogavilan@gmail.com>
 	
         * tooltip.tcl, tooltip.man, tooltip.html: Add configure command.
