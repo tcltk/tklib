@@ -28,7 +28,7 @@ package require msgcat
 # clear ?pattern?
 #	Stops the specified widgets (defaults to all) from showing tooltips.
 #
-# configure ?opt ?arg? ?opt arg? ...
+# configure ?opt ?val opt val ...??
 #       Configure foreground, background and font.
 #
 # delay ?millisecs?
@@ -44,15 +44,17 @@ package require msgcat
 # enable OR on
 #	Enables tooltips for defined widgets.
 #
-# <widget> ?-index index? ?-items id? ?-tag tag? ?message?
-#	If -index is specified, then <widget> is assumed to be a menu
-#	and the index represents what index into the menu (either the
-#	numerical index or the label) to associate the tooltip message with.
-#	Tooltips do not appear for disabled menu items.
-#	If -item is specified, then <widget> is assumed to be a listbox,
-#	treeview or canvas and the itemId specifies one or more items.
-#	If -tag is specified, then <widget> is assumed to be a text
-#	and the tagId specifies a tag.
+# <widget> ?-index index? ?-item(s) items? ?-tab tabId" ?-tag tag? ?message?
+#	* If -index is specified, then <widget> is assumed to be a menu and
+#	  index represents what index into the menu (either the numerical index
+#	  or the label) to associate the tooltip message with.
+#	  Tooltips do not appear for disabled menu items.
+#	* If -item(s) is specified, then <widget> is assumed to be a listbox,
+#	  ttk::treeview or canvas and items specifies one or more items.
+#	* If -tab is specified, then <widget> is assumed to be a ttk::notebook
+#	  and tabId specifies a tab identifier.
+#	* If -tag is specified, then <widget> is assumed to be a text and tag
+#	  specifies a tag name.
 #	If message is {}, then the tooltip for that widget is removed.
 #	The widget must exist prior to calling tooltip.  The current
 #	tooltip message for <widget> is returned, if any.
@@ -197,6 +199,20 @@ proc ::tooltip::register {w args} {
                 }
 		set args [lreplace $args 0 1]
 	    }
+	    -tab {
+		if {[winfo class $w] ne "TNotebook"} {
+		    return -code error "widget \"$w\" is not a ttk::notebook\
+			widget"
+		}
+		set tabId [lindex $args 1]
+		if {[catch {$w index $tabId} tabIndex]} {
+		    return -code error $tabIndex
+		} elseif {$tabIndex < 0 || $tabIndex >= [$w index end]} {
+		    return -code error "tab index $tabId out of bounds"
+		}
+		set tabWin [lindex [$w tabs] $tabIndex]
+		set args [lreplace $args 0 1]
+	    }
             -tag {
                 set tag [lindex $args 1]
                 set r [catch {lsearch -exact [$w tag names] $tag} ndx]
@@ -208,14 +224,15 @@ proc ::tooltip::register {w args} {
             }
 	    default {
 		return -code error "unknown option \"$key\":\
-			should be -index, -items, -tag or --"
+			should be -index, -item(s), -tab, -tag or --"
 	    }
 	}
 	set key [lindex $args 0]
     }
     if {[llength $args] != 1} {
 	return -code error "wrong # args: should be \"tooltip widget\
-		?-index index? ?-items item? ?-tag tag? ?--? message\""
+		?-index index? ?-item(s) items? ?-tab tabId? ?-tag tag? ?--?\
+		message\""
     }
     if {$key eq ""} {
 	clear $w
@@ -239,6 +256,10 @@ proc ::tooltip::register {w args} {
 	    # Only need to return the first item for the purposes of
 	    # how this is called
 	    return $w,[lindex $items 0]
+	} elseif {[info exists tabWin]} {
+	    set tooltip($w,$tabWin) $key
+	    enableNotebook $w $tabWin
+	    return $w,$tabWin
         } elseif {[info exists tag]} {
             set tooltip($w,t_$tag) $key
             enableTag $w $tag
@@ -281,7 +302,7 @@ proc ::tooltip::configure {args} {
     set len [llength $args]
     if {$len >= 2 && ($len % 2) != 0} {
         return -level 2 -code error "wrong # args. Should be\
-            \"tooltip configure ?opt ?arg?? ?opt arg? ...\""
+            \"tooltip configure ?opt ?val opt val ...??\""
     }
 
     variable G
@@ -379,7 +400,7 @@ proc ::tooltip::show {w msg {i {}}} {
     if {$i eq "cursor"} {
         set py [winfo pointery $w]
 	set y [expr {$py + 20}]
-# this is a weong calculation?
+# this is a wrong calculation?
 #	if {($y < $screenh) && ($y+$reqh) > $screenh} {}
 	if { ($y + $reqh) > $screenh } {
 	    set y [expr {$py - $reqh - 5}]
@@ -502,8 +523,8 @@ proc ::tooltip::listitemTip {w x y} {
     }
 }
 
-# Handle the lack of <Enter>/<Leave> between listbox/treeview items
-# using <Motion>
+# Handle the lack of <Enter>/<Leave> between listbox/treeview items using
+# <Motion>
 proc ::tooltip::listitemMotion {w x y} {
     variable tooltip
     variable G
@@ -529,7 +550,7 @@ proc ::tooltip::listitemMotion {w x y} {
     }
 }
 
-# Initialize tooltip events for Listbox widgets
+# Initialize tooltip events for listbox/treeview widgets
 proc ::tooltip::enableListbox {w args} {
     if {[string match *listitemTip* [bind $w <Enter>]]} { return }
     bind $w <Enter> +[namespace code [list listitemTip %W %x %y]]
@@ -539,7 +560,7 @@ proc ::tooltip::enableListbox {w args} {
     bind $w <Any-Button> +[namespace code hide]
 }
 
-proc ::tooltip::itemTip {w args} {
+proc ::tooltip::canvasitemTip {w args} {
     variable tooltip
     variable G
 
@@ -552,11 +573,53 @@ proc ::tooltip::itemTip {w args} {
 }
 
 proc ::tooltip::enableCanvas {w args} {
-    if {[string match *itemTip* [$w bind all <Enter>]]} { return }
-    $w bind all <Enter> +[namespace code [list itemTip $w]]
+    if {[string match *canvasitemTip* [$w bind all <Enter>]]} { return }
+    $w bind all <Enter> +[namespace code [list canvasitemTip $w]]
     $w bind all <Leave> +[namespace code [list hide 1]] ; # fade ok
     $w bind all <Any-KeyPress> +[namespace code hide]
     $w bind all <Any-Button> +[namespace code hide]
+}
+
+proc ::tooltip::notebooktabTip {w x y} {
+    variable tooltip
+    variable G
+
+    set G(LAST) -1
+    set tabIndex [$w index @$x,$y]
+    set tabWin [lindex [$w tabs] $tabIndex]
+    if {$G(enabled) && [info exists tooltip($w,$tabWin)]} {
+	set G(AFTERID) [after $G(DELAY) \
+		[namespace code [list show $w $tooltip($w,$tabWin) cursor]]]
+    }
+}
+
+# Handle the lack of <Enter>/<Leave> between ttk::notebook items using <Motion>
+proc ::tooltip::notebooktabMotion {w x y} {
+    variable tooltip
+    variable G
+    if {$G(enabled)} {
+	set tabIndex [$w index @$x,$y]
+	set tabWin [lindex [$w tabs] $tabIndex]
+        if {$tabWin ne $G(LAST)} {
+            set G(LAST) $tabWin
+            after cancel $G(AFTERID)
+            catch {wm withdraw $G(TOPLEVEL)}
+            if {[info exists tooltip($w,$tabWin)]} {
+                set G(AFTERID) [after $G(DELAY) \
+                   [namespace code [list show $w $tooltip($w,$tabWin) cursor]]]
+            }
+        }
+    }
+}
+
+# Initialize tooltip events for ttk::notebook widgets
+proc ::tooltip::enableNotebook {w args} {
+    if {[string match *notebooktabTip* [bind $w <Enter>]]} { return }
+    bind $w <Enter> +[namespace code [list notebooktabTip %W %x %y]]
+    bind $w <Motion> +[namespace code [list notebooktabMotion %W %x %y]]
+    bind $w <Leave> +[namespace code [list hide 1]] ; # fade ok
+    bind $w <Any-KeyPress> +[namespace code hide]
+    bind $w <Any-Button> +[namespace code hide]
 }
 
 proc ::tooltip::tagTip {w tag} {
@@ -578,4 +641,4 @@ proc ::tooltip::enableTag {w tag} {
     $w tag bind $tag <Any-Button> +[namespace code hide]
 }
 
-package provide tooltip 1.5
+package provide tooltip 1.6
