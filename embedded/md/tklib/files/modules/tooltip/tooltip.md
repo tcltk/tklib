@@ -2,7 +2,7 @@
 [//000000001]: # (tooltip \- Tooltip management)
 [//000000002]: # (Generated from file 'tooltip\.man' by tcllib/doctools with format 'markdown')
 [//000000003]: # (Copyright &copy; 1996\-2008, Jeffrey Hobbs)
-[//000000004]: # (tooltip\(n\) 1\.4\.7 tklib "Tooltip management")
+[//000000004]: # (tooltip\(n\) 1\.6 tklib "Tooltip management")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -35,18 +35,18 @@ tooltip \- Tooltip management
 
 # <a name='synopsis'></a>SYNOPSIS
 
-package require Tcl 8\.4  
+package require Tcl 8\.5  
 package require msgcat 1\.3  
-package require tooltip ?1\.4\.7?  
+package require tooltip ?1\.6?  
 
 [__::tooltip::tooltip__ *command* ?*options*?](#1)  
-[__::tooltip::tooltip__ *pathName* ?*option arg*? *message*](#2)  
+[__::tooltip::tooltip__ *pathName* ?*option value*? *message*](#2)  
 
 # <a name='description'></a>DESCRIPTION
 
 This package provides tooltips, small text messages that can be displayed when
-the mouse hovers over a widget, menu item, canvas item, listbox item or text
-widget tag\.
+the mouse hovers over a widget, menu item, canvas item, listbox or ttk::treeview
+item, ttk::notebook tab or text widget tag\.
 
 # <a name='section2'></a>COMMANDS
 
@@ -59,11 +59,20 @@ widget tag\.
         Prevents the specified widgets from showing tooltips\. *pattern* is a
         glob pattern and defaults to matching all widgets\.
 
+      * __configure__ ?*option* ?*value option value* \.\.\.??
+
+        Queries or modifies the configuration options of the tooltip\. The
+        supported options are __\-backgroud__, __\-foreground__ and
+        __\-font__\. If no *option* is specified, returns a dictionary of
+        the option values\. If one *option* is specified with no value, returns
+        the value of that option\. Otherwise, sets the given *option*s to the
+        corresponding *value*s\.
+
       * __delay__ ?*millisecs*?
 
         Query or set the hover delay\. This is the interval that the pointer must
         remain over the widget before the tooltip is displayed\. The delay is
-        specified in milliseconds and must be greater than or equal to 50ms\.
+        specified in milliseconds and must be greater than or equal to 50 ms\.
         With no argument the current delay is returned\.
 
       * __fade__ ?*boolean*?
@@ -84,14 +93,15 @@ widget tag\.
 
         Enables tooltips for defined widgets\.
 
-  - <a name='2'></a>__::tooltip::tooltip__ *pathName* ?*option arg*? *message*
+  - <a name='2'></a>__::tooltip::tooltip__ *pathName* ?*option value*? *message*
 
     This command arranges for widget *pathName* to display a tooltip with
     message *message*\. The tooltip uses a late\-binding msgcat call on the
     passed in message to allow for on\-the\-fly language changes in an
-    application\. If the widget specified is a menu, canvas, listbox or text
-    widget then additional options are used to tie the tooltip to specific menu
-    entries, canvas or listbox items, or text widget tags\.
+    application\. If the widget specified is a menu, canvas, listbox,
+    ttk::treeview, ttk::notebook or text widget then additional options are used
+    to tie the tooltip to specific menu, canvas, listbox or ttk::treeview items,
+    ttk::notebook tabs or text widget tags\.
 
       * __\-index__ *index*
 
@@ -99,23 +109,30 @@ widget tag\.
         either the entry index or the entry label\. The widget must be a menu
         widget but the entries do not have to exist when the tooltip is set\.
 
-      * __\-items__ *name*
+      * __\-items__ *items*
 
-        This option is used to set a tooltip for canvas widget or listbox items\.
-        For the canvas widget, the item must already be present in the canvas
-        widget and will be found with a __find withtag__ lookup\. For listbox
-        widgets the item\(s\) may be created later but the programmer is
-        responsible for managing the link between the listbox item index and the
-        corresponding tooltip\. If the listbox items are re\-ordered, the tooltips
-        will need amending\.
+        This option is used to set a tooltip for canvas, listbox or ttk::treview
+        items\. For the canvas widget, the item must already be present in the
+        canvas and will be found with a __find withtag__ lookup\. For listbox
+        and ttk::treview widgets the item\(s\) may be created later but the
+        programmer is responsible for managing the link between the listbox or
+        ttk::treview item index and the corresponding tooltip\. If the listbox or
+        ttk::treview items are re\-ordered, the tooltips will need amending\.
 
-        If the widget is not a canvas or listbox then an error is raised\.
+        If the widget is not a canvas, listbox or ttk::treview then an error is
+        raised\.
+
+      * __\-tab__ *tabId*
+
+        The __\-tab__ option can be used to set a tooltip for a ttk::notebook
+        tab\. The tab should already be present when this command is called, or
+        an error will be returned\. The widget must be a ttk::notebook widget\.
 
       * __\-tag__ *name*
 
         The __\-tag__ option can be used to set a tooltip for a text widget
-        tag\. The tag should already be present when this command is called or an
-        error will be returned\. The widget must also be a text widget\.
+        tag\. The tag should already be present when this command is called, or
+        an error will be returned\. The widget must be a text widget\.
 
       * __\-\-__
 
@@ -147,6 +164,14 @@ widget tag\.
     pack [listbox .lb]
     .lb insert 0 "item one"
     tooltip::tooltip .lb -item 0 "Listbox item tooltip"
+
+    # Demonstrate ttk::notebook tab tooltip
+    package require tooltip
+    pack [ttk::notebook .nb]
+    .nb add [frame .nb.f1 -height 50] -text "First tab"
+    .nb add [frame .nb.f2 -height 50] -text "Second tab"
+    tooltip::tooltip .nb -tab 0 "Tooltip for the 1st notebook tab"
+    tooltip::tooltip .nb -tab 1 "Tooltip for the 2nd notebook tab"
 
     # Demonstrate text tag tooltip
     package require tooltip

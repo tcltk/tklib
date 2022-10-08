@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'canvas_epoints\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "canvas::edit::points" n 0\&.1 tklib "Variations on a canvas"
+.TH "canvas::edit::points" n 0\&.2 tklib "Variations on a canvas"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -277,7 +277,7 @@ package require \fBTcl  8\&.5\fR
 .sp
 package require \fBTk  8\&.5\fR
 .sp
-package require \fBcanvas::edit::points  ?0\&.1?\fR
+package require \fBcanvas::edit::points  ?0\&.2?\fR
 .sp
 \fB::canvas::edit\fR \fBpoints\fR \fIobjectName\fR \fIcanvas\fR \fIoptions\fR\&.\&.\&.
 .sp

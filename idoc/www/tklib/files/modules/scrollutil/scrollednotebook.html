@@ -16,7 +16,7 @@
     <h1>The <code><b>scrollutil::scrollednotebook</b></code> Command<br>
     and the <code><b>closetab</b></code> Style Element</h1>
 
-    <h2>For Scrollutil Version 1.14</h2>
+    <h2>For Scrollutil Version 1.16</h2>
 
     <h3>by</h3>
 
@@ -177,17 +177,23 @@ package require scrollutil_tile
     must exist.</dd>
 
     <dd class="tm">A scrollednotebook is a mega-widget that contains a
-    ttk::notebook within a <a href=
-    "scrollableframe.html">scrollableframe</a> and supports an arbitrary number
-    of unsqueezed tabs.&nbsp; Currently not visible tabs can be brought into
-    view by navigating and scrolling with the mouse wheel or keyboard.&nbsp; An
+    ttk::notebook within a <a href="scrollableframe.html">scrollableframe</a>
+    and supports an arbitrary number of unsqueezed tabs.&nbsp; Currently not
+    visible tabs can be brought into view by navigating with the mouse wheel or
+    keyboard and by scrolling with the aid of the two arrow buttons placed on
+    demand in the top-left and top-right or bottom-left and bottom-right
+    corners (depending on the notebook's <a href=
+    "#std_options">style</a>).&nbsp; The size of the arrows depends on the
+    display's scaling percentage (<code>100</code>, <code>125</code>,
+    <code>150</code>, <code>175</code>, or <code>200</code>), while their color
+    is theme-specific and is updated whenever the theme changes.&nbsp; An
     individual tab can be made visible programmatically with the aid of the
-    <code><b><a href="#see">see</a></b></code> subcommand.&nbsp; It is made
-    sure that the currently selected tab is always visible.&nbsp; Unlike the
+    <code><b><a href="#see">see</a></b></code> subcommand.&nbsp; Unlike the
     ttk::notebook widget, whose <code><b>-width</b></code> option is quite
-    often overriden by the total width of the tabs, the scrollednotebook widget
-    respects the value of its <code><b><a href="#width">-width</a></b></code>
-    option, regardless of the space required by the tabs.</dd>
+    often overridden by the total width of the tabs, the scrollednotebook
+    widget respects the value of its <code><b><a href=
+    "#width">-width</a></b></code> option, regardless of the space required by
+    the tabs.</dd>
 
     <dd class="tm">The API of the scrollednotebook widget is nearly identical
     to that of ttk::notebook.&nbsp; Apart from the scrollednotebook-specific
@@ -485,9 +491,7 @@ package require scrollutil_tile
         <dd>This subcommand adjusts the view in the scrollednotebook's window
         so that the tab given by <code><i>tabId</i></code> becomes visible in
         it.&nbsp; Note that when a tab gets selected, this command is
-        automatically invoked for it, in order to make that tab visible.&nbsp;
-        In addition, the currently selected tab is always kept visible, by
-        invoking this command whenever necessary.</dd>
+        automatically invoked for it, in order to make that tab visible.</dd>
       </dl>
     </dd>
 
@@ -550,28 +554,41 @@ proc populateMenu {nb data} {
 
     <dd>
       <ol>
-        <li class="tm"><b>Navigation between the tabs of a ttk::notebook or
-        scrollednotebook widget via the mouse wheel:</b>&nbsp; A mouse wheel
-        tick selects the tab cyclically following/preceding the currently
-        selected one.&nbsp; (Note that the same effect can also be achieved
-        with the keys <code>Right</code>, <code>Left</code>,
-        <code>Control-Tab</code>, and <code>Control-Shift-Tab</code>.)&nbsp; On
-        the windowing system <code><b>aqua</b></code>, if the
-        <code>Option</code> key is down while the mouse wheel is being rotated
-        then a wheel tick selects the tab whose numerical index is 10
-        greater/less than that of the currently selected one (modulo the number
-        of tabs).&nbsp; The same holds true on the windowing systems
-        <code><b>x11</b></code> and <code><b>win32</b></code> if the Tk version
-        is 8.7a4 or later and the mouse wheel is rotated with the
-        <code>Alt</code> key down.</li>
+        <li class="tm"><b>Navigation between the tabs of a scrollednotebook or
+        ttk::notebook widget via the mouse wheel:</b>&nbsp; A mouse wheel tick
+        selects the tab of state <code><b>normal</b></code> cyclically
+        following/preceding the currently selected one.&nbsp; (Note that the
+        same effect can also be achieved with the keys <code>Right</code>,
+        <code>Left</code>, <code>Control-Tab</code>, and
+        <code>Control-Shift-Tab</code>.)&nbsp; On the windowing system
+        <code><b>aqua</b></code>, if the <code>Option</code> key is down while
+        the mouse wheel is being rotated then a wheel tick selects the 10'th
+        tab of state <code><b>normal</b></code> cyclically following/preceding
+        the currently selected one (modulo the number of tabs).&nbsp; The same
+        holds true on the windowing systems <code><b>x11</b></code> and
+        <code><b>win32</b></code> if the Tk version is 8.7a4 or later and the
+        mouse wheel is rotated with the <code>Alt</code> key down.</li>
 
-        <li class="tm"><b>Moving the tabs of a ttk::notebook or
-        scrollednotebook widget with the mouse</b>:&nbsp; If mouse button 1 is
+        <li class="tm"><b>Scrolling the tab row of a scrollednotebook widget
+        with the aid of the arrow buttons:</b>&nbsp; If the tab at the right
+        edge of the scrollednotebook is only partly visible then pressing mouse
+        button 1 over the right arrow adjusts the view in the tab row so that
+        the tab becomes fully visible; otherwise the click brings the next
+        nonhidden tab into view.&nbsp; Similarly, if the tab at the left edge
+        of the scrollednotebook is only partly visible then pressing mouse
+        button 1 over the left arrow adjusts the view in the tab row so that
+        the tab becomes fully visible; otherwise the click brings the previous
+        nonhidden tab into view.&nbsp; If the mouse button is held down for at
+        least 300 milliseconds, the actions described above will auto-repeat
+        every 100 milliseconds.</li>
+
+        <li class="tm"><b>Moving the tabs of a scrollednotebook or
+        ttk::notebook widget with the mouse</b>:&nbsp; If mouse button 1 is
         pressed over a tab but outside the <code><b><a href=
         "#closetab">closetab</a></b></code> element (if any) and then dragged
-        outside that tab then, in case of a scrollednotebook provided that the
+        outside that tab then (in case of a scrollednotebook provided that the
         value of the widget's <code><b><a href=
-        "#movabletabs">-movabletabs</a></b></code> option is true, the mouse
+        "#movabletabs">-movabletabs</a></b></code> option is true) the mouse
         cursor takes on the shape of a left/right arrow, indicating that the
         tab in question is being moved to another position.&nbsp; This
         operation ends when mouse button 1 is released, and can be canceled by
@@ -823,7 +840,7 @@ package require scrollutil_tile
 
     <dd>Sets or queries the state of the <code><b><a href=
     "#closetab">closetab</a></b></code> element of the tab specified by
-    <code><i>tabId</i></code> of the ttk::notebook or scrollednotebook widget 
+    <code><i>tabId</i></code> of the ttk::notebook or scrollednotebook widget
     <code><i>notebook</i></code>.&nbsp; The optional argument specifies the
     state as <code><b>normal</b></code> or <code><b>disabled</b></code>.&nbsp;
     Without this argument the command returns the current state of the tab's
@@ -840,9 +857,9 @@ package require scrollutil_tile
         <code><b>closetab</b></code> element is shown in white color on light
         red background when hovered, and in white color on dark red background
         when pressed with mouse button 1.&nbsp; By releasing mouse button 1
-        over the same element, the tab is closed and the notebook widget
-        receives a <code><b>&lt;&lt;NotebookTabClosed&gt;&gt;</b></code>
-        virtual event.</li>
+        over the same element, the action described under points 4 and 5 of the
+        <a href="#bindings">FURTHER BINDINGS</a> section above is
+        triggered.</li>
 
         <li class="tm">In the <code><b>disabled</b></code> state, the
         <code><b>closetab</b></code> element, both when hovered and when

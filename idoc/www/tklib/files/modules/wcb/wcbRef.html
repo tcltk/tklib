@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Wcb Command Reference</h1>
 
-    <h2>For Wcb Version 3.7</h2>
+    <h2>For Wcb Version 3.8</h2>
 
     <h3>by</h3>
 
@@ -141,11 +141,12 @@
             <li>if called for the first time for this widget with at least one
             nonempty argument following the <code><i>option</i></code>
             parameter, then the procedure renames the Tcl command
-            <code><i>widgetName</i></code> to <code>_<i>widgetName</i></code>
-            and builds a new procedure <code><i>widgetName</i></code>, in which
-            the execution of the widget operations associated with the above
-            values of <code><i>option</i></code> is preceded by invocations of
-            the corresponding before-callbacks and followed by calls to the
+            <code>::<i>widgetName</i></code> to
+            <code>::_<i>widgetName</i></code> and builds a new procedure
+            <code>::<i>widgetName</i></code>, in which the execution of the
+            widget operations associated with the above values of
+            <code><i>option</i></code> is preceded by invocations of the
+            corresponding before-callbacks and followed by calls to the
             corresponding after-callbacks, in the global scope;</li>
 
             <li class="tm">it sets the callback list to the one built from
@@ -160,9 +161,12 @@
       </ul>
     </dd>
 
-    <dd class="tm">When a callback is invoked, the name of the original Tcl
-    command for the widget <code><i>widgetName</i></code> as well as the
-    command arguments are automatically appended to it as parameters.</dd>
+    <dd class="tm">When a callback is invoked for the widget
+    <code><i>widgetName</i></code>, the name of the <b>proxy command</b>
+    <code>::_<i>widgetName</i></code> and the command arguments are
+    automatically appended to it as parameters.&nbsp; Use the <code><b><a href=
+    "#pathname">wcb::pathname</a></b></code> command to retrieve the original
+    widget path name.</dd>
 
     <dd class="tm">The following table shows the widget subcommands
     corresponding to the above values of <code><i>option</i></code>, together
@@ -403,17 +407,17 @@
         <li class="tm">After a successful invocation of this command with at
         least one nonempty callback following the <code><i>option</i></code>
         argument, you can use either the new procedure
-        <code><i>widgetName</i></code> or the original Tcl command
-        <code>_<i>widgetName</i></code> to perform any valid operation on the
-        widget <code><i>widgetName</i></code>.&nbsp; Use the old Tcl command
-        <code>_<i>widgetName</i></code> if you want to prevent the callbacks
+        <code><i>widgetName</i></code> or the proxy command
+        <code>::_<i>widgetName</i></code> to perform any valid operation on the
+        widget <code><i>widgetName</i></code>.&nbsp; Use the proxy command
+        <code>::_<i>widgetName</i></code> if you want to prevent the callbacks
         from being invoked when executing the respective widget
         subcommand.</li>
 
         <li class="tm">When destroying a widget <code><i>widgetName</i></code>
         for which <code><b>wcb::callback</b></code> has replaced the
-        corresponding Tcl command with a new procedure, the original command
-        <code>_<i>widgetName</i></code> is deleted automatically by the Tcl
+        corresponding Tcl command with a new procedure, the proxy command
+        <code>::_<i>widgetName</i></code> is deleted automatically by the Tcl
         interpreter (this is not true in the case of a BWidget Entry,
         tablelist, or ctext widget).&nbsp; The new widget procedure
         <code><i>widgetName</i></code> would persist, but Wcb arranges for it
@@ -423,7 +427,7 @@
         which is appended to the list of binding tags of the widget the first
         time when registering some callbacks for it.&nbsp; (In the case of a
         BWidget Entry, tablelist, or ctext widget, this script also deletes the
-        original Tcl command <code>_<i>widgetName</i></code>.)</li>
+        proxy command <code>::_<i>widgetName</i></code>.)</li>
 
         <li class="tm">The cleanup script mentioned above also unregisters all
         callbacks defined for <code><i>widgetName</i></code>, thus ensuring
@@ -692,21 +696,21 @@
 
     <dd>
       <pre>
-<b>wcb::pathname</b> <i>origCmd</i>
+<b>wcb::pathname</b> <i>proxyCmd</i>
 </pre>
     </dd>
 
     <dt><b>DESCRIPTION</b></dt>
 
     <dd>This procedure returns the path name of the widget corresponding to the
-    Tcl command name <code><i>origCmd</i></code> passed to a callback.</dd>
+    Tcl command name <code><i>proxyCmd</i></code> passed to a callback.</dd>
 
     <dd class="tm">When a before- or after-callback for a widget is invoked,
-    the name of the original Tcl command associated with that widget is
-    automatically appended to it as parameter.&nbsp; This procedure can be used
-    within a callback to derive the path name of the widget from the command
-    name passed to the callback as argument.&nbsp; It simply returns the string
-    range obtained from <code><i>origCmd</i></code> by removing the
+    the name of the proxy command associated with that widget is automatically
+    appended to it as parameter.&nbsp; This procedure can be used within a
+    callback to retrieve the path name of the widget from the command name
+    passed to the callback as argument.&nbsp; It simply returns the string
+    range obtained from <code><i>proxyCmd</i></code> by removing the
     <code>"::_"</code> prefix.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>

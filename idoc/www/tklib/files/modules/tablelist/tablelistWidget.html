@@ -14,7 +14,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.18</h2>
+    <h2>For Tablelist Version 6.19</h2>
 
     <h3>by</h3>
 
@@ -900,13 +900,15 @@
     "#formatinfo">formatinfo</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#get">get</a></b> <i>firstIndex</i>
-    <i>lastIndex</i></code></dd>
+    <i>lastIndex</i>
+    ?<b>-all</b>|<b>-nonhidden</b>|<b>-viewable</b>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#get">get</a></b>
     <i>indexList</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#getcells">getcells</a></b>
-    <i>firstCell</i> <i>lastCell</i></code></dd>
+    <i>firstCell</i> <i>lastCell</i>
+    ?<b>-all</b>|<b>-nonhidden</b>|<b>-viewable</b>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#getcells">getcells</a></b>
     <i>cellIndexList</i></code></dd>
@@ -918,14 +920,16 @@
     <i>columnIndexList</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#getformatted">getformatted</a></b>
-    <i>firstIndex</i> <i>lastIndex</i></code></dd>
+    <i>firstIndex</i> <i>lastIndex</i>
+    ?<b>-all</b>|<b>-nonhidden</b>|<b>-viewable</b>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#getformatted">getformatted</a></b>
     <i>indexList</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#getformattedcells">getformattedcells</a></b> <i>firstCell</i>
-    <i>lastCell</i></code></dd>
+    <i>lastCell</i>
+    ?<b>-all</b>|<b>-nonhidden</b>|<b>-viewable</b>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#getformattedcells">getformattedcells</a></b>
@@ -940,13 +944,15 @@
     <i>columnIndexList</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#getfullkeys">getfullkeys</a></b>
-    <i>firstIndex</i> <i>lastIndex</i></code></dd>
+    <i>firstIndex</i> <i>lastIndex</i>
+    ?<b>-all</b>|<b>-nonhidden</b>|<b>-viewable</b>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#getfullkeys">getfullkeys</a></b>
     <i>indexList</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#getkeys">getkeys</a></b>
-    <i>firstIndex</i> <i>lastIndex</i></code></dd>
+    <i>firstIndex</i> <i>lastIndex</i>
+    ?<b>-all</b>|<b>-nonhidden</b>|<b>-viewable</b>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#getkeys">getkeys</a></b>
     <i>indexList</i></code></dd>
@@ -6570,11 +6576,11 @@ proc updateWindow {tbl row col w args} {
 
         <dd class="tm"><b>CAUTION:</b>&nbsp; Tk versions 8.3 - 8.4.12 had a bug
         that caused a segmentation fault if the whole content of a text widget
-        was elided.&nbsp; This bug was also present in Tk 8.5.a1 -
-        8.5.a3.&nbsp; When using one of these earlier Tk versions, this bug
-        will produce a crash if all the rows of a tablelist widget are
-        hidden.&nbsp; It is your responsibility to avoid such situations when
-        using a Tk version having this bug!</dd>
+        was elided.&nbsp; This bug was also present in Tk 8.5a1 - 8.5a3.&nbsp;
+        When using one of these earlier Tk versions, this bug will produce a
+        crash if all the rows of a tablelist widget are hidden.&nbsp; It is
+        your responsibility to avoid such situations when using a Tk version
+        having this bug!</dd>
 
         <dt class="tm" id="row_name"><code><b>-name</b> <i>name</i></code></dt>
 
@@ -8702,6 +8708,14 @@ registerDragSrc [$tbl bodypath]
         <dd>Returns the integer column index value that corresponds to
         <code><i>columnIndex</i></code>.</dd>
 
+        <dd class="tm"><b>REMARK:</b>&nbsp; If <code><i>columnIndex</i></code>
+        is <code><b>end</b></code> then the return value is the numerical index
+        of the last column (not the number of columns).&nbsp; This behavior is
+        different from that of the <code><b><a href=
+        "#index">index</a></b></code> subcommand, which (for compatibility with
+        the Tk core listbox) for the argument <code><b>end</b></code> returns
+        the number of items (not the index of the last item).</dd>
+
         <dt class="tm" id="columnwidth"><code><i>pathName</i>
         <b>columnwidth</b> <i>columnIndex</i>
         ?<b>-requested</b>|<b>-stretched</b>|<b>-total</b>?</code></dt>
@@ -8939,7 +8953,7 @@ eval [list <i>pathName</i> <a href=
         corner.&nbsp; The corner is specified by means of the optional
         argument: <code><b>-ne</b></code> (which is the default) stands for
         north-east and <code><b>-sw</b></code> stands for south-west.</dd>
-        
+ 
         <dd class="tm">If the corner specification has the value
         <code><b>-ne</b></code> then the command returns the path name of the
         <b>north-east corner frame</b>, which is designed to be shown to the
@@ -8958,7 +8972,7 @@ eval [list <i>pathName</i> <a href=
         virtual event is generated, with its <code><b>-data</b></code> option
         set to the (requested) height of the header for Tk versions 8.5 and
         higher.</dd>
-        
+
         <dd class="tm">If the corner was specified as <code><b>-sw</b></code>
         then the return value is the path name of the <b>south-west corner
         frame</b>, which is designed to be shown just below the tablelist's
@@ -9144,6 +9158,13 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
         deleted.&nbsp; In both cases, all descendants of the specified items
         will be deleted, too.&nbsp; The return value is an empty string.</dd>
 
+        <dd class="tm"><b>REMARK:</b>&nbsp; If the tablelist widget has no
+        items then both forms of the command return immediately, without any
+        further action (like checking the validity of the indices).&nbsp; For
+        example,&nbsp; <code><i>pathName</i> <b>delete</b> 0
+        <b>end</b></code>&nbsp; returns imediately without raising an error,
+        although in this case both indices are invalid.</dd>
+
         <dt class="tm" id="deletecolumns"><code><i>pathName</i>
         <b>deletecolumns</b> <i>firstColumn</i> <i>lastColumn</i></code><br>
         <code><i>pathName</i> <b>deletecolumns</b>
@@ -9157,6 +9178,14 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
         delete.&nbsp; The command's second form accepts a list
         <code><i>columnIndexList</i></code> of indices specifying the columns
         to be deleted.&nbsp; Returns an empty string.</dd>
+
+        <dd class="tm"><b>REMARK:</b>&nbsp; If the tablelist widget has no
+        columns then both forms of the command return immediately, without any
+        further action (like checking the validity of the column
+        indices).&nbsp; For example,&nbsp; <code><i>pathName</i>
+        <b>deletecolumns</b> 0 <b>end</b></code>&nbsp; returns imediately
+        without raising an error, although in this case both column indices are
+        invalid.</dd>
 
         <dt class="tm" id="depth"><code><i>pathName</i> <b>depth</b>
         <i>nodeIndex</i></code></dt>
@@ -9587,13 +9616,22 @@ proc formatValue {tbl val} {
         </dd>
 
         <dt id="get"><code><i>pathName</i> <b>get</b> <i>firstIndex</i>
-        <i>lastIndex</i></code><br>
+        <i>lastIndex</i>
+        ?<b>-all</b>|<b>-nonhidden</b>|<b>-viewable</b>?</code><br>
         <code><i>pathName</i> <b>get</b> <i>indexList</i></code></dt>
 
         <dd>The first form of the command returns a list whose elements are all
         of the tablelist items (i.e., row contents) between
         <code><i>firstIndex</i></code> and <code><i>lastIndex</i></code>,
-        inclusive.&nbsp; The value returned by the second form depends on the
+        inclusive.&nbsp; The optional argument can be used to restrict the
+        items when building the result list.&nbsp; The default value
+        <code><b>-all</b></code> means: no restriction.&nbsp; The value
+        <code><b>-nonhidden</b></code> filters out the items whose row has its
+        <code><b><a href="#row_hide">-hide</a></b></code> option set to
+        true.&nbsp; Finally, the value <code><b>-viewable</b></code> restricts
+        the items to the <a href="#isviewable">viewable</a> ones.</dd>
+
+        <dd class="tm">The value returned by the second form depends on the
         number of elements in the list <code><i>indexList</i></code>: if the
         latter contains exactly one index then the return value is the
         tablelist item indicated by that index (or an empty string if the index
@@ -9602,13 +9640,22 @@ proc formatValue {tbl val} {
         <code><i>indexList</i></code>.</dd>
 
         <dt class="tm" id="getcells"><code><i>pathName</i> <b>getcells</b>
-        <i>firstCell</i> <i>lastCell</i></code><br>
+        <i>firstCell</i> <i>lastCell</i>
+        ?<b>-all</b>|<b>-nonhidden</b>|<b>-viewable</b>?</code><br>
         <code><i>pathName</i> <b>getcells</b> <i>cellIndexList</i></code></dt>
 
         <dd>The first form of the command returns a list whose elements are all
         of the tablelist elements (i.e., cell contents) between
         <code><i>firstCell</i></code> and <code><i>lastCell</i></code>,
-        inclusive.&nbsp; The value returned by the second form depends on the
+        inclusive.&nbsp; The optional argument can be used to restrict the
+        elements when building the result list.&nbsp; The default value
+        <code><b>-all</b></code> means: no restriction.&nbsp; The value
+        <code><b>-nonhidden</b></code> filters out the elements whose row or
+        column has its <code><b>-hide</b></code> option set to true.&nbsp;
+        Finally, the value <code><b>-viewable</b></code> restricts the elements
+        to the <a href="#isviewable">viewable</a> ones.</dd>
+
+        <dd class="tm">The value returned by the second form depends on the
         number of elements in the list <code><i>cellIndexList</i></code>: if
         the latter contains exactly one cell index then the return value is the
         tablelist element indicated by that cell index; otherwise the command
@@ -9635,36 +9682,55 @@ proc formatValue {tbl val} {
         all of the tablelist body elements contained in that column.</dd>
 
         <dt class="tm" id="getformatted"><code><i>pathName</i>
-        <b>getformatted</b> <i>firstIndex</i> <i>lastIndex</i></code><br>
+        <b>getformatted</b> <i>firstIndex</i> <i>lastIndex</i>
+        ?<b>-all</b>|<b>-nonhidden</b>|<b>-viewable</b>?</code><br>
         <code><i>pathName</i> <b>getformatted</b> <i>indexList</i></code></dt>
 
         <dd>The first form of the command returns a list whose elements are all
         of the <a href="#col_formatted">formatted</a> tablelist items (i.e.,
         formatted row contents) between <code><i>firstIndex</i></code> and
-        <code><i>lastIndex</i></code>, inclusive.&nbsp; The value returned by
-        the second form depends on the number of elements in the list
-        <code><i>indexList</i></code>: if the latter contains exactly one index
-        then the return value is the formatted tablelist item indicated by that
-        index (or an empty string if the index refers to a non-existent item);
-        otherwise the command returns the list of all of the formatted
-        tablelist items corresponding to the indices specified by
-        <code><i>indexList</i></code>.</dd>
+        <code><i>lastIndex</i></code>, inclusive.&nbsp; The optional argument
+        can be used to restrict the items when building the result list.&nbsp;
+        The default value <code><b>-all</b></code> means: no restriction.&nbsp;
+        The value <code><b>-nonhidden</b></code> filters out the items whose
+        row has its <code><b><a href="#row_hide">-hide</a></b></code> option
+        set to true.&nbsp; Finally, the value <code><b>-viewable</b></code>
+        restricts the items to the <a href="#isviewable">viewable</a>
+        ones.</dd>
+
+        <dd class="tm">The value returned by the second form depends on the
+        number of elements in the list <code><i>indexList</i></code>: if the
+        latter contains exactly one index then the return value is the
+        formatted tablelist item indicated by that index (or an empty string if
+        the index refers to a non-existent item); otherwise the command returns
+        the list of all of the formatted tablelist items corresponding to the
+        indices specified by <code><i>indexList</i></code>.</dd>
 
         <dt class="tm" id="getformattedcells"><code><i>pathName</i>
-        <b>getformattedcells</b> <i>firstCell</i> <i>lastCell</i></code><br>
+        <b>getformattedcells</b> <i>firstCell</i> <i>lastCell</i>
+        ?<b>-all</b>|<b>-nonhidden</b>|<b>-viewable</b>?</code><br>
         <code><i>pathName</i> <b>getformattedcells</b>
         <i>cellIndexList</i></code></dt>
 
         <dd>The first form of the command returns a list whose elements are all
         of the <a href="#col_formatted">formatted</a> tablelist elements (i.e.,
         formatted cell contents) between <code><i>firstCell</i></code> and
-        <code><i>lastCell</i></code>, inclusive.&nbsp; The value returned by
-        the second form depends on the number of elements in the list
-        <code><i>cellIndexList</i></code>: if the latter contains exactly one
-        cell index then the return value is the formatted tablelist element
-        indicated by that cell index; otherwise the command returns the list of
-        all of the formatted tablelist elements corresponding to the cell
-        indices specified by <code><i>cellIndexList</i></code>.</dd>
+        <code><i>lastCell</i></code>, inclusive.&nbsp; The optional argument
+        can be used to restrict the elements when building the result
+        list.&nbsp; The default value <code><b>-all</b></code> means: no
+        restriction.&nbsp; The value <code><b>-nonhidden</b></code> filters out
+        the elements whose row or column has its <code><b>-hide</b></code>
+        option set to true.&nbsp; Finally, the value
+        <code><b>-viewable</b></code> restricts the elements to the <a href=
+        "#isviewable">viewable</a> ones.</dd>
+
+        <dd class="tm">The value returned by the second form depends on the
+        number of elements in the list <code><i>cellIndexList</i></code>: if
+        the latter contains exactly one cell index then the return value is the
+        formatted tablelist element indicated by that cell index; otherwise the
+        command returns the list of all of the formatted tablelist elements
+        corresponding to the cell indices specified by
+        <code><i>cellIndexList</i></code>.</dd>
 
         <dt class="tm" id="getformattedcolumns"><code><i>pathName</i>
         <b>getformattedcolumns</b> <i>firstColumn</i>
@@ -9689,13 +9755,22 @@ proc formatValue {tbl val} {
         column.</dd>
 
         <dt class="tm" id="getfullkeys"><code><i>pathName</i>
-        <b>getfullkeys</b> <i>firstIndex</i> <i>lastIndex</i></code><br>
+        <b>getfullkeys</b> <i>firstIndex</i> <i>lastIndex</i>
+        ?<b>-all</b>|<b>-nonhidden</b>|<b>-viewable</b>?</code><br>
         <code><i>pathName</i> <b>getfullkeys</b> <i>indexList</i></code></dt>
 
         <dd>The first form of the command returns a list whose elements are all
         of the full keys associated with the tablelist items between
         <code><i>firstIndex</i></code> and <code><i>lastIndex</i></code>,
-        inclusive.&nbsp; The value returned by the second form depends on the
+        inclusive.&nbsp; The optional argument can be used to restrict the
+        items when building the result list.&nbsp; The default value
+        <code><b>-all</b></code> means: no restriction.&nbsp; The value
+        <code><b>-nonhidden</b></code> filters out the items whose row has its
+        <code><b><a href="#row_hide">-hide</a></b></code> option set to
+        true.&nbsp; Finally, the value <code><b>-viewable</b></code> restricts
+        the items to the <a href="#isviewable">viewable</a> ones.</dd>
+
+        <dd class="tm">The value returned by the second form depends on the
         number of elements in the list <code><i>indexList</i></code>: if the
         latter contains exactly one index then the return value is the full key
         associated with the tablelist item indicated by that index (or an empty
@@ -9712,13 +9787,22 @@ proc formatValue {tbl val} {
         <code><b>k</b></code> to these internal item IDs.</dd>
 
         <dt class="tm" id="getkeys"><code><i>pathName</i> <b>getkeys</b>
-        <i>firstIndex</i> <i>lastIndex</i></code><br>
+        <i>firstIndex</i> <i>lastIndex</i>
+        ?<b>-all</b>|<b>-nonhidden</b>|<b>-viewable</b>?</code><br>
         <code><i>pathName</i> <b>getkeys</b> <i>indexList</i></code></dt>
 
         <dd>The first form of the command returns a list whose elements are all
         of the sequence numbers associated with the tablelist items between
         <code><i>firstIndex</i></code> and <code><i>lastIndex</i></code>,
-        inclusive.&nbsp; The value returned by the second form depends on the
+        inclusive.&nbsp; The optional argument can be used to restrict the
+        items when building the result list.&nbsp; The default value
+        <code><b>-all</b></code> means: no restriction.&nbsp; The value
+        <code><b>-nonhidden</b></code> filters out the items whose row has its
+        <code><b><a href="#row_hide">-hide</a></b></code> option set to
+        true.&nbsp; Finally, the value <code><b>-viewable</b></code> restricts
+        the items to the <a href="#isviewable">viewable</a> ones.</dd>
+
+        <dd class="tm">The value returned by the second form depends on the
         number of elements in the list <code><i>indexList</i></code>: if the
         latter contains exactly one index then the return value is the sequence
         number associated with the tablelist item indicated by that index (or
@@ -11137,11 +11221,11 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
 
         <dd class="tm"><b>CAUTION:</b>&nbsp; Tk versions 8.3 - 8.4.12 had a bug
         that caused a segmentation fault if the whole content of a text widget
-        was elided.&nbsp; This bug was also present in Tk 8.5.a1 -
-        8.5.a3.&nbsp; When using one of these earlier Tk versions, this bug
-        will produce a crash if all the rows of a tablelist widget are
-        hidden.&nbsp; It is your responsibility to avoid such situations when
-        using a Tk version having this bug!</dd>
+        was elided.&nbsp; This bug was also present in Tk 8.5a1 - 8.5a3.&nbsp;
+        When using one of these earlier Tk versions, this bug will produce a
+        crash if all the rows of a tablelist widget are hidden.&nbsp; It is
+        your responsibility to avoid such situations when using a Tk version
+        having this bug!</dd>
 
         <dt class="tm" id="toplevelkey"><code><i>pathName</i>
         <b>toplevelkey</b> <i>index</i></code></dt>

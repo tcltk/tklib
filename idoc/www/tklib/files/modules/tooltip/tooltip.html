@@ -107,7 +107,7 @@
 &#124; <a href="../../../../toc2.html">Applications</a>
  ] <hr>
 <div class="doctools">
-<h1 class="doctools_title">tooltip(n) 1.4.7 tklib &quot;Tooltip management&quot;</h1>
+<h1 class="doctools_title">tooltip(n) 1.6 tklib &quot;Tooltip management&quot;</h1>
 <div id="name" class="doctools_section"><h2><a name="name">Name</a></h2>
 <p>tooltip - Tooltip management</p>
 </div>
@@ -126,20 +126,20 @@
 <div id="synopsis" class="doctools_section"><h2><a name="synopsis">Synopsis</a></h2>
 <div class="doctools_synopsis">
 <ul class="doctools_requirements">
-<li>package require <b class="pkgname">Tcl 8.4</b></li>
+<li>package require <b class="pkgname">Tcl 8.5</b></li>
 <li>package require <b class="pkgname">msgcat 1.3</b></li>
-<li>package require <b class="pkgname">tooltip <span class="opt">?1.4.7?</span></b></li>
+<li>package require <b class="pkgname">tooltip <span class="opt">?1.6?</span></b></li>
 </ul>
 <ul class="doctools_syntax">
 <li><a href="#1"><b class="cmd">::tooltip::tooltip</b> <i class="arg">command</i> <span class="opt">?<i class="arg">options</i>?</span></a></li>
-<li><a href="#2"><b class="cmd">::tooltip::tooltip</b> <i class="arg">pathName</i> <span class="opt">?<i class="arg">option arg</i>?</span> <i class="arg">message</i></a></li>
+<li><a href="#2"><b class="cmd">::tooltip::tooltip</b> <i class="arg">pathName</i> <span class="opt">?<i class="arg">option value</i>?</span> <i class="arg">message</i></a></li>
 </ul>
 </div>
 </div>
 <div id="section1" class="doctools_section"><h2><a name="section1">Description</a></h2>
 <p>This package provides tooltips, small text messages that can be displayed
-when the mouse hovers over a widget, menu item, canvas item, listbox item
-or text widget tag.</p>
+when the mouse hovers over a widget, menu item, canvas item, listbox or
+ttk::treeview item, ttk::notebook tab or text widget tag.</p>
 </div>
 <div id="section2" class="doctools_section"><h2><a name="section2">COMMANDS</a></h2>
 <dl class="doctools_definitions">
@@ -149,10 +149,16 @@ or text widget tag.</p>
 <dt><b class="option">clear</b> <span class="opt">?<i class="arg">pattern</i>?</span></dt>
 <dd><p>Prevents the specified widgets from showing tooltips. <i class="arg">pattern</i>
 is a glob pattern and defaults to matching all widgets.</p></dd>
+<dt><b class="option">configure</b> <span class="opt">?<i class="arg">option</i> <span class="opt">?<i class="arg">value option value</i> ...?</span>?</span></dt>
+<dd><p>Queries or modifies the configuration options of the tooltip. The supported
+options are <b class="option">-backgroud</b>, <b class="option">-foreground</b> and <b class="option">-font</b>. If no
+<i class="arg">option</i> is specified, returns a dictionary of the option values. If one
+<i class="arg">option</i> is specified with no value, returns the value of that option.
+Otherwise, sets the given <i class="arg">option</i>s to the corresponding <i class="arg">value</i>s.</p></dd>
 <dt><b class="option">delay</b> <span class="opt">?<i class="arg">millisecs</i>?</span></dt>
 <dd><p>Query or set the hover delay. This is the interval that the pointer must remain
 over the widget before the tooltip is displayed. The delay is specified in
-milliseconds and must be greater than or equal to 50ms.
+milliseconds and must be greater than or equal to 50 ms.
 With no argument the current delay is returned.</p></dd>
 <dt><b class="option">fade</b> <span class="opt">?<i class="arg">boolean</i>?</span></dt>
 <dd><p>Enable or disable fading of the tooltip.  The fading is enabled by default on
@@ -167,34 +173,40 @@ disappearing.</p></dd>
 <dt><b class="option">on</b></dt>
 <dd><p>Enables tooltips for defined widgets.</p></dd>
 </dl></dd>
-<dt><a name="2"><b class="cmd">::tooltip::tooltip</b> <i class="arg">pathName</i> <span class="opt">?<i class="arg">option arg</i>?</span> <i class="arg">message</i></a></dt>
+<dt><a name="2"><b class="cmd">::tooltip::tooltip</b> <i class="arg">pathName</i> <span class="opt">?<i class="arg">option value</i>?</span> <i class="arg">message</i></a></dt>
 <dd><p>This command arranges for widget <i class="arg">pathName</i> to display a tooltip with
 message <i class="arg">message</i>.  The tooltip uses a late-binding msgcat call on the
 passed in message to allow for on-the-fly language changes in an application.
-If the widget specified is a menu, canvas, listbox or text widget then
-additional options are used to tie the tooltip to specific menu entries,
-canvas or listbox items, or text widget tags.</p>
+If the widget specified is a menu, canvas, listbox, ttk::treeview,
+ttk::notebook or text widget then additional options are used to tie the
+tooltip to specific menu, canvas, listbox or ttk::treeview items, ttk::notebook
+tabs or text widget tags.</p>
 <dl class="doctools_options">
 <dt><b class="option">-index</b> <i class="arg">index</i></dt>
 <dd><p>This option is used to set a tooltip on a menu item. The index may be
 either the entry index or the entry label. The widget must be a menu
 widget but the entries do not have to exist when the tooltip is set.</p></dd>
-<dt><b class="option">-items</b> <i class="arg">name</i></dt>
-<dd><p>This option is used to set a tooltip for canvas widget or listbox items.
-For the canvas widget, the item must already be present in the canvas
-widget and will be found with a <b class="cmd">find withtag</b> lookup.
-For listbox widgets the item(s) may be created later but the programmer
-is responsible for managing the link between the listbox item index and the
-corresponding tooltip. If the listbox items are re-ordered, the tooltips
-will need amending.</p>
-<p>If the widget is not a canvas or listbox then an error is raised.</p></dd>
+<dt><b class="option">-items</b> <i class="arg">items</i></dt>
+<dd><p>This option is used to set a tooltip for canvas, listbox or ttk::treview items.
+For the canvas widget, the item must already be present in the canvas and will
+be found with a <b class="cmd">find withtag</b> lookup.
+For listbox and ttk::treview widgets the item(s) may be created later but the
+programmer is responsible for managing the link between the listbox or
+ttk::treview item index and the corresponding tooltip. If the listbox or
+ttk::treview items are re-ordered, the tooltips will need amending.</p>
+<p>If the widget is not a canvas, listbox or ttk::treview then an error is raised.</p></dd>
+<dt><b class="option">-tab</b> <i class="arg">tabId</i></dt>
+<dd><p>The <b class="option">-tab</b> option can be used to set a tooltip for a ttk::notebook tab.
+The tab should already be present when this command is called, or an error will
+be returned. The widget must be a ttk::notebook widget.</p></dd>
 <dt><b class="option">-tag</b> <i class="arg">name</i></dt>
-<dd><p>The <b class="option">-tag</b> option can be used to set a tooltip for a text widget
-tag. The tag should already be present when this command is called or
-an error will be returned. The widget must also be a text widget.</p></dd>
+<dd><p>The <b class="option">-tag</b> option can be used to set a tooltip for a text widget tag.
+The tag should already be present when this command is called, or an error will
+be returned. The widget must be a text widget.</p></dd>
 <dt><b class="option">--</b></dt>
 <dd><p>The <b class="option">--</b> option marks the end of options.
-The argument following this one will be treated as <i class="arg">message</i> even if it starts with a -.</p></dd>
+The argument following this one will be treated as <i class="arg">message</i> even if it
+starts with a -.</p></dd>
 </dl></dd>
 </dl>
 </div>
@@ -226,6 +238,15 @@ package require tooltip
 pack [listbox .lb]
 .lb insert 0 &quot;item one&quot;
 tooltip::tooltip .lb -item 0 &quot;Listbox item tooltip&quot;
+</pre>
+<pre class="doctools_example">
+# Demonstrate ttk::notebook tab tooltip
+package require tooltip
+pack [ttk::notebook .nb]
+.nb add [frame .nb.f1 -height 50] -text &quot;First tab&quot;
+.nb add [frame .nb.f2 -height 50] -text &quot;Second tab&quot;
+tooltip::tooltip .nb -tab 0 &quot;Tooltip for the 1st notebook tab&quot;
+tooltip::tooltip .nb -tab 1 &quot;Tooltip for the 2nd notebook tab&quot;
 </pre>
 <pre class="doctools_example">
 # Demonstrate text tag tooltip

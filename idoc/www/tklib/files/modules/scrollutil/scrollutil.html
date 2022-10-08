@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 1.14</h2>
+    <h2>For Scrollutil Version 1.16</h2>
 
     <h3>by</h3>
 
@@ -98,7 +98,7 @@
 
   <p>Scrollutil is a library package for Tcl/Tk versions 8.0 or higher, written
   in pure Tcl/Tk code.&nbsp; It contains:</p>
-  
+
   <ul>
     <li>the implementation of the <b><a href=
     "scrollarea.html">scrollarea</a></b>, <b><a href=
@@ -143,7 +143,7 @@
   ttk::entry) and respects the header component and title columns of <a href=
   "https://www.nemethi.de/tablelist/">tablelist</a> widgets (this is freely
   configurable).</p>
-  
+
   <p>The scrollutil::scrollarea widget is similar to BWidget ScrolledWindow and
   its snit-based equivalent widget::scrolledwindow, contributed by Jeffrey
   Hobbs and contained in tklib.&nbsp; The snit-based <a href=
@@ -174,7 +174,7 @@
   can be brought into view by scrolling, and the widget also provides a command
   for making individual widgets contained in the content frame visible in the
   scrollableframe window.</p>
-  
+
   <p>The scrollutil::scrollableframe widget is similar to BWidget
   ScrollableFrame and iwidgets::scrolledframe.&nbsp; However, unlike these
   widgets, which use a canvas for scrolling the content frame, it adjusts the
@@ -306,8 +306,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil1.14.tar.gz</code> for UNIX and
-  <code>scrollutil1_14.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil1.16.tar.gz</code> for UNIX and
+  <code>scrollutil1_16.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -331,11 +331,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil1.14.tar.gz</code>:</p>
+  <code>scrollutil1.16.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil1.14.tar.gz | tar -xf -
+gunzip -c scrollutil1.16.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -343,17 +343,17 @@ gunzip -c scrollutil1.14.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil1.14.tar.gz
+tar -zxf scrollutil1.16.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil1.14</code>,
+  <p>Both commands will create a directory named <code>scrollutil1.16</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil1_14.zip</code> into the directory
-  <code>scrollutil1.14</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil1_16.zip</code> into the directory
+  <code>scrollutil1.16</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -367,12 +367,16 @@ tar -zxf scrollutil1.14.tar.gz
   <b>Scrollutil</b> and <b>Scrollutil_tile</b>.&nbsp; The main difference
   between the two is that Scrollutil_tile enables the tile-based,
   theme-specific appearance of scrollarea, scrollsync, and scrollableframe
-  widgets, and provides the themed scrollednotebook widget; this package
-  requires Tcl/Tk 8.4 or higher and tile 0.8 or higher.&nbsp; It is not
-  possible to use both packages in one and the same application, because both
-  are implemented in the same <code>scrollutil</code> namespace and provide
-  identical commands (except for the <code>scrollutil::scrollednotebook</code>
-  command, which is provided by the Scrollutil_tile package only).</p>
+  widgets, and provides the themed scrollednotebook and plainnotebook widgets;
+  this package requires Tcl/Tk 8.4 or higher and tile 0.8 or higher.&nbsp; It
+  is not possible to use both packages in one and the same application, because
+  both are implemented in the same <code>scrollutil</code> namespace and
+  provide identical commands (except for the commands
+  <code>scrollutil::scrollednotebook</code>,
+  <code>scrollutil::plainnotebook</code>, <code>scrollutil::addclosetab</code>,
+  <code>scrollutil::removeclosetab</code>, and
+  <code>scrollutil::closetabstate</code>, which are provided by the
+  Scrollutil_tile package only).</p>
 
   <p>To be able to access the commands and variables defined in the package
   Scrollutil, your scripts must contain one of the lines</p>
@@ -569,7 +573,7 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
   whenever the theme changes or the virtual event
   <code>&lt;&lt;TkWorldChanged&gt;&gt;</code> with the <code>user_data</code>
   field (<code>%d</code>) set to <code>FontChanged</code> is received.&nbsp; If
-  the Tk version is later than 8.6.11 or 8.7.a5, this virtual event is sent by
+  the Tk version is later than 8.6.11 or 8.7a5, this virtual event is sent by
   the Tk engine to all widgets when a font is changed, for example, by
   invoking&nbsp; <code>font configure</code>&nbsp; (see <a href=
   "https://core.tcl-lang.org/tips/doc/trunk/tip/608.md">TIP 608</a>).</p>
@@ -715,9 +719,9 @@ source [file join $dir styleUtil.tcl]
   <code>vista</code>, <code>xpnative</code>, and <code>aqua</code>.</p>
 
   <p>The ttk::button widgets of the style <code>Small.Toolbutton</code> created
-  by the procedure <code>createToolbutton</code>, implemented in this helper
-  script, will appear raised when they have the focus.&nbsp; Again, this makes
-  the keyboard navigation more user-friendly.</p>
+  by the procedure <code>styleutil::createToolbutton</code>, implemented in
+  this helper script, will appear raised when they have the focus.&nbsp; Again,
+  this makes the keyboard navigation more user-friendly.</p>
 
   <p>The script also patches the <code>clam</code> theme, by invoking the
   public procedure <code>clampatch::patchClamTheme</code> of the clampatch
@@ -743,6 +747,15 @@ clampatch::patchClamTheme
   <code>clam</code> theme, which has smaller ttk::button widgets as well as
   ttk::treeview and tablelist headers, and its scalable ttk::checkbutton and
   ttk::radiobutton widgets have a significantly improved look and behavior.</p>
+
+  <p>Yet another procedure provided by this script is
+  <code>styleutil::getCurrentTheme</code>, which returns the name of the
+  current theme by invoking the&nbsp; <code>ttk::style theme use</code>&nbsp;
+  command.&nbsp; If an old tile version is being used which doesn't yet support
+  this method then the procedure returns the value of the variable
+  <code>::ttk::currentTheme</code> (which is set by the
+  <code>ttk::setTheme</code> command only).&nbsp; This procedure is used by
+  nearly all demo scripts included in the Scrollutil distribution.</p>
 
   <h3 id="ex_ScrolledTablelist">A Scrolled tablelist Widget</h3>
 
@@ -1048,7 +1061,7 @@ $sa setwidget $ss</span>
 # Populate the scrollsync widget with three tablelists
 #</span>
 
-if {[getCurrentTheme] ne "aqua"} {
+if {[styleutil::getCurrentTheme] ne "aqua"} {
     option add *Tablelist.background            white
     option add *Tablelist.stripeBackground      #f0f0f0
 }
@@ -1111,7 +1124,7 @@ pack $f  -expand yes -fill both
   the European countries, ttk::combobox widgets for selecting the corresponding
   capital cities, and ttk::button widgets of the style
   <code>Small.Toolbutton</code> (created by using the procedure
-  <code>createToolbutton</code>, implemented in the file
+  <code>styleutil::createToolbutton</code>, implemented in the file
   <code><a href="#ex_styleUtil">styleUtil.tcl</a></code>) for the less patient
   users, displaying the text "Resolve".</p>
 
@@ -1795,8 +1808,8 @@ source [file join $dir ScrolledFrmContent.tcl]
   tabs.</p>
 
   <blockquote>
-    <img src="ScrolledNotebookDemo.png" alt="ScrolledNotebookDemo" width="638"
-    height="514">
+    <img src="ScrolledNotebookDemo.png" alt="ScrolledNotebookDemo" width="646"
+    height="518">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -1822,7 +1835,7 @@ image create photo fileImg -file [file join $dir file$pct.gif]
 set f  [ttk::frame .f]
 <span class="red">set nb [scrollutil::scrollednotebook $f.nb -style My.TNotebook \
         -forgetcommand condCopySel -leavecommand condCopySel]</span>
-set currentTheme [getCurrentTheme]
+set currentTheme [styleutil::getCurrentTheme]
 set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 foreach fileName [lsort [glob *.tcl]] {
@@ -2056,7 +2069,7 @@ image create photo folderImg -file [file join $dir folder$pct.gif]
 # of the files of the specified suffix within the current working directory
 #</span>
 proc populateNotebook {nb sfx} {
-    set currentTheme [getCurrentTheme]
+    set currentTheme [styleutil::getCurrentTheme]
     set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
     foreach fileName [lsort -dictionary [glob *.$sfx]] {
         set baseName [string range $fileName 0 end-4]
@@ -2065,9 +2078,7 @@ proc populateNotebook {nb sfx} {
             set canv [canvas $sa.canv -background #c0c0c0]
             set img [image create photo -file $fileName]
             $canv create image 10 10 -anchor nw -image $img
-            set width  [expr {[image width  $img] + 20}]
-            set height [expr {[image height $img] + 20}]
-            $canv configure -scrollregion [list 0 0 $width $height]
+            bind $canv &lt;Configure&gt; [list setScrollRegion %W %w %h $img]
             <span class="red">scrollutil::addMouseWheelSupport $canv
             $sa setwidget $canv</span>
         } else {
@@ -2133,6 +2144,14 @@ $pm add $nbTtk</span>
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 populateNotebook $nbTtk "tcl"
 
+proc setScrollRegion {canv canvWidth canvHeight img} {
+    set width  [expr {[image width  $img] + 20}]
+    set height [expr {[image height $img] + 20}]
+    if {$width  &lt; $canvWidth}  { set width  $canvWidth }
+    if {$height &lt; $canvHeight} { set height $canvHeight }
+    $canv configure -scrollregion [list 0 0 $width $height]
+}
+
 proc pmLeaveCmd {pm nb} {
     return [condCopySel $nb [$nb select]]
 }
@@ -2148,9 +2167,12 @@ proc condCopySel {nb widget} {
 
 
 <span class="cmt">#
-# Create a binding for moving and closing the tabs interactively
+# For each plainnotebook create a binding for
+# moving and closing its tabs interactively
 #</span>
-<span class="red">bind $nb &lt;&lt;MenuItemsRequested&gt;&gt; { populateMenu %W %d }</span>
+<span class="red">foreach nb [$pm pages] {
+    bind $nb &lt;&lt;MenuItemsRequested&gt;&gt; { populateMenu %W %d }
+}</span>
 
 proc populateMenu {nb data} {
     . . .
