@@ -451,7 +451,7 @@ snit::widgetadaptor canvas::sqmap {
 		$self FreeCell $at
 	    }
 	} elseif {[llength $myshowngridview]} {
-	    # Scan through the grid cells of the view used at the ast
+	    # Scan through the grid cells of the view used at the last
 	    # redraw, and check which of them have become
 	    # invisible. Put these on the list of items we can reuse
 	    # for the cells which just became visible and thus in need
