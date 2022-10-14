@@ -110,8 +110,10 @@ namespace eval scrollutil::pm {
     #
     # Use a list to facilitate the handling of command options
     #
-    variable cmdOpts [list add cget configure forget index insert \
-		      pagecget pageconfigure pages select size window]
+    variable cmdOpts [list add attrib cget configure forget hasattrib \
+		      haspageattrib index insert pageattrib pagecget \
+		      pageconfigure pages select size unsetattrib \
+		      unsetpageattrib window]
 }
 
 #
@@ -195,6 +197,12 @@ proc scrollutil::pagesman args {
 	    pageCount	0
 	    currentPage	""
 	}
+
+	#
+	# The following array is used to hold arbitrary attributes
+	# and their values for this widget and its pages
+	#
+	variable attribs
     }
 
     #
@@ -396,6 +404,11 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    return ""
 	}
 
+	attrib {
+	    return [::scrollutil::attribSubCmd $win "widget" \
+		    [lrange $args 1 end]]
+	}
+
 	cget {
 	    if {$argCount != 2} {
 		mwutil::wrongNumArgs "$win $cmd option"
@@ -439,6 +452,11 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    set data(stickyList) [lreplace $data(stickyList) $pageIdx $pageIdx]
 	    incr data(pageCount) -1
 
+	    upvar ::scrollutil::ns${win}::attribs attribs
+	    foreach name [array names attribs $widget-*] {
+		unset attribs($name)
+	    }
+
 	    if {[string compare $widget $data(currentPage)] == 0} {
 		#
 		# Select the next/previous page
@@ -459,6 +477,34 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    }
 
 	    return 1
+	}
+
+	hasattrib -
+	unsetattrib {
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win $cmd name"
+	    }
+
+	    return [::scrollutil::${cmd}SubCmd $win "widget" [lindex $args 1]]
+	}
+
+	haspageattrib -
+	unsetpageattrib {
+	    if {$argCount != 3} {
+		mwutil::wrongNumArgs "$win $cmd pageIndex name"
+	    }
+
+	    set pageIdx [lindex $args 1]
+	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
+	    if {$pageIdx < 0 || $pageIdx >= $data(pageCount)} {
+		return -code error "page index $pageIdx out of bounds"
+	    }
+
+	    set first [string first "page" $cmd]
+	    set last [expr {$first + 3}]
+	    set cmd [string replace $cmd $first $last]	;# (has|unset)attrib
+	    set widget [lindex $data(pageList) $pageIdx]
+	    return [::scrollutil::${cmd}SubCmd $win $widget [lindex $args 2]]
 	}
 
 	index {
@@ -532,6 +578,23 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    return ""
 	}
 
+	pageattrib {
+	    if {$argCount < 2} {
+		mwutil::wrongNumArgs \
+		    "$win $cmd pageIndex ?name ?value name value ...??"
+	    }
+
+	    set pageIdx [lindex $args 1]
+	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
+	    if {$pageIdx < 0 || $pageIdx >= $data(pageCount)} {
+		return -code error "page index $pageIdx out of bounds"
+	    }
+
+	    set widget [lindex $data(pageList) $pageIdx]
+	    return [::scrollutil::attribSubCmd $win $widget \
+		    [lrange $args 2 end]]
+	}
+
 	pagecget {
 	    if {$argCount != 3} {
 		mwutil::wrongNumArgs "$win $cmd pageIndex option"
@@ -551,7 +614,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	pageconfigure {
 	    if {$argCount < 2} {
 		mwutil::wrongNumArgs \
-		    "$win $cmd pageIndex ?option? ?value option value ...?"
+		    "$win $cmd pageIndex ?option ?value option value ...??"
 	    }
 
 	    set pageIdx [lindex $args 1]
@@ -703,20 +766,20 @@ proc scrollutil::pm::resizeWidget win {
     upvar ::scrollutil::ns${win}::data data
     unset data(afterId)
 
-    set compWidth  [expr {$data(-width)  <= 0}]
-    set compHeight [expr {$data(-height) <= 0}]
-    if {$compWidth || $compHeight} {
+    set computeWidth  [expr {$data(-width)  <= 0}]
+    set computeHeight [expr {$data(-height) <= 0}]
+    if {$computeWidth || $computeHeight} {
 	set maxWidth 0
 	set maxHeight 0
 	foreach widget $data(pageList) padding $data(paddingList) {
 	    foreach {l t r b} [parsePadding $win $padding] {}
-	    if {$compWidth} {
+	    if {$computeWidth} {
 		set width [expr {[winfo reqwidth $widget] + $l + $r}]
 		if {$width > $maxWidth} {
 		    set maxWidth $width
 		}
 	    }
-	    if {$compHeight} {
+	    if {$computeHeight} {
 		set height [expr {[winfo reqheight $widget] + $t + $b}]
 		if {$height > $maxHeight} {
 		    set maxHeight $height
@@ -730,11 +793,11 @@ proc scrollutil::pm::resizeWidget win {
 	    incr bd [expr {2 * $data(-highlightthickness)}]
 	}
 
-	if {$compWidth} {
+	if {$computeWidth} {
 	    incr maxWidth $bd
 	    $win configure -width $maxWidth
 	}
-	if {$compHeight} {
+	if {$computeHeight} {
 	    incr maxHeight $bd
 	    $win configure -height $maxHeight
 	}

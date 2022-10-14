@@ -87,7 +87,8 @@ namespace eval scrollutil::ss {
     #
     # Use a list to facilitate the handling of the command options
     #
-    variable cmdOpts [list cget configure setwidgets widgets xview yview]
+    variable cmdOpts [list attrib cget configure hasattrib setwidgets \
+		      unsetattrib widgets xview yview]
 }
 
 #
@@ -175,6 +176,12 @@ proc scrollutil::scrollsync args {
 	    xScrollableList	{}
 	    yScrollableList	{}
 	}
+
+	#
+	# The following array is used to hold
+	# arbitrary attributes for this widget
+	#
+	variable attribs
     }
 
     #
@@ -298,7 +305,13 @@ proc scrollutil::ss::scrollsyncWidgetCmd {win args} {
 
     variable cmdOpts
     set cmd [mwutil::fullOpt "option" [lindex $args 0] $cmdOpts]
+
     switch $cmd {
+	attrib {
+	    return [::scrollutil::attribSubCmd $win "widget" \
+		    [lrange $args 1 end]]
+	}
+
 	cget {
 	    if {$argCount != 2} {
 		mwutil::wrongNumArgs "$win $cmd option"
@@ -318,6 +331,15 @@ proc scrollutil::ss::scrollsyncWidgetCmd {win args} {
 	    return [mwutil::configureSubCmd $win configSpecs \
 		    scrollutil::ss::doConfig scrollutil::ss::doCget \
 		    [lrange $args 1 end]]
+	}
+
+	hasattrib -
+	unsetattrib {
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win $cmd name"
+	    }
+
+	    return [::scrollutil::${cmd}SubCmd $win "widget" [lindex $args 1]]
 	}
 
 	setwidgets {

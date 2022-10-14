@@ -67,10 +67,12 @@ namespace eval scrollutil::pnb {
     #
     # Use a list to facilitate the handling of command options
     #
-    variable cmdOpts [list add addbutton addlabel addseparator cget \
-		      closablestate configure forget hide index insert \
-		      insertbutton insertlabel insertseparator instate see \
-		      select state style tab tabpath tabs titlepath]
+    variable cmdOpts [list add addbutton addlabel addseparator attrib cget \
+		      closablestate configure forget hasattrib hastabattrib \
+		      hide index insert insertbutton insertlabel \
+		      insertseparator instate see select state style tab \
+		      tabattrib tabpath tabs titlepath unsetattrib \
+		      unsettabattrib]
 
     #
     # Array variable used in binding scripts for the tag PnbTab:
@@ -418,6 +420,12 @@ proc scrollutil::plainnotebook args {
 	# The following array holds various data for this widget
 	#
 	variable data
+
+	#
+	# The following array is used to hold arbitrary attributes
+	# and their values for this widget and its pages
+	#
+	variable attribs
     }
 
     #
@@ -771,6 +779,10 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    return $aux
 	}
 
+	attrib {
+	    return [::scrollutil::attribSubCmd $win "widget" $argList]
+	}
+
 	cget {
 	    if {$argCount != 2} {
 		mwutil::wrongNumArgs "$win $cmd option"
@@ -840,8 +852,40 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 		return -code error $result
 	    }
 
+	    upvar ::scrollutil::ns${win}::attribs attribs
+	    array unset attribs $widget-*
+
 	    destroy $tabPath
 	    return 1
+	}
+
+	hasattrib -
+	unsetattrib {
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win $cmd name"
+	    }
+
+	    return [::scrollutil::${cmd}SubCmd $win "widget" [lindex $args 1]]
+	}
+
+	hastabattrib -
+	unsettabattrib {
+	    if {$argCount != 3} {
+		mwutil::wrongNumArgs "$win $cmd tab name"
+	    }
+
+	    set tabId [lindex $args 1]
+	    if {[catch {::$win index $tabId} tabIdx] != 0} {
+		return -code error $tabIdx
+	    } elseif {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
+		return -code error "tab index $tabId out of bounds"
+	    }
+
+	    set first [string first "tab" $cmd]
+	    set last [expr {$first + 2}]
+	    set cmd [string replace $cmd $first $last]	;# (has|unset)attrib
+	    set widget [lindex [$nb tabs] $tabIdx]
+	    return [::scrollutil::${cmd}SubCmd $win $widget [lindex $args 2]]
 	}
 
 	hide {
@@ -1116,6 +1160,24 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 		configTab $win $tabIdx $tabPath
 	    }
 	    return $result
+	}
+
+	tabattrib {
+	    if {$argCount < 2} {
+		mwutil::wrongNumArgs \
+		    "$win $cmd tab ?name ?value name value ...??"
+	    }
+
+	    set tabId [lindex $args 1]
+	    if {[catch {::$win index $tabId} tabIdx] != 0} {
+		return -code error $tabIdx
+	    } elseif {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
+		return -code error "tab index $tabId out of bounds"
+	    }
+
+	    set widget [lindex [$nb tabs] $tabIdx]
+	    return [::scrollutil::attribSubCmd $win $widget \
+		    [lrange $args 2 end]]
 	}
 
 	tabpath {

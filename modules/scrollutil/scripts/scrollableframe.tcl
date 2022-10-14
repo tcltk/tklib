@@ -102,8 +102,9 @@ namespace eval scrollutil::sf {
     # Use lists to facilitate the handling
     # of various options and corner values
     #
-    variable cmdOpts	[list autofillx autofilly autosize cget configure \
-			 contentframe scan see seerect xview yview]
+    variable cmdOpts	[list attrib autofillx autofilly autosize cget \
+			 configure contentframe hasattrib scan see seerect \
+			 unsetattrib xview yview]
     variable scanOpts	[list mark dragto]
     variable dimensions	[list w h wh]
     variable corners	[list nw ne sw se]
@@ -225,6 +226,12 @@ proc scrollutil::scrollableframe args {
 	    scanXOffset	0
 	    scanYOffset	0
 	}
+
+	#
+	# The following array is used to hold
+	# arbitrary attributes for this widget
+	#
+	variable attribs
     }
 
     #
@@ -439,12 +446,18 @@ proc scrollutil::sf::scrollableframeWidgetCmd {win args} {
 
     variable cmdOpts
     set cmd [mwutil::fullOpt "option" [lindex $args 0] $cmdOpts]
+    set argList [lrange $args 1 end]
+
     switch $cmd {
-	autofillx { return [autofillxSubCmd $win [lrange $args 1 end]] }
+	attrib {
+	    return [::scrollutil::attribSubCmd $win "widget" $argList]
+	}
 
-	autofilly { return [autofillySubCmd $win [lrange $args 1 end]] }
+	autofillx { return [autofillxSubCmd $win $argList] }
 
-	autosize  { return [autosizeSubCmd  $win [lrange $args 1 end]] }
+	autofilly { return [autofillySubCmd $win $argList] }
+
+	autosize  { return [autosizeSubCmd  $win $argList] }
 
 	cget {
 	    if {$argCount != 2} {
@@ -463,8 +476,7 @@ proc scrollutil::sf::scrollableframeWidgetCmd {win args} {
 	configure {
 	    variable configSpecs
 	    return [mwutil::configureSubCmd $win configSpecs \
-		    scrollutil::sf::doConfig scrollutil::sf::doCget \
-		    [lrange $args 1 end]]
+		    scrollutil::sf::doConfig scrollutil::sf::doCget $argList]
 	}
 
 	contentframe {
@@ -476,15 +488,24 @@ proc scrollutil::sf::scrollableframeWidgetCmd {win args} {
 	    return $data(cf)
 	}
 
-	scan	{ return [scanSubCmd    $win [lrange $args 1 end]] }
+	hasattrib -
+	unsetattrib {
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win $cmd name"
+	    }
 
-	see	{ return [seeSubCmd     $win [lrange $args 1 end]] }
+	    return [::scrollutil::${cmd}SubCmd $win "widget" [lindex $args 1]]
+	}
 
-	seerect	{ return [seerectSubCmd $win [lrange $args 1 end]] }
+	scan	{ return [scanSubCmd    $win $argList] }
 
-	xview	{ return [xviewSubCmd   $win [lrange $args 1 end]] }
+	see	{ return [seeSubCmd     $win $argList] }
 
-	yview	{ return [yviewSubCmd   $win [lrange $args 1 end]] }
+	seerect	{ return [seerectSubCmd $win $argList] }
+
+	xview	{ return [xviewSubCmd   $win $argList] }
+
+	yview	{ return [yviewSubCmd   $win $argList] }
     }
 }
 

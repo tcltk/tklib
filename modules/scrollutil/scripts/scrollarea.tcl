@@ -142,7 +142,8 @@ namespace eval scrollutil::sa {
     # Use lists to facilitate the handling of
     # the command options and scrollbar modes
     #
-    variable cmdOpts        [list cget configure setwidget widget]
+    variable cmdOpts        [list attrib cget configure hasattrib setwidget \
+			     unsetattrib widget]
     variable scrollbarModes [list static dynamic none]
 
     variable newSetFocusPolicy [expr {
@@ -260,6 +261,12 @@ proc scrollutil::scrollarea args {
 	    cf-ne_height 1
 	    cf-sw_width  1
 	}
+
+	#
+	# The following array is used to hold
+	# arbitrary attributes for this widget
+	#
+	variable attribs
     }
 
     #
@@ -548,7 +555,13 @@ proc scrollutil::sa::scrollareaWidgetCmd {win args} {
 
     variable cmdOpts
     set cmd [mwutil::fullOpt "option" [lindex $args 0] $cmdOpts]
+
     switch $cmd {
+	attrib {
+	    return [::scrollutil::attribSubCmd $win "widget" \
+		    [lrange $args 1 end]]
+	}
+
 	cget {
 	    if {$argCount != 2} {
 		mwutil::wrongNumArgs "$win $cmd option"
@@ -568,6 +581,15 @@ proc scrollutil::sa::scrollareaWidgetCmd {win args} {
 	    return [mwutil::configureSubCmd $win configSpecs \
 		    scrollutil::sa::doConfig scrollutil::sa::doCget \
 		    [lrange $args 1 end]]
+	}
+
+	hasattrib -
+	unsetattrib {
+	    if {$argCount != 2} {
+		mwutil::wrongNumArgs "$win $cmd name"
+	    }
+
+	    return [::scrollutil::${cmd}SubCmd $win "widget" [lindex $args 1]]
 	}
 
 	setwidget {
