@@ -16,7 +16,7 @@
     <h1>The <code><b>scrollutil::scrollednotebook</b></code> Command<br>
     and the <code><b>closetab</b></code> Style Element</h1>
 
-    <h2>For Scrollutil Version 1.16</h2>
+    <h2>For Scrollutil Version 1.17</h2>
 
     <h3>by</h3>
 
@@ -116,12 +116,35 @@ package require scrollutil_tile
 
     <dt class="tm"><a href="#widget_command">WIDGET COMMAND</a></dt>
 
+    <dd><code><i>pathName</i> <b><a href="#attrib">attrib</a></b> ?<i>name</i>
+    ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dd>
+
     <dd><code><i>pathName</i> <b><a href=
     "#snb_closetabstate">closetabstate</a></b> <i>tabId</i>
     ?<b>normal</b>|<b>disabled</b>?</code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#hasattrib">hasattrib</a></b>
+    <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#hastabattrib">hastabattrib</a></b>
+    <i>tabId</i> <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#notebookpath">notebookpath</a></b></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#see">see</a></b>
     <i>tabId</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#tabattrib">tabattrib</a></b>
+    <i>tabId</i> ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i>
+    ...??</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#unsetattrib">unsetattrib</a></b>
+    <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#unsettabattrib">unsettabattrib</a></b> <i>tabId</i>
+    <i>name</i></code></dd>
 
     <dt class="tm"><a href="#kbd_traversal">KEYBOARD TRAVERSAL</a></dt>
 
@@ -196,15 +219,10 @@ package require scrollutil_tile
     the tabs.</dd>
 
     <dd class="tm">The API of the scrollednotebook widget is nearly identical
-    to that of ttk::notebook.&nbsp; Apart from the scrollednotebook-specific
-    <code><b>closetabstate</b></code> and <code><b>see</b></code> subcommands,
-    the Tcl command associated with a scrollednotebook widget provides the same
-    subcommands as the one associated with a ttk::notebook.&nbsp; Note that the
-    API doesn't provide any command for retrieving the path name of the
-    ttk::notebook widget contained in a scrollednotebook, because there is no
-    need to access that widget directly.&nbsp; Moreover, using its options or
-    subcommands instead of those of the scrollednotebook widget would result in
-    an unpredictable behavior.</dd>
+    to that of ttk::notebook.&nbsp; Apart from a few additional,
+    scrollednotebook-specific subcommands, the Tcl command associated with a
+    scrollednotebook widget provides the same subcommands as the one associated
+    with a ttk::notebook.</dd>
 
     <dt class="tm" id="std_options"><b>STANDARD OPTIONS</b></dt>
 
@@ -473,6 +491,24 @@ package require scrollutil_tile
 
     <dd>
       <dl>
+        <dt class="tm" id="attrib"><code><i>pathName</i> <b>attrib</b>
+        ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dt>
+
+        <dd>Queries or modifies the attributes of the widget.&nbsp; If no
+        <code><i>name</i></code> is specified, the command returns a list of
+        pairs, each of which contains the name and the value of an attribute
+        for <code><i>pathName</i></code>.&nbsp; If <code><i>name</i></code> is
+        specified with no <code><i>value</i></code>, then the command returns
+        the value of the one named attribute, or an empty string if no
+        corresponding value exists (you can use the <code><b><a href=
+        "#hasattrib">hasattrib</a></b></code> subcommand to distinguish this
+        case from the one that the value of an <i>existing</i> attribute is an
+        empty string).&nbsp; If one or more
+        <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
+        then the command sets the given widget attribute(s) to the given
+        value(s); in this case the return value is an empty string.&nbsp; Each
+        <code><i>name</i></code> may be an arbitrary string.</dd>
+
         <dt class="tm" id="snb_closetabstate"><code><i>pathName</i>
         <b>closetabstate</b> <i>tabId</i>
         ?<b>normal</b>|<b>disabled</b>?</code></dt>
@@ -485,6 +521,74 @@ package require scrollutil_tile
         the <code><b><a href=
         "#closetabstate">scrollutil::closetabstate</a></b></code> command.</dd>
 
+        <dt class="tm" id="hasattrib"><code><i>pathName</i> <b>hasattrib</b>
+        <i>name</i></code></dt>
+
+        <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
+        exists and <code>0</code> otherwise.</dd>
+
+        <dt class="tm" id="hastabattrib"><code><i>pathName</i>
+        <b>hastabattrib</b> <i>tabId</i> <i>name</i></code></dt>
+
+        <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
+        for the tab given by <code><i>tabId</i></code> exists and
+        <code>0</code> otherwise.</dd>
+
+        <dt class="tm" id="notebookpath"><code><i>pathName</i>
+        <b>notebookpath</b></code></dt>
+
+        <dd>
+          Returns the path name of the ttk::notebook widget contained in the
+          scrollednotebook.&nbsp; One of the extremely rare cases where this
+          subcommand is needed, is related to setting a tooltip for one of the
+          tabs.&nbsp; If <code><i>nb</i></code> denotes the ttk::notebook
+          path name returned by this subcommand, you can set a tooltip
+          <code><i>message</i></code> for one of its tabs by using either the
+          <code><b>-tab</b></code> option of the
+          <code><b>tooltip::tooltip</b></code> command from the tooltip package
+          contained in tklib:
+
+          <blockquote>
+            <pre>
+tooltip::tooltip <i>nb</i> -tab <i>tabId</i> <i>message</i>
+</pre>
+          </blockquote>
+        </dd>
+
+        <dd>
+          or the <code><b>-nbktab</b></code> option of the
+          <code><b>baltip::tip</b></code> command from the baltip package by
+          Alex Plotnikov:
+
+          <blockquote>
+            <pre>
+baltip::tip <i>nb</i> <i>message</i> -nbktab <i>tabWindow ...</i>
+</pre>
+          </blockquote>
+        </dd>
+
+        <dd>
+          The support for the <code><b>-tab</b></code> option of the
+          <code><b>tooltip::tooltip</b></code> command was added in version 1.6
+          of the tooltip package.&nbsp; The <code><b>baltip::tip</b></code>
+	  command accepts a great variety of additional options, too.&nbsp; The
+	  baltip package can be downloaded from the location
+
+          <blockquote>
+            <address>
+              <a href=
+              "https://chiselapp.com/user/aplsimple/repository/baltip/download/">https://chiselapp.com/user/aplsimple/repository/baltip/download/</a>
+            </address>
+          </blockquote>
+        </dd>
+
+        <dd><b>REMARK:</b>&nbsp; With the above exception, in the vast majority
+        of cases there is no need to access the ttk::notebook widget contained
+        in the scrollednotebook directly.&nbsp; Moreover, using the
+        ttk::notebook's options or subcommands instead of those of the
+        scrollednotebook widget will more often than not result in an
+        unpredictable behavior.</dd>
+
         <dt class="tm" id="see"><code><i>pathName</i> <b>see</b>
         <i>tabId</i></code></dt>
 
@@ -492,6 +596,38 @@ package require scrollutil_tile
         so that the tab given by <code><i>tabId</i></code> becomes visible in
         it.&nbsp; Note that when a tab gets selected, this command is
         automatically invoked for it, in order to make that tab visible.</dd>
+
+        <dt class="tm" id="tabattrib"><code><i>pathName</i> <b>tabattrib</b>
+        <i>tabId</i> ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i>
+        ...??</code></dt>
+
+        <dd>Queries or modifies the attributes of the tab given by
+        <code><i>tabId</i></code>.&nbsp; If no <code><i>name</i></code> is
+        specified, the command returns a list of pairs, each of which contains
+        the name and the value of an attribute for the tab.&nbsp; If
+        <code><i>name</i></code> is specified with no
+        <code><i>value</i></code>, then the command returns the value of the
+        one named tab attribute, or an empty string if no corresponding value
+        exists (you can use the <code><b><a href=
+        "#hastabattrib">hastabattrib</a></b></code> subcommand to distinguish
+        this case from the one that the value of an <i>existing</i> tab
+        attribute is an empty string).&nbsp; If one or more
+        <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
+        then the command sets the given tab attribute(s) to the given
+        value(s); in this case the return value is an empty string.&nbsp; Each
+        <code><i>name</i></code> may be an arbitrary string.</dd>
+
+        <dt class="tm" id="unsetattrib"><code><i>pathName</i>
+        <b>unsetattrib</b> <i>name</i></code></dt>
+
+        <dd>Unsets the attribute <code><i>name</i></code>.&nbsp; Returns an
+        empty string.</dd>
+
+        <dt class="tm" id="unsettabattrib"><code><i>pathName</i>
+        <b>unsettabattrib</b> <i>tabId</i> <i>name</i></code></dt>
+
+        <dd>Unsets the attribute <code><i>name</i></code> for the tab given by
+        <code><i>tabId</i></code>.&nbsp; Returns an empty string.</dd>
       </dl>
     </dd>
 

@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>scrollutil::plainnotebook</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.16</h2>
+    <h2>For Scrollutil Version 1.17</h2>
 
     <h3>by</h3>
 
@@ -115,6 +115,9 @@ package require scrollutil_tile
     <dd><code><i>pathName</i> <b><a href=
     "#addseparator">addseparator</a></b></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#attrib">attrib</a></b> ?<i>name</i>
+    ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#cget">cget</a></b>
     <i>option</i></code></dd>
 
@@ -123,10 +126,16 @@ package require scrollutil_tile
     ?<i>boolean</i>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#configure">configure</a></b>
-    ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i> ...?</code></dd>
+    ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i> ...??</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#forget">forget</a></b>
     <i>tabId</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#hasattrib">hasattrib</a></b>
+    <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#hastabattrib">hastabattrib</a></b>
+    <i>tabId</i> <i>name</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#hide">hide</a></b>
     <i>tabId</i></code></dd>
@@ -161,8 +170,12 @@ package require scrollutil_tile
     <dd><code><i>pathName</i> <b><a href="#style">style</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#tab">tab</a></b>
-    <i>tabId</i> ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i>
-    ...?</code></dd>
+    <i>tabId</i> ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i>
+    ...??</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#tabattrib">tabattrib</a></b>
+    <i>tabId</i> ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i>
+    ...??</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#tabpath">tabpath</a></b>
     <i>tabId</i></code></dd>
@@ -171,6 +184,13 @@ package require scrollutil_tile
 
     <dd><code><i>pathName</i> <b><a href=
     "#titlepath">titlepath</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#unsetattrib">unsetattrib</a></b>
+    <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#unsettabattrib">unsettabattrib</a></b> <i>tabId</i>
+    <i>name</i></code></dd>
 
     <dt class="tm"><a href="#kbd_traversal">KEYBOARD TRAVERSAL</a></dt>
 
@@ -261,7 +281,8 @@ package require scrollutil_tile
     for retrieving the path name of the ttk::notebook widget contained in a
     plainnotebook, because there is no need to access that widget
     directly.&nbsp; Moreover, using its options or subcommands instead of those
-    of the plainnotebook widget would result in an unpredictable behavior.</dd>
+    of the plainnotebook widget will more often than not result in an
+    unpredictable behavior.</dd>
 
     <dd class="tm">Notice also that only the tabs created with the
     <code><b><a href="#add">add</a></b></code> and <code><b><a href=
@@ -700,6 +721,24 @@ package require scrollutil_tile
         return value is the path name of the above-mentioned ttk::separator
         widget.</dd>
 
+        <dt class="tm" id="attrib"><code><i>pathName</i> <b>attrib</b>
+        ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dt>
+
+        <dd>Queries or modifies the attributes of the widget.&nbsp; If no
+        <code><i>name</i></code> is specified, the command returns a list of
+        pairs, each of which contains the name and the value of an attribute
+        for <code><i>pathName</i></code>.&nbsp; If <code><i>name</i></code> is
+        specified with no <code><i>value</i></code>, then the command returns
+        the value of the one named attribute, or an empty string if no
+        corresponding value exists (you can use the <code><b><a href=
+        "#hasattrib">hasattrib</a></b></code> subcommand to distinguish this
+        case from the one that the value of an <i>existing</i> attribute is an
+        empty string).&nbsp; If one or more
+        <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
+        then the command sets the given widget attribute(s) to the given
+        value(s); in this case the return value is an empty string.&nbsp; Each
+        <code><i>name</i></code> may be an arbitrary string.</dd>
+
         <dt class="tm" id="cget"><code><i>pathName</i> <b>cget</b>
         <i>option</i></code></dt>
 
@@ -719,8 +758,8 @@ package require scrollutil_tile
         option for the specified tab.</dd>
 
         <dt class="tm" id="configure"><code><i>pathName</i> <b>configure</b>
-        ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i>
-        ...?</code></dt>
+        ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i>
+        ...??</code></dt>
 
         <dd>Queries or modifies the configuration options of the widget.&nbsp;
         If no <code><i>option</i></code> is specified, the command returns a
@@ -743,6 +782,19 @@ package require scrollutil_tile
         <i>tabId</i></code></dt>
 
         <dd>See the <b>ttk_notebook</b> manual entry.</dd>
+
+        <dt class="tm" id="hasattrib"><code><i>pathName</i> <b>hasattrib</b>
+        <i>name</i></code></dt>
+
+        <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
+        exists and <code>0</code> otherwise.</dd>
+
+        <dt class="tm" id="hastabattrib"><code><i>pathName</i>
+        <b>hastabattrib</b> <i>tabId</i> <i>name</i></code></dt>
+
+        <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
+        for the tab given by <code><i>tabId</i></code> exists and
+        <code>0</code> otherwise.</dd>
 
         <dt class="tm" id="hide"><code><i>pathName</i> <b>hide</b>
         <i>tabId</i></code></dt>
@@ -837,10 +889,30 @@ package require scrollutil_tile
         widget provides it for all supported Tk versions.</dd>
 
         <dt class="tm" id="tab"><code><i>pathName</i> <b>tab</b> <i>tabId</i>
-        ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i>
-        ...?</code></dt>
+        ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i>
+        ...??</code></dt>
 
         <dd>See the <b>ttk_notebook</b> manual entry.</dd>
+
+        <dt class="tm" id="tabattrib"><code><i>pathName</i> <b>tabattrib</b>
+        <i>tabId</i> ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i>
+        ...??</code></dt>
+
+        <dd>Queries or modifies the attributes of the tab given by
+        <code><i>tabId</i></code>.&nbsp; If no <code><i>name</i></code> is
+        specified, the command returns a list of pairs, each of which contains
+        the name and the value of an attribute for the tab.&nbsp; If
+        <code><i>name</i></code> is specified with no
+        <code><i>value</i></code>, then the command returns the value of the
+        one named tab attribute, or an empty string if no corresponding value
+        exists (you can use the <code><b><a href=
+        "#hastabattrib">hastabattrib</a></b></code> subcommand to distinguish
+        this case from the one that the value of an <i>existing</i> tab
+        attribute is an empty string).&nbsp; If one or more
+        <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
+        then the command sets the given tab attribute(s) to the given
+        value(s); in this case the return value is an empty string.&nbsp; Each
+        <code><i>name</i></code> may be an arbitrary string.</dd>
 
         <dt class="tm" id="tabpath"><code><i>pathName</i> <b>tabpath</b>
         <i>tabId</i></code></dt>
@@ -858,6 +930,18 @@ package require scrollutil_tile
 
         <dd>Returns the path name of the plainnotebook's title label, which is
         a ttk::label widget of the style <code>PnbTitle.TLabel</code>.</dd>
+
+        <dt class="tm" id="unsetattrib"><code><i>pathName</i>
+        <b>unsetattrib</b> <i>name</i></code></dt>
+
+        <dd>Unsets the attribute <code><i>name</i></code>.&nbsp; Returns an
+        empty string.</dd>
+
+        <dt class="tm" id="unsettabattrib"><code><i>pathName</i>
+        <b>unsettabattrib</b> <i>tabId</i> <i>name</i></code></dt>
+
+        <dd>Unsets the attribute <code><i>name</i></code> for the tab given by
+        <code><i>tabId</i></code>.&nbsp; Returns an empty string.</dd>
       </dl>
     </dd>
 

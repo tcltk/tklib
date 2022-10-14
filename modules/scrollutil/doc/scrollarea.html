@@ -15,7 +15,7 @@
     <h1>The <code><b>scrollutil::scrollarea</b></code> and<br>
     <code><b>scrollutil::getscrollarea</b></code> Commands</h1>
 
-    <h2>For Scrollutil Version 1.16</h2>
+    <h2>For Scrollutil Version 1.17</h2>
 
     <h3>by</h3>
 
@@ -104,14 +104,23 @@
 
     <dt class="tm"><a href="#widget_command">WIDGET COMMAND</a></dt>
 
+    <dd><code><i>pathName</i> <b><a href="#attrib">attrib</a></b> ?<i>name</i>
+    ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#cget">cget</a></b>
     <i>option</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#configure">configure</a></b>
-    ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i> ...?</code></dd>
+    ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i> ...??</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#hasattrib">hasattrib</a></b>
+    <i>name</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#setwidget">setwidget</a></b>
     <i>widget</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#unsetattrib">unsetattrib</a></b>
+    <i>name</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#widget">widget</a></b></code></dd>
 
@@ -581,6 +590,24 @@ option add *Scrollarea.setFocus 1
 
     <dd>
       <dl>
+        <dt class="tm" id="attrib"><code><i>pathName</i> <b>attrib</b>
+        ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dt>
+
+        <dd>Queries or modifies the attributes of the widget.&nbsp; If no
+        <code><i>name</i></code> is specified, the command returns a list of
+        pairs, each of which contains the name and the value of an attribute
+        for <code><i>pathName</i></code>.&nbsp; If <code><i>name</i></code> is
+        specified with no <code><i>value</i></code>, then the command returns
+        the value of the one named attribute, or an empty string if no
+        corresponding value exists (you can use the <code><b><a href=
+        "#hasattrib">hasattrib</a></b></code> subcommand to distinguish this
+        case from the one that the value of an <i>existing</i> attribute is an
+        empty string).&nbsp; If one or more
+        <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
+        then the command sets the given widget attribute(s) to the given
+        value(s); in this case the return value is an empty string.&nbsp; Each
+        <code><i>name</i></code> may be an arbitrary string.</dd>
+
         <dt class="tm" id="cget"><code><i>pathName</i> <b>cget</b>
         <i>option</i></code></dt>
 
@@ -589,8 +616,8 @@ option add *Scrollarea.setFocus 1
         by the <code><b>scrollutil::scrollarea</b></code> command.</dd>
 
         <dt class="tm" id="configure"><code><i>pathName</i> <b>configure</b>
-        ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i>
-        ...?</code></dt>
+        ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i>
+        ...??</code></dt>
 
         <dd>Queries or modifies the configuration options of the widget.&nbsp;
         If no <code><i>option</i></code> is specified, the command returns a
@@ -608,6 +635,12 @@ option add *Scrollarea.setFocus 1
         string.&nbsp; <code><i>option</i></code> may have any of the values
         accepted by the <code><b>scrollutil::scrollarea</b></code>
         command.</dd>
+
+        <dt class="tm" id="hasattrib"><code><i>pathName</i> <b>hasattrib</b>
+        <i>name</i></code></dt>
+
+        <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
+        exists and <code>0</code> otherwise.</dd>
 
         <dt class="tm" id="setwidget"><code><i>pathName</i> <b>setwidget</b>
         <i>widget</i></code></dt>
@@ -675,6 +708,12 @@ option add *Scrollarea.setFocus 1
         supported way to embed a widget into a scrollarea.&nbsp; Any attempt to
         embed further widgets, using any geometry manager, will lead to
         unpredictable results!</dd>
+
+        <dt class="tm" id="unsetattrib"><code><i>pathName</i>
+        <b>unsetattrib</b> <i>name</i></code></dt>
+
+        <dd>Unsets the attribute <code><i>name</i></code>.&nbsp; Returns an
+        empty string.</dd>
 
         <dt class="tm" id="widget"><code><i>pathName</i>
         <b>widget</b></code></dt>
