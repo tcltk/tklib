@@ -6,6 +6,9 @@
 # element name is the name of a command and the value is
 # a script that loads the command.
 
+set auto_index(::scrollutil::attribSubCmd) [list source [file join $dir attrib.tcl]]
+set auto_index(::scrollutil::hasattribSubCmd) [list source [file join $dir attrib.tcl]]
+set auto_index(::scrollutil::unsetattribSubCmd) [list source [file join $dir attrib.tcl]]
 set auto_index(::scrollutil::getForegroundColors) [list source [file join $dir notebookImages.tcl]]
 set auto_index(::scrollutil::createCloseImages) [list source [file join $dir notebookImages.tcl]]
 set auto_index(::scrollutil::createLeftArrowImage) [list source [file join $dir notebookImages.tcl]]
