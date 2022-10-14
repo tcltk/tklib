@@ -413,7 +413,7 @@ proc configTablelist {} {
 		ttk::checkbutton $w -command [list applyBoolean $w $opt]
 		global $w
 		set $w [$tbl cget $opt]
-		$w configure -text [expr {[set $w] ? "true": "false"}]
+		$w configure -text [expr {[set $w] ? "on": "off"}]
 		grid $w -row $row -column 1 -sticky w -padx 4p -pady {4p 0}
 	    }
 
@@ -502,7 +502,7 @@ proc applyBoolean {w opt} {
     global tbl
     upvar #0 $w var
     $tbl configure $opt $var
-    $w configure -text [expr {$var ? "true" : "false"}]
+    $w configure -text [expr {$var ? "on" : "off"}]
 }
 
 #------------------------------------------------------------------------------

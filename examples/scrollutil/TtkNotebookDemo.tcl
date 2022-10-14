@@ -49,7 +49,7 @@ foreach fileName [lsort [glob *.tcl]] {
 }
 
 #
-# Create a binding for moving and closing the tabs interactively
+# Create bindings for moving and closing the tabs interactively
 #
 bind $nb <<MenuItemsRequested>> { populateMenu %W %d }
 bind $nb <<CloseTabRequested>>  { closeTab %W %d }
@@ -73,7 +73,7 @@ proc populateMenu {nb data} {
 proc closeTab {nb tabIdx} {
     set widget [lindex [$nb tabs] $tabIdx]
     set txt $widget.txt
-    if {[$txt tag nextrange sel 1.0 end] eq ""} {
+    if {[llength [$txt tag nextrange sel 1.0 end]] == 0} {
 	$nb forget $tabIdx
 	return ""
     }

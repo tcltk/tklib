@@ -68,7 +68,7 @@ set pm [scrollutil::pagesman $f.pm -leavecommand pmLeaveCmd]
 #
 option add *Plainnotebook.closableTabs	1
 option add *Plainnotebook.forgetCommand	condCopySel
-option add *Plainnotebook.leaveCommand	condCopySel
+option add *Plainnotebook.leaveCommand	saveSel
 
 #
 # Create a plainnotebook child displaying the contents of the Tk library files
@@ -118,7 +118,12 @@ proc setScrollRegion {canv canvWidth canvHeight img} {
 }
 
 proc pmLeaveCmd {pm nb} {
-    return [condCopySel $nb [$nb select]]
+    set widget [$nb select]
+    if {$widget eq ""} {
+	return 1
+    } else {
+	return [saveSel $nb $widget]
+    }
 }
 
 proc condCopySel {nb widget} {
@@ -128,7 +133,7 @@ proc condCopySel {nb widget} {
     }
 
     set txt $widget.txt
-    if {[$txt tag nextrange sel 1.0 end] eq ""} {
+    if {[llength [$txt tag nextrange sel 1.0 end]] == 0} {
 	return 1
     }
 
@@ -142,12 +147,29 @@ proc condCopySel {nb widget} {
     }
 }
 
+proc saveSel {nb widget} {
+    global nbImgs
+    if {$nb eq $nbImgs || [winfo class $widget] ne "Scrollarea"} {
+	return 1
+    }
+
+    set selRange [$widget.txt tag nextrange sel 1.0 end]
+    if {[llength $selRange] == 0} {
+	$nb unsettabattrib $widget "selRange"
+    } else {
+	$nb tabattrib $widget "selRange" $selRange
+    }
+
+    return 1
+}
+
 #
-# For each plainnotebook create a binding for
-# moving and closing its tabs interactively
+# For each plainnotebook create bindings for moving and closing its tabs
+# interactively, as well as for the virtual event <<NotebookTabChanged>>
 #
 foreach nb [$pm pages] {
     bind $nb <<MenuItemsRequested>> { populateMenu %W %d }
+    bind $nb <<NotebookTabChanged>> { restoreSel %W }
 }
 
 proc populateMenu {nb data} {
@@ -164,6 +186,15 @@ proc populateMenu {nb data} {
     $menu add separator
     $menu add command -label "Close Tab" -command \
 	[list $nb forget $tabIdx]
+}
+
+proc restoreSel nb {
+    set widget [$nb select]
+    if {$widget ne "" && [$nb hastabattrib $widget "selRange"]} {
+	set txt $widget.txt
+	$txt tag remove sel 1.0 end
+	$txt tag add sel {*}[$nb tabattrib $widget "selRange"]
+    }
 }
 
 #

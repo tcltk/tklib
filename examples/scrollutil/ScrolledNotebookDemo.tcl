@@ -24,7 +24,7 @@ image create photo fileImg -file [file join $dir file$pct.gif]
 #
 set f  [ttk::frame .f]
 set nb [scrollutil::scrollednotebook $f.nb -style My.TNotebook \
-	-forgetcommand condCopySel -leavecommand condCopySel]
+	-forgetcommand condCopySel -leavecommand saveSel]
 set currentTheme [styleutil::getCurrentTheme]
 set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
@@ -51,7 +51,7 @@ foreach fileName [lsort [glob *.tcl]] {
 
 proc condCopySel {nb widget} {
     set txt $widget.txt
-    if {[$txt tag nextrange sel 1.0 end] eq ""} {
+    if {[llength [$txt tag nextrange sel 1.0 end]] == 0} {
 	return 1
     }
 
@@ -65,10 +65,23 @@ proc condCopySel {nb widget} {
     }
 }
 
+proc saveSel {nb widget} {
+    set selRange [$widget.txt tag nextrange sel 1.0 end]
+    if {[llength $selRange] == 0} {
+	$nb unsettabattrib $widget "selRange"
+    } else {
+	$nb tabattrib $widget "selRange" $selRange
+    }
+
+    return 1
+}
+
 #
-# Create a binding for moving and closing the tabs interactively
+# Create bindings for moving and closing the tabs interactively,
+# as well as for the virtual event <<NotebookTabChanged>>
 #
 bind $nb <<MenuItemsRequested>> { populateMenu %W %d }
+bind $nb <<NotebookTabChanged>> { restoreSel %W }
 
 proc populateMenu {nb data} {
     foreach {menu tabIdx} $data {}
@@ -84,6 +97,15 @@ proc populateMenu {nb data} {
     $menu add separator
     $menu add command -label "Close Tab" -command \
 	[list $nb forget $tabIdx]
+}
+
+proc restoreSel nb {
+    set widget [$nb select]
+    if {$widget ne "" && [$nb hastabattrib $widget "selRange"]} {
+	set txt $widget.txt
+	$txt tag remove sel 1.0 end
+	$txt tag add sel {*}[$nb tabattrib $widget "selRange"]
+    }
 }
 
 #
