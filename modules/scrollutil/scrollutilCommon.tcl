@@ -10,7 +10,7 @@ namespace eval ::scrollutil {
     #
     # Public variables:
     #
-    variable version	1.16
+    variable version	1.17
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -85,7 +85,7 @@ proc ::scrollutil::createTkAliases {} {
 lappend auto_path [file join $::scrollutil::library scripts]
 
 #
-# Load the packages mwutil and scaleutil from the directory
+# Load the packages mwutil, scaleutil, and clampatch from the directory
 # "scripts/utils".  Take into account that mwutil is also included
 # in Mentry and Tablelist, and scaleutil is also included in Tablelist.
 #
@@ -100,6 +100,6 @@ proc ::scrollutil::loadUtils {} {
     }
     package require scaleutil 1.9
 
-    package require clampatch 1.1
+    package require clampatch 1.2
 }
 ::scrollutil::loadUtils
