@@ -1,3 +1,36 @@
+2022-10-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.17.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added the "notebookpath" subcommand to the
+	  scrollednotebook widget; added the "attrib", "hasattrib", and
+	  "unsetattrib" subcommands to the scrollarea, scrollsync,
+	  scrollableframe, scrollednotebook, plainnotebook, and pagesman
+	  widgets; added the "tabattrib", "hastabattrib", and "unsettabattrib"
+	  subcommands to the scrollednotebook and plainnotebook widgets; added
+	  the "pageattrib", "haspageattrib", and "unsetpageattrib" subcommands
+	  to the pagesman widget.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/clampatch.tcl: Made the look and behavior of the
+	* scripts/utils/pkgIndex.tcl:  ttk::checkbutton and ttk::radiobutton
+	  widgets of the patched "clam" theme more fancy.
+
+	* doc/TablelistConfig.png: Updated screenshot.
+
+	* ../../examples/scrollutil/*.tcl: The demo scripts
+	  "ScrolledNotebookDemo.tcl", "PlainNotebookDemo.tcl", and
+	  "PagesManDemo.tcl" now demonstrate the usage of the new "tabattrib",
+	  "hastabattrib", and "unsettabattrib" scrollednotebook and
+	  plainnotebook subcommands; minor changes in the files
+	  "*FrmContent.tcl".
+
 2022-07-14  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 1.16.
