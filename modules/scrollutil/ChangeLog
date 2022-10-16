@@ -1,3 +1,9 @@
+2022-10-16  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/utils/clampatch.tcl: Improved the look of the selected
+	* doc/TablelistConfig.png:     ttk::checkbutton widgets of the patched
+	  "clam" theme.
+
 2022-10-14  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 1.17.
