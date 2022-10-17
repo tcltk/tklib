@@ -1,3 +1,7 @@
+2022-10-17  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/utils/clampatch.tcl: Minor improvements.
+
 2022-10-16  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/utils/clampatch.tcl: Improved the look of the selected
