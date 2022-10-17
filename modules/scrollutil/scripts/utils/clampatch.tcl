@@ -1,5 +1,5 @@
 #==============================================================================
-# Contains a procedure designed for patching the clam theme.
+# Contains procedures designed for patching and unpatching the clam theme.
 #
 # Structure of the module:
 #   - Namespace initialization
@@ -130,12 +130,12 @@ proc clampatch::patchClamTheme {} {
 		}
 	    }
 	}
-
-	#
-	# Send a <<ThemeChanged>> virtual event to all widgets
-	#
-	::ttk::ThemeChanged
     }
+
+    #
+    # Send a <<ThemeChanged>> virtual event to all widgets
+    #
+    ::ttk::ThemeChanged
 }
 
 #------------------------------------------------------------------------------
@@ -185,12 +185,12 @@ proc clampatch::unpatchClamTheme {} {
 		}
 	    }
 	}
-
-	#
-	# Send a <<ThemeChanged>> virtual event to all widgets
-	#
-	::ttk::ThemeChanged
     }
+
+    #
+    # Send a <<ThemeChanged>> virtual event to all widgets
+    #
+    ::ttk::ThemeChanged
 }
 
 # Private helper procedures
