@@ -1,3 +1,13 @@
+2022-10-20  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scrollutilCommon.tcl: Don't load the clampatch package.
+
+	* CHANGES.txt:                             Renamed the clampatch
+	* scripts/utils/themepatch.tcl:            package to themepatch and
+	* scripts/utils/pkgIndex.tcl:              extended it by support for
+	* doc/scrollutil.html:                     the "default" theme.
+	* ../../examples/scrollutil/styleUtil.tcl:
+
 2022-10-17  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scripts/utils/clampatch.tcl: Minor improvements.
