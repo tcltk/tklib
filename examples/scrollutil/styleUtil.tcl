@@ -5,7 +5,7 @@
 #==============================================================================
 
 package require scrollutil_tile
-package require clampatch
+package require themepatch
 
 #
 # To set the "-autohidescrollbars" or "-setfocus" option of all scrollarea
@@ -66,7 +66,7 @@ if {[tk windowingsystem] eq "aqua"} {
 #
 # Patch the clam theme styles TButton, Heading, TCheckbutton, and TRadiobutton
 #
-clampatch::patchClamTheme
+themepatch::patchTheme clam
 
 if {[tk windowingsystem] eq "x11"} {
     font configure TkHeadingFont -weight normal		;# default: bold

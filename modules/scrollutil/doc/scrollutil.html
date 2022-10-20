@@ -727,22 +727,22 @@ source [file join $dir styleUtil.tcl]
   this makes the keyboard navigation more user-friendly.</p>
 
   <p>The script also patches the <code>clam</code> theme, by invoking the
-  public procedure <code>clampatch::patchClamTheme</code> of the clampatch
+  public procedure <code>themepatch::patchTheme</code> of the themepatch
   package, which is bundled with Scrollutil (but, contrary to the scaleutil
   package, it is not used by the Scrollutil code and therefore it needs to be
-  loaded explicitly via&nbsp; <code>package require clampatch</code>):</p>
+  loaded explicitly via&nbsp; <code>package require themepatch</code>):</p>
 
   <blockquote>
     <pre>
 package require scrollutil_tile
-package require clampatch
+package require themepatch
 
 . . .
 
 <span class="cmt">#
 # Patch the clam theme styles TButton, Heading, TCheckbutton, and TRadiobutton
 #</span>
-clampatch::patchClamTheme
+themepatch::patchTheme clam
 </pre>
   </blockquote>
 

@@ -20,11 +20,14 @@ What is new in Scrollutil 1.17?
    "tabattrib", "hastabattrib", and "unsettabattrib" scrollednotebook
    and plainnotebook subcommands.
 
-6. Made the look and behavior of the ttk::checkbutton and
-   ttk::radiobutton widgets of the "clam" theme patched with the
-   "clampatch::patchClamTheme" command more fancy.
+6. Renamed the clampatch package to themepatch and extended it by
+   support for patching and unpatching the "default" theme.
 
-7. Several improvements in the demo scripts and documentation.
+7. Made the look and behavior of the ttk::checkbutton and
+   ttk::radiobutton widgets of the "clam" theme patched via
+   "themepatch::patchTheme clam" more fancy.
+
+8. Several improvements in the demo scripts and documentation.
 
 What was new in Scrollutil 1.16?
 --------------------------------
