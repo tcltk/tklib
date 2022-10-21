@@ -21,11 +21,14 @@
 #------------------------------------------------------------------------------
 # tablelist::getTablelistColumn
 #
-# Gets the column number from the path name w of a (sub)label or sort arrow of
-# a tablelist widget.
+# Gets the column number from the path name w of a (sub)label or
+# (ttk::)checkbutton placed into a sublabel, or sort arrow of a tablelist
+# widget.
 #------------------------------------------------------------------------------
 proc tablelist::getTablelistColumn w {
-    if {[regexp {^(\..+)\.hdr\.t\.f\.l([0-9]+)(-[it]l)?$} $w dummy win col] ||
+    if {[regexp \
+	 {^(\..+)\.hdr\.t\.f\.l([0-9]+)-il\.f\.ckbtn$} $w dummy win col] ||
+	[regexp {^(\..+)\.hdr\.t\.f\.l([0-9]+)(-[it]l)?$} $w dummy win col] ||
 	[regexp {^(\..+)\.hdr\.t\.f\.c([0-9]+)$} $w dummy win col]} {
 	return $col
     } else {
@@ -472,16 +475,16 @@ proc tablelist::updateFonts win {
 #------------------------------------------------------------------------------
 proc tablelist::handleThemeChangedEvent {} {
     variable currentTheme
-    variable checkbtnLayout
-    variable widgetStyle
-    variable colorScheme
 
     set newTheme [::mwutil::currentTheme]
     switch -- $newTheme {
-	clam {
-	    set newCheckbtnLayout [style layout TCheckbutton]
+	clam -
+	default {
+	    set newCkbtnLayout [style layout TCheckbutton]
+	    variable ckbtnLayouts
 	    if {[string compare $newTheme $currentTheme] == 0 &&
-		[string compare $newCheckbtnLayout $checkbtnLayout] == 0} {
+		[string compare $newCkbtnLayout $ckbtnLayouts($currentTheme)] \
+		== 0} {
 		return ""
 	    }
 	}
@@ -493,6 +496,8 @@ proc tablelist::handleThemeChangedEvent {} {
 	    } else {
 		set newColorScheme [getKdeConfigVal "KDE" "colorScheme"]
 	    }
+	    variable widgetStyle
+	    variable colorScheme
 	    if {[string compare $newTheme $currentTheme] == 0 &&
 		[string compare $newWidgetStyle $widgetStyle] == 0 &&
 		[string compare $newColorScheme $colorScheme] == 0} {
@@ -507,9 +512,6 @@ proc tablelist::handleThemeChangedEvent {} {
     }
 
     set currentTheme $newTheme
-    set checkbtnLayout ""
-    set widgetStyle ""
-    set colorScheme ""
     switch -- $newTheme {
 	aqua {
 	    #
@@ -518,8 +520,9 @@ proc tablelist::handleThemeChangedEvent {} {
 	    #
 	    condOpenPipeline
 	}
-	clam {
-	    set checkbtnLayout $newCheckbtnLayout
+	clam -
+	default {
+	    set ckbtnLayouts($newTheme) $newCkbtnLayout
 	}
 	tileqt {
 	    set widgetStyle $newWidgetStyle
@@ -1169,8 +1172,8 @@ proc tablelist::defineTablelistBody {} {
     }
 
     variable winSys
-    variable uniformWheelSupport
-    if {$uniformWheelSupport} {
+    if {$::tk_version >= 8.7 &&
+	[package vcompare $::tk_patchLevel "8.7a4"] >= 0} {
 	bind TablelistBody <MouseWheel> {
 	    tablelist::handleWheelEvent <MouseWheel> y %W \
 		%X %Y %D -40.0
@@ -3985,9 +3988,9 @@ proc tablelist::labelB1Motion {w X x y} {
 		# Get the target column index
 		#
 		set contW [winfo containing -displayof $w $X [winfo rooty $w]]
-		if {[parseLabelPath $contW dummy targetCol]} {
-		    set master $contW
-		    if {$X < [winfo rootx $contW] + [winfo width $contW]/2} {
+		if {[set targetCol [getTablelistColumn $contW]] >= 0} {
+		    set master $data(hdrTxtFrmLbl)$targetCol
+		    if {$X < [winfo rootx $master] + [winfo width $master]/2} {
 			set relx 0.0
 		    } else {
 			incr targetCol
@@ -4037,11 +4040,26 @@ proc tablelist::labelB1Motion {w X x y} {
 		    set data(master) $master
 		    set data(relx) $relx
 		    configLabel $w -cursor $data(-movecolumncursor)
-		    $data(hdrTxtFrmCanv)$col configure -cursor \
-					    $data(-movecolumncursor)
+		    $data(hdrTxtFrmCanv)$col configure \
+			-cursor $data(-movecolumncursor)
+
+		    set y 0
+		    set height 0
+		    variable usingTile
+		    variable currentTheme
+		    variable newAquaSupport
+		    if {$usingTile &&
+			[string compare $currentTheme "aqua"] == 0 &&
+			$newAquaSupport} {
+			set y -4
+			if {[string compare $master $data(hdrTxtFrm)] == 0} {
+			    set height 4
+			}
+		    }
+
 		    place $data(colGap) -in $master -anchor n \
-					-bordermode outside \
-					-relheight 1.0 -relx $relx
+			-bordermode outside -height $height -relheight 1.0 \
+			-relx $relx -y $y
 		}
 	    }
 	}
