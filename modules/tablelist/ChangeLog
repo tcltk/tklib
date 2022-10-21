@@ -1,3 +1,31 @@
+2022-10-21 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:                          Bumped the version number to 6.20.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* ../../examples/tablelist/*.tcl:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/tablelistBind.tcl: The argument of the
+	  "tablelist::getTablelistColumn" command now may also be the path name
+	  of a Tk core or tile checkbutton embedded into a header label;
+	  improvements related to moving a column interactively, especially on
+	  Mac OS X/11+.
+
+	* scripts/tablelistUtil.tcl: Redisplaying a column is no longer
+	  suppressed if the column is hidden; restricted the workaround for a
+	  crash on Mac OS X/11+ to the affected Tk releases 8.6.11, 8.6.12, and
+	  8.7a5; added support for the case that the "default" theme was
+	  modified by invoking the "themepatch::patchTheme" command of the
+	  themepatch package (bundled with Scrollutil).
+
+	* scripts/tablelistWidget.tcl: Added the "dumptostring" and
+	  "loadfromstring" subcommands.
+
+	* scripts/tclIndex: Newly generated.
+
 2022-05-30 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 6.19.
