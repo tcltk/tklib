@@ -13,7 +13,7 @@
   <div align="center">
     <h1>Commands Related to Binding Scripts</h1>
 
-    <h2>For Tablelist Version 6.19</h2>
+    <h2>For Tablelist Version 6.20</h2>
 
     <h3>by</h3>
 
@@ -109,12 +109,12 @@
       <code><b>%W</b></code>, which can be the tablelist's body, one of the
       separator frames, a label widget displaying an embedded image, or (a
       descendant of) an embedded window.&nbsp; It can also be a header label or
-      an additional widget placed by Tablelist into a header label for
-      displaying a header image or a sort arrow.&nbsp; Likewise, the arguments
-      <code><i>x</i></code> and <code><i>y</i></code> correspond to the event
-      fields <code><b>%x</b></code> and <code><b>%y</b></code>.&nbsp; The three
-      elements of the list returned by the command are usually assigned to the
-      help variables <code><b>tablelist::W</b></code>,
+      a Tk core or tile checkbutton embedded into a header label, or a sort
+      arrow.&nbsp; Likewise, the
+      arguments <code><i>x</i></code> and <code><i>y</i></code> correspond to
+      the event fields <code><b>%x</b></code> and <code><b>%y</b></code>.&nbsp;
+      The three elements of the list returned by the command are usually
+      assigned to the help variables <code><b>tablelist::W</b></code>,
       <code><b>tablelist::x</b></code>, and <code><b>tablelist::y</b></code>,
       by using the statement
 
@@ -164,9 +164,9 @@ foreach {tablelist::W tablelist::x tablelist::y} \
     the event field <code><b>%W</b></code>, which can be the tablelist's body,
     one of the separator frames, a label widget displaying an embedded image,
     or (a descendant of) an embedded window.&nbsp; It can also be a header
-    label or an additional widget placed by Tablelist into a header label for
-    displaying a header image or a sort arrow.&nbsp; The return value is often
-    assigned to the help variable <code><b>tablelist::W</b></code>.</dd>
+    label or a Tk core or tile checkbutton embedded into a header label, or a
+    sort arrow.&nbsp; The return value is often assigned to the help variable
+    <code><b>tablelist::W</b></code>.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
@@ -201,12 +201,13 @@ foreach {tablelist::W tablelist::x tablelist::y} \
 
     <dd>This command gets the column number from the path name
     <code><i>headerLabelPathName</i></code> of a tablelist header label or of
-    an additional widget placed by Tablelist into a header label for displaying
-    a header image or a sort arrow.</dd>
+    a Tk core or tile checkbutton embedded into a header label, or of a sort
+    arrow.&nbsp; Returns the column number on success and <code>-1</code> on
+    failure.</dd>
 
-    <dd class="tm">In a binding script, the command argument corresponds to the
-    event field <code><b>%W</b></code>.&nbsp; The return value is often
-    assigned to the help variable <code><b>tablelist::col</b></code>.</dd>
+    <dd class="tm">In a binding script, the argument corresponds to the event
+    field <code><b>%W</b></code>.&nbsp; The return value is often assigned to
+    the help variable <code><b>tablelist::col</b></code>.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 

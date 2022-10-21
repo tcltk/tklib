@@ -1,5 +1,31 @@
-What is new in Tablelist 6.19?
+What is new in Tablelist 6.20?
 ------------------------------
+
+1. Added the "dumptostring" and "loadfromstring" subcommands, which
+   complement "dumptofile" and "loadfromfile", respectively (thanks
+   to Rolf Ade for his proposal).
+
+2. The argument of the "tablelist::getTablelistColumn" command now may
+   also be the path name of a Tk core or tile checkbutton embedded into
+   a header label.
+
+3. Added support for the case that the "default" theme was modified by
+   invoking the "themepatch::patchTheme" command of the themepatch
+   package, which is bundled with the Scrollutil distribution.
+
+4. Redisplaying a column (due to, e.g., setting its "-align", "-font",
+   "-formatcommand", or "-width" option) is no longer suppressed if the
+   column is hidden.  This makes sure that on unhiding the column, its
+   elements will appear properly formatted (thanks to Alexandru Dadalau
+   for his example script that determined me to make this improvement).
+
+5. Improvements related to moving a column interactively, especially on
+   Mac OS X/11+.
+
+6. Several further improvements and minor bug fixes.
+
+What was new in Tablelist 6.19?
+-------------------------------
 
 1. The "get", "getcells", "getformatted", "getformattedcells",
    "getfullkeys", and "getkeys" subcommands now accept an optional

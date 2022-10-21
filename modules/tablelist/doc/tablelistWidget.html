@@ -14,7 +14,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.19</h2>
+    <h2>For Tablelist Version 6.20</h2>
 
     <h3>by</h3>
 
@@ -843,6 +843,9 @@
     <dd><code><i>pathName</i> <b><a href="#dumptofile">dumptofile</a></b>
     <i>fileName</i></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#dumptostring">dumptostring</a></b></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#editcell">editcell</a></b>
     <i>cellIndex</i></code></dd>
 
@@ -1045,6 +1048,10 @@
 
     <dd><code><i>pathName</i> <b><a href="#loadfromfile">loadfromfile</a></b>
     <i>fileName</i> ?<b>-fully</b>|<b>-partly</b>?</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#loadfromstring">loadfromstring</a></b> <i>string</i>
+    ?<b>-fully</b>|<b>-partly</b>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#move">move</a></b>
     <i>sourceIndex</i> <i>targetIndex</i></code></dd>
@@ -9245,8 +9252,8 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
         <code><i>fileName</i></code>.&nbsp; Before writing the data to the
         file, the subcommand expands all rows of the tablelist by
         invoking&nbsp; <code><b><a href= "#expandall">expandall</a>
-        -fully</b></code>.&nbsp; You can later load the file's contents with
-        the aid of the <code><b><a href=
+        -fully</b></code>.&nbsp; You can later load the file's content with the
+        aid of the <code><b><a href=
         "#loadfromfile">loadfromfile</a></b></code> subcommand.</dd>
 
         <dd class="tm"><b>REMARK:</b>&nbsp; Since the
@@ -9255,6 +9262,25 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
         invocation of <code><b>dumptofile</b></code> between <code><b><a href=
         "#setbusycursor">setbusycursor</a></b></code> and <code><b><a href=
         "#restorecursor">restorecursor</a></b></code>.</dd>
+
+        <dt class="tm" id="dumptostring"><code><i>pathName</i>
+        <b>dumptostring</b></code></dt>
+
+        <dd>Returns a string consisting of the header and body items contained
+        in the widget's internal list, along with information regarding the
+        columns, sorting, and tree structure.&nbsp; Before constructing this
+        string, the subcommand expands all rows of the tablelist by
+        invoking&nbsp; <code><b><a href= "#expandall">expandall</a>
+        -fully</b></code>.&nbsp; You can later load the return string with the
+        aid of the <code><b><a href=
+        "#loadfromstring">loadfromstring</a></b></code> subcommand.</dd>
+
+        <dd class="tm"><b>REMARK:</b>&nbsp; Since the
+        <code><b>expandall</b></code> subcommand can take quite a long time
+        (several seconds or even minutes), it is recommended to enclose the
+        invocation of <code><b>dumptostring</b></code> between
+        <code><b><a href="#setbusycursor">setbusycursor</a></b></code> and
+        <code><b><a href="#restorecursor">restorecursor</a></b></code>.</dd>
 
         <dt class="tm" id="editcell"><code><i>pathName</i> <b>editcell</b>
         <i>cellIndex</i></code></dt>
@@ -10335,9 +10361,9 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         <code><b>lsearch</b></code> options), this subcommand is not supported
         for Tk versions earlier than 8.4.</dd>
 
-        <dd class="tm">After clearing the widget's current contents (if any)
-        and applying to it the sorting-related information retrieved from the
-        file, the subcommand inserts the header items (if any) via&nbsp;
+        <dd class="tm">After clearing the widget's current content (if any) and
+        applying to it the sorting-related information retrieved from the file,
+        the subcommand inserts the header items (if any) via&nbsp;
         <code><b><a href="#hdr_insertlist">header
         insertlist</a></b></code>&nbsp; and then examines the body items
         contained in the file.&nbsp; If all of them were direct children of the
@@ -10393,6 +10419,25 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         option between <code><b><a href=
         "#setbusycursor">setbusycursor</a></b></code> and <code><b><a href=
         "#restorecursor">restorecursor</a></b></code>.</dd>
+
+        <dt class="tm" id="loadfromstring"><code><i>pathName</i>
+        <b>loadfromstring</b> <i>string</i>
+        ?<b>-fully</b>|<b>-partly</b>?</code></dt>
+
+        <dd>Populates the tablelist widget using the items and information
+        regarding the columns, sorting, and tree structure retrieved from the
+        string <code><i>string</i></code>, which must have have been returned
+        by the <code><b><a href="#dumptostring">dumptostring</a></b></code>
+        subcommand.</dd>
+
+        <dd class="tm">For technical reasons (the use of some
+        <code><b>lsearch</b></code> options), this subcommand is not supported
+        for Tk versions earlier than 8.4.</dd>
+
+        <dd class="tm">The remaining details are nearly identical to the ones
+        regarding the <code><b><a href=
+        "#loadfromfile">loadfromfile</a></b></code> subcommand (just replace
+        "file" with "string" where appropriate).</dd>
 
         <dt class="tm" id="move"><code><i>pathName</i> <b>move</b>
         <i>sourceIndex</i> <i>targetIndex</i></code><br>
