@@ -1,5 +1,7 @@
 2022-10-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
 	* scripts/utils/themepatch.tcl: When patching a theme, protect the
 	  layouts of the other themes.
 
