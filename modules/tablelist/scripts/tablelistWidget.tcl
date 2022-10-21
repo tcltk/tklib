@@ -96,12 +96,14 @@ namespace eval tablelist {
 	createTileAliases
     }
 
-    variable checkbtnLayout ""
+    variable ckbtnLayouts
+    array set ckbtnLayouts {clam ""  default ""}
     variable widgetStyle ""
     variable colorScheme ""
     switch -- $currentTheme {
-	clam {
-	    set checkbtnLayout [style layout TCheckbutton]
+	clam -
+	default {
+	    set ckbtnLayouts($currentTheme) [style layout TCheckbutton]
 	}
 	tileqt {
 	    set widgetStyle [tileqt_currentThemeName]
@@ -118,21 +120,11 @@ namespace eval tablelist {
 	![regexp {^8\.6(a[1-3]|b1)$} $::tk_patchLevel]) ||
 	($::tk_version >= 8.5 && [catch {package require img::png}] == 0)}]
 
-    variable specialAquaHandling [expr {$usingTile && ($::tk_version >= 8.6 ||
-	[regexp {^8\.5\.(9|[1-9][0-9])$} $::tk_patchLevel]) &&
-	[lsearch -exact [winfo server .] "AppKit"] >= 0}]
-
     variable newAquaSupport [expr {
 	($::tk_version == 8.6 &&
 	 [package vcompare $::tk_patchLevel "8.6.10"] >= 0) ||
 	($::tk_version >= 8.7 &&
 	 [package vcompare $::tk_patchLevel "8.7a3"] >= 0)}]
-
-    variable extendedAquaSupport \
-	[expr {[lsearch -exact [image types] "nsimage"] >= 0}]
-
-    variable uniformWheelSupport [expr {$::tk_version >= 8.7 &&
-	[package vcompare $::tk_patchLevel "8.7a4"] >= 0}]
 
     #
     # The array configSpecs is used to handle configuration options.  The
@@ -510,25 +502,26 @@ namespace eval tablelist {
 	configrowlist configrows configure containing containingcell \
 	containingcolumn cornerlabelpath cornerpath curcellselection \
 	curselection depth delete deletecolumns descendantcount dicttoitem \
-	dumptofile editcell editinfo editwinpath editwintag embedcheckbutton \
-	embedcheckbuttons embedttkcheckbutton embedttkcheckbuttons entrypath \
-	expand expandall expandedkeys fillcolumn findcolumnname findrowname \
-	finishediting formatinfo get getcells getcolumns getformatted \
-	getformattedcells getformattedcolumns getfullkeys getkeys hasattrib \
-	hascellattrib hascolumnattrib hasrowattrib header headerpath \
-	headertag hidetargetmark imagelabelpath index insert insertchild \
+	dumptofile dumptostring editcell editinfo editwinpath editwintag \
+	embedcheckbutton embedcheckbuttons embedttkcheckbutton \
+	embedttkcheckbuttons entrypath expand expandall expandedkeys \
+	fillcolumn findcolumnname findrowname finishediting formatinfo get \
+	getcells getcolumns getformatted getformattedcells \
+	getformattedcolumns getfullkeys getkeys hasattrib hascellattrib \
+	hascolumnattrib hasrowattrib header headerpath headertag \
+	hidetargetmark imagelabelpath index insert insertchild \
 	insertchildlist insertchildren insertcolumnlist insertcolumns \
 	insertlist iselemsnipped isexpanded istitlesnipped isviewable \
 	itemlistvar itemtodict labelpath labels labeltag labelwindowpath \
-	loadfromfile move movecolumn nearest nearestcell nearestcolumn \
-	noderow parentkey refreshsorting rejectinput resetsortinfo \
-	restorecursor rowattrib rowcget rowconfigure scan searchcolumn see \
-	seecell seecolumn selection separatorpath separators setbusycursor \
-	showtargetmark size sort sortbycolumn sortbycolumnlist sortcolumn \
-	sortcolumnlist sortorder sortorderlist stopautoscroll targetmarkpath \
-	targetmarkpos togglecolumnhide togglerowhide toplevelkey unsetattrib \
-	unsetcellattrib unsetcolumnattrib unsetrowattrib viewablerowcount \
-	windowpath xview yview]
+	loadfromfile loadfromstring move movecolumn nearest nearestcell \
+	nearestcolumn noderow parentkey refreshsorting rejectinput \
+	resetsortinfo restorecursor rowattrib rowcget rowconfigure scan \
+	searchcolumn see seecell seecolumn selection separatorpath separators \
+	setbusycursor showtargetmark size sort sortbycolumn sortbycolumnlist \
+	sortcolumn sortcolumnlist sortorder sortorderlist stopautoscroll \
+	targetmarkpath targetmarkpos togglecolumnhide togglerowhide \
+	toplevelkey unsetattrib unsetcellattrib unsetcolumnattrib \
+	unsetrowattrib viewablerowcount windowpath xview yview]
 
     proc restrictCmdOpts {} {
 	variable canElide
@@ -550,8 +543,10 @@ namespace eval tablelist {
 	}
 
 	if {$::tk_version < 8.4} {
-	    set idx [lsearch -exact $cmdOpts "loadfromfile"]
-	    set cmdOpts [lreplace $cmdOpts $idx $idx]
+	    foreach opt [list loadfromfile loadfromstring] {
+		set idx [lsearch -exact $cmdOpts $opt]
+		set cmdOpts [lreplace $cmdOpts $idx $idx]
+	    }
 	}
 
 	if {$::tk_version < 8.5} {
@@ -2402,6 +2397,19 @@ proc tablelist::dumptofileSubCmd {win argList} {
 	return -code error $file
     }
 
+    puts $file [dumptostringSubCmd $win {}]
+    close $file
+    return ""
+}
+
+#------------------------------------------------------------------------------
+# tablelist::dumptostringSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::dumptostringSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win dumptostring"
+    }
+
     synchronize $win
     displayItems $win
 
@@ -2415,26 +2423,24 @@ proc tablelist::dumptofileSubCmd {win argList} {
     upvar ::tablelist::ns${win}::data data
     set lastCol $data(lastCol)
     set hdr_itemList {}
-    set itemList {}
     set parentList {}
+    set itemList {}
     foreach item $data(hdr_itemList) {
 	lappend hdr_itemList [lrange $item 0 $lastCol]
     }
     foreach item $data(itemList) {
 	set key [lindex $item end]
-	set parentRow [keyToRow $win $data($key-parent)]
-
+	lappend parentList [keyToRow $win $data($key-parent)]
 	lappend itemList [lrange $item 0 $lastCol]
-	lappend parentList $parentRow
     }
 
-    puts $file [strMap {\n \\n} [::$win cget -columntitles]]
-    puts $file [list [::$win sortcolumnlist] [::$win sortorderlist]]
-    puts $file [strMap {\n \\n} $hdr_itemList]
-    puts $file $parentList
-    puts $file $itemList
-    close $file
-    return ""
+    set str ""
+    append str [strMap {\n \\n} [::$win cget -columntitles]] \n
+    append str [list [::$win sortcolumnlist] [::$win sortorderlist]] \n
+    append str [strMap {\n \\n} $hdr_itemList] \n
+    append str $parentList \n
+    append str $itemList
+    return $str
 }
 
 #------------------------------------------------------------------------------
@@ -5268,18 +5274,57 @@ proc tablelist::loadfromfileSubCmd {win argList} {
 	return -code error $file
     }
 
-    set columnTitles [strMap {\\n \n} [gets $file]]
-    if {[string compare $columnTitles [::$win cget -columntitles]] != 0} {
-	close $file
+    set str [read $file]
+    close $file
+
+    if {[catch {loadfromstringSubCmd $win [list $str $opt]}] == 0} {
+	return ""
+    } else {
 	return -code error \
 	    "the specified file is not compatible with this tablelist widget"
     }
+}
 
-    foreach {sortColumnList sortOrderList} [gets $file] {}
-    set hdr_itemList [strMap {\\n \n} [gets $file]]
-    set parentList [gets $file]
-    set itemList [read $file]
-    close $file
+#------------------------------------------------------------------------------
+# tablelist::loadfromstringSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::loadfromstringSubCmd {win argList} {
+    set argCount [llength $argList]
+    if {$argCount < 1 || $argCount > 2} {
+	mwutil::wrongNumArgs "$win loadfromstring string ?-fully|-partly?"
+    }
+
+    set str [lindex $argList 0]
+    if {$argCount == 1} {
+	set opt "-partly"
+    } else {
+	variable expCollOpts
+	set opt [mwutil::fullOpt "option" [lindex $argList 1] $expCollOpts]
+    }
+
+    set idx [string first \n $str]
+    set line [string range $str 0 [expr {$idx - 1}]]
+    set columnTitles [strMap {\\n \n} $line]
+    if {[string compare $columnTitles [::$win cget -columntitles]] != 0} {
+	return -code error \
+	    "the specified string is not compatible with this tablelist widget"
+    }
+
+    set startIdx [incr idx]
+    set idx [string first \n $str $startIdx]
+    set line [string range $str $startIdx [expr {$idx - 1}]]
+    foreach {sortColumnList sortOrderList} $line {}
+
+    set startIdx [incr idx]
+    set idx [string first \n $str $startIdx]
+    set line [string range $str $startIdx [expr {$idx - 1}]]
+    set hdr_itemList [strMap {\\n \n} $line]
+
+    set startIdx [incr idx]
+    set idx [string first \n $str $startIdx]
+    set parentList [string range $str $startIdx [expr {$idx - 1}]]
+
+    set itemList [string range $str [incr idx] end]
 
     if {$::tk_version >= 8.5} {
 	::$win header delete 0 end
@@ -9421,10 +9466,11 @@ proc tablelist::checkStatesTrace {win varName arrIndex op} {
 #------------------------------------------------------------------------------
 # tablelist::populateCmd
 #
-# This procedure is the value to which the loadfromfile subcommand with the
-# -partly option sets the -populatecommand option of the tablelist widget win.
-# It inserts the children of the specified row, according to the values of some
-# widget and row attributes, set by the loadfromfile subcommand.
+# This procedure is the value to which the loadfromfile and loadfromstring
+# subcommands with the -partly option set the -populatecommand option of the
+# tablelist widget win.  It inserts the children of the specified row,
+# according to the values of some widget and row attributes, set by the 
+# loadfromfile and loadfromstring subcommands.
 #------------------------------------------------------------------------------
 proc tablelist::populateCmd {win row} {
     set itemList [::$win attrib "itemList"]
@@ -9466,10 +9512,10 @@ proc tablelist::populateCmd {win row} {
 #------------------------------------------------------------------------------
 # tablelist::expandCmd
 #
-# This procedure is the value to which the loadfromfile subcommand with the
-# -partly option sets the -expandcommand option of the tablelist widget win.
-# It invokes the populateCmd procedure if the specified row has no children
-# yet.
+# This procedure is the value to which the loadfromfile and loadfromstring
+# subcommands with the -partly option set the -expandcommand option of the
+# tablelist widget win.  It invokes the populateCmd procedure if the specified
+# row has no children yet.
 #------------------------------------------------------------------------------
 proc tablelist::expandCmd {win row} {
     if {[::$win childcount $row] == 0} {
