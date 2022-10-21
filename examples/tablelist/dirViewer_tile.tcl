@@ -7,7 +7,7 @@
 # Copyright (c) 2010-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.19
+package require tablelist_tile 6.20
 
 #
 # Add some entries to the Tk option database

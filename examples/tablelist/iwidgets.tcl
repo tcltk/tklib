@@ -9,7 +9,7 @@
 #==============================================================================
 
 package require Tk 8.4				;# because of "-compound"
-package require tablelist 6.19
+package require tablelist 6.20
 if {[catch {package require iwidgets} result1] != 0 &&
     [catch {package require Iwidgets} result2] != 0} {
     error "$result1; $result2"
