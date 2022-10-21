@@ -1,3 +1,8 @@
+2022-10-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/utils/themepatch.tcl: When patching a theme, protect the
+	  layouts of the other themes.
+
 2022-10-20  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scrollutilCommon.tcl: Don't load the clampatch package.
