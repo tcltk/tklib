@@ -71,6 +71,7 @@ proc themepatch::unpatchTheme theme {
     }
 }
 
+#
 # Private helper procedures
 # =========================
 #
@@ -86,6 +87,19 @@ namespace eval themepatch::default {}
 #------------------------------------------------------------------------------
 proc themepatch::patchTheme_clam {} {
     set pct [::scaleutil::scalingPercentage [tk windowingsystem]]
+
+    #
+    # Save the TCheckbutton and TRadiobutton layouts of the other
+    # themes, because some of them might have clam as ancestor
+    #
+    foreach theme [ttk::style theme names] {
+	if {$theme ne "clam"} {
+	    ttk::style theme settings $theme {
+		set ckbtnLayoutArr($theme) [ttk::style layout TCheckbutton]
+		set rdbtnLayoutArr($theme) [ttk::style layout TRadiobutton]
+	    }
+	}
+    }
 
     ttk::style theme settings clam {
 	#
@@ -170,6 +184,16 @@ proc themepatch::patchTheme_clam {} {
     }
 
     #
+    # Restore the TCheckbutton and TRadiobutton layouts of the other themes
+    #
+    foreach theme [array names ckbtnLayoutArr] {
+	ttk::style theme settings $theme {
+	    ttk::style layout TCheckbutton $ckbtnLayoutArr($theme)
+	    ttk::style layout TRadiobutton $rdbtnLayoutArr($theme)
+	}
+    }
+
+    #
     # Send a <<ThemeChanged>> virtual event to all widgets
     #
     ::ttk::ThemeChanged
@@ -239,6 +263,19 @@ proc themepatch::patchTheme_default {} {
     set pct [::scaleutil::scalingPercentage [tk windowingsystem]]
     set pad [::scaleutil::scale 5 $pct]
 
+    #
+    # Save the TCheckbutton and TRadiobutton layouts of the
+    # other themes, because they have default as ancestor
+    #
+    foreach theme [ttk::style theme names] {
+	if {$theme ne "default"} {
+	    ttk::style theme settings $theme {
+		set ckbtnLayoutArr($theme) [ttk::style layout TCheckbutton]
+		set rdbtnLayoutArr($theme) [ttk::style layout TRadiobutton]
+	    }
+	}
+    }
+
     ttk::style theme settings default {
 	#
 	# Create the Checkbutton.image_ind and Radiobutton.image_ind elements
@@ -296,6 +333,16 @@ proc themepatch::patchTheme_default {} {
 		    Radiobutton.label -sticky nswe
 		}
 	    }
+	}
+    }
+
+    #
+    # Restore the TCheckbutton and TRadiobutton layouts of the other themes
+    #
+    foreach theme [array names ckbtnLayoutArr] {
+	ttk::style theme settings $theme {
+	    ttk::style layout TCheckbutton $ckbtnLayoutArr($theme)
+	    ttk::style layout TRadiobutton $rdbtnLayoutArr($theme)
 	}
     }
 
