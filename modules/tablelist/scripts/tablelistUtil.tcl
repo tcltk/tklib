@@ -6923,7 +6923,7 @@ proc tablelist::makeTtkCkbtn w {
 	    if {[string first "Checkbutton.indicator" $ckbtnLayout] >= 0} {
 		style layout Tablelist.TCheckbutton { Checkbutton.indicator }
 		styleConfig Tablelist.TCheckbutton -indicatormargin {0 0 1 1}
-	    } else {		;# see procedure themepatch::patchTheme_clam
+	    } else {		;# see procedure themepatch::patch_clam
 		style layout Tablelist.TCheckbutton { Checkbutton.image_ind }
 	    }
 	}
@@ -6932,7 +6932,7 @@ proc tablelist::makeTtkCkbtn w {
 	    if {[string first "Checkbutton.indicator" $ckbtnLayout] >= 0} {
 		style layout Tablelist.TCheckbutton { Checkbutton.indicator }
 		styleConfig Tablelist.TCheckbutton -indicatormargin 0
-	    } else {		;# see procedure themepatch::patchTheme_default
+	    } else {		;# see procedure themepatch::patch_default
 		style layout Tablelist.TCheckbutton { Checkbutton.image_ind }
 	    }
 	}

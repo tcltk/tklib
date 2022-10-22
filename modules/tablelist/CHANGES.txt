@@ -10,8 +10,8 @@ What is new in Tablelist 6.20?
    a header label.
 
 3. Added support for the case that the "default" theme was modified by
-   invoking the "themepatch::patchTheme" command of the themepatch
-   package, which is bundled with the Scrollutil distribution.
+   invoking the "themepatch::patch" command of the themepatch package,
+   which is bundled with the Scrollutil distribution.
 
 4. Redisplaying a column (due to, e.g., setting its "-align", "-font",
    "-formatcommand", or "-width" option) is no longer suppressed if the
