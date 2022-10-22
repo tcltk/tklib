@@ -25,7 +25,7 @@ What is new in Scrollutil 1.17?
 
 7. Made the look and behavior of the ttk::checkbutton and
    ttk::radiobutton widgets of the "clam" theme patched via
-   "themepatch::patchTheme clam" more fancy.
+   "themepatch::patch clam" more fancy.
 
 8. Several improvements in the demo scripts and documentation.
 

@@ -31,7 +31,7 @@ namespace eval themepatch {
     #
     # Public procedures:
     #
-    namespace export	patchTheme unpatchTheme
+    namespace export	patch unpatch
 }
 
 package provide themepatch $themepatch::version
@@ -42,14 +42,14 @@ package provide themepatch $themepatch::version
 #
 
 #------------------------------------------------------------------------------
-# themepatch::patchTheme
+# themepatch::patch
 #
 # Patches some styles of the given theme.
 #------------------------------------------------------------------------------
-proc themepatch::patchTheme theme {
+proc themepatch::patch theme {
     switch $theme {
 	clam -
-	default { patchTheme_$theme }
+	default { patch_$theme }
 	default {
 	    return -code error "bad theme \"$theme\": must be clam or default"
 	}
@@ -57,14 +57,14 @@ proc themepatch::patchTheme theme {
 }
 
 #------------------------------------------------------------------------------
-# themepatch::unpatchTheme
+# themepatch::unpatch
 #
 # Unpatches some styles of the given theme.
 #------------------------------------------------------------------------------
-proc themepatch::unpatchTheme theme {
+proc themepatch::unpatch theme {
     switch $theme {
 	clam -
-	default { unpatchTheme_$theme }
+	default { unpatch_$theme }
 	default {
 	    return -code error "bad theme \"$theme\": must be clam or default"
 	}
@@ -80,12 +80,12 @@ namespace eval themepatch::clam    {}
 namespace eval themepatch::default {}
 
 #------------------------------------------------------------------------------
-# themepatch::patchTheme_clam
+# themepatch::patch_clam
 #
 # Patches the styles TButton, Heading, TCheckbutton, and TRadiobutton of the
 # clam theme.
 #------------------------------------------------------------------------------
-proc themepatch::patchTheme_clam {} {
+proc themepatch::patch_clam {} {
     set pct [::scaleutil::scalingPercentage [tk windowingsystem]]
 
     #
@@ -200,12 +200,12 @@ proc themepatch::patchTheme_clam {} {
 }
 
 #------------------------------------------------------------------------------
-# themepatch::unpatchTheme_clam
+# themepatch::unpatch_clam
 #
 # Unpatches the styles TButton, Heading, TCheckbutton, and TRadiobutton of the
 # clam theme.
 #------------------------------------------------------------------------------
-proc themepatch::unpatchTheme_clam {} {
+proc themepatch::unpatch_clam {} {
     set pct [::scaleutil::scalingPercentage [tk windowingsystem]]
 
     ttk::style theme settings clam {
@@ -255,11 +255,11 @@ proc themepatch::unpatchTheme_clam {} {
 }
 
 #------------------------------------------------------------------------------
-# themepatch::patchTheme_default
+# themepatch::patch_default
 #
 # Patches the styles TCheckbutton and TRadiobutton of the default theme.
 #------------------------------------------------------------------------------
-proc themepatch::patchTheme_default {} {
+proc themepatch::patch_default {} {
     set pct [::scaleutil::scalingPercentage [tk windowingsystem]]
     set pad [::scaleutil::scale 5 $pct]
 
@@ -353,11 +353,11 @@ proc themepatch::patchTheme_default {} {
 }
 
 #------------------------------------------------------------------------------
-# themepatch::unpatchTheme_default
+# themepatch::unpatch_default
 #
 # Unpatches the styles TCheckbutton and TRadiobutton of the default theme.
 #------------------------------------------------------------------------------
-proc themepatch::unpatchTheme_default {} {
+proc themepatch::unpatch_default {} {
     ttk::style theme settings default {
 	#
 	# Restore the TCheckbutton and TRadiobutton layouts
