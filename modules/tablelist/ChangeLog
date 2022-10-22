@@ -1,3 +1,8 @@
+2022-10-22 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:               Renamed themepatch::(un)patchTheme to
+	* scripts/tablelistUtil.tcl: themepatch::(un)patch.
+
 2022-10-21 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:                          Bumped the version number to 6.20.
