@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'canvas_epoints\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "canvas::edit::points" n 0\&.2 tklib "Variations on a canvas"
+.TH "canvas::edit::points" n 0\&.3 tklib "Variations on a canvas"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -277,7 +277,7 @@ package require \fBTcl  8\&.5\fR
 .sp
 package require \fBTk  8\&.5\fR
 .sp
-package require \fBcanvas::edit::points  ?0\&.2?\fR
+package require \fBcanvas::edit::points  ?0\&.3?\fR
 .sp
 \fB::canvas::edit\fR \fBpoints\fR \fIobjectName\fR \fIcanvas\fR \fIoptions\fR\&.\&.\&.
 .sp
@@ -293,11 +293,9 @@ package require \fBcanvas::edit::points  ?0\&.2?\fR
 .sp
 \fBobjectName\fR \fBclear\fR
 .sp
+\fBactiveCmd\fR \fIeditorObj\fR \fIid\fR
+.sp
 \fBcreateCmd\fR \fIcanvas\fR \fIx\fR \fIy\fR
-.sp
-\fBhighlightCmd\fR \fBon\fR \fIcanvas\fR \fIitem\fR
-.sp
-\fBhighlightCmd\fR \fBoff\fR \fIcanvas\fR \fIstate\fR
 .sp
 \fBdataCmd\fR \fBadd\fR \fIeditorObj\fR \fIid\fR \fIx\fR \fIy\fR
 .sp
@@ -311,11 +309,60 @@ package require \fBcanvas::edit::points  ?0\&.2?\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides a class whose instances handle editing a cloud
-of point markers on a canvas\&. Instances can be configured with regard
-to the visual appearance of markers (regular, and highlighted)\&. Note
-that instances do not store the edited points themselves, but delegate
-this to a configurable object\&.
+This package provides a class whose instances handle editing a cloud of point markers on a
+canvas\&. Instances can be configured with regard to the visual appearance of markers\&. Note that
+instances do not store the edited points themselves, but delegate this to a configurable object\&.
+.SH INTERACTION
+.PP
+The default bindings enable the creation, removal and dragging of point (markers) using the
+mouse buttons 1, 2, and 3\&. Specifically:
+.IP [1]
+Clicking anywhere with button 1 adds a new point\&.
+.IP [2]
+Clicking on a point with button 2 removes that point\&.
+.IP [3]
+Clicking on a point with button 3 starts a drag operation ending with the release of the
+button\&.
+.PP
+.PP
+The option \fB-drag-point\fR can be used to change the button used to initiate drag
+operations\&. Note that the option value may not only contain the button number, but also modifier
+prefix separated from the button by a dash "\fB-\fR"\&.
+The recognized modifiers are \fBControl\fR, \fBShift\fR, and \fBAlt\fR\&.
+.PP
+The option \fB-add-remove-point\fR can be used to change the button used to add/remove
+points\&. This works because removal is an item binding, while adding is canvas global\&. The option
+recognizes the same syntax for button as \fB-drag-point\fR\&.
+.PP
+In the standard configuration the canvas item representing a point is a circle configured
+using the appearance options \fB-color\fR, \fB-hilit-color\fR, and \fB-radius\fR\&. Their
+defaults are \fBSkyblue2\fR, \fBred\fR, and \fB3\fR, repsectively\&.
+.PP
+The option \fB-kind\fR can be used to slightly customize the canvas item to any kind
+accepting the item options \fB-width\fR, \fB-outline\fR, \fB-fill\fR, and
+\fB-activefill\fR\&.
+.PP
+For more extensive customization its is necessary to configure a creation callback using
+option \fB-create-cmd\fR\&. The callback takes the canvas and x\&. y coordinates as arguments, in
+this order, and is expected to return a list of the canvas items representing the point\&.
+.PP
+Note the plural\&. With the callback it is possible to visualize a point using a group of
+items\&.
+.PP
+Further note that when the callback return an empty list no point is created\&. In other words,
+the callback can also be used to perform checks if a point at the given location is desirable, or
+not\&. This can be combined with the default creation behaviour as the option can be queried, and its
+default value is the callback for the default behaviour\&.
+.PP
+Keeping with the callback for a bit, the option \fB-active-cmd\fR sets a callback invoked
+whenever the mouse is over one of the created points, i\&.e\&. active\&. This can be used to drive derived
+displays\&. For example highlighting the point's entry in a table or other widget\&.
+.PP
+The last option of importance is \fB-tag\fR\&. Its value is the name of the canvas tag used
+to mark all the items owned, i\&.e\&. created and managed by an\&. The default is \fBPOINT\fR\&.
+.PP
+When attaching multiple instances of this behaviour to the same canvas each instance has to
+be configured with a unique tag, to prevent them from interfering with each other\&.
 .SH "CLASS API"
 .TP
 \fB::canvas::edit\fR \fBpoints\fR \fIobjectName\fR \fIcanvas\fR \fIoptions\fR\&.\&.\&.
@@ -393,19 +440,49 @@ when the user interactively removes a point, i\&.e\&. \fB-data-cmd\fR\&.
 .SH OPTIONS
 The class command accepts the following options
 .TP
-\fB-tag\fR \fIstring\fR
-The value of this option is the name of the canvas tag with which to
-identify all items of all points managed by the editor\&.
+\fB-active-cmd\fR \fIcommand-prefix\fR
+The value of this option is a command prefix the editor will invoke
+when the mouse enters or leaves a point managed by the instance\&.
+.sp
+If not specified it defaults to an empty command which does nothing\&.
+.sp
+The signature of this command prefix is
+.RS
+.TP
+\fBactiveCmd\fR \fIeditorObj\fR \fIid\fR
+.sp
+The \fIid\fR identifies the point within the editor\&.
+.sp
+An empty \fIid\fR indicates that the last entered point was left\&.
+.sp
+The result of this method is ignored\&.
+.RE
+.TP
+\fB-add-remove-point\fR \fIeventspec\fR
+The value of this option is an event specification (without bracketing angles) declaring which event
+will trigger adding and removing a point\&.
 .sp
 This option can only be set at construction time\&.
 .sp
-If not specified it defaults to \fBPOINT\fR
+The default setup uses different events for adding and removing points, \fBButtonPress-1\fR
+and \fBButtonPress-2\fR respectively\&.
+.sp
+When using this option the same event is used for both operations\&. This is no problem because
+adding is bound as canvas-global event while removal is bound to the relevant canvas items\&.
+.TP
+\fB-color\fR \fIcolorspec\fR
+The value of this option is the fill color for the default item created when adding a point, and no
+\fB-create-cmd\fR is specified\&.
+.sp
+The default value is \fBSkyBlue2\fR\&.
 .TP
 \fB-create-cmd\fR \fIcommand-prefix\fR
 The value of this option is a command prefix the editor will invoke
 when it has to create a new point\&.
 .sp
-This option can only be set at construction time\&.
+While this option can be set after construction, it is recommended to use this feature only
+as a means of inserting custom processing to be done at creation time which remembers and calls the
+previous value of the option\&.
 .sp
 If not specified it defaults to a command which will create a
 black-bordered blue circle of radius 3 centered on the location of the
@@ -422,40 +499,6 @@ arbitrary shape\&.
 .sp
 The returned list of items is allowed to be empty, and such is
 taken as signal that the callback vetoed the creation of the point\&.
-.RE
-.TP
-\fB-highlight-cmd\fR \fIcommand-prefix\fR
-The value of this option is a command prefix the editor will invoke
-when it has to (un)highlight a point\&.
-.sp
-This option can only be set at construction time\&.
-.sp
-If not specified it defaults to a command which will re-color
-the item to highlight in red (and restores the color for
-unhighlighting)\&.
-.sp
-The two signatures of this command prefix are
-.RS
-.TP
-\fBhighlightCmd\fR \fBon\fR \fIcanvas\fR \fIitem\fR
-.sp
-This method of the command prefix has to perform whatever is
-needed to highlight the point the \fIitem\fR is a part of (remember
-the note above about points allowed to be constructed from multiple
-canvas items)\&.
-.sp
-The result of the command can be anything and will be passed as
-is as argument \fIstate\fR to the \fBoff\fR method\&.
-.TP
-\fBhighlightCmd\fR \fBoff\fR \fIcanvas\fR \fIstate\fR
-.sp
-This method is invoked to unhighlight a point described by the
-\fIstate\fR, which is the unchanged result of the \fBon\fR method
-of the command prefix\&. The result of this method is ignored\&.
-.sp
-Note any interaction between dragging and highlighting of
-points is handled within the editor, and that the callback bears no
-responsibility for doing such\&.
 .RE
 .TP
 \fB-data-cmd\fR \fIcommand-prefix\fR
@@ -529,6 +572,41 @@ The \fIid\fR identifies the moved point within the editor\&.
 The result of this method must be a boolean value\&. If the
 method returns \fBfalse\fR the move is vetoed and rollbed back\&.
 .RE
+.TP
+\fB-drag-point\fR \fIeventspec\fR
+The value of this option is an event specification (without bracketing angles) declaring which event
+will trigger a drag action on points\&.
+.sp
+This option can only be set at construction time\&.
+.sp
+The default specification is \fBButtonPress-3\fR\&.
+.TP
+\fB-hilit-color\fR \fIcolorspec\fR
+The value of this option is the highlight color for the default item created when adding a point,
+and no \fB-highlight-cmd\fR is specified\&.
+.sp
+The default value is \fBred\fR\&.
+.TP
+\fB-kind\fR \fIname\fR
+The value of this option is the canvas item type for the default item created when adding a point,
+and no \fB-create-cmd\fR is specified\&.
+Only item types specified through a bounding box are suitable\&.
+.sp
+The default value is \fBoval\fR\&.
+.TP
+\fB-radius\fR \fIint\fR
+The value of this option is the radius for the default item created when adding a point,
+and no \fB-create-cmd\fR is specified\&.
+.sp
+The default value is \fB3\fR\&.
+.TP
+\fB-tag\fR \fIstring\fR
+The value of this option is the name of the canvas tag with which to
+identify all items of all points managed by the editor\&.
+.sp
+This option can only be set at construction time\&.
+.sp
+If not specified it defaults to \fBPOINT\fR
 .PP
 .SH "BUGS, IDEAS, FEEDBACK"
 This document, and the package it describes, will undoubtedly contain

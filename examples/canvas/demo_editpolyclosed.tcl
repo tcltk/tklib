@@ -1,19 +1,19 @@
 #!/bin/env tclsh8.5
 # -*- tcl -*-
 # # ## ### ##### ######## ############# #####################
-# demo_editquad.tcl --
+# demo_editpoly.tcl --
 #
 # This demonstration script creates a canvas widget where you can edit
-# a quadrilateral.
+# an ordered cloud of points i.e. a poly-line.
 #
-# RCS: @(#) $Id: demo_editquad.tcl,v 1.1 2012/02/24 01:41:22 andreas_kupries Exp $
+# RCS: @(#) $Id: demo_editpoly.tcl,v 1.1 2012/02/24 01:41:22 andreas_kupries Exp $
 
 # # ## ### ##### ######## ############# #####################
 ## Bindings
 #
-# Button-1 : Create new quad vertex at mouse position.
-# Button-2 : Remove quad vertex at mouse position.
-# Button-3 : Start drag of quad vertex at mouse position.
+# Button-1 : Create new line vertex at mouse position.
+# Button-2 : Remove line vertex at mouse position.
+# Button-3 : Start drag of line vertex at mouse position.
 
 # # ## ### ##### ######## ############# #####################
 ## Requirements
@@ -31,7 +31,7 @@ apply {{selfdir} {
 }} [file dirname [file normalize [info script]]]
 
 package require Tk
-package require canvas::edit::quadrilateral
+package require canvas::edit::polyline
 
 # # ## ### ##### ######## ############# #####################
 ## GUI
@@ -41,7 +41,7 @@ catch {destroy $w}
 wm withdraw .
 
 toplevel       $w
-wm title       $w "Canvas :: Editor :: Quadrilateral"
+wm title       $w "Canvas :: Editor :: Polygon"
 wm iconname    $w "CEP"
 set c          $w.c
 
@@ -69,7 +69,11 @@ grid $w.clear -row 2 -column 3               -sticky swen
 # # ## ### ##### ######## ############# #####################
 ## Setup the behavioral triggers and responses ...
 
-canvas::edit quadrilateral EDITOR $c -data-cmd M
+# lc to demo polygon filling on highlight
+set lc {-line-config { -activefill green -activestipple gray25 }}
+set lc {}
+
+canvas::edit polyline EDITOR $c -data-cmd M -closed 1 {*}$lc
 
 proc M {args} {
     global w

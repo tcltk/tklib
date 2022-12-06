@@ -1,19 +1,12 @@
 #!/bin/env tclsh8.5
 # -*- tcl -*-
 # # ## ### ##### ######## ############# #####################
-# demo_editquad.tcl --
+# demo_editcircle.tcl --
 #
-# This demonstration script creates a canvas widget where you can edit
-# a quadrilateral.
-#
-# RCS: @(#) $Id: demo_editquad.tcl,v 1.1 2012/02/24 01:41:22 andreas_kupries Exp $
+# This demonstration script creates a canvas widget where you can edit a circle
 
 # # ## ### ##### ######## ############# #####################
-## Bindings
-#
-# Button-1 : Create new quad vertex at mouse position.
-# Button-2 : Remove quad vertex at mouse position.
-# Button-3 : Start drag of quad vertex at mouse position.
+## Bindings - Defaults
 
 # # ## ### ##### ######## ############# #####################
 ## Requirements
@@ -31,7 +24,7 @@ apply {{selfdir} {
 }} [file dirname [file normalize [info script]]]
 
 package require Tk
-package require canvas::edit::quadrilateral
+package require canvas::edit::circle
 
 # # ## ### ##### ######## ############# #####################
 ## GUI
@@ -41,7 +34,7 @@ catch {destroy $w}
 wm withdraw .
 
 toplevel       $w
-wm title       $w "Canvas :: Editor :: Quadrilateral"
+wm title       $w "Canvas :: Editor :: Circle"
 wm iconname    $w "CEP"
 set c          $w.c
 
@@ -69,7 +62,7 @@ grid $w.clear -row 2 -column 3               -sticky swen
 # # ## ### ##### ######## ############# #####################
 ## Setup the behavioral triggers and responses ...
 
-canvas::edit quadrilateral EDITOR $c -data-cmd M
+canvas::edit circle EDITOR $c -data-cmd M
 
 proc M {args} {
     global w

@@ -1,7 +1,7 @@
 
 [//000000001]: # (canvas::edit::points \- Variations on a canvas)
 [//000000002]: # (Generated from file 'canvas\_epoints\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (canvas::edit::points\(n\) 0\.2 tklib "Variations on a canvas")
+[//000000003]: # (canvas::edit::points\(n\) 0\.3 tklib "Variations on a canvas")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -22,13 +22,15 @@ canvas::edit::points \- Editing a cloud of points on a canvas
 
   - [Description](#section1)
 
-  - [Class API](#section2)
+  - [Interaction](#section2)
 
-  - [Instance API](#section3)
+  - [Class API](#section3)
 
-  - [Options](#section4)
+  - [Instance API](#section4)
 
-  - [Bugs, Ideas, Feedback](#section5)
+  - [Options](#section5)
+
+  - [Bugs, Ideas, Feedback](#section6)
 
   - [Keywords](#keywords)
 
@@ -36,7 +38,7 @@ canvas::edit::points \- Editing a cloud of points on a canvas
 
 package require Tcl 8\.5  
 package require Tk 8\.5  
-package require canvas::edit::points ?0\.2?  
+package require canvas::edit::points ?0\.3?  
 
 [__::canvas::edit__ __points__ *objectName* *canvas* *options*\.\.\.](#1)  
 [__objectName__ __destroy__](#2)  
@@ -45,23 +47,81 @@ package require canvas::edit::points ?0\.2?
 [__objectName__ __active__](#5)  
 [__objectName__ __add__ *x* *y*](#6)  
 [__objectName__ __clear__](#7)  
-[__createCmd__ *canvas* *x* *y*](#8)  
-[__highlightCmd__ __on__ *canvas* *item*](#9)  
-[__highlightCmd__ __off__ *canvas* *state*](#10)  
-[__dataCmd__ __add__ *editorObj* *id* *x* *y*](#11)  
-[__dataCmd__ __remove__ *editorObj* *id*](#12)  
-[__dataCmd__ __move start__ *editorObj* *id*](#13)  
-[__dataCmd__ __move delta__ *editorObj* *id* *x* *y* *dx* *dy*](#14)  
-[__dataCmd__ __move done__ *editorObj* *id*](#15)  
+[__activeCmd__ *editorObj* *id*](#8)  
+[__createCmd__ *canvas* *x* *y*](#9)  
+[__dataCmd__ __add__ *editorObj* *id* *x* *y*](#10)  
+[__dataCmd__ __remove__ *editorObj* *id*](#11)  
+[__dataCmd__ __move start__ *editorObj* *id*](#12)  
+[__dataCmd__ __move delta__ *editorObj* *id* *x* *y* *dx* *dy*](#13)  
+[__dataCmd__ __move done__ *editorObj* *id*](#14)  
 
 # <a name='description'></a>DESCRIPTION
 
 This package provides a class whose instances handle editing a cloud of point
 markers on a canvas\. Instances can be configured with regard to the visual
-appearance of markers \(regular, and highlighted\)\. Note that instances do not
-store the edited points themselves, but delegate this to a configurable object\.
+appearance of markers\. Note that instances do not store the edited points
+themselves, but delegate this to a configurable object\.
 
-# <a name='section2'></a>Class API
+# <a name='section2'></a>Interaction
+
+The default bindings enable the creation, removal and dragging of point
+\(markers\) using the mouse buttons 1, 2, and 3\. Specifically:
+
+  1. Clicking anywhere with button 1 adds a new point\.
+
+  1. Clicking on a point with button 2 removes that point\.
+
+  1. Clicking on a point with button 3 starts a drag operation ending with the
+     release of the button\.
+
+The option __\-drag\-point__ can be used to change the button used to initiate
+drag operations\. Note that the option value may not only contain the button
+number, but also modifier prefix separated from the button by a dash
+"__\-__"\. The recognized modifiers are __Control__, __Shift__, and
+__Alt__\.
+
+The option __\-add\-remove\-point__ can be used to change the button used to
+add/remove points\. This works because removal is an item binding, while adding
+is canvas global\. The option recognizes the same syntax for button as
+__\-drag\-point__\.
+
+In the standard configuration the canvas item representing a point is a circle
+configured using the appearance options __\-color__, __\-hilit\-color__,
+and __\-radius__\. Their defaults are __Skyblue2__, __red__, and
+__3__, repsectively\.
+
+The option __\-kind__ can be used to slightly customize the canvas item to
+any kind accepting the item options __\-width__, __\-outline__,
+__\-fill__, and __\-activefill__\.
+
+For more extensive customization its is necessary to configure a creation
+callback using option __\-create\-cmd__\. The callback takes the canvas and x\.
+y coordinates as arguments, in this order, and is expected to return a list of
+the canvas items representing the point\.
+
+Note the plural\. With the callback it is possible to visualize a point using a
+group of items\.
+
+Further note that when the callback return an empty list no point is created\. In
+other words, the callback can also be used to perform checks if a point at the
+given location is desirable, or not\. This can be combined with the default
+creation behaviour as the option can be queried, and its default value is the
+callback for the default behaviour\.
+
+Keeping with the callback for a bit, the option __\-active\-cmd__ sets a
+callback invoked whenever the mouse is over one of the created points, i\.e\.
+active\. This can be used to drive derived displays\. For example highlighting the
+point's entry in a table or other widget\.
+
+The last option of importance is __\-tag__\. Its value is the name of the
+canvas tag used to mark all the items owned, i\.e\. created and managed by an\. The
+default is __POINT__\.
+
+When attaching multiple instances of this behaviour to the same canvas each
+instance has to be configured with a unique tag, to prevent them from
+interfering with each other\.
+
+# <a name='section3'></a>Class API
 
   - <a name='1'></a>__::canvas::edit__ __points__ *objectName* *canvas* *options*\.\.\.
 
@@ -73,9 +133,9 @@ store the edited points themselves, but delegate this to a configurable object\.
     command\.
 
     The options accepted here, and their values, are explained in the section
-    [Options](#section4)\.
+    [Options](#section5)\.
 
-# <a name='section3'></a>Instance API
+# <a name='section4'></a>Instance API
 
 Instances of the point cloud editors provide the following API:
 
@@ -141,32 +201,63 @@ Instances of the point cloud editors provide the following API:
     Note that this method goes through the same callback invoked when the user
     interactively removes a point, i\.e\. __\-data\-cmd__\.
 
-# <a name='section4'></a>Options
+# <a name='section5'></a>Options
 
 The class command accepts the following options
 
-  - __\-tag__ *string*
+  - __\-active\-cmd__ *command\-prefix*
 
-    The value of this option is the name of the canvas tag with which to
-    identify all items of all points managed by the editor\.
+    The value of this option is a command prefix the editor will invoke when the
+    mouse enters or leaves a point managed by the instance\.
+
+    If not specified it defaults to an empty command which does nothing\.
+
+    The signature of this command prefix is
+
+      * <a name='8'></a>__activeCmd__ *editorObj* *id*
+
+        The *id* identifies the point within the editor\.
+
+        An empty *id* indicates that the last entered point was left\.
+
+        The result of this method is ignored\.
+
+  - __\-add\-remove\-point__ *eventspec*
+
+    The value of this option is an event specification \(without bracketing
+    angles\) declaring which event will trigger adding and removing a point\.
 
     This option can only be set at construction time\.
 
-    If not specified it defaults to __POINT__
+    The default setup uses different events for adding and removing points,
+    __ButtonPress\-1__ and __ButtonPress\-2__ respectively\.
+
+    When using this option the same event is used for both operations\. This is
+    no problem because adding is bound as canvas\-global event while removal is
+    bound to the relevant canvas items\.
+
+  - __\-color__ *colorspec*
+
+    The value of this option is the fill color for the default item created when
+    adding a point, and no __\-create\-cmd__ is specified\.
+
+    The default value is __SkyBlue2__\.
 
   - __\-create\-cmd__ *command\-prefix*
 
     The value of this option is a command prefix the editor will invoke when it
     has to create a new point\.
 
-    This option can only be set at construction time\.
+    While this option can be set after construction, it is recommended to use
+    this feature only as a means of inserting custom processing to be done at
+    creation time which remembers and calls the previous value of the option\.
 
     If not specified it defaults to a command which will create a black\-bordered
     blue circle of radius 3 centered on the location of the new point\.
 
     The signature of this command prefix is
 
-      * <a name='8'></a>__createCmd__ *canvas* *x* *y*
+      * <a name='9'></a>__createCmd__ *canvas* *x* *y*
 
         The result of the command prefix *must* be a list of the canvas items
         it created to represent the marker\. Note here that the visual
@@ -175,37 +266,6 @@ The class command accepts the following options
 
         The returned list of items is allowed to be empty, and such is taken as
         signal that the callback vetoed the creation of the point\.
-
-  - __\-highlight\-cmd__ *command\-prefix*
-
-    The value of this option is a command prefix the editor will invoke when it
-    has to \(un\)highlight a point\.
-
-    This option can only be set at construction time\.
-
-    If not specified it defaults to a command which will re\-color the item to
-    highlight in red \(and restores the color for unhighlighting\)\.
-
-    The two signatures of this command prefix are
-
-      * <a name='9'></a>__highlightCmd__ __on__ *canvas* *item*
-
-        This method of the command prefix has to perform whatever is needed to
-        highlight the point the *item* is a part of \(remember the note above
-        about points allowed to be constructed from multiple canvas items\)\.
-
-        The result of the command can be anything and will be passed as is as
-        argument *state* to the __off__ method\.
-
-      * <a name='10'></a>__highlightCmd__ __off__ *canvas* *state*
-
-        This method is invoked to unhighlight a point described by the
-        *state*, which is the unchanged result of the __on__ method of the
-        command prefix\. The result of this method is ignored\.
-
-        Note any interaction between dragging and highlighting of points is
-        handled within the editor, and that the callback bears no responsibility
-        for doing such\.
 
   - __\-data\-cmd__ *command\-prefix*
 
@@ -220,7 +280,7 @@ The class command accepts the following options
 
     The signatures of this command prefix are
 
-      * <a name='11'></a>__dataCmd__ __add__ *editorObj* *id* *x* *y*
+      * <a name='10'></a>__dataCmd__ __add__ *editorObj* *id* *x* *y*
 
         This callback is invoked when a new point was added to the instance,
         either interactively, or programmatically\. See instance method
@@ -234,7 +294,7 @@ The class command accepts the following options
 
         The result of this method is ignored\.
 
-      * <a name='12'></a>__dataCmd__ __remove__ *editorObj* *id*
+      * <a name='11'></a>__dataCmd__ __remove__ *editorObj* *id*
 
         This callback is invoked when a point removed from the editor instance\.
 
@@ -242,7 +302,7 @@ The class command accepts the following options
 
         The result of this method is ignored\.
 
-      * <a name='13'></a>__dataCmd__ __move start__ *editorObj* *id*
+      * <a name='12'></a>__dataCmd__ __move start__ *editorObj* *id*
 
         This callback is invoked when the movement of a point in the editor
         instance has started\.
@@ -251,7 +311,7 @@ The class command accepts the following options
 
         The result of this method is ignored\.
 
-      * <a name='14'></a>__dataCmd__ __move delta__ *editorObj* *id* *x* *y* *dx* *dy*
+      * <a name='13'></a>__dataCmd__ __move delta__ *editorObj* *id* *x* *y* *dx* *dy*
 
         This callback is invoked when the point moved in the editor instance\.
 
@@ -270,7 +330,7 @@ The class command accepts the following options
 
         The result of this method is ignored\.
 
-      * <a name='15'></a>__dataCmd__ __move done__ *editorObj* *id*
+      * <a name='14'></a>__dataCmd__ __move done__ *editorObj* *id*
 
         This callback is invoked when the movement of a point in the editor
         instance is complete\.
@@ -280,7 +340,47 @@ The class command accepts the following options
         The result of this method must be a boolean value\. If the method returns
         __false__ the move is vetoed and rollbed back\.
 
-# <a name='section5'></a>Bugs, Ideas, Feedback
+  - __\-drag\-point__ *eventspec*
+
+    The value of this option is an event specification \(without bracketing
+    angles\) declaring which event will trigger a drag action on points\.
+
+    This option can only be set at construction time\.
+
+    The default specification is __ButtonPress\-3__\.
+
+  - __\-hilit\-color__ *colorspec*
+
+    The value of this option is the highlight color for the default item created
+    when adding a point, and no __\-highlight\-cmd__ is specified\.
+
+    The default value is __red__\.
+
+  - __\-kind__ *name*
+
+    The value of this option is the canvas item type for the default item
+    created when adding a point, and no __\-create\-cmd__ is specified\. Only
+    item types specified through a bounding box are suitable\.
+
+    The default value is __oval__\.
+
+  - __\-radius__ *int*
+
+    The value of this option is the radius for the default item created when
+    adding a point, and no __\-create\-cmd__ is specified\.
+
+    The default value is __3__\.
+
+  - __\-tag__ *string*
+
+    The value of this option is the name of the canvas tag with which to
+    identify all items of all points managed by the editor\.
+
+    This option can only be set at construction time\.
+
+    If not specified it defaults to __POINT__
+
+# <a name='section6'></a>Bugs, Ideas, Feedback
 
 This document, and the package it describes, will undoubtedly contain bugs and
 other problems\. Please report such in the category *canvas* of the [Tklib

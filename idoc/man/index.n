@@ -362,6 +362,9 @@ canvas
 \fBfiles/modules/canvas/canvas_drag\&.n\fR
 canvas::drag
 .TP
+\fBfiles/modules/canvas/canvas_ecircle\&.n\fR
+canvas::edit::circle
+.TP
 \fBfiles/modules/canvas/canvas_epoints\&.n\fR
 canvas::edit::points
 .TP
@@ -370,6 +373,9 @@ canvas::edit::polyline
 .TP
 \fBfiles/modules/canvas/canvas_equad\&.n\fR
 canvas::edit::quadrilateral
+.TP
+\fBfiles/modules/canvas/canvas_erectangle\&.n\fR
+canvas::edit::rectangle
 .TP
 \fBfiles/modules/canvas/canvas_gradient\&.n\fR
 canvas::gradient
@@ -439,6 +445,9 @@ chatwidget
 .RE
 circle
 .RS
+.TP
+\fBfiles/modules/canvas/canvas_ecircle\&.n\fR
+canvas::edit::circle
 .TP
 \fBfiles/modules/diagrams/diagram\&.n\fR
 diagram
@@ -635,6 +644,9 @@ diagram
 editing
 .RS
 .TP
+\fBfiles/modules/canvas/canvas_ecircle\&.n\fR
+canvas::edit::circle
+.TP
 \fBfiles/modules/canvas/canvas_epoints\&.n\fR
 canvas::edit::points
 .TP
@@ -643,6 +655,9 @@ canvas::edit::polyline
 .TP
 \fBfiles/modules/canvas/canvas_equad\&.n\fR
 canvas::edit::quadrilateral
+.TP
+\fBfiles/modules/canvas/canvas_erectangle\&.n\fR
+canvas::edit::rectangle
 .RE
 editor
 .RS
@@ -1084,6 +1099,12 @@ ntextIndent
 .TP
 \fBfiles/modules/ntext/ntextWordBreak\&.n\fR
 ntextWordBreak
+.RE
+rectangle
+.RS
+.TP
+\fBfiles/modules/canvas/canvas_erectangle\&.n\fR
+canvas::edit::rectangle
 .RE
 regexp
 .RS
