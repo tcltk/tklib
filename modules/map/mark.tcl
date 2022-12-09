@@ -5,7 +5,7 @@
 ## Originally developed within the AKIS project (c) Andreas Kupries
 
 # @@ Meta Begin
-# Package map::mark 0
+# Package map::mark 0.1
 # Meta author      {Andreas Kupries}
 # Meta location    https://core.tcl.tk/tklib
 # Meta platform    tcl

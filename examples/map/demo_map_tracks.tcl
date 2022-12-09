@@ -1,11 +1,11 @@
 #!/bin/env tclsh8.6
 # -*- tcl -*-
 # # ## ### ##### ######## ############# #####################
-# demo_map_boxes.tcl --
+# demo_map_tracks.tcl --
 #
 # This demonstration script shows a basic map.
 # Tiles from OpenStreetMap, Mapnik.
-# Beyond that it shows the geo/box specs found in the data directory
+# Beyond that it shows the geo/track specs found in the data directory
 
 # # ## ### ##### ######## ############# #####################
 ## Requirements
@@ -24,12 +24,12 @@ apply {{selfdir} {
 }} [file dirname [file normalize [info script]]]
 
 package require Tk 8.6
-package require map::box::map-display
-package require map::box::store::fs
-package require map::box::store::memory
-package require map::box::table-display
 package require map::display
 package require map::provider::osm
+package require map::track::map-display
+package require map::track::store::fs
+package require map::track::store::memory
+package require map::track::table-display
 
 # # ## ### ##### ######## ############# #####################
 
@@ -57,12 +57,12 @@ proc do {cachedir datadir} {
     file mkdir                $cachedir
     map provider osm     TILE $cachedir
 
-    map box store fs     FS  $datadir
-    map box store memory MEM FS
+    map track store fs     FS  $datadir
+    map track store memory MEM FS
 
     wm withdraw .
     toplevel    .m
-    wm title    .m "Map Display + Boxes"
+    wm title    .m "Map Display + Tracks"
     wm iconname .m "MAP"
 
     map display .m.map \
@@ -70,15 +70,14 @@ proc do {cachedir datadir} {
 	-initial-geo  [home] \
 	-initial-zoom [expr {[TILE levels]-1}]
 
-    map box table-display .m.boxes MEM \
-	-on-selection box-selected
+    map track table-display .m.tracks MEM \
+	-on-selection track-selected
 
-    map box map-display BOXES .m.map MEM \
+    map track map-display TRACKS .m.map MEM \
 	-color       red \
 	-hilit-color SkyBlue2 \
-	-rect-config { -stipple gray12 -fill black } \
-	-on-active   box-active-changed
-    BOXES enable
+	-on-active   track-active-changed
+    TRACKS enable
 
     button .m.exit   -command ::exit -text Exit
     button .m.rehome -command rehome -text Home
@@ -92,7 +91,7 @@ proc do {cachedir datadir} {
     grid columnconfigure .m 3 -weight 0
     grid columnconfigure .m 4 -weight 0
 
-    grid .m.boxes  -row 0 -column 0               -sticky swen
+    grid .m.tracks -row 0 -column 0               -sticky swen
     grid .m.map    -row 0 -column 1 -columnspan 4 -sticky swen
     grid .m.exit   -row 1 -column 1               -sticky swen
     grid .m.rehome -row 1 -column 2               -sticky swn
@@ -100,15 +99,15 @@ proc do {cachedir datadir} {
     return
 }
 
-proc box-active-changed {id} {
+proc track-active-changed {id} {
     if {$id eq {}} return
 
-    .m.boxes focus $id
+    .m.tracks focus $id
     return
 }
 
-proc box-selected {id} {
-    BOXES focus $id
+proc track-selected {id} {
+    TRACKS focus $id
     return
 }
 

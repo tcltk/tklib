@@ -3,28 +3,28 @@
 ## (c) 2022 Andreas Kupries
 
 # @@ Meta Begin
-# Package map::box::store::memory 0
+# Package map::box::store::memory 0.1
 # Meta author      {Andreas Kupries}
 # Meta location    https://core.tcl.tk/tklib
 # Meta platform    tcl
-# Meta summary	   In-memory store for geobox definitions
-# Meta description In-memory store for geobox definitions, with
+# Meta summary	   In-memory store for geo/box definitions
+# Meta description In-memory store for geo/box definitions, with
 # Meta description memoized calculation of extended attributes.
 # Meta description Base data is taken from a backing store.
 # Meta description Anything API-compatible to map::box::store::fs
-# Meta subject	   {center, geobox
-# Meta subject	   {diameter, geobox}
-# Meta subject	   {geobox pixels, zoom}
-# Meta subject	   {geobox, center}
-# Meta subject	   {geobox, diameter}
-# Meta subject	   {geobox, memory store}
-# Meta subject	   {geobox, perimeter length}
-# Meta subject	   {length, geobox, perimeter}
-# Meta subject	   {memory store, geobox}
-# Meta subject	   {perimeter length, geobox}
-# Meta subject	   {pixels, zoom, geobox}
-# Meta subject	   {store, geobox, memory}
-# Meta subject	   {zoom, geobox pixels}
+# Meta subject	   {center, geo/box
+# Meta subject	   {diameter, geo/box}
+# Meta subject	   {geo/box pixels, zoom}
+# Meta subject	   {geo/box, center}
+# Meta subject	   {geo/box, diameter}
+# Meta subject	   {geo/box, memory store}
+# Meta subject	   {geo/box, perimeter length}
+# Meta subject	   {length, geo/box, perimeter}
+# Meta subject	   {memory store, geo/box}
+# Meta subject	   {perimeter length, geo/box}
+# Meta subject	   {pixels, zoom, geo/box}
+# Meta subject	   {store, geo/box, memory}
+# Meta subject	   {zoom, geo/box pixels}
 # Meta require     {Tcl 8.6-}
 # Meta require     debug
 # Meta require     debug::caller
@@ -42,7 +42,7 @@ package provide map::box::store::memory 0.1
 ##  <obj> ids			-> list (id...)
 ##  <obj> get ID		-> dict (names, geo, diameter, perimeter, center)
 ##  <obj> visible GEOBOX	-> list (id...)
-##  <obj> pixels ID ZOOM	-> list (point)
+##  <obj> pixels ID ZOOM	-> pointbox
 #
 # # ## ### ##### ######## ############# ######################
 ## Requirements
@@ -75,11 +75,11 @@ snit::type ::map::box::store::memory {
     # - Backing store, command prefix
     # - Pixel store     :: dict (id -> zoom -> pointbox)
     # - Attribute store :: dict (id -> attr)
-    #              attr :: dict ("name"     -> string
-    #                            "geobox"   -> geobox
-    #                            "diameter" -> double
-    #                            "length"   -> double
-    #                            "center"   -> geo)
+    #              attr :: dict ("names"     -> list (string...)
+    #                            "geo"       -> geobox
+    #                            "diameter"  -> double
+    #                            "perimeter" -> double
+    #                            "center"    -> geo)
 
     variable mystore  {}
     variable myattr   {}
@@ -128,11 +128,11 @@ snit::type ::map::box::store::memory {
 
     method Attributes {id} {
 	set attr [DO get $id]
-	set gbox [dict get $attr geobox]
+	set gbox [dict get $attr geo]
 
-	set center    [::map slippy geo box center    $gbox]
-	set diameter  [::map slippy geo box diameter  $gbox]
-	set perimeter [::map slippy geo box perimeter $gbox]
+	set center    [map slippy geo box center    $gbox]
+	set diameter  [map slippy geo box diameter  $gbox]
+	set perimeter [map slippy geo box perimeter $gbox]
 
 	dict set attr center    $center
 	dict set attr diameter  $diameter
@@ -147,7 +147,7 @@ snit::type ::map::box::store::memory {
 	debug.tklib/map/box/store/memory {}
 
 	set attr [DO get $id]
-	set gbox [dict get $attr geobox]
+	set gbox [dict get $attr geo]
 	set pbox [map slippy geo box 2point $zoom $gbox]
 
 	return $pbox

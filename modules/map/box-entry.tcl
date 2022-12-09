@@ -55,8 +55,8 @@ package require canvas::edit::rectangle ;# - Pixel level editor
 # # ## ### ##### ######## ############# ######################
 ## Ensemble setup.
 
-namespace eval map             { namespace export box   ; namespace ensemble create }
-namespace eval map::box        { namespace export entry ; namespace ensemble create }
+namespace eval map      { namespace export box   ; namespace ensemble create }
+namespace eval map::box { namespace export entry ; namespace ensemble create }
 
 debug level  tklib/map/box/entry
 debug prefix tklib/map/box/entry {<[pid]> [debug caller] | }
@@ -123,7 +123,6 @@ snit::type ::map::box::entry {
     delegate method disable to myeditor
     delegate method enable  to myeditor
     delegate method active  to myeditor
-
 
     method box {} {
 	debug.tklib/map/box/entry {}

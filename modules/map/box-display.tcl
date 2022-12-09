@@ -3,7 +3,7 @@
 ## (c) 2022 Andreas Kupries
 
 # @@ Meta Begin
-# Package map::box::display 0
+# Package map::box::display 0.1
 # Meta author      {Andreas Kupries}
 # Meta location    https://core.tcl.tk/tklib
 # Meta platform    tcl
@@ -47,8 +47,8 @@ package require tablelist               ;# - Tabular display
 # # ## ### ##### ######## ############# ######################
 ## Ensemble setup.
 
-namespace eval map             { namespace export box     ; namespace ensemble create }
-namespace eval map::box        { namespace export display ; namespace ensemble create }
+namespace eval map      { namespace export box     ; namespace ensemble create }
+namespace eval map::box { namespace export display ; namespace ensemble create }
 
 debug level  tklib/map/box/display
 debug prefix tklib/map/box/display {<[pid]> [debug caller] | }

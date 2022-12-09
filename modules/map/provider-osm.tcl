@@ -5,7 +5,7 @@
 ## Originally developed within the AKIS project (c) Andreas Kupries
 
 # @@ Meta Begin
-# Package map::provider::osm 0
+# Package map::provider::osm 0.1
 # Meta author      {Andreas Kupries}
 # Meta location    https://core.tcl.tk/tlib
 # Meta platform    tcl
