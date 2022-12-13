@@ -132,6 +132,7 @@ snit::widget ::map::display {
 
     constructor {args} {
 	debug.tklib/map/display {}
+
 	$self configurelist $args
 
 	if {![llength $myprovider]} {

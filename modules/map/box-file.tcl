@@ -69,10 +69,10 @@ proc ::map::box::file::read {path} {
     if {[catch {
 	set c [open $path r]
     }]} return
-    
+
     set d [::read $c]
     close $c
-    
+
     set names {}
     set coordinates [lmap line [split $d \n] {
 	set line [string trim $line]
@@ -83,7 +83,7 @@ proc ::map::box::file::read {path} {
 	    lappend names $line
 	    continue
 	}
-	set line	
+	set line
     }]
 
     #puts $path\t//$names//$coordinates//
@@ -103,8 +103,8 @@ proc ::map::box::file::read {path} {
     if {![llength $names]} { lappend names [file rootname [file tail $path]] }
 
     dict set g names $names
-    dict set g geo   [list $lat0 $lon0 $lat1 $lon1]
-    
+    dict set g geo   $coordinates
+
     return $g
 }
 
