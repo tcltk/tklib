@@ -227,7 +227,7 @@ snit::type ::map::area::map-display {
 
 	# Query store for visible areas
 	set visible [DO visible $geobox]
-	
+
 	set new {}
 	foreach v $visible { dict set new $v . }
 
@@ -278,7 +278,7 @@ snit::type ::map::area::map-display {
 	dict with spec {}
 	# names, geo, diameter, length, center, bbox, parts
 	# => center, bbox
-	
+
 	dict set myareas $id bbox   $bbox
 	dict set myareas $id center $center
 	return

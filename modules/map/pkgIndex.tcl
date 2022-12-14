@@ -27,4 +27,10 @@ package ifneeded map::track::store::memory 0.1   [list source [file join $dir tr
 package ifneeded map::track::table-display 0.1   [list source [file join $dir track-table-display.tcl]]
 package ifneeded map::track::entry         0.1   [list source [file join $dir track-entry.tcl]]
 #
+package ifneeded map::point::file          0.1   [list source [file join $dir point-file.tcl]]
+package ifneeded map::point::map-display   0.1   [list source [file join $dir point-map-display.tcl]]
+package ifneeded map::point::store::fs     0.1   [list source [file join $dir point-store-fs.tcl]]
+package ifneeded map::point::store::memory 0.1   [list source [file join $dir point-store-mem.tcl]]
+package ifneeded map::point::table-display 0.1   [list source [file join $dir point-table-display.tcl]]
+#
 return

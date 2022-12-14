@@ -64,7 +64,7 @@ snit::widget ::map::area::display {
     # User configuration
 
     option -on-selection -default {}
-    
+
     # . . .. ... ..... ........ ............. .....................
     ## State
 
@@ -82,7 +82,7 @@ snit::widget ::map::area::display {
 	debug.tklib/map/area/display {}
 
 	$self configurelist $args
-	
+
 	label $win.lcenter   -text Center
 	label $win.clat      -textvariable  [myvar myclat]
 	label $win.clon      -textvariable  [myvar myclon]
@@ -92,7 +92,7 @@ snit::widget ::map::area::display {
 	label $win.length    -textvariable  [myvar myperimeter]
 	label $win.ldiameter -text Diameter
 	label $win.diameter  -textvariable  [myvar mydiameter]
-	
+
 	scrollutil::scrollarea $win.sa
 	tablelist::tablelist   $win.sa.table -width 60 \
 	    -columntitles {\# Latitude Longitude Distance Total}
@@ -132,7 +132,7 @@ snit::widget ::map::area::display {
 	$win.sa.table see           $index
 	return
     }
-    
+
     method set {geos} {
 	debug.tklib/map/area/display {}
 
@@ -152,7 +152,7 @@ snit::widget ::map::area::display {
 	lassign [map slippy geo limit $center] clat clon
 
 	# Assemble table data
-	
+
 	set last {}
 	set total 0
 	set rows [lmap g $geos {
@@ -162,13 +162,13 @@ snit::widget ::map::area::display {
 		set d     [map slippy geo distance $last $g]
 		set total [expr {$total + $d}]
 		# Format for display
-		set dd    [map slipp pretty-distance $d]	   
+		set dd    [map slipp pretty-distance $d]
 		set dt    [map slipp pretty-distance $total]
 	    }
 
 	    lassign [map slippy geo limit $g] lat lon
 	    set last $g
-	    
+
 	    set data {}
 	    lappend data [incr rowid]
 	    lappend data $lat
@@ -182,11 +182,11 @@ snit::widget ::map::area::display {
 	set d [map slippy geo distance $last [lindex $geos 0]]
 	set total [expr {$total + $d}]
 	# Format for display
-	set dd    [map slipp pretty-distance $d]	   
+	set dd    [map slipp pretty-distance $d]
 	set dt    [map slipp pretty-distance $total]
 
 	lappend rows [list 1 {} {} $dd $dt]
-	
+
 	# ... and commit
 	set myparts     $parts
 	set myperimeter $dt
@@ -217,11 +217,11 @@ snit::widget ::map::area::display {
 
 	set row [lindex $myspec $row 0]
 	incr row -1
-	
+
 	uplevel #0 [list {*}$options(-on-selection) $row]
 	return
     }
-    
+
     # . . .. ... ..... ........ ............. .....................
 }
 

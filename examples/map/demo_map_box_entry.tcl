@@ -122,8 +122,8 @@ proc action-save {} {
     set name [file rootname [file tail $path]]
 
     dict set g names [list $name]
-    dict set g geo   [ENTRY box]  
-    
+    dict set g geo   [ENTRY box]
+
     map box file write $path $g
     return
 }
@@ -141,7 +141,7 @@ proc action-load {} {
 
     # TODO: error message
     if {![dict size $box]} return
-    
+
     ENTRY set [dict get $box geo]
     return
 }

@@ -227,7 +227,7 @@ snit::type ::map::track::map-display {
 
 	# Query store for visible tracks
 	set visible [DO visible $geobox]
-	
+
 	set new {}
 	foreach v $visible { dict set new $v . }
 
@@ -278,7 +278,7 @@ snit::type ::map::track::map-display {
 	dict with spec {}
 	# names, geo, diameter, length, center, bbox, parts
 	# => center, bbox
-	
+
 	dict set mytracks $id bbox   $bbox
 	dict set mytracks $id center $center
 	return

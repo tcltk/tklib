@@ -113,7 +113,7 @@ snit::type ::map::area::store::memory {
     ## API
 
     delegate method * to mystore except get	;# ids, visible
-    
+
     method get {id} {
 	debug.tklib/map/area/store/memory {}
 

@@ -134,9 +134,9 @@ snit::type ::map::track::store::fs {
 	    set track [map track file read $path]
 	    if {![dict size $track]} continue
 	    # track :: dict (names, geo)
-	    
+
 	    # Note: file path is used as track ID
-	    
+
 	    # Update visibility map
 	    foreach p [dict get $track geo] {
 		dict set mypoints $p $path

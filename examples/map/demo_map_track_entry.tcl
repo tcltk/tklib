@@ -60,7 +60,7 @@ proc do {cachedir} {
 
     map track display .m.track \
 	-on-selection action-vertex-selected
-    
+
     map display     .m.map \
 	-provider     TILE \
 	-initial-geo  [home] \
@@ -138,8 +138,8 @@ proc action-save {} {
     set name [file rootname [file tail $path]]
 
     dict set g names [list $name]
-    dict set g geo   [ENTRY track]  
-    
+    dict set g geo   [ENTRY track]
+
     map track file write $path $g
     return
 }
@@ -157,7 +157,7 @@ proc action-load {} {
 
     # TODO: error message
     if {![dict size $track]} return
-    
+
     ENTRY set [dict get $track geo]
     return
 }

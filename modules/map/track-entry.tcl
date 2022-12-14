@@ -16,7 +16,7 @@
 # Meta subject     {addon, track entry, map display}
 # Meta subject     {track entry, map display, addon}
 # Meta subject     {map display, addon, track entry}
-# Meta subject	   
+# Meta subject
 # Meta require     {Tcl 8.6-}
 # Meta require     canvas::edit::polyline
 # Meta require     debug
@@ -78,7 +78,7 @@ snit::type ::map::track::entry {
 
     # . . .. ... ..... ........ ............. .....................
     ## State
-    
+
     variable myeditor	 {}	;# Core poly line editor
     variable mymap	 {}	;# Map the behaviour is attached to
     variable mycanvas	 {}	;# Canvas inside the map
@@ -174,7 +174,7 @@ snit::type ::map::track::entry {
 	# Determine focus point and its immediate neighbours in the track order
 	# This provides us with the bounding box to center the map on.
 	set min $index ; incr min -1
-	set max $index ; incr max 
+	set max $index ; incr max
 	set hood {}
 	for {set i $min} {$i <= $max} {incr i} {
 	    set g [lindex $mygeos $i]
@@ -186,10 +186,10 @@ snit::type ::map::track::entry {
 	set bbox  [map slippy geo bbox-list $hood]
 	set zoom  [map slippy geo box fit $bbox $mycanvasdim [expr {[$mymap levels]-1}]]
 
-	$mymap center $focus $zoom	
+	$mymap center $focus $zoom
 	return
     }
-    
+
     # . . .. ... ..... ........ ............. .....................
     ## Internal
 

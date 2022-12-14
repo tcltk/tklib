@@ -278,7 +278,7 @@ snit::type ::map::box::map-display {
 	dict with spec {}
 	# names, geo, diameter, perimeter, center
 	# => geo, center
-	
+
 	dict set myboxes $id bbox   $geo
 	dict set myboxes $id center $center
 	return

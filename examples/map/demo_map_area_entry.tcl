@@ -60,7 +60,7 @@ proc do {cachedir} {
 
     map area display .m.area \
 	-on-selection action-vertex-selected
-    
+
     map display     .m.map \
 	-provider     TILE \
 	-initial-geo  [home] \
@@ -139,8 +139,8 @@ proc action-save {} {
     set name [file rootname [file tail $path]]
 
     dict set g names [list $name]
-    dict set g geo   [ENTRY track]  
-    
+    dict set g geo   [ENTRY track]
+
     map area file write $path $g
     return
 }
@@ -158,7 +158,7 @@ proc action-load {} {
 
     # TODO: error message
     if {![dict size $area]} return
-    
+
     ENTRY set [dict get $area geo]
     return
 }
