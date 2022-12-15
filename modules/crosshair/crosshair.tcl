@@ -360,6 +360,9 @@ proc ::crosshair::Unhide { w x y } {
     if { !$opts(hidden) } return
     set opts(hidden) 0
 
+    # Store changes back.
+    set config($w) [array get opts]
+
     # Recreate cross-hair. This takes the bounding boxes, if any, into
     # account, i.e. if we are out of bounds nothing will appear.
     Move $w $x $y
@@ -592,4 +595,4 @@ namespace eval ::crosshair {
 # ### ### ### ######### ######### #########
 ## Ready
 
-package provide crosshair 1.2
+package provide crosshair 1.2.1
