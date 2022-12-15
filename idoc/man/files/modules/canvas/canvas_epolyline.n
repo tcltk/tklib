@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'canvas_epolyline\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "canvas::edit::polyline" n 0\&.1 tklib "Variations on a canvas"
+.TH "canvas::edit::polyline" n 0\&.2 tklib "Variations on a canvas"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -279,7 +279,7 @@ package require \fBTk  8\&.5\fR
 .sp
 package require \fBcanvas::edit::points  ?0\&.1?\fR
 .sp
-package require \fBcanvas::edit::polyline  ?0\&.1?\fR
+package require \fBcanvas::edit::polyline  ?0\&.2?\fR
 .sp
 \fB::canvas::edit\fR \fBpolyline\fR \fIobjectName\fR \fIcanvas\fR \fIoptions\fR\&.\&.\&.
 .sp
@@ -295,21 +295,36 @@ package require \fBcanvas::edit::polyline  ?0\&.1?\fR
 .sp
 \fBobjectName\fR \fBclear\fR
 .sp
+\fBactiveCmd\fR \fIeditorObj\fR \fIid\fR
+.sp
 \fBcreateCmd\fR \fIcanvas\fR \fIx\fR \fIy\fR
-.sp
-\fBhighlightCmd\fR \fBon\fR \fIcanvas\fR \fIitem\fR
-.sp
-\fBhighlightCmd\fR \fBoff\fR \fIcanvas\fR \fIstate\fR
 .sp
 \fBdataCmd\fR \fIeditorObj\fR \fIcoordinates\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides a class whose instances handle editing a single
-poly-line on a canvas\&. Instances can be configured with regard to the
-visual appearance (regular, and highlighted) of the markers denoting
-the line's vertices\&. Note that instances do not store the edited
-polyline themselves, but delegate this to a configurable object\&.
+This package provides a class whose instances handle editing a single poly-line (or -gon) on a
+canvas\&. Instances can be configured with regard to the visual appearance of the markers denoting the
+line's vertices, as well as if the line is to be closed or not, and further if a closed line has to
+be convex or not\&. Note that instances do not store the edited polyline themselves, but delegate this
+to a configurable object\&.
+.SH INTERACTION
+.PP
+The polyline editor internally uses an instance of package \fBcanvas::edit::points\fR,
+and inherits all the options and behaviours for it\&. The color options are additionally applied to
+the line element of this editor
+.PP
+Beyond that it provides 2 options to configure the editing mode, and one option to customize
+the line/polygon item used to render the line through the points\&.
+.PP
+The main editing mode is controlled by option \fB-closed\fR for \fIline\fR (i\&.e\&. open)
+versus \fIpolygon\fR (i\&.e\&. closed)\&. The default is line/open mode\&.
+.PP
+In polygon/closed mode the option \fB-convex\fR controls if the editor enforces convexity
+of the polygon, or not\&. The default is no enforcement of convexity\&.
+.PP
+The option \fB-line-config\fR enables basic customization of the line/polygon item\&. Note
+that it cannot overide the inherited color options\&.
 .SH "CLASS API"
 .TP
 \fB::canvas::edit\fR \fBpolyline\fR \fIobjectName\fR \fIcanvas\fR \fIoptions\fR\&.\&.\&.
@@ -391,19 +406,72 @@ when the user interactively removes a vertex, i\&.e\&. \fB-data-cmd\fR\&.
 .SH OPTIONS
 The class command accepts the following options
 .TP
-\fB-tag\fR \fIstring\fR
-The value of this option is the name of the canvas tag with which to
-identify all items of all vertices managed by the editor\&.
+\fB-active-cmd\fR \fIcommand-prefix\fR
+The value of this option is a command prefix the editor will invoke
+when the mouse enters or leaves the line or a point managed by the instance\&.
+.sp
+If not specified it defaults to an empty command which does nothing\&.
+.sp
+The signature of this command prefix is
+.RS
+.TP
+\fBactiveCmd\fR \fIeditorObj\fR \fIid\fR
+.sp
+The \fIid\fR identifies the entered object\&.
+.sp
+An empty \fIid\fR indicates that the last entered object was left\&.
+.sp
+The value \fBline\fR indicates that the line was entered\&.
+.sp
+A numeric value \fBN\fR indicates that the \fBN\fR'th vertex of the line was entered,
+counting from \fB0\fR\&.
+.sp
+The result of this method is ignored\&.
+.RE
+.TP
+\fB-add-remove-point\fR \fIeventspec\fR
+The value of this option is an event specification (without bracketing angles) declaring which event
+will trigger adding and removing a point\&.
 .sp
 This option can only be set at construction time\&.
 .sp
-If not specified it defaults to \fBPOLYLINE\fR
+The default setup uses different events for adding and removing points, \fBButtonPress-1\fR
+and \fBButtonPress-2\fR respectively\&.
+.sp
+When using this option the same event is used for both operations\&. This is no problem because
+adding is bound as canvas-global event while removal is bound to the relevant canvas items\&.
+.TP
+\fB-closed\fR \fIboolean\fR
+The value of this option is a boolean flag indicating if the edited polyline is closed, i\&.e\&. a loop,
+or not\&. \fINOTE\fR that a proper loop requires at least 3 points\&. For less than that an open line
+is shown, or even just a point\&.
+.sp
+This option can only be set at construction time\&.
+.sp
+If not specified it defaults to \fBfalse\fR
+.TP
+\fB-color\fR \fIcolorspec\fR
+The value of this option is the fill color for the default item created when adding a point, and no
+\fB-create-cmd\fR is specified\&.
+.sp
+The default value is \fBSkyBlue2\fR\&.
+.TP
+\fB-convex\fR \fIboolean\fR
+The value of this option is a boolean flag indicating if the edited polyline is strictly convex, or
+not\&.
+This option has meaning if and only if option \fB-closed\fR is configured to be \fBtrue\fR\&.
+.sp
+This option can only be set at construction time\&.
+.sp
+If not specified it defaults to \fBfalse\fR
 .TP
 \fB-create-cmd\fR \fIcommand-prefix\fR
 The value of this option is a command prefix the editor will invoke
 when it has to create a new vertex\&.
 .sp
-This option can only be set at construction time\&.
+While this option can be set after construction, it is recommended to use this feature only
+as a means of inserting custom processing to be done at creation time which remembers and calls the
+previous value of the option\&.
 .sp
 If not specified it defaults to a command which will create a
 black-bordered blue circle of radius 3 centered on the location of the
@@ -420,40 +488,6 @@ an arbitrary shape\&.
 .sp
 The returned list of items is allowed to be empty, and such is
 taken as signal that the callback vetoed the creation of the vertex\&.
-.RE
-.TP
-\fB-highlight-cmd\fR \fIcommand-prefix\fR
-The value of this option is a command prefix the editor will invoke
-when it has to (un)highlight a vertex\&.
-.sp
-This option can only be set at construction time\&.
-.sp
-If not specified it defaults to a command which will re-color
-the item to highlight in red (and restores the color for
-unhighlighting)\&.
-.sp
-The two signatures of this command prefix are
-.RS
-.TP
-\fBhighlightCmd\fR \fBon\fR \fIcanvas\fR \fIitem\fR
-.sp
-This method of the command prefix has to perform whatever is
-needed to highlight the vertex the \fIitem\fR is a part of (remember
-the note above about points allowed to be constructed from multiple
-canvas items)\&.
-.sp
-The result of the command can be anything and will be passed as
-is as argument \fIstate\fR to the \fBoff\fR method\&.
-.TP
-\fBhighlightCmd\fR \fBoff\fR \fIcanvas\fR \fIstate\fR
-.sp
-This method is invoked to unhighlight a vertex described by the
-\fIstate\fR, which is the unchanged result of the \fBon\fR method
-of the command prefix\&. The result of this method is ignored\&.
-.sp
-Note any interaction between dragging and highlighting of
-vertices is handled within the editor, and that the callback bears no
-responsibility for doing such\&.
 .RE
 .TP
 \fB-data-cmd\fR \fIcommand-prefix\fR
@@ -481,6 +515,49 @@ with each location a pair of x- and y-coordinates\&.
 .sp
 The result of this method is ignored\&.
 .RE
+.TP
+\fB-drag-point\fR \fIeventspec\fR
+The value of this option is an event specification (without bracketing angles) declaring which event
+will trigger a drag action on points\&.
+.sp
+This option can only be set at construction time\&.
+.sp
+The default specification is \fBButtonPress-3\fR\&.
+.TP
+\fB-hilit-color\fR \fIcolorspec\fR
+The value of this option is the highlight color for the default item created when adding a point,
+and no \fB-highlight-cmd\fR is specified\&.
+.sp
+The default value is \fBred\fR\&.
+.TP
+\fB-kind\fR \fIname\fR
+The value of this option is the canvas item type for the default item created when adding a point,
+and no \fB-create-cmd\fR is specified\&.
+Only item types specified through a bounding box are suitable\&.
+.sp
+The default value is \fBoval\fR\&.
+.TP
+\fB-line-config\fR \fIlist\fR
+The value of this option is a list of options and their values to be applied to the internal
+line/polygon item whenever it is regenerated after changes\&.
+Note that these options \fIcannot\fR override the principal coloring of the line/polygon as
+applied by the main options \fB-color\fR and \fB-hilit-color\fR\&.
+.sp
+If not specified it defaults to the empty list\&.
+.TP
+\fB-radius\fR \fIint\fR
+The value of this option is the radius for the default item created when adding a point,
+and no \fB-create-cmd\fR is specified\&.
+.sp
+The default value is \fB3\fR\&.
+.TP
+\fB-tag\fR \fIstring\fR
+The value of this option is the name of the canvas tag with which to
+identify all items of all vertices managed by the editor\&.
+.sp
+This option can only be set at construction time\&.
+.sp
+If not specified it defaults to \fBPOLYLINE\fR
 .PP
 .SH "BUGS, IDEAS, FEEDBACK"
 This document, and the package it describes, will undoubtedly contain

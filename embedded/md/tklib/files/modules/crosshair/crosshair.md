@@ -4,7 +4,7 @@
 [//000000003]: # (Copyright &copy; 2003 Kevin Kenny)
 [//000000004]: # (Copyright &copy; 2008 \(docs\) Andreas Kupries <andreas\_kupries@users\.sourceforge\.net>)
 [//000000005]: # (Copyright &copy; 2013 Frank Gover, Andreas Kupries)
-[//000000006]: # (crosshair\(n\) 1\.1 tklib "Crosshairs")
+[//000000006]: # (crosshair\(n\) 1\.2\.1 tklib "Crosshairs")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -39,7 +39,7 @@ crosshair \- Crosshairs for Tk canvas
 
 package require Tcl ?8\.4?  
 package require Tk ?8\.4?  
-package require crosshair ?1\.1?  
+package require crosshair ?1\.2\.1?  
 
 [__crosshair::crosshair__ *w* ?*arg*\.\.\.?](#1)  
 [__crosshair::off__ *w*](#2)  

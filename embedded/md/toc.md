@@ -25,11 +25,15 @@
 
           + [canvas::drag](tklib/files/modules/canvas/canvas\_drag\.md) Manage the dragging of canvas items or item groups
 
+          + [canvas::edit::circle](tklib/files/modules/canvas/canvas\_ecircle\.md) Editing a circle on a canvas
+
           + [canvas::edit::points](tklib/files/modules/canvas/canvas\_epoints\.md) Editing a cloud of points on a canvas
 
           + [canvas::edit::polyline](tklib/files/modules/canvas/canvas\_epolyline\.md) Editing a polyline on a canvas
 
           + [canvas::edit::quadrilateral](tklib/files/modules/canvas/canvas\_equad\.md) Editing a quadrilateral on a canvas
+
+          + [canvas::edit::rectangle](tklib/files/modules/canvas/canvas\_erectangle\.md) Editing a rectangle on a canvas
 
           + [canvas::gradient](tklib/files/modules/canvas/canvas\_gradient\.md) Canvas with a gradient background
 
@@ -141,11 +145,15 @@
 
               - [canvas::drag](tklib/files/modules/canvas/canvas\_drag\.md) Manage the dragging of canvas items or item groups
 
+              - [canvas::edit::circle](tklib/files/modules/canvas/canvas\_ecircle\.md) Editing a circle on a canvas
+
               - [canvas::edit::points](tklib/files/modules/canvas/canvas\_epoints\.md) Editing a cloud of points on a canvas
 
               - [canvas::edit::polyline](tklib/files/modules/canvas/canvas\_epolyline\.md) Editing a polyline on a canvas
 
               - [canvas::edit::quadrilateral](tklib/files/modules/canvas/canvas\_equad\.md) Editing a quadrilateral on a canvas
+
+              - [canvas::edit::rectangle](tklib/files/modules/canvas/canvas\_erectangle\.md) Editing a rectangle on a canvas
 
               - [canvas::gradient](tklib/files/modules/canvas/canvas\_gradient\.md) Canvas with a gradient background
 

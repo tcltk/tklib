@@ -3,9 +3,11 @@ apps/diagram-viewer.man
 apps/shtmlview.man
 modules/autoscroll/autoscroll.man
 modules/canvas/canvas_drag.man
+modules/canvas/canvas_ecircle.man
 modules/canvas/canvas_epoints.man
 modules/canvas/canvas_epolyline.man
 modules/canvas/canvas_equad.man
+modules/canvas/canvas_erectangle.man
 modules/canvas/canvas_gradient.man
 modules/canvas/canvas_highlight.man
 modules/canvas/canvas_mvg.man

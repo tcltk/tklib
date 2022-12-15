@@ -99,5 +99,7 @@ proc clear {} {
 # # ## ### ##### ######## ############# #####################
 ## Invoke event loop.
 
+flip
+
 vwait __forever__
 exit

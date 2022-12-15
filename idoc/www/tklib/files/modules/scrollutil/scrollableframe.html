@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>scrollutil::scrollableframe</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.16</h2>
+    <h2>For Scrollutil Version 1.17</h2>
 
     <h3>by</h3>
 
@@ -102,6 +102,9 @@
 
     <dt class="tm"><a href="#widget_command">WIDGET COMMAND</a></dt>
 
+    <dd><code><i>pathName</i> <b><a href="#attrib">attrib</a></b> ?<i>name</i>
+    ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#autofillx">autofillx</a></b>
     ?<i>boolean</i>?</code></dd>
 
@@ -115,10 +118,13 @@
     <i>option</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#configure">configure</a></b>
-    ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i> ...?</code></dd>
+    ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i> ...??</code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#contentframe">contentframe</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#hasattrib">hasattrib</a></b>
+    <i>name</i></code></dd>
 
     <dd>
       <code><i>pathName</i> <b><a href="#scan">scan</a></b> <i>option
@@ -138,6 +144,9 @@
     <dd><code><i>pathName</i> <b><a href="#seerect">seerect</a></b> <i>x1</i>
     <i>y1</i> <i>x2</i> <i>y2</i>
     ?<b>nw</b>|<b>ne</b>|<b>sw</b>|<b>se</b>?</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#unsetattrib">unsetattrib</a></b>
+    <i>name</i></code></dd>
 
     <dd>
       <code><i>pathName</i> <b><a href="#xview">xview</a></b>
@@ -596,6 +605,24 @@ pack $sa -expand yes -fill both
 
     <dd>
       <dl>
+        <dt class="tm" id="attrib"><code><i>pathName</i> <b>attrib</b>
+        ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dt>
+
+        <dd>Queries or modifies the attributes of the widget.&nbsp; If no
+        <code><i>name</i></code> is specified, the command returns a list of
+        pairs, each of which contains the name and the value of an attribute
+        for <code><i>pathName</i></code>.&nbsp; If <code><i>name</i></code> is
+        specified with no <code><i>value</i></code>, then the command returns
+        the value of the one named attribute, or an empty string if no
+        corresponding value exists (you can use the <code><b><a href=
+        "#hasattrib">hasattrib</a></b></code> subcommand to distinguish this
+        case from the one that the value of an <i>existing</i> attribute is an
+        empty string).&nbsp; If one or more
+        <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
+        then the command sets the given widget attribute(s) to the given
+        value(s); in this case the return value is an empty string.&nbsp; Each
+        <code><i>name</i></code> may be an arbitrary string.</dd>
+
         <dt class="tm" id="autofillx"><code><i>pathName</i> <b>autofillx</b>
         ?<i>boolean</i>?</code></dt>
 
@@ -664,8 +691,8 @@ pack $sa -expand yes -fill both
         by the <code><b>scrollutil::scrollableframe</b></code> command.</dd>
 
         <dt class="tm" id="configure"><code><i>pathName</i> <b>configure</b>
-        ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i>
-        ...?</code></dt>
+        ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i>
+        ...??</code></dt>
 
         <dd>Queries or modifies the configuration options of the widget.&nbsp;
         If no <code><i>option</i></code> is specified, the command returns a
@@ -688,6 +715,12 @@ pack $sa -expand yes -fill both
         <b>contentframe</b></code></dt>
 
         <dd>Returns the path name of the widget's content frame.</dd>
+
+        <dt class="tm" id="hasattrib"><code><i>pathName</i> <b>hasattrib</b>
+        <i>name</i></code></dt>
+
+        <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
+        exists and <code>0</code> otherwise.</dd>
 
         <dt class="tm" id="scan"><code><i>pathName</i> <b>scan</b> <i>option
         args</i></code></dt>
@@ -793,6 +826,12 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
         (north-west), <code><b>ne</b></code> (north-east),
         <code><b>sw</b></code> (south-west), and <code><b>se</b></code>
         (south-east).&nbsp; The default corner is <code><b>nw</b></code>.</dd>
+
+        <dt class="tm" id="unsetattrib"><code><i>pathName</i>
+        <b>unsetattrib</b> <i>name</i></code></dt>
+
+        <dd>Unsets the attribute <code><i>name</i></code>.&nbsp; Returns an
+        empty string.</dd>
 
         <dt class="tm" id="xview"><code><i>pathName</i> <b>xview</b>
         ?<i>args</i>?</code></dt>
@@ -1088,19 +1127,25 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
     </tr>
 
     <tr>
-      <td><code><b>autosize</b> ?<b>w</b>|<b>h</b>|<b>wh</b>?</code></td>
+      <td><code><b>attrib</b></code></td>
       <td bgcolor="#e0e0e0"></td>
       <td bgcolor="#e0e0e0"></td>
     </tr>
 
     <tr>
-      <td><code><b>autofillx</b> ?<i>boolean</i>?</code></td>
+      <td><code><b>autosize</b></code></td>
       <td bgcolor="#e0e0e0"></td>
       <td bgcolor="#e0e0e0"></td>
     </tr>
 
     <tr>
-      <td><code><b>autofilly</b> ?<i>boolean</i>?</code></td>
+      <td><code><b>autofillx</b></code></td>
+      <td bgcolor="#e0e0e0"></td>
+      <td bgcolor="#e0e0e0"></td>
+    </tr>
+
+    <tr>
+      <td><code><b>autofilly</b></code></td>
       <td bgcolor="#e0e0e0"></td>
       <td bgcolor="#e0e0e0"></td>
     </tr>
@@ -1124,6 +1169,12 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
     </tr>
 
     <tr>
+      <td><code><b>hasattrib</b></code></td>
+      <td bgcolor="#e0e0e0"></td>
+      <td bgcolor="#e0e0e0"></td>
+    </tr>
+
+    <tr>
       <td><code><b>scan</b></code>&nbsp; (with mouse event bindings)</td>
       <td bgcolor="#e0e0e0"></td>
       <td bgcolor="#e0e0e0"></td>
@@ -1140,6 +1191,12 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
     <tr>
       <td><code><b>seerect</b> <i>x1</i> <i>y1</i> <i>x2</i> <i>y2</i>
       ?<b>nw</b>|<b>ne</b>|<b>sw</b>|<b>se</b>?</code></td>
+      <td bgcolor="#e0e0e0"></td>
+      <td bgcolor="#e0e0e0"></td>
+    </tr>
+
+    <tr>
+      <td><code><b>unsetattrib</b></code></td>
       <td bgcolor="#e0e0e0"></td>
       <td bgcolor="#e0e0e0"></td>
     </tr>

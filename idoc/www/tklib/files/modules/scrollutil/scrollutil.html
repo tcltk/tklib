@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 1.16</h2>
+    <h2>For Scrollutil Version 1.17</h2>
 
     <h3>by</h3>
 
@@ -197,22 +197,25 @@
   <p><b>The scrollutil::scrollednotebook mega-widget</b> contains a
   ttk::notebook within a scrollableframe and supports an arbitrary number of
   unsqueezed tabs.&nbsp; Currently not visible tabs can be brought into view by
-  navigating and scrolling with the mouse wheel or keyboard, and the widget
-  also provides a command for making individual tabs visible in the
-  scrollednotebook window.&nbsp; It is made sure that the currently selected
-  tab is always visible.&nbsp; Unlike the ttk::notebook widget, whose
-  <code>-width</code> option is quite often overriden by the total width of the
-  tabs, the scrollednotebook widget respects the value of its
-  <code>-width</code> option, regardless of the space required by the tabs.</p>
+  navigating with the mouse wheel or keyboard and by scrolling with the aid of
+  the two arrow buttons placed on demand in the top-left and top-right or
+  bottom-left and bottom-right corners (depending on the notebook's
+  style).&nbsp; The widget also provides a command for making individual tabs
+  visible in the scrollednotebook window.&nbsp; Unlike the ttk::notebook
+  widget, whose <code>-width</code> option is quite often overriden by the
+  total width of the tabs, the scrollednotebook widget respects the value of
+  its <code>-width</code> option, regardless of the space required by the
+  tabs.</p>
 
   <p><b>The scrollutil::plainnotebook mega-widget</b> extends a ttk::notebook
   having an arbitrary number of pages with invisible tabs by a ttk::frame to
   its left or right containing, among others, a scrollableframe whose content
   frame is the parent of a series of widgets that play the role of vertically
   laid-out notebook tabs.&nbsp; Currently not visible "tabs" can be brought
-  into view by scrolling with the mouse wheel or the vertical scrollbar of the
-  scrollarea containing the scrollableframe, and the widget provides a command
-  for making individual "tabs" visible in the plainnotebook window.&nbsp;
+  into view by navigating with the mouse wheel or keyboard and by scrolling
+  with the vertical scrollbar of the scrollarea containing the
+  scrollableframe.&nbsp; The widget also provides a command for making
+  individual "tabs" visible in the plainnotebook window.&nbsp;
   Unlike a ttk::notebook widget with vertically aligned tabs, which in most
   themes has a suboptimal look and whose <code>-height</code> option is quite
   often overriden by the total height of the tabs, the plainnotebook widget
@@ -306,8 +309,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil1.16.tar.gz</code> for UNIX and
-  <code>scrollutil1_16.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil1.17.tar.gz</code> for UNIX and
+  <code>scrollutil1_17.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -331,11 +334,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil1.16.tar.gz</code>:</p>
+  <code>scrollutil1.17.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil1.16.tar.gz | tar -xf -
+gunzip -c scrollutil1.17.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -343,17 +346,17 @@ gunzip -c scrollutil1.16.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil1.16.tar.gz
+tar -zxf scrollutil1.17.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil1.16</code>,
+  <p>Both commands will create a directory named <code>scrollutil1.17</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil1_16.zip</code> into the directory
-  <code>scrollutil1.16</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil1_17.zip</code> into the directory
+  <code>scrollutil1.17</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -724,22 +727,22 @@ source [file join $dir styleUtil.tcl]
   this makes the keyboard navigation more user-friendly.</p>
 
   <p>The script also patches the <code>clam</code> theme, by invoking the
-  public procedure <code>clampatch::patchClamTheme</code> of the clampatch
-  package, which is bundled with Scrollutil (but, contrary to the scaleutil
-  package, it is not used by the Scrollutil code and therefore it needs to be
-  loaded explicitly via&nbsp; <code>package require clampatch</code>):</p>
+  public procedure <code>themepatch::patch</code> of the themepatch package,
+  which is bundled with Scrollutil (but, contrary to the scaleutil package, it
+  is not used by the Scrollutil code and therefore it needs to be loaded
+  explicitly via&nbsp; <code>package require themepatch</code>):</p>
 
   <blockquote>
     <pre>
 package require scrollutil_tile
-package require clampatch
+package require themepatch
 
 . . .
 
 <span class="cmt">#
 # Patch the clam theme styles TButton, Heading, TCheckbutton, and TRadiobutton
 #</span>
-clampatch::patchClamTheme
+themepatch::patch clam
 </pre>
   </blockquote>
 
@@ -1834,7 +1837,7 @@ image create photo fileImg -file [file join $dir file$pct.gif]
 #</span>
 set f  [ttk::frame .f]
 <span class="red">set nb [scrollutil::scrollednotebook $f.nb -style My.TNotebook \
-        -forgetcommand condCopySel -leavecommand condCopySel]</span>
+        -forgetcommand condCopySel -leavecommand saveSel]</span>
 set currentTheme [styleutil::getCurrentTheme]
 set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
@@ -1861,7 +1864,7 @@ foreach fileName [lsort [glob *.tcl]] {
 
 proc condCopySel {nb widget} {
     set txt $widget.txt
-    if {[$txt tag nextrange sel 1.0 end] eq ""} {
+    if {[llength [$txt tag nextrange sel 1.0 end]] == 0} {
         return 1
     }
 
@@ -1875,10 +1878,23 @@ proc condCopySel {nb widget} {
     }
 }
 
+proc saveSel {nb widget} {
+    set selRange [$widget.txt tag nextrange sel 1.0 end]
+    if {[llength $selRange] == 0} {
+        <span class="red">$nb unsettabattrib $widget "selRange"</span>
+    } else {
+        <span class="red">$nb tabattrib $widget "selRange" $selRange</span>
+    }
+
+    return 1
+}
+
 <span class="cmt">#
-# Create a binding for moving and closing the tabs interactively
+# Create bindings for moving and closing the tabs interactively,
+# as well as for the virtual event &lt;&lt;NotebookTabChanged&gt;&gt;
 #</span>
-<span class="red">bind $nb &lt;&lt;MenuItemsRequested&gt;&gt; { populateMenu %W %d }</span>
+<span class="red">bind $nb &lt;&lt;MenuItemsRequested&gt;&gt; { populateMenu %W %d }
+bind $nb &lt;&lt;NotebookTabChanged&gt;&gt; { restoreSel %W }</span>
 
 proc populateMenu {nb data} {
     <span class="red">foreach {menu tabIdx} $data {}
@@ -1894,6 +1910,15 @@ proc populateMenu {nb data} {
     $menu add separator
     $menu add command -label "Close Tab" -command \
         <span class="red">[list $nb forget $tabIdx]</span>
+}
+
+proc restoreSel nb {
+    <span class="red">set widget [$nb select]</span>
+    if {$widget ne "" && <span class="red">[$nb hastabattrib $widget "selRange"]</span>} {
+        set txt $widget.txt
+        $txt tag remove sel 1.0 end
+        $txt tag add sel {*}<span class="red">[$nb tabattrib $widget "selRange"]</span>
+    }
 }
 
 . . .
@@ -1928,20 +1953,41 @@ proc configNb {nb sa} {
   <p>Note that the state of the text widgets is set to <code>disabled</code>,
   but the user can select a text range and then copy the selection into the
   clipboard via <code>Control-c</code> (<code>Command-c</code> on Mac OS
-  X/11+).&nbsp; When attempting to close a tab or to leave the currently
-  selected one, the path name of the corresponding scrollarea widget is
-  automatically passed to the <code>condCopySel</code> procedure, which was
-  specified as the value of the <code><a href=
-  "scrollednotebook.html#forgetcommand">-forgetcommand</a></code> and
-  <code><a href="scrollednotebook.html#leavecommand">-leavecommand</a></code>
-  options.&nbsp; This procedure checks the text widget child of the scrollarea
+  X/11+).&nbsp; When attempting to close a tab, the path name of the
+  corresponding scrollarea widget is automatically passed to the
+  <code>condCopySel</code> procedure, which was specified as the value of the
+  <code><a href="scrollednotebook.html#forgetcommand">-forgetcommand</a></code>
+  option.&nbsp; This procedure checks the text widget child of the scrollarea
   for the existence of a selection and enables the user to make sure that the
-  selection will be copied to the clipboard before closing or leaving the tab,
-  or to cancel the attempted operation on it.&nbsp; In a real-world
-  application, the procedure(s) specified as the value(s) of the two
-  above-mentioned options typically ask the user whether to save the changes
-  before closing or leaving the tab, or to cancel the attempted operation on
-  it.</p>
+  selection will be copied to the clipboard before closing the tab, or to
+  cancel the attempted operation on it.&nbsp; In a real-world application, the
+  procedure specified as the value of the above-mentioned option would
+  typically ask the user whether to save the changes before closing the tab, or
+  to cancel the attempted operation on it.</p>
+
+  <p>When attempting to leave the currently selected window by selecting a
+  different one, the path name of the scrollarea widget is automatically passed
+  to the <code>saveSel</code> procedure, which was specified as the value of
+  the <code><a href=
+  "scrollednotebook.html#leavecommand">-leavecommand</a></code> option.&nbsp;
+  This procedure saves the two-element list of text indices delimiting the
+  selection in the text widget child of the scrollarea as the value of the
+  <code>"selRange"</code> tab attribute, with the aid of the <code><a href=
+  "scrollednotebook.html#tabattrib">tabattrib</a></code> subcommand, or resets
+  that tab attribute via <code><a href=
+  "scrollednotebook.html#unsettabattrib">unsettabattrib</a></code> if the text
+  widget has no selection.&nbsp; Later, when this tab is selected again, the
+  <code>restoreSel</code> procedure, bound to the virtual event <code><a href=
+  "scrollednotebook.html#virtual_events">&lt;&lt;NotebookTabChanged&gt;&gt;</a></code>,
+  checks the existence of the <code>"selRange"</code> tab attribute with the
+  aid of the <code><a href=
+  "scrollednotebook.html#hastabattrib">hastabattrib</a></code> subcommand and
+  restores the text widget selection specified by the value of this tab
+  attribute, retrieved with the aid of the <code>tabattrib</code>
+  subcommand.&nbsp; We chose this approach for saving and restoring the text
+  selection instead of creating the text widgets with&nbsp;
+  <code>-exportselection 0</code>&nbsp; in order to demostrate the usage of
+  the subcommands related to tab attributes.</p>
 
   <p>We also make use of the virtual event <code><a href=
   "scrollednotebook.html#virtual_events">&lt;&lt;MenuItemsRequested&gt;&gt;</a></code>
@@ -2000,19 +2046,29 @@ image create photo fileImg -file [file join $dir file$pct.gif]
 #</span>
 set f  [ttk::frame .f]
 <span class="red">set nb [scrollutil::plainnotebook $f.nb -closabletabs 1 \
-        -forgetcommand condCopySel -leavecommand condCopySel]</span>
+        -forgetcommand condCopySel -leavecommand saveSel]</span>
 . . .
 
 proc condCopySel {nb widget} {
     . . .
 }
 
+proc saveSel {nb widget} {
+    . . .
+}
+
 <span class="cmt">#
-# Create a binding for moving and closing the tabs interactively
+# Create bindings for moving and closing the tabs interactively,
+# as well as for the virtual event <<NotebookTabChanged>>
 #</span>
-<span class="red">bind $nb &lt;&lt;MenuItemsRequested&gt;&gt; { populateMenu %W %d }</span>
+<span class="red">bind $nb &lt;&lt;MenuItemsRequested&gt;&gt; { populateMenu %W %d }
+bind $nb &lt;&lt;NotebookTabChanged&gt;&gt; { restoreSel %W }</span>
 
 proc populateMenu {nb data} {
+    . . .
+}
+
+proc restoreSel nb {
     . . .
 }
 
@@ -2103,7 +2159,7 @@ set f [ttk::frame .f]
 #</span>
 <span class="red">option add *Plainnotebook.closableTabs  1
 option add *Plainnotebook.forgetCommand condCopySel
-option add *Plainnotebook.leaveCommand  condCopySel</span>
+option add *Plainnotebook.leaveCommand  saveSel</span>
 
 <span class="cmt">#
 # Create a plainnotebook child displaying the contents of the Tk library files
@@ -2153,7 +2209,12 @@ proc setScrollRegion {canv canvWidth canvHeight img} {
 }
 
 proc pmLeaveCmd {pm nb} {
-    return [condCopySel $nb [$nb select]]
+    <span class="red">set widget [$nb select]</span>
+    if {$widget eq ""} {
+        return 1
+    } else {
+        return [saveSel $nb $widget]
+    }
 }
 
 proc condCopySel {nb widget} {
@@ -2165,16 +2226,30 @@ proc condCopySel {nb widget} {
     . . .
 }
 
+proc saveSel {nb widget} {
+    global nbImgs
+    if {$nb eq $nbImgs || [winfo class $widget] ne "Scrollarea"} {
+        return 1
+    }
+
+    . . .
+}
+
 
 <span class="cmt">#
-# For each plainnotebook create a binding for
-# moving and closing its tabs interactively
+# For each plainnotebook create bindings for moving and closing its tabs
+# interactively, as well as for the virtual event &lt;&lt;NotebookTabChanged&gt;&gt;
 #</span>
 <span class="red">foreach nb [$pm pages] {
     bind $nb &lt;&lt;MenuItemsRequested&gt;&gt; { populateMenu %W %d }
+    bind $nb &lt;&lt;NotebookTabChanged&gt;&gt; { restoreSel %W }
 }</span>
 
 proc populateMenu {nb data} {
+    . . .
+}
+
+proc restoreSel nb {
     . . .
 }
 

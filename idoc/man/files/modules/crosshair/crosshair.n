@@ -4,7 +4,7 @@
 '\" Copyright (c) 2008 (docs) Andreas Kupries <andreas_kupries@users\&.sourceforge\&.net>
 '\" Copyright (c) 2013 Frank Gover, Andreas Kupries
 '\"
-.TH "crosshair" n 1\&.1 tklib "Crosshairs"
+.TH "crosshair" n 1\&.2\&.1 tklib "Crosshairs"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -280,7 +280,7 @@ package require \fBTcl  ?8\&.4?\fR
 .sp
 package require \fBTk  ?8\&.4?\fR
 .sp
-package require \fBcrosshair  ?1\&.1?\fR
+package require \fBcrosshair  ?1\&.2\&.1?\fR
 .sp
 \fBcrosshair::crosshair\fR \fIw\fR ?\fIarg\fR\&.\&.\&.?
 .sp

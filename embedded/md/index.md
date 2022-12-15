@@ -43,12 +43,12 @@
 |||
 |---|---|
 |<a name='calendar'></a>calendar|[widget](tklib/files/modules/widget/widget\.md) &#183; [widget\_calendar](tklib/files/modules/widget/widget\_calendar\.md)|
-|<a name='canvas'></a>canvas|[canvas::drag](tklib/files/modules/canvas/canvas\_drag\.md) &#183; [canvas::edit::points](tklib/files/modules/canvas/canvas\_epoints\.md) &#183; [canvas::edit::polyline](tklib/files/modules/canvas/canvas\_epolyline\.md) &#183; [canvas::edit::quadrilateral](tklib/files/modules/canvas/canvas\_equad\.md) &#183; [canvas::gradient](tklib/files/modules/canvas/canvas\_gradient\.md) &#183; [canvas::highlight](tklib/files/modules/canvas/canvas\_highlight\.md) &#183; [canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) &#183; [canvas::snap](tklib/files/modules/canvas/canvas\_snap\.md) &#183; [canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md) &#183; [canvas::tag](tklib/files/modules/canvas/canvas\_tags\.md) &#183; [canvas::track::lines](tklib/files/modules/canvas/canvas\_trlines\.md) &#183; [canvasLabel](tklib/files/modules/tkpiechart/canvaslabel\.md) &#183; [crosshair](tklib/files/modules/crosshair/crosshair\.md) &#183; [diagram](tklib/files/modules/diagrams/diagram\.md) &#183; [diagram\-viewer](tklib/files/apps/diagram\-viewer\.md) &#183; [pie](tklib/files/modules/tkpiechart/pie\.md) &#183; [pieBoxLabeler](tklib/files/modules/tkpiechart/pieboxlabeler\.md) &#183; [piePeripheralLabeler](tklib/files/modules/tkpiechart/pieperipherallabeler\.md)|
+|<a name='canvas'></a>canvas|[canvas::drag](tklib/files/modules/canvas/canvas\_drag\.md) &#183; [canvas::edit::circle](tklib/files/modules/canvas/canvas\_ecircle\.md) &#183; [canvas::edit::points](tklib/files/modules/canvas/canvas\_epoints\.md) &#183; [canvas::edit::polyline](tklib/files/modules/canvas/canvas\_epolyline\.md) &#183; [canvas::edit::quadrilateral](tklib/files/modules/canvas/canvas\_equad\.md) &#183; [canvas::edit::rectangle](tklib/files/modules/canvas/canvas\_erectangle\.md) &#183; [canvas::gradient](tklib/files/modules/canvas/canvas\_gradient\.md) &#183; [canvas::highlight](tklib/files/modules/canvas/canvas\_highlight\.md) &#183; [canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) &#183; [canvas::snap](tklib/files/modules/canvas/canvas\_snap\.md) &#183; [canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md) &#183; [canvas::tag](tklib/files/modules/canvas/canvas\_tags\.md) &#183; [canvas::track::lines](tklib/files/modules/canvas/canvas\_trlines\.md) &#183; [canvasLabel](tklib/files/modules/tkpiechart/canvaslabel\.md) &#183; [crosshair](tklib/files/modules/crosshair/crosshair\.md) &#183; [diagram](tklib/files/modules/diagrams/diagram\.md) &#183; [diagram\-viewer](tklib/files/apps/diagram\-viewer\.md) &#183; [pie](tklib/files/modules/tkpiechart/pie\.md) &#183; [pieBoxLabeler](tklib/files/modules/tkpiechart/pieboxlabeler\.md) &#183; [piePeripheralLabeler](tklib/files/modules/tkpiechart/pieperipherallabeler\.md)|
 |<a name='cell'></a>cell|[canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md)|
 |<a name='character'></a>character|[khim](tklib/files/modules/khim/khim\.md)|
 |<a name='chat'></a>chat|[chatwidget](tklib/files/modules/chatwidget/chatwidget\.md)|
 |<a name='chatwidget'></a>chatwidget|[chatwidget](tklib/files/modules/chatwidget/chatwidget\.md)|
-|<a name='circle'></a>circle|[diagram](tklib/files/modules/diagrams/diagram\.md)|
+|<a name='circle'></a>circle|[canvas::edit::circle](tklib/files/modules/canvas/canvas\_ecircle\.md) &#183; [diagram](tklib/files/modules/diagrams/diagram\.md)|
 |<a name='clock'></a>clock|[datefield](tklib/files/modules/datefield/datefield\.md)|
 |<a name='color\_gradient'></a>color gradient|[canvas::gradient](tklib/files/modules/canvas/canvas\_gradient\.md)|
 |<a name='composite\_widget'></a>composite widget|[chatwidget](tklib/files/modules/chatwidget/chatwidget\.md)|
@@ -87,7 +87,7 @@
 
 |||
 |---|---|
-|<a name='editing'></a>editing|[canvas::edit::points](tklib/files/modules/canvas/canvas\_epoints\.md) &#183; [canvas::edit::polyline](tklib/files/modules/canvas/canvas\_epolyline\.md) &#183; [canvas::edit::quadrilateral](tklib/files/modules/canvas/canvas\_equad\.md)|
+|<a name='editing'></a>editing|[canvas::edit::circle](tklib/files/modules/canvas/canvas\_ecircle\.md) &#183; [canvas::edit::points](tklib/files/modules/canvas/canvas\_epoints\.md) &#183; [canvas::edit::polyline](tklib/files/modules/canvas/canvas\_epolyline\.md) &#183; [canvas::edit::quadrilateral](tklib/files/modules/canvas/canvas\_equad\.md) &#183; [canvas::edit::rectangle](tklib/files/modules/canvas/canvas\_erectangle\.md)|
 |<a name='editor'></a>editor|[bitmap\-editor](tklib/files/apps/bitmap\-editor\.md)|
 |<a name='ellipse'></a>ellipse|[diagram](tklib/files/modules/diagrams/diagram\.md)|
 |<a name='enter\_callback'></a>enter callback|[canvas::highlight](tklib/files/modules/canvas/canvas\_highlight\.md)|
@@ -203,6 +203,7 @@
 |---|---|
 |<a name='raster\_image'></a>raster image|[diagram](tklib/files/modules/diagrams/diagram\.md)|
 |<a name='re\_syntax'></a>re\_syntax|[ntext](tklib/files/modules/ntext/ntext\.md) &#183; [ntextIndent](tklib/files/modules/ntext/ntextIndent\.md) &#183; [ntextWordBreak](tklib/files/modules/ntext/ntextWordBreak\.md)|
+|<a name='rectangle'></a>rectangle|[canvas::edit::rectangle](tklib/files/modules/canvas/canvas\_erectangle\.md)|
 |<a name='regexp'></a>regexp|[ntext](tklib/files/modules/ntext/ntext\.md) &#183; [ntextIndent](tklib/files/modules/ntext/ntextIndent\.md) &#183; [ntextWordBreak](tklib/files/modules/ntext/ntextWordBreak\.md)|
 |<a name='remove\_tag'></a>remove tag|[canvas::tag](tklib/files/modules/canvas/canvas\_tags\.md)|
 |<a name='rubberband'></a>rubberband|[canvas::track::lines](tklib/files/modules/canvas/canvas\_trlines\.md)|

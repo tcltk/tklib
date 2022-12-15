@@ -14,12 +14,13 @@
 #
 # - Callback used to create the item (group) representing the point.
 #   Default: Single blue circle of radius 3 with center at point location.
-#
-# - Callback used to (un)highlight the item (group) of a point.
-#   Default: Switch to red color.
+#            Active color red.
 #
 # - Callback used to record editing activity (add, remove, move point)
-#   Default: NONE.
+#   Default: Do nothing, accept all moves
+#
+# - Callback used to report enter/leave editing activity on the points
+#   Default: Do nothing.
 
 # # ## ### ##### ######## ############# #####################
 ## Requisites
@@ -28,7 +29,6 @@ package require Tcl 8.5
 package require Tk
 package require snit
 package require canvas::drag
-package require canvas::highlight
 package require canvas::tag
 
 namespace eval ::canvas::edit {
@@ -43,29 +43,43 @@ snit::type ::canvas::edit::points {
     # # ## ### ##### ######## ############# #####################
     ## Life cycle, and configuration
 
-    option -tag           -default POINT -readonly 1 ; # Tag identifying our points
-    option -create-cmd    -default {}    -readonly 1 ; # Callback invoked to create new points.
-    option -highlight-cmd -default {}    -readonly 1 ; # Callback to highlight a dragged point.
-    option -data-cmd      -default {}    -readonly 1 ; # Callback for point edit operations
+    option -tag         -default POINT -readonly 1 ;# Tag identifying our points
+    option -create-cmd  -default {}                ;# Callback invoked to create new points.
+    option -data-cmd    -default {}                ;# Callback for point edit operations
+    option -active-cmd  -default {}                ;# Callback to report point with mouse over it
+
+    # data-cmd signatures ...
+    # DC add        (canvas group x y      ) :: VOID
+    # DC remove     (canvas group          ) :: VOID
+    # DC move start (canvas group          ) :: VOID
+    # DC move delta (canvas group x y dx dy) :: VOID
+    # DC move done  (canvas group          ) :: boolean
 
     # Options to tweak the default marker style without having to go for full-custom callback
     # Blue filled circle of radius 3, with a black border. See `DefaultCreate`.
     option -color       -default SkyBlue2
-    option -radius      -default 3
     option -hilit-color -default red
+    option -radius      -default 3
     option -kind        -default oval
 
-    constructor {c args} {
-	set mycanvas $c
-	set options(-create-cmd)    [mymethod DefaultCreate]
-	set options(-highlight-cmd) [mymethod DefaultHighlight]
+    # Event options ...
+    option -add-remove-point -default {} -readonly 1 ; # Event to add/remove a point
+    option -drag-point       -default  3 -readonly 1 ; # Event to drag a point
 
+    constructor {c args} {
 	$self configurelist $args
+
+	set mycanvas $c
+	set options(-data-cmd)      [mymethod DefaultData]
+	set options(-create-cmd)    [mymethod DefaultCreate]
 
 	# TODO :: Connect this to the option processing to allow me to
 	# drop -readonly 1 from their definition. Note that this also
 	# requires code to re-tag all the items on the fly.
-	$self Bindings Add {highlight drag edit}
+	#$self Bindings Add {}
+
+	$mycanvas bind $options(-tag) <Enter> [mymethod Active 1 $mycanvas %x %y]
+	$mycanvas bind $options(-tag) <Leave> [mymethod Active 0 $mycanvas %x %y]
 	return
     }
 
@@ -95,7 +109,7 @@ snit::type ::canvas::edit::points {
     method add {x y} {
 	# Create a point marker programmatically. This enables users
 	# to load an editor instance with existing point locations.
-	return [$self Add $mycanvas $x $y]
+	return [$self AddCore $mycanvas $x $y]
     }
 
     method remove {id} {
@@ -119,6 +133,7 @@ snit::type ::canvas::edit::points {
 
     ###### Destroy an existing point
     method clear {} {
+	set grouptags {}
 	foreach item [$mycanvas find withtag $options(-tag)] {
 	    lappend grouptags [GetId $mycanvas $item]
 	}
@@ -132,18 +147,16 @@ snit::type ::canvas::edit::points {
     }
 
     # # ## ### ##### ######## ############# #####################
-    ## Manage the canvas bindings (point creation and removal,
-    ## dragging, highlighting).
+    ## Manage the canvas bindings (point creation and removal, dragging).
 
     method {Bindings Add} {parts} {
-	if {![llength $parts]} { lappend parts highlight drag edit }
+	if {![llength $parts]} { lappend parts drag edit }
 	foreach part $parts {
 	    switch -exact -- $part {
-		highlight {
-		    canvas::highlight on $mycanvas $options(-tag) [mymethod Highlight]
-		}
 		drag {
-		    canvas::drag on $mycanvas $options(-tag) [mymethod Drag]
+		    canvas::drag on $mycanvas $options(-tag) \
+			[mymethod Drag] \
+			-event $options(-drag-point)
 		}
 		edit {
 		    if {$myactive} return
@@ -154,9 +167,17 @@ snit::type ::canvas::edit::points {
 		    # 2. If not, is there a way to ensure that 'Add' is not triggered when a
 		    #    'Remove' is done, even if the events for the 2 actions basically overlap
 		    #    (B1=Add, Shift-B1=Remove, for example) ?
+		    #
+		    # We know that Remove, as item binding, is run before the global Add.
 
-		    $mycanvas bind $options(-tag) <2> [mymethod Remove $mycanvas %x %y]
-		    bind $mycanvas                <1> [mymethod Add    $mycanvas %x %y]
+		    if {$options(-add-remove-point) ne {}} {
+			set event <$options(-add-remove-point)>
+			$mycanvas bind $options(-tag) $event [mymethod Remove $mycanvas %x %y 1]
+			bind $mycanvas                $event [mymethod Add    $mycanvas %x %y 1]
+		    } else {
+			$mycanvas bind $options(-tag) <2> [mymethod Remove $mycanvas %x %y 0]
+			bind $mycanvas                <1> [mymethod Add    $mycanvas %x %y 0]
+		    }
 		}
 	    }
 	}
@@ -164,12 +185,9 @@ snit::type ::canvas::edit::points {
     }
 
     method {Bindings Remove} {parts} {
-	if {![llength $parts]} { lappend parts highlight drag edit }
+	if {![llength $parts]} { lappend parts drag edit }
 	foreach part $parts {
 	    switch -exact -- $part {
-		highlight {
-		    canvas::highlight off $mycanvas $options(-tag)
-		}
 		drag {
 		    canvas::drag off $mycanvas $options(-tag)
 		}
@@ -177,8 +195,14 @@ snit::type ::canvas::edit::points {
 		    if {!$myactive} return
 		    set myactive 0
 
-		    $mycanvas bind $options(-tag) <2> {}
-		    bind $mycanvas                <1> {}
+		    if {$options(-add-remove-point) ne {}} {
+			set event <$options(-add-remove-point)>
+			$mycanvas bind $options(-tag) $event {}
+			bind $mycanvas                $event {}
+		    } else {
+			$mycanvas bind $options(-tag) <2> {}
+			bind $mycanvas                <1> {}
+		    }
 		}
 	    }
 	}
@@ -190,9 +214,25 @@ snit::type ::canvas::edit::points {
     ## section.
 
     ###### Place new point
-    method Add {c x y} {
+    method Add {c x y skip} {
+	# x, y are relative to the viewport
+
+	if {$skip && $myskip} { set myskip 0 ; return }
+
 	$self CheckCanvas $c
+
+	# Translate into actual canvas coordinates
+	set x [$c canvasx $x]
+	set y [$c canvasy $y]
+
+	$self AddCore $c $x $y
+    }
+
+    method AddCore {c x y} {
+	# x, y are absolute canvas coordinates
+
 	set grouptag [NewId]
+
 	set items [{*}$options(-create-cmd) $c $x $y]
 	# No visual representation of the point, no point. Vetoed.
 	if {![llength $items]} return
@@ -205,15 +245,16 @@ snit::type ::canvas::edit::points {
     }
 
     ###### Destroy an existing point
-    method Remove {c x y} {
+    method Remove {c x y skip} {
 	$self CheckCanvas $c
-	#puts "Remove|$x $y|"
+	#puts "Remove|$x $y|[$c find withtag current]"
 	$self RemoveByTag [GetId $c [$c find withtag current]]
+	set myskip $skip
 	return
     }
 
     method RemoveByTag {grouptag} {
-	$c delete $grouptag
+	$mycanvas delete $grouptag
 	#puts "RemoveTag|$grouptag"
 	unset myloc($grouptag)
 	Note remove $grouptag
@@ -241,7 +282,6 @@ snit::type ::canvas::edit::points {
     method {Drag start} {c item} {
 	$self CheckCanvas $c
 	#puts "Drag Start|$item|"
-	set mydragactive 1
 	set grouptag [GetId $c $item]
 	set mydbox [$c bbox $grouptag]
 	Note {move start} $grouptag
@@ -262,7 +302,6 @@ snit::type ::canvas::edit::points {
     method {Drag done} {c grouptag} {
 	$self CheckCanvas $c
 	#puts "Drag Done|$grouptag|"
-	set mydragactive 0
 	set ok [Note {move done} $grouptag]
 	lassign [Delta] px py dx dy
 	if {$ok} {
@@ -275,20 +314,6 @@ snit::type ::canvas::edit::points {
 	    $c move $grouptag $dx $dy
 	}
 	return
-    }
-
-    ###### Highlight management ... Start. Note! Not the user callback.
-    method {Highlight on} {c item} {
-	$self CheckCanvas $c
-	return [{*}$options(-highlight-cmd) on $c $item]
-    }
-
-    ###### Highlight management ... Done. Vetoed during drag.
-    method {Highlight off} {c state} {
-	$self CheckCanvas $c
-	if {$mydragactive} { return 0 }
-	{*}$options(-highlight-cmd) off $c $state
-	return 1
     }
 
     # # ## ### ##### ######## ############# #####################
@@ -359,12 +384,11 @@ snit::type ::canvas::edit::points {
     # # ## ### ##### ######## ############# #####################
     ## Instance state
 
+    variable myskip        0 ; # Remove/Add communication flag
     variable mycanvas     {} ; # Instance command of the canvas widget
 			       # the editor works with.
     variable mycounter     0 ; # Counter for NewId to generate
 			       # identifiers for point markers.
-    variable mydragactive  0 ; # Flag, true when a drag is running, to
-			       # veto un-highlighting.
     variable mydbox       {} ; # The bounding box of the items dragged
 			       # around, to compute full deltas and
 			       # absolute location during the drag.
@@ -375,12 +399,21 @@ snit::type ::canvas::edit::points {
 			       # calculation of absolute coordinates
 			       # during dragging.
 
+    method Active {on c x y} {
+	# puts "$on $c\t($x $y)"
+	if {![llength $options(-active-cmd)]} return
+	if {$on} { set on [$self current] } else { set on {} }
+	{*}$options(-active-cmd) $self $on
+	return
+    }
+
     # # ## ### ##### ######## ############# #####################
     ## Default implementations for the configurable callbacks to
-    ## create and highlight the edited points.
+    ## create the edited points.
 
     method DefaultCreate {c x y} {
 	$self CheckCanvas $c
+
 	# Create a circle marker in the default style
 	set r $options(-radius)
 	set w [expr {$x - $r}]
@@ -388,28 +421,18 @@ snit::type ::canvas::edit::points {
 	set e [expr {$x + $r}]
 	set s [expr {$y + $r}]
 	lappend items [$c create $options(-kind) $w $n $e $s \
-			   -width   1            \
-			   -outline black       \
-			   -fill    $options(-color)]
+			   -width      1           \
+			   -outline    black       \
+			   -activefill $options(-hilit-color) \
+			   -fill       $options(-color)]
 	return $items
     }
 
-    method {DefaultHighlight on} {c item} {
-	$self CheckCanvas $c
-	# Highlight by refilling the item in red. Save its full state
-	# for restoration at the end of the highlight.
-	set previous [lindex [$c itemconfigure $item -fill] end]
-	$c itemconfigure $item -fill $options(-hilit-color)
-	return [list $item $previous]
-    }
-
-    method {DefaultHighlight off} {c state} {
-	$self CheckCanvas $c
-	# To unhighlight get the saved item and state, restore them.
-	lassign $state item previous
-	$c itemconfigure $item -fill $previous
-	return
-    }
+    method {DefaultData add}        {c group x y}       {}
+    method {DefaultData remove}     {c group}           {}
+    method {DefaultData move start} {c group}           {}
+    method {DefaultData move delta} {c group x y dx dy} {}
+    method {DefaultData move done}  {c group}           { return yes } ;# accept always
 
     method CheckCanvas {c} {
 	if {$c eq $mycanvas} return
@@ -422,7 +445,7 @@ snit::type ::canvas::edit::points {
 # # ## ### ##### ######## ############# #####################
 ## Ready
 
-package provide canvas::edit::points 0.2
+package provide canvas::edit::points 0.3
 return
 
 # # ## ### ##### ######## ############# #####################

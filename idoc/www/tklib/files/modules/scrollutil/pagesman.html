@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>scrollutil::pagesman</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.16</h2>
+    <h2>For Scrollutil Version 1.17</h2>
 
     <h3>by</h3>
 
@@ -98,14 +98,23 @@
     <dd><code><i>pathName</i> <b><a href="#add">add</a></b> <i>window</i>
     ?<i>option</i> <i>value</i> <i>option</i> <i>value</i> ...?</code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#attrib">attrib</a></b> ?<i>name</i>
+    ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#cget">cget</a></b>
     <i>option</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#configure">configure</a></b>
-    ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i> ...?</code></dd>
+    ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i> ...??</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#forget">forget</a></b>
     <i>pageIndex</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#hasattrib">hasattrib</a></b>
+    <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#haspageattrib">haspageattrib</a></b>
+    <i>pageIndex</i> <i>name</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#index">index</a></b>
     <i>window</i></code></dd>
@@ -114,12 +123,16 @@
     <i>pageIndex</i> <i>window</i> ?<i>option</i> <i>value</i> <i>option</i>
     <i>value</i> ...?</code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#pageattrib">pageattrib</a></b>
+    <i>pageIndex</i> ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i>
+    ...??</code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#pagecget">pagecget</a></b>
     <i>pageIndex</i> <i>option</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#pageconfigure">pageconfigure</a></b>
-    <i>pageIndex</i> ?<i>option</i>? ?<i>value</i> <i>option</i>
-    <i>value</i> ...?</code></dd>
+    <i>pageIndex</i> ?<i>option</i> ?<i>value</i> <i>option</i>
+    <i>value</i> ...??</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#pages">pages</a></b></code></dd>
 
@@ -127,6 +140,13 @@
     ?<i>pageIndex</i>?</code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#size">size</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#unsetattrib">unsetattrib</a></b>
+    <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#unsetpageattrib">unsetpageattrib</a></b> <i>pageIndex</i>
+    <i>name</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#window">window</a></b>
     <i>pageIndex</i></code></dd>
@@ -414,9 +434,11 @@
 
     <dd><code><i>option</i></code> and the <code><i>arg</i></code>s determine
     the exact behavior of the command.&nbsp; In the subcommand descriptions
-    below, <code><i>pageIndex</i></code> always denotes a numerical page
-    index.&nbsp; The following subcommands are possible for pagesman
-    widgets:</dd>
+    below, <code><i>pageIndex</i></code> always denotes a numerical page index,
+    which, with the exception of the <code><b><a href=
+    "#insert">insert</a></b></code> subcommand, must be greater than or equal
+    to zero and less than the number of pages.&nbsp; The following subcommands
+    are possible for pagesman widgets:</dd>
 
     <dd>
       <dl>
@@ -430,6 +452,24 @@
         then the subcommand uses its optional arguments to update the options
         of the corresponding page.</dd>
 
+        <dt class="tm" id="attrib"><code><i>pathName</i> <b>attrib</b>
+        ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dt>
+
+        <dd>Queries or modifies the attributes of the widget.&nbsp; If no
+        <code><i>name</i></code> is specified, the command returns a list of
+        pairs, each of which contains the name and the value of an attribute
+        for <code><i>pathName</i></code>.&nbsp; If <code><i>name</i></code> is
+        specified with no <code><i>value</i></code>, then the command returns
+        the value of the one named attribute, or an empty string if no
+        corresponding value exists (you can use the <code><b><a href=
+        "#hasattrib">hasattrib</a></b></code> subcommand to distinguish this
+        case from the one that the value of an <i>existing</i> attribute is an
+        empty string).&nbsp; If one or more
+        <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
+        then the command sets the given widget attribute(s) to the given
+        value(s); in this case the return value is an empty string.&nbsp; Each
+        <code><i>name</i></code> may be an arbitrary string.</dd>
+
         <dt class="tm" id="cget"><code><i>pathName</i> <b>cget</b>
         <i>option</i></code></dt>
 
@@ -438,8 +478,8 @@
         by the <code><b>scrollutil::pagesman</b></code> command.</dd>
 
         <dt class="tm" id="configure"><code><i>pathName</i> <b>configure</b>
-        ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i>
-        ...?</code></dt>
+        ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i>
+        ...??</code></dt>
 
         <dd>Queries or modifies the configuration options of the widget.&nbsp;
         If no <code><i>option</i></code> is specified, the command returns a
@@ -466,6 +506,19 @@
         of the <code><b><a href="#forgetcommand">-forgetcommand</a></b></code>
         option, and <code>1</code> otherwise.</dd>
 
+        <dt class="tm" id="hasattrib"><code><i>pathName</i> <b>hasattrib</b>
+        <i>name</i></code></dt>
+
+        <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
+        exists and <code>0</code> otherwise.</dd>
+
+        <dt class="tm" id="haspageattrib"><code><i>pathName</i>
+        <b>haspageattrib</b> <i>pageIndex</i> <i>name</i></code></dt>
+
+        <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
+        for the page given by <code><i>pageIndex</i></code> exists and
+        <code>0</code> otherwise.</dd>
+
         <dt class="tm" id="index"><code><i>pathName</i> <b>index</b>
         <i>window</i></code></dt>
 
@@ -484,7 +537,31 @@
         list of available options.&nbsp; If <code><i>window</i></code> is
         already managed by the pagesman widget, then the subcommand moves it to
         the specified position and uses its optional arguments to update the
-        options of the corresponding page.</dd>
+        options of the corresponding page.&nbsp; If
+        <code><i>pageIndex</i></code> is less than or equal to zero then the
+        window is prepended to the list of pages; if it is greater than or
+        equal to the number of pages then the window is appended to the list of
+        pages.</dd>
+
+        <dt class="tm" id="pageattrib"><code><i>pathName</i> <b>pageattrib</b>
+        <i>pageIndex</i> ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i>
+        ...??</code></dt>
+
+        <dd>Queries or modifies the attributes of the page given by
+        <code><i>pageIndex</i></code>.&nbsp; If no <code><i>name</i></code> is
+        specified, the command returns a list of pairs, each of which contains
+        the name and the value of an attribute for the page.&nbsp; If
+        <code><i>name</i></code> is specified with no
+        <code><i>value</i></code>, then the command returns the value of the
+        one named page attribute, or an empty string if no corresponding value
+        exists (you can use the <code><b><a href=
+        "#haspageattrib">haspageattrib</a></b></code> subcommand to distinguish
+        this case from the one that the value of an <i>existing</i> page
+        attribute is an empty string).&nbsp; If one or more
+        <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
+        then the command sets the given page attribute(s) to the given
+        value(s); in this case the return value is an empty string.&nbsp; Each
+        <code><i>name</i></code> may be an arbitrary string.</dd>
 
         <dt class="tm" id="pagecget"><code><i>pathName</i> <b>pagecget</b>
         <i>pageIndex</i> <i>option</i></code></dt>
@@ -496,8 +573,8 @@
         "#pageconfigure">pageconfigure</a></b></code> command.</dd>
 
         <dt class="tm" id="pageconfigure"><code><i>pathName</i>
-        <b>pageconfigure</b> <i>pageIndex</i> ?<i>option</i>? ?<i>value</i>
-        <i>option</i> <i>value</i> ...?</code></dt>
+        <b>pageconfigure</b> <i>pageIndex</i> ?<i>option</i> ?<i>value</i>
+        <i>option</i> <i>value</i> ...??</code></dt>
 
         <dd>Queries or modifies the configuration options of the page given by
         <code><i>pageIndex</i></code>.&nbsp; If no <code><i>option</i></code>
@@ -538,6 +615,18 @@
 
         <dd>Returns the number of pages, i.e., the number of windows managed by
         the pagesman widget.</dd>
+
+        <dt class="tm" id="unsetattrib"><code><i>pathName</i>
+        <b>unsetattrib</b> <i>name</i></code></dt>
+
+        <dd>Unsets the attribute <code><i>name</i></code>.&nbsp; Returns an
+        empty string.</dd>
+
+        <dt class="tm" id="unsetpageattrib"><code><i>pathName</i>
+        <b>unsetpageattrib</b> <i>pageIndex</i> <i>name</i></code></dt>
+
+        <dd>Unsets the attribute <code><i>name</i></code> for the page given by
+        <code><i>pageIndex</i></code>.&nbsp; Returns an empty string.</dd>
 
         <dt class="tm" id="window"><code><i>pathName</i> <b>window</b>
         <i>pageIndex</i></code></dt>
