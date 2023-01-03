@@ -343,7 +343,7 @@ snit::type ::canvas::edit::rectangle {
 	set myrect [$mycanvas create rectangle $minx $miny $maxx $maxy \
 			-fill {} \
 			-width 2 \
-			{*}$options(-line-config) \
+			{*}$options(-rect-config) \
 			-activeoutline $options(-hilit-color) \
 			-outline       $options(-color)]
 
