@@ -67,11 +67,12 @@ snit::type ::canvas::edit::points {
     option -drag-point       -default  3 -readonly 1 ; # Event to drag a point
 
     constructor {c args} {
+	set options(-data-cmd)      [mymethod DefaultData]
+	set options(-create-cmd)    [mymethod DefaultCreate]
+
 	$self configurelist $args
 
 	set mycanvas $c
-	set options(-data-cmd)      [mymethod DefaultData]
-	set options(-create-cmd)    [mymethod DefaultCreate]
 
 	# TODO :: Connect this to the option processing to allow me to
 	# drop -readonly 1 from their definition. Note that this also
