@@ -1,6 +1,8 @@
 #!/bin/env tclsh8.6
 # -*- tcl -*-
 # # ## ### ##### ######## ############# #####################
+## (c) 2022-2023 Andreas Kupries
+#
 # demo_map.tcl --
 #
 # This demonstration script shows a basic map.
@@ -75,6 +77,8 @@ proc do {cachedir datadir} {
     file mkdir            $cachedir
     map provider osm TILE $cachedir
 
+    set max [TILE levels] ; incr max -1
+
     wm withdraw .
     toplevel    .m
     wm title    .m "Map Display"
@@ -92,7 +96,7 @@ proc do {cachedir datadir} {
     map box store memory   BMEM BFS
 
     map point store fs     PFS  $datadir
-    map point store memory PMEM PFS
+    map point store memory PMEM PFS $max
 
     # UI elements
 
@@ -107,7 +111,7 @@ proc do {cachedir datadir} {
     map display .m.map \
 	-provider     TILE \
 	-initial-geo  [home] \
-	-initial-zoom [expr {[TILE levels]-1}]
+	-initial-zoom $max
 
     # Layers ... Display engines attaching to the map
 

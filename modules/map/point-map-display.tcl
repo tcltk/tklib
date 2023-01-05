@@ -1,6 +1,6 @@
 ## -*- tcl -*-
 # # ## ### ##### ######## ############# ######################
-## (c) 2022 Andreas Kupries
+## (c) 2022-2023 Andreas Kupries
 ##
 ## Originally developed within the AKIS project (c) Andreas Kupries
 
@@ -125,9 +125,9 @@ snit::type ::map::point::map-display {
 	$self Attach
 
 	# Standard styles - Note! No item un/hiding
-	$self add-style point   -color red      -hilit-color SkyBlue2 -radius 4
-	$self add-style feature -color red      -hilit-color SkyBlue2 -radius 6
-	$self add-style cluster -color orange   -hilit-color green    -radius 20
+	$self add-style point   -color red -hilit-color SkyBlue2 -radius 4
+	$self add-style feature -color red -hilit-color SkyBlue2 -radius 6
+	$self add-style cluster -create-cmd [mymethod DefaultCluster]
 	return
     }
 
@@ -341,7 +341,11 @@ snit::type ::map::point::map-display {
 	    set usable [lreplace $usable end end]
 	    dict set myfree style $usable
 	} else {
-	    set tag [$engine add 0 0]
+	    # Pass attributes to tag creator command, if any
+	    # Default `cluster` style will look for a `count` attribute.
+	    set mydetails [dict get $mypoints $id attr]
+	    set tag       [$engine add 0 0]
+	    set mydetails {}
 
 	    dict set mylocation $tag {0 0}
 	}
@@ -422,6 +426,39 @@ snit::type ::map::point::map-display {
 	}
 
 	return [dict get $myengine $style]
+    }
+
+    # ..................................................................
+    ## Default style support: Cluster -
+
+    variable mydetails {}
+
+    method DefaultCluster {c x y} {
+	# Default cluster is circle with text (indicating number of aggregated points)
+	set color  orange
+	set hilit  green
+	set radius 20
+
+	# Create a circle marker in the default style
+	set r $radius
+	set w [expr {$x - $r}]
+	set n [expr {$y - $r}]
+	set e [expr {$x + $r}]
+	set s [expr {$y + $r}]
+	lappend items [$c create oval $w $n $e $s \
+			   -width      1          \
+			   -outline    black      \
+			   -activefill $hilit \
+			   -fill       $color]
+
+	# If a count attribute is present use it as text in the circle marker.
+	if {[dict exists $mydetails count]} {
+	    lappend items [$c create text $x $y \
+			       -activefill $hilit \
+			       -text [dict get $mydetails count]]
+	}
+
+	return $items
     }
 
     # ..................................................................

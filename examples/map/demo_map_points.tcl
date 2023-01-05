@@ -1,6 +1,8 @@
 #!/bin/env tclsh8.6
 # -*- tcl -*-
 # # ## ### ##### ######## ############# #####################
+## (c) 2022-2023 Andreas Kupries
+#
 # demo_map_points.tcl --
 #
 # This demonstration script shows a basic map.
@@ -57,8 +59,10 @@ proc do {cachedir datadir} {
     file mkdir                $cachedir
     map provider osm     TILE $cachedir
 
+    set max [TILE levels] ; incr max -1
+
     map point store fs     FS  $datadir
-    map point store memory MEM FS
+    map point store memory MEM FS $max
 
     wm withdraw .
     toplevel    .m
@@ -68,7 +72,7 @@ proc do {cachedir datadir} {
     map display .m.map \
 	-provider     TILE \
 	-initial-geo  [home] \
-	-initial-zoom [expr {[TILE levels]-1}]
+	-initial-zoom $max
 
     map point table-display .m.points MEM \
 	-on-selection point-selected
@@ -100,6 +104,8 @@ proc do {cachedir datadir} {
 
 proc point-active-changed {id} {
     if {$id eq {}} return
+    # Suppress cluster activations. Table display does not know these.
+    if {[string match c/* $id]} return
 
     .m.points focus $id
     return
