@@ -347,7 +347,9 @@ snit::widget ::map::display {
 	$self Behaviour
 	if {!$options($o)} return
 
-	# When going locked ensure display of chosen center
+	# When going locked ensure display of chosen center, if known
+
+	if {$mycenter eq {}} return
 	$self EnsureCenter
 	return
     }
