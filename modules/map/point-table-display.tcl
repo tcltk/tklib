@@ -182,9 +182,9 @@ snit::widget ::map::point::table-display {
 
 	    lassign [map slippy geo limit $geo] lat lon
 
-	    foreach name $names {
+	    if {![llength $names]} {
 		lappend row	[incr rowid]
-		lappend row	$name
+		lappend row	{}
 		lappend row	$kind
 		lappend row	$lat
 		lappend row	$lon
@@ -194,6 +194,20 @@ snit::widget ::map::point::table-display {
 
 		dict set map    $rowid $pointid
 		dict set points $pointid $rowid .
+	    } else {
+		foreach name $names {
+		    lappend row	[incr rowid]
+		    lappend row	$name
+		    lappend row	$kind
+		    lappend row	$lat
+		    lappend row	$lon
+
+		    lappend specs $row
+		    unset row
+
+		    dict set map    $rowid $pointid
+		    dict set points $pointid $rowid .
+		}
 	    }
 	}
 

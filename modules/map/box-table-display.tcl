@@ -184,9 +184,11 @@ snit::widget ::map::box::table-display {
 	    set perimeter [map slippy pretty-distance $perimeter]
 	    lassign [map slippy geo limit $center] lat lon
 
-	    foreach name $names {
+	    if {![llength $names]} {
+		# No names, single row with empty name column.
+
 		lappend row	[incr rowid]
-		lappend row	$name
+		lappend row	{}
 		lappend row	$lat
 		lappend row	$lon
 		lappend row	$diameter
@@ -197,6 +199,23 @@ snit::widget ::map::box::table-display {
 
 		dict set map   $rowid $boxid
 		dict set boxes $boxid $rowid .
+	    } else {
+		# One or more names, one row per name
+
+		foreach name $names {
+		    lappend row	[incr rowid]
+		    lappend row	$name
+		    lappend row	$lat
+		    lappend row	$lon
+		    lappend row	$diameter
+		    lappend row	$perimeter
+
+		    lappend specs $row
+		    unset row
+
+		    dict set map   $rowid $boxid
+		    dict set boxes $boxid $rowid .
+		}
 	    }
 	}
 
@@ -204,7 +223,6 @@ snit::widget ::map::box::table-display {
 	set myrows  $map
 	set myboxes $boxes
 	set myspec  $specs
-
 	return
     }
 
