@@ -146,7 +146,7 @@ snit::type ::map::box::store::fs {
 
 	    set box [map box file read $path]
 	    if {![dict size $box]} continue
-	    # doc :: dict (names, geo)
+	    # box :: dict (names, geo)
 
 	    # Note: file path is used as box ID
 
