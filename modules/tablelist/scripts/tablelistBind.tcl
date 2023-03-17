@@ -10,7 +10,7 @@
 #   - Binding tag TablelistHeader
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -478,6 +478,7 @@ proc tablelist::handleThemeChangedEvent {} {
 
     set newTheme [::mwutil::currentTheme]
     switch -- $newTheme {
+	alt -
 	clam -
 	default {
 	    set newCkbtnLayout [style layout TCheckbutton]
@@ -520,6 +521,7 @@ proc tablelist::handleThemeChangedEvent {} {
 	    #
 	    condOpenPipeline
 	}
+	alt -
 	clam -
 	default {
 	    set ckbtnLayouts($newTheme) $newCkbtnLayout

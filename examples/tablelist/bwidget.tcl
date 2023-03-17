@@ -5,11 +5,11 @@
 # widgets from the BWidget package and of the Tk core checkbutton and
 # menubutton widgets.
 #
-# Copyright (c) 2004-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.4				;# because of "-compound"
-package require tablelist 6.20
+package require tablelist 6.21
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -194,10 +194,12 @@ proc editEndCmd {tbl row col text} {
     switch [$tbl columncget $col -name] {
 	available {
 	    #
-	    # Update the image contained in the cell
+	    # Update the image contained in the cell and the checkbutton
+	    # embedded into the header label of the column "available"
 	    #
 	    set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
 	    $tbl cellconfigure $row,$col -image $img
+	    after idle [list updateCkbtn $tbl $row $col]
 	}
 
 	baudRate {

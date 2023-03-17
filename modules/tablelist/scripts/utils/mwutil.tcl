@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Public utility procedures
 #
-# Copyright (c) 2000-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8
@@ -19,7 +19,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.19
+    variable version	2.20
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -36,7 +36,8 @@ namespace eval mwutil {
 			configureSubCmd attribSubCmd hasattribSubCmd \
 			unsetattribSubCmd getScrollInfo getScrollInfo2 \
 			isScrollable scrollByUnits genMouseWheelEvent \
-			containsPointer hasFocus windowingSystem currentTheme
+			containsPointer hasFocus windowingSystem currentTheme \
+			normalizeColor parsePadding
 
     #
     # Make modified versions of the procedures tk_focusNext and
@@ -100,7 +101,8 @@ proc mwutil::wrongNumArgs args {
 #------------------------------------------------------------------------------
 proc mwutil::getAncestorByClass {w class} {
     regexp {^(\..+)\..+$} $w dummy win
-    while {[string compare [winfo class $win] $class] != 0} {
+    while {[winfo exists $win] &&
+	   [string compare [winfo class $win] $class] != 0} {
 	set win [winfo parent $win]
     }
 
@@ -686,4 +688,65 @@ proc mwutil::currentTheme {} {
     } else {
 	return ""
     }
+}
+
+#------------------------------------------------------------------------------
+# mwutil::normalizeColor
+#
+# Returns the representation of a given color in the form "#RRGGBB".
+#------------------------------------------------------------------------------
+proc mwutil::normalizeColor color {
+    foreach {r g b} [winfo rgb . $color] {}
+    return [format "#%02x%02x%02x" \
+	    [expr {$r >> 8}] [expr {$g >> 8}] [expr {$b >> 8}]]
+}
+
+#------------------------------------------------------------------------------
+# mwutil::parsePadding
+#
+# Returns the 4-elements list of pixels corresponding to a given padding
+# specification.
+#------------------------------------------------------------------------------
+proc mwutil::parsePadding {w padding} {
+    switch [llength $padding] {
+	0 {
+	    set l 0; set t 0; set r 0; set b 0
+	}
+	1 {
+	    set l [winfo pixels $w $padding]
+	    set t $l; set r $l; set b $l
+	}
+	2 {
+	    foreach {l t} $padding {}
+	    set l [winfo pixels $w $l]
+	    set t [winfo pixels $w $t]
+	    set r $l; set b $t
+	}
+	3 {
+	    foreach {l t r} $padding {}
+	    set l [winfo pixels $w $l]
+	    set t [winfo pixels $w $t]
+	    set r [winfo pixels $w $r]
+	    set b $t
+	}
+	4 {
+	    foreach {l t r b} $padding {}
+	    set l [winfo pixels $w $l]
+	    set t [winfo pixels $w $t]
+	    set r [winfo pixels $w $r]
+	    set b [winfo pixels $w $b]
+	}
+	default {
+	    return -code error "wrong # elements in padding spec \"$padding\""
+	}
+    }
+
+    set result [list $l $t $r $b]
+    foreach pad $result {
+	if {$pad < 0} {
+	    return -code error "bad pad value \"$pad\""
+	}
+    }
+
+    return $result
 }

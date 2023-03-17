@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -6730,8 +6730,8 @@ proc tablelist::createCkbtn {cmd win row col w} {
 
     if {[string length $cmd] != 0} {
 	$w.ckbtn configure -command [format {
-	    after idle [list %s %s %d %d]
-	} $cmd $win $row $col]
+	    after idle [list %s %s [%s index %s] %d]
+	} $cmd $win $win $key $col]
     }
 }
 
@@ -6756,8 +6756,8 @@ proc tablelist::hdr_createCkbtn {cmd win row col w} {
 
     if {[string length $cmd] != 0} {
 	$w.ckbtn configure -command [format {
-	    after idle [list %s %s %d %d]
-	} $cmd $win $row $col]
+	    after idle [list %s %s [%s header index %s] %d]
+	} $cmd $win $win $key $col]
     }
 }
 
@@ -6793,29 +6793,21 @@ proc tablelist::makeCkbtn w {
 	}
 
 	win32 {
-	    variable scalingpct
-	    if {$scalingpct == 100} {
-		$frm configure -width 13 -height 13
-		$w configure -borderwidth 0 -font {"MS Sans Serif" 8}
-		place $w -x -1 -y -1
-		return {13 13}
-	    } else {
-		variable checkedImg
-		variable uncheckedImg
-		variable tristateImg
-		if {![info exists checkedImg]} {
-		    createCheckbuttonImgs
-		}
-
-		$w configure -borderwidth 2 -indicatoron 0 \
-		    -image $uncheckedImg -selectimage $checkedImg \
-		    -tristateimage $tristateImg
-		if {$::tk_version >= 8.4} {
-		    $w configure -offrelief sunken ;# -offrelief added in Tk8.4
-		}
-		pack $w
-		return [list [winfo reqwidth $w] [winfo reqheight $w]]
+	    variable checkedImg
+	    variable uncheckedImg
+	    variable tristateImg
+	    if {![info exists checkedImg]} {
+		createCheckbuttonImgs
 	    }
+
+	    $w configure -borderwidth 2 -indicatoron 0 \
+		-image $uncheckedImg -selectimage $checkedImg \
+		-tristateimage $tristateImg
+	    if {$::tk_version >= 8.4} {
+		$w configure -offrelief sunken ;# -offrelief added in Tk8.4
+	    }
+	    pack $w
+	    return [list [winfo reqwidth $w] [winfo reqheight $w]]
 	}
 
 	classic {
@@ -6866,8 +6858,8 @@ proc tablelist::createTtkCkbtn {cmd win row col w} {
 
     if {[string length $cmd] != 0} {
 	$w.ckbtn configure -command [format {
-	    after idle [list %s %s %d %d]
-	} $cmd $win $row $col]
+	    after idle [list %s %s [%s index %s] %d]
+	} $cmd $win $win $key $col]
     }
 }
 
@@ -6892,8 +6884,8 @@ proc tablelist::hdr_createTtkCkbtn {cmd win row col w} {
 
     if {[string length $cmd] != 0} {
 	$w.ckbtn configure -command [format {
-	    after idle [list %s %s %d %d]
-	} $cmd $win $row $col]
+	    after idle [list %s %s [%s header index %s] %d]
+	} $cmd $win $win $key $col]
     }
 }
 
@@ -6915,6 +6907,16 @@ proc tablelist::makeTtkCkbtn w {
     set ckbtnLayout [style layout TCheckbutton]
     variable currentTheme
     switch -- $currentTheme {
+	alt -
+	default {
+	    if {[string first "Checkbutton.indicator" $ckbtnLayout] >= 0} {
+		style layout Tablelist.TCheckbutton { Checkbutton.indicator }
+		styleConfig Tablelist.TCheckbutton -indicatormargin 0
+	    } else {		;# see procedure themepatch::patch_default
+		style layout Tablelist.TCheckbutton { Checkbutton.image_ind }
+	    }
+	}
+
 	aqua {
 	    catch {style layout Tablelist.TCheckbutton { Checkbutton.button }}
 	}
@@ -6924,15 +6926,6 @@ proc tablelist::makeTtkCkbtn w {
 		style layout Tablelist.TCheckbutton { Checkbutton.indicator }
 		styleConfig Tablelist.TCheckbutton -indicatormargin {0 0 1 1}
 	    } else {		;# see procedure themepatch::patch_clam
-		style layout Tablelist.TCheckbutton { Checkbutton.image_ind }
-	    }
-	}
-
-	default {
-	    if {[string first "Checkbutton.indicator" $ckbtnLayout] >= 0} {
-		style layout Tablelist.TCheckbutton { Checkbutton.indicator }
-		styleConfig Tablelist.TCheckbutton -indicatormargin 0
-	    } else {		;# see procedure themepatch::patch_default
 		style layout Tablelist.TCheckbutton { Checkbutton.image_ind }
 	    }
 	}
@@ -6971,6 +6964,18 @@ proc tablelist::makeTtkCkbtn w {
     }
 
     switch -- $currentTheme {
+	alt -
+	blue -
+	Breeze - breeze -
+	clam -
+	default -
+	winxpblue {
+	    set height [winfo reqheight $w]
+	    $frm configure -width $height -height $height
+	    place $w -x 0
+	    return [list $height $height]
+	}
+
 	aqua {
 	    variable extendedAquaSupport
 	    if {$extendedAquaSupport} {
@@ -6998,17 +7003,6 @@ proc tablelist::makeTtkCkbtn w {
 	    $frm configure -width 14 -height 14
 	    place $w -x -1 -y -1
 	    return {14 14}
-	}
-
-	blue -
-	Breeze - breeze -
-	clam -
-	default -
-	winxpblue {
-	    set height [winfo reqheight $w]
-	    $frm configure -width $height -height $height
-	    place $w -x 0
-	    return [list $height $height]
 	}
 
 	clearlooks {

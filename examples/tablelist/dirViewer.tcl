@@ -4,11 +4,11 @@
 # Demonstrates how to use a tablelist widget for displaying the content of a
 # directory.
 #
-# Copyright (c) 2010-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2010-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.3
-package require tablelist 6.20
+package require tablelist 6.21
 
 #
 # Add some entries to the Tk option database

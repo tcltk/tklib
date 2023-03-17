@@ -1,14 +1,14 @@
 #==============================================================================
 # Main Tablelist and Tablelist_tile package module.
 #
-# Copyright (c) 2000-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	6.20
+    variable version	6.21
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -95,15 +95,17 @@ lappend auto_path [file join $::tablelist::library scripts]
 # Mentry and Scrollutil, and scaleutil is also included in Scrollutil.
 #
 proc ::tablelist::loadUtils {} {
-    if {[catch {package present mwutil} version] == 0 && $version < 2.19} {
+    if {[catch {package present mwutil} version] == 0 &&
+	[package vcompare $version 2.20] < 0} {
 	package forget mwutil
     }
-    package require mwutil 2.19
+    package require mwutil 2.20
 
-    if {[catch {package present scaleutil} version] == 0 && $version < 1.9} {
+    if {[catch {package present scaleutil} version] == 0 &&
+	[package vcompare $version 1.10] < 0} {
 	package forget scaleutil
     }
-    package require scaleutil 1.9
+    package require scaleutil 1.10
 
     package require scaleutilmisc 1.3
 }

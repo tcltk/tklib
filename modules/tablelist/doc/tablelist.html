@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 6.20</h2>
+    <h2>For Tablelist Version 6.21</h2>
 
     <h3>by</h3>
 
@@ -177,8 +177,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist6.20.tar.gz</code> for UNIX and
-  <code>tablelist6_20.zip</code> for Windows.&nbsp; These files contain the
+  The distribution file is <code>tablelist6.21.tar.gz</code> for UNIX and
+  <code>tablelist6_21.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -202,11 +202,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist6.20.tar.gz</code>:</p>
+  <code>tablelist6.21.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist6.20.tar.gz | tar -xf -
+gunzip -c tablelist6.21.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -214,17 +214,17 @@ gunzip -c tablelist6.20.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist6.20.tar.gz
+tar -zxf tablelist6.21.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist6.20</code>,
+  <p>Both commands will create a directory named <code>tablelist6.21</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist6_20.zip</code> into the directory
-  <code>tablelist6.20</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist6_21.zip</code> into the directory
+  <code>tablelist6.21</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -321,14 +321,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 6.20, then it is highly
-  recommended to specify the version number <code>6.20</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 6.21, then it is highly
+  recommended to specify the version number <code>6.21</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 6.20</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 6.21</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 6.20</code>.</p>
+  tablelist_tile 6.21</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -404,51 +404,65 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   environment and it mostly manipulates system resources that are resident
   outside of Xlib, which Tk is based on.&nbsp; (Traditional X applications like
   <code>bitmap</code> and <code>xmag</code> are also affected by this.)&nbsp;
-  With the exception of Xfce and MATE, the procedure computes the scaling
-  percentage from the value of the X resource <code>Xft.dpi</code>, by
-  executing the <code>xrdb</code> application.&nbsp; On GNOME-based systems
-  where <code>xrdb</code> is not installed per default (e.g., Solus GNOME and
-  Solus Budgie), it uses the <code>xrandr</code> application and the file
-  <code>~/.config/monitors.xml</code> instead.</p>
+  With the partial exception of Xfce and MATE (see below), the procedure
+  computes the scaling percentage from the value of the X resource
+  <code>Xft.dpi</code>, by executing the <code>xrdb</code> application.&nbsp;
+  On GNOME-based systems where <code>xrdb</code> is not installed per default
+  (e.g., Solus GNOME and Solus Budgie), it uses the <code>xrandr</code>
+  application and the file <code>~/.config/monitors.xml</code> instead.</p>
 
   <ul>
-    <li class="tm">On <i>Xfce and MATE</i> the display scaling mode can be
-    either unscaled (1x, regular) or scaled (2x, HiDPI), and the scaling
-    percentage will be set accordingly to <code>100</code> or
-    <code>200</code>.&nbsp; On Xfce, the display scaling mode is called
-    <i>window scaling</i> and can be selected in the <i>Appearance</i>
-    dialog.&nbsp; Xfce versions 4.16 and later also support fractional scaling
-    (whose parameters can be configured in the <i>Display</i> dialog), but, due
-    to the way the fractional scaling is implemented on Xfce, the scaling
-    percentage remains set to <code>100</code> or <code>200</code>, depending
-    on the value of the window scaling.&nbsp; On MATE, the display scaling mode
-    is called <i>window scaling factor</i> and can be selected in the <i>MATE
-    Tweak</i> dialog.</li>
+    <li class="tm">On <i>Xfce</i>, the display scaling mode, called
+    <i>window scaling</i>, can be "1x" or "2x" and can be selected in the
+    <i>Appearance</i> dialog.&nbsp; Xfce versions 4.16 and later also support
+    fractional scaling, whose parameters can be configured in the
+    <i>Display</i> dialog.&nbsp; If the "2x" mode was selected then the scaling
+    percentage will be set by the procedure
+    <code>scaleutil::scalingPercentage</code> to <code>200</code>, otherwise it
+    will be computed from the value of the font DPI, given by the X resource
+    <code>Xft.dpi</code>.&nbsp; The value of the font DPI can be set in the
+    <i>Fonts</i> tab of the <i>Appearance</i> dialog or (on Linux Lite 5+) via
+    the <i>HiDPI Settings</i> dialog.</li>
+
+    <li class="tm">On MATE</i>, the display scaling mode, called <i>window
+    scaling factor</i>, can be "Auto-detect", "Regular", or "HiDPI", and can be
+    selected in the <i>MATE Tweak</i> dialog.&nbsp; The same effect can be
+    achieved by using the <i>Monitor Preferences</i> dialog and selecting one
+    of the possible scaling values "auto detect", "100%", and "200%".&nbsp; If
+    needed, the procedure <code>scaleutil::scalingPercentage</code>
+    auto-detects which one of the "Regular" ("100%") and "HiDPI" ("200%") modes
+    corresponds to the preset "Auto-detect" ("auto detect") mode.&nbsp; If the
+    "HiDPI" ("200%") mode was selected by the user or auto-detected by the
+    procedure, then the scaling percentage will be set to <code>200</code>,
+    otherwise it will be computed from the value of the font DPI, given by the
+    X resource <code>Xft.dpi</code>.&nbsp; The value of the font DPI can be set
+    via the <i>Font Rendering Details</i> dialog, which in turn can be opened
+    from within the <i>Fonts</i> tab of the <i>Appearance Preferences</i>
+    dialog.</li>
 
     <li class="tm">In case of <i>GNOME on Xorg, Budgie, and Cinnamon versions
     earlier than 4.6</i>, the display scaling can be either 100 % or 200 %, and
     the procedure sets the scaling percentage accordingly to <code>100</code>
     or <code>200</code>.&nbsp; In newer GNOME and Budgie versions on Ubuntu one
     can enable the <code>x11-randr-fractional-scaling</code> as experimental
-    feature, which adds 125 %, 150 %, and 175 % to the list of supported
-    scaling percentages.&nbsp; Note that, due to the way this fractional
-    scaling is implemented, if the display scaling was set to one of these
-    intermediate levels, the value returned by
-    <code>scaleutil::scalingPercentage</code> will be <code>200</code>.&nbsp;
-    Cinnamon versions 4.6 and later also support fractional scaling; regardless
-    of the value of the <i>fractional scaling</i>, the scaling percentage will
-    be set to <code>100</code> or <code>200</code>, depending on whether the
-    <i>user interface scale</i> is set to "Normal" or "Double (Hi-DPI)".</li>
+    feature, which adds (at least) 125 %, 150 %, and 175 % to the list of
+    supported scaling percentages.&nbsp; Note that, due to the way this
+    fractional scaling is implemented, the value returned by
+    <code>scaleutil::scalingPercentage</code> will be <code>200</code>,
+    regardless of the selected display scaling.&nbsp; Cinnamon versions 4.6 and
+    later also support fractional scaling; if activated then the scaling
+    percentage returned by the procedure will be <code>200</code>, regardless 
+    of the selected display scaling.</li>
 
     <li class="tm"><i>GNOME on Wayland</i> traditionally supports the display
     scaling values 100 % and 200 %, and the scaling percentage will be set
     accordingly to <code>100</code> or <code>200</code>.&nbsp; In newer GNOME
     versions one can enable the experimental feature
-    <code>scale-monitor-framebuffer</code>, which adds 125 %, 150 %, and 175 %
-    to the list of supported scaling percentages.&nbsp; With this feature
-    enabled, the value returned by <code>scaleutil::scalingPercentage</code>
-    will be <code>100</code> for all scaling levels 100 %, 125 %, ...,
-    200 %.&nbsp; This is due to the fact that in this case, instead of window
+    <code>scale-monitor-framebuffer</code>, which adds (at least) 125 %, 150 %,
+    and 175 % to the list of supported scaling percentages.&nbsp; With this
+    feature enabled, the value returned by
+    <code>scaleutil::scalingPercentage</code> will be <code>100</code> for all
+    scaling levels, due to the fact that in this case, instead of window
     contents, monitor framebuffers will be scaled in a logical pixel coordinate
     space.</li>
 
@@ -462,13 +476,30 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     <code>100</code>, regardless of the display's scaling level.</li>
   </ul>
 
+  <p>On GNOME and Budgie, the display scaling can be set in the <i>Displays</i>
+  page of the <i>Settings</i> dialog, but the value of the X resource
+  <code>Xft.dpi</code>, which is used by the procedure
+  <code>scaleutil::scalingPercentage</code>, can also be manipulated by setting
+  the scaling factor of the fonts via the <i>Tweaks</i> application.&nbsp;
+  Likewise, on Cinnamon the display scaling can be set in the <i>Display</i>
+  page of the <i>System Settings</i> dialog, but the value of the X resource
+  <code>Xft.dpi</code> can also be manipulated by setting the text scaling
+  factor via the <i>Font Selection</i> page of the <i>System Settings</i>
+  dialog.&nbsp; Finally, on KDE Plasma the display scaling can be set in the
+  <i>Display Configuration</i> page of the <i>System Settings</i> dialog, but
+  the value of the font DPI, given by the X resource <code>Xft.dpi</code> can
+  also be set via the <i>Fonts</i> page of the <i>System Settings</i>
+  dialog.</p>
+
   <p>Besides computing the scaling percentage, the procedure
   <code>scaleutil::scalingPercentage</code> performs a series of additional
   tasks.&nbsp; Among others, it changes the default height of the ttk::treeview
   rows from the hard-coded value of 20 pixels to a more reasonable one, based
   on the metrics of the font used by the <code>Treeview</code> style (usually
   <code>TkDefaultFont</code>), and makes sure that this step will be repeated
-  whenever the theme changes or the virtual event
+  whenever the virtual event <code>&lt;&lt;ThemeChanged&gt;&gt;</code> is
+  received (e.g., because the value of the <code>Treeview</code> style's
+  <code>-font</code> option has changed), or the virtual event
   <code>&lt;&lt;TkWorldChanged&gt;&gt;</code> with the <code>user_data</code>
   field (<code>%d</code>) set to <code>FontChanged</code> is received.&nbsp; If
   the Tk version is later than 8.6.11 or 8.7a5, this virtual event is sent by
@@ -509,50 +540,55 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   sizes will suit the display's scaling level, the procedure examines this
   library file and, if the latter contains sizes in pixels, then it sets the
   <code>-size</code> option of the standard fonts to corresponding sizes in
-  points (without altering the file).&nbsp; In addition, for the HiDPI mode on
-  Xfce and MATE, the procedure doubles the sizes (in points) of the standard
-  fonts (the way display scaling works on these desktops makes this
-  necessary).</p>
+  points (without altering the file).&nbsp; In addition, for the "2x" mode on
+  Xfce, the procedure doubles the sizes (in points) of the standard fonts (the
+  way display scaling works on that desktop makes this necessary).</p>
 
   <p>The procedure also scales:</p>
 
   <ul>
-    <li>the default parameters of the Tk core panedwindow sash;</li>
+    <li class="tm">the default parameters of the Tk core panedwindow sash;</li>
 
-    <li>the default size of the Tk core scale widget and its slider;</li>
+    <li class="tm">the default size of the Tk core scale widget and its
+    slider;</li>
 
-    <li>the default width of the Tk core scrollbars on X11;</li>
+    <li class="tm">the default width of the Tk core scrollbars on X11;</li>
 
-    <li>the default length of the ttk::scale and ttk::progressbar widgets;</li>
+    <li class="tm">the default length of the ttk::scale and ttk::progressbar
+    widgets;</li>
 
-    <li>for the built-in themes <code>alt</code>, <code>clam</code>,
-    <code>classic</code>, <code>default</code>, <code>vista</code>, and
-    <code>xpnative</code>, the paddings of the ttk::spinbox, ttk::button,
-    toolbutton, ttk::menubutton, ttk::checkbutton, and ttk::radiobutton
-    widgets, as well as some styling options of the ttk::notebook widget and
-    its tabs;</li>
+    <li class="tm">for the built-in themes <code>alt</code> and
+    <code>default</code>, some styling options of the ttk::scrollbar,
+    ttk::scale, ttk::progressbar, ttk::combobox, ttk::spinbox, ttk::button,
+    toolbutton, ttk::menubutton, ttk::checkbutton, ttk::radiobutton,
+    ttk::notebook, and ttk::treeview widgets;</li>
 
-    <li>for the <code>alt</code>, <code>clam</code>, <code>classic</code>, and
-    <code>default</code> themes, the width of the ttk::scrollbar widget, the
-    sliders of the ttk::scale and ttk::progressbar widgets, as well as the
-    arrows of the ttk::combobox and ttk::spinbox widgets;</li>
+    <li class="tm">for the built-in theme <code>clam</code>, some styling
+    options of the ttk::scrollbar, ttk::scale, ttk::progressbar, ttk::combobox,
+    ttk::spinbox, ttk::button, toolbutton, ttk::menubutton, ttk::checkbutton,
+    ttk::radiobutton, ttk::notebook, ttk::panedwindow, ttk::treeview, and
+    ttk::labelframe widgets;</li>
 
-    <li>for the <code>alt</code> and <code>clam</code> themes, the arrow and
-    padding of the ttk::menubutton widget;</li>
+    <li class="tm">for the built-in theme <code>classic</code>, some styling
+    options of the ttk::scrollbar, ttk::scale, ttk::progressbar, ttk::combobox,
+    ttk::spinbox, ttk::button, toolbutton, ttk::menubutton, ttk::checkbutton,
+    ttk::radiobutton, ttk::notebook, ttk::panedwindow, and ttk::treeview
+    widgets;</li>
 
-    <li>for the <code>classic</code> and <code>default</code> themes, the
-    indicator margin and padding of the ttk::menubutton widget;</li>
+    <li class="tm">for the built-in theme <code>vista</code>, some styling
+    options of the ttk::combobox, ttk::button, toolbutton, ttk::menubutton,
+    ttk::checkbutton, ttk::radiobutton, ttk::notebook, and ttk::treeview
+    widgets;</li>
 
-    <li>for the <code>clam</code>, <code>classic</code>, and
-    <code>default</code> themes, the indicator size of the ttk::checkbutton and
-    ttk::radiobutton widgets (note that in the <code>alt</code> theme, the
-    indicators of these widgets are not scalable);</li>
+    <li class="tm">for the built-in theme <code>winnative</code>, some styling
+    options of the ttk::scale, ttk::progressbar, ttk::combobox, ttk::spinbox,
+    toolbutton, ttk::menubutton, ttk::checkbutton, ttk::radiobutton, 
+    ttk::notebook, and ttk::treeview widgets;</li>
 
-    <li>for the <code>clam</code> and <code>classic</code> themes, the sash of
-    the ttk::panedwindow widget;</li>
-
-    <li>for the <code>clam</code> theme, the padding of the ttk::treeview
-    column headers and the label margins of the ttk::labelframe widget.</li>
+    <li class="tm">for the built-in theme <code>xpnative</code>, some styling
+    options of the ttk::combobox, ttk::spinbox, ttk::button, toolbutton,
+    ttk::menubutton, ttk::checkbutton, ttk::radiobutton, ttk::notebook, and
+    ttk::treeview widgets.</li>
   </ul>
 
   <p>In addition, the procedure <code>scaleutil::scalingPercentage</code> makes
@@ -561,8 +597,15 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   properly scaled, regardless of the Tk release being used.&nbsp; (A
   long-standing bug in the implementation of these widgets was fixed in May
   2020 and is now contained in both Tk 8.6.11 and later and 8.7a5 and later,
-  but the procedure provides a workaround for the Tk versions that are still
-  affected by this bug.)</p>
+  but the procedure provides an automatic workaround for the Tk versions that
+  are still affected by this bug.)</p>
+
+  <p>Note that the Tk core checkbutton and radiobutton widgets, as well as the
+  indicators of the ttk::checkbutton and ttk::radiobutton widgets of the
+  <code>alt</code> and <code>winnative</code> themes are currently (as of
+  February 2023) not scalable (they will scale automatically in Tk 8.7b1 and
+  later).&nbsp; Moreover, the ttk::sizegrip widget is currently not scalable in
+  any of the built-in themes.</p>
 
   <h3 id="ov_tile">More on Tablelist_tile</h3>
 
@@ -702,7 +745,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 6.20
+package require tablelist 6.21
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -758,7 +801,7 @@ demo::displayConfig .configTop.tf.tbl
 
   <blockquote>
     <pre>
-package require tablelist 6.20
+package require tablelist 6.21
 
 namespace eval demo {
     <span class="cmt">#
@@ -1239,7 +1282,7 @@ demo::displayChildren .
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.20
+package require tablelist 6.21
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1869,7 +1912,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.20
+package require tablelist 6.21
 
 <span class="cmt">#
 # Add some entries to the Tk option database
@@ -2281,7 +2324,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   a BWidget ComboBox used to edit the content of one of its cells:</p>
 
   <blockquote>
-    <img src="bwidget.png" alt="Serial Line Configuration" width="856" height=
+    <img src="bwidget.png" alt="Serial Line Configuration" width="858" height=
     "407">
   </blockquote>
 
@@ -2294,7 +2337,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;<span class="cmt"># because of "-compound"</span>
-package require tablelist 6.20
+package require tablelist 6.21
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2438,7 +2481,7 @@ option add *Tablelist.labelCommand2     tablelist::addToSortColumns
   <code>Shift</code> key.</p>
 
   <p>The file <code>serialParams.tcl</code>, which is <code>source</code>d into
-  the main script, contains the following code, whose second half is related to
+  the main script, contains the following code, which is related mainly to
   the&nbsp; <code><a href=
   "tablelistWidget.html#col_labelwindow">-labelwindow</a>
   checkbutton</code>&nbsp; setting for column no. 1:</p>
@@ -2460,9 +2503,9 @@ for {set row 0; set line 1} {$row < 16} {set row $line; incr line} {
 }
 
 <span class="cmt">#
-# Configure the checkbutton embedded into the header label of the
-# column "available", and make sure that it will be reconfigured
-# whenever any column is moved interactively to a new position
+# Configure the "-command" option of the checkbutton embedded into the
+# header label of the column "available", and make sure that it will be
+# reconfigured whenever any column is moved interactively to a new position
 #</span>
 proc configCkbtn {tbl col} {
     set ckbtn [$tbl labelwindowpath $col]
@@ -2475,11 +2518,43 @@ proc onCkbtnToggle {tbl col ckbtn} {
 }
 configCkbtn $tbl available
 bind $tbl &lt;&lt;TablelistColumnMoved&gt;&gt; { configCkbtn %W available }
+bind $tbl &lt;&lt;ThemeChanged&gt;&gt;         { configCkbtn %W available }
+
+<span class="cmt">#
+# Make sure that the checkbutton will appear in tri-state mode
+#</span>
+set ckbtn [$tbl labelwindowpath available]
+set varName [$ckbtn cget -variable]
+if {[string compare [winfo class $ckbtn] "Checkbutton"] == 0} {
+    set $varName ""
+} else {
+    unset $varName
+}
+
+<span class="cmt">#
+# Selects/deselects the checkbutton embedded into the header label
+# of the column "available" or sets it into the tri-state mode.
+#</span>
+proc updateCkbtn {tbl row col} {
+    set lst [$tbl getcolumns $col]
+    set ckbtn [$tbl labelwindowpath $col]
+    upvar #0 [$ckbtn cget -variable] var
+
+    if {[lsearch -exact $lst 1] < 0} {                  ;<span class="cmt"># all 0</span>
+        set var 0                                       ;<span class="cmt"># deselect</span>
+    } elseif {[lsearch -exact $lst 0] < 0} {            ;<span class="cmt"># all 1</span>
+        set var 1                                       ;<span class="cmt"># select</span>
+    } elseif {[string compare [winfo class $ckbtn] "Checkbutton"] == 0} {
+        set var ""                                      ;<span class="cmt"># tri-state mode</span>
+    } else {
+        unset -nocomplain var                           ;<span class="cmt"># tri-state mode</span>
+    }
+}
 </pre>
   </blockquote>
 
-  <p>Concerning the second half of the above code, see REMARK 2 in the
-  description of the <code><a href=
+  <p>Concerning the <code>configCkbtn</code> procedure above, see REMARK 2 in
+  the description of the <code><a href=
   "tablelistWidget.html#col_labelwindow">-labelwindow</a></code> column
   configuration option.</p>
 
@@ -2580,10 +2655,12 @@ proc editEndCmd {tbl row col text} {
     switch [$tbl columncget $col -name] {
         <span class="red">available {
             <span class="cmt">#
-            # Update the image contained in the cell
+            # Update the image contained in the cell and the checkbutton
+            # embedded into the header label of the column "available"
             #</span>
             set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
             $tbl cellconfigure $row,$col -image $img
+            after idle [list updateCkbtn $tbl $row $col]
         }</span>
 
         baudRate {
@@ -2659,7 +2736,7 @@ proc editEndCmd {tbl row col text} {
 
       <blockquote>
         <pre>
-$tbl embedcheckbuttons 1
+$tbl embedcheckbuttons 1 updateCkbtn
 </pre>
       </blockquote>
     </li>
@@ -2672,8 +2749,7 @@ $tbl embedcheckbuttons 1
         <pre>
     for {set row 0} {$row < 16} {incr row} {
         set ckbtn2 [$tbl windowpath $row,available].ckbtn
-        upvar #0 [$ckbtn2 cget -variable] var2
-        set var2 $var
+        set [$ckbtn2 cget -variable] $var
     }
 </pre>
       </blockquote>
@@ -2717,7 +2793,7 @@ $tbl embedcheckbuttons 1
 
   <blockquote>
     <pre>
-package require tablelist 6.20
+package require tablelist 6.21
 
 wm title . "Tk Library Scripts"
 
@@ -3001,7 +3077,7 @@ $tbl fillcolumn 3 -window createButton
   <blockquote>
     <pre>
 package require Tk 8.3                          ;<span class="cmt"># because of entry validation</span>
-package require tablelist 6.20
+package require tablelist 6.21
 </pre>
   </blockquote>
 
@@ -3009,7 +3085,7 @@ package require tablelist 6.20
 
   <blockquote>
     <pre>
-package require tablelist<span class="red">_tile</span> 6.20
+package require tablelist<span class="red">_tile</span> 6.21
 </pre>
   </blockquote>
 
@@ -3087,13 +3163,19 @@ set btn [<span class="red">ttk::</span>button <span class="red">$f</span>.btn -t
   <code>option.tcl</code>.&nbsp; Its tile-specific part uses the values written
   by the command <code><a href=
   "tablelistThemes.html#setThemeDefaults">tablelist::setThemeDefaults</a></code>
-  into the array <code>tablelist::themeDefaults</code>, to make sure that on
-  <code>x11</code> the selection will have the same theme-specific look in all
-  the widgets created by the application:</p>
+  into the array <code>tablelist::themeDefaults</code>, to make sure that the
+  body items will be displayed with stripes and on <code>X11</code> the
+  selection will have the same theme-specific look in all the widgets created
+  by the application:</p>
 
   <blockquote>
     <pre>
-tablelist::setThemeDefaults
+set currentTheme [tablelist::getCurrentTheme]
+if {$tablelist::themeDefaults(-stripebackground) eq "" &&
+    $currentTheme ne "black"} {
+    option add *Tablelist.background            white
+    option add *Tablelist.stripeBackground      #f0f0f0
+}
 if {[tk windowingsystem] eq "x11"} {
     option add *Font              TkDefaultFont
     option add *selectBackground  $tablelist::themeDefaults(-selectbackground)
@@ -3110,9 +3192,32 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)
   resulting window has a nice theme-specific appearance:</p>
 
   <blockquote>
-    <img src="tileWidgets.png" alt="Serial Line Configuration" width="854"
+    <img src="tileWidgets.png" alt="Serial Line Configuration" width="859"
     height="402">
   </blockquote>
+
+  <p>The <code>tileWidgets.tcl</code> script starts by patching the
+  <code>default</code> theme on X11, by invoking the public procedure
+  <code>themepatch::patch</code> of the themepatch package, which is bundled
+  with Tablelist (but, contrary to the scaleutil package, it is not used by the
+  Tablelist code and therefore it needs to be loaded explicitly via&nbsp;
+  <code>package require themepatch</code>):</p>
+
+  <blockquote>
+    <pre>
+if {[tk windowingsystem] eq "x11"} {
+    #
+    # Patch the default theme's styles TCheckbutton and TRadiobutton
+    #
+    package require themepatch
+    themepatch::patch default
+}
+</pre>
+  </blockquote>
+
+  <p>Due to this (optional) step, the scalable ttk::checkbutton widgets used in
+  the colum "Available" have a modern look and behavior, just like the ones of
+  the themes <code>aqua</code> and <code>vista</code>.</p>
 
   <p>The tile-based version of the demo script <code><a href=
   "#ex_windows">embeddedWindows.tcl</a></code> contains a bit more changes, but

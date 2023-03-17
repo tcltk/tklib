@@ -1,5 +1,67 @@
-What is new in Tablelist 6.20?
+What is new in Tablelist 6.21?
 ------------------------------
+
+1.  For the built-in themes "alt", "clam", "classic", and "default", the
+    "-stripebackground" option now has a nonempty theme-specific default
+    value (for the "aqua" theme this has always been the case).
+
+2.  In disabled state, the "finishediting" subcommand now returns
+    immediately, without terminating the interactive cell editing
+    (thanks to Ulrich Seidl for his proposal).
+
+3.  Improvements related to the appearance of the Tk core checkbutton
+    widgets embedded into a header label or a cell (temporarily or
+    persistently).
+
+4.  The (ttk::)checkbutton embedded into the header label of the column
+    "available" of the tablelist widget created by the demo-scripts for
+    interactive cell editing now appears in tri-state mode and is
+    selected/deselected or set into the tri-state mode whenever the
+    editing changes the value of any cell contained in this column.
+
+5.  The scaleutil package now scales more styling options of the
+    ttk::treeview widget and some styling options of a series of widgets
+    of the "winnative" theme, too.
+
+6.  The scaleutil package now supports also the case that on Xfce the
+    DPI value was set in the "Fonts" tab of the "Appearance" dialog or
+    (on Linux Lite 5+) via the "HiDPI Settings" dialog, or on MATE it
+    was set via the "Font Rendering Details" dialog.
+
+7.  The scaleutil package now takes into account that current MATE
+    versions scale the font DPI for HiDPI displays.
+
+8.  The Tablelist distribution now includes the themepatch package,
+    whose "themepatch::patch" command significantly improves the look
+    and behavior of the ttk::checkbutton and ttk::radiobutton widgets of
+    the "alt", "clam", and "default" themes, and makes the "clam"
+    theme's ttk::button and ttk::menubutton widgets as well as its
+    ttk::treeview and tablelist headers smaller.  If the tk version is
+    at least 8.7 or the tksvg extension can be loaded into the
+    interpreter, then the package uses fully scaling-aware SVG images
+    for drawing the indicators of the patched ttk::checkbutton and
+    ttk::radiobutton widgets.  The demo script "tileWidgets.tcl" now
+    patches the "default" theme on X11 via "themepatch::patch default".
+
+9.  Added support for the case that the "alt" theme was modified by
+    invoking the "themepatch::patch" command of the themepatch package.
+
+10. Extended the description of the "tablelist::setThemeDefaults"
+    command by the hint that with current Tablelist_tile versions there
+    is no need for invocations of this procedure in application code,
+    and this is now reflected by the demo scripts, too.
+
+11. Fixed two bugs related to the "embedcheckbutton(s)",
+    "embedttkcheckbutton(s)", "header embedcheckbutton(s)", and
+    "header embedttkcheckbutton(s)" subcommands (thanks to Adrian
+    Medrano Calvo for his bug report).
+
+12. Fixed a few bugs related to the comparison of package versions.
+
+13. Several further improvements and minor bug fixes.
+
+What was new in Tablelist 6.20?
+-------------------------------
 
 1. Added the "dumptostring" and "loadfromstring" subcommands, which
    complement "dumptofile" and "loadfromfile", respectively (thanks

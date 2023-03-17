@@ -7,7 +7,7 @@
 #   - Private procedures related to tile themes
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2005-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -183,7 +183,7 @@ proc tablelist::altTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
 	-disabledforeground	#a3a3a3 \
-	-stripebackground	"" \
+	-stripebackground	#f0f0f0 \
 	-selectbackground	#4a6984 \
 	-selectforeground	#ffffff \
 	-selectborderwidth	0 \
@@ -554,7 +554,7 @@ proc tablelist::clamTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
 	-disabledforeground	#999999 \
-	-stripebackground	"" \
+	-stripebackground	#eeebe7 \
 	-selectbackground	#4a6984 \
 	-selectforeground	#ffffff \
 	-selectborderwidth	0 \
@@ -578,7 +578,7 @@ proc tablelist::classicTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
 	-disabledforeground	#a3a3a3 \
-	-stripebackground	"" \
+	-stripebackground	#f0f0f0 \
 	-selectbackground	#c3c3c3 \
 	-selectforeground	#000000 \
 	-selectborderwidth	1 \
@@ -633,7 +633,7 @@ proc tablelist::defaultTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
 	-disabledforeground	#a3a3a3 \
-	-stripebackground	"" \
+	-stripebackground	#e8e8e8 \
 	-selectbackground	#4a6984 \
 	-selectforeground	#ffffff \
 	-selectborderwidth	1 \

@@ -1,20 +1,18 @@
 #==============================================================================
 # Contains some Tk option database settings.
 #
-# Copyright (c) 2004-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
 # Add some entries to the Tk option database
 #
 set currentTheme [tablelist::getCurrentTheme]
-set isAwTheme \
-    [llength [info commands ::ttk::theme::${currentTheme}::setTextColors]]
-if {$currentTheme ne "aqua" && $currentTheme ne "black" && !$isAwTheme} {
+if {$tablelist::themeDefaults(-stripebackground) eq "" &&
+    $currentTheme ne "black"} {
     option add *Tablelist.background		white
     option add *Tablelist.stripeBackground	#f0f0f0
 }
-tablelist::setThemeDefaults
 if {[tk windowingsystem] eq "x11"} {
     option add *Font		  TkDefaultFont
     option add *selectBackground  $tablelist::themeDefaults(-selectbackground)
@@ -25,6 +23,8 @@ option add *Tablelist.setGrid			yes
 option add *Tablelist.movableColumns		yes
 option add *Tablelist.labelCommand		tablelist::sortByColumn
 option add *Tablelist.labelCommand2		tablelist::addToSortColumns
+set isAwTheme \
+    [llength [info commands ::ttk::theme::${currentTheme}::setTextColors]]
 if {$isAwTheme && ![regexp {^(aw)?(arc|breeze.*)$} $currentTheme]} {
     option add *ScrollArea.borderWidth		2
 } else {

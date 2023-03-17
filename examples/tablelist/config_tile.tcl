@@ -2,10 +2,10 @@
 # Demonstrates how to use a tablelist widget for displaying and editing the
 # configuration options of an arbitrary widget.
 #
-# Copyright (c) 2000-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.20
+package require tablelist_tile 6.21
 
 namespace eval demo {
     #
@@ -22,13 +22,11 @@ namespace eval demo {
     #   b1, b2, b3	  TButton
     #
     variable currentTheme [tablelist::getCurrentTheme]
-    variable isAwTheme \
-	[llength [info commands ::ttk::theme::${currentTheme}::setTextColors]]
-    if {$currentTheme ne "aqua" && $currentTheme ne "black" && !$isAwTheme} {
+    if {$tablelist::themeDefaults(-stripebackground) eq "" &&
+	$currentTheme ne "black"} {
 	option add *DemoTop.tf.tbl.background		white
 	option add *DemoTop.tf.tbl.stripeBackground	#f0f0f0
     }
-    tablelist::setThemeDefaults
     if {[tk windowingsystem] eq "x11"} {
 	option add *DemoTop*Font			TkDefaultFont
 	option add *DemoTop*selectBackground \
@@ -41,6 +39,8 @@ namespace eval demo {
     set foreground [winfo rgb . $::tablelist::themeDefaults(-foreground)]
     set selectFg   [winfo rgb . $::tablelist::themeDefaults(-selectforeground)]
     set selectFgEqForeground [expr {$selectFg eq $foreground}]
+    variable isAwTheme \
+	[llength [info commands ::ttk::theme::${currentTheme}::setTextColors]]
     if {$isAwTheme && ![regexp {^(aw)?(arc|breeze.*)$} $currentTheme]} {
 	option add *DemoTop.tf.borderWidth		2
     } else {

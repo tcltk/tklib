@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1968,7 +1968,8 @@ proc tablelist::doFinishEditing {win {destroy 1}} {
     }
 
     upvar ::tablelist::ns${win}::data data
-    if {[set row $data(editRow)] < 0} {
+    if {[string compare $data(-state) "disabled"] == 0 ||
+	[set row $data(editRow)] < 0} {
 	return 1
     }
     set col $data(editCol)

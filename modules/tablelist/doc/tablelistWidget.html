@@ -14,7 +14,7 @@
   <div align="center">
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.20</h2>
+    <h2>For Tablelist Version 6.21</h2>
 
     <h3>by</h3>
 
@@ -6110,9 +6110,9 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         <dd>
           <blockquote>
             <pre>
-<span class="cmt"># Configure the checkbutton embedded into the header label of the
-# column "available", and make sure that it will be reconfigured
-# whenever any column is moved interactively to a new position</span>
+<span class="cmt"># Configure the "-command" option of the checkbutton embedded into the
+# header label of the column "available", and make sure that it will be
+# reconfigured whenever any column is moved interactively to a new position</span>
 proc configCkbtn {tbl col} {
     set ckbtn [$tbl <a href="#labelwindowpath">labelwindowpath</a> $col]
     $ckbtn configure -command [list onCkbtnToggle $tbl $col $ckbtn]
@@ -9079,8 +9079,8 @@ pack $frm -expand yes -fill both -padx 10 -pady 10
             the screenshot below (on Windows this is only valid for the
             horizontal scrollbar):</p>
 
-            <p><img src="scrollbars.png" alt="Scrollbars" width="461" height=
-            "274"></p>
+            <p><img src="scrollbars.png" alt="Scrollbars" width="459" height=
+            "272"></p>
           </blockquote>
         </dd>
 
@@ -9368,10 +9368,11 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         <code><i>command</i></code> argument is a nonempty string then the
         checkbutton's <code><b>-command</b></code> option will be set to a
         script that concatenates this argument with the path name of the
-        tablelist widget and the cell's row and column indices and then invokes
-        the resulting script at idle time, thus making sure that at the time of
-        its invocation the cell's internal value will already be updated to
-        reflect the checkbutton's check state.</dd>
+        tablelist widget and the cell's current row and column indices (which
+        can be different from the ones at the checkbutton's creation time) and
+        then invokes the resulting script at idle time, thus making sure that
+        at the time of its invocation the cell's internal value will already be
+        updated to reflect the checkbutton's check state.</dd>
 
         <dd class="tm"><b>REMARK 1:</b>&nbsp; Remember that the
         <code><b><a href="#windowpath">windowpath</a></b></code> subcommand
@@ -9565,7 +9566,10 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         numerical row and column indices of the cell whose content is being
         edited.&nbsp; If no cell was being edited when the command was invoked
         then the same value <code>1</code> is returned but no virtual event is
-        generated.</dd>
+        generated.&nbsp; Likewise, if the widget's state is
+        <code><b>disabled</b></code> then the subcommand returns the value
+        <code>1</code> immediately, without terminating the editing and
+        generating any virtual event.</dd>
 
         <dd class="tm">This subcommand is called <i>implicitly</i> by pressing
         <code>Return</code> or <code>KP_Enter</code> (together with

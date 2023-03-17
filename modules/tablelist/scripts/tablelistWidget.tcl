@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -97,10 +97,11 @@ namespace eval tablelist {
     }
 
     variable ckbtnLayouts
-    array set ckbtnLayouts {clam ""  default ""}
+    array set ckbtnLayouts {alt ""  clam ""  default ""}
     variable widgetStyle ""
     variable colorScheme ""
     switch -- $currentTheme {
+	alt -
 	clam -
 	default {
 	    set ckbtnLayouts($currentTheme) [style layout TCheckbutton]
@@ -116,8 +117,9 @@ namespace eval tablelist {
 	}
     }
 
-    variable pngSupported [expr {($::tk_version >= 8.6 &&
-	![regexp {^8\.6(a[1-3]|b1)$} $::tk_patchLevel]) ||
+    variable pngSupported [expr {
+	($::tk_version >= 8.6 &&
+	 [package vcompare $::tk_patchLevel "8.6b2"] >= 0) ||
 	($::tk_version >= 8.5 && [catch {package require img::png}] == 0)}]
 
     variable newAquaSupport [expr {
@@ -8018,6 +8020,7 @@ proc tablelist::hdr_insertRows {win index argList} {
     set indexLine [expr {$index + 2}]
     set row $index
     set line $indexLine
+    $w insert $line.0 "\n"
     foreach item $argList {
 	#
 	# Adjust and extend the item, and insert
@@ -8037,7 +8040,9 @@ proc tablelist::hdr_insertRows {win index argList} {
 	    set item [mapTabs $item]
 	}
 
-	lappend insertArgs "\n" {}
+	if {$line != $indexLine} {
+	    lappend insertArgs "\n" {}
+	}
 
 	set col 0
 	foreach text $item \
@@ -9452,15 +9457,20 @@ proc tablelist::listVarTrace {win varName arrIndex op} {
 #------------------------------------------------------------------------------
 proc tablelist::checkStatesTrace {win varName arrIndex op} {
     #
-    # $arrIndex is is a cell index of the form <key>,<col>
+    # $arrIndex is a cell index of the form "<key>,<col>",
+    # which at idle time will no longer be valid if in
+    # the meantime the cell's row or column got deleted
     #
-    upvar $varName var
     if {[string match "h*" $arrIndex]} {
-	after idle \
-	    [list ::$win header cellconfigure $arrIndex -text $var($arrIndex)]
+	set subcmd "header cellconfigure"
     } else {
-	after idle [list ::$win cellconfigure $arrIndex -text $var($arrIndex)]
+	set subcmd "cellconfigure"
     }
+    upvar $varName var
+    set script [format {
+	catch { %s %s %s -text %s }
+    } [list $win] $subcmd $arrIndex [list $var($arrIndex)]]
+    after idle $script
 }
 
 #------------------------------------------------------------------------------

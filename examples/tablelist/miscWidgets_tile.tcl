@@ -5,10 +5,10 @@
 # Oakley's combobox, the mentry widgets of type "Date" and "Time", and of the
 # Tk core entry, spinbox, checkbutton, and menubutton widgets.
 #
-# Copyright (c) 2004-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.20
+package require tablelist_tile 6.21
 package require combobox
 package require mentry
 
@@ -210,10 +210,12 @@ proc editEndCmd {tbl row col text} {
     switch [$tbl columncget $col -name] {
 	available {
 	    #
-	    # Update the image contained in the cell
+	    # Update the image contained in the cell and the checkbutton
+	    # embedded into the header label of the column "available"
 	    #
 	    set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
 	    $tbl cellconfigure $row,$col -image $img
+	    after idle [list updateCkbtn $tbl $row $col]
 	}
 
 	baudRate {

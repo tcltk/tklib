@@ -4,10 +4,18 @@
 # Demonstrates the interactive tablelist cell editing with the aid of some
 # widgets from the tile package.
 #
-# Copyright (c) 2005-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.20
+package require tablelist_tile 6.21
+
+if {[tk windowingsystem] eq "x11"} {
+    #
+    # Patch the default theme's styles TCheckbutton and TRadiobutton
+    #
+    package require themepatch
+    themepatch::patch default
+}
 
 wm title . "Serial Line Configuration"
 
@@ -85,6 +93,12 @@ $tbl columnconfigure 10 -name color    -editable yes \
 proc emptyStr   val { return "" }
 proc formatDate val { return [clock format $val -format "%Y-%m-%d"] }
 proc formatTime val { return [clock format $val -format "%H:%M:%S"] }
+
+if {[tk windowingsystem] eq "x11"} {
+    package req scrollutil_tile
+    package require themepatch
+    themepatch::patch default
+}
 
 #
 # Populate the tablelist widget and configure the checkbutton
@@ -212,10 +226,12 @@ proc editEndCmd {tbl row col text} {
     switch [$tbl columncget $col -name] {
 	available {
 	    #
-	    # Update the image contained in the cell
+	    # Update the image contained in the cell and the checkbutton
+	    # embedded into the header label of the column "available"
 	    #
 	    set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
 	    $tbl cellconfigure $row,$col -image $img
+	    after idle [list updateCkbtn $tbl $row $col]
 	}
 
 	baudRate {

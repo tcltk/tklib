@@ -3,7 +3,7 @@
 # configures the checkbutton embedded into the header label of the column
 # "available".
 #
-# Copyright (c) 2021-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -21,9 +21,9 @@ for {set row 0; set line 1} {$row < 16} {set row $line; incr line} {
 }
 
 #
-# Configure the checkbutton embedded into the header label of the
-# column "available", and make sure that it will be reconfigured
-# whenever any column is moved interactively to a new position
+# Configure the "-command" option of the checkbutton embedded into the
+# header label of the column "available", and make sure that it will be
+# reconfigured whenever any column is moved interactively to a new position
 #
 proc configCkbtn {tbl col} {
     set ckbtn [$tbl labelwindowpath $col]
@@ -36,4 +36,35 @@ proc onCkbtnToggle {tbl col ckbtn} {
 }
 configCkbtn $tbl available
 bind $tbl <<TablelistColumnMoved>> { configCkbtn %W available }
-bind $tbl <<ThemeChanged>> { configCkbtn %W available }
+bind $tbl <<ThemeChanged>>	   { configCkbtn %W available }
+
+#
+# Make sure that the checkbutton will appear in tri-state mode
+#
+set ckbtn [$tbl labelwindowpath available]
+set varName [$ckbtn cget -variable]
+if {[string compare [winfo class $ckbtn] "Checkbutton"] == 0} {
+    set $varName ""
+} else {
+    unset $varName
+}
+
+#
+# Selects/deselects the checkbutton embedded into the header label
+# of the column "available" or sets it into the tri-state mode.
+#
+proc updateCkbtn {tbl row col} {
+    set lst [$tbl getcolumns $col]
+    set ckbtn [$tbl labelwindowpath $col]
+    upvar #0 [$ckbtn cget -variable] var
+
+    if {[lsearch -exact $lst 1] < 0} {			;# all 0
+	set var 0					;# deselect
+    } elseif {[lsearch -exact $lst 0] < 0} {		;# all 1
+	set var 1					;# select
+    } elseif {[string compare [winfo class $ckbtn] "Checkbutton"] == 0} {
+	set var ""					;# tri-state mode
+    } else {
+	unset -nocomplain var				;# tri-state mode
+    }
+}
