@@ -1,3 +1,46 @@
+2023-03-16 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* tablelistCommon.tcl: Fixed a few bugs related to the comparison of
+	  package versions; bumped the version number to 6.21; updated the
+	  copyright information.
+
+	* *.tcl:         Bumped the version number to 6.21; updated the
+	* COPYRIGHT.txt: copyright information.
+	* README.txt:
+
+	* doc/tablelistThemes.html: Added the hint that with current
+	  Tablelist_tile versions there is no need for invocations of the
+	  tablelist::setThemeDefaults command in application code.
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: For the built-in themes "alt", "clam", "classic", and
+	  "default", the "-stripebackground" option now has a nonempty theme-
+	  specific default value; in disabled state, the "finishediting"
+	  subcommand now returns immediately, without terminating the
+	  interactive cell editing; improvements related to the appearance of
+	  Tk core checkbutton widgets embedded into a header label or a cell
+	  (temporarily or persistently); added support for the case that the
+	  "alt" theme was modified by invoking the "themepatch::patch" command
+	  of the themepatch package; fixed two bugs related to the
+	  "embedcheckbutton(s)", "embedttkcheckbutton(s)", "header
+	  embedcheckbutton(s)", and "header embedttkcheckbutton(s)"
+	  subcommands; updated the copyright information.
+
+	* scripts/utils/*.tcl:               Various extensions and updates in
+	* scripts/utils/indicatorImgs/*.tcl: the mwutil and scaleutil packages;
+	  added the themepatch package; updated the copyright information.
+
+	* doc/*.png: Updated a few screenshots.
+
+	* ../../examples/tablelist/*.tcl: The (ttk::)checkbutton embedded into
+	  the header label of the column "available" of the tablelist widget
+	  created by the demo-scripts for interactive cell editing now appears
+	  in tri-state mode and is dynamically selected/deselected or set into
+	  the tri-state mode; bumped the version number to 6.21; updated the
+	  copyright information.
+
 2022-10-24 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 6.20.
