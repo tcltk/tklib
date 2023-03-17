@@ -1,5 +1,17 @@
-What is new in Mentry 3.16?
+What is new in Mentry 3.17?
 ---------------------------
+
+1. Extended the description of the "mentry::setThemeDefaults" command by
+   the hint that with current Mentry_tile versions there is no need for
+   invocations of this procedure in application code.
+
+2. Included the same version 2.20 of the mega-widget utility package
+   mwutil as in the most recent Tablelist release 6.21.
+
+3. Fixed a bug related to the comparison of package versions.
+
+What was new in Mentry 3.16?
+----------------------------
 
 1. Updated the Wcb command reference "wcbRef.html" to the version
    included in the most recent Wcb release 3.8.

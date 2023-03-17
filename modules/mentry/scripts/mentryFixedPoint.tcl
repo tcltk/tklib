@@ -2,7 +2,7 @@
 # Contains the implementation of a multi-entry widget for real numbers in
 # fixed-point format.
 #
-# Copyright (c) 1999-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
