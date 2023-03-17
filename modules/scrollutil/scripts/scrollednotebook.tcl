@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 2021-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.4
@@ -37,13 +37,13 @@ namespace eval scrollutil::snb {
     array set configSpecs {
 	-cursor			{cursor		Cursor		f}
 	-forgetcommand		{forgetCommand	ForgetCommand	w}
-	-height			{height		Height		f}
+	-height			{height		Height		n}
 	-leavecommand		{leaveCommand	LeaveCommand	w}
 	-movabletabs		{movableTabs	MovableTabs	w}
 	-padding		{padding	Padding		n}
 	-style			{style		Style		n}
 	-takefocus		{takeFocus	TakeFocus	f}
-	-width			{width		Width		f}
+	-width			{width		Width		w}
     }
 
     #
@@ -64,9 +64,9 @@ namespace eval scrollutil::snb {
     #
     # Use a list to facilitate the handling of command options
     #
-    variable cmdOpts [list add attrib cget closetabstate configure forget \
-		      hasattrib hastabattrib hide identify index insert \
-		      instate notebookpath see select state style tab \
+    variable cmdOpts [list add adjustsize attrib cget closetabstate configure \
+		      forget hasattrib hastabattrib hide identify index \
+		      insert instate notebookpath see select state style tab \
 		      tabattrib tabs unsetattrib unsettabattrib]
     if {$::tk_version < 8.7 ||
 	[package vcompare $::tk_patchLevel "8.7a4"] < 0} {
@@ -529,20 +529,6 @@ proc scrollutil::snb::doConfig {win opt val} {
 		    $data(sf) configure $opt $val
 		    $data(nb) configure $opt $val
 		}
-		-height {
-		    if {$data($opt) == 0} {
-			$data(sf) configure $opt [winfo reqheight $data(nb)]
-		    } else {
-			$data(sf) configure $opt $val
-		    }
-		}
-		-width {
-		    if {$data($opt) == 0} {
-			$data(sf) configure $opt [winfo reqwidth $data(nb)]
-		    } else {
-			$data(sf) configure $opt $val
-		    }
-		}
 	    }
 	}
 
@@ -555,6 +541,9 @@ proc scrollutil::snb::doConfig {win opt val} {
 	    set data($opt) [$data(nb) cget $opt]
 
 	    switch -- $opt {
+		-height {
+		    $data(sf) configure $opt [winfo reqheight $data(nb)]
+		}
 		-style {
 		    if {$val eq ""} {
 			set val TNotebook
@@ -583,6 +572,17 @@ proc scrollutil::snb::doConfig {win opt val} {
 		}
 		-movabletabs {
 		    set data($opt) [expr {$val ? 1 : 0}]
+		}
+		-width {
+		    set val [winfo pixels $win $val]
+		    if {$val <= 0} {
+			$data(nb) configure $opt $val
+			$data(sf) configure $opt [winfo reqwidth $data(nb)]
+			set data($opt) $val
+		    } else {
+			$data(sf) configure $opt $val
+			set data($opt) [$data(sf) cget $opt]
+		    }
 		}
 	    }
 	}
@@ -636,6 +636,14 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 		updateNbWidth $win
 	    }
 	    return ""
+	}
+
+	adjustsize {
+	    if {$argCount != 1} {
+		mwutil::wrongNumArgs "$win $cmd"
+	    }
+
+	    return [adjustsizeSubCmd $win]
 	}
 
 	attrib {
@@ -925,6 +933,57 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 }
 
 #------------------------------------------------------------------------------
+# scrollutil::snb::adjustsizeSubCmd
+#
+# Processes the scrollednotebook adjustsize subcommmand.
+#------------------------------------------------------------------------------
+proc scrollutil::snb::adjustsizeSubCmd win {
+    upvar ::scrollutil::ns${win}::data data
+    set nb $data(nb)
+
+    set maxWidth 0
+    foreach widget [$nb tabs] {
+	set padding [::$win tab $widget -padding]
+	foreach {l t r b} [mwutil::parsePadding $win $padding] {}
+	set reqWidth [expr {[winfo reqwidth $widget] + $l + $r}]
+	if {$reqWidth > $maxWidth} {
+	    set maxWidth $reqWidth
+	}
+    }
+
+    if {[set style [$nb cget -style]] eq ""} {
+	set style TNotebook
+    }
+    if {[set padding [$nb cget -padding]] eq ""} {
+	set padding [ttk::style lookup $style -padding]
+    }
+    foreach {l t r b} [mwutil::parsePadding $win $padding] {}
+    incr maxWidth [expr {$l + $r}]
+    incr maxWidth [expr {[mwutil::currentTheme] eq "aqua" ? 18 : 4}]
+
+    ::$win configure -width  $maxWidth
+
+    update idletasks
+    if {[destroyed $win]} {
+	return ""
+    }
+
+    set maxHeight 0
+    foreach widget [$nb tabs] {
+	set padding [::$win tab $widget -padding]
+	foreach {l t r b} [mwutil::parsePadding $win $padding] {}
+	set reqHeight [expr {[winfo reqheight $widget] + $t + $b}]
+	if {$reqHeight > $maxHeight} {
+	    set maxHeight $reqHeight
+	}
+    }
+
+    ::$win configure -height $maxHeight
+
+    return ""
+}
+
+#------------------------------------------------------------------------------
 # scrollutil::snb::seeSubCmd
 #
 # Processes the scrollednotebook see subcommmand.
@@ -941,8 +1000,16 @@ proc scrollutil::snb::seeSubCmd {win nbTabId {dir ""}} {
 	return ""
     }
 
+    if {[set style [$nb cget -style]] eq ""} {
+	set style TNotebook
+    }
+    if {[set padding [$nb cget -padding]] eq ""} {
+	set padding [ttk::style lookup $style -padding]
+    }
+    foreach {l t r b} [mwutil::parsePadding $win $padding] {}
     set tabIdx [$nb index $nbTabId]
-    if {[winfo height $nb] < 10 || [$nb tab $tabIdx -state] eq "hidden"} {
+    if {[winfo height $nb] < 10 + $t + $b ||
+	[$nb tab $tabIdx -state] eq "hidden"} {
 	return ""
     }
 
@@ -1014,7 +1081,7 @@ proc scrollutil::snb::adjustXPad {win tabIdx first last} {
     incr right [expr {$cfWidth - int($cfWidth * $last + 0.5)}]
 
     foreach {l top r bottom} \
-	[normalizePadding $win [origPadding $win $tabIdx]] {}
+	[mwutil::parsePadding $win [origPadding $win $tabIdx]] {}
 
     if {$data(arrowAction)} {
 	set data(arrowAction) 0
@@ -1074,10 +1141,8 @@ proc scrollutil::snb::onScrollednotebookMap win {
     set sf $data(sf)
     set nb $data(nb)
 
-    if {$data(-height) == 0} {
-	$sf configure -height [winfo reqheight $nb]
-    }
-    if {$data(-width) == 0} {
+    $sf configure -height [winfo reqheight $nb]
+    if {$data(-width) <= 0} {
 	$sf configure -width [winfo reqwidth $nb]
     }
     $sf configure -xscrollcommand [list scrollutil::snb::adjustXPad $win -1]
@@ -1092,11 +1157,11 @@ proc scrollutil::snb::onScrollednotebookMap win {
 proc scrollutil::snb::onThemeChanged w {
     if {$w eq "."} {
 	::scrollutil::getForegroundColors normalFg disabledFg
-	scrollutil_closeImg         configure -foreground $normalFg
-	scrollutil_closeDisabledImg configure -foreground $disabledFg
+	::scrollutil::setImgForeground scrollutil_closeImg	   $normalFg
+	::scrollutil::setImgForeground scrollutil_closeDisabledImg $disabledFg
 
-	scrollutil_leftArrowImg     configure -foreground $normalFg
-	scrollutil_rightArrowImg    configure -foreground $normalFg
+	::scrollutil::setImgForeground scrollutil_leftArrowImg  $normalFg
+	::scrollutil::setImgForeground scrollutil_rightArrowImg $normalFg
     } else {
 	doConfig $w -style [doCget $w -style]
 	updateNbWidth $w
@@ -1552,12 +1617,12 @@ proc scrollutil::snb::yCoordForTabs nb {
     if {[set padding [$nb cget -padding]] eq ""} {
 	set padding [ttk::style lookup $style -padding]
     }
-    foreach {left top right bottom} [normalizePadding $nb $padding] {}
+    foreach {l t r b} [mwutil::parsePadding $nb $padding] {}
 
     switch -- $tabPos {
-	nw - sw	{ set x [expr {$left + 10}] }
+	nw - sw	{ set x [expr {$l + 10}] }
 	n -  s	{ set x [expr {[winfo width $nb] / 2}] }
-	ne - se	{ set x [expr {[winfo width $nb] - $right - 11}] }
+	ne - se	{ set x [expr {[winfo width $nb] - $r - 11}] }
     }
 
     set height [winfo height $nb]
@@ -1741,46 +1806,6 @@ proc scrollutil::snb::activateTab win {
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::snb::normalizePadding
-#
-# Returns the 4-elements list of pixels corresponding to a given padding
-# specification.
-#------------------------------------------------------------------------------
-proc scrollutil::snb::normalizePadding {w padding} {
-    switch [llength $padding] {
-	0 { return [list 0 0 0 0] }
-	1 {
-	    set l [winfo pixels $w $padding]
-	    return [list $l $l $l $l]
-	}
-	2 {
-	    foreach {l t} $padding {}
-	    set l [winfo pixels $w $l]
-	    set t [winfo pixels $w $t]
-	    return [list $l $t $l $t]
-	}
-	3 {
-	    foreach {l t r} $padding {}
-	    set l [winfo pixels $w $l]
-	    set t [winfo pixels $w $t]
-	    set r [winfo pixels $w $r]
-	    return [list $l $t $r $t]
-	}
-	4 {
-	    foreach {l t r b} $padding {}
-	    set l [winfo pixels $w $l]
-	    set t [winfo pixels $w $t]
-	    set r [winfo pixels $w $r]
-	    set b [winfo pixels $w $b]
-	    return [list $l $t $r $b]
-	}
-	default {
-	    return -code error "wrong # elements in padding spec \"$padding\""
-	}
-    }
-}
-
-#------------------------------------------------------------------------------
 # scrollutil::snb::savePaddings
 #
 # Saves the overall and horizontal paddings of the pane identified by a given
@@ -1794,7 +1819,7 @@ proc scrollutil::snb::savePaddings {win widget} {
     set padding [$data(nb) tab $widget -padding]
     set paddingArr($widget) $padding
 
-    foreach {l t r b} [normalizePadding $win $padding] {}
+    foreach {l t r b} [mwutil::parsePadding $win $padding] {}
     set xPadArr($widget) [list $l $r]
 }
 

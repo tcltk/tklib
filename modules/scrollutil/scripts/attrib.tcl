@@ -2,7 +2,7 @@
 # Contains procedures that implement the *attrib, has*attrib, and unset*attrib
 # subcommands.
 #
-# Copyright (c) 2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2022-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------

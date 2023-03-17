@@ -4,7 +4,7 @@
 # Demonstrates the use of the scrollutil::scrollsync widget in connection with
 # three tablelist widgets.
 #
-# Copyright (c) 2019-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require tablelist_tile
@@ -38,7 +38,7 @@ $sa setwidget $ss
 # Populate the scrollsync widget with three tablelists
 #
 
-if {[styleutil::getCurrentTheme] ne "aqua"} {
+if {$tablelist::themeDefaults(-stripebackground) eq ""} {
     option add *Tablelist.background		white
     option add *Tablelist.stripeBackground	#f0f0f0
 }

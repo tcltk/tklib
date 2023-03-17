@@ -1,5 +1,54 @@
-What is new in Scrollutil 1.17?
+What is new in Scrollutil 1.18?
 -------------------------------
+
+1.  Added the "adjustsize" subcommand to the scrollednotebook,
+    plainnotebook, and pagesman widgets (thanks to Harald Oehlmann for
+    his proposal).
+
+2.  The "add" and "insert" plainnotebook subcommands now return the path
+    name of the widget used for the tab corresponding to the window
+    specified as subcommand argument.
+
+3.  If the Tk version is at least 8.7 or the tksvg extension can be
+    loaded into the interpreter, then all the images used by the
+    scrollednotebook and plainnotebook widgets are now created as SVG
+    images that will scale automatically according to the display's real
+    scaling percentage, which can be greater than 200 (the maximum value
+    returned by the procedure scaleutil::scalingPercentage).  This comes
+    in handy especially when running Androwish on a tablet or
+    smartphone.
+
+4.  The scaleutil package now scales more styling options of the
+    ttk::treeview widget and some styling options of a series of widgets
+    of the "winnative" theme, too.
+
+5.  The scaleutil package now supports also the case that on Xfce the
+    DPI value was set in the "Fonts" tab of the "Appearance" dialog or
+    (on Linux Lite 5+) via the "HiDPI Settings" dialog, or on MATE it
+    was set via the "Font Rendering Details" dialog.
+
+6.  The scaleutil package now takes into account that current MATE
+    versions scale the font DPI for HiDPI displays.
+
+7.  Extended the themepatch package by support for patching and
+    unpatching the "alt" theme and by adding the "themepatch::ispatched"
+    command.
+
+8.  If the Tk version is at least 8.7 or the tksvg extension can be
+    loaded into the interpreter, then the "themepatch::patch" command
+    now uses fully scaling-aware SVG images for drawing the indicators
+    of the ttk::checkbutton and ttk::radiobutton widgets (again, this
+    will be a benefit especially for Androwish).
+
+9.  Corrected the definition of the "-height" option for the
+    scrollednotebook widget to be in sync with that for ttk::notebook.
+
+10. Fixed a few bugs related to the comparison of package versions.
+
+11. Several improvements in the demo scripts.
+
+What was new in Scrollutil 1.17?
+--------------------------------
 
 1. Added the "notebookpath" subcommand to the scrollednotebook widget
    and described how it can be used in connection with setting a tab-

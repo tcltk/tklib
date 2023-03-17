@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 1.17</h2>
+    <h2>For Scrollutil Version 1.18</h2>
 
     <h3>by</h3>
 
@@ -309,8 +309,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil1.17.tar.gz</code> for UNIX and
-  <code>scrollutil1_17.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil1.18.tar.gz</code> for UNIX and
+  <code>scrollutil1_18.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -334,11 +334,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil1.17.tar.gz</code>:</p>
+  <code>scrollutil1.18.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil1.17.tar.gz | tar -xf -
+gunzip -c scrollutil1.18.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -346,17 +346,17 @@ gunzip -c scrollutil1.17.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil1.17.tar.gz
+tar -zxf scrollutil1.18.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil1.17</code>,
+  <p>Both commands will create a directory named <code>scrollutil1.18</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil1_17.zip</code> into the directory
-  <code>scrollutil1.17</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil1_18.zip</code> into the directory
+  <code>scrollutil1.18</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -509,51 +509,65 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
   environment and it mostly manipulates system resources that are resident
   outside of Xlib, which Tk is based on.&nbsp; (Traditional X applications like
   <code>bitmap</code> and <code>xmag</code> are also affected by this.)&nbsp;
-  With the exception of Xfce and MATE, the procedure computes the scaling
-  percentage from the value of the X resource <code>Xft.dpi</code>, by
-  executing the <code>xrdb</code> application.&nbsp; On GNOME-based systems
-  where <code>xrdb</code> is not installed per default (e.g., Solus GNOME and
-  Solus Budgie), it uses the <code>xrandr</code> application and the file
-  <code>~/.config/monitors.xml</code> instead.</p>
+  With the partial exception of Xfce and MATE (see below), the procedure
+  computes the scaling percentage from the value of the X resource
+  <code>Xft.dpi</code>, by executing the <code>xrdb</code> application.&nbsp;
+  On GNOME-based systems where <code>xrdb</code> is not installed per default
+  (e.g., Solus GNOME and Solus Budgie), it uses the <code>xrandr</code>
+  application and the file <code>~/.config/monitors.xml</code> instead.</p>
 
   <ul>
-    <li class="tm">On <i>Xfce and MATE</i> the display scaling mode can be
-    either unscaled (1x, regular) or scaled (2x, HiDPI), and the scaling
-    percentage will be set accordingly to <code>100</code> or
-    <code>200</code>.&nbsp; On Xfce, the display scaling mode is called
-    <i>window scaling</i> and can be selected in the <i>Appearance</i>
-    dialog.&nbsp; Xfce versions 4.16 and later also support fractional scaling
-    (whose parameters can be configured in the <i>Display</i> dialog), but, due
-    to the way the fractional scaling is implemented on Xfce, the scaling
-    percentage remains set to <code>100</code> or <code>200</code>, depending
-    on the value of the window scaling.&nbsp; On MATE, the display scaling mode
-    is called <i>window scaling factor</i> and can be selected in the <i>MATE
-    Tweak</i> dialog.</li>
+    <li class="tm">On <i>Xfce</i>, the display scaling mode, called
+    <i>window scaling</i>, can be "1x" or "2x" and can be selected in the
+    <i>Appearance</i> dialog.&nbsp; Xfce versions 4.16 and later also support
+    fractional scaling, whose parameters can be configured in the
+    <i>Display</i> dialog.&nbsp; If the "2x" mode was selected then the scaling
+    percentage will be set by the procedure
+    <code>scaleutil::scalingPercentage</code> to <code>200</code>, otherwise it
+    will be computed from the value of the font DPI, given by the X resource
+    <code>Xft.dpi</code>.&nbsp; The value of the font DPI can be set in the
+    <i>Fonts</i> tab of the <i>Appearance</i> dialog or (on Linux Lite 5+) via
+    the <i>HiDPI Settings</i> dialog.</li>
+
+    <li class="tm">On MATE</i>, the display scaling mode, called <i>window
+    scaling factor</i>, can be "Auto-detect", "Regular", or "HiDPI", and can be
+    selected in the <i>MATE Tweak</i> dialog.&nbsp; The same effect can be
+    achieved by using the <i>Monitor Preferences</i> dialog and selecting one
+    of the possible scaling values "auto detect", "100%", and "200%".&nbsp; If
+    needed, the procedure <code>scaleutil::scalingPercentage</code>
+    auto-detects which one of the "Regular" ("100%") and "HiDPI" ("200%") modes
+    corresponds to the preset "Auto-detect" ("auto detect") mode.&nbsp; If the
+    "HiDPI" ("200%") mode was selected by the user or auto-detected by the
+    procedure, then the scaling percentage will be set to <code>200</code>,
+    otherwise it will be computed from the value of the font DPI, given by the
+    X resource <code>Xft.dpi</code>.&nbsp; The value of the font DPI can be set
+    via the <i>Font Rendering Details</i> dialog, which in turn can be opened
+    from within the <i>Fonts</i> tab of the <i>Appearance Preferences</i>
+    dialog.</li>
 
     <li class="tm">In case of <i>GNOME on Xorg, Budgie, and Cinnamon versions
     earlier than 4.6</i>, the display scaling can be either 100 % or 200 %, and
     the procedure sets the scaling percentage accordingly to <code>100</code>
     or <code>200</code>.&nbsp; In newer GNOME and Budgie versions on Ubuntu one
     can enable the <code>x11-randr-fractional-scaling</code> as experimental
-    feature, which adds 125 %, 150 %, and 175 % to the list of supported
-    scaling percentages.&nbsp; Note that, due to the way this fractional
-    scaling is implemented, if the display scaling was set to one of these
-    intermediate levels, the value returned by
-    <code>scaleutil::scalingPercentage</code> will be <code>200</code>.&nbsp;
-    Cinnamon versions 4.6 and later also support fractional scaling; regardless
-    of the value of the <i>fractional scaling</i>, the scaling percentage will
-    be set to <code>100</code> or <code>200</code>, depending on whether the
-    <i>user interface scale</i> is set to "Normal" or "Double (Hi-DPI)".</li>
+    feature, which adds (at least) 125 %, 150 %, and 175 % to the list of
+    supported scaling percentages.&nbsp; Note that, due to the way this
+    fractional scaling is implemented, the value returned by
+    <code>scaleutil::scalingPercentage</code> will be <code>200</code>,
+    regardless of the selected display scaling.&nbsp; Cinnamon versions 4.6 and
+    later also support fractional scaling; if activated then the scaling
+    percentage returned by the procedure will be <code>200</code>, regardless
+    of the selected display scaling.</li>
 
     <li class="tm"><i>GNOME on Wayland</i> traditionally supports the display
     scaling values 100 % and 200 %, and the scaling percentage will be set
     accordingly to <code>100</code> or <code>200</code>.&nbsp; In newer GNOME
     versions one can enable the experimental feature
-    <code>scale-monitor-framebuffer</code>, which adds 125 %, 150 %, and 175 %
-    to the list of supported scaling percentages.&nbsp; With this feature
-    enabled, the value returned by <code>scaleutil::scalingPercentage</code>
-    will be <code>100</code> for all scaling levels 100 %, 125 %, ...,
-    200 %.&nbsp; This is due to the fact that in this case, instead of window
+    <code>scale-monitor-framebuffer</code>, which adds (at least) 125 %, 150 %,
+    and 175 % to the list of supported scaling percentages.&nbsp; With this
+    feature enabled, the value returned by
+    <code>scaleutil::scalingPercentage</code> will be <code>100</code> for all
+    scaling levels, due to the fact that in this case, instead of window
     contents, monitor framebuffers will be scaled in a logical pixel coordinate
     space.</li>
 
@@ -567,13 +581,30 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     <code>100</code>, regardless of the display's scaling level.</li>
   </ul>
 
+  <p>On GNOME and Budgie, the display scaling can be set in the <i>Displays</i>
+  page of the <i>Settings</i> dialog, but the value of the X resource
+  <code>Xft.dpi</code>, which is used by the procedure
+  <code>scaleutil::scalingPercentage</code>, can also be manipulated by setting
+  the scaling factor of the fonts via the <i>Tweaks</i> application.&nbsp;
+  Likewise, on Cinnamon the display scaling can be set in the <i>Display</i>
+  page of the <i>System Settings</i> dialog, but the value of the X resource
+  <code>Xft.dpi</code> can also be manipulated by setting the text scaling
+  factor via the <i>Font Selection</i> page of the <i>System Settings</i>
+  dialog.&nbsp; Finally, on KDE Plasma the display scaling can be set in the
+  <i>Display Configuration</i> page of the <i>System Settings</i> dialog, but
+  the value of the font DPI, given by the X resource <code>Xft.dpi</code> can
+  also be set via the <i>Fonts</i> page of the <i>System Settings</i>
+  dialog.</p>
+
   <p>Besides computing the scaling percentage, the procedure
   <code>scaleutil::scalingPercentage</code> performs a series of additional
   tasks.&nbsp; Among others, it changes the default height of the ttk::treeview
   rows from the hard-coded value of 20 pixels to a more reasonable one, based
   on the metrics of the font used by the <code>Treeview</code> style (usually
   <code>TkDefaultFont</code>), and makes sure that this step will be repeated
-  whenever the theme changes or the virtual event
+  whenever the virtual event <code>&lt;&lt;ThemeChanged&gt;&gt;</code> is
+  received (e.g., because the value of the <code>Treeview</code> style's
+  <code>-font</code> option has changed), or the virtual event
   <code>&lt;&lt;TkWorldChanged&gt;&gt;</code> with the <code>user_data</code>
   field (<code>%d</code>) set to <code>FontChanged</code> is received.&nbsp; If
   the Tk version is later than 8.6.11 or 8.7a5, this virtual event is sent by
@@ -614,50 +645,55 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   sizes will suit the display's scaling level, the procedure examines this
   library file and, if the latter contains sizes in pixels, then it sets the
   <code>-size</code> option of the standard fonts to corresponding sizes in
-  points (without altering the file).&nbsp; In addition, for the HiDPI mode on
-  Xfce and MATE, the procedure doubles the sizes (in points) of the standard
-  fonts (the way display scaling works on these desktops makes this
-  necessary).</p>
+  points (without altering the file).&nbsp; In addition, for the "2x" mode on
+  Xfce, the procedure doubles the sizes (in points) of the standard fonts (the
+  way display scaling works on that desktop makes this necessary).</p>
 
   <p>The procedure also scales:</p>
 
   <ul>
-    <li>the default parameters of the Tk core panedwindow sash;</li>
+    <li class="tm">the default parameters of the Tk core panedwindow sash;</li>
 
-    <li>the default size of the Tk core scale widget and its slider;</li>
+    <li class="tm">the default size of the Tk core scale widget and its
+    slider;</li>
 
-    <li>the default width of the Tk core scrollbars on X11;</li>
+    <li class="tm">the default width of the Tk core scrollbars on X11;</li>
 
-    <li>the default length of the ttk::scale and ttk::progressbar widgets;</li>
+    <li class="tm">the default length of the ttk::scale and ttk::progressbar
+    widgets;</li>
 
-    <li>for the built-in themes <code>alt</code>, <code>clam</code>,
-    <code>classic</code>, <code>default</code>, <code>vista</code>, and
-    <code>xpnative</code>, the paddings of the ttk::spinbox, ttk::button,
-    toolbutton, ttk::menubutton, ttk::checkbutton, and ttk::radiobutton
-    widgets, as well as some styling options of the ttk::notebook widget and
-    its tabs;</li>
+    <li class="tm">for the built-in themes <code>alt</code> and
+    <code>default</code>, some styling options of the ttk::scrollbar,
+    ttk::scale, ttk::progressbar, ttk::combobox, ttk::spinbox, ttk::button,
+    toolbutton, ttk::menubutton, ttk::checkbutton, ttk::radiobutton,
+    ttk::notebook, and ttk::treeview widgets;</li>
 
-    <li>for the <code>alt</code>, <code>clam</code>, <code>classic</code>, and
-    <code>default</code> themes, the width of the ttk::scrollbar widget, the
-    sliders of the ttk::scale and ttk::progressbar widgets, as well as the
-    arrows of the ttk::combobox and ttk::spinbox widgets;</li>
+    <li class="tm">for the built-in theme <code>clam</code>, some styling
+    options of the ttk::scrollbar, ttk::scale, ttk::progressbar, ttk::combobox,
+    ttk::spinbox, ttk::button, toolbutton, ttk::menubutton, ttk::checkbutton,
+    ttk::radiobutton, ttk::notebook, ttk::panedwindow, ttk::treeview, and
+    ttk::labelframe widgets;</li>
 
-    <li>for the <code>alt</code> and <code>clam</code> themes, the arrow and
-    padding of the ttk::menubutton widget;</li>
+    <li class="tm">for the built-in theme <code>classic</code>, some styling
+    options of the ttk::scrollbar, ttk::scale, ttk::progressbar, ttk::combobox,
+    ttk::spinbox, ttk::button, toolbutton, ttk::menubutton, ttk::checkbutton,
+    ttk::radiobutton, ttk::notebook, ttk::panedwindow, and ttk::treeview
+    widgets;</li>
 
-    <li>for the <code>classic</code> and <code>default</code> themes, the
-    indicator margin and padding of the ttk::menubutton widget;</li>
+    <li class="tm">for the built-in theme <code>vista</code>, some styling
+    options of the ttk::combobox, ttk::button, toolbutton, ttk::menubutton,
+    ttk::checkbutton, ttk::radiobutton, ttk::notebook, and ttk::treeview
+    widgets;</li>
 
-    <li>for the <code>clam</code>, <code>classic</code>, and
-    <code>default</code> themes, the indicator size of the ttk::checkbutton and
-    ttk::radiobutton widgets (note that in the <code>alt</code> theme, the
-    indicators of these widgets are not scalable);</li>
+    <li class="tm">for the built-in theme <code>winnative</code>, some styling
+    options of the ttk::scale, ttk::progressbar, ttk::combobox, ttk::spinbox,
+    toolbutton, ttk::menubutton, ttk::checkbutton, ttk::radiobutton, 
+    ttk::notebook, and ttk::treeview widgets;</li>
 
-    <li>for the <code>clam</code> and <code>classic</code> themes, the sash of
-    the ttk::panedwindow widget;</li>
-
-    <li>for the <code>clam</code> theme, the padding of the ttk::treeview
-    column headers and the label margins of the ttk::labelframe widget.</li>
+    <li class="tm">for the built-in theme <code>xpnative</code>, some styling
+    options of the ttk::combobox, ttk::spinbox, ttk::button, toolbutton,
+    ttk::menubutton, ttk::checkbutton, ttk::radiobutton, ttk::notebook, and
+    ttk::treeview widgets.</li>
   </ul>
 
   <p>In addition, the procedure <code>scaleutil::scalingPercentage</code> makes
@@ -666,8 +702,15 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   properly scaled, regardless of the Tk release being used.&nbsp; (A
   long-standing bug in the implementation of these widgets was fixed in May
   2020 and is now contained in both Tk 8.6.11 and later and 8.7a5 and later,
-  but the procedure provides a workaround for the Tk versions that are still
-  affected by this bug.)</p>
+  but the procedure provides an automatic workaround for the Tk versions that
+  are still affected by this bug.)</p>
+
+  <p>Note that the Tk core checkbutton and radiobutton widgets, as well as the
+  indicators of the ttk::checkbutton and ttk::radiobutton widgets of the
+  <code>alt</code> and <code>winnative</code> themes are currently (as of
+  February 2023) not scalable (they will scale automatically in Tk 8.7b1 and
+  later).&nbsp; Moreover, the ttk::sizegrip widget is currently not scalable in
+  any of the built-in themes.</p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
@@ -711,7 +754,7 @@ source [file join $dir styleUtil.tcl]
   default&nbsp; <code>-autohidescrollbars 0</code>&nbsp; and&nbsp;
   <code>-setfocus 0</code>&nbsp; scrollarea settings.</p>
 
-  <p>Next, the script patches a few ttk widget styles and defines the style
+  <p>The script patches a few ttk widget styles and defines the style
   <code>Small.Toolbutton</code>.</p>
 
   <p>The patch for the style <code>TCombobox</code> makes sure that the
@@ -726,31 +769,6 @@ source [file join $dir styleUtil.tcl]
   this helper script, will appear raised when they have the focus.&nbsp; Again,
   this makes the keyboard navigation more user-friendly.</p>
 
-  <p>The script also patches the <code>clam</code> theme, by invoking the
-  public procedure <code>themepatch::patch</code> of the themepatch package,
-  which is bundled with Scrollutil (but, contrary to the scaleutil package, it
-  is not used by the Scrollutil code and therefore it needs to be loaded
-  explicitly via&nbsp; <code>package require themepatch</code>):</p>
-
-  <blockquote>
-    <pre>
-package require scrollutil_tile
-package require themepatch
-
-. . .
-
-<span class="cmt">#
-# Patch the clam theme styles TButton, Heading, TCheckbutton, and TRadiobutton
-#</span>
-themepatch::patch clam
-</pre>
-  </blockquote>
-
-  <p>On X11, the script sets the theme to this patched variant of the
-  <code>clam</code> theme, which has smaller ttk::button widgets as well as
-  ttk::treeview and tablelist headers, and its scalable ttk::checkbutton and
-  ttk::radiobutton widgets have a significantly improved look and behavior.</p>
-
   <p>Yet another procedure provided by this script is
   <code>styleutil::getCurrentTheme</code>, which returns the name of the
   current theme by invoking the&nbsp; <code>ttk::style theme use</code>&nbsp;
@@ -759,6 +777,32 @@ themepatch::patch clam
   <code>::ttk::currentTheme</code> (which is set by the
   <code>ttk::setTheme</code> command only).&nbsp; This procedure is used by
   nearly all demo scripts included in the Scrollutil distribution.</p>
+
+  <p>The script also patches the <code>clam</code> theme, by invoking the
+  public procedure <code>themepatch::patch</code> of the themepatch package,
+  which is bundled with Scrollutil (but, contrary to the scaleutil package, is
+  not used by the Scrollutil code and therefore it needs to be loaded
+  explicitly via&nbsp; <code>package require themepatch</code>):</p>
+
+  <blockquote>
+    <pre>
+package require scrollutil_tile
+
+. . .
+
+<span class="cmt">#
+# Patch the clam theme's styles TButton, TMenubutton,
+# Heading, TCheckbutton, and TRadiobutton
+#</span>
+package require themepatch
+themepatch::patch clam
+</pre>
+  </blockquote>
+
+  <p>On X11, the script sets the theme to this patched variant of the
+  <code>clam</code> theme, which has smaller ttk::button widgets as well as
+  ttk::treeview and tablelist headers, and its scalable ttk::checkbutton and
+  ttk::radiobutton widgets have a significantly improved look and behavior.</p>
 
   <h3 id="ex_ScrolledTablelist">A Scrolled tablelist Widget</h3>
 
@@ -774,7 +818,7 @@ themepatch::patch clam
 
   <blockquote>
     <img src="ScrolledTablelist.png" alt="ScrolledTablelist" width="478"
-    height="334">
+    height="336">
   </blockquote>
 
   <p>The script achieves these requirements using traditional scrollbar
@@ -881,7 +925,7 @@ pack $f  -expand yes -fill both
   widgets.</p>
 
   <blockquote>
-    <img src="ScrolledText.png" alt="ScrolledText" width="399" height="335">
+    <img src="ScrolledText.png" alt="ScrolledText" width="399" height="337">
   </blockquote>
 
   <p>Here is the relevant code, in which the lines related to the scrollarea
@@ -970,7 +1014,7 @@ after 100 [list $txt yview 14.0]
   <a href="scrollarea.html">scrollarea</a>.</p>
 
   <blockquote>
-    <img src="SyncListboxes.png" alt="SyncListboxes" width="318" height="302">
+    <img src="SyncListboxes.png" alt="SyncListboxes" width="318" height="304">
   </blockquote>
 
   <p>Here is the relevant code, in which the lines related to the scrollarea
@@ -1032,7 +1076,7 @@ pack $f  -expand yes -fill both
 
   <blockquote>
     <img src="SyncTablelists.png" alt="SyncTablelists" width="546" height=
-    "323">
+    "325">
   </blockquote>
 
   <p>The relevant code is similar to the one shown in the <a href=
@@ -1064,7 +1108,8 @@ $sa setwidget $ss</span>
 # Populate the scrollsync widget with three tablelists
 #</span>
 
-if {[styleutil::getCurrentTheme] ne "aqua"} {
+tablelist::setThemeDefaults
+if {$tablelist::themeDefaults(-stripebackground) eq ""} {
     option add *Tablelist.background            white
     option add *Tablelist.stripeBackground      #f0f0f0
 }
@@ -1132,8 +1177,8 @@ pack $f  -expand yes -fill both
   users, displaying the text "Resolve".</p>
 
   <blockquote>
-    <img src="ScrollableFrmDemo1.png" alt="ScrollableFrmDemo1" width="403"
-    height="370">
+    <img src="ScrollableFrmDemo1.png" alt="ScrollableFrmDemo1" width="401"
+    height="361">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -1422,7 +1467,7 @@ set cf [$sf childsite]
 
   <blockquote>
     <img src="ScrollableFrmDemo2.png" alt="ScrollableFrmDemo2" width="601"
-    height="510">
+    height="512">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -1610,8 +1655,8 @@ grid $_sa ...
   scrollableframe changes as a result of resizing the toplevel window.</p>
 
   <blockquote>
-    <img src="TablelistConfig.png" alt="TablelistConfig" width="380"
-    height="399">
+    <img src="TablelistConfig.png" alt="TablelistConfig" width="377"
+    height="391">
   </blockquote>
 
   <h3 id="ex_BwScrollableFrameDemo2">A Script Using Two BWidget ScrollableFrame
@@ -1812,7 +1857,7 @@ source [file join $dir ScrolledFrmContent.tcl]
 
   <blockquote>
     <img src="ScrolledNotebookDemo.png" alt="ScrolledNotebookDemo" width="646"
-    height="518">
+    height="521">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -1924,17 +1969,14 @@ proc restoreSel nb {
 . . .
 
 <span class="cmt">#
-# Set the scrollednotebook's width.  Take into account that in the aqua
-# theme the -padding option of the TNotebook style is set to {18 8 18 17}
-# and the panes are drawn with a hard-coded internal padding of {9 5 9 9}.
+# Set the scrollednotebook's -height and -width options to the
+# maximum requested height and width of all panes, respectively
 #</span>
-after 150 [list configNb $nb $sa]
+after 150 [list resizeNb $nb]
 
-proc configNb {nb sa} {
-    set width [expr {[winfo reqwidth $sa] + [winfo reqwidth $sa.vsb]}]
-    incr width [expr {$::currentTheme eq "aqua" ?
-                      2*27 : 2*[winfo pixels . 7p] + 4}]
-    <span class="red">$nb configure -width $width</span>
+proc resizeNb nb {
+    update idletasks    ;<span class="cmt"># makes sure that the vertical scrollbars are mapped</span>
+    $nb adjustsize
 }
 </pre>
   </blockquote>
@@ -2018,7 +2060,7 @@ proc configNb {nb sa} {
 
   <blockquote>
     <img src="PlainNotebookDemo.png" alt="PlainNotebookDemo" width="811"
-    height="578">
+    height="581">
   </blockquote>
 
   <p>The relevant code is nearly identical to the one shown in the <a href=
@@ -2091,7 +2133,7 @@ proc restoreSel nb {
   <code>ttk</code>, respectively.</p>
 
   <blockquote>
-    <img src="PagesManDemo.png" alt="PagesManDemo" width="811" height="578">
+    <img src="PagesManDemo.png" alt="PagesManDemo" width="811" height="581">
   </blockquote>
 
   <p>The user can switch from the first page to the three other ones with the
@@ -2103,7 +2145,7 @@ proc restoreSel nb {
 
   <blockquote>
     <img src="PagesManDemoImages.png" alt="PagesManDemoImages" width="811"
-    height="578">
+    height="581">
   </blockquote>
 
   <p>Here is the relevant code:</p>

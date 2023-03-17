@@ -5,7 +5,7 @@
 # scrolledframe::scrolledframe command of the Scrolledframe package by Maurice
 # Bredelet (ulis) and its optimized and enhanced version contributed by Keith
 # Nash, as well as with the sframe command implemented by Paul Walton (see
-# https://wiki.tcl-lang.org/ page/A+scrolled+frame).
+# https://wiki.tcl-lang.org/page/A+scrolled+frame).
 #
 # Structure of the module:
 #   - Namespace initialization
@@ -13,7 +13,7 @@
 #   - Public procedures
 #   - Private procedures
 #
-# Copyright (c) 2019-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.4

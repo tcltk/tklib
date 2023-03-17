@@ -13,7 +13,7 @@
   <div align="center">
     <h1>The <code><b>scrollutil::plainnotebook</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.17</h2>
+    <h2>For Scrollutil Version 1.18</h2>
 
     <h3>by</h3>
 
@@ -114,6 +114,9 @@ package require scrollutil_tile
 
     <dd><code><i>pathName</i> <b><a href=
     "#addseparator">addseparator</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#adjustsize">adjustsize</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#attrib">attrib</a></b> ?<i>name</i>
     ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dd>
@@ -432,10 +435,10 @@ package require scrollutil_tile
 
       <blockquote>
         <p>If present and greater than zero, specifies the desired height of
-        the pane area (not including internal padding) in any of the forms
-        acceptable to <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the
-        maximum height of all panes is used.&nbsp; The default is
-        <code>0</code></p>
+        the pane area in any of the forms acceptable to
+        <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the maximum
+        requested height of all panes is used.&nbsp; The default is
+        <code>0</code>.</p>
       </blockquote>
     </dd>
 
@@ -603,10 +606,10 @@ package require scrollutil_tile
 
       <blockquote>
         <p>If present and greater than zero, specifies the desired width of the
-        pane area (not including internal padding) in any of the forms
-        acceptable to <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the
-        maximum width of all panes is used.&nbsp; The default is
-        <code>0</code></p>
+        pane area in any of the forms acceptable to
+        <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the maximum
+        requested width of all panes is used.&nbsp; The default is
+        <code>0</code>.</p>
       </blockquote>
     </dd>
 
@@ -661,7 +664,10 @@ package require scrollutil_tile
         style (<code>Page.Toolbutton</code> or
         <code>ClosablePage.Toolbutton</code>, depending on the value of the
         <code><b><a href="#closabletabs">-closabletabs</a></b></code>
-        option).</dd>
+        option).&nbsp; The return value is the path name of the widget used for
+        the tab corresponding to <code><i>window</i></code> (a ttk::radiobutton
+        or ttk::button, both using a toolbutton style, or a ttk::label, or a
+        ttk::separator).</dd>
 
         <dt class="tm" id="addbutton"><code><i>pathName</i> <b>addbutton</b>
         <i>pageIndex</i> <i>text</i> ?<i>image</i>?</code></dt>
@@ -672,11 +678,10 @@ package require scrollutil_tile
         <code><i>image</i></code>, the <code><b>descend</b></code> element,
         whose shape resembles that of a &gt; character.&nbsp; This style
         element is automatically created by the Scrollutil_tile package.&nbsp;
-        Its size depends on the display's scaling percentage (<code>100</code>,
-        <code>125</code>, <code>150</code>, <code>175</code>, or
-        <code>200</code>), while its foreground color is theme-specific and is
-        updated whenever the theme changes.&nbsp; The return value is the path
-        name of the above-mentioned ttk::button widget.</dd>
+        Its size depends on the display's scaling percentage, while its
+        foreground color is theme-specific and is updated whenever the theme
+        changes.&nbsp; The return value is the path name of the above-mentioned
+        ttk::button widget.</dd>
 
         <dd class="tm">For this subcommand to work, the widget's parent must be
         a <a href="pagesman.html">pagesman</a> widget.&nbsp;
@@ -720,6 +725,21 @@ package require scrollutil_tile
         which is typically used as a delimiter of a group of tabs.&nbsp; The
         return value is the path name of the above-mentioned ttk::separator
         widget.</dd>
+
+        <dt class="tm" id="adjustsize"><code><i>pathName</i>
+        <b>adjustsize</b></code></dt>
+
+        <dd>Sets the plainnotebook's <code><b><a href=
+        "#height">-height</a></b></code> option to the maximum requested height
+        of all panes and its <code><b><a href="#width">-width</a></b></code>
+        option to the maximum requested width of all panes.</dd>
+
+        <dd class="tm"><b>REMARK:</b>&nbsp; If the plainnotebook's
+        <code><b>-height</b></code> and <code><b>-width</b></code> options have
+        their default value <code>0</code> then in many cases there is no need
+        for invocations of this subcommand, since the widget will automatically
+        attempt to adapt its size to the maximum requested size of its
+        panes.</dd>
 
         <dt class="tm" id="attrib"><code><i>pathName</i> <b>attrib</b>
         ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dt>
@@ -825,7 +845,10 @@ package require scrollutil_tile
         style (<code>Page.Toolbutton</code> or
         <code>ClosablePage.Toolbutton</code>, depending on the value of the
         <code><b><a href="#closabletabs">-closabletabs</a></b></code>
-        option).</dd>
+        option).&nbsp; The return value is the path name of the widget used for
+        the tab corresponding to <code><i>window</i></code> (a ttk::radiobutton
+        or ttk::button, both using a toolbutton style, or a ttk::label, or a
+        ttk::separator).</dd>
 
         <dt class="tm" id="insertbutton"><code><i>pathName</i>
         <b>insertbutton</b> <i>pos</i> <i>pageIndex</i> <i>text</i>

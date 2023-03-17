@@ -1,11 +1,10 @@
 #==============================================================================
 # Patches a few ttk widget styles and defines the style Small.Toolbutton.
 #
-# Copyright (c) 2019-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require scrollutil_tile
-package require themepatch
 
 #
 # To set the "-autohidescrollbars" or "-setfocus" option of all scrollarea
@@ -13,6 +12,13 @@ package require themepatch
 #
 # option add *Scrollarea.autoHideScrollbars 1
 # option add *Scrollarea.setFocus           1
+
+#
+# Patch the clam theme's styles TButton, TMenubutton,
+# Heading, TCheckbutton, and TRadiobutton
+#
+package require themepatch
+themepatch::patch clam
 
 foreach theme {alt clam classic default} {
     ttk::style theme settings $theme {
@@ -41,41 +47,38 @@ foreach theme {alt clam classic default} {
 }
 unset theme
 
-if {[tk windowingsystem] eq "aqua"} {
-    ttk::style theme settings aqua {
-	#
-	# Work around some appearance issues related to the "aqua" theme
-	#
-	if {[catch {winfo rgb . systemTextBackgroundColor}] == 0 &&
-	    [catch {winfo rgb . systemTextColor}] == 0} {
-	    foreach style {TEntry TSpinbox} {
-		ttk::style configure $style \
-		    -background systemTextBackgroundColor \
-		    -foreground systemTextColor
+switch [tk windowingsystem] {
+    aqua {
+	ttk::style theme settings aqua {
+	    #
+	    # Work around some appearance issues related to the "aqua" theme
+	    #
+	    if {[catch {winfo rgb . systemTextBackgroundColor}] == 0 &&
+		[catch {winfo rgb . systemTextColor}] == 0} {
+		foreach style {TEntry TSpinbox} {
+		    ttk::style configure $style \
+			-background systemTextBackgroundColor \
+			-foreground systemTextColor
+		}
+		unset style
 	    }
-	    unset style
+
+	    #
+	    # Small.Toolbutton
+	    #
+	    ttk::style configure Small.Toolbutton -padding 0
 	}
-
-	#
-	# Small.Toolbutton
-	#
-	ttk::style configure Small.Toolbutton -padding 0
     }
-}
 
-#
-# Patch the clam theme styles TButton, Heading, TCheckbutton, and TRadiobutton
-#
-themepatch::patch clam
+    x11 {
+	font configure TkHeadingFont -weight normal	    ;# default: bold
 
-if {[tk windowingsystem] eq "x11"} {
-    font configure TkHeadingFont -weight normal		;# default: bold
+	option add *selectBackground		#4a6984	    ;# default: #c3c3c3
+	option add *selectForeground		#ffffff	    ;# default: #000000
+	option add *inactiveSelectBackground	#9e9a91	    ;# default: #c3c3c3
 
-    option add *selectBackground	  #4a6984	;# default: #c3c3c3
-    option add *selectForeground	  #ffffff	;# default: #000000
-    option add *inactiveSelectBackground  #9e9a91	;# default: #c3c3c3
-
-    ttk::setTheme clam
+	ttk::setTheme clam
+    }
 }
 
 namespace eval styleutil {

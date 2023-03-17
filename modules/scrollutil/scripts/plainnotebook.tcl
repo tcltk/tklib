@@ -10,7 +10,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 2021-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.4
@@ -67,11 +67,11 @@ namespace eval scrollutil::pnb {
     #
     # Use a list to facilitate the handling of command options
     #
-    variable cmdOpts [list add addbutton addlabel addseparator attrib cget \
-		      closablestate configure forget hasattrib hastabattrib \
-		      hide index insert insertbutton insertlabel \
-		      insertseparator instate see select state style tab \
-		      tabattrib tabpath tabs titlepath unsetattrib \
+    variable cmdOpts [list add addbutton addlabel addseparator adjustsize \
+		      attrib cget closablestate configure forget hasattrib \
+		      hastabattrib hide index insert insertbutton insertlabel \
+		      insertseparator instate see select state style \
+		      tab tabattrib tabpath tabs titlepath unsetattrib \
 		      unsettabattrib]
 
     #
@@ -708,7 +708,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    }
 
 	    configTab $win $tabIdx $tabPath
-	    return ""
+	    return $tabPath
 	}
 
 	addbutton {
@@ -957,7 +957,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 
 	    reorderTabs $win
 	    configTab $win [$nb index $widget] $tabPath
-	    return ""
+	    return $tabPath
 	}
 
 	insertbutton {
@@ -1066,6 +1066,14 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    } else {
 		return ""
 	    }
+	}
+
+	adjustsize {
+	    if {$argCount != 1} {
+		mwutil::wrongNumArgs "$win $cmd"
+	    }
+
+	    return [adjustsizeSubCmd $win]
 	}
 
 	see {
@@ -1204,6 +1212,48 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    return $win.frm.title
 	}
     }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::pnb::adjustsizeSubCmd
+#
+# Processes the scrollednotebook adjustsize subcommmand.
+#------------------------------------------------------------------------------
+proc scrollutil::pnb::adjustsizeSubCmd win {
+    upvar ::scrollutil::ns${win}::data data
+    set nb $win.nb
+
+    set maxWidth 0
+    foreach widget [$nb tabs] {
+	set padding [::$win tab $widget -padding]
+	foreach {l t r b} [mwutil::parsePadding $win $padding] {}
+	set reqWidth [expr {[winfo reqwidth $widget] + $l + $r}]
+	if {$reqWidth > $maxWidth} {
+	    set maxWidth $reqWidth
+	}
+    }
+
+    ::$win configure -width $maxWidth
+
+    update idletasks
+    if {![array exists ::scrollutil::ns${win}::data] ||
+	[winfo class $win] ne "Plainnotebook"} {
+	return ""
+    }
+
+    set maxHeight 0
+    foreach widget [$nb tabs] {
+	set padding [::$win tab $widget -padding]
+	foreach {l t r b} [mwutil::parsePadding $win $padding] {}
+	set reqHeight [expr {[winfo reqheight $widget] + $t + $b}]
+	if {$reqHeight > $maxHeight} {
+	    set maxHeight $reqHeight
+	}
+    }
+
+    ::$win configure -height $maxHeight
+
+    return ""
 }
 
 #------------------------------------------------------------------------------
@@ -1417,11 +1467,11 @@ proc scrollutil::pnb::onFontChanged win {
 proc scrollutil::pnb::onThemeChanged w {
     if {$w eq "."} {
 	::scrollutil::getForegroundColors normalFg disabledFg
-	scrollutil_descendImg	      configure -foreground $normalFg
-	scrollutil_descendDisabledImg configure -foreground $disabledFg
+	::scrollutil::setImgForeground scrollutil_descendImg	     $normalFg
+	::scrollutil::setImgForeground scrollutil_descendDisabledImg $disabledFg
 
 	if {[lsearch -exact [image names] "scrollutil_ascendImg"] >= 0} {
-	    scrollutil_ascendImg      configure -foreground $normalFg
+	    ::scrollutil::setImgForeground scrollutil_ascendImg $normalFg
 	}
 
 	variable currentTheme

@@ -4,7 +4,7 @@
 # Demonstrates the use of the Scrollutil package in connection with the
 # iwidgets::scrolledframe widget.
 #
-# Copyright (c) 2019-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 if {[catch {package require iwidgets} result1] != 0 &&
@@ -74,19 +74,19 @@ set capitalList [lsort $capitalList]
 if {[lsearch -exact {aqua vista xpnative} $currentTheme] >= 0} {
     set topPadY 1.5p
 } else {
-    set topPadY 4p
+    set topPadY 3p
 }
 set padY [list $topPadY 0]
 
 set row 0
 foreach country $countryList {
     set w [ttk::label $cf.l$row -text $country]
-    grid $w -row $row -column 0 -sticky w -padx {4p 0} -pady $padY
+    grid $w -row $row -column 0 -sticky w -padx {3p 0} -pady $padY
 
     set w [ttk::combobox $cf.cb$row -state readonly -width 14 \
 	   -values $capitalList]
     bind $w <<ComboboxSelected>> [list checkCapital %W $country]
-    grid $w -row $row -column 1 -sticky w -padx {4p 0} -pady $padY
+    grid $w -row $row -column 1 -sticky w -padx {3p 0} -pady $padY
 
     #
     # Adapt the handling of the mouse wheel events for the ttk::combobox widget
@@ -95,7 +95,7 @@ foreach country $countryList {
 
     set b [styleutil::createToolbutton $cf.b$row -text "Resolve" \
 	   -command [list setCapital $w $country]]
-    grid $b -row $row -column 2 -sticky w -padx 4p -pady $padY
+    grid $b -row $row -column 2 -sticky w -padx 3p -pady $padY
 
     incr row
 }

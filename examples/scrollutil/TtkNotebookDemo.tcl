@@ -3,7 +3,7 @@
 #==============================================================================
 # Demonstrates the use of the ttk::notebook widget.
 #
-# Copyright (c) 2021-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require scrollutil_tile
@@ -105,7 +105,6 @@ after 50 [list configNb $nb $sa]
 
 proc configNb {nb sa} {
     set width [expr {[winfo reqwidth $sa] + [winfo reqwidth $sa.vsb]}]
-    incr width [expr {$::currentTheme eq "aqua" ?
-		      0 : 2*[winfo pixels . 7p] + 4}]
+    incr width [expr {$::currentTheme eq "aqua" ? 0 : 2*[winfo pixels . 7p]}]
     $nb configure -width $width
 }

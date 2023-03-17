@@ -8,9 +8,8 @@
 #   - Private configuration procedures
 #   - Private procedures implementing the pagesman widget command
 #   - Private procedures used in bindings
-#   - Private utility procedures
 #
-# Copyright (c) 2021-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -110,9 +109,9 @@ namespace eval scrollutil::pm {
     #
     # Use a list to facilitate the handling of command options
     #
-    variable cmdOpts [list add attrib cget configure forget hasattrib \
-		      haspageattrib index insert pageattrib pagecget \
-		      pageconfigure pages select size unsetattrib \
+    variable cmdOpts [list add adjustsize attrib cget configure forget \
+		      hasattrib haspageattrib index insert pageattrib \
+		      pagecget pageconfigure pages select size unsetattrib \
 		      unsetpageattrib window]
 }
 
@@ -196,6 +195,7 @@ proc scrollutil::pagesman args {
 	    stickyList	{}
 	    pageCount	0
 	    currentPage	""
+	    delay	0
 	}
 
 	#
@@ -292,7 +292,7 @@ proc scrollutil::pm::doPageConfig {pageIdx win opt val} {
 
     switch -- $opt {
 	-padding {
-	    if {[catch {parsePadding $win $val} result] != 0} {
+	    if {[catch {mwutil::parsePadding $win $val} result] != 0} {
 		return -code error $result
 	    }
 
@@ -300,7 +300,7 @@ proc scrollutil::pm::doPageConfig {pageIdx win opt val} {
 		[lreplace $data(paddingList) $pageIdx $pageIdx $val]
 
 	    if {$isCurrent} {
-		foreach {l t r b} [parsePadding $win $val] {}
+		foreach {l t r b} [mwutil::parsePadding $win $val] {}
 		grid configure $widget -padx [list $l $r] -pady [list $t $b]
 	    }
 
@@ -382,8 +382,8 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 		lappend data(stickyList)  $sticky
 		incr data(pageCount)
 
-		bind $widget <Map> [list scrollutil::pm::resizeWidgetDelayed \
-				    $data(pathName) 100]
+		bind $widget <Map> +[list scrollutil::pm::resizeWidgetDelayed \
+				     $data(pathName) 100]
 	    } else {
 		set data(paddingList) \
 		    [lreplace $data(paddingList) $idx $idx $padding]
@@ -391,7 +391,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 		    [lreplace $data(stickyList) $idx $idx $sticky]
 
 		if {[string compare $widget $data(currentPage)] == 0} {
-		    foreach {l t r b} [parsePadding $win $padding] {}
+		    foreach {l t r b} [mwutil::parsePadding $win $padding] {}
 		    grid configure $widget \
 			-padx [list $l $r] -pady [list $t $b] -sticky $sticky
 		}
@@ -402,6 +402,14 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    }
 
 	    return ""
+	}
+
+	adjustsize {
+	    if {$argCount != 1} {
+		mwutil::wrongNumArgs "$win $cmd"
+	    }
+
+	    return [resizeWidget $win 1]
 	}
 
 	attrib {
@@ -561,11 +569,11 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    if {$idx < 0} {
 		incr data(pageCount)
 
-		bind $widget <Map> [list scrollutil::pm::resizeWidgetDelayed \
-				    $data(pathName) 100]
+		bind $widget <Map> +[list scrollutil::pm::resizeWidgetDelayed \
+				     $data(pathName) 100]
 	    } else {
 		if {[string compare $widget $data(currentPage)] == 0} {
-		    foreach {l t r b} [parsePadding $win $padding] {}
+		    foreach {l t r b} [mwutil::parsePadding $win $padding] {}
 		    grid configure $widget \
 			-padx [list $l $r] -pady [list $t $b] -sticky $sticky
 		}
@@ -667,7 +675,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 
 	    set padding [lindex $data(paddingList) $pageIdx]
 	    set sticky  [lindex $data(stickyList)  $pageIdx]
-	    foreach {l t r b} [parsePadding $win $padding] {}
+	    foreach {l t r b} [mwutil::parsePadding $win $padding] {}
 	    grid $widget -padx [list $l $r] -pady [list $t $b] -sticky $sticky
 	    set data(currentPage) $widget
 
@@ -720,7 +728,7 @@ proc scrollutil::pm::getPageOpts {win optValPairs paddingName stickyName} {
 
 	switch -- $opt {
 	    -padding {
-		if {[catch {parsePadding $win $val} result] != 0} {
+		if {[catch {mwutil::parsePadding $win $val} result] != 0} {
 		    return -code error $result
 		}
 		set padding $val
@@ -746,10 +754,11 @@ proc scrollutil::pm::getPageOpts {win optValPairs paddingName stickyName} {
 #------------------------------------------------------------------------------
 # scrollutil::pm::resizeWidgetDelayed
 #------------------------------------------------------------------------------
-proc scrollutil::pm::resizeWidgetDelayed {win ms} {
+proc scrollutil::pm::resizeWidgetDelayed {win ms {force 0}} {
     upvar ::scrollutil::ns${win}::data data
     if {![info exists data(afterId)]} {
-	set data(afterId) [after $ms [list scrollutil::pm::resizeWidget $win]]
+	set data(afterId) \
+	    [after $ms [list scrollutil::pm::resizeWidget $win $force]]
 	set data(delay) $ms
     }
 }
@@ -757,121 +766,82 @@ proc scrollutil::pm::resizeWidgetDelayed {win ms} {
 #------------------------------------------------------------------------------
 # scrollutil::pm::resizeWidget
 #------------------------------------------------------------------------------
-proc scrollutil::pm::resizeWidget win {
+proc scrollutil::pm::resizeWidget {win {force 0}} {
     if {![winfo exists $win] ||
 	[string compare [winfo class $win] "Pagesman"] != 0} {
 	return ""
     }
 
     upvar ::scrollutil::ns${win}::data data
-    unset data(afterId)
+    catch {unset data(afterId)}
 
-    set computeWidth  [expr {$data(-width)  <= 0}]
-    set computeHeight [expr {$data(-height) <= 0}]
+    set computeWidth  [expr {$data(-width)  <= 0 || $force}]
+    set computeHeight [expr {$data(-height) <= 0 || $force}]
     if {$computeWidth || $computeHeight} {
-	set maxWidth 0
-	set maxHeight 0
-	foreach widget $data(pageList) padding $data(paddingList) {
-	    foreach {l t r b} [parsePadding $win $padding] {}
-	    if {$computeWidth} {
-		set width [expr {[winfo reqwidth $widget] + $l + $r}]
-		if {$width > $maxWidth} {
-		    set maxWidth $width
-		}
-	    }
-	    if {$computeHeight} {
-		set height [expr {[winfo reqheight $widget] + $t + $b}]
-		if {$height > $maxHeight} {
-		    set maxHeight $height
-		}
-	    }
-	}
-
 	set bd [expr {2 * $data(-borderwidth)}]
 	variable ::scrollutil::usingTile
 	if {!$usingTile} {
 	    incr bd [expr {2 * $data(-highlightthickness)}]
 	}
+    }
 
+    if {$computeWidth} {
+	set maxWidth 0
+	foreach widget $data(pageList) padding $data(paddingList) {
+	    foreach {l t r b} [mwutil::parsePadding $win $padding] {}
+	    set reqWidth [expr {[winfo reqwidth $widget] + $l + $r}]
+	    if {$reqWidth > $maxWidth} {
+		set maxWidth $reqWidth
+	    }
+	}
+
+	incr maxWidth $bd
+	$win configure -width $maxWidth
+	if {$force} {
+	    set data(-width) $maxWidth
+	}
+    }
+
+    if {$computeHeight} {
 	if {$computeWidth} {
-	    incr maxWidth $bd
-	    $win configure -width $maxWidth
-	}
-	if {$computeHeight} {
-	    incr maxHeight $bd
-	    $win configure -height $maxHeight
+	    update idletasks
+	    if {![winfo exists $win] ||
+		[string compare [winfo class $win] "Pagesman"] != 0} {
+		return ""
+	    }
 	}
 
+	set maxHeight 0
+	foreach widget $data(pageList) padding $data(paddingList) {
+	    foreach {l t r b} [mwutil::parsePadding $win $padding] {}
+	    set reqHeight [expr {[winfo reqheight $widget] + $t + $b}]
+	    if {$reqHeight > $maxHeight} {
+		set maxHeight $reqHeight
+	    }
+	}
+
+	incr maxHeight $bd
+	$win configure -height $maxHeight
+	if {$force} {
+	    set data(-height) $maxHeight
+	}
+    }
+
+    if {$computeWidth || $computeHeight} {
 	if {$data(delay) == 100} {
 	    #
 	    # Resize the widget again 210 ms later because dynamic scrollbars
 	    # within a scrollarea might need up to 300 ms for being mapped
 	    #
-	    resizeWidgetDelayed $win 210
+	    resizeWidgetDelayed $win 210 $force
+	} else {
+	    set data(delay) 0
 	}
     }
 
     if {$data(pageCount) != 0 && [string length $data(currentPage)] == 0} {
 	::$win select 0
     }
-}
 
-#
-# Private utility procedures
-# ==========================
-#
-
-#------------------------------------------------------------------------------
-# scrollutil::pm::parsePadding
-#
-# Returns the 4-elements list of pixels corresponding to a given padding
-# specification.
-#------------------------------------------------------------------------------
-proc scrollutil::pm::parsePadding {w padding} {
-    switch [llength $padding] {
-	0 { return [list 0 0 0 0] }
-	1 {
-	    set l [screenDistToPad $w $padding]
-	    return [list $l $l $l $l]
-	}
-	2 {
-	    foreach {l t} $padding {}
-	    set l [screenDistToPad $w $l]
-	    set t [screenDistToPad $w $t]
-	    return [list $l $t $l $t]
-	}
-	3 {
-	    foreach {l t r} $padding {}
-	    set l [screenDistToPad $w $l]
-	    set t [screenDistToPad $w $t]
-	    set r [screenDistToPad $w $r]
-	    return [list $l $t $r $t]
-	}
-	4 {
-	    foreach {l t r b} $padding {}
-	    set l [screenDistToPad $w $l]
-	    set t [screenDistToPad $w $t]
-	    set r [screenDistToPad $w $r]
-	    set b [screenDistToPad $w $b]
-	    return [list $l $t $r $b]
-	}
-	default {
-	    return -code error "wrong # elements in padding spec \"$padding\""
-	}
-    }
-}
-
-#------------------------------------------------------------------------------
-# scrollutil::pm::screenDistToPad
-#
-# Returns the number of pixels corresponding to a given screen distance, which
-# is not allowed to be negative.
-#------------------------------------------------------------------------------
-proc scrollutil::pm::screenDistToPad {w dist} {
-    set px [winfo pixels $w $dist]
-    if {$px < 0} {
-	return -code error "bad pad value \"$dist\""
-    }
-
-    return $px
+    return ""
 }

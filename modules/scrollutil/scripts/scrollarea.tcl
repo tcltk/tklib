@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 2019-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -275,6 +275,13 @@ proc scrollutil::scrollarea args {
     upvar ::scrollutil::ns${win}::data data
     foreach opt $configOpts {
 	set data($opt) [lindex $configSpecs($opt) 3]
+    }
+    set data(inNotebook) 0
+    foreach class {TNotebook Scrollednotebook Plainnotebook Pagesman} {
+	if {[string length [mwutil::getAncestorByClass $win $class]] > 0} {
+	    set data(inNotebook) 1
+	    break
+	}
     }
 
     #
@@ -927,8 +934,8 @@ proc scrollutil::sa::onScrollbarClicked sb {
 #------------------------------------------------------------------------------
 proc scrollutil::sa::onDynamicHScrollbarMap hsb {
     foreach {first last} [$hsb get] {}
-    if {($first == 0 && $last == 1) ||
-	![containsTextWidget [winfo parent $hsb]]} {
+    set win [winfo parent $hsb]
+    if {($first == 0 && $last == 1) || ![protectGeometry $win]} {
 	return ""
     }
 
@@ -941,11 +948,8 @@ proc scrollutil::sa::onDynamicHScrollbarMap hsb {
     # Guard against a potential endless loop by making sure that
     # showing the horizontal scrollbar won't make the toplevel higher
     #
-    set height [winfo height $top]
-    set geom [wm geometry $top]
-    update idletasks
-    if {[winfo height $top] > $height} {
-	wm geometry $top $geom
+    if {[winfo reqheight $win] == [winfo height $win] + [winfo height $hsb]} {
+	wm geometry $top [wm geometry $top]
     }
 }
 
@@ -1074,7 +1078,7 @@ proc scrollutil::sa::unlockHScrollbar win {
 	upvar ::scrollutil::ns${win}::data data
 	set data(hsbLocked) 0
 
-	if {$data(-lockinterval) <= 1 && ![containsTextWidget $win]} {
+	if {$data(-lockinterval) <= 1 && ![protectGeometry $win]} {
 	    updateHScrollbar $win
 	}
     }
@@ -1185,23 +1189,28 @@ proc scrollutil::sa::unobscureScrollbars win {
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::sa::containsTextWidget
+# scrollutil::sa::protectGeometry
 #------------------------------------------------------------------------------
-proc scrollutil::sa::containsTextWidget win {
-    set widget [::$win widget]
-    set class [winfo class $widget]
-    if {[string compare $class "Text"]  == 0 ||
-	[string compare $class "Ctext"] == 0} {
-	return 1
-    } elseif {[string compare $class "Scrollsync"] == 0} {
-	foreach w [::$widget widgets] {
-	    set class [winfo class $w]
-	    if {[string compare $class "Text"]  == 0 ||
-		[string compare $class "Ctext"] == 0} {
-		return 1
+proc scrollutil::sa::protectGeometry win {
+    upvar ::scrollutil::ns${win}::data data
+    if {$data(inNotebook)} {
+	return 0     ;# in order to keep the notebook programmaticaly resizable
+    } else {
+	set widget [::$win widget]
+	set class [winfo class $widget]
+	if {[string compare $class "Text"]  == 0 ||
+	    [string compare $class "Ctext"] == 0} {
+	    return 1
+	} elseif {[string compare $class "Scrollsync"] == 0} {
+	    foreach w [::$widget widgets] {
+		set class [winfo class $w]
+		if {[string compare $class "Text"]  == 0 ||
+		    [string compare $class "Ctext"] == 0} {
+		    return 1
+		}
 	    }
 	}
-    }
 
-    return 0
+	return 0
+    }
 }

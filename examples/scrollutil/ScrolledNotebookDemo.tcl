@@ -3,7 +3,7 @@
 #==============================================================================
 # Demonstrates the use of the scrollutil::scrollednotebook widget.
 #
-# Copyright (c) 2021-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require scrollutil_tile
@@ -118,15 +118,12 @@ pack $nb -side top -expand yes -fill both -padx 7p -pady 7p
 pack $f  -expand yes -fill both
 
 #
-# Set the scrollednotebook's width.  Take into account that in the aqua
-# theme the -padding option of the TNotebook style is set to {18 8 18 17}
-# and the panes are drawn with a hard-coded internal padding of {9 5 9 9}.
+# Set the scrollednotebook's -height and -width options to the
+# maximum requested height and width of all panes, respectively
 #
-after 150 [list configNb $nb $sa]
+after 150 [list resizeNb $nb]
 
-proc configNb {nb sa} {
-    set width [expr {[winfo reqwidth $sa] + [winfo reqwidth $sa.vsb]}]
-    incr width [expr {$::currentTheme eq "aqua" ?
-		      2*27 : 2*[winfo pixels . 7p] + 4}]
-    $nb configure -width $width
+proc resizeNb nb {
+    update idletasks	;# makes sure that the vertical scrollbars are mapped
+    $nb adjustsize
 }

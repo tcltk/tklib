@@ -2,13 +2,12 @@
 # Populates the content frame of the scrollutil::scrollableframe widget created
 # in the demo script SuScrollableFrmDemo2.tcl.
 #
-# Copyright (c) 2019-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
 # Add an entry to the Tk option database
 #
-tablelist::setThemeDefaults
 option add *selectBorderWidth	$tablelist::themeDefaults(-selectborderwidth)
 
 #
@@ -27,7 +26,7 @@ set _sa [scrollutil::scrollarea $cf.sa$row]
 set txt [text $_sa.txt -font TkFixedFont -width 73]
 scrollutil::addMouseWheelSupport $txt
 $_sa setwidget $txt
-grid $_sa -row $row -column 0 -columnspan 3 -sticky w -padx 7p -pady {4p 0}
+grid $_sa -row $row -column 0 -columnspan 3 -sticky w -padx 7p -pady {3p 0}
 
 #
 # A scrolled listbox widget
@@ -39,16 +38,16 @@ incr row
 set _sa [scrollutil::scrollarea $cf.sa$row]
 set lb [listbox $_sa.lb -width 0]
 $_sa setwidget $lb
-grid $_sa -row $row -rowspan 6 -column 0 -sticky w -padx {7p 0} -pady {4p 0}
+grid $_sa -row $row -rowspan 6 -column 0 -sticky w -padx {7p 0} -pady {3p 0}
 
 #
 # A ttk::combobox widget
 #
 set l [ttk::label $cf.l$row -text "Release:"]
-grid $l -row $row -column 1 -sticky w -padx {7p 0} -pady {4p 0}
+grid $l -row $row -column 1 -sticky w -padx {7p 0} -pady {3p 0}
 set cb [ttk::combobox $cf.cb -state readonly -width 14]
 bind $cb <<ComboboxSelected>> updateWidgets
-grid $cb -row $row -column 2 -sticky w -padx {4p 7p} -pady {4p 0}
+grid $cb -row $row -column 2 -sticky w -padx {3p 7p} -pady {3p 0}
 
 #
 # A ttk::spinbox widget
@@ -57,7 +56,7 @@ incr row
 set l [ttk::label $cf.l$row -text "Changes:"]
 grid $l -row $row -column 1 -sticky w -padx {7p 0} -pady {7p 0}
 set sb [ttk::spinbox $cf.sb -from 0 -to 20 -state readonly -width 4]
-grid $sb -row $row -column 2 -sticky w -padx {4p 7p} -pady {7p 0}
+grid $sb -row $row -column 2 -sticky w -padx {3p 7p} -pady {7p 0}
 
 #
 # A ttk::entry widget
@@ -66,7 +65,7 @@ incr row
 set l [ttk::label $cf.l$row -text "Comment:"]
 grid $l -row $row -column 1 -sticky w -padx {7p 0} -pady {7p 0}
 set e [ttk::entry $cf.e -width 32]
-grid $e -row $row -column 2 -sticky w -padx {4p 7p} -pady {7p 0}
+grid $e -row $row -column 2 -sticky w -padx {3p 7p} -pady {7p 0}
 
 #
 # A ttk::separator widget
@@ -82,7 +81,7 @@ incr row
 set l [ttk::label $cf.l$row -text "Date of first release:"]
 grid $l -row $row -column 1 -sticky w -padx {7p 0} -pady {7p 0}
 set me [mentry::dateMentry $cf.me Ymd -]
-grid $me -row $row -column 2 -sticky w -padx {4p 7p} -pady {7p 0}
+grid $me -row $row -column 2 -sticky w -padx {3p 7p} -pady {7p 0}
 
 incr row
 grid rowconfigure $cf $row -weight 1
@@ -100,8 +99,7 @@ set tbl [tablelist::tablelist $_sa.tbl \
 	 -columns {0 "Release" left  0 "Changes" right  0 "Comment" left} \
 	 -height 16 -width 0 -showseparators yes -incrarrowtype down \
 	 -labelcommand tablelist::sortByColumn]
-set currentTheme [styleutil::getCurrentTheme]
-if {$currentTheme ne "aqua"} {
+if {$tablelist::themeDefaults(-stripebackground) eq ""} {
     $tbl configure -background white -stripebackground #f0f0f0
 }
 if {[$tbl cget -selectborderwidth] == 0} {
@@ -111,7 +109,7 @@ $tbl columnconfigure 0 -name release -sortmode dictionary
 $tbl columnconfigure 1 -name changes -sortmode integer
 $tbl columnconfigure 2 -name comment
 $_sa setwidget $tbl
-grid $_sa -row $row -column 0 -columnspan 3 -sticky w -padx 7p -pady {4p 0}
+grid $_sa -row $row -column 0 -columnspan 3 -sticky w -padx 7p -pady {3p 0}
 
 #
 # On X11 configure the tablelist according to the display's
@@ -133,6 +131,7 @@ incr row
 set _sa [scrollutil::scrollarea $cf.sa$row -borderwidth 0]
 set tv [ttk::treeview $_sa.tv -columns {release changes comment} \
 	-show headings -height 16 -selectmode browse]
+set currentTheme [styleutil::getCurrentTheme]
 if {$currentTheme eq "aqua" &&
     [package vcompare $::tk_patchLevel "8.6.10"] >= 0} {
     $_sa configure -borderwidth 1 ;# because in this case $tv has a flat relief
@@ -144,7 +143,7 @@ $tv column release -anchor w
 $tv column changes -anchor e
 $tv column comment -anchor w
 $_sa setwidget $tv
-grid $_sa -row $row -column 0 -columnspan 3 -sticky w -padx 7p -pady {4p 7p}
+grid $_sa -row $row -column 0 -columnspan 3 -sticky w -padx 7p -pady {3p 7p}
 
 grid columnconfigure $cf 2 -weight 1
 
@@ -296,7 +295,7 @@ proc cancelEdit {w args} {
 
 proc configMainSf {sf cf lb} {
     set width [winfo reqwidth $cf]
-    set height [expr {[winfo reqheight $cf.l0] + [winfo pixels . 4p] + \
+    set height [expr {[winfo reqheight $cf.l0] + [winfo pixels . 3p] + \
 		      [winfo reqheight $cf.sa1] + 2*[winfo pixels . 7p]}]
     $sf configure -width $width -height $height \
 	-yscrollincrement [expr {[winfo reqheight $lb] / 10}]
@@ -341,7 +340,7 @@ proc configTablelist {} {
 
 	set opt [lindex $configSet 0]
 	set w [ttk::label $cf.l$row -text $opt]
-	grid $w -row $row -column 0 -sticky w -padx {4p 0} -pady {4p 0}
+	grid $w -row $row -column 0 -sticky w -padx {3p 0} -pady {3p 0}
 
 	set w $cf.w$row
 	switch -- $opt {
@@ -377,7 +376,7 @@ proc configTablelist {} {
 		$w configure -values $values
 		$w set [$tbl cget $opt]
 		bind $w <<ComboboxSelected>> [list applyValue %W $opt]
-		grid $w -row $row -column 1 -sticky w -padx 4p -pady {4p 0}
+		grid $w -row $row -column 1 -sticky w -padx 3p -pady {3p 0}
 
 		#
 		# Adapt the handling of the mouse wheel
@@ -414,7 +413,7 @@ proc configTablelist {} {
 		global $w
 		set $w [$tbl cget $opt]
 		$w configure -text [expr {[set $w] ? "on": "off"}]
-		grid $w -row $row -column 1 -sticky w -padx 4p -pady {4p 0}
+		grid $w -row $row -column 1 -sticky w -padx 3p -pady {3p 0}
 	    }
 
 	    -borderwidth -
@@ -438,7 +437,7 @@ proc configTablelist {} {
 		foreach event {<Return> <KP_Enter> <FocusOut>} {
 		    bind $w $event [list applyValue %W $opt]
 		}
-		grid $w -row $row -column 1 -sticky w -padx 4p -pady {4p 0}
+		grid $w -row $row -column 1 -sticky w -padx 3p -pady {3p 0}
 
 		#
 		# Adapt the handling of the mouse wheel
@@ -453,7 +452,7 @@ proc configTablelist {} {
 		foreach event {<Return> <KP_Enter> <FocusOut>} {
 		    bind $w $event [list applyValue %W $opt]
 		}
-		grid $w -row $row -column 1 -sticky we -padx 4p -pady {4p 0}
+		grid $w -row $row -column 1 -sticky we -padx 3p -pady {3p 0}
 	    }
 	}
 
@@ -510,6 +509,6 @@ proc applyBoolean {w opt} {
 proc configTopSf {sf cf row} {
     set width [winfo reqwidth $cf]
     set rowHeight [expr {[winfo reqheight $cf] / $row}]
-    set height [expr {10*$rowHeight + [winfo pixels .top 4p]}]
+    set height [expr {10*$rowHeight + [winfo pixels .top 3p]}]
     $sf configure -width $width -height $height -yscrollincrement $rowHeight
 }
