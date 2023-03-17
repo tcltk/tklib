@@ -1,3 +1,44 @@
+2023-03-16  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scrollutilCommon.tcl: Fixed a few bugs related to the comparison of
+	  package versions; bumped the version number to 1.18; updated the
+	  copyright information.
+
+	* *.tcl:         Bumped the version number to 1.18; updated the
+	* COPYRIGHT.txt: copyright information.
+	* README.txt:
+
+	* doc/scrollednotebook.html: Corrected the definition of the "-height"
+	  option for the scrollednotebook widget to be in sync with that for
+	  ttk::notebook.
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added the "adjustsize" subcommand to the
+	  scrollednotebook, plainnotebook, and pagesman widgets; the "add" and
+	  "insert" plainnotebook subcommands now return the path name of the
+	  widget used for the tab corresponding to the window specified as
+	  subcommand argument; if the Tk version is at least 8.7 or the tksvg
+	  extension can be loaded into the interpreter, then all the images
+	  used by the scrollednotebook and plainnotebook widgets are now
+	  created as fully scaling-aware SVG images; updated the copyright
+	  information.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/*.tcl:               Various extensions and updates in
+	* scripts/utils/indicatorImgs/*.tcl: the mwutil and scaleutil packages;
+	  added support for the "alt" theme to the themepatch package; when
+	  possible, using fully scaling-aware SVG images for drawing the
+	  indicators of the ttk::checkbutton and ttk::radiobutton widgets;
+	  updated the copyright information.
+
+	* doc/*.png: Updated screenshots.
+
+	* ../../examples/scrollutil/*.tcl: Several improvements in the demo
+	  scripts; updated the copyright information.
+
 2022-10-24  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 1.17.
