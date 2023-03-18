@@ -1,3 +1,8 @@
+2023-03-18  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/utils/mwutil.tcl: Procedure getAncestorByClass significantly
+	  enhanced.
+
 2023-03-16  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scrollutilCommon.tcl: Fixed a few bugs related to the comparison of

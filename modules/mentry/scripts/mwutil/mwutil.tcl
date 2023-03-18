@@ -100,13 +100,21 @@ proc mwutil::wrongNumArgs args {
 # exist (but w itself needn't exist).
 #------------------------------------------------------------------------------
 proc mwutil::getAncestorByClass {w class} {
-    regexp {^(\..+)\..+$} $w dummy win
-    while {[winfo exists $win] &&
-	   [string compare [winfo class $win] $class] != 0} {
-	set win [winfo parent $win]
-    }
+    if {[regexp {^\.[^.]+$} $w]} {
+	return [expr {[string compare [winfo class .] $class] == 0 ? "." : ""}]
+    } elseif {[regexp {^(\..+)\.[^.]+$} $w dummy win]} {
+	while {[winfo exists $win]} {
+	    if {[string compare [winfo class $win] $class] == 0} {
+		return $win
+	    } else {
+		set win [winfo parent $win]
+	    }
+	}
 
-    return $win
+	return ""
+    } else {
+	return ""
+    }
 }
 
 #------------------------------------------------------------------------------
