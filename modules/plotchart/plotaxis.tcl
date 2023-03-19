@@ -1704,6 +1704,9 @@ proc ::Plotchart::DrawLegend { w series text {spacing {}}} {
 
     if { [string match r* $w] } {
         set w [string range $w 1 end]
+        set series "R:$series"
+    } else {
+        set series "L:$series"
     }
 
     # Append only if new item - not in list already
@@ -1729,6 +1732,9 @@ proc ::Plotchart::RemoveFromLegend { w series } {
 
     if { [string match r* $w] } {
         set w [string range $w 1 end]
+        set series "R:$series"
+    } else {
+        set series "L:$series"
     }
 
     #
@@ -1781,23 +1787,30 @@ proc ::Plotchart::ActuallyDrawLegend { w {spacing {}}} {
 
         set hasEntries 1
 
+        if { [string index $series 0] == "R" } {
+            set wDS r$w
+        } else {
+            set wDS $w
+        }
+        set series [string range $series 2 end]
+
         set colour "black"
-        if { [info exists data_series($w,$series,-colour)] } {
-            set colour $data_series($w,$series,-colour)
+        if { [info exists data_series($wDS,$series,-colour)] } {
+            set colour $data_series($wDS,$series,-colour)
         }
         set type "line"
-        if { [info exists data_series($w,$series,-type)] } {
-            set type $data_series($w,$series,-type)
+        if { [info exists data_series($wDS,$series,-type)] } {
+            set type $data_series($wDS,$series,-type)
         }
-        if { [info exists data_series($w,legendtype)] } {
-            set type $data_series($w,legendtype)
+        if { [info exists data_series($wDS,legendtype)] } {
+            set type $data_series($wDS,legendtype)
         }
         if {[info exists legend($w,legendtype)]} {
             set type $legend($w,legendtype)
         }
         set width 1
-        if { [info exists data_series($w,$series,-width)] } {
-            set width $data_series($w,$series,-width)
+        if { [info exists data_series($wDS,$series,-width)] } {
+            set width $data_series($wDS,$series,-width)
         }
         set font TkTextFont
         if {[info exists legend($w,font)]} {
@@ -1813,8 +1826,6 @@ proc ::Plotchart::ActuallyDrawLegend { w {spacing {}}} {
             set legend($w,spacing) $spacing
         }
 
-        # TODO: line or rectangle!
-
         if { $type != "rectangle" } {
             if { $type == "line" || $type == "both" } {
                 $legendw create line 0 $y 15 $y -fill $colour -tag [list legend legendobj $w] -width $width
@@ -1822,8 +1833,8 @@ proc ::Plotchart::ActuallyDrawLegend { w {spacing {}}} {
 
             if { $type == "symbol" || $type == "both" } {
                 set symbol "dot"
-                if { [info exists data_series($w,$series,-symbol)] } {
-                    set symbol $data_series($w,$series,-symbol)
+                if { [info exists data_series($wDS,$series,-symbol)] } {
+                    set symbol $data_series($wDS,$series,-symbol)
                 }
                 DrawSymbolPixel $legendw $series 7 $y $symbol $colour [list legend legendobj legend_$series $w]
             }

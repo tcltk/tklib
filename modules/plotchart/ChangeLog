@@ -1,3 +1,7 @@
+2023-03-19  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+	* plotaxis.tcl:    Correct the problem Markus Freiberg found with the legend for the right axis (ticket eb4101adc5)
+	* pkgIndex.tcl:    Increase the version number to 2.5.3
+
 2022-04-12  Arjen Markus  <arjenmarkus@users,sourceforge.net>
 	* plotaxis.tcl:    Apply Alexandru's patch for the legend
 	* plotchart.man:   Describe the new option to legendconfig (-order)
