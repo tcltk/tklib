@@ -846,6 +846,49 @@ diagram. In addition to the positioning options (-box and -axesbox) the diagram 
 
 [list_end]
 
+
+[call [cmd ::Plotchart::createDendrogram] [arg w] [arg args]]
+
+Create a dendrogram to plot hierarchically organised data. The labels that identify
+the endpoints of the hierarchy can all be drawn on the same level or where their
+branch ends. This is controlled by the option "-extend".
+[nl]
+The data are organised as nested lists, like:
+[example {
+     \$dendrogram plot data { {"Label1"  "Label2"} {F {A B} {C {D E}}} }
+}]
+Sublists with more than one element are considered a branching and are drawn in that way.
+Sublists with only one element are considered a leaf and are drawn as text.
+Because a string with two or more words can not be distinguished from a list with two
+or more elements, a provision is made for this situation: if the first element is "LEAF",
+then the list is considered to consist of leafs only and all elements (even if they
+are actually nested lists themselves are drawn as text:
+[example {
+     \$dendrogram plot data { {LEAF "Label 1"  "Label 2"} {F {A B} {C {D E}}} }
+}]
+
+[list_begin arguments]
+[arg_def widget w in]
+Name of the canvas widget to hold the dendrogram.
+
+[arg_def list args in]
+Zero or more option-value pairs:
+[list_begin itemized]
+[item]
+The option "-direction" takes one of the following values: left-right, right-left,
+top-bottom, bottom-top, with "top-bottom" as the default. The tree will be drawn
+according to this option, the labels appear either horizontally or vertically at
+the end of the tree.
+[item]
+The option "-extend" with value 1 (default) or 0 (no extension) to indicate that
+the labels should all appear at the same level.
+[list_end]
+
+[list_end]
+[para]
+
+[list_end]
+
 [section "PLOT METHODS"]
 
 Each of the creation commands explained in the last section returns
@@ -1607,6 +1650,37 @@ Y-coordinate of the box or a list of values.
 [para]
 The box ends at the 1st and 3rd quartile, while the whiskers by default
 are plotted to span 1.5 IQR (interquartile range) from the 1st and 3rd quartile.
+
+
+[call [cmd \$xyplot] violin [arg series] [arg xcrd] [arg ycrd]]
+
+Draw a violin plot based on the given data set. It is an alternative to the box and whiskers presentation.
+Just as with the box-and-whiskers subcommand, if the argument [term xcrd] is a
+list of several values and the argument [term ycrd] is a single value, a
+horizontal "violin" is drawn.
+[para]
+If, instead, the argument [term ycrd] contains a list of several values
+and the argument [term xcrd] a single value, then a vertical "violin" is
+drawn.
+[para]
+
+The option -violinwidth to the dataconfig command determines the width (or
+height) of the violin (default: 50 pixels).
+[para]
+The option -colour (-color) determines the outline colour and the option -fillcolour (-fillcolor)
+determines the colour by which the violin is filled (defaults: black and not filled).
+
+[list_begin arguments]
+[arg_def string series in]
+Name of the data series to use.
+
+[arg_def float xcrd in]
+X-coordinate of the violin or a list of values.
+
+[arg_def float ymin in]
+Y-coordinate of the violin or a list of values.
+[list_end]
+
 
 [call [cmd \$xyplot] vector [arg series] [arg xcrd] [arg ycrd] [arg ucmp] [arg vcmp]]
 
@@ -2486,8 +2560,25 @@ The label along the x- or y-axis to which the data belong
 [arg_def list values in]
 List of raw values, the extent of the box and the whiskers will be
 determined from this list.
-
 [list_end]
+
+[call [cmd \$boxplot] violin [arg series] [arg label] [arg values]]
+
+Add a "violin" to the plot. The dataconfig command can be used to customize
+the appearance (see the violin command for the xyplot for details).
+
+[list_begin arguments]
+[arg_def string series in]
+Name of the data series to be used for settings
+
+[arg_def string label in]
+The label along the x- or y-axis to which the data belong
+
+[arg_def list values in]
+List of raw values, the extent of the box and the whiskers will be
+determined from this list.
+[list_end]
+
 [list_end]
 
 
@@ -3039,6 +3130,24 @@ X-coordinate (or time) at which the line is to be drawn
 Individual optional arguments that will be passed to the [term "create line"] subcommand
 of the underlying canvas. This way you can set the colour or the line width
 of the vertical line.
+[list_end]
+[list_end]
+
+
+For [emph {dendrograms}] there is one specific subcommand:
+
+[list_begin definitions]
+[call [cmd \$dendrogram] plot [arg series] [arg data]]
+Draw a dendrogram according to the options given or implied when the dendrogram command was created.
+The "series" name allows you to select the colour of the branches (-colour/-color) as well as the colour and font of the labels
+(-labelcolour/-labelcolor and -labelfont).
+
+[list_begin arguments]
+[arg_def string series in]
+Name of the set of options to draw the dendrogram with.
+
+[arg_def list data in]
+Nested list, describing the tree structure. See the [emph createDendrogram] command.
 [list_end]
 [list_end]
 

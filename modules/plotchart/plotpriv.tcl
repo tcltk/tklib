@@ -4570,3 +4570,168 @@ proc ::Plotchart::DeleteData {w} {
 
     $w delete data
 }
+
+# DrawViolin --
+#     Draw a violin plot based on the given set of values
+#
+# Arguments:
+#     w          Name of the canvas (actually the plot)
+#     series     Name of the data series to be used
+#     xcrd       X-coordinate or list of data
+#     ycrd       Y-coordinate or list of data
+#
+# Result:
+#     None
+# Side effects:
+#     A violin plot at the given x- or y-coordinate
+#
+proc ::Plotchart::DrawViolin {w series xcrd ycrd} {
+    variable data_series
+    variable scaling
+
+    #
+    # Check orientation
+    #
+    set type "?"
+    if { [llength $xcrd] > 1 && [llength $ycrd] == 1 } {
+        set type h
+    }
+    if { [llength $xcrd] == 1 && [llength $ycrd] > 1 } {
+        set type v
+    }
+    if { $type == "?" } {
+        return -code error "Use either a list of x values or a list of y values - not both"
+    }
+
+    if { $type == "h" } {
+        set data [lsort -real -increasing $xcrd]
+    } else {
+        set data [lsort -real -increasing $ycrd]
+    }
+    set length [llength $data]
+
+    set extraRange 0.05
+    set maxExtent  25
+    if { [info exists data_series($w,$series,-violinwidth)] } {
+        set maxExtent $data_series($w,$series,-violinwidth)
+    }
+
+    set outlineColour black
+    if { [info exists data_series($w,$series,-colour)] } {
+        set outlineColour $data_series($w,$series,-colour)
+    }
+
+    set fillColour {}
+    if { [info exists data_series($w,$series,-fillcolour)] } {
+        set fillColour $data_series($w,$series,-fillcolour)
+    }
+
+    set numberClasses [expr {min( 10, max( 3, [llength $data]/2) )}]
+
+    #
+    # Determine the extremes - increase the range by a small margin
+    #
+    set minv [lindex $data 0]
+    set maxv [lindex $data end]
+
+    set range [expr {$maxv - $minv}]
+
+    if { $range == 0.0 } {
+        if { $type eq "h" } {
+            lassign [coordsToPixel $w $minv $ycrd] px py
+        } else {
+            lassign [coordsToPixel $w $xcrd $minv] px py
+        }
+        $w create oval [expr {$px-$maxExtent}] [expr {$py-$maxExtent}] [expr {$px+$maxExtent}] [expr {$py+$maxExtent}]
+        return
+    } else {
+        set minv [expr {$minv - $extraRange * $range}]
+        set maxv [expr {$maxv + $extraRange * $range}]
+    }
+
+    set dv [expr {($maxv - $minv) / $numberClasses}]
+
+    #
+    # Determine the distribution
+    #
+    set classCount [lrepeat $numberClasses [expr {0}]]
+
+    foreach value $data {
+        set class [expr {int( ($value-$minv) / $dv)}]
+        lset classCount $class [expr {[lindex $classCount $class] + 1}]
+    }
+
+    set ccoordB [list 0]
+    set vcoordB [list 0]
+    set ccoordE [list]
+    set vcoordE [list]
+
+    set vi       0
+    set maxCount 0
+    foreach class $classCount {
+        if { $maxCount < $class } {
+            set maxCount $class
+        }
+
+        incr vi
+        lappend ccoordB $class
+        lappend vcoordB $vi
+
+        set ccoordE [concat [expr {-$class}] $ccoordE]
+        set vcoordE [concat $vi              $vcoordE]
+    }
+
+    set ccoordB [concat $ccoordB 0              $ccoordE 0]
+    set vcoordB [concat $vcoordB $numberClasses $vcoordE 0]
+
+    set scaleV [expr {$maxExtent / double($maxCount)}]
+
+    set xyCoords [list]
+
+    foreach cc $ccoordB vc $vcoordB {
+        if { $type eq "h" } {
+            set xc [expr {$minv + $vc * $dv}]
+            lassign [coordsToPixel $w $xc $ycrd] px py
+            set py [expr {$py + $scaleV * $cc}]
+        } else {
+            set yc [expr {$minv + $vc * $dv}]
+            lassign [coordsToPixel $w $xcrd $yc] px py
+            set px [expr {$px + $scaleV * $cc}]
+        }
+        lappend xyCoords $px $py
+    }
+
+    $w create polygon $xyCoords -smooth 1 -fill $fillColour -outline $outlineColour
+}
+
+# DrawViolinData --
+#    Draw the data in a boxplot as a violin
+#    where either the x-axis or the y-axis consists of labels
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    label       Label on the x- or y-axis to put the box on
+#    values      List of values to plot the violin for
+# Result:
+#    None
+# Side effects:
+#    New data drawn in canvas
+#
+proc ::Plotchart::DrawViolinData { w series label values } {
+    variable config
+    variable scaling
+    variable settings
+
+    set index [lsearch $config($w,axisnames) $label]
+    if { $index == -1 } {
+        return "Label $label not found on axis"
+    }
+
+    set coord [expr {$index + 1}]
+
+    if { $settings($w,orientation) eq "vertical" } {
+        DrawViolin $w $series $coord $values
+    } else {
+        DrawViolin $w $series $values $coord
+    }
+}

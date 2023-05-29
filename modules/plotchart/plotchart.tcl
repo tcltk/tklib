@@ -38,7 +38,7 @@ namespace eval ::Plotchart {
                     createWindrose createTargetDiagram createPerformanceProfile \
                     createTableChart createTitleBar createTaylorDiagram \
                     createSpiralPie createTernaryDiagram createStatusTimeline \
-                    createCirclePlot createHeatmap \
+                    createCirclePlot createHeatmap createDendrogram \
                     plotstyle plotconfig plotpack plotmethod clearcanvas eraseplot
 
    #
@@ -86,6 +86,7 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,bindcmd)           BindCmd
    set methodProc(xyplot,rescale)           RescalePlot
    set methodProc(xyplot,box-and-whiskers)  DrawBoxWhiskers
+   set methodProc(xyplot,violin)            DrawViolin
    set methodProc(xyplot,xband)             DrawXband
    set methodProc(xyplot,yband)             DrawYband
    set methodProc(xyplot,labeldot)          DrawLabelDot
@@ -490,6 +491,7 @@ namespace eval ::Plotchart {
    set methodProc(boxplot,vtext)               DrawVtext
    set methodProc(boxplot,vsubtext)            DrawVsubtext
    set methodProc(boxplot,plot)                DrawBoxData
+   set methodProc(boxplot,violin)              DrawViolinData
    set methodProc(boxplot,saveplot)            SavePlot
    set methodProc(boxplot,dataconfig)          DataConfig
    set methodProc(boxplot,xconfig)             XConfig
@@ -631,6 +633,9 @@ namespace eval ::Plotchart {
    set methodProc(heatmap,title)               DrawTitle
    set methodProc(heatmap,plot)                DrawHeatmapCells
    set methodProc(heatmap,scale)               ConfigHeatmapScale
+   set methodProc(dendrogram,title)            DrawTitle
+   set methodProc(dendrogram,dataconfig)       DataConfig
+   set methodProc(dendrogram,plot)             DrawDendrogram
    #
    # Auxiliary parameters
    #
@@ -640,10 +645,12 @@ namespace eval ::Plotchart {
    variable options
    variable option_keys
    variable option_values
-   set options       {-colour -color  -symbol -type -filled -fillcolour -fillcolor -boxwidth -width -radius \
-      -whisker -whiskerwidth -mediancolour -mediancolor  -medianwidth -style -smooth}
-   set option_keys   {-colour -colour -symbol -type -filled -fillcolour -fillcolour -boxwidth -width -radius \
-      -whisker -whiskerwidth -mediancolour -mediancolour -medianwidth -style -smooth}
+   set options       {-colour -color  -symbol -type -filled -fillcolour -fillcolor -boxwidth -width -radius
+      -whisker -whiskerwidth -mediancolour -mediancolor  -medianwidth -style -smooth -violinwidth
+      -labelcolour -labelcolor  -labelfont}
+   set option_keys   {-colour -colour -symbol -type -filled -fillcolour -fillcolour -boxwidth -width -radius
+      -whisker -whiskerwidth -mediancolour -mediancolour -medianwidth -style -smooth -violinwidth
+      -labelcolour -labelcolour -labelfont}
    set option_values {-colour       {...}
                       -symbol       {plus cross circle up down dot upfilled downfilled}
                       -type         {line symbol both rectangle}
@@ -658,6 +665,9 @@ namespace eval ::Plotchart {
                       -whiskerwidth {...}
                       -style        {filled spike symbol plateau stair}
                       -smooth       {0 1 no yes false true}
+                      -violinwidth  {...}
+                      -labelcolour  {...}
+                      -labelfont    {...}
                      }
 
    variable axis_options
@@ -3385,6 +3395,68 @@ proc ::Plotchart::createHeatmap { c rowlabels columnlabels args } {
    return $newchart
 }
 
+# createDendrogram --
+#    Create a command for drawing a dendrogram (type of tree)
+# Arguments:
+#    c             Name of the canvas
+#    args          Additional arguments
+# Result:
+#    Name of a new command
+#
+proc ::Plotchart::createDendrogram { c args } {
+   variable scaling
+   variable data_series
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
+
+   set newchart "dendrogram_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler dendrogram $w
+   CopyConfig dendrogram $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
+
+   set scaling($w,coordSystem) 0
+   set scaling($w,xfactor)     1.0 ;# Dummy
+   set scaling($w,yfactor)     1.0
+
+   viewPort          $w $pxmin     $pymin     $pxmax   $pymax
+   worldCoordinates  $w 0.0        0.0        1.0      1.0
+   DefaultBalloon    $w
+
+   set extend 1
+   set dir    top-bottom
+
+   set knowndirs {left-right right-left top-bottom bottom-top}
+
+   foreach {keyword value} $args {
+      switch -- $keyword {
+         "-extend" {
+             set extend $value
+         }
+         "-direction" {
+             if { $value in $knowndirs } {
+                 set dir $value
+             } else {
+                 return -code error "Unknown direction: $value"
+             }
+         }
+      }
+   }
+
+   set scaling($w,extend)    [expr {!!$extend}]
+   set scaling($w,direction) $dir
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
+
+   return $newchart
+}
+
 # Load the private procedures
 #
 source [file join [file dirname [info script]] "plotpriv.tcl"]
@@ -3402,7 +3474,8 @@ source [file join [file dirname [info script]] "plotspecial.tcl"]
 source [file join [file dirname [info script]] "plotobject.tcl"]
 source [file join [file dirname [info script]] "plottable.tcl"]
 source [file join [file dirname [info script]] "plotstatustimeline.tcl"]
+source [file join [file dirname [info script]] "plotdendrogram.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.5.2
+package provide Plotchart 2.6.0

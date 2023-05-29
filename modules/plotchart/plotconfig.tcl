@@ -137,7 +137,7 @@ namespace eval ::Plotchart {
         timechart stripchart isometric 3dplot 3dbars
         radialchart txplot 3dribbon boxplot windrose
         targetdiagram performance table ternary distnormal
-        taylordiagram heatmap circleplot
+        taylordiagram heatmap circleplot dendrogram
     }
 
     # define implemented components for each chart type:
@@ -171,6 +171,7 @@ namespace eval ::Plotchart {
         taylordiagram {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask limits reference}
         heatmap       {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
         circleplot    {title subtitle margin text legend axis                          background}
+        dendrogram    {title subtitle margin text legend leftaxis rightaxis bottomaxis background}
     } {
         set config($type,components) $components
     }
