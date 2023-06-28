@@ -1,3 +1,47 @@
+2023-06-28 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* tablelistCommon.tcl: For Tcl versions 8.4 and later replaced the
+	  deprecated "trace variable" and "trace vdelete" invocations with
+	  "trace add variable" and "trace remove variable", respectively;
+	  bumped the version number to 6.22.
+
+	* *.tcl:         Bumped the version number to 6.22.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: In the presence of SVG support, added the variable
+	  "tablelist::svgfmt" and the arrow style "photo0x0"; removed the very
+	  rarely needed arrow styles "flat6x4", "flat7x5", "flat9x6",
+	  "flatAngle9x7", and "flatAngle10x7"; added the arrow styles
+	  "flat10x5", "flat12x6", "flat14x7", and "flat16x8"; the default value
+	  of the "-arrowstyle" option on X11 is now "photo0x0" if SVG is
+	  supported, and one of "flat8x4", "flat10x5", "flat12x6", "flat14x7",
+	  or "flat16x8" otherwise; in the presence of SVG support, added the
+	  tree styles "plain", "bicolor", "white", and "classic"; the
+	  temporarily or persistently embedded checkbuttons now use scaling-
+	  aware SVG images; for Tcl versions 8.4 and later replaced the
+	  deprecated "trace variable" and "trace vdelete" invocations with
+	  "trace add variable" and "trace remove variable", respectively;
+	  guarded against destroying a tablelist widget in which interactive
+	  cell editing is in progress.
+
+	* scripts/utils/*.tcl:               Various updates in the scaleutil,
+	* scripts/utils/indicatorImgs/*.tcl: scaleutilmisc, and themepatch
+	  packages, e.g., related to the BWidget SpinBox and ComboBox as well
+	  as Iwidgets dateentry and timeentry widgets used for interactive cell
+	  editing, and to patching the "default" theme.
+
+	* doc/*.png: Updated a series of screenshots and added 4 new ones.
+
+	* ../../examples/tablelist/*: In the presence of SVG support, the demo
+	  scripts now use SVG images, and on X11 the demo scripts
+	  "browseTree(_tile).tcl" and "dirViewer(_tile).tcl" now set the
+	  "-treestyle" option to the SVG-based style "bicolor"; bumped the
+	  version number to 6.22.
+
 2023-03-20 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 6.21.
